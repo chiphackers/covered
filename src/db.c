@@ -825,6 +825,11 @@ void db_assign_symbol( char* name, char* symbol ) {
       /* Add this signal */
       symtable_add( symbol, slink->sig, &vcd_symtab );
 
+    } else {
+
+      snprintf( msg, 4096, "VCD signal \"%s.%s\" found that is not part of design", curr_vcd_scope, name );
+      print_output( msg, WARNING );
+
     }
 
     signal_dealloc( tmpsig );
