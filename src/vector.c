@@ -185,6 +185,46 @@ bool vector_db_read( vector** vec, char** line ) {
 }
 
 /*!
+ \param nib    Nibble to display toggle information
+ \param width  Number of bits of nibble to display
+ \param ofile  Stream to output information to.
+ 
+ Displays the toggle01 information from the specified vector to the output
+ stream specified in ofile.
+*/
+void vector_display_toggle01( nibble* nib, int width, FILE* ofile ) {
+
+  int i;    /* Loop iterator */
+
+  fprintf( ofile, "%d'b", width );
+
+  for( i=(width - 1); i>=0; i-- ) {
+    fprintf( ofile, "%d", ((nib[(i/4)] >> ((i%4)+8)) & 0x1) );
+  }
+
+}
+
+/*!
+ \param nib    Nibble to display toggle information
+ \param width  Number of bits of nibble to display
+ \param ofile  Stream to output information to.
+ 
+ Displays the toggle10 information from the specified vector to the output
+ stream specified in ofile.
+*/
+void vector_display_toggle10( nibble* nib, int width, FILE* ofile ) {
+
+  int i;    /* Loop iterator */
+
+  fprintf( ofile, "%d'b", width );
+
+  for( i=(width - 1); i>=0; i-- ) {
+    fprintf( ofile, "%d", ((nib[(i/4)] >> ((i%4)+12)) & 0x1) );
+  }
+
+}
+
+/*!
  \param nib    Nibble to display.
  \param width  Number of bits in nibble to display.
  \param lsb    Least significant bit of nibble to start outputting.
@@ -217,18 +257,12 @@ void vector_display_nibble( nibble* nib, int width, int lsb ) {
   }
 
   /* Display nibble toggle01 history */
-  printf( ", 0->1: %d'b", width );
-
-  for( i=(width - 1); i>=0; i-- ) {
-    printf( "%d", ((nib[(i/4)] >> ((i%4)+8)) & 0x1) );
-  }
+  printf( ", 0->1: " );
+  vector_display_toggle01( nib, width, stdout );
 
   /* Display nibble toggle10 history */
-  printf( ", 1->0: %d'b", width );
-
-  for( i=(width - 1); i>=0; i-- ) {
-    printf( "%d", ((nib[(i/4)] >> ((i%4)+12)) & 0x1) );
-  }
+  printf( ", 1->0: " );
+  vector_display_toggle10( nib, width, stdout );
 
   /* Display bit set information */
   printf( ", set: %d'b", width );

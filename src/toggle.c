@@ -9,6 +9,7 @@
 
 #include "toggle.h"
 #include "defines.h"
+#include "vector.h"
 
 
 extern mod_inst* instance_root;
@@ -149,14 +150,70 @@ void toggle_module_summary( FILE* ofile, mod_link* head ) {
 }
 
 /*!
+ \param ofile  Pointer to file to output results to.
+ \param sigl   Pointer to signal list head.
+
+ Displays the signals that did not achieve 100% toggle coverage to standard 
+ output from the specified signal list.
+*/
+void toggle_display_verbose( FILE* ofile, sig_link* sigl ) {
+
+  sig_link* curr_sig;   /* Pointer to current signal link being evaluated */
+  int       hit01;      /* Number of bits that toggled from 0 to 1        */
+  int       hit10;      /* Number of bits that toggled from 1 to 0        */
+
+  fprintf( ofile, "Signals not getting 100%% toggle coverage\n" );
+
+  curr_sig = sigl;
+
+  while( curr_sig != NULL ) {
+
+    vector_toggle_count( curr_sig->sig->value, &hit01, &hit10 );
+
+    if( (hit01 < curr_sig->sig->value->width) || (hit10 < curr_sig->sig->value->width) ) {
+
+      fprintf( ofile, "Signal:  %s     Toggle 0->1: ", curr_sig->sig->name );
+      vector_display_toggle01( curr_sig->sig->value->value, curr_sig->sig->value->width, ofile );      
+      fprintf( ofile, "     Toggle 1->0: " );
+      vector_display_toggle10( curr_sig->sig->value->value, curr_sig->sig->value->width, ofile );      
+      fprintf( ofile, "\n" );
+
+    }
+
+    curr_sig = curr_sig->next;
+
+  }
+
+}
+
+/*!
  \param ofile  Pointer to file to display coverage results to.
  \param root   Pointer to root of instance module tree to parse.
 
  Displays the verbose toggle coverage results to the specified output stream on
- an instance basis.  The verbose toggle coverage includes the signal names (and
- expressions) that did not receive 100% toggle coverage during simulation. 
+ an instance basis.  The verbose toggle coverage includes the signal names
+ and their bits that did not receive 100% toggle coverage during simulation. 
 */
 void toggle_instance_verbose( FILE* ofile, mod_inst* root ) {
+
+  mod_inst* curr_inst;   /* Pointer to current instance being evaluated */
+
+  assert( root != NULL );
+
+  fprintf( ofile, "\n" );
+  fprintf( ofile, "Module: %s, File: %s, Instance: %s\n",
+           root->mod->name,
+           root->mod->filename,
+           root->name );
+  fprintf( ofile, "--------------------------------------------------------\n" );
+
+  toggle_display_verbose( ofile, root->mod->sig_head );
+
+  curr_inst = root->child_head;
+  while( curr_inst != NULL ) {
+    toggle_instance_verbose( ofile, curr_inst );
+    curr_inst = curr_inst->next;
+  }
 
 }
 
@@ -166,10 +223,24 @@ void toggle_instance_verbose( FILE* ofile, mod_inst* root ) {
 
  Displays the verbose toggle coverage results to the specified output stream on
  a module basis (combining modules that are instantiated multiple times).
- The verbose toggle coverage includes the signal names (and expressions) that
+ The verbose toggle coverage includes the signal names and their bits that
  did not receive 100% toggle coverage during simulation.
 */
 void toggle_module_verbose( FILE* ofile, mod_link* head ) {
+
+  assert( head != NULL );
+
+  fprintf( ofile, "\n" );
+  fprintf( ofile, "Module: %s, File: %s\n",
+           head->mod->name,
+           head->mod->filename );
+  fprintf( ofile, "--------------------------------------------------------\n" );
+
+  toggle_display_verbose( ofile, head->mod->sig_head );
+
+  if( head->next != NULL ) {
+    toggle_module_verbose( ofile, head->next );
+  }
 
 }
 

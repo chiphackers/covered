@@ -21,6 +21,6 @@ end
 assign a = b & c;
 assign d = (e & f) | g;
 assign e = (a ^ b) && (d || c);
-assign f = ~(a !== b) ? (g <= d) == 5'b10111 : ^b;
+assign f = ~(a !== b) ? (g <= d) == 4'o17 : ^b;
 
 endmodule

@@ -28,6 +28,12 @@ void vector_db_write( vector* vec, FILE* file, bool write_data );
 //! Creates and parses current file line for vector information */
 bool vector_db_read( vector** vec, char** line );
 
+//! Outputs the toggle01 information from the specified nibble to the specified output stream.
+void vector_display_toggle01( nibble* nib, int width, FILE* ofile );
+
+//! Outputs the toggle10 information from the specified nibble to the specified output stream.
+void vector_display_toggle10( nibble* nib, int width, FILE* ofile );
+
 //! Outputs nibble to standard output.
 void vector_display_nibble( nibble* nib, int width, int lsb );
 
