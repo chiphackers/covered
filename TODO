@@ -22,6 +22,9 @@ Score command
 7.  Make sure that expression widths are correct (may have to look at left-hand-side bit
     width to calculate this correctly).
 
+8.  Make sure that parser only parses a file once (when it is in both in a library (-y) and
+    and a -v option).
+
 
 Merge command
 -------------
