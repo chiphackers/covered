@@ -61,12 +61,22 @@ int expression_bit_value( expression* expr );
 /*! \brief Returns TRUE if specified expression is found to contain all static leaf expressions. */
 bool expression_is_static_only( expression* expr );
 
+/*! \brief Returns TRUE if specified expression is on the LHS of a blocking assignment operator. */
+bool expression_is_assigned( expression* expr );
+
+/*! \brief Performs blocking assignment assignment to variables. */
+void expression_assign( expression* lhs, expression* rhs, int* lsb );
+
 /*! \brief Deallocates memory used for expression. */
 void expression_dealloc( expression* expr, bool exp_only );
 
 
 /*
  $Log$
+ Revision 1.28  2004/10/22 21:40:30  phase1geo
+ More incremental updates to improve efficiency in score command (though this
+ change should not, in and of itself, improve efficiency).
+
  Revision 1.27  2004/08/11 22:11:39  phase1geo
  Initial beginnings of combinational logic verbose reporting to GUI.
 

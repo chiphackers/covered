@@ -23,7 +23,7 @@
  in the expression structure is used to reference the signal.  The LSB and width
  values from the actual signal can then be used to verify that we are still
  within range.  If we are found to be out of range, a value of X must be assigned
- the the SBIT_SEL expression.  The width of an SBIT_SEL is always constant (1).  The
+ to the SBIT_SEL expression.  The width of an SBIT_SEL is always constant (1).  The
  LSB of the SBIT_SEL is manipulated by the left expression value.
  
  \par EXP_OP_MBIT_SEL
@@ -259,48 +259,44 @@ void expression_set_value( expression* exp, vector* vec ) {
   assert( exp->value != NULL );
   assert( vec != NULL );
   
-  if( ESUPPL_IS_LHS( exp->suppl ) == 0 ) {
-
-    /* printf( "In expression_set_value, expr: %d, op: %d, line: %d\n", exp->id, exp->op, exp->line ); */
+  /* printf( "In expression_set_value, expr: %d, op: %d, line: %d\n", exp->id, exp->op, exp->line ); */
   
-    switch( exp->op ) {
-      case EXP_OP_SIG   :
-      case EXP_OP_PARAM :
-        exp->value->value = vec->value;
-        exp->value->width = vec->width;
-        break;
-      case EXP_OP_SBIT_SEL   :
-      case EXP_OP_PARAM_SBIT :
-        exp->value->value = vec->value;
-        exp->value->width = 1;
-        break;
-      case EXP_OP_MBIT_SEL   :
-      case EXP_OP_PARAM_MBIT :
-        expression_operate_recursively( exp->left  );
-        expression_operate_recursively( exp->right );
-        lbit = vector_to_int( exp->left->value  );
-        rbit = vector_to_int( exp->right->value );
-        if( lbit <= rbit ) {
-          exp->value->width = ((rbit - lbit) + 1);
-          if( exp->op == EXP_OP_PARAM_MBIT ) {
-            exp->value->value = vec->value + lbit;
-          } else {
-            exp->value->value = vec->value + (lbit - exp->sig->lsb);
-          }
+  switch( exp->op ) {
+    case EXP_OP_SIG   :
+    case EXP_OP_PARAM :
+      exp->value->value = vec->value;
+      exp->value->width = vec->width;
+      break;
+    case EXP_OP_SBIT_SEL   :
+    case EXP_OP_PARAM_SBIT :
+      exp->value->value = vec->value;
+      exp->value->width = 1;
+      break;
+    case EXP_OP_MBIT_SEL   :
+    case EXP_OP_PARAM_MBIT :
+      expression_operate_recursively( exp->left  );
+      expression_operate_recursively( exp->right );
+      lbit = vector_to_int( exp->left->value  );
+      rbit = vector_to_int( exp->right->value );
+      if( lbit <= rbit ) {
+        exp->value->width = ((rbit - lbit) + 1);
+        if( exp->op == EXP_OP_PARAM_MBIT ) {
+          exp->value->value = vec->value + lbit;
         } else {
-          exp->value->width = ((lbit - rbit) + 1);
-          if( exp->op == EXP_OP_PARAM_MBIT ) {
-            exp->value->value = vec->value + rbit;
-          } else {
-            exp->value->value = vec->value + (rbit - exp->sig->lsb);
-          }
+          exp->value->value = vec->value + (lbit - exp->sig->lsb);
         }
-        break;
-      default :  break;
-    }
-
+      } else {
+        exp->value->width = ((lbit - rbit) + 1);
+        if( exp->op == EXP_OP_PARAM_MBIT ) {
+          exp->value->value = vec->value + rbit;
+        } else {
+          exp->value->value = vec->value + (rbit - exp->sig->lsb);
+        }
+      }
+      break;
+    default :  break;
   }
-  
+
 }
 
 /*!
@@ -940,7 +936,7 @@ bool expression_operate( expression* expr ) {
   vec_data value32[32];     /* 32-bit nibble value                              */
   control  lf, lt, rf, rt;  /* Specify left and right WAS_TRUE/WAS_FALSE values */
 
-  if( expr != NULL ) {
+  if( (expr != NULL) && (expr->suppl.part.lhs == 0) ) {
 
     snprintf( user_msg, USER_MSG_LENGTH, "In expression_operate, id: %d, op: %d, line: %d", expr->id, expr->op, expr->line );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -1291,8 +1287,12 @@ bool expression_operate( expression* expr ) {
         retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
         break;
 
-      case EXP_OP_ASSIGN :
       case EXP_OP_BASSIGN :
+        intval1 = 0;
+        expression_assign( expr->left, expr->right, &intval1 );
+        break;
+
+      case EXP_OP_ASSIGN :
       case EXP_OP_NASSIGN :
       case EXP_OP_IF :
         break;
@@ -1363,7 +1363,7 @@ bool expression_operate( expression* expr ) {
 */
 void expression_operate_recursively( expression* expr ) {
     
-  if( expr != NULL ) {
+  if( (expr != NULL) && (expr->suppl.part.lhs == 0) ) {
     
     /*
      Non-static expression found where static expression required.  Simulator
@@ -1445,6 +1445,93 @@ bool expression_is_static_only( expression* expr ) {
 }
 
 /*!
+ \param expr  Pointer to current expression to evaluate
+
+ \return Returns TRUE if the specified expression is on the LHS of a blocking assignment operator;
+         otherwise, returns FALSE.
+
+ Used to figure out of an expression which points to a signal will assign this signal value during
+ simulation by the expression_assign function (instead of from the VCD file).
+*/
+bool expression_is_assigned( expression* expr ) {
+
+  bool assigned = FALSE;  /* Return value for this function */
+
+  if( expr != NULL ) {
+
+    if( (expr->suppl.part.lhs == 1) && (expr->suppl.part.root == 0) ) {
+
+      /* Traverse up tree to see if a BASSIGN is found */
+      assigned = expression_is_assigned( expr->parent->expr );
+
+    } else if( expr->op == EXP_OP_BASSIGN ) {
+
+      assigned = TRUE;
+
+    }
+
+  }
+
+  return( assigned );
+
+}
+
+/*!
+ \param lhs  Pointer to current expression on left-hand-side of assignment to calculate for.
+ \param rhs  Pointer to the right-hand-expression that will be assigned from.
+ \param lsb  Current least-significant bit in rhs value to start assigning.
+
+ Recursively iterates through specified LHS expression, assigning the value from the RHS expression.
+ This is called whenever a blocking assignment expression is found during simulation.
+*/
+void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
+
+  int intval1;  /* Integer value to use */
+
+  if( lhs != NULL ) {
+
+    printf( "In expression_assign, lhs_op: %d, rhs_op: %d, lsb: %d\n", lhs->op, rhs->op, *lsb );
+
+    switch( lhs->op ) {
+      case EXP_OP_SIG      :
+        printf( "Signal: %s\n", lhs->sig->name );
+        vector_set_value( lhs->value, rhs->value->value, lhs->value->width, *lsb, 0 );
+        *lsb = *lsb + lhs->value->width;
+        printf( "New lsb: %d\n", *lsb );
+        break;
+      case EXP_OP_SBIT_SEL :
+        if( !vector_is_unknown( lhs->left->value ) ) {
+          intval1 = vector_to_int( lhs->left->value ) - lhs->sig->lsb;
+          assert( intval1 >= 0 );
+          assert( intval1 < lhs->sig->value->width );
+          lhs->value->value = lhs->sig->value->value + intval1;
+        }
+        vector_set_value( lhs->value, rhs->value->value, 1, *lsb, 0 );
+        *lsb = *lsb + lhs->value->width;
+        printf( "New lsb: %d\n", *lsb );
+        break;
+      case EXP_OP_MBIT_SEL :
+        vector_set_value( lhs->value, rhs->value->value, lhs->value->width, *lsb, 0 );
+        *lsb = *lsb + lhs->value->width;
+        printf( "New lsb: %d\n", *lsb );
+        break;
+      case EXP_OP_CONCAT   :
+      case EXP_OP_LIST     :
+        break;
+      default:
+        /* This is an illegal expression to have on the left-hand-side of an expression */
+        break;
+    }
+
+    /* Not sure at this point if this code belongs above or below the above switch statement */
+    expression_assign( lhs->right, rhs, lsb );
+    expression_assign( lhs->left,  rhs, lsb );
+
+  }
+
+}
+
+/*!
  \param expr      Pointer to root expression to deallocate.
  \param exp_only  Removes only the specified expression and not its children.
 
@@ -1506,6 +1593,12 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.110  2005/02/05 04:13:29  phase1geo
+ Started to add reporting capabilities for race condition information.  Modified
+ race condition reason calculation and handling.  Ran -Wall on all code and cleaned
+ things up.  Cleaned up regression as a result of these changes.  Full regression
+ now passes.
+
  Revision 1.109  2005/01/10 02:59:30  phase1geo
  Code added for race condition checking that checks for signals being assigned
  in multiple statements.  Working on handling bit selects -- this is in progress.

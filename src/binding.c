@@ -234,8 +234,16 @@ bool bind_perform( char* sig_name, expression* exp, module* mod_sig, module* mod
 
   if( retval ) {
 
+    printf( "Binding expression/signal %s\n", sigl->sig->name );
+
     /* Add expression to signal expression list */
     exp_link_add( exp, &(sigl->sig->exp_head), &(sigl->sig->exp_tail) );
+
+    /* If this expression will be assigned by generated results instead of from dumpfile, mark that info here */
+    if( expression_is_assigned( exp ) ) {
+      sigl->sig->value->suppl.part.assigned = 1;
+      printf( "Signal %n will be assigned***\n", sigl->sig->name );
+    }
 
     /* Set expression to point at signal */
     exp->sig = sigl->sig;
@@ -353,6 +361,10 @@ void bind() {
 
 /* 
  $Log$
+ Revision 1.28  2004/03/30 15:42:14  phase1geo
+ Renaming signal type to vsignal type to eliminate compilation problems on systems
+ that contain a signal type in the OS.
+
  Revision 1.27  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,

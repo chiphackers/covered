@@ -1225,8 +1225,13 @@ void db_assign_symbol( char* name, char* symbol, int msb, int lsb ) {
     /* Find the signal that matches the specified signal name */
     if( (slink = sig_link_find( &tmpsig, curr_instance->mod->sig_head )) != NULL ) {
 
-      /* Add this signal */
-      symtable_add( strdup_safe( symbol, __FILE__, __LINE__ ), slink->sig, msb, lsb );
+      /* Only add the symbol if we are not going to generate this value ourselves */
+      if( slink->sig->value->suppl.part.assigned == 0 ) {
+
+        /* Add this signal */
+        symtable_add( strdup_safe( symbol, __FILE__, __LINE__ ), slink->sig, msb, lsb );
+
+      }
 
     } else {
 
@@ -1334,6 +1339,12 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.124  2005/02/05 04:13:29  phase1geo
+ Started to add reporting capabilities for race condition information.  Modified
+ race condition reason calculation and handling.  Ran -Wall on all code and cleaned
+ things up.  Cleaned up regression as a result of these changes.  Full regression
+ now passes.
+
  Revision 1.123  2005/02/04 23:55:47  phase1geo
  Adding code to support race condition information in CDD files.  All code is
  now in place for writing/reading this data to/from the CDD file (although

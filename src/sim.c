@@ -239,7 +239,9 @@ bool sim_expression( expression* expr ) {
      its operation is performed so don't traverse the tree now.
     */
     if( (expr->op != EXP_OP_EOR) && (expr->left != NULL) ) {
-      left_changed = sim_expression( expr->left );
+      if( expr->left->suppl.part.lhs == 0 ) {
+        left_changed = sim_expression( expr->left );
+      }
     } else {
       left_changed = TRUE;
     }
@@ -254,7 +256,9 @@ bool sim_expression( expression* expr ) {
 
     /* See explanation above */
     if( (expr->op != EXP_OP_EOR) && (expr->right != NULL) ) {
-      right_changed = sim_expression( expr->right );
+      if( expr->right->suppl.part.lhs == 0 ) {
+        right_changed = sim_expression( expr->right );
+      }
     } else {
       right_changed = TRUE;
     } 
@@ -396,6 +400,10 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.38  2005/01/07 17:59:52  phase1geo
+ Finalized updates for supplemental field changes.  Everything compiles and links
+ correctly at this time; however, a regression run has not confirmed the changes.
+
  Revision 1.37  2004/11/08 12:35:34  phase1geo
  More updates to improve efficiency.
 

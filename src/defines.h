@@ -954,16 +954,17 @@ struct str_link_s {
  manipulate this information.
 */
 struct vector_s {
-  int        width;     /*!< Bit width of this vector                          */
+  int        width;       /*!< Bit width of this vector                                                                 */
   union {
-    nibble   all;       /*!< Allows us to set all bits in the suppl field      */
+    nibble   all;         /*!< Allows us to set all bits in the suppl field                                             */
     struct {
-      nibble base  :3;  /*!< Base-type of this data when originally parsed     */
-      nibble wait  :1;  /*!< Specifies that this signal should be waited for   */
-      nibble inport:1;  /*!< Specifies if this vector is part of an input port */
+      nibble base    :3;  /*!< Base-type of this data when originally parsed                                            */
+      nibble wait    :1;  /*!< Specifies that this signal should be waited for                                          */
+      nibble inport  :1;  /*!< Specifies if this vector is part of an input port                                        */
+      nibble assigned:1;  /*!< Specifies that this vector will be assigned from simulated results (instead of dumpfile) */
     } part;
-  } suppl;              /*!< Supplemental field                                */
-  vec_data*  value;     /*!< 4-state current value and toggle history          */
+  } suppl;                /*!< Supplemental field                                                                       */
+  vec_data*  value;       /*!< 4-state current value and toggle history                                                 */
 };
 
 /*!
@@ -1567,6 +1568,12 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.121  2005/02/05 04:13:29  phase1geo
+ Started to add reporting capabilities for race condition information.  Modified
+ race condition reason calculation and handling.  Ran -Wall on all code and cleaned
+ things up.  Cleaned up regression as a result of these changes.  Full regression
+ now passes.
+
  Revision 1.120  2005/02/04 23:55:48  phase1geo
  Adding code to support race condition information in CDD files.  All code is
  now in place for writing/reading this data to/from the CDD file (although
