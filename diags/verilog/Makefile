@@ -47,7 +47,8 @@ DIAGLIST = assign3.2A \
 	   casez1.3 \
 	   casez1.4 \
 	   casez2 \
-           ifelse1
+           ifelse1 \
+	   define2
 
 regress:	$(COVERED) clean $(DIAGLIST)
 
