@@ -57,9 +57,9 @@ void search_init() {
 
   /* Initialize instance tree */
   if( top_instance == NULL ) {
-    instance_add( &instance_root, NULL, mod, strdup( top_module ) );
+    instance_parse_add( &instance_root, NULL, mod, strdup( top_module ) );
   } else {
-    instance_add( &instance_root, NULL, mod, strdup( top_instance ) );
+    instance_parse_add( &instance_root, NULL, mod, strdup( top_instance ) );
   }
 
 }
@@ -210,6 +210,10 @@ void search_free_lists() {
 }
 
 /* $Log$
+/* Revision 1.6  2002/07/18 02:33:24  phase1geo
+/* Fixed instantiation addition.  Multiple hierarchy instantiation trees should
+/* now work.
+/*
 /* Revision 1.5  2002/07/11 19:12:38  phase1geo
 /* Fixing version number.  Fixing bug with score command if -t option was not
 /* specified to avoid a segmentation fault.

@@ -200,6 +200,8 @@ bool db_read( char* file, int read_mode ) {
 
             }
 
+            curr_module = tmpmod;
+
             if( (read_mode == READ_MODE_MERGE_NO_MERGE) || (read_mode == READ_MODE_REPORT_NO_MERGE) ) {
 
 	      /* Add module to instance tree and module list */
@@ -213,7 +215,7 @@ bool db_read( char* file, int read_mode ) {
               } else {
 
                 /* Add module to instance tree and module list */
-                instance_add( &instance_root, curr_module, tmpmod, back );
+                instance_read_add( &instance_root, parent_scope, curr_module, back );
                 mod_link_add( tmpmod, &mod_head, &mod_tail );
               
               }
@@ -311,7 +313,7 @@ void db_add_instance( char* scope, char* modname ) {
 
     if( (found_mod_link = mod_link_find( mod, mod_head )) != NULL ) {
 
-      instance_add( &instance_root, curr_module, found_mod_link->mod, scope );
+      instance_parse_add( &instance_root, curr_module, found_mod_link->mod, scope );
 
       module_dealloc( mod );
 
@@ -321,7 +323,7 @@ void db_add_instance( char* scope, char* modname ) {
       mod_link_add( mod, &mod_head, &mod_tail );
 
       // Add instance.
-      instance_add( &instance_root, curr_module, mod, scope );
+      instance_parse_add( &instance_root, curr_module, mod, scope );
 
     }
 
@@ -960,6 +962,10 @@ void db_do_timestep( int time ) {
 }
 
 /* $Log$
+/* Revision 1.44  2002/07/18 02:33:23  phase1geo
+/* Fixed instantiation addition.  Multiple hierarchy instantiation trees should
+/* now work.
+/*
 /* Revision 1.43  2002/07/17 21:45:56  phase1geo
 /* Fixing case where `define does not set to a value.  Looking into problem
 /* with embedded instances (at least 3 deep).

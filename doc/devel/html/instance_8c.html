@@ -17,13 +17,15 @@
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a139">mod_inst</a> *&nbsp;</td><td valign=bottom><a class="el" href="instance_8c.html#a1">instance_find_scope</a> (<a class="el" href="defines_8h.html#a139">mod_inst</a> *root, char *scope)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Finds specified scope in module instance tree.</em> <a href="#a1"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a139">mod_inst</a> *&nbsp;</td><td valign=bottom><a class="el" href="instance_8c.html#a2">instance_find_by_module</a> (<a class="el" href="defines_8h.html#a139">mod_inst</a> *root, <a class="el" href="defines_8h.html#a132">module</a> *mod, int *ignore)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="instance_8c.html#a3">instance_add</a> (<a class="el" href="defines_8h.html#a139">mod_inst</a> **root, <a class="el" href="defines_8h.html#a132">module</a> *parent, <a class="el" href="defines_8h.html#a132">module</a> *child, char *inst_name)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Adds new instance to specified instance tree.</em> <a href="#a3"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="instance_8c.html#a4">instance_db_write</a> (<a class="el" href="defines_8h.html#a139">mod_inst</a> *root, FILE *<a class="el" href="vcd__lexer_8c.html#a106">file</a>, char *scope)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Displays contents of module instance tree to specified file.</em> <a href="#a4"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="instance_8c.html#a5">instance_dealloc_tree</a> (<a class="el" href="defines_8h.html#a139">mod_inst</a> *root)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="instance_8c.html#a6">instance_dealloc</a> (<a class="el" href="defines_8h.html#a139">mod_inst</a> *root, char *scope)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Removes specified instance from tree.</em> <a href="#a6"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="instance_8c.html#a3">instance_parse_add</a> (<a class="el" href="defines_8h.html#a139">mod_inst</a> **root, <a class="el" href="defines_8h.html#a132">module</a> *parent, <a class="el" href="defines_8h.html#a132">module</a> *child, char *inst_name)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Adds new instance to specified instance tree during parse.</em> <a href="#a3"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="instance_8c.html#a4">instance_read_add</a> (<a class="el" href="defines_8h.html#a139">mod_inst</a> **root, char *parent, <a class="el" href="defines_8h.html#a132">module</a> *child, char *inst_name)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Adds new instance to specified instance tree during CDD read.</em> <a href="#a4"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="instance_8c.html#a5">instance_db_write</a> (<a class="el" href="defines_8h.html#a139">mod_inst</a> *root, FILE *<a class="el" href="vcd__lexer_8c.html#a106">file</a>, char *scope)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Displays contents of module instance tree to specified file.</em> <a href="#a5"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="instance_8c.html#a6">instance_dealloc_tree</a> (<a class="el" href="defines_8h.html#a139">mod_inst</a> *root)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="instance_8c.html#a7">instance_dealloc</a> (<a class="el" href="defines_8h.html#a139">mod_inst</a> *root, char *scope)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Removes specified instance from tree.</em> <a href="#a7"></a><em></em></font><br><br></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 
@@ -33,70 +35,6 @@ Author: </b><dd>
 Trevor Williams (<a href="mailto:trevorw@charter.net">trevorw@charter.net</a>) </dl><dl compact><dt><b>
 Date: </b><dd>
 3/11/2002</dl><hr><h2>Function Documentation</h2>
-<a name="a3" doxytag="instance.c::instance_add"></a><p>
-<table width="100%" cellpadding="2" cellspacing="0" border="0">
-  <tr>
-    <td class="md">
-      <table cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td class="md" nowrap valign="top"> void instance_add </td>
-          <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a139">mod_inst</a> **&nbsp;</td>
-          <td class="mdname" nowrap>&nbsp; <em>root</em>, </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a132">module</a> *&nbsp;</td>
-          <td class="mdname" nowrap>&nbsp; <em>parent</em>, </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a132">module</a> *&nbsp;</td>
-          <td class="mdname" nowrap>&nbsp; <em>child</em>, </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td class="md" nowrap>char *&nbsp;</td>
-          <td class="mdname" nowrap>&nbsp; <em>inst_name</em></td>
-        </tr>
-        <tr>
-          <td></td>
-          <td class="md">)&nbsp;</td>
-          <td class="md" colspan="2"></td>
-        </tr>
-
-      </table>
-    </td>
-  </tr>
-</table>
-<table cellspacing=5 cellpadding=0 border=0>
-  <tr>
-    <td>
-      &nbsp;
-    </td>
-    <td>
-
-<p>
-Adds new instance to specified instance tree.
-<p>
-<dl compact><dt><b>
-Parameters: </b><dd>
-<table border=0 cellspacing=2 cellpadding=0>
-<tr><td valign=top><em>root</em>&nbsp;</td><td>
-Root mod_inst pointer of module instance tree. </td></tr>
-<tr><td valign=top><em>parent</em>&nbsp;</td><td>
-Pointer to parent module of specified child. </td></tr>
-<tr><td valign=top><em>child</em>&nbsp;</td><td>
-Pointer to child module to add. </td></tr>
-<tr><td valign=top><em>inst_name</em>&nbsp;</td><td>
-Name of new module instance.</td></tr>
-</table>
-</dl>Adds the child module to the child module pointer list located in the module specified by the scope of parent in the module instance tree pointed to by root.     </td>
-  </tr>
-</table>
 <a name="a0" doxytag="instance.c::instance_create"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
@@ -145,7 +83,7 @@ Returns: </b><dd>
 Returns pointer to newly created module instance.</dl>Creates a new module instance from heap, initializes its data and returns a pointer to it.     </td>
   </tr>
 </table>
-<a name="a4" doxytag="instance.c::instance_db_write"></a><p>
+<a name="a5" doxytag="instance.c::instance_db_write"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -201,7 +139,7 @@ Scope of this module.</td></tr>
 </dl>Calls each module display function in instance tree, starting with the root module and ending when all of the leaf modules are output. Note: the function that calls this function originally should set the value of scope to NULL.     </td>
   </tr>
 </table>
-<a name="a6" doxytag="instance.c::instance_dealloc"></a><p>
+<a name="a7" doxytag="instance.c::instance_dealloc"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -249,7 +187,7 @@ Scope of module to remove from tree.</td></tr>
 </dl>Searches tree for specified module. If the module instance is found, the module instance is removed from the tree along with all of its child module instances.     </td>
   </tr>
 </table>
-<a name="a5" doxytag="instance.c::instance_dealloc_tree"></a><p>
+<a name="a6" doxytag="instance.c::instance_dealloc_tree"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -390,7 +328,135 @@ Returns: </b><dd>
 Returns pointer to module instance found by scope.</dl>Searches the specified module instance tree for the specified scope. When the module instance is found, a pointer to that module instance is passed back to the calling function.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Wed Jul 17 21:32:36 2002 for Covered by
+<a name="a3" doxytag="instance.c::instance_parse_add"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> void instance_parse_add </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a139">mod_inst</a> **&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>root</em>, </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a132">module</a> *&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>parent</em>, </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a132">module</a> *&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>child</em>, </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td class="md" nowrap>char *&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>inst_name</em></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td class="md">)&nbsp;</td>
+          <td class="md" colspan="2"></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+Adds new instance to specified instance tree during parse.
+<p>
+<dl compact><dt><b>
+Parameters: </b><dd>
+<table border=0 cellspacing=2 cellpadding=0>
+<tr><td valign=top><em>root</em>&nbsp;</td><td>
+Root mod_inst pointer of module instance tree. </td></tr>
+<tr><td valign=top><em>parent</em>&nbsp;</td><td>
+Pointer to parent module of specified child. </td></tr>
+<tr><td valign=top><em>child</em>&nbsp;</td><td>
+Pointer to child module to add. </td></tr>
+<tr><td valign=top><em>inst_name</em>&nbsp;</td><td>
+Name of new module instance.</td></tr>
+</table>
+</dl>Adds the child module to the child module pointer list located in the module specified by the scope of parent in the module instance tree pointed to by root. This function is used by the db_add_instance function during the parsing stage.     </td>
+  </tr>
+</table>
+<a name="a4" doxytag="instance.c::instance_read_add"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> void instance_read_add </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a139">mod_inst</a> **&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>root</em>, </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td class="md" nowrap>char *&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>parent</em>, </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a132">module</a> *&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>child</em>, </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td class="md" nowrap>char *&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>inst_name</em></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td class="md">)&nbsp;</td>
+          <td class="md" colspan="2"></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+Adds new instance to specified instance tree during CDD read.
+<p>
+<dl compact><dt><b>
+Parameters: </b><dd>
+<table border=0 cellspacing=2 cellpadding=0>
+<tr><td valign=top><em>root</em>&nbsp;</td><td>
+Pointer to root instance of module instance tree. </td></tr>
+<tr><td valign=top><em>parent</em>&nbsp;</td><td>
+String scope of parent instance. </td></tr>
+<tr><td valign=top><em>child</em>&nbsp;</td><td>
+Pointer to child module to add to specified parent's child list. </td></tr>
+<tr><td valign=top><em>inst_name</em>&nbsp;</td><td>
+Instance name of this child module instance.</td></tr>
+</table>
+</dl>Adds the child module to the child module pointer list located in the module specified by the scope of parent in the module instance tree pointed to by root. This function is used by the db_read function during the CDD reading stage.     </td>
+  </tr>
+</table>
+<hr><address align="right"><small>Generated on Thu Jul 18 00:44:44 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

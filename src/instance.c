@@ -141,9 +141,10 @@ mod_inst* instance_find_by_module( mod_inst* root, module* mod, int* ignore ) {
  
  Adds the child module to the child module pointer list located in
  the module specified by the scope of parent in the module instance
- tree pointed to by root.
+ tree pointed to by root.  This function is used by the db_add_instance
+ function during the parsing stage.
 */
-void instance_add( mod_inst** root, module* parent, module* child, char* inst_name ) {
+void instance_parse_add( mod_inst** root, module* parent, module* child, char* inst_name ) {
   
   mod_inst* inst;      /* Temporary pointer to module instance to add to */
   mod_inst* new_inst;  /* Pointer to new module instance to add          */
@@ -152,14 +153,14 @@ void instance_add( mod_inst** root, module* parent, module* child, char* inst_na
 
   if( *root == NULL ) {
 
-    // printf( "In instance_add, top instance name: %s\n", inst_name );
+    // printf( "In instance_parse_add, top instance name: %s\n", inst_name );
     *root = instance_create( child, inst_name );
 
   } else {
 
     assert( parent != NULL );
   
-    // printf( "In instance_add, parent name: %s, child instance: %s\n", parent->name, inst_name );
+    // printf( "In instance_parse_add, parent name: %s, child instance: %s\n", parent->name, inst_name );
 
     i      = 0;
     ignore = 0;
@@ -186,6 +187,56 @@ void instance_add( mod_inst** root, module* parent, module* child, char* inst_na
  
   }
   
+}
+
+/*!
+ \param root    Pointer to root instance of module instance tree.
+ \param parent  String scope of parent instance.
+ \param child   Pointer to child module to add to specified parent's child list.
+ \param inst_name  Instance name of this child module instance.
+
+ Adds the child module to the child module pointer list located in
+ the module specified by the scope of parent in the module instance
+ tree pointed to by root.  This function is used by the db_read
+ function during the CDD reading stage.
+*/ 
+void instance_read_add( mod_inst** root, char* parent, module* child, char* inst_name ) {
+
+  mod_inst* inst;      /* Temporary pointer to module instance to add to */
+  mod_inst* new_inst;  /* Pointer to new module instance to add          */
+
+  new_inst = instance_create( child, inst_name );
+
+  if( *root == NULL ) {
+
+    // printf( "In instance_read_add, top instance name: %s\n", inst_name );
+    *root = new_inst;
+
+  } else {
+
+    assert( parent != NULL );
+  
+    // printf( "In instance_read_add, parent scope: %s, child instance: %s\n", parent, inst_name );
+
+    if( (inst = instance_find_scope( *root, parent )) != NULL ) {
+
+      if( inst->child_head == NULL ) {
+        inst->child_head = new_inst;
+        inst->child_tail = new_inst;
+      } else {
+        inst->child_tail->next = new_inst;
+        inst->child_tail       = new_inst;
+      }
+
+    } else {
+
+      /* Unable to find parent of this child, something went in wrong in writing/reading CDD file. */
+      assert( inst != NULL );
+
+    }
+ 
+  }
+
 }
 
 /*!
@@ -318,4 +369,4 @@ void instance_dealloc( mod_inst* root, char* scope ) {
 
 }
 
-/* $Log */
+/* $Log$ */
