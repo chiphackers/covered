@@ -19,9 +19,6 @@
 /* The number of bytes in a long.  */
 #define SIZEOF_LONG 4
 
-/* Installation directory for Covered */
-#define INSTALL_DIR /usr/local
-
 /* The number of bytes in a short.  */
 #define SIZEOF_SHORT 2
 
@@ -41,5 +38,5 @@
 #define PACKAGE "covered"
 
 /* Version number of package */
-#define VERSION "covered-20040322"
+#define VERSION "covered-20040323"
 

@@ -18,9 +18,6 @@
 /* The number of bytes in a long.  */
 #undef SIZEOF_LONG
 
-/* Installation directory for Covered */
-#undef INSTALL_DIR
-
 /* The number of bytes in a short.  */
 #undef SIZEOF_SHORT
 

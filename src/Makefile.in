@@ -109,6 +109,7 @@ covered_SOURCES = arc.c \
 
 
 INCLUDES = -I..
+AM_CPPFLAGS = -DINSTALL_DIR=@prefix@
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
 CONFIG_CLEAN_FILES = 
@@ -359,6 +360,7 @@ install-exec install-data-am install-data install-am install \
 uninstall-am uninstall all-redirect all-am all installdirs \
 mostlyclean-generic distclean-generic clean-generic \
 maintainer-clean-generic clean mostlyclean distclean maintainer-clean
+
 
 parser.h parser.c: $(srcdir)/parser.y
 	bison --verbose -t -p VL -d -o parser.c $(srcdir)/parser.y

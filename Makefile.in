@@ -64,7 +64,8 @@ RANLIB = @RANLIB@
 VERSION = @VERSION@
 XGPERF = @XGPERF@
 
-SUBDIRS = src doc scripts
+SUBDIRS = src doc
+nobase_SCRIPTS = scripts/cov_create.tcl scripts/main_view.tcl scripts/menu_create.tcl scripts/process_file.tcl
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = config.h
