@@ -1,5 +1,5 @@
 5 1 *
 3 main main implicit2.v
-1 c main 2 0 300aa
-1 b main 2 0 320aa
-1 a main 2 0 312aa
+1 c main 2 0 0 3000a
+1 b main 2 0 0 3200a
+1 a main 2 0 0 3120a

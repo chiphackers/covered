@@ -2,16 +2,16 @@
 3 depth1 inst0 instance1.v
 2 2 inst0 31 103001 0 0 
 2 1 inst0 31 203001 0 0 
-2 3 inst0 31 2f3f88 2 1 1 0 111aa
-1 a1 inst0 1 0 111aa 1
-1 b1 inst0 1 0 101aa 2
-1 c1 inst0 1 0 111aa
+2 3 inst0 31 2f3f88 2 1 1 0 0 11102
+1 a1 inst0 1 0 0 11102 1
+1 b1 inst0 1 0 0 10102 2
+1 c1 inst0 1 0 0 11102
 4 3 inst0 3 3
 3 depth2 inst0.inst1 instance1.v
 2 5 inst0.inst1 44 103001 0 0 
 2 4 inst0.inst1 44 203001 0 0 
-2 6 inst0.inst1 44 1f3f82 5 4 1 0 111aa
-1 a2 inst0.inst1 1 0 111aa 4
-1 b2 inst0.inst1 1 0 101aa 5
-1 c2 inst0.inst1 1 0 111aa
+2 6 inst0.inst1 44 1f3f82 5 4 1 0 0 11102
+1 a2 inst0.inst1 1 0 0 11102 4
+1 b2 inst0.inst1 1 0 0 10102 5
+1 c2 inst0.inst1 1 0 0 11102
 4 6 inst0.inst1 6 6

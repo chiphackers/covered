@@ -1,20 +1,20 @@
 5 1 *
 3 main main instance1.v
-1 b main 1 0 101aa
-1 a main 1 0 111aa
+1 b main 1 0 0 10102
+1 a main 1 0 0 11102
 3 depth1 main.inst0 instance1.v
 2 2 main.inst0 31 103001 0 0 
 2 1 main.inst0 31 203001 0 0 
-2 3 main.inst0 31 2f3f88 2 1 1 0 111aa
-1 a1 main.inst0 1 0 111aa 1
-1 b1 main.inst0 1 0 101aa 2
-1 c1 main.inst0 1 0 111aa
+2 3 main.inst0 31 2f3f88 2 1 1 0 0 11102
+1 a1 main.inst0 1 0 0 11102 1
+1 b1 main.inst0 1 0 0 10102 2
+1 c1 main.inst0 1 0 0 11102
 4 3 main.inst0 3 3
 3 depth2 main.inst0.inst1 instance1.v
 2 5 main.inst0.inst1 44 103001 0 0 
 2 4 main.inst0.inst1 44 203001 0 0 
-2 6 main.inst0.inst1 44 1f3f82 5 4 1 0 111aa
-1 a2 main.inst0.inst1 1 0 111aa 4
-1 b2 main.inst0.inst1 1 0 101aa 5
-1 c2 main.inst0.inst1 1 0 111aa
+2 6 main.inst0.inst1 44 1f3f82 5 4 1 0 0 11102
+1 a2 main.inst0.inst1 1 0 0 11102 4
+1 b2 main.inst0.inst1 1 0 0 10102 5
+1 c2 main.inst0.inst1 1 0 0 11102
 4 6 main.inst0.inst1 6 6

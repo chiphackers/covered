@@ -1,7 +1,7 @@
 5 1 *
 3 main main concat6.v
 2 1 main 4 201001 0 0 
-2 2 main 4 201fa6 1 0 2 0 300aa
-1 b main 2 0 300aa 1
-1 a main 2 0 300aa
+2 2 main 4 201fa6 1 0 2 0 0 3000a
+1 b main 2 0 0 3000a 1
+1 a main 2 0 0 3000a
 4 2 main 2 2

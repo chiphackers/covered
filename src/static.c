@@ -181,7 +181,7 @@ static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int
       } else {
 
         right->exp = expression_create( NULL, NULL, EXP_OP_STATIC, 0, line, FALSE );
-        vector_init( right->exp->value, (nibble*)malloc_safe( sizeof( nibble ) * VECTOR_SIZE( 32 ) ), 32, 0 );  
+        vector_init( right->exp->value, (nibble*)malloc_safe( sizeof( nibble ) * 32 ), 32, 0 );  
         vector_from_int( right->exp->value, right->num );
 
         tmpexp = expression_create( right->exp, left->exp, op, 0, line, FALSE );
@@ -196,7 +196,7 @@ static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int
       if( left->exp == NULL ) {
 
         left->exp = expression_create( NULL, NULL, EXP_OP_STATIC, 0, line, FALSE );
-        vector_init( left->exp->value, (nibble*)malloc_safe( sizeof( nibble ) * VECTOR_SIZE( 32 ) ), 32, 0 );
+        vector_init( left->exp->value, (nibble*)malloc_safe( sizeof( nibble ) * 32 ), 32, 0 );
         vector_from_int( left->exp->value, left->num );
 
         tmpexp = expression_create( right->exp, left->exp, op, 0, line, FALSE );
@@ -286,6 +286,9 @@ void static_expr_dealloc( static_expr* stexp, bool rm_exp ) {
 
 /*
  $Log$
+ Revision 1.7  2002/11/02 16:16:20  phase1geo
+ Cleaned up all compiler warnings in source and header files.
+
  Revision 1.6  2002/10/31 23:14:28  phase1geo
  Fixing C compatibility problems with cc and gcc.  Found a few possible problems
  with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that

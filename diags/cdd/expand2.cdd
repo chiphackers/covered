@@ -2,10 +2,10 @@
 3 main main expand2.v
 2 3 main 7 203001 0 0 
 2 2 main 7 103001 0 0 
-2 4 main 7 1e2031 3 2 2 0 312aa
-2 1 main 7 102000 0 0 32 0 5,0,0,0,0,0,0,0
-2 5 main 7 182fa5 4 1 6 0 f7caa,101aa
-1 a main 6 0 f5aaa,312aa
-1 b main 1 0 101aa 2
-1 c main 1 0 110aa 3
+2 4 main 7 1e2031 3 2 2 0 0 3120a
+2 1 main 7 102000 0 0 32 0 0 5 0 0 0 0 0 0 0
+2 5 main 7 182fa5 4 1 6 0 0 f7caa 1010a
+1 a main 6 0 0 f5aaa 3120a
+1 b main 1 0 0 10102 2
+1 c main 1 0 0 11002 3
 4 5 main 5 5

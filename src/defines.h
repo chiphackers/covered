@@ -176,31 +176,31 @@
  @{
 */
 
-/*!
- Command bit for knowing if vector is set.
-*/
-#define VECTOR_SET_BIT	     0x1
+#define VECTOR_LSB_VAL       0
 
-/*!
- Command bit for knowing if vector is a static value.
-*/
-#define VECTOR_STATIC_BIT    0x2
+#define VECTOR_LSB_TOG01     2
 
-/*!
- Macro for determining if VECTOR_SET_BIT is set.
-*/
-#define IS_VECTOR_SET(x)     (x & VECTOR_SET_BIT)
+#define VECTOR_LSB_TOG10     3
 
-/*!
- Macro for determining if VECTOR_STATIC_BIT is set.
-*/
-#define IS_VECTOR_STATIC(x)  (x & VECTOR_STATIC_BIT)
+#define VECTOR_LSB_SET       4
 
-/*!
- Macro for getting the current nibble size of the specified vector.  x is the
- width of the vector.
-*/
-#define VECTOR_SIZE(x)       (((x % 4) == 0) ? (x / 4) : ((x / 4) + 1))
+#define VECTOR_LSB_FALSE     5
+
+#define VECTOR_LSB_TRUE      6
+
+#define VECTOR_VAL(x)        (x & 0x3)
+
+#define VECTOR_TOG01(x)      ((x >> VECTOR_LSB_TOG01) & 0x1)
+
+#define VECTOR_TOG10(x)      ((x >> VECTOR_LSB_TOG10) & 0x1)
+
+#define VECTOR_SET(x)        ((x >> VECTOR_LSB_SET) & 0x1)
+
+#define VECTOR_FALSE(x)      ((x >> VECTOR_LSB_FALSE) & 0x1)
+
+#define VECTOR_TRUE(x)       ((x >> VECTOR_LSB_TRUE) & 0x1)
+
+#define VECTOR_SET_VAL(x,y)  x = ((x & 0xfc) | y)
 
 /*!
  Used for merging two vector nibbles from two vectors.  Both vector nibble
@@ -213,7 +213,7 @@
  - FALSE
  - TRUE
 */
-#define VECTOR_MERGE_MASK    0xff3fff00
+#define VECTOR_MERGE_MASK    0x7c
 
 /*! @} */
 
@@ -845,6 +845,16 @@ typedef enum {
  A nibble is a 32-bit value that is subdivided into the following parts:
  <table>
    <tr> <td> <strong> Bits </strong> </td> <td> <strong> Field Description </strong> </td> </tr>
+   <tr> <td> 1:0 </td> <td> 2-state value </td> </tr>
+   <tr> <td> 2   </td> <td> Indicator if bit was toggled from 0->1 </td> </tr>
+   <tr> <td> 3   </td> <td> Indicator if bit was toggled from 1->0 </td> </tr>
+   <tr> <td> 4   </td> <td> Indicator if bit has been previously assigned this timestep </td> </tr>
+   <tr> <td> 5   </td> <td> Indicator if bit was set to a value of 0 (FALSE) </td> </tr>
+   <tr> <td> 6   </td> <td> Indicator if bit was set to a value of 1 (TRUE) </td> </tr>
+   <tr> <td> 7   </td> <td> Reserved </td> </tr>
+ </table>
+ <table>
+   <tr> <td> <strong> Bits </strong> </td> <td> <strong> Field Description </strong> </td> </tr>
    <tr> <td> 7:0   </td> <td> Current 4-state value for bits 3-0 </td> </tr>
    <tr> <td> 11:8  </td> <td> Indicator if associated bit was toggled from 0->1 </td> </tr>
    <tr> <td> 15:12 </td> <td> Indicator if associated bit was toggled from 1->0 </td></tr>
@@ -855,7 +865,7 @@ typedef enum {
    <tr> <td> 31:28 </td> <td> Indicator if associated bit was set to a value of 1 (TRUE) </td> </tr>
  </table>
 */
-typedef unsigned int nibble;
+typedef unsigned char nibble;
 
 /*!
  A control is a 32-bit value that is subdivided into the following parts:
@@ -921,6 +931,7 @@ struct str_link_s {
 struct vector_s {
   int     width;     /*!< Bit width of this vector                 */
   int     lsb;       /*!< Least significant bit                    */
+  nibble  suppl;     /*!< Supplemental field                       */
   nibble* value;     /*!< 4-state current value and toggle history */
 };
 
@@ -1457,6 +1468,10 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.82  2003/10/10 20:52:07  phase1geo
+ Initial submission of FSM expression allowance code.  We are still not quite
+ there yet, but we are getting close.
+
  Revision 1.81  2003/10/03 21:28:43  phase1geo
  Restructuring FSM handling to be better suited to handle new FSM input/output
  state variable allowances.  Regression should still pass but new FSM support

@@ -80,7 +80,7 @@ char* codegen_gen_expr( expression* expr, int line, int parent_op ) {
 
     } else if( SUPPL_OP( expr->suppl ) == EXP_OP_STATIC ) {
 
-      switch( vector_get_type( expr->value ) ) {
+      switch( expr->value->suppl ) {
 
         case DECIMAL :
           snprintf( code_format, 20, "%d", vector_to_int( expr->value ) );
@@ -328,6 +328,13 @@ char* codegen_gen_expr( expression* expr, int line, int parent_op ) {
 
 /*
  $Log$
+ Revision 1.26  2002/12/05 14:45:17  phase1geo
+ Removing assertion error from instance6.1 failure; however, this case does not
+ work correctly according to instance6.2.v diagnostic.  Added @(...) output in
+ report command for edge-triggered events.  Also fixed bug where a module could be
+ parsed more than once.  Full regression does not pass at this point due to
+ new instance6.2.v diagnostic.
+
  Revision 1.25  2002/11/05 00:20:06  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.

@@ -2,8 +2,8 @@
 3 depth2 inst1 instance1.v
 2 2 inst1 44 103001 0 0 
 2 1 inst1 44 203001 0 0 
-2 3 inst1 44 1f3f82 2 1 1 0 111aa
-1 a2 inst1 1 0 111aa 1
-1 b2 inst1 1 0 101aa 2
-1 c2 inst1 1 0 111aa
+2 3 inst1 44 1f3f82 2 1 1 0 0 11102
+1 a2 inst1 1 0 0 11102 1
+1 b2 inst1 1 0 0 10102 2
+1 c2 inst1 1 0 0 11102
 4 3 inst1 3 3

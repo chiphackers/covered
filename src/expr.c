@@ -85,7 +85,7 @@ void expression_create_value( expression* exp, int width, int lsb, bool data ) {
   nibble* value = NULL;    /* Temporary storage of vector nibble array */
 
   if( data == TRUE ) {
-    value = (nibble*)malloc_safe( sizeof( nibble ) * VECTOR_SIZE( width ) );
+    value = (nibble*)malloc_safe( sizeof( nibble ) * width );
   }
 
   /* Create value */
@@ -769,18 +769,18 @@ void expression_display( expression* expr ) {
 */
 void expression_operate( expression* expr ) {
 
-  vector  vec1;                          /* Used for logical reduction                       */ 
-  vector  vec2;                          /* Used for logical reduction                       */
-  vector* vec;                           /* Pointer to vector of unknown size                */
-  int     i;                             /* Loop iterator                                    */
-  int     j;                             /* Loop iterator                                    */
-  nibble  bit;                           /* Bit holder for some ops                          */
-  int     intval1;                       /* Temporary integer value for *, /, %              */
-  int     intval2;                       /* Temporary integer value for *, /, %              */
-  nibble  value1a;                       /* 1-bit nibble value                               */
-  nibble  value1b;                       /* 1-bit nibble value                               */
-  nibble  value32[ VECTOR_SIZE( 32 ) ];  /* 32-bit nibble value                              */
-  control lf, lt, rf, rt;                /* Specify left and right WAS_TRUE/WAS_FALSE values */
+  vector  vec1;            /* Used for logical reduction                       */ 
+  vector  vec2;            /* Used for logical reduction                       */
+  vector* vec;             /* Pointer to vector of unknown size                */
+  int     i;               /* Loop iterator                                    */
+  int     j;               /* Loop iterator                                    */
+  nibble  bit;             /* Bit holder for some ops                          */
+  int     intval1;         /* Temporary integer value for *, /, %              */
+  int     intval2;         /* Temporary integer value for *, /, %              */
+  nibble  value1a;         /* 1-bit nibble value                               */
+  nibble  value1b;         /* 1-bit nibble value                               */
+  nibble  value32[32];     /* 32-bit nibble value                              */
+  control lf, lt, rf, rt;  /* Specify left and right WAS_TRUE/WAS_FALSE values */
 
   if( expr != NULL ) {
 
@@ -810,7 +810,7 @@ void expression_operate( expression* expr ) {
           intval1 = vector_to_int( expr->left->value );
           intval2 = vector_to_int( expr->right->value );
           if( intval2 == 0 ) {
-            print_output( "Division by 0 error", FATAL );
+            print_output( "1 Division by 0 error", FATAL );
             exit( 1 );
           }
           intval1 = intval1 / intval2;
@@ -830,7 +830,7 @@ void expression_operate( expression* expr ) {
           intval1 = vector_to_int( expr->left->value );
           intval2 = vector_to_int( expr->right->value );
           if( intval2 == 0 ) {
-            print_output( "Division by 0 error", FATAL );
+            print_output( "2 Division by 0 error", FATAL );
             exit( 1 );
           }
           intval1 = intval1 % intval2;
@@ -931,16 +931,16 @@ void expression_operate( expression* expr ) {
       case EXP_OP_COND_SEL :
         vector_init( &vec1, &value1a, 1, 0 );
         vector_unary_op( &vec1, expr->parent->expr->left->value, or_optab );
-        if( vector_bit_val( vec1.value, 0 ) == 0 ) {
+        if( VECTOR_VAL( vec1.value[0] ) == 0 ) {
           vector_set_value( expr->value, expr->right->value->value, expr->right->value->width,
                             expr->right->value->lsb, 0 );
-        } else if( vector_bit_val( vec1.value, 0 ) == 1 ) {
+        } else if( VECTOR_VAL( vec1.value[0] ) == 1 ) {
           vector_set_value( expr->value, expr->left->value->value, expr->left->value->width,
                             expr->left->value->lsb, 0 );
         } else {
           vec = vector_create( expr->value->width, 0, TRUE );
           for( i=0; i<vec->width; i++ ) {
-            vector_set_bit( vec->value, 2, i );
+            VECTOR_SET_VAL( vec->value[i], 2 );
           }
           vector_set_value( expr->value, vec->value, vec->width, vec->lsb, 0 );
           vector_dealloc( vec );
@@ -1011,7 +1011,7 @@ void expression_operate( expression* expr ) {
           }
         } else {
           for( j=0; j<expr->right->value->width; j++ ) {
-            bit = vector_bit_val( expr->right->value->value, j );
+            bit = VECTOR_VAL( expr->right->value->value[j] );
             for( i=0; i<vector_to_int( expr->left->value ); i++ ) {
               vector_set_value( expr->value, &bit, 1, 0, ((j * expr->right->value->width) + i) );
             }
@@ -1029,57 +1029,58 @@ void expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_PEDGE :
-        value1a = vector_bit_val( expr->right->value->value, 0 );
-        value1b = vector_bit_val( expr->left->value->value,  1 );
+        value1a = VECTOR_VAL( expr->right->value->value[0] );
+        value1b = expr->left->value->value[0];
         /* If the event has been armed previously, evaluate */
-        if( (value1b == 1) && (value1a != vector_bit_val( expr->left->value->value, 0 )) && (value1a == 1) ) {
+        if( ((value1b & 0x80) == 0x80) && (value1a != VECTOR_VAL( expr->left->value->value[0] )) && (value1a == 1) ) {
           bit = 1;
           vector_set_value( expr->value, &bit, 1, 0, 0 );
           /* Clear armed bit */
-          vector_set_bit( &value1a, 0, 1 );
+          value1a &= 0x7f;
         } else {
           bit = 0;
           vector_set_value( expr->value, &bit, 1, 0, 0 );
           /* Set armed bit */
-          vector_set_bit( &value1a, 1, 1 );
+          value1a |= 0x80;
         }
         /* Set left LAST value to current value of right */
-        vector_set_value( expr->left->value, &value1a, 2, 0, 0 );
+        expr->left->value->value[0] = value1a;
         break;
  
       case EXP_OP_NEDGE :
-        value1a = vector_bit_val( expr->right->value->value, 0 );
-        value1b = vector_bit_val( expr->left->value->value,  1 );
-        if( (value1b == 1) && (value1a != vector_bit_val( expr->left->value->value, 0 )) && (value1a == 0) ) {
+        value1a = VECTOR_VAL( expr->right->value->value[0] );
+        value1b = expr->left->value->value[0];
+        if( ((value1b & 0x80) == 0x80) && (value1a != VECTOR_VAL( expr->left->value->value[0] )) && (value1a == 0) ) {
           bit = 1;
           vector_set_value( expr->value, &bit, 1, 0, 0 );
           /* Clear armed bit */
-          vector_set_bit( &value1a, 0, 1 );
-       } else {
+          value1a &= 0x7f;
+        } else {
           bit = 0;
           vector_set_value( expr->value, &bit, 1, 0, 0 );
           /* Set armed bit */
-          vector_set_bit( &value1a, 1, 1 );
+          value1a |= 0x80;
         }
         /* Set left LAST value to current value of right */
-        vector_set_value( expr->left->value, &value1a, 2, 0, 0 );
+        expr->left->value->value[0] = value1a;
         break;
 
       case EXP_OP_AEDGE :
         vector_init( &vec1, &value1a, 1, 0 );
         vector_op_compare( &vec1, expr->left->value, expr->right->value, COMP_CEQ );
+        value1b = expr->left->value->value[0];
         /* Set left LAST value to current value of right */
         vector_set_value( expr->left->value, expr->right->value->value, expr->right->value->width, expr->right->value->lsb, 0 );
-        if( (vector_bit_val( expr->left->value->value, expr->left->value->width ) == 1) && (vector_to_int( &vec1 ) == 0) ) {
+        if( ((value1b & 0x80) == 0x80) && (vector_to_int( &vec1 ) == 0) ) {
           bit = 1;
           vector_set_value( expr->value, &bit, 1, 0, 0 );
           /* Clear armed bit */
-          vector_set_bit( expr->left->value->value, 0, expr->left->value->width );
+          expr->left->value->value[0] &= 0x7f; 
         } else {
           bit = 0;
           vector_set_value( expr->value, &bit, 1, 0, 0 );
           /* Set armed bit */
-          vector_set_bit( expr->left->value->value, 1, expr->left->value->width );
+          expr->left->value->value[0] |= 0x80; 
         }
         break;
 
@@ -1149,7 +1150,7 @@ void expression_operate( expression* expr ) {
     /* Set TRUE/FALSE bits to indicate value */
     vector_init( &vec1, &value1a, 1, 0 );
     vector_unary_op( &vec1, expr->value, or_optab );
-    switch( vector_bit_val( vec1.value, 0 ) ) {
+    switch( VECTOR_VAL( vec1.value[0] ) ) {
       case 0 :  expr->suppl = expr->suppl | (0x1 << SUPPL_LSB_FALSE) | (0x1 << SUPPL_LSB_EVAL_F);  break;
       case 1 :  expr->suppl = expr->suppl | (0x1 << SUPPL_LSB_TRUE)  | (0x1 << SUPPL_LSB_EVAL_T);  break;
       default:  break;
@@ -1326,6 +1327,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.79  2003/10/10 20:52:07  phase1geo
+ Initial submission of FSM expression allowance code.  We are still not quite
+ there yet, but we are getting close.
+
  Revision 1.78  2003/08/10 00:05:16  phase1geo
  Fixing bug with posedge, negedge and anyedge expressions such that these expressions
  must be armed before they are able to be evaluated.  Fixing bug in vector compare function

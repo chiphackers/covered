@@ -279,7 +279,7 @@ void signal_set_wait_bit( signal* sig, int val ) {
   assert( sig->value != NULL );
   assert( sig->value->value != NULL );
 
-  sig->value->value[0] = (sig->value->value[0] & 0xffbfffff) | ((val & 0x1) << 22);
+  sig->value->suppl = (sig->value->suppl & 0xfb) | ((val & 0x1) << 2);
 
 }
 
@@ -296,7 +296,7 @@ int signal_get_wait_bit( signal* sig ) {
   assert( sig->value != NULL );
   assert( sig->value->value != NULL );
 
-  return( (sig->value->value[0] & 0x400000) >> 22 );
+  return( (sig->value->suppl & 0x4) >> 2 );
 
 }
 
@@ -447,6 +447,10 @@ void signal_dealloc( signal* sig ) {
 
 /*
  $Log$
+ Revision 1.36  2003/10/10 20:52:07  phase1geo
+ Initial submission of FSM expression allowance code.  We are still not quite
+ there yet, but we are getting close.
+
  Revision 1.35  2003/10/02 12:30:56  phase1geo
  Initial code modifications to handle more robust FSM cases.
 

@@ -3,11 +3,11 @@
 2 4 main 8 102001 0 0 
 2 2 main 8 102001 0 0 
 2 1 main 8 103001 0 0 
-2 3 main 8 1a2031 2 1 3 0 725aa
-2 5 main 8 182031 4 3 4 0 f4aaa
-2 6 main 8 102fa6 5 0 4 0 f4aaa
-1 a main 4 0 f4aaa
-1 b0 main 1 0 100aa 4
-1 b1 main 2 0 321aa 2
-1 b2 main 1 0 101aa 1
+2 3 main 8 1a2031 2 1 3 0 0 7252a
+2 5 main 8 182031 4 3 4 0 0 f4aaa
+2 6 main 8 102fa6 5 0 4 0 0 f4aaa
+1 a main 4 0 0 f4aaa
+1 b0 main 1 0 0 10002 4
+1 b1 main 2 0 0 3210a 2
+1 b2 main 1 0 0 10102 1
 4 6 main 6 6

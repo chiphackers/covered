@@ -337,14 +337,14 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
 
     } else if( SUPPL_OP( exp->suppl ) == EXP_OP_STATIC ) {
 
-      if( vector_get_type( exp->value ) == DECIMAL ) {
+      if( exp->value->suppl == DECIMAL ) {
 
         snprintf( code_fmt, 300, "%d", vector_to_int( exp->value ) );
         *size = strlen( code_fmt );
       
       } else {
 
-        tmpstr = vector_to_string( exp->value, vector_get_type( exp->value ) );
+        tmpstr = vector_to_string( exp->value, exp->value->suppl );
         *size  = strlen( tmpstr );
         free_safe( tmpstr );
 
@@ -1053,6 +1053,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.64  2003/10/03 03:08:44  phase1geo
+ Modifying filename in summary output to only specify basename of file instead
+ of entire path.  The verbose report contains the full pathname still, however.
+
  Revision 1.63  2003/08/25 13:02:03  phase1geo
  Initial stab at adding FSM support.  Contains summary reporting capability
  at this point and roughly works.  Updated regress suite as a result of these
