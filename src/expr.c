@@ -271,7 +271,7 @@ void expression_set_value( expression* exp, vector* vec ) {
       }
       assert( exp->value->width <= vec->width );
       // assert( exp->value->value == NULL );
-      assert( vec->value != NULL );
+      // assert( vec->value != NULL );
       exp->value->value = vec->value;
       break;
     default :  break;
@@ -1211,6 +1211,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.68  2002/12/02 06:14:27  phase1geo
+ Fixing bug when an MBIT_SEL expression is used in a module that is instantiated
+ more than once (assertion error was firing).  Added diagnostic to test suite to
+ test that this case passes.
+
  Revision 1.67  2002/11/27 03:49:20  phase1geo
  Fixing bugs in score and report commands for regression.  Finally fixed
  static expression calculation to yield proper coverage results for constant
