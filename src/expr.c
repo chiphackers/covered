@@ -813,6 +813,7 @@ bool expression_db_replace( expression* base, char** line ) {
   bool retval = TRUE;  /* Return value for this function */
   int  id;             /* Expression ID field            */
   int  linenum;        /* Expression line number         */
+  int  column;         /* Column location information    */
   int  suppl;          /* Supplemental field             */
   int  right_id;       /* ID of right child              */
   int  left_id;        /* ID of left child               */
@@ -820,7 +821,7 @@ bool expression_db_replace( expression* base, char** line ) {
 
   assert( base != NULL );
 
-  if( sscanf( *line, "%d %d %x %d %d%n", &id, &linenum, &suppl, &right_id, &left_id, &chars_read ) == 5 ) {
+  if( sscanf( *line, "%d %d %d %x %d %d%n", &id, &linenum, &column, &suppl, &right_id, &left_id, &chars_read ) == 6 ) {
 
     *line = *line + chars_read;
 
@@ -1478,6 +1479,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.97  2004/04/19 04:54:55  phase1geo
+ Adding first and last column information to expression and related code.  This is
+ not working correctly yet.
+
  Revision 1.96  2004/04/05 12:30:52  phase1geo
  Adding *db_replace functions to allow a design to be opened with new CDD
  results (for GUI purposes only).
