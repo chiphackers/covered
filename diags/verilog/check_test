@@ -1,0 +1,71 @@
+#!/usr/bin/perl
+
+# Name:    check_test
+# Author:  Trevor Williams  <trevorw(charter.net)>
+# Date:    12/28/2002
+# Purpose: Verifies that specified diagnostic successfully passed all phases of testing.
+
+$test = $ARGV[0];
+
+# Defines
+$CDD_DIR    = "../cdd";
+$RPT_DIR    = "../rpt";
+$RPT_OUTPUT = "regress.output";
+
+# Open report results file if it currently exists and accumulate info.
+if( open( RPT_RESULTS, "${RPT_OUTPUT}" ) > 0 ) {
+
+  $results = <RPT_RESULTS>;
+  chomp( $results );
+
+  if( $results =~ /^DIAGNOSTICS PASSED: (\d+), FAILED: (\d+)$/ ) {
+    $passed = $1;
+    $failed = $2;
+  } else {
+    die "Bad format for regression results file\n";
+  }
+
+  close( RPT_RESULTS );
+
+} else {
+
+  $passed = 0;
+  $failed = 0;
+
+}
+
+# Remove VCD file
+system( "rm -f *.vcd" ) && die;
+
+# Check CDD file
+$check1 = system( "diff ${test}.cdd ${CDD_DIR}/${test}.cdd" );
+if( $check1 == 0 ) {
+  system( "rm ${test}.cdd" ) && die;
+}
+
+# Check module report
+$check2 = system( "diff ${test}.rptM ${RPT_DIR}/${test}.rptM" );
+if( $check2 == 0 ) {
+  system( "rm ${test}.rptM" ) && die;
+}
+
+# Check instance report
+$check3 = system( "diff ${test}.rptI ${RPT_DIR}/${test}.rptI" );
+if( $check3 == 0 ) {
+  system( "rm ${test}.rptI" ) && die;
+}
+
+open( RPT_RESULTS, ">${RPT_OUTPUT}" ) || die "Can't open ${RPT_OUTPUT} for writing!\n";
+
+if( ($check1 > 0) || ($check2 > 0) || ($check3 > 0) ) {
+  print "  Checking output results         -- FAILED\n";
+  $failed++;
+} else {
+  print "  Checking output results         -- PASSED\n";
+  $passed++;
+}
+
+print RPT_RESULTS "DIAGNOSTICS PASSED: ${passed}, FAILED: ${failed}\n";
+
+close( RPT_RESULTS );
+

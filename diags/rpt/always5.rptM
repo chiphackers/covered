@@ -1,0 +1,24 @@
+Covered -- Verilog Coverage Verbose Report
+==========================================
+
+LINE COVERAGE RESULTS BY MODULE
+-------------------------------
+Module                    Filename                Hit/Miss/Total    Percent hit
+-------------------------------------------------------------------------------
+  main                    always5.v                  2/   0/   2      100%
+=================================================================================
+
+TOGGLE COVERAGE RESULTS BY MODULE
+---------------------------------
+Module                    Filename                         Toggle 0 -> 1                    Toggle 1 -> 0
+                                                  Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
+----------------------------------------------------------------------------------------------------------------
+  main                    always5.v                  4/   0/   4      100%            4/   0/   4      100%
+===============================================================================================================
+
+COMBINATIONAL LOGIC COVERAGE RESULTS BY MODULE
+----------------------------------------------
+Module                    Filename                     Logical Combinations
+                                                  Hit/Miss/Total    Percent hit
+-------------------------------------------------------------------------------
+  main                    always5.v                 12/   0/  12      100%

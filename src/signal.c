@@ -85,22 +85,27 @@ void signal_db_write( signal* sig, FILE* file, char* modname ) {
 
   exp_link* curr;      /* Pointer to current expression link element */
 
-  /* Display identification and value information first */
-  fprintf( file, "%d %s %s ",
-    DB_TYPE_SIGNAL,
-    sig->name,
-    modname
-  );
+  /* Don't write this signal if it isn't usable by Covered */
+  if( sig->name[0] != '!' ) {
 
-  vector_db_write( sig->value, file, (sig->name[0] == '#') );
+    /* Display identification and value information first */
+    fprintf( file, "%d %s %s ",
+      DB_TYPE_SIGNAL,
+      sig->name,
+      modname
+    );
 
-  curr = sig->exp_head;
-  while( curr != NULL ) {
-    fprintf( file, " %d", expression_get_id( curr->exp ) );
-    curr = curr->next;
+    vector_db_write( sig->value, file, (sig->name[0] == '#') );
+
+    curr = sig->exp_head;
+    while( curr != NULL ) {
+      fprintf( file, " %d", expression_get_id( curr->exp ) );
+      curr = curr->next;
+    }
+
+    fprintf( file, "\n" );
+
   }
-
-  fprintf( file, "\n" );
 
 }
 
@@ -356,6 +361,10 @@ void signal_dealloc( signal* sig ) {
 
 /*
  $Log$
+ Revision 1.25  2002/11/05 00:20:08  phase1geo
+ Adding development documentation.  Fixing problem with combinational logic
+ output in report command and updating full regression.
+
  Revision 1.24  2002/11/02 16:16:20  phase1geo
  Cleaned up all compiler warnings in source and header files.
 

@@ -415,13 +415,11 @@ int command_report( int argc, int last_arg, char** argv ) {
   int   retval = 0;  /* Return value of this function */
   FILE* ofile;       /* Pointer to output stream      */
 
-  /* Initialize error suppression value */
-  set_output_suppression( FALSE );
-
   /* Parse score command-line */
   if( report_parse_args( argc, last_arg, argv ) ) {
 
-    printf( COVERED_HEADER );
+    snprintf( user_msg, USER_MSG_LENGTH, COVERED_HEADER );
+    print_output( user_msg, NORMAL );
 
     /* Open output stream */
     if( output_file != NULL ) {
@@ -475,6 +473,9 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.18  2002/11/02 16:16:20  phase1geo
+ Cleaned up all compiler warnings in source and header files.
+
  Revision 1.17  2002/10/29 19:57:51  phase1geo
  Fixing problems with beginning block comments within comments which are
  produced automatically by CVS.  Should fix warning messages from compiler.

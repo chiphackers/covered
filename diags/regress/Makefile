@@ -24,7 +24,7 @@ CDD_DIR       = ../cdd
 
 LOGFILE = regress.log
 
-FAILING_DIAGS = instance6      instance6.1    instance6.2
+FAILING_DIAGS = instance6.2
 
 DIAGS1        = always1        always2        always3        always3.1.11A  always4 \
                 always5        always6        always7        always8        always9 \
@@ -35,36 +35,36 @@ DIAGS1        = always1        always2        always3        always3.1.11A  alwa
                 casex1.4       casez1         casez1.1       casez1.2       casez1.3 \
                 casez1.4       casez2         concat1        concat2        concat3 \
                 concat4.1      concat4.2      concat5        cond1          cond2 \
-                delay1         define1        define1.1      define2        define2.1      define3 \
-                expand1        expand2        expand3        ifdef1         ifdef1.2 \
-                ifdef2.1       ifdef2.2       ifdef2.3       ifelse1        include1 \
-                include1.1     include2       instance1      instance1.1    instance1.2 \
-                instance2      instance3      instance4      instance4.1    instance4.2 \
-                instance5      long_exp1 \
-                mbit_sel1      mbit_sel2      mbit_sel3      mbit_sel3.1    mem1 \
-                mult1          param1         param1.1       param1.2       param1.3 \
-                param3         param3.1       param3.2       param3.3       param3.4 \
-                param4         param5         param6         param6.1       sbit_sel1 \
-                static1        supply0        supply1        tri            tri0 \
-                tri1
+                delay1         define1        define1.1      define2        define2.1 \
+                define3        define4        expand1        expand2        expand3 \
+                ifdef1         ifdef1.2       ifdef2.1       ifdef2.2       ifdef2.3 \
+                ifelse1        include1       include1.1     include2       instance1 \
+                instance1.1    instance1.2    instance2      instance3      instance4 \
+                instance4.1    instance4.2    instance5      instance6      instance6.1 \
+                long_exp1      mbit_sel1 \
+                mbit_sel2      mbit_sel3      mbit_sel3.1    mem1           mult1 \
+                param1         param1.1       param1.2       param1.3       param3 \
+                param3.1       param3.2       param3.3       param3.4       param4 \
+                param5         param6         param6.1       sbit_sel1      static1 \
+                supply0        supply1        tri            tri0           tri1
 DIAGS2        = delay1.1
 DIAGS3        = delay1.2
 DIAGS4        = delay1.3
            
 IVONLYDIAGS1  = always5.1      assign1        assign2.8      ifdef1.1       implicit1 \
-                real1.1        static2        static2.1      static2.2
+                implicit2      real1.1        static2        static2.1      static2.2
 IVONLYDIAGS2  = 
 IVONLYDIAGS3  = 
 IVONLYDIAGS4  = 
 
 VCSONLYDIAGS1 = always7.1      assign2.4      assign2.5      assign2.6      assign2.7 \
-                event1         real1          triand         trior          trireg \
-                wand           wor
+                event1         implicit2.1    real1          triand         trior \
+                trireg         wand           wor
 VCSONLYDIAGS2 = 
 VCSONLYDIAGS3 = 
 VCSONLYDIAGS4 = 
 
-iverilog:
+iverilog:    clean
 	@cd ../verilog; \
 	$(MAKE) VERILOG=$(IVERILOG) VERILOG_FLAGS="$(IVERILOG_FLAGS1)" VERILOG_EXEC=$(IVERILOG_EXEC) DIAGLIST="$(DIAGS1) $(IVONLYDIAGS1)" regress
 	@cd ../verilog; \
@@ -73,9 +73,10 @@ iverilog:
 	$(MAKE) VERILOG=$(IVERILOG) VERILOG_FLAGS="$(IVERILOG_FLAGS3)" VERILOG_EXEC=$(IVERILOG_EXEC) DIAGLIST="$(DIAGS3) $(IVONLYDIAGS3)" regress
 	@cd ../verilog; \
 	$(MAKE) VERILOG=$(IVERILOG) VERILOG_FLAGS="$(IVERILOG_FLAGS4)" VERILOG_EXEC=$(IVERILOG_EXEC) DIAGLIST="$(DIAGS4) $(IVONLYDIAGS4)" regress
-	@echo REGRESSION PASSED!
+	@echo
+	@cat ../verilog/regress.output
 
-vcs:
+vcs:         clean
 	@cd ../verilog; \
 	$(MAKE) VERILOG=$(VCS) VERILOG_FLAGS="$(VCS_FLAGS1)" VERILOG_EXEC=$(VCS_EXEC) DIAGLIST="$(DIAGS1) $(VCSONLYDIAGS1)" regress
 	@cd ../verilog; \
@@ -84,7 +85,8 @@ vcs:
 	$(MAKE) VERILOG=$(VCS) VERILOG_FLAGS="$(VCS_FLAGS3)" VERILOG_EXEC=$(VCS_EXEC) DIAGLIST="$(DIAGS3) $(VCSONLYDIAGS3)" regress
 	@cd ../verilog; \
 	$(MAKE) VERILOG=$(VCS) VERILOG_FLAGS="$(VCS_FLAGS4)" VERILOG_EXEC=$(VCS_EXEC) DIAGLIST="$(DIAGS4) $(VCSONLYDIAGS4)" regress
-	@echo REGRESSION PASSED!
+	@echo
+	@cat ../verilog/regress.output
 
 clean:
 	cd ../verilog;  $(MAKE) clean

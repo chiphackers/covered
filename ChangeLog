@@ -1,3 +1,32 @@
+2002-12-22 00:29  phase1geo
+
+	* src/: lexer.l, pplexer.l: Changing call to reset_pplexer to
+	return void (using globally visible ppfilename string instead). 
+	Fixing bug with EOF in DEFINE and INCLUDE states which lead to a
+	segmentation fault.
+
+2002-12-19 23:42  phase1geo
+
+	* src/lexer.l: Fixing segmentation fault bug in lexer.
+
+2002-12-19 09:19  phase1geo
+
+	* src/lexer.l: Fixing problem with output when describing file that
+	we are now parsing.
+
+2002-12-19 02:12  phase1geo
+
+	* diags/cdd/define3.cdd, diags/regress/Makefile, src/Makefile.am,
+	src/Makefile.in, src/lexer.l, src/parser_misc.h, src/pplexer.l:
+	Adding initial working version of preprocessor lexer combined with
+	normal lexer.  Added define3.v to regression suite.
+
+2002-12-14 01:47  phase1geo
+
+	* ChangeLog, NEWS, config.h, config.status, configure,
+	configure.in, doc/user/covered.1, src/Makefile.in: Updates to
+	ChangeLog, configure and NEWS for 20021214 release.
+
 2002-12-14 01:06  phase1geo
 
 	* TODO, diags/regress/Makefile, diags/verilog/define3.v,

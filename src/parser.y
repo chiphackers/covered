@@ -2027,25 +2027,53 @@ block_item_decl
     }
   | K_integer register_variable_list ';'
     {
+      str_link* curr = $2;
+      char      tmp[256];
       if( ignore_mode == 0 ) {
+        while( curr != NULL ) {
+          snprintf( tmp, 256, "!%s", curr->str );
+          db_add_signal( tmp, NULL, NULL );
+          curr = curr->next;
+        }
         str_link_delete_list( $2 );
       }
     }
   | K_time register_variable_list ';'
     {
+      str_link* curr = $2;
+      char      tmp[256];
       if( ignore_mode == 0 ) {
+        while( curr != NULL ) {
+          snprintf( tmp, 256, "!%s", curr->str );
+          db_add_signal( tmp, NULL, NULL );
+          curr = curr->next;
+        }
         str_link_delete_list( $2 );
       }
     }
   | K_real list_of_variables ';'
     {
+      str_link* curr = $2;
+      char      tmp[256];
       if( ignore_mode == 0 ) {
+        while( curr != NULL ) {
+          snprintf( tmp, 256, "!%s", curr->str );
+          db_add_signal( tmp, NULL, NULL );
+          curr = curr->next;
+        }
         str_link_delete_list( $2 );
       }
     }
   | K_realtime list_of_variables ';'
     {
+      str_link* curr = $2;
+      char      tmp[256];
       if( ignore_mode == 0 ) {
+        while( curr != NULL ) {
+          snprintf( tmp, 256, "!%s", curr->str );
+          db_add_signal( tmp, NULL, NULL );
+          curr = curr->next;
+        }
         str_link_delete_list( $2 );
       }
     }

@@ -23,23 +23,25 @@ VERILOG_FLAGS = $(IVERILOG_FLAGS)
 VERILOG_EXEC  = $(IVERILOG_EXEC)
 
 CDD_DIR       = ../cdd
+RPT_DIR       = ../rpt
 
 LOGFILE = regress.log
 
-regress:	$(COVERED) clean $(DIAGLIST)
+regress:	$(COVERED) $(DIAGLIST)
 
 $(DIAGLIST):
 	@echo Running $@
 	@$(VERILOG) $(VERILOG_FLAGS) $@.v
 	@./$(VERILOG_EXEC)
 	@$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@.cfg
-	@diff $@.cdd $(CDD_DIR)/$@.cdd
-	@rm -rf a.out *.vcd *.cdd
+	-@$(COVERED) $(COVERED_GFLAG) report -d v -o $@.rptM $@.cdd
+	-@$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@.rptI $@.cdd
+	@./check_test $@
 
 $(COVERED):
 	cd $(COVERED_SRC); make
 	
 clean:
-	@rm -f $(LOGFILE)
+	@rm -f $(LOGFILE) *.rpt
 	@rm -f $(IVERILOG_EXEC) $(VCS_EXEC) *.vcd *.cdd *.log
-	@rm -f core *.o
+	@rm -f core *.o tmp* regress.output
