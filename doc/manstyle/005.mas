@@ -1,0 +1,90 @@
+<!--
+[variables]
+{
+  $page_title = "Toggle Coverage"
+  $page_title_english = "Toggle Coverage"
+  $file_prev = "004.html"
+  $file_next = "006.html"
+  $real_page_number = "5"
+  $page_number = "5"
+}
+-->
+
+<_header2>
+Toggle Coverage
+</_header2>
+
+<_pg>
+Toggle coverage answers the question, "Did this bit of this 
+wire/register change from a value of zero (0) to one (1) and 
+back from one (1) to zero (0) during simulation?"
+</_pg>
+
+<_pg>
+A bit is said to be fully covered when it toggles back and 
+forth at least once.  This metric does not indicate to the 
+user that every value of a multi-bit vector was seen.  For 
+example, if we have a two bit vector called "foo", toggle 
+coverage will not tell you that the value of foo was set to 
+the values of 0, 1, 2 and 3.  However, it will tell you that 
+all bits in that vector were toggled back and forth.
+</_pg>
+
+<_header3>
+Example
+</_header3>
+
+<_margin>Example</_margin>
+
+<_pg>
+Suppose that a DUT was comprised of the following module
+</_pg>
+
+<_code>
+module test;<br>
+<br>
+reg [2:0] a;<br>
+<br>
+initial<br>
+$sp begin<br>
+$sp$sp$sp a = 3'b0;<br>
+$sp$sp$sp #10;<br>
+$sp$sp$sp a = 3'b110;<br>
+$sp$sp$sp #10;<br>
+$sp$sp$sp a = 3'b010;<br>
+$sp$sp$sp #10;<br>
+$sp end<br>
+<br>
+endmodule
+</_code>
+
+<_pg>
+The register called "a", after being simulated, would have
+achieved a total toggle percentage of 50% (or 3 out of 6).  Can
+you see which toggles are missing?
+</_pg>
+
+<_pg>
+Bit 0 has never toggled to 1 (and has never been at a value of
+1 and toggled to 0); therefore, bit-0 has toggled 0% (0 out of 2).
+Bit 1 has toggled from a value of 0 to 1, but has not toggled
+from a value of 1 to 0; therefore, bit-1 has toggled 50% (0 out
+of 2).  Bit 2 is the only bit that has fully toggled, achieving
+a toggle percentage of 100% (2 out of 2).  If you add all of the
+possible toggles to the number of achieved toggles, you end up
+with 3 out of 6 (or 50% total toggle coverage).
+</_pg>
+
+<_header3>
+Recommendations
+</_header3>
+
+<_margin>Recommendations</_margin>
+
+<_pg>
+For a design to pass full coverage, it is recommended that the 
+toggle coverage for all modules in a design received 100% 
+coverage.  If a bit is never changes value, it is usually an 
+indication that a mode is not being exercised in the design or 
+a datapath has a stuck-at issue.
+</_pg>

@@ -1,0 +1,143 @@
+<!--
+[variables]
+{
+  $page_title = "FSM Coverage"
+  $page_title_english = "FSM Coverage"
+  $file_prev = "006.html"
+  $file_next = "008.html"
+  $real_page_number = "7"
+  $page_number = "7"
+}
+-->
+
+<_header2>
+Finite State Machine (FSM) Coverage
+</_header2>
+
+<_pg>
+Finite state machine (FSM) coverage answers the question, "Did
+I reach all of the states and traverse all possible paths
+through a given state machine?"
+</_pg>
+
+<_pg>
+There are two types of coverage detail for FSMs that Covered 
+can handle:
+</_pg>
+
+<_pg>
+<OL>
+  <LI>State coverage - answers the question "Were all states 
+of an FSM hit during simulation?"
+  <LI>State transition coverage - answers the question "Did 
+the FSM transition between all states (that are achievable) in 
+simulation?"
+</OL>
+</_pg>
+
+<_header3>
+Example
+</_header3>
+
+<_margin>Example</_margin>
+
+<_pg>
+Suppose the DUT comprised of the following finite state machine.
+</_pg>
+
+<_code language="All">
+module test( clock );<br>
+input clock;<br>
+<br>
+reg [1:0] state;<br>
+reg req, gnt;<br>
+<br>
+parameter IDLE 2'b00;<br>
+parameter REQ$sp 2'b01;<br>
+parameter WAIT 2'b10;<br>
+parameter GNT$sp 2'b11;<br>
+<br>
+initial<br>
+$sp begin<br>
+$sp$sp$sp req = 1'b0;<br>
+$sp$sp$sp gnt = 1'b0;<br>
+$sp$sp$sp repeat(4) @(posedge clock);<br>
+$sp$sp$sp req <= 1'b1;<br>
+$sp$sp$sp @(posedge clock);<br>
+$sp$sp$sp req <= 1'b0;<br>
+$sp$sp$sp gnt <= 1'b1;<br>
+$sp$sp$sp @(posedge clock);<br>
+$sp$sp$sp gnt <= 1'b0;<br>
+$sp$sp$sp repeat(2) @(posedge clock);<br>
+$sp end<br>
+<br>
+always @(posedge clock)<br>
+$sp case( state )<br>
+$sp$sp$sp IDLE : state <= req ? REQ : IDLE;<br>
+$sp$sp$sp REQ$sp : state <= gnt ? GNT : WAIT;<br>
+$sp$sp$sp WAIT : state <= gnt ? GNT : WAIT;<br>
+$sp$sp$sp GNT$sp : state <= IDLE;<br>
+$sp$sp$sp default : state <= 2'bx;<br>
+$sp endcase<br>
+<br>
+endmodule
+
+</_code>
+
+<_pg>
+To help visualize this state machine, let's also display it as a
+digraph.
+</_pg>
+
+<_pg>
+<img src="img/fsm_example.png"><br><br>
+</_pg>
+
+<_pg>
+This state machine has four states: IDLE, REQ, WAIT, GNT.  During
+simulation, 75% of the states were hit (3 out of 4) including
+IDLE, REQ and GNT.  You can see that the WAIT state was never
+hit during simulation since the gnt signal was asserted the
+clock period after the req signal asserted. 
+</_pg>
+
+<_pg>
+Additionally, this state machine contains 7 state "arcs" which
+are represented in the digraph as arrowed lines.  They are
+the following:
+</_pg>
+
+<_pg>
+<ol>
+  <li>IDLE -> IDLE$sp (HIT)
+  <li>IDLE -> REQ$sp$sp (HIT)
+  <li>REQ$sp -> WAIT$sp (MISSED)
+  <li>REQ$sp -> GNT$sp$sp (HIT)
+  <li>WAIT -> WAIT$sp (MISSED)
+  <li>WAIT -> GNT$sp$sp (MISSED)
+  <li>GNT$sp -> IDLE$sp (HIT)
+</ol>
+</_pg>
+
+<_pg>
+Counting the number of traversed arcs during simulation, we can
+see that we have covered 4 out of 7 (or 57%) of the possible
+arcs in this state machine.
+</_pg>
+
+<_header3>
+Recommendations
+</_header3>
+
+<_margin>Recommendations</_margin>
+
+<_pg>
+For a design to pass full coverage, it is recommended that the 
+FSM coverage for all finite state machines in the design to 
+receive 100% coverage for the state coverage and 100% for all 
+achievable state transitions.  Since Covered will not 
+determine which state transitions are achievable, it is up to 
+the verification engineer to examine the executed state 
+transitions to determine if 100% of possible transitions 
+occurred.
+</_pg>

@@ -1,0 +1,27 @@
+<!--
+[variables]
+{
+  $page_title = "Contents"
+  $page_title_ = "Contents"
+  $file_prev = "index.html"
+  $file_next = "002.html"
+  $real_page_number = "1"
+  $page_number = "1"
+}
+-->
+
+<_contentsHeader>
+$page_title
+</_contentsHeader>
+
+<_pg>
+<TABLE cellspacing=0 cellpadding=0 border=0>
+  <TR>
+    <TD width=50>
+    </TD>
+    <TD>
+      $contents
+    </TD>
+  </TR>
+</TABLE>
+</_pg>

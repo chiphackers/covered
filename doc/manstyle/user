@@ -1,0 +1,44 @@
+/** This manual was created with ManStyle Version 2.2.2 */
+
+[variables]
+{
+$opt_use_img_borders       = "yes"
+$opt_use_img_margins       = "no"
+$opt_language              = "English"
+$document_version          = "0.1"
+$document_release          = "5/25/2002"
+$manual_description        = "User Manual"
+$project_name              = "Covered"
+$project_name_lower        = "covered"
+$project_version           = "0.1"
+$author                    = "Trevor Williams"
+$creation_date             = "20020525"
+$organization_logo_big     = "banner.gif"
+$organization_logo_small   = ""
+$organization_slogan       = "Verification isn't complete unless its Covered"
+$organization_name         = ""
+$product_homepage          = "<A href=http://covered.sourceforge.net>http://covered.sourceforge.net</A>"
+$copyright_information     = "<B>License: GPL</B>"
+$contents_depth            = "2"
+$sp                        = "&nbsp;"
+$file_contents             = "001.html"
+$output_directory          = "/ptmp/cvs/covered/covered/doc/user"
+$theme                     = "/usr/local/src/manstyle/themes/tec"
+
+}
+
+<_process file="index" subject="index">
+<_process file="001" subject="page">
+<_process file="002" subject="page">
+<_process file="003" subject="page">
+<_process file="004" subject="page">
+<_process file="005" subject="page">
+<_process file="006" subject="page">
+<_process file="007" subject="page">
+<_process file="008" subject="page">
+<_process file="009" subject="page">
+<_process file="010" subject="page">
+<_process file="011" subject="page">
+<_process file="012" subject="page">
+<_process file="013" subject="page">
+<_process file="014" subject="page">
