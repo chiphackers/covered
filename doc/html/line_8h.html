@@ -15,7 +15,7 @@
 <p>
 <a href="line_8h-source.html">Go to the source code of this file.</a><table border=0 cellpadding=0 cellspacing=0>
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="line_8h.html#a0">line_get_stats</a> (<a class="el" href="defines_8h.html#a111">exp_link</a> *expl, float *total, int *hit)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="line_8h.html#a0">line_get_stats</a> (<a class="el" href="defines_8h.html#a112">stmt_link</a> *stmtl, float *total, int *hit)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Calculates line coverage numbers for the specified expression list.</em> <a href="#a0">More...</a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="line_8h.html#a1">line_report</a> (FILE *ofile, <a class="el" href="defines_8h.html#a123">bool</a> verbose, <a class="el" href="defines_8h.html#a123">bool</a> instance)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Generates report output for line coverage.</em> <a href="#a1">More...</a><em></em></font><br><br></td></tr>
@@ -38,8 +38,8 @@ Date: </b><dd>
         <tr>
           <td class="md" nowrap valign="top"> void line_get_stats </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a111">exp_link</a> *&nbsp;</td>
-          <td class="mdname" nowrap>&nbsp; <em>expl</em>, </td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a112">stmt_link</a> *&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>stmtl</em>, </td>
         </tr>
         <tr>
           <td></td>
@@ -76,14 +76,14 @@ Calculates line coverage numbers for the specified expression list.
 <dl compact><dt><b>
 Parameters: </b><dd>
 <table border=0 cellspacing=2 cellpadding=0>
-<tr><td valign=top><em>expl</em>&nbsp;</td><td>
-Pointer to current expression list to explore. </td></tr>
+<tr><td valign=top><em>stmtl</em>&nbsp;</td><td>
+Pointer to current statement list to explore. </td></tr>
 <tr><td valign=top><em>total</em>&nbsp;</td><td>
 Holds total number of lines parsed. </td></tr>
 <tr><td valign=top><em>hit</em>&nbsp;</td><td>
 Holds total number of lines hit.</td></tr>
 </table>
-</dl>Iterates through given expression list, gathering information about which lines exist in the list, which lines were hit during simulation and which lines were missed during simulation. This information is used to report summary information about line coverage.     </td>
+</dl>Iterates through given statement list, gathering information about which lines exist in the list, which lines were hit during simulation and which lines were missed during simulation. This information is used to report summary information about line coverage.     </td>
   </tr>
 </table>
 <a name="a1" doxytag="line.h::line_report"></a><p>
@@ -142,7 +142,7 @@ Specifies to report by instance or module.</td></tr>
 </dl>After the design is read into the module hierarchy, parses the hierarchy by module, reporting the line coverage for each module encountered. The parent module will specify its own line coverage along with a total line coverage including its  children.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Wed May 1 22:21:49 2002 for Covered by
+<hr><address align="right"><small>Generated on Thu May 2 22:36:41 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.15 </small></address>

@@ -5,13 +5,14 @@
 {\tt \#include $<$string.h$>$}\par
 {\tt \#include \char`\"{}defines.h\char`\"{}}\par
 {\tt \#include \char`\"{}statement.h\char`\"{}}\par
-{\tt \#include \char`\"{}expression.h\char`\"{}}\par
+{\tt \#include \char`\"{}expr.h\char`\"{}}\par
 {\tt \#include \char`\"{}util.h\char`\"{}}\par
+{\tt \#include \char`\"{}link.h\char`\"{}}\par
 \subsection*{Functions}
 \begin{CompactItemize}
 \item 
 {\bf statement} $\ast$ {\bf statement\_\-create} ({\bf expression} $\ast$exp, int line\_\-begin, int line\_\-end)
-\item 
+\begin{CompactList}\small\item\em Creates new statement structure.\item\end{CompactList}\item 
 void {\bf statement\_\-db\_\-write} ({\bf statement} $\ast$stmt, FILE $\ast$ofile, char $\ast$scope)
 \begin{CompactList}\small\item\em Writes specified statement to the specified output file.\item\end{CompactList}\item 
 {\bf bool} {\bf statement\_\-db\_\-read} (char $\ast$$\ast$line, {\bf module} $\ast$curr\_\-mod)
@@ -38,6 +39,8 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \index{statement_create@{statement\_\-create}!statement.c@{statement.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf statement}$\ast$ statement\_\-create ({\bf expression} $\ast$ {\em exp}, int {\em line\_\-begin}, int {\em line\_\-end})}\label{statement_8c_a0}
 
+
+Creates new statement structure.
 
 \begin{Desc}
 \item[Parameters: ]\par

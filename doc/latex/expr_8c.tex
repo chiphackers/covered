@@ -14,7 +14,7 @@
 \item 
 void {\bf expression\_\-create\_\-value} ({\bf expression} $\ast$exp, int width, int lsb)
 \begin{CompactList}\small\item\em Creates an expression value and sets MEASURABLE bit if necessary.\item\end{CompactList}\item 
-{\bf expression} $\ast$ {\bf expression\_\-create} ({\bf expression} $\ast$right, {\bf expression} $\ast$left, int op, int id, int line)
+{\bf expression} $\ast$ {\bf expression\_\-create} ({\bf expression} $\ast$right, {\bf expression} $\ast$left, int op, int id)
 \begin{CompactList}\small\item\em Creates new expression.\item\end{CompactList}\item 
 void {\bf expression\_\-merge} ({\bf expression} $\ast$base, {\bf expression} $\ast$in)
 \begin{CompactList}\small\item\em Merges two expressions and stores result in base expression.\item\end{CompactList}\item 
@@ -61,7 +61,7 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsection{Function Documentation}
 \index{expr.c@{expr.c}!expression_create@{expression\_\-create}}
 \index{expression_create@{expression\_\-create}!expr.c@{expr.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf expression}$\ast$ expression\_\-create ({\bf expression} $\ast$ {\em right}, {\bf expression} $\ast$ {\em left}, int {\em op}, int {\em id}, int {\em line})}\label{expr_8c_a7}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf expression}$\ast$ expression\_\-create ({\bf expression} $\ast$ {\em right}, {\bf expression} $\ast$ {\em left}, int {\em op}, int {\em id})}\label{expr_8c_a7}
 
 
 Creates new expression.
@@ -73,8 +73,7 @@ Creates new expression.
 right}]Pointer to expression on right. \item[{\em 
 left}]Pointer to expression on left. \item[{\em 
 op}]Operation to perform for this expression. \item[{\em 
-id}]ID for this expression as determined by the parent. \item[{\em 
-line}]Starting line for this expression (only valid for root)\end{description}
+id}]ID for this expression as determined by the parent.\end{description}
 \end{Desc}
 \begin{Desc}
 \item[Returns: ]\par

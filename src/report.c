@@ -204,7 +204,7 @@ void report_gather_stats( mod_inst* root ) {
 
   /* Get coverage results for this instance */
   if( report_line ) {
-    line_get_stats( root->mod->exp_head, &(root->stat->line_total), &(root->stat->line_hit) );
+    line_get_stats( root->mod->stmt_head, &(root->stat->line_total), &(root->stat->line_hit) );
   }
 
   if( report_toggle ) {
@@ -346,3 +346,5 @@ int command_report( int argc, char** argv ) {
 
 }
 
+
+/* $Log$ */

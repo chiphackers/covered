@@ -18,6 +18,7 @@
 #include "link.h"
 #include "symtable.h"
 #include "instance.h"
+#include "statement.h"
 
 
 extern char*      top_module;
@@ -140,6 +141,11 @@ bool db_read( char* file, int read_mode ) {
 
           /* Parse rest of line for expression info */
           retval = expression_db_read( &rest_line, curr_module );
+
+        } else if( type == DB_TYPE_STATEMENT ) {
+
+          /* Parse rest of line for statement info */
+          retval = statement_db_read( &rest_line, curr_module );
 
         } else if( type == DB_TYPE_MODULE ) {
 
@@ -427,7 +433,6 @@ signal* db_find_signal( char* name ) {
  \param right     Pointer to expression on right side of expression.
  \param left      Pointer to expression on left side of expression.
  \param op        Operation to perform on expression.
- \param line      Line number in Verilog file that expression is located (for line coverage).
  \param sig_name  Name of signal that expression is attached to (if valid).
 
  \return Returns pointer to newly created expression.
@@ -435,21 +440,20 @@ signal* db_find_signal( char* name ) {
  Creates a new expression with the specified parameter information and returns a
  pointer to the newly created expression.
 */
-expression* db_create_expression( expression* right, expression* left, int op, int line, char* sig_name ) {
+expression* db_create_expression( expression* right, expression* left, int op, char* sig_name ) {
 
   expression* expr;             /* Temporary pointer to newly created expression */
   char        msg[4096];        /* Display message string                        */
 
-  snprintf( msg, 4096, "In db_create_expression, right: 0x%lx, left: 0x%lx, id: %d, op: %d, line: %d", 
+  snprintf( msg, 4096, "In db_create_expression, right: 0x%lx, left: 0x%lx, id: %d, op: %d", 
                        right,
                        left,
                        curr_expr_id, 
-                       op, 
-                       line );
+                       op );
   print_output( msg, NORMAL );
 
   /* Create expression with next expression ID */
-  expr = expression_create( right, left, op, curr_expr_id, line );
+  expr = expression_create( right, left, op, curr_expr_id );
   curr_expr_id++;
 
   /* Set right and left side expression's (if they exist) parent pointer to this expression */
@@ -489,7 +493,7 @@ void db_add_expression( expression* root ) {
 
     if( exp_link_find( root, curr_module->exp_head ) == NULL ) {
     
-      snprintf( msg, 4096, "In db_add_expression, id: %d, op: %d, line: %d", root->id, SUPPL_OP( root->suppl ), root->line );
+      snprintf( msg, 4096, "In db_add_expression, id: %d, op: %d", root->id, SUPPL_OP( root->suppl ) );
       print_output( msg, NORMAL );
    
       // Add expression's children first.
@@ -508,73 +512,71 @@ void db_add_expression( expression* root ) {
 }
 
 /*!
- \param line  Line number where statement is parsed from.
- \param exp   Pointer to associated "root" expression.
+ \param line_begin  Line number where statement starts.
+ \param line_end    Line number where statement ends.
+ \param exp         Pointer to associated "root" expression.
 
- \return Returns pointer to expression containing statement.
+ \return Returns pointer to created statement.
 
- Creates an expression with the STMT operation set.  Because statements are setup a bit
- differently than regular expressions (parent points to associated expression while
- right and left may point to other expressions), the parameter list is modified from
- the db_create_expression function.  Adds created statement expression to current
- module's expression list.
+ Creates an statement structure and adds created statement to current
+ module's statement list.
 */
-expression* db_create_statement( int line, expression* exp ) {
+statement* db_create_statement( int line_begin, int line_end, expression* exp ) {
 
-  expression* stmt;       /* Pointer to newly created statement expression */
-  char        msg[4096];  /* Message to display to user                    */
+  statement* stmt;       /* Pointer to newly created statement */
+  char       msg[4096];  /* Message to display to user         */
 
-  snprintf( msg, 4096, "In db_create_statement, line: %d, id: %d, exp: %d", line, curr_expr_id, exp->id );
+  snprintf( msg, 4096, "In db_create_statement, line_begin: %d, line_end: %d, id: %d", 
+            line_begin, 
+            line_end,
+            exp->id );
   print_output( msg, NORMAL );
 
-  stmt = expression_create( NULL, NULL, EXP_OP_STMT, curr_expr_id, line );
-  stmt->parent = exp;
+  stmt = statement_create( exp, line_begin, line_end );
 
-  curr_expr_id++;
-
-  exp_link_add( stmt, &(curr_module->exp_head), &(curr_module->exp_tail) );
+  stmt_link_add( stmt, &(curr_module->stmt_head), &(curr_module->stmt_tail) );
 
   return( stmt );
 
 }
 
 /*!
- \param stmt      Pointer to statement to add to module expression list.
- \param exp_true  Pointer to statement to run if statement evaluates to TRUE.
+ \param stmt       Pointer to statement to connect true path to.
+ \param next_true  Pointer to statement to run if statement evaluates to TRUE.
 
  Connects the specified statement's true statement.
 */
-void db_connect_statement_true( expression* stmt, expression* exp_true ) {
+void db_connect_statement_true( statement* stmt, statement* next_true ) {
 
   char msg[4096];   /* Message to display to user */
 
   if( stmt != NULL ) {
 
-    snprintf( msg, 4096, "In db_connect_statement_true, id: %d, exp: %d", stmt->id, exp_true->id );
+    snprintf( msg, 4096, "In db_connect_statement_true, id: %d, next: %d", stmt->exp->id, next_true->exp->id );
     print_output( msg, NORMAL );
 
-    stmt->right = exp_true;
+    stmt->next_true = next_true;
 
   }
 
 }
 
 /*!
- \param stmt       Pointer to statement to add to module expression list.
- \param exp_false  Pointer to statement to run if statement evaluates to TRUE.
+ \param stmt        Pointer to statement to connect false path to.
+ \param next_false  Pointer to statement to run if statement evaluates to FALSE.
 
  Connects the specified statement's false statement.
 */
-void db_connect_statement_false( expression* stmt, expression* exp_false ) {
+void db_connect_statement_false( statement* stmt, statement* next_false ) {
 
   char msg[4096];   /* Message to display to user */
 
   if( stmt != NULL ) {
 
-    snprintf( msg, 4096, "In db_connect_statement_false, id: %d, exp: %d", stmt->id, exp_false->id );
+    snprintf( msg, 4096, "In db_connect_statement_false, id: %d, next: %d", stmt->exp->id, next_false->exp->id );
     print_output( msg, NORMAL );
 
-    stmt->left = exp_false;
+    stmt->next_false = next_false;
 
   }
 
@@ -947,6 +949,10 @@ int db_get_signal_size( char* symbol ) {
 
 
 /* $Log$
+/* Revision 1.8  2002/05/02 03:27:42  phase1geo
+/* Initial creation of statement structure and manipulation files.  Internals are
+/* still in a chaotic state.
+/*
 /* Revision 1.7  2002/04/30 05:04:25  phase1geo
 /* Added initial go-round of adding statement handling to parser.  Added simple
 /* Verilog test to check correct statement handling.  At this point there is a

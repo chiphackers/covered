@@ -13,6 +13,7 @@
 #include "expr.h"
 #include "module.h"
 #include "util.h"
+#include "statement.h"
 
 /*!
  \param str   String to add to specified list.
@@ -30,6 +31,33 @@ void str_link_add( char* str, str_link** head, str_link** tail ) {
   tmp = (str_link*)malloc_safe( sizeof( str_link ) );
 
   tmp->str  = str;
+  tmp->next = NULL;
+
+  if( *head == NULL ) {
+    *head = *tail = tmp;
+  } else {
+    (*tail)->next = tmp;
+    *tail         = tmp;
+  }
+
+}
+
+/*!
+ \param stmt  Pointer to statement to add to specified statement list.
+ \param head  Pointer to head str_link element of list.
+ \param tail  Pointer to tail str_link element of list.
+
+ Creates a new stmt_link element with the value specified for stmt.  Sets
+ next pointer of element to NULL, sets the tail element to point to the
+ new element and sets the tail value to the new element.
+*/
+void stmt_link_add( statement* stmt, stmt_link** head, stmt_link** tail ) {
+
+  stmt_link* tmp;    /* Temporary pointer to newly created stmt_link element */
+
+  tmp = (stmt_link*)malloc_safe( sizeof( stmt_link ) );
+
+  tmp->stmt = stmt;
   tmp->next = NULL;
 
   if( *head == NULL ) {
@@ -143,6 +171,26 @@ void str_link_display( str_link* head ) {
 }
 
 /*!
+ \param head  Pointer to head of stmt_link list.
+
+ Displays the string contents of the stmt_link list pointed to by head
+ to standard output.  This function is mainly used for debugging purposes.
+*/
+void stmt_link_display( stmt_link* head ) {
+
+  stmt_link* curr;    /* Pointer to current stmt_link link to display */
+
+  printf( "Statement list:\n" );
+
+  curr = head;
+  while( curr != NULL ) {
+    printf( "  id: %d, addr: 0x%lx\n", curr->stmt->exp->id, curr->stmt );
+    curr = curr->next;
+  }
+
+}
+
+/*!
  \param head  Pointer to head of exp_link list.
 
  Displays the string contents of the exp_link list pointed to by head
@@ -225,8 +273,32 @@ str_link* str_link_find( char* value, str_link* head ) {
 }
 
 /*!
+ \param id    ID of statement to find.
+ \param head  Pointer to head of stmt_link list to search.
+
+ \return Returns the pointer to the found stmt_link or NULL if the search was unsuccessful.
+
+ Iteratively searches the stmt_link list specified by the head stmt_link element.  If
+ a matching statement is found, the pointer to this element is returned.  If the specified
+ statement could not be matched, the value of NULL is returned.
+*/
+stmt_link* stmt_link_find( int id, stmt_link* head ) {
+
+  stmt_link* curr;    /* Pointer to current stmt_link link */
+
+  curr = head;
+  while( (curr != NULL) && (curr->stmt->exp->id != id) ) {
+    curr = curr->next;
+  }
+
+  return( curr );
+
+}
+
+/*!
  \param exp   Pointer to expression to find.
  \param head  Pointer to head of exp_link list to search.
+
  \return Returns the pointer to the found exp_link or NULL if the search was unsuccessful.
 
  Iteratively searches the exp_link list specified by the head exp_link element.  If
@@ -321,6 +393,31 @@ void str_link_delete_list( str_link* head ) {
 }
 
 /*!
+ \param head  Pointer to head stmt_link element of list.
+
+ Deletes each element of the specified list.
+*/
+void stmt_link_delete_list( stmt_link* head ) {
+
+  stmt_link* tmp;   /* Temporary pointer to current link in list */
+
+  while( head != NULL ) {
+
+    tmp  = head;
+    head = tmp->next;
+
+    /* Deallocate statement */
+    statement_dealloc( tmp->stmt );
+    tmp->stmt = NULL;
+
+    /* Deallocate stmt_link element itself */
+    free_safe( tmp );
+
+  }
+
+}
+
+/*!
  \param head  Pointer to head exp_link element of list.
  \param del_exp  If set to TRUE, deallocates the expression; otherwise, leaves expression alone.
 
@@ -397,3 +494,6 @@ void mod_link_delete_list( mod_link* head ) {
   }
 
 }
+
+
+/* $Log$ */

@@ -7,177 +7,178 @@
 <center>
 <a class="qindex" href="index.html">Main Page</a> &nbsp; <a class="qindex" href="modules.html">Modules</a> &nbsp; <a class="qindex" href="annotated.html">Compound List</a> &nbsp; <a class="qindex" href="files.html">File List</a> &nbsp; <a class="qindex" href="functions.html">Compound Members</a> &nbsp; <a class="qindex" href="globals.html">File Members</a> &nbsp; <a class="qindex" href="pages.html">Related Pages</a> &nbsp; </center>
 <hr><h1>parser.h</h1><a href="parser_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre>00001 <font class="keyword">typedef</font> <font class="keyword">union </font>{
-<a name="l00002"></a><a class="code" href="unionYYSTYPE.html#m8">00002</a>   <font class="keywordtype">char</font>*         text;
+<a name="l00002"></a><a class="code" href="unionYYSTYPE.html#m9">00002</a>   <font class="keywordtype">char</font>*         text;
 <a name="l00003"></a><a class="code" href="unionYYSTYPE.html#m1">00003</a>   <font class="keywordtype">int</font>           integer;
-<a name="l00004"></a><a class="code" href="unionYYSTYPE.html#m9">00004</a>   <a class="code" href="structvector__s.html">vector</a>*       number;
+<a name="l00004"></a><a class="code" href="unionYYSTYPE.html#m10">00004</a>   <a class="code" href="structvector__s.html">vector</a>*       number;
 <a name="l00005"></a><a class="code" href="unionYYSTYPE.html#m3">00005</a>   <font class="keywordtype">double</font>        realtime;
-<a name="l00006"></a><a class="code" href="unionYYSTYPE.html#m10">00006</a>   <a class="code" href="structsignal__s.html">signal</a>*       sig;
-<a name="l00007"></a><a class="code" href="unionYYSTYPE.html#m11">00007</a>   <a class="code" href="structexpression__s.html">expression</a>*   expr;
-<a name="l00008"></a><a class="code" href="unionYYSTYPE.html#m12">00008</a>   <a class="code" href="structsignal__width__s.html">signal_width</a>* <a class="code" href="structsigwidth__s.html">sigwidth</a>; 
-<a name="l00009"></a><a class="code" href="unionYYSTYPE.html#m13">00009</a>   <a class="code" href="structstr__link__s.html">str_link</a>*     strlink;
-00010 } <a class="code" href="unionYYSTYPE.html">YYSTYPE</a>;
-00011 
-00012 <font class="preprocessor">#ifndef YYLTYPE</font>
-<a name="l00013"></a><a class="code" href="structyyltype.html">00013</a> <font class="preprocessor"></font><font class="keyword">typedef</font>
-00014   <font class="keyword">struct </font><a class="code" href="structyyltype.html">yyltype</a>
-00015     {
-00016       <font class="keywordtype">int</font> <a class="code" href="structyyltype.html#m0">timestamp</a>;
-00017       <font class="keywordtype">int</font> <a class="code" href="structyyltype.html#m1">first_line</a>;
-00018       <font class="keywordtype">int</font> <a class="code" href="structyyltype.html#m2">first_column</a>;
-00019       <font class="keywordtype">int</font> <a class="code" href="structyyltype.html#m3">last_line</a>;
-00020       <font class="keywordtype">int</font> <a class="code" href="structyyltype.html#m4">last_column</a>;
-<a name="l00021"></a><a class="code" href="structyyltype.html#m5">00021</a>       <font class="keywordtype">char</font> *<a class="code" href="structyyltype.html#m5">text</a>;
-00022    }
-00023   <a class="code" href="structyyltype.html">yyltype</a>;
-00024 
-<a name="l00025"></a><a class="code" href="parser_8h.html#a0">00025</a> <font class="preprocessor">#define YYLTYPE yyltype</font>
-00026 <font class="preprocessor"></font><font class="preprocessor">#endif</font>
-00027 <font class="preprocessor"></font>
-<a name="l00028"></a><a class="code" href="parser_8h.html#a1">00028</a> <font class="preprocessor">#define HIDENTIFIER     257</font>
-<a name="l00029"></a><a class="code" href="parser_8h.html#a2">00029</a> <font class="preprocessor"></font><font class="preprocessor">#define IDENTIFIER      258</font>
-<a name="l00030"></a><a class="code" href="parser_8h.html#a3">00030</a> <font class="preprocessor"></font><font class="preprocessor">#define PATHPULSE_IDENTIFIER    259</font>
-<a name="l00031"></a><a class="code" href="parser_8h.html#a4">00031</a> <font class="preprocessor"></font><font class="preprocessor">#define NUMBER  260</font>
-<a name="l00032"></a><a class="code" href="parser_8h.html#a5">00032</a> <font class="preprocessor"></font><font class="preprocessor">#define REALTIME        261</font>
-<a name="l00033"></a><a class="code" href="parser_8h.html#a6">00033</a> <font class="preprocessor"></font><font class="preprocessor">#define STRING  262</font>
-<a name="l00034"></a><a class="code" href="parser_8h.html#a7">00034</a> <font class="preprocessor"></font><font class="preprocessor">#define PORTNAME        263</font>
-<a name="l00035"></a><a class="code" href="parser_8h.html#a8">00035</a> <font class="preprocessor"></font><font class="preprocessor">#define SYSTEM_IDENTIFIER       264</font>
-<a name="l00036"></a><a class="code" href="parser_8h.html#a9">00036</a> <font class="preprocessor"></font><font class="preprocessor">#define IGNORE  265</font>
-<a name="l00037"></a><a class="code" href="parser_8h.html#a10">00037</a> <font class="preprocessor"></font><font class="preprocessor">#define K_LE    266</font>
-<a name="l00038"></a><a class="code" href="parser_8h.html#a11">00038</a> <font class="preprocessor"></font><font class="preprocessor">#define K_GE    267</font>
-<a name="l00039"></a><a class="code" href="parser_8h.html#a12">00039</a> <font class="preprocessor"></font><font class="preprocessor">#define K_EG    268</font>
-<a name="l00040"></a><a class="code" href="parser_8h.html#a13">00040</a> <font class="preprocessor"></font><font class="preprocessor">#define K_EQ    269</font>
-<a name="l00041"></a><a class="code" href="parser_8h.html#a14">00041</a> <font class="preprocessor"></font><font class="preprocessor">#define K_NE    270</font>
-<a name="l00042"></a><a class="code" href="parser_8h.html#a15">00042</a> <font class="preprocessor"></font><font class="preprocessor">#define K_CEQ   271</font>
-<a name="l00043"></a><a class="code" href="parser_8h.html#a16">00043</a> <font class="preprocessor"></font><font class="preprocessor">#define K_CNE   272</font>
-<a name="l00044"></a><a class="code" href="parser_8h.html#a17">00044</a> <font class="preprocessor"></font><font class="preprocessor">#define K_LS    273</font>
-<a name="l00045"></a><a class="code" href="parser_8h.html#a18">00045</a> <font class="preprocessor"></font><font class="preprocessor">#define K_RS    274</font>
-<a name="l00046"></a><a class="code" href="parser_8h.html#a19">00046</a> <font class="preprocessor"></font><font class="preprocessor">#define K_SG    275</font>
-<a name="l00047"></a><a class="code" href="parser_8h.html#a20">00047</a> <font class="preprocessor"></font><font class="preprocessor">#define K_PO_POS        276</font>
-<a name="l00048"></a><a class="code" href="parser_8h.html#a21">00048</a> <font class="preprocessor"></font><font class="preprocessor">#define K_PO_NEG        277</font>
-<a name="l00049"></a><a class="code" href="parser_8h.html#a22">00049</a> <font class="preprocessor"></font><font class="preprocessor">#define K_LOR   278</font>
-<a name="l00050"></a><a class="code" href="parser_8h.html#a23">00050</a> <font class="preprocessor"></font><font class="preprocessor">#define K_LAND  279</font>
-<a name="l00051"></a><a class="code" href="parser_8h.html#a24">00051</a> <font class="preprocessor"></font><font class="preprocessor">#define K_NAND  280</font>
-<a name="l00052"></a><a class="code" href="parser_8h.html#a25">00052</a> <font class="preprocessor"></font><font class="preprocessor">#define K_NOR   281</font>
-<a name="l00053"></a><a class="code" href="parser_8h.html#a26">00053</a> <font class="preprocessor"></font><font class="preprocessor">#define K_NXOR  282</font>
-<a name="l00054"></a><a class="code" href="parser_8h.html#a27">00054</a> <font class="preprocessor"></font><font class="preprocessor">#define K_TRIGGER       283</font>
-<a name="l00055"></a><a class="code" href="parser_8h.html#a28">00055</a> <font class="preprocessor"></font><font class="preprocessor">#define K_always        284</font>
-<a name="l00056"></a><a class="code" href="parser_8h.html#a29">00056</a> <font class="preprocessor"></font><font class="preprocessor">#define K_and   285</font>
-<a name="l00057"></a><a class="code" href="parser_8h.html#a30">00057</a> <font class="preprocessor"></font><font class="preprocessor">#define K_assign        286</font>
-<a name="l00058"></a><a class="code" href="parser_8h.html#a31">00058</a> <font class="preprocessor"></font><font class="preprocessor">#define K_begin 287</font>
-<a name="l00059"></a><a class="code" href="parser_8h.html#a32">00059</a> <font class="preprocessor"></font><font class="preprocessor">#define K_buf   288</font>
-<a name="l00060"></a><a class="code" href="parser_8h.html#a33">00060</a> <font class="preprocessor"></font><font class="preprocessor">#define K_bufif0        289</font>
-<a name="l00061"></a><a class="code" href="parser_8h.html#a34">00061</a> <font class="preprocessor"></font><font class="preprocessor">#define K_bufif1        290</font>
-<a name="l00062"></a><a class="code" href="parser_8h.html#a35">00062</a> <font class="preprocessor"></font><font class="preprocessor">#define K_case  291</font>
-<a name="l00063"></a><a class="code" href="parser_8h.html#a36">00063</a> <font class="preprocessor"></font><font class="preprocessor">#define K_casex 292</font>
-<a name="l00064"></a><a class="code" href="parser_8h.html#a37">00064</a> <font class="preprocessor"></font><font class="preprocessor">#define K_casez 293</font>
-<a name="l00065"></a><a class="code" href="parser_8h.html#a38">00065</a> <font class="preprocessor"></font><font class="preprocessor">#define K_cmos  294</font>
-<a name="l00066"></a><a class="code" href="parser_8h.html#a39">00066</a> <font class="preprocessor"></font><font class="preprocessor">#define K_deassign      295</font>
-<a name="l00067"></a><a class="code" href="parser_8h.html#a40">00067</a> <font class="preprocessor"></font><font class="preprocessor">#define K_default       296</font>
-<a name="l00068"></a><a class="code" href="parser_8h.html#a41">00068</a> <font class="preprocessor"></font><font class="preprocessor">#define K_defparam      297</font>
-<a name="l00069"></a><a class="code" href="parser_8h.html#a42">00069</a> <font class="preprocessor"></font><font class="preprocessor">#define K_disable       298</font>
-<a name="l00070"></a><a class="code" href="parser_8h.html#a43">00070</a> <font class="preprocessor"></font><font class="preprocessor">#define K_edge  299</font>
-<a name="l00071"></a><a class="code" href="parser_8h.html#a44">00071</a> <font class="preprocessor"></font><font class="preprocessor">#define K_else  300</font>
-<a name="l00072"></a><a class="code" href="parser_8h.html#a45">00072</a> <font class="preprocessor"></font><font class="preprocessor">#define K_end   301</font>
-<a name="l00073"></a><a class="code" href="parser_8h.html#a46">00073</a> <font class="preprocessor"></font><font class="preprocessor">#define K_endcase       302</font>
-<a name="l00074"></a><a class="code" href="parser_8h.html#a47">00074</a> <font class="preprocessor"></font><font class="preprocessor">#define K_endfunction   303</font>
-<a name="l00075"></a><a class="code" href="parser_8h.html#a48">00075</a> <font class="preprocessor"></font><font class="preprocessor">#define K_endmodule     304</font>
-<a name="l00076"></a><a class="code" href="parser_8h.html#a49">00076</a> <font class="preprocessor"></font><font class="preprocessor">#define I_endmodule     305</font>
-<a name="l00077"></a><a class="code" href="parser_8h.html#a50">00077</a> <font class="preprocessor"></font><font class="preprocessor">#define K_endprimitive  306</font>
-<a name="l00078"></a><a class="code" href="parser_8h.html#a51">00078</a> <font class="preprocessor"></font><font class="preprocessor">#define K_endspecify    307</font>
-<a name="l00079"></a><a class="code" href="parser_8h.html#a52">00079</a> <font class="preprocessor"></font><font class="preprocessor">#define K_endtable      308</font>
-<a name="l00080"></a><a class="code" href="parser_8h.html#a53">00080</a> <font class="preprocessor"></font><font class="preprocessor">#define K_endtask       309</font>
-<a name="l00081"></a><a class="code" href="parser_8h.html#a54">00081</a> <font class="preprocessor"></font><font class="preprocessor">#define K_event 310</font>
-<a name="l00082"></a><a class="code" href="parser_8h.html#a55">00082</a> <font class="preprocessor"></font><font class="preprocessor">#define K_for   311</font>
-<a name="l00083"></a><a class="code" href="parser_8h.html#a56">00083</a> <font class="preprocessor"></font><font class="preprocessor">#define K_force 312</font>
-<a name="l00084"></a><a class="code" href="parser_8h.html#a57">00084</a> <font class="preprocessor"></font><font class="preprocessor">#define K_forever       313</font>
-<a name="l00085"></a><a class="code" href="parser_8h.html#a58">00085</a> <font class="preprocessor"></font><font class="preprocessor">#define K_fork  314</font>
-<a name="l00086"></a><a class="code" href="parser_8h.html#a59">00086</a> <font class="preprocessor"></font><font class="preprocessor">#define K_function      315</font>
-<a name="l00087"></a><a class="code" href="parser_8h.html#a60">00087</a> <font class="preprocessor"></font><font class="preprocessor">#define K_highz0        316</font>
-<a name="l00088"></a><a class="code" href="parser_8h.html#a61">00088</a> <font class="preprocessor"></font><font class="preprocessor">#define K_highz1        317</font>
-<a name="l00089"></a><a class="code" href="parser_8h.html#a62">00089</a> <font class="preprocessor"></font><font class="preprocessor">#define K_if    318</font>
-<a name="l00090"></a><a class="code" href="parser_8h.html#a63">00090</a> <font class="preprocessor"></font><font class="preprocessor">#define K_initial       319</font>
-<a name="l00091"></a><a class="code" href="parser_8h.html#a64">00091</a> <font class="preprocessor"></font><font class="preprocessor">#define K_inout 320</font>
-<a name="l00092"></a><a class="code" href="parser_8h.html#a65">00092</a> <font class="preprocessor"></font><font class="preprocessor">#define K_input 321</font>
-<a name="l00093"></a><a class="code" href="parser_8h.html#a66">00093</a> <font class="preprocessor"></font><font class="preprocessor">#define K_integer       322</font>
-<a name="l00094"></a><a class="code" href="parser_8h.html#a67">00094</a> <font class="preprocessor"></font><font class="preprocessor">#define K_join  323</font>
-<a name="l00095"></a><a class="code" href="parser_8h.html#a68">00095</a> <font class="preprocessor"></font><font class="preprocessor">#define K_large 324</font>
-<a name="l00096"></a><a class="code" href="parser_8h.html#a69">00096</a> <font class="preprocessor"></font><font class="preprocessor">#define K_localparam    325</font>
-<a name="l00097"></a><a class="code" href="parser_8h.html#a70">00097</a> <font class="preprocessor"></font><font class="preprocessor">#define K_macromodule   326</font>
-<a name="l00098"></a><a class="code" href="parser_8h.html#a71">00098</a> <font class="preprocessor"></font><font class="preprocessor">#define K_medium        327</font>
-<a name="l00099"></a><a class="code" href="parser_8h.html#a72">00099</a> <font class="preprocessor"></font><font class="preprocessor">#define K_module        328</font>
-<a name="l00100"></a><a class="code" href="parser_8h.html#a73">00100</a> <font class="preprocessor"></font><font class="preprocessor">#define K_nand  329</font>
-<a name="l00101"></a><a class="code" href="parser_8h.html#a74">00101</a> <font class="preprocessor"></font><font class="preprocessor">#define K_negedge       330</font>
-<a name="l00102"></a><a class="code" href="parser_8h.html#a75">00102</a> <font class="preprocessor"></font><font class="preprocessor">#define K_nmos  331</font>
-<a name="l00103"></a><a class="code" href="parser_8h.html#a76">00103</a> <font class="preprocessor"></font><font class="preprocessor">#define K_nor   332</font>
-<a name="l00104"></a><a class="code" href="parser_8h.html#a77">00104</a> <font class="preprocessor"></font><font class="preprocessor">#define K_not   333</font>
-<a name="l00105"></a><a class="code" href="parser_8h.html#a78">00105</a> <font class="preprocessor"></font><font class="preprocessor">#define K_notif0        334</font>
-<a name="l00106"></a><a class="code" href="parser_8h.html#a79">00106</a> <font class="preprocessor"></font><font class="preprocessor">#define K_notif1        335</font>
-<a name="l00107"></a><a class="code" href="parser_8h.html#a80">00107</a> <font class="preprocessor"></font><font class="preprocessor">#define K_or    336</font>
-<a name="l00108"></a><a class="code" href="parser_8h.html#a81">00108</a> <font class="preprocessor"></font><font class="preprocessor">#define K_output        337</font>
-<a name="l00109"></a><a class="code" href="parser_8h.html#a82">00109</a> <font class="preprocessor"></font><font class="preprocessor">#define K_parameter     338</font>
-<a name="l00110"></a><a class="code" href="parser_8h.html#a83">00110</a> <font class="preprocessor"></font><font class="preprocessor">#define K_pmos  339</font>
-<a name="l00111"></a><a class="code" href="parser_8h.html#a84">00111</a> <font class="preprocessor"></font><font class="preprocessor">#define K_posedge       340</font>
-<a name="l00112"></a><a class="code" href="parser_8h.html#a85">00112</a> <font class="preprocessor"></font><font class="preprocessor">#define K_primitive     341</font>
-<a name="l00113"></a><a class="code" href="parser_8h.html#a86">00113</a> <font class="preprocessor"></font><font class="preprocessor">#define K_pull0 342</font>
-<a name="l00114"></a><a class="code" href="parser_8h.html#a87">00114</a> <font class="preprocessor"></font><font class="preprocessor">#define K_pull1 343</font>
-<a name="l00115"></a><a class="code" href="parser_8h.html#a88">00115</a> <font class="preprocessor"></font><font class="preprocessor">#define K_pulldown      344</font>
-<a name="l00116"></a><a class="code" href="parser_8h.html#a89">00116</a> <font class="preprocessor"></font><font class="preprocessor">#define K_pullup        345</font>
-<a name="l00117"></a><a class="code" href="parser_8h.html#a90">00117</a> <font class="preprocessor"></font><font class="preprocessor">#define K_rcmos 346</font>
-<a name="l00118"></a><a class="code" href="parser_8h.html#a91">00118</a> <font class="preprocessor"></font><font class="preprocessor">#define K_real  347</font>
-<a name="l00119"></a><a class="code" href="parser_8h.html#a92">00119</a> <font class="preprocessor"></font><font class="preprocessor">#define K_realtime      348</font>
-<a name="l00120"></a><a class="code" href="parser_8h.html#a93">00120</a> <font class="preprocessor"></font><font class="preprocessor">#define K_reg   349</font>
-<a name="l00121"></a><a class="code" href="parser_8h.html#a94">00121</a> <font class="preprocessor"></font><font class="preprocessor">#define K_release       350</font>
-<a name="l00122"></a><a class="code" href="parser_8h.html#a95">00122</a> <font class="preprocessor"></font><font class="preprocessor">#define K_repeat        351</font>
-<a name="l00123"></a><a class="code" href="parser_8h.html#a96">00123</a> <font class="preprocessor"></font><font class="preprocessor">#define K_rnmos 352</font>
-<a name="l00124"></a><a class="code" href="parser_8h.html#a97">00124</a> <font class="preprocessor"></font><font class="preprocessor">#define K_rpmos 353</font>
-<a name="l00125"></a><a class="code" href="parser_8h.html#a98">00125</a> <font class="preprocessor"></font><font class="preprocessor">#define K_rtran 354</font>
-<a name="l00126"></a><a class="code" href="parser_8h.html#a99">00126</a> <font class="preprocessor"></font><font class="preprocessor">#define K_rtranif0      355</font>
-<a name="l00127"></a><a class="code" href="parser_8h.html#a100">00127</a> <font class="preprocessor"></font><font class="preprocessor">#define K_rtranif1      356</font>
-<a name="l00128"></a><a class="code" href="parser_8h.html#a101">00128</a> <font class="preprocessor"></font><font class="preprocessor">#define K_scalered      357</font>
-<a name="l00129"></a><a class="code" href="parser_8h.html#a102">00129</a> <font class="preprocessor"></font><font class="preprocessor">#define K_signed        358</font>
-<a name="l00130"></a><a class="code" href="parser_8h.html#a103">00130</a> <font class="preprocessor"></font><font class="preprocessor">#define K_small 359</font>
-<a name="l00131"></a><a class="code" href="parser_8h.html#a104">00131</a> <font class="preprocessor"></font><font class="preprocessor">#define K_specify       360</font>
-<a name="l00132"></a><a class="code" href="parser_8h.html#a105">00132</a> <font class="preprocessor"></font><font class="preprocessor">#define K_specparam     361</font>
-<a name="l00133"></a><a class="code" href="parser_8h.html#a106">00133</a> <font class="preprocessor"></font><font class="preprocessor">#define K_strong0       362</font>
-<a name="l00134"></a><a class="code" href="parser_8h.html#a107">00134</a> <font class="preprocessor"></font><font class="preprocessor">#define K_strong1       363</font>
-<a name="l00135"></a><a class="code" href="parser_8h.html#a108">00135</a> <font class="preprocessor"></font><font class="preprocessor">#define K_supply0       364</font>
-<a name="l00136"></a><a class="code" href="parser_8h.html#a109">00136</a> <font class="preprocessor"></font><font class="preprocessor">#define K_supply1       365</font>
-<a name="l00137"></a><a class="code" href="parser_8h.html#a110">00137</a> <font class="preprocessor"></font><font class="preprocessor">#define K_table 366</font>
-<a name="l00138"></a><a class="code" href="parser_8h.html#a111">00138</a> <font class="preprocessor"></font><font class="preprocessor">#define K_task  367</font>
-<a name="l00139"></a><a class="code" href="parser_8h.html#a112">00139</a> <font class="preprocessor"></font><font class="preprocessor">#define K_time  368</font>
-<a name="l00140"></a><a class="code" href="parser_8h.html#a113">00140</a> <font class="preprocessor"></font><font class="preprocessor">#define K_tran  369</font>
-<a name="l00141"></a><a class="code" href="parser_8h.html#a114">00141</a> <font class="preprocessor"></font><font class="preprocessor">#define K_tranif0       370</font>
-<a name="l00142"></a><a class="code" href="parser_8h.html#a115">00142</a> <font class="preprocessor"></font><font class="preprocessor">#define K_tranif1       371</font>
-<a name="l00143"></a><a class="code" href="parser_8h.html#a116">00143</a> <font class="preprocessor"></font><font class="preprocessor">#define K_tri   372</font>
-<a name="l00144"></a><a class="code" href="parser_8h.html#a117">00144</a> <font class="preprocessor"></font><font class="preprocessor">#define K_tri0  373</font>
-<a name="l00145"></a><a class="code" href="parser_8h.html#a118">00145</a> <font class="preprocessor"></font><font class="preprocessor">#define K_tri1  374</font>
-<a name="l00146"></a><a class="code" href="parser_8h.html#a119">00146</a> <font class="preprocessor"></font><font class="preprocessor">#define K_triand        375</font>
-<a name="l00147"></a><a class="code" href="parser_8h.html#a120">00147</a> <font class="preprocessor"></font><font class="preprocessor">#define K_trior 376</font>
-<a name="l00148"></a><a class="code" href="parser_8h.html#a121">00148</a> <font class="preprocessor"></font><font class="preprocessor">#define K_trireg        377</font>
-<a name="l00149"></a><a class="code" href="parser_8h.html#a122">00149</a> <font class="preprocessor"></font><font class="preprocessor">#define K_vectored      378</font>
-<a name="l00150"></a><a class="code" href="parser_8h.html#a123">00150</a> <font class="preprocessor"></font><font class="preprocessor">#define K_wait  379</font>
-<a name="l00151"></a><a class="code" href="parser_8h.html#a124">00151</a> <font class="preprocessor"></font><font class="preprocessor">#define K_wand  380</font>
-<a name="l00152"></a><a class="code" href="parser_8h.html#a125">00152</a> <font class="preprocessor"></font><font class="preprocessor">#define K_weak0 381</font>
-<a name="l00153"></a><a class="code" href="parser_8h.html#a126">00153</a> <font class="preprocessor"></font><font class="preprocessor">#define K_weak1 382</font>
-<a name="l00154"></a><a class="code" href="parser_8h.html#a127">00154</a> <font class="preprocessor"></font><font class="preprocessor">#define K_while 383</font>
-<a name="l00155"></a><a class="code" href="parser_8h.html#a128">00155</a> <font class="preprocessor"></font><font class="preprocessor">#define K_wire  384</font>
-<a name="l00156"></a><a class="code" href="parser_8h.html#a129">00156</a> <font class="preprocessor"></font><font class="preprocessor">#define K_wor   385</font>
-<a name="l00157"></a><a class="code" href="parser_8h.html#a130">00157</a> <font class="preprocessor"></font><font class="preprocessor">#define K_xnor  386</font>
-<a name="l00158"></a><a class="code" href="parser_8h.html#a131">00158</a> <font class="preprocessor"></font><font class="preprocessor">#define K_xor   387</font>
-<a name="l00159"></a><a class="code" href="parser_8h.html#a132">00159</a> <font class="preprocessor"></font><font class="preprocessor">#define K_Shold 388</font>
-<a name="l00160"></a><a class="code" href="parser_8h.html#a133">00160</a> <font class="preprocessor"></font><font class="preprocessor">#define K_Speriod       389</font>
-<a name="l00161"></a><a class="code" href="parser_8h.html#a134">00161</a> <font class="preprocessor"></font><font class="preprocessor">#define K_Srecovery     390</font>
-<a name="l00162"></a><a class="code" href="parser_8h.html#a135">00162</a> <font class="preprocessor"></font><font class="preprocessor">#define K_Ssetup        391</font>
-<a name="l00163"></a><a class="code" href="parser_8h.html#a136">00163</a> <font class="preprocessor"></font><font class="preprocessor">#define K_Swidth        392</font>
-<a name="l00164"></a><a class="code" href="parser_8h.html#a137">00164</a> <font class="preprocessor"></font><font class="preprocessor">#define K_Ssetuphold    393</font>
-<a name="l00165"></a><a class="code" href="parser_8h.html#a138">00165</a> <font class="preprocessor"></font><font class="preprocessor">#define KK_attribute    394</font>
-<a name="l00166"></a><a class="code" href="parser_8h.html#a139">00166</a> <font class="preprocessor"></font><font class="preprocessor">#define K_TAND  395</font>
-<a name="l00167"></a><a class="code" href="parser_8h.html#a140">00167</a> <font class="preprocessor"></font><font class="preprocessor">#define UNARY_PREC      396</font>
-<a name="l00168"></a><a class="code" href="parser_8h.html#a141">00168</a> <font class="preprocessor"></font><font class="preprocessor">#define less_than_K_else        397</font>
-00169 <font class="preprocessor"></font>
-00170 
-<a name="l00171"></a><a class="code" href="parser_8h.html#a143">00171</a> <font class="keyword">extern</font> <a class="code" href="unionYYSTYPE.html">YYSTYPE</a> <a class="code" href="parser_8h.html#a143">VLlval</a>;
-</pre></div><hr><address align="right"><small>Generated on Wed May 1 22:21:48 2002 for Covered by
+<a name="l00006"></a><a class="code" href="unionYYSTYPE.html#m11">00006</a>   <a class="code" href="structsignal__s.html">signal</a>*       sig;
+<a name="l00007"></a><a class="code" href="unionYYSTYPE.html#m12">00007</a>   <a class="code" href="structexpression__s.html">expression</a>*   expr;
+<a name="l00008"></a><a class="code" href="unionYYSTYPE.html#m13">00008</a>   <a class="code" href="structstatement__s.html">statement</a>*    state;
+<a name="l00009"></a><a class="code" href="unionYYSTYPE.html#m14">00009</a>   <a class="code" href="structsignal__width__s.html">signal_width</a>* <a class="code" href="structsigwidth__s.html">sigwidth</a>; 
+<a name="l00010"></a><a class="code" href="unionYYSTYPE.html#m15">00010</a>   <a class="code" href="structstr__link__s.html">str_link</a>*     strlink;
+00011 } <a class="code" href="unionYYSTYPE.html">YYSTYPE</a>;
+00012 
+00013 <font class="preprocessor">#ifndef YYLTYPE</font>
+<a name="l00014"></a><a class="code" href="structyyltype.html">00014</a> <font class="preprocessor"></font><font class="keyword">typedef</font>
+00015   <font class="keyword">struct </font><a class="code" href="structyyltype.html">yyltype</a>
+00016     {
+00017       <font class="keywordtype">int</font> <a class="code" href="structyyltype.html#m0">timestamp</a>;
+00018       <font class="keywordtype">int</font> <a class="code" href="structyyltype.html#m1">first_line</a>;
+00019       <font class="keywordtype">int</font> <a class="code" href="structyyltype.html#m2">first_column</a>;
+00020       <font class="keywordtype">int</font> <a class="code" href="structyyltype.html#m3">last_line</a>;
+00021       <font class="keywordtype">int</font> <a class="code" href="structyyltype.html#m4">last_column</a>;
+<a name="l00022"></a><a class="code" href="structyyltype.html#m5">00022</a>       <font class="keywordtype">char</font> *<a class="code" href="structyyltype.html#m5">text</a>;
+00023    }
+00024   <a class="code" href="structyyltype.html">yyltype</a>;
+00025 
+<a name="l00026"></a><a class="code" href="parser_8h.html#a0">00026</a> <font class="preprocessor">#define YYLTYPE yyltype</font>
+00027 <font class="preprocessor"></font><font class="preprocessor">#endif</font>
+00028 <font class="preprocessor"></font>
+<a name="l00029"></a><a class="code" href="parser_8h.html#a1">00029</a> <font class="preprocessor">#define HIDENTIFIER     257</font>
+<a name="l00030"></a><a class="code" href="parser_8h.html#a2">00030</a> <font class="preprocessor"></font><font class="preprocessor">#define IDENTIFIER      258</font>
+<a name="l00031"></a><a class="code" href="parser_8h.html#a3">00031</a> <font class="preprocessor"></font><font class="preprocessor">#define PATHPULSE_IDENTIFIER    259</font>
+<a name="l00032"></a><a class="code" href="parser_8h.html#a4">00032</a> <font class="preprocessor"></font><font class="preprocessor">#define NUMBER  260</font>
+<a name="l00033"></a><a class="code" href="parser_8h.html#a5">00033</a> <font class="preprocessor"></font><font class="preprocessor">#define REALTIME        261</font>
+<a name="l00034"></a><a class="code" href="parser_8h.html#a6">00034</a> <font class="preprocessor"></font><font class="preprocessor">#define STRING  262</font>
+<a name="l00035"></a><a class="code" href="parser_8h.html#a7">00035</a> <font class="preprocessor"></font><font class="preprocessor">#define PORTNAME        263</font>
+<a name="l00036"></a><a class="code" href="parser_8h.html#a8">00036</a> <font class="preprocessor"></font><font class="preprocessor">#define SYSTEM_IDENTIFIER       264</font>
+<a name="l00037"></a><a class="code" href="parser_8h.html#a9">00037</a> <font class="preprocessor"></font><font class="preprocessor">#define IGNORE  265</font>
+<a name="l00038"></a><a class="code" href="parser_8h.html#a10">00038</a> <font class="preprocessor"></font><font class="preprocessor">#define K_LE    266</font>
+<a name="l00039"></a><a class="code" href="parser_8h.html#a11">00039</a> <font class="preprocessor"></font><font class="preprocessor">#define K_GE    267</font>
+<a name="l00040"></a><a class="code" href="parser_8h.html#a12">00040</a> <font class="preprocessor"></font><font class="preprocessor">#define K_EG    268</font>
+<a name="l00041"></a><a class="code" href="parser_8h.html#a13">00041</a> <font class="preprocessor"></font><font class="preprocessor">#define K_EQ    269</font>
+<a name="l00042"></a><a class="code" href="parser_8h.html#a14">00042</a> <font class="preprocessor"></font><font class="preprocessor">#define K_NE    270</font>
+<a name="l00043"></a><a class="code" href="parser_8h.html#a15">00043</a> <font class="preprocessor"></font><font class="preprocessor">#define K_CEQ   271</font>
+<a name="l00044"></a><a class="code" href="parser_8h.html#a16">00044</a> <font class="preprocessor"></font><font class="preprocessor">#define K_CNE   272</font>
+<a name="l00045"></a><a class="code" href="parser_8h.html#a17">00045</a> <font class="preprocessor"></font><font class="preprocessor">#define K_LS    273</font>
+<a name="l00046"></a><a class="code" href="parser_8h.html#a18">00046</a> <font class="preprocessor"></font><font class="preprocessor">#define K_RS    274</font>
+<a name="l00047"></a><a class="code" href="parser_8h.html#a19">00047</a> <font class="preprocessor"></font><font class="preprocessor">#define K_SG    275</font>
+<a name="l00048"></a><a class="code" href="parser_8h.html#a20">00048</a> <font class="preprocessor"></font><font class="preprocessor">#define K_PO_POS        276</font>
+<a name="l00049"></a><a class="code" href="parser_8h.html#a21">00049</a> <font class="preprocessor"></font><font class="preprocessor">#define K_PO_NEG        277</font>
+<a name="l00050"></a><a class="code" href="parser_8h.html#a22">00050</a> <font class="preprocessor"></font><font class="preprocessor">#define K_LOR   278</font>
+<a name="l00051"></a><a class="code" href="parser_8h.html#a23">00051</a> <font class="preprocessor"></font><font class="preprocessor">#define K_LAND  279</font>
+<a name="l00052"></a><a class="code" href="parser_8h.html#a24">00052</a> <font class="preprocessor"></font><font class="preprocessor">#define K_NAND  280</font>
+<a name="l00053"></a><a class="code" href="parser_8h.html#a25">00053</a> <font class="preprocessor"></font><font class="preprocessor">#define K_NOR   281</font>
+<a name="l00054"></a><a class="code" href="parser_8h.html#a26">00054</a> <font class="preprocessor"></font><font class="preprocessor">#define K_NXOR  282</font>
+<a name="l00055"></a><a class="code" href="parser_8h.html#a27">00055</a> <font class="preprocessor"></font><font class="preprocessor">#define K_TRIGGER       283</font>
+<a name="l00056"></a><a class="code" href="parser_8h.html#a28">00056</a> <font class="preprocessor"></font><font class="preprocessor">#define K_always        284</font>
+<a name="l00057"></a><a class="code" href="parser_8h.html#a29">00057</a> <font class="preprocessor"></font><font class="preprocessor">#define K_and   285</font>
+<a name="l00058"></a><a class="code" href="parser_8h.html#a30">00058</a> <font class="preprocessor"></font><font class="preprocessor">#define K_assign        286</font>
+<a name="l00059"></a><a class="code" href="parser_8h.html#a31">00059</a> <font class="preprocessor"></font><font class="preprocessor">#define K_begin 287</font>
+<a name="l00060"></a><a class="code" href="parser_8h.html#a32">00060</a> <font class="preprocessor"></font><font class="preprocessor">#define K_buf   288</font>
+<a name="l00061"></a><a class="code" href="parser_8h.html#a33">00061</a> <font class="preprocessor"></font><font class="preprocessor">#define K_bufif0        289</font>
+<a name="l00062"></a><a class="code" href="parser_8h.html#a34">00062</a> <font class="preprocessor"></font><font class="preprocessor">#define K_bufif1        290</font>
+<a name="l00063"></a><a class="code" href="parser_8h.html#a35">00063</a> <font class="preprocessor"></font><font class="preprocessor">#define K_case  291</font>
+<a name="l00064"></a><a class="code" href="parser_8h.html#a36">00064</a> <font class="preprocessor"></font><font class="preprocessor">#define K_casex 292</font>
+<a name="l00065"></a><a class="code" href="parser_8h.html#a37">00065</a> <font class="preprocessor"></font><font class="preprocessor">#define K_casez 293</font>
+<a name="l00066"></a><a class="code" href="parser_8h.html#a38">00066</a> <font class="preprocessor"></font><font class="preprocessor">#define K_cmos  294</font>
+<a name="l00067"></a><a class="code" href="parser_8h.html#a39">00067</a> <font class="preprocessor"></font><font class="preprocessor">#define K_deassign      295</font>
+<a name="l00068"></a><a class="code" href="parser_8h.html#a40">00068</a> <font class="preprocessor"></font><font class="preprocessor">#define K_default       296</font>
+<a name="l00069"></a><a class="code" href="parser_8h.html#a41">00069</a> <font class="preprocessor"></font><font class="preprocessor">#define K_defparam      297</font>
+<a name="l00070"></a><a class="code" href="parser_8h.html#a42">00070</a> <font class="preprocessor"></font><font class="preprocessor">#define K_disable       298</font>
+<a name="l00071"></a><a class="code" href="parser_8h.html#a43">00071</a> <font class="preprocessor"></font><font class="preprocessor">#define K_edge  299</font>
+<a name="l00072"></a><a class="code" href="parser_8h.html#a44">00072</a> <font class="preprocessor"></font><font class="preprocessor">#define K_else  300</font>
+<a name="l00073"></a><a class="code" href="parser_8h.html#a45">00073</a> <font class="preprocessor"></font><font class="preprocessor">#define K_end   301</font>
+<a name="l00074"></a><a class="code" href="parser_8h.html#a46">00074</a> <font class="preprocessor"></font><font class="preprocessor">#define K_endcase       302</font>
+<a name="l00075"></a><a class="code" href="parser_8h.html#a47">00075</a> <font class="preprocessor"></font><font class="preprocessor">#define K_endfunction   303</font>
+<a name="l00076"></a><a class="code" href="parser_8h.html#a48">00076</a> <font class="preprocessor"></font><font class="preprocessor">#define K_endmodule     304</font>
+<a name="l00077"></a><a class="code" href="parser_8h.html#a49">00077</a> <font class="preprocessor"></font><font class="preprocessor">#define I_endmodule     305</font>
+<a name="l00078"></a><a class="code" href="parser_8h.html#a50">00078</a> <font class="preprocessor"></font><font class="preprocessor">#define K_endprimitive  306</font>
+<a name="l00079"></a><a class="code" href="parser_8h.html#a51">00079</a> <font class="preprocessor"></font><font class="preprocessor">#define K_endspecify    307</font>
+<a name="l00080"></a><a class="code" href="parser_8h.html#a52">00080</a> <font class="preprocessor"></font><font class="preprocessor">#define K_endtable      308</font>
+<a name="l00081"></a><a class="code" href="parser_8h.html#a53">00081</a> <font class="preprocessor"></font><font class="preprocessor">#define K_endtask       309</font>
+<a name="l00082"></a><a class="code" href="parser_8h.html#a54">00082</a> <font class="preprocessor"></font><font class="preprocessor">#define K_event 310</font>
+<a name="l00083"></a><a class="code" href="parser_8h.html#a55">00083</a> <font class="preprocessor"></font><font class="preprocessor">#define K_for   311</font>
+<a name="l00084"></a><a class="code" href="parser_8h.html#a56">00084</a> <font class="preprocessor"></font><font class="preprocessor">#define K_force 312</font>
+<a name="l00085"></a><a class="code" href="parser_8h.html#a57">00085</a> <font class="preprocessor"></font><font class="preprocessor">#define K_forever       313</font>
+<a name="l00086"></a><a class="code" href="parser_8h.html#a58">00086</a> <font class="preprocessor"></font><font class="preprocessor">#define K_fork  314</font>
+<a name="l00087"></a><a class="code" href="parser_8h.html#a59">00087</a> <font class="preprocessor"></font><font class="preprocessor">#define K_function      315</font>
+<a name="l00088"></a><a class="code" href="parser_8h.html#a60">00088</a> <font class="preprocessor"></font><font class="preprocessor">#define K_highz0        316</font>
+<a name="l00089"></a><a class="code" href="parser_8h.html#a61">00089</a> <font class="preprocessor"></font><font class="preprocessor">#define K_highz1        317</font>
+<a name="l00090"></a><a class="code" href="parser_8h.html#a62">00090</a> <font class="preprocessor"></font><font class="preprocessor">#define K_if    318</font>
+<a name="l00091"></a><a class="code" href="parser_8h.html#a63">00091</a> <font class="preprocessor"></font><font class="preprocessor">#define K_initial       319</font>
+<a name="l00092"></a><a class="code" href="parser_8h.html#a64">00092</a> <font class="preprocessor"></font><font class="preprocessor">#define K_inout 320</font>
+<a name="l00093"></a><a class="code" href="parser_8h.html#a65">00093</a> <font class="preprocessor"></font><font class="preprocessor">#define K_input 321</font>
+<a name="l00094"></a><a class="code" href="parser_8h.html#a66">00094</a> <font class="preprocessor"></font><font class="preprocessor">#define K_integer       322</font>
+<a name="l00095"></a><a class="code" href="parser_8h.html#a67">00095</a> <font class="preprocessor"></font><font class="preprocessor">#define K_join  323</font>
+<a name="l00096"></a><a class="code" href="parser_8h.html#a68">00096</a> <font class="preprocessor"></font><font class="preprocessor">#define K_large 324</font>
+<a name="l00097"></a><a class="code" href="parser_8h.html#a69">00097</a> <font class="preprocessor"></font><font class="preprocessor">#define K_localparam    325</font>
+<a name="l00098"></a><a class="code" href="parser_8h.html#a70">00098</a> <font class="preprocessor"></font><font class="preprocessor">#define K_macromodule   326</font>
+<a name="l00099"></a><a class="code" href="parser_8h.html#a71">00099</a> <font class="preprocessor"></font><font class="preprocessor">#define K_medium        327</font>
+<a name="l00100"></a><a class="code" href="parser_8h.html#a72">00100</a> <font class="preprocessor"></font><font class="preprocessor">#define K_module        328</font>
+<a name="l00101"></a><a class="code" href="parser_8h.html#a73">00101</a> <font class="preprocessor"></font><font class="preprocessor">#define K_nand  329</font>
+<a name="l00102"></a><a class="code" href="parser_8h.html#a74">00102</a> <font class="preprocessor"></font><font class="preprocessor">#define K_negedge       330</font>
+<a name="l00103"></a><a class="code" href="parser_8h.html#a75">00103</a> <font class="preprocessor"></font><font class="preprocessor">#define K_nmos  331</font>
+<a name="l00104"></a><a class="code" href="parser_8h.html#a76">00104</a> <font class="preprocessor"></font><font class="preprocessor">#define K_nor   332</font>
+<a name="l00105"></a><a class="code" href="parser_8h.html#a77">00105</a> <font class="preprocessor"></font><font class="preprocessor">#define K_not   333</font>
+<a name="l00106"></a><a class="code" href="parser_8h.html#a78">00106</a> <font class="preprocessor"></font><font class="preprocessor">#define K_notif0        334</font>
+<a name="l00107"></a><a class="code" href="parser_8h.html#a79">00107</a> <font class="preprocessor"></font><font class="preprocessor">#define K_notif1        335</font>
+<a name="l00108"></a><a class="code" href="parser_8h.html#a80">00108</a> <font class="preprocessor"></font><font class="preprocessor">#define K_or    336</font>
+<a name="l00109"></a><a class="code" href="parser_8h.html#a81">00109</a> <font class="preprocessor"></font><font class="preprocessor">#define K_output        337</font>
+<a name="l00110"></a><a class="code" href="parser_8h.html#a82">00110</a> <font class="preprocessor"></font><font class="preprocessor">#define K_parameter     338</font>
+<a name="l00111"></a><a class="code" href="parser_8h.html#a83">00111</a> <font class="preprocessor"></font><font class="preprocessor">#define K_pmos  339</font>
+<a name="l00112"></a><a class="code" href="parser_8h.html#a84">00112</a> <font class="preprocessor"></font><font class="preprocessor">#define K_posedge       340</font>
+<a name="l00113"></a><a class="code" href="parser_8h.html#a85">00113</a> <font class="preprocessor"></font><font class="preprocessor">#define K_primitive     341</font>
+<a name="l00114"></a><a class="code" href="parser_8h.html#a86">00114</a> <font class="preprocessor"></font><font class="preprocessor">#define K_pull0 342</font>
+<a name="l00115"></a><a class="code" href="parser_8h.html#a87">00115</a> <font class="preprocessor"></font><font class="preprocessor">#define K_pull1 343</font>
+<a name="l00116"></a><a class="code" href="parser_8h.html#a88">00116</a> <font class="preprocessor"></font><font class="preprocessor">#define K_pulldown      344</font>
+<a name="l00117"></a><a class="code" href="parser_8h.html#a89">00117</a> <font class="preprocessor"></font><font class="preprocessor">#define K_pullup        345</font>
+<a name="l00118"></a><a class="code" href="parser_8h.html#a90">00118</a> <font class="preprocessor"></font><font class="preprocessor">#define K_rcmos 346</font>
+<a name="l00119"></a><a class="code" href="parser_8h.html#a91">00119</a> <font class="preprocessor"></font><font class="preprocessor">#define K_real  347</font>
+<a name="l00120"></a><a class="code" href="parser_8h.html#a92">00120</a> <font class="preprocessor"></font><font class="preprocessor">#define K_realtime      348</font>
+<a name="l00121"></a><a class="code" href="parser_8h.html#a93">00121</a> <font class="preprocessor"></font><font class="preprocessor">#define K_reg   349</font>
+<a name="l00122"></a><a class="code" href="parser_8h.html#a94">00122</a> <font class="preprocessor"></font><font class="preprocessor">#define K_release       350</font>
+<a name="l00123"></a><a class="code" href="parser_8h.html#a95">00123</a> <font class="preprocessor"></font><font class="preprocessor">#define K_repeat        351</font>
+<a name="l00124"></a><a class="code" href="parser_8h.html#a96">00124</a> <font class="preprocessor"></font><font class="preprocessor">#define K_rnmos 352</font>
+<a name="l00125"></a><a class="code" href="parser_8h.html#a97">00125</a> <font class="preprocessor"></font><font class="preprocessor">#define K_rpmos 353</font>
+<a name="l00126"></a><a class="code" href="parser_8h.html#a98">00126</a> <font class="preprocessor"></font><font class="preprocessor">#define K_rtran 354</font>
+<a name="l00127"></a><a class="code" href="parser_8h.html#a99">00127</a> <font class="preprocessor"></font><font class="preprocessor">#define K_rtranif0      355</font>
+<a name="l00128"></a><a class="code" href="parser_8h.html#a100">00128</a> <font class="preprocessor"></font><font class="preprocessor">#define K_rtranif1      356</font>
+<a name="l00129"></a><a class="code" href="parser_8h.html#a101">00129</a> <font class="preprocessor"></font><font class="preprocessor">#define K_scalered      357</font>
+<a name="l00130"></a><a class="code" href="parser_8h.html#a102">00130</a> <font class="preprocessor"></font><font class="preprocessor">#define K_signed        358</font>
+<a name="l00131"></a><a class="code" href="parser_8h.html#a103">00131</a> <font class="preprocessor"></font><font class="preprocessor">#define K_small 359</font>
+<a name="l00132"></a><a class="code" href="parser_8h.html#a104">00132</a> <font class="preprocessor"></font><font class="preprocessor">#define K_specify       360</font>
+<a name="l00133"></a><a class="code" href="parser_8h.html#a105">00133</a> <font class="preprocessor"></font><font class="preprocessor">#define K_specparam     361</font>
+<a name="l00134"></a><a class="code" href="parser_8h.html#a106">00134</a> <font class="preprocessor"></font><font class="preprocessor">#define K_strong0       362</font>
+<a name="l00135"></a><a class="code" href="parser_8h.html#a107">00135</a> <font class="preprocessor"></font><font class="preprocessor">#define K_strong1       363</font>
+<a name="l00136"></a><a class="code" href="parser_8h.html#a108">00136</a> <font class="preprocessor"></font><font class="preprocessor">#define K_supply0       364</font>
+<a name="l00137"></a><a class="code" href="parser_8h.html#a109">00137</a> <font class="preprocessor"></font><font class="preprocessor">#define K_supply1       365</font>
+<a name="l00138"></a><a class="code" href="parser_8h.html#a110">00138</a> <font class="preprocessor"></font><font class="preprocessor">#define K_table 366</font>
+<a name="l00139"></a><a class="code" href="parser_8h.html#a111">00139</a> <font class="preprocessor"></font><font class="preprocessor">#define K_task  367</font>
+<a name="l00140"></a><a class="code" href="parser_8h.html#a112">00140</a> <font class="preprocessor"></font><font class="preprocessor">#define K_time  368</font>
+<a name="l00141"></a><a class="code" href="parser_8h.html#a113">00141</a> <font class="preprocessor"></font><font class="preprocessor">#define K_tran  369</font>
+<a name="l00142"></a><a class="code" href="parser_8h.html#a114">00142</a> <font class="preprocessor"></font><font class="preprocessor">#define K_tranif0       370</font>
+<a name="l00143"></a><a class="code" href="parser_8h.html#a115">00143</a> <font class="preprocessor"></font><font class="preprocessor">#define K_tranif1       371</font>
+<a name="l00144"></a><a class="code" href="parser_8h.html#a116">00144</a> <font class="preprocessor"></font><font class="preprocessor">#define K_tri   372</font>
+<a name="l00145"></a><a class="code" href="parser_8h.html#a117">00145</a> <font class="preprocessor"></font><font class="preprocessor">#define K_tri0  373</font>
+<a name="l00146"></a><a class="code" href="parser_8h.html#a118">00146</a> <font class="preprocessor"></font><font class="preprocessor">#define K_tri1  374</font>
+<a name="l00147"></a><a class="code" href="parser_8h.html#a119">00147</a> <font class="preprocessor"></font><font class="preprocessor">#define K_triand        375</font>
+<a name="l00148"></a><a class="code" href="parser_8h.html#a120">00148</a> <font class="preprocessor"></font><font class="preprocessor">#define K_trior 376</font>
+<a name="l00149"></a><a class="code" href="parser_8h.html#a121">00149</a> <font class="preprocessor"></font><font class="preprocessor">#define K_trireg        377</font>
+<a name="l00150"></a><a class="code" href="parser_8h.html#a122">00150</a> <font class="preprocessor"></font><font class="preprocessor">#define K_vectored      378</font>
+<a name="l00151"></a><a class="code" href="parser_8h.html#a123">00151</a> <font class="preprocessor"></font><font class="preprocessor">#define K_wait  379</font>
+<a name="l00152"></a><a class="code" href="parser_8h.html#a124">00152</a> <font class="preprocessor"></font><font class="preprocessor">#define K_wand  380</font>
+<a name="l00153"></a><a class="code" href="parser_8h.html#a125">00153</a> <font class="preprocessor"></font><font class="preprocessor">#define K_weak0 381</font>
+<a name="l00154"></a><a class="code" href="parser_8h.html#a126">00154</a> <font class="preprocessor"></font><font class="preprocessor">#define K_weak1 382</font>
+<a name="l00155"></a><a class="code" href="parser_8h.html#a127">00155</a> <font class="preprocessor"></font><font class="preprocessor">#define K_while 383</font>
+<a name="l00156"></a><a class="code" href="parser_8h.html#a128">00156</a> <font class="preprocessor"></font><font class="preprocessor">#define K_wire  384</font>
+<a name="l00157"></a><a class="code" href="parser_8h.html#a129">00157</a> <font class="preprocessor"></font><font class="preprocessor">#define K_wor   385</font>
+<a name="l00158"></a><a class="code" href="parser_8h.html#a130">00158</a> <font class="preprocessor"></font><font class="preprocessor">#define K_xnor  386</font>
+<a name="l00159"></a><a class="code" href="parser_8h.html#a131">00159</a> <font class="preprocessor"></font><font class="preprocessor">#define K_xor   387</font>
+<a name="l00160"></a><a class="code" href="parser_8h.html#a132">00160</a> <font class="preprocessor"></font><font class="preprocessor">#define K_Shold 388</font>
+<a name="l00161"></a><a class="code" href="parser_8h.html#a133">00161</a> <font class="preprocessor"></font><font class="preprocessor">#define K_Speriod       389</font>
+<a name="l00162"></a><a class="code" href="parser_8h.html#a134">00162</a> <font class="preprocessor"></font><font class="preprocessor">#define K_Srecovery     390</font>
+<a name="l00163"></a><a class="code" href="parser_8h.html#a135">00163</a> <font class="preprocessor"></font><font class="preprocessor">#define K_Ssetup        391</font>
+<a name="l00164"></a><a class="code" href="parser_8h.html#a136">00164</a> <font class="preprocessor"></font><font class="preprocessor">#define K_Swidth        392</font>
+<a name="l00165"></a><a class="code" href="parser_8h.html#a137">00165</a> <font class="preprocessor"></font><font class="preprocessor">#define K_Ssetuphold    393</font>
+<a name="l00166"></a><a class="code" href="parser_8h.html#a138">00166</a> <font class="preprocessor"></font><font class="preprocessor">#define KK_attribute    394</font>
+<a name="l00167"></a><a class="code" href="parser_8h.html#a139">00167</a> <font class="preprocessor"></font><font class="preprocessor">#define K_TAND  395</font>
+<a name="l00168"></a><a class="code" href="parser_8h.html#a140">00168</a> <font class="preprocessor"></font><font class="preprocessor">#define UNARY_PREC      396</font>
+<a name="l00169"></a><a class="code" href="parser_8h.html#a141">00169</a> <font class="preprocessor"></font><font class="preprocessor">#define less_than_K_else        397</font>
+00170 <font class="preprocessor"></font>
+00171 
+<a name="l00172"></a><a class="code" href="parser_8h.html#a143">00172</a> <font class="keyword">extern</font> <a class="code" href="unionYYSTYPE.html">YYSTYPE</a> <a class="code" href="parser_8h.html#a143">VLlval</a>;
+</pre></div><hr><address align="right"><small>Generated on Thu May 2 22:36:40 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.15 </small></address>

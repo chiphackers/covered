@@ -13,7 +13,7 @@
 
 
 //! Creates new statement structure.
-statement* statement_create( expression* exp, int line );
+statement* statement_create( expression* exp, int line_begin, int line_end );
 
 //! Writes specified statement to the specified output file.
 void statement_db_write( statement* stmt, FILE* ofile, char* scope );
@@ -28,6 +28,10 @@ void statement_loopback( statement* stmt );
 void statement_dealloc( statement* stmt );
 
 
-/* $Log$ */
+/* $Log$
+/* Revision 1.1  2002/05/02 03:27:42  phase1geo
+/* Initial creation of statement structure and manipulation files.  Internals are
+/* still in a chaotic state.
+/* */
 
 #endif

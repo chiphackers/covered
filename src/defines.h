@@ -599,13 +599,15 @@ struct sig_link_s {
  module.
 */
 struct module_s {
-  char*     name;      /*!< Module name                                        */
-  char*     filename;  /*!< File name where module exists                      */
-  char*     scope;     /*!< Verilog hierarchical scope of this module          */
-  sig_link* sig_head;  /*!< Head pointer to list of signals in this module     */
-  sig_link* sig_tail;  /*!< Tail pointer to list of signals in this module     */
-  exp_link* exp_head;  /*!< Head pointer to list of expressions in this module */
-  exp_link* exp_tail;  /*!< Tail pointer to list of expressions in this module */
+  char*      name;       /*!< Module name                                        */
+  char*      filename;   /*!< File name where module exists                      */
+  char*      scope;      /*!< Verilog hierarchical scope of this module          */
+  sig_link*  sig_head;   /*!< Head pointer to list of signals in this module     */
+  sig_link*  sig_tail;   /*!< Tail pointer to list of signals in this module     */
+  exp_link*  exp_head;   /*!< Head pointer to list of expressions in this module */
+  exp_link*  exp_tail;   /*!< Tail pointer to list of expressions in this module */
+  stmt_link* stmt_head;  /*!< Head pointer to list of statements in this module  */
+  stmt_link* stmt_tail;  /*!< Tail pointer to list of statements in this module  */
 };
 
 typedef struct module_s module;
@@ -702,6 +704,10 @@ struct mod_inst_s {
 
 
 /* $Log$
+/* Revision 1.9  2002/05/02 03:27:42  phase1geo
+/* Initial creation of statement structure and manipulation files.  Internals are
+/* still in a chaotic state.
+/*
 /* Revision 1.8  2002/04/30 05:04:25  phase1geo
 /* Added initial go-round of adding statement handling to parser.  Added simple
 /* Verilog test to check correct statement handling.  At this point there is a

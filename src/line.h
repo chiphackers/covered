@@ -13,9 +13,12 @@
 #include "defines.h"
 
 //! Calculates line coverage numbers for the specified expression list.
-void line_get_stats( exp_link* expl, float* total, int* hit );
+void line_get_stats( stmt_link* stmtl, float* total, int* hit );
 
 //! Generates report output for line coverage.
 void line_report( FILE* ofile, bool verbose, bool instance );
+
+
+/* $Log$ */
 
 #endif

@@ -15,4 +15,7 @@
 //! Generates report output for combinational logic coverage.
 void combination_report( FILE* ofile, bool verbose, bool instance );
 
+
+/* $Log$ */
+
 #endif

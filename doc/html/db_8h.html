@@ -25,15 +25,15 @@
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds specified signal to signal list. Called by parser.</em> <a href="#a4">More...</a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a109">signal</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a5">db_find_signal</a> (char *name)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Finds specified signal in module and returns pointer to the signal structure. Called by parser.</em> <a href="#a5">More...</a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a108">expression</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a6">db_create_expression</a> (<a class="el" href="defines_8h.html#a108">expression</a> *right, <a class="el" href="defines_8h.html#a108">expression</a> *left, int op, int line, char *sig_name)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a108">expression</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a6">db_create_expression</a> (<a class="el" href="defines_8h.html#a108">expression</a> *right, <a class="el" href="defines_8h.html#a108">expression</a> *left, int op, char *sig_name)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Creates new expression from specified information. Called by parser and db_add_expression.</em> <a href="#a6">More...</a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a7">db_add_expression</a> (<a class="el" href="defines_8h.html#a108">expression</a> *root)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds specified expression to expression list. Called by parser.</em> <a href="#a7">More...</a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a108">expression</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a8">db_create_statement</a> (int line, <a class="el" href="defines_8h.html#a108">expression</a> *exp)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a110">statement</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a8">db_create_statement</a> (int line_begin, int line_end, <a class="el" href="defines_8h.html#a108">expression</a> *exp)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Creates new statement expression from specified information. Called by parser.</em> <a href="#a8">More...</a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a9">db_connect_statement_true</a> (<a class="el" href="defines_8h.html#a108">expression</a> *stmt, <a class="el" href="defines_8h.html#a108">expression</a> *exp_true)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a9">db_connect_statement_true</a> (<a class="el" href="defines_8h.html#a110">statement</a> *stmt, <a class="el" href="defines_8h.html#a110">statement</a> *exp_true)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Connects true statement to specified statement.</em> <a href="#a9">More...</a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a10">db_connect_statement_false</a> (<a class="el" href="defines_8h.html#a108">expression</a> *stmt, <a class="el" href="defines_8h.html#a108">expression</a> *exp_false)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a10">db_connect_statement_false</a> (<a class="el" href="defines_8h.html#a110">statement</a> *stmt, <a class="el" href="defines_8h.html#a110">statement</a> *exp_false)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Connects false statement to specified statement.</em> <a href="#a10">More...</a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a11">db_set_vcd_scope</a> (char *scope)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Sets current VCD scope to specified scope.</em> <a href="#a11">More...</a><em></em></font><br><br></td></tr>
@@ -311,14 +311,14 @@ Symbol value of signal used in VCD dumpfile.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void db_connect_statement_false </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a108">expression</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a110">statement</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>stmt</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a108">expression</a> *&nbsp;</td>
-          <td class="mdname" nowrap>&nbsp; <em>exp_false</em></td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a110">statement</a> *&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>next_false</em></td>
         </tr>
         <tr>
           <td></td>
@@ -344,9 +344,9 @@ Connects false statement to specified statement.
 Parameters: </b><dd>
 <table border=0 cellspacing=2 cellpadding=0>
 <tr><td valign=top><em>stmt</em>&nbsp;</td><td>
-Pointer to statement to add to module expression list. </td></tr>
-<tr><td valign=top><em>exp_false</em>&nbsp;</td><td>
-Pointer to statement to run if statement evaluates to TRUE.</td></tr>
+Pointer to statement to connect false path to. </td></tr>
+<tr><td valign=top><em>next_false</em>&nbsp;</td><td>
+Pointer to statement to run if statement evaluates to FALSE.</td></tr>
 </table>
 </dl>Connects the specified statement's false statement.     </td>
   </tr>
@@ -359,14 +359,14 @@ Pointer to statement to run if statement evaluates to TRUE.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void db_connect_statement_true </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a108">expression</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a110">statement</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>stmt</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a108">expression</a> *&nbsp;</td>
-          <td class="mdname" nowrap>&nbsp; <em>exp_true</em></td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a110">statement</a> *&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>next_true</em></td>
         </tr>
         <tr>
           <td></td>
@@ -392,8 +392,8 @@ Connects true statement to specified statement.
 Parameters: </b><dd>
 <table border=0 cellspacing=2 cellpadding=0>
 <tr><td valign=top><em>stmt</em>&nbsp;</td><td>
-Pointer to statement to add to module expression list. </td></tr>
-<tr><td valign=top><em>exp_true</em>&nbsp;</td><td>
+Pointer to statement to connect true path to. </td></tr>
+<tr><td valign=top><em>next_true</em>&nbsp;</td><td>
 Pointer to statement to run if statement evaluates to TRUE.</td></tr>
 </table>
 </dl>Connects the specified statement's true statement.     </td>
@@ -421,12 +421,6 @@ Pointer to statement to run if statement evaluates to TRUE.</td></tr>
           <td></td>
           <td class="md" nowrap>int&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>op</em>, </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td class="md" nowrap>int&nbsp;</td>
-          <td class="mdname" nowrap>&nbsp; <em>line</em>, </td>
         </tr>
         <tr>
           <td></td>
@@ -463,8 +457,6 @@ Pointer to expression on right side of expression. </td></tr>
 Pointer to expression on left side of expression. </td></tr>
 <tr><td valign=top><em>op</em>&nbsp;</td><td>
 Operation to perform on expression. </td></tr>
-<tr><td valign=top><em>line</em>&nbsp;</td><td>
-Line number in Verilog file that expression is located (for line coverage). </td></tr>
 <tr><td valign=top><em>sig_name</em>&nbsp;</td><td>
 Name of signal that expression is attached to (if valid).</td></tr>
 </table>
@@ -479,10 +471,16 @@ Returns pointer to newly created expression.</dl>Creates a new expression with t
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a108">expression</a>* db_create_statement </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a110">statement</a>* db_create_statement </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top">int&nbsp;</td>
-          <td class="mdname" nowrap>&nbsp; <em>line</em>, </td>
+          <td class="mdname" nowrap>&nbsp; <em>line_begin</em>, </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td class="md" nowrap>int&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>line_end</em>, </td>
         </tr>
         <tr>
           <td></td>
@@ -513,14 +511,16 @@ Creates new statement expression from specified information. Called by parser.
 <dl compact><dt><b>
 Parameters: </b><dd>
 <table border=0 cellspacing=2 cellpadding=0>
-<tr><td valign=top><em>line</em>&nbsp;</td><td>
-Line number where statement is parsed from. </td></tr>
+<tr><td valign=top><em>line_begin</em>&nbsp;</td><td>
+Line number where statement starts. </td></tr>
+<tr><td valign=top><em>line_end</em>&nbsp;</td><td>
+Line number where statement ends. </td></tr>
 <tr><td valign=top><em>exp</em>&nbsp;</td><td>
 Pointer to associated "root" expression.</td></tr>
 </table>
 </dl><dl compact><dt><b>
 Returns: </b><dd>
-Returns pointer to expression containing statement.</dl>Creates an expression with the STMT operation set. Because statements are setup a bit differently than regular expressions (parent points to associated expression while right and left may point to other expressions), the parameter list is modified from the db_create_expression function. Adds created statement expression to current module's expression list.     </td>
+Returns pointer to created statement.</dl>Creates an statement structure and adds created statement to current module's statement list.     </td>
   </tr>
 </table>
 <a name="a16" doxytag="db.h::db_do_timestep"></a><p>
@@ -853,7 +853,7 @@ Returns: </b><dd>
 Returns TRUE if database write was successful; otherwise, returns FALSE.</dl>Opens specified database for writing. If database open successful, iterates through module, expression and signal lists, displaying each to the database file. If database write successful, returns TRUE; otherwise, returns FALSE to the calling function.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Wed May 1 22:21:49 2002 for Covered by
+<hr><address align="right"><small>Generated on Thu May 2 22:36:41 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.15 </small></address>

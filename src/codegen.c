@@ -33,7 +33,7 @@ char* codegen_gen_expr( expression* expr, int line ) {
   char  code_format[12]; /* Format for creating my_code string                                        */
   bool  both;            /* Specifies if both left and right expressions should be used               */
 
-  if( (expr != NULL) && ((line == -1) || (expr->line >= line)) ) {
+  if( (expr != NULL) && (line == -1) ) {
 
     left_code  = codegen_gen_expr( expr->left,  line );
     right_code = codegen_gen_expr( expr->right, line );
@@ -141,3 +141,5 @@ char* codegen_gen_expr( expression* expr, int line ) {
 
 }
 
+
+/* $Log */

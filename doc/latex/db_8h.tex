@@ -18,15 +18,15 @@ void {\bf db\_\-add\_\-signal} (char $\ast$name, int width, int lsb, int is\_\-s
 \begin{CompactList}\small\item\em Adds specified signal to signal list. Called by parser.\item\end{CompactList}\item 
 {\bf signal} $\ast$ {\bf db\_\-find\_\-signal} (char $\ast$name)
 \begin{CompactList}\small\item\em Finds specified signal in module and returns pointer to the signal structure. Called by parser.\item\end{CompactList}\item 
-{\bf expression} $\ast$ {\bf db\_\-create\_\-expression} ({\bf expression} $\ast$right, {\bf expression} $\ast$left, int op, int line, char $\ast$sig\_\-name)
+{\bf expression} $\ast$ {\bf db\_\-create\_\-expression} ({\bf expression} $\ast$right, {\bf expression} $\ast$left, int op, char $\ast$sig\_\-name)
 \begin{CompactList}\small\item\em Creates new expression from specified information. Called by parser and db\_\-add\_\-expression.\item\end{CompactList}\item 
 void {\bf db\_\-add\_\-expression} ({\bf expression} $\ast$root)
 \begin{CompactList}\small\item\em Adds specified expression to expression list. Called by parser.\item\end{CompactList}\item 
-{\bf expression} $\ast$ {\bf db\_\-create\_\-statement} (int line, {\bf expression} $\ast$exp)
+{\bf statement} $\ast$ {\bf db\_\-create\_\-statement} (int line\_\-begin, int line\_\-end, {\bf expression} $\ast$exp)
 \begin{CompactList}\small\item\em Creates new statement expression from specified information. Called by parser.\item\end{CompactList}\item 
-void {\bf db\_\-connect\_\-statement\_\-true} ({\bf expression} $\ast$stmt, {\bf expression} $\ast$exp\_\-true)
+void {\bf db\_\-connect\_\-statement\_\-true} ({\bf statement} $\ast$stmt, {\bf statement} $\ast$exp\_\-true)
 \begin{CompactList}\small\item\em Connects true statement to specified statement.\item\end{CompactList}\item 
-void {\bf db\_\-connect\_\-statement\_\-false} ({\bf expression} $\ast$stmt, {\bf expression} $\ast$exp\_\-false)
+void {\bf db\_\-connect\_\-statement\_\-false} ({\bf statement} $\ast$stmt, {\bf statement} $\ast$exp\_\-false)
 \begin{CompactList}\small\item\em Connects false statement to specified statement.\item\end{CompactList}\item 
 void {\bf db\_\-set\_\-vcd\_\-scope} (char $\ast$scope)
 \begin{CompactList}\small\item\em Sets current VCD scope to specified scope.\item\end{CompactList}\item 
@@ -129,7 +129,7 @@ symbol}]Symbol value of signal used in VCD dumpfile.\end{description}
 \end{Desc}
 Creates a new entry in the symbol table for the specified signal and symbol. \index{db.h@{db.h}!db_connect_statement_false@{db\_\-connect\_\-statement\_\-false}}
 \index{db_connect_statement_false@{db\_\-connect\_\-statement\_\-false}!db.h@{db.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-connect\_\-statement\_\-false ({\bf expression} $\ast$ {\em stmt}, {\bf expression} $\ast$ {\em exp\_\-false})}\label{db_8h_a10}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-connect\_\-statement\_\-false ({\bf statement} $\ast$ {\em stmt}, {\bf statement} $\ast$ {\em next\_\-false})}\label{db_8h_a10}
 
 
 Connects false statement to specified statement.
@@ -138,12 +138,12 @@ Connects false statement to specified statement.
 \item[Parameters: ]\par
 \begin{description}
 \item[{\em 
-stmt}]Pointer to statement to add to module expression list. \item[{\em 
-exp\_\-false}]Pointer to statement to run if statement evaluates to TRUE.\end{description}
+stmt}]Pointer to statement to connect false path to. \item[{\em 
+next\_\-false}]Pointer to statement to run if statement evaluates to FALSE.\end{description}
 \end{Desc}
 Connects the specified statement's false statement. \index{db.h@{db.h}!db_connect_statement_true@{db\_\-connect\_\-statement\_\-true}}
 \index{db_connect_statement_true@{db\_\-connect\_\-statement\_\-true}!db.h@{db.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-connect\_\-statement\_\-true ({\bf expression} $\ast$ {\em stmt}, {\bf expression} $\ast$ {\em exp\_\-true})}\label{db_8h_a9}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-connect\_\-statement\_\-true ({\bf statement} $\ast$ {\em stmt}, {\bf statement} $\ast$ {\em next\_\-true})}\label{db_8h_a9}
 
 
 Connects true statement to specified statement.
@@ -152,12 +152,12 @@ Connects true statement to specified statement.
 \item[Parameters: ]\par
 \begin{description}
 \item[{\em 
-stmt}]Pointer to statement to add to module expression list. \item[{\em 
-exp\_\-true}]Pointer to statement to run if statement evaluates to TRUE.\end{description}
+stmt}]Pointer to statement to connect true path to. \item[{\em 
+next\_\-true}]Pointer to statement to run if statement evaluates to TRUE.\end{description}
 \end{Desc}
 Connects the specified statement's true statement. \index{db.h@{db.h}!db_create_expression@{db\_\-create\_\-expression}}
 \index{db_create_expression@{db\_\-create\_\-expression}!db.h@{db.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf expression}$\ast$ db\_\-create\_\-expression ({\bf expression} $\ast$ {\em right}, {\bf expression} $\ast$ {\em left}, int {\em op}, int {\em line}, char $\ast$ {\em sig\_\-name})}\label{db_8h_a6}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf expression}$\ast$ db\_\-create\_\-expression ({\bf expression} $\ast$ {\em right}, {\bf expression} $\ast$ {\em left}, int {\em op}, char $\ast$ {\em sig\_\-name})}\label{db_8h_a6}
 
 
 Creates new expression from specified information. Called by parser and db\_\-add\_\-expression.
@@ -169,7 +169,6 @@ Creates new expression from specified information. Called by parser and db\_\-ad
 right}]Pointer to expression on right side of expression. \item[{\em 
 left}]Pointer to expression on left side of expression. \item[{\em 
 op}]Operation to perform on expression. \item[{\em 
-line}]Line number in Verilog file that expression is located (for line coverage). \item[{\em 
 sig\_\-name}]Name of signal that expression is attached to (if valid).\end{description}
 \end{Desc}
 \begin{Desc}
@@ -177,7 +176,7 @@ sig\_\-name}]Name of signal that expression is attached to (if valid).\end{descr
 Returns pointer to newly created expression.\end{Desc}
 Creates a new expression with the specified parameter information and returns a pointer to the newly created expression. \index{db.h@{db.h}!db_create_statement@{db\_\-create\_\-statement}}
 \index{db_create_statement@{db\_\-create\_\-statement}!db.h@{db.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf expression}$\ast$ db\_\-create\_\-statement (int {\em line}, {\bf expression} $\ast$ {\em exp})}\label{db_8h_a8}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf statement}$\ast$ db\_\-create\_\-statement (int {\em line\_\-begin}, int {\em line\_\-end}, {\bf expression} $\ast$ {\em exp})}\label{db_8h_a8}
 
 
 Creates new statement expression from specified information. Called by parser.
@@ -186,13 +185,14 @@ Creates new statement expression from specified information. Called by parser.
 \item[Parameters: ]\par
 \begin{description}
 \item[{\em 
-line}]Line number where statement is parsed from. \item[{\em 
+line\_\-begin}]Line number where statement starts. \item[{\em 
+line\_\-end}]Line number where statement ends. \item[{\em 
 exp}]Pointer to associated \char`\"{}root\char`\"{} expression.\end{description}
 \end{Desc}
 \begin{Desc}
 \item[Returns: ]\par
-Returns pointer to expression containing statement.\end{Desc}
-Creates an expression with the STMT operation set. Because statements are setup a bit differently than regular expressions (parent points to associated expression while right and left may point to other expressions), the parameter list is modified from the db\_\-create\_\-expression function. Adds created statement expression to current module's expression list. \index{db.h@{db.h}!db_do_timestep@{db\_\-do\_\-timestep}}
+Returns pointer to created statement.\end{Desc}
+Creates an statement structure and adds created statement to current module's statement list. \index{db.h@{db.h}!db_do_timestep@{db\_\-do\_\-timestep}}
 \index{db_do_timestep@{db\_\-do\_\-timestep}!db.h@{db.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-do\_\-timestep (int {\em time})}\label{db_8h_a16}
 

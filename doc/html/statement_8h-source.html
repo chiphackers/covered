@@ -13,7 +13,7 @@
 00012 <font class="preprocessor">#include "<a class="code" href="expr_8h.html">expr.h</a>"</font>
 00013 
 00014 
-00016 <a class="code" href="structstatement__s.html">statement</a>* <a class="code" href="statement_8h.html#a0">statement_create</a>( <a class="code" href="structexpression__s.html">expression</a>* exp, <font class="keywordtype">int</font> line );
+00016 <a class="code" href="structstatement__s.html">statement</a>* <a class="code" href="statement_8c.html#a0">statement_create</a>( <a class="code" href="structexpression__s.html">expression</a>* exp, <font class="keywordtype">int</font> line_begin, <font class="keywordtype">int</font> line_end );
 00017 
 00019 <font class="keywordtype">void</font> <a class="code" href="statement_8c.html#a1">statement_db_write</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt, FILE* ofile, <font class="keywordtype">char</font>* scope );
 00020 
@@ -24,10 +24,14 @@
 00028 <font class="keywordtype">void</font> <a class="code" href="statement_8c.html#a4">statement_dealloc</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt );
 00029 
 00030 
-00031 <font class="comment">/* $Log$ */</font>
-00032 
-00033 <font class="preprocessor">#endif</font>
-</pre></div><hr><address align="right"><small>Generated on Wed May 1 22:21:48 2002 for Covered by
+00031 <font class="comment">/* $Log$</font>
+00032 <font class="comment"></font><font class="comment">/* Revision 1.1  2002/05/02 03:27:42  phase1geo</font>
+00033 <font class="comment"></font><font class="comment">/* Initial creation of statement structure and manipulation files.  Internals are</font>
+00034 <font class="comment"></font><font class="comment">/* still in a chaotic state.</font>
+00035 <font class="comment"></font><font class="comment">/* */</font>
+00036 
+00037 #endif
+</pre></div><hr><address align="right"><small>Generated on Thu May 2 22:36:40 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.15 </small></address>

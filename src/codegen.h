@@ -14,4 +14,7 @@
 //! Creates Verilog code string from specified expression tree.
 char* codegen_gen_expr( expression* expr, int line );
 
+
+/* $Log$ */
+
 #endif

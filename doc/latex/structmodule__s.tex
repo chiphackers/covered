@@ -18,6 +18,10 @@ char $\ast$ {\bf scope}
 {\bf exp\_\-link} $\ast$ {\bf exp\_\-head}
 \item 
 {\bf exp\_\-link} $\ast$ {\bf exp\_\-tail}
+\item 
+{\bf stmt\_\-link} $\ast$ {\bf stmt\_\-head}
+\item 
+{\bf stmt\_\-link} $\ast$ {\bf stmt\_\-tail}
 \end{CompactItemize}
 
 
@@ -62,7 +66,17 @@ Head pointer to list of signals in this module \index{module_s@{module\_\-s}!sig
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf sig\_\-link}$\ast$ module\_\-s::sig\_\-tail}\label{structmodule__s_m4}
 
 
-Tail pointer to list of signals in this module 
+Tail pointer to list of signals in this module \index{module_s@{module\_\-s}!stmt_head@{stmt\_\-head}}
+\index{stmt_head@{stmt\_\-head}!module_s@{module\_\-s}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf stmt\_\-link}$\ast$ module\_\-s::stmt\_\-head}\label{structmodule__s_m7}
+
+
+Head pointer to list of statements in this module \index{module_s@{module\_\-s}!stmt_tail@{stmt\_\-tail}}
+\index{stmt_tail@{stmt\_\-tail}!module_s@{module\_\-s}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf stmt\_\-link}$\ast$ module\_\-s::stmt\_\-tail}\label{structmodule__s_m8}
+
+
+Tail pointer to list of statements in this module 
 
 The documentation for this struct was generated from the following file:\begin{CompactItemize}
 \item 

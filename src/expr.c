@@ -63,14 +63,13 @@ void expression_create_value( expression* exp, int width, int lsb ) {
  \param left   Pointer to expression on left.
  \param op     Operation to perform for this expression.
  \param id     ID for this expression as determined by the parent.
- \param line   Starting line for this expression (only valid for root)
 
  \return Returns pointer to newly created expression.
 
  Creates a new expression from heap memory and initializes its values for
  usage.  Right and left expressions need to be created before this function is called.
 */
-expression* expression_create( expression* right, expression* left, int op, int id, int line ) {
+expression* expression_create( expression* right, expression* left, int op, int id ) {
 
   expression* new_expr;    /* Pointer to newly created expression */
   int         rwidth = 0;  /* Bit width of expression on right    */
@@ -79,7 +78,6 @@ expression* expression_create( expression* right, expression* left, int op, int 
   new_expr = (expression*)malloc_safe( sizeof( expression ) );
 
   new_expr->suppl  = ((op & 0xff) << SUPPL_LSB_OP);
-  new_expr->line   = line;
   new_expr->id     = id;
   new_expr->sig    = NULL;
   new_expr->parent = NULL;
@@ -180,7 +178,7 @@ void expression_merge( expression* base, expression* in ) {
   assert( base != NULL );
   assert( in != NULL );
 
-  if( (base->id != in->id) || (SUPPL_OP( base->suppl ) != SUPPL_OP( in->suppl )) || (base->line != in->line) ) {
+  if( (base->id != in->id) || (SUPPL_OP( base->suppl ) != SUPPL_OP( in->suppl )) ) {
 
     print_output( "Attempting to merge databases derived from different designs.  Unable to merge", FATAL );
     exit( 1 );
@@ -225,12 +223,11 @@ int expression_get_id( expression* expr ) {
 */
 void expression_db_write( expression* expr, FILE* file, char* scope ) {
 
-  fprintf( file, "%d %d %s %x %d %d %d ",
+  fprintf( file, "%d %d %s %x %d %d ",
     DB_TYPE_EXPRESSION,
     expr->id,
     scope,
     (expr->suppl & 0xffff),
-    expr->line,
     expression_get_id( expr->right ),
     expression_get_id( expr->left )
   );
@@ -263,7 +260,6 @@ bool expression_db_read( char** line, module* curr_mod ) {
   expression* expr;             /* Pointer to newly created expression                 */
   char        scope[4096];      /* Holder for scope of this expression                 */
   nibble      suppl;            /* Holder of supplemental value of this expression     */
-  int         eline;            /* Holder of starting line                             */
   int         right_id;         /* Holder of expression ID to the right                */
   int         left_id;          /* Holder of expression ID to the left                 */
   expression* right;            /* Pointer to current expression's right expression    */
@@ -275,7 +271,7 @@ bool expression_db_read( char** line, module* curr_mod ) {
   exp_link*   expl;             /* Pointer to found expression in module               */
   char        msg[4096];        /* Error message string                                */
 
-  if( sscanf( *line, "%d %s %x %d %d %d%n", &id, modname, &suppl, &eline, &right_id, &left_id, &chars_read ) == 6 ) {
+  if( sscanf( *line, "%d %s %x %d %d%n", &id, modname, &suppl, &right_id, &left_id, &chars_read ) == 6 ) {
 
     *line = *line + chars_read;
 
@@ -312,7 +308,7 @@ bool expression_db_read( char** line, module* curr_mod ) {
       }
 
       /* Create new expression */
-      expr        = expression_create( right, left, SUPPL_OP( suppl ), id, eline );
+      expr        = expression_create( right, left, SUPPL_OP( suppl ), id );
       expr->suppl = suppl;
 
       if( right != NULL ) {
@@ -729,4 +725,7 @@ void expression_dealloc( expression* expr, bool exp_only ) {
   }
 
 }
+
+
+/* $Log$ */
 

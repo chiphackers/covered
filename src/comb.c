@@ -531,7 +531,6 @@ void combination_display_verbose( FILE* ofile, exp_link* expl ) {
 
   expression* unexec_exp;      /* Pointer to current unexecuted expression    */
   char*       code;            /* Code string from code generator             */
-  int         last_line = -1;  /* Line number of last line found to be missed */
   int         exp_id;          /* Current expression ID of missed expression  */
 
   fprintf( ofile, "Missed Combinations\n" );
@@ -539,23 +538,18 @@ void combination_display_verbose( FILE* ofile, exp_link* expl ) {
   /* Display current instance missed lines */
   while( expl != NULL ) {
 
-    if( (SUPPL_COMB_MISSED( expl->exp->suppl ) == 1) && (expl->exp->line != last_line) ) {
+    if( SUPPL_COMB_MISSED( expl->exp->suppl ) == 1 ) {
 
-      last_line  = expl->exp->line;
       unexec_exp = expl->exp;
       exp_id     = 1;
-
-      while( (unexec_exp->parent != NULL) && (unexec_exp->parent->line == unexec_exp->line) ) {
-        unexec_exp = unexec_exp->parent;
-      }
 
       fprintf( ofile, "====================================================\n" );
       fprintf( ofile, " Line #     Expression\n" );
       fprintf( ofile, "====================================================\n" );
 
       /* Generate line of code that missed combinational coverage */
-      code = codegen_gen_expr( unexec_exp, unexec_exp->line );
-      fprintf( ofile, "%7d:    %s\n", unexec_exp->line, code );
+      code = codegen_gen_expr( unexec_exp, -1 );
+      fprintf( ofile, "%7d:    %s\n", 0, code );
 
       /* Output underlining feature for missed expressions */
       combination_underline( ofile, unexec_exp, "            " );
@@ -676,3 +670,6 @@ void combination_report( FILE* ofile, bool verbose, bool instance ) {
   }
 
 }
+
+
+/* $Log$ */
