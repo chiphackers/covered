@@ -209,14 +209,18 @@ bool statement_db_read( char** line, module* curr_mod ) {
       stmt = statement_create( expl->exp );
 
       /* Find and link next_true */
-      if( true_id != 0 ) {
+      if( true_id == id ) {
+        stmt->next_true = stmt;
+      } else if( true_id != 0 ) {
         stmtl = stmt_link_find( true_id, curr_mod->stmt_head );
         assert( stmtl != NULL );
         stmt->next_true = stmtl->stmt;
       }
 
       /* Find and link next_false */
-      if( false_id != 0 ) {
+      if( false_id == id ) {
+        stmt->next_false = stmt;
+      } else if( false_id != 0 ) {
         stmtl = stmt_link_find( false_id, curr_mod->stmt_head );
         assert( stmtl != NULL );
         stmt->next_false = stmtl->stmt;
@@ -332,6 +336,10 @@ void statement_dealloc( statement* stmt ) {
 
 
 /* $Log$
+/* Revision 1.10  2002/06/25 03:39:03  phase1geo
+/* Fixed initial scoring bugs.  We now generate a legal CDD file for reporting.
+/* Fixed some report bugs though there are still some remaining.
+/*
 /* Revision 1.9  2002/06/25 02:02:04  phase1geo
 /* Fixing bugs with writing/reading statements and with parsing design with
 /* statements.  We now get to the scoring section.  Some problems here at
