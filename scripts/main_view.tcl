@@ -9,6 +9,7 @@ source $HOME/scripts/comb.tcl
 source $HOME/scripts/help.tcl
 
 set last_lb_index ""
+set lwidth        -1 
 
 proc main_view {} {
 
@@ -37,13 +38,16 @@ proc main_view {} {
   bind .bot <Configure> {
     set W  [winfo width .bot]
     set X0 [winfo rootx .bot]
+    if {$lwidth == -1} {
+      set lwidth [expr .25 * $W]
+    }
+    main_place $W $lwidth
   }
 
   bind .bot.handle <B1-Motion> {
-    main_place [expr {(%X-$X0)/double($W)}]
+    set lwidth [expr %X - $X0]
+    main_place $W $lwidth
   }
-
-  main_place .35
 
   # Create the listbox label
   label .bot.left.ll -text "Modules/Instances" -anchor w
@@ -94,11 +98,11 @@ proc main_view {} {
 
 }
 
-proc main_place {fract} {
+proc main_place {width value} {
 
-  place .bot.left -relwidth $fract
-  place .bot.handle -relx $fract
-  place .bot.right -relwidth [expr {1.0 - $fract}]
+  place .bot.left   -width $value
+  place .bot.handle -x $value
+  place .bot.right  -width [expr $width - $value]
 
 }
  
