@@ -919,7 +919,7 @@ void expression_display( expression* expr ) {
 */
 bool expression_operate( expression* expr ) {
 
-  bool    retval = FALSE;  /* Return value for this function                   */
+  bool    retval = TRUE;   /* Return value for this function                   */
   vector  vec1;            /* Used for logical reduction                       */ 
   vector  vec2;            /* Used for logical reduction                       */
   vector* vec;             /* Pointer to vector of unknown size                */
@@ -1294,7 +1294,7 @@ bool expression_operate( expression* expr ) {
     }
     
     /* If we have a new value, recalculate TRUE/FALSE indicators */
-    // if( retval ) {
+    if( retval ) {
 
       /* Clear current TRUE/FALSE indicators */
       if( (SUPPL_OP( expr->suppl ) != EXP_OP_STATIC) &&
@@ -1311,7 +1311,7 @@ bool expression_operate( expression* expr ) {
         default:  break;
       }
 
-    // }
+    }
 
     /* Set EVAL00, EVAL01, EVAL10 or EVAL11 bits based on current value of children */
     if( (expr->left != NULL) && (expr->right != NULL) ) {
@@ -1496,6 +1496,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.104  2004/11/06 13:22:48  phase1geo
+ Updating CDD files for change where EVAL_T and EVAL_F bits are now being masked out
+ of the CDD files.
+
  Revision 1.103  2004/10/22 22:03:31  phase1geo
  More incremental changes to increase score command efficiency.
 
