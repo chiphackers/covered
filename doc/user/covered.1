@@ -1,4 +1,4 @@
-.TH "Covered" "1" "covered-20031019" "Trevor Williams" "Code Analysis"
+.TH "Covered" "1" "covered-20041209" "Trevor Williams" "Code Analysis"
 .SH "NAME"
 .LP 
 Covered \- Verilog Code Coverage Analyzer
@@ -128,6 +128,9 @@ File to output report information to.  Default is standard output.
 .TP 
 \fB\-v\fR
 Deprecated.  Replaced by '\-d d' or '\-d v'.
+.TP 
+\fB\-view\fR
+Starts the GUI interface for Covered coverage reporting.
 .TP 
 \fB\-w (\fR\fInumber\fR\fB)\fR
 Specifies the maximum line width (in characters) that can be used to output Verilog information.  If this option is not specified, all Verilog code in the report will retain the same formatting as was specified in the original Verilog code.  If this option is specified, Verilog code will be formatted to use as much of the current line as possible, wrapping text when the line reaches the maximum line width.  The default maximum line width is 115 characters (this value is used if no number is specified with the \-w option).  If a number is specified with the \-w option, this value is used for the maximum line width.

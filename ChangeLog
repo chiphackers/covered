@@ -1,3 +1,453 @@
+2004-12-07 13:55  phase1geo
+
+	* doc/: Makefile, gui/Makefile.am, gui/Makefile.in: Updating
+	Makefiles to install GUI documentation images to correct directory.
+	 Removing doc/Makefile as this is now generated via configure.
+
+2004-12-07 07:52  phase1geo
+
+	* Makefile.am, Makefile.in, configure, configure.in, doc/Makefile,
+	doc/Makefile.am, doc/Makefile.in, doc/gui/Makefile.am,
+	doc/gui/Makefile.in, doc/user/Makefile.am, doc/user/Makefile.in,
+	scripts/help.tcl: Updates to install user and GUI documentation.
+
+2004-12-06 13:07  phase1geo
+
+	* configure.in, doc/gui/Makefile.am: Adding Makefile.am to GUI
+	documentation directory.  Updated configure.in for this change.  We
+	need to run autoconf (later version) to generate new configure.
+
+2004-12-06 08:10  phase1geo
+
+	* doc/gui/: cov_bar.html, line.html: More documentation updates.
+
+2004-12-02 00:14  phase1geo
+
+	* doc/gui/: comb.html, cov_bar.html, cov_view.html, file_menu.html,
+	help_menu.html, info_bar.html, intro.html, line.html, main.html,
+	main_menu.html, mod_inst_lb.html, pref_menu.html, report_menu.html,
+	summary_bar.html, toggle.html, welcome.html: More help menu
+	documentation updates.
+
+2004-11-29 07:32  phase1geo
+
+	* doc/gui/: cov_view.html, summary_bar.html, welcome.html: More
+	documentation updates.
+
+2004-11-08 06:35  phase1geo
+
+	* src/sim.c: More updates to improve efficiency.
+
+2004-11-06 23:51  phase1geo
+
+	* src/vsignal.c: If assigned signal value did not change, do not
+	cause associated expression tree(s) to be re-evaluated.
+
+2004-11-06 08:49  phase1geo
+
+	* src/expr.c: Fixing problem in expression_operate.  This removes
+	some more code from the score command to improve run-time
+	efficiency.
+
+2004-11-06 07:22  phase1geo
+
+	* diags/cdd/always1.cdd, diags/cdd/always10.cdd,
+	diags/cdd/always11.1.cdd, diags/cdd/always11.2.cdd,
+	diags/cdd/always11.cdd, diags/cdd/always12.cdd,
+	diags/cdd/always13.cdd, diags/cdd/always2.cdd,
+	diags/cdd/always3.1.11A.cdd, diags/cdd/always3.cdd,
+	diags/cdd/always4.cdd, diags/cdd/always5.1.cdd,
+	diags/cdd/always5.cdd, diags/cdd/always6.cdd,
+	diags/cdd/always8.cdd, diags/cdd/always9.cdd,
+	diags/cdd/assign1.cdd, diags/cdd/assign2.1.cdd,
+	diags/cdd/assign2.2.cdd, diags/cdd/assign2.3.cdd,
+	diags/cdd/assign2.8.cdd, diags/cdd/assign2.9.cdd,
+	diags/cdd/assign2.cdd, diags/cdd/assign3.2A.cdd,
+	diags/cdd/block1.cdd, diags/cdd/case1.1.cdd, diags/cdd/case1.2.cdd,
+	diags/cdd/case1.3.cdd, diags/cdd/case1.cdd, diags/cdd/case2.cdd,
+	diags/cdd/case3.1.cdd, diags/cdd/case3.2.cdd,
+	diags/cdd/case3.3.cdd, diags/cdd/case3.4.cdd, diags/cdd/case3.cdd,
+	diags/cdd/case4.1.cdd, diags/cdd/case4.cdd, diags/cdd/casex1.1.cdd,
+	diags/cdd/casex1.2.cdd, diags/cdd/casex1.3.cdd,
+	diags/cdd/casex1.4.cdd, diags/cdd/casex1.cdd,
+	diags/cdd/casez1.1.cdd, diags/cdd/casez1.2.cdd,
+	diags/cdd/casez1.3.cdd, diags/cdd/casez1.4.cdd,
+	diags/cdd/casez1.cdd, diags/cdd/casez2.cdd, diags/cdd/concat1.cdd,
+	diags/cdd/concat2.cdd, diags/cdd/concat3.cdd,
+	diags/cdd/concat4.1.cdd, diags/cdd/concat4.2.cdd,
+	diags/cdd/concat5.cdd, diags/cdd/concat6.cdd, diags/cdd/cond1.cdd,
+	diags/cdd/cond2.cdd, diags/cdd/define1.1.cdd,
+	diags/cdd/define1.2.cdd, diags/cdd/define1.cdd,
+	diags/cdd/define2.1.cdd, diags/cdd/define2.cdd,
+	diags/cdd/define3.cdd, diags/cdd/define4.cdd,
+	diags/cdd/delay1.1.cdd, diags/cdd/delay1.2.cdd,
+	diags/cdd/delay1.3.cdd, diags/cdd/delay1.cdd, diags/cdd/delay2.cdd,
+	diags/cdd/example.cdd, diags/cdd/expand1.cdd,
+	diags/cdd/expand2.cdd, diags/cdd/expand3.cdd,
+	diags/cdd/expand4.1.cdd, diags/cdd/expand4.2.cdd,
+	diags/cdd/expand4.3.cdd, diags/cdd/expand4.4.cdd,
+	diags/cdd/expand4.cdd, diags/cdd/fsm1.1.cdd, diags/cdd/fsm1.2.cdd,
+	diags/cdd/fsm1.3.cdd, diags/cdd/fsm1.4.cdd, diags/cdd/fsm1.cdd,
+	diags/cdd/fsm10.1.cdd, diags/cdd/fsm10.2.cdd, diags/cdd/fsm10.cdd,
+	diags/cdd/fsm2.cdd, diags/cdd/fsm2a.cdd, diags/cdd/fsm2b.cdd,
+	diags/cdd/fsm3.cdd, diags/cdd/fsm4.1.cdd, diags/cdd/fsm4.cdd,
+	diags/cdd/fsm5.1.cdd, diags/cdd/fsm5.2.cdd, diags/cdd/fsm5.3.cdd,
+	diags/cdd/fsm5.cdd, diags/cdd/fsm6.cdd, diags/cdd/fsm7.1.cdd,
+	diags/cdd/fsm7.2.cdd, diags/cdd/fsm7.3.cdd, diags/cdd/fsm7.4.cdd,
+	diags/cdd/fsm7.5.cdd, diags/cdd/fsm7.cdd, diags/cdd/fsm8.1.cdd,
+	diags/cdd/fsm8.2.cdd, diags/cdd/fsm8.3.cdd, diags/cdd/fsm8.cdd,
+	diags/cdd/fsm9.1.cdd, diags/cdd/fsm9.2.cdd, diags/cdd/fsm9.cdd,
+	diags/cdd/ifdef1.1.cdd, diags/cdd/ifdef1.2.cdd,
+	diags/cdd/ifdef1.cdd, diags/cdd/ifdef2.1.cdd,
+	diags/cdd/ifdef2.2.cdd, diags/cdd/ifdef2.3.cdd,
+	diags/cdd/ifelse1.cdd, diags/cdd/implicit1.cdd,
+	diags/cdd/include1.1.cdd, diags/cdd/include1.cdd,
+	diags/cdd/include2.cdd, diags/cdd/instance1.1.cdd,
+	diags/cdd/instance1.2.cdd, diags/cdd/instance1.cdd,
+	diags/cdd/instance2.cdd, diags/cdd/instance3.cdd,
+	diags/cdd/instance4.1.cdd, diags/cdd/instance4.2.cdd,
+	diags/cdd/instance4.cdd, diags/cdd/instance5.cdd,
+	diags/cdd/instance6.1.cdd, diags/cdd/instance6.2.cdd,
+	diags/cdd/instance6.cdd, diags/cdd/instance7.cdd,
+	diags/cdd/long_exp1.cdd, diags/cdd/long_exp2.cdd,
+	diags/cdd/long_exp3.cdd, diags/cdd/long_sig.cdd,
+	diags/cdd/mbit_sel1.cdd, diags/cdd/mbit_sel2.cdd,
+	diags/cdd/mbit_sel3.1.cdd, diags/cdd/mbit_sel3.cdd,
+	diags/cdd/merge1.cdd, diags/cdd/merge1a.cdd, diags/cdd/merge1b.cdd,
+	diags/cdd/mult1.cdd, diags/cdd/multi_exp1.1.cdd,
+	diags/cdd/multi_exp1.10.cdd, diags/cdd/multi_exp1.11.cdd,
+	diags/cdd/multi_exp1.12.cdd, diags/cdd/multi_exp1.13.cdd,
+	diags/cdd/multi_exp1.14.cdd, diags/cdd/multi_exp1.15.cdd,
+	diags/cdd/multi_exp1.2.cdd, diags/cdd/multi_exp1.3.cdd,
+	diags/cdd/multi_exp1.4.cdd, diags/cdd/multi_exp1.5.cdd,
+	diags/cdd/multi_exp1.6.cdd, diags/cdd/multi_exp1.7.cdd,
+	diags/cdd/multi_exp1.8.cdd, diags/cdd/multi_exp1.9.cdd,
+	diags/cdd/multi_exp2.1.cdd, diags/cdd/multi_exp2.cdd,
+	diags/cdd/multi_exp3.cdd, diags/cdd/param1.1.cdd,
+	diags/cdd/param1.2.cdd, diags/cdd/param1.3.cdd,
+	diags/cdd/param1.cdd, diags/cdd/param3.1.cdd,
+	diags/cdd/param3.2.cdd, diags/cdd/param3.3.cdd,
+	diags/cdd/param3.4.cdd, diags/cdd/param3.5.cdd,
+	diags/cdd/param3.cdd, diags/cdd/param4.1.cdd, diags/cdd/param4.cdd,
+	diags/cdd/param5.cdd, diags/cdd/param6.1.cdd, diags/cdd/param6.cdd,
+	diags/cdd/param7.cdd, diags/cdd/pulldown1.cdd,
+	diags/cdd/pullup1.cdd, diags/cdd/real1.1.cdd,
+	diags/cdd/sbit_sel1.1.cdd, diags/cdd/sbit_sel1.cdd,
+	diags/cdd/static1.cdd, diags/cdd/static2.1.cdd,
+	diags/cdd/static2.2.cdd, diags/cdd/static2.cdd,
+	diags/cdd/supply0.cdd, diags/cdd/supply1.cdd, diags/cdd/tri.cdd,
+	diags/cdd/tri0.cdd, diags/cdd/tri1.cdd, diags/cdd/unary1.cdd,
+	doc/gui/info_bar.html, src/defines.h, src/expr.c, src/vector.c,
+	src/vector.h, src/vsignal.c: Updating CDD files for change where
+	EVAL_T and EVAL_F bits are now being masked out of the CDD files.
+
+2004-10-22 17:03  phase1geo
+
+	* src/: expr.c, vector.c, vector.h: More incremental changes to
+	increase score command efficiency.
+
+2004-10-22 16:40  phase1geo
+
+	* src/: expr.c, expr.h: More incremental updates to improve
+	efficiency in score command (though this change should not, in and
+	of itself, improve efficiency).
+
+2004-10-22 15:31  phase1geo
+
+	* src/: vector.c, vector.h: Returning assignment status in
+	vector_set_value and speeding up assignment procedure.	This is an
+	incremental change to help speed up design scoring.
+
+2004-10-08 07:31  phase1geo
+
+	* doc/gui/: mod_inst_lb.html, images/populated_lb.jpg: Documenting
+	module/instance selection box.
+
+2004-10-07 13:50  phase1geo
+
+	* doc/gui/: cov_bar.html, cov_view.html, info_bar.html,
+	main_menu.html, mod_inst_lb.html, summary_bar.html,
+	images/main_cov.jpg, images/main_info.jpg, images/main_lb.jpg,
+	images/main_menu.jpg, images/main_summary.jpg,
+	images/main_viewer.jpg: Adding new images for main window
+	documentation.	Updated all HTML main window files to include these
+	images.
+
+2004-10-06 23:28  phase1geo
+
+	* doc/gui/: cov_bar.html, cov_view.html, help_menu.html,
+	info_bar.html, main.html, mod_inst_lb.html, pref_menu.html,
+	summary_bar.html, welcome.html, images/color.jpg: Adding more
+	documentation for main window.	All files are now in place but many
+	lack any real documentation.  Finished main window menu bar
+	documentation at this point.
+
+2004-10-06 00:04  phase1geo
+
+	* doc/gui/: comb.html, file_menu.html, help_menu.html, intro.html,
+	line.html, main_menu.html, pref_menu.html, report_menu.html,
+	toggle.html: Updating documentation and adding new files.  Still a
+	long way to go.
+
+2004-10-04 08:36  phase1geo
+
+	* doc/gui/main_menu.html: Adding missed file from last checkin.
+
+2004-10-04 08:35  phase1geo
+
+	* doc/gui/: comb.html, intro.html, line.html, main.html,
+	toggle.html, welcome.html, images/banner.gif, images/file_view.jpg,
+	images/help_view.jpg, images/main_window.jpg, images/open_cdd.jpg,
+	images/pref_view.jpg, images/report_view.jpg: Adding image files
+	and updates to GUI documentation (still not complete).
+
+2004-09-21 07:58  phase1geo
+
+	* doc/gui/welcome.html: Adding anchors to link welcome page to
+	other documentation.
+
+2004-09-20 23:52  phase1geo
+
+	* doc/gui/: comb.html, info.html, intro.html, line.html, main.html,
+	toggle.html: Adding initial new user manual documentation for GUI. 
+	Renamed info.html to intro.html.
+
+2004-09-17 07:48  phase1geo
+
+	* doc/gui/: info.html, welcome.html: Initial files for GUI user
+	manual.  Not even close to being finished at this point.
+
+2004-09-15 11:29  phase1geo
+
+	* scripts/help.tcl: Correcting manual display to work properly with
+	the -remote command.
+
+2004-09-15 00:11  phase1geo
+
+	* scripts/help.tcl: Adding body to man page output function to
+	display HTML help pages in a web browser for viewing.
+
+2004-09-14 14:26  phase1geo
+
+	* scripts/help.tcl, scripts/menu_create.tcl, src/report.c,
+	src/tcl_funcs.c, src/tcl_funcs.h: Fixing browser and version
+	injection to Tcl scripts.
+
+2004-09-13 23:54  phase1geo
+
+	* Makefile.in, acinclude.m4, aclocal.m4, config.h, config.h.in,
+	configure, configure.in, doc/user/Makefile.in, scripts/Makefile.in,
+	scripts/help.tcl, src/Makefile.am, src/Makefile.in, src/report.c,
+	src/tcl_funcs.c, src/tcl_funcs.h: Adding check for browser to
+	configuration build scripts.  Adding code to set BROWSER global
+	variable in Tcl scripts.
+
+2004-09-11 00:24  phase1geo
+
+	* TODO: Updating TODO.
+
+2004-09-11 00:21  phase1geo
+
+	* acinclude.m4: Adding acinclude.m4 file which includes extra
+	macros for handling Tcl/Tk libraries.
+
+2004-09-11 00:20  phase1geo
+
+	* Makefile.in, aclocal.m4, config.h, config.h.in, configure,
+	configure.in, doc/user/Makefile.in, scripts/Makefile.in,
+	src/Makefile.am, src/Makefile.in: Updating configuration files and
+	Makefiles to properly get Tcl/Tk compile/linking flags/information.
+	 This methodology should be much more portable now.
+
+2004-09-06 22:50  phase1geo
+
+	* scripts/comb.tcl: Fixing bug with underlines going bezerk when
+	switching between expressions.
+
+2004-09-06 22:17  phase1geo
+
+	* scripts/main_view.tcl, src/comb.c, src/comb.h: Fixing bug that
+	did not allow combinational logic to be revisited in GUI properly. 
+	Also removing comments from bgerror function in Tcl code.
+
+2004-09-05 22:36  phase1geo
+
+	* scripts/comb.tcl: Fixing bug where expressions were not being
+	correctly output to the coverage information textbox.
+
+2004-08-29 23:06  phase1geo
+
+	* doc/user/covered.1: Updating man page.
+
+2004-08-29 23:04  phase1geo
+
+	* Makefile.am, Makefile.in: Removing scripts directory from
+	Makefile.am in main covered directory.
+
+2004-08-29 22:39  phase1geo
+
+	* NEWS, config.h, configure, configure.in, scripts/Makefile.am,
+	scripts/Makefile.in, scripts/cov_create.tcl, scripts/main_view.tcl,
+	scripts/menu_create.tcl, scripts/process_file.tcl, src/Makefile.am,
+	src/Makefile.in, src/report.c, src/tcl_funcs.c, src/tcl_funcs.h:
+	Updates for upcoming 0.3 stable release.
+
+2004-08-24 09:31  phase1geo
+
+	* scripts/comb.tcl: Fixing horizontal pane in comb.tcl to work the
+	way I want it to.
+
+2004-08-23 23:47  phase1geo
+
+	* scripts/main_view.tcl: Fixing vertical pane so that left side
+	remains constant (instead of relative to the size of the window)
+	during resizing.
+
+2004-08-23 14:06  phase1geo
+
+	* scripts/: Makefile.am, Makefile.in, main_view.tcl, misc.tcl: Code
+	cleanup from last checkin.
+
+2004-08-23 14:00  phase1geo
+
+	* scripts/: comb.tcl, cov_create.tcl, main_view.tcl,
+	menu_create.tcl, misc.tcl, process_file.tcl: Added handles to GUI
+	for resizing subwindows.  This is now working.
+
+2004-08-20 17:15  phase1geo
+
+	* scripts/: Makefile.am, Makefile.in, banner.gif, help.tcl,
+	main_view.tcl, menu_create.tcl, misc.tcl, process_file.tcl:
+	Remaking About window and adding initial help support and
+	adjustable panes.  Things are in limbo right now.
+
+2004-08-20 10:08  phase1geo
+
+	* scripts/: comb.tcl, process_file.tcl: Various improvements/fixes
+	to interface.
+
+2004-08-18 01:16  phase1geo
+
+	* scripts/: comb.tcl, process_file.tcl: Cleaning up some GUI
+	elements that didn't look right from before.  Things look and work
+	pretty well at this point.
+
+2004-08-17 10:23  phase1geo
+
+	* scripts/comb.tcl, src/comb.c, src/comb.h, src/tcl_funcs.c: Added
+	combinational logic coverage output to GUI.  Modified comb.c code
+	to get this to work that impacts ASCII coverage output; however,
+	regression is fully passing with these changes.  Combinational
+	coverage for GUI is mostly complete regarding information and
+	usability.  Possibly some cleanup in output and in code is needed.
+
+2004-08-16 23:43  phase1geo
+
+	* src/: comb.c, comb.h: Updating unary and binary combinational
+	expression output functions to create string arrays instead of
+	immediately sending the information to standard output to support
+	GUI interface as well as ASCII interface.
+
+2004-08-16 15:46  phase1geo
+
+	* scripts/: comb.tcl, menu_create.tcl: Fixing problem where
+	canceled file openings were acting badly.  Also added window and
+	scrollbars for coverage information (although this information is
+	not specified here yet).  Also added new global variable that
+	reports the current expression to get coverage information for
+	(this will be added next).  GUI is operating as desired and without
+	errors at this point.
+
+2004-08-16 13:54  phase1geo
+
+	* scripts/comb.tcl: Fixing bugs in last checkin and added underline
+	ID information to expression structure for recalling coverage
+	information.
+
+2004-08-16 12:28  phase1geo
+
+	* scripts/comb.tcl: Combinational logic underlining is now working
+	as currently wanted.  Able to move up and down underline tree
+	correctly.
+
+2004-08-16 00:07  phase1geo
+
+	* scripts/comb.tcl: Adding more for displaying combinational logic
+	underlines as desired.	Expressions are now (mostly) organized
+	correctly.  Still need to determine which expression has been
+	selected and need to display only expressions that are selected.
+
+2004-08-13 17:05  phase1geo
+
+	* scripts/comb.tcl: Work in progress on cleaning up combinational
+	expression output.
+
+2004-08-13 15:45  phase1geo
+
+	* scripts/comb.tcl, src/comb.c, src/comb.h, src/report.c,
+	src/tcl_funcs.c: More added for combinational logic verbose
+	reporting.  At this point, the code is being output with underlines
+	that can move up and down the expression tree.	No expression
+	reporting is being done at this time, however.
+
+2004-08-12 07:56  phase1geo
+
+	* src/tcl_funcs.c: Fixing error in combinational logic collection
+	function for covered logic.
+
+2004-08-11 17:11  phase1geo
+
+	* scripts/Makefile.am, scripts/Makefile.in, scripts/comb.tcl,
+	scripts/cov_create.tcl, scripts/main_view.tcl,
+	scripts/menu_create.tcl, scripts/process_file.tcl, src/comb.c,
+	src/comb.h, src/expr.c, src/expr.h, src/line.c, src/report.c,
+	src/tcl_funcs.c: Initial beginnings of combinational logic verbose
+	reporting to GUI.
+
+2004-08-10 13:28  phase1geo
+
+	* scripts/cov_create.tcl: Adding code to keep textbox output in
+	main window the same when switching between different coverage
+	types.
+
+2004-08-10 12:23  phase1geo
+
+	* scripts/cov_create.tcl, scripts/main_view.tcl,
+	scripts/process_file.tcl, src/tcl_funcs.c: Fixing various
+	user-related problems with interface.  Things are working pretty
+	well at this point, I believe.
+
+2004-08-10 10:58  phase1geo
+
+	* scripts/process_file.tcl, scripts/toggle.tcl, src/tcl_funcs.c:
+	Fixing problems with toggle coverage when modules start on lines
+	above 1 and problems when signal is a single or multi-bit select.
+
+2004-08-10 09:28  phase1geo
+
+	* Makefile.am, Makefile.in, scripts/toggle.tcl: Removing diags and
+	doc directories fro Makefile.am and fixing toggle.tcl to work as
+	wanted.
+
+2004-08-10 00:29  phase1geo
+
+	* scripts/toggle.tcl: Initial version of verbose toggle window.
+
+2004-08-09 17:03  phase1geo
+
+	* Makefile.am, Makefile.in: Removing packages and images directory
+	from build path since these no longer exist.
+
+2004-08-08 07:50  phase1geo
+
+	* ChangeLog, scripts/Makefile.am, scripts/Makefile.in,
+	scripts/cov_create.tcl, scripts/main_view.tcl,
+	scripts/menu_create.tcl, scripts/process_file.tcl, src/expr.c,
+	src/line.c, src/tcl_funcs.c, src/tcl_funcs.h, src/toggle.c,
+	src/toggle.h, src/vector.c, src/vector.h: Snapshot of addition of
+	toggle coverage in GUI.  This is not working exactly as it will be,
+	but it is getting close.
+
 2004-07-21 23:43  phase1geo
 
 	* Makefile.am, Makefile.in, diags/Makefile, diags/cdd/always1.cdd,

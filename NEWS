@@ -1,6 +1,39 @@
 Covered-Related NEWS
 ====================
 
+    * 12/09/2004
+
+Development release covered-20041209 made.  This release contains summary and detailed coverage
+reporting windows for toggle and combinational logic to the GUI.  Lots of bug fixes, updates
+and enhancements to the UI.  The scoring phase was optimized a bit to improve run-time.
+Additionally, help manual has been started for the current state of the GUI.  The following
+is a description of the changes found in this release over the last.
+
+  - Fixing case where user hits cancel button in the open CDD window and application exits.
+  - Added module/instance highlighting in listbox for uncovered modules/instances.
+  - Adding informational bar at the bottom of the main window for providing state-sensitive
+    help/state information.
+  - Added ability to make module/instance listbox resizable.
+  - Fixed configure files for Tcl/TK referencing.
+  - Fixed bug in getting the line summary total for the GUI.
+  - Fixed problem where source viewer would lose its place when switching between different
+    coverage metrics, changing colors and/or specifying different uncovered/covered options.
+  - Added 'Open Related CDD' and 'Merge related CDD' options to File menu to allow user to see
+    different CDD files generated from the same design and to merge CDD information from the
+    same design.
+  - Added verbose toggle coverage information window, allowing the user to see verbose information
+    for a signal by left-clicking on the signal in the source viewer.
+  - Added verbose combinational coverage information window, allowing the user to see verbose
+    information for an expression by left-clicking on the expression in the source viewer.
+  - Modified error reporting for GUI to display this information to an interactive window (instead
+    of the the shell).
+  - Added code to improve efficiency during scoring phase.  The improvement is fairly minor at this
+    stage, but there is more to come with these changes.
+  - Added start of help manual documentation for GUI.
+
+Lots of features, bug fixes, optimizations, documentation enhancements and build improvements in
+this release.  Please report any problems, and, as always, enjoy!
+
     * 03/21/2004
 
 Release covered-20040321 made.  This release contains lots of bug fixes and also contains the

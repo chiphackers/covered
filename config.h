@@ -75,7 +75,7 @@
 #define STDC_HEADERS 1
 
 /* Version number of package */
-#define VERSION "covered-20040918"
+#define VERSION "covered-20041209"
 
 /* Define to 1 if the X Window System is missing or not being used. */
 /* #undef X_DISPLAY_MISSING */
