@@ -420,18 +420,20 @@ void statement_connect( statement* curr_stmt, statement* next_stmt ) {
 */
 void statement_set_stop( statement* stmt, statement* post, bool true_path, bool both ) {
 
-  static int count = 0;
+  // static int count = 0;
   int        true_id;
   int        false_id;
   int        post_id;
 
   assert( stmt != NULL );
 
+/*
   if( count > 70 ) {
     assert( count == 0 );
   } else {
     count++;
   }
+*/
 
   if( post == NULL ) {
     post_id = 0;
@@ -518,6 +520,10 @@ void statement_dealloc( statement* stmt ) {
 
 
 /* $Log$
+/* Revision 1.26  2002/07/08 12:35:31  phase1geo
+/* Added initial support for library searching.  Code seems to be broken at the
+/* moment.
+/*
 /* Revision 1.25  2002/07/05 16:49:47  phase1geo
 /* Modified a lot of code this go around.  Fixed VCD reader to handle changes in
 /* the reverse order (last changes are stored instead of first for timestamp).
