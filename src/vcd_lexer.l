@@ -186,8 +186,6 @@ WSPACE [ \t\b\f]+
      int        sig_size;
      int        value_size;
 
-     printf( "In lexer, signal:%s.\n", yytext );
-
      value_size = 0;
      ptr        = yytext + 1;
 

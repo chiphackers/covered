@@ -565,7 +565,6 @@ void db_add_statement( statement* stmt ) {
     }
 
     /* Now add current statement */
-    printf( "Adding to statement tail: %d\n", stmt->exp->id );
     stmt_link_add_tail( stmt, &(curr_module->stmt_head), &(curr_module->stmt_tail) );
 
   }
@@ -805,9 +804,6 @@ void db_find_set_add_signal( char* symbol, vector* vec ) {
 
       if( sig != NULL ) {
 
-	printf( "Setting signal %s to ", sig->name );
-        vector_display( vec );
-
         signal_set_value( sig, vec->value, vec->width, 0, sig->value->lsb );
 
         /* Add signal's expressions to expression queue */
@@ -884,7 +880,6 @@ int db_get_signal_size( char* symbol ) {
   if( symtable_find( symbol, vcd_symtab, &sig ) ) {
     if( sig != NULL ) {
       assert( sig->value != NULL );
-      printf( "Found signal size: %d\n", sig->value->width );
       return( sig->value->width );
     } else {
       return( 0 );
@@ -897,6 +892,10 @@ int db_get_signal_size( char* symbol ) {
 
 
 /* $Log$
+/* Revision 1.20  2002/06/27 20:39:43  phase1geo
+/* Fixing scoring bugs as well as report bugs.  Things are starting to work
+/* fairly well now.  Added rest of support for delays.
+/*
 /* Revision 1.19  2002/06/27 12:36:47  phase1geo
 /* Fixing bugs with scoring.  I think I got it this time.
 /*

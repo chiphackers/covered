@@ -171,7 +171,7 @@ void sim_expression( expression* expr ) {
   }
 
   /* Now perform expression operation for this expression */
-  printf( "Performing expression operation: %d, id: %d\n", SUPPL_OP( expr->suppl ), expr->id );
+  // printf( "Performing expression operation: %d, id: %d\n", SUPPL_OP( expr->suppl ), expr->id );
   expression_operate( expr );
 
 }
@@ -202,13 +202,11 @@ statement* sim_statement( statement* head_stmt ) {
     /* Indicate that this statement's expression has been executed */
     stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_EXECUTED);
 
-    printf( "Executed statement %d\n", stmt->exp->id );
+    // printf( "Executed statement %d\n", stmt->exp->id );
       
     last_stmt = stmt;
 
     if( expression_is_zero( stmt->exp ) ) {
-
-      printf( "Value is FALSE\n" );
 
       /* 
        If statement's next_false value is NULL, we need to wait.  Set STMT_HEAD
@@ -258,8 +256,6 @@ void sim_simulate() {
 
     assert( curr_stmt->stmt != NULL );
 
-    printf( "Executing statement %d\n", curr_stmt->stmt->exp->id );
-
     /* Place current statement into statement simulation engine and call it */
     curr_stmt->stmt = sim_statement( curr_stmt->stmt );
 
@@ -291,6 +287,10 @@ void sim_simulate() {
 }
 
 /* $Log$
+/* Revision 1.9  2002/06/27 20:39:43  phase1geo
+/* Fixing scoring bugs as well as report bugs.  Things are starting to work
+/* fairly well now.  Added rest of support for delays.
+/*
 /* Revision 1.8  2002/06/26 04:59:50  phase1geo
 /* Adding initial support for delays.  Support is not yet complete and is
 /* currently untested.
