@@ -2,6 +2,14 @@
  \file     binding.c
  \author   Trevor Williams  (trevorw@charter.net)
  \date     3/4/2002
+ 
+ \par Binding
+ Binding is the process of setting pointers in signals and expressions to
+ point to each other.  These pointers are required for scoring purposes.
+ Binding is required for two purposes:
+   -# The signal that is being bound may not have been parsed (hierarchical
+      referencing allows for this).
+   -# An expression does not have a pointer to a signal but rather its vector.
 */
 
 #ifdef HAVE_CONFIG_H
@@ -183,12 +191,6 @@ bool bind_perform( char* sig_name, expression* exp, module* mod_sig, module* mod
 }
 
 /*!
- Binding is the process of setting pointers in signals and expressions to
- point to each other.  These pointers are required for scoring purposes.
- Binding is required for two purposes:
-   1.  The signal that is being bound may not have been parsed (hierarchical
-       referencing allows for this).
-   2.  An expression does not have a pointer to a signal but rather its vector.
  In the process of binding, we go through each element of the binding list,
  finding the signal to be bound in the specified tree, adding the expression
  to the signal's expression pointer list, and setting the expression vector pointer
@@ -295,6 +297,11 @@ void bind() {
 
 /* 
  $Log$
+ Revision 1.21  2003/01/05 22:25:22  phase1geo
+ Fixing bug with declared integers, time, real, realtime and memory types where
+ they are confused with implicitly declared signals and given 1-bit value types.
+ Updating regression for changes.
+
  Revision 1.20  2002/12/13 16:49:45  phase1geo
  Fixing infinite loop bug with statement set_stop function.  Removing
  hierarchical references from scoring (same problem as defparam statement).
