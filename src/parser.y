@@ -377,6 +377,7 @@ static_expr_primary
                 }
         | IDENTIFIER
                 {
+                  /* This is a parameter value */
                   $$ = 0;
                 }
         | UNUSED_IDENTIFIER
@@ -2676,11 +2677,11 @@ parameter_assign_list
 	| parameter_assign_list ',' parameter_assign
 
 parameter_assign
-	: IDENTIFIER '=' { ignore_mode++; } expression { ignore_mode--; }
+	: IDENTIFIER '=' static_expr
 		{
 		  $$ = $1;
 		}
-        | UNUSED_IDENTIFIER '=' expression
+        | UNUSED_IDENTIFIER '=' static_expr
                 {
                   $$ = NULL;
                 }
