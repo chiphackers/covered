@@ -62,7 +62,7 @@ To get coverage for the entire design, the covered command line would be:
 <_margin>Command</_margin>
 
 <_code>
-covered score -t test -i test(rest of command-line)
+covered score -t test -i test (rest of command-line)
 </_code>
 
 <_pg>
@@ -80,12 +80,16 @@ would be:
 <_margin>Command</_margin>
 
 <_code>
-covered score -t foomod -i foo (rest of command-line)
+covered score -t foomod -i test.foo (rest of command-line)
 </_code>
 
 <_pg>
-In this case, because the name of the top-level module is different than its instantiated
-name, both the -t and -i options must be specified on the command-line.
+In this case, we do not wish to score the module test (the top-level file for the design)
+but rather wish to gain coverage information for module foomod and all instantiated modules
+underneath it.  Since foomod is not the top-level design file, the -i option must be specified
+to tell Covered what the hierarchical scope of the top-level score file is in relation to the
+entire design.  The main reason why this is necessary is so that Covered will be able to
+locate the dumpfile information for the modules/instances that need to be scored.
 </_pg>
 
 <_pg>
@@ -96,7 +100,7 @@ in the hierarchy), Covered command-line would look like the following:
 <_margin>Command</_margin>
 
 <_code>
-covered score -t foomod -i foo -e amod -e bmod
+covered score -t foomod -i test.foo -e amod -e bmod
 </_code>
 
 <_pg>

@@ -220,9 +220,17 @@
 
 /*!
  Least-significant bit position of expression supplemental field indicating the
- expression's operation type.  The type is 7-bits wide.
+ expression's operation type.  The type is 6-bits wide.
 */
 #define SUPPL_LSB_OP                0
+
+/*!
+ Least-significant bit position of expression supplemental field indicating that the
+ children of this expression have been swapped.  The swapping of the positions is
+ performed by the score command (for multi-bit selects) and this bit indicates to the
+ report code to swap them back when displaying them in a report.
+*/
+#define SUPPL_LSB_SWAPPED           6
 
 /*!
  Least-significant bit position of expression supplemental field indicating that this
@@ -294,6 +302,8 @@
  supplemental fields are ANDed with this mask and ORed together to perform the
  merge.  Fields that are merged are:
  - OPERATION
+ - SWAPPED
+ - ROOT
  - EXECUTED
  - TRUE
  - FALSE
@@ -301,7 +311,8 @@
  - STMT_HEAD
  - STMT_CONTINUOUS
 */
-#define SUPPL_MERGE_MASK            ((0x7f << SUPPL_LSB_OP)        | \
+#define SUPPL_MERGE_MASK            ((0x3f << SUPPL_LSB_OP)        | \
+                                     (0x1  << SUPPL_LSB_SWAPPED)   | \
                                      (0x1  << SUPPL_LSB_ROOT)      | \
                                      (0x1  << SUPPL_LSB_EXECUTED)  | \
                                      (0x1  << SUPPL_LSB_TRUE)      | \
@@ -309,6 +320,13 @@
                                      (0x1  << SUPPL_LSB_STMT_HEAD) | \
                                      (0x1  << SUPPL_LSB_STMT_STOP) | \
                                      (0x1  << SUPPL_LSB_STMT_CONTINUOUS))
+
+/*!
+ Returns a value of 1 if the specified supplemental value has the SWAPPED
+ bit set indicating that the children of the current expression were
+ swapped positions during the scoring phase.
+*/
+#define SUPPL_WAS_SWAPPED(x)        ((x >> SUPPL_LSB_SWAPPED) & 0x1)
 
 /*!
  Returns a value of 1 if the specified supplemental value has the ROOT bit
@@ -369,7 +387,7 @@
 /*!
  Returns the specified expression's operation.
 */
-#define SUPPL_OP(x)                 ((x >> SUPPL_LSB_OP) & 0x7f)
+#define SUPPL_OP(x)                 ((x >> SUPPL_LSB_OP) & 0x3f)
 
 /*! @} */
      
@@ -1045,6 +1063,11 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.50  2002/10/13 19:20:42  phase1geo
+/* Added -T option to score command for properly handling min:typ:max delay expressions.
+/* Updated documentation for -i and -T options to score command and added additional
+/* diagnostic to test instance handling.
+/*
 /* Revision 1.49  2002/10/11 05:23:21  phase1geo
 /* Removing local user message allocation and replacing with global to help
 /* with memory efficiency.

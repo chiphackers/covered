@@ -452,6 +452,8 @@ void* malloc_safe( int size ) {
   // printf( "Malloc size: %d, curr: %ld, largest: %ld\n", size, curr_malloc_size, largest_malloc_size );
 
   obj = malloc( size );
+  
+  // printf( "Allocated memory 0x%lx\n", obj );
 
   if( obj == NULL ) {
     print_output( "Out of heap memory", FATAL );
@@ -500,6 +502,10 @@ void gen_space( char* spaces, int num_spaces ) {
 }
 
 /* $Log$
+/* Revision 1.13  2002/10/11 05:23:21  phase1geo
+/* Removing local user message allocation and replacing with global to help
+/* with memory efficiency.
+/*
 /* Revision 1.12  2002/10/11 04:24:02  phase1geo
 /* This checkin represents some major code renovation in the score command to
 /* fully accommodate parameter support.  All parameter support is in at this

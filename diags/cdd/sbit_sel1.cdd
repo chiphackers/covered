@@ -1,16 +1,16 @@
 3 main main sbit_sel1.v
 2 1 main 7 2000 0 0 32 0 1,0,0,0,0,0,0,0
-2 2 main 7 3fa3 1 0 
+2 2 main 7 3fa3 0 1 
 2 3 main 8 2000 0 0 32 0 4,0,0,0,0,0,0,0
-2 4 main 8 1fa3 3 0 
+2 4 main 8 1fa3 0 3 
 2 5 main 9 2000 0 0 32 0 5,0,0,0,0,0,0,0
-2 6 main 9 3fa3 5 0 
+2 6 main 9 3fa3 0 5 
 2 7 main 10 2000 0 0 32 0 10,0,0,0,0,0,0,0
-2 8 main 10 3fa3 7 0 
+2 8 main 10 3fa3 0 7 
 2 10 main 11 2000 0 0 32 0 1,0,0,0,0,0,0,0
 2 9 main 11 3001 0 0 
 2 11 main 11 2006 10 9 32 0 f20aa,f00aa,f00aa,f00aa,f00aa,f00aa,f00aa,f00aa
-2 12 main 11 3fa3 11 0 
+2 12 main 11 3fa3 0 11 
 1 sel main 3 0 720aa 9
 1 z main 4 1 fddaa 2 4 6 8 12
 1 e main 1 0 111aa

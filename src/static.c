@@ -222,6 +222,47 @@ static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int
 }
 
 /*!
+ \param left   Pointer to static expression on left of vector.
+ \param right  Pointer to static expression on right of vector.
+ \param width  Calculated width of combined right/left static expressions.
+ \param lsb    Calculated lsb of combined right/left static expressions.
+ 
+ Calculates the LSB and width of a vector defined by the specified left and right
+ static expressions.  If the width cannot be obtained immediately (parameter in static
+ expression), set width to -1.  If the LSB cannot be obtained immediately (parameter in
+ static expression), set LSB to -1.  The returned width and lsb parameters can be used
+ to size a vector instantiation.
+*/
+void static_expr_calc_lsb_and_width( static_expr* left, static_expr* right, int* width, int* lsb ) {
+  
+  *width = -1;
+  *lsb   = -1;
+  
+  if( (right != NULL) && (right->exp == NULL) ) {
+    *lsb = right->num;
+    assert( *lsb >= 0 );
+  }
+
+  if( (left != NULL) && (left->exp == NULL) ) {
+    if( *lsb != -1 ) { 
+      if( *lsb <= left->num ) {
+        *width = (left->num - *lsb) + 1;
+        assert( *width > 0 );
+      } else {
+        *width = (*lsb - left->num) + 1;
+        *lsb   = left->num;
+        assert( *width > 0 );
+        assert( *lsb >= 0 );
+      }
+    } else {
+      *lsb = left->num;
+      assert( *lsb >= 0 );
+    }
+  }
+
+}
+
+/*!
  \param stexp   Pointer to static expression to deallocate.
  \param rm_exp  Specifies that expression tree should be deallocated.
 
@@ -243,6 +284,11 @@ void static_expr_dealloc( static_expr* stexp, bool rm_exp ) {
 }
 
 /* $Log$
+/* Revision 1.3  2002/10/12 06:51:34  phase1geo
+/* Updating development documentation to match all changes within source.
+/* Adding new development pages created by Doxygen for the new source
+/* files.
+/*
 /* Revision 1.2  2002/10/11 04:24:02  phase1geo
 /* This checkin represents some major code renovation in the score command to
 /* fully accommodate parameter support.  All parameter support is in at this

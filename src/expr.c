@@ -186,6 +186,10 @@ expression* expression_create( expression* right, expression* left, int op, int 
 */
 void expression_set_value( expression* exp, vector* vec ) {
   
+  int lwidth;           /* Width of left child                                */
+  int rwidth;           /* Width of right child                               */
+  expression* tmp_exp;  /* Temporary expression pointer for swapping children */
+  
   assert( exp != NULL );
   assert( exp->value != NULL );
   assert( vec != NULL );
@@ -205,6 +209,26 @@ void expression_set_value( expression* exp, vector* vec ) {
       break;
     case EXP_OP_MBIT_SEL   :
     case EXP_OP_PARAM_MBIT :
+      expression_operate_recursively( exp->left  );
+      expression_operate_recursively( exp->right );
+      lwidth = vector_to_int( exp->left->value  );
+      rwidth = vector_to_int( exp->right->value );
+      if( lwidth <= rwidth ) {
+        exp->value->width = ((rwidth - lwidth) + 1);
+        // printf( "Setting width of expr %d, lwidth: %d, rwidth: %d\n", exp->id, lwidth, rwidth );
+      } else {
+        exp->value->width = ((lwidth - rwidth) + 1);
+        // printf( "Swapping children in expr %d, lwidth: %d, rwidth: %d\n", exp->id, lwidth, rwidth );
+        /* Need to swap left and right children for proper operation */
+        tmp_exp = exp->left;
+        exp->left = exp->right;
+        exp->right = tmp_exp;
+        /* Indicate that value has been swapped in supplemental field */
+        exp->suppl = exp->suppl | (0x1 << SUPPL_LSB_SWAPPED);
+      }
+      assert( exp->value->width <= vec->width );
+      assert( exp->value->value == NULL );
+      assert( vec->value != NULL );
       exp->value->value = vec->value;
       exp->suppl        = exp->suppl | ((vec->lsb & 0xffff) << SUPPL_LSB_SIG_LSB);
       break;
@@ -813,16 +837,20 @@ void expression_operate( expression* expr ) {
 
       case EXP_OP_SBIT_SEL   :
       case EXP_OP_PARAM_SBIT :
+      case EXP_OP_MBIT_SEL   :
+      case EXP_OP_PARAM_MBIT :
         vector_init( &vec1, &value1a, 1, 0 );
-        vector_unary_op( &vec1, expr->right->value, or_optab );
-        if( (vec1.value[0] & 0x3) != 2 ) {  
-          expr->value->lsb = vector_to_int( expr->right->value ) - ((expr->suppl >> SUPPL_LSB_SIG_LSB) & 0xffff);
+        vector_unary_op( &vec1, expr->left->value, or_optab );
+        if( (vec1.value[0] & 0x3) != 2 ) {
+          expr->value->lsb = vector_to_int( expr->left->value ) - ((expr->suppl >> SUPPL_LSB_SIG_LSB) & 0xffff);
+          // vector_set_value( expr->value, expr->right->value->value, 1, vector_to_int( expr->left->value ) - expr->right->value->lsb, 0 );
         } else {
           /* Indicate that the value of the LSB could not be calculated -- unknowns exist */
-          expr->value->lsb = -1;
+          // What to do???
         }
         break;
 
+#ifdef DEPRECATED
       case EXP_OP_MBIT_SEL   :
       case EXP_OP_PARAM_MBIT :
         vector_init( &vec1, &value1a, 1, 0 );
@@ -838,6 +866,7 @@ void expression_operate( expression* expr ) {
           expr->value->width = -1;
         }
         break;
+#endif
 
       case EXP_OP_EXPAND :
         for( j=0; j<expr->right->value->width; j++ ) {
@@ -970,6 +999,46 @@ void expression_operate( expression* expr ) {
 }
 
 /*!
+ \param expr  Pointer to top of expression tree to perform recursive operations.
+ 
+ Recursively performs the proper operations to cause the top-level expression to
+ be set to a value.  This function is called during the parse stage to derive 
+ pre-CDD widths of multi-bit expressions.  Each MSB/LSB is an expression tree that 
+ needs to be evaluated to set the width properly on the MBIT_SEL expression.
+*/
+void expression_operate_recursively( expression* expr ) {
+    
+  if( expr != NULL ) {
+    
+    /*
+     Non-static expression found where static expression required.  Simulator
+     should catch this error before us, so no user error (too much work to find
+     expression in module expression list for now.
+    */
+    assert( (SUPPL_OP( expr->suppl ) != EXP_OP_SIG)      &&
+            (SUPPL_OP( expr->suppl ) != EXP_OP_SBIT_SEL) &&
+            (SUPPL_OP( expr->suppl ) != EXP_OP_MBIT_SEL) );
+
+    /* Evaluate children */
+    expression_operate_recursively( expr->left  );
+    expression_operate_recursively( expr->right );
+    
+    /* Resize current expression only */
+    expression_resize( expr, FALSE );
+    
+    /* Create vector value to store operation information */
+    if( expr->value == NULL ) {
+      expression_create_value( expr, expr->value->width, expr->value->lsb, TRUE );
+    }
+    
+    /* Perform operation */
+    expression_operate( expr );
+    
+  }
+  
+}
+
+/*!
  \param expr  Pointer to expression to evaluate.
 
  \return Returns the value of the expression after being compressed to 1 bit via
@@ -1006,10 +1075,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
     op = SUPPL_OP( expr->suppl );
 
-    if( (op != EXP_OP_SIG)        && 
-        (op != EXP_OP_SBIT_SEL)   && 
-        (op != EXP_OP_MBIT_SEL)   &&
-        (op != EXP_OP_PARAM)      &&
+    if( (op != EXP_OP_SIG       ) && 
+        (op != EXP_OP_SBIT_SEL  ) &&
+        (op != EXP_OP_MBIT_SEL  ) &&
+        (op != EXP_OP_PARAM     ) &&
         (op != EXP_OP_PARAM_SBIT) &&
         (op != EXP_OP_PARAM_MBIT) ) {
 
@@ -1048,6 +1117,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.53  2002/10/11 05:23:21  phase1geo
+/* Removing local user message allocation and replacing with global to help
+/* with memory efficiency.
+/*
 /* Revision 1.52  2002/10/11 04:24:01  phase1geo
 /* This checkin represents some major code renovation in the score command to
 /* fully accommodate parameter support.  All parameter support is in at this

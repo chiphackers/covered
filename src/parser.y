@@ -850,85 +850,139 @@ expr_primary
                   vector_dealloc( tmp->value );
 		  tmp->value = $1;
 
-                  /* Calculate TRUE/FALSE-ness of NUMBER now */
-                  switch( expression_bit_value( tmp ) ) {
-                    case 0 :  tmp->suppl = tmp->suppl | (0x1 << SUPPL_LSB_FALSE);  break;
-                    case 1 :  tmp->suppl = tmp->suppl | (0x1 << SUPPL_LSB_TRUE);   break;
-                    default:  break;
-                  }
+      /* Calculate TRUE/FALSE-ness of NUMBER now */
+      switch( expression_bit_value( tmp ) ) {
+        case 0 :  tmp->suppl = tmp->suppl | (0x1 << SUPPL_LSB_FALSE);  break;
+        case 1 :  tmp->suppl = tmp->suppl | (0x1 << SUPPL_LSB_TRUE);   break;
+        default:  break;
+      }
 
 		  $$ = tmp;
 		}
-        | UNUSED_NUMBER
-                {
-                  $$ = NULL;
-                }
-        | REALTIME
-                {
-                  $$ = NULL;
-                }
-        | UNUSED_REALTIME
-                {
-                  $$ = NULL;
-                }
+  | UNUSED_NUMBER
+    {
+      $$ = NULL;
+    }
+  | REALTIME
+    {
+      $$ = NULL;
+    }
+  | UNUSED_REALTIME
+    {
+      $$ = NULL;
+    }
 	| STRING
 		{
 		  $$ = NULL;
 		}
-        | UNUSED_STRING
-                {
-                  $$ = NULL;
-                }
-	| identifier
-		{
-                  expression* tmp;
-                  if( ignore_mode == 0 ) {
-                    tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, @1.first_line, $1 );
-                    $$  = tmp;
-		    free_safe( $1 );
-                  } else {
-                    $$ = NULL;
-                  }
-		}
-	| SYSTEM_IDENTIFIER
-		{
-		  $$ = NULL;
-		}
-        | UNUSED_SYSTEM_IDENTIFIER
-                {
-                  $$ = NULL;
-                }
-	| identifier '[' expression ']'
-		{
-		  expression* tmp;
-                  if( ignore_mode == 0 ) {
-                    tmp = db_create_expression( $3, NULL, EXP_OP_SBIT_SEL, @1.first_line, $1 );
-		    $$  = tmp;
-		    free_safe( $1 );
-                  } else {
-                    $$ = NULL;
-                  }
-		}
-	| identifier '[' expression ':' expression ']'
-		{		  
-                  expression* tmp;
-                  if( ignore_mode == 0 ) {
-                    tmp = db_create_expression( $5, $3, EXP_OP_MBIT_SEL, @1.first_line, $1 );
-                    $$  = tmp;
-                    free_safe( $1 );
-                  } else {
-                    $$ = NULL;
-                  }
-		}
-	| identifier '(' expression_list ')'
-		{
-                  if( ignore_mode == 0 ) {
-                    expression_dealloc( $3, FALSE );
-                    free_safe( $1 );
-                  }
-		  $$ = NULL;
-		}
-	| SYSTEM_IDENTIFIER '(' expression_list ')'
+  | UNUSED_STRING
+    {
+      $$ = NULL;
+    }
+  | identifier
+    {
+      expression* tmp;
+      if( ignore_mode == 0 ) {
+        tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, @1.first_line, $1 );
+        $$  = tmp;
+        free_safe( $1 );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | SYSTEM_IDENTIFIER
+    {
+      $$ = NULL;
+    }
+  | UNUSED_SYSTEM_IDENTIFIER
+    {
+      $$ = NULL;
+    }
+  | identifier '[' expression ']'
+    {
+      expression* tmp;
+      if( ignore_mode == 0 ) {
+        tmp = db_create_expression( NULL, $3, EXP_OP_SBIT_SEL, @1.first_line, $1 );
+        $$  = tmp;
+        free_safe( $1 );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | identifier '[' expression ':' expression ']'
+    {		  
+      expression* tmp;
+      if( ignore_mode == 0 ) {
+        tmp = db_create_expression( $5, $3, EXP_OP_MBIT_SEL, @1.first_line, $1 );
+        $$  = tmp;
+        free_safe( $1 );
+      } else {
+        $$ = NULL;
+      }
+    }
+  | identifier '[' expression K_PO_POS static_expr ']'
+    {
+      expression* tmp1;
+      expression* tmp2;
+      vector*     vec;
+      if( ignore_mode == 0 ) {
+        vec  = vector_create( 32, 0, TRUE );
+        tmp1 = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
+        vector_from_int( vec, 1 );
+        assert( tmp1->value->value == NULL ); 
+        free_safe( tmp1->value );
+        tmp1->value = vec;
+        tmp2 = db_create_expression( tmp1, $3, EXP_OP_MBIT_SEL, @1.first_line, $1 );
+        assert( $5 != NULL );
+        tmp2->value->lsb = 0;
+        if( $5->exp == NULL ) {
+          tmp2->value->width = $5->num;
+          tmp2->value->value = NULL;
+        } else {
+          db_add_vector_param( NULL, tmp2, $5->exp, PARAM_TYPE_EXP_MSB );
+        }
+        static_expr_dealloc( $5, FALSE );
+        $$ = tmp2;
+      } else {
+        $$ = NULL;
+      }
+    }
+  | identifier '[' expression K_PO_NEG static_expr ']'
+    {
+      expression* tmp1;
+      expression* tmp2;
+      vector*     vec;
+      if( ignore_mode == 0 ) {
+        vec  = vector_create( 32, 0, TRUE );
+        tmp1 = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
+        vector_from_int( vec, 1 );
+        assert( tmp1->value->value == NULL ); 
+        free_safe( tmp1->value );
+        tmp1->value = vec;
+        tmp2 = db_create_expression( tmp1, $3, EXP_OP_MBIT_SEL, @1.first_line, $1 );
+        assert( $5 != NULL );
+        tmp2->value->lsb = 0;
+        if( $5->exp == NULL ) {
+          tmp2->value->width = $5->num;
+          tmp2->value->value = NULL;
+        } else {
+          db_add_vector_param( NULL, tmp2, $5->exp, PARAM_TYPE_EXP_MSB );
+        }
+        static_expr_dealloc( $5, FALSE );
+        $$ = tmp2;
+      } else {
+        $$ = NULL;
+      }
+    }
+  | identifier '(' expression_list ')'
+    {
+      if( ignore_mode == 0 ) {
+        expression_dealloc( $3, FALSE );
+        free_safe( $1 );
+      }
+      $$ = NULL;
+    }
+  | SYSTEM_IDENTIFIER '(' expression_list ')'
 		{
                   expression_dealloc( $3, FALSE );
 		  $$ = NULL;

@@ -10,7 +10,7 @@ IP  = In Progress
 Score command
 -------------
 
-IP 1.  Verify that single and multi-bit selectors work in all cases.
+X  1.  Verify that single and multi-bit selectors work in all cases.
 
 X  2.  When `include is encountered, store current line number in stack for retrieval
        when file parsing is resumed for that file.
