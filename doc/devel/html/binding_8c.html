@@ -17,20 +17,20 @@
 <code>#include "<a class="el" href="vector_8h-source.html">vector.h</a>"</code><br>
 <table border=0 cellpadding=0 cellspacing=0>
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a4">bind_add</a> (char *sig_name, <a class="el" href="defines_8h.html#a125">expression</a> *exp, char *mod_name)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a4">bind_add</a> (char *sig_name, <a class="el" href="defines_8h.html#a126">expression</a> *exp, char *mod_name)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds signal and expression to binding list.</em> <a href="#a4"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a5">bind_remove</a> (int id)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Removes the expression with ID of id from binding list.</em> <a href="#a5"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a6">bind_set_tree</a> (<a class="el" href="defines_8h.html#a125">expression</a> *expr)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a7">bind_perform</a> (char *sig_name, <a class="el" href="defines_8h.html#a125">expression</a> *exp, <a class="el" href="defines_8h.html#a133">module</a> *mod, <a class="el" href="defines_8h.html#a142">bool</a> implicit_allowed)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a6">bind_set_tree</a> (<a class="el" href="defines_8h.html#a126">expression</a> *expr)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a7">bind_perform</a> (char *sig_name, <a class="el" href="defines_8h.html#a126">expression</a> *exp, <a class="el" href="defines_8h.html#a134">module</a> *mod, <a class="el" href="defines_8h.html#a143">bool</a> implicit_allowed)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Finds signal in module and bind the expression to this signal.</em> <a href="#a7"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a8">bind</a> ()</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Performs signal/expression bind (performed after parse completed).</em> <a href="#a8"></a><em></em></font><br><br></td></tr>
 <tr><td colspan=2><br><h2>Variables</h2></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a137">sig_exp_bind</a> *&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a0">seb_head</a></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a137">sig_exp_bind</a> *&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a1">seb_tail</a></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a139">mod_inst</a> *&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a2">instance_root</a></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a134">mod_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a3">mod_head</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a138">sig_exp_bind</a> *&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a0">seb_head</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a138">sig_exp_bind</a> *&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a1">seb_tail</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a140">mod_inst</a> *&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a2">instance_root</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a135">mod_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a3">mod_head</a></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 
@@ -84,7 +84,7 @@ Binding is the process of setting pointers in signals and expressions to point t
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a125">expression</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a126">expression</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>exp</em>, </td>
         </tr>
         <tr>
@@ -140,19 +140,19 @@ Name of module containing specified expression.</td></tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a125">expression</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a126">expression</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>exp</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a133">module</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a134">module</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>mod</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a142">bool</a>&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a143">bool</a>&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>implicit_allowed</em></td>
         </tr>
         <tr>
@@ -235,7 +235,7 @@ Expression ID of binding to remove.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void bind_set_tree </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a125">expression</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a126">expression</a> *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>expr</em>          </td>
           <td class="md" valign="top">)&nbsp;</td>
           <td class="md" nowrap></td>
@@ -269,7 +269,7 @@ Pointer to expression to set bit widths in its expression tree.</td></tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a139">mod_inst</a>* instance_root
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a140">mod_inst</a>* instance_root
       </table>
     </td>
   </tr>
@@ -291,7 +291,7 @@ Pointer to expression to set bit widths in its expression tree.</td></tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a134">mod_link</a>* mod_head
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a135">mod_link</a>* mod_head
       </table>
     </td>
   </tr>
@@ -313,7 +313,7 @@ Pointer to expression to set bit widths in its expression tree.</td></tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a137">sig_exp_bind</a>* seb_head
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a138">sig_exp_bind</a>* seb_head
       </table>
     </td>
   </tr>
@@ -335,7 +335,7 @@ Pointer to expression to set bit widths in its expression tree.</td></tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a137">sig_exp_bind</a>* seb_tail
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a138">sig_exp_bind</a>* seb_tail
       </table>
     </td>
   </tr>
@@ -351,7 +351,7 @@ Pointer to expression to set bit widths in its expression tree.</td></tr>
     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Sat Jul 20 19:07:53 2002 for Covered by
+<hr><address align="right"><small>Generated on Mon Jul 22 00:22:58 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

@@ -48,7 +48,7 @@ struct {\bf yy\_\-buffer\_\-state}
 \item 
 \#define {\bf yyrestart}\ VCDrestart
 \item 
-\#define {\bf yytext}\ VCDtext
+\#define {\bf yytext}\ {\bf VCDtext}
 \item 
 \#define {\bf yywrap}\ VCDwrap
 \item 
@@ -112,9 +112,9 @@ struct {\bf yy\_\-buffer\_\-state}
 \item 
 \#define {\bf YY\_\-DO\_\-BEFORE\_\-ACTION}
 \item 
-\#define {\bf YY\_\-NUM\_\-RULES}\ 30
+\#define {\bf YY\_\-NUM\_\-RULES}\ 34
 \item 
-\#define {\bf YY\_\-END\_\-OF\_\-BUFFER}\ 31
+\#define {\bf YY\_\-END\_\-OF\_\-BUFFER}\ 35
 \item 
 \#define {\bf REJECT}\ reject\_\-used\_\-but\_\-not\_\-detected
 \item 
@@ -140,7 +140,19 @@ struct {\bf yy\_\-buffer\_\-state}
 \item 
 \#define {\bf SIMULATION}\ 5
 \item 
-\#define {\bf DEFINITION}\ 6
+\#define {\bf DEF\_\-VAR\_\-TYPE}\ 6
+\item 
+\#define {\bf DEF\_\-VAR\_\-SIZE}\ 7
+\item 
+\#define {\bf DEF\_\-VAR\_\-ID}\ 8
+\item 
+\#define {\bf DEF\_\-VAR\_\-REF}\ 9
+\item 
+\#define {\bf DEF\_\-END}\ 10
+\item 
+\#define {\bf DEF\_\-SCOPE\_\-TYPE}\ 11
+\item 
+\#define {\bf DEF\_\-SCOPE\_\-ID}\ 12
 \item 
 \#define {\bf YY\_\-READ\_\-BUF\_\-SIZE}\ 8192
 \item 
@@ -235,19 +247,19 @@ int {\bf yy\_\-did\_\-buffer\_\-switch\_\-on\_\-eof}
 \item 
 char $\ast$ {\bf yytext}
 \item 
-yyconst short int {\bf yy\_\-accept} [131]
+yyconst short int {\bf yy\_\-accept} [123]
 \item 
 yyconst int {\bf yy\_\-ec} [256]
 \item 
-yyconst int {\bf yy\_\-meta} [32]
+yyconst int {\bf yy\_\-meta} [33]
 \item 
-yyconst short int {\bf yy\_\-base} [146]
+yyconst short int {\bf yy\_\-base} [142]
 \item 
-yyconst short int {\bf yy\_\-def} [146]
+yyconst short int {\bf yy\_\-def} [142]
 \item 
-yyconst short int {\bf yy\_\-nxt} [373]
+yyconst short int {\bf yy\_\-nxt} [553]
 \item 
-yyconst short int {\bf yy\_\-chk} [373]
+yyconst short int {\bf yy\_\-chk} [553]
 \item 
 {\bf yy\_\-state\_\-type} {\bf yy\_\-last\_\-accepting\_\-state}
 \item 
@@ -293,14 +305,44 @@ int {\bf len}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define DATE\ 2}\label{vcd__lexer_8c_a57}
 
 
-\index{vcd_lexer.c@{vcd\_\-lexer.c}!DEFINITION@{DEFINITION}}
-\index{DEFINITION@{DEFINITION}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define DEFINITION\ 6}\label{vcd__lexer_8c_a61}
+\index{vcd_lexer.c@{vcd\_\-lexer.c}!DEF_END@{DEF\_\-END}}
+\index{DEF_END@{DEF\_\-END}!vcd_lexer.c@{vcd\_\-lexer.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define DEF\_\-END\ 10}\label{vcd__lexer_8c_a65}
+
+
+\index{vcd_lexer.c@{vcd\_\-lexer.c}!DEF_SCOPE_ID@{DEF\_\-SCOPE\_\-ID}}
+\index{DEF_SCOPE_ID@{DEF\_\-SCOPE\_\-ID}!vcd_lexer.c@{vcd\_\-lexer.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define DEF\_\-SCOPE\_\-ID\ 12}\label{vcd__lexer_8c_a67}
+
+
+\index{vcd_lexer.c@{vcd\_\-lexer.c}!DEF_SCOPE_TYPE@{DEF\_\-SCOPE\_\-TYPE}}
+\index{DEF_SCOPE_TYPE@{DEF\_\-SCOPE\_\-TYPE}!vcd_lexer.c@{vcd\_\-lexer.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define DEF\_\-SCOPE\_\-TYPE\ 11}\label{vcd__lexer_8c_a66}
+
+
+\index{vcd_lexer.c@{vcd\_\-lexer.c}!DEF_VAR_ID@{DEF\_\-VAR\_\-ID}}
+\index{DEF_VAR_ID@{DEF\_\-VAR\_\-ID}!vcd_lexer.c@{vcd\_\-lexer.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define DEF\_\-VAR\_\-ID\ 8}\label{vcd__lexer_8c_a63}
+
+
+\index{vcd_lexer.c@{vcd\_\-lexer.c}!DEF_VAR_REF@{DEF\_\-VAR\_\-REF}}
+\index{DEF_VAR_REF@{DEF\_\-VAR\_\-REF}!vcd_lexer.c@{vcd\_\-lexer.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define DEF\_\-VAR\_\-REF\ 9}\label{vcd__lexer_8c_a64}
+
+
+\index{vcd_lexer.c@{vcd\_\-lexer.c}!DEF_VAR_SIZE@{DEF\_\-VAR\_\-SIZE}}
+\index{DEF_VAR_SIZE@{DEF\_\-VAR\_\-SIZE}!vcd_lexer.c@{vcd\_\-lexer.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define DEF\_\-VAR\_\-SIZE\ 7}\label{vcd__lexer_8c_a62}
+
+
+\index{vcd_lexer.c@{vcd\_\-lexer.c}!DEF_VAR_TYPE@{DEF\_\-VAR\_\-TYPE}}
+\index{DEF_VAR_TYPE@{DEF\_\-VAR\_\-TYPE}!vcd_lexer.c@{vcd\_\-lexer.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define DEF\_\-VAR\_\-TYPE\ 6}\label{vcd__lexer_8c_a61}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!ECHO@{ECHO}}
 \index{ECHO@{ECHO}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define ECHO\ (void) fwrite( yytext, yyleng, 1, yyout )}\label{vcd__lexer_8c_a63}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define ECHO\ (void) fwrite( yytext, yyleng, 1, yyout )}\label{vcd__lexer_8c_a69}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!EOB_ACT_CONTINUE_SCAN@{EOB\_\-ACT\_\-CONTINUE\_\-SCAN}}
@@ -360,7 +402,7 @@ int {\bf len}
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!YY_BREAK@{YY\_\-BREAK}}
 \index{YY_BREAK@{YY\_\-BREAK}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-BREAK\ break;}\label{vcd__lexer_8c_a69}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-BREAK\ break;}\label{vcd__lexer_8c_a75}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!YY_BUF_SIZE@{YY\_\-BUF\_\-SIZE}}
@@ -395,7 +437,7 @@ int {\bf len}
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!YY_DECL@{YY\_\-DECL}}
 \index{YY_DECL@{YY\_\-DECL}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-DECL\ int yylex YY\_\-PROTO(( void ))}\label{vcd__lexer_8c_a68}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-DECL\ int yylex YY\_\-PROTO(( void ))}\label{vcd__lexer_8c_a74}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!yy_delete_buffer@{yy\_\-delete\_\-buffer}}
@@ -418,7 +460,7 @@ int {\bf len}
         yy_c_buf_p = yy_cp;\end{verbatim}\normalsize 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!YY_END_OF_BUFFER@{YY\_\-END\_\-OF\_\-BUFFER}}
 \index{YY_END_OF_BUFFER@{YY\_\-END\_\-OF\_\-BUFFER}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-END\_\-OF\_\-BUFFER\ 31}\label{vcd__lexer_8c_a48}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-END\_\-OF\_\-BUFFER\ 35}\label{vcd__lexer_8c_a48}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!YY_END_OF_BUFFER_CHAR@{YY\_\-END\_\-OF\_\-BUFFER\_\-CHAR}}
@@ -428,12 +470,12 @@ int {\bf len}
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!YY_EXIT_FAILURE@{YY\_\-EXIT\_\-FAILURE}}
 \index{YY_EXIT_FAILURE@{YY\_\-EXIT\_\-FAILURE}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-EXIT\_\-FAILURE\ 2}\label{vcd__lexer_8c_a71}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-EXIT\_\-FAILURE\ 2}\label{vcd__lexer_8c_a77}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!YY_FATAL_ERROR@{YY\_\-FATAL\_\-ERROR}}
 \index{YY_FATAL_ERROR@{YY\_\-FATAL\_\-ERROR}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-FATAL\_\-ERROR(msg)\ yy\_\-fatal\_\-error( msg )}\label{vcd__lexer_8c_a67}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-FATAL\_\-ERROR(msg)\ yy\_\-fatal\_\-error( msg )}\label{vcd__lexer_8c_a73}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!yy_flex_debug@{yy\_\-flex\_\-debug}}
@@ -468,7 +510,7 @@ int {\bf len}
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!YY_INPUT@{YY\_\-INPUT}}
 \index{YY_INPUT@{YY\_\-INPUT}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-INPUT(buf, result, max\_\-size)}\label{vcd__lexer_8c_a64}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-INPUT(buf, result, max\_\-size)}\label{vcd__lexer_8c_a70}
 
 
 {\bf Value:}
@@ -515,7 +557,7 @@ int {\bf len}
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!YY_NUM_RULES@{YY\_\-NUM\_\-RULES}}
 \index{YY_NUM_RULES@{YY\_\-NUM\_\-RULES}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-NUM\_\-RULES\ 30}\label{vcd__lexer_8c_a47}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-NUM\_\-RULES\ 34}\label{vcd__lexer_8c_a47}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!YY_PROTO@{YY\_\-PROTO}}
@@ -525,7 +567,7 @@ int {\bf len}
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!YY_READ_BUF_SIZE@{YY\_\-READ\_\-BUF\_\-SIZE}}
 \index{YY_READ_BUF_SIZE@{YY\_\-READ\_\-BUF\_\-SIZE}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-READ\_\-BUF\_\-SIZE\ 8192}\label{vcd__lexer_8c_a62}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-READ\_\-BUF\_\-SIZE\ 8192}\label{vcd__lexer_8c_a68}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!YY_RESTORE_YY_MORE_OFFSET@{YY\_\-RESTORE\_\-YY\_\-MORE\_\-OFFSET}}
@@ -535,7 +577,7 @@ int {\bf len}
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!YY_RULE_SETUP@{YY\_\-RULE\_\-SETUP}}
 \index{YY_RULE_SETUP@{YY\_\-RULE\_\-SETUP}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-RULE\_\-SETUP\ YY\_\-USER\_\-ACTION}\label{vcd__lexer_8c_a70}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-RULE\_\-SETUP\ YY\_\-USER\_\-ACTION}\label{vcd__lexer_8c_a76}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!YY_SC_TO_UI@{YY\_\-SC\_\-TO\_\-UI}}
@@ -594,7 +636,7 @@ int {\bf len}
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!YY_START_STACK_INCR@{YY\_\-START\_\-STACK\_\-INCR}}
 \index{YY_START_STACK_INCR@{YY\_\-START\_\-STACK\_\-INCR}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-START\_\-STACK\_\-INCR\ 25}\label{vcd__lexer_8c_a66}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-START\_\-STACK\_\-INCR\ 25}\label{vcd__lexer_8c_a72}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!YY_STATE_EOF@{YY\_\-STATE\_\-EOF}}
@@ -624,7 +666,7 @@ int {\bf len}
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!yyless@{yyless}}
 \index{yyless@{yyless}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yyless(n)}\label{vcd__lexer_8c_a72}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yyless(n)}\label{vcd__lexer_8c_a78}
 
 
 {\bf Value:}
@@ -687,12 +729,12 @@ int {\bf len}
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!yyterminate@{yyterminate}}
 \index{yyterminate@{yyterminate}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yyterminate()\ return YY\_\-NULL}\label{vcd__lexer_8c_a65}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yyterminate()\ return YY\_\-NULL}\label{vcd__lexer_8c_a71}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!yytext@{yytext}}
 \index{yytext@{yytext}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yytext\ VCDtext}\label{vcd__lexer_8c_a15}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yytext\ {\bf VCDtext}}\label{vcd__lexer_8c_a15}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!yytext_ptr@{yytext\_\-ptr}}
@@ -710,22 +752,22 @@ int {\bf len}
 \subsection{Typedef Documentation}
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!YY_BUFFER_STATE@{YY\_\-BUFFER\_\-STATE}}
 \index{YY_BUFFER_STATE@{YY\_\-BUFFER\_\-STATE}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf yy\_\-buffer\_\-state}$\ast$ YY\_\-BUFFER\_\-STATE}\label{vcd__lexer_8c_a73}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf yy\_\-buffer\_\-state}$\ast$ YY\_\-BUFFER\_\-STATE}\label{vcd__lexer_8c_a79}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!YY_CHAR@{YY\_\-CHAR}}
 \index{YY_CHAR@{YY\_\-CHAR}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef unsigned char YY\_\-CHAR}\label{vcd__lexer_8c_a85}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef unsigned char YY\_\-CHAR}\label{vcd__lexer_8c_a91}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!yy_size_t@{yy\_\-size\_\-t}}
 \index{yy_size_t@{yy\_\-size\_\-t}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef unsigned int yy\_\-size\_\-t}\label{vcd__lexer_8c_a77}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef unsigned int yy\_\-size\_\-t}\label{vcd__lexer_8c_a83}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!yy_state_type@{yy\_\-state\_\-type}}
 \index{yy_state_type@{yy\_\-state\_\-type}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef int yy\_\-state\_\-type}\label{vcd__lexer_8c_a86}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef int yy\_\-state\_\-type}\label{vcd__lexer_8c_a92}
 
 
 
@@ -733,82 +775,82 @@ int {\bf len}
 \subsection{Function Documentation}
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!YY_PROTO@{YY\_\-PROTO}}
 \index{YY_PROTO@{YY\_\-PROTO}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yy\_\-push\_\-state YY\_\-PROTO ((int new\_\-state))\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a123}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yy\_\-push\_\-state YY\_\-PROTO ((int new\_\-state))\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a129}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!YY_PROTO@{YY\_\-PROTO}}
 \index{YY_PROTO@{YY\_\-PROTO}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yyunput YY\_\-PROTO ((int c, char $\ast$buf\_\-ptr))\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a122}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yyunput YY\_\-PROTO ((int c, char $\ast$buf\_\-ptr))\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a128}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!YY_PROTO@{YY\_\-PROTO}}
 \index{YY_PROTO@{YY\_\-PROTO}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yy\_\-fatal\_\-error YY\_\-PROTO ((yyconst char msg[$\,$]))\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a121}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yy\_\-fatal\_\-error YY\_\-PROTO ((yyconst char msg[$\,$]))\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a127}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!YY_PROTO@{YY\_\-PROTO}}
 \index{YY_PROTO@{YY\_\-PROTO}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf yy\_\-state\_\-type} yy\_\-try\_\-NUL\_\-trans YY\_\-PROTO (({\bf yy\_\-state\_\-type} current\_\-state))\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a120}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf yy\_\-state\_\-type} yy\_\-try\_\-NUL\_\-trans YY\_\-PROTO (({\bf yy\_\-state\_\-type} current\_\-state))\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a126}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!YY_PROTO@{YY\_\-PROTO}}
 \index{YY_PROTO@{YY\_\-PROTO}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yy\_\-flex\_\-free YY\_\-PROTO ((void $\ast$))\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a119}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yy\_\-flex\_\-free YY\_\-PROTO ((void $\ast$))\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a125}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!YY_PROTO@{YY\_\-PROTO}}
 \index{YY_PROTO@{YY\_\-PROTO}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ yy\_\-flex\_\-realloc YY\_\-PROTO ((void $\ast$, {\bf yy\_\-size\_\-t}))\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a118}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ yy\_\-flex\_\-realloc YY\_\-PROTO ((void $\ast$, {\bf yy\_\-size\_\-t}))\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a124}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!YY_PROTO@{YY\_\-PROTO}}
 \index{YY_PROTO@{YY\_\-PROTO}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ yy\_\-flex\_\-alloc YY\_\-PROTO (({\bf yy\_\-size\_\-t}))\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a117}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ yy\_\-flex\_\-alloc YY\_\-PROTO (({\bf yy\_\-size\_\-t}))\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a123}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!YY_PROTO@{YY\_\-PROTO}}
 \index{YY_PROTO@{YY\_\-PROTO}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf YY\_\-BUFFER\_\-STATE} yy\_\-scan\_\-bytes YY\_\-PROTO ((yyconst char $\ast$bytes, int {\bf len}))}\label{vcd__lexer_8c_a116}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf YY\_\-BUFFER\_\-STATE} yy\_\-scan\_\-bytes YY\_\-PROTO ((yyconst char $\ast$bytes, int {\bf len}))}\label{vcd__lexer_8c_a122}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!YY_PROTO@{YY\_\-PROTO}}
 \index{YY_PROTO@{YY\_\-PROTO}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf YY\_\-BUFFER\_\-STATE} yy\_\-scan\_\-string YY\_\-PROTO ((yyconst char $\ast$yy\_\-str))}\label{vcd__lexer_8c_a115}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf YY\_\-BUFFER\_\-STATE} yy\_\-scan\_\-string YY\_\-PROTO ((yyconst char $\ast$yy\_\-str))}\label{vcd__lexer_8c_a121}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!YY_PROTO@{YY\_\-PROTO}}
 \index{YY_PROTO@{YY\_\-PROTO}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf YY\_\-BUFFER\_\-STATE} yy\_\-scan\_\-buffer YY\_\-PROTO ((char $\ast$base, {\bf yy\_\-size\_\-t} {\bf size}))}\label{vcd__lexer_8c_a114}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf YY\_\-BUFFER\_\-STATE} yy\_\-scan\_\-buffer YY\_\-PROTO ((char $\ast$base, {\bf yy\_\-size\_\-t} {\bf size}))}\label{vcd__lexer_8c_a120}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!YY_PROTO@{YY\_\-PROTO}}
 \index{YY_PROTO@{YY\_\-PROTO}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yy\_\-init\_\-buffer YY\_\-PROTO (({\bf YY\_\-BUFFER\_\-STATE} b, FILE $\ast${\bf file}))}\label{vcd__lexer_8c_a113}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yy\_\-init\_\-buffer YY\_\-PROTO (({\bf YY\_\-BUFFER\_\-STATE} b, FILE $\ast${\bf file}))}\label{vcd__lexer_8c_a119}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!YY_PROTO@{YY\_\-PROTO}}
 \index{YY_PROTO@{YY\_\-PROTO}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yy\_\-delete\_\-buffer YY\_\-PROTO (({\bf YY\_\-BUFFER\_\-STATE} b))}\label{vcd__lexer_8c_a112}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yy\_\-delete\_\-buffer YY\_\-PROTO (({\bf YY\_\-BUFFER\_\-STATE} b))}\label{vcd__lexer_8c_a118}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!YY_PROTO@{YY\_\-PROTO}}
 \index{YY_PROTO@{YY\_\-PROTO}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf YY\_\-BUFFER\_\-STATE} yy\_\-create\_\-buffer YY\_\-PROTO ((FILE $\ast${\bf file}, int {\bf size}))}\label{vcd__lexer_8c_a111}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf YY\_\-BUFFER\_\-STATE} yy\_\-create\_\-buffer YY\_\-PROTO ((FILE $\ast${\bf file}, int {\bf size}))}\label{vcd__lexer_8c_a117}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!YY_PROTO@{YY\_\-PROTO}}
 \index{YY_PROTO@{YY\_\-PROTO}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yy\_\-load\_\-buffer\_\-state YY\_\-PROTO ((void))}\label{vcd__lexer_8c_a110}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yy\_\-load\_\-buffer\_\-state YY\_\-PROTO ((void))}\label{vcd__lexer_8c_a116}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!YY_PROTO@{YY\_\-PROTO}}
 \index{YY_PROTO@{YY\_\-PROTO}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yy\_\-switch\_\-to\_\-buffer YY\_\-PROTO (({\bf YY\_\-BUFFER\_\-STATE} new\_\-buffer))}\label{vcd__lexer_8c_a109}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yy\_\-switch\_\-to\_\-buffer YY\_\-PROTO (({\bf YY\_\-BUFFER\_\-STATE} new\_\-buffer))}\label{vcd__lexer_8c_a115}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!YY_PROTO@{YY\_\-PROTO}}
 \index{YY_PROTO@{YY\_\-PROTO}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yyrestart YY\_\-PROTO ((FILE $\ast$input\_\-file))}\label{vcd__lexer_8c_a108}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yyrestart YY\_\-PROTO ((FILE $\ast$input\_\-file))}\label{vcd__lexer_8c_a114}
 
 
 
@@ -816,27 +858,27 @@ int {\bf len}
 \subsection{Variable Documentation}
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!file@{file}}
 \index{file@{file}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}FILE$\ast$ file}\label{vcd__lexer_8c_a106}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}FILE$\ast$ file}\label{vcd__lexer_8c_a112}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!len@{len}}
 \index{len@{len}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int len}\label{vcd__lexer_8c_a107}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int len}\label{vcd__lexer_8c_a113}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!size@{size}}
 \index{size@{size}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf yy\_\-size\_\-t} size}\label{vcd__lexer_8c_a105}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf yy\_\-size\_\-t} size}\label{vcd__lexer_8c_a111}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!vcdfile@{vcdfile}}
 \index{vcdfile@{vcdfile}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ vcdfile}\label{vcd__lexer_8c_a100}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ vcdfile}\label{vcd__lexer_8c_a106}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!yy_accept@{yy\_\-accept}}
 \index{yy_accept@{yy\_\-accept}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst short int yy\_\-accept[131]\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a88}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst short int yy\_\-accept[123]\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a94}
 
 
 {\bf Initial value:}
@@ -844,198 +886,198 @@ int {\bf len}
 \footnotesize\begin{verbatim}
     {   0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-        0,    0,   29,   29,   31,   30,    1,    2,   20,    6,
-        5,    6,   10,    9,   10,   14,   13,   14,   18,   17,
-       18,   30,   30,   30,   29,   20,   21,   29,   29,   20,
-       20,   20,   20,   20,    0,    0,    0,    0,   28,    0,
-       24,   24,    0,   29,   20,   20,   20,   20,   20,   20,
-       29,   29,   21,   29,   23,   23,   20,   20,   20,   20,
-        0,    0,    0,    0,   25,   20,   20,   20,   20,   20,
-       22,   29,   26,   20,   20,   20,   20,    4,    8,   12,
-       16,   20,   20,   19,   20,   20,   22,   29,   20,    7,
+        0,    0,   33,   33,   33,   33,   23,   23,   33,   33,
+       33,   33,   33,   33,   33,   33,   35,   34,    1,    2,
+       20,    6,    5,    6,   10,    9,   10,   14,   13,   14,
+       18,   17,   18,   34,   34,   34,   33,   21,   22,   23,
+       25,   33,   33,   33,   24,   20,   20,   20,   20,   20,
+        0,    0,    0,    0,   32,    0,   28,   28,    0,   33,
+       21,   22,   23,   33,   33,   25,   27,   27,   33,   33,
+       24,   20,   20,   20,   20,    0,    0,    0,    0,   29,
+       26,   33,   33,   30,   20,   20,   20,   20,    4,    8,
 
-       20,   20,   20,    7,   20,   20,   27,   20,   20,   20,
-       20,   20,   20,   20,   20,   20,   20,   20,   20,    3,
-       20,   15,    3,   20,   15,   20,   20,   11,   11,    0
+       12,   16,   26,   19,   33,   20,    7,   20,   20,   31,
+       20,   20,   20,   20,   20,   20,    3,   20,   15,   20,
+       11,    0
     }\end{verbatim}\normalsize 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!yy_base@{yy\_\-base}}
 \index{yy_base@{yy\_\-base}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst short int yy\_\-base[146]\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a91}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst short int yy\_\-base[142]\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a97}
 
 
 {\bf Initial value:}
 
 \footnotesize\begin{verbatim}
     {   0,
-        0,    6,    8,    9,   11,   14,   16,   17,   19,   22,
-       28,    0,   42,    0,  340,  341,  341,  341,   54,  341,
-      341,  317,  341,  341,  316,  341,  341,  315,  341,  341,
-      314,   18,   74,   24,    0,   88,  119,   30,  332,    0,
-      307,  314,  309,  309,  304,  303,  302,  299,   68,  322,
-      321,   77,   78,    0,  117,  129,   63,   95,  105,  118,
-      160,  177,  194,  153,  316,    0,  292,  283,  287,  283,
-      286,  285,  284,  280,  298,  104,  114,  125,  128,  115,
-      211,  148,    0,  271,  272,  268,  260,  341,  341,  341,
-      341,  142,  152,  261,  169,  177,  228,  163,  262,    0,
+        0,    7,   10,   11,   13,   14,   17,   20,   21,   23,
+       20,   26,   41,    0,   72,   82,   76,   86,   93,    0,
+      124,  139,  155,    0,    0,    0,  328,  520,  520,  520,
+      114,  520,  520,  303,  520,  520,  302,  520,  520,  273,
+      520,  520,  271,   27,  186,  118,    0,  201,  120,  289,
+      219,    3,  265,  127,  237,    0,  259,  266,  260,  260,
+      254,  251,  249,  248,  138,  148,  149,  189,  196,    0,
+      255,  184,  266,  273,  291,  323,  211,    0,  242,  222,
+      341,  242,  235,  239,  231,  235,  230,  226,  225,  220,
+      359,  220,  219,    0,  213,  198,  193,  182,  520,  520,
 
-      254,  259,  176,  251,  186,  191,    0,  251,  222,  214,
-      163,  203,  210,  201,  178,  155,  194,  213,  181,    0,
-      130,    0,  106,  211,   96,   59,  198,    0,    9,  341,
-      245,  251,  257,  263,  269,    0,  274,  280,  286,  292,
-      297,  303,  309,  315,  321
+      520,  520,  377,    0,  240,  180,    0,  167,  168,    0,
+      162,  133,  115,  108,  114,   59,    0,   51,    0,   16,
+        0,  520,  395,  402,  409,  416,  423,  430,  437,   25,
+      443,  450,  457,  464,  471,  478,  485,  491,  498,  505,
+      512
     }\end{verbatim}\normalsize 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!yy_bp@{yy\_\-bp}}
 \index{yy_bp@{yy\_\-bp}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}register char$\ast$ yy\_\-bp}\label{vcd__lexer_8c_a104}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}register char$\ast$ yy\_\-bp}\label{vcd__lexer_8c_a110}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!yy_c_buf_p@{yy\_\-c\_\-buf\_\-p}}
 \index{yy_c_buf_p@{yy\_\-c\_\-buf\_\-p}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ yy\_\-c\_\-buf\_\-p = (char $\ast$) 0\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a81}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ yy\_\-c\_\-buf\_\-p = (char $\ast$) 0\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a87}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!yy_chk@{yy\_\-chk}}
 \index{yy_chk@{yy\_\-chk}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst short int yy\_\-chk[373]\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a94}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst short int yy\_\-chk[553]\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a100}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!yy_current_buffer@{yy\_\-current\_\-buffer}}
 \index{yy_current_buffer@{yy\_\-current\_\-buffer}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf YY\_\-BUFFER\_\-STATE} yy\_\-current\_\-buffer = 0\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a78}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf YY\_\-BUFFER\_\-STATE} yy\_\-current\_\-buffer = 0\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a84}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!yy_def@{yy\_\-def}}
 \index{yy_def@{yy\_\-def}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst short int yy\_\-def[146]\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a92}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst short int yy\_\-def[142]\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a98}
 
 
 {\bf Initial value:}
 
 \footnotesize\begin{verbatim}
     {   0,
-      131,  131,  132,  132,  133,  133,  134,  134,  135,  135,
-      131,   11,  130,   13,  130,  130,  130,  130,  136,  130,
-      130,  130,  130,  130,  130,  130,  130,  130,  130,  130,
-      130,  130,  137,  130,  138,  130,  139,  138,  140,  136,
-      136,  136,  136,  136,  130,  130,  130,  130,  130,  141,
-      137,  137,  130,  138,   36,   36,   56,   56,   56,   56,
-      142,  143,  139,  138,  140,  144,  136,  136,  136,  136,
-      130,  130,  130,  130,  141,   56,   56,   56,   56,   56,
-      145,  138,  138,  136,  136,  136,  136,  130,  130,  130,
-      130,   56,   56,   56,   56,   56,  145,  138,  136,  136,
+      123,  123,  124,  124,  125,  125,  126,  126,  127,  127,
+      123,  123,  122,   13,  128,  128,  129,  129,  122,   19,
+      128,  128,  122,   23,   19,   19,  122,  122,  122,  122,
+      130,  122,  122,  122,  122,  122,  122,  122,  122,  122,
+      122,  122,  122,  122,  131,  122,  132,  133,  132,  134,
+      135,  136,  132,  132,  137,  130,  130,  130,  130,  130,
+      122,  122,  122,  122,  122,  138,  131,  131,  122,  132,
+      133,  132,  134,  139,  122,  135,  136,  140,  132,  132,
+      137,  130,  130,  130,  130,  122,  122,  122,  122,  138,
+      141,  132,  132,  132,  130,  130,  130,  130,  122,  122,
 
-      136,  136,   56,   56,   56,   56,  138,  136,  136,  136,
-       56,   56,   56,  136,  136,  136,   56,   56,   56,  136,
-      136,  136,   56,   56,   56,  136,   56,  136,   56,    0,
+      122,  122,  141,  132,  132,  130,  130,  130,  130,  132,
       130,  130,  130,  130,  130,  130,  130,  130,  130,  130,
-      130,  130,  130,  130,  130
+      130,    0,  122,  122,  122,  122,  122,  122,  122,  122,
+      122,  122,  122,  122,  122,  122,  122,  122,  122,  122,
+      122
     }\end{verbatim}\normalsize 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!yy_did_buffer_switch_on_eof@{yy\_\-did\_\-buffer\_\-switch\_\-on\_\-eof}}
 \index{yy_did_buffer_switch_on_eof@{yy\_\-did\_\-buffer\_\-switch\_\-on\_\-eof}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-did\_\-buffer\_\-switch\_\-on\_\-eof\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a84}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-did\_\-buffer\_\-switch\_\-on\_\-eof\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a90}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!yy_ec@{yy\_\-ec}}
 \index{yy_ec@{yy\_\-ec}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst int yy\_\-ec[256]\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a89}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst int yy\_\-ec[256]\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a95}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!yy_hold_char@{yy\_\-hold\_\-char}}
 \index{yy_hold_char@{yy\_\-hold\_\-char}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char yy\_\-hold\_\-char\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a79}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char yy\_\-hold\_\-char\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a85}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!yy_init@{yy\_\-init}}
 \index{yy_init@{yy\_\-init}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-init = 1\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a82}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-init = 1\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a88}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!yy_last_accepting_cpos@{yy\_\-last\_\-accepting\_\-cpos}}
 \index{yy_last_accepting_cpos@{yy\_\-last\_\-accepting\_\-cpos}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ yy\_\-last\_\-accepting\_\-cpos\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a96}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ yy\_\-last\_\-accepting\_\-cpos\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a102}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!yy_last_accepting_state@{yy\_\-last\_\-accepting\_\-state}}
 \index{yy_last_accepting_state@{yy\_\-last\_\-accepting\_\-state}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf yy\_\-state\_\-type} yy\_\-last\_\-accepting\_\-state\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a95}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf yy\_\-state\_\-type} yy\_\-last\_\-accepting\_\-state\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a101}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!yy_meta@{yy\_\-meta}}
 \index{yy_meta@{yy\_\-meta}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst int yy\_\-meta[32]\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a90}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst int yy\_\-meta[33]\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a96}
 
 
 {\bf Initial value:}
 
 \footnotesize\begin{verbatim}
     {   0,
-        1,    2,    3,    4,    5,    5,    5,    5,    5,    5,
-        5,    6,    6,    6,    5,    5,    5,    5,    6,    6,
-        6,    6,    6,    6,    6,    6,    6,    6,    6,    6,
-        6
+        1,    2,    3,    4,    5,    6,    6,    6,    6,    6,
+        6,    6,    7,    7,    7,    6,    6,    6,    6,    7,
+        7,    7,    7,    7,    7,    7,    7,    7,    7,    7,
+        7,    7
     }\end{verbatim}\normalsize 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!yy_more_flag@{yy\_\-more\_\-flag}}
 \index{yy_more_flag@{yy\_\-more\_\-flag}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-more\_\-flag = 0\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a97}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-more\_\-flag = 0\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a103}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!yy_more_len@{yy\_\-more\_\-len}}
 \index{yy_more_len@{yy\_\-more\_\-len}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-more\_\-len = 0\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a98}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-more\_\-len = 0\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a104}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!yy_n_chars@{yy\_\-n\_\-chars}}
 \index{yy_n_chars@{yy\_\-n\_\-chars}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-n\_\-chars\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a80}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-n\_\-chars\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a86}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!yy_nxt@{yy\_\-nxt}}
 \index{yy_nxt@{yy\_\-nxt}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst short int yy\_\-nxt[373]\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a93}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst short int yy\_\-nxt[553]\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a99}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!yy_start@{yy\_\-start}}
 \index{yy_start@{yy\_\-start}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-start = 0\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a83}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-start = 0\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a89}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!yy_start_stack@{yy\_\-start\_\-stack}}
 \index{yy_start_stack@{yy\_\-start\_\-stack}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int$\ast$ yy\_\-start\_\-stack = 0\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a103}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int$\ast$ yy\_\-start\_\-stack = 0\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a109}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!yy_start_stack_depth@{yy\_\-start\_\-stack\_\-depth}}
 \index{yy_start_stack_depth@{yy\_\-start\_\-stack\_\-depth}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-start\_\-stack\_\-depth = 0\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a102}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-start\_\-stack\_\-depth = 0\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a108}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!yy_start_stack_ptr@{yy\_\-start\_\-stack\_\-ptr}}
 \index{yy_start_stack_ptr@{yy\_\-start\_\-stack\_\-ptr}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-start\_\-stack\_\-ptr = 0\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a101}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-start\_\-stack\_\-ptr = 0\hspace{0.3cm}{\tt  [static]}}\label{vcd__lexer_8c_a107}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!yyin@{yyin}}
 \index{yyin@{yyin}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}FILE$\ast$ yyin = (FILE $\ast$) 0}\label{vcd__lexer_8c_a75}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}FILE$\ast$ yyin = (FILE $\ast$) 0}\label{vcd__lexer_8c_a81}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!yyleng@{yyleng}}
 \index{yyleng@{yyleng}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yyleng}\label{vcd__lexer_8c_a74}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yyleng}\label{vcd__lexer_8c_a80}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!yylloc@{yylloc}}
 \index{yylloc@{yylloc}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}YYLTYPE yylloc}\label{vcd__lexer_8c_a99}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}YYLTYPE yylloc}\label{vcd__lexer_8c_a105}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!yyout@{yyout}}
 \index{yyout@{yyout}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}FILE $\ast$ yyout = (FILE $\ast$) 0}\label{vcd__lexer_8c_a76}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}FILE $\ast$ yyout = (FILE $\ast$) 0}\label{vcd__lexer_8c_a82}
 
 
 \index{vcd_lexer.c@{vcd\_\-lexer.c}!yytext@{yytext}}
 \index{yytext@{yytext}!vcd_lexer.c@{vcd\_\-lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ yytext}\label{vcd__lexer_8c_a87}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ yytext}\label{vcd__lexer_8c_a93}
 
 

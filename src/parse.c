@@ -12,6 +12,7 @@
 #include "util.h"
 #include "db.h"
 #include "binding.h"
+#include "vcd.h"
 
 extern void reset_lexer( FILE* out, str_link* file_list_head );
 extern int VLparse();
@@ -135,16 +136,12 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
 
   snprintf( msg, 4096, "========  Reading in VCD dumpfile %s  ========\n", vcd );
   print_output( msg, DEBUG );
-
-  reset_vcd_lexer( vcd );
   
-  if( VCDparse() != 0 ) {
-    print_output( "Error parsing VCD file", FATAL );
-    exit( 1 );
-  } else {
-    /* Flush any pending statement trees that are waiting for delay */
-    db_do_timestep( -1 );
-  }
+  /* Perform the parse */
+  vcd_parse( vcd );
+    
+  /* Flush any pending statement trees that are waiting for delay */
+  db_do_timestep( -1 );
 
   snprintf( msg, 4096, "========  Writing database %s  ========\n", db );
   print_output( msg, DEBUG );
@@ -160,6 +157,10 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
 }
 
 /* $Log$
+/* Revision 1.8  2002/07/20 21:34:58  phase1geo
+/* Separating ability to parse design and score dumpfile.  Now both or either
+/* can be done (allowing one to parse once and score multiple times).
+/*
 /* Revision 1.7  2002/07/18 22:02:35  phase1geo
 /* In the middle of making improvements/fixes to the expression/signal
 /* binding phase.

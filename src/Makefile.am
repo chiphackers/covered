@@ -1,6 +1,5 @@
 bin_PROGRAMS = covered
 covered_SOURCES = parser.c \
-		  vcd_parser.c \
 		  binding.c \
 		  codegen.c \
 		  comb.c \
@@ -27,8 +26,7 @@ covered_SOURCES = parser.c \
 		  symtable.c \
 		  toggle.c \
                   util.c \
-		  vcd_lexer.c \
-		  vcd_parser_misc.c \
+                  vcd.c \
 		  vector.c
 
 parser.h parser.c: $(srcdir)/parser.y

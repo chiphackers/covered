@@ -33,7 +33,7 @@
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a12">yylex</a>&nbsp;&nbsp;&nbsp;VCDlex</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a13">yyout</a>&nbsp;&nbsp;&nbsp;VCDout</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a14">yyrestart</a>&nbsp;&nbsp;&nbsp;VCDrestart</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a15">yytext</a>&nbsp;&nbsp;&nbsp;VCDtext</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a15">yytext</a>&nbsp;&nbsp;&nbsp;<a class="el" href="vcd__parser__misc_8c.html#a2">VCDtext</a></td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a16">yywrap</a>&nbsp;&nbsp;&nbsp;VCDwrap</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a17">FLEX_SCANNER</a></td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a18">YY_FLEX_MAJOR_VERSION</a>&nbsp;&nbsp;&nbsp;2</td></tr>
@@ -42,8 +42,8 @@
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a21">YY_PROTO</a>(proto)&nbsp;&nbsp;&nbsp;()</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a22">YY_NULL</a>&nbsp;&nbsp;&nbsp;0</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a23">YY_SC_TO_UI</a>(c)&nbsp;&nbsp;&nbsp;((unsigned int) (unsigned char) c)</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a24">BEGIN</a>&nbsp;&nbsp;&nbsp;<a class="el" href="vcd__lexer_8c.html#a83">yy_start</a> = 1 + 2 *</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a25">YY_START</a>&nbsp;&nbsp;&nbsp;((<a class="el" href="vcd__lexer_8c.html#a83">yy_start</a> - 1) / 2)</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a24">BEGIN</a>&nbsp;&nbsp;&nbsp;<a class="el" href="vcd__lexer_8c.html#a89">yy_start</a> = 1 + 2 *</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a25">YY_START</a>&nbsp;&nbsp;&nbsp;((<a class="el" href="vcd__lexer_8c.html#a89">yy_start</a> - 1) / 2)</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a26">YYSTATE</a>&nbsp;&nbsp;&nbsp;YY_START</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a27">YY_STATE_EOF</a>(state)&nbsp;&nbsp;&nbsp;(YY_END_OF_BUFFER + state + 1)</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a28">YY_NEW_FILE</a>&nbsp;&nbsp;&nbsp;yyrestart( yyin )</td></tr>
@@ -57,94 +57,100 @@
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a36">YY_BUFFER_NEW</a>&nbsp;&nbsp;&nbsp;0</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a37">YY_BUFFER_NORMAL</a>&nbsp;&nbsp;&nbsp;1</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a38">YY_BUFFER_EOF_PENDING</a>&nbsp;&nbsp;&nbsp;2</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a39">YY_CURRENT_BUFFER</a>&nbsp;&nbsp;&nbsp;<a class="el" href="vcd__lexer_8c.html#a78">yy_current_buffer</a></td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a40">YY_FLUSH_BUFFER</a>&nbsp;&nbsp;&nbsp;yy_flush_buffer( <a class="el" href="vcd__lexer_8c.html#a78">yy_current_buffer</a> )</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a39">YY_CURRENT_BUFFER</a>&nbsp;&nbsp;&nbsp;<a class="el" href="vcd__lexer_8c.html#a84">yy_current_buffer</a></td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a40">YY_FLUSH_BUFFER</a>&nbsp;&nbsp;&nbsp;yy_flush_buffer( <a class="el" href="vcd__lexer_8c.html#a84">yy_current_buffer</a> )</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a41">yy_new_buffer</a>&nbsp;&nbsp;&nbsp;yy_create_buffer</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a42">yy_set_interactive</a>(is_interactive)</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a43">yy_set_bol</a>(at_bol)</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a44">YY_AT_BOL</a>()&nbsp;&nbsp;&nbsp;(<a class="el" href="vcd__lexer_8c.html#a78">yy_current_buffer</a>-&gt;yy_at_bol)</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a44">YY_AT_BOL</a>()&nbsp;&nbsp;&nbsp;(<a class="el" href="vcd__lexer_8c.html#a84">yy_current_buffer</a>-&gt;yy_at_bol)</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a45">yytext_ptr</a>&nbsp;&nbsp;&nbsp;yytext</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a46">YY_DO_BEFORE_ACTION</a></td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a47">YY_NUM_RULES</a>&nbsp;&nbsp;&nbsp;30</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a48">YY_END_OF_BUFFER</a>&nbsp;&nbsp;&nbsp;31</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a47">YY_NUM_RULES</a>&nbsp;&nbsp;&nbsp;34</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a48">YY_END_OF_BUFFER</a>&nbsp;&nbsp;&nbsp;35</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a49">REJECT</a>&nbsp;&nbsp;&nbsp;reject_used_but_not_detected</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a50">yymore</a>()&nbsp;&nbsp;&nbsp;(<a class="el" href="vcd__lexer_8c.html#a97">yy_more_flag</a> = 1)</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a51">YY_MORE_ADJ</a>&nbsp;&nbsp;&nbsp;<a class="el" href="vcd__lexer_8c.html#a98">yy_more_len</a></td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a50">yymore</a>()&nbsp;&nbsp;&nbsp;(<a class="el" href="vcd__lexer_8c.html#a103">yy_more_flag</a> = 1)</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a51">YY_MORE_ADJ</a>&nbsp;&nbsp;&nbsp;<a class="el" href="vcd__lexer_8c.html#a104">yy_more_len</a></td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a52">YY_RESTORE_YY_MORE_OFFSET</a></td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a53">INITIAL</a>&nbsp;&nbsp;&nbsp;0</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a54">yylval</a>&nbsp;&nbsp;&nbsp;<a class="el" href="vcd__parser_8h.html#a50">VCDlval</a></td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a54">yylval</a>&nbsp;&nbsp;&nbsp;<a class="el" href="vcd__parser_8h.html#a48">VCDlval</a></td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a55">YY_STACK_USED</a>&nbsp;&nbsp;&nbsp;1</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a56">COMMENT</a>&nbsp;&nbsp;&nbsp;1</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a57">DATE</a>&nbsp;&nbsp;&nbsp;2</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a58">TIMESCALE</a>&nbsp;&nbsp;&nbsp;3</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a59">VERSION</a>&nbsp;&nbsp;&nbsp;4</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a60">SIMULATION</a>&nbsp;&nbsp;&nbsp;5</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a61">DEFINITION</a>&nbsp;&nbsp;&nbsp;6</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a62">YY_READ_BUF_SIZE</a>&nbsp;&nbsp;&nbsp;8192</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a63">ECHO</a>&nbsp;&nbsp;&nbsp;(void) fwrite( yytext, yyleng, 1, yyout )</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a64">YY_INPUT</a>(buf, result, max_size)</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a65">yyterminate</a>()&nbsp;&nbsp;&nbsp;return YY_NULL</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a66">YY_START_STACK_INCR</a>&nbsp;&nbsp;&nbsp;25</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a67">YY_FATAL_ERROR</a>(msg)&nbsp;&nbsp;&nbsp;yy_fatal_error( msg )</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a68">YY_DECL</a>&nbsp;&nbsp;&nbsp;int yylex YY_PROTO(( void ))</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a69">YY_BREAK</a>&nbsp;&nbsp;&nbsp;break;</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a70">YY_RULE_SETUP</a>&nbsp;&nbsp;&nbsp;YY_USER_ACTION</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a71">YY_EXIT_FAILURE</a>&nbsp;&nbsp;&nbsp;2</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a72">yyless</a>(n)</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a61">DEF_VAR_TYPE</a>&nbsp;&nbsp;&nbsp;6</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a62">DEF_VAR_SIZE</a>&nbsp;&nbsp;&nbsp;7</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a63">DEF_VAR_ID</a>&nbsp;&nbsp;&nbsp;8</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a64">DEF_VAR_REF</a>&nbsp;&nbsp;&nbsp;9</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a65">DEF_END</a>&nbsp;&nbsp;&nbsp;10</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a66">DEF_SCOPE_TYPE</a>&nbsp;&nbsp;&nbsp;11</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a67">DEF_SCOPE_ID</a>&nbsp;&nbsp;&nbsp;12</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a68">YY_READ_BUF_SIZE</a>&nbsp;&nbsp;&nbsp;8192</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a69">ECHO</a>&nbsp;&nbsp;&nbsp;(void) fwrite( yytext, yyleng, 1, yyout )</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a70">YY_INPUT</a>(buf, result, max_size)</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a71">yyterminate</a>()&nbsp;&nbsp;&nbsp;return YY_NULL</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a72">YY_START_STACK_INCR</a>&nbsp;&nbsp;&nbsp;25</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a73">YY_FATAL_ERROR</a>(msg)&nbsp;&nbsp;&nbsp;yy_fatal_error( msg )</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a74">YY_DECL</a>&nbsp;&nbsp;&nbsp;int yylex YY_PROTO(( void ))</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a75">YY_BREAK</a>&nbsp;&nbsp;&nbsp;break;</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a76">YY_RULE_SETUP</a>&nbsp;&nbsp;&nbsp;YY_USER_ACTION</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a77">YY_EXIT_FAILURE</a>&nbsp;&nbsp;&nbsp;2</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a78">yyless</a>(n)</td></tr>
 <tr><td colspan=2><br><h2>Typedefs</h2></td></tr>
-<tr><td nowrap align=right valign=top>typedef <a class="el" href="structyy__buffer__state.html">yy_buffer_state</a> *&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a73">YY_BUFFER_STATE</a></td></tr>
-<tr><td nowrap align=right valign=top>typedef unsigned int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a77">yy_size_t</a></td></tr>
-<tr><td nowrap align=right valign=top>typedef unsigned char&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a85">YY_CHAR</a></td></tr>
-<tr><td nowrap align=right valign=top>typedef int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a86">yy_state_type</a></td></tr>
+<tr><td nowrap align=right valign=top>typedef <a class="el" href="structyy__buffer__state.html">yy_buffer_state</a> *&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a79">YY_BUFFER_STATE</a></td></tr>
+<tr><td nowrap align=right valign=top>typedef unsigned int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a83">yy_size_t</a></td></tr>
+<tr><td nowrap align=right valign=top>typedef unsigned char&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a91">YY_CHAR</a></td></tr>
+<tr><td nowrap align=right valign=top>typedef int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a92">yy_state_type</a></td></tr>
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
-<tr><td nowrap align=right valign=top>void yyrestart&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a108">YY_PROTO</a> ((FILE *input_file))</td></tr>
-<tr><td nowrap align=right valign=top>void yy_switch_to_buffer&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a109">YY_PROTO</a> ((<a class="el" href="vcd__lexer_8c.html#a73">YY_BUFFER_STATE</a> new_buffer))</td></tr>
-<tr><td nowrap align=right valign=top>void yy_load_buffer_state&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a110">YY_PROTO</a> ((void))</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="vcd__lexer_8c.html#a73">YY_BUFFER_STATE</a> yy_create_buffer&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a111">YY_PROTO</a> ((FILE *<a class="el" href="vcd__lexer_8c.html#a106">file</a>, int <a class="el" href="vcd__lexer_8c.html#a105">size</a>))</td></tr>
-<tr><td nowrap align=right valign=top>void yy_delete_buffer&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a112">YY_PROTO</a> ((<a class="el" href="vcd__lexer_8c.html#a73">YY_BUFFER_STATE</a> b))</td></tr>
-<tr><td nowrap align=right valign=top>void yy_init_buffer&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a113">YY_PROTO</a> ((<a class="el" href="vcd__lexer_8c.html#a73">YY_BUFFER_STATE</a> b, FILE *<a class="el" href="vcd__lexer_8c.html#a106">file</a>))</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="vcd__lexer_8c.html#a73">YY_BUFFER_STATE</a> yy_scan_buffer&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a114">YY_PROTO</a> ((char *base, <a class="el" href="vcd__lexer_8c.html#a77">yy_size_t</a> <a class="el" href="vcd__lexer_8c.html#a105">size</a>))</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="vcd__lexer_8c.html#a73">YY_BUFFER_STATE</a> yy_scan_string&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a115">YY_PROTO</a> ((yyconst char *yy_str))</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="vcd__lexer_8c.html#a73">YY_BUFFER_STATE</a> yy_scan_bytes&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a116">YY_PROTO</a> ((yyconst char *bytes, int <a class="el" href="vcd__lexer_8c.html#a107">len</a>))</td></tr>
-<tr><td nowrap align=right valign=top>void *yy_flex_alloc&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a117">YY_PROTO</a> ((<a class="el" href="vcd__lexer_8c.html#a77">yy_size_t</a>))</td></tr>
-<tr><td nowrap align=right valign=top>void *yy_flex_realloc&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a118">YY_PROTO</a> ((void *, <a class="el" href="vcd__lexer_8c.html#a77">yy_size_t</a>))</td></tr>
-<tr><td nowrap align=right valign=top>void yy_flex_free&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a119">YY_PROTO</a> ((void *))</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="vcd__lexer_8c.html#a86">yy_state_type</a> yy_try_NUL_trans&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a120">YY_PROTO</a> ((<a class="el" href="vcd__lexer_8c.html#a86">yy_state_type</a> current_state))</td></tr>
-<tr><td nowrap align=right valign=top>void yy_fatal_error&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a121">YY_PROTO</a> ((yyconst char msg[]))</td></tr>
-<tr><td nowrap align=right valign=top>void yyunput&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a122">YY_PROTO</a> ((int c, char *buf_ptr))</td></tr>
-<tr><td nowrap align=right valign=top>void yy_push_state&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a123">YY_PROTO</a> ((int new_state))</td></tr>
+<tr><td nowrap align=right valign=top>void yyrestart&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a114">YY_PROTO</a> ((FILE *input_file))</td></tr>
+<tr><td nowrap align=right valign=top>void yy_switch_to_buffer&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a115">YY_PROTO</a> ((<a class="el" href="vcd__lexer_8c.html#a79">YY_BUFFER_STATE</a> new_buffer))</td></tr>
+<tr><td nowrap align=right valign=top>void yy_load_buffer_state&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a116">YY_PROTO</a> ((void))</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="vcd__lexer_8c.html#a79">YY_BUFFER_STATE</a> yy_create_buffer&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a117">YY_PROTO</a> ((FILE *<a class="el" href="vcd__lexer_8c.html#a112">file</a>, int <a class="el" href="vcd__lexer_8c.html#a111">size</a>))</td></tr>
+<tr><td nowrap align=right valign=top>void yy_delete_buffer&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a118">YY_PROTO</a> ((<a class="el" href="vcd__lexer_8c.html#a79">YY_BUFFER_STATE</a> b))</td></tr>
+<tr><td nowrap align=right valign=top>void yy_init_buffer&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a119">YY_PROTO</a> ((<a class="el" href="vcd__lexer_8c.html#a79">YY_BUFFER_STATE</a> b, FILE *<a class="el" href="vcd__lexer_8c.html#a112">file</a>))</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="vcd__lexer_8c.html#a79">YY_BUFFER_STATE</a> yy_scan_buffer&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a120">YY_PROTO</a> ((char *base, <a class="el" href="vcd__lexer_8c.html#a83">yy_size_t</a> <a class="el" href="vcd__lexer_8c.html#a111">size</a>))</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="vcd__lexer_8c.html#a79">YY_BUFFER_STATE</a> yy_scan_string&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a121">YY_PROTO</a> ((yyconst char *yy_str))</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="vcd__lexer_8c.html#a79">YY_BUFFER_STATE</a> yy_scan_bytes&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a122">YY_PROTO</a> ((yyconst char *bytes, int <a class="el" href="vcd__lexer_8c.html#a113">len</a>))</td></tr>
+<tr><td nowrap align=right valign=top>void *yy_flex_alloc&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a123">YY_PROTO</a> ((<a class="el" href="vcd__lexer_8c.html#a83">yy_size_t</a>))</td></tr>
+<tr><td nowrap align=right valign=top>void *yy_flex_realloc&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a124">YY_PROTO</a> ((void *, <a class="el" href="vcd__lexer_8c.html#a83">yy_size_t</a>))</td></tr>
+<tr><td nowrap align=right valign=top>void yy_flex_free&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a125">YY_PROTO</a> ((void *))</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="vcd__lexer_8c.html#a92">yy_state_type</a> yy_try_NUL_trans&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a126">YY_PROTO</a> ((<a class="el" href="vcd__lexer_8c.html#a92">yy_state_type</a> current_state))</td></tr>
+<tr><td nowrap align=right valign=top>void yy_fatal_error&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a127">YY_PROTO</a> ((yyconst char msg[]))</td></tr>
+<tr><td nowrap align=right valign=top>void yyunput&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a128">YY_PROTO</a> ((int c, char *buf_ptr))</td></tr>
+<tr><td nowrap align=right valign=top>void yy_push_state&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a129">YY_PROTO</a> ((int new_state))</td></tr>
 <tr><td colspan=2><br><h2>Variables</h2></td></tr>
-<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a74">yyleng</a></td></tr>
-<tr><td nowrap align=right valign=top>FILE *&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a75">yyin</a> = (FILE *) 0</td></tr>
-<tr><td nowrap align=right valign=top>FILE *&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a76">yyout</a> = (FILE *) 0</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="vcd__lexer_8c.html#a73">YY_BUFFER_STATE</a>&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a78">yy_current_buffer</a> = 0</td></tr>
-<tr><td nowrap align=right valign=top>char&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a79">yy_hold_char</a></td></tr>
-<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a80">yy_n_chars</a></td></tr>
-<tr><td nowrap align=right valign=top>char *&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a81">yy_c_buf_p</a> = (char *) 0</td></tr>
-<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a82">yy_init</a> = 1</td></tr>
-<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a83">yy_start</a> = 0</td></tr>
-<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a84">yy_did_buffer_switch_on_eof</a></td></tr>
-<tr><td nowrap align=right valign=top>char *&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a87">yytext</a></td></tr>
-<tr><td nowrap align=right valign=top>yyconst short int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a88">yy_accept</a> [131]</td></tr>
-<tr><td nowrap align=right valign=top>yyconst int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a89">yy_ec</a> [256]</td></tr>
-<tr><td nowrap align=right valign=top>yyconst int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a90">yy_meta</a> [32]</td></tr>
-<tr><td nowrap align=right valign=top>yyconst short int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a91">yy_base</a> [146]</td></tr>
-<tr><td nowrap align=right valign=top>yyconst short int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a92">yy_def</a> [146]</td></tr>
-<tr><td nowrap align=right valign=top>yyconst short int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a93">yy_nxt</a> [373]</td></tr>
-<tr><td nowrap align=right valign=top>yyconst short int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a94">yy_chk</a> [373]</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="vcd__lexer_8c.html#a86">yy_state_type</a>&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a95">yy_last_accepting_state</a></td></tr>
-<tr><td nowrap align=right valign=top>char *&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a96">yy_last_accepting_cpos</a></td></tr>
-<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a97">yy_more_flag</a> = 0</td></tr>
-<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a98">yy_more_len</a> = 0</td></tr>
-<tr><td nowrap align=right valign=top>YYLTYPE&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a99">yylloc</a></td></tr>
-<tr><td nowrap align=right valign=top>char *&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a100">vcdfile</a></td></tr>
-<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a101">yy_start_stack_ptr</a> = 0</td></tr>
-<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a102">yy_start_stack_depth</a> = 0</td></tr>
-<tr><td nowrap align=right valign=top>int *&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a103">yy_start_stack</a> = 0</td></tr>
-<tr><td nowrap align=right valign=top>register char *&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a104">yy_bp</a></td></tr>
-<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a105">size</a></td></tr>
-<tr><td nowrap align=right valign=top>FILE *&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a106">file</a></td></tr>
-<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a107">len</a></td></tr>
+<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a80">yyleng</a></td></tr>
+<tr><td nowrap align=right valign=top>FILE *&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a81">yyin</a> = (FILE *) 0</td></tr>
+<tr><td nowrap align=right valign=top>FILE *&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a82">yyout</a> = (FILE *) 0</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="vcd__lexer_8c.html#a79">YY_BUFFER_STATE</a>&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a84">yy_current_buffer</a> = 0</td></tr>
+<tr><td nowrap align=right valign=top>char&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a85">yy_hold_char</a></td></tr>
+<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a86">yy_n_chars</a></td></tr>
+<tr><td nowrap align=right valign=top>char *&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a87">yy_c_buf_p</a> = (char *) 0</td></tr>
+<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a88">yy_init</a> = 1</td></tr>
+<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a89">yy_start</a> = 0</td></tr>
+<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a90">yy_did_buffer_switch_on_eof</a></td></tr>
+<tr><td nowrap align=right valign=top>char *&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a93">yytext</a></td></tr>
+<tr><td nowrap align=right valign=top>yyconst short int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a94">yy_accept</a> [123]</td></tr>
+<tr><td nowrap align=right valign=top>yyconst int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a95">yy_ec</a> [256]</td></tr>
+<tr><td nowrap align=right valign=top>yyconst int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a96">yy_meta</a> [33]</td></tr>
+<tr><td nowrap align=right valign=top>yyconst short int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a97">yy_base</a> [142]</td></tr>
+<tr><td nowrap align=right valign=top>yyconst short int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a98">yy_def</a> [142]</td></tr>
+<tr><td nowrap align=right valign=top>yyconst short int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a99">yy_nxt</a> [553]</td></tr>
+<tr><td nowrap align=right valign=top>yyconst short int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a100">yy_chk</a> [553]</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="vcd__lexer_8c.html#a92">yy_state_type</a>&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a101">yy_last_accepting_state</a></td></tr>
+<tr><td nowrap align=right valign=top>char *&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a102">yy_last_accepting_cpos</a></td></tr>
+<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a103">yy_more_flag</a> = 0</td></tr>
+<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a104">yy_more_len</a> = 0</td></tr>
+<tr><td nowrap align=right valign=top>YYLTYPE&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a105">yylloc</a></td></tr>
+<tr><td nowrap align=right valign=top>char *&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a106">vcdfile</a></td></tr>
+<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a107">yy_start_stack_ptr</a> = 0</td></tr>
+<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a108">yy_start_stack_depth</a> = 0</td></tr>
+<tr><td nowrap align=right valign=top>int *&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a109">yy_start_stack</a> = 0</td></tr>
+<tr><td nowrap align=right valign=top>register char *&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a110">yy_bp</a></td></tr>
+<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a111">size</a></td></tr>
+<tr><td nowrap align=right valign=top>FILE *&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a112">file</a></td></tr>
+<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="vcd__lexer_8c.html#a113">len</a></td></tr>
 </table>
 <hr><h2>Define Documentation</h2>
 <a name="a24" doxytag="vcd_lexer.c::BEGIN"></a><p>
@@ -153,7 +159,7 @@
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> #define BEGIN&nbsp;&nbsp;&nbsp;<a class="el" href="vcd__lexer_8c.html#a83">yy_start</a> = 1 + 2 *
+          <td class="md" nowrap valign="top"> #define BEGIN&nbsp;&nbsp;&nbsp;<a class="el" href="vcd__lexer_8c.html#a89">yy_start</a> = 1 + 2 *
       </table>
     </td>
   </tr>
@@ -213,13 +219,13 @@
     </td>
   </tr>
 </table>
-<a name="a61" doxytag="vcd_lexer.c::DEFINITION"></a><p>
+<a name="a65" doxytag="vcd_lexer.c::DEF_END"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> #define DEFINITION&nbsp;&nbsp;&nbsp;6
+          <td class="md" nowrap valign="top"> #define DEF_END&nbsp;&nbsp;&nbsp;10
       </table>
     </td>
   </tr>
@@ -235,7 +241,139 @@
     </td>
   </tr>
 </table>
-<a name="a63" doxytag="vcd_lexer.c::ECHO"></a><p>
+<a name="a67" doxytag="vcd_lexer.c::DEF_SCOPE_ID"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> #define DEF_SCOPE_ID&nbsp;&nbsp;&nbsp;12
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+    </td>
+  </tr>
+</table>
+<a name="a66" doxytag="vcd_lexer.c::DEF_SCOPE_TYPE"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> #define DEF_SCOPE_TYPE&nbsp;&nbsp;&nbsp;11
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+    </td>
+  </tr>
+</table>
+<a name="a63" doxytag="vcd_lexer.c::DEF_VAR_ID"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> #define DEF_VAR_ID&nbsp;&nbsp;&nbsp;8
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+    </td>
+  </tr>
+</table>
+<a name="a64" doxytag="vcd_lexer.c::DEF_VAR_REF"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> #define DEF_VAR_REF&nbsp;&nbsp;&nbsp;9
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+    </td>
+  </tr>
+</table>
+<a name="a62" doxytag="vcd_lexer.c::DEF_VAR_SIZE"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> #define DEF_VAR_SIZE&nbsp;&nbsp;&nbsp;7
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+    </td>
+  </tr>
+</table>
+<a name="a61" doxytag="vcd_lexer.c::DEF_VAR_TYPE"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> #define DEF_VAR_TYPE&nbsp;&nbsp;&nbsp;6
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+    </td>
+  </tr>
+</table>
+<a name="a69" doxytag="vcd_lexer.c::ECHO"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -493,7 +631,7 @@
 &nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
           <td class="md" valign="top">)&nbsp;</td>
-          <td class="md" nowrap>&nbsp;&nbsp;&nbsp;(<a class="el" href="vcd__lexer_8c.html#a78">yy_current_buffer</a>-&gt;yy_at_bol)
+          <td class="md" nowrap>&nbsp;&nbsp;&nbsp;(<a class="el" href="vcd__lexer_8c.html#a84">yy_current_buffer</a>-&gt;yy_at_bol)
       </table>
     </td>
   </tr>
@@ -509,7 +647,7 @@
     </td>
   </tr>
 </table>
-<a name="a69" doxytag="vcd_lexer.c::YY_BREAK"></a><p>
+<a name="a75" doxytag="vcd_lexer.c::YY_BREAK"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -647,7 +785,7 @@
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> #define YY_CURRENT_BUFFER&nbsp;&nbsp;&nbsp;<a class="el" href="vcd__lexer_8c.html#a78">yy_current_buffer</a>
+          <td class="md" nowrap valign="top"> #define YY_CURRENT_BUFFER&nbsp;&nbsp;&nbsp;<a class="el" href="vcd__lexer_8c.html#a84">yy_current_buffer</a>
       </table>
     </td>
   </tr>
@@ -663,7 +801,7 @@
     </td>
   </tr>
 </table>
-<a name="a68" doxytag="vcd_lexer.c::YY_DECL"></a><p>
+<a name="a74" doxytag="vcd_lexer.c::YY_DECL"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -740,7 +878,7 @@
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> #define YY_END_OF_BUFFER&nbsp;&nbsp;&nbsp;31
+          <td class="md" nowrap valign="top"> #define YY_END_OF_BUFFER&nbsp;&nbsp;&nbsp;35
       </table>
     </td>
   </tr>
@@ -778,7 +916,7 @@
     </td>
   </tr>
 </table>
-<a name="a71" doxytag="vcd_lexer.c::YY_EXIT_FAILURE"></a><p>
+<a name="a77" doxytag="vcd_lexer.c::YY_EXIT_FAILURE"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -800,7 +938,7 @@
     </td>
   </tr>
 </table>
-<a name="a67" doxytag="vcd_lexer.c::YY_FATAL_ERROR"></a><p>
+<a name="a73" doxytag="vcd_lexer.c::YY_FATAL_ERROR"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -899,7 +1037,7 @@
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> #define YY_FLUSH_BUFFER&nbsp;&nbsp;&nbsp;yy_flush_buffer( <a class="el" href="vcd__lexer_8c.html#a78">yy_current_buffer</a> )
+          <td class="md" nowrap valign="top"> #define YY_FLUSH_BUFFER&nbsp;&nbsp;&nbsp;yy_flush_buffer( <a class="el" href="vcd__lexer_8c.html#a84">yy_current_buffer</a> )
       </table>
     </td>
   </tr>
@@ -959,7 +1097,7 @@
     </td>
   </tr>
 </table>
-<a name="a64" doxytag="vcd_lexer.c::YY_INPUT"></a><p>
+<a name="a70" doxytag="vcd_lexer.c::YY_INPUT"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -998,12 +1136,12 @@
                 <font class="keywordflow">if</font> ( c == <font class="charliteral">'\n'</font> ) \
                         buf[n++] = (char) c; \
                 <font class="keywordflow">if</font> ( c == EOF &amp;&amp; ferror( yyin ) ) \
-                        <a class="code" href="vcd__lexer_8c.html#a67">YY_FATAL_ERROR</a>( <font class="stringliteral">"input in flex scanner failed"</font> ); \
+                        <a class="code" href="vcd__lexer_8c.html#a73">YY_FATAL_ERROR</a>( <font class="stringliteral">"input in flex scanner failed"</font> ); \
                 result = n; \
                 } \
         <font class="keywordflow">else</font> <font class="keywordflow">if</font> ( ((result = fread( buf, 1, max_size, yyin )) == 0) \
                   &amp;&amp; ferror( yyin ) ) \
-                <a class="code" href="vcd__lexer_8c.html#a67">YY_FATAL_ERROR</a>( <font class="stringliteral">"input in flex scanner failed"</font> );</pre></div>    </td>
+                <a class="code" href="vcd__lexer_8c.html#a73">YY_FATAL_ERROR</a>( <font class="stringliteral">"input in flex scanner failed"</font> );</pre></div>    </td>
   </tr>
 </table>
 <a name="a8" doxytag="vcd_lexer.c::yy_load_buffer_state"></a><p>
@@ -1034,7 +1172,7 @@
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> #define YY_MORE_ADJ&nbsp;&nbsp;&nbsp;<a class="el" href="vcd__lexer_8c.html#a98">yy_more_len</a>
+          <td class="md" nowrap valign="top"> #define YY_MORE_ADJ&nbsp;&nbsp;&nbsp;<a class="el" href="vcd__lexer_8c.html#a104">yy_more_len</a>
       </table>
     </td>
   </tr>
@@ -1122,7 +1260,7 @@
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> #define YY_NUM_RULES&nbsp;&nbsp;&nbsp;30
+          <td class="md" nowrap valign="top"> #define YY_NUM_RULES&nbsp;&nbsp;&nbsp;34
       </table>
     </td>
   </tr>
@@ -1165,7 +1303,7 @@
     </td>
   </tr>
 </table>
-<a name="a62" doxytag="vcd_lexer.c::YY_READ_BUF_SIZE"></a><p>
+<a name="a68" doxytag="vcd_lexer.c::YY_READ_BUF_SIZE"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -1209,7 +1347,7 @@
     </td>
   </tr>
 </table>
-<a name="a70" doxytag="vcd_lexer.c::YY_RULE_SETUP"></a><p>
+<a name="a76" doxytag="vcd_lexer.c::YY_RULE_SETUP"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -1414,7 +1552,7 @@
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> #define YY_START&nbsp;&nbsp;&nbsp;((<a class="el" href="vcd__lexer_8c.html#a83">yy_start</a> - 1) / 2)
+          <td class="md" nowrap valign="top"> #define YY_START&nbsp;&nbsp;&nbsp;((<a class="el" href="vcd__lexer_8c.html#a89">yy_start</a> - 1) / 2)
       </table>
     </td>
   </tr>
@@ -1430,7 +1568,7 @@
     </td>
   </tr>
 </table>
-<a name="a66" doxytag="vcd_lexer.c::YY_START_STACK_INCR"></a><p>
+<a name="a72" doxytag="vcd_lexer.c::YY_START_STACK_INCR"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -1567,7 +1705,7 @@
     </td>
   </tr>
 </table>
-<a name="a72" doxytag="vcd_lexer.c::yyless"></a><p>
+<a name="a78" doxytag="vcd_lexer.c::yyless"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -1666,7 +1804,7 @@
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> #define yylval&nbsp;&nbsp;&nbsp;<a class="el" href="vcd__parser_8h.html#a50">VCDlval</a>
+          <td class="md" nowrap valign="top"> #define yylval&nbsp;&nbsp;&nbsp;<a class="el" href="vcd__parser_8h.html#a48">VCDlval</a>
       </table>
     </td>
   </tr>
@@ -1693,7 +1831,7 @@
 &nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
           <td class="md" valign="top">)&nbsp;</td>
-          <td class="md" nowrap>&nbsp;&nbsp;&nbsp;(<a class="el" href="vcd__lexer_8c.html#a97">yy_more_flag</a> = 1)
+          <td class="md" nowrap>&nbsp;&nbsp;&nbsp;(<a class="el" href="vcd__lexer_8c.html#a103">yy_more_flag</a> = 1)
       </table>
     </td>
   </tr>
@@ -1775,7 +1913,7 @@
     </td>
   </tr>
 </table>
-<a name="a65" doxytag="vcd_lexer.c::yyterminate"></a><p>
+<a name="a71" doxytag="vcd_lexer.c::yyterminate"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -1808,7 +1946,7 @@
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> #define yytext&nbsp;&nbsp;&nbsp;VCDtext
+          <td class="md" nowrap valign="top"> #define yytext&nbsp;&nbsp;&nbsp;<a class="el" href="vcd__parser__misc_8c.html#a2">VCDtext</a>
       </table>
     </td>
   </tr>
@@ -1869,7 +2007,7 @@
   </tr>
 </table>
 <hr><h2>Typedef Documentation</h2>
-<a name="a73" doxytag="vcd_lexer.c::YY_BUFFER_STATE"></a><p>
+<a name="a79" doxytag="vcd_lexer.c::YY_BUFFER_STATE"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -1891,7 +2029,7 @@
     </td>
   </tr>
 </table>
-<a name="a85" doxytag="vcd_lexer.c::YY_CHAR"></a><p>
+<a name="a91" doxytag="vcd_lexer.c::YY_CHAR"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -1913,7 +2051,7 @@
     </td>
   </tr>
 </table>
-<a name="a77" doxytag="vcd_lexer.c::yy_size_t"></a><p>
+<a name="a83" doxytag="vcd_lexer.c::yy_size_t"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -1935,7 +2073,7 @@
     </td>
   </tr>
 </table>
-<a name="a86" doxytag="vcd_lexer.c::yy_state_type"></a><p>
+<a name="a92" doxytag="vcd_lexer.c::yy_state_type"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -1958,7 +2096,7 @@
   </tr>
 </table>
 <hr><h2>Function Documentation</h2>
-<a name="a123" doxytag="vcd_lexer.c::YY_PROTO"></a><p>
+<a name="a129" doxytag="vcd_lexer.c::YY_PROTO"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -1987,7 +2125,7 @@
     </td>
   </tr>
 </table>
-<a name="a122" doxytag="vcd_lexer.c::YY_PROTO"></a><p>
+<a name="a128" doxytag="vcd_lexer.c::YY_PROTO"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2016,7 +2154,7 @@
     </td>
   </tr>
 </table>
-<a name="a121" doxytag="vcd_lexer.c::YY_PROTO"></a><p>
+<a name="a127" doxytag="vcd_lexer.c::YY_PROTO"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2045,15 +2183,15 @@
     </td>
   </tr>
 </table>
-<a name="a120" doxytag="vcd_lexer.c::YY_PROTO"></a><p>
+<a name="a126" doxytag="vcd_lexer.c::YY_PROTO"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="vcd__lexer_8c.html#a86">yy_state_type</a> yy_try_NUL_trans YY_PROTO </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="vcd__lexer_8c.html#a92">yy_state_type</a> yy_try_NUL_trans YY_PROTO </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top">(<a class="el" href="vcd__lexer_8c.html#a86">yy_state_type</a> current_state)&nbsp;</td>
+          <td class="md" nowrap valign="top">(<a class="el" href="vcd__lexer_8c.html#a92">yy_state_type</a> current_state)&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
           <td class="md" valign="top">)&nbsp;</td>
           <td class="md" nowrap><code> [static]</code></td>
@@ -2074,7 +2212,7 @@
     </td>
   </tr>
 </table>
-<a name="a119" doxytag="vcd_lexer.c::YY_PROTO"></a><p>
+<a name="a125" doxytag="vcd_lexer.c::YY_PROTO"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2103,7 +2241,7 @@
     </td>
   </tr>
 </table>
-<a name="a118" doxytag="vcd_lexer.c::YY_PROTO"></a><p>
+<a name="a124" doxytag="vcd_lexer.c::YY_PROTO"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2111,10 +2249,184 @@
         <tr>
           <td class="md" nowrap valign="top"> void* yy_flex_realloc YY_PROTO </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top">(void *, <a class="el" href="vcd__lexer_8c.html#a77">yy_size_t</a>)&nbsp;</td>
+          <td class="md" nowrap valign="top">(void *, <a class="el" href="vcd__lexer_8c.html#a83">yy_size_t</a>)&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
           <td class="md" valign="top">)&nbsp;</td>
           <td class="md" nowrap><code> [static]</code></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+    </td>
+  </tr>
+</table>
+<a name="a123" doxytag="vcd_lexer.c::YY_PROTO"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> void* yy_flex_alloc YY_PROTO </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="md" nowrap valign="top">(<a class="el" href="vcd__lexer_8c.html#a83">yy_size_t</a>)&nbsp;</td>
+          <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
+          <td class="md" valign="top">)&nbsp;</td>
+          <td class="md" nowrap><code> [static]</code></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+    </td>
+  </tr>
+</table>
+<a name="a122" doxytag="vcd_lexer.c::YY_PROTO"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> <a class="el" href="vcd__lexer_8c.html#a79">YY_BUFFER_STATE</a> yy_scan_bytes YY_PROTO </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="md" nowrap valign="top">(yyconst char *bytes, int <a class="el" href="vcd__lexer_8c.html#a113">len</a>)&nbsp;</td>
+          <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
+          <td class="md" valign="top">)&nbsp;</td>
+          <td class="md" nowrap></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+    </td>
+  </tr>
+</table>
+<a name="a121" doxytag="vcd_lexer.c::YY_PROTO"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> <a class="el" href="vcd__lexer_8c.html#a79">YY_BUFFER_STATE</a> yy_scan_string YY_PROTO </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="md" nowrap valign="top">(yyconst char *yy_str)&nbsp;</td>
+          <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
+          <td class="md" valign="top">)&nbsp;</td>
+          <td class="md" nowrap></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+    </td>
+  </tr>
+</table>
+<a name="a120" doxytag="vcd_lexer.c::YY_PROTO"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> <a class="el" href="vcd__lexer_8c.html#a79">YY_BUFFER_STATE</a> yy_scan_buffer YY_PROTO </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="md" nowrap valign="top">(char *base, <a class="el" href="vcd__lexer_8c.html#a83">yy_size_t</a> <a class="el" href="vcd__lexer_8c.html#a111">size</a>)&nbsp;</td>
+          <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
+          <td class="md" valign="top">)&nbsp;</td>
+          <td class="md" nowrap></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+    </td>
+  </tr>
+</table>
+<a name="a119" doxytag="vcd_lexer.c::YY_PROTO"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> void yy_init_buffer YY_PROTO </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="md" nowrap valign="top">(<a class="el" href="vcd__lexer_8c.html#a79">YY_BUFFER_STATE</a> b, FILE *<a class="el" href="vcd__lexer_8c.html#a112">file</a>)&nbsp;</td>
+          <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
+          <td class="md" valign="top">)&nbsp;</td>
+          <td class="md" nowrap></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+    </td>
+  </tr>
+</table>
+<a name="a118" doxytag="vcd_lexer.c::YY_PROTO"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> void yy_delete_buffer YY_PROTO </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="md" nowrap valign="top">(<a class="el" href="vcd__lexer_8c.html#a79">YY_BUFFER_STATE</a> b)&nbsp;</td>
+          <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
+          <td class="md" valign="top">)&nbsp;</td>
+          <td class="md" nowrap></td>
         </tr>
 
       </table>
@@ -2138,12 +2450,12 @@
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> void* yy_flex_alloc YY_PROTO </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="vcd__lexer_8c.html#a79">YY_BUFFER_STATE</a> yy_create_buffer YY_PROTO </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top">(<a class="el" href="vcd__lexer_8c.html#a77">yy_size_t</a>)&nbsp;</td>
+          <td class="md" nowrap valign="top">(FILE *<a class="el" href="vcd__lexer_8c.html#a112">file</a>, int <a class="el" href="vcd__lexer_8c.html#a111">size</a>)&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
           <td class="md" valign="top">)&nbsp;</td>
-          <td class="md" nowrap><code> [static]</code></td>
+          <td class="md" nowrap></td>
         </tr>
 
       </table>
@@ -2162,180 +2474,6 @@
   </tr>
 </table>
 <a name="a116" doxytag="vcd_lexer.c::YY_PROTO"></a><p>
-<table width="100%" cellpadding="2" cellspacing="0" border="0">
-  <tr>
-    <td class="md">
-      <table cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="vcd__lexer_8c.html#a73">YY_BUFFER_STATE</a> yy_scan_bytes YY_PROTO </td>
-          <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top">(yyconst char *bytes, int <a class="el" href="vcd__lexer_8c.html#a107">len</a>)&nbsp;</td>
-          <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
-          <td class="md" valign="top">)&nbsp;</td>
-          <td class="md" nowrap></td>
-        </tr>
-
-      </table>
-    </td>
-  </tr>
-</table>
-<table cellspacing=5 cellpadding=0 border=0>
-  <tr>
-    <td>
-      &nbsp;
-    </td>
-    <td>
-
-<p>
-    </td>
-  </tr>
-</table>
-<a name="a115" doxytag="vcd_lexer.c::YY_PROTO"></a><p>
-<table width="100%" cellpadding="2" cellspacing="0" border="0">
-  <tr>
-    <td class="md">
-      <table cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="vcd__lexer_8c.html#a73">YY_BUFFER_STATE</a> yy_scan_string YY_PROTO </td>
-          <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top">(yyconst char *yy_str)&nbsp;</td>
-          <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
-          <td class="md" valign="top">)&nbsp;</td>
-          <td class="md" nowrap></td>
-        </tr>
-
-      </table>
-    </td>
-  </tr>
-</table>
-<table cellspacing=5 cellpadding=0 border=0>
-  <tr>
-    <td>
-      &nbsp;
-    </td>
-    <td>
-
-<p>
-    </td>
-  </tr>
-</table>
-<a name="a114" doxytag="vcd_lexer.c::YY_PROTO"></a><p>
-<table width="100%" cellpadding="2" cellspacing="0" border="0">
-  <tr>
-    <td class="md">
-      <table cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="vcd__lexer_8c.html#a73">YY_BUFFER_STATE</a> yy_scan_buffer YY_PROTO </td>
-          <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top">(char *base, <a class="el" href="vcd__lexer_8c.html#a77">yy_size_t</a> <a class="el" href="vcd__lexer_8c.html#a105">size</a>)&nbsp;</td>
-          <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
-          <td class="md" valign="top">)&nbsp;</td>
-          <td class="md" nowrap></td>
-        </tr>
-
-      </table>
-    </td>
-  </tr>
-</table>
-<table cellspacing=5 cellpadding=0 border=0>
-  <tr>
-    <td>
-      &nbsp;
-    </td>
-    <td>
-
-<p>
-    </td>
-  </tr>
-</table>
-<a name="a113" doxytag="vcd_lexer.c::YY_PROTO"></a><p>
-<table width="100%" cellpadding="2" cellspacing="0" border="0">
-  <tr>
-    <td class="md">
-      <table cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td class="md" nowrap valign="top"> void yy_init_buffer YY_PROTO </td>
-          <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top">(<a class="el" href="vcd__lexer_8c.html#a73">YY_BUFFER_STATE</a> b, FILE *<a class="el" href="vcd__lexer_8c.html#a106">file</a>)&nbsp;</td>
-          <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
-          <td class="md" valign="top">)&nbsp;</td>
-          <td class="md" nowrap></td>
-        </tr>
-
-      </table>
-    </td>
-  </tr>
-</table>
-<table cellspacing=5 cellpadding=0 border=0>
-  <tr>
-    <td>
-      &nbsp;
-    </td>
-    <td>
-
-<p>
-    </td>
-  </tr>
-</table>
-<a name="a112" doxytag="vcd_lexer.c::YY_PROTO"></a><p>
-<table width="100%" cellpadding="2" cellspacing="0" border="0">
-  <tr>
-    <td class="md">
-      <table cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td class="md" nowrap valign="top"> void yy_delete_buffer YY_PROTO </td>
-          <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top">(<a class="el" href="vcd__lexer_8c.html#a73">YY_BUFFER_STATE</a> b)&nbsp;</td>
-          <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
-          <td class="md" valign="top">)&nbsp;</td>
-          <td class="md" nowrap></td>
-        </tr>
-
-      </table>
-    </td>
-  </tr>
-</table>
-<table cellspacing=5 cellpadding=0 border=0>
-  <tr>
-    <td>
-      &nbsp;
-    </td>
-    <td>
-
-<p>
-    </td>
-  </tr>
-</table>
-<a name="a111" doxytag="vcd_lexer.c::YY_PROTO"></a><p>
-<table width="100%" cellpadding="2" cellspacing="0" border="0">
-  <tr>
-    <td class="md">
-      <table cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="vcd__lexer_8c.html#a73">YY_BUFFER_STATE</a> yy_create_buffer YY_PROTO </td>
-          <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top">(FILE *<a class="el" href="vcd__lexer_8c.html#a106">file</a>, int <a class="el" href="vcd__lexer_8c.html#a105">size</a>)&nbsp;</td>
-          <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
-          <td class="md" valign="top">)&nbsp;</td>
-          <td class="md" nowrap></td>
-        </tr>
-
-      </table>
-    </td>
-  </tr>
-</table>
-<table cellspacing=5 cellpadding=0 border=0>
-  <tr>
-    <td>
-      &nbsp;
-    </td>
-    <td>
-
-<p>
-    </td>
-  </tr>
-</table>
-<a name="a110" doxytag="vcd_lexer.c::YY_PROTO"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2364,7 +2502,7 @@
     </td>
   </tr>
 </table>
-<a name="a109" doxytag="vcd_lexer.c::YY_PROTO"></a><p>
+<a name="a115" doxytag="vcd_lexer.c::YY_PROTO"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2372,7 +2510,7 @@
         <tr>
           <td class="md" nowrap valign="top"> void yy_switch_to_buffer YY_PROTO </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top">(<a class="el" href="vcd__lexer_8c.html#a73">YY_BUFFER_STATE</a> new_buffer)&nbsp;</td>
+          <td class="md" nowrap valign="top">(<a class="el" href="vcd__lexer_8c.html#a79">YY_BUFFER_STATE</a> new_buffer)&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
           <td class="md" valign="top">)&nbsp;</td>
           <td class="md" nowrap></td>
@@ -2393,7 +2531,7 @@
     </td>
   </tr>
 </table>
-<a name="a108" doxytag="vcd_lexer.c::YY_PROTO"></a><p>
+<a name="a114" doxytag="vcd_lexer.c::YY_PROTO"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2423,7 +2561,7 @@
   </tr>
 </table>
 <hr><h2>Variable Documentation</h2>
-<a name="a106" doxytag="vcd_lexer.c::file"></a><p>
+<a name="a112" doxytag="vcd_lexer.c::file"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2445,7 +2583,7 @@
     </td>
   </tr>
 </table>
-<a name="a107" doxytag="vcd_lexer.c::len"></a><p>
+<a name="a113" doxytag="vcd_lexer.c::len"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2467,13 +2605,13 @@
     </td>
   </tr>
 </table>
-<a name="a105" doxytag="vcd_lexer.c::size"></a><p>
+<a name="a111" doxytag="vcd_lexer.c::size"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="vcd__lexer_8c.html#a77">yy_size_t</a> size
+          <td class="md" nowrap valign="top"> <a class="el" href="vcd__lexer_8c.html#a83">yy_size_t</a> size
       </table>
     </td>
   </tr>
@@ -2489,7 +2627,7 @@
     </td>
   </tr>
 </table>
-<a name="a100" doxytag="vcd_lexer.c::vcdfile"></a><p>
+<a name="a106" doxytag="vcd_lexer.c::vcdfile"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2511,13 +2649,13 @@
     </td>
   </tr>
 </table>
-<a name="a88" doxytag="vcd_lexer.c::yy_accept"></a><p>
+<a name="a94" doxytag="vcd_lexer.c::yy_accept"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> yyconst short int yy_accept[131]<code> [static]</code>
+          <td class="md" nowrap valign="top"> yyconst short int yy_accept[123]<code> [static]</code>
       </table>
     </td>
   </tr>
@@ -2533,29 +2671,29 @@
 <b>Initial value:</b><div class="fragment"><pre>
     {   0,
         0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-        0,    0,   29,   29,   31,   30,    1,    2,   20,    6,
-        5,    6,   10,    9,   10,   14,   13,   14,   18,   17,
-       18,   30,   30,   30,   29,   20,   21,   29,   29,   20,
-       20,   20,   20,   20,    0,    0,    0,    0,   28,    0,
-       24,   24,    0,   29,   20,   20,   20,   20,   20,   20,
-       29,   29,   21,   29,   23,   23,   20,   20,   20,   20,
-        0,    0,    0,    0,   25,   20,   20,   20,   20,   20,
-       22,   29,   26,   20,   20,   20,   20,    4,    8,   12,
-       16,   20,   20,   19,   20,   20,   22,   29,   20,    7,
+        0,    0,   33,   33,   33,   33,   23,   23,   33,   33,
+       33,   33,   33,   33,   33,   33,   35,   34,    1,    2,
+       20,    6,    5,    6,   10,    9,   10,   14,   13,   14,
+       18,   17,   18,   34,   34,   34,   33,   21,   22,   23,
+       25,   33,   33,   33,   24,   20,   20,   20,   20,   20,
+        0,    0,    0,    0,   32,    0,   28,   28,    0,   33,
+       21,   22,   23,   33,   33,   25,   27,   27,   33,   33,
+       24,   20,   20,   20,   20,    0,    0,    0,    0,   29,
+       26,   33,   33,   30,   20,   20,   20,   20,    4,    8,
 
-       20,   20,   20,    7,   20,   20,   27,   20,   20,   20,
-       20,   20,   20,   20,   20,   20,   20,   20,   20,    3,
-       20,   15,    3,   20,   15,   20,   20,   11,   11,    0
+       12,   16,   26,   19,   33,   20,    7,   20,   20,   31,
+       20,   20,   20,   20,   20,   20,    3,   20,   15,   20,
+       11,    0
     }</pre></div>    </td>
   </tr>
 </table>
-<a name="a91" doxytag="vcd_lexer.c::yy_base"></a><p>
+<a name="a97" doxytag="vcd_lexer.c::yy_base"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> yyconst short int yy_base[146]<code> [static]</code>
+          <td class="md" nowrap valign="top"> yyconst short int yy_base[142]<code> [static]</code>
       </table>
     </td>
   </tr>
@@ -2570,26 +2708,26 @@
 <p>
 <b>Initial value:</b><div class="fragment"><pre>
     {   0,
-        0,    6,    8,    9,   11,   14,   16,   17,   19,   22,
-       28,    0,   42,    0,  340,  341,  341,  341,   54,  341,
-      341,  317,  341,  341,  316,  341,  341,  315,  341,  341,
-      314,   18,   74,   24,    0,   88,  119,   30,  332,    0,
-      307,  314,  309,  309,  304,  303,  302,  299,   68,  322,
-      321,   77,   78,    0,  117,  129,   63,   95,  105,  118,
-      160,  177,  194,  153,  316,    0,  292,  283,  287,  283,
-      286,  285,  284,  280,  298,  104,  114,  125,  128,  115,
-      211,  148,    0,  271,  272,  268,  260,  341,  341,  341,
-      341,  142,  152,  261,  169,  177,  228,  163,  262,    0,
+        0,    7,   10,   11,   13,   14,   17,   20,   21,   23,
+       20,   26,   41,    0,   72,   82,   76,   86,   93,    0,
+      124,  139,  155,    0,    0,    0,  328,  520,  520,  520,
+      114,  520,  520,  303,  520,  520,  302,  520,  520,  273,
+      520,  520,  271,   27,  186,  118,    0,  201,  120,  289,
+      219,    3,  265,  127,  237,    0,  259,  266,  260,  260,
+      254,  251,  249,  248,  138,  148,  149,  189,  196,    0,
+      255,  184,  266,  273,  291,  323,  211,    0,  242,  222,
+      341,  242,  235,  239,  231,  235,  230,  226,  225,  220,
+      359,  220,  219,    0,  213,  198,  193,  182,  520,  520,
 
-      254,  259,  176,  251,  186,  191,    0,  251,  222,  214,
-      163,  203,  210,  201,  178,  155,  194,  213,  181,    0,
-      130,    0,  106,  211,   96,   59,  198,    0,    9,  341,
-      245,  251,  257,  263,  269,    0,  274,  280,  286,  292,
-      297,  303,  309,  315,  321
+      520,  520,  377,    0,  240,  180,    0,  167,  168,    0,
+      162,  133,  115,  108,  114,   59,    0,   51,    0,   16,
+        0,  520,  395,  402,  409,  416,  423,  430,  437,   25,
+      443,  450,  457,  464,  471,  478,  485,  491,  498,  505,
+      512
     }</pre></div>    </td>
   </tr>
 </table>
-<a name="a104" doxytag="vcd_lexer.c::yy_bp"></a><p>
+<a name="a110" doxytag="vcd_lexer.c::yy_bp"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2611,7 +2749,7 @@
     </td>
   </tr>
 </table>
-<a name="a81" doxytag="vcd_lexer.c::yy_c_buf_p"></a><p>
+<a name="a87" doxytag="vcd_lexer.c::yy_c_buf_p"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2633,13 +2771,13 @@
     </td>
   </tr>
 </table>
-<a name="a94" doxytag="vcd_lexer.c::yy_chk"></a><p>
+<a name="a100" doxytag="vcd_lexer.c::yy_chk"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> yyconst short int yy_chk[373]<code> [static]</code>
+          <td class="md" nowrap valign="top"> yyconst short int yy_chk[553]<code> [static]</code>
       </table>
     </td>
   </tr>
@@ -2655,13 +2793,13 @@
     </td>
   </tr>
 </table>
-<a name="a78" doxytag="vcd_lexer.c::yy_current_buffer"></a><p>
+<a name="a84" doxytag="vcd_lexer.c::yy_current_buffer"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="vcd__lexer_8c.html#a73">YY_BUFFER_STATE</a> yy_current_buffer = 0<code> [static]</code>
+          <td class="md" nowrap valign="top"> <a class="el" href="vcd__lexer_8c.html#a79">YY_BUFFER_STATE</a> yy_current_buffer = 0<code> [static]</code>
       </table>
     </td>
   </tr>
@@ -2677,13 +2815,13 @@
     </td>
   </tr>
 </table>
-<a name="a92" doxytag="vcd_lexer.c::yy_def"></a><p>
+<a name="a98" doxytag="vcd_lexer.c::yy_def"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> yyconst short int yy_def[146]<code> [static]</code>
+          <td class="md" nowrap valign="top"> yyconst short int yy_def[142]<code> [static]</code>
       </table>
     </td>
   </tr>
@@ -2698,26 +2836,26 @@
 <p>
 <b>Initial value:</b><div class="fragment"><pre>
     {   0,
-      131,  131,  132,  132,  133,  133,  134,  134,  135,  135,
-      131,   11,  130,   13,  130,  130,  130,  130,  136,  130,
-      130,  130,  130,  130,  130,  130,  130,  130,  130,  130,
-      130,  130,  137,  130,  138,  130,  139,  138,  140,  136,
-      136,  136,  136,  136,  130,  130,  130,  130,  130,  141,
-      137,  137,  130,  138,   36,   36,   56,   56,   56,   56,
-      142,  143,  139,  138,  140,  144,  136,  136,  136,  136,
-      130,  130,  130,  130,  141,   56,   56,   56,   56,   56,
-      145,  138,  138,  136,  136,  136,  136,  130,  130,  130,
-      130,   56,   56,   56,   56,   56,  145,  138,  136,  136,
+      123,  123,  124,  124,  125,  125,  126,  126,  127,  127,
+      123,  123,  122,   13,  128,  128,  129,  129,  122,   19,
+      128,  128,  122,   23,   19,   19,  122,  122,  122,  122,
+      130,  122,  122,  122,  122,  122,  122,  122,  122,  122,
+      122,  122,  122,  122,  131,  122,  132,  133,  132,  134,
+      135,  136,  132,  132,  137,  130,  130,  130,  130,  130,
+      122,  122,  122,  122,  122,  138,  131,  131,  122,  132,
+      133,  132,  134,  139,  122,  135,  136,  140,  132,  132,
+      137,  130,  130,  130,  130,  122,  122,  122,  122,  138,
+      141,  132,  132,  132,  130,  130,  130,  130,  122,  122,
 
-      136,  136,   56,   56,   56,   56,  138,  136,  136,  136,
-       56,   56,   56,  136,  136,  136,   56,   56,   56,  136,
-      136,  136,   56,   56,   56,  136,   56,  136,   56,    0,
+      122,  122,  141,  132,  132,  130,  130,  130,  130,  132,
       130,  130,  130,  130,  130,  130,  130,  130,  130,  130,
-      130,  130,  130,  130,  130
+      130,    0,  122,  122,  122,  122,  122,  122,  122,  122,
+      122,  122,  122,  122,  122,  122,  122,  122,  122,  122,
+      122
     }</pre></div>    </td>
   </tr>
 </table>
-<a name="a84" doxytag="vcd_lexer.c::yy_did_buffer_switch_on_eof"></a><p>
+<a name="a90" doxytag="vcd_lexer.c::yy_did_buffer_switch_on_eof"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2739,7 +2877,7 @@
     </td>
   </tr>
 </table>
-<a name="a89" doxytag="vcd_lexer.c::yy_ec"></a><p>
+<a name="a95" doxytag="vcd_lexer.c::yy_ec"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2761,7 +2899,7 @@
     </td>
   </tr>
 </table>
-<a name="a79" doxytag="vcd_lexer.c::yy_hold_char"></a><p>
+<a name="a85" doxytag="vcd_lexer.c::yy_hold_char"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2783,7 +2921,7 @@
     </td>
   </tr>
 </table>
-<a name="a82" doxytag="vcd_lexer.c::yy_init"></a><p>
+<a name="a88" doxytag="vcd_lexer.c::yy_init"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2805,7 +2943,7 @@
     </td>
   </tr>
 </table>
-<a name="a96" doxytag="vcd_lexer.c::yy_last_accepting_cpos"></a><p>
+<a name="a102" doxytag="vcd_lexer.c::yy_last_accepting_cpos"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2827,13 +2965,13 @@
     </td>
   </tr>
 </table>
-<a name="a95" doxytag="vcd_lexer.c::yy_last_accepting_state"></a><p>
+<a name="a101" doxytag="vcd_lexer.c::yy_last_accepting_state"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="vcd__lexer_8c.html#a86">yy_state_type</a> yy_last_accepting_state<code> [static]</code>
+          <td class="md" nowrap valign="top"> <a class="el" href="vcd__lexer_8c.html#a92">yy_state_type</a> yy_last_accepting_state<code> [static]</code>
       </table>
     </td>
   </tr>
@@ -2849,13 +2987,13 @@
     </td>
   </tr>
 </table>
-<a name="a90" doxytag="vcd_lexer.c::yy_meta"></a><p>
+<a name="a96" doxytag="vcd_lexer.c::yy_meta"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> yyconst int yy_meta[32]<code> [static]</code>
+          <td class="md" nowrap valign="top"> yyconst int yy_meta[33]<code> [static]</code>
       </table>
     </td>
   </tr>
@@ -2870,14 +3008,14 @@
 <p>
 <b>Initial value:</b><div class="fragment"><pre>
     {   0,
-        1,    2,    3,    4,    5,    5,    5,    5,    5,    5,
-        5,    6,    6,    6,    5,    5,    5,    5,    6,    6,
-        6,    6,    6,    6,    6,    6,    6,    6,    6,    6,
-        6
+        1,    2,    3,    4,    5,    6,    6,    6,    6,    6,
+        6,    6,    7,    7,    7,    6,    6,    6,    6,    7,
+        7,    7,    7,    7,    7,    7,    7,    7,    7,    7,
+        7,    7
     }</pre></div>    </td>
   </tr>
 </table>
-<a name="a97" doxytag="vcd_lexer.c::yy_more_flag"></a><p>
+<a name="a103" doxytag="vcd_lexer.c::yy_more_flag"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2899,7 +3037,7 @@
     </td>
   </tr>
 </table>
-<a name="a98" doxytag="vcd_lexer.c::yy_more_len"></a><p>
+<a name="a104" doxytag="vcd_lexer.c::yy_more_len"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2921,7 +3059,7 @@
     </td>
   </tr>
 </table>
-<a name="a80" doxytag="vcd_lexer.c::yy_n_chars"></a><p>
+<a name="a86" doxytag="vcd_lexer.c::yy_n_chars"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2943,13 +3081,13 @@
     </td>
   </tr>
 </table>
-<a name="a93" doxytag="vcd_lexer.c::yy_nxt"></a><p>
+<a name="a99" doxytag="vcd_lexer.c::yy_nxt"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> yyconst short int yy_nxt[373]<code> [static]</code>
+          <td class="md" nowrap valign="top"> yyconst short int yy_nxt[553]<code> [static]</code>
       </table>
     </td>
   </tr>
@@ -2965,7 +3103,7 @@
     </td>
   </tr>
 </table>
-<a name="a83" doxytag="vcd_lexer.c::yy_start"></a><p>
+<a name="a89" doxytag="vcd_lexer.c::yy_start"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2987,7 +3125,7 @@
     </td>
   </tr>
 </table>
-<a name="a103" doxytag="vcd_lexer.c::yy_start_stack"></a><p>
+<a name="a109" doxytag="vcd_lexer.c::yy_start_stack"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -3009,7 +3147,7 @@
     </td>
   </tr>
 </table>
-<a name="a102" doxytag="vcd_lexer.c::yy_start_stack_depth"></a><p>
+<a name="a108" doxytag="vcd_lexer.c::yy_start_stack_depth"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -3031,7 +3169,7 @@
     </td>
   </tr>
 </table>
-<a name="a101" doxytag="vcd_lexer.c::yy_start_stack_ptr"></a><p>
+<a name="a107" doxytag="vcd_lexer.c::yy_start_stack_ptr"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -3053,7 +3191,7 @@
     </td>
   </tr>
 </table>
-<a name="a75" doxytag="vcd_lexer.c::yyin"></a><p>
+<a name="a81" doxytag="vcd_lexer.c::yyin"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -3075,7 +3213,7 @@
     </td>
   </tr>
 </table>
-<a name="a74" doxytag="vcd_lexer.c::yyleng"></a><p>
+<a name="a80" doxytag="vcd_lexer.c::yyleng"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -3097,7 +3235,7 @@
     </td>
   </tr>
 </table>
-<a name="a99" doxytag="vcd_lexer.c::yylloc"></a><p>
+<a name="a105" doxytag="vcd_lexer.c::yylloc"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -3119,7 +3257,7 @@
     </td>
   </tr>
 </table>
-<a name="a76" doxytag="vcd_lexer.c::yyout"></a><p>
+<a name="a82" doxytag="vcd_lexer.c::yyout"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -3141,7 +3279,7 @@
     </td>
   </tr>
 </table>
-<a name="a87" doxytag="vcd_lexer.c::yytext"></a><p>
+<a name="a93" doxytag="vcd_lexer.c::yytext"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -3163,7 +3301,7 @@
     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Sat Jul 20 19:07:57 2002 for Covered by
+<hr><address align="right"><small>Generated on Mon Jul 22 00:23:01 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

@@ -1,6 +1,7 @@
 \section{vcd\_\-parser\_\-misc.c File Reference}
 \label{vcd__parser__misc_8c}\index{vcd_parser_misc.c@{vcd\_\-parser\_\-misc.c}}
 {\tt \#include $<$stdio.h$>$}\par
+{\tt \#include $<$stdlib.h$>$}\par
 {\tt \#include \char`\"{}vcd\_\-parser\_\-misc.h\char`\"{}}\par
 \subsection*{Functions}
 \begin{CompactItemize}
@@ -17,6 +18,8 @@ int {\bf VCDwrap} ()
 unsigned {\bf vcd\_\-error\_\-count} = 0
 \item 
 unsigned {\bf vcd\_\-warn\_\-count} = 0
+\item 
+char $\ast$ {\bf VCDtext}
 \end{CompactItemize}
 
 
@@ -34,17 +37,17 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsection{Function Documentation}
 \index{vcd_parser_misc.c@{vcd\_\-parser\_\-misc.c}!VCDerror@{VCDerror}}
 \index{VCDerror@{VCDerror}!vcd_parser_misc.c@{vcd\_\-parser\_\-misc.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void VCDerror (char $\ast$ {\em msg})}\label{vcd__parser__misc_8c_a2}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void VCDerror (char $\ast$ {\em msg})}\label{vcd__parser__misc_8c_a3}
 
 
 \index{vcd_parser_misc.c@{vcd\_\-parser\_\-misc.c}!VCDwrap@{VCDwrap}}
 \index{VCDwrap@{VCDwrap}!vcd_parser_misc.c@{vcd\_\-parser\_\-misc.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int VCDwrap ()}\label{vcd__parser__misc_8c_a4}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int VCDwrap ()}\label{vcd__parser__misc_8c_a5}
 
 
 \index{vcd_parser_misc.c@{vcd\_\-parser\_\-misc.c}!yywarn@{yywarn}}
 \index{yywarn@{yywarn}!vcd_parser_misc.c@{vcd\_\-parser\_\-misc.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yywarn (char $\ast$ {\em msg})}\label{vcd__parser__misc_8c_a3}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yywarn (char $\ast$ {\em msg})}\label{vcd__parser__misc_8c_a4}
 
 
 
@@ -58,5 +61,10 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \index{vcd_parser_misc.c@{vcd\_\-parser\_\-misc.c}!vcd_warn_count@{vcd\_\-warn\_\-count}}
 \index{vcd_warn_count@{vcd\_\-warn\_\-count}!vcd_parser_misc.c@{vcd\_\-parser\_\-misc.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}unsigned vcd\_\-warn\_\-count = 0}\label{vcd__parser__misc_8c_a1}
+
+
+\index{vcd_parser_misc.c@{vcd\_\-parser\_\-misc.c}!VCDtext@{VCDtext}}
+\index{VCDtext@{VCDtext}!vcd_parser_misc.c@{vcd\_\-parser\_\-misc.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ VCDtext}\label{vcd__parser__misc_8c_a2}
 
 

@@ -12,7 +12,7 @@
 00013 <font class="preprocessor">#include "<a class="code" href="defines_8h.html">defines.h</a>"</font>
 00014 
 00015 
-00017 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a7">vector_init</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <a class="code" href="defines_8h.html#a121">nibble</a>* value, <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> lsb );
+00017 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a7">vector_init</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <a class="code" href="defines_8h.html#a122">nibble</a>* value, <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> lsb );
 00018 
 00020 <a class="code" href="structvector__s.html">vector</a>* <a class="code" href="vector_8c.html#a8">vector_create</a>( <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> lsb );
 00021 
@@ -22,17 +22,17 @@
 00027 
 00029 <font class="keywordtype">bool</font> <a class="code" href="vector_8c.html#a11">vector_db_read</a>( <a class="code" href="structvector__s.html">vector</a>** vec, <font class="keywordtype">char</font>** line );
 00030 
-00032 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a12">vector_display_toggle01</a>( <a class="code" href="defines_8h.html#a121">nibble</a>* nib, <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> lsb, FILE* ofile );
+00032 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a12">vector_display_toggle01</a>( <a class="code" href="defines_8h.html#a122">nibble</a>* nib, <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> lsb, FILE* ofile );
 00033 
-00035 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a13">vector_display_toggle10</a>( <a class="code" href="defines_8h.html#a121">nibble</a>* nib, <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> lsb, FILE* ofile );
+00035 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a13">vector_display_toggle10</a>( <a class="code" href="defines_8h.html#a122">nibble</a>* nib, <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> lsb, FILE* ofile );
 00036 
-00038 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a14">vector_display_nibble</a>( <a class="code" href="defines_8h.html#a121">nibble</a>* nib, <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> lsb );
+00038 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a14">vector_display_nibble</a>( <a class="code" href="defines_8h.html#a122">nibble</a>* nib, <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> lsb );
 00039 
 00041 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a15">vector_display</a>( <a class="code" href="structvector__s.html">vector</a>* vec );
 00042 
-00044 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a17">vector_set_bit</a>( <a class="code" href="defines_8h.html#a121">nibble</a>* nib, <a class="code" href="defines_8h.html#a121">nibble</a> value, <font class="keywordtype">int</font> pos );
+00044 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a17">vector_set_bit</a>( <a class="code" href="defines_8h.html#a122">nibble</a>* nib, <a class="code" href="defines_8h.html#a122">nibble</a> value, <font class="keywordtype">int</font> pos );
 00045 
-00047 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a24">vector_set_value</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <a class="code" href="defines_8h.html#a121">nibble</a>* value, <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> from_idx, <font class="keywordtype">int</font> to_idx );
+00047 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a24">vector_set_value</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <a class="code" href="defines_8h.html#a122">nibble</a>* value, <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> from_idx, <font class="keywordtype">int</font> to_idx );
 00048 
 00050 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a25">vector_set_type</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <font class="keywordtype">int</font> type );
 00051 
@@ -66,7 +66,7 @@
 00093 
 00095 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a40">vector_unary_inv</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* src );
 00096 
-00098 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a41">vector_unary_op</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* src, <a class="code" href="defines_8h.html#a121">nibble</a>* optab );
+00098 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a41">vector_unary_op</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* src, <a class="code" href="defines_8h.html#a122">nibble</a>* optab );
 00099 
 00101 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a42">vector_unary_not</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* src );
 00102 
@@ -91,7 +91,7 @@
 00122 
 00123 <font class="preprocessor">#endif</font>
 00124 <font class="preprocessor"></font>
-</pre></div><hr><address align="right"><small>Generated on Sat Jul 20 19:07:53 2002 for Covered by
+</pre></div><hr><address align="right"><small>Generated on Mon Jul 22 00:22:58 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

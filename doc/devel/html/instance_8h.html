@@ -13,15 +13,15 @@
 <p>
 <a href="instance_8h-source.html">Go to the source code of this file.</a><table border=0 cellpadding=0 cellspacing=0>
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a139">mod_inst</a> *&nbsp;</td><td valign=bottom><a class="el" href="instance_8h.html#a0">instance_find_scope</a> (<a class="el" href="defines_8h.html#a139">mod_inst</a> *root, char *scope)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a140">mod_inst</a> *&nbsp;</td><td valign=bottom><a class="el" href="instance_8h.html#a0">instance_find_scope</a> (<a class="el" href="defines_8h.html#a140">mod_inst</a> *root, char *scope)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Finds specified scope in module instance tree.</em> <a href="#a0"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="instance_8h.html#a1">instance_parse_add</a> (<a class="el" href="defines_8h.html#a139">mod_inst</a> **root, <a class="el" href="defines_8h.html#a133">module</a> *parent, <a class="el" href="defines_8h.html#a133">module</a> *child, char *inst_name)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="instance_8h.html#a1">instance_parse_add</a> (<a class="el" href="defines_8h.html#a140">mod_inst</a> **root, <a class="el" href="defines_8h.html#a134">module</a> *parent, <a class="el" href="defines_8h.html#a134">module</a> *child, char *inst_name)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds new instance to specified instance tree during parse.</em> <a href="#a1"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="instance_8h.html#a2">instance_read_add</a> (<a class="el" href="defines_8h.html#a139">mod_inst</a> **root, char *parent, <a class="el" href="defines_8h.html#a133">module</a> *child, char *inst_name)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="instance_8h.html#a2">instance_read_add</a> (<a class="el" href="defines_8h.html#a140">mod_inst</a> **root, char *parent, <a class="el" href="defines_8h.html#a134">module</a> *child, char *inst_name)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds new instance to specified instance tree during CDD read.</em> <a href="#a2"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="instance_8h.html#a3">instance_db_write</a> (<a class="el" href="defines_8h.html#a139">mod_inst</a> *root, FILE *<a class="el" href="vcd__lexer_8c.html#a106">file</a>, char *scope)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="instance_8h.html#a3">instance_db_write</a> (<a class="el" href="defines_8h.html#a140">mod_inst</a> *root, FILE *<a class="el" href="vcd__lexer_8c.html#a112">file</a>, char *scope)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Displays contents of module instance tree to specified file.</em> <a href="#a3"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="instance_8h.html#a4">instance_dealloc</a> (<a class="el" href="defines_8h.html#a139">mod_inst</a> *root, char *scope)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="instance_8h.html#a4">instance_dealloc</a> (<a class="el" href="defines_8h.html#a140">mod_inst</a> *root, char *scope)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Removes specified instance from tree.</em> <a href="#a4"></a><em></em></font><br><br></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
@@ -42,7 +42,7 @@ Date: </b><dd>
         <tr>
           <td class="md" nowrap valign="top"> void instance_db_write </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a139">mod_inst</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a140">mod_inst</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>root</em>, </td>
         </tr>
         <tr>
@@ -98,7 +98,7 @@ Scope of this module.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void instance_dealloc </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a139">mod_inst</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a140">mod_inst</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>root</em>, </td>
         </tr>
         <tr>
@@ -144,9 +144,9 @@ Scope of module to remove from tree.</td></tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a139">mod_inst</a>* instance_find_scope </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a140">mod_inst</a>* instance_find_scope </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a139">mod_inst</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a140">mod_inst</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>root</em>, </td>
         </tr>
         <tr>
@@ -196,19 +196,19 @@ Returns pointer to module instance found by scope.</dl>Searches the specified mo
         <tr>
           <td class="md" nowrap valign="top"> void instance_parse_add </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a139">mod_inst</a> **&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a140">mod_inst</a> **&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>root</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a133">module</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a134">module</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>parent</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a133">module</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a134">module</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>child</em>, </td>
         </tr>
         <tr>
@@ -260,7 +260,7 @@ Name of new module instance.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void instance_read_add </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a139">mod_inst</a> **&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a140">mod_inst</a> **&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>root</em>, </td>
         </tr>
         <tr>
@@ -272,7 +272,7 @@ Name of new module instance.</td></tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a133">module</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a134">module</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>child</em>, </td>
         </tr>
         <tr>
@@ -316,7 +316,7 @@ Instance name of this child module instance.</td></tr>
 </dl>Adds the child module to the child module pointer list located in the module specified by the scope of parent in the module instance tree pointed to by root. This function is used by the db_read function during the CDD reading stage.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Sat Jul 20 19:07:54 2002 for Covered by
+<hr><address align="right"><small>Generated on Mon Jul 22 00:22:59 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>
