@@ -584,6 +584,10 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
           codegen_create_expr( code, code_depth, expr->line, "casez( ", left_code, left_code_depth, expr->left->line, " ) ",
                                right_code, right_code_depth, expr->right->line, " :" );
           break;
+        case EXP_OP_DELAY    :
+          codegen_create_expr( code, code_depth, expr->line, "#(", right_code, right_code_depth, expr->right->line, ")",
+                               NULL, 0, 0, NULL );
+          break;
         case EXP_OP_ASSIGN   :
           codegen_create_expr( code, code_depth, expr->line, "assign ", left_code, left_code_depth, expr->left->line, " = ",
                                right_code, right_code_depth, expr->right->line, NULL );
@@ -625,6 +629,15 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.36  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.35  2004/03/15 21:38:17  phase1geo
  Updated source files after running lint on these files.  Full regression
  still passes at this point.

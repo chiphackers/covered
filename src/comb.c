@@ -41,8 +41,8 @@
 #include "iter.h"
 
 
-extern mod_inst* instance_root;
-extern mod_link* mod_head;
+extern mod_inst*    instance_root;
+extern mod_link*    mod_head;
 
 extern bool         report_covered;
 extern unsigned int report_comb_depth;
@@ -50,6 +50,7 @@ extern bool         report_instance;
 extern char         leading_hierarchy[4096];
 extern char         second_hierarchy[4096];
 extern int          line_width;
+extern char         user_msg[USER_MSG_LENGTH];
 
 
 /*!
@@ -521,8 +522,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
 
   if( exp != NULL ) {
     
-    if( (SUPPL_OP( exp->suppl ) == EXP_OP_LAST) ||
-        (SUPPL_OP( exp->suppl ) == EXP_OP_DELAY) ) {
+    if( SUPPL_OP( exp->suppl ) == EXP_OP_LAST ) {
 
       *size = 0;
 
@@ -700,13 +700,15 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
             case EXP_OP_CASE     :  *size = l_size + r_size + 11; strcpy( code_fmt, "      %s   %s  "  );  break;
             case EXP_OP_CASEX    :  *size = l_size + r_size + 12; strcpy( code_fmt, "       %s   %s  " );  break;
             case EXP_OP_CASEZ    :  *size = l_size + r_size + 12; strcpy( code_fmt, "       %s   %s  " );  break;
+            case EXP_OP_DELAY    :  *size = l_size + r_size + 3;  strcpy( code_fmt, "  %s " );             break;
             case EXP_OP_ASSIGN   :  *size = l_size + r_size + 10; strcpy( code_fmt, "       %s   %s" );    break;
             case EXP_OP_BASSIGN  :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s   %s" );           break;
             case EXP_OP_NASSIGN  :  *size = l_size + r_size + 4;  strcpy( code_fmt, "%s    %s" );          break;
             case EXP_OP_IF       :  *size = r_size + 6;           strcpy( code_fmt, "    %s  " );          break;
             default              :
-              print_output( "Internal error:  Unknown expression type in combination_underline_tree",
-                            FATAL, __FILE__, __LINE__ );
+              snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  Unknown expression type in combination_underline_tree (%d)",
+                        SUPPL_OP( exp->suppl ) );
+              print_output( user_msg, FATAL, __FILE__, __LINE__ );
               exit( 1 );
               break;
           }
@@ -1566,6 +1568,15 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.91  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.90  2004/03/15 21:38:17  phase1geo
  Updated source files after running lint on these files.  Full regression
  still passes at this point.
