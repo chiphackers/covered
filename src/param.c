@@ -637,7 +637,7 @@ void param_db_write( inst_parm* iparm, FILE* file, char* scope ) {
   if( iparm->name != NULL ) {
 
     /* Display identification and value information first */
-    fprintf( file, "%d #%s %s ",
+    fprintf( file, "%d #%s %s 0 ",
       DB_TYPE_SIGNAL,
       iparm->name,
       scope
@@ -716,6 +716,9 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.29  2003/10/17 12:55:36  phase1geo
+ Intermediate checkin for LSB fixes.
+
  Revision 1.28  2003/02/17 22:47:20  phase1geo
  Fixing bug with merging same DUTs from different testbenches.  Updated reports
  to display full path instead of instance name and parent instance name.  Added
