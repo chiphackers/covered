@@ -4,8 +4,15 @@
  \date     3/31/2002
 */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdio.h>
 #include <assert.h>
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
 
 #include "line.h"
 #include "defines.h"
@@ -325,6 +332,12 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.27  2003/02/17 22:47:20  phase1geo
+ Fixing bug with merging same DUTs from different testbenches.  Updated reports
+ to display full path instead of instance name and parent instance name.  Added
+ merge tests and added merge testing into regression test suite.  Fixing bug with
+ -D/-Q option specified with merge command.  Full regression passing.
+
  Revision 1.26  2002/12/07 17:46:53  phase1geo
  Fixing bug with handling memory declarations.  Added diagnostic to verify
  that memory declarations are handled properly.  Fixed bug with infinite
