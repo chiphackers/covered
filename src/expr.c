@@ -66,7 +66,7 @@ expression* expression_create( expression* right, expression* left, int op, int 
 
   new_expr = (expression*)malloc_safe( sizeof( expression ) );
 
-  new_expr->suppl        = ((op & 0xff) << SUPPL_LSB_OP);
+  new_expr->suppl        = ((op & 0x7f) << SUPPL_LSB_OP);
   new_expr->id           = id;
   new_expr->line         = line;
   new_expr->sig          = NULL;
@@ -647,7 +647,7 @@ void expression_operate( expression* expr ) {
       case EXP_OP_DELAY :
         intval1 = vector_to_int( expr->left->value );           // Start time of delay
         intval2 = vector_to_int( expr->right->value );          // Number of clocks to delay
-        if( (intval1 + intval2) <= curr_sim_time ) {
+        if( ((intval1 + intval2) <= curr_sim_time) || (curr_sim_time == -1) ) {
           bit = 1;
           vector_set_value( expr->value, &bit, 1, 0, 0 );
         } else {
@@ -677,13 +677,13 @@ void expression_operate( expression* expr ) {
 /*!
  \param expr  Pointer to expression to evaluate.
 
- \return Returns 1 if the specified expression evaluates to a unary 0.
+ \return Returns 1 if the specified expression evaluates to a unary 1.
 
- Returns a value of 1 if the specified expression contains all zero values in
- its bits.  It accomplishes this by performing a unary OR operation on the
- specified expression value and testing bit 0 of the result.
+ Returns a value of 1 if the specified expression contains at least one 1 value
+ and no X or Z values in its bits.  It accomplishes this by performing a unary 
+ OR operation on the specified expression value and testing bit 0 of the result.
 */
-bool expression_is_zero( expression* expr ) {
+bool expression_is_true( expression* expr ) {
 
   vector result;        /* Vector containing result of expression tree */
   nibble data;          /* Data for result vector                      */
@@ -692,7 +692,7 @@ bool expression_is_zero( expression* expr ) {
   vector_init( &result, &data, 1, 0 );
   vector_unary_op( &result, expr->value, or_optab );
 
-  return( (data & 0x3) == 0 );
+  return( (data & 0x3) == 1 );
 
 }
 
@@ -741,6 +741,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.17  2002/06/28 00:40:37  phase1geo
+/* Cleaning up extraneous output from debugging.
+/*
 /* Revision 1.16  2002/06/27 20:39:43  phase1geo
 /* Fixing scoring bugs as well as report bugs.  Things are starting to work
 /* fairly well now.  Added rest of support for delays.

@@ -176,7 +176,7 @@
 
 /*!
  Least-significant bit position of expression supplemental field indicating the
- expression's operation type.  The type is 8-bits wide.
+ expression's operation type.  The type is 7-bits wide.
 */
 #define SUPPL_LSB_OP                0
 
@@ -185,27 +185,34 @@
  expression is a root expression.  Traversing to the parent pointer will take you to
  a statement type.
 */
-#define SUPPL_LSB_ROOT              8
+#define SUPPL_LSB_ROOT              7
 
 /*!
  Least-significant bit position of expression supplemental field indicating that this
  expression has been executed in the queue during the lifetime of the simulation.
 */
-#define SUPPL_LSB_EXECUTED          9
+#define SUPPL_LSB_EXECUTED          8
 
 /*!
  Least-significant bit position of expression supplemental field indicating the
  statement which this expression belongs is a head statement (only valid for root
  expressions -- parent expression == NULL).
 */
-#define SUPPL_LSB_STMT_HEAD         10
+#define SUPPL_LSB_STMT_HEAD         9
 
 /*!
  Least-significant bit position of expression supplemental field indicating the
  statement which this expression belongs should write itself to the CDD and not
  continue to traverse its next_true and next_false pointers.
 */
-#define SUPPL_LSB_STMT_STOP         11
+#define SUPPL_LSB_STMT_STOP         10
+
+/*!
+ Least-significant bit position of expression supplemental field indicating the
+ statement which this expression belongs is part of a continuous assignment.  As such,
+ stop simulating this statement tree after this expression tree is evaluated.
+*/
+#define SUPPL_LSB_STMT_CONTINUOUS   11
 
 /*!
  Least-significant bit position of expression supplemental field indicating that this
@@ -242,12 +249,21 @@
  Used for merging two supplemental fields from two expressions.  Both expression
  supplemental fields are ANDed with this mask and ORed together to perform the
  merge.  Fields that are merged are:
+ - OPERATION
  - EXECUTED
  - TRUE
  - FALSE
  - STMT_STOP
+ - STMT_HEAD
+ - STMT_CONTINUOUS
 */
-#define SUPPL_MERGE_MASK            0x3a00
+#define SUPPL_MERGE_MASK            ((0x7f << SUPPL_LSB_OP)        | \
+                                     (0x1  << SUPPL_LSB_EXECUTED)  | \
+                                     (0x1  << SUPPL_LSB_TRUE)      | \
+                                     (0x1  << SUPPL_LSB_FALSE)     | \
+                                     (0x1  << SUPPL_LSB_STMT_HEAD) | \
+                                     (0x1  << SUPPL_LSB_STMT_STOP) | \
+                                     (0x1  << SUPPL_LSB_STMT_CONTINUOUS))
 
 /*!
  Returns a value of 1 if the specified supplemental value has the ROOT bit
@@ -277,6 +293,12 @@
 
 /*!
  Returns a value of 1 if the specified supplemental belongs to an expression
+ whose associated statement is a continous assignment.
+*/
+#define SUPPL_IS_STMT_CONTINUOUS(x) ((x >> SUPPL_LSB_STMT_CONTINUOUS) & 0x1)
+
+/*!
+ Returns a value of 1 if the specified supplemental belongs to an expression
  that has evaluated to a value of TRUE (1) during simulation.
 */
 #define SUPPL_WAS_TRUE(x)           ((x >> SUPPL_LSB_TRUE) & 0x1)
@@ -302,7 +324,7 @@
 /*!
  Returns the specified expression's operation.
 */
-#define SUPPL_OP(x)                 ((x >> SUPPL_LSB_OP) & 0xff)
+#define SUPPL_OP(x)                 ((x >> SUPPL_LSB_OP) & 0x7f)
 
 /*! @} */
      
@@ -316,9 +338,17 @@
 
 /*!
  When new module is read from database file, it is placed in the module list and
- is placed in the correct hierarchical position in the instance tree.
+ is placed in the correct hierarchical position in the instance tree.  Used when
+ performing a MERGE command.
 */
-#define READ_MODE_NO_MERGE          0
+#define READ_MODE_MERGE_NO_MERGE          0
+
+/*!
+ When new module is read from database file, it is placed in the module list and
+ is placed in the correct hierarchical position in the instance tree.  Used when
+ performing a REPORT command.
+*/
+#define READ_MODE_REPORT_NO_MERGE         1
 
 /*!
  When module is completely read in (including module, signals, expressions), the
@@ -326,14 +356,14 @@
  module is merged with the instance's module; otherwise, we are attempting to
  merge two databases that were created from differe9nt designs.
 */
-#define READ_MODE_INST_MERGE        1
+#define READ_MODE_MERGE_INST_MERGE        2
 
 /*!
  When module is completely read in (including module, signals, expressions), the
  module is looked up in the module list.  If the module is found, it is merged
  with the existing module; otherwise, it is added to the module list.
 */
-#define READ_MODE_MOD_MERGE         2
+#define READ_MODE_REPORT_MOD_MERGE        3
 
 /*! @} */
 
@@ -759,6 +789,9 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.17  2002/06/27 21:18:48  phase1geo
+/* Fixing report Verilog output.  simple.v verilog diagnostic now passes.
+/*
 /* Revision 1.16  2002/06/27 20:39:43  phase1geo
 /* Fixing scoring bugs as well as report bugs.  Things are starting to work
 /* fairly well now.  Added rest of support for delays.

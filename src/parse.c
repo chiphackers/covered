@@ -123,7 +123,7 @@ bool parse_and_score_dumpfile( char* top, char* db, char* vcd ) {
   print_output( msg, NORMAL );
 
   /* Read in contents of specified database file */
-  if( !db_read( db, READ_MODE_NO_MERGE ) ) {
+  if( !db_read( db, READ_MODE_MERGE_NO_MERGE ) ) {
     print_output( "Unable to read database file", FATAL );
     exit( 1 );
   }
@@ -143,6 +143,9 @@ bool parse_and_score_dumpfile( char* top, char* db, char* vcd ) {
   if( VCDparse() != 0 ) {
     print_output( "Error parsing VCD file", FATAL );
     exit( 1 );
+  } else {
+    /* Flush any pending statement trees that are waiting for delay */
+    db_do_timestep( -1 );
   }
 
   snprintf( msg, 4096, "========  Writing database %s  ========\n", db );

@@ -99,9 +99,10 @@ bool db_write( char* file ) {
 /*!
  \param file       Name of database file to read contents from.
  \param read_mode  Specifies what to do with read data.  Values are
-                   - 0 = Instance, no merge
-                   - 1 = Instance, merge
-                   - 2 = Module, merge
+                   - 0 = Instance, no merge, merge command
+                   - 1 = Instance, no merge, report command
+                   - 2 = Instance, merge, merge command
+                   - 3 = Module, merge, report command
 
  \return Returns TRUE if database read was successful; otherwise, returns FALSE.
 
@@ -149,7 +150,7 @@ bool db_read( char* file, int read_mode ) {
         } else if( type == DB_TYPE_STATEMENT ) {
 
           /* Parse rest of line for statement info */
-          retval = statement_db_read( &rest_line, curr_module );
+          retval = statement_db_read( &rest_line, curr_module, read_mode );
 
         } else if( type == DB_TYPE_MODULE ) {
 
@@ -162,7 +163,7 @@ bool db_read( char* file, int read_mode ) {
 
             if( curr_module != NULL ) {
 
-              if( read_mode == READ_MODE_INST_MERGE ) {
+              if( read_mode == READ_MODE_MERGE_INST_MERGE ) {
               
                 /* Find module in instance tree and do a module merge */
                 if( (foundinst = instance_find_scope( instance_root, tmpmod->scope )) == NULL ) {
@@ -173,7 +174,7 @@ bool db_read( char* file, int read_mode ) {
                   module_merge( foundinst->mod, curr_module );
                 }
 
-              } else if( read_mode == READ_MODE_MOD_MERGE ) {
+              } else if( read_mode == READ_MODE_REPORT_MOD_MERGE ) {
 
                 if( (foundmod = mod_link_find( curr_module, mod_head )) == NULL ) {
                   mod_link_add( curr_module, &mod_head, &mod_tail );
@@ -189,7 +190,7 @@ bool db_read( char* file, int read_mode ) {
 
             curr_module = tmpmod;
 
-            if( read_mode == READ_MODE_NO_MERGE ) {
+            if( (read_mode == READ_MODE_MERGE_NO_MERGE) || (read_mode == READ_MODE_REPORT_NO_MERGE) ) {
 
 	      /* Add module to instance tree and module list */
               scope_extract_back( tmpmod->scope, back, parent_scope );
@@ -231,7 +232,7 @@ bool db_read( char* file, int read_mode ) {
 
     }
 
-    if( read_mode == READ_MODE_INST_MERGE ) {
+    if( read_mode == READ_MODE_MERGE_INST_MERGE ) {
               
       /* Find module in instance tree and do a module merge */
       if( (foundinst = instance_find_scope( instance_root, tmpmod->scope )) == NULL ) {
@@ -242,7 +243,7 @@ bool db_read( char* file, int read_mode ) {
         module_merge( foundinst->mod, curr_module );
       }
 
-    } else if( read_mode == READ_MODE_MOD_MERGE ) {
+    } else if( read_mode == READ_MODE_REPORT_MOD_MERGE ) {
 
       if( (foundmod = mod_link_find( curr_module, mod_head )) == NULL ) {
         mod_link_add( curr_module, &mod_head, &mod_tail );
@@ -579,11 +580,18 @@ void db_add_statement( statement* stmt ) {
 */
 void db_connect_statement_true( statement* stmt, statement* next_true ) {
 
-  char msg[4096];   /* Message to display to user */
+  char msg[4096];   /* Message to display to user          */
+  int  next_id;     /* Statement ID of next TRUE statement */
 
   if( stmt != NULL ) {
 
-    snprintf( msg, 4096, "In db_connect_statement_true, id: %d, next: %d", stmt->exp->id, next_true->exp->id );
+    if( next_true == NULL ) {
+      next_id = 0;
+    } else {
+      next_id = next_true->exp->id;
+    }
+
+    snprintf( msg, 4096, "In db_connect_statement_true, id: %d, next: %d", stmt->exp->id, next_id );
     print_output( msg, NORMAL );
 
     stmt->next_true = next_true;
@@ -600,11 +608,18 @@ void db_connect_statement_true( statement* stmt, statement* next_true ) {
 */
 void db_connect_statement_false( statement* stmt, statement* next_false ) {
 
-  char msg[4096];   /* Message to display to user */
+  char msg[4096];   /* Message to display to user           */
+  int  next_id;     /* Statement ID of next FALSE statement */
 
   if( stmt != NULL ) {
 
-    snprintf( msg, 4096, "In db_connect_statement_false, id: %d, next: %d", stmt->exp->id, next_false->exp->id );
+    if( next_false == NULL ) {
+      next_id = 0;
+    } else {
+      next_id = next_false->exp->id;
+    }
+
+    snprintf( msg, 4096, "In db_connect_statement_false, id: %d, next: %d", stmt->exp->id, next_id );
     print_output( msg, NORMAL );
 
     stmt->next_false = next_false;
@@ -806,6 +821,8 @@ void db_find_set_add_signal( char* symbol, vector* vec ) {
 
         signal_set_value( sig, vec->value, vec->width, 0, sig->value->lsb );
 
+        // signal_display( sig );
+
         /* Add signal's expressions to expression queue */
         curr_exp = sig->exp_head;
         while( curr_exp != NULL ) {
@@ -874,7 +891,7 @@ int db_get_signal_size( char* symbol ) {
   signal* sig;        /* Pointer to found signal      */
   char    msg[4096];  /* Debug/error message for user */
 
-  snprintf( msg, 4096, "In db_get_signal_size, symbol:%s.\n", symbol );
+  snprintf( msg, 4096, "In db_get_signal_size, symbol:%s.", symbol );
   print_output( msg, NORMAL );
 
   if( symtable_find( symbol, vcd_symtab, &sig ) ) {
@@ -892,6 +909,9 @@ int db_get_signal_size( char* symbol ) {
 
 
 /* $Log$
+/* Revision 1.21  2002/06/28 00:40:37  phase1geo
+/* Cleaning up extraneous output from debugging.
+/*
 /* Revision 1.20  2002/06/27 20:39:43  phase1geo
 /* Fixing scoring bugs as well as report bugs.  Things are starting to work
 /* fairly well now.  Added rest of support for delays.

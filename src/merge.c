@@ -107,10 +107,10 @@ int command_merge( int argc, char** argv ) {
   print_output( "Merging databases...", NORMAL );
 
   /* Read in base database */
-  db_read( merge_in0, READ_MODE_NO_MERGE );
+  db_read( merge_in0, READ_MODE_MERGE_NO_MERGE );
 
   /* Read in database to merge */
-  db_read( merge_in1, READ_MODE_INST_MERGE );
+  db_read( merge_in1, READ_MODE_MERGE_INST_MERGE );
 
   /* Write out new database to output file */
   db_write( merged_file );

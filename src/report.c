@@ -331,9 +331,9 @@ int command_report( int argc, char** argv ) {
   } else {
 
     if( report_instance ) {
-      db_read( input_db, READ_MODE_NO_MERGE );
+      db_read( input_db, READ_MODE_REPORT_NO_MERGE );
     } else {
-      db_read( input_db, READ_MODE_MOD_MERGE );
+      db_read( input_db, READ_MODE_REPORT_MOD_MERGE );
     }
 
   }
@@ -348,6 +348,9 @@ int command_report( int argc, char** argv ) {
 
 
 /* $Log$
+/* Revision 1.5  2002/06/25 21:46:10  phase1geo
+/* Fixes to simulator and reporting.  Still some bugs here.
+/*
 /* Revision 1.4  2002/05/13 03:02:58  phase1geo
 /* Adding lines back to expressions and removing them from statements (since the line
 /* number range of an expression can be calculated by looking at the expression line

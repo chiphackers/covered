@@ -37,14 +37,18 @@ void expression_display( expression* expr );
 //! Performs operation specified by parameter expression.
 void expression_operate( expression* expr );
 
-//! Returns a value of 1, if the specified expression evaluates to a zero value.
-bool expression_is_zero( expression* expr );
+//! Returns a value of 1, if the specified expression evaluates to a non-zero, non-X/Z value.
+bool expression_is_true( expression* expr );
 
 //! Deallocates memory used for expression.
 void expression_dealloc( expression* expr, bool exp_only );
 
 
 /* $Log$
+/* Revision 1.6  2002/06/25 03:39:03  phase1geo
+/* Fixed initial scoring bugs.  We now generate a legal CDD file for reporting.
+/* Fixed some report bugs though there are still some remaining.
+/*
 /* Revision 1.5  2002/06/21 05:55:05  phase1geo
 /* Getting some codes ready for writing simulation engine.  We should be set
 /* now.

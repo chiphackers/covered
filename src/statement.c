@@ -171,13 +171,14 @@ void statement_db_write( statement* stmt, FILE* ofile, char* scope ) {
 /*!
  \param line      Pointer to current line of file being read.
  \param curr_mod  Pointer to current module.
+ \param read_mode  If set to REPORT, adds statement to head of list; otherwise, adds statement to tail.
  
  \return Returns TRUE if the line is read without error; otherwise, returns FALSE.
 
  Reads in the contents of the statement from the specified line, creates
  a statement structure to hold the contents.
 */
-bool statement_db_read( char** line, module* curr_mod ) {
+bool statement_db_read( char** line, module* curr_mod, int read_mode ) {
 
   bool       retval = TRUE;  /* Return value of this function                                          */
   int        id;             /* ID of root expression that is associated with this statement           */
@@ -226,7 +227,11 @@ bool statement_db_read( char** line, module* curr_mod ) {
       }
 
       /* Add statement to module statement list */
-      stmt_link_add_tail( stmt, &(curr_mod->stmt_head), &(curr_mod->stmt_tail) );
+      if( (read_mode == READ_MODE_MERGE_NO_MERGE) || (read_mode == READ_MODE_MERGE_INST_MERGE) ) {
+        stmt_link_add_tail( stmt, &(curr_mod->stmt_head), &(curr_mod->stmt_tail) );
+      } else {
+        stmt_link_add_head( stmt, &(curr_mod->stmt_head), &(curr_mod->stmt_tail) );
+      }
 
 //      stmt_link_display( curr_mod->stmt_head );
 
@@ -263,11 +268,15 @@ void statement_connect( statement* curr_stmt, statement* next_stmt, bool set_sto
   assert( curr_stmt != NULL );
   assert( next_stmt != NULL );
 
+  // printf( "In statement_connect, curr_stmt: %d, next_stmt: %d, set_stop: %d\n", curr_stmt->exp->id, next_stmt->exp->id, set_stop );
+
+/*
   if( count == 100 ) {
     assert( count == 0 );
   } else {
     count++;
   }
+*/
 
   /* Set STOP bit if necessary */
   if( (curr_stmt->next_true == NULL) && (curr_stmt->next_false == NULL) && set_stop ) {
@@ -350,6 +359,9 @@ void statement_dealloc( statement* stmt ) {
 
 
 /* $Log$
+/* Revision 1.17  2002/06/28 00:40:37  phase1geo
+/* Cleaning up extraneous output from debugging.
+/*
 /* Revision 1.16  2002/06/27 20:39:43  phase1geo
 /* Fixing scoring bugs as well as report bugs.  Things are starting to work
 /* fairly well now.  Added rest of support for delays.

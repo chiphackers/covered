@@ -206,23 +206,34 @@ statement* sim_statement( statement* head_stmt ) {
       
     last_stmt = stmt;
 
-    if( expression_is_zero( stmt->exp ) ) {
+    if( SUPPL_IS_STMT_CONTINUOUS( stmt->exp->suppl ) == 1 ) {
 
-      /* 
-       If statement's next_false value is NULL, we need to wait.  Set STMT_HEAD
-       bit in this statement.
-      */
-      if( stmt->next_false == NULL ) {
-         
-        stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
-
-      }
-
-      stmt = stmt->next_false;
+       /*
+        If this is a continuous assignment, don't traverse next pointers.
+       */
+       stmt = NULL;
 
     } else {
 
-      stmt = stmt->next_true;
+      if( expression_is_true( stmt->exp ) ) {
+
+        stmt = stmt->next_true;
+ 
+      } else {
+
+        /* 
+         If statement's next_false value is NULL, we need to wait.  Set STMT_HEAD
+         bit in this statement.
+        */
+        if( stmt->next_false == NULL ) {
+         
+          stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
+
+        }
+
+        stmt = stmt->next_false;
+
+      }
 
     }
 
@@ -287,6 +298,9 @@ void sim_simulate() {
 }
 
 /* $Log$
+/* Revision 1.10  2002/06/28 00:40:37  phase1geo
+/* Cleaning up extraneous output from debugging.
+/*
 /* Revision 1.9  2002/06/27 20:39:43  phase1geo
 /* Fixing scoring bugs as well as report bugs.  Things are starting to work
 /* fairly well now.  Added rest of support for delays.

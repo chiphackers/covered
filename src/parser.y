@@ -1876,6 +1876,9 @@ assign
                   /* Set STMT_STOP bit */
                   stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);
 
+                  /* Set STMT_CONTINUOUS bit */
+                  stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_CONTINUOUS);
+
                   /* Statement will be looped back to itself */
                   db_connect_statement_true( stmt, stmt );
                   db_connect_statement_false( stmt, stmt );

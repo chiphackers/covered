@@ -145,8 +145,9 @@ signame
 	;
 
 changelists
-	: changelist
-	| changelist changelists;
+	: changelists changelist
+	| changelist
+	;
 
 changelist
 	: TIMESTAMP changes
