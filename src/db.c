@@ -273,19 +273,27 @@ bool db_read( char* file, int read_mode ) {
             if( (read_mode == READ_MODE_MERGE_INST_MERGE) && ((foundinst = instance_find_scope( instance_root, mod_scope )) != NULL) ) {
               merge_mode = TRUE;
               module_db_merge( foundinst->mod, db_handle, TRUE );
+            } else if( read_mode == READ_MODE_REPORT_MOD_REPLACE ) {
+              if( (foundmod = mod_link_find( &tmpmod, mod_head )) != NULL ) {
+                merge_mode = TRUE;
+                /*
+                 If this module has been assigned a stat, remove it and replace it with the new module contents;
+                 otherwise, merge the results of the new module with the old.
+                */
+                if( foundmod->mod->stat != NULL ) {
+                  statistic_dealloc( foundmod->mod->stat );
+                  foundmod->mod->stat = NULL;
+                  module_db_replace( foundmod->mod, db_handle );
+                } else {
+                  module_db_merge( foundmod->mod, db_handle, FALSE );
+                }
+              } else {
+                printf( "HERE\n" );
+                retval = FALSE;
+              }
             } else if( (read_mode == READ_MODE_REPORT_MOD_MERGE) && ((foundmod = mod_link_find( &tmpmod, mod_head )) != NULL) ) {
               merge_mode = TRUE;
-              /*
-               If this module has been assigned a stat, remove it and replace it with the new module contents;
-               otherwise, merge the results of the new module with the old.
-              */
-              if( foundmod->mod->stat != NULL ) {
-                statistic_dealloc( foundmod->mod->stat );
-                foundmod->mod->stat = NULL;
-                module_db_replace( foundmod->mod, db_handle );
-              } else {
-                module_db_merge( foundmod->mod, db_handle, FALSE );
-              }
+              module_db_merge( foundmod->mod, db_handle, FALSE );
             } else {
               curr_module             = module_create();
               curr_module->name       = strdup_safe( mod_name, __FILE__, __LINE__ );
@@ -1292,6 +1300,11 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.113  2004/04/07 11:36:03  phase1geo
+ Changes made to allow opening multiple CDD files without needing to deallocate
+ all memory for one before reallocating memory for another.  Things are not
+ entirely working at this point.
+
  Revision 1.112  2004/03/30 15:42:14  phase1geo
  Renaming signal type to vsignal type to eliminate compilation problems on systems
  that contain a signal type in the OS.

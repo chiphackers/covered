@@ -535,6 +535,13 @@
 */
 #define READ_MODE_REPORT_MOD_MERGE        3
 
+/*!
+ When module is completely read in (including module, signals, expressions), the
+ module is looked up in the module list.  If the module is found, it is replaced
+ (unless the module has already been replaced, in which case it is merged) with
+ the existing module.
+*/
+#define READ_MODE_REPORT_MOD_REPLACE      4
 /*! @} */
 
 /*!
@@ -1578,6 +1585,10 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.105  2004/03/30 15:42:14  phase1geo
+ Renaming signal type to vsignal type to eliminate compilation problems on systems
+ that contain a signal type in the OS.
+
  Revision 1.104  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,

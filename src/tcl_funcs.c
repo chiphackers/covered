@@ -176,7 +176,51 @@ int tcl_func_open_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv
 
     ifile = strdup_safe( argv[1], __FILE__, __LINE__ );
 
-    if( !report_read_cdd_and_ready( ifile ) ) {
+    if( !report_read_cdd_and_ready( ifile, READ_MODE_REPORT_MOD_MERGE ) ) {
+      retval = TCL_ERROR;
+    }
+
+    free_safe( ifile );
+
+  }
+
+  return( retval );
+
+}
+
+int tcl_func_replace_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+
+  int   retval = TCL_OK;
+  char* ifile;
+
+  /* If no filename was specified, the user hit cancel so just exit gracefully */
+  if( argv[1][0] != '\0' ) {
+
+    ifile = strdup_safe( argv[1], __FILE__, __LINE__ );
+
+    if( !report_read_cdd_and_ready( ifile, READ_MODE_REPORT_MOD_REPLACE ) ) {
+      retval = TCL_ERROR;
+    }
+
+    free_safe( ifile );
+
+  }
+
+  return( retval );
+
+}
+
+int tcl_func_merge_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+
+  int   retval = TCL_OK;
+  char* ifile;
+
+  /* If no filename was specified, the user hit cancel so just exit gracefully */
+  if( argv[1][0] != '\0' ) {
+
+    ifile = strdup_safe( argv[1], __FILE__, __LINE__ );
+
+    if( !report_read_cdd_and_ready( ifile, READ_MODE_REPORT_MOD_MERGE ) ) {
       retval = TCL_ERROR;
     }
 
@@ -222,6 +266,8 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* home ) {
   Tcl_CreateCommand( tcl, "tcl_func_collect_covered_lines",    (Tcl_CmdProc*)(tcl_func_collect_covered_lines),    0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_module_start_and_end", (Tcl_CmdProc*)(tcl_func_get_module_start_and_end), 0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_open_cdd",                 (Tcl_CmdProc*)(tcl_func_open_cdd),                 0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_replace_cdd",              (Tcl_CmdProc*)(tcl_func_replace_cdd),              0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_merge_cdd",                (Tcl_CmdProc*)(tcl_func_merge_cdd),                0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_line_summary",         (Tcl_CmdProc*)(tcl_func_get_line_summary),         0, 0 );
 
   /* Set HOME variable to location of scripts */
@@ -231,6 +277,10 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* home ) {
 
 /*
  $Log$
+ Revision 1.3  2004/03/26 13:20:33  phase1geo
+ Fixing case where user hits cancel button in open window so that we don't
+ exit the GUI when this occurs.
+
  Revision 1.2  2004/03/25 14:37:07  phase1geo
  Fixing installation of TCL scripts and usage of the scripts in their installed
  location.  We are almost ready to create the new development release.

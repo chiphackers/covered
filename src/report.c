@@ -510,14 +510,15 @@ void report_generate( FILE* ofile ) {
 }
 
 /*!
- \param ifile  Name of CDD file to read from.
+ \param ifile      Name of CDD file to read from.
+ \param read_mode  Specifies mode to read from CDD file (merge or replace).
  
  \return Returns TRUE if CDD file was read properly; otherwise, returns FALSE.
 
  Reads in specified CDD file and gathers module statistics to get ready for GUI
  interaction with this CDD file. 
 */
-bool report_read_cdd_and_ready( char* ifile ) {
+bool report_read_cdd_and_ready( char* ifile, int read_mode ) {
 
   bool retval = TRUE;  /* Return value for this function */
 
@@ -528,10 +529,8 @@ bool report_read_cdd_and_ready( char* ifile ) {
 
   } else {
 
-    if( retval = db_read( ifile, READ_MODE_REPORT_MOD_MERGE ) ) {
+    if( retval = db_read( ifile, read_mode ) ) {
       report_gather_module_stats( mod_head );
-    } else {
-      exit( 1 );
     }
 
   }
@@ -616,7 +615,7 @@ int command_report( int argc, int last_arg, char** argv ) {
     } else {
 
       if( input_db != NULL ) {
-        report_read_cdd_and_ready( input_db );
+        report_read_cdd_and_ready( input_db, READ_MODE_REPORT_MOD_MERGE );
       }
 
       /* Initialize the Tcl/Tk interpreter */
@@ -671,6 +670,10 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.34  2004/03/26 13:20:33  phase1geo
+ Fixing case where user hits cancel button in open window so that we don't
+ exit the GUI when this occurs.
+
  Revision 1.33  2004/03/25 14:37:07  phase1geo
  Fixing installation of TCL scripts and usage of the scripts in their installed
  location.  We are almost ready to create the new development release.

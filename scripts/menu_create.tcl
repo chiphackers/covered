@@ -35,7 +35,7 @@ proc menu_create {.menubar} {
   set tfm [menu .menubar.file.menu -tearoff false]
 
   # Now add open and close options
-  $tfm add command -label "Open CDD..." -command {
+  $tfm add command -label "Open Initial CDD..." -command {
     set file_name [tk_getOpenFile -filetypes $file_types]
     message .status -text "Opening $file_name..." -width 500 -relief raised
     place .status -in . -relx 0.33 -rely 0.5
@@ -45,11 +45,33 @@ proc menu_create {.menubar} {
       destroy .status
       .bot.info configure -text "Select a module/instance at left for coverage details"
     }
-    ;# This line of code is only needed until we have the ability to open several files at once.
-    ;# .menubar.file.menu entryconfigure 0 -state disabled
+    ;# Disable ourselves and allow user to replace or merge new CDD
+    .menubar.file.menu entryconfigure 0 -state disabled
+    .menubar.file.menu entryconfigure 1 -state normal
+    .menubar.file.menu entryconfigure 2 -state normal
   }
-  $tfm add command -label "Reopen CDD" -state disabled
-  $tfm add command -label "Close CDD" -state disabled
+  $tfm add command -label "Open Related CDD..." -state disabled -command {
+    set file_name [tk_getOpenFile -filetypes $file_types]
+    message .status -text "Opening $file_name..." -width 500 -relief raised
+    place .status -in . -relx 0.33 -rely 0.5
+    after 100 {
+      tcl_func_replace_cdd $file_name
+      populate_listbox .bot.l
+      destroy .status
+      .bot.info configure -text "Select a module/instance at left for coverage details"
+    }
+  }
+  $tfm add command -label "Merge Related CDD..." -state disabled -command {
+    set file_name [tk_getOpenFile -filetypes $file_types]
+    message .status -text "Merging $file_name..." -width 500 -relief raised
+    place .status -in . -relx 0.33 -rely 0.5
+    after 100 {
+      tcl_func_merge_cdd $file_name
+      populate_listbox .bot.l
+      destroy .status
+      .bot.info configure -text "Select a module/instance at left for coverage details"
+    }
+  }
   $tfm add separator
   $tfm add command -label Exit -command exit
 
