@@ -26,6 +26,36 @@ set curr_mod_name         0
 # print the total listing will be a bit too-much. As of now, we are 
 # using lsearch, but will certainly optimize later.
 
+proc create_race_tags {} {
+
+  global race_type race_reasons race_lines
+
+  # Set race condition information
+  if {[expr $race_type == 1] && [expr [llength $race_reasons] > 0]} {
+    set cmd_enter ".bot.right.txt tag add race_enter"
+    set cmd_leave ".bot.right.txt tag add race_leave"
+    foreach entry $race_lines {
+      set cmd_enter [concat $cmd_enter "$entry.0" "$entry.end"]
+      set cmd_leave [concat $cmd_leave "$entry.0" "$entry.end"]
+    }
+    eval $cmd_enter
+    eval $cmd_leave
+    .bot.right.txt tag bind race_enter <Enter> {
+      set curr_info   [.info cget -text]
+      set curr_cursor [.bot.right.txt cget -cursor]
+      .bot.right.txt configure -cursor question_arrow
+      set curr_line [lindex [split [.bot.right.txt index {current + 1 chars}] .] 0]
+      set reason    [lindex $race_msgs [lindex $race_reasons [lsearch $race_lines $curr_line]]]
+      .info configure -text "Race condition reason: $reason"
+    }
+    .bot.right.txt tag bind race_leave <Leave> {
+      .bot.right.txt configure -cursor $curr_cursor
+      .info          configure -text   $curr_info
+    }
+  }
+
+}
+
 proc process_module_line_cov {} {
 
   global fileContent file_name start_line end_line
@@ -136,6 +166,9 @@ proc display_line_cov {} {
         }
         incr linecount
       }
+
+      # Create race condition tags
+      create_race_tags
 
     }
 
@@ -277,10 +310,13 @@ proc display_toggle_cov {} {
         .bot.right.txt tag configure uncov_button -underline true -foreground $uncov_fgColor -background $uncov_bgColor
         .bot.right.txt tag bind uncov_enter <Enter> {
           set curr_cursor [.bot.right.txt cget -cursor]
+          set curr_info   [.info cget -text]
           .bot.right.txt configure -cursor hand2
+          .info configure -text "Click left button for detailed toggle coverage information"
         }
         .bot.right.txt tag bind uncov_leave <Leave> {
           .bot.right.txt configure -cursor $curr_cursor
+          .info configure -text $curr_info
         }
         .bot.right.txt tag bind uncov_button <ButtonPress-1> {
           set range [.bot.right.txt tag prevrange uncov_button {current + 1 chars}]
@@ -427,6 +463,9 @@ proc display_comb_cov {} {
         incr linecount
       }
 
+      # Create race condition tags
+      create_race_tags
+
       # Finally, set combinational logic information
       if {[expr $uncov_type == 1] && [expr [llength $uncovered_combs] > 0]} {
         set cmd_enter     ".bot.right.txt tag add uncov_enter"
@@ -468,10 +507,13 @@ proc display_comb_cov {} {
         .bot.right.txt tag configure uncov_button -underline true
         .bot.right.txt tag bind uncov_enter <Enter> {
           set curr_cursor [.bot.right.txt cget -cursor]
+          set curr_info   [.info cget -text]
           .bot.right.txt configure -cursor hand2
+          .info configure -text "Click left button for detailed combinational logic coverage information" 
         }
         .bot.right.txt tag bind uncov_leave <Leave> {
           .bot.right.txt configure -cursor $curr_cursor
+          .info configure -text $curr_info
         }
         .bot.right.txt tag bind uncov_button <ButtonPress-1> {
           set all_ranges [.bot.right.txt tag ranges uncov_highlight]

@@ -13,7 +13,13 @@ set lwidth        -1
 
 proc main_view {} {
 
+  global race_msgs
+
   # Start off 
+
+  # Get all race condition reason messages
+  set race_msgs ""
+  tcl_func_get_race_reason_msgs
 
   # Create the frame for menubar creation
   frame .menubar -width 710 -height 20 

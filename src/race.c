@@ -701,6 +701,7 @@ void race_report( FILE* ofile, bool verbose ) {
 /*!
  \param modname   Name of module to search for
  \param lines     Pointer to an array of lines that contain line numbers of race condition statements
+ \param reasons   Pointer to an array of race condition reason integers, one for each line in the lines array
  \param line_cnt  Pointer to number of elements that exist in lines array
 
  \return Returns TRUE if the specified module name was found in the design; otherwise, returns FALSE.
@@ -708,7 +709,7 @@ void race_report( FILE* ofile, bool verbose ) {
  Collects all of the line numbers in the specified module that were ignored from coverage due to
  detecting a race condition.  This function is primarily used by the GUI for outputting purposes.
 */
-bool race_collect_lines( char* modname, int** lines, int* line_cnt ) {
+bool race_collect_lines( char* modname, int** lines, int** reasons, int* line_cnt ) {
 
   bool      retval    = TRUE;  /* Return value for this function                           */
   module    mod;               /* Temporary module used to search for module name          */
@@ -723,6 +724,7 @@ bool race_collect_lines( char* modname, int** lines, int* line_cnt ) {
 
     /* Begin by allocating some memory for the lines */
     *lines    = (int*)malloc_safe( (sizeof( int ) * line_size), __FILE__, __LINE__ );
+    *reasons  = (int*)malloc_safe( (sizeof( int ) * line_size), __FILE__, __LINE__ );
     *line_cnt = 0;
 
     curr_race = modl->mod->race_head;
@@ -730,9 +732,11 @@ bool race_collect_lines( char* modname, int** lines, int* line_cnt ) {
       for( i=curr_race->start_line; i<=curr_race->end_line; i++ ) {
 	if( *line_cnt == line_size ) {
           line_size += 20;
-	  *lines = (int*)realloc( *lines, (sizeof( int ) * line_size) );
+	  *lines   = (int*)realloc( *lines, (sizeof( int ) * line_size) );
+	  *reasons = (int*)realloc( *lines, (sizeof( int ) * line_size) );
 	}
-        (*lines)[*line_cnt] = i;
+        (*lines)[*line_cnt]   = i;
+        (*reasons)[*line_cnt] = curr_race->reason;
 	(*line_cnt)++;
       }
       curr_race = curr_race->next;
@@ -771,6 +775,10 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.22  2005/02/05 06:20:58  phase1geo
+ Added ascii report output for race conditions.  There is a segmentation fault
+ bug associated with instance reporting.  Need to look into further.
+
  Revision 1.21  2005/02/05 05:29:25  phase1geo
  Added race condition reporting to GUI.
 

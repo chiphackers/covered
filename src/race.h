@@ -30,7 +30,7 @@ void race_get_stats( race_blk* curr, int* race_total, int type_total[][RACE_TYPE
 void race_report( FILE* ofile, bool verbose );
 
 /*! \brief Collects all of the lines in the specified module that were not verified due to race condition breach */
-bool race_collect_lines( char* modname, int** lines, int* line_cnt );
+bool race_collect_lines( char* modname, int** lines, int** reasons, int* line_cnt );
 
 /*! \brief Deallocates the specified race condition block from memory */
 void race_blk_delete_list( race_blk* rb );
@@ -38,6 +38,9 @@ void race_blk_delete_list( race_blk* rb );
 
 /*
  $Log$
+ Revision 1.11  2005/02/05 05:29:25  phase1geo
+ Added race condition reporting to GUI.
+
  Revision 1.10  2005/02/05 04:13:30  phase1geo
  Started to add reporting capabilities for race condition information.  Modified
  race condition reason calculation and handling.  Ran -Wall on all code and cleaned

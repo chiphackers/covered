@@ -24,10 +24,29 @@
 #include "race.h"
 
 
-extern mod_link* mod_head;
-extern mod_inst* instance_root;
-extern char      user_msg[USER_MSG_LENGTH];
+extern mod_link*   mod_head;
+extern mod_inst*   instance_root;
+extern char        user_msg[USER_MSG_LENGTH];
+extern const char* race_msgs[RACE_TYPE_NUM];
 
+
+int tcl_func_get_race_reason_msgs( ClientData d, Tcl_Interp* tcl, int argc, const char *argv[] ) {
+
+  int retval = TCL_OK;  /* Return value of this function */
+  int i;                /* Loop iterator                 */
+
+  for( i=0; i<RACE_TYPE_NUM; i++ ) {
+    strcpy( user_msg, race_msgs[i] );
+    if( i == 0 ) {
+      Tcl_SetVar( tcl, "race_msgs", user_msg, (TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT) );
+    } else {
+      Tcl_SetVar( tcl, "race_msgs", user_msg, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+    }
+  }
+
+  return( retval );
+
+}
 
 int tcl_func_get_module_list( ClientData d, Tcl_Interp* tcl, int argc, const char *argv[] ) {
 
@@ -208,24 +227,30 @@ int tcl_func_collect_race_lines( ClientData d, Tcl_Interp* tcl, int argc, const 
   int   retval  = TCL_OK;
   char* modname;
   int*  lines;
+  int*  reasons;
   int   line_cnt;
   int   i       = 0;
   char  line[20]; 
+  char  reason[20];
 
   modname = strdup_safe( argv[1], __FILE__, __LINE__ );
 
-  if( race_collect_lines( modname, &lines, &line_cnt ) ) {
+  if( race_collect_lines( modname, &lines, &reasons, &line_cnt ) ) {
 
     for( i=0; i<line_cnt; i++ ) {
-      snprintf( line, 20, "%d", lines[i] );
+      snprintf( line,   20, "%d", lines[i]   );
+      snprintf( reason, 20, "%d", reasons[i] );
       if( i == 0 ) {
-	Tcl_SetVar( tcl, "race_lines", line, (TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT) );
+	Tcl_SetVar( tcl, "race_lines",   line,   (TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT) );
+        Tcl_SetVar( tcl, "race_reasons", reason, (TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT) );
       } else {
-	Tcl_SetVar( tcl, "race_lines", line, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+	Tcl_SetVar( tcl, "race_lines",   line,   (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+	Tcl_SetVar( tcl, "race_reasons", reason, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
       }
     }
 
     free_safe( lines );
+    free_safe( reasons );
 
   } else {
 
@@ -701,6 +726,7 @@ int tcl_func_get_comb_summary( ClientData d, Tcl_Interp* tcl, int argc, const ch
 
 void tcl_func_initialize( Tcl_Interp* tcl, char* home, char* version, char* browser ) {
 
+  Tcl_CreateCommand( tcl, "tcl_func_get_race_reason_msgs",      (Tcl_CmdProc*)(tcl_func_get_race_reason_msgs),      0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_module_list",           (Tcl_CmdProc*)(tcl_func_get_module_list),           0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_instance_list",         (Tcl_CmdProc*)(tcl_func_get_instance_list),         0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_filename",              (Tcl_CmdProc*)(tcl_func_get_filename),              0, 0 );
@@ -736,6 +762,9 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* home, char* version, char* brow
 
 /*
  $Log$
+ Revision 1.16  2005/02/05 05:29:25  phase1geo
+ Added race condition reporting to GUI.
+
  Revision 1.15  2005/02/05 04:13:30  phase1geo
  Started to add reporting capabilities for race condition information.  Modified
  race condition reason calculation and handling.  Ran -Wall on all code and cleaned
