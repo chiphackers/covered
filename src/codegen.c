@@ -136,7 +136,7 @@ char* codegen_gen_expr( expression* expr, int line ) {
         default:  break;
       }
 
-      printf( "In codegen, expr id: %d, op: %d\n", expr->id, SUPPL_OP( expr->suppl ) );
+      // printf( "In codegen, expr id: %d, op: %d\n", expr->id, SUPPL_OP( expr->suppl ) );
 
       if( both ) {
         code_size = strlen( right_code ) + strlen( left_code ) + code_size;
@@ -172,6 +172,12 @@ char* codegen_gen_expr( expression* expr, int line ) {
 
 
 /* $Log$
+/* Revision 1.11  2002/07/05 00:10:18  phase1geo
+/* Adding report support for case statements.  Everything outputs fine; however,
+/* I want to remove CASE, CASEX and CASEZ expressions from being reported since
+/* it causes redundant and misleading information to be displayed in the verbose
+/* reports.  New diagnostics to check CASE expressions have been added and pass.
+/*
 /* Revision 1.10  2002/07/03 21:30:52  phase1geo
 /* Fixed remaining issues with always statements.  Full regression is running
 /* error free at this point.  Regenerated documentation.  Added EOR expression

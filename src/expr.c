@@ -693,13 +693,11 @@ void expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_CASE :
-        expression_operate( expr->left );
         vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_EQ );
         break;
 
       case EXP_OP_CASEX :
       case EXP_OP_CASEZ :
-        expression_operate( expr->left );
         vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CEQ );
         break;
 
@@ -790,6 +788,12 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.28  2002/07/05 00:10:18  phase1geo
+/* Adding report support for case statements.  Everything outputs fine; however,
+/* I want to remove CASE, CASEX and CASEZ expressions from being reported since
+/* it causes redundant and misleading information to be displayed in the verbose
+/* reports.  New diagnostics to check CASE expressions have been added and pass.
+/*
 /* Revision 1.27  2002/07/04 23:10:12  phase1geo
 /* Added proper support for case, casex, and casez statements in score command.
 /* Report command still incorrect for these statement types.
