@@ -195,13 +195,19 @@
  Least-significant bit position of expression supplemental field indicating that this
  expression has evaluated to a value of FALSE during the lifetime of the simulation.
 */
-#define SUPPL_LSB_FALSE             8
+#define SUPPL_LSB_FALSE             4
 
 /*!
  Least-significant bit position of expression supplemental field indicating that this
  expression has evaluated to a value of TRUE during the lifetime of the simulation.
 */
-#define SUPPL_LSB_TRUE              9
+#define SUPPL_LSB_TRUE              5
+
+/*!
+ Least-significant bit position of expression supplemental field indicating the
+ expression's operation type.
+*/
+#define SUPPL_LSB_OP                8
 
 /*!
  Least-significant bit position of expression supplemental field for the LSB of the
@@ -252,6 +258,11 @@
 */
 #define SUPPL_COMB_MISSED(x)        (SUPPL_IS_MEASURABLE(x) & (~SUPPL_WAS_TRUE(x) | ~SUPPL_WAS_FALSE(x)))
 
+/*!
+ Returns the specified expression's operation.
+*/
+#define SUPPL_OP(x)                 ((x >> SUPPL_LSB_OP) & 0xff)
+
 /*! @} */
      
 /*!
@@ -293,48 +304,48 @@
  @{
 */
 
-#define EXP_OP_NONE	0	/*!< Specifies no expression (leaf node in expression tree) */
-#define EXP_OP_SIG	1	/*!< Specifes that this expression contains signal value    */
-#define EXP_OP_XOR	2	/*!< '^'   operator */
-#define EXP_OP_MULTIPLY	3    	/*!< '*'   operator */
-#define EXP_OP_DIVIDE	4	/*!< '/'   operator */
-#define EXP_OP_MOD	5	/*!< '%'   operator */
-#define EXP_OP_ADD	6	/*!< '+'   operator */
-#define EXP_OP_SUBTRACT	7	/*!< '-'   operator */
-#define EXP_OP_AND	8	/*!< '&'   operator */
-#define EXP_OP_OR	9	/*!< '|'   operator */
-#define EXP_OP_NAND     10      /*!< '~&'  operator */
-#define EXP_OP_NOR	11	/*!< '~|'  operator */
-#define EXP_OP_NXOR	12	/*!< '~^'  operator */
-#define EXP_OP_LT	13	/*!< '<'   operator */
-#define EXP_OP_GT	14	/*!< '>'   operator */
-#define EXP_OP_LSHIFT	15	/*!< '<<'  operator */
-#define EXP_OP_RSHIFT	16	/*!< '>>'  operator */
-#define EXP_OP_EQ	17	/*!< '=='  operator */
-#define EXP_OP_CEQ	18	/*!< '===' operator */
-#define EXP_OP_LE	19	/*!< '<='  operator */
-#define EXP_OP_GE	20	/*!< '>='  operator */
-#define EXP_OP_NE	21	/*!< '!='  operator */
-#define EXP_OP_CNE	22	/*!< '!==' operator */
-#define EXP_OP_LOR	23	/*!< '||'  operator */
-#define EXP_OP_LAND	24	/*!< '&&'  operator */
-#define EXP_OP_COND_T	25	/*!< '?:' true condition operator  */
-#define EXP_OP_COND_F   26      /*!< '?:' false condition operator */
-#define EXP_OP_UINV	27	/*!< unary '~'  operator           */
-#define EXP_OP_UAND	28	/*!< unary '&'  operator           */
-#define EXP_OP_UNOT	29	/*!< unary '!'  operator           */
-#define EXP_OP_UOR	30	/*!< unary '|'  operator           */
-#define EXP_OP_UXOR	31 	/*!< unary '^'  operator           */
-#define EXP_OP_UNAND	32	/*!< unary '~&' operator           */
-#define EXP_OP_UNOR	33	/*!< unary '~|' operator           */
-#define EXP_OP_UNXOR	34	/*!< unary '~^' operator           */
-#define EXP_OP_SBIT_SEL	35	/*!< single-bit signal select      */
-#define EXP_OP_MBIT_SEL	36	/*!< multi-bit signal select       */
-#define EXP_OP_EXPAND	37	/*!< bit expansion operator        */
-#define EXP_OP_CONCAT	38	/*!< signal concatenation operator */
-#define EXP_OP_PEDGE	39	/*!< posedge operator              */
-#define EXP_OP_NEDGE	40	/*!< negedge operator              */
-#define EXP_OP_AEDGE	41	/*!< anyedge operator              */
+#define EXP_OP_NONE	0x0	/*!< Specifies no expression (leaf node in expression tree) */
+#define EXP_OP_SIG	0x1	/*!< Specifes that this expression contains signal value    */
+#define EXP_OP_XOR	0x2	/*!< '^'   operator */
+#define EXP_OP_MULTIPLY	0x3    	/*!< '*'   operator */
+#define EXP_OP_DIVIDE	0x4	/*!< '/'   operator */
+#define EXP_OP_MOD	0x5	/*!< '%'   operator */
+#define EXP_OP_ADD	0x6	/*!< '+'   operator */
+#define EXP_OP_SUBTRACT	0x7	/*!< '-'   operator */
+#define EXP_OP_AND	0x8	/*!< '&'   operator */
+#define EXP_OP_OR	0x9	/*!< '|'   operator */
+#define EXP_OP_NAND     0xa     /*!< '~&'  operator */
+#define EXP_OP_NOR	0xb	/*!< '~|'  operator */
+#define EXP_OP_NXOR	0xc	/*!< '~^'  operator */
+#define EXP_OP_LT	0xd	/*!< '<'   operator */
+#define EXP_OP_GT	0xe	/*!< '>'   operator */
+#define EXP_OP_LSHIFT	0xf	/*!< '<<'  operator */
+#define EXP_OP_RSHIFT	0x10	/*!< '>>'  operator */
+#define EXP_OP_EQ	0x11	/*!< '=='  operator */
+#define EXP_OP_CEQ	0x12	/*!< '===' operator */
+#define EXP_OP_LE	0x13	/*!< '<='  operator */
+#define EXP_OP_GE	0x14	/*!< '>='  operator */
+#define EXP_OP_NE	0x15	/*!< '!='  operator */
+#define EXP_OP_CNE	0x16	/*!< '!==' operator */
+#define EXP_OP_LOR	0x17	/*!< '||'  operator */
+#define EXP_OP_LAND	0x18	/*!< '&&'  operator */
+#define EXP_OP_COND_T	0x19	/*!< '?:' true condition operator  */
+#define EXP_OP_COND_F   0x1a    /*!< '?:' false condition operator */
+#define EXP_OP_UINV	0x1b	/*!< unary '~'  operator           */
+#define EXP_OP_UAND	0x1c	/*!< unary '&'  operator           */
+#define EXP_OP_UNOT	0x1d	/*!< unary '!'  operator           */
+#define EXP_OP_UOR	0x1e	/*!< unary '|'  operator           */
+#define EXP_OP_UXOR	0x1f 	/*!< unary '^'  operator           */
+#define EXP_OP_UNAND	0x20	/*!< unary '~&' operator           */
+#define EXP_OP_UNOR	0x21	/*!< unary '~|' operator           */
+#define EXP_OP_UNXOR	0x22	/*!< unary '~^' operator           */
+#define EXP_OP_SBIT_SEL	0x23	/*!< single-bit signal select      */
+#define EXP_OP_MBIT_SEL	0x24	/*!< multi-bit signal select       */
+#define EXP_OP_EXPAND	0x25	/*!< bit expansion operator        */
+#define EXP_OP_CONCAT	0x26	/*!< signal concatenation operator */
+#define EXP_OP_PEDGE	0x27	/*!< posedge operator              */
+#define EXP_OP_NEDGE	0x28	/*!< negedge operator              */
+#define EXP_OP_AEDGE	0x29	/*!< anyedge operator              */
 
 /*! @} */
 
@@ -479,7 +490,6 @@ struct expression_s {
   nibble      suppl;       /*!< Vector containing supplemental information for this expression */
   int         line;        /*!< Starting line number of root expression (only valid if root)   */
   int         id;          /*!< Specifies unique ID for this expression in the parent          */
-  int         op;          /*!< Operation to perform on expression                             */
   signal*     sig;         /*!< Pointer to signal.  If NULL then no signal is attached         */
   expression* parent;      /*!< Parent expression.  If NULL then this is the root expression   */
   expression* right;       /*!< Pointer to expression on right                                 */

@@ -1519,7 +1519,6 @@ net_decl_assigns
 		  tmp->str  = $1;
 		  tmp->next = NULL;
 		  $$ = tmp;
-		  printf( "Found net_decl_assign\n" );
 		}
 	;
 

@@ -12,18 +12,20 @@
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a1">SUPPL_LSB_EXECUTED</a>&nbsp;&nbsp;&nbsp;1</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a2">SUPPL_LSB_CHANGED</a>&nbsp;&nbsp;&nbsp;2</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a3">SUPPL_LSB_MEASURABLE</a>&nbsp;&nbsp;&nbsp;3</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a4">SUPPL_LSB_FALSE</a>&nbsp;&nbsp;&nbsp;8</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a5">SUPPL_LSB_TRUE</a>&nbsp;&nbsp;&nbsp;9</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a6">SUPPL_LSB_SIG_LSB</a>&nbsp;&nbsp;&nbsp;16</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a7">SUPPL_MERGE_MASK</a>&nbsp;&nbsp;&nbsp;0x302</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a8">SUPPL_WAS_EXECUTED</a>(x)&nbsp;&nbsp;&nbsp;((x &gt;&gt; SUPPL_LSB_EXECUTED) &amp; 0x1)</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a9">SUPPL_IS_MEASURABLE</a>(x)&nbsp;&nbsp;&nbsp;((x &gt;&gt; SUPPL_LSB_MEASURABLE) &amp; 0x1)</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a10">SUPPL_WAS_TRUE</a>(x)&nbsp;&nbsp;&nbsp;((x &gt;&gt; SUPPL_LSB_TRUE) &amp; 0x1)</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a11">SUPPL_WAS_FALSE</a>(x)&nbsp;&nbsp;&nbsp;((x &gt;&gt; SUPPL_LSB_FALSE) &amp; 0x1)</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a12">SUPPL_COMB_MISSED</a>(x)&nbsp;&nbsp;&nbsp;(SUPPL_IS_MEASURABLE(x) &amp; (~SUPPL_WAS_TRUE(x) | ~SUPPL_WAS_FALSE(x)))</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a4">SUPPL_LSB_FALSE</a>&nbsp;&nbsp;&nbsp;4</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a5">SUPPL_LSB_TRUE</a>&nbsp;&nbsp;&nbsp;5</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a6">SUPPL_LSB_OP</a>&nbsp;&nbsp;&nbsp;8</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a7">SUPPL_LSB_SIG_LSB</a>&nbsp;&nbsp;&nbsp;16</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a8">SUPPL_MERGE_MASK</a>&nbsp;&nbsp;&nbsp;0x302</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a9">SUPPL_WAS_EXECUTED</a>(x)&nbsp;&nbsp;&nbsp;((x &gt;&gt; SUPPL_LSB_EXECUTED) &amp; 0x1)</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a10">SUPPL_IS_MEASURABLE</a>(x)&nbsp;&nbsp;&nbsp;((x &gt;&gt; SUPPL_LSB_MEASURABLE) &amp; 0x1)</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a11">SUPPL_WAS_TRUE</a>(x)&nbsp;&nbsp;&nbsp;((x &gt;&gt; SUPPL_LSB_TRUE) &amp; 0x1)</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a12">SUPPL_WAS_FALSE</a>(x)&nbsp;&nbsp;&nbsp;((x &gt;&gt; SUPPL_LSB_FALSE) &amp; 0x1)</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a13">SUPPL_COMB_MISSED</a>(x)&nbsp;&nbsp;&nbsp;(SUPPL_IS_MEASURABLE(x) &amp; (~SUPPL_WAS_TRUE(x) | ~SUPPL_WAS_FALSE(x)))</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a14">SUPPL_OP</a>(x)&nbsp;&nbsp;&nbsp;((x &gt;&gt; SUPPL_LSB_OP) &amp; 0xff)</td></tr>
 </table>
 <hr><h2>Define Documentation</h2>
-<a name="a12" doxytag="defines.h::SUPPL_COMB_MISSED"></a><p>
+<a name="a13" doxytag="defines.h::SUPPL_COMB_MISSED"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -50,7 +52,7 @@
 Returns a value of 1 if the specified supplemental belongs to an expression that was measurable for combinational coverage but not fully covered during simulation.     </td>
   </tr>
 </table>
-<a name="a9" doxytag="defines.h::SUPPL_IS_MEASURABLE"></a><p>
+<a name="a10" doxytag="defines.h::SUPPL_IS_MEASURABLE"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -127,7 +129,7 @@ Least-significant bit position of expression supplemental field indicating that 
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> #define SUPPL_LSB_FALSE&nbsp;&nbsp;&nbsp;8
+          <td class="md" nowrap valign="top"> #define SUPPL_LSB_FALSE&nbsp;&nbsp;&nbsp;4
       </table>
     </td>
   </tr>
@@ -187,7 +189,29 @@ Least-significant bit position of expression supplemental field indicating that 
 Least-significant bit position of expression supplemental field indicating that this expression evaluates to a value of 0 or 1 and is therefore measurable for coverage.     </td>
   </tr>
 </table>
-<a name="a6" doxytag="defines.h::SUPPL_LSB_SIG_LSB"></a><p>
+<a name="a6" doxytag="defines.h::SUPPL_LSB_OP"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> #define SUPPL_LSB_OP&nbsp;&nbsp;&nbsp;8
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+Least-significant bit position of expression supplemental field indicating the expression's operation type.     </td>
+  </tr>
+</table>
+<a name="a7" doxytag="defines.h::SUPPL_LSB_SIG_LSB"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -215,7 +239,7 @@ Least-significant bit position of expression supplemental field for the LSB of t
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> #define SUPPL_LSB_TRUE&nbsp;&nbsp;&nbsp;9
+          <td class="md" nowrap valign="top"> #define SUPPL_LSB_TRUE&nbsp;&nbsp;&nbsp;5
       </table>
     </td>
   </tr>
@@ -231,7 +255,7 @@ Least-significant bit position of expression supplemental field for the LSB of t
 Least-significant bit position of expression supplemental field indicating that this expression has evaluated to a value of TRUE during the lifetime of the simulation.     </td>
   </tr>
 </table>
-<a name="a7" doxytag="defines.h::SUPPL_MERGE_MASK"></a><p>
+<a name="a8" doxytag="defines.h::SUPPL_MERGE_MASK"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -255,7 +279,34 @@ Used for merging two supplemental fields from two expressions. Both expression s
     </td>
   </tr>
 </table>
-<a name="a8" doxytag="defines.h::SUPPL_WAS_EXECUTED"></a><p>
+<a name="a14" doxytag="defines.h::SUPPL_OP"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> #define SUPPL_OP</td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="md" nowrap valign="top">x&nbsp;</td>
+          <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
+          <td class="md" valign="top">)&nbsp;</td>
+          <td class="md" nowrap>&nbsp;&nbsp;&nbsp;((x &gt;&gt; SUPPL_LSB_OP) &amp; 0xff)
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+Returns the specified expression's operation.     </td>
+  </tr>
+</table>
+<a name="a9" doxytag="defines.h::SUPPL_WAS_EXECUTED"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -282,7 +333,7 @@ Used for merging two supplemental fields from two expressions. Both expression s
 Returns a value of 1 if the specified supplemental value has the executed bit set; otherwise, returns a value of 0 to indicate whether the corresponding expression was executed during simulation or not.     </td>
   </tr>
 </table>
-<a name="a11" doxytag="defines.h::SUPPL_WAS_FALSE"></a><p>
+<a name="a12" doxytag="defines.h::SUPPL_WAS_FALSE"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -309,7 +360,7 @@ Returns a value of 1 if the specified supplemental value has the executed bit se
 Returns a value of 1 if the specified supplemental belongs to an expression that has evaluated to a value of FALSE (0) during simulation.     </td>
   </tr>
 </table>
-<a name="a10" doxytag="defines.h::SUPPL_WAS_TRUE"></a><p>
+<a name="a11" doxytag="defines.h::SUPPL_WAS_TRUE"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -336,7 +387,7 @@ Returns a value of 1 if the specified supplemental belongs to an expression that
 Returns a value of 1 if the specified supplemental belongs to an expression that has evaluated to a value of TRUE (1) during simulation.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Tue Apr 23 00:25:18 2002 for Covered by
+<hr><address align="right"><small>Generated on Wed Apr 24 22:34:16 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.15 </small></address>

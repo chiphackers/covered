@@ -156,7 +156,7 @@ void exp_link_display( exp_link* head ) {
 
   curr = head;
   while( curr != NULL ) {
-    printf( "  id: %d, op: %d, addr: 0x%lx\n", curr->exp->id, curr->exp->op, curr->exp );
+    printf( "  id: %d, op: %d, addr: 0x%lx\n", curr->exp->id, SUPPL_OP( curr->exp->suppl ), curr->exp );
     curr = curr->next;
   }
 

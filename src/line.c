@@ -38,7 +38,7 @@ void line_get_stats( exp_link* expl, float* total, int* hit ) {
       line_hit = FALSE;
       *total = *total + 1;
       if(    (SUPPL_WAS_EXECUTED( curr->exp->suppl ) == 1) 
-          || (   (curr->exp->op == EXP_OP_NONE) 
+          || (   (SUPPL_OP( curr->exp->suppl ) == EXP_OP_NONE) 
               && (   (curr->next == NULL) 
                   || (curr->next->exp->line != curr->exp->line))) ) {
         (*hit)++;
@@ -149,7 +149,7 @@ void line_display_verbose( FILE* ofile, exp_link* expl ) {
   while( expl != NULL ) {
 
     if(   (SUPPL_WAS_EXECUTED( expl->exp->suppl ) == 0)
-       && (expl->exp->op != EXP_OP_NONE)
+       && (SUPPL_OP( expl->exp->suppl ) != EXP_OP_NONE)
        && (expl->exp->line != last_line) ) {
 
       last_line  = expl->exp->line;

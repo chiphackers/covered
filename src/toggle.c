@@ -43,9 +43,9 @@ void toggle_get_stats( exp_link* expl, sig_link* sigl, float* total, int* hit01,
 #ifdef USE_TOGGLE_EXPR
   /* Search expression list */
   while( curr_exp != NULL ) {
-    if( (curr_exp->exp->op != EXP_OP_SIG) &&
-        (curr_exp->exp->op != EXP_OP_SBIT_SEL) &&
-        (curr_exp->exp->op != EXP_OP_MBIT_SEL) ) {
+    if( (SUPPL_OP( curr_exp->exp->suppl ) != EXP_OP_SIG) &&
+        (SUPPL_OP( curr_exp->exp->suppl ) != EXP_OP_SBIT_SEL) &&
+        (SUPPL_OP( curr_exp->exp->suppl ) != EXP_OP_MBIT_SEL) ) {
       *total = *total + curr_exp->exp->value->width;
       vector_toggle_count( curr_exp->exp->value, hit01, hit10 );
     }

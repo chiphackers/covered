@@ -177,7 +177,7 @@ void bind( int mode ) {
       exp_link_add( seb_head->exp, &(sigl->sig->exp_head), &(sigl->sig->exp_tail) );
 
       /* Make expression vector be signal vector*/
-      switch( seb_head->exp->op ) {
+      switch( SUPPL_OP( seb_head->exp->suppl ) ) {
         case EXP_OP_SIG :
           vector_dealloc( seb_head->exp->value );
           seb_head->exp->value = sigl->sig->value;
@@ -192,7 +192,7 @@ void bind( int mode ) {
           seb_head->exp->value->value = sigl->sig->value->value;
           break;
         default :
-          snprintf( msg, 4096, "Internal error:  Expression with bad operation (%d) in binding function", seb_head->exp->op );
+          snprintf( msg, 4096, "Internal error:  Expression with bad operation (%d) in binding function", SUPPL_OP( seb_head->exp->suppl ) );
           print_output( msg, FATAL );
           exit( 1 );
           break;

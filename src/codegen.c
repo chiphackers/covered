@@ -38,22 +38,22 @@ char* codegen_gen_expr( expression* expr, int line ) {
     left_code  = codegen_gen_expr( expr->left,  line );
     right_code = codegen_gen_expr( expr->right, line );
 
-    if( expr->op == EXP_OP_NONE ) {
+    if( SUPPL_OP( expr->suppl ) == EXP_OP_NONE ) {
 
       my_code = vector_to_string( expr->value, HEXIDECIMAL );
 
-    } else if( expr->op == EXP_OP_SIG ) {
+    } else if( SUPPL_OP( expr->suppl ) == EXP_OP_SIG ) {
 
       assert( expr->sig != NULL );
       my_code = strdup( expr->sig->name );
 
-    } else if( expr->op == EXP_OP_SBIT_SEL ) {
+    } else if( SUPPL_OP( expr->suppl ) == EXP_OP_SBIT_SEL ) {
 
       assert( expr->sig != NULL );
       my_code = (char*)malloc_safe( strlen( expr->sig->name ) + 13 );
       snprintf( code_format, (strlen( expr->sig->name ) + 13), "%s[%d]", expr->sig->name, right_code );
 
-    } else if( expr->op == EXP_OP_MBIT_SEL ) {
+    } else if( SUPPL_OP( expr->suppl ) == EXP_OP_MBIT_SEL ) {
 
       assert( expr->sig != NULL );
       my_code = (char*)malloc_safe( strlen( expr->sig->name ) + 23 );
@@ -61,7 +61,7 @@ char* codegen_gen_expr( expression* expr, int line ) {
 
     } else {
 
-      switch( expr->op ) {
+      switch( SUPPL_OP( expr->suppl ) ) {
         case EXP_OP_XOR      :  code_size = 6;  strcpy( code_format, "(%s ^ %s)" );   both = TRUE;  break;
         case EXP_OP_MULTIPLY :  code_size = 6;  strcpy( code_format, "(%s * %s)" );   both = TRUE;  break;
         case EXP_OP_DIVIDE   :  code_size = 6;  strcpy( code_format, "(%s / %s)" );   both = TRUE;  break;
@@ -70,7 +70,7 @@ char* codegen_gen_expr( expression* expr, int line ) {
         case EXP_OP_SUBTRACT :  code_size = 6;  strcpy( code_format, "(%s - %s)" );   both = TRUE;  break;
         case EXP_OP_AND      :  code_size = 6;  strcpy( code_format, "(%s & %s)" );   both = TRUE;  break;
         case EXP_OP_OR       :  
-          if( expr->right->op == EXP_OP_COND_F ) {
+          if( SUPPL_OP( expr->right->suppl ) == EXP_OP_COND_F ) {
             code_size = 6;  strcpy( code_format, "(%s : %s)" );  both = TRUE;
           } else {
             code_size = 6;  strcpy( code_format, "(%s | %s)" );  both = TRUE;
@@ -133,7 +133,7 @@ char* codegen_gen_expr( expression* expr, int line ) {
 
 /*
   if( expr != NULL ) {
-    printf( "%s, op: %d\n", my_code, expr->op );
+    printf( "%s, op: %d\n", my_code, SUPPL_OP( expr->suppl ) );
   }
 */
 

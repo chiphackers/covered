@@ -489,7 +489,7 @@ void db_add_expression( expression* root ) {
 
     if( exp_link_find( root, curr_module->exp_head ) == NULL ) {
     
-      snprintf( msg, 4096, "In db_add_expression, id: %d, op: %d, line: %d", root->id, root->op, root->line );
+      snprintf( msg, 4096, "In db_add_expression, id: %d, op: %d, line: %d", root->id, SUPPL_OP( root->suppl ), root->line );
       print_output( msg, NORMAL );
    
       // Add expression's children first.
@@ -760,9 +760,11 @@ void db_do_timestep( int time ) {
 */
 int db_get_signal_size( char* symbol ) {
 
-  signal* sig;       /* Pointer to found signal */
+  signal* sig;        /* Pointer to found signal      */
+  char    msg[4096];  /* Debug/error message for user */
 
-  printf( "In db_get_signal_size, symbol: %s\n", symbol );
+  snprintf( msg, 4096, "In db_get_signal_size, symbol: %s\n", symbol );
+  print_output( msg, NORMAL );
 
   if( symtable_find( symbol, vcd_symtab, &sig ) ) {
     if( sig != NULL ) {

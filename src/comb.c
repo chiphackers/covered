@@ -186,11 +186,11 @@ void combination_underline_tree( expression* exp, char*** lines, int* depth, int
 
   if( exp != NULL ) {
 
-    if( exp->op == EXP_OP_NONE ) {
+    if( SUPPL_OP( exp->suppl ) == EXP_OP_NONE ) {
       
       *size = exp->value->width + 12;
 
-    } else if( exp->op == EXP_OP_SIG ) {
+    } else if( SUPPL_OP( exp->suppl ) == EXP_OP_SIG ) {
 
       *size = strlen( exp->sig->name );
 
@@ -199,7 +199,7 @@ void combination_underline_tree( expression* exp, char*** lines, int* depth, int
       combination_underline_tree( exp->left,  &l_lines, &l_depth, &l_size, exp_id );
       combination_underline_tree( exp->right, &r_lines, &r_depth, &r_size, exp_id );
 
-      switch( exp->op ) {
+      switch( SUPPL_OP( exp->suppl ) ) {
         case EXP_OP_XOR      :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "   );  break;
         case EXP_OP_MULTIPLY :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "   );  break;
         case EXP_OP_DIVIDE   :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "   );  break;
@@ -426,7 +426,7 @@ void combination_list_missed( FILE* ofile, expression* exp, int* exp_id ) {
       fprintf( ofile, "--------------\n" );
 
       /* Create combination table */
-      switch( exp->op ) {
+      switch( SUPPL_OP( exp->suppl ) ) {
         case EXP_OP_XOR      :  combination_two_vars( ofile, exp, 0, 1, 1, 0 );  break;
         case EXP_OP_ADD      :  combination_two_vars( ofile, exp, 0, 1, 1, 0 );  break;
         case EXP_OP_SUBTRACT :  combination_two_vars( ofile, exp, 0, 1, 1, 0 );  break;

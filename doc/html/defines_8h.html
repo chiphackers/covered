@@ -51,60 +51,62 @@
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a1">SUPPL_LSB_EXECUTED</a>&nbsp;&nbsp;&nbsp;1</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a2">SUPPL_LSB_CHANGED</a>&nbsp;&nbsp;&nbsp;2</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a3">SUPPL_LSB_MEASURABLE</a>&nbsp;&nbsp;&nbsp;3</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a4">SUPPL_LSB_FALSE</a>&nbsp;&nbsp;&nbsp;8</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a5">SUPPL_LSB_TRUE</a>&nbsp;&nbsp;&nbsp;9</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a6">SUPPL_LSB_SIG_LSB</a>&nbsp;&nbsp;&nbsp;16</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a7">SUPPL_MERGE_MASK</a>&nbsp;&nbsp;&nbsp;0x302</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a8">SUPPL_WAS_EXECUTED</a>(x)&nbsp;&nbsp;&nbsp;((x &gt;&gt; SUPPL_LSB_EXECUTED) &amp; 0x1)</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a9">SUPPL_IS_MEASURABLE</a>(x)&nbsp;&nbsp;&nbsp;((x &gt;&gt; SUPPL_LSB_MEASURABLE) &amp; 0x1)</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a10">SUPPL_WAS_TRUE</a>(x)&nbsp;&nbsp;&nbsp;((x &gt;&gt; SUPPL_LSB_TRUE) &amp; 0x1)</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a11">SUPPL_WAS_FALSE</a>(x)&nbsp;&nbsp;&nbsp;((x &gt;&gt; SUPPL_LSB_FALSE) &amp; 0x1)</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a12">SUPPL_COMB_MISSED</a>(x)&nbsp;&nbsp;&nbsp;(SUPPL_IS_MEASURABLE(x) &amp; (~SUPPL_WAS_TRUE(x) | ~SUPPL_WAS_FALSE(x)))</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a4">SUPPL_LSB_FALSE</a>&nbsp;&nbsp;&nbsp;4</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a5">SUPPL_LSB_TRUE</a>&nbsp;&nbsp;&nbsp;5</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a6">SUPPL_LSB_OP</a>&nbsp;&nbsp;&nbsp;8</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a7">SUPPL_LSB_SIG_LSB</a>&nbsp;&nbsp;&nbsp;16</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a8">SUPPL_MERGE_MASK</a>&nbsp;&nbsp;&nbsp;0x302</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a9">SUPPL_WAS_EXECUTED</a>(x)&nbsp;&nbsp;&nbsp;((x &gt;&gt; SUPPL_LSB_EXECUTED) &amp; 0x1)</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a10">SUPPL_IS_MEASURABLE</a>(x)&nbsp;&nbsp;&nbsp;((x &gt;&gt; SUPPL_LSB_MEASURABLE) &amp; 0x1)</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a11">SUPPL_WAS_TRUE</a>(x)&nbsp;&nbsp;&nbsp;((x &gt;&gt; SUPPL_LSB_TRUE) &amp; 0x1)</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a12">SUPPL_WAS_FALSE</a>(x)&nbsp;&nbsp;&nbsp;((x &gt;&gt; SUPPL_LSB_FALSE) &amp; 0x1)</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a13">SUPPL_COMB_MISSED</a>(x)&nbsp;&nbsp;&nbsp;(SUPPL_IS_MEASURABLE(x) &amp; (~SUPPL_WAS_TRUE(x) | ~SUPPL_WAS_FALSE(x)))</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a14">SUPPL_OP</a>(x)&nbsp;&nbsp;&nbsp;((x &gt;&gt; SUPPL_LSB_OP) &amp; 0xff)</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__read__modes.html#a0">READ_MODE_NO_MERGE</a>&nbsp;&nbsp;&nbsp;0</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__read__modes.html#a1">READ_MODE_INST_MERGE</a>&nbsp;&nbsp;&nbsp;1</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__read__modes.html#a2">READ_MODE_MOD_MERGE</a>&nbsp;&nbsp;&nbsp;2</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a0">EXP_OP_NONE</a>&nbsp;&nbsp;&nbsp;0</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a1">EXP_OP_SIG</a>&nbsp;&nbsp;&nbsp;1</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a2">EXP_OP_XOR</a>&nbsp;&nbsp;&nbsp;2</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a3">EXP_OP_MULTIPLY</a>&nbsp;&nbsp;&nbsp;3</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a4">EXP_OP_DIVIDE</a>&nbsp;&nbsp;&nbsp;4</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a5">EXP_OP_MOD</a>&nbsp;&nbsp;&nbsp;5</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a6">EXP_OP_ADD</a>&nbsp;&nbsp;&nbsp;6</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a7">EXP_OP_SUBTRACT</a>&nbsp;&nbsp;&nbsp;7</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a8">EXP_OP_AND</a>&nbsp;&nbsp;&nbsp;8</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a9">EXP_OP_OR</a>&nbsp;&nbsp;&nbsp;9</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a10">EXP_OP_NAND</a>&nbsp;&nbsp;&nbsp;10</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a11">EXP_OP_NOR</a>&nbsp;&nbsp;&nbsp;11</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a12">EXP_OP_NXOR</a>&nbsp;&nbsp;&nbsp;12</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a13">EXP_OP_LT</a>&nbsp;&nbsp;&nbsp;13</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a14">EXP_OP_GT</a>&nbsp;&nbsp;&nbsp;14</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a15">EXP_OP_LSHIFT</a>&nbsp;&nbsp;&nbsp;15</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a16">EXP_OP_RSHIFT</a>&nbsp;&nbsp;&nbsp;16</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a17">EXP_OP_EQ</a>&nbsp;&nbsp;&nbsp;17</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a18">EXP_OP_CEQ</a>&nbsp;&nbsp;&nbsp;18</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a19">EXP_OP_LE</a>&nbsp;&nbsp;&nbsp;19</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a20">EXP_OP_GE</a>&nbsp;&nbsp;&nbsp;20</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a21">EXP_OP_NE</a>&nbsp;&nbsp;&nbsp;21</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a22">EXP_OP_CNE</a>&nbsp;&nbsp;&nbsp;22</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a23">EXP_OP_LOR</a>&nbsp;&nbsp;&nbsp;23</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a24">EXP_OP_LAND</a>&nbsp;&nbsp;&nbsp;24</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a25">EXP_OP_COND_T</a>&nbsp;&nbsp;&nbsp;25</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a26">EXP_OP_COND_F</a>&nbsp;&nbsp;&nbsp;26</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a27">EXP_OP_UINV</a>&nbsp;&nbsp;&nbsp;27</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a28">EXP_OP_UAND</a>&nbsp;&nbsp;&nbsp;28</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a29">EXP_OP_UNOT</a>&nbsp;&nbsp;&nbsp;29</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a30">EXP_OP_UOR</a>&nbsp;&nbsp;&nbsp;30</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a31">EXP_OP_UXOR</a>&nbsp;&nbsp;&nbsp;31</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a32">EXP_OP_UNAND</a>&nbsp;&nbsp;&nbsp;32</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a33">EXP_OP_UNOR</a>&nbsp;&nbsp;&nbsp;33</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a34">EXP_OP_UNXOR</a>&nbsp;&nbsp;&nbsp;34</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a35">EXP_OP_SBIT_SEL</a>&nbsp;&nbsp;&nbsp;35</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a36">EXP_OP_MBIT_SEL</a>&nbsp;&nbsp;&nbsp;36</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a37">EXP_OP_EXPAND</a>&nbsp;&nbsp;&nbsp;37</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a38">EXP_OP_CONCAT</a>&nbsp;&nbsp;&nbsp;38</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a39">EXP_OP_PEDGE</a>&nbsp;&nbsp;&nbsp;39</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a40">EXP_OP_NEDGE</a>&nbsp;&nbsp;&nbsp;40</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a41">EXP_OP_AEDGE</a>&nbsp;&nbsp;&nbsp;41</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a0">EXP_OP_NONE</a>&nbsp;&nbsp;&nbsp;0x0</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a1">EXP_OP_SIG</a>&nbsp;&nbsp;&nbsp;0x1</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a2">EXP_OP_XOR</a>&nbsp;&nbsp;&nbsp;0x2</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a3">EXP_OP_MULTIPLY</a>&nbsp;&nbsp;&nbsp;0x3</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a4">EXP_OP_DIVIDE</a>&nbsp;&nbsp;&nbsp;0x4</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a5">EXP_OP_MOD</a>&nbsp;&nbsp;&nbsp;0x5</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a6">EXP_OP_ADD</a>&nbsp;&nbsp;&nbsp;0x6</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a7">EXP_OP_SUBTRACT</a>&nbsp;&nbsp;&nbsp;0x7</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a8">EXP_OP_AND</a>&nbsp;&nbsp;&nbsp;0x8</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a9">EXP_OP_OR</a>&nbsp;&nbsp;&nbsp;0x9</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a10">EXP_OP_NAND</a>&nbsp;&nbsp;&nbsp;0xa</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a11">EXP_OP_NOR</a>&nbsp;&nbsp;&nbsp;0xb</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a12">EXP_OP_NXOR</a>&nbsp;&nbsp;&nbsp;0xc</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a13">EXP_OP_LT</a>&nbsp;&nbsp;&nbsp;0xd</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a14">EXP_OP_GT</a>&nbsp;&nbsp;&nbsp;0xe</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a15">EXP_OP_LSHIFT</a>&nbsp;&nbsp;&nbsp;0xf</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a16">EXP_OP_RSHIFT</a>&nbsp;&nbsp;&nbsp;0x10</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a17">EXP_OP_EQ</a>&nbsp;&nbsp;&nbsp;0x11</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a18">EXP_OP_CEQ</a>&nbsp;&nbsp;&nbsp;0x12</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a19">EXP_OP_LE</a>&nbsp;&nbsp;&nbsp;0x13</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a20">EXP_OP_GE</a>&nbsp;&nbsp;&nbsp;0x14</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a21">EXP_OP_NE</a>&nbsp;&nbsp;&nbsp;0x15</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a22">EXP_OP_CNE</a>&nbsp;&nbsp;&nbsp;0x16</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a23">EXP_OP_LOR</a>&nbsp;&nbsp;&nbsp;0x17</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a24">EXP_OP_LAND</a>&nbsp;&nbsp;&nbsp;0x18</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a25">EXP_OP_COND_T</a>&nbsp;&nbsp;&nbsp;0x19</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a26">EXP_OP_COND_F</a>&nbsp;&nbsp;&nbsp;0x1a</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a27">EXP_OP_UINV</a>&nbsp;&nbsp;&nbsp;0x1b</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a28">EXP_OP_UAND</a>&nbsp;&nbsp;&nbsp;0x1c</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a29">EXP_OP_UNOT</a>&nbsp;&nbsp;&nbsp;0x1d</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a30">EXP_OP_UOR</a>&nbsp;&nbsp;&nbsp;0x1e</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a31">EXP_OP_UXOR</a>&nbsp;&nbsp;&nbsp;0x1f</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a32">EXP_OP_UNAND</a>&nbsp;&nbsp;&nbsp;0x20</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a33">EXP_OP_UNOR</a>&nbsp;&nbsp;&nbsp;0x21</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a34">EXP_OP_UNXOR</a>&nbsp;&nbsp;&nbsp;0x22</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a35">EXP_OP_SBIT_SEL</a>&nbsp;&nbsp;&nbsp;0x23</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a36">EXP_OP_MBIT_SEL</a>&nbsp;&nbsp;&nbsp;0x24</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a37">EXP_OP_EXPAND</a>&nbsp;&nbsp;&nbsp;0x25</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a38">EXP_OP_CONCAT</a>&nbsp;&nbsp;&nbsp;0x26</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a39">EXP_OP_PEDGE</a>&nbsp;&nbsp;&nbsp;0x27</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a40">EXP_OP_NEDGE</a>&nbsp;&nbsp;&nbsp;0x28</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a41">EXP_OP_AEDGE</a>&nbsp;&nbsp;&nbsp;0x29</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__op__tables.html#a0">AND_OP_TABLE</a>&nbsp;&nbsp;&nbsp;0,  0,  0,  0,  0,  1,  2,  2,  0,  2,  2,  2,  0,  2,  2,  2</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__op__tables.html#a1">OR_OP_TABLE</a>&nbsp;&nbsp;&nbsp;0,  1,  2,  2,  1,  1,  1,  1,  2,  1,  2,  2,  2,  1,  2,  2</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__op__tables.html#a2">XOR_OP_TABLE</a>&nbsp;&nbsp;&nbsp;0,  1,  2,  2,  1,  0,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2</td></tr>
@@ -126,23 +128,23 @@
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__lexer__val__types.html#a3">OCTAL</a>&nbsp;&nbsp;&nbsp;2</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__lexer__val__types.html#a4">HEXIDECIMAL</a>&nbsp;&nbsp;&nbsp;3</td></tr>
 <tr><td colspan=2><br><h2>Typedefs</h2></td></tr>
-<tr><td nowrap align=right valign=top>typedef unsigned int&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a97">nibble</a></td></tr>
-<tr><td nowrap align=right valign=top>typedef <a class="el" href="structstr__link__s.html">str_link_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a98">str_link</a></td></tr>
-<tr><td nowrap align=right valign=top>typedef <a class="el" href="structvector__s.html">vector_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a99">vector</a></td></tr>
-<tr><td nowrap align=right valign=top>typedef <a class="el" href="structexpression__s.html">expression_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a100">expression</a></td></tr>
-<tr><td nowrap align=right valign=top>typedef <a class="el" href="structsignal__s.html">signal_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a101">signal</a></td></tr>
-<tr><td nowrap align=right valign=top>typedef <a class="el" href="structexp__link__s.html">exp_link_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a102">exp_link</a></td></tr>
-<tr><td nowrap align=right valign=top>typedef <a class="el" href="structsig__link__s.html">sig_link_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a103">sig_link</a></td></tr>
-<tr><td nowrap align=right valign=top>typedef <a class="el" href="structmodule__s.html">module_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a104">module</a></td></tr>
-<tr><td nowrap align=right valign=top>typedef <a class="el" href="structmod__link__s.html">mod_link_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a105">mod_link</a></td></tr>
-<tr><td nowrap align=right valign=top>typedef <a class="el" href="structsymtable__s.html">symtable_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a106">symtable</a></td></tr>
-<tr><td nowrap align=right valign=top>typedef <a class="el" href="structsignal__width__s.html">signal_width_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a107">signal_width</a></td></tr>
-<tr><td nowrap align=right valign=top>typedef <a class="el" href="structsig__exp__bind__s.html">sig_exp_bind_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a108">sig_exp_bind</a></td></tr>
-<tr><td nowrap align=right valign=top>typedef <a class="el" href="structstatistic__s.html">statistic_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a109">statistic</a></td></tr>
-<tr><td nowrap align=right valign=top>typedef <a class="el" href="structmod__inst__s.html">mod_inst_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a110">mod_inst</a></td></tr>
+<tr><td nowrap align=right valign=top>typedef unsigned int&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a99">nibble</a></td></tr>
+<tr><td nowrap align=right valign=top>typedef <a class="el" href="structstr__link__s.html">str_link_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a100">str_link</a></td></tr>
+<tr><td nowrap align=right valign=top>typedef <a class="el" href="structvector__s.html">vector_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a101">vector</a></td></tr>
+<tr><td nowrap align=right valign=top>typedef <a class="el" href="structexpression__s.html">expression_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a102">expression</a></td></tr>
+<tr><td nowrap align=right valign=top>typedef <a class="el" href="structsignal__s.html">signal_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a103">signal</a></td></tr>
+<tr><td nowrap align=right valign=top>typedef <a class="el" href="structexp__link__s.html">exp_link_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a104">exp_link</a></td></tr>
+<tr><td nowrap align=right valign=top>typedef <a class="el" href="structsig__link__s.html">sig_link_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a105">sig_link</a></td></tr>
+<tr><td nowrap align=right valign=top>typedef <a class="el" href="structmodule__s.html">module_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a106">module</a></td></tr>
+<tr><td nowrap align=right valign=top>typedef <a class="el" href="structmod__link__s.html">mod_link_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a107">mod_link</a></td></tr>
+<tr><td nowrap align=right valign=top>typedef <a class="el" href="structsymtable__s.html">symtable_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a108">symtable</a></td></tr>
+<tr><td nowrap align=right valign=top>typedef <a class="el" href="structsignal__width__s.html">signal_width_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a109">signal_width</a></td></tr>
+<tr><td nowrap align=right valign=top>typedef <a class="el" href="structsig__exp__bind__s.html">sig_exp_bind_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a110">sig_exp_bind</a></td></tr>
+<tr><td nowrap align=right valign=top>typedef <a class="el" href="structstatistic__s.html">statistic_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a111">statistic</a></td></tr>
+<tr><td nowrap align=right valign=top>typedef <a class="el" href="structmod__inst__s.html">mod_inst_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a112">mod_inst</a></td></tr>
 <tr><td colspan=2><br><h2>Enumerations</h2></td></tr>
-<tr><td nowrap align=right valign=top>enum &nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a113">bool</a> { <a class="el" href="defines_8h.html#a113a111">FALSE</a>, 
-<a class="el" href="defines_8h.html#a113a112">TRUE</a>
+<tr><td nowrap align=right valign=top>enum &nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a115">bool</a> { <a class="el" href="defines_8h.html#a115a113">FALSE</a>, 
+<a class="el" href="defines_8h.html#a115a114">TRUE</a>
  }</td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
@@ -244,7 +246,7 @@ Determine size of integer in bits.     </td>
   </tr>
 </table>
 <hr><h2>Typedef Documentation</h2>
-<a name="a102" doxytag="defines.h::exp_link"></a><p>
+<a name="a104" doxytag="defines.h::exp_link"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -266,7 +268,7 @@ Determine size of integer in bits.     </td>
     </td>
   </tr>
 </table>
-<a name="a100" doxytag="defines.h::expression"></a><p>
+<a name="a102" doxytag="defines.h::expression"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -288,7 +290,7 @@ Determine size of integer in bits.     </td>
     </td>
   </tr>
 </table>
-<a name="a110" doxytag="defines.h::mod_inst"></a><p>
+<a name="a112" doxytag="defines.h::mod_inst"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -310,7 +312,7 @@ Determine size of integer in bits.     </td>
     </td>
   </tr>
 </table>
-<a name="a105" doxytag="defines.h::mod_link"></a><p>
+<a name="a107" doxytag="defines.h::mod_link"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -332,7 +334,7 @@ Determine size of integer in bits.     </td>
     </td>
   </tr>
 </table>
-<a name="a104" doxytag="defines.h::module"></a><p>
+<a name="a106" doxytag="defines.h::module"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -354,7 +356,7 @@ Determine size of integer in bits.     </td>
     </td>
   </tr>
 </table>
-<a name="a97" doxytag="defines.h::nibble"></a><p>
+<a name="a99" doxytag="defines.h::nibble"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -376,7 +378,7 @@ Determine size of integer in bits.     </td>
 A nibble is a 32-bit value that is subdivided into three parts: Bits 7 - 0 = 4 bits of 4-state value. Bits 11 - 8 = Toggle01 value for each of the four 4-state bits. Bits 15 - 12 = Toggle10 value for each of the four 4-state bits. Bits 19 - 16 = Indicates if this bit has been previously assigned. Bits 23 - 20 = Static value indicators for each of the four 4-state bits.     </td>
   </tr>
 </table>
-<a name="a108" doxytag="defines.h::sig_exp_bind"></a><p>
+<a name="a110" doxytag="defines.h::sig_exp_bind"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -398,7 +400,7 @@ A nibble is a 32-bit value that is subdivided into three parts: Bits 7 - 0 = 4 b
     </td>
   </tr>
 </table>
-<a name="a103" doxytag="defines.h::sig_link"></a><p>
+<a name="a105" doxytag="defines.h::sig_link"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -420,7 +422,7 @@ A nibble is a 32-bit value that is subdivided into three parts: Bits 7 - 0 = 4 b
     </td>
   </tr>
 </table>
-<a name="a101" doxytag="defines.h::signal"></a><p>
+<a name="a103" doxytag="defines.h::signal"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -442,7 +444,7 @@ A nibble is a 32-bit value that is subdivided into three parts: Bits 7 - 0 = 4 b
     </td>
   </tr>
 </table>
-<a name="a107" doxytag="defines.h::signal_width"></a><p>
+<a name="a109" doxytag="defines.h::signal_width"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -464,7 +466,7 @@ A nibble is a 32-bit value that is subdivided into three parts: Bits 7 - 0 = 4 b
     </td>
   </tr>
 </table>
-<a name="a109" doxytag="defines.h::statistic"></a><p>
+<a name="a111" doxytag="defines.h::statistic"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -486,7 +488,7 @@ A nibble is a 32-bit value that is subdivided into three parts: Bits 7 - 0 = 4 b
     </td>
   </tr>
 </table>
-<a name="a98" doxytag="defines.h::str_link"></a><p>
+<a name="a100" doxytag="defines.h::str_link"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -508,7 +510,7 @@ A nibble is a 32-bit value that is subdivided into three parts: Bits 7 - 0 = 4 b
     </td>
   </tr>
 </table>
-<a name="a106" doxytag="defines.h::symtable"></a><p>
+<a name="a108" doxytag="defines.h::symtable"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -530,7 +532,7 @@ A nibble is a 32-bit value that is subdivided into three parts: Bits 7 - 0 = 4 b
     </td>
   </tr>
 </table>
-<a name="a99" doxytag="defines.h::vector"></a><p>
+<a name="a101" doxytag="defines.h::vector"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -553,7 +555,7 @@ A nibble is a 32-bit value that is subdivided into three parts: Bits 7 - 0 = 4 b
   </tr>
 </table>
 <hr><h2>Enumeration Type Documentation</h2>
-<a name="a113" doxytag="defines.h::bool"></a><p>
+<a name="a115" doxytag="defines.h::bool"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -575,16 +577,16 @@ A nibble is a 32-bit value that is subdivided into three parts: Bits 7 - 0 = 4 b
 Defines boolean variables used in most functions. <dl compact><dt><b>
 Enumeration values:</b><dd>
 <table border=0 cellspacing=2 cellpadding=0>
-<tr><td valign=top><em><a name="a113a111" doxytag="FALSE"></a><em>FALSE</em></em>&nbsp;</td><td>
+<tr><td valign=top><em><a name="a115a113" doxytag="FALSE"></a><em>FALSE</em></em>&nbsp;</td><td>
 Boolean false value </td></tr>
-<tr><td valign=top><em><a name="a113a112" doxytag="TRUE"></a><em>TRUE</em></em>&nbsp;</td><td>
+<tr><td valign=top><em><a name="a115a114" doxytag="TRUE"></a><em>TRUE</em></em>&nbsp;</td><td>
 Boolean true value </td></tr>
 </table>
 </dl>
     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Tue Apr 23 00:25:14 2002 for Covered by
+<hr><address align="right"><small>Generated on Wed Apr 24 22:34:14 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.15 </small></address>

@@ -326,7 +326,7 @@ void* malloc_safe( int size ) {
 
   if( size > 10000 ) {
     print_output( "Allocating memory chunk larger than 10000 bytes.  Possible error.", WARNING );
-    printf( "  Memory block size request: %d bytes\n", size );
+    // printf( "  Memory block size request: %d bytes\n", size );
     exit( 1 );
   } else if( size <= 0 ) {
     print_output( "Internal:  Attempting to allocate memory of size <= 0", FATAL );

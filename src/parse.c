@@ -94,7 +94,10 @@ bool parse_design( char* top, char* output_db ) {
   }
 
   /* Write contents to baseline database file. */
-  db_write( output_db );
+  if( !db_write( output_db ) ) {
+    print_output( "Unable to write database file", FATAL );
+    exit( 1 );
+  }
 
   snprintf( msg, 4096, "========  Design written to database %s successfully  ========\n\n", output_db );
   print_output( msg, NORMAL );
@@ -120,7 +123,10 @@ bool parse_and_score_dumpfile( char* top, char* db, char* vcd ) {
   print_output( msg, NORMAL );
 
   /* Read in contents of specified database file */
-  db_read( db, READ_MODE_NO_MERGE );
+  if( !db_read( db, READ_MODE_NO_MERGE ) ) {
+    print_output( "Unable to read database file", FATAL );
+    exit( 1 );
+  }
 
   /* Read in contents of VCD file */
   if( vcd == NULL ) {
@@ -143,7 +149,10 @@ bool parse_and_score_dumpfile( char* top, char* db, char* vcd ) {
   print_output( msg, NORMAL );
 
   /* Write contents to database file */
-  db_write( db );
+  if( !db_write( db ) ) {
+    print_output( "Unable to write database file", FATAL );
+    exit( 1 );
+  }
 
   return( retval );
 

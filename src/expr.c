@@ -43,8 +43,7 @@ expression* expression_create( expression* right, expression* left, int op, int 
 
   new_expr = (expression*)malloc_safe( sizeof( expression ) );
 
-  new_expr->suppl  = 0x0;
-  new_expr->op     = op;
+  new_expr->suppl  = ((op & 0xff) << SUPPL_LSB_OP);
   new_expr->line   = line;
   new_expr->id     = id;
   new_expr->sig    = NULL;
@@ -114,7 +113,7 @@ void expression_merge( expression* base, expression* in ) {
   assert( base != NULL );
   assert( in != NULL );
 
-  if( (base->id != in->id) || (base->op != in->op) || (base->line != in->line) ) {
+  if( (base->id != in->id) || (SUPPL_OP( base->suppl ) != SUPPL_OP( in->suppl )) || (base->line != in->line) ) {
 
     print_output( "Attempting to merge databases derived from different designs.  Unable to merge", FATAL );
     exit( 1 );
@@ -159,10 +158,9 @@ int expression_get_id( expression* expr ) {
 */
 void expression_db_write( expression* expr, FILE* file, char* scope ) {
 
-  fprintf( file, "%d %d %d %s %x %d %d %d ",
+  fprintf( file, "%d %d %s %x %d %d %d ",
     DB_TYPE_EXPRESSION,
     expr->id,
-    expr->op,
     scope,
     (expr->suppl & 0xffff),
     expr->line,
@@ -170,8 +168,10 @@ void expression_db_write( expression* expr, FILE* file, char* scope ) {
     expression_get_id( expr->left )
   );
 
-  if( (expr->op != EXP_OP_SIG) && (expr->op != EXP_OP_SBIT_SEL) && (expr->op != EXP_OP_MBIT_SEL) ) {
-    vector_db_write( expr->value, file, (expr->op == EXP_OP_NONE) );
+  if( (SUPPL_OP( expr->suppl ) != EXP_OP_SIG) && 
+      (SUPPL_OP( expr->suppl ) != EXP_OP_SBIT_SEL) && 
+      (SUPPL_OP( expr->suppl ) != EXP_OP_MBIT_SEL) ) {
+    vector_db_write( expr->value, file, (SUPPL_OP( expr->suppl ) == EXP_OP_NONE) );
   }
 
   fprintf( file, "\n" );
@@ -193,7 +193,6 @@ bool expression_db_read( char** line, module* curr_mod ) {
 
   bool        retval = TRUE;    /* Return value for this function                      */
   int         id;               /* Holder of expression ID                             */
-  int         op;               /* Holder of expression operation                      */
   expression* expr;             /* Pointer to newly created expression                 */
   char        scope[4096];      /* Holder for scope of this expression                 */
   nibble      suppl;            /* Holder of supplemental value of this expression     */
@@ -209,7 +208,7 @@ bool expression_db_read( char** line, module* curr_mod ) {
   exp_link*   expl;             /* Pointer to found expression in module               */
   char        msg[4096];        /* Error message string                                */
 
-  if( sscanf( *line, "%d %d %s %x %d %d %d%n", &id, &op, modname, &suppl, &eline, &right_id, &left_id, &chars_read ) == 7 ) {
+  if( sscanf( *line, "%d %s %x %d %d %d%n", &id, modname, &suppl, &eline, &right_id, &left_id, &chars_read ) == 6 ) {
 
     *line = *line + chars_read;
 
@@ -246,7 +245,7 @@ bool expression_db_read( char** line, module* curr_mod ) {
       }
 
       /* Create new expression */
-      expr        = expression_create( right, left, op, id, eline );
+      expr        = expression_create( right, left, SUPPL_OP( suppl ), id, eline );
       expr->suppl = suppl;
 
       if( right != NULL ) {
@@ -257,7 +256,9 @@ bool expression_db_read( char** line, module* curr_mod ) {
         left->parent = expr;
       }
 
-      if( (op != EXP_OP_SIG) && (op != EXP_OP_SBIT_SEL) && (op != EXP_OP_MBIT_SEL) ) {
+      if( (SUPPL_OP( suppl ) != EXP_OP_SIG) && 
+          (SUPPL_OP( suppl ) != EXP_OP_SBIT_SEL) && 
+          (SUPPL_OP( suppl ) != EXP_OP_MBIT_SEL) ) {
 
         /* Read in vector information */
         if( vector_db_read( &vec, line ) ) {
@@ -343,7 +344,7 @@ void expression_operate( expression* expr ) {
     oldval = vector_create( expr->value->width, expr->value->lsb );
     vector_set_value( oldval, expr->value->value, oldval->width, expr->value->lsb, oldval->lsb );
 
-    switch( expr->op ) {
+    switch( SUPPL_OP( expr->suppl ) ) {
 
       case EXP_OP_XOR :
         vector_bitwise_op( expr->value, expr->left->value, expr->right->value, xor_optab );
@@ -628,7 +629,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
   if( expr != NULL ) {
 
-    if( (expr->op != EXP_OP_SIG) && (expr->op != EXP_OP_SBIT_SEL) && (expr->op != EXP_OP_MBIT_SEL) ) {
+    if( (SUPPL_OP( expr->suppl ) != EXP_OP_SIG) && 
+        (SUPPL_OP( expr->suppl ) != EXP_OP_SBIT_SEL) && 
+        (SUPPL_OP( expr->suppl ) != EXP_OP_MBIT_SEL) ) {
 
       /* Free up memory from vector value storage */
       vector_dealloc( expr->value );
