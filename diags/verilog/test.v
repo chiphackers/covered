@@ -5,7 +5,7 @@ wire a;
 
 foobar bar( c );
 
-assign a = ~b & (c ^ d) & (e | f | g);
+assign a = ~b & (c ^ d) & (e | (f == 1'b1) | g);
 
 initial begin
 	$dumpfile( "test.vcd" );

@@ -13,7 +13,7 @@ always @(posedge c) d <= ~d;
 
 always @(negedge d) e <= ~e;
 
-always @(e or f) g <= a & c;
+always @(e or f) g <= e & f;
 
 always @(posedge c)
   if( e & d )

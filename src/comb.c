@@ -95,19 +95,32 @@ int combination_calc_depth( expression* exp, unsigned int curr_depth, bool left 
 /*!
  \param exp    Pointer to expression to calculate hit and total of multi-expression subtrees.
  \param ulid   Pointer to current underline ID.
+ \param ul     If TRUE, parent expressions were found to be missing so force the underline.
  \param hit    Pointer to value containing number of hit expression values in this expression.
  \param total  Pointer to value containing total number of expression values in this expression.
+
+ \return Returns TRUE if child expressions were found to be missed; otherwise, returns FALSE.
 
  Parses the specified expression tree, calculating the hit and total values of all
  sub-expressions that are the same operation types as their left children.
 */
-void combination_multi_expr_calc( expression* exp, int* ulid, int* hit, float* total ) {
+bool combination_multi_expr_calc( expression* exp, int* ulid, bool ul, int* hit, float* total ) {
 
   bool and_op;  /* Specifies if current expression is an AND or LAND operation */
 
   if( exp != NULL ) {
 
+    /* Figure out if this is an AND/LAND operation */
     and_op = (SUPPL_OP( exp->suppl ) == EXP_OP_AND) || (SUPPL_OP( exp->suppl ) == EXP_OP_LAND);
+
+    /* Decide if our expression requires that this sequence gets underlined */
+    if( !ul ) {
+      if( and_op ) {
+        ul = (((exp->suppl >> SUPPL_LSB_EVAL_11) & 0x1) == 0) || (SUPPL_WAS_FALSE( exp->left->suppl ) == 0) || (SUPPL_WAS_FALSE( exp->right->suppl ) == 0);
+      } else {
+        ul = (((exp->suppl >> SUPPL_LSB_EVAL_00) & 0x1) == 0) || (SUPPL_WAS_TRUE( exp->left->suppl )  == 0) || (SUPPL_WAS_TRUE( exp->right->suppl )  == 0);
+      }
+    }
 
     if( (exp->left != NULL) && (SUPPL_OP( exp->suppl ) != SUPPL_OP( exp->left->suppl )) ) {
       if( and_op ) {
@@ -115,13 +128,13 @@ void combination_multi_expr_calc( expression* exp, int* ulid, int* hit, float* t
       } else {
         *hit += SUPPL_WAS_TRUE( exp->left->suppl );
       }
-      if( (exp->left->ulid == -1) && (*ulid != -1) ) {
+      if( (exp->left->ulid == -1) && ul ) { 
         exp->left->ulid = *ulid;
         (*ulid)++;
       }
       (*total)++;
     } else {
-      combination_multi_expr_calc( exp->left, ulid, hit, total );
+      ul = combination_multi_expr_calc( exp->left, ulid, ul, hit, total );
     }
 
     if( and_op ) {
@@ -129,7 +142,7 @@ void combination_multi_expr_calc( expression* exp, int* ulid, int* hit, float* t
     } else {
       *hit += SUPPL_WAS_TRUE( exp->right->suppl );
     }
-    if( (exp->right->ulid == -1) && (*ulid != -1) ) {
+    if( (exp->right->ulid == -1) && ul ) {
       exp->right->ulid = *ulid;
       (*ulid)++;
     }
@@ -141,7 +154,7 @@ void combination_multi_expr_calc( expression* exp, int* ulid, int* hit, float* t
       } else {
         *hit += ((exp->suppl >> SUPPL_LSB_EVAL_00) & 0x1);
       }
-      if( (exp->ulid == -1) && (*ulid != -1) ) {
+      if( (exp->ulid == -1) && ul ) {
         exp->ulid = *ulid;
         (*ulid)++;
       }
@@ -149,6 +162,8 @@ void combination_multi_expr_calc( expression* exp, int* ulid, int* hit, float* t
     }
 
   }
+
+  return( ul );
 
 }
 
@@ -166,10 +181,13 @@ void combination_multi_expr_calc( expression* exp, int* ulid, int* hit, float* t
 */
 void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_depth, float* total, int* hit ) {
 
-  int num_hit  = 0;   /* Number of expression value hits for the current expression */
-  int tmp_ulid = -1;  /* Underline value that won't cause underlines                */
+  int num_hit = 0;  /* Number of expression value hits for the current expression */
 
   if( exp != NULL ) {
+
+    /* Calculate children */
+    combination_get_tree_stats( exp->left,  ulid, combination_calc_depth( exp, curr_depth, TRUE ),  total, hit );
+    combination_get_tree_stats( exp->right, ulid, combination_calc_depth( exp, curr_depth, FALSE ), total, hit );
 
     if( ((report_comb_depth == REPORT_DETAILED) && (curr_depth <= report_comb_depth)) ||
          (report_comb_depth == REPORT_VERBOSE) ||
@@ -189,11 +207,7 @@ void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_d
                (SUPPL_OP( exp->suppl ) == EXP_OP_OR)   ||
                (SUPPL_OP( exp->suppl ) == EXP_OP_LAND) ||
                (SUPPL_OP( exp->suppl ) == EXP_OP_LOR)) ) {
-            if( (SUPPL_WAS_TRUE( exp->suppl ) == 1) && (SUPPL_WAS_FALSE( exp->suppl ) == 1) ) {
-              combination_multi_expr_calc( exp, &tmp_ulid, hit, total );
-            } else {
-              combination_multi_expr_calc( exp, ulid, hit, total );
-            }
+            combination_multi_expr_calc( exp, ulid, FALSE, hit, total );
           } else {
             if( expression_is_static_only( exp ) ) {
               *total = *total + 2;
@@ -228,10 +242,6 @@ void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_d
 
     /* Consider this expression to be counted */
     exp->suppl = exp->suppl | (0x1 << SUPPL_LSB_COMB_CNTD);
-
-    /* Calculate children */
-    combination_get_tree_stats( exp->right, ulid, combination_calc_depth( exp, curr_depth, FALSE ), total, hit );
-    combination_get_tree_stats( exp->left,  ulid, combination_calc_depth( exp, curr_depth, TRUE ),  total, hit );
 
   }
 
@@ -687,6 +697,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
 
       }
 
+/*
       if( force_underline ) {
         comb_missed = 1;
       } else {
@@ -697,6 +708,10 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
           comb_missed = 0;
         }
       }
+*/
+
+      comb_missed = (((report_comb_depth == REPORT_DETAILED) && (curr_depth <= report_comb_depth)) ||
+                      (report_comb_depth == REPORT_VERBOSE)) ? ((exp->ulid != -1) ? 1 : 0) : 0;
 
       if( l_depth > r_depth ) {
         *depth = l_depth + comb_missed;
@@ -1199,7 +1214,7 @@ void combination_multi_vars( FILE* ofile, expression* exp ) {
     combination_multi_var_exprs( &line1, &line2, &line3, exp );
 
     /* Calculate hit and total values for this sub-expression */
-    combination_multi_expr_calc( exp, &ulid, &hit, &total );
+    combination_multi_expr_calc( exp, &ulid, FALSE, &hit, &total );
 
     fprintf( ofile, "Expression %d   (%d/%.0f)\n", exp->ulid, hit, total );
 
@@ -1330,7 +1345,7 @@ void combination_list_missed( FILE* ofile, expression* exp, unsigned int curr_de
 bool combination_missed_expr( expression* expr, unsigned int curr_depth ) {
 
   bool missed_right;  /* Set to TRUE if missed expression found on right */
-  bool missed_left;  /* Set to TRUE if missed expression found on left  */
+  bool missed_left;   /* Set to TRUE if missed expression found on left  */
 
   if( (expr != NULL) && (SUPPL_WAS_COMB_COUNTED( expr->suppl ) == 1) ) {
 
@@ -1342,7 +1357,7 @@ bool combination_missed_expr( expression* expr, unsigned int curr_depth ) {
     if( ((report_comb_depth == REPORT_DETAILED) && (curr_depth <= report_comb_depth)) ||
          (report_comb_depth == REPORT_VERBOSE) ) {
 
-      return( (EXPR_COMB_MISSED( expr ) == 1) || missed_right || missed_left );
+      return( (expr->ulid != -1) || missed_right || missed_left );
 
     } else {
 
@@ -1544,6 +1559,11 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.83  2004/01/26 05:39:36  phase1geo
+ Initial swag at new underline ID algorithm.  This not quite working correctly
+ at this time.  Added two generic diagnostics to regression suite that will
+ test this new capability.
+
  Revision 1.82  2004/01/25 03:41:48  phase1geo
  Fixes bugs in summary information not matching verbose information.  Also fixes
  bugs where instances were output when no logic was missing, where instance
