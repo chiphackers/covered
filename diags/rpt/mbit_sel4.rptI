@@ -1,0 +1,33 @@
+Covered -- Verilog Coverage Verbose Report
+==========================================
+
+LINE COVERAGE RESULTS BY INSTANCE
+---------------------------------
+Instance                  Parent                  Hit/Miss/Total    Percent hit
+-------------------------------------------------------------------------------
+  main                    <root>                     0/   0/   0      100%
+=================================================================================
+
+TOGGLE COVERAGE RESULTS BY INSTANCE
+-----------------------------------
+Instance                  Parent                           Toggle 0 -> 1                    Toggle 1 -> 0
+                                                  Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
+----------------------------------------------------------------------------------------------------------------
+  main                    <root>                     1/   3/   4       25%            1/   3/   4       25%
+
+Module: main, File: mbit_sel4.v, Instance: main
+--------------------------------------------------------
+Signals not getting 100% toggle coverage
+
+Signal                    Toggle
+----------------------------------------------------------------------------------
+a                         0->1: 4'b0010
+......................... 1->0: 4'b1000 ...
+===============================================================================================================
+
+COMBINATIONAL LOGIC COVERAGE RESULTS BY INSTANCE
+------------------------------------------------
+Instance                  Parent                       Logic Combinations
+                                                  Hit/Miss/Total    Percent hit
+-------------------------------------------------------------------------------
+  main                    <root>                     0/   0/   0      100%

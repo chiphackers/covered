@@ -41,10 +41,11 @@ DIAGS1        = always1        always2        always3        always3.1.11A  alwa
                 instance1      instance1.1    instance1.2    instance2      instance3 \
                 instance4      instance4.1    instance4.2    instance5      instance6 \
                 instance6.1    instance6.2    instance7      long_exp1      mbit_sel1 \
-                mbit_sel2      mbit_sel3      mbit_sel3.1    mem1           mult1 \
-                param1         param1.1       param1.2       param1.3       param3 \
-                param3.1       param3.2       param3.3       param3.4       param4 \
-                param4.1       param5         param6         param6.1       param7         pulldown1 \
+                mbit_sel2      mbit_sel3      mbit_sel3.1    mbit_sel4      mbit_sel4.1 \
+                mbit_sel4.2    mbit_sel4.3    mem1           mult1          param1 \
+                param1.1       param1.2       param1.3       param3         param3.1 \
+                param3.2       param3.3       param3.4       param4         param4.1 \
+                param5         param6         param6.1       param7         pulldown1 \
                 pullup1        sbit_sel1      static1        supply0        supply1 \
                 tri            tri0           tri1
 DIAGS2        = delay1.1
