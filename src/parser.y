@@ -38,10 +38,13 @@ int param_mode  = 0;
 exp_link* param_exp_head = NULL;
 exp_link* param_exp_tail = NULL;
 
-/* Uncomment these lines to turn debugging on */
-/* #define YYDEBUG 1 */
 #define YYERROR_VERBOSE 1
-/* int yydebug = 1; */
+
+/* Uncomment these lines to turn debugging on */
+/* 
+#define YYDEBUG 1
+int yydebug = 1; 
+*/
 %}
 
 %union {
@@ -1373,12 +1376,12 @@ module_item
       db_add_statement( stmt, stmt );
       */
     }
-  | K_task { ignore_mode++; } UNUSED_IDENTIFIER ';'
+  | K_task ignore_more UNUSED_IDENTIFIER ';'
       task_item_list_opt statement_opt
-    K_endtask { ignore_mode--; }
-  | K_function { ignore_mode++; } range_or_type_opt UNUSED_IDENTIFIER ';'
+    K_endtask ignore_less
+  | K_function ignore_more range_or_type_opt UNUSED_IDENTIFIER ';'
       function_item_list statement
-    K_endfunction { ignore_mode--; }
+    K_endfunction ignore_less
   | K_specify K_endspecify
   | K_specify error K_endspecify
   | error ';'
@@ -1393,7 +1396,7 @@ module_item
     {
       VLerror( "Syntax error in continuous assignment" );
     }
-  | K_function error K_endfunction
+  | K_function ignore_more error K_endfunction ignore_less
     {
       /* yyerror( @1, "error: I give up on this function definition" );
          yyerrok; */
@@ -1913,8 +1916,8 @@ statement_opt
      This rule handles only procedural assignments. */
 lpvalue
   : identifier
-  | identifier ignore_more '[' static_expr ']' ignore_less
-  | identifier ignore_more '[' static_expr ':' static_expr ']' ignore_less
+  | identifier ignore_more '[' expression ']' ignore_less
+  | identifier ignore_more '[' expression ':' expression ']' ignore_less
   | '{' ignore_more expression_list ignore_less '}'
     {
       $$ = 0;
@@ -1926,8 +1929,8 @@ lpvalue
      expression meets the constraints of continuous assignments. */
 lavalue
   : identifier
-  | identifier ignore_more '[' static_expr ']' ignore_less
-  | identifier ignore_more '[' static_expr ':' static_expr ']' ignore_less
+  | identifier ignore_more '[' expression ']' ignore_less
+  | identifier ignore_more '[' expression ':' expression ']' ignore_less
   | '{' ignore_more expression_list ignore_less '}'
     {
       $$ = 0;

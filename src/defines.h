@@ -779,7 +779,7 @@ typedef struct str_link_s str_link;
 
 struct str_link_s {
   char*     str;     /*!< String to store                  */
-  char*     suppl;   /*!< Pointer to additional string     */
+  char      suppl;   /*!< 8-bit additional information     */
   str_link* next;    /*!< Pointer to next str_link element */
 };
 
@@ -1123,6 +1123,12 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.60  2002/11/27 03:49:20  phase1geo
+ Fixing bugs in score and report commands for regression.  Finally fixed
+ static expression calculation to yield proper coverage results for constant
+ expressions.  Updated regression suite and development documentation for
+ changes.
+
  Revision 1.59  2002/11/24 14:38:12  phase1geo
  Updating more regression CDD files for bug fixes.  Fixing bugs where combinational
  expressions were counted more than once.  Adding new diagnostics to regression

@@ -951,9 +951,10 @@ static int yywrap() {
     }
 
     /* Problem here is that istack seems to be gone from memory */
-    istack         = (struct include_stack_t*)malloc( sizeof( struct include_stack_t ) );
+    istack = (struct include_stack_t*)malloc( sizeof( struct include_stack_t ) );
+    curr   = filelist_curr;
 
-    if( filelist_curr == NULL ) {
+    if( (curr = get_next_vfile( curr, modlist_head->str )) == NULL ) {
       print_output( "Unable to find the following modules:", FATAL );
       curr = modlist_head;
       while( curr != NULL ) {
@@ -963,7 +964,7 @@ static int yywrap() {
       exit( 1 );
     }
 
-    istack->path   = strdup( filelist_curr->str );
+    istack->path   = strdup( curr->str );
     istack->next   = 0;
     istack->lineno = 0;
     istack->file   = fopen( istack->path, "r" );
@@ -978,7 +979,7 @@ static int yywrap() {
     yylloc.first_line = 1;
     yylloc.text       = istack->path;
 
-    filelist_curr = filelist_curr->next;
+    filelist_curr = curr->next;
 
     return( 0 );
 
@@ -1001,9 +1002,15 @@ static int yywrap() {
  */
 void reset_lexer( FILE* out, str_link* file_list_head ) {
 
-  struct include_stack_t* isp = malloc( sizeof( struct include_stack_t ) );
+  struct include_stack_t* isp  = malloc( sizeof( struct include_stack_t ) );
+  str_link*               curr = file_list_head;            
 
-  isp->path   = strdup( file_list_head->str );
+  if( (curr = get_next_vfile( curr, modlist_head->str )) == NULL ) {
+    print_output( "No verilog files specified", FATAL );
+    exit( 1 );
+  }
+
+  isp->path   = strdup( curr->str );
   isp->file   = fopen( isp->path, "r" );
   isp->lineno = 0;
   isp->str    = 0;

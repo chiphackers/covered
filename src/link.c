@@ -40,8 +40,9 @@ void str_link_add( char* str, str_link** head, str_link** tail ) {
 
   tmp = (str_link*)malloc_safe( sizeof( str_link ) );
 
-  tmp->str  = str;
-  tmp->next = NULL;
+  tmp->str   = str;
+  tmp->suppl = '_';
+  tmp->next  = NULL;
 
   if( *head == NULL ) {
     *head = *tail = tmp;
@@ -578,6 +579,9 @@ void mod_link_delete_list( mod_link* head ) {
 
 /*
  $Log$
+ Revision 1.13  2002/11/02 16:16:20  phase1geo
+ Cleaned up all compiler warnings in source and header files.
+
  Revision 1.12  2002/10/29 19:57:50  phase1geo
  Fixing problems with beginning block comments within comments which are
  produced automatically by CVS.  Should fix warning messages from compiler.

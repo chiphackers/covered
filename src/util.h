@@ -49,6 +49,9 @@ void scope_extract_back( char* scope, char* back, char* rest );
 /*! \brief Returns TRUE if specified scope is local (contains no periods). */
 bool scope_local( char* scope );
 
+/*! \brief Returns next Verilog file to parse. */
+str_link* get_next_vfile( str_link* curr, char* mod );
+
 /*! \brief Performs safe malloc call. */
 void* malloc_safe(size_t size );
 
@@ -61,6 +64,10 @@ void gen_space( char* spaces, int num_spaces );
 
 /*
  $Log$
+ Revision 1.10  2002/11/05 00:20:08  phase1geo
+ Adding development documentation.  Fixing problem with combinational logic
+ output in report command and updating full regression.
+
  Revision 1.9  2002/11/02 16:16:20  phase1geo
  Cleaned up all compiler warnings in source and header files.
 

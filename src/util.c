@@ -267,6 +267,7 @@ void directory_load( char* dir, str_link* ext_head, str_link** file_head, str_li
           snprintf( tmpfile, tmpchars, "%s/%s", dir, dirp->d_name );
           if( str_link_find( tmpfile, *file_head ) == NULL ) {
             str_link_add( tmpfile, file_head, file_tail );
+            (*file_tail)->suppl = 'D';
           }
         }
       }
@@ -430,6 +431,91 @@ bool scope_local( char* scope ) {
 }
 
 /*!
+ \param mname  Name of module extracted.
+ \param len    Length of mname string (we cannot exceed this value).
+ \param fname  Name of filename to extract module name from.
+
+ Takes in a filename (with possible directory information and/or possible extension)
+ and transforms it into a filename with the directory and extension information stripped
+ off.  Much like the the functionality of the unix command "basename".  Returns the 
+ stripped filename in the mname parameter.
+*/
+void convert_file_to_module( char* mname, int len, char* fname ) {
+
+  char* ptr;   /* Pointer to current character in filename */
+  char* lptr;  /* Pointer to last character in module name */
+  int   i;     /* Loop iterator                            */
+
+  /* Set ptr to end of fname string */
+  ptr  = fname + strlen( fname );
+  lptr = ptr;
+
+  /* Continue back until period is found */
+  while( (ptr > fname) && (*ptr != '.') ) {
+    ptr--;
+  }
+
+  if( ptr > fname ) {
+    lptr = ptr;
+  }
+
+  /* Continue on until ptr == fname or we have reached a non-filename character */
+  while( (ptr > fname) && (*ptr != '/') ) {
+    ptr--;
+  }
+
+  /* Construct new name */
+  if( ptr > fname ) {
+    ptr++;
+  }
+
+  assert( (lptr - ptr) < len );
+
+  i = 0;
+  while( ptr < lptr ) {
+    mname[i] = *ptr;
+    ptr++;
+    i++;
+  }
+  mname[i] = '\0';
+
+}
+
+  
+
+/*!
+ \param curr  Pointer to current file in list.
+ \param mod   Name of module searching for.
+
+ \return Returns pointer to next Verilog file to parse or NULL if no files were found.
+
+ Iterates through specified file list, searching for next Verilog file to parse.
+ If a file is a library file (suppl field is 'D'), the name of the module to search
+ for is compared with the name of the file.
+*/
+str_link* get_next_vfile( str_link* curr, char* mod ) {
+
+  str_link* next = NULL;  /* Pointer to next Verilog file to parse */
+  char      name[256];    /* String holder for module name of file */
+
+  while( (curr != NULL) && (next == NULL) ) {
+    if( curr->suppl != 'D' ) {
+      next = curr;
+    } else {
+      convert_file_to_module( name, 256, curr->str );
+      if( strcmp( name, mod ) == 0 ) {
+        next = curr;
+      } else {
+        curr = curr->next;
+      }
+    }
+  }
+
+  return( next );
+
+}
+
+/*!
  \param size  Number of bytes to allocate.
 
  \return Pointer to allocated memory.
@@ -506,6 +592,11 @@ void gen_space( char* spaces, int num_spaces ) {
 
 /*
  $Log$
+ Revision 1.17  2002/10/31 23:14:30  phase1geo
+ Fixing C compatibility problems with cc and gcc.  Found a few possible problems
+ with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that
+ lead to bus errors.  Ran full regression in 64-bit mode without error.
+
  Revision 1.16  2002/10/29 19:57:51  phase1geo
  Fixing problems with beginning block comments within comments which are
  produced automatically by CVS.  Should fix warning messages from compiler.
