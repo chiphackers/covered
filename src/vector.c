@@ -909,30 +909,47 @@ void vector_op_compare( vector* tgt, vector* left, vector* right, int comp_type 
       rbit = 0;
     }
 
-    if( (lbit != rbit) || (((lbit >= 2) || (rbit >= 2)) && (comp_type != COMP_CEQ) && (comp_type != COMP_CNE)) ) {
-      done = TRUE;
+    if( comp_type == COMP_CXEQ ) {
+      if( ((lbit < 2) && (rbit < 2)) && (lbit != rbit) ) {
+        done = TRUE;
+      }
+    } else if( comp_type == COMP_CZEQ ) {
+      if( ((lbit < 3) && (rbit < 3)) && (lbit != rbit) ) {
+        done = TRUE;
+      }
+    } else {
+      if( ((lbit != rbit) && (comp_type != COMP_CXEQ) && (comp_type != COMP_CZEQ)) || 
+          (((lbit >= 2) || (rbit >= 2)) && (comp_type != COMP_CEQ) && (comp_type != COMP_CNE)) ) {
+        done = TRUE;
+      }
     }
 
     pos--;
 
   }
 
-  if( ((lbit >= 2) || (rbit >= 2)) && (comp_type != COMP_CEQ) && (comp_type != COMP_CNE) ) {
+  if( ((lbit >= 2) || (rbit >= 2)) && 
+      (comp_type != COMP_CEQ)      && 
+      (comp_type != COMP_CNE)      &&
+      (comp_type != COMP_CXEQ)     &&
+      (comp_type != COMP_CZEQ) ) {
 
     value = 2;
 
   } else {
 
     switch( comp_type ) {
-      case COMP_LT  :  value = ((lbit == 0) && (rbit == 1)) ? 1 : 0;  break;
-      case COMP_GT  :  value = ((lbit == 1) && (rbit == 0)) ? 1 : 0;  break;
-      case COMP_LE  :  value = ((lbit == 1) && (rbit == 0)) ? 0 : 1;  break;
-      case COMP_GE  :  value = ((lbit == 0) && (rbit == 1)) ? 0 : 1;  break;
-      case COMP_EQ  :
-      case COMP_CEQ :  value = (lbit == rbit)               ? 1 : 0;  break;
-      case COMP_NE  :
-      case COMP_CNE :  value = (lbit == rbit)               ? 0 : 1;  break;
-      default       :
+      case COMP_LT   :  value = ((lbit == 0) && (rbit == 1)) ? 1 : 0;  break;
+      case COMP_GT   :  value = ((lbit == 1) && (rbit == 0)) ? 1 : 0;  break;
+      case COMP_LE   :  value = ((lbit == 1) && (rbit == 0)) ? 0 : 1;  break;
+      case COMP_GE   :  value = ((lbit == 0) && (rbit == 1)) ? 0 : 1;  break;
+      case COMP_EQ   :
+      case COMP_CEQ  :
+      case COMP_CXEQ :
+      case COMP_CZEQ :  value = (lbit == rbit)               ? 1 : 0;  break;
+      case COMP_NE   :
+      case COMP_CNE  :  value = (lbit == rbit)               ? 0 : 1;  break;
+      default        :
         snprintf( msg, 4096, "Internal error:  Unidentified comparison type %d", comp_type );
         print_output( msg, FATAL );
         exit( 1 );
@@ -1266,4 +1283,9 @@ void vector_dealloc( vector* vec ) {
 
 }
 
-/* $Log$ */
+/* $Log$
+/* Revision 1.6  2002/07/03 03:31:11  phase1geo
+/* Adding RCS Log strings in files that were missing them so that file version
+/* information is contained in every source and header file.  Reordering src
+/* Makefile to be alphabetical.  Adding mult1.v diagnostic to regression suite.
+/* */

@@ -8,8 +8,8 @@
 
 COVERED_SRC   = ../../src
 COVERED       = $(COVERED_SRC)/covered
-# COVERED_FLAGS = -q
-COVERED_FLAGS = 
+COVERED_FLAGS = -q
+# COVERED_FLAGS = 
 
 VERILOG       = iverilog
 VERILOG_FLAGS =
@@ -31,7 +31,12 @@ DIAGLIST = assign3.2A \
            always4 \
            always5 \
            case1 \
-           case2
+           case2 \
+           case3 \
+           case3.1 \
+           case3.2 \
+           case3.3 \
+           case3.4
 
 regress:	$(COVERED) clean $(DIAGLIST)
 

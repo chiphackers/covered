@@ -396,11 +396,13 @@ void expression_operate( expression* expr ) {
   int     intval2;                       /* Temporary integer value for *, /, %   */
   nibble  value1a;                       /* 1-bit nibble value                    */
   nibble  value1b;                       /* 1-bit nibble value                    */
-  nibble  value32[ VECTOR_SIZE( 32 ) ];  /* 32-bit nibble value                   */            
+  nibble  value32[ VECTOR_SIZE( 32 ) ];  /* 32-bit nibble value                   */
+  char    msg[4096];                     /* Message to user                       */
 
   if( expr != NULL ) {
 
-    // printf( "In expression_operate, id: %d, op: %d\n", expr->id, SUPPL_OP( expr->suppl ) );
+    snprintf( msg, 4096, "In expression_operate, id: %d, op: %d", expr->id, SUPPL_OP( expr->suppl ) );
+    print_output( msg, NORMAL );
 
     assert( expr->value != NULL );
 
@@ -693,12 +695,15 @@ void expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_CASE :
-        vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_EQ );
+        vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CEQ );
         break;
 
       case EXP_OP_CASEX :
+        vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CXEQ );
+        break;
+
       case EXP_OP_CASEZ :
-        vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CEQ );
+        vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CZEQ );
         break;
 
       default :

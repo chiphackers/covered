@@ -479,8 +479,10 @@
 #define COMP_GE         3       /*!< Greater than or equal to */
 #define COMP_EQ         4       /*!< Equal to                 */
 #define COMP_NE         5       /*!< Not equal to             */
-#define COMP_CEQ        6       /*!< Absolute equal to        */
-#define COMP_CNE        7       /*!< Absolute not equal to    */
+#define COMP_CEQ        6       /*!< Case equality            */
+#define COMP_CNE        7       /*!< Case inequality          */
+#define COMP_CXEQ       8       /*!< Casex equality           */
+#define COMP_CZEQ       9       /*!< Casez equality           */
 
 /*! @} */
 
@@ -820,6 +822,10 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.24  2002/07/04 23:10:12  phase1geo
+/* Added proper support for case, casex, and casez statements in score command.
+/* Report command still incorrect for these statement types.
+/*
 /* Revision 1.23  2002/07/03 21:30:52  phase1geo
 /* Fixed remaining issues with always statements.  Full regression is running
 /* error free at this point.  Regenerated documentation.  Added EOR expression
