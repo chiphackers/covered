@@ -33,7 +33,7 @@ X  8.  Make sure that parser only parses a file once (when it is in both in a li
 X  9.  Allow ability to only parse a design and only score a dumpfile (rather than having to
        do both everytime -- could save a lot of time in not having to reparse).
 
-   10. Possibly allow undeclared signals to be automatically created if not found (1-bit signal
+X  10. Possibly allow undeclared signals to be automatically created if not found (1-bit signal
        values -- simulators will probably do this).
 
    11. Make sure that extension order is maintained for a given library path.

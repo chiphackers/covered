@@ -193,32 +193,40 @@ void bind_set_tree( expression* expr ) {
 }
 
 /*!
- \param sig_name  String name of signal to bind to specified expression.
- \param exp       Pointer to expression to bind.
- \param mod       Pointer to module containing signal.
+ \param sig_name          String name of signal to bind to specified expression.
+ \param exp               Pointer to expression to bind.
+ \param mod               Pointer to module containing signal.
+ \param implicit_allowed  If set to TRUE, creates any signals that are implicitly defined.
 
  Performs a binding of an expression and signal based on the name of the
  signal.  Looks up signal name in the specified module and sets the expression
  and signal to point to each other.
 */
-void bind_perform( char* sig_name, expression* exp, module* mod ) {
+void bind_perform( char* sig_name, expression* exp, module* mod, bool implicit_allowed ) {
 
-  signal    sig;        /* Temporary signal for comparison purposes    */
+  signal    tsig;       /* Temporary signal for comparison purposes    */
   sig_link* sigl;       /* Pointer to found signal in specified module */
   char      msg[4096];  /* Error message to user                       */
 
   /* Search for specified signal in current module */
-  signal_init( &sig, sig_name, NULL );
-  sigl = sig_link_find( &sig, mod->sig_head );
+  signal_init( &tsig, sig_name, NULL );
+  sigl = sig_link_find( &tsig, mod->sig_head );
 
   if( sigl == NULL ) {
-    /* Bad hierarchical reference -- user error */
-    snprintf( msg, 4096, "Hierarchical reference to undefined signal \"%s\" in module %s, line %d", 
-              sig_name,
-              mod->name,
-              exp->line );
-    print_output( msg, FATAL );
-    exit( 1 );
+    if( !implicit_allowed ) {
+      /* Bad hierarchical reference -- user error */
+      snprintf( msg, 4096, "Hierarchical reference to undefined signal \"%s\" in module %s, line %d", 
+                sig_name,
+                mod->name,
+                exp->line );
+      print_output( msg, FATAL );
+      exit( 1 );
+    } else {
+      snprintf( msg, 4096, "Implicit declaration of signal \"%s\", creating 1-bit version of signal", sig_name );
+      print_output( msg, WARNING );
+      sig_link_add( signal_create( sig_name, 1, 0, 0 ), &(mod->sig_head), &(mod->sig_tail) );
+      sigl = mod->sig_tail;
+    }
   }
 
   /* Add expression to signal expression list */
@@ -304,7 +312,7 @@ void bind() {
     }
 
     /* Now bind the signal to the expression */
-    bind_perform( curr_seb->sig_name, curr_seb->exp, mod );
+    bind_perform( curr_seb->sig_name, curr_seb->exp, mod, FALSE );
 
     curr_seb = curr_seb->next;
 
@@ -328,6 +336,10 @@ void bind() {
 }
 
 /* $Log$
+/* Revision 1.11  2002/07/18 22:02:35  phase1geo
+/* In the middle of making improvements/fixes to the expression/signal
+/* binding phase.
+/*
 /* Revision 1.10  2002/07/17 06:27:18  phase1geo
 /* Added start for fixes to bit select code starting with single bit selection.
 /* Full regression passes with addition of sbit_sel1 diagnostic.

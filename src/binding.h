@@ -19,12 +19,16 @@ void bind_add( char* sig_name, expression* exp, char* mod_name );
 void bind_remove( int id );
 
 //! Finds signal in module and bind the expression to this signal.
-void bind_perform( char* sig_name, expression* exp, module* mod );
+void bind_perform( char* sig_name, expression* exp, module* mod, bool implicit_allowed );
 
 //! Performs signal/expression bind (performed after parse completed).
 void bind();
 
-/* $Log$ */
+/* $Log$
+/* Revision 1.3  2002/07/18 22:02:35  phase1geo
+/* In the middle of making improvements/fixes to the expression/signal
+/* binding phase.
+/* */
 
 #endif
 

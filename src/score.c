@@ -293,16 +293,18 @@ int command_score( int argc, int last_arg, char** argv ) {
 
     /* Parse design */
     if( use_files_head != NULL ) {
-      print_output( "Scoring design...", NORMAL );
+      print_output( "Reading design...", NORMAL );
       search_init();
       parse_design( top_module, output_db );
+      print_output( "", NORMAL );
     }
 
     /* Read dumpfile and score design */
     if( vcd_file != NULL ) {
-      snprintf( msg, 4096, "Scoring dumpfile %s", vcd_file );
+      snprintf( msg, 4096, "Scoring dumpfile %s...", vcd_file );
       print_output( msg, NORMAL );
       parse_and_score_dumpfile( output_db, vcd_file );
+      print_output( "", NORMAL );
     }
 
     /* Deallocate memory for search engine */
@@ -312,7 +314,7 @@ int command_score( int argc, int last_arg, char** argv ) {
     free_safe( output_db );
     free_safe( vcd_file );
 
-    print_output( "\n***  Scoring completed successfully!  ***\n", NORMAL );
+    print_output( "***  Scoring completed successfully!  ***\n", NORMAL );
     snprintf( msg, 4096, "Dynamic memory allocated:   %ld bytes", largest_malloc_size );
     print_output( msg, NORMAL );
     snprintf( msg, 4096, "Allocated memory remaining: %ld bytes", curr_malloc_size );
@@ -326,6 +328,10 @@ int command_score( int argc, int last_arg, char** argv ) {
 }
 
 /* $Log$
+/* Revision 1.15  2002/07/20 21:34:58  phase1geo
+/* Separating ability to parse design and score dumpfile.  Now both or either
+/* can be done (allowing one to parse once and score multiple times).
+/*
 /* Revision 1.14  2002/07/17 12:53:04  phase1geo
 /* Added -D option to score command and verified that this works properly.
 /*

@@ -20,6 +20,7 @@
 #include "instance.h"
 #include "statement.h"
 #include "sim.h"
+#include "binding.h"
 
 
 extern char*     top_module;
@@ -425,7 +426,7 @@ void db_add_signal( char* name, int width, int lsb, int is_static ) {
 */
 signal* db_find_signal( char* name ) {
 
-  signal*   sig;         /* Temporary pointer to signal              */
+  signal    sig;         /* Temporary signal for comparison purposes */
   sig_link* sigl;        /* Temporary pointer to signal link element */
   char      msg[4096];   /* Display message string                   */
 
@@ -433,12 +434,8 @@ signal* db_find_signal( char* name ) {
   print_output( msg, DEBUG );
 
   /* Create signal to find */
-  sig = signal_create( name, 1, 0, TRUE );
-
-  sigl = sig_link_find( sig, curr_module->sig_head );
-
-  /* Free up memory from temporary signal value */
-  signal_dealloc( sig );
+  sig.name = name;
+  sigl = sig_link_find( &sig, curr_module->sig_head );
 
   if( sigl == NULL ) {
     return( NULL );
@@ -510,7 +507,7 @@ expression* db_create_expression( expression* right, expression* left, int op, i
 
     /* If signal is located in this current module, bind now; else, bind later. */
     if( scope_local( sig_name ) ) {
-      bind_perform( sig_name, expr, curr_module );
+      bind_perform( sig_name, expr, curr_module, TRUE );
     } else {
       bind_add( sig_name, expr, curr_module->name );
     }
@@ -968,6 +965,10 @@ void db_do_timestep( int time ) {
 }
 
 /* $Log$
+/* Revision 1.46  2002/07/18 22:02:35  phase1geo
+/* In the middle of making improvements/fixes to the expression/signal
+/* binding phase.
+/*
 /* Revision 1.45  2002/07/18 05:50:45  phase1geo
 /* Fixes should be just about complete for instance depth problems now.  Diagnostics
 /* to help verify instance handling are added to regression.  Full regression passes.
