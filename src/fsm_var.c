@@ -308,25 +308,16 @@ void fsm_var_stmt_add( statement* stmt, char* mod_name ) {
 
   fv_bind* fvb;  /* Pointer to new FSM variable binding structure */
 
-  /* If the module list does not exist yet, we need to bind this later; otherwise, bind now. */
-  if( mod_head == NULL ) {
+  fvb           = (fv_bind*)malloc_safe( sizeof( fv_bind ) );
+  fvb->stmt     = stmt;
+  fvb->mod_name = strdup( mod_name );
 
-    fvb           = (fv_bind*)malloc_safe( sizeof( fv_bind ) );
-    fvb->stmt     = stmt;
-    fvb->mod_name = strdup( mod_name );
-
-    /* Add new structure to the head of the global list */
-    if( fsm_var_stmt_head == NULL ) {
-      fsm_var_stmt_head = fsm_var_stmt_tail = fvb;
-    } else {
-      fvb->next         = fsm_var_stmt_head;
-      fsm_var_stmt_head = fvb;
-    }
-
+  /* Add new structure to the head of the global list */
+  if( fsm_var_stmt_head == NULL ) {
+    fsm_var_stmt_head = fsm_var_stmt_tail = fvb;
   } else {
-
-    fsm_var_bind_stmt( stmt, mod_name );
-
+    fvb->next         = fsm_var_stmt_head;
+    fsm_var_stmt_head = fvb;
   }
 
 }
@@ -456,6 +447,10 @@ void fsm_var_remove( fsm_var* fv ) {
 
 /*
  $Log$
+ Revision 1.10  2003/11/07 05:18:40  phase1geo
+ Adding working code for inline FSM attribute handling.  Full regression fails
+ at this point but the code seems to be working correctly.
+
  Revision 1.9  2003/10/28 01:09:38  phase1geo
  Cleaning up unnecessary output.
 

@@ -17,8 +17,6 @@
 2 7 main.fsm1 23 203001 0 0 
 2 8 main.fsm1 23 2a 0 0 2 0 a
 2 9 main.fsm1 23 2033a7 7 8 1 0 11102
-2 25 main.fsm1 0 203f81 0 0 
-2 26 main.fsm1 0 203f81 0 0 
 2 64 main.fsm1 37 201032 0 0 
 2 63 main.fsm1 37 102032 0 0 
 2 65 main.fsm1 37 24301a 64 63 2 0 3110a
@@ -71,6 +69,8 @@
 2 49 main.fsm1 34 2ff02b 48 45 1 0 11102
 2 53 main.fsm1 34 2df02b 52 49 1 0 11102
 2 57 main.fsm1 34 2d33ab 56 53 1 0 11102
+2 26 main.fsm1 0 203f81 0 0 
+2 25 main.fsm1 0 203f81 0 0 
 1 #STATE_IDLE main.fsm1 0 2 0 0 11 59 64 88
 1 #STATE_HEAD main.fsm1 0 2 0 1 63 67 87
 1 #STATE_DATA main.fsm1 0 2 0 4 72 75 80
@@ -82,8 +82,8 @@
 1 valid main.fsm1 0 1 4 11102 50 60 68 76 84
 1 state main.fsm1 0 2 4 3330a 25 43 58
 1 next_state main.fsm1 0 2 0 3330a 12 26
-4 26 main.fsm1 26 26
 4 25 main.fsm1 25 25
+4 26 main.fsm1 26 26
 4 14 main.fsm1 9 9
 4 9 main.fsm1 14 0
 4 90 main.fsm1 57 57

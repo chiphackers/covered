@@ -8,8 +8,6 @@
 2 5 main 16 203001 0 0 
 2 6 main 16 2a 0 0 2 0 a
 2 7 main 16 2033a7 5 6 1 0 11102
-2 23 main 0 203f81 0 0 
-2 24 main 0 203f81 0 0 
 2 62 main 30 201032 0 0 
 2 61 main 30 102032 0 0 
 2 63 main 30 24301a 62 61 2 0 3110a
@@ -62,6 +60,8 @@
 2 47 main 27 2ff02b 46 43 1 0 11102
 2 51 main 27 2df02b 50 47 1 0 11102
 2 55 main 27 2d33ab 54 51 1 0 11102
+2 24 main 0 203f81 0 0 
+2 23 main 0 203f81 0 0 
 1 #STATE_IDLE main 0 2 0 0 9 57 62 86
 1 #STATE_HEAD main 0 2 0 1 61 65 85
 1 #STATE_DATA main 0 2 0 4 70 73 78
@@ -73,8 +73,8 @@
 1 valid main 0 1 4 11102 48 58 66 74 82
 1 state main 0 2 4 3330a 23 41 56
 1 next_state main 0 2 0 3330a 10 24
-4 24 main 24 24
 4 23 main 23 23
+4 24 main 24 24
 4 12 main 7 7
 4 7 main 12 0
 4 88 main 55 55
