@@ -397,6 +397,86 @@ bool vector_db_merge( vector* base, char** line, bool same ) {
 }
 
 /*!
+ \param base  Base vector containing data to replace.
+ \param line  Pointer to line to parse for vector information.
+
+ \return Returns TRUE if parsing successful; otherwise, returns FALSE.
+
+ Parses current file line for vector information and performs vector replace of
+ base vector with read vector information.  If the vectors are found to be different
+ (width is not equal), an error message is sent to the user and the
+ program is halted.  If the vectors are found to be equivalents, the replacement is
+ performed on the vector nibbles.
+*/
+bool vector_db_replace( vector* base, char** line ) {
+
+  bool   retval = TRUE;   /* Return value of this function */
+  int    width;           /* Width of read vector          */
+  int    suppl;           /* Supplemental value of vector  */
+  int    chars_read;      /* Number of characters read     */
+  int    i;               /* Loop iterator                 */
+  int    value;           /* Integer form of value         */
+  nibble nibs[4];         /* Temporary nibble containers   */
+
+  assert( base != NULL );
+
+  if( sscanf( *line, "%d %d%n", &width, &suppl, &chars_read ) == 2 ) {
+
+    *line = *line + chars_read;
+
+    if( base->width != width ) {
+
+      print_output( "Attempting to replace a database derived from a different design.  Unable to replace",
+                    FATAL, __FILE__, __LINE__ );
+      exit( 1 );
+
+    } else {
+
+      i = 0;
+      while( (i < width) && retval ) {
+        if( sscanf( *line, "%x%n", &value, &chars_read ) == 1 ) {
+          *line += chars_read;
+          vector_uint_to_nibbles( value, nibs );
+          switch( width - i ) {
+            case 0 :  break;
+            case 1 :
+              base->value[i+0] = nibs[0];
+              break;
+            case 2 :
+              base->value[i+0] = nibs[0];
+              base->value[i+1] = nibs[1];
+              break;
+            case 3 :
+              base->value[i+0] = nibs[0];
+              base->value[i+1] = nibs[1];
+              base->value[i+2] = nibs[2];
+              break;
+            default:
+              base->value[i+0] = nibs[0];
+              base->value[i+1] = nibs[1];
+              base->value[i+2] = nibs[2];
+              base->value[i+3] = nibs[3];
+              break;
+          }
+        } else {
+          retval = FALSE;
+        }
+        i += 4;
+      }
+
+    }
+
+  } else {
+
+    retval = FALSE;
+
+  }
+
+  return( retval );
+
+}
+
+/*!
  \param nib    Nibble to display toggle information
  \param width  Number of bits of nibble to display
  \param ofile  Stream to output information to.
@@ -1506,6 +1586,15 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.48  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.47  2004/03/15 21:38:17  phase1geo
  Updated source files after running lint on these files.  Full regression
  still passes at this point.

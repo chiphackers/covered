@@ -31,6 +31,9 @@ bool vector_db_read( vector** vec, char** line );
 /*! \brief Reads and merges two vectors, placing the result into base vector. */
 bool vector_db_merge( vector* base, char** line, bool same );
 
+/*! \brief Reads and replaces original vector with newly read vector. */
+bool vector_db_replace( vector* base, char** line );
+
 /*! \brief Outputs the toggle01 information from the specified nibble to the specified output stream. */
 void vector_display_toggle01( nibble* nib, int width, FILE* ofile );
 
@@ -118,6 +121,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.19  2003/10/28 13:28:00  phase1geo
+ Updates for more FSM attribute handling.  Not quite there yet but full regression
+ still passes.
+
  Revision 1.18  2003/10/17 12:55:36  phase1geo
  Intermediate checkin for LSB fixes.
 

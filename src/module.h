@@ -28,6 +28,9 @@ bool module_db_read( module* mod, char* scope, char** line );
 /*! \brief Reads and merges two modules into base module. */
 bool module_db_merge( module* base, FILE* file, bool same );
 
+/*! \brief Reads and replaces original module with contents of new module. */
+bool module_db_replace( module* base, FILE* file );
+
 /*! \brief Displays signals stored in this module. */
 void module_display_signals( module* mod );
 
@@ -43,6 +46,11 @@ void module_dealloc( module* mod );
 
 /*
  $Log$
+ Revision 1.9  2002/12/30 05:31:33  phase1geo
+ Fixing bug in module merge for reports when parameterized modules are merged.
+ These modules should not output an error to the user when mismatching modules
+ are found.
+
  Revision 1.8  2002/11/05 00:20:07  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.

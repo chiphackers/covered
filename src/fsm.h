@@ -30,6 +30,9 @@ bool fsm_db_read( char** line, module* mod );
 /*! \brief Reads and merges two FSMs, placing result into base FSM. */
 bool fsm_db_merge( fsm* base, char** line, bool same );
 
+/*! \brief Reads and replaces original FSM with new FSM. */
+bool fsm_db_replace( fsm* base, char** line );
+
 /*! \brief Sets the bit in set table based on the values of last and curr. */
 void fsm_table_set( fsm* table );
 
@@ -44,6 +47,10 @@ void fsm_dealloc( fsm* table );
 
 /*
  $Log$
+ Revision 1.12  2003/11/07 05:18:40  phase1geo
+ Adding working code for inline FSM attribute handling.  Full regression fails
+ at this point but the code seems to be working correctly.
+
  Revision 1.11  2003/10/13 12:27:25  phase1geo
  More fixes to FSM stuff.
 

@@ -43,6 +43,9 @@ bool expression_db_read( char** line, module* curr_mod, bool eval );
 /*! \brief Reads and merges two expressions and stores result in base expression. */
 bool expression_db_merge( expression* base, char** line, bool same );
 
+/*! \brief Reads and replaces original expression with new expression. */
+bool expression_db_replace( expression* base, char** line );
+
 /*! \brief Displays the specified expression information. */
 void expression_display( expression* expr );
 
@@ -64,6 +67,11 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.24  2004/01/08 23:24:41  phase1geo
+ Removing unnecessary scope information from signals, expressions and
+ statements to reduce file sizes of CDDs and slightly speeds up fscanf
+ function calls.  Updated regression for this fix.
+
  Revision 1.23  2003/11/30 21:50:45  phase1geo
  Modifying line_collect_uncovered function to create array containing all physical
  lines (rather than just uncovered statement starting line values) for more

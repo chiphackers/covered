@@ -365,6 +365,113 @@ bool module_db_merge( module* base, FILE* file, bool same ) {
 }
 
 /*!
+ \param base  Module that will be replaced with the new data.
+ \param file  Pointer to CDD file handle to read.
+
+ \return Returns TRUE if parse and merge was successful; otherwise, returns FALSE.
+
+ Parses specified line for module information and performs a replacement of the original
+ module with the contents of the new module.  If there are any differences between the
+ two modules, a warning or error will be displayed to the user.
+*/
+bool module_db_replace( module* base, FILE* file ) {
+
+  bool      retval = TRUE;   /* Return value of this function                                */
+  exp_link* curr_base_exp;   /* Pointer to current expression in base module expression list */
+  sig_link* curr_base_sig;   /* Pointer to current signal in base module signal list         */
+  stmt_iter curr_base_stmt;  /* Statement list iterator                                      */
+  fsm_link* curr_base_fsm;   /* Pointer to current FSM in base module FSM list               */
+  char*     curr_line;       /* Pointer to current line being read from CDD                  */
+  char*     rest_line;       /* Pointer to rest of read line                                 */
+  int       type;            /* Specifies currently read CDD type                            */
+  int       chars_read;      /* Number of characters read from current CDD line              */
+
+  assert( base != NULL );
+  assert( base->name != NULL );
+
+  /* Handle all module expressions */
+  curr_base_exp = base->exp_head;
+  while( (curr_base_exp != NULL) && retval ) {
+    if( readline( file, &curr_line ) ) {
+      if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
+        rest_line = curr_line + chars_read;
+        if( type == DB_TYPE_EXPRESSION ) {
+          retval = expression_db_replace( curr_base_exp->exp, &rest_line );
+        } else {
+          retval = FALSE;
+        }
+      } else {
+        retval = FALSE;
+      }
+    } else {
+      retval = FALSE;
+    }
+    curr_base_exp = curr_base_exp->next;
+  }
+
+  /* Handle all module signals */
+  curr_base_sig = base->sig_head;
+  while( (curr_base_sig != NULL) && retval ) {
+    if( readline( file, &curr_line ) ) {
+      if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
+        rest_line = curr_line + chars_read;
+        if( type == DB_TYPE_SIGNAL ) {
+          retval = vsignal_db_replace( curr_base_sig->sig, &rest_line );
+        } else {
+          retval = FALSE;
+        }
+      } else {
+        retval = FALSE;
+      }
+    } else {
+      retval = FALSE;
+    }
+    curr_base_sig = curr_base_sig->next;
+  }
+
+  /* Since statements don't get replaced, we will just read these lines in */
+  stmt_iter_reset( &curr_base_stmt, base->stmt_head );
+  while( (curr_base_stmt.curr != NULL) && retval ) {
+    if( readline( file, &curr_line ) ) {
+      if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
+        rest_line = curr_line + chars_read;
+        if( type != DB_TYPE_STATEMENT ) {
+          retval = FALSE;
+        }
+      } else {
+        retval = FALSE;
+      }
+    } else {
+      retval = FALSE;
+    }
+    stmt_iter_next( &curr_base_stmt );
+  }
+
+  /* Handle all module FSMs */
+  curr_base_fsm = base->fsm_head;
+  while( (curr_base_fsm != NULL) && retval ) {
+    if( readline( file, &curr_line ) ) {
+      if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
+        rest_line = curr_line + chars_read;
+        if( type == DB_TYPE_FSM ) {
+          retval = fsm_db_replace( curr_base_fsm->table, &rest_line );
+        } else {
+          retval = FALSE;
+        }
+      } else {
+        retval = FALSE;
+      }
+    } else {
+      retval = FALSE;
+    }
+    curr_base_fsm = curr_base_fsm->next;
+  }
+
+  return( retval );
+
+}
+
+/*!
  \param mod  Pointer to module element to display signals.
 
  Iterates through signal list of specified module, displaying each signal's
@@ -476,6 +583,10 @@ void module_dealloc( module* mod ) {
 
 /*
  $Log$
+ Revision 1.34  2004/03/30 15:42:14  phase1geo
+ Renaming signal type to vsignal type to eliminate compilation problems on systems
+ that contain a signal type in the OS.
+
  Revision 1.33  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,

@@ -1116,6 +1116,51 @@ bool arc_db_merge( char** base, char** line, bool same ) {
 }
 
 /*!
+ \param base  Pointer to arc table to merge data into.
+ \param line  Pointer to read in line from CDD file to merge.
+
+ \return Returns TRUE if line was read in correctly; otherwise, returns FALSE.
+
+*/
+bool arc_db_replace( char** base, char** line ) {
+
+  bool    retval = TRUE;  /* Return value for this function     */
+  char*   arcs;           /* Read arc array                     */
+  char*   strl;           /* Left state value string            */
+  char*   strr;           /* Right state value string           */
+  char*   tmpl;           /* Temporary left state value string  */
+  char*   tmpr;           /* Temporary right state value string */
+  vector* vecl;           /* Left state vector value            */
+  vector* vecr;           /* Right state vector value           */
+  int     i;              /* Loop iterator                      */
+  char    str_width[20];  /* Temporary string holder            */
+
+  if( arc_db_read( &arcs, line ) ) {
+
+    /* Check to make sure that arc arrays are compatible */
+    if( arc_get_width( *base ) != arc_get_width( arcs ) ) {
+      /*
+       This case has been proven to be unreachable; however, we will keep it here
+       in case future code changes make it valid.  There is no diagnostic in error
+       regression that hits this failure.
+      */
+      print_output( "Attempting to replace a database derived from a different design.  Unable to replace",
+                    FATAL, __FILE__, __LINE__ );
+      exit( 1 );
+    }
+
+    free_safe( *base );
+
+    /* Replace old arc array with new arc array */
+    *base = arcs;
+
+  }
+
+  return( retval );
+
+}
+
+/*!
  \param ofile  Pointer to file handle for report output.
  \param fstr   Formatting string for string output.
  \param arcs   Pointer to state transition arc array.
@@ -1217,6 +1262,15 @@ void arc_dealloc( char* arcs ) {
 
 /*
  $Log$
+ Revision 1.23  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.22  2004/03/15 21:38:17  phase1geo
  Updated source files after running lint on these files.  Full regression
  still passes at this point.
