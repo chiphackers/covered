@@ -314,7 +314,7 @@ int arc_find( char* arcs, vector* from_st, vector* to_st, int* ptr ) {
             k++;
           }
           if( k == entry_size ) {
-            *ptr = (j * entry_size);
+            *ptr = j;
           }
           j++;
         }
@@ -332,7 +332,7 @@ int arc_find( char* arcs, vector* from_st, vector* to_st, int* ptr ) {
               k++;
             }
             if( k == entry_size ) {
-              *ptr = (j * entry_size);
+              *ptr = j;
             }
           }
           j++;
@@ -405,55 +405,67 @@ void arc_add( char** arcs, int width, vector* fr_st, vector* to_st, int hit ) {
 
   assert( *arcs != NULL );
 
-  ptr  = 1;   /* Tell find function to check for a match even if opposite bit is not set. */
-  side = arc_find( *arcs, fr_st, to_st, &ptr );
+  if( !vector_is_unknown( fr_st ) && !vector_is_unknown( to_st ) ) {
 
-  if( (side == 2) && (arc_get_curr_size( *arcs ) == arc_get_max_size( *arcs )) ) {
+    ptr  = 1;   /* Tell find function to check for a match even if opposite bit is not set. */
+    side = arc_find( *arcs, fr_st, to_st, &ptr );
 
-    /* We have maxed out the array, reallocate */
-    tmp = *arcs;
+    if( (side == 2) && (arc_get_curr_size( *arcs ) == arc_get_max_size( *arcs )) ) {
 
-    /* Calculate the entry width */
-    entry_width = arc_get_entry_width( arc_get_width( tmp ) );
+      /* We have maxed out the array, reallocate */
+      tmp = *arcs;
 
-    /* Allocate new memory */
-    *arcs = (char*)malloc_safe( (entry_width * (arc_get_max_size( tmp ) + arc_get_width( tmp ))) + ARC_STATUS_SIZE );
+      /* Calculate the entry width */
+      entry_width = arc_get_entry_width( arc_get_width( tmp ) );
 
-    arc_set_width( *arcs, arc_get_width( tmp ) );
-    arc_set_max_size( *arcs, arc_get_max_size( tmp ) + arc_get_width( tmp ) );
-    arc_set_curr_size( *arcs, arc_get_curr_size( tmp ) );
-    arc_set_suppl( *arcs, ((int)tmp[6] & 0xff) );
-    for( i=0; i<(entry_width * (arc_get_max_size( tmp ) + arc_get_width( tmp ))); i++ ) {
-      if( i < ((arc_get_max_size( tmp ) * entry_width)) ) {
-        (*arcs)[i+ARC_STATUS_SIZE] = tmp[i+ARC_STATUS_SIZE];
-      } else {
-        (*arcs)[i+ARC_STATUS_SIZE] = 0;
+      /* Allocate new memory */
+      *arcs = (char*)malloc_safe( (entry_width * (arc_get_max_size( tmp ) + arc_get_width( tmp ))) + ARC_STATUS_SIZE );
+
+      arc_set_width( *arcs, arc_get_width( tmp ) );
+      arc_set_max_size( *arcs, arc_get_max_size( tmp ) + arc_get_width( tmp ) );
+      arc_set_curr_size( *arcs, arc_get_curr_size( tmp ) );
+      arc_set_suppl( *arcs, ((int)tmp[6] & 0xff) );
+
+      for( i=0; i<(entry_width * (arc_get_max_size( tmp ) + arc_get_width( tmp ))); i++ ) {
+        if( i < ((arc_get_max_size( tmp ) * entry_width)) ) {
+          (*arcs)[i+ARC_STATUS_SIZE] = tmp[i+ARC_STATUS_SIZE];
+        } else {
+          (*arcs)[i+ARC_STATUS_SIZE] = 0;
+        }
       }
+
+      /* Deallocate old memory */
+      free_safe( tmp );
+
     }
 
-    /* Deallocate old memory */
-    free_safe( tmp );
+    if( side == 2 ) {
 
-  }
+      /* Initialize arc entry */
+      // printf( "Actually setting state now, hit: %d, %d\n", hit, arc_get_curr_size( *arcs ) );
+      if( arc_set_states( *arcs, arc_get_curr_size( *arcs ), fr_st, to_st ) ) {
+        arc_set_entry_suppl( *arcs, arc_get_curr_size( *arcs ), ARC_HIT_F, hit );
+        arc_set_entry_suppl( *arcs, arc_get_curr_size( *arcs ), ARC_HIT_R, 0 );
+        arc_set_curr_size( *arcs, (arc_get_curr_size( *arcs ) + 1) );
+      }
 
-  if( side == 2 ) {
+    } else if( side == 1 ) {
 
-    /* Initialize arc entry */
-    // printf( "Actually setting state now, hit: %d, %d\n", hit, arc_get_curr_size( *arcs ) );
-    if( arc_set_states( *arcs, arc_get_curr_size( *arcs ), fr_st, to_st ) ) {
-      arc_set_entry_suppl( *arcs, arc_get_curr_size( *arcs ), ARC_HIT_F, hit );
-      arc_set_entry_suppl( *arcs, arc_get_curr_size( *arcs ), ARC_HIT_R, 0 );
-      arc_set_curr_size( *arcs, (arc_get_curr_size( *arcs ) + 1) );
+      // printf( "Setting reverse state now, hit: %d, ptr: %d\n", hit, ptr );
+      arc_set_entry_suppl( *arcs, ptr, ARC_BIDIR, 1 );
+      arc_set_entry_suppl( *arcs, ptr, ARC_HIT_R, hit );
+
+    } else if( side == 0 ) {
+
+      // printf( "Setting forward state now, hit: %d, ptr: %d\n", hit, ptr );
+      arc_set_entry_suppl( *arcs, ptr, ARC_HIT_F, hit );
+
     }
 
-  } else if( side == 1 ) {
-
-    arc_set_entry_suppl( *arcs, ptr, ARC_BIDIR, 1 );
-    arc_set_entry_suppl( *arcs, ptr, ARC_HIT_R, hit );
-
-  } else if( side == 0 ) {
-
-    arc_set_entry_suppl( *arcs, ptr, ARC_HIT_F, hit );
+    /* If we have set a side with hit equal to 0, we are specifying a known transition. */
+    if( ((side == 0) || (side == 1) || (side == 2)) && (hit == 0) ) {
+      arc_set_suppl( *arcs, ((int)((*arcs)[6]) & 0xff) | (0x1 << ARC_TRANS_KNOWN) );
+    }
 
   }
 
@@ -821,11 +833,11 @@ bool arc_db_read( char** arcs, char** line ) {
   suppl     =  (arc_read_get_next_value( line ) & 0xff);
 
   /* Allocate memory */
-  *arcs = (char*)malloc_safe( (arc_get_entry_width( width ) * curr_size) + ARC_STATUS_SIZE );
+  *arcs = (char*)malloc_safe( (arc_get_entry_width( width ) * max_size) + ARC_STATUS_SIZE );
 
   /* Initialize */
   arc_set_width( *arcs, width );
-  arc_set_max_size( *arcs, curr_size );
+  arc_set_max_size( *arcs, max_size );
   arc_set_curr_size( *arcs, curr_size );
   arc_set_suppl( *arcs, suppl );
 
@@ -1057,7 +1069,8 @@ void arc_display_transitions( FILE* ofile, char* fstr, char* arcs, bool hit ) {
       fprintf( ofile, fstr, strl, strr );
     }
 
-    if( arc_get_entry_suppl( arcs, i, ARC_HIT_R ) == hit ) {
+    if( (arc_get_entry_suppl( arcs, i, ARC_HIT_R ) == hit) &&
+        (arc_get_entry_suppl( arcs, i, ARC_BIDIR ) == 1) ) {
       arc_state_to_string( arcs, i, TRUE,  strl );
       arc_state_to_string( arcs, i, FALSE, strr );
       fprintf( ofile, fstr, strr, strl );
@@ -1083,6 +1096,10 @@ void arc_dealloc( char* arcs ) {
 
 /*
  $Log$
+ Revision 1.16  2003/10/28 13:28:00  phase1geo
+ Updates for more FSM attribute handling.  Not quite there yet but full regression
+ still passes.
+
  Revision 1.15  2003/10/17 12:55:36  phase1geo
  Intermediate checkin for LSB fixes.
 

@@ -114,7 +114,7 @@ fsm_var* fsm_var_add( char* mod_name, expression* in_state, expression* out_stat
     mod.name = mod_name;
 
     if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
-      table = fsm_create( in_state, out_state, FALSE );
+      table = fsm_create( in_state, out_state );
       if( name != NULL ) {
         table->name = strdup( name );
       }
@@ -242,7 +242,7 @@ bool fsm_var_bind_stmt( statement* stmt, char* mod_name ) {
 
     /* Finally, create the new FSM if we are the output state */
     if( (fv = fsm_var_is_output_state( stmt->exp )) != NULL ) {
-      fv->table       = fsm_create( fv->ivar, fv->ovar, FALSE );
+      fv->table       = fsm_create( fv->ivar, fv->ovar );
       fv->ivar->table = fv->table;
       fv->ovar->table = fv->table;
       fsm_link_add( fv->table, &(modl->mod->fsm_head), &(modl->mod->fsm_tail) );
@@ -456,6 +456,9 @@ void fsm_var_remove( fsm_var* fv ) {
 
 /*
  $Log$
+ Revision 1.9  2003/10/28 01:09:38  phase1geo
+ Cleaning up unnecessary output.
+
  Revision 1.8  2003/10/28 00:18:06  phase1geo
  Adding initial support for inline attributes to specify FSMs.  Still more
  work to go but full regression still passes at this point.

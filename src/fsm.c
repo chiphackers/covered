@@ -65,13 +65,12 @@ extern char         user_msg[USER_MSG_LENGTH];
 /*!
  \param from_state  Pointer to expression that is input state variable for this FSM.
  \param to_state    Pointer to expression that is output state variable for this FSM.
- \param make_table  Specifies if arc array table should be created at this time.
 
  \return Returns a pointer to the newly allocated FSM structure.
 
  Allocates and initializes an FSM structure.
 */
-fsm* fsm_create( expression* from_state, expression* to_state, bool make_table ) {
+fsm* fsm_create( expression* from_state, expression* to_state ) {
 
   fsm* table;  /* Pointer to newly created FSM */
 
@@ -81,12 +80,7 @@ fsm* fsm_create( expression* from_state, expression* to_state, bool make_table )
   table->to_state   = to_state;
   table->arc_head   = NULL;
   table->arc_tail   = NULL;
-
-  if( make_table ) {
-    table->table = arc_create( to_state->value->width );
-  } else {
-    table->table = NULL;
-  }
+  table->table      = NULL;
 
   return( table );
 
@@ -136,6 +130,13 @@ void fsm_create_tables( fsm* table ) {
   nibble   value;       /* Bit within index to set in table entry     */
   int      i;           /* Loop iterator                              */
 
+  /* Create the FSM arc transition table */
+  assert( table != NULL );
+  assert( table->to_state != NULL );
+  assert( table->to_state-> value != NULL );
+  assert( table->table == NULL );
+  table->table = arc_create( table->to_state->value->width );
+
   /* Set valid table */
   curr_arc = table->arc_head;
   while( (curr_arc != NULL) && set ) {
@@ -143,10 +144,6 @@ void fsm_create_tables( fsm* table ) {
     /* Evaluate from and to state expressions */
     expression_operate( curr_arc->from_state );
     expression_operate( curr_arc->to_state   );
-
-    printf( "In fsm_create_tables\n" );
-    vector_display( curr_arc->from_state->value );
-    vector_display( curr_arc->to_state->value );
 
     /* Set table entry in table, if possible */
     arc_add( &(table->table), table->to_state->value->width, curr_arc->from_state->value, curr_arc->to_state->value, 0 );
@@ -220,7 +217,7 @@ bool fsm_db_read( char** line, module* mod ) {
         ((oexpl = exp_link_find( &oexp, mod->exp_head )) != NULL) ) {
 
       /* Create new FSM */
-      table = fsm_create( iexpl->exp, oexpl->exp, TRUE );
+      table = fsm_create( iexpl->exp, oexpl->exp );
 
       /*
        If the input state variable is the same as the output state variable, create the new expression now.
@@ -235,9 +232,6 @@ bool fsm_db_read( char** line, module* mod ) {
 
       /* Set output expression tables to point to this FSM */
       table->to_state->table = table;
-
-      // oexpl->exp->table = table;
-      fsm_create_tables( table );
 
       /* Now read in set table */
       if( is_table == 1 ) {
@@ -779,6 +773,10 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.29  2003/10/28 13:28:00  phase1geo
+ Updates for more FSM attribute handling.  Not quite there yet but full regression
+ still passes.
+
  Revision 1.28  2003/10/28 00:18:05  phase1geo
  Adding initial support for inline attributes to specify FSMs.  Still more
  work to go but full regression still passes at this point.

@@ -241,6 +241,19 @@ bool fsm_arg_parse( char* arg ) {
 
 }
 
+/*!
+ \param str  Pointer to string containing parameter or constant value.
+ \param mod  Pointer to module containing this FSM.
+
+ \return Returns a pointer to the expression created from the found value; otherwise,
+         returns a value of NULL to indicate the this parser was unable to parse the
+         specified transition value.
+
+ Parses specified string value for a parameter or constant value.  If the string
+ is parsed correctly, a new expression is created to hold the contents of the
+ parsed value and is returned to the calling function.  If the string is not
+ parsed correctly, a value of NULL is returned to the calling function.
+*/
 expression* fsm_arg_parse_value( char** str, module* mod ) {
 
   expression* expr;          /* Pointer to expression containing state value */
@@ -308,13 +321,11 @@ expression* fsm_arg_parse_value( char** str, module* mod ) {
       }
     } else if( sscanf( *str, "%[a-zA-Z0-9_]%n", str_val, &chars_read ) == 1 ) {
       *str = *str + chars_read;
-      printf( "Found parameter: %s\n", str_val );
       if( (mparm = mod_parm_find( str_val, mod->param_head )) != NULL ) {
 
         /* Generate parameter expression */
         expr = expression_create( NULL, NULL, EXP_OP_PARAM, curr_expr_id, 0, FALSE );
         curr_expr_id++;
-        printf( "Created expression for parameter, %d\n", expr->id );
         exp_link_add( expr, &(mparm->exp_head), &(mparm->exp_tail) );
 
       }
@@ -328,6 +339,22 @@ expression* fsm_arg_parse_value( char** str, module* mod ) {
 
 }
 
+/*!
+ \param expr   Pointer to expression containing string value in vector value array.
+ \param table  Pointer to FSM table to add the transition arcs to.
+ \param mod    Pointer to the module that contains the specified FSM.
+
+ \par
+ Parses a transition string carried in the specified expression argument.  All transitions
+ must be in the form of:
+
+ \par
+ (<parameter>|<constant_value>)->(<parameter>|<constant_value>)
+
+ \par
+ Each transition is then added to the specified FSM table's arc list which is added to the
+ FSM arc transition table when the fsm_create_tables() function is called.
+*/
 void fsm_arg_parse_trans( expression* expr, fsm* table, module* mod ) {
 
   expression* from_state;  /* Pointer to from_state value of transition */
@@ -478,6 +505,10 @@ void fsm_arg_parse_attr( attr_param* ap, module* mod ) {
 
 /*
  $Log$
+ Revision 1.9  2003/10/28 13:28:00  phase1geo
+ Updates for more FSM attribute handling.  Not quite there yet but full regression
+ still passes.
+
  Revision 1.8  2003/10/28 01:09:38  phase1geo
  Cleaning up unnecessary output.
 

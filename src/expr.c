@@ -55,12 +55,12 @@
 #include "fsm.h"
 
 
-extern nibble xor_optab[16];
-extern nibble and_optab[16];
-extern nibble or_optab[16];
-extern nibble nand_optab[16];
-extern nibble nor_optab[16];
-extern nibble nxor_optab[16];
+extern nibble xor_optab[OPTAB_SIZE];
+extern nibble and_optab[OPTAB_SIZE];
+extern nibble or_optab[OPTAB_SIZE];
+extern nibble nand_optab[OPTAB_SIZE];
+extern nibble nor_optab[OPTAB_SIZE];
+extern nibble nxor_optab[OPTAB_SIZE];
 
 extern int  curr_sim_time;
 extern char user_msg[USER_MSG_LENGTH];
@@ -1329,6 +1329,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.86  2003/10/31 01:38:13  phase1geo
+ Adding new expand diagnostics to verify more situations regarding expansion
+ operators.  Fixing expression_create to properly handle all situations of
+ this operator's use.
+
  Revision 1.85  2003/10/30 05:05:11  phase1geo
  Partial fix to bug 832730.  This doesn't seem to completely fix the parameter
  case, however.
