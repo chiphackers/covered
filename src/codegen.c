@@ -34,6 +34,22 @@
 #include "util.h"
 #include "vector.h"
 
+
+/*!
+ \param code             Array of strings containing generated code lines.
+ \param code_index       Index to current string in code array to set.
+ \param first            String value coming before left expression string.
+ \param left             Array of strings for left expression code.
+ \param left_depth       Number of strings contained in left array.
+ \param first_same_line  Set to TRUE if left expression is on the same line as the current expression.
+ \param middle           String value coming after left expression string.
+ \param right            Array of strings for right expression code.
+ \param right_depth      Number of strings contained in right array.
+ \param last_same_line   Set to TRUE if right expression is on the same line as the left expression.
+ \param last             String value coming after right expression string.
+
+ Generates multi-line expression code strings from current, left, and right expressions.
+*/
 void codegen_create_expr_helper( char** code,
                                  int    code_index,
                                  char*  first,
@@ -46,9 +62,9 @@ void codegen_create_expr_helper( char** code,
                                  bool   last_same_line,
                                  char*  last ) {
 
-  char* tmpstr;
-  int   code_size = 0;
-  int   i;
+  char* tmpstr;         /* Temporary string holder              */
+  int   code_size = 0;  /* Length of current string to generate */
+  int   i;              /* Loop iterator                        */
 
   assert( left_depth > 0 );
 
@@ -126,6 +142,23 @@ void codegen_create_expr_helper( char** code,
 
 }
 
+/*!
+ \param code             Pointer to an array of strings which will contain generated code lines.
+ \param code_depth       Pointer to number of strings contained in code array.
+ \param curr_line        Line number of current expression.
+ \param first            String value coming before left expression string.
+ \param left             Array of strings for left expression code.
+ \param left_depth       Number of strings contained in left array.
+ \param left_line        Line number of left expression.
+ \param middle           String value coming after left expression string.
+ \param right            Array of strings for right expression code.
+ \param right_depth      Number of strings contained in right array.
+ \param right_line       Line number of right expression.
+ \param last             String value coming after right expression string.
+
+ Allocates enough memory in code array to store all code lines for the current expression.
+ Calls the helper function to actually generate code lines (to populate the code array).
+*/
 void codegen_create_expr( char*** code,
                           int*    code_depth,
                           int     curr_line,
@@ -139,10 +172,6 @@ void codegen_create_expr( char*** code,
                           int     right_line,
                           char*   last ) {
 
-  int code_size;
-  int comb;
-  int i;
-
   *code_depth = 0;
 
   if( (left_depth > 0) || (right_depth > 0) ) {
@@ -150,65 +179,39 @@ void codegen_create_expr( char*** code,
     /* Allocate enough storage in code array for these lines */
     if( left_depth > 0 ) {
       *code_depth += left_depth;
-      // printf( "(left_depth > 0), code_depth: %d\n", *code_depth );
     }
     if( right_depth > 0 ) {
       *code_depth += right_depth;
-      // printf( "(right_depth > 0), code_depth: %d\n", *code_depth );
     }
     if( (left_depth > 0) && (right_depth > 0) && (left_line == right_line) ) {
       *code_depth -= 1;
-      // printf( "(left_depth > 0) && (right_depth > 0) && (left_line == right_line), code_depth: %d\n", *code_depth );
     }
     if( (left_depth > 0) && (left_line > curr_line) ) {
       *code_depth += 1;
-      // printf( "(left_depth > 0) && (left_line > curr_line), code_depth: %d\n", *code_depth );
     }
     if( (left_depth == 0) && (right_depth > 0) && (right_line != curr_line) ) {
       *code_depth += 1;
-      // printf( "(left_depth == 0) && (right_depth > 0) && (right_line != curr_line), code_depth: %d\n", *code_depth );
     }
-    // printf( "-----\n" );
     *code = (char**)malloc_safe( sizeof( char* ) * (*code_depth) );
 
     /* Now generate expression string array */
-
-/*
-    printf( "left[0]: %s, right[0]: %s, first: %s, middle: %s, last: %s, left_depth: %d, right_depth: %d, curr_line: %d, left_line: %d, right_line: %d\n",
-            ((left_depth  == 0) ? "NULL" : left[0]),
-            ((right_depth == 0) ? "NULL" : right[0]),
-            ((first       == NULL) ? "NULL" : first),
-            ((middle      == NULL) ? "NULL" : middle),
-            ((last        == NULL) ? "NULL" : last), left_depth, right_depth, curr_line, left_line, right_line );
-*/
-
     codegen_create_expr_helper( *code, 0, first, left, left_depth, (curr_line >= left_line), middle,
                                 right, right_depth, (left_line == right_line), last );
-
-/*
-    printf( "code (%d):\n", *code_depth );
-    for( i=0; i<(*code_depth); i++ ) {
-      printf( "  %2d  %s\n", i, (*code)[i] );
-    }
-    printf( "***\n" );
-*/
 
   }
 
 }
 
 /*!
- \param expr       Pointer to root of expression tree to generate.
- \param line       Specifies last line number to generate.
- \param parent_op  Operation of parent.  If our op is the same, no surrounding parenthesis is needed.
-
- \return Returns a pointer to the generated Verilog string.
+ \param expr        Pointer to root of expression tree to generate.
+ \param parent_op   Operation of parent.  If our op is the same, no surrounding parenthesis is needed.
+ \param code        Pointer to array of strings that will contain code lines for the supplied expression.
+ \param code_depth  Pointer to number of strings contained in code array.
 
  Generates Verilog code from specified expression tree.  This Verilog
  snippet is used by the verbose coverage reporting functions for showing
- Verilog examples that were missed during simulation.  The line parameter
- specifies the last line number to generate for this expression tree.  If
- the value of line is -1, the entire expression tree is generated.
+ Verilog examples that were missed during simulation.  This code handles multi-line
+ Verilog output by storing its information into the code and code_depth parameters.
 */
 void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_depth ) {
 
@@ -585,6 +588,10 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.31  2003/12/13 03:18:16  phase1geo
+ Fixing bug found in difference between Linux and Irix snprintf() algorithm.
+ Full regression now passes.
+
  Revision 1.30  2003/12/12 17:16:25  phase1geo
  Changing code generator to output logic based on user supplied format.  Full
  regression fails at this point due to mismatching report files.

@@ -266,7 +266,8 @@ bool combination_module_summary( FILE* ofile, mod_link* head ) {
  \param exp_id  ID to place in underline.
 
  Draws an underline containing the specified expression ID to the specified
- line.
+ line.  The expression ID will be placed immediately following the beginning
+ vertical bar.
 */
 void combination_draw_line( char* line, int size, int exp_id ) {
 
@@ -292,12 +293,14 @@ void combination_draw_line( char* line, int size, int exp_id ) {
 }
 
 /*!
- \param line    Pointer to line to create line onto.
- \param size    Number of characters long line is.
- \param exp_id  ID to place in underline.
+ \param line       Pointer to line to create line onto.
+ \param size       Number of characters long line is.
+ \param exp_id     ID to place in underline.
+ \param left_bar   If set to TRUE, draws a vertical bar at the beginning of the underline.
+ \param right_bar  If set to TRUE, draws a vertical bar at the end of the underline.
 
  Draws an underline containing the specified expression ID to the specified
- line.
+ line.  The expression ID will be placed in the center of the generated underline.
 */
 void combination_draw_centered_line( char* line, int size, int exp_id, bool left_bar, bool right_bar ) {
 
@@ -1225,6 +1228,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.70  2003/12/13 03:26:39  phase1geo
+ Adding code to optimize cases where output code is only on one line (no
+ need to reformat the line in this case).
+
  Revision 1.69  2003/12/12 22:39:13  phase1geo
  Adding rest of line wrap code.  Full regression should now pass.
 
