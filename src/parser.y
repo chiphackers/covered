@@ -1197,10 +1197,12 @@ module_item
 	| K_always statement
 		{
                   statement* stmt = $2;
-                  db_statement_connect( stmt, stmt );
-                  db_statement_set_stop( stmt, stmt, TRUE );
-                  stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
-                  db_add_statement( stmt );
+                  if( stmt != NULL ) {
+                    db_statement_connect( stmt, stmt );
+                    db_statement_set_stop( stmt, stmt, TRUE );
+                    stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
+                    db_add_statement( stmt );
+                  }
 		}
 	| K_initial { ignore_mode++; } statement { ignore_mode--; }
 		{
@@ -1469,6 +1471,9 @@ statement
                   if( ignore_mode == 0 ) {
                     stmt = db_create_statement( $1 );
                     db_add_expression( $1 );
+                    if( $2 != NULL ) {
+                      db_statement_connect( stmt, $2 );
+                    }
                     $$ = stmt;
                   } else {
                     $$ = NULL;
@@ -1480,7 +1485,9 @@ statement
                   if( ignore_mode == 0 ) {
                     stmt = db_create_statement( $1 );
                     db_add_expression( $1 );
-                    db_statement_connect( stmt, $2 );
+                    if( $2 != NULL ) {
+                      db_statement_connect( stmt, $2 );
+                    }
                     $$ = stmt;
                   } else {
                     $$ = NULL;

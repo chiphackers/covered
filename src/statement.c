@@ -275,6 +275,8 @@ bool statement_db_read( char** line, module* curr_mod, int read_mode ) {
 
       stmt = statement_create( expl->exp );
 
+      printf( "Just read statement: %d, true_id: %d, false_id: %d\n", id, true_id, false_id );
+
       /* Find and link next_true */
       if( true_id == id ) {
         stmt->next_true = stmt;
@@ -456,6 +458,7 @@ void statement_set_stop( statement* stmt, statement* post, bool true_path, bool 
   // printf( "In statement_set_stop, stmt: %d, post: %d, next_true: %d, next_false: %d\n", stmt->exp->id, post_id, true_id, false_id );
 
   if( ((stmt->next_true == post) && (stmt->next_false == post)) ||
+      ((stmt->next_true == post) && (stmt->next_false == NULL)) ||
       (stmt->next_false == post) ) {
     if( true_path || both) {
       // printf( "Setting STOP bit for statement %d\n", stmt->exp->id );
@@ -520,6 +523,10 @@ void statement_dealloc( statement* stmt ) {
 
 
 /* $Log$
+/* Revision 1.27  2002/07/12 04:53:29  phase1geo
+/* Removing counter code that was used for debugging infinite loops in code
+/* previously.
+/*
 /* Revision 1.26  2002/07/08 12:35:31  phase1geo
 /* Added initial support for library searching.  Code seems to be broken at the
 /* moment.
