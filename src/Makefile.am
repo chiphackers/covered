@@ -51,4 +51,3 @@ keywords.c:  keywords.gperf
 clean:
 	rm -f pplexer.c lexer.c keywords.c
 	rm -f parser.c parser.h parser.output
-	rm -rf .deps
