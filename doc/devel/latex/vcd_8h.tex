@@ -1,0 +1,40 @@
+\section{vcd.h File Reference}
+\label{vcd_8h}\index{vcd.h@{vcd.h}}
+Contains VCD parser functions. 
+
+
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+void {\bf vcd\_\-parse} (char $\ast${\bf vcd\_\-file})
+\begin{CompactList}\small\item\em Parses specified VCD file, storing information into database.\item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+Contains VCD parser functions.
+
+
+
+\begin{Desc}
+\item[Author: ]\par
+Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\begin{Desc}
+\item[Date: ]\par
+7/21/2002\end{Desc}
+
+
+\subsection{Function Documentation}
+\index{vcd.h@{vcd.h}!vcd_parse@{vcd\_\-parse}}
+\index{vcd_parse@{vcd\_\-parse}!vcd.h@{vcd.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vcd\_\-parse (char $\ast$ {\em vcd\_\-file})}\label{vcd_8h_a0}
+
+
+Parses specified VCD file, storing information into database.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+vcd\_\-file}]Name of VCD file to parse.\end{description}
+\end{Desc}
+Reads specified VCD file for relevant information and calls the database functions when appropriate to store this information. This replaces the need for a lexer and parser which should increase performance. 

@@ -1,0 +1,120 @@
+\section{vcd.c File Reference}
+\label{vcd_8c}\index{vcd.c@{vcd.c}}
+{\tt \#include $<$stdio.h$>$}\par
+{\tt \#include $<$assert.h$>$}\par
+{\tt \#include $<$stdlib.h$>$}\par
+{\tt \#include \char`\"{}vcd.h\char`\"{}}\par
+{\tt \#include \char`\"{}db.h\char`\"{}}\par
+{\tt \#include \char`\"{}util.h\char`\"{}}\par
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+void {\bf vcd\_\-parse\_\-def\_\-ignore} (FILE $\ast$vcd)
+\item 
+void {\bf vcd\_\-parse\_\-def\_\-var} (FILE $\ast$vcd)
+\item 
+void {\bf vcd\_\-parse\_\-def\_\-scope} (FILE $\ast$vcd)
+\item 
+void {\bf vcd\_\-parse\_\-def} (FILE $\ast$vcd)
+\item 
+void {\bf vcd\_\-parse\_\-sim\_\-vector} (FILE $\ast$vcd, char $\ast$value)
+\item 
+void {\bf vcd\_\-parse\_\-sim} (FILE $\ast$vcd)
+\item 
+void {\bf vcd\_\-parse} (char $\ast${\bf vcd\_\-file})
+\begin{CompactList}\small\item\em Parses specified VCD file, storing information into database.\item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+\begin{Desc}
+\item[Author: ]\par
+Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\begin{Desc}
+\item[Date: ]\par
+7/21/2002\end{Desc}
+
+
+\subsection{Function Documentation}
+\index{vcd.c@{vcd.c}!vcd_parse@{vcd\_\-parse}}
+\index{vcd_parse@{vcd\_\-parse}!vcd.c@{vcd.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vcd\_\-parse (char $\ast$ {\em vcd\_\-file})}\label{vcd_8c_a6}
+
+
+Parses specified VCD file, storing information into database.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+vcd\_\-file}]Name of VCD file to parse.\end{description}
+\end{Desc}
+Reads specified VCD file for relevant information and calls the database functions when appropriate to store this information. This replaces the need for a lexer and parser which should increase performance. \index{vcd.c@{vcd.c}!vcd_parse_def@{vcd\_\-parse\_\-def}}
+\index{vcd_parse_def@{vcd\_\-parse\_\-def}!vcd.c@{vcd.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vcd\_\-parse\_\-def (FILE $\ast$ {\em vcd})}\label{vcd_8c_a3}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+vcd}]File handle pointer to opened VCD file.\end{description}
+\end{Desc}
+Parses all definition information from specified file. \index{vcd.c@{vcd.c}!vcd_parse_def_ignore@{vcd\_\-parse\_\-def\_\-ignore}}
+\index{vcd_parse_def_ignore@{vcd\_\-parse\_\-def\_\-ignore}!vcd.c@{vcd.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vcd\_\-parse\_\-def\_\-ignore (FILE $\ast$ {\em vcd})}\label{vcd_8c_a0}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+vcd}]File handle pointer to opened VCD file.\end{description}
+\end{Desc}
+Parses specified file until \$end keyword is seen, ignoring all text inbetween. \index{vcd.c@{vcd.c}!vcd_parse_def_scope@{vcd\_\-parse\_\-def\_\-scope}}
+\index{vcd_parse_def_scope@{vcd\_\-parse\_\-def\_\-scope}!vcd.c@{vcd.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vcd\_\-parse\_\-def\_\-scope (FILE $\ast$ {\em vcd})}\label{vcd_8c_a2}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+vcd}]File handle pointer to opened VCD file.\end{description}
+\end{Desc}
+Parses definition \$scope keyword line until \$end keyword is seen. \index{vcd.c@{vcd.c}!vcd_parse_def_var@{vcd\_\-parse\_\-def\_\-var}}
+\index{vcd_parse_def_var@{vcd\_\-parse\_\-def\_\-var}!vcd.c@{vcd.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vcd\_\-parse\_\-def\_\-var (FILE $\ast$ {\em vcd})}\label{vcd_8c_a1}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+vcd}]File handle pointer to opened VCD file.\end{description}
+\end{Desc}
+Parses definition \$var keyword line until \$end keyword is seen. \index{vcd.c@{vcd.c}!vcd_parse_sim@{vcd\_\-parse\_\-sim}}
+\index{vcd_parse_sim@{vcd\_\-parse\_\-sim}!vcd.c@{vcd.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vcd\_\-parse\_\-sim (FILE $\ast$ {\em vcd})}\label{vcd_8c_a5}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+vcd}]File handle of opened VCD file.\end{description}
+\end{Desc}
+Parses all lines that occur in the simulation portion of the VCD file. \index{vcd.c@{vcd.c}!vcd_parse_sim_vector@{vcd\_\-parse\_\-sim\_\-vector}}
+\index{vcd_parse_sim_vector@{vcd\_\-parse\_\-sim\_\-vector}!vcd.c@{vcd.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vcd\_\-parse\_\-sim\_\-vector (FILE $\ast$ {\em vcd}, char $\ast$ {\em value})}\label{vcd_8c_a4}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+vcd}]File handle of opened VCD file. \item[{\em 
+value}]String containing value of current signal.\end{description}
+\end{Desc}
+Reads the next token from the file and calls the appropriate database storage function for this signal change. 
