@@ -55,13 +55,41 @@ char* curr_inst_scope   = NULL;
 */
 mod_inst* curr_instance = NULL;
 
+/*!
+ Pointer to head of list of module names that need to be parsed yet.  These names
+ are added in the db_add_instance function and removed in the db_end_module function.
+*/
 str_link* modlist_head  = NULL;
+
+/*!
+ Pointer to tail of list of module names that need to be parsed yet.  These names
+ are added in the db_add_instance function and removed in the db_end_module function.
+*/
 str_link* modlist_tail  = NULL;
 
+/*!
+ Pointer to the module structure for the module that is currently being parsed.
+*/
 module*   curr_module   = NULL;
 
+/*!
+ Pointer to the VCD symbol table tree structure that contains all signals and their
+ corresponding VCD symbols.  Tree elements are sorted by symbol name for quick lookup.
+*/
 symtable* vcd_symtab           = NULL;
+
+/*!
+ Pointer to the pre-simulation timestep table tree structure.  This tree contains copies
+ of the VCD symbol table tree entries that are to be evaluated just prior to simulation
+ for a particular timestep.
+*/
 symtable* presim_timestep_tab  = NULL;
+
+/*!
+ Pointer to the post-simulation timestep table tree structure.  This tree contains copies
+ of the VCD symbol table tree entries that are to be evaluated just after simulation for
+ a particular timestep.
+*/
 symtable* postsim_timestep_tab = NULL;
 
 /*!
@@ -76,6 +104,12 @@ int       curr_expr_id  = 1;
  function.  It is used for calculating delay expressions in the simulation engine.
 */
 int       curr_sim_time   = 0;
+
+/*!
+ Contains timestep value when simulation was last performed.  This value is used to determine
+ if the current timestep needs to be printed to standard output (if the -ts option is specified
+ to the score command.
+*/
 int       last_sim_update = 0;
 
 /*!
@@ -1211,6 +1245,11 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.94  2003/08/09 22:10:41  phase1geo
+ Removing wait event signals from CDD file generation in support of another method
+ that fixes a bug when multiple wait event statements exist within the same
+ statement tree.
+
  Revision 1.93  2003/08/07 15:41:43  phase1geo
  Adding -ts option to score command to allow the current timestep to be
  output during the simulation phase.

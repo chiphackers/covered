@@ -2049,7 +2049,7 @@
     <td class="mdRow">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> #define <a class="el" href="parser_8c.html#a209">yylval</a>&nbsp;&nbsp;&nbsp;<a class="el" href="parser_8h.html#a149">VLlval</a>
+          <td class="md" nowrap valign="top"> #define <a class="el" href="parser_8c.html#a208">yylval</a>&nbsp;&nbsp;&nbsp;<a class="el" href="parser_8h.html#a149">VLlval</a>
       </table>
     </td>
   </tr>
@@ -3110,7 +3110,13 @@ Contains state before entering comment block.     </td>
     <td class="mdRow">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="structstr__link__s.html">str_link</a>* <a class="el" href="parse_8c.html#a2">modlist_head</a>
+          <td class="md" nowrap valign="top"> <a class="el" href="structstr__link__s.html">str_link</a>* <a class="el" href="parse_8c.html#a1">modlist_head</a> </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="mdname1" valign="top" nowrap>          </td>
+          <td class="md" valign="top">&nbsp;)&nbsp;</td>
+          <td class="md" nowrap></td>
+        </tr>
+
       </table>
     </td>
   </tr>
@@ -3123,7 +3129,7 @@ Contains state before entering comment block.     </td>
     <td>
 
 <p>
-    </td>
+Pointer to head of list of module names that need to be parsed yet. These names are added in the db_add_instance function and removed in the db_end_module function.     </td>
   </tr>
 </table>
 <a name="a118" doxytag="lexer.c::modlist_tail"></a><p>
@@ -3132,7 +3138,13 @@ Contains state before entering comment block.     </td>
     <td class="mdRow">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="structstr__link__s.html">str_link</a>* <a class="el" href="parse_8c.html#a3">modlist_tail</a>
+          <td class="md" nowrap valign="top"> <a class="el" href="structstr__link__s.html">str_link</a>* <a class="el" href="parse_8c.html#a2">modlist_tail</a> </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="mdname1" valign="top" nowrap>          </td>
+          <td class="md" valign="top">&nbsp;)&nbsp;</td>
+          <td class="md" nowrap></td>
+        </tr>
+
       </table>
     </td>
   </tr>
@@ -3145,7 +3157,7 @@ Contains state before entering comment block.     </td>
     <td>
 
 <p>
-    </td>
+Pointer to tail of list of module names that need to be parsed yet. These names are added in the db_add_instance function and removed in the db_end_module function.     </td>
   </tr>
 </table>
 <a name="a111" doxytag="lexer.c::ppfilename"></a><p>
@@ -3830,7 +3842,7 @@ Holds some output that will be displayed via the print_output command. This is c
     </td>
   </tr>
 </table>
-<hr size="1"><address style="align: right;"><small>Generated on Wed Aug 6 00:14:04 2003 for Covered by
+<hr size="1"><address style="align: right;"><small>Generated on Sat Aug 9 22:46:41 2003 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 > 
 </a>1.3.3 </small></address>

@@ -17,17 +17,17 @@
 <table border=0 cellpadding=0 cellspacing=0>
 <tr><td></td></tr>
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="score_8c.html#a11">define_macro</a> (const char *name, const char *value)</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="score_8c.html#a12">define_macro</a> (const char *name, const char *value)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="score_8c.html#a12">score_usage</a> ()</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="score_8c.html#a13">score_usage</a> ()</td></tr>
 
-<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="score_8c.html#a13">read_command_file</a> (char *cmd_file, char ***arg_list, int *arg_num)</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="score_8c.html#a14">read_command_file</a> (char *cmd_file, char ***arg_list, int *arg_num)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="score_8c.html#a14">score_parse_args</a> (int argc, int last_arg, char **argv)</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="score_8c.html#a15">score_parse_args</a> (int argc, int last_arg, char **argv)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align=right valign=top>int&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="score_8c.html#a15">command_score</a> (int argc, int last_arg, char **argv)</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>int&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="score_8c.html#a16">command_score</a> (int argc, int last_arg, char **argv)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Parses score command-line and performs score. </em> <a href="#a15"></a><em><br><br></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Parses score command-line and performs score. </em> <a href="#a16"></a><em><br><br></td></tr>
 <tr><td colspan=2><br><h2>Variables</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align=right valign=top>char *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="score_8c.html#a0">top_module</a> = NULL</td></tr>
 
@@ -43,20 +43,22 @@
 
 <tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="score_8c.html#a6">instance_specified</a> = FALSE</td></tr>
 
-<tr><td class="memItemLeft" nowrap align=right valign=top>unsigned long&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="score_8c.html#a7">largest_malloc_size</a></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>int&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="score_8c.html#a7">timestep_update</a> = 0</td></tr>
 
-<tr><td class="memItemLeft" nowrap align=right valign=top>unsigned long&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="score_8c.html#a8">curr_malloc_size</a></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>unsigned long&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="score_8c.html#a8">largest_malloc_size</a></td></tr>
 
-<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="structstr__link__s.html">str_link</a> *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="score_8c.html#a9">use_files_head</a></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>unsigned long&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="score_8c.html#a9">curr_malloc_size</a></td></tr>
 
-<tr><td class="memItemLeft" nowrap align=right valign=top>char&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="score_8c.html#a10">user_msg</a> [USER_MSG_LENGTH]</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="structstr__link__s.html">str_link</a> *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="score_8c.html#a10">use_files_head</a></td></tr>
+
+<tr><td class="memItemLeft" nowrap align=right valign=top>char&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="score_8c.html#a11">user_msg</a> [USER_MSG_LENGTH]</td></tr>
 
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 <dl compact><dt><b>Author:</b></dt><dd>Trevor Williams (<a href="mailto:trevorw@charter.net">trevorw@charter.net</a>) </dd></dl>
 <dl compact><dt><b>Date:</b></dt><dd>11/29/2001</dd></dl>
 <hr><h2>Function Documentation</h2>
-<a name="a15" doxytag="score.c::command_score"></a><p>
+<a name="a16" doxytag="score.c::command_score"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -110,7 +112,7 @@ Parses score command-line and performs score.
 Performs score command functionality.     </td>
   </tr>
 </table>
-<a name="a11" doxytag="score.c::define_macro"></a><p>
+<a name="a12" doxytag="score.c::define_macro"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -154,7 +156,7 @@ Performs score command functionality.     </td>
 Stores define identifer with its value in a define node and placed in the binary search tree for quick lookup later on.     </td>
   </tr>
 </table>
-<a name="a13" doxytag="score.c::read_command_file"></a><p>
+<a name="a14" doxytag="score.c::read_command_file"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -206,7 +208,7 @@ Stores define identifer with its value in a define node and placed in the binary
     </td>
   </tr>
 </table>
-<a name="a14" doxytag="score.c::score_parse_args"></a><p>
+<a name="a15" doxytag="score.c::score_parse_args"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -258,7 +260,7 @@ Stores define identifer with its value in a define node and placed in the binary
 Parses score command argument list and performs specified functions based on these arguments.     </td>
   </tr>
 </table>
-<a name="a12" doxytag="score.c::score_usage"></a><p>
+<a name="a13" doxytag="score.c::score_usage"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -287,7 +289,7 @@ Displays usage information for score command.     </td>
   </tr>
 </table>
 <hr><h2>Variable Documentation</h2>
-<a name="a8" doxytag="score.c::curr_malloc_size"></a><p>
+<a name="a9" doxytag="score.c::curr_malloc_size"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -359,7 +361,7 @@ Value to use when a delay expression with min:typ:max     </td>
 Specifies if -i option was specified     </td>
   </tr>
 </table>
-<a name="a7" doxytag="score.c::largest_malloc_size"></a><p>
+<a name="a8" doxytag="score.c::largest_malloc_size"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -431,6 +433,28 @@ Name of output score database file to generate     </td>
 Name of preprocessor filename to use     </td>
   </tr>
 </table>
+<a name="a7" doxytag="score.c::timestep_update"></a><p>
+<table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
+  <tr>
+    <td class="mdRow">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> int <a class="el" href="score_8c.html#a7">timestep_update</a> = 0
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+Specifies timestep increment to display current time     </td>
+  </tr>
+</table>
 <a name="a1" doxytag="score.c::top_instance"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
@@ -475,7 +499,7 @@ Name of top-level instance name     </td>
 Name of top-level module to score     </td>
   </tr>
 </table>
-<a name="a9" doxytag="score.c::use_files_head"></a><p>
+<a name="a10" doxytag="score.c::use_files_head"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -503,7 +527,7 @@ Name of top-level module to score     </td>
 Pointer to head element of used files list     </td>
   </tr>
 </table>
-<a name="a10" doxytag="score.c::user_msg"></a><p>
+<a name="a11" doxytag="score.c::user_msg"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -553,7 +577,7 @@ Holds some output that will be displayed via the print_output command. This is c
 Name of VCD output file to parse     </td>
   </tr>
 </table>
-<hr size="1"><address style="align: right;"><small>Generated on Wed Aug 6 00:14:06 2003 for Covered by
+<hr size="1"><address style="align: right;"><small>Generated on Sat Aug 9 22:46:43 2003 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 > 
 </a>1.3.3 </small></address>

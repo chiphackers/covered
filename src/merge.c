@@ -20,8 +20,22 @@
 #include "util.h"
 
 
+/*!
+ Specifies the output filename of the CDD file that contains the merged data.
+*/
 char* merged_file = NULL;
+
+/*!
+ Specifies the name of the input CDD file that will be read in first.  If the user
+ does not specify an output CDD filename (i.e., no -o option is specified), the name
+ of merge_in0 will be used for merged_file.
+*/
 char* merge_in0   = NULL;
+
+/*!
+ Specifies the name of the input CDD file that will be read in second (this data
+ is merged into the first CDD input.
+*/
 char* merge_in1   = NULL;
 
 extern char user_msg[USER_MSG_LENGTH];
@@ -162,6 +176,12 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.13  2003/02/17 22:47:20  phase1geo
+ Fixing bug with merging same DUTs from different testbenches.  Updated reports
+ to display full path instead of instance name and parent instance name.  Added
+ merge tests and added merge testing into regression test suite.  Fixing bug with
+ -D/-Q option specified with merge command.  Full regression passing.
+
  Revision 1.12  2003/02/11 05:20:52  phase1geo
  Fixing problems with merging constant/parameter vector values.  Also fixing
  bad output from merge command when the CDD files cannot be opened for reading.

@@ -16,39 +16,37 @@
 <table border=0 cellpadding=0 cellspacing=0>
 <tr><td></td></tr>
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="parse_8c.html#a7">reset_lexer</a> (<a class="el" href="structstr__link__s.html">str_link</a> *file_list_head)</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="parse_8c.html#a6">reset_lexer</a> (<a class="el" href="structstr__link__s.html">str_link</a> *file_list_head)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align=right valign=top>int&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="parse_8c.html#a8">VLparse</a> ()</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>int&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="parse_8c.html#a7">VLparse</a> ()</td></tr>
 
-<tr><td class="memItemLeft" nowrap align=right valign=top>int&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="parse_8c.html#a9">parse_readline</a> (FILE *<a class="el" href="pplexer_8c.html#a113">file</a>, char *line, int <a class="el" href="pplexer_8c.html#a112">size</a>)</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>int&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="parse_8c.html#a8">parse_readline</a> (FILE *<a class="el" href="pplexer_8c.html#a113">file</a>, char *line, int <a class="el" href="pplexer_8c.html#a112">size</a>)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="parse_8c.html#a10">parse_design</a> (char *top, char *<a class="el" href="score_8c.html#a2">output_db</a>)</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="parse_8c.html#a9">parse_design</a> (char *top, char *<a class="el" href="score_8c.html#a2">output_db</a>)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Parses the specified design and generates scoring modules. </em> <a href="#a10"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="parse_8c.html#a11">parse_and_score_dumpfile</a> (char *db, char *vcd)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Parses the specified design and generates scoring modules. </em> <a href="#a9"></a><em><br><br></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="parse_8c.html#a10">parse_and_score_dumpfile</a> (char *db, char *vcd)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Parses VCD dumpfile and scores design. </em> <a href="#a11"></a><em><br><br></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Parses VCD dumpfile and scores design. </em> <a href="#a10"></a><em><br><br></td></tr>
 <tr><td colspan=2><br><h2>Variables</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top>int&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="parse_8c.html#a0">VLdebug</a></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="structstr__link__s.html">str_link</a> *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="parse_8c.html#a0">use_files_head</a></td></tr>
 
-<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="structstr__link__s.html">str_link</a> *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="parse_8c.html#a1">use_files_head</a></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="structstr__link__s.html">str_link</a> *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="parse_8c.html#a1">modlist_head</a></td></tr>
 
-<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="structstr__link__s.html">str_link</a> *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="parse_8c.html#a2">modlist_head</a></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="structstr__link__s.html">str_link</a> *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="parse_8c.html#a2">modlist_tail</a></td></tr>
 
-<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="structstr__link__s.html">str_link</a> *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="parse_8c.html#a3">modlist_tail</a></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>char&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="parse_8c.html#a3">user_msg</a> [USER_MSG_LENGTH]</td></tr>
 
-<tr><td class="memItemLeft" nowrap align=right valign=top>char&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="parse_8c.html#a4">user_msg</a> [USER_MSG_LENGTH]</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>int&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="parse_8c.html#a4">error_count</a></td></tr>
 
-<tr><td class="memItemLeft" nowrap align=right valign=top>int&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="parse_8c.html#a5">error_count</a></td></tr>
-
-<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="parse_8c.html#a6">flag_scored</a></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="parse_8c.html#a5">flag_scored</a></td></tr>
 
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 <dl compact><dt><b>Author:</b></dt><dd>Trevor Williams (<a href="mailto:trevorw@charter.net">trevorw@charter.net</a>) </dd></dl>
 <dl compact><dt><b>Date:</b></dt><dd>11/27/2001</dd></dl>
 <hr><h2>Function Documentation</h2>
-<a name="a11" doxytag="parse.c::parse_and_score_dumpfile"></a><p>
+<a name="a10" doxytag="parse.c::parse_and_score_dumpfile"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -95,7 +93,7 @@ Parses VCD dumpfile and scores design.
     </td>
   </tr>
 </table>
-<a name="a10" doxytag="parse.c::parse_design"></a><p>
+<a name="a9" doxytag="parse.c::parse_design"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -142,7 +140,7 @@ Parses the specified design and generates scoring modules.
 Resets the lexer and parses all Verilog files specified in use_files list. After all design files are parsed, their information will be appropriately stored in the associated lists.     </td>
   </tr>
 </table>
-<a name="a9" doxytag="parse.c::parse_readline"></a><p>
+<a name="a8" doxytag="parse.c::parse_readline"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -194,7 +192,7 @@ Resets the lexer and parses all Verilog files specified in use_files list. After
 Reads from specified file, one character at a time, until either a newline or EOF is encountered. Returns the read line and the number of characters stored in the line. No newline character is added to the line.     </td>
   </tr>
 </table>
-<a name="a7" doxytag="parse.c::reset_lexer"></a><p>
+<a name="a6" doxytag="parse.c::reset_lexer"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -223,7 +221,7 @@ Reads from specified file, one character at a time, until either a newline or EO
     </td>
   </tr>
 </table>
-<a name="a8" doxytag="parse.c::VLparse"></a><p>
+<a name="a7" doxytag="parse.c::VLparse"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -252,13 +250,19 @@ Reads from specified file, one character at a time, until either a newline or EO
   </tr>
 </table>
 <hr><h2>Variable Documentation</h2>
-<a name="a5" doxytag="parse.c::error_count"></a><p>
+<a name="a4" doxytag="parse.c::error_count"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> int <a class="el" href="parser__misc_8h.html#a4">error_count</a>
+          <td class="md" nowrap valign="top"> int <a class="el" href="parser__misc_8h.html#a4">error_count</a> </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="mdname1" valign="top" nowrap>          </td>
+          <td class="md" valign="top">&nbsp;)&nbsp;</td>
+          <td class="md" nowrap></td>
+        </tr>
+
       </table>
     </td>
   </tr>
@@ -271,16 +275,16 @@ Reads from specified file, one character at a time, until either a newline or EO
     <td>
 
 <p>
-    </td>
+Counts the number of errors found during the parsing process.     </td>
   </tr>
 </table>
-<a name="a6" doxytag="parse.c::flag_scored"></a><p>
+<a name="a5" doxytag="parse.c::flag_scored"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a181">bool</a> <a class="el" href="parse_8c.html#a6">flag_scored</a> </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a181">bool</a> <a class="el" href="parse_8c.html#a5">flag_scored</a> </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>          </td>
           <td class="md" valign="top">&nbsp;)&nbsp;</td>
@@ -302,13 +306,19 @@ Reads from specified file, one character at a time, until either a newline or EO
 If this flag is set to a value of 1, it indicates that the current CDD file has been scored and is available for coverage reporting (if CDD file has not been scored, errors will occur when trying to get coverage numbers).     </td>
   </tr>
 </table>
-<a name="a2" doxytag="parse.c::modlist_head"></a><p>
+<a name="a1" doxytag="parse.c::modlist_head"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="structstr__link__s.html">str_link</a>* <a class="el" href="parse_8c.html#a2">modlist_head</a>
+          <td class="md" nowrap valign="top"> <a class="el" href="structstr__link__s.html">str_link</a>* <a class="el" href="parse_8c.html#a1">modlist_head</a> </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="mdname1" valign="top" nowrap>          </td>
+          <td class="md" valign="top">&nbsp;)&nbsp;</td>
+          <td class="md" nowrap></td>
+        </tr>
+
       </table>
     </td>
   </tr>
@@ -321,16 +331,22 @@ If this flag is set to a value of 1, it indicates that the current CDD file has 
     <td>
 
 <p>
-    </td>
+Pointer to head of list of module names that need to be parsed yet. These names are added in the db_add_instance function and removed in the db_end_module function.     </td>
   </tr>
 </table>
-<a name="a3" doxytag="parse.c::modlist_tail"></a><p>
+<a name="a2" doxytag="parse.c::modlist_tail"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="structstr__link__s.html">str_link</a>* <a class="el" href="parse_8c.html#a3">modlist_tail</a>
+          <td class="md" nowrap valign="top"> <a class="el" href="structstr__link__s.html">str_link</a>* <a class="el" href="parse_8c.html#a2">modlist_tail</a> </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="mdname1" valign="top" nowrap>          </td>
+          <td class="md" valign="top">&nbsp;)&nbsp;</td>
+          <td class="md" nowrap></td>
+        </tr>
+
       </table>
     </td>
   </tr>
@@ -343,10 +359,10 @@ If this flag is set to a value of 1, it indicates that the current CDD file has 
     <td>
 
 <p>
-    </td>
+Pointer to tail of list of module names that need to be parsed yet. These names are added in the db_add_instance function and removed in the db_end_module function.     </td>
   </tr>
 </table>
-<a name="a1" doxytag="parse.c::use_files_head"></a><p>
+<a name="a0" doxytag="parse.c::use_files_head"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -374,7 +390,7 @@ If this flag is set to a value of 1, it indicates that the current CDD file has 
 Pointer to head element of used files list     </td>
   </tr>
 </table>
-<a name="a4" doxytag="parse.c::user_msg"></a><p>
+<a name="a3" doxytag="parse.c::user_msg"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -402,29 +418,7 @@ Pointer to head element of used files list     </td>
 Holds some output that will be displayed via the print_output command. This is created globally so that memory does not need to be reallocated for each function that wishes to use it.     </td>
   </tr>
 </table>
-<a name="a0" doxytag="parse.c::VLdebug"></a><p>
-<table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
-  <tr>
-    <td class="mdRow">
-      <table cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td class="md" nowrap valign="top"> int <a class="el" href="parse_8c.html#a0">VLdebug</a>
-      </table>
-    </td>
-  </tr>
-</table>
-<table cellspacing=5 cellpadding=0 border=0>
-  <tr>
-    <td>
-      &nbsp;
-    </td>
-    <td>
-
-<p>
-    </td>
-  </tr>
-</table>
-<hr size="1"><address style="align: right;"><small>Generated on Wed Aug 6 00:14:05 2003 for Covered by
+<hr size="1"><address style="align: right;"><small>Generated on Sat Aug 9 22:46:42 2003 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 > 
 </a>1.3.3 </small></address>

@@ -4,7 +4,22 @@
  \date     12/1/2001
  
  \par
- A vector comprised of three components
+ The vector is the data structure that stores all of the current value and coverage
+ information for a particular signal or expression.  All simulated operations are
+ performed on vector structures and as such are the most used and optimized data
+ structures used by Covered.  To keep the memory image of a vector to as small as
+ possible, a vector is comprised of three components:
+ 
+ \par
+   -# A least-significant bit (LSB) value which specifies the current vector's LSB.
+   -# A width value which specifies the number of bits contained in the current vector.
+      To get the MSB of the vector, simply add the width to the LSB and subtract one.
+   -# A value array which contains the vector's current value and other coverage
+      information gained during simulation.  This array is an array of 32-bit values
+      (or nibbles) whose length is determined by the width of the vector divided by four.
+      We divide the width by 4 because one nibble contains all of the information for
+      up to 4 bits of four-state data.  For a break-down of the bits within a nibble,
+      please consult the \ref nibble table.
 */
 
 #ifdef HAVE_CONFIG_H
@@ -1513,6 +1528,12 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.36  2003/08/10 00:05:16  phase1geo
+ Fixing bug with posedge, negedge and anyedge expressions such that these expressions
+ must be armed before they are able to be evaluated.  Fixing bug in vector compare function
+ to cause compare to occur on smallest vector size (rather than on largest).  Updated regression
+ files and added new diagnostics to test event fix.
+
  Revision 1.35  2003/08/05 20:25:05  phase1geo
  Fixing non-blocking bug and updating regression files according to the fix.
  Also added function vector_is_unknown() which can be called before making

@@ -75,10 +75,30 @@
 
 extern nibble or_optab[16];
 
+/*!
+ Pointer to head of expression list that contains all expressions that contain static (non-changing)
+ values.  These expressions will be forced to be simulated, making sure that correct coverage numbers
+ for expressions containing static values is maintained.
+*/
 exp_link*  static_expr_head = NULL;
+
+/*!
+ Pointer to tail of expression list that contains all expressions that contain static (non-changing)
+ values.  These expressions will be forced to be simulated, making sure that correct coverage numbers
+ for expressions containing static values is maintained.
+*/
 exp_link*  static_expr_tail = NULL;
 
+/*!
+ Pointer to head of statement list that contains all statements that will initially be simulated
+ for the current timestep.
+*/
 stmt_link* presim_stmt_head = NULL;
+
+/*!
+ Pointer to tail of statement list that contains all statements that will initially be simulated
+ for the current timestep.
+*/
 stmt_link* presim_stmt_tail = NULL;
 
 
@@ -351,6 +371,13 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.29  2003/08/05 20:25:05  phase1geo
+ Fixing non-blocking bug and updating regression files according to the fix.
+ Also added function vector_is_unknown() which can be called before making
+ a call to vector_to_int() which will eleviate any X/Z-values causing problems
+ with this conversion.  Additionally, the real1.1 regression report files were
+ updated.
+
  Revision 1.28  2002/11/27 06:03:35  phase1geo
  Adding diagnostics to verify selectable delay.  Removing selectable delay
  warning from being output constantly to only outputting when selectable delay

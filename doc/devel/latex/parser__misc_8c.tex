@@ -15,8 +15,6 @@ int {\bf VLwrap} ()
 \subsection*{Variables}
 \begin{CompactItemize}
 \item 
-const char $\ast$ {\bf vl\_\-file}
-\item 
 char {\bf user\_\-msg} [USER\_\-MSG\_\-LENGTH]
 \item 
 unsigned {\bf error\_\-count} = 0
@@ -35,39 +33,45 @@ unsigned {\bf warn\_\-count} = 0
 \subsection{Function Documentation}
 \index{parser_misc.c@{parser\_\-misc.c}!VLerror@{VLerror}}
 \index{VLerror@{VLerror}!parser_misc.c@{parser\_\-misc.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void VLerror (char $\ast$ {\em msg})}\label{parser__misc_8c_a4}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void VLerror (char $\ast$ {\em msg})}\label{parser__misc_8c_a3}
 
 
-\index{parser_misc.c@{parser\_\-misc.c}!VLwarn@{VLwarn}}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em msg}]String containing error message to display to user.\end{description}
+\end{Desc}
+Outputs specified error message string to standard output and increments error count. \index{parser_misc.c@{parser\_\-misc.c}!VLwarn@{VLwarn}}
 \index{VLwarn@{VLwarn}!parser_misc.c@{parser\_\-misc.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void VLwarn (char $\ast$ {\em msg})}\label{parser__misc_8c_a5}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void VLwarn (char $\ast$ {\em msg})}\label{parser__misc_8c_a4}
 
 
-\index{parser_misc.c@{parser\_\-misc.c}!VLwrap@{VLwrap}}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em msg}]String containing warning message to display to user.\end{description}
+\end{Desc}
+Outputs specified warning message string to standard output and increments warning count. \index{parser_misc.c@{parser\_\-misc.c}!VLwrap@{VLwrap}}
 \index{VLwrap@{VLwrap}!parser_misc.c@{parser\_\-misc.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int VLwrap ()}\label{parser__misc_8c_a6}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int VLwrap ()}\label{parser__misc_8c_a5}
 
 
-
+Called by parser when file wrapping is required. 
 
 \subsection{Variable Documentation}
 \index{parser_misc.c@{parser\_\-misc.c}!error_count@{error\_\-count}}
 \index{error_count@{error\_\-count}!parser_misc.c@{parser\_\-misc.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}unsigned {\bf error\_\-count} = 0}\label{parser__misc_8c_a2}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}unsigned {\bf error\_\-count} = 0}\label{parser__misc_8c_a1}
 
 
-\index{parser_misc.c@{parser\_\-misc.c}!user_msg@{user\_\-msg}}
+Counts the number of errors found during the parsing process. \index{parser_misc.c@{parser\_\-misc.c}!user_msg@{user\_\-msg}}
 \index{user_msg@{user\_\-msg}!parser_misc.c@{parser\_\-misc.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char {\bf user\_\-msg}[USER\_\-MSG\_\-LENGTH] ()}\label{parser__misc_8c_a1}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char {\bf user\_\-msg}[USER\_\-MSG\_\-LENGTH] ()}\label{parser__misc_8c_a0}
 
 
-Holds some output that will be displayed via the print\_\-output command. This is created globally so that memory does not need to be reallocated for each function that wishes to use it. \index{parser_misc.c@{parser\_\-misc.c}!vl_file@{vl\_\-file}}
-\index{vl_file@{vl\_\-file}!parser_misc.c@{parser\_\-misc.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const char$\ast$ {\bf vl\_\-file}}\label{parser__misc_8c_a0}
-
-
-\index{parser_misc.c@{parser\_\-misc.c}!warn_count@{warn\_\-count}}
+Holds some output that will be displayed via the print\_\-output command. This is created globally so that memory does not need to be reallocated for each function that wishes to use it. \index{parser_misc.c@{parser\_\-misc.c}!warn_count@{warn\_\-count}}
 \index{warn_count@{warn\_\-count}!parser_misc.c@{parser\_\-misc.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}unsigned {\bf warn\_\-count} = 0}\label{parser__misc_8c_a3}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}unsigned {\bf warn\_\-count} = 0}\label{parser__misc_8c_a2}
 
 
+Counts the number of warnings found during the parsing process. 

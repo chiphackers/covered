@@ -18,6 +18,8 @@ void {\bf expression\_\-resize} ({\bf expression} $\ast$expr, {\bf bool} recursi
 \begin{CompactList}\small\item\em Recursively resizes specified expression tree leaf node. \item\end{CompactList}\item 
 int {\bf expression\_\-get\_\-id} ({\bf expression} $\ast$expr)
 \begin{CompactList}\small\item\em Returns expression ID of this expression. \item\end{CompactList}\item 
+void {\bf expression\_\-get\_\-wait\_\-sig\_\-list} ({\bf expression} $\ast$expr, {\bf sig\_\-link} $\ast$$\ast$head, {\bf sig\_\-link} $\ast$$\ast$tail)
+\begin{CompactList}\small\item\em Finds all wait event signals in specified expression. \item\end{CompactList}\item 
 void {\bf expression\_\-db\_\-write} ({\bf expression} $\ast$expr, FILE $\ast${\bf file}, char $\ast$scope)
 \begin{CompactList}\small\item\em Writes this expression to the specified database file. \item\end{CompactList}\item 
 {\bf bool} {\bf expression\_\-db\_\-read} (char $\ast$$\ast$line, {\bf module} $\ast$curr\_\-mod, {\bf bool} eval)
@@ -50,7 +52,7 @@ Contains functions for handling expressions.
 \subsection{Function Documentation}
 \index{expr.h@{expr.h}!expression_bit_value@{expression\_\-bit\_\-value}}
 \index{expression_bit_value@{expression\_\-bit\_\-value}!expr.h@{expr.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int expression\_\-bit\_\-value ({\bf expression} $\ast$ {\em expr})}\label{expr_8h_a11}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int expression\_\-bit\_\-value ({\bf expression} $\ast$ {\em expr})}\label{expr_8h_a12}
 
 
 Returns a compressed, 1-bit representation of the value after a unary OR. 
@@ -90,7 +92,7 @@ Creates an expression value and initializes it.
 \end{Desc}
 Creates a value vector that is large enough to store width number of bits in value and sets the specified expression value to this value. This function should be called by either the expression\_\-create function, the bind function, or the signal db\_\-read function. \index{expr.h@{expr.h}!expression_db_merge@{expression\_\-db\_\-merge}}
 \index{expression_db_merge@{expression\_\-db\_\-merge}!expr.h@{expr.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} expression\_\-db\_\-merge ({\bf expression} $\ast$ {\em base}, char $\ast$$\ast$ {\em line}, {\bf bool} {\em same})}\label{expr_8h_a7}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} expression\_\-db\_\-merge ({\bf expression} $\ast$ {\em base}, char $\ast$$\ast$ {\em line}, {\bf bool} {\em same})}\label{expr_8h_a8}
 
 
 Reads and merges two expressions and stores result in base expression. 
@@ -104,7 +106,7 @@ Reads and merges two expressions and stores result in base expression.
 \item[Returns:]Returns TRUE if parse and merge was sucessful; otherwise, returns FALSE.\end{Desc}
 Parses specified line for expression information and merges contents into the base expression. If the two expressions given are not the same (IDs, op, and/or line position differ) we know that the database files being merged were not created from the same design; therefore, display an error message to the user in this case. If both expressions are the same, perform the merge. \index{expr.h@{expr.h}!expression_db_read@{expression\_\-db\_\-read}}
 \index{expression_db_read@{expression\_\-db\_\-read}!expr.h@{expr.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} expression\_\-db\_\-read (char $\ast$$\ast$ {\em line}, {\bf module} $\ast$ {\em curr\_\-mod}, {\bf bool} {\em eval})}\label{expr_8h_a6}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} expression\_\-db\_\-read (char $\ast$$\ast$ {\em line}, {\bf module} $\ast$ {\em curr\_\-mod}, {\bf bool} {\em eval})}\label{expr_8h_a7}
 
 
 Reads current line of specified file and parses for expression information. 
@@ -118,7 +120,7 @@ Reads current line of specified file and parses for expression information.
 \item[Returns:]Returns TRUE if parsing successful; otherwise, returns FALSE.\end{Desc}
 Reads in the specified expression information, creates new expression from heap, populates the expression with specified information from file and returns that value in the specified expression pointer. If all is successful, returns TRUE; otherwise, returns FALSE. \index{expr.h@{expr.h}!expression_db_write@{expression\_\-db\_\-write}}
 \index{expression_db_write@{expression\_\-db\_\-write}!expr.h@{expr.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-db\_\-write ({\bf expression} $\ast$ {\em expr}, FILE $\ast$ {\em file}, char $\ast$ {\em scope})}\label{expr_8h_a5}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-db\_\-write ({\bf expression} $\ast$ {\em expr}, FILE $\ast$ {\em file}, char $\ast$ {\em scope})}\label{expr_8h_a6}
 
 
 Writes this expression to the specified database file. 
@@ -130,7 +132,7 @@ Writes this expression to the specified database file.
 \end{Desc}
 This function recursively displays the expression information for the specified expression tree to the coverage database specified by file. \index{expr.h@{expr.h}!expression_dealloc@{expression\_\-dealloc}}
 \index{expression_dealloc@{expression\_\-dealloc}!expr.h@{expr.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-dealloc ({\bf expression} $\ast$ {\em expr}, {\bf bool} {\em exp\_\-only})}\label{expr_8h_a13}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-dealloc ({\bf expression} $\ast$ {\em expr}, {\bf bool} {\em exp\_\-only})}\label{expr_8h_a14}
 
 
 Deallocates memory used for expression. 
@@ -142,7 +144,7 @@ Deallocates memory used for expression.
 \end{Desc}
 Deallocates all heap memory allocated with the malloc routine. \index{expr.h@{expr.h}!expression_display@{expression\_\-display}}
 \index{expression_display@{expression\_\-display}!expr.h@{expr.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-display ({\bf expression} $\ast$ {\em expr})}\label{expr_8h_a8}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-display ({\bf expression} $\ast$ {\em expr})}\label{expr_8h_a9}
 
 
 Displays the specified expression information. 
@@ -166,9 +168,21 @@ Returns expression ID of this expression.
 \end{Desc}
 \begin{Desc}
 \item[Returns:]Returns expression ID for this expression.\end{Desc}
-If specified expression is non-NULL, return expression ID of this expression; otherwise, return a value of 0 to indicate that this is a leaf node. \index{expr.h@{expr.h}!expression_is_static_only@{expression\_\-is\_\-static\_\-only}}
+If specified expression is non-NULL, return expression ID of this expression; otherwise, return a value of 0 to indicate that this is a leaf node. \index{expr.h@{expr.h}!expression_get_wait_sig_list@{expression\_\-get\_\-wait\_\-sig\_\-list}}
+\index{expression_get_wait_sig_list@{expression\_\-get\_\-wait\_\-sig\_\-list}!expr.h@{expr.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-get\_\-wait\_\-sig\_\-list ({\bf expression} $\ast$ {\em expr}, {\bf sig\_\-link} $\ast$$\ast$ {\em head}, {\bf sig\_\-link} $\ast$$\ast$ {\em tail})}\label{expr_8h_a5}
+
+
+Finds all wait event signals in specified expression. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em expr}]Pointer to expression tree to parse. \item[{\em head}]Pointer to head of signal list to populate. \item[{\em tail}]Pointer to tail of signal list to populate.\end{description}
+\end{Desc}
+If the specified expression tree has an event operation at the root of the expression tree (EOR, PEDGE, NEDGE, AEDGE), send the expression, head and tail to the expression\_\-get\_\-wait\_\-sig\_\-list\_\-helper function. \index{expr.h@{expr.h}!expression_is_static_only@{expression\_\-is\_\-static\_\-only}}
 \index{expression_is_static_only@{expression\_\-is\_\-static\_\-only}!expr.h@{expr.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} expression\_\-is\_\-static\_\-only ({\bf expression} $\ast$ {\em expr})}\label{expr_8h_a12}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} expression\_\-is\_\-static\_\-only ({\bf expression} $\ast$ {\em expr})}\label{expr_8h_a13}
 
 
 Returns TRUE if specified expression is found to contain all static leaf expressions. 
@@ -182,7 +196,7 @@ Returns TRUE if specified expression is found to contain all static leaf express
 \item[Returns:]Returns TRUE if expression contains only static expressions; otherwise, returns FALSE.\end{Desc}
 Recursively iterates through specified expression tree and returns TRUE if all of the children expressions are static expressions (STATIC or parameters). \index{expr.h@{expr.h}!expression_operate@{expression\_\-operate}}
 \index{expression_operate@{expression\_\-operate}!expr.h@{expr.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-operate ({\bf expression} $\ast$ {\em expr})}\label{expr_8h_a9}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-operate ({\bf expression} $\ast$ {\em expr})}\label{expr_8h_a10}
 
 
 Performs operation specified by parameter expression. 
@@ -194,7 +208,7 @@ Performs operation specified by parameter expression.
 \end{Desc}
 Performs expression operation. This function must only be run after its left and right expressions have been calculated during this clock period. Sets the value of the operation in its own vector value and updates the suppl nibble as necessary. \index{expr.h@{expr.h}!expression_operate_recursively@{expression\_\-operate\_\-recursively}}
 \index{expression_operate_recursively@{expression\_\-operate\_\-recursively}!expr.h@{expr.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-operate\_\-recursively ({\bf expression} $\ast$ {\em expr})}\label{expr_8h_a10}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-operate\_\-recursively ({\bf expression} $\ast$ {\em expr})}\label{expr_8h_a11}
 
 
 Performs recursive expression operation (parse mode only). 

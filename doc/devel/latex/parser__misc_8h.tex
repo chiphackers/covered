@@ -70,7 +70,12 @@ Contains miscellaneous functions declarations and defines used by parser.
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void VLerror (char $\ast$ {\em msg})}\label{parser__misc_8h_a7}
 
 
-\index{parser_misc.h@{parser\_\-misc.h}!VLlex@{VLlex}}
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em msg}]String containing error message to display to user.\end{description}
+\end{Desc}
+Outputs specified error message string to standard output and increments error count. \index{parser_misc.h@{parser\_\-misc.h}!VLlex@{VLlex}}
 \index{VLlex@{VLlex}!parser_misc.h@{parser\_\-misc.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}int VLlex ()}\label{parser__misc_8h_a6}
 
@@ -80,20 +85,25 @@ Contains miscellaneous functions declarations and defines used by parser.
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void VLwarn (char $\ast$ {\em msg})}\label{parser__misc_8h_a8}
 
 
-
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em msg}]String containing warning message to display to user.\end{description}
+\end{Desc}
+Outputs specified warning message string to standard output and increments warning count. 
 
 \subsection{Variable Documentation}
 \index{parser_misc.h@{parser\_\-misc.h}!error_count@{error\_\-count}}
 \index{error_count@{error\_\-count}!parser_misc.h@{parser\_\-misc.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}unsigned {\bf error\_\-count}}\label{parser__misc_8h_a4}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}unsigned {\bf error\_\-count} ()}\label{parser__misc_8h_a4}
 
 
-\index{parser_misc.h@{parser\_\-misc.h}!warn_count@{warn\_\-count}}
+Counts the number of errors found during the parsing process. \index{parser_misc.h@{parser\_\-misc.h}!warn_count@{warn\_\-count}}
 \index{warn_count@{warn\_\-count}!parser_misc.h@{parser\_\-misc.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}unsigned {\bf warn\_\-count}}\label{parser__misc_8h_a5}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}unsigned {\bf warn\_\-count} ()}\label{parser__misc_8h_a5}
 
 
-\index{parser_misc.h@{parser\_\-misc.h}!yylloc@{yylloc}}
+Counts the number of warnings found during the parsing process. \index{parser_misc.h@{parser\_\-misc.h}!yylloc@{yylloc}}
 \index{yylloc@{yylloc}!parser_misc.h@{parser\_\-misc.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}YYLTYPE {\bf yylloc}}\label{parser__misc_8h_a3}
 

@@ -33,7 +33,7 @@ void {\bf db\_\-end\_\-module} ()
 \begin{CompactList}\small\item\em Creates new expression from specified information. Called by parser and db\_\-add\_\-expression. \item\end{CompactList}\item 
 void {\bf db\_\-add\_\-expression} ({\bf expression} $\ast$root)
 \begin{CompactList}\small\item\em Adds specified expression to expression list. Called by parser. \item\end{CompactList}\item 
-{\bf statement} $\ast$ {\bf db\_\-create\_\-statement} ({\bf expression} $\ast$exp, {\bf sig\_\-link} $\ast$$\ast$head, {\bf sig\_\-link} $\ast$$\ast$tail)
+{\bf statement} $\ast$ {\bf db\_\-create\_\-statement} ({\bf expression} $\ast$exp)
 \begin{CompactList}\small\item\em Creates new statement expression from specified information. Called by parser. \item\end{CompactList}\item 
 void {\bf db\_\-add\_\-statement} ({\bf statement} $\ast$stmt, {\bf statement} $\ast$start)
 \begin{CompactList}\small\item\em Adds specified statement to current module's statement list. Called by parser. \item\end{CompactList}\item 
@@ -231,7 +231,7 @@ Creates new expression from specified information. Called by parser and db\_\-ad
 \item[Returns:]Returns pointer to newly created expression.\end{Desc}
 Creates a new expression with the specified parameter information and returns a pointer to the newly created expression. \index{db.h@{db.h}!db_create_statement@{db\_\-create\_\-statement}}
 \index{db_create_statement@{db\_\-create\_\-statement}!db.h@{db.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf statement}$\ast$ db\_\-create\_\-statement ({\bf expression} $\ast$ {\em exp}, {\bf sig\_\-link} $\ast$$\ast$ {\em head}, {\bf sig\_\-link} $\ast$$\ast$ {\em tail})}\label{db_8h_a13}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf statement}$\ast$ db\_\-create\_\-statement ({\bf expression} $\ast$ {\em exp})}\label{db_8h_a13}
 
 
 Creates new statement expression from specified information. Called by parser. 
@@ -239,7 +239,7 @@ Creates new statement expression from specified information. Called by parser.
 \begin{Desc}
 \item[Parameters:]
 \begin{description}
-\item[{\em exp}]Pointer to associated \char`\"{}root\char`\"{} expression. \item[{\em head}]Pointer to head of wait event signal list. \item[{\em tail}]Pointer to tail of wait event signal list.\end{description}
+\item[{\em exp}]Pointer to associated \char`\"{}root\char`\"{} expression.\end{description}
 \end{Desc}
 \begin{Desc}
 \item[Returns:]Returns pointer to created statement.\end{Desc}

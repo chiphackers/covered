@@ -25,15 +25,15 @@ void {\bf bind} ()
 \subsection*{Variables}
 \begin{CompactItemize}
 \item 
-{\bf sig\_\-exp\_\-bind} $\ast$ {\bf seb\_\-head}
-\item 
-{\bf sig\_\-exp\_\-bind} $\ast$ {\bf seb\_\-tail}
-\item 
 {\bf mod\_\-inst} $\ast$ {\bf instance\_\-root}
 \item 
 {\bf mod\_\-link} $\ast$ {\bf mod\_\-head}
 \item 
 char {\bf user\_\-msg} [USER\_\-MSG\_\-LENGTH]
+\item 
+{\bf sig\_\-exp\_\-bind} $\ast$ {\bf seb\_\-head}
+\item 
+{\bf sig\_\-exp\_\-bind} $\ast$ {\bf seb\_\-tail}
 \end{CompactItemize}
 
 
@@ -43,8 +43,20 @@ char {\bf user\_\-msg} [USER\_\-MSG\_\-LENGTH]
 \begin{Desc}
 \item[Date:]3/4/2002\end{Desc}
 \begin{Desc}
-\item[Binding]Binding is the process of setting pointers in signals and expressions to point to each other. These pointers are required for scoring purposes. Binding is required for two purposes:\begin{enumerate}
-\item The signal that is being bound may not have been parsed (hierarchical referencing allows for this).\item An expression does not have a pointer to a signal but rather its vector.\end{enumerate}
+\item[Binding]When a input, output, inout, reg, wire, etc. is parsed in a module a new signal structure is created and is placed into the current module's signal list. However, the expression list of the newly created signal is initially empty (because we have not encountered any expressions that use the signal yet). Each signal contains a list of expressions that the signal is a part of so that when the signal changes its value during simulation time, it can notify the expressions that it is a part of that they need to be re-evaluated.\end{Desc}
+\begin{Desc}
+\item[]Additionally, the expression structure contains a pointer to the signal from which it receives its value. However, not all expressions point to signals. Only the expressions which have an operation type of EXP\_\-OP\_\-SIG, EXP\_\-OP\_\-SBIT\_\-SEL, and EXP\_\-OP\_\-MBIT\_\-SEL have pointers to signals. These pointers are used for quick retrieval of the signal name when outputting expressions.\end{Desc}
+\begin{Desc}
+\item[]Because both signals and expressions point to each other, we say that signals and expressions need to be bound to each other. The process of binding takes place at two different points in the scoring process:\end{Desc}
+\begin{Desc}
+\item[]\begin{enumerate}
+\item When an expression is parsed and the signal that it needs to point to is a signal that is local to the current module that the expression exists in. If the signal is not local (a hierarchical reference), we cannot bind at this time because the signal may be referring to a signal in a module which has not been parsed yet. Because of this, binding also occurs in the second point of the score command.\item After all parsing has been performed, all signals and expressions which have not been bound at point 1 are now bound.\end{enumerate}
+\end{Desc}
+\begin{Desc}
+\item[Implicit Signal Creation]In several Verilog simulators, the automatic creation of one-bit wires is allowed. These signals are considered \char`\"{}automatically created\char`\"{} because they are not declared in either the port list or the wire list for its particular module. Therefore, when the binding process occurs and a signal structure has not been created for a used signal (because the signal was not declared in the port list or wire list), the bind\_\-perform function needs to do one of the following:\end{Desc}
+\begin{Desc}
+\item[]\begin{enumerate}
+\item If the signal name expresses a signal name that will be local to the current module (i.e., there aren't any periods in the signal name), automatically create a one-bit signal for the missing signal and bind this new signal to the expression that uses the implicit signal.\item If the signal name expresses a signal name that will be remote to the current module (i.e., if there are periods in the signal name), generate an error message to the user about using a bad hierarchical reference.\end{enumerate}
 \end{Desc}
 
 
@@ -99,27 +111,27 @@ Removes the binding containing the expression ID of id. This needs to be called 
 \subsection{Variable Documentation}
 \index{binding.c@{binding.c}!instance_root@{instance\_\-root}}
 \index{instance_root@{instance\_\-root}!binding.c@{binding.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-inst}$\ast$ {\bf instance\_\-root} ()}\label{binding_8c_a2}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-inst}$\ast$ {\bf instance\_\-root} ()}\label{binding_8c_a0}
 
 
 Pointer to root of module instance tree \index{binding.c@{binding.c}!mod_head@{mod\_\-head}}
 \index{mod_head@{mod\_\-head}!binding.c@{binding.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-link}$\ast$ {\bf mod\_\-head} ()}\label{binding_8c_a3}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-link}$\ast$ {\bf mod\_\-head} ()}\label{binding_8c_a1}
 
 
 Pointer to head element of module list \index{binding.c@{binding.c}!seb_head@{seb\_\-head}}
 \index{seb_head@{seb\_\-head}!binding.c@{binding.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf sig\_\-exp\_\-bind}$\ast$ {\bf seb\_\-head}}\label{binding_8c_a0}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf sig\_\-exp\_\-bind}$\ast$ {\bf seb\_\-head}}\label{binding_8c_a3}
 
 
-\index{binding.c@{binding.c}!seb_tail@{seb\_\-tail}}
+Pointer to the head of the signal/expression binding list. \index{binding.c@{binding.c}!seb_tail@{seb\_\-tail}}
 \index{seb_tail@{seb\_\-tail}!binding.c@{binding.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf sig\_\-exp\_\-bind}$\ast$ {\bf seb\_\-tail}}\label{binding_8c_a1}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf sig\_\-exp\_\-bind}$\ast$ {\bf seb\_\-tail}}\label{binding_8c_a4}
 
 
-\index{binding.c@{binding.c}!user_msg@{user\_\-msg}}
+Pointer to the tail of the signal/expression binding list. \index{binding.c@{binding.c}!user_msg@{user\_\-msg}}
 \index{user_msg@{user\_\-msg}!binding.c@{binding.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char {\bf user\_\-msg}[USER\_\-MSG\_\-LENGTH] ()}\label{binding_8c_a4}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char {\bf user\_\-msg}[USER\_\-MSG\_\-LENGTH] ()}\label{binding_8c_a2}
 
 
 Holds some output that will be displayed via the print\_\-output command. This is created globally so that memory does not need to be reallocated for each function that wishes to use it. 

@@ -110,9 +110,13 @@
 #include "sim.h"
 
 
-stmt_loop_link* stmt_loop_stack = NULL;
-
 extern char user_msg[USER_MSG_LENGTH];
+
+/*!
+ Pointer to statement loop stack structure.  See description of \ref stmt_loop_link
+ for more information on this stack structure usage.
+*/
+stmt_loop_link* stmt_loop_stack = NULL;
 
 
 /*!
@@ -594,6 +598,11 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.42  2003/08/09 22:10:41  phase1geo
+ Removing wait event signals from CDD file generation in support of another method
+ that fixes a bug when multiple wait event statements exist within the same
+ statement tree.
+
  Revision 1.41  2003/08/05 20:25:05  phase1geo
  Fixing non-blocking bug and updating regression files according to the fix.
  Also added function vector_is_unknown() which can be called before making

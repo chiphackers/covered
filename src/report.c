@@ -27,8 +27,9 @@
 #include "db.h"
 
 
-extern char user_msg[USER_MSG_LENGTH];
-
+extern char      user_msg[USER_MSG_LENGTH];
+extern mod_inst* instance_root;
+extern mod_link* mod_head;
 
 /*!
  If set to a boolean value of TRUE, reports the line coverage for the specified database
@@ -75,12 +76,17 @@ bool report_covered     = FALSE;
 */
 unsigned int report_comb_depth = REPORT_SUMMARY;
 
-
+/*!
+ Name of output file to write report contents to.  If output_file is NULL, the report
+ will be written to standard output.
+*/
 char* output_file      = NULL;
-char* input_db         = NULL;
 
-extern mod_inst* instance_root;
-extern mod_link* mod_head;
+/*!
+ Name of input CDD file to read for generating coverage report.  This value must be
+ specified to a value other than NULL for the report phase to complete properly.
+*/
+char* input_db         = NULL;
 
 
 /*!
@@ -475,6 +481,11 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.20  2003/02/18 20:17:03  phase1geo
+ Making use of scored flag in CDD file.  Causing report command to exit early
+ if it is working on a CDD file which has not been scored.  Updated testsuite
+ for these changes.
+
  Revision 1.19  2002/12/29 06:09:32  phase1geo
  Fixing bug where output was not squelched in report command when -Q option
  is specified.  Fixed bug in preprocessor where spaces where added in when newlines

@@ -25,8 +25,6 @@ int {\bf parse\_\-readline} (FILE $\ast${\bf file}, char $\ast$line, int {\bf si
 \subsection*{Variables}
 \begin{CompactItemize}
 \item 
-int {\bf VLdebug}
-\item 
 {\bf str\_\-link} $\ast$ {\bf use\_\-files\_\-head}
 \item 
 {\bf str\_\-link} $\ast$ {\bf modlist\_\-head}
@@ -51,7 +49,7 @@ int {\bf error\_\-count}
 \subsection{Function Documentation}
 \index{parse.c@{parse.c}!parse_and_score_dumpfile@{parse\_\-and\_\-score\_\-dumpfile}}
 \index{parse_and_score_dumpfile@{parse\_\-and\_\-score\_\-dumpfile}!parse.c@{parse.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} parse\_\-and\_\-score\_\-dumpfile (char $\ast$ {\em db}, char $\ast$ {\em vcd})}\label{parse_8c_a11}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} parse\_\-and\_\-score\_\-dumpfile (char $\ast$ {\em db}, char $\ast$ {\em vcd})}\label{parse_8c_a10}
 
 
 Parses VCD dumpfile and scores design. 
@@ -65,7 +63,7 @@ Parses VCD dumpfile and scores design.
 \item[Returns:]Returns TRUE if VCD parsing and scoring is successful; otherwise, returns FALSE. \end{Desc}
 \index{parse.c@{parse.c}!parse_design@{parse\_\-design}}
 \index{parse_design@{parse\_\-design}!parse.c@{parse.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} parse\_\-design (char $\ast$ {\em top}, char $\ast$ {\em output\_\-db})}\label{parse_8c_a10}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} parse\_\-design (char $\ast$ {\em top}, char $\ast$ {\em output\_\-db})}\label{parse_8c_a9}
 
 
 Parses the specified design and generates scoring modules. 
@@ -79,7 +77,7 @@ Parses the specified design and generates scoring modules.
 \item[Returns:]Returns TRUE if parsing is successful; otherwise, returns FALSE.\end{Desc}
 Resets the lexer and parses all Verilog files specified in use\_\-files list. After all design files are parsed, their information will be appropriately stored in the associated lists. \index{parse.c@{parse.c}!parse_readline@{parse\_\-readline}}
 \index{parse_readline@{parse\_\-readline}!parse.c@{parse.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int parse\_\-readline (FILE $\ast$ {\em file}, char $\ast$ {\em line}, int {\em size})}\label{parse_8c_a9}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int parse\_\-readline (FILE $\ast$ {\em file}, char $\ast$ {\em line}, int {\em size})}\label{parse_8c_a8}
 
 
 \begin{Desc}
@@ -91,12 +89,12 @@ Resets the lexer and parses all Verilog files specified in use\_\-files list. Af
 \item[Returns:]Returns the number of characters read from this line.\end{Desc}
 Reads from specified file, one character at a time, until either a newline or EOF is encountered. Returns the read line and the number of characters stored in the line. No newline character is added to the line. \index{parse.c@{parse.c}!reset_lexer@{reset\_\-lexer}}
 \index{reset_lexer@{reset\_\-lexer}!parse.c@{parse.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void reset\_\-lexer ({\bf str\_\-link} $\ast$ {\em file\_\-list\_\-head})}\label{parse_8c_a7}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void reset\_\-lexer ({\bf str\_\-link} $\ast$ {\em file\_\-list\_\-head})}\label{parse_8c_a6}
 
 
 \index{parse.c@{parse.c}!VLparse@{VLparse}}
 \index{VLparse@{VLparse}!parse.c@{parse.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int VLparse ()}\label{parse_8c_a8}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int VLparse ()}\label{parse_8c_a7}
 
 
 
@@ -104,36 +102,32 @@ Reads from specified file, one character at a time, until either a newline or EO
 \subsection{Variable Documentation}
 \index{parse.c@{parse.c}!error_count@{error\_\-count}}
 \index{error_count@{error\_\-count}!parse.c@{parse.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int {\bf error\_\-count}}\label{parse_8c_a5}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int {\bf error\_\-count} ()}\label{parse_8c_a4}
 
 
-\index{parse.c@{parse.c}!flag_scored@{flag\_\-scored}}
+Counts the number of errors found during the parsing process. \index{parse.c@{parse.c}!flag_scored@{flag\_\-scored}}
 \index{flag_scored@{flag\_\-scored}!parse.c@{parse.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} {\bf flag\_\-scored} ()}\label{parse_8c_a6}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} {\bf flag\_\-scored} ()}\label{parse_8c_a5}
 
 
 If this flag is set to a value of 1, it indicates that the current CDD file has been scored and is available for coverage reporting (if CDD file has not been scored, errors will occur when trying to get coverage numbers). \index{parse.c@{parse.c}!modlist_head@{modlist\_\-head}}
 \index{modlist_head@{modlist\_\-head}!parse.c@{parse.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ {\bf modlist\_\-head}}\label{parse_8c_a2}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ {\bf modlist\_\-head} ()}\label{parse_8c_a1}
 
 
-\index{parse.c@{parse.c}!modlist_tail@{modlist\_\-tail}}
+Pointer to head of list of module names that need to be parsed yet. These names are added in the db\_\-add\_\-instance function and removed in the db\_\-end\_\-module function. \index{parse.c@{parse.c}!modlist_tail@{modlist\_\-tail}}
 \index{modlist_tail@{modlist\_\-tail}!parse.c@{parse.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ {\bf modlist\_\-tail}}\label{parse_8c_a3}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ {\bf modlist\_\-tail} ()}\label{parse_8c_a2}
 
 
-\index{parse.c@{parse.c}!use_files_head@{use\_\-files\_\-head}}
+Pointer to tail of list of module names that need to be parsed yet. These names are added in the db\_\-add\_\-instance function and removed in the db\_\-end\_\-module function. \index{parse.c@{parse.c}!use_files_head@{use\_\-files\_\-head}}
 \index{use_files_head@{use\_\-files\_\-head}!parse.c@{parse.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ {\bf use\_\-files\_\-head} ()}\label{parse_8c_a1}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ {\bf use\_\-files\_\-head} ()}\label{parse_8c_a0}
 
 
 Pointer to head element of used files list \index{parse.c@{parse.c}!user_msg@{user\_\-msg}}
 \index{user_msg@{user\_\-msg}!parse.c@{parse.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char {\bf user\_\-msg}[USER\_\-MSG\_\-LENGTH] ()}\label{parse_8c_a4}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char {\bf user\_\-msg}[USER\_\-MSG\_\-LENGTH] ()}\label{parse_8c_a3}
 
 
-Holds some output that will be displayed via the print\_\-output command. This is created globally so that memory does not need to be reallocated for each function that wishes to use it. \index{parse.c@{parse.c}!VLdebug@{VLdebug}}
-\index{VLdebug@{VLdebug}!parse.c@{parse.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int {\bf VLdebug}}\label{parse_8c_a0}
-
-
+Holds some output that will be displayed via the print\_\-output command. This is created globally so that memory does not need to be reallocated for each function that wishes to use it. 

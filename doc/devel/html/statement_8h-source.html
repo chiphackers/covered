@@ -10,7 +10,7 @@
 00011 <span class="preprocessor">#include "<a class="code" href="defines_8h.html">defines.h</a>"</span>
 00012 
 00013 
-00015 <a class="code" href="structstatement__s.html">statement</a>* <a class="code" href="statement_8c.html#a2">statement_create</a>( <a class="code" href="structexpression__s.html">expression</a>* exp, <a class="code" href="structsig__link__s.html">sig_link</a>* head, <a class="code" href="structsig__link__s.html">sig_link</a>* tail );
+00015 <a class="code" href="structstatement__s.html">statement</a>* <a class="code" href="statement_8c.html#a2">statement_create</a>( <a class="code" href="structexpression__s.html">expression</a>* exp );
 00016 
 00018 <span class="keywordtype">void</span> <a class="code" href="statement_8c.html#a5">statement_db_write</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt, FILE* ofile, <span class="keywordtype">char</span>* scope );
 00019 
@@ -27,74 +27,79 @@
 00035 
 00036 <span class="comment">/*</span>
 00037 <span class="comment"> $Log$</span>
-00038 <span class="comment"> Revision 1.14  2003/08/05 20:25:05  phase1geo</span>
-00039 <span class="comment"> Fixing non-blocking bug and updating regression files according to the fix.</span>
-00040 <span class="comment"> Also added function vector_is_unknown() which can be called before making</span>
-00041 <span class="comment"> a call to vector_to_int() which will eleviate any X/Z-values causing problems</span>
-00042 <span class="comment"> with this conversion.  Additionally, the real1.1 regression report files were</span>
-00043 <span class="comment"> updated.</span>
-00044 <span class="comment"></span>
-00045 <span class="comment"> Revision 1.13  2002/11/05 00:20:08  phase1geo</span>
-00046 <span class="comment"> Adding development documentation.  Fixing problem with combinational logic</span>
-00047 <span class="comment"> output in report command and updating full regression.</span>
-00048 <span class="comment"></span>
-00049 <span class="comment"> Revision 1.12  2002/10/31 23:14:27  phase1geo</span>
-00050 <span class="comment"> Fixing C compatibility problems with cc and gcc.  Found a few possible problems</span>
-00051 <span class="comment"> with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that</span>
-00052 <span class="comment"> lead to bus errors.  Ran full regression in 64-bit mode without error.</span>
+00038 <span class="comment"> Revision 1.15  2003/08/09 22:10:41  phase1geo</span>
+00039 <span class="comment"> Removing wait event signals from CDD file generation in support of another method</span>
+00040 <span class="comment"> that fixes a bug when multiple wait event statements exist within the same</span>
+00041 <span class="comment"> statement tree.</span>
+00042 <span class="comment"></span>
+00043 <span class="comment"> Revision 1.14  2003/08/05 20:25:05  phase1geo</span>
+00044 <span class="comment"> Fixing non-blocking bug and updating regression files according to the fix.</span>
+00045 <span class="comment"> Also added function vector_is_unknown() which can be called before making</span>
+00046 <span class="comment"> a call to vector_to_int() which will eleviate any X/Z-values causing problems</span>
+00047 <span class="comment"> with this conversion.  Additionally, the real1.1 regression report files were</span>
+00048 <span class="comment"> updated.</span>
+00049 <span class="comment"></span>
+00050 <span class="comment"> Revision 1.13  2002/11/05 00:20:08  phase1geo</span>
+00051 <span class="comment"> Adding development documentation.  Fixing problem with combinational logic</span>
+00052 <span class="comment"> output in report command and updating full regression.</span>
 00053 <span class="comment"></span>
-00054 <span class="comment"> Revision 1.11  2002/10/30 06:07:11  phase1geo</span>
-00055 <span class="comment"> First attempt to handle expression trees/statement trees that contain</span>
-00056 <span class="comment"> unsupported code.  These are removed completely and not evaluated (because</span>
-00057 <span class="comment"> we can't guarantee that our results will match the simulator).  Added real1.1.v</span>
-00058 <span class="comment"> diagnostic that verifies one case of this scenario.  Full regression passes.</span>
-00059 <span class="comment"></span>
-00060 <span class="comment"> Revision 1.10  2002/10/29 19:57:51  phase1geo</span>
-00061 <span class="comment"> Fixing problems with beginning block comments within comments which are</span>
-00062 <span class="comment"> produced automatically by CVS.  Should fix warning messages from compiler.</span>
-00063 <span class="comment"></span>
-00064 <span class="comment"> Revision 1.9  2002/07/03 21:30:53  phase1geo</span>
-00065 <span class="comment"> Fixed remaining issues with always statements.  Full regression is running</span>
-00066 <span class="comment"> error free at this point.  Regenerated documentation.  Added EOR expression</span>
-00067 <span class="comment"> operation to handle the or expression in event lists.</span>
+00054 <span class="comment"> Revision 1.12  2002/10/31 23:14:27  phase1geo</span>
+00055 <span class="comment"> Fixing C compatibility problems with cc and gcc.  Found a few possible problems</span>
+00056 <span class="comment"> with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that</span>
+00057 <span class="comment"> lead to bus errors.  Ran full regression in 64-bit mode without error.</span>
+00058 <span class="comment"></span>
+00059 <span class="comment"> Revision 1.11  2002/10/30 06:07:11  phase1geo</span>
+00060 <span class="comment"> First attempt to handle expression trees/statement trees that contain</span>
+00061 <span class="comment"> unsupported code.  These are removed completely and not evaluated (because</span>
+00062 <span class="comment"> we can't guarantee that our results will match the simulator).  Added real1.1.v</span>
+00063 <span class="comment"> diagnostic that verifies one case of this scenario.  Full regression passes.</span>
+00064 <span class="comment"></span>
+00065 <span class="comment"> Revision 1.10  2002/10/29 19:57:51  phase1geo</span>
+00066 <span class="comment"> Fixing problems with beginning block comments within comments which are</span>
+00067 <span class="comment"> produced automatically by CVS.  Should fix warning messages from compiler.</span>
 00068 <span class="comment"></span>
-00069 <span class="comment"> Revision 1.8  2002/07/01 15:10:42  phase1geo</span>
-00070 <span class="comment"> Fixing always loopbacks and setting stop bits correctly.  All verilog diagnostics</span>
-00071 <span class="comment"> seem to be passing with these fixes.</span>
-00072 <span class="comment"></span>
-00073 <span class="comment"> Revision 1.7  2002/06/30 22:23:20  phase1geo</span>
-00074 <span class="comment"> Working on fixing looping in parser.  Statement connector needs to be revamped.</span>
-00075 <span class="comment"></span>
-00076 <span class="comment"> Revision 1.6  2002/06/28 03:04:59  phase1geo</span>
-00077 <span class="comment"> Fixing more errors found by diagnostics.  Things are running pretty well at</span>
-00078 <span class="comment"> this point with current diagnostics.  Still some report output problems.</span>
-00079 <span class="comment"></span>
-00080 <span class="comment"> Revision 1.5  2002/06/27 12:36:47  phase1geo</span>
-00081 <span class="comment"> Fixing bugs with scoring.  I think I got it this time.</span>
-00082 <span class="comment"></span>
-00083 <span class="comment"> Revision 1.4  2002/06/24 04:54:48  phase1geo</span>
-00084 <span class="comment"> More fixes and code additions to make statements work properly.  Still not</span>
-00085 <span class="comment"> there at this point.</span>
-00086 <span class="comment"></span>
-00087 <span class="comment"> Revision 1.3  2002/05/13 03:02:58  phase1geo</span>
-00088 <span class="comment"> Adding lines back to expressions and removing them from statements (since the line</span>
-00089 <span class="comment"> number range of an expression can be calculated by looking at the expression line</span>
-00090 <span class="comment"> numbers).</span>
+00069 <span class="comment"> Revision 1.9  2002/07/03 21:30:53  phase1geo</span>
+00070 <span class="comment"> Fixed remaining issues with always statements.  Full regression is running</span>
+00071 <span class="comment"> error free at this point.  Regenerated documentation.  Added EOR expression</span>
+00072 <span class="comment"> operation to handle the or expression in event lists.</span>
+00073 <span class="comment"></span>
+00074 <span class="comment"> Revision 1.8  2002/07/01 15:10:42  phase1geo</span>
+00075 <span class="comment"> Fixing always loopbacks and setting stop bits correctly.  All verilog diagnostics</span>
+00076 <span class="comment"> seem to be passing with these fixes.</span>
+00077 <span class="comment"></span>
+00078 <span class="comment"> Revision 1.7  2002/06/30 22:23:20  phase1geo</span>
+00079 <span class="comment"> Working on fixing looping in parser.  Statement connector needs to be revamped.</span>
+00080 <span class="comment"></span>
+00081 <span class="comment"> Revision 1.6  2002/06/28 03:04:59  phase1geo</span>
+00082 <span class="comment"> Fixing more errors found by diagnostics.  Things are running pretty well at</span>
+00083 <span class="comment"> this point with current diagnostics.  Still some report output problems.</span>
+00084 <span class="comment"></span>
+00085 <span class="comment"> Revision 1.5  2002/06/27 12:36:47  phase1geo</span>
+00086 <span class="comment"> Fixing bugs with scoring.  I think I got it this time.</span>
+00087 <span class="comment"></span>
+00088 <span class="comment"> Revision 1.4  2002/06/24 04:54:48  phase1geo</span>
+00089 <span class="comment"> More fixes and code additions to make statements work properly.  Still not</span>
+00090 <span class="comment"> there at this point.</span>
 00091 <span class="comment"></span>
-00092 <span class="comment"> Revision 1.2  2002/05/03 03:39:36  phase1geo</span>
-00093 <span class="comment"> Removing all syntax errors due to addition of statements.  Added more statement</span>
-00094 <span class="comment"> support code.  Still have a ways to go before we can try anything.  Removed lines</span>
-00095 <span class="comment"> from expressions though we may want to consider putting these back for reporting</span>
-00096 <span class="comment"> purposes.</span>
-00097 <span class="comment"></span>
-00098 <span class="comment"> Revision 1.1  2002/05/02 03:27:42  phase1geo</span>
-00099 <span class="comment"> Initial creation of statement structure and manipulation files.  Internals are</span>
-00100 <span class="comment"> still in a chaotic state.</span>
-00101 <span class="comment">*/</span>
-00102 
-00103 <span class="preprocessor">#endif</span>
-00104 <span class="preprocessor"></span>
-</pre></div><hr size="1"><address style="align: right;"><small>Generated on Wed Aug 6 00:14:02 2003 for Covered by
+00092 <span class="comment"> Revision 1.3  2002/05/13 03:02:58  phase1geo</span>
+00093 <span class="comment"> Adding lines back to expressions and removing them from statements (since the line</span>
+00094 <span class="comment"> number range of an expression can be calculated by looking at the expression line</span>
+00095 <span class="comment"> numbers).</span>
+00096 <span class="comment"></span>
+00097 <span class="comment"> Revision 1.2  2002/05/03 03:39:36  phase1geo</span>
+00098 <span class="comment"> Removing all syntax errors due to addition of statements.  Added more statement</span>
+00099 <span class="comment"> support code.  Still have a ways to go before we can try anything.  Removed lines</span>
+00100 <span class="comment"> from expressions though we may want to consider putting these back for reporting</span>
+00101 <span class="comment"> purposes.</span>
+00102 <span class="comment"></span>
+00103 <span class="comment"> Revision 1.1  2002/05/02 03:27:42  phase1geo</span>
+00104 <span class="comment"> Initial creation of statement structure and manipulation files.  Internals are</span>
+00105 <span class="comment"> still in a chaotic state.</span>
+00106 <span class="comment">*/</span>
+00107 
+00108 <span class="preprocessor">#endif</span>
+00109 <span class="preprocessor"></span>
+</pre></div><hr size="1"><address style="align: right;"><small>Generated on Sat Aug 9 22:46:38 2003 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 > 
 </a>1.3.3 </small></address>

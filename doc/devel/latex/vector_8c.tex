@@ -114,7 +114,11 @@ char {\bf user\_\-msg} [USER\_\-MSG\_\-LENGTH]
 \begin{Desc}
 \item[Date:]12/1/2001\end{Desc}
 \begin{Desc}
-\item[]A vector comprised of three components\end{Desc}
+\item[]The vector is the data structure that stores all of the current value and coverage information for a particular signal or expression. All simulated operations are performed on vector structures and as such are the most used and optimized data structures used by Covered. To keep the memory image of a vector to as small as possible, a vector is comprised of three components:\end{Desc}
+\begin{Desc}
+\item[]\begin{enumerate}
+\item A least-significant bit (LSB) value which specifies the current vector's LSB.\item A width value which specifies the number of bits contained in the current vector. To get the MSB of the vector, simply add the width to the LSB and subtract one.\item A value array which contains the vector's current value and other coverage information gained during simulation. This array is an array of 32-bit values (or nibbles) whose length is determined by the width of the vector divided by four. We divide the width by 4 because one nibble contains all of the information for up to 4 bits of four-state data. For a break-down of the bits within a nibble, please consult the {\bf nibble}{\rm (p.\,\pageref{defines_8h_a154})} table.\end{enumerate}
+\end{Desc}
 
 
 \subsection{Function Documentation}

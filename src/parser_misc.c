@@ -9,12 +9,24 @@
 #include "parser_misc.h"
 #include "util.h"
 
-extern const char* vl_file;
-extern char        user_msg[USER_MSG_LENGTH];
+extern char user_msg[USER_MSG_LENGTH];
 
+/*!
+ Counts the number of errors found during the parsing process.
+*/
 unsigned error_count = 0;
+
+/*!
+ Counts the number of warnings found during the parsing process.
+*/
 unsigned warn_count  = 0;
 
+/*!
+ \param msg  String containing error message to display to user.
+
+ Outputs specified error message string to standard output and increments
+ error count.
+*/
 void VLerror( char* msg ) {
 
   error_count += 1;
@@ -24,6 +36,12 @@ void VLerror( char* msg ) {
 
 }
 
+/*!
+ \param msg  String containing warning message to display to user.
+
+ Outputs specified warning message string to standard output and increments
+ warning count.
+*/
 void VLwarn( char* msg ) {
 
   warn_count += 1;
@@ -33,6 +51,9 @@ void VLwarn( char* msg ) {
 
 }
 
+/*!
+ Called by parser when file wrapping is required.
+*/
 int VLwrap() {
 
   return -1;
@@ -41,5 +62,9 @@ int VLwrap() {
 
 /*
  $Log$
+ Revision 1.2  2002/12/01 06:37:52  phase1geo
+ Adding appropriate error output and causing score command to proper exit
+ if parser errors are found.
+
 */
 

@@ -9,198 +9,203 @@
 00003 <span class="preprocessor"></span>
 00012 <span class="preprocessor">#include "<a class="code" href="defines_8h.html">defines.h</a>"</span>
 00013 
-00015 <span class="keywordtype">bool</span> <a class="code" href="db_8c.html#a20">db_write</a>( <span class="keywordtype">char</span>* file, <span class="keywordtype">bool</span> parse_mode );
+00015 <span class="keywordtype">bool</span> <a class="code" href="db_8c.html#a23">db_write</a>( <span class="keywordtype">char</span>* file, <span class="keywordtype">bool</span> parse_mode );
 00016 
-00018 <span class="keywordtype">bool</span> <a class="code" href="db_8c.html#a21">db_read</a>( <span class="keywordtype">char</span>* file, <span class="keywordtype">int</span> read_mode );
+00018 <span class="keywordtype">bool</span> <a class="code" href="db_8c.html#a24">db_read</a>( <span class="keywordtype">char</span>* file, <span class="keywordtype">int</span> read_mode );
 00019 
-00021 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a22">db_add_instance</a>( <span class="keywordtype">char</span>* scope, <span class="keywordtype">char</span>* modname );
+00021 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a25">db_add_instance</a>( <span class="keywordtype">char</span>* scope, <span class="keywordtype">char</span>* modname );
 00022 
-00024 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a23">db_add_module</a>( <span class="keywordtype">char</span>* name, <span class="keywordtype">char</span>* file );
+00024 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a26">db_add_module</a>( <span class="keywordtype">char</span>* name, <span class="keywordtype">char</span>* file );
 00025 
-00027 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a25">db_add_declared_param</a>( <span class="keywordtype">char</span>* name, <a class="code" href="structexpression__s.html">expression</a>* expr );
+00027 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a28">db_add_declared_param</a>( <span class="keywordtype">char</span>* name, <a class="code" href="structexpression__s.html">expression</a>* expr );
 00028 
-00030 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a26">db_add_override_param</a>( <span class="keywordtype">char</span>* inst_name, <a class="code" href="structexpression__s.html">expression</a>* expr );
+00030 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a29">db_add_override_param</a>( <span class="keywordtype">char</span>* inst_name, <a class="code" href="structexpression__s.html">expression</a>* expr );
 00031 
-00033 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a27">db_add_vector_param</a>( <a class="code" href="structsignal__s.html">signal</a>* sig, <a class="code" href="structexpression__s.html">expression</a>* parm_exp, <span class="keywordtype">int</span> type );
+00033 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a30">db_add_vector_param</a>( <a class="code" href="structsignal__s.html">signal</a>* sig, <a class="code" href="structexpression__s.html">expression</a>* parm_exp, <span class="keywordtype">int</span> type );
 00034 
-00036 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a28">db_add_defparam</a>( <span class="keywordtype">char</span>* name, <a class="code" href="structexpression__s.html">expression</a>* expr );
+00036 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a31">db_add_defparam</a>( <span class="keywordtype">char</span>* name, <a class="code" href="structexpression__s.html">expression</a>* expr );
 00037 
-00039 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a29">db_add_signal</a>( <span class="keywordtype">char</span>* name, <a class="code" href="structstatic__expr__s.html">static_expr</a>* left, <a class="code" href="structstatic__expr__s.html">static_expr</a>* right );
+00039 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a32">db_add_signal</a>( <span class="keywordtype">char</span>* name, <a class="code" href="structstatic__expr__s.html">static_expr</a>* left, <a class="code" href="structstatic__expr__s.html">static_expr</a>* right );
 00040 
-00042 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a24">db_end_module</a>();
+00042 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a27">db_end_module</a>();
 00043 
-00045 <a class="code" href="structsignal__s.html">signal</a>* <a class="code" href="db_8c.html#a30">db_find_signal</a>( <span class="keywordtype">char</span>* name );
+00045 <a class="code" href="structsignal__s.html">signal</a>* <a class="code" href="db_8c.html#a33">db_find_signal</a>( <span class="keywordtype">char</span>* name );
 00046 
-00048 <a class="code" href="structexpression__s.html">expression</a>* <a class="code" href="db_8c.html#a31">db_create_expression</a>( <a class="code" href="structexpression__s.html">expression</a>* right, <a class="code" href="structexpression__s.html">expression</a>* left, <span class="keywordtype">int</span> op, <span class="keywordtype">int</span> line, <span class="keywordtype">char</span>* sig_name );
+00048 <a class="code" href="structexpression__s.html">expression</a>* <a class="code" href="db_8c.html#a34">db_create_expression</a>( <a class="code" href="structexpression__s.html">expression</a>* right, <a class="code" href="structexpression__s.html">expression</a>* left, <span class="keywordtype">int</span> op, <span class="keywordtype">int</span> line, <span class="keywordtype">char</span>* sig_name );
 00049 
-00051 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a32">db_add_expression</a>( <a class="code" href="structexpression__s.html">expression</a>* root );
+00051 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a35">db_add_expression</a>( <a class="code" href="structexpression__s.html">expression</a>* root );
 00052 
-00054 <a class="code" href="structstatement__s.html">statement</a>* <a class="code" href="db_8c.html#a33">db_create_statement</a>( <a class="code" href="structexpression__s.html">expression</a>* exp, <a class="code" href="structsig__link__s.html">sig_link</a>** head, <a class="code" href="structsig__link__s.html">sig_link</a>** tail );
+00054 <a class="code" href="structstatement__s.html">statement</a>* <a class="code" href="db_8c.html#a36">db_create_statement</a>( <a class="code" href="structexpression__s.html">expression</a>* exp );
 00055 
-00057 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a34">db_add_statement</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt, <a class="code" href="structstatement__s.html">statement</a>* start );
+00057 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a37">db_add_statement</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt, <a class="code" href="structstatement__s.html">statement</a>* start );
 00058 
-00060 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a35">db_remove_statement</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt );
+00060 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a38">db_remove_statement</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt );
 00061 
-00063 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a38">db_statement_connect</a>( <a class="code" href="structstatement__s.html">statement</a>* curr_stmt, <a class="code" href="structstatement__s.html">statement</a>* next_stmt );
+00063 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a41">db_statement_connect</a>( <a class="code" href="structstatement__s.html">statement</a>* curr_stmt, <a class="code" href="structstatement__s.html">statement</a>* next_stmt );
 00064 
-00066 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a39">db_statement_set_stop</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt, <a class="code" href="structstatement__s.html">statement</a>* post, <span class="keywordtype">bool</span> both );
+00066 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a42">db_statement_set_stop</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt, <a class="code" href="structstatement__s.html">statement</a>* post, <span class="keywordtype">bool</span> both );
 00067 
-00069 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a36">db_connect_statement_true</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt, <a class="code" href="structstatement__s.html">statement</a>* exp_true );
+00069 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a39">db_connect_statement_true</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt, <a class="code" href="structstatement__s.html">statement</a>* exp_true );
 00070 
-00072 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a37">db_connect_statement_false</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt, <a class="code" href="structstatement__s.html">statement</a>* exp_false );
+00072 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a40">db_connect_statement_false</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt, <a class="code" href="structstatement__s.html">statement</a>* exp_false );
 00073 
-00075 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a40">db_set_vcd_scope</a>( <span class="keywordtype">char</span>* scope );
+00075 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a43">db_set_vcd_scope</a>( <span class="keywordtype">char</span>* scope );
 00076 
-00078 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a41">db_vcd_upscope</a>();
+00078 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a44">db_vcd_upscope</a>();
 00079 
-00081 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a42">db_assign_symbol</a>( <span class="keywordtype">char</span>* name, <span class="keywordtype">char</span>* symbol, <span class="keywordtype">int</span> msb, <span class="keywordtype">int</span> lsb );
+00081 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a45">db_assign_symbol</a>( <span class="keywordtype">char</span>* name, <span class="keywordtype">char</span>* symbol, <span class="keywordtype">int</span> msb, <span class="keywordtype">int</span> lsb );
 00082 
-00084 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a43">db_set_symbol_char</a>( <span class="keywordtype">char</span>* sym, <span class="keywordtype">char</span> value );
+00084 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a46">db_set_symbol_char</a>( <span class="keywordtype">char</span>* sym, <span class="keywordtype">char</span> value );
 00085 
-00087 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a44">db_set_symbol_string</a>( <span class="keywordtype">char</span>* sym, <span class="keywordtype">char</span>* value );
+00087 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a47">db_set_symbol_string</a>( <span class="keywordtype">char</span>* sym, <span class="keywordtype">char</span>* value );
 00088 
-00090 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a45">db_do_timestep</a>( <span class="keywordtype">int</span> time ); 
+00090 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a48">db_do_timestep</a>( <span class="keywordtype">int</span> time ); 
 00091 
 00092 
 00093 <span class="comment">/*</span>
 00094 <span class="comment"> $Log$</span>
-00095 <span class="comment"> Revision 1.29  2003/08/05 20:25:05  phase1geo</span>
-00096 <span class="comment"> Fixing non-blocking bug and updating regression files according to the fix.</span>
-00097 <span class="comment"> Also added function vector_is_unknown() which can be called before making</span>
-00098 <span class="comment"> a call to vector_to_int() which will eleviate any X/Z-values causing problems</span>
-00099 <span class="comment"> with this conversion.  Additionally, the real1.1 regression report files were</span>
-00100 <span class="comment"> updated.</span>
-00101 <span class="comment"></span>
-00102 <span class="comment"> Revision 1.28  2003/02/13 23:44:08  phase1geo</span>
-00103 <span class="comment"> Tentative fix for VCD file reading.  Not sure if it works correctly when</span>
-00104 <span class="comment"> original signal LSB is != 0.  Icarus Verilog testsuite passes.</span>
-00105 <span class="comment"></span>
-00106 <span class="comment"> Revision 1.27  2003/01/25 22:39:02  phase1geo</span>
-00107 <span class="comment"> Fixing case where statement is found to be unsupported in middle of statement</span>
-00108 <span class="comment"> tree.  The entire statement tree is removed from consideration for simulation.</span>
-00109 <span class="comment"></span>
-00110 <span class="comment"> Revision 1.26  2002/12/11 14:51:57  phase1geo</span>
-00111 <span class="comment"> Fixes compiler errors from last checkin.</span>
-00112 <span class="comment"></span>
-00113 <span class="comment"> Revision 1.25  2002/12/03 06:01:16  phase1geo</span>
-00114 <span class="comment"> Fixing bug where delay statement is the last statement in a statement list.</span>
-00115 <span class="comment"> Adding diagnostics to verify this functionality.</span>
-00116 <span class="comment"></span>
-00117 <span class="comment"> Revision 1.24  2002/11/05 00:20:06  phase1geo</span>
-00118 <span class="comment"> Adding development documentation.  Fixing problem with combinational logic</span>
-00119 <span class="comment"> output in report command and updating full regression.</span>
-00120 <span class="comment"></span>
-00121 <span class="comment"> Revision 1.23  2002/11/02 16:16:20  phase1geo</span>
-00122 <span class="comment"> Cleaned up all compiler warnings in source and header files.</span>
-00123 <span class="comment"></span>
-00124 <span class="comment"> Revision 1.22  2002/10/31 23:13:30  phase1geo</span>
-00125 <span class="comment"> Fixing C compatibility problems with cc and gcc.  Found a few possible problems</span>
-00126 <span class="comment"> with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that</span>
-00127 <span class="comment"> lead to bus errors.  Ran full regression in 64-bit mode without error.</span>
+00095 <span class="comment"> Revision 1.30  2003/08/09 22:10:41  phase1geo</span>
+00096 <span class="comment"> Removing wait event signals from CDD file generation in support of another method</span>
+00097 <span class="comment"> that fixes a bug when multiple wait event statements exist within the same</span>
+00098 <span class="comment"> statement tree.</span>
+00099 <span class="comment"></span>
+00100 <span class="comment"> Revision 1.29  2003/08/05 20:25:05  phase1geo</span>
+00101 <span class="comment"> Fixing non-blocking bug and updating regression files according to the fix.</span>
+00102 <span class="comment"> Also added function vector_is_unknown() which can be called before making</span>
+00103 <span class="comment"> a call to vector_to_int() which will eleviate any X/Z-values causing problems</span>
+00104 <span class="comment"> with this conversion.  Additionally, the real1.1 regression report files were</span>
+00105 <span class="comment"> updated.</span>
+00106 <span class="comment"></span>
+00107 <span class="comment"> Revision 1.28  2003/02/13 23:44:08  phase1geo</span>
+00108 <span class="comment"> Tentative fix for VCD file reading.  Not sure if it works correctly when</span>
+00109 <span class="comment"> original signal LSB is != 0.  Icarus Verilog testsuite passes.</span>
+00110 <span class="comment"></span>
+00111 <span class="comment"> Revision 1.27  2003/01/25 22:39:02  phase1geo</span>
+00112 <span class="comment"> Fixing case where statement is found to be unsupported in middle of statement</span>
+00113 <span class="comment"> tree.  The entire statement tree is removed from consideration for simulation.</span>
+00114 <span class="comment"></span>
+00115 <span class="comment"> Revision 1.26  2002/12/11 14:51:57  phase1geo</span>
+00116 <span class="comment"> Fixes compiler errors from last checkin.</span>
+00117 <span class="comment"></span>
+00118 <span class="comment"> Revision 1.25  2002/12/03 06:01:16  phase1geo</span>
+00119 <span class="comment"> Fixing bug where delay statement is the last statement in a statement list.</span>
+00120 <span class="comment"> Adding diagnostics to verify this functionality.</span>
+00121 <span class="comment"></span>
+00122 <span class="comment"> Revision 1.24  2002/11/05 00:20:06  phase1geo</span>
+00123 <span class="comment"> Adding development documentation.  Fixing problem with combinational logic</span>
+00124 <span class="comment"> output in report command and updating full regression.</span>
+00125 <span class="comment"></span>
+00126 <span class="comment"> Revision 1.23  2002/11/02 16:16:20  phase1geo</span>
+00127 <span class="comment"> Cleaned up all compiler warnings in source and header files.</span>
 00128 <span class="comment"></span>
-00129 <span class="comment"> Revision 1.21  2002/10/29 19:57:50  phase1geo</span>
-00130 <span class="comment"> Fixing problems with beginning block comments within comments which are</span>
-00131 <span class="comment"> produced automatically by CVS.  Should fix warning messages from compiler.</span>
-00132 <span class="comment"></span>
-00133 <span class="comment"> Revision 1.20  2002/10/29 13:33:21  phase1geo</span>
-00134 <span class="comment"> Adding patches for 64-bit compatibility.  Reformatted parser.y for easier</span>
-00135 <span class="comment"> viewing (removed tabs).  Full regression passes.</span>
-00136 <span class="comment"></span>
-00137 <span class="comment"> Revision 1.19  2002/10/23 03:39:06  phase1geo</span>
-00138 <span class="comment"> Fixing bug in MBIT_SEL expressions to calculate the expression widths</span>
-00139 <span class="comment"> correctly.  Updated diagnostic testsuite and added diagnostic that</span>
-00140 <span class="comment"> found the original bug.  A few documentation updates.</span>
+00129 <span class="comment"> Revision 1.22  2002/10/31 23:13:30  phase1geo</span>
+00130 <span class="comment"> Fixing C compatibility problems with cc and gcc.  Found a few possible problems</span>
+00131 <span class="comment"> with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that</span>
+00132 <span class="comment"> lead to bus errors.  Ran full regression in 64-bit mode without error.</span>
+00133 <span class="comment"></span>
+00134 <span class="comment"> Revision 1.21  2002/10/29 19:57:50  phase1geo</span>
+00135 <span class="comment"> Fixing problems with beginning block comments within comments which are</span>
+00136 <span class="comment"> produced automatically by CVS.  Should fix warning messages from compiler.</span>
+00137 <span class="comment"></span>
+00138 <span class="comment"> Revision 1.20  2002/10/29 13:33:21  phase1geo</span>
+00139 <span class="comment"> Adding patches for 64-bit compatibility.  Reformatted parser.y for easier</span>
+00140 <span class="comment"> viewing (removed tabs).  Full regression passes.</span>
 00141 <span class="comment"></span>
-00142 <span class="comment"> This checkin represents some major code renovation in the score command to</span>
-00143 <span class="comment"> fully accommodate parameter support.  All parameter support is in at this</span>
-00144 <span class="comment"> point and the most commonly used parameter usages have been verified.  Some</span>
-00145 <span class="comment"> bugs were fixed in handling default values of constants and expression tree</span>
-00146 <span class="comment"> resizing has been optimized to its fullest.  Full regression has been</span>
-00147 <span class="comment"> updated and passes.  Adding new diagnostics to test suite.  Fixed a few</span>
-00148 <span class="comment"> problems in report outputting.</span>
-00149 <span class="comment"></span>
-00150 <span class="comment"> Revision 1.17  2002/09/25 02:51:44  phase1geo</span>
-00151 <span class="comment"> Removing need of vector nibble array allocation and deallocation during</span>
-00152 <span class="comment"> expression resizing for efficiency and bug reduction.  Other enhancements</span>
-00153 <span class="comment"> for parameter support.  Parameter stuff still not quite complete.</span>
+00142 <span class="comment"> Revision 1.19  2002/10/23 03:39:06  phase1geo</span>
+00143 <span class="comment"> Fixing bug in MBIT_SEL expressions to calculate the expression widths</span>
+00144 <span class="comment"> correctly.  Updated diagnostic testsuite and added diagnostic that</span>
+00145 <span class="comment"> found the original bug.  A few documentation updates.</span>
+00146 <span class="comment"></span>
+00147 <span class="comment"> This checkin represents some major code renovation in the score command to</span>
+00148 <span class="comment"> fully accommodate parameter support.  All parameter support is in at this</span>
+00149 <span class="comment"> point and the most commonly used parameter usages have been verified.  Some</span>
+00150 <span class="comment"> bugs were fixed in handling default values of constants and expression tree</span>
+00151 <span class="comment"> resizing has been optimized to its fullest.  Full regression has been</span>
+00152 <span class="comment"> updated and passes.  Adding new diagnostics to test suite.  Fixed a few</span>
+00153 <span class="comment"> problems in report outputting.</span>
 00154 <span class="comment"></span>
-00155 <span class="comment"> Revision 1.16  2002/09/23 01:37:44  phase1geo</span>
-00156 <span class="comment"> Need to make some changes to the inst_parm structure and some associated</span>
-00157 <span class="comment"> functionality for efficiency purposes.  This checkin contains most of the</span>
-00158 <span class="comment"> changes to the parser (with the exception of signal sizing).</span>
+00155 <span class="comment"> Revision 1.17  2002/09/25 02:51:44  phase1geo</span>
+00156 <span class="comment"> Removing need of vector nibble array allocation and deallocation during</span>
+00157 <span class="comment"> expression resizing for efficiency and bug reduction.  Other enhancements</span>
+00158 <span class="comment"> for parameter support.  Parameter stuff still not quite complete.</span>
 00159 <span class="comment"></span>
-00160 <span class="comment"> Revision 1.15  2002/09/21 07:03:28  phase1geo</span>
-00161 <span class="comment"> Attached all parameter functions into db.c.  Just need to finish getting</span>
-00162 <span class="comment"> parser to correctly add override parameters.  Once this is complete, phase 3</span>
-00163 <span class="comment"> can start and will include regenerating expressions and signals before</span>
-00164 <span class="comment"> getting output to CDD file.</span>
-00165 <span class="comment"></span>
-00166 <span class="comment"> Revision 1.14  2002/09/19 05:25:19  phase1geo</span>
-00167 <span class="comment"> Fixing incorrect simulation of static values and fixing reports generated</span>
-00168 <span class="comment"> from these static expressions.  Also includes some modifications for parameters</span>
-00169 <span class="comment"> though these changes are not useful at this point.</span>
+00160 <span class="comment"> Revision 1.16  2002/09/23 01:37:44  phase1geo</span>
+00161 <span class="comment"> Need to make some changes to the inst_parm structure and some associated</span>
+00162 <span class="comment"> functionality for efficiency purposes.  This checkin contains most of the</span>
+00163 <span class="comment"> changes to the parser (with the exception of signal sizing).</span>
+00164 <span class="comment"></span>
+00165 <span class="comment"> Revision 1.15  2002/09/21 07:03:28  phase1geo</span>
+00166 <span class="comment"> Attached all parameter functions into db.c.  Just need to finish getting</span>
+00167 <span class="comment"> parser to correctly add override parameters.  Once this is complete, phase 3</span>
+00168 <span class="comment"> can start and will include regenerating expressions and signals before</span>
+00169 <span class="comment"> getting output to CDD file.</span>
 00170 <span class="comment"></span>
-00171 <span class="comment"> Revision 1.13  2002/08/26 12:57:03  phase1geo</span>
-00172 <span class="comment"> In the middle of adding parameter support.  Intermediate checkin but does</span>
-00173 <span class="comment"> not break regressions at this point.</span>
-00174 <span class="comment"></span>
-00175 <span class="comment"> Revision 1.12  2002/08/23 12:55:33  phase1geo</span>
-00176 <span class="comment"> Starting to make modifications for parameter support.  Added parameter source</span>
-00177 <span class="comment"> and header files, changed vector_from_string function to be more verbose</span>
-00178 <span class="comment"> and updated Makefiles for new param.h/.c files.</span>
+00171 <span class="comment"> Revision 1.14  2002/09/19 05:25:19  phase1geo</span>
+00172 <span class="comment"> Fixing incorrect simulation of static values and fixing reports generated</span>
+00173 <span class="comment"> from these static expressions.  Also includes some modifications for parameters</span>
+00174 <span class="comment"> though these changes are not useful at this point.</span>
+00175 <span class="comment"></span>
+00176 <span class="comment"> Revision 1.13  2002/08/26 12:57:03  phase1geo</span>
+00177 <span class="comment"> In the middle of adding parameter support.  Intermediate checkin but does</span>
+00178 <span class="comment"> not break regressions at this point.</span>
 00179 <span class="comment"></span>
-00180 <span class="comment"> Revision 1.11  2002/07/22 05:24:46  phase1geo</span>
-00181 <span class="comment"> Creating new VCD parser.  This should have performance benefits as well as</span>
-00182 <span class="comment"> have the ability to handle any problems that come up in parsing.</span>
-00183 <span class="comment"></span>
-00184 <span class="comment"> Revision 1.10  2002/07/05 16:49:47  phase1geo</span>
-00185 <span class="comment"> Modified a lot of code this go around.  Fixed VCD reader to handle changes in</span>
-00186 <span class="comment"> the reverse order (last changes are stored instead of first for timestamp).</span>
-00187 <span class="comment"> Fixed problem with AEDGE operator to handle vector value changes correctly.</span>
-00188 <span class="comment"> Added casez2.v diagnostic to verify proper handling of casez with '?' characters.</span>
-00189 <span class="comment"> Full regression passes; however, the recent changes seem to have impacted</span>
-00190 <span class="comment"> performance -- need to look into this.</span>
-00191 <span class="comment"></span>
-00192 <span class="comment"> Revision 1.9  2002/07/03 21:30:52  phase1geo</span>
-00193 <span class="comment"> Fixed remaining issues with always statements.  Full regression is running</span>
-00194 <span class="comment"> error free at this point.  Regenerated documentation.  Added EOR expression</span>
-00195 <span class="comment"> operation to handle the or expression in event lists.</span>
+00180 <span class="comment"> Revision 1.12  2002/08/23 12:55:33  phase1geo</span>
+00181 <span class="comment"> Starting to make modifications for parameter support.  Added parameter source</span>
+00182 <span class="comment"> and header files, changed vector_from_string function to be more verbose</span>
+00183 <span class="comment"> and updated Makefiles for new param.h/.c files.</span>
+00184 <span class="comment"></span>
+00185 <span class="comment"> Revision 1.11  2002/07/22 05:24:46  phase1geo</span>
+00186 <span class="comment"> Creating new VCD parser.  This should have performance benefits as well as</span>
+00187 <span class="comment"> have the ability to handle any problems that come up in parsing.</span>
+00188 <span class="comment"></span>
+00189 <span class="comment"> Revision 1.10  2002/07/05 16:49:47  phase1geo</span>
+00190 <span class="comment"> Modified a lot of code this go around.  Fixed VCD reader to handle changes in</span>
+00191 <span class="comment"> the reverse order (last changes are stored instead of first for timestamp).</span>
+00192 <span class="comment"> Fixed problem with AEDGE operator to handle vector value changes correctly.</span>
+00193 <span class="comment"> Added casez2.v diagnostic to verify proper handling of casez with '?' characters.</span>
+00194 <span class="comment"> Full regression passes; however, the recent changes seem to have impacted</span>
+00195 <span class="comment"> performance -- need to look into this.</span>
 00196 <span class="comment"></span>
-00197 <span class="comment"> Revision 1.8  2002/07/01 15:10:42  phase1geo</span>
-00198 <span class="comment"> Fixing always loopbacks and setting stop bits correctly.  All verilog diagnostics</span>
-00199 <span class="comment"> seem to be passing with these fixes.</span>
-00200 <span class="comment"></span>
-00201 <span class="comment"> Revision 1.7  2002/06/27 12:36:47  phase1geo</span>
-00202 <span class="comment"> Fixing bugs with scoring.  I think I got it this time.</span>
-00203 <span class="comment"></span>
-00204 <span class="comment"> Revision 1.6  2002/06/24 12:34:56  phase1geo</span>
-00205 <span class="comment"> Fixing the set of the STMT_HEAD and STMT_STOP bits.  We are getting close.</span>
-00206 <span class="comment"></span>
-00207 <span class="comment"> Revision 1.5  2002/06/24 04:54:48  phase1geo</span>
-00208 <span class="comment"> More fixes and code additions to make statements work properly.  Still not</span>
-00209 <span class="comment"> there at this point.</span>
-00210 <span class="comment"></span>
-00211 <span class="comment"> Revision 1.4  2002/05/13 03:02:58  phase1geo</span>
-00212 <span class="comment"> Adding lines back to expressions and removing them from statements (since the line</span>
-00213 <span class="comment"> number range of an expression can be calculated by looking at the expression line</span>
-00214 <span class="comment"> numbers).</span>
+00197 <span class="comment"> Revision 1.9  2002/07/03 21:30:52  phase1geo</span>
+00198 <span class="comment"> Fixed remaining issues with always statements.  Full regression is running</span>
+00199 <span class="comment"> error free at this point.  Regenerated documentation.  Added EOR expression</span>
+00200 <span class="comment"> operation to handle the or expression in event lists.</span>
+00201 <span class="comment"></span>
+00202 <span class="comment"> Revision 1.8  2002/07/01 15:10:42  phase1geo</span>
+00203 <span class="comment"> Fixing always loopbacks and setting stop bits correctly.  All verilog diagnostics</span>
+00204 <span class="comment"> seem to be passing with these fixes.</span>
+00205 <span class="comment"></span>
+00206 <span class="comment"> Revision 1.7  2002/06/27 12:36:47  phase1geo</span>
+00207 <span class="comment"> Fixing bugs with scoring.  I think I got it this time.</span>
+00208 <span class="comment"></span>
+00209 <span class="comment"> Revision 1.6  2002/06/24 12:34:56  phase1geo</span>
+00210 <span class="comment"> Fixing the set of the STMT_HEAD and STMT_STOP bits.  We are getting close.</span>
+00211 <span class="comment"></span>
+00212 <span class="comment"> Revision 1.5  2002/06/24 04:54:48  phase1geo</span>
+00213 <span class="comment"> More fixes and code additions to make statements work properly.  Still not</span>
+00214 <span class="comment"> there at this point.</span>
 00215 <span class="comment"></span>
-00216 <span class="comment"> Revision 1.3  2002/05/03 03:39:36  phase1geo</span>
-00217 <span class="comment"> Removing all syntax errors due to addition of statements.  Added more statement</span>
-00218 <span class="comment"> support code.  Still have a ways to go before we can try anything.  Removed lines</span>
-00219 <span class="comment"> from expressions though we may want to consider putting these back for reporting</span>
-00220 <span class="comment"> purposes.</span>
-00221 <span class="comment"></span>
-00222 <span class="comment"> Revision 1.2  2002/04/30 05:04:25  phase1geo</span>
-00223 <span class="comment"> Added initial go-round of adding statement handling to parser.  Added simple</span>
-00224 <span class="comment"> Verilog test to check correct statement handling.  At this point there is a</span>
-00225 <span class="comment"> bug in the expression write function (we need to display statement trees in</span>
-00226 <span class="comment"> the proper order since they are unlike normal expression trees.)</span>
-00227 <span class="comment">*/</span>
-00228 
-00229 <span class="preprocessor">#endif</span>
-00230 <span class="preprocessor"></span>
-</pre></div><hr size="1"><address style="align: right;"><small>Generated on Wed Aug 6 00:14:01 2003 for Covered by
+00216 <span class="comment"> Revision 1.4  2002/05/13 03:02:58  phase1geo</span>
+00217 <span class="comment"> Adding lines back to expressions and removing them from statements (since the line</span>
+00218 <span class="comment"> number range of an expression can be calculated by looking at the expression line</span>
+00219 <span class="comment"> numbers).</span>
+00220 <span class="comment"></span>
+00221 <span class="comment"> Revision 1.3  2002/05/03 03:39:36  phase1geo</span>
+00222 <span class="comment"> Removing all syntax errors due to addition of statements.  Added more statement</span>
+00223 <span class="comment"> support code.  Still have a ways to go before we can try anything.  Removed lines</span>
+00224 <span class="comment"> from expressions though we may want to consider putting these back for reporting</span>
+00225 <span class="comment"> purposes.</span>
+00226 <span class="comment"></span>
+00227 <span class="comment"> Revision 1.2  2002/04/30 05:04:25  phase1geo</span>
+00228 <span class="comment"> Added initial go-round of adding statement handling to parser.  Added simple</span>
+00229 <span class="comment"> Verilog test to check correct statement handling.  At this point there is a</span>
+00230 <span class="comment"> bug in the expression write function (we need to display statement trees in</span>
+00231 <span class="comment"> the proper order since they are unlike normal expression trees.)</span>
+00232 <span class="comment">*/</span>
+00233 
+00234 <span class="preprocessor">#endif</span>
+00235 <span class="preprocessor"></span>
+</pre></div><hr size="1"><address style="align: right;"><small>Generated on Sat Aug 9 22:46:37 2003 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 > 
 </a>1.3.3 </small></address>

@@ -17,7 +17,6 @@
 
 extern void reset_lexer( str_link* file_list_head );
 extern int VLparse();
-extern int VLdebug;
 
 extern str_link* use_files_head;
 
@@ -168,6 +167,12 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
 
 /*
  $Log$
+ Revision 1.19  2003/08/10 00:05:16  phase1geo
+ Fixing bug with posedge, negedge and anyedge expressions such that these expressions
+ must be armed before they are able to be evaluated.  Fixing bug in vector compare function
+ to cause compare to occur on smallest vector size (rather than on largest).  Updated regression
+ files and added new diagnostics to test event fix.
+
  Revision 1.18  2003/02/18 20:17:02  phase1geo
  Making use of scored flag in CDD file.  Causing report command to exit early
  if it is working on a CDD file which has not been scored.  Updated testsuite

@@ -11,7 +11,7 @@
 \subsection*{Functions}
 \begin{CompactItemize}
 \item 
-{\bf statement} $\ast$ {\bf statement\_\-create} ({\bf expression} $\ast$exp, {\bf sig\_\-link} $\ast$head, {\bf sig\_\-link} $\ast$tail)
+{\bf statement} $\ast$ {\bf statement\_\-create} ({\bf expression} $\ast$exp)
 \begin{CompactList}\small\item\em Creates new statement structure. \item\end{CompactList}\item 
 void {\bf statement\_\-stack\_\-push} ({\bf statement} $\ast$stmt, int id)
 \item 
@@ -34,9 +34,9 @@ void {\bf statement\_\-dealloc} ({\bf statement} $\ast$stmt)
 \subsection*{Variables}
 \begin{CompactItemize}
 \item 
-{\bf stmt\_\-loop\_\-link} $\ast$ {\bf stmt\_\-loop\_\-stack} = NULL
-\item 
 char {\bf user\_\-msg} [USER\_\-MSG\_\-LENGTH]
+\item 
+{\bf stmt\_\-loop\_\-link} $\ast$ {\bf stmt\_\-loop\_\-stack} = NULL
 \end{CompactItemize}
 
 
@@ -117,7 +117,7 @@ Connects statement sequence to next statement.
 \end{Desc}
 Recursively traverses the specified stmt sequence. When it reaches a statement that has either next\_\-true or next\_\-false set to NULL, sets next\_\-true and/or next\_\-false of that statement to point to the next\_\-stmt statement. \index{statement.c@{statement.c}!statement_create@{statement\_\-create}}
 \index{statement_create@{statement\_\-create}!statement.c@{statement.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf statement}$\ast$ statement\_\-create ({\bf expression} $\ast$ {\em exp}, {\bf sig\_\-link} $\ast$ {\em head}, {\bf sig\_\-link} $\ast$ {\em tail})}\label{statement_8c_a2}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf statement}$\ast$ statement\_\-create ({\bf expression} $\ast$ {\em exp})}\label{statement_8c_a2}
 
 
 Creates new statement structure. 
@@ -125,7 +125,7 @@ Creates new statement structure.
 \begin{Desc}
 \item[Parameters:]
 \begin{description}
-\item[{\em exp}]Pointer to root expression of expression tree for this statement. \item[{\em head}]Pointer to head of wait event signal list. \item[{\em tail}]Pointer to tail of wait event signal list.\end{description}
+\item[{\em exp}]Pointer to root expression of expression tree for this statement.\end{description}
 \end{Desc}
 \begin{Desc}
 \item[Returns:]Returns pointer to the newly created statement.\end{Desc}
@@ -226,12 +226,12 @@ Creates a new statement loop link for the specified parameters and adds this ele
 \subsection{Variable Documentation}
 \index{statement.c@{statement.c}!stmt_loop_stack@{stmt\_\-loop\_\-stack}}
 \index{stmt_loop_stack@{stmt\_\-loop\_\-stack}!statement.c@{statement.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf stmt\_\-loop\_\-link}$\ast$ {\bf stmt\_\-loop\_\-stack} = NULL}\label{statement_8c_a0}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf stmt\_\-loop\_\-link}$\ast$ {\bf stmt\_\-loop\_\-stack} = NULL}\label{statement_8c_a1}
 
 
-\index{statement.c@{statement.c}!user_msg@{user\_\-msg}}
+Pointer to statement loop stack structure. See description of {\bf stmt\_\-loop\_\-link}{\rm (p.\,\pageref{defines_8h_a166})} for more information on this stack structure usage. \index{statement.c@{statement.c}!user_msg@{user\_\-msg}}
 \index{user_msg@{user\_\-msg}!statement.c@{statement.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char {\bf user\_\-msg}[USER\_\-MSG\_\-LENGTH] ()}\label{statement_8c_a1}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char {\bf user\_\-msg}[USER\_\-MSG\_\-LENGTH] ()}\label{statement_8c_a0}
 
 
 Holds some output that will be displayed via the print\_\-output command. This is created globally so that memory does not need to be reallocated for each function that wishes to use it. 

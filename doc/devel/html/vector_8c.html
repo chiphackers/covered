@@ -146,7 +146,10 @@
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 <dl compact><dt><b>Author:</b></dt><dd>Trevor Williams (<a href="mailto:trevorw@charter.net">trevorw@charter.net</a>) </dd></dl>
 <dl compact><dt><b>Date:</b></dt><dd>12/1/2001</dd></dl>
-<dl compact><dt><b></b></dt><dd>A vector comprised of three components</dd></dl>
+<dl compact><dt><b></b></dt><dd>The vector is the data structure that stores all of the current value and coverage information for a particular signal or expression. All simulated operations are performed on vector structures and as such are the most used and optimized data structures used by Covered. To keep the memory image of a vector to as small as possible, a vector is comprised of three components:</dd></dl>
+<dl compact><dt><b></b></dt><dd><ol>
+<li>A least-significant bit (LSB) value which specifies the current vector's LSB.</li><li>A width value which specifies the number of bits contained in the current vector. To get the MSB of the vector, simply add the width to the LSB and subtract one.</li><li>A value array which contains the vector's current value and other coverage information gained during simulation. This array is an array of 32-bit values (or nibbles) whose length is determined by the width of the vector divided by four. We divide the width by 4 because one nibble contains all of the information for up to 4 bits of four-state data. For a break-down of the bits within a nibble, please consult the <a class="el" href="defines_8h.html#a154">nibble</a> table.</li></ol>
+</dd></dl>
 <hr><h2>Function Documentation</h2>
 <a name="a18" doxytag="vector.c::vector_bit_val"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
@@ -2268,7 +2271,7 @@ Holds some output that will be displayed via the print_output command. This is c
 XOR operation table     </td>
   </tr>
 </table>
-<hr size="1"><address style="align: right;"><small>Generated on Wed Aug 6 00:14:08 2003 for Covered by
+<hr size="1"><address style="align: right;"><small>Generated on Sat Aug 9 22:46:46 2003 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 > 
 </a>1.3.3 </small></address>

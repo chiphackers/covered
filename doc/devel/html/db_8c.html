@@ -24,84 +24,84 @@
 <table border=0 cellpadding=0 cellspacing=0>
 <tr><td></td></tr>
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a20">db_write</a> (char *<a class="el" href="pplexer_8c.html#a113">file</a>, <a class="el" href="defines_8h.html#a181">bool</a> parse_mode)</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a23">db_write</a> (char *<a class="el" href="pplexer_8c.html#a113">file</a>, <a class="el" href="defines_8h.html#a181">bool</a> parse_mode)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Writes contents of expressions, modules and signals to database file. </em> <a href="#a20"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a21">db_read</a> (char *<a class="el" href="pplexer_8c.html#a113">file</a>, int read_mode)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Writes contents of expressions, modules and signals to database file. </em> <a href="#a23"></a><em><br><br></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a24">db_read</a> (char *<a class="el" href="pplexer_8c.html#a113">file</a>, int read_mode)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Reads contents of database file and stores into internal lists. </em> <a href="#a21"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a22">db_add_instance</a> (char *scope, char *modname)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Reads contents of database file and stores into internal lists. </em> <a href="#a24"></a><em><br><br></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a25">db_add_instance</a> (char *scope, char *modname)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Adds specified module node to module tree. Called by parser. </em> <a href="#a22"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a23">db_add_module</a> (char *name, char *<a class="el" href="pplexer_8c.html#a113">file</a>)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Adds specified module node to module tree. Called by parser. </em> <a href="#a25"></a><em><br><br></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a26">db_add_module</a> (char *name, char *<a class="el" href="pplexer_8c.html#a113">file</a>)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Adds specified module to module list. Called by parser. </em> <a href="#a23"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a24">db_end_module</a> ()</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Adds specified module to module list. Called by parser. </em> <a href="#a26"></a><em><br><br></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a27">db_end_module</a> ()</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Called when the endmodule keyword is parsed. </em> <a href="#a24"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a25">db_add_declared_param</a> (char *name, <a class="el" href="structexpression__s.html">expression</a> *expr)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Called when the endmodule keyword is parsed. </em> <a href="#a27"></a><em><br><br></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a28">db_add_declared_param</a> (char *name, <a class="el" href="structexpression__s.html">expression</a> *expr)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Adds specified declared parameter to parameter list. Called by parser. </em> <a href="#a25"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a26">db_add_override_param</a> (char *inst_name, <a class="el" href="structexpression__s.html">expression</a> *expr)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Adds specified declared parameter to parameter list. Called by parser. </em> <a href="#a28"></a><em><br><br></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a29">db_add_override_param</a> (char *inst_name, <a class="el" href="structexpression__s.html">expression</a> *expr)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Adds specified override parameter to parameter list. Called by parser. </em> <a href="#a26"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a27">db_add_vector_param</a> (<a class="el" href="structsignal__s.html">signal</a> *sig, <a class="el" href="structexpression__s.html">expression</a> *parm_exp, int type)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Adds specified override parameter to parameter list. Called by parser. </em> <a href="#a29"></a><em><br><br></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a30">db_add_vector_param</a> (<a class="el" href="structsignal__s.html">signal</a> *sig, <a class="el" href="structexpression__s.html">expression</a> *parm_exp, int type)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Adds signal/expression vector parameter to parameter list. </em> <a href="#a27"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a28">db_add_defparam</a> (char *name, <a class="el" href="structexpression__s.html">expression</a> *expr)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Adds signal/expression vector parameter to parameter list. </em> <a href="#a30"></a><em><br><br></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a31">db_add_defparam</a> (char *name, <a class="el" href="structexpression__s.html">expression</a> *expr)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Adds specified defparam to parameter override list. Called by parser. </em> <a href="#a28"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a29">db_add_signal</a> (char *name, <a class="el" href="structstatic__expr__s.html">static_expr</a> *left, <a class="el" href="structstatic__expr__s.html">static_expr</a> *right)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Adds specified defparam to parameter override list. Called by parser. </em> <a href="#a31"></a><em><br><br></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a32">db_add_signal</a> (char *name, <a class="el" href="structstatic__expr__s.html">static_expr</a> *left, <a class="el" href="structstatic__expr__s.html">static_expr</a> *right)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Adds specified signal to signal list. Called by parser. </em> <a href="#a29"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="structsignal__s.html">signal</a> *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a30">db_find_signal</a> (char *name)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Adds specified signal to signal list. Called by parser. </em> <a href="#a32"></a><em><br><br></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="structsignal__s.html">signal</a> *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a33">db_find_signal</a> (char *name)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Finds specified signal in module and returns pointer to the signal structure. Called by parser. </em> <a href="#a30"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="structexpression__s.html">expression</a> *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a31">db_create_expression</a> (<a class="el" href="structexpression__s.html">expression</a> *right, <a class="el" href="structexpression__s.html">expression</a> *left, int op, int line, char *sig_name)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Finds specified signal in module and returns pointer to the signal structure. Called by parser. </em> <a href="#a33"></a><em><br><br></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="structexpression__s.html">expression</a> *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a34">db_create_expression</a> (<a class="el" href="structexpression__s.html">expression</a> *right, <a class="el" href="structexpression__s.html">expression</a> *left, int op, int line, char *sig_name)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Creates new expression from specified information. Called by parser and db_add_expression. </em> <a href="#a31"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a32">db_add_expression</a> (<a class="el" href="structexpression__s.html">expression</a> *root)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Creates new expression from specified information. Called by parser and db_add_expression. </em> <a href="#a34"></a><em><br><br></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a35">db_add_expression</a> (<a class="el" href="structexpression__s.html">expression</a> *root)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Adds specified expression to expression list. Called by parser. </em> <a href="#a32"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="structstatement__s.html">statement</a> *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a33">db_create_statement</a> (<a class="el" href="structexpression__s.html">expression</a> *exp, <a class="el" href="structsig__link__s.html">sig_link</a> **head, <a class="el" href="structsig__link__s.html">sig_link</a> **tail)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Adds specified expression to expression list. Called by parser. </em> <a href="#a35"></a><em><br><br></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="structstatement__s.html">statement</a> *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a36">db_create_statement</a> (<a class="el" href="structexpression__s.html">expression</a> *exp)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Creates new statement expression from specified information. Called by parser. </em> <a href="#a33"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a34">db_add_statement</a> (<a class="el" href="structstatement__s.html">statement</a> *stmt, <a class="el" href="structstatement__s.html">statement</a> *start)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Creates new statement expression from specified information. Called by parser. </em> <a href="#a36"></a><em><br><br></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a37">db_add_statement</a> (<a class="el" href="structstatement__s.html">statement</a> *stmt, <a class="el" href="structstatement__s.html">statement</a> *start)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Adds specified statement to current module's statement list. Called by parser. </em> <a href="#a34"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a35">db_remove_statement</a> (<a class="el" href="structstatement__s.html">statement</a> *stmt)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Adds specified statement to current module's statement list. Called by parser. </em> <a href="#a37"></a><em><br><br></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a38">db_remove_statement</a> (<a class="el" href="structstatement__s.html">statement</a> *stmt)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Removes specified statement and associated expression from list and memory. </em> <a href="#a35"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a36">db_connect_statement_true</a> (<a class="el" href="structstatement__s.html">statement</a> *stmt, <a class="el" href="structstatement__s.html">statement</a> *next_true)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Removes specified statement and associated expression from list and memory. </em> <a href="#a38"></a><em><br><br></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a39">db_connect_statement_true</a> (<a class="el" href="structstatement__s.html">statement</a> *stmt, <a class="el" href="structstatement__s.html">statement</a> *next_true)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Connects true statement to specified statement. </em> <a href="#a36"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a37">db_connect_statement_false</a> (<a class="el" href="structstatement__s.html">statement</a> *stmt, <a class="el" href="structstatement__s.html">statement</a> *next_false)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Connects true statement to specified statement. </em> <a href="#a39"></a><em><br><br></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a40">db_connect_statement_false</a> (<a class="el" href="structstatement__s.html">statement</a> *stmt, <a class="el" href="structstatement__s.html">statement</a> *next_false)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Connects false statement to specified statement. </em> <a href="#a37"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a38">db_statement_connect</a> (<a class="el" href="structstatement__s.html">statement</a> *curr_stmt, <a class="el" href="structstatement__s.html">statement</a> *next_stmt)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Connects false statement to specified statement. </em> <a href="#a40"></a><em><br><br></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a41">db_statement_connect</a> (<a class="el" href="structstatement__s.html">statement</a> *curr_stmt, <a class="el" href="structstatement__s.html">statement</a> *next_stmt)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Connects one statement block to another. </em> <a href="#a38"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a39">db_statement_set_stop</a> (<a class="el" href="structstatement__s.html">statement</a> *stmt, <a class="el" href="structstatement__s.html">statement</a> *post, <a class="el" href="defines_8h.html#a181">bool</a> both)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Connects one statement block to another. </em> <a href="#a41"></a><em><br><br></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a42">db_statement_set_stop</a> (<a class="el" href="structstatement__s.html">statement</a> *stmt, <a class="el" href="structstatement__s.html">statement</a> *post, <a class="el" href="defines_8h.html#a181">bool</a> both)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Sets STMT_STOP bit in the appropriate statements. </em> <a href="#a39"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a40">db_set_vcd_scope</a> (char *scope)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Sets STMT_STOP bit in the appropriate statements. </em> <a href="#a42"></a><em><br><br></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a43">db_set_vcd_scope</a> (char *scope)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Sets current VCD scope to specified scope. </em> <a href="#a40"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a41">db_vcd_upscope</a> ()</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Sets current VCD scope to specified scope. </em> <a href="#a43"></a><em><br><br></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a44">db_vcd_upscope</a> ()</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Moves current VCD hierarchy up one level. </em> <a href="#a41"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a42">db_assign_symbol</a> (char *name, char *symbol, int msb, int lsb)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Moves current VCD hierarchy up one level. </em> <a href="#a44"></a><em><br><br></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a45">db_assign_symbol</a> (char *name, char *symbol, int msb, int lsb)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Adds symbol to signal specified by name. </em> <a href="#a42"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a43">db_set_symbol_char</a> (char *sym, char value)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Adds symbol to signal specified by name. </em> <a href="#a45"></a><em><br><br></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a46">db_set_symbol_char</a> (char *sym, char value)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Sets the found symbol value to specified character value. Called by VCD lexer. </em> <a href="#a43"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a44">db_set_symbol_string</a> (char *sym, char *value)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Sets the found symbol value to specified character value. Called by VCD lexer. </em> <a href="#a46"></a><em><br><br></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a47">db_set_symbol_string</a> (char *sym, char *value)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Sets the found symbol value to specified string value. Called by VCD lexer. </em> <a href="#a44"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a45">db_do_timestep</a> (int time)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Sets the found symbol value to specified string value. Called by VCD lexer. </em> <a href="#a47"></a><em><br><br></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a48">db_do_timestep</a> (int time)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Performs a timestep for all signal changes during this timestep. </em> <a href="#a45"></a><em><br><br></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Performs a timestep for all signal changes during this timestep. </em> <a href="#a48"></a><em><br><br></td></tr>
 <tr><td colspan=2><br><h2>Variables</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align=right valign=top>char *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a0">top_module</a></td></tr>
 
@@ -123,32 +123,38 @@
 
 <tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a9">flag_scored</a></td></tr>
 
-<tr><td class="memItemLeft" nowrap align=right valign=top>char *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a10">curr_inst_scope</a> = NULL</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>int&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a10">timestep_update</a></td></tr>
 
-<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="structmod__inst__s.html">mod_inst</a> *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a11">curr_instance</a> = NULL</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a11">debug_mode</a></td></tr>
 
-<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="structstr__link__s.html">str_link</a> *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a12">modlist_head</a> = NULL</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>char *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a12">curr_inst_scope</a> = NULL</td></tr>
 
-<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="structstr__link__s.html">str_link</a> *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a13">modlist_tail</a> = NULL</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="structmod__inst__s.html">mod_inst</a> *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a13">curr_instance</a> = NULL</td></tr>
 
-<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="structmodule__s.html">module</a> *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a14">curr_module</a> = NULL</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="structstr__link__s.html">str_link</a> *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a14">modlist_head</a> = NULL</td></tr>
 
-<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="structsymtable__s.html">symtable</a> *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a15">vcd_symtab</a> = NULL</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="structstr__link__s.html">str_link</a> *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a15">modlist_tail</a> = NULL</td></tr>
 
-<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="structsymtable__s.html">symtable</a> *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a16">presim_timestep_tab</a> = NULL</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="structmodule__s.html">module</a> *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a16">curr_module</a> = NULL</td></tr>
 
-<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="structsymtable__s.html">symtable</a> *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a17">postsim_timestep_tab</a> = NULL</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="structsymtable__s.html">symtable</a> *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a17">vcd_symtab</a> = NULL</td></tr>
 
-<tr><td class="memItemLeft" nowrap align=right valign=top>int&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a18">curr_expr_id</a> = 1</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="structsymtable__s.html">symtable</a> *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a18">presim_timestep_tab</a> = NULL</td></tr>
 
-<tr><td class="memItemLeft" nowrap align=right valign=top>int&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a19">curr_sim_time</a> = 0</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="structsymtable__s.html">symtable</a> *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a19">postsim_timestep_tab</a> = NULL</td></tr>
+
+<tr><td class="memItemLeft" nowrap align=right valign=top>int&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a20">curr_expr_id</a> = 1</td></tr>
+
+<tr><td class="memItemLeft" nowrap align=right valign=top>int&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a21">curr_sim_time</a> = 0</td></tr>
+
+<tr><td class="memItemLeft" nowrap align=right valign=top>int&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8c.html#a22">last_sim_update</a> = 0</td></tr>
 
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 <dl compact><dt><b>Author:</b></dt><dd>Trevor Williams (<a href="mailto:trevorw@charter.net">trevorw@charter.net</a>) </dd></dl>
 <dl compact><dt><b>Date:</b></dt><dd>12/7/2001</dd></dl>
 <hr><h2>Function Documentation</h2>
-<a name="a25" doxytag="db.c::db_add_declared_param"></a><p>
+<a name="a28" doxytag="db.c::db_add_declared_param"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -194,7 +200,7 @@ Adds specified declared parameter to parameter list. Called by parser.
 Searches current module to verify that specified parameter name has not been previously used in the module. If the parameter name has not been found, it is created added to the current module's parameter list.     </td>
   </tr>
 </table>
-<a name="a28" doxytag="db.c::db_add_defparam"></a><p>
+<a name="a31" doxytag="db.c::db_add_defparam"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -240,7 +246,7 @@ Adds specified defparam to parameter override list. Called by parser.
 Adds specified parameter to the defparam list.     </td>
   </tr>
 </table>
-<a name="a32" doxytag="db.c::db_add_expression"></a><p>
+<a name="a35" doxytag="db.c::db_add_expression"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -276,7 +282,7 @@ Adds specified expression to expression list. Called by parser.
 Adds the specified expression to the current module's expression list.     </td>
   </tr>
 </table>
-<a name="a22" doxytag="db.c::db_add_instance"></a><p>
+<a name="a25" doxytag="db.c::db_add_instance"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -322,7 +328,7 @@ Adds specified module node to module tree. Called by parser.
 Creates a new module_node with the instantiation name, search for matching module. If module hasn't been created previously, create it now without a filename associated (NULL). Add module_node to tree if there are no problems in doing so.     </td>
   </tr>
 </table>
-<a name="a23" doxytag="db.c::db_add_module"></a><p>
+<a name="a26" doxytag="db.c::db_add_module"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -368,7 +374,7 @@ Adds specified module to module list. Called by parser.
 Creates a new module element with the contents specified by the parameters given and inserts this module into the module list. This function can only be called when we are actually parsing a module which implies that we must have the name of the module at the head of the modlist linked-list structure.     </td>
   </tr>
 </table>
-<a name="a26" doxytag="db.c::db_add_override_param"></a><p>
+<a name="a29" doxytag="db.c::db_add_override_param"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -414,7 +420,7 @@ Adds specified override parameter to parameter list. Called by parser.
 Creates override parameter and stores this in the current module as well as all associated instances.     </td>
   </tr>
 </table>
-<a name="a29" doxytag="db.c::db_add_signal"></a><p>
+<a name="a32" doxytag="db.c::db_add_signal"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -467,7 +473,7 @@ Adds specified signal to signal list. Called by parser.
 Creates a new signal with the specified parameter information and adds this to the signal list if it does not already exist. If width == 0, the sig_msb and sig_lsb values are interrogated. If sig_msb and/or is non-NULL, its value is add to the current module's parameter list and all associated instances are updated to contain new value.     </td>
   </tr>
 </table>
-<a name="a34" doxytag="db.c::db_add_statement"></a><p>
+<a name="a37" doxytag="db.c::db_add_statement"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -513,7 +519,7 @@ Adds specified statement to current module's statement list. Called by parser.
 Adds the specified statement tree to the tail of the current module's statement list. The start statement is specified to avoid infinite looping.     </td>
   </tr>
 </table>
-<a name="a27" doxytag="db.c::db_add_vector_param"></a><p>
+<a name="a30" doxytag="db.c::db_add_vector_param"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -566,7 +572,7 @@ Adds signal/expression vector parameter to parameter list.
 Creates a vector parameter for the specified signal or expression with the specified parameter expression. This function is called by the parser.     </td>
   </tr>
 </table>
-<a name="a42" doxytag="db.c::db_assign_symbol"></a><p>
+<a name="a45" doxytag="db.c::db_assign_symbol"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -626,7 +632,7 @@ Adds symbol to signal specified by name.
 Creates a new entry in the symbol table for the specified signal and symbol.     </td>
   </tr>
 </table>
-<a name="a37" doxytag="db.c::db_connect_statement_false"></a><p>
+<a name="a40" doxytag="db.c::db_connect_statement_false"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -672,7 +678,7 @@ Connects false statement to specified statement.
 Connects the specified statement's false statement.     </td>
   </tr>
 </table>
-<a name="a36" doxytag="db.c::db_connect_statement_true"></a><p>
+<a name="a39" doxytag="db.c::db_connect_statement_true"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -718,7 +724,7 @@ Connects true statement to specified statement.
 Connects the specified statement's true statement.     </td>
   </tr>
 </table>
-<a name="a31" doxytag="db.c::db_create_expression"></a><p>
+<a name="a34" doxytag="db.c::db_create_expression"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -786,7 +792,7 @@ Creates new expression from specified information. Called by parser and db_add_e
 Creates a new expression with the specified parameter information and returns a pointer to the newly created expression.     </td>
   </tr>
 </table>
-<a name="a33" doxytag="db.c::db_create_statement"></a><p>
+<a name="a36" doxytag="db.c::db_create_statement"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -795,24 +801,9 @@ Creates a new expression with the specified parameter information and returns a 
           <td class="md" nowrap valign="top"> <a class="el" href="structstatement__s.html">statement</a>* db_create_statement </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top"><a class="el" href="structexpression__s.html">expression</a> *&nbsp;</td>
-          <td class="mdname" nowrap> <em>exp</em>, </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td class="md" nowrap><a class="el" href="structsig__link__s.html">sig_link</a> **&nbsp;</td>
-          <td class="mdname" nowrap> <em>head</em>, </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td class="md" nowrap><a class="el" href="structsig__link__s.html">sig_link</a> **&nbsp;</td>
-          <td class="mdname" nowrap> <em>tail</em></td>
-        </tr>
-        <tr>
-          <td></td>
-          <td class="md">)&nbsp;</td>
-          <td class="md" colspan="2"></td>
+          <td class="mdname1" valign="top" nowrap> <em>exp</em>          </td>
+          <td class="md" valign="top">&nbsp;)&nbsp;</td>
+          <td class="md" nowrap></td>
         </tr>
 
       </table>
@@ -831,16 +822,14 @@ Creates new statement expression from specified information. Called by parser.
 <p>
 <dl compact><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign=top><em>exp</em>&nbsp;</td><td>Pointer to associated "root" expression. </td></tr>
-    <tr><td valign=top><em>head</em>&nbsp;</td><td>Pointer to head of wait event signal list. </td></tr>
-    <tr><td valign=top><em>tail</em>&nbsp;</td><td>Pointer to tail of wait event signal list.</td></tr>
+    <tr><td valign=top><em>exp</em>&nbsp;</td><td>Pointer to associated "root" expression.</td></tr>
   </table>
 </dl>
 <dl compact><dt><b>Returns:</b></dt><dd>Returns pointer to created statement.</dd></dl>
 Creates an statement structure and adds created statement to current module's statement list.     </td>
   </tr>
 </table>
-<a name="a45" doxytag="db.c::db_do_timestep"></a><p>
+<a name="a48" doxytag="db.c::db_do_timestep"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -876,7 +865,7 @@ Performs a timestep for all signal changes during this timestep.
 Cycles through expression queue, performing expression evaluations as we go. If an expression has a parent expression, that parent expression is placed in the expression queue after that expression has completed its evaluation. When the expression queue is empty, we are finished for this clock period.     </td>
   </tr>
 </table>
-<a name="a24" doxytag="db.c::db_end_module"></a><p>
+<a name="a27" doxytag="db.c::db_end_module"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -906,7 +895,7 @@ Called when the endmodule keyword is parsed.
 Updates the modlist for parsing purposes.     </td>
   </tr>
 </table>
-<a name="a30" doxytag="db.c::db_find_signal"></a><p>
+<a name="a33" doxytag="db.c::db_find_signal"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -943,7 +932,7 @@ Finds specified signal in module and returns pointer to the signal structure. Ca
 Searches current module for signal matching the specified name. If the signal is found, returns a pointer to the calling function for that signal.     </td>
   </tr>
 </table>
-<a name="a21" doxytag="db.c::db_read"></a><p>
+<a name="a24" doxytag="db.c::db_read"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -992,7 +981,7 @@ Reads contents of database file and stores into internal lists.
 Opens specified database file for reading. Reads in each line from the file examining its contents and creating the appropriate type to store the specified information and stores it into the appropriate internal list. If there are any problems opening the file for reading or parsing errors, returns FALSE; otherwise, returns TRUE.     </td>
   </tr>
 </table>
-<a name="a35" doxytag="db.c::db_remove_statement"></a><p>
+<a name="a38" doxytag="db.c::db_remove_statement"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -1028,7 +1017,7 @@ Removes specified statement and associated expression from list and memory.
 Removes specified statement expression and its tree from current module expression list and deallocates both the expression and statement from heap memory. Called when a statement structure is found to contain a statement that is not supported by Covered.     </td>
   </tr>
 </table>
-<a name="a43" doxytag="db.c::db_set_symbol_char"></a><p>
+<a name="a46" doxytag="db.c::db_set_symbol_char"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -1074,7 +1063,7 @@ Sets the found symbol value to specified character value. Called by VCD lexer.
 Searches the timestep symtable followed by the VCD symbol table searching for the symbol that matches the specified argument. Once a symbol is found, its value parameter is set to the specified character. If the symbol was found in the VCD symbol table, it is copied to the timestep symbol table.     </td>
   </tr>
 </table>
-<a name="a44" doxytag="db.c::db_set_symbol_string"></a><p>
+<a name="a47" doxytag="db.c::db_set_symbol_string"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -1120,7 +1109,7 @@ Sets the found symbol value to specified string value. Called by VCD lexer.
 Searches the timestep symtable followed by the VCD symbol table searching for the symbol that matches the specified argument. Once a symbol is found, its value parameter is set to the specified string. If the symbol was found in the VCD symbol table, it is copied to the timestep symbol table.     </td>
   </tr>
 </table>
-<a name="a40" doxytag="db.c::db_set_vcd_scope"></a><p>
+<a name="a43" doxytag="db.c::db_set_vcd_scope"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -1156,7 +1145,7 @@ Sets current VCD scope to specified scope.
 Sets the curr_inst_scope global variable to the specified scope.     </td>
   </tr>
 </table>
-<a name="a38" doxytag="db.c::db_statement_connect"></a><p>
+<a name="a41" doxytag="db.c::db_statement_connect"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -1202,7 +1191,7 @@ Connects one statement block to another.
 Calls the statement_connect function located in <a class="el" href="statement_8c.html">statement.c</a> with the specified parameters.     </td>
   </tr>
 </table>
-<a name="a39" doxytag="db.c::db_statement_set_stop"></a><p>
+<a name="a42" doxytag="db.c::db_statement_set_stop"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -1255,7 +1244,7 @@ Sets STMT_STOP bit in the appropriate statements.
 Calls the statement_set_stop function with the specified parameters. This function is called by the parser after the call to db_statement_connect.     </td>
   </tr>
 </table>
-<a name="a41" doxytag="db.c::db_vcd_upscope"></a><p>
+<a name="a44" doxytag="db.c::db_vcd_upscope"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -1285,7 +1274,7 @@ Moves current VCD hierarchy up one level.
 Moves the curr_inst_scope up one level of hierarchy. This function is called when the $upscope keyword is seen in a VCD file.     </td>
   </tr>
 </table>
-<a name="a20" doxytag="db.c::db_write"></a><p>
+<a name="a23" doxytag="db.c::db_write"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -1333,13 +1322,13 @@ Opens specified database for writing. If database open successful, iterates thro
   </tr>
 </table>
 <hr><h2>Variable Documentation</h2>
-<a name="a18" doxytag="db.c::curr_expr_id"></a><p>
+<a name="a20" doxytag="db.c::curr_expr_id"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> int <a class="el" href="db_8c.html#a18">curr_expr_id</a> = 1
+          <td class="md" nowrap valign="top"> int <a class="el" href="db_8c.html#a20">curr_expr_id</a> = 1
       </table>
     </td>
   </tr>
@@ -1355,13 +1344,13 @@ Opens specified database for writing. If database open successful, iterates thro
 This static value contains the current expression ID number to use for the next expression found, it is incremented by one when an expression is found. This allows us to have a unique expression ID for each expression (since expressions have no intrinsic names).     </td>
   </tr>
 </table>
-<a name="a10" doxytag="db.c::curr_inst_scope"></a><p>
+<a name="a12" doxytag="db.c::curr_inst_scope"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> char* <a class="el" href="db_8c.html#a10">curr_inst_scope</a> = NULL
+          <td class="md" nowrap valign="top"> char* <a class="el" href="db_8c.html#a12">curr_inst_scope</a> = NULL
       </table>
     </td>
   </tr>
@@ -1377,13 +1366,13 @@ This static value contains the current expression ID number to use for the next 
 Specifies the string Verilog scope that is currently specified in the VCD file.     </td>
   </tr>
 </table>
-<a name="a11" doxytag="db.c::curr_instance"></a><p>
+<a name="a13" doxytag="db.c::curr_instance"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="structmod__inst__s.html">mod_inst</a>* <a class="el" href="db_8c.html#a11">curr_instance</a> = NULL
+          <td class="md" nowrap valign="top"> <a class="el" href="structmod__inst__s.html">mod_inst</a>* <a class="el" href="db_8c.html#a13">curr_instance</a> = NULL
       </table>
     </td>
   </tr>
@@ -1399,13 +1388,13 @@ Specifies the string Verilog scope that is currently specified in the VCD file. 
 Pointer to the current instance selected by the VCD parser. If this value is NULL, the current instance does not reside in the design specified for coverage.     </td>
   </tr>
 </table>
-<a name="a14" doxytag="db.c::curr_module"></a><p>
+<a name="a16" doxytag="db.c::curr_module"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="structmodule__s.html">module</a>* <a class="el" href="db_8c.html#a14">curr_module</a> = NULL
+          <td class="md" nowrap valign="top"> <a class="el" href="structmodule__s.html">module</a>* <a class="el" href="db_8c.html#a16">curr_module</a> = NULL
       </table>
     </td>
   </tr>
@@ -1418,10 +1407,10 @@ Pointer to the current instance selected by the VCD parser. If this value is NUL
     <td>
 
 <p>
-    </td>
+Pointer to the module structure for the module that is currently being parsed.     </td>
   </tr>
 </table>
-<a name="a19" doxytag="db.c::curr_sim_time"></a><p>
+<a name="a21" doxytag="db.c::curr_sim_time"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -1443,13 +1432,41 @@ Pointer to the current instance selected by the VCD parser. If this value is NUL
 This static value contains the current simulation time which is specified by the db_do_timestep function. It is used for calculating delay expressions in the simulation engine.     </td>
   </tr>
 </table>
+<a name="a11" doxytag="db.c::debug_mode"></a><p>
+<table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
+  <tr>
+    <td class="mdRow">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a181">bool</a> <a class="el" href="util_8c.html#a1">debug_mode</a> </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="mdname1" valign="top" nowrap>          </td>
+          <td class="md" valign="top">&nbsp;)&nbsp;</td>
+          <td class="md" nowrap></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+If set to TRUE, causes debug information to be spewed to screen.     </td>
+  </tr>
+</table>
 <a name="a9" doxytag="db.c::flag_scored"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a181">bool</a> <a class="el" href="parse_8c.html#a6">flag_scored</a> </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a181">bool</a> <a class="el" href="parse_8c.html#a5">flag_scored</a> </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>          </td>
           <td class="md" valign="top">&nbsp;)&nbsp;</td>
@@ -1497,6 +1514,28 @@ If this flag is set to a value of 1, it indicates that the current CDD file has 
 
 <p>
 Pointer to root of module instance tree     </td>
+  </tr>
+</table>
+<a name="a22" doxytag="db.c::last_sim_update"></a><p>
+<table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
+  <tr>
+    <td class="mdRow">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> int <a class="el" href="db_8c.html#a22">last_sim_update</a> = 0
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+Contains timestep value when simulation was last performed. This value is used to determine if the current timestep needs to be printed to standard output (if the -ts option is specified to the score command.     </td>
   </tr>
 </table>
 <a name="a8" doxytag="db.c::leading_hierarchy"></a><p>
@@ -1583,13 +1622,13 @@ Pointer to head element of module list     </td>
 Pointer to tail element of module list     </td>
   </tr>
 </table>
-<a name="a12" doxytag="db.c::modlist_head"></a><p>
+<a name="a14" doxytag="db.c::modlist_head"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="structstr__link__s.html">str_link</a>* <a class="el" href="parse_8c.html#a2">modlist_head</a> = NULL
+          <td class="md" nowrap valign="top"> <a class="el" href="structstr__link__s.html">str_link</a>* <a class="el" href="parse_8c.html#a1">modlist_head</a> = NULL
       </table>
     </td>
   </tr>
@@ -1602,16 +1641,16 @@ Pointer to tail element of module list     </td>
     <td>
 
 <p>
-    </td>
+Pointer to head of list of module names that need to be parsed yet. These names are added in the db_add_instance function and removed in the db_end_module function.     </td>
   </tr>
 </table>
-<a name="a13" doxytag="db.c::modlist_tail"></a><p>
+<a name="a15" doxytag="db.c::modlist_tail"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="structstr__link__s.html">str_link</a>* <a class="el" href="parse_8c.html#a3">modlist_tail</a> = NULL
+          <td class="md" nowrap valign="top"> <a class="el" href="structstr__link__s.html">str_link</a>* <a class="el" href="parse_8c.html#a2">modlist_tail</a> = NULL
       </table>
     </td>
   </tr>
@@ -1624,7 +1663,7 @@ Pointer to tail element of module list     </td>
     <td>
 
 <p>
-    </td>
+Pointer to tail of list of module names that need to be parsed yet. These names are added in the db_add_instance function and removed in the db_end_module function.     </td>
   </tr>
 </table>
 <a name="a2" doxytag="db.c::no_score_head"></a><p>
@@ -1711,13 +1750,13 @@ This flag is used to indicate if Covered was successfull in finding at least one
 OR operation table     </td>
   </tr>
 </table>
-<a name="a17" doxytag="db.c::postsim_timestep_tab"></a><p>
+<a name="a19" doxytag="db.c::postsim_timestep_tab"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="structsymtable__s.html">symtable</a>* <a class="el" href="db_8c.html#a17">postsim_timestep_tab</a> = NULL
+          <td class="md" nowrap valign="top"> <a class="el" href="structsymtable__s.html">symtable</a>* <a class="el" href="db_8c.html#a19">postsim_timestep_tab</a> = NULL
       </table>
     </td>
   </tr>
@@ -1730,16 +1769,16 @@ OR operation table     </td>
     <td>
 
 <p>
-    </td>
+Pointer to the post-simulation timestep table tree structure. This tree contains copies of the VCD symbol table tree entries that are to be evaluated just after simulation for a particular timestep.     </td>
   </tr>
 </table>
-<a name="a16" doxytag="db.c::presim_timestep_tab"></a><p>
+<a name="a18" doxytag="db.c::presim_timestep_tab"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="structsymtable__s.html">symtable</a>* <a class="el" href="db_8c.html#a16">presim_timestep_tab</a> = NULL
+          <td class="md" nowrap valign="top"> <a class="el" href="structsymtable__s.html">symtable</a>* <a class="el" href="db_8c.html#a18">presim_timestep_tab</a> = NULL
       </table>
     </td>
   </tr>
@@ -1752,7 +1791,35 @@ OR operation table     </td>
     <td>
 
 <p>
+Pointer to the pre-simulation timestep table tree structure. This tree contains copies of the VCD symbol table tree entries that are to be evaluated just prior to simulation for a particular timestep.     </td>
+  </tr>
+</table>
+<a name="a10" doxytag="db.c::timestep_update"></a><p>
+<table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
+  <tr>
+    <td class="mdRow">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> int <a class="el" href="score_8c.html#a7">timestep_update</a> </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="mdname1" valign="top" nowrap>          </td>
+          <td class="md" valign="top">&nbsp;)&nbsp;</td>
+          <td class="md" nowrap></td>
+        </tr>
+
+      </table>
     </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+Specifies timestep increment to display current time     </td>
   </tr>
 </table>
 <a name="a0" doxytag="db.c::top_module"></a><p>
@@ -1811,13 +1878,13 @@ Name of top-level module to score     </td>
 Holds some output that will be displayed via the print_output command. This is created globally so that memory does not need to be reallocated for each function that wishes to use it.     </td>
   </tr>
 </table>
-<a name="a15" doxytag="db.c::vcd_symtab"></a><p>
+<a name="a17" doxytag="db.c::vcd_symtab"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="structsymtable__s.html">symtable</a>* <a class="el" href="db_8c.html#a15">vcd_symtab</a> = NULL
+          <td class="md" nowrap valign="top"> <a class="el" href="structsymtable__s.html">symtable</a>* <a class="el" href="db_8c.html#a17">vcd_symtab</a> = NULL
       </table>
     </td>
   </tr>
@@ -1830,10 +1897,10 @@ Holds some output that will be displayed via the print_output command. This is c
     <td>
 
 <p>
-    </td>
+Pointer to the VCD symbol table tree structure that contains all signals and their corresponding VCD symbols. Tree elements are sorted by symbol name for quick lookup.     </td>
   </tr>
 </table>
-<hr size="1"><address style="align: right;"><small>Generated on Wed Aug 6 00:14:02 2003 for Covered by
+<hr size="1"><address style="align: right;"><small>Generated on Sat Aug 9 22:46:39 2003 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 > 
 </a>1.3.3 </small></address>

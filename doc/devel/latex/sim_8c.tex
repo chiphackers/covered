@@ -122,7 +122,7 @@ Searches through all statements in pre-simulation queue, searching for one that 
 
 Simulates current timestep. 
 
-This function is the heart of the simulation engine. It is called by the {\bf db\_\-do\_\-timestep()}{\rm (p.\,\pageref{db_8c_a45})} function in {\bf db.c}{\rm (p.\,\pageref{db_8c})} and moves the statements and expressions into the appropriate simulation functions. See above explanation on this procedure. \index{sim.c@{sim.c}!sim_statement@{sim\_\-statement}}
+This function is the heart of the simulation engine. It is called by the {\bf db\_\-do\_\-timestep()}{\rm (p.\,\pageref{db_8c_a48})} function in {\bf db.c}{\rm (p.\,\pageref{db_8c})} and moves the statements and expressions into the appropriate simulation functions. See above explanation on this procedure. \index{sim.c@{sim.c}!sim_statement@{sim\_\-statement}}
 \index{sim_statement@{sim\_\-statement}!sim.c@{sim.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf statement}$\ast$ sim\_\-statement ({\bf statement} $\ast$ {\em head\_\-stmt})}\label{sim_8c_a10}
 
@@ -147,18 +147,19 @@ OR operation table \index{sim.c@{sim.c}!presim_stmt_head@{presim\_\-stmt\_\-head
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf stmt\_\-link}$\ast$ {\bf presim\_\-stmt\_\-head} = NULL}\label{sim_8c_a3}
 
 
-\index{sim.c@{sim.c}!presim_stmt_tail@{presim\_\-stmt\_\-tail}}
+Pointer to head of statement list that contains all statements that will initially be simulated for the current timestep. \index{sim.c@{sim.c}!presim_stmt_tail@{presim\_\-stmt\_\-tail}}
 \index{presim_stmt_tail@{presim\_\-stmt\_\-tail}!sim.c@{sim.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf stmt\_\-link}$\ast$ {\bf presim\_\-stmt\_\-tail} = NULL}\label{sim_8c_a4}
 
 
-\index{sim.c@{sim.c}!static_expr_head@{static\_\-expr\_\-head}}
+Pointer to tail of statement list that contains all statements that will initially be simulated for the current timestep. \index{sim.c@{sim.c}!static_expr_head@{static\_\-expr\_\-head}}
 \index{static_expr_head@{static\_\-expr\_\-head}!sim.c@{sim.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf exp\_\-link}$\ast$ {\bf static\_\-expr\_\-head} = NULL}\label{sim_8c_a1}
 
 
-\index{sim.c@{sim.c}!static_expr_tail@{static\_\-expr\_\-tail}}
+Pointer to head of expression list that contains all expressions that contain static (non-changing) values. These expressions will be forced to be simulated, making sure that correct coverage numbers for expressions containing static values is maintained. \index{sim.c@{sim.c}!static_expr_tail@{static\_\-expr\_\-tail}}
 \index{static_expr_tail@{static\_\-expr\_\-tail}!sim.c@{sim.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf exp\_\-link}$\ast$ {\bf static\_\-expr\_\-tail} = NULL}\label{sim_8c_a2}
 
 
+Pointer to tail of expression list that contains all expressions that contain static (non-changing) values. These expressions will be forced to be simulated, making sure that correct coverage numbers for expressions containing static values is maintained. 

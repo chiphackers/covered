@@ -23,19 +23,33 @@
  Because both signals and expressions point to each other, we say that signals and
  expressions need to be bound to each other.  The process of binding takes place at
  two different points in the scoring process:
-   -# When an expression is parsed and the signal that it needs to point to is
-      a signal that is local to the current module that the expression exists in.
-      If the signal is not local (a hierarchical reference), we cannot bind at this
-      time because the signal may be referring to a signal in a module which has not
-      been parsed yet.  Because of this, binding also occurs in the second point of
-      the score command.
-   -# After all parsing has been performed, all signals and expressions which have
-      not been bound at point 1 are now bound.
+
+ \par
+ -# When an expression is parsed and the signal that it needs to point to is
+    a signal that is local to the current module that the expression exists in.
+    If the signal is not local (a hierarchical reference), we cannot bind at this
+    time because the signal may be referring to a signal in a module which has not
+    been parsed yet.  Because of this, binding also occurs in the second point of
+    the score command.
+ -# After all parsing has been performed, all signals and expressions which have
+    not been bound at point 1 are now bound.
 
  \par Implicit Signal Creation
- The Verilog 
+ In several Verilog simulators, the automatic creation of one-bit wires is allowed.
+ These signals are considered "automatically created" because they are not declared
+ in either the port list or the wire list for its particular module.  Therefore, when the
+ binding process occurs and a signal structure has not been created for a used signal
+ (because the signal was not declared in the port list or wire list), the bind_perform
+ function needs to do one of the following:
 
-
+ \par
+ -# If the signal name expresses a signal name that will be local to the current
+    module (i.e., there aren't any periods in the signal name), automatically create
+    a one-bit signal for the missing signal and bind this new signal to the expression
+    that uses the implicit signal.
+ -# If the signal name expresses a signal name that will be remote to the current
+    module (i.e., if there are periods in the signal name), generate an error message
+    to the user about using a bad hierarchical reference.
 */
 
 #ifdef HAVE_CONFIG_H
@@ -59,12 +73,19 @@
 #include "param.h"
 
 
-sig_exp_bind* seb_head;
-sig_exp_bind* seb_tail;
-
 extern mod_inst* instance_root;
 extern mod_link* mod_head;
 extern char      user_msg[USER_MSG_LENGTH];
+
+/*!
+ Pointer to the head of the signal/expression binding list.
+*/
+sig_exp_bind* seb_head;
+
+/*!
+ Pointer to the tail of the signal/expression binding list.
+*/
+sig_exp_bind* seb_tail;
 
 /*!
  \param sig_name  Signal scope to bind.
@@ -323,6 +344,11 @@ void bind() {
 
 /* 
  $Log$
+ Revision 1.23  2003/08/09 22:10:41  phase1geo
+ Removing wait event signals from CDD file generation in support of another method
+ that fixes a bug when multiple wait event statements exist within the same
+ statement tree.
+
  Revision 1.22  2003/02/18 13:35:51  phase1geo
  Updates for RedHat8.0 compilation.
 
