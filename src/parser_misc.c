@@ -6,23 +6,30 @@
 
 #include <stdio.h>
 
-#include  "parser_misc.h"
+#include "parser_misc.h"
+#include "util.h"
 
-extern const char*vl_file;
+extern const char* vl_file;
+extern char        user_msg[USER_MSG_LENGTH];
+
 unsigned error_count = 0;
-unsigned warn_count = 0;
+unsigned warn_count  = 0;
 
 void VLerror( char* msg ) {
 
   error_count += 1;
-  fprintf( stderr, "%s\n", msg );
+  
+  snprintf( user_msg, USER_MSG_LENGTH, "%s,   file: %s, line: %d", msg, yylloc.text, yylloc.first_line );
+  print_output( user_msg, FATAL );
 
 }
 
-void yywarn( char* msg ) {
+void VLwarn( char* msg ) {
 
   warn_count += 1;
-  fprintf( stderr, "%s\n", msg );
+  
+  snprintf( user_msg, USER_MSG_LENGTH, "%s,   file: %s, line: %d", msg, yylloc.text, yylloc.first_line );
+  print_output( user_msg, WARNING );
 
 }
 
@@ -31,4 +38,8 @@ int VLwrap() {
   return -1;
 
 }
+
+/*
+ $Log$
+*/
 

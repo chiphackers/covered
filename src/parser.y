@@ -597,13 +597,45 @@ expression
         $$ = NULL;
       }
     }
+  | '+' error %prec UNARY_PREC
+    {
+      VLerror( "Operand of signed positive + is not a primary expression" );
+    }
+  | '-' error %prec UNARY_PREC
+    {
+      VLerror( "Operand of signed negative - is not a primary expression" );
+    }
+  | '~' error %prec UNARY_PREC
+    {
+      VLerror( "Operand of unary ~ is not a primary expression" );
+    }
+  | '&' error %prec UNARY_PREC
+    {
+      VLerror( "Operand of reduction & is not a primary expression" );
+    }
   | '!' error %prec UNARY_PREC
     {
-      /* yyerror( @1, "error: Operand of unary ! is not a primary expression." ); */
+      VLerror( "Operand of unary ! is not a primary expression" );
+    }
+  | '|' error %prec UNARY_PREC
+    {
+      VLerror( "Operand of reduction | is not a primary expression" );
     }
   | '^' error %prec UNARY_PREC
     {
-      /* yyerror( @1, "error: Operand of reduction ^ is not a primary expression." ); */
+      VLerror( "Operand of reduction ^ is not a primary expression" );
+    }
+  | K_NAND error %prec UNARY_PREC
+    {
+      VLerror( "Operand of reduction ~& is not a primary expression" );
+    }
+  | K_NOR error %prec UNARY_PREC
+    {
+      VLerror( "Operand of reduction ~| is not a primary expression" );
+    }
+  | K_NXOR error %prec UNARY_PREC
+    {
+      VLerror( "Operand of reduction ~^ is not a primary expression" );
     }
   | expression '^' expression
     {
@@ -1307,7 +1339,6 @@ module_item
           db_add_signal( curr->str, &left, &right );
           curr = curr->next;
         }
-        /* What to do about assignments? */
       }
       str_link_delete_list( $3 );
     }
@@ -1343,9 +1374,7 @@ module_item
       if( $2 != NULL ) {
         free_safe( $2 );
       }
-      /* yyerror( @3, "error: Invalid variable list in port declaration.");
-         if( $2 ) delete $2;
-         yyerrok; */
+      VLerror( "Invalid variable list in port declaration" );
     }
   | block_item_decl
   | K_defparam defparam_assign_list ';'
@@ -1408,22 +1437,19 @@ module_item
   | K_specify error K_endspecify
   | error ';'
     {
-      /* yyerror( @1, "error: invalid module item.  Did you forget an initial or always?" );
-         yyerrok; */
+      VLerror( "Invalid module item.  Did you forget an initial or always?" );
     }
   | K_assign error '=' { ignore_mode++; } expression { ignore_mode--; } ';'
     {
-      /* yyerror( @1, "error: syntax error in left side of continuous assignment." );
-         yyerrok; */
+      VLerror( "Syntax error in left side of continuous assignment" );
     }
   | K_assign error ';'
     {
-      /* yyerror( @1, "error: syntax error in continuous assignment." );
-         yyerrok; */
+      VLerror( "Syntax error in continuous assignment" );
     }
   | K_function error K_endfunction
     {
-      /* yyerrok( @1, "error: I give up on this function definition" );
+      /* yyerror( @1, "error: I give up on this function definition" );
          yyerrok; */
     }
   | KK_attribute '(' { ignore_mode++; } UNUSED_IDENTIFIER ',' UNUSED_STRING ',' UNUSED_STRING { ignore_mode--; }')' ';'
@@ -1464,7 +1490,7 @@ statement
     }
   | K_begin error K_end
     {
-      yyerrok;
+      VLerror( "Illegal syntax in begin/end block" );
       $$ = NULL;
     }
   | K_fork { ignore_mode++; } fork_statement { ignore_mode--; } K_join
@@ -1619,6 +1645,7 @@ statement
       if( ignore_mode == 0 ) {
         expression_dealloc( $3, FALSE );
       }
+      VLerror( "Illegal case expression" );
       $$ = NULL;
     }
   | K_casex '(' expression ')' error K_endcase
@@ -1626,6 +1653,7 @@ statement
       if( ignore_mode == 0 ) {
         expression_dealloc( $3, FALSE );
       }
+      VLerror( "Illegal casex expression" );
       $$ = NULL;
     }
   | K_casez '(' expression ')' error K_endcase
@@ -1633,6 +1661,7 @@ statement
       if( ignore_mode == 0 ) {
         expression_dealloc( $3, FALSE );
       }
+      VLerror( "Illegal casez expression" );
       $$ = NULL;
     }
   | K_if '(' expression ')' statement_opt %prec less_than_K_else
@@ -1667,6 +1696,7 @@ statement
     }
   | K_if '(' error ')' { ignore_mode++; } if_statement_error { ignore_mode--; }
     {
+      VLerror( "Illegal conditional if expression" );
       $$ = NULL;
     }
   | K_for { ignore_mode++; } for_statement { ignore_mode--; }
@@ -1830,8 +1860,7 @@ statement
     }
   | error ';'
     {
-      /* yyerror( @1, "error: Malformed statement." );
-         yyerrok; */
+      VLerror( "Illegal statement" );
       $$ = NULL;
     }
   ;
@@ -2073,8 +2102,15 @@ block_item_decl
   | K_localparam localparam_assign_list ';'
   | K_reg error ';'
     {
-      /* yyerror( @1, "error: syntax error in reg variable list." );
-         yyerrok; */
+      VLerror( "Syntax error in reg variable list" );
+    }
+  | K_parameter error ';'
+    {
+      VLerror( "Syntax error in parameter variable list" );
+    }
+  | K_localparam error ';'
+    {
+      VLerror( "Syntax error in localparam list" );
     }
   ;	
 
@@ -2123,8 +2159,7 @@ case_item
     }
   | error { ignore_mode++; } ':' statement_opt { ignore_mode--; }
     {
-      /* yyerror( @1, "error: Incomprehensible case expression." );
-         yyerrok; */
+      VLerror( "Illegal case expression" );
     }
   ;
 
@@ -2713,6 +2748,7 @@ event_control
     }
   | '@' '(' error ')'
     {
+      VLerror( "Illegal event control expression" );
       $$ = NULL;
     }
   ;
@@ -2846,6 +2882,9 @@ parameter_value_opt
     }
   | '#' UNUSED_NUMBER
   | '#' error
+    {
+      VLerror( "Syntax error in parameter value assignment list" );
+    }
   |
   ;
 
