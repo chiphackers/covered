@@ -245,8 +245,11 @@ WSPACE [ \t\b\f]+
 [0-9][0-9_]*[ \t]*\'[sS]?[dD][ \t]*[0-9][0-9_]* {
      if( ignore_mode == 0 ) {
        yylval.number = vector_from_string( &yytext );
-       assert( yylval.number != NULL );
-       return NUMBER;
+       if( yylval.number != NULL ) {
+         return NUMBER;
+       } else {
+         return UNUSED_NUMBER;
+       }
      } else {
        return UNUSED_NUMBER;
      }
@@ -256,8 +259,11 @@ WSPACE [ \t\b\f]+
 [0-9][0-9_]*[ \t]*\'[sS]?[bB][ \t]*[0-1xzXZ_\?]+ {
      if( ignore_mode == 0 ) {
        yylval.number = vector_from_string( &yytext );
-       assert( yylval.number != NULL );
-       return NUMBER;
+       if( yylval.number != NULL ) {
+         return NUMBER;
+       } else {
+         return UNUSED_NUMBER;
+       }
      } else {
        return UNUSED_NUMBER;
      }
@@ -267,8 +273,11 @@ WSPACE [ \t\b\f]+
 [0-9][0-9_]*[ \t]*\'[sS]?[oO][ \t]*[0-7xzXZ_\?]+ {
      if( ignore_mode == 0 ) {
        yylval.number = vector_from_string( &yytext );
-       assert( yylval.number != NULL );
-       return NUMBER;
+       if( yylval.number != NULL ) {
+         return NUMBER;
+       } else {
+         return UNUSED_NUMBER;
+       }
      } else {
        return UNUSED_NUMBER;
      }
@@ -278,8 +287,11 @@ WSPACE [ \t\b\f]+
 [0-9][0-9_]*[ \t]*\'[sS]?[hH][ \t]*[0-9a-fA-FxzXZ_\?]+ {
      if( ignore_mode == 0 ) {
        yylval.number = vector_from_string( &yytext );
-       assert( yylval.number != NULL );
-       return NUMBER;
+       if( yylval.number != NULL ) {
+         return NUMBER;
+       } else {
+         return UNUSED_NUMBER;
+       }
      } else {
        return UNUSED_NUMBER;
      }
@@ -289,8 +301,11 @@ WSPACE [ \t\b\f]+
 \'[sS]?[dD][ \t]*[0-9][0-9_]* {
      if( ignore_mode == 0 ) {
        yylval.number = vector_from_string( &yytext );
-       assert( yylval.number != NULL );
-       return NUMBER;
+       if( yylval.number != NULL ) {
+         return NUMBER;
+       } else {
+         return UNUSED_NUMBER;
+       }
      } else {
        return UNUSED_NUMBER;
      }
@@ -300,8 +315,11 @@ WSPACE [ \t\b\f]+
 \'[sS]?[bB][ \t]*[0-1xzXZ_\?]+ {
      if( ignore_mode == 0 ) {
        yylval.number = vector_from_string( &yytext );
-       assert( yylval.number != NULL );
-       return NUMBER;
+       if( yylval.number != NULL ) {
+         return NUMBER;
+       } else {
+         return UNUSED_NUMBER;
+       }
      } else {
        return UNUSED_NUMBER;
      }
@@ -311,8 +329,11 @@ WSPACE [ \t\b\f]+
 \'[sS]?[oO][ \t]*[0-7xzXZ_\?]+ {
      if( ignore_mode == 0 ) {
        yylval.number = vector_from_string( &yytext );
-       assert( yylval.number != NULL );
-       return NUMBER;
+       if( yylval.number != NULL ) {
+         return NUMBER;
+       } else {
+         return UNUSED_NUMBER;
+       }
      } else {
        return UNUSED_NUMBER;
      }
@@ -322,8 +343,11 @@ WSPACE [ \t\b\f]+
 \'[sS]?[hH][ \t]*[0-9a-fA-FxzXZ_\?]+ {
      if( ignore_mode == 0 ) {
        yylval.number = vector_from_string( &yytext );
-       assert( yylval.number != NULL );
-       return NUMBER;
+       if( yylval.number != NULL ) {
+         return NUMBER;
+       } else {
+         return UNUSED_NUMBER;
+       }
      } else {
        return UNUSED_NUMBER;
      }
@@ -333,8 +357,11 @@ WSPACE [ \t\b\f]+
 [0-9][0-9_]* {
      if( ignore_mode == 0 ) {
        yylval.number = vector_from_string( &yytext );
-       assert( yylval.number != NULL );
-       return NUMBER;
+       if( yylval.number != NULL ) {
+         return NUMBER;
+       } else {
+         return UNUSED_NUMBER;
+       }
      } else {
        return UNUSED_NUMBER;
      }

@@ -88,7 +88,7 @@ void signal_db_write( signal* sig, FILE* file, char* modname ) {
   exp_link* curr;      /* Pointer to current expression link element */
 
   /* Don't write this signal if it isn't usable by Covered */
-  if( sig->name[0] != '!' ) {
+  if( (sig->name[0] != '!') && (sig->value->width != -1) ) {
 
     /* Display identification and value information first */
     fprintf( file, "%d %s %s %d ",
@@ -443,6 +443,9 @@ void signal_dealloc( signal* sig ) {
 
 /*
  $Log$
+ Revision 1.44  2003/11/05 05:22:56  phase1geo
+ Final fix for bug 835366.  Full regression passes once again.
+
  Revision 1.43  2003/10/20 16:05:06  phase1geo
  Fixing bug for older versions of Icarus that does not output the correct
  bit select in the VCD dumpfile.  Covered will automatically adjust the bit-select

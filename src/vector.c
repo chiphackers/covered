@@ -866,7 +866,8 @@ char* vector_to_string( vector* vec, int type ) {
  \return Returns pointer to newly created vector holding string value.
 
  Converts a string value from the lexer into a vector structure appropriately
- sized.
+ sized.  If the string value size exceeds Covered's maximum bit allowance, return
+ a value of NULL to indicate this to the calling function.
 */
 vector* vector_from_string( char** str ) {
 
@@ -924,18 +925,24 @@ vector* vector_from_string( char** str ) {
     return( NULL );
   }
 
-  /* Verify that we have not exceeded the maximum number of bits */
-  assert( size <= MAX_BIT_WIDTH );
+  /* If we have exceeded the maximum number of bits, return a value of NULL */
+  if( size > MAX_BIT_WIDTH ) {
 
-  /* Create vector */
-  vec = vector_create( size, TRUE );
+    vec = NULL;
 
-  vec->suppl = type;
-
-  if( type == DECIMAL ) {
-    vector_from_int( vec, atol( value ) );
   } else {
-    vector_set_static( vec, value, bits_per_char ); 
+
+    /* Create vector */
+    vec = vector_create( size, TRUE );
+
+    vec->suppl = type;
+
+    if( type == DECIMAL ) {
+      vector_from_int( vec, atol( value ) );
+    } else {
+      vector_set_static( vec, value, bits_per_char ); 
+    }
+
   }
 
   return( vec );
@@ -1476,6 +1483,9 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.43  2003/11/05 05:22:56  phase1geo
+ Final fix for bug 835366.  Full regression passes once again.
+
  Revision 1.42  2003/10/30 05:05:13  phase1geo
  Partial fix to bug 832730.  This doesn't seem to completely fix the parameter
  case, however.

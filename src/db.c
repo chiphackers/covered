@@ -619,6 +619,15 @@ void db_add_signal( char* name, static_expr* left, static_expr* right ) {
 
     static_expr_calc_lsb_and_width( left, right, &width, &lsb );
 
+    /* Check to make sure that signal width does not exceed maximum size */
+    if( width > MAX_BIT_WIDTH ) {
+      snprintf( user_msg, USER_MSG_LENGTH, "Signal (%s) width (%d) exceeds maximum allowed by Covered (%d).  Ignoring...", name, width, MAX_BIT_WIDTH );
+      print_output( user_msg, WARNING );
+      width = -1;
+      left  = NULL;
+      right = NULL;
+    }  
+
     if( (lsb != -1) && (width != -1) ) { 
       sig = signal_create( name, width, lsb );
     } else {
@@ -1242,6 +1251,9 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.106  2003/10/28 01:09:38  phase1geo
+ Cleaning up unnecessary output.
+
  Revision 1.105  2003/10/28 00:18:05  phase1geo
  Adding initial support for inline attributes to specify FSMs.  Still more
  work to go but full regression still passes at this point.
