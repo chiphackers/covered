@@ -5,7 +5,7 @@ LINE COVERAGE RESULTS BY MODULE
 -------------------------------
 Module                    Filename                Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    mbit_sel3.1.v              1/   0/   1      100%
+  main                    mbit_sel3.1.v             1/   0/   1      100%
 =================================================================================
 
 TOGGLE COVERAGE RESULTS BY MODULE
@@ -13,7 +13,7 @@ TOGGLE COVERAGE RESULTS BY MODULE
 Module                    Filename                         Toggle 0 -> 1                    Toggle 1 -> 0
                                                   Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
 ----------------------------------------------------------------------------------------------------------------
-  main                    mbit_sel3.1.v              0/ 177/ 177        0%            0/ 177/ 177        0%
+  main                    mbit_sel3.1.v             0/ 177/ 177        0%            0/ 177/ 177        0%
 
 Module: main, File: mbit_sel3.1.v
 --------------------------------------------------------
@@ -32,7 +32,7 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY MODULE
 Module                    Filename                     Logical Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    mbit_sel3.1.v              1/   1/   2       50%
+  main                    mbit_sel3.1.v             1/   1/   2       50%
 
 Module: main, File: mbit_sel3.1.v
 --------------------------------------------------------
@@ -50,4 +50,14 @@ Expression 1
 -------
    0
 
+
+=================================================================================
+
+FINITE STATE MACHINE COVERAGE RESULTS BY MODULE
+-----------------------------------------------
+                                                               State                             Arc
+Module                    Filename                Hit/Miss/Total    Percent Hit    Hit/Miss/Total    Percent hit
+----------------------------------------------------------------------------------------------------------------
+  main                    mbit_sel3.1.v             0/   0/   0      100%            0/   0/   0      100%
+=================================================================================
 

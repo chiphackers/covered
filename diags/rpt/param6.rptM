@@ -5,7 +5,7 @@ LINE COVERAGE RESULTS BY MODULE
 -------------------------------
 Module                    Filename                Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    param6.v                   1/   0/   1      100%
+  main                    param6.v                  1/   0/   1      100%
 =================================================================================
 
 TOGGLE COVERAGE RESULTS BY MODULE
@@ -13,7 +13,7 @@ TOGGLE COVERAGE RESULTS BY MODULE
 Module                    Filename                         Toggle 0 -> 1                    Toggle 1 -> 0
                                                   Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
 ----------------------------------------------------------------------------------------------------------------
-  main                    param6.v                   0/  10/  10        0%            0/  10/  10        0%
+  main                    param6.v                  0/  10/  10        0%            0/  10/  10        0%
 
 Module: main, File: param6.v
 --------------------------------------------------------
@@ -32,7 +32,7 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY MODULE
 Module                    Filename                     Logical Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    param6.v                   5/   1/   6       83%
+  main                    param6.v                  5/   1/   6       83%
 
 Module: main, File: param6.v
 --------------------------------------------------------
@@ -50,4 +50,14 @@ Expression 1
 -------
    0
 
+
+=================================================================================
+
+FINITE STATE MACHINE COVERAGE RESULTS BY MODULE
+-----------------------------------------------
+                                                               State                             Arc
+Module                    Filename                Hit/Miss/Total    Percent Hit    Hit/Miss/Total    Percent hit
+----------------------------------------------------------------------------------------------------------------
+  main                    param6.v                  0/   0/   0      100%            0/   0/   0      100%
+=================================================================================
 

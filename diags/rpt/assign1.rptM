@@ -5,7 +5,7 @@ LINE COVERAGE RESULTS BY MODULE
 -------------------------------
 Module                    Filename                Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    assign1.v                 38/   0/  38      100%
+  main                    assign1.v                38/   0/  38      100%
 =================================================================================
 
 TOGGLE COVERAGE RESULTS BY MODULE
@@ -13,7 +13,7 @@ TOGGLE COVERAGE RESULTS BY MODULE
 Module                    Filename                         Toggle 0 -> 1                    Toggle 1 -> 0
                                                   Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
 ----------------------------------------------------------------------------------------------------------------
-  main                    assign1.v                 79/ 185/ 264       30%           79/ 185/ 264       30%
+  main                    assign1.v                79/ 185/ 264       30%           79/ 185/ 264       30%
 
 Module: main, File: assign1.v
 --------------------------------------------------------
@@ -42,4 +42,14 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY MODULE
 Module                    Filename                     Logical Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    assign1.v                 76/   0/  76      100%
+  main                    assign1.v                76/   0/  76      100%
+=================================================================================
+
+FINITE STATE MACHINE COVERAGE RESULTS BY MODULE
+-----------------------------------------------
+                                                               State                             Arc
+Module                    Filename                Hit/Miss/Total    Percent Hit    Hit/Miss/Total    Percent hit
+----------------------------------------------------------------------------------------------------------------
+  main                    assign1.v                 0/   0/   0      100%            0/   0/   0      100%
+=================================================================================
+

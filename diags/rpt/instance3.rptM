@@ -5,8 +5,8 @@ LINE COVERAGE RESULTS BY MODULE
 -------------------------------
 Module                    Filename                Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    instance3.v                0/   0/   0      100%
-  foo                     instance3.v                2/   1/   3       67%
+  main                    instance3.v               0/   0/   0      100%
+  foo                     instance3.v               2/   1/   3       67%
 
 Module: foo, File: instance3.v
 --------------------------------------------------------
@@ -21,8 +21,8 @@ TOGGLE COVERAGE RESULTS BY MODULE
 Module                    Filename                         Toggle 0 -> 1                    Toggle 1 -> 0
                                                   Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
 ----------------------------------------------------------------------------------------------------------------
-  main                    instance3.v                0/   0/   0      100%            0/   0/   0      100%
-  foo                     instance3.v                1/   3/   4       25%            1/   3/   4       25%
+  main                    instance3.v               0/   0/   0      100%            0/   0/   0      100%
+  foo                     instance3.v               1/   3/   4       25%            1/   3/   4       25%
 
 Module: foo, File: instance3.v
 --------------------------------------------------------
@@ -45,8 +45,8 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY MODULE
 Module                    Filename                     Logical Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    instance3.v                0/   0/   0      100%
-  foo                     instance3.v                5/   3/   8       62%
+  main                    instance3.v               0/   0/   0      100%
+  foo                     instance3.v               5/   3/   8       62%
 
 Module: foo, File: instance3.v
 --------------------------------------------------------
@@ -72,4 +72,15 @@ Expression 1
    0
    1
 
+
+=================================================================================
+
+FINITE STATE MACHINE COVERAGE RESULTS BY MODULE
+-----------------------------------------------
+                                                               State                             Arc
+Module                    Filename                Hit/Miss/Total    Percent Hit    Hit/Miss/Total    Percent hit
+----------------------------------------------------------------------------------------------------------------
+  main                    instance3.v               0/   0/   0      100%            0/   0/   0      100%
+  foo                     instance3.v               0/   0/   0      100%            0/   0/   0      100%
+=================================================================================
 

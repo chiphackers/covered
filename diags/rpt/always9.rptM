@@ -5,7 +5,7 @@ LINE COVERAGE RESULTS BY MODULE
 -------------------------------
 Module                    Filename                Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    always9.v                 31/  22/  53       58%
+  main                    always9.v                31/  22/  53       58%
 
 Module: main, File: always9.v
 --------------------------------------------------------
@@ -41,7 +41,7 @@ TOGGLE COVERAGE RESULTS BY MODULE
 Module                    Filename                         Toggle 0 -> 1                    Toggle 1 -> 0
                                                   Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
 ----------------------------------------------------------------------------------------------------------------
-  main                    always9.v                  4/  49/  53        8%            2/  51/  53        4%
+  main                    always9.v                 4/  49/  53        8%            2/  51/  53        4%
 
 Module: main, File: always9.v
 --------------------------------------------------------
@@ -70,7 +70,7 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY MODULE
 Module                    Filename                     Logical Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    always9.v                 10/  46/  56       18%
+  main                    always9.v                10/  46/  56       18%
 
 Module: main, File: always9.v
 --------------------------------------------------------
@@ -417,4 +417,14 @@ Expression 1
    0
    1
 
+
+=================================================================================
+
+FINITE STATE MACHINE COVERAGE RESULTS BY MODULE
+-----------------------------------------------
+                                                               State                             Arc
+Module                    Filename                Hit/Miss/Total    Percent Hit    Hit/Miss/Total    Percent hit
+----------------------------------------------------------------------------------------------------------------
+  main                    always9.v                 0/   0/   0      100%            0/   0/   0      100%
+=================================================================================
 

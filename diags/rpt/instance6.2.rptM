@@ -5,9 +5,9 @@ LINE COVERAGE RESULTS BY MODULE
 -------------------------------
 Module                    Filename                Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    instance6.2.v              0/   0/   0      100%
-  foobar                  instance6.2.v              1/   0/   1      100%
-  barfoo                  instance6.2.v              0/   0/   0      100%
+  main                    instance6.2.v             0/   0/   0      100%
+  foobar                  instance6.2.v             1/   0/   1      100%
+  barfoo                  instance6.2.v             0/   0/   0      100%
 =================================================================================
 
 TOGGLE COVERAGE RESULTS BY MODULE
@@ -15,9 +15,9 @@ TOGGLE COVERAGE RESULTS BY MODULE
 Module                    Filename                         Toggle 0 -> 1                    Toggle 1 -> 0
                                                   Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
 ----------------------------------------------------------------------------------------------------------------
-  main                    instance6.2.v              2/   6/   8       25%            1/   7/   8       12%
-  foobar                  instance6.2.v              3/   3/   6       50%            2/   4/   6       33%
-  barfoo                  instance6.2.v              0/   4/   4        0%            0/   4/   4        0%
+  main                    instance6.2.v             2/   6/   8       25%            1/   7/   8       12%
+  foobar                  instance6.2.v             3/   3/   6       50%            2/   4/   6       33%
+  barfoo                  instance6.2.v             0/   4/   4        0%            0/   4/   4        0%
 
 Module: main, File: instance6.2.v
 --------------------------------------------------------
@@ -56,6 +56,18 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY MODULE
 Module                    Filename                     Logical Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    instance6.2.v              0/   0/   0      100%
-  foobar                  instance6.2.v              2/   0/   2      100%
-  barfoo                  instance6.2.v              0/   0/   0      100%
+  main                    instance6.2.v             0/   0/   0      100%
+  foobar                  instance6.2.v             2/   0/   2      100%
+  barfoo                  instance6.2.v             0/   0/   0      100%
+=================================================================================
+
+FINITE STATE MACHINE COVERAGE RESULTS BY MODULE
+-----------------------------------------------
+                                                               State                             Arc
+Module                    Filename                Hit/Miss/Total    Percent Hit    Hit/Miss/Total    Percent hit
+----------------------------------------------------------------------------------------------------------------
+  main                    instance6.2.v             0/   0/   0      100%            0/   0/   0      100%
+  foobar                  instance6.2.v             0/   0/   0      100%            0/   0/   0      100%
+  barfoo                  instance6.2.v             0/   0/   0      100%            0/   0/   0      100%
+=================================================================================
+

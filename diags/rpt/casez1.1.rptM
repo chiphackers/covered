@@ -5,7 +5,7 @@ LINE COVERAGE RESULTS BY MODULE
 -------------------------------
 Module                    Filename                Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    casez1.1.v                 4/   1/   5       80%
+  main                    casez1.1.v                4/   1/   5       80%
 
 Module: main, File: casez1.1.v
 --------------------------------------------------------
@@ -20,7 +20,7 @@ TOGGLE COVERAGE RESULTS BY MODULE
 Module                    Filename                         Toggle 0 -> 1                    Toggle 1 -> 0
                                                   Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
 ----------------------------------------------------------------------------------------------------------------
-  main                    casez1.1.v                 1/   1/   2       50%            0/   2/   2        0%
+  main                    casez1.1.v                1/   1/   2       50%            0/   2/   2        0%
 
 Module: main, File: casez1.1.v
 --------------------------------------------------------
@@ -39,7 +39,7 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY MODULE
 Module                    Filename                     Logical Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    casez1.1.v                 3/   1/   4       75%
+  main                    casez1.1.v                3/   1/   4       75%
 
 Module: main, File: casez1.1.v
 --------------------------------------------------------
@@ -57,4 +57,14 @@ Expression 1
 -------
    0
 
+
+=================================================================================
+
+FINITE STATE MACHINE COVERAGE RESULTS BY MODULE
+-----------------------------------------------
+                                                               State                             Arc
+Module                    Filename                Hit/Miss/Total    Percent Hit    Hit/Miss/Total    Percent hit
+----------------------------------------------------------------------------------------------------------------
+  main                    casez1.1.v                0/   0/   0      100%            0/   0/   0      100%
+=================================================================================
 

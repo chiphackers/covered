@@ -5,7 +5,7 @@ LINE COVERAGE RESULTS BY MODULE
 -------------------------------
 Module                    Filename                Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    tri.v                      3/   0/   3      100%
+  main                    tri.v                     3/   0/   3      100%
 =================================================================================
 
 TOGGLE COVERAGE RESULTS BY MODULE
@@ -13,7 +13,7 @@ TOGGLE COVERAGE RESULTS BY MODULE
 Module                    Filename                         Toggle 0 -> 1                    Toggle 1 -> 0
                                                   Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
 ----------------------------------------------------------------------------------------------------------------
-  main                    tri.v                      3/   4/   7       43%            3/   4/   7       43%
+  main                    tri.v                     3/   4/   7       43%            3/   4/   7       43%
 
 Module: main, File: tri.v
 --------------------------------------------------------
@@ -38,7 +38,7 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY MODULE
 Module                    Filename                     Logical Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    tri.v                      4/   4/   8       50%
+  main                    tri.v                     4/   4/   8       50%
 
 Module: main, File: tri.v
 --------------------------------------------------------
@@ -92,4 +92,14 @@ Expression 2
  1+| 0 |    1
  1+| 1+|    1
 
+
+=================================================================================
+
+FINITE STATE MACHINE COVERAGE RESULTS BY MODULE
+-----------------------------------------------
+                                                               State                             Arc
+Module                    Filename                Hit/Miss/Total    Percent Hit    Hit/Miss/Total    Percent hit
+----------------------------------------------------------------------------------------------------------------
+  main                    tri.v                     0/   0/   0      100%            0/   0/   0      100%
+=================================================================================
 

@@ -5,7 +5,7 @@ LINE COVERAGE RESULTS BY MODULE
 -------------------------------
 Module                    Filename                Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    implicit2.v                0/   0/   0      100%
+  main                    implicit2.v               0/   0/   0      100%
 =================================================================================
 
 TOGGLE COVERAGE RESULTS BY MODULE
@@ -13,7 +13,7 @@ TOGGLE COVERAGE RESULTS BY MODULE
 Module                    Filename                         Toggle 0 -> 1                    Toggle 1 -> 0
                                                   Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
 ----------------------------------------------------------------------------------------------------------------
-  main                    implicit2.v                1/   5/   6       17%            2/   4/   6       33%
+  main                    implicit2.v               1/   5/   6       17%            2/   4/   6       33%
 
 Module: main, File: implicit2.v
 --------------------------------------------------------
@@ -34,4 +34,14 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY MODULE
 Module                    Filename                     Logical Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    implicit2.v                0/   0/   0      100%
+  main                    implicit2.v               0/   0/   0      100%
+=================================================================================
+
+FINITE STATE MACHINE COVERAGE RESULTS BY MODULE
+-----------------------------------------------
+                                                               State                             Arc
+Module                    Filename                Hit/Miss/Total    Percent Hit    Hit/Miss/Total    Percent hit
+----------------------------------------------------------------------------------------------------------------
+  main                    implicit2.v               0/   0/   0      100%            0/   0/   0      100%
+=================================================================================
+

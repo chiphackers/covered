@@ -5,7 +5,7 @@ LINE COVERAGE RESULTS BY MODULE
 -------------------------------
 Module                    Filename                Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    assign3.2A.v               3/   0/   3      100%
+  main                    assign3.2A.v              3/   0/   3      100%
 =================================================================================
 
 TOGGLE COVERAGE RESULTS BY MODULE
@@ -13,7 +13,7 @@ TOGGLE COVERAGE RESULTS BY MODULE
 Module                    Filename                         Toggle 0 -> 1                    Toggle 1 -> 0
                                                   Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
 ----------------------------------------------------------------------------------------------------------------
-  main                    assign3.2A.v               0/  82/  82        0%            0/  82/  82        0%
+  main                    assign3.2A.v              0/  82/  82        0%            0/  82/  82        0%
 
 Module: main, File: assign3.2A.v
 --------------------------------------------------------
@@ -38,7 +38,7 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY MODULE
 Module                    Filename                     Logical Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    assign3.2A.v               3/   3/   6       50%
+  main                    assign3.2A.v              3/   3/   6       50%
 
 Module: main, File: assign3.2A.v
 --------------------------------------------------------
@@ -82,4 +82,14 @@ Expression 1
 -------
    0
 
+
+=================================================================================
+
+FINITE STATE MACHINE COVERAGE RESULTS BY MODULE
+-----------------------------------------------
+                                                               State                             Arc
+Module                    Filename                Hit/Miss/Total    Percent Hit    Hit/Miss/Total    Percent hit
+----------------------------------------------------------------------------------------------------------------
+  main                    assign3.2A.v              0/   0/   0      100%            0/   0/   0      100%
+=================================================================================
 
