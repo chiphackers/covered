@@ -79,6 +79,8 @@ void instance_add( mod_inst** root, char* parent, module* child, char* inst_name
   mod_inst* inst;      /* Temporary pointer to module instance to add to */
   mod_inst* new_inst;  /* Pointer to new module instance to add          */
   
+  printf( "In instance_add, parent scope: %s, child instance: %s\n", parent, inst_name );
+
   new_inst             = (mod_inst*)malloc_safe( sizeof( mod_inst ) );
   new_inst->mod        = child;
   new_inst->name       = strdup( inst_name );

@@ -304,6 +304,7 @@ void db_add_instance( char* scope, char* modname ) {
 
     snprintf( msg, 4096, "In db_add_instance, instance: %s, module: %s", scope, modname );
     print_output( msg, DEBUG );
+    printf( "%s\n", msg );
 
     /* Create new module node */
     mod       = module_create();
@@ -963,6 +964,9 @@ void db_do_timestep( int time ) {
 }
 
 /* $Log$
+/* Revision 1.42  2002/07/17 00:13:57  phase1geo
+/* Added support for -e option and informally tested.
+/*
 /* Revision 1.41  2002/07/14 05:10:42  phase1geo
 /* Added support for signal concatenation in score and report commands.  Fixed
 /* bugs in this code (and multiplication).

@@ -419,6 +419,10 @@ WSPACE [ \t\b\f]+
      yy_push_state( DEFINE );
      def_start();
  }
+^{WSPACE}?`define{WSPACE}[a-zA-Z_][a-zA-Z0-9_]* {
+     yy_push_state( DEFINE );
+     def_start();
+ }
 <DEFINE>.* { 
      do_define();
  }
@@ -917,6 +921,7 @@ static void do_include() {
   istack->yybs  = YY_CURRENT_BUFFER;
   istack        = standby;
   standby       = 0;
+  yylloc.first_line = 1;
 
   snprintf( msg, 4096, "Parsing include file \"%s\"", path );
   print_output( msg, NORMAL );
