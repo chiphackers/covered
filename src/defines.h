@@ -176,7 +176,7 @@
 
 /*!
  Least-significant bit position of expression supplemental field indicating the
- expression's operation type.  The type is 7-bits wide.
+ expression's operation type.  The type is 8-bits wide.
 */
 #define SUPPL_LSB_OP                0
 
@@ -185,13 +185,7 @@
  expression is a root expression.  Traversing to the parent pointer will take you to
  a statement type.
 */
-#define SUPPL_LSB_ROOT              7
-
-/*!
- Least-significant bit position of expression supplemental field indicating that this
- expression is currently in the run-time queue.
-*/
-#define SUPPL_LSB_IN_QUEUE          8
+#define SUPPL_LSB_ROOT              8
 
 /*!
  Least-significant bit position of expression supplemental field indicating that this
@@ -706,6 +700,21 @@ struct sig_exp_bind_s {
 
 //------------------------------------------------------------------------------
 /*!
+ Binds an expression to a statement.  This is used when constructing a case
+ structure.
+*/
+struct case_stmt_s;
+
+typedef struct case_stmt_s case_statement;
+
+struct case_stmt_s {
+  expression*     expr;    /*!< Pointer to case equality expression          */
+  statement*      stmt;    /*!< Pointer to first statement in case statement */
+  case_statement* next;    /*!< Pointer to next case statement in list       */
+};
+
+//------------------------------------------------------------------------------
+/*!
  Contains statistics for coverage results which is stored in a module instance.
  NOTE:  FSM WILL BE HANDLED AT A LATER TIME.
 */
@@ -749,6 +758,10 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.13  2002/06/22 05:27:30  phase1geo
+/* Additional supporting code for simulation engine and statement support in
+/* parser.
+/*
 /* Revision 1.11  2002/05/13 03:02:58  phase1geo
 /* Adding lines back to expressions and removing them from statements (since the line
 /* number range of an expression can be calculated by looking at the expression line

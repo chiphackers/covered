@@ -31,7 +31,65 @@ void {\bf statement\_\-dealloc} ({\bf statement} $\ast$stmt)
 Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
 \item[Date: ]\par
-5/1/2002\end{Desc}
+5/1/2002
+
+ Statements are used to indicate flow of execution for a given always or initial block. Each statement is assigned to exactly one expression tree and it contains a pointer to the next statement if its expression tree evaluates to TRUE (non-zero value) or FALSE (zero value). To minimize memory use, a statement  uses some of the unused bits in its root expression supplemental field instead of having its own supplemental field. There are two bits in the expression supplemental value that are only used by expressions: {\bf SUPPL\_\-LSB\_\-STMT\_\-HEAD} {\rm (p.\,\pageref{group__expr__suppl_a3})} and {\bf SUPPL\_\-LSB\_\-STMT\_\-STOP} {\rm (p.\,\pageref{group__expr__suppl_a4})}.
+
+ The STMT\_\-HEAD bit indicates that this statement should be loaded into the pre-simulation statement queue if any of its expressions change value in the current timestep. To begin with, the first statement in the always/initial block has this bit set, all other statements have this bit cleared.
+
+ The STMT\_\-STOP bit is used for CDD output. If a statement has this bit set, it will not traverse its next\_\-true or next\_\-false paths when outputting. This is necessary when statement paths merge back to the same path. If this bit was not used, the statements output after the merge would be output twice. Consider the following Verilog code snippet:\end{Desc}
+
+
+\footnotesize\begin{verbatim} intial begin
+        a = 0;
+        if( a )
+          b = 1;
+        else
+          b = 0;
+        c = a | b;
+ end
+\end{verbatim}\normalsize 
+
+
+ In this example there are five statements. They are the following:
+
+\begin{enumerate}
+\item 
+
+
+\footnotesize\begin{verbatim}a = 0; 
+\end{verbatim}\normalsize 
+\item 
+
+
+\footnotesize\begin{verbatim}if( a ) 
+\end{verbatim}\normalsize 
+\item 
+
+
+\footnotesize\begin{verbatim}b = 1; 
+\end{verbatim}\normalsize 
+\item 
+
+
+\footnotesize\begin{verbatim}b = 0; 
+\end{verbatim}\normalsize 
+\item 
+
+
+\footnotesize\begin{verbatim}c = a | b; 
+\end{verbatim}\normalsize 
+\end{enumerate}
+
+
+ Notice that the if statement has two paths. If a is TRUE, statement 3 is executed; otherwise, statement 4 is executed. Both statements 3 and 4 then merge to execute statement 5. If the entire statement tree were printed without a STOP bit, you can see that statement 5 would be output twice; once for the TRUE branch and once for the FALSE branch.
+
+ To eliminate this redundancy, the STMT\_\-STOP bit is set on statement 4. The last statement of a FALSE path before merging always gets its STMT\_\-STOP bit set. The TRUE path should never get the STMT\_\-STOP bit set. Additionally, once a statement gets its STMT\_\-STOP bit set by the parser, this value must be maintained (never cleared).\begin{Desc}
+\item[Cyclic Statement Trees]\par
+ Many times a statement tree will \char`\"{}loopback\char`\"{} on itself. These statement trees are considered to be cyclic in nature and, as such, must have leaf statements of the statement tree tied to the first statement of the tree. The following Verilog constructs have cyclic behavior: {\tt always}, {\tt forever}, {\tt for}, {\tt repeat}, and {\tt while}.\end{Desc}
+\begin{Desc}
+\item[Traversing Statement Tree]\par
+ Starting at the head statement, the value of the head statement is determined to be TRUE or FALSE. If the value is TRUE (non-zero), the next\_\-true path is taken. If the value is FALSE (zero), the next\_\-false path is taken. For statements that express an assignment (or other statements that do not branch), both the next\_\-true and next\_\-false paths point to the same statement. For statements that express a wait-for-event (ex. {\tt wait}, {\tt @}, etc.), the next\_\-true pointer will point to the next statement in the tree; however, the next\_\-false pointer will point to NULL. This NULL assignment indicates to the statement simulation engine that this statement will receive the STMT\_\-HEAD bit and the current statement tree is finished for this timestep.\end{Desc}
 
 
 \subsection{Function Documentation}

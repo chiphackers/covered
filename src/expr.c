@@ -64,7 +64,7 @@ expression* expression_create( expression* right, expression* left, int op, int 
 
   new_expr = (expression*)malloc_safe( sizeof( expression ) );
 
-  new_expr->suppl        = ((op & 0x7f) << SUPPL_LSB_OP);
+  new_expr->suppl        = ((op & 0xff) << SUPPL_LSB_OP);
   new_expr->id           = id;
   new_expr->line         = line;
   new_expr->sig          = NULL;
@@ -194,6 +194,8 @@ void expression_merge( expression* base, expression* in ) {
  ID for this expression.
 */
 int expression_get_id( expression* expr ) {
+
+  assert( expr != NULL );
 
   if( SUPPL_IS_ROOT( expr->suppl ) == 1 ) {
     /* This is the root expression, it does not have a parent */
@@ -706,6 +708,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.10  2002/06/22 21:08:23  phase1geo
+/* Added simulation engine and tied it to the db.c file.  Simulation engine is
+/* currently untested and will remain so until the parser is updated correctly
+/* for statements.  This will be the next step.
+/*
 /* Revision 1.9  2002/06/22 05:27:30  phase1geo
 /* Additional supporting code for simulation engine and statement support in
 /* parser.

@@ -25,15 +25,16 @@ char err_msg[1000];
 %}
 
 %union {
-  char*         text;
-  int	        integer;
-  vector*       number;
-  double        realtime;
-  signal*       sig;
-  expression*   expr;
-  statement*    state;
-  signal_width* sigwidth; 
-  str_link*     strlink;
+  char*           text;
+  int	          integer;
+  vector*         number;
+  double          realtime;
+  signal*         sig;
+  expression*     expr;
+  statement*      state;
+  signal_width*   sigwidth; 
+  str_link*       strlink;
+  case_statement* case_stmt;
 };
 
 %token <text>   HIDENTIFIER IDENTIFIER
@@ -66,25 +67,26 @@ char err_msg[1000];
 
 %token KK_attribute
 
-%type <integer>  net_type
-%type <sigwidth> range_opt range
-%type <integer>  static_expr static_expr_primary
-%type <text>     identifier port_reference port port_opt port_reference_list
-%type <text>     list_of_ports list_of_ports_opt
-%type <expr>     expr_primary expression_list expression
-%type <expr>     event_control event_expression_list event_expression
-%type <text>     udp_port_list
-%type <text>     lpvalue lavalue
-%type <integer>  delay_value delay_value_simple
-%type <text>     range_or_type_opt
-%type <text>     defparam_assign_list defparam_assign
-%type <text>     gate_instance
-%type <text>     parameter_assign_list parameter_assign
-%type <text>     localparam_assign_list localparam_assign
-%type <strlink>  register_variable_list list_of_variables
-%type <strlink>  net_decl_assigns gate_instance_list
-%type <text>     register_variable net_decl_assign
-%type <state>    statement statement_list statement_opt
+%type <integer>   net_type
+%type <sigwidth>  range_opt range
+%type <integer>   static_expr static_expr_primary
+%type <text>      identifier port_reference port port_opt port_reference_list
+%type <text>      list_of_ports list_of_ports_opt
+%type <expr>      expr_primary expression_list expression
+%type <expr>      event_control event_expression_list event_expression
+%type <text>      udp_port_list
+%type <text>      lpvalue lavalue
+%type <integer>   delay_value delay_value_simple
+%type <text>      range_or_type_opt
+%type <text>      defparam_assign_list defparam_assign
+%type <text>      gate_instance
+%type <text>      parameter_assign_list parameter_assign
+%type <text>      localparam_assign_list localparam_assign
+%type <strlink>   register_variable_list list_of_variables
+%type <strlink>   net_decl_assigns gate_instance_list
+%type <text>      register_variable net_decl_assign
+%type <state>     statement statement_list statement_opt
+%type <case_stmt> case_items case_item
 
 %token K_TAND
 %right '?' ':'
@@ -943,7 +945,6 @@ module_item
 
 	| K_assign drive_strength_opt delay3_opt assign_list ';'
 		{
-                  /* statement* stmt = db_create_statement( ??? ); */
 		}
 	| K_always statement
 		{
@@ -992,7 +993,7 @@ module_item
 statement
 	: K_assign lavalue '=' expression ';'
 		{
-		  db_add_expression( $4 );
+		  expression_dealloc( $4, FALSE );
                   $$ = NULL;
 		}
 	| K_deassign lavalue ';'
@@ -1038,7 +1039,7 @@ statement
 	    statement_list
 	  K_join
 		{
-                  $$ = $5;
+                  $$ = NULL;
 		}
 	| K_fork K_join
 		{
@@ -1058,7 +1059,7 @@ statement
 		}
 	| K_forever statement
 		{
-                  $$ = NULL;
+                  $$ = $2;
 		}
 	| K_fork statement_list K_join
 		{
@@ -1066,38 +1067,84 @@ statement
 		}
 	| K_repeat '(' expression ')' statement
 		{
-                  statement* stmt = db_create_statement( $3 );
-                  db_add_expression( $3 );
-                  $$ = stmt;
+                  // statement* stmt = db_create_statement( $3 );
+                  // db_add_expression( $3 );
+                  // $$ = stmt;
+                  $$ = 0;
 		}
 	| K_case '(' expression ')' case_items K_endcase
 		{
-                  /* Not sure how to handle expressions quite yet */
-                  $$ = NULL;
+                  expression*     expr;
+                  statement*      stmt;
+                  statement*      last_stmt = NULL;
+                  case_statement* c_stmt    = $5;
+                  case_statement* tc_stmt;
+                  while( c_stmt != NULL ) {
+                    expr = db_create_expression( $3, c_stmt->expr, EXP_OP_EQ, @1.first_line, NULL );
+                    db_add_expression( expr );
+                    stmt = db_create_statement( expr );
+                    db_connect_statement_true( stmt, c_stmt->stmt );
+                    db_connect_statement_false( stmt, last_stmt );
+                    last_stmt = stmt;
+                    tc_stmt   = c_stmt;
+                    c_stmt    = c_stmt->next;
+                    free_safe( tc_stmt );
+                  }
+                  $$ = stmt;
 		}
 	| K_casex '(' expression ')' case_items K_endcase
 		{
-                  /* Not sure how to handle expressions quite yet */
-                  $$ = NULL;
+                  expression*     expr;
+                  statement*      stmt;
+                  statement*      last_stmt = NULL;
+                  case_statement* c_stmt    = $5;
+                  case_statement* tc_stmt;
+                  while( c_stmt != NULL ) {
+                    expr = db_create_expression( $3, c_stmt->expr, EXP_OP_CEQ, @1.first_line, NULL );
+                    db_add_expression( expr );
+                    stmt = db_create_statement( expr );
+                    db_connect_statement_true( stmt, c_stmt->stmt );
+                    db_connect_statement_false( stmt, last_stmt );
+                    last_stmt = stmt;
+                    tc_stmt   = c_stmt;
+                    c_stmt    = c_stmt->next;
+                    free_safe( tc_stmt );
+                  }
+                  $$ = stmt;
 		}
 	| K_casez '(' expression ')' case_items K_endcase
 		{
-                  /* Not sure how to handle expressions quite yet */
-                  $$ = NULL;
+                  expression*     expr;
+                  statement*      stmt;
+                  statement*      last_stmt = NULL;
+                  case_statement* c_stmt    = $5;
+                  case_statement* tc_stmt;
+                  while( c_stmt != NULL ) {
+                    expr = db_create_expression( $3, c_stmt->expr, EXP_OP_CEQ, @1.first_line, NULL );
+                    db_add_expression( expr );
+                    stmt = db_create_statement( expr );
+                    db_connect_statement_true( stmt, c_stmt->stmt );
+                    db_connect_statement_false( stmt, last_stmt );
+                    last_stmt = stmt;
+                    tc_stmt   = c_stmt;
+                    c_stmt    = c_stmt->next;
+                    free_safe( tc_stmt );
+                  }
+                  $$ = stmt;
 		}
 	| K_case '(' expression ')' error K_endcase
 		{
-		  yyerrok;
+		  expression_dealloc( $3, FALSE );
                   $$ = NULL;
 		}
 	| K_casex '(' expression ')' error K_endcase
 		{
-		  yyerrok;
+		  expression_dealloc( $3, FALSE );
                   $$ = NULL;
 		}
 	| K_casez '(' expression ')' error K_endcase
 		{
-		  yyerrok;
+		  expression_dealloc( $3, FALSE );
                   $$ = NULL;
 		}
 	| K_if '(' expression ')' statement_opt %prec less_than_K_else
@@ -1127,15 +1174,19 @@ statement
 		}
 	| K_for '(' lpvalue '=' expression ';' expression ';' lpvalue '=' expression ')' statement
 		{
-                  statement* stmt1 = db_create_statement( $5 );
-                  statement* stmt2 = db_create_statement( $7 );
-                  statement* stmt3 = db_create_statement( $11 );
-                  db_add_expression( $5 );
-                  db_add_expression( $7 );
-                  db_add_expression( $11 );
-                  db_connect_statement_false( stmt1, stmt2 );
-                  db_connect_statement_true( stmt2, $13 );
-                  $$ = stmt1;
+                  // statement* stmt1 = db_create_statement( $5 );
+                  // statement* stmt2 = db_create_statement( $7 );
+                  // statement* stmt3 = db_create_statement( $11 );
+                  // db_add_expression( $5 );
+                  // db_add_expression( $7 );
+                  // db_add_expression( $11 );
+                  // db_connect_statement_false( stmt1, stmt2 );
+                  // db_connect_statement_true( stmt2, $13 );
+                  // $$ = stmt1;
+                  expression_dealloc( $5, FALSE );
+                  expression_dealloc( $7, FALSE );
+                  expression_dealloc( $11, FALSE );
+                  $$ = 0;
 		}
 	| K_for '(' lpvalue '=' expression ';' expression ';' error ')' statement
 		{
@@ -1158,10 +1209,12 @@ statement
 		}
 	| K_while '(' expression ')' statement
 		{
-                  statement* stmt = db_create_statement( $3 );
-		  db_add_expression( $3 );
-                  db_connect_statement_true( stmt, $5 );
-                  $$ = stmt;
+                  // statement* stmt = db_create_statement( $3 );
+		  // db_add_expression( $3 );
+                  // db_connect_statement_true( stmt, $5 );
+                  // $$ = stmt;
+                  expression_dealloc( $3, FALSE );
+                  $$ = 0;
 		}
 	| K_while '(' error ')' statement
 		{
@@ -1210,10 +1263,12 @@ statement
 		}
 	| lpvalue '=' K_repeat '(' expression ')' event_control expression ';'
 		{
-                  statement* stmt = db_create_statement( $5 );
-		  db_add_expression( $5 );
-		  db_add_expression( $8 );
-                  $$ = stmt;
+                  // statement* stmt = db_create_statement( $5 );
+		  // db_add_expression( $5 );
+		  // db_add_expression( $8 );
+                  // $$ = stmt;
+                  expression_dealloc( $5, FALSE );
+                  expression_dealloc( $8, FALSE );
 		}
 	| lpvalue K_LE event_control expression ';'
 		{
@@ -1223,16 +1278,19 @@ statement
 		}
 	| lpvalue K_LE K_repeat '(' expression ')' event_control expression ';'
 		{
-                  statement* stmt = db_create_statement( $5 );
-		  db_add_expression( $5 );
-		  db_add_expression( $8 );
-		  $$ = stmt;
+                  // statement* stmt = db_create_statement( $5 );
+		  // db_add_expression( $5 );
+		  // db_add_expression( $8 );
+		  // $$ = stmt;
+                  expression_dealloc( $5, FALSE );
+                  expression_dealloc( $8, FALSE );
+                  $$ = 0;
 		}
 	| K_wait '(' expression ')' statement_opt
 		{
                   statement* stmt = db_create_statement( $3 );
                   db_add_expression( $3 );
-                  db_connect_statement_false( stmt, $5 );
+                  db_connect_statement_true( stmt, $5 );
 		  $$ = stmt;
 		}
 	| SYSTEM_IDENTIFIER '(' expression_list ')' ';'
@@ -1409,14 +1467,25 @@ block_item_decl
 case_item
 	: expression_list ':' statement_opt
 		{
-		  /* Create conditional */
+                  case_statement* cstmt = (case_statement*)malloc_safe( sizeof( case_statement ) );
+                  cstmt->next = NULL;
+                  cstmt->expr = $1;
+                  cstmt->stmt = $3;
+		  $$ = cstmt;
 		}
 	| K_default ':' statement_opt
 		{
-		  /* Create conditional */
+                  case_statement* cstmt = (case_statement*)malloc_safe( sizeof( case_statement ) );
+                  cstmt->next = NULL;
+                  cstmt->expr = NULL;
+                  cstmt->stmt = $3;
 		}
 	| K_default statement_opt
 		{
+                  case_statement* cstmt = (case_statement*)malloc_safe( sizeof( case_statement ) );
+                  cstmt->next = NULL;
+                  cstmt->expr = NULL;
+                  cstmt->stmt = $2;
 		  /* Create conditional */
 		}
 	| error ':' statement_opt
@@ -1427,8 +1496,16 @@ case_item
 	;
 
 case_items
-	: case_items case_item
+	: case_item case_items
+                {
+                  case_statement* list;
+                  case_statement* curr;
+                  curr->next = list;
+                }
 	| case_item
+                {
+                  $$ = $1;
+                }
 	;
 
 delay1
@@ -1477,6 +1554,10 @@ assign_list
 assign
 	: lavalue '=' expression
 		{
+                  statement* stmt = db_create_statement( $3 );
+                  /* Statement will be looped back to itself */
+                  db_connect_statement_true( stmt, stmt );
+                  db_connect_statement_false( stmt, stmt );
 		  db_add_expression( $3 );
 		}
 	;
