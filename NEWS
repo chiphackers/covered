@@ -1,6 +1,32 @@
 Covered-Related NEWS
 ====================
 
+    * 11/16/2003
+
+Release covered-20031116 made.  This development release contains a new way to specify FSMs
+within the design by using inline Verilog-2001 attribute syntax.  There are also a lot of
+bug fixes contained in this release as well as the usual user and development documentation
+enhancements.  See the list below for more details on the changes made for this release.
+
+  - Added better VCD parsing capability to allow bit selects to be "attached" to the signal
+    names in the VCD variable definition section.  The newer versions of Icarus Verilog now
+    output this format style.
+  - Added ability to specify FSM location and transition information using Verilog-2001
+    attributes.  Added many diagnostics to regress suite to verify this capability.
+  - Fixed bug found in stable release that caused an incorrect calculation of unary operations
+    performed on single-bit values.  Fixes bug 835366.
+  - Fixed bug found in using constant values in the right-hand side of repetitive concatenation
+    operators.  Fixes bug 832730.
+  - Fixed bugs in reporting of FSM coverage information in the report command.
+  - Fixed bug in FSM variable binding stage that caused incorrect coverage numbers to be reported
+    for FSM coverage.
+  - Fixed bug in handling variables that are too long (more than the allowed 1024 bits).  Removes
+    memory corruption problems when this occurs.  Displays warning to user that it has found
+    a variable that it cannot handle and gracefully disregards any logic that uses these variables.
+  - Updated user documentation to include new chapter on inline attributes that Covered can
+    now handle.
+  - Updated development documentation for new functions added in this release.
+
     * 10/19/2003
 
 Release covered-20031019 made.  Lots of modifications to existing structures and supporting

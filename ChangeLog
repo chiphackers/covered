@@ -1,3 +1,127 @@
+2003-11-14 22:25  phase1geo
+
+	* src/fsm_arg.c: Fixing syntax error found in Doxygen.
+
+2003-11-14 22:21  phase1geo
+
+	* src/: attr.h, defines.h, fsm_var.c: Fixing syntax errors found in
+	Doxygen and GCC compiler.
+
+2003-11-12 23:08  phase1geo
+
+	* doc/: manstyle/012.mas, manstyle/013.mas, manstyle/014.mas,
+	manstyle/015.mas, manstyle/016.mas, manstyle/017.mas,
+	manstyle/user, user/001.html, user/002.html, user/003.html,
+	user/004.html, user/005.html, user/006.html, user/007.html,
+	user/008.html, user/009.html, user/010.html, user/011.html,
+	user/012.html, user/013.html, user/014.html, user/015.html,
+	user/016.html, user/017.html, user/index.html: Updating user
+	document to show how to specify FSM inline attributes.
+
+2003-11-12 11:34  phase1geo
+
+	* src/: db.c, lexer.l, signal.c, vector.c: Fixing bug where signals
+	are longer than allowable bit width.
+
+2003-11-12 11:32  phase1geo
+
+	* diags/: cdd/long_sig.cdd, rpt/long_sig.rptI, rpt/long_sig.rptM:
+	Adding working files for long_sig diagnostic.
+
+2003-11-11 22:36  phase1geo
+
+	* diags/: regress/Makefile, regress/long_sig.cfg,
+	verilog/long_sig.v: Adding long_sig diagnostic to verify Covered
+	bug with handling oversized signals.  The logic has not been fixed
+	at this point for this diagnostic.
+
+2003-11-11 16:41  phase1geo
+
+	* src/vcd.c: Fixing bug with reading VCD signals that are too long
+	for Covered to support.  We were getting an assertion error when we
+	should have simply read in and ignored the signal.
+
+2003-11-11 15:48  phase1geo
+
+	* src/: fsm_var.c, fsm_var.h: Fixing bug where next pointers in
+	bind lists were not being initialized to NULL (manifested itself in
+	Irix).	Also added missing development documentation to functions
+	in fsm_var.c and removed unnecessary function.
+
+2003-11-11 07:37  phase1geo
+
+	* diags/cdd/fsm10.1.cdd, diags/cdd/fsm10.2.cdd, diags/cdd/fsm6.cdd,
+	diags/cdd/fsm7.1.cdd, diags/cdd/fsm7.2.cdd, diags/cdd/fsm7.3.cdd,
+	diags/cdd/fsm7.4.cdd, diags/cdd/fsm7.5.cdd, diags/cdd/fsm7.cdd,
+	diags/cdd/fsm8.1.cdd, diags/cdd/fsm8.2.cdd, diags/cdd/fsm8.3.cdd,
+	diags/cdd/fsm8.cdd, diags/cdd/fsm9.1.cdd, diags/cdd/fsm9.2.cdd,
+	diags/cdd/fsm9.cdd, diags/rpt/fsm8.3.rptI, diags/rpt/fsm8.3.rptM,
+	src/fsm_var.c: Fixing bug in fsm_var that bound FSM statements
+	early.	This caused an incorrect ordering of statements that
+	results in incorrect FSM coverage.  Updated regression suite for
+	changes.  Full regression now passes.
+
+2003-11-09 22:25  phase1geo
+
+	* diags/cdd/fsm10.1.cdd, diags/cdd/fsm10.2.cdd,
+	diags/cdd/fsm10.cdd, diags/cdd/fsm9.1.cdd, diags/cdd/fsm9.2.cdd,
+	diags/cdd/fsm9.cdd, diags/regress/Makefile,
+	diags/regress/fsm10.1.cfg, diags/regress/fsm10.2.cfg,
+	diags/regress/fsm10.cfg, diags/regress/fsm8.3.cfg,
+	diags/regress/fsm9.1.cfg, diags/regress/fsm9.2.cfg,
+	diags/regress/fsm9.cfg, diags/rpt/fsm10.1.rptI,
+	diags/rpt/fsm10.1.rptM, diags/rpt/fsm10.2.rptI,
+	diags/rpt/fsm10.2.rptM, diags/rpt/fsm10.rptI, diags/rpt/fsm10.rptM,
+	diags/rpt/fsm9.1.rptI, diags/rpt/fsm9.1.rptM,
+	diags/rpt/fsm9.2.rptI, diags/rpt/fsm9.2.rptM, diags/rpt/fsm9.rptI,
+	diags/rpt/fsm9.rptM, diags/verilog/fsm10.1.v,
+	diags/verilog/fsm10.2.v, diags/verilog/fsm10.v,
+	diags/verilog/fsm8.3.v, diags/verilog/fsm9.1.v,
+	diags/verilog/fsm9.2.v, diags/verilog/fsm9.v,
+	diags/verilog/lib/fsma.v, src/arc.c, src/fsm.c, src/stat.c: Adding
+	more FSM diagnostics to regression suite.  All major testing for
+	current FSM code should be complete at this time.  A few bug fixes
+	to files that were found during this regression testing.
+
+2003-11-07 22:21  phase1geo
+
+	* diags/cdd/fsm7.3.cdd, diags/cdd/fsm7.4.cdd, diags/cdd/fsm7.5.cdd,
+	diags/cdd/fsm8.1.cdd, diags/cdd/fsm8.2.cdd, diags/cdd/fsm8.cdd,
+	diags/regress/Makefile, diags/regress/fsm7.3.cfg,
+	diags/regress/fsm7.4.cfg, diags/regress/fsm7.5.cfg,
+	diags/regress/fsm8.1.cfg, diags/regress/fsm8.2.cfg,
+	diags/regress/fsm8.cfg, diags/rpt/fsm7.3.rptI,
+	diags/rpt/fsm7.3.rptM, diags/rpt/fsm7.4.rptI,
+	diags/rpt/fsm7.4.rptM, diags/rpt/fsm7.5.rptI,
+	diags/rpt/fsm7.5.rptM, diags/rpt/fsm8.1.rptI,
+	diags/rpt/fsm8.1.rptM, diags/rpt/fsm8.2.rptI,
+	diags/rpt/fsm8.2.rptM, diags/rpt/fsm8.rptI, diags/rpt/fsm8.rptM,
+	diags/verilog/fsm7.3.v, diags/verilog/fsm7.4.v,
+	diags/verilog/fsm7.5.v, diags/verilog/fsm8.1.v,
+	diags/verilog/fsm8.2.v, diags/verilog/fsm8.v, src/arc.c: Adding
+	several new FSM diagnostics to regression suite to verify inline
+	attributes.  Fixed bug in arc.c where states were not being
+	identified correctly as unique or not.
+
+2003-11-07 21:38  phase1geo
+
+	* AUTHORS, ChangeLog, diags/cdd/fsm7.1.cdd, diags/cdd/fsm7.2.cdd,
+	diags/cdd/fsm7.cdd, diags/regress/Makefile,
+	diags/regress/fsm7.1.cfg, diags/regress/fsm7.2.cfg,
+	diags/regress/fsm7.cfg, diags/rpt/fsm7.1.rptI,
+	diags/rpt/fsm7.1.rptM, diags/rpt/fsm7.2.rptI,
+	diags/rpt/fsm7.2.rptM, diags/rpt/fsm7.rptI, diags/rpt/fsm7.rptM,
+	diags/verilog/fsm7.1.v, diags/verilog/fsm7.2.v,
+	diags/verilog/fsm7.v, src/arc.c: Adding new FSM diagnostics to
+	regression suite and fixing problem that was causing regressions to
+	fail.
+
+2003-11-06 23:18  phase1geo
+
+	* src/: arc.c, expr.c, fsm.c, fsm.h, fsm_arg.c, fsm_var.c: Adding
+	working code for inline FSM attribute handling.  Full regression
+	fails at this point but the code seems to be working correctly.
+
 2003-11-04 23:34  phase1geo
 
 	* diags/: cdd/assign1.cdd, cdd/unary1.cdd, regress/Makefile,

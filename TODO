@@ -12,8 +12,8 @@ Score command
 1.  Add ability for user to specify FSM all possible states/state transitions
     for a particular FSM on a command-line basis.
 
-2.  Add ability for user to specify FSM location and all possible states/state
-    transitions for a particular FSM using inline $attribute calls.
+X  2.  Add ability for user to specify FSM location and all possible states/state
+      transitions for a particular FSM using inline $attribute calls.
 
 3.  Add ability to automatically extract all possible states/state transitions
     for a specified FSM.
@@ -21,7 +21,7 @@ Score command
 4.  Add ability to automatically locate and extract an FSM from the design
     without user intervention.
 
-5.  Work on increasing performance of score command.
+IP 5.  Work on increasing performance of score command.
 
 6.  Add more Verilog-2001 constructs to parser.
 
@@ -29,7 +29,6 @@ Score command
 
 8.  Add feature to cause Covered to omit the simulation phase for toggle and
     FSM coverage results.
-
 
 Merge command
 -------------
@@ -41,3 +40,9 @@ Report command
 1.  Update look of text reports to make them more robust and comprehensible.
 
 2.  Work on GUI interface for report function.
+
+Miscellaneous
+-------------
+
+1.  Add regression that produces known, achievable error conditions in the code.
+
