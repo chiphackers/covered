@@ -61,7 +61,7 @@ Displays this help information.
 Directory to find included Verilog files.
 .TP 
 \fB\-i\fR \fIinstance_name\fR
-Instance name of top\-level module.  Necessary if module to verify coverage is not the top\-level module in the design.  If not specified, \fI\-t\fR value is used.
+Verilog hierarchical reference to the module that is at the top of the tree to be scored.  This option is necessary if module to verify coverage is not the top\-level module in the design.  If not specified, \fI\-t\fR value is used.
 .TP 
 \fB\-o\fR \fIdatabase\fR
 Name of database to write coverage information to.  If not specified, the output database filename will be "cov.db".
@@ -71,6 +71,9 @@ Performs a defparam on the specified parameter with value.
 .TP 
 \fB\-t\fR \fItop\-level module\fR
 Specifies the module name of the top\-most module that will be measured.  Note that this module does not need to be the top\-most module in the simulator.  This field is required for all calls to the score command.
+.TP 
+\fB\-T min|typ|max\fR
+Specifies which value to use when encountering a delay expression in the form:  min:typ:max.  If this option is not specified, 'typ' select is used by default.
 .TP 
 \fB\-v\fR \fIfilename\fR
 Name of specific Verilog file to score.

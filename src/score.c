@@ -18,10 +18,11 @@
 #include "vector.h"
 
 
-char* top_module   = NULL;    /*!< Name of top-level module to score              */
-char* top_instance = NULL;    /*!< Name of top-level instance name                */
-char* output_db    = NULL;    /*!< Name of output score database file to generate */
-char* vcd_file     = NULL;    /*!< Name of VCD output file to parse               */
+char* top_module      = NULL;                /*!< Name of top-level module to score                     */
+char* top_instance    = NULL;                /*!< Name of top-level instance name                       */
+char* output_db       = NULL;                /*!< Name of output score database file to generate        */
+char* vcd_file        = NULL;                /*!< Name of VCD output file to parse                      */
+int   delay_expr_type = DELAY_EXPR_DEFAULT;  /*!< Value to use when a delay expression with min:typ:max */
 
 extern unsigned long largest_malloc_size;
 extern unsigned long curr_malloc_size;
@@ -44,9 +45,9 @@ void score_usage() {
   printf( "      -vcd <dumpfile>              Name of dumpfile to score design with.  If this option\n" );
   printf( "                                   is not used, Covered will only create an initial CDD file\n" );
   printf( "                                   from the design and will not attempt to score the design.\n" );
-  printf( "      -i <instance_name>           Instance name of top-level module.  Necessary if module\n" );
-  printf( "                                   to verify coverage is not the top-level module in the design\n" );
-  printf( "                                   If not specified, -t value is used.\n" );
+  printf( "      -i <instance_name>           Verilog hierarchical scope of top-level module to score.\n" );
+  printf( "                                   Necessary if module to verify coverage is not the top-level\n" );
+  printf( "                                   module in the design.  If not specified, -t value is used.\n" );
   printf( "      -o <database_filename>       Name of database to write coverage information to.\n" );
   printf( "      -I <directory>               Directory to find included Verilog files.\n" );
   printf( "      -f <filename>                Name of file containing additional arguments to parse.\n" );
@@ -55,6 +56,7 @@ void score_usage() {
   printf( "      -e <module_name>             Name of module to not score.\n" );
   printf( "      -D <define_name>(=<value>)   Defines the specified name to 1 or the specified value.\n" );
   printf( "      -P <parameter_scope>=<value> Performs a defparam on the specified parameter with value.\n" );
+  printf( "      -T min|typ|max               Specifies value to use in delay expressions of the form min:typ:max.\n" );
   printf( "      -h                           Displays this help information.\n" );
   printf( "\n" );
   printf( "      +libext+.<extension>(+.<extension>)+\n" );
@@ -267,6 +269,22 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
         ptr++;
         defparam_add( argv[i], vector_from_string( ptr ) );
       }
+      
+    } else if( strncmp( "-T", argv[i], 2 ) == 0 ) {
+      
+      i++;
+      
+      if( strcmp( argv[i], "min" ) == 0 ) {
+        delay_expr_type = DELAY_EXPR_MIN;
+      } else if( strcmp( argv[i], "max" ) == 0 ) {
+        delay_expr_type = DELAY_EXPR_MAX;
+      } else if( strcmp( argv[i], "typ" ) == 0 ) {
+        delay_expr_type = DELAY_EXPR_TYP;
+      } else {
+        snprintf( user_msg, USER_MSG_LENGTH, "Unknown -T value (%s).  Please specify min, max or typ.", argv[i] );
+        print_output( user_msg, FATAL );
+        exit( 1 );
+      }
         
     } else {
 
@@ -295,7 +313,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 */
 int command_score( int argc, int last_arg, char** argv ) {
 
-  int  retval = 0;  /* Return value for this function */
+  int retval = 0;  /* Return value for this function */
 
   /* Parse score command-line */
   if( score_parse_args( argc, last_arg, argv ) ) {
@@ -305,6 +323,11 @@ int command_score( int argc, int last_arg, char** argv ) {
 
     if( output_db == NULL ) {
       output_db = strdup( DFLT_OUTPUT_DB );
+    }
+    
+    if( delay_expr_type == DELAY_EXPR_DEFAULT ) {
+      print_output( "Delay expression type for min:typ:max not specified, using default of 'typ'", WARNING );
+      delay_expr_type = DELAY_EXPR_TYP;
     }
 
     /* Parse design */
@@ -343,6 +366,10 @@ int command_score( int argc, int last_arg, char** argv ) {
 }
 
 /* $Log$
+/* Revision 1.26  2002/10/13 13:55:53  phase1geo
+/* Fixing instance depth selection and updating all configuration files for
+/* regression.  Full regression now passes.
+/*
 /* Revision 1.25  2002/10/11 05:23:21  phase1geo
 /* Removing local user message allocation and replacing with global to help
 /* with memory efficiency.

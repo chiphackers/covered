@@ -20,6 +20,7 @@
 #include "static.h"
 
 extern char user_msg[USER_MSG_LENGTH];
+extern int  delay_expr_type;
 
 int ignore_mode = 0;
 int param_mode  = 0;
@@ -2175,21 +2176,42 @@ delay_value
                   static_expr* se1 = $1;
                   static_expr* se2 = $3;
                   static_expr* se3 = $5;
+                  static_expr* se;
                   if( ignore_mode == 0 ) {
-                    if( se2->exp == NULL ) {
+                    switch( delay_expr_type ) {
+                      case DELAY_EXPR_MIN :
+                        se = $1;
+                        static_expr_dealloc( $3, TRUE );
+                        static_expr_dealloc( $5, TRUE );
+                        break;
+                      case DELAY_EXPR_TYP :
+                        se = $3;
+                        static_expr_dealloc( $1, TRUE );
+                        static_expr_dealloc( $5, TRUE );
+                        break;
+                      case DELAY_EXPR_MAX :
+                        se = $5;
+                        static_expr_dealloc( $1, TRUE );
+                        static_expr_dealloc( $3, TRUE );
+                        break;
+                      default:
+                        assert( (delay_expr_type == DELAY_EXPR_MIN) ||
+                                (delay_expr_type == DELAY_EXPR_TYP) ||
+                                (delay_expr_type == DELAY_EXPR_MAX) );
+                        break;
+                    }
+                    if( se->exp == NULL ) {
                       tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
                       vector_init( tmp->value, (nibble*)malloc_safe( sizeof( nibble ) * VECTOR_SIZE( 32 ) ), 32, 0 );  
-                      vector_from_int( tmp->value, se2->num );
+                      vector_from_int( tmp->value, se->num );
                     } else {
-                      tmp = se2->exp;
-                      free_safe( se2 );
+                      tmp = se->exp;
+                      free_safe( se );
                     }
                     $$ = tmp;
                   } else {
                     $$ = NULL;
                   }
-                  static_expr_dealloc( se1, TRUE );
-                  static_expr_dealloc( se3, TRUE );
                 }                  
 	;
 

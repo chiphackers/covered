@@ -244,6 +244,14 @@ coverage.
   </tr>
   <tr>
     <td>
+      -T min|typ|max
+    </td>
+    <td>
+      Specifies which value to use in min:typ:max delay expressions.  Default is typ.
+    </td>
+  </tr>
+  <tr>
+    <td>
       -h
     </td>
     <td>

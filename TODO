@@ -24,7 +24,7 @@ X  5.  Handle parameters
 
 X  6.  Verify that -D option works when a value is specified.
 
-   7.  Make sure that expression widths are correct (may have to look at left-hand-side bit
+IP 7.  Make sure that expression widths are correct (may have to look at left-hand-side bit
        width to calculate this correctly).
 
 X  8.  Make sure that parser only parses a file once (when it is in both in a library (-y) and
