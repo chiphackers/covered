@@ -2,24 +2,24 @@
 3 main main assign2.1.v
 2 2 main 5 103001 0 0 
 2 1 main 5 103001 0 0 
-2 3 main 5 2d3f82 2 1 1 0 0 11102
+2 3 main 5 2d3f82 2 1 1 0 11102
 2 5 main 6 103001 0 0 
 2 4 main 6 103001 0 0 
-2 6 main 6 2d3f8f 5 4 1 0 0 11102
+2 6 main 6 2d3f8f 5 4 1 0 11102
 2 7 main 7 103001 0 0 
-2 8 main 7 203f9b 7 0 1 0 0 11002
+2 8 main 7 203f9b 7 0 1 0 11002
 2 13 main 8 203001 0 0 
 2 10 main 8 103001 0 0 
-2 11 main 8 10301e 10 0 1 0 0 10102
+2 11 main 8 10301e 10 0 1 0 10102
 2 9 main 8 203001 0 0 
-2 12 main 8 2b3008 11 9 1 0 0 11102
-2 14 main 8 271f88 13 12 1 0 0 10002
-1 b main 1 0 0 10102 2 5
-1 a main 1 0 0 10102 1 4 7
-1 w0 main 1 0 0 11102 9
-1 w1 main 32 0 0 f13aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa 10
-1 w2 main 1 0 0 11002 13
-1 w3 main 2 0 0 3000a
+2 12 main 8 2b3008 11 9 1 0 11102
+2 14 main 8 271f88 13 12 1 0 10002
+1 b main 0 1 0 10102 2 5
+1 a main 0 1 0 10102 1 4 7
+1 w0 main 0 1 0 11102 9
+1 w1 main 0 32 0 f13aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa 10
+1 w2 main 0 1 0 11002 13
+1 w3 main 0 2 0 3000a
 4 3 main 3 3
 4 6 main 6 6
 4 8 main 8 8

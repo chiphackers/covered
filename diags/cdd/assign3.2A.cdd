@@ -1,16 +1,16 @@
 5 1 * 1
 3 main main assign3.2A.v
-2 1 main 30 201000 0 0 32 0 0 0 0 0 0 0 0 0 0
+2 1 main 30 201000 0 0 32 0 0 0 0 0 0 0 0 0
 2 2 main 30 102fa3 0 1 
 2 3 main 31 102f81 0 0 
-2 5 main 32 102000 0 0 32 0 0 0 1 0 0 0 0 0 0
-2 4 main 32 102000 0 0 32 0 0 55 1 0 0 0 0 0 0
+2 5 main 32 102000 0 0 32 0 0 1 0 0 0 0 0 0
+2 4 main 32 102000 0 0 32 0 55 1 0 0 0 0 0 0
 2 6 main 32 182fa4 5 4 
-1 a main 1 0 0 10002
-1 b main 32 0 0 f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa
-1 c main 16 0 0 f00aa f00aa f00aa f00aa
-1 val main 32 0 0 f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa 2 3 6
-1 error main 1 0 0 10002
+1 a main 0 1 0 10002
+1 b main 0 32 0 f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa
+1 c main 0 16 0 f00aa f00aa f00aa f00aa
+1 val main 0 32 0 f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa 2 3 6
+1 error main 0 1 0 10002
 4 2 main 2 2
 4 3 main 3 3
 4 6 main 6 6

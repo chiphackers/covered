@@ -2,16 +2,16 @@
 3 foobar foo instance4.v
 2 2 foo 29 103001 0 0 
 2 1 foo 29 203001 0 0 
-2 3 foo 29 173f89 2 1 1 0 0 10102
-1 c foo 1 0 0 10102 2
-1 b foo 1 0 0 11102 1
-1 a foo 1 0 0 10102
+2 3 foo 29 173f89 2 1 1 0 10102
+1 c foo 0 1 0 10102 2
+1 b foo 0 1 0 11102 1
+1 a foo 0 1 0 10102
 4 3 foo 3 3
 3 fooman foo.foo instance4.v
 2 5 foo.foo 42 103001 0 0 
 2 4 foo.foo 42 203001 0 0 
-2 6 foo.foo 42 271f88 5 4 1 0 0 10002
-1 b foo.foo 1 0 0 11102 4
-1 c foo.foo 1 0 0 10102 5
-1 a foo.foo 1 0 0 10002
+2 6 foo.foo 42 271f88 5 4 1 0 10002
+1 b foo.foo 0 1 0 11102 4
+1 c foo.foo 0 1 0 10102 5
+1 a foo.foo 0 1 0 10002
 4 6 foo.foo 6 6

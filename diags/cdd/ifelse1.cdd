@@ -1,26 +1,26 @@
 5 1 * 1
 3 main main ifelse1.v
-1 sel main 1 0 0 10102
-1 b main 1 0 0 11002
-1 a main 1 0 0 10102
-1 reset main 1 0 0 11002
-1 clock main 1 0 0 11102
-1 z main 1 0 0 10102
+1 sel main 0 1 0 10102
+1 b main 0 1 0 11002
+1 a main 0 1 0 10102
+1 reset main 0 1 0 11002
+1 clock main 0 1 0 11102
+1 z main 0 1 0 10102
 3 mux main.switch ./lib/mux.v
-2 5 main.switch 14 201580 0 0 1 0 1 0
+2 5 main.switch 14 201580 0 0 1 1 0
 2 7 main.switch 17 102581 0 0 
 2 8 main.switch 19 201581 0 0 
 2 6 main.switch 16 103181 0 0 
 2 4 main.switch 13 203181 0 0 
 2 1 main.switch 12 103001 0 0 
-2 2 main.switch 12 2a 0 0 2 0 0 a
-2 3 main.switch 12 2033a7 1 2 1 0 0 11102
-1 clock main.switch 1 0 4 11102 1
-1 reset main.switch 1 0 0 11002 4
-1 a main.switch 1 0 0 10102 7
-1 b main.switch 1 0 0 11002 8
-1 sel main.switch 1 0 0 10102 6
-1 z main.switch 1 0 0 10102
+2 2 main.switch 12 2a 0 0 2 0 a
+2 3 main.switch 12 2033a7 1 2 1 0 11102
+1 clock main.switch 0 1 4 11102 1
+1 reset main.switch 0 1 0 11002 4
+1 a main.switch 0 1 0 10102 7
+1 b main.switch 0 1 0 11002 8
+1 sel main.switch 0 1 0 10102 6
+1 z main.switch 0 1 0 10102
 4 8 main.switch 3 3
 4 7 main.switch 3 3
 4 6 main.switch 7 8

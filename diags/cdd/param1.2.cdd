@@ -2,11 +2,11 @@
 3 main main param1.v
 2 5 main 9 102032 0 0 
 2 4 main 9 102032 0 0 
-2 6 main 9 18201a 5 4 32 0 0 f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa
+2 6 main 9 18201a 5 4 32 0 f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa
 2 3 main 9 103001 0 0 
-2 7 main 9 1a2f99 6 3 32 0 0 f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa
-1 #value0 main 32 0 0 1 0 0 0 0 0 0 0 4
-1 #value1 main 1 0 0 1 5
-1 a main 1 0 0 11002
-1 b main 1 0 0 10102 3
+2 7 main 9 1a2f99 6 3 32 0 f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa
+1 #value0 main 0 32 0 1 0 0 0 0 0 0 0 4
+1 #value1 main 0 1 0 1 5
+1 a main 0 1 0 11002
+1 b main 0 1 0 10102 3
 4 7 main 7 7

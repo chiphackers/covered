@@ -1,23 +1,23 @@
 5 1 * 1
 3 main main param3.2.v
-1 #major main 32 0 0 1 0 0 0 0 0 0 0
-1 #bar1 main 32 0 0 1 0 0 0 0 0 0 0
-1 #bar2 main 32 0 0 10001 0 0 0 0 0 0 0
-1 y main 1 0 0 10002
-1 x main 1 0 0 11102
+1 #major main 0 32 0 1 0 0 0 0 0 0 0
+1 #bar1 main 0 32 0 1 0 0 0 0 0 0 0
+1 #bar2 main 0 32 0 10001 0 0 0 0 0 0 0
+1 y main 0 1 0 10002
+1 x main 0 1 0 11102
 3 foo main.bar1 param3.2.v
 2 8 main.bar1 30 102032 0 0 
 2 7 main.bar1 30 203001 0 0 
-2 9 main.bar1 30 1a3f82 8 7 32 0 0 f11aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa
-1 #alpha main.bar1 32 0 0 1 0 0 0 0 0 0 0 8
-1 b main.bar1 1 0 0 11102 7
-1 a main.bar1 1 0 0 11102
+2 9 main.bar1 30 1a3f82 8 7 32 0 f11aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa
+1 #alpha main.bar1 0 32 0 1 0 0 0 0 0 0 0 8
+1 b main.bar1 0 1 0 11102 7
+1 a main.bar1 0 1 0 11102
 4 9 main.bar1 9 9
 3 foo main.bar2 param3.2.v
 2 8 main.bar2 30 102032 0 0 
 2 7 main.bar2 30 201001 0 0 
-2 9 main.bar2 30 122f82 8 7 32 0 0 f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa
-1 #alpha main.bar2 32 0 0 10001 0 0 0 0 0 0 0 8
-1 b main.bar2 1 0 0 10002 7
-1 a main.bar2 1 0 0 10002
+2 9 main.bar2 30 122f82 8 7 32 0 f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa
+1 #alpha main.bar2 0 32 0 10001 0 0 0 0 0 0 0 8
+1 b main.bar2 0 1 0 10002 7
+1 a main.bar2 0 1 0 10002
 4 9 main.bar2 9 9
