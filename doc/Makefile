@@ -1,5 +1,5 @@
 all:
-	doxygen covered.dox
+	- doxygen covered.dox
 
 clean:
-	rm -rf html latex img
+	rm -rf ./devel/html ./devel/latex
