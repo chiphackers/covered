@@ -72,6 +72,12 @@ bool report_instance    = FALSE;
 bool report_covered     = FALSE;
 
 /*!
+ If set to a boolean value of TRUE, displays GUI report viewer instead of generating text
+ report files.
+*/
+bool report_gui         = FALSE;
+
+/*!
  If set to a non-zero value, causes Covered to only generate combinational logic
  report information for depths up to the number specified.
 */
@@ -96,7 +102,12 @@ char* input_db         = NULL;
 void report_usage() {
 
   printf( "\n" );
-  printf( "Usage:  covered report [<options>] <database_file>\n" );
+  printf( "Usage:  covered report (-h | -view | [<options>] <database_file>)\n" );
+  printf( "\n" );
+  printf( "   -view                      Uses the graphical report viewer for viewing reports.  If this\n" );
+  printf( "                               option is not specified, the text report will be generated.\n" );
+  printf( "                               (This option is currently not available).\n" );
+  printf( "   -h                         Displays this help information.\n" );
   printf( "\n" );
   printf( "   Options:\n" );
   printf( "      -m [l][t][c][f]         Type(s) of metrics to report.  Default is ltc.\n" );
@@ -106,7 +117,6 @@ void report_usage() {
   printf( "      -c                      If '-d d' or '-d v' is specified, displays covered line, toggle\n" );
   printf( "                               and combinational cases.  Default is to display uncovered results.\n" );
   printf( "      -o <filename>           File to output report information to.  Default is standard output.\n" );
-  printf( "      -h                      Displays this help information.\n" );
   printf( "\n" );
 
 }
@@ -181,10 +191,9 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
       i++;
       report_parse_metrics( argv[i] );
 
-    } else if( strncmp( "-v", argv[i], 2 ) == 0 ) {
+    } else if( strncmp( "-view", argv[i], 5 ) == 0 ) {
 
-      print_output( "Using deprecated option '-v'.  Please use '-d d' or '-d v'.", FATAL );
-      retval = FALSE;
+      report_gui = TRUE;
 
     } else if( strncmp( "-i", argv[i], 2 ) == 0 ) {
 
@@ -436,50 +445,59 @@ int command_report( int argc, int last_arg, char** argv ) {
     snprintf( user_msg, USER_MSG_LENGTH, COVERED_HEADER );
     print_output( user_msg, NORMAL );
 
-    /* Open output stream */
-    if( output_file != NULL ) {
+    if( !report_gui ) {
 
-      if( (ofile = fopen( output_file, "w" )) == NULL ) {
+      /* Open output stream */
+      if( output_file != NULL ) {
 
-        snprintf( user_msg, USER_MSG_LENGTH, "Unable to open %s for writing", output_file );
+        if( (ofile = fopen( output_file, "w" )) == NULL ) {
+
+          snprintf( user_msg, USER_MSG_LENGTH, "Unable to open %s for writing", output_file );
+          print_output( user_msg, FATAL );
+          exit( 1 );
+
+        } else {
+
+          /* Free up memory for holding output_file */
+          free_safe( output_file );
+
+        }
+    
+      } else {
+ 
+        ofile = stdout;
+
+      }
+
+      /* Open database file for reading */
+      if( input_db == NULL ) {
+
+        snprintf( user_msg, USER_MSG_LENGTH, "Database file not specified in command line" );
         print_output( user_msg, FATAL );
         exit( 1 );
 
       } else {
 
-        /* Free up memory for holding output_file */
-        free_safe( output_file );
+        if( report_instance ) {
+          if( db_read( input_db, READ_MODE_REPORT_NO_MERGE ) ) {
+            report_generate( ofile );
+          }
+        } else {
+          if( db_read( input_db, READ_MODE_REPORT_MOD_MERGE ) ) {
+            report_generate( ofile );
+          }
+        }
 
       }
-    
-    } else {
- 
-      ofile = stdout;
 
-    }
-
-    /* Open database file for reading */
-    if( input_db == NULL ) {
-
-      snprintf( user_msg, USER_MSG_LENGTH, "Database file not specified in command line" );
-      print_output( user_msg, FATAL );
-      exit( 1 );
+      fclose( ofile );
 
     } else {
 
-      if( report_instance ) {
-        if( db_read( input_db, READ_MODE_REPORT_NO_MERGE ) ) {
-          report_generate( ofile );
-        }
-      } else {
-        if( db_read( input_db, READ_MODE_REPORT_MOD_MERGE ) ) {
-          report_generate( ofile );
-        }
-      }
+      /* Call GUI here */
+      print_output( "The -view option is currently not available\n", FATAL );
 
     }
-
-    fclose( ofile );
 
   }
 
@@ -490,6 +508,11 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.22  2003/08/25 13:02:04  phase1geo
+ Initial stab at adding FSM support.  Contains summary reporting capability
+ at this point and roughly works.  Updated regress suite as a result of these
+ changes.
+
  Revision 1.21  2003/08/10 03:50:10  phase1geo
  More development documentation updates.  All global variables are now
  documented correctly.  Also fixed some generated documentation warnings.
