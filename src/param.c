@@ -339,8 +339,14 @@ void param_expr_eval( expression* expr, inst_parm* ihead ) {
   if( expr != NULL ) {
 
     /* Evaluate children first */
-    param_expr_eval( expr->left, ihead );
-    param_expr_eval( expr->right, ihead );
+    if( (expr->left == NULL) && (expr->right == NULL) ) {
+      expression_resize( expr );
+    } else {
+      param_expr_eval( expr->left,  ihead );
+      param_expr_eval( expr->right, ihead );
+    }
+
+
 
     param_op = ( (SUPPL_OP( expr->suppl ) == EXP_OP_PARAM)      ||
                  (SUPPL_OP( expr->suppl ) == EXP_OP_PARAM_SBIT) ||
@@ -363,6 +369,17 @@ void param_expr_eval( expression* expr, inst_parm* ihead ) {
           expr->suppl = (expr->suppl & ~(0x7f << SUPPL_LSB_OP)) | (EXP_OP_MBIT_SEL << SUPPL_LSB_OP);
           break;
         default :  break;
+      }
+
+    } else {
+
+      /*
+       Since we are not a parameter identifier, let's allocate some data for us 
+       if we don't have some already.
+      */
+      assert( expr->value != NULL );
+      if( expr->value->value == NULL ) {
+        expression_create_value( expr, expr->value->width, expr->value->lsb, TRUE );
       }
 
     }
@@ -578,12 +595,6 @@ void mod_parm_dealloc( mod_parm* parm, bool recursive ) {
 
     free_safe( parm->name );
 
-/*
-    if( parm->expr != NULL ) {
-      expression_dealloc( parm->expr, TRUE );
-    }
-*/
-
     exp_link_delete_list( parm->exp_head, FALSE );
     sig_link_delete_list( parm->sig_head );
 
@@ -619,6 +630,11 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 
 /* $Log$
+/* Revision 1.11  2002/09/25 05:36:08  phase1geo
+/* Initial version of parameter support is now in place.  Parameters work on a
+/* basic level.  param1.v tests this basic functionality and param1.cdd contains
+/* the correct CDD output from handling parameters in this file.  Yeah!
+/*
 /* Revision 1.10  2002/09/25 02:51:44  phase1geo
 /* Removing need of vector nibble array allocation and deallocation during
 /* expression resizing for efficiency and bug reduction.  Other enhancements
