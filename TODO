@@ -57,6 +57,8 @@ GUI
 X  1.  Add overwrite functions to signal, expression, and FSM types to allow for quicker
        closing of files and reopening.
 
-   2.  Add toggle, combinational logic and FSM coverage output
+X  2.  Add toggle and combinational logic verbose output
 
-   3.  Make TCL and TK libraries build better in configure scripts
+   3.  Add FSM coverage output
+
+X  4.  Make TCL and TK libraries build better in configure scripts
