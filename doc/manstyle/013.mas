@@ -1,8 +1,8 @@
 <!--
 [variables]
 {
-  $page_title = "The merge Command"
-  $page_title_english = "The merge Command"
+  $page_title = "The score Command"
+  $page_title_english = "The score Command"
   $file_prev = "012.html"
   $file_next = "014.html"
   $real_page_number = "13"
@@ -19,30 +19,18 @@ Usage
 </_header2>
 
 <_pg>
-The merge command is initiated with the following call:
+The score command is initiated with the following call:
 </_pg>
 
 <_code>
-covered merge [&lt;options&gt;] &lt;existing_CDD&gt; &lt;CDD_to_merge&gt;
+covered score -t &lt;top_module&gt; [&lt;options&gt;]
 </_code>
 
 <_pg>
-The <i>existing_CDD</i> specifier relates to any existing CDD.
-If the -o option is not specified (see below for details), this
-file will be replaced with the merged CDD created by the merge.
-This is important to remember since merging is an irreversible
-operation (apart from the generating a brand-new CDD from the
-design and dumpfile using the score command).
-</_pg>
-
-<_pg>
-The <i>CDD_to_merge</i> specifier relates to any existing CDD
-that is not the <i>existing_CDD</i>.  Though it is not illegal
-to merge the same CDD to itself, the result is the same as
-the original CDD.  Note that the <i>CDD_to_merge</i> is a file
-which is guaranteed to not be modified by the merge command.
-The contents of the file are literally read-only by Covered and
-are merged into the information contained in the <i>existing_CDD</i>.
+The <i>top_module</i> parameter is required for the scoring purposes and represents the 
+top-most module that will be covered.  It is important to note that Covered does not need
+to parse the entire DUT.  It only parses that part of the design which will receive
+coverage results.  More on this will be described in section 6.3 below.
 </_pg>
 
 <_header2>
@@ -50,15 +38,20 @@ Options
 </_header2>
 
 <_pg>
-The following table lists the options available for the merge
-command.
+The following table describes the additional options that can
+be passed to the score command.  Note that it is optional in
+how you tell Covered where to find the Verilog design files;
+however, it is not optional to exclude the Verilog files.  If
+no Verilog can be found that contains at least the top instance,
+Covered will generate an error message to the user specifying
+that it was unable to find the required Verilog modules.
 </_pg>
 
 <_block>
 <table cellspacing=2 cellpadding=4 border=1>
   <tr>
     <td colspan=2 class="tableHeader">
-      Options to merge Command
+      Options to score Command
     </td>
   </tr>
   <tr>
@@ -71,12 +64,135 @@ command.
   </tr>
   <tr>
     <td>
+      -vcd &lt;dumpfile&gt;
+    </td>
+    <td>
+      Name of dumpfile to score design with.  If this option is not used, Covered will 
+      only create an initial CDD file from the design and will not attempt to score the 
+      design.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      -i &lt;instance&gt;
+    </td>
+    <td>
+      Instance name of top-level module.  Necessary if 
+      module to verify coverage is not the top-level 
+      module in the design.  If not specified, -t value 
+      is used.
+    </td>
+  </tr>
+  <tr>
+    <td>
       -o &lt;<i>filename</i>&gt;
     </td>
     <td>
-      Name of CDD to write merged coverage information to (if
-not specified, the &lt;<i>existing_CDD</i>&gt; is overwritten with
-merged CDD).
+      Name of CDD to write coverage information to
+    </td>
+  </tr>
+  <tr>
+    <td>
+      -I &lt;<i>directory</i>&gt;
+    </td>
+    <td>
+      Directory to find included Verilog files.  You may use this
+option as many times as necessary on the command-line, one for each
+directory.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      -f &lt;<i>filename</i>&gt;
+    </td>
+    <td>
+      Name of file containing additional arguments to parse.  You
+may specify this option more than once on a command-line.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      -y &lt;<i>directory</i>&gt;
+    </td>
+    <td>
+      Directory to find unspecified Verilog files.  You may specify
+this option more than once on a command-line; one for each directory
+required.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      -v &lt;<i>filename</i>&gt;
+    </td>
+    <td>
+      Name of specific Verilog file to score.  You may specify this
+option more than once on a command-line; one for each filename to
+parse.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      -e &lt;<i>module</i>&gt;
+    </td>
+    <td>
+      Name of module to not score.  You may specify this option more
+than once on a command-line; one for each module to remove from
+coverage.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      -D &lt;name&gt;(=&lt;value&gt;)
+    </td>
+    <td>
+      Defines the specified name to 1 or the specified value.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      -p &lt;filename&gt;
+    </td>
+    <td>
+      Overrides filename used for outputting intermediate preprocessor output.  See
+      "Other Notes" section below for more information.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      -P &lt;parameter_scope&gt;=&lt;value&gt;
+    </td>
+    <td>
+      Performs a defparam on the specified parameter with value.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      -T min|typ|max
+    </td>
+    <td>
+      Specifies which value to use in min:typ:max delay expressions.  Default is typ.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      -ts &lt;number&gt;
+    </td>
+    <td>
+      When scoring occurs, this option allows the user to see how far the simulator
+      has progressed by outputting the current timestep to standard output.  The
+      value of &lt;number&gt; specifies how many timesteps are allowed to be simulated
+      before outputting the current timestep (results in less calls to output stream).
+    </td>
+  </tr>
+  <tr>
+    <td>
+      -F &lt;module&gt;=(&lt;in_expr&gt;,)&lt;out_expr&gt;
+    </td>
+    <td>
+      Specifies the location to find an FSM to score where <i>module</i> is the Verilog
+      module containing the FSM, <i>in_expr</i> is the input state expression and
+      <i>out_expr</i> is the output state expression.  If <i>in_expr</i> is not specified,
+      <i>out_expr</i> is used as both the input and output state expression.
     </td>
   </tr>
   <tr>
@@ -84,76 +200,372 @@ merged CDD).
       -h
     </td>
     <td>
-      Outputs usage information for the merge command
+      Outputs usage information for the score command
     </td>
   </tr>
 </table><br>
 </_block>
 
 <_header2>
-Merging Three or More CDDs
+Specifying What to Cover
 </_header2>
 
 <_pg>
-Note that it is currently only possible to merge two CDDs at a 
-time per merge command, the output CDD of which may be stored 
-in the first of the two CDDs or a new CDD.
+Covered is not a logic simulator and, therefore, is not required to parse the entire DUT.
+True simulation is performed by the Verilog simulator used to generate the VCD dumpfile.
+Covered, therefore, is given the ability to parse only the part of the DUT that is to be
+scored for coverage.  Having this ability to ignore parts of the DUT has several advantages
+in the way of performance.  Less memory is necessary for coverage simulation/calculation.
+Additionally, less processing is also required which leads to faster turnaround.  On the
+other hand, since Covered ignores the parts of the design not being scored, some information
+is not automatically extracted by Covered that is required for scoring the specified part
+of the DUT.  The <i>defparam</i> statement is one such statement.  More on this is
+mentioned in the following section. 
 </_pg>
 
 <_pg>
-To merge three or more CDDs, it is recommended that one uniquely
-named CDD file (possibly merged.cov or something like it) be
-created by an initial merge command (using the -o option -- see
-below).  Then all subsequent merge commands would specify the
-merged CDD file first followed by the next CDD to merge.  This
-would create one CDD file containing the merged contents of
-all CDDs created for the specified design.
+The following example describes a complete DUT and how to cause Covered to score various
+parts of the DUT.
+</_pg>
+
+<_margin>Figure</_margin>
+
+<_pg>
+<img src="img/vhier.png">
 </_pg>
 
 <_pg>
-An example of how to merge four CDDs called "run1.cov",
-"run2.cov", "run3.cov" and "run4.cov" into a resulting CDD
-called "merged.cov" is as follows:
+Assume that the following Verilog modules are used to create this tree.
+</_pg>
+
+<_pg>
+<ul>
+  <li>module "test" instantiated as "test" in the above figure</li>
+  <li>module "foomod" instantiated as "foo"</li>
+  <li>module "barmod" instantiated as "bar"</li>
+  <li>module "amod" instantiated as "a"</li>
+  <li>module "bmod" instantiated as "b"</li>
+</ul>
+</_pg>
+
+<_pg>
+To get coverage for the entire design, the covered command line would be:
+</_pg>
+
+<_margin>Command</_margin>
+
+<_code>
+covered score -t test -i test (rest of command-line)
+</_code>
+
+<_pg>
+Because both the -t and -i options are the same value (the module name is the same as the
+instance name), only the -t option needs to be specified.  If the -i option is not specified,
+Covered will assume that the instance name of the top module is the same name as the top
+module itself.  Note that the -t option always needs to be specified for the score command.
+</_pg>
+
+<_pg>
+To get coverage for the instance foo and all modules below it, the covered command line
+would be:
+</_pg>
+
+<_margin>Command</_margin>
+
+<_code>
+covered score -t foomod -i test.foo (rest of command-line)
+</_code>
+
+<_pg>
+In this case, we do not wish to score the module test (the top-level file for the design)
+but rather wish to gain coverage information for module foomod and all instantiated modules
+underneath it.  Since foomod is not the top-level design file, the -i option must be specified
+to tell Covered what the hierarchical scope of the top-level score file is in relation to the
+entire design.  The main reason why this is necessary is so that Covered will be able to
+locate the dumpfile information for the modules/instances that need to be scored.
+</_pg>
+
+<_pg>
+To get coverage for only the instance foo (and none of the modules instantiated below it
+in the hierarchy), Covered command-line would look like the following:
+</_pg>
+
+<_margin>Command</_margin>
+
+<_code>
+covered score -t foomod -i test.foo -e amod -e bmod
+</_code>
+
+<_pg>
+Here we see the use of the -e option, it takes a module name as its value.  When a module
+with the matching name is found in the hierarchy, it and all of its submodules are removed
+from coverage.  You may specify as many -e arguments as necessary to select the appropriate
+modules to cover.
+</_pg>
+
+<_pg>
+To get coverage for the instance foo and all modules below it,
+in addition to the instance bar, you would have to run
+Covered twice (once for each top instance).
+</_pg>
+
+<_pg>
+The -vcd &lt;<i>vcd_dumpfile</i>&gt; parameter is simply the
+name of the VCD dumpfile that contains all of the module instances
+selected by the -t parameter (in combination with the -e option --
+see below).
+</_pg>
+
+<_header2>
+Overriding Parameters (-P option)
+</_header2>
+
+<_pg>
+As mentioned in Section 6.3, Covered does not pay attention to the entire DUT.  This allows
+it to be more flexible and more efficient in memory and processing requirements.  This also
+has a down-side in that certain parts of the DUT are not parsed which can affect other
+parts of the DUT (parts needing to be scored).  More specifically, parameter overriding which
+are accomplished with the <i>defparam</i> command.
+</_pg>
+
+<_pg>
+The <i>defparam</i> statement can override any parameter specified in the DUT from any
+module in the DUT.  Since parameter information is not typically specified in VCD dumpfiles,
+Covered needs to know about all parameter values at score time.  Since all defparam
+statements are ignored by the Covered parser (even those in the DUT being scored), the user
+must inform Covered of any parameters that need to be overridden.  This is accomplished with
+the -P option to the score command.
+</_pg>
+
+<_pg>
+The first value in the -P option is the hierarchical reference to the parameter that needs
+to be overridden.  The second value (following the '=' sign) specifies the value to assign
+the parameter to.  This will override any default value assigned to that parameter.  The user
+may not override the same parameter value twice on the command-line.  Additionally, if the
+parameter is already being overridden in the design via an inline parameter override
+(parameter overrides specified in the '#(...)' part of the module instantiation).
+</_pg>
+
+<_pg>
+As an example of how to override a parameter value on the score command-line, let's assume
+that there is a parameter called 'google' in the module called 'amod' used in the example in
+Section 6.3.  The parameter definition in this module looks like the following:
+</_pg>
+
+<_code>
+parameter google = 4'hf;
+</_code>
+
+<_pg>
+To override this value to a new value of 18, use the following option in the score
+command:
+</_pg>
+
+<_margin>Option Example</_margin>
+
+<_code>
+-P test.foo.a.google=18
+</_code>
+
+<_pg>
+In this example, notice that we have not only changed the value of google, but we have
+also changed the bit-width of google from 4 bits to 32 bits (the size of an integer).  This
+is considered legal behavior by Covered.
+</_pg>
+
+<_pg>
+It is also possible to specify non-integer values to the parameter override option.  Decimal,
+binary, octal and hexidecimal values may also be specified, using the same syntax as they
+are specified in Verilog.  The following examples would also be other ways to override the
+value to 18.
+</_pg>
+
+<_code>
+-P test.foo.a.google=5'b10010<br>
+-P test.foo.a.google=4'o22<br>
+-P test.foo.a.google=12'h12<br>
+-P test.foo.a.google='d18<br>
+</_code>
+
+<_pg>
+In fact, you may specify any value (with the exception of real numbers) to override a
+parameter, including the following value types: 'x', 'X', 'z', 'Z', '_', '?'.  This means
+that unknowns may be specified in a parameter.  Note that this may generate user reported 
+errors if parameters overridden to unknown values are used in mathematical equations or are
+used to specify the width of wires, regs, etc.
+</_pg>
+
+<_pg>
+If a defparam statement is encountered in the DUT being scored, a warning message will be
+output to the user specifying that it has encountered a defparam statement.  The defparam
+statement is ignored by Covered; however, if the parameter that it is overridding is used
+in the DUT being scored, the results of Covered may differ from actual simulation results.
+As such, please review all of these warning types to determine if the parameter should be
+overridden or not.  If defparams are not parsed (seen by Covered), no such warning will be 
+output.  Please review the DUT for defparams which affect the DUT being scored.
+</_pg>
+
+<_header2>
+Scoring FSMs
+</_header2>
+
+<_pg>
+At this time Covered does not have the ability to automatically extract FSM information
+from the design.  As a result, it is up to the user to specify FSM information for Covered
+to use in scoring FSMs.  The ability to automatically extract FSM information is planned to
+be supported in the future; however, it is always a good idea to allow the user to specify
+and potentially override Covered's automatic extraction in the case where Covered either
+misses an FSM or incorrectly determines logic to be an FSM in cases where none exists.  The
+information specified in this section describes how to tell Covered where an FSM exists
+within the design as of the current development version of Covered.
+</_pg>
+
+<_pg>
+First, we need to make a few assumptions about the type of FSMs that Covered will be able
+to handle and, in the future, identify.
+</_pg>
+
+<_pg>
+<ol>
+  <li>The FSM is a synchronous design with edge-triggered flip-flops.</li>
+  <li>There are no FSMs embedded in another FSM.</li>
+  <li>The FSM is not a pipe-lined system.</li>
+  <li>The entire FSM must exist within the same module.</li>
+  <li>All state registers/variables must be less than 2^16 bits in width.
+</ol>
+</_pg>
+
+<_pg>
+There is currently only one way, via the command-line, to specify to Covered where to find
+FSMs within the design.  In the future, the inline Verilog-2001 "$attribute" function will
+be used to also allow the user to specify to Covered where an FSM is located.  Using the
+command-line method, no changes need to be to source Verilog code for Covered's purposes.
+</_pg>
+
+<_pg>
+To specify where an FSM exists within the design, the -F option must be specified to Covered's
+score command.  Each -F option specifies one FSM within the design.  Multiple -F options to
+the score command are allowed, allowing more than one FSM to be scored simultaneously.  The
+-F option takes one argument that is subdivided into two or three parts:
+</_pg>
+
+<_margin>FSM score option</_margin>
+
+<_pg>
+-F &lt;module&gt;=(&lt;input_state_expression&gt;,)&lt;output_state_expression&gt;
+</_pg>
+
+<_pg>
+The &lt;module&gt; specifies the Verilog module where the FSM state variables exist.  The
+&lt;input_state_expression&gt; specifies the name of the variable(s) that represent the input
+state of the state machine.  The &lt;output_state_expression&gt; specifies the name of the
+variable(s) that represent the output state of the state machine.  Most FSMs have one variable
+as the input state (in most cases a registered version of the output state) such that the
+input variable is different than the output variable of the state machine.  Specifying both
+variables in the -F option provides the user to more accurately specify to Covered the
+FSM.  In the case that an FSM has the same variable for the input and output state, the user
+must specify only the output state variable (omitting the &lt;input_state_expression&gt; and
+comma character in the argument).
+</_pg>
+
+<_pg>
+The input and output expression to the -F command can represent any signals, parts of signals,
+or combinations of signals.  Constant values or parameters in the specification of the
+input/output expression is currently not supported (in fact, there are no future plans to
+support this behavior unless user-feedback demands it).  The following examples show various
+legal ways to specify input/output expressions.  The syntax is limited to what it shown in
+these examples.
 </_pg>
 
 <_margin>Example 1</_margin>
 
 <_code>
-&gt;  ls<br>
-run1.cov<br>
-run2.cov<br>
-run3.cov<br>
-run4.cov<br>
-<br>
-&gt;  covered merge -o merged.cov run1.cov run2.cov<br>
-<br>
-&gt;  covered merge merged.cov run3.cov<br>
-<br>
-&gt;  covered merge merged.cov run4.cov
+-F foobar=a
 </_code>
 
 <_pg>
-Another possible way to merge these files would be to use a
-tree-structured merge algorithm that uses intermediate CDDs
-to form the final CDD.  This method will use fewer merge calls
-but will take slightly more disk space.
+Example 1 specifies that the entire vector called "a" should be considered both the
+input and output state variable.
 </_pg>
 
 <_margin>Example 2</_margin>
 
 <_code>
-&gt;  covered merge -o temp1.cov run1.cov run2.cov<br>
-<br>
-&gt;  covered merge -o temp2.cov run3.cov run4.cov<br>
-<br>
-&gt;  covered merge -o merged.cov temp1.cov temp2.cov<br>
-
+-F foobar=a[2]
 </_code>
 
 <_pg>
-There are, obviously, many more ways to generate a merged report
-but are too numerous to list here.  The examples above both
-achieve the same result in a fairly optimal manner and provide
-a good understanding of how to use the merge command on a large
-number of CDDs.
+Example 2 specifies that bit 2 of the vector called "a" should be considered both
+the input and output state variable.
+</_pg>
+
+<_margin>Example 3</_margin>
+
+<_code>
+-F foobar=a[3:1]
+</_code>
+
+<_pg>
+Example 3 specifies that bits 3:1 of the vector called "a" should be considered both
+the input and output state variable.
+</_pg>
+
+<_margin>Example 4</_margin>
+
+<_code>
+-F foobar={a,b}
+</_code>
+
+<_pg>
+Example 4 specifies that vectors "a" and "b" should be concatenated to form the input/output
+state variable.  Only one set of curly brackets may be used to specify a concatenated state
+expression; however, 2 or more signals may be specified within those brackets.
+</_pg>
+
+<_pg>
+Any combination of the above four examples can be used to formalate the input state
+expression or the output state expression.
+</_pg>
+
+<_pg>
+If the user specifies an FSM that Covered is not able to find (either the module was not
+included in the design that Covered is scoring or the FSM uses Verilog code that Covered is
+not able to handle), an error message is displayed to the user.  It is then up to the user
+to determine if the FSM was incorrectly specified to Covered or otherwise.  This warning is
+not considered to be a bug in Covered (unless of course, it can be proven that the FSM
+should have been found).
+</_pg>
+
+<_pg>
+At the current time, Covered does not have the ability to extract the states and state
+transitions of the specified FSM from the design.  Currently, it also doesn't have the ability
+to specify this information in other ways.  To provide meaningful coverage information for
+the FSM, Covered outputs all hit states and state transitions in the report when all
+achievable states and state transitions are not known.  This information will be able to be
+specified by the user in future versions of Covered, with the ability to automatically extract
+this information also in the works.
+</_pg>
+
+<_header2>
+Other Notes
+</_header2>
+
+<_pg>
+When the Verilog files are parsed, a preprocessor is run on each file that is to be read
+in by Covered.  The preprocessor generates an intermediate form of each file, resolving
+defined values and included files.  The intermediate form is output to a file which is
+called "tmpXXXXXX" where XXXXXX represents some alphanumeric sequence chosen by the OS via
+the mkstemp() function.  The file is guaranteed to be unique to all other files in the
+directory and it is automatically removed by Covered when parsing is completed.  However, if
+Covered should segfault or hit into an internal assertion error during the parsing stage,
+this output file will remain in the current directory and it will be up to the user to
+remove it (though Covered will still be able to run even if this file is left remaining).
+</_pg>
+
+<_pg>
+If the user does not want Covered to use this naming convention for specifying this file,
+the user may use the -p option (see Options section above) to override the default name.
+Covered will then use this filename instead of generating a unique name.  Make sure that
+the file specified does not contain any useful data since Covered will overwrite this
+file when the score command is run.
 </_pg>
