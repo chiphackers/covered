@@ -390,6 +390,11 @@
  list and should not be added again.
 */
 #define SUPPL_LSB_STMT_ADDED        24
+
+/*!
+ Least-significant bit position of expression supplemental field indicating that this
+ expression exists on the left-hand side of an assignment operation.
+*/
 #define SUPPL_LSB_LHS               25
 
 /*!
@@ -494,6 +499,11 @@
  Returns the specified expression's operation.
 */
 #define SUPPL_OP(x)                 ((x >> SUPPL_LSB_OP) & 0x3f)
+
+/*!
+ Returns a value of 1 if the specified expression exists on the left-hand side
+ of an assignment operation.
+*/
 #define SUPPL_IS_LHS(x)             ((x >> SUPPL_LSB_LHS) & 0x1)
 
 /*! @} */
@@ -1076,8 +1086,71 @@ typedef struct vsignal_s     vsignal;
 typedef struct fsm_s fsm;
 
 struct expression_s {
-  vector*     value;       /*!< Current value and toggle information of this expression        */
-  control     suppl;       /*!< Vector containing supplemental information for this expression */
+  vector*     value;       /*!< Current value and toggle information of this expression                         */
+  control     op;          /*!< Expression operation type                                                       */
+  union {
+    control   all;         /*!< Controls all bits within this union                                             */
+    struct {
+      control swapped:1;   /*!< Indicates that the children of this expression have been swapped.  The swapping 
+                                of the positions is performed by the score command (for multi-bit selects) and
+				this bit indicates to the report code to swap them back when displaying them in
+				a report.                                                                       */
+      control root:1;      /*!< Indicates that this expression is a root expression.  Traversing to the parent
+                                pointer will take you to a statement type.                                      */
+      control executed:1;  /*!< Indicates that this expression has been executed in the queue during the
+                                lifetime of the simulation.                                                     */
+      control stmt_head:1; /*!< Indicates the statement which this expression belongs is a head statement (only
+                                valid for root expressions -- parent expression == NULL).                       */
+      control stmt_stop:1; /*!< Indicates the statement which this expression belongs should write itself to
+                                the CDD and not continue to traverse its next_true and next_false pointers.     */
+      control stmt_cont:1; /*!< Indicates the statement which this expression belongs is part of a continuous
+                                assignment.  As such, stop simulating this statement tree after this expression
+				tree is evaluated.                                                              */
+      control false:1;     /*!< Indicates that this expression has evaluated to a value of FALSE during the
+                                lifetime of the simulation.                                                     */
+      control true:1;      /*!< Indicates that this expression has evaluated to a value of TRUE during the
+                                lifetime of the simulation.                                                     */
+      control left_changed:1; /*!< Indicates that this expression has its left child expression in a changed
+                                   state during this timestamp.                                                 */
+      control right_changed:1;  /*!< Indicates that this expression has its right child expression in a changed
+                                     state during this timestamp.                                               */
+      control eval_00:1;        /*!< Indicates that the value of the left child expression evaluated to FALSE
+                                     and the right child expression evaluated to FALSE.                         */
+       /*!
+        Least-significant bit position of expression supplemental field indicating that the
+	 value of the left child expression evaluated to FALSE and the right child expression
+	  evaluated to TRUE.
+	  */
+#define SUPPL_LSB_EVAL_01           17
+
+	  /*!
+	   Least-significant bit position of expression supplemental field indicating that the
+	    value of the left child expression evaluated to TRUE and the right child expression
+	     evaluated to FALSE.
+	     */
+#define SUPPL_LSB_EVAL_10           18
+
+	     /*!
+	      Least-significant bit position of expression supplemental field indicating that the
+	       value of the left child expression evaluated to TRUE and the right child expression
+	        evaluated to TRUE.
+		*/
+#define SUPPL_LSB_EVAL_11           19
+
+		/*!
+		 Least-significant bit position of expression supplemental field indicating that the
+		  value of the current expression currently set to TRUE (temporary value).
+		  */
+#define SUPPL_LSB_EVAL_T            20
+
+		  /*!
+		   Least-significant bit position of expression supplemental field indicating that the
+		    value of the current expression currently set to FALSE (temporary value).
+		    */
+#define SUPPL_LSB_EVAL_F            21
+
+    } part;
+  } suppl;
   int         id;          /*!< Specifies unique ID for this expression in the parent          */
   int         ulid;        /*!< Specifies underline ID for reporting purposes                  */
   int         line;        /*!< Specified line in file that this expression is found on        */
@@ -1607,6 +1680,10 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.111  2005/01/04 14:37:00  phase1geo
+ New changes for race condition checking.  Things are uncompilable at this
+ point.
+
  Revision 1.110  2004/12/17 14:27:46  phase1geo
  More code added to race condition checker.  This is in an unusable state at
  this time.
