@@ -10,6 +10,6 @@ rm -rf ./doc/manstyle
 ./configure
 cd ./doc; make devel_doc
 cd ./doc/devel/html; tar cvlf ../../../../devel.tar *; gzip ../../../../devel.tar
-cd ./doc; make clean
+cd ./doc; make clean devel_doc_clean
 cd ./doc/user; tar cvlf ../../../user.tar *; gzip ../../../user.tar
 make distclean
