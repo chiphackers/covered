@@ -636,10 +636,14 @@ int command_report( int argc, int last_arg, char** argv ) {
       }
 
       /* Get the COVERED_HOME environment variable */
+#ifndef INSTALL_DIR
       if( (covered_home = getenv( "COVERED_HOME" )) == NULL ) {
         print_output( "COVERED_HOME not initialized.  Exiting...", FATAL, __FILE__, __LINE__ );
         exit( 1 );
       }
+#else
+      covered_home = strdup( "INSTALL_DIR" );
+#endif
 
       /* Initialize TCL */
       tcl_func_initialize( interp );
@@ -667,6 +671,15 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.31  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.30  2004/03/15 21:38:17  phase1geo
  Updated source files after running lint on these files.  Full regression
  still passes at this point.

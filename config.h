@@ -19,6 +19,9 @@
 /* The number of bytes in a long.  */
 #define SIZEOF_LONG 4
 
+/* Installation directory for Covered */
+#define INSTALL_DIR /usr/local
+
 /* The number of bytes in a short.  */
 #define SIZEOF_SHORT 2
 
@@ -28,9 +31,15 @@
 /* Define if you have the <sys/times.h> header file.  */
 #define HAVE_SYS_TIMES_H 1
 
+/* Define if you have the tcl library (-ltcl).  */
+#define HAVE_LIBTCL 1
+
+/* Define if you have the tk library (-ltk).  */
+#define HAVE_LIBTK 1
+
 /* Name of package */
 #define PACKAGE "covered"
 
 /* Version number of package */
-#define VERSION "covered-20040211"
+#define VERSION "covered-20040322"
 

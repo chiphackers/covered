@@ -18,6 +18,9 @@
 /* The number of bytes in a long.  */
 #undef SIZEOF_LONG
 
+/* Installation directory for Covered */
+#undef INSTALL_DIR
+
 /* The number of bytes in a short.  */
 #undef SIZEOF_SHORT
 
@@ -26,6 +29,12 @@
 
 /* Define if you have the <sys/times.h> header file.  */
 #undef HAVE_SYS_TIMES_H
+
+/* Define if you have the tcl library (-ltcl).  */
+#undef HAVE_LIBTCL
+
+/* Define if you have the tk library (-ltk).  */
+#undef HAVE_LIBTK
 
 /* Name of package */
 #undef PACKAGE

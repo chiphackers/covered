@@ -1,7 +1,32 @@
 Covered-Related NEWS
 ====================
 
-    * 04/11/2004
+    * 03/21/2004
+
+Release covered-20040321 made.  This release contains lots of bug fixes and also contains the
+initial version of the Covered report viewing GUI (line coverage only).  The following is a
+description of the changes made since the last development release.
+
+  - Ran C linting tool on all Covered source code and updated code based on linting errors/
+    warnings.
+  - Modified debug output to show file and line number of code that called the outputting
+    function (easier to debug problems and useful in error regression testing).
+  - Started initial error testing in regressions.
+  - Several bug fixes made to remove segmentation faults and assertion errors in the new
+    report generation functions.
+  - Initial version of Covered report viewing GUI added.  This version displays line coverage
+    only at the moment.
+  - Fixed bug in score command for statement removal (was resulting in memory errors that led
+    to segmentation faults).
+  - Fixed bug in report command that output bad verbose information when -c option was used.
+  - Added new diagnostics to regression testsuite to reproduce situations where original
+    segmentation faults were found to occur.
+  - Development documentation updates.  No user documentation updates are released at this
+    time (other than information provided using the -h global option to Covered).
+
+Have fun!
+
+    * 02/11/2004
 
 Release covered-20040210 made.  A lot of work has gone into this release to make the report
 output more readable and concise.  Several bug fixes have been made as well.  A GUI is on

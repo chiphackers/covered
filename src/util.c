@@ -81,6 +81,8 @@ void set_debug( bool value ) {
 /*!
  \param msg   Message to display.
  \param type  Type of message to output
+ \param file  Name of file that called this function
+ \param line  Line number that this function was called in
 
  Displays the specified message to standard output based on the type of message
  being output.
@@ -773,6 +775,15 @@ void timer_stop( timer** tm ) {
 
 /*
  $Log$
+ Revision 1.27  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.26  2004/03/15 21:38:17  phase1geo
  Updated source files after running lint on these files.  Full regression
  still passes at this point.

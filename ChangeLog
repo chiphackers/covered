@@ -1,3 +1,141 @@
+2004-03-20 21:56  phase1geo
+
+	* diags/rpt/: multi_exp2.rptI, multi_exp2.rptM, multi_exp2.rptWI,
+	multi_exp2.rptWM: Updating multi_exp2 reports to match current
+	version of comb.c.  At some time we will get comb.c fixed to match
+	the previous version.
+
+2004-03-20 09:26  phase1geo
+
+	* diags/cdd/multi_exp3.cdd, diags/regress/Makefile,
+	diags/rpt/multi_exp3.rptI, diags/rpt/multi_exp3.rptM,
+	diags/rpt/multi_exp3.rptWI, diags/rpt/multi_exp3.rptWM, src/comb.c:
+	Fixing assertion error in report command for multi-value expression
+	display.  Added multi_exp3 report information to regression suite
+	and fixed regression Makefile.
+
+2004-03-19 16:38  phase1geo
+
+	* diags/verilog/multi_exp3.v: Removing unnecessary complexity from
+	diagnostic while still hittting the original error.
+
+2004-03-19 16:34  phase1geo
+
+	* src/comb.c: Removing assertion error from DELAY expression
+	underline output.
+
+2004-03-19 16:32  phase1geo
+
+	* diags/: regress/Makefile, regress/multi_exp3.cfg,
+	verilog/multi_exp3.v: Adding multi_exp3 diagnostic that replicates
+	assertion error in report command for an expression that does not
+	have an underline ID that is not fully covered.
+
+2004-03-18 17:01  phase1geo
+
+	* scripts/main_view.tcl, scripts/menu_create.tcl, src/comb.c:
+	Fixing combination_output_expr function to correctly determine when
+	an expression should be output to the report.  Full regression now
+	passes.  Also modified TCL scripts to not be dependent on the
+	original widgets package (we use straight TCL for now).
+
+2004-03-18 08:06  phase1geo
+
+	* src/comb.c: Fixing combination_output_expr to work correctly for
+	covered and uncovered modes.
+
+2004-03-17 22:43  phase1geo
+
+	* src/comb.c: Cleaning up verbose output.  The last modification
+	still isn't working exactly as hoped; more work to do here.
+
+2004-03-17 17:04  phase1geo
+
+	* src/comb.c: Attempting to fix output problem when -c option is
+	specified for expressions that contain non-measurable
+	subexpressions.
+
+2004-03-17 07:44  phase1geo
+
+	* scripts/: cov_create.tcl, main_view.tcl, menu_create.tcl,
+	process_file.tcl: Adding initial versions of TCL scripts for GUI
+	interface.
+
+2004-03-17 07:24  phase1geo
+
+	* diags/cdd/always13.cdd, diags/regress/Makefile,
+	diags/regress/always13.cfg, diags/regress/err1.0.cfg,
+	diags/regress/err2.0.cfg, diags/rpt/always13.rptI,
+	diags/rpt/always13.rptM, diags/rpt/always13.rptWI,
+	diags/rpt/always13.rptWM, diags/verilog/always13.v,
+	diags/verilog/err1.0.v, diags/verilog/err2.0.v,
+	diags/verilog/err2.1.v, src/codegen.c, src/comb.c: Fixing some more
+	report-related bugs.  Added new diagnostics to regression suite to
+	test for these.
+
+2004-03-16 08:01  phase1geo
+
+	* src/statement.c: Cleaning up verbose output.
+
+2004-03-16 07:56  phase1geo
+
+	* src/statement.c: Fixing bug with statement removal to make it
+	less prone to segmentation faulting.
+
+2004-03-15 23:45  phase1geo
+
+	* config.h, configure, configure.in, diags/cdd/always12.cdd,
+	diags/cdd/long_exp3.cdd, diags/regress/Makefile,
+	diags/regress/always12.cfg, diags/regress/long_exp3.cfg,
+	diags/rpt/always12.rptI, diags/rpt/always12.rptM,
+	diags/rpt/always12.rptWI, diags/rpt/always12.rptWM,
+	diags/rpt/long_exp3.rptI, diags/rpt/long_exp3.rptM,
+	diags/rpt/long_exp3.rptWI, diags/rpt/long_exp3.rptWM,
+	diags/verilog/Makefile, diags/verilog/always12.v,
+	diags/verilog/gen_test, diags/verilog/long_exp3.v, src/Makefile.am,
+	src/Makefile.in, src/arc.c, src/arc.h, src/attr.c, src/attr.h,
+	src/binding.c, src/binding.h, src/codegen.c, src/comb.c, src/db.c,
+	src/db.h, src/defines.h, src/expr.c, src/fsm.c, src/fsm_arg.c,
+	src/fsm_var.c, src/gui.c, src/gui.h, src/info.c, src/instance.c,
+	src/lexer.l, src/line.c, src/line.h, src/link.c, src/main.c,
+	src/merge.c, src/module.c, src/param.c, src/parse.c, src/parser.y,
+	src/parser_misc.c, src/pplexer.l, src/report.c, src/score.c,
+	src/search.c, src/signal.c, src/stat.c, src/statement.c,
+	src/static.c, src/symtable.c, src/tcl_funcs.c, src/tcl_funcs.h,
+	src/tree.c, src/util.c, src/util.h, src/vcd.c, src/vector.c:
+	Checkin contains a plethora of changes, bug fixes, enhancements... 
+	Some of which include:	new diagnostics to verify bug fixes found
+	in field, test generator script for creating new diagnostics,
+	enhancing error reporting output to include filename and line
+	number of failing code (useful for error regression testing),
+	support for error regression testing, bug fixes for segmentation
+	fault errors found in field, additional data integrity features,
+	and code support for GUI tool (this submission does not include TCL
+	files).
+
+2004-03-15 15:38  phase1geo
+
+	* src/: arc.c, arc.h, attr.h, codegen.c, comb.c, db.c, defines.h,
+	expr.c, fsm.c, fsm_arg.c, fsm_var.c, info.c, instance.c, line.c,
+	link.c, parse.c, parser.y, pplexer.l, report.c, score.c, search.c,
+	statement.c, symtable.c, toggle.c, toggle.h, util.c, vcd.c,
+	vector.c: Updated source files after running lint on these files. 
+	Full regression still passes at this point.
+
+2004-02-11 13:18  phase1geo
+
+	* NEWS, diags/verilog/Makefile: Final changes for new development
+	release.
+
+2004-02-11 07:36  phase1geo
+
+	* NEWS, configure, configure.in: More updates for upcoming release.
+
+2004-02-09 23:03  phase1geo
+
+	* ChangeLog, NEWS, config.h, configure, configure.in: Updates for
+	next development release.
+
 2004-02-09 22:53  phase1geo
 
 	* diags/verilog/Makefile, doc/manstyle/016.mas,
