@@ -430,9 +430,9 @@ proc display_comb_cov {} {
               }
             }
           } else {
-            set_cmd_enter  [concat $cmd_enter  [lindex $entry 0] [lindex $entry 1]]
-            set_cmd_button [concat $cmd_button [lindex $entry 0] [lindex $entry 1]]
-            set_cmd_leave  [concat $cmd_leave  [lindex $entry 0] [lindex $entry 1]]
+            set cmd_enter  [concat $cmd_enter  [lindex $entry 0] [lindex $entry 1]]
+            set cmd_button [concat $cmd_button [lindex $entry 0] [lindex $entry 1]]
+            set cmd_leave  [concat $cmd_leave  [lindex $entry 0] [lindex $entry 1]]
           }
         }
         eval $cmd_enter

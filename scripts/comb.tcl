@@ -57,11 +57,13 @@ proc display_comb_info {} {
   .combwin.f.t tag delete comb_bp1
   .combwin.f.t tag delete comb_bp3
 
-  # Allow us to clear out text box and repopulate
-  .combwin.f.t configure -state normal
+  # Allow us to clear out text boxes and repopulate
+  .combwin.f.t  configure -state normal
+  .combwin.f.tc configure -state normal
 
   # Clear the text-box before any insertion is being made
-  .combwin.f.t delete 1.0 end
+  .combwin.f.t  delete 1.0 end
+  .combwin.f.tc delete 1.0 end
 
   # Get length of comb_code list
   set code_len [llength $comb_code]
@@ -84,7 +86,8 @@ proc display_comb_info {} {
   }
 
   # Keep user from writing in text boxes
-  .combwin.f.t configure -state disabled
+  .combwin.f.t  configure -state disabled
+  .combwin.f.tc configure -state disabled
 
   # Add expression tags and bindings
   if {[llength $comb_uline_indexes] > 0} {
