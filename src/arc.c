@@ -253,6 +253,12 @@ void arc_add( char** arcs, int width, expression* fr_st, expression* to_st ) {
 
 }
 
+/*!
+ \param arcs  Pointer to state transition arc array to write.
+ \param file  Pointer to CDD file to write.
+
+ \return Returns TRUE if write was successful; otherwise, returns FALSE.
+*/
 bool arc_db_write( char* arcs, FILE* file ) {
 
   bool retval = TRUE;  /* Return value for this function */
@@ -334,45 +340,25 @@ bool arc_db_read( char** arcs, char** line ) {
 
 }
 
-int main() {
+/*!
+ \param arcs  Pointer to state transition arc array.
 
-  char*       test  = NULL;
-  expression* fr_st = expression_create( NULL, NULL, EXP_OP_STATIC, 0, 0, FALSE );
-  expression* to_st = expression_create( NULL, NULL, EXP_OP_STATIC, 0, 0, FALSE );
-  vector*     vec1  = vector_create( 32, 0, TRUE );
-  vector*     vec2  = vector_create( 32, 0, TRUE );
-  int         i;
-  FILE*       handle;
-  char*       read = NULL;
-  char*       curr_line;
+ Deallocates all allocated memory for the specified state transition
+ arc array.
+*/
+void arc_dealloc( char* arcs ) {
 
-  vector_from_int( vec1, 1 );
-  free_safe( fr_st->value );
-  fr_st->value = vec1;
-
-  vector_from_int( vec2, 2 );
-  free_safe( to_st->value );
-  to_st->value = vec2;
-
-  arc_add( &test, 9, fr_st, to_st );
-
-  if( (handle = fopen( "foo", "w" )) != NULL ) {
-    arc_db_write( test, handle );
-    fprintf( handle, "\n" );
-    fclose( handle );
+  if( arcs != NULL ) {
+    free_safe( arcs );
   }
-  if( (handle = fopen( "foo", "r" )) != NULL ) {
-    readline( handle, &curr_line );
-    arc_db_read( &read, &curr_line );
-    fclose( handle );
-  }
-  arc_db_write( test, stdout );
-  printf( "\n" );
 
 }
 
 /*
  $Log$
+ Revision 1.2  2003/08/26 21:53:23  phase1geo
+ Added database read/write functions and fixed problems with other arc functions.
+
  Revision 1.1  2003/08/26 12:53:35  phase1geo
  Added initial versions of arc.c and arc.h though they are not even close to
  being finished at this point.
