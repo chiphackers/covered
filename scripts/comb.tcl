@@ -59,7 +59,7 @@ proc check_level {level} {
   
 }
 
-proc display_comb_info {level} {
+proc display_comb_info {level selected_range} {
 
   global comb_code comb_uline_groups comb_ulines
   global comb_uline_indexes comb_first_uline
@@ -121,35 +121,66 @@ proc display_comb_info {level} {
     }
     .combwin.f.t tag bind comb_bp1 <ButtonPress-1> {
       .combwin.f.t configure -cursor $comb_curr_cursor
-      comb_down_level
+      comb_down_level [.combwin.f.t tag prevrange comb_bp1 {current + 1 chars}]
     }
     .combwin.f.t tag bind comb_bp2 <ButtonPress-2> {
       .combwin.f.t configure -cursor $comb_curr_cursor
-      comb_up_level
+      comb_up_level [.combwin.f.t tag prevrange comb_bp2 {current + 1 chars}]
     }
   }
 
 }
 
-proc comb_up_level {} {
+proc comb_up_level {selected_range} {
 
   global comb_level
 
   if {$comb_level > 0} {
     incr comb_level -1
-    display_comb_info $comb_level
+    display_comb_info $comb_level $selected_range
   }
 
 }
 
-proc comb_down_level {} {
+proc comb_down_level {selected_range} {
 
   global comb_level
 
   if [check_level [expr $comb_level + 1]] {
     incr comb_level
-    display_comb_info $comb_level
+    display_comb_info $comb_level $selected_range
   }
+
+}
+
+proc get_underline_expressions {parent} {
+
+}
+ 
+# Create a list containing locations of underlined expressions in the comb_ulines list
+# Each entry in the list will be organized as follows:
+#   displayed level {{index start_char end_char}*} parent_id {children_ids...}*
+# parent_id == -1 means that this doesn't have a parent
+# id is based on index in list
+proc organize_underlines {} {
+
+  global comb_ulines comb_uline_groups comb_uline_exprs
+
+  set code_len  [llength $comb_uline_groups]
+  set curr_line 0
+
+  for {set i 0} {$i < $code_len} {incr i} {
+    set index [expr [lindex $comb_uline_groups $i] + $curr_line - 1]
+    if {$i == 0} {
+      set line_info [list $index 0 [string length [lindex $comb_ulines $index]]
+    } else {
+      lappend line_info [list $index 0 [string length [lindex $comb_ulines $index]]
+    }
+  }
+
+  list comb_uline_exprs 0 -1 $line_info -1
+
+  get_underline_expressions 0
 
 }
 
@@ -197,7 +228,9 @@ proc create_comb_window {mod_name expr_id} {
   set comb_ulines       ""
   tcl_func_get_comb_coverage $mod_name $expr_id
 
+  organize_underlines
+
   # Write combinational logic with level 0 underline information in text box
-  display_comb_info 0
+  display_comb_info 0 "1.0 end"
 
 }
