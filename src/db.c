@@ -29,6 +29,7 @@
 #include "binding.h"
 #include "param.h"
 #include "static.h"
+#include "stat.h"
 #include "fsm.h"
 #include "info.h"
 #include "attr.h"
@@ -1333,6 +1334,11 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.123  2005/02/04 23:55:47  phase1geo
+ Adding code to support race condition information in CDD files.  All code is
+ now in place for writing/reading this data to/from the CDD file (although
+ nothing is currently done with it and it is currently untested).
+
  Revision 1.122  2005/01/25 13:42:27  phase1geo
  Fixing segmentation fault problem with race condition checking.  Added race1.1
  to regression.  Removed unnecessary output statements from previous debugging

@@ -1010,7 +1010,7 @@
  The rpt directory contains a generated module (*.rptM) and instance (*.rptI) report for each Verilog
  diagnostic.  Like the cdd directory, the rpt directory contains generated reports that were deemed to
  be correct by the diagnostic writer.  When diagnostic is run in which the output is deemed to be good,
- the *.rptI/*.rptM files from the diagnostic run are copied to this directory.  All report files in
+ the *.rptI and *.rptM files from the diagnostic run are copied to this directory.  All report files in
  this directory are used to compare the final report outputs from a diagnostic run to determine if
  the generated report files are correct.  Compares are performed via the "diff" Unix command.
  
@@ -1216,6 +1216,10 @@
 
 /*
  $Log$
+ Revision 1.8  2004/03/30 15:42:14  phase1geo
+ Renaming signal type to vsignal type to eliminate compilation problems on systems
+ that contain a signal type in the OS.
+
  Revision 1.7  2003/08/06 13:23:53  phase1geo
  Updating Doxygen-generated documentation.  Doxygen updated to version 1.3.3.
 

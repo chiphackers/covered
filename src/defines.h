@@ -760,7 +760,7 @@
 /*! @} */
 
 /*!
- \addtogroup attribute_types
+ \addtogroup attribute_types Attribute Types
 
  The following defines specify the attribute types that are parseable by Covered.
 
@@ -769,6 +769,44 @@
 
 #define ATTRIBUTE_UNKNOWN       0       /*!< This attribute is not recognized by Covered */
 #define ATTRIBUTE_FSM           1       /*!< FSM attribute                               */
+
+/*! @} */
+
+/*!
+ \addtogroup race_condition_types Race Condition Violation Types
+
+ The following group of defines specify all of the types of race conditions that Covered is
+ currently capable of detecting:
+
+ @{
+*/
+
+/*! All sequential logic uses non-blocking assignments */
+#define RACE_TYPE_SEQ_USES_NON_BLOCK         0
+
+/*! All combinational logic in an always block uses blocking assignments */
+#define RACE_TYPE_CMB_USES_BLOCK             1
+
+/*! All mixed sequential and combinational logic in the same always block uses non-blocking assignments */
+#define RACE_TYPE_MIX_USES_NON_BLOCK         2
+
+/*! Blocking and non-blocking assignments should not be used in the same always block */
+#define RACE_TYPE_HOMOGENOUS                 3
+
+/*! Assignments made to a variable should only be done within one always block */
+#define RACE_TYPE_ASSIGN_IN_ONE_BLOCK1       4
+
+/*! Signal assigned both in statement block and via input/inout port */
+#define RACE_TYPE_ASSIGN_IN_ONE_BLOCK2       5
+
+/*! The $strobe system call should only be used to display variables that were assigned using non-blocking assignments */
+#define RACE_TYPE_STROBE_DISPLAY_NON_BLOCK   6
+
+/*! No #0 procedural assignments should exist */
+#define RACE_TYPE_NO_POUND_0_PROC_ASSIGNS    7
+
+/*! Total number of race condition checks in this list */
+#define RACE_TYPE_NUM                        8
 
 /*! @} */
 
@@ -1127,17 +1165,19 @@ struct statistic_s;
 typedef struct statistic_s statistic;
 
 struct statistic_s {
-  float line_total;    /*!< Total number of lines parsed               */
-  int   line_hit;      /*!< Number of lines executed during simulation */
-  float tog_total;     /*!< Total number of bits to toggle             */
-  int   tog01_hit;     /*!< Number of bits toggling from 0 to 1        */
-  int   tog10_hit;     /*!< Number of bits toggling from 1 to 0        */
-  float comb_total;    /*!< Total number of expression combinations    */
-  int   comb_hit;      /*!< Number of logic combinations hit           */
-  float state_total;   /*!< Total number of FSM states                 */
-  int   state_hit;     /*!< Number of FSM states reached               */
-  float arc_total;     /*!< Total number of FSM arcs                   */
-  int   arc_hit;       /*!< Number of FSM arcs traversed               */
+  float line_total;                  /*!< Total number of lines parsed                   */
+  int   line_hit;                    /*!< Number of lines executed during simulation     */
+  float tog_total;                   /*!< Total number of bits to toggle                 */
+  int   tog01_hit;                   /*!< Number of bits toggling from 0 to 1            */
+  int   tog10_hit;                   /*!< Number of bits toggling from 1 to 0            */
+  float comb_total;                  /*!< Total number of expression combinations        */
+  int   comb_hit;                    /*!< Number of logic combinations hit               */
+  float state_total;                 /*!< Total number of FSM states                     */
+  int   state_hit;                   /*!< Number of FSM states reached                   */
+  float arc_total;                   /*!< Total number of FSM arcs                       */
+  int   arc_hit;                     /*!< Number of FSM arcs traversed                   */
+  int   race_total;                  /*!< Total number of race conditions found          */
+  int   rtype_total[RACE_TYPE_NUM];  /*!< Total number of each race condition type found */
 };
 
 /*------------------------------------------------------------------------------*/
@@ -1527,6 +1567,11 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.120  2005/02/04 23:55:48  phase1geo
+ Adding code to support race condition information in CDD files.  All code is
+ now in place for writing/reading this data to/from the CDD file (although
+ nothing is currently done with it and it is currently untested).
+
  Revision 1.119  2005/02/01 05:11:18  phase1geo
  Updates to race condition checker to find blocking/non-blocking assignments in
  statement block.  Regression still runs clean.

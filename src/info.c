@@ -108,7 +108,7 @@ bool info_db_read( char** line ) {
 
   bool retval = TRUE;  /* Return value for this function                 */
   int  chars_read;     /* Number of characters scanned in from this line */
-  bool scored;         /* Indicates if this file contains scored data    */
+  int  scored;         /* Indicates if this file contains scored data    */
   int  version;        /* Contains CDD version from file                 */
   int  mcode;          /* Temporary merge code                           */
   char tmp[4096];      /* Temporary string                               */
@@ -161,7 +161,7 @@ bool info_db_read( char** line ) {
       }
     }
 
-    flag_scored = scored ? TRUE : flag_scored;
+    flag_scored = (scored == TRUE) ? TRUE : flag_scored;
     merged_code = (merged_code == INFO_NOT_MERGED) ? mcode : merged_code;
 
   } else {
@@ -178,6 +178,15 @@ bool info_db_read( char** line ) {
 
 /*
  $Log$
+ Revision 1.7  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.6  2004/03/15 21:38:17  phase1geo
  Updated source files after running lint on these files.  Full regression
  still passes at this point.

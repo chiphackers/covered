@@ -23,12 +23,23 @@ bool race_db_write( race_blk* head, FILE* file );
 /*! \brief Reads contents from specified line for a race condition block and assigns the new block to the curr_mod */
 bool race_db_read( char** line, module* curr_mod );
 
+/*! \brief Get statistic information for the specified race condition block list */
+void race_get_stats( race_blk* curr, int* race_total, int type_total[][RACE_TYPE_NUM] );
+
+/*! \brief Displays report information for race condition blocks in design */
+void race_report( FILE* ofile, bool verbose );
+
 /*! \brief Deallocates the specified race condition block from memory */
 void race_blk_delete_list( race_blk* rb );
 
 
 /*
  $Log$
+ Revision 1.9  2005/02/04 23:55:54  phase1geo
+ Adding code to support race condition information in CDD files.  All code is
+ now in place for writing/reading this data to/from the CDD file (although
+ nothing is currently done with it and it is currently untested).
+
  Revision 1.8  2005/01/10 23:03:39  phase1geo
  Added code to properly report race conditions.  Added code to remove statement blocks
  from module when race conditions are found.

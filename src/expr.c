@@ -906,7 +906,7 @@ void expression_display( expression* expr ) {
           expr->id,
           expr->line,
 	  expr->col,
-          expr->suppl,
+          expr->suppl.all,
           expr->value->width,
           left_id, 
           right_id );
@@ -1506,6 +1506,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.109  2005/01/10 02:59:30  phase1geo
+ Code added for race condition checking that checks for signals being assigned
+ in multiple statements.  Working on handling bit selects -- this is in progress.
+
  Revision 1.108  2005/01/07 23:00:09  phase1geo
  Regression now passes for previous changes.  Also added ability to properly
  convert quoted strings to vectors and vectors to quoted strings.  This will

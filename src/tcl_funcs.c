@@ -19,6 +19,8 @@
 #include "toggle.h"
 #include "comb.h"
 #include "expr.h"
+#include "instance.h"
+#include "report.h"
 
 
 extern mod_link* mod_head;
@@ -71,8 +73,7 @@ int tcl_func_get_instances( Tcl_Interp* tcl, mod_inst* root ) {
 
 int tcl_func_get_instance_list( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
-  mod_inst* inst;             /* Pointer to current instance    */
-  int       retval = TCL_OK;  /* Return value for this function */
+  int retval = TCL_OK;  /* Return value for this function */
 
   if( instance_root != NULL ) {
     tcl_func_get_instances( tcl, instance_root );
@@ -694,6 +695,9 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* home, char* version, char* brow
 
 /*
  $Log$
+ Revision 1.14  2004/09/14 19:26:28  phase1geo
+ Fixing browser and version injection to Tcl scripts.
+
  Revision 1.13  2004/09/14 04:54:58  phase1geo
  Adding check for browser to configuration build scripts.  Adding code to set
  BROWSER global variable in Tcl scripts.

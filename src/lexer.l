@@ -29,6 +29,7 @@
 extern YYLTYPE yylloc;
 
 extern void reset_pplexer( char* filename, FILE* out );
+extern int PPVLlex( void );
 
 extern int   ignore_mode;
 extern int   attr_mode;
@@ -136,12 +137,6 @@ WSPACE [ \t\b\f]+
 	yylloc.last_column += 2;
 	BEGIN( comment_enter );
  }
-
-  /* Pragma comment */
-  /*"(*"           { comment_enter = YY_START;  BEGIN( PCOMMENT ); }
-  /*<PCOMMENT>.    { yymore();                                     }
-  /*<PCOMMENT>\n   { yylloc.first_line += 1;  yymore();            }
-  /*<PCOMMENT>"*)" { BEGIN( comment_enter );                       }
 
   /* Multi-character symbols */
 "(*"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_PSTAR;   }

@@ -30,6 +30,7 @@
 #include "fsm.h"
 #include "tcl_funcs.h"
 #include "info.h"
+#include "race.h"
 
 
 extern char      user_msg[USER_MSG_LENGTH];
@@ -65,6 +66,12 @@ bool report_combination  = TRUE;
  report output.
 */
 bool report_fsm          = TRUE;
+
+/*!
+ If set to a boolean value of TRUE, reports the race condition violations for the specified
+ database file; otherwise, omits this information from the report output.
+*/
+bool report_race         = TRUE;
 
 /*!
  If set to a boolean value of TRUE, provides a coverage information for individual
@@ -131,7 +138,7 @@ void report_usage() {
   printf( "   -h                         Displays this help information.\n" );
   printf( "\n" );
   printf( "   Options:\n" );
-  printf( "      -m [l][t][c][f]         Type(s) of metrics to report.  Default is ltc.\n" );
+  printf( "      -m [l][t][c][f][r]      Type(s) of metrics to report.  Default is ltcfr.\n" );
   printf( "      -d (s|d|v)              Level of report detail (s=summary, d=detailed, v=verbose).\n" );
   printf( "                               Default is to display summary coverage information.\n" );
   printf( "      -i                      Provides coverage information for instances instead of module.\n" );
@@ -164,6 +171,7 @@ void report_parse_metrics( char* metrics ) {
   report_toggle      = FALSE;
   report_combination = FALSE;
   report_fsm         = FALSE;
+  report_race        = FALSE;
 
   for( ptr=metrics; ptr<(metrics + strlen( metrics )); ptr++ ) {
 
@@ -176,6 +184,8 @@ void report_parse_metrics( char* metrics ) {
       case 'C' :  report_combination = TRUE;  break;
       case 'f' :
       case 'F' :  report_fsm         = TRUE;  break;
+      case 'r' :
+      case 'R' :  report_race        = TRUE;  break;
       default  :
         snprintf( user_msg, USER_MSG_LENGTH, "Unknown metric specified '%c'...  Ignoring.", *ptr );
         print_output( user_msg, WARNING, __FILE__, __LINE__ );
@@ -355,6 +365,12 @@ void report_gather_instance_stats( mod_inst* root ) {
                    &(root->stat->arc_hit) );
   }
 
+  if( report_race ) {
+    race_get_stats( root->mod->race_head,
+                    &(root->stat->race_total),
+		    &(root->stat->rtype_total) );
+  }
+
 }
 
 /*!
@@ -393,6 +409,12 @@ void report_gather_module_stats( mod_link* head ) {
                      &(head->mod->stat->state_hit),
                      &(head->mod->stat->arc_total),
                      &(head->mod->stat->arc_hit) );
+    }
+
+    if( report_race ) {
+      race_get_stats( head->mod->race_head,
+                      &(head->mod->stat->race_total),
+                      &(head->mod->stat->rtype_total) );
     }
 
     head = head->next;
@@ -513,6 +535,10 @@ void report_generate( FILE* ofile ) {
     fsm_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
   }
 
+  if( report_race ) {
+    race_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
+  }
+
 }
 
 /*!
@@ -535,7 +561,7 @@ bool report_read_cdd_and_ready( char* ifile, int read_mode ) {
 
   } else {
 
-    if( retval = db_read( ifile, read_mode ) ) {
+    if( (retval = db_read( ifile, read_mode )) ) {
       report_gather_module_stats( mod_head );
     }
 
@@ -686,6 +712,9 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.40  2004/09/14 19:26:28  phase1geo
+ Fixing browser and version injection to Tcl scripts.
+
  Revision 1.39  2004/09/14 04:54:58  phase1geo
  Adding check for browser to configuration build scripts.  Adding code to set
  BROWSER global variable in Tcl scripts.

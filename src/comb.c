@@ -890,7 +890,7 @@ char* combination_prep_line( char* line, int start, int len ) {
   int   curr_index;         /* Index current character in str to set             */
   bool  line_ip   = FALSE;  /* Specifies if a line is currently in progress      */
   bool  line_seen = FALSE;  /* Specifies that a line has been seen for this line */
-  int   start_ul;           /* Index of starting underline                       */
+  int   start_ul  = 0;      /* Index of starting underline                       */
 
   /* Allocate memory for string to return */
   str = (char*)malloc_safe( (len + 2), __FILE__, __LINE__ );
@@ -981,7 +981,6 @@ void combination_underline( FILE* ofile, char** code, int code_depth, expression
   int    j;        /* Loop iterator                   */
   char*  tmpstr;   /* Temporary string variable       */
   int    start;    /* Starting index                  */
-  int    k;
 
   start = 0;
 
@@ -1324,15 +1323,14 @@ void combination_multi_expr_output( char** info, char* line1, char* line2, char*
 */
 void combination_multi_vars( char*** info, int* info_size, expression* exp ) {
 
-  int   ulid    = 1;
-  float total   = 0;
-  int   hit     = 0;
-  char* line1   = NULL;
-  char* line2   = NULL;
-  char* line3   = NULL;
+  int   ulid      = 1;
+  float total     = 0;
+  int   hit       = 0;
+  char* line1     = NULL;
+  char* line2     = NULL;
+  char* line3     = NULL;
   char  tmp[20];
   int   line_size = 1;
-  char* curr_line;
 
   /* Only output this expression if we are missing coverage. */
   if( exp->ulid != -1 ) {
@@ -1516,7 +1514,7 @@ void combination_list_missed( FILE* ofile, expression* exp, unsigned int curr_de
  if an expression is found that has not received 100% coverage for
  combinational logic.
 */
-bool combination_output_expr( expression* expr, unsigned int curr_depth, int* any_missed, int* any_measurable ) {
+void combination_output_expr( expression* expr, unsigned int curr_depth, int* any_missed, int* any_measurable ) {
 
   if( (expr != NULL) && (ESUPPL_WAS_COMB_COUNTED( expr->suppl ) == 1) ) {
 
@@ -1933,6 +1931,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.106  2005/01/07 23:30:08  phase1geo
+ Adding ability to handle strings in expressions.  Added string1.v diagnostic
+ to verify this functionality.  Updated regressions for this change.
+
  Revision 1.105  2005/01/07 23:00:09  phase1geo
  Regression now passes for previous changes.  Also added ability to properly
  convert quoted strings to vectors and vectors to quoted strings.  This will

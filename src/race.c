@@ -7,8 +7,8 @@
  The contents of this file contain functions to handle race condition checking and information
  handling regarding race conditions.  Since race conditions can cause the Covered simulator to not
  provide the same run-time order as the primary Verilog simulator, we need to be able to detect when
- race conditions are occurring within the design.  The following conditions are checked within the design
- during the parsing stage.
+ race conditions are occurring within the design.  The conditions that are checked within the design
+ during the parsing stage can be found \ref race_condition_types.
 
  \par
  -# All sequential logic uses non-blocking assignments.
@@ -37,6 +37,8 @@
 #include "util.h"
 #include "vsignal.h"
 #include "statement.h"
+#include "iter.h"
+#include "vector.h"
 
 
 stmt_blk* sb = NULL;
@@ -47,6 +49,18 @@ int       sb_size;
  scoring command.
 */
 int races_found = 0;
+
+/*!
+ This array is used to output the various race condition violation messages in both the parsing and report functions
+ */
+const char* race_msgs[RACE_TYPE_NUM] = { "Sequential statement block contains blocking assignment(s)",
+                                         "Combinational statement block contains non-blocking assignment(s)",
+                                         "Mixed statement block contains blocking assignment(s)",
+					 "Statement block contains both blocking and non-blocking assignment(s)", 
+					 "Signal assigned in two different statement blocks",
+					 "Signal assigned both in statement block and via input/inout port",
+					 "System call $strobe used to output signal assigned via blocking assignment",
+					 "Procedural assignment with #0 delay performed" };
 
 extern int       flag_race_check;
 extern char      user_msg[USER_MSG_LENGTH];
@@ -72,6 +86,8 @@ race_blk* race_blk_create( int reason, int start_line, int end_line ) {
   rb->start_line = start_line;
   rb->end_line   = end_line;
   rb->next       = NULL;
+
+  return( rb );
 
 }
 
@@ -204,7 +220,8 @@ void race_calc_assignments( int sb_index ) {
 */
 void race_handle_race_condition( expression* expr, module* mod, statement* stmt, statement* base, int reason ) {
 
-  int i;  /* Loop iterator */
+  race_blk* rb;  /* Pointer to race condition block to add to specified module */
+  int       i;   /* Loop iterator                                              */
 
   /* If the base pointer is NULL, the stmt refers to a statement block that conflicts with an input port */
   if( base == NULL ) {
@@ -212,7 +229,8 @@ void race_handle_race_condition( expression* expr, module* mod, statement* stmt,
     if( flag_race_check != NORMAL ) {
 
       print_output( "", (flag_race_check + 1), __FILE__, __LINE__ );
-      print_output( "Possible race condition detected - signal assigned both in statement block and via input/inout port", flag_race_check, __FILE__, __LINE__ );
+      snprintf( user_msg, USER_MSG_LENGTH, "Possible race condition detected - %s", race_msgs[reason] );
+      print_output( user_msg, flag_race_check, __FILE__, __LINE__ );
       snprintf( user_msg, USER_MSG_LENGTH, "  Signal assigned in file: %s, line: %d", mod->filename, expr->line );
       print_output( user_msg, (flag_race_check + 1), __FILE__, __LINE__ );
 
@@ -230,7 +248,8 @@ void race_handle_race_condition( expression* expr, module* mod, statement* stmt,
     if( flag_race_check != NORMAL ) {
 
       print_output( "", (flag_race_check + 1), __FILE__, __LINE__ );
-      print_output( "Possible race condition detected - signal assigned in two different statement blocks", flag_race_check, __FILE__, __LINE__ );
+      snprintf( user_msg, USER_MSG_LENGTH, "Possible race condition detected - %s", race_msgs[reason] );
+      print_output( user_msg, flag_race_check, __FILE__, __LINE__ );
       snprintf( user_msg, USER_MSG_LENGTH, "  Signal assigned in file: %s, line: %d", mod->filename, expr->line );
       print_output( user_msg, (flag_race_check + 1), __FILE__, __LINE__ );
       snprintf( user_msg, USER_MSG_LENGTH, "  Signal also assigned in statement starting at file: %s, line: %d", mod->filename, base->exp->line );
@@ -252,13 +271,8 @@ void race_handle_race_condition( expression* expr, module* mod, statement* stmt,
       if( reason != 6 ) {
 	
         print_output( "", (flag_race_check + 1), __FILE__, __LINE__ );
-        switch( reason ) {
-          case 1 :   print_output( "Possible race condition detected - sequential statement block contains blocking assignment(s)", flag_race_check, __FILE__, __LINE__ );  break;
-          case 3 :   print_output( "Possible race condition detected - combinational statement block contains non-blocking assignment(s)", flag_race_check, __FILE__, __LINE__ );  break;
-          case 4 :   print_output( "Possible race condition detected - mixed statement block contains blocking assignment(s)", flag_race_check, __FILE__, __LINE__ );  break;
-          case 5 :   print_output( "Possible race condition detected - statement block contains both blocking and non-blocking assignment(s)", flag_race_check, __FILE__, __LINE__ );  break;
-  	  default:   break;
-        }
+	snprintf( user_msg, USER_MSG_LENGTH, "Possible race condition detected - %s", race_msgs[reason] );
+        print_output( user_msg, flag_race_check, __FILE__, __LINE__ );
         snprintf( user_msg, USER_MSG_LENGTH, "  Statement block starting in file: %s, line: %d", mod->filename, stmt->exp->line );
         print_output( user_msg, (flag_race_check + 1), __FILE__, __LINE__ );
 	if( flag_race_check == WARNING ) {
@@ -281,7 +295,15 @@ void race_handle_race_condition( expression* expr, module* mod, statement* stmt,
   }
 
   /* Create a race condition block and add it to current module */
-  race_blk_create( reason, stmt->exp->line, statement_get_last_line( stmt ) );
+  rb = race_blk_create( reason, stmt->exp->line, statement_get_last_line( stmt ) );
+
+  /* Add the newly created race condition block to the current module */
+  if( mod->race_head == NULL ) {
+    mod->race_head = mod->race_tail = rb;
+  } else {
+    mod->race_tail->next = rb;
+    mod->race_tail       = rb;
+  }
 
   /* Set remove flag in stmt_blk array to remove this module from memory */
   i = race_find_head_statement( stmt );
@@ -302,22 +324,22 @@ void race_check_assignment_types( module* mod ) {
     /* Check that a sequential logic block contains only non-blocking assignments */
     if( sb[i].seq && !sb[i].cmb && sb[i].bassign ) {
 
-      race_handle_race_condition( sb[i].stmt->exp, mod, sb[i].stmt, sb[i].stmt, 1 );
+      race_handle_race_condition( sb[i].stmt->exp, mod, sb[i].stmt, sb[i].stmt, RACE_TYPE_SEQ_USES_NON_BLOCK );
 
     /* Check that a combinational logic block contains only blocking assignments */
     } else if( !sb[i].seq && sb[i].cmb && sb[i].nassign ) {
 
-      race_handle_race_condition( sb[i].stmt->exp, mod, sb[i].stmt, sb[i].stmt, 3 );
+      race_handle_race_condition( sb[i].stmt->exp, mod, sb[i].stmt, sb[i].stmt, RACE_TYPE_CMB_USES_BLOCK );
 
     /* Check that mixed logic block contains only non-blocking assignments */
     } else if( sb[i].seq && sb[i].cmb && sb[i].bassign ) {
 
-      race_handle_race_condition( sb[i].stmt->exp, mod, sb[i].stmt, sb[i].stmt, 4 );
+      race_handle_race_condition( sb[i].stmt->exp, mod, sb[i].stmt, sb[i].stmt, RACE_TYPE_MIX_USES_NON_BLOCK );
 
     /* Check that a statement block doesn't contain both blocking and non-blocking assignments */
     } else if( sb[i].bassign && sb[i].nassign ) {
 
-      race_handle_race_condition( sb[i].stmt->exp, mod, sb[i].stmt, sb[i].stmt, 5 );
+      race_handle_race_condition( sb[i].stmt->exp, mod, sb[i].stmt, sb[i].stmt, RACE_TYPE_HOMOGENOUS );
 
     }
 
@@ -332,7 +354,6 @@ void race_check_one_block_assignment( module* mod ) {
   statement* curr_stmt;           /* Pointer to current statement                                       */
   int        sig_stmt;            /* Index of base signal statement in statement block array            */
   bool       race_found = FALSE;  /* Specifies if at least one race condition was found for this signal */
-  bool       prev_assigned;       /* Set to TRUE if signal was previously assigned                      */
   bool       curr_race;           /* Set to TRUE if race condition was found in current iteration       */
 
   sigl = mod->sig_head;
@@ -386,13 +407,13 @@ void race_check_one_block_assignment( module* mod ) {
 
           /* Check to see if current signal is also an input port */ 
           if( (sigl->sig->value->suppl.part.inport == 1) || curr_race ) {
-            race_handle_race_condition( expl->exp, mod, curr_stmt, NULL, 6 );
+            race_handle_race_condition( expl->exp, mod, curr_stmt, NULL, RACE_TYPE_ASSIGN_IN_ONE_BLOCK2 );
 	    sb[sig_stmt].remove = TRUE;
           }
 
         } else if( (sb[sig_stmt].stmt != curr_stmt) && curr_race ) {
 
-          race_handle_race_condition( expl->exp, mod, curr_stmt, sb[sig_stmt].stmt, 6 );
+          race_handle_race_condition( expl->exp, mod, curr_stmt, sb[sig_stmt].stmt, RACE_TYPE_ASSIGN_IN_ONE_BLOCK1 );
 	  sb[sig_stmt].remove = TRUE;
 	  race_found = TRUE;
 
@@ -579,6 +600,46 @@ bool race_db_read( char** line, module* curr_mod ) {
 }
 
 /*!
+ \param curr        Pointer to head of race condition block list.
+ \param race_total  Pointer to value that will hold the total number of race conditions in this module.
+ \param type_total  Pointer to array containing number of race conditions found for each violation type.
+
+ Iterates through specified race condition block list, totaling the number of race conditions found as
+ well as tallying each type of race condition.
+*/
+void race_get_stats( race_blk* curr, int* race_total, int type_total[][RACE_TYPE_NUM] ) {
+
+  int i;  /* Loop iterator */
+
+  /* Clear totals */
+  *race_total = 0;
+  for( i=0; i<RACE_TYPE_NUM; i++ ) {
+    (*type_total)[i] = 0;
+  }
+
+  /* Tally totals */
+  while( curr != NULL ) {
+    (*type_total)[curr->reason]++;
+    (*race_total)++;
+    curr = curr->next;
+  }
+
+}
+
+/*!
+ \param ofile    Output stream to display report information to.
+ \param verbose  Specifies if summary or verbose output should be displayed.
+
+ Generates the race condition report information and displays it to the specified
+ output stream.
+*/
+void race_report( FILE* ofile, bool verbose ) {
+
+  printf( "In race_report\n" );
+
+}
+
+/*!
  \param rb  Pointer to race condition block to deallocate.
 
  Recursively deallocates the specified race condition block list.
@@ -599,6 +660,11 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.19  2005/02/04 23:55:53  phase1geo
+ Adding code to support race condition information in CDD files.  All code is
+ now in place for writing/reading this data to/from the CDD file (although
+ nothing is currently done with it and it is currently untested).
+
  Revision 1.18  2005/02/03 05:48:33  phase1geo
  Fixing bugs in race condition checker.  Adding race2.1 diagnostic.  Regression
  currently has some failures due to these changes.

@@ -257,7 +257,7 @@ bool fsm_arg_parse( char* arg ) {
 */
 expression* fsm_arg_parse_value( char** str, module* mod ) {
 
-  expression* expr;          /* Pointer to expression containing state value */
+  expression* expr = NULL;   /* Pointer to expression containing state value */
   expression* left;          /* Left child expression                        */
   expression* right;         /* Right child expression                       */
   vector*     vec;           /* Pointer to newly allocated vector value      */
@@ -279,7 +279,7 @@ expression* fsm_arg_parse_value( char** str, module* mod ) {
   } else {
 
     /* This value should be a parameter value, parse it */
-    if( sscanf( *str, "%[a-zA-Z0-9_]\[%d:%d]", str_val, &msb, &lsb, &chars_read ) == 3 ) {
+    if( sscanf( *str, "%[a-zA-Z0-9_]\[%d:%d]%n", str_val, &msb, &lsb, &chars_read ) == 3 ) {
       *str = *str + chars_read;
       if( (mparm = mod_parm_find( str_val, mod->param_head )) != NULL ) {
 
@@ -303,7 +303,7 @@ expression* fsm_arg_parse_value( char** str, module* mod ) {
         exp_link_add( expr, &(mparm->exp_head), &(mparm->exp_tail) );
 
       }
-    } else if( sscanf( *str, "%[a-zA-Z0-9_]\[%d]", str_val, &lsb, &chars_read ) == 2 ) {
+    } else if( sscanf( *str, "%[a-zA-Z0-9_]\[%d]%n", str_val, &lsb, &chars_read ) == 2 ) {
       *str = *str + chars_read;
       if( (mparm = mod_parm_find( str_val, mod->param_head )) != NULL ) {
 
@@ -413,7 +413,7 @@ void fsm_arg_parse_trans( expression* expr, fsm* table, module* mod ) {
 void fsm_arg_parse_attr( attr_param* ap, module* mod ) {
 
   attr_param* curr;               /* Pointer to current attribute parameter in list */
-  fsm_link*   fsml;               /* Pointer to found FSM structure                 */
+  fsm_link*   fsml      = NULL;   /* Pointer to found FSM structure                 */
   fsm         table;              /* Temporary FSM used for searching purposes      */
   int         index     = 1;      /* Current index number in list                   */
   bool        ignore    = FALSE;  /* Set to TRUE if we should ignore this attribute */
@@ -495,11 +495,13 @@ void fsm_arg_parse_attr( attr_param* ap, module* mod ) {
         fsm_arg_parse_trans( curr->expr, fsml->table, mod );
       }
     } else {
+      tmp = vector_to_string( curr->expr->value );
       snprintf( user_msg, USER_MSG_LENGTH, "Invalid covered_fsm attribute parameter (%s=%s), file: %s",
                 curr->name,
-                curr->expr->value->value,
+                tmp,
                 mod->filename );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      free_safe( tmp );
       exit( 1 );
     }
 
@@ -514,6 +516,11 @@ void fsm_arg_parse_attr( attr_param* ap, module* mod ) {
 
 /*
  $Log$
+ Revision 1.19  2005/01/07 23:00:10  phase1geo
+ Regression now passes for previous changes.  Also added ability to properly
+ convert quoted strings to vectors and vectors to quoted strings.  This will
+ allow us to support strings in expressions.  This is a known good.
+
  Revision 1.18  2005/01/07 17:59:51  phase1geo
  Finalized updates for supplemental field changes.  Everything compiles and links
  correctly at this time; however, a regression run has not confirmed the changes.
