@@ -56,9 +56,21 @@ if( $check3 == 0 ) {
   system( "rm ${test}.rptI" ) && die;
 }
 
+# Check module with line-width report
+$check4 = system( "diff ${test}.rptWM ${RPT_DIR}/${test}.rptWM" );
+if( $check4 == 0 ) {
+  system( "rm ${test}.rptWM" ) && die;
+}
+
+# Check instance with line-width report
+$check5 = system( "diff ${test}.rptWI ${RPT_DIR}/${test}.rptWI" );
+if( $check5 == 0 ) {
+  system( "rm ${test}.rptWI" ) && die;
+}
+
 open( RPT_RESULTS, ">${RPT_OUTPUT}" ) || die "Can't open ${RPT_OUTPUT} for writing!\n";
 
-if( ($check1 > 0) || ($check2 > 0) || ($check3 > 0) ) {
+if( ($check1 > 0) || ($check2 > 0) || ($check3 > 0) || ($check4 > 0) || ($check5 > 0) ) {
   print "  Checking output results         -- FAILED\n";
   $failed++;
 } else {
