@@ -251,7 +251,9 @@ void arc_set_entry_suppl( char* arcs, int curr, int type, char val ) {
 */
 int arc_get_entry_suppl( char* arcs, int curr, int type ) {
 
-  return( (int)((arcs[curr + ARC_STATUS_SIZE] >> type) & 0x1) );
+  int entry_size = arc_get_entry_width( arc_get_width( arcs ) );
+
+  return( (int)((arcs[(curr * entry_size) + ARC_STATUS_SIZE] >> type) & 0x1) );
 
 }
 
@@ -313,7 +315,7 @@ int arc_find( char* arcs, vector* from_st, vector* to_st, int* ptr ) {
       if( arc_set_states( tmp, 0, to_st, from_st ) ) {
         j = 0;
         while( (j < curr_size) && (*ptr == -1) ) {
-          if( (type == 1) || ((type == 0) && (arc_get_entry_suppl( arcs, (j * entry_size), ARC_BIDIR ) == 1)) ) {
+          if( (type == 1) || ((type == 0) && (arc_get_entry_suppl( arcs, j, ARC_BIDIR ) == 1)) ) {
             k = 0;
             while( (k < entry_size) && 
                    (((k == 0) && ((arcs[(((j * entry_size) + k) + ARC_STATUS_SIZE)] & 0xe0) == (tmp[k + ARC_STATUS_SIZE] & 0xe0))) ||
@@ -443,10 +445,133 @@ void arc_add( char** arcs, int width, vector* fr_st, vector* to_st, int hit ) {
 
 }
 
+void arc_lshift( char* fr_arc, int start, char* to_arc, int width, int shift ) {
+
+  int to_pos;  /* Index of character in to_arc to write */
+  int fr_pos;  /* Index of character in fr_arc to read  */
+  int ptr;     /* Current bit pointer                   */
+  int i;       /* Loop iterator                         */
+
+  to_pos = 0;
+  fr_pos = start;
+  ptr    = shift;
+
+  for( i=0; i<width; i++ ) {
+    if( ptr >= shift ) {
+      to_arc[to_pos] = to_arc[to_pos] | ((fr_arc[fr_pos] & (0x1 << ptr)) >> shift);
+    } else {
+      to_arc[to_pos] = to_arc[to_pos] | ((fr_arc[fr_pos] & (0x1 << ptr)) << ((8 + (ptr - shift)) - ptr));
+    }
+    ptr = (ptr + 1) % 8;
+    if( ptr == 0 ) {
+      fr_pos++;
+    }
+    if( i == 7 ) {
+      to_pos++;
+    }
+  }
+    
+}
+
+bool arc_compare_states( char* arcs, int index1, int pos1, int index2, int pos2 ) {
+
+  int i;  /* Loop iterator */
+
+  i = 0;
+  while( (i < arc_get_width( arcs )) && (((arcs[index1] >> pos1) & 0x1) == ((arcs[index2] >> pos2) & 0x1)) ) {
+    pos1   = (pos1 + 1) % 8;
+    pos2   = (pos2 + 1) % 8;
+    index1 = (pos1 == 0) ? (index1 + 1) : index1;
+    index2 = (pos2 == 0) ? (index2 + 1) : index2;
+    i++;
+  }
+
+  return( i == arc_get_width( arcs ) );
+
+}
+
+void arc_compare_all_states( char* arcs, int start, bool left ) {
+
+  int state1_pos;    /* Bit position of current state        */
+  int state1_index;  /* Character position of current state  */
+  int state2_pos;    /* Bit position of state to check       */
+  int state2_index;  /* Character position of state to check */
+  int entry_size;    /* Characters needed to store one entry */
+  int i;             /* Loop iterator                        */
+  int j;             /* Loop iterator                        */
+
+  entry_size = arc_get_entry_width( arc_get_width( arcs ) );
+
+  // printf( "Comparing against start: %d, left: %d\n", start, left );
+
+  if( left ) {
+    state1_pos   = (arc_get_width( arcs ) + ARC_ENTRY_SUPPL_SIZE) % 8;
+    state1_index = (start * entry_size) + ((arc_get_width( arcs ) + ARC_ENTRY_SUPPL_SIZE) / 8) + ARC_STATUS_SIZE;
+    j            = 1;
+  } else {
+    state1_pos   = ARC_ENTRY_SUPPL_SIZE;
+    state1_index = (start * entry_size) + ARC_STATUS_SIZE;
+    j            = 0;
+    start++;
+  }
+
+  for( i=start; i<arc_get_curr_size( arcs ); i++ ) {
+    for( ; j<2; j++ ) {
+   
+      // printf( "Comparing with i: %d, j: %d\n", i, j );
+
+      /* Left */
+      if( j == 0 ) {
+        state2_pos   = (arc_get_width( arcs ) + ARC_ENTRY_SUPPL_SIZE) % 8;
+        state2_index = (i * entry_size) + ((arc_get_width( arcs ) + ARC_ENTRY_SUPPL_SIZE) / 8) + ARC_STATUS_SIZE;
+      } else {
+        state2_pos   = ARC_ENTRY_SUPPL_SIZE;
+        state2_index = (i * entry_size) + ARC_STATUS_SIZE;
+      }
+
+      if( arc_compare_states( arcs, state1_index, state1_pos, state2_index, state2_pos ) ) {
+        // printf( "Found match\n" );
+        if( j == 0 ) {
+          arc_set_entry_suppl( arcs, i, ARC_NOT_UNIQUE_L, 1 );
+        } else {
+          arc_set_entry_suppl( arcs, i, ARC_NOT_UNIQUE_R, 1 );
+        }
+      }
+
+    }
+    j = 0;
+  }
+
+}
+
 int arc_state_hits( char* arcs ) {
 
   int hit = 0;     /* Number of states hit */
   int i;           /* Loop iterator        */
+  int j;           /* Loop iterator        */
+
+  for( i=0; i<arc_get_curr_size( arcs ); i++ ) {
+    for( j=0; j<2; j++ ) {
+
+      /* Do left first */
+      if( j == 0 ) {
+        if( arc_get_entry_suppl( arcs, i, ARC_NOT_UNIQUE_L ) == 0 ) {
+          arc_compare_all_states( arcs, i, TRUE );
+          hit++;
+          // printf( "1 Hit: %d\n", hit );
+        }
+      } else {
+        if( arc_get_entry_suppl( arcs, i, ARC_NOT_UNIQUE_R ) == 0 ) {
+          if( (i + 1) < arc_get_curr_size( arcs ) ) {
+            arc_compare_all_states( arcs, i, FALSE );
+          }
+          hit++;
+          // printf( "2 Hit: %d\n", hit );
+        }
+      }
+
+    }
+  }
 
   return( hit );
 
@@ -465,8 +590,8 @@ int arc_transition_hits( char* arcs ) {
 
   /* Count the number of hits in the FSM arc */
   for( i=0; i<curr_size; i++ ) {
-    hit += arc_get_entry_suppl( arcs, (i * entry_size), ARC_HIT_F );
-    hit += arc_get_entry_suppl( arcs, (i * entry_size), ARC_HIT_R );
+    hit += arc_get_entry_suppl( arcs, i, ARC_HIT_F );
+    hit += arc_get_entry_suppl( arcs, i, ARC_HIT_R );
   }
 
   return( hit );
@@ -665,6 +790,10 @@ void arc_dealloc( char* arcs ) {
 
 /*
  $Log$
+ Revision 1.5  2003/09/13 02:59:34  phase1geo
+ Fixing bugs in arc.c created by extending entry supplemental field to 5 bits
+ from 3 bits.  Additional two bits added for calculating unique states.
+
  Revision 1.4  2003/09/12 04:47:00  phase1geo
  More fixes for new FSM arc transition protocol.  Everything seems to work now
  except that state hits are not being counted correctly.
