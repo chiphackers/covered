@@ -30,11 +30,13 @@ extern char user_msg[USER_MSG_LENGTH];
 */
 void vcd_parse_def_ignore( FILE* vcd ) {
 
-  bool end_seen = FALSE;     /* If set to true, $end keyword was seen */
-  char token[256];           /* String value of current token         */
-  int  tokval;               /* Set to number of tokens found         */
+  bool end_seen = FALSE;  /* If set to true, $end keyword was seen */
+  char token[256];        /* String value of current token         */
+  int  tokval;            /* Set to number of tokens found         */
+  int  chars_read;        /* Number of characters scanned in       */
 
-  while( !end_seen && ((tokval = fscanf( vcd, "%s", token )) == 1) ) {
+  while( !end_seen && ((tokval = fscanf( vcd, "%s%n", token, &chars_read )) == 1) ) {
+    assert( chars_read <= 256 );
     if( strncmp( "$end", token, 4 ) == 0 ) {
       end_seen = TRUE;
     }
@@ -59,6 +61,12 @@ void vcd_parse_def_var( FILE* vcd ) {
 
   if( fscanf( vcd, "%s %d %s %s %s", type, &size, id_code, ref, tmp ) == 5 ) {
 
+    /* Make sure that we have not exceeded array boundaries */
+    assert( strlen( type )    <= 256 );
+    assert( strlen( ref )     <= 256 );
+    assert( strlen( tmp )     <= 15  );
+    assert( strlen( id_code ) <= 256 );
+    
     if( strncmp( "$end", tmp, 4 ) != 0 ) {
 
       if( (fscanf( vcd, "%s", tmp ) != 1) || (strncmp( "$end", tmp, 4 ) != 0) ) {
@@ -92,6 +100,10 @@ void vcd_parse_def_scope( FILE* vcd ) {
 
   if( fscanf( vcd, "%s %s $end", type, id ) == 2 ) {
 
+    /* Make sure that we have not exceeded any array boundaries */
+    assert( strlen( type ) <= 256 );
+    assert( strlen( id )   <= 256 );
+    
     /* For now we will let any type slide */
     db_set_vcd_scope( id );
 
@@ -113,9 +125,12 @@ void vcd_parse_def( FILE* vcd ) {
 
   bool enddef_found = FALSE;  /* If set to true, definition section is finished */
   char keyword[256];          /* Holds keyword value                            */
+  int  chars_read;            /* Number of characters scanned in                */
 
-  while( !enddef_found && (fscanf( vcd, "%s", keyword ) == 1) ) {
+  while( !enddef_found && (fscanf( vcd, "%s%n", keyword, &chars_read ) == 1) ) {
 
+    assert( chars_read <= 256 );
+    
     if( keyword[0] == '$' ) {
 
       if( strncmp( "var", (keyword + 1), 3 ) == 0 ) {
@@ -155,10 +170,13 @@ void vcd_parse_def( FILE* vcd ) {
 */
 void vcd_parse_sim_vector( FILE* vcd, char* value ) {
 
-  char sym[256];      /* String value of signal symbol */
+  char sym[256];    /* String value of signal symbol   */
+  int  chars_read;  /* Number of characters scanned in */
 
-  if( fscanf( vcd, "%s", sym ) == 1 ) {
+  if( fscanf( vcd, "%s%n", sym, &chars_read ) == 1 ) {
 
+    assert( chars_read <= 256 );
+    
     db_set_symbol_string( sym, value );
 
   } else {
@@ -178,14 +196,17 @@ void vcd_parse_sim_vector( FILE* vcd, char* value ) {
 */
 void vcd_parse_sim_ignore( FILE* vcd ) {
 
-  char sym[256];      /* String value of signal symbol */
+  char sym[256];    /* String value of signal symbol   */
+  int  chars_read;  /* Number of characters scanned in */
 
-  if( fscanf( vcd, "%s", sym ) != 1 ) {
+  if( fscanf( vcd, "%s%n", sym, &chars_read ) != 1 ) {
 
     print_output( "Bad file format", FATAL );
     exit( 1 );
 
   }
+  
+  assert( chars_read <= 256 );
 
 }
 
@@ -198,9 +219,12 @@ void vcd_parse_sim( FILE* vcd ) {
 
   char token[4100];         /* Current token from VCD file       */
   int  last_timestep = -1;  /* Value of last timestamp from file */
+  int  chars_read;          /* Number of characters scanned in   */
  
-  while( !feof( vcd ) && (fscanf( vcd, "%s", token ) == 1) ) {
+  while( !feof( vcd ) && (fscanf( vcd, "%s%n", token, &chars_read ) == 1) ) {
 
+    assert( chars_read <= 4100 );
+    
     if( token[0] == '$' ) {
 
       /* Currently ignore all simulation keywords */
@@ -268,6 +292,10 @@ void vcd_parse( char* vcd_file ) {
 
 /*
  $Log$
+ Revision 1.6  2002/10/29 19:57:51  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
  Revision 1.5  2002/10/29 13:33:21  phase1geo
  Adding patches for 64-bit compatibility.  Reformatted parser.y for easier
  viewing (removed tabs).  Full regression passes.

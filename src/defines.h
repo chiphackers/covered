@@ -1043,6 +1043,7 @@ struct symtable_s {
   char*     sym;          /*!< Name of VCD-specified signal                */
   signal*   sig;          /*!< Pointer to signal for this symbol           */
   char*     value;        /*!< String representation of last current value */
+  int       size;         /*!< Number of bytes allowed storage for value   */
   symtable* right;        /*!< Pointer to next symtable entry to the right */
   symtable* left;         /*!< Pointer to next symtable entry to the left  */
 };
@@ -1130,6 +1131,14 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.62  2002/12/07 17:46:52  phase1geo
+ Fixing bug with handling memory declarations.  Added diagnostic to verify
+ that memory declarations are handled properly.  Fixed bug with infinite
+ looping in statement_connect function and optimized this part of the score
+ command.  Added diagnostic to verify this fix (always9.v).  Fixed bug in
+ report command with ordering of lines and combinational logic verbose output.
+ This is now fixed correctly.
+
  Revision 1.61  2002/12/06 02:18:59  phase1geo
  Fixing bug with calculating list and concatenation lengths when MBIT_SEL
  expressions were included.  Also modified file parsing algorithm to be

@@ -41,6 +41,7 @@ symtable* symtable_add( char* sym, signal* sig, symtable** symtab ) {
   entry->sym   = strdup( sym );
   entry->sig   = sig;
   entry->value = (char*)malloc_safe( sig->value->width + 1 );
+  entry->size  = (sig->value->width + 1);
   entry->right = NULL;
   entry->left  = NULL;
 
@@ -78,32 +79,70 @@ symtable* symtable_add( char* sym, signal* sig, symtable** symtab ) {
 /*!
  \param sym     Name of symbol to find in the table.
  \param symtab  Root of the symtable to search in.
- \param skip    Number of matching symbol values to skip.
+ \param value   Value to set symtable entry to when match found.
 
- \return Returns pointer to found symtable entry or NULL if unable to find.
+ \return Returns the number of matches that were found.
 
- Performs a binary search of the specified tree to find matching symtable entry.  If
- a match is found,returns a pointer to the found symtable entry; otherwise, returns
- a value of NULL to indicate that the symtable entry was not found.
+ Performs a binary search of the specified tree to find all matching symtable entries.
+ When a match is found, the specified value is assigned to the symtable entry.
 */
-symtable* symtable_find( char* sym, symtable* symtab, int skip ) {
+int symtable_find_and_set( char* sym, symtable* symtab, char* value ) {
 
   symtable* curr;         /* Pointer to current symtable            */
-  bool      unmatched;    /* If TRUE, current symbol does not match */
-  int       skipped = 0;  /* Number of matching symbols skipped     */
+  int       comp;         /* Specifies symbol comparison value      */
+  int       matches = 0;  /* Counts number of times we have matched */
 
   curr = symtab;
-  while( (curr != NULL) && ((unmatched = (strcmp( sym, curr->sym ) != 0)) || (skipped < skip)) ) {
-    if( !unmatched ) { skipped++; }
-    if( strcmp( sym, curr->sym ) > 0 ) {
+  while( curr != NULL ) {
+    comp = strcmp( sym, curr->sym );
+    if( comp == 0 ) {
+      assert( strlen( value ) < curr->size );     // Useful for debugging but not necessary
+      strcpy( curr->value, value );
+      matches++;
+    }
+    if( comp > 0 ) {
       curr = curr->right;
     } else {
       curr = curr->left;
     }
   }
 
-  return( curr );
+  return( matches );
 
+}
+
+/*!
+ \param sym       Symbol name to search for.
+ \param from_tab  Table to pull symbol table information from.
+ \param value     Value to assign to newly created table entry.
+ \param to_tab    Reference to table to place new entry into.
+ 
+ Performs a binary search of the from_tab symtable in search of all entries that match
+ the specified sym parameter.  Whenever a match is found, a new entry is created and placed
+ in the to_tab symtable containing the contents of the found entry.  Additionally, the
+ specified value is assigned to the new entry.
+*/
+void symtable_move_and_set( char* sym, symtable* from_tab, char* value, symtable** to_tab ) {
+  
+  symtable* curr;    /* Pointer to current symtable           */
+  symtable* newsym;  /* Pointer to newly created symtab entry */
+  int       comp;    /* Specifies symbol comparison value     */
+  
+  curr = from_tab;
+  while( curr != NULL ) {
+    comp = strcmp( sym, curr->sym );
+    if( comp == 0 ) {
+      assert( curr->sig->value != NULL );
+      newsym = symtable_add( sym, curr->sig, to_tab );
+      strcpy( newsym->value, value );
+    }
+    if( comp > 0 ) {
+      curr = curr->right;
+    } else {
+      curr = curr->left;
+    }
+  }
+  
 }
 
 /*!
@@ -138,7 +177,7 @@ void symtable_dealloc( symtable* symtab ) {
 
     symtable_dealloc( symtab->right );
     symtable_dealloc( symtab->left  );
- 
+
     if( symtab->sym != NULL ) {
       free_safe( symtab->sym );
     }
@@ -151,6 +190,10 @@ void symtable_dealloc( symtable* symtab ) {
 
 /*
  $Log$
+ Revision 1.8  2002/11/05 00:20:08  phase1geo
+ Adding development documentation.  Fixing problem with combinational logic
+ output in report command and updating full regression.
+
  Revision 1.7  2002/10/31 23:14:29  phase1geo
  Fixing C compatibility problems with cc and gcc.  Found a few possible problems
  with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that

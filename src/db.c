@@ -1016,40 +1016,22 @@ void db_assign_symbol( char* name, char* symbol ) {
 */
 void db_set_symbol_char( char* sym, char value ) {
 
-  symtable* symtab;      /* Pointer to found symbol table entry                             */
-  symtable* new_symtab;  /* Pointer to newly create symbol table entry                      */
-  int       skip = 0;    /* Specifies number of symbols to skip in search that match symbol */
+  char val[2];  /* Value to store */
 
   snprintf( user_msg, USER_MSG_LENGTH, "In db_set_symbol_char, sym: %s, value: %c", sym, value );
   print_output( user_msg, DEBUG );
 
-  while( (symtab = symtable_find( sym, timestep_tab, skip )) != NULL ) {
+  /* Put together value string */
+  val[0] = value;
+  val[1] = '\0';
 
-    /* Update value */
-    symtab->value[0] = value;
-    symtab->value[1] = '\0';
+  /*
+   Set value of all matching occurrences in current timestep.  If no occurrences
+   were found, add it to the current timestep.
+  */
+  if( symtable_find_and_set( sym, timestep_tab, val ) == 0 ) {
 
-    skip++;
- 
-  }
-
-  /* Only search VCD table if symbol has never been moved over */
-  if( skip == 0 ) {
-
-    while( (symtab = symtable_find( sym, vcd_symtab, skip )) != NULL ) {
-
-      assert( symtab->sig->value != NULL );
-
-      /* Add to timestep table */
-      new_symtab = symtable_add( sym, symtab->sig, &(timestep_tab) );
-
-      /* Update value */
-      new_symtab->value[0] = value;
-      new_symtab->value[1] = '\0';
-
-      skip++;
-
-    }
+    symtable_move_and_set( sym, vcd_symtab, val, &(timestep_tab) );
 
   }
 
@@ -1066,38 +1048,13 @@ void db_set_symbol_char( char* sym, char value ) {
 */
 void db_set_symbol_string( char* sym, char* value ) {
 
-  symtable* symtab;      /* Pointer to found symbol table entry                             */
-  symtable* new_symtab;  /* Pointer to newly create symbol table entry                      */
-  int       skip = 0;    /* Specifies number of symbols to skip in search that match symbol */
-
   snprintf( user_msg, USER_MSG_LENGTH, "In db_set_symbol_string, sym: %s, value: %s", sym, value );
   print_output( user_msg, DEBUG );
 
-  while( (symtab = symtable_find( sym, timestep_tab, skip )) != NULL ) {
-
-    /* Update value */
-    strcpy( symtab->value, value ); 
-
-    skip++;
- 
-  }
-
   /* Only search VCD table if symbol has never been moved over */
-  if( skip == 0 ) {
+  if( symtable_find_and_set( sym, timestep_tab, value ) == 0 ) {
 
-    while( (symtab = symtable_find( sym, vcd_symtab, skip )) != NULL ) {
-
-      assert( symtab->sig->value != NULL );
-
-      /* Add to timestep table */
-      new_symtab = symtable_add( sym, symtab->sig, &(timestep_tab) );
-
-      /* Update value */
-      strcpy( new_symtab->value, value );
-
-      skip++;
-
-    }
+    symtable_move_and_set( sym, vcd_symtab, value, &(timestep_tab) );
 
   }
 
@@ -1132,6 +1089,11 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.76  2003/01/03 02:07:40  phase1geo
+ Fixing segmentation fault in lexer caused by not closing the temporary
+ input file before unlinking it.  Fixed case where module was parsed but not
+ at the head of the module list.
+
  Revision 1.75  2002/12/30 05:31:33  phase1geo
  Fixing bug in module merge for reports when parameterized modules are merged.
  These modules should not output an error to the user when mismatching modules

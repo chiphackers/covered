@@ -14,8 +14,11 @@
 /*! \brief Creates a new symtable entry and adds it to the specified symbol table. */
 symtable* symtable_add( char* sym, signal* sig, symtable** symtab );
 
-/*! \brief Finds specified symbol in specified symbol table and returns pointer to signal. */
-symtable* symtable_find( char* sym, symtable* symtab, int skip );
+/*! \brief Sets all matching symtable entries to specified value */
+int symtable_find_and_set( char* sym, symtable* symtab, char* value );
+
+/*! \brief Copies all matching symtable entries from from_tab to to_tab and assigns value to it */
+void symtable_move_and_set( char* sym, symtable* from_tab, char* value, symtable** to_tab );
 
 /*! \brief Assigns stored values to all associated signals stored in specified symbol table. */
 void symtable_assign( symtable* symtab );
@@ -26,6 +29,10 @@ void symtable_dealloc( symtable* symtab );
 
 /*
  $Log$
+ Revision 1.7  2002/11/05 00:20:08  phase1geo
+ Adding development documentation.  Fixing problem with combinational logic
+ output in report command and updating full regression.
+
  Revision 1.6  2002/10/31 23:14:30  phase1geo
  Fixing C compatibility problems with cc and gcc.  Found a few possible problems
  with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that
