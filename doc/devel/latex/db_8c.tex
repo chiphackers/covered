@@ -1,7 +1,6 @@
 \section{db.c File Reference}
 \label{db_8c}\index{db.c@{db.c}}
 {\tt \#include $<$stdio.h$>$}\par
-{\tt \#include $<$string.h$>$}\par
 {\tt \#include $<$stdlib.h$>$}\par
 {\tt \#include $<$assert.h$>$}\par
 {\tt \#include \char`\"{}defines.h\char`\"{}}\par
@@ -17,6 +16,7 @@
 {\tt \#include \char`\"{}sim.h\char`\"{}}\par
 {\tt \#include \char`\"{}binding.h\char`\"{}}\par
 {\tt \#include \char`\"{}param.h\char`\"{}}\par
+{\tt \#include \char`\"{}static.h\char`\"{}}\par
 \subsection*{Functions}
 \begin{CompactItemize}
 \item 
@@ -29,7 +29,7 @@ void {\bf db\_\-add\_\-instance} (char $\ast$scope, char $\ast$modname)
 void {\bf db\_\-add\_\-module} (char $\ast$name, char $\ast${\bf file})
 \begin{CompactList}\small\item\em Adds specified module to module list. Called by parser.\item\end{CompactList}\item 
 void {\bf db\_\-end\_\-module} ()
-\item 
+\begin{CompactList}\small\item\em Called when the endmodule keyword is parsed.\item\end{CompactList}\item 
 void {\bf db\_\-add\_\-declared\_\-param} (char $\ast$name, {\bf expression} $\ast$expr)
 \begin{CompactList}\small\item\em Adds specified declared parameter to parameter list. Called by parser.\item\end{CompactList}\item 
 void {\bf db\_\-add\_\-override\_\-param} (char $\ast$inst\_\-name, {\bf expression} $\ast$expr)
@@ -61,7 +61,7 @@ void {\bf db\_\-statement\_\-set\_\-stop} ({\bf statement} $\ast$stmt, {\bf stat
 void {\bf db\_\-set\_\-vcd\_\-scope} (char $\ast$scope)
 \begin{CompactList}\small\item\em Sets current VCD scope to specified scope.\item\end{CompactList}\item 
 void {\bf db\_\-vcd\_\-upscope} ()
-\item 
+\begin{CompactList}\small\item\em Moves current VCD hierarchy up one level.\item\end{CompactList}\item 
 void {\bf db\_\-assign\_\-symbol} (char $\ast$name, char $\ast$symbol)
 \begin{CompactList}\small\item\em Adds symbol to signal specified by name.\item\end{CompactList}\item 
 void {\bf db\_\-set\_\-symbol\_\-char} (char $\ast$sym, char value)
@@ -342,6 +342,8 @@ Cycles through expression queue, performing expression evaluations as we go. If 
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-end\_\-module ()}\label{db_8c_a20}
 
 
+Called when the endmodule keyword is parsed.
+
 Updates the modlist for parsing purposes. \index{db.c@{db.c}!db_find_signal@{db\_\-find\_\-signal}}
 \index{db_find_signal@{db\_\-find\_\-signal}!db.c@{db.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf signal}$\ast$ db\_\-find\_\-signal (char $\ast$ {\em name})}\label{db_8c_a26}
@@ -455,6 +457,8 @@ Calls the statement\_\-set\_\-stop function with the specified parameters. This 
 \index{db_vcd_upscope@{db\_\-vcd\_\-upscope}!db.c@{db.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-vcd\_\-upscope ()}\label{db_8c_a36}
 
+
+Moves current VCD hierarchy up one level.
 
 Moves the curr\_\-inst\_\-scope up one level of hierarchy. This function is called when the \$upscope keyword is seen in a VCD file. \index{db.c@{db.c}!db_write@{db\_\-write}}
 \index{db_write@{db\_\-write}!db.c@{db.c}}

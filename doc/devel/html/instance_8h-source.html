@@ -8,47 +8,57 @@
 00002 <font class="preprocessor"></font><font class="preprocessor">#define __INSTANCE_H__</font>
 00003 <font class="preprocessor"></font>
 00011 <font class="preprocessor">#include "<a class="code" href="defines_8h.html">defines.h</a>"</font>
-00012 <font class="preprocessor">#include "<a class="code" href="module_8h.html">module.h</a>"</font>
+00012 
 00013 
-00014 
-00016 <font class="keywordtype">void</font> <a class="code" href="instance_8c.html#a1">instance_gen_scope</a>( <font class="keywordtype">char</font>* scope, <a class="code" href="structmod__inst__s.html">mod_inst</a>* leaf );
-00017 
-00019 <a class="code" href="structmod__inst__s.html">mod_inst</a>* <a class="code" href="instance_8c.html#a3">instance_find_scope</a>( <a class="code" href="structmod__inst__s.html">mod_inst</a>* root, <font class="keywordtype">char</font>* scope );
-00020 
-00022 <a class="code" href="structmod__inst__s.html">mod_inst</a>* <a class="code" href="instance_8c.html#a4">instance_find_by_module</a>( <a class="code" href="structmod__inst__s.html">mod_inst</a>* root, <a class="code" href="structmodule__s.html">module</a>* mod, <font class="keywordtype">int</font>* ignore );
-00023 
-00025 <font class="keywordtype">void</font> <a class="code" href="instance_8c.html#a6">instance_parse_add</a>( <a class="code" href="structmod__inst__s.html">mod_inst</a>** root, <a class="code" href="structmodule__s.html">module</a>* parent, <a class="code" href="structmodule__s.html">module</a>* child, <font class="keywordtype">char</font>* inst_name );
-00026 
-00028 <font class="keywordtype">void</font> <a class="code" href="instance_8c.html#a7">instance_read_add</a>( <a class="code" href="structmod__inst__s.html">mod_inst</a>** root, <font class="keywordtype">char</font>* parent, <a class="code" href="structmodule__s.html">module</a>* child, <font class="keywordtype">char</font>* inst_name );
-00029 
-00031 <font class="keywordtype">void</font> <a class="code" href="instance_8c.html#a8">instance_db_write</a>( <a class="code" href="structmod__inst__s.html">mod_inst</a>* root, FILE* <a class="code" href="lexer_8c.html#a122">file</a>, <font class="keywordtype">char</font>* scope, <font class="keywordtype">bool</font> parse_mode );
-00032 
-00034 <font class="keywordtype">void</font> <a class="code" href="instance_8c.html#a10">instance_dealloc</a>( <a class="code" href="structmod__inst__s.html">mod_inst</a>* root, <font class="keywordtype">char</font>* scope );
+00015 <font class="keywordtype">void</font> <a class="code" href="instance_8c.html#a1">instance_gen_scope</a>( <font class="keywordtype">char</font>* scope, <a class="code" href="structmod__inst__s.html">mod_inst</a>* leaf );
+00016 
+00018 <a class="code" href="structmod__inst__s.html">mod_inst</a>* <a class="code" href="instance_8c.html#a3">instance_find_scope</a>( <a class="code" href="structmod__inst__s.html">mod_inst</a>* root, <font class="keywordtype">char</font>* scope );
+00019 
+00021 <a class="code" href="structmod__inst__s.html">mod_inst</a>* <a class="code" href="instance_8c.html#a4">instance_find_by_module</a>( <a class="code" href="structmod__inst__s.html">mod_inst</a>* root, <a class="code" href="structmodule__s.html">module</a>* mod, <font class="keywordtype">int</font>* ignore );
+00022 
+00024 <font class="keywordtype">void</font> <a class="code" href="instance_8c.html#a6">instance_parse_add</a>( <a class="code" href="structmod__inst__s.html">mod_inst</a>** root, <a class="code" href="structmodule__s.html">module</a>* parent, <a class="code" href="structmodule__s.html">module</a>* child, <font class="keywordtype">char</font>* inst_name );
+00025 
+00027 <font class="keywordtype">void</font> <a class="code" href="instance_8c.html#a7">instance_read_add</a>( <a class="code" href="structmod__inst__s.html">mod_inst</a>** root, <font class="keywordtype">char</font>* parent, <a class="code" href="structmodule__s.html">module</a>* child, <font class="keywordtype">char</font>* inst_name );
+00028 
+00030 <font class="keywordtype">void</font> <a class="code" href="instance_8c.html#a8">instance_db_write</a>( <a class="code" href="structmod__inst__s.html">mod_inst</a>* root, FILE* <a class="code" href="lexer_8c.html#a122">file</a>, <font class="keywordtype">char</font>* scope, <font class="keywordtype">bool</font> parse_mode );
+00031 
+00033 <font class="keywordtype">void</font> <a class="code" href="instance_8c.html#a10">instance_dealloc</a>( <a class="code" href="structmod__inst__s.html">mod_inst</a>* root, <font class="keywordtype">char</font>* scope );
+00034 
 00035 
-00036 <font class="comment">/* $Log$</font>
-00037 <font class="comment">/* Revision 1.6  2002/09/21 07:03:28  phase1geo</font>
-00038 <font class="comment">/* Attached all parameter functions into db.c.  Just need to finish getting</font>
-00039 <font class="comment">/* parser to correctly add override parameters.  Once this is complete, phase 3</font>
-00040 <font class="comment">/* can start and will include regenerating expressions and signals before</font>
-00041 <font class="comment">/* getting output to CDD file.</font>
-00042 <font class="comment">/*</font>
-00043 <font class="comment">/* Revision 1.5  2002/09/19 05:25:19  phase1geo</font>
-00044 <font class="comment">/* Fixing incorrect simulation of static values and fixing reports generated</font>
-00045 <font class="comment">/* from these static expressions.  Also includes some modifications for parameters</font>
-00046 <font class="comment">/* though these changes are not useful at this point.</font>
-00047 <font class="comment">/*</font>
-00048 <font class="comment">/* Revision 1.4  2002/07/18 05:50:45  phase1geo</font>
-00049 <font class="comment">/* Fixes should be just about complete for instance depth problems now.  Diagnostics</font>
-00050 <font class="comment">/* to help verify instance handling are added to regression.  Full regression passes.</font>
-00051 <font class="comment">/*</font>
-00052 <font class="comment">/* Revision 1.3  2002/07/18 02:33:24  phase1geo</font>
-00053 <font class="comment">/* Fixed instantiation addition.  Multiple hierarchy instantiation trees should</font>
-00054 <font class="comment">/* now work.</font>
-00055 <font class="comment">/* */</font>
-00056 
-00057 <font class="preprocessor">#endif</font>
-00058 <font class="preprocessor"></font>
-</pre></div><hr><address align="right"><small>Generated on Fri Oct 25 17:40:15 2002 for Covered by
+00036 <font class="comment">/*</font>
+00037 <font class="comment"> $Log$</font>
+00038 <font class="comment"> Revision 1.8  2002/10/31 23:13:52  phase1geo</font>
+00039 <font class="comment"> Fixing C compatibility problems with cc and gcc.  Found a few possible problems</font>
+00040 <font class="comment"> with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that</font>
+00041 <font class="comment"> lead to bus errors.  Ran full regression in 64-bit mode without error.</font>
+00042 <font class="comment"></font>
+00043 <font class="comment"> Revision 1.7  2002/10/29 19:57:50  phase1geo</font>
+00044 <font class="comment"> Fixing problems with beginning block comments within comments which are</font>
+00045 <font class="comment"> produced automatically by CVS.  Should fix warning messages from compiler.</font>
+00046 <font class="comment"></font>
+00047 <font class="comment"> Revision 1.6  2002/09/21 07:03:28  phase1geo</font>
+00048 <font class="comment"> Attached all parameter functions into db.c.  Just need to finish getting</font>
+00049 <font class="comment"> parser to correctly add override parameters.  Once this is complete, phase 3</font>
+00050 <font class="comment"> can start and will include regenerating expressions and signals before</font>
+00051 <font class="comment"> getting output to CDD file.</font>
+00052 <font class="comment"></font>
+00053 <font class="comment"> Revision 1.5  2002/09/19 05:25:19  phase1geo</font>
+00054 <font class="comment"> Fixing incorrect simulation of static values and fixing reports generated</font>
+00055 <font class="comment"> from these static expressions.  Also includes some modifications for parameters</font>
+00056 <font class="comment"> though these changes are not useful at this point.</font>
+00057 <font class="comment"></font>
+00058 <font class="comment"> Revision 1.4  2002/07/18 05:50:45  phase1geo</font>
+00059 <font class="comment"> Fixes should be just about complete for instance depth problems now.  Diagnostics</font>
+00060 <font class="comment"> to help verify instance handling are added to regression.  Full regression passes.</font>
+00061 <font class="comment"></font>
+00062 <font class="comment"> Revision 1.3  2002/07/18 02:33:24  phase1geo</font>
+00063 <font class="comment"> Fixed instantiation addition.  Multiple hierarchy instantiation trees should</font>
+00064 <font class="comment"> now work.</font>
+00065 <font class="comment">*/</font>
+00066 
+00067 <font class="preprocessor">#endif</font>
+00068 <font class="preprocessor"></font>
+</pre></div><hr><address align="right"><small>Generated on Sun Nov 3 21:15:57 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

@@ -13,7 +13,9 @@
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
 
 #include "defines.h"
 #include "signal.h"

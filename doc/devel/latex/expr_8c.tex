@@ -72,13 +72,13 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \item[Expressions]\par
  The following are special expressions that are handled differently than standard unary (i.e., $\sim$a) and dual operators (i.e., a \& b). These expressions are documented to help remove confusion (my own) about how they are implemented by Covered and handled during the parsing and scoring phases of the tool.\end{Desc}
 \begin{Desc}
-\item[$\backslash$sub EXP\_\-OP\_\-SIG]\par
+\item[EXP\_\-OP\_\-SIG]\par
  A signal expression has no left or right child (they are both NULL). Its vector value is a pointer to the signal vector value to which is belongs. This allows the signal expression value to change automatically when the signal value is updated. No further expression operation is necessary to calculate its value.\end{Desc}
 \begin{Desc}
-\item[$\backslash$sub EXP\_\-OP\_\-SBIT\_\-SEL]\par
+\item[EXP\_\-OP\_\-SBIT\_\-SEL]\par
  A single-bit signal expression has its left child pointed to the expression tree that is required to select the bit from the specified signal value. The left child is allowed to change values during simulation. To verify that the current bit select has not exceeded the ranges of the signal, the signal pointer value in the expression structure is used to reference the signal. The LSB and width values from the actual signal can then be used to verify that we are still within range. If we are found to be out of range, a value of X must be assigned the the SBIT\_\-SEL expression. The width of an SBIT\_\-SEL is always constant (1). The LSB of the SBIT\_\-SEL is manipulated by the left expression value.\end{Desc}
 \begin{Desc}
-\item[$\backslash$sub EXP\_\-OP\_\-MBIT\_\-SEL]\par
+\item[EXP\_\-OP\_\-MBIT\_\-SEL]\par
  A multi-bit signal expression has its left child set to the expression tree on the left side of the ':' in the vector and the right child set to the expression tree on the right side of the ':' in the vector. The width of the MBIT\_\-SEL must be constant but is related to the difference between the left and right child values; therefore, it is required that the left and right child values be constant expressions (consisting of only expressions, parameters, and static values). The width of the MBIT\_\-SEL expression is calculated after reading in the MBIT\_\-SEL expression from the CDD file. If the left or right child expressions are found to not be constant, an error is signaled to the user immediately. The LSB is also calculated to be the lesser of the two child values. The width and lsb are assigned to the MBIT\_\-SEL expression vector immediately. In the case of MBIT\_\-SEL, the LSB is also constant. Vector direction is currently not considered at this point.\end{Desc}
 
 

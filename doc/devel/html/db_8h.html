@@ -30,34 +30,38 @@
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds specified defparam to parameter override list. Called by parser.</em> <a href="#a7"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a8">db_add_signal</a> (char *name, <a class="el" href="defines_8h.html#a163">static_expr</a> *left, <a class="el" href="defines_8h.html#a163">static_expr</a> *right)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds specified signal to signal list. Called by parser.</em> <a href="#a8"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a150">signal</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a9">db_find_signal</a> (char *name)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Finds specified signal in module and returns pointer to the signal structure. Called by parser.</em> <a href="#a9"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a149">expression</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a10">db_create_expression</a> (<a class="el" href="defines_8h.html#a149">expression</a> *right, <a class="el" href="defines_8h.html#a149">expression</a> *left, int op, int line, char *sig_name)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Creates new expression from specified information. Called by parser and db_add_expression.</em> <a href="#a10"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a11">db_add_expression</a> (<a class="el" href="defines_8h.html#a149">expression</a> *root)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Adds specified expression to expression list. Called by parser.</em> <a href="#a11"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a151">statement</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a12">db_create_statement</a> (<a class="el" href="defines_8h.html#a149">expression</a> *exp)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Creates new statement expression from specified information. Called by parser.</em> <a href="#a12"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a13">db_add_statement</a> (<a class="el" href="defines_8h.html#a151">statement</a> *stmt)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Adds specified statement to current module's statement list. Called by parser.</em> <a href="#a13"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a14">db_statement_connect</a> (<a class="el" href="defines_8h.html#a151">statement</a> *curr_stmt, <a class="el" href="defines_8h.html#a151">statement</a> *next_stmt)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Connects one statement block to another.</em> <a href="#a14"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a15">db_statement_set_stop</a> (<a class="el" href="defines_8h.html#a151">statement</a> *stmt, <a class="el" href="defines_8h.html#a151">statement</a> *post, <a class="el" href="defines_8h.html#a170">bool</a> both)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Sets STMT_STOP bit in the appropriate statements.</em> <a href="#a15"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a16">db_connect_statement_true</a> (<a class="el" href="defines_8h.html#a151">statement</a> *stmt, <a class="el" href="defines_8h.html#a151">statement</a> *exp_true)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Connects true statement to specified statement.</em> <a href="#a16"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a17">db_connect_statement_false</a> (<a class="el" href="defines_8h.html#a151">statement</a> *stmt, <a class="el" href="defines_8h.html#a151">statement</a> *exp_false)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Connects false statement to specified statement.</em> <a href="#a17"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a18">db_set_vcd_scope</a> (char *scope)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Sets current VCD scope to specified scope.</em> <a href="#a18"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a19">db_assign_symbol</a> (char *name, char *symbol)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Adds symbol to signal specified by name.</em> <a href="#a19"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a20">db_set_symbol_char</a> (char *sym, char value)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Sets the found symbol value to specified character value. Called by VCD lexer.</em> <a href="#a20"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a21">db_set_symbol_string</a> (char *sym, char *value)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Sets the found symbol value to specified string value. Called by VCD lexer.</em> <a href="#a21"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a22">db_do_timestep</a> (int time)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Performs a timestep for all signal changes during this timestep.</em> <a href="#a22"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a9">db_end_module</a> ()</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Called when the endmodule keyword is parsed.</em> <a href="#a9"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a150">signal</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a10">db_find_signal</a> (char *name)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Finds specified signal in module and returns pointer to the signal structure. Called by parser.</em> <a href="#a10"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a149">expression</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a11">db_create_expression</a> (<a class="el" href="defines_8h.html#a149">expression</a> *right, <a class="el" href="defines_8h.html#a149">expression</a> *left, int op, int line, char *sig_name)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Creates new expression from specified information. Called by parser and db_add_expression.</em> <a href="#a11"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a12">db_add_expression</a> (<a class="el" href="defines_8h.html#a149">expression</a> *root)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Adds specified expression to expression list. Called by parser.</em> <a href="#a12"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a151">statement</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a13">db_create_statement</a> (<a class="el" href="defines_8h.html#a149">expression</a> *exp)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Creates new statement expression from specified information. Called by parser.</em> <a href="#a13"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a14">db_add_statement</a> (<a class="el" href="defines_8h.html#a151">statement</a> *stmt)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Adds specified statement to current module's statement list. Called by parser.</em> <a href="#a14"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a15">db_statement_connect</a> (<a class="el" href="defines_8h.html#a151">statement</a> *curr_stmt, <a class="el" href="defines_8h.html#a151">statement</a> *next_stmt)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Connects one statement block to another.</em> <a href="#a15"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a16">db_statement_set_stop</a> (<a class="el" href="defines_8h.html#a151">statement</a> *stmt, <a class="el" href="defines_8h.html#a151">statement</a> *post, <a class="el" href="defines_8h.html#a170">bool</a> both)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Sets STMT_STOP bit in the appropriate statements.</em> <a href="#a16"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a17">db_connect_statement_true</a> (<a class="el" href="defines_8h.html#a151">statement</a> *stmt, <a class="el" href="defines_8h.html#a151">statement</a> *exp_true)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Connects true statement to specified statement.</em> <a href="#a17"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a18">db_connect_statement_false</a> (<a class="el" href="defines_8h.html#a151">statement</a> *stmt, <a class="el" href="defines_8h.html#a151">statement</a> *exp_false)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Connects false statement to specified statement.</em> <a href="#a18"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a19">db_set_vcd_scope</a> (char *scope)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Sets current VCD scope to specified scope.</em> <a href="#a19"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a20">db_vcd_upscope</a> ()</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Moves current VCD hierarchy up one level.</em> <a href="#a20"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a21">db_assign_symbol</a> (char *name, char *symbol)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Adds symbol to signal specified by name.</em> <a href="#a21"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a22">db_set_symbol_char</a> (char *sym, char value)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Sets the found symbol value to specified character value. Called by VCD lexer.</em> <a href="#a22"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a23">db_set_symbol_string</a> (char *sym, char *value)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Sets the found symbol value to specified string value. Called by VCD lexer.</em> <a href="#a23"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a24">db_do_timestep</a> (int time)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Performs a timestep for all signal changes during this timestep.</em> <a href="#a24"></a><em></em></font><br><br></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 Contains functions for writing and reading contents of covered database file.
@@ -165,7 +169,7 @@ Expression value of parameter override.</td></tr>
 </dl>Adds specified parameter to the defparam list.     </td>
   </tr>
 </table>
-<a name="a11" doxytag="db.h::db_add_expression"></a><p>
+<a name="a12" doxytag="db.h::db_add_expression"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -402,7 +406,7 @@ Specifies constant value for calculation of right-hand vector value.</td></tr>
 </dl>Creates a new signal with the specified parameter information and adds this to the signal list if it does not already exist. If width == 0, the sig_msb and sig_lsb values are interrogated. If sig_msb and/or is non-NULL, its value is add to the current module's parameter list and all associated instances are updated to contain new value.     </td>
   </tr>
 </table>
-<a name="a13" doxytag="db.h::db_add_statement"></a><p>
+<a name="a14" doxytag="db.h::db_add_statement"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -503,7 +507,7 @@ Type of signal vector parameter to create (LSB or MSB).</td></tr>
 </dl>Creates a vector parameter for the specified signal or expression with the specified parameter expression. This function is called by the parser.     </td>
   </tr>
 </table>
-<a name="a19" doxytag="db.h::db_assign_symbol"></a><p>
+<a name="a21" doxytag="db.h::db_assign_symbol"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -551,7 +555,7 @@ Symbol value of signal used in VCD dumpfile.</td></tr>
 </dl>Creates a new entry in the symbol table for the specified signal and symbol.     </td>
   </tr>
 </table>
-<a name="a17" doxytag="db.h::db_connect_statement_false"></a><p>
+<a name="a18" doxytag="db.h::db_connect_statement_false"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -599,7 +603,7 @@ Pointer to statement to run if statement evaluates to FALSE.</td></tr>
 </dl>Connects the specified statement's false statement.     </td>
   </tr>
 </table>
-<a name="a16" doxytag="db.h::db_connect_statement_true"></a><p>
+<a name="a17" doxytag="db.h::db_connect_statement_true"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -647,7 +651,7 @@ Pointer to statement to run if statement evaluates to TRUE.</td></tr>
 </dl>Connects the specified statement's true statement.     </td>
   </tr>
 </table>
-<a name="a10" doxytag="db.h::db_create_expression"></a><p>
+<a name="a11" doxytag="db.h::db_create_expression"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -721,7 +725,7 @@ Returns: </b><dd>
 Returns pointer to newly created expression.</dl>Creates a new expression with the specified parameter information and returns a pointer to the newly created expression.     </td>
   </tr>
 </table>
-<a name="a12" doxytag="db.h::db_create_statement"></a><p>
+<a name="a13" doxytag="db.h::db_create_statement"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -760,7 +764,7 @@ Returns: </b><dd>
 Returns pointer to created statement.</dl>Creates an statement structure and adds created statement to current module's statement list.     </td>
   </tr>
 </table>
-<a name="a22" doxytag="db.h::db_do_timestep"></a><p>
+<a name="a24" doxytag="db.h::db_do_timestep"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -797,7 +801,37 @@ Current time step value being performed.</td></tr>
 </dl>Cycles through expression queue, performing expression evaluations as we go. If an expression has a parent expression, that parent expression is placed in the expression queue after that expression has completed its evaluation. When the expression queue is empty, we are finished for this clock period.     </td>
   </tr>
 </table>
-<a name="a9" doxytag="db.h::db_find_signal"></a><p>
+<a name="a9" doxytag="db.h::db_end_module"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> void db_end_module </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
+          <td class="md" valign="top">)&nbsp;</td>
+          <td class="md" nowrap></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+Called when the endmodule keyword is parsed.
+<p>
+Updates the modlist for parsing purposes.     </td>
+  </tr>
+</table>
+<a name="a10" doxytag="db.h::db_find_signal"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -888,7 +922,7 @@ Returns: </b><dd>
 Returns TRUE if database read was successful; otherwise, returns FALSE.</dl>Opens specified database file for reading. Reads in each line from the file examining its contents and creating the appropriate type to store the specified information and stores it into the appropriate internal list. If there are any problems opening the file for reading or parsing errors, returns FALSE; otherwise, returns TRUE.     </td>
   </tr>
 </table>
-<a name="a20" doxytag="db.h::db_set_symbol_char"></a><p>
+<a name="a22" doxytag="db.h::db_set_symbol_char"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -936,7 +970,7 @@ String version of value to set symbol table entry to.</td></tr>
 </dl>Searches the timestep symtable followed by the VCD symbol table searching for the symbol that matches the specified argument. Once a symbol is found, its value parameter is set to the specified character. If the symbol was found in the VCD symbol table, it is copied to the timestep symbol table.     </td>
   </tr>
 </table>
-<a name="a21" doxytag="db.h::db_set_symbol_string"></a><p>
+<a name="a23" doxytag="db.h::db_set_symbol_string"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -984,7 +1018,7 @@ String version of value to set symbol table entry to.</td></tr>
 </dl>Searches the timestep symtable followed by the VCD symbol table searching for the symbol that matches the specified argument. Once a symbol is found, its value parameter is set to the specified string. If the symbol was found in the VCD symbol table, it is copied to the timestep symbol table.     </td>
   </tr>
 </table>
-<a name="a18" doxytag="db.h::db_set_vcd_scope"></a><p>
+<a name="a19" doxytag="db.h::db_set_vcd_scope"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -1021,7 +1055,7 @@ Current VCD scope.</td></tr>
 </dl>Sets the curr_inst_scope global variable to the specified scope.     </td>
   </tr>
 </table>
-<a name="a14" doxytag="db.h::db_statement_connect"></a><p>
+<a name="a15" doxytag="db.h::db_statement_connect"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -1069,7 +1103,7 @@ Pointer to next statement to attach to.</td></tr>
 </dl>Calls the statement_connect function located in <a class="el" href="statement_8c.html">statement.c</a> with the specified parameters.     </td>
   </tr>
 </table>
-<a name="a15" doxytag="db.h::db_statement_set_stop"></a><p>
+<a name="a16" doxytag="db.h::db_statement_set_stop"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -1125,6 +1159,36 @@ If TRUE, causes both true and false paths to set stop bits if connected to post 
 </dl>Calls the statement_set_stop function with the specified parameters. This function is called by the parser after the call to db_statement_connect.     </td>
   </tr>
 </table>
+<a name="a20" doxytag="db.h::db_vcd_upscope"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> void db_vcd_upscope </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
+          <td class="md" valign="top">)&nbsp;</td>
+          <td class="md" nowrap></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+Moves current VCD hierarchy up one level.
+<p>
+Moves the curr_inst_scope up one level of hierarchy. This function is called when the $upscope keyword is seen in a VCD file.     </td>
+  </tr>
+</table>
 <a name="a0" doxytag="db.h::db_write"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
@@ -1175,7 +1239,7 @@ Returns: </b><dd>
 Returns TRUE if database write was successful; otherwise, returns FALSE.</dl>Opens specified database for writing. If database open successful, iterates through module, expression and signal lists, displaying each to the database file. If database write successful, returns TRUE; otherwise, returns FALSE to the calling function.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Fri Oct 25 17:40:16 2002 for Covered by
+<hr><address align="right"><small>Generated on Sun Nov 3 21:15:57 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

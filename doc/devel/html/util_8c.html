@@ -19,6 +19,7 @@
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="util_8c.html#a5">set_output_suppression</a> (<a class="el" href="defines_8h.html#a170">bool</a> value)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Sets error suppression to specified value.</em> <a href="#a5"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="util_8c.html#a6">set_debug</a> (<a class="el" href="defines_8h.html#a170">bool</a> value)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Sets global debug flag to specified value.</em> <a href="#a6"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="util_8c.html#a7">print_output</a> (char *msg, int type)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Displays error message to standard output.</em> <a href="#a7"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a170">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="util_8c.html#a8">is_variable</a> (char *token)</td></tr>
@@ -39,7 +40,7 @@
 <tr><td>&nbsp;</td><td><font size=-1><em>Extracts lowest level of hierarchy from specified scope.</em> <a href="#a15"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a170">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="util_8c.html#a16">scope_local</a> (char *scope)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Returns TRUE if specified scope is local (contains no periods).</em> <a href="#a16"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void *&nbsp;</td><td valign=bottom><a class="el" href="util_8c.html#a17">malloc_safe</a> (int <a class="el" href="lexer_8c.html#a121">size</a>)</td></tr>
+<tr><td nowrap align=right valign=top>void *&nbsp;</td><td valign=bottom><a class="el" href="util_8c.html#a17">malloc_safe</a> (size_t <a class="el" href="lexer_8c.html#a121">size</a>)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Performs safe malloc call.</em> <a href="#a17"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="util_8c.html#a18">free_safe</a> (void *ptr)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Performs safe deallocation of heap memory.</em> <a href="#a18"></a><em></em></font><br><br></td></tr>
@@ -379,7 +380,7 @@ Returns TRUE if the specified string is a legal variable name; otherwise, return
         <tr>
           <td class="md" nowrap valign="top"> void* malloc_safe </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top">int&nbsp;</td>
+          <td class="md" nowrap valign="top">size_t&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>size</em>          </td>
           <td class="md" valign="top">)&nbsp;</td>
           <td class="md" nowrap></td>
@@ -677,6 +678,8 @@ Returns TRUE if specified scope is local (contains no periods).
     <td>
 
 <p>
+Sets global debug flag to specified value.
+<p>
 <dl compact><dt><b>
 Parameters: </b><dd>
 <table border=0 cellspacing=2 cellpadding=0>
@@ -834,7 +837,7 @@ If set to TRUE, suppresses all non-fatal error messages from being displayed.   
 Holds some output that will be displayed via the print_output command. This is created globally so that memory does not need to be reallocated for each function that wishes to use it.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Fri Oct 25 17:40:18 2002 for Covered by
+<hr><address align="right"><small>Generated on Sun Nov 3 21:16:00 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

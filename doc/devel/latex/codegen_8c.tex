@@ -1,9 +1,9 @@
 \section{codegen.c File Reference}
 \label{codegen_8c}\index{codegen.c@{codegen.c}}
-{\tt \#include $<$string.h$>$}\par
 {\tt \#include $<$assert.h$>$}\par
 {\tt \#include \char`\"{}defines.h\char`\"{}}\par
 {\tt \#include \char`\"{}codegen.h\char`\"{}}\par
+{\tt \#include \char`\"{}util.h\char`\"{}}\par
 {\tt \#include \char`\"{}vector.h\char`\"{}}\par
 \subsection*{Functions}
 \begin{CompactItemize}
@@ -20,7 +20,11 @@ char $\ast$ {\bf codegen\_\-gen\_\-expr} ({\bf expression} $\ast$expr, int line,
 Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
 \item[Date: ]\par
-4/11/2002\end{Desc}
+4/11/2002
+
+ This file and its functions are used solely by the Covered report command. When the user specifies that Covered should report detailed or verbose reports, it is necessary to output the Verilog code associated with line and combinational logic coverage. However, the actual Verilog code read from the file is not stored internally anywhere inside of the Covered. By doing this, Covered can do two things: (1) save on memory that otherwise need to be stored or save on processing (have to reparse the code for reports) and (2) allows Covered to \char`\"{}clean up the source code making it easier to read (hopefully) and easier to underline missed combinational logic cases.
+
+ What the code generator does then is to recreate the source Verilog from the internally stored expression tree. This allows associated Verilog code with uncovered logic to quickly and efficiently be display to the user. The code generator is used in combination with the underlining facility (located in the {\bf comb.c} file).\end{Desc}
 
 
 \subsection{Function Documentation}

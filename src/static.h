@@ -11,20 +11,26 @@
 #include "defines.h"
 
 
-/*! Calculates new values for unary static expressions and returns the new static expression. */
+/*! \brief Calculates new values for unary static expressions and returns the new static expression. */
 static_expr* static_expr_gen_unary( static_expr* stexp, int op, int line );
 
-/*! Calculates new values for static expression and returns the new static expression. */
+/*! \brief Calculates new values for static expression and returns the new static expression. */
 static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int line );
 
-/*! Calculates LSB and width for specified left/right pair for vector. */
+/*! \brief Calculates LSB and width for specified left/right pair for vector. */
 void static_expr_calc_lsb_and_width( static_expr* left, static_expr* right, int* width, int* lsb );
 
-/*! Deallocates static_expr memory from heap. */
+/*! \brief Deallocates static_expr memory from heap. */
 void static_expr_dealloc( static_expr* stexp, bool rm_exp );
+
 
 /*
  $Log$
+ Revision 1.5  2002/10/31 23:14:29  phase1geo
+ Fixing C compatibility problems with cc and gcc.  Found a few possible problems
+ with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that
+ lead to bus errors.  Ran full regression in 64-bit mode without error.
+
  Revision 1.4  2002/10/29 19:57:51  phase1geo
  Fixing problems with beginning block comments within comments which are
  produced automatically by CVS.  Should fix warning messages from compiler.

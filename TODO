@@ -18,27 +18,25 @@ X  2.  When `include is encountered, store current line number in stack for retr
 IP 3.  When parser error occurs, output something more meaningful (for debugging purposes)
        and cause tool to exit rather than continue on.
 
-   4.  Add performance monitor facility and attach monitors to all parser and lexer rules.
+X  4.  Handle parameters
 
-X  5.  Handle parameters
+X  5.  Verify that -D option works when a value is specified.
 
-X  6.  Verify that -D option works when a value is specified.
-
-IP 7.  Make sure that expression widths are correct (may have to look at left-hand-side bit
+IP 6.  Make sure that expression widths are correct (may have to look at left-hand-side bit
        width to calculate this correctly).
 
-X  8.  Make sure that parser only parses a file once (when it is in both in a library (-y) and
+X  7.  Make sure that parser only parses a file once (when it is in both in a library (-y) and
        and a -v option).
 
-X  9.  Allow ability to only parse a design and only score a dumpfile (rather than having to
+X  8.  Allow ability to only parse a design and only score a dumpfile (rather than having to
        do both everytime -- could save a lot of time in not having to reparse).
 
-X  10. Possibly allow undeclared signals to be automatically created if not found (1-bit signal
+X  9.  Possibly allow undeclared signals to be automatically created if not found (1-bit signal
        values -- simulators will probably do this).
 
-X  11. Make sure that extension order is maintained for a given library path.
+X  10. Make sure that extension order is maintained for a given library path.
 
-X  12. Remove all local creations of err_msg string and just create one global version of this
+X  11. Remove all local creations of err_msg string and just create one global version of this
        for efficiency sake.
 
    13. Make -v option to score command work like Verilog simulators and allow Verilog files

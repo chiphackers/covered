@@ -18,6 +18,8 @@ void {\bf signal\_\-db\_\-write} ({\bf signal} $\ast$sig, FILE $\ast${\bf file},
 \begin{CompactList}\small\item\em Reads signal information from specified file.\item\end{CompactList}\item 
 {\bf bool} {\bf signal\_\-db\_\-merge} ({\bf signal} $\ast$base, char $\ast$$\ast$line)
 \begin{CompactList}\small\item\em Reads and merges two signals, placing result into base signal.\item\end{CompactList}\item 
+void {\bf signal\_\-vcd\_\-assign} ({\bf signal} $\ast$sig, char $\ast$value)
+\begin{CompactList}\small\item\em Assigns specified VCD value to specified signal.\item\end{CompactList}\item 
 void {\bf signal\_\-add\_\-expression} ({\bf signal} $\ast$sig, {\bf expression} $\ast$expr)
 \begin{CompactList}\small\item\em Adds an expression to the signal list.\item\end{CompactList}\item 
 void {\bf signal\_\-display} ({\bf signal} $\ast$sig)
@@ -42,7 +44,7 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsection{Function Documentation}
 \index{signal.h@{signal.h}!signal_add_expression@{signal\_\-add\_\-expression}}
 \index{signal_add_expression@{signal\_\-add\_\-expression}!signal.h@{signal.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-add\_\-expression ({\bf signal} $\ast$ {\em sig}, {\bf expression} $\ast$ {\em expr})}\label{signal_8h_a5}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-add\_\-expression ({\bf signal} $\ast$ {\em sig}, {\bf expression} $\ast$ {\em expr})}\label{signal_8h_a6}
 
 
 Adds an expression to the signal list.
@@ -130,7 +132,7 @@ modname}]Name of module that this signal belongs to.\end{description}
 \end{Desc}
 Prints the signal information for the specified signal to the specified file. This file will be the database coverage file for this design. \index{signal.h@{signal.h}!signal_dealloc@{signal\_\-dealloc}}
 \index{signal_dealloc@{signal\_\-dealloc}!signal.h@{signal.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-dealloc ({\bf signal} $\ast$ {\em sig})}\label{signal_8h_a7}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-dealloc ({\bf signal} $\ast$ {\em sig})}\label{signal_8h_a8}
 
 
 Deallocates the memory used for this signal.
@@ -143,7 +145,7 @@ sig}]Pointer to signal to deallocate.\end{description}
 \end{Desc}
 Deallocates all malloc'ed memory back to the heap for the specified signal. \index{signal.h@{signal.h}!signal_display@{signal\_\-display}}
 \index{signal_display@{signal\_\-display}!signal.h@{signal.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-display ({\bf signal} $\ast$ {\em sig})}\label{signal_8h_a6}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-display ({\bf signal} $\ast$ {\em sig})}\label{signal_8h_a7}
 
 
 Displays signal contents to standard output.
@@ -169,4 +171,18 @@ sig}]Pointer to signal to initialize. \item[{\em
 name}]Pointer to signal name string. \item[{\em 
 value}]Pointer to signal value.\end{description}
 \end{Desc}
-Initializes the specified signal with the values of name and value. This function is called by the signal\_\-create routine and is also useful for creating temporary signals (reduces the need for dynamic memory allocation). for performance enhancing purposes. 
+Initializes the specified signal with the values of name and value. This function is called by the signal\_\-create routine and is also useful for creating temporary signals (reduces the need for dynamic memory allocation). for performance enhancing purposes. \index{signal.h@{signal.h}!signal_vcd_assign@{signal\_\-vcd\_\-assign}}
+\index{signal_vcd_assign@{signal\_\-vcd\_\-assign}!signal.h@{signal.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-vcd\_\-assign ({\bf signal} $\ast$ {\em sig}, char $\ast$ {\em value})}\label{signal_8h_a5}
+
+
+Assigns specified VCD value to specified signal.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+sig}]Pointer to signal to assign VCD value to. \item[{\em 
+value}]String version of VCD value.\end{description}
+\end{Desc}
+Assigns the associated value to the specified signal's vector. After this, it iterates through its expression list, setting the TRUE and FALSE bits accordingly. Finally, calls the simulator expr\_\-changed function for each expression. 

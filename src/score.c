@@ -4,9 +4,15 @@
  \date     11/29/2001
 */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
 
 #include "defines.h"
 #include "score.h"
@@ -366,6 +372,9 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.29  2002/11/02 16:16:20  phase1geo
+ Cleaned up all compiler warnings in source and header files.
+
  Revision 1.28  2002/10/29 19:57:51  phase1geo
  Fixing problems with beginning block comments within comments which are
  produced automatically by CVS.  Should fix warning messages from compiler.

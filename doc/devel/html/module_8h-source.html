@@ -30,30 +30,41 @@
 00039 
 00041 <font class="keywordtype">void</font> <a class="code" href="module_8c.html#a10">module_dealloc</a>( <a class="code" href="structmodule__s.html">module</a>* mod );
 00042 
-00043 <font class="comment">/* $Log$</font>
-00044 <font class="comment">/* Revision 1.5  2002/09/25 02:51:44  phase1geo</font>
-00045 <font class="comment">/* Removing need of vector nibble array allocation and deallocation during</font>
-00046 <font class="comment">/* expression resizing for efficiency and bug reduction.  Other enhancements</font>
-00047 <font class="comment">/* for parameter support.  Parameter stuff still not quite complete.</font>
-00048 <font class="comment">/*</font>
-00049 <font class="comment">/* Revision 1.4  2002/08/19 04:34:07  phase1geo</font>
-00050 <font class="comment">/* Fixing bug in database reading code that dealt with merging modules.  Module</font>
-00051 <font class="comment">/* merging is now performed in a more optimal way.  Full regression passes and</font>
-00052 <font class="comment">/* own examples pass as well.</font>
-00053 <font class="comment">/*</font>
-00054 <font class="comment">/* Revision 1.3  2002/07/18 02:33:24  phase1geo</font>
-00055 <font class="comment">/* Fixed instantiation addition.  Multiple hierarchy instantiation trees should</font>
-00056 <font class="comment">/* now work.</font>
-00057 <font class="comment">/*</font>
-00058 <font class="comment">/* Revision 1.2  2002/07/03 03:31:11  phase1geo</font>
-00059 <font class="comment">/* Adding RCS Log strings in files that were missing them so that file version</font>
-00060 <font class="comment">/* information is contained in every source and header file.  Reordering src</font>
-00061 <font class="comment">/* Makefile to be alphabetical.  Adding mult1.v diagnostic to regression suite.</font>
-00062 <font class="comment">/* */</font>
-00063 
-00064 <font class="preprocessor">#endif</font>
-00065 <font class="preprocessor"></font>
-</pre></div><hr><address align="right"><small>Generated on Fri Oct 25 17:40:15 2002 for Covered by
+00043 
+00044 <font class="comment">/*</font>
+00045 <font class="comment"> $Log$</font>
+00046 <font class="comment"> Revision 1.7  2002/10/31 23:14:00  phase1geo</font>
+00047 <font class="comment"> Fixing C compatibility problems with cc and gcc.  Found a few possible problems</font>
+00048 <font class="comment"> with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that</font>
+00049 <font class="comment"> lead to bus errors.  Ran full regression in 64-bit mode without error.</font>
+00050 <font class="comment"></font>
+00051 <font class="comment"> Revision 1.6  2002/10/29 19:57:51  phase1geo</font>
+00052 <font class="comment"> Fixing problems with beginning block comments within comments which are</font>
+00053 <font class="comment"> produced automatically by CVS.  Should fix warning messages from compiler.</font>
+00054 <font class="comment"></font>
+00055 <font class="comment"> Revision 1.5  2002/09/25 02:51:44  phase1geo</font>
+00056 <font class="comment"> Removing need of vector nibble array allocation and deallocation during</font>
+00057 <font class="comment"> expression resizing for efficiency and bug reduction.  Other enhancements</font>
+00058 <font class="comment"> for parameter support.  Parameter stuff still not quite complete.</font>
+00059 <font class="comment"></font>
+00060 <font class="comment"> Revision 1.4  2002/08/19 04:34:07  phase1geo</font>
+00061 <font class="comment"> Fixing bug in database reading code that dealt with merging modules.  Module</font>
+00062 <font class="comment"> merging is now performed in a more optimal way.  Full regression passes and</font>
+00063 <font class="comment"> own examples pass as well.</font>
+00064 <font class="comment"></font>
+00065 <font class="comment"> Revision 1.3  2002/07/18 02:33:24  phase1geo</font>
+00066 <font class="comment"> Fixed instantiation addition.  Multiple hierarchy instantiation trees should</font>
+00067 <font class="comment"> now work.</font>
+00068 <font class="comment"></font>
+00069 <font class="comment"> Revision 1.2  2002/07/03 03:31:11  phase1geo</font>
+00070 <font class="comment"> Adding RCS Log strings in files that were missing them so that file version</font>
+00071 <font class="comment"> information is contained in every source and header file.  Reordering src</font>
+00072 <font class="comment"> Makefile to be alphabetical.  Adding mult1.v diagnostic to regression suite.</font>
+00073 <font class="comment">*/</font>
+00074 
+00075 <font class="preprocessor">#endif</font>
+00076 <font class="preprocessor"></font>
+</pre></div><hr><address align="right"><small>Generated on Sun Nov 3 21:15:57 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

@@ -9,33 +9,37 @@
 */
 
 #include "defines.h"
-#include "expr.h"
 
 
-/*! Creates new statement structure. */
+/*! \brief Creates new statement structure. */
 statement* statement_create( expression* exp );
 
-/*! Writes specified statement to the specified output file. */
+/*! \brief Writes specified statement to the specified output file. */
 void statement_db_write( statement* stmt, FILE* ofile, char* scope );
 
-/*! Reads in statement line from specified string and stores statement in specified module. */
+/*! \brief Reads in statement line from specified string and stores statement in specified module. */
 bool statement_db_read( char** line, module* curr_mod, int read_mode );
 
-/*! Connects statement sequence to next statement. */
+/*! \brief Connects statement sequence to next statement. */
 void statement_connect( statement* curr_stmt, statement* next_stmt );
 
-/*! Sets stop bits in specified statement tree. */
+/*! \brief Sets stop bits in specified statement tree. */
 void statement_set_stop( statement* stmt, statement* post, bool true_path, bool both );
 
-/*! Recursively deallocates specified statement tree. */
+/*! \brief Recursively deallocates specified statement tree. */
 void statement_dealloc_recursive( statement* stmt );
 
-/*! Deallocates statement memory and associated expression tree from the heap. */
+/*! \brief Deallocates statement memory and associated expression tree from the heap. */
 void statement_dealloc( statement* stmt );
 
 
 /*
  $Log$
+ Revision 1.12  2002/10/31 23:14:27  phase1geo
+ Fixing C compatibility problems with cc and gcc.  Found a few possible problems
+ with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that
+ lead to bus errors.  Ran full regression in 64-bit mode without error.
+
  Revision 1.11  2002/10/30 06:07:11  phase1geo
  First attempt to handle expression trees/statement trees that contain
  unsupported code.  These are removed completely and not evaluated (because

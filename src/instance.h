@@ -9,32 +9,37 @@
 */
 
 #include "defines.h"
-#include "module.h"
 
 
-/*! Builds full hierarchy from leaf node to root. */
+/*! \brief Builds full hierarchy from leaf node to root. */
 void instance_gen_scope( char* scope, mod_inst* leaf );
 
-/*! Finds specified scope in module instance tree. */
+/*! \brief Finds specified scope in module instance tree. */
 mod_inst* instance_find_scope( mod_inst* root, char* scope );
 
-/*! Returns instance that points to specified module for each instance. */
+/*! \brief Returns instance that points to specified module for each instance. */
 mod_inst* instance_find_by_module( mod_inst* root, module* mod, int* ignore );
 
-/*! Adds new instance to specified instance tree during parse. */
+/*! \brief Adds new instance to specified instance tree during parse. */
 void instance_parse_add( mod_inst** root, module* parent, module* child, char* inst_name );
 
-/*! Adds new instance to specified instance tree during CDD read. */
+/*! \brief Adds new instance to specified instance tree during CDD read. */
 void instance_read_add( mod_inst** root, char* parent, module* child, char* inst_name );
 
-/*! Displays contents of module instance tree to specified file. */
+/*! \brief Displays contents of module instance tree to specified file. */
 void instance_db_write( mod_inst* root, FILE* file, char* scope, bool parse_mode );
 
-/*! Removes specified instance from tree. */
+/*! \brief Removes specified instance from tree. */
 void instance_dealloc( mod_inst* root, char* scope );
+
 
 /*
  $Log$
+ Revision 1.8  2002/10/31 23:13:52  phase1geo
+ Fixing C compatibility problems with cc and gcc.  Found a few possible problems
+ with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that
+ lead to bus errors.  Ran full regression in 64-bit mode without error.
+
  Revision 1.7  2002/10/29 19:57:50  phase1geo
  Fixing problems with beginning block comments within comments which are
  produced automatically by CVS.  Should fix warning messages from compiler.

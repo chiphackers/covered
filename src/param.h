@@ -13,51 +13,56 @@
 #include "defines.h"
 
 
-/*! Searches specified module parameter list for matching parameter. */
+/*! \brief Searches specified module parameter list for matching parameter. */
 mod_parm* mod_parm_find( char* name, mod_parm* parm );
 
-/*! Searches specified module parameter list for matching signal dependency. */
+/*! \brief Searches specified module parameter list for matching signal dependency. */
 mod_parm* mod_parm_find_sig_dependent( char* name, mod_parm* parm );
 
-/*! Creates new module parameter and adds it to the specified list. */
+/*! \brief Creates new module parameter and adds it to the specified list. */
 mod_parm* mod_parm_add( char* scope, expression* expr, int type, mod_parm** head, mod_parm** tail );
 
-/*! Outputs contents of module parameter list to standard output. */
+/*! \brief Outputs contents of module parameter list to standard output. */
 void mod_parm_display( mod_parm* mparm );
 
-/*! Searches specified instance parameter list for matching parameter. */
+/*! \brief Searches specified instance parameter list for matching parameter. */
 inst_parm* inst_parm_find( char* name, inst_parm* parm );
 
-/*! Creates and adds new instance parameter to specified instance parameter list. */
+/*! \brief Creates and adds new instance parameter to specified instance parameter list. */
 inst_parm* inst_parm_add( char* scope, vector* value, mod_parm* mparm, inst_parm** head, inst_parm** tail );
 
-/*! Adds parameter override to defparam list. */
+/*! \brief Adds parameter override to defparam list. */
 void defparam_add( char* scope, vector* expr );
 
-/*! Sets the specified expression value to the instance parameter value. */
+/*! \brief Sets the specified expression value to the instance parameter value. */
 void param_set_expr_size( expression* expr, inst_parm* icurr );
 
-/*! Sets the specified signal size according to the specified instance parameter and resizes attached expressions. */
+/*! \brief Sets the specified signal size according to the specified instance parameter and resizes attached expressions. */
 bool param_set_sig_size( signal* sig, inst_parm* icurr );
 
-/*! Transforms a declared module parameter into an instance parameter. */
+/*! \brief Transforms a declared module parameter into an instance parameter. */
 void param_resolve_declared( char* mscope, mod_parm* mparm, inst_parm* ip_head, inst_parm** ihead, inst_parm** itail );
 
-/*! Transforms an override module parameter into an instance parameter. */
+/*! \brief Transforms an override module parameter into an instance parameter. */
 void param_resolve_override( mod_parm* oparm, inst_parm** ihead, inst_parm** itail );
 
-/*! Outputs specified instance parameter to specified output stream. */
+/*! \brief Outputs specified instance parameter to specified output stream. */
 void param_db_write( inst_parm* iparm, FILE* file, char* scope );
 
-/*! Deallocates specified module parameter and possibly entire module parameter list. */
+/*! \brief Deallocates specified module parameter and possibly entire module parameter list. */
 void mod_parm_dealloc( mod_parm* parm, bool recursive );
 
-/*! Deallocates specified instance parameter and possibly entire instance parameter list. */
+/*! \brief Deallocates specified instance parameter and possibly entire instance parameter list. */
 void inst_parm_dealloc( inst_parm* parm, bool recursive );
 
 
 /*
  $Log$
+ Revision 1.11  2002/10/31 23:14:12  phase1geo
+ Fixing C compatibility problems with cc and gcc.  Found a few possible problems
+ with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that
+ lead to bus errors.  Ran full regression in 64-bit mode without error.
+
  Revision 1.10  2002/10/29 19:57:51  phase1geo
  Fixing problems with beginning block comments within comments which are
  produced automatically by CVS.  Should fix warning messages from compiler.

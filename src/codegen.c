@@ -2,9 +2,31 @@
  \file     codegen.c
  \author   Trevor Williams  (trevorw@charter.net)
  \date     4/11/2002
+ 
+ \par
+ This file and its functions are used solely by the Covered report command.  When the user
+ specifies that Covered should report detailed or verbose reports, it is necessary to output
+ the Verilog code associated with line and combinational logic coverage.  However, the actual
+ Verilog code read from the file is not stored internally anywhere inside of the Covered.  By
+ doing this, Covered can do two things:  (1) save on memory that otherwise need to be stored
+ or save on processing (have to reparse the code for reports) and (2) allows Covered to "clean
+ up the source code making it easier to read (hopefully) and easier to underline missed
+ combinational logic cases.
+ 
+ \par
+ What the code generator does then is to recreate the source Verilog from the internally
+ stored expression tree.  This allows associated Verilog code with uncovered logic to quickly
+ and efficiently be display to the user.  The code generator is used in combination with the
+ underlining facility (located in the comb.c file).
 */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
 #include <assert.h>
 
 #include "defines.h"
@@ -282,6 +304,9 @@ char* codegen_gen_expr( expression* expr, int line, int parent_op ) {
 
 /*
  $Log$
+ Revision 1.24  2002/11/02 16:16:20  phase1geo
+ Cleaned up all compiler warnings in source and header files.
+
  Revision 1.23  2002/10/29 19:57:50  phase1geo
  Fixing problems with beginning block comments within comments which are
  produced automatically by CVS.  Should fix warning messages from compiler.

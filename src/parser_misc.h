@@ -9,10 +9,10 @@
 */
 
 /*!
- * The vlltype supports the passing of detailed source file location
- * information between the lexical analyzer and the parser. Defining
- * YYLTYPE compels the lexor to use this type and not something other.
- */
+ The vlltype supports the passing of detailed source file location
+ information between the lexical analyzer and the parser. Defining
+ YYLTYPE compels the lexor to use this type and not something other.
+*/
 struct vlltype {
   unsigned first_line;
   unsigned first_column;

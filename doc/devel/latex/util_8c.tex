@@ -16,7 +16,7 @@
 void {\bf set\_\-output\_\-suppression} ({\bf bool} value)
 \begin{CompactList}\small\item\em Sets error suppression to specified value.\item\end{CompactList}\item 
 void {\bf set\_\-debug} ({\bf bool} value)
-\item 
+\begin{CompactList}\small\item\em Sets global debug flag to specified value.\item\end{CompactList}\item 
 void {\bf print\_\-output} (char $\ast$msg, int type)
 \begin{CompactList}\small\item\em Displays error message to standard output.\item\end{CompactList}\item 
 {\bf bool} {\bf is\_\-variable} (char $\ast$token)
@@ -37,7 +37,7 @@ void {\bf scope\_\-extract\_\-back} (char $\ast$scope, char $\ast$back, char $\a
 \begin{CompactList}\small\item\em Extracts lowest level of hierarchy from specified scope.\item\end{CompactList}\item 
 {\bf bool} {\bf scope\_\-local} (char $\ast$scope)
 \begin{CompactList}\small\item\em Returns TRUE if specified scope is local (contains no periods).\item\end{CompactList}\item 
-void $\ast$ {\bf malloc\_\-safe} (int {\bf size})
+void $\ast$ {\bf malloc\_\-safe} (size\_\-t {\bf size})
 \begin{CompactList}\small\item\em Performs safe malloc call.\item\end{CompactList}\item 
 void {\bf free\_\-safe} (void $\ast$ptr)
 \begin{CompactList}\small\item\em Performs safe deallocation of heap memory.\item\end{CompactList}\item 
@@ -186,7 +186,7 @@ token}]String to check for valid variable name. \end{description}
 Returns TRUE if the specified string is a legal variable name; otherwise, returns FALSE.\end{Desc}
 If the specified string follows all of the rules for a legal program variable (doesn't start with a number, contains only a-z\-A-Z0-9\_\- characters), returns a value of TRUE; otherwise, returns a value of FALSE. \index{util.c@{util.c}!malloc_safe@{malloc\_\-safe}}
 \index{malloc_safe@{malloc\_\-safe}!util.c@{util.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ malloc\_\-safe (int {\em size})}\label{util_8c_a17}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ malloc\_\-safe (size\_\-t {\em size})}\label{util_8c_a17}
 
 
 Performs safe malloc call.
@@ -272,6 +272,8 @@ Returns TRUE if specified scope is local (contains no periods).
 \index{set_debug@{set\_\-debug}!util.c@{util.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void set\_\-debug ({\bf bool} {\em value})}\label{util_8c_a6}
 
+
+Sets global debug flag to specified value.
 
 \begin{Desc}
 \item[Parameters: ]\par

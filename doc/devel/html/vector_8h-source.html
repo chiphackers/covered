@@ -30,83 +30,101 @@
 00039 
 00041 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a16">vector_display</a>( <a class="code" href="structvector__s.html">vector</a>* vec );
 00042 
-00044 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a18">vector_set_bit</a>( <a class="code" href="defines_8h.html#a144">nibble</a>* nib, <a class="code" href="defines_8h.html#a144">nibble</a> value, <font class="keywordtype">int</font> pos );
+00044 <a class="code" href="defines_8h.html#a144">nibble</a> <a class="code" href="vector_8c.html#a17">vector_bit_val</a>( <a class="code" href="defines_8h.html#a144">nibble</a>* value, <font class="keywordtype">int</font> pos );
 00045 
-00047 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a25">vector_set_value</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <a class="code" href="defines_8h.html#a144">nibble</a>* value, <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> from_idx, <font class="keywordtype">int</font> to_idx );
+00047 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a18">vector_set_bit</a>( <a class="code" href="defines_8h.html#a144">nibble</a>* nib, <a class="code" href="defines_8h.html#a144">nibble</a> value, <font class="keywordtype">int</font> pos );
 00048 
-00050 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a26">vector_set_type</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <font class="keywordtype">int</font> type );
+00050 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a25">vector_set_value</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <a class="code" href="defines_8h.html#a144">nibble</a>* value, <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> from_idx, <font class="keywordtype">int</font> to_idx );
 00051 
-00053 <font class="keywordtype">int</font> <a class="code" href="vector_8c.html#a27">vector_get_type</a>( <a class="code" href="structvector__s.html">vector</a>* vec );
+00053 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a26">vector_set_type</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <font class="keywordtype">int</font> type );
 00054 
-00056 <font class="keywordtype">int</font> <a class="code" href="vector_8c.html#a28">vector_to_int</a>( <a class="code" href="structvector__s.html">vector</a>* vec );
+00056 <font class="keywordtype">int</font> <a class="code" href="vector_8c.html#a27">vector_get_type</a>( <a class="code" href="structvector__s.html">vector</a>* vec );
 00057 
-00059 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a29">vector_from_int</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <font class="keywordtype">int</font> value );
+00059 <font class="keywordtype">int</font> <a class="code" href="vector_8c.html#a28">vector_to_int</a>( <a class="code" href="structvector__s.html">vector</a>* vec );
 00060 
-00062 <font class="keywordtype">char</font>* <a class="code" href="vector_8c.html#a31">vector_to_string</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <font class="keywordtype">int</font> type );
+00062 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a29">vector_from_int</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <font class="keywordtype">int</font> value );
 00063 
-00065 <a class="code" href="structvector__s.html">vector</a>* <a class="code" href="vector_8c.html#a32">vector_from_string</a>( <font class="keywordtype">char</font>* str );
+00065 <font class="keywordtype">char</font>* <a class="code" href="vector_8c.html#a31">vector_to_string</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <font class="keywordtype">int</font> type );
 00066 
-00068 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a23">vector_toggle_count</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <font class="keywordtype">int</font>* tog01_cnt, <font class="keywordtype">int</font>* tog10_cnt );
+00068 <a class="code" href="structvector__s.html">vector</a>* <a class="code" href="vector_8c.html#a32">vector_from_string</a>( <font class="keywordtype">char</font>* str );
 00069 
-00071 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a24">vector_logic_count</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <font class="keywordtype">int</font>* false_cnt, <font class="keywordtype">int</font>* true_cnt );
+00071 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a33">vector_vcd_assign</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <font class="keywordtype">char</font>* value );
 00072 
-00074 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a34">vector_bitwise_op</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* src1, <a class="code" href="structvector__s.html">vector</a>* src2, <font class="keywordtype">int</font>* optab );
+00074 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a23">vector_toggle_count</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <font class="keywordtype">int</font>* tog01_cnt, <font class="keywordtype">int</font>* tog10_cnt );
 00075 
-00077 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a35">vector_op_compare</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* left, <a class="code" href="structvector__s.html">vector</a>* right, <font class="keywordtype">int</font> comp_type );
+00077 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a24">vector_logic_count</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <font class="keywordtype">int</font>* false_cnt, <font class="keywordtype">int</font>* true_cnt );
 00078 
-00080 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a36">vector_op_lshift</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* left, <a class="code" href="structvector__s.html">vector</a>* right );
-00081  
-00083 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a37">vector_op_rshift</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* left, <a class="code" href="structvector__s.html">vector</a>* right );
+00080 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a34">vector_bitwise_op</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* src1, <a class="code" href="structvector__s.html">vector</a>* src2, <a class="code" href="defines_8h.html#a144">nibble</a>* optab );
+00081 
+00083 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a35">vector_op_compare</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* left, <a class="code" href="structvector__s.html">vector</a>* right, <font class="keywordtype">int</font> comp_type );
 00084 
-00086 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a38">vector_op_add</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* left, <a class="code" href="structvector__s.html">vector</a>* right );
-00087 
-00089 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a39">vector_op_subtract</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* left, <a class="code" href="structvector__s.html">vector</a>* right );
+00086 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a36">vector_op_lshift</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* left, <a class="code" href="structvector__s.html">vector</a>* right );
+00087  
+00089 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a37">vector_op_rshift</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* left, <a class="code" href="structvector__s.html">vector</a>* right );
 00090 
-00092 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a40">vector_op_multiply</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* left, <a class="code" href="structvector__s.html">vector</a>* right );
+00092 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a38">vector_op_add</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* left, <a class="code" href="structvector__s.html">vector</a>* right );
 00093 
-00095 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a41">vector_unary_inv</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* src );
+00095 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a39">vector_op_subtract</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* left, <a class="code" href="structvector__s.html">vector</a>* right );
 00096 
-00098 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a42">vector_unary_op</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* src, <a class="code" href="defines_8h.html#a144">nibble</a>* optab );
+00098 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a40">vector_op_multiply</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* left, <a class="code" href="structvector__s.html">vector</a>* right );
 00099 
-00101 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a43">vector_unary_not</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* src );
+00101 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a41">vector_unary_inv</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* src );
 00102 
-00104 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a44">vector_dealloc</a>( <a class="code" href="structvector__s.html">vector</a>* vec );
+00104 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a42">vector_unary_op</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* src, <a class="code" href="defines_8h.html#a144">nibble</a>* optab );
 00105 
-00106 <font class="comment">/* $Log$</font>
-00107 <font class="comment">/* Revision 1.9  2002/09/25 02:51:44  phase1geo</font>
-00108 <font class="comment">/* Removing need of vector nibble array allocation and deallocation during</font>
-00109 <font class="comment">/* expression resizing for efficiency and bug reduction.  Other enhancements</font>
-00110 <font class="comment">/* for parameter support.  Parameter stuff still not quite complete.</font>
-00111 <font class="comment">/*</font>
-00112 <font class="comment">/* Revision 1.8  2002/08/23 12:55:34  phase1geo</font>
-00113 <font class="comment">/* Starting to make modifications for parameter support.  Added parameter source</font>
-00114 <font class="comment">/* and header files, changed vector_from_string function to be more verbose</font>
-00115 <font class="comment">/* and updated Makefiles for new param.h/.c files.</font>
-00116 <font class="comment">/*</font>
-00117 <font class="comment">/* Revision 1.7  2002/08/19 04:34:07  phase1geo</font>
-00118 <font class="comment">/* Fixing bug in database reading code that dealt with merging modules.  Module</font>
-00119 <font class="comment">/* merging is now performed in a more optimal way.  Full regression passes and</font>
-00120 <font class="comment">/* own examples pass as well.</font>
-00121 <font class="comment">/*</font>
-00122 <font class="comment">/* Revision 1.6  2002/07/17 06:27:18  phase1geo</font>
-00123 <font class="comment">/* Added start for fixes to bit select code starting with single bit selection.</font>
-00124 <font class="comment">/* Full regression passes with addition of sbit_sel1 diagnostic.</font>
-00125 <font class="comment">/*</font>
-00126 <font class="comment">/* Revision 1.5  2002/07/10 04:57:07  phase1geo</font>
-00127 <font class="comment">/* Adding bits to vector nibble to allow us to specify what type of input</font>
-00128 <font class="comment">/* static value was read in so that the output value may be displayed in</font>
-00129 <font class="comment">/* the same format (DECIMAL, BINARY, OCTAL, HEXIDECIMAL).  Full regression</font>
-00130 <font class="comment">/* passes.</font>
-00131 <font class="comment">/*</font>
-00132 <font class="comment">/* Revision 1.4  2002/07/03 03:31:11  phase1geo</font>
-00133 <font class="comment">/* Adding RCS Log strings in files that were missing them so that file version</font>
-00134 <font class="comment">/* information is contained in every source and header file.  Reordering src</font>
-00135 <font class="comment">/* Makefile to be alphabetical.  Adding mult1.v diagnostic to regression suite.</font>
-00136 <font class="comment">/* */</font>
-00137 
-00138 <font class="preprocessor">#endif</font>
-00139 <font class="preprocessor"></font>
-</pre></div><hr><address align="right"><small>Generated on Fri Oct 25 17:40:16 2002 for Covered by
+00107 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a43">vector_unary_not</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* src );
+00108 
+00110 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a44">vector_dealloc</a>( <a class="code" href="structvector__s.html">vector</a>* vec );
+00111 
+00112 
+00113 <font class="comment">/*</font>
+00114 <font class="comment"> $Log$</font>
+00115 <font class="comment"> Revision 1.12  2002/11/02 16:16:20  phase1geo</font>
+00116 <font class="comment"> Cleaned up all compiler warnings in source and header files.</font>
+00117 <font class="comment"></font>
+00118 <font class="comment"> Revision 1.11  2002/10/31 23:14:37  phase1geo</font>
+00119 <font class="comment"> Fixing C compatibility problems with cc and gcc.  Found a few possible problems</font>
+00120 <font class="comment"> with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that</font>
+00121 <font class="comment"> lead to bus errors.  Ran full regression in 64-bit mode without error.</font>
+00122 <font class="comment"></font>
+00123 <font class="comment"> Revision 1.10  2002/10/29 19:57:51  phase1geo</font>
+00124 <font class="comment"> Fixing problems with beginning block comments within comments which are</font>
+00125 <font class="comment"> produced automatically by CVS.  Should fix warning messages from compiler.</font>
+00126 <font class="comment"></font>
+00127 <font class="comment"> Revision 1.9  2002/09/25 02:51:44  phase1geo</font>
+00128 <font class="comment"> Removing need of vector nibble array allocation and deallocation during</font>
+00129 <font class="comment"> expression resizing for efficiency and bug reduction.  Other enhancements</font>
+00130 <font class="comment"> for parameter support.  Parameter stuff still not quite complete.</font>
+00131 <font class="comment"></font>
+00132 <font class="comment"> Revision 1.8  2002/08/23 12:55:34  phase1geo</font>
+00133 <font class="comment"> Starting to make modifications for parameter support.  Added parameter source</font>
+00134 <font class="comment"> and header files, changed vector_from_string function to be more verbose</font>
+00135 <font class="comment"> and updated Makefiles for new param.h/.c files.</font>
+00136 <font class="comment"></font>
+00137 <font class="comment"> Revision 1.7  2002/08/19 04:34:07  phase1geo</font>
+00138 <font class="comment"> Fixing bug in database reading code that dealt with merging modules.  Module</font>
+00139 <font class="comment"> merging is now performed in a more optimal way.  Full regression passes and</font>
+00140 <font class="comment"> own examples pass as well.</font>
+00141 <font class="comment"></font>
+00142 <font class="comment"> Revision 1.6  2002/07/17 06:27:18  phase1geo</font>
+00143 <font class="comment"> Added start for fixes to bit select code starting with single bit selection.</font>
+00144 <font class="comment"> Full regression passes with addition of sbit_sel1 diagnostic.</font>
+00145 <font class="comment"></font>
+00146 <font class="comment"> Revision 1.5  2002/07/10 04:57:07  phase1geo</font>
+00147 <font class="comment"> Adding bits to vector nibble to allow us to specify what type of input</font>
+00148 <font class="comment"> static value was read in so that the output value may be displayed in</font>
+00149 <font class="comment"> the same format (DECIMAL, BINARY, OCTAL, HEXIDECIMAL).  Full regression</font>
+00150 <font class="comment"> passes.</font>
+00151 <font class="comment"></font>
+00152 <font class="comment"> Revision 1.4  2002/07/03 03:31:11  phase1geo</font>
+00153 <font class="comment"> Adding RCS Log strings in files that were missing them so that file version</font>
+00154 <font class="comment"> information is contained in every source and header file.  Reordering src</font>
+00155 <font class="comment"> Makefile to be alphabetical.  Adding mult1.v diagnostic to regression suite.</font>
+00156 <font class="comment">*/</font>
+00157 
+00158 <font class="preprocessor">#endif</font>
+00159 <font class="preprocessor"></font>
+</pre></div><hr><address align="right"><small>Generated on Sun Nov 3 21:15:57 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

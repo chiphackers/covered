@@ -2,6 +2,7 @@
 \label{comb_8c}\index{comb.c@{comb.c}}
 {\tt \#include $<$stdio.h$>$}\par
 {\tt \#include $<$assert.h$>$}\par
+{\tt \#include $<$stdlib.h$>$}\par
 {\tt \#include \char`\"{}defines.h\char`\"{}}\par
 {\tt \#include \char`\"{}comb.h\char`\"{}}\par
 {\tt \#include \char`\"{}codegen.h\char`\"{}}\par
@@ -17,7 +18,7 @@ int {\bf combination\_\-calc\_\-depth} ({\bf expression} $\ast$exp, unsigned int
 void {\bf combination\_\-get\_\-tree\_\-stats} ({\bf expression} $\ast$exp, unsigned int curr\_\-depth, float $\ast$total, int $\ast$hit)
 \item 
 void {\bf combination\_\-get\_\-stats} ({\bf exp\_\-link} $\ast$expl, float $\ast$total, int $\ast$hit)
-\item 
+\begin{CompactList}\small\item\em Calculates combination logic statistics for summary output.\item\end{CompactList}\item 
 {\bf bool} {\bf combination\_\-instance\_\-summary} (FILE $\ast$ofile, {\bf mod\_\-inst} $\ast$root, char $\ast$parent)
 \item 
 {\bf bool} {\bf combination\_\-module\_\-summary} (FILE $\ast$ofile, {\bf mod\_\-link} $\ast$head)
@@ -116,6 +117,8 @@ Draws an underline containing the specified expression ID to the specified line.
 \index{combination_get_stats@{combination\_\-get\_\-stats}!comb.c@{comb.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-get\_\-stats ({\bf exp\_\-link} $\ast$ {\em expl}, float $\ast$ {\em total}, int $\ast$ {\em hit})}\label{comb_8c_a7}
 
+
+Calculates combination logic statistics for summary output.
 
 \begin{Desc}
 \item[Parameters: ]\par

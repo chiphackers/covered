@@ -59,25 +59,35 @@
 00082 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a21">mod_link_delete_list</a>( <a class="code" href="structmod__link__s.html">mod_link</a>* head );
 00083 
 00084 
-00085 <font class="comment">/* $Log$</font>
-00086 <font class="comment">/* Revision 1.4  2002/07/18 22:02:35  phase1geo</font>
-00087 <font class="comment">/* In the middle of making improvements/fixes to the expression/signal</font>
-00088 <font class="comment">/* binding phase.</font>
-00089 <font class="comment">/*</font>
-00090 <font class="comment">/* Revision 1.3  2002/06/25 03:39:03  phase1geo</font>
-00091 <font class="comment">/* Fixed initial scoring bugs.  We now generate a legal CDD file for reporting.</font>
-00092 <font class="comment">/* Fixed some report bugs though there are still some remaining.</font>
-00093 <font class="comment">/*</font>
-00094 <font class="comment">/* Revision 1.2  2002/05/03 03:39:36  phase1geo</font>
-00095 <font class="comment">/* Removing all syntax errors due to addition of statements.  Added more statement</font>
-00096 <font class="comment">/* support code.  Still have a ways to go before we can try anything.  Removed lines</font>
-00097 <font class="comment">/* from expressions though we may want to consider putting these back for reporting</font>
-00098 <font class="comment">/* purposes.</font>
-00099 <font class="comment">/* */</font>
-00100 
-00101 <font class="preprocessor">#endif</font>
-00102 <font class="preprocessor"></font>
-</pre></div><hr><address align="right"><small>Generated on Fri Oct 25 17:40:15 2002 for Covered by
+00085 <font class="comment">/*</font>
+00086 <font class="comment"> $Log$</font>
+00087 <font class="comment"> Revision 1.6  2002/10/31 23:13:56  phase1geo</font>
+00088 <font class="comment"> Fixing C compatibility problems with cc and gcc.  Found a few possible problems</font>
+00089 <font class="comment"> with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that</font>
+00090 <font class="comment"> lead to bus errors.  Ran full regression in 64-bit mode without error.</font>
+00091 <font class="comment"></font>
+00092 <font class="comment"> Revision 1.5  2002/10/29 19:57:50  phase1geo</font>
+00093 <font class="comment"> Fixing problems with beginning block comments within comments which are</font>
+00094 <font class="comment"> produced automatically by CVS.  Should fix warning messages from compiler.</font>
+00095 <font class="comment"></font>
+00096 <font class="comment"> Revision 1.4  2002/07/18 22:02:35  phase1geo</font>
+00097 <font class="comment"> In the middle of making improvements/fixes to the expression/signal</font>
+00098 <font class="comment"> binding phase.</font>
+00099 <font class="comment"></font>
+00100 <font class="comment"> Revision 1.3  2002/06/25 03:39:03  phase1geo</font>
+00101 <font class="comment"> Fixed initial scoring bugs.  We now generate a legal CDD file for reporting.</font>
+00102 <font class="comment"> Fixed some report bugs though there are still some remaining.</font>
+00103 <font class="comment"></font>
+00104 <font class="comment"> Revision 1.2  2002/05/03 03:39:36  phase1geo</font>
+00105 <font class="comment"> Removing all syntax errors due to addition of statements.  Added more statement</font>
+00106 <font class="comment"> support code.  Still have a ways to go before we can try anything.  Removed lines</font>
+00107 <font class="comment"> from expressions though we may want to consider putting these back for reporting</font>
+00108 <font class="comment"> purposes.</font>
+00109 <font class="comment">*/</font>
+00110 
+00111 <font class="preprocessor">#endif</font>
+00112 <font class="preprocessor"></font>
+</pre></div><hr><address align="right"><small>Generated on Sun Nov 3 21:15:57 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

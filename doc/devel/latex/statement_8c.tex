@@ -2,7 +2,6 @@
 \label{statement_8c}\index{statement.c@{statement.c}}
 {\tt \#include $<$stdio.h$>$}\par
 {\tt \#include $<$assert.h$>$}\par
-{\tt \#include $<$string.h$>$}\par
 {\tt \#include \char`\"{}defines.h\char`\"{}}\par
 {\tt \#include \char`\"{}statement.h\char`\"{}}\par
 {\tt \#include \char`\"{}expr.h\char`\"{}}\par
@@ -26,6 +25,10 @@ void {\bf statement\_\-connect} ({\bf statement} $\ast$curr\_\-stmt, {\bf statem
 \begin{CompactList}\small\item\em Connects statement sequence to next statement.\item\end{CompactList}\item 
 void {\bf statement\_\-set\_\-stop} ({\bf statement} $\ast$stmt, {\bf statement} $\ast$post, {\bf bool} true\_\-path, {\bf bool} both)
 \begin{CompactList}\small\item\em Sets stop bits in specified statement tree.\item\end{CompactList}\item 
+void {\bf statement\_\-dealloc\_\-recursive\_\-helper} ({\bf statement} $\ast$curr, {\bf statement} $\ast$start)
+\item 
+void {\bf statement\_\-dealloc\_\-recursive} ({\bf statement} $\ast$stmt)
+\begin{CompactList}\small\item\em Recursively deallocates specified statement tree.\item\end{CompactList}\item 
 void {\bf statement\_\-dealloc} ({\bf statement} $\ast$stmt)
 \begin{CompactList}\small\item\em Deallocates statement memory and associated expression tree from the heap.\item\end{CompactList}\end{CompactItemize}
 \subsection*{Variables}
@@ -172,7 +175,7 @@ scope}]Scope of parent module which contains the specified statement.\end{descri
 \end{Desc}
 Recursively writes the contents of the specified statement tree (and its associated expression trees to the specified output stream. \index{statement.c@{statement.c}!statement_dealloc@{statement\_\-dealloc}}
 \index{statement_dealloc@{statement\_\-dealloc}!statement.c@{statement.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void statement\_\-dealloc ({\bf statement} $\ast$ {\em stmt})}\label{statement_8c_a9}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void statement\_\-dealloc ({\bf statement} $\ast$ {\em stmt})}\label{statement_8c_a11}
 
 
 Deallocates statement memory and associated expression tree from the heap.
@@ -183,7 +186,32 @@ Deallocates statement memory and associated expression tree from the heap.
 \item[{\em 
 stmt}]Pointer to statement to deallocate.\end{description}
 \end{Desc}
-Deallocates specified statement from heap memory. First remove expression tree of this statement. Second, remove all statements following this statement. Finally, remove the specified statement itself. Since statements can be circular in nature, we will not remove a statement that has its expression tree already deallocated. This will prevent this function from getting into an infinite loop (or stack overflow since this function is recursive). \index{statement.c@{statement.c}!statement_set_stop@{statement\_\-set\_\-stop}}
+Deallocates specified statement from heap memory. Does not remove attached expression (this is assumed to be cleaned up by the expression list removal function). \index{statement.c@{statement.c}!statement_dealloc_recursive@{statement\_\-dealloc\_\-recursive}}
+\index{statement_dealloc_recursive@{statement\_\-dealloc\_\-recursive}!statement.c@{statement.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void statement\_\-dealloc\_\-recursive ({\bf statement} $\ast$ {\em stmt})}\label{statement_8c_a10}
+
+
+Recursively deallocates specified statement tree.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+stmt}]Pointer to head of statement tree to deallocate.\end{description}
+\end{Desc}
+Recursively deallocates specified statement tree. \index{statement.c@{statement.c}!statement_dealloc_recursive_helper@{statement\_\-dealloc\_\-recursive\_\-helper}}
+\index{statement_dealloc_recursive_helper@{statement\_\-dealloc\_\-recursive\_\-helper}!statement.c@{statement.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void statement\_\-dealloc\_\-recursive\_\-helper ({\bf statement} $\ast$ {\em curr}, {\bf statement} $\ast$ {\em start})}\label{statement_8c_a9}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+curr}]Pointer to current statement to deallocate. \item[{\em 
+start}]Pointer to statement of root of statement tree to deallocate.\end{description}
+\end{Desc}
+Recursively deallocates statements listed by the current statement tree. This function is called by the parser to remove statement trees that were created but found to have unsupported code in them. This function takes care to not remove the same statement twice and to not infinitely loop. \index{statement.c@{statement.c}!statement_set_stop@{statement\_\-set\_\-stop}}
 \index{statement_set_stop@{statement\_\-set\_\-stop}!statement.c@{statement.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void statement\_\-set\_\-stop ({\bf statement} $\ast$ {\em stmt}, {\bf statement} $\ast$ {\em post}, {\bf bool} {\em true\_\-path}, {\bf bool} {\em both})}\label{statement_8c_a8}
 

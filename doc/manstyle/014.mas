@@ -37,6 +37,7 @@ making Covered the tool that it is today.
   <li>Stephen Williams - Thanks for helping me understand some of
 the ins and outs of what's required "under the hood" to handle some
 of Verilog's constructs.
+  <li>Daniel McMahill - testing and patches for 64-bit compatibility
 </ul>
 </_pg>
 

@@ -9,17 +9,22 @@
 */
 
 #include "defines.h"
-#include "link.h"
 
 
-/*! Parses the specified design and generates scoring modules. */
+/*! \brief Parses the specified design and generates scoring modules. */
 bool parse_design( char* top, char* output_db );
 
-/*! Parses VCD dumpfile and scores design. */
+/*! \brief Parses VCD dumpfile and scores design. */
 bool parse_and_score_dumpfile( char* db, char* vcd );
+
 
 /*
  $Log$
+ Revision 1.5  2002/10/31 23:14:13  phase1geo
+ Fixing C compatibility problems with cc and gcc.  Found a few possible problems
+ with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that
+ lead to bus errors.  Ran full regression in 64-bit mode without error.
+
  Revision 1.4  2002/10/29 19:57:51  phase1geo
  Fixing problems with beginning block comments within comments which are
  produced automatically by CVS.  Should fix warning messages from compiler.

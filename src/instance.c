@@ -4,7 +4,14 @@
  \date     3/11/2002
 */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#include <stdio.h>
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
 #include <stdlib.h>
 #include <assert.h>
 
@@ -475,6 +482,9 @@ void instance_dealloc( mod_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.22  2002/11/02 16:16:20  phase1geo
+ Cleaned up all compiler warnings in source and header files.
+
  Revision 1.21  2002/10/31 23:13:51  phase1geo
  Fixing C compatibility problems with cc and gcc.  Found a few possible problems
  with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that

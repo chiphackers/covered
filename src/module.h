@@ -13,35 +13,41 @@
 #include "defines.h"
 
 
-/*! Initializes all values of module. */
+/*! \brief Initializes all values of module. */
 void module_init( module* mod );
 
-/*! Creates new module from heap and initializes structure. */
+/*! \brief Creates new module from heap and initializes structure. */
 module* module_create();
 
-/*! Writes contents of provided module to specified output. */
+/*! \brief Writes contents of provided module to specified output. */
 bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst );
 
-/*! Read contents of current line from specified file, creates module and adds to module list. */
+/*! \brief Read contents of current line from specified file, creates module and adds to module list. */
 bool module_db_read( module* mod, char* scope, char** line );
 
-/*! Reads and merges two modules into base module. */
+/*! \brief Reads and merges two modules into base module. */
 bool module_db_merge( module* base, FILE* file );
 
-/*! Displays signals stored in this module. */
+/*! \brief Displays signals stored in this module. */
 void module_display_signals( module* mod );
 
-/*! Displays expressions stored in this module. */
+/*! \brief Displays expressions stored in this module. */
 void module_display_expressions( module* mod );
 
-/*! Deallocates module element contents only from heap. */
+/*! \brief Deallocates module element contents only from heap. */
 void module_clean( module* mod );
 
-/*! Deallocates module element from heap. */
+/*! \brief Deallocates module element from heap. */
 void module_dealloc( module* mod );
+
 
 /*
  $Log$
+ Revision 1.7  2002/10/31 23:14:00  phase1geo
+ Fixing C compatibility problems with cc and gcc.  Found a few possible problems
+ with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that
+ lead to bus errors.  Ran full regression in 64-bit mode without error.
+
  Revision 1.6  2002/10/29 19:57:51  phase1geo
  Fixing problems with beginning block comments within comments which are
  produced automatically by CVS.  Should fix warning messages from compiler.

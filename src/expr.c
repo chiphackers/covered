@@ -9,13 +9,13 @@
  to help remove confusion (my own) about how they are implemented by Covered and
  handled during the parsing and scoring phases of the tool.
  
- \par \sub EXP_OP_SIG
+ \par EXP_OP_SIG
  A signal expression has no left or right child (they are both NULL).  Its vector
  value is a pointer to the signal vector value to which is belongs.  This allows
  the signal expression value to change automatically when the signal value is
  updated.  No further expression operation is necessary to calculate its value.
  
- \par \sub EXP_OP_SBIT_SEL
+ \par EXP_OP_SBIT_SEL
  A single-bit signal expression has its left child pointed to the expression tree
  that is required to select the bit from the specified signal value.  The left
  child is allowed to change values during simulation.  To verify that the current
@@ -26,7 +26,7 @@
  the the SBIT_SEL expression.  The width of an SBIT_SEL is always constant (1).  The
  LSB of the SBIT_SEL is manipulated by the left expression value.
  
- \par \sub EXP_OP_MBIT_SEL
+ \par EXP_OP_MBIT_SEL
  A multi-bit signal expression has its left child set to the expression tree on the
  left side of the ':' in the vector and the right child set to the expression tree on
  the right side of the ':' in the vector.  The width of the MBIT_SEL must be constant
@@ -423,7 +423,7 @@ void expression_db_write( expression* expr, FILE* file, char* scope ) {
     expr->id,
     scope,
     expr->line,
-    (expr->suppl & 0xffff),
+    (expr->suppl & 0x000fffff),
     (SUPPL_OP( expr->suppl ) == EXP_OP_STATIC) ? 0 : expression_get_id( expr->right ),
     (SUPPL_OP( expr->suppl ) == EXP_OP_STATIC) ? 0 : expression_get_id( expr->left )
   );
@@ -467,7 +467,7 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
   expression  texp;           /* Temporary expression link holder for searching   */
   exp_link*   expl;           /* Pointer to found expression in module            */
 
-  if( sscanf( *line, "%d %s %d %hx %d %d%n", &id, modname, &linenum, &suppl, &right_id, &left_id, &chars_read ) == 6 ) {
+  if( sscanf( *line, "%d %s %d %x %d %d%n", &id, modname, &linenum, &suppl, &right_id, &left_id, &chars_read ) == 6 ) {
 
     *line = *line + chars_read;
 
@@ -677,17 +677,18 @@ void expression_display( expression* expr ) {
 */
 void expression_operate( expression* expr ) {
 
-  vector  vec1;                          /* Used for logical reduction          */ 
-  vector  vec2;                          /* Used for logical reduction          */
-  vector* vec;                           /* Pointer to vector of unknown size   */
-  int     i;                             /* Loop iterator                       */
-  int     j;                             /* Loop iterator                       */
-  nibble  bit;                           /* Bit holder for some ops             */
-  int     intval1;                       /* Temporary integer value for *, /, % */
-  int     intval2;                       /* Temporary integer value for *, /, % */
-  nibble  value1a;                       /* 1-bit nibble value                  */
-  nibble  value1b;                       /* 1-bit nibble value                  */
-  nibble  value32[ VECTOR_SIZE( 32 ) ];  /* 32-bit nibble value                 */
+  vector  vec1;                          /* Used for logical reduction                       */ 
+  vector  vec2;                          /* Used for logical reduction                       */
+  vector* vec;                           /* Pointer to vector of unknown size                */
+  int     i;                             /* Loop iterator                                    */
+  int     j;                             /* Loop iterator                                    */
+  nibble  bit;                           /* Bit holder for some ops                          */
+  int     intval1;                       /* Temporary integer value for *, /, %              */
+  int     intval2;                       /* Temporary integer value for *, /, %              */
+  nibble  value1a;                       /* 1-bit nibble value                               */
+  nibble  value1b;                       /* 1-bit nibble value                               */
+  nibble  value32[ VECTOR_SIZE( 32 ) ];  /* 32-bit nibble value                              */
+  control lf, lt, rf, rt;                /* Specify left and right WAS_TRUE/WAS_FALSE values */
 
   if( expr != NULL ) {
 
@@ -1012,14 +1013,30 @@ void expression_operate( expression* expr ) {
         break;
 
     }
-
+    
+    /* Clear current TRUE/FALSE indicators */
+    expr->suppl = expr->suppl & ~((0x1 << SUPPL_LSB_EVAL_T) | (0x1 << SUPPL_LSB_EVAL_F));
+    
     /* Set TRUE/FALSE bits to indicate value */
     vector_init( &vec1, &value1a, 1, 0 );
     vector_unary_op( &vec1, expr->value, or_optab );
     switch( vector_bit_val( vec1.value, 0 ) ) {
-      case 0 :  expr->suppl = expr->suppl | (0x1 << SUPPL_LSB_FALSE);  break;
-      case 1 :  expr->suppl = expr->suppl | (0x1 << SUPPL_LSB_TRUE);   break;
+      case 0 :  expr->suppl = expr->suppl | (0x1 << SUPPL_LSB_FALSE) | (0x1 << SUPPL_LSB_EVAL_F);  break;
+      case 1 :  expr->suppl = expr->suppl | (0x1 << SUPPL_LSB_TRUE)  | (0x1 << SUPPL_LSB_EVAL_T);  break;
       default:  break;
+    }
+    
+    /* Set EVAL00, EVAL01, EVAL10 or EVAL11 bits based on current value of children */
+    if( (expr->left != NULL) && (expr->right != NULL) ) {
+      lf = SUPPL_IS_FALSE( expr->left->suppl  );
+      lt = SUPPL_IS_TRUE(  expr->left->suppl  );
+      rf = SUPPL_IS_FALSE( expr->right->suppl );
+      rt = SUPPL_IS_TRUE(  expr->right->suppl );
+      expr->suppl = expr->suppl | 
+                    ((lf & rf) << SUPPL_LSB_EVAL_00) |
+                    ((lf & rt) << SUPPL_LSB_EVAL_01) |
+                    ((lt & rf) << SUPPL_LSB_EVAL_10) |
+                    ((lt & rt) << SUPPL_LSB_EVAL_11);
     }
 
   }
@@ -1146,6 +1163,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.60  2002/11/02 16:16:20  phase1geo
+ Cleaned up all compiler warnings in source and header files.
+
  Revision 1.59  2002/10/31 23:13:43  phase1geo
  Fixing C compatibility problems with cc and gcc.  Found a few possible problems
  with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that

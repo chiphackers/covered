@@ -13,14 +13,20 @@
 #include "defines.h"
 
 
-/*! Calculates the toggle coverage for the specifed expression and signal lists. */
+/*! \brief Calculates the toggle coverage for the specifed expression and signal lists. */
 void toggle_get_stats( exp_link* expl, sig_link* sigl, float* total, int* hit01, int* hit10 );
 
-/*! Generates report output for toggle coverage. */
+/*! \brief Generates report output for toggle coverage. */
 void toggle_report( FILE* ofile, bool verbose );
+
 
 /*
  $Log$
+ Revision 1.5  2002/10/31 23:14:30  phase1geo
+ Fixing C compatibility problems with cc and gcc.  Found a few possible problems
+ with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that
+ lead to bus errors.  Ran full regression in 64-bit mode without error.
+
  Revision 1.4  2002/10/29 19:57:51  phase1geo
  Fixing problems with beginning block comments within comments which are
  produced automatically by CVS.  Should fix warning messages from compiler.

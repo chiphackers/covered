@@ -13,104 +13,108 @@
 #include "defines.h"
 
 
-/*! Initializes specified vector. */
+/*! \brief Initializes specified vector. */
 void vector_init( vector* vec, nibble* value, int width, int lsb );
 
-/*! Creates and initializes new vector */
+/*! \brief Creates and initializes new vector */
 vector* vector_create( int width, int lsb, bool data );
 
-/*! Displays vector information to specified database file. */
+/*! \brief Displays vector information to specified database file. */
 void vector_db_write( vector* vec, FILE* file, bool write_data );
 
-/*! Creates and parses current file line for vector information */
+/*! \brief Creates and parses current file line for vector information */
 bool vector_db_read( vector** vec, char** line );
 
-/*! Reads and merges two vectors, placing the result into base vector. */
+/*! \brief Reads and merges two vectors, placing the result into base vector. */
 bool vector_db_merge( vector* base, char** line );
 
-/*! Outputs the toggle01 information from the specified nibble to the specified output stream. */
+/*! \brief Outputs the toggle01 information from the specified nibble to the specified output stream. */
 void vector_display_toggle01( nibble* nib, int width, int lsb, FILE* ofile );
 
-/*! Outputs the toggle10 information from the specified nibble to the specified output stream. */
+/*! \brief Outputs the toggle10 information from the specified nibble to the specified output stream. */
 void vector_display_toggle10( nibble* nib, int width, int lsb, FILE* ofile );
 
-/*! Outputs nibble to standard output. */
+/*! \brief Outputs nibble to standard output. */
 void vector_display_nibble( nibble* nib, int width, int lsb );
 
-/*! Outputs vector contents to standard output. */
+/*! \brief Outputs vector contents to standard output. */
 void vector_display( vector* vec );
 
-/*! Selects bit from value array from bit position pos. */
+/*! \brief Selects bit from value array from bit position pos. */
 nibble vector_bit_val( nibble* value, int pos );
 
-/*! Sets specified bit to specified value in given nibble. */
+/*! \brief Sets specified bit to specified value in given nibble. */
 void vector_set_bit( nibble* nib, nibble value, int pos );
 
-/*! Sets specified vector value to new value and maintains coverage history. */
+/*! \brief Sets specified vector value to new value and maintains coverage history. */
 void vector_set_value( vector* vec, nibble* value, int width, int from_idx, int to_idx );
 
-/*! Sets vector output type (DECIMAL, BINARY, OCTAL or HEXIDECIMAL) in first nibble */
+/*! \brief Sets vector output type (DECIMAL, BINARY, OCTAL or HEXIDECIMAL) in first nibble */
 void vector_set_type( vector* vec, int type );
 
-/*! Returns value of vector output type. */
+/*! \brief Returns value of vector output type. */
 int vector_get_type( vector* vec );
 
-/*! Converts vector into integer value. */
+/*! \brief Converts vector into integer value. */
 int vector_to_int( vector* vec );
 
-/*! Converts integer into vector value. */
+/*! \brief Converts integer into vector value. */
 void vector_from_int( vector* vec, int value );
 
-/*! Converts vector into a string value in specified format. */
+/*! \brief Converts vector into a string value in specified format. */
 char* vector_to_string( vector* vec, int type );
 
-/*! Converts character string value into vector. */
+/*! \brief Converts character string value into vector. */
 vector* vector_from_string( char* str );
 
-/*! Assigns specified VCD value to specified vector. */
+/*! \brief Assigns specified VCD value to specified vector. */
 void vector_vcd_assign( vector* vec, char* value );
 
-/*! Counts toggle01 and toggle10 information from specifed vector. */
+/*! \brief Counts toggle01 and toggle10 information from specifed vector. */
 void vector_toggle_count( vector* vec, int* tog01_cnt, int* tog10_cnt );
 
-/*! Counts FALSE and TRUE information from the specified vector. */
+/*! \brief Counts FALSE and TRUE information from the specified vector. */
 void vector_logic_count( vector* vec, int* false_cnt, int* true_cnt );
 
-/*! Performs bitwise operation on two source vectors from specified operation table. */
+/*! \brief Performs bitwise operation on two source vectors from specified operation table. */
 void vector_bitwise_op( vector* tgt, vector* src1, vector* src2, nibble* optab );
 
-/*! Performs bitwise comparison of two vectors. */
+/*! \brief Performs bitwise comparison of two vectors. */
 void vector_op_compare( vector* tgt, vector* left, vector* right, int comp_type );
 
-/*! Performs left shift operation on left expression by right expression bits. */
+/*! \brief Performs left shift operation on left expression by right expression bits. */
 void vector_op_lshift( vector* tgt, vector* left, vector* right );
  
-/*! Performs right shift operation on left expression by right expression bits. */
+/*! \brief Performs right shift operation on left expression by right expression bits. */
 void vector_op_rshift( vector* tgt, vector* left, vector* right );
 
-/*! Performs addition operation on left and right expression values. */
+/*! \brief Performs addition operation on left and right expression values. */
 void vector_op_add( vector* tgt, vector* left, vector* right );
 
-/*! Performs subtraction operation on left and right expression values. */
+/*! \brief Performs subtraction operation on left and right expression values. */
 void vector_op_subtract( vector* tgt, vector* left, vector* right );
 
-/*! Performs multiplication operation on left and right expression values. */
+/*! \brief Performs multiplication operation on left and right expression values. */
 void vector_op_multiply( vector* tgt, vector* left, vector* right );
 
-/*! Performs unary bitwise inversion operation on specified vector value. */
+/*! \brief Performs unary bitwise inversion operation on specified vector value. */
 void vector_unary_inv( vector* tgt, vector* src );
 
-/*! Performs unary operation on specified vector value. */
+/*! \brief Performs unary operation on specified vector value. */
 void vector_unary_op( vector* tgt, vector* src, nibble* optab );
 
-/*! Performs unary logical NOT operation on specified vector value. */
+/*! \brief Performs unary logical NOT operation on specified vector value. */
 void vector_unary_not( vector* tgt, vector* src );
 
-/*! Deallocates all memory allocated for vector */
+/*! \brief Deallocates all memory allocated for vector */
 void vector_dealloc( vector* vec );
+
 
 /*
  $Log$
+ Revision 1.12  2002/11/02 16:16:20  phase1geo
+ Cleaned up all compiler warnings in source and header files.
+
  Revision 1.11  2002/10/31 23:14:37  phase1geo
  Fixing C compatibility problems with cc and gcc.  Found a few possible problems
  with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that

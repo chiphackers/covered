@@ -1,7 +1,6 @@
 \section{vector.c File Reference}
 \label{vector_8c}\index{vector.c@{vector.c}}
 {\tt \#include $<$stdio.h$>$}\par
-{\tt \#include $<$string.h$>$}\par
 {\tt \#include $<$stdlib.h$>$}\par
 {\tt \#include $<$assert.h$>$}\par
 {\tt \#include \char`\"{}defines.h\char`\"{}}\par
@@ -17,7 +16,7 @@ void {\bf vector\_\-init} ({\bf vector} $\ast$vec, {\bf nibble} $\ast$value, int
 void {\bf vector\_\-db\_\-write} ({\bf vector} $\ast$vec, FILE $\ast${\bf file}, {\bf bool} write\_\-data)
 \begin{CompactList}\small\item\em Displays vector information to specified database file.\item\end{CompactList}\item 
 {\bf bool} {\bf vector\_\-db\_\-read} ({\bf vector} $\ast$$\ast$vec, char $\ast$$\ast$line)
-\begin{CompactList}\small\item\em Creates and parses current file line for vector information $\ast$/.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Creates and parses current file line for vector information.\item\end{CompactList}\item 
 {\bf bool} {\bf vector\_\-db\_\-merge} ({\bf vector} $\ast$base, char $\ast$$\ast$line)
 \begin{CompactList}\small\item\em Reads and merges two vectors, placing the result into base vector.\item\end{CompactList}\item 
 void {\bf vector\_\-display\_\-toggle01} ({\bf nibble} $\ast$nib, int width, int lsb, FILE $\ast$ofile)
@@ -29,7 +28,7 @@ void {\bf vector\_\-display\_\-nibble} ({\bf nibble} $\ast$nib, int width, int l
 void {\bf vector\_\-display} ({\bf vector} $\ast$vec)
 \begin{CompactList}\small\item\em Outputs vector contents to standard output.\item\end{CompactList}\item 
 {\bf nibble} {\bf vector\_\-bit\_\-val} ({\bf nibble} $\ast$value, int pos)
-\item 
+\begin{CompactList}\small\item\em Selects bit from value array from bit position pos.\item\end{CompactList}\item 
 void {\bf vector\_\-set\_\-bit} ({\bf nibble} $\ast$nib, {\bf nibble} value, int pos)
 \begin{CompactList}\small\item\em Sets specified bit to specified value in given nibble.\item\end{CompactList}\item 
 void {\bf vector\_\-set\_\-toggle01} ({\bf nibble} $\ast$value, int pos)
@@ -61,8 +60,8 @@ char $\ast$ {\bf vector\_\-to\_\-string} ({\bf vector} $\ast$vec, int type)
 {\bf vector} $\ast$ {\bf vector\_\-from\_\-string} (char $\ast$str)
 \begin{CompactList}\small\item\em Converts character string value into vector.\item\end{CompactList}\item 
 void {\bf vector\_\-vcd\_\-assign} ({\bf vector} $\ast$vec, char $\ast$value)
-\item 
-void {\bf vector\_\-bitwise\_\-op} ({\bf vector} $\ast$tgt, {\bf vector} $\ast$src1, {\bf vector} $\ast$src2, int $\ast$optab)
+\begin{CompactList}\small\item\em Assigns specified VCD value to specified vector.\item\end{CompactList}\item 
+void {\bf vector\_\-bitwise\_\-op} ({\bf vector} $\ast$tgt, {\bf vector} $\ast$src1, {\bf vector} $\ast$src2, {\bf nibble} $\ast$optab)
 \begin{CompactList}\small\item\em Performs bitwise operation on two source vectors from specified operation table.\item\end{CompactList}\item 
 void {\bf vector\_\-op\_\-compare} ({\bf vector} $\ast$tgt, {\bf vector} $\ast$left, {\bf vector} $\ast$right, int comp\_\-type)
 \begin{CompactList}\small\item\em Performs bitwise comparison of two vectors.\item\end{CompactList}\item 
@@ -124,6 +123,8 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf nibble} vector\_\-bit\_\-val ({\bf nibble} $\ast$ {\em value}, int {\em pos})}\label{vector_8c_a17}
 
 
+Selects bit from value array from bit position pos.
+
 \begin{Desc}
 \item[Parameters: ]\par
 \begin{description}
@@ -136,7 +137,7 @@ pos}]Bit position to extract \end{description}
 2-bit (4-state) value of specified bit from specified vector.\end{Desc}
 Assumes that pos is within the range of value. Retrieves bit value specified from pos index from the specified value, byte-aligns the value and returns this 2-bit value to the calling function. Used to extract bit values from a vector. \index{vector.c@{vector.c}!vector_bitwise_op@{vector\_\-bitwise\_\-op}}
 \index{vector_bitwise_op@{vector\_\-bitwise\_\-op}!vector.c@{vector.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vector\_\-bitwise\_\-op ({\bf vector} $\ast$ {\em tgt}, {\bf vector} $\ast$ {\em src1}, {\bf vector} $\ast$ {\em src2}, int $\ast$ {\em optab})}\label{vector_8c_a34}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vector\_\-bitwise\_\-op ({\bf vector} $\ast$ {\em tgt}, {\bf vector} $\ast$ {\em src1}, {\bf vector} $\ast$ {\em src2}, {\bf nibble} $\ast$ {\em optab})}\label{vector_8c_a34}
 
 
 Performs bitwise operation on two source vectors from specified operation table.
@@ -190,7 +191,7 @@ Parses current file line for vector information and performs vector merge of  ba
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} vector\_\-db\_\-read ({\bf vector} $\ast$$\ast$ {\em vec}, char $\ast$$\ast$ {\em line})}\label{vector_8c_a11}
 
 
-Creates and parses current file line for vector information $\ast$/.
+Creates and parses current file line for vector information.
 
 \begin{Desc}
 \item[Parameters: ]\par
@@ -663,6 +664,8 @@ Performs unary operation on specified vector value from specifed operation table
 \index{vector_vcd_assign@{vector\_\-vcd\_\-assign}!vector.c@{vector.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vector\_\-vcd\_\-assign ({\bf vector} $\ast$ {\em vec}, char $\ast$ {\em value})}\label{vector_8c_a33}
 
+
+Assigns specified VCD value to specified vector.
 
 \begin{Desc}
 \item[Parameters: ]\par

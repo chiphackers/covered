@@ -2,6 +2,23 @@
  \file     comb.c
  \author   Trevor Williams  (trevorw@charter.net)
  \date     3/31/2002
+ 
+ \par
+ The functions in this file are used by the report command to calculate and display all 
+ report output for combination logic coverage.  Combinational logic coverage is calculated
+ solely from the list of expression trees in the scored design.  For each module or instance,
+ the expression list is passed to the calculation routine which iterates through each
+ expression tree, tallying the total number of expression values and the total number of
+ expression values reached.
+ 
+ \par
+ Every expression contains two possible expression values during simulation:  0 and 1 (or 1+).
+ If an expression evaluated to some unknown value, this is not recorded by Covered.
+ If an expression has evaluated to 0, the WAS_FALSE bit of the expression's supplemental
+ field will be set.  If the expression has evaluated to 1 or a value greater than 1, the
+ WAS_TRUE bit of the expression's supplemental field will be set.  If both the WAS_FALSE and
+ the WAS_TRUE bits are set after scoring, the expression is considered to be fully covered.
+ 
 */
 
 #ifdef HAVE_CONFIG_H
@@ -644,6 +661,8 @@ void combination_unary( FILE* ofile, expression* exp, int id, char* op ) {
 */
 void combination_two_vars( FILE* ofile, expression* exp, int val0, int val1, int val2, int val3, int id, char* op ) {
 
+  assert( exp != NULL );
+  
   /* Verify that left child expression is valid for this operation */
   assert( exp->left != NULL );
 
@@ -655,13 +674,11 @@ void combination_two_vars( FILE* ofile, expression* exp, int val0, int val1, int
   fprintf( ofile, " L | R | Value\n" );
   fprintf( ofile, "---+---+------\n" );
 
-  if( !((SUPPL_WAS_FALSE( exp->left->suppl ) == 1) && (SUPPL_WAS_FALSE( exp->right->suppl ) == 1)) ||
-      !((val0 == 1) ? (SUPPL_WAS_TRUE( exp->suppl ) == 1) : (SUPPL_WAS_FALSE( exp->suppl ) == 1)) ) {
+  if( ((exp->suppl >> SUPPL_LSB_EVAL_00) & 0x1) == 0 ) {
     fprintf( ofile, " 0 | 0 |    %d\n", val0 );
   }
 
-  if( !((SUPPL_WAS_FALSE( exp->left->suppl ) == 1) && (SUPPL_WAS_TRUE( exp->right->suppl ) == 1)) ||
-      !((val1 == 1) ? (SUPPL_WAS_TRUE( exp->suppl ) == 1) : (SUPPL_WAS_FALSE( exp->suppl ) == 1)) ) {
+  if( ((exp->suppl >> SUPPL_LSB_EVAL_01) & 0x1) == 0 ) {
     if( exp->right->value->width > 1 ) {
       fprintf( ofile, " 0 | 1+|    %d\n", val1 );
     } else {
@@ -669,8 +686,7 @@ void combination_two_vars( FILE* ofile, expression* exp, int val0, int val1, int
     }
   }
 
-  if( !((SUPPL_WAS_TRUE( exp->left->suppl ) == 1) && (SUPPL_WAS_FALSE( exp->right->suppl ) == 1)) ||
-      !((val2 == 1) ? (SUPPL_WAS_TRUE( exp->suppl ) == 1) : (SUPPL_WAS_FALSE( exp->suppl ) == 1)) ) {
+  if( ((exp->suppl >> SUPPL_LSB_EVAL_10) & 0x1) == 0 ) {
     if( exp->left->value->width > 1 ) {
       fprintf( ofile, " 1+| 0 |    %d\n", val2 );
     } else {
@@ -678,8 +694,7 @@ void combination_two_vars( FILE* ofile, expression* exp, int val0, int val1, int
     }
   }
 
-  if( !((SUPPL_WAS_TRUE( exp->left->suppl ) == 1) && (SUPPL_WAS_TRUE( exp->right->suppl ) == 1)) ||
-      !((val3 == 1) ? (SUPPL_WAS_TRUE( exp->suppl ) == 1) : (SUPPL_WAS_FALSE( exp->suppl ) == 1)) ) {
+  if( ((exp->suppl >> SUPPL_LSB_EVAL_11) & 0x1) == 0 ) {
     if( (exp->left->value->width > 1) && (exp->right->value->width > 1) ) {
       fprintf( ofile, " 1+| 1+|    %d\n", val3 );
     } else if( exp->left->value->width > 1 ) {
@@ -986,6 +1001,9 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.53  2002/11/02 16:16:20  phase1geo
+ Cleaned up all compiler warnings in source and header files.
+
  Revision 1.52  2002/10/31 23:13:21  phase1geo
  Fixing C compatibility problems with cc and gcc.  Found a few possible problems
  with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that

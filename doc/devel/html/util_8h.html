@@ -15,32 +15,34 @@
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a0">set_output_suppression</a> (<a class="el" href="defines_8h.html#a170">bool</a> value)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Sets error suppression to specified value.</em> <a href="#a0"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a1">print_output</a> (char *msg, int type)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Displays error message to standard output.</em> <a href="#a1"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a170">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a2">is_variable</a> (char *token)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Returns TRUE if the specified string is a legal variable name.</em> <a href="#a2"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a170">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a3">is_directory</a> (char *token)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Returns TRUE if the specified string is a legal directory string.</em> <a href="#a3"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a170">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a4">directory_exists</a> (char *dir)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Returns TRUE if the specified directory exists.</em> <a href="#a4"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a5">directory_load</a> (char *dir, <a class="el" href="defines_8h.html#a146">str_link</a> *ext_head, <a class="el" href="defines_8h.html#a146">str_link</a> **file_head, <a class="el" href="defines_8h.html#a146">str_link</a> **file_tail)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Loads contents of specified directory to file list if extension is part of list.</em> <a href="#a5"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a170">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a6">file_exists</a> (char *<a class="el" href="lexer_8c.html#a122">file</a>)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Returns TRUE if the specified file exists.</em> <a href="#a6"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a170">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a7">readline</a> (FILE *<a class="el" href="lexer_8c.html#a122">file</a>, char **line)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Reads line from file and returns it in string form.</em> <a href="#a7"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a8">scope_extract_front</a> (char *scope, char *front, char *rest)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Extracts highest level of hierarchy from specified scope.</em> <a href="#a8"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a9">scope_extract_back</a> (char *scope, char *back, char *rest)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Extracts lowest level of hierarchy from specified scope.</em> <a href="#a9"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a170">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a10">scope_local</a> (char *scope)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Returns TRUE if specified scope is local (contains no periods).</em> <a href="#a10"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void *&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a11">malloc_safe</a> (int <a class="el" href="lexer_8c.html#a121">size</a>)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Performs safe malloc call.</em> <a href="#a11"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a12">free_safe</a> (void *ptr)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Performs safe deallocation of heap memory.</em> <a href="#a12"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a13">gen_space</a> (char *spaces, int num_spaces)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Creates a string containing space characters.</em> <a href="#a13"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a1">set_debug</a> (<a class="el" href="defines_8h.html#a170">bool</a> value)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Sets global debug flag to specified value.</em> <a href="#a1"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a2">print_output</a> (char *msg, int type)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Displays error message to standard output.</em> <a href="#a2"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a170">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a3">is_variable</a> (char *token)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Returns TRUE if the specified string is a legal variable name.</em> <a href="#a3"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a170">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a4">is_directory</a> (char *token)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Returns TRUE if the specified string is a legal directory string.</em> <a href="#a4"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a170">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a5">directory_exists</a> (char *dir)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Returns TRUE if the specified directory exists.</em> <a href="#a5"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a6">directory_load</a> (char *dir, <a class="el" href="defines_8h.html#a146">str_link</a> *ext_head, <a class="el" href="defines_8h.html#a146">str_link</a> **file_head, <a class="el" href="defines_8h.html#a146">str_link</a> **file_tail)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Loads contents of specified directory to file list if extension is part of list.</em> <a href="#a6"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a170">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a7">file_exists</a> (char *<a class="el" href="lexer_8c.html#a122">file</a>)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Returns TRUE if the specified file exists.</em> <a href="#a7"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a170">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a8">readline</a> (FILE *<a class="el" href="lexer_8c.html#a122">file</a>, char **line)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Reads line from file and returns it in string form.</em> <a href="#a8"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a9">scope_extract_front</a> (char *scope, char *front, char *rest)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Extracts highest level of hierarchy from specified scope.</em> <a href="#a9"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a10">scope_extract_back</a> (char *scope, char *back, char *rest)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Extracts lowest level of hierarchy from specified scope.</em> <a href="#a10"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a170">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a11">scope_local</a> (char *scope)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Returns TRUE if specified scope is local (contains no periods).</em> <a href="#a11"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void *&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a12">malloc_safe</a> (size_t <a class="el" href="lexer_8c.html#a121">size</a>)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Performs safe malloc call.</em> <a href="#a12"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a13">free_safe</a> (void *ptr)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Performs safe deallocation of heap memory.</em> <a href="#a13"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a14">gen_space</a> (char *spaces, int num_spaces)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Creates a string containing space characters.</em> <a href="#a14"></a><em></em></font><br><br></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 Contains miscellaneous global functions used by many functions.
@@ -52,7 +54,7 @@ Author: </b><dd>
 Trevor Williams (<a href="mailto:trevorw@charter.net">trevorw@charter.net</a>) </dl><dl compact><dt><b>
 Date: </b><dd>
 11/27/2001</dl><hr><h2>Function Documentation</h2>
-<a name="a4" doxytag="util.h::directory_exists"></a><p>
+<a name="a5" doxytag="util.h::directory_exists"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -91,7 +93,7 @@ Returns: </b><dd>
 Returns TRUE if the specified directory exists; otherwise, returns FALSE.</dl>Checks to see if the specified directory actually exists in the file structure. If the directory is found to exist, returns TRUE; otherwise, returns FALSE.     </td>
   </tr>
 </table>
-<a name="a5" doxytag="util.h::directory_load"></a><p>
+<a name="a6" doxytag="util.h::directory_load"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -161,7 +163,7 @@ Need to order files according to extension first instead of filename.</dl>
 Opens the specified directory for reading and loads (in order) all files that contain the specified extensions (if ext_head is NULL, load only *.v files). Stores all string filenames to the specified string list.     </td>
   </tr>
 </table>
-<a name="a6" doxytag="util.h::file_exists"></a><p>
+<a name="a7" doxytag="util.h::file_exists"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -200,7 +202,7 @@ Returns: </b><dd>
 Returns TRUE if the specified file exists; otherwise, returns FALSE.</dl>Checks to see if the specified file actually exists in the file structure. If the file is found to exist, returns TRUE; otherwise, returns FALSE.     </td>
   </tr>
 </table>
-<a name="a12" doxytag="util.h::free_safe"></a><p>
+<a name="a13" doxytag="util.h::free_safe"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -237,7 +239,7 @@ Pointer to object to deallocate.</td></tr>
 </dl>Safely performs a free function of heap memory. Also keeps track of current memory usage for output information at end of program life.     </td>
   </tr>
 </table>
-<a name="a13" doxytag="util.h::gen_space"></a><p>
+<a name="a14" doxytag="util.h::gen_space"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -285,7 +287,7 @@ Number of spaces to place in string.</td></tr>
 </dl>Creates a string that contains num_spaces number of space characters, adding a NULL character at the end of the string to allow for correct usage by the strlen and other string functions.     </td>
   </tr>
 </table>
-<a name="a3" doxytag="util.h::is_directory"></a><p>
+<a name="a4" doxytag="util.h::is_directory"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -324,7 +326,7 @@ Returns: </b><dd>
 Returns TRUE if the specified string is a legal UNIX directory; otherwise, returns FALSE.</dl>Returns TRUE if the specified string is either a legal UNIX relative pathname or static pathname. If the specified string does not correlate to a legal UNIX pathname, a value of FALSE is returned.     </td>
   </tr>
 </table>
-<a name="a2" doxytag="util.h::is_variable"></a><p>
+<a name="a3" doxytag="util.h::is_variable"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -363,7 +365,7 @@ Returns: </b><dd>
 Returns TRUE if the specified string is a legal variable name; otherwise, returns FALSE.</dl>If the specified string follows all of the rules for a legal program variable (doesn't start with a number, contains only a-zA-Z0-9_ characters), returns a value of TRUE; otherwise, returns a value of FALSE.     </td>
   </tr>
 </table>
-<a name="a11" doxytag="util.h::malloc_safe"></a><p>
+<a name="a12" doxytag="util.h::malloc_safe"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -371,7 +373,7 @@ Returns TRUE if the specified string is a legal variable name; otherwise, return
         <tr>
           <td class="md" nowrap valign="top"> void* malloc_safe </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top">int&nbsp;</td>
+          <td class="md" nowrap valign="top">size_t&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>size</em>          </td>
           <td class="md" valign="top">)&nbsp;</td>
           <td class="md" nowrap></td>
@@ -402,7 +404,7 @@ Returns: </b><dd>
 Pointer to allocated memory.</dl>Allocated memory like a malloc() call but performs some pre-allocation and post-allocation checks to be sure that the malloc call works properly.     </td>
   </tr>
 </table>
-<a name="a1" doxytag="util.h::print_output"></a><p>
+<a name="a2" doxytag="util.h::print_output"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -450,7 +452,7 @@ Type of message to output</td></tr>
 </dl>Displays the specified message to standard output based on the type of message being output.     </td>
   </tr>
 </table>
-<a name="a7" doxytag="util.h::readline"></a><p>
+<a name="a8" doxytag="util.h::readline"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -500,7 +502,7 @@ Returns: </b><dd>
 Returns FALSE if feof is encountered; otherwise, returns TRUE.</dl>Reads in a single line of information from the specified file and returns a string containing the read line to the calling function.     </td>
   </tr>
 </table>
-<a name="a9" doxytag="util.h::scope_extract_back"></a><p>
+<a name="a10" doxytag="util.h::scope_extract_back"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -556,7 +558,7 @@ Hierarchy left after extraction.</td></tr>
 </dl>Extracts the lowest level of hierarchy from the specified scope, returning that instance name to the value of back and the the rest of the hierarchy in the value of rest.     </td>
   </tr>
 </table>
-<a name="a8" doxytag="util.h::scope_extract_front"></a><p>
+<a name="a9" doxytag="util.h::scope_extract_front"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -612,7 +614,7 @@ Hierarchy left after extraction.</td></tr>
 </dl>Extracts the highest level of hierarchy from the specified scope, returning that instance name to the value of front and the the rest of the hierarchy in the value of rest.     </td>
   </tr>
 </table>
-<a name="a10" doxytag="util.h::scope_local"></a><p>
+<a name="a11" doxytag="util.h::scope_local"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -641,6 +643,43 @@ Hierarchy left after extraction.</td></tr>
 Returns TRUE if specified scope is local (contains no periods).
 <p>
     </td>
+  </tr>
+</table>
+<a name="a1" doxytag="util.h::set_debug"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> void set_debug </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a170">bool</a>&nbsp;</td>
+          <td class="mdname1" valign="top" nowrap>&nbsp; <em>value</em>          </td>
+          <td class="md" valign="top">)&nbsp;</td>
+          <td class="md" nowrap></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+Sets global debug flag to specified value.
+<p>
+<dl compact><dt><b>
+Parameters: </b><dd>
+<table border=0 cellspacing=2 cellpadding=0>
+<tr><td valign=top><em>value</em>&nbsp;</td><td>
+Boolean value of debug mode.</td></tr>
+</table>
+</dl>Sets the global debug mode to the specified value.     </td>
   </tr>
 </table>
 <a name="a0" doxytag="util.h::set_output_suppression"></a><p>
@@ -680,7 +719,7 @@ Boolean value of suppression.</td></tr>
 </dl>Sets the global variable output_suppressed to the specified value.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Fri Oct 25 17:40:18 2002 for Covered by
+<hr><address align="right"><small>Generated on Sun Nov 3 21:16:00 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

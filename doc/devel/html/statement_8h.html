@@ -8,7 +8,6 @@
 <a href="#_details">More...</a>
 <p>
 <code>#include "<a class="el" href="defines_8h-source.html">defines.h</a>"</code><br>
-<code>#include "<a class="el" href="expr_8h-source.html">expr.h</a>"</code><br>
 
 <p>
 <a href="statement_8h-source.html">Go to the source code of this file.</a><table border=0 cellpadding=0 cellspacing=0>
@@ -23,8 +22,10 @@
 <tr><td>&nbsp;</td><td><font size=-1><em>Connects statement sequence to next statement.</em> <a href="#a3"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="statement_8h.html#a4">statement_set_stop</a> (<a class="el" href="defines_8h.html#a151">statement</a> *stmt, <a class="el" href="defines_8h.html#a151">statement</a> *post, <a class="el" href="defines_8h.html#a170">bool</a> true_path, <a class="el" href="defines_8h.html#a170">bool</a> both)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Sets stop bits in specified statement tree.</em> <a href="#a4"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="statement_8h.html#a5">statement_dealloc</a> (<a class="el" href="defines_8h.html#a151">statement</a> *stmt)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Deallocates statement memory and associated expression tree from the heap.</em> <a href="#a5"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="statement_8h.html#a5">statement_dealloc_recursive</a> (<a class="el" href="defines_8h.html#a151">statement</a> *stmt)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Recursively deallocates specified statement tree.</em> <a href="#a5"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="statement_8h.html#a6">statement_dealloc</a> (<a class="el" href="defines_8h.html#a151">statement</a> *stmt)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Deallocates statement memory and associated expression tree from the heap.</em> <a href="#a6"></a><em></em></font><br><br></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 Contains functions to create, manipulate and deallocate statements.
@@ -237,7 +238,7 @@ Scope of parent module which contains the specified statement.</td></tr>
 </dl>Recursively writes the contents of the specified statement tree (and its associated expression trees to the specified output stream.     </td>
   </tr>
 </table>
-<a name="a5" doxytag="statement.h::statement_dealloc"></a><p>
+<a name="a6" doxytag="statement.h::statement_dealloc"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -271,7 +272,44 @@ Parameters: </b><dd>
 <tr><td valign=top><em>stmt</em>&nbsp;</td><td>
 Pointer to statement to deallocate.</td></tr>
 </table>
-</dl>Deallocates specified statement from heap memory. First remove expression tree of this statement. Second, remove all statements following this statement. Finally, remove the specified statement itself. Since statements can be circular in nature, we will not remove a statement that has its expression tree already deallocated. This will prevent this function from getting into an infinite loop (or stack overflow since this function is recursive).     </td>
+</dl>Deallocates specified statement from heap memory. Does not remove attached expression (this is assumed to be cleaned up by the expression list removal function).     </td>
+  </tr>
+</table>
+<a name="a5" doxytag="statement.h::statement_dealloc_recursive"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> void statement_dealloc_recursive </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a151">statement</a> *&nbsp;</td>
+          <td class="mdname1" valign="top" nowrap>&nbsp; <em>stmt</em>          </td>
+          <td class="md" valign="top">)&nbsp;</td>
+          <td class="md" nowrap></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+Recursively deallocates specified statement tree.
+<p>
+<dl compact><dt><b>
+Parameters: </b><dd>
+<table border=0 cellspacing=2 cellpadding=0>
+<tr><td valign=top><em>stmt</em>&nbsp;</td><td>
+Pointer to head of statement tree to deallocate.</td></tr>
+</table>
+</dl>Recursively deallocates specified statement tree.     </td>
   </tr>
 </table>
 <a name="a4" doxytag="statement.h::statement_set_stop"></a><p>
@@ -338,7 +376,7 @@ If TRUE, causes both false and true paths to set stop bits when next statement i
 </dl>Recursively traverses specified statement tree, setting the statement's stop bits that have either their next_true or next_false pointers pointing to the statement called post.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Fri Oct 25 17:40:18 2002 for Covered by
+<hr><address align="right"><small>Generated on Sun Nov 3 21:16:00 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

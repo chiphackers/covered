@@ -11,6 +11,7 @@
 <code>#include "<a class="el" href="expr_8h-source.html">expr.h</a>"</code><br>
 <code>#include "<a class="el" href="db_8h-source.html">db.h</a>"</code><br>
 <code>#include "<a class="el" href="util_8h-source.html">util.h</a>"</code><br>
+<code>#include "<a class="el" href="vector_8h-source.html">vector.h</a>"</code><br>
 <table border=0 cellpadding=0 cellspacing=0>
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a163">static_expr</a> *&nbsp;</td><td valign=bottom><a class="el" href="static_8c.html#a0">static_expr_gen_unary</a> (<a class="el" href="defines_8h.html#a163">static_expr</a> *stexp, int op, int line)</td></tr>
@@ -274,7 +275,7 @@ Returns: </b><dd>
 Returns pointer to new static_expr structure.</dl>Used by the parser to calculate a new static_expr structure based on the unary operation encountered while parsing. Based on the operation type specified in the argument list, performs unary operation (if operand is a static number and not an expression -- parameter in operand expression tree), storing result into original static_expr number field and returns the original structure back to the calling function. If the operand is an expression, create an expression for the specified operation type and store this expression in the original expression pointer field.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Fri Oct 25 17:40:18 2002 for Covered by
+<hr><address align="right"><small>Generated on Sun Nov 3 21:16:00 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

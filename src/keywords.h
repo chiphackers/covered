@@ -8,7 +8,7 @@
  \brief    Contains functions for checking Verilog keywords.
 */
 
-/*! Returns the defined value of the keyword or IDENTIFIER if this is not a Verilog keyword. */
+/*! \brief Returns the defined value of the keyword or IDENTIFIER if this is not a Verilog keyword. */
 extern int lexer_keyword_code( const char* str, int length );
 
 #endif

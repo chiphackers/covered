@@ -291,6 +291,46 @@
 #define SUPPL_LSB_RIGHT_CHANGED     15
 
 /*!
+ Least-significant bit position of expression supplemental field indicating that the
+ value of the left child expression evaluated to FALSE and the right child expression
+ evaluated to FALSE.
+*/
+#define SUPPL_LSB_EVAL_00           16
+
+/*!
+ Least-significant bit position of expression supplemental field indicating that the
+ value of the left child expression evaluated to FALSE and the right child expression
+ evaluated to TRUE.
+*/
+#define SUPPL_LSB_EVAL_01           17
+
+/*!
+ Least-significant bit position of expression supplemental field indicating that the
+ value of the left child expression evaluated to TRUE and the right child expression
+ evaluated to FALSE.
+*/
+#define SUPPL_LSB_EVAL_10           18
+
+/*!
+ Least-significant bit position of expression supplemental field indicating that the
+ value of the left child expression evaluated to TRUE and the right child expression
+ evaluated to TRUE.
+*/
+#define SUPPL_LSB_EVAL_11           19
+
+/*!
+ Least-significant bit position of expression supplemental field indicating that the
+ value of the current expression currently set to TRUE (temporary value).
+*/
+#define SUPPL_LSB_EVAL_T            20
+
+/*!
+ Least-significant bit position of expression supplemental field indicating that the
+ value of the current expression currently set to FALSE (temporary value).
+*/
+#define SUPPL_LSB_EVAL_F            21
+
+/*!
  Used for merging two supplemental fields from two expressions.  Both expression
  supplemental fields are ANDed with this mask and ORed together to perform the
  merge.  Fields that are merged are:
@@ -303,16 +343,21 @@
  - STMT_STOP
  - STMT_HEAD
  - STMT_CONTINUOUS
+ - EVAL 00, 01, 10, 11
 */
-#define SUPPL_MERGE_MASK            ((0x3f << SUPPL_LSB_OP)        | \
-                                     (0x1  << SUPPL_LSB_SWAPPED)   | \
-                                     (0x1  << SUPPL_LSB_ROOT)      | \
-                                     (0x1  << SUPPL_LSB_EXECUTED)  | \
-                                     (0x1  << SUPPL_LSB_TRUE)      | \
-                                     (0x1  << SUPPL_LSB_FALSE)     | \
-                                     (0x1  << SUPPL_LSB_STMT_HEAD) | \
-                                     (0x1  << SUPPL_LSB_STMT_STOP) | \
-                                     (0x1  << SUPPL_LSB_STMT_CONTINUOUS))
+#define SUPPL_MERGE_MASK            ((0x3f << SUPPL_LSB_OP)              | \
+                                     (0x1  << SUPPL_LSB_SWAPPED)         | \
+                                     (0x1  << SUPPL_LSB_ROOT)            | \
+                                     (0x1  << SUPPL_LSB_EXECUTED)        | \
+                                     (0x1  << SUPPL_LSB_TRUE)            | \
+                                     (0x1  << SUPPL_LSB_FALSE)           | \
+                                     (0x1  << SUPPL_LSB_STMT_HEAD)       | \
+                                     (0x1  << SUPPL_LSB_STMT_STOP)       | \
+                                     (0x1  << SUPPL_LSB_STMT_CONTINUOUS) | \
+                                     (0x1  << SUPPL_LSB_EVAL_00)         | \
+                                     (0x1  << SUPPL_LSB_EVAL_01)         | \
+                                     (0x1  << SUPPL_LSB_EVAL_10)         | \
+                                     (0x1  << SUPPL_LSB_EVAL_11))
 
 /*!
  Returns a value of 1 if the specified supplemental value has the SWAPPED
@@ -352,6 +397,18 @@
  whose associated statement is a continous assignment.
 */
 #define SUPPL_IS_STMT_CONTINUOUS(x) ((x >> SUPPL_LSB_STMT_CONTINUOUS) & 0x1)
+
+/*!
+ Returns a value of 1 if the specified supplemental belongs to an expression
+ who was just evaluated to TRUE.
+*/
+#define SUPPL_IS_TRUE(x)            ((x >> SUPPL_LSB_EVAL_T) & 0x1)
+
+/*!
+ Returns a value of 1 if the specified supplemental belongs to an expression
+ who was just evaluated to FALSE.
+*/
+#define SUPPL_IS_FALSE(x)           ((x >> SUPPL_LSB_EVAL_F) & 0x1)
 
 /*!
  Returns a value of 1 if the specified supplemental belongs to an expression
@@ -710,15 +767,14 @@ typedef enum {
 */
 #if SIZEOF_INT == 4
 typedef unsigned int nibble;
+typedef unsigned int control;
 #else
 #if SIZEOF_LONG == 4
 typedef unsigned long nibble;
+typedef unsigned long control;
 #endif
 #endif
 
-#if SIZEOF_SHORT == 2
-typedef unsigned short control;
-#endif
 
 /*------------------------------------------------------------------------------*/
 /*!
@@ -1076,6 +1132,11 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.55  2002/10/31 23:13:36  phase1geo
+ Fixing C compatibility problems with cc and gcc.  Found a few possible problems
+ with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that
+ lead to bus errors.  Ran full regression in 64-bit mode without error.
+
  Revision 1.54  2002/10/29 19:57:50  phase1geo
  Fixing problems with beginning block comments within comments which are
  produced automatically by CVS.  Should fix warning messages from compiler.
