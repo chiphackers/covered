@@ -319,9 +319,7 @@ void signal_vcd_assign( signal* sig, char* value, int msb, int lsb ) {
   print_output( user_msg, DEBUG );
 
   /* Set signal value to specified value */
-  vector_vcd_assign( sig->value, value, msb, lsb );
-
-  /* TBD - may need to alter msb and lsb for this signal's lsb value */
+  vector_vcd_assign( sig->value, value, (msb - sig->lsb), (lsb - sig->lsb) );
 
   /* Iterate through signal's expression list */
   curr_expr = sig->exp_head;
@@ -441,6 +439,9 @@ void signal_dealloc( signal* sig ) {
 
 /*
  $Log$
+ Revision 1.40  2003/10/17 12:55:36  phase1geo
+ Intermediate checkin for LSB fixes.
+
  Revision 1.39  2003/10/16 04:26:01  phase1geo
  Adding new fsm5 diagnostic to testsuite and regression.  Added proper support
  for FSM variables that are not able to be bound correctly.  Fixing bug in
