@@ -55,7 +55,7 @@ Module                    Filename                     Logical Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
   main                    fsm10.1.v                 0/   0/   0      100%
-  fsma                    fsma.v                   30/   8/  38       79%
+  fsma                    fsma.v                   24/   8/  32       75%
 
 Module: fsma, File: lib/fsma.v
 --------------------------------------------------------
@@ -68,7 +68,7 @@ Missed Combinations
                          |------------------2-------------------|
 
 
-Expression 1
+Expression 1   (1/4)
 ^^^^^^^^^^^^^ - &
  L | R | Value
 ---+---+------
@@ -76,7 +76,7 @@ Expression 1
  0 | 1 |    0
  1 | 0 |    0
 
-Expression 2
+Expression 2   (1/2)
 ^^^^^^^^^^^^^ - ?:
  Value
 -------
@@ -90,7 +90,7 @@ Expression 2
                          |------------------2-------------------|
 
 
-Expression 1
+Expression 1   (0/4)
 ^^^^^^^^^^^^^ - &
  L | R | Value
 ---+---+------
@@ -99,7 +99,7 @@ Expression 1
  1 | 0 |    0
  1 | 1 |    1
 
-Expression 2
+Expression 2   (0/2)
 ^^^^^^^^^^^^^ - ?:
  Value
 -------
@@ -114,7 +114,7 @@ Expression 2
                          |------------------2-------------------|
 
 
-Expression 1
+Expression 1   (1/4)
 ^^^^^^^^^^^^^ - &
  L | R | Value
 ---+---+------
@@ -122,7 +122,7 @@ Expression 1
  1 | 0 |    0
  1 | 1 |    1
 
-Expression 2
+Expression 2   (1/2)
 ^^^^^^^^^^^^^ - ?:
  Value
 -------

@@ -44,7 +44,7 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY INSTANCE
 Instance                                               Logic Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                                             20/   8/  28       71%
+  main                                             11/   7/  18       61%
 
 Module: main, File: case4.1.v, Instance: main
 --------------------------------------------------------
@@ -54,24 +54,32 @@ Missed Combinations
 ====================================================
      24:    @(display_tagto_current_state or 
               |------------1------------|    
-              |--------------3----------------
             pcix_pio_timeout_recorder or 
             |-----------2-----------|    
-            ------------3-----------|    
             split_resp_active or 
             split_resp_tag or 
             tag_timeout or 
-            |----4----|    
+            |----3----|    
             clr_tag_toed)
 
 
-Expression 3
-^^^^^^^^^^^^^ - or
- L | R | Value
----+---+------
- 0 | 1 |    1
- 1 | 0 |    1
- 1 | 1 |    1
+Expression 1   (1/2)
+^^^^^^^^^^^^^ - 
+ Value
+-------
+   1
+
+Expression 2   (1/2)
+^^^^^^^^^^^^^ - 
+ Value
+-------
+   1
+
+Expression 3   (1/2)
+^^^^^^^^^^^^^ - 
+ Value
+-------
+   1
 
 ====================================================
  Line #     Expression
@@ -80,7 +88,7 @@ Expression 3
                       |------------1------------|
 
 
-Expression 1
+Expression 1   (0/2)
 ^^^^^^^^^^^^^ - 
  Value
 -------
@@ -94,7 +102,7 @@ Expression 1
                                            |--1--|
 
 
-Expression 1
+Expression 1   (0/2)
 ^^^^^^^^^^^^^ - 
  Value
 -------

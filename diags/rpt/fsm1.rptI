@@ -54,8 +54,8 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY INSTANCE
 Instance                                               Logic Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                                             30/   8/  38       79%
-  main.fsm                                         30/   8/  38       79%
+  main                                             24/   8/  32       75%
+  main.fsm                                         24/   8/  32       75%
 
 Module: main, File: fsm1.v, Instance: main
 --------------------------------------------------------
@@ -73,7 +73,7 @@ Missed Combinations
                          |------------------2-------------------|
 
 
-Expression 1
+Expression 1   (1/4)
 ^^^^^^^^^^^^^ - &
  L | R | Value
 ---+---+------
@@ -81,7 +81,7 @@ Expression 1
  0 | 1 |    0
  1 | 0 |    0
 
-Expression 2
+Expression 2   (1/2)
 ^^^^^^^^^^^^^ - ?:
  Value
 -------
@@ -95,7 +95,7 @@ Expression 2
                          |------------------2-------------------|
 
 
-Expression 1
+Expression 1   (0/4)
 ^^^^^^^^^^^^^ - &
  L | R | Value
 ---+---+------
@@ -104,7 +104,7 @@ Expression 1
  1 | 0 |    0
  1 | 1 |    1
 
-Expression 2
+Expression 2   (0/2)
 ^^^^^^^^^^^^^ - ?:
  Value
 -------
@@ -119,7 +119,7 @@ Expression 2
                          |------------------2-------------------|
 
 
-Expression 1
+Expression 1   (1/4)
 ^^^^^^^^^^^^^ - &
  L | R | Value
 ---+---+------
@@ -127,7 +127,7 @@ Expression 1
  1 | 0 |    0
  1 | 1 |    1
 
-Expression 2
+Expression 2   (1/2)
 ^^^^^^^^^^^^^ - ?:
  Value
 -------

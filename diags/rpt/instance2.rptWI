@@ -140,7 +140,7 @@ Missed Combinations
                             |----1-----|
 
 
-Expression 1
+Expression 1   (1/2)
 ^^^^^^^^^^^^^ - {}
  Value
 -------
@@ -163,7 +163,7 @@ Missed Combinations
                          |----1----|
 
 
-Expression 1
+Expression 1   (2/4)
 ^^^^^^^^^^^^^ - &
  L | R | Value
 ---+---+------
@@ -182,7 +182,7 @@ Missed Combinations
                          |----1----|
 
 
-Expression 1
+Expression 1   (1/4)
 ^^^^^^^^^^^^^ - ^
  L | R | Value
 ---+---+------
@@ -197,7 +197,7 @@ Expression 1
                          |----1----|
 
 
-Expression 1
+Expression 1   (1/4)
 ^^^^^^^^^^^^^ - &
  L | R | Value
 ---+---+------
@@ -217,7 +217,7 @@ Missed Combinations
                          |----1----|
 
 
-Expression 1
+Expression 1   (2/4)
 ^^^^^^^^^^^^^ - &
  L | R | Value
 ---+---+------

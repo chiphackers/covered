@@ -34,7 +34,7 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY MODULE
 Module                    Filename                     Logical Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    fsm3.v                   32/   6/  38       84%
+  main                    fsm3.v                   26/   6/  32       81%
 
 Module: main, File: fsm3.v
 --------------------------------------------------------
@@ -46,7 +46,7 @@ Missed Combinations
                      |--------------1--------------|
 
 
-Expression 1
+Expression 1   (1/2)
 ^^^^^^^^^^^^^ - ?:
  Value
 -------
@@ -60,7 +60,7 @@ Expression 1
             STATE_IDLE :
 
 
-Expression 1
+Expression 1   (1/2)
 ^^^^^^^^^^^^^ - 
  Value
 -------
@@ -73,7 +73,7 @@ Expression 1
                          |------------------1-------------------|
 
 
-Expression 1
+Expression 1   (1/2)
 ^^^^^^^^^^^^^ - ?:
  Value
 -------
@@ -86,7 +86,7 @@ Expression 1
                          |------------------1-------------------|
 
 
-Expression 1
+Expression 1   (1/2)
 ^^^^^^^^^^^^^ - ?:
  Value
 -------
@@ -99,7 +99,7 @@ Expression 1
                          |------------------1-------------------|
 
 
-Expression 1
+Expression 1   (1/2)
 ^^^^^^^^^^^^^ - ?:
  Value
 -------
@@ -112,7 +112,7 @@ Expression 1
                          |------------------1-------------------|
 
 
-Expression 1
+Expression 1   (1/2)
 ^^^^^^^^^^^^^ - ?:
  Value
 -------

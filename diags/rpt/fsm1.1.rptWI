@@ -72,8 +72,8 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY INSTANCE
 Instance                                               Logic Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                                             22/  16/  38       58%
-  main.fsm                                         22/  16/  38       58%
+  main                                             16/  16/  32       50%
+  main.fsm                                         16/  16/  32       50%
 
 Module: main, File: fsm1.1.v, Instance: main
 --------------------------------------------------------
@@ -90,7 +90,7 @@ Missed Combinations
                      |--------------1--------------|
 
 
-Expression 1
+Expression 1   (1/2)
 ^^^^^^^^^^^^^ - ?:
  Value
 -------
@@ -103,7 +103,7 @@ Expression 1
                   |-1-|               
 
 
-Expression 1
+Expression 1   (1/2)
 ^^^^^^^^^^^^^ - 
  Value
 -------
@@ -117,7 +117,7 @@ Expression 1
                          |------------------2-------------------|
 
 
-Expression 1
+Expression 1   (1/4)
 ^^^^^^^^^^^^^ - &
  L | R | Value
 ---+---+------
@@ -125,7 +125,7 @@ Expression 1
  1 | 0 |    0
  1 | 1 |    1
 
-Expression 2
+Expression 2   (1/2)
 ^^^^^^^^^^^^^ - ?:
  Value
 -------
@@ -139,7 +139,7 @@ Expression 2
                          |------------------2-------------------|
 
 
-Expression 1
+Expression 1   (0/4)
 ^^^^^^^^^^^^^ - &
  L | R | Value
 ---+---+------
@@ -148,7 +148,7 @@ Expression 1
  1 | 0 |    0
  1 | 1 |    1
 
-Expression 2
+Expression 2   (0/2)
 ^^^^^^^^^^^^^ - ?:
  Value
 -------
@@ -163,7 +163,7 @@ Expression 2
                          |------------------2-------------------|
 
 
-Expression 1
+Expression 1   (0/4)
 ^^^^^^^^^^^^^ - &
  L | R | Value
 ---+---+------
@@ -172,7 +172,7 @@ Expression 1
  1 | 0 |    0
  1 | 1 |    1
 
-Expression 2
+Expression 2   (0/2)
 ^^^^^^^^^^^^^ - ?:
  Value
 -------
@@ -187,7 +187,7 @@ Expression 2
                          |------------------2-------------------|
 
 
-Expression 1
+Expression 1   (0/4)
 ^^^^^^^^^^^^^ - &
  L | R | Value
 ---+---+------
@@ -196,7 +196,7 @@ Expression 1
  1 | 0 |    0
  1 | 1 |    1
 
-Expression 2
+Expression 2   (0/2)
 ^^^^^^^^^^^^^ - ?:
  Value
 -------

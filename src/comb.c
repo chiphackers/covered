@@ -153,7 +153,11 @@ void combination_get_tree_stats( expression* exp, unsigned int curr_depth, float
 
       if( (EXPR_IS_MEASURABLE( exp ) == 1) && (SUPPL_WAS_COMB_COUNTED( exp->suppl ) == 0) ) {
 
-        if( (SUPPL_IS_ROOT( exp->suppl ) == 1) || (SUPPL_OP( exp->suppl ) != SUPPL_OP( exp->parent->expr->suppl )) ) {
+        if( (SUPPL_IS_ROOT( exp->suppl ) == 1) || (SUPPL_OP( exp->suppl ) != SUPPL_OP( exp->parent->expr->suppl )) ||
+            ((SUPPL_OP( exp->suppl ) != EXP_OP_AND)  ||
+             (SUPPL_OP( exp->suppl ) != EXP_OP_LAND) ||
+             (SUPPL_OP( exp->suppl ) != EXP_OP_OR)   ||
+             (SUPPL_OP( exp->suppl ) != EXP_OP_LOR)) ) {
 
           /* Calculate current expression combination coverage */
           if( (exp->left != NULL) && (SUPPL_OP( exp->suppl ) == SUPPL_OP( exp->left->suppl )) &&
@@ -1232,7 +1236,11 @@ void combination_list_missed( FILE* ofile, expression* exp, unsigned int curr_de
         (((report_comb_depth == REPORT_DETAILED) && (curr_depth <= report_comb_depth)) ||
           (report_comb_depth == REPORT_VERBOSE)) ) {
 
-      if( (SUPPL_IS_ROOT( exp->suppl ) == 1) || (SUPPL_OP( exp->suppl ) != SUPPL_OP( exp->parent->expr->suppl )) ) {
+      if( (SUPPL_IS_ROOT( exp->suppl ) == 1) || (SUPPL_OP( exp->suppl ) != SUPPL_OP( exp->parent->expr->suppl )) ||
+          ((SUPPL_OP( exp->suppl ) != EXP_OP_AND)  ||
+           (SUPPL_OP( exp->suppl ) != EXP_OP_LAND) ||
+           (SUPPL_OP( exp->suppl ) != EXP_OP_OR)   ||
+           (SUPPL_OP( exp->suppl ) != EXP_OP_LOR)) ) {
 
         if( (exp->left != NULL) && (SUPPL_OP( exp->suppl ) == SUPPL_OP( exp->left->suppl )) &&
             ((SUPPL_OP( exp->suppl ) == EXP_OP_AND)  ||
@@ -1288,10 +1296,9 @@ void combination_list_missed( FILE* ofile, expression* exp, unsigned int curr_de
             case EXP_OP_CASE       :  combination_unary( ofile, exp, *exp_id, "" );                   break;
             case EXP_OP_CASEX      :  combination_unary( ofile, exp, *exp_id, "" );                   break;
             case EXP_OP_CASEZ      :  combination_unary( ofile, exp, *exp_id, "" );                   break;        
-            // case EXP_OP_PEDGE      :  combination_unary( ofile, exp, *exp_id, "posedge" );            break;
-            // case EXP_OP_NEDGE      :  combination_unary( ofile, exp, *exp_id, "negedge" );            break;
-            // case EXP_OP_AEDGE      :  combination_unary( ofile, exp, *exp_id, "" );                   break;
-            case EXP_OP_EOR        :  combination_two_vars( ofile, exp, 0, 1, 1, 1, *exp_id, "or" );  break;
+            case EXP_OP_PEDGE      :  combination_unary( ofile, exp, *exp_id, "posedge" );            break;
+            case EXP_OP_NEDGE      :  combination_unary( ofile, exp, *exp_id, "negedge" );            break;
+            case EXP_OP_AEDGE      :  combination_unary( ofile, exp, *exp_id, "" );                   break;
             default                :  break;
           }
       
@@ -1540,6 +1547,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.76  2003/12/30 23:02:28  phase1geo
+ Contains rest of fixes for multi-expression combinational logic report output.
+ Full regression fails currently.
+
  Revision 1.75  2003/12/22 23:37:02  phase1geo
  More fixes to report output code.
 

@@ -44,7 +44,7 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY MODULE
 Module                    Filename                     Logical Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    case4.1.v                20/   8/  28       71%
+  main                    case4.1.v                11/   7/  18       61%
 
 Module: main, File: case4.1.v
 --------------------------------------------------------
@@ -52,20 +52,28 @@ Missed Combinations
 ====================================================
  Line #     Expression
 ====================================================
-     24:    @(display_tagto_current_state or pcix_pio_timeout_recorder or split_resp_active or 
-              |------------1------------|    |-----------2-----------|                         
-              |--------------------------3---------------------------|                         
-            split_resp_tag or tag_timeout or clr_tag_toed)
-                              |----4----|                 
+     24:    @(display_tagto_current_state or pcix_pio_timeout_recorder or split_resp_active or split_resp_tag or tag_timeout or 
+              |------------1------------|    |-----------2-----------|                                           |----3----|    
+            clr_tag_toed)
 
 
-Expression 3
-^^^^^^^^^^^^^ - or
- L | R | Value
----+---+------
- 0 | 1 |    1
- 1 | 0 |    1
- 1 | 1 |    1
+Expression 1   (1/2)
+^^^^^^^^^^^^^ - 
+ Value
+-------
+   1
+
+Expression 2   (1/2)
+^^^^^^^^^^^^^ - 
+ Value
+-------
+   1
+
+Expression 3   (1/2)
+^^^^^^^^^^^^^ - 
+ Value
+-------
+   1
 
 ====================================================
  Line #     Expression
@@ -74,7 +82,7 @@ Expression 3
                       |------------1------------|
 
 
-Expression 1
+Expression 1   (0/2)
 ^^^^^^^^^^^^^ - 
  Value
 -------
@@ -88,7 +96,7 @@ Expression 1
                                            |--1--|
 
 
-Expression 1
+Expression 1   (0/2)
 ^^^^^^^^^^^^^ - 
  Value
 -------

@@ -30,7 +30,7 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY MODULE
 Module                    Filename                     Logical Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    always1.v                22/   0/  22      100%
+  main                    always1.v                20/   0/  20      100%
 =================================================================================
 
 FINITE STATE MACHINE COVERAGE RESULTS BY MODULE

@@ -85,8 +85,8 @@ Module                    Filename                     Logical Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
   main                    fsm10.2.v                 0/   0/   0      100%
-  fsma                    fsma.v                   30/   8/  38       79%
-  fsm                     fsm.v                    22/  16/  38       58%
+  fsma                    fsma.v                   24/   8/  32       75%
+  fsm                     fsm.v                    16/  16/  32       50%
 
 Module: fsma, File: lib/fsma.v
 --------------------------------------------------------
@@ -99,7 +99,7 @@ Missed Combinations
                          |------------------2-------------------|
 
 
-Expression 1
+Expression 1   (1/4)
 ^^^^^^^^^^^^^ - &
  L | R | Value
 ---+---+------
@@ -107,7 +107,7 @@ Expression 1
  0 | 1 |    0
  1 | 0 |    0
 
-Expression 2
+Expression 2   (1/2)
 ^^^^^^^^^^^^^ - ?:
  Value
 -------
@@ -121,7 +121,7 @@ Expression 2
                          |------------------2-------------------|
 
 
-Expression 1
+Expression 1   (0/4)
 ^^^^^^^^^^^^^ - &
  L | R | Value
 ---+---+------
@@ -130,7 +130,7 @@ Expression 1
  1 | 0 |    0
  1 | 1 |    1
 
-Expression 2
+Expression 2   (0/2)
 ^^^^^^^^^^^^^ - ?:
  Value
 -------
@@ -145,7 +145,7 @@ Expression 2
                          |------------------2-------------------|
 
 
-Expression 1
+Expression 1   (1/4)
 ^^^^^^^^^^^^^ - &
  L | R | Value
 ---+---+------
@@ -153,7 +153,7 @@ Expression 1
  1 | 0 |    0
  1 | 1 |    1
 
-Expression 2
+Expression 2   (1/2)
 ^^^^^^^^^^^^^ - ?:
  Value
 -------
@@ -171,7 +171,7 @@ Missed Combinations
                      |--------------1--------------|
 
 
-Expression 1
+Expression 1   (1/2)
 ^^^^^^^^^^^^^ - ?:
  Value
 -------
@@ -184,7 +184,7 @@ Expression 1
                   |-1-|               
 
 
-Expression 1
+Expression 1   (1/2)
 ^^^^^^^^^^^^^ - 
  Value
 -------
@@ -198,7 +198,7 @@ Expression 1
                          |------------------2-------------------|
 
 
-Expression 1
+Expression 1   (1/4)
 ^^^^^^^^^^^^^ - &
  L | R | Value
 ---+---+------
@@ -206,7 +206,7 @@ Expression 1
  1 | 0 |    0
  1 | 1 |    1
 
-Expression 2
+Expression 2   (1/2)
 ^^^^^^^^^^^^^ - ?:
  Value
 -------
@@ -220,7 +220,7 @@ Expression 2
                          |------------------2-------------------|
 
 
-Expression 1
+Expression 1   (0/4)
 ^^^^^^^^^^^^^ - &
  L | R | Value
 ---+---+------
@@ -229,7 +229,7 @@ Expression 1
  1 | 0 |    0
  1 | 1 |    1
 
-Expression 2
+Expression 2   (0/2)
 ^^^^^^^^^^^^^ - ?:
  Value
 -------
@@ -244,7 +244,7 @@ Expression 2
                          |------------------2-------------------|
 
 
-Expression 1
+Expression 1   (0/4)
 ^^^^^^^^^^^^^ - &
  L | R | Value
 ---+---+------
@@ -253,7 +253,7 @@ Expression 1
  1 | 0 |    0
  1 | 1 |    1
 
-Expression 2
+Expression 2   (0/2)
 ^^^^^^^^^^^^^ - ?:
  Value
 -------
@@ -268,7 +268,7 @@ Expression 2
                          |------------------2-------------------|
 
 
-Expression 1
+Expression 1   (0/4)
 ^^^^^^^^^^^^^ - &
  L | R | Value
 ---+---+------
@@ -277,7 +277,7 @@ Expression 1
  1 | 0 |    0
  1 | 1 |    1
 
-Expression 2
+Expression 2   (0/2)
 ^^^^^^^^^^^^^ - ?:
  Value
 -------

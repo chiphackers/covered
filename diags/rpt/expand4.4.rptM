@@ -46,13 +46,13 @@ Missed Combinations
                          |-------3-------|
 
 
-Expression 1
+Expression 1   (1/2)
 ^^^^^^^^^^^^^ - ~
  Value
 -------
    0
 
-Expression 2
+Expression 2   (1/4)
 ^^^^^^^^^^^^^ - &
  L | R | Value
 ---+---+------
@@ -60,7 +60,7 @@ Expression 2
  1 | 0 |    0
  1 | 1 |    1
 
-Expression 3
+Expression 3   (1/2)
 ^^^^^^^^^^^^^ - {{}}
  Value
 -------

@@ -58,6 +58,12 @@ Missed Combinations
             |-----1------|
 
 
+Expression 1   (1/2)
+^^^^^^^^^^^^^ - posedge
+ Value
+-------
+   1
+
 ====================================================
  Line #     Expression
 ====================================================
@@ -65,7 +71,7 @@ Missed Combinations
                    |1-|
 
 
-Expression 1
+Expression 1   (0/2)
 ^^^^^^^^^^^^^ - ~
  Value
 -------

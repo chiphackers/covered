@@ -45,7 +45,7 @@ Missed Combinations
             STATE_IDLE :
 
 
-Expression 1
+Expression 1   (1/2)
 ^^^^^^^^^^^^^ - 
  Value
 -------
@@ -58,7 +58,7 @@ Expression 1
                      |------------------1-------------------|
 
 
-Expression 1
+Expression 1   (1/2)
 ^^^^^^^^^^^^^ - ?:
  Value
 -------
@@ -71,7 +71,7 @@ Expression 1
                      |------------------1-------------------|
 
 
-Expression 1
+Expression 1   (1/2)
 ^^^^^^^^^^^^^ - ?:
  Value
 -------
@@ -84,7 +84,7 @@ Expression 1
                      |------------------1-------------------|
 
 
-Expression 1
+Expression 1   (1/2)
 ^^^^^^^^^^^^^ - ?:
  Value
 -------
@@ -97,7 +97,7 @@ Expression 1
                      |------------------1-------------------|
 
 
-Expression 1
+Expression 1   (1/2)
 ^^^^^^^^^^^^^ - ?:
  Value
 -------

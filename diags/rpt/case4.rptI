@@ -40,7 +40,7 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY INSTANCE
 Instance                                               Logic Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                                             26/   2/  28       93%
+  main                                             16/   2/  18       89%
 
 Module: main, File: case4.v, Instance: main
 --------------------------------------------------------
@@ -52,7 +52,7 @@ Missed Combinations
                       |1|
 
 
-Expression 1
+Expression 1   (1/2)
 ^^^^^^^^^^^^^ - 
  Value
 -------
@@ -65,7 +65,7 @@ Expression 1
                    |--1--|
 
 
-Expression 1
+Expression 1   (1/2)
 ^^^^^^^^^^^^^ - 
  Value
 -------
