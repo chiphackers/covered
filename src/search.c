@@ -187,20 +187,32 @@ bool search_add_no_score_module( char* module ) {
 */
 bool search_add_extensions( char* ext_list ) {
 
-  bool  retval = TRUE;   /* Return value for this function */
-  char  ext[10];         /* holder for extension           */
-  char* tmp;             /* Temporary extension name       */
+  bool  retval    = TRUE;      /* Return value for this function */
+  char  ext[30];               /* holder for extension           */
+  int   ext_index = 0;         /* Index to ext array             */
+  char* tmp       = ext_list;  /* Temporary extension name       */
 
   if( ext_list != NULL ) {
 
-    while( sscanf( ext_list, ".%s+", ext ) == 1 ) {
-      tmp = strdup_safe( ext, __FILE__, __LINE__ );
-      str_link_add( tmp, &extensions_head, &extensions_tail );
-      ext_list = ext_list + strlen( ext ) + 2;
+    while( (*tmp != '\0') && retval ) {
+      assert( ext_index < 30 );
+      if( *tmp == '+' ) { 
+        ext[ext_index] = '\0';
+        ext_index      = 0;
+        str_link_add( strdup_safe( ext, __FILE__, __LINE__ ), &extensions_head, &extensions_tail );
+      } else if( *tmp == '.' ) {
+        if( ext_index > 0 ) {
+          retval = FALSE;
+        }
+      } else {
+        ext[ext_index] = *tmp;
+        ext_index++;
+      }
+      tmp++;
     }
 
     /* If extension list is not empty, we have hit a parsing error */
-    if( strlen( ext_list ) > 0 ) {
+    if( strlen( tmp ) > 0 ) {
       retval = FALSE;
     }
 
@@ -209,6 +221,12 @@ bool search_add_extensions( char* ext_list ) {
     retval = FALSE;
 
   }
+
+  /* If we had a parsing error, output the problem here */
+  if( !retval ) {
+    snprintf( user_msg, USER_MSG_LENGTH, "Bad library extension specified (+libext+%s)\n", ext_list );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+  } 
 
   return( retval );
 
@@ -229,6 +247,11 @@ void search_free_lists() {
 
 /*
  $Log$
+ Revision 1.17  2005/01/03 22:02:27  phase1geo
+ Fixing case where file is specified with -v after it has already been included to
+ just ignore the file instead of printing out an incorrect error message that the
+ file was unable to be opened.
+
  Revision 1.16  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,

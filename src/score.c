@@ -266,7 +266,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
       i++;
       retval = search_add_file( argv[i] );
 
-    } else if( strncmp( "+libext+.", argv[i], 8 ) == 0 ) {
+    } else if( strncmp( "+libext+", argv[i], 8 ) == 0 ) {
 
       retval = search_add_extensions( argv[i] + 8 );
 
@@ -410,6 +410,9 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.46  2004/12/17 22:29:36  phase1geo
+ More code added to race condition feature.  Still not usable.
+
  Revision 1.45  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,
