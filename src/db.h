@@ -30,7 +30,7 @@ void db_add_declared_param( char* name, expression* expr );
 void db_add_override_param( char* inst_name, expression* expr );
 
 /*! \brief Adds signal/expression vector parameter to parameter list. */
-void db_add_vector_param( signal* sig, expression* exp, expression* parm_exp, int type );
+void db_add_vector_param( signal* sig, expression* parm_exp, int type );
 
 /*! \brief Adds specified defparam to parameter override list.  Called by parser. */
 void db_add_defparam( char* name, expression* expr );
@@ -89,6 +89,10 @@ void db_do_timestep( int time );
 
 /*
  $Log$
+ Revision 1.25  2002/12/03 06:01:16  phase1geo
+ Fixing bug where delay statement is the last statement in a statement list.
+ Adding diagnostics to verify this functionality.
+
  Revision 1.24  2002/11/05 00:20:06  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.
