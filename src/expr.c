@@ -425,6 +425,16 @@ int expression_get_id( expression* expr ) {
 
 }
 
+/*!
+ \param expr  Pointer to expression tree to parse.
+ \param head  Pointer to head of signal list to populate.
+ \param tail  Pointer to tail of signal list to populate.
+
+ Recursively parses specified expression list in search of signals within the
+ expression.  When a signal is found, it is added the the signal list specified
+ by head and tail.  This function is called by the expression_get_wait_sig_list
+ function.
+*/
 void expression_get_wait_sig_list_helper( expression* expr, sig_link** head, sig_link** tail ) {
 
   if( expr != NULL ) {
@@ -451,6 +461,15 @@ void expression_get_wait_sig_list_helper( expression* expr, sig_link** head, sig
 
 }
 
+/*!
+ \param expr  Pointer to expression tree to parse.
+ \param head  Pointer to head of signal list to populate.
+ \param tail  Pointer to tail of signal list to populate.
+
+ If the specified expression tree has an event operation at the root of the
+ expression tree (EOR, PEDGE, NEDGE, AEDGE), send the expression, head and tail
+ to the expression_get_wait_sig_list_helper function.
+*/
 void expression_get_wait_sig_list( expression* expr, sig_link** head, sig_link** tail ) {
 
   if( (expr != NULL) &&
@@ -460,11 +479,6 @@ void expression_get_wait_sig_list( expression* expr, sig_link** head, sig_link**
        (SUPPL_OP( expr->suppl ) == EXP_OP_AEDGE)) ) {
 
     expression_get_wait_sig_list_helper( expr, head, tail );
-
-  } else {
-
-    *head = NULL;
-    *tail = NULL;
 
   }
 
@@ -1286,6 +1300,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.76  2003/08/09 22:10:41  phase1geo
+ Removing wait event signals from CDD file generation in support of another method
+ that fixes a bug when multiple wait event statements exist within the same
+ statement tree.
+
  Revision 1.75  2003/08/05 20:25:05  phase1geo
  Fixing non-blocking bug and updating regression files according to the fix.
  Also added function vector_is_unknown() which can be called before making
