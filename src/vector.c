@@ -868,7 +868,7 @@ char* vector_to_string( vector* vec, int type ) {
  Converts a string value from the lexer into a vector structure appropriately
  sized.
 */
-vector* vector_from_string( char* str ) {
+vector* vector_from_string( char** str ) {
 
   vector* vec;                   /* Temporary holder for newly created vector                                */
   int     bits_per_char;         /* Number of bits represented by a single character in the value string str */
@@ -876,39 +876,49 @@ vector* vector_from_string( char* str ) {
   char    value[MAX_BIT_WIDTH];  /* String to store string value in                                          */
   char    stype[2];              /* Temporary holder for type of string being parsed                         */
   int     type;                  /* Type of string being parsed                                              */
+  int     chars_read;            /* Number of characters read by a sscanf() function call                    */
 
-  if( sscanf( str, "%d'%[sSdD]%[0-9]", &size, stype, value ) == 3 ) {
+  if( sscanf( *str, "%d'%[sSdD]%[0-9]%n", &size, stype, value, &chars_read ) == 3 ) {
     bits_per_char = 10;
     type          = DECIMAL;
-  } else if( sscanf( str, "%d'%[sSbB]%[01xXzZ_\?]", &size, stype, value ) == 3 ) {
+    *str          = *str + chars_read;
+  } else if( sscanf( *str, "%d'%[sSbB]%[01xXzZ_\?]%n", &size, stype, value, &chars_read ) == 3 ) {
     bits_per_char = 1;
     type          = BINARY;
-  } else if( sscanf( str, "%d'%[sSoO]%[0-7xXzZ_\?]", &size, stype, value ) == 3 ) {
+    *str          = *str + chars_read;
+  } else if( sscanf( *str, "%d'%[sSoO]%[0-7xXzZ_\?]%n", &size, stype, value, &chars_read ) == 3 ) {
     bits_per_char = 3;
     type          = OCTAL;
-  } else if( sscanf( str, "%d'%[sShH]%[0-9a-fA-FxXzZ_\?]", &size, stype, value ) == 3 ) {
+    *str          = *str + chars_read;
+  } else if( sscanf( *str, "%d'%[sShH]%[0-9a-fA-FxXzZ_\?]%n", &size, stype, value, &chars_read ) == 3 ) {
     bits_per_char = 4;
     type          = HEXIDECIMAL;
-  } else if( sscanf( str, "'%[sSdD]%[0-9]", stype, value ) == 2 ) {
+    *str          = *str + chars_read;
+  } else if( sscanf( *str, "'%[sSdD]%[0-9]%n", stype, value, &chars_read ) == 2 ) {
     bits_per_char = 10;
     type          = DECIMAL;
     size          = 32;
-  } else if( sscanf( str, "'%[sSbB]%[01xXzZ_\?]", stype, value ) == 2 ) {
+    *str          = *str + chars_read;
+  } else if( sscanf( *str, "'%[sSbB]%[01xXzZ_\?]%n", stype, value, &chars_read ) == 2 ) {
     bits_per_char = 1;
     type          = BINARY;
     size          = 32;
-  } else if( sscanf( str, "'%[sSoO]%[0-7xXzZ_\?]", stype, value ) == 2 ) {
+    *str          = *str + chars_read;
+  } else if( sscanf( *str, "'%[sSoO]%[0-7xXzZ_\?]%n", stype, value, &chars_read ) == 2 ) {
     bits_per_char = 3;
     type          = OCTAL;
     size          = 32;
-  } else if( sscanf( str, "'%[sShH]%[0-9a-fA-FxXzZ_\?]", stype, value ) == 2 ) {
+    *str          = *str + chars_read;
+  } else if( sscanf( *str, "'%[sShH]%[0-9a-fA-FxXzZ_\?]%n", stype, value, &chars_read ) == 2 ) {
     bits_per_char = 4;
     type          = HEXIDECIMAL;
     size          = 32;
-  } else if( sscanf( str, "%[0-9_]", value ) == 1 ) {
+    *str          = *str + chars_read;
+  } else if( sscanf( *str, "%[0-9_]%n", value, &chars_read ) == 1 ) {
     bits_per_char = 10;
     type          = DECIMAL;
     size          = 32;
+    *str          = *str + chars_read;
   } else {
     /* If the specified string is none of the above, return NULL */
     return( NULL );
@@ -1457,6 +1467,9 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.40  2003/10/17 12:55:36  phase1geo
+ Intermediate checkin for LSB fixes.
+
  Revision 1.39  2003/10/11 05:15:08  phase1geo
  Updates for code optimizations for vector value data type (integers to chars).
  Updated regression for changes.

@@ -17,6 +17,7 @@
 #include "vector.h"
 #include "statement.h"
 #include "link.h"
+#include "param.h"
 
 
 extern int  curr_expr_id;
@@ -240,6 +241,136 @@ bool fsm_arg_parse( char* arg ) {
 
 }
 
+expression* fsm_arg_parse_value( char** str, module* mod ) {
+
+  expression* expr;          /* Pointer to expression containing state value */
+  expression* left;          /* Left child expression                        */
+  expression* right;         /* Right child expression                       */
+  vector*     vec;           /* Pointer to newly allocated vector value      */
+  char        str_val[256];  /* String version of value parsed               */
+  int         msb;           /* Most-significant bit position of parameter   */
+  int         lsb;           /* Least-significant bit position of parameter  */
+  int         chars_read;    /* Number of characters read from sscanf()      */
+  mod_parm*   mparm;         /* Pointer to module parameter found            */
+
+  if( (vec = vector_from_string( str )) != NULL ) {
+
+    /* This value represents a static value, handle as such */
+    expr = expression_create( NULL, NULL, EXP_OP_STATIC, curr_expr_id, 0, FALSE );
+    curr_expr_id++;
+
+    vector_dealloc( expr->value );
+    expr->value = vec;
+
+  } else {
+
+    /* This value should be a parameter value, parse it */
+    if( sscanf( *str, "%[a-zA-Z0-9_]\[%d:%d]", str_val, &msb, &lsb, &chars_read ) == 3 ) {
+      *str = *str + chars_read;
+      if( (mparm = mod_parm_find( str_val, mod->param_head )) != NULL ) {
+
+        /* Generate left child expression */
+        left = expression_create( NULL, NULL, EXP_OP_STATIC, curr_expr_id, 0, FALSE );
+        curr_expr_id++;
+        vector_dealloc( left->value );
+        left->value = vector_create( 32, TRUE );
+        vector_from_int( left->value, msb );
+
+        /* Generate right child expression */
+        right = expression_create( NULL, NULL, EXP_OP_STATIC, curr_expr_id, 0, FALSE );
+        curr_expr_id++;
+        vector_dealloc( right->value );
+        right->value = vector_create( 32, TRUE );
+        vector_from_int( right->value, lsb );
+
+        /* Generate multi-bit parameter expression */
+        expr = expression_create( right, left, EXP_OP_PARAM_MBIT, curr_expr_id, 0, FALSE ); 
+        curr_expr_id++;
+        exp_link_add( expr, &(mparm->exp_head), &(mparm->exp_tail) );
+
+      }
+    } else if( sscanf( *str, "%[a-zA-Z0-9_]\[%d]", str_val, &lsb, &chars_read ) == 2 ) {
+      *str = *str + chars_read;
+      if( (mparm = mod_parm_find( str_val, mod->param_head )) != NULL ) {
+
+        /* Generate left child expression */
+        left = expression_create( NULL, NULL, EXP_OP_STATIC, curr_expr_id, 0, FALSE );
+        curr_expr_id++;
+        vector_dealloc( left->value );
+        left->value = vector_create( 32, TRUE );
+        vector_from_int( left->value, lsb );
+
+        /* Generate single-bit parameter expression */
+        expr = expression_create( NULL, left, EXP_OP_PARAM_SBIT, curr_expr_id, 0, FALSE );
+        curr_expr_id++;
+        exp_link_add( expr, &(mparm->exp_head), &(mparm->exp_tail) );
+
+      }
+    } else if( sscanf( *str, "%[a-zA-Z0-9_]%n", str_val, &chars_read ) == 1 ) {
+      *str = *str + chars_read;
+      printf( "Found parameter: %s\n", str_val );
+      if( (mparm = mod_parm_find( str_val, mod->param_head )) != NULL ) {
+
+        /* Generate parameter expression */
+        expr = expression_create( NULL, NULL, EXP_OP_PARAM, curr_expr_id, 0, FALSE );
+        curr_expr_id++;
+        printf( "Created expression for parameter, %d\n", expr->id );
+        exp_link_add( expr, &(mparm->exp_head), &(mparm->exp_tail) );
+
+      }
+    } else {
+      expr = NULL;
+    }
+
+  }
+
+  return( expr );
+
+}
+
+void fsm_arg_parse_trans( expression* expr, fsm* table, module* mod ) {
+
+  expression* from_state;  /* Pointer to from_state value of transition */
+  expression* to_state;    /* Pointer to to_state value of transition   */
+  char*       str;         /* String version of expression value        */
+
+  assert( expr != NULL );
+
+  /* Convert expression value to a string */
+  str = (char*)(expr->value->value);
+
+  if( (from_state = fsm_arg_parse_value( &str, mod )) == NULL ) {
+    snprintf( user_msg, USER_MSG_LENGTH, "Left-hand side FSM transition value must be a constant value or parameter, line: %d, file: %s",
+              expr->line, mod->filename );
+    print_output( user_msg, FATAL );
+    exit( 1 );
+  } else {
+
+    if( (str[0] != '-') || (str[1] != '>') ) {
+      snprintf( user_msg, USER_MSG_LENGTH, "FSM transition values must contain the string '->' between them, line: %d, file: %s",
+                expr->line, mod->filename );
+      print_output( user_msg, FATAL );
+      exit( 1 );
+    } else {
+      str += 2;
+    }
+
+    if( (to_state = fsm_arg_parse_value( &str, mod )) == NULL ) {
+      snprintf( user_msg, USER_MSG_LENGTH, "Right-hand side FSM transition value must be a constant value or parameter, line: %d, file: %s",
+                expr->line, mod->filename );
+      print_output( user_msg, FATAL );
+      exit( 1 );
+    } else {
+
+      /* Add both expressions to FSM arc list */
+      fsm_add_arc( table, from_state, to_state );
+
+    }
+
+  }
+
+}
+
 /*!
  \param ap   Pointer to attribute parameter list.
  \param mod  Pointer to module containing this attribute.
@@ -325,7 +456,7 @@ void fsm_arg_parse_attr( attr_param* ap, module* mod ) {
         print_output( user_msg, FATAL );
         exit( 1 );
       } else {
-        /* Handle state transition information here */
+        fsm_arg_parse_trans( curr->expr, fsml->table, mod );
       }
     } else {
       snprintf( user_msg, USER_MSG_LENGTH, "Invalid covered_fsm attribute parameter (%s=%s), file: %s",
@@ -347,6 +478,9 @@ void fsm_arg_parse_attr( attr_param* ap, module* mod ) {
 
 /*
  $Log$
+ Revision 1.8  2003/10/28 01:09:38  phase1geo
+ Cleaning up unnecessary output.
+
  Revision 1.7  2003/10/28 00:18:06  phase1geo
  Adding initial support for inline attributes to specify FSMs.  Still more
  work to go but full regression still passes at this point.

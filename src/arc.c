@@ -911,14 +911,16 @@ void arc_state_to_string( char* arcs, int index, bool left, char* str ) {
 */
 bool arc_db_merge( char** base, char** line, bool same ) {
 
-  bool    retval = TRUE;  /* Return value for this function */
-  char*   arcs;           /* Read arc array                 */
-  char*   strl;           /* Left state value string        */
-  char*   strr;           /* Right state value string       */
-  vector* vecl;           /* Left state vector value        */
-  vector* vecr;           /* Right state vector value       */
-  int     i;              /* Loop iterator                  */
-  char    str_width[20];  /* Temporary string holder        */
+  bool    retval = TRUE;  /* Return value for this function     */
+  char*   arcs;           /* Read arc array                     */
+  char*   strl;           /* Left state value string            */
+  char*   strr;           /* Right state value string           */
+  char*   tmpl;           /* Temporary left state value string  */
+  char*   tmpr;           /* Temporary right state value string */
+  vector* vecl;           /* Left state vector value            */
+  vector* vecr;           /* Right state vector value           */
+  int     i;              /* Loop iterator                      */
+  char    str_width[20];  /* Temporary string holder            */
 
   if( arc_db_read( &arcs, line ) ) {
 
@@ -939,6 +941,9 @@ bool arc_db_merge( char** base, char** line, bool same ) {
     snprintf( strl, ((arc_get_width( arcs ) / 4) + 4 + strlen( str_width )), "%s'h", str_width );
     snprintf( strr, ((arc_get_width( arcs ) / 4) + 4 + strlen( str_width )), "%s'h", str_width );
 
+    tmpl = strl;
+    tmpr = strr;
+
     for( i=0; i<arc_get_curr_size( arcs ); i++ ) {
 
       /* Get string versions of state values */
@@ -946,14 +951,17 @@ bool arc_db_merge( char** base, char** line, bool same ) {
       arc_state_to_string( arcs, i, FALSE, (strr + 2 + strlen( str_width )) );      
 
       /* Convert these strings to vectors */
-      vecl = vector_from_string( strl );
-      vecr = vector_from_string( strr );
+      vecl = vector_from_string( &strl );
+      vecr = vector_from_string( &strr );
 
       /* Add these states to the base arc array */
       arc_add( base, arc_get_width( arcs ), vecl, vecr, arc_get_entry_suppl( arcs, i, ARC_HIT_F ) );
       if( arc_get_entry_suppl( arcs, i, ARC_BIDIR ) == 1 ) {
         arc_add( base, arc_get_width( arcs ), vecr, vecl, arc_get_entry_suppl( arcs, i, ARC_HIT_R ) );
       }
+
+      strl = tmpl;
+      strr = tmpr;
 
       vector_dealloc( vecl );
       vector_dealloc( vecr );
@@ -1075,6 +1083,9 @@ void arc_dealloc( char* arcs ) {
 
 /*
  $Log$
+ Revision 1.15  2003/10/17 12:55:36  phase1geo
+ Intermediate checkin for LSB fixes.
+
  Revision 1.14  2003/10/16 12:27:19  phase1geo
  Fixing bug in arc.c related to non-zero LSBs.
 

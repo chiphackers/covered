@@ -244,7 +244,7 @@ WSPACE [ \t\b\f]+
   /* Decimal number - Size indicated */
 [0-9][0-9_]*[ \t]*\'[sS]?[dD][ \t]*[0-9][0-9_]* {
      if( ignore_mode == 0 ) {
-       yylval.number = vector_from_string( yytext );
+       yylval.number = vector_from_string( &yytext );
        assert( yylval.number != NULL );
        return NUMBER;
      } else {
@@ -255,7 +255,7 @@ WSPACE [ \t\b\f]+
   /* Binary number - Size indicated */
 [0-9][0-9_]*[ \t]*\'[sS]?[bB][ \t]*[0-1xzXZ_\?]+ {
      if( ignore_mode == 0 ) {
-       yylval.number = vector_from_string( yytext );
+       yylval.number = vector_from_string( &yytext );
        assert( yylval.number != NULL );
        return NUMBER;
      } else {
@@ -266,7 +266,7 @@ WSPACE [ \t\b\f]+
   /* Octal number - Size indicated */
 [0-9][0-9_]*[ \t]*\'[sS]?[oO][ \t]*[0-7xzXZ_\?]+ {
      if( ignore_mode == 0 ) {
-       yylval.number = vector_from_string( yytext );
+       yylval.number = vector_from_string( &yytext );
        assert( yylval.number != NULL );
        return NUMBER;
      } else {
@@ -277,7 +277,7 @@ WSPACE [ \t\b\f]+
   /* Hexidecimal number - Size indicated */
 [0-9][0-9_]*[ \t]*\'[sS]?[hH][ \t]*[0-9a-fA-FxzXZ_\?]+ {
      if( ignore_mode == 0 ) {
-       yylval.number = vector_from_string( yytext );
+       yylval.number = vector_from_string( &yytext );
        assert( yylval.number != NULL );
        return NUMBER;
      } else {
@@ -288,7 +288,7 @@ WSPACE [ \t\b\f]+
   /* Decimal number - unsized */
 \'[sS]?[dD][ \t]*[0-9][0-9_]* {
      if( ignore_mode == 0 ) {
-       yylval.number = vector_from_string( yytext );
+       yylval.number = vector_from_string( &yytext );
        assert( yylval.number != NULL );
        return NUMBER;
      } else {
@@ -299,7 +299,7 @@ WSPACE [ \t\b\f]+
   /* Binary number - unsized */
 \'[sS]?[bB][ \t]*[0-1xzXZ_\?]+ {
      if( ignore_mode == 0 ) {
-       yylval.number = vector_from_string( yytext );
+       yylval.number = vector_from_string( &yytext );
        assert( yylval.number != NULL );
        return NUMBER;
      } else {
@@ -310,7 +310,7 @@ WSPACE [ \t\b\f]+
   /* Octal number - unsized */
 \'[sS]?[oO][ \t]*[0-7xzXZ_\?]+ {
      if( ignore_mode == 0 ) {
-       yylval.number = vector_from_string( yytext );
+       yylval.number = vector_from_string( &yytext );
        assert( yylval.number != NULL );
        return NUMBER;
      } else {
@@ -321,7 +321,7 @@ WSPACE [ \t\b\f]+
   /* Hexidecimal number - unsized */
 \'[sS]?[hH][ \t]*[0-9a-fA-FxzXZ_\?]+ {
      if( ignore_mode == 0 ) {
-       yylval.number = vector_from_string( yytext );
+       yylval.number = vector_from_string( &yytext );
        assert( yylval.number != NULL );
        return NUMBER;
      } else {
@@ -332,7 +332,7 @@ WSPACE [ \t\b\f]+
   /* Unsized decimal number */
 [0-9][0-9_]* {
      if( ignore_mode == 0 ) {
-       yylval.number = vector_from_string( yytext );
+       yylval.number = vector_from_string( &yytext );
        assert( yylval.number != NULL );
        return NUMBER;
      } else {

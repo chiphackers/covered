@@ -71,7 +71,7 @@ void vector_from_int( vector* vec, int value );
 char* vector_to_string( vector* vec, int type );
 
 /*! \brief Converts character string value into vector. */
-vector* vector_from_string( char* str );
+vector* vector_from_string( char** str );
 
 /*! \brief Assigns specified VCD value to specified vector. */
 void vector_vcd_assign( vector* vec, char* value, int msb, int lsb );
@@ -118,6 +118,9 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.18  2003/10/17 12:55:36  phase1geo
+ Intermediate checkin for LSB fixes.
+
  Revision 1.17  2003/08/05 20:25:05  phase1geo
  Fixing non-blocking bug and updating regression files according to the fix.
  Also added function vector_is_unknown() which can be called before making
