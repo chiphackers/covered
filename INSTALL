@@ -1,0 +1,46 @@
+                              COVERED
+                   User Installation Instructions
+===================================================================
+
+1.  Supported Systems
+  Covered has been mostly tested on a RedHat Linux 7.2 system.  Limited testing
+  has been done on IRIX-6.5.12.  The intent of this tool is to support any
+  POSIX standard environment.  The Icarus Verilog simulator has been used extensively
+  throughout the development process.  VCS has also been used in testing.
+
+2.  Required Tools
+  The following is a list of tools that are necessary for building/compiling the
+  Covered executable.
+  - gcc  (Version 2.96 -- not sure if >=3.0 versions will work yet)
+  - flex (Version 2.5.4 or higher)
+  - bison (Version 1.28 or higher)
+  - GNU make (Version 3.27.1 or higher)
+  - GNU gperf (Version 2.7.2 or higher)
+
+3.  Configure and Make Process
+  To begin with, untar and ungzip the Covered tarball with the following command:
+
+    gzip -dc <Covered tarball name> | tar xvf -
+
+  After this has completed, cd to the Covered directory and perform the following
+  command to build the proper Makefiles and set configuration settings for your system.
+
+    ./configure
+
+  After the configuration process has completed, a Makefile will be created in the
+  Covered directory.  To build and compile all source code for the tool, simply type:
+
+    make
+
+  This will create the "covered" executable file in the ./src directory.  This is the
+  only program that will be needed since there is no run-time linking or underlying
+  libraries supporting the program.  To install the executable, simply type:
+
+    make install
+
+  This will install the Covered executable into the /usr/local/bin directory.  To place
+  this executable in a different location, please use the --prefix=<directory> option
+  when calling the ./configure script.
+
+If there are any problems with installing Covered, please let me know by either submitting
+a bug report or sending me an e-mail at trevorw@charter.net
