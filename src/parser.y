@@ -367,6 +367,82 @@ static_expr_primary
 		}
 	;
 
+unused_expr
+        : unused_expr_primary
+        | '+' unused_expr_primary %prec UNARY_PREC
+        | '-' unused_expr_primary %prec UNARY_PREC
+        | '~' unused_expr_primary %prec UNARY_PREC
+	| '&' unused_expr_primary %prec UNARY_PREC
+	| '!' unused_expr_primary %prec UNARY_PREC
+	| '|' unused_expr_primary %prec UNARY_PREC
+	| '^' unused_expr_primary %prec UNARY_PREC
+	| K_NAND unused_expr_primary %prec UNARY_PREC
+	| K_NOR unused_expr_primary %prec UNARY_PREC
+	| K_NXOR unused_expr_primary %prec UNARY_PREC
+	| '!' error %prec UNARY_PREC
+	| '^' error %prec UNARY_PREC
+	| unused_expr '^' unused_expr
+	| unused_expr '*' unused_expr
+	| unused_expr '/' unused_expr
+	| unused_expr '%' unused_expr
+	| unused_expr '+' unused_expr
+	| unused_expr '-' unused_expr
+	| unused_expr '&' unused_expr
+	| unused_expr '|' unused_expr
+        | unused_expr K_NAND unused_expr
+	| unused_expr K_NOR unused_expr
+	| unused_expr K_NXOR unused_expr
+	| unused_expr '<' unused_expr
+	| unused_expr '>' unused_expr
+	| unused_expr K_LS unused_expr
+	| unused_expr K_RS unused_expr
+	| unused_expr K_EQ unused_expr
+	| unused_expr K_CEQ unused_expr
+	| unused_expr K_LE unused_expr
+	| unused_expr K_GE unused_expr
+	| unused_expr K_NE unused_expr
+	| unused_expr K_CNE unused_expr
+	| unused_expr K_LOR unused_expr
+	| unused_expr K_LAND unused_expr
+	| unused_expr '?' unused_expr ':' unused_expr
+        ;
+
+unused_expr_primary
+	: NUMBER
+                 {
+                   free_safe( $1 );
+                 }
+	| STRING
+	| identifier
+                 {
+                   free_safe( $1 );
+                 }
+	| SYSTEM_IDENTIFIER
+	| identifier '[' unused_expr ']'
+                 {
+                   free_safe( $1 );
+                 }
+	| identifier '[' unused_expr ':' unused_expr ']'
+                 {
+                   free_safe( $1 );
+                 }
+	| identifier '(' unused_expr_list ')'
+                 {
+                   free_safe( $1 );
+                 }
+	| SYSTEM_IDENTIFIER '(' unused_expr_list ')'
+	| '(' unused_expr ')'
+	| '{' unused_expr_list '}'
+	| '{' unused_expr '{' unused_expr_list '}' '}'
+	;
+
+unused_expr_list
+	: unused_expr_list ',' unused_expr
+	| unused_expr
+	|
+	| unused_expr_list ','
+	;
+
 expression
 	: expr_primary
 		{
@@ -972,11 +1048,10 @@ module_item
 		  // yyerror( @1, "error: invalid module item.  Did you forget an initial or always?" );
 		  // yyerrok;
 		}
-	| K_assign error '=' expression ';'
+	| K_assign error '=' unused_expr ';'
 		{
 		  // yyerror( @1, "error: syntax error in left side of continuous assignment." );
 		  // yyerrok;
-		  expression_dealloc( $4, FALSE );
 		}
 	| K_assign error ';'
 		{
@@ -995,20 +1070,166 @@ module_item
 		}
 	;
 
-statement
-	: K_assign lavalue '=' expression ';'
+unused_stmt
+	: K_assign lavalue '=' unused_expr ';'
+	| K_deassign lavalue ';'
+	| K_force lavalue '=' unused_expr ';'
+	| K_release lavalue ';'
+	| K_begin unused_stmt_list K_end
+	| K_begin ':' IDENTIFIER
+	    block_item_decls_opt
+	    unused_stmt_list
+	  K_end
+                {
+                  free_safe( $3 );
+                }
+	| K_begin K_end
+	| K_begin ':' IDENTIFIER K_end
+                {
+                  free_safe( $3 );
+                }
+	| K_begin error K_end
+	| K_fork ':' IDENTIFIER
+	    block_item_decls_opt
+	    unused_stmt_list
+	  K_join
+                {
+                  free_safe( $3 );
+                }
+	| K_fork K_join
+	| K_fork ':' IDENTIFIER K_join
+                {
+                  free_safe( $3 );
+                }
+	| K_disable identifier ';'
 		{
-		  expression_dealloc( $4, FALSE );
+                  free_safe( $2 );
+		}
+	| K_TRIGGER IDENTIFIER ';'
+		{
+                  free_safe( $2 );
+		}
+	| K_forever unused_stmt
+	| K_fork unused_stmt_list K_join
+	| K_repeat '(' unused_expr ')' unused_stmt
+	| K_case '(' unused_expr ')' unused_case_items K_endcase
+	| K_casex '(' unused_expr ')' unused_case_items K_endcase
+	| K_casez '(' unused_expr ')' unused_case_items K_endcase
+	| K_case '(' unused_expr ')' error K_endcase
+	| K_casex '(' unused_expr ')' error K_endcase
+	| K_casez '(' unused_expr ')' error K_endcase
+	| K_if '(' unused_expr ')' unused_stmt_opt %prec less_than_K_else
+	| K_if '(' unused_expr ')' unused_stmt_opt K_else unused_stmt_opt
+	| K_if '(' error ')' unused_stmt_opt %prec less_than_K_else
+	| K_if '(' error ')' unused_stmt_opt K_else unused_stmt_opt 
+	| K_for '(' lpvalue '=' unused_expr ';' unused_expr ';' lpvalue '=' unused_expr ')' unused_stmt
+	| K_for '(' lpvalue '=' unused_expr ';' unused_expr ';' error ')' unused_stmt
+	| K_for '(' lpvalue '=' unused_expr ';' error ';' lpvalue '=' unused_expr ')' unused_stmt
+	| K_for '(' error ')' unused_stmt
+	| K_while '(' unused_expr ')' unused_stmt
+	| K_while '(' error ')' unused_stmt
+	| delay1 unused_stmt_opt
+	| unused_event_control unused_stmt_opt
+	| lpvalue '=' unused_expr ';'
+                {
+                  free_safe( $1 );
+                }
+	| lpvalue K_LE unused_expr ';'
+                {
+                  free_safe( $1 );
+                }
+	| lpvalue '=' delay1 unused_expr ';'
+                {
+                  free_safe( $1 );
+                }
+	| lpvalue K_LE delay1 unused_expr ';'
+                {
+                  free_safe( $1 );
+                }
+	| lpvalue '=' unused_event_control unused_expr ';'
+                {
+                  free_safe( $1 );
+                }
+	| lpvalue '=' K_repeat '(' unused_expr ')' unused_event_control unused_expr ';'
+                {
+                  free_safe( $1 );
+                }
+	| lpvalue K_LE unused_event_control unused_expr ';'
+                {
+                  free_safe( $1 );
+                }
+	| lpvalue K_LE K_repeat '(' unused_expr ')' unused_event_control unused_expr ';'
+                {
+                  free_safe( $1 );
+                }
+	| K_wait '(' unused_expr ')' unused_stmt_opt
+	| SYSTEM_IDENTIFIER '(' unused_expr_list ')' ';'
+	| SYSTEM_IDENTIFIER ';'
+	| identifier '(' unused_expr_list ')' ';'
+		{
+		  free_safe( $1 );
+		}
+	| identifier ';'
+		{
+		  free_safe( $1 );
+		}
+	| error ';'
+	;
+
+unused_stmt_list
+	: unused_stmt unused_stmt_list
+	| unused_stmt
+	;
+
+unused_stmt_opt
+	: unused_stmt
+	| ';'
+	;
+
+unused_case_item
+	: unused_expr_list ':' unused_stmt_opt
+	| K_default ':' unused_stmt_opt
+	| K_default unused_stmt_opt
+	| error ':' unused_stmt_opt
+	;
+
+unused_case_items
+	: unused_case_item unused_case_items
+	| unused_case_item
+	;
+
+unused_event_control
+	: '@' IDENTIFIER
+		{
+		  free_safe( $2 );
+		}
+	| '@' '(' unused_event_expr_list ')'
+	| '@' '(' error ')'
+	;
+
+unused_event_expr_list
+	: unused_event_expr
+	| unused_event_expr_list K_or unused_event_expr
+	| unused_event_expr_list ',' unused_event_expr
+	;
+
+unused_event_expr
+	: K_posedge unused_expr
+	| K_negedge unused_expr
+	| unused_expr
+	;
+
+statement
+	: K_assign lavalue '=' unused_expr ';'
+		{
                   $$ = NULL;
 		}
 	| K_deassign lavalue ';'
 		{
                   $$ = NULL;
 		}
-	| K_force lavalue '=' expression ';'
+	| K_force lavalue '=' unused_expr ';'
 		{
-		  /* Don't handle forces at this time */
-		  expression_dealloc( $4, FALSE );
                   $$ = NULL;
 		}
 	| K_release lavalue ';'
@@ -1041,7 +1262,7 @@ statement
 		}
 	| K_fork ':' IDENTIFIER
 	    block_item_decls_opt
-	    statement_list
+	    unused_stmt_list
 	  K_join
 		{
                   $$ = NULL;
@@ -1062,20 +1283,17 @@ statement
 		{
                   $$ = NULL;
 		}
-	| K_forever statement
-		{
-                  $$ = $2;
-		}
-	| K_fork statement_list K_join
+	| K_forever unused_stmt
 		{
                   $$ = NULL;
 		}
-	| K_repeat '(' expression ')' statement
+	| K_fork unused_stmt_list K_join
 		{
-                  // statement* stmt = db_create_statement( $3 );
-                  // db_add_expression( $3 );
-                  // $$ = stmt;
-                  $$ = 0;
+                  $$ = NULL;
+		}
+	| K_repeat '(' unused_expr ')' unused_stmt
+		{
+                  $$ = NULL;
 		}
 	| K_case '(' expression ')' case_items K_endcase
 		{
@@ -1143,19 +1361,16 @@ statement
                   }
                   $$ = stmt;
 		}
-	| K_case '(' expression ')' error K_endcase
+	| K_case '(' unused_expr ')' error K_endcase
 		{
-		  expression_dealloc( $3, FALSE );
                   $$ = NULL;
 		}
-	| K_casex '(' expression ')' error K_endcase
+	| K_casex '(' unused_expr ')' error K_endcase
 		{
-		  expression_dealloc( $3, FALSE );
                   $$ = NULL;
 		}
-	| K_casez '(' expression ')' error K_endcase
+	| K_casez '(' unused_expr ')' error K_endcase
 		{
-		  expression_dealloc( $3, FALSE );
                   $$ = NULL;
 		}
 	| K_if '(' expression ')' statement_opt %prec less_than_K_else
@@ -1173,68 +1388,40 @@ statement
                   db_connect_statement_false( stmt, $7 );
                   $$ = stmt;
 		}
-	| K_if '(' error ')' statement_opt %prec less_than_K_else
+	| K_if '(' error ')' unused_stmt_opt %prec less_than_K_else
 		{
-		  // yyerror( @1, "error: Malformed conditional expression." );
                   $$ = NULL;
 		}
-	| K_if '(' error ')' statement_opt K_else statement_opt 
+	| K_if '(' error ')' unused_stmt_opt K_else unused_stmt_opt 
 		{
-		  // yyerror( @1, "error: Malformed conditional expression." );
                   $$ = NULL;
 		}
-	| K_for '(' lpvalue '=' expression ';' expression ';' lpvalue '=' expression ')' statement
+	| K_for '(' lpvalue '=' unused_expr ';' unused_expr ';' lpvalue '=' unused_expr ')' unused_stmt
 		{
-                  // statement* stmt1 = db_create_statement( $5 );
-                  // statement* stmt2 = db_create_statement( $7 );
-                  // statement* stmt3 = db_create_statement( $11 );
-                  // db_add_expression( $5 );
-                  // db_add_expression( $7 );
-                  // db_add_expression( $11 );
-                  // db_connect_statement_false( stmt1, stmt2 );
-                  // db_connect_statement_true( stmt2, $13 );
-                  // $$ = stmt1;
-                  expression_dealloc( $5, FALSE );
-                  expression_dealloc( $7, FALSE );
-                  expression_dealloc( $11, FALSE );
-                  $$ = 0;
-		}
-	| K_for '(' lpvalue '=' expression ';' expression ';' error ')' statement
-		{
-		  expression_dealloc( $5, FALSE );
-		  expression_dealloc( $7, FALSE );
-		  // yyerror( @9, "error: Error in for loop step assignment." );
                   $$ = NULL;
 		}
-	| K_for '(' lpvalue '=' expression ';' error ';' lpvalue '=' expression ')' statement
+	| K_for '(' lpvalue '=' unused_expr ';' unused_expr ';' error ')' unused_stmt
 		{
-		  expression_dealloc( $5, FALSE );
-		  expression_dealloc( $11, FALSE );
-		  // yyerror( @7, "error: Error in for loop condition expression." );
                   $$ = NULL;
 		}
-	| K_for '(' error ')' statement
+	| K_for '(' lpvalue '=' unused_expr ';' error ';' lpvalue '=' unused_expr ')' unused_stmt
 		{
-		  // yyerror( @3, "error: Incomprehensible for loop." );
                   $$ = NULL;
 		}
-	| K_while '(' expression ')' statement
+	| K_for '(' error ')' unused_stmt
 		{
-                  // statement* stmt = db_create_statement( $3 );
-		  // db_add_expression( $3 );
-                  // db_connect_statement_true( stmt, $5 );
-                  // $$ = stmt;
-                  expression_dealloc( $3, FALSE );
-                  $$ = 0;
+                  $$ = NULL;
 		}
-	| K_while '(' error ')' statement
+	| K_while '(' unused_expr ')' unused_stmt
 		{
-		  // yyerror( @3, "error: Error in while loop condition." );
+                  $$ = NULL;
+		}
+	| K_while '(' error ')' unused_stmt
+		{
                   $$ = NULL;
 		}
 	| delay1 statement_opt
 		{
-                  printf( "In delay\n" );
                   $$ = NULL;
 		}
 	| event_control statement_opt
@@ -1272,14 +1459,9 @@ statement
 		  db_add_expression( $4 );
                   $$ = stmt;
 		}
-	| lpvalue '=' K_repeat '(' expression ')' event_control expression ';'
+	| lpvalue '=' K_repeat '(' unused_expr ')' event_control unused_expr ';'
 		{
-                  // statement* stmt = db_create_statement( $5 );
-		  // db_add_expression( $5 );
-		  // db_add_expression( $8 );
-                  // $$ = stmt;
-                  expression_dealloc( $5, FALSE );
-                  expression_dealloc( $8, FALSE );
+                  $$ = NULL;
 		}
 	| lpvalue K_LE event_control expression ';'
 		{
@@ -1287,15 +1469,9 @@ statement
 		  db_add_expression( $4 );
                   $$ = stmt;
 		}
-	| lpvalue K_LE K_repeat '(' expression ')' event_control expression ';'
+	| lpvalue K_LE K_repeat '(' unused_expr ')' event_control unused_expr ';'
 		{
-                  // statement* stmt = db_create_statement( $5 );
-		  // db_add_expression( $5 );
-		  // db_add_expression( $8 );
-		  // $$ = stmt;
-                  expression_dealloc( $5, FALSE );
-                  expression_dealloc( $8, FALSE );
-                  $$ = 0;
+                  $$ = NULL;
 		}
 	| K_wait '(' expression ')' statement_opt
 		{
@@ -1304,23 +1480,22 @@ statement
                   db_connect_statement_true( stmt, $5 );
 		  $$ = stmt;
 		}
-	| SYSTEM_IDENTIFIER '(' expression_list ')' ';'
+	| SYSTEM_IDENTIFIER '(' unused_expr_list ')' ';'
 		{
-		  expression_dealloc( $3, FALSE );
                   $$ = NULL;
 		}
 	| SYSTEM_IDENTIFIER ';'
 		{
                   $$ = NULL;
 		}
-	| identifier '(' expression_list ')' ';'
+	| identifier '(' unused_expr_list ')' ';'
 		{
-		  expression_dealloc( $3, FALSE );
+		  free_safe( $1 );
                   $$ = NULL;
 		}
 	| identifier ';'
 		{
-		  /* This is a task call */
+		  free_safe( $1 );
                   $$ = NULL;
 		}
 	| error ';'
