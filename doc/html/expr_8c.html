@@ -19,7 +19,7 @@
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a6">expression_create_value</a> (<a class="el" href="defines_8h.html#a108">expression</a> *exp, int width, int lsb)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Creates an expression value and sets MEASURABLE bit if necessary.</em> <a href="#a6">More...</a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a108">expression</a> *&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a7">expression_create</a> (<a class="el" href="defines_8h.html#a108">expression</a> *right, <a class="el" href="defines_8h.html#a108">expression</a> *left, int op, int id)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a108">expression</a> *&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a7">expression_create</a> (<a class="el" href="defines_8h.html#a108">expression</a> *right, <a class="el" href="defines_8h.html#a108">expression</a> *left, int op, int id, int line)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Creates new expression.</em> <a href="#a7">More...</a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a8">expression_merge</a> (<a class="el" href="defines_8h.html#a108">expression</a> *base, <a class="el" href="defines_8h.html#a108">expression</a> *in)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Merges two expressions and stores result in base expression.</em> <a href="#a8">More...</a><em></em></font><br><br></td></tr>
@@ -78,7 +78,13 @@ Date: </b><dd>
           <td></td>
           <td></td>
           <td class="md" nowrap>int&nbsp;</td>
-          <td class="mdname" nowrap>&nbsp; <em>id</em></td>
+          <td class="mdname" nowrap>&nbsp; <em>id</em>, </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td class="md" nowrap>int&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>line</em></td>
         </tr>
         <tr>
           <td></td>
@@ -110,7 +116,9 @@ Pointer to expression on left. </td></tr>
 <tr><td valign=top><em>op</em>&nbsp;</td><td>
 Operation to perform for this expression. </td></tr>
 <tr><td valign=top><em>id</em>&nbsp;</td><td>
-ID for this expression as determined by the parent.</td></tr>
+ID for this expression as determined by the parent. </td></tr>
+<tr><td valign=top><em>line</em>&nbsp;</td><td>
+Line number this expression is on.</td></tr>
 </table>
 </dl><dl compact><dt><b>
 Returns: </b><dd>
@@ -657,7 +665,7 @@ OR operation table     </td>
 XOR operation table     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Thu May 2 22:36:41 2002 for Covered by
+<hr><address align="right"><small>Generated on Sun May 12 22:00:14 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.15 </small></address>

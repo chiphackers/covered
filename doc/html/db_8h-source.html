@@ -22,11 +22,11 @@
 00027 
 00029 <a class="code" href="structsignal__s.html">signal</a>* <a class="code" href="db_8c.html#a19">db_find_signal</a>( <font class="keywordtype">char</font>* name );
 00030 
-00032 <a class="code" href="structexpression__s.html">expression</a>* <a class="code" href="db_8c.html#a20">db_create_expression</a>( <a class="code" href="structexpression__s.html">expression</a>* right, <a class="code" href="structexpression__s.html">expression</a>* left, <font class="keywordtype">int</font> op, <font class="keywordtype">char</font>* sig_name );
+00032 <a class="code" href="structexpression__s.html">expression</a>* <a class="code" href="db_8c.html#a20">db_create_expression</a>( <a class="code" href="structexpression__s.html">expression</a>* right, <a class="code" href="structexpression__s.html">expression</a>* left, <font class="keywordtype">int</font> op, <font class="keywordtype">int</font> line, <font class="keywordtype">char</font>* sig_name );
 00033 
 00035 <font class="keywordtype">void</font> <a class="code" href="db_8c.html#a21">db_add_expression</a>( <a class="code" href="structexpression__s.html">expression</a>* root );
 00036 
-00038 <a class="code" href="structstatement__s.html">statement</a>* <a class="code" href="db_8c.html#a22">db_create_statement</a>( <font class="keywordtype">int</font> line_begin, <font class="keywordtype">int</font> line_end, <a class="code" href="structexpression__s.html">expression</a>* exp );
+00038 <a class="code" href="structstatement__s.html">statement</a>* <a class="code" href="db_8c.html#a22">db_create_statement</a>( <a class="code" href="structexpression__s.html">expression</a>* exp );
 00039 
 00041 <font class="keywordtype">void</font> <a class="code" href="db_8c.html#a23">db_connect_statement_true</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt, <a class="code" href="structstatement__s.html">statement</a>* exp_true );
 00042 
@@ -46,16 +46,22 @@
 00063 
 00064 
 00065 <font class="comment">/* $Log$</font>
-00066 <font class="comment"></font><font class="comment">/* Revision 1.2  2002/04/30 05:04:25  phase1geo</font>
-00067 <font class="comment"></font><font class="comment">/* Added initial go-round of adding statement handling to parser.  Added simple</font>
-00068 <font class="comment"></font><font class="comment">/* Verilog test to check correct statement handling.  At this point there is a</font>
-00069 <font class="comment"></font><font class="comment">/* bug in the expression write function (we need to display statement trees in</font>
-00070 <font class="comment"></font><font class="comment">/* the proper order since they are unlike normal expression trees.)</font>
-00071 <font class="comment"></font><font class="comment">/* */</font>
-00072 
-00073 #endif
-00074 
-</pre></div><hr><address align="right"><small>Generated on Thu May 2 22:36:40 2002 for Covered by
+00066 <font class="comment"></font><font class="comment">/* Revision 1.3  2002/05/03 03:39:36  phase1geo</font>
+00067 <font class="comment"></font><font class="comment">/* Removing all syntax errors due to addition of statements.  Added more statement</font>
+00068 <font class="comment"></font><font class="comment">/* support code.  Still have a ways to go before we can try anything.  Removed lines</font>
+00069 <font class="comment"></font><font class="comment">/* from expressions though we may want to consider putting these back for reporting</font>
+00070 <font class="comment"></font><font class="comment">/* purposes.</font>
+00071 <font class="comment"></font><font class="comment">/*</font>
+00072 <font class="comment"></font><font class="comment">/* Revision 1.2  2002/04/30 05:04:25  phase1geo</font>
+00073 <font class="comment"></font><font class="comment">/* Added initial go-round of adding statement handling to parser.  Added simple</font>
+00074 <font class="comment"></font><font class="comment">/* Verilog test to check correct statement handling.  At this point there is a</font>
+00075 <font class="comment"></font><font class="comment">/* bug in the expression write function (we need to display statement trees in</font>
+00076 <font class="comment"></font><font class="comment">/* the proper order since they are unlike normal expression trees.)</font>
+00077 <font class="comment"></font><font class="comment">/* */</font>
+00078 
+00079 #endif
+00080 
+</pre></div><hr><address align="right"><small>Generated on Sun May 12 22:00:13 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.15 </small></address>

@@ -13,7 +13,7 @@
 
 
 //! Creates new statement structure.
-statement* statement_create( expression* exp, int line_begin, int line_end );
+statement* statement_create( expression* exp );
 
 //! Writes specified statement to the specified output file.
 void statement_db_write( statement* stmt, FILE* ofile, char* scope );
@@ -29,6 +29,12 @@ void statement_dealloc( statement* stmt );
 
 
 /* $Log$
+/* Revision 1.2  2002/05/03 03:39:36  phase1geo
+/* Removing all syntax errors due to addition of statements.  Added more statement
+/* support code.  Still have a ways to go before we can try anything.  Removed lines
+/* from expressions though we may want to consider putting these back for reporting
+/* purposes.
+/*
 /* Revision 1.1  2002/05/02 03:27:42  phase1geo
 /* Initial creation of statement structure and manipulation files.  Internals are
 /* still in a chaotic state.

@@ -17,28 +17,42 @@ extern mod_inst* instance_root;
 extern mod_link* mod_head;
 
 /*!
- \param stmtl  Pointer to current statement list to explore.
+ \param expl   Pointer to current expression list to explore.
  \param total  Holds total number of lines parsed.
  \param hit    Holds total number of lines hit.
 
- Iterates through given statement list, gathering information about which
+ Iterates through given expression list, gathering information about which
  lines exist in the list, which lines were hit during simulation and which
  lines were missed during simulation.  This information is used to report
  summary information about line coverage.
 */
-void line_get_stats( stmt_link* stmtl, float* total, int* hit ) {
+void line_get_stats( exp_link* expl, float* total, int* hit ) {
 
-  stmt_link* curr = stmtl;   /* Pointer to current statement link in list */
+  exp_link* curr      = expl;   /* Pointer to current expression link in list      */
+  int       last_line = -1;     /* Last line number found                          */
+  bool      line_hit  = TRUE;   /* Specifies that the current line was hit already */
 
   while( curr != NULL ) {
 
-    *total = *total + ((curr->stmt->line_end - curr->stmt->line_begin) + 1);
-
-    if( SUPPL_WAS_EXECUTED( curr->stmt->exp->suppl ) == 1 ) {
-      *hit = *hit + ((curr->stmt->line_end - curr->stmt->line_begin) + 1);
+    if( curr->exp->line != last_line ) {
+      line_hit = FALSE;
+      *total = *total + 1;
+      if(    (SUPPL_WAS_EXECUTED( curr->exp->suppl ) == 1) 
+          || (   (SUPPL_OP( curr->exp->suppl ) == EXP_OP_NONE) 
+              && (   (curr->next == NULL) 
+                  || (curr->next->exp->line != curr->exp->line))) ) {
+        (*hit)++;
+        line_hit = TRUE;
+      }
+    } else {
+      if( (SUPPL_WAS_EXECUTED( curr->exp->suppl ) == 1) && !line_hit ) {
+        (*hit)++;
+        line_hit = TRUE;
+      }
     }
-
-    curr = curr->next;
+        
+    last_line = curr->exp->line;
+    curr      = curr->next;
 
   }
 
@@ -97,7 +111,7 @@ void line_module_summary( FILE* ofile, mod_link* head ) {
   float     percent;          /* Percentage of lines hit                               */
   float     miss;             /* Number of lines missed                                */
 
-  line_get_stats( head->mod->stmt_head, &total_lines, &hit_lines );
+  line_get_stats( head->mod->exp_head, &total_lines, &hit_lines );
 
   percent = ((hit_lines / total_lines) * 100);
   miss    = (total_lines - hit_lines);
@@ -117,30 +131,40 @@ void line_module_summary( FILE* ofile, mod_link* head ) {
 }
 
 /*!
- \param ofile  Pointer to file to output results to.
- \param stmtl  Pointer to statement list head.
+ \param ofile      Pointer to file to output results to.
+ \param expl       Pointer to expression list head.
 
  Displays the lines missed during simulation to standard output from the
  specified expression list.
 */
-void line_display_verbose( FILE* ofile, stmt_link* stmtl ) {
+void line_display_verbose( FILE* ofile, exp_link* expl ) {
 
-  char* code;   /* Pointer to code string from code generator */
+  expression* unexec_exp;      /* Pointer to current unexecuted expression    */
+  char*       code;            /* Pointer to code string from code generator  */
+  int         last_line = -1;  /* Line number of last line found to be missed */
 
   fprintf( ofile, "Missed Lines\n\n" );
 
   /* Display current instance missed lines */
-  while( stmtl != NULL ) {
+  while( expl != NULL ) {
 
-    if( SUPPL_WAS_EXECUTED( stmtl->stmt->exp->suppl ) == 0 ) {
+    if(   (SUPPL_WAS_EXECUTED( expl->exp->suppl ) == 0)
+       && (SUPPL_OP( expl->exp->suppl ) != EXP_OP_NONE)
+       && (expl->exp->line != last_line) ) {
 
-      code = codegen_gen_expr( stmtl->stmt->exp, -1 );
-      fprintf( ofile, "%7d:    %s\n", stmtl->stmt->line_begin, code );
+      last_line  = expl->exp->line;
+      unexec_exp = expl->exp;
+      while( (unexec_exp->parent != NULL) && (unexec_exp->parent->line == unexec_exp->line) ) {
+        unexec_exp = unexec_exp->parent;
+      }
+
+      code = codegen_gen_expr( unexec_exp, unexec_exp->line );
+      fprintf( ofile, "%7d:    %s\n", unexec_exp->line, code );
       free_safe( code );
 
     }
 
-    stmtl = stmtl->next;
+    expl = expl->next;
 
   }
 
@@ -170,7 +194,7 @@ void line_instance_verbose( FILE* ofile, mod_inst* root ) {
            root->name );
   fprintf( ofile, "--------------------------------------------------------\n" );
 
-  line_display_verbose( ofile, root->mod->stmt_head );
+  line_display_verbose( ofile, root->mod->exp_head );
 
   curr_inst = root->child_head;
   while( curr_inst != NULL ) {
@@ -199,7 +223,7 @@ void line_module_verbose( FILE* ofile, mod_link* head ) {
            head->mod->filename );
   fprintf( ofile, "--------------------------------------------------------\n" );
 
-  line_display_verbose( ofile, head->mod->stmt_head );
+  line_display_verbose( ofile, head->mod->exp_head );
   
   if( head->next != NULL ) {
     line_module_verbose( ofile, head->next );
@@ -252,5 +276,5 @@ void line_report( FILE* ofile, bool verbose, bool instance ) {
 
 }
 
-
 /* $Log$ */
+

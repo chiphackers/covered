@@ -7,10 +7,6 @@
 \item 
 {\bf expression} $\ast$ {\bf exp}
 \item 
-int {\bf line\_\-begin}
-\item 
-int {\bf line\_\-end}
-\item 
 {\bf statement} $\ast$ {\bf next\_\-true}
 \item 
 {\bf statement} $\ast$ {\bf next\_\-false}
@@ -23,24 +19,14 @@ int {\bf line\_\-end}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf expression}$\ast$ statement\_\-s::exp}\label{structstatement__s_m0}
 
 
-Pointer to associated expression tree \index{statement_s@{statement\_\-s}!line_begin@{line\_\-begin}}
-\index{line_begin@{line\_\-begin}!statement_s@{statement\_\-s}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int statement\_\-s::line\_\-begin}\label{structstatement__s_m1}
-
-
-Beginning line of expression tree \index{statement_s@{statement\_\-s}!line_end@{line\_\-end}}
-\index{line_end@{line\_\-end}!statement_s@{statement\_\-s}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int statement\_\-s::line\_\-end}\label{structstatement__s_m2}
-
-
-Ending line of expression tree \index{statement_s@{statement\_\-s}!next_false@{next\_\-false}}
+Pointer to associated expression tree \index{statement_s@{statement\_\-s}!next_false@{next\_\-false}}
 \index{next_false@{next\_\-false}!statement_s@{statement\_\-s}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf statement}$\ast$ statement\_\-s::next\_\-false}\label{structstatement__s_m4}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf statement}$\ast$ statement\_\-s::next\_\-false}\label{structstatement__s_m2}
 
 
 Pointer to next statement to run if next\_\-true not picked \index{statement_s@{statement\_\-s}!next_true@{next\_\-true}}
 \index{next_true@{next\_\-true}!statement_s@{statement\_\-s}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf statement}$\ast$ statement\_\-s::next\_\-true}\label{structstatement__s_m3}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf statement}$\ast$ statement\_\-s::next\_\-true}\label{structstatement__s_m1}
 
 
 Pointer to next statement to run if expression tree non-zero 

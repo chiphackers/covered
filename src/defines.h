@@ -2,7 +2,7 @@
 #define __DEFINES_H__
 
 /*!
- \file    defines.h
+ \file     defines.h
  \author   Trevor Williams  (trevorw@charter.net)
  \date     11/27/2001
  \brief    Contains definitions/structures used in the Covered utility.
@@ -511,6 +511,7 @@ struct expression_s {
   vector*     value;       /*!< Current value and toggle information of this expression        */
   nibble      suppl;       /*!< Vector containing supplemental information for this expression */
   int         id;          /*!< Specifies unique ID for this expression in the parent          */
+  int         line;        /*!< Specified line in file that this expression is found on        */
   signal*     sig;         /*!< Pointer to signal.  If NULL then no signal is attached         */
   expression* parent;      /*!< Parent expression.  If NULL then this is the root expression   */
   expression* right;       /*!< Pointer to expression on right                                 */
@@ -536,8 +537,6 @@ typedef struct statement_s statement;
 
 struct statement_s {
   expression* exp;         /*!< Pointer to associated expression tree                        */
-  int         line_begin;  /*!< Beginning line of expression tree                            */
-  int         line_end;    /*!< Ending line of expression tree                               */
   statement*  next_true;   /*!< Pointer to next statement to run if expression tree non-zero */
   statement*  next_false;  /*!< Pointer to next statement to run if next_true not picked     */
 };
@@ -704,6 +703,12 @@ struct mod_inst_s {
 
 
 /* $Log$
+/* Revision 1.10  2002/05/03 03:39:36  phase1geo
+/* Removing all syntax errors due to addition of statements.  Added more statement
+/* support code.  Still have a ways to go before we can try anything.  Removed lines
+/* from expressions though we may want to consider putting these back for reporting
+/* purposes.
+/*
 /* Revision 1.9  2002/05/02 03:27:42  phase1geo
 /* Initial creation of statement structure and manipulation files.  Internals are
 /* still in a chaotic state.

@@ -35,11 +35,11 @@
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds specified signal to signal list. Called by parser.</em> <a href="#a18">More...</a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a109">signal</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a19">db_find_signal</a> (char *name)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Finds specified signal in module and returns pointer to the signal structure. Called by parser.</em> <a href="#a19">More...</a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a108">expression</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a20">db_create_expression</a> (<a class="el" href="defines_8h.html#a108">expression</a> *right, <a class="el" href="defines_8h.html#a108">expression</a> *left, int op, char *sig_name)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a108">expression</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a20">db_create_expression</a> (<a class="el" href="defines_8h.html#a108">expression</a> *right, <a class="el" href="defines_8h.html#a108">expression</a> *left, int op, int line, char *sig_name)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Creates new expression from specified information. Called by parser and db_add_expression.</em> <a href="#a20">More...</a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a21">db_add_expression</a> (<a class="el" href="defines_8h.html#a108">expression</a> *root)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds specified expression to expression list. Called by parser.</em> <a href="#a21">More...</a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a110">statement</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a22">db_create_statement</a> (int line_begin, int line_end, <a class="el" href="defines_8h.html#a108">expression</a> *exp)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a110">statement</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a22">db_create_statement</a> (<a class="el" href="defines_8h.html#a108">expression</a> *exp)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Creates new statement expression from specified information. Called by parser.</em> <a href="#a22">More...</a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a23">db_connect_statement_true</a> (<a class="el" href="defines_8h.html#a110">statement</a> *stmt, <a class="el" href="defines_8h.html#a110">statement</a> *next_true)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Connects true statement to specified statement.</em> <a href="#a23">More...</a><em></em></font><br><br></td></tr>
@@ -449,6 +449,12 @@ Pointer to statement to run if statement evaluates to TRUE.</td></tr>
         <tr>
           <td></td>
           <td></td>
+          <td class="md" nowrap>int&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>line</em>, </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
           <td class="md" nowrap>char *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>sig_name</em></td>
         </tr>
@@ -481,6 +487,8 @@ Pointer to expression on right side of expression. </td></tr>
 Pointer to expression on left side of expression. </td></tr>
 <tr><td valign=top><em>op</em>&nbsp;</td><td>
 Operation to perform on expression. </td></tr>
+<tr><td valign=top><em>line</em>&nbsp;</td><td>
+Line number of current expression. </td></tr>
 <tr><td valign=top><em>sig_name</em>&nbsp;</td><td>
 Name of signal that expression is attached to (if valid).</td></tr>
 </table>
@@ -497,25 +505,10 @@ Returns pointer to newly created expression.</dl>Creates a new expression with t
         <tr>
           <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a110">statement</a>* db_create_statement </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top">int&nbsp;</td>
-          <td class="mdname" nowrap>&nbsp; <em>line_begin</em>, </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td class="md" nowrap>int&nbsp;</td>
-          <td class="mdname" nowrap>&nbsp; <em>line_end</em>, </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a108">expression</a> *&nbsp;</td>
-          <td class="mdname" nowrap>&nbsp; <em>exp</em></td>
-        </tr>
-        <tr>
-          <td></td>
-          <td class="md">)&nbsp;</td>
-          <td class="md" colspan="2"></td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a108">expression</a> *&nbsp;</td>
+          <td class="mdname1" valign="top" nowrap>&nbsp; <em>exp</em>          </td>
+          <td class="md" valign="top">)&nbsp;</td>
+          <td class="md" nowrap></td>
         </tr>
 
       </table>
@@ -535,10 +528,6 @@ Creates new statement expression from specified information. Called by parser.
 <dl compact><dt><b>
 Parameters: </b><dd>
 <table border=0 cellspacing=2 cellpadding=0>
-<tr><td valign=top><em>line_begin</em>&nbsp;</td><td>
-Line number where statement starts. </td></tr>
-<tr><td valign=top><em>line_end</em>&nbsp;</td><td>
-Line number where statement ends. </td></tr>
 <tr><td valign=top><em>exp</em>&nbsp;</td><td>
 Pointer to associated "root" expression.</td></tr>
 </table>
@@ -1261,7 +1250,7 @@ Pointer to tail element of module list     </td>
     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Thu May 2 22:36:41 2002 for Covered by
+<hr><address align="right"><small>Generated on Sun May 12 22:00:14 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.15 </small></address>

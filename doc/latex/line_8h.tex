@@ -8,7 +8,7 @@ Contains functions for determining/reporting line coverage.
 \subsection*{Functions}
 \begin{CompactItemize}
 \item 
-void {\bf line\_\-get\_\-stats} ({\bf stmt\_\-link} $\ast$stmtl, float $\ast$total, int $\ast$hit)
+void {\bf line\_\-get\_\-stats} ({\bf exp\_\-link} $\ast$expl, float $\ast$total, int $\ast$hit)
 \begin{CompactList}\small\item\em Calculates line coverage numbers for the specified expression list.\item\end{CompactList}\item 
 void {\bf line\_\-report} (FILE $\ast$ofile, {\bf bool} verbose, {\bf bool} instance)
 \begin{CompactList}\small\item\em Generates report output for line coverage.\item\end{CompactList}\end{CompactItemize}
@@ -30,7 +30,7 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsection{Function Documentation}
 \index{line.h@{line.h}!line_get_stats@{line\_\-get\_\-stats}}
 \index{line_get_stats@{line\_\-get\_\-stats}!line.h@{line.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void line\_\-get\_\-stats ({\bf stmt\_\-link} $\ast$ {\em stmtl}, float $\ast$ {\em total}, int $\ast$ {\em hit})}\label{line_8h_a0}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void line\_\-get\_\-stats ({\bf exp\_\-link} $\ast$ {\em expl}, float $\ast$ {\em total}, int $\ast$ {\em hit})}\label{line_8h_a0}
 
 
 Calculates line coverage numbers for the specified expression list.
@@ -39,11 +39,11 @@ Calculates line coverage numbers for the specified expression list.
 \item[Parameters: ]\par
 \begin{description}
 \item[{\em 
-stmtl}]Pointer to current statement list to explore. \item[{\em 
+expl}]Pointer to current expression list to explore. \item[{\em 
 total}]Holds total number of lines parsed. \item[{\em 
 hit}]Holds total number of lines hit.\end{description}
 \end{Desc}
-Iterates through given statement list, gathering information about which lines exist in the list, which lines were hit during simulation and which lines were missed during simulation. This information is used to report summary information about line coverage. \index{line.h@{line.h}!line_report@{line\_\-report}}
+Iterates through given expression list, gathering information about which lines exist in the list, which lines were hit during simulation and which lines were missed during simulation. This information is used to report summary information about line coverage. \index{line.h@{line.h}!line_report@{line\_\-report}}
 \index{line_report@{line\_\-report}!line.h@{line.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void line\_\-report (FILE $\ast$ {\em ofile}, {\bf bool} {\em verbose}, {\bf bool} {\em instance})}\label{line_8h_a1}
 

@@ -31,11 +31,11 @@ void {\bf db\_\-add\_\-signal} (char $\ast$name, int width, int lsb, int is\_\-s
 \begin{CompactList}\small\item\em Adds specified signal to signal list. Called by parser.\item\end{CompactList}\item 
 {\bf signal} $\ast$ {\bf db\_\-find\_\-signal} (char $\ast$name)
 \begin{CompactList}\small\item\em Finds specified signal in module and returns pointer to the signal structure. Called by parser.\item\end{CompactList}\item 
-{\bf expression} $\ast$ {\bf db\_\-create\_\-expression} ({\bf expression} $\ast$right, {\bf expression} $\ast$left, int op, char $\ast$sig\_\-name)
+{\bf expression} $\ast$ {\bf db\_\-create\_\-expression} ({\bf expression} $\ast$right, {\bf expression} $\ast$left, int op, int line, char $\ast$sig\_\-name)
 \begin{CompactList}\small\item\em Creates new expression from specified information. Called by parser and db\_\-add\_\-expression.\item\end{CompactList}\item 
 void {\bf db\_\-add\_\-expression} ({\bf expression} $\ast$root)
 \begin{CompactList}\small\item\em Adds specified expression to expression list. Called by parser.\item\end{CompactList}\item 
-{\bf statement} $\ast$ {\bf db\_\-create\_\-statement} (int line\_\-begin, int line\_\-end, {\bf expression} $\ast$exp)
+{\bf statement} $\ast$ {\bf db\_\-create\_\-statement} ({\bf expression} $\ast$exp)
 \begin{CompactList}\small\item\em Creates new statement expression from specified information. Called by parser.\item\end{CompactList}\item 
 void {\bf db\_\-connect\_\-statement\_\-true} ({\bf statement} $\ast$stmt, {\bf statement} $\ast$next\_\-true)
 \begin{CompactList}\small\item\em Connects true statement to specified statement.\item\end{CompactList}\item 
@@ -201,7 +201,7 @@ next\_\-true}]Pointer to statement to run if statement evaluates to TRUE.\end{de
 \end{Desc}
 Connects the specified statement's true statement. \index{db.c@{db.c}!db_create_expression@{db\_\-create\_\-expression}}
 \index{db_create_expression@{db\_\-create\_\-expression}!db.c@{db.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf expression}$\ast$ db\_\-create\_\-expression ({\bf expression} $\ast$ {\em right}, {\bf expression} $\ast$ {\em left}, int {\em op}, char $\ast$ {\em sig\_\-name})}\label{db_8c_a20}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf expression}$\ast$ db\_\-create\_\-expression ({\bf expression} $\ast$ {\em right}, {\bf expression} $\ast$ {\em left}, int {\em op}, int {\em line}, char $\ast$ {\em sig\_\-name})}\label{db_8c_a20}
 
 
 Creates new expression from specified information. Called by parser and db\_\-add\_\-expression.
@@ -213,6 +213,7 @@ Creates new expression from specified information. Called by parser and db\_\-ad
 right}]Pointer to expression on right side of expression. \item[{\em 
 left}]Pointer to expression on left side of expression. \item[{\em 
 op}]Operation to perform on expression. \item[{\em 
+line}]Line number of current expression. \item[{\em 
 sig\_\-name}]Name of signal that expression is attached to (if valid).\end{description}
 \end{Desc}
 \begin{Desc}
@@ -220,7 +221,7 @@ sig\_\-name}]Name of signal that expression is attached to (if valid).\end{descr
 Returns pointer to newly created expression.\end{Desc}
 Creates a new expression with the specified parameter information and returns a pointer to the newly created expression. \index{db.c@{db.c}!db_create_statement@{db\_\-create\_\-statement}}
 \index{db_create_statement@{db\_\-create\_\-statement}!db.c@{db.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf statement}$\ast$ db\_\-create\_\-statement (int {\em line\_\-begin}, int {\em line\_\-end}, {\bf expression} $\ast$ {\em exp})}\label{db_8c_a22}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf statement}$\ast$ db\_\-create\_\-statement ({\bf expression} $\ast$ {\em exp})}\label{db_8c_a22}
 
 
 Creates new statement expression from specified information. Called by parser.
@@ -229,8 +230,6 @@ Creates new statement expression from specified information. Called by parser.
 \item[Parameters: ]\par
 \begin{description}
 \item[{\em 
-line\_\-begin}]Line number where statement starts. \item[{\em 
-line\_\-end}]Line number where statement ends. \item[{\em 
 exp}]Pointer to associated \char`\"{}root\char`\"{} expression.\end{description}
 \end{Desc}
 \begin{Desc}

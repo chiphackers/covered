@@ -204,165 +204,170 @@
 <a name="l00511"></a><a class="code" href="structexpression__s.html#m0">00511</a>   vector*     <a class="code" href="structexpression__s.html#m0">value</a>;       
 <a name="l00512"></a><a class="code" href="structexpression__s.html#m1">00512</a>   <a class="code" href="defines_8h.html#a105">nibble</a>      <a class="code" href="structexpression__s.html#m1">suppl</a>;       
 <a name="l00513"></a><a class="code" href="structexpression__s.html#m2">00513</a>   <font class="keywordtype">int</font>         <a class="code" href="structexpression__s.html#m2">id</a>;          
-<a name="l00514"></a><a class="code" href="structexpression__s.html#m3">00514</a>   signal*     <a class="code" href="structexpression__s.html#m3">sig</a>;         
-<a name="l00515"></a><a class="code" href="structexpression__s.html#m4">00515</a>   expression* <a class="code" href="structexpression__s.html#m4">parent</a>;      
-<a name="l00516"></a><a class="code" href="structexpression__s.html#m5">00516</a>   expression* <a class="code" href="structexpression__s.html#m5">right</a>;       
-<a name="l00517"></a><a class="code" href="structexpression__s.html#m6">00517</a>   expression* <a class="code" href="structexpression__s.html#m6">left</a>;        
-00518 };
-00519 
-00520 <font class="comment">//------------------------------------------------------------------------------</font>
-00533 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structstatement__s.html">statement_s</a>;
-00534 
-<a name="l00535"></a><a class="code" href="defines_8h.html#a110">00535</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structstatement__s.html">statement_s</a> statement;
-00536 
-<a name="l00537"></a><a class="code" href="structstatement__s.html">00537</a> <font class="keyword">struct </font><a class="code" href="structstatement__s.html">statement_s</a> {
-<a name="l00538"></a><a class="code" href="structstatement__s.html#m0">00538</a>   expression* <a class="code" href="structstatement__s.html#m0">exp</a>;         
-<a name="l00539"></a><a class="code" href="structstatement__s.html#m1">00539</a>   <font class="keywordtype">int</font>         <a class="code" href="structstatement__s.html#m1">line_begin</a>;  
-<a name="l00540"></a><a class="code" href="structstatement__s.html#m2">00540</a>   <font class="keywordtype">int</font>         <a class="code" href="structstatement__s.html#m2">line_end</a>;    
-<a name="l00541"></a><a class="code" href="structstatement__s.html#m3">00541</a>   statement*  <a class="code" href="structstatement__s.html#m3">next_true</a>;   
-<a name="l00542"></a><a class="code" href="structstatement__s.html#m4">00542</a>   statement*  <a class="code" href="structstatement__s.html#m4">next_false</a>;  
-00543 };
-00544  
-00545 <font class="comment">//------------------------------------------------------------------------------</font>
-00549 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structexp__link__s.html">exp_link_s</a>;
-00550 
-<a name="l00551"></a><a class="code" href="defines_8h.html#a111">00551</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structexp__link__s.html">exp_link_s</a> exp_link;
-00552 
-<a name="l00553"></a><a class="code" href="structexp__link__s.html">00553</a> <font class="keyword">struct </font><a class="code" href="structexp__link__s.html">exp_link_s</a> {
-<a name="l00554"></a><a class="code" href="structexp__link__s.html#m0">00554</a>   expression* <a class="code" href="structexp__link__s.html#m0">exp</a>;   
-<a name="l00555"></a><a class="code" href="structexp__link__s.html#m1">00555</a>   exp_link*   <a class="code" href="structexp__link__s.html#m1">next</a>;  
-00556 };
-00557 
-00558 <font class="comment">//------------------------------------------------------------------------------</font>
-00562 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structstmt__link__s.html">stmt_link_s</a>;
-00563 
-<a name="l00564"></a><a class="code" href="defines_8h.html#a112">00564</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structstmt__link__s.html">stmt_link_s</a> stmt_link;
-00565 
-<a name="l00566"></a><a class="code" href="structstmt__link__s.html">00566</a> <font class="keyword">struct </font><a class="code" href="structstmt__link__s.html">stmt_link_s</a> {
-<a name="l00567"></a><a class="code" href="structstmt__link__s.html#m0">00567</a>   statement* <a class="code" href="structstmt__link__s.html#m0">stmt</a>;   
-<a name="l00568"></a><a class="code" href="structstmt__link__s.html#m1">00568</a>   stmt_link* <a class="code" href="structstmt__link__s.html#m1">next</a>;   
-00569 };
-00570 
-00571 <font class="comment">//------------------------------------------------------------------------------</font>
-<a name="l00576"></a><a class="code" href="structsignal__s.html">00576</a> <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structsignal__s.html">signal_s</a> {
-<a name="l00577"></a><a class="code" href="structsignal__s.html#m0">00577</a>   <font class="keywordtype">char</font>*      <a class="code" href="structsignal__s.html#m0">name</a>;      
-<a name="l00578"></a><a class="code" href="structsignal__s.html#m1">00578</a>   vector*    <a class="code" href="structsignal__s.html#m1">value</a>;     
-<a name="l00579"></a><a class="code" href="structsignal__s.html#m2">00579</a>   exp_link*  <a class="code" href="structsignal__s.html#m2">exp_head</a>;  
-<a name="l00580"></a><a class="code" href="structsignal__s.html#m3">00580</a>   exp_link*  <a class="code" href="structsignal__s.html#m3">exp_tail</a>;  
-00581 };
-00582 
-00583 <font class="comment">//------------------------------------------------------------------------------</font>
-00587 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structsig__link__s.html">sig_link_s</a>;
-00588 
-<a name="l00589"></a><a class="code" href="defines_8h.html#a113">00589</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structsig__link__s.html">sig_link_s</a> sig_link;
-00590 
-<a name="l00591"></a><a class="code" href="structsig__link__s.html">00591</a> <font class="keyword">struct </font><a class="code" href="structsig__link__s.html">sig_link_s</a> {
-<a name="l00592"></a><a class="code" href="structsig__link__s.html#m0">00592</a>   signal*   <a class="code" href="structsig__link__s.html#m0">sig</a>;   
-<a name="l00593"></a><a class="code" href="structsig__link__s.html#m1">00593</a>   sig_link* <a class="code" href="structsig__link__s.html#m1">next</a>;  
-00594 };
-00595 
-00596 <font class="comment">//------------------------------------------------------------------------------</font>
-<a name="l00601"></a><a class="code" href="structmodule__s.html">00601</a> <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structmodule__s.html">module_s</a> {
-<a name="l00602"></a><a class="code" href="structmodule__s.html#m0">00602</a>   <font class="keywordtype">char</font>*      <a class="code" href="structmodule__s.html#m0">name</a>;       
-<a name="l00603"></a><a class="code" href="structmodule__s.html#m1">00603</a>   <font class="keywordtype">char</font>*      <a class="code" href="structmodule__s.html#m1">filename</a>;   
-<a name="l00604"></a><a class="code" href="structmodule__s.html#m2">00604</a>   <font class="keywordtype">char</font>*      <a class="code" href="structmodule__s.html#m2">scope</a>;      
-<a name="l00605"></a><a class="code" href="structmodule__s.html#m3">00605</a>   sig_link*  <a class="code" href="structmodule__s.html#m3">sig_head</a>;   
-<a name="l00606"></a><a class="code" href="structmodule__s.html#m4">00606</a>   sig_link*  <a class="code" href="structmodule__s.html#m4">sig_tail</a>;   
-<a name="l00607"></a><a class="code" href="structmodule__s.html#m5">00607</a>   exp_link*  <a class="code" href="structmodule__s.html#m5">exp_head</a>;   
-<a name="l00608"></a><a class="code" href="structmodule__s.html#m6">00608</a>   exp_link*  <a class="code" href="structmodule__s.html#m6">exp_tail</a>;   
-<a name="l00609"></a><a class="code" href="structmodule__s.html#m7">00609</a>   stmt_link* <a class="code" href="structmodule__s.html#m7">stmt_head</a>;  
-<a name="l00610"></a><a class="code" href="structmodule__s.html#m8">00610</a>   stmt_link* <a class="code" href="structmodule__s.html#m8">stmt_tail</a>;  
-00611 };
-00612 
-<a name="l00613"></a><a class="code" href="defines_8h.html#a114">00613</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structmodule__s.html">module_s</a> module;
-00614 
-00615 <font class="comment">//------------------------------------------------------------------------------</font>
-00619 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structmod__link__s.html">mod_link_s</a>;
-00620         
-<a name="l00621"></a><a class="code" href="defines_8h.html#a115">00621</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structmod__link__s.html">mod_link_s</a> mod_link;
-00622         
-<a name="l00623"></a><a class="code" href="structmod__link__s.html">00623</a> <font class="keyword">struct </font><a class="code" href="structmod__link__s.html">mod_link_s</a> {
-<a name="l00624"></a><a class="code" href="structmod__link__s.html#m0">00624</a>   module*    <a class="code" href="structmod__link__s.html#m0">mod</a>;   
-<a name="l00625"></a><a class="code" href="structmod__link__s.html#m1">00625</a>   mod_link* <a class="code" href="structmod__link__s.html#m1">next</a>;   
-00626 };
-00627 
-00628 <font class="comment">//------------------------------------------------------------------------------</font>
-00632 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structsymtable__s.html">symtable_s</a>;
-00633 
-<a name="l00634"></a><a class="code" href="defines_8h.html#a116">00634</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structsymtable__s.html">symtable_s</a> symtable;
-00635 
-<a name="l00636"></a><a class="code" href="structsymtable__s.html">00636</a> <font class="keyword">struct </font><a class="code" href="structsymtable__s.html">symtable_s</a> {
-<a name="l00637"></a><a class="code" href="structsymtable__s.html#m0">00637</a>   <font class="keywordtype">char</font>*     <a class="code" href="structsymtable__s.html#m0">sym</a>;          
-<a name="l00638"></a><a class="code" href="structsymtable__s.html#m1">00638</a>   signal*   <a class="code" href="structsymtable__s.html#m1">sig</a>;          
-<a name="l00639"></a><a class="code" href="structsymtable__s.html#m2">00639</a>   symtable* <a class="code" href="structsymtable__s.html#m2">right</a>;        
-<a name="l00640"></a><a class="code" href="structsymtable__s.html#m3">00640</a>   symtable* <a class="code" href="structsymtable__s.html#m3">left</a>;         
-00641 };
-00642 
-00643 <font class="comment">//------------------------------------------------------------------------------</font>
-<a name="l00647"></a><a class="code" href="structsignal__width__s.html">00647</a> <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structsignal__width__s.html">signal_width_s</a> {
-<a name="l00648"></a><a class="code" href="structsignal__width__s.html#m0">00648</a>   <font class="keywordtype">int</font> <a class="code" href="structsignal__width__s.html#m0">width</a>;
-<a name="l00649"></a><a class="code" href="structsignal__width__s.html#m1">00649</a>   <font class="keywordtype">int</font> <a class="code" href="structsignal__width__s.html#m1">lsb</a>;
-00650 };
-00651 
-<a name="l00652"></a><a class="code" href="defines_8h.html#a117">00652</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structsignal__width__s.html">signal_width_s</a> signal_width;
-00653 
-00654 <font class="comment">//------------------------------------------------------------------------------</font>
-00658 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structsig__exp__bind__s.html">sig_exp_bind_s</a>;
-00659 
-<a name="l00660"></a><a class="code" href="defines_8h.html#a118">00660</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structsig__exp__bind__s.html">sig_exp_bind_s</a> sig_exp_bind;
-00661 
-<a name="l00662"></a><a class="code" href="structsig__exp__bind__s.html">00662</a> <font class="keyword">struct </font><a class="code" href="structsig__exp__bind__s.html">sig_exp_bind_s</a> {
-<a name="l00663"></a><a class="code" href="structsig__exp__bind__s.html#m0">00663</a>   <font class="keywordtype">char</font>*         <a class="code" href="structsig__exp__bind__s.html#m0">sig_name</a>;  
-<a name="l00664"></a><a class="code" href="structsig__exp__bind__s.html#m1">00664</a>   expression*   <a class="code" href="structsig__exp__bind__s.html#m1">exp</a>;       
-<a name="l00665"></a><a class="code" href="structsig__exp__bind__s.html#m2">00665</a>   <font class="keywordtype">char</font>*         <a class="code" href="structsig__exp__bind__s.html#m2">mod_name</a>;  
-<a name="l00666"></a><a class="code" href="structsig__exp__bind__s.html#m3">00666</a>   sig_exp_bind* <a class="code" href="structsig__exp__bind__s.html#m3">next</a>;      
-00667 };
-00668 
-00669 <font class="comment">//------------------------------------------------------------------------------</font>
-00674 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structstatistic__s.html">statistic_s</a>;
-00675 
-<a name="l00676"></a><a class="code" href="defines_8h.html#a119">00676</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structstatistic__s.html">statistic_s</a> statistic;
-00677 
-<a name="l00678"></a><a class="code" href="structstatistic__s.html">00678</a> <font class="keyword">struct </font><a class="code" href="structstatistic__s.html">statistic_s</a> {
-<a name="l00679"></a><a class="code" href="structstatistic__s.html#m0">00679</a>   <font class="keywordtype">float</font> <a class="code" href="structstatistic__s.html#m0">line_total</a>;    
-<a name="l00680"></a><a class="code" href="structstatistic__s.html#m1">00680</a>   <font class="keywordtype">int</font>   <a class="code" href="structstatistic__s.html#m1">line_hit</a>;      
-<a name="l00681"></a><a class="code" href="structstatistic__s.html#m2">00681</a>   <font class="keywordtype">float</font> <a class="code" href="structstatistic__s.html#m2">tog_total</a>;     
-<a name="l00682"></a><a class="code" href="structstatistic__s.html#m3">00682</a>   <font class="keywordtype">int</font>   <a class="code" href="structstatistic__s.html#m3">tog01_hit</a>;     
-<a name="l00683"></a><a class="code" href="structstatistic__s.html#m4">00683</a>   <font class="keywordtype">int</font>   <a class="code" href="structstatistic__s.html#m4">tog10_hit</a>;     
-<a name="l00684"></a><a class="code" href="structstatistic__s.html#m5">00684</a>   <font class="keywordtype">float</font> <a class="code" href="structstatistic__s.html#m5">comb_total</a>;    
-<a name="l00685"></a><a class="code" href="structstatistic__s.html#m6">00685</a>   <font class="keywordtype">int</font>   <a class="code" href="structstatistic__s.html#m6">comb_hit</a>;      
-00686 };
-00687 
-00688 <font class="comment">//------------------------------------------------------------------------------</font>
-00692 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structmod__inst__s.html">mod_inst_s</a>;
-00693 
-<a name="l00694"></a><a class="code" href="defines_8h.html#a120">00694</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structmod__inst__s.html">mod_inst_s</a> mod_inst;
-00695 
-<a name="l00696"></a><a class="code" href="structmod__inst__s.html">00696</a> <font class="keyword">struct </font><a class="code" href="structmod__inst__s.html">mod_inst_s</a> {
-<a name="l00697"></a><a class="code" href="structmod__inst__s.html#m0">00697</a>   <font class="keywordtype">char</font>*      <a class="code" href="structmod__inst__s.html#m0">name</a>;          
-<a name="l00698"></a><a class="code" href="structmod__inst__s.html#m1">00698</a>   module*    <a class="code" href="structmod__inst__s.html#m1">mod</a>;           
-<a name="l00699"></a><a class="code" href="structmod__inst__s.html#m2">00699</a>   statistic* <a class="code" href="structmod__inst__s.html#m2">stat</a>;          
-<a name="l00700"></a><a class="code" href="structmod__inst__s.html#m3">00700</a>   mod_inst*  <a class="code" href="structmod__inst__s.html#m3">child_head</a>;    
-<a name="l00701"></a><a class="code" href="structmod__inst__s.html#m4">00701</a>   mod_inst*  <a class="code" href="structmod__inst__s.html#m4">child_tail</a>;    
-<a name="l00702"></a><a class="code" href="structmod__inst__s.html#m5">00702</a>   mod_inst*  <a class="code" href="structmod__inst__s.html#m5">next</a>;          
-00703 };
+<a name="l00514"></a><a class="code" href="structexpression__s.html#m3">00514</a>   <font class="keywordtype">int</font>         <a class="code" href="structexpression__s.html#m3">line</a>;        
+<a name="l00515"></a><a class="code" href="structexpression__s.html#m4">00515</a>   signal*     <a class="code" href="structexpression__s.html#m4">sig</a>;         
+<a name="l00516"></a><a class="code" href="structexpression__s.html#m5">00516</a>   expression* <a class="code" href="structexpression__s.html#m5">parent</a>;      
+<a name="l00517"></a><a class="code" href="structexpression__s.html#m6">00517</a>   expression* <a class="code" href="structexpression__s.html#m6">right</a>;       
+<a name="l00518"></a><a class="code" href="structexpression__s.html#m7">00518</a>   expression* <a class="code" href="structexpression__s.html#m7">left</a>;        
+00519 };
+00520 
+00521 <font class="comment">//------------------------------------------------------------------------------</font>
+00534 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structstatement__s.html">statement_s</a>;
+00535 
+<a name="l00536"></a><a class="code" href="defines_8h.html#a110">00536</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structstatement__s.html">statement_s</a> statement;
+00537 
+<a name="l00538"></a><a class="code" href="structstatement__s.html">00538</a> <font class="keyword">struct </font><a class="code" href="structstatement__s.html">statement_s</a> {
+<a name="l00539"></a><a class="code" href="structstatement__s.html#m0">00539</a>   expression* <a class="code" href="structstatement__s.html#m0">exp</a>;         
+<a name="l00540"></a><a class="code" href="structstatement__s.html#m1">00540</a>   statement*  <a class="code" href="structstatement__s.html#m1">next_true</a>;   
+<a name="l00541"></a><a class="code" href="structstatement__s.html#m2">00541</a>   statement*  <a class="code" href="structstatement__s.html#m2">next_false</a>;  
+00542 };
+00543  
+00544 <font class="comment">//------------------------------------------------------------------------------</font>
+00548 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structexp__link__s.html">exp_link_s</a>;
+00549 
+<a name="l00550"></a><a class="code" href="defines_8h.html#a111">00550</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structexp__link__s.html">exp_link_s</a> exp_link;
+00551 
+<a name="l00552"></a><a class="code" href="structexp__link__s.html">00552</a> <font class="keyword">struct </font><a class="code" href="structexp__link__s.html">exp_link_s</a> {
+<a name="l00553"></a><a class="code" href="structexp__link__s.html#m0">00553</a>   expression* <a class="code" href="structexp__link__s.html#m0">exp</a>;   
+<a name="l00554"></a><a class="code" href="structexp__link__s.html#m1">00554</a>   exp_link*   <a class="code" href="structexp__link__s.html#m1">next</a>;  
+00555 };
+00556 
+00557 <font class="comment">//------------------------------------------------------------------------------</font>
+00561 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structstmt__link__s.html">stmt_link_s</a>;
+00562 
+<a name="l00563"></a><a class="code" href="defines_8h.html#a112">00563</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structstmt__link__s.html">stmt_link_s</a> stmt_link;
+00564 
+<a name="l00565"></a><a class="code" href="structstmt__link__s.html">00565</a> <font class="keyword">struct </font><a class="code" href="structstmt__link__s.html">stmt_link_s</a> {
+<a name="l00566"></a><a class="code" href="structstmt__link__s.html#m0">00566</a>   statement* <a class="code" href="structstmt__link__s.html#m0">stmt</a>;   
+<a name="l00567"></a><a class="code" href="structstmt__link__s.html#m1">00567</a>   stmt_link* <a class="code" href="structstmt__link__s.html#m1">next</a>;   
+00568 };
+00569 
+00570 <font class="comment">//------------------------------------------------------------------------------</font>
+<a name="l00575"></a><a class="code" href="structsignal__s.html">00575</a> <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structsignal__s.html">signal_s</a> {
+<a name="l00576"></a><a class="code" href="structsignal__s.html#m0">00576</a>   <font class="keywordtype">char</font>*      <a class="code" href="structsignal__s.html#m0">name</a>;      
+<a name="l00577"></a><a class="code" href="structsignal__s.html#m1">00577</a>   vector*    <a class="code" href="structsignal__s.html#m1">value</a>;     
+<a name="l00578"></a><a class="code" href="structsignal__s.html#m2">00578</a>   exp_link*  <a class="code" href="structsignal__s.html#m2">exp_head</a>;  
+<a name="l00579"></a><a class="code" href="structsignal__s.html#m3">00579</a>   exp_link*  <a class="code" href="structsignal__s.html#m3">exp_tail</a>;  
+00580 };
+00581 
+00582 <font class="comment">//------------------------------------------------------------------------------</font>
+00586 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structsig__link__s.html">sig_link_s</a>;
+00587 
+<a name="l00588"></a><a class="code" href="defines_8h.html#a113">00588</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structsig__link__s.html">sig_link_s</a> sig_link;
+00589 
+<a name="l00590"></a><a class="code" href="structsig__link__s.html">00590</a> <font class="keyword">struct </font><a class="code" href="structsig__link__s.html">sig_link_s</a> {
+<a name="l00591"></a><a class="code" href="structsig__link__s.html#m0">00591</a>   signal*   <a class="code" href="structsig__link__s.html#m0">sig</a>;   
+<a name="l00592"></a><a class="code" href="structsig__link__s.html#m1">00592</a>   sig_link* <a class="code" href="structsig__link__s.html#m1">next</a>;  
+00593 };
+00594 
+00595 <font class="comment">//------------------------------------------------------------------------------</font>
+<a name="l00600"></a><a class="code" href="structmodule__s.html">00600</a> <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structmodule__s.html">module_s</a> {
+<a name="l00601"></a><a class="code" href="structmodule__s.html#m0">00601</a>   <font class="keywordtype">char</font>*      <a class="code" href="structmodule__s.html#m0">name</a>;       
+<a name="l00602"></a><a class="code" href="structmodule__s.html#m1">00602</a>   <font class="keywordtype">char</font>*      <a class="code" href="structmodule__s.html#m1">filename</a>;   
+<a name="l00603"></a><a class="code" href="structmodule__s.html#m2">00603</a>   <font class="keywordtype">char</font>*      <a class="code" href="structmodule__s.html#m2">scope</a>;      
+<a name="l00604"></a><a class="code" href="structmodule__s.html#m3">00604</a>   sig_link*  <a class="code" href="structmodule__s.html#m3">sig_head</a>;   
+<a name="l00605"></a><a class="code" href="structmodule__s.html#m4">00605</a>   sig_link*  <a class="code" href="structmodule__s.html#m4">sig_tail</a>;   
+<a name="l00606"></a><a class="code" href="structmodule__s.html#m5">00606</a>   exp_link*  <a class="code" href="structmodule__s.html#m5">exp_head</a>;   
+<a name="l00607"></a><a class="code" href="structmodule__s.html#m6">00607</a>   exp_link*  <a class="code" href="structmodule__s.html#m6">exp_tail</a>;   
+<a name="l00608"></a><a class="code" href="structmodule__s.html#m7">00608</a>   stmt_link* <a class="code" href="structmodule__s.html#m7">stmt_head</a>;  
+<a name="l00609"></a><a class="code" href="structmodule__s.html#m8">00609</a>   stmt_link* <a class="code" href="structmodule__s.html#m8">stmt_tail</a>;  
+00610 };
+00611 
+<a name="l00612"></a><a class="code" href="defines_8h.html#a114">00612</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structmodule__s.html">module_s</a> module;
+00613 
+00614 <font class="comment">//------------------------------------------------------------------------------</font>
+00618 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structmod__link__s.html">mod_link_s</a>;
+00619         
+<a name="l00620"></a><a class="code" href="defines_8h.html#a115">00620</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structmod__link__s.html">mod_link_s</a> mod_link;
+00621         
+<a name="l00622"></a><a class="code" href="structmod__link__s.html">00622</a> <font class="keyword">struct </font><a class="code" href="structmod__link__s.html">mod_link_s</a> {
+<a name="l00623"></a><a class="code" href="structmod__link__s.html#m0">00623</a>   module*    <a class="code" href="structmod__link__s.html#m0">mod</a>;   
+<a name="l00624"></a><a class="code" href="structmod__link__s.html#m1">00624</a>   mod_link* <a class="code" href="structmod__link__s.html#m1">next</a>;   
+00625 };
+00626 
+00627 <font class="comment">//------------------------------------------------------------------------------</font>
+00631 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structsymtable__s.html">symtable_s</a>;
+00632 
+<a name="l00633"></a><a class="code" href="defines_8h.html#a116">00633</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structsymtable__s.html">symtable_s</a> symtable;
+00634 
+<a name="l00635"></a><a class="code" href="structsymtable__s.html">00635</a> <font class="keyword">struct </font><a class="code" href="structsymtable__s.html">symtable_s</a> {
+<a name="l00636"></a><a class="code" href="structsymtable__s.html#m0">00636</a>   <font class="keywordtype">char</font>*     <a class="code" href="structsymtable__s.html#m0">sym</a>;          
+<a name="l00637"></a><a class="code" href="structsymtable__s.html#m1">00637</a>   signal*   <a class="code" href="structsymtable__s.html#m1">sig</a>;          
+<a name="l00638"></a><a class="code" href="structsymtable__s.html#m2">00638</a>   symtable* <a class="code" href="structsymtable__s.html#m2">right</a>;        
+<a name="l00639"></a><a class="code" href="structsymtable__s.html#m3">00639</a>   symtable* <a class="code" href="structsymtable__s.html#m3">left</a>;         
+00640 };
+00641 
+00642 <font class="comment">//------------------------------------------------------------------------------</font>
+<a name="l00646"></a><a class="code" href="structsignal__width__s.html">00646</a> <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structsignal__width__s.html">signal_width_s</a> {
+<a name="l00647"></a><a class="code" href="structsignal__width__s.html#m0">00647</a>   <font class="keywordtype">int</font> <a class="code" href="structsignal__width__s.html#m0">width</a>;
+<a name="l00648"></a><a class="code" href="structsignal__width__s.html#m1">00648</a>   <font class="keywordtype">int</font> <a class="code" href="structsignal__width__s.html#m1">lsb</a>;
+00649 };
+00650 
+<a name="l00651"></a><a class="code" href="defines_8h.html#a117">00651</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structsignal__width__s.html">signal_width_s</a> signal_width;
+00652 
+00653 <font class="comment">//------------------------------------------------------------------------------</font>
+00657 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structsig__exp__bind__s.html">sig_exp_bind_s</a>;
+00658 
+<a name="l00659"></a><a class="code" href="defines_8h.html#a118">00659</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structsig__exp__bind__s.html">sig_exp_bind_s</a> sig_exp_bind;
+00660 
+<a name="l00661"></a><a class="code" href="structsig__exp__bind__s.html">00661</a> <font class="keyword">struct </font><a class="code" href="structsig__exp__bind__s.html">sig_exp_bind_s</a> {
+<a name="l00662"></a><a class="code" href="structsig__exp__bind__s.html#m0">00662</a>   <font class="keywordtype">char</font>*         <a class="code" href="structsig__exp__bind__s.html#m0">sig_name</a>;  
+<a name="l00663"></a><a class="code" href="structsig__exp__bind__s.html#m1">00663</a>   expression*   <a class="code" href="structsig__exp__bind__s.html#m1">exp</a>;       
+<a name="l00664"></a><a class="code" href="structsig__exp__bind__s.html#m2">00664</a>   <font class="keywordtype">char</font>*         <a class="code" href="structsig__exp__bind__s.html#m2">mod_name</a>;  
+<a name="l00665"></a><a class="code" href="structsig__exp__bind__s.html#m3">00665</a>   sig_exp_bind* <a class="code" href="structsig__exp__bind__s.html#m3">next</a>;      
+00666 };
+00667 
+00668 <font class="comment">//------------------------------------------------------------------------------</font>
+00673 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structstatistic__s.html">statistic_s</a>;
+00674 
+<a name="l00675"></a><a class="code" href="defines_8h.html#a119">00675</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structstatistic__s.html">statistic_s</a> statistic;
+00676 
+<a name="l00677"></a><a class="code" href="structstatistic__s.html">00677</a> <font class="keyword">struct </font><a class="code" href="structstatistic__s.html">statistic_s</a> {
+<a name="l00678"></a><a class="code" href="structstatistic__s.html#m0">00678</a>   <font class="keywordtype">float</font> <a class="code" href="structstatistic__s.html#m0">line_total</a>;    
+<a name="l00679"></a><a class="code" href="structstatistic__s.html#m1">00679</a>   <font class="keywordtype">int</font>   <a class="code" href="structstatistic__s.html#m1">line_hit</a>;      
+<a name="l00680"></a><a class="code" href="structstatistic__s.html#m2">00680</a>   <font class="keywordtype">float</font> <a class="code" href="structstatistic__s.html#m2">tog_total</a>;     
+<a name="l00681"></a><a class="code" href="structstatistic__s.html#m3">00681</a>   <font class="keywordtype">int</font>   <a class="code" href="structstatistic__s.html#m3">tog01_hit</a>;     
+<a name="l00682"></a><a class="code" href="structstatistic__s.html#m4">00682</a>   <font class="keywordtype">int</font>   <a class="code" href="structstatistic__s.html#m4">tog10_hit</a>;     
+<a name="l00683"></a><a class="code" href="structstatistic__s.html#m5">00683</a>   <font class="keywordtype">float</font> <a class="code" href="structstatistic__s.html#m5">comb_total</a>;    
+<a name="l00684"></a><a class="code" href="structstatistic__s.html#m6">00684</a>   <font class="keywordtype">int</font>   <a class="code" href="structstatistic__s.html#m6">comb_hit</a>;      
+00685 };
+00686 
+00687 <font class="comment">//------------------------------------------------------------------------------</font>
+00691 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structmod__inst__s.html">mod_inst_s</a>;
+00692 
+<a name="l00693"></a><a class="code" href="defines_8h.html#a120">00693</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structmod__inst__s.html">mod_inst_s</a> mod_inst;
+00694 
+<a name="l00695"></a><a class="code" href="structmod__inst__s.html">00695</a> <font class="keyword">struct </font><a class="code" href="structmod__inst__s.html">mod_inst_s</a> {
+<a name="l00696"></a><a class="code" href="structmod__inst__s.html#m0">00696</a>   <font class="keywordtype">char</font>*      <a class="code" href="structmod__inst__s.html#m0">name</a>;          
+<a name="l00697"></a><a class="code" href="structmod__inst__s.html#m1">00697</a>   module*    <a class="code" href="structmod__inst__s.html#m1">mod</a>;           
+<a name="l00698"></a><a class="code" href="structmod__inst__s.html#m2">00698</a>   statistic* <a class="code" href="structmod__inst__s.html#m2">stat</a>;          
+<a name="l00699"></a><a class="code" href="structmod__inst__s.html#m3">00699</a>   mod_inst*  <a class="code" href="structmod__inst__s.html#m3">child_head</a>;    
+<a name="l00700"></a><a class="code" href="structmod__inst__s.html#m4">00700</a>   mod_inst*  <a class="code" href="structmod__inst__s.html#m4">child_tail</a>;    
+<a name="l00701"></a><a class="code" href="structmod__inst__s.html#m5">00701</a>   mod_inst*  <a class="code" href="structmod__inst__s.html#m5">next</a>;          
+00702 };
+00703 
 00704 
-00705 
-00706 <font class="comment">/* $Log$</font>
-00707 <font class="comment"></font><font class="comment">/* Revision 1.9  2002/05/02 03:27:42  phase1geo</font>
-00708 <font class="comment"></font><font class="comment">/* Initial creation of statement structure and manipulation files.  Internals are</font>
-00709 <font class="comment"></font><font class="comment">/* still in a chaotic state.</font>
-00710 <font class="comment"></font><font class="comment">/*</font>
-00711 <font class="comment"></font><font class="comment">/* Revision 1.8  2002/04/30 05:04:25  phase1geo</font>
-00712 <font class="comment"></font><font class="comment">/* Added initial go-round of adding statement handling to parser.  Added simple</font>
-00713 <font class="comment"></font><font class="comment">/* Verilog test to check correct statement handling.  At this point there is a</font>
-00714 <font class="comment"></font><font class="comment">/* bug in the expression write function (we need to display statement trees in</font>
-00715 <font class="comment"></font><font class="comment">/* the proper order since they are unlike normal expression trees.)</font>
-00716 <font class="comment"></font><font class="comment">/* */</font>
-00717 
-00718 #endif
-00719 
-</pre></div><hr><address align="right"><small>Generated on Thu May 2 22:36:40 2002 for Covered by
+00705 <font class="comment">/* $Log$</font>
+00706 <font class="comment"></font><font class="comment">/* Revision 1.10  2002/05/03 03:39:36  phase1geo</font>
+00707 <font class="comment"></font><font class="comment">/* Removing all syntax errors due to addition of statements.  Added more statement</font>
+00708 <font class="comment"></font><font class="comment">/* support code.  Still have a ways to go before we can try anything.  Removed lines</font>
+00709 <font class="comment"></font><font class="comment">/* from expressions though we may want to consider putting these back for reporting</font>
+00710 <font class="comment"></font><font class="comment">/* purposes.</font>
+00711 <font class="comment"></font><font class="comment">/*</font>
+00712 <font class="comment"></font><font class="comment">/* Revision 1.9  2002/05/02 03:27:42  phase1geo</font>
+00713 <font class="comment"></font><font class="comment">/* Initial creation of statement structure and manipulation files.  Internals are</font>
+00714 <font class="comment"></font><font class="comment">/* still in a chaotic state.</font>
+00715 <font class="comment"></font><font class="comment">/*</font>
+00716 <font class="comment"></font><font class="comment">/* Revision 1.8  2002/04/30 05:04:25  phase1geo</font>
+00717 <font class="comment"></font><font class="comment">/* Added initial go-round of adding statement handling to parser.  Added simple</font>
+00718 <font class="comment"></font><font class="comment">/* Verilog test to check correct statement handling.  At this point there is a</font>
+00719 <font class="comment"></font><font class="comment">/* bug in the expression write function (we need to display statement trees in</font>
+00720 <font class="comment"></font><font class="comment">/* the proper order since they are unlike normal expression trees.)</font>
+00721 <font class="comment"></font><font class="comment">/* */</font>
+00722 
+00723 #endif
+00724 
+</pre></div><hr><address align="right"><small>Generated on Sun May 12 22:00:13 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.15 </small></address>

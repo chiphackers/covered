@@ -16,7 +16,7 @@
 <code>#include "<a class="el" href="link_8h-source.html">link.h</a>"</code><br>
 <table border=0 cellpadding=0 cellspacing=0>
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a110">statement</a> *&nbsp;</td><td valign=bottom><a class="el" href="statement_8c.html#a0">statement_create</a> (<a class="el" href="defines_8h.html#a108">expression</a> *exp, int line_begin, int line_end)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a110">statement</a> *&nbsp;</td><td valign=bottom><a class="el" href="statement_8c.html#a0">statement_create</a> (<a class="el" href="defines_8h.html#a108">expression</a> *exp)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Creates new statement structure.</em> <a href="#a0">More...</a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="statement_8c.html#a1">statement_db_write</a> (<a class="el" href="defines_8h.html#a110">statement</a> *stmt, FILE *ofile, char *scope)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Writes specified statement to the specified output file.</em> <a href="#a1">More...</a><em></em></font><br><br></td></tr>
@@ -44,24 +44,9 @@ Date: </b><dd>
           <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a110">statement</a>* statement_create </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a108">expression</a> *&nbsp;</td>
-          <td class="mdname" nowrap>&nbsp; <em>exp</em>, </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td class="md" nowrap>int&nbsp;</td>
-          <td class="mdname" nowrap>&nbsp; <em>line_begin</em>, </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td class="md" nowrap>int&nbsp;</td>
-          <td class="mdname" nowrap>&nbsp; <em>line_end</em></td>
-        </tr>
-        <tr>
-          <td></td>
-          <td class="md">)&nbsp;</td>
-          <td class="md" colspan="2"></td>
+          <td class="mdname1" valign="top" nowrap>&nbsp; <em>exp</em>          </td>
+          <td class="md" valign="top">)&nbsp;</td>
+          <td class="md" nowrap></td>
         </tr>
 
       </table>
@@ -82,11 +67,7 @@ Creates new statement structure.
 Parameters: </b><dd>
 <table border=0 cellspacing=2 cellpadding=0>
 <tr><td valign=top><em>exp</em>&nbsp;</td><td>
-Pointer to root expression of expression tree for this statement. </td></tr>
-<tr><td valign=top><em>line_begin</em>&nbsp;</td><td>
-Starting line of this expression </td></tr>
-<tr><td valign=top><em>line_end</em>&nbsp;</td><td>
-Ending line of this expression</td></tr>
+Pointer to root expression of expression tree for this statement.</td></tr>
 </table>
 </dl><dl compact><dt><b>
 Returns: </b><dd>
@@ -273,7 +254,7 @@ Pointer to statement sequence to connect ends for loopback.</td></tr>
 </dl>Traverses the specified stmt sequence (assumes that stmt is the statement at the top of the sequence). When it reaches a statement that has both next_true and next_false set to NULL, sets next_true and next_false of that statement to point to the top of the sequence. This will cause the statement to have a loopback effect.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Thu May 2 22:36:42 2002 for Covered by
+<hr><address align="right"><small>Generated on Sun May 12 22:00:16 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.15 </small></address>

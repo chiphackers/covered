@@ -29,13 +29,13 @@ void db_add_signal( char* name, int width, int lsb, int is_static );
 signal* db_find_signal( char* name );
 
 //! Creates new expression from specified information.  Called by parser and db_add_expression.
-expression* db_create_expression( expression* right, expression* left, int op, char* sig_name );
+expression* db_create_expression( expression* right, expression* left, int op, int line, char* sig_name );
 
 //! Adds specified expression to expression list.  Called by parser.
 void db_add_expression( expression* root );
 
 //! Creates new statement expression from specified information.  Called by parser.
-statement* db_create_statement( int line_begin, int line_end, expression* exp );
+statement* db_create_statement( expression* exp );
 
 //! Connects true statement to specified statement.
 void db_connect_statement_true( statement* stmt, statement* exp_true );
@@ -61,7 +61,7 @@ int db_get_signal_size( char* symbol );
 //! Performs a timestep for all signal changes during this timestep.
 void db_do_timestep( int time ); 
 
-/* $Log$/* Revision 1.2  2002/04/30 05:04:25  phase1geo/* Added initial go-round of adding statement handling to parser.  Added simple/* Verilog test to check correct statement handling.  At this point there is a/* bug in the expression write function (we need to display statement trees in/* the proper order since they are unlike normal expression trees.)/* */
+/* $Log$/* Revision 1.3  2002/05/03 03:39:36  phase1geo/* Removing all syntax errors due to addition of statements.  Added more statement/* support code.  Still have a ways to go before we can try anything.  Removed lines/* from expressions though we may want to consider putting these back for reporting/* purposes./*/* Revision 1.2  2002/04/30 05:04:25  phase1geo/* Added initial go-round of adding statement handling to parser.  Added simple/* Verilog test to check correct statement handling.  At this point there is a/* bug in the expression write function (we need to display statement trees in/* the proper order since they are unlike normal expression trees.)/* */
 
 #endif
 

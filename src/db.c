@@ -433,6 +433,7 @@ signal* db_find_signal( char* name ) {
  \param right     Pointer to expression on right side of expression.
  \param left      Pointer to expression on left side of expression.
  \param op        Operation to perform on expression.
+ \param line      Line number of current expression.
  \param sig_name  Name of signal that expression is attached to (if valid).
 
  \return Returns pointer to newly created expression.
@@ -440,20 +441,21 @@ signal* db_find_signal( char* name ) {
  Creates a new expression with the specified parameter information and returns a
  pointer to the newly created expression.
 */
-expression* db_create_expression( expression* right, expression* left, int op, char* sig_name ) {
+expression* db_create_expression( expression* right, expression* left, int op, int line, char* sig_name ) {
 
   expression* expr;             /* Temporary pointer to newly created expression */
   char        msg[4096];        /* Display message string                        */
 
-  snprintf( msg, 4096, "In db_create_expression, right: 0x%lx, left: 0x%lx, id: %d, op: %d", 
+  snprintf( msg, 4096, "In db_create_expression, right: 0x%lx, left: 0x%lx, id: %d, op: %d, line: %d", 
                        right,
                        left,
                        curr_expr_id, 
-                       op );
+                       op,
+                       line );
   print_output( msg, NORMAL );
 
   /* Create expression with next expression ID */
-  expr = expression_create( right, left, op, curr_expr_id );
+  expr = expression_create( right, left, op, curr_expr_id, line );
   curr_expr_id++;
 
   /* Set right and left side expression's (if they exist) parent pointer to this expression */
@@ -512,8 +514,6 @@ void db_add_expression( expression* root ) {
 }
 
 /*!
- \param line_begin  Line number where statement starts.
- \param line_end    Line number where statement ends.
  \param exp         Pointer to associated "root" expression.
 
  \return Returns pointer to created statement.
@@ -521,18 +521,15 @@ void db_add_expression( expression* root ) {
  Creates an statement structure and adds created statement to current
  module's statement list.
 */
-statement* db_create_statement( int line_begin, int line_end, expression* exp ) {
+statement* db_create_statement( expression* exp ) {
 
   statement* stmt;       /* Pointer to newly created statement */
   char       msg[4096];  /* Message to display to user         */
 
-  snprintf( msg, 4096, "In db_create_statement, line_begin: %d, line_end: %d, id: %d", 
-            line_begin, 
-            line_end,
-            exp->id );
+  snprintf( msg, 4096, "In db_create_statement, id: %d", exp->id );
   print_output( msg, NORMAL );
 
-  stmt = statement_create( exp, line_begin, line_end );
+  stmt = statement_create( exp );
 
   stmt_link_add( stmt, &(curr_module->stmt_head), &(curr_module->stmt_tail) );
 
@@ -949,6 +946,12 @@ int db_get_signal_size( char* symbol ) {
 
 
 /* $Log$
+/* Revision 1.9  2002/05/03 03:39:36  phase1geo
+/* Removing all syntax errors due to addition of statements.  Added more statement
+/* support code.  Still have a ways to go before we can try anything.  Removed lines
+/* from expressions though we may want to consider putting these back for reporting
+/* purposes.
+/*
 /* Revision 1.8  2002/05/02 03:27:42  phase1geo
 /* Initial creation of statement structure and manipulation files.  Internals are
 /* still in a chaotic state.

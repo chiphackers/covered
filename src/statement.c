@@ -17,22 +17,18 @@
 
 /*!
  \param exp         Pointer to root expression of expression tree for this statement.
- \param line_begin  Starting line of this expression
- \param line_end    Ending line of this expression
  
  \return Returns pointer to the newly created statement.
 
  Creates a new statement structure from heap memory and initializes it with the
  specified parameter information.
 */
-statement* statement_create( expression* exp, int line_begin, int line_end ) {
+statement* statement_create( expression* exp ) {
 
   statement* stmt;   /* Pointer to newly created statement */
 
   stmt             = (statement*)malloc_safe( sizeof( statement ) );
   stmt->exp        = exp;
-  stmt->line_begin = line_begin;
-  stmt->line_end   = line_end;
   stmt->next_true  = NULL;
   stmt->next_false = NULL;
 
@@ -70,12 +66,10 @@ void statement_db_write( statement* stmt, FILE* ofile, char* scope ) {
   expression_db_write( stmt->exp, ofile, scope );
 
   /* Write out contents of this statement last */
-  fprintf( ofile, "%d %d %s %d %d",
+  fprintf( ofile, "%d %d %s",
     DB_TYPE_STATEMENT,
     stmt->exp->id,
-    scope,
-    stmt->line_begin,
-    stmt->line_end
+    scope
   );
 
   if( stmt->next_true != NULL ) {
@@ -110,8 +104,6 @@ bool statement_db_read( char** line, module* curr_mod ) {
   bool       retval;         /* Return value of this function                                          */
   int        id;             /* ID of root expression that is associated with this statement           */
   char       modname[4096];  /* Scope of module to which this statement belongs                        */
-  int        line_begin;     /* Line number of the beginning of this statement                         */
-  int        line_end;       /* Line number of the ending of this statement                            */
   int        true_id;        /* ID of root expression that is associated with the next_true statement  */
   int        false_id;       /* ID of root expression that is associated with the next_false statement */
   expression tmpexp;         /* Temporary expression used for expression search                        */
@@ -120,7 +112,7 @@ bool statement_db_read( char** line, module* curr_mod ) {
   stmt_link* stmtl;          /* Pointer to found statement link                                        */
   int        chars_read;     /* Number of characters read from line                                    */
 
-  if( sscanf( *line, "%d %s %d %d %d %d%n", &id, modname, &line_begin, &line_end, &true_id, &false_id, &chars_read ) == 6 ) {
+  if( sscanf( *line, "%d %s %d %d%n", &id, modname, &true_id, &false_id, &chars_read ) == 6 ) {
 
     *line = *line + chars_read;
 
@@ -135,7 +127,7 @@ bool statement_db_read( char** line, module* curr_mod ) {
       tmpexp.id = id;
       expl = exp_link_find( &tmpexp, curr_mod->exp_head );
 
-      stmt = statement_create( expl->exp, line_begin, line_end );
+      stmt = statement_create( expl->exp );
 
       /* We should always have a legit next_false statement */
       assert( false_id != 0 );
@@ -244,6 +236,12 @@ void statement_dealloc( statement* stmt ) {
 
 
 /* $Log$
+/* Revision 1.2  2002/05/03 03:39:36  phase1geo
+/* Removing all syntax errors due to addition of statements.  Added more statement
+/* support code.  Still have a ways to go before we can try anything.  Removed lines
+/* from expressions though we may want to consider putting these back for reporting
+/* purposes.
+/*
 /* Revision 1.1  2002/05/02 03:27:42  phase1geo
 /* Initial creation of statement structure and manipulation files.  Internals are
 /* still in a chaotic state.

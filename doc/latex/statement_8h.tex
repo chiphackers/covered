@@ -8,7 +8,7 @@ Contains functions to create, manipulate and deallocate statements.
 \subsection*{Functions}
 \begin{CompactItemize}
 \item 
-{\bf statement} $\ast$ {\bf statement\_\-create} ({\bf expression} $\ast$exp, int line\_\-begin, int line\_\-end)
+{\bf statement} $\ast$ {\bf statement\_\-create} ({\bf expression} $\ast$exp)
 \begin{CompactList}\small\item\em Creates new statement structure.\item\end{CompactList}\item 
 void {\bf statement\_\-db\_\-write} ({\bf statement} $\ast$stmt, FILE $\ast$ofile, char $\ast$scope)
 \begin{CompactList}\small\item\em Writes specified statement to the specified output file.\item\end{CompactList}\item 
@@ -36,7 +36,7 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsection{Function Documentation}
 \index{statement.h@{statement.h}!statement_create@{statement\_\-create}}
 \index{statement_create@{statement\_\-create}!statement.h@{statement.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf statement}$\ast$ statement\_\-create ({\bf expression} $\ast$ {\em exp}, int {\em line\_\-begin}, int {\em line\_\-end})}\label{statement_8h_a0}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf statement}$\ast$ statement\_\-create ({\bf expression} $\ast$ {\em exp})}\label{statement_8h_a0}
 
 
 Creates new statement structure.
@@ -45,9 +45,7 @@ Creates new statement structure.
 \item[Parameters: ]\par
 \begin{description}
 \item[{\em 
-exp}]Pointer to root expression of expression tree for this statement. \item[{\em 
-line\_\-begin}]Starting line of this expression \item[{\em 
-line\_\-end}]Ending line of this expression\end{description}
+exp}]Pointer to root expression of expression tree for this statement.\end{description}
 \end{Desc}
 \begin{Desc}
 \item[Returns: ]\par

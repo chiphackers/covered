@@ -402,7 +402,7 @@ expression
 		    print_output( err_msg, FATAL );
 		    exit( 1 );
 		  }
-		  tmp = db_create_expression( $2, NULL, EXP_OP_UINV, NULL );
+		  tmp = db_create_expression( $2, NULL, EXP_OP_UINV, @1.first_line, NULL );
 		  $$ = tmp;
 		}
 	| '&' expr_primary %prec UNARY_PREC
@@ -415,7 +415,7 @@ expression
 		    print_output( err_msg, FATAL );
 		    exit( 1 );
 		  }
-		  tmp = db_create_expression( $2, NULL, EXP_OP_UAND, NULL );
+		  tmp = db_create_expression( $2, NULL, EXP_OP_UAND, @1.first_line, NULL );
 		  $$ = tmp;
 		}
 	| '!' expr_primary %prec UNARY_PREC
@@ -428,7 +428,7 @@ expression
 		    print_output( err_msg, FATAL );
 		    exit( 1 );
 		  }
-		  tmp = db_create_expression( $2, NULL, EXP_OP_UNOT, NULL );
+		  tmp = db_create_expression( $2, NULL, EXP_OP_UNOT, @1.first_line, NULL );
 		  $$ = tmp;
 		}
 	| '|' expr_primary %prec UNARY_PREC
@@ -441,7 +441,7 @@ expression
 		    print_output( err_msg, FATAL );
 		    exit( 1 );
 		  }
-		  tmp = db_create_expression( $2, NULL, EXP_OP_UOR, NULL );
+		  tmp = db_create_expression( $2, NULL, EXP_OP_UOR, @1.first_line, NULL );
 		  $$ = tmp;
 		}
 	| '^' expr_primary %prec UNARY_PREC
@@ -454,7 +454,7 @@ expression
 		    print_output( err_msg, FATAL );
 		    exit( 1 );
 		  }
-		  tmp = db_create_expression( $2, NULL, EXP_OP_UXOR, NULL );
+		  tmp = db_create_expression( $2, NULL, EXP_OP_UXOR, @1.first_line, NULL );
 		  $$ = tmp;
 		}
 	| K_NAND expr_primary %prec UNARY_PREC
@@ -467,7 +467,7 @@ expression
 		    print_output( err_msg, FATAL );
 		    exit( 1 );
 		  }
-		  tmp = db_create_expression( $2, NULL, EXP_OP_UNAND, NULL );
+		  tmp = db_create_expression( $2, NULL, EXP_OP_UNAND, @1.first_line, NULL );
 		  $$ = tmp;
 		}
 	| K_NOR expr_primary %prec UNARY_PREC
@@ -480,7 +480,7 @@ expression
 		    print_output( err_msg, FATAL );
 		    exit( 1 );
 		  }
-		  tmp = db_create_expression( $2, NULL, EXP_OP_UNOR, NULL );
+		  tmp = db_create_expression( $2, NULL, EXP_OP_UNOR, @1.first_line, NULL );
 		  $$ = tmp;
 		}
 	| K_NXOR expr_primary %prec UNARY_PREC
@@ -493,7 +493,7 @@ expression
 		    print_output( err_msg, FATAL );
 		    exit( 1 );
 		  }
-		  tmp = db_create_expression( $2, NULL, EXP_OP_UNXOR, NULL );
+		  tmp = db_create_expression( $2, NULL, EXP_OP_UNXOR, @1.first_line, NULL );
 		  $$ = tmp;
 		}
 	| '!' error %prec UNARY_PREC
@@ -506,124 +506,124 @@ expression
 		}
 	| expression '^' expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_XOR, NULL );
+		  expression* tmp = db_create_expression( $3, $1, EXP_OP_XOR, @1.first_line, NULL );
 		  $$ = tmp;
 		}
 	| expression '*' expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_MULTIPLY, NULL );
+		  expression* tmp = db_create_expression( $3, $1, EXP_OP_MULTIPLY, @1.first_line, NULL );
 		  $$ = tmp;
 		}
 	| expression '/' expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_DIVIDE, NULL );
+		  expression* tmp = db_create_expression( $3, $1, EXP_OP_DIVIDE, @1.first_line, NULL );
 		  $$ = tmp;
 		}
 	| expression '%' expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_MOD, NULL );
+		  expression* tmp = db_create_expression( $3, $1, EXP_OP_MOD, @1.first_line, NULL );
 		  $$ = tmp;
 		}
 	| expression '+' expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_ADD, NULL );
+		  expression* tmp = db_create_expression( $3, $1, EXP_OP_ADD, @1.first_line, NULL );
 		  $$ = tmp;
 		}
 	| expression '-' expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_SUBTRACT, NULL );
+		  expression* tmp = db_create_expression( $3, $1, EXP_OP_SUBTRACT, @1.first_line, NULL );
 		  $$ = tmp;
 		}
 	| expression '&' expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_AND, NULL );
+		  expression* tmp = db_create_expression( $3, $1, EXP_OP_AND, @1.first_line, NULL );
 		  $$ = tmp;
 		}
 	| expression '|' expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_OR, NULL );
+		  expression* tmp = db_create_expression( $3, $1, EXP_OP_OR, @1.first_line, NULL );
 		  $$ = tmp;
 		}
         | expression K_NAND expression
                 {
-                  expression* tmp = db_create_expression( $3, $1, EXP_OP_NAND, NULL );
+                  expression* tmp = db_create_expression( $3, $1, EXP_OP_NAND, @1.first_line, NULL );
                   $$ = tmp;
                 }
 	| expression K_NOR expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_NOR, NULL );
+		  expression* tmp = db_create_expression( $3, $1, EXP_OP_NOR, @1.first_line, NULL );
 		  $$ = tmp;
 		}
 	| expression K_NXOR expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_NXOR, NULL );
+		  expression* tmp = db_create_expression( $3, $1, EXP_OP_NXOR, @1.first_line, NULL );
 		  $$ = tmp;
 		}
 	| expression '<' expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_LT, NULL );
+		  expression* tmp = db_create_expression( $3, $1, EXP_OP_LT, @1.first_line, NULL );
 		  $$ = tmp;
 		}
 	| expression '>' expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_GT, NULL );
+		  expression* tmp = db_create_expression( $3, $1, EXP_OP_GT, @1.first_line, NULL );
 		  $$ = tmp;
 		}
 	| expression K_LS expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_LSHIFT, NULL );
+		  expression* tmp = db_create_expression( $3, $1, EXP_OP_LSHIFT, @1.first_line, NULL );
 		  $$ = tmp;
 		}
 	| expression K_RS expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_RSHIFT, NULL );
+		  expression* tmp = db_create_expression( $3, $1, EXP_OP_RSHIFT, @1.first_line, NULL );
 		  $$ = tmp;
 		}
 	| expression K_EQ expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_EQ, NULL );
+		  expression* tmp = db_create_expression( $3, $1, EXP_OP_EQ, @1.first_line, NULL );
 		  $$ = tmp;
 		}
 	| expression K_CEQ expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_CEQ, NULL );
+		  expression* tmp = db_create_expression( $3, $1, EXP_OP_CEQ, @1.first_line, NULL );
 		  $$ = tmp;
 		}
 	| expression K_LE expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_LE, NULL );
+		  expression* tmp = db_create_expression( $3, $1, EXP_OP_LE, @1.first_line, NULL );
 		  $$ = tmp;
 		}
 	| expression K_GE expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_GE, NULL );
+		  expression* tmp = db_create_expression( $3, $1, EXP_OP_GE, @1.first_line, NULL );
 		  $$ = tmp;
 		}
 	| expression K_NE expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_NE, NULL );
+		  expression* tmp = db_create_expression( $3, $1, EXP_OP_NE, @1.first_line, NULL );
 		  $$ = tmp;
 		}
 	| expression K_CNE expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_CNE, NULL );
+		  expression* tmp = db_create_expression( $3, $1, EXP_OP_CNE, @1.first_line, NULL );
 		  $$ = tmp;
 		}
 	| expression K_LOR expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_LOR, NULL );
+		  expression* tmp = db_create_expression( $3, $1, EXP_OP_LOR, @1.first_line, NULL );
 		  $$ = tmp;
 		}
 	| expression K_LAND expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_LAND, NULL );
+		  expression* tmp = db_create_expression( $3, $1, EXP_OP_LAND, @1.first_line, NULL );
 		  $$ = tmp;
 		}
 	| expression '?' expression ':' expression
 		{
-		  expression* tmp1 = db_create_expression( $3, $1, EXP_OP_COND_T, NULL );
-		  expression* tmp2 = db_create_expression( $5, $1, EXP_OP_COND_F, NULL );
-		  expression* tmp  = db_create_expression( tmp2, tmp1, EXP_OP_OR, NULL );
+		  expression* tmp1 = db_create_expression( $3, $1, EXP_OP_COND_T, @1.first_line, NULL );
+		  expression* tmp2 = db_create_expression( $5, $1, EXP_OP_COND_F, @1.first_line, NULL );
+		  expression* tmp  = db_create_expression( tmp2, tmp1, EXP_OP_OR, @1.first_line, NULL );
 		  $$ = tmp;
 		}
 	;
@@ -631,7 +631,7 @@ expression
 expr_primary
 	: NUMBER
 		{
-		  expression* tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, NULL );
+		  expression* tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
                   free_safe( tmp->value );
 		  tmp->value = $1;
 		  $$ = tmp;
@@ -642,7 +642,7 @@ expr_primary
 		}
 	| identifier
 		{
-                  expression* tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, $1 );
+                  expression* tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, @1.first_line, $1 );
                   $$ = tmp;
 		  free_safe( $1 );
 		}
@@ -652,13 +652,13 @@ expr_primary
 		}
 	| identifier '[' expression ']'
 		{
-		  expression* tmp = db_create_expression( $3, NULL, EXP_OP_SBIT_SEL, $1 );
+		  expression* tmp = db_create_expression( $3, NULL, EXP_OP_SBIT_SEL, @1.first_line, $1 );
 		  $$ = tmp;
 		  free_safe( $1 );
 		}
 	| identifier '[' expression ':' expression ']'
 		{		  
-                  expression* tmp = db_create_expression( $5, $3, EXP_OP_MBIT_SEL, $1 );
+                  expression* tmp = db_create_expression( $5, $3, EXP_OP_MBIT_SEL, @1.first_line, $1 );
                   $$ = tmp;
                   free_safe( $1 );
 		}
@@ -681,7 +681,7 @@ expr_primary
 	| '{' expression '{' expression_list '}' '}'
 		{
 		  expression* tmp;
-		  tmp = db_create_expression( $4, $2, EXP_OP_EXPAND, NULL );
+		  tmp = db_create_expression( $4, $2, EXP_OP_EXPAND, @1.first_line, NULL );
 		  $$ = tmp;
 		}
 	;
@@ -692,7 +692,7 @@ expression_list
 		{
 		  expression* tmp;
 		  if( $3 != NULL ) {
-		    tmp = db_create_expression( $3, $1, EXP_OP_CONCAT, NULL );
+		    tmp = db_create_expression( $3, $1, EXP_OP_CONCAT, @1.first_line, NULL );
 		    $$ = tmp;
 		  } else {
 		    $$ = $1;
@@ -1067,7 +1067,7 @@ statement
 		}
 	| K_repeat '(' expression ')' statement
 		{
-                  statement* stmt = db_create_statement( @1.first_line, @1.last_line, $3 );
+                  statement* stmt = db_create_statement( $3 );
                   db_add_expression( $3 );
                   $$ = stmt;
 		}
@@ -1103,14 +1103,14 @@ statement
 		}
 	| K_if '(' expression ')' statement_opt %prec less_than_K_else
 		{
-                  statement* stmt = db_create_statement( @1.first_line, @1.last_line, $3 );
+                  statement* stmt = db_create_statement( $3 );
 		  db_add_expression( $3 );
                   db_connect_statement_true( stmt, $5 );
                   $$ = stmt;
 		}
 	| K_if '(' expression ')' statement_opt K_else statement_opt
 		{
-                  statement* stmt = db_create_statement( @1.first_line, @1.last_line, $3 );
+                  statement* stmt = db_create_statement( $3 );
 		  db_add_expression( $3 );
                   db_connect_statement_true( stmt, $5 );
                   db_connect_statement_false( stmt, $7 );
@@ -1128,9 +1128,9 @@ statement
 		}
 	| K_for '(' lpvalue '=' expression ';' expression ';' lpvalue '=' expression ')' statement
 		{
-                  statement* stmt1 = db_create_statement( @1.first_line, @1.last_line, $5 );
-                  statement* stmt2 = db_create_statement( @1.first_line, @1.last_line, $7 );
-                  statement* stmt3 = db_create_statement( @1.first_line, @1.last_line, $11 );
+                  statement* stmt1 = db_create_statement( $5 );
+                  statement* stmt2 = db_create_statement( $7 );
+                  statement* stmt3 = db_create_statement( $11 );
                   db_add_expression( $5 );
                   db_add_expression( $7 );
                   db_add_expression( $11 );
@@ -1159,7 +1159,7 @@ statement
 		}
 	| K_while '(' expression ')' statement
 		{
-                  statement* stmt = db_create_statement( @1.first_line, @1.last_line, $3 );
+                  statement* stmt = db_create_statement( $3 );
 		  db_add_expression( $3 );
                   db_connect_statement_true( stmt, $5 );
                   $$ = stmt;
@@ -1180,58 +1180,58 @@ statement
 		}
 	| lpvalue '=' expression ';'
 		{
-                  statement* stmt = db_create_statement( @1.first_line, @1.last_line, $3 );
+                  statement* stmt = db_create_statement( $3 );
 		  db_add_expression( $3 );
                   $$ = stmt;
 		}
 	| lpvalue K_LE expression ';'
 		{
 		  /* Add root expression (non-blocking) */
-                  statement* stmt = db_create_statement( @1.first_line, @1.last_line, $3 );
+                  statement* stmt = db_create_statement( $3 );
 		  db_add_expression( $3 );
                   $$ = stmt;
 		}
 	| lpvalue '=' delay1 expression ';'
 		{
-		  statement* stmt = db_create_statement( @1.first_line, @1.last_line, $4 );
+		  statement* stmt = db_create_statement( $4 );
 		  db_add_expression( $4 );
                   $$ = stmt;
 		}
 	| lpvalue K_LE delay1 expression ';'
 		{
-		  statement* stmt = db_create_statement( @1.first_line, @1.last_line, $4 );
+		  statement* stmt = db_create_statement( $4 );
 		  db_add_expression( $4 );
                   $$ = stmt;
 		}
 	| lpvalue '=' event_control expression ';'
 		{
-		  statement* stmt = db_create_statement( @1.first_line, @1.last_line, $4 );
+		  statement* stmt = db_create_statement( $4 );
 		  db_add_expression( $4 );
                   $$ = stmt;
 		}
 	| lpvalue '=' K_repeat '(' expression ')' event_control expression ';'
 		{
-                  statement* stmt = db_create_statement( @1.first_line, @1.last_line, $5 );
+                  statement* stmt = db_create_statement( $5 );
 		  db_add_expression( $5 );
 		  db_add_expression( $8 );
                   $$ = stmt;
 		}
 	| lpvalue K_LE event_control expression ';'
 		{
-                  statement* stmt = db_create_statement( @1.first_line, @1.last_line, $4 );
+                  statement* stmt = db_create_statement( $4 );
 		  db_add_expression( $4 );
                   $$ = stmt;
 		}
 	| lpvalue K_LE K_repeat '(' expression ')' event_control expression ';'
 		{
-                  statement* stmt = db_create_statement( @1.first_line, @1.last_line, $5 );
+                  statement* stmt = db_create_statement( $5 );
 		  db_add_expression( $5 );
 		  db_add_expression( $8 );
 		  $$ = stmt;
 		}
 	| K_wait '(' expression ')' statement_opt
 		{
-                  statement* stmt = db_create_statement( @1.first_line, @1.last_line, $3 );
+                  statement* stmt = db_create_statement( $3 );
                   db_add_expression( $3 );
                   db_connect_statement_false( stmt, $5 );
 		  $$ = stmt;
@@ -1664,7 +1664,7 @@ event_control
 		  signal*     sig = db_find_signal( $2 );
 		  expression* tmp;
 		  if( sig != NULL ) {
-		    tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, NULL );
+		    tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, @1.first_line, NULL );
 		    vector_dealloc( tmp->value );
 		    tmp->value = sig->value;
 		    $$ = tmp;
@@ -1691,7 +1691,7 @@ event_expression_list
 	| event_expression_list K_or event_expression
 		{
 		  expression* tmp;
-		  tmp = db_create_expression( $3, $1, EXP_OP_LOR, NULL );
+		  tmp = db_create_expression( $3, $1, EXP_OP_LOR, @1.first_line, NULL );
 		  $$ = tmp;
 		}
 	| event_expression_list ',' event_expression
@@ -1705,19 +1705,19 @@ event_expression
 	: K_posedge expression
 		{
 		  expression* tmp;
-		  tmp = db_create_expression( $2, NULL, EXP_OP_PEDGE, NULL );
+		  tmp = db_create_expression( $2, NULL, EXP_OP_PEDGE, @1.first_line, NULL );
 		  $$ = tmp;
 		}
 	| K_negedge expression
 		{
 		  expression* tmp;
-		  tmp = db_create_expression( $2, NULL, EXP_OP_NEDGE, NULL );
+		  tmp = db_create_expression( $2, NULL, EXP_OP_NEDGE, @1.first_line, NULL );
 		  $$ = tmp;
 		}
 	| expression
 		{
 		  expression* tmp;
-		  tmp = db_create_expression( $1, NULL, EXP_OP_AEDGE, NULL );
+		  tmp = db_create_expression( $1, NULL, EXP_OP_AEDGE, @1.first_line, NULL );
 		  $$ = tmp;
 		}
 	;

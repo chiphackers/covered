@@ -17,7 +17,7 @@
 void expression_create_value( expression* exp, int width, int lsb );
 
 //! Creates new expression.
-expression* expression_create( expression* right, expression* left, int op, int id );
+expression* expression_create( expression* right, expression* left, int op, int id, int line );
 
 //! Merges two expressions and stores result in base expression.
 void expression_merge( expression* base, expression* in );
@@ -41,7 +41,13 @@ void expression_operate( expression* expr );
 void expression_dealloc( expression* expr, bool exp_only );
 
 
-/* $Log$ */
+/* $Log$
+/* Revision 1.3  2002/05/03 03:39:36  phase1geo
+/* Removing all syntax errors due to addition of statements.  Added more statement
+/* support code.  Still have a ways to go before we can try anything.  Removed lines
+/* from expressions though we may want to consider putting these back for reporting
+/* purposes.
+/* */
 
 #endif
 
