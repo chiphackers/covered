@@ -862,6 +862,14 @@ expr_primary
                 {
                   $$ = NULL;
                 }
+        | REALTIME
+                {
+                  $$ = NULL;
+                }
+        | UNUSED_REALTIME
+                {
+                  $$ = NULL;
+                }
 	| STRING
 		{
 		  $$ = NULL;
