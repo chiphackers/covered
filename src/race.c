@@ -144,11 +144,13 @@ void race_calc_expr_assignment( expression* exp, int sb_index ) {
 
 void race_calc_assignments_helper( statement* stmt, statement* head, int sb_index ) {
 
-  if( (stmt != NULL) && (stmt != head) && (ESUPPL_IS_STMT_STOP( stmt->exp->suppl ) == 0) ) {
-
+  if( stmt != NULL ) {
+	
     /* Calculate children statements */
-    race_calc_assignments_helper( stmt->next_true, head, sb_index );
-    race_calc_assignments_helper( stmt->next_false, head, sb_index );
+    if( (stmt != head) && (ESUPPL_IS_STMT_STOP( stmt->exp->suppl ) == 0) ) {
+      race_calc_assignments_helper( stmt->next_true, head, sb_index );
+      race_calc_assignments_helper( stmt->next_false, head, sb_index );
+    }
 
     /* Calculate assignment operator type */
     race_calc_expr_assignment( stmt->exp, sb_index );
@@ -487,6 +489,9 @@ void race_check_modules() {
 
 /*
  $Log$
+ Revision 1.17  2005/02/03 04:59:13  phase1geo
+ Fixing bugs in race condition checker.  Updated regression.
+
  Revision 1.16  2005/02/01 05:11:18  phase1geo
  Updates to race condition checker to find blocking/non-blocking assignments in
  statement block.  Regression still runs clean.
