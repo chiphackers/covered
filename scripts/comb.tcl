@@ -121,39 +121,172 @@ proc display_comb_info {level selected_range} {
     }
     .combwin.f.t tag bind comb_bp1 <ButtonPress-1> {
       .combwin.f.t configure -cursor $comb_curr_cursor
-      comb_down_level [.combwin.f.t tag prevrange comb_bp1 {current + 1 chars}]
+      set selected_range [.combwin.f.t tag prevrange comb_bp1 {current + 1 chars}]
+      set redraw [move_display_down [get_expr_index_from_range $selected_range]]
+      if {redraw == 1} {
+        display_comb_info
+      } 
     }
     .combwin.f.t tag bind comb_bp2 <ButtonPress-2> {
       .combwin.f.t configure -cursor $comb_curr_cursor
-      comb_up_level [.combwin.f.t tag prevrange comb_bp2 {current + 1 chars}]
+      set selected_range [.combwin.f.t tag prevrange comb_bp2 {current + 1 chars}]
+      set redraw [move_display_up [get_expr_index_from_range $selected_range]]
+      if {redraw == 1} {
+        display_comb_info
+      } 
     }
   }
 
 }
 
-proc comb_up_level {selected_range} {
+proc get_expr_index_from_range {selected_range} {
 
-  global comb_level
+  global comb_uline_exprs
 
-  if {$comb_level > 0} {
-    incr comb_level -1
-    display_comb_info $comb_level $selected_range
-  }
+  # Get range information
+  set start_info [split [lindex $selected_range 0] .]
+  set end_info   [split [lindex $selected_range 1] .]
 
-}
+  set i     0
+  set found 0
 
-proc comb_down_level {selected_range} {
+  while {[expr $i < [llength $comb_uline_exprs]] && [expr found == 0]} {
+  
+    set curr_expr [lindex $comb_uline_exprs $i]
 
-  global comb_level
-
-  if [check_level [expr $comb_level + 1]] {
-    incr comb_level
-    display_comb_info $comb_level $selected_range
   }
 
 }
 
 proc get_underline_expressions {parent} {
+
+  global comb_uline_exprs comb_uline_groups
+  global comb_ulines
+
+  # Get information from parent expression
+  set parent_expr  [lindex $comb_uline_exprs $parent]
+  set parent_level [lindex $parent_expr 1]
+
+  # Calculate the current level by adding one to the parent expression
+  set child_level [expr $parent_level + 1]
+
+  # Iterate through list of lines that parent consumes getting children
+  set parent_lines    [lindex $parent_expr 2]
+  set parent_line_num [llength $parent_lines]
+  set uline_ip        0
+  set child_ids       ""
+  for {set i 0} {$i < $parent_line_num} {incr i} {
+
+    # Get current line
+    set line [lindex $parent_lines $i]
+
+    # Get current parent line information
+    set index      [lindex $line 0]
+    set start_char [lindex $line 1]
+    set end_char   [lindex $line 2]
+
+    if {$child_level < [lindex $comb_uline_groups $i]} {
+
+      # Extract children from this line
+      set curr_uline  [lindex $comb_ulines [expr $index - 1]]
+      set curr_char  0
+
+      if {$uline_ip == 1} {
+        set curr_char [string first "-" $curr_uline $curr_char] 
+        set uline_ip  0
+      } else {
+        set curr_char [string first "|" $curr_uline $curr_char] 
+      }
+
+      while {[expr $curr_char != -1] && [expr $curr_char < $end_char]} {
+        if {$uline_ip == 0} {
+          set uline_ip 1
+          set start_char $curr_char
+        } else {
+          set uline_ip 0
+          set child_line [list [expr $index - 1] $start_char [expr $curr_char + 1]]
+          lappend child_lines $child_line
+
+          # This child is done so add it to the expression list now
+          lappend comb_uline_exprs [list 0 $child_level $child_lines $parent]
+          set child_lines ""
+          lappend child_ids [expr [llength $comb_uline_exprs] - 1]
+
+        }
+        set curr_char [string first "|" $curr_uline [expr $curr_char + 1]]
+      }
+
+      if {$uline_ip == 1} { 
+        set child_line [list [expr $index - 1] $start_char [string length $curr_uline]]
+        lappend child_lines $child_line
+      }
+
+    }
+    
+  }
+
+  # Set child IDs to this parent
+  lappend parent_expr $child_ids
+  lreplace $comb_uline_exprs $parent $parent $parent_expr
+
+}
+
+proc move_display_down {parent_index} {
+
+  global comb_uline_exprs
+
+  set redraw 0
+
+  # Get children list from parent expression
+  set parent_expr [lindex $comb_uline_exprs $parent_index]
+  set children    [lindex $top_expr 4]
+
+  # Iterate through all children, setting the display variable to 1
+  foreach child $children {
+    set child_expr [lindex $comb_uline_exprs $child]
+    lreplace $child_expr 0 0 1
+    lreplace $comb_uline_exprs $child $child $child_expr
+  }
+
+  if {[llength $children] > 0} {
+
+    # Set parent display variable to 0
+    lreplace $parent_expr 0 0 0
+    lreplace $comb_uline_exprs $parent_index $parent_index $parent_expr
+    set redraw 1
+
+  }
+
+  return $redraw
+
+}
+
+proc move_display_up {child_index} {
+
+  global comb_uline_exprs
+
+  set redraw 0
+
+  # Get parent expression from child
+  set child_expr [lindex $comb_uline_exprs $child_index]
+  set parent     [lindex $child_expr 3]
+
+  if {$parent != -1} {
+
+    # Set child display to 0
+    lreplace $child_expr 0 0 0
+    lreplace $comb_uline_exprs $child_index $child_index $child_expr
+
+    # Set parent display to 1
+    set parent_expr [lindex $comb_uline_exprs $parent]
+    lreplace $parent_expr 0 0 1
+    lreplace $comb_uline_exprs $parent $parent $parent_expr
+
+    set redraw 1
+
+  }
+
+  return $redraw
 
 }
  
@@ -171,16 +304,21 @@ proc organize_underlines {} {
 
   for {set i 0} {$i < $code_len} {incr i} {
     set index [expr [lindex $comb_uline_groups $i] + $curr_line - 1]
-    if {$i == 0} {
-      set line_info [list $index 0 [string length [lindex $comb_ulines $index]]
-    } else {
-      lappend line_info [list $index 0 [string length [lindex $comb_ulines $index]]
-    }
+    lappend line_info [list $index 0 [string length [lindex $comb_ulines $index]]]
+    set curr_line [expr $curr_line + [lindex $comb_uline_groups $i]]
   }
 
-  list comb_uline_exprs 0 -1 $line_info -1
+  lappend comb_uline_exprs [list 0 -1 $line_info -1]
 
-  get_underline_expressions 0
+  # Get all child expressions
+  set i 0
+  while {$i < [llength $comb_uline_exprs]} {
+    get_underline_expressions $i
+    incr i
+  }
+
+  # Set the display value in the children of the top-level
+  move_display_down 0
 
 }
 
