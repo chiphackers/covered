@@ -28,99 +28,9 @@ covered score -t &lt;top_module&gt; [&lt;options&gt;]
 
 <_pg>
 The <i>top_module</i> parameter is required for the scoring purposes and represents the 
-top-most module that will be covered.  Covered is limited to being able to gain coverage 
-results for either a single module or a single module tree.  With the combination of the
--t, -i and -e options, all relevant modules in a design can be selected for coverage.  The 
-following figure shows a design in its hierachical form to illustrate how to get Covered 
-to generate coverage results for a part of the design.
-</_pg>
-
-<_margin>Figure</_margin>
-
-<_pg>
-<img src="img/vhier.png">
-</_pg>
-
-<_pg>
-Assume that the following Verilog modules are used to create this tree.
-</_pg>
-
-<_pg>
-<ul>
-  <li>module "test" instantiated as "test" in the above figure</li>
-  <li>module "foomod" instantiated as "foo"</li>
-  <li>module "barmod" instantiated as "bar"</li>
-  <li>module "amod" instantiated as "a"</li>
-  <li>module "bmod" instantiated as "b"</li>
-</ul>
-</_pg>
-
-<_pg>
-To get coverage for the entire design, the covered command line would be:
-</_pg>
-
-<_margin>Command</_margin>
-
-<_code>
-covered score -t test -i test (rest of command-line)
-</_code>
-
-<_pg>
-Because both the -t and -i options are the same value (the module name is the same as the
-instance name), only the -t option needs to be specified.  If the -i option is not specified,
-Covered will assume that the instance name of the top module is the same name as the top
-module itself.  Note that the -t option always needs to be specified for the score command.
-</_pg>
-
-<_pg>
-To get coverage for the instance foo and all modules below it, the covered command line
-would be:
-</_pg>
-
-<_margin>Command</_margin>
-
-<_code>
-covered score -t foomod -i test.foo (rest of command-line)
-</_code>
-
-<_pg>
-In this case, we do not wish to score the module test (the top-level file for the design)
-but rather wish to gain coverage information for module foomod and all instantiated modules
-underneath it.  Since foomod is not the top-level design file, the -i option must be specified
-to tell Covered what the hierarchical scope of the top-level score file is in relation to the
-entire design.  The main reason why this is necessary is so that Covered will be able to
-locate the dumpfile information for the modules/instances that need to be scored.
-</_pg>
-
-<_pg>
-To get coverage for only the instance foo (and none of the modules instantiated below it
-in the hierarchy), Covered command-line would look like the following:
-</_pg>
-
-<_margin>Command</_margin>
-
-<_code>
-covered score -t foomod -i test.foo -e amod -e bmod
-</_code>
-
-<_pg>
-Here we see the use of the -e option, it takes a module name as its value.  When a module
-with the matching name is found in the hierarchy, it and all of its submodules are removed
-from coverage.  You may specify as many -e arguments as necessary to select the appropriate
-modules to cover.
-</_pg>
-
-<_pg>
-To get coverage for the instance foo and all modules below it,
-in addition to the instance bar, you would have to run
-Covered twice (once for each top instance).
-</_pg>
-
-<_pg>
-The -vcd &lt;<i>vcd_dumpfile</i>&gt; parameter is simply the
-name of the VCD dumpfile that contains all of the module instances
-selected by the -t parameter (in combination with the -e option --
-see below).
+top-most module that will be covered.  It is important to note that Covered does not need
+to parse the entire DUT.  It only parses that part of the design which will receive
+coverage results.  More on this will be described in section 6.3 below.
 </_pg>
 
 <_header2>
@@ -262,5 +172,208 @@ coverage.
       Outputs usage information for the score command
     </td>
   </tr>
-</table>
+</table><br>
 </_block>
+
+<_header2>
+Specifying What to Cover
+</_header2>
+
+<_pg>
+Covered is not a logic simulator and, therefore, is not required to parse the entire DUT.
+True simulation is performed by the Verilog simulator used to generate the VCD dumpfile.
+Covered, therefore, is given the ability to parse only the part of the DUT that is to be
+scored for coverage.  Having this ability to ignore parts of the DUT has several advantages
+in the way of performance.  Less memory is necessary for coverage simulation/calculation.
+Additionally, less processing is also required which leads to faster turnaround.  On the
+other hand, since Covered ignores the parts of the design not being scored, some information
+is not automatically extracted by Covered that is required for scoring the specified part
+of the DUT.  The <i>defparam</i> statement is one such statement.  More on this is
+mentioned in the following section. 
+</_pg>
+
+<_pg>
+The following example describes a complete DUT and how to cause Covered to score various
+parts of the DUT.
+</_pg>
+
+<_margin>Figure</_margin>
+
+<_pg>
+<img src="img/vhier.png">
+</_pg>
+
+<_pg>
+Assume that the following Verilog modules are used to create this tree.
+</_pg>
+
+<_pg>
+<ul>
+  <li>module "test" instantiated as "test" in the above figure</li>
+  <li>module "foomod" instantiated as "foo"</li>
+  <li>module "barmod" instantiated as "bar"</li>
+  <li>module "amod" instantiated as "a"</li>
+  <li>module "bmod" instantiated as "b"</li>
+</ul>
+</_pg>
+
+<_pg>
+To get coverage for the entire design, the covered command line would be:
+</_pg>
+
+<_margin>Command</_margin>
+
+<_code>
+covered score -t test -i test (rest of command-line)
+</_code>
+
+<_pg>
+Because both the -t and -i options are the same value (the module name is the same as the
+instance name), only the -t option needs to be specified.  If the -i option is not specified,
+Covered will assume that the instance name of the top module is the same name as the top
+module itself.  Note that the -t option always needs to be specified for the score command.
+</_pg>
+
+<_pg>
+To get coverage for the instance foo and all modules below it, the covered command line
+would be:
+</_pg>
+
+<_margin>Command</_margin>
+
+<_code>
+covered score -t foomod -i test.foo (rest of command-line)
+</_code>
+
+<_pg>
+In this case, we do not wish to score the module test (the top-level file for the design)
+but rather wish to gain coverage information for module foomod and all instantiated modules
+underneath it.  Since foomod is not the top-level design file, the -i option must be specified
+to tell Covered what the hierarchical scope of the top-level score file is in relation to the
+entire design.  The main reason why this is necessary is so that Covered will be able to
+locate the dumpfile information for the modules/instances that need to be scored.
+</_pg>
+
+<_pg>
+To get coverage for only the instance foo (and none of the modules instantiated below it
+in the hierarchy), Covered command-line would look like the following:
+</_pg>
+
+<_margin>Command</_margin>
+
+<_code>
+covered score -t foomod -i test.foo -e amod -e bmod
+</_code>
+
+<_pg>
+Here we see the use of the -e option, it takes a module name as its value.  When a module
+with the matching name is found in the hierarchy, it and all of its submodules are removed
+from coverage.  You may specify as many -e arguments as necessary to select the appropriate
+modules to cover.
+</_pg>
+
+<_pg>
+To get coverage for the instance foo and all modules below it,
+in addition to the instance bar, you would have to run
+Covered twice (once for each top instance).
+</_pg>
+
+<_pg>
+The -vcd &lt;<i>vcd_dumpfile</i>&gt; parameter is simply the
+name of the VCD dumpfile that contains all of the module instances
+selected by the -t parameter (in combination with the -e option --
+see below).
+</_pg>
+
+<_header2>
+Overriding Parameters (-P option)
+</_header2>
+
+<_pg>
+As mentioned in Section 6.3, Covered does not pay attention to the entire DUT.  This allows
+it to be more flexible and more efficient in memory and processing requirements.  This also
+has a down-side in that certain parts of the DUT are not parsed which can affect other
+parts of the DUT (parts needing to be scored).  More specifically, parameter overriding which
+are accomplished with the <i>defparam</i> command.
+</_pg>
+
+<_pg>
+The <i>defparam</i> statement can override any parameter specified in the DUT from any
+module in the DUT.  Since parameter information is not typically specified in VCD dumpfiles,
+Covered needs to know about all parameter values at score time.  Since all defparam
+statements are ignored by the Covered parser (even those in the DUT being scored), the user
+must inform Covered of any parameters that need to be overridden.  This is accomplished with
+the -P option to the score command.
+</_pg>
+
+<_pg>
+The first value in the -P option is the hierarchical reference to the parameter that needs
+to be overridden.  The second value (following the '=' sign) specifies the value to assign
+the parameter to.  This will override any default value assigned to that parameter.  The user
+may not override the same parameter value twice on the command-line.  Additionally, if the
+parameter is already being overridden in the design via an inline parameter override
+(parameter overrides specified in the '#(...)' part of the module instantiation).
+</_pg>
+
+<_pg>
+As an example of how to override a parameter value on the score command-line, let's assume
+that there is a parameter called 'google' in the module called 'amod' used in the example in
+Section 6.3.  The parameter definition in this module looks like the following:
+</_pg>
+
+<_code>
+parameter google = 4'hf;
+</_code>
+
+<_pg>
+To override this value to a new value of 18, use the following option in the score
+command:
+</_pg>
+
+<_margin>Option Example</_margin>
+
+<_code>
+-P test.foo.a.google=18
+</_code>
+
+<_pg>
+In this example, notice that we have not only changed the value of google, but we have
+also changed the bit-width of google from 4 bits to 32 bits (the size of an integer).  This
+is considered legal behavior by Covered.
+</_pg>
+
+<_pg>
+It is also possible to specify non-integer values to the parameter override option.  Decimal,
+binary, octal and hexidecimal values may also be specified, using the same syntax as they
+are specified in Verilog.  The following examples would also be other ways to override the
+value to 18.
+</_pg>
+
+<_code>
+-P test.foo.a.google=5'b10010<br>
+-P test.foo.a.google=4'o22<br>
+-P test.foo.a.google=12'h12<br>
+-P test.foo.a.google='d18<br>
+</_code>
+
+<_pg>
+In fact, you may specify any value (with the exception of real numbers) to override a
+parameter, including the following value types: 'x', 'X', 'z', 'Z', '_', '?'.  This means
+that unknowns may be specified in a parameter.  Note that this may generate user reported 
+errors if parameters overridden to unknown values are used in mathematical equations or are
+used to specify the width of wires, regs, etc.
+</_pg>
+
+<_pg>
+If a defparam statement is encountered in the DUT being scored, a warning message will be
+output to the user specifying that it has encountered a defparam statement.  The defparam
+statement is ignored by Covered; however, if the parameter that it is overridding is used
+in the DUT being scored, the results of Covered may differ from actual simulation results.
+As such, please review all of these warning types to determine if the parameter should be
+overridden or not.  If defparams are not parsed (seen by Covered), no such warning will be 
+output.  Please review the DUT for defparams which affect the DUT being scored.
+</_pg>
+
+<_pg>
+
+</_pg>

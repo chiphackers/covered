@@ -1,5 +1,46 @@
 Covered-Related NEWS
 ====================
+    * 10/26/2002
+
+Release covered-20021026 finally made.  This release is an enormous step toward
+getting to first stable release.  Added support for parameters which should be
+complete for stable release.  Supports all Verilog-1995 standard parameter code.
+This caused some parts of the code to be completely redesigned and in the process
+enhanced the efficiency of the score command.  Additional enhancements and bug fixes
+are so numerous that I will list them below:
+
+  - Fixed bug in VCD for reading $var definitions containing optional bit selects
+  - Fixed bug with calculating initial values of signals for all simulators
+  - Fixed bug with coverage results for static values.
+  - Modified regression to run with Icarus Verilog or VCS.
+  - Full support parameters as specified for Verilog-1995 (Verilog-2000 will be supported
+    in the future) -- simple bullet in list but a lot of work involved here.
+  - Fixing bug with concatenations specified on the left-hand-side of equations
+  - Fixed several other bugs in handling concatenations.
+  - Added lots of new diagnostics to regression suite to test parameters and other
+    Verilog components which were found to be buggy.
+  - Fixed bugs with single and mult-bit signal selects.  Multi-bit select bugs were
+    causing internal assertion errors to fire.
+  - Expressions changed to be more efficient with memory consumption.
+  - Added ability to parse real types in VCD dumpfiles (though real numbers are not
+    supported internally) -- VCD dumpfile parsing should be complete now.
+  - Fixing -i option in score command to use full Verilog hierarchy rather than just
+    the instance name (this was the intended behavior).
+  - Added -T option to allow user to select min, typ, or max delay values in
+    min:typ:max delay statements.
+  - Fixed bug leading to segmentation fault in report command when outputting verbose
+    information for large expression trees.
+  - Added initial fix for ordering line and combinational logic outputs in verbose
+    reports (they were backwards before).
+  - Updates to development documentation, user manual, and man page for new features
+    and redescribed a few things in user manual for clarification purposes.
+
+Overall, this is a MAJOR release.  Please give this one a try and submit bug reports.
+I only have a few more small features to add before first stable release so I want to
+really work the problems out of this release.  All Verilog code that Covered will
+pay attention to in a design for the Verilog-1995 standard is now in place.  A lot of
+work went into this release -- thus the delay in getting the release out.
+
     * 9/14/2002
 
 Release covered-20020914 made.  This release is mostly a feature release with a few

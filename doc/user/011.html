@@ -106,7 +106,87 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">The <i>top_module</i> parameter is required for the scoring purposes and represents the top-most module that will be covered. Covered is limited to being able to gain coverage results for either a single module or a single module tree. With the combination of the -t, -i and -e options, all relevant modules in a design can be selected for coverage. The following figure shows a design in its hierachical form to illustrate how to get Covered to generate coverage results for a part of the design.</P>
+      <P class="pg">The <i>top_module</i> parameter is required for the scoring purposes and represents the top-most module that will be covered. It is important to note that Covered does not need to parse the entire DUT. It only parses that part of the design which will receive coverage results. More on this will be described in section 6.3 below.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header2">6.2&nbsp; <A name="6_2"></A>Options</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">The following table describes the additional options that can be passed to the score command. Note that it is optional in how you tell Covered where to find the Verilog design files; however, it is not optional to exclude the Verilog files. If no Verilog can be found that contains at least the top instance, Covered will generate an error message to the user specifying that it was unable to find the required Verilog modules.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      
+      <TABLE cellpadding=0 cellspacing=0 border=0 width=100%>
+        <TR>
+          <TD>
+            <P class="blockIndentLeft">&nbsp;</P>
+          </TD>
+          <TD width=100% align=center>
+<table cellspacing=2 cellpadding=4 border=1> <tr> <td colspan=2 class="tableHeader"> Options to score Command </td> </tr> <tr> <td> <strong>Option</strong> </td> <td> <strong>Description</strong> <td> </tr> <tr> <td> -vcd &lt;dumpfile&gt; </td> <td> Name of dumpfile to score design with. If this option is not used, Covered will only create an initial CDD file from the design and will not attempt to score the design. </td> </tr> <tr> <td> -i &lt;instance&gt; </td> <td> Instance name of top-level module. Necessary if module to verify coverage is not the top-level module in the design. If not specified, -t value is used. </td> </tr> <tr> <td> -o &lt;<i>filename</i>&gt; </td> <td> Name of CDD to write coverage information to </td> </tr> <tr> <td> -I &lt;<i>directory</i>&gt; </td> <td> Directory to find included Verilog files. You may use this option as many times as necessary on the command-line, one for each directory. </td> </tr> <tr> <td> -f &lt;<i>filename</i>&gt; </td> <td> Name of file containing additional arguments to parse. You may specify this option more than once on a command-line. </td> </tr> <tr> <td> -y &lt;<i>directory</i>&gt; </td> <td> Directory to find unspecified Verilog files. You may specify this option more than once on a command-line; one for each directory required. </td> </tr> <tr> <td> -v &lt;<i>filename</i>&gt; </td> <td> Name of specific Verilog file to score. You may specify this option more than once on a command-line; one for each filename to parse. </td> </tr> <tr> <td> -e &lt;<i>module</i>&gt; </td> <td> Name of module to not score. You may specify this option more than once on a command-line; one for each module to remove from coverage. </td> </tr> <tr> <td> -D &lt;name&gt;(=&lt;value&gt;) </td> <td> Defines the specified name to 1 or the specified value. </td> </tr> <tr> <td> -P &lt;parameter_scope&gt;=&lt;value&gt; </td> <td> Performs a defparam on the specified parameter with value. </td> </tr> <tr> <td> -T min|typ|max </td> <td> Specifies which value to use in min:typ:max delay expressions. Default is typ. </td> </tr> <tr> <td> -h </td> <td> Outputs usage information for the score command </td> </tr> </table><br>
+          </TD>
+          <TD>
+            <P class="blockIndentRight">&nbsp;</P>
+          </TD>
+        </TR>
+      </TABLE>
+
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header2">6.3&nbsp; <A name="6_3"></A>Specifying What to Cover</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">Covered is not a logic simulator and, therefore, is not required to parse the entire DUT. True simulation is performed by the Verilog simulator used to generate the VCD dumpfile. Covered, therefore, is given the ability to parse only the part of the DUT that is to be scored for coverage. Having this ability to ignore parts of the DUT has several advantages in the way of performance. Less memory is necessary for coverage simulation/calculation. Additionally, less processing is also required which leads to faster turnaround. On the other hand, since Covered ignores the parts of the design not being scored, some information is not automatically extracted by Covered that is required for scoring the specified part of the DUT. The <i>defparam</i> statement is one such statement. More on this is mentioned in the following section. </P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">The following example describes a complete DUT and how to cause Covered to score various parts of the DUT.</P>
     </TD>
   </TR>
 
@@ -271,7 +351,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="header2">6.2&nbsp; <A name="6_2"></A>Options</P>
+      <P class="header2">6.4&nbsp; <A name="6_4"></A>Overriding Parameters (-P option)</P>
     </TD>
   </TR>
 
@@ -282,7 +362,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">The following table describes the additional options that can be passed to the score command. Note that it is optional in how you tell Covered where to find the Verilog design files; however, it is not optional to exclude the Verilog files. If no Verilog can be found that contains at least the top instance, Covered will generate an error message to the user specifying that it was unable to find the required Verilog modules.</P>
+      <P class="pg">As mentioned in Section 6.3, Covered does not pay attention to the entire DUT. This allows it to be more flexible and more efficient in memory and processing requirements. This also has a down-side in that certain parts of the DUT are not parsed which can affect other parts of the DUT (parts needing to be scored). More specifically, parameter overriding which are accomplished with the <i>defparam</i> command.</P>
     </TD>
   </TR>
 
@@ -293,21 +373,128 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      
-      <TABLE cellpadding=0 cellspacing=0 border=0 width=100%>
-        <TR>
-          <TD>
-            <P class="blockIndentLeft">&nbsp;</P>
-          </TD>
-          <TD width=100% align=center>
-<table cellspacing=2 cellpadding=4 border=1> <tr> <td colspan=2 class="tableHeader"> Options to score Command </td> </tr> <tr> <td> <strong>Option</strong> </td> <td> <strong>Description</strong> <td> </tr> <tr> <td> -vcd &lt;dumpfile&gt; </td> <td> Name of dumpfile to score design with. If this option is not used, Covered will only create an initial CDD file from the design and will not attempt to score the design. </td> </tr> <tr> <td> -i &lt;instance&gt; </td> <td> Instance name of top-level module. Necessary if module to verify coverage is not the top-level module in the design. If not specified, -t value is used. </td> </tr> <tr> <td> -o &lt;<i>filename</i>&gt; </td> <td> Name of CDD to write coverage information to </td> </tr> <tr> <td> -I &lt;<i>directory</i>&gt; </td> <td> Directory to find included Verilog files. You may use this option as many times as necessary on the command-line, one for each directory. </td> </tr> <tr> <td> -f &lt;<i>filename</i>&gt; </td> <td> Name of file containing additional arguments to parse. You may specify this option more than once on a command-line. </td> </tr> <tr> <td> -y &lt;<i>directory</i>&gt; </td> <td> Directory to find unspecified Verilog files. You may specify this option more than once on a command-line; one for each directory required. </td> </tr> <tr> <td> -v &lt;<i>filename</i>&gt; </td> <td> Name of specific Verilog file to score. You may specify this option more than once on a command-line; one for each filename to parse. </td> </tr> <tr> <td> -e &lt;<i>module</i>&gt; </td> <td> Name of module to not score. You may specify this option more than once on a command-line; one for each module to remove from coverage. </td> </tr> <tr> <td> -D &lt;name&gt;(=&lt;value&gt;) </td> <td> Defines the specified name to 1 or the specified value. </td> </tr> <tr> <td> -P &lt;parameter_scope&gt;=&lt;value&gt; </td> <td> Performs a defparam on the specified parameter with value. </td> </tr> <tr> <td> -T min|typ|max </td> <td> Specifies which value to use in min:typ:max delay expressions. Default is typ. </td> </tr> <tr> <td> -h </td> <td> Outputs usage information for the score command </td> </tr> </table>
-          </TD>
-          <TD>
-            <P class="blockIndentRight">&nbsp;</P>
-          </TD>
-        </TR>
-      </TABLE>
+      <P class="pg">The <i>defparam</i> statement can override any parameter specified in the DUT from any module in the DUT. Since parameter information is not typically specified in VCD dumpfiles, Covered needs to know about all parameter values at score time. Since all defparam statements are ignored by the Covered parser (even those in the DUT being scored), the user must inform Covered of any parameters that need to be overridden. This is accomplished with the -P option to the score command.</P>
+    </TD>
+  </TR>
 
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">The first value in the -P option is the hierarchical reference to the parameter that needs to be overridden. The second value (following the '=' sign) specifies the value to assign the parameter to. This will override any default value assigned to that parameter. The user may not override the same parameter value twice on the command-line. Additionally, if the parameter is already being overridden in the design via an inline parameter override (parameter overrides specified in the '#(...)' part of the module instantiation).</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">As an example of how to override a parameter value on the score command-line, let's assume that there is a parameter called 'google' in the module called 'amod' used in the example in Section 6.3. The parameter definition in this module looks like the following:</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="code">parameter google = 4'hf;</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">To override this value to a new value of 18, use the following option in the score command:</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin">Option Example</P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="code">-P test.foo.a.google=18</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">In this example, notice that we have not only changed the value of google, but we have also changed the bit-width of google from 4 bits to 32 bits (the size of an integer). This is considered legal behavior by Covered.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">It is also possible to specify non-integer values to the parameter override option. Decimal, binary, octal and hexidecimal values may also be specified, using the same syntax as they are specified in Verilog. The following examples would also be other ways to override the value to 18.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="code">-P test.foo.a.google=5'b10010<br> -P test.foo.a.google=4'o22<br> -P test.foo.a.google=12'h12<br> -P test.foo.a.google='d18<br></P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">In fact, you may specify any value (with the exception of real numbers) to override a parameter, including the following value types: 'x', 'X', 'z', 'Z', '_', '?'. This means that unknowns may be specified in a parameter. Note that this may generate user reported errors if parameters overridden to unknown values are used in mathematical equations or are used to specify the width of wires, regs, etc.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">If a defparam statement is encountered in the DUT being scored, a warning message will be output to the user specifying that it has encountered a defparam statement. The defparam statement is ignored by Covered; however, if the parameter that it is overridding is used in the DUT being scored, the results of Covered may differ from actual simulation results. As such, please review all of these warning types to determine if the parameter should be overridden or not. If defparams are not parsed (seen by Covered), no such warning will be output. Please review the DUT for defparams which affect the DUT being scored.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg"></P>
     </TD>
   </TR>
 
