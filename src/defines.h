@@ -751,8 +751,6 @@ struct module_s {
   exp_link*  exp_tail;   /*!< Tail pointer to list of expressions in this module */
   stmt_link* stmt_head;  /*!< Head pointer to list of statements in this module  */
   stmt_link* stmt_tail;  /*!< Tail pointer to list of statements in this module  */
-  parameter* param_head; /*!< Head pointer to list of parameters in this module  */
-  parameter* param_tail; /*!< Tail pointer to list of parameters in this module  */
 };
 
 typedef struct module_s module;
@@ -837,12 +835,14 @@ struct mod_inst_s;
 typedef struct mod_inst_s mod_inst;
 
 struct mod_inst_s {
-  char*      name;          /*!< Instance name of this module instance      */
-  module*    mod;           /*!< Pointer to module this instance represents */
-  statistic* stat;          /*!< Pointer to statistic holder                */
-  mod_inst*  child_head;    /*!< Pointer to head of child list              */
-  mod_inst*  child_tail;    /*!< Pointer to tail of child list              */
-  mod_inst*  next;          /*!< Pointer to next child in parents list      */
+  char*      name;          /*!< Instance name of this module instance             */
+  module*    mod;           /*!< Pointer to module this instance represents        */
+  statistic* stat;          /*!< Pointer to statistic holder                       */
+  parameter* param_head;    /*!< Head pointer to list of parameters in this module */
+  parameter* param_tail;    /*!< Tail pointer to list of parameters in this module */
+  mod_inst*  child_head;    /*!< Pointer to head of child list                     */
+  mod_inst*  child_tail;    /*!< Pointer to tail of child list                     */
+  mod_inst*  next;          /*!< Pointer to next child in parents list             */
 };
 
 //-------------------------------------------------------------------------------
@@ -854,6 +854,10 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.39  2002/08/26 12:57:03  phase1geo
+/* In the middle of adding parameter support.  Intermediate checkin but does
+/* not break regressions at this point.
+/*
 /* Revision 1.38  2002/08/23 12:55:33  phase1geo
 /* Starting to make modifications for parameter support.  Added parameter source
 /* and header files, changed vector_from_string function to be more verbose

@@ -23,7 +23,6 @@ parameter* param_tail = NULL;
 parameter* defparam_head = NULL;
 parameter* defparam_tail = NULL;
 
-
 /*!
  \param name  Name of parameter value to find.
  \param parm  Pointer to head of parameter list to search.
@@ -118,12 +117,11 @@ void param_add_to_list( parameter* parm, parameter** head, parameter** tail ) {
  \param expr   Expression to calculate parameter value.
  \param mod    Pointer to module to add parameter to.
 
- Creates a new parameter with the specified information and
- adds it to the end of the global parameter list.  This
- function is only called when a parameter is found in a
- particular module.
+ Creates a new parameter with the specified information and adds it to the 
+ instance parameter list.  This function is only called when a parameter
+ is found in a particular module.
 */
-void param_add( char* name, expression* expr, module* mod ) {
+void param_add( char* name, expression* expr, mod_inst* inst ) {
 
   parameter* parm;     /* Temporary pointer to parameter */
   parameter* defparm;  /* Pointer to found defparam      */
@@ -140,14 +138,18 @@ void param_add( char* name, expression* expr, module* mod ) {
     /* Exchange expression values */
     expression_dealloc( parm->expr, TRUE );
     parm->expr = defparm->expr;
-    
+
     /* Remove found defparam */
     free_safe( defparm->name );
     free_safe( defparm );
 
   }
     
-  param_add_to_list( parm, &(mod->param_head), &(mod->param_tail) );
+  /* Evaluate expression */
+  expression_operate( parm->expr );
+    
+  /* Now add the parameter to the current expression */
+  param_add_to_list( parm, &(inst->param_head), &(inst->param_tail) );
 
 }
 
@@ -194,8 +196,11 @@ void param_add_defparam( char* scope, vector* value ) {
 
 }
 
-
 /* $Log$
+/* Revision 1.2  2002/08/26 12:57:04  phase1geo
+/* In the middle of adding parameter support.  Intermediate checkin but does
+/* not break regressions at this point.
+/*
 /* Revision 1.1  2002/08/23 12:55:33  phase1geo
 /* Starting to make modifications for parameter support.  Added parameter source
 /* and header files, changed vector_from_string function to be more verbose
