@@ -1,0 +1,134 @@
+\section{search.h File Reference}
+\label{search_8h}\index{search.h@{search.h}}
+Contains functions used for finding Verilog files in the search information provided on the command line. 
+
+
+{\tt \#include \char`\"{}defines.h\char`\"{}}\par
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+void {\bf search\_\-init} ()
+\begin{CompactList}\small\item\em Initializes search maintained pointers.\item\end{CompactList}\item 
+{\bf bool} {\bf search\_\-add\_\-include\_\-path} (char $\ast$path)
+\begin{CompactList}\small\item\em Adds an include directory to the list of directories to search for `include directives.\item\end{CompactList}\item 
+{\bf bool} {\bf search\_\-add\_\-directory\_\-path} (char $\ast$path)
+\begin{CompactList}\small\item\em Adds a directory to the list of directories to find unspecified Verilog modules.\item\end{CompactList}\item 
+{\bf bool} {\bf search\_\-add\_\-file} (char $\ast$file)
+\begin{CompactList}\small\item\em Adds a specific Verilog module to the list of modules to score.\item\end{CompactList}\item 
+{\bf bool} {\bf search\_\-add\_\-no\_\-score\_\-module} (char $\ast${\bf module})
+\begin{CompactList}\small\item\em Adds specified module to list of modules not to score.\item\end{CompactList}\item 
+{\bf bool} {\bf search\_\-add\_\-extensions} (char $\ast$ext\_\-list)
+\begin{CompactList}\small\item\em Adds specified extensions to allowed file extension list.\item\end{CompactList}\item 
+void {\bf search\_\-free\_\-lists} ()
+\begin{CompactList}\small\item\em Deallocates all used memory for search lists.\item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+Contains functions used for finding Verilog files in the search information provided on the command line.
+
+
+
+\begin{Desc}
+\item[Author: ]\par
+Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\begin{Desc}
+\item[Date: ]\par
+11/27/2001\end{Desc}
+
+
+\subsection{Function Documentation}
+\index{search.h@{search.h}!search_add_directory_path@{search\_\-add\_\-directory\_\-path}}
+\index{search_add_directory_path@{search\_\-add\_\-directory\_\-path}!search.h@{search.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} search\_\-add\_\-directory\_\-path (char $\ast$ {\em path})}\label{search_8h_a2}
+
+
+Adds a directory to the list of directories to find unspecified Verilog modules.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+path}]Name of directory to find unspecified Verilog files \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns TRUE if the specified string is a legal directory string and specifies an existing directory; otherwise, returns FALSE. \end{Desc}
+\index{search.h@{search.h}!search_add_extensions@{search\_\-add\_\-extensions}}
+\index{search_add_extensions@{search\_\-add\_\-extensions}!search.h@{search.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} search\_\-add\_\-extensions (char $\ast$ {\em ext\_\-list})}\label{search_8h_a5}
+
+
+Adds specified extensions to allowed file extension list.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+ext\_\-list}]String containing extensions to allow in search. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns TRUE if the specified string is in the correct format; otherwise, returns FALSE. \end{Desc}
+\index{search.h@{search.h}!search_add_file@{search\_\-add\_\-file}}
+\index{search_add_file@{search\_\-add\_\-file}!search.h@{search.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} search\_\-add\_\-file (char $\ast$ {\em file})}\label{search_8h_a3}
+
+
+Adds a specific Verilog module to the list of modules to score.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+file}]Name of Verilog file to add to scoring list. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns TRUE if the specified file exists; otherwise, returns FALSE. \end{Desc}
+\index{search.h@{search.h}!search_add_include_path@{search\_\-add\_\-include\_\-path}}
+\index{search_add_include_path@{search\_\-add\_\-include\_\-path}!search.h@{search.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} search\_\-add\_\-include\_\-path (char $\ast$ {\em path})}\label{search_8h_a1}
+
+
+Adds an include directory to the list of directories to search for `include directives.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+path}]Name of include path to search for `include directives. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns TRUE if the specified path is a legal directory string and specifies an existing directory; otherwise, returns FALSE. \end{Desc}
+\index{search.h@{search.h}!search_add_no_score_module@{search\_\-add\_\-no\_\-score\_\-module}}
+\index{search_add_no_score_module@{search\_\-add\_\-no\_\-score\_\-module}!search.h@{search.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} search\_\-add\_\-no\_\-score\_\-module (char $\ast$ {\em module})}\label{search_8h_a4}
+
+
+Adds specified module to list of modules not to score.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+module}]Name of module to specifically not score \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns TRUE if the specified string is a legal module name; otherwise, returns FALSE. \end{Desc}
+\index{search.h@{search.h}!search_free_lists@{search\_\-free\_\-lists}}
+\index{search_free_lists@{search\_\-free\_\-lists}!search.h@{search.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void search\_\-free\_\-lists ()}\label{search_8h_a6}
+
+
+Deallocates all used memory for search lists.
+
+This function should be called after all parsing is completed.  Deletes all initialized lists. \index{search.h@{search.h}!search_init@{search\_\-init}}
+\index{search_init@{search\_\-init}!search.h@{search.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void search\_\-init ()}\label{search_8h_a0}
+
+
+Initializes search maintained pointers.
+
+Creates root module for module\_\-node tree. If a module\_\-node points to this node as its parent, that node is considered the root node of the tree. 

@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>Covered Info</title>
+</head>
+<body bgcolor="#FFFFFF">
+<center>
+<img src="banner.gif" alt="Covered - The Verilog Code Coverage Analyzer">
+</center>
+<hr>
+<p>
+<a name="Introduction"><h2>Introduction</h2></a>
+<p>
+Covered is a Verilog code coverage analysis tool that can be useful for determining how well a diagnostic test suite is covering the design under test. Typically in the design verification work flow, a design verification engineer will develop a self-checking test suite to verify design elements/functions specified by a design's specification document. When the test suite contains all of the tests required by the design specification, the test writer may be asking him/herself, "How much logic in the design is actually being exercised?", "Does my test suite cover all of the logic under test?", and "Am I done writing tests for the logic?". When the design verification gets to this point, it is often useful to get some metrics for determining logic coverage. This is where a code coverage utility, such as Covered, is very useful.
+<p>
+<a name="News"><h2>News</h2></a>
+<p>
+<ul>
+<li>4/12/2002</li>
+<p>
+Created a home for the Covered utility on SourceForge.net. Currently, the HTML website is only available for viewing. No downloads are yet available. There are a few features that need to be added to the tool (and verification of those and other parts) before the source files and tool become available for public use. Check out the ToDo page for items that are on my todo list before making the tool available on-line!
+<p>
+<li>11/27/2001</li>
+<p>
+Started working on the Covered utility. After searching long and hard for a free, open source code coverage utility and coming up empty, decided to start working on one. This utility will be available on the gEDA website and database.
+</ul>
+<p>
+<a name="ToDo"><h2>ToDo List</h2></a>
+<p>
+Items that need to be completed before initial release of this utility/source code.
+<ol>
+<li>Work on verbose reporting for all coverage metrics.</li>
+<li>Add support for statements in Verilog parser. Currently, only expressions are handled correctly by the parser. Expressions are not contingent upon anything else besides signal changes within the expression to be added the the run-time engine. Statements are required to handle ordering of expressions.</li>
+<li>Add combinational logic coverage handling to report structure. Currently, line and toggle coverage are handled in summary form.</li>
+</ol>
+<p>
+The following are items that are on the todo list after the above have been completed. Some of them are long term features that I want as part of this tool.
+<ol>
+<li>Enhance Verilog code parser to allow coverage on more of the language.</li>
+<li>Add support to handle Finite State Machines. The initial available versions of Covered will not include FSM coverage metrics.</li>
+<li>Provide GUI for generating/parsing reports. The GUI will allow users to quickly see what is covered and what is not covered (without being as messy as a large text file).</li>
+</ol>
+<p>
+If you have any other things that you would like to see put into these lists, let me know
+<p>
+<a name="Downloads"><h2>Downloads</h2></a>
+<p>
+No version is currently available for download.
+<p>
+<a name="Documentation"><h2>Documentation</h2></a>
+<p>
+No documentation is currently available.
+<p>
+<a name="BugReporting"><h2>Bug Reporting</h2></a>
+<p>
+If you encounter any problems with the Covered tool, please send these problems along with the version of Covered that you are using to the
+<a href="https://sourceforge.net/tracker/?group_id=51103&atid=462087" target="_parent">Covered bug reporting utility</a>
+on
+<a href="http://sourceforge.net" target="_parent">SourceForge.net</a>
+.  Please describe the problem as accurately as possible or send an example that uncovers the problem. I will try to look at these as soon as possible.
+<p>
+<hr>
+<table>
+	<tr valign="baseline">
+		This page is maintained by 
+		<a href="mailto:trevorw@charter.net">Trevor Williams</a>.<br>
+		Last modified date:  Sun Apr 14 23:24:51 2002 
+	</tr>
+	<tr valign="top">
+		<a href="http://sourceforge.net" target="_parent"> 
+			<img src="http://sourceforge.net/sflogo.php?group_id=51103&type=5"
+	          		width = "210" height = "62" border = "0" alt = "SourceForge Logo">
+		</a>
+	</tr>
+</table>
+</body>
+</html>

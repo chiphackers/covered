@@ -1,0 +1,110 @@
+\section{binding.c File Reference}
+\label{binding_8c}\index{binding.c@{binding.c}}
+{\tt \#include $<$string.h$>$}\par
+{\tt \#include $<$stdlib.h$>$}\par
+{\tt \#include $<$assert.h$>$}\par
+{\tt \#include \char`\"{}defines.h\char`\"{}}\par
+{\tt \#include \char`\"{}binding.h\char`\"{}}\par
+{\tt \#include \char`\"{}signal.h\char`\"{}}\par
+{\tt \#include \char`\"{}expr.h\char`\"{}}\par
+{\tt \#include \char`\"{}instance.h\char`\"{}}\par
+{\tt \#include \char`\"{}link.h\char`\"{}}\par
+{\tt \#include \char`\"{}util.h\char`\"{}}\par
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+void {\bf bind\_\-add} (char $\ast$sig\_\-name, {\bf expression} $\ast$exp, char $\ast$mod\_\-name)
+\begin{CompactList}\small\item\em Adds signal and expression to binding list.\item\end{CompactList}\item 
+void {\bf bind\_\-remove} (int id)
+\begin{CompactList}\small\item\em Removes the expression with ID of id from binding list.\item\end{CompactList}\item 
+void {\bf bind} (int mode)
+\begin{CompactList}\small\item\em Performs signal/expression bind (performed after parse completed).\item\end{CompactList}\end{CompactItemize}
+\subsection*{Variables}
+\begin{CompactItemize}
+\item 
+{\bf sig\_\-exp\_\-bind} $\ast$ {\bf seb\_\-head}
+\item 
+{\bf sig\_\-exp\_\-bind} $\ast$ {\bf seb\_\-tail}
+\item 
+{\bf mod\_\-inst} $\ast$ {\bf instance\_\-root}
+\item 
+{\bf mod\_\-link} $\ast$ {\bf mod\_\-head}
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+\begin{Desc}
+\item[Author: ]\par
+Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\begin{Desc}
+\item[Date: ]\par
+3/4/2002\end{Desc}
+
+
+\subsection{Function Documentation}
+\index{binding.c@{binding.c}!bind@{bind}}
+\index{bind@{bind}!binding.c@{binding.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void bind (int {\em mode})}\label{binding_8c_a6}
+
+
+Performs signal/expression bind (performed after parse completed).
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+mode}]If set to 0, searches instance tree; otherwise, searches tree.\end{description}
+\end{Desc}
+Binding is the process of setting pointers in signals and expressions to point to each other. These pointers are required for scoring purposes. Binding is required for two purposes: 1. The signal that is being bound may not have been parsed (hierarchical referencing allows for this). 2. An expression does not have a pointer to a signal but rather its vector. In the process of binding, we go through each element of the binding list, finding the signal to be bound in the specified tree, adding the expression to the signal's expression pointer list, and setting the expression vector pointer to point to the signal vector. \index{binding.c@{binding.c}!bind_add@{bind\_\-add}}
+\index{bind_add@{bind\_\-add}!binding.c@{binding.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void bind\_\-add (char $\ast$ {\em sig\_\-name}, {\bf expression} $\ast$ {\em exp}, char $\ast$ {\em mod\_\-name})}\label{binding_8c_a4}
+
+
+Adds signal and expression to binding list.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+sig\_\-name}]Signal scope to bind. \item[{\em 
+exp}]Expression ID to bind. \item[{\em 
+mod\_\-name}]Name of module containing specified expression.\end{description}
+\end{Desc}
+Adds the specified signal and expression to the bindings linked list. This bindings list will be handled after all input Verilog has been parsed. \index{binding.c@{binding.c}!bind_remove@{bind\_\-remove}}
+\index{bind_remove@{bind\_\-remove}!binding.c@{binding.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void bind\_\-remove (int {\em id})}\label{binding_8c_a5}
+
+
+Removes the expression with ID of id from binding list.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+id}]Expression ID of binding to remove.\end{description}
+\end{Desc}
+Removes the binding containing the expression ID of id. This needs to be called before an expression is removed. 
+
+\subsection{Variable Documentation}
+\index{binding.c@{binding.c}!instance_root@{instance\_\-root}}
+\index{instance_root@{instance\_\-root}!binding.c@{binding.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-inst}$\ast$ instance\_\-root}\label{binding_8c_a2}
+
+
+\index{binding.c@{binding.c}!mod_head@{mod\_\-head}}
+\index{mod_head@{mod\_\-head}!binding.c@{binding.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-link}$\ast$ mod\_\-head}\label{binding_8c_a3}
+
+
+\index{binding.c@{binding.c}!seb_head@{seb\_\-head}}
+\index{seb_head@{seb\_\-head}!binding.c@{binding.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf sig\_\-exp\_\-bind}$\ast$ seb\_\-head}\label{binding_8c_a0}
+
+
+\index{binding.c@{binding.c}!seb_tail@{seb\_\-tail}}
+\index{seb_tail@{seb\_\-tail}!binding.c@{binding.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf sig\_\-exp\_\-bind}$\ast$ seb\_\-tail}\label{binding_8c_a1}
+
+

@@ -1,0 +1,388 @@
+\section{db.c File Reference}
+\label{db_8c}\index{db.c@{db.c}}
+{\tt \#include $<$stdio.h$>$}\par
+{\tt \#include $<$string.h$>$}\par
+{\tt \#include $<$stdlib.h$>$}\par
+{\tt \#include $<$assert.h$>$}\par
+{\tt \#include \char`\"{}defines.h\char`\"{}}\par
+{\tt \#include \char`\"{}db.h\char`\"{}}\par
+{\tt \#include \char`\"{}util.h\char`\"{}}\par
+{\tt \#include \char`\"{}module.h\char`\"{}}\par
+{\tt \#include \char`\"{}expr.h\char`\"{}}\par
+{\tt \#include \char`\"{}signal.h\char`\"{}}\par
+{\tt \#include \char`\"{}link.h\char`\"{}}\par
+{\tt \#include \char`\"{}symtable.h\char`\"{}}\par
+{\tt \#include \char`\"{}instance.h\char`\"{}}\par
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+{\bf bool} {\bf db\_\-write} (char $\ast$file)
+\begin{CompactList}\small\item\em Writes contents of expressions, modules and signals to database file.\item\end{CompactList}\item 
+{\bf bool} {\bf db\_\-read} (char $\ast$file, int read\_\-mode)
+\begin{CompactList}\small\item\em Reads contents of database file and stores into internal lists.\item\end{CompactList}\item 
+void {\bf db\_\-add\_\-instance} (char $\ast$scope, char $\ast$modname)
+\begin{CompactList}\small\item\em Adds specified module node to module tree. Called by parser.\item\end{CompactList}\item 
+void {\bf db\_\-add\_\-module} (char $\ast$name, char $\ast$file)
+\begin{CompactList}\small\item\em Adds specified module to module list. Called by parser.\item\end{CompactList}\item 
+void {\bf db\_\-end\_\-module} ()
+\item 
+void {\bf db\_\-add\_\-signal} (char $\ast$name, int width, int lsb, int is\_\-static)
+\begin{CompactList}\small\item\em Adds specified signal to signal list. Called by parser.\item\end{CompactList}\item 
+{\bf signal} $\ast$ {\bf db\_\-find\_\-signal} (char $\ast$name)
+\begin{CompactList}\small\item\em Finds specified signal in module and returns pointer to the signal structure. Called by parser.\item\end{CompactList}\item 
+{\bf expression} $\ast$ {\bf db\_\-create\_\-expression} ({\bf expression} $\ast$right, {\bf expression} $\ast$left, int op, int line, char $\ast$sig\_\-name)
+\begin{CompactList}\small\item\em Creates new expression from specified information. Called by parser and db\_\-add\_\-expression.\item\end{CompactList}\item 
+void {\bf db\_\-add\_\-expression} ({\bf expression} $\ast$root)
+\begin{CompactList}\small\item\em Adds specified expression to expression list. Called by parser.\item\end{CompactList}\item 
+void {\bf db\_\-set\_\-vcd\_\-scope} (char $\ast$scope)
+\begin{CompactList}\small\item\em Sets current VCD scope to specified scope.\item\end{CompactList}\item 
+void {\bf db\_\-vcd\_\-upscope} ()
+\item 
+void {\bf db\_\-assign\_\-symbol} (char $\ast$name, char $\ast$symbol)
+\begin{CompactList}\small\item\em Adds symbol to signal specified by name.\item\end{CompactList}\item 
+{\bf bool} {\bf db\_\-symbol\_\-found} (char $\ast$symbol)
+\begin{CompactList}\small\item\em Finds specified signal and returns TRUE if found.\item\end{CompactList}\item 
+void {\bf db\_\-find\_\-set\_\-add\_\-signal} (char $\ast$symbol, {\bf vector} $\ast$vec)
+\begin{CompactList}\small\item\em Finds specified signal, sets the value and adds its expression to expression queue.\item\end{CompactList}\item 
+void {\bf db\_\-do\_\-timestep} (int time)
+\begin{CompactList}\small\item\em Performs a timestep for all signal changes during this timestep.\item\end{CompactList}\item 
+int {\bf db\_\-get\_\-signal\_\-size} (char $\ast$symbol)
+\begin{CompactList}\small\item\em Returns width of signal for specified symbol.\item\end{CompactList}\end{CompactItemize}
+\subsection*{Variables}
+\begin{CompactItemize}
+\item 
+char $\ast$ {\bf top\_\-module}
+\item 
+{\bf mod\_\-inst} $\ast$ {\bf instance\_\-root}
+\item 
+char $\ast$ {\bf curr\_\-vcd\_\-scope} = NULL
+\item 
+{\bf mod\_\-link} $\ast$ {\bf mod\_\-head}
+\item 
+{\bf mod\_\-link} $\ast$ {\bf mod\_\-tail}
+\item 
+{\bf str\_\-link} $\ast$ {\bf modlist\_\-head} = NULL
+\item 
+{\bf str\_\-link} $\ast$ {\bf modlist\_\-tail} = NULL
+\item 
+{\bf module} $\ast$ {\bf curr\_\-module} = NULL
+\item 
+{\bf symtable} $\ast$ {\bf vcd\_\-symtab} = NULL
+\item 
+{\bf symtable} $\ast$ {\bf timestep\_\-tab} = NULL
+\item 
+{\bf exp\_\-link} $\ast$ {\bf exp\_\-queue\_\-head} = NULL
+\item 
+{\bf exp\_\-link} $\ast$ {\bf exp\_\-queue\_\-tail} = NULL
+\item 
+int {\bf curr\_\-expr\_\-id} = 1
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+\begin{Desc}
+\item[Author: ]\par
+Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\begin{Desc}
+\item[Date: ]\par
+12/7/2001\end{Desc}
+
+
+\subsection{Function Documentation}
+\index{db.c@{db.c}!db_add_expression@{db\_\-add\_\-expression}}
+\index{db_add_expression@{db\_\-add\_\-expression}!db.c@{db.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-add\_\-expression ({\bf expression} $\ast$ {\em root})}\label{db_8c_a21}
+
+
+Adds specified expression to expression list. Called by parser.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+root}]Pointer to root expression to add to module expression list.\end{description}
+\end{Desc}
+Adds the specified expression to the current module's expression list. \index{db.c@{db.c}!db_add_instance@{db\_\-add\_\-instance}}
+\index{db_add_instance@{db\_\-add\_\-instance}!db.c@{db.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-add\_\-instance (char $\ast$ {\em scope}, char $\ast$ {\em modname})}\label{db_8c_a15}
+
+
+Adds specified module node to module tree. Called by parser.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+scope}]Name of module node instance being added. \item[{\em 
+modname}]Name of module being instantiated.\end{description}
+\end{Desc}
+Creates a new module\_\-node with the instantiation name, search for matching module. If module hasn't been created previously, create it now without a filename associated (NULL). Add module\_\-node to tree if there are no problems in doing so. \index{db.c@{db.c}!db_add_module@{db\_\-add\_\-module}}
+\index{db_add_module@{db\_\-add\_\-module}!db.c@{db.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-add\_\-module (char $\ast$ {\em name}, char $\ast$ {\em file})}\label{db_8c_a16}
+
+
+Adds specified module to module list. Called by parser.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+name}]Name of module being added to tree. \item[{\em 
+file}]Filename that module is a part of.\end{description}
+\end{Desc}
+Creates a new module element with the contents specified by the parameters given and inserts this module into the module list. This function can only be called when we are actually parsing a module which implies that we must have the name of the module at the head of the modlist linked-list structure. \index{db.c@{db.c}!db_add_signal@{db\_\-add\_\-signal}}
+\index{db_add_signal@{db\_\-add\_\-signal}!db.c@{db.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-add\_\-signal (char $\ast$ {\em name}, int {\em width}, int {\em lsb}, int {\em is\_\-static})}\label{db_8c_a18}
+
+
+Adds specified signal to signal list. Called by parser.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+name}]Name of signal being added. \item[{\em 
+width}]Bit width of signal being added. \item[{\em 
+lsb}]Least significant bit of signal. \item[{\em 
+is\_\-static}]If set to non-zero value, sets static bit of this signal vector.\end{description}
+\end{Desc}
+Creates a new signal with the specified parameter information and adds this to the signal list if it does not already exist. \index{db.c@{db.c}!db_assign_symbol@{db\_\-assign\_\-symbol}}
+\index{db_assign_symbol@{db\_\-assign\_\-symbol}!db.c@{db.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-assign\_\-symbol (char $\ast$ {\em name}, char $\ast$ {\em symbol})}\label{db_8c_a24}
+
+
+Adds symbol to signal specified by name.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+name}]Name of signal to set value to. \item[{\em 
+symbol}]Symbol value of signal used in VCD dumpfile.\end{description}
+\end{Desc}
+Creates a new entry in the symbol table for the specified signal and symbol. \index{db.c@{db.c}!db_create_expression@{db\_\-create\_\-expression}}
+\index{db_create_expression@{db\_\-create\_\-expression}!db.c@{db.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf expression}$\ast$ db\_\-create\_\-expression ({\bf expression} $\ast$ {\em right}, {\bf expression} $\ast$ {\em left}, int {\em op}, int {\em line}, char $\ast$ {\em sig\_\-name})}\label{db_8c_a20}
+
+
+Creates new expression from specified information. Called by parser and db\_\-add\_\-expression.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+right}]Pointer to expression on right side of expression. \item[{\em 
+left}]Pointer to expression on left side of expression. \item[{\em 
+op}]Operation to perform on expression. \item[{\em 
+line}]Line number in Verilog file that expression is located (for line coverage). \item[{\em 
+sig\_\-name}]Name of signal that expression is attached to (if valid).\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns pointer to newly created expression.\end{Desc}
+Creates a new expression with the specified parameter information and returns a pointer to the newly created expression. \index{db.c@{db.c}!db_do_timestep@{db\_\-do\_\-timestep}}
+\index{db_do_timestep@{db\_\-do\_\-timestep}!db.c@{db.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-do\_\-timestep (int {\em time})}\label{db_8c_a27}
+
+
+Performs a timestep for all signal changes during this timestep.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+time}]Current time step value being performed.\end{description}
+\end{Desc}
+Cycles through expression queue, performing expression evaluations as we go. If an expression has a parent expression, that parent expression is placed in the expression queue after that expression has completed its evaluation. When the expression queue is empty, we are finished for this clock period. \index{db.c@{db.c}!db_end_module@{db\_\-end\_\-module}}
+\index{db_end_module@{db\_\-end\_\-module}!db.c@{db.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-end\_\-module ()}\label{db_8c_a17}
+
+
+Updates the modlist for parsing purposes. \index{db.c@{db.c}!db_find_set_add_signal@{db\_\-find\_\-set\_\-add\_\-signal}}
+\index{db_find_set_add_signal@{db\_\-find\_\-set\_\-add\_\-signal}!db.c@{db.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-find\_\-set\_\-add\_\-signal (char $\ast$ {\em symbol}, {\bf vector} $\ast$ {\em vec})}\label{db_8c_a26}
+
+
+Finds specified signal, sets the value and adds its expression to expression queue.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+symbol}]VCD signal symbol from VCD dumpfile. \item[{\em 
+vec}]Specified value to set found signal to.\end{description}
+\end{Desc}
+Searches symbol table for this timestep. If this signal does not already exist in here, look in VCD symbol table for specified signal. Assign specified vector value to signal value and store expression pointers into expression queue to work on this timestep. \index{db.c@{db.c}!db_find_signal@{db\_\-find\_\-signal}}
+\index{db_find_signal@{db\_\-find\_\-signal}!db.c@{db.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf signal}$\ast$ db\_\-find\_\-signal (char $\ast$ {\em name})}\label{db_8c_a19}
+
+
+Finds specified signal in module and returns pointer to the signal structure. Called by parser.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+name}]String name of signal to find in current module.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns pointer to the found signal. If signal is not found, internal error.\end{Desc}
+Searches current module for signal matching the specified name. If the signal is found, returns a pointer to the calling function for that signal. \index{db.c@{db.c}!db_get_signal_size@{db\_\-get\_\-signal\_\-size}}
+\index{db_get_signal_size@{db\_\-get\_\-signal\_\-size}!db.c@{db.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int db\_\-get\_\-signal\_\-size (char $\ast$ {\em symbol})}\label{db_8c_a28}
+
+
+Returns width of signal for specified symbol.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+symbol}]Symbol of signal to find.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns signal width of specified symbol or 0 if signal is not found.\end{Desc}
+Searches symbol table for specified symbol. If the corresponding signal is valid, returns the width value of the signal to the calling function. \index{db.c@{db.c}!db_read@{db\_\-read}}
+\index{db_read@{db\_\-read}!db.c@{db.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} db\_\-read (char $\ast$ {\em file}, int {\em read\_\-mode})}\label{db_8c_a14}
+
+
+Reads contents of database file and stores into internal lists.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+file}]Name of database file to read contents from. \item[{\em 
+read\_\-mode}]Specifies what to do with read data. Values are\begin{CompactItemize}
+\item 
+0 = Instance, no merge\item 
+1 = Instance, merge\item 
+2 = Module, merge\end{CompactItemize}
+\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns TRUE if database read was successful; otherwise, returns FALSE.\end{Desc}
+Opens specified database file for reading. Reads in each line from the file examining its contents and creating the appropriate type to store the specified information and stores it into the appropriate internal list. If there are any problems opening the file for reading or parsing errors, returns FALSE; otherwise, returns TRUE. \index{db.c@{db.c}!db_set_vcd_scope@{db\_\-set\_\-vcd\_\-scope}}
+\index{db_set_vcd_scope@{db\_\-set\_\-vcd\_\-scope}!db.c@{db.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-set\_\-vcd\_\-scope (char $\ast$ {\em scope})}\label{db_8c_a22}
+
+
+Sets current VCD scope to specified scope.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+scope}]Current VCD scope.\end{description}
+\end{Desc}
+Sets the curr\_\-vcd\_\-scope global variable to the specified scope. \index{db.c@{db.c}!db_symbol_found@{db\_\-symbol\_\-found}}
+\index{db_symbol_found@{db\_\-symbol\_\-found}!db.c@{db.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} db\_\-symbol\_\-found (char $\ast$ {\em symbol})}\label{db_8c_a25}
+
+
+Finds specified signal and returns TRUE if found.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+symbol}]\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns TRUE if the symbol is found; otherwise, returns FALSE.\end{Desc}
+Searches the current timestep symbol table to see if the specified signal exists in this list. If the signal is not found, returns FALSE; otherwise, returns a value of TRUE. Note: this function should be called before db\_\-find\_\-set\_\-add\_\-signal. \index{db.c@{db.c}!db_vcd_upscope@{db\_\-vcd\_\-upscope}}
+\index{db_vcd_upscope@{db\_\-vcd\_\-upscope}!db.c@{db.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-vcd\_\-upscope ()}\label{db_8c_a23}
+
+
+Moves the curr\_\-vcd\_\-scope up one level of hierarchy. This function is called when the \$upscope keyword is seen in a VCD file. \index{db.c@{db.c}!db_write@{db\_\-write}}
+\index{db_write@{db\_\-write}!db.c@{db.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} db\_\-write (char $\ast$ {\em file})}\label{db_8c_a13}
+
+
+Writes contents of expressions, modules and signals to database file.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+file}]Name of database file to output contents to.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns TRUE if database write was successful; otherwise, returns FALSE.\end{Desc}
+Opens specified database for writing. If database open successful, iterates through module, expression and signal lists, displaying each to the database file. If database write successful, returns TRUE; otherwise, returns FALSE to the calling function. 
+
+\subsection{Variable Documentation}
+\index{db.c@{db.c}!curr_expr_id@{curr\_\-expr\_\-id}}
+\index{curr_expr_id@{curr\_\-expr\_\-id}!db.c@{db.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int curr\_\-expr\_\-id = 1}\label{db_8c_a12}
+
+
+This static value contains the current expression ID number to use for the next expression found, it is incremented by one when an expression is found. This allows us to have a unique expression ID for each expression (since expressions have no intrinsic names). \index{db.c@{db.c}!curr_module@{curr\_\-module}}
+\index{curr_module@{curr\_\-module}!db.c@{db.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf module}$\ast$ curr\_\-module = NULL}\label{db_8c_a7}
+
+
+\index{db.c@{db.c}!curr_vcd_scope@{curr\_\-vcd\_\-scope}}
+\index{curr_vcd_scope@{curr\_\-vcd\_\-scope}!db.c@{db.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ curr\_\-vcd\_\-scope = NULL}\label{db_8c_a2}
+
+
+\index{db.c@{db.c}!exp_queue_head@{exp\_\-queue\_\-head}}
+\index{exp_queue_head@{exp\_\-queue\_\-head}!db.c@{db.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf exp\_\-link}$\ast$ exp\_\-queue\_\-head = NULL}\label{db_8c_a10}
+
+
+\index{db.c@{db.c}!exp_queue_tail@{exp\_\-queue\_\-tail}}
+\index{exp_queue_tail@{exp\_\-queue\_\-tail}!db.c@{db.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf exp\_\-link}$\ast$ exp\_\-queue\_\-tail = NULL}\label{db_8c_a11}
+
+
+\index{db.c@{db.c}!instance_root@{instance\_\-root}}
+\index{instance_root@{instance\_\-root}!db.c@{db.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-inst}$\ast$ instance\_\-root}\label{db_8c_a1}
+
+
+\index{db.c@{db.c}!mod_head@{mod\_\-head}}
+\index{mod_head@{mod\_\-head}!db.c@{db.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-link}$\ast$ mod\_\-head}\label{db_8c_a3}
+
+
+\index{db.c@{db.c}!mod_tail@{mod\_\-tail}}
+\index{mod_tail@{mod\_\-tail}!db.c@{db.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-link}$\ast$ mod\_\-tail ()}\label{db_8c_a4}
+
+
+Pointer to tail element of module list \index{db.c@{db.c}!modlist_head@{modlist\_\-head}}
+\index{modlist_head@{modlist\_\-head}!db.c@{db.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ modlist\_\-head = NULL}\label{db_8c_a5}
+
+
+\index{db.c@{db.c}!modlist_tail@{modlist\_\-tail}}
+\index{modlist_tail@{modlist\_\-tail}!db.c@{db.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ modlist\_\-tail = NULL}\label{db_8c_a6}
+
+
+\index{db.c@{db.c}!timestep_tab@{timestep\_\-tab}}
+\index{timestep_tab@{timestep\_\-tab}!db.c@{db.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf symtable}$\ast$ timestep\_\-tab = NULL}\label{db_8c_a9}
+
+
+\index{db.c@{db.c}!top_module@{top\_\-module}}
+\index{top_module@{top\_\-module}!db.c@{db.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ top\_\-module}\label{db_8c_a0}
+
+
+\index{db.c@{db.c}!vcd_symtab@{vcd\_\-symtab}}
+\index{vcd_symtab@{vcd\_\-symtab}!db.c@{db.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf symtable}$\ast$ vcd\_\-symtab = NULL}\label{db_8c_a8}
+
+

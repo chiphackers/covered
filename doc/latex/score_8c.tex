@@ -1,0 +1,117 @@
+\section{score.c File Reference}
+\label{score_8c}\index{score.c@{score.c}}
+{\tt \#include $<$stdlib.h$>$}\par
+{\tt \#include $<$stdio.h$>$}\par
+{\tt \#include $<$string.h$>$}\par
+{\tt \#include \char`\"{}defines.h\char`\"{}}\par
+{\tt \#include \char`\"{}score.h\char`\"{}}\par
+{\tt \#include \char`\"{}util.h\char`\"{}}\par
+{\tt \#include \char`\"{}link.h\char`\"{}}\par
+{\tt \#include \char`\"{}search.h\char`\"{}}\par
+{\tt \#include \char`\"{}parse.h\char`\"{}}\par
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+{\bf bool} {\bf read\_\-command\_\-file} (char $\ast$cmd\_\-file, char $\ast$$\ast$arg\_\-list, int $\ast$arg\_\-num)
+\item 
+{\bf bool} {\bf score\_\-parse\_\-args} (int argc, char $\ast$$\ast$argv)
+\item 
+int {\bf command\_\-score} (int argc, char $\ast$$\ast$argv)
+\begin{CompactList}\small\item\em Parses score command-line and performs score.\item\end{CompactList}\end{CompactItemize}
+\subsection*{Variables}
+\begin{CompactItemize}
+\item 
+char $\ast$ {\bf top\_\-module} = NULL
+\item 
+char $\ast$ {\bf output\_\-db} = NULL
+\item 
+char $\ast$ {\bf vcd\_\-file} = NULL
+\item 
+unsigned long {\bf largest\_\-malloc\_\-size}
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+\begin{Desc}
+\item[Author: ]\par
+Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\begin{Desc}
+\item[Date: ]\par
+11/29/2001\end{Desc}
+
+
+\subsection{Function Documentation}
+\index{score.c@{score.c}!command_score@{command\_\-score}}
+\index{command_score@{command\_\-score}!score.c@{score.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int command\_\-score (int {\em argc}, char $\ast$$\ast$ {\em argv})}\label{score_8c_a6}
+
+
+Parses score command-line and performs score.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+argc}]Number of arguments in score command-line. \item[{\em 
+argv}]Arguments from command-line to parse. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns 0 if scoring is successful; otherwise, returns -1. \end{Desc}
+\index{score.c@{score.c}!read_command_file@{read\_\-command\_\-file}}
+\index{read_command_file@{read\_\-command\_\-file}!score.c@{score.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} read\_\-command\_\-file (char $\ast$ {\em cmd\_\-file}, char $\ast$$\ast$ {\em arg\_\-list}, int $\ast$ {\em arg\_\-num})}\label{score_8c_a4}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+cmd\_\-file}]Name of file to read commands from. \item[{\em 
+arg\_\-list}]List of arguments found in specified command file. \item[{\em 
+arg\_\-num}]Number of arguments in arg\_\-list array. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns TRUE if read of command file was successful; otherwise, returns FALSE. \end{Desc}
+\index{score.c@{score.c}!score_parse_args@{score\_\-parse\_\-args}}
+\index{score_parse_args@{score\_\-parse\_\-args}!score.c@{score.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} score\_\-parse\_\-args (int {\em argc}, char $\ast$$\ast$ {\em argv})}\label{score_8c_a5}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+argc}]Number of arguments specified in argv parameter list. \item[{\em 
+argv}]List of arguments to parse. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns TRUE if successful in dealing with arguments; otherwise, returns FALSE. \end{Desc}
+
+
+\subsection{Variable Documentation}
+\index{score.c@{score.c}!largest_malloc_size@{largest\_\-malloc\_\-size}}
+\index{largest_malloc_size@{largest\_\-malloc\_\-size}!score.c@{score.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}unsigned long largest\_\-malloc\_\-size ()}\label{score_8c_a3}
+
+
+Holds the largest number of bytes in allocation at one period of time. \index{score.c@{score.c}!output_db@{output\_\-db}}
+\index{output_db@{output\_\-db}!score.c@{score.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ output\_\-db = NULL}\label{score_8c_a1}
+
+
+Name of output score database file to generate \index{score.c@{score.c}!top_module@{top\_\-module}}
+\index{top_module@{top\_\-module}!score.c@{score.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ top\_\-module = NULL}\label{score_8c_a0}
+
+
+Name of top-level module to score \index{score.c@{score.c}!vcd_file@{vcd\_\-file}}
+\index{vcd_file@{vcd\_\-file}!score.c@{score.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ vcd\_\-file = NULL}\label{score_8c_a2}
+
+
+Name of VCD output file to parse 

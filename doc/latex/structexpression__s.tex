@@ -1,0 +1,78 @@
+\section{expression\_\-s  Struct Reference}
+\label{structexpression__s}\index{expression_s@{expression\_\-s}}
+{\tt \#include $<$defines.h$>$}
+
+\subsection*{Public Attributes}
+\begin{CompactItemize}
+\item 
+{\bf vector} $\ast$ {\bf value}
+\item 
+{\bf nibble} {\bf suppl}
+\item 
+int {\bf line}
+\item 
+int {\bf id}
+\item 
+int {\bf op}
+\item 
+{\bf signal} $\ast$ {\bf sig}
+\item 
+{\bf expression} $\ast$ {\bf parent}
+\item 
+{\bf expression} $\ast$ {\bf right}
+\item 
+{\bf expression} $\ast$ {\bf left}
+\end{CompactItemize}
+
+
+\subsection{Member Data Documentation}
+\index{expression_s@{expression\_\-s}!id@{id}}
+\index{id@{id}!expression_s@{expression\_\-s}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int expression\_\-s::id}\label{structexpression__s_m3}
+
+
+Specifies unique ID for this expression in the parent \index{expression_s@{expression\_\-s}!left@{left}}
+\index{left@{left}!expression_s@{expression\_\-s}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf expression}$\ast$ expression\_\-s::left}\label{structexpression__s_m8}
+
+
+Pointer to expression on left \index{expression_s@{expression\_\-s}!line@{line}}
+\index{line@{line}!expression_s@{expression\_\-s}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int expression\_\-s::line}\label{structexpression__s_m2}
+
+
+Starting line number of root expression (only valid if root) \index{expression_s@{expression\_\-s}!op@{op}}
+\index{op@{op}!expression_s@{expression\_\-s}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int expression\_\-s::op}\label{structexpression__s_m4}
+
+
+Operation to perform on expression \index{expression_s@{expression\_\-s}!parent@{parent}}
+\index{parent@{parent}!expression_s@{expression\_\-s}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf expression}$\ast$ expression\_\-s::parent}\label{structexpression__s_m6}
+
+
+Parent expression. If NULL then this is the root expression \index{expression_s@{expression\_\-s}!right@{right}}
+\index{right@{right}!expression_s@{expression\_\-s}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf expression}$\ast$ expression\_\-s::right}\label{structexpression__s_m7}
+
+
+Pointer to expression on right \index{expression_s@{expression\_\-s}!sig@{sig}}
+\index{sig@{sig}!expression_s@{expression\_\-s}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf signal}$\ast$ expression\_\-s::sig}\label{structexpression__s_m5}
+
+
+Pointer to signal. If NULL then no signal is attached \index{expression_s@{expression\_\-s}!suppl@{suppl}}
+\index{suppl@{suppl}!expression_s@{expression\_\-s}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf nibble} expression\_\-s::suppl}\label{structexpression__s_m1}
+
+
+Vector containing supplemental information for this expression \index{expression_s@{expression\_\-s}!value@{value}}
+\index{value@{value}!expression_s@{expression\_\-s}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf vector}$\ast$ expression\_\-s::value}\label{structexpression__s_m0}
+
+
+Current value and toggle information of this expression 
+
+The documentation for this struct was generated from the following file:\begin{CompactItemize}
+\item 
+{\bf defines.h}\end{CompactItemize}

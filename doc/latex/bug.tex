@@ -1,0 +1,6 @@
+\section{Bug List}\label{bug}
+\begin{description}
+\item[\label{_bug000001}
+Member {\bf signal\_\-db\_\-read}(char $\ast$$\ast$line, module $\ast$curr\_\-mod) ]
+A signal will only look in the current module for a matching expression. In the case of a hierarchical reference, it is possible that an expression outside the current module is referencing this signal. We need to check for this case (hierarchical expression) and find the expression elsewhere.\end{description}
+ 

@@ -1,0 +1,97 @@
+\section{instance.c File Reference}
+\label{instance_8c}\index{instance.c@{instance.c}}
+{\tt \#include $<$string.h$>$}\par
+{\tt \#include $<$stdlib.h$>$}\par
+{\tt \#include $<$assert.h$>$}\par
+{\tt \#include \char`\"{}defines.h\char`\"{}}\par
+{\tt \#include \char`\"{}instance.h\char`\"{}}\par
+{\tt \#include \char`\"{}module.h\char`\"{}}\par
+{\tt \#include \char`\"{}util.h\char`\"{}}\par
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+{\bf mod\_\-inst} $\ast$ {\bf instance\_\-find\_\-scope} ({\bf mod\_\-inst} $\ast$root, char $\ast$scope)
+\begin{CompactList}\small\item\em Finds specified scope in module instance tree.\item\end{CompactList}\item 
+void {\bf instance\_\-add} ({\bf mod\_\-inst} $\ast$$\ast$root, char $\ast$parent, {\bf module} $\ast$child, char $\ast$inst\_\-name)
+\begin{CompactList}\small\item\em Adds new instance to specified instance tree.\item\end{CompactList}\item 
+void {\bf instance\_\-db\_\-write} ({\bf mod\_\-inst} $\ast$root, FILE $\ast$file, char $\ast$scope)
+\begin{CompactList}\small\item\em Displays contents of module instance tree to specified file.\item\end{CompactList}\item 
+void {\bf instance\_\-dealloc} ({\bf mod\_\-inst} $\ast$root, char $\ast$scope)
+\begin{CompactList}\small\item\em Removes specified instance from tree.\item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+\begin{Desc}
+\item[Author: ]\par
+Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\begin{Desc}
+\item[Date: ]\par
+3/11/2002\end{Desc}
+
+
+\subsection{Function Documentation}
+\index{instance.c@{instance.c}!instance_add@{instance\_\-add}}
+\index{instance_add@{instance\_\-add}!instance.c@{instance.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void instance\_\-add ({\bf mod\_\-inst} $\ast$$\ast$ {\em root}, char $\ast$ {\em parent}, {\bf module} $\ast$ {\em child}, char $\ast$ {\em inst\_\-name})}\label{instance_8c_a1}
+
+
+Adds new instance to specified instance tree.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+root}]Root mod\_\-inst pointer of module instance tree. \item[{\em 
+parent}]Scope of parent module. \item[{\em 
+child}]Pointer to child module to add. \item[{\em 
+inst\_\-name}]Name of new module instance.\end{description}
+\end{Desc}
+Adds the child module to the child module pointer list located in the module specified by the scope of parent in the module instance tree pointed to by root. \index{instance.c@{instance.c}!instance_db_write@{instance\_\-db\_\-write}}
+\index{instance_db_write@{instance\_\-db\_\-write}!instance.c@{instance.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void instance\_\-db\_\-write ({\bf mod\_\-inst} $\ast$ {\em root}, FILE $\ast$ {\em file}, char $\ast$ {\em scope})}\label{instance_8c_a2}
+
+
+Displays contents of module instance tree to specified file.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+root}]Root of module instance tree to write. \item[{\em 
+file}]Output file to display contents to. \item[{\em 
+scope}]Scope of this module.\end{description}
+\end{Desc}
+Calls each module display function in instance tree, starting with the root module and ending when all of the leaf modules are output. Note: the function that calls this function originally should set the value of scope to NULL. \index{instance.c@{instance.c}!instance_dealloc@{instance\_\-dealloc}}
+\index{instance_dealloc@{instance\_\-dealloc}!instance.c@{instance.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void instance\_\-dealloc ({\bf mod\_\-inst} $\ast$ {\em root}, char $\ast$ {\em scope})}\label{instance_8c_a3}
+
+
+Removes specified instance from tree.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+root}]Root of module instance tree. \item[{\em 
+scope}]Scope of module to remove from tree.\end{description}
+\end{Desc}
+Searches tree for specified module. If the module instance is found, the module instance is removed from the tree along with all of its child module instances. \index{instance.c@{instance.c}!instance_find_scope@{instance\_\-find\_\-scope}}
+\index{instance_find_scope@{instance\_\-find\_\-scope}!instance.c@{instance.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-inst}$\ast$ instance\_\-find\_\-scope ({\bf mod\_\-inst} $\ast$ {\em root}, char $\ast$ {\em scope})}\label{instance_8c_a0}
+
+
+Finds specified scope in module instance tree.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+root}]Root of mod\_\-inst tree to parse for scope. \item[{\em 
+scope}]Scope to search for.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns pointer to module instance found by scope.\end{Desc}
+Searches the specified module instance tree for the specified scope. When the module instance is found, a pointer to that module instance is passed back to the calling function. 

@@ -1,0 +1,44 @@
+\section{fsm.h File Reference}
+\label{fsm_8h}\index{fsm.h@{fsm.h}}
+Contains functions for determining/reporting FSM coverage. 
+
+
+{\tt \#include $<$stdio.h$>$}\par
+{\tt \#include \char`\"{}defines.h\char`\"{}}\par
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+void {\bf fsm\_\-report} (FILE $\ast$ofile, {\bf bool} verbose, {\bf bool} instance)
+\begin{CompactList}\small\item\em Generates report output for FSM coverage.\item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+Contains functions for determining/reporting FSM coverage.
+
+
+
+\begin{Desc}
+\item[Author: ]\par
+Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\begin{Desc}
+\item[Date: ]\par
+3/31/2002\end{Desc}
+
+
+\subsection{Function Documentation}
+\index{fsm.h@{fsm.h}!fsm_report@{fsm\_\-report}}
+\index{fsm_report@{fsm\_\-report}!fsm.h@{fsm.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void fsm\_\-report (FILE $\ast$ {\em ofile}, {\bf bool} {\em verbose}, {\bf bool} {\em instance})}\label{fsm_8h_a0}
+
+
+Generates report output for FSM coverage.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+ofile}]Pointer to file to output results to. \item[{\em 
+verbose}]Specifies whether or not to provide verbose information \item[{\em 
+instance}]Specifies to report by instance or module.\end{description}
+\end{Desc}
+After the design is read into the module hierarchy, parses the hierarchy by module, reporting the FSM coverage for each module encountered. The parent module will specify its own FSM coverage along with a total FSM coverage including its  children. 

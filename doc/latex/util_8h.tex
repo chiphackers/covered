@@ -1,0 +1,216 @@
+\section{util.h File Reference}
+\label{util_8h}\index{util.h@{util.h}}
+Contains miscellaneous global functions used by many functions. 
+
+
+{\tt \#include $<$stdio.h$>$}\par
+{\tt \#include \char`\"{}defines.h\char`\"{}}\par
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+void {\bf set\_\-output\_\-suppression} ({\bf bool} value)
+\begin{CompactList}\small\item\em Sets error suppression to specified value.\item\end{CompactList}\item 
+void {\bf print\_\-output} (char $\ast$msg, int type)
+\begin{CompactList}\small\item\em Displays error message to standard output.\item\end{CompactList}\item 
+{\bf bool} {\bf is\_\-variable} (char $\ast$token)
+\begin{CompactList}\small\item\em Returns TRUE if the specified string is a legal variable name.\item\end{CompactList}\item 
+{\bf bool} {\bf is\_\-directory} (char $\ast$token)
+\begin{CompactList}\small\item\em Returns TRUE if the specified string is a legal directory string.\item\end{CompactList}\item 
+{\bf bool} {\bf directory\_\-exists} (char $\ast$dir)
+\begin{CompactList}\small\item\em Returns TRUE if the specified directory exists.\item\end{CompactList}\item 
+{\bf bool} {\bf file\_\-exists} (char $\ast$file)
+\begin{CompactList}\small\item\em Returns TRUE if the specified file exists.\item\end{CompactList}\item 
+{\bf bool} {\bf readline} (FILE $\ast$file, char $\ast$$\ast$line)
+\begin{CompactList}\small\item\em Reads line from file and returns it in string form.\item\end{CompactList}\item 
+void {\bf scope\_\-extract\_\-front} (char $\ast$scope, char $\ast$front, char $\ast$rest)
+\begin{CompactList}\small\item\em Extracts highest level of hierarchy from specified scope.\item\end{CompactList}\item 
+void {\bf scope\_\-extract\_\-back} (char $\ast$scope, char $\ast$back, char $\ast$rest)
+\begin{CompactList}\small\item\em Extracts lowest level of hierarchy from specified scope.\item\end{CompactList}\item 
+void $\ast$ {\bf malloc\_\-safe} (int size)
+\begin{CompactList}\small\item\em Performs safe malloc call.\item\end{CompactList}\item 
+void {\bf free\_\-safe} (void $\ast$ptr)
+\begin{CompactList}\small\item\em Performs safe deallocation of heap memory.\item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+Contains miscellaneous global functions used by many functions.
+
+
+
+\begin{Desc}
+\item[Author: ]\par
+Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\begin{Desc}
+\item[Date: ]\par
+11/27/2001\end{Desc}
+
+
+\subsection{Function Documentation}
+\index{util.h@{util.h}!directory_exists@{directory\_\-exists}}
+\index{directory_exists@{directory\_\-exists}!util.h@{util.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} directory\_\-exists (char $\ast$ {\em dir})}\label{util_8h_a4}
+
+
+Returns TRUE if the specified directory exists.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+dir}]Name of directory to check for existence. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns TRUE if the specified directory exists; otherwise, returns FALSE.\end{Desc}
+Checks to see if the specified directory actually exists in the file structure. If the directory is found to exist, returns TRUE; otherwise, returns FALSE. \index{util.h@{util.h}!file_exists@{file\_\-exists}}
+\index{file_exists@{file\_\-exists}!util.h@{util.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} file\_\-exists (char $\ast$ {\em file})}\label{util_8h_a5}
+
+
+Returns TRUE if the specified file exists.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+file}]Name of file to check for existence. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns TRUE if the specified file exists; otherwise, returns FALSE.\end{Desc}
+Checks to see if the specified file actually exists in the file structure. If the file is found to exist, returns TRUE; otherwise, returns FALSE. \index{util.h@{util.h}!free_safe@{free\_\-safe}}
+\index{free_safe@{free\_\-safe}!util.h@{util.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void free\_\-safe (void $\ast$ {\em ptr})}\label{util_8h_a10}
+
+
+Performs safe deallocation of heap memory.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+ptr}]Pointer to object to deallocate.\end{description}
+\end{Desc}
+Safely performs a free function of heap memory. Also keeps track of current memory usage for output information at end of program life. \index{util.h@{util.h}!is_directory@{is\_\-directory}}
+\index{is_directory@{is\_\-directory}!util.h@{util.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} is\_\-directory (char $\ast$ {\em token})}\label{util_8h_a3}
+
+
+Returns TRUE if the specified string is a legal directory string.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+token}]String to check for valid pathname-ness \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns TRUE if the specified string is a legal UNIX directory; otherwise, returns FALSE.\end{Desc}
+Returns TRUE if the specified string is either a legal UNIX relative pathname or static pathname. If the specified string does not correlate to a legal UNIX pathname, a value of FALSE is returned. \index{util.h@{util.h}!is_variable@{is\_\-variable}}
+\index{is_variable@{is\_\-variable}!util.h@{util.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} is\_\-variable (char $\ast$ {\em token})}\label{util_8h_a2}
+
+
+Returns TRUE if the specified string is a legal variable name.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+token}]String to check for valid variable name. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns TRUE if the specified string is a legal variable name; otherwise, returns FALSE.\end{Desc}
+If the specified string follows all of the rules for a legal program variable (doesn't start with a number, contains only a-z\-A-Z0-9\_\- characters), returns a value of TRUE; otherwise, returns a value of FALSE. \index{util.h@{util.h}!malloc_safe@{malloc\_\-safe}}
+\index{malloc_safe@{malloc\_\-safe}!util.h@{util.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ malloc\_\-safe (int {\em size})}\label{util_8h_a9}
+
+
+Performs safe malloc call.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+size}]Number of bytes to allocate.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Pointer to allocated memory.\end{Desc}
+Allocated memory like a malloc() call but performs some pre-allocation and post-allocation checks to be sure that the malloc call works properly. \index{util.h@{util.h}!print_output@{print\_\-output}}
+\index{print_output@{print\_\-output}!util.h@{util.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void print\_\-output (char $\ast$ {\em msg}, int {\em type})}\label{util_8h_a1}
+
+
+Displays error message to standard output.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+msg}]Message to display. \item[{\em 
+type}]Type of message to output\end{description}
+\end{Desc}
+Displays the specified message to standard output based on the type of message being output. \index{util.h@{util.h}!readline@{readline}}
+\index{readline@{readline}!util.h@{util.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} readline (FILE $\ast$ {\em file}, char $\ast$$\ast$ {\em line})}\label{util_8h_a6}
+
+
+Reads line from file and returns it in string form.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+file}]File to read next line from. \item[{\em 
+line}]Pointer to string which will contain read line minus newline character.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns FALSE if feof is encountered; otherwise, returns TRUE.\end{Desc}
+Reads in a single line of information from the specified file and returns a string containing the read line to the calling function. \index{util.h@{util.h}!scope_extract_back@{scope\_\-extract\_\-back}}
+\index{scope_extract_back@{scope\_\-extract\_\-back}!util.h@{util.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void scope\_\-extract\_\-back (char $\ast$ {\em scope}, char $\ast$ {\em back}, char $\ast$ {\em rest})}\label{util_8h_a8}
+
+
+Extracts lowest level of hierarchy from specified scope.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+scope}]Full scope to extract from. \item[{\em 
+back}]Lowest level of hierarchy extracted. \item[{\em 
+rest}]Hierarchy left after extraction.\end{description}
+\end{Desc}
+Extracts the lowest level of hierarchy from the specified scope, returning that instance name to the value of back and the the rest of the hierarchy in the value of rest. \index{util.h@{util.h}!scope_extract_front@{scope\_\-extract\_\-front}}
+\index{scope_extract_front@{scope\_\-extract\_\-front}!util.h@{util.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void scope\_\-extract\_\-front (char $\ast$ {\em scope}, char $\ast$ {\em front}, char $\ast$ {\em rest})}\label{util_8h_a7}
+
+
+Extracts highest level of hierarchy from specified scope.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+scope}]Full scope to extract from. \item[{\em 
+front}]Highest level of hierarchy extracted. \item[{\em 
+rest}]Hierarchy left after extraction.\end{description}
+\end{Desc}
+Extracts the highest level of hierarchy from the specified scope, returning that instance name to the value of front and the the rest of the hierarchy in the value of rest. \index{util.h@{util.h}!set_output_suppression@{set\_\-output\_\-suppression}}
+\index{set_output_suppression@{set\_\-output\_\-suppression}!util.h@{util.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void set\_\-output\_\-suppression ({\bf bool} {\em value})}\label{util_8h_a0}
+
+
+Sets error suppression to specified value.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+value}]Boolean value of suppression.\end{description}
+\end{Desc}
+Sets the global variable output\_\-suppressed to the specified value. 

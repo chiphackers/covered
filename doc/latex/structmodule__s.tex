@@ -1,0 +1,69 @@
+\section{module\_\-s  Struct Reference}
+\label{structmodule__s}\index{module_s@{module\_\-s}}
+{\tt \#include $<$defines.h$>$}
+
+\subsection*{Public Attributes}
+\begin{CompactItemize}
+\item 
+char $\ast$ {\bf name}
+\item 
+char $\ast$ {\bf filename}
+\item 
+char $\ast$ {\bf scope}
+\item 
+{\bf sig\_\-link} $\ast$ {\bf sig\_\-head}
+\item 
+{\bf sig\_\-link} $\ast$ {\bf sig\_\-tail}
+\item 
+{\bf exp\_\-link} $\ast$ {\bf exp\_\-head}
+\item 
+{\bf exp\_\-link} $\ast$ {\bf exp\_\-tail}
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+Contains information for a Verilog module. A module contains a list of signals within the module. 
+
+
+
+\subsection{Member Data Documentation}
+\index{module_s@{module\_\-s}!exp_head@{exp\_\-head}}
+\index{exp_head@{exp\_\-head}!module_s@{module\_\-s}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf exp\_\-link}$\ast$ module\_\-s::exp\_\-head}\label{structmodule__s_m5}
+
+
+Head pointer to list of expressions in this module \index{module_s@{module\_\-s}!exp_tail@{exp\_\-tail}}
+\index{exp_tail@{exp\_\-tail}!module_s@{module\_\-s}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf exp\_\-link}$\ast$ module\_\-s::exp\_\-tail}\label{structmodule__s_m6}
+
+
+Tail pointer to list of expressions in this module \index{module_s@{module\_\-s}!filename@{filename}}
+\index{filename@{filename}!module_s@{module\_\-s}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ module\_\-s::filename}\label{structmodule__s_m1}
+
+
+File name where module exists \index{module_s@{module\_\-s}!name@{name}}
+\index{name@{name}!module_s@{module\_\-s}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ module\_\-s::name}\label{structmodule__s_m0}
+
+
+Module name \index{module_s@{module\_\-s}!scope@{scope}}
+\index{scope@{scope}!module_s@{module\_\-s}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ module\_\-s::scope}\label{structmodule__s_m2}
+
+
+Verilog hierarchical scope of this module \index{module_s@{module\_\-s}!sig_head@{sig\_\-head}}
+\index{sig_head@{sig\_\-head}!module_s@{module\_\-s}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf sig\_\-link}$\ast$ module\_\-s::sig\_\-head}\label{structmodule__s_m3}
+
+
+Head pointer to list of signals in this module \index{module_s@{module\_\-s}!sig_tail@{sig\_\-tail}}
+\index{sig_tail@{sig\_\-tail}!module_s@{module\_\-s}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf sig\_\-link}$\ast$ module\_\-s::sig\_\-tail}\label{structmodule__s_m4}
+
+
+Tail pointer to list of signals in this module 
+
+The documentation for this struct was generated from the following file:\begin{CompactItemize}
+\item 
+{\bf defines.h}\end{CompactItemize}

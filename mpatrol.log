@@ -1,0 +1,69 @@
+@(#) mpatrol 1.4.8 (02/01/08)
+Copyright (C) 1997-2002 Graeme S. Roy
+
+This is free software, and you are welcome to redistribute it under certain
+conditions; see the GNU Library General Public License for details.
+
+For the latest mpatrol release and documentation,
+visit http://www.cbmamiga.demon.co.uk/mpatrol.
+
+operating system:       UNIX
+system variant:         Linux
+processor architecture: Intel 80x86
+processor word size:    32-bit
+object file format:     BFD
+dynamic linker type:    SVR4
+
+Log file generated on Thu Apr 18 22:00:52 2002
+
+read 362 symbols from /usr/lib/libmpatrol.so
+read 778 symbols from /usr/lib/libbfd-2.11.90.0.8.so
+read 2943 symbols from /lib/libc.so.6
+read 1175 symbols from /usr/lib/libstdc++-libc6.2-2.so.3
+read 694 symbols from /lib/libm.so.6
+read 160 symbols from /lib/ld-linux.so.2
+read 194 symbols from ./conftest
+
+system page size:  4096 bytes
+default alignment: 4 bytes
+overflow size:     0 bytes
+overflow byte:     0xAA
+allocation byte:   0xFF
+free byte:         0x55
+allocation stop:   0
+reallocation stop: 0
+free stop:         0
+unfreed abort:     0
+small boundary:    32 bytes
+medium boundary:   256 bytes
+large boundary:    2048 bytes
+lower check range: 0
+upper check range: 0
+check frequency:   1
+failure frequency: 0
+failure seed:      1019185252
+prologue function: <unset>
+epilogue function: <unset>
+handler function:  <unset>
+log file:          mpatrol.log
+profiling file:    mpatrol.out
+tracing file:      mpatrol.trace
+program filename:  ./conftest
+symbols read:      6306
+autosave count:    0
+freed queue size:  0
+allocation count:  84
+allocation peak:   21 (454279 bytes)
+allocation limit:  0 bytes
+allocated blocks:  8 (2011 bytes)
+marked blocks:     0 (0 bytes)
+freed blocks:      0 (0 bytes)
+free blocks:       3 (460837 bytes)
+internal blocks:   36 (589824 bytes)
+total heap usage:  1052672 bytes
+total compared:    0 bytes
+total located:     0 bytes
+total copied:      46185 bytes
+total set:         615044 bytes
+total warnings:    0
+total errors:      0

@@ -1,0 +1,33 @@
+\section{Output type}
+\label{group__output__type}\index{Output type@{Output type}}
+\subsection*{Defines}
+\begin{CompactItemize}
+\item 
+\#define {\bf FATAL}\ 1
+\item 
+\#define {\bf WARNING}\ 2
+\item 
+\#define {\bf NORMAL}\ 3
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+The following defines are used by the print\_\-output function to determine what type of output to generate and whether the output should or should not be suppressed. 
+
+\subsection{Define Documentation}
+\index{output_type@{output\_\-type}!FATAL@{FATAL}}
+\index{FATAL@{FATAL}!output_type@{output\_\-type}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define FATAL\ 1}\label{group__output__type_a0}
+
+
+Indicates that the specified error is fatal and will cause the program to immediately stop. Cannot be suppressed. \index{output_type@{output\_\-type}!NORMAL@{NORMAL}}
+\index{NORMAL@{NORMAL}!output_type@{output\_\-type}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define NORMAL\ 3}\label{group__output__type_a2}
+
+
+Indicate that the specified message is not an error but some type of necessary output. Suppressed if output\_\-suppressed boolean variable in {\bf util.c} is set to TRUE. \index{output_type@{output\_\-type}!WARNING@{WARNING}}
+\index{WARNING@{WARNING}!output_type@{output\_\-type}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define WARNING\ 2}\label{group__output__type_a1}
+
+
+Indicate that the specified error is only a warning that something may be wrong but will not cause the program to immediately terminate. Suppressed if output\_\-suppressed boolean variable in {\bf util.c} is set to TRUE. 

@@ -1,0 +1,137 @@
+\section{toggle.c File Reference}
+\label{toggle_8c}\index{toggle.c@{toggle.c}}
+{\tt \#include $<$stdio.h$>$}\par
+{\tt \#include $<$assert.h$>$}\par
+{\tt \#include \char`\"{}toggle.h\char`\"{}}\par
+{\tt \#include \char`\"{}defines.h\char`\"{}}\par
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+void {\bf toggle\_\-get\_\-stats} ({\bf exp\_\-link} $\ast$expl, {\bf sig\_\-link} $\ast$sigl, float $\ast$total, int $\ast$hit01, int $\ast$hit10)
+\begin{CompactList}\small\item\em Calculates the toggle coverage for the specifed expression and signal lists.\item\end{CompactList}\item 
+void {\bf toggle\_\-instance\_\-summary} (FILE $\ast$ofile, {\bf mod\_\-inst} $\ast$root, char $\ast$parent\_\-inst)
+\item 
+void {\bf toggle\_\-module\_\-summary} (FILE $\ast$ofile, {\bf mod\_\-link} $\ast$head)
+\item 
+void {\bf toggle\_\-instance\_\-verbose} (FILE $\ast$ofile, {\bf mod\_\-inst} $\ast$root)
+\item 
+void {\bf toggle\_\-module\_\-verbose} (FILE $\ast$ofile, {\bf mod\_\-link} $\ast$head)
+\item 
+void {\bf toggle\_\-report} (FILE $\ast$ofile, {\bf bool} verbose, {\bf bool} instance)
+\begin{CompactList}\small\item\em Generates report output for toggle coverage.\item\end{CompactList}\end{CompactItemize}
+\subsection*{Variables}
+\begin{CompactItemize}
+\item 
+{\bf mod\_\-inst} $\ast$ {\bf instance\_\-root}
+\item 
+{\bf mod\_\-link} $\ast$ {\bf mod\_\-head}
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+\begin{Desc}
+\item[Author: ]\par
+Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\begin{Desc}
+\item[Date: ]\par
+3/31/2002\end{Desc}
+
+
+\subsection{Function Documentation}
+\index{toggle.c@{toggle.c}!toggle_get_stats@{toggle\_\-get\_\-stats}}
+\index{toggle_get_stats@{toggle\_\-get\_\-stats}!toggle.c@{toggle.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void toggle\_\-get\_\-stats ({\bf exp\_\-link} $\ast$ {\em expl}, {\bf sig\_\-link} $\ast$ {\em sigl}, float $\ast$ {\em total}, int $\ast$ {\em hit01}, int $\ast$ {\em hit10})}\label{toggle_8c_a2}
+
+
+Calculates the toggle coverage for the specifed expression and signal lists.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+expl}]Pointer to expression list to search. \item[{\em 
+sigl}]Pointer to signal list to search. \item[{\em 
+total}]Total number of bits in the design/module. \item[{\em 
+hit01}]Number of bits toggling from 0 to 1 during simulation. \item[{\em 
+hit10}]Number of bits toggling from 1 to 0 during simulation.\end{description}
+\end{Desc}
+Searches specified expression list and signal list, gathering information  about toggled bits. For each bit that is found in the design, the total value is incremented by one. For each bit that toggled from a 0 to a 1, the value of hit01 is incremented by one. For each bit that toggled from a 1 to a 0, the value of hit10 is incremented by one. \index{toggle.c@{toggle.c}!toggle_instance_summary@{toggle\_\-instance\_\-summary}}
+\index{toggle_instance_summary@{toggle\_\-instance\_\-summary}!toggle.c@{toggle.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void toggle\_\-instance\_\-summary (FILE $\ast$ {\em ofile}, {\bf mod\_\-inst} $\ast$ {\em root}, char $\ast$ {\em parent\_\-inst})}\label{toggle_8c_a3}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+ofile}]File to output coverage information to. \item[{\em 
+root}]Instance node in the module instance tree being evaluated. \item[{\em 
+parent\_\-inst}]Name of parent instance.\end{description}
+\end{Desc}
+Displays the toggle instance summarization to the specified file. Recursively iterates through module instance tree, outputting the toggle information that is found at that instance. \index{toggle.c@{toggle.c}!toggle_instance_verbose@{toggle\_\-instance\_\-verbose}}
+\index{toggle_instance_verbose@{toggle\_\-instance\_\-verbose}!toggle.c@{toggle.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void toggle\_\-instance\_\-verbose (FILE $\ast$ {\em ofile}, {\bf mod\_\-inst} $\ast$ {\em root})}\label{toggle_8c_a5}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+ofile}]Pointer to file to display coverage results to. \item[{\em 
+root}]Pointer to root of instance module tree to parse.\end{description}
+\end{Desc}
+Displays the verbose toggle coverage results to the specified output stream on an instance basis. The verbose toggle coverage includes the signal names (and expressions) that did not receive 100\% toggle coverage during simulation. \index{toggle.c@{toggle.c}!toggle_module_summary@{toggle\_\-module\_\-summary}}
+\index{toggle_module_summary@{toggle\_\-module\_\-summary}!toggle.c@{toggle.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void toggle\_\-module\_\-summary (FILE $\ast$ {\em ofile}, {\bf mod\_\-link} $\ast$ {\em head})}\label{toggle_8c_a4}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+ofile}]Pointer to file to display coverage results to. \item[{\em 
+head}]Pointer to head of module list to parse.\end{description}
+\end{Desc}
+Iterates through the module list displaying the toggle coverage for each module. \index{toggle.c@{toggle.c}!toggle_module_verbose@{toggle\_\-module\_\-verbose}}
+\index{toggle_module_verbose@{toggle\_\-module\_\-verbose}!toggle.c@{toggle.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void toggle\_\-module\_\-verbose (FILE $\ast$ {\em ofile}, {\bf mod\_\-link} $\ast$ {\em head})}\label{toggle_8c_a6}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+ofile}]Pointer to file to display coverage results to. \item[{\em 
+head}]Pointer to head of module list to parse.\end{description}
+\end{Desc}
+Displays the verbose toggle coverage results to the specified output stream on a module basis (combining modules that are instantiated multiple times). The verbose toggle coverage includes the signal names (and expressions) that did not receive 100\% toggle coverage during simulation. \index{toggle.c@{toggle.c}!toggle_report@{toggle\_\-report}}
+\index{toggle_report@{toggle\_\-report}!toggle.c@{toggle.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void toggle\_\-report (FILE $\ast$ {\em ofile}, {\bf bool} {\em verbose}, {\bf bool} {\em instance})}\label{toggle_8c_a7}
+
+
+Generates report output for toggle coverage.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+ofile}]Pointer to file to output results to. \item[{\em 
+verbose}]Specifies whether or not to provide verbose information \item[{\em 
+instance}]Specifies to report by instance or module.\end{description}
+\end{Desc}
+After the design is read into the module hierarchy, parses the hierarchy by module, reporting the toggle coverage for each module encountered. The parent module will specify its own toggle coverage along with a total toggle coverage including its  children. 
+
+\subsection{Variable Documentation}
+\index{toggle.c@{toggle.c}!instance_root@{instance\_\-root}}
+\index{instance_root@{instance\_\-root}!toggle.c@{toggle.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-inst}$\ast$ instance\_\-root ()}\label{toggle_8c_a0}
+
+
+Pointer to root of module instance tree \index{toggle.c@{toggle.c}!mod_head@{mod\_\-head}}
+\index{mod_head@{mod\_\-head}!toggle.c@{toggle.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-link}$\ast$ mod\_\-head ()}\label{toggle_8c_a1}
+
+
+Pointer to head element of module list 

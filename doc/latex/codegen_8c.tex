@@ -1,0 +1,44 @@
+\section{codegen.c File Reference}
+\label{codegen_8c}\index{codegen.c@{codegen.c}}
+{\tt \#include $<$string.h$>$}\par
+{\tt \#include $<$assert.h$>$}\par
+{\tt \#include \char`\"{}defines.h\char`\"{}}\par
+{\tt \#include \char`\"{}codegen.h\char`\"{}}\par
+{\tt \#include \char`\"{}vector.h\char`\"{}}\par
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+char $\ast$ {\bf codegen\_\-gen\_\-expr} ({\bf expression} $\ast$expr, int line)
+\begin{CompactList}\small\item\em Creates Verilog code string from specified expression tree.\item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+\begin{Desc}
+\item[Author: ]\par
+Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\begin{Desc}
+\item[Date: ]\par
+4/11/2002\end{Desc}
+
+
+\subsection{Function Documentation}
+\index{codegen.c@{codegen.c}!codegen_gen_expr@{codegen\_\-gen\_\-expr}}
+\index{codegen_gen_expr@{codegen\_\-gen\_\-expr}!codegen.c@{codegen.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ codegen\_\-gen\_\-expr ({\bf expression} $\ast$ {\em expr}, int {\em line})}\label{codegen_8c_a0}
+
+
+Creates Verilog code string from specified expression tree.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+expr}]Pointer to root of expression tree to generate. \item[{\em 
+line}]Specifies last line number to generate.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns a pointer to the generated Verilog string.\end{Desc}
+Generates Verilog code from specified expression tree. This Verilog snippet is used by the verbose coverage reporting functions for showing Verilog examples that were missed during simulation. The line parameter specifies the last line number to generate for this expression tree. If the value of line is -1, the entire expression tree is generated. 

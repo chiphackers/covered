@@ -1,0 +1,16 @@
+#ifndef __CONFIG_H__
+#define __CONFIG_H__
+
+/*!
+ \file    config.h.in
+ \author   Trevor Williams  (trevorw@charter.net)
+ \date     1/5/2002
+ \brief    Contains defines setup by configure utility.
+*/
+
+#undef SIZEOF_SHORT
+#undef SIZEOF_INT
+#undef SIZEOF_LONG
+
+#endif
+

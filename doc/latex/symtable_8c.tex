@@ -1,0 +1,77 @@
+\section{symtable.c File Reference}
+\label{symtable_8c}\index{symtable.c@{symtable.c}}
+{\tt \#include $<$stdlib.h$>$}\par
+{\tt \#include $<$string.h$>$}\par
+{\tt \#include \char`\"{}defines.h\char`\"{}}\par
+{\tt \#include \char`\"{}symtable.h\char`\"{}}\par
+{\tt \#include \char`\"{}util.h\char`\"{}}\par
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+void {\bf symtable\_\-add} (char $\ast$sym, {\bf signal} $\ast$sig, {\bf symtable} $\ast$$\ast$symtab)
+\begin{CompactList}\small\item\em Creates a new symtable entry and adds it to the specified symbol table.\item\end{CompactList}\item 
+{\bf bool} {\bf symtable\_\-find} (char $\ast$sym, {\bf symtable} $\ast$symtab, {\bf signal} $\ast$$\ast$sig)
+\begin{CompactList}\small\item\em Finds specified symbol in specified symbol table and returns pointer to signal.\item\end{CompactList}\item 
+void {\bf symtable\_\-dealloc} ({\bf symtable} $\ast$symtab)
+\begin{CompactList}\small\item\em Deallocates all symtable entries for specified symbol table.\item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+\begin{Desc}
+\item[Author: ]\par
+Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\begin{Desc}
+\item[Date: ]\par
+1/3/2002\end{Desc}
+
+
+\subsection{Function Documentation}
+\index{symtable.c@{symtable.c}!symtable_add@{symtable\_\-add}}
+\index{symtable_add@{symtable\_\-add}!symtable.c@{symtable.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void symtable\_\-add (char $\ast$ {\em sym}, {\bf signal} $\ast$ {\em sig}, {\bf symtable} $\ast$$\ast$ {\em symtab})}\label{symtable_8c_a0}
+
+
+Creates a new symtable entry and adds it to the specified symbol table.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+sym}]VCD symbol for the specified signal. \item[{\em 
+sig}]Pointer to signal corresponding to the specified symbol. \item[{\em 
+symtab}]Pointer to symtable to store the symtable entry to.\end{description}
+\end{Desc}
+Using the symbol as a unique ID, creates a new symtable element for specified information and places it into the binary tree. \index{symtable.c@{symtable.c}!symtable_dealloc@{symtable\_\-dealloc}}
+\index{symtable_dealloc@{symtable\_\-dealloc}!symtable.c@{symtable.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void symtable\_\-dealloc ({\bf symtable} $\ast$ {\em symtab})}\label{symtable_8c_a2}
+
+
+Deallocates all symtable entries for specified symbol table.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+symtab}]Pointer to root of symtable to clear.\end{description}
+\end{Desc}
+Recursively deallocates all elements of specifies symbol table. \index{symtable.c@{symtable.c}!symtable_find@{symtable\_\-find}}
+\index{symtable_find@{symtable\_\-find}!symtable.c@{symtable.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} symtable\_\-find (char $\ast$ {\em sym}, {\bf symtable} $\ast$ {\em symtab}, {\bf signal} $\ast$$\ast$ {\em sig})}\label{symtable_8c_a1}
+
+
+Finds specified symbol in specified symbol table and returns pointer to signal.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+sym}]Name of symbol to find in the table. \item[{\em 
+symtab}]Root of the symtable to search in. \item[{\em 
+sig}]Pointer to found signal.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns TRUE if symbol was found; otherwise, returns FALSE.\end{Desc}
+Performs a binary search of the specified tree to find matching symtable entry. If a match is found, assigns sig parameter to the signal represented by the symbol and returns TRUE; otherwise, simply returns FALSE. 

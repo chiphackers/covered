@@ -1,0 +1,48 @@
+\section{signal\_\-s  Struct Reference}
+\label{structsignal__s}\index{signal_s@{signal\_\-s}}
+{\tt \#include $<$defines.h$>$}
+
+\subsection*{Public Attributes}
+\begin{CompactItemize}
+\item 
+char $\ast$ {\bf name}
+\item 
+{\bf vector} $\ast$ {\bf value}
+\item 
+{\bf exp\_\-link} $\ast$ {\bf exp\_\-head}
+\item 
+{\bf exp\_\-link} $\ast$ {\bf exp\_\-tail}
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+Stores all information needed to represent a signal. If value of value element is non-zero at the end of the run, this signal has been simulated. 
+
+
+
+\subsection{Member Data Documentation}
+\index{signal_s@{signal\_\-s}!exp_head@{exp\_\-head}}
+\index{exp_head@{exp\_\-head}!signal_s@{signal\_\-s}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf exp\_\-link}$\ast$ signal\_\-s::exp\_\-head}\label{structsignal__s_m2}
+
+
+Head pointer to list of expressions \index{signal_s@{signal\_\-s}!exp_tail@{exp\_\-tail}}
+\index{exp_tail@{exp\_\-tail}!signal_s@{signal\_\-s}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf exp\_\-link}$\ast$ signal\_\-s::exp\_\-tail}\label{structsignal__s_m3}
+
+
+Tail pointer to list of expressions \index{signal_s@{signal\_\-s}!name@{name}}
+\index{name@{name}!signal_s@{signal\_\-s}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ signal\_\-s::name}\label{structsignal__s_m0}
+
+
+Full hierarchical name of signal in design \index{signal_s@{signal\_\-s}!value@{value}}
+\index{value@{value}!signal_s@{signal\_\-s}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf vector}$\ast$ signal\_\-s::value}\label{structsignal__s_m1}
+
+
+Pointer to vector value of this signal 
+
+The documentation for this struct was generated from the following file:\begin{CompactItemize}
+\item 
+{\bf defines.h}\end{CompactItemize}

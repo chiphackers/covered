@@ -1,0 +1,151 @@
+\section{line.c File Reference}
+\label{line_8c}\index{line.c@{line.c}}
+{\tt \#include $<$stdio.h$>$}\par
+{\tt \#include $<$assert.h$>$}\par
+{\tt \#include \char`\"{}line.h\char`\"{}}\par
+{\tt \#include \char`\"{}defines.h\char`\"{}}\par
+{\tt \#include \char`\"{}link.h\char`\"{}}\par
+{\tt \#include \char`\"{}instance.h\char`\"{}}\par
+{\tt \#include \char`\"{}codegen.h\char`\"{}}\par
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+void {\bf line\_\-get\_\-stats} ({\bf exp\_\-link} $\ast$expl, float $\ast$total, int $\ast$hit)
+\begin{CompactList}\small\item\em Calculates line coverage numbers for the specified expression list.\item\end{CompactList}\item 
+void {\bf line\_\-instance\_\-summary} (FILE $\ast$ofile, {\bf mod\_\-inst} $\ast$root, char $\ast$parent\_\-inst)
+\item 
+void {\bf line\_\-module\_\-summary} (FILE $\ast$ofile, {\bf mod\_\-link} $\ast$head)
+\item 
+void {\bf line\_\-display\_\-verbose} (FILE $\ast$ofile, {\bf exp\_\-link} $\ast$expl)
+\item 
+void {\bf line\_\-instance\_\-verbose} (FILE $\ast$ofile, {\bf mod\_\-inst} $\ast$root)
+\item 
+void {\bf line\_\-module\_\-verbose} (FILE $\ast$ofile, {\bf mod\_\-link} $\ast$head)
+\item 
+void {\bf line\_\-report} (FILE $\ast$ofile, {\bf bool} verbose, {\bf bool} instance)
+\begin{CompactList}\small\item\em Generates report output for line coverage.\item\end{CompactList}\end{CompactItemize}
+\subsection*{Variables}
+\begin{CompactItemize}
+\item 
+{\bf mod\_\-inst} $\ast$ {\bf instance\_\-root}
+\item 
+{\bf mod\_\-link} $\ast$ {\bf mod\_\-head}
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+\begin{Desc}
+\item[Author: ]\par
+Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\begin{Desc}
+\item[Date: ]\par
+3/31/2002\end{Desc}
+
+
+\subsection{Function Documentation}
+\index{line.c@{line.c}!line_display_verbose@{line\_\-display\_\-verbose}}
+\index{line_display_verbose@{line\_\-display\_\-verbose}!line.c@{line.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void line\_\-display\_\-verbose (FILE $\ast$ {\em ofile}, {\bf exp\_\-link} $\ast$ {\em expl})}\label{line_8c_a5}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+ofile}]Pointer to file to output results to. \item[{\em 
+expl}]Pointer to expression list head.\end{description}
+\end{Desc}
+Displays the lines missed during simulation to standard output from the specified expression list. \index{line.c@{line.c}!line_get_stats@{line\_\-get\_\-stats}}
+\index{line_get_stats@{line\_\-get\_\-stats}!line.c@{line.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void line\_\-get\_\-stats ({\bf exp\_\-link} $\ast$ {\em expl}, float $\ast$ {\em total}, int $\ast$ {\em hit})}\label{line_8c_a2}
+
+
+Calculates line coverage numbers for the specified expression list.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+expl}]Pointer to current expression list to explore. \item[{\em 
+total}]Holds total number of lines parsed. \item[{\em 
+hit}]Holds total number of lines hit.\end{description}
+\end{Desc}
+Iterates through given expression list, gathering information about which lines exist in the list, which lines were hit during simulation and which lines were missed during simulation. This information is used to report summary information about line coverage. \index{line.c@{line.c}!line_instance_summary@{line\_\-instance\_\-summary}}
+\index{line_instance_summary@{line\_\-instance\_\-summary}!line.c@{line.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void line\_\-instance\_\-summary (FILE $\ast$ {\em ofile}, {\bf mod\_\-inst} $\ast$ {\em root}, char $\ast$ {\em parent\_\-inst})}\label{line_8c_a3}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+ofile}]Pointer to file to output results to. \item[{\em 
+root}]Current node in instance tree. \item[{\em 
+parent\_\-inst}]Name of parent instance.\end{description}
+\end{Desc}
+Recursively iterates through the instance tree gathering the total number of lines parsed vs. the total number of lines executed during the course of simulation. The parent node will display its information before calling its children. \index{line.c@{line.c}!line_instance_verbose@{line\_\-instance\_\-verbose}}
+\index{line_instance_verbose@{line\_\-instance\_\-verbose}!line.c@{line.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void line\_\-instance\_\-verbose (FILE $\ast$ {\em ofile}, {\bf mod\_\-inst} $\ast$ {\em root})}\label{line_8c_a6}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+ofile}]Pointer to file to output results to. \item[{\em 
+root}]Pointer to root node of instance tree to search through.\end{description}
+\end{Desc}
+Displays the verbose line coverage results to the specified output stream on an instance basis. The verbose line coverage includes the line numbers  (and associated verilog code) and file/module name of the lines that were  not hit during simulation. \index{line.c@{line.c}!line_module_summary@{line\_\-module\_\-summary}}
+\index{line_module_summary@{line\_\-module\_\-summary}!line.c@{line.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void line\_\-module\_\-summary (FILE $\ast$ {\em ofile}, {\bf mod\_\-link} $\ast$ {\em head})}\label{line_8c_a4}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+ofile}]Pointer to file to output results to. \item[{\em 
+head}]Pointer to head of module list to explore.\end{description}
+\end{Desc}
+Iterates through the module list, displaying the line coverage results (summary format) for each module. \index{line.c@{line.c}!line_module_verbose@{line\_\-module\_\-verbose}}
+\index{line_module_verbose@{line\_\-module\_\-verbose}!line.c@{line.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void line\_\-module\_\-verbose (FILE $\ast$ {\em ofile}, {\bf mod\_\-link} $\ast$ {\em head})}\label{line_8c_a7}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+ofile}]Pointer to file to output results to. \item[{\em 
+head}]Pointer to head of module list to search through.\end{description}
+\end{Desc}
+Displays the verbose line coverage results to the specified output stream on a module basis (combining modules that are instantiated multiple times). The verbose line coverage includes the line numbers (and associated verilog code) and file/module name of the lines that were not hit during simulation. \index{line.c@{line.c}!line_report@{line\_\-report}}
+\index{line_report@{line\_\-report}!line.c@{line.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void line\_\-report (FILE $\ast$ {\em ofile}, {\bf bool} {\em verbose}, {\bf bool} {\em instance})}\label{line_8c_a8}
+
+
+Generates report output for line coverage.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+ofile}]Pointer to file to output results to. \item[{\em 
+verbose}]Specifies whether or not to provide verbose information \item[{\em 
+instance}]Specifies to report by instance or module.\end{description}
+\end{Desc}
+After the design is read into the module hierarchy, parses the hierarchy by module, reporting the line coverage for each module encountered. The parent module will specify its own line coverage along with a total line coverage including its  children. 
+
+\subsection{Variable Documentation}
+\index{line.c@{line.c}!instance_root@{instance\_\-root}}
+\index{instance_root@{instance\_\-root}!line.c@{line.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-inst}$\ast$ instance\_\-root}\label{line_8c_a0}
+
+
+\index{line.c@{line.c}!mod_head@{mod\_\-head}}
+\index{mod_head@{mod\_\-head}!line.c@{line.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-link}$\ast$ mod\_\-head}\label{line_8c_a1}
+
+

@@ -1,0 +1,159 @@
+\section{tree.c File Reference}
+\label{tree_8c}\index{tree.c@{tree.c}}
+{\tt \#include $<$stdlib.h$>$}\par
+{\tt \#include $<$string.h$>$}\par
+{\tt \#include \char`\"{}defines.h\char`\"{}}\par
+{\tt \#include \char`\"{}tree.h\char`\"{}}\par
+{\tt \#include \char`\"{}link.h\char`\"{}}\par
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+{\bf tree\_\-node} $\ast$ {\bf tree\_\-node\_\-create} ({\bf module} $\ast$mod)
+\begin{CompactList}\small\item\em Creates a new node to be added to the tree.\item\end{CompactList}\item 
+{\bf bool} {\bf tree\_\-add\_\-node\_\-mod} ({\bf module} $\ast$mod, {\bf tree\_\-node} $\ast$root, char $\ast$curr\_\-mod)
+\begin{CompactList}\small\item\em Adds specified module node to the specified module tree based on module name.\item\end{CompactList}\item 
+{\bf bool} {\bf tree\_\-add\_\-node\_\-inst} ({\bf module} $\ast$mod, {\bf tree\_\-node} $\ast$root, char $\ast$curr\_\-inst)
+\begin{CompactList}\small\item\em Adds specified module node to the specified module tree based on instance name.\item\end{CompactList}\item 
+void {\bf tree\_\-db\_\-write} ({\bf tree\_\-node} $\ast$root, FILE $\ast$file)
+\begin{CompactList}\small\item\em Outputs contents of entire module tree to specified file.\item\end{CompactList}\item 
+{\bf tree\_\-node} $\ast$ {\bf tree\_\-find\_\-module} (char $\ast$modname, {\bf bool} chkname, char $\ast$modscope, {\bf bool} chkscope, int fname\_\-comp, {\bf tree\_\-node} $\ast$root)
+\begin{CompactList}\small\item\em Searches tree list for specified module.\item\end{CompactList}\item 
+void {\bf tree\_\-dealloc} ({\bf tree\_\-node} $\ast$tnode)
+\begin{CompactList}\small\item\em Deallocates memory for tree node back to heap memory.\item\end{CompactList}\end{CompactItemize}
+\subsection*{Variables}
+\begin{CompactItemize}
+\item 
+{\bf str\_\-link} $\ast$ {\bf no\_\-score\_\-head}
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+\begin{Desc}
+\item[Author: ]\par
+Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\begin{Desc}
+\item[Date: ]\par
+12/7/2001\end{Desc}
+
+
+\subsection{Function Documentation}
+\index{tree.c@{tree.c}!tree_add_node_inst@{tree\_\-add\_\-node\_\-inst}}
+\index{tree_add_node_inst@{tree\_\-add\_\-node\_\-inst}!tree.c@{tree.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} tree\_\-add\_\-node\_\-inst ({\bf module} $\ast$ {\em mod}, {\bf tree\_\-node} $\ast$ {\em root}, char $\ast$ {\em curr\_\-inst})}\label{tree_8c_a3}
+
+
+Adds specified module node to the specified module tree based on instance name.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+mod}]Pointer to module to add to the specified tree. \item[{\em 
+root}]Pointer to root node of the tree. \item[{\em 
+curr\_\-inst}]Name of current module instance being parsed.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns TRUE if parent module instance found and node added successfully; otherwise, returns FALSE.\end{Desc}
+Adds specified tree node to a tree. The process to add will go like this:\begin{enumerate}
+\item 
+Look through entire tree\_\-node list starting at root, looking for parent module based on scope.\item 
+If parent module found, add this module to its child list and return TRUE; otherwise, return FALSE. \end{enumerate}
+\index{tree.c@{tree.c}!tree_add_node_mod@{tree\_\-add\_\-node\_\-mod}}
+\index{tree_add_node_mod@{tree\_\-add\_\-node\_\-mod}!tree.c@{tree.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} tree\_\-add\_\-node\_\-mod ({\bf module} $\ast$ {\em mod}, {\bf tree\_\-node} $\ast$ {\em root}, char $\ast$ {\em curr\_\-mod})}\label{tree_8c_a2}
+
+
+Adds specified module node to the specified module tree based on module name.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+mod}]Pointer to module to add to the specified tree. \item[{\em 
+root}]Pointer to root node of the tree. \item[{\em 
+curr\_\-mod}]Name of current module being parsed. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns TRUE if module is not excluded from coverage; otherwise, return FALSE.\end{Desc}
+Adds specified tree node to a tree. The process to add will go like this:\begin{enumerate}
+\item 
+If this module is specified to not be covered, exit this function immediately.\item 
+Look through entire tree\_\-node list starting at root, looking for parent module.\item 
+If parent module found, add this module to its child list. \end{enumerate}
+\index{tree.c@{tree.c}!tree_db_write@{tree\_\-db\_\-write}}
+\index{tree_db_write@{tree\_\-db\_\-write}!tree.c@{tree.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void tree\_\-db\_\-write ({\bf tree\_\-node} $\ast$ {\em root}, FILE $\ast$ {\em file})}\label{tree_8c_a4}
+
+
+Outputs contents of entire module tree to specified file.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+root}]Pointer to root of current tree. \item[{\em 
+file}]Pointer to output file.\end{description}
+\end{Desc}
+Recursively outputs all modules of tree to database file. All parents are output before their children. \index{tree.c@{tree.c}!tree_dealloc@{tree\_\-dealloc}}
+\index{tree_dealloc@{tree\_\-dealloc}!tree.c@{tree.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void tree\_\-dealloc ({\bf tree\_\-node} $\ast$ {\em tnode})}\label{tree_8c_a6}
+
+
+Deallocates memory for tree node back to heap memory.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+tnode}]Pointer to tree node to deallocate.\end{description}
+\end{Desc}
+Recursively deallocates all nodes beneath and including the specified tree node. \index{tree.c@{tree.c}!tree_find_module@{tree\_\-find\_\-module}}
+\index{tree_find_module@{tree\_\-find\_\-module}!tree.c@{tree.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf tree\_\-node}$\ast$ tree\_\-find\_\-module (char $\ast$ {\em modname}, {\bf bool} {\em chkname}, char $\ast$ {\em scope}, {\bf bool} {\em chkscope}, int {\em fname\_\-comp}, {\bf tree\_\-node} $\ast$ {\em root})}\label{tree_8c_a5}
+
+
+Searches tree list for specified module.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+modname}]Name of module to find in tree. \item[{\em 
+chkname}]If set to TRUE, uses specified module name to check against. \item[{\em 
+modscope}]Scope of module to find in the tree. \item[{\em 
+chkscope}]If set to TRUE, uses specified module scope to check against. \item[{\em 
+fname\_\-comp}]Specifies strictness of matching the module filename. \item[{\em 
+root}]Root module node of tree. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Pointer to found module node or NULL if not found.\end{Desc}
+Recursively searches the contents of the tree for the specified module node. If a match is found, returns a pointer to this module; otherwise, returns a value of NULL. \index{tree.c@{tree.c}!tree_node_create@{tree\_\-node\_\-create}}
+\index{tree_node_create@{tree\_\-node\_\-create}!tree.c@{tree.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf tree\_\-node}$\ast$ tree\_\-node\_\-create ({\bf module} $\ast$ {\em mod})}\label{tree_8c_a1}
+
+
+Creates a new node to be added to the tree.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+mod}]Pointer to module to initialize tree node with. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns pointer to newly created tree node.\end{Desc}
+Allocates memory from the heap for the specified tree node, initializes the node with the specified module and initializes the rest of the pointers to NULL. 
+
+\subsection{Variable Documentation}
+\index{tree.c@{tree.c}!no_score_head@{no\_\-score\_\-head}}
+\index{no_score_head@{no\_\-score\_\-head}!tree.c@{tree.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ no\_\-score\_\-head}\label{tree_8c_a0}
+
+
+Pointer to head element of modules not-to-score list 

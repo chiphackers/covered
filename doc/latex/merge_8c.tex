@@ -1,0 +1,87 @@
+\section{merge.c File Reference}
+\label{merge_8c}\index{merge.c@{merge.c}}
+{\tt \#include $<$stdio.h$>$}\par
+{\tt \#include $<$string.h$>$}\par
+{\tt \#include $<$stdlib.h$>$}\par
+{\tt \#include \char`\"{}defines.h\char`\"{}}\par
+{\tt \#include \char`\"{}merge.h\char`\"{}}\par
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+{\bf bool} {\bf merge\_\-parse\_\-args} (int argc, char $\ast$$\ast$argv)
+\item 
+int {\bf command\_\-merge} (int argc, char $\ast$$\ast$argv)
+\begin{CompactList}\small\item\em Parses command-line for merge options and performs merge command.\item\end{CompactList}\end{CompactItemize}
+\subsection*{Variables}
+\begin{CompactItemize}
+\item 
+char $\ast$ {\bf merged\_\-file} = NULL
+\item 
+char $\ast$ {\bf merge\_\-in0} = NULL
+\item 
+char $\ast$ {\bf merge\_\-in1} = NULL
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+\begin{Desc}
+\item[Author: ]\par
+Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\begin{Desc}
+\item[Date: ]\par
+11/29/2001\end{Desc}
+
+
+\subsection{Function Documentation}
+\index{merge.c@{merge.c}!command_merge@{command\_\-merge}}
+\index{command_merge@{command\_\-merge}!merge.c@{merge.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int command\_\-merge (int {\em argc}, char $\ast$$\ast$ {\em argv})}\label{merge_8c_a4}
+
+
+Parses command-line for merge options and performs merge command.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+argc}]Number of arguments in command-line to parse. \item[{\em 
+argv}]List of arguments from command-line to parse. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns 0 if merge is successful; otherwise, returns -1. \end{Desc}
+\index{merge.c@{merge.c}!merge_parse_args@{merge\_\-parse\_\-args}}
+\index{merge_parse_args@{merge\_\-parse\_\-args}!merge.c@{merge.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} merge\_\-parse\_\-args (int {\em argc}, char $\ast$$\ast$ {\em argv})}\label{merge_8c_a3}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+argc}]Number of arguments in argument list argv. \item[{\em 
+argv}]Argument list passed to this program.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns TRUE if argument parsing was successful; otherwise, returns FALSE.\end{Desc}
+Parses the merge argument list, placing all parsed values into global variables. If an argument is found that is not valid for the merge operation, an error message is displayed to the user. 
+
+\subsection{Variable Documentation}
+\index{merge.c@{merge.c}!merge_in0@{merge\_\-in0}}
+\index{merge_in0@{merge\_\-in0}!merge.c@{merge.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ merge\_\-in0 = NULL}\label{merge_8c_a1}
+
+
+\index{merge.c@{merge.c}!merge_in1@{merge\_\-in1}}
+\index{merge_in1@{merge\_\-in1}!merge.c@{merge.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ merge\_\-in1 = NULL}\label{merge_8c_a2}
+
+
+\index{merge.c@{merge.c}!merged_file@{merged\_\-file}}
+\index{merged_file@{merged\_\-file}!merge.c@{merge.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ merged\_\-file = NULL}\label{merge_8c_a0}
+
+

@@ -1,0 +1,34 @@
+######################################################
+# Written by:   Trevor Williams  (trevorw@charter.net)
+#
+# Date:         3/22/2002
+#
+# Purpose:      Runs regression suite for Verilog
+######################################################
+
+COVERED_SRC   = ../../src
+COVERED       = $(COVERED_SRC)/covered
+COVERED_FLAGS = -q
+
+IVERILOG       = iverilog
+IVERILOG_FLAGS =
+
+LOGFILE = regress.log
+
+DIAGLIST = addsr \
+	   assign3.2A
+
+regress:	$(COVERED) clean $(DIAGLIST)
+
+$(DIAGLIST):	
+	$(IVERILOG) $(IVERILOG_FLAGS) $@.v
+	./a.out
+	$(COVERED) score -t $@ -vcd $@.vcd $(COVERED_FLAGS) -v $@.v
+
+$(COVERED):
+	cd $(COVERED_SRC); make
+	
+clean:
+	rm -f $(LOGFILE)
+	rm -f a.out *.vcd *.db *.log
+	rm -f core

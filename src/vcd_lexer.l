@@ -1,0 +1,318 @@
+%{ 
+/*!
+ \file     vcd_lexer.l
+ \author   Trevor Williams  (trevorw@charter.net)
+ \date     1/3/2001
+ \brief    Lexer for VCD Format
+*/
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <assert.h>
+
+#include "defines.h"
+#include "vcd_parser_misc.h"
+#include "vcd_parser.h"
+#include "vector.h"
+#include "db.h"
+
+#define yylval VCDlval
+
+extern YYLTYPE yylloc;
+
+char* vcdfile;
+%}
+
+%option stack
+
+%x COMMENT
+%x DATE
+%x TIMESCALE
+%x VERSION
+
+%s SIMULATION
+
+WSPACE [ \t\b\f]+
+
+%%
+
+  /* Whitespace -- we ignore this */
+[ \t\b\f\r]   { ; }
+
+  /* Newline character - blank line -- we ignore these */
+\n            { yylloc.first_line += 1; }
+
+  /* Ignore comments */
+\$comment      { BEGIN( COMMENT );       }
+<COMMENT>\$end { BEGIN( 0 );             }
+<COMMENT>\n    { yylloc.first_line += 1; }
+<COMMENT>.     { yymore();               }
+
+  /* Ignore date */
+\$date         { BEGIN( DATE );    }
+<DATE>\$end    { BEGIN( 0 );             }
+<DATE>\n       { yylloc.first_line += 1; }
+<DATE>.        { yymore();               }
+
+  /* Ignore timescale */
+\$timescale      { BEGIN( TIMESCALE );     }
+<TIMESCALE>\$end { BEGIN( 0 );             }
+<TIMESCALE>\n    { yylloc.first_line += 1; }
+<TIMESCALE>.     { yymore();               }
+
+  /* Ignore version */
+\$version      { BEGIN( VERSION );       }
+<VERSION>\$end { BEGIN( 0 );             }
+<VERSION>\n    { yylloc.first_line += 1; }
+<VERSION>.     { yymore();               }
+
+  /* Indicates end of header section and beginning of simulation section */
+\$enddefinitions { 
+     BEGIN( SIMULATION ); 
+     return( V_enddefinitions );
+ }
+
+  /* VCD Keywords */
+\$[a-zA-Z]*   {
+     if(      strcmp( yytext, "$var"            ) == 0 ) { return( V_var );            }
+     else if( strcmp( yytext, "$end"            ) == 0 ) { return( V_end );            }
+     else if( strcmp( yytext, "$scope"          ) == 0 ) { return( V_scope );          }
+     else if( strcmp( yytext, "$upscope"        ) == 0 ) { return( V_upscope );        }
+     else if( strcmp( yytext, "$dumpall"        ) == 0 ) { return( V_dumpall );        }
+     else if( strcmp( yytext, "$dumpoff"        ) == 0 ) { return( V_dumpoff );        }
+     else if( strcmp( yytext, "$dumpon"         ) == 0 ) { return( V_dumpon );         }
+     else if( strcmp( yytext, "$dumpvars"       ) == 0 ) { return( V_dumpvars );       }
+     else if( strcmp( yytext, "$dumpports"      ) == 0 ) { return( V_dumpports );      }
+     else if( strcmp( yytext, "$dumpportsoff"   ) == 0 ) { return( V_dumpportsoff );   }
+     else if( strcmp( yytext, "$dumpportson"    ) == 0 ) { return( V_dumpportson );    }
+     else if( strcmp( yytext, "$dumpportsall"   ) == 0 ) { return( V_dumpportsall );   }
+     else if( strcmp( yytext, "$vcdclose"       ) == 0 ) { return( V_vcdclose );       }
+     else {
+       yylval.text = strdup( yytext );
+       return( VALUE );
+     }
+ }
+
+  /* Identifiers */
+[a-zA-Z_][a-zA-Z0-9_]* {
+     if(      strcmp( yytext, "event"     ) == 0 ) { return( V_event );     }
+     else if( strcmp( yytext, "parameter" ) == 0 ) { return( V_parameter ); }
+     else if( strcmp( yytext, "integer"   ) == 0 ) { return( V_integer );   }
+     else if( strcmp( yytext, "real"      ) == 0 ) { return( V_real );      }
+     else if( strcmp( yytext, "reg"       ) == 0 ) { return( V_reg );       }
+     else if( strcmp( yytext, "supply0"   ) == 0 ) { return( V_supply0 );   }
+     else if( strcmp( yytext, "supply1"   ) == 0 ) { return( V_supply1 );   }
+     else if( strcmp( yytext, "time"      ) == 0 ) { return( V_time );      }
+     else if( strcmp( yytext, "tri"       ) == 0 ) { return( V_tri );       }
+     else if( strcmp( yytext, "triand"    ) == 0 ) { return( V_triand );    }
+     else if( strcmp( yytext, "trior"     ) == 0 ) { return( V_trior );     }
+     else if( strcmp( yytext, "trireg"    ) == 0 ) { return( V_trireg );    }
+     else if( strcmp( yytext, "tri0"      ) == 0 ) { return( V_tri0 );      }
+     else if( strcmp( yytext, "tri1"      ) == 0 ) { return( V_tri1 );      }
+     else if( strcmp( yytext, "wand"      ) == 0 ) { return( V_wand );      }
+     else if( strcmp( yytext, "wire"      ) == 0 ) { return( V_wire );      }
+     else if( strcmp( yytext, "wor"       ) == 0 ) { return( V_wor );       }
+     else if( strcmp( yytext, "port"      ) == 0 ) { return( V_port );      } 
+     else if( strcmp( yytext, "module"    ) == 0 ) { return( V_module );    }
+     else if( strcmp( yytext, "task"      ) == 0 ) { return( V_task );      }
+     else if( strcmp( yytext, "function"  ) == 0 ) { return( V_function );  }
+     else if( strcmp( yytext, "begin"     ) == 0 ) { return( V_begin );     }
+     else if( strcmp( yytext, "fork"      ) == 0 ) { return( V_fork );      }
+     else {
+       yylval.text = strdup( yytext );
+       return IDENTIFIER;
+     }
+ }
+
+  /* Hierarchical signal identifiers */
+[a-zA-Z_][a-zA-Z0-9$_]*(\.[a-zA-Z_][a-zA-Z0-9$_]*)+ {
+     yylval.text = strdup( yytext );
+     return HIDENTIFIER;
+ }
+  
+  /* Signal names starting with a '\' character */
+\\[^ \t\b\f\r]+  { 
+     yylval.text = strdup( yytext + 1 );
+     return IDENTIFIER; 
+ }
+
+ /* Change value */
+<SIMULATION>[01xXzZ][!-~0-9]+ {
+     vector     vec;
+     nibble     vec_val;
+
+     vector_init( &vec, &vec_val, 1, 0 );
+
+     if( !db_symbol_found( yytext + 1 ) ) { 
+
+       switch( yytext[0] ) {
+         case '0':  vec.value[0] = (vec.value[0] & ~0x3) | 0x0;  break;
+         case '1':  vec.value[0] = (vec.value[0] & ~0x3) | 0x1;  break;
+         case 'x':  vec.value[0] = (vec.value[0] & ~0x3) | 0x2;  break;
+         case 'z':  vec.value[0] = (vec.value[0] & ~0x3) | 0x3;  break;
+         default : 
+           perror( vcdfile );
+           exit( 1 );
+         break;
+       }
+
+       /* Add symbol to timestep table */
+       db_find_set_add_signal( (yytext + 1), &vec );
+       
+       return CHANGE;
+
+     }
+
+ }
+
+<SIMULATION>[bB]?[01xXzZ]+{WSPACE}[!-~0-9]+ {
+     int        bits = strlen( yytext );
+     vector*    vec;
+     int        i;
+     char*      ptr;
+     char*      sym;
+     int        sig_size;
+     int        value_size;
+
+     value_size = 0;
+     ptr        = yytext + 1;
+
+     while( (ptr < (yytext + bits - 1)) && (*ptr != ' ') ) { 
+       ptr++;
+     }
+
+     assert( ptr != (yytext + bits - 1) );
+
+     *ptr = '\0';
+     ptr++;
+
+     if( !db_symbol_found( ptr ) ) {
+
+       /* Working on problem here */
+       if( (sig_size = db_get_signal_size( ptr )) > 0 ) {
+
+         sym = ptr;
+
+         /* Create appropriately sized vector */
+         vec = vector_create( sig_size, 0 );
+
+         ptr = ptr - 2;
+         i   = 0;
+    
+         while( ptr > yytext ) {
+           switch( *ptr ) {
+             case '0':  vec->value[i/4] = (vec->value[i/4] & ~(0x3 << ((i%4)*2))) | (0x0 << ((i%4)*2));  break;
+             case '1':  vec->value[i/4] = (vec->value[i/4] & ~(0x3 << ((i%4)*2))) | (0x1 << ((i%4)*2));  break;
+             case 'x':  vec->value[i/4] = (vec->value[i/4] & ~(0x3 << ((i%4)*2))) | (0x2 << ((i%4)*2));  break;
+             case 'z':  vec->value[i/4] = (vec->value[i/4] & ~(0x3 << ((i%4)*2))) | (0x3 << ((i%4)*2));  break;
+             default :  
+               perror( vcdfile );
+  	       exit( 1 );
+             break;
+	   }	
+           ptr--;
+           i++;
+         }
+
+         ptr++;
+
+         /* 
+	  If the last bit displayed is X or Z and we have not filled in the entire vector, 
+          fill it in with the same value 
+         */
+         if( (*ptr == 'x') || (*ptr == 'z') ) {
+           for( ; i<sig_size; i++ ) {
+             switch( *ptr ) {
+               case 'x':  vec->value[i/4] = (vec->value[i/4] & ~(0x3 << ((i%4)*2))) | (0x2 << ((i%4)*2));  break;
+               case 'z':  vec->value[i/4] = (vec->value[i/4] & ~(0x3 << ((i%4)*2))) | (0x3 << ((i%4)*2));  break;
+               default :
+                 perror( vcdfile );
+                 exit( 1 );
+               break;
+ 	     }
+           }
+         }
+      
+         /* Add symbol to timestep symbol table */
+         db_find_set_add_signal( sym, vec );
+
+         vector_dealloc( vec );
+
+       }
+
+       return CHANGE;
+
+     }
+
+ }
+
+\[[0-9]+\] {
+     char* pos = (char*)malloc_safe( strlen( yytext ) - 1 );
+     int   i;
+     for( i=1; i<(strlen( yytext ) - 1); i++ ) {
+       pos[i-1] = yytext[i];
+     }
+     pos[i-1] = '\0';
+     yylval.sigwidth->width = 1;
+     yylval.sigwidth->lsb   = atol( pos );
+     free_safe( pos );
+     return SIGWIDTH;
+ }
+
+\[[0-9]+:[0-9]+\] {
+     char* pos1 = (char*)malloc_safe( strlen( yytext ) - 3 );
+     char* pos2 = (char*)malloc_safe( strlen( yytext ) - 3 );
+     int   i    = 1;
+     int   j;
+     while( (i < (strlen( yytext ) - 1)) && (i != ':') ) {
+       pos1[i-1] = yytext[i];
+       i++;
+     }
+     if( i == (strlen( yytext ) - 1) ) {
+       perror( vcdfile );
+       exit( 1 );
+     } else {
+       pos1[i-1] = '\0';
+     }	
+     j = i;
+     while( i < (strlen( yytext ) - 1) ) {
+       pos2[i-j] = yytext[i];
+       i++;
+     }
+     pos2[i-j] = '\0';
+     if( atol( pos1 ) >= atol( pos2 ) ) {
+       yylval.sigwidth->width = atol( pos1 ) - atol( pos2 );
+       yylval.sigwidth->lsb   = atol( pos2 );
+     } else {
+       yylval.sigwidth->width = atol( pos2 ) - atol( pos1 );
+       yylval.sigwidth->lsb   = atol( pos1 );
+     }
+     free_safe( pos1 );
+     free_safe( pos2 );
+     return SIGWIDTH;
+ }
+
+  /* Lex out timestamps as these will otherwise be confused with strings. */
+\#[0-9]+  {
+     yylval.number = atol( yytext + 1 );
+     return TIMESTAMP;
+ }
+
+[^ \n\t\b\f\r]*   { 
+     yylval.text = strdup( yytext );
+     return( VALUE );
+ }
+
+%%
+
+void reset_vcd_lexer( char* vcd ) {
+
+  vcdfile = strdup( vcd );
+
+  if( (yyin = fopen( vcdfile, "r" )) == NULL ) {
+    perror( vcdfile );
+    exit( 1 );
+  }
+
+}

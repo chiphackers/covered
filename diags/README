@@ -1,0 +1,29 @@
+What is this directory used for?
+--------------------------------
+
+This directory contains diagnostics for verifying the correctness of the
+Covered utility.  The "c" directory contains a suite of diagnostics that compile
+in portions of the Covered functions for verifying the correctness of individual
+functions.  The "verilog" directory contains a suite of diagnostics that run
+portions of Verilog code to verify that the Covered utility generates the correct
+coverage numbers for the specified design.
+
+
+How do I run a regression?
+--------------------------
+
+To run a full regression for both diagnostic suites, simply type:
+
+    make regress
+
+The regression suite logfile will be called "regress.log" in this directory.
+
+Note:
+
+To run the Verilog testsuite, Icarus Verilog must be installed on your machine.
+To obtain the Icarus Verilog executable, go to:
+
+http://www.icarus.com
+
+
+Written by:  Trevor Williams  (trevorw@charter.net)

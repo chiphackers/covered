@@ -1,0 +1,47 @@
+\section{Lexer\_\-val\_\-types}
+\label{group__lexer__val__types}\index{Lexer_val_types@{Lexer\_\-val\_\-types}}
+\subsection*{Defines}
+\begin{CompactItemize}
+\item 
+\#define {\bf MAX\_\-BIT\_\-WIDTH}\ 1024
+\item 
+\#define {\bf DECIMAL}\ 0
+\item 
+\#define {\bf BINARY}\ 1
+\item 
+\#define {\bf OCTAL}\ 2
+\item 
+\#define {\bf HEXIDECIMAL}\ 3
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+The following defines specify what type of vector value can be extracted from a value string. These defines are used by {\bf vector.c} and the lexer. 
+
+\subsection{Define Documentation}
+\index{Lexer_val_types@{Lexer\_\-val\_\-types}!BINARY@{BINARY}}
+\index{BINARY@{BINARY}!Lexer_val_types@{Lexer\_\-val\_\-types}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define BINARY\ 1}\label{group__lexer__val__types_a2}
+
+
+String in format [b\-B][01x\-Xz\-Z\_\-$\backslash$?]+ \index{Lexer_val_types@{Lexer\_\-val\_\-types}!DECIMAL@{DECIMAL}}
+\index{DECIMAL@{DECIMAL}!Lexer_val_types@{Lexer\_\-val\_\-types}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define DECIMAL\ 0}\label{group__lexer__val__types_a1}
+
+
+String in format [d\-D][0-9]+ \index{Lexer_val_types@{Lexer\_\-val\_\-types}!HEXIDECIMAL@{HEXIDECIMAL}}
+\index{HEXIDECIMAL@{HEXIDECIMAL}!Lexer_val_types@{Lexer\_\-val\_\-types}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define HEXIDECIMAL\ 3}\label{group__lexer__val__types_a4}
+
+
+String in format [h\-H][0-9a-f\-A-Fx\-Xz\-Z\_\-$\backslash$?]+ \index{Lexer_val_types@{Lexer\_\-val\_\-types}!MAX_BIT_WIDTH@{MAX\_\-BIT\_\-WIDTH}}
+\index{MAX_BIT_WIDTH@{MAX\_\-BIT\_\-WIDTH}!Lexer_val_types@{Lexer\_\-val\_\-types}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define MAX\_\-BIT\_\-WIDTH\ 1024}\label{group__lexer__val__types_a0}
+
+
+Maximum number of bits that a vector can hold \index{Lexer_val_types@{Lexer\_\-val\_\-types}!OCTAL@{OCTAL}}
+\index{OCTAL@{OCTAL}!Lexer_val_types@{Lexer\_\-val\_\-types}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define OCTAL\ 2}\label{group__lexer__val__types_a3}
+
+
+String in format [o\-O][0-7x\-Xz\-Z\_\-$\backslash$?]+ 

@@ -1,0 +1,192 @@
+\section{signal.h File Reference}
+\label{signal_8h}\index{signal.h@{signal.h}}
+Contains functions for handling signals. 
+
+
+{\tt \#include $<$stdio.h$>$}\par
+{\tt \#include \char`\"{}defines.h\char`\"{}}\par
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+void {\bf signal\_\-init} ({\bf signal} $\ast$sig, char $\ast$name, {\bf vector} $\ast$value)
+\begin{CompactList}\small\item\em Initializes specified signal with specified values.\item\end{CompactList}\item 
+{\bf signal} $\ast$ {\bf signal\_\-create} (char $\ast$name, int width, int lsb, int is\_\-static)
+\begin{CompactList}\small\item\em Creates a new signal based on the information passed to this function.\item\end{CompactList}\item 
+void {\bf signal\_\-merge} ({\bf signal} $\ast$base, {\bf signal} $\ast$in)
+\begin{CompactList}\small\item\em Merges two signals, placing result into base signal.\item\end{CompactList}\item 
+void {\bf signal\_\-db\_\-write} ({\bf signal} $\ast$sig, FILE $\ast$file, char $\ast$modname)
+\begin{CompactList}\small\item\em Outputs this signal information to specified file.\item\end{CompactList}\item 
+{\bf bool} {\bf signal\_\-db\_\-read} (char $\ast$$\ast$line, {\bf module} $\ast$curr\_\-mod)
+\begin{CompactList}\small\item\em Reads signal information from specified file.\item\end{CompactList}\item 
+{\bf bool} {\bf signal\_\-set\_\-value} ({\bf signal} $\ast$sig, {\bf nibble} $\ast$value, int num\_\-bits, int from\_\-lsb, int to\_\-lsb)
+\begin{CompactList}\small\item\em Sets value of signal to specified value.\item\end{CompactList}\item 
+void {\bf signal\_\-add\_\-expression} ({\bf signal} $\ast$sig, {\bf expression} $\ast$expr)
+\begin{CompactList}\small\item\em Adds an expression to the signal list.\item\end{CompactList}\item 
+void {\bf signal\_\-display} ({\bf signal} $\ast$sig)
+\begin{CompactList}\small\item\em Displays signal contents to standard output.\item\end{CompactList}\item 
+void {\bf signal\_\-dealloc} ({\bf signal} $\ast$sig)
+\begin{CompactList}\small\item\em Deallocates the memory used for this signal.\item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+Contains functions for handling signals.
+
+
+
+\begin{Desc}
+\item[Author: ]\par
+Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\begin{Desc}
+\item[Date: ]\par
+12/1/2001\end{Desc}
+
+
+\subsection{Function Documentation}
+\index{signal.h@{signal.h}!signal_add_expression@{signal\_\-add\_\-expression}}
+\index{signal_add_expression@{signal\_\-add\_\-expression}!signal.h@{signal.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-add\_\-expression ({\bf signal} $\ast$ {\em sig}, {\bf expression} $\ast$ {\em expr})}\label{signal_8h_a6}
+
+
+Adds an expression to the signal list.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+sig}]Pointer to signal to add expression to. \item[{\em 
+expr}]Expression to add to list.\end{description}
+\end{Desc}
+Adds the specified expression to the end of this signal's expression list. \index{signal.h@{signal.h}!signal_create@{signal\_\-create}}
+\index{signal_create@{signal\_\-create}!signal.h@{signal.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf signal}$\ast$ signal\_\-create (char $\ast$ {\em name}, int {\em width}, int {\em lsb}, int {\em is\_\-static})}\label{signal_8h_a1}
+
+
+Creates a new signal based on the information passed to this function.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+name}]Full hierarchical name of this signal. \item[{\em 
+width}]Bit width of this signal. \item[{\em 
+lsb}]Bit position of least significant bit. \item[{\em 
+is\_\-static}]Specifies if this signal is a static value.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Pointer to newly created signal.\end{Desc}
+This function should be called by the Verilog parser or the database reading function. It initializes all of the necessary values for a signal and returns a pointer to this newly created signal. \index{signal.h@{signal.h}!signal_db_read@{signal\_\-db\_\-read}}
+\index{signal_db_read@{signal\_\-db\_\-read}!signal.h@{signal.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} signal\_\-db\_\-read (char $\ast$$\ast$ {\em line}, {\bf module} $\ast$ {\em curr\_\-mod})}\label{signal_8h_a4}
+
+
+Reads signal information from specified file.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+line}]Pointer to current line from database file to parse. \item[{\em 
+curr\_\-mod}]Pointer to current module instantiating this signal.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns TRUE if signal information read successfully; otherwise, returns FALSE.\end{Desc}
+
+
+\begin{Desc}
+\item[{\bf Bug: }]\par
+A signal will only look in the current module for a matching expression. In the case of a hierarchical reference, it is possible that an expression outside the current module is referencing this signal. We need to check for this case (hierarchical expression) and find the expression elsewhere.\end{Desc}
+
+
+Creates a new signal structure, parses current file line for signal information and stores it to the specified signal. If there are any problems in reading in the current line, returns FALSE; otherwise, returns TRUE. \index{signal.h@{signal.h}!signal_db_write@{signal\_\-db\_\-write}}
+\index{signal_db_write@{signal\_\-db\_\-write}!signal.h@{signal.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-db\_\-write ({\bf signal} $\ast$ {\em sig}, FILE $\ast$ {\em file}, char $\ast$ {\em modname})}\label{signal_8h_a3}
+
+
+Outputs this signal information to specified file.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+sig}]Signal to write to file. \item[{\em 
+file}]Name of file to display signal contents to. \item[{\em 
+modname}]Name of module that this signal belongs to.\end{description}
+\end{Desc}
+Prints the signal information for the specified signal to the specified file. This file will be the database coverage file for this design. \index{signal.h@{signal.h}!signal_dealloc@{signal\_\-dealloc}}
+\index{signal_dealloc@{signal\_\-dealloc}!signal.h@{signal.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-dealloc ({\bf signal} $\ast$ {\em sig})}\label{signal_8h_a8}
+
+
+Deallocates the memory used for this signal.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+sig}]Pointer to signal to deallocate.\end{description}
+\end{Desc}
+Deallocates all malloc'ed memory back to the heap for the specified signal. \index{signal.h@{signal.h}!signal_display@{signal\_\-display}}
+\index{signal_display@{signal\_\-display}!signal.h@{signal.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-display ({\bf signal} $\ast$ {\em sig})}\label{signal_8h_a7}
+
+
+Displays signal contents to standard output.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+sig}]Pointer to signal to display to standard output.\end{description}
+\end{Desc}
+Displays signal's name, width, lsb and value vector to the standard output. \index{signal.h@{signal.h}!signal_init@{signal\_\-init}}
+\index{signal_init@{signal\_\-init}!signal.h@{signal.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-init ({\bf signal} $\ast$ {\em sig}, char $\ast$ {\em name}, {\bf vector} $\ast$ {\em value})}\label{signal_8h_a0}
+
+
+Initializes specified signal with specified values.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+sig}]Pointer to signal to initialize. \item[{\em 
+name}]Pointer to signal name string. \item[{\em 
+value}]Pointer to signal value.\end{description}
+\end{Desc}
+Initializes the specified signal with the values of name and value. This function is called by the signal\_\-create routine and is also useful for creating temporary signals (reduces the need for dynamic memory allocation). for performance enhancing purposes. \index{signal.h@{signal.h}!signal_merge@{signal\_\-merge}}
+\index{signal_merge@{signal\_\-merge}!signal.h@{signal.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-merge ({\bf signal} $\ast$ {\em base}, {\bf signal} $\ast$ {\em in})}\label{signal_8h_a2}
+
+
+Merges two signals, placing result into base signal.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+base}]Signal to store result of merge into. \item[{\em 
+in}]Signal to be merged into base signal.\end{description}
+\end{Desc}
+Performs merge of the base and in signals, placing the resulting merged signal into the base signal. If the signals are found to be unalike (names are different), an error message is displayed to the user. If both signals are the same, perform the merge on the signal's vectors. \index{signal.h@{signal.h}!signal_set_value@{signal\_\-set\_\-value}}
+\index{signal_set_value@{signal\_\-set\_\-value}!signal.h@{signal.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} signal\_\-set\_\-value ({\bf signal} $\ast$ {\em sig}, {\bf nibble} $\ast$ {\em value}, int {\em num\_\-bits}, int {\em from\_\-lsb}, int {\em to\_\-lsb})}\label{signal_8h_a5}
+
+
+Sets value of signal to specified value.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+sig}]Pointer to signal to set value to. \item[{\em 
+value}]Value to set signal value to. \item[{\em 
+num\_\-bits}]Number of bits wide that value is. \item[{\em 
+from\_\-lsb}]Least significant bit of assign value. \item[{\em 
+to\_\-lsb}]Least significant bit of signal being assigned. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns TRUE if value assignment is successful; otherwise, returns FALSE.\end{Desc}
+This function is called by the VCD reading function when the matching signal is found. If the signal has never been set to a value before (value is NULL), copy the contents of the value verbatim. If the signal value has been set previously, compare the old value to the new value bit for bit, setting the toggle bits accordingly. After this is achieved, copy the new value to the signal value. If the specified value width, does not match this signal's width, we have an internal error (VCD file does not match the design read in), so we return FALSE. Otherwise, return with a value of TRUE. 

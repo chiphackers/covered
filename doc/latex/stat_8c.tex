@@ -1,0 +1,66 @@
+\section{stat.c File Reference}
+\label{stat_8c}\index{stat.c@{stat.c}}
+{\tt \#include \char`\"{}stat.h\char`\"{}}\par
+{\tt \#include \char`\"{}defines.h\char`\"{}}\par
+{\tt \#include \char`\"{}util.h\char`\"{}}\par
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+{\bf statistic} $\ast$ {\bf statistic\_\-create} ()
+\begin{CompactList}\small\item\em Creates and initializes a new statistic structure.\item\end{CompactList}\item 
+void {\bf statistic\_\-merge} ({\bf statistic} $\ast$stat\_\-to, {\bf statistic} $\ast$stat\_\-from)
+\begin{CompactList}\small\item\em Merges the results of the stat\_\-from to the stat\_\-to.\item\end{CompactList}\item 
+void {\bf statistic\_\-dealloc} ({\bf statistic} $\ast$stat)
+\begin{CompactList}\small\item\em Deallocates memory for a statistic structure.\item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+\begin{Desc}
+\item[Author: ]\par
+Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\begin{Desc}
+\item[Date: ]\par
+4/4/2002\end{Desc}
+
+
+\subsection{Function Documentation}
+\index{stat.c@{stat.c}!statistic_create@{statistic\_\-create}}
+\index{statistic_create@{statistic\_\-create}!stat.c@{stat.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf statistic}$\ast$ statistic\_\-create ()}\label{stat_8c_a0}
+
+
+Creates and initializes a new statistic structure.
+
+\begin{Desc}
+\item[Returns: ]\par
+Pointer to newly created/initialized statistic structure.\end{Desc}
+Allocates new memory for a coverage statistic structure and initializes its values. \index{stat.c@{stat.c}!statistic_dealloc@{statistic\_\-dealloc}}
+\index{statistic_dealloc@{statistic\_\-dealloc}!stat.c@{stat.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void statistic\_\-dealloc ({\bf statistic} $\ast$ {\em stat})}\label{stat_8c_a2}
+
+
+Deallocates memory for a statistic structure.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+stat}]Pointer to statistic structure to deallocate from heap.\end{description}
+\end{Desc}
+Destroys the specified statistic structure from heap memory. \index{stat.c@{stat.c}!statistic_merge@{statistic\_\-merge}}
+\index{statistic_merge@{statistic\_\-merge}!stat.c@{stat.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void statistic\_\-merge ({\bf statistic} $\ast$ {\em stat\_\-to}, {\bf statistic} $\ast$ {\em stat\_\-from})}\label{stat_8c_a1}
+
+
+Merges the results of the stat\_\-from to the stat\_\-to.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+stat\_\-to}]Statistic structure to merge information into. \item[{\em 
+stat\_\-from}]Statistic structure to be merged.\end{description}
+\end{Desc}
+Adds the values of the stat\_\-to structure to the contents of the stat\_\-from structure. The stat\_\-from structure will then contain accumulated results. 
