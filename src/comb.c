@@ -139,16 +139,20 @@ bool combination_multi_expr_calc( expression* exp, int* ulid, bool ul, int* hit,
       ul = combination_multi_expr_calc( exp->left, ulid, ul, hit, total );
     }
 
-    if( and_op ) {
-      *hit += SUPPL_WAS_FALSE( exp->right->suppl );
+    if( (exp->right != NULL) && (SUPPL_OP( exp->suppl ) != SUPPL_OP( exp->right->suppl )) ) {
+      if( and_op ) {
+        *hit += SUPPL_WAS_FALSE( exp->right->suppl );
+      } else {
+        *hit += SUPPL_WAS_TRUE( exp->right->suppl );
+      }
+      if( (exp->right->ulid == -1) && ul ) {
+        exp->right->ulid = *ulid;
+        (*ulid)++;
+      }
+      (*total)++;
     } else {
-      *hit += SUPPL_WAS_TRUE( exp->right->suppl );
+      ul = combination_multi_expr_calc( exp->right, ulid, ul, hit, total );
     }
-    if( (exp->right->ulid == -1) && ul ) {
-      exp->right->ulid = *ulid;
-      (*ulid)++;
-    }
-    (*total)++;
 
     if( (SUPPL_IS_ROOT( exp->suppl ) == 1) || (SUPPL_OP( exp->suppl ) != SUPPL_OP( exp->parent->expr->suppl )) ) {
       if( and_op ) {
@@ -189,8 +193,9 @@ bool combination_is_expr_multi_node( expression* exp ) {
           (SUPPL_IS_ROOT( exp->suppl ) == 0) && 
           (exp->parent->expr->left  != NULL) &&
           (exp->parent->expr->right != NULL) &&
-          (exp->parent->expr->right->id == exp->id) &&
-          (exp->parent->expr->left->ulid == -1) &&
+          ( ( (exp->parent->expr->right->id == exp->id) &&
+              (exp->parent->expr->left->ulid == -1) ) ||
+            (exp->parent->expr->left->id == exp->id) ) &&
           ( (SUPPL_OP( exp->parent->expr->suppl ) == EXP_OP_AND)  ||
             (SUPPL_OP( exp->parent->expr->suppl ) == EXP_OP_LAND) ||
             (SUPPL_OP( exp->parent->expr->suppl ) == EXP_OP_OR)   ||
@@ -236,7 +241,10 @@ void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_d
              (SUPPL_OP( exp->suppl ) != EXP_OP_LOR)) ) {
 
           /* Calculate current expression combination coverage */
-          if( (exp->left != NULL) && (SUPPL_OP( exp->suppl ) == SUPPL_OP( exp->left->suppl )) &&
+          if( (((exp->left != NULL) &&
+                (SUPPL_OP( exp->suppl ) == SUPPL_OP( exp->left->suppl ))) ||
+               ((exp->right != NULL) &&
+                (SUPPL_OP( exp->suppl ) == SUPPL_OP( exp->right->suppl )))) &&
               ((SUPPL_OP( exp->suppl ) == EXP_OP_AND)  ||
                (SUPPL_OP( exp->suppl ) == EXP_OP_OR)   ||
                (SUPPL_OP( exp->suppl ) == EXP_OP_LAND) ||
@@ -1572,6 +1580,9 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.97  2004/03/19 22:34:23  phase1geo
+ Removing assertion error from DELAY expression underline output.
+
  Revision 1.96  2004/03/18 23:01:45  phase1geo
  Fixing combination_output_expr function to correctly determine when an
  expression should be output to the report.  Full regression now passes.
