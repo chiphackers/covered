@@ -1594,6 +1594,7 @@ typedef struct stmt_sig_s stmt_sig;
 struct stmt_sig_s {
   vsignal*   sig;   /*!< Pointer to signal which this structure represents                                   */
   statement* stmt;  /*!< Pointer to top-level statement in statement tree that this signal is first found in */
+  bool       blocking;  /*!< Specifies if the signal was assigned as blocking (TRUE) or non-blocking (FALSE) */
   stmt_sig*  next;  /*!< Pointer to next statement signal structure in the linked list                       */
 };
 
@@ -1607,6 +1608,9 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.109  2004/12/16 13:52:58  phase1geo
+ Starting to add support for race-condition detection and handling.
+
  Revision 1.108  2004/11/06 13:22:48  phase1geo
  Updating CDD files for change where EVAL_T and EVAL_F bits are now being masked out
  of the CDD files.
