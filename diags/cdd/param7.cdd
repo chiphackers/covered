@@ -1,0 +1,20 @@
+3 main main param7.v
+1 #a main 32 0 1,0,0,0,0,0,0,0
+3 foo main.a param7.v
+1 #temp main.a 32 0 1,0,0,0,0,0,0,0
+1 #c main.a 32 0 20004,0,0,0,0,0,0,0
+3 bar main.a.c param7.v
+2 8 main.a.c 35 201f80 0 0 32 0 0,0,0,0,0,0,0,0
+1 #temp main.a.c 32 0 20004,0,0,0,0,0,0,0
+1 a main.a.c 2 0 300aa
+4 8 main.a.c 8 8
+3 goo main.b param7.v
+1 #d main.b 32 0 4,0,0,0,0,0,0,0
+3 foo main.b.d param7.v
+1 #temp main.b.d 32 0 4,0,0,0,0,0,0,0
+1 #c main.b.d 32 0 30205,0,0,0,0,0,0,0
+3 bar main.b.d.c param7.v
+2 8 main.b.d.c 35 201f80 0 0 32 0 0,0,0,0,0,0,0,0
+1 #temp main.b.d.c 32 0 30205,0,0,0,0,0,0,0
+1 a main.b.d.c 3 0 aa
+4 8 main.b.d.c 8 8

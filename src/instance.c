@@ -227,7 +227,6 @@ void instance_resolve_params( mod_parm* mparm, mod_inst* inst ) {
     if( PARAM_TYPE( mparm ) == PARAM_TYPE_DECLARED ) {
       param_resolve_declared( scope, mparm, inst->parent->param_head, &(inst->param_head), &(inst->param_tail) );
     } else {
-      printf( "  Calling override for type: %d\n", PARAM_TYPE( mparm ) );
       param_resolve_override( mparm, &(inst->param_head), &(inst->param_tail) );
     }
 
@@ -267,7 +266,6 @@ mod_inst* instance_add_child( mod_inst* inst, module* child, char* name ) {
   new_inst->parent = inst;
 
   /* Resolve all parameters for new instance */
-  printf( "Going to instance_resolve_params for module: %s\n", child->name );
   instance_resolve_params( child->param_head, new_inst );
 
   return( new_inst );
@@ -291,15 +289,13 @@ void instance_copy( mod_inst* from_inst, mod_inst* to_inst, char* name ) {
   assert( to_inst   != NULL );
   assert( name      != NULL );
 
-  printf( "In instance_copy\n" );
-
   /* Add new child instance */
   new_inst = instance_add_child( to_inst, from_inst->mod, name );
 
   /* Iterate through rest of current child's list of children */
   curr = from_inst->child_head;
   while( curr != NULL ) {
-    instance_copy( curr, new_inst, from_inst->name );
+    instance_copy( curr, new_inst, curr->name );
     curr = curr->next;
   }
 
@@ -557,6 +553,11 @@ void instance_dealloc( mod_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.27  2003/01/13 14:30:05  phase1geo
+ Initial code to fix problem with missing instances in CDD files.  Instance
+ now shows up but parameters not calculated correctly.  Another checkin to
+ follow will contain full fix.
+
  Revision 1.26  2003/01/04 03:56:27  phase1geo
  Fixing bug with parameterized modules.  Updated regression suite for changes.
 

@@ -464,14 +464,11 @@ inst_parm* param_has_override( char* mname, mod_parm* mparm, inst_parm* ip_head,
   /* If an override has been found, use this value instead of the mparm expression value */
   if( icurr != NULL ) {
 
-    /* Substitute value of parameter override value in mparm expression */
-    //expression_
-
     /* Add new instance parameter to current instance */
     parm = inst_parm_add( mparm->name, icurr->value, mparm, ihead, itail );
 
   }
-   
+
   return( parm );
 
 }
@@ -569,7 +566,7 @@ void param_resolve_declared( char* mscope, mod_parm* mparm, inst_parm* ip_head,
   /* Deallocate temporary string values */
   free_safe( mname );
   free_safe( rest  );
-    
+
 }
 
 /************************************************************************************/
@@ -697,6 +694,9 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.25  2003/01/04 03:56:28  phase1geo
+ Fixing bug with parameterized modules.  Updated regression suite for changes.
+
  Revision 1.24  2002/12/13 16:49:48  phase1geo
  Fixing infinite loop bug with statement set_stop function.  Removing
  hierarchical references from scoring (same problem as defparam statement).
