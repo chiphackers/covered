@@ -227,11 +227,80 @@ void instance_resolve_params( mod_parm* mparm, mod_inst* inst ) {
     if( PARAM_TYPE( mparm ) == PARAM_TYPE_DECLARED ) {
       param_resolve_declared( scope, mparm, inst->parent->param_head, &(inst->param_head), &(inst->param_tail) );
     } else {
+      printf( "  Calling override for type: %d\n", PARAM_TYPE( mparm ) );
       param_resolve_override( mparm, &(inst->param_head), &(inst->param_tail) );
     }
 
     mparm = mparm->next;
 
+  }
+
+}
+
+/*!
+ \param inst   Pointer to instance to add child instance to.
+ \param child  Pointer to child module to create instance for.
+ \param name   Name of instance to add.
+ 
+ \return Returns pointer to newly created module instance.
+ 
+ Generates new instance, adds it to the child list of the inst module
+ instance, and resolves any parameters.
+*/
+mod_inst* instance_add_child( mod_inst* inst, module* child, char* name ) {
+
+  mod_inst* new_inst;  /* Pointer to newly created instance to add */
+
+  /* Generate new instance */
+  new_inst = instance_create( child, name );
+
+  /* Add new instance to inst child instance list */
+  if( inst->child_head == NULL ) {
+    inst->child_head       = new_inst;
+    inst->child_tail       = new_inst;
+  } else {
+    inst->child_tail->next = new_inst;
+    inst->child_tail       = new_inst;
+  }
+
+  /* Point this instance's parent pointer to its parent */
+  new_inst->parent = inst;
+
+  /* Resolve all parameters for new instance */
+  printf( "Going to instance_resolve_params for module: %s\n", child->name );
+  instance_resolve_params( child->param_head, new_inst );
+
+  return( new_inst );
+
+}
+
+/*!
+ \param from_inst  Pointer to instance tree to copy.
+ \param to_inst    Pointer to instance to copy tree to.
+ \param name       Instance name of current instance being copied.
+ 
+ Recursively copies the instance tree of from_inst to the instance 
+ to_inst, allocating memory for the new instances and resolving parameters.
+*/
+void instance_copy( mod_inst* from_inst, mod_inst* to_inst, char* name ) {
+
+  mod_inst* curr;      /* Pointer to current module instance to copy */
+  mod_inst* new_inst;  /* Pointer to newly created module instance   */
+
+  assert( from_inst != NULL );
+  assert( to_inst   != NULL );
+  assert( name      != NULL );
+
+  printf( "In instance_copy\n" );
+
+  /* Add new child instance */
+  new_inst = instance_add_child( to_inst, from_inst->mod, name );
+
+  /* Iterate through rest of current child's list of children */
+  curr = from_inst->child_head;
+  while( curr != NULL ) {
+    instance_copy( curr, new_inst, from_inst->name );
+    curr = curr->next;
   }
 
 }
@@ -251,6 +320,7 @@ void instance_parse_add( mod_inst** root, module* parent, module* child, char* i
   
   mod_inst* inst;      /* Temporary pointer to module instance to add to */
   mod_inst* new_inst;  /* Pointer to new module instance to add          */
+  mod_inst* cinst;     /* Pointer to instance of child module            */
   int       i;         /* Loop iterator                                  */
   int       ignore;    /* Number of matched instances to ignore          */
 
@@ -264,38 +334,42 @@ void instance_parse_add( mod_inst** root, module* parent, module* child, char* i
   } else {
 
     assert( parent != NULL );
-  
+
     i      = 0;
     ignore = 0;
 
-    while( (inst = instance_find_by_module( *root, parent, &ignore )) != NULL ) {
+    /*
+     Check to see if the child module has already been parsed and, if so, find
+     one of its instances for copying the instance tree below it.
+    */
+    cinst = instance_find_by_module( *root, child, &ignore);
+    
+    /* Filename will be set to a value if the module has been parsed */
+    if( (cinst != NULL) && (cinst->mod->filename != NULL) ) { 
 
-      new_inst = instance_create( child, inst_name );
-
-      if( inst->child_head == NULL ) {
-        inst->child_head = new_inst;
-        inst->child_tail = new_inst;
-      } else {
-        inst->child_tail->next = new_inst;
-        inst->child_tail       = new_inst;
+      ignore = 0;
+      while( (inst = instance_find_by_module( *root, parent, &ignore )) != NULL ) {
+        instance_copy( cinst, inst, inst_name );
+        i++;
+        ignore = i;
       }
 
-      /* Point this instance's parent pointer to its parent */
-      new_inst->parent = inst;
+    } else {
 
-      /* Resolve all parameters for new instance */
-      instance_resolve_params( child->param_head, new_inst );
-
-      i++;
-      ignore = i;
+      ignore = 0;
+      while( (inst = instance_find_by_module( *root, parent, &ignore )) != NULL ) {
+        instance_add_child( inst, child, inst_name );
+        i++;
+        ignore = i;
+      }
 
     }
 
     /* We should have found at least one parent instance */
     assert( i > 0 );
- 
+
   }
-  
+
 }
 
 /*!
@@ -483,6 +557,9 @@ void instance_dealloc( mod_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.26  2003/01/04 03:56:27  phase1geo
+ Fixing bug with parameterized modules.  Updated regression suite for changes.
+
  Revision 1.25  2003/01/03 05:53:19  phase1geo
  Removing unnecessary spaces.
 
