@@ -329,11 +329,6 @@ int command_score( int argc, int last_arg, char** argv ) {
     if( output_db == NULL ) {
       output_db = strdup( DFLT_OUTPUT_DB );
     }
-    
-    if( delay_expr_type == DELAY_EXPR_DEFAULT ) {
-      print_output( "Delay expression type for min:typ:max not specified, using default of 'typ'", WARNING );
-      delay_expr_type = DELAY_EXPR_TYP;
-    }
 
     /* Parse design */
     if( use_files_head != NULL ) {
@@ -372,6 +367,10 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.30  2002/11/05 00:20:08  phase1geo
+ Adding development documentation.  Fixing problem with combinational logic
+ output in report command and updating full regression.
+
  Revision 1.29  2002/11/02 16:16:20  phase1geo
  Cleaned up all compiler warnings in source and header files.
 

@@ -27,7 +27,6 @@ CDD_DIR       = ../cdd
 LOGFILE = regress.log
 
 regress:	$(COVERED) clean $(DIAGLIST)
-	@echo REGRESSION PASSED!
 
 $(DIAGLIST):
 	@echo Running $@

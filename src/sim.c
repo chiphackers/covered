@@ -41,7 +41,7 @@
  its root expression and is removed from the statement simulation engine.  The next statement 
  at the head of the pre-simulation statement queue is then loaded into the statement 
  simulation engine.  If next_false statement is not NULL, it is loaded into the statement 
- simulation  engine and work is done on that statement.
+ simulation engine and work is done on that statement.
 
  \par
  When a root expression is placed into the expression simulation engine, the tree is
@@ -317,6 +317,12 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.27  2002/11/27 03:49:20  phase1geo
+ Fixing bugs in score and report commands for regression.  Finally fixed
+ static expression calculation to yield proper coverage results for constant
+ expressions.  Updated regression suite and development documentation for
+ changes.
+
  Revision 1.26  2002/11/02 16:16:20  phase1geo
  Cleaned up all compiler warnings in source and header files.
 

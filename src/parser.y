@@ -2289,13 +2289,22 @@ delay_value
       expression*  tmp;
       static_expr* se = NULL;
       if( ignore_mode == 0 ) {
+        if( delay_expr_type == DELAY_EXPR_DEFAULT ) {
+          snprintf( user_msg,
+                    USER_MSG_LENGTH,
+                    "Delay expression type for min:typ:max not specified, using default of 'typ', file %s, line %d",
+                    @1.text,
+                    @1.first_line );
+          print_output( user_msg, WARNING );
+        }
         switch( delay_expr_type ) {
           case DELAY_EXPR_MIN :
             se = $1;
             static_expr_dealloc( $3, TRUE );
             static_expr_dealloc( $5, TRUE );
             break;
-          case DELAY_EXPR_TYP :
+          case DELAY_EXPR_DEFAULT :
+          case DELAY_EXPR_TYP     :
             se = $3;
             static_expr_dealloc( $1, TRUE );
             static_expr_dealloc( $5, TRUE );
