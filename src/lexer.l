@@ -476,6 +476,7 @@ static int yywrap() {
       fprintf( stderr, "      %s\n", curr->str );
       curr = curr->next;
     }
+    assert( unlink( ppfilename ) == 0 );
     exit( 1 );
   }
   
