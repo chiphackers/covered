@@ -10,7 +10,7 @@ Contains functions for parsing Verilog modules.
 \item 
 {\bf bool} {\bf parse\_\-design} (char $\ast$top, char $\ast${\bf output\_\-db})
 \begin{CompactList}\small\item\em Parses the specified design and generates scoring modules.\item\end{CompactList}\item 
-{\bf bool} {\bf parse\_\-and\_\-score\_\-dumpfile} (char $\ast$top, char $\ast$db, char $\ast$vcd)
+{\bf bool} {\bf parse\_\-and\_\-score\_\-dumpfile} (char $\ast$db, char $\ast$vcd)
 \begin{CompactList}\small\item\em Parses VCD dumpfile and scores design.\item\end{CompactList}\end{CompactItemize}
 
 
@@ -30,7 +30,7 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsection{Function Documentation}
 \index{parse.h@{parse.h}!parse_and_score_dumpfile@{parse\_\-and\_\-score\_\-dumpfile}}
 \index{parse_and_score_dumpfile@{parse\_\-and\_\-score\_\-dumpfile}!parse.h@{parse.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} parse\_\-and\_\-score\_\-dumpfile (char $\ast$ {\em top}, char $\ast$ {\em db}, char $\ast$ {\em vcd})}\label{parse_8h_a1}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} parse\_\-and\_\-score\_\-dumpfile (char $\ast$ {\em db}, char $\ast$ {\em vcd})}\label{parse_8h_a1}
 
 
 Parses VCD dumpfile and scores design.
@@ -39,7 +39,6 @@ Parses VCD dumpfile and scores design.
 \item[Parameters: ]\par
 \begin{description}
 \item[{\em 
-top}]Name of top-level Verilog module to score \item[{\em 
 db}]Name of output database file to generate. \item[{\em 
 vcd}]Name of VCD file to parse for scoring. \end{description}
 \end{Desc}

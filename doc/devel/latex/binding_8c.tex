@@ -20,7 +20,9 @@ void {\bf bind\_\-remove} (int id)
 \begin{CompactList}\small\item\em Removes the expression with ID of id from binding list.\item\end{CompactList}\item 
 void {\bf bind\_\-set\_\-tree} ({\bf expression} $\ast$expr)
 \item 
-void {\bf bind} (int mode)
+void {\bf bind\_\-perform} (char $\ast$sig\_\-name, {\bf expression} $\ast$exp, {\bf module} $\ast$mod, {\bf bool} implicit\_\-allowed)
+\begin{CompactList}\small\item\em Finds signal in module and bind the expression to this signal.\item\end{CompactList}\item 
+void {\bf bind} ()
 \begin{CompactList}\small\item\em Performs signal/expression bind (performed after parse completed).\item\end{CompactList}\end{CompactItemize}
 \subsection*{Variables}
 \begin{CompactItemize}
@@ -49,17 +51,11 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsection{Function Documentation}
 \index{binding.c@{binding.c}!bind@{bind}}
 \index{bind@{bind}!binding.c@{binding.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void bind (int {\em mode})}\label{binding_8c_a7}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void bind ()}\label{binding_8c_a8}
 
 
 Performs signal/expression bind (performed after parse completed).
 
-\begin{Desc}
-\item[Parameters: ]\par
-\begin{description}
-\item[{\em 
-mode}]If set to 0, searches instance tree; otherwise, searches tree.\end{description}
-\end{Desc}
 Binding is the process of setting pointers in signals and expressions to point to each other. These pointers are required for scoring purposes. Binding is required for two purposes: 1. The signal that is being bound may not have been parsed (hierarchical referencing allows for this). 2. An expression does not have a pointer to a signal but rather its vector. In the process of binding, we go through each element of the binding list, finding the signal to be bound in the specified tree, adding the expression to the signal's expression pointer list, and setting the expression vector pointer to point to the signal vector. \index{binding.c@{binding.c}!bind_add@{bind\_\-add}}
 \index{bind_add@{bind\_\-add}!binding.c@{binding.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void bind\_\-add (char $\ast$ {\em sig\_\-name}, {\bf expression} $\ast$ {\em exp}, char $\ast$ {\em mod\_\-name})}\label{binding_8c_a4}
@@ -75,7 +71,23 @@ sig\_\-name}]Signal scope to bind. \item[{\em
 exp}]Expression ID to bind. \item[{\em 
 mod\_\-name}]Name of module containing specified expression.\end{description}
 \end{Desc}
-Adds the specified signal and expression to the bindings linked list. This bindings list will be handled after all input Verilog has been parsed. \index{binding.c@{binding.c}!bind_remove@{bind\_\-remove}}
+Adds the specified signal and expression to the bindings linked list. This bindings list will be handled after all input Verilog has been parsed. \index{binding.c@{binding.c}!bind_perform@{bind\_\-perform}}
+\index{bind_perform@{bind\_\-perform}!binding.c@{binding.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void bind\_\-perform (char $\ast$ {\em sig\_\-name}, {\bf expression} $\ast$ {\em exp}, {\bf module} $\ast$ {\em mod}, {\bf bool} {\em implicit\_\-allowed})}\label{binding_8c_a7}
+
+
+Finds signal in module and bind the expression to this signal.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+sig\_\-name}]String name of signal to bind to specified expression. \item[{\em 
+exp}]Pointer to expression to bind. \item[{\em 
+mod}]Pointer to module containing signal. \item[{\em 
+implicit\_\-allowed}]If set to TRUE, creates any signals that are implicitly defined.\end{description}
+\end{Desc}
+Performs a binding of an expression and signal based on the name of the signal. Looks up signal name in the specified module and sets the expression and signal to point to each other. \index{binding.c@{binding.c}!bind_remove@{bind\_\-remove}}
 \index{bind_remove@{bind\_\-remove}!binding.c@{binding.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void bind\_\-remove (int {\em id})}\label{binding_8c_a5}
 

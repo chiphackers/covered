@@ -28,6 +28,8 @@ void {\bf scope\_\-extract\_\-front} (char $\ast$scope, char $\ast$front, char $
 \begin{CompactList}\small\item\em Extracts highest level of hierarchy from specified scope.\item\end{CompactList}\item 
 void {\bf scope\_\-extract\_\-back} (char $\ast$scope, char $\ast$back, char $\ast$rest)
 \begin{CompactList}\small\item\em Extracts lowest level of hierarchy from specified scope.\item\end{CompactList}\item 
+{\bf bool} {\bf scope\_\-local} (char $\ast$scope)
+\begin{CompactList}\small\item\em Returns TRUE if specified scope is local (contains no periods).\item\end{CompactList}\item 
 void $\ast$ {\bf malloc\_\-safe} (int {\bf size})
 \begin{CompactList}\small\item\em Performs safe malloc call.\item\end{CompactList}\item 
 void {\bf free\_\-safe} (void $\ast$ptr)
@@ -107,7 +109,7 @@ file}]Name of file to check for existence. \end{description}
 Returns TRUE if the specified file exists; otherwise, returns FALSE.\end{Desc}
 Checks to see if the specified file actually exists in the file structure. If the file is found to exist, returns TRUE; otherwise, returns FALSE. \index{util.h@{util.h}!free_safe@{free\_\-safe}}
 \index{free_safe@{free\_\-safe}!util.h@{util.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void free\_\-safe (void $\ast$ {\em ptr})}\label{util_8h_a11}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void free\_\-safe (void $\ast$ {\em ptr})}\label{util_8h_a12}
 
 
 Performs safe deallocation of heap memory.
@@ -120,7 +122,7 @@ ptr}]Pointer to object to deallocate.\end{description}
 \end{Desc}
 Safely performs a free function of heap memory. Also keeps track of current memory usage for output information at end of program life. \index{util.h@{util.h}!gen_space@{gen\_\-space}}
 \index{gen_space@{gen\_\-space}!util.h@{util.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void gen\_\-space (char $\ast$ {\em spaces}, int {\em num\_\-spaces})}\label{util_8h_a12}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void gen\_\-space (char $\ast$ {\em spaces}, int {\em num\_\-spaces})}\label{util_8h_a13}
 
 
 Creates a string containing space characters.
@@ -166,7 +168,7 @@ token}]String to check for valid variable name. \end{description}
 Returns TRUE if the specified string is a legal variable name; otherwise, returns FALSE.\end{Desc}
 If the specified string follows all of the rules for a legal program variable (doesn't start with a number, contains only a-z\-A-Z0-9\_\- characters), returns a value of TRUE; otherwise, returns a value of FALSE. \index{util.h@{util.h}!malloc_safe@{malloc\_\-safe}}
 \index{malloc_safe@{malloc\_\-safe}!util.h@{util.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ malloc\_\-safe (int {\em size})}\label{util_8h_a10}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ malloc\_\-safe (int {\em size})}\label{util_8h_a11}
 
 
 Performs safe malloc call.
@@ -241,7 +243,14 @@ scope}]Full scope to extract from. \item[{\em
 front}]Highest level of hierarchy extracted. \item[{\em 
 rest}]Hierarchy left after extraction.\end{description}
 \end{Desc}
-Extracts the highest level of hierarchy from the specified scope, returning that instance name to the value of front and the the rest of the hierarchy in the value of rest. \index{util.h@{util.h}!set_output_suppression@{set\_\-output\_\-suppression}}
+Extracts the highest level of hierarchy from the specified scope, returning that instance name to the value of front and the the rest of the hierarchy in the value of rest. \index{util.h@{util.h}!scope_local@{scope\_\-local}}
+\index{scope_local@{scope\_\-local}!util.h@{util.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} scope\_\-local (char $\ast$ {\em scope})}\label{util_8h_a10}
+
+
+Returns TRUE if specified scope is local (contains no periods).
+
+\index{util.h@{util.h}!set_output_suppression@{set\_\-output\_\-suppression}}
 \index{set_output_suppression@{set\_\-output\_\-suppression}!util.h@{util.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void set\_\-output\_\-suppression ({\bf bool} {\em value})}\label{util_8h_a0}
 

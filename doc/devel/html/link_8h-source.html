@@ -45,32 +45,39 @@
 00062 <a class="code" href="structmod__link__s.html">mod_link</a>* <a class="code" href="link_8c.html#a15">mod_link_find</a>( <a class="code" href="structmodule__s.html">module</a>* mod, <a class="code" href="structmod__link__s.html">mod_link</a>* head );
 00063 
 00064 
-00066 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a16">str_link_delete_list</a>( <a class="code" href="structstr__link__s.html">str_link</a>* head );
+00066 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a16">exp_link_remove</a>( <a class="code" href="structexpression__s.html">expression</a>* exp, <a class="code" href="structexp__link__s.html">exp_link</a>** head, <a class="code" href="structexp__link__s.html">exp_link</a>** tail );
 00067 
-00069 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a17">stmt_link_delete_list</a>( <a class="code" href="structstmt__link__s.html">stmt_link</a>* head );
-00070 
-00072 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a18">exp_link_delete_list</a>( <a class="code" href="structexp__link__s.html">exp_link</a>* head, <font class="keywordtype">bool</font> del_exp );
-00073 
-00075 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a19">sig_link_delete_list</a>( <a class="code" href="structsig__link__s.html">sig_link</a>* head );
-00076 
-00078 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a20">mod_link_delete_list</a>( <a class="code" href="structmod__link__s.html">mod_link</a>* head );
-00079 
+00068 
+00070 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a17">str_link_delete_list</a>( <a class="code" href="structstr__link__s.html">str_link</a>* head );
+00071 
+00073 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a18">stmt_link_delete_list</a>( <a class="code" href="structstmt__link__s.html">stmt_link</a>* head );
+00074 
+00076 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a19">exp_link_delete_list</a>( <a class="code" href="structexp__link__s.html">exp_link</a>* head, <font class="keywordtype">bool</font> del_exp );
+00077 
+00079 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a20">sig_link_delete_list</a>( <a class="code" href="structsig__link__s.html">sig_link</a>* head );
 00080 
-00081 <font class="comment">/* $Log$</font>
-00082 <font class="comment">/* Revision 1.3  2002/06/25 03:39:03  phase1geo</font>
-00083 <font class="comment">/* Fixed initial scoring bugs.  We now generate a legal CDD file for reporting.</font>
-00084 <font class="comment">/* Fixed some report bugs though there are still some remaining.</font>
-00085 <font class="comment">/*</font>
-00086 <font class="comment">/* Revision 1.2  2002/05/03 03:39:36  phase1geo</font>
-00087 <font class="comment">/* Removing all syntax errors due to addition of statements.  Added more statement</font>
-00088 <font class="comment">/* support code.  Still have a ways to go before we can try anything.  Removed lines</font>
-00089 <font class="comment">/* from expressions though we may want to consider putting these back for reporting</font>
-00090 <font class="comment">/* purposes.</font>
-00091 <font class="comment">/* */</font>
-00092 
-00093 <font class="preprocessor">#endif</font>
-00094 <font class="preprocessor"></font>
-</pre></div><hr><address align="right"><small>Generated on Thu Jul 18 00:44:43 2002 for Covered by
+00082 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a21">mod_link_delete_list</a>( <a class="code" href="structmod__link__s.html">mod_link</a>* head );
+00083 
+00084 
+00085 <font class="comment">/* $Log$</font>
+00086 <font class="comment">/* Revision 1.4  2002/07/18 22:02:35  phase1geo</font>
+00087 <font class="comment">/* In the middle of making improvements/fixes to the expression/signal</font>
+00088 <font class="comment">/* binding phase.</font>
+00089 <font class="comment">/*</font>
+00090 <font class="comment">/* Revision 1.3  2002/06/25 03:39:03  phase1geo</font>
+00091 <font class="comment">/* Fixed initial scoring bugs.  We now generate a legal CDD file for reporting.</font>
+00092 <font class="comment">/* Fixed some report bugs though there are still some remaining.</font>
+00093 <font class="comment">/*</font>
+00094 <font class="comment">/* Revision 1.2  2002/05/03 03:39:36  phase1geo</font>
+00095 <font class="comment">/* Removing all syntax errors due to addition of statements.  Added more statement</font>
+00096 <font class="comment">/* support code.  Still have a ways to go before we can try anything.  Removed lines</font>
+00097 <font class="comment">/* from expressions though we may want to consider putting these back for reporting</font>
+00098 <font class="comment">/* purposes.</font>
+00099 <font class="comment">/* */</font>
+00100 
+00101 <font class="preprocessor">#endif</font>
+00102 <font class="preprocessor"></font>
+</pre></div><hr><address align="right"><small>Generated on Sat Jul 20 19:07:53 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

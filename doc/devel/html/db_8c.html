@@ -19,6 +19,7 @@
 <code>#include "<a class="el" href="instance_8h-source.html">instance.h</a>"</code><br>
 <code>#include "<a class="el" href="statement_8h-source.html">statement.h</a>"</code><br>
 <code>#include "<a class="el" href="sim_8h-source.html">sim.h</a>"</code><br>
+<code>#include "<a class="el" href="binding_8h-source.html">binding.h</a>"</code><br>
 <table border=0 cellpadding=0 cellspacing=0>
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a142">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a15">db_write</a> (char *<a class="el" href="vcd__lexer_8c.html#a106">file</a>)</td></tr>
@@ -65,16 +66,16 @@
 <tr><td nowrap align=right valign=top>char *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a0">top_module</a></td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a139">mod_inst</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a1">instance_root</a></td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a122">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a2">no_score_head</a></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a133">mod_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a3">mod_head</a></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a133">mod_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a4">mod_tail</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a134">mod_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a3">mod_head</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a134">mod_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a4">mod_tail</a></td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a121">nibble</a>&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a5">or_optab</a> [16]</td></tr>
 <tr><td nowrap align=right valign=top>char *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a6">curr_inst_scope</a> = NULL</td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a139">mod_inst</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a7">curr_instance</a> = NULL</td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a122">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a8">modlist_head</a> = NULL</td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a122">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a9">modlist_tail</a> = NULL</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a132">module</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a10">curr_module</a> = NULL</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a134">symtable</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a11">vcd_symtab</a> = NULL</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a134">symtable</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a12">timestep_tab</a> = NULL</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a133">module</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a10">curr_module</a> = NULL</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a135">symtable</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a11">vcd_symtab</a> = NULL</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a135">symtable</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a12">timestep_tab</a> = NULL</td></tr>
 <tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a13">curr_expr_id</a> = 1</td></tr>
 <tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a14">curr_sim_time</a> = 0</td></tr>
 </table>
@@ -1110,7 +1111,7 @@ Pointer to the current instance selected by the VCD parser. If this value is NUL
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a132">module</a>* curr_module = NULL
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a133">module</a>* curr_module = NULL
       </table>
     </td>
   </tr>
@@ -1176,7 +1177,7 @@ This static value contains the current simulation time which is specified by the
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a133">mod_link</a>* mod_head
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a134">mod_link</a>* mod_head
       </table>
     </td>
   </tr>
@@ -1198,7 +1199,7 @@ This static value contains the current simulation time which is specified by the
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a133">mod_link</a>* mod_tail </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a134">mod_link</a>* mod_tail </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
           <td class="md" valign="top">)&nbsp;</td>
@@ -1320,7 +1321,7 @@ Pointer to head element of modules not-to-score list     </td>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a134">symtable</a>* timestep_tab = NULL
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a135">symtable</a>* timestep_tab = NULL
       </table>
     </td>
   </tr>
@@ -1364,7 +1365,7 @@ Pointer to head element of modules not-to-score list     </td>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a134">symtable</a>* vcd_symtab = NULL
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a135">symtable</a>* vcd_symtab = NULL
       </table>
     </td>
   </tr>
@@ -1380,7 +1381,7 @@ Pointer to head element of modules not-to-score list     </td>
     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Thu Jul 18 00:44:44 2002 for Covered by
+<hr><address align="right"><small>Generated on Sat Jul 20 19:07:54 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

@@ -21,7 +21,7 @@
 <tr><td>&nbsp;</td><td><font size=-1><em>Merges two signals, placing result into base signal.</em> <a href="#a2"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="signal_8h.html#a3">signal_db_write</a> (<a class="el" href="defines_8h.html#a126">signal</a> *sig, FILE *<a class="el" href="vcd__lexer_8c.html#a106">file</a>, char *modname)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Outputs this signal information to specified file.</em> <a href="#a3"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a142">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="signal_8h.html#a4">signal_db_read</a> (char **line, <a class="el" href="defines_8h.html#a132">module</a> *curr_mod)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a142">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="signal_8h.html#a4">signal_db_read</a> (char **line, <a class="el" href="defines_8h.html#a133">module</a> *curr_mod)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Reads signal information from specified file.</em> <a href="#a4"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="signal_8h.html#a5">signal_add_expression</a> (<a class="el" href="defines_8h.html#a126">signal</a> *sig, <a class="el" href="defines_8h.html#a125">expression</a> *expr)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds an expression to the signal list.</em> <a href="#a5"></a><em></em></font><br><br></td></tr>
@@ -168,7 +168,7 @@ Pointer to newly created signal.</dl>This function should be called by the Veril
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a132">module</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a133">module</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>curr_mod</em></td>
         </tr>
         <tr>
@@ -444,7 +444,7 @@ Signal to be merged into base signal.</td></tr>
 </dl>Performs merge of the base and in signals, placing the resulting merged signal into the base signal. If the signals are found to be unalike (names are different), an error message is displayed to the user. If both signals are the same, perform the merge on the signal's vectors.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Thu Jul 18 00:44:46 2002 for Covered by
+<hr><address align="right"><small>Generated on Sat Jul 20 19:07:56 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

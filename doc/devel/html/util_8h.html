@@ -33,12 +33,14 @@
 <tr><td>&nbsp;</td><td><font size=-1><em>Extracts highest level of hierarchy from specified scope.</em> <a href="#a8"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a9">scope_extract_back</a> (char *scope, char *back, char *rest)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Extracts lowest level of hierarchy from specified scope.</em> <a href="#a9"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void *&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a10">malloc_safe</a> (int <a class="el" href="vcd__lexer_8c.html#a105">size</a>)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Performs safe malloc call.</em> <a href="#a10"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a11">free_safe</a> (void *ptr)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Performs safe deallocation of heap memory.</em> <a href="#a11"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a12">gen_space</a> (char *spaces, int num_spaces)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Creates a string containing space characters.</em> <a href="#a12"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a142">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a10">scope_local</a> (char *scope)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Returns TRUE if specified scope is local (contains no periods).</em> <a href="#a10"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void *&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a11">malloc_safe</a> (int <a class="el" href="vcd__lexer_8c.html#a105">size</a>)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Performs safe malloc call.</em> <a href="#a11"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a12">free_safe</a> (void *ptr)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Performs safe deallocation of heap memory.</em> <a href="#a12"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a13">gen_space</a> (char *spaces, int num_spaces)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Creates a string containing space characters.</em> <a href="#a13"></a><em></em></font><br><br></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 Contains miscellaneous global functions used by many functions.
@@ -198,7 +200,7 @@ Returns: </b><dd>
 Returns TRUE if the specified file exists; otherwise, returns FALSE.</dl>Checks to see if the specified file actually exists in the file structure. If the file is found to exist, returns TRUE; otherwise, returns FALSE.     </td>
   </tr>
 </table>
-<a name="a11" doxytag="util.h::free_safe"></a><p>
+<a name="a12" doxytag="util.h::free_safe"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -235,7 +237,7 @@ Pointer to object to deallocate.</td></tr>
 </dl>Safely performs a free function of heap memory. Also keeps track of current memory usage for output information at end of program life.     </td>
   </tr>
 </table>
-<a name="a12" doxytag="util.h::gen_space"></a><p>
+<a name="a13" doxytag="util.h::gen_space"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -361,7 +363,7 @@ Returns: </b><dd>
 Returns TRUE if the specified string is a legal variable name; otherwise, returns FALSE.</dl>If the specified string follows all of the rules for a legal program variable (doesn't start with a number, contains only a-zA-Z0-9_ characters), returns a value of TRUE; otherwise, returns a value of FALSE.     </td>
   </tr>
 </table>
-<a name="a10" doxytag="util.h::malloc_safe"></a><p>
+<a name="a11" doxytag="util.h::malloc_safe"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -610,6 +612,37 @@ Hierarchy left after extraction.</td></tr>
 </dl>Extracts the highest level of hierarchy from the specified scope, returning that instance name to the value of front and the the rest of the hierarchy in the value of rest.     </td>
   </tr>
 </table>
+<a name="a10" doxytag="util.h::scope_local"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a142">bool</a> scope_local </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="md" nowrap valign="top">char *&nbsp;</td>
+          <td class="mdname1" valign="top" nowrap>&nbsp; <em>scope</em>          </td>
+          <td class="md" valign="top">)&nbsp;</td>
+          <td class="md" nowrap></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+Returns TRUE if specified scope is local (contains no periods).
+<p>
+    </td>
+  </tr>
+</table>
 <a name="a0" doxytag="util.h::set_output_suppression"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
@@ -647,7 +680,7 @@ Boolean value of suppression.</td></tr>
 </dl>Sets the global variable output_suppressed to the specified value.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Thu Jul 18 00:44:46 2002 for Covered by
+<hr><address align="right"><small>Generated on Sat Jul 20 19:07:56 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

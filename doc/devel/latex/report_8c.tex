@@ -21,7 +21,9 @@ void {\bf report\_\-parse\_\-metrics} (char $\ast$metrics)
 \item 
 {\bf bool} {\bf report\_\-parse\_\-args} (int argc, int last\_\-arg, char $\ast$$\ast$argv)
 \item 
-void {\bf report\_\-gather\_\-stats} ({\bf mod\_\-inst} $\ast$root)
+void {\bf report\_\-gather\_\-instance\_\-stats} ({\bf mod\_\-inst} $\ast$root)
+\item 
+void {\bf report\_\-gather\_\-module\_\-stats} ({\bf mod\_\-link} $\ast$head)
 \item 
 void {\bf report\_\-print\_\-header} (FILE $\ast$ofile)
 \item 
@@ -49,6 +51,8 @@ char $\ast$ {\bf output\_\-file} = NULL
 char $\ast$ {\bf input\_\-db} = NULL
 \item 
 {\bf mod\_\-inst} $\ast$ {\bf instance\_\-root}
+\item 
+{\bf mod\_\-link} $\ast$ {\bf mod\_\-head}
 \end{CompactItemize}
 
 
@@ -66,7 +70,7 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsection{Function Documentation}
 \index{report.c@{report.c}!command_report@{command\_\-report}}
 \index{command_report@{command\_\-report}!report.c@{report.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int command\_\-report (int {\em argc}, int {\em last\_\-arg}, char $\ast$$\ast$ {\em argv})}\label{report_8c_a15}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int command\_\-report (int {\em argc}, int {\em last\_\-arg}, char $\ast$$\ast$ {\em argv})}\label{report_8c_a17}
 
 
 Parses command-line for report command and performs report functionality.
@@ -82,9 +86,9 @@ argv}]Arguments passed to report command to parse.\end{description}
 \begin{Desc}
 \item[Returns: ]\par
 Returns 0 is report is successful; otherwise, returns -1.\end{Desc}
-Performs report command functionality. \index{report.c@{report.c}!report_gather_stats@{report\_\-gather\_\-stats}}
-\index{report_gather_stats@{report\_\-gather\_\-stats}!report.c@{report.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void report\_\-gather\_\-stats ({\bf mod\_\-inst} $\ast$ {\em root})}\label{report_8c_a12}
+Performs report command functionality. \index{report.c@{report.c}!report_gather_instance_stats@{report\_\-gather\_\-instance\_\-stats}}
+\index{report_gather_instance_stats@{report\_\-gather\_\-instance\_\-stats}!report.c@{report.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void report\_\-gather\_\-instance\_\-stats ({\bf mod\_\-inst} $\ast$ {\em root})}\label{report_8c_a13}
 
 
 \begin{Desc}
@@ -93,9 +97,20 @@ Performs report command functionality. \index{report.c@{report.c}!report_gather_
 \item[{\em 
 root}]Pointer to root of instance tree to search.\end{description}
 \end{Desc}
-Recursively parses instance tree, creating statistic structures for each of the instances in the tree. Calculates summary coverage information for children nodes first and parent nodes after. In this way, the parent nodes will have the accumulated information from themselves and all of their children. \index{report.c@{report.c}!report_generate@{report\_\-generate}}
+Recursively parses instance tree, creating statistic structures for each of the instances in the tree. Calculates summary coverage information for children nodes first and parent nodes after. In this way, the parent nodes will have the accumulated information from themselves and all of their children. \index{report.c@{report.c}!report_gather_module_stats@{report\_\-gather\_\-module\_\-stats}}
+\index{report_gather_module_stats@{report\_\-gather\_\-module\_\-stats}!report.c@{report.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void report\_\-gather\_\-module\_\-stats ({\bf mod\_\-link} $\ast$ {\em head})}\label{report_8c_a14}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+head}]Pointer to head of module list to search.\end{description}
+\end{Desc}
+Traverses module list, creating statistic structures for each of the modules in the tree, and calculates summary coverage information. \index{report.c@{report.c}!report_generate@{report\_\-generate}}
 \index{report_generate@{report\_\-generate}!report.c@{report.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void report\_\-generate (FILE $\ast$ {\em ofile})}\label{report_8c_a14}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void report\_\-generate (FILE $\ast$ {\em ofile})}\label{report_8c_a16}
 
 
 \begin{Desc}
@@ -106,7 +121,7 @@ ofile}]Pointer to output stream to display report information to.\end{descriptio
 \end{Desc}
 Generates a coverage report based on the options specified on the command line to the specified output stream. \index{report.c@{report.c}!report_parse_args@{report\_\-parse\_\-args}}
 \index{report_parse_args@{report\_\-parse\_\-args}!report.c@{report.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} report\_\-parse\_\-args (int {\em argc}, int {\em last\_\-arg}, char $\ast$$\ast$ {\em argv})}\label{report_8c_a11}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} report\_\-parse\_\-args (int {\em argc}, int {\em last\_\-arg}, char $\ast$$\ast$ {\em argv})}\label{report_8c_a12}
 
 
 \begin{Desc}
@@ -122,7 +137,7 @@ argv}]Argument list passed to this program.\end{description}
 Returns TRUE if parsing was successful; otherwise, returns FALSE.\end{Desc}
 Parses the argument list for options. If a legal option is found for the report command, the appropriate action is taken for that option. If an option is found that is not allowed, an error message is reported to the user and the program terminates immediately. \index{report.c@{report.c}!report_parse_metrics@{report\_\-parse\_\-metrics}}
 \index{report_parse_metrics@{report\_\-parse\_\-metrics}!report.c@{report.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void report\_\-parse\_\-metrics (char $\ast$ {\em metrics})}\label{report_8c_a10}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void report\_\-parse\_\-metrics (char $\ast$ {\em metrics})}\label{report_8c_a11}
 
 
 \begin{Desc}
@@ -133,7 +148,7 @@ metrics}]Specified metrics to calculate coverage for.\end{description}
 \end{Desc}
 Parses the specified string containing the metrics to test. If a legal metric character is found, its corresponding flag is set to TRUE. If a character is found that does not correspond to a metric, an error message is flagged to the user (a warning). \index{report.c@{report.c}!report_print_header@{report\_\-print\_\-header}}
 \index{report_print_header@{report\_\-print\_\-header}!report.c@{report.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void report\_\-print\_\-header (FILE $\ast$ {\em ofile})}\label{report_8c_a13}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void report\_\-print\_\-header (FILE $\ast$ {\em ofile})}\label{report_8c_a15}
 
 
 \begin{Desc}
@@ -144,7 +159,7 @@ ofile}]Pointer to output stream to display report information to.\end{descriptio
 \end{Desc}
 Generates generic report header for all reports. \index{report.c@{report.c}!report_usage@{report\_\-usage}}
 \index{report_usage@{report\_\-usage}!report.c@{report.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void report\_\-usage ()}\label{report_8c_a9}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void report\_\-usage ()}\label{report_8c_a10}
 
 
 Displays usage information about the report command. 
@@ -158,6 +173,11 @@ Displays usage information about the report command.
 \index{report.c@{report.c}!instance_root@{instance\_\-root}}
 \index{instance_root@{instance\_\-root}!report.c@{report.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-inst}$\ast$ instance\_\-root}\label{report_8c_a8}
+
+
+\index{report.c@{report.c}!mod_head@{mod\_\-head}}
+\index{mod_head@{mod\_\-head}!report.c@{report.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-link}$\ast$ mod\_\-head}\label{report_8c_a9}
 
 
 \index{report.c@{report.c}!output_file@{output\_\-file}}

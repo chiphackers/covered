@@ -10,18 +10,19 @@
 <tr><td colspan=2><br><h2>Public Attributes</h2></td></tr>
 <tr><td nowrap align=right valign=top>char *&nbsp;</td><td valign=bottom><a class="el" href="structmodule__s.html#m0">name</a></td></tr>
 <tr><td nowrap align=right valign=top>char *&nbsp;</td><td valign=bottom><a class="el" href="structmodule__s.html#m1">filename</a></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a131">sig_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="structmodule__s.html#m2">sig_head</a></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a131">sig_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="structmodule__s.html#m3">sig_tail</a></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a128">exp_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="structmodule__s.html#m4">exp_head</a></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a128">exp_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="structmodule__s.html#m5">exp_tail</a></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a129">stmt_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="structmodule__s.html#m6">stmt_head</a></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a129">stmt_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="structmodule__s.html#m7">stmt_tail</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a132">statistic</a> *&nbsp;</td><td valign=bottom><a class="el" href="structmodule__s.html#m2">stat</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a131">sig_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="structmodule__s.html#m3">sig_head</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a131">sig_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="structmodule__s.html#m4">sig_tail</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a128">exp_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="structmodule__s.html#m5">exp_head</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a128">exp_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="structmodule__s.html#m6">exp_tail</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a129">stmt_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="structmodule__s.html#m7">stmt_head</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a129">stmt_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="structmodule__s.html#m8">stmt_tail</a></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 Contains information for a Verilog module. A module contains a list of signals within the module. 
 <p>
 <hr><h2>Member Data Documentation</h2>
-<a name="m4" doxytag="module_s::exp_head"></a><p>
+<a name="m5" doxytag="module_s::exp_head"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -43,7 +44,7 @@ Contains information for a Verilog module. A module contains a list of signals w
 Head pointer to list of expressions in this module     </td>
   </tr>
 </table>
-<a name="m5" doxytag="module_s::exp_tail"></a><p>
+<a name="m6" doxytag="module_s::exp_tail"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -109,7 +110,7 @@ File name where module exists     </td>
 Module name     </td>
   </tr>
 </table>
-<a name="m2" doxytag="module_s::sig_head"></a><p>
+<a name="m3" doxytag="module_s::sig_head"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -131,7 +132,7 @@ Module name     </td>
 Head pointer to list of signals in this module     </td>
   </tr>
 </table>
-<a name="m3" doxytag="module_s::sig_tail"></a><p>
+<a name="m4" doxytag="module_s::sig_tail"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -153,7 +154,29 @@ Head pointer to list of signals in this module     </td>
 Tail pointer to list of signals in this module     </td>
   </tr>
 </table>
-<a name="m6" doxytag="module_s::stmt_head"></a><p>
+<a name="m2" doxytag="module_s::stat"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a132">statistic</a>* module_s::stat
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+Pointer to module coverage statistics structure     </td>
+  </tr>
+</table>
+<a name="m7" doxytag="module_s::stmt_head"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -175,7 +198,7 @@ Tail pointer to list of signals in this module     </td>
 Head pointer to list of statements in this module     </td>
   </tr>
 </table>
-<a name="m7" doxytag="module_s::stmt_tail"></a><p>
+<a name="m8" doxytag="module_s::stmt_tail"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -199,7 +222,7 @@ Tail pointer to list of statements in this module     </td>
 </table>
 <hr>The documentation for this struct was generated from the following file:<ul>
 <li><a class="el" href="defines_8h-source.html">defines.h</a></ul>
-<hr><address align="right"><small>Generated on Thu Jul 18 00:44:47 2002 for Covered by
+<hr><address align="right"><small>Generated on Sat Jul 20 19:07:57 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

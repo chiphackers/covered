@@ -32,26 +32,32 @@
 00042 
 00044 <font class="keywordtype">void</font> <a class="code" href="util_8c.html#a14">scope_extract_back</a>( <font class="keywordtype">char</font>* scope, <font class="keywordtype">char</font>* back, <font class="keywordtype">char</font>* rest );
 00045 
-00047 <font class="keywordtype">void</font>* <a class="code" href="util_8c.html#a15">malloc_safe</a>( <font class="keywordtype">int</font> size );
+00047 <font class="keywordtype">bool</font> <a class="code" href="util_8c.html#a15">scope_local</a>( <font class="keywordtype">char</font>* scope );
 00048 
-00050 <font class="keywordtype">void</font> <a class="code" href="util_8c.html#a16">free_safe</a>( <font class="keywordtype">void</font>* ptr );
+00050 <font class="keywordtype">void</font>* <a class="code" href="util_8c.html#a16">malloc_safe</a>( <font class="keywordtype">int</font> size );
 00051 
-00053 <font class="keywordtype">void</font> <a class="code" href="util_8c.html#a17">gen_space</a>( <font class="keywordtype">char</font>* spaces, <font class="keywordtype">int</font> num_spaces );
+00053 <font class="keywordtype">void</font> <a class="code" href="util_8c.html#a17">free_safe</a>( <font class="keywordtype">void</font>* ptr );
 00054 
-00055 <font class="comment">/* $Log$</font>
-00056 <font class="comment">/* Revision 1.4  2002/07/08 12:35:31  phase1geo</font>
-00057 <font class="comment">/* Added initial support for library searching.  Code seems to be broken at the</font>
-00058 <font class="comment">/* moment.</font>
-00059 <font class="comment">/*</font>
-00060 <font class="comment">/* Revision 1.3  2002/07/03 03:31:11  phase1geo</font>
-00061 <font class="comment">/* Adding RCS Log strings in files that were missing them so that file version</font>
-00062 <font class="comment">/* information is contained in every source and header file.  Reordering src</font>
-00063 <font class="comment">/* Makefile to be alphabetical.  Adding mult1.v diagnostic to regression suite.</font>
-00064 <font class="comment">/* */</font>
-00065 
-00066 <font class="preprocessor">#endif</font>
-00067 <font class="preprocessor"></font>
-</pre></div><hr><address align="right"><small>Generated on Thu Jul 18 00:44:43 2002 for Covered by
+00056 <font class="keywordtype">void</font> <a class="code" href="util_8c.html#a18">gen_space</a>( <font class="keywordtype">char</font>* spaces, <font class="keywordtype">int</font> num_spaces );
+00057 
+00058 <font class="comment">/* $Log$</font>
+00059 <font class="comment">/* Revision 1.5  2002/07/18 22:02:35  phase1geo</font>
+00060 <font class="comment">/* In the middle of making improvements/fixes to the expression/signal</font>
+00061 <font class="comment">/* binding phase.</font>
+00062 <font class="comment">/*</font>
+00063 <font class="comment">/* Revision 1.4  2002/07/08 12:35:31  phase1geo</font>
+00064 <font class="comment">/* Added initial support for library searching.  Code seems to be broken at the</font>
+00065 <font class="comment">/* moment.</font>
+00066 <font class="comment">/*</font>
+00067 <font class="comment">/* Revision 1.3  2002/07/03 03:31:11  phase1geo</font>
+00068 <font class="comment">/* Adding RCS Log strings in files that were missing them so that file version</font>
+00069 <font class="comment">/* information is contained in every source and header file.  Reordering src</font>
+00070 <font class="comment">/* Makefile to be alphabetical.  Adding mult1.v diagnostic to regression suite.</font>
+00071 <font class="comment">/* */</font>
+00072 
+00073 <font class="preprocessor">#endif</font>
+00074 <font class="preprocessor"></font>
+</pre></div><hr><address align="right"><small>Generated on Sat Jul 20 19:07:53 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

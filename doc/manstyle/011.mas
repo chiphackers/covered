@@ -23,15 +23,16 @@ The score command is initiated with the following call:
 </_pg>
 
 <_code>
-covered score -t &lt;top_module&gt; -vcd &lt;vcd_dumpfile&gt; [&lt;options&gt;]
+covered score -t &lt;top_module&gt; [&lt;options&gt;]
 </_code>
 
 <_pg>
 The <i>top_module</i> parameter is required for the scoring purposes and represents the 
 top-most module that will be covered.  Covered is limited to being able to gain coverage 
-results for either a single module or a single module tree.  The following figure shows a 
-design in its hierachical form to illustrate how to get Covered to generate coverage results 
-for a part of the design.
+results for either a single module or a single module tree.  With the combination of the
+-t, -i and -e options, all relevant modules in a design can be selected for coverage.  The 
+following figure shows a design in its hierachical form to illustrate how to get Covered 
+to generate coverage results for a part of the design.
 </_pg>
 
 <_margin>Figure</_margin>
@@ -41,12 +42,68 @@ for a part of the design.
 </_pg>
 
 <_pg>
-To get coverage for the entire design, the <i>top_module</i> value would be "test".
+Assume that the following Verilog modules are used to create this tree.
 </_pg>
 
 <_pg>
-To get coverage for the instance foo and all modules below it, the <i>top_module</i> value 
-would be "foo".
+<ul>
+  <li>module "test" instantiated as "test" in the above figure</li>
+  <li>module "foomod" instantiated as "foo"</li>
+  <li>module "barmod" instantiated as "bar"</li>
+  <li>module "amod" instantiated as "a"</li>
+  <li>module "bmod" instantiated as "b"</li>
+</ul>
+</_pg>
+
+<_pg>
+To get coverage for the entire design, the covered command line would be:
+</_pg>
+
+<_margin>Command</_margin>
+
+<_code>
+covered score -t test -i test(rest of command-line)
+</_code>
+
+<_pg>
+Because both the -t and -i options are the same value (the module name is the same as the
+instance name), only the -t option needs to be specified.  If the -i option is not specified,
+Covered will assume that the instance name of the top module is the same name as the top
+module itself.  Note that the -t option always needs to be specified for the score command.
+</_pg>
+
+<_pg>
+To get coverage for the instance foo and all modules below it, the covered command line
+would be:
+</_pg>
+
+<_margin>Command</_margin>
+
+<_code>
+covered score -t foomod -i foo (rest of command-line)
+</_code>
+
+<_pg>
+In this case, because the name of the top-level module is different than its instantiated
+name, both the -t and -i options must be specified on the command-line.
+</_pg>
+
+<_pg>
+To get coverage for only the instance foo (and none of the modules instantiated below it
+in the hierarchy), Covered command-line would look like the following:
+</_pg>
+
+<_margin>Command</_margin>
+
+<_code>
+covered score -t foomod -i foo -e amod -e bmod
+</_code>
+
+<_pg>
+Here we see the use of the -e option, it takes a module name as its value.  When a module
+with the matching name is found in the hierarchy, it and all of its submodules are removed
+from coverage.  You may specify as many -e arguments as necessary to select the appropriate
+modules to cover.
 </_pg>
 
 <_pg>
@@ -90,6 +147,16 @@ that it was unable to find the required Verilog modules.
     <td>
       <strong>Description</strong>
     <td>
+  </tr>
+  <tr>
+    <td>
+      -vcd &lt;dumpfile&gt;
+    </td>
+    <td>
+      Name of dumpfile to score design with.  If this option is not used, Covered will 
+      only create an initial CDD file from the design and will not attempt to score the 
+      design.
+    </td>
   </tr>
   <tr>
     <td>
@@ -165,6 +232,14 @@ coverage.
     </td>
     <td>
       Suppresses output to standard output
+    </td>
+  </tr>
+  <tr>
+    <td>
+      -D <name>(=<value>)
+    </td>
+    <td>
+      Defines the specified name to 1 or the specified value.
     </td>
   </tr>
   <tr>
