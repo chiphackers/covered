@@ -40,7 +40,7 @@
  immediately.  In the case of MBIT_SEL, the LSB is also constant.  Vector direction
  is currently not considered at this point.
 
- \par EXP_OP_ASSIGN, EXP_OP_BASSIGN, EXP_OP_NASSIGN
+ \par EXP_OP_ASSIGN, EXP_OP_BASSIGN, EXP_OP_NASSIGN, EXP_OP_IF
  All of these expressions are assignment operators that are in assign statements,
  behavioral blocking assignments, and behavioral non-blocking assignments, respectively.
  These expressions do not have an operation to perform because their vector value pointers
@@ -330,6 +330,7 @@ void expression_resize( expression* expr, bool recursive ) {
       case EXP_OP_ASSIGN :
       case EXP_OP_BASSIGN :
       case EXP_OP_NASSIGN :
+      case EXP_OP_IF :
         break;
 
       /* These operations should always be set to a width 1 */
@@ -538,6 +539,7 @@ void expression_db_write( expression* expr, FILE* file, char* scope ) {
       (SUPPL_OP( expr->suppl ) != EXP_OP_ASSIGN)     &&
       (SUPPL_OP( expr->suppl ) != EXP_OP_BASSIGN)    &&
       (SUPPL_OP( expr->suppl ) != EXP_OP_NASSIGN)    &&
+      (SUPPL_OP( expr->suppl ) != EXP_OP_IF)         &&
       ((SUPPL_OP( expr->suppl ) == EXP_OP_STATIC) || (SUPPL_IS_LHS( expr->suppl ) == 0)) ) {
     vector_db_write( expr->value, file, (SUPPL_OP( expr->suppl ) == EXP_OP_STATIC) );
   }
@@ -623,6 +625,7 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
                                  (SUPPL_OP( suppl ) != EXP_OP_ASSIGN)     &&
                                  (SUPPL_OP( suppl ) != EXP_OP_BASSIGN)    &&
                                  (SUPPL_OP( suppl ) != EXP_OP_NASSIGN)    &&
+                                 (SUPPL_OP( suppl ) != EXP_OP_IF)         &&
                                  ((SUPPL_OP( suppl ) == EXP_OP_STATIC) || (SUPPL_IS_LHS( suppl ) == 0))) );
       expr->suppl = suppl;
 
@@ -647,6 +650,7 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
           (SUPPL_OP( suppl ) != EXP_OP_ASSIGN)     &&
           (SUPPL_OP( suppl ) != EXP_OP_BASSIGN)    &&
           (SUPPL_OP( suppl ) != EXP_OP_NASSIGN)    &&
+          (SUPPL_OP( suppl ) != EXP_OP_IF)         &&
           ((SUPPL_OP( suppl ) == EXP_OP_STATIC) || (SUPPL_IS_LHS( suppl ) == 0)) ) {
 
         /* Read in vector information */
@@ -668,7 +672,8 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
       /* If we are an assignment operator, set our vector value to that of the right child */
       if( (SUPPL_OP( suppl ) == EXP_OP_ASSIGN)  ||
           (SUPPL_OP( suppl ) == EXP_OP_BASSIGN) ||
-          (SUPPL_OP( suppl ) == EXP_OP_NASSIGN) ) {
+          (SUPPL_OP( suppl ) == EXP_OP_NASSIGN) ||
+          (SUPPL_OP( suppl ) == EXP_OP_IF) ) {
 
         vector_dealloc( expr->value );
         expr->value = right->value;
@@ -748,6 +753,7 @@ bool expression_db_merge( expression* base, char** line, bool same ) {
           (SUPPL_OP( suppl ) != EXP_OP_ASSIGN)     &&
           (SUPPL_OP( suppl ) != EXP_OP_BASSIGN)    &&
           (SUPPL_OP( suppl ) != EXP_OP_NASSIGN)    &&
+          (SUPPL_OP( suppl ) != EXP_OP_IF)         &&
           ((SUPPL_OP( suppl ) == EXP_OP_STATIC) || (SUPPL_IS_LHS( suppl ) == 0)) ) {
 
         /* Merge expression vectors */
@@ -1175,6 +1181,7 @@ void expression_operate( expression* expr ) {
       case EXP_OP_ASSIGN :
       case EXP_OP_BASSIGN :
       case EXP_OP_NASSIGN :
+      case EXP_OP_IF :
         break;
 
       default :
@@ -1341,6 +1348,7 @@ void expression_dealloc( expression* expr, bool exp_only ) {
         (op != EXP_OP_ASSIGN    ) &&
         (op != EXP_OP_BASSIGN   ) &&
         (op != EXP_OP_NASSIGN   ) &&
+        (op != EXP_OP_IF        ) &&
         ((SUPPL_IS_LHS( expr->suppl ) == 0) || (op == EXP_OP_STATIC)) ) {
 
       /* Free up memory from vector value storage */
@@ -1379,6 +1387,13 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.89  2003/11/29 06:55:48  phase1geo
+ Fixing leftover bugs in better report output changes.  Fixed bug in param.c
+ where parameters found in RHS expressions that were part of statements that
+ were being removed were not being properly removed.  Fixed bug in sim.c where
+ expressions in tree above conditional operator were not being evaluated if
+ conditional expression was not at the top of tree.
+
  Revision 1.88  2003/11/26 23:14:41  phase1geo
  Adding code to include left-hand-side expressions of statements for report
  outputting purposes.  Full regression does not yet pass.

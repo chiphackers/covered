@@ -512,6 +512,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
             case EXP_OP_ASSIGN   :  *size = l_size + r_size + 10; strcpy( code_fmt, "       %s   %s" );    break;
             case EXP_OP_BASSIGN  :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s   %s" );           break;
             case EXP_OP_NASSIGN  :  *size = l_size + r_size + 4;  strcpy( code_fmt, "%s    %s" );          break;
+            case EXP_OP_IF       :  *size = r_size + 6;           strcpy( code_fmt, "    %s  " );          break;
             default              :
               print_output( "Internal error:  Unknown expression type in combination_underline_tree", FATAL );
               exit( 1 );
@@ -1056,6 +1057,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.66  2003/11/26 23:14:41  phase1geo
+ Adding code to include left-hand-side expressions of statements for report
+ outputting purposes.  Full regression does not yet pass.
+
  Revision 1.65  2003/10/11 05:15:07  phase1geo
  Updates for code optimizations for vector value data type (integers to chars).
  Updated regression for changes.

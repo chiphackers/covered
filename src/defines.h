@@ -722,6 +722,7 @@
 #define EXP_OP_ASSIGN     0x35
 #define EXP_OP_BASSIGN    0x36
 #define EXP_OP_NASSIGN    0x37
+#define EXP_OP_IF         0x38
 
 /*! @} */
 
@@ -743,6 +744,7 @@
                                      (SUPPL_OP( x->suppl ) != EXP_OP_ASSIGN) && \
                                      (SUPPL_OP( x->suppl ) != EXP_OP_BASSIGN) && \
                                      (SUPPL_OP( x->suppl ) != EXP_OP_NASSIGN) && \
+                                     (SUPPL_OP( x->suppl ) != EXP_OP_IF) && \
                                      (SUPPL_IS_LHS( x->suppl ) == 0) && \
                                      !((SUPPL_IS_ROOT( x->suppl ) == 0) && \
                                        ((SUPPL_OP( x->suppl ) == EXP_OP_SIG) || \
@@ -751,6 +753,7 @@
                                        (SUPPL_OP( x->parent->expr->suppl ) != EXP_OP_ASSIGN) && \
                                        (SUPPL_OP( x->parent->expr->suppl ) != EXP_OP_BASSIGN) && \
                                        (SUPPL_OP( x->parent->expr->suppl ) != EXP_OP_NASSIGN) && \
+                                       (SUPPL_OP( x->parent->expr->suppl ) != EXP_OP_IF) && \
                                        (SUPPL_OP( x->parent->expr->suppl ) != EXP_OP_COND)) && \
                                      (x->line != 0)) ? 1 : 0)
 
@@ -1521,6 +1524,13 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.90  2003/11/29 06:55:48  phase1geo
+ Fixing leftover bugs in better report output changes.  Fixed bug in param.c
+ where parameters found in RHS expressions that were part of statements that
+ were being removed were not being properly removed.  Fixed bug in sim.c where
+ expressions in tree above conditional operator were not being evaluated if
+ conditional expression was not at the top of tree.
+
  Revision 1.89  2003/11/15 04:21:57  phase1geo
  Fixing syntax errors found in Doxygen and GCC compiler.
 

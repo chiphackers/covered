@@ -1755,10 +1755,14 @@ statement
     }
   | K_if '(' expression ')' statement_opt %prec less_than_K_else
     {
-      statement* stmt;
+      expression* tmp;
+      statement*  stmt;
       if( (ignore_mode == 0) && ($3 != NULL) ) {
-        stmt = db_create_statement( $3 );
-        db_add_expression( $3 );
+        tmp  = db_create_expression( $3, NULL, EXP_OP_IF, FALSE, @1.first_line, NULL );
+        vector_dealloc( tmp->value );
+        tmp->value = $3->value;
+        stmt = db_create_statement( tmp );
+        db_add_expression( tmp );
         db_connect_statement_true( stmt, $5 );
         db_statement_set_stop( $5, NULL, FALSE );
         $$ = stmt;
@@ -1769,10 +1773,14 @@ statement
     }
   | K_if '(' expression ')' statement_opt K_else statement_opt
     {
-      statement* stmt;
+      expression* tmp;
+      statement*  stmt;
       if( (ignore_mode == 0) && ($3 != NULL) ) {
-        stmt = db_create_statement( $3 );
-        db_add_expression( $3 );
+        tmp  = db_create_expression( $3, NULL, EXP_OP_IF, FALSE, @1.first_line, NULL );
+        vector_dealloc( tmp->value );
+        tmp->value = $3->value;
+        stmt = db_create_statement( tmp );
+        db_add_expression( tmp );
         db_connect_statement_true( stmt, $5 );
         db_connect_statement_false( stmt, $7 );
         db_statement_set_stop( $5, NULL, FALSE );
