@@ -16,6 +16,8 @@ set toggle_summary_total  0
 set toggle_summary_hit    0
 set toggle_summary_hit01  0
 set toggle_summary_hit10  0
+set comb_summary_total    0
+set comb_summary_hit      0
 set curr_mod_name         0
 
 # TODO : 
@@ -175,15 +177,15 @@ proc calc_and_display_toggle_cov {} {
   if {$curr_mod_name != 0} {
 
     # Get list of uncovered/covered lines
-    set uncovered_toggles 0
-    set covered_toggles   0
+    set uncovered_toggles ""
+    set covered_toggles   ""
     tcl_func_collect_uncovered_toggles $curr_mod_name $start_line
     tcl_func_collect_covered_toggles   $curr_mod_name $start_line
 
     # Calculate toggle hit and total values
-    if {[lindex $covered_toggles 0] == 0} {
+    if {[llength $covered_toggles] == 0} {
       set toggle_summary_hit 0
-      if {[lindex $uncovered_toggles 0] == 0} {
+      if {[llength $uncovered_toggles] == 0} {
         set toggle_summary_total 0
       } else {
         set toggle_summary_total [llength $uncovered_toggles]
@@ -292,22 +294,161 @@ proc display_toggle_cov {} {
  
 proc process_module_comb_cov {} {
 
-  global start_line end_line
-  global 
+  global fileContent file_name start_line end_line
+  global curr_mod_name
 
-  display_comb_cov
+  if {$curr_mod_name != 0} {
+
+    tcl_func_get_filename $curr_mod_name
+
+    if {[catch {set fileText $fileContent($file_name)}]} {
+      if {[catch {set fp [open $file_name "r"]}]} {
+        tk_messageBox -message "File $file_name Not Found!" \
+                      -title "No File" -icon error
+        return
+      }
+      set fileText [read $fp]
+      set fileContent($file_name) $fileText
+      close $fp
+    }
+
+    # Get start and end line numbers of this module
+    set start_line 0
+    set end_line   0
+    tcl_func_get_module_start_and_end $curr_mod_name
+
+    # Get line summary information and display this now
+    tcl_func_get_comb_summary $curr_mod_name
+
+    calc_and_display_comb_cov
+
+  }
 
 } 
 
+proc calc_and_display_comb_cov {} {
+
+  global cov_type uncov_type mod_inst_type mod_list
+  global uncovered_combs covered_combs
+  global curr_mod_name start_line
+  global comb_summary_hit comb_summary_total
+
+  if {$curr_mod_name != 0} {
+
+    # Get list of uncovered/covered combinational logic 
+    set uncovered_combs ""
+    set covered_combs   ""
+    tcl_func_collect_combs $curr_mod_name $start_line
+
+    # Calculate combinational logic hit and total values
+    if {[llength $covered_combs] == 0} {
+      set comb_summary_hit 0
+      if {[llength $uncovered_combs] == 0} {
+        set comb_summary_total 0
+      } else {
+        set comb_summary_total [llength $uncovered_combs]
+      }
+    } else {
+      set comb_summary_hit   [llength $covered_combs]
+      set comb_summary_total [expr $comb_summary_hit + [llength $uncovered_combs]]
+    }
+
+    display_comb_cov
+
+  }
+
+}
+
 proc display_comb_cov {} {
  
-  global fgColor bgColor
+  global fileContent file_name
+  global uncov_fgColor uncov_bgColor cov_fgColor cov_bgColor
+  global uncovered_combs covered_combs
+  global uncov_type cov_type
+  global start_line end_line
+  global comb_summary_total comb_summary_hit
+  global cov_rb mod_inst_type mod_list
+  global curr_mod_name
 
-  # Configure text area
-  .bot.txt tag configure colorMap -foreground $fgColor -background $bgColor
+  if {$curr_mod_name != 0} {
 
-  # Clear the text-box before any insertion is being made
-  .bot.txt delete 1.0 end
+    # Populate information bar
+    .bot.info configure -text "Filename: $file_name"
+
+    .bot.txt tag configure uncov_colorMap -foreground $uncov_fgColor -background $uncov_bgColor
+    .bot.txt tag configure cov_colorMap   -foreground $cov_fgColor   -background $cov_bgColor
+
+    # Allow us to write to the text box
+    .bot.txt configure -state normal
+
+    # Clear the text-box before any insertion is being made
+    .bot.txt delete 1.0 end
+
+    set contents [split $fileContent($file_name) \n]
+    set linecount 1
+
+    if {$end_line != 0} {
+
+      # First, populate the summary information
+      .covbox.ht configure -text "$comb_summary_hit"
+      .covbox.tt configure -text "$comb_summary_total"
+
+      # Next, populate text box with file contents including highlights for covered/uncovered lines
+      foreach phrase $contents {
+        if [expr [expr $start_line <= $linecount] && [expr $end_line >= $linecount]] {
+          set line [format {%7d  %s} $linecount [append phrase "\n"]]
+          .bot.txt insert end $line
+        }
+        incr linecount
+      }
+
+      # Finally, set combinational logic information
+      if {[expr $uncov_type == 1] && [expr [llength $uncovered_combs] > 0]} {
+        set cmd_enter  ".bot.txt tag add uncov_enter"
+        set cmd_button ".bot.txt tag add uncov_button"
+        set cmd_leave  ".bot.txt tag add uncov_leave"
+        foreach entry $uncovered_combs {
+          set cmd_enter  [concat $cmd_enter  [lindex $entry 0] [lindex $entry 1]]
+          set cmd_button [concat $cmd_button [lindex $entry 0] [lindex $entry 1]]
+          set cmd_leave  [concat $cmd_leave  [lindex $entry 0] [lindex $entry 1]]
+        }
+        eval $cmd_enter
+        eval $cmd_button
+        eval $cmd_leave
+        .bot.txt tag configure uncov_button -underline true -foreground $uncov_fgColor -background $uncov_bgColor
+        .bot.txt tag bind uncov_enter <Enter> {
+          set curr_cursor [.bot.txt cget -cursor]
+          .bot.txt configure -cursor hand2
+        }
+        .bot.txt tag bind uncov_leave <Leave> {
+          .bot.txt configure -cursor $curr_cursor
+        }
+        .bot.txt tag bind uncov_button <ButtonPress-1> {
+          set all_ranges [.bot.txt tag ranges uncov_button]
+          set my_range   [.bot.txt tag prevrange uncov_button {current + 1 chars}]
+          set index [expr [lsearch -exact $all_ranges [lindex $my_range 0]] / 2]
+          set expr_id [lindex [lindex $uncovered_combs $index] 2]
+          create_comb_window $curr_mod_name $expr_id
+        }
+      }
+
+      if {[expr $cov_type == 1] && [expr [llength $covered_combs] > 0]} {
+        set cmd_cov ".bot.txt tag add cov_highlight"
+        foreach entry $covered_combs {
+          set cmd_cov [concat $cmd_cov $entry]
+        }
+        eval $cmd_cov
+        .bot.txt tag configure cov_highlight -foreground $cov_fgColor -background $cov_bgColor
+      }
+
+    }
+
+  }
+
+  # Now cause the text box to be read-only again
+  .bot.txt configure -state disabled
+
+  return
 
 }
 

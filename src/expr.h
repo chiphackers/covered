@@ -29,7 +29,7 @@ void expression_resize( expression* expr, bool recursive );
 int expression_get_id( expression* expr );
 
 /*! \brief Returns last line in this expression tree. */
-int expression_get_last_line( expression* expr );
+expression* expression_get_last_line_expr( expression* expr );
 
 /*! \brief Finds all wait event signals in specified expression */
 void expression_get_wait_sig_list( expression* expr, sig_link** head, sig_link** tail );
@@ -67,6 +67,10 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.26  2004/04/19 04:54:56  phase1geo
+ Adding first and last column information to expression and related code.  This is
+ not working correctly yet.
+
  Revision 1.25  2004/04/05 12:30:52  phase1geo
  Adding *db_replace functions to allow a design to be opened with new CDD
  results (for GUI purposes only).

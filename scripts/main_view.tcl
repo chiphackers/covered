@@ -5,6 +5,7 @@ source $HOME/scripts/menu_create.tcl
 source $HOME/scripts/cov_create.tcl
 source $HOME/scripts/process_file.tcl
 source $HOME/scripts/toggle.tcl
+source $HOME/scripts/comb.tcl
 
 set last_lb_index ""
 
@@ -117,6 +118,7 @@ proc highlight_listbox {} {
   global uncov_fgColor uncov_bgColor lb_fgColor lb_bgColor
   global line_summary_total line_summary_hit
   global toggle_summary_total toggle_summary_hit01 toggle_summary_hit10
+  global comb_summary_total comb_summary_hit
 
   if {$file_name != 0} {
 
@@ -130,6 +132,8 @@ proc highlight_listbox {} {
         tcl_func_get_toggle_summary $mod_name
         set fully_covered [expr [expr $toggle_summary_total == $toggle_summary_hit01] && [expr $toggle_summary_total == $toggle_summary_hit10]]
       } elseif {$cov_rb == "comb"} {
+        tcl_func_get_comb_summary $mod_name
+        set fully_covered [expr $comb_summary_total == $comb_summary_hit]
       } elseif {$cov_rb == "fsm"} {
       } else {
         # ERROR
@@ -183,14 +187,14 @@ proc populate_text {} {
 
 }
 
-proc bgerror {msg} {
+# proc bgerror {msg} {
 
   ;# Remove the status window if it exists
-  destroy .status
+#   destroy .status
 
   ;# Display error message
-  set retval [tk_messageBox -message $msg -title "Error" -type ok]
+#   set retval [tk_messageBox -message $msg -title "Error" -type ok]
 
-}
+# }
 
 main_view

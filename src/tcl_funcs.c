@@ -15,6 +15,10 @@
 #include "gui.h"
 #include "link.h"
 #include "util.h"
+#include "line.h"
+#include "toggle.h"
+#include "comb.h"
+#include "expr.h"
 
 
 extern mod_link* mod_head;
@@ -323,6 +327,114 @@ int tcl_func_get_toggle_coverage( ClientData d, Tcl_Interp* tcl, int argc, const
 
 }
 
+int tcl_func_collect_combs( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+
+  int          retval = TCL_OK;
+  char*        modname;
+  expression** covs;
+  expression** uncovs;
+  int          cov_cnt;
+  int          uncov_cnt;
+  int          i;
+  char         str[85];
+  int          startline;
+  expression*  last;
+
+  modname   = strdup_safe( argv[1], __FILE__, __LINE__ );
+  startline = atol( argv[2] );
+
+  if( combination_collect( modname, &covs, &cov_cnt, &uncovs, &uncov_cnt ) ) {
+
+    /* Load uncovered statements into Tcl */
+    for( i=0; i<uncov_cnt; i++ ) {
+      last = expression_get_last_line_expr( uncovs[i] );
+      snprintf( str, 85, "%d.%d %d.%d %d", (uncovs[i]->line - (startline - 1)), (((uncovs[i]->col >> 16) & 0xffff) + 9),
+                                           (last->line      - (startline - 1)), ((last->col              & 0xffff) + 10),
+                                           uncovs[i]->id );
+      if( i == 0 ) {
+        Tcl_SetVar( tcl, "uncovered_combs", str, (TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT) );
+      } else {
+        Tcl_SetVar( tcl, "uncovered_combs", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      }
+    }
+
+    /* Load covered statements into Tcl */
+    for( i=0; i<cov_cnt; i++ ) {
+      last = expression_get_last_line_expr( covs[i] );
+      snprintf( str, 85, "%d.%d %d.%d %d", (covs[i]->line - (startline - 1)), (((covs[i]->col >> 16) & 0xffff) + 9),
+                                           (last->line    - (startline - 1)), ((last->col            & 0xffff) + 10),
+                                           covs[i]->id );
+      if( i == 0 ) {
+        Tcl_SetVar( tcl, "covered_combs", str, (TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT) );
+      } else {
+        Tcl_SetVar( tcl, "covered_combs", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      }
+    }
+
+    /* Deallocate memory */
+    free_safe( uncovs );
+    free_safe( covs   );
+
+  } else {
+
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find module %s in design", argv[1] );
+    Tcl_AddErrorInfo( tcl, user_msg );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    retval = TCL_ERROR;
+
+  }
+
+  free_safe( modname );
+
+  return( retval );
+
+}
+
+int tcl_func_get_comb_coverage( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+
+  int   retval = TCL_OK;
+  char* modname;
+  char* signame;
+  int   msb;
+  int   lsb;
+  char* tog01;
+  char* tog10;
+  char  tmp[20];
+
+#ifdef SKIP
+  modname = strdup_safe( argv[1], __FILE__, __LINE__ );
+
+  if( combination_get_coverage( modname, signame, &msb, &lsb, &tog01, &tog10 ) ) {
+
+    snprintf( tmp, 20, "%d", msb );
+    Tcl_SetVar( tcl, "toggle_msb", tmp, TCL_GLOBAL_ONLY );
+    snprintf( tmp, 20, "%d", lsb );
+    Tcl_SetVar( tcl, "toggle_lsb", tmp, TCL_GLOBAL_ONLY );
+    Tcl_SetVar( tcl, "toggle01_verbose", tog01, TCL_GLOBAL_ONLY );
+    Tcl_SetVar( tcl, "toggle10_verbose", tog10, TCL_GLOBAL_ONLY );
+
+    /* Free up allocated memory */
+    free_safe( tog01 );
+    free_safe( tog10 );
+
+  } else {
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find module %s in design", argv[1] );
+    Tcl_AddErrorInfo( tcl, user_msg );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    retval = TCL_ERROR;
+  }
+
+  /* Free up allocated memory */
+  free_safe( modname );
+  free_safe( signame );
+#else
+  printf( "In tcl_func_get_comb_coverage\n" );
+#endif
+
+  return( retval );
+
+}
+
 int tcl_func_open_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
   int   retval = TCL_OK;
@@ -457,6 +569,34 @@ int tcl_func_get_toggle_summary( ClientData d, Tcl_Interp* tcl, int argc, const 
 
 }
 
+int tcl_func_get_comb_summary( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+
+  int   retval = TCL_OK;  /* Return value for this function                 */
+  char* mod_name;         /* Name of module to lookup                       */
+  int   total;            /* Contains total number of expressions evaluated */
+  int   hit;              /* Contains total number of expressions hit       */
+  char  value[20];        /* String version of a value                      */
+
+  mod_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+
+  if( combination_get_module_summary( mod_name, &total, &hit ) ) {
+    snprintf( value, 20, "%d", total );
+    Tcl_SetVar( tcl, "comb_summary_total", value, TCL_GLOBAL_ONLY );
+    snprintf( value, 20, "%d", hit );
+    Tcl_SetVar( tcl, "comb_summary_hit", value, TCL_GLOBAL_ONLY );
+  } else {
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find module %s", mod_name );
+    Tcl_AddErrorInfo( tcl, user_msg );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    retval = TCL_ERROR;
+  }
+
+  free_safe( mod_name );
+
+  return( retval );
+
+}
+
 void tcl_func_initialize( Tcl_Interp* tcl, char* home ) {
 
   Tcl_CreateCommand( tcl, "tcl_func_get_module_list",           (Tcl_CmdProc*)(tcl_func_get_module_list),           0, 0 );
@@ -466,6 +606,7 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* home ) {
   Tcl_CreateCommand( tcl, "tcl_func_collect_covered_lines",     (Tcl_CmdProc*)(tcl_func_collect_covered_lines),     0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_collect_uncovered_toggles", (Tcl_CmdProc*)(tcl_func_collect_uncovered_toggles), 0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_collect_covered_toggles",   (Tcl_CmdProc*)(tcl_func_collect_covered_toggles),   0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_collect_combs",             (Tcl_CmdProc*)(tcl_func_collect_combs),             0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_module_start_and_end",  (Tcl_CmdProc*)(tcl_func_get_module_start_and_end),  0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_toggle_coverage",       (Tcl_CmdProc*)(tcl_func_get_toggle_coverage),       0, 0 ); 
   Tcl_CreateCommand( tcl, "tcl_func_open_cdd",                  (Tcl_CmdProc*)(tcl_func_open_cdd),                  0, 0 );
@@ -473,6 +614,7 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* home ) {
   Tcl_CreateCommand( tcl, "tcl_func_merge_cdd",                 (Tcl_CmdProc*)(tcl_func_merge_cdd),                 0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_line_summary",          (Tcl_CmdProc*)(tcl_func_get_line_summary),          0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_toggle_summary",        (Tcl_CmdProc*)(tcl_func_get_toggle_summary),        0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_get_comb_summary",          (Tcl_CmdProc*)(tcl_func_get_comb_summary),          0, 0 );
 
   /* Set HOME variable to location of scripts */
   Tcl_SetVar( tcl, "HOME", home, TCL_GLOBAL_ONLY );
@@ -481,6 +623,10 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* home ) {
 
 /*
  $Log$
+ Revision 1.8  2004/08/10 17:23:58  phase1geo
+ Fixing various user-related problems with interface.  Things are working pretty
+ well at this point, I believe.
+
  Revision 1.7  2004/08/10 15:58:13  phase1geo
  Fixing problems with toggle coverage when modules start on lines above 1 and
  problems when signal is a single or multi-bit select.

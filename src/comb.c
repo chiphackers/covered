@@ -39,6 +39,7 @@
 #include "vector.h"
 #include "expr.h"
 #include "iter.h"
+#include "link.h"
 
 
 extern mod_inst*    instance_root;
@@ -312,6 +313,33 @@ void combination_get_stats( exp_link* expl, float* total, int* hit ) {
     }
     curr_exp = curr_exp->next;
   }
+
+}
+
+// bool toggle_get_coverage( char* mod_name, char* sig_name, int* msb, int* lsb, char** tog01, char** tog10 );
+
+bool combination_get_module_summary( char* mod_name, int* total, int* hit ) {
+
+  bool      retval = TRUE;  /* Return value of this function */
+  module    mod;            /* Module used for searching     */
+  mod_link* modl;           /* Pointer to found module link  */
+  char      tmp[21];        /* Temporary string for total    */
+
+  mod.name = mod_name;
+
+  if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
+
+    snprintf( tmp, 21, "%20.0f", modl->mod->stat->comb_total );
+    assert( sscanf( tmp, "%d", total ) == 1 );
+    *hit = modl->mod->stat->comb_hit;
+
+  } else {
+
+    retval = FALSE;
+
+  }
+
+  return( retval );
 
 }
 
@@ -1521,6 +1549,78 @@ void combination_module_verbose( FILE* ofile, mod_link* head ) {
 
 }
 
+bool combination_collect( const char* mod_name, expression*** covs, int* cov_cnt, expression*** uncovs, int* uncov_cnt ) {
+
+  bool      retval = TRUE;   /* Return value of this function                                             */
+  module    mod;             /* Module used for searching                                                 */
+  mod_link* modl;            /* Pointer to found module link                                              */
+  stmt_iter stmti;           /* Statement list iterator                                                   */
+  int       any_missed;      /* Specifies if any of the subexpressions were missed in this expression     */
+  int       any_measurable;  /* Specifies if any of the subexpressions were measurable in this expression */
+  int       cov_size;        /* Current maximum allocated space in covs array                             */
+  int       uncov_size;      /* Current maximum allocated space in uncovs array                           */
+ 
+  /* First, find module in module array */
+  mod.name = strdup_safe( mod_name, __FILE__, __LINE__ );
+  if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
+
+    /* Create an array that will hold the number of uncovered combinations */
+    cov_size   = 20;
+    uncov_size = 20;
+    *cov_cnt   = 0;
+    *uncov_cnt = 0;
+    *covs      = (expression**)malloc_safe( (sizeof( expression* ) * cov_size),   __FILE__, __LINE__ );
+    *uncovs    = (expression**)malloc_safe( (sizeof( expression* ) * uncov_size), __FILE__, __LINE__ );
+
+    /* Display current instance missed lines */
+    stmt_iter_reset( &stmti, modl->mod->stmt_tail );
+    stmt_iter_find_head( &stmti, FALSE );
+
+    while( stmti.curr != NULL ) {
+
+      any_missed     = 0;
+      any_measurable = 0;
+
+      combination_output_expr( stmti.curr->stmt->exp, 0, &any_missed, &any_measurable );
+
+      /* Check for uncovered statements */
+      if( any_missed == 1 ) {
+        if( stmti.curr->stmt->exp->line != 0 ) {
+          if( *uncov_cnt == uncov_size ) {
+            uncov_size += 20;
+            *uncovs     = (expression**)realloc( *uncovs, (sizeof( expression* ) * uncov_size) );
+          }
+          (*uncovs)[(*uncov_cnt)] = stmti.curr->stmt->exp;
+          (*uncov_cnt)++;
+        }
+        stmti.curr->stmt->exp->suppl = stmti.curr->stmt->exp->suppl & ~(0x1 << SUPPL_LSB_COMB_CNTD);
+      }
+
+      /* Check for covered statements */
+      if( (any_missed == 0) && (any_measurable == 1) ) {
+        if( stmti.curr->stmt->exp->line != 0 ) {
+          if( *cov_cnt == cov_size ) {
+            cov_size += 20;
+            *covs     = (expression**)realloc( *covs, (sizeof( expression* ) * cov_size) );
+          }
+          (*covs)[(*cov_cnt)] = stmti.curr->stmt->exp;
+          (*cov_cnt)++;
+        }
+        stmti.curr->stmt->exp->suppl = stmti.curr->stmt->exp->suppl & ~(0x1 << SUPPL_LSB_COMB_CNTD);
+      }
+
+      stmt_iter_get_next_in_order( &stmti );
+
+    }
+
+  }
+
+  free_safe( mod.name );
+
+  return( retval );
+
+}
+
 /*!
  \param ofile     Pointer to file to output results to.
  \param verbose   Specifies whether or not to provide verbose information
@@ -1580,6 +1680,11 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.98  2004/03/20 15:26:50  phase1geo
+ Fixing assertion error in report command for multi-value expression display.
+ Added multi_exp3 report information to regression suite and fixed regression
+ Makefile.
+
  Revision 1.97  2004/03/19 22:34:23  phase1geo
  Removing assertion error from DELAY expression underline output.
 

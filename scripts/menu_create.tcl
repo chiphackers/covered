@@ -92,9 +92,11 @@ proc menu_create {.menubar} {
     set text_x [.bot.txt xview]
     set text_y [.bot.txt yview]
     if {$cov_rb == "line"} {
-      calc_and_display_line_cov
+      display_line_cov
     } elseif {$cov_rb == "toggle"} {
-      calc_and_display_toggle_cov
+      display_toggle_cov
+    } elseif {$cov_rb == "comb"} {
+      display_comb_cov
     } else {
       # Error
     }
@@ -105,9 +107,11 @@ proc menu_create {.menubar} {
     set text_x [.bot.txt xview]
     set text_y [.bot.txt yview]
     if {$cov_rb == "line"} {
-      calc_and_display_line_cov
+      display_line_cov
     } elseif {$cov_rb == "toggle"} {
-      calc_and_display_toggle_cov
+      display_toggle_cov
+    } elseif {$cov_rb == "comb"} {
+      display_comb_cov
     } else {
       # Error
     }
@@ -132,6 +136,8 @@ proc menu_create {.menubar} {
       display_line_cov
     } elseif {$cov_rb == "toggle"} {
       display_toggle_cov
+    } elseif {$cov_rb == "comb"} {
+      display_comb_cov
     } else {
       # Error
     }
@@ -151,6 +157,8 @@ proc menu_create {.menubar} {
       display_line_cov
     } elseif {$cov_rb == "toggle"} {
       display_toggle_cov
+    } elseif {$cov_rb == "comb"} {
+      display_comb_cov
     } else {
       # Error
     }
@@ -172,6 +180,8 @@ proc menu_create {.menubar} {
       display_line_cov
     } elseif {$cov_rb == "toggle"} {
       display_toggle_cov
+    } elseif {$cov_rb == "comb"} {
+      display_comb_cov
     } else {
       # Error
     }
@@ -191,6 +201,8 @@ proc menu_create {.menubar} {
       display_line_cov
     } elseif {$cov_rb == "toggle"} {
       display_toggle_cov
+    } elseif {$cov_rb == "comb"} {
+      display_comb_cov
     } else {
       # Error
     }

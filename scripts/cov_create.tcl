@@ -49,7 +49,7 @@ proc cov_create {.covbox} {
       .bot.txt xview moveto [lindex $text_x 0]
       .bot.txt yview moveto [lindex $text_y 0]
     }
-  } -state disabled
+  }
   radiobutton .covbox.fsm  -variable cov_rb -value fsm    -text "FSM" -command {
     if {$file_name != 0} {
       set text_x [.bot.txt xview]
