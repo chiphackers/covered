@@ -1,5 +1,19 @@
 Covered-Related NEWS
 ====================
+    * 7/7/2002
+
+Release covered-20020711 made.  This release contains a lot of fixes to the score and report
+commands.  Proper support for `include and `define preprocessor now available.  Fixes to the
+-y, -I, and -f options to score command.  These now seem to working correctly.  Added -D and
+-Q options to covered (for score, merge and report commands) for adjusting amount of output
+to the screen.  The -D option causes debug information to be spewed to standard output for
+debugging tool problems (not recommended for standard usage).  The -Q option will omit all
+output to standard output (stderr is still displayed).  By default, the minimal amount of output
+is displayed to show tool progress.  Added proper support for default case, casex and casez
+statements.  Fixed a lot of problems in the report command output, including reformatting the
+toggle information to help make this more readable.  Lots of bug fixes and support enhancements
+make upgrading to this version worthwhile.
+
     * 7/6/2002
 
 Second release of Covered (covered-20020706) made.  Proper support for case, casex and casez

@@ -835,6 +835,11 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.31  2002/07/10 13:15:57  phase1geo
+/* Adding case1.1.v Verilog diagnostic to check default case statement.  There
+/* were reporting problems related to this.  Report problems have been fixed and
+/* full regression passes.
+/*
 /* Revision 1.30  2002/07/10 04:57:07  phase1geo
 /* Adding bits to vector nibble to allow us to specify what type of input
 /* static value was read in so that the output value may be displayed in
