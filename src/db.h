@@ -36,7 +36,7 @@ void db_add_vector_param( vsignal* sig, expression* parm_exp, int type );
 void db_add_defparam( char* name, expression* expr );
 
 /*! \brief Adds specified vsignal to vsignal list.  Called by parser. */
-void db_add_signal( char* name, static_expr* left, static_expr* right );
+void db_add_signal( char* name, static_expr* left, static_expr* right, int inport );
 
 /*! \brief Called when the endmodule keyword is parsed. */
 void db_end_module( int end_line );
@@ -103,6 +103,10 @@ void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.36  2004/04/19 04:54:55  phase1geo
+ Adding first and last column information to expression and related code.  This is
+ not working correctly yet.
+
  Revision 1.35  2004/03/30 15:42:14  phase1geo
  Renaming signal type to vsignal type to eliminate compilation problems on systems
  that contain a signal type in the OS.

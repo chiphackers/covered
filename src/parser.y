@@ -123,7 +123,7 @@ int yydebug = 1;
 
 %token KK_attribute
 
-%type <integer>   net_type
+%type <integer>   net_type port_type
 %type <vecwidth>  range_opt range
 %type <statexp>   static_expr static_expr_primary
 %type <text>      identifier
@@ -1320,7 +1320,7 @@ module_item
       if( ($2 == 1) && ($3 != NULL) ) {
         /* Creating signal(s) */
         while( curr != NULL ) {
-          db_add_signal( curr->str, $3->left, $3->right );
+          db_add_signal( curr->str, $3->left, $3->right, 0 );
           curr = curr->next;
         }
       }
@@ -1341,7 +1341,7 @@ module_item
       if( ($2 == 1) && ($3 != NULL) ) {
         /* Create signal(s) */
         while( curr != NULL ) {
-          db_add_signal( curr->sig_name, $3->left, $3->right );
+          db_add_signal( curr->sig_name, $3->left, $3->right, 0 );
           if( curr->exp != NULL ) {
             tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, curr->exp->line, 0, 0, curr->sig_name );
             tmp  = db_create_expression( curr->exp, tmp, EXP_OP_BASSIGN, FALSE, curr->exp->line, 0, 0, NULL );
@@ -1385,7 +1385,7 @@ module_item
         left.num  = 1;
         right.num = 0;
         while( curr != NULL ) {
-          db_add_signal( curr->sig_name, &left, &right );
+          db_add_signal( curr->sig_name, &left, &right, 0 );
           if( curr->exp != NULL ) {
             tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, curr->exp->line, 0, 0, curr->sig_name );
             tmp  = db_create_expression( curr->exp, tmp, EXP_OP_BASSIGN, FALSE, curr->exp->line, 0, 0, NULL );
@@ -1415,7 +1415,7 @@ module_item
       str_link* tmp  = $5;
       str_link* curr = tmp;
       while( curr != NULL ) {
-        db_add_signal( curr->str, $3->left, $3->right );
+        db_add_signal( curr->str, $3->left, $3->right, 0 );
         curr = curr->next;
       }
       str_link_delete_list( $5 );
@@ -1429,7 +1429,7 @@ module_item
       str_link* tmp  = $3;
       str_link* curr = tmp;
       while( curr != NULL ) {
-        db_add_signal( curr->str, $2->left, $2->right );
+        db_add_signal( curr->str, $2->left, $2->right, $1 );
         curr = curr->next;
       }
       str_link_delete_list( $3 );
@@ -1444,7 +1444,7 @@ module_item
       str_link* tmp  = $4;
       str_link* curr = tmp;
       while( curr != NULL ) {
-        db_add_signal( curr->str, $3->left, $3->right );
+        db_add_signal( curr->str, $3->left, $3->right, $1 );
         curr = curr->next;
       }
       str_link_delete_list( $4 );
@@ -1505,7 +1505,7 @@ module_item
       if( ignore_mode == 0 ) {
         while( curr != NULL ) {
           snprintf( tmp, 256, "!%s", curr->str );
-          db_add_signal( tmp, NULL, NULL );
+          db_add_signal( tmp, NULL, NULL, 0 );
           curr = curr->next;
         }
         str_link_delete_list( $2 );
@@ -2287,7 +2287,7 @@ block_item_decl
       str_link* curr = tmp;
       if( ignore_mode == 0 ) {
         while( curr != NULL ) {
-          db_add_signal( curr->str, $2->left, $2->right );
+          db_add_signal( curr->str, $2->left, $2->right, 0 );
           curr = curr->next;
         }
         str_link_delete_list( tmp );
@@ -2309,7 +2309,7 @@ block_item_decl
         left.exp  = NULL;
         right.exp = NULL;
         while( curr != NULL ) {
-          db_add_signal( curr->str, &left, &right );
+          db_add_signal( curr->str, &left, &right, 0 );
           curr = curr->next;
         }
         str_link_delete_list( tmp );
@@ -2322,7 +2322,7 @@ block_item_decl
       str_link* curr = tmp;
       if( ignore_mode == 0 ) {
         while( curr != NULL ) {
-          db_add_signal( curr->str, $3->left, $3->right );
+          db_add_signal( curr->str, $3->left, $3->right, 0 );
           curr = curr->next;
         }
         str_link_delete_list( tmp );
@@ -2344,7 +2344,7 @@ block_item_decl
         left.exp  = NULL;
         right.exp = NULL;
         while( curr != NULL ) {
-          db_add_signal( curr->str, &left, &right );
+          db_add_signal( curr->str, &left, &right, 0 );
           curr = curr->next;
         }
         str_link_delete_list( tmp );
@@ -2357,7 +2357,7 @@ block_item_decl
       if( ignore_mode == 0 ) {
         while( curr != NULL ) {
           snprintf( tmp, 256, "!%s", curr->str );
-          db_add_signal( tmp, NULL, NULL );
+          db_add_signal( tmp, NULL, NULL, 0 );
           curr = curr->next;
         }
         str_link_delete_list( $2 );
@@ -2370,7 +2370,7 @@ block_item_decl
       if( ignore_mode == 0 ) {
         while( curr != NULL ) {
           snprintf( tmp, 256, "!%s", curr->str );
-          db_add_signal( tmp, NULL, NULL );
+          db_add_signal( tmp, NULL, NULL, 0 );
           curr = curr->next;
         }
         str_link_delete_list( $2 );
@@ -2383,7 +2383,7 @@ block_item_decl
       if( ignore_mode == 0 ) {
         while( curr != NULL ) {
           snprintf( tmp, 256, "!%s", curr->str );
-          db_add_signal( tmp, NULL, NULL );
+          db_add_signal( tmp, NULL, NULL, 0 );
           curr = curr->next;
         }
         str_link_delete_list( $2 );
@@ -2396,7 +2396,7 @@ block_item_decl
       if( ignore_mode == 0 ) {
         while( curr != NULL ) {
           snprintf( tmp, 256, "!%s", curr->str );
-          db_add_signal( tmp, NULL, NULL );
+          db_add_signal( tmp, NULL, NULL, 0 );
           curr = curr->next;
         }
         str_link_delete_list( $2 );
@@ -3145,8 +3145,17 @@ charge_strength
 
 port_type
   : K_input
+    {
+      $$ = 1;
+    }
   | K_output
+    {
+      $$ = 0;
+    }
   | K_inout
+    {
+      $$ = 1;
+    }
   ;
 
 defparam_assign_list

@@ -18,12 +18,18 @@ void race_add_inport_sig( vsignal* sig );
 /*! \brief Parses entire statement tree pointed to by stmt, adding all found signals within it to the stmt_sig list */
 void race_find_and_add_stmt_sigs( statement* stmt, statement* root );
 
+/*! \brief Displays contents of stmt_sig array to standard output */
+void race_stmt_sig_display();
+
 /*! \brief Deallocates specified stmt_sig structure from memory */
-void race_stmt_sig_dealloc( stmt_sig* ss );
+void race_stmt_sig_dealloc();
 
 
 /*
  $Log$
+ Revision 1.3  2004/12/17 22:29:36  phase1geo
+ More code added to race condition feature.  Still not usable.
+
  Revision 1.2  2004/12/17 14:27:46  phase1geo
  More code added to race condition checker.  This is in an unusable state at
  this time.

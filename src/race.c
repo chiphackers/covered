@@ -27,6 +27,7 @@
  been set by the user.
 */
 
+#include <stdio.h>
 
 #include "defines.h"
 #include "race.h"
@@ -155,6 +156,9 @@ void race_add_inport_sig( vsignal* sig ) {
     stmt_sig_tail       = ss;
   }
 
+  printf( "Added input port\n" );
+  race_stmt_sig_display();
+
 }
 
 /*!
@@ -176,31 +180,80 @@ void race_find_and_add_stmt_sigs( statement* stmt, statement* root ) {
   assert( stmt != NULL );
   assert( root != NULL );
 
-  race_find_lhs_sigs( stmt->exp, root, FALSE );
+  if( stmt != NULL ) {
+
+    /* Find all LHS assigned signals in current statement expression tree */
+    race_find_lhs_sigs( stmt->exp, root, FALSE );
+
+    /* Traverse TRUE and FALSE paths if STOP and CONTINUOUS bits are not set */
+    if( (SUPPL_IS_STMT_STOP( stmt->exp->suppl ) == 0) &&
+        (SUPPL_IS_STMT_CONTINUOUS( stmt->exp->suppl ) == 0) ) {
+
+      race_find_and_add_stmt_sigs( stmt->next_true,  root );
+
+      /* Traverse FALSE path if it differs from TRUE path */
+      if( stmt->next_true != stmt->next_false ) {
+        race_find_and_add_stmt_sigs( stmt->next_false, root );
+      }
+
+    }
+
+    race_stmt_sig_display();
+
+  }
+
+}
+
+/*!
+ Displays contents of stmt_sig structure array to standard output.  For debugging purposes only.
+*/
+void race_stmt_sig_display() {
+
+  stmt_sig* curr;  /* Pointer to current stmt_sig structure in list */
+
+  printf( "Statement-signal array:\n" );
+
+  curr = stmt_sig_head;
+  while( curr != NULL ) {
+    if( curr->stmt == NULL ) {
+      printf( "  sig_name: %s, input, blocking: %d\n", curr->sig->name, curr->blocking );
+    } else {
+      printf( "  sig_name: %s, stmt_id: %d, blocking: %d\n", curr->sig->name, curr->stmt->exp->id, curr->blocking );
+    } 
+    curr = curr->next;
+  }
 
 }
 
 /*!
  \param ss  Pointer to stmt_sig structure to deallocate
 
- Recursively deallocates specified stmt_sig structure/list from memory.
+ Deallocates stmt_sig structure list from memory.
 */
-void race_stmt_sig_dealloc( stmt_sig* ss ) {
+void race_stmt_sig_dealloc() {
 
-  if( ss != NULL ) {
+  stmt_sig* curr;  /* Pointer to current stmt_sig element to deallocate   */
+  stmt_sig* tmp;   /* Temporary pointer to stmt_sig element to deallocate */
 
-    /* Remove next stmt_sig before removing ourselves */
-    race_stmt_sig_dealloc( ss->next );
-
-    /* Deallocate ourselves now */
-    free_safe( ss );
-
+  /* Deallocate all elements in stmt_sig list */
+  curr = stmt_sig_head;
+  while( curr != NULL ) {
+    tmp  = curr;
+    curr = curr->next;
+    free_safe( tmp );
   }
+
+  /* Set head and tail to NULL */
+  stmt_sig_head = NULL;
+  stmt_sig_tail = NULL;
 
 }
 
 /*
  $Log$
+ Revision 1.5  2004/12/17 22:29:35  phase1geo
+ More code added to race condition feature.  Still not usable.
+
  Revision 1.4  2004/12/17 14:27:46  phase1geo
  More code added to race condition checker.  This is in an unusable state at
  this time.

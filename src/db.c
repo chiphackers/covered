@@ -32,6 +32,7 @@
 #include "fsm.h"
 #include "info.h"
 #include "attr.h"
+#include "race.h"
 
 
 extern char*     top_module;
@@ -619,9 +620,10 @@ void db_add_defparam( char* name, expression* expr ) {
 }
 
 /*!
- \param name   Name of signal being added.
- \param left   Specifies constant value for calculation of left-hand vector value.
- \param right  Specifies constant value for calculation of right-hand vector value.
+ \param name    Name of signal being added.
+ \param left    Specifies constant value for calculation of left-hand vector value.
+ \param right   Specifies constant value for calculation of right-hand vector value.
+ \param inport  Set to 1 if specified signal name is an input port.
 
  Creates a new signal with the specified parameter information and adds this
  to the signal list if it does not already exist.  If width == 0, the sig_msb
@@ -629,7 +631,7 @@ void db_add_defparam( char* name, expression* expr ) {
  add to the current module's parameter list and all associated instances are
  updated to contain new value.
 */
-void db_add_signal( char* name, static_expr* left, static_expr* right ) {
+void db_add_signal( char* name, static_expr* left, static_expr* right, int inport ) {
 
   vsignal  tmpsig;  /* Temporary signal for signal searching */
   vsignal* sig;     /* Container for newly created signal    */
@@ -672,6 +674,11 @@ void db_add_signal( char* name, static_expr* left, static_expr* right ) {
 
     /* Add signal to current module's signal list */
     sig_link_add( sig, &(curr_module->sig_head), &(curr_module->sig_tail) );
+
+    /* Add signal to stmt_sig list for race condition checking if it is an input port */
+    if( inport == 1 ) {
+      race_add_inport_sig( sig );
+    } 
 
   }
   
@@ -1303,6 +1310,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.116  2004/04/21 05:14:03  phase1geo
+ Adding report_gui checking to print_output and adding error handler to TCL
+ scripts.  Any errors occurring within the code will be propagated to the user.
+
  Revision 1.115  2004/04/19 04:54:55  phase1geo
  Adding first and last column information to expression and related code.  This is
  not working correctly yet.
