@@ -175,7 +175,7 @@ coverage.
   </tr>
   <tr>
     <td>
-      -t &lt;number&gt;
+      -ts &lt;number&gt;
     </td>
     <td>
       When scoring occurs, this option allows the user to see how far the simulator

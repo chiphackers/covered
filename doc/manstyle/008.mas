@@ -77,3 +77,10 @@ What logic cannot be currently analyzed?
   <li>System task calls (or any $... call)</li>
 </ol>
 </_pg>
+
+<_pg>
+When logic is encountered that cannot be analyzed within an always block, Covered will
+disregard the entire always block.  If the entire always block cannot be analyzed, it does
+not try to get coverage statistics as these will most likely be incorrect (i.e., disregarded
+logic could affect the state of the logic that is being covered).
+</_pg>

@@ -75,6 +75,9 @@ Performs a defparam on the specified parameter with value.
 \fB\-t\fR \fItop\-level module\fR
 Specifies the module name of the top\-most module that will be measured.  Note that this module does not need to be the top\-most module in the simulator.  This field is required for all calls to the score command.
 .TP 
+\fB\-ts\fR \fInumber\fR
+When scoring occurs, this option allows the user to see how far the simulator has progressed by outputting the current timestep to standard output. The value of \fInumber\fR specifies how many timesteps are allowed to be simulated before outputting the current timestep (results in less calls to output stream).
+.TP 
 \fB\-T min|typ|max\fR
 Specifies which value to use when encountering a delay expression in the form:  min:typ:max.  If this option is not specified, 'typ' select is used by default.
 .TP 
