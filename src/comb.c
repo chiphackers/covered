@@ -935,10 +935,11 @@ void combination_unary( FILE* ofile, expression* exp, int id, char* op ) {
 
   fprintf( ofile, "Expression %d   (%d/2)\n", id, hit );
   fprintf( ofile, "^^^^^^^^^^^^^ - %s\n", op );
+  fprintf( ofile, " E | E\n" );
   fprintf( ofile, "=0=|=1=\n" );
   fprintf( ofile, " %c   %c\n\n",
-		  ((SUPPL_WAS_FALSE( exp->suppl ) == 1) ? ' ' : 'M'),
-		  ((SUPPL_WAS_TRUE( exp->suppl )  == 1) ? ' ' : 'M') );
+		  ((SUPPL_WAS_FALSE( exp->suppl ) == 1) ? ' ' : '*'),
+		  ((SUPPL_WAS_TRUE( exp->suppl )  == 1) ? ' ' : '*') );
 
 }
 
@@ -978,10 +979,10 @@ void combination_two_vars( FILE* ofile, expression* exp, int val0, int val1, int
   fprintf( ofile, " LR | LR | LR | LR \n" );
   fprintf( ofile, "=00=|=01=|=10=|=11=\n" );
   fprintf( ofile, " %c    %c    %c    %c\n\n",
-                  ((((exp->suppl >> SUPPL_LSB_EVAL_00) & 0x1) == 1) ? ' ' : 'M'),
-                  ((((exp->suppl >> SUPPL_LSB_EVAL_01) & 0x1) == 1) ? ' ' : 'M'),
-                  ((((exp->suppl >> SUPPL_LSB_EVAL_10) & 0x1) == 1) ? ' ' : 'M'),
-                  ((((exp->suppl >> SUPPL_LSB_EVAL_11) & 0x1) == 1) ? ' ' : 'M') );
+                  ((((exp->suppl >> SUPPL_LSB_EVAL_00) & 0x1) == 1) ? ' ' : '*'),
+                  ((((exp->suppl >> SUPPL_LSB_EVAL_01) & 0x1) == 1) ? ' ' : '*'),
+                  ((((exp->suppl >> SUPPL_LSB_EVAL_10) & 0x1) == 1) ? ' ' : '*'),
+                  ((((exp->suppl >> SUPPL_LSB_EVAL_11) & 0x1) == 1) ? ' ' : '*') );
 
 }
 
@@ -1023,9 +1024,9 @@ void combination_multi_var_exprs( char** line1, char** line2, char** line3, expr
       }
       curr_id_str[i] = '\0';
       if( and_op ) {
-        snprintf( left_line3, (curr_id_str_len + 4), " %c%s  ", ((SUPPL_WAS_FALSE( exp->left->suppl ) == 1) ? ' ' : 'M'), curr_id_str );
+        snprintf( left_line3, (curr_id_str_len + 4), " %c%s  ", ((SUPPL_WAS_FALSE( exp->left->suppl ) == 1) ? ' ' : '*'), curr_id_str );
       } else {
-        snprintf( left_line3, (curr_id_str_len + 4), " %c%s  ", ((SUPPL_WAS_TRUE( exp->left->suppl )  == 1) ? ' ' : 'M'), curr_id_str );
+        snprintf( left_line3, (curr_id_str_len + 4), " %c%s  ", ((SUPPL_WAS_TRUE( exp->left->suppl )  == 1) ? ' ' : '*'), curr_id_str );
       }
 
     } else {
@@ -1057,10 +1058,10 @@ void combination_multi_var_exprs( char** line1, char** line2, char** line3, expr
     curr_id_str[i] = '\0';
     if( and_op ) {
       snprintf( *line3, (strlen( left_line3 ) + curr_id_str_len + 4), "%s %c%s  ",
-                left_line3, ((SUPPL_WAS_FALSE( exp->right->suppl ) == 1) ? ' ' : 'M'), curr_id_str );
+                left_line3, ((SUPPL_WAS_FALSE( exp->right->suppl ) == 1) ? ' ' : '*'), curr_id_str );
     } else {
       snprintf( *line3, (strlen( left_line3 ) + curr_id_str_len + 4), "%s %c%s  ",
-                left_line3, ((SUPPL_WAS_TRUE( exp->right->suppl )  == 1) ? ' ' : 'M'),  curr_id_str );
+                left_line3, ((SUPPL_WAS_TRUE( exp->right->suppl )  == 1) ? ' ' : '*'),  curr_id_str );
     }
     free_safe( left_line1 );
     free_safe( left_line2 );
@@ -1077,11 +1078,11 @@ void combination_multi_var_exprs( char** line1, char** line2, char** line3, expr
       if( and_op ) {
         snprintf( *line1, (strlen( left_line1 ) + 7), "%s All",   left_line1 );
         snprintf( *line2, (strlen( left_line2 ) + 7), "%s==1==",  left_line2 );
-        snprintf( *line3, (strlen( left_line3 ) + 7), "%s  %c  ", left_line3, ((((exp->suppl >> SUPPL_LSB_EVAL_11) & 0x1) == 1) ? ' ' : 'M') );
+        snprintf( *line3, (strlen( left_line3 ) + 7), "%s  %c  ", left_line3, ((((exp->suppl >> SUPPL_LSB_EVAL_11) & 0x1) == 1) ? ' ' : '*') );
       } else {
         snprintf( *line1, (strlen( left_line1 ) + 7), "%s All",   left_line1 );
         snprintf( *line2, (strlen( left_line2 ) + 7), "%s==0==",  left_line2 );
-        snprintf( *line3, (strlen( left_line3 ) + 7), "%s  %c  ", left_line3, ((((exp->suppl >> SUPPL_LSB_EVAL_00) & 0x1) == 1) ? ' ' : 'M') );
+        snprintf( *line3, (strlen( left_line3 ) + 7), "%s  %c  ", left_line3, ((((exp->suppl >> SUPPL_LSB_EVAL_00) & 0x1) == 1) ? ' ' : '*') );
       }
       free_safe( left_line1 );
       free_safe( left_line2 );
@@ -1518,6 +1519,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.79  2004/01/09 23:50:08  phase1geo
+ Updated look of unary, two vars and multi vars combinational logic report
+ output to be more succinct.
+
  Revision 1.78  2004/01/03 06:03:51  phase1geo
  Fixing file changes from last checkin.
 
