@@ -77,7 +77,7 @@ void report_usage() {
   printf( "      -v                      Provide verbose information in report.  Default is summarize.\n" );
   printf( "      -i                      Provides coverage information for instances instead of module.\n" );
   printf( "      -o <filename>           File to output report information to.  Default is standard output.\n" );
-  printf( "      -h                      Displays this usage information.\n" );
+  printf( "      -h                      Displays this help information.\n" );
   printf( "\n" );
 
 }
@@ -377,6 +377,9 @@ int command_report( int argc, char** argv ) {
 
 
 /* $Log$
+/* Revision 1.7  2002/07/02 22:37:35  phase1geo
+/* Changing on-line help command calling.  Regenerated documentation.
+/*
 /* Revision 1.6  2002/06/28 03:04:59  phase1geo
 /* Fixing more errors found by diagnostics.  Things are running pretty well at
 /* this point with current diagnostics.  Still some report output problems.
