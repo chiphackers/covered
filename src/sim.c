@@ -68,6 +68,7 @@
 #include "sim.h"
 #include "expr.h"
 #include "vector.h"
+#include "iter.h"
 
 extern nibble or_optab[16];
 
@@ -254,49 +255,51 @@ statement* sim_statement( statement* head_stmt ) {
 */
 void sim_simulate() {
 
-  stmt_link* curr_stmt;   /* Pointer to current statement to simulate */
-  stmt_link* last_stmt;   /* Pointer to last statement evaluated      */
-  stmt_link* tmp_stmt;    /* Pointer to temporary statement holder    */
-
-  /* Get head statement from pre-simulation statement queue */
-  curr_stmt = presim_stmt_head;
-  last_stmt = presim_stmt_head;
-
-  while( curr_stmt != NULL ) {
-
-    assert( curr_stmt->stmt != NULL );
-
-    /* Place current statement into statement simulation engine and call it */
-    curr_stmt->stmt = sim_statement( curr_stmt->stmt );
-
-    /* If the next statement is NULL, this statement tree is done for good so remove */
-    if( curr_stmt->stmt == NULL ) {
-
-      if( curr_stmt == presim_stmt_head ) {
-        presim_stmt_head = curr_stmt->next;
-      } else if( curr_stmt == presim_stmt_tail ) {
-        presim_stmt_tail       = last_stmt;
-        presim_stmt_tail->next = NULL;
+  stmt_iter  curr_stmt;  /* Statement list iterator             */
+  stmt_link* tmp_stmt;   /* Temporary pointer to statement link */
+  
+  stmt_iter_reset( &curr_stmt, presim_stmt_head );
+  
+  while( curr_stmt.curr != NULL ) {
+    
+    assert( curr_stmt.curr->stmt != NULL );
+    
+    curr_stmt.curr->stmt = sim_statement( curr_stmt.curr->stmt );
+    
+    if( curr_stmt.curr->stmt == NULL ) {
+      
+      if( curr_stmt.curr == presim_stmt_head ) {
+        presim_stmt_head      = (stmt_link*)((int)(curr_stmt.curr->ptr) ^ (int)(curr_stmt.last));
+        presim_stmt_head->ptr = (stmt_link*)((int)(curr_stmt.curr) ^ (int)(presim_stmt_head->ptr));
+      } else if( curr_stmt.curr == presim_stmt_tail ) {
+        presim_stmt_tail      = curr_stmt.last;
+        presim_stmt_tail->ptr = (stmt_link*)((int)(curr_stmt.curr) ^ (int)(presim_stmt_tail->ptr));
       } else {
-        last_stmt->next = curr_stmt->next;
+        tmp_stmt            = (stmt_link*)((int)(curr_stmt.last) ^ (int)(curr_stmt.curr->ptr));
+        curr_stmt.last->ptr = tmp_stmt;
+        tmp_stmt->ptr       = (stmt_link*)(((int)(curr_stmt.curr) ^ (int)(tmp_stmt->ptr)) ^ (int)(curr_stmt.last));
       }
-
-      tmp_stmt  = curr_stmt;
-      curr_stmt = curr_stmt->next;
-
-      free_safe( tmp_stmt );
-
+      
+      tmp_stmt = curr_stmt.curr;
+      stmt_iter_next( &curr_stmt );
+      
     } else {
-
-      curr_stmt = curr_stmt->next;
-
+      
+      stmt_iter_next( &curr_stmt );
+      
     }
-
+    
   }
-
+  
 }
 
+
 /* $Log$
+/* Revision 1.21  2002/09/19 05:25:20  phase1geo
+/* Fixing incorrect simulation of static values and fixing reports generated
+/* from these static expressions.  Also includes some modifications for parameters
+/* though these changes are not useful at this point.
+/*
 /* Revision 1.20  2002/07/14 05:10:42  phase1geo
 /* Added support for signal concatenation in score and report commands.  Fixed
 /* bugs in this code (and multiplication).

@@ -17,6 +17,7 @@
 #include "statement.h"
 #include "param.h"
 #include "link.h"
+#include "iter.h"
 
 
 extern char user_msg[USER_MSG_LENGTH];
@@ -139,7 +140,7 @@ bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst ) {
   bool       retval = TRUE;   /* Return value for this function                 */
   sig_link*  curr_sig;        /* Pointer to current module sig_link element     */
   exp_link*  curr_exp;        /* Pointer to current module exp_link element     */
-  stmt_link* curr_stmt;       /* Pointer to current module stmt_link element    */
+  stmt_iter  curr_stmt;       /* Statement list iterator                        */
   inst_parm* curr_parm;       /* Pointer to current instance parameter          */
   int        old_suppl;       /* Contains supplemental value of parameter expr  */
   bool       param_op;        /* Specifies if current expression is a parameter */
@@ -189,10 +190,10 @@ bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst ) {
   // module_display_statements( mod );
 
   /* Now print all statements in module */
-  curr_stmt = mod->stmt_head;
-  while( curr_stmt != NULL ) {
-    statement_db_write( curr_stmt->stmt, file, scope );
-    curr_stmt = curr_stmt->next;
+  stmt_iter_reset( &curr_stmt, mod->stmt_head );
+  while( curr_stmt.curr != NULL ) {
+    statement_db_write( curr_stmt.curr->stmt, file, scope );
+    stmt_iter_next( &curr_stmt );
   }
 
   return( retval );
@@ -241,14 +242,14 @@ bool module_db_read( module* mod, char* scope, char** line ) {
 */
 bool module_db_merge( module* base, FILE* file ) {
 
-  bool       retval = TRUE;   /* Return value of this function                                */
-  exp_link*  curr_base_exp;   /* Pointer to current expression in base module expression list */
-  sig_link*  curr_base_sig;   /* Pointer to current signal in base module signal list         */
-  stmt_link* curr_base_stmt;  /* Pointer to current statement in base module statement list   */
-  char*      curr_line;       /* Pointer to current line being read from CDD                  */
-  char*      rest_line;       /* Pointer to rest of read line                                 */
-  int        type;            /* Specifies currently read CDD type                            */
-  int        chars_read;      /* Number of characters read from current CDD line              */
+  bool      retval = TRUE;   /* Return value of this function                                */
+  exp_link* curr_base_exp;   /* Pointer to current expression in base module expression list */
+  sig_link* curr_base_sig;   /* Pointer to current signal in base module signal list         */
+  stmt_iter curr_base_stmt;  /* Statement list iterator                                      */
+  char*     curr_line;       /* Pointer to current line being read from CDD                  */
+  char*     rest_line;       /* Pointer to rest of read line                                 */
+  int       type;            /* Specifies currently read CDD type                            */
+  int       chars_read;      /* Number of characters read from current CDD line              */
 
   assert( base != NULL );
   assert( base->name != NULL );
@@ -298,8 +299,8 @@ bool module_db_merge( module* base, FILE* file ) {
   }
 
   /* Since statements don't get merged, we will just read these lines in */
-  curr_base_stmt = base->stmt_head;
-  while( (curr_base_stmt != NULL) && retval ) {
+  stmt_iter_reset( &curr_base_stmt, base->stmt_head );
+  while( (curr_base_stmt.curr != NULL) && retval ) {
     if( readline( file, &curr_line ) ) {
       if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
         rest_line = curr_line + chars_read;
@@ -312,7 +313,7 @@ bool module_db_merge( module* base, FILE* file ) {
     } else {
       retval = FALSE;
     }
-    curr_base_stmt = curr_base_stmt->next;
+    stmt_iter_next( &curr_base_stmt );
   }
 
   return( retval );
@@ -433,6 +434,11 @@ void module_dealloc( module* mod ) {
 
 
 /* $Log$
+/* Revision 1.22  2002/10/23 03:39:07  phase1geo
+/* Fixing bug in MBIT_SEL expressions to calculate the expression widths
+/* correctly.  Updated diagnostic testsuite and added diagnostic that
+/* found the original bug.  A few documentation updates.
+/*
 /* Revision 1.21  2002/10/11 05:23:21  phase1geo
 /* Removing local user message allocation and replacing with global to help
 /* with memory efficiency.

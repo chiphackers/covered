@@ -7,6 +7,7 @@ covered_SOURCES = parser.c \
 		  expr.c \
 		  fsm.c \
 		  instance.c \
+ 		  iter.c \
 		  keywords.c \
 		  lexer.c \
 		  line.c \

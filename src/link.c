@@ -15,6 +15,8 @@
 #include "module.h"
 #include "util.h"
 #include "statement.h"
+#include "iter.h"
+
 
 /*!
  \param str   String to add to specified list.
@@ -59,13 +61,14 @@ void stmt_link_add_head( statement* stmt, stmt_link** head, stmt_link** tail ) {
   tmp = (stmt_link*)malloc_safe( sizeof( stmt_link ) );
 
   tmp->stmt = stmt;
-  tmp->next = NULL;
 
   if( *head == NULL ) {
     *head = *tail = tmp;
+    tmp->ptr = NULL;
   } else {
-    tmp->next = *head;
-    *head     = tmp;
+    tmp->ptr     = (stmt_link*)((int)(*head) ^ (int)NULL);
+    (*head)->ptr = (stmt_link*)((int)((*head)->ptr) ^ (int)tmp);
+    *head        = tmp;
   }
 
 }
@@ -85,13 +88,14 @@ void stmt_link_add_tail( statement* stmt, stmt_link** head, stmt_link** tail ) {
   tmp = (stmt_link*)malloc_safe( sizeof( stmt_link ) );
 
   tmp->stmt = stmt;
-  tmp->next = NULL;
 
   if( *head == NULL ) {
     *head = *tail = tmp;
+    tmp->ptr = NULL;
   } else {
-    (*tail)->next = tmp;
-    *tail         = tmp;
+    tmp->ptr     = (stmt_link*)((int)(*tail) ^ (int)NULL);
+    (*tail)->ptr = (stmt_link*)((int)((*tail)->ptr) ^ (int)tmp);
+    *tail        = tmp;
   }
 
 }
@@ -205,14 +209,14 @@ void str_link_display( str_link* head ) {
 */
 void stmt_link_display( stmt_link* head ) {
 
-  stmt_link* curr;    /* Pointer to current stmt_link link to display */
+  stmt_iter curr;   /* Statement list iterator */
 
   printf( "Statement list:\n" );
 
-  curr = head;
-  while( curr != NULL ) {
-    printf( "  id: %d, addr: 0x%lx\n", curr->stmt->exp->id, curr->stmt );
-    curr = curr->next;
+  stmt_iter_reset( &curr, head );
+  while( curr.curr != NULL ) {
+    printf( "  id: %d, addr: 0x%lx\n", curr.curr->stmt->exp->id, curr.curr->stmt );
+    stmt_iter_next( &curr );
   }
 
 }
@@ -225,7 +229,7 @@ void stmt_link_display( stmt_link* head ) {
 */
 void exp_link_display( exp_link* head ) {
 
-  exp_link* curr;    /* Pointer to current exp_link link to display */
+  exp_link* curr;    /* Pointer to current expression link */
 
   printf( "Expression list:\n" );
 
@@ -311,14 +315,14 @@ str_link* str_link_find( char* value, str_link* head ) {
 */
 stmt_link* stmt_link_find( int id, stmt_link* head ) {
 
-  stmt_link* curr;    /* Pointer to current stmt_link link */
+  stmt_iter curr;   /* Statement list iterator */
 
-  curr = head;
-  while( (curr != NULL) && (curr->stmt->exp->id != id) ) {
-    curr = curr->next;
+  stmt_iter_reset( &curr, head );
+  while( (curr.curr != NULL) && (curr.curr->stmt->exp->id != id) ) {
+    stmt_iter_next( &curr );
   }
 
-  return( curr );
+  return( curr.curr );
 
 }
 
@@ -334,11 +338,9 @@ stmt_link* stmt_link_find( int id, stmt_link* head ) {
 */
 exp_link* exp_link_find( expression* exp, exp_link* head ) {
 
-  exp_link* curr;    /* Pointer to current exp_link link */
+  exp_link* curr;   /* Expression list iterator */
 
   curr = head;
-
-  ////// TBD  Need to recursively search each expression tree
   while( (curr != NULL) && (curr->exp->id != exp->id) ) {
     curr = curr->next;
   }
@@ -402,8 +404,8 @@ mod_link* mod_link_find( module* mod, mod_link* head ) {
 */
 void exp_link_remove( expression* exp, exp_link** head, exp_link** tail ) {
 
-  exp_link* curr;        /* Pointer to current expression in list */
-  exp_link* last;        /* Pointer to last expression in list    */
+  exp_link* curr;  /* Pointer to current expression link */
+  exp_link* last;  /* Pointer to last expression link    */
 
   curr = *head;
   last = NULL;
@@ -416,10 +418,10 @@ void exp_link_remove( expression* exp, exp_link** head, exp_link** tail ) {
   if( curr != NULL ) {
 
     if( curr == *head ) {
-      *head         = curr->next;
+      *head = curr->next;
     } else if( curr == *tail ) {
-      *tail         = last;
-      (*tail)->next = NULL;
+      last->next = NULL;
+      *tail      = last;
     } else {
       last->next = curr->next;
     }
@@ -464,20 +466,26 @@ void str_link_delete_list( str_link* head ) {
 */
 void stmt_link_delete_list( stmt_link* head ) {
 
-  stmt_link* tmp;   /* Temporary pointer to current link in list */
+  stmt_iter curr;  /* Statement list iterator */
 
-  while( head != NULL ) {
-
-    tmp  = head;
-    head = tmp->next;
+  stmt_iter_reset( &curr, head );
+  
+  while( curr.curr != NULL ) {
 
     /* Deallocate statement */
-    statement_dealloc( tmp->stmt );
-    tmp->stmt = NULL;
+    statement_dealloc( curr.curr->stmt );
+    curr.curr->stmt = NULL;
+
+    head      = (stmt_link*)((int)(curr.curr->ptr) ^ (int)(curr.last));
+    if( head != NULL ) {
+      head->ptr = (stmt_link*)((int)(curr.curr) ^ (int)(head->ptr));
+    }
 
     /* Deallocate stmt_link element itself */
-    free_safe( tmp );
+    free_safe( curr.curr );
 
+    stmt_iter_reset( &curr, head );
+    
   }
 
 }
@@ -490,22 +498,22 @@ void stmt_link_delete_list( stmt_link* head ) {
 */
 void exp_link_delete_list( exp_link* head, bool del_exp ) {
 
-  exp_link* tmp;   /* Temporary pointer to current link in list */
-
+  exp_link* tmp;  /* Pointer to current expression link to remove */
+  
   while( head != NULL ) {
 
     tmp  = head;
-    head = tmp->next;
-
+    head = head->next;
+    
     /* Deallocate expression */
     if( del_exp ) {
       expression_dealloc( tmp->exp, TRUE );
       tmp->exp = NULL;
     }
-
+    
     /* Deallocate exp_link element itself */
     free_safe( tmp );
-
+    
   }
 
 }
@@ -562,6 +570,9 @@ void mod_link_delete_list( mod_link* head ) {
 
 
 /* $Log$
+/* Revision 1.9  2002/07/23 12:56:22  phase1geo
+/* Fixing some memory overflow issues.  Still getting core dumps in some areas.
+/*
 /* Revision 1.8  2002/07/18 22:02:35  phase1geo
 /* In the middle of making improvements/fixes to the expression/signal
 /* binding phase.

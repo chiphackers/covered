@@ -53,9 +53,9 @@ Report command
 
    1.  Handle combination logic outputting for expression trees that have line-wrap.
 
-   2.  Make sure that verbose line outputting is ordered for each file.
+X  2.  Make sure that verbose line outputting is ordered for each file.
 
-   3.  Make sure that combinational logic outputting is ordered for each file.
+X  3.  Make sure that combinational logic outputting is ordered for each file.
 
 X  4.  Make sure that combinational table output is correct for all cases.
 

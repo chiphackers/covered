@@ -12,6 +12,8 @@
 #include "link.h"
 #include "instance.h"
 #include "codegen.h"
+#include "iter.h"
+
 
 extern mod_inst* instance_root;
 extern mod_link* mod_head;
@@ -32,23 +34,25 @@ extern bool         report_instance;
 */
 void line_get_stats( stmt_link* stmtl, float* total, int* hit ) {
 
-  stmt_link* curr      = stmtl;  /* Pointer to current statement link in list       */
-  int        last_line = -1;     /* Last line number found                          */
+  stmt_iter curr;             /* Statement list iterator */
+  int       last_line = -1;     /* Last line number found                          */
 
-  while( curr != NULL ) {
+  stmt_iter_reset( &curr, stmtl );
+  
+  while( curr.curr != NULL ) {
 
-    if( (SUPPL_OP( curr->stmt->exp->suppl ) != EXP_OP_DELAY) &&
-        (SUPPL_OP( curr->stmt->exp->suppl ) != EXP_OP_CASE)  &&
-        (SUPPL_OP( curr->stmt->exp->suppl ) != EXP_OP_CASEX) &&
-        (SUPPL_OP( curr->stmt->exp->suppl ) != EXP_OP_CASEZ) &&
-        (SUPPL_OP( curr->stmt->exp->suppl ) != EXP_OP_DEFAULT) ) {
+    if( (SUPPL_OP( curr.curr->stmt->exp->suppl ) != EXP_OP_DELAY) &&
+        (SUPPL_OP( curr.curr->stmt->exp->suppl ) != EXP_OP_CASE)  &&
+        (SUPPL_OP( curr.curr->stmt->exp->suppl ) != EXP_OP_CASEX) &&
+        (SUPPL_OP( curr.curr->stmt->exp->suppl ) != EXP_OP_CASEZ) &&
+        (SUPPL_OP( curr.curr->stmt->exp->suppl ) != EXP_OP_DEFAULT) ) {
       *total = *total + 1;
-      if( SUPPL_WAS_EXECUTED( curr->stmt->exp->suppl ) == 1 ) {
+      if( SUPPL_WAS_EXECUTED( curr.curr->stmt->exp->suppl ) == 1 ) {
         (*hit)++;
       }
     }
         
-    curr = curr->next;
+    stmt_iter_next( &curr );
 
   }
 
@@ -153,8 +157,9 @@ bool line_module_summary( FILE* ofile, mod_link* head ) {
 */
 void line_display_verbose( FILE* ofile, stmt_link* stmtl ) {
 
-  expression* unexec_exp;      /* Pointer to current unexecuted expression    */
-  char*       code;            /* Pointer to code string from code generator  */
+  stmt_iter   stmti;       /* Statement list iterator                    */
+  expression* unexec_exp;  /* Pointer to current unexecuted expression   */
+  char*       code;        /* Pointer to code string from code generator */
 
   if( report_covered ) {
     fprintf( ofile, "Hit Lines\n\n" );
@@ -163,17 +168,18 @@ void line_display_verbose( FILE* ofile, stmt_link* stmtl ) {
   }
 
   /* Display current instance missed lines */
-  while( stmtl != NULL ) {
+  stmt_iter_reset( &stmti, stmtl );
+  while( stmti.curr != NULL ) {
 
-    if( (SUPPL_OP( stmtl->stmt->exp->suppl ) != EXP_OP_DELAY) &&
-        (SUPPL_OP( stmtl->stmt->exp->suppl ) != EXP_OP_CASE)  &&
-        (SUPPL_OP( stmtl->stmt->exp->suppl ) != EXP_OP_CASEX) &&
-        (SUPPL_OP( stmtl->stmt->exp->suppl ) != EXP_OP_CASEZ) &&
-        (SUPPL_OP( stmtl->stmt->exp->suppl ) != EXP_OP_DEFAULT) ) {
+    if( (SUPPL_OP( stmti.curr->stmt->exp->suppl ) != EXP_OP_DELAY) &&
+        (SUPPL_OP( stmti.curr->stmt->exp->suppl ) != EXP_OP_CASE)  &&
+        (SUPPL_OP( stmti.curr->stmt->exp->suppl ) != EXP_OP_CASEX) &&
+        (SUPPL_OP( stmti.curr->stmt->exp->suppl ) != EXP_OP_CASEZ) &&
+        (SUPPL_OP( stmti.curr->stmt->exp->suppl ) != EXP_OP_DEFAULT) ) {
 
-      if( SUPPL_WAS_EXECUTED( stmtl->stmt->exp->suppl ) == report_covered ) {
+      if( SUPPL_WAS_EXECUTED( stmti.curr->stmt->exp->suppl ) == report_covered ) {
 
-        unexec_exp = stmtl->stmt->exp;
+        unexec_exp = stmti.curr->stmt->exp;
 
         code = codegen_gen_expr( unexec_exp, unexec_exp->line, SUPPL_OP( unexec_exp->suppl ) );
         fprintf( ofile, "%7d:    %s\n", unexec_exp->line, code );
@@ -183,7 +189,7 @@ void line_display_verbose( FILE* ofile, stmt_link* stmtl ) {
 
     }
 
-    stmtl = stmtl->next;
+    stmt_iter_next( &stmti );
 
   }
 
@@ -213,7 +219,7 @@ void line_instance_verbose( FILE* ofile, mod_inst* root ) {
            root->name );
   fprintf( ofile, "--------------------------------------------------------\n" );
 
-  line_display_verbose( ofile, root->mod->stmt_head );
+  line_display_verbose( ofile, root->mod->stmt_tail );
 
   curr_inst = root->child_head;
   while( curr_inst != NULL ) {
@@ -245,7 +251,7 @@ void line_module_verbose( FILE* ofile, mod_link* head ) {
                head->mod->filename );
       fprintf( ofile, "--------------------------------------------------------\n" );
 
-      line_display_verbose( ofile, head->mod->stmt_head );
+      line_display_verbose( ofile, head->mod->stmt_tail );
   
     }
 
@@ -302,6 +308,11 @@ void line_report( FILE* ofile, bool verbose ) {
 }
 
 /* $Log$
+/* Revision 1.21  2002/10/24 23:19:39  phase1geo
+/* Making some fixes to report output.  Fixing bugs.  Added long_exp1.v diagnostic
+/* to regression suite which finds a current bug in the report underlining
+/* functionality.  Need to look into this.
+/*
 /* Revision 1.20  2002/09/13 05:12:25  phase1geo
 /* Adding final touches to -d option to report.  Adding documentation and
 /* updating development documentation to stay in sync.

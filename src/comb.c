@@ -13,6 +13,7 @@
 #include "util.h"
 #include "vector.h"
 #include "expr.h"
+#include "iter.h"
 
 
 extern mod_inst* instance_root;
@@ -816,9 +817,10 @@ bool combination_missed_expr( expression* expr, unsigned int curr_depth ) {
 */
 void combination_display_verbose( FILE* ofile, stmt_link* stmtl ) {
 
-  expression* unexec_exp;      /* Pointer to current unexecuted expression    */
-  char*       code;            /* Code string from code generator             */
-  int         exp_id;          /* Current expression ID of missed expression  */
+  stmt_iter   stmti;       /* Statement list iterator                     */
+  expression* unexec_exp;  /* Pointer to current unexecuted expression    */
+  char*       code;        /* Code string from code generator             */
+  int         exp_id;      /* Current expression ID of missed expression  */
 
   if( report_covered ) {
     fprintf( ofile, "Hit Combinations\n" );
@@ -827,11 +829,12 @@ void combination_display_verbose( FILE* ofile, stmt_link* stmtl ) {
   }
 
   /* Display current instance missed lines */
-  while( stmtl != NULL ) {
+  stmt_iter_reset( &stmti, stmtl );
+  while( stmti.curr != NULL ) {
 
-    if( combination_missed_expr( stmtl->stmt->exp, 0 ) == !report_covered ) {
+    if( combination_missed_expr( stmti.curr->stmt->exp, 0 ) == !report_covered ) {
 
-      unexec_exp = stmtl->stmt->exp;
+      unexec_exp = stmti.curr->stmt->exp;
       exp_id     = 1;
 
       fprintf( ofile, "====================================================\n" );
@@ -855,7 +858,7 @@ void combination_display_verbose( FILE* ofile, stmt_link* stmtl ) {
 
     }
 
-    stmtl = stmtl->next;
+    stmt_iter_next( &stmti );
 
   }
 
@@ -886,7 +889,7 @@ void combination_instance_verbose( FILE* ofile, mod_inst* root ) {
              root->name );
     fprintf( ofile, "--------------------------------------------------------\n" );
 
-    combination_display_verbose( ofile, root->mod->stmt_head );
+    combination_display_verbose( ofile, root->mod->stmt_tail );
 
     curr_inst = root->child_head;
     while( curr_inst != NULL ) {
@@ -918,7 +921,7 @@ void combination_module_verbose( FILE* ofile, mod_link* head ) {
                head->mod->filename );
       fprintf( ofile, "--------------------------------------------------------\n" );
 
-      combination_display_verbose( ofile, head->mod->stmt_head );
+      combination_display_verbose( ofile, head->mod->stmt_tail );
   
     }
 
@@ -975,6 +978,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 
 /* $Log$
+/* Revision 1.48  2002/10/25 03:44:39  phase1geo
+/* Fixing bug in comb.c that caused statically allocated string to be exceeded
+/* which caused memory corruption problems.  Full regression now passes.
+/*
 /* Revision 1.47  2002/10/24 23:19:38  phase1geo
 /* Making some fixes to report output.  Fixing bugs.  Added long_exp1.v diagnostic
 /* to regression suite which finds a current bug in the report underlining
