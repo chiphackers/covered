@@ -93,8 +93,6 @@ bool line_collect_uncovered( char* mod_name, int** lines, int* line_cnt ) {
   mod.name = mod_name;
   if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
 
-    printf( "Found module: %s\n", mod_name );
-
     /* Create an array that will hold the number of uncovered lines */
     line_size = 20;
     *line_cnt = 0;
@@ -435,6 +433,10 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.35  2003/12/01 23:27:16  phase1geo
+ Adding code for retrieving line summary module coverage information for
+ GUI.
+
  Revision 1.34  2003/11/30 21:50:45  phase1geo
  Modifying line_collect_uncovered function to create array containing all physical
  lines (rather than just uncovered statement starting line values) for more
