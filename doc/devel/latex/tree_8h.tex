@@ -7,9 +7,9 @@ Contains functions for adding, finding, and removing nodes from binary tree.
 \subsection*{Functions}
 \begin{CompactItemize}
 \item 
-{\bf tnode}$\ast$ {\bf tree\_\-add} (const char $\ast$key, const char $\ast$value, {\bf bool} override, {\bf tnode} $\ast$$\ast$root)
+{\bf tnode} $\ast$ {\bf tree\_\-add} (const char $\ast$key, const char $\ast$value, {\bf bool} override, {\bf tnode} $\ast$$\ast$root)
 \begin{CompactList}\small\item\em Adds specified key/value pair to tree as a node.\item\end{CompactList}\item 
-{\bf tnode}$\ast$ {\bf tree\_\-find} (const char $\ast$key, {\bf tnode} $\ast$root)
+{\bf tnode} $\ast$ {\bf tree\_\-find} (const char $\ast$key, {\bf tnode} $\ast$root)
 \begin{CompactList}\small\item\em Returns pointer to tree node that matches specified key.\item\end{CompactList}\item 
 void {\bf tree\_\-remove} (const char $\ast$key, {\bf tnode} $\ast$$\ast$root)
 \begin{CompactList}\small\item\em Removes specified tree node from tree.\item\end{CompactList}\item 
@@ -20,16 +20,10 @@ void {\bf tree\_\-dealloc} ({\bf tnode} $\ast$root)
 \subsection{Detailed Description}
 Contains functions for adding, finding, and removing nodes from binary tree.
 
-
-
 \begin{Desc}
-\item[{\bf Author: }]\par
-Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
-\item[{\bf Date: }]\par
-1/4/2003
-
-\end{Desc}
+\item[Date:]1/4/2003 \end{Desc}
 
 
 \subsection{Function Documentation}
@@ -41,21 +35,12 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 Adds specified key/value pair to tree as a node.
 
 \begin{Desc}
-\item[{\bf Parameters: }]\par
+\item[Parameters:]
 \begin{description}
-\item[
-{\em key}]String containing search key for node retrieval. \item[
-{\em value}]Value associated with this node. \item[
-{\em override}]If TRUE, causes new value to overwrite old value if match found. \item[
-{\em root}]Pointer to root of tree to add to.
-
-\end{description}
+\item[{\em key}]String containing search key for node retrieval. \item[{\em value}]Value associated with this node. \item[{\em override}]If TRUE, causes new value to overwrite old value if match found. \item[{\em root}]Pointer to root of tree to add to.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[{\bf Returns: }]\par
-Returns pointer to newly created tree node.
-
-\end{Desc}
+\item[Returns:]Returns pointer to newly created tree node.\end{Desc}
 Creates new node for this pairing and adds it to the binary tree for quick lookup. \index{tree.h@{tree.h}!tree_dealloc@{tree\_\-dealloc}}
 \index{tree_dealloc@{tree\_\-dealloc}!tree.h@{tree.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void tree\_\-dealloc ({\bf tnode} $\ast$ {\em root})}\label{tree_8h_a3}
@@ -64,12 +49,9 @@ Creates new node for this pairing and adds it to the binary tree for quick looku
 Deallocates entire tree from memory.
 
 \begin{Desc}
-\item[{\bf Parameters: }]\par
+\item[Parameters:]
 \begin{description}
-\item[
-{\em root}]Pointer to root of tree to deallocate.
-
-\end{description}
+\item[{\em root}]Pointer to root of tree to deallocate.\end{description}
 \end{Desc}
 Recursively traverses specified tree, deallocating all memory associated with that tree. \index{tree.h@{tree.h}!tree_find@{tree\_\-find}}
 \index{tree_find@{tree\_\-find}!tree.h@{tree.h}}
@@ -79,19 +61,12 @@ Recursively traverses specified tree, deallocating all memory associated with th
 Returns pointer to tree node that matches specified key.
 
 \begin{Desc}
-\item[{\bf Parameters: }]\par
+\item[Parameters:]
 \begin{description}
-\item[
-{\em key}]Key value to search for in tree. \item[
-{\em root}]Pointer to root of binary tree to search.
-
-\end{description}
+\item[{\em key}]Key value to search for in tree. \item[{\em root}]Pointer to root of binary tree to search.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[{\bf Returns: }]\par
-Returns pointer to found node or NULL if not found.
-
-\end{Desc}
+\item[Returns:]Returns pointer to found node or NULL if not found.\end{Desc}
 Searches binary tree for key that matches the specified name parameter. If found, a pointer to the node is returned; otherwise, the value of NULL is returned. \index{tree.h@{tree.h}!tree_remove@{tree\_\-remove}}
 \index{tree_remove@{tree\_\-remove}!tree.h@{tree.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void tree\_\-remove (const char $\ast$ {\em key}, {\bf tnode} $\ast$$\ast$ {\em root})}\label{tree_8h_a2}
@@ -100,12 +75,8 @@ Searches binary tree for key that matches the specified name parameter. If found
 Removes specified tree node from tree.
 
 \begin{Desc}
-\item[{\bf Parameters: }]\par
+\item[Parameters:]
 \begin{description}
-\item[
-{\em key}]Key to search for and remove from tree. \item[
-{\em root}]Pointer to root of tree to search.
-
-\end{description}
+\item[{\em key}]Key to search for and remove from tree. \item[{\em root}]Pointer to root of tree to search.\end{description}
 \end{Desc}
 Looks up the specified node (based on key value) and removes it from the tree in such a was as to keep the integrity of the tree in check for continual quick searching. 

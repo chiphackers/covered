@@ -28,10 +28,10 @@ struct {\bf keyword}
 \item 
 unsigned int {\bf keyword\_\-hash} (register const char $\ast$str, register unsigned int {\bf len})
 \item 
-const struct {\bf keyword}$\ast$ {\bf check\_\-identifier} (register const char $\ast$str, register unsigned int {\bf len})
+const struct {\bf keyword} $\ast$ {\bf check\_\-identifier} (register const char $\ast$str, register unsigned int {\bf len})
 \item 
 int {\bf lexer\_\-keyword\_\-code} (const char $\ast$str, int length)
-\begin{CompactList}\small\item\em Returns the defined value of the {\bf keyword} {\rm (p.\,\pageref{structkeyword})} or IDENTIFIER if this is not a Verilog {\bf keyword} {\rm (p.\,\pageref{structkeyword})}.\item\end{CompactList}\end{CompactItemize}
+\begin{CompactList}\small\item\em Returns the defined value of the keyword or IDENTIFIER if this is not a Verilog keyword.\item\end{CompactList}\end{CompactItemize}
 
 
 \subsection{Define Documentation}
@@ -65,7 +65,7 @@ int {\bf lexer\_\-keyword\_\-code} (const char $\ast$str, int length)
 \subsection{Function Documentation}
 \index{keywords.c@{keywords.c}!check_identifier@{check\_\-identifier}}
 \index{check_identifier@{check\_\-identifier}!keywords.c@{keywords.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const struct {\bf keyword} $\ast$ check\_\-identifier (register const char $\ast$ {\em str}, register unsigned int {\em len})}\label{keywords_8c_a6}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const struct {\bf keyword}$\ast$ check\_\-identifier (register const char $\ast$ {\em str}, register unsigned int {\em len})}\label{keywords_8c_a6}
 
 
 \index{keywords.c@{keywords.c}!keyword_hash@{keyword\_\-hash}}
@@ -78,5 +78,5 @@ int {\bf lexer\_\-keyword\_\-code} (const char $\ast$str, int length)
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}int lexer\_\-keyword\_\-code (const char $\ast$ {\em str}, int {\em length})}\label{keywords_8c_a7}
 
 
-Returns the defined value of the {\bf keyword} {\rm (p.\,\pageref{structkeyword})} or IDENTIFIER if this is not a Verilog {\bf keyword} {\rm (p.\,\pageref{structkeyword})}.
+Returns the defined value of the keyword or IDENTIFIER if this is not a Verilog keyword.
 

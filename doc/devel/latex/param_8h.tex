@@ -8,19 +8,19 @@ Contains functions and structures necessary to handle parameters.
 \subsection*{Functions}
 \begin{CompactItemize}
 \item 
-{\bf mod\_\-parm}$\ast$ {\bf mod\_\-parm\_\-find} (char $\ast$name, {\bf mod\_\-parm} $\ast$parm)
+{\bf mod\_\-parm} $\ast$ {\bf mod\_\-parm\_\-find} (char $\ast$name, {\bf mod\_\-parm} $\ast$parm)
 \begin{CompactList}\small\item\em Searches specified module parameter list for matching parameter.\item\end{CompactList}\item 
-{\bf mod\_\-parm}$\ast$ {\bf mod\_\-parm\_\-find\_\-sig\_\-dependent} (char $\ast$name, {\bf mod\_\-parm} $\ast$parm)
+{\bf mod\_\-parm} $\ast$ {\bf mod\_\-parm\_\-find\_\-sig\_\-dependent} (char $\ast$name, {\bf mod\_\-parm} $\ast$parm)
 \begin{CompactList}\small\item\em Searches specified module parameter list for matching signal dependency.\item\end{CompactList}\item 
 void {\bf mod\_\-parm\_\-find\_\-expr\_\-and\_\-remove} ({\bf expression} $\ast$exp, {\bf mod\_\-parm} $\ast$parm)
 \begin{CompactList}\small\item\em Find specified expression and remove if found from module parameter expression lists.\item\end{CompactList}\item 
-{\bf mod\_\-parm}$\ast$ {\bf mod\_\-parm\_\-add} (char $\ast$scope, {\bf expression} $\ast$expr, int type, {\bf mod\_\-parm} $\ast$$\ast$head, {\bf mod\_\-parm} $\ast$$\ast$tail)
+{\bf mod\_\-parm} $\ast$ {\bf mod\_\-parm\_\-add} (char $\ast$scope, {\bf expression} $\ast$expr, int type, {\bf mod\_\-parm} $\ast$$\ast$head, {\bf mod\_\-parm} $\ast$$\ast$tail)
 \begin{CompactList}\small\item\em Creates new module parameter and adds it to the specified list.\item\end{CompactList}\item 
 void {\bf mod\_\-parm\_\-display} ({\bf mod\_\-parm} $\ast$mparm)
 \begin{CompactList}\small\item\em Outputs contents of module parameter list to standard output.\item\end{CompactList}\item 
-{\bf inst\_\-parm}$\ast$ {\bf inst\_\-parm\_\-find} (char $\ast$name, {\bf inst\_\-parm} $\ast$parm)
+{\bf inst\_\-parm} $\ast$ {\bf inst\_\-parm\_\-find} (char $\ast$name, {\bf inst\_\-parm} $\ast$parm)
 \begin{CompactList}\small\item\em Searches specified instance parameter list for matching parameter.\item\end{CompactList}\item 
-{\bf inst\_\-parm}$\ast$ {\bf inst\_\-parm\_\-add} (char $\ast$scope, {\bf vector} $\ast$value, {\bf mod\_\-parm} $\ast$mparm, {\bf inst\_\-parm} $\ast$$\ast$head, {\bf inst\_\-parm} $\ast$$\ast$tail)
+{\bf inst\_\-parm} $\ast$ {\bf inst\_\-parm\_\-add} (char $\ast$scope, {\bf vector} $\ast$value, {\bf mod\_\-parm} $\ast$mparm, {\bf inst\_\-parm} $\ast$$\ast$head, {\bf inst\_\-parm} $\ast$$\ast$tail)
 \begin{CompactList}\small\item\em Creates and adds new instance parameter to specified instance parameter list.\item\end{CompactList}\item 
 void {\bf defparam\_\-add} (char $\ast$scope, {\bf vector} $\ast$expr)
 \begin{CompactList}\small\item\em Adds parameter override to defparam list.\item\end{CompactList}\item 
@@ -43,34 +43,24 @@ void {\bf inst\_\-parm\_\-dealloc} ({\bf inst\_\-parm} $\ast$parm, {\bf bool} re
 \subsection{Detailed Description}
 Contains functions and structures necessary to handle parameters.
 
-
-
 \begin{Desc}
-\item[{\bf Author: }]\par
-Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
-\item[{\bf Date: }]\par
-8/22/2002
-
-\end{Desc}
+\item[Date:]8/22/2002 \end{Desc}
 
 
 \subsection{Function Documentation}
 \index{param.h@{param.h}!defparam_add@{defparam\_\-add}}
 \index{defparam_add@{defparam\_\-add}!param.h@{param.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void defparam\_\-add (char $\ast$ {\em scope}, {\bf vector} $\ast$ {\em expr})}\label{param_8h_a7}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void defparam\_\-add (char $\ast$ {\em scope}, {\bf vector} $\ast$ {\em value})}\label{param_8h_a7}
 
 
 Adds parameter override to defparam list.
 
 \begin{Desc}
-\item[{\bf Parameters: }]\par
+\item[Parameters:]
 \begin{description}
-\item[
-{\em scope}]Full hierarchical reference to specified scope to change value to. \item[
-{\em value}]User-specified parameter override value.
-
-\end{description}
+\item[{\em scope}]Full hierarchical reference to specified scope to change value to. \item[{\em value}]User-specified parameter override value.\end{description}
 \end{Desc}
 Scans list of all parameters to make sure that specified parameter isn't already being set to a new value. If no match occurs, adds the new defparam to the defparam list. This function is called for each -P option to the score command. \index{param.h@{param.h}!inst_parm_add@{inst\_\-parm\_\-add}}
 \index{inst_parm_add@{inst\_\-parm\_\-add}!param.h@{param.h}}
@@ -80,23 +70,13 @@ Scans list of all parameters to make sure that specified parameter isn't already
 Creates and adds new instance parameter to specified instance parameter list.
 
 \begin{Desc}
-\item[{\bf Parameters: }]\par
+\item[Parameters:]
 \begin{description}
-\item[
-{\em scope}]Full hierarchical name of parameter value. \item[
-{\em value}]Vector value of specified instance parameter. \item[
-{\em mparm}]Pointer to module instance that this instance parameter is derived from. \item[
-{\em head}]Pointer to head of instance parameter list to add to. \item[
-{\em tail}]Pointer to tail of instance parameter list to add to.
-
-\end{description}
+\item[{\em scope}]Full hierarchical name of parameter value. \item[{\em value}]Vector value of specified instance parameter. \item[{\em mparm}]Pointer to module instance that this instance parameter is derived from. \item[{\em head}]Pointer to head of instance parameter list to add to. \item[{\em tail}]Pointer to tail of instance parameter list to add to.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[{\bf Returns: }]\par
-Returns pointer to newly created instance parameter.
-
-\end{Desc}
-Creates a new instance parameter with the specified information and adds  it to the instance parameter list. \index{param.h@{param.h}!inst_parm_dealloc@{inst\_\-parm\_\-dealloc}}
+\item[Returns:]Returns pointer to newly created instance parameter.\end{Desc}
+Creates a new instance parameter with the specified information and adds it to the instance parameter list. \index{param.h@{param.h}!inst_parm_dealloc@{inst\_\-parm\_\-dealloc}}
 \index{inst_parm_dealloc@{inst\_\-parm\_\-dealloc}!param.h@{param.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void inst\_\-parm\_\-dealloc ({\bf inst\_\-parm} $\ast$ {\em parm}, {\bf bool} {\em recursive})}\label{param_8h_a14}
 
@@ -104,13 +84,9 @@ Creates a new instance parameter with the specified information and adds  it to 
 Deallocates specified instance parameter and possibly entire instance parameter list.
 
 \begin{Desc}
-\item[{\bf Parameters: }]\par
+\item[Parameters:]
 \begin{description}
-\item[
-{\em parm}]Pointer to instance parameter to remove \item[
-{\em recursive}]If TRUE, removes entire instance parameter list; otherwise, just remove me.
-
-\end{description}
+\item[{\em parm}]Pointer to instance parameter to remove \item[{\em recursive}]If TRUE, removes entire instance parameter list; otherwise, just remove me.\end{description}
 \end{Desc}
 Deallocates allocated memory from heap for the specified instance parameter. If the value of recursive is set to TRUE, perform this deallocation for the entire list of instance parameters. \index{param.h@{param.h}!inst_parm_find@{inst\_\-parm\_\-find}}
 \index{inst_parm_find@{inst\_\-parm\_\-find}!param.h@{param.h}}
@@ -120,20 +96,13 @@ Deallocates allocated memory from heap for the specified instance parameter. If 
 Searches specified instance parameter list for matching parameter.
 
 \begin{Desc}
-\item[{\bf Parameters: }]\par
+\item[Parameters:]
 \begin{description}
-\item[
-{\em name}]Name of parameter value to find. \item[
-{\em parm}]Pointer to head of instance parameter list to search.
-
-\end{description}
+\item[{\em name}]Name of parameter value to find. \item[{\em parm}]Pointer to head of instance parameter list to search.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[{\bf Returns: }]\par
-Returns pointer to found instance parameter or NULL if instance parameter is not found.
-
-\end{Desc}
-Searches specified instance parameter list for an instance parameter that matches  the name of the specified instance parameter. If a match is found, a pointer to  the found instance parameter is returned to the calling function; otherwise, a value of NULL is returned if no match was found. \index{param.h@{param.h}!mod_parm_add@{mod\_\-parm\_\-add}}
+\item[Returns:]Returns pointer to found instance parameter or NULL if instance parameter is not found.\end{Desc}
+Searches specified instance parameter list for an instance parameter that matches the name of the specified instance parameter. If a match is found, a pointer to the found instance parameter is returned to the calling function; otherwise, a value of NULL is returned if no match was found. \index{param.h@{param.h}!mod_parm_add@{mod\_\-parm\_\-add}}
 \index{mod_parm_add@{mod\_\-parm\_\-add}!param.h@{param.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-parm}$\ast$ mod\_\-parm\_\-add (char $\ast$ {\em scope}, {\bf expression} $\ast$ {\em expr}, int {\em type}, {\bf mod\_\-parm} $\ast$$\ast$ {\em head}, {\bf mod\_\-parm} $\ast$$\ast$ {\em tail})}\label{param_8h_a3}
 
@@ -141,23 +110,13 @@ Searches specified instance parameter list for an instance parameter that matche
 Creates new module parameter and adds it to the specified list.
 
 \begin{Desc}
-\item[{\bf Parameters: }]\par
+\item[Parameters:]
 \begin{description}
-\item[
-{\em scope}]Full hierarchical name of parameter value. \item[
-{\em expr}]Expression tree for current module parameter. \item[
-{\em type}]Specifies type of module parameter (declared/override). \item[
-{\em head}]Pointer to head of module parameter list to add to. \item[
-{\em tail}]Pointer to tail of module parameter list to add to.
-
-\end{description}
+\item[{\em scope}]Full hierarchical name of parameter value. \item[{\em expr}]Expression tree for current module parameter. \item[{\em type}]Specifies type of module parameter (declared/override). \item[{\em head}]Pointer to head of module parameter list to add to. \item[{\em tail}]Pointer to tail of module parameter list to add to.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[{\bf Returns: }]\par
-Returns pointer to newly created module parameter.
-
-\end{Desc}
-Creates a new module parameter with the specified information and adds  it to the module parameter list. \index{param.h@{param.h}!mod_parm_dealloc@{mod\_\-parm\_\-dealloc}}
+\item[Returns:]Returns pointer to newly created module parameter.\end{Desc}
+Creates a new module parameter with the specified information and adds it to the module parameter list. \index{param.h@{param.h}!mod_parm_dealloc@{mod\_\-parm\_\-dealloc}}
 \index{mod_parm_dealloc@{mod\_\-parm\_\-dealloc}!param.h@{param.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void mod\_\-parm\_\-dealloc ({\bf mod\_\-parm} $\ast$ {\em parm}, {\bf bool} {\em recursive})}\label{param_8h_a13}
 
@@ -165,13 +124,9 @@ Creates a new module parameter with the specified information and adds  it to th
 Deallocates specified module parameter and possibly entire module parameter list.
 
 \begin{Desc}
-\item[{\bf Parameters: }]\par
+\item[Parameters:]
 \begin{description}
-\item[
-{\em parm}]Pointer to module parameter to remove \item[
-{\em recursive}]If TRUE, removes entire module parameter list; otherwise, just remove me.
-
-\end{description}
+\item[{\em parm}]Pointer to module parameter to remove \item[{\em recursive}]If TRUE, removes entire module parameter list; otherwise, just remove me.\end{description}
 \end{Desc}
 Deallocates allocated memory from heap for the specified module parameter. If the value of recursive is set to TRUE, perform this deallocation for the entire list of module parameters. \index{param.h@{param.h}!mod_parm_display@{mod\_\-parm\_\-display}}
 \index{mod_parm_display@{mod\_\-parm\_\-display}!param.h@{param.h}}
@@ -181,12 +136,9 @@ Deallocates allocated memory from heap for the specified module parameter. If th
 Outputs contents of module parameter list to standard output.
 
 \begin{Desc}
-\item[{\bf Parameters: }]\par
+\item[Parameters:]
 \begin{description}
-\item[
-{\em mparm}]Pointer to module parameter list to display.
-
-\end{description}
+\item[{\em mparm}]Pointer to module parameter list to display.\end{description}
 \end{Desc}
 Outputs contents of specified module parameter to standard output. For debugging purposes only. \index{param.h@{param.h}!mod_parm_find@{mod\_\-parm\_\-find}}
 \index{mod_parm_find@{mod\_\-parm\_\-find}!param.h@{param.h}}
@@ -196,20 +148,13 @@ Outputs contents of specified module parameter to standard output. For debugging
 Searches specified module parameter list for matching parameter.
 
 \begin{Desc}
-\item[{\bf Parameters: }]\par
+\item[Parameters:]
 \begin{description}
-\item[
-{\em name}]Name of parameter value to find. \item[
-{\em parm}]Pointer to head of module parameter list to search.
-
-\end{description}
+\item[{\em name}]Name of parameter value to find. \item[{\em parm}]Pointer to head of module parameter list to search.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[{\bf Returns: }]\par
-Returns pointer to found module parameter or NULL if module parameter is not found.
-
-\end{Desc}
-Searches specified module parameter list for an module parameter that matches  the name of the specified module parameter. If a match is found, a pointer to  the found module parameter is returned to the calling function; otherwise, a value of NULL is returned if no match was found. \index{param.h@{param.h}!mod_parm_find_expr_and_remove@{mod\_\-parm\_\-find\_\-expr\_\-and\_\-remove}}
+\item[Returns:]Returns pointer to found module parameter or NULL if module parameter is not found.\end{Desc}
+Searches specified module parameter list for an module parameter that matches the name of the specified module parameter. If a match is found, a pointer to the found module parameter is returned to the calling function; otherwise, a value of NULL is returned if no match was found. \index{param.h@{param.h}!mod_parm_find_expr_and_remove@{mod\_\-parm\_\-find\_\-expr\_\-and\_\-remove}}
 \index{mod_parm_find_expr_and_remove@{mod\_\-parm\_\-find\_\-expr\_\-and\_\-remove}!param.h@{param.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void mod\_\-parm\_\-find\_\-expr\_\-and\_\-remove ({\bf expression} $\ast$ {\em exp}, {\bf mod\_\-parm} $\ast$ {\em parm})}\label{param_8h_a2}
 
@@ -217,13 +162,9 @@ Searches specified module parameter list for an module parameter that matches  t
 Find specified expression and remove if found from module parameter expression lists.
 
 \begin{Desc}
-\item[{\bf Parameters: }]\par
+\item[Parameters:]
 \begin{description}
-\item[
-{\em exp}]Pointer to expression to find and remove from lists. \item[
-{\em parm}]Pointer to module parameter list to search.
-
-\end{description}
+\item[{\em exp}]Pointer to expression to find and remove from lists. \item[{\em parm}]Pointer to module parameter list to search.\end{description}
 \end{Desc}
 Searches list of module parameter expression lists for specified expression. If the expression is found in one of the lists, remove the expression link. \index{param.h@{param.h}!mod_parm_find_sig_dependent@{mod\_\-parm\_\-find\_\-sig\_\-dependent}}
 \index{mod_parm_find_sig_dependent@{mod\_\-parm\_\-find\_\-sig\_\-dependent}!param.h@{param.h}}
@@ -233,19 +174,12 @@ Searches list of module parameter expression lists for specified expression. If 
 Searches specified module parameter list for matching signal dependency.
 
 \begin{Desc}
-\item[{\bf Parameters: }]\par
+\item[Parameters:]
 \begin{description}
-\item[
-{\em name}]Name of signal to search for signal-parameter dependency \item[
-{\em parm}]Pointer to head of module parameter list to search.
-
-\end{description}
+\item[{\em name}]Name of signal to search for signal-parameter dependency \item[{\em parm}]Pointer to head of module parameter list to search.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[{\bf Returns: }]\par
-Returns pointer to found module parameter or NULL if search was unsuccessful
-
-\end{Desc}
+\item[Returns:]Returns pointer to found module parameter or NULL if search was unsuccessful\end{Desc}
 Searches the specified module list for a parameter that points to a signal that matches the specified name. This indicates that the signal specified by the given name is dependent upon the value of this parameter. Returns a pointer to the found module parameter if a match is found; otherwise, returns NULL. \index{param.h@{param.h}!param_db_write@{param\_\-db\_\-write}}
 \index{param_db_write@{param\_\-db\_\-write}!param.h@{param.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void param\_\-db\_\-write ({\bf inst\_\-parm} $\ast$ {\em iparm}, FILE $\ast$ {\em file}, char $\ast$ {\em scope})}\label{param_8h_a12}
@@ -254,14 +188,9 @@ Searches the specified module list for a parameter that points to a signal that 
 Outputs specified instance parameter to specified output stream.
 
 \begin{Desc}
-\item[{\bf Parameters: }]\par
+\item[Parameters:]
 \begin{description}
-\item[
-{\em iparm}]Pointer to instance parameter to output to file. \item[
-{\em file}]Pointer to file handle to write parameter contents to. \item[
-{\em scope}]Current scope of parameter to output.
-
-\end{description}
+\item[{\em iparm}]Pointer to instance parameter to output to file. \item[{\em file}]Pointer to file handle to write parameter contents to. \item[{\em scope}]Current scope of parameter to output.\end{description}
 \end{Desc}
 Prints contents of specified instance parameter to the specified output stream. Parameters get output in the same format as signals (they type specified for parameters is DB\_\-TYPE\_\-SIGNAL). A leading \# sign is attached to the parameter name to indicate that the current signal is a parameter and not a signal, and should therefore not be scored as a signal. \index{param.h@{param.h}!param_resolve_declared@{param\_\-resolve\_\-declared}}
 \index{param_resolve_declared@{param\_\-resolve\_\-declared}!param.h@{param.h}}
@@ -271,22 +200,12 @@ Prints contents of specified instance parameter to the specified output stream. 
 Transforms a declared module parameter into an instance parameter.
 
 \begin{Desc}
-\item[{\bf Parameters: }]\par
+\item[Parameters:]
 \begin{description}
-\item[
-{\em mscope}]Full hierarchical scope of current module. \item[
-{\em mparm}]Pointer to parameter in current module to check. \item[
-{\em ip\_\-head}]Pointer to parent instance's instance parameter list. \item[
-{\em ihead}]Pointer to current instance parameter list head to add to. \item[
-{\em itail}]Pointer to current instance parameter list tail to add to.
-
-\end{description}
+\item[{\em mscope}]Full hierarchical scope of current module. \item[{\em mparm}]Pointer to parameter in current module to check. \item[{\em ip\_\-head}]Pointer to parent instance's instance parameter list. \item[{\em ihead}]Pointer to current instance parameter list head to add to. \item[{\em itail}]Pointer to current instance parameter list tail to add to.\end{description}
 \end{Desc}
 Performs declared module parameter resolution and stores the appropriate instance parameter into the current instance's instance parameter list. This procedure is accomplished by checking the following in the specified order:\begin{enumerate}
-\item 
-Check to see if parameter has an override parameter by checking the instance parameter list of the parent instance to this instance.\item 
-If (1) fails, check to see if current parameter is overridden by a user-specified defparam value.\item 
-If (2) fails, calculate the current expression's value by evaluating the parameter's expression tree. \end{enumerate}
+\item Check to see if parameter has an override parameter by checking the instance parameter list of the parent instance to this instance.\item If (1) fails, check to see if current parameter is overridden by a user-specified defparam value.\item If (2) fails, calculate the current expression's value by evaluating the parameter's expression tree. \end{enumerate}
 \index{param.h@{param.h}!param_resolve_override@{param\_\-resolve\_\-override}}
 \index{param_resolve_override@{param\_\-resolve\_\-override}!param.h@{param.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void param\_\-resolve\_\-override ({\bf mod\_\-parm} $\ast$ {\em oparm}, {\bf inst\_\-parm} $\ast$$\ast$ {\em ihead}, {\bf inst\_\-parm} $\ast$$\ast$ {\em itail})}\label{param_8h_a11}
@@ -295,14 +214,9 @@ If (2) fails, calculate the current expression's value by evaluating the paramet
 Transforms an override module parameter into an instance parameter.
 
 \begin{Desc}
-\item[{\bf Parameters: }]\par
+\item[Parameters:]
 \begin{description}
-\item[
-{\em oparm}]Pointer to override module parameter. \item[
-{\em ihead}]Pointer to head of instance parameter list to add to. \item[
-{\em itail}]Pointer to tail of instance parameter list to add to.
-
-\end{description}
+\item[{\em oparm}]Pointer to override module parameter. \item[{\em ihead}]Pointer to head of instance parameter list to add to. \item[{\em itail}]Pointer to tail of instance parameter list to add to.\end{description}
 \end{Desc}
 Evaluates the current module parameter expression tree and adds a new instance parameter to the specified instance parameter list, preserving the order and type of the override parameter. \index{param.h@{param.h}!param_set_expr_size@{param\_\-set\_\-expr\_\-size}}
 \index{param_set_expr_size@{param\_\-set\_\-expr\_\-size}!param.h@{param.h}}
@@ -319,17 +233,10 @@ Sets the specified expression value to the instance parameter value.
 Sets the specified signal size according to the specified instance parameter and resizes attached expressions.
 
 \begin{Desc}
-\item[{\bf Parameters: }]\par
+\item[Parameters:]
 \begin{description}
-\item[
-{\em sig}]Pointer to signal to search for in instance parameter list. \item[
-{\em icurr}]Pointer to head of instance parameter list to search.
-
-\end{description}
+\item[{\em sig}]Pointer to signal to search for in instance parameter list. \item[{\em icurr}]Pointer to head of instance parameter list to search.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[{\bf Returns: }]\par
-Returns TRUE if signal size is fully established; otherwise, returns FALSE.
-
-\end{Desc}
+\item[Returns:]Returns TRUE if signal size is fully established; otherwise, returns FALSE.\end{Desc}
 Sizes the specified signal according to the value of the specified instance parameter value. 

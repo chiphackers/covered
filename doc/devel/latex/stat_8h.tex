@@ -7,7 +7,7 @@ Contains functions for handling coverage statistics.
 \subsection*{Functions}
 \begin{CompactItemize}
 \item 
-{\bf statistic}$\ast$ {\bf statistic\_\-create} ()
+{\bf statistic} $\ast$ {\bf statistic\_\-create} ()
 \begin{CompactList}\small\item\em Creates and initializes a new statistic structure.\item\end{CompactList}\item 
 void {\bf statistic\_\-merge} ({\bf statistic} $\ast$stat\_\-to, {\bf statistic} $\ast$stat\_\-from)
 \begin{CompactList}\small\item\em Merges the results of the stat\_\-from to the stat\_\-to.\item\end{CompactList}\item 
@@ -18,16 +18,10 @@ void {\bf statistic\_\-dealloc} ({\bf statistic} $\ast$stat)
 \subsection{Detailed Description}
 Contains functions for handling coverage statistics.
 
-
-
 \begin{Desc}
-\item[{\bf Author: }]\par
-Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
-\item[{\bf Date: }]\par
-4/4/2002
-
-\end{Desc}
+\item[Date:]4/4/2002 \end{Desc}
 
 
 \subsection{Function Documentation}
@@ -39,10 +33,7 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 Creates and initializes a new statistic structure.
 
 \begin{Desc}
-\item[{\bf Returns: }]\par
-Pointer to newly created/initialized statistic structure.
-
-\end{Desc}
+\item[Returns:]Pointer to newly created/initialized statistic structure.\end{Desc}
 Allocates new memory for a coverage statistic structure and initializes its values. \index{stat.h@{stat.h}!statistic_dealloc@{statistic\_\-dealloc}}
 \index{statistic_dealloc@{statistic\_\-dealloc}!stat.h@{stat.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void statistic\_\-dealloc ({\bf statistic} $\ast$ {\em stat})}\label{stat_8h_a2}
@@ -51,12 +42,9 @@ Allocates new memory for a coverage statistic structure and initializes its valu
 Deallocates memory for a statistic structure.
 
 \begin{Desc}
-\item[{\bf Parameters: }]\par
+\item[Parameters:]
 \begin{description}
-\item[
-{\em stat}]Pointer to statistic structure to deallocate from heap.
-
-\end{description}
+\item[{\em stat}]Pointer to statistic structure to deallocate from heap.\end{description}
 \end{Desc}
 Destroys the specified statistic structure from heap memory. \index{stat.h@{stat.h}!statistic_merge@{statistic\_\-merge}}
 \index{statistic_merge@{statistic\_\-merge}!stat.h@{stat.h}}
@@ -66,12 +54,8 @@ Destroys the specified statistic structure from heap memory. \index{stat.h@{stat
 Merges the results of the stat\_\-from to the stat\_\-to.
 
 \begin{Desc}
-\item[{\bf Parameters: }]\par
+\item[Parameters:]
 \begin{description}
-\item[
-{\em stat\_\-to}]Statistic structure to merge information into. \item[
-{\em stat\_\-from}]Statistic structure to be merged.
-
-\end{description}
+\item[{\em stat\_\-to}]Statistic structure to merge information into. \item[{\em stat\_\-from}]Statistic structure to be merged.\end{description}
 \end{Desc}
 Adds the values of the stat\_\-to structure to the contents of the stat\_\-from structure. The stat\_\-from structure will then contain accumulated results. 

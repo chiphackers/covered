@@ -17,16 +17,10 @@ void {\bf line\_\-report} (FILE $\ast$ofile, {\bf bool} verbose)
 \subsection{Detailed Description}
 Contains functions for determining/reporting line coverage.
 
-
-
 \begin{Desc}
-\item[{\bf Author: }]\par
-Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
-\item[{\bf Date: }]\par
-3/31/2002
-
-\end{Desc}
+\item[Date:]3/31/2002 \end{Desc}
 
 
 \subsection{Function Documentation}
@@ -38,14 +32,9 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 Calculates line coverage numbers for the specified expression list.
 
 \begin{Desc}
-\item[{\bf Parameters: }]\par
+\item[Parameters:]
 \begin{description}
-\item[
-{\em stmtl}]Pointer to current statement list to explore. \item[
-{\em total}]Holds total number of lines parsed. \item[
-{\em hit}]Holds total number of lines hit.
-
-\end{description}
+\item[{\em stmtl}]Pointer to current statement list to explore. \item[{\em total}]Holds total number of lines parsed. \item[{\em hit}]Holds total number of lines hit.\end{description}
 \end{Desc}
 Iterates through given statement list, gathering information about which lines exist in the list, which lines were hit during simulation and which lines were missed during simulation. This information is used to report summary information about line coverage. \index{line.h@{line.h}!line_report@{line\_\-report}}
 \index{line_report@{line\_\-report}!line.h@{line.h}}
@@ -55,12 +44,8 @@ Iterates through given statement list, gathering information about which lines e
 Generates report output for line coverage.
 
 \begin{Desc}
-\item[{\bf Parameters: }]\par
+\item[Parameters:]
 \begin{description}
-\item[
-{\em ofile}]Pointer to file to output results to. \item[
-{\em verbose}]Specifies whether to generate summary or verbose output.
-
-\end{description}
+\item[{\em ofile}]Pointer to file to output results to. \item[{\em verbose}]Specifies whether to generate summary or verbose output.\end{description}
 \end{Desc}
-After the design is read into the module hierarchy, parses the hierarchy by module, reporting the line coverage for each module encountered. The parent module will specify its own line coverage along with a total line coverage including its  children. 
+After the design is read into the module hierarchy, parses the hierarchy by module, reporting the line coverage for each module encountered. The parent module will specify its own line coverage along with a total line coverage including its children. 

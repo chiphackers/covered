@@ -404,15 +404,15 @@ void {\bf \_\-\_\-yy\_\-memcpy} (to, {\bf from}, {\bf count}) char $\ast$to
 \item 
 char {\bf user\_\-msg} [USER\_\-MSG\_\-LENGTH]
 \item 
-int {\bf delay\_\-expr\_\-type} = DELAY\_\-EXPR\_\-DEFAULT
+int {\bf delay\_\-expr\_\-type}
 \item 
 int {\bf ignore\_\-mode} = 0
 \item 
 int {\bf param\_\-mode} = 0
 \item 
-{\bf exp\_\-link}$\ast$ {\bf param\_\-exp\_\-head} = NULL
+{\bf exp\_\-link} $\ast$ {\bf param\_\-exp\_\-head} = NULL
 \item 
-{\bf exp\_\-link}$\ast$ {\bf param\_\-exp\_\-tail} = NULL
+{\bf exp\_\-link} $\ast$ {\bf param\_\-exp\_\-tail} = NULL
 \item 
 const short {\bf yytranslate} [$\,$]
 \item 
@@ -422,7 +422,7 @@ const short {\bf yyrhs} [$\,$]
 \item 
 const short {\bf yyrline} [$\,$]
 \item 
-const char$\ast$ const {\bf yytname} [$\,$]
+const char $\ast$const {\bf yytname} [$\,$]
 \item 
 const short {\bf yyr1} [$\,$]
 \item 
@@ -440,28 +440,40 @@ const short {\bf yytable} [$\,$]
 \item 
 const short {\bf yycheck} [$\,$]
 \item 
+int {\bf yychar}
+\item 
+{\bf YYSTYPE} {\bf yylval}
+\item 
 YYLTYPE {\bf yylloc}
 \item 
-char$\ast$ {\bf from}
+int {\bf yynerrs}
+\item 
+int {\bf yydebug}
+\item 
+char $\ast$ {\bf from}
 \item 
 unsigned int {\bf count}
 \end{CompactItemize}
 
 
 \subsection{Detailed Description}
-
-
 \begin{Desc}
-\item[{\bf Author: }]\par
-Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
-\item[{\bf Date: }]\par
-12/14/2001
-
-\end{Desc}
+\item[Date:]12/14/2001\end{Desc}
 
 
 \subsection{Define Documentation}
+\index{parser.c@{parser.c}!const@{const}}
+\index{const@{const}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define const}\label{parser_8c_a159}
+
+
+\index{parser.c@{parser.c}!I_endmodule@{I\_\-endmodule}}
+\index{I_endmodule@{I\_\-endmodule}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define I\_\-endmodule\ 311}\label{parser_8c_a63}
+
+
 \index{parser.c@{parser.c}!IDENTIFIER@{IDENTIFIER}}
 \index{IDENTIFIER@{IDENTIFIER}!parser.c@{parser.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define IDENTIFIER\ 257}\label{parser_8c_a9}
@@ -470,151 +482,6 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \index{parser.c@{parser.c}!IGNORE@{IGNORE}}
 \index{IGNORE@{IGNORE}!parser.c@{parser.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define IGNORE\ 263}\label{parser_8c_a15}
-
-
-\index{parser.c@{parser.c}!I_endmodule@{I\_\-endmodule}}
-\index{I_endmodule@{I\_\-endmodule}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define I\_\-endmodule\ 311}\label{parser_8c_a63}
-
-
-\index{parser.c@{parser.c}!KK_attribute@{KK\_\-attribute}}
-\index{KK_attribute@{KK\_\-attribute}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define KK\_\-attribute\ 400}\label{parser_8c_a152}
-
-
-\index{parser.c@{parser.c}!K_CEQ@{K\_\-CEQ}}
-\index{K_CEQ@{K\_\-CEQ}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-CEQ\ 275}\label{parser_8c_a27}
-
-
-\index{parser.c@{parser.c}!K_CNE@{K\_\-CNE}}
-\index{K_CNE@{K\_\-CNE}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-CNE\ 276}\label{parser_8c_a28}
-
-
-\index{parser.c@{parser.c}!K_EG@{K\_\-EG}}
-\index{K_EG@{K\_\-EG}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-EG\ 272}\label{parser_8c_a24}
-
-
-\index{parser.c@{parser.c}!K_EQ@{K\_\-EQ}}
-\index{K_EQ@{K\_\-EQ}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-EQ\ 273}\label{parser_8c_a25}
-
-
-\index{parser.c@{parser.c}!K_GE@{K\_\-GE}}
-\index{K_GE@{K\_\-GE}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-GE\ 271}\label{parser_8c_a23}
-
-
-\index{parser.c@{parser.c}!K_LAND@{K\_\-LAND}}
-\index{K_LAND@{K\_\-LAND}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-LAND\ 285}\label{parser_8c_a37}
-
-
-\index{parser.c@{parser.c}!K_LE@{K\_\-LE}}
-\index{K_LE@{K\_\-LE}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-LE\ 270}\label{parser_8c_a22}
-
-
-\index{parser.c@{parser.c}!K_LOR@{K\_\-LOR}}
-\index{K_LOR@{K\_\-LOR}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-LOR\ 284}\label{parser_8c_a36}
-
-
-\index{parser.c@{parser.c}!K_LS@{K\_\-LS}}
-\index{K_LS@{K\_\-LS}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-LS\ 277}\label{parser_8c_a29}
-
-
-\index{parser.c@{parser.c}!K_NAND@{K\_\-NAND}}
-\index{K_NAND@{K\_\-NAND}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-NAND\ 286}\label{parser_8c_a38}
-
-
-\index{parser.c@{parser.c}!K_NE@{K\_\-NE}}
-\index{K_NE@{K\_\-NE}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-NE\ 274}\label{parser_8c_a26}
-
-
-\index{parser.c@{parser.c}!K_NOR@{K\_\-NOR}}
-\index{K_NOR@{K\_\-NOR}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-NOR\ 287}\label{parser_8c_a39}
-
-
-\index{parser.c@{parser.c}!K_NXOR@{K\_\-NXOR}}
-\index{K_NXOR@{K\_\-NXOR}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-NXOR\ 288}\label{parser_8c_a40}
-
-
-\index{parser.c@{parser.c}!K_PO_NEG@{K\_\-PO\_\-NEG}}
-\index{K_PO_NEG@{K\_\-PO\_\-NEG}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-PO\_\-NEG\ 281}\label{parser_8c_a33}
-
-
-\index{parser.c@{parser.c}!K_PO_POS@{K\_\-PO\_\-POS}}
-\index{K_PO_POS@{K\_\-PO\_\-POS}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-PO\_\-POS\ 280}\label{parser_8c_a32}
-
-
-\index{parser.c@{parser.c}!K_PSTAR@{K\_\-PSTAR}}
-\index{K_PSTAR@{K\_\-PSTAR}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-PSTAR\ 283}\label{parser_8c_a35}
-
-
-\index{parser.c@{parser.c}!K_RS@{K\_\-RS}}
-\index{K_RS@{K\_\-RS}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-RS\ 278}\label{parser_8c_a30}
-
-
-\index{parser.c@{parser.c}!K_SG@{K\_\-SG}}
-\index{K_SG@{K\_\-SG}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-SG\ 279}\label{parser_8c_a31}
-
-
-\index{parser.c@{parser.c}!K_STARP@{K\_\-STARP}}
-\index{K_STARP@{K\_\-STARP}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-STARP\ 282}\label{parser_8c_a34}
-
-
-\index{parser.c@{parser.c}!K_Shold@{K\_\-Shold}}
-\index{K_Shold@{K\_\-Shold}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-Shold\ 394}\label{parser_8c_a146}
-
-
-\index{parser.c@{parser.c}!K_Speriod@{K\_\-Speriod}}
-\index{K_Speriod@{K\_\-Speriod}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-Speriod\ 395}\label{parser_8c_a147}
-
-
-\index{parser.c@{parser.c}!K_Srecovery@{K\_\-Srecovery}}
-\index{K_Srecovery@{K\_\-Srecovery}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-Srecovery\ 396}\label{parser_8c_a148}
-
-
-\index{parser.c@{parser.c}!K_Ssetup@{K\_\-Ssetup}}
-\index{K_Ssetup@{K\_\-Ssetup}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-Ssetup\ 397}\label{parser_8c_a149}
-
-
-\index{parser.c@{parser.c}!K_Ssetuphold@{K\_\-Ssetuphold}}
-\index{K_Ssetuphold@{K\_\-Ssetuphold}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-Ssetuphold\ 399}\label{parser_8c_a151}
-
-
-\index{parser.c@{parser.c}!K_Swidth@{K\_\-Swidth}}
-\index{K_Swidth@{K\_\-Swidth}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-Swidth\ 398}\label{parser_8c_a150}
-
-
-\index{parser.c@{parser.c}!K_TAND@{K\_\-TAND}}
-\index{K_TAND@{K\_\-TAND}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-TAND\ 401}\label{parser_8c_a153}
-
-
-\index{parser.c@{parser.c}!K_TRIGGER@{K\_\-TRIGGER}}
-\index{K_TRIGGER@{K\_\-TRIGGER}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-TRIGGER\ 289}\label{parser_8c_a41}
 
 
 \index{parser.c@{parser.c}!K_always@{K\_\-always}}
@@ -667,9 +534,19 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-casez\ 299}\label{parser_8c_a51}
 
 
+\index{parser.c@{parser.c}!K_CEQ@{K\_\-CEQ}}
+\index{K_CEQ@{K\_\-CEQ}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-CEQ\ 275}\label{parser_8c_a27}
+
+
 \index{parser.c@{parser.c}!K_cmos@{K\_\-cmos}}
 \index{K_cmos@{K\_\-cmos}!parser.c@{parser.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-cmos\ 300}\label{parser_8c_a52}
+
+
+\index{parser.c@{parser.c}!K_CNE@{K\_\-CNE}}
+\index{K_CNE@{K\_\-CNE}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-CNE\ 276}\label{parser_8c_a28}
 
 
 \index{parser.c@{parser.c}!K_deassign@{K\_\-deassign}}
@@ -695,6 +572,11 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \index{parser.c@{parser.c}!K_edge@{K\_\-edge}}
 \index{K_edge@{K\_\-edge}!parser.c@{parser.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-edge\ 305}\label{parser_8c_a57}
+
+
+\index{parser.c@{parser.c}!K_EG@{K\_\-EG}}
+\index{K_EG@{K\_\-EG}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-EG\ 272}\label{parser_8c_a24}
 
 
 \index{parser.c@{parser.c}!K_else@{K\_\-else}}
@@ -742,6 +624,11 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-endtask\ 315}\label{parser_8c_a67}
 
 
+\index{parser.c@{parser.c}!K_EQ@{K\_\-EQ}}
+\index{K_EQ@{K\_\-EQ}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-EQ\ 273}\label{parser_8c_a25}
+
+
 \index{parser.c@{parser.c}!K_event@{K\_\-event}}
 \index{K_event@{K\_\-event}!parser.c@{parser.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-event\ 316}\label{parser_8c_a68}
@@ -770,6 +657,11 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \index{parser.c@{parser.c}!K_function@{K\_\-function}}
 \index{K_function@{K\_\-function}!parser.c@{parser.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-function\ 321}\label{parser_8c_a73}
+
+
+\index{parser.c@{parser.c}!K_GE@{K\_\-GE}}
+\index{K_GE@{K\_\-GE}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-GE\ 271}\label{parser_8c_a23}
 
 
 \index{parser.c@{parser.c}!K_highz0@{K\_\-highz0}}
@@ -812,14 +704,34 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-join\ 329}\label{parser_8c_a81}
 
 
+\index{parser.c@{parser.c}!K_LAND@{K\_\-LAND}}
+\index{K_LAND@{K\_\-LAND}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-LAND\ 285}\label{parser_8c_a37}
+
+
 \index{parser.c@{parser.c}!K_large@{K\_\-large}}
 \index{K_large@{K\_\-large}!parser.c@{parser.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-large\ 330}\label{parser_8c_a82}
 
 
+\index{parser.c@{parser.c}!K_LE@{K\_\-LE}}
+\index{K_LE@{K\_\-LE}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-LE\ 270}\label{parser_8c_a22}
+
+
 \index{parser.c@{parser.c}!K_localparam@{K\_\-localparam}}
 \index{K_localparam@{K\_\-localparam}!parser.c@{parser.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-localparam\ 331}\label{parser_8c_a83}
+
+
+\index{parser.c@{parser.c}!K_LOR@{K\_\-LOR}}
+\index{K_LOR@{K\_\-LOR}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-LOR\ 284}\label{parser_8c_a36}
+
+
+\index{parser.c@{parser.c}!K_LS@{K\_\-LS}}
+\index{K_LS@{K\_\-LS}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-LS\ 277}\label{parser_8c_a29}
 
 
 \index{parser.c@{parser.c}!K_macromodule@{K\_\-macromodule}}
@@ -842,6 +754,16 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-nand\ 335}\label{parser_8c_a87}
 
 
+\index{parser.c@{parser.c}!K_NAND@{K\_\-NAND}}
+\index{K_NAND@{K\_\-NAND}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-NAND\ 286}\label{parser_8c_a38}
+
+
+\index{parser.c@{parser.c}!K_NE@{K\_\-NE}}
+\index{K_NE@{K\_\-NE}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-NE\ 274}\label{parser_8c_a26}
+
+
 \index{parser.c@{parser.c}!K_negedge@{K\_\-negedge}}
 \index{K_negedge@{K\_\-negedge}!parser.c@{parser.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-negedge\ 336}\label{parser_8c_a88}
@@ -857,6 +779,11 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-nor\ 338}\label{parser_8c_a90}
 
 
+\index{parser.c@{parser.c}!K_NOR@{K\_\-NOR}}
+\index{K_NOR@{K\_\-NOR}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-NOR\ 287}\label{parser_8c_a39}
+
+
 \index{parser.c@{parser.c}!K_not@{K\_\-not}}
 \index{K_not@{K\_\-not}!parser.c@{parser.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-not\ 339}\label{parser_8c_a91}
@@ -870,6 +797,11 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \index{parser.c@{parser.c}!K_notif1@{K\_\-notif1}}
 \index{K_notif1@{K\_\-notif1}!parser.c@{parser.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-notif1\ 341}\label{parser_8c_a93}
+
+
+\index{parser.c@{parser.c}!K_NXOR@{K\_\-NXOR}}
+\index{K_NXOR@{K\_\-NXOR}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-NXOR\ 288}\label{parser_8c_a40}
 
 
 \index{parser.c@{parser.c}!K_or@{K\_\-or}}
@@ -892,6 +824,16 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-pmos\ 345}\label{parser_8c_a97}
 
 
+\index{parser.c@{parser.c}!K_PO_NEG@{K\_\-PO\_\-NEG}}
+\index{K_PO_NEG@{K\_\-PO\_\-NEG}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-PO\_\-NEG\ 281}\label{parser_8c_a33}
+
+
+\index{parser.c@{parser.c}!K_PO_POS@{K\_\-PO\_\-POS}}
+\index{K_PO_POS@{K\_\-PO\_\-POS}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-PO\_\-POS\ 280}\label{parser_8c_a32}
+
+
 \index{parser.c@{parser.c}!K_posedge@{K\_\-posedge}}
 \index{K_posedge@{K\_\-posedge}!parser.c@{parser.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-posedge\ 346}\label{parser_8c_a98}
@@ -900,6 +842,11 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \index{parser.c@{parser.c}!K_primitive@{K\_\-primitive}}
 \index{K_primitive@{K\_\-primitive}!parser.c@{parser.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-primitive\ 347}\label{parser_8c_a99}
+
+
+\index{parser.c@{parser.c}!K_PSTAR@{K\_\-PSTAR}}
+\index{K_PSTAR@{K\_\-PSTAR}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-PSTAR\ 283}\label{parser_8c_a35}
 
 
 \index{parser.c@{parser.c}!K_pull0@{K\_\-pull0}}
@@ -962,6 +909,11 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-rpmos\ 359}\label{parser_8c_a111}
 
 
+\index{parser.c@{parser.c}!K_RS@{K\_\-RS}}
+\index{K_RS@{K\_\-RS}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-RS\ 278}\label{parser_8c_a30}
+
+
 \index{parser.c@{parser.c}!K_rtran@{K\_\-rtran}}
 \index{K_rtran@{K\_\-rtran}!parser.c@{parser.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-rtran\ 360}\label{parser_8c_a112}
@@ -980,6 +932,16 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \index{parser.c@{parser.c}!K_scalered@{K\_\-scalered}}
 \index{K_scalered@{K\_\-scalered}!parser.c@{parser.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-scalered\ 363}\label{parser_8c_a115}
+
+
+\index{parser.c@{parser.c}!K_SG@{K\_\-SG}}
+\index{K_SG@{K\_\-SG}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-SG\ 279}\label{parser_8c_a31}
+
+
+\index{parser.c@{parser.c}!K_Shold@{K\_\-Shold}}
+\index{K_Shold@{K\_\-Shold}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-Shold\ 394}\label{parser_8c_a146}
 
 
 \index{parser.c@{parser.c}!K_signed@{K\_\-signed}}
@@ -1002,6 +964,31 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-specparam\ 367}\label{parser_8c_a119}
 
 
+\index{parser.c@{parser.c}!K_Speriod@{K\_\-Speriod}}
+\index{K_Speriod@{K\_\-Speriod}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-Speriod\ 395}\label{parser_8c_a147}
+
+
+\index{parser.c@{parser.c}!K_Srecovery@{K\_\-Srecovery}}
+\index{K_Srecovery@{K\_\-Srecovery}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-Srecovery\ 396}\label{parser_8c_a148}
+
+
+\index{parser.c@{parser.c}!K_Ssetup@{K\_\-Ssetup}}
+\index{K_Ssetup@{K\_\-Ssetup}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-Ssetup\ 397}\label{parser_8c_a149}
+
+
+\index{parser.c@{parser.c}!K_Ssetuphold@{K\_\-Ssetuphold}}
+\index{K_Ssetuphold@{K\_\-Ssetuphold}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-Ssetuphold\ 399}\label{parser_8c_a151}
+
+
+\index{parser.c@{parser.c}!K_STARP@{K\_\-STARP}}
+\index{K_STARP@{K\_\-STARP}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-STARP\ 282}\label{parser_8c_a34}
+
+
 \index{parser.c@{parser.c}!K_strong0@{K\_\-strong0}}
 \index{K_strong0@{K\_\-strong0}!parser.c@{parser.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-strong0\ 368}\label{parser_8c_a120}
@@ -1022,9 +1009,19 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-supply1\ 371}\label{parser_8c_a123}
 
 
+\index{parser.c@{parser.c}!K_Swidth@{K\_\-Swidth}}
+\index{K_Swidth@{K\_\-Swidth}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-Swidth\ 398}\label{parser_8c_a150}
+
+
 \index{parser.c@{parser.c}!K_table@{K\_\-table}}
 \index{K_table@{K\_\-table}!parser.c@{parser.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-table\ 372}\label{parser_8c_a124}
+
+
+\index{parser.c@{parser.c}!K_TAND@{K\_\-TAND}}
+\index{K_TAND@{K\_\-TAND}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-TAND\ 401}\label{parser_8c_a153}
 
 
 \index{parser.c@{parser.c}!K_task@{K\_\-task}}
@@ -1070,6 +1067,11 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \index{parser.c@{parser.c}!K_triand@{K\_\-triand}}
 \index{K_triand@{K\_\-triand}!parser.c@{parser.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-triand\ 381}\label{parser_8c_a133}
+
+
+\index{parser.c@{parser.c}!K_TRIGGER@{K\_\-TRIGGER}}
+\index{K_TRIGGER@{K\_\-TRIGGER}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-TRIGGER\ 289}\label{parser_8c_a41}
 
 
 \index{parser.c@{parser.c}!K_trior@{K\_\-trior}}
@@ -1130,6 +1132,16 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \index{parser.c@{parser.c}!K_xor@{K\_\-xor}}
 \index{K_xor@{K\_\-xor}!parser.c@{parser.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-xor\ 393}\label{parser_8c_a145}
+
+
+\index{parser.c@{parser.c}!KK_attribute@{KK\_\-attribute}}
+\index{KK_attribute@{KK\_\-attribute}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define KK\_\-attribute\ 400}\label{parser_8c_a152}
+
+
+\index{parser.c@{parser.c}!less_than_K_else@{less\_\-than\_\-K\_\-else}}
+\index{less_than_K_else@{less\_\-than\_\-K\_\-else}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define less\_\-than\_\-K\_\-else\ 403}\label{parser_8c_a155}
 
 
 \index{parser.c@{parser.c}!NUMBER@{NUMBER}}
@@ -1207,7 +1219,9 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYBACKUP(token, value)}\label{parser_8c_a175}
 
 
-{\bf Value:}\footnotesize\begin{verbatim}do                                                              \
+{\bf Value:}
+
+\footnotesize\begin{verbatim}do                                                              \
   if (yychar == YYEMPTY && yylen == 1)                          \
     { yychar = (token), yylval = (value);                       \
       yychar1 = YYTRANSLATE (yychar);                           \
@@ -1223,9 +1237,24 @@ while (0)
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYBISON\ 1}\label{parser_8c_a0}
 
 
+\index{parser.c@{parser.c}!yychar@{yychar}}
+\index{yychar@{yychar}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yychar\ VLchar}\label{parser_8c_a5}
+
+
+\index{parser.c@{parser.c}!yyclearin@{yyclearin}}
+\index{yyclearin@{yyclearin}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yyclearin\ (yychar = YYEMPTY)}\label{parser_8c_a167}
+
+
 \index{parser.c@{parser.c}!YYDEBUG@{YYDEBUG}}
 \index{YYDEBUG@{YYDEBUG}!parser.c@{parser.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYDEBUG\ 1}\label{parser_8c_a158}
+
+
+\index{parser.c@{parser.c}!yydebug@{yydebug}}
+\index{yydebug@{yydebug}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yydebug\ {\bf VLdebug}}\label{parser_8c_a6}
 
 
 \index{parser.c@{parser.c}!YYEMPTY@{YYEMPTY}}
@@ -1243,9 +1272,19 @@ while (0)
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYERRCODE\ 256}\label{parser_8c_a177}
 
 
+\index{parser.c@{parser.c}!yyerrok@{yyerrok}}
+\index{yyerrok@{yyerrok}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yyerrok\ (yyerrstatus = 0)}\label{parser_8c_a166}
+
+
 \index{parser.c@{parser.c}!YYERROR@{YYERROR}}
 \index{YYERROR@{YYERROR}!parser.c@{parser.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYERROR\ goto yyerrlab1}\label{parser_8c_a172}
+
+
+\index{parser.c@{parser.c}!yyerror@{yyerror}}
+\index{yyerror@{yyerror}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yyerror\ VLerror}\label{parser_8c_a3}
 
 
 \index{parser.c@{parser.c}!YYERROR_VERBOSE@{YYERROR\_\-VERBOSE}}
@@ -1283,12 +1322,19 @@ while (0)
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYLEX\ yylex()}\label{parser_8c_a178}
 
 
+\index{parser.c@{parser.c}!yylex@{yylex}}
+\index{yylex@{yylex}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yylex\ VLlex}\label{parser_8c_a2}
+
+
 \index{parser.c@{parser.c}!YYLLOC_DEFAULT@{YYLLOC\_\-DEFAULT}}
 \index{YYLLOC_DEFAULT@{YYLLOC\_\-DEFAULT}!parser.c@{parser.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYLLOC\_\-DEFAULT(Current, Rhs, N)}\label{parser_8c_a157}
 
 
-{\bf Value:}\footnotesize\begin{verbatim}  Current.first_line   = Rhs[1].first_line;      \
+{\bf Value:}
+
+\footnotesize\begin{verbatim}Current.first_line   = Rhs[1].first_line;      \
   Current.first_column = Rhs[1].first_column;    \
   Current.last_line    = Rhs[N].last_line;       \
   Current.last_column  = Rhs[N].last_column;     \
@@ -1299,11 +1345,19 @@ while (0)
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYLSP\_\-NEEDED}\label{parser_8c_a8}
 
 
-{\bf Value:}\footnotesize\begin{verbatim}
-\end{verbatim}\normalsize 
+\index{parser.c@{parser.c}!yylval@{yylval}}
+\index{yylval@{yylval}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yylval\ {\bf VLlval}}\label{parser_8c_a4}
+
+
 \index{parser.c@{parser.c}!YYMAXDEPTH@{YYMAXDEPTH}}
 \index{YYMAXDEPTH@{YYMAXDEPTH}!parser.c@{parser.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYMAXDEPTH\ 10000}\label{parser_8c_a180}
+
+
+\index{parser.c@{parser.c}!yynerrs@{yynerrs}}
+\index{yynerrs@{yynerrs}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yynerrs\ VLnerrs}\label{parser_8c_a7}
 
 
 \index{parser.c@{parser.c}!YYNTBASE@{YYNTBASE}}
@@ -1311,20 +1365,21 @@ while (0)
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYNTBASE\ 194}\label{parser_8c_a162}
 
 
+\index{parser.c@{parser.c}!yyparse@{yyparse}}
+\index{yyparse@{yyparse}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yyparse\ VLparse}\label{parser_8c_a1}
+
+
 \index{parser.c@{parser.c}!YYPARSE_PARAM_ARG@{YYPARSE\_\-PARAM\_\-ARG}}
 \index{YYPARSE_PARAM_ARG@{YYPARSE\_\-PARAM\_\-ARG}!parser.c@{parser.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYPARSE\_\-PARAM\_\-ARG}\label{parser_8c_a181}
 
 
-{\bf Value:}\footnotesize\begin{verbatim}
-\end{verbatim}\normalsize 
 \index{parser.c@{parser.c}!YYPARSE_PARAM_DECL@{YYPARSE\_\-PARAM\_\-DECL}}
 \index{YYPARSE_PARAM_DECL@{YYPARSE\_\-PARAM\_\-DECL}!parser.c@{parser.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYPARSE\_\-PARAM\_\-DECL}\label{parser_8c_a182}
 
 
-{\bf Value:}\footnotesize\begin{verbatim}
-\end{verbatim}\normalsize 
 \index{parser.c@{parser.c}!YYPOPSTACK@{YYPOPSTACK}}
 \index{YYPOPSTACK@{YYPOPSTACK}!parser.c@{parser.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYPOPSTACK\ (yyvsp--, yyssp--, yylsp--)}\label{parser_8c_a183}
@@ -1350,79 +1405,22 @@ while (0)
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYTRANSLATE(x)\ ((unsigned)(x) $<$= 403 ? {\bf yytranslate}[x] : 383)}\label{parser_8c_a163}
 
 
-\index{parser.c@{parser.c}!const@{const}}
-\index{const@{const}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define const}\label{parser_8c_a159}
-
-
-{\bf Value:}\footnotesize\begin{verbatim}
-\end{verbatim}\normalsize 
-\index{parser.c@{parser.c}!less_than_K_else@{less\_\-than\_\-K\_\-else}}
-\index{less_than_K_else@{less\_\-than\_\-K\_\-else}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define less\_\-than\_\-K\_\-else\ 403}\label{parser_8c_a155}
-
-
-\index{parser.c@{parser.c}!yychar@{yychar}}
-\index{yychar@{yychar}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yychar\ VLchar}\label{parser_8c_a5}
-
-
-\index{parser.c@{parser.c}!yyclearin@{yyclearin}}
-\index{yyclearin@{yyclearin}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yyclearin\ (yychar = YYEMPTY)}\label{parser_8c_a167}
-
-
-\index{parser.c@{parser.c}!yydebug@{yydebug}}
-\index{yydebug@{yydebug}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yydebug\ {\bf VLdebug}}\label{parser_8c_a6}
-
-
-\index{parser.c@{parser.c}!yyerrok@{yyerrok}}
-\index{yyerrok@{yyerrok}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yyerrok\ (yyerrstatus = 0)}\label{parser_8c_a166}
-
-
-\index{parser.c@{parser.c}!yyerror@{yyerror}}
-\index{yyerror@{yyerror}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yyerror\ VLerror}\label{parser_8c_a3}
-
-
-\index{parser.c@{parser.c}!yylex@{yylex}}
-\index{yylex@{yylex}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yylex\ VLlex}\label{parser_8c_a2}
-
-
-\index{parser.c@{parser.c}!yylval@{yylval}}
-\index{yylval@{yylval}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf YYSTYPE} yylval\ {\bf VLlval}}\label{parser_8c_a4}
-
-
-\index{parser.c@{parser.c}!yynerrs@{yynerrs}}
-\index{yynerrs@{yynerrs}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yynerrs\ VLnerrs}\label{parser_8c_a7}
-
-
-\index{parser.c@{parser.c}!yyparse@{yyparse}}
-\index{yyparse@{yyparse}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yyparse\ VLparse}\label{parser_8c_a1}
-
-
 
 
 \subsection{Function Documentation}
 \index{parser.c@{parser.c}!__yy_memcpy@{\_\-\_\-yy\_\-memcpy}}
 \index{__yy_memcpy@{\_\-\_\-yy\_\-memcpy}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void \_\-\_\-yy\_\-memcpy (to, {\bf from}, {\bf count})\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a208}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void \_\-\_\-yy\_\-memcpy (to, {\bf from}, {\bf count})\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a212}
 
 
 \index{parser.c@{parser.c}!lex_end_udp_table@{lex\_\-end\_\-udp\_\-table}}
 \index{lex_end_udp_table@{lex\_\-end\_\-udp\_\-table}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void lex\_\-end\_\-udp\_\-table ()}\label{parser_8c_a207}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void lex\_\-end\_\-udp\_\-table ()}\label{parser_8c_a211}
 
 
 \index{parser.c@{parser.c}!lex_start_udp_table@{lex\_\-start\_\-udp\_\-table}}
 \index{lex_start_udp_table@{lex\_\-start\_\-udp\_\-table}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void lex\_\-start\_\-udp\_\-table ()}\label{parser_8c_a206}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void lex\_\-start\_\-udp\_\-table ()}\label{parser_8c_a210}
 
 
 
@@ -1430,17 +1428,17 @@ while (0)
 \subsection{Variable Documentation}
 \index{parser.c@{parser.c}!count@{count}}
 \index{count@{count}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}unsigned int count}\label{parser_8c_a205}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}unsigned int count}\label{parser_8c_a209}
 
 
 \index{parser.c@{parser.c}!delay_expr_type@{delay\_\-expr\_\-type}}
 \index{delay_expr_type@{delay\_\-expr\_\-type}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int delay\_\-expr\_\-type = DELAY\_\-EXPR\_\-DEFAULT}\label{parser_8c_a185}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int delay\_\-expr\_\-type ()}\label{parser_8c_a185}
 
 
 Value to use when a delay expression with min:typ:max \index{parser.c@{parser.c}!from@{from}}
 \index{from@{from}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char $\ast$ from}\label{parser_8c_a204}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ from}\label{parser_8c_a208}
 
 
 \index{parser.c@{parser.c}!ignore_mode@{ignore\_\-mode}}
@@ -1450,12 +1448,12 @@ Value to use when a delay expression with min:typ:max \index{parser.c@{parser.c}
 
 \index{parser.c@{parser.c}!param_exp_head@{param\_\-exp\_\-head}}
 \index{param_exp_head@{param\_\-exp\_\-head}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf exp\_\-link} $\ast$ param\_\-exp\_\-head = NULL}\label{parser_8c_a188}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf exp\_\-link}$\ast$ param\_\-exp\_\-head = NULL}\label{parser_8c_a188}
 
 
 \index{parser.c@{parser.c}!param_exp_tail@{param\_\-exp\_\-tail}}
 \index{param_exp_tail@{param\_\-exp\_\-tail}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf exp\_\-link} $\ast$ param\_\-exp\_\-tail = NULL}\label{parser_8c_a189}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf exp\_\-link}$\ast$ param\_\-exp\_\-tail = NULL}\label{parser_8c_a189}
 
 
 \index{parser.c@{parser.c}!param_mode@{param\_\-mode}}
@@ -1465,25 +1463,37 @@ Value to use when a delay expression with min:typ:max \index{parser.c@{parser.c}
 
 \index{parser.c@{parser.c}!user_msg@{user\_\-msg}}
 \index{user_msg@{user\_\-msg}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char user\_\-msg[USER\_\-MSG\_\-LENGTH]}\label{parser_8c_a184}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char user\_\-msg[USER\_\-MSG\_\-LENGTH] ()}\label{parser_8c_a184}
+
+
+Holds some output that will be displayed via the print\_\-output command. This is created globally so that memory does not need to be reallocated for each function that wishes to use it. \index{parser.c@{parser.c}!yychar@{yychar}}
+\index{yychar@{yychar}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yychar}\label{parser_8c_a203}
 
 
 \index{parser.c@{parser.c}!yycheck@{yycheck}}
 \index{yycheck@{yycheck}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yycheck\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a202}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yycheck[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a202}
+
+
+\index{parser.c@{parser.c}!yydebug@{yydebug}}
+\index{yydebug@{yydebug}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yydebug}\label{parser_8c_a207}
 
 
 \index{parser.c@{parser.c}!yydefact@{yydefact}}
 \index{yydefact@{yydefact}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yydefact\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a197}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yydefact[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a197}
 
 
 \index{parser.c@{parser.c}!yydefgoto@{yydefgoto}}
 \index{yydefgoto@{yydefgoto}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yydefgoto\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a198}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yydefgoto[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a198}
 
 
-{\bf Initial value:}\footnotesize\begin{verbatim} {  1311,
+{\bf Initial value:}
+
+\footnotesize\begin{verbatim} {  1311,
     54,    72,    73,     5,     6,    16,     7,     8,    62,   381,
     60,   380,   188,   376,   377,   378,   940,  1135,   576,   944,
   1049,  1181,   782,   783,   447,   284,   415,   411,   838,   412,
@@ -1503,23 +1513,36 @@ Value to use when a delay expression with min:typ:max \index{parser.c@{parser.c}
   1004,   132,   133,   126,   127,   509,   890,   517,   518,  1011,
   1155,   343,   344,   532,   533,   345,   346,   544,   754,   741,
   1107,  1108,   347,   348,  1234,   923,   244,   546
-}\end{verbatim}\normalsize 
+}
+\end{verbatim}\normalsize 
 \index{parser.c@{parser.c}!yylloc@{yylloc}}
 \index{yylloc@{yylloc}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}YYLTYPE yylloc}\label{parser_8c_a203}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}YYLTYPE yylloc}\label{parser_8c_a205}
+
+
+\index{parser.c@{parser.c}!yylval@{yylval}}
+\index{yylval@{yylval}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf YYSTYPE} yylval}\label{parser_8c_a204}
+
+
+\index{parser.c@{parser.c}!yynerrs@{yynerrs}}
+\index{yynerrs@{yynerrs}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yynerrs}\label{parser_8c_a206}
 
 
 \index{parser.c@{parser.c}!yypact@{yypact}}
 \index{yypact@{yypact}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yypact\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a199}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yypact[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a199}
 
 
 \index{parser.c@{parser.c}!yypgoto@{yypgoto}}
 \index{yypgoto@{yypgoto}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yypgoto\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a200}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yypgoto[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a200}
 
 
-{\bf Initial value:}\footnotesize\begin{verbatim} {-32768,
+{\bf Initial value:}
+
+\footnotesize\begin{verbatim} {-32768,
 -32768,-32768,  1118,-32768,  1308,-32768,-32768,-32768,-32768,-32768,
 -32768,-32768,  1249,-32768,   737,-32768,-32768,-32768,-32768,-32768,
 -32768,-32768,  -159,  -826,   -87,   618,   136,  -235,  -175,   -21,
@@ -1539,44 +1562,45 @@ Value to use when a delay expression with min:typ:max \index{parser.c@{parser.c}
 -32768,-32768,  -107,-32768,   -85,-32768,-32768,  1038,   635,-32768,
 -32768,-32768,  1019,-32768,   625,   466,-32768,    -2,  -143,  -487,
  -1002,-32768,   470,-32768,  -560,   605,    -6,  -436
-}\end{verbatim}\normalsize 
+}
+\end{verbatim}\normalsize 
 \index{parser.c@{parser.c}!yyprhs@{yyprhs}}
 \index{yyprhs@{yyprhs}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yyprhs\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a191}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yyprhs[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a191}
 
 
 \index{parser.c@{parser.c}!yyr1@{yyr1}}
 \index{yyr1@{yyr1}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yyr1\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a195}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yyr1[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a195}
 
 
 \index{parser.c@{parser.c}!yyr2@{yyr2}}
 \index{yyr2@{yyr2}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yyr2\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a196}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yyr2[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a196}
 
 
 \index{parser.c@{parser.c}!yyrhs@{yyrhs}}
 \index{yyrhs@{yyrhs}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yyrhs\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a192}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yyrhs[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a192}
 
 
 \index{parser.c@{parser.c}!yyrline@{yyrline}}
 \index{yyrline@{yyrline}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yyrline\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a193}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yyrline[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a193}
 
 
 \index{parser.c@{parser.c}!yytable@{yytable}}
 \index{yytable@{yytable}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yytable\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a201}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yytable[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a201}
 
 
 \index{parser.c@{parser.c}!yytname@{yytname}}
 \index{yytname@{yytname}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const char $\ast$const yytname\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a194}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const char$\ast$ const yytname[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a194}
 
 
 \index{parser.c@{parser.c}!yytranslate@{yytranslate}}
 \index{yytranslate@{yytranslate}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yytranslate\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a190}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yytranslate[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a190}
 
 

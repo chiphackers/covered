@@ -20,7 +20,7 @@ void {\bf line\_\-get\_\-stats} ({\bf stmt\_\-link} $\ast$stmtl, float $\ast$tot
 \item 
 void {\bf line\_\-display\_\-verbose} (FILE $\ast$ofile, {\bf stmt\_\-link} $\ast$stmtl)
 \item 
-void {\bf line\_\-instance\_\-verbose} (FILE $\ast$ofile, {\bf mod\_\-inst} $\ast$root)
+void {\bf line\_\-instance\_\-verbose} (FILE $\ast$ofile, {\bf mod\_\-inst} $\ast$root, char $\ast$parent\_\-inst)
 \item 
 void {\bf line\_\-module\_\-verbose} (FILE $\ast$ofile, {\bf mod\_\-link} $\ast$head)
 \item 
@@ -29,171 +29,137 @@ void {\bf line\_\-report} (FILE $\ast$ofile, {\bf bool} verbose)
 \subsection*{Variables}
 \begin{CompactItemize}
 \item 
-{\bf mod\_\-inst}$\ast$ {\bf instance\_\-root}
+{\bf mod\_\-inst} $\ast$ {\bf instance\_\-root}
 \item 
-{\bf mod\_\-link}$\ast$ {\bf mod\_\-head}
+{\bf mod\_\-link} $\ast$ {\bf mod\_\-head}
 \item 
 {\bf bool} {\bf report\_\-covered}
 \item 
 unsigned int {\bf report\_\-comb\_\-depth}
 \item 
 {\bf bool} {\bf report\_\-instance}
+\item 
+char {\bf leading\_\-hierarchy} [4096]
 \end{CompactItemize}
 
 
 \subsection{Detailed Description}
-
-
 \begin{Desc}
-\item[{\bf Author: }]\par
-Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
-\item[{\bf Date: }]\par
-3/31/2002
-
-\end{Desc}
+\item[Date:]3/31/2002\end{Desc}
 
 
 \subsection{Function Documentation}
 \index{line.c@{line.c}!line_display_verbose@{line\_\-display\_\-verbose}}
 \index{line_display_verbose@{line\_\-display\_\-verbose}!line.c@{line.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void line\_\-display\_\-verbose (FILE $\ast$ {\em ofile}, {\bf stmt\_\-link} $\ast$ {\em stmtl})}\label{line_8c_a8}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void line\_\-display\_\-verbose (FILE $\ast$ {\em ofile}, {\bf stmt\_\-link} $\ast$ {\em stmtl})}\label{line_8c_a9}
 
 
 \begin{Desc}
-\item[{\bf Parameters: }]\par
+\item[Parameters:]
 \begin{description}
-\item[
-{\em ofile}]Pointer to file to output results to. \item[
-{\em stmtl}]Pointer to expression list head.
-
-\end{description}
+\item[{\em ofile}]Pointer to file to output results to. \item[{\em stmtl}]Pointer to expression list head.\end{description}
 \end{Desc}
 Displays the lines missed during simulation to standard output from the specified expression list. \index{line.c@{line.c}!line_get_stats@{line\_\-get\_\-stats}}
 \index{line_get_stats@{line\_\-get\_\-stats}!line.c@{line.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void line\_\-get\_\-stats ({\bf stmt\_\-link} $\ast$ {\em stmtl}, float $\ast$ {\em total}, int $\ast$ {\em hit})}\label{line_8c_a5}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void line\_\-get\_\-stats ({\bf stmt\_\-link} $\ast$ {\em stmtl}, float $\ast$ {\em total}, int $\ast$ {\em hit})}\label{line_8c_a6}
 
 
 Calculates line coverage numbers for the specified expression list.
 
 \begin{Desc}
-\item[{\bf Parameters: }]\par
+\item[Parameters:]
 \begin{description}
-\item[
-{\em stmtl}]Pointer to current statement list to explore. \item[
-{\em total}]Holds total number of lines parsed. \item[
-{\em hit}]Holds total number of lines hit.
-
-\end{description}
+\item[{\em stmtl}]Pointer to current statement list to explore. \item[{\em total}]Holds total number of lines parsed. \item[{\em hit}]Holds total number of lines hit.\end{description}
 \end{Desc}
 Iterates through given statement list, gathering information about which lines exist in the list, which lines were hit during simulation and which lines were missed during simulation. This information is used to report summary information about line coverage. \index{line.c@{line.c}!line_instance_summary@{line\_\-instance\_\-summary}}
 \index{line_instance_summary@{line\_\-instance\_\-summary}!line.c@{line.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} line\_\-instance\_\-summary (FILE $\ast$ {\em ofile}, {\bf mod\_\-inst} $\ast$ {\em root}, char $\ast$ {\em parent\_\-inst})}\label{line_8c_a6}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} line\_\-instance\_\-summary (FILE $\ast$ {\em ofile}, {\bf mod\_\-inst} $\ast$ {\em root}, char $\ast$ {\em parent\_\-inst})}\label{line_8c_a7}
 
 
 \begin{Desc}
-\item[{\bf Parameters: }]\par
+\item[Parameters:]
 \begin{description}
-\item[
-{\em ofile}]Pointer to file to output results to. \item[
-{\em root}]Current node in instance tree. \item[
-{\em parent\_\-inst}]Name of parent instance.
-
-\end{description}
+\item[{\em ofile}]Pointer to file to output results to. \item[{\em root}]Current node in instance tree. \item[{\em parent\_\-inst}]Name of parent instance.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[{\bf Returns: }]\par
-Returns TRUE if lines were found to be missed; otherwise, returns FALSE.
-
-\end{Desc}
+\item[Returns:]Returns TRUE if lines were found to be missed; otherwise, returns FALSE.\end{Desc}
 Recursively iterates through the instance tree gathering the total number of lines parsed vs. the total number of lines executed during the course of simulation. The parent node will display its information before calling its children. \index{line.c@{line.c}!line_instance_verbose@{line\_\-instance\_\-verbose}}
 \index{line_instance_verbose@{line\_\-instance\_\-verbose}!line.c@{line.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void line\_\-instance\_\-verbose (FILE $\ast$ {\em ofile}, {\bf mod\_\-inst} $\ast$ {\em root})}\label{line_8c_a9}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void line\_\-instance\_\-verbose (FILE $\ast$ {\em ofile}, {\bf mod\_\-inst} $\ast$ {\em root}, char $\ast$ {\em parent\_\-inst})}\label{line_8c_a10}
 
 
 \begin{Desc}
-\item[{\bf Parameters: }]\par
+\item[Parameters:]
 \begin{description}
-\item[
-{\em ofile}]Pointer to file to output results to. \item[
-{\em root}]Pointer to root node of instance tree to search through.
-
-\end{description}
+\item[{\em ofile}]Pointer to file to output results to. \item[{\em root}]Pointer to root node of instance tree to search through. \item[{\em parent\_\-inst}]Hierarchical path of parent instance.\end{description}
 \end{Desc}
-Displays the verbose line coverage results to the specified output stream on an instance basis. The verbose line coverage includes the line numbers  (and associated verilog code) and file/module name of the lines that were  not hit during simulation. \index{line.c@{line.c}!line_module_summary@{line\_\-module\_\-summary}}
+Displays the verbose line coverage results to the specified output stream on an instance basis. The verbose line coverage includes the line numbers (and associated verilog code) and file/module name of the lines that were not hit during simulation. \index{line.c@{line.c}!line_module_summary@{line\_\-module\_\-summary}}
 \index{line_module_summary@{line\_\-module\_\-summary}!line.c@{line.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} line\_\-module\_\-summary (FILE $\ast$ {\em ofile}, {\bf mod\_\-link} $\ast$ {\em head})}\label{line_8c_a7}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} line\_\-module\_\-summary (FILE $\ast$ {\em ofile}, {\bf mod\_\-link} $\ast$ {\em head})}\label{line_8c_a8}
 
 
 \begin{Desc}
-\item[{\bf Parameters: }]\par
+\item[Parameters:]
 \begin{description}
-\item[
-{\em ofile}]Pointer to file to output results to. \item[
-{\em head}]Pointer to head of module list to explore.
-
-\end{description}
+\item[{\em ofile}]Pointer to file to output results to. \item[{\em head}]Pointer to head of module list to explore.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[{\bf Returns: }]\par
-Returns TRUE if there where lines that were found to be missed; otherwise, returns FALSE.
-
-\end{Desc}
+\item[Returns:]Returns TRUE if there where lines that were found to be missed; otherwise, returns FALSE.\end{Desc}
 Iterates through the module list, displaying the line coverage results (summary format) for each module. \index{line.c@{line.c}!line_module_verbose@{line\_\-module\_\-verbose}}
 \index{line_module_verbose@{line\_\-module\_\-verbose}!line.c@{line.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void line\_\-module\_\-verbose (FILE $\ast$ {\em ofile}, {\bf mod\_\-link} $\ast$ {\em head})}\label{line_8c_a10}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void line\_\-module\_\-verbose (FILE $\ast$ {\em ofile}, {\bf mod\_\-link} $\ast$ {\em head})}\label{line_8c_a11}
 
 
 \begin{Desc}
-\item[{\bf Parameters: }]\par
+\item[Parameters:]
 \begin{description}
-\item[
-{\em ofile}]Pointer to file to output results to. \item[
-{\em head}]Pointer to head of module list to search through.
-
-\end{description}
+\item[{\em ofile}]Pointer to file to output results to. \item[{\em head}]Pointer to head of module list to search through.\end{description}
 \end{Desc}
 Displays the verbose line coverage results to the specified output stream on a module basis (combining modules that are instantiated multiple times). The verbose line coverage includes the line numbers (and associated verilog code) and file/module name of the lines that were not hit during simulation. \index{line.c@{line.c}!line_report@{line\_\-report}}
 \index{line_report@{line\_\-report}!line.c@{line.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void line\_\-report (FILE $\ast$ {\em ofile}, {\bf bool} {\em verbose})}\label{line_8c_a11}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void line\_\-report (FILE $\ast$ {\em ofile}, {\bf bool} {\em verbose})}\label{line_8c_a12}
 
 
 Generates report output for line coverage.
 
 \begin{Desc}
-\item[{\bf Parameters: }]\par
+\item[Parameters:]
 \begin{description}
-\item[
-{\em ofile}]Pointer to file to output results to. \item[
-{\em verbose}]Specifies whether to generate summary or verbose output.
-
-\end{description}
+\item[{\em ofile}]Pointer to file to output results to. \item[{\em verbose}]Specifies whether to generate summary or verbose output.\end{description}
 \end{Desc}
-After the design is read into the module hierarchy, parses the hierarchy by module, reporting the line coverage for each module encountered. The parent module will specify its own line coverage along with a total line coverage including its  children. 
+After the design is read into the module hierarchy, parses the hierarchy by module, reporting the line coverage for each module encountered. The parent module will specify its own line coverage along with a total line coverage including its children. 
 
 \subsection{Variable Documentation}
 \index{line.c@{line.c}!instance_root@{instance\_\-root}}
 \index{instance_root@{instance\_\-root}!line.c@{line.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-inst}$\ast$ instance\_\-root}\label{line_8c_a0}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-inst}$\ast$ instance\_\-root ()}\label{line_8c_a0}
 
 
-\index{line.c@{line.c}!mod_head@{mod\_\-head}}
+Pointer to root of module instance tree \index{line.c@{line.c}!leading_hierarchy@{leading\_\-hierarchy}}
+\index{leading_hierarchy@{leading\_\-hierarchy}!line.c@{line.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char leading\_\-hierarchy[4096] ()}\label{line_8c_a5}
+
+
+This string specifies the Verilog hierarchy leading up to the DUT. This value is taken from the -i value (or is a value of '$\ast$' if the -t option is only specified). \index{line.c@{line.c}!mod_head@{mod\_\-head}}
 \index{mod_head@{mod\_\-head}!line.c@{line.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-link}$\ast$ mod\_\-head}\label{line_8c_a1}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-link}$\ast$ mod\_\-head ()}\label{line_8c_a1}
 
 
-\index{line.c@{line.c}!report_comb_depth@{report\_\-comb\_\-depth}}
+Pointer to head element of module list \index{line.c@{line.c}!report_comb_depth@{report\_\-comb\_\-depth}}
 \index{report_comb_depth@{report\_\-comb\_\-depth}!line.c@{line.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}unsigned int report\_\-comb\_\-depth}\label{line_8c_a3}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}unsigned int report\_\-comb\_\-depth ()}\label{line_8c_a3}
 
 
 If set to a non-zero value, causes Covered to only generate combinational logic report information for depths up to the number specified. \index{line.c@{line.c}!report_covered@{report\_\-covered}}
 \index{report_covered@{report\_\-covered}!line.c@{line.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} report\_\-covered}\label{line_8c_a2}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} report\_\-covered ()}\label{line_8c_a2}
 
 
-\index{line.c@{line.c}!report_instance@{report\_\-instance}}
+If set to a boolean value of TRUE, displays covered logic for a particular CDD file. By default, Covered will display uncovered logic. Must be used in conjunction with the -v (verbose output) option. \index{line.c@{line.c}!report_instance@{report\_\-instance}}
 \index{report_instance@{report\_\-instance}!line.c@{line.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} report\_\-instance}\label{line_8c_a4}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} report\_\-instance ()}\label{line_8c_a4}
 
 
+If set to a boolean value of TRUE, provides a coverage information for individual module instances. If set to a value of FALSE, reports coverage information on a module basis, merging results from all instances of same module. 

@@ -11,9 +11,9 @@
 \subsection*{Functions}
 \begin{CompactItemize}
 \item 
-{\bf static\_\-expr}$\ast$ {\bf static\_\-expr\_\-gen\_\-unary} ({\bf static\_\-expr} $\ast$stexp, int op, int line)
+{\bf static\_\-expr} $\ast$ {\bf static\_\-expr\_\-gen\_\-unary} ({\bf static\_\-expr} $\ast$stexp, int op, int line)
 \begin{CompactList}\small\item\em Calculates new values for unary static expressions and returns the new static expression.\item\end{CompactList}\item 
-{\bf static\_\-expr}$\ast$ {\bf static\_\-expr\_\-gen} ({\bf static\_\-expr} $\ast$right, {\bf static\_\-expr} $\ast$left, int op, int line)
+{\bf static\_\-expr} $\ast$ {\bf static\_\-expr\_\-gen} ({\bf static\_\-expr} $\ast$right, {\bf static\_\-expr} $\ast$left, int op, int line)
 \begin{CompactList}\small\item\em Calculates new values for static expression and returns the new static expression.\item\end{CompactList}\item 
 void {\bf static\_\-expr\_\-calc\_\-lsb\_\-and\_\-width} ({\bf static\_\-expr} $\ast$left, {\bf static\_\-expr} $\ast$right, int $\ast$width, int $\ast$lsb)
 \begin{CompactList}\small\item\em Calculates LSB and width for specified left/right pair for vector.\item\end{CompactList}\item 
@@ -22,24 +22,18 @@ void {\bf static\_\-expr\_\-dealloc} ({\bf static\_\-expr} $\ast$stexp, {\bf boo
 
 
 \subsection{Detailed Description}
-
-
 \begin{Desc}
-\item[{\bf Author: }]\par
-Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
-\item[{\bf Date: }]\par
-10/02/2002
-
- To accommodate the need for parameters (variables) in static expressions, the static\_\-expr structure and supporting code was created to maintain the efficiency of static expressions that consist of known values while being able to keep track of parameter uses in static expressions.
-
- A static\_\-expr structure consists of members: an int (stores known integer values) and an expression pointer. If the expression pointer is set to NULL for the given static\_\-expr, it is assumed that the static\_\-expr structure contains a valid, known value that can be used in immediate computations. If the expression pointer is not NULL, it is assumed that the static\_\-expr structure contains an expression tree that needs to be evaluated at a later time (when parameters are being elaborated).
-
- When a static expression is being parsed and a static value (integer value) is encountered, a new static\_\-expr is allocated from heap memory and the number field is assigned to this integer value. The new static\_\-expr structure is then passed up the tree to be used in further calculations, if necessary. If a static expression is being parsed and an identifier (parameter) is encountered, an expression is created with an operation type of EXP\_\-OP\_\-SIG to indicate that a parameter is required during elaboration. The name of the necessary parameter is bound to the newly created expression.
-
- Using this strategy for handling static expressions, it becomes evident that we retain the efficiency of calculating static expression that consists entirely of known values (the only overhead is the allocation/deallocation of a static\_\-expr structure from the heap). If a parameter is found during the parse stage, more effort is required to calculate the static\_\-expr, but this is considered necessary in the larger scope of things so we will not concern ourselves with this overhead (which is fairly minimal anyways).
-
-\end{Desc}
+\item[Date:]10/02/2002\end{Desc}
+\begin{Desc}
+\item[]To accommodate the need for parameters (variables) in static expressions, the static\_\-expr structure and supporting code was created to maintain the efficiency of static expressions that consist of known values while being able to keep track of parameter uses in static expressions.\end{Desc}
+\begin{Desc}
+\item[]A static\_\-expr structure consists of members: an int (stores known integer values) and an expression pointer. If the expression pointer is set to NULL for the given static\_\-expr, it is assumed that the static\_\-expr structure contains a valid, known value that can be used in immediate computations. If the expression pointer is not NULL, it is assumed that the static\_\-expr structure contains an expression tree that needs to be evaluated at a later time (when parameters are being elaborated).\end{Desc}
+\begin{Desc}
+\item[]When a static expression is being parsed and a static value (integer value) is encountered, a new static\_\-expr is allocated from heap memory and the number field is assigned to this integer value. The new static\_\-expr structure is then passed up the tree to be used in further calculations, if necessary. If a static expression is being parsed and an identifier (parameter) is encountered, an expression is created with an operation type of EXP\_\-OP\_\-SIG to indicate that a parameter is required during elaboration. The name of the necessary parameter is bound to the newly created expression.\end{Desc}
+\begin{Desc}
+\item[]Using this strategy for handling static expressions, it becomes evident that we retain the efficiency of calculating static expression that consists entirely of known values (the only overhead is the allocation/deallocation of a static\_\-expr structure from the heap). If a parameter is found during the parse stage, more effort is required to calculate the static\_\-expr, but this is considered necessary in the larger scope of things so we will not concern ourselves with this overhead (which is fairly minimal anyways).\end{Desc}
 
 
 \subsection{Function Documentation}
@@ -51,15 +45,9 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 Calculates LSB and width for specified left/right pair for vector.
 
 \begin{Desc}
-\item[{\bf Parameters: }]\par
+\item[Parameters:]
 \begin{description}
-\item[
-{\em left}]Pointer to static expression on left of vector. \item[
-{\em right}]Pointer to static expression on right of vector. \item[
-{\em width}]Calculated width of combined right/left static expressions. \item[
-{\em lsb}]Calculated lsb of combined right/left static expressions.
-
-\end{description}
+\item[{\em left}]Pointer to static expression on left of vector. \item[{\em right}]Pointer to static expression on right of vector. \item[{\em width}]Calculated width of combined right/left static expressions. \item[{\em lsb}]Calculated lsb of combined right/left static expressions.\end{description}
 \end{Desc}
 Calculates the LSB and width of a vector defined by the specified left and right static expressions. If the width cannot be obtained immediately (parameter in static expression), set width to -1. If the LSB cannot be obtained immediately (parameter in static expression), set LSB to -1. The returned width and lsb parameters can be used to size a vector instantiation. \index{static.c@{static.c}!static_expr_dealloc@{static\_\-expr\_\-dealloc}}
 \index{static_expr_dealloc@{static\_\-expr\_\-dealloc}!static.c@{static.c}}
@@ -69,57 +57,36 @@ Calculates the LSB and width of a vector defined by the specified left and right
 Deallocates static\_\-expr memory from heap.
 
 \begin{Desc}
-\item[{\bf Parameters: }]\par
+\item[Parameters:]
 \begin{description}
-\item[
-{\em stexp}]Pointer to static expression to deallocate. \item[
-{\em rm\_\-exp}]Specifies that expression tree should be deallocated.
-
-\end{description}
+\item[{\em stexp}]Pointer to static expression to deallocate. \item[{\em rm\_\-exp}]Specifies that expression tree should be deallocated.\end{description}
 \end{Desc}
 Deallocates all allocated memory from the heap for the specified static\_\-expr structure. \index{static.c@{static.c}!static_expr_gen@{static\_\-expr\_\-gen}}
 \index{static_expr_gen@{static\_\-expr\_\-gen}!static.c@{static.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf static\_\-expr} $\ast$ static\_\-expr\_\-gen ({\bf static\_\-expr} $\ast$ {\em right}, {\bf static\_\-expr} $\ast$ {\em left}, int {\em op}, int {\em line})}\label{static_8c_a1}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf static\_\-expr}$\ast$ static\_\-expr\_\-gen ({\bf static\_\-expr} $\ast$ {\em right}, {\bf static\_\-expr} $\ast$ {\em left}, int {\em op}, int {\em line})}\label{static_8c_a1}
 
 
 Calculates new values for static expression and returns the new static expression.
 
 \begin{Desc}
-\item[{\bf Parameters: }]\par
+\item[Parameters:]
 \begin{description}
-\item[
-{\em right}]Pointer to right static expression. \item[
-{\em left}]Pointer to left static expression. \item[
-{\em op}]Static expression operation. \item[
-{\em line}]Line number that static expression operation found on.
-
-\end{description}
+\item[{\em right}]Pointer to right static expression. \item[{\em left}]Pointer to left static expression. \item[{\em op}]Static expression operation. \item[{\em line}]Line number that static expression operation found on.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[{\bf Returns: }]\par
-Returns pointer to new static\_\-expr structure.
-
-\end{Desc}
+\item[Returns:]Returns pointer to new static\_\-expr structure.\end{Desc}
 Used by the parser to calculate a new static\_\-expr structure based on the operation encountered while parsing. Based on the operation type specified in the argument list, performs unary operation (if both operands are static numbers, storing result into original static\_\-expr number field and returns If only one of the operands is an expression, create a EXP\_\-OP\_\-STATIC expression for the other operand and create an expression consisting of these two expressions and the specified operation. If both operands are expressions, simply create a new expression consisting of those two expressions and specified operator. Store the newly create expression in the original right static\_\-expr and deallocate the left static\_\-expr. \index{static.c@{static.c}!static_expr_gen_unary@{static\_\-expr\_\-gen\_\-unary}}
 \index{static_expr_gen_unary@{static\_\-expr\_\-gen\_\-unary}!static.c@{static.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf static\_\-expr} $\ast$ static\_\-expr\_\-gen\_\-unary ({\bf static\_\-expr} $\ast$ {\em stexp}, int {\em op}, int {\em line})}\label{static_8c_a0}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf static\_\-expr}$\ast$ static\_\-expr\_\-gen\_\-unary ({\bf static\_\-expr} $\ast$ {\em stexp}, int {\em op}, int {\em line})}\label{static_8c_a0}
 
 
 Calculates new values for unary static expressions and returns the new static expression.
 
 \begin{Desc}
-\item[{\bf Parameters: }]\par
+\item[Parameters:]
 \begin{description}
-\item[
-{\em stexp}]Pointer to static expression. \item[
-{\em op}]Unary static expression operation. \item[
-{\em line}]Line number that this expression was found on in file.
-
-\end{description}
+\item[{\em stexp}]Pointer to static expression. \item[{\em op}]Unary static expression operation. \item[{\em line}]Line number that this expression was found on in file.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[{\bf Returns: }]\par
-Returns pointer to new static\_\-expr structure.
-
-\end{Desc}
+\item[Returns:]Returns pointer to new static\_\-expr structure.\end{Desc}
 Used by the parser to calculate a new static\_\-expr structure based on the unary operation encountered while parsing. Based on the operation type specified in the argument list, performs unary operation (if operand is a static number and not an expression -- parameter in operand expression tree), storing result into original static\_\-expr number field and returns the original structure back to the calling function. If the operand is an expression, create an expression for the specified operation type and store this expression in the original expression pointer field. 

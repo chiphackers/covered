@@ -15,30 +15,19 @@ void {\bf fsm\_\-report} (FILE $\ast$ofile, {\bf bool} verbose)
 
 
 \subsection{Detailed Description}
-
-
 \begin{Desc}
-\item[{\bf Author: }]\par
-Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
-\item[{\bf Date: }]\par
-3/31/2002\end{Desc}
+\item[Date:]3/31/2002\end{Desc}
 \begin{Desc}
-\item[{\bf How are FSMs handled?}]\par
- In some fashion (either by manual input or automatic FSM extraction), an FSM state variable is named. When the parser parses a module that contains this state variable, the size of the state variable is used to construct a two-dimensional state transition table which is the size of the state variable squared. Each element of the table is one bit in size. If the bit is set in an element, it is known that the state variable transitioned from row value to column value. The table can be output to the CDD file in any way that uses the least amount of space.\end{Desc}
+\item[How are FSMs handled?]In some fashion (either by manual input or automatic FSM extraction), an FSM state variable is named. When the parser parses a module that contains this state variable, the size of the state variable is used to construct a two-dimensional state transition table which is the size of the state variable squared. Each element of the table is one bit in size. If the bit is set in an element, it is known that the state variable transitioned from row value to column value. The table can be output to the CDD file in any way that uses the least amount of space.\end{Desc}
 \begin{Desc}
-\item[{\bf What information can be extracted from an FSM?}]\par
- Because of the history saving nature of the FSM table, at least two basic statistics can be drawn from it. The first is basically, \char`\"{}Which states did the state machine get to?\char`\"{}. This information can be calculated by parsing the table for set bits. When a set bit is found, both the row and column values are reported as achieved states.
-
- The second statistic that can be drawn from a state machine table are state transitions. This statistic answers the question, \char`\"{}Which state transition arcs in the state transition diagram were traversed?\char`\"{}. The table format is formulated to specifically calculate the answer to this question. When a bit is found to be set in the table, we know which state (row) transitioned to which other state (column).\end{Desc}
+\item[What information can be extracted from an FSM?]Because of the history saving nature of the FSM table, at least two basic statistics can be drawn from it. The first is basically, \char`\"{}Which states did the state machine get to?\char`\"{}. This information can be calculated by parsing the table for set bits. When a set bit is found, both the row and column values are reported as achieved states.\end{Desc}
 \begin{Desc}
-\item[{\bf What is contained in this file?}]\par
- This file contains the functions necessary to perform the following:\begin{enumerate}
-\item 
-Create the required FSM table and attach it to a signal\item 
-Set the appropriate bit in the table during simulation\item 
-Write/read an FSM to/from the CDD file\item 
-Generate FSM report output\end{enumerate}
+\item[]The second statistic that can be drawn from a state machine table are state transitions. This statistic answers the question, \char`\"{}Which state transition arcs in the state transition diagram were traversed?\char`\"{}. The table format is formulated to specifically calculate the answer to this question. When a bit is found to be set in the table, we know which state (row) transitioned to which other state (column).\end{Desc}
+\begin{Desc}
+\item[What is contained in this file?]This file contains the functions necessary to perform the following:\begin{enumerate}
+\item Create the required FSM table and attach it to a signal\item Set the appropriate bit in the table during simulation\item Write/read an FSM to/from the CDD file\item Generate FSM report output\end{enumerate}
 \end{Desc}
 
 
@@ -51,19 +40,16 @@ Generate FSM report output\end{enumerate}
 Generates report output for FSM coverage.
 
 \begin{Desc}
-\item[{\bf Parameters: }]\par
+\item[Parameters:]
 \begin{description}
-\item[
-{\em ofile}]Pointer to file to output results to. \item[
-{\em verbose}]Specifies whether or not to provide verbose information
-
-\end{description}
+\item[{\em ofile}]Pointer to file to output results to. \item[{\em verbose}]Specifies whether or not to provide verbose information\end{description}
 \end{Desc}
-After the design is read into the module hierarchy, parses the hierarchy by module, reporting the FSM coverage for each module encountered. The parent module will specify its own FSM coverage along with a total FSM coverage including its  children. 
+After the design is read into the module hierarchy, parses the hierarchy by module, reporting the FSM coverage for each module encountered. The parent module will specify its own FSM coverage along with a total FSM coverage including its children. 
 
 \subsection{Variable Documentation}
 \index{fsm.c@{fsm.c}!report_instance@{report\_\-instance}}
 \index{report_instance@{report\_\-instance}!fsm.c@{fsm.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} report\_\-instance}\label{fsm_8c_a0}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} report\_\-instance ()}\label{fsm_8c_a0}
 
 
+If set to a boolean value of TRUE, provides a coverage information for individual module instances. If set to a value of FALSE, reports coverage information on a module basis, merging results from all instances of same module. 
