@@ -11,18 +11,18 @@
 <code>#include "<a class="el" href="vector_8h-source.html">vector.h</a>"</code><br>
 <table border=0 cellpadding=0 cellspacing=0>
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="sim_8c.html#a3">sim_expr_changed</a> (<a class="el" href="defines_8h.html#a124">expression</a> *expr)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="sim_8c.html#a3">sim_expr_changed</a> (<a class="el" href="defines_8h.html#a125">expression</a> *expr)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds specified expression's statement to pre-simulation statement queue.</em> <a href="#a3"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="sim_8c.html#a4">sim_add_stmt_to_queue</a> (<a class="el" href="defines_8h.html#a126">statement</a> *stmt)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="sim_8c.html#a4">sim_add_stmt_to_queue</a> (<a class="el" href="defines_8h.html#a127">statement</a> *stmt)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds specified statement to pre-simulation statement queue.</em> <a href="#a4"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="sim_8c.html#a5">sim_expression</a> (<a class="el" href="defines_8h.html#a124">expression</a> *expr)</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a126">statement</a> *&nbsp;</td><td valign=bottom><a class="el" href="sim_8c.html#a6">sim_statement</a> (<a class="el" href="defines_8h.html#a126">statement</a> *head_stmt)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="sim_8c.html#a5">sim_expression</a> (<a class="el" href="defines_8h.html#a125">expression</a> *expr)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a127">statement</a> *&nbsp;</td><td valign=bottom><a class="el" href="sim_8c.html#a6">sim_statement</a> (<a class="el" href="defines_8h.html#a127">statement</a> *head_stmt)</td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="sim_8c.html#a7">sim_simulate</a> ()</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Simulates current timestep.</em> <a href="#a7"></a><em></em></font><br><br></td></tr>
 <tr><td colspan=2><br><h2>Variables</h2></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a120">nibble</a>&nbsp;</td><td valign=bottom><a class="el" href="sim_8c.html#a0">or_optab</a> [16]</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a128">stmt_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="sim_8c.html#a1">presim_stmt_head</a></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a128">stmt_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="sim_8c.html#a2">presim_stmt_tail</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a121">nibble</a>&nbsp;</td><td valign=bottom><a class="el" href="sim_8c.html#a0">or_optab</a> [16]</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a129">stmt_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="sim_8c.html#a1">presim_stmt_head</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a129">stmt_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="sim_8c.html#a2">presim_stmt_tail</a></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 
@@ -54,7 +54,7 @@ Date: </b><dd>
         <tr>
           <td class="md" nowrap valign="top"> void sim_add_stmt_to_queue </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a126">statement</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a127">statement</a> *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>stmt</em>          </td>
           <td class="md" valign="top">)&nbsp;</td>
           <td class="md" nowrap></td>
@@ -91,7 +91,7 @@ Pointer to statement to add to queue.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void sim_expr_changed </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a124">expression</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a125">expression</a> *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>expr</em>          </td>
           <td class="md" valign="top">)&nbsp;</td>
           <td class="md" nowrap></td>
@@ -128,7 +128,7 @@ Pointer to expression that contains a changed signal value.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void sim_expression </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a124">expression</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a125">expression</a> *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>expr</em>          </td>
           <td class="md" valign="top">)&nbsp;</td>
           <td class="md" nowrap></td>
@@ -182,7 +182,7 @@ Pointer to expression to simulate.</td></tr>
 <p>
 Simulates current timestep.
 <p>
-This function is the heart of the simulation engine. It is called by the <a class="el" href="db_8c.html#a33">db_do_timestep</a>() function in <a class="el" href="db_8c.html">db.c</a> and moves the statements and expressions into the appropriate simulation functions. See above explanation on this procedure.     </td>
+This function is the heart of the simulation engine. It is called by the <a class="el" href="db_8c.html#a34">db_do_timestep</a>() function in <a class="el" href="db_8c.html">db.c</a> and moves the statements and expressions into the appropriate simulation functions. See above explanation on this procedure.     </td>
   </tr>
 </table>
 <a name="a6" doxytag="sim.c::sim_statement"></a><p>
@@ -191,9 +191,9 @@ This function is the heart of the simulation engine. It is called by the <a clas
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a126">statement</a>* sim_statement </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a127">statement</a>* sim_statement </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a126">statement</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a127">statement</a> *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>head_stmt</em>          </td>
           <td class="md" valign="top">)&nbsp;</td>
           <td class="md" nowrap></td>
@@ -229,7 +229,7 @@ Returns a pointer to the first statement to execute in the next timestep</dl>Per
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a120">nibble</a> or_optab[16] </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a121">nibble</a> or_optab[16] </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
           <td class="md" valign="top">)&nbsp;</td>
@@ -257,7 +257,7 @@ OR operation table     </td>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a128">stmt_link</a>* presim_stmt_head
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a129">stmt_link</a>* presim_stmt_head
       </table>
     </td>
   </tr>
@@ -279,7 +279,7 @@ OR operation table     </td>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a128">stmt_link</a>* presim_stmt_tail
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a129">stmt_link</a>* presim_stmt_tail
       </table>
     </td>
   </tr>
@@ -295,7 +295,7 @@ OR operation table     </td>
     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Tue Jul 9 23:54:23 2002 for Covered by
+<hr><address align="right"><small>Generated on Mon Jul 15 19:03:00 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

@@ -151,7 +151,7 @@ char* codegen_gen_expr( expression* expr, int line ) {
         case EXP_OP_UNAND    :  code_size = 3;  strcpy( code_format, "~&%s" );              both = FALSE;  break;
         case EXP_OP_UNOR     :  code_size = 3;  strcpy( code_format, "~|%s" );              both = FALSE;  break;
         case EXP_OP_UNXOR    :  code_size = 3;  strcpy( code_format, "~^%s" );              both = FALSE;  break;
-        case EXP_OP_EXPAND   :  break;   // Not sure how to handle
+        case EXP_OP_EXPAND   :  code_size = 5;  strcpy( code_format, "{%s{%s}}" );          both = TRUE;   break;
         case EXP_OP_LIST     :  code_size = 3;  strcpy( code_format, "%s, %s" );            both = TRUE;   break;
         case EXP_OP_CONCAT   :  code_size = 3;  strcpy( code_format, "{%s}" );              both = FALSE;  break;
         case EXP_OP_PEDGE    :  code_size = 9;  strcpy( code_format, "posedge %s" );        both = FALSE;  break;
@@ -218,6 +218,10 @@ char* codegen_gen_expr( expression* expr, int line ) {
 
 
 /* $Log$
+/* Revision 1.16  2002/07/14 05:10:42  phase1geo
+/* Added support for signal concatenation in score and report commands.  Fixed
+/* bugs in this code (and multiplication).
+/*
 /* Revision 1.15  2002/07/10 16:27:17  phase1geo
 /* Fixing output for single/multi-bit select signals in reports.
 /*

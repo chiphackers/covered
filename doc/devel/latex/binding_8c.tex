@@ -18,6 +18,8 @@ void {\bf bind\_\-add} (char $\ast$sig\_\-name, {\bf expression} $\ast$exp, char
 \begin{CompactList}\small\item\em Adds signal and expression to binding list.\item\end{CompactList}\item 
 void {\bf bind\_\-remove} (int id)
 \begin{CompactList}\small\item\em Removes the expression with ID of id from binding list.\item\end{CompactList}\item 
+void {\bf bind\_\-set\_\-tree} ({\bf expression} $\ast$expr)
+\item 
 void {\bf bind} (int mode)
 \begin{CompactList}\small\item\em Performs signal/expression bind (performed after parse completed).\item\end{CompactList}\end{CompactItemize}
 \subsection*{Variables}
@@ -47,7 +49,7 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsection{Function Documentation}
 \index{binding.c@{binding.c}!bind@{bind}}
 \index{bind@{bind}!binding.c@{binding.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void bind (int {\em mode})}\label{binding_8c_a6}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void bind (int {\em mode})}\label{binding_8c_a7}
 
 
 Performs signal/expression bind (performed after parse completed).
@@ -86,7 +88,18 @@ Removes the expression with ID of id from binding list.
 \item[{\em 
 id}]Expression ID of binding to remove.\end{description}
 \end{Desc}
-Removes the binding containing the expression ID of id. This needs to be called before an expression is removed. 
+Removes the binding containing the expression ID of id. This needs to be called before an expression is removed. \index{binding.c@{binding.c}!bind_set_tree@{bind\_\-set\_\-tree}}
+\index{bind_set_tree@{bind\_\-set\_\-tree}!binding.c@{binding.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void bind\_\-set\_\-tree ({\bf expression} $\ast$ {\em expr})}\label{binding_8c_a6}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+expr}]Pointer to expression to set bit widths in its expression tree.\end{description}
+\end{Desc}
+This function is called after all signals have been bound to their respective expressions. It recursively moves up the given expression tree towards the root, setting the expression sizes of all expressions that do not currently have a vector size associated with them. 
 
 \subsection{Variable Documentation}
 \index{binding.c@{binding.c}!instance_root@{instance\_\-root}}

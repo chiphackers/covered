@@ -105,6 +105,103 @@ void bind_remove( int id ) {
 }
 
 /*!
+ \param expr  Pointer to expression to set bit widths in its expression tree.
+
+ This function is called after all signals have been bound to their respective
+ expressions.  It recursively moves up the given expression tree towards the root,
+ setting the expression sizes of all expressions that do not currently have a
+ vector size associated with them.
+*/
+void bind_set_tree( expression* expr ) {
+
+  nibble value1;     /* Value to initialize LAST element of AEDGE operation */
+  int    i;          /* Loop iterator                                       */
+  static int count = 0;
+
+/*
+  if( count > 70 ) {
+    assert( count == 70 );
+  } else {
+    count++;
+  }
+*/
+
+  if( expr != NULL ) {
+
+    /* Set children before I set myself */
+    if( SUPPL_OP( expr->suppl ) != EXP_OP_AEDGE ) {
+      bind_set_tree( expr->left );
+    }
+    bind_set_tree( expr->right );
+
+    if( expr->value->width == 0 ) {
+
+      /* Set my size */
+      switch( SUPPL_OP( expr->suppl ) ) {
+
+        /*
+         In the case of an AEDGE expression, it needs to have the size of its LAST child expression
+         to be the width of its right child.
+        */
+        case EXP_OP_AEDGE :
+          expression_create_value( expr->left, expr->right->value->width, expr->right->value->lsb );
+          value1 = 0x2;
+          for( i=0; i<expr->left->value->width; i++ ) {
+            vector_set_value( expr->left->value, &value1, 1, 0, i );
+          }
+          expression_create_value( expr, 1, 0 );
+          break;
+
+        /*
+         In the case of an EXPAND, we need to set the width to be the product of the value of
+         the left child and the bit-width of the right child.
+        */
+        case EXP_OP_EXPAND :
+          expression_create_value( expr, (vector_to_int( expr->left->value ) * expr->right->value->width), 0 );
+          break;
+
+        /* 
+         In the case of a MULTIPLY or LIST (for concatenation) operation, its expression width must be the sum of its
+         children's width.  Remove the current vector and replace it with the appropriately
+         sized vector.
+        */
+        case EXP_OP_MULTIPLY :
+        case EXP_OP_LIST :
+          expression_create_value( expr, (expr->left->value->width + expr->right->value->width), 0 );
+          break;
+
+        default :
+          if( (expr->left != NULL) && (expr->left->value->width > expr->right->value->width) ) {
+            expression_create_value( expr, expr->left->value->width, 0 );
+          } else {
+            expression_create_value( expr, expr->right->value->width, 0 );
+          }
+          break;
+
+      }
+
+      if( SUPPL_IS_ROOT( expr->suppl ) == 0 ) {
+        bind_set_tree( expr->parent->expr );
+      }
+
+    } else {
+  
+      switch( SUPPL_OP( expr->suppl ) ) {
+        case EXP_OP_SIG :
+        case EXP_OP_SBIT_SEL :
+        case EXP_OP_MBIT_SEL :
+          bind_remove( expr->id );
+          break;
+        default : break;
+      }
+
+    }
+
+  }
+
+}
+
+/*!
  \param mode  If set to 0, searches instance tree; otherwise, searches tree.
  
  Binding is the process of setting pointers in signals and expressions to
@@ -120,33 +217,37 @@ void bind_remove( int id ) {
 */
 void bind( int mode ) {
   
-  mod_inst*     modi;          /* Pointer to found module instance                         */
-  module*       mod;           /* Pointer to found module                                  */
-  mod_link*     modl;          /* Pointer to found module link                             */
-  signal        sig;           /* Temporary signal used for matching                       */
-  sig_link*     sigl;          /* Found signal in module                                   */
-  char          scope[4096];   /* Scope of signal's parent module                          */
-  char          sig_name[256]; /* Name of signal in module                                 */
-  char          msg[4096];     /* Error message to display to user                         */
-  expression*   curr_parent;   /* Pointer to current parent expression                     */
-  int           tmp_width;     /* Temporary storage of old vector width for multiplication */
-  int           i;             /* Loop iterator                                            */
-  nibble        value1;        /* Temporary holder of vector nibble data for AEDGE expr's  */
+  mod_inst*     modi;          /* Pointer to found module instance                            */
+  module*       mod;           /* Pointer to found module                                     */
+  mod_link*     modl;          /* Pointer to found module link                                */
+  signal        sig;           /* Temporary signal used for matching                          */
+  sig_link*     sigl;          /* Found signal in module                                      */
+  char          scope[4096];   /* Scope of signal's parent module                             */
+  char          sig_name[256]; /* Name of signal in module                                    */
+  char          msg[4096];     /* Error message to display to user                            */
+  expression*   curr_parent;   /* Pointer to current parent expression                        */
+  int           tmp_width;     /* Temporary storage of old vector width for multiplication    */
+  int           i;             /* Loop iterator                                               */
+  nibble        value1;        /* Temporary holder of vector nibble data for AEDGE expr's     */
+  sig_exp_bind* curr_seb;      /* Pointer to current signal/expression binding to evaluate    */
+  sig_exp_bind* last_seb;      /* Temporary holder of last binding for error control purposes */
 
-  while( seb_head != NULL ) {
+  curr_seb = seb_head;
 
-    assert( seb_head->exp != NULL );
+  while( curr_seb != NULL ) {
+
+    assert( curr_seb->exp != NULL );
 
     if( mode == 0 ) {
 
       /* Find module where signal resides */
-      scope_extract_back( seb_head->sig_name, sig_name, scope );
+      scope_extract_back( curr_seb->sig_name, sig_name, scope );
 
       if( scope[0] == '\0' ) {
 
         /* No scope, signal was in same module as expression so search for module name */
         mod       = module_create();
-        mod->name = strdup( seb_head->mod_name );
+        mod->name = strdup( curr_seb->mod_name );
         modl      = mod_link_find( mod, mod_head );
         assert( modl != NULL );
         module_dealloc( mod );
@@ -179,21 +280,20 @@ void bind( int mode ) {
       }
 
       /* Add expression to signal expression list */
-      exp_link_add( seb_head->exp, &(sigl->sig->exp_head), &(sigl->sig->exp_tail) );
+      exp_link_add( curr_seb->exp, &(sigl->sig->exp_head), &(sigl->sig->exp_tail) );
 
       /* Make expression vector be signal vector*/
-      switch( SUPPL_OP( seb_head->exp->suppl ) ) {
+      switch( SUPPL_OP( curr_seb->exp->suppl ) ) {
         case EXP_OP_SIG :
-          vector_dealloc( seb_head->exp->value );
-          seb_head->exp->value = sigl->sig->value;
+          vector_dealloc( curr_seb->exp->value );
+          curr_seb->exp->value = sigl->sig->value;
           break;
         case EXP_OP_SBIT_SEL :
-          // free_safe( seb_head->exp->value->value );
-          seb_head->exp->value->value = sigl->sig->value->value;
-          seb_head->exp->value->width = 1;
+          curr_seb->exp->value->value = sigl->sig->value->value;
+          curr_seb->exp->value->width = 1;
           break;
         case EXP_OP_MBIT_SEL :
-          seb_head->exp->value->value = sigl->sig->value->value;
+          curr_seb->exp->value->value = sigl->sig->value->value;
           break;
         default :
           snprintf( msg, 4096, "Internal error:  Expression with bad operation (%d) in binding function", SUPPL_OP( seb_head->exp->suppl ) );
@@ -202,58 +302,31 @@ void bind( int mode ) {
           break;
       }
 
-      /* 
-       Traverse parent link, if parent found to have width == 0, set it to the
-       size of this signal.
-      */
-      if( SUPPL_IS_ROOT( seb_head->exp->suppl ) == 1 ) {
-        curr_parent = NULL;
-      } else {
-        curr_parent = seb_head->exp->parent->expr;
-      }
-      while( curr_parent != NULL ) {
-        if( curr_parent->value->width == 0 ) {
-          if( SUPPL_OP( curr_parent->suppl ) == EXP_OP_AEDGE ) {
-            /*
-             In the case of an AEDGE expression, it needs to have the size of its LAST child expression
-             to be the width of its right child.
-            */
-            expression_create_value( curr_parent, 1, 0 );
-            expression_create_value( curr_parent->left, seb_head->exp->value->width, seb_head->exp->value->lsb );
-            value1 = 0x2;
-            for( i=0; i<seb_head->exp->value->width; i++ ) {
-              vector_set_value( curr_parent->left->value, &value1, 1, 0, i );
-            }
-          } else {
-            expression_create_value( curr_parent, seb_head->exp->value->width, seb_head->exp->value->lsb );
-          }
-        } else if( (SUPPL_OP( curr_parent->suppl ) == EXP_OP_MULTIPLY) ||
-                   (SUPPL_OP( curr_parent->suppl ) == EXP_OP_LIST)     ||
-                   (SUPPL_OP( curr_parent->suppl ) == EXP_OP_CONCAT) ) {
-          /* 
-           In the case of a MULTIPLY or LIST (for concatenation) operation, its expression width must be the sum of its
-           children's width.  Remove the current vector and replace it with the appropriately
-           sized vector.
-          */
-          tmp_width = curr_parent->value->width;
-          vector_dealloc( curr_parent->value );
-          curr_parent->value = vector_create( (seb_head->exp->value->width + tmp_width), seb_head->exp->value->lsb );
-        }
-
-        /* Don't traverse past the root expression */
-        if( SUPPL_IS_ROOT( curr_parent->suppl ) == 1 ) {
-          curr_parent = NULL;
-        } else {
-          curr_parent = curr_parent->parent->expr;
-        }
-      }
-
     }
 
-    bind_remove( seb_head->exp->id );   
-     
+    curr_seb = curr_seb->next;
+
+  }
+
+  /*
+   Now that all of the signals have been tied to their corresponding expressions, we need to traverse
+   all of the affected expression trees and update the expression bit-width sizes to match.
+  */
+  while( seb_head != NULL ) {
+    last_seb = seb_head;
+    if( SUPPL_IS_ROOT( seb_head->exp->suppl ) == 0 ) {
+      bind_set_tree( seb_head->exp->parent->expr );    
+    } else {
+      bind_remove( seb_head->exp->id );
+    }
+    /* Verify that we always make forward progress on eliminating the SEB list */
+    assert( last_seb != seb_head );
   }
   
 }
 
-/* $Log$ */
+/* $Log$
+/* Revision 1.8  2002/07/14 05:10:42  phase1geo
+/* Added support for signal concatenation in score and report commands.  Fixed
+/* bugs in this code (and multiplication).
+/* */

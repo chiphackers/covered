@@ -18,13 +18,14 @@ CDD_DIR       = ../cdd
 
 LOGFILE = regress.log
 
+
 DIAGLIST = assign3.2A \
-	   always3.1.11A \
            assign1 \
+           always1 \
+	   always3.1.11A \
            cond1 \
 	   cond2 \
            mult1 \
-           always1 \
            always2 \
            always3 \
            always4 \
@@ -60,7 +61,9 @@ DIAGLIST = assign3.2A \
            ifdef2.1 \
            ifdef2.2 \
            concat1 \
-           concat2
+           concat2 \
+           expand1 \
+           expand2
 
 regress:	$(COVERED) clean $(DIAGLIST)
 

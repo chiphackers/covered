@@ -12,6 +12,7 @@
 #include "codegen.h"
 #include "util.h"
 #include "vector.h"
+#include "expr.h"
 
 
 extern mod_inst* instance_root;
@@ -284,7 +285,7 @@ void combination_underline_tree( expression* exp, char*** lines, int* depth, int
             *size = l_size + r_size + strlen( exp->sig->name ) + 3;  
             strcpy( code_fmt, "%s" );  
             break;
-          case EXP_OP_EXPAND   :  *size = l_size + r_size + 0;  strcpy( code_fmt, "%s"               );  break;  // ???
+          case EXP_OP_EXPAND   :  *size = l_size + r_size + 4;  strcpy( code_fmt, " %s %s  "         );  break;
           case EXP_OP_CONCAT   :  *size = l_size + r_size + 2;  strcpy( code_fmt, " %s "             );  break;
           case EXP_OP_LIST     :  *size = l_size + r_size + 2;  strcpy( code_fmt, "%s  %s"           );  break;
           case EXP_OP_PEDGE    :  *size = l_size + r_size + 8;  strcpy( code_fmt, "        %s"       );  break;
@@ -556,7 +557,7 @@ void combination_list_missed( FILE* ofile, expression* exp, int* exp_id ) {
         case EXP_OP_UNXOR    :  combination_unary( ofile, exp );                 break;
         case EXP_OP_SBIT_SEL :  combination_unary( ofile, exp );                 break;
         case EXP_OP_MBIT_SEL :  combination_unary( ofile, exp );                 break;
-        case EXP_OP_EXPAND   :  /* ??? */  break;
+        case EXP_OP_EXPAND   :  combination_unary( ofile, exp );                 break;
         case EXP_OP_CONCAT   :  combination_unary( ofile, exp );                 break;
         case EXP_OP_EOR      :  combination_two_vars( ofile, exp, 0, 1, 1, 1 );  break;
         case EXP_OP_CASE     :  combination_unary( ofile, exp );                 break;
@@ -756,6 +757,10 @@ void combination_report( FILE* ofile, bool verbose, bool instance ) {
 
 
 /* $Log$
+/* Revision 1.33  2002/07/14 05:27:34  phase1geo
+/* Fixing report outputting to allow multiple modules/instances to be
+/* output.
+/*
 /* Revision 1.32  2002/07/14 05:10:42  phase1geo
 /* Added support for signal concatenation in score and report commands.  Fixed
 /* bugs in this code (and multiplication).

@@ -105,6 +105,12 @@ expression* expression_create( expression* right, expression* left, int op, int 
     assert( rwidth < 1024 );
     expression_create_value( new_expr, rwidth, 0 );
 
+  } else if( (op == EXP_OP_EXPAND) && (rwidth > 0) && (lwidth > 0) ) {
+
+    assert( rwidth < 1024 );
+    assert( lwidth < 1024 );
+    expression_create_value( new_expr, (rwidth * lwidth), 0 );
+
   } else if( (op == EXP_OP_LT   ) ||
              (op == EXP_OP_GT   ) ||
              (op == EXP_OP_EQ   ) ||
@@ -388,12 +394,11 @@ void expression_display( expression* expr ) {
     right_id = expr->right->id;
   }
 
-  printf( "  Expression =>  id: %d, line: %d, suppl: %x, width: %d, addr: %d, left: %d, right: %d\n", 
+  printf( "  Expression =>  id: %d, line: %d, suppl: %x, width: %d, left: %d, right: %d\n", 
           expr->id,
           expr->line,
           expr->suppl,
           expr->value->width,
-          expr->id,
           left_id, 
           right_id );
 
@@ -413,6 +418,7 @@ void expression_operate( expression* expr ) {
   vector  vec2;                          /* Used for logical reduction            */
   vector* vec;                           /* Pointer to vector of unknown size     */
   int     i;                             /* Loop iterator                         */
+  int     j;                             /* Loop iterator                         */
   nibble  bit;                           /* Bit holder for some ops               */
   int     intval1;                       /* Temporary integer value for *, /, %   */
   int     intval2;                       /* Temporary integer value for *, /, %   */
@@ -636,9 +642,11 @@ void expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_EXPAND :
-        bit = vector_bit_val( expr->right->value->value, 0 );
-        for( i=0; i<vector_to_int( expr->left->value ); i++ ) {
-          vector_set_value( expr->value, &bit, 1, 0, i );
+        for( j=0; j<expr->right->value->width; j++ ) {
+          bit = vector_bit_val( expr->right->value->value, j );
+          for( i=0; i<vector_to_int( expr->left->value ); i++ ) {
+            vector_set_value( expr->value, &bit, 1, 0, ((j * expr->right->value->width) + i) );
+          }
         }
         break;
 
@@ -831,6 +839,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.39  2002/07/14 05:10:42  phase1geo
+/* Added support for signal concatenation in score and report commands.  Fixed
+/* bugs in this code (and multiplication).
+/*
 /* Revision 1.38  2002/07/10 04:57:07  phase1geo
 /* Adding bits to vector nibble to allow us to specify what type of input
 /* static value was read in so that the output value may be displayed in
