@@ -1415,7 +1415,7 @@ module_item
         db_statement_connect( stmt, stmt );
         db_statement_set_stop( stmt, stmt, TRUE );
         stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
-        db_add_statement( stmt );
+        db_add_statement( stmt, stmt );
       }
     }
   | K_initial { ignore_mode++; } statement { ignore_mode--; }
@@ -1424,7 +1424,7 @@ module_item
       statement* stmt = $2;
       db_statement_set_stop( stmt, NULL, FALSE );
       stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
-      db_add_statement( stmt );
+      db_add_statement( stmt, stmt );
       */
     }
   | K_task { ignore_mode++; } UNUSED_IDENTIFIER ';'
@@ -2430,7 +2430,7 @@ assign
         db_connect_statement_true( stmt, stmt );
         db_connect_statement_false( stmt, stmt );
         db_add_expression( $3 );
-        db_add_statement( stmt );
+        db_add_statement( stmt, stmt );
       }
     }
   ;
@@ -2657,7 +2657,7 @@ net_decl_assign
           db_connect_statement_true( stmt, stmt );
           db_connect_statement_false( stmt, stmt );
           db_add_expression( $3 );
-          db_add_statement( stmt );
+          db_add_statement( stmt, stmt );
         }
         $$ = $1;
       } else {
@@ -2681,7 +2681,7 @@ net_decl_assign
           db_connect_statement_true( stmt, stmt );
           db_connect_statement_false( stmt, stmt );
           db_add_expression( $4 );
-          db_add_statement( stmt );
+          db_add_statement( stmt, stmt );
         }
         $$ = $2;
       } else {

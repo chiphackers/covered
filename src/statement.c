@@ -287,7 +287,7 @@ bool statement_db_read( char** line, module* curr_mod, int read_mode ) {
       } else if( true_id != 0 ) {
         stmtl = stmt_link_find( true_id, curr_mod->stmt_head );
         if( stmtl == NULL ) {
-          assert( true_id == false_id );
+          // assert( true_id == false_id );
           /* Add to statement loop stack */
           statement_stack_push( stmt, true_id );
         } else {
@@ -360,14 +360,14 @@ void statement_connect( statement* curr_stmt, statement* next_stmt ) {
   } else {
     false_id = curr_stmt->next_false->exp->id;
   }
-
-/*  
+  
+  /*
   printf( "In statement_connect, curr_stmt: %d, curr_true: %d, curr_false: %d, next_stmt: %d\n", 
           curr_stmt->exp->id, 
           true_id,
           false_id,
           next_stmt->exp->id );
-*/
+  */
 
   /* If both paths go to the same destination, only parse one path */
   if( curr_stmt->next_true == curr_stmt->next_false ) {
@@ -563,6 +563,10 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.35  2002/11/05 00:20:08  phase1geo
+ Adding development documentation.  Fixing problem with combinational logic
+ output in report command and updating full regression.
+
  Revision 1.34  2002/10/31 23:14:26  phase1geo
  Fixing C compatibility problems with cc and gcc.  Found a few possible problems
  with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that

@@ -789,24 +789,26 @@ statement* db_create_statement( expression* exp ) {
 }
 
 /*!
- \param stmt  Pointer to statement add to current module's statement list.
+ \param stmt   Pointer to statement add to current module's statement list.
+ \param start  Pointer to starting statement of statement tree.
 
  Adds the specified statement tree to the tail of the current module's statement list.
+ The start statement is specified to avoid infinite looping.
 */
-void db_add_statement( statement* stmt ) {
+void db_add_statement( statement* stmt, statement* start ) {
  
   if( stmt != NULL ) {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "In db_add_statement, id: %d", stmt->exp->id );
+    snprintf( user_msg, USER_MSG_LENGTH, "In db_add_statement, id: %d, start id: %d", stmt->exp->id, start->exp->id );
     print_output( user_msg, DEBUG );
 
     /* Add TRUE and FALSE statement paths to list */
     if( SUPPL_IS_STMT_STOP( stmt->exp->suppl ) == 0 ) {
-      db_add_statement( stmt->next_false );
+      db_add_statement( stmt->next_false, start );
     }
 
-    if( (stmt->next_true != stmt->next_false) && (stmt->next_true != stmt) ) {
-      db_add_statement( stmt->next_true );
+    if( (stmt->next_true != stmt->next_false) && (stmt->next_true != start) ) {
+      db_add_statement( stmt->next_true, start );
     }
 
     /* Now add current statement */
@@ -1152,6 +1154,10 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.69  2002/11/05 00:20:06  phase1geo
+ Adding development documentation.  Fixing problem with combinational logic
+ output in report command and updating full regression.
+
  Revision 1.68  2002/11/02 16:16:20  phase1geo
  Cleaned up all compiler warnings in source and header files.
 
