@@ -451,6 +451,23 @@ int expression_get_id( expression* expr ) {
 
 }
 
+int expression_get_last_line( expression* expr ) {
+
+  int line = -1;
+
+  if( expr != NULL ) {
+
+    line = expression_get_last_line( expr->right );
+    if( (line == -1) || (line < expr->line) ) {
+      line = expr->line;
+    }
+      
+  }
+
+  return( line );
+
+}
+
 /*!
  \param expr  Pointer to expression tree to parse.
  \param head  Pointer to head of signal list to populate.
@@ -1387,6 +1404,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.90  2003/11/30 05:46:45  phase1geo
+ Adding IF report outputting capability.  Updated always9 diagnostic for these
+ changes and updated rest of regression CDD files accordingly.
+
  Revision 1.89  2003/11/29 06:55:48  phase1geo
  Fixing leftover bugs in better report output changes.  Fixed bug in param.c
  where parameters found in RHS expressions that were part of statements that

@@ -21,6 +21,7 @@
 #include "codegen.h"
 #include "iter.h"
 #include "util.h"
+#include "expr.h"
 
 extern mod_inst* instance_root;
 extern mod_link* mod_head;
@@ -80,19 +81,24 @@ void line_get_stats( stmt_link* stmtl, float* total, int* hit ) {
 */
 bool line_collect_uncovered( char* mod_name, int** lines, int* line_cnt ) {
 
-  bool      retval = TRUE;  /* Return value for this function */
-  stmt_iter stmti;          /* Statement list iterator        */
-  module    mod;            /* Module used for searching      */
-  mod_link* modl;           /* Pointer to found module link   */
-  int       i      = 0;     /* Array index                    */
+  bool      retval = TRUE;  /* Return value for this function                     */
+  stmt_iter stmti;          /* Statement list iterator                            */
+  module    mod;            /* Module used for searching                          */
+  mod_link* modl;           /* Pointer to found module link                       */
+  int       i;              /* Loop iterator                                      */
+  int       last_line;      /* Specifies the last line of the current expression  */
+  int       line_size;      /* Indicates the number of entries in the lines array */
 
   /* First, find module in module array */
   mod.name = mod_name;
   if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
 
+    printf( "Found module: %s\n", mod_name );
+
     /* Create an array that will hold the number of uncovered lines */
-    *line_cnt = modl->mod->stat->line_total - modl->mod->stat->line_hit;
-    *lines    = (int*)malloc_safe( sizeof( int ) * (*line_cnt) );
+    line_size = 20;
+    *line_cnt = 0;
+    *lines    = (int*)malloc_safe( sizeof( int ) * line_size );
 
     stmt_iter_reset( &stmti, modl->mod->stmt_tail );
     stmt_iter_find_head( &stmti, FALSE );
@@ -108,8 +114,16 @@ bool line_collect_uncovered( char* mod_name, int** lines, int* line_cnt ) {
 
         if( !SUPPL_WAS_EXECUTED( stmti.curr->stmt->exp->suppl ) ) {
 
-          (*lines)[i] = stmti.curr->stmt->exp->line;
-          i++;
+          last_line = expression_get_last_line( stmti.curr->stmt->exp );
+          printf( "Last line: %d\n", last_line );
+          for( i=stmti.curr->stmt->exp->line; i<=last_line; i++ ) {
+            if( *line_cnt == line_size ) {
+              line_size += 20;
+              *lines = (int*)realloc( *lines, (sizeof( int ) * line_size) );
+            }
+            (*lines)[(*line_cnt)] = i;
+            (*line_cnt)++;
+          }
 
         }
 
@@ -397,6 +411,10 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.33  2003/11/22 20:44:58  phase1geo
+ Adding function to get array of missed line numbers for GUI purposes.  Updates
+ to report command for getting information ready when running the GUI.
+
  Revision 1.32  2003/10/13 03:56:29  phase1geo
  Fixing some problems with new FSM code.  Not quite there yet.
 
