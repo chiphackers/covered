@@ -43,14 +43,10 @@ char {\bf user\_\-msg} [USER\_\-MSG\_\-LENGTH]
 
 
 \subsection{Detailed Description}
-
-
 \begin{Desc}
-\item[Author: ]\par
-Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
-\item[Date: ]\par
-12/7/2001\end{Desc}
+\item[Date:]12/7/2001\end{Desc}
 
 
 \subsection{Function Documentation}
@@ -62,10 +58,9 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 Deallocates module element contents only from heap.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-mod}]Pointer to module element to clean.\end{description}
+\item[{\em mod}]Pointer to module element to clean.\end{description}
 \end{Desc}
 Deallocates module contents: name and filename strings. \index{module.c@{module.c}!module_create@{module\_\-create}}
 \index{module_create@{module\_\-create}!module.c@{module.c}}
@@ -75,8 +70,7 @@ Deallocates module contents: name and filename strings. \index{module.c@{module.
 Creates new module from heap and initializes structure.
 
 \begin{Desc}
-\item[Returns: ]\par
-Returns pointer to newly created module element that has been properly initialized.\end{Desc}
+\item[Returns:]Returns pointer to newly created module element that has been properly initialized.\end{Desc}
 Allocates memory from the heap for a module element and initializes all contents to NULL. Returns a pointer to the newly created module. \index{module.c@{module.c}!module_db_merge@{module\_\-db\_\-merge}}
 \index{module_db_merge@{module\_\-db\_\-merge}!module.c@{module.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} module\_\-db\_\-merge ({\bf module} $\ast$ {\em base}, FILE $\ast$ {\em file}, {\bf bool} {\em same})}\label{module_8c_a6}
@@ -85,17 +79,13 @@ Allocates memory from the heap for a module element and initializes all contents
 Reads and merges two modules into base module.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-base}]Module that will merge in that data from the in module \item[{\em 
-file}]Pointer to CDD file handle to read. \item[{\em 
-same}]Specifies if module to be merged should match existing module exactly or not.\end{description}
+\item[{\em base}]Module that will merge in that data from the in module \item[{\em file}]Pointer to CDD file handle to read. \item[{\em same}]Specifies if module to be merged should match existing module exactly or not.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Returns TRUE if parse and merge was successful; otherwise, returns FALSE.\end{Desc}
-Parses specified line for module information and performs a merge of the two  specified modules, placing the resulting merge module into the module named base. If there are any differences between the two modules, a warning or error will be displayed to the user. \index{module.c@{module.c}!module_db_read@{module\_\-db\_\-read}}
+\item[Returns:]Returns TRUE if parse and merge was successful; otherwise, returns FALSE.\end{Desc}
+Parses specified line for module information and performs a merge of the two specified modules, placing the resulting merge module into the module named base. If there are any differences between the two modules, a warning or error will be displayed to the user. \index{module.c@{module.c}!module_db_read@{module\_\-db\_\-read}}
 \index{module_db_read@{module\_\-db\_\-read}!module.c@{module.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} module\_\-db\_\-read ({\bf module} $\ast$ {\em mod}, char $\ast$ {\em scope}, char $\ast$$\ast$ {\em line})}\label{module_8c_a5}
 
@@ -103,16 +93,12 @@ Parses specified line for module information and performs a merge of the two  sp
 Read contents of current line from specified file, creates module and adds to module list.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-mod}]Pointer to module to read contents into. \item[{\em 
-scope}]Pointer to name of read module scope. \item[{\em 
-line}]Pointer to current line to parse.\end{description}
+\item[{\em mod}]Pointer to module to read contents into. \item[{\em scope}]Pointer to name of read module scope. \item[{\em line}]Pointer to current line to parse.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Returns TRUE if read was successful; otherwise, returns FALSE.\end{Desc}
+\item[Returns:]Returns TRUE if read was successful; otherwise, returns FALSE.\end{Desc}
 Reads the current line of the specified file and parses it for a module. If all is successful, returns TRUE; otherwise, returns FALSE. \index{module.c@{module.c}!module_db_write@{module\_\-db\_\-write}}
 \index{module_db_write@{module\_\-db\_\-write}!module.c@{module.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} module\_\-db\_\-write ({\bf module} $\ast$ {\em mod}, char $\ast$ {\em scope}, FILE $\ast$ {\em file}, {\bf mod\_\-inst} $\ast$ {\em inst})}\label{module_8c_a4}
@@ -121,17 +107,12 @@ Reads the current line of the specified file and parses it for a module. If all 
 Writes contents of provided module to specified output.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-mod}]Pointer to module to write to output. \item[{\em 
-scope}]String version of module scope in hierarchy. \item[{\em 
-file}]Pointer to specified output file to write contents. \item[{\em 
-inst}]Pointer to the current module instance.\end{description}
+\item[{\em mod}]Pointer to module to write to output. \item[{\em scope}]String version of module scope in hierarchy. \item[{\em file}]Pointer to specified output file to write contents. \item[{\em inst}]Pointer to the current module instance.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Returns TRUE if file output was successful; otherwise, returns FALSE.\end{Desc}
+\item[Returns:]Returns TRUE if file output was successful; otherwise, returns FALSE.\end{Desc}
 Prints the database line for the specified module to the specified database file. If there are any problems with the write, returns FALSE; otherwise, returns TRUE. \index{module.c@{module.c}!module_dealloc@{module\_\-dealloc}}
 \index{module_dealloc@{module\_\-dealloc}!module.c@{module.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void module\_\-dealloc ({\bf module} $\ast$ {\em mod})}\label{module_8c_a10}
@@ -140,10 +121,9 @@ Prints the database line for the specified module to the specified database file
 Deallocates module element from heap.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-mod}]Pointer to module element to deallocate.\end{description}
+\item[{\em mod}]Pointer to module element to deallocate.\end{description}
 \end{Desc}
 Deallocates module; name and filename strings; and finally the structure itself from the heap. \index{module.c@{module.c}!module_display_expressions@{module\_\-display\_\-expressions}}
 \index{module_display_expressions@{module\_\-display\_\-expressions}!module.c@{module.c}}
@@ -153,10 +133,9 @@ Deallocates module; name and filename strings; and finally the structure itself 
 Displays expressions stored in this module.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-mod}]Pointer to module element to display expressions\end{description}
+\item[{\em mod}]Pointer to module element to display expressions\end{description}
 \end{Desc}
 Iterates through expression list of specified module, displaying each expression's id. \index{module.c@{module.c}!module_display_signals@{module\_\-display\_\-signals}}
 \index{module_display_signals@{module\_\-display\_\-signals}!module.c@{module.c}}
@@ -166,10 +145,9 @@ Iterates through expression list of specified module, displaying each expression
 Displays signals stored in this module.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-mod}]Pointer to module element to display signals.\end{description}
+\item[{\em mod}]Pointer to module element to display signals.\end{description}
 \end{Desc}
 Iterates through signal list of specified module, displaying each signal's name, width, lsb and value. \index{module.c@{module.c}!module_init@{module\_\-init}}
 \index{module_init@{module\_\-init}!module.c@{module.c}}
@@ -179,10 +157,9 @@ Iterates through signal list of specified module, displaying each signal's name,
 Initializes all values of module.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-mod}]Pointer to module to initialize.\end{description}
+\item[{\em mod}]Pointer to module to initialize.\end{description}
 \end{Desc}
 Initializes all contents to NULL. \index{module.c@{module.c}!module_size_elements@{module\_\-size\_\-elements}}
 \index{module_size_elements@{module\_\-size\_\-elements}!module.c@{module.c}}
@@ -190,17 +167,16 @@ Initializes all contents to NULL. \index{module.c@{module.c}!module_size_element
 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-mod}]Pointer to module containing elements to resize. \item[{\em 
-inst}]Pointer to instance containing this module.\end{description}
+\item[{\em mod}]Pointer to module containing elements to resize. \item[{\em inst}]Pointer to instance containing this module.\end{description}
 \end{Desc}
 Resizes signals if they are contigent upon parameter values. After all signals have been resized, the signal's corresponding expressions are resized. This function should be called just prior to outputting this module's contents to the CDD file (after parsing phase only) 
 
 \subsection{Variable Documentation}
 \index{module.c@{module.c}!user_msg@{user\_\-msg}}
 \index{user_msg@{user\_\-msg}!module.c@{module.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char user\_\-msg[USER\_\-MSG\_\-LENGTH]}\label{module_8c_a0}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char user\_\-msg[USER\_\-MSG\_\-LENGTH] ()}\label{module_8c_a0}
 
 
+Holds some output that will be displayed via the print\_\-output command. This is created globally so that memory does not need to be reallocated for each function that wishes to use it. 

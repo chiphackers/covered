@@ -20,14 +20,10 @@ void {\bf sim\_\-simulate} ()
 \subsection{Detailed Description}
 Contains functions for simulation engine.
 
-
-
 \begin{Desc}
-\item[Author: ]\par
-Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
-\item[Date: ]\par
-6/20/2002\end{Desc}
+\item[Date:]6/20/2002 \end{Desc}
 
 
 \subsection{Function Documentation}
@@ -46,10 +42,9 @@ Iterates through static expression list and causes the simulator to evaluate the
 Adds specified statement to pre-simulation statement queue.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-stmt}]Pointer to statement to add to queue.\end{description}
+\item[{\em stmt}]Pointer to statement to add to queue.\end{description}
 \end{Desc}
 Checks STMT\_\-HEAD bit of specified statement. If this is set to 1, adds this statement to the presimulation statement queue; otherwise, it does nothing with the statement \index{sim.h@{sim.h}!sim_expr_changed@{sim\_\-expr\_\-changed}}
 \index{sim_expr_changed@{sim\_\-expr\_\-changed}!sim.h@{sim.h}}
@@ -59,10 +54,9 @@ Checks STMT\_\-HEAD bit of specified statement. If this is set to 1, adds this s
 Adds specified expression's statement to pre-simulation statement queue.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-expr}]Pointer to expression that contains a changed signal value.\end{description}
+\item[{\em expr}]Pointer to expression that contains a changed signal value.\end{description}
 \end{Desc}
 Traverses up expression tree pointed to by leaf node expr, setting the CHANGED bits as it reaches the root expression. When the root expression is found, the statement pointed to by the root's parent pointer is added to the pre-simulation statement queue for simulation at the end of the timestep. If, upon traversing the tree, an expression is found to already be have a CHANGED bit set, we know that the statement has already been added, so stop here and do not add the statement again. \index{sim.h@{sim.h}!sim_simulate@{sim\_\-simulate}}
 \index{sim_simulate@{sim\_\-simulate}!sim.h@{sim.h}}
@@ -71,4 +65,4 @@ Traverses up expression tree pointed to by leaf node expr, setting the CHANGED b
 
 Simulates current timestep.
 
-This function is the heart of the simulation engine. It is called by the {\bf db\_\-do\_\-timestep}() {\rm (p.\,\pageref{db_8c_a40})} function in {\bf db.c} and moves the statements and expressions into the appropriate simulation functions. See above explanation on this procedure. 
+This function is the heart of the simulation engine. It is called by the {\bf db\_\-do\_\-timestep()} function in {\bf db.c} and moves the statements and expressions into the appropriate simulation functions. See above explanation on this procedure. 

@@ -1,7 +1,6 @@
 \section{pplexer.c File Reference}
 \label{pplexer_8c}\index{pplexer.c@{pplexer.c}}
 {\tt \#include $<$stdio.h$>$}\par
-{\tt \#include $<$unistd.h$>$}\par
 {\tt \#include $<$string.h$>$}\par
 {\tt \#include $<$stdlib.h$>$}\par
 {\tt \#include $<$assert.h$>$}\par
@@ -240,6 +239,8 @@ int {\bf yywrap} ()
 void yyunput {\bf YY\_\-PROTO} ((int c, char $\ast$buf\_\-ptr))
 \item 
 void yy\_\-push\_\-state {\bf YY\_\-PROTO} ((int new\_\-state))
+\item 
+void {\bf yy\_\-init\_\-buffer} (b, {\bf file}) {\bf YY\_\-BUFFER\_\-STATE} b
 \item 
 {\bf tnode} $\ast$ {\bf def\_\-lookup} (const char $\ast$name)
 \item 
@@ -480,7 +481,8 @@ char {\bf def\_\-name} [256]
         yyleng = (int) (yy_cp - yy_bp); \
         yy_hold_char = *yy_cp; \
         *yy_cp = '\0'; \
-        yy_c_buf_p = yy_cp;\end{verbatim}\normalsize 
+        yy_c_buf_p = yy_cp;
+\end{verbatim}\normalsize 
 \index{pplexer.c@{pplexer.c}!YY_END_OF_BUFFER@{YY\_\-END\_\-OF\_\-BUFFER}}
 \index{YY_END_OF_BUFFER@{YY\_\-END\_\-OF\_\-BUFFER}!pplexer.c@{pplexer.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-END\_\-OF\_\-BUFFER\ 65}\label{pplexer_8c_a48}
@@ -552,7 +554,8 @@ char {\bf def\_\-name} [256]
                 } \
         else if ( ((result = fread( buf, 1, max_size, yyin )) == 0) \
                   && ferror( yyin ) ) \
-                YY_FATAL_ERROR( "input in flex scanner failed" );\end{verbatim}\normalsize 
+                YY_FATAL_ERROR( "input in flex scanner failed" );
+\end{verbatim}\normalsize 
 \index{pplexer.c@{pplexer.c}!yy_load_buffer_state@{yy\_\-load\_\-buffer\_\-state}}
 \index{yy_load_buffer_state@{yy\_\-load\_\-buffer\_\-state}!pplexer.c@{pplexer.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yy\_\-load\_\-buffer\_\-state\ PPVL\_\-load\_\-buffer\_\-state}\label{pplexer_8c_a8}
@@ -608,7 +611,8 @@ char {\bf def\_\-name} [256]
 \footnotesize\begin{verbatim}if ( yyleng > 0 ) \
                 yy_current_buffer->yy_at_bol = \
                                 (yytext[yyleng - 1] == '\n'); \
-        YY_USER_ACTION\end{verbatim}\normalsize 
+        YY_USER_ACTION
+\end{verbatim}\normalsize 
 \index{pplexer.c@{pplexer.c}!YY_SC_TO_UI@{YY\_\-SC\_\-TO\_\-UI}}
 \index{YY_SC_TO_UI@{YY\_\-SC\_\-TO\_\-UI}!pplexer.c@{pplexer.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-SC\_\-TO\_\-UI(c)\ ((unsigned int) (unsigned char) c)}\label{pplexer_8c_a23}
@@ -640,7 +644,8 @@ char {\bf def\_\-name} [256]
         if ( ! yy_current_buffer ) \
                 yy_current_buffer = yy_create_buffer( yyin, YY_BUF_SIZE ); \
         yy_current_buffer->yy_at_bol = at_bol; \
-        }\end{verbatim}\normalsize 
+        }
+\end{verbatim}\normalsize 
 \index{pplexer.c@{pplexer.c}!yy_set_interactive@{yy\_\-set\_\-interactive}}
 \index{yy_set_interactive@{yy\_\-set\_\-interactive}!pplexer.c@{pplexer.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yy\_\-set\_\-interactive(is\_\-interactive)}\label{pplexer_8c_a42}
@@ -652,7 +657,8 @@ char {\bf def\_\-name} [256]
         if ( ! yy_current_buffer ) \
                 yy_current_buffer = yy_create_buffer( yyin, YY_BUF_SIZE ); \
         yy_current_buffer->yy_is_interactive = is_interactive; \
-        }\end{verbatim}\normalsize 
+        }
+\end{verbatim}\normalsize 
 \index{pplexer.c@{pplexer.c}!YY_STACK_USED@{YY\_\-STACK\_\-USED}}
 \index{YY_STACK_USED@{YY\_\-STACK\_\-USED}!pplexer.c@{pplexer.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-STACK\_\-USED\ 1}\label{pplexer_8c_a56}
@@ -714,7 +720,8 @@ char {\bf def\_\-name} [256]
                 *yy_c_buf_p = '\0'; \
                 yyleng = n; \
                 } \
-        while ( 0 )\end{verbatim}\normalsize 
+        while ( 0 )
+\end{verbatim}\normalsize 
 \index{pplexer.c@{pplexer.c}!yyless@{yyless}}
 \index{yyless@{yyless}!pplexer.c@{pplexer.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yyless(n)}\label{pplexer_8c_a34}
@@ -730,7 +737,8 @@ char {\bf def\_\-name} [256]
                 yy_c_buf_p = yy_cp = yy_bp + n - YY_MORE_ADJ; \
                 YY_DO_BEFORE_ACTION;   \
                 } \
-        while ( 0 )\end{verbatim}\normalsize 
+        while ( 0 )
+\end{verbatim}\normalsize 
 \index{pplexer.c@{pplexer.c}!yylex@{yylex}}
 \index{yylex@{yylex}!pplexer.c@{pplexer.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yylex\ PPVLlex}\label{pplexer_8c_a12}
@@ -814,18 +822,16 @@ char {\bf def\_\-name} [256]
 
 Completes the define addition phase. \index{pplexer.c@{pplexer.c}!def_lookup@{def\_\-lookup}}
 \index{def_lookup@{def\_\-lookup}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf tnode}$\ast$ def\_\-lookup (const char $\ast$ {\em name})\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a141}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf tnode}$\ast$ def\_\-lookup (const char $\ast$ {\em name})\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a142}
 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-name}]Name of define to lookup in table\end{description}
+\item[{\em name}]Name of define to lookup in table\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Pointer to defined value.\end{Desc}
+\item[Returns:]Pointer to defined value.\end{Desc}
 Looks up the specified define identifier in the binary tree lookup table. Returns NULL (0), if the define was not found in the lookup tree; otherwise, returns a pointer to the defined value. \index{pplexer.c@{pplexer.c}!def_match@{def\_\-match}}
 \index{def_match@{def\_\-match}!pplexer.c@{pplexer.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void def\_\-match ()\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a130}
@@ -843,28 +849,21 @@ Extracts define identifier string from define directive match. \index{pplexer.c@
 
 Performs an undefine of an undef indentifier by searching for the matching define node and removing it from the tree. \index{pplexer.c@{pplexer.c}!define_macro@{define\_\-macro}}
 \index{define_macro@{define\_\-macro}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void define\_\-macro (const char $\ast$ {\em name}, const char $\ast$ {\em value})}\label{pplexer_8c_a142}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void define\_\-macro (const char $\ast$ {\em name}, const char $\ast$ {\em value})}\label{pplexer_8c_a143}
 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-name}]String value of define identifier \item[{\em 
-value}]String value associated with define identifier\end{description}
+\item[{\em name}]String value of define identifier \item[{\em value}]String value associated with define identifier\end{description}
 \end{Desc}
 Stores define identifer with its value in a define node and placed in the binary search tree for quick lookup later on. \index{pplexer.c@{pplexer.c}!do_define@{do\_\-define}}
 \index{do_define@{do\_\-define}!pplexer.c@{pplexer.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void do\_\-define ()\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a134}
 
 
-
-
 \begin{Desc}
-\item[{\bf Bug: }]\par
-This strips trailing line comments out of the definition. It's not adequate as the \char`\"{}//\char`\"{} may have been quoted or commented, but it will do for now.\end{Desc}
-
-
+\item[{\bf Bug}]This strips trailing line comments out of the definition. It's not adequate as the \char`\"{}//\char`\"{} may have been quoted or commented, but it will do for now.\end{Desc}
 Prepares define value and identifier for storage in the lookup tree and then performs the store. \index{pplexer.c@{pplexer.c}!do_include@{do\_\-include}}
 \index{do_include@{do\_\-include}!pplexer.c@{pplexer.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void do\_\-include ()\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a137}
@@ -881,17 +880,20 @@ Adds include directive filename to file parsing stack. \index{pplexer.c@{pplexer
 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-name}]Name of defined value.\end{description}
+\item[{\em name}]Name of defined value.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Returns 1 if define is found in lookup table; otherwise, returns 0.\end{Desc}
+\item[Returns:]Returns 1 if define is found in lookup table; otherwise, returns 0.\end{Desc}
 Checks lookup table to see if specified define identifier has been previously defined. \index{pplexer.c@{pplexer.c}!reset_pplexer@{reset\_\-pplexer}}
 \index{reset_pplexer@{reset\_\-pplexer}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void reset\_\-pplexer (char $\ast$ {\em filename}, FILE $\ast$ {\em out})}\label{pplexer_8c_a143}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void reset\_\-pplexer (char $\ast$ {\em filename}, FILE $\ast$ {\em out})}\label{pplexer_8c_a144}
+
+
+\index{pplexer.c@{pplexer.c}!yy_init_buffer@{yy\_\-init\_\-buffer}}
+\index{yy_init_buffer@{yy\_\-init\_\-buffer}!pplexer.c@{pplexer.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yy\_\-init\_\-buffer (b, {\bf file})}\label{pplexer_8c_a141}
 
 
 \index{pplexer.c@{pplexer.c}!YY_PROTO@{YY\_\-PROTO}}
@@ -1024,10 +1026,10 @@ Pointer to head element of include paths list \index{pplexer.c@{pplexer.c}!istac
 
 \index{pplexer.c@{pplexer.c}!user_msg@{user\_\-msg}}
 \index{user_msg@{user\_\-msg}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char user\_\-msg[USER\_\-MSG\_\-LENGTH]}\label{pplexer_8c_a104}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char user\_\-msg[USER\_\-MSG\_\-LENGTH] ()}\label{pplexer_8c_a104}
 
 
-\index{pplexer.c@{pplexer.c}!yy_accept@{yy\_\-accept}}
+Holds some output that will be displayed via the print\_\-output command. This is created globally so that memory does not need to be reallocated for each function that wishes to use it. \index{pplexer.c@{pplexer.c}!yy_accept@{yy\_\-accept}}
 \index{yy_accept@{yy\_\-accept}!pplexer.c@{pplexer.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst short int yy\_\-accept[649]\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a94}
 
@@ -1105,7 +1107,8 @@ Pointer to head element of include paths list \index{pplexer.c@{pplexer.c}!istac
         5,    1,    5,    1,    5,    5,    5,    5,    5,    5,
         5,    5,    5,    5,    5,    5,    5,    5,    5,    5,
         5,    5,    5
-    }\end{verbatim}\normalsize 
+    }
+\end{verbatim}\normalsize 
 \index{pplexer.c@{pplexer.c}!yy_n_chars@{yy\_\-n\_\-chars}}
 \index{yy_n_chars@{yy\_\-n\_\-chars}!pplexer.c@{pplexer.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-n\_\-chars\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a86}

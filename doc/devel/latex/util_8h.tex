@@ -45,14 +45,10 @@ void {\bf gen\_\-space} (char $\ast$spaces, int num\_\-spaces)
 \subsection{Detailed Description}
 Contains miscellaneous global functions used by many functions.
 
-
-
 \begin{Desc}
-\item[Author: ]\par
-Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
-\item[Date: ]\par
-11/27/2001\end{Desc}
+\item[Date:]11/27/2001 \end{Desc}
 
 
 \subsection{Function Documentation}
@@ -64,14 +60,12 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 Returns TRUE if the specified directory exists.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-dir}]Name of directory to check for existence. \end{description}
+\item[{\em dir}]Name of directory to check for existence. \end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Returns TRUE if the specified directory exists; otherwise, returns FALSE.\end{Desc}
+\item[Returns:]Returns TRUE if the specified directory exists; otherwise, returns FALSE.\end{Desc}
 Checks to see if the specified directory actually exists in the file structure. If the directory is found to exist, returns TRUE; otherwise, returns FALSE. \index{util.h@{util.h}!directory_load@{directory\_\-load}}
 \index{directory_load@{directory\_\-load}!util.h@{util.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void directory\_\-load (char $\ast$ {\em dir}, {\bf str\_\-link} $\ast$ {\em ext\_\-head}, {\bf str\_\-link} $\ast$$\ast$ {\em file\_\-head}, {\bf str\_\-link} $\ast$$\ast$ {\em file\_\-tail})}\label{util_8h_a6}
@@ -80,21 +74,14 @@ Checks to see if the specified directory actually exists in the file structure. 
 Loads contents of specified directory to file list if extension is part of list.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-dir}]Name of directory to read files from. \item[{\em 
-ext\_\-head}]Pointer to extension list. \item[{\em 
-file\_\-head}]Pointer to head element of filename string list. \item[{\em 
-file\_\-tail}]Pointer to tail element of filename string list.\end{description}
+\item[{\em dir}]Name of directory to read files from. \item[{\em ext\_\-head}]Pointer to extension list. \item[{\em file\_\-head}]Pointer to head element of filename string list. \item[{\em file\_\-tail}]Pointer to tail element of filename string list.\end{description}
 \end{Desc}
 
 
 \begin{Desc}
-\item[{\bf Bug: }]\par
-Need to order files according to extension first instead of filename.\end{Desc}
-
-
+\item[{\bf Bug}]Need to order files according to extension first instead of filename.\end{Desc}
 Opens the specified directory for reading and loads (in order) all files that contain the specified extensions (if ext\_\-head is NULL, load only $\ast$.v files). Stores all string filenames to the specified string list. \index{util.h@{util.h}!file_exists@{file\_\-exists}}
 \index{file_exists@{file\_\-exists}!util.h@{util.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} file\_\-exists (char $\ast$ {\em file})}\label{util_8h_a7}
@@ -103,14 +90,12 @@ Opens the specified directory for reading and loads (in order) all files that co
 Returns TRUE if the specified file exists.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-file}]Name of file to check for existence. \end{description}
+\item[{\em file}]Name of file to check for existence. \end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Returns TRUE if the specified file exists; otherwise, returns FALSE.\end{Desc}
+\item[Returns:]Returns TRUE if the specified file exists; otherwise, returns FALSE.\end{Desc}
 Checks to see if the specified file actually exists in the file structure. If the file is found to exist, returns TRUE; otherwise, returns FALSE. \index{util.h@{util.h}!free_safe@{free\_\-safe}}
 \index{free_safe@{free\_\-safe}!util.h@{util.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void free\_\-safe (void $\ast$ {\em ptr})}\label{util_8h_a14}
@@ -119,10 +104,9 @@ Checks to see if the specified file actually exists in the file structure. If th
 Performs safe deallocation of heap memory.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-ptr}]Pointer to object to deallocate.\end{description}
+\item[{\em ptr}]Pointer to object to deallocate.\end{description}
 \end{Desc}
 Safely performs a free function of heap memory. Also keeps track of current memory usage for output information at end of program life. \index{util.h@{util.h}!gen_space@{gen\_\-space}}
 \index{gen_space@{gen\_\-space}!util.h@{util.h}}
@@ -132,11 +116,9 @@ Safely performs a free function of heap memory. Also keeps track of current memo
 Creates a string containing space characters.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-spaces}]Pointer to string to places spaces into. \item[{\em 
-num\_\-spaces}]Number of spaces to place in string.\end{description}
+\item[{\em spaces}]Pointer to string to places spaces into. \item[{\em num\_\-spaces}]Number of spaces to place in string.\end{description}
 \end{Desc}
 Creates a string that contains num\_\-spaces number of space characters, adding a NULL character at the end of the string to allow for correct usage by the strlen and other string functions. \index{util.h@{util.h}!get_next_vfile@{get\_\-next\_\-vfile}}
 \index{get_next_vfile@{get\_\-next\_\-vfile}!util.h@{util.h}}
@@ -146,15 +128,12 @@ Creates a string that contains num\_\-spaces number of space characters, adding 
 Returns next Verilog file to parse.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-curr}]Pointer to current file in list. \item[{\em 
-mod}]Name of module searching for.\end{description}
+\item[{\em curr}]Pointer to current file in list. \item[{\em mod}]Name of module searching for.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Returns pointer to next Verilog file to parse or NULL if no files were found.\end{Desc}
+\item[Returns:]Returns pointer to next Verilog file to parse or NULL if no files were found.\end{Desc}
 Iterates through specified file list, searching for next Verilog file to parse. If a file is a library file (suppl field is 'D'), the name of the module to search for is compared with the name of the file. \index{util.h@{util.h}!is_directory@{is\_\-directory}}
 \index{is_directory@{is\_\-directory}!util.h@{util.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} is\_\-directory (char $\ast$ {\em token})}\label{util_8h_a4}
@@ -163,14 +142,12 @@ Iterates through specified file list, searching for next Verilog file to parse. 
 Returns TRUE if the specified string is a legal directory string.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-token}]String to check for valid pathname-ness \end{description}
+\item[{\em token}]String to check for valid pathname-ness \end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Returns TRUE if the specified string is a legal UNIX directory; otherwise, returns FALSE.\end{Desc}
+\item[Returns:]Returns TRUE if the specified string is a legal UNIX directory; otherwise, returns FALSE.\end{Desc}
 Returns TRUE if the specified string is either a legal UNIX relative pathname or static pathname. If the specified string does not correlate to a legal UNIX pathname, a value of FALSE is returned. \index{util.h@{util.h}!is_variable@{is\_\-variable}}
 \index{is_variable@{is\_\-variable}!util.h@{util.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} is\_\-variable (char $\ast$ {\em token})}\label{util_8h_a3}
@@ -179,14 +156,12 @@ Returns TRUE if the specified string is either a legal UNIX relative pathname or
 Returns TRUE if the specified string is a legal variable name.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-token}]String to check for valid variable name. \end{description}
+\item[{\em token}]String to check for valid variable name. \end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Returns TRUE if the specified string is a legal variable name; otherwise, returns FALSE.\end{Desc}
+\item[Returns:]Returns TRUE if the specified string is a legal variable name; otherwise, returns FALSE.\end{Desc}
 If the specified string follows all of the rules for a legal program variable (doesn't start with a number, contains only a-z\-A-Z0-9\_\- characters), returns a value of TRUE; otherwise, returns a value of FALSE. \index{util.h@{util.h}!malloc_safe@{malloc\_\-safe}}
 \index{malloc_safe@{malloc\_\-safe}!util.h@{util.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ malloc\_\-safe (size\_\-t {\em size})}\label{util_8h_a13}
@@ -195,14 +170,12 @@ If the specified string follows all of the rules for a legal program variable (d
 Performs safe malloc call.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-size}]Number of bytes to allocate.\end{description}
+\item[{\em size}]Number of bytes to allocate.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Pointer to allocated memory.\end{Desc}
+\item[Returns:]Pointer to allocated memory.\end{Desc}
 Allocated memory like a malloc() call but performs some pre-allocation and post-allocation checks to be sure that the malloc call works properly. \index{util.h@{util.h}!print_output@{print\_\-output}}
 \index{print_output@{print\_\-output}!util.h@{util.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void print\_\-output (char $\ast$ {\em msg}, int {\em type})}\label{util_8h_a2}
@@ -211,11 +184,9 @@ Allocated memory like a malloc() call but performs some pre-allocation and post-
 Displays error message to standard output.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-msg}]Message to display. \item[{\em 
-type}]Type of message to output\end{description}
+\item[{\em msg}]Message to display. \item[{\em type}]Type of message to output\end{description}
 \end{Desc}
 Displays the specified message to standard output based on the type of message being output. \index{util.h@{util.h}!readline@{readline}}
 \index{readline@{readline}!util.h@{util.h}}
@@ -225,15 +196,12 @@ Displays the specified message to standard output based on the type of message b
 Reads line from file and returns it in string form.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-file}]File to read next line from. \item[{\em 
-line}]Pointer to string which will contain read line minus newline character.\end{description}
+\item[{\em file}]File to read next line from. \item[{\em line}]Pointer to string which will contain read line minus newline character.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Returns FALSE if feof is encountered; otherwise, returns TRUE.\end{Desc}
+\item[Returns:]Returns FALSE if feof is encountered; otherwise, returns TRUE.\end{Desc}
 Reads in a single line of information from the specified file and returns a string containing the read line to the calling function. \index{util.h@{util.h}!scope_extract_back@{scope\_\-extract\_\-back}}
 \index{scope_extract_back@{scope\_\-extract\_\-back}!util.h@{util.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void scope\_\-extract\_\-back (char $\ast$ {\em scope}, char $\ast$ {\em back}, char $\ast$ {\em rest})}\label{util_8h_a10}
@@ -242,12 +210,9 @@ Reads in a single line of information from the specified file and returns a stri
 Extracts lowest level of hierarchy from specified scope.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-scope}]Full scope to extract from. \item[{\em 
-back}]Lowest level of hierarchy extracted. \item[{\em 
-rest}]Hierarchy left after extraction.\end{description}
+\item[{\em scope}]Full scope to extract from. \item[{\em back}]Lowest level of hierarchy extracted. \item[{\em rest}]Hierarchy left after extraction.\end{description}
 \end{Desc}
 Extracts the lowest level of hierarchy from the specified scope, returning that instance name to the value of back and the the rest of the hierarchy in the value of rest. \index{util.h@{util.h}!scope_extract_front@{scope\_\-extract\_\-front}}
 \index{scope_extract_front@{scope\_\-extract\_\-front}!util.h@{util.h}}
@@ -257,12 +222,9 @@ Extracts the lowest level of hierarchy from the specified scope, returning that 
 Extracts highest level of hierarchy from specified scope.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-scope}]Full scope to extract from. \item[{\em 
-front}]Highest level of hierarchy extracted. \item[{\em 
-rest}]Hierarchy left after extraction.\end{description}
+\item[{\em scope}]Full scope to extract from. \item[{\em front}]Highest level of hierarchy extracted. \item[{\em rest}]Hierarchy left after extraction.\end{description}
 \end{Desc}
 Extracts the highest level of hierarchy from the specified scope, returning that instance name to the value of front and the the rest of the hierarchy in the value of rest. \index{util.h@{util.h}!scope_local@{scope\_\-local}}
 \index{scope_local@{scope\_\-local}!util.h@{util.h}}
@@ -279,10 +241,9 @@ Returns TRUE if specified scope is local (contains no periods).
 Sets global debug flag to specified value.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-value}]Boolean value of debug mode.\end{description}
+\item[{\em value}]Boolean value of debug mode.\end{description}
 \end{Desc}
 Sets the global debug mode to the specified value. \index{util.h@{util.h}!set_output_suppression@{set\_\-output\_\-suppression}}
 \index{set_output_suppression@{set\_\-output\_\-suppression}!util.h@{util.h}}
@@ -292,9 +253,8 @@ Sets the global debug mode to the specified value. \index{util.h@{util.h}!set_ou
 Sets error suppression to specified value.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-value}]Boolean value of suppression.\end{description}
+\item[{\em value}]Boolean value of suppression.\end{description}
 \end{Desc}
 Sets the global variable output\_\-suppressed to the specified value. 

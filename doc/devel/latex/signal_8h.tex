@@ -31,14 +31,10 @@ void {\bf signal\_\-dealloc} ({\bf signal} $\ast$sig)
 \subsection{Detailed Description}
 Contains functions for handling signals.
 
-
-
 \begin{Desc}
-\item[Author: ]\par
-Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
-\item[Date: ]\par
-12/1/2001\end{Desc}
+\item[Date:]12/1/2001 \end{Desc}
 
 
 \subsection{Function Documentation}
@@ -50,11 +46,9 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 Adds an expression to the signal list.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-sig}]Pointer to signal to add expression to. \item[{\em 
-expr}]Expression to add to list.\end{description}
+\item[{\em sig}]Pointer to signal to add expression to. \item[{\em expr}]Expression to add to list.\end{description}
 \end{Desc}
 Adds the specified expression to the end of this signal's expression list. \index{signal.h@{signal.h}!signal_create@{signal\_\-create}}
 \index{signal_create@{signal\_\-create}!signal.h@{signal.h}}
@@ -64,16 +58,12 @@ Adds the specified expression to the end of this signal's expression list. \inde
 Creates a new signal based on the information passed to this function.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-name}]Full hierarchical name of this signal. \item[{\em 
-width}]Bit width of this signal. \item[{\em 
-lsb}]Bit position of least significant bit.\end{description}
+\item[{\em name}]Full hierarchical name of this signal. \item[{\em width}]Bit width of this signal. \item[{\em lsb}]Bit position of least significant bit.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Pointer to newly created signal.\end{Desc}
+\item[Returns:]Pointer to newly created signal.\end{Desc}
 This function should be called by the Verilog parser or the database reading function. It initializes all of the necessary values for a signal and returns a pointer to this newly created signal. \index{signal.h@{signal.h}!signal_db_merge@{signal\_\-db\_\-merge}}
 \index{signal_db_merge@{signal\_\-db\_\-merge}!signal.h@{signal.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} signal\_\-db\_\-merge ({\bf signal} $\ast$ {\em base}, char $\ast$$\ast$ {\em line}, {\bf bool} {\em same})}\label{signal_8h_a4}
@@ -82,17 +72,13 @@ This function should be called by the Verilog parser or the database reading fun
 Reads and merges two signals, placing result into base signal.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-base}]Signal to store result of merge into. \item[{\em 
-line}]Pointer to line of CDD file to parse. \item[{\em 
-same}]Specifies if signal to merge needs to be exactly the same as the existing signal.\end{description}
+\item[{\em base}]Signal to store result of merge into. \item[{\em line}]Pointer to line of CDD file to parse. \item[{\em same}]Specifies if signal to merge needs to be exactly the same as the existing signal.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Returns TRUE if parsing successful; otherwise, returns FALSE.\end{Desc}
-Parses specified line for signal information and performs merge  of the base and in signals, placing the resulting merged signal  into the base signal. If the signals are found to be unalike  (names are different), an error message is displayed to the user.  If both signals are the same, perform the merge on the signal's  vectors. \index{signal.h@{signal.h}!signal_db_read@{signal\_\-db\_\-read}}
+\item[Returns:]Returns TRUE if parsing successful; otherwise, returns FALSE.\end{Desc}
+Parses specified line for signal information and performs merge of the base and in signals, placing the resulting merged signal into the base signal. If the signals are found to be unalike (names are different), an error message is displayed to the user. If both signals are the same, perform the merge on the signal's vectors. \index{signal.h@{signal.h}!signal_db_read@{signal\_\-db\_\-read}}
 \index{signal_db_read@{signal\_\-db\_\-read}!signal.h@{signal.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} signal\_\-db\_\-read (char $\ast$$\ast$ {\em line}, {\bf module} $\ast$ {\em curr\_\-mod})}\label{signal_8h_a3}
 
@@ -100,22 +86,16 @@ Parses specified line for signal information and performs merge  of the base and
 Reads signal information from specified file.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-line}]Pointer to current line from database file to parse. \item[{\em 
-curr\_\-mod}]Pointer to current module instantiating this signal.\end{description}
+\item[{\em line}]Pointer to current line from database file to parse. \item[{\em curr\_\-mod}]Pointer to current module instantiating this signal.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Returns TRUE if signal information read successfully; otherwise, returns FALSE.\end{Desc}
+\item[Returns:]Returns TRUE if signal information read successfully; otherwise, returns FALSE.\end{Desc}
 
 
 \begin{Desc}
-\item[{\bf Bug: }]\par
-A signal will only look in the current module for a matching expression. In the case of a hierarchical reference, it is possible that an expression outside the current module is referencing this signal. We need to check for this case (hierarchical expression) and find the expression elsewhere.\end{Desc}
-
-
+\item[{\bf Bug}]A signal will only look in the current module for a matching expression. In the case of a hierarchical reference, it is possible that an expression outside the current module is referencing this signal. We need to check for this case (hierarchical expression) and find the expression elsewhere.\end{Desc}
 Creates a new signal structure, parses current file line for signal information and stores it to the specified signal. If there are any problems in reading in the current line, returns FALSE; otherwise, returns TRUE. \index{signal.h@{signal.h}!signal_db_write@{signal\_\-db\_\-write}}
 \index{signal_db_write@{signal\_\-db\_\-write}!signal.h@{signal.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-db\_\-write ({\bf signal} $\ast$ {\em sig}, FILE $\ast$ {\em file}, char $\ast$ {\em modname})}\label{signal_8h_a2}
@@ -124,12 +104,9 @@ Creates a new signal structure, parses current file line for signal information 
 Outputs this signal information to specified file.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-sig}]Signal to write to file. \item[{\em 
-file}]Name of file to display signal contents to. \item[{\em 
-modname}]Name of module that this signal belongs to.\end{description}
+\item[{\em sig}]Signal to write to file. \item[{\em file}]Name of file to display signal contents to. \item[{\em modname}]Name of module that this signal belongs to.\end{description}
 \end{Desc}
 Prints the signal information for the specified signal to the specified file. This file will be the database coverage file for this design. \index{signal.h@{signal.h}!signal_dealloc@{signal\_\-dealloc}}
 \index{signal_dealloc@{signal\_\-dealloc}!signal.h@{signal.h}}
@@ -139,10 +116,9 @@ Prints the signal information for the specified signal to the specified file. Th
 Deallocates the memory used for this signal.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-sig}]Pointer to signal to deallocate.\end{description}
+\item[{\em sig}]Pointer to signal to deallocate.\end{description}
 \end{Desc}
 Deallocates all malloc'ed memory back to the heap for the specified signal. \index{signal.h@{signal.h}!signal_display@{signal\_\-display}}
 \index{signal_display@{signal\_\-display}!signal.h@{signal.h}}
@@ -152,10 +128,9 @@ Deallocates all malloc'ed memory back to the heap for the specified signal. \ind
 Displays signal contents to standard output.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-sig}]Pointer to signal to display to standard output.\end{description}
+\item[{\em sig}]Pointer to signal to display to standard output.\end{description}
 \end{Desc}
 Displays signal's name, width, lsb and value vector to the standard output. \index{signal.h@{signal.h}!signal_init@{signal\_\-init}}
 \index{signal_init@{signal\_\-init}!signal.h@{signal.h}}
@@ -165,12 +140,9 @@ Displays signal's name, width, lsb and value vector to the standard output. \ind
 Initializes specified signal with specified values.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-sig}]Pointer to signal to initialize. \item[{\em 
-name}]Pointer to signal name string. \item[{\em 
-value}]Pointer to signal value.\end{description}
+\item[{\em sig}]Pointer to signal to initialize. \item[{\em name}]Pointer to signal name string. \item[{\em value}]Pointer to signal value.\end{description}
 \end{Desc}
 Initializes the specified signal with the values of name and value. This function is called by the signal\_\-create routine and is also useful for creating temporary signals (reduces the need for dynamic memory allocation). for performance enhancing purposes. \index{signal.h@{signal.h}!signal_vcd_assign@{signal\_\-vcd\_\-assign}}
 \index{signal_vcd_assign@{signal\_\-vcd\_\-assign}!signal.h@{signal.h}}
@@ -180,10 +152,8 @@ Initializes the specified signal with the values of name and value. This functio
 Assigns specified VCD value to specified signal.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-sig}]Pointer to signal to assign VCD value to. \item[{\em 
-value}]String version of VCD value.\end{description}
+\item[{\em sig}]Pointer to signal to assign VCD value to. \item[{\em value}]String version of VCD value.\end{description}
 \end{Desc}
 Assigns the associated value to the specified signal's vector. After this, it iterates through its expression list, setting the TRUE and FALSE bits accordingly. Finally, calls the simulator expr\_\-changed function for each expression. 

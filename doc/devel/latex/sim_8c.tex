@@ -38,31 +38,22 @@ void {\bf sim\_\-simulate} ()
 
 
 \subsection{Detailed Description}
-
-
 \begin{Desc}
-\item[Author: ]\par
-Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
-\item[Date: ]\par
-6/20/2002
-
- The simulation engine is made up of three parts:\begin{enumerate}
-\item 
-pre-simulation statement queue\item 
-statement simulation engine\item 
-expression simulation engine\end{enumerate}
+\item[Date:]6/20/2002\end{Desc}
+\begin{Desc}
+\item[]The simulation engine is made up of three parts:\begin{enumerate}
+\item pre-simulation statement queue\item statement simulation engine\item expression simulation engine\end{enumerate}
 \end{Desc}
-
-
- The operation of the simulation engine is as follows. When a signal is found in the VCD file, the expressions to which it is a part of the RHS are looked up in the design tree. The expression tree is then parsed from the expression to the root, setting the {\bf SUPPL\_\-LSB\_\-LEFT\_\-CHANGED} {\rm (p.\,\pageref{group__expr__suppl_a9})} or {\bf SUPPL\_\-LSB\_\-RIGHT\_\-CHANGED} {\rm (p.\,\pageref{group__expr__suppl_a10})} as it  makes its way to the root. When at the root expression, the {\bf SUPPL\_\-LSB\_\-STMT\_\-HEAD} {\rm (p.\,\pageref{group__expr__suppl_a4})}  bit is interrogated. If this bit is a 1, the expression's statement is loaded  into the pre-simulation statement queue. If the bit is a 0, no further action is  taken.
-
- Once the timestep marker has been set, the simulate function is called. The  statement located at the head of the queue is placed into the statement simulation  engine and the head pointer is set to point to the next statement in the queue.  The head statement is continually taken until the pre-simulation statement queue  is empty. This signifies that the timestep has been completed.
-
- When a statement is placed into the statement simulation engine, the {\bf SUPPL\_\-LSB\_\-STMT\_\-HEAD} {\rm (p.\,\pageref{group__expr__suppl_a4})}  bit is cleared in the root expression. Additionally, the root expression pointed to by  the statement is interrogated to see if the {\bf SUPPL\_\-LSB\_\-LEFT\_\-CHANGED} {\rm (p.\,\pageref{group__expr__suppl_a9})} or {\bf SUPPL\_\-LSB\_\-RIGHT\_\-CHANGED} {\rm (p.\,\pageref{group__expr__suppl_a10})}  bits are set. If one or both of the bits are found to be set, the root expression  is placed into the expression simulation engine for further processing. When the  statement's expression has completed its simulation, the value of the root expression  is used to determine if the next\_\-true or next\_\-false path will be taken. If the value  of the root expression is true, the next\_\-true statement is loaded into the statement  simulation engine. If the value of the root expression is false and the next\_\-false  pointer is NULL, this signifies that the current statement tree has completed for this  timestep. At this point, the current statement will set the {\bf SUPPL\_\-LSB\_\-STMT\_\-HEAD} {\rm (p.\,\pageref{group__expr__suppl_a4})} bit in  its root expression and is removed from the statement simulation engine. The next statement  at the head of the pre-simulation statement queue is then loaded into the statement  simulation engine. If next\_\-false statement is not NULL, it is loaded into the statement  simulation engine and work is done on that statement.
-
- When a root expression is placed into the expression simulation engine, the tree is traversed, following the paths that have set {\bf SUPPL\_\-LSB\_\-LEFT\_\-CHANGED} {\rm (p.\,\pageref{group__expr__suppl_a9})} or  {\bf SUPPL\_\-LSB\_\-RIGHT\_\-CHANGED} {\rm (p.\,\pageref{group__expr__suppl_a10})} bits set. Each expression tree is traversed depth first. When an  expression is reached that does not have either of these bits set, we have reached the expression whose value has changed. When this expression is found, it is evaluated and the resulting value is stored into its value vector. Once this has occurred, the parent expression checks to see if the other child expression has changed value. If so, that child expression's tree is traversed. Once both child expressions contain the current value for the current timestep, the parent expression evaluates its expression with the values of its children and clears both the {\bf SUPPL\_\-LSB\_\-LEFT\_\-CHANGED} {\rm (p.\,\pageref{group__expr__suppl_a9})} and {\bf SUPPL\_\-LSB\_\-RIGHT\_\-CHANGED} {\rm (p.\,\pageref{group__expr__suppl_a10})} bits to indicate that both children were evaluated. The resulting value is stored into the current expression's value vector and the parent expression of the current expression is worked on. This evaluation process continues until the root expression of the tree has been evaluated. At this point the expression tree is removed from the expression simulation engine and the associated statement worked on by the statement simulation engine as specified above.
-
+\begin{Desc}
+\item[]The operation of the simulation engine is as follows. When a signal is found in the VCD file, the expressions to which it is a part of the RHS are looked up in the design tree. The expression tree is then parsed from the expression to the root, setting the {\bf SUPPL\_\-LSB\_\-LEFT\_\-CHANGED} or {\bf SUPPL\_\-LSB\_\-RIGHT\_\-CHANGED} as it makes its way to the root. When at the root expression, the {\bf SUPPL\_\-LSB\_\-STMT\_\-HEAD} bit is interrogated. If this bit is a 1, the expression's statement is loaded into the pre-simulation statement queue. If the bit is a 0, no further action is taken.\end{Desc}
+\begin{Desc}
+\item[]Once the timestep marker has been set, the simulate function is called. The statement located at the head of the queue is placed into the statement simulation engine and the head pointer is set to point to the next statement in the queue. The head statement is continually taken until the pre-simulation statement queue is empty. This signifies that the timestep has been completed.\end{Desc}
+\begin{Desc}
+\item[]When a statement is placed into the statement simulation engine, the {\bf SUPPL\_\-LSB\_\-STMT\_\-HEAD} bit is cleared in the root expression. Additionally, the root expression pointed to by the statement is interrogated to see if the {\bf SUPPL\_\-LSB\_\-LEFT\_\-CHANGED} or {\bf SUPPL\_\-LSB\_\-RIGHT\_\-CHANGED} bits are set. If one or both of the bits are found to be set, the root expression is placed into the expression simulation engine for further processing. When the statement's expression has completed its simulation, the value of the root expression is used to determine if the next\_\-true or next\_\-false path will be taken. If the value of the root expression is true, the next\_\-true statement is loaded into the statement simulation engine. If the value of the root expression is false and the next\_\-false pointer is NULL, this signifies that the current statement tree has completed for this timestep. At this point, the current statement will set the {\bf SUPPL\_\-LSB\_\-STMT\_\-HEAD} bit in its root expression and is removed from the statement simulation engine. The next statement at the head of the pre-simulation statement queue is then loaded into the statement simulation engine. If next\_\-false statement is not NULL, it is loaded into the statement simulation engine and work is done on that statement.\end{Desc}
+\begin{Desc}
+\item[]When a root expression is placed into the expression simulation engine, the tree is traversed, following the paths that have set {\bf SUPPL\_\-LSB\_\-LEFT\_\-CHANGED} or {\bf SUPPL\_\-LSB\_\-RIGHT\_\-CHANGED} bits set. Each expression tree is traversed depth first. When an expression is reached that does not have either of these bits set, we have reached the expression whose value has changed. When this expression is found, it is evaluated and the resulting value is stored into its value vector. Once this has occurred, the parent expression checks to see if the other child expression has changed value. If so, that child expression's tree is traversed. Once both child expressions contain the current value for the current timestep, the parent expression evaluates its expression with the values of its children and clears both the {\bf SUPPL\_\-LSB\_\-LEFT\_\-CHANGED} and {\bf SUPPL\_\-LSB\_\-RIGHT\_\-CHANGED} bits to indicate that both children were evaluated. The resulting value is stored into the current expression's value vector and the parent expression of the current expression is worked on. This evaluation process continues until the root expression of the tree has been evaluated. At this point the expression tree is removed from the expression simulation engine and the associated statement worked on by the statement simulation engine as specified above.\end{Desc}
 
 
 \subsection{Function Documentation}
@@ -81,10 +72,9 @@ Iterates through static expression list and causes the simulator to evaluate the
 Adds specified statement to pre-simulation statement queue.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-stmt}]Pointer to statement to add to queue.\end{description}
+\item[{\em stmt}]Pointer to statement to add to queue.\end{description}
 \end{Desc}
 Checks STMT\_\-HEAD bit of specified statement. If this is set to 1, adds this statement to the presimulation statement queue; otherwise, it does nothing with the statement \index{sim.c@{sim.c}!sim_expr_changed@{sim\_\-expr\_\-changed}}
 \index{sim_expr_changed@{sim\_\-expr\_\-changed}!sim.c@{sim.c}}
@@ -94,10 +84,9 @@ Checks STMT\_\-HEAD bit of specified statement. If this is set to 1, adds this s
 Adds specified expression's statement to pre-simulation statement queue.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-expr}]Pointer to expression that contains a changed signal value.\end{description}
+\item[{\em expr}]Pointer to expression that contains a changed signal value.\end{description}
 \end{Desc}
 Traverses up expression tree pointed to by leaf node expr, setting the CHANGED bits as it reaches the root expression. When the root expression is found, the statement pointed to by the root's parent pointer is added to the pre-simulation statement queue for simulation at the end of the timestep. If, upon traversing the tree, an expression is found to already be have a CHANGED bit set, we know that the statement has already been added, so stop here and do not add the statement again. \index{sim.c@{sim.c}!sim_expression@{sim\_\-expression}}
 \index{sim_expression@{sim\_\-expression}!sim.c@{sim.c}}
@@ -105,32 +94,29 @@ Traverses up expression tree pointed to by leaf node expr, setting the CHANGED b
 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-expr}]Pointer to expression to simulate.\end{description}
+\item[{\em expr}]Pointer to expression to simulate.\end{description}
 \end{Desc}
-Recursively traverses specified expression tree, following the {\bf SUPPL\_\-LSB\_\-LEFT\_\-CHANGED} {\rm (p.\,\pageref{group__expr__suppl_a9})}  and {\bf SUPPL\_\-LSB\_\-RIGHT\_\-CHANGED} {\rm (p.\,\pageref{group__expr__suppl_a10})} bits in the supplemental field. Once an expression is found that has neither bit set, perform the expression operation and move back up the tree. Once both left and right children have calculated values, perform the expression operation for the current expression, clear both changed bits and return. \index{sim.c@{sim.c}!sim_simulate@{sim\_\-simulate}}
+Recursively traverses specified expression tree, following the {\bf SUPPL\_\-LSB\_\-LEFT\_\-CHANGED} and {\bf SUPPL\_\-LSB\_\-RIGHT\_\-CHANGED} bits in the supplemental field. Once an expression is found that has neither bit set, perform the expression operation and move back up the tree. Once both left and right children have calculated values, perform the expression operation for the current expression, clear both changed bits and return. \index{sim.c@{sim.c}!sim_simulate@{sim\_\-simulate}}
 \index{sim_simulate@{sim\_\-simulate}!sim.c@{sim.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void sim\_\-simulate ()}\label{sim_8c_a10}
 
 
 Simulates current timestep.
 
-This function is the heart of the simulation engine. It is called by the {\bf db\_\-do\_\-timestep}() {\rm (p.\,\pageref{db_8c_a40})} function in {\bf db.c} and moves the statements and expressions into the appropriate simulation functions. See above explanation on this procedure. \index{sim.c@{sim.c}!sim_statement@{sim\_\-statement}}
+This function is the heart of the simulation engine. It is called by the {\bf db\_\-do\_\-timestep()} function in {\bf db.c} and moves the statements and expressions into the appropriate simulation functions. See above explanation on this procedure. \index{sim.c@{sim.c}!sim_statement@{sim\_\-statement}}
 \index{sim_statement@{sim\_\-statement}!sim.c@{sim.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf statement}$\ast$ sim\_\-statement ({\bf statement} $\ast$ {\em head\_\-stmt})}\label{sim_8c_a9}
 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-head\_\-stmt}]Pointer to head statement to simulate.\end{description}
+\item[{\em head\_\-stmt}]Pointer to head statement to simulate.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Returns a pointer to the first statement to execute in the next timestep\end{Desc}
+\item[Returns:]Returns a pointer to the first statement to execute in the next timestep\end{Desc}
 Performs statement simulation as described above. Calls expression simulator if the associated root expression is specified that signals have changed value within it. Continues to run for current statement tree until statement tree hits a wait-for-event condition (or we reach the end of a simulation tree). 
 
 \subsection{Variable Documentation}

@@ -26,14 +26,10 @@ void {\bf instance\_\-dealloc} ({\bf mod\_\-inst} $\ast$root, char $\ast$scope)
 \subsection{Detailed Description}
 Contains functions for handling module instances.
 
-
-
 \begin{Desc}
-\item[Author: ]\par
-Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
-\item[Date: ]\par
-3/11/2002\end{Desc}
+\item[Date:]3/11/2002 \end{Desc}
 
 
 \subsection{Function Documentation}
@@ -45,13 +41,9 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 Displays contents of module instance tree to specified file.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-root}]Root of module instance tree to write. \item[{\em 
-file}]Output file to display contents to. \item[{\em 
-scope}]Scope of this module. \item[{\em 
-parse\_\-mode}]Specifies if we are parsing or scoring.\end{description}
+\item[{\em root}]Root of module instance tree to write. \item[{\em file}]Output file to display contents to. \item[{\em scope}]Scope of this module. \item[{\em parse\_\-mode}]Specifies if we are parsing or scoring.\end{description}
 \end{Desc}
 Calls each module display function in instance tree, starting with the root module and ending when all of the leaf modules are output. Note: the function that calls this function originally should set the value of scope to NULL. \index{instance.h@{instance.h}!instance_dealloc@{instance\_\-dealloc}}
 \index{instance_dealloc@{instance\_\-dealloc}!instance.h@{instance.h}}
@@ -61,11 +53,9 @@ Calls each module display function in instance tree, starting with the root modu
 Removes specified instance from tree.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-root}]Root of module instance tree. \item[{\em 
-scope}]Scope of module to remove from tree.\end{description}
+\item[{\em root}]Root of module instance tree. \item[{\em scope}]Scope of module to remove from tree.\end{description}
 \end{Desc}
 Searches tree for specified module. If the module instance is found, the module instance is removed from the tree along with all of its child module instances. \index{instance.h@{instance.h}!instance_find_by_module@{instance\_\-find\_\-by\_\-module}}
 \index{instance_find_by_module@{instance\_\-find\_\-by\_\-module}!instance.h@{instance.h}}
@@ -75,17 +65,13 @@ Searches tree for specified module. If the module instance is found, the module 
 Returns instance that points to specified module for each instance.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-root}]Pointer to root module instance of tree. \item[{\em 
-mod}]Pointer to module to find in tree. \item[{\em 
-ignore}]Pointer to number of matches to ignore.\end{description}
+\item[{\em root}]Pointer to root module instance of tree. \item[{\em mod}]Pointer to module to find in tree. \item[{\em ignore}]Pointer to number of matches to ignore.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Returns pointer to module instance found by scope.\end{Desc}
-Searches the specified module instance tree for the specified module. When a module instance is found that points to the specified module and the ignore value is 0, a pointer to that module instance is  passed back to the calling function; otherwise, the ignore count is decremented and the searching continues. \index{instance.h@{instance.h}!instance_find_scope@{instance\_\-find\_\-scope}}
+\item[Returns:]Returns pointer to module instance found by scope.\end{Desc}
+Searches the specified module instance tree for the specified module. When a module instance is found that points to the specified module and the ignore value is 0, a pointer to that module instance is passed back to the calling function; otherwise, the ignore count is decremented and the searching continues. \index{instance.h@{instance.h}!instance_find_scope@{instance\_\-find\_\-scope}}
 \index{instance_find_scope@{instance\_\-find\_\-scope}!instance.h@{instance.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-inst}$\ast$ instance\_\-find\_\-scope ({\bf mod\_\-inst} $\ast$ {\em root}, char $\ast$ {\em scope})}\label{instance_8h_a1}
 
@@ -93,15 +79,12 @@ Searches the specified module instance tree for the specified module. When a mod
 Finds specified scope in module instance tree.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-root}]Root of mod\_\-inst tree to parse for scope. \item[{\em 
-scope}]Scope to search for.\end{description}
+\item[{\em root}]Root of mod\_\-inst tree to parse for scope. \item[{\em scope}]Scope to search for.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Returns pointer to module instance found by scope.\end{Desc}
+\item[Returns:]Returns pointer to module instance found by scope.\end{Desc}
 Searches the specified module instance tree for the specified scope. When the module instance is found, a pointer to that module instance is passed back to the calling function. \index{instance.h@{instance.h}!instance_gen_scope@{instance\_\-gen\_\-scope}}
 \index{instance_gen_scope@{instance\_\-gen\_\-scope}!instance.h@{instance.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void instance\_\-gen\_\-scope (char $\ast$ {\em scope}, {\bf mod\_\-inst} $\ast$ {\em leaf})}\label{instance_8h_a0}
@@ -110,11 +93,9 @@ Searches the specified module instance tree for the specified scope. When the mo
 Builds full hierarchy from leaf node to root.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-scope}]String pointer to store generated scope (assumed to be allocated) \item[{\em 
-leaf}]Pointer to leaf instance in scope.\end{description}
+\item[{\em scope}]String pointer to store generated scope (assumed to be allocated) \item[{\em leaf}]Pointer to leaf instance in scope.\end{description}
 \end{Desc}
 Recursively travels up to the root of the instance tree, building the scope string as it goes. When the root instance is reached, the string is returned. Assumes that scope is initialized to the NULL character. \index{instance.h@{instance.h}!instance_parse_add@{instance\_\-parse\_\-add}}
 \index{instance_parse_add@{instance\_\-parse\_\-add}!instance.h@{instance.h}}
@@ -124,13 +105,9 @@ Recursively travels up to the root of the instance tree, building the scope stri
 Adds new instance to specified instance tree during parse.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-root}]Root mod\_\-inst pointer of module instance tree. \item[{\em 
-parent}]Pointer to parent module of specified child. \item[{\em 
-child}]Pointer to child module to add. \item[{\em 
-inst\_\-name}]Name of new module instance.\end{description}
+\item[{\em root}]Root mod\_\-inst pointer of module instance tree. \item[{\em parent}]Pointer to parent module of specified child. \item[{\em child}]Pointer to child module to add. \item[{\em inst\_\-name}]Name of new module instance.\end{description}
 \end{Desc}
 Adds the child module to the child module pointer list located in the module specified by the scope of parent in the module instance tree pointed to by root. This function is used by the db\_\-add\_\-instance function during the parsing stage. \index{instance.h@{instance.h}!instance_read_add@{instance\_\-read\_\-add}}
 \index{instance_read_add@{instance\_\-read\_\-add}!instance.h@{instance.h}}
@@ -140,12 +117,8 @@ Adds the child module to the child module pointer list located in the module spe
 Adds new instance to specified instance tree during CDD read.
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-root}]Pointer to root instance of module instance tree. \item[{\em 
-parent}]String scope of parent instance. \item[{\em 
-child}]Pointer to child module to add to specified parent's child list. \item[{\em 
-inst\_\-name}]Instance name of this child module instance.\end{description}
+\item[{\em root}]Pointer to root instance of module instance tree. \item[{\em parent}]String scope of parent instance. \item[{\em child}]Pointer to child module to add to specified parent's child list. \item[{\em inst\_\-name}]Instance name of this child module instance.\end{description}
 \end{Desc}
 Adds the child module to the child module pointer list located in the module specified by the scope of parent in the module instance tree pointed to by root. This function is used by the db\_\-read function during the CDD reading stage. 
