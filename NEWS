@@ -1,9 +1,9 @@
 Covered-Related NEWS
 ====================
 
-    * 12/09/2004
+    * 12/10/2004
 
-Development release covered-20041209 made.  This release contains summary and detailed coverage
+Development release covered-20041210 made.  This release contains summary and detailed coverage
 reporting windows for toggle and combinational logic to the GUI.  Lots of bug fixes, updates
 and enhancements to the UI.  The scoring phase was optimized a bit to improve run-time.
 Additionally, help manual has been started for the current state of the GUI.  The following
