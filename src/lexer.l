@@ -962,7 +962,12 @@ static int yywrap() {
     istack         = (struct include_stack_t*)malloc( sizeof( struct include_stack_t ) );
 
     if( filelist_curr == NULL ) {
-      print_output( "Unable to find top-level module in given file list", FATAL );
+      print_output( "Unable to find the following modules:", FATAL );
+      curr = modlist_head;
+      while( curr != NULL ) {
+        fprintf( stderr, "        %s\n", curr->str );
+        curr = curr->next;
+      }
       exit( 1 );
     }
 
