@@ -719,9 +719,13 @@
 #define EXP_OP_PARAM_SBIT 0x33
 /*! Decimal value = 52.  Specifies multi-bit select parameter. */
 #define EXP_OP_PARAM_MBIT 0x34
+/*! Decimal value = 53.  Specifies an assign assignment operator. */
 #define EXP_OP_ASSIGN     0x35
+/*! Decimal value = 54.  Specifies a blocking assignment operator. */
 #define EXP_OP_BASSIGN    0x36
+/*! Decimal value = 55.  Specifies a non-blocking assignment operator. */
 #define EXP_OP_NASSIGN    0x37
+/*! Decimal value = 56.  Specifies an if statement operator. */
 #define EXP_OP_IF         0x38
 
 /*! @} */
@@ -1524,6 +1528,10 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.91  2003/11/30 05:46:45  phase1geo
+ Adding IF report outputting capability.  Updated always9 diagnostic for these
+ changes and updated rest of regression CDD files accordingly.
+
  Revision 1.90  2003/11/29 06:55:48  phase1geo
  Fixing leftover bugs in better report output changes.  Fixed bug in param.c
  where parameters found in RHS expressions that were part of statements that
