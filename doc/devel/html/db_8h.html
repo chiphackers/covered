@@ -29,22 +29,26 @@
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds specified expression to expression list. Called by parser.</em> <a href="#a7"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a114">statement</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a8">db_create_statement</a> (<a class="el" href="defines_8h.html#a112">expression</a> *exp)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Creates new statement expression from specified information. Called by parser.</em> <a href="#a8"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a9">db_connect_statement_true</a> (<a class="el" href="defines_8h.html#a114">statement</a> *stmt, <a class="el" href="defines_8h.html#a114">statement</a> *exp_true)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Connects true statement to specified statement.</em> <a href="#a9"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a10">db_connect_statement_false</a> (<a class="el" href="defines_8h.html#a114">statement</a> *stmt, <a class="el" href="defines_8h.html#a114">statement</a> *exp_false)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Connects false statement to specified statement.</em> <a href="#a10"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a11">db_set_vcd_scope</a> (char *scope)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Sets current VCD scope to specified scope.</em> <a href="#a11"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a12">db_assign_symbol</a> (char *name, char *symbol)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Adds symbol to signal specified by name.</em> <a href="#a12"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a128">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a13">db_symbol_found</a> (char *symbol)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Finds specified signal and returns TRUE if found.</em> <a href="#a13"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a14">db_find_set_add_signal</a> (char *symbol, <a class="el" href="defines_8h.html#a110">vector</a> *vec)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Finds specified signal, sets the value and adds its expression to expression queue.</em> <a href="#a14"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a15">db_get_signal_size</a> (char *symbol)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Returns width of signal for specified symbol.</em> <a href="#a15"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a16">db_do_timestep</a> (int time)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Performs a timestep for all signal changes during this timestep.</em> <a href="#a16"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a9">db_statement_connect</a> (<a class="el" href="defines_8h.html#a114">statement</a> *curr_stmt, <a class="el" href="defines_8h.html#a114">statement</a> *next_stmt)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Connects one statement block to another.</em> <a href="#a9"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a10">db_connect_statement_true</a> (<a class="el" href="defines_8h.html#a114">statement</a> *stmt, <a class="el" href="defines_8h.html#a114">statement</a> *exp_true)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Connects true statement to specified statement.</em> <a href="#a10"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a11">db_connect_statement_false</a> (<a class="el" href="defines_8h.html#a114">statement</a> *stmt, <a class="el" href="defines_8h.html#a114">statement</a> *exp_false)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Connects false statement to specified statement.</em> <a href="#a11"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a12">db_statement_set_stop</a> (<a class="el" href="defines_8h.html#a114">statement</a> *stmt)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Sets stop bits on leaf nodes of specified statement.</em> <a href="#a12"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a13">db_set_vcd_scope</a> (char *scope)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Sets current VCD scope to specified scope.</em> <a href="#a13"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a14">db_assign_symbol</a> (char *name, char *symbol)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Adds symbol to signal specified by name.</em> <a href="#a14"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a128">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a15">db_symbol_found</a> (char *symbol)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Finds specified signal and returns TRUE if found.</em> <a href="#a15"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a16">db_find_set_add_signal</a> (char *symbol, <a class="el" href="defines_8h.html#a110">vector</a> *vec)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Finds specified signal, sets the value and adds its expression to expression queue.</em> <a href="#a16"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a17">db_get_signal_size</a> (char *symbol)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Returns width of signal for specified symbol.</em> <a href="#a17"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a18">db_do_timestep</a> (int time)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Performs a timestep for all signal changes during this timestep.</em> <a href="#a18"></a><em></em></font><br><br></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 Contains functions for writing and reading contents of covered database file.
@@ -253,7 +257,7 @@ If set to non-zero value, sets static bit of this signal vector.</td></tr>
 </dl>Creates a new signal with the specified parameter information and adds this to the signal list if it does not already exist.     </td>
   </tr>
 </table>
-<a name="a12" doxytag="db.h::db_assign_symbol"></a><p>
+<a name="a14" doxytag="db.h::db_assign_symbol"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -301,7 +305,7 @@ Symbol value of signal used in VCD dumpfile.</td></tr>
 </dl>Creates a new entry in the symbol table for the specified signal and symbol.     </td>
   </tr>
 </table>
-<a name="a10" doxytag="db.h::db_connect_statement_false"></a><p>
+<a name="a11" doxytag="db.h::db_connect_statement_false"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -349,7 +353,7 @@ Pointer to statement to run if statement evaluates to FALSE.</td></tr>
 </dl>Connects the specified statement's false statement.     </td>
   </tr>
 </table>
-<a name="a9" doxytag="db.h::db_connect_statement_true"></a><p>
+<a name="a10" doxytag="db.h::db_connect_statement_true"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -510,7 +514,7 @@ Returns: </b><dd>
 Returns pointer to created statement.</dl>Creates an statement structure and adds created statement to current module's statement list.     </td>
   </tr>
 </table>
-<a name="a16" doxytag="db.h::db_do_timestep"></a><p>
+<a name="a18" doxytag="db.h::db_do_timestep"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -547,7 +551,7 @@ Current time step value being performed.</td></tr>
 </dl>Cycles through expression queue, performing expression evaluations as we go. If an expression has a parent expression, that parent expression is placed in the expression queue after that expression has completed its evaluation. When the expression queue is empty, we are finished for this clock period.     </td>
   </tr>
 </table>
-<a name="a14" doxytag="db.h::db_find_set_add_signal"></a><p>
+<a name="a16" doxytag="db.h::db_find_set_add_signal"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -634,7 +638,7 @@ Returns: </b><dd>
 Returns pointer to the found signal. If signal is not found, internal error.</dl>Searches current module for signal matching the specified name. If the signal is found, returns a pointer to the calling function for that signal.     </td>
   </tr>
 </table>
-<a name="a15" doxytag="db.h::db_get_signal_size"></a><p>
+<a name="a17" doxytag="db.h::db_get_signal_size"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -725,7 +729,7 @@ Returns: </b><dd>
 Returns TRUE if database read was successful; otherwise, returns FALSE.</dl>Opens specified database file for reading. Reads in each line from the file examining its contents and creating the appropriate type to store the specified information and stores it into the appropriate internal list. If there are any problems opening the file for reading or parsing errors, returns FALSE; otherwise, returns TRUE.     </td>
   </tr>
 </table>
-<a name="a11" doxytag="db.h::db_set_vcd_scope"></a><p>
+<a name="a13" doxytag="db.h::db_set_vcd_scope"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -762,7 +766,92 @@ Current VCD scope.</td></tr>
 </dl>Sets the curr_vcd_scope global variable to the specified scope.     </td>
   </tr>
 </table>
-<a name="a13" doxytag="db.h::db_symbol_found"></a><p>
+<a name="a9" doxytag="db.h::db_statement_connect"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> void db_statement_connect </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a114">statement</a> *&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>curr_stmt</em>, </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a114">statement</a> *&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>next_stmt</em></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td class="md">)&nbsp;</td>
+          <td class="md" colspan="2"></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+Connects one statement block to another.
+<p>
+<dl compact><dt><b>
+Parameters: </b><dd>
+<table border=0 cellspacing=2 cellpadding=0>
+<tr><td valign=top><em>curr_stmt</em>&nbsp;</td><td>
+Pointer to current statement to attach. </td></tr>
+<tr><td valign=top><em>next_stmt</em>&nbsp;</td><td>
+Pointer to next statement to attach to.</td></tr>
+</table>
+</dl>Calls the statement_connect function located in <a class="el" href="statement_8c.html">statement.c</a> with the specified parameters.     </td>
+  </tr>
+</table>
+<a name="a12" doxytag="db.h::db_statement_set_stop"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> void db_statement_set_stop </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a114">statement</a> *&nbsp;</td>
+          <td class="mdname1" valign="top" nowrap>&nbsp; <em>stmt</em>          </td>
+          <td class="md" valign="top">)&nbsp;</td>
+          <td class="md" nowrap></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+Sets stop bits on leaf nodes of specified statement.
+<p>
+<dl compact><dt><b>
+Parameters: </b><dd>
+<table border=0 cellspacing=2 cellpadding=0>
+<tr><td valign=top><em>stmt</em>&nbsp;</td><td>
+Pointer to current statement to set stop bits.</td></tr>
+</table>
+</dl>Calls the statement_set_stop function located in <a class="el" href="statement_8c.html">statement.c</a> with the specified parameter.     </td>
+  </tr>
+</table>
+<a name="a15" doxytag="db.h::db_symbol_found"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -840,7 +929,7 @@ Returns: </b><dd>
 Returns TRUE if database write was successful; otherwise, returns FALSE.</dl>Opens specified database for writing. If database open successful, iterates through module, expression and signal lists, displaying each to the database file. If database write successful, returns TRUE; otherwise, returns FALSE to the calling function.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Sun Jun 23 16:17:22 2002 for Covered by
+<hr><address align="right"><small>Generated on Mon Jun 24 22:38:05 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

@@ -29,8 +29,10 @@
 <tr><td>&nbsp;</td><td><font size=-1><em>Displays the specified expression information.</em> <a href="#a6"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="expr_8h.html#a7">expression_operate</a> (<a class="el" href="defines_8h.html#a112">expression</a> *expr)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Performs operation specified by parameter expression.</em> <a href="#a7"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="expr_8h.html#a8">expression_dealloc</a> (<a class="el" href="defines_8h.html#a112">expression</a> *expr, <a class="el" href="defines_8h.html#a128">bool</a> exp_only)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Deallocates memory used for expression.</em> <a href="#a8"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a128">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="expr_8h.html#a8">expression_is_zero</a> (<a class="el" href="defines_8h.html#a112">expression</a> *expr)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Returns a value of 1, if the specified expression evaluates to a zero value.</em> <a href="#a8"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="expr_8h.html#a9">expression_dealloc</a> (<a class="el" href="defines_8h.html#a112">expression</a> *expr, <a class="el" href="defines_8h.html#a128">bool</a> exp_only)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Deallocates memory used for expression.</em> <a href="#a9"></a><em></em></font><br><br></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 Contains functions for handling expressions.
@@ -278,7 +280,7 @@ Name of Verilog hierarchical scope for this expression.</td></tr>
 </dl>This function recursively displays the expression information for the specified expression tree to the coverage database specified by file.     </td>
   </tr>
 </table>
-<a name="a8" doxytag="expr.h::expression_dealloc"></a><p>
+<a name="a9" doxytag="expr.h::expression_dealloc"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -399,7 +401,46 @@ Pointer to expression to get ID from. </td></tr>
 </table>
 </dl><dl compact><dt><b>
 Returns: </b><dd>
-Returns expression ID for this expression.</dl>Recursively gets IDs of parents to formulate the unique expression ID for this expression.     </td>
+Returns expression ID for this expression.</dl>If specified expression is non-NULL, return expression ID of this expression; otherwise, return a value of 0 to indicate that this is a leaf node.     </td>
+  </tr>
+</table>
+<a name="a8" doxytag="expr.h::expression_is_zero"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a128">bool</a> expression_is_zero </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a112">expression</a> *&nbsp;</td>
+          <td class="mdname1" valign="top" nowrap>&nbsp; <em>expr</em>          </td>
+          <td class="md" valign="top">)&nbsp;</td>
+          <td class="md" nowrap></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+Returns a value of 1, if the specified expression evaluates to a zero value.
+<p>
+<dl compact><dt><b>
+Parameters: </b><dd>
+<table border=0 cellspacing=2 cellpadding=0>
+<tr><td valign=top><em>expr</em>&nbsp;</td><td>
+Pointer to expression to evaluate.</td></tr>
+</table>
+</dl><dl compact><dt><b>
+Returns: </b><dd>
+Returns 1 if the specified expression evaluates to a unary 0.</dl>Returns a value of 1 if the specified expression contains all zero values in its bits. It accomplishes this by performing a unary OR operation on the specified expression value and testing bit 0 of the result.     </td>
   </tr>
 </table>
 <a name="a2" doxytag="expr.h::expression_merge"></a><p>
@@ -487,7 +528,7 @@ Pointer to expression to set value to.</td></tr>
 </dl>Performs expression operation. This function must only be run after its left and right expressions have been calculated during this clock period. Sets the value of the operation in its own vector value and updates the suppl nibble as necessary.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Sun Jun 23 16:17:22 2002 for Covered by
+<hr><address align="right"><small>Generated on Mon Jun 24 22:38:05 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

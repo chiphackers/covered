@@ -64,7 +64,11 @@ void combination_instance_summary( FILE* ofile, mod_inst* root, char* parent ) {
   assert( root != NULL );
   assert( root->stat != NULL );
 
-  percent = ((root->stat->comb_hit / root->stat->comb_total) * 100);
+  if( root->stat->comb_total == 0 ) {
+    percent = 0;
+  } else {
+    percent = ((root->stat->comb_hit / root->stat->comb_total) * 100);
+  }
   miss    = (root->stat->comb_total - root->stat->comb_hit);
 
   fprintf( ofile, "  %-20.20s    %-20.20s    %3d/%3.0f/%3.0f      %3.0f%%\n",
@@ -104,7 +108,11 @@ void combination_module_summary( FILE* ofile, mod_link* head ) {
 
   combination_get_stats( head->mod->exp_head, &total_lines, &hit_lines );
 
-  percent = ((hit_lines / total_lines) * 100);
+  if( total_lines == 0 ) {
+    percent = 0;
+  } else {
+    percent = ((hit_lines / total_lines) * 100);
+  }
   miss    = (total_lines - hit_lines);
 
   fprintf( ofile, "  %-20.20s    %-20.20s    %3d/%3.0f/%3.0f      %3.0f%%\n", 
@@ -671,6 +679,10 @@ void combination_report( FILE* ofile, bool verbose, bool instance ) {
 
 
 /* $Log$
+/* Revision 1.15  2002/06/21 05:55:05  phase1geo
+/* Getting some codes ready for writing simulation engine.  We should be set
+/* now.
+/*
 /* Revision 1.14  2002/05/03 03:39:36  phase1geo
 /* Removing all syntax errors due to addition of statements.  Added more statement
 /* support code.  Still have a ways to go before we can try anything.  Removed lines

@@ -17,8 +17,10 @@ void {\bf statement\_\-db\_\-write} ({\bf statement} $\ast$stmt, FILE $\ast$ofil
 \begin{CompactList}\small\item\em Writes specified statement to the specified output file.\item\end{CompactList}\item 
 {\bf bool} {\bf statement\_\-db\_\-read} (char $\ast$$\ast$line, {\bf module} $\ast$curr\_\-mod)
 \begin{CompactList}\small\item\em Reads in statement line from specified string and stores statement in specified module.\item\end{CompactList}\item 
-void {\bf statement\_\-loopback} ({\bf statement} $\ast$stmt)
-\begin{CompactList}\small\item\em Connects statement sequence to form a loop.\item\end{CompactList}\item 
+void {\bf statement\_\-connect} ({\bf statement} $\ast$curr\_\-stmt, {\bf statement} $\ast$next\_\-stmt)
+\begin{CompactList}\small\item\em Connects statement sequence to next statement.\item\end{CompactList}\item 
+void {\bf statement\_\-set\_\-stop} ({\bf statement} $\ast$stmt)
+\item 
 void {\bf statement\_\-dealloc} ({\bf statement} $\ast$stmt)
 \begin{CompactList}\small\item\em Deallocates statement memory and associated expression tree from the heap.\item\end{CompactList}\end{CompactItemize}
 
@@ -84,7 +86,7 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 
  Notice that the if statement has two paths. If a is TRUE, statement 3 is executed; otherwise, statement 4 is executed. Both statements 3 and 4 then merge to execute statement 5. If the entire statement tree were printed without a STOP bit, you can see that statement 5 would be output twice; once for the TRUE branch and once for the FALSE branch.
 
- To eliminate this redundancy, the STMT\_\-STOP bit is set on statement 4. The last statement of a FALSE path before merging always gets its STMT\_\-STOP bit set. The TRUE path should never get the STMT\_\-STOP bit set. Additionally, once a statement gets its STMT\_\-STOP bit set by the parser, this value must be maintained (never cleared).\begin{Desc}
+ To eliminate this redundancy, the STMT\_\-STOP bit is set on statement 4. The last statement of a TRUE path before merging always gets its STMT\_\-STOP bit set. The FALSE path should never get the STMT\_\-STOP bit set. Additionally, once a statement gets its STMT\_\-STOP bit set by the parser, this value must be maintained (never cleared).\begin{Desc}
 \item[Cyclic Statement Trees]\par
  Many times a statement tree will \char`\"{}loopback\char`\"{} on itself. These statement trees are considered to be cyclic in nature and, as such, must have leaf statements of the statement tree tied to the first statement of the tree. The following Verilog constructs have cyclic behavior: {\tt always}, {\tt forever}, {\tt for}, {\tt repeat}, and {\tt while}.\end{Desc}
 \begin{Desc}
@@ -93,7 +95,21 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 
 
 \subsection{Function Documentation}
-\index{statement.c@{statement.c}!statement_create@{statement\_\-create}}
+\index{statement.c@{statement.c}!statement_connect@{statement\_\-connect}}
+\index{statement_connect@{statement\_\-connect}!statement.c@{statement.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void statement\_\-connect ({\bf statement} $\ast$ {\em curr\_\-stmt}, {\bf statement} $\ast$ {\em next\_\-stmt})}\label{statement_8c_a3}
+
+
+Connects statement sequence to next statement.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+curr\_\-stmt}]Pointer to statement sequence to traverse. \item[{\em 
+next\_\-stmt}]Pointer to statement to connect ends to.\end{description}
+\end{Desc}
+Recursively traverses the specified stmt sequence. When it reaches a statement  that has either next\_\-true or next\_\-false set to NULL, sets next\_\-true and/or  next\_\-false of that statement to point to the next\_\-stmt statement. \index{statement.c@{statement.c}!statement_create@{statement\_\-create}}
 \index{statement_create@{statement\_\-create}!statement.c@{statement.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf statement}$\ast$ statement\_\-create ({\bf expression} $\ast$ {\em exp})}\label{statement_8c_a0}
 
@@ -143,7 +159,7 @@ scope}]Scope of parent module which contains the specified statement.\end{descri
 \end{Desc}
 Recursively writes the contents of the specified statement tree (and its associated expression trees to the specified output stream. \index{statement.c@{statement.c}!statement_dealloc@{statement\_\-dealloc}}
 \index{statement_dealloc@{statement\_\-dealloc}!statement.c@{statement.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void statement\_\-dealloc ({\bf statement} $\ast$ {\em stmt})}\label{statement_8c_a4}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void statement\_\-dealloc ({\bf statement} $\ast$ {\em stmt})}\label{statement_8c_a5}
 
 
 Deallocates statement memory and associated expression tree from the heap.
@@ -154,17 +170,15 @@ Deallocates statement memory and associated expression tree from the heap.
 \item[{\em 
 stmt}]Pointer to statement to deallocate.\end{description}
 \end{Desc}
-Deallocates specified statement from heap memory. First remove expression tree of this statement. Second, remove all statements following this statement. Finally, remove the specified statement itself. Since statements can be circular in nature, we will not remove a statement that has its expression tree already deallocated. This will prevent this function from getting into an infinite loop (or stack overflow since this function is recursive). \index{statement.c@{statement.c}!statement_loopback@{statement\_\-loopback}}
-\index{statement_loopback@{statement\_\-loopback}!statement.c@{statement.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void statement\_\-loopback ({\bf statement} $\ast$ {\em stmt})}\label{statement_8c_a3}
+Deallocates specified statement from heap memory. First remove expression tree of this statement. Second, remove all statements following this statement. Finally, remove the specified statement itself. Since statements can be circular in nature, we will not remove a statement that has its expression tree already deallocated. This will prevent this function from getting into an infinite loop (or stack overflow since this function is recursive). \index{statement.c@{statement.c}!statement_set_stop@{statement\_\-set\_\-stop}}
+\index{statement_set_stop@{statement\_\-set\_\-stop}!statement.c@{statement.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void statement\_\-set\_\-stop ({\bf statement} $\ast$ {\em stmt})}\label{statement_8c_a4}
 
-
-Connects statement sequence to form a loop.
 
 \begin{Desc}
 \item[Parameters: ]\par
 \begin{description}
 \item[{\em 
-stmt}]Pointer to statement sequence to connect ends for loopback.\end{description}
+stmt}]Pointer to statement to traverse and set stop bits.\end{description}
 \end{Desc}
-Traverses the specified stmt sequence (assumes that stmt is the statement at the top of the sequence). When it reaches a statement that has both next\_\-true and next\_\-false set to NULL, sets next\_\-true and next\_\-false of that statement to point to the top of the sequence. This will cause the statement to have a loopback effect. 
+Recursively traverses specified statement, setting STMT\_\-STOP bits on leaf nodes. This function is called for the last statement in a sequence. It is called before the statement\_\-connect for the entire statement sequence. 

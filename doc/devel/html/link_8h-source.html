@@ -12,59 +12,61 @@
 00013 
 00015 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a0">str_link_add</a>( <font class="keywordtype">char</font>* str, <a class="code" href="structstr__link__s.html">str_link</a>** head, <a class="code" href="structstr__link__s.html">str_link</a>** tail );
 00016 
-00018 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a1">stmt_link_add</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt, <a class="code" href="structstmt__link__s.html">stmt_link</a>** head, <a class="code" href="structstmt__link__s.html">stmt_link</a>** tail );
+00018 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a1">stmt_link_add_head</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt, <a class="code" href="structstmt__link__s.html">stmt_link</a>** head, <a class="code" href="structstmt__link__s.html">stmt_link</a>** tail );
 00019 
-00021 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a2">exp_link_add</a>( <a class="code" href="structexpression__s.html">expression</a>* expr, <a class="code" href="structexp__link__s.html">exp_link</a>** head, <a class="code" href="structexp__link__s.html">exp_link</a>** tail );
+00021 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a2">stmt_link_add_tail</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt, <a class="code" href="structstmt__link__s.html">stmt_link</a>** head, <a class="code" href="structstmt__link__s.html">stmt_link</a>** tail );
 00022 
-00024 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a3">sig_link_add</a>( <a class="code" href="structsignal__s.html">signal</a>* sig, <a class="code" href="structsig__link__s.html">sig_link</a>** head, <a class="code" href="structsig__link__s.html">sig_link</a>** tail );
+00024 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a3">exp_link_add</a>( <a class="code" href="structexpression__s.html">expression</a>* expr, <a class="code" href="structexp__link__s.html">exp_link</a>** head, <a class="code" href="structexp__link__s.html">exp_link</a>** tail );
 00025 
-00027 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a4">mod_link_add</a>( <a class="code" href="structmodule__s.html">module</a>* mod, <a class="code" href="structmod__link__s.html">mod_link</a>** head, <a class="code" href="structmod__link__s.html">mod_link</a>** tail );
+00027 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a4">sig_link_add</a>( <a class="code" href="structsignal__s.html">signal</a>* sig, <a class="code" href="structsig__link__s.html">sig_link</a>** head, <a class="code" href="structsig__link__s.html">sig_link</a>** tail );
 00028 
-00029 
-00031 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a5">str_link_display</a>( <a class="code" href="structstr__link__s.html">str_link</a>* head );
+00030 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a5">mod_link_add</a>( <a class="code" href="structmodule__s.html">module</a>* mod, <a class="code" href="structmod__link__s.html">mod_link</a>** head, <a class="code" href="structmod__link__s.html">mod_link</a>** tail );
+00031 
 00032 
-00034 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a6">stmt_link_display</a>( <a class="code" href="structstmt__link__s.html">stmt_link</a>* head );
+00034 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a6">str_link_display</a>( <a class="code" href="structstr__link__s.html">str_link</a>* head );
 00035 
-00037 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a7">exp_link_display</a>( <a class="code" href="structexp__link__s.html">exp_link</a>* head );
+00037 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a7">stmt_link_display</a>( <a class="code" href="structstmt__link__s.html">stmt_link</a>* head );
 00038 
-00040 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a8">sig_link_display</a>( <a class="code" href="structsig__link__s.html">sig_link</a>* head );
+00040 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a8">exp_link_display</a>( <a class="code" href="structexp__link__s.html">exp_link</a>* head );
 00041 
-00043 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a9">mod_link_display</a>( <a class="code" href="structmod__link__s.html">mod_link</a>* head );
+00043 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a9">sig_link_display</a>( <a class="code" href="structsig__link__s.html">sig_link</a>* head );
 00044 
-00045 
-00047 <a class="code" href="structstr__link__s.html">str_link</a>* <a class="code" href="link_8c.html#a10">str_link_find</a>( <font class="keywordtype">char</font>* value, <a class="code" href="structstr__link__s.html">str_link</a>* head );
+00046 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a10">mod_link_display</a>( <a class="code" href="structmod__link__s.html">mod_link</a>* head );
+00047 
 00048 
-00050 <a class="code" href="structstmt__link__s.html">stmt_link</a>* <a class="code" href="link_8c.html#a11">stmt_link_find</a>( <font class="keywordtype">int</font> id, <a class="code" href="structstmt__link__s.html">stmt_link</a>* head );
+00050 <a class="code" href="structstr__link__s.html">str_link</a>* <a class="code" href="link_8c.html#a11">str_link_find</a>( <font class="keywordtype">char</font>* value, <a class="code" href="structstr__link__s.html">str_link</a>* head );
 00051 
-00053 <a class="code" href="structexp__link__s.html">exp_link</a>* <a class="code" href="link_8c.html#a12">exp_link_find</a>( <a class="code" href="structexpression__s.html">expression</a>* exp, <a class="code" href="structexp__link__s.html">exp_link</a>* head );
+00053 <a class="code" href="structstmt__link__s.html">stmt_link</a>* <a class="code" href="link_8c.html#a12">stmt_link_find</a>( <font class="keywordtype">int</font> id, <a class="code" href="structstmt__link__s.html">stmt_link</a>* head );
 00054 
-00056 <a class="code" href="structsig__link__s.html">sig_link</a>* <a class="code" href="link_8c.html#a13">sig_link_find</a>( <a class="code" href="structsignal__s.html">signal</a>* sig, <a class="code" href="structsig__link__s.html">sig_link</a>* head );
+00056 <a class="code" href="structexp__link__s.html">exp_link</a>* <a class="code" href="link_8c.html#a13">exp_link_find</a>( <a class="code" href="structexpression__s.html">expression</a>* exp, <a class="code" href="structexp__link__s.html">exp_link</a>* head );
 00057 
-00059 <a class="code" href="structmod__link__s.html">mod_link</a>* <a class="code" href="link_8c.html#a14">mod_link_find</a>( <a class="code" href="structmodule__s.html">module</a>* mod, <a class="code" href="structmod__link__s.html">mod_link</a>* head );
+00059 <a class="code" href="structsig__link__s.html">sig_link</a>* <a class="code" href="link_8c.html#a14">sig_link_find</a>( <a class="code" href="structsignal__s.html">signal</a>* sig, <a class="code" href="structsig__link__s.html">sig_link</a>* head );
 00060 
-00061 
-00063 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a15">str_link_delete_list</a>( <a class="code" href="structstr__link__s.html">str_link</a>* head );
+00062 <a class="code" href="structmod__link__s.html">mod_link</a>* <a class="code" href="link_8c.html#a15">mod_link_find</a>( <a class="code" href="structmodule__s.html">module</a>* mod, <a class="code" href="structmod__link__s.html">mod_link</a>* head );
+00063 
 00064 
-00066 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a16">stmt_link_delete_list</a>( <a class="code" href="structstmt__link__s.html">stmt_link</a>* head );
+00066 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a16">str_link_delete_list</a>( <a class="code" href="structstr__link__s.html">str_link</a>* head );
 00067 
-00069 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a17">exp_link_delete_list</a>( <a class="code" href="structexp__link__s.html">exp_link</a>* head, <font class="keywordtype">bool</font> del_exp );
+00069 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a17">stmt_link_delete_list</a>( <a class="code" href="structstmt__link__s.html">stmt_link</a>* head );
 00070 
-00072 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a18">sig_link_delete_list</a>( <a class="code" href="structsig__link__s.html">sig_link</a>* head );
+00072 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a18">exp_link_delete_list</a>( <a class="code" href="structexp__link__s.html">exp_link</a>* head, <font class="keywordtype">bool</font> del_exp );
 00073 
-00075 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a19">mod_link_delete_list</a>( <a class="code" href="structmod__link__s.html">mod_link</a>* head );
+00075 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a19">sig_link_delete_list</a>( <a class="code" href="structsig__link__s.html">sig_link</a>* head );
 00076 
-00077 
-00078 <font class="comment">/* $Log$</font>
-00079 <font class="comment">/* Revision 1.2  2002/05/03 03:39:36  phase1geo</font>
-00080 <font class="comment">/* Removing all syntax errors due to addition of statements.  Added more statement</font>
-00081 <font class="comment">/* support code.  Still have a ways to go before we can try anything.  Removed lines</font>
-00082 <font class="comment">/* from expressions though we may want to consider putting these back for reporting</font>
-00083 <font class="comment">/* purposes.</font>
-00084 <font class="comment">/* */</font>
-00085 
-00086 <font class="preprocessor">#endif</font>
-00087 <font class="preprocessor"></font>
-</pre></div><hr><address align="right"><small>Generated on Sun Jun 23 16:17:22 2002 for Covered by
+00078 <font class="keywordtype">void</font> <a class="code" href="link_8c.html#a20">mod_link_delete_list</a>( <a class="code" href="structmod__link__s.html">mod_link</a>* head );
+00079 
+00080 
+00081 <font class="comment">/* $Log$</font>
+00082 <font class="comment">/* Revision 1.2  2002/05/03 03:39:36  phase1geo</font>
+00083 <font class="comment">/* Removing all syntax errors due to addition of statements.  Added more statement</font>
+00084 <font class="comment">/* support code.  Still have a ways to go before we can try anything.  Removed lines</font>
+00085 <font class="comment">/* from expressions though we may want to consider putting these back for reporting</font>
+00086 <font class="comment">/* purposes.</font>
+00087 <font class="comment">/* */</font>
+00088 
+00089 <font class="preprocessor">#endif</font>
+00090 <font class="preprocessor"></font>
+</pre></div><hr><address align="right"><small>Generated on Mon Jun 24 22:38:04 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

@@ -222,7 +222,7 @@ bool statement_db_read( char** line, module* curr_mod ) {
         stmt->next_false = stmtl->stmt;
       }
 
-      stmt_link_add( stmt, &(curr_mod->stmt_head), &(curr_mod->stmt_tail) );
+      stmt_link_add_tail( stmt, &(curr_mod->stmt_head), &(curr_mod->stmt_tail) );
 
     }
 
@@ -332,6 +332,11 @@ void statement_dealloc( statement* stmt ) {
 
 
 /* $Log$
+/* Revision 1.9  2002/06/25 02:02:04  phase1geo
+/* Fixing bugs with writing/reading statements and with parsing design with
+/* statements.  We now get to the scoring section.  Some problems here at
+/* the moment with the simulator.
+/*
 /* Revision 1.7  2002/06/24 04:54:48  phase1geo
 /* More fixes and code additions to make statements work properly.  Still not
 /* there at this point.

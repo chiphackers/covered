@@ -20,10 +20,11 @@
 <tr><td>&nbsp;</td><td><font size=-1><em>Writes specified statement to the specified output file.</em> <a href="#a1"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a128">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="statement_8c.html#a2">statement_db_read</a> (char **line, <a class="el" href="defines_8h.html#a118">module</a> *curr_mod)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Reads in statement line from specified string and stores statement in specified module.</em> <a href="#a2"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="statement_8c.html#a3">statement_loopback</a> (<a class="el" href="defines_8h.html#a114">statement</a> *stmt)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Connects statement sequence to form a loop.</em> <a href="#a3"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="statement_8c.html#a4">statement_dealloc</a> (<a class="el" href="defines_8h.html#a114">statement</a> *stmt)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Deallocates statement memory and associated expression tree from the heap.</em> <a href="#a4"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="statement_8c.html#a3">statement_connect</a> (<a class="el" href="defines_8h.html#a114">statement</a> *curr_stmt, <a class="el" href="defines_8h.html#a114">statement</a> *next_stmt)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Connects statement sequence to next statement.</em> <a href="#a3"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="statement_8c.html#a4">statement_set_stop</a> (<a class="el" href="defines_8h.html#a114">statement</a> *stmt)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="statement_8c.html#a5">statement_dealloc</a> (<a class="el" href="defines_8h.html#a114">statement</a> *stmt)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Deallocates statement memory and associated expression tree from the heap.</em> <a href="#a5"></a><em></em></font><br><br></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 
@@ -61,11 +62,59 @@ Date: </b><dd>
 <p>
  Notice that the if statement has two paths. If a is TRUE, statement 3 is executed; otherwise, statement 4 is executed. Both statements 3 and 4 then merge to execute statement 5. If the entire statement tree were printed without a STOP bit, you can see that statement 5 would be output twice; once for the TRUE branch and once for the FALSE branch.
 <p>
- To eliminate this redundancy, the STMT_STOP bit is set on statement 4. The last statement of a FALSE path before merging always gets its STMT_STOP bit set. The TRUE path should never get the STMT_STOP bit set. Additionally, once a statement gets its STMT_STOP bit set by the parser, this value must be maintained (never cleared).<dl compact><dt><b>
+ To eliminate this redundancy, the STMT_STOP bit is set on statement 4. The last statement of a TRUE path before merging always gets its STMT_STOP bit set. The FALSE path should never get the STMT_STOP bit set. Additionally, once a statement gets its STMT_STOP bit set by the parser, this value must be maintained (never cleared).<dl compact><dt><b>
 Cyclic Statement Trees</b><dd>
  Many times a statement tree will "loopback" on itself. These statement trees are considered to be cyclic in nature and, as such, must have leaf statements of the statement tree tied to the first statement of the tree. The following Verilog constructs have cyclic behavior: <code>always</code>, <code>forever</code>, <code>for</code>, <code>repeat</code>, and <code>while</code>.</dl><dl compact><dt><b>
 Traversing Statement Tree</b><dd>
  Starting at the head statement, the value of the head statement is determined to be TRUE or FALSE. If the value is TRUE (non-zero), the next_true path is taken. If the value is FALSE (zero), the next_false path is taken. For statements that express an assignment (or other statements that do not branch), both the next_true and next_false paths point to the same statement. For statements that express a wait-for-event (ex. <code>wait</code>, <code>@</code>, etc.), the next_true pointer will point to the next statement in the tree; however, the next_false pointer will point to NULL. This NULL assignment indicates to the statement simulation engine that this statement will receive the STMT_HEAD bit and the current statement tree is finished for this timestep.</dl><hr><h2>Function Documentation</h2>
+<a name="a3" doxytag="statement.c::statement_connect"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> void statement_connect </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a114">statement</a> *&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>curr_stmt</em>, </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a114">statement</a> *&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>next_stmt</em></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td class="md">)&nbsp;</td>
+          <td class="md" colspan="2"></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+Connects statement sequence to next statement.
+<p>
+<dl compact><dt><b>
+Parameters: </b><dd>
+<table border=0 cellspacing=2 cellpadding=0>
+<tr><td valign=top><em>curr_stmt</em>&nbsp;</td><td>
+Pointer to statement sequence to traverse. </td></tr>
+<tr><td valign=top><em>next_stmt</em>&nbsp;</td><td>
+Pointer to statement to connect ends to.</td></tr>
+</table>
+</dl>Recursively traverses the specified stmt sequence. When it reaches a statement  that has either next_true or next_false set to NULL, sets next_true and/or  next_false of that statement to point to the next_stmt statement.     </td>
+  </tr>
+</table>
 <a name="a0" doxytag="statement.c::statement_create"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
@@ -211,7 +260,7 @@ Scope of parent module which contains the specified statement.</td></tr>
 </dl>Recursively writes the contents of the specified statement tree (and its associated expression trees to the specified output stream.     </td>
   </tr>
 </table>
-<a name="a4" doxytag="statement.c::statement_dealloc"></a><p>
+<a name="a5" doxytag="statement.c::statement_dealloc"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -248,13 +297,13 @@ Pointer to statement to deallocate.</td></tr>
 </dl>Deallocates specified statement from heap memory. First remove expression tree of this statement. Second, remove all statements following this statement. Finally, remove the specified statement itself. Since statements can be circular in nature, we will not remove a statement that has its expression tree already deallocated. This will prevent this function from getting into an infinite loop (or stack overflow since this function is recursive).     </td>
   </tr>
 </table>
-<a name="a3" doxytag="statement.c::statement_loopback"></a><p>
+<a name="a4" doxytag="statement.c::statement_set_stop"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> void statement_loopback </td>
+          <td class="md" nowrap valign="top"> void statement_set_stop </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a114">statement</a> *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>stmt</em>          </td>
@@ -274,18 +323,16 @@ Pointer to statement to deallocate.</td></tr>
     <td>
 
 <p>
-Connects statement sequence to form a loop.
-<p>
 <dl compact><dt><b>
 Parameters: </b><dd>
 <table border=0 cellspacing=2 cellpadding=0>
 <tr><td valign=top><em>stmt</em>&nbsp;</td><td>
-Pointer to statement sequence to connect ends for loopback.</td></tr>
+Pointer to statement to traverse and set stop bits.</td></tr>
 </table>
-</dl>Traverses the specified stmt sequence (assumes that stmt is the statement at the top of the sequence). When it reaches a statement that has both next_true and next_false set to NULL, sets next_true and next_false of that statement to point to the top of the sequence. This will cause the statement to have a loopback effect.     </td>
+</dl>Recursively traverses specified statement, setting STMT_STOP bits on leaf nodes. This function is called for the last statement in a sequence. It is called before the statement_connect for the entire statement sequence.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Sun Jun 23 16:17:24 2002 for Covered by
+<hr><address align="right"><small>Generated on Mon Jun 24 22:38:06 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

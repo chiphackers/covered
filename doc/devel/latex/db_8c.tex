@@ -42,6 +42,10 @@ void {\bf db\_\-connect\_\-statement\_\-true} ({\bf statement} $\ast$stmt, {\bf 
 \begin{CompactList}\small\item\em Connects true statement to specified statement.\item\end{CompactList}\item 
 void {\bf db\_\-connect\_\-statement\_\-false} ({\bf statement} $\ast$stmt, {\bf statement} $\ast$next\_\-false)
 \begin{CompactList}\small\item\em Connects false statement to specified statement.\item\end{CompactList}\item 
+void {\bf db\_\-statement\_\-connect} ({\bf statement} $\ast$curr\_\-stmt, {\bf statement} $\ast$next\_\-stmt)
+\begin{CompactList}\small\item\em Connects one statement block to another.\item\end{CompactList}\item 
+void {\bf db\_\-statement\_\-set\_\-stop} ({\bf statement} $\ast$stmt)
+\begin{CompactList}\small\item\em Sets stop bits on leaf nodes of specified statement.\item\end{CompactList}\item 
 void {\bf db\_\-set\_\-vcd\_\-scope} (char $\ast$scope)
 \begin{CompactList}\small\item\em Sets current VCD scope to specified scope.\item\end{CompactList}\item 
 void {\bf db\_\-vcd\_\-upscope} ()
@@ -158,7 +162,7 @@ is\_\-static}]If set to non-zero value, sets static bit of this signal vector.\e
 \end{Desc}
 Creates a new signal with the specified parameter information and adds this to the signal list if it does not already exist. \index{db.c@{db.c}!db_assign_symbol@{db\_\-assign\_\-symbol}}
 \index{db_assign_symbol@{db\_\-assign\_\-symbol}!db.c@{db.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-assign\_\-symbol (char $\ast$ {\em name}, char $\ast$ {\em symbol})}\label{db_8c_a27}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-assign\_\-symbol (char $\ast$ {\em name}, char $\ast$ {\em symbol})}\label{db_8c_a29}
 
 
 Adds symbol to signal specified by name.
@@ -236,7 +240,7 @@ exp}]Pointer to associated \char`\"{}root\char`\"{} expression.\end{description}
 Returns pointer to created statement.\end{Desc}
 Creates an statement structure and adds created statement to current module's statement list. \index{db.c@{db.c}!db_do_timestep@{db\_\-do\_\-timestep}}
 \index{db_do_timestep@{db\_\-do\_\-timestep}!db.c@{db.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-do\_\-timestep (int {\em time})}\label{db_8c_a30}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-do\_\-timestep (int {\em time})}\label{db_8c_a32}
 
 
 Performs a timestep for all signal changes during this timestep.
@@ -254,7 +258,7 @@ Cycles through expression queue, performing expression evaluations as we go. If 
 
 Updates the modlist for parsing purposes. \index{db.c@{db.c}!db_find_set_add_signal@{db\_\-find\_\-set\_\-add\_\-signal}}
 \index{db_find_set_add_signal@{db\_\-find\_\-set\_\-add\_\-signal}!db.c@{db.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-find\_\-set\_\-add\_\-signal (char $\ast$ {\em symbol}, {\bf vector} $\ast$ {\em vec})}\label{db_8c_a29}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-find\_\-set\_\-add\_\-signal (char $\ast$ {\em symbol}, {\bf vector} $\ast$ {\em vec})}\label{db_8c_a31}
 
 
 Finds specified signal, sets the value and adds its expression to expression queue.
@@ -284,7 +288,7 @@ name}]String name of signal to find in current module.\end{description}
 Returns pointer to the found signal. If signal is not found, internal error.\end{Desc}
 Searches current module for signal matching the specified name. If the signal is found, returns a pointer to the calling function for that signal. \index{db.c@{db.c}!db_get_signal_size@{db\_\-get\_\-signal\_\-size}}
 \index{db_get_signal_size@{db\_\-get\_\-signal\_\-size}!db.c@{db.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int db\_\-get\_\-signal\_\-size (char $\ast$ {\em symbol})}\label{db_8c_a31}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int db\_\-get\_\-signal\_\-size (char $\ast$ {\em symbol})}\label{db_8c_a33}
 
 
 Returns width of signal for specified symbol.
@@ -322,7 +326,7 @@ read\_\-mode}]Specifies what to do with read data. Values are\begin{CompactItemi
 Returns TRUE if database read was successful; otherwise, returns FALSE.\end{Desc}
 Opens specified database file for reading. Reads in each line from the file examining its contents and creating the appropriate type to store the specified information and stores it into the appropriate internal list. If there are any problems opening the file for reading or parsing errors, returns FALSE; otherwise, returns TRUE. \index{db.c@{db.c}!db_set_vcd_scope@{db\_\-set\_\-vcd\_\-scope}}
 \index{db_set_vcd_scope@{db\_\-set\_\-vcd\_\-scope}!db.c@{db.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-set\_\-vcd\_\-scope (char $\ast$ {\em scope})}\label{db_8c_a25}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-set\_\-vcd\_\-scope (char $\ast$ {\em scope})}\label{db_8c_a27}
 
 
 Sets current VCD scope to specified scope.
@@ -333,9 +337,36 @@ Sets current VCD scope to specified scope.
 \item[{\em 
 scope}]Current VCD scope.\end{description}
 \end{Desc}
-Sets the curr\_\-vcd\_\-scope global variable to the specified scope. \index{db.c@{db.c}!db_symbol_found@{db\_\-symbol\_\-found}}
+Sets the curr\_\-vcd\_\-scope global variable to the specified scope. \index{db.c@{db.c}!db_statement_connect@{db\_\-statement\_\-connect}}
+\index{db_statement_connect@{db\_\-statement\_\-connect}!db.c@{db.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-statement\_\-connect ({\bf statement} $\ast$ {\em curr\_\-stmt}, {\bf statement} $\ast$ {\em next\_\-stmt})}\label{db_8c_a25}
+
+
+Connects one statement block to another.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+curr\_\-stmt}]Pointer to current statement to attach. \item[{\em 
+next\_\-stmt}]Pointer to next statement to attach to.\end{description}
+\end{Desc}
+Calls the statement\_\-connect function located in {\bf statement.c} with the specified parameters. \index{db.c@{db.c}!db_statement_set_stop@{db\_\-statement\_\-set\_\-stop}}
+\index{db_statement_set_stop@{db\_\-statement\_\-set\_\-stop}!db.c@{db.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-statement\_\-set\_\-stop ({\bf statement} $\ast$ {\em stmt})}\label{db_8c_a26}
+
+
+Sets stop bits on leaf nodes of specified statement.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+stmt}]Pointer to current statement to set stop bits.\end{description}
+\end{Desc}
+Calls the statement\_\-set\_\-stop function located in {\bf statement.c} with the specified parameter. \index{db.c@{db.c}!db_symbol_found@{db\_\-symbol\_\-found}}
 \index{db_symbol_found@{db\_\-symbol\_\-found}!db.c@{db.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} db\_\-symbol\_\-found (char $\ast$ {\em symbol})}\label{db_8c_a28}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} db\_\-symbol\_\-found (char $\ast$ {\em symbol})}\label{db_8c_a30}
 
 
 Finds specified signal and returns TRUE if found.
@@ -351,7 +382,7 @@ symbol}]\end{description}
 Returns TRUE if the symbol is found; otherwise, returns FALSE.\end{Desc}
 Searches the current timestep symbol table to see if the specified signal exists in this list. If the signal is not found, returns FALSE; otherwise, returns a value of TRUE. Note: this function should be called before db\_\-find\_\-set\_\-add\_\-signal. \index{db.c@{db.c}!db_vcd_upscope@{db\_\-vcd\_\-upscope}}
 \index{db_vcd_upscope@{db\_\-vcd\_\-upscope}!db.c@{db.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-vcd\_\-upscope ()}\label{db_8c_a26}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-vcd\_\-upscope ()}\label{db_8c_a28}
 
 
 Moves the curr\_\-vcd\_\-scope up one level of hierarchy. This function is called when the \$upscope keyword is seen in a VCD file. \index{db.c@{db.c}!db_write@{db\_\-write}}

@@ -114,7 +114,7 @@ void sim_add_to_queue( expression* expr ) {
     } else {
 
       /* We are the root expression so just add the statement to the queue */
-      stmt_link_add( expr->parent->stmt, &(presim_stmt_head), &(presim_stmt_tail) );
+      stmt_link_add_tail( expr->parent->stmt, &(presim_stmt_head), &(presim_stmt_tail) );
 
     }
 
@@ -132,14 +132,14 @@ void sim_add_to_queue( expression* expr ) {
  expression operation for the current expression, clear both changed bits and
  return.
 */
-void sim_expr_changed( expression* expr ) {
+void sim_expression( expression* expr ) {
 
   assert( expr != NULL );
 
   /* Traverse left child expression if it has changed */
   if( SUPPL_IS_LEFT_CHANGED( expr->suppl ) == 1 ) {
 
-    sim_expr_changed( expr->left );
+    sim_expression( expr->left );
 
     /* Clear LEFT CHANGED bit */
     expr->suppl = expr->suppl & ~(0x1 << SUPPL_LSB_LEFT_CHANGED);
@@ -149,7 +149,7 @@ void sim_expr_changed( expression* expr ) {
   /* Traverse right child expression if it has changed */
   if( SUPPL_IS_RIGHT_CHANGED( expr->suppl ) == 1 ) {
 
-    sim_expr_changed( expr->right );
+    sim_expression( expr->right );
 
     /* Clear RIGHT CHANGED bit */
     expr->suppl = expr->suppl & ~(0x1 << SUPPL_LSB_RIGHT_CHANGED);
@@ -159,33 +159,6 @@ void sim_expr_changed( expression* expr ) {
   /* Now perform expression operation for this expression */
   printf( "Performing expression operation: %d, id: %d\n", SUPPL_OP( expr->suppl ), expr->id );
   expression_operate( expr );
-
-  /* Indicate that this expression has been executed */
-  expr->suppl = expr->suppl | (0x1 << SUPPL_LSB_EXECUTED);
-
-}
-
-/*!
- \param expr  Pointer to expression to simulate.
-
- \return Returns 1 if the value of the root expression as non-zero; otherwise, returns
-         a value of 0.
-
- Performs expression simulation as described above.  Returns the root expression
- value as a 1-bit value.
-*/
-int sim_expression( expression* expr ) {
-
-  vector result;        /* Vector containing result of expression tree */
-  nibble data;          /* Data for result vector                      */
-
-  sim_expr_changed( expr );
-
-  /* Evaluate the value of the root expression and return this value */
-  vector_init( &result, &data, 1, 0 );
-  vector_unary_op( &result, expr->value, or_optab );
-
-  return( data & 0x1 );
 
 }
 
@@ -209,32 +182,29 @@ void sim_statement( statement* head_stmt ) {
 
   while( stmt != NULL ) {
 
-    /* 
-     If the root expression has changed, place root expression into expression
-     simulation engine.
-    */
-    if( (SUPPL_IS_LEFT_CHANGED( stmt->exp->suppl )  == 1) ||
-        (SUPPL_IS_RIGHT_CHANGED( stmt->exp->suppl ) == 1) ) {
+    /* Place expression in expression simulator and run */
+    sim_expression( stmt->exp );
 
-      if( sim_expression( stmt->exp ) == 1 ) {
+    /* Indicate that this statement's expression has been executed */
+    stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_EXECUTED);
+      
+    if( expression_is_zero( stmt->exp ) ) {
 
-        stmt = stmt->next_true;
-
-      } else {
-
-        /* 
-         If statement's next_false value is NULL, we need to wait.  Set STMT_HEAD
-         bit in this statement.
-        */
-        if( stmt->next_false == NULL ) {
+      /* 
+       If statement's next_false value is NULL, we need to wait.  Set STMT_HEAD
+       bit in this statement.
+      */
+      if( stmt->next_false == NULL ) {
          
-          stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
-
-        }
-
-        stmt = stmt->next_false;
+        stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
 
       }
+
+      stmt = stmt->next_false;
+
+    } else {
+
+      stmt = stmt->next_true;
 
     }
 
@@ -258,6 +228,8 @@ void sim_simulate() {
 
     assert( curr_stmt->stmt != NULL );
 
+    printf( "Executing statement %d\n", curr_stmt->stmt->exp->id );
+
     /* Place current statement into statement simulation engine and call it */
     sim_statement( curr_stmt->stmt );
 
@@ -265,11 +237,17 @@ void sim_simulate() {
     presim_stmt_head = presim_stmt_head->next;
     free_safe( curr_stmt );
 
+    curr_stmt = presim_stmt_head;
+
   }
 
 }
 
 /* $Log$
+/* Revision 1.4  2002/06/23 21:18:22  phase1geo
+/* Added appropriate statement support in parser.  All parts should be in place
+/* and ready to start testing.
+/*
 /* Revision 1.3  2002/06/22 21:08:23  phase1geo
 /* Added simulation engine and tied it to the db.c file.  Simulation engine is
 /* currently untested and will remain so until the parser is updated correctly

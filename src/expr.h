@@ -37,11 +37,18 @@ void expression_display( expression* expr );
 //! Performs operation specified by parameter expression.
 void expression_operate( expression* expr );
 
+//! Returns a value of 1, if the specified expression evaluates to a zero value.
+bool expression_is_zero( expression* expr );
+
 //! Deallocates memory used for expression.
 void expression_dealloc( expression* expr, bool exp_only );
 
 
 /* $Log$
+/* Revision 1.5  2002/06/21 05:55:05  phase1geo
+/* Getting some codes ready for writing simulation engine.  We should be set
+/* now.
+/*
 /* Revision 1.4  2002/05/13 03:02:58  phase1geo
 /* Adding lines back to expressions and removing them from statements (since the line
 /* number range of an expression can be calculated by looking at the expression line

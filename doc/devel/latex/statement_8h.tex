@@ -14,8 +14,8 @@ void {\bf statement\_\-db\_\-write} ({\bf statement} $\ast$stmt, FILE $\ast$ofil
 \begin{CompactList}\small\item\em Writes specified statement to the specified output file.\item\end{CompactList}\item 
 {\bf bool} {\bf statement\_\-db\_\-read} (char $\ast$$\ast$line, {\bf module} $\ast$curr\_\-mod)
 \begin{CompactList}\small\item\em Reads in statement line from specified string and stores statement in specified module.\item\end{CompactList}\item 
-void {\bf statement\_\-loopback} ({\bf statement} $\ast$stmt)
-\begin{CompactList}\small\item\em Connects statement sequence to form a loop.\item\end{CompactList}\item 
+void {\bf statement\_\-connect} ({\bf statement} $\ast$curr\_\-stmt, {\bf statement} $\ast$next\_\-stmt)
+\begin{CompactList}\small\item\em Connects statement sequence to next statement.\item\end{CompactList}\item 
 void {\bf statement\_\-dealloc} ({\bf statement} $\ast$stmt)
 \begin{CompactList}\small\item\em Deallocates statement memory and associated expression tree from the heap.\item\end{CompactList}\end{CompactItemize}
 
@@ -34,7 +34,21 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 
 
 \subsection{Function Documentation}
-\index{statement.h@{statement.h}!statement_create@{statement\_\-create}}
+\index{statement.h@{statement.h}!statement_connect@{statement\_\-connect}}
+\index{statement_connect@{statement\_\-connect}!statement.h@{statement.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void statement\_\-connect ({\bf statement} $\ast$ {\em curr\_\-stmt}, {\bf statement} $\ast$ {\em next\_\-stmt})}\label{statement_8h_a3}
+
+
+Connects statement sequence to next statement.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+curr\_\-stmt}]Pointer to statement sequence to traverse. \item[{\em 
+next\_\-stmt}]Pointer to statement to connect ends to.\end{description}
+\end{Desc}
+Recursively traverses the specified stmt sequence. When it reaches a statement  that has either next\_\-true or next\_\-false set to NULL, sets next\_\-true and/or  next\_\-false of that statement to point to the next\_\-stmt statement. \index{statement.h@{statement.h}!statement_create@{statement\_\-create}}
 \index{statement_create@{statement\_\-create}!statement.h@{statement.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf statement}$\ast$ statement\_\-create ({\bf expression} $\ast$ {\em exp})}\label{statement_8h_a0}
 
@@ -95,17 +109,4 @@ Deallocates statement memory and associated expression tree from the heap.
 \item[{\em 
 stmt}]Pointer to statement to deallocate.\end{description}
 \end{Desc}
-Deallocates specified statement from heap memory. First remove expression tree of this statement. Second, remove all statements following this statement. Finally, remove the specified statement itself. Since statements can be circular in nature, we will not remove a statement that has its expression tree already deallocated. This will prevent this function from getting into an infinite loop (or stack overflow since this function is recursive). \index{statement.h@{statement.h}!statement_loopback@{statement\_\-loopback}}
-\index{statement_loopback@{statement\_\-loopback}!statement.h@{statement.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void statement\_\-loopback ({\bf statement} $\ast$ {\em stmt})}\label{statement_8h_a3}
-
-
-Connects statement sequence to form a loop.
-
-\begin{Desc}
-\item[Parameters: ]\par
-\begin{description}
-\item[{\em 
-stmt}]Pointer to statement sequence to connect ends for loopback.\end{description}
-\end{Desc}
-Traverses the specified stmt sequence (assumes that stmt is the statement at the top of the sequence). When it reaches a statement that has both next\_\-true and next\_\-false set to NULL, sets next\_\-true and next\_\-false of that statement to point to the top of the sequence. This will cause the statement to have a loopback effect. 
+Deallocates specified statement from heap memory. First remove expression tree of this statement. Second, remove all statements following this statement. Finally, remove the specified statement itself. Since statements can be circular in nature, we will not remove a statement that has its expression tree already deallocated. This will prevent this function from getting into an infinite loop (or stack overflow since this function is recursive). 

@@ -532,7 +532,7 @@ statement* db_create_statement( expression* exp ) {
 
   stmt = statement_create( exp );
 
-  stmt_link_add( stmt, &(curr_module->stmt_head), &(curr_module->stmt_tail) );
+  stmt_link_add_head( stmt, &(curr_module->stmt_head), &(curr_module->stmt_tail) );
 
   return( stmt );
 
@@ -868,6 +868,9 @@ int db_get_signal_size( char* symbol ) {
 
 
 /* $Log$
+/* Revision 1.14  2002/06/24 12:34:56  phase1geo
+/* Fixing the set of the STMT_HEAD and STMT_STOP bits.  We are getting close.
+/*
 /* Revision 1.13  2002/06/24 04:54:48  phase1geo
 /* More fixes and code additions to make statements work properly.  Still not
 /* there at this point.

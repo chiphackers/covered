@@ -31,8 +31,10 @@
 <tr><td>&nbsp;</td><td><font size=-1><em>Displays the specified expression information.</em> <a href="#a12"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a13">expression_operate</a> (<a class="el" href="defines_8h.html#a112">expression</a> *expr)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Performs operation specified by parameter expression.</em> <a href="#a13"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a14">expression_dealloc</a> (<a class="el" href="defines_8h.html#a112">expression</a> *expr, <a class="el" href="defines_8h.html#a128">bool</a> exp_only)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Deallocates memory used for expression.</em> <a href="#a14"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a128">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a14">expression_is_zero</a> (<a class="el" href="defines_8h.html#a112">expression</a> *expr)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Returns a value of 1, if the specified expression evaluates to a zero value.</em> <a href="#a14"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a15">expression_dealloc</a> (<a class="el" href="defines_8h.html#a112">expression</a> *expr, <a class="el" href="defines_8h.html#a128">bool</a> exp_only)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Deallocates memory used for expression.</em> <a href="#a15"></a><em></em></font><br><br></td></tr>
 <tr><td colspan=2><br><h2>Variables</h2></td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a108">nibble</a>&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a0">xor_optab</a> [16]</td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a108">nibble</a>&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a1">and_optab</a> [16]</td></tr>
@@ -285,7 +287,7 @@ Name of Verilog hierarchical scope for this expression.</td></tr>
 </dl>This function recursively displays the expression information for the specified expression tree to the coverage database specified by file.     </td>
   </tr>
 </table>
-<a name="a14" doxytag="expr.c::expression_dealloc"></a><p>
+<a name="a15" doxytag="expr.c::expression_dealloc"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -406,7 +408,46 @@ Pointer to expression to get ID from. </td></tr>
 </table>
 </dl><dl compact><dt><b>
 Returns: </b><dd>
-Returns expression ID for this expression.</dl>Recursively gets IDs of parents to formulate the unique expression ID for this expression.     </td>
+Returns expression ID for this expression.</dl>If specified expression is non-NULL, return expression ID of this expression; otherwise, return a value of 0 to indicate that this is a leaf node.     </td>
+  </tr>
+</table>
+<a name="a14" doxytag="expr.c::expression_is_zero"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a128">bool</a> expression_is_zero </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a112">expression</a> *&nbsp;</td>
+          <td class="mdname1" valign="top" nowrap>&nbsp; <em>expr</em>          </td>
+          <td class="md" valign="top">)&nbsp;</td>
+          <td class="md" nowrap></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+Returns a value of 1, if the specified expression evaluates to a zero value.
+<p>
+<dl compact><dt><b>
+Parameters: </b><dd>
+<table border=0 cellspacing=2 cellpadding=0>
+<tr><td valign=top><em>expr</em>&nbsp;</td><td>
+Pointer to expression to evaluate.</td></tr>
+</table>
+</dl><dl compact><dt><b>
+Returns: </b><dd>
+Returns 1 if the specified expression evaluates to a unary 0.</dl>Returns a value of 1 if the specified expression contains all zero values in its bits. It accomplishes this by performing a unary OR operation on the specified expression value and testing bit 0 of the result.     </td>
   </tr>
 </table>
 <a name="a8" doxytag="expr.c::expression_merge"></a><p>
@@ -657,7 +698,7 @@ NXOR operation table     </td>
 XOR operation table     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Sun Jun 23 16:17:22 2002 for Covered by
+<hr><address align="right"><small>Generated on Mon Jun 24 22:38:05 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

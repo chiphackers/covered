@@ -28,29 +28,31 @@
 00036 
 00038 <font class="keywordtype">void</font> <a class="code" href="expr_8c.html#a13">expression_operate</a>( <a class="code" href="structexpression__s.html">expression</a>* expr );
 00039 
-00041 <font class="keywordtype">void</font> <a class="code" href="expr_8c.html#a14">expression_dealloc</a>( <a class="code" href="structexpression__s.html">expression</a>* expr, <font class="keywordtype">bool</font> exp_only );
+00041 <font class="keywordtype">bool</font> <a class="code" href="expr_8c.html#a14">expression_is_zero</a>( <a class="code" href="structexpression__s.html">expression</a>* expr );
 00042 
-00043 
-00044 <font class="comment">/* $Log$</font>
-00045 <font class="comment">/* Revision 1.5  2002/06/21 05:55:05  phase1geo</font>
-00046 <font class="comment">/* Getting some codes ready for writing simulation engine.  We should be set</font>
-00047 <font class="comment">/* now.</font>
-00048 <font class="comment">/*</font>
-00049 <font class="comment">/* Revision 1.4  2002/05/13 03:02:58  phase1geo</font>
-00050 <font class="comment">/* Adding lines back to expressions and removing them from statements (since the line</font>
-00051 <font class="comment">/* number range of an expression can be calculated by looking at the expression line</font>
-00052 <font class="comment">/* numbers).</font>
-00053 <font class="comment">/*</font>
-00054 <font class="comment">/* Revision 1.3  2002/05/03 03:39:36  phase1geo</font>
-00055 <font class="comment">/* Removing all syntax errors due to addition of statements.  Added more statement</font>
-00056 <font class="comment">/* support code.  Still have a ways to go before we can try anything.  Removed lines</font>
-00057 <font class="comment">/* from expressions though we may want to consider putting these back for reporting</font>
-00058 <font class="comment">/* purposes.</font>
-00059 <font class="comment">/* */</font>
-00060 
-00061 <font class="preprocessor">#endif</font>
-00062 <font class="preprocessor"></font>
-</pre></div><hr><address align="right"><small>Generated on Sun Jun 23 16:17:22 2002 for Covered by
+00044 <font class="keywordtype">void</font> <a class="code" href="expr_8c.html#a15">expression_dealloc</a>( <a class="code" href="structexpression__s.html">expression</a>* expr, <font class="keywordtype">bool</font> exp_only );
+00045 
+00046 
+00047 <font class="comment">/* $Log$</font>
+00048 <font class="comment">/* Revision 1.5  2002/06/21 05:55:05  phase1geo</font>
+00049 <font class="comment">/* Getting some codes ready for writing simulation engine.  We should be set</font>
+00050 <font class="comment">/* now.</font>
+00051 <font class="comment">/*</font>
+00052 <font class="comment">/* Revision 1.4  2002/05/13 03:02:58  phase1geo</font>
+00053 <font class="comment">/* Adding lines back to expressions and removing them from statements (since the line</font>
+00054 <font class="comment">/* number range of an expression can be calculated by looking at the expression line</font>
+00055 <font class="comment">/* numbers).</font>
+00056 <font class="comment">/*</font>
+00057 <font class="comment">/* Revision 1.3  2002/05/03 03:39:36  phase1geo</font>
+00058 <font class="comment">/* Removing all syntax errors due to addition of statements.  Added more statement</font>
+00059 <font class="comment">/* support code.  Still have a ways to go before we can try anything.  Removed lines</font>
+00060 <font class="comment">/* from expressions though we may want to consider putting these back for reporting</font>
+00061 <font class="comment">/* purposes.</font>
+00062 <font class="comment">/* */</font>
+00063 
+00064 <font class="preprocessor">#endif</font>
+00065 <font class="preprocessor"></font>
+</pre></div><hr><address align="right"><small>Generated on Mon Jun 24 22:38:04 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>
