@@ -92,6 +92,14 @@ int combination_calc_depth( expression* exp, unsigned int curr_depth, bool left 
 
 }
 
+/*!
+ \param exp    Pointer to expression to calculate hit and total of multi-expression subtrees.
+ \param hit    Pointer to value containing number of hit expression values in this expression.
+ \param total  Pointer to value containing total number of expression values in this expression.
+
+ Parses the specified expression tree, calculating the hit and total values of all
+ sub-expressions that are the same operation types as their left children.
+*/
 void combination_multi_expr_calc( expression* exp, int* hit, float* total ) {
 
   bool and_op;   /* Specifies if current expression is an AND or LAND operation */
@@ -100,7 +108,6 @@ void combination_multi_expr_calc( expression* exp, int* hit, float* total ) {
 
     and_op = (SUPPL_OP( exp->suppl ) == EXP_OP_AND) || (SUPPL_OP( exp->suppl ) == EXP_OP_LAND);
 
-    /* If we have hit the left-most expression, start creating string here */
     if( (exp->left != NULL) && (SUPPL_OP( exp->suppl ) != SUPPL_OP( exp->left->suppl )) ) {
       if( and_op ) {
         *hit += SUPPL_WAS_FALSE( exp->left->suppl );
@@ -154,9 +161,9 @@ void combination_get_tree_stats( expression* exp, unsigned int curr_depth, float
       if( (EXPR_IS_MEASURABLE( exp ) == 1) && (SUPPL_WAS_COMB_COUNTED( exp->suppl ) == 0) ) {
 
         if( (SUPPL_IS_ROOT( exp->suppl ) == 1) || (SUPPL_OP( exp->suppl ) != SUPPL_OP( exp->parent->expr->suppl )) ||
-            ((SUPPL_OP( exp->suppl ) != EXP_OP_AND)  ||
-             (SUPPL_OP( exp->suppl ) != EXP_OP_LAND) ||
-             (SUPPL_OP( exp->suppl ) != EXP_OP_OR)   ||
+            ((SUPPL_OP( exp->suppl ) != EXP_OP_AND) &&
+             (SUPPL_OP( exp->suppl ) != EXP_OP_LAND) &&
+             (SUPPL_OP( exp->suppl ) != EXP_OP_OR)   &&
              (SUPPL_OP( exp->suppl ) != EXP_OP_LOR)) ) {
 
           /* Calculate current expression combination coverage */
@@ -1185,11 +1192,6 @@ void combination_multi_vars( FILE* ofile, expression* exp, int id ) {
 
   /* Output the lines paying attention to the current line width */
   combination_multi_expr_output( ofile, line1, line2, line3 );
-/*
-  fprintf( ofile, "%s\n",   line1 );
-  fprintf( ofile, "%s\n",   line2 );
-  fprintf( ofile, "%s\n\n", line3 );
-*/
 
   free_safe( line1 );
   free_safe( line2 );
@@ -1237,9 +1239,9 @@ void combination_list_missed( FILE* ofile, expression* exp, unsigned int curr_de
           (report_comb_depth == REPORT_VERBOSE)) ) {
 
       if( (SUPPL_IS_ROOT( exp->suppl ) == 1) || (SUPPL_OP( exp->suppl ) != SUPPL_OP( exp->parent->expr->suppl )) ||
-          ((SUPPL_OP( exp->suppl ) != EXP_OP_AND)  ||
-           (SUPPL_OP( exp->suppl ) != EXP_OP_LAND) ||
-           (SUPPL_OP( exp->suppl ) != EXP_OP_OR)   ||
+          ((SUPPL_OP( exp->suppl ) != EXP_OP_AND)  &&
+           (SUPPL_OP( exp->suppl ) != EXP_OP_LAND) &&
+           (SUPPL_OP( exp->suppl ) != EXP_OP_OR)   &&
            (SUPPL_OP( exp->suppl ) != EXP_OP_LOR)) ) {
 
         if( (exp->left != NULL) && (SUPPL_OP( exp->suppl ) == SUPPL_OP( exp->left->suppl )) &&
@@ -1547,6 +1549,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.77  2004/01/02 22:11:03  phase1geo
+ Updating regression for latest batch of changes.  Full regression now passes.
+ Fixed bug with event or operation in report command.
+
  Revision 1.76  2003/12/30 23:02:28  phase1geo
  Contains rest of fixes for multi-expression combinational logic report output.
  Full regression fails currently.
