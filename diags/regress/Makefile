@@ -29,7 +29,7 @@ DIAGS1        = always1        always2        always3        always3.1.11A  alwa
                 assign2        assign2.1      assign2.2      assign2.3      assign2.9 \
                 assign3.2A     block1         case1          case1.1        case1.2        case1.3 \
                 case2          case3          case3.1        case3.2        case3.3 \
-                case3.4        case4          casex1         casex1.1       casex1.2       casex1.3 \
+                case3.4        case4          case4.1        casex1         casex1.1       casex1.2       casex1.3 \
                 casex1.4       casez1         casez1.1       casez1.2       casez1.3 \
                 casez1.4       casez2         concat1        concat2        concat3 \
                 concat4.1      concat4.2      concat5        cond1          cond2 \

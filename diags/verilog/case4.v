@@ -3,6 +3,9 @@ module main;
 parameter A = 0,
           B = 1,
           C = 2;
+parameter STATE_A = (1 << A),
+          STATE_B = (1 << B),
+          STATE_C = (1 << C);
 
 reg               clock;
 reg [C:A]         st;
@@ -19,18 +22,18 @@ always @(st or b or c or d or e or f)
        begin
         str = "A_STATE";
         if( b )
-          next_st = (3'b1 << B);
+          next_st = STATE_B;
        end
      st[B] :
        begin
         str = "B_STATE";
-        next_st = (3'b1 << C);
+        next_st = STATE_C;
        end
      st[C] :
        begin
         str = "C_STATE";
         if( c || (d && (e == f)) )
-          next_st = (3'b1 << A);
+          next_st = STATE_A;
        end
    endcase
   end
