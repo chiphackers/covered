@@ -943,7 +943,7 @@ expr_primary
   | identifier
     {
       expression* tmp;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($1 != NULL) ) {
         tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, @1.first_line, $1 );
         $$  = tmp;
         free_safe( $1 );
@@ -962,11 +962,14 @@ expr_primary
   | identifier '[' expression ']'
     {
       expression* tmp;
-      if( (ignore_mode == 0) && ($3 != NULL) ) {
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         tmp = db_create_expression( NULL, $3, EXP_OP_SBIT_SEL, @1.first_line, $1 );
         $$  = tmp;
         free_safe( $1 );
       } else {
+        if( $1 != NULL ) {
+          free_safe( $1 );
+        }
         expression_dealloc( $3, FALSE );
         $$ = NULL;
       }
@@ -974,11 +977,14 @@ expr_primary
   | identifier '[' expression ':' expression ']'
     {		  
       expression* tmp;
-      if( (ignore_mode == 0) && ($3 != NULL) && ($5 != NULL) ) {
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) && ($5 != NULL) ) {
         tmp = db_create_expression( $5, $3, EXP_OP_MBIT_SEL, @1.first_line, $1 );
         $$  = tmp;
         free_safe( $1 );
       } else {
+        if( $1 != NULL ) {
+          free_safe( $1 );
+        }
         expression_dealloc( $3, FALSE );
         expression_dealloc( $5, FALSE );
         $$ = NULL;
@@ -991,6 +997,7 @@ expr_primary
       expression_dealloc( $3, FALSE );
       static_expr_dealloc( $5, TRUE );
       free_safe( $1 );
+      $$ = NULL;
     }
   | identifier '[' expression K_PO_NEG static_expr ']'
     {
@@ -999,6 +1006,7 @@ expr_primary
       expression_dealloc( $3, FALSE );
       static_expr_dealloc( $5, TRUE );
       free_safe( $1 );
+      $$ = NULL;
     }
   | identifier '(' expression_list ')'
     {
@@ -2009,8 +2017,23 @@ statement_opt
      This rule handles only procedural assignments. */
 lpvalue
   : identifier
+    {
+      if( $1 != NULL ) {
+        free_safe( $1 );
+      }
+    }
   | identifier ignore_more '[' expression ']' ignore_less
+    {
+      if( $1 != NULL ) {
+        free_safe( $1 );
+      }
+    }
   | identifier ignore_more '[' expression ':' expression ']' ignore_less
+    {
+      if( $1 != NULL ) {
+        free_safe( $1 );
+      }
+    }
   | '{' ignore_more expression_list ignore_less '}'
     {
       $$ = NULL;

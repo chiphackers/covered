@@ -33,21 +33,22 @@ DIAGS1        = always1        always2        always3        always3.1.11A  alwa
                 casex1.1       casex1.2       casex1.3       casex1.4       casez1 \
                 casez1.1       casez1.2       casez1.3       casez1.4       casez2 \
                 concat1        concat2        concat3        concat4.1      concat4.2 \
-                concat5        cond1          cond2          delay1         delay2 \
-                define1        define1.1      define1.2      define2        define2.1 \
-                define3        define4        expand1        expand2        expand3 \
-                gate1          ifdef1         ifdef1.2       ifdef2.1       ifdef2.2 \
-                ifdef2.3       ifelse1        include1       include1.1     include2 \
-                instance1      instance1.1    instance1.2    instance2      instance3 \
-                instance4      instance4.1    instance4.2    instance5      instance6 \
-                instance6.1    instance6.2    instance7      long_exp1      mbit_sel1 \
-                mbit_sel2      mbit_sel3      mbit_sel3.1    mbit_sel4      mbit_sel4.1 \
-                mbit_sel4.2    mbit_sel4.3    mem1           mult1          param1 \
-                param1.1       param1.2       param1.3       param3         param3.1 \
-                param3.2       param3.3       param3.4       param3.5       param4 \
-                param4.1       param5         param6         param6.1       param7 \
-                pulldown1      pullup1        sbit_sel1      static1        supply0 \
-                supply1        tri            tri0           tri1
+                concat5        concat6        cond1          cond2          delay1 \
+                delay2         define1        define1.1      define1.2      define2 \
+                define2.1      define3        define4        expand1        expand2 \
+                expand3        gate1          hier1          ifdef1         ifdef1.2 \
+                ifdef2.1       ifdef2.2       ifdef2.3       ifelse1        include1 \
+                include1.1     include2       instance1      instance1.1    instance1.2 \
+                instance2      instance3      instance4      instance4.1    instance4.2 \
+                instance5      instance6      instance6.1    instance6.2    instance7 \
+                long_exp1      mbit_sel1      mbit_sel2      mbit_sel3      mbit_sel3.1 \
+                mbit_sel4      mbit_sel4.1    mbit_sel4.2    mbit_sel4.3    mem1 \
+                mult1          param1         param1.1       param1.2       param1.3 \
+                param3         param3.1       param3.2       param3.3       param3.4 \
+                param3.5       param4         param4.1       param5         param6 \
+                param6.1       param7         pulldown1      pullup1        sbit_sel1 \
+                static1        supply0        supply1        tri            tri0 \
+                tri1
 DIAGS2        = delay1.1
 DIAGS3        = delay1.2
 DIAGS4        = delay1.3
