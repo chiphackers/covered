@@ -1,6 +1,16 @@
 Covered-Related NEWS
 ====================
 
+    * 04/10/2004
+
+Release covered-20040210 made.  A lot of work has gone into this release to make the report
+output more readable and concise.  Several bug fixes have been made as well.  A GUI is on
+the way for report viewing that will be available in alpha version in the next development
+release.  Below are some of the highlights of this release.
+
+  - Added GUI interfacing functions in preparation of upcoming GUI report viewing utility.
+  - 
+
     * 11/16/2003
 
 Release covered-20031116 made.  This development release contains a new way to specify FSMs
