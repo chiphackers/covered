@@ -454,6 +454,56 @@ void statement_set_stop( statement* stmt, statement* post, bool true_path, bool 
 
 }
 
+void statement_remove_paths_helper( statement* curr, statement* start, statement* stmt ) {
+
+  if( (curr != NULL) && (curr != start) ) {
+
+    /* Handle TRUE path */
+    if( curr->next_true == stmt ) {
+      curr->next_true = NULL;
+      printf( "Removed statement %d from true statement %d\n", stmt->exp->id, curr->exp->id );
+    } else {
+      statement_remove_paths_helper( curr->next_true,  start, stmt );
+    }
+
+    /* Handle FALSE path */
+    if( curr->next_false == stmt ) {
+      curr->next_false = NULL;
+      printf( "Removed statement %d from false statement %d\n", stmt->exp->id, curr->exp->id );
+    } else {
+      statement_remove_paths_helper( curr->next_false, start, stmt );
+    }
+
+  }
+
+}
+
+void statement_remove_paths( statement* start, statement* stmt ) {
+
+  if( start != NULL ) {
+
+    printf( "Attempting to remove statement %d paths\n", stmt->exp->id );
+
+    /* Handle TRUE path */
+    if( start->next_true == stmt ) {
+      start->next_true = NULL;
+      printf( "Removed statement %d from true statement %d\n", stmt->exp->id, start->exp->id );
+    } else {
+      statement_remove_paths_helper( start->next_true,  start, stmt );
+    }
+
+    /* Handle FALSE path */
+    if( start->next_false == stmt ) {
+      start->next_false = NULL;
+      printf( "Removed statement %d from false statement %d\n", stmt->exp->id, start->exp->id );
+    } else {
+      statement_remove_paths_helper( start->next_false, start, stmt );
+    }
+
+  }
+
+}
+
 /*!
  \param curr   Pointer to current statement to deallocate.
  \param start  Pointer to statement of root of statement tree to deallocate.
@@ -467,29 +517,19 @@ void statement_dealloc_recursive_helper( statement* curr, statement* start ) {
   
   if( (curr != NULL) && (curr != start) ) {
     
-    printf( "curr: 0x%p, start: 0x%p\n", curr, start );
-
     /* Remove TRUE path */
     statement_dealloc_recursive_helper( curr->next_true,  start );
-    printf( "Setting 0x%p to NULL\n", curr->next_true );
-    curr->next_true = NULL;
     
     /* Remove FALSE path */
     statement_dealloc_recursive_helper( curr->next_false, start );
-    printf( "Setting 0x%p to NULL\n", curr->next_false );
-    curr->next_false = NULL;
 
-    if( (curr != NULL) && (curr->exp != NULL) ) {
+    /* Disconnect statement from current module */
+    db_remove_statement_from_current_module( curr );
 
-      /* Disconnect statement from current module */
-      db_remove_statement_from_current_module( curr );
+    /* Set pointers to this statement to NULL */
+    statement_remove_paths( start, curr );
 
-      /* Indicate that this statement no longer exists */
-      curr->exp = NULL;
-    
-      printf( "Removing 0x%p\n", curr );
-      free_safe( curr );
-    }
+    free_safe( curr );
     
   }
   
@@ -506,13 +546,9 @@ void statement_dealloc_recursive( statement* stmt ) {
   
     /* Remove TRUE path */
     statement_dealloc_recursive_helper( stmt->next_true,  stmt );
-    stmt->next_true = NULL;
   
     /* Remove FALSE path */
     statement_dealloc_recursive_helper( stmt->next_false, stmt );
-    stmt->next_false = NULL;
-
-    assert( stmt != NULL );
 
     /* Disconnect statement from current module */
     db_remove_statement_from_current_module( stmt );
@@ -520,6 +556,9 @@ void statement_dealloc_recursive( statement* stmt ) {
     /* Remove wait event signal list */
     sig_link_delete_list( stmt->wait_sig_head, FALSE );
   
+    /* Set pointers to this statement to NULL */
+    statement_remove_paths( stmt, stmt );
+
     free_safe( stmt );
     
   }
@@ -550,6 +589,15 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.46  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.45  2004/03/15 21:38:17  phase1geo
  Updated source files after running lint on these files.  Full regression
  still passes at this point.
