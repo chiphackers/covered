@@ -741,7 +741,7 @@ int vector_to_int( vector* vec ) {
 
   width = (vec->width > (SIZEOF_INT * 8)) ? 32 : vec->width;
 
-  for( i=(width - 1); i>=vec->lsb; i-- ) {
+  for( i=((width - 1) + vec->lsb); i>=vec->lsb; i-- ) {
     switch( (vec->value[i/4] >> ((i%4)*2)) & 0x3 ) {
       case 0 :  retval = (retval << 1) | 0;  break;
       case 1 :  retval = (retval << 1) | 1;  break;
@@ -1528,6 +1528,11 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.37  2003/08/10 03:50:10  phase1geo
+ More development documentation updates.  All global variables are now
+ documented correctly.  Also fixed some generated documentation warnings.
+ Removed some unnecessary global variables.
+
  Revision 1.36  2003/08/10 00:05:16  phase1geo
  Fixing bug with posedge, negedge and anyedge expressions such that these expressions
  must be armed before they are able to be evaluated.  Fixing bug in vector compare function

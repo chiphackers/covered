@@ -184,6 +184,8 @@ bool arc_set_states( char* arcs, int start, vector* left, vector* right ) {
 
   } else {
 
+    // printf( "Setting state (%d) to (%d)\n", vector_to_int( left ), vector_to_int( right ) );
+
     entry_size = arc_get_entry_width( arc_get_width( arcs ) );
 
     for( j=0; j<2; j++ ) {
@@ -427,6 +429,7 @@ void arc_add( char** arcs, int width, vector* fr_st, vector* to_st, int hit ) {
   if( side == 2 ) {
 
     /* Initialize arc entry */
+    // printf( "Actually setting state now\n" );
     if( arc_set_states( *arcs, arc_get_curr_size( *arcs ), fr_st, to_st ) ) {
       arc_set_entry_suppl( *arcs, arc_get_curr_size( *arcs ), ARC_HIT_F, hit );
       arc_set_entry_suppl( *arcs, arc_get_curr_size( *arcs ), ARC_HIT_R, 0 );
@@ -918,10 +921,9 @@ void arc_state_to_string( char* arcs, int index, bool left, char* str ) {
 
   /* Make a bit-wise extraction of current state */
   for( i=0; i<arc_get_width( arcs ); i++ ) {
-    val <<= 1;
-    val  |= (int)(arcs[index] >> pos) & 0x1;  
+    val >>= 1;
+    val  |= ((int)(arcs[index] >> pos) & 0x1) << 3;  
     if( (i % 4) == 3 ) {
-      printf( "-value: %d\n", val );
       snprintf( tmp, 2, "%x", val );
       str[str_index] = tmp[0];
       str_index--;
@@ -932,6 +934,7 @@ void arc_state_to_string( char* arcs, int index, bool left, char* str ) {
   } 
  
   if( (i % 4) != 0 ) {
+    val >>= (4 - i);
     snprintf( tmp, 2, "%x", val );
     str[str_index] = tmp[0];
   }
@@ -1017,6 +1020,9 @@ void arc_dealloc( char* arcs ) {
 
 /*
  $Log$
+ Revision 1.8  2003/09/14 01:09:20  phase1geo
+ Added verbose output for FSMs.
+
  Revision 1.7  2003/09/13 19:53:59  phase1geo
  Adding correct way of calculating state and state transition totals.  Modifying
  FSM summary reporting to reflect these changes.  Also added function documentation
