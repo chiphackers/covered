@@ -31,6 +31,7 @@ char* vcd_file           = NULL;                /*!< Name of VCD output file to 
 int   delay_expr_type    = DELAY_EXPR_DEFAULT;  /*!< Value to use when a delay expression with min:typ:max */
 char* ppfilename         = NULL;                /*!< Name of preprocessor filename to use                  */
 bool  instance_specified = FALSE;               /*!< Specifies if -i option was specified                  */
+int   timestep_update    = 0;                   /*!< Specifies timestep increment to display current time  */
 
 extern unsigned long largest_malloc_size;
 extern unsigned long curr_malloc_size;
@@ -66,6 +67,8 @@ void score_usage() {
   printf( "      -p <filename>                Specifies name of file to use for preprocessor output.\n" );
   printf( "      -P <parameter_scope>=<value> Performs a defparam on the specified parameter with value.\n" );
   printf( "      -T min|typ|max               Specifies value to use in delay expressions of the form min:typ:max.\n" );
+  printf( "      -ts <number>                 If design is being scored, specifying this option will output\n" );
+  printf( "                                   the current timestep (by increments of <number>) to standard output.\n" );
   printf( "      -h                           Displays this help information.\n" );
   printf( "\n" );
   printf( "      +libext+.<extension>(+.<extension>)+\n" );
@@ -185,6 +188,11 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
         print_output( user_msg, FATAL );
         retval = FALSE;
       }
+
+    } else if( strncmp( "-ts", argv[i], 3 ) == 0 ) {
+
+      i++;
+      timestep_update = atol( argv[i] );
 
     } else if( strncmp( "-t", argv[i], 2 ) == 0 ) {
 
@@ -382,6 +390,10 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.33  2003/02/07 23:12:30  phase1geo
+ Optimizing db_add_statement function to avoid memory errors.  Adding check
+ for -i option to avoid user error.
+
  Revision 1.32  2003/01/06 00:44:21  phase1geo
  Updates to NEWS, ChangeLog, development documentation and user documentation
  for new 0.2pre1_20030105 release.
