@@ -435,16 +435,16 @@ proc display_comb_cov {} {
         set cmd_highlight ".bot.right.txt tag add uncov_highlight"
         foreach entry $uncovered_combs {
           set cmd_highlight [concat $cmd_highlight [lindex $entry 0] [lindex $entry 1]]
-          set start_line    [lindex [split [lindex $entry 0] .] 0]
-          set end_line      [lindex [split [lindex $entry 1] .] 0]
-          if {$start_line != $end_line} {
-            set cmd_enter  [concat $cmd_enter  [lindex $entry 0] "$start_line.end"]
-            set cmd_button [concat $cmd_button [lindex $entry 0] "$start_line.end"]
-            set cmd_leave  [concat $cmd_leave  [lindex $entry 0] "$start_line.end"]
-            for {set i [expr $start_line + 1]} {$i <= $end_line} {incr i} {
+          set sline [lindex [split [lindex $entry 0] .] 0]
+          set eline [lindex [split [lindex $entry 1] .] 0]
+          if {$sline != $eline} {
+            set cmd_enter  [concat $cmd_enter  [lindex $entry 0] "$sline.end"]
+            set cmd_button [concat $cmd_button [lindex $entry 0] "$sline.end"]
+            set cmd_leave  [concat $cmd_leave  [lindex $entry 0] "$sline.end"]
+            for {set i [expr $sline + 1]} {$i <= $eline} {incr i} {
               set line       [.bot.right.txt get "$i.7" end]
               set line_diff  [expr [expr [string length $line] - [string length [string trimleft $line]]] + 7]
-              if {$i == $end_line} {
+              if {$i == $eline} {
                 set cmd_enter  [concat $cmd_enter  "$i.$line_diff" [lindex $entry 1]]
                 set cmd_button [concat $cmd_button "$i.$line_diff" [lindex $entry 1]]
                 set cmd_leave  [concat $cmd_leave  "$i.$line_diff" [lindex $entry 1]]
