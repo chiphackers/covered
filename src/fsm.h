@@ -13,7 +13,7 @@
 #include "defines.h"
 
 /*! \brief Creates and initializes new FSM structure. */
-fsm* fsm_create( expression* from_state, expression* to_state );
+fsm* fsm_create( expression* from_state, expression* to_state, bool make_table );
 
 /*! \brief Adds new FSM arc structure to specified FSMs arc list. */
 void fsm_add_arc( fsm* table, expression* from_state, expression* to_state );
@@ -44,6 +44,10 @@ void fsm_dealloc( fsm* table );
 
 /*
  $Log$
+ Revision 1.10  2003/10/10 20:52:07  phase1geo
+ Initial submission of FSM expression allowance code.  We are still not quite
+ there yet, but we are getting close.
+
  Revision 1.9  2003/09/22 03:46:24  phase1geo
  Adding support for single state variable FSMs.  Allow two different ways to
  specify FSMs on command-line.  Added diagnostics to verify new functionality.

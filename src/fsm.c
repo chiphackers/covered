@@ -65,12 +65,13 @@ extern char         user_msg[USER_MSG_LENGTH];
 /*!
  \param from_state  Pointer to expression that is input state variable for this FSM.
  \param to_state    Pointer to expression that is output state variable for this FSM.
+ \param make_table  Specifies if arc array table should be created at this time.
 
  \return Returns a pointer to the newly allocated FSM structure.
 
  Allocates and initializes an FSM structure.
 */
-fsm* fsm_create( expression* from_state, expression* to_state ) {
+fsm* fsm_create( expression* from_state, expression* to_state, bool make_table ) {
 
   fsm* table;  /* Pointer to newly created FSM */
 
@@ -79,7 +80,12 @@ fsm* fsm_create( expression* from_state, expression* to_state ) {
   table->to_state   = to_state;
   table->arc_head   = NULL;
   table->arc_tail   = NULL;
-  table->table      = arc_create( to_state->value->width );
+
+  if( make_table ) {
+    table->table = arc_create( to_state->value->width );
+  } else {
+    table->table = NULL;
+  }
 
   return( table );
 
@@ -166,7 +172,12 @@ bool fsm_db_write( fsm* table, FILE* file ) {
   );
 
   /* Print set table */
-  arc_db_write( table->table, file );
+  if( table->table != NULL ) {
+    fprintf( file, "1 " );
+    arc_db_write( table->table, file );
+  } else {
+    fprintf( file, "0" );
+  }
 
   fprintf( file, "\n" );
 
@@ -193,8 +204,9 @@ bool fsm_db_read( char** line, module* mod ) {
   int        i;                /* Loop iterator                                      */
   int        chars_read;       /* Number of characters read from sscanf              */
   fsm*       table;            /* Pointer to newly created FSM structure from CDD    */
+  int        is_table;         /* Holds value of is_table entry of FSM output        */
  
-  if( sscanf( *line, "%d %d%n", &(iexp.id), &(oexp.id), &chars_read ) == 2 ) {
+  if( sscanf( *line, "%d %d %d%n", &(iexp.id), &(oexp.id), &is_table, &chars_read ) == 3 ) {
 
     *line = *line + chars_read + 1;
 
@@ -203,7 +215,7 @@ bool fsm_db_read( char** line, module* mod ) {
         ((oexpl = exp_link_find( &oexp, mod->exp_head )) != NULL) ) {
 
       /* Create new FSM */
-      table = fsm_create( iexpl->exp, oexpl->exp );
+      table = fsm_create( iexpl->exp, oexpl->exp, TRUE );
 
       /*
        If the input state variable is the same as the output state variable, create the new expression now.
@@ -224,18 +236,27 @@ bool fsm_db_read( char** line, module* mod ) {
       fsm_create_tables( table );
 
       /* Now read in set table */
-      if( arc_db_read( &(table->table), line ) ) {
+      if( is_table == 1 ) {
+
+        if( arc_db_read( &(table->table), line ) ) {
+
+          /* Add fsm to current module */
+          fsm_link_add( table, &(mod->fsm_head), &(mod->fsm_tail) );
+ 
+        } else {
+
+          print_output( "Unable to read FSM state transition arc array", FATAL );
+          retval = FALSE;
+
+        }
+
+      } else {
 
         /* Add fsm to current module */
         fsm_link_add( table, &(mod->fsm_head), &(mod->fsm_tail) );
- 
-      } else {
-
-        print_output( "Unable to read FSM state transition arc array", FATAL );
-        retval = FALSE;
 
       }
-
+ 
     } else {
 
       snprintf( user_msg, USER_MSG_LENGTH, "Unable to find state variable expressions (%d, %d) for current FSM", iexp.id, oexp.id );
@@ -275,12 +296,13 @@ bool fsm_db_merge( fsm* base, char** line, bool same ) {
   int    chars_read;     /* Number of characters read from line */
   int    i;              /* Loop iterator                       */
   nibble nib;            /* Temporary nibble storage            */
+  int    is_table;       /* Holds value of is_table signifier   */
 
   assert( base != NULL );
   assert( base->from_state != NULL );
   assert( base->to_state != NULL );
 
-  if( sscanf( *line, "%d %d%n", &iid, &oid, &chars_read ) == 2 ) {
+  if( sscanf( *line, "%d %d %d%n", &iid, &oid, &is_table, &chars_read ) == 3 ) {
 
     *line = *line + chars_read + 1;
 
@@ -289,7 +311,7 @@ bool fsm_db_merge( fsm* base, char** line, bool same ) {
       print_output( "Attempting to merge two databases derived from different designs.  Unable to merge", FATAL );
       exit( 1 );
 
-    } else {
+    } else if( is_table == 1 ) {
 
       arc_db_merge( &(base->table), line, same );
           
@@ -748,6 +770,10 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.21  2003/10/10 20:52:07  phase1geo
+ Initial submission of FSM expression allowance code.  We are still not quite
+ there yet, but we are getting close.
+
  Revision 1.20  2003/10/03 21:28:43  phase1geo
  Restructuring FSM handling to be better suited to handle new FSM input/output
  state variable allowances.  Regression should still pass but new FSM support
