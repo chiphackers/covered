@@ -50,7 +50,7 @@ void param_resolve_declared( char* mscope, mod_parm* mparm, inst_parm* ip_head, 
 void param_resolve_override( mod_parm* oparm, inst_parm** ihead, inst_parm** itail );
 
 /*! \brief Outputs specified instance parameter to specified output stream. */
-void param_db_write( inst_parm* iparm, FILE* file, char* scope );
+void param_db_write( inst_parm* iparm, FILE* file );
 
 /*! \brief Deallocates specified module parameter and possibly entire module parameter list. */
 void mod_parm_dealloc( mod_parm* parm, bool recursive );
@@ -61,6 +61,11 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive );
 
 /*
  $Log$
+ Revision 1.13  2003/02/07 02:28:24  phase1geo
+ Fixing bug with statement removal.  Expressions were being deallocated but not properly
+ removed from module parameter expression lists and module expression lists.  Regression
+ now passes again.
+
  Revision 1.12  2002/11/05 00:20:07  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.

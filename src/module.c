@@ -188,7 +188,7 @@ bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst ) {
   /* Now print all expressions in module */
   curr_exp = mod->exp_head;
   while( curr_exp != NULL ) {
-    expression_db_write( curr_exp->exp, file, scope );
+    expression_db_write( curr_exp->exp, file );
     curr_exp = curr_exp->next;
   }
 
@@ -196,7 +196,7 @@ bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst ) {
   if( inst != NULL ) {
     curr_parm = inst->param_head;
     while( curr_parm != NULL ) {
-      param_db_write( curr_parm, file, scope );
+      param_db_write( curr_parm, file );
       curr_parm = curr_parm->next;
     }
   }
@@ -204,14 +204,14 @@ bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst ) {
   /* Now print all signals in module */
   curr_sig = mod->sig_head;
   while( curr_sig != NULL ) {
-    signal_db_write( curr_sig->sig, file, scope );
+    signal_db_write( curr_sig->sig, file );
     curr_sig = curr_sig->next; 
   }
 
   /* Now print all statements in module */
   stmt_iter_reset( &curr_stmt, mod->stmt_head );
   while( curr_stmt.curr != NULL ) {
-    statement_db_write( curr_stmt.curr->stmt, file, scope );
+    statement_db_write( curr_stmt.curr->stmt, file );
     stmt_iter_next( &curr_stmt );
   }
 
@@ -476,6 +476,12 @@ void module_dealloc( module* mod ) {
 
 /*
  $Log$
+ Revision 1.31  2004/01/04 04:52:03  phase1geo
+ Updating ChangeLog and TODO files.  Adding merge information to INFO line
+ of CDD files and outputting this information to the merged reports.  Adding
+ starting and ending line information to modules and added function for GUI
+ to retrieve this information.  Updating full regression.
+
  Revision 1.30  2003/08/25 13:02:04  phase1geo
  Initial stab at adding FSM support.  Contains summary reporting capability
  at this point and roughly works.  Updated regress suite as a result of these

@@ -20,7 +20,7 @@ void signal_init( signal* sig, char* name, vector* value, int lsb );
 signal* signal_create( char* name, int width, int lsb );
 
 /*! \brief Outputs this signal information to specified file. */
-void signal_db_write( signal* sig, FILE* file, char* modname );
+void signal_db_write( signal* sig, FILE* file );
 
 /*! \brief Reads signal information from specified file. */
 bool signal_db_read( char** line, module* curr_mod );
@@ -52,6 +52,9 @@ void signal_dealloc( signal* sig );
 
 /*
  $Log$
+ Revision 1.15  2003/10/17 12:55:36  phase1geo
+ Intermediate checkin for LSB fixes.
+
  Revision 1.14  2003/10/10 20:52:07  phase1geo
  Initial submission of FSM expression allowance code.  We are still not quite
  there yet, but we are getting close.

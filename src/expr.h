@@ -35,7 +35,7 @@ int expression_get_last_line( expression* expr );
 void expression_get_wait_sig_list( expression* expr, sig_link** head, sig_link** tail );
 
 /*! \brief Writes this expression to the specified database file. */
-void expression_db_write( expression* expr, FILE* file, char* scope );
+void expression_db_write( expression* expr, FILE* file );
 
 /*! \brief Reads current line of specified file and parses for expression information. */
 bool expression_db_read( char** line, module* curr_mod, bool eval );
@@ -64,6 +64,12 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.23  2003/11/30 21:50:45  phase1geo
+ Modifying line_collect_uncovered function to create array containing all physical
+ lines (rather than just uncovered statement starting line values) for more
+ accurate line coverage results for the GUI.  Added new long_exp2 diagnostic that
+ is used to test this functionality.
+
  Revision 1.22  2003/11/26 23:14:41  phase1geo
  Adding code to include left-hand-side expressions of statements for report
  outputting purposes.  Full regression does not yet pass.

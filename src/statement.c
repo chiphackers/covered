@@ -213,12 +213,11 @@ void statement_stack_compare( statement* stmt ) {
 /*!
  \param stmt   Pointer to statement to write out value.
  \param ofile  Pointer to output file to write statement line to.
- \param scope  Scope of parent module which contains the specified statement.
 
  Recursively writes the contents of the specified statement tree (and its
  associated expression trees to the specified output stream.
 */
-void statement_db_write( statement* stmt, FILE* ofile, char* scope ) {
+void statement_db_write( statement* stmt, FILE* ofile ) {
 
   assert( stmt != NULL );
 
@@ -226,22 +225,21 @@ void statement_db_write( statement* stmt, FILE* ofile, char* scope ) {
   /* Write succeeding statements first */
   if( SUPPL_IS_STMT_STOP( stmt->exp->suppl ) == 0 ) {
 
-    statement_db_write( stmt->next_true, ofile, scope );
-    statement_db_write( stmt->next_false, ofile, scope );
+    statement_db_write( stmt->next_true, ofile );
+    statement_db_write( stmt->next_false, ofile );
 
   }
 
   assert( stmt->exp != NULL );
 
   /* Write out expression tree second */
-  expression_db_write( stmt->exp, ofile, scope );
+  expression_db_write( stmt->exp, ofile );
 #endif
 
   /* Write out contents of this statement last */
-  fprintf( ofile, "%d %d %s",
+  fprintf( ofile, "%d %d",
     DB_TYPE_STATEMENT,
-    stmt->exp->id,
-    scope
+    stmt->exp->id
   );
 
   if( stmt->next_true == NULL ) {
@@ -274,7 +272,6 @@ bool statement_db_read( char** line, module* curr_mod, int read_mode ) {
 
   bool       retval = TRUE;  /* Return value of this function                                          */
   int        id;             /* ID of root expression that is associated with this statement           */
-  char       name[4096];     /* Temporary name string                                                  */
   int        true_id;        /* ID of root expression that is associated with the next_true statement  */
   int        false_id;       /* ID of root expression that is associated with the next_false statement */
   expression tmpexp;         /* Temporary expression used for expression search                        */
@@ -283,7 +280,7 @@ bool statement_db_read( char** line, module* curr_mod, int read_mode ) {
   stmt_link* stmtl;          /* Pointer to found statement link                                        */
   int        chars_read;     /* Number of characters read from line                                    */
 
-  if( sscanf( *line, "%d %s %d %d%n", &id, name, &true_id, &false_id, &chars_read ) == 4 ) {
+  if( sscanf( *line, "%d %d %d%n", &id, &true_id, &false_id, &chars_read ) == 3 ) {
 
     *line = *line + chars_read;
 
@@ -598,6 +595,11 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.43  2003/08/10 03:50:10  phase1geo
+ More development documentation updates.  All global variables are now
+ documented correctly.  Also fixed some generated documentation warnings.
+ Removed some unnecessary global variables.
+
  Revision 1.42  2003/08/09 22:10:41  phase1geo
  Removing wait event signals from CDD file generation in support of another method
  that fixes a bug when multiple wait event statements exist within the same

@@ -1,26 +1,26 @@
 5 1 * 2 0
 3 main main instance6.1.v 6 26
-1 b main 0 3 0 7002a
-1 a main 0 3 0 7152a
+1 b 0 3 0 7002a
+1 a 0 3 0 7152a
 3 foobar main.foo instance6.1.v 29 39
-2 5 main.foo 37 102000 0 0 32 0 1 0 0 0 0 0 0 0
-2 4 main.foo 37 102000 0 0 32 0 4 0 0 0 0 0 0 0
-2 6 main.foo 37 183024 5 4 
-2 3 main.foo 37 2000001 0 0 
-2 7 main.foo 37 103fb5 6 3 
-1 #bsize main.foo 0 32 0 5 0 0 0 0 0 0 0
-1 b main.foo 0 3 0 7152a 6
-1 a main.foo 0 2 0 3020a 3
-4 7 main.foo 7 7
+2 5 37 102000 0 0 32 0 1 0 0 0 0 0 0 0
+2 4 37 102000 0 0 32 0 4 0 0 0 0 0 0 0
+2 6 37 183024 5 4 
+2 3 37 2000001 0 0 
+2 7 37 103fb5 6 3 
+1 #bsize 0 32 0 5 0 0 0 0 0 0 0
+1 b 0 3 0 7152a 6
+1 a 0 2 0 3020a 3
+4 7 7 7
 3 barfoo main.bar instance6.1.v 42 48
-1 b main.bar 0 3 0 7002a
+1 b 0 3 0 7002a
 3 foobar main.bar.dude instance6.1.v 29 39
-2 5 main.bar.dude 37 102000 0 0 32 0 1 0 0 0 0 0 0 0
-2 4 main.bar.dude 37 102000 0 0 32 0 4 0 0 0 0 0 0 0
-2 6 main.bar.dude 37 182024 5 4 
-2 3 main.bar.dude 37 2000001 0 0 
-2 7 main.bar.dude 37 102fb5 6 3 
-1 #bsize main.bar.dude 0 32 0 5 0 0 0 0 0 0 0
-1 b main.bar.dude 0 3 0 7002a 6
-1 a main.bar.dude 0 2 0 3000a 3
-4 7 main.bar.dude 7 7
+2 5 37 102000 0 0 32 0 1 0 0 0 0 0 0 0
+2 4 37 102000 0 0 32 0 4 0 0 0 0 0 0 0
+2 6 37 182024 5 4 
+2 3 37 2000001 0 0 
+2 7 37 102fb5 6 3 
+1 #bsize 0 32 0 5 0 0 0 0 0 0 0
+1 b 0 3 0 7002a 6
+1 a 0 2 0 3000a 3
+4 7 7 7

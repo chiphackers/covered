@@ -1,37 +1,37 @@
 5 1 * 2 0
 3 main main ifelse1.v 1 33
-1 sel main 0 1 0 10102
-1 b main 0 1 0 11002
-1 a main 0 1 0 10102
-1 reset main 0 1 0 11002
-1 clock main 0 1 0 11102
-1 z main 0 1 0 10102
+1 sel 0 1 0 10102
+1 b 0 1 0 11002
+1 a 0 1 0 10102
+1 reset 0 1 0 11002
+1 clock 0 1 0 11102
+1 z 0 1 0 10102
 3 mux main.switch ./lib/mux.v 1 21
-2 6 main.switch 14 201000 0 0 1 1 0
-2 5 main.switch 14 2000001 0 0 
-2 7 main.switch 14 2015b6 6 5 
-2 10 main.switch 17 102001 0 0 
-2 9 main.switch 17 2000001 0 0 
-2 11 main.switch 17 1025b6 10 9 
-2 13 main.switch 19 201001 0 0 
-2 12 main.switch 19 2000001 0 0 
-2 14 main.switch 19 2015b6 13 12 
-2 8 main.switch 16 103001 0 0 
-2 15 main.switch 16 1031b8 8 0 
-2 4 main.switch 13 203001 0 0 
-2 16 main.switch 13 2031b8 4 0 
-2 1 main.switch 12 103001 0 0 
-2 2 main.switch 12 2a 0 0 2 0 a
-2 3 main.switch 12 2033a7 1 2 1 0 11102
-1 clock main.switch 0 1 4 11102 1
-1 reset main.switch 0 1 0 11002 4
-1 a main.switch 0 1 0 10102 10
-1 b main.switch 0 1 0 11002 13
-1 sel main.switch 0 1 0 10102 8
-1 z main.switch 0 1 0 10102 5 9 12
-4 14 main.switch 3 3
-4 11 main.switch 3 3
-4 15 main.switch 11 14
-4 7 main.switch 3 3
-4 16 main.switch 7 15
-4 3 main.switch 16 0
+2 6 14 201000 0 0 1 1 0
+2 5 14 2000001 0 0 
+2 7 14 2015b6 6 5 
+2 10 17 102001 0 0 
+2 9 17 2000001 0 0 
+2 11 17 1025b6 10 9 
+2 13 19 201001 0 0 
+2 12 19 2000001 0 0 
+2 14 19 2015b6 13 12 
+2 8 16 103001 0 0 
+2 15 16 1031b8 8 0 
+2 4 13 203001 0 0 
+2 16 13 2031b8 4 0 
+2 1 12 103001 0 0 
+2 2 12 2a 0 0 2 0 a
+2 3 12 2033a7 1 2 1 0 11102
+1 clock 0 1 4 11102 1
+1 reset 0 1 0 11002 4
+1 a 0 1 0 10102 10
+1 b 0 1 0 11002 13
+1 sel 0 1 0 10102 8
+1 z 0 1 0 10102 5 9 12
+4 14 3 3
+4 11 3 3
+4 15 11 14
+4 7 3 3
+4 16 7 15
+4 3 16 0

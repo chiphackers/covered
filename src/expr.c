@@ -530,17 +530,15 @@ void expression_get_wait_sig_list( expression* expr, sig_link** head, sig_link**
 /*!
  \param expr   Pointer to expression to write to database file.
  \param file   Pointer to database file to write to.
- \param scope  Name of Verilog hierarchical scope for this expression.
 
  This function recursively displays the expression information for the specified
  expression tree to the coverage database specified by file.
 */
-void expression_db_write( expression* expr, FILE* file, char* scope ) {
+void expression_db_write( expression* expr, FILE* file ) {
 
-  fprintf( file, "%d %d %s %d %x %d %d ",
+  fprintf( file, "%d %d %d %x %d %d ",
     DB_TYPE_EXPRESSION,
     expr->id,
-    scope,
     expr->line,
     (expr->suppl & SUPPL_MERGE_MASK),
     (SUPPL_OP( expr->suppl ) == EXP_OP_STATIC) ? 0 : expression_get_id( expr->right ),
@@ -590,11 +588,10 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
   expression* left;           /* Pointer to current expression's left expression  */
   int         chars_read;     /* Number of characters scanned in from line        */
   vector*     vec;            /* Holders vector value of this expression          */
-  char        modname[4096];  /* Name of this expression's module instance        */
   expression  texp;           /* Temporary expression link holder for searching   */
   exp_link*   expl;           /* Pointer to found expression in module            */
 
-  if( sscanf( *line, "%d %s %d %x %d %d%n", &id, modname, &linenum, &suppl, &right_id, &left_id, &chars_read ) == 6 ) {
+  if( sscanf( *line, "%d %d %x %d %d%n", &id, &linenum, &suppl, &right_id, &left_id, &chars_read ) == 5 ) {
 
     *line = *line + chars_read;
 
@@ -738,7 +735,6 @@ bool expression_db_merge( expression* base, char** line, bool same ) {
 
   bool retval = TRUE;  /* Return value for this function */
   int  id;             /* Expression ID field            */
-  char modname[4096];  /* Module name of this expression */
   int  linenum;        /* Expression line number         */
   int  suppl;          /* Supplemental field             */
   int  right_id;       /* ID of right child              */
@@ -747,7 +743,7 @@ bool expression_db_merge( expression* base, char** line, bool same ) {
 
   assert( base != NULL );
 
-  if( sscanf( *line, "%d %s %d %x %d %d%n", &id, modname, &linenum, &suppl, &right_id, &left_id, &chars_read ) == 6 ) {
+  if( sscanf( *line, "%d %d %x %d %d%n", &id, &linenum, &suppl, &right_id, &left_id, &chars_read ) == 5 ) {
 
     *line = *line + chars_read;
 
@@ -1404,6 +1400,12 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.91  2003/11/30 21:50:45  phase1geo
+ Modifying line_collect_uncovered function to create array containing all physical
+ lines (rather than just uncovered statement starting line values) for more
+ accurate line coverage results for the GUI.  Added new long_exp2 diagnostic that
+ is used to test this functionality.
+
  Revision 1.90  2003/11/30 05:46:45  phase1geo
  Adding IF report outputting capability.  Updated always9 diagnostic for these
  changes and updated rest of regression CDD files accordingly.

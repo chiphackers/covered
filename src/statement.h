@@ -15,7 +15,7 @@
 statement* statement_create( expression* exp );
 
 /*! \brief Writes specified statement to the specified output file. */
-void statement_db_write( statement* stmt, FILE* ofile, char* scope );
+void statement_db_write( statement* stmt, FILE* ofile );
 
 /*! \brief Reads in statement line from specified string and stores statement in specified module. */
 bool statement_db_read( char** line, module* curr_mod, int read_mode );
@@ -35,6 +35,11 @@ void statement_dealloc( statement* stmt );
 
 /*
  $Log$
+ Revision 1.15  2003/08/09 22:10:41  phase1geo
+ Removing wait event signals from CDD file generation in support of another method
+ that fixes a bug when multiple wait event statements exist within the same
+ statement tree.
+
  Revision 1.14  2003/08/05 20:25:05  phase1geo
  Fixing non-blocking bug and updating regression files according to the fix.
  Also added function vector_is_unknown() which can be called before making

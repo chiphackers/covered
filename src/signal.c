@@ -77,13 +77,12 @@ signal* signal_create( char* name, int width, int lsb ) {
 /*!
  \param sig      Signal to write to file.
  \param file     Name of file to display signal contents to.
- \param modname  Name of module that this signal belongs to.
 
  Prints the signal information for the specified signal to the
  specified file.  This file will be the database coverage file
  for this design.
 */
-void signal_db_write( signal* sig, FILE* file, char* modname ) {
+void signal_db_write( signal* sig, FILE* file ) {
 
   exp_link* curr;      /* Pointer to current expression link element */
 
@@ -91,10 +90,9 @@ void signal_db_write( signal* sig, FILE* file, char* modname ) {
   if( (sig->name[0] != '!') && (sig->value->width != -1) ) {
 
     /* Display identification and value information first */
-    fprintf( file, "%d %s %s %d ",
+    fprintf( file, "%d %s %d ",
       DB_TYPE_SIGNAL,
       sig->name,
-      modname,
       sig->lsb
     );
 
@@ -132,12 +130,11 @@ bool signal_db_read( char** line, module* curr_mod ) {
   int        lsb;            /* Least-significant bit of this signal             */
   int        exp_id;         /* Expression ID                                    */
   int        chars_read;     /* Number of characters read from line              */
-  char       modname[4096];  /* Name of signal's module                          */
   expression texp;           /* Temporary expression link for searching purposes */
   exp_link*  expl;           /* Temporary expression link for storage            */
 
   /* Get name values. */
-  if( sscanf( *line, "%s %s %d %n", name, modname, &lsb, &chars_read ) == 3 ) {
+  if( sscanf( *line, "%s %d %n", name, &lsb, &chars_read ) == 2 ) {
 
     *line = *line + chars_read;
 
@@ -233,14 +230,13 @@ bool signal_db_merge( signal* base, char** line, bool same ) {
  
   bool retval;         /* Return value of this function        */
   char name[256];      /* Name of current signal               */
-  char modname[4096];  /* Name of current signal's module      */
   int  lsb;            /* Least-significant bit of this signal */
   int  chars_read;     /* Number of characters read from line  */
 
   assert( base != NULL );
   assert( base->name != NULL );
 
-  if( sscanf( *line, "%s %s %d %n", name, modname, &lsb, &chars_read ) == 3 ) {
+  if( sscanf( *line, "%s %d %n", name, &lsb, &chars_read ) == 2 ) {
 
     *line = *line + chars_read;
 
@@ -445,6 +441,13 @@ void signal_dealloc( signal* sig ) {
 
 /*
  $Log$
+ Revision 1.46  2003/11/29 06:55:49  phase1geo
+ Fixing leftover bugs in better report output changes.  Fixed bug in param.c
+ where parameters found in RHS expressions that were part of statements that
+ were being removed were not being properly removed.  Fixed bug in sim.c where
+ expressions in tree above conditional operator were not being evaluated if
+ conditional expression was not at the top of tree.
+
  Revision 1.45  2003/11/12 17:34:03  phase1geo
  Fixing bug where signals are longer than allowable bit width.
 

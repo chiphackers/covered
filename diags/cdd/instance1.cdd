@@ -1,24 +1,24 @@
 5 1 * 2 0
 3 main main instance1.v 1 22
-1 b main 0 1 0 10102
-1 a main 0 1 0 11102
+1 b 0 1 0 10102
+1 a 0 1 0 11102
 3 depth1 main.inst0 instance1.v 24 35
-2 3 main.inst0 31 103001 0 0 
-2 2 main.inst0 31 203001 0 0 
-2 4 main.inst0 31 2f3008 3 2 1 0 11102
-2 1 main.inst0 31 2000001 0 0 
-2 5 main.inst0 31 203fb5 4 1 
-1 a1 main.inst0 0 1 0 11102 2
-1 b1 main.inst0 0 1 0 10102 3
-1 c1 main.inst0 0 1 0 11102 1
-4 5 main.inst0 5 5
+2 3 31 103001 0 0 
+2 2 31 203001 0 0 
+2 4 31 2f3008 3 2 1 0 11102
+2 1 31 2000001 0 0 
+2 5 31 203fb5 4 1 
+1 a1 0 1 0 11102 2
+1 b1 0 1 0 10102 3
+1 c1 0 1 0 11102 1
+4 5 5 5
 3 depth2 main.inst0.inst1 instance1.v 37 46
-2 8 main.inst0.inst1 44 103001 0 0 
-2 7 main.inst0.inst1 44 203001 0 0 
-2 9 main.inst0.inst1 44 1f3002 8 7 1 0 11102
-2 6 main.inst0.inst1 44 2000001 0 0 
-2 10 main.inst0.inst1 44 103fb5 9 6 
-1 a2 main.inst0.inst1 0 1 0 11102 7
-1 b2 main.inst0.inst1 0 1 0 10102 8
-1 c2 main.inst0.inst1 0 1 0 11102 6
-4 10 main.inst0.inst1 10 10
+2 8 44 103001 0 0 
+2 7 44 203001 0 0 
+2 9 44 1f3002 8 7 1 0 11102
+2 6 44 2000001 0 0 
+2 10 44 103fb5 9 6 
+1 a2 0 1 0 11102 7
+1 b2 0 1 0 10102 8
+1 c2 0 1 0 11102 6
+4 10 10 10

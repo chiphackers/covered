@@ -1,24 +1,24 @@
 5 1 * 2 0
 3 main main instance4.v 1 21
-1 b main 0 1 0 10102
-1 a main 0 1 0 11102
+1 b 0 1 0 10102
+1 a 0 1 0 11102
 3 foobar main.foo instance4.v 24 33
-2 3 main.foo 29 103001 0 0 
-2 2 main.foo 29 203001 0 0 
-2 4 main.foo 29 173009 3 2 1 0 10102
-2 1 main.foo 29 2000001 0 0 
-2 5 main.foo 29 103fb5 4 1 
-1 c main.foo 0 1 0 10102 3
-1 b main.foo 0 1 0 11102 2
-1 a main.foo 0 1 0 10102 1
-4 5 main.foo 5 5
+2 3 29 103001 0 0 
+2 2 29 203001 0 0 
+2 4 29 173009 3 2 1 0 10102
+2 1 29 2000001 0 0 
+2 5 29 103fb5 4 1 
+1 c 0 1 0 10102 3
+1 b 0 1 0 11102 2
+1 a 0 1 0 10102 1
+4 5 5 5
 3 fooman main.foo.foo instance4.v 36 44
-2 8 main.foo.foo 42 103001 0 0 
-2 7 main.foo.foo 42 203001 0 0 
-2 9 main.foo.foo 42 271008 8 7 1 0 10002
-2 6 main.foo.foo 42 2000001 0 0 
-2 10 main.foo.foo 42 201fb5 9 6 
-1 b main.foo.foo 0 1 0 11102 7
-1 c main.foo.foo 0 1 0 10102 8
-1 a main.foo.foo 0 1 0 10002 6
-4 10 main.foo.foo 10 10
+2 8 42 103001 0 0 
+2 7 42 203001 0 0 
+2 9 42 271008 8 7 1 0 10002
+2 6 42 2000001 0 0 
+2 10 42 201fb5 9 6 
+1 b 0 1 0 11102 7
+1 c 0 1 0 10102 8
+1 a 0 1 0 10002 6
+4 10 10 10
