@@ -22,11 +22,15 @@ X  2.  Add ability for user to specify FSM location and all possible states/stat
 
 X  5.  Work on increasing performance of score command.
 
-   6.  Add more Verilog-2001 constructs to parser.
+   6.  Add more Verilog-1995 constructs to parser.
+       - loops (for, while, repeat)
+       - tasks/functions
 
-   7.  Allow Covered to run simulation phases in parallel to increase performance.
+   7.  Add more Verilog-2001 constructs to parser.
 
-   8.  Add feature to cause Covered to omit the simulation phase for toggle and
+   8.  Allow Covered to run simulation phases in parallel to increase performance.
+
+   9.  Add feature to cause Covered to omit the simulation phase for toggle and
        FSM coverage results.
 
 Merge command
@@ -43,5 +47,18 @@ IP 2.  Work on GUI interface for report function.
 Miscellaneous
 -------------
 
-   1.  Add regression that produces known, achievable error conditions in the code.
+IP 1.  Add regression that produces known, achievable error conditions in the code.
 
+   2.  Change name of signal to vsignal in stable release version.
+
+GUI
+---
+
+   1.  Add overwrite functions to signal, expression, and FSM types to allow for quicker
+       closing of files and reopening.
+
+   2.  Add ability to close entire design so that a new one can be reopened.
+
+   3.  Add toggle, combinational logic and FSM coverage output
+
+   4.  Make TCL and TK libraries build better in configure scripts
