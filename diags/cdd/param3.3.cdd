@@ -1,0 +1,12 @@
+3 main main param3.3.v
+1 #xsize main 32 0 4,0,0,0,0,0,0,0
+1 #bar1 main 32 0 4,0,0,0,0,0,0,0
+1 x main 2 0 311aa
+3 foo main.bar1 param3.3.v
+2 8 main.bar1 33 1000 0 0 2 0 100000
+2 7 main.bar1 33 3001 0 0 
+2 9 main.bar1 33 3f82 8 7 2 0 311aa
+1 #bsize main.bar1 32 0 4,0,0,0,0,0,0,0
+1 b main.bar1 2 0 311aa 7
+1 a main.bar1 2 0 311aa
+4 9 main.bar1 9 9
