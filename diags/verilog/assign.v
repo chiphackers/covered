@@ -1,13 +1,13 @@
 module main;
 
 wire	a;
-reg	b;
-reg	c;
+reg 	b;
+reg 	c;
 
 wire	d;
 wire 	e;
 wire	f;
-reg	g;
+reg 	g;
 
 initial begin
 	$dumpfile( "assign.vcd" );

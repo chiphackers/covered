@@ -275,8 +275,8 @@ void combination_underline_tree( expression* exp, char*** lines, int* depth, int
           if( (i < l_depth) && (i < r_depth) ) {
          
             /* Merge left and right lines */
-            snprintf( (*lines)[i], *size, code_fmt, l_lines[i], r_lines[i] );
-
+            snprintf( (*lines)[i], (*size + 1), code_fmt, l_lines[i], r_lines[i] );
+            
             free_safe( l_lines[i] );
             free_safe( r_lines[i] );
 
@@ -286,8 +286,8 @@ void combination_underline_tree( expression* exp, char*** lines, int* depth, int
             gen_space( exp_sp, r_size );
 
             /* Merge left side only */
-            snprintf( (*lines)[i], *size, code_fmt, l_lines[i], exp_sp );
-
+            snprintf( (*lines)[i], (*size + 1), code_fmt, l_lines[i], exp_sp );
+            
             free_safe( l_lines[i] );
 
           } else if( i < r_depth ) {
@@ -296,8 +296,8 @@ void combination_underline_tree( expression* exp, char*** lines, int* depth, int
             gen_space( exp_sp, l_size );
 
             /* Merge left side only */
-            snprintf( (*lines)[i], *size, code_fmt, exp_sp, r_lines[i] );
-
+            snprintf( (*lines)[i], (*size + 1), code_fmt, exp_sp, r_lines[i] );
+            
             free_safe( r_lines[i] );
    
           } else {

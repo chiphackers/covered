@@ -195,7 +195,7 @@ int command_score( int argc, char** argv ) {
   int retval = 0;    /* Return value for this function */
 
   /* Initialize error suppression value */
-  set_output_suppression( FALSE );
+  set_output_suppression( TRUE );
 
   /* Parse score command-line */
   score_parse_args( argc, argv );

@@ -472,8 +472,6 @@ expression* db_create_expression( expression* right, expression* left, int op, i
     bind_add( sig_name, expr, curr_module->name );
   }
 
-  printf( "In db_create_expression, width: %d\n", expr->value->width );
-
   return( expr );
 
 }

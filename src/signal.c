@@ -204,7 +204,6 @@ bool signal_db_read( char** line, module* curr_mod ) {
               (SUPPL_OP( expl->exp->suppl ) == EXP_OP_MBIT_SEL ) ) {
 
             if( SUPPL_OP( expl->exp->suppl ) == EXP_OP_SIG ) {
-              printf( "Binding signal with width: %d\n", sig->value->width );
               expl->exp->value = sig->value;
               expl->exp->sig   = sig;
             } else if( (SUPPL_OP( expl->exp->suppl ) == EXP_OP_SBIT_SEL) || (SUPPL_OP( expl->exp->suppl ) == EXP_OP_MBIT_SEL) ) {
