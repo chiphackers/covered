@@ -12,6 +12,8 @@
 \subsection*{Functions}
 \begin{CompactItemize}
 \item 
+void {\bf score\_\-usage} ()
+\item 
 {\bf bool} {\bf read\_\-command\_\-file} (char $\ast$cmd\_\-file, char $\ast$$\ast$arg\_\-list, int $\ast$arg\_\-num)
 \item 
 {\bf bool} {\bf score\_\-parse\_\-args} (int argc, char $\ast$$\ast$argv)
@@ -45,7 +47,7 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsection{Function Documentation}
 \index{score.c@{score.c}!command_score@{command\_\-score}}
 \index{command_score@{command\_\-score}!score.c@{score.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int command\_\-score (int {\em argc}, char $\ast$$\ast$ {\em argv})}\label{score_8c_a6}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int command\_\-score (int {\em argc}, char $\ast$$\ast$ {\em argv})}\label{score_8c_a7}
 
 
 Parses score command-line and performs score.
@@ -62,7 +64,7 @@ argv}]Arguments from command-line to parse. \end{description}
 Returns 0 if scoring is successful; otherwise, returns -1. \end{Desc}
 \index{score.c@{score.c}!read_command_file@{read\_\-command\_\-file}}
 \index{read_command_file@{read\_\-command\_\-file}!score.c@{score.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} read\_\-command\_\-file (char $\ast$ {\em cmd\_\-file}, char $\ast$$\ast$ {\em arg\_\-list}, int $\ast$ {\em arg\_\-num})}\label{score_8c_a4}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} read\_\-command\_\-file (char $\ast$ {\em cmd\_\-file}, char $\ast$$\ast$ {\em arg\_\-list}, int $\ast$ {\em arg\_\-num})}\label{score_8c_a5}
 
 
 \begin{Desc}
@@ -78,7 +80,7 @@ arg\_\-num}]Number of arguments in arg\_\-list array. \end{description}
 Returns TRUE if read of command file was successful; otherwise, returns FALSE. \end{Desc}
 \index{score.c@{score.c}!score_parse_args@{score\_\-parse\_\-args}}
 \index{score_parse_args@{score\_\-parse\_\-args}!score.c@{score.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} score\_\-parse\_\-args (int {\em argc}, char $\ast$$\ast$ {\em argv})}\label{score_8c_a5}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} score\_\-parse\_\-args (int {\em argc}, char $\ast$$\ast$ {\em argv})}\label{score_8c_a6}
 
 
 \begin{Desc}
@@ -91,7 +93,12 @@ argv}]List of arguments to parse. \end{description}
 \begin{Desc}
 \item[Returns: ]\par
 Returns TRUE if successful in dealing with arguments; otherwise, returns FALSE. \end{Desc}
+\index{score.c@{score.c}!score_usage@{score\_\-usage}}
+\index{score_usage@{score\_\-usage}!score.c@{score.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void score\_\-usage ()}\label{score_8c_a4}
 
+
+Displays usage information for score command. 
 
 \subsection{Variable Documentation}
 \index{score.c@{score.c}!largest_malloc_size@{largest\_\-malloc\_\-size}}

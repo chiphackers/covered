@@ -18,6 +18,22 @@ char* merge_in1   = NULL;
 
 
 /*!
+ Outputs usage informaiton to standard output for merge command.
+*/
+void merge_usage() {
+
+  printf( "\n" );
+  printf( "Usage:  covered merge [<options>] <existing_database> <database_to_merge>\n" );
+  printf( "\n" );
+  printf( "   Options:\n" );
+  printf( "      -o <filename>           File to output new database to.  If this argument is not\n" );
+  printf( "                              specified, the <existing_database> is used as the output\n" );
+  printf( "                              database name.\n" );
+  printf( "\n" );
+
+}
+
+/*!
  \param argc  Number of arguments in argument list argv.
  \param argv  Argument list passed to this program.
 
@@ -39,7 +55,12 @@ bool merge_parse_args( int argc, char** argv ) {
 
   while( (i < argc) && retval ) {
 
-    if( strncmp( "-o", argv[i], 2 ) == 0 ) {
+    if( strncmp( "-h", argv[i], 2 ) == 0 ) {
+
+      merge_usage();
+      retval = FALSE;
+
+    } else if( strncmp( "-o", argv[i], 2 ) == 0 ) {
     
       i++;
       if( is_directory( argv[i] ) ) {
@@ -100,22 +121,24 @@ int command_merge( int argc, char** argv ) {
   set_output_suppression( FALSE );
 
   /* Parse score command-line */
-  if( !merge_parse_args( argc, argv ) ) {
-    exit( 1 );
+  if( merge_parse_args( argc, argv ) ) {
+
+    printf( COVERED_HEADER );
+
+    print_output( "Merging databases...", NORMAL );
+
+    /* Read in base database */
+    db_read( merge_in0, READ_MODE_MERGE_NO_MERGE );
+
+    /* Read in database to merge */
+    db_read( merge_in1, READ_MODE_MERGE_INST_MERGE );
+
+    /* Write out new database to output file */
+    db_write( merged_file );
+
+    printf( "\n***  Merging completed successfully!  ***\n" );
+
   }
-
-  print_output( "Merging databases...", NORMAL );
-
-  /* Read in base database */
-  db_read( merge_in0, READ_MODE_MERGE_NO_MERGE );
-
-  /* Read in database to merge */
-  db_read( merge_in1, READ_MODE_MERGE_INST_MERGE );
-
-  /* Write out new database to output file */
-  db_write( merged_file );
-
-  printf( "\n***  Merging completed successfully!  ***\n" );
 
   return( retval );
 

@@ -11,9 +11,10 @@
 <code>#include "<a class="el" href="merge_8h-source.html">merge.h</a>"</code><br>
 <table border=0 cellpadding=0 cellspacing=0>
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a132">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="merge_8c.html#a3">merge_parse_args</a> (int argc, char **argv)</td></tr>
-<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="merge_8c.html#a4">command_merge</a> (int argc, char **argv)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Parses command-line for merge options and performs merge command.</em> <a href="#a4"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="merge_8c.html#a3">merge_usage</a> ()</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a132">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="merge_8c.html#a4">merge_parse_args</a> (int argc, char **argv)</td></tr>
+<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="merge_8c.html#a5">command_merge</a> (int argc, char **argv)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Parses command-line for merge options and performs merge command.</em> <a href="#a5"></a><em></em></font><br><br></td></tr>
 <tr><td colspan=2><br><h2>Variables</h2></td></tr>
 <tr><td nowrap align=right valign=top>char *&nbsp;</td><td valign=bottom><a class="el" href="merge_8c.html#a0">merged_file</a> = NULL</td></tr>
 <tr><td nowrap align=right valign=top>char *&nbsp;</td><td valign=bottom><a class="el" href="merge_8c.html#a1">merge_in0</a> = NULL</td></tr>
@@ -27,7 +28,7 @@ Author: </b><dd>
 Trevor Williams (<a href="mailto:trevorw@charter.net">trevorw@charter.net</a>) </dl><dl compact><dt><b>
 Date: </b><dd>
 11/29/2001</dl><hr><h2>Function Documentation</h2>
-<a name="a4" doxytag="merge.c::command_merge"></a><p>
+<a name="a5" doxytag="merge.c::command_merge"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -77,7 +78,7 @@ Returns: </b><dd>
 Returns 0 if merge is successful; otherwise, returns -1. </dl>    </td>
   </tr>
 </table>
-<a name="a3" doxytag="merge.c::merge_parse_args"></a><p>
+<a name="a4" doxytag="merge.c::merge_parse_args"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -123,6 +124,34 @@ Argument list passed to this program.</td></tr>
 </dl><dl compact><dt><b>
 Returns: </b><dd>
 Returns TRUE if argument parsing was successful; otherwise, returns FALSE.</dl>Parses the merge argument list, placing all parsed values into global variables. If an argument is found that is not valid for the merge operation, an error message is displayed to the user.     </td>
+  </tr>
+</table>
+<a name="a3" doxytag="merge.c::merge_usage"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> void merge_usage </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
+          <td class="md" valign="top">)&nbsp;</td>
+          <td class="md" nowrap></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+Outputs usage informaiton to standard output for merge command.     </td>
   </tr>
 </table>
 <hr><h2>Variable Documentation</h2>
@@ -192,7 +221,7 @@ Returns TRUE if argument parsing was successful; otherwise, returns FALSE.</dl>P
     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Tue Jul 2 14:51:59 2002 for Covered by
+<hr><address align="right"><small>Generated on Tue Jul 2 17:36:56 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

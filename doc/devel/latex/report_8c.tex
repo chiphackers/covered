@@ -15,6 +15,8 @@
 \subsection*{Functions}
 \begin{CompactItemize}
 \item 
+void {\bf report\_\-usage} ()
+\item 
 void {\bf report\_\-parse\_\-metrics} (char $\ast$metrics)
 \item 
 {\bf bool} {\bf report\_\-parse\_\-args} (int argc, char $\ast$$\ast$argv)
@@ -64,7 +66,7 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsection{Function Documentation}
 \index{report.c@{report.c}!command_report@{command\_\-report}}
 \index{command_report@{command\_\-report}!report.c@{report.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int command\_\-report (int {\em argc}, char $\ast$$\ast$ {\em argv})}\label{report_8c_a14}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int command\_\-report (int {\em argc}, char $\ast$$\ast$ {\em argv})}\label{report_8c_a15}
 
 
 Parses command-line for report command and performs report functionality.
@@ -81,7 +83,7 @@ argv}]Arguments passed to report command to parse. \end{description}
 Returns 0 is report is successful; otherwise, returns -1. \end{Desc}
 \index{report.c@{report.c}!report_gather_stats@{report\_\-gather\_\-stats}}
 \index{report_gather_stats@{report\_\-gather\_\-stats}!report.c@{report.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void report\_\-gather\_\-stats ({\bf mod\_\-inst} $\ast$ {\em root})}\label{report_8c_a11}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void report\_\-gather\_\-stats ({\bf mod\_\-inst} $\ast$ {\em root})}\label{report_8c_a12}
 
 
 \begin{Desc}
@@ -92,7 +94,7 @@ root}]Pointer to root of instance tree to search.\end{description}
 \end{Desc}
 Recursively parses instance tree, creating statistic structures for each of the instances in the tree. Calculates summary coverage information for children nodes first and parent nodes after. In this way, the parent nodes will have the accumulated information from themselves and all of their children. \index{report.c@{report.c}!report_generate@{report\_\-generate}}
 \index{report_generate@{report\_\-generate}!report.c@{report.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void report\_\-generate (FILE $\ast$ {\em ofile})}\label{report_8c_a13}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void report\_\-generate (FILE $\ast$ {\em ofile})}\label{report_8c_a14}
 
 
 \begin{Desc}
@@ -103,7 +105,7 @@ ofile}]Pointer to output stream to display report information to.\end{descriptio
 \end{Desc}
 Generates a coverage report based on the options specified on the command line to the specified output stream. \index{report.c@{report.c}!report_parse_args@{report\_\-parse\_\-args}}
 \index{report_parse_args@{report\_\-parse\_\-args}!report.c@{report.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} report\_\-parse\_\-args (int {\em argc}, char $\ast$$\ast$ {\em argv})}\label{report_8c_a10}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} report\_\-parse\_\-args (int {\em argc}, char $\ast$$\ast$ {\em argv})}\label{report_8c_a11}
 
 
 \begin{Desc}
@@ -115,7 +117,7 @@ argv}]Argument list passed to this program.\end{description}
 \end{Desc}
 Parses the argument list for options. If a legal option is found for the report command, the appropriate action is taken for that option. If an option is found that is not allowed, an error message is reported to the user and the program terminates immediately. \index{report.c@{report.c}!report_parse_metrics@{report\_\-parse\_\-metrics}}
 \index{report_parse_metrics@{report\_\-parse\_\-metrics}!report.c@{report.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void report\_\-parse\_\-metrics (char $\ast$ {\em metrics})}\label{report_8c_a9}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void report\_\-parse\_\-metrics (char $\ast$ {\em metrics})}\label{report_8c_a10}
 
 
 \begin{Desc}
@@ -126,7 +128,7 @@ metrics}]Specified metrics to calculate coverage for.\end{description}
 \end{Desc}
 Parses the specified string containing the metrics to test. If a legal metric character is found, its corresponding flag is set to TRUE. If a character is found that does not correspond to a metric, an error message is flagged to the user (a warning). \index{report.c@{report.c}!report_print_header@{report\_\-print\_\-header}}
 \index{report_print_header@{report\_\-print\_\-header}!report.c@{report.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void report\_\-print\_\-header (FILE $\ast$ {\em ofile})}\label{report_8c_a12}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void report\_\-print\_\-header (FILE $\ast$ {\em ofile})}\label{report_8c_a13}
 
 
 \begin{Desc}
@@ -135,7 +137,12 @@ Parses the specified string containing the metrics to test. If a legal metric ch
 \item[{\em 
 ofile}]Pointer to output stream to display report information to.\end{description}
 \end{Desc}
-Generates generic report header for all reports. 
+Generates generic report header for all reports. \index{report.c@{report.c}!report_usage@{report\_\-usage}}
+\index{report_usage@{report\_\-usage}!report.c@{report.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void report\_\-usage ()}\label{report_8c_a9}
+
+
+Displays usage information about the report command. 
 
 \subsection{Variable Documentation}
 \index{report.c@{report.c}!input_db@{input\_\-db}}

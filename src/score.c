@@ -22,6 +22,35 @@ char* vcd_file   = NULL;    /*!< Name of VCD output file to parse               
 
 extern unsigned long largest_malloc_size;
 
+
+/*!
+ Displays usage information for score command.
+*/
+void score_usage() {
+
+  printf( "\n" );
+  printf( "Usage:  covered score -t <top-level_module_name> -vcd <dumpfile> [<options>]\n" );
+  printf( "\n" );
+  printf( "   Options:\n" );
+  printf( "      -o <database_filename>  Name of database to write coverage information to.\n" );
+  printf( "      -I <directory>          Directory to find included Verilog files\n" );
+  printf( "      -f <filename>           Name of file containing additional arguments to parse\n" );
+  printf( "      -y <directory>          Directory to find unspecified Verilog files\n" );
+  printf( "      -v <filename>           Name of specific Verilog file to score\n" );
+  printf( "      -e <module_name>        Name of module to not score\n" );
+  printf( "      -q                      Suppresses output to standard output\n" );
+  printf( "\n" );
+  printf( "      +libext+.<extension>(+.<extension>)+\n" );
+  printf( "                              Extensions of Verilog files to allow in scoring\n" );
+  printf( "\n" );
+  printf( "    Note:\n" );
+  printf( "      The top-level module specifies the module to begin scoring.  All\n" );
+  printf( "      modules beneath this module in the hierarchy will also be scored\n" );
+  printf( "      unless these modules are explicitly stated to not be scored using\n" );
+  printf( "      the -e flag.\n" );
+  printf( "\n" );
+
+}
 /*!
  \param cmd_file Name of file to read commands from.
  \param arg_list List of arguments found in specified command file.
@@ -95,9 +124,14 @@ bool score_parse_args( int argc, char** argv ) {
   int    arg_num = 0;     /* Number of arguments in arg_list */
   char   err_msg[4096];   /* Error message to display        */
 
-  while( (i < (argc - 1)) && retval ) {
+  while( (i < argc) && retval ) {
 
-    if( strncmp( "-q", argv[i], 2 ) == 0 ) {
+    if( strncmp( "-h", argv[i], 2 ) == 0 ) {
+
+      score_usage();
+      retval = FALSE;
+
+    } else if( strncmp( "-q", argv[i], 2 ) == 0 ) {
 
       set_output_suppression( TRUE );
 
@@ -198,36 +232,42 @@ int command_score( int argc, char** argv ) {
   set_output_suppression( FALSE );
 
   /* Parse score command-line */
-  score_parse_args( argc, argv );
+  if( score_parse_args( argc, argv ) ) {
 
-  if( output_db == NULL ) {
-    output_db = strdup( DFLT_OUTPUT_DB );
+    printf( COVERED_HEADER );
+
+    if( output_db == NULL ) {
+      output_db = strdup( DFLT_OUTPUT_DB );
+    }
+
+    printf( "Scoring design...\n" );
+
+    /* Initialize search engine */
+    search_init();
+
+    /* Parse design */
+    parse_design( top_module, output_db );
+
+    /* Read dumpfile and score design */
+    parse_and_score_dumpfile( top_module, output_db, vcd_file );
+
+    /* Deallocate memory for search engine */
+    search_free_lists();
+
+    free_safe( top_module );
+    free_safe( output_db );
+    free_safe( vcd_file );
+
+    printf( "\n***  Scoring completed successfully!  ***\n" );
+    printf( "\n" );
+    printf( "Dynamic memory allocated:  %ld bytes\n", largest_malloc_size );
+    printf( "\n" );
+
   }
-
-  printf( "Scoring design...\n" );
-
-  /* Initialize search engine */
-  search_init();
-
-  /* Parse design */
-  parse_design( top_module, output_db );
-
-  /* Read dumpfile and score design */
-  parse_and_score_dumpfile( top_module, output_db, vcd_file );
-
-  /* Deallocate memory for search engine */
-  search_free_lists();
-
-  free_safe( top_module );
-  free_safe( output_db );
-  free_safe( vcd_file );
-
-  printf( "\n***  Scoring completed successfully!  ***\n" );
-  printf( "\n" );
-  printf( "Dynamic memory allocated:  %ld bytes\n", largest_malloc_size );
-  printf( "\n" );
 
   return( retval );
 
 }
+
+/* $Log$ */
 

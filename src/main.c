@@ -21,49 +21,20 @@
 void usage() {
 
   printf( "\n" );
-  printf( "Usage:\n" );
+  printf( "Usage:  covered (-h | -v | <command> <command_options>)\n" );
   printf( "\n" );
-  printf( "  General Covered information:\n" );
-  printf( "    covered -v       Display current Covered version\n" );
-  printf( "    covered -h       Display this usage information\n" );
+  printf( "   Options:\n" );
+  printf( "      -v                      Display current Covered version\n" );
+  printf( "      -h                      Display this usage information\n" );
   printf( "\n" );
-  printf( "  To generate coverage database:\n" );
-  printf( "    covered score -t <top-level_module_name> -vcd <dumpfile> [<options>]\n" );
+  printf( "   Commands:\n" );
+  printf( "      score                   Parses Verilog files and VCD dumpfiles to create database file used\n" );
+  printf( "                                for merging and reporting.\n" );
+  printf( "      merge                   Merges two database files into one.\n" );
+  printf( "      report                  Generates human-readable coverage reports from database file.\n" );
   printf( "\n" );
-  printf( "    Options:\n" );
-  printf( "      -o <database_filename>  Name of database to write coverage information to.\n" );
-  printf( "      -I <directory>          Directory to find included Verilog files\n" );
-  printf( "      -f <filename>           Name of file containing additional arguments to parse\n" );
-  printf( "      -y <directory>          Directory to find unspecified Verilog files\n" );
-  printf( "      -v <filename>           Name of specific Verilog file to score\n" );
-  printf( "      -e <module_name>        Name of module to not score\n" );
-  printf( "      -q                      Suppresses output to standard output\n" );
-  printf( "\n" );
-  printf( "      +libext+.<extension>(+.<extension>)+\n" );
-  printf( "                              Extensions of Verilog files to allow in scoring\n" );
-  printf( "\n" );
-  printf( "    Note:\n" );
-  printf( "      The top-level module specifies the module to begin scoring.  All\n" );
-  printf( "      modules beneath this module in the hierarchy will also be scored\n" );
-  printf( "      unless these modules are explicitly stated to not be scored using\n" );
-  printf( "      the -e flag.\n" );
-  printf( "\n" );
-  printf( "  To merge a database with an existing database:\n" );
-  printf( "    covered merge [<options>] <existing_database> <database_to_merge>\n" );
-  printf( "\n" );
-  printf( "    Options:\n" );
-  printf( "      -o <filename>           File to output new database to.  If this argument is not\n" );
-  printf( "                              specified, the <existing_database> is used as the output\n" );
-  printf( "                              database name.\n" );
-  printf( "\n" );
-  printf( "  To generate a coverage report:\n" );
-  printf( "    covered report [<options>] <database_file>\n" );
-  printf( "\n" );
-  printf( "    Options:\n" );
-  printf( "      -m [l][t][c][f]         Type(s) of metrics to report.  Default is ltc.\n" );
-  printf( "      -v                      Provide verbose information in report.  Default is summarize.\n" );
-  printf( "      -i                      Provides coverage information for instances instead of module.\n" );
-  printf( "      -o <filename>           File to output report information to.  Default is standard output.\n" );
+  printf( "   For individual help information for each of the above commands, enter:\n" );
+  printf( "      covered <command> -h\n" );
   printf( "\n" );
 
 }
@@ -101,17 +72,14 @@ int main( int argc, char** argv ) {
 
     } else if( strncmp( "score", argv[1], 5 ) == 0 ) {
 
-      printf( COVERED_HEADER );
       retval = command_score( argc, argv );
 
     } else if( strncmp( "merge", argv[1], 5 ) == 0 ) {
 
-      printf( COVERED_HEADER );
       retval = command_merge( argc, argv );
 
     } else if( strncmp( "report", argv[1], 6 ) == 0 ) {
 
-      printf( COVERED_HEADER );
       retval = command_report( argc, argv );
 
     } else {

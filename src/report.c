@@ -65,6 +65,24 @@ extern mod_inst* instance_root;
 
 
 /*!
+ Displays usage information about the report command.
+*/
+void report_usage() {
+
+  printf( "\n" );
+  printf( "Usage:  covered report [<options>] <database_file>\n" );
+  printf( "\n" );
+  printf( "   Options:\n" );
+  printf( "      -m [l][t][c][f]         Type(s) of metrics to report.  Default is ltc.\n" );
+  printf( "      -v                      Provide verbose information in report.  Default is summarize.\n" );
+  printf( "      -i                      Provides coverage information for instances instead of module.\n" );
+  printf( "      -o <filename>           File to output report information to.  Default is standard output.\n" );
+  printf( "      -h                      Displays this usage information.\n" );
+  printf( "\n" );
+
+}
+
+/*!
  \param metrics  Specified metrics to calculate coverage for.
 
  Parses the specified string containing the metrics to test.  If
@@ -123,7 +141,12 @@ bool report_parse_args( int argc, char** argv ) {
 
   while( (i < argc) && retval ) {
 
-    if( strncmp( "-m", argv[i], 2 ) == 0 ) {
+    if( strncmp( "-h", argv[i], 2 ) == 0 ) {
+ 
+      report_usage();
+      retval = FALSE;
+
+    } else if( strncmp( "-m", argv[i], 2 ) == 0 ) {
     
       i++;
       report_parse_metrics( argv[i] );
@@ -172,6 +195,8 @@ bool report_parse_args( int argc, char** argv ) {
     i++;
 
   }
+
+  return( retval );
 
 }
 
@@ -297,50 +322,54 @@ int command_report( int argc, char** argv ) {
   set_output_suppression( FALSE );
 
   /* Parse score command-line */
-  report_parse_args( argc, argv );
+  if( report_parse_args( argc, argv ) ) {
 
-  /* Open output stream */
-  if( output_file != NULL ) {
+    printf( COVERED_HEADER );
 
-    if( (ofile = fopen( output_file, "w" )) == NULL ) {
+    /* Open output stream */
+    if( output_file != NULL ) {
 
-      snprintf( msg, 4096, "Unable to open %s for writing", output_file );
+      if( (ofile = fopen( output_file, "w" )) == NULL ) {
+
+        snprintf( msg, 4096, "Unable to open %s for writing", output_file );
+        print_output( msg, FATAL );
+        exit( 1 );
+
+      } else {
+
+        /* Free up memory for holding output_file */
+        free( output_file );
+
+      }
+    
+    } else {
+ 
+      ofile = stdout;
+
+    }
+
+    /* Open database file for reading */
+    if( input_db == NULL ) {
+
+      snprintf( msg, 4096, "Database file not specified in command line" );
       print_output( msg, FATAL );
       exit( 1 );
 
     } else {
 
-      /* Free up memory for holding output_file */
-      free( output_file );
+      if( report_instance ) {
+        db_read( input_db, READ_MODE_REPORT_NO_MERGE );
+      } else {
+        db_read( input_db, READ_MODE_REPORT_MOD_MERGE );
+      }
 
     }
-    
-  } else {
- 
-    ofile = stdout;
+
+    report_generate( ofile );
+
+    fclose( ofile );
 
   }
-
-  /* Open database file for reading */
-  if( input_db == NULL ) {
-
-    snprintf( msg, 4096, "Database file not specified in command line" );
-    print_output( msg, FATAL );
-    exit( 1 );
-
-  } else {
-
-    if( report_instance ) {
-      db_read( input_db, READ_MODE_REPORT_NO_MERGE );
-    } else {
-      db_read( input_db, READ_MODE_REPORT_MOD_MERGE );
-    }
-
-  }
-
-  report_generate( ofile );
-
-  fclose( ofile );
 
   return( retval );
 
@@ -348,6 +377,10 @@ int command_report( int argc, char** argv ) {
 
 
 /* $Log$
+/* Revision 1.6  2002/06/28 03:04:59  phase1geo
+/* Fixing more errors found by diagnostics.  Things are running pretty well at
+/* this point with current diagnostics.  Still some report output problems.
+/*
 /* Revision 1.5  2002/06/25 21:46:10  phase1geo
 /* Fixes to simulator and reporting.  Still some bugs here.
 /*

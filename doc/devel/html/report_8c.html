@@ -18,13 +18,14 @@
 <code>#include "<a class="el" href="stat_8h-source.html">stat.h</a>"</code><br>
 <table border=0 cellpadding=0 cellspacing=0>
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="report_8c.html#a9">report_parse_metrics</a> (char *metrics)</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a132">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="report_8c.html#a10">report_parse_args</a> (int argc, char **argv)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="report_8c.html#a11">report_gather_stats</a> (<a class="el" href="defines_8h.html#a129">mod_inst</a> *root)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="report_8c.html#a12">report_print_header</a> (FILE *ofile)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="report_8c.html#a13">report_generate</a> (FILE *ofile)</td></tr>
-<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="report_8c.html#a14">command_report</a> (int argc, char **argv)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Parses command-line for report command and performs report functionality.</em> <a href="#a14"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="report_8c.html#a9">report_usage</a> ()</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="report_8c.html#a10">report_parse_metrics</a> (char *metrics)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a132">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="report_8c.html#a11">report_parse_args</a> (int argc, char **argv)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="report_8c.html#a12">report_gather_stats</a> (<a class="el" href="defines_8h.html#a129">mod_inst</a> *root)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="report_8c.html#a13">report_print_header</a> (FILE *ofile)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="report_8c.html#a14">report_generate</a> (FILE *ofile)</td></tr>
+<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="report_8c.html#a15">command_report</a> (int argc, char **argv)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Parses command-line for report command and performs report functionality.</em> <a href="#a15"></a><em></em></font><br><br></td></tr>
 <tr><td colspan=2><br><h2>Variables</h2></td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a132">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="report_8c.html#a0">report_line</a> = TRUE</td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a132">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="report_8c.html#a1">report_toggle</a> = TRUE</td></tr>
@@ -44,7 +45,7 @@ Author: </b><dd>
 Trevor Williams (<a href="mailto:trevorw@charter.net">trevorw@charter.net</a>) </dl><dl compact><dt><b>
 Date: </b><dd>
 11/29/2001</dl><hr><h2>Function Documentation</h2>
-<a name="a14" doxytag="report.c::command_report"></a><p>
+<a name="a15" doxytag="report.c::command_report"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -94,7 +95,7 @@ Returns: </b><dd>
 Returns 0 is report is successful; otherwise, returns -1. </dl>    </td>
   </tr>
 </table>
-<a name="a11" doxytag="report.c::report_gather_stats"></a><p>
+<a name="a12" doxytag="report.c::report_gather_stats"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -129,7 +130,7 @@ Pointer to root of instance tree to search.</td></tr>
 </dl>Recursively parses instance tree, creating statistic structures for each of the instances in the tree. Calculates summary coverage information for children nodes first and parent nodes after. In this way, the parent nodes will have the accumulated information from themselves and all of their children.     </td>
   </tr>
 </table>
-<a name="a13" doxytag="report.c::report_generate"></a><p>
+<a name="a14" doxytag="report.c::report_generate"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -164,7 +165,7 @@ Pointer to output stream to display report information to.</td></tr>
 </dl>Generates a coverage report based on the options specified on the command line to the specified output stream.     </td>
   </tr>
 </table>
-<a name="a10" doxytag="report.c::report_parse_args"></a><p>
+<a name="a11" doxytag="report.c::report_parse_args"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -210,7 +211,7 @@ Argument list passed to this program.</td></tr>
 </dl>Parses the argument list for options. If a legal option is found for the report command, the appropriate action is taken for that option. If an option is found that is not allowed, an error message is reported to the user and the program terminates immediately.     </td>
   </tr>
 </table>
-<a name="a9" doxytag="report.c::report_parse_metrics"></a><p>
+<a name="a10" doxytag="report.c::report_parse_metrics"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -245,7 +246,7 @@ Specified metrics to calculate coverage for.</td></tr>
 </dl>Parses the specified string containing the metrics to test. If a legal metric character is found, its corresponding flag is set to TRUE. If a character is found that does not correspond to a metric, an error message is flagged to the user (a warning).     </td>
   </tr>
 </table>
-<a name="a12" doxytag="report.c::report_print_header"></a><p>
+<a name="a13" doxytag="report.c::report_print_header"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -278,6 +279,34 @@ Parameters: </b><dd>
 Pointer to output stream to display report information to.</td></tr>
 </table>
 </dl>Generates generic report header for all reports.     </td>
+  </tr>
+</table>
+<a name="a9" doxytag="report.c::report_usage"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> void report_usage </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
+          <td class="md" valign="top">)&nbsp;</td>
+          <td class="md" nowrap></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+Displays usage information about the report command.     </td>
   </tr>
 </table>
 <hr><h2>Variable Documentation</h2>
@@ -479,7 +508,7 @@ If set to a boolean value of TRUE, reports the toggle coverage for the specified
 If set to a boolean value of TRUE, provides a verbose description of both the coverage and metric examples that were not covered. If set to FALSE, provides a summarized coverage report containing only coverage percentage values.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Tue Jul 2 14:52:00 2002 for Covered by
+<hr><address align="right"><small>Generated on Tue Jul 2 17:36:57 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

@@ -8,6 +8,8 @@
 \subsection*{Functions}
 \begin{CompactItemize}
 \item 
+void {\bf merge\_\-usage} ()
+\item 
 {\bf bool} {\bf merge\_\-parse\_\-args} (int argc, char $\ast$$\ast$argv)
 \item 
 int {\bf command\_\-merge} (int argc, char $\ast$$\ast$argv)
@@ -37,7 +39,7 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsection{Function Documentation}
 \index{merge.c@{merge.c}!command_merge@{command\_\-merge}}
 \index{command_merge@{command\_\-merge}!merge.c@{merge.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int command\_\-merge (int {\em argc}, char $\ast$$\ast$ {\em argv})}\label{merge_8c_a4}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int command\_\-merge (int {\em argc}, char $\ast$$\ast$ {\em argv})}\label{merge_8c_a5}
 
 
 Parses command-line for merge options and performs merge command.
@@ -54,7 +56,7 @@ argv}]List of arguments from command-line to parse. \end{description}
 Returns 0 if merge is successful; otherwise, returns -1. \end{Desc}
 \index{merge.c@{merge.c}!merge_parse_args@{merge\_\-parse\_\-args}}
 \index{merge_parse_args@{merge\_\-parse\_\-args}!merge.c@{merge.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} merge\_\-parse\_\-args (int {\em argc}, char $\ast$$\ast$ {\em argv})}\label{merge_8c_a3}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} merge\_\-parse\_\-args (int {\em argc}, char $\ast$$\ast$ {\em argv})}\label{merge_8c_a4}
 
 
 \begin{Desc}
@@ -67,7 +69,12 @@ argv}]Argument list passed to this program.\end{description}
 \begin{Desc}
 \item[Returns: ]\par
 Returns TRUE if argument parsing was successful; otherwise, returns FALSE.\end{Desc}
-Parses the merge argument list, placing all parsed values into global variables. If an argument is found that is not valid for the merge operation, an error message is displayed to the user. 
+Parses the merge argument list, placing all parsed values into global variables. If an argument is found that is not valid for the merge operation, an error message is displayed to the user. \index{merge.c@{merge.c}!merge_usage@{merge\_\-usage}}
+\index{merge_usage@{merge\_\-usage}!merge.c@{merge.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void merge\_\-usage ()}\label{merge_8c_a3}
+
+
+Outputs usage informaiton to standard output for merge command. 
 
 \subsection{Variable Documentation}
 \index{merge.c@{merge.c}!merge_in0@{merge\_\-in0}}

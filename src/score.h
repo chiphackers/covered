@@ -11,5 +11,7 @@
 //! Parses score command-line and performs score.
 int command_score( int argc, char** argv );
 
+/* $Log */
+
 #endif
 
