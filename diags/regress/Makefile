@@ -60,7 +60,8 @@ DIAGS4        = delay1.3
 MERGE1        = merge1         fsm2
            
 IVONLYDIAGS1  = always5.1      assign1        assign2.8      ifdef1.1       implicit1 \
-                implicit2      real1.1        static2        static2.1      static2.2
+                implicit2      real1.1        static2        static2.1      static2.2 \
+                unary1
 IVONLYDIAGS2  = 
 IVONLYDIAGS3  = 
 IVONLYDIAGS4  = 
