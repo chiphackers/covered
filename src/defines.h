@@ -794,12 +794,39 @@
                                   (SUPPL_OP( x->suppl ) == EXP_OP_PARAM_MBIT))
 
 /*!
+ Returns a value of true if the specified expression is considered a combination expression by
+ the combinational logic report generator.
+*/
+#define EXPR_IS_COMB(x)         ((SUPPL_OP( x->suppl ) == EXP_OP_XOR)      || \
+		                 (SUPPL_OP( x->suppl ) == EXP_OP_ADD)      || \
+				 (SUPPL_OP( x->suppl ) == EXP_OP_SUBTRACT) || \
+				 (SUPPL_OP( x->suppl ) == EXP_OP_AND)      || \
+				 (SUPPL_OP( x->suppl ) == EXP_OP_OR)       || \
+				 (SUPPL_OP( x->suppl ) == EXP_OP_NAND)     || \
+				 (SUPPL_OP( x->suppl ) == EXP_OP_NOR)      || \
+				 (SUPPL_OP( x->suppl ) == EXP_OP_NXOR)     || \
+				 (SUPPL_OP( x->suppl ) == EXP_OP_LOR)      || \
+				 (SUPPL_OP( x->suppl ) == EXP_OP_LAND))
+
+/*!
+ Returns a value of true if the specified expression is considered a unary expression by
+ the combinational logic report generator.
+*/
+#define EXPR_IS_UNARY(x)        !EXPR_IS_COMB(x)
+
+/*!
  Returns a value of 1 if the specified expression was measurable for combinational 
  coverage but not fully covered during simulation.
 */
-#define EXPR_COMB_MISSED(x)        (EXPR_IS_MEASURABLE( x ) & \
-                                    ~expression_is_static_only( x ) & \
-                                    (~SUPPL_WAS_TRUE( x->suppl ) | ~SUPPL_WAS_FALSE( x->suppl )))
+#define EXPR_COMB_MISSED(x)        (EXPR_IS_MEASURABLE( x ) && \
+                                    !expression_is_static_only( x ) && \
+				    ((EXPR_IS_COMB( x ) && \
+				      (!((x->suppl >> SUPPL_LSB_EVAL_00) & 0x1) || \
+                                       !((x->suppl >> SUPPL_LSB_EVAL_01) & 0x1) || \
+                                       !((x->suppl >> SUPPL_LSB_EVAL_10) & 0x1) || \
+                                       !((x->suppl >> SUPPL_LSB_EVAL_11) & 0x1))) || \
+				     !SUPPL_WAS_TRUE( x->suppl ) || \
+				     !SUPPL_WAS_FALSE( x->suppl )))
 
 /*!
  \addtogroup op_tables
@@ -1553,6 +1580,12 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.97  2004/01/04 04:52:03  phase1geo
+ Updating ChangeLog and TODO files.  Adding merge information to INFO line
+ of CDD files and outputting this information to the merged reports.  Adding
+ starting and ending line information to modules and added function for GUI
+ to retrieve this information.  Updating full regression.
+
  Revision 1.96  2004/01/02 22:11:03  phase1geo
  Updating regression for latest batch of changes.  Full regression now passes.
  Fixed bug with event or operation in report command.
