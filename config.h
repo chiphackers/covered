@@ -38,5 +38,5 @@
 #define PACKAGE "covered"
 
 /* Version number of package */
-#define VERSION "covered-20040323"
+#define VERSION "covered-20040325"
 

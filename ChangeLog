@@ -1,3 +1,26 @@
+2004-03-25 08:37  phase1geo
+
+	* Makefile.am, Makefile.in, configure, configure.in, mkinstalldirs,
+	scripts/main_view.tcl, src/Makefile.am, src/Makefile.in,
+	src/report.c, src/tcl_funcs.c, src/tcl_funcs.h: Fixing installation
+	of TCL scripts and usage of the scripts in their installed
+	location.  We are almost ready to create the new development
+	release.
+
+2004-03-23 07:43  phase1geo
+
+	* Makefile.am, Makefile.in, config.h, config.h.in, configure,
+	configure.in, src/Makefile.am, src/Makefile.in: Modifications to
+	Makefile structure to install TCL scripts in location that is known
+	to Covered without the use of a COVERED_HOME environment variable. 
+	We are almost there now.
+
+2004-03-22 07:26  phase1geo
+
+	* ChangeLog, Makefile.am, Makefile.in, NEWS, config.h, config.h.in,
+	configure, configure.in, src/report.c, src/util.c: Updates for
+	upcoming release.  We are not quite ready to release at this point.
+
 2004-03-20 21:56  phase1geo
 
 	* diags/rpt/: multi_exp2.rptI, multi_exp2.rptM, multi_exp2.rptWI,
