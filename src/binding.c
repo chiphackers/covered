@@ -234,16 +234,8 @@ bool bind_perform( char* sig_name, expression* exp, module* mod_sig, module* mod
 
   if( retval ) {
 
-    printf( "Binding expression/signal %s\n", sigl->sig->name );
-
     /* Add expression to signal expression list */
     exp_link_add( exp, &(sigl->sig->exp_head), &(sigl->sig->exp_tail) );
-
-    /* If this expression will be assigned by generated results instead of from dumpfile, mark that info here */
-    if( expression_is_assigned( exp ) ) {
-      sigl->sig->value->suppl.part.assigned = 1;
-      printf( "Signal %n will be assigned***\n", sigl->sig->name );
-    }
 
     /* Set expression to point at signal */
     exp->sig = sigl->sig;
@@ -361,6 +353,11 @@ void bind() {
 
 /* 
  $Log$
+ Revision 1.29  2005/02/08 23:18:22  phase1geo
+ Starting to add code to handle expression assignment for blocking assignments.
+ At this point, regressions will probably still pass but new code isn't doing exactly
+ what I want.
+
  Revision 1.28  2004/03/30 15:42:14  phase1geo
  Renaming signal type to vsignal type to eliminate compilation problems on systems
  that contain a signal type in the OS.

@@ -830,6 +830,16 @@ expression* db_create_expression( expression* right, expression* left, int op, b
 
     }
 
+  } else {
+
+    /*
+     If this is a blocking assignment, set the assigned vector attribute in all signals to the
+     left of the blocking assignment operator to TRUE.
+    */
+    if( op == EXP_OP_BASSIGN ) {
+      expression_set_assigned( expr->left );
+    }
+
   }
  
   return( expr );
@@ -1339,6 +1349,11 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.125  2005/02/08 23:18:22  phase1geo
+ Starting to add code to handle expression assignment for blocking assignments.
+ At this point, regressions will probably still pass but new code isn't doing exactly
+ what I want.
+
  Revision 1.124  2005/02/05 04:13:29  phase1geo
  Started to add reporting capabilities for race condition information.  Modified
  race condition reason calculation and handling.  Ran -Wall on all code and cleaned

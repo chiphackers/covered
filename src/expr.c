@@ -1447,32 +1447,29 @@ bool expression_is_static_only( expression* expr ) {
 /*!
  \param expr  Pointer to current expression to evaluate
 
- \return Returns TRUE if the specified expression is on the LHS of a blocking assignment operator;
-         otherwise, returns FALSE.
-
- Used to figure out of an expression which points to a signal will assign this signal value during
- simulation by the expression_assign function (instead of from the VCD file).
+ Recursively traverses expression tree specified by expr and sets the assigned vector supplemental
+ field attribute to true for all signal (including single and multi-bit expressions).  This assumes
+ that the expression tree is the LHS of a blocking assignment operator (which is called in db.c)
 */
-bool expression_is_assigned( expression* expr ) {
-
-  bool assigned = FALSE;  /* Return value for this function */
+void expression_set_assigned( expression* expr ) {
 
   if( expr != NULL ) {
 
-    if( (expr->suppl.part.lhs == 1) && (expr->suppl.part.root == 0) ) {
+    if( (expr->op == EXP_OP_SIG) ||
+        (expr->op == EXP_OP_SBIT_SEL) ||
+	(expr->op == EXP_OP_MBIT_SEL) ) { 
 
-      /* Traverse up tree to see if a BASSIGN is found */
-      assigned = expression_is_assigned( expr->parent->expr );
+      /* printf( "Setting assigned for signal %s\n", expr->sig->name ); */
+      expr->sig->value->suppl.part.assigned = 1;
 
-    } else if( expr->op == EXP_OP_BASSIGN ) {
+    } else {
 
-      assigned = TRUE;
+      expression_set_assigned( expr->left  );
+      expression_set_assigned( expr->right );
 
     }
 
   }
-
-  return( assigned );
 
 }
 
@@ -1490,14 +1487,14 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
 
   if( lhs != NULL ) {
 
-    printf( "In expression_assign, lhs_op: %d, rhs_op: %d, lsb: %d\n", lhs->op, rhs->op, *lsb );
+    snprintf( user_msg, USER_MSG_LENGTH, "In expression_assign, lhs_op: %d, rhs_op: %d, lsb: %d", lhs->op, rhs->op, *lsb );
+    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
     switch( lhs->op ) {
       case EXP_OP_SIG      :
-        printf( "Signal: %s\n", lhs->sig->name );
         vector_set_value( lhs->value, rhs->value->value, lhs->value->width, *lsb, 0 );
+	vector_display( lhs->value );
         *lsb = *lsb + lhs->value->width;
-        printf( "New lsb: %d\n", *lsb );
         break;
       case EXP_OP_SBIT_SEL :
         if( !vector_is_unknown( lhs->left->value ) ) {
@@ -1508,18 +1505,21 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
         }
         vector_set_value( lhs->value, rhs->value->value, 1, *lsb, 0 );
         *lsb = *lsb + lhs->value->width;
-        printf( "New lsb: %d\n", *lsb );
         break;
       case EXP_OP_MBIT_SEL :
         vector_set_value( lhs->value, rhs->value->value, lhs->value->width, *lsb, 0 );
         *lsb = *lsb + lhs->value->width;
-        printf( "New lsb: %d\n", *lsb );
         break;
       case EXP_OP_CONCAT   :
       case EXP_OP_LIST     :
         break;
       default:
         /* This is an illegal expression to have on the left-hand-side of an expression */
+	assert( (lhs->op == EXP_OP_SIG)      ||
+	        (lhs->op == EXP_OP_SBIT_SEL) ||
+		(lhs->op == EXP_OP_MBIT_SEL) ||
+		(lhs->op == EXP_OP_CONCAT)   ||
+		(lhs->op == EXP_OP_LIST) );
         break;
     }
 
@@ -1593,6 +1593,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.111  2005/02/08 23:18:23  phase1geo
+ Starting to add code to handle expression assignment for blocking assignments.
+ At this point, regressions will probably still pass but new code isn't doing exactly
+ what I want.
+
  Revision 1.110  2005/02/05 04:13:29  phase1geo
  Started to add reporting capabilities for race condition information.  Modified
  race condition reason calculation and handling.  Ran -Wall on all code and cleaned
