@@ -909,13 +909,17 @@ void expression_display( expression* expr ) {
 /*!
  \param expr   Pointer to expression to set value to.
 
+ \return Returns TRUE if the assigned expression value was different than the previously stored value;
+         otherwise, returns FALSE.
+
  Performs expression operation.  This function must only be run after its
  left and right expressions have been calculated during this clock period.
  Sets the value of the operation in its own vector value and updates the
  suppl nibble as necessary.
 */
-void expression_operate( expression* expr ) {
+bool expression_operate( expression* expr ) {
 
+  bool    retval = FALSE;  /* Return value for this function                   */
   vector  vec1;            /* Used for logical reduction                       */ 
   vector  vec2;            /* Used for logical reduction                       */
   vector* vec;             /* Pointer to vector of unknown size                */
@@ -951,7 +955,7 @@ void expression_operate( expression* expr ) {
         if( vector_is_unknown( expr->left->value ) || vector_is_unknown( expr->right->value ) ) {
           bit = 0x2;
           for( i=0; i<expr->value->width; i++ ) {
-            vector_set_value( expr->value, &bit, 1, 0, i );
+            retval |= vector_set_value( expr->value, &bit, 1, 0, i );
           }
         } else {
           vector_init( &vec1, value32, 32 );
@@ -963,7 +967,7 @@ void expression_operate( expression* expr ) {
           }
           intval1 = intval1 / intval2;
           vector_from_int( &vec1, intval1 );
-          vector_set_value( expr->value, vec1.value, expr->value->width, 0, 0 );
+          retval = vector_set_value( expr->value, vec1.value, expr->value->width, 0, 0 );
         }
         break;
 
@@ -971,7 +975,7 @@ void expression_operate( expression* expr ) {
         if( vector_is_unknown( expr->left->value ) || vector_is_unknown( expr->right->value ) ) {
           bit = 0x2;
           for( i=0; i<expr->value->width; i++ ) {
-            vector_set_value( expr->value, &bit, 1, 0, i );
+            retval |= vector_set_value( expr->value, &bit, 1, 0, i );
           }
         } else {
           vector_init( &vec1, value32, 32 );
@@ -983,7 +987,7 @@ void expression_operate( expression* expr ) {
           }
           intval1 = intval1 % intval2;
           vector_from_int( &vec1, intval1 );
-          vector_set_value( expr->value, vec1.value, expr->value->width, 0, 0 );
+          retval = vector_set_value( expr->value, vec1.value, expr->value->width, 0, 0 );
         }
         break;
  
@@ -1073,22 +1077,22 @@ void expression_operate( expression* expr ) {
 
       case EXP_OP_COND :
         /* Simple vector copy from right side */
-        vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
+        retval = vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
         break;
 
       case EXP_OP_COND_SEL :
         vector_init( &vec1, &value1a, 1 );
         vector_unary_op( &vec1, expr->parent->expr->left->value, or_optab );
         if( VECTOR_VAL( vec1.value[0] ) == 0 ) {
-          vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
+          retval = vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
         } else if( VECTOR_VAL( vec1.value[0] ) == 1 ) {
-          vector_set_value( expr->value, expr->left->value->value, expr->left->value->width, 0, 0 );
+          retval = vector_set_value( expr->value, expr->left->value->value, expr->left->value->width, 0, 0 );
         } else {
           vec = vector_create( expr->value->width, TRUE );
           for( i=0; i<vec->width; i++ ) {
             VECTOR_SET_VAL( vec->value[i], 2 );
           }
-          vector_set_value( expr->value, vec->value, vec->width, 0, 0 );
+          retval = vector_set_value( expr->value, vec->value, vec->width, 0, 0 );
           vector_dealloc( vec );
         }
         break;
@@ -1149,25 +1153,25 @@ void expression_operate( expression* expr ) {
         if( vector_is_unknown( expr->left->value ) ) {
           bit = 0x2;
           for( i=0; i<expr->value->width; i++ ) {
-            vector_set_value( expr->value, &bit, 1, 0, i );
+            retval |= vector_set_value( expr->value, &bit, 1, 0, i );
           }
         } else {
           for( j=0; j<expr->right->value->width; j++ ) {
             bit = VECTOR_VAL( expr->right->value->value[j] );
             for( i=0; i<vector_to_int( expr->left->value ); i++ ) {
-              vector_set_value( expr->value, &bit, 1, 0, ((j * expr->right->value->width) + i) );
+              retval |= vector_set_value( expr->value, &bit, 1, 0, ((j * expr->right->value->width) + i) );
             }
           }
         }
         break;
 
       case EXP_OP_LIST :
-        vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
-        vector_set_value( expr->value, expr->left->value->value,  expr->left->value->width,  0, expr->right->value->width );
+        retval |= vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
+        retval |= vector_set_value( expr->value, expr->left->value->value,  expr->left->value->width,  0, expr->right->value->width );
         break;
 
       case EXP_OP_CONCAT :
-        vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
+        retval = vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
         break;
 
       case EXP_OP_PEDGE :
@@ -1176,12 +1180,12 @@ void expression_operate( expression* expr ) {
         /* If the event has been armed previously, evaluate */
         if( ((value1b & 0x80) == 0x80) && (value1a != VECTOR_VAL( expr->left->value->value[0] )) && (value1a == 1) ) {
           bit = 1;
-          vector_set_value( expr->value, &bit, 1, 0, 0 );
+          retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
           /* Clear armed bit */
           value1a &= 0x7f;
         } else {
           bit = 0;
-          vector_set_value( expr->value, &bit, 1, 0, 0 );
+          retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
           /* Set armed bit */
           value1a |= 0x80;
         }
@@ -1194,12 +1198,12 @@ void expression_operate( expression* expr ) {
         value1b = expr->left->value->value[0];
         if( ((value1b & 0x80) == 0x80) && (value1a != VECTOR_VAL( expr->left->value->value[0] )) && (value1a == 0) ) {
           bit = 1;
-          vector_set_value( expr->value, &bit, 1, 0, 0 );
+          retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
           /* Clear armed bit */
           value1a &= 0x7f;
         } else {
           bit = 0;
-          vector_set_value( expr->value, &bit, 1, 0, 0 );
+          retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
           /* Set armed bit */
           value1a |= 0x80;
         }
@@ -1215,12 +1219,12 @@ void expression_operate( expression* expr ) {
         vector_set_value( expr->left->value, expr->right->value->value, expr->right->value->width, 0, 0 );
         if( ((value1b & 0x80) == 0x80) && (vector_to_int( &vec1 ) == 0) ) {
           bit = 1;
-          vector_set_value( expr->value, &bit, 1, 0, 0 );
+          retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
           /* Clear armed bit */
           expr->left->value->value[0] &= 0x7f; 
         } else {
           bit = 0;
-          vector_set_value( expr->value, &bit, 1, 0, 0 );
+          retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
           /* Set armed bit */
           expr->left->value->value[0] |= 0x80; 
         }
@@ -1245,11 +1249,11 @@ void expression_operate( expression* expr ) {
         intval2 = vector_to_int( expr->right->value );          /* Number of clocks to delay */
         if( ((intval1 + intval2) <= curr_sim_time) || ((curr_sim_time == -1) && (intval1 != 0xffffffff)) ) {
           bit = 1;
-          vector_set_value( expr->value, &bit, 1, 0, 0 );
+          retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
           vector_from_int( expr->left->value, 0xffffffff );
         } else {
           bit = 0;
-          vector_set_value( expr->value, &bit, 1, 0, 0 );
+          retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
         }
         break;
 
@@ -1273,7 +1277,7 @@ void expression_operate( expression* expr ) {
 
       case EXP_OP_DEFAULT :
         bit = 1;
-        vector_set_value( expr->value, &bit, 1, 0, 0 );
+        retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
         break;
 
       case EXP_OP_ASSIGN :
@@ -1485,6 +1489,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.101  2004/08/11 22:11:39  phase1geo
+ Initial beginnings of combinational logic verbose reporting to GUI.
+
  Revision 1.100  2004/08/08 12:50:27  phase1geo
  Snapshot of addition of toggle coverage in GUI.  This is not working exactly as
  it will be, but it is getting close.
