@@ -15,7 +15,7 @@ fsm fsm (
 );
 
 initial begin
-	$dumpfile( "fsm1.vcd" );
+	$dumpfile( "fsm1.2.vcd" );
 	$dumpvars( 0, main );
         reset = 1'b1;
 	head  = 1'b0;
@@ -27,12 +27,6 @@ initial begin
 	@(posedge clk);
         head <= 1'b1;
 	valid <= 1'b1;
-	@(posedge clk);
-        head <= 1'b0;
-	tail <= 1'b1;
-	@(posedge clk);
-	tail  <= 1'b0;
-	valid <= 1'b0;
 	#20;
 	$finish;
 end

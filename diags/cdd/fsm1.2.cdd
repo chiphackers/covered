@@ -1,0 +1,91 @@
+5 1 *
+3 main main fsm1.2.v
+1 clk main 1 0 111aa
+1 reset main 1 0 110aa
+1 head main 1 0 101aa
+1 tail main 1 0 100aa
+1 valid main 1 0 101aa
+3 fsm main.fsm lib/fsm.v
+2 10 main.fsm 23 103001 0 0 
+2 9 main.fsm 23 201032 0 0 
+2 11 main.fsm 23 13301a 10 9 2 0 313aa
+2 8 main.fsm 23 203001 0 0 
+2 12 main.fsm 23 173599 11 8 2 0 313aa
+2 5 main.fsm 23 203001 0 0 
+2 6 main.fsm 23 2a 0 0 2 0 333aa
+2 7 main.fsm 23 2033a7 5 6 1 0 111aa
+2 34 main.fsm 28 201032 0 0 
+2 33 main.fsm 28 102032 0 0 
+2 35 main.fsm 28 14301a 34 33 2 0 301aa
+2 31 main.fsm 28 103001 0 0 
+2 30 main.fsm 28 103001 0 0 
+2 32 main.fsm 28 193008 31 30 1 0 101aa
+2 36 main.fsm 28 193599 35 32 2 0 301aa
+2 42 main.fsm 29 102032 0 0 
+2 41 main.fsm 29 102032 0 0 
+2 43 main.fsm 29 18201a 42 41 2 0 300aa
+2 39 main.fsm 29 201001 0 0 
+2 38 main.fsm 29 102001 0 0 
+2 40 main.fsm 29 241008 39 38 1 0 100aa
+2 44 main.fsm 29 122599 43 40 2 0 300aa
+2 50 main.fsm 30 102032 0 0 
+2 49 main.fsm 30 102032 0 0 
+2 51 main.fsm 30 18201a 50 49 2 0 300aa
+2 47 main.fsm 30 201001 0 0 
+2 46 main.fsm 30 102001 0 0 
+2 48 main.fsm 30 241008 47 46 1 0 100aa
+2 52 main.fsm 30 122599 51 48 2 0 300aa
+2 58 main.fsm 31 32 0 0 
+2 57 main.fsm 31 32 0 0 
+2 59 main.fsm 31 c01a 58 57 2 0 aa
+2 55 main.fsm 31 1 0 0 
+2 54 main.fsm 31 1 0 0 
+2 56 main.fsm 31 c008 55 54 1 0 aa
+2 60 main.fsm 31 c499 59 56 2 0 aa
+2 53 main.fsm 31 102032 0 0 
+2 28 main.fsm 27 103081 0 0 
+2 61 main.fsm 31 2015ad 53 28 1 0 100aa
+2 45 main.fsm 30 102032 0 0 
+2 62 main.fsm 30 1831ad 45 28 1 0 101aa
+2 37 main.fsm 29 102032 0 0 
+2 63 main.fsm 29 2831ad 37 28 1 0 111aa
+2 29 main.fsm 28 201032 0 0 
+2 64 main.fsm 28 2531ad 29 28 1 0 111aa
+2 24 main.fsm 25 1 0 0 
+2 25 main.fsm 25 2a 0 0 2 0 100aa
+2 26 main.fsm 25 20b029 24 25 1 0 111aa
+2 20 main.fsm 25 1 0 0 
+2 21 main.fsm 25 2a 0 0 2 0 101aa
+2 22 main.fsm 25 20b029 20 21 1 0 111aa
+2 16 main.fsm 25 1 0 0 
+2 17 main.fsm 25 2a 0 0 2 0 101aa
+2 18 main.fsm 25 20b029 16 17 1 0 111aa
+2 13 main.fsm 25 1 0 0 
+2 14 main.fsm 25 2a 0 0 3 0 313aa
+2 15 main.fsm 25 20b029 13 14 1 0 111aa
+2 19 main.fsm 25 27f02b 18 15 1 0 111aa
+2 23 main.fsm 25 2df02b 22 19 1 0 111aa
+2 27 main.fsm 25 2d33ab 26 23 1 0 111aa
+1 #STATE_IDLE main.fsm 2 0 100000 9 29 34 58
+1 #STATE_HEAD main.fsm 2 0 100001 33 37 57
+1 #STATE_DATA main.fsm 2 0 100004 42 45 50
+1 #STATE_TAIL main.fsm 2 0 100005 41 49 53
+1 clock main.fsm 1 0 111aa 5
+1 reset main.fsm 1 0 110aa 8
+1 head main.fsm 1 0 101aa 16 31 55
+1 tail main.fsm 1 0 100aa 24 39 47
+1 valid main.fsm 1 0 101aa 20 30 38 46 54
+1 state main.fsm 2 0 313aa 13 28
+1 next_state main.fsm 2 0 313aa 10
+4 12 main.fsm 7 7
+4 7 main.fsm 12 0
+4 60 main.fsm 27 27
+4 61 main.fsm 60 27
+4 52 main.fsm 27 27
+4 62 main.fsm 52 61
+4 44 main.fsm 27 27
+4 63 main.fsm 44 62
+4 36 main.fsm 27 27
+4 64 main.fsm 36 63
+4 27 main.fsm 64 0
+6 state next_state 02,04,03,,01,21,c1,

@@ -5,10 +5,10 @@ LINE COVERAGE RESULTS BY INSTANCE
 ---------------------------------
 Instance                                          Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                                              6/   1/   7       86%
-  main.fsm                                          6/   1/   7       86%
+  main                                              4/   3/   7       57%
+  main.fsm                                          4/   3/   7       57%
 
-Module: main, File: fsm1.v, Instance: main
+Module: main, File: fsm1.1.v, Instance: main
 --------------------------------------------------------
 Missed Lines
 
@@ -18,7 +18,9 @@ Module: fsm, File: lib/fsm.v, Instance: main.fsm
 --------------------------------------------------------
 Missed Lines
 
+     29:    (valid & tail) ? STATE_TAIL : STATE_DATA
      30:    (valid & tail) ? STATE_TAIL : STATE_DATA
+     31:    (valid & head) ? STATE_HEAD : STATE_IDLE
 
 =================================================================================
 
@@ -27,10 +29,10 @@ TOGGLE COVERAGE RESULTS BY INSTANCE
 Instance                                                   Toggle 0 -> 1                    Toggle 1 -> 0
                                                   Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
 ----------------------------------------------------------------------------------------------------------------
-  main                                             12/   2/  14       86%           14/   0/  14      100%
-  main.fsm                                          8/   1/   9       89%            9/   0/   9      100%
+  main                                              2/  12/  14       14%            4/  10/  14       29%
+  main.fsm                                          1/   8/   9       11%            2/   7/   9       22%
 
-Module: main, File: fsm1.v, Instance: main
+Module: main, File: fsm1.1.v, Instance: main
 --------------------------------------------------------
 Signals not getting 100% toggle coverage
 
@@ -38,6 +40,12 @@ Signal                    Toggle
 ----------------------------------------------------------------------------------
 reset                     0->1: 1'b0
 ......................... 1->0: 1'b1 ...
+head                      0->1: 1'b0
+......................... 1->0: 1'b0 ...
+tail                      0->1: 1'b0
+......................... 1->0: 1'b0 ...
+valid                     0->1: 1'b0
+......................... 1->0: 1'b0 ...
 
 Module: fsm, File: lib/fsm.v, Instance: main.fsm
 --------------------------------------------------------
@@ -47,6 +55,16 @@ Signal                    Toggle
 ----------------------------------------------------------------------------------
 reset                     0->1: 1'b0
 ......................... 1->0: 1'b1 ...
+head                      0->1: 1'b0
+......................... 1->0: 1'b0 ...
+tail                      0->1: 1'b0
+......................... 1->0: 1'b0 ...
+valid                     0->1: 1'b0
+......................... 1->0: 1'b0 ...
+state                     0->1: 2'b00
+......................... 1->0: 2'b00 ...
+next_state                0->1: 2'b00
+......................... 1->0: 2'b00 ...
 ===============================================================================================================
 
 COMBINATIONAL LOGIC COVERAGE RESULTS BY INSTANCE
@@ -54,10 +72,10 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY INSTANCE
 Instance                                               Logic Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                                             30/   8/  38       79%
-  main.fsm                                         30/   8/  38       79%
+  main                                             22/  16/  38       58%
+  main.fsm                                         22/  16/  38       58%
 
-Module: main, File: fsm1.v, Instance: main
+Module: main, File: fsm1.1.v, Instance: main
 --------------------------------------------------------
 Missed Combinations
 
@@ -65,6 +83,54 @@ Missed Combinations
 Module: fsm, File: lib/fsm.v, Instance: main.fsm
 --------------------------------------------------------
 Missed Combinations
+====================================================
+ Line #     Expression
+====================================================
+     23:    reset ? STATE_IDLE : next_state
+            |--------------1--------------|
+
+
+Expression 1
+^^^^^^^^^^^^^ - ?:
+ Value
+-------
+   1+
+
+====================================================
+ Line #     Expression
+====================================================
+     28:    case( state ) STATE_IDLE :
+                  |-1-|               
+
+
+Expression 1
+^^^^^^^^^^^^^ - 
+ Value
+-------
+   1+
+
+====================================================
+ Line #     Expression
+====================================================
+     28:    (valid & head) ? STATE_HEAD : STATE_IDLE
+            |-----1------|                          
+            |------------------2-------------------|
+
+
+Expression 1
+^^^^^^^^^^^^^ - &
+ L | R | Value
+---+---+------
+ 0 | 1 |    0
+ 1 | 0 |    0
+ 1 | 1 |    1
+
+Expression 2
+^^^^^^^^^^^^^ - ?:
+ Value
+-------
+   1+
+
 ====================================================
  Line #     Expression
 ====================================================
@@ -80,12 +146,14 @@ Expression 1
  0 | 0 |    0
  0 | 1 |    0
  1 | 0 |    0
+ 1 | 1 |    1
 
 Expression 2
 ^^^^^^^^^^^^^ - ?:
  Value
 -------
    0
+   1+
 
 ====================================================
  Line #     Expression
@@ -123,6 +191,7 @@ Expression 1
 ^^^^^^^^^^^^^ - &
  L | R | Value
 ---+---+------
+ 0 | 0 |    0
  0 | 1 |    0
  1 | 0 |    0
  1 | 1 |    1
@@ -131,6 +200,7 @@ Expression 2
 ^^^^^^^^^^^^^ - ?:
  Value
 -------
+   0
    1+
 
 
@@ -141,10 +211,10 @@ FINITE STATE MACHINE COVERAGE RESULTS BY INSTANCE
                                                                State                             Arc
 Instance                                          Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
 ----------------------------------------------------------------------------------------------------------------
-  main                                              3/  ? /  ?        ? %            4/  ? /  ?        ? %
-  main.fsm                                          3/  ? /  ?        ? %            4/  ? /  ?        ? %
+  main                                              1/  ? /  ?        ? %            1/  ? /  ?        ? %
+  main.fsm                                          1/  ? /  ?        ? %            1/  ? /  ?        ? %
 
-Module: main, File: fsm1.v, Instance: main
+Module: main, File: fsm1.1.v, Instance: main
 --------------------------------------------------------
 
 Module: fsm, File: lib/fsm.v, Instance: main.fsm
@@ -156,17 +226,12 @@ FSM input state (state), output state (next_state)
     States
     ======
     2'h0
-    2'h1
-    2'h3
 
   Hit State Transitions
 
     From State    To State  
     ==========    ==========
     2'h0       -> 2'h0      
-    2'h0       -> 2'h1      
-    2'h1       -> 2'h3      
-    2'h3       -> 2'h0      
 
 =================================================================================
 
