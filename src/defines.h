@@ -804,9 +804,14 @@
  @{
 */
 
-#define ARC_HIT_F               0       /*!< From state -> to state hit - forward */
-#define ARC_HIT_R               1       /*!< To state -> from state hit - reverse */
-#define ARC_BIDIR               2       /*!< Entry is bidirectional               */
+#define ARC_HIT_F               0       /*!< From state -> to state hit - forward               */
+#define ARC_HIT_R               1       /*!< To state -> from state hit - reverse               */
+#define ARC_BIDIR               2       /*!< Entry is bidirectional                             */
+#define ARC_NOT_UNIQUE_R        3       /*!< Right state is not unique                          */
+#define ARC_NOT_UNIQUE_L        4       /*!< Left state is not unique                           */
+#define ARC_ENTRY_SUPPL_SIZE    5       /*!< Number of bits comprising entry supplemental field */
+
+#define ARC_STATUS_SIZE         7       /*!< Number of characters comprising arc status         */
 
 /*! @} */
 
@@ -1421,6 +1426,10 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.77  2003/09/12 04:47:00  phase1geo
+ More fixes for new FSM arc transition protocol.  Everything seems to work now
+ except that state hits are not being counted correctly.
+
  Revision 1.76  2003/08/26 21:53:23  phase1geo
  Added database read/write functions and fixed problems with other arc functions.
 

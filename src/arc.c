@@ -26,7 +26,9 @@
 */
 int arc_get_entry_width( int width ) {
 
-  return( ((((width * 2) + 2) % 8) == 0) ? (((width * 2) + 2) / 8) : ((((width * 2) + 2) / 8) + 1) );
+  return( ((((width * 2) + ARC_ENTRY_SUPPL_SIZE) % 8) == 0) ?
+                 (((width * 2) + ARC_ENTRY_SUPPL_SIZE) / 8) :
+                 ((((width * 2) + ARC_ENTRY_SUPPL_SIZE) / 8) + 1) );
 
 }
 
@@ -165,13 +167,14 @@ int arc_get_suppl( char* arcs ) {
 */
 bool arc_set_states( char* arcs, int start, vector* left, vector* right ) {
 
-  bool   retval = TRUE;  /* Return value of this function       */
-  char   mask;           /* Mask to apply to current bit select */
-  vector value;          /* Vector to hold current bit select   */
-  int    pos;            /* Current 8-bit boundary bit position */
-  int    i;              /* Loop iterator                       */
-  int    j;              /* Loop iterator                       */
-  int    curr;           /* Current index of arc array to set   */
+  bool   retval = TRUE;  /* Return value of this function                  */
+  char   mask;           /* Mask to apply to current bit select            */
+  vector value;          /* Vector to hold current bit select              */
+  int    pos;            /* Current 8-bit boundary bit position            */
+  int    i;              /* Loop iterator                                  */
+  int    j;              /* Loop iterator                                  */
+  int    curr;           /* Current index of arc array to set              */
+  int    entry_size;     /* Number of characters needed to store one entry */
 
   /* Check specified vector for unknown information */
   if( vector_is_unknown( left ) || vector_is_unknown( right ) ) {
@@ -180,17 +183,19 @@ bool arc_set_states( char* arcs, int start, vector* left, vector* right ) {
 
   } else {
 
+    entry_size = arc_get_entry_width( arc_get_width( arcs ) );
+
     for( j=0; j<2; j++ ) {
   
       if( j == 0 ) {
-        pos         = (arc_get_width( arcs ) + 3) % 8;
-        curr        = start + ((arc_get_width( arcs ) + 3) / 8) + 7;
+        pos         = (arc_get_width( arcs ) + ARC_ENTRY_SUPPL_SIZE) % 8;
+        curr        = (start * entry_size) + ((arc_get_width( arcs ) + ARC_ENTRY_SUPPL_SIZE) / 8) + ARC_STATUS_SIZE;
         value.width = (arc_get_width( arcs ) > (8 - pos)) ? (8 - pos) : arc_get_width( arcs );
         value.value = left->value;
       } else {
-        pos          = 3;
+        pos          = ARC_ENTRY_SUPPL_SIZE;
         value.width  = (arc_get_width( arcs ) > 8) ? 8 : arc_get_width( arcs );
-        curr         = start + 7;
+        curr         = (start * entry_size) + ARC_STATUS_SIZE;
         value.value  = right->value;
       }
 
@@ -227,7 +232,9 @@ bool arc_set_states( char* arcs, int start, vector* left, vector* right ) {
 */
 void arc_set_entry_suppl( char* arcs, int curr, int type, char val ) {
 
-  arcs[curr + 7] = arcs[curr + 7] | ((val & 0x1) << type);
+  int entry_size = arc_get_entry_width( arc_get_width( arcs ) );
+
+  arcs[(curr * entry_size) + ARC_STATUS_SIZE] = arcs[(curr * entry_size) + ARC_STATUS_SIZE] | ((val & 0x1) << type);
 
 }
 
@@ -244,7 +251,7 @@ void arc_set_entry_suppl( char* arcs, int curr, int type, char val ) {
 */
 int arc_get_entry_suppl( char* arcs, int curr, int type ) {
 
-  return( (int)((arcs[curr + 7] >> type) & 0x1) );
+  return( (int)((arcs[curr + ARC_STATUS_SIZE] >> type) & 0x1) );
 
 }
 
@@ -280,7 +287,7 @@ int arc_find( char* arcs, vector* from_st, vector* to_st, int* ptr ) {
   *ptr       = -1;
 
   /* Initialize tmp */
-  arc_set_width( tmp, 1 );
+  arc_set_width( tmp, arc_get_width( arcs ) );
 
   i = 0;
   while( (i < 2) && (*ptr == -1) ) {
@@ -291,8 +298,8 @@ int arc_find( char* arcs, vector* from_st, vector* to_st, int* ptr ) {
         while( (j < curr_size) && (*ptr == -1) ) {
           k = 0;
           while( (k < entry_size) &&
-                 (((k == 0) && ((arcs[(((j * entry_size) + k) + 7)] & 0xf8) == (tmp[k + 7] & 0xf8))) ||
-                  ((k != 0) &&  (arcs[(((j * entry_size) + k) + 7)]         ==  tmp[k + 7]))) ) {
+                 (((k == 0) && ((arcs[(((j * entry_size) + k) + ARC_STATUS_SIZE)] & 0xe0) == (tmp[k + ARC_STATUS_SIZE] & 0xe0))) ||
+                  ((k != 0) &&  (arcs[(((j * entry_size) + k) + ARC_STATUS_SIZE)]         ==  tmp[k + ARC_STATUS_SIZE]))) ) {
             k++;
           }
           if( k == entry_size ) {
@@ -309,8 +316,8 @@ int arc_find( char* arcs, vector* from_st, vector* to_st, int* ptr ) {
           if( (type == 1) || ((type == 0) && (arc_get_entry_suppl( arcs, (j * entry_size), ARC_BIDIR ) == 1)) ) {
             k = 0;
             while( (k < entry_size) && 
-                   (((k == 0) && ((arcs[(((j * entry_size) + k) + 7)] & 0xf8) == (tmp[k + 7] & 0xf8))) ||
-                    ((k != 0) &&  (arcs[(((j * entry_size) + k) + 7)]         ==  tmp[k + 7]))) ) {
+                   (((k == 0) && ((arcs[(((j * entry_size) + k) + ARC_STATUS_SIZE)] & 0xe0) == (tmp[k + ARC_STATUS_SIZE] & 0xe0))) ||
+                    ((k != 0) &&  (arcs[(((j * entry_size) + k) + ARC_STATUS_SIZE)]         ==  tmp[k + ARC_STATUS_SIZE]))) ) {
               k++;
             }
             if( k == entry_size ) {
@@ -338,15 +345,21 @@ int arc_find( char* arcs, vector* from_st, vector* to_st, int* ptr ) {
 */
 char* arc_create( int width ) {
 
-  char* arcs;  /* Pointer to newly create state transition array   */
+  char* arcs;  /* Pointer to newly create state transition array */
+  int   i;     /* Loop iterator                                  */
 
   /* The arcs char array is not allocated, allocate the default space here */
-  arcs = (char*)malloc_safe( (arc_get_entry_width( width ) * width) + 7 );
+  arcs = (char*)malloc_safe( (arc_get_entry_width( width ) * width) + ARC_STATUS_SIZE );
 
   /* Initialize */
-  arc_set_width( arcs, width );     /* Signal width                           */
-  arc_set_max_size( arcs, width );  /* Number of entries in current arc array */
-  arc_set_curr_size( arcs, 0 );     /* Current entry pointer to store new     */
+  arc_set_width( arcs, width );     /* Signal width                                   */
+  arc_set_max_size( arcs, width );  /* Number of entries in current arc array         */
+  arc_set_curr_size( arcs, 0 );     /* Current entry pointer to store new             */
+  arc_set_suppl( arcs, 0 );         /* Initialize supplemental field to zeros for now */
+
+  for( i=0; i<(arc_get_entry_width( width ) * width); i++ ) {
+    arcs[i+ARC_STATUS_SIZE] = 0;
+  }
 
   return( arcs );
 
@@ -389,13 +402,18 @@ void arc_add( char** arcs, int width, vector* fr_st, vector* to_st, int hit ) {
     entry_width = arc_get_entry_width( arc_get_width( tmp ) );
 
     /* Allocate new memory */
-    *arcs = (char*)malloc_safe( (entry_width * arc_get_width( tmp )) + arc_get_width( tmp ) + 7 );
+    *arcs = (char*)malloc_safe( (entry_width * arc_get_width( tmp )) + arc_get_width( tmp ) + ARC_STATUS_SIZE );
 
     arc_set_width( *arcs, arc_get_width( tmp ) );
     arc_set_max_size( *arcs, arc_get_max_size( tmp ) + arc_get_width( tmp ) );
     arc_set_curr_size( *arcs, arc_get_curr_size( tmp ) );
-    for( i=7; i<((arc_get_max_size( tmp ) * entry_width) + 7); i++ ) {
-      (*arcs)[i] = tmp[i];
+    arc_set_suppl( *arcs, 0 );
+    for( i=0; i<((entry_width * arc_get_width( tmp )) + arc_get_width( tmp )); i++ ) {
+      if( i < ((arc_get_max_size( tmp ) * entry_width)) ) {
+        (*arcs)[i+ARC_STATUS_SIZE] = tmp[i+ARC_STATUS_SIZE];
+      } else {
+        (*arcs)[i+ARC_STATUS_SIZE] = 0;
+      }
     }
 
     /* Deallocate old memory */
@@ -425,7 +443,7 @@ void arc_add( char** arcs, int width, vector* fr_st, vector* to_st, int hit ) {
 
 }
 
-int arc_state_hit_total( char* arcs ) {
+int arc_state_hits( char* arcs ) {
 
   int hit = 0;     /* Number of states hit */
   int i;           /* Loop iterator        */
@@ -434,7 +452,7 @@ int arc_state_hit_total( char* arcs ) {
 
 }
 
-int arc_transition_hit_total( char* arcs ) {
+int arc_transition_hits( char* arcs ) {
 
   int hit = 0;     /* Number of arcs hit                          */
   int i;           /* Loop iterator                               */
@@ -470,11 +488,11 @@ bool arc_db_write( char* arcs, FILE* file ) {
   bool retval = TRUE;  /* Return value for this function */
   int  i;              /* Loop iterator                  */
 
-  for( i=0; i<(arc_get_curr_size( arcs ) * arc_get_entry_width( arc_get_width( arcs ) )) + 7; i++ ) {
+  for( i=0; i<(arc_get_curr_size( arcs ) * arc_get_entry_width( arc_get_width( arcs ) )) + ARC_STATUS_SIZE; i++ ) {
     if( (int)arcs[i] == 0 ) {
       fprintf( file, "," );
     } else {
-      fprintf( file, "%02x", (int)arcs[i] );
+      fprintf( file, "%02x", (((int)arcs[i]) & 0xff) );
     }
   }
 
@@ -548,7 +566,7 @@ bool arc_db_read( char** arcs, char** line ) {
   suppl     =  (arc_read_get_next_value( line ) & 0xff);
 
   /* Allocate memory */
-  *arcs = (char*)malloc_safe( (arc_get_entry_width( width ) * curr_size) + 7 );
+  *arcs = (char*)malloc_safe( (arc_get_entry_width( width ) * curr_size) + ARC_STATUS_SIZE );
 
   /* Initialize */
   arc_set_width( *arcs, width );
@@ -557,8 +575,8 @@ bool arc_db_read( char** arcs, char** line ) {
   arc_set_suppl( *arcs, suppl );
 
   /* Read in rest of values */ 
-  i = 7;
-  while( (i < ((curr_size * arc_get_entry_width( width )) + 7)) && retval ) {
+  i = ARC_STATUS_SIZE;
+  while( (i < ((curr_size * arc_get_entry_width( width )) + ARC_STATUS_SIZE)) && retval ) {
     if( (val = arc_read_get_next_value( line )) != -1 ) {
       (*arcs)[i] = (char)(val & 0xff);
     } else {
@@ -611,11 +629,11 @@ bool arc_db_merge( char* base, char** line, bool same ) {
   }
 
   entry_size = arc_get_entry_width( width );
-  i          = 7;
-  while( (i < ((curr_size * arc_get_entry_width( width )) + 7)) && retval ) {
+  i          = ARC_STATUS_SIZE;
+  while( (i < ((curr_size * arc_get_entry_width( width )) + ARC_STATUS_SIZE)) && retval ) {
     if( (val = arc_read_get_next_value( line )) != -1 ) {
       if( same ) {
-        if( ((((i - 7) % entry_size) == 0) && ((char)(val & 0xfc) != (base[i] & 0xfc))) || ((char)val != base[i]) ) {
+        if( ((((i - ARC_STATUS_SIZE) % entry_size) == 0) && ((char)(val & 0xfc) != (base[i] & 0xfc))) || ((char)val != base[i]) ) {
           print_output( "Attempting to merge two databases derived from different designs.  Unable to merge", FATAL );
           exit( 1 );
         }
@@ -647,6 +665,10 @@ void arc_dealloc( char* arcs ) {
 
 /*
  $Log$
+ Revision 1.4  2003/09/12 04:47:00  phase1geo
+ More fixes for new FSM arc transition protocol.  Everything seems to work now
+ except that state hits are not being counted correctly.
+
  Revision 1.3  2003/08/29 12:52:06  phase1geo
  Updating comments for functions.
 
