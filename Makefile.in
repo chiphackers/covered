@@ -65,7 +65,7 @@ VERSION = @VERSION@
 XGPERF = @XGPERF@
 
 EXTRA_DIST = ChangeLog.bak depcomp release.in ChangeLog AUTHORS COPYING INSTALL NEWS README TODO
-SUBDIRS = diags doc images packages scripts src
+SUBDIRS = diags doc scripts src
 AUTOMAKE_OPTIONS = foreign
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
