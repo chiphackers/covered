@@ -2,58 +2,63 @@ The following items are known to be problems in the current code that need to be
 or features that are unimplemented/not complete that need to be done before 0.1 stable
 release can be made.
 
+Legend
+------
+X   = This feature/fix has been completed and tested
+IP  = In Progress
+
 Score command
 -------------
 
-1.  Verify that single and multi-bit selectors work in all cases.
+   1.  Verify that single and multi-bit selectors work in all cases.
 
-2.  When `include is encountered, store current line number in stack for retrieval
-    when file parsing is resumed for that file.
+X  2.  When `include is encountered, store current line number in stack for retrieval
+       when file parsing is resumed for that file.
 
-3.  When parser error occurs, output something more meaningful (for debugging purposes)
-    and cause tool to exit rather than continue on.
+   3.  When parser error occurs, output something more meaningful (for debugging purposes)
+       and cause tool to exit rather than continue on.
 
-4.  Add performance monitor facility and attach monitors to all parser and lexer rules.
+   4.  Add performance monitor facility and attach monitors to all parser and lexer rules.
 
-5.  Handle parameters
+   5.  Handle parameters
 
-6.  Verify that -D option works when a value is specified.
+   6.  Verify that -D option works when a value is specified.
 
-7.  Make sure that expression widths are correct (may have to look at left-hand-side bit
-    width to calculate this correctly).
+   7.  Make sure that expression widths are correct (may have to look at left-hand-side bit
+       width to calculate this correctly).
 
-8.  Make sure that parser only parses a file once (when it is in both in a library (-y) and
-    and a -v option).
+   8.  Make sure that parser only parses a file once (when it is in both in a library (-y) and
+       and a -v option).
 
-9.  Allow ability to only parse a design and only score a dumpfile (rather than having to
-    do both everytime -- could save a lot of time in not having to reparse).
+   9.  Allow ability to only parse a design and only score a dumpfile (rather than having to
+       do both everytime -- could save a lot of time in not having to reparse).
 
-10. Possibly allow undeclared signals to be automatically created if not found (1-bit signal
-    values -- simulators will probably do this).
+   10. Possibly allow undeclared signals to be automatically created if not found (1-bit signal
+       values -- simulators will probably do this).
 
 
 Merge command
 -------------
 
-1.  Set up some type of merge testsuite and verify that everything works correctly here.
+   1.  Set up some type of merge testsuite and verify that everything works correctly here.
 
 
 Report command
 --------------
 
-1.  Handle combination logic outputting for expression trees that have line-wrap.
+   1.  Handle combination logic outputting for expression trees that have line-wrap.
 
-2.  Make sure that verbose line outputting is ordered for each file.
+   2.  Make sure that verbose line outputting is ordered for each file.
 
-3.  Make sure that combinational logic outputting is ordered for each file.
+   3.  Make sure that combinational logic outputting is ordered for each file.
 
-4.  Make sure that combinational table output is correct for all cases.
+   4.  Make sure that combinational table output is correct for all cases.
 
-5.  Add '+' to combinational logic output for values equal to or greater than one.
+   5.  Add '+' to combinational logic output for values equal to or greater than one.
 
-6.  Make sure that all unnecessary output is removed from verbose output (sometimes
-    modules/instances that have received 100% coverage still get some message).
+   6.  Make sure that all unnecessary output is removed from verbose output (sometimes
+       modules/instances that have received 100% coverage still get some message).
 
-7.  Add depth option for combination logic analyzer.
+   7.  Add depth option for combination logic analyzer.
 
-8.  Add option to output what has been covered (instead of what has not been covered)
+   8.  Add option to output what has been covered (instead of what has not been covered)

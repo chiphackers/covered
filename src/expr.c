@@ -130,6 +130,9 @@ expression* expression_create( expression* right, expression* left, int op, int 
              (op == EXP_OP_UNOR ) ||
              (op == EXP_OP_UNXOR) ||
              (op == EXP_OP_EOR)   ||
+             (op == EXP_OP_NEDGE) ||
+             (op == EXP_OP_PEDGE) ||
+             (op == EXP_OP_AEDGE) ||
              (op == EXP_OP_CASE)  ||
              (op == EXP_OP_CASEX) ||
              (op == EXP_OP_CASEZ) ||

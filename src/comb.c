@@ -444,7 +444,11 @@ void combination_unary( FILE* ofile, expression* exp ) {
   }
 
   if( SUPPL_WAS_TRUE( exp->suppl ) == 0 ) {
-    fprintf( ofile, "   1\n" );
+    if( exp->value->width > 1 ) {
+      fprintf( ofile, "   1+\n" );
+    } else {
+      fprintf( ofile, "   1\n" );
+    }
   }
 
   fprintf( ofile, "\n" );
@@ -480,19 +484,33 @@ void combination_two_vars( FILE* ofile, expression* exp, int val0, int val1, int
 
   if( !((SUPPL_WAS_FALSE( exp->left->suppl ) == 1) && (SUPPL_WAS_TRUE( exp->right->suppl ) == 1)) ||
       !((val1 == 1) ? (SUPPL_WAS_TRUE( exp->suppl ) == 1) : (SUPPL_WAS_FALSE( exp->suppl ) == 1)) ) {
-
-    fprintf( ofile, " 0 | 1 |    %d\n", val1 );
+    if( exp->right->value->width > 1 ) {
+      fprintf( ofile, " 0 | 1+|    %d\n", val1 );
+    } else {
+      fprintf( ofile, " 0 | 1 |    %d\n", val1 );
+    }
   }
 
   if( !((SUPPL_WAS_TRUE( exp->left->suppl ) == 1) && (SUPPL_WAS_FALSE( exp->right->suppl ) == 1)) ||
       !((val2 == 1) ? (SUPPL_WAS_TRUE( exp->suppl ) == 1) : (SUPPL_WAS_FALSE( exp->suppl ) == 1)) ) {
-
-    fprintf( ofile, " 1 | 0 |    %d\n", val2 );
+    if( exp->left->value->width > 1 ) {
+      fprintf( ofile, " 1+| 0 |    %d\n", val2 );
+    } else {
+      fprintf( ofile, " 1 | 0 |    %d\n", val2 );
+    }
   }
 
   if( !((SUPPL_WAS_TRUE( exp->left->suppl ) == 1) && (SUPPL_WAS_TRUE( exp->right->suppl ) == 1)) ||
       !((val3 == 1) ? (SUPPL_WAS_TRUE( exp->suppl ) == 1) : (SUPPL_WAS_FALSE( exp->suppl ) == 1)) ) {
-    fprintf( ofile, " 1 | 1 |    %d\n", val3 );
+    if( (exp->left->value->width > 1) && (exp->right->value->width > 1) ) {
+      fprintf( ofile, " 1+| 1+|    %d\n", val3 );
+    } else if( exp->left->value->width > 1 ) {
+      fprintf( ofile, " 1+| 1 |    %d\n", val3 );
+    } else if( exp->right->value->width > 1 ) {
+      fprintf( ofile, " 1 | 1+|    %d\n", val3 );
+    } else {
+      fprintf( ofile, " 1 | 1 |    %d\n", val3 );
+    }
   }
 
   fprintf( ofile, "\n" );
@@ -757,6 +775,11 @@ void combination_report( FILE* ofile, bool verbose, bool instance ) {
 
 
 /* $Log$
+/* Revision 1.34  2002/07/16 00:05:31  phase1geo
+/* Adding support for replication operator (EXPAND).  All expressional support
+/* should now be available.  Added diagnostics to test replication operator.
+/* Rewrote binding code to be more efficient with memory use.
+/*
 /* Revision 1.33  2002/07/14 05:27:34  phase1geo
 /* Fixing report outputting to allow multiple modules/instances to be
 /* output.

@@ -29,11 +29,6 @@ extern str_link* inc_paths_head;
 extern int ignore_mode;
 
 /*!
- Set to a non-zero value when we are in the true section of an `ifdef or `ifndef
-*/
-int true_mode = 0;
-
-/*!
  Contains error message if something wrong is found.
 */
 static char error_msg[500];
@@ -917,10 +912,11 @@ static void do_include() {
 
   assert( standby->file );
 
-  standby->next = istack;
-  istack->yybs  = YY_CURRENT_BUFFER;
-  istack        = standby;
-  standby       = 0;
+  standby->next     = istack;
+  istack->yybs      = YY_CURRENT_BUFFER;
+  istack->lineno    = yylloc.first_line;
+  istack            = standby;
+  standby           = 0;
   yylloc.first_line = 1;
 
   snprintf( msg, 4096, "Parsing include file \"%s\"", path );
@@ -1003,6 +999,7 @@ static int yywrap() {
   snprintf( msg, 4096, "Resume parsing %s", istack->path );
   print_output( msg, NORMAL );
   yy_switch_to_buffer( istack->yybs );
+  yylloc.first_line = istack->lineno;
 
   return 0;
 

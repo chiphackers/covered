@@ -2470,10 +2470,13 @@ event_expression
 		{
 		  expression* tmp1;
                   expression* tmp2;
+                  nibble      val  = 0x2;
                   expression* expr = $1;
                   if( ignore_mode == 0 ) {
                     tmp1 = db_create_expression( NULL, NULL, EXP_OP_LAST, @1.first_line, NULL );
-		    tmp2 = db_create_expression( $1, tmp1, EXP_OP_AEDGE, @1.first_line, NULL );
+		    tmp2 = db_create_expression( expr, tmp1, EXP_OP_AEDGE, @1.first_line, NULL );
+                    expression_create_value( tmp1, expr->value->width, 0 );
+                    vector_set_value( tmp1->value, &val, 1, 0, 0 );
 		    $$ = tmp2;
                   } else {
                     $$ = NULL;
