@@ -393,6 +393,7 @@ proc organize_underlines {} {
     set curr_line [expr $curr_line + [lindex $comb_uline_groups $i]]
   }
 
+  set comb_uline_exprs ""
   lappend comb_uline_exprs [list 0 -1 -1 $line_info -1]
 
   # Get all child expressions
