@@ -104,7 +104,7 @@ void instance_add( mod_inst** root, char* parent, module* child, char* inst_name
       inst->child_tail->next = new_inst;
       inst->child_tail       = new_inst;
     }
-
+ 
   }
   
 }
@@ -145,6 +145,42 @@ void instance_db_write( mod_inst* root, FILE* file, char* scope ) {
 }
 
 /*!
+ \param inst  Pointer to root instance of module instance tree to remove.
+
+ Recursively traverses instance tree, deallocating heap memory used to store the
+ the tree.
+*/
+void instance_dealloc_tree( mod_inst* root ) {
+
+  mod_inst* curr;        /* Pointer to current instance to evaluate */
+  mod_inst* tmp;         /* Temporary pointer to instance           */
+
+  if( root != NULL ) {
+
+    /* Remove instance's children first */
+    curr = root->child_head;
+    while( curr != NULL ) {
+      tmp = curr->next;
+      instance_dealloc_tree( curr );
+      curr = tmp;
+    }
+
+    /* Free up memory allocated for name */
+    free_safe( root->name );
+
+    /* Free up memory allocated for statistic, if necessary */
+    if( root->stat != NULL ) {
+      free_safe( root->stat );
+    }
+  
+    /* Free up memory for this module instance */
+    free_safe( root );
+
+  }
+
+}
+
+/*!
  \param root   Root of module instance tree.
  \param scope  Scope of module to remove from tree.
     
@@ -154,30 +190,57 @@ void instance_db_write( mod_inst* root, FILE* file, char* scope ) {
 */
 void instance_dealloc( mod_inst* root, char* scope ) {
   
-  mod_inst* inst;  /* Pointer to instance to remove               */
-  mod_inst* curr;  /* Pointer to current child instance to remove */
+  mod_inst* inst;        /* Pointer to instance to remove                        */
+  mod_inst* curr;        /* Pointer to current child instance to remove          */
+  mod_inst* last;        /* Last current child instance                          */
+  char      back[256];   /* Highest level of hierarchy in hierarchical reference */
+  char      rest[4096];  /* Rest of scope value                                  */
   
-  inst = instance_find_scope( root, scope );
-  
-  /* Remove all children first */
-  curr = inst->child_head;
-  while( curr != NULL ) {
-    assert( curr->name != NULL );
-    instance_dealloc( curr, curr->name );
-    curr = curr->next;
-  }
-  
-  /* Free up memory allocated for name */
-  free_safe( inst->name );
+  /* 
+   First, find parent instance of given scope and remove this instance
+   from its child list.
+  */  
+  scope_extract_back( scope, back, rest );
 
-  /* Free up memory allocated for statistic, if necessary */
-  if( inst->stat != NULL ) {
-    free_safe( inst->stat );
+  if( rest[0] == '\0' ) {
+    /* Current scope is root */
+    inst = NULL;
+  } else {
+    inst = instance_find_scope( root, rest );
   }
-  
-  /* Free up memory for this module instance */
-  free_safe( inst );
-  
+
+  /* If inst is NULL, the scope is the root instance so no child removal is necessary */
+  if( inst != NULL ) {
+
+    curr = inst->child_head;
+    last = NULL;
+    while( (curr != NULL) && (strcmp( curr->name, scope ) != 0) ) {
+      last = curr;
+      curr = curr->next;
+    }
+
+    if( curr != NULL ) {
+      if( last != NULL ) {
+        last->next = curr->next;
+      }
+      if( curr == inst->child_head ) {
+        /* Move parent head pointer */
+        inst->child_head = curr->next;
+      }
+      if( curr == inst->child_tail ) {
+        /* Move parent tail pointer */
+        inst->child_tail = last;
+      }
+    }
+
+    instance_dealloc_tree( curr );
+
+  } else {
+
+    instance_dealloc_tree( root );
+
+  }
+
 }
 
 /* $Log */
