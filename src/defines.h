@@ -1150,8 +1150,7 @@ struct fsm_s {
   signal*  sig;       /*!< Pointer to state signal                                                      */
   fsm_arc* arc_head;  /*!< Pointer to head of list of expression pairs that describe the valid FSM arcs */
   fsm_arc* arc_tail;  /*!< Pointer to tail of list of expression pairs that describe the valid FSM arcs */
-  nibble*  table;     /*!< FSM arc traversal table                                                      */
-  nibble*  valid;     /*!< Table of valid states                                                        */
+  char*    table;     /*!< FSM arc traversal table                                                      */
 };
 
 /*-------------------------------------------------------------------------------*/
@@ -1404,6 +1403,11 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.75  2003/08/25 13:02:03  phase1geo
+ Initial stab at adding FSM support.  Contains summary reporting capability
+ at this point and roughly works.  Updated regress suite as a result of these
+ changes.
+
  Revision 1.74  2003/08/22 00:23:59  phase1geo
  Adding development documentation comment to defines.h for new sym_sig structure.
 

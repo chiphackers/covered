@@ -162,7 +162,6 @@ fsm* fsm_create( signal* sig ) {
   table->arc_head = NULL;
   table->arc_tail = NULL;
   table->table    = NULL;
-  table->valid    = NULL;
 
   return( table );
 
@@ -254,12 +253,10 @@ void fsm_create_tables( fsm* table ) {
   if( table->sig->value->width <= 6 ) {
 
     table->table    = (nibble*)malloc_safe( fsm_get_width( table ) * 8 );
-    table->valid    = (nibble*)malloc_safe( fsm_get_width( table ) * 8 );
   
     /* Initialize table */
     for( i=0; i<fsm_get_width( table ); i++ ) {
       table->table[i] = 0;
-      table->valid[i] = 0;
     }
 
     /* Set valid table */
@@ -271,21 +268,11 @@ void fsm_create_tables( fsm* table ) {
       expression_operate( curr_arc->to_state   );
 
       /* Set valid bit in table, if possible */
-      set = fsm_set_table_bit( table->valid, table->sig->value->width, curr_arc->from_state->value, curr_arc->to_state->value );
+      // set = fsm_set_table_bit( table->valid, table->sig->value->width, curr_arc->from_state->value, curr_arc->to_state->value );
 
       curr_arc = curr_arc->next;
 
     } 
-
-    /*
-     If we found an unknown, set all valid bits to zero to indicate that a different type
-     of FSM report output is needed.
-    */
-    if( !set ) {
-      for( i=0; i<fsm_get_width( table ); i++ ) {
-        table->valid[i] = 0;
-      }
-    }
 
   } else {
 
@@ -316,11 +303,6 @@ bool fsm_db_write( fsm* table, FILE* file ) {
     DB_TYPE_FSM,
     table->sig->name
   );
-
-  /* Print valid table */
-  for( i=0; i<fsm_get_width( table ); i++ ) {
-    fprintf( file, " %x", table->valid[i] );
-  }
 
   /* Print set table */
   for( i=0; i<fsm_get_width( table ); i++ ) {
@@ -364,13 +346,6 @@ bool fsm_db_read( char** line, module* mod ) {
       table            = fsm_create( sigl->sig );
       sigl->sig->table = table;
       fsm_create_tables( table );
-
-      /* Now read in valid table */
-      for( i=0; i<fsm_get_width( table ); i++ ) {
-        if( sscanf( *line, "%x%n", &(table->valid[i]), &chars_read ) == 1 ) {
-          *line = *line + chars_read;
-        }
-      }
 
       /* Now read in set table */
       for( i=0; i<fsm_get_width( table ); i++ ) {
@@ -434,20 +409,6 @@ bool fsm_db_merge( fsm* base, char** line, bool same ) {
       exit( 1 );
 
     } else {
-
-      /* Read in valid table information */
-      for( i=0; i<fsm_get_width( base ); i++ ) {
-        if( sscanf( *line, "%x%n", &nib, &chars_read ) == 1 ) {
-          *line = *line + chars_read;
-          if( base->valid[i] != nib ) {
-            print_output( "Attempting to merge two databases derived from different designs.  Unable to merge", FATAL );
-            exit( 1 );
-          }
-        } else {
-          print_output( "Attempting to merge two databases derived from different designs.  Unable to merge", FATAL );
-          exit( 1 );
-        }
-      }
 
       /* Read in set table information and merge */
       for( i=0; i<fsm_get_width( base ); i++ ) {
@@ -736,10 +697,6 @@ void fsm_dealloc( fsm* table ) {
       free_safe( table->table );
     }
 
-    if( table->valid != NULL ) {
-      free_safe( table->valid );
-    }
-
     /* Deallocate FSM arc structure */
     while( table->arc_head != NULL ) {
       tmp = table->arc_head;
@@ -756,6 +713,11 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.6  2003/08/25 13:02:03  phase1geo
+ Initial stab at adding FSM support.  Contains summary reporting capability
+ at this point and roughly works.  Updated regress suite as a result of these
+ changes.
+
  Revision 1.5  2002/11/23 16:10:46  phase1geo
  Updating changelog and development documentation to include FSM description
  (this is a brainstorm on how to handle FSMs when we get to this point).  Fixed
