@@ -108,9 +108,9 @@ void combination_get_tree_stats( expression* exp, unsigned int curr_depth, float
     if( ((report_comb_depth == REPORT_DETAILED) && (curr_depth == report_comb_depth)) ||
          (report_comb_depth == REPORT_VERBOSE) ||
          (report_comb_depth == REPORT_SUMMARY) ) {
-      
+
       /* Calculate current expression combination coverage */
-      if( EXPR_IS_MEASURABLE( exp ) == 1 ) {
+      if( (EXPR_IS_MEASURABLE( exp ) == 1) && (SUPPL_WAS_COMB_COUNTED( exp->suppl ) == 0) ) {
         *total = *total + 2;
         if( EXPR_EVAL_STATIC( exp ) == 1 ) {
           *hit = *hit + 2;
@@ -120,6 +120,9 @@ void combination_get_tree_stats( expression* exp, unsigned int curr_depth, float
       }
 
     }
+
+    /* Consider this expression to be counted */
+    exp->suppl = exp->suppl | (0x1 << SUPPL_LSB_COMB_CNTD);
 
     /* Calculate children */
     combination_get_tree_stats( exp->right, combination_calc_depth( exp, curr_depth, FALSE ), total, hit );
@@ -803,16 +806,19 @@ bool combination_missed_expr( expression* expr, unsigned int curr_depth ) {
 
   bool missed_right;     /* Set to TRUE if missed expression found on right */
   bool missed_left;      /* Set to TRUE if missed expression found on left  */
-  
-  if( expr != NULL ) {
+    
+  if( (expr != NULL) && (SUPPL_WAS_COMB_COUNTED( expr->suppl ) == 1) ) {
 
+    expr->suppl  = expr->suppl & ~(0x1 << SUPPL_LSB_COMB_CNTD);
+    
     missed_right = combination_missed_expr( expr->right, combination_calc_depth( expr, curr_depth, FALSE ) );
     missed_left  = combination_missed_expr( expr->left,  combination_calc_depth( expr, curr_depth, TRUE ) );
 
     if( ((report_comb_depth == REPORT_DETAILED) && (curr_depth == report_comb_depth)) ||
          (report_comb_depth == REPORT_VERBOSE) ) {
 
-      return( (EXPR_COMB_MISSED( expr ) == 1) || missed_right || missed_left );
+      return( ((EXPR_IS_MEASURABLE( expr ) == 1) && (EXPR_COMB_MISSED( expr ) == !report_covered)) || 
+              missed_right || missed_left );
 
     } else {
       
@@ -857,9 +863,9 @@ void combination_display_verbose( FILE* ofile, stmt_link* stmtl ) {
   stmt_iter_reset( &stmti, stmtl );
   while( stmti.curr != NULL ) {
 
-    if( (combination_missed_expr( stmti.curr->stmt->exp, 0 ) == !report_covered) &&
-        (EXPR_IS_MEASURABLE( stmti.curr->stmt->exp ) == 1) ) {
+    if( combination_missed_expr( stmti.curr->stmt->exp, 0 ) == 1 ) {
 
+      stmti.curr->stmt->exp->suppl = stmti.curr->stmt->exp->suppl & ~(0x1 << SUPPL_LSB_COMB_CNTD);
       unexec_exp = stmti.curr->stmt->exp;
       exp_id     = 1;
 
@@ -1005,6 +1011,9 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.56  2002/11/23 21:27:25  phase1geo
+ Fixing bug with combinational logic being output when unmeasurable.
+
  Revision 1.55  2002/11/23 16:10:46  phase1geo
  Updating changelog and development documentation to include FSM description
  (this is a brainstorm on how to handle FSMs when we get to this point).  Fixed

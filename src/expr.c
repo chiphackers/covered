@@ -287,13 +287,11 @@ void expression_resize( expression* expr, bool recursive ) {
   int  largest_width;  /* Holds larger width of left and right children */
 
   if( expr != NULL ) {
-        
+
     if( recursive ) {
       expression_resize( expr->left, recursive );
       expression_resize( expr->right, recursive );
     }
-    
-    printf( "Resizing expression %d, op: %d, presize: %d\n", expr->id, SUPPL_OP( expr->suppl ), expr->value->width );
 
     switch( SUPPL_OP( expr->suppl ) ) {
 
@@ -1047,7 +1045,6 @@ void expression_operate( expression* expr ) {
     
     /* Set EVAL00, EVAL01, EVAL10 or EVAL11 bits based on current value of children */
     if( (expr->left != NULL) && (expr->right != NULL) ) {
-      printf( "Right operation type: %d\n", SUPPL_OP( expr->right->suppl ) );
       lf = SUPPL_IS_FALSE( expr->left->suppl  );
       lt = SUPPL_IS_TRUE(  expr->left->suppl  );
       rf = SUPPL_IS_FALSE( expr->right->suppl );
@@ -1057,7 +1054,6 @@ void expression_operate( expression* expr ) {
                     ((lf & rt) << SUPPL_LSB_EVAL_01) |
                     ((lt & rf) << SUPPL_LSB_EVAL_10) |
                     ((lt & rt) << SUPPL_LSB_EVAL_11);
-      printf( "Calculating dual operation types, lf: %d, lt: %d, rf: %d, rt: %d, suppl: %x\n", lf, lt, rf, rt, expr->suppl );
     }
 
   }
@@ -1184,6 +1180,12 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.65  2002/11/23 16:10:46  phase1geo
+ Updating changelog and development documentation to include FSM description
+ (this is a brainstorm on how to handle FSMs when we get to this point).  Fixed
+ bug with code underlining function in handling parameter in reports.  Fixing bugs
+ with MBIT/SBIT handling (this is not verified to be completely correct yet).
+
  Revision 1.64  2002/11/08 00:58:04  phase1geo
  Attempting to fix problem with parameter handling.  Updated some diagnostics
  in test suite.  Other diagnostics to follow.

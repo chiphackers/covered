@@ -331,6 +331,13 @@
 #define SUPPL_LSB_EVAL_F            21
 
 /*!
+ Least-significant bit position of expression supplemental field indicating that the
+ current expression has been previously counted for combinational coverage.  Only set
+ by report command (therefore this bit will always be a zero when written to CDD file.
+*/
+#define SUPPL_LSB_COMB_CNTD         22
+
+/*!
  Used for merging two supplemental fields from two expressions.  Both expression
  supplemental fields are ANDed with this mask and ORed together to perform the
  merge.  Fields that are merged are:
@@ -421,6 +428,12 @@
  timestamp.
 */
 #define SUPPL_IS_RIGHT_CHANGED(x)   ((x >> SUPPL_LSB_RIGHT_CHANGED) & 0x1)
+
+/*!
+ Returns a value of 1 if the specified expression has already been counted
+ for combinational coverage.
+*/
+#define SUPPL_WAS_COMB_COUNTED(x)   ((x >> SUPPL_LSB_COMB_CNTD) & 0x1)
 
 /*!
  Returns the specified expression's operation.
@@ -1123,6 +1136,9 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.58  2002/11/23 21:27:25  phase1geo
+ Fixing bug with combinational logic being output when unmeasurable.
+
  Revision 1.57  2002/11/23 16:10:46  phase1geo
  Updating changelog and development documentation to include FSM description
  (this is a brainstorm on how to handle FSMs when we get to this point).  Fixed
