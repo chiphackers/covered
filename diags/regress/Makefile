@@ -56,9 +56,7 @@ DIAGS1        = always1        always2        always3        always3.1.11A  alwa
                 param1         param1.1       param1.2       param1.3       param3 \
                 param3.1       param3.2       param3.3       param3.4       param3.5 \
                 param4         param4.1       param5         param6         param6.1 \
-                param7         pulldown1      pullup1        race1          race1.1 \
-                race1.2        race2.1        race2.2        race2.3        race2.4 \
-                sbit_sel1 \
+                param7         pulldown1      pullup1        sbit_sel1 \
                 sbit_sel1.1    static1        string1        supply0        supply1 \
                 toggle         tri            tri0           tri1
 DIAGS2        = delay1.1
@@ -66,6 +64,9 @@ DIAGS3        = delay1.2
 DIAGS4        = delay1.3
 
 MERGE1        = merge1         fsm2
+
+RACELIST      = race1          race1.1        race1.2        race2.1        race2.2 \
+                race2.3        race2.4
 
 ERRSCORE      = err1.0         err2.0
 ERRMERGE      =
@@ -90,7 +91,7 @@ VCSONLYDIAGS4 =
 
 iverilog:    clean
 	@cd ../verilog; \
-	$(MAKE) VERILOG=$(IVERILOG) VERILOG_FLAGS="$(IVERILOG_FLAGS1)" VERILOG_CMD="vvp $(IVERILOG_EXEC)" VERILOG_EXEC=$(IVERILOG_EXEC) DIAGLIST="$(DIAGS1) $(IVONLYDIAGS1)" MERGELIST="$(MERGE1)" ERRSCORELIST="$(ERRSCORE)" ERRMERGELIST="$(ERRMERGE)" ERRREPORTLIST="$(ERRREPORT)" regress
+	$(MAKE) VERILOG=$(IVERILOG) VERILOG_FLAGS="$(IVERILOG_FLAGS1)" VERILOG_CMD="vvp $(IVERILOG_EXEC)" VERILOG_EXEC=$(IVERILOG_EXEC) DIAGLIST="$(DIAGS1) $(IVONLYDIAGS1)" MERGELIST="$(MERGE1)" ERRSCORELIST="$(ERRSCORE)" ERRMERGELIST="$(ERRMERGE)" ERRREPORTLIST="$(ERRREPORT)" RACELIST="$(RACELIST)" regress
 	@cd ../verilog; \
 	$(MAKE) VERILOG=$(IVERILOG) VERILOG_FLAGS="$(IVERILOG_FLAGS2)" VERILOG_CMD="vvp $(IVERILOG_EXEC)" VERILOG_EXEC=$(IVERILOG_EXEC) DIAGLIST="$(DIAGS2) $(IVONLYDIAGS2)" regress
 	@cd ../verilog; \

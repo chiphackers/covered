@@ -29,7 +29,7 @@ RPT_DIR       = ../rpt
 
 LOGFILE = regress.log
 
-regress:	$(COVERED) $(DIAGLIST) $(MERGELIST) $(ERRSCORELIST) $(ERRMERGELIST)
+regress:	$(COVERED) $(DIAGLIST) $(RACELIST) $(MERGELIST) $(ERRSCORELIST) $(ERRMERGELIST)
 
 $(DIAGLIST):
 	@echo Running $@
@@ -40,6 +40,17 @@ $(DIAGLIST):
 	-@$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@.rptI $@.cdd
 	-@$(COVERED) $(COVERED_GFLAG) report -w -d v -o $@.rptWM $@.cdd
 	-@$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $@.rptWI $@.cdd
+	@./check_test $@ 1
+
+$(RACELIST):
+	@echo Running $@
+	@$(VERILOG) $(VERILOG_FLAGS) $@.v
+	@$(VERILOG_CMD)
+	@$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@.cfg
+	-@$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -o $@.rptM $@.cdd
+	-@$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -i -o $@.rptI $@.cdd
+	-@$(COVERED) $(COVERED_GFLAG) report -w -d v -m ltcfr -o $@.rptWM $@.cdd
+	-@$(COVERED) $(COVERED_GFLAG) report -w -d v -m ltcfr -i -o $@.rptWI $@.cdd
 	@./check_test $@ 1
 
 $(MERGELIST):
