@@ -1,14 +1,14 @@
 module main;
 
-wire [1:0]   a;
-wire         b;
-wire         c;
+reg  [1:0]   a;
+reg          b;
+reg          c;
 reg  [3:0]   d;
 
-assign {a, b, c} = d;
+always @(d) {a, b, c} = d;
 
 initial begin
-	$dumpfile( "concat3.vcd" );
+	$dumpfile( "concat4.1.vcd" );
 	$dumpvars( 0, main );
 	d = 4'h0;
 	#5;

@@ -1770,7 +1770,7 @@ lpvalue
 	: identifier
 	| identifier '[' static_expr ']'
 	| identifier '[' static_expr ':' static_expr ']'
-	| '{' expression_list '}'
+	| '{' { ignore_mode++; } expression_list { ignore_mode--; } '}'
 		{
 		  $$ = 0;
 		}
@@ -1786,7 +1786,7 @@ lavalue
 		{
 		  free_safe( $2 );
 		}
-	| '{' expression_list '}'
+	| '{' { ignore_mode++; } expression_list { ignore_mode--; } '}'
 		{
 		  $$ = 0;
 		}
