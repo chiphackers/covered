@@ -1,0 +1,16 @@
+3 foobar main.foo instance4.v
+2 2 main.foo 29 3001 0 0 
+2 1 main.foo 29 3001 0 0 
+2 3 main.foo 29 3f89 2 1 1 0 101aa
+1 c main.foo 1 0 101aa 2
+1 b main.foo 1 0 111aa 1
+1 a main.foo 1 0 101aa
+4 3 main.foo 3 3
+3 fooman main.foo.foo instance4.v
+2 5 main.foo.foo 42 3001 0 0 
+2 4 main.foo.foo 42 3001 0 0 
+2 6 main.foo.foo 42 1f88 5 4 1 0 100aa
+1 b main.foo.foo 1 0 111aa 4
+1 c main.foo.foo 1 0 101aa 5
+1 a main.foo.foo 1 0 100aa
+4 6 main.foo.foo 6 6
