@@ -4,6 +4,7 @@
 {\tt \#include \char`\"{}defines.h\char`\"{}}\par
 {\tt \#include \char`\"{}signal.h\char`\"{}}\par
 {\tt \#include \char`\"{}expr.h\char`\"{}}\par
+{\tt \#include \char`\"{}vector.h\char`\"{}}\par
 {\tt \#include \char`\"{}module.h\char`\"{}}\par
 {\tt \#include \char`\"{}db.h\char`\"{}}\par
 {\tt \#include \char`\"{}link.h\char`\"{}}\par
@@ -320,15 +321,15 @@ union {\bf YYSTYPE}
 \item 
 \#define {\bf const}
 \item 
-\#define {\bf YYFINAL}\ 848
+\#define {\bf YYFINAL}\ 1201
 \item 
 \#define {\bf YYFLAG}\ -32768
 \item 
 \#define {\bf YYNTBASE}\ 187
 \item 
-\#define {\bf YYTRANSLATE}(x)\ ((unsigned)(x) $<$= 397 ? {\bf yytranslate}[x] : 277)
+\#define {\bf YYTRANSLATE}(x)\ ((unsigned)(x) $<$= 397 ? {\bf yytranslate}[x] : 291)
 \item 
-\#define {\bf YYLAST}\ 3524
+\#define {\bf YYLAST}\ 6361
 \item 
 \#define {\bf YYSTACK\_\-ALLOC}\ malloc
 \item 
@@ -1231,7 +1232,7 @@ while (0)\end{verbatim}\normalsize
 
 \index{parser.c@{parser.c}!YYFINAL@{YYFINAL}}
 \index{YYFINAL@{YYFINAL}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYFINAL\ 848}\label{parser_8c_a152}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYFINAL\ 1201}\label{parser_8c_a152}
 
 
 \index{parser.c@{parser.c}!YYFLAG@{YYFLAG}}
@@ -1246,7 +1247,7 @@ while (0)\end{verbatim}\normalsize
 
 \index{parser.c@{parser.c}!YYLAST@{YYLAST}}
 \index{YYLAST@{YYLAST}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYLAST\ 3524}\label{parser_8c_a156}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYLAST\ 6361}\label{parser_8c_a156}
 
 
 \index{parser.c@{parser.c}!YYLEX@{YYLEX}}
@@ -1321,7 +1322,7 @@ while (0)\end{verbatim}\normalsize
 
 \index{parser.c@{parser.c}!YYTRANSLATE@{YYTRANSLATE}}
 \index{YYTRANSLATE@{YYTRANSLATE}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYTRANSLATE(x)\ ((unsigned)(x) $<$= 397 ? {\bf yytranslate}[x] : 277)}\label{parser_8c_a155}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYTRANSLATE(x)\ ((unsigned)(x) $<$= 397 ? {\bf yytranslate}[x] : 291)}\label{parser_8c_a155}
 
 
 
@@ -1377,16 +1378,18 @@ while (0)\end{verbatim}\normalsize
 
 {\bf Initial value:}
 
-\footnotesize\begin{verbatim} {   846,
+\footnotesize\begin{verbatim} {  1199,
      5,     6,     7,    40,    41,     8,    18,    26,    27,    28,
-    29,    37,   466,    59,   294,   295,   696,   297,   182,     9,
-    21,   106,   107,   227,   228,   382,   553,   554,   555,   556,
-   557,   759,   558,   559,    97,    98,   311,   262,   312,   169,
-   491,   577,   578,    99,   697,   698,   170,   329,   330,   467,
-   302,   492,   493,   218,   219,   189,   192,   193,   513,   514,
-   515,   100,   371,   372,   174,   175,   326,   327,   171,   472,
-   473,   213,   214,   101,   179,   180,   142,   387,   388,   249,
-   250,   658,   659,   200,   201,   196,   197,   567,   568
+    29,    37,   770,    59,   435,   436,  1053,   320,   321,   923,
+   438,   182,     9,    21,   106,   107,   227,   228,   408,   657,
+   658,   659,   660,   661,  1021,   662,   663,    97,    98,   511,
+   299,   512,  1054,  1055,   293,   768,   769,   337,   262,   338,
+   294,   595,   724,   725,   726,   924,   925,   170,   577,   330,
+   295,   355,   356,   771,   507,   596,   597,   218,   219,   189,
+   192,   193,   617,   618,   619,   100,   397,   398,   174,   175,
+   352,   353,   171,   574,   575,   213,   214,   101,   179,   180,
+   142,   413,   414,   249,   250,   853,   854,   200,   201,   196,
+   197,   671,   672
 }\end{verbatim}\normalsize 
 \index{parser.c@{parser.c}!yylloc@{yylloc}}
 \index{yylloc@{yylloc}!parser.c@{parser.c}}
@@ -1416,15 +1419,17 @@ while (0)\end{verbatim}\normalsize
 {\bf Initial value:}
 
 \footnotesize\begin{verbatim} {-32768,
--32768,   958,-32768,-32768,-32768,-32768,-32768,-32768,   932,-32768,
-   243,   911,   -10,  2411,   -86,  1526,  -118,   -67,   -70,-32768,
--32768,-32768,   866,-32768,-32768,-32768,-32768,-32768,   419,  -172,
-  -544,   172,-32768,   417,-32768,   884,   -50,  -155,  -165,  -267,
-   101,   563,-32768,  -346,-32768,  -469,  -207,-32768,   618,  -485,
-   654,-32768,   332,   -82,   -44,-32768,   644,   -66,-32768,-32768,
-   473,-32768,   775,   471,-32768,   897,  -302,   264,  -301,-32768,
-    18,-32768,-32768,-32768,-32768,  -125,-32768,-32768,   436,-32768,
-   608,-32768,   343,-32768,  -176,-32768,  -138,-32768,   316
+-32768,  1329,-32768,-32768,-32768,-32768,-32768,-32768,  1297,-32768,
+   239,  1276,   -10,  1740,   464,  5644,  -173,   725,  2876,  -118,
+   -67,   -70,-32768,-32768,-32768,  1234,-32768,-32768,-32768,-32768,
+-32768,   684,  -248,  -618,   242,-32768,   688,-32768,  1249,  -143,
+  -261,  -257,-32768,  -775,  -510,-32768,  -385,   -42,   625,  -152,
+    34,   950,  -485,-32768,   -39,-32768,  -703,-32768,-32768,-32768,
+  -202,-32768,   964,  -582,  1002,-32768,   514,   -84,    78,-32768,
+   997,   -60,-32768,-32768,   743,-32768,  1146,   740,-32768,  1263,
+  -551,   -81,  -328,-32768,    -2,-32768,-32768,-32768,-32768,  -150,
+-32768,-32768,   703,-32768,   954,-32768,   521,-32768,  -191,-32768,
+  -172,-32768,   494
 }\end{verbatim}\normalsize 
 \index{parser.c@{parser.c}!yyprhs@{yyprhs}}
 \index{yyprhs@{yyprhs}!parser.c@{parser.c}}

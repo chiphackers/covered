@@ -24,8 +24,8 @@ void {\bf expression\_\-display} ({\bf expression} $\ast$expr)
 \begin{CompactList}\small\item\em Displays the specified expression information.\item\end{CompactList}\item 
 void {\bf expression\_\-operate} ({\bf expression} $\ast$expr)
 \begin{CompactList}\small\item\em Performs operation specified by parameter expression.\item\end{CompactList}\item 
-{\bf bool} {\bf expression\_\-is\_\-zero} ({\bf expression} $\ast$expr)
-\begin{CompactList}\small\item\em Returns a value of 1, if the specified expression evaluates to a zero value.\item\end{CompactList}\item 
+{\bf bool} {\bf expression\_\-is\_\-true} ({\bf expression} $\ast$expr)
+\begin{CompactList}\small\item\em Returns a value of 1, if the specified expression evaluates to a non-zero, non-X/Z value.\item\end{CompactList}\item 
 void {\bf expression\_\-dealloc} ({\bf expression} $\ast$expr, {\bf bool} exp\_\-only)
 \begin{CompactList}\small\item\em Deallocates memory used for expression.\item\end{CompactList}\end{CompactItemize}
 
@@ -154,12 +154,12 @@ expr}]Pointer to expression to get ID from. \end{description}
 \begin{Desc}
 \item[Returns: ]\par
 Returns expression ID for this expression.\end{Desc}
-If specified expression is non-NULL, return expression ID of this expression; otherwise, return a value of 0 to indicate that this is a leaf node. \index{expr.h@{expr.h}!expression_is_zero@{expression\_\-is\_\-zero}}
-\index{expression_is_zero@{expression\_\-is\_\-zero}!expr.h@{expr.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} expression\_\-is\_\-zero ({\bf expression} $\ast$ {\em expr})}\label{expr_8h_a8}
+If specified expression is non-NULL, return expression ID of this expression; otherwise, return a value of 0 to indicate that this is a leaf node. \index{expr.h@{expr.h}!expression_is_true@{expression\_\-is\_\-true}}
+\index{expression_is_true@{expression\_\-is\_\-true}!expr.h@{expr.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} expression\_\-is\_\-true ({\bf expression} $\ast$ {\em expr})}\label{expr_8h_a8}
 
 
-Returns a value of 1, if the specified expression evaluates to a zero value.
+Returns a value of 1, if the specified expression evaluates to a non-zero, non-X/Z value.
 
 \begin{Desc}
 \item[Parameters: ]\par
@@ -169,8 +169,8 @@ expr}]Pointer to expression to evaluate.\end{description}
 \end{Desc}
 \begin{Desc}
 \item[Returns: ]\par
-Returns 1 if the specified expression evaluates to a unary 0.\end{Desc}
-Returns a value of 1 if the specified expression contains all zero values in its bits. It accomplishes this by performing a unary OR operation on the specified expression value and testing bit 0 of the result. \index{expr.h@{expr.h}!expression_merge@{expression\_\-merge}}
+Returns 1 if the specified expression evaluates to a unary 1.\end{Desc}
+Returns a value of 1 if the specified expression contains at least one 1 value and no X or Z values in its bits. It accomplishes this by performing a unary  OR operation on the specified expression value and testing bit 0 of the result. \index{expr.h@{expr.h}!expression_merge@{expression\_\-merge}}
 \index{expression_merge@{expression\_\-merge}!expr.h@{expr.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-merge ({\bf expression} $\ast$ {\em base}, {\bf expression} $\ast$ {\em in})}\label{expr_8h_a2}
 

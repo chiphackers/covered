@@ -8,6 +8,7 @@
 {\tt \#include \char`\"{}expr.h\char`\"{}}\par
 {\tt \#include \char`\"{}util.h\char`\"{}}\par
 {\tt \#include \char`\"{}link.h\char`\"{}}\par
+{\tt \#include \char`\"{}sim.h\char`\"{}}\par
 \subsection*{Functions}
 \begin{CompactItemize}
 \item 
@@ -15,12 +16,10 @@
 \begin{CompactList}\small\item\em Creates new statement structure.\item\end{CompactList}\item 
 void {\bf statement\_\-db\_\-write} ({\bf statement} $\ast$stmt, FILE $\ast$ofile, char $\ast$scope)
 \begin{CompactList}\small\item\em Writes specified statement to the specified output file.\item\end{CompactList}\item 
-{\bf bool} {\bf statement\_\-db\_\-read} (char $\ast$$\ast$line, {\bf module} $\ast$curr\_\-mod)
+{\bf bool} {\bf statement\_\-db\_\-read} (char $\ast$$\ast$line, {\bf module} $\ast$curr\_\-mod, int read\_\-mode)
 \begin{CompactList}\small\item\em Reads in statement line from specified string and stores statement in specified module.\item\end{CompactList}\item 
-void {\bf statement\_\-connect} ({\bf statement} $\ast$curr\_\-stmt, {\bf statement} $\ast$next\_\-stmt)
+void {\bf statement\_\-connect} ({\bf statement} $\ast$curr\_\-stmt, {\bf statement} $\ast$next\_\-stmt, {\bf bool} set\_\-stop)
 \begin{CompactList}\small\item\em Connects statement sequence to next statement.\item\end{CompactList}\item 
-void {\bf statement\_\-set\_\-stop} ({\bf statement} $\ast$stmt)
-\item 
 void {\bf statement\_\-dealloc} ({\bf statement} $\ast$stmt)
 \begin{CompactList}\small\item\em Deallocates statement memory and associated expression tree from the heap.\item\end{CompactList}\end{CompactItemize}
 
@@ -97,7 +96,7 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsection{Function Documentation}
 \index{statement.c@{statement.c}!statement_connect@{statement\_\-connect}}
 \index{statement_connect@{statement\_\-connect}!statement.c@{statement.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void statement\_\-connect ({\bf statement} $\ast$ {\em curr\_\-stmt}, {\bf statement} $\ast$ {\em next\_\-stmt})}\label{statement_8c_a3}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void statement\_\-connect ({\bf statement} $\ast$ {\em curr\_\-stmt}, {\bf statement} $\ast$ {\em next\_\-stmt}, {\bf bool} {\em set\_\-stop})}\label{statement_8c_a3}
 
 
 Connects statement sequence to next statement.
@@ -107,7 +106,8 @@ Connects statement sequence to next statement.
 \begin{description}
 \item[{\em 
 curr\_\-stmt}]Pointer to statement sequence to traverse. \item[{\em 
-next\_\-stmt}]Pointer to statement to connect ends to.\end{description}
+next\_\-stmt}]Pointer to statement to connect ends to. \item[{\em 
+set\_\-stop}]If TRUE and the next\_\-true and next\_\-false are NULL, set stop bit.\end{description}
 \end{Desc}
 Recursively traverses the specified stmt sequence. When it reaches a statement  that has either next\_\-true or next\_\-false set to NULL, sets next\_\-true and/or  next\_\-false of that statement to point to the next\_\-stmt statement. \index{statement.c@{statement.c}!statement_create@{statement\_\-create}}
 \index{statement_create@{statement\_\-create}!statement.c@{statement.c}}
@@ -127,7 +127,7 @@ exp}]Pointer to root expression of expression tree for this statement.\end{descr
 Returns pointer to the newly created statement.\end{Desc}
 Creates a new statement structure from heap memory and initializes it with the specified parameter information. \index{statement.c@{statement.c}!statement_db_read@{statement\_\-db\_\-read}}
 \index{statement_db_read@{statement\_\-db\_\-read}!statement.c@{statement.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} statement\_\-db\_\-read (char $\ast$$\ast$ {\em line}, {\bf module} $\ast$ {\em curr\_\-mod})}\label{statement_8c_a2}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} statement\_\-db\_\-read (char $\ast$$\ast$ {\em line}, {\bf module} $\ast$ {\em curr\_\-mod}, int {\em read\_\-mode})}\label{statement_8c_a2}
 
 
 Reads in statement line from specified string and stores statement in specified module.
@@ -137,7 +137,8 @@ Reads in statement line from specified string and stores statement in specified 
 \begin{description}
 \item[{\em 
 line}]Pointer to current line of file being read. \item[{\em 
-curr\_\-mod}]Pointer to current module.\end{description}
+curr\_\-mod}]Pointer to current module. \item[{\em 
+read\_\-mode}]If set to REPORT, adds statement to head of list; otherwise, adds statement to tail.\end{description}
 \end{Desc}
 \begin{Desc}
 \item[Returns: ]\par
@@ -159,7 +160,7 @@ scope}]Scope of parent module which contains the specified statement.\end{descri
 \end{Desc}
 Recursively writes the contents of the specified statement tree (and its associated expression trees to the specified output stream. \index{statement.c@{statement.c}!statement_dealloc@{statement\_\-dealloc}}
 \index{statement_dealloc@{statement\_\-dealloc}!statement.c@{statement.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void statement\_\-dealloc ({\bf statement} $\ast$ {\em stmt})}\label{statement_8c_a5}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void statement\_\-dealloc ({\bf statement} $\ast$ {\em stmt})}\label{statement_8c_a4}
 
 
 Deallocates statement memory and associated expression tree from the heap.
@@ -170,15 +171,4 @@ Deallocates statement memory and associated expression tree from the heap.
 \item[{\em 
 stmt}]Pointer to statement to deallocate.\end{description}
 \end{Desc}
-Deallocates specified statement from heap memory. First remove expression tree of this statement. Second, remove all statements following this statement. Finally, remove the specified statement itself. Since statements can be circular in nature, we will not remove a statement that has its expression tree already deallocated. This will prevent this function from getting into an infinite loop (or stack overflow since this function is recursive). \index{statement.c@{statement.c}!statement_set_stop@{statement\_\-set\_\-stop}}
-\index{statement_set_stop@{statement\_\-set\_\-stop}!statement.c@{statement.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void statement\_\-set\_\-stop ({\bf statement} $\ast$ {\em stmt})}\label{statement_8c_a4}
-
-
-\begin{Desc}
-\item[Parameters: ]\par
-\begin{description}
-\item[{\em 
-stmt}]Pointer to statement to traverse and set stop bits.\end{description}
-\end{Desc}
-Recursively traverses specified statement, setting STMT\_\-STOP bits on leaf nodes. This function is called for the last statement in a sequence. It is called before the statement\_\-connect for the entire statement sequence. 
+Deallocates specified statement from heap memory. First remove expression tree of this statement. Second, remove all statements following this statement. Finally, remove the specified statement itself. Since statements can be circular in nature, we will not remove a statement that has its expression tree already deallocated. This will prevent this function from getting into an infinite loop (or stack overflow since this function is recursive). 

@@ -10,13 +10,13 @@
 \subsection*{Functions}
 \begin{CompactItemize}
 \item 
-void {\bf line\_\-get\_\-stats} ({\bf exp\_\-link} $\ast$expl, float $\ast$total, int $\ast$hit)
+void {\bf line\_\-get\_\-stats} ({\bf stmt\_\-link} $\ast$stmtl, float $\ast$total, int $\ast$hit)
 \begin{CompactList}\small\item\em Calculates line coverage numbers for the specified expression list.\item\end{CompactList}\item 
 void {\bf line\_\-instance\_\-summary} (FILE $\ast$ofile, {\bf mod\_\-inst} $\ast$root, char $\ast$parent\_\-inst)
 \item 
 void {\bf line\_\-module\_\-summary} (FILE $\ast$ofile, {\bf mod\_\-link} $\ast$head)
 \item 
-void {\bf line\_\-display\_\-verbose} (FILE $\ast$ofile, {\bf exp\_\-link} $\ast$expl)
+void {\bf line\_\-display\_\-verbose} (FILE $\ast$ofile, {\bf stmt\_\-link} $\ast$stmtl)
 \item 
 void {\bf line\_\-instance\_\-verbose} (FILE $\ast$ofile, {\bf mod\_\-inst} $\ast$root)
 \item 
@@ -47,7 +47,7 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsection{Function Documentation}
 \index{line.c@{line.c}!line_display_verbose@{line\_\-display\_\-verbose}}
 \index{line_display_verbose@{line\_\-display\_\-verbose}!line.c@{line.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void line\_\-display\_\-verbose (FILE $\ast$ {\em ofile}, {\bf exp\_\-link} $\ast$ {\em expl})}\label{line_8c_a5}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void line\_\-display\_\-verbose (FILE $\ast$ {\em ofile}, {\bf stmt\_\-link} $\ast$ {\em stmtl})}\label{line_8c_a5}
 
 
 \begin{Desc}
@@ -55,11 +55,11 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{description}
 \item[{\em 
 ofile}]Pointer to file to output results to. \item[{\em 
-expl}]Pointer to expression list head.\end{description}
+stmtl}]Pointer to expression list head.\end{description}
 \end{Desc}
 Displays the lines missed during simulation to standard output from the specified expression list. \index{line.c@{line.c}!line_get_stats@{line\_\-get\_\-stats}}
 \index{line_get_stats@{line\_\-get\_\-stats}!line.c@{line.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void line\_\-get\_\-stats ({\bf exp\_\-link} $\ast$ {\em expl}, float $\ast$ {\em total}, int $\ast$ {\em hit})}\label{line_8c_a2}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void line\_\-get\_\-stats ({\bf stmt\_\-link} $\ast$ {\em stmtl}, float $\ast$ {\em total}, int $\ast$ {\em hit})}\label{line_8c_a2}
 
 
 Calculates line coverage numbers for the specified expression list.
@@ -68,11 +68,11 @@ Calculates line coverage numbers for the specified expression list.
 \item[Parameters: ]\par
 \begin{description}
 \item[{\em 
-expl}]Pointer to current expression list to explore. \item[{\em 
+stmtl}]Pointer to current statement list to explore. \item[{\em 
 total}]Holds total number of lines parsed. \item[{\em 
 hit}]Holds total number of lines hit.\end{description}
 \end{Desc}
-Iterates through given expression list, gathering information about which lines exist in the list, which lines were hit during simulation and which lines were missed during simulation. This information is used to report summary information about line coverage. \index{line.c@{line.c}!line_instance_summary@{line\_\-instance\_\-summary}}
+Iterates through given statement list, gathering information about which lines exist in the list, which lines were hit during simulation and which lines were missed during simulation. This information is used to report summary information about line coverage. \index{line.c@{line.c}!line_instance_summary@{line\_\-instance\_\-summary}}
 \index{line_instance_summary@{line\_\-instance\_\-summary}!line.c@{line.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void line\_\-instance\_\-summary (FILE $\ast$ {\em ofile}, {\bf mod\_\-inst} $\ast$ {\em root}, char $\ast$ {\em parent\_\-inst})}\label{line_8c_a3}
 

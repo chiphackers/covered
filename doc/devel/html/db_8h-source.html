@@ -8,86 +8,92 @@
 00002 <font class="preprocessor"></font><font class="preprocessor">#define __DB_H__</font>
 00003 <font class="preprocessor"></font>
 00013 
-00014 <font class="keywordtype">bool</font> <a class="code" href="db_8c.html#a13">db_write</a>( <font class="keywordtype">char</font>* file );
+00014 <font class="keywordtype">bool</font> <a class="code" href="db_8c.html#a12">db_write</a>( <font class="keywordtype">char</font>* file );
 00015 
-00017 <font class="keywordtype">bool</font> <a class="code" href="db_8c.html#a14">db_read</a>( <font class="keywordtype">char</font>* file, <font class="keywordtype">int</font> read_mode );
+00017 <font class="keywordtype">bool</font> <a class="code" href="db_8c.html#a13">db_read</a>( <font class="keywordtype">char</font>* file, <font class="keywordtype">int</font> read_mode );
 00018 
-00020 <font class="keywordtype">void</font> <a class="code" href="db_8c.html#a15">db_add_instance</a>( <font class="keywordtype">char</font>* scope, <font class="keywordtype">char</font>* modname );
+00020 <font class="keywordtype">void</font> <a class="code" href="db_8c.html#a14">db_add_instance</a>( <font class="keywordtype">char</font>* scope, <font class="keywordtype">char</font>* modname );
 00021 
-00023 <font class="keywordtype">void</font> <a class="code" href="db_8c.html#a16">db_add_module</a>( <font class="keywordtype">char</font>* name, <font class="keywordtype">char</font>* file );
+00023 <font class="keywordtype">void</font> <a class="code" href="db_8c.html#a15">db_add_module</a>( <font class="keywordtype">char</font>* name, <font class="keywordtype">char</font>* file );
 00024 
-00026 <font class="keywordtype">void</font> <a class="code" href="db_8c.html#a18">db_add_signal</a>( <font class="keywordtype">char</font>* name, <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> lsb, <font class="keywordtype">int</font> is_static );
+00026 <font class="keywordtype">void</font> <a class="code" href="db_8c.html#a17">db_add_signal</a>( <font class="keywordtype">char</font>* name, <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> lsb, <font class="keywordtype">int</font> is_static );
 00027 
-00029 <a class="code" href="structsignal__s.html">signal</a>* <a class="code" href="db_8c.html#a19">db_find_signal</a>( <font class="keywordtype">char</font>* name );
+00029 <a class="code" href="structsignal__s.html">signal</a>* <a class="code" href="db_8c.html#a18">db_find_signal</a>( <font class="keywordtype">char</font>* name );
 00030 
-00032 <a class="code" href="structexpression__s.html">expression</a>* <a class="code" href="db_8c.html#a20">db_create_expression</a>( <a class="code" href="structexpression__s.html">expression</a>* right, <a class="code" href="structexpression__s.html">expression</a>* left, <font class="keywordtype">int</font> op, <font class="keywordtype">int</font> line, <font class="keywordtype">char</font>* sig_name );
+00032 <a class="code" href="structexpression__s.html">expression</a>* <a class="code" href="db_8c.html#a19">db_create_expression</a>( <a class="code" href="structexpression__s.html">expression</a>* right, <a class="code" href="structexpression__s.html">expression</a>* left, <font class="keywordtype">int</font> op, <font class="keywordtype">int</font> line, <font class="keywordtype">char</font>* sig_name );
 00033 
-00035 <font class="keywordtype">void</font> <a class="code" href="db_8c.html#a21">db_add_expression</a>( <a class="code" href="structexpression__s.html">expression</a>* root );
+00035 <font class="keywordtype">void</font> <a class="code" href="db_8c.html#a20">db_add_expression</a>( <a class="code" href="structexpression__s.html">expression</a>* root );
 00036 
-00038 <a class="code" href="structstatement__s.html">statement</a>* <a class="code" href="db_8c.html#a22">db_create_statement</a>( <a class="code" href="structexpression__s.html">expression</a>* exp );
+00038 <a class="code" href="structstatement__s.html">statement</a>* <a class="code" href="db_8c.html#a21">db_create_statement</a>( <a class="code" href="structexpression__s.html">expression</a>* exp );
 00039 
-00041 <font class="keywordtype">void</font> <a class="code" href="db_8c.html#a25">db_statement_connect</a>( <a class="code" href="structstatement__s.html">statement</a>* curr_stmt, <a class="code" href="structstatement__s.html">statement</a>* next_stmt );
+00041 <font class="keywordtype">void</font> <a class="code" href="db_8c.html#a22">db_add_statement</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt );
 00042 
-00044 <font class="keywordtype">void</font> <a class="code" href="db_8c.html#a23">db_connect_statement_true</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt, <a class="code" href="structstatement__s.html">statement</a>* exp_true );
+00044 <font class="keywordtype">void</font> <a class="code" href="db_8c.html#a25">db_statement_connect</a>( <a class="code" href="structstatement__s.html">statement</a>* curr_stmt, <a class="code" href="structstatement__s.html">statement</a>* next_stmt );
 00045 
-00047 <font class="keywordtype">void</font> <a class="code" href="db_8c.html#a24">db_connect_statement_false</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt, <a class="code" href="structstatement__s.html">statement</a>* exp_false );
+00047 <font class="keywordtype">void</font> <a class="code" href="db_8c.html#a23">db_connect_statement_true</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt, <a class="code" href="structstatement__s.html">statement</a>* exp_true );
 00048 
-00050 <font class="keywordtype">void</font> <a class="code" href="db_8c.html#a26">db_statement_set_stop</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt );
+00050 <font class="keywordtype">void</font> <a class="code" href="db_8c.html#a24">db_connect_statement_false</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt, <a class="code" href="structstatement__s.html">statement</a>* exp_false );
 00051 
-00053 <font class="keywordtype">void</font> <a class="code" href="db_8c.html#a27">db_set_vcd_scope</a>( <font class="keywordtype">char</font>* scope );
+00053 <font class="keywordtype">void</font> <a class="code" href="db_8c.html#a26">db_set_vcd_scope</a>( <font class="keywordtype">char</font>* scope );
 00054 
-00056 <font class="keywordtype">void</font> <a class="code" href="db_8c.html#a29">db_assign_symbol</a>( <font class="keywordtype">char</font>* name, <font class="keywordtype">char</font>* symbol );
+00056 <font class="keywordtype">void</font> <a class="code" href="db_8c.html#a28">db_assign_symbol</a>( <font class="keywordtype">char</font>* name, <font class="keywordtype">char</font>* symbol );
 00057 
-00059 <font class="keywordtype">bool</font> <a class="code" href="db_8c.html#a30">db_symbol_found</a>( <font class="keywordtype">char</font>* symbol );
+00059 <font class="keywordtype">bool</font> <a class="code" href="db_8c.html#a29">db_symbol_found</a>( <font class="keywordtype">char</font>* symbol );
 00060 
-00062 <font class="keywordtype">void</font> <a class="code" href="db_8c.html#a31">db_find_set_add_signal</a>( <font class="keywordtype">char</font>* symbol, <a class="code" href="structvector__s.html">vector</a>* vec );
+00062 <font class="keywordtype">void</font> <a class="code" href="db_8c.html#a30">db_find_set_add_signal</a>( <font class="keywordtype">char</font>* symbol, <a class="code" href="structvector__s.html">vector</a>* vec );
 00063 
-00065 <font class="keywordtype">int</font> <a class="code" href="db_8c.html#a33">db_get_signal_size</a>( <font class="keywordtype">char</font>* symbol );
+00065 <font class="keywordtype">int</font> <a class="code" href="db_8c.html#a32">db_get_signal_size</a>( <font class="keywordtype">char</font>* symbol );
 00066 
-00068 <font class="keywordtype">void</font> <a class="code" href="db_8c.html#a32">db_do_timestep</a>( <font class="keywordtype">int</font> time ); 
+00068 <font class="keywordtype">void</font> <a class="code" href="db_8c.html#a31">db_do_timestep</a>( <font class="keywordtype">int</font> time ); 
 00069 
 00070 
 00071 <font class="comment">/* $Log$</font>
 00072 <font class="comment"></font>
-00073 <font class="comment">/* Revision 1.6  2002/06/24 12:34:56  phase1geo</font>
+00073 <font class="comment">/* Revision 1.7  2002/06/27 12:36:47  phase1geo</font>
 00074 <font class="comment"></font>
-00075 <font class="comment">/* Fixing the set of the STMT_HEAD and STMT_STOP bits.  We are getting close.</font>
+00075 <font class="comment">/* Fixing bugs with scoring.  I think I got it this time.</font>
 00076 <font class="comment"></font>
 00077 <font class="comment">/*</font>
 00078 <font class="comment"></font>
-00079 <font class="comment">/* Revision 1.5  2002/06/24 04:54:48  phase1geo</font>
+00079 <font class="comment">/* Revision 1.6  2002/06/24 12:34:56  phase1geo</font>
 00080 <font class="comment"></font>
-00081 <font class="comment">/* More fixes and code additions to make statements work properly.  Still not</font>
+00081 <font class="comment">/* Fixing the set of the STMT_HEAD and STMT_STOP bits.  We are getting close.</font>
 00082 <font class="comment"></font>
-00083 <font class="comment">/* there at this point.</font>
+00083 <font class="comment">/*</font>
 00084 <font class="comment"></font>
-00085 <font class="comment">/*</font>
+00085 <font class="comment">/* Revision 1.5  2002/06/24 04:54:48  phase1geo</font>
 00086 <font class="comment"></font>
-00087 <font class="comment">/* Revision 1.4  2002/05/13 03:02:58  phase1geo</font>
+00087 <font class="comment">/* More fixes and code additions to make statements work properly.  Still not</font>
 00088 <font class="comment"></font>
-00089 <font class="comment">/* Adding lines back to expressions and removing them from statements (since the line</font>
+00089 <font class="comment">/* there at this point.</font>
 00090 <font class="comment"></font>
-00091 <font class="comment">/* number range of an expression can be calculated by looking at the expression line</font>
+00091 <font class="comment">/*</font>
 00092 <font class="comment"></font>
-00093 <font class="comment">/* numbers).</font>
+00093 <font class="comment">/* Revision 1.4  2002/05/13 03:02:58  phase1geo</font>
 00094 <font class="comment"></font>
-00095 <font class="comment">/*</font>
-00096 <font class="comment">/* Revision 1.3  2002/05/03 03:39:36  phase1geo</font>
-00097 <font class="comment">/* Removing all syntax errors due to addition of statements.  Added more statement</font>
-00098 <font class="comment">/* support code.  Still have a ways to go before we can try anything.  Removed lines</font>
-00099 <font class="comment">/* from expressions though we may want to consider putting these back for reporting</font>
-00100 <font class="comment">/* purposes.</font>
+00095 <font class="comment">/* Adding lines back to expressions and removing them from statements (since the line</font>
+00096 <font class="comment"></font>
+00097 <font class="comment">/* number range of an expression can be calculated by looking at the expression line</font>
+00098 <font class="comment"></font>
+00099 <font class="comment">/* numbers).</font>
+00100 <font class="comment"></font>
 00101 <font class="comment">/*</font>
-00102 <font class="comment">/* Revision 1.2  2002/04/30 05:04:25  phase1geo</font>
-00103 <font class="comment">/* Added initial go-round of adding statement handling to parser.  Added simple</font>
-00104 <font class="comment">/* Verilog test to check correct statement handling.  At this point there is a</font>
-00105 <font class="comment">/* bug in the expression write function (we need to display statement trees in</font>
-00106 <font class="comment">/* the proper order since they are unlike normal expression trees.)</font>
-00107 <font class="comment">/* */</font>
-00108 
-00109 <font class="preprocessor">#endif</font>
-00110 <font class="preprocessor"></font>
-</pre></div><hr><address align="right"><small>Generated on Mon Jun 24 22:38:04 2002 for Covered by
+00102 <font class="comment">/* Revision 1.3  2002/05/03 03:39:36  phase1geo</font>
+00103 <font class="comment">/* Removing all syntax errors due to addition of statements.  Added more statement</font>
+00104 <font class="comment">/* support code.  Still have a ways to go before we can try anything.  Removed lines</font>
+00105 <font class="comment">/* from expressions though we may want to consider putting these back for reporting</font>
+00106 <font class="comment">/* purposes.</font>
+00107 <font class="comment">/*</font>
+00108 <font class="comment">/* Revision 1.2  2002/04/30 05:04:25  phase1geo</font>
+00109 <font class="comment">/* Added initial go-round of adding statement handling to parser.  Added simple</font>
+00110 <font class="comment">/* Verilog test to check correct statement handling.  At this point there is a</font>
+00111 <font class="comment">/* bug in the expression write function (we need to display statement trees in</font>
+00112 <font class="comment">/* the proper order since they are unlike normal expression trees.)</font>
+00113 <font class="comment">/* */</font>
+00114 
+00115 <font class="preprocessor">#endif</font>
+00116 <font class="preprocessor"></font>
+</pre></div><hr><address align="right"><small>Generated on Thu Jun 27 22:07:03 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

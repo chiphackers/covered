@@ -24,14 +24,14 @@ void {\bf db\_\-add\_\-expression} ({\bf expression} $\ast$root)
 \begin{CompactList}\small\item\em Adds specified expression to expression list. Called by parser.\item\end{CompactList}\item 
 {\bf statement} $\ast$ {\bf db\_\-create\_\-statement} ({\bf expression} $\ast$exp)
 \begin{CompactList}\small\item\em Creates new statement expression from specified information. Called by parser.\item\end{CompactList}\item 
+void {\bf db\_\-add\_\-statement} ({\bf statement} $\ast$stmt)
+\begin{CompactList}\small\item\em Adds specified statement to current module's statement list. Called by parser.\item\end{CompactList}\item 
 void {\bf db\_\-statement\_\-connect} ({\bf statement} $\ast$curr\_\-stmt, {\bf statement} $\ast$next\_\-stmt)
 \begin{CompactList}\small\item\em Connects one statement block to another.\item\end{CompactList}\item 
 void {\bf db\_\-connect\_\-statement\_\-true} ({\bf statement} $\ast$stmt, {\bf statement} $\ast$exp\_\-true)
 \begin{CompactList}\small\item\em Connects true statement to specified statement.\item\end{CompactList}\item 
 void {\bf db\_\-connect\_\-statement\_\-false} ({\bf statement} $\ast$stmt, {\bf statement} $\ast$exp\_\-false)
 \begin{CompactList}\small\item\em Connects false statement to specified statement.\item\end{CompactList}\item 
-void {\bf db\_\-statement\_\-set\_\-stop} ({\bf statement} $\ast$stmt)
-\begin{CompactList}\small\item\em Sets stop bits on leaf nodes of specified statement.\item\end{CompactList}\item 
 void {\bf db\_\-set\_\-vcd\_\-scope} (char $\ast$scope)
 \begin{CompactList}\small\item\em Sets current VCD scope to specified scope.\item\end{CompactList}\item 
 void {\bf db\_\-assign\_\-symbol} (char $\ast$name, char $\ast$symbol)
@@ -117,7 +117,20 @@ width}]Bit width of signal being added. \item[{\em
 lsb}]Least significant bit of signal. \item[{\em 
 is\_\-static}]If set to non-zero value, sets static bit of this signal vector.\end{description}
 \end{Desc}
-Creates a new signal with the specified parameter information and adds this to the signal list if it does not already exist. \index{db.h@{db.h}!db_assign_symbol@{db\_\-assign\_\-symbol}}
+Creates a new signal with the specified parameter information and adds this to the signal list if it does not already exist. \index{db.h@{db.h}!db_add_statement@{db\_\-add\_\-statement}}
+\index{db_add_statement@{db\_\-add\_\-statement}!db.h@{db.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-add\_\-statement ({\bf statement} $\ast$ {\em stmt})}\label{db_8h_a9}
+
+
+Adds specified statement to current module's statement list. Called by parser.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+stmt}]Pointer to statement add to current module's statement list.\end{description}
+\end{Desc}
+Adds the specified statement tree to the tail of the current module's statement list. \index{db.h@{db.h}!db_assign_symbol@{db\_\-assign\_\-symbol}}
 \index{db_assign_symbol@{db\_\-assign\_\-symbol}!db.h@{db.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-assign\_\-symbol (char $\ast$ {\em name}, char $\ast$ {\em symbol})}\label{db_8h_a14}
 
@@ -133,7 +146,7 @@ symbol}]Symbol value of signal used in VCD dumpfile.\end{description}
 \end{Desc}
 Creates a new entry in the symbol table for the specified signal and symbol. \index{db.h@{db.h}!db_connect_statement_false@{db\_\-connect\_\-statement\_\-false}}
 \index{db_connect_statement_false@{db\_\-connect\_\-statement\_\-false}!db.h@{db.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-connect\_\-statement\_\-false ({\bf statement} $\ast$ {\em stmt}, {\bf statement} $\ast$ {\em next\_\-false})}\label{db_8h_a11}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-connect\_\-statement\_\-false ({\bf statement} $\ast$ {\em stmt}, {\bf statement} $\ast$ {\em next\_\-false})}\label{db_8h_a12}
 
 
 Connects false statement to specified statement.
@@ -147,7 +160,7 @@ next\_\-false}]Pointer to statement to run if statement evaluates to FALSE.\end{
 \end{Desc}
 Connects the specified statement's false statement. \index{db.h@{db.h}!db_connect_statement_true@{db\_\-connect\_\-statement\_\-true}}
 \index{db_connect_statement_true@{db\_\-connect\_\-statement\_\-true}!db.h@{db.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-connect\_\-statement\_\-true ({\bf statement} $\ast$ {\em stmt}, {\bf statement} $\ast$ {\em next\_\-true})}\label{db_8h_a10}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-connect\_\-statement\_\-true ({\bf statement} $\ast$ {\em stmt}, {\bf statement} $\ast$ {\em next\_\-true})}\label{db_8h_a11}
 
 
 Connects true statement to specified statement.
@@ -268,9 +281,10 @@ Reads contents of database file and stores into internal lists.
 file}]Name of database file to read contents from. \item[{\em 
 read\_\-mode}]Specifies what to do with read data. Values are\begin{CompactItemize}
 \item 
-0 = Instance, no merge\item 
-1 = Instance, merge\item 
-2 = Module, merge\end{CompactItemize}
+0 = Instance, no merge, merge command\item 
+1 = Instance, no merge, report command\item 
+2 = Instance, merge, merge command\item 
+3 = Module, merge, report command\end{CompactItemize}
 \end{description}
 \end{Desc}
 \begin{Desc}
@@ -291,7 +305,7 @@ scope}]Current VCD scope.\end{description}
 \end{Desc}
 Sets the curr\_\-vcd\_\-scope global variable to the specified scope. \index{db.h@{db.h}!db_statement_connect@{db\_\-statement\_\-connect}}
 \index{db_statement_connect@{db\_\-statement\_\-connect}!db.h@{db.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-statement\_\-connect ({\bf statement} $\ast$ {\em curr\_\-stmt}, {\bf statement} $\ast$ {\em next\_\-stmt})}\label{db_8h_a9}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-statement\_\-connect ({\bf statement} $\ast$ {\em curr\_\-stmt}, {\bf statement} $\ast$ {\em next\_\-stmt})}\label{db_8h_a10}
 
 
 Connects one statement block to another.
@@ -303,20 +317,7 @@ Connects one statement block to another.
 curr\_\-stmt}]Pointer to current statement to attach. \item[{\em 
 next\_\-stmt}]Pointer to next statement to attach to.\end{description}
 \end{Desc}
-Calls the statement\_\-connect function located in {\bf statement.c} with the specified parameters. \index{db.h@{db.h}!db_statement_set_stop@{db\_\-statement\_\-set\_\-stop}}
-\index{db_statement_set_stop@{db\_\-statement\_\-set\_\-stop}!db.h@{db.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-statement\_\-set\_\-stop ({\bf statement} $\ast$ {\em stmt})}\label{db_8h_a12}
-
-
-Sets stop bits on leaf nodes of specified statement.
-
-\begin{Desc}
-\item[Parameters: ]\par
-\begin{description}
-\item[{\em 
-stmt}]Pointer to current statement to set stop bits.\end{description}
-\end{Desc}
-Calls the statement\_\-set\_\-stop function located in {\bf statement.c} with the specified parameter. \index{db.h@{db.h}!db_symbol_found@{db\_\-symbol\_\-found}}
+Calls the statement\_\-connect function located in {\bf statement.c} with the specified parameters. \index{db.h@{db.h}!db_symbol_found@{db\_\-symbol\_\-found}}
 \index{db_symbol_found@{db\_\-symbol\_\-found}!db.h@{db.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} db\_\-symbol\_\-found (char $\ast$ {\em symbol})}\label{db_8h_a15}
 
