@@ -87,10 +87,10 @@ extern exp_link* static_expr_tail;
 */
 void expression_create_value( expression* exp, int width, bool data ) {
 
-  nibble* value = NULL;    /* Temporary storage of vector nibble array */
+  vec_data* value = NULL;    /* Temporary storage of vector nibble array */
 
   if( data == TRUE ) {
-    value = (nibble*)malloc_safe( (sizeof( nibble ) * width), __FILE__, __LINE__ );
+    value = (vec_data*)malloc_safe( (sizeof( vec_data ) * width), __FILE__, __LINE__ );
   }
 
   /* Create value */
@@ -846,7 +846,7 @@ bool expression_db_replace( expression* base, char** line ) {
     } else {
 
       /* Merge expression supplemental fields */
-      base->suppl.all = suppl;
+      base->suppl.all = suppl.all;
 
       if( (op != EXP_OP_SIG)        &&
           (op != EXP_OP_SBIT_SEL)   &&
@@ -926,19 +926,19 @@ void expression_display( expression* expr ) {
 */
 bool expression_operate( expression* expr ) {
 
-  bool    retval = TRUE;   /* Return value for this function                   */
-  vector  vec1;            /* Used for logical reduction                       */ 
-  vector  vec2;            /* Used for logical reduction                       */
-  vector* vec;             /* Pointer to vector of unknown size                */
-  int     i;               /* Loop iterator                                    */
-  int     j;               /* Loop iterator                                    */
-  nibble  bit;             /* Bit holder for some ops                          */
-  int     intval1;         /* Temporary integer value for *, /, %              */
-  int     intval2;         /* Temporary integer value for *, /, %              */
-  nibble  value1a;         /* 1-bit nibble value                               */
-  nibble  value1b;         /* 1-bit nibble value                               */
-  nibble  value32[32];     /* 32-bit nibble value                              */
-  control lf, lt, rf, rt;  /* Specify left and right WAS_TRUE/WAS_FALSE values */
+  bool     retval = TRUE;   /* Return value for this function                   */
+  vector   vec1;            /* Used for logical reduction                       */ 
+  vector   vec2;            /* Used for logical reduction                       */
+  vector*  vec;             /* Pointer to vector of unknown size                */
+  int      i;               /* Loop iterator                                    */
+  int      j;               /* Loop iterator                                    */
+  vec_data bit;             /* Bit holder for some ops                          */
+  int      intval1;         /* Temporary integer value for *, /, %              */
+  int      intval2;         /* Temporary integer value for *, /, %              */
+  vec_data value1a;         /* 1-bit nibble value                               */
+  vec_data value1b;         /* 1-bit nibble value                               */
+  vec_data value32[32];     /* 32-bit nibble value                              */
+  control  lf, lt, rf, rt;  /* Specify left and right WAS_TRUE/WAS_FALSE values */
 
   if( expr != NULL ) {
 
@@ -947,6 +947,10 @@ bool expression_operate( expression* expr ) {
 
     assert( expr->value != NULL );
     assert( ESUPPL_IS_LHS( expr->suppl ) == 0 );
+
+    bit.all     = 0;
+    value1a.all = 0;
+    value1b.all = 0;
 
     switch( expr->op ) {
 
@@ -960,7 +964,7 @@ bool expression_operate( expression* expr ) {
 
       case EXP_OP_DIVIDE :
         if( vector_is_unknown( expr->left->value ) || vector_is_unknown( expr->right->value ) ) {
-          bit = 0x2;
+          bit.part.value = 0x2;
           for( i=0; i<expr->value->width; i++ ) {
             retval |= vector_set_value( expr->value, &bit, 1, 0, i );
           }
@@ -980,7 +984,7 @@ bool expression_operate( expression* expr ) {
 
       case EXP_OP_MOD :
         if( vector_is_unknown( expr->left->value ) || vector_is_unknown( expr->right->value ) ) {
-          bit = 0x2;
+          bit.part.value = 0x2;
           for( i=0; i<expr->value->width; i++ ) {
             retval |= vector_set_value( expr->value, &bit, 1, 0, i );
           }
@@ -1158,13 +1162,13 @@ bool expression_operate( expression* expr ) {
 
       case EXP_OP_EXPAND :
         if( vector_is_unknown( expr->left->value ) ) {
-          bit = 0x2;
+          bit.part.value = 0x2;
           for( i=0; i<expr->value->width; i++ ) {
             retval |= vector_set_value( expr->value, &bit, 1, 0, i );
           }
         } else {
           for( j=0; j<expr->right->value->width; j++ ) {
-            bit = expr->right->value->value[j].part.value;
+            bit.part.value = expr->right->value->value[j].part.value;
             for( i=0; i<vector_to_int( expr->left->value ); i++ ) {
               retval |= vector_set_value( expr->value, &bit, 1, 0, ((j * expr->right->value->width) + i) );
             }
@@ -1182,58 +1186,58 @@ bool expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_PEDGE :
-        value1a = expr->right->value->value[0].part.value;
-        value1b = expr->left->value->value[0];
+        value1a.part.value = expr->right->value->value[0].part.value;
+        value1b.all        = expr->left->value->value[0].all;
         /* If the event has been armed previously, evaluate */
-        if( ((value1b & 0x80) == 0x80) && (value1a != expr->left->value->value[0].part.value) && (value1a == 1) ) {
-          bit = 1;
+        if( (value1b.part.armed == 1) && (value1a.part.value != expr->left->value->value[0].part.value) && (value1a.part.value == 1) ) {
+          bit.part.value = 1;
           retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
           /* Clear armed bit */
-          value1a &= 0x7f;
+          value1a.part.armed = 0;
         } else {
-          bit = 0;
+          bit.part.value = 0;
           retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
           /* Set armed bit */
-          value1a |= 0x80;
+          value1a.part.armed = 1;
         }
         /* Set left LAST value to current value of right */
-        expr->left->value->value[0] = value1a;
+        expr->left->value->value[0].all = value1a.all;
         break;
  
       case EXP_OP_NEDGE :
-        value1a = expr->right->value->value[0].part.value;
-        value1b = expr->left->value->value[0];
-        if( ((value1b & 0x80) == 0x80) && (value1a != expr->left->value->value[0].part.value) && (value1a == 0) ) {
-          bit = 1;
+        value1a.part.value = expr->right->value->value[0].part.value;
+        value1b.all        = expr->left->value->value[0].all;
+        if( (value1b.part.armed == 1) && (value1a.part.value != expr->left->value->value[0].part.value) && (value1a.part.value == 0) ) {
+          bit.part.value = 1;
           retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
           /* Clear armed bit */
-          value1a &= 0x7f;
+          value1a.part.armed = 0;
         } else {
-          bit = 0;
+          bit.part.value = 0;
           retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
           /* Set armed bit */
-          value1a |= 0x80;
+          value1a.part.armed = 1;
         }
         /* Set left LAST value to current value of right */
-        expr->left->value->value[0] = value1a;
+        expr->left->value->value[0].all = value1a.all;
         break;
 
       case EXP_OP_AEDGE :
         vector_init( &vec1, &value1a, 1 );
         vector_op_compare( &vec1, expr->left->value, expr->right->value, COMP_CEQ );
-        value1b = expr->left->value->value[0];
+        value1b.all = expr->left->value->value[0].all;
         /* Set left LAST value to current value of right */
         vector_set_value( expr->left->value, expr->right->value->value, expr->right->value->width, 0, 0 );
-        if( ((value1b & 0x80) == 0x80) && (vector_to_int( &vec1 ) == 0) ) {
-          bit = 1;
+        if( (value1b.part.armed == 1) && (vector_to_int( &vec1 ) == 0) ) {
+          bit.part.value = 1;
           retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
           /* Clear armed bit */
-          expr->left->value->value[0] &= 0x7f; 
+          expr->left->value->value[0].part.armed = 0;
         } else {
-          bit = 0;
+          bit.part.value = 0;
           retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
           /* Set armed bit */
-          expr->left->value->value[0] |= 0x80; 
+          expr->left->value->value[0].part.armed = 1;
         }
         break;
 
@@ -1255,11 +1259,11 @@ bool expression_operate( expression* expr ) {
         intval1 = vector_to_int( expr->left->value );           /* Start time of delay */
         intval2 = vector_to_int( expr->right->value );          /* Number of clocks to delay */
         if( ((intval1 + intval2) <= curr_sim_time) || ((curr_sim_time == -1) && (intval1 != 0xffffffff)) ) {
-          bit = 1;
+          bit.part.value = 1;
           retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
           vector_from_int( expr->left->value, 0xffffffff );
         } else {
-          bit = 0;
+          bit.part.value = 0;
           retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
         }
         break;
@@ -1283,7 +1287,7 @@ bool expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_DEFAULT :
-        bit = 1;
+        bit.part.value = 1;
         retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
         break;
 
@@ -1401,14 +1405,14 @@ void expression_operate_recursively( expression* expr ) {
 */
 int expression_bit_value( expression* expr ) {
 
-  vector result;        /* Vector containing result of expression tree */
-  nibble data;          /* Data for result vector                      */
+  vector   result;  /* Vector containing result of expression tree */
+  vec_data data;    /* Data for result vector                      */
 
   /* Evaluate the value of the root expression and return this value */
   vector_init( &result, &data, 1 );
   vector_unary_op( &result, expr->value, or_optab );
 
-  return( data & 0x3 );
+  return( data.part.value );
 
 }
 
@@ -1502,6 +1506,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.106  2005/01/06 23:51:16  phase1geo
+ Intermediate checkin.  Files don't fully compile yet.
+
  Revision 1.105  2004/11/06 14:49:43  phase1geo
  Fixing problem in expression_operate.  This removes some more code from the score command
  to improve run-time efficiency.

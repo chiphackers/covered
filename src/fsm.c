@@ -613,15 +613,15 @@ void fsm_display_verbose( FILE* ofile, fsm_link* head ) {
   while( head != NULL ) {
 
     if( head->table->from_state->id == head->table->to_state->id ) {
-      codegen_gen_expr( head->table->to_state, SUPPL_OP( head->table->to_state->suppl ), &ocode, &ocode_depth );
+      codegen_gen_expr( head->table->to_state, head->table->to_state->op, &ocode, &ocode_depth );
       fprintf( ofile, "      FSM input/output state (%s)\n\n", ocode[0] );
       for( i=0; i<ocode_depth; i++ ) {
         free_safe( ocode[i] );
       }
       free_safe( ocode );
     } else {
-      codegen_gen_expr( head->table->from_state, SUPPL_OP( head->table->from_state->suppl ), &icode, &icode_depth );
-      codegen_gen_expr( head->table->to_state,   SUPPL_OP( head->table->to_state->suppl   ), &ocode, &ocode_depth );
+      codegen_gen_expr( head->table->from_state, head->table->from_state->op, &icode, &icode_depth );
+      codegen_gen_expr( head->table->to_state,   head->table->to_state->op,   &ocode, &ocode_depth );
       fprintf( ofile, "      FSM input state (%s), output state (%s)\n\n", icode[0], ocode[0] );
       for( i=0; i<icode_depth; i++ ) {
         free_safe( icode[i] );
@@ -813,6 +813,10 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.41  2004/04/19 04:54:56  phase1geo
+ Adding first and last column information to expression and related code.  This is
+ not working correctly yet.
+
  Revision 1.40  2004/04/05 12:30:52  phase1geo
  Adding *db_replace functions to allow a design to be opened with new CDD
  results (for GUI purposes only).

@@ -815,6 +815,7 @@ union vec_data_u {
     nibble set  :1;  /*!< Indicator if bit has been previously assigned this timestep */
     nibble false:1;  /*!< Indicator if bit was set to a value of 0 (FALSE)            */
     nibble true :1;  /*!< Indicator if bit was set to a value of 1 (TRUE)             */
+    nibble armed:1;  /*!< Indicator if bit was armed                                  */
   } part;
 };
 
@@ -915,6 +916,7 @@ struct vector_s {
     nibble   all;       /*!< Allows us to set all bits in the suppl field      */
     struct {
       nibble base  :2;  /*!< Base-type of this data when originally parsed     */
+      nibble wait  :1;  /*!< Specifies that this signal should be waited for   */
       nibble inport:1;  /*!< Specifies if this vector is part of an input port */
     } part;
   } suppl;              /*!< Supplemental field                                */
@@ -1497,6 +1499,9 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.113  2005/01/06 23:51:16  phase1geo
+ Intermediate checkin.  Files don't fully compile yet.
+
  Revision 1.112  2005/01/06 14:32:24  phase1geo
  Starting to make updates to supplemental fields.  Work is in progress.
 

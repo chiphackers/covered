@@ -2618,7 +2618,7 @@ delay_value
       if( (ignore_mode == 0) && (se != NULL) ) {
         if( se->exp == NULL ) {
           tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-          vector_init( tmp->value, (nibble*)malloc_safe( (sizeof( nibble ) * 32), __FILE__, __LINE__ ), 32 );  
+          vector_init( tmp->value, (vec_data*)malloc_safe( (sizeof( vec_data ) * 32), __FILE__, __LINE__ ), 32 );  
           vector_from_int( tmp->value, se->num );
         } else {
           tmp = se->exp;
@@ -2668,7 +2668,7 @@ delay_value
         if( se != NULL ) {
           if( se->exp == NULL ) {
             tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-            vector_init( tmp->value, (nibble*)malloc_safe( (sizeof( nibble ) * 32), __FILE__, __LINE__ ), 32 );
+            vector_init( tmp->value, (vec_data*)malloc_safe( (sizeof( vec_data ) * 32), __FILE__, __LINE__ ), 32 );
             vector_from_int( tmp->value, se->num );
           } else {
             tmp = se->exp;

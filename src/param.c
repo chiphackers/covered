@@ -422,7 +422,7 @@ void param_expr_eval( expression* expr, inst_parm* ihead ) {
     param_expr_eval( expr->left,  ihead );
     param_expr_eval( expr->right, ihead );
 
-    switch( SUPPL_OP( expr->suppl ) ) {
+    switch( expr->op ) {
       case EXP_OP_STATIC :
         break;
       case EXP_OP_PARAM      :
@@ -436,9 +436,9 @@ void param_expr_eval( expression* expr, inst_parm* ihead ) {
          if we don't have some already.
         */
         assert( expr->value != NULL );
-        assert( (SUPPL_OP( expr->suppl ) != EXP_OP_SIG)      &&
-                (SUPPL_OP( expr->suppl ) != EXP_OP_SBIT_SEL) &&
-                (SUPPL_OP( expr->suppl ) != EXP_OP_MBIT_SEL) );
+        assert( (expr->op != EXP_OP_SIG)      &&
+                (expr->op != EXP_OP_SBIT_SEL) &&
+                (expr->op != EXP_OP_MBIT_SEL) );
         expression_resize( expr, FALSE );
         if( expr->value->value != NULL ) {
           free_safe( expr->value->value );
@@ -722,6 +722,10 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.34  2004/03/30 15:42:14  phase1geo
+ Renaming signal type to vsignal type to eliminate compilation problems on systems
+ that contain a signal type in the OS.
+
  Revision 1.33  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,

@@ -174,12 +174,12 @@ bool vsignal_db_read( char** line, module* curr_mod ) {
            If expression is a vsignal holder, we need to set the expression's vector to point
            to our vector and set its vsignal pointer to point to us.
           */
-          if( (SUPPL_OP( expl->exp->suppl ) == EXP_OP_SIG) ||
-              (SUPPL_OP( expl->exp->suppl ) == EXP_OP_SBIT_SEL) ||
-              (SUPPL_OP( expl->exp->suppl ) == EXP_OP_MBIT_SEL) ||
-              (SUPPL_OP( expl->exp->suppl ) == EXP_OP_PARAM)    ||
-              (SUPPL_OP( expl->exp->suppl ) == EXP_OP_PARAM_SBIT) ||
-              (SUPPL_OP( expl->exp->suppl ) == EXP_OP_PARAM_MBIT) ) {
+          if( (expl->exp->op == EXP_OP_SIG) ||
+              (expl->exp->op == EXP_OP_SBIT_SEL) ||
+              (expl->exp->op == EXP_OP_MBIT_SEL) ||
+              (expl->exp->op == EXP_OP_PARAM)    ||
+              (expl->exp->op == EXP_OP_PARAM_SBIT) ||
+              (expl->exp->op == EXP_OP_PARAM_MBIT) ) {
             expression_set_value( expl->exp, sig->value );
           }
 
@@ -323,7 +323,7 @@ void vsignal_set_wait_bit( vsignal* sig, int val ) {
   assert( sig->value != NULL );
   assert( sig->value->value != NULL );
 
-  sig->value->suppl = (sig->value->suppl & 0xfb) | ((val & 0x1) << 2);
+  sig->value->suppl.part.wait = val;
 
 }
 
@@ -340,7 +340,7 @@ int vsignal_get_wait_bit( vsignal* sig ) {
   assert( sig->value != NULL );
   assert( sig->value->value != NULL );
 
-  return( (sig->value->suppl & 0x4) >> 2 );
+  return( sig->value->suppl.part.wait );
 
 }
 
@@ -379,7 +379,7 @@ void vsignal_vcd_assign( vsignal* sig, char* value, int msb, int lsb ) {
     while( curr_expr != NULL ) {
 
       /* Add to simulation queue if expression is a RHS */
-      if( SUPPL_IS_LHS( curr_expr->exp->suppl ) == 0 ) {
+      if( ESUPPL_IS_LHS( curr_expr->exp->suppl ) == 0 ) {
         sim_expr_changed( curr_expr->exp );
       }
 
@@ -496,6 +496,10 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.4  2004/11/07 05:51:24  phase1geo
+ If assigned signal value did not change, do not cause associated expression tree(s)
+ to be re-evaluated.
+
  Revision 1.3  2004/11/06 13:22:48  phase1geo
  Updating CDD files for change where EVAL_T and EVAL_F bits are now being masked out
  of the CDD files.

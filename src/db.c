@@ -782,9 +782,9 @@ expression* db_create_expression( expression* right, expression* left, int op, b
   }
 
   if( (left != NULL) &&
-      (SUPPL_OP( expr->suppl ) != EXP_OP_CASE) &&
-      (SUPPL_OP( expr->suppl ) != EXP_OP_CASEX) &&
-      (SUPPL_OP( expr->suppl ) != EXP_OP_CASEZ) ) {
+      (expr->op != EXP_OP_CASE) &&
+      (expr->op != EXP_OP_CASEX) &&
+      (expr->op != EXP_OP_CASEZ) ) {
     assert( left->parent->expr == NULL );
     left->parent->expr = expr;
   }
@@ -830,7 +830,7 @@ void db_add_expression( expression* root ) {
     if( exp_link_find( root, curr_module->exp_head ) == NULL ) {
     
       snprintf( user_msg, USER_MSG_LENGTH, "In db_add_expression, id: %d, op: %d, line: %d", 
-                root->id, SUPPL_OP( root->suppl ), root->line );
+                root->id, root->op, root->line );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
       /* Add expression's children first. */
@@ -878,13 +878,13 @@ statement* db_create_statement( expression* exp ) {
 */
 void db_add_statement( statement* stmt, statement* start ) {
  
-  if( (stmt != NULL) && ((stmt->exp->suppl & (0x1 << SUPPL_LSB_STMT_ADDED)) == 0) ) {
+  if( (stmt != NULL) && (stmt->exp->suppl.part.stmt_added == 0) ) {
 
     snprintf( user_msg, USER_MSG_LENGTH, "In db_add_statement, id: %d, start id: %d", stmt->exp->id, start->exp->id );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
     /* Add TRUE and FALSE statement paths to list */
-    if( (SUPPL_IS_STMT_STOP( stmt->exp->suppl ) == 0) && (stmt->next_false != start) ) {
+    if( (ESUPPL_IS_STMT_STOP( stmt->exp->suppl ) == 0) && (stmt->next_false != start) ) {
       db_add_statement( stmt->next_false, start );
     }
 
@@ -893,7 +893,7 @@ void db_add_statement( statement* stmt, statement* start ) {
     }
 
     /* Set ADDED bit of this statement */
-    stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_ADDED);
+    stmt->exp->suppl.part.stmt_added = 1;
 
     /* Now add current statement */
     stmt_link_add_tail( stmt, &(curr_module->stmt_head), &(curr_module->stmt_tail) );
@@ -1313,6 +1313,9 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.118  2004/12/20 04:12:00  phase1geo
+ A bit more race condition checking code added.  Still not there yet.
+
  Revision 1.117  2004/12/18 16:23:16  phase1geo
  More race condition checking updates.
 

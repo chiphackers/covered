@@ -310,7 +310,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
       } else {
         *ptr = '\0';
         ptr++;
-        defparam_add( argv[i], vector_from_string( &ptr ) );
+        defparam_add( argv[i], vector_from_string( &ptr, FALSE ) );
       }
       
     } else if( strncmp( "-T", argv[i], 2 ) == 0 ) {
@@ -410,6 +410,9 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.47  2005/01/03 23:00:35  phase1geo
+ Fixing library extension parser.
+
  Revision 1.46  2004/12/17 22:29:36  phase1geo
  More code added to race condition feature.  Still not usable.
 

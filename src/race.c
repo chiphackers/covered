@@ -50,7 +50,7 @@ extern char user_msg[USER_MSG_LENGTH];
 */
 bool race_does_matching_stmt_blk_exist( stmt_blk* sb, stmt_blk* curr ) {
 
-  while( (curr != NULL) && (curr->sig != ss->sig) ) {
+  while( (curr != NULL) && (curr->sig != sb->sig) ) {
     curr = curr->next;
   }
 
@@ -73,17 +73,17 @@ void race_find_lhs_sigs( expression* exp, statement* root, bool blocking ) {
   if( exp != NULL ) {
 
     /* If the current expression was an assignment operator, return if it was blocking/non-blocking */
-    if( (SUPPL_OP( exp->suppl ) == EXP_OP_ASSIGN) ||
-        (SUPPL_OP( exp->suppl ) == EXP_OP_BASSIGN) ) {
+    if( (exp->op == EXP_OP_ASSIGN) ||
+        (exp->op == EXP_OP_BASSIGN) ) {
 
       blocking = TRUE;
 
     /* If the current expression is a signal that is on the LHS, add it to the stmt_blk array */
-    } else if( (SUPPL_OP( exp->suppl ) == EXP_OP_SIG     ) ||
-               (SUPPL_OP( exp->suppl ) == EXP_OP_SBIT_SEL) ||
-               (SUPPL_OP( exp->suppl ) == EXP_OP_MBIT_SEL) ) {
+    } else if( (exp->op == EXP_OP_SIG     ) ||
+               (exp->op == EXP_OP_SBIT_SEL) ||
+               (exp->op == EXP_OP_MBIT_SEL) ) {
 
-      if( SUPPL_IS_LHS( exp->suppl ) == 1 ) {
+      if( ESUPPL_IS_LHS( exp->suppl ) == 1 ) {
 
         /* Check to see if any elements in stmt_blk list match this element */
         tmpss = stmt_blk_head;
@@ -185,8 +185,8 @@ void race_find_and_add_stmt_blks( statement* stmt, statement* root ) {
     race_find_lhs_sigs( stmt->exp, root, FALSE );
 
     /* Traverse TRUE and FALSE paths if STOP and CONTINUOUS bits are not set */
-    if( (SUPPL_IS_STMT_STOP( stmt->exp->suppl ) == 0) &&
-        (SUPPL_IS_STMT_CONTINUOUS( stmt->exp->suppl ) == 0) ) {
+    if( (ESUPPL_IS_STMT_STOP( stmt->exp->suppl ) == 0) &&
+        (ESUPPL_IS_STMT_CONTINUOUS( stmt->exp->suppl ) == 0) ) {
 
       race_find_and_add_stmt_blks( stmt->next_true,  root );
 
@@ -316,6 +316,10 @@ void race_stmt_blk_dealloc() {
 
 /*
  $Log$
+ Revision 1.8  2005/01/04 14:37:00  phase1geo
+ New changes for race condition checking.  Things are uncompilable at this
+ point.
+
  Revision 1.7  2004/12/20 04:12:00  phase1geo
  A bit more race condition checking code added.  Still not there yet.
 

@@ -68,8 +68,8 @@ void stmt_iter_reverse( stmt_iter* si ) {
 */
 void stmt_iter_find_head( stmt_iter* si, bool skip ) {
   
-  while( (si->curr != NULL) && ((SUPPL_IS_STMT_HEAD( si->curr->stmt->exp->suppl ) == 0) || skip) ) {
-    if( SUPPL_IS_STMT_HEAD( si->curr->stmt->exp->suppl ) == 1 ) {
+  while( (si->curr != NULL) && ((ESUPPL_IS_STMT_HEAD( si->curr->stmt->exp->suppl ) == 0) || skip) ) {
+    if( ESUPPL_IS_STMT_HEAD( si->curr->stmt->exp->suppl ) == 1 ) {
       skip = FALSE;
     }
     stmt_iter_next( si );
@@ -105,6 +105,9 @@ void stmt_iter_get_next_in_order( stmt_iter* si ) {
 
 /*
  $Log$
+ Revision 1.6  2003/10/13 03:56:29  phase1geo
+ Fixing some problems with new FSM code.  Not quite there yet.
+
  Revision 1.5  2003/01/27 16:06:10  phase1geo
  Fixing bug with line ordering where case statement lines were not being
  output to reports.  Updating regression to reflect fixes.

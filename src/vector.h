@@ -14,7 +14,7 @@
 
 
 /*! \brief Initializes specified vector. */
-void vector_init( vector* vec, nibble* value, int width );
+void vector_init( vector* vec, vec_data* value, int width );
 
 /*! \brief Creates and initializes new vector */
 vector* vector_create( int width, bool data );
@@ -35,19 +35,19 @@ bool vector_db_merge( vector* base, char** line, bool same );
 bool vector_db_replace( vector* base, char** line );
 
 /*! \brief Returns string containing toggle 0 -> 1 information in binary format */
-char* vector_get_toggle01( nibble* nib, int width );
+char* vector_get_toggle01( vec_data* nib, int width );
 
 /*! \brief Returns string containing toggle 1 -> 0 information in binary format */
-char* vector_get_toggle10( nibble* nib, int width );
+char* vector_get_toggle10( vec_data* nib, int width );
 
 /*! \brief Outputs the toggle01 information from the specified nibble to the specified output stream. */
-void vector_display_toggle01( nibble* nib, int width, FILE* ofile );
+void vector_display_toggle01( vec_data* nib, int width, FILE* ofile );
 
 /*! \brief Outputs the toggle10 information from the specified nibble to the specified output stream. */
-void vector_display_toggle10( nibble* nib, int width, FILE* ofile );
+void vector_display_toggle10( vec_data* nib, int width, FILE* ofile );
 
 /*! \brief Outputs nibble to standard output. */
-void vector_display_nibble( nibble* nib, int width );
+void vector_display_nibble( vec_data* nib, int width );
 
 /*! \brief Outputs vector contents to standard output. */
 void vector_display( vector* vec );
@@ -59,7 +59,7 @@ nibble vector_bit_val( nibble* value, int pos );
 void vector_set_bit( nibble* nib, nibble value, int pos );
 
 /*! \brief Sets specified vector value to new value and maintains coverage history. */
-bool vector_set_value( vector* vec, nibble* value, int width, int from_idx, int to_idx );
+bool vector_set_value( vector* vec, vec_data* value, int width, int from_idx, int to_idx );
 
 /*! \brief Sets vector output type (DECIMAL, BINARY, OCTAL or HEXIDECIMAL) in first nibble */
 void vector_set_type( vector* vec, int type );
@@ -127,6 +127,9 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.25  2005/01/06 23:51:18  phase1geo
+ Intermediate checkin.  Files don't fully compile yet.
+
  Revision 1.24  2004/11/06 13:22:48  phase1geo
  Updating CDD files for change where EVAL_T and EVAL_F bits are now being masked out
  of the CDD files.

@@ -10,8 +10,8 @@
  TRUE (non-zero value) or FALSE (zero value).  To minimize memory use, a statement 
  uses some of the unused bits in its root expression supplemental field instead of
  having its own supplemental field.  There are two bits in the expression
- supplemental value that are only used by statements:  #SUPPL_LSB_STMT_HEAD and
- #SUPPL_LSB_STMT_STOP.
+ supplemental value that are only used by statements:  #ESUPPL_LSB_STMT_HEAD and
+ #ESUPPL_LSB_STMT_STOP.
 
  \par
  The STMT_HEAD bit indicates that this statement should be loaded into the
@@ -121,14 +121,14 @@ statement* statement_create( expression* exp ) {
 
   statement* stmt;  /* Pointer to newly created statement */
 
-  stmt                    = (statement*)malloc_safe( sizeof( statement ), __FILE__, __LINE__ );
-  stmt->exp               = exp;
-  stmt->exp->parent->stmt = stmt;
-  stmt->exp->suppl        = stmt->exp->suppl | (0x1 << SUPPL_LSB_ROOT);
-  stmt->wait_sig_head     = NULL;
-  stmt->wait_sig_tail     = NULL;
-  stmt->next_true         = NULL;
-  stmt->next_false        = NULL;
+  stmt                       = (statement*)malloc_safe( sizeof( statement ), __FILE__, __LINE__ );
+  stmt->exp                  = exp;
+  stmt->exp->parent->stmt    = stmt;
+  stmt->exp->suppl.part.root = 1;
+  stmt->wait_sig_head        = NULL;
+  stmt->wait_sig_tail        = NULL;
+  stmt->next_true            = NULL;
+  stmt->next_false           = NULL;
 
   expression_get_wait_sig_list( exp, &(stmt->wait_sig_head), &(stmt->wait_sig_tail) );
 
@@ -213,7 +213,7 @@ void statement_db_write( statement* stmt, FILE* ofile ) {
 
 #ifdef EFFICIENCY_CODE
   /* Write succeeding statements first */
-  if( SUPPL_IS_STMT_STOP( stmt->exp->suppl ) == 0 ) {
+  if( ESUPPL_IS_STMT_STOP( stmt->exp->suppl ) == 0 ) {
 
     statement_db_write( stmt->next_true, ofile );
     statement_db_write( stmt->next_false, ofile );
@@ -353,16 +353,16 @@ void statement_connect( statement* curr_stmt, statement* next_stmt ) {
     
   /* If both paths go to the same destination, only parse one path */
   if( (curr_stmt->next_true == curr_stmt->next_false) || 
-      (((curr_stmt->exp->suppl >> SUPPL_LSB_STMT_CONNECTED) & 0x1) == 1) ) {
+      (curr_stmt->exp->suppl.part.stmt_connected == 1) ) {
 
     if( curr_stmt->next_true == NULL ) {
       curr_stmt->next_true  = next_stmt;
       /* If the current statement is a wait statement, don't connect next_false path */
-      if( (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_DELAY) &&
-          (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_NEDGE) &&
-          (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_PEDGE) &&
-          (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_AEDGE) &&
-          (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_EOR) ) {
+      if( (curr_stmt->exp->op != EXP_OP_DELAY) &&
+          (curr_stmt->exp->op != EXP_OP_NEDGE) &&
+          (curr_stmt->exp->op != EXP_OP_PEDGE) &&
+          (curr_stmt->exp->op != EXP_OP_AEDGE) &&
+          (curr_stmt->exp->op != EXP_OP_EOR) ) {
         curr_stmt->next_false = next_stmt;
       }
     } else if( curr_stmt->next_true != next_stmt ) {
@@ -380,11 +380,11 @@ void statement_connect( statement* curr_stmt, statement* next_stmt ) {
 
     /* Traverse FALSE path */
     if( curr_stmt->next_false == NULL ) {
-      if( (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_DELAY) &&
-          (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_NEDGE) &&
-          (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_PEDGE) &&
-          (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_AEDGE) &&
-          (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_EOR) ) {
+      if( (curr_stmt->exp->op != EXP_OP_DELAY) &&
+          (curr_stmt->exp->op != EXP_OP_NEDGE) &&
+          (curr_stmt->exp->op != EXP_OP_PEDGE) &&
+          (curr_stmt->exp->op != EXP_OP_AEDGE) &&
+          (curr_stmt->exp->op != EXP_OP_EOR) ) {
         curr_stmt->next_false = next_stmt;
       }
     } else if( curr_stmt->next_false != next_stmt ) {
@@ -394,7 +394,7 @@ void statement_connect( statement* curr_stmt, statement* next_stmt ) {
   }
 
   if( (curr_stmt->next_true != NULL) && (curr_stmt->next_false != NULL) ) {
-    curr_stmt->exp->suppl = curr_stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_CONNECTED);
+    curr_stmt->exp->suppl.part.stmt_connected = 1;
   }
 
 }
@@ -419,11 +419,11 @@ void statement_set_stop( statement* stmt, statement* post, bool true_path, bool 
       (stmt->next_false == post) ) {
     if( true_path || both) {
       /* printf( "Setting STOP bit for statement %d\n", stmt->exp->id ); */
-      stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);
+      stmt->exp->suppl.part.stmt_stop = 1;
     }
   } else {
     if( (stmt->next_true == stmt->next_false) ||
-        (((stmt->exp->suppl >> SUPPL_LSB_STMT_CONNECTED) & 0x1) == 0) ) {
+        (stmt->exp->suppl.part.stmt_connected == 0) ) {
       if( (stmt->next_true != NULL) && (stmt->next_true != post) ) { 
         statement_set_stop( stmt->next_true, post, TRUE, both );
       }
@@ -438,7 +438,7 @@ void statement_set_stop( statement* stmt, statement* post, bool true_path, bool 
   }
   
   if( (stmt->next_true != NULL) && (stmt->next_false != NULL) ) {
-    stmt->exp->suppl = stmt->exp->suppl & ~(0x1 << SUPPL_LSB_STMT_CONNECTED);
+    stmt->exp->suppl.part.stmt_connected = 0;
   }
 
 }
@@ -572,6 +572,10 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.49  2004/07/22 04:43:06  phase1geo
+ Finishing code to calculate start and end columns of expressions.  Regression
+ has been updated for these changes.  Other various minor changes as well.
+
  Revision 1.48  2004/03/16 14:01:47  phase1geo
  Cleaning up verbose output.
 
