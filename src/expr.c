@@ -338,21 +338,27 @@ void expression_resize( expression* expr, bool recursive ) {
       case EXP_OP_CASEX   :
       case EXP_OP_CASEZ   :
       case EXP_OP_DEFAULT :
-      case EXP_OP_LAST    :
         if( (expr->value->width != 1) || (expr->value->value == NULL) ) {
           assert( expr->value->value == NULL );
           expression_create_value( expr, 1, 0, FALSE );
         }
         break;
 
+      case EXP_OP_LAST    :
+        if( (expr->value->width != 2) || (expr->value->value == NULL) ) {
+          assert( expr->value->value == NULL );
+          expression_create_value( expr, 2, 0, FALSE );
+        }
+        break;
+
       /*
        In the case of an AEDGE expression, it needs to have the size of its LAST child expression
-       to be the width of its right child.
+       to be the width of its right child + one bit for an armed value.
       */
       case EXP_OP_AEDGE :
         if( (expr->left->value->width != expr->right->value->width) || (expr->left->value->value == NULL) ) {
           assert( expr->left->value->value == NULL );
-          expression_create_value( expr->left, expr->right->value->width, expr->right->value->lsb, FALSE );
+          expression_create_value( expr->left, (expr->right->value->width + 1), expr->right->value->lsb, FALSE );
         }
         if( (expr->value->width != 1) || (expr->value->value == NULL) ) {
           assert( expr->value->value == NULL );
@@ -1022,44 +1028,57 @@ void expression_operate( expression* expr ) {
 
       case EXP_OP_PEDGE :
         value1a = vector_bit_val( expr->right->value->value, 0 );
-        value1b = vector_bit_val( expr->left->value->value,  0 );
-        if( (value1a != value1b) && (value1a == 1) ) {
+        value1b = vector_bit_val( expr->left->value->value,  1 );
+        /* If the event has been armed previously, evaluate */
+        if( (value1b == 1) && (value1a != vector_bit_val( expr->left->value->value, 0 )) && (value1a == 1) ) {
           bit = 1;
           vector_set_value( expr->value, &bit, 1, 0, 0 );
+          /* Clear armed bit */
+          vector_set_bit( &value1a, 0, 1 );
         } else {
           bit = 0;
           vector_set_value( expr->value, &bit, 1, 0, 0 );
+          /* Set armed bit */
+          vector_set_bit( &value1a, 1, 1 );
         }
         /* Set left LAST value to current value of right */
-        vector_set_value( expr->left->value, &value1a, 1, 0, 0 );
+        vector_set_value( expr->left->value, &value1a, 2, 0, 0 );
         break;
  
       case EXP_OP_NEDGE :
         value1a = vector_bit_val( expr->right->value->value, 0 );
-        value1b = vector_bit_val( expr->left->value->value,  0 );
-        if( (value1a != value1b) && (value1a == 0) ) {
+        value1b = vector_bit_val( expr->left->value->value,  1 );
+        if( (value1b == 1) && (value1a != vector_bit_val( expr->left->value->value, 0 )) && (value1a == 0) ) {
           bit = 1;
           vector_set_value( expr->value, &bit, 1, 0, 0 );
+          /* Clear armed bit */
+          vector_set_bit( &value1a, 0, 1 );
        } else {
           bit = 0;
           vector_set_value( expr->value, &bit, 1, 0, 0 );
+          /* Set armed bit */
+          vector_set_bit( &value1a, 1, 1 );
         }
         /* Set left LAST value to current value of right */
-        vector_set_value( expr->left->value, &value1a, 1, 0, 0 );
+        vector_set_value( expr->left->value, &value1a, 2, 0, 0 );
         break;
 
       case EXP_OP_AEDGE :
         vector_init( &vec1, &value1a, 1, 0 );
         vector_op_compare( &vec1, expr->left->value, expr->right->value, COMP_CEQ );
-        if( vector_to_int( &vec1 ) == 0 ) {
+        /* Set left LAST value to current value of right */
+        vector_set_value( expr->left->value, expr->right->value->value, expr->right->value->width, expr->right->value->lsb, 0 );
+        if( (vector_bit_val( expr->left->value->value, expr->left->value->width ) == 1) && (vector_to_int( &vec1 ) == 0) ) {
           bit = 1;
           vector_set_value( expr->value, &bit, 1, 0, 0 );
+          /* Clear armed bit */
+          vector_set_bit( expr->left->value->value, 0, expr->left->value->width );
         } else {
           bit = 0;
           vector_set_value( expr->value, &bit, 1, 0, 0 );
+          /* Set armed bit */
+          vector_set_bit( expr->left->value->value, 1, expr->left->value->width );
         }
-        /* Set left LAST value to current value of right */
-        vector_set_value( expr->left->value, expr->right->value->value, expr->right->value->width, expr->right->value->lsb, 0 );
         break;
 
       case EXP_OP_EOR :
@@ -1079,7 +1098,7 @@ void expression_operate( expression* expr ) {
         }
         intval1 = vector_to_int( expr->left->value );           /* Start time of delay */
         intval2 = vector_to_int( expr->right->value );          /* Number of clocks to delay */
-        if( ((intval1 + intval2) <= curr_sim_time) || ((curr_sim_time == -1) && (vector_to_int( expr->left->value ) != 0xffffffff)) ) {
+        if( ((intval1 + intval2) <= curr_sim_time) || ((curr_sim_time == -1) && (intval1 != 0xffffffff)) ) {
           bit = 1;
           vector_set_value( expr->value, &bit, 1, 0, 0 );
           vector_from_int( expr->left->value, 0xffffffff );
@@ -1300,6 +1319,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.77  2003/08/09 22:16:37  phase1geo
+ Updates to development documentation for newly added functions from previous
+ checkin.
+
  Revision 1.76  2003/08/09 22:10:41  phase1geo
  Removing wait event signals from CDD file generation in support of another method
  that fixes a bug when multiple wait event statements exist within the same

@@ -141,6 +141,9 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
   snprintf( user_msg, USER_MSG_LENGTH, "========  Reading in VCD dumpfile %s  ========\n", vcd );
   print_output( user_msg, DEBUG );
   
+  /* Perform initialization simulation timestep */
+  db_do_timestep( 0 );
+
   /* Perform the parse */
   vcd_parse( vcd );
     
@@ -165,6 +168,11 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
 
 /*
  $Log$
+ Revision 1.18  2003/02/18 20:17:02  phase1geo
+ Making use of scored flag in CDD file.  Causing report command to exit early
+ if it is working on a CDD file which has not been scored.  Updated testsuite
+ for these changes.
+
  Revision 1.17  2003/01/03 05:48:04  phase1geo
  Reorganizing file opening/closing code in lexer.l and pplexer.l to make some
  sense out of the madness.

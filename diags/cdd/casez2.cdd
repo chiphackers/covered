@@ -26,7 +26,7 @@
 2 5 main 8 102000 0 0 8 0 1000ff,7f
 2 28 main 8 1a31af 5 4 1 0 101aa
 2 1 main 6 103001 0 0 
-2 2 main 6 2a 0 0 8 0 f2faa,f0faa
+2 2 main 6 2a 0 0 9 0 f2faa,f0faa,aa
 2 3 main 6 2033a9 1 2 1 0 111aa
 1 ir main 8 0 f2faa,f0faa 1 4
 1 state main 3 0 773aa

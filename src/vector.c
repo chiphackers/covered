@@ -1107,11 +1107,11 @@ void vector_op_compare( vector* tgt, vector* left, vector* right, int comp_type 
   bool   done = FALSE;  /* Specifies continuation of comparison */
   nibble value;         /* Result to be stored in tgt           */
 
-  /* Determine at which bit position to begin comparing */
+  /* Determine at which bit position to begin comparing, start at MSB of smallest vector */
   if( left->width > right->width ) {
-    pos = left->width - 1;
-  } else {
     pos = right->width - 1;
+  } else {
+    pos = left->width - 1;
   }
 
   while( (pos >= 0) && !done ) {
@@ -1513,6 +1513,13 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.35  2003/08/05 20:25:05  phase1geo
+ Fixing non-blocking bug and updating regression files according to the fix.
+ Also added function vector_is_unknown() which can be called before making
+ a call to vector_to_int() which will eleviate any X/Z-values causing problems
+ with this conversion.  Additionally, the real1.1 regression report files were
+ updated.
+
  Revision 1.34  2003/02/14 00:00:30  phase1geo
  Fixing bug with vector_vcd_assign when signal being assigned has an LSB that
  is greater than 0.
