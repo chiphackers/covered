@@ -34,6 +34,15 @@ expression* db_create_expression( expression* right, expression* left, int op, i
 //! Adds specified expression to expression list.  Called by parser.
 void db_add_expression( expression* root );
 
+//! Creates new statement expression from specified information.  Called by parser.
+expression* db_create_statement( int line, expression* exp );
+
+//! Connects true statement to specified statement.
+void db_connect_statement_true( expression* stmt, expression* exp_true );
+
+//! Connects false statement to specified statement.
+void db_connect_statement_false( expression* stmt, expression* exp_false );
+
 //! Sets current VCD scope to specified scope.
 void db_set_vcd_scope( char* scope );
 
@@ -51,6 +60,8 @@ int db_get_signal_size( char* symbol );
 
 //! Performs a timestep for all signal changes during this timestep.
 void db_do_timestep( int time ); 
+
+/* $Log$ */
 
 #endif
 

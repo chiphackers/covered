@@ -508,6 +508,79 @@ void db_add_expression( expression* root ) {
 }
 
 /*!
+ \param line  Line number where statement is parsed from.
+ \param exp   Pointer to associated "root" expression.
+
+ \return Returns pointer to expression containing statement.
+
+ Creates an expression with the STMT operation set.  Because statements are setup a bit
+ differently than regular expressions (parent points to associated expression while
+ right and left may point to other expressions), the parameter list is modified from
+ the db_create_expression function.  Adds created statement expression to current
+ module's expression list.
+*/
+expression* db_create_statement( int line, expression* exp ) {
+
+  expression* stmt;       /* Pointer to newly created statement expression */
+  char        msg[4096];  /* Message to display to user                    */
+
+  snprintf( msg, 4096, "In db_create_statement, line: %d, id: %d, exp: %d", line, curr_expr_id, exp->id );
+  print_output( msg, NORMAL );
+
+  stmt = expression_create( NULL, NULL, EXP_OP_STMT, curr_expr_id, line );
+  stmt->parent = exp;
+
+  curr_expr_id++;
+
+  exp_link_add( stmt, &(curr_module->exp_head), &(curr_module->exp_tail) );
+
+  return( stmt );
+
+}
+
+/*!
+ \param stmtm     Pointer to statement to add to module expression list.
+ \param exp_true  Pointer to statement to run if statement evaluates to TRUE.
+
+ Connects the specified statement's true statement.
+*/
+void db_connect_statement_true( expression* stmt, expression* exp_true ) {
+
+  char msg[4096];   /* Message to display to user */
+
+  if( stmt != NULL ) {
+
+    snprintf( msg, 4096, "In db_connect_statement_true, id: %d, exp: %d", stmt->id, exp_true->id );
+    print_output( msg, NORMAL );
+
+    stmt->right = exp_true;
+
+  }
+
+}
+
+/*!
+ \param stmtm      Pointer to statement to add to module expression list.
+ \param exp_false  Pointer to statement to run if statement evaluates to TRUE.
+
+ Connects the specified statement's false statement.
+*/
+void db_connect_statement_false( expression* stmt, expression* exp_false ) {
+
+  char msg[4096];   /* Message to display to user */
+
+  if( stmt != NULL ) {
+
+    snprintf( msg, 4096, "In db_connect_statement_false, id: %d, exp: %d", stmt->id, exp_false->id );
+    print_output( msg, NORMAL );
+
+    stmt->left = exp_false;
+
+  }
+
+}
+
+/*!
  \param scope  Current VCD scope.
 
  Sets the curr_vcd_scope global variable to the specified scope.
@@ -734,6 +807,59 @@ void db_find_set_add_signal( char* symbol, vector* vec ) {
 }
 
 /*!
+ \param exp  Pointer to current expression to evaluate and traverse.
+
+ Recursively searches through specified tree, following the path to changed
+ expressions as specified by the LEFT_CHANGED and RIGHT_CHANGED bits.  When
+ an expression is found that does not have its LEFT_CHANGED and RIGHT_CHANGED
+ bits set, we have found a leaf expression, so place this expression at the
+ end of the expression queue.  If the specified expression is a statement
+ and no CHANGED bits are set, evaluate the value and add the next statement
+ to the tail of the expression queue. This function is called by the
+ db_do_timestep function.
+*/
+void db_handle_statement( expression* exp ) {
+
+  bool changed = FALSE;   /* Specifies if this expression has changed */
+
+  if( SUPPL_OP( exp->suppl ) == EXP_OP_STMT ) {
+    
+    /* Check to see if associated expression has changed */
+    assert( exp->parent != NULL );
+
+    if( (SUPPL_IS_LEFT_CHANGED( exp->parent->suppl )  == 1) ||
+        (SUPPL_IS_RIGHT_CHANGED( exp->parent->suppl ) == 1) ) {
+      db_handle_statement( exp->parent );
+    }
+
+    /* Place next statement into the expression queue. */
+    if( exp->parent->value->value[0] == 1 ) {
+      exp_link_add( exp->right, &exp_queue_head, &exp_queue_tail );
+    } else {
+      exp_link_add( exp->left, &exp_queue_head, &exp_queue_tail );
+    }
+
+  } else {
+
+    /* If left expression has changed, handle it. */
+    if( SUPPL_IS_LEFT_CHANGED( exp->suppl ) == 1 ) {
+      db_handle_statement( exp->left );
+    }
+
+    /* If right expression has changed, handle it. */
+    if( SUPPL_IS_RIGHT_CHANGED( exp->suppl ) == 1 ) {
+      db_handle_statement( exp->right );
+    }
+
+    /* Now place this expression in the queue */
+    exp->suppl = exp->suppl | (0x1 << SUPPL_LSB_IN_QUEUE);
+    exp_link_add( exp, &exp_queue_head, &exp_queue_tail );
+
+  }
+
+}
+
+/*!
  \param time  Current time step value being performed.
 
  Cycles through expression queue, performing expression evaluations as we go.  If
@@ -760,8 +886,8 @@ void db_do_timestep( int time ) {
     }
  
     /* Perform expression operation */
-//    printf( "Expression address: 0x%lx\n", exp_queue_head->exp );
-//    printf( "Performing expression operation: %d, id: %d\n", exp_queue_head->exp->op, exp_queue_head->exp->id );
+    printf( "Expression address: 0x%lx\n", exp_queue_head->exp );
+    printf( "Performing expression operation: %d, id: %d\n", SUPPL_OP( exp_queue_head->exp->suppl ), exp_queue_head->exp->id );
     expression_operate( exp_queue_head->exp );
 
     /* Indicate that this expression is no longer in the expression queue. */
@@ -819,3 +945,5 @@ int db_get_signal_size( char* symbol ) {
 
 }
 
+
+/* $Log$ */

@@ -19,9 +19,9 @@
 char err_msg[1000];
 
 /* Uncomment these lines to turn debuggin on */
-#define YYDEBUG 1
-#define YYERROR_VERBOSE 1
-int yydebug = 1;
+//#define YYDEBUG 1
+//#define YYERROR_VERBOSE 1
+//int yydebug = 1;
 %}
 
 %union {
@@ -83,6 +83,7 @@ int yydebug = 1;
 %type <strlink>  register_variable_list list_of_variables
 %type <strlink>  net_decl_assigns gate_instance_list
 %type <text>     register_variable net_decl_assign
+%type <expr>     statement statement_list statement_opt
 
 %token K_TAND
 %right '?' ':'
@@ -950,8 +951,7 @@ module_item
 		}
 	| K_initial statement
 		{
-                  /* Line will be uncommented when statement support is complete */
-                  // db_add_expression( $2 );
+                  db_add_expression( $2 );
 		}
 	| K_task IDENTIFIER ';'
 	    task_item_list_opt statement_opt
@@ -993,212 +993,308 @@ statement
 	: K_assign lavalue '=' expression ';'
 		{
 		  db_add_expression( $4 );
+                  $$ = NULL;
 		}
 	| K_deassign lavalue ';'
 		{
+                  $$ = NULL;
 		}
 	| K_force lavalue '=' expression ';'
 		{
 		  /* Don't handle forces at this time */
 		  expression_dealloc( $4, FALSE );
+                  $$ = NULL;
 		}
 	| K_release lavalue ';'
 		{
+                  $$ = NULL;
 		}
 	| K_begin statement_list K_end
 		{
+                  $$ = $2;
 		}
 	| K_begin ':' IDENTIFIER
 	    block_item_decls_opt
 	    statement_list
 	  K_end
 		{
+                  $$ = $5;
 		}
 	| K_begin K_end
 		{
+                  $$ = NULL;
 		}
 	| K_begin ':' IDENTIFIER K_end
 		{
+                  $$ = NULL;
 		}
 	| K_begin error K_end
 		{
 		  yyerrok;
+                  $$ = NULL;
 		}
 	| K_fork ':' IDENTIFIER
 	    block_item_decls_opt
 	    statement_list
 	  K_join
 		{
+                  $$ = $5;
 		}
 	| K_fork K_join
 		{
+                  $$ = NULL;
 		}
 	| K_fork ':' IDENTIFIER K_join
 		{
+                  $$ = NULL;
 		}
 	| K_disable identifier ';'
 		{
+                  $$ = NULL;
 		}
 	| K_TRIGGER IDENTIFIER ';'
 		{
+                  $$ = NULL;
 		}
 	| K_forever statement
 		{
+                  expression* exp = db_create_statement( @1.first_line, $2 );
+                  $$ = exp;
 		}
 	| K_fork statement_list K_join
 		{
+                  expression* exp = db_create_statement( @1.first_line, $2 );
+                  $$ = exp;
 		}
 	| K_repeat '(' expression ')' statement
 		{
-		  expression_dealloc( $3, FALSE );
+                  expression* exp = db_create_statement( @1.first_line, $3 );
+                  db_add_expression( $3 );
+                  $$ = exp;
 		}
 	| K_case '(' expression ')' case_items K_endcase
 		{
+                  /* Not sure how to handle expressions quite yet */
+                  $$ = NULL;
 		}
 	| K_casex '(' expression ')' case_items K_endcase
 		{
+                  /* Not sure how to handle expressions quite yet */
+                  $$ = NULL;
 		}
 	| K_casez '(' expression ')' case_items K_endcase
 		{
+                  /* Not sure how to handle expressions quite yet */
+                  $$ = NULL;
 		}
 	| K_case '(' expression ')' error K_endcase
 		{
 		  yyerrok;
+                  $$ = NULL;
 		}
 	| K_casex '(' expression ')' error K_endcase
 		{
 		  yyerrok;
+                  $$ = NULL;
 		}
 	| K_casez '(' expression ')' error K_endcase
 		{
 		  yyerrok;
+                  $$ = NULL;
 		}
 	| K_if '(' expression ')' statement_opt %prec less_than_K_else
 		{
+                  expression* exp = db_create_statement( @1.first_line, $3 );
 		  db_add_expression( $3 );
+                  db_connect_statement_true( exp, $5 );
+                  $$ = exp;
 		}
 	| K_if '(' expression ')' statement_opt K_else statement_opt
 		{
+                  expression* exp = db_create_statement( @1.first_line, $3 );
 		  db_add_expression( $3 );
+                  db_connect_statement_true( exp, $5 );
+                  db_connect_statement_false( exp, $7 );
+                  $$ = exp;
 		}
 	| K_if '(' error ')' statement_opt %prec less_than_K_else
 		{
 		  // yyerror( @1, "error: Malformed conditional expression." );
+                  $$ = NULL;
 		}
 	| K_if '(' error ')' statement_opt K_else statement_opt 
 		{
 		  // yyerror( @1, "error: Malformed conditional expression." );
+                  $$ = NULL;
 		}
 	| K_for '(' lpvalue '=' expression ';' expression ';' lpvalue '=' expression ')' statement
 		{
-		  expression_dealloc( $5, FALSE );
-		  expression_dealloc( $7, FALSE );
-		  expression_dealloc( $11, FALSE );
+                  expression* exp1 = db_create_statement( @1.first_line, $5 );
+                  expression* exp2 = db_create_statement( @1.first_line, $7 );
+                  expression* exp3 = db_create_statement( @1.first_line, $11 );
+                  db_add_expression( $5 );
+                  db_add_expression( $7 );
+                  db_add_expression( $11 );
+                  db_connect_statement_false( exp1, exp2 );
+                  db_connect_statement_true( exp2, $13 );
+                  /* Need to add loopback code */
+                  $$ = exp1;
 		}
 	| K_for '(' lpvalue '=' expression ';' expression ';' error ')' statement
 		{
 		  expression_dealloc( $5, FALSE );
 		  expression_dealloc( $7, FALSE );
 		  // yyerror( @9, "error: Error in for loop step assignment." );
+                  $$ = NULL;
 		}
 	| K_for '(' lpvalue '=' expression ';' error ';' lpvalue '=' expression ')' statement
 		{
 		  expression_dealloc( $5, FALSE );
 		  expression_dealloc( $11, FALSE );
 		  // yyerror( @7, "error: Error in for loop condition expression." );
+                  $$ = NULL;
 		}
 	| K_for '(' error ')' statement
 		{
 		  // yyerror( @3, "error: Incomprehensible for loop." );
+                  $$ = NULL;
 		}
 	| K_while '(' expression ')' statement
 		{
+                  expression* exp = db_create_statement( @1.first_line, $3 );
 		  db_add_expression( $3 );
+                  db_connect_statement_true( exp, $5 );
+                  /* Need to add loopback code */
+                  $$ = exp;
 		}
 	| K_while '(' error ')' statement
 		{
 		  // yyerror( @3, "error: Error in while loop condition." );
+                  $$ = NULL;
 		}
 	| delay1 statement_opt
 		{
+                  printf( "In delay\n" );
+                  $$ = NULL;
 		}
 	| event_control statement_opt
 		{
+                  $$ = NULL;
 		}
 	| lpvalue '=' expression ';'
 		{
+                  expression* exp = db_create_statement( @1.first_line, $3 );
+                  printf( "In assignment\n" );
 		  db_add_expression( $3 );
-		  /* Root expression to add here */
+                  $$ = exp;
 		}
 	| lpvalue K_LE expression ';'
 		{
 		  /* Add root expression (non-blocking) */
+                  expression* exp = db_create_statement( @1.first_line, $3 );
 		  db_add_expression( $3 );
+                  $$ = exp;
 		}
 	| lpvalue '=' delay1 expression ';'
 		{
-		  /* Add root expression */
+		  expression* exp = db_create_statement( @1.first_line, $4 );
 		  db_add_expression( $4 );
+                  $$ = exp;
 		}
 	| lpvalue K_LE delay1 expression ';'
 		{
-		  /* Add root expression */
+		  expression* exp = db_create_statement( @1.first_line, $4 );
 		  db_add_expression( $4 );
+                  $$ = exp;
 		}
 	| lpvalue '=' event_control expression ';'
 		{
-		  /* Add root expression */
+		  expression* exp = db_create_statement( @1.first_line, $4 );
 		  db_add_expression( $4 );
+                  $$ = exp;
 		}
 	| lpvalue '=' K_repeat '(' expression ')' event_control expression ';'
 		{
-		  expression_dealloc( $5, FALSE );
+                  expression* exp = db_create_statement( @1.first_line, $5 );
+		  db_add_expression( $5 );
 		  db_add_expression( $8 );
+                  $$ = exp;
 		}
 	| lpvalue K_LE event_control expression ';'
 		{
+                  expression* exp = db_create_statement( @1.first_line, $4 );
 		  db_add_expression( $4 );
+                  $$ = exp;
 		}
 	| lpvalue K_LE K_repeat '(' expression ')' event_control expression ';'
 		{
-		  expression_dealloc( $5, FALSE );
-		  db_add_expression( $8 ); 
-		  /* ??? */
+                  expression* exp = db_create_statement( @1.first_line, $5 );
+		  db_add_expression( $5 );
+		  db_add_expression( $8 );
+		  $$ = exp;
 		}
 	| K_wait '(' expression ')' statement_opt
 		{
-		  expression_dealloc( $3, FALSE );
+                  expression* exp = db_create_statement( @1.first_line, $3 );
+                  db_add_expression( $3 );
+                  db_connect_statement_false( exp, $5 );
+		  $$ = exp;
 		}
 	| SYSTEM_IDENTIFIER '(' expression_list ')' ';'
 		{
+                  printf( "In SYSTEM_IDENTIFIER\n" );
 		  expression_dealloc( $3, FALSE );
+                  $$ = NULL;
 		}
 	| SYSTEM_IDENTIFIER ';'
 		{
+                  $$ = NULL;
 		}
 	| identifier '(' expression_list ')' ';'
 		{
 		  expression_dealloc( $3, FALSE );
+                  $$ = NULL;
 		}
 	| identifier ';'
 		{
-		  // ???
+		  /* This is a task call */
+                  $$ = NULL;
 		}
 	| error ';'
 		{
 		  // yyerror( @1, "error: Malformed statement." );
 		  // yyerrok;
+                  $$ = NULL;
 		}
 	;
 
 statement_list
-	: statement_list statement
+	: statement statement_list
+                {
+                  if( $2 != NULL ) {
+                    db_connect_statement_false( $1, $2 );
+                  }
+                  if( $1 == NULL ) {
+                    $$ = $2;
+                  } else {
+                    $$ = $1;
+                  }
+                }
 	| statement
+                {
+                  $$ = $1;
+                }
 	;
 
 statement_opt
 	: statement
+                {
+                  $$ = $1;
+                }
 	| ';'
+                {
+                  $$ = NULL;
+                }
 	;
 
   /* An lpvalue is the expression that can go on the left side of a procedural assignment.

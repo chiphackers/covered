@@ -337,3 +337,6 @@ void module_dealloc( module* mod ) {
 
 }
 
+
+/* $Log$ */
+

@@ -671,5 +671,7 @@ struct mod_inst_s {
 };
 
 
+/* $Log$ */
+
 #endif
 
