@@ -208,7 +208,7 @@ int tcl_func_get_line_summary( ClientData d, Tcl_Interp* tcl, int argc, const ch
 
 }
 
-void tcl_func_initialize( Tcl_Interp* tcl ) {
+void tcl_func_initialize( Tcl_Interp* tcl, char* home ) {
 
   Tcl_CreateCommand( tcl, "tcl_func_get_module_list",          (Tcl_CmdProc*)(tcl_func_get_module_list),          0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_instance_list",        (Tcl_CmdProc*)(tcl_func_get_instance_list),        0, 0 );
@@ -219,8 +219,20 @@ void tcl_func_initialize( Tcl_Interp* tcl ) {
   Tcl_CreateCommand( tcl, "tcl_func_open_cdd",                 (Tcl_CmdProc*)(tcl_func_open_cdd),                 0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_line_summary",         (Tcl_CmdProc*)(tcl_func_get_line_summary),         0, 0 );
 
+  /* Set HOME variable to location of scripts */
+  Tcl_SetVar( tcl, "HOME", home, TCL_GLOBAL_ONLY );
+
 }
 
 /*
  $Log$
+ Revision 1.1  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
 */

@@ -42,4 +42,4 @@ dnl Checks for library functions.
 AC_TYPE_SIGNAL
 AC_TYPE_SIZE_T
 
-AC_OUTPUT(Makefile src/Makefile doc/user/Makefile)
+AC_OUTPUT(Makefile src/Makefile doc/user/Makefile scripts/Makefile)

@@ -3,4 +3,4 @@
 
 int tcl_func_get_module_list( ClientData d, Tcl_Interp* tcl, int argc, const char *argv[] );
 
-void tcl_func_initialize( Tcl_Interp* tcl );
+void tcl_func_initialize( Tcl_Interp* tcl, char* home );

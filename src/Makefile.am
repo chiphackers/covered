@@ -42,7 +42,7 @@ covered_SOURCES = arc.c \
 		  vector.c
 
 INCLUDES=	-I..
-AM_CPPFLAGS=-DINSTALL_DIR=@prefix@
+AM_CPPFLAGS=-DINSTALL_DIR=\"@datadir@/covered\"
 
 parser.h parser.c: $(srcdir)/parser.y
 	bison --verbose -t -p VL -d -o parser.c $(srcdir)/parser.y

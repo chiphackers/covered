@@ -109,7 +109,7 @@ covered_SOURCES = arc.c \
 
 
 INCLUDES = -I..
-AM_CPPFLAGS = -DINSTALL_DIR=@prefix@
+AM_CPPFLAGS = -DINSTALL_DIR=\"@datadir@/covered\"
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
 CONFIG_CLEAN_FILES = 
