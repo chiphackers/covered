@@ -86,7 +86,7 @@ stmt_link* presim_stmt_tail;
  bit set, we know that the statement has already been added, so stop here and
  do not add the statement again.
 */
-void sim_add_to_queue( expression* expr ) {
+void sim_expr_changed( expression* expr ) {
 
   expression* parent;    /* Pointer to parent expression of the current expression */
 
@@ -109,14 +109,28 @@ void sim_add_to_queue( expression* expr ) {
       }
 
       /* Continue up the tree */
-      sim_add_to_queue( expr->parent->expr );
-
-    } else {
-
-      /* We are the root expression so just add the statement to the queue */
-      stmt_link_add_tail( expr->parent->stmt, &(presim_stmt_head), &(presim_stmt_tail) );
+      sim_expr_changed( expr->parent->expr );
 
     }
+
+  }
+
+}
+
+/*!
+ \param stmt  Pointer to statement to add to queue.
+
+ Checks STMT_HEAD bit of specified statement.  If this is set to 1, adds
+ this statement to the presimulation statement queue; otherwise, it does nothing with
+ the statement
+*/
+void sim_add_stmt_to_queue( statement* stmt ) {
+
+  assert( stmt != NULL );
+
+  if( SUPPL_IS_STMT_HEAD( stmt->exp->suppl ) == 1 ) {
+
+    stmt_link_add_tail( stmt, &(presim_stmt_head), &(presim_stmt_tail) );
 
   }
 
@@ -165,20 +179,20 @@ void sim_expression( expression* expr ) {
 /*!
  \param head_stmt  Pointer to head statement to simulate.
 
+ \return Returns a pointer to the first statement to execute in the next timestep
+
  Performs statement simulation as described above.  Calls expression simulator if
  the associated root expression is specified that signals have changed value within
  it.  Continues to run for current statement tree until statement tree hits a
  wait-for-event condition (or we reach the end of a simulation tree).
 */
-void sim_statement( statement* head_stmt ) {
+statement* sim_statement( statement* head_stmt ) {
 
-  statement* stmt;       /* Pointer to current statement to evaluate */
+  statement* stmt;              /* Pointer to current statement to evaluate */
+  statement* last_stmt = NULL;  /* Pointer to the last statement evaluated  */
 
   /* Set the value of stmt with the head_stmt */
   stmt = head_stmt;
-
-  /* Clear the STMT_HEAD bit in the root expression */
-  stmt->exp->suppl = stmt->exp->suppl & ~(0x1 << SUPPL_LSB_STMT_HEAD);
 
   while( stmt != NULL ) {
 
@@ -187,7 +201,11 @@ void sim_statement( statement* head_stmt ) {
 
     /* Indicate that this statement's expression has been executed */
     stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_EXECUTED);
+
+    printf( "Executed statement %d\n", stmt->exp->id );
       
+    last_stmt = stmt;
+
     if( expression_is_zero( stmt->exp ) ) {
 
       /* 
@@ -210,6 +228,13 @@ void sim_statement( statement* head_stmt ) {
 
   }
 
+  /* If this is the last statement in the tree with no loopback, return NULL */
+  if( (last_stmt->next_true == NULL) && (last_stmt->next_false == NULL) ) {
+    last_stmt = NULL;
+  }
+
+  return( last_stmt );
+
 }
 
 /*!
@@ -219,7 +244,7 @@ void sim_statement( statement* head_stmt ) {
 */
 void sim_simulate() {
 
-  stmt_link* curr_stmt;       /* Pointer to current statement to simulate */
+  stmt_link* curr_stmt;   /* Pointer to current statement to simulate    */
 
   /* Get head statement from pre-simulation statement queue */
   curr_stmt = presim_stmt_head;
@@ -231,19 +256,18 @@ void sim_simulate() {
     printf( "Executing statement %d\n", curr_stmt->stmt->exp->id );
 
     /* Place current statement into statement simulation engine and call it */
-    sim_statement( curr_stmt->stmt );
-
-    /* Remove current statement from head of queue */
-    presim_stmt_head = presim_stmt_head->next;
-    free_safe( curr_stmt );
-
-    curr_stmt = presim_stmt_head;
+    curr_stmt->stmt = sim_statement( curr_stmt->stmt );
+    curr_stmt       = curr_stmt->next;
 
   }
 
 }
 
 /* $Log$
+/* Revision 1.5  2002/06/25 03:39:03  phase1geo
+/* Fixed initial scoring bugs.  We now generate a legal CDD file for reporting.
+/* Fixed some report bugs though there are still some remaining.
+/*
 /* Revision 1.4  2002/06/23 21:18:22  phase1geo
 /* Added appropriate statement support in parser.  All parts should be in place
 /* and ready to start testing.

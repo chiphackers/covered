@@ -90,6 +90,7 @@
 #include "expr.h"
 #include "util.h"
 #include "link.h"
+#include "sim.h"
 
 
 /*!
@@ -226,7 +227,11 @@ bool statement_db_read( char** line, module* curr_mod ) {
         stmt->next_false = stmtl->stmt;
       }
 
+      /* Add statement to module statement list */
       stmt_link_add_tail( stmt, &(curr_mod->stmt_head), &(curr_mod->stmt_tail) );
+
+      /* Possibly add statement to presimulation queue */
+      sim_add_stmt_to_queue( stmt );
 
     }
 
@@ -336,6 +341,10 @@ void statement_dealloc( statement* stmt ) {
 
 
 /* $Log$
+/* Revision 1.11  2002/06/25 12:48:38  phase1geo
+/* Fixing case where statement's true and false paths point to itself when
+/* reading in CDD.
+/*
 /* Revision 1.10  2002/06/25 03:39:03  phase1geo
 /* Fixed initial scoring bugs.  We now generate a legal CDD file for reporting.
 /* Fixed some report bugs though there are still some remaining.

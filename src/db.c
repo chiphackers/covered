@@ -38,9 +38,6 @@ module*   curr_module       = NULL;
 symtable* vcd_symtab        = NULL;
 symtable* timestep_tab      = NULL;
 
-exp_link* exp_queue_head    = NULL;
-exp_link* exp_queue_tail    = NULL;
-
 /*!
  This static value contains the current expression ID number to use for the next expression found, it
  is incremented by one when an expression is found.  This allows us to have a unique expression ID
@@ -796,7 +793,7 @@ void db_find_set_add_signal( char* symbol, vector* vec ) {
           }
 
           /* Add to simulation queue */
-          sim_add_to_queue( curr_exp->exp );
+          sim_expr_changed( curr_exp->exp );
 
           curr_exp = curr_exp->next;
 
@@ -868,6 +865,10 @@ int db_get_signal_size( char* symbol ) {
 
 
 /* $Log$
+/* Revision 1.15  2002/06/25 03:39:03  phase1geo
+/* Fixed initial scoring bugs.  We now generate a legal CDD file for reporting.
+/* Fixed some report bugs though there are still some remaining.
+/*
 /* Revision 1.14  2002/06/24 12:34:56  phase1geo
 /* Fixing the set of the STMT_HEAD and STMT_STOP bits.  We are getting close.
 /*
