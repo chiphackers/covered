@@ -7,7 +7,6 @@ source $HOME/scripts/process_file.tcl
 source $HOME/scripts/toggle.tcl
 source $HOME/scripts/comb.tcl
 source $HOME/scripts/help.tcl
-# source $HOME/scripts/misc.tcl
 
 set last_lb_index ""
 
