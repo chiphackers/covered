@@ -131,7 +131,6 @@ bool combination_multi_expr_calc( expression* exp, int* ulid, bool ul, int* hit,
         *hit += SUPPL_WAS_TRUE( exp->left->suppl );
       }
       if( (exp->left->ulid == -1) && ul ) { 
-        printf( "Setting exp->left->ulid to %d for expression %d\n", *ulid, exp->left->id );
         exp->left->ulid = *ulid;
         (*ulid)++;
       }
@@ -146,7 +145,6 @@ bool combination_multi_expr_calc( expression* exp, int* ulid, bool ul, int* hit,
       *hit += SUPPL_WAS_TRUE( exp->right->suppl );
     }
     if( (exp->right->ulid == -1) && ul ) {
-      printf( "Setting exp->right->ulid to %d for expression %d\n", *ulid, exp->right->id );
       exp->right->ulid = *ulid;
       (*ulid)++;
     }
@@ -159,7 +157,6 @@ bool combination_multi_expr_calc( expression* exp, int* ulid, bool ul, int* hit,
         *hit += ((exp->suppl >> SUPPL_LSB_EVAL_00) & 0x1);
       }
       if( (exp->ulid == -1) && ul ) {
-        printf( "Setting exp->ulid to %d for (1) expression %d\n", *ulid, exp->id );
         exp->ulid = *ulid;
         (*ulid)++;
       }
@@ -257,7 +254,6 @@ void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_d
                         ((exp->suppl >> SUPPL_LSB_EVAL_11) & 0x1);
               *hit    = *hit + num_hit;
               if( (num_hit != 4) && (exp->ulid == -1) && !combination_is_expr_multi_node( exp ) ) {
-                printf( "Setting exp->ulid to %d for (2) expression %d\n", *ulid, exp->id );
                 exp->ulid = *ulid;
                 (*ulid)++;
               }
@@ -266,7 +262,6 @@ void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_d
               num_hit = SUPPL_WAS_TRUE( exp->suppl ) + SUPPL_WAS_FALSE( exp->suppl );
               *hit    = *hit + num_hit;
               if( (num_hit != 2) && (exp->ulid == -1) && !combination_is_expr_multi_node( exp ) ) {
-                printf( "Setting exp->ulid to %d for (3) expression %d\n", *ulid, exp->id );
                 exp->ulid = *ulid;
                 (*ulid)++;
               }
@@ -1581,6 +1576,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.93  2004/03/17 23:04:08  phase1geo
+ Attempting to fix output problem when -c option is specified for expressions
+ that contain non-measurable subexpressions.
+
  Revision 1.92  2004/03/17 13:25:00  phase1geo
  Fixing some more report-related bugs.  Added new diagnostics to regression
  suite to test for these.
