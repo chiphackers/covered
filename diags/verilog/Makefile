@@ -8,29 +8,34 @@
 
 COVERED_SRC   = ../../src
 COVERED       = $(COVERED_SRC)/covered
-# COVERED_FLAGS = -q
-COVERED_FLAGS = 
+COVERED_FLAGS = -q
+# COVERED_FLAGS = 
 
 VERILOG       = iverilog
 VERILOG_FLAGS =
 VERILOG_EXEC  = a.out
 
+CDD_DIR       = ../cdd
+
 LOGFILE = regress.log
 
 DIAGLIST = addsr \
-	   assign3.2A
+	   assign3.2A \
+	   simple \
+	   always3.1.11A
 
 regress:	$(COVERED) clean $(DIAGLIST)
 
 $(DIAGLIST):
 	$(VERILOG) $(VERILOG_FLAGS) $@.v
 	./$(VERILOG_EXEC)
-	$(COVERED) score -t main -vcd $@.vcd $(COVERED_FLAGS) -o $@.db -v $@.v
+	$(COVERED) score -t main -vcd $@.vcd $(COVERED_FLAGS) -o $@.cdd -v $@.v
+	diff $@.cdd $(CDD_DIR)/$@.cdd
 
 $(COVERED):
 	cd $(COVERED_SRC); make
 	
 clean:
 	rm -f $(LOGFILE)
-	rm -f a.out *.vcd *.db *.log
+	rm -f a.out *.vcd *.cdd *.log
 	rm -f core
