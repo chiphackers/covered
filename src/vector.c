@@ -728,7 +728,7 @@ bool vector_set_value( vector* vec, nibble* value, int width, int from_idx, int 
     from_val = VECTOR_VAL( value[i + from_idx] );
     to_val   = VECTOR_VAL( set_val );
 
-    if( from_val != to_val ) {
+    if( (from_val != to_val) || (VECTOR_SET( set_val ) == 0x0) ) {
 
       if( VECTOR_SET( set_val ) == 0x1 ) {
 
@@ -1097,15 +1097,19 @@ vector* vector_from_string( char** str ) {
  \param msb    Most significant bit to assign to.
  \param lsb    Least significant bit to assign to.
 
+ \return Returns TRUE if assigned value differs from the original value; otherwise,
+         returns FALSE.
+
  Iterates through specified value string, setting the specified vector value to
  this value.  Performs a VCD-specific bit-fill if the value size is not the size
  of the vector.  The specified value string is assumed to be in binary format.
 */
-void vector_vcd_assign( vector* vec, char* value, int msb, int lsb ) {
+bool vector_vcd_assign( vector* vec, char* value, int msb, int lsb ) {
 
-  char*  ptr;   /* Pointer to current character under evaluation */
-  int    i;     /* Loop iterator                                 */
-  nibble vval;  /* Temporary vector value holder                 */
+  bool   retval = FALSE;  /* Return value for this function                */
+  char*  ptr;             /* Pointer to current character under evaluation */
+  int    i;               /* Loop iterator                                 */
+  nibble vval;            /* Temporary vector value holder                 */
 
   assert( vec != NULL );
   assert( value != NULL );
@@ -1130,7 +1134,7 @@ void vector_vcd_assign( vector* vec, char* value, int msb, int lsb ) {
         break;
     }
 
-    vector_set_value( vec, &vval, 1, 0, i );
+    retval |= vector_set_value( vec, &vval, 1, 0, i );
 
     ptr--;
     i++;
@@ -1142,8 +1146,10 @@ void vector_vcd_assign( vector* vec, char* value, int msb, int lsb ) {
   /* Perform VCD value bit-fill if specified value did not match width of vector value */
   for( ; i<=msb; i++ ) {
     if( vval == 1 ) { vval = 0; }
-    vector_set_value( vec, &vval, 1, 0, i );
+    retval |= vector_set_value( vec, &vval, 1, 0, i );
   }
+
+  return( retval );
 
 }
 
@@ -1299,20 +1305,23 @@ bool vector_op_compare( vector* tgt, vector* left, vector* right, int comp_type 
  \param left   Expression value being shifted left.
  \param right  Expression containing number of bit positions to shift.
 
+ \param Returns TRUE if assigned value differs from original value; otherwise, returns FALSE.
+
  Converts right expression into an integer value and left shifts the left
  expression the specified number of bit locations, zero-filling the LSB.
 */
-void vector_op_lshift( vector* tgt, vector* left, vector* right ) {
+bool vector_op_lshift( vector* tgt, vector* left, vector* right ) {
 
-  int    shift_val;    /* Number of bits to shift left */
-  nibble zero    = 0;  /* Zero value for zero-fill     */
-  nibble unknown = 2;  /* X-value for unknown fill     */
-  int    i;            /* Loop iterator                */
+  bool   retval  = FALSE;  /* Return value for this function */
+  int    shift_val;        /* Number of bits to shift left   */
+  nibble zero    = 0;      /* Zero value for zero-fill       */
+  nibble unknown = 2;      /* X-value for unknown fill       */
+  int    i;                /* Loop iterator                  */
 
   if( vector_is_unknown( right ) ) {
 
     for( i=0; i<tgt->width; i++ ) {
-      vector_set_value( tgt, &unknown, 1, 0, i );
+      retval |= vector_set_value( tgt, &unknown, 1, 0, i );
     }
 
   } else {
@@ -1322,15 +1331,17 @@ void vector_op_lshift( vector* tgt, vector* left, vector* right ) {
     if( shift_val >= left->width ) {
       shift_val = left->width;
     } else {
-      vector_set_value( tgt, left->value, (left->width - shift_val), 0, shift_val );
+      retval = vector_set_value( tgt, left->value, (left->width - shift_val), 0, shift_val );
     }
 
     /* Zero-fill LSBs */
     for( i=0; i<shift_val; i++ ) {
-      vector_set_value( tgt, &zero, 1, 0, i );
+      retval |= vector_set_value( tgt, &zero, 1, 0, i );
     }
 
   }
+
+  return( retval );
     
 }
  
@@ -1339,20 +1350,23 @@ void vector_op_lshift( vector* tgt, vector* left, vector* right ) {
  \param left   Expression value being shifted left.
  \param right  Expression containing number of bit positions to shift.
 
+ \return Returns TRUE if assigned value differs from original value; otherwise, returns FALSE.
+
  Converts right expression into an integer value and right shifts the left
  expression the specified number of bit locations, zero-filling the MSB.
 */
-void vector_op_rshift( vector* tgt, vector* left, vector* right ) {
+bool vector_op_rshift( vector* tgt, vector* left, vector* right ) {
 
-  int    shift_val;    /* Number of bits to shift left */
-  nibble zero    = 0;  /* Zero value for zero-fill     */
-  nibble unknown = 2;  /* X-value for unknown fill     */
-  int    i;            /* Loop iterator                */
+  bool   retval  = FALSE;  /* Return value for this function */
+  int    shift_val;        /* Number of bits to shift left   */
+  nibble zero    = 0;      /* Zero value for zero-fill       */
+  nibble unknown = 2;      /* X-value for unknown fill       */
+  int    i;                /* Loop iterator                  */
 
   if( vector_is_unknown( right ) ) {
 
     for( i=0; i<tgt->width; i++ ) {
-      vector_set_value( tgt, &unknown, 1, 0, i );
+      retval |= vector_set_value( tgt, &unknown, 1, 0, i );
     }
 
   } else {
@@ -1362,15 +1376,17 @@ void vector_op_rshift( vector* tgt, vector* left, vector* right ) {
     if( shift_val >= left->width ) {
       shift_val = left->width;
     } else {
-      vector_set_value( tgt, left->value, (left->width - shift_val), shift_val, 0 );
+      retval = vector_set_value( tgt, left->value, (left->width - shift_val), shift_val, 0 );
     }
 
     /* Zero-fill LSBs */
     for( i=(left->width - shift_val); i<left->width; i++ ) {
-      vector_set_value( tgt, &zero, 1, 0, i );
+      retval |= vector_set_value( tgt, &zero, 1, 0, i );
     }
 
   }
+
+  return( retval );
 
 }
 
@@ -1379,16 +1395,19 @@ void vector_op_rshift( vector* tgt, vector* left, vector* right ) {
  \param left   Expression value on left side of + sign.
  \param right  Expression value on right side of + sign.
 
+ \return Returns TRUE if assigned value differs from original value; otherwise, returns FALSE.
+
  Performs 4-state bitwise addition on left and right expression values.
  Carry bit is discarded (value is wrapped around).
 */
-void vector_op_add( vector* tgt, vector* left, vector* right ) {
+bool vector_op_add( vector* tgt, vector* left, vector* right ) {
 
-  nibble lbit;        /* Current left expression bit  */
-  nibble rbit;        /* Current right expression bit */
-  nibble carry = 0;   /* Carry bit                    */
-  nibble value;       /* Current value                */
-  int    i;           /* Loop iterator                */
+  bool   retval = FALSE;  /* Return value for this function */
+  nibble lbit;            /* Current left expression bit    */
+  nibble rbit;            /* Current right expression bit   */
+  nibble carry  = 0;      /* Carry bit                      */
+  nibble value;           /* Current value                  */
+  int    i;               /* Loop iterator                  */
 
   for( i=0; i<tgt->width; i++ ) {
     
@@ -1410,9 +1429,11 @@ void vector_op_add( vector* tgt, vector* left, vector* right ) {
              ((add_optab[ ((lbit  << 2) | rbit) ] >> 2) & 0x3));
     
 
-    vector_set_value( tgt, &value, 1, 0, i );
+    retval |= vector_set_value( tgt, &value, 1, 0, i );
 
   }
+
+  return( retval );
 
 }
 
@@ -1421,15 +1442,18 @@ void vector_op_add( vector* tgt, vector* left, vector* right ) {
  \param left   Expression value on left side of - sign.
  \param right  Expression value on right side of - sign.
 
+ \return Returns TRUE if assigned value differs from original value; otherwise, returns FALSE.
+
  Performs 4-state bitwise subtraction by performing bitwise inversion
  of right expression value, adding one to the result and adding this
  result to the left expression value.
 */
-void vector_op_subtract( vector* tgt, vector* left, vector* right ) {
+bool vector_op_subtract( vector* tgt, vector* left, vector* right ) {
 
-  vector* vec1;  /* Temporary vector holder */
-  vector* vec2;  /* Temporary vector holder */
-  vector* vec3;  /* Temporary vector holder */
+  bool    retval = FALSE;  /* Return value for this function */
+  vector* vec1;            /* Temporary vector holder        */
+  vector* vec2;            /* Temporary vector holder        */
+  vector* vec3;            /* Temporary vector holder        */
 
   /* Create temp vectors */
   vec1 = vector_create( tgt->width, TRUE );
@@ -1446,11 +1470,14 @@ void vector_op_subtract( vector* tgt, vector* left, vector* right ) {
   vector_op_add( vec3, vec2, vec1 );  
 
   /* Add new value to left value */
-  vector_op_add( tgt, left, vec3 );
+  retval = vector_op_add( tgt, left, vec3 );
 
+  /* Deallocate used memory */ 
   vector_dealloc( vec1 );
   vector_dealloc( vec2 );
   vector_dealloc( vec3 );
+
+  return( retval );
 
 }
 
@@ -1459,21 +1486,24 @@ void vector_op_subtract( vector* tgt, vector* left, vector* right ) {
  \param left   Expression value on left side of * sign.
  \param right  Expression value on right side of * sign.
 
+ \return Returns TRUE if assigned value differs from original value; otherwise, returns FALSE.
+
  Performs 4-state conversion multiplication.  If both values
  are known (non-X, non-Z), vectors are converted to integers, multiplication
  occurs and values are converted back into vectors.  If one of the values
  is equal to zero, the value is 0.  If one of the values is equal to one,
  the value is that of the other vector.
 */
-void vector_op_multiply( vector* tgt, vector* left, vector* right ) {
+bool vector_op_multiply( vector* tgt, vector* left, vector* right ) {
 
-  vector lcomp;        /* Compare vector left  */
-  nibble lcomp_val;    /* Compare value left   */
-  vector rcomp;        /* Compare vector right */
-  nibble rcomp_val;    /* Compare value right  */
-  vector vec;          /* Intermediate vector  */
-  nibble vec_val[32];  /* Intermediate value   */
-  int     i;           /* Loop iterator        */
+  bool   retval = FALSE;  /* Return value for this function */
+  vector lcomp;           /* Compare vector left            */
+  nibble lcomp_val;       /* Compare value left             */
+  vector rcomp;           /* Compare vector right           */
+  nibble rcomp_val;       /* Compare value right            */
+  vector vec;             /* Intermediate vector            */
+  nibble vec_val[32];     /* Intermediate value             */
+  int     i;              /* Loop iterator                  */
 
   /* Initialize temporary vectors */
   vector_init( &lcomp, &lcomp_val, 1 );
@@ -1521,7 +1551,9 @@ void vector_op_multiply( vector* tgt, vector* left, vector* right ) {
   }
 
   /* Set target value */
-  vector_set_value( tgt, vec.value, tgt->width, 0, 0 );
+  retval = vector_set_value( tgt, vec.value, tgt->width, 0, 0 );
+
+  return( retval );
 
 }
 
@@ -1529,14 +1561,17 @@ void vector_op_multiply( vector* tgt, vector* left, vector* right ) {
  \param tgt  Target vector for operation results to be stored.
  \param src  Source vector to perform operation on.
 
+ \return Returns TRUE if assigned value differs from orignal; otherwise, returns FALSE.
+
  Performs a bitwise inversion on the specified vector.
 */
-void vector_unary_inv( vector* tgt, vector* src ) {
+bool vector_unary_inv( vector* tgt, vector* src ) {
 
-  nibble bit;      /* Selected bit from source vector */
-  vector vec;      /* Temporary vector value          */
-  nibble vec_val;  /* Temporary value                 */
-  int    i;        /* Loop iterator                   */
+  bool   retval = FALSE;  /* Return value for this function  */
+  nibble bit;             /* Selected bit from source vector */
+  vector vec;             /* Temporary vector value          */
+  nibble vec_val;         /* Temporary value                 */
+  int    i;               /* Loop iterator                   */
 
   vector_init( &vec, &vec_val, 1 );
 
@@ -1549,9 +1584,11 @@ void vector_unary_inv( vector* tgt, vector* src ) {
       case 1  :  VECTOR_SET_VAL( vec.value[0], 0 );  break;
       default :  VECTOR_SET_VAL( vec.value[0], 2 );  break;
     }
-    vector_set_value( tgt, vec.value, 1, 0, i );
+    retval |= vector_set_value( tgt, vec.value, 1, 0, i );
 
   }
+
+  return( retval );
 
 }
 
@@ -1560,21 +1597,24 @@ void vector_unary_inv( vector* tgt, vector* src ) {
  \param src    Source vector to be operated on.
  \param optab  Operation table.
 
+ \return Returns TRUE if assigned value differs from original; otherwise, returns FALSE.
+
  Performs unary operation on specified vector value from specifed
  operation table.
 */
-void vector_unary_op( vector* tgt, vector* src, nibble* optab ) {
+bool vector_unary_op( vector* tgt, vector* src, nibble* optab ) {
 
-  nibble uval;     /* Unary operation value        */
-  nibble bit;      /* Current bit under evaluation */
-  vector vec;      /* Temporary vector value       */
-  nibble vec_val;  /* Temporary value              */
-  int    i;        /* Loop iterator                */
+  bool   retval;   /* Return value for this function */
+  nibble uval;     /* Unary operation value          */
+  nibble bit;      /* Current bit under evaluation   */
+  vector vec;      /* Temporary vector value         */
+  nibble vec_val;  /* Temporary value                */
+  int    i;        /* Loop iterator                  */
 
   if( (src->width == 1) && (optab[16] == 1) ) {
 
     /* Perform inverse operation if our source width is 1 and we are a NOT operation. */
-    vector_unary_inv( tgt, src );
+    retval = vector_unary_inv( tgt, src );
 
   } else {
 
@@ -1588,9 +1628,11 @@ void vector_unary_op( vector* tgt, vector* src, nibble* optab ) {
     }
 
     VECTOR_SET_VAL( vec.value[0], uval );
-    vector_set_value( tgt, vec.value, 1, 0, 0 );
+    retval = vector_set_value( tgt, vec.value, 1, 0, 0 );
 
   }
+
+  return( retval );
 
 }
 
@@ -1598,11 +1640,13 @@ void vector_unary_op( vector* tgt, vector* src, nibble* optab ) {
  \param tgt  Target vector for operation result storage.
  \param src  Source vector to be operated on.
 
+ \return Returns TRUE if assigned value differs from original; otherwise, returns FALSE.
+
  Performs unary logical NOT operation on specified vector value.
 */
-void vector_unary_not( vector* tgt, vector* src ) {
+bool vector_unary_not( vector* tgt, vector* src ) {
 
-  vector_unary_op( tgt, src, nor_optab );
+  return( vector_unary_op( tgt, src, nor_optab ) );
 
 }
 
@@ -1636,6 +1680,9 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.52  2004/10/22 22:03:32  phase1geo
+ More incremental changes to increase score command efficiency.
+
  Revision 1.51  2004/10/22 20:31:07  phase1geo
  Returning assignment status in vector_set_value and speeding up assignment procedure.
  This is an incremental change to help speed up design scoring.

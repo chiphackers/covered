@@ -83,7 +83,7 @@ char* vector_to_string( vector* vec, int type );
 vector* vector_from_string( char** str );
 
 /*! \brief Assigns specified VCD value to specified vector. */
-void vector_vcd_assign( vector* vec, char* value, int msb, int lsb );
+bool vector_vcd_assign( vector* vec, char* value, int msb, int lsb );
 
 /*! \brief Counts toggle01 and toggle10 information from specifed vector. */
 void vector_toggle_count( vector* vec, int* tog01_cnt, int* tog10_cnt );
@@ -98,28 +98,28 @@ bool vector_bitwise_op( vector* tgt, vector* src1, vector* src2, nibble* optab )
 bool vector_op_compare( vector* tgt, vector* left, vector* right, int comp_type );
 
 /*! \brief Performs left shift operation on left expression by right expression bits. */
-void vector_op_lshift( vector* tgt, vector* left, vector* right );
+bool vector_op_lshift( vector* tgt, vector* left, vector* right );
  
 /*! \brief Performs right shift operation on left expression by right expression bits. */
-void vector_op_rshift( vector* tgt, vector* left, vector* right );
+bool vector_op_rshift( vector* tgt, vector* left, vector* right );
 
 /*! \brief Performs addition operation on left and right expression values. */
-void vector_op_add( vector* tgt, vector* left, vector* right );
+bool vector_op_add( vector* tgt, vector* left, vector* right );
 
 /*! \brief Performs subtraction operation on left and right expression values. */
-void vector_op_subtract( vector* tgt, vector* left, vector* right );
+bool vector_op_subtract( vector* tgt, vector* left, vector* right );
 
 /*! \brief Performs multiplication operation on left and right expression values. */
-void vector_op_multiply( vector* tgt, vector* left, vector* right );
+bool vector_op_multiply( vector* tgt, vector* left, vector* right );
 
 /*! \brief Performs unary bitwise inversion operation on specified vector value. */
-void vector_unary_inv( vector* tgt, vector* src );
+bool vector_unary_inv( vector* tgt, vector* src );
 
 /*! \brief Performs unary operation on specified vector value. */
-void vector_unary_op( vector* tgt, vector* src, nibble* optab );
+bool vector_unary_op( vector* tgt, vector* src, nibble* optab );
 
 /*! \brief Performs unary logical NOT operation on specified vector value. */
-void vector_unary_not( vector* tgt, vector* src );
+bool vector_unary_not( vector* tgt, vector* src );
 
 /*! \brief Deallocates all memory allocated for vector */
 void vector_dealloc( vector* vec );
@@ -127,6 +127,9 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.23  2004/10/22 22:03:32  phase1geo
+ More incremental changes to increase score command efficiency.
+
  Revision 1.22  2004/10/22 20:31:07  phase1geo
  Returning assignment status in vector_set_value and speeding up assignment procedure.
  This is an incremental change to help speed up design scoring.

@@ -948,7 +948,7 @@ bool expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_MULTIPLY :
-        vector_op_multiply( expr->value, expr->left->value, expr->right->value );
+        retval = vector_op_multiply( expr->value, expr->left->value, expr->right->value );
         break;
 
       case EXP_OP_DIVIDE :
@@ -992,11 +992,11 @@ bool expression_operate( expression* expr ) {
         break;
  
       case EXP_OP_ADD :
-        vector_op_add( expr->value, expr->left->value, expr->right->value );
+        retval = vector_op_add( expr->value, expr->left->value, expr->right->value );
         break;
 
       case EXP_OP_SUBTRACT :
-        vector_op_subtract( expr->value, expr->left->value, expr->right->value );
+        retval = vector_op_subtract( expr->value, expr->left->value, expr->right->value );
         break;
 
       case EXP_OP_AND :
@@ -1028,11 +1028,11 @@ bool expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_LSHIFT :
-        vector_op_lshift( expr->value, expr->left->value, expr->right->value );
+        retval = vector_op_lshift( expr->value, expr->left->value, expr->right->value );
         break;
  
       case EXP_OP_RSHIFT :
-        vector_op_rshift( expr->value, expr->left->value, expr->right->value );
+        retval = vector_op_rshift( expr->value, expr->left->value, expr->right->value );
         break;
 
       case EXP_OP_EQ :
@@ -1098,35 +1098,35 @@ bool expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_UINV :
-        vector_unary_inv( expr->value, expr->right->value );
+        retval = vector_unary_inv( expr->value, expr->right->value );
         break;
 
       case EXP_OP_UAND :
-        vector_unary_op( expr->value, expr->right->value, and_optab );
+        retval = vector_unary_op( expr->value, expr->right->value, and_optab );
         break;
 
       case EXP_OP_UNOT :
-        vector_unary_not( expr->value, expr->right->value );
+        retval = vector_unary_not( expr->value, expr->right->value );
         break;
 
       case EXP_OP_UOR :
-        vector_unary_op( expr->value, expr->right->value, or_optab );
+        retval = vector_unary_op( expr->value, expr->right->value, or_optab );
         break;
  
       case EXP_OP_UXOR :
-        vector_unary_op( expr->value, expr->right->value, xor_optab );
+        retval = vector_unary_op( expr->value, expr->right->value, xor_optab );
         break;
 
       case EXP_OP_UNAND :
-        vector_unary_op( expr->value, expr->right->value, nand_optab );
+        retval = vector_unary_op( expr->value, expr->right->value, nand_optab );
         break;
 
       case EXP_OP_UNOR :
-        vector_unary_op( expr->value, expr->right->value, nor_optab );
+        retval = vector_unary_op( expr->value, expr->right->value, nor_optab );
         break;
 
       case EXP_OP_UNXOR :
-        vector_unary_op( expr->value, expr->right->value, nxor_optab );
+        retval = vector_unary_op( expr->value, expr->right->value, nxor_optab );
         break;
 
       case EXP_OP_STATIC :
@@ -1293,20 +1293,25 @@ bool expression_operate( expression* expr ) {
 
     }
     
-    /* Clear current TRUE/FALSE indicators */
-    if( (SUPPL_OP( expr->suppl ) != EXP_OP_STATIC) &&
-        (SUPPL_OP( expr->suppl ) != EXP_OP_PARAM ) ) {
-      expr->suppl = expr->suppl & ~((0x1 << SUPPL_LSB_EVAL_T) | (0x1 << SUPPL_LSB_EVAL_F));
-    }
+    /* If we have a new value, recalculate TRUE/FALSE indicators */
+    // if( retval ) {
+
+      /* Clear current TRUE/FALSE indicators */
+      if( (SUPPL_OP( expr->suppl ) != EXP_OP_STATIC) &&
+          (SUPPL_OP( expr->suppl ) != EXP_OP_PARAM ) ) {
+        expr->suppl = expr->suppl & ~((0x1 << SUPPL_LSB_EVAL_T) | (0x1 << SUPPL_LSB_EVAL_F));
+      }
     
-    /* Set TRUE/FALSE bits to indicate value */
-    vector_init( &vec1, &value1a, 1 );
-    vector_unary_op( &vec1, expr->value, or_optab );
-    switch( VECTOR_VAL( vec1.value[0] ) ) {
-      case 0 :  expr->suppl = expr->suppl | (0x1 << SUPPL_LSB_FALSE) | (0x1 << SUPPL_LSB_EVAL_F);  break;
-      case 1 :  expr->suppl = expr->suppl | (0x1 << SUPPL_LSB_TRUE)  | (0x1 << SUPPL_LSB_EVAL_T);  break;
-      default:  break;
-    }
+      /* Set TRUE/FALSE bits to indicate value */
+      vector_init( &vec1, &value1a, 1 );
+      vector_unary_op( &vec1, expr->value, or_optab );
+      switch( VECTOR_VAL( vec1.value[0] ) ) {
+        case 0 :  expr->suppl = expr->suppl | (0x1 << SUPPL_LSB_FALSE) | (0x1 << SUPPL_LSB_EVAL_F);  break;
+        case 1 :  expr->suppl = expr->suppl | (0x1 << SUPPL_LSB_TRUE)  | (0x1 << SUPPL_LSB_EVAL_T);  break;
+        default:  break;
+      }
+
+    // }
 
     /* Set EVAL00, EVAL01, EVAL10 or EVAL11 bits based on current value of children */
     if( (expr->left != NULL) && (expr->right != NULL) ) {
@@ -1491,6 +1496,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.103  2004/10/22 22:03:31  phase1geo
+ More incremental changes to increase score command efficiency.
+
  Revision 1.102  2004/10/22 21:40:30  phase1geo
  More incremental updates to improve efficiency in score command (though this
  change should not, in and of itself, improve efficiency).

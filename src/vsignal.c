@@ -356,7 +356,8 @@ int vsignal_get_wait_bit( vsignal* sig ) {
 */
 void vsignal_vcd_assign( vsignal* sig, char* value, int msb, int lsb ) {
 
-  exp_link* curr_expr;  /* Pointer to current expression link under evaluation */
+  bool      vec_changed;  /* Specifies if assigned value differed from original value */
+  exp_link* curr_expr;    /* Pointer to current expression link under evaluation      */
 
   assert( sig->value != NULL );
 
@@ -365,23 +366,28 @@ void vsignal_vcd_assign( vsignal* sig, char* value, int msb, int lsb ) {
 
   /* Set vsignal value to specified value */
   if( lsb > 0 ) {
-    vector_vcd_assign( sig->value, value, (msb - sig->lsb), (lsb - sig->lsb) );
+    vec_changed = vector_vcd_assign( sig->value, value, (msb - sig->lsb), (lsb - sig->lsb) );
   } else {
-    vector_vcd_assign( sig->value, value, msb, lsb );
+    vec_changed = vector_vcd_assign( sig->value, value, msb, lsb );
   }
 
-  /* Iterate through vsignal's expression list */
-  curr_expr = sig->exp_head;
-  while( curr_expr != NULL ) {
+  /* Don't go through the hassle of updating expressions if value hasn't changed */
+  // if( vec_changed ) {
 
-    /* Add to simulation queue if expression is a RHS */
-    if( SUPPL_IS_LHS( curr_expr->exp->suppl ) == 0 ) {
-      sim_expr_changed( curr_expr->exp );
+    /* Iterate through vsignal's expression list */
+    curr_expr = sig->exp_head;
+    while( curr_expr != NULL ) {
+
+      /* Add to simulation queue if expression is a RHS */
+      if( SUPPL_IS_LHS( curr_expr->exp->suppl ) == 0 ) {
+        sim_expr_changed( curr_expr->exp );
+      }
+
+      curr_expr = curr_expr->next;
+
     }
 
-    curr_expr = curr_expr->next;
-
-  }
+  // }
 
 }
 
@@ -490,6 +496,10 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.2  2004/04/05 12:30:52  phase1geo
+ Adding *db_replace functions to allow a design to be opened with new CDD
+ results (for GUI purposes only).
+
  Revision 1.1  2004/03/30 15:42:15  phase1geo
  Renaming signal type to vsignal type to eliminate compilation problems on systems
  that contain a signal type in the OS.
