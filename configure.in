@@ -18,9 +18,39 @@ then
 	exit 1
 fi
 
-dnl Checks for libraries.
-AC_CHECK_LIB(tcl, Tcl_Init)
-AC_CHECK_LIB(tk, Tk_SafeInit)
+## Tcl/Tk.
+AC_ARG_WITH([tcltk],
+[AC_HELP_STRING([--with-tcltk],
+                [use Tcl/Tk, or specify its library dir @<:@yes@:>@])],
+[if test "${withval}" = no; then
+  want_tcltk=no
+elif test "${withval}" = yes; then
+  want_tcltk=yes
+else
+  want_tcltk=yes
+  LDFLAGS="${LDFLAGS} -L${withval}"
+  tcltk_prefix="${withval}"
+fi],
+[want_tcltk=yes])
+AC_ARG_WITH([tcl-config],
+[AC_HELP_STRING([--with-tcl-config=TCL_CONFIG],
+                [specify location of tclConfig.sh @<:@@:>@])],
+[TCL_CONFIG="${withval}"],
+[TCL_CONFIG=""])
+AC_ARG_WITH([tk-config],
+[AC_HELP_STRING([--with-tk-config=TK_CONFIG],
+                [specify location of tkConfig.sh @<:@@:>@])],
+[TK_CONFIG="${withval}"],
+[TK_CONFIG=""])
+
+AC_ARG_VAR([TCLTK_LIBS],
+           [flags needed for linking against the Tcl and Tk libraries])
+AC_ARG_VAR([TCLTK_CPPFLAGS],
+           [flags needed for finding the tcl.h and tk.h headers])
+
+## Tcl/Tk.
+COVERED_TCLTK
+
 
 dnl AC_CHECK_HEADERS(getopt.h)
 AC_CHECK_HEADERS(string.h)
@@ -43,3 +73,7 @@ AC_TYPE_SIGNAL
 AC_TYPE_SIZE_T
 
 AC_OUTPUT(Makefile src/Makefile doc/user/Makefile scripts/Makefile)
+
+if test -n "${warn_tcltk_version}"; then
+  AC_MSG_WARN([${warn_tcltk_version}])
+fi

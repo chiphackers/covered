@@ -61,8 +61,13 @@ CC = @CC@
 MAKEINFO = @MAKEINFO@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
+TCLTK_CPPFLAGS = @TCLTK_CPPFLAGS@
+TCLTK_LIBS = @TCLTK_LIBS@
+TCL_CONFIG = @TCL_CONFIG@
+TK_CONFIG = @TK_CONFIG@
 VERSION = @VERSION@
 XGPERF = @XGPERF@
+use_tcltk = @use_tcltk@
 
 tcldir = $(datadir)/covered/scripts
 tcl_SCRIPTS = banner.gif \

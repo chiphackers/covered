@@ -41,6 +41,8 @@ covered_SOURCES = arc.c \
 		  vector.c \
 		  vsignal.c
 
+covered_LDADD = $(TCLTK_LIBS)
+
 INCLUDES=	-I..
 AM_CPPFLAGS=-DINSTALL_DIR=\"@datadir@/covered\"
 
