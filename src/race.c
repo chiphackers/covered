@@ -616,6 +616,60 @@ void race_get_stats( race_blk* curr, int* race_total, int type_total[][RACE_TYPE
 
 }
 
+bool race_report_summary( FILE* ofile, mod_link* head ) {
+
+  bool found = FALSE;  /* Return value for this function */
+
+  while( head != NULL ) {
+
+    found = (head->mod->stat->race_total > 0) ? TRUE : found;
+
+    fprintf( ofile, "  %-20.20s    %-20.20s        %d\n", 
+             head->mod->name,
+	     get_basename( head->mod->filename ),
+	     head->mod->stat->race_total );
+
+    head = head->next;
+
+  }
+
+  return( found );
+
+}
+
+void race_report_verbose( FILE* ofile, mod_link* head ) {
+
+  race_blk* curr_race;  /* Pointer to current race condition block */
+
+  while( head != NULL ) {
+
+    if( head->mod->stat->race_total > 0 ) {
+
+      fprintf( ofile, "\n" );
+      fprintf( ofile, "    Module: %s, File: %s\n", 
+               head->mod->name, 
+               head->mod->filename );
+      fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
+
+      fprintf( ofile, "      Starting Line #     Race Condition Violation Reason\n" );
+      fprintf( ofile, "      ---------------------------------------------------------------------------------------------------------\n" );
+
+      curr_race = head->mod->race_head;
+      while( curr_race != NULL ) {
+        fprintf( ofile, "              %7d:    %s\n", curr_race->start_line, race_msgs[curr_race->reason] );
+	curr_race = curr_race->next;
+      }
+
+      fprintf( ofile, "\n" );
+
+    }
+
+    head = head->next;
+											       
+  }
+
+}
+
 /*!
  \param ofile    Output stream to display report information to.
  \param verbose  Specifies if summary or verbose output should be displayed.
@@ -625,7 +679,22 @@ void race_get_stats( race_blk* curr, int* race_total, int type_total[][RACE_TYPE
 */
 void race_report( FILE* ofile, bool verbose ) {
 
-  printf( "In race_report\n" );
+  bool found;  /* If set to TRUE, race conditions were found */
+
+  fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
+  fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   RACE CONDITION VIOLATIONS   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
+  fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
+  fprintf( ofile, "Module                    Filename                 Number of Violations found\n" );
+  fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
+
+  found = race_report_summary( ofile, mod_head );
+
+  if( verbose && found ) {
+    fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
+    race_report_verbose( ofile, mod_head );
+  }
+
+  fprintf( ofile, "\n\n" );
 
 }
 
@@ -702,6 +771,9 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.21  2005/02/05 05:29:25  phase1geo
+ Added race condition reporting to GUI.
+
  Revision 1.20  2005/02/05 04:13:30  phase1geo
  Started to add reporting capabilities for race condition information.  Modified
  race condition reason calculation and handling.  Ran -Wall on all code and cleaned

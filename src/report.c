@@ -71,7 +71,7 @@ bool report_fsm          = TRUE;
  If set to a boolean value of TRUE, reports the race condition violations for the specified
  database file; otherwise, omits this information from the report output.
 */
-bool report_race         = TRUE;
+bool report_race         = FALSE;
 
 /*!
  If set to a boolean value of TRUE, provides a coverage information for individual
@@ -138,7 +138,7 @@ void report_usage() {
   printf( "   -h                         Displays this help information.\n" );
   printf( "\n" );
   printf( "   Options:\n" );
-  printf( "      -m [l][t][c][f][r]      Type(s) of metrics to report.  Default is ltcfr.\n" );
+  printf( "      -m [l][t][c][f][r]      Type(s) of metrics to report.  Default is ltcf.\n" );
   printf( "      -d (s|d|v)              Level of report detail (s=summary, d=detailed, v=verbose).\n" );
   printf( "                               Default is to display summary coverage information.\n" );
   printf( "      -i                      Provides coverage information for instances instead of module.\n" );
@@ -712,6 +712,12 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.41  2005/02/05 04:13:30  phase1geo
+ Started to add reporting capabilities for race condition information.  Modified
+ race condition reason calculation and handling.  Ran -Wall on all code and cleaned
+ things up.  Cleaned up regression as a result of these changes.  Full regression
+ now passes.
+
  Revision 1.40  2004/09/14 19:26:28  phase1geo
  Fixing browser and version injection to Tcl scripts.
 
