@@ -9,6 +9,8 @@
 
 VDIR = ./regress
 
+all:
+
 regress:	regress-v
 
 regress-v:

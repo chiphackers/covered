@@ -1,6 +1,6 @@
 %{
 /*!
- \file     lexer.l
+ \file     lexer.c
  \author   Trevor Williams  (trevorw@charter.net)
  \date     12/2/2001
  \brief    Lexer for Verilog language
@@ -76,25 +76,66 @@ WSPACE [ \t\b\f]+
 %%
 
   /* Whitespace -- we ignore this */
-[ \t\b\f\r]   { ; }
+[ \t\b\f\r]   {
+	yylloc.last_column += strlen( yytext );
+ }
 
   /* Newline character - blank line -- we ignore these */
-\n            { yylloc.first_line += 1; yylloc.last_column = 1; }
+\n {
+	yylloc.first_line += 1;
+	yylloc.last_column = 0;
+ }
 
   /* Handle line directives */
-^"#line"[ ]+\"[^\"]*\"[ ]+[0-9]+.* { line_directive(); }
-^"`line"[ ]+[0-9]+[ ]+\"[^\"]*\".* { line_directive2(); }
+^"#line"[ ]+\"[^\"]*\"[ ]+[0-9]+.* {
+	yylloc.first_column = yylloc.last_column;
+	yylloc.last_column += strlen( yytext );
+	line_directive();
+ }
+
+^"`line"[ ]+[0-9]+[ ]+\"[^\"]*\".* {
+	yylloc.first_column = yylloc.last_column;
+	yylloc.last_column += strlen( yytext );
+	line_directive2();
+ }
 
   /* Single-line comment -- we ignore this information */
-"//".*        { comment_enter = YY_START;  BEGIN( LCOMMENT );    }
-<LCOMMENT>.   { yymore();                                        }
-<LCOMMENT>\n  { yylloc.first_line += 1;  BEGIN( comment_enter ); }
+"//".*        {
+	yylloc.first_column = yylloc.last_column;
+	yylloc.last_column += strlen( yytext );
+	comment_enter       = YY_START;
+	BEGIN( LCOMMENT );
+ }
+<LCOMMENT>.   {
+	yylloc.last_column += 1;
+	yymore();
+ }
+<LCOMMENT>\n  {
+	BEGIN( comment_enter );
+	yylloc.first_line += 1;
+	yylloc.last_column = 0;
+ }
 
   /* Multi-line comment */
-"/*"           { comment_enter = YY_START;  BEGIN( CCOMMENT ); }
-<CCOMMENT>.    { yymore();                                     }
-<CCOMMENT>\n   { yylloc.first_line += 1;  yymore();            }
-<CCOMMENT>"*/" { BEGIN( comment_enter );                       }
+"/*"           {
+	comment_enter       = YY_START;
+	BEGIN( CCOMMENT );
+	yylloc.first_column = yylloc.last_column;
+	yylloc.last_column += 2;
+ }
+<CCOMMENT>.    {
+	yylloc.last_column += 1;
+	yymore();
+ }
+<CCOMMENT>\n   {
+	yylloc.first_line += 1;
+	yylloc.last_column = 0;
+	yymore();
+ }
+<CCOMMENT>"*/" {
+	yylloc.last_column += 2;
+	BEGIN( comment_enter );
+ }
 
   /* Pragma comment */
   /*"(*"           { comment_enter = YY_START;  BEGIN( PCOMMENT ); }
@@ -103,90 +144,125 @@ WSPACE [ \t\b\f]+
   /*<PCOMMENT>"*)" { BEGIN( comment_enter );                       }
 
   /* Multi-character symbols */
-"(*"  { return K_PSTAR;   }
-"*)"  { return K_STARP;   }
-"<<"  { return K_LS;      }
-">>"  { return K_RS;      }
-"<="  { return K_LE;      }
-">="  { return K_GE;      }
-"=="  { return K_EQ;      }
-"!="  { return K_NE;      }
-"===" { return K_CEQ;     }
-"!==" { return K_CNE;     }
-"||"  { return K_LOR;     }
-"&&"  { return K_LAND;    }
-"&&&" { return K_TAND;    }
-"~|"  { return K_NOR;     }
-"~^"  { return K_NXOR;    }
-"^~"  { return K_NXOR;    }
-"~&"  { return K_NAND;    }
-"->"  { return K_TRIGGER; }
-"+:"  { return K_PO_POS;  }
-"-:"  { return K_PO_NEG;  }
-"=>"  { return K_EG;      }
-"*>"  { return K_SG;      }
+"(*"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_PSTAR;   }
+"*)"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_STARP;   }
+"<<"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_LS;      }
+">>"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_RS;      }
+"<="  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_LE;      }
+">="  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_GE;      }
+"=="  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_EQ;      }
+"!="  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_NE;      }
+"===" { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 3;  return K_CEQ;     }
+"!==" { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 3;  return K_CNE;     }
+"||"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_LOR;     }
+"&&"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_LAND;    }
+"&&&" { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 3;  return K_TAND;    }
+"~|"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_NOR;     }
+"~^"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_NXOR;    }
+"^~"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_NXOR;    }
+"~&"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_NAND;    }
+"->"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_TRIGGER; }
+"+:"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_PO_POS;  }
+"-:"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_PO_NEG;  }
+"=>"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_EG;      }
+"*>"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_SG;      }
 
   /* Single character symbols */
-[}{;:\[\],()#=.@&!?<>%|^~+*/-] { return yytext[0]; }
+[}{;:\[\],()#=.@&!?<>%|^~+*/-] {
+	yylloc.first_column = yylloc.last_column;
+	yylloc.last_column += 1;
+	return yytext[0];
+ }
 
   /* C-style strings */
-\"            { BEGIN( CSTRING ); }
-<CSTRING>\\\" { yymore();         }
-<CSTRING>\n   { BEGIN( 0 );
-                if( (ignore_mode == 0) && (attr_mode > 0) ) {
-                  yylval.text = strdup_safe( yytext, __FILE__, __LINE__ );
-                }
-                /* VLerror( yylloc, "Missing close quote of string." ); */
-                yylloc.first_line += 1;
-                return 0; }
-<CSTRING>\"   { BEGIN( 0 );
-                if( (ignore_mode == 0) && (attr_mode > 0) ) {
-                  yylval.text = strdup_safe( yytext, __FILE__, __LINE__ );
-                  yylval.text[ strlen( yytext ) - 1 ] = '\0';
-                  return STRING;
-                } else {
-                  return UNUSED_STRING;
-                }
-              }
-<CSTRING>.    { yymore();      }
+\"            {
+	yylloc.first_column = yylloc.last_column;
+	yylloc.last_column += 1;
+	BEGIN( CSTRING );
+ }
+<CSTRING>\\\" {
+	yylloc.last_column += 2;
+	yymore();
+ }
+<CSTRING>\n   {
+	yylloc.last_column = 0;
+	BEGIN( 0 );
+        if( (ignore_mode == 0) && (attr_mode > 0) ) {
+          yylval.text = strdup_safe( yytext, __FILE__, __LINE__ );
+        }
+        /* VLerror( yylloc, "Missing close quote of string." ); */
+        yylloc.first_line += 1;
+        return 0;
+ }
+<CSTRING>\"   {
+	yylloc.last_column += 1;
+	BEGIN( 0 );
+        if( (ignore_mode == 0) && (attr_mode > 0) ) {
+          yylval.text = strdup_safe( yytext, __FILE__, __LINE__ );
+          yylval.text[ strlen( yytext ) - 1 ] = '\0';
+          return STRING;
+        } else {
+          return UNUSED_STRING;
+        }
+ }
+<CSTRING>.    {
+	yylloc.last_column += 1;
+	yymore();
+ }
 
   /* Ignore modules that are not needed by the parser. */
-<IGNORE_MODULE>endmodule    { BEGIN( 0 ); 
-			      return I_endmodule; }
-<IGNORE_MODULE>endprimitive { BEGIN( 0 );
-                              return( K_endprimitive ); }
-<IGNORE_MODULE>\n           { yylloc.first_line += 1;  
-			      yymore();           }
-<IGNORE_MODULE>.            { yymore();           }
+<IGNORE_MODULE>endmodule    {
+	yylloc.first_column = yylloc.last_column;
+	yylloc.last_column += strlen( yytext );
+	BEGIN( 0 );
+        return I_endmodule;
+ }
+<IGNORE_MODULE>endprimitive {
+	yylloc.first_column = yylloc.last_column;
+	yylloc.last_column += strlen( yytext );
+	BEGIN( 0 );
+        return( K_endprimitive );
+ }
+<IGNORE_MODULE>\n           {
+	yylloc.first_line += 1;
+	yylloc.last_column = 0;
+        yymore();
+ }
+<IGNORE_MODULE>.            {
+	yylloc.last_column += 1;
+	yymore();
+ }
 
   /* Entries for user defined primitive tables -- not currently supported */
-<UDPTABLE>\(\?0\)    { return '_';       }
-<UDPTABLE>\(\?1\)    { return '+';       }
-<UDPTABLE>\(\?[xX]\) { return '%';       }
-<UDPTABLE>\(\?\?\)   { return '*';       }
-<UDPTABLE>\(01\)     { return 'r';       }
-<UDPTABLE>\(0[xX]\)  { return 'Q';       }
-<UDPTABLE>\(0\?\)    { return 'P';       }
-<UDPTABLE>\(10\)     { return 'f';       }
-<UDPTABLE>\(1[xX]\)  { return 'M';       }
-<UDPTABLE>\(1\?\)    { return 'N';       }
-<UDPTABLE>\([xX]0\)  { return 'F';       }
-<UDPTABLE>\([xX]1\)  { return 'R';       }
-<UDPTABLE>\([xX]\?\) { return 'B';       }
-<UDPTABLE>[bB]       { return 'b';       }
-<UDPTABLE>[lL]       { return 'l';       }
-<UDPTABLE>[hH]       { return 'h';       }
-<UDPTABLE>[fF]       { return 'f';       }
-<UDPTABLE>[rR]       { return 'r';       }
-<UDPTABLE>[xX]       { return 'x';       }
-<UDPTABLE>[nN]       { return 'n';       }
-<UDPTABLE>[pP]       { return 'p';       }
-<UDPTABLE>[01\?\*\-] { return yytext[0]; }
+<UDPTABLE>\(\?0\)    { yylloc.last_column += strlen( yytext );  return '_';       }
+<UDPTABLE>\(\?1\)    { yylloc.last_column += strlen( yytext );  return '+';       }
+<UDPTABLE>\(\?[xX]\) { yylloc.last_column += strlen( yytext );  return '%';       }
+<UDPTABLE>\(\?\?\)   { yylloc.last_column += strlen( yytext );  return '*';       }
+<UDPTABLE>\(01\)     { yylloc.last_column += strlen( yytext );  return 'r';       }
+<UDPTABLE>\(0[xX]\)  { yylloc.last_column += strlen( yytext );  return 'Q';       }
+<UDPTABLE>\(0\?\)    { yylloc.last_column += strlen( yytext );  return 'P';       }
+<UDPTABLE>\(10\)     { yylloc.last_column += strlen( yytext );  return 'f';       }
+<UDPTABLE>\(1[xX]\)  { yylloc.last_column += strlen( yytext );  return 'M';       }
+<UDPTABLE>\(1\?\)    { yylloc.last_column += strlen( yytext );  return 'N';       }
+<UDPTABLE>\([xX]0\)  { yylloc.last_column += strlen( yytext );  return 'F';       }
+<UDPTABLE>\([xX]1\)  { yylloc.last_column += strlen( yytext );  return 'R';       }
+<UDPTABLE>\([xX]\?\) { yylloc.last_column += strlen( yytext );  return 'B';       }
+<UDPTABLE>[bB]       { yylloc.last_column += strlen( yytext );  return 'b';       }
+<UDPTABLE>[lL]       { yylloc.last_column += strlen( yytext );  return 'l';       }
+<UDPTABLE>[hH]       { yylloc.last_column += strlen( yytext );  return 'h';       }
+<UDPTABLE>[fF]       { yylloc.last_column += strlen( yytext );  return 'f';       }
+<UDPTABLE>[rR]       { yylloc.last_column += strlen( yytext );  return 'r';       }
+<UDPTABLE>[xX]       { yylloc.last_column += strlen( yytext );  return 'x';       }
+<UDPTABLE>[nN]       { yylloc.last_column += strlen( yytext );  return 'n';       }
+<UDPTABLE>[pP]       { yylloc.last_column += strlen( yytext );  return 'p';       }
+<UDPTABLE>[01\?\*\-] { yylloc.last_column += strlen( yytext );  return yytext[0]; }
 
   /* Keyword and signal identifiers */
 [a-zA-Z_][a-zA-Z0-9$_]* {
      str_link* foundmod;
      int rc = lexer_keyword_code( yytext, yyleng );
+     yylloc.first_column = yylloc.last_column;
+     yylloc.last_column += strlen( yytext );
      if( rc == IDENTIFIER ) {
        if( ignore_mode == 0 ) {
          yylval.text  = strdup_safe( yytext, __FILE__, __LINE__ );
@@ -224,6 +300,8 @@ WSPACE [ \t\b\f]+
 
   /* Signal names starting with a '\' character */
 \\[^ \t\b\f\r\n]+  { 
+     yylloc.first_column = yylloc.last_column;
+     yylloc.last_column += strlen( yytext );
      if( ignore_mode == 0 ) {
        yylval.text = strdup_safe( yytext, __FILE__, __LINE__ );
        return IDENTIFIER; 
@@ -234,6 +312,8 @@ WSPACE [ \t\b\f]+
 
   /* System call lines -- we ignore this information */
 \$([a-zA-Z0-9$_]+)   { 
+     yylloc.first_column = yylloc.last_column;
+     yylloc.last_column += strlen( yytext );
      if( ignore_mode == 0 ) {
        return SYSTEM_IDENTIFIER; 
      } else {
@@ -243,6 +323,8 @@ WSPACE [ \t\b\f]+
 
   /* Decimal number - Size indicated */
 [0-9][0-9_]*[ \t]*\'[sS]?[dD][ \t]*[0-9][0-9_]* {
+     yylloc.first_column = yylloc.last_column;
+     yylloc.last_column += strlen( yytext );
      if( ignore_mode == 0 ) {
        yylval.number = vector_from_string( &yytext );
        if( yylval.number != NULL ) {
@@ -257,6 +339,8 @@ WSPACE [ \t\b\f]+
 
   /* Binary number - Size indicated */
 [0-9][0-9_]*[ \t]*\'[sS]?[bB][ \t]*[0-1xzXZ_\?]+ {
+     yylloc.first_column = yylloc.last_column;
+     yylloc.last_column += strlen( yytext );
      if( ignore_mode == 0 ) {
        yylval.number = vector_from_string( &yytext );
        if( yylval.number != NULL ) {
@@ -271,6 +355,8 @@ WSPACE [ \t\b\f]+
 
   /* Octal number - Size indicated */
 [0-9][0-9_]*[ \t]*\'[sS]?[oO][ \t]*[0-7xzXZ_\?]+ {
+     yylloc.first_column = yylloc.last_column;
+     yylloc.last_column += strlen( yytext );
      if( ignore_mode == 0 ) {
        yylval.number = vector_from_string( &yytext );
        if( yylval.number != NULL ) {
@@ -285,6 +371,8 @@ WSPACE [ \t\b\f]+
 
   /* Hexidecimal number - Size indicated */
 [0-9][0-9_]*[ \t]*\'[sS]?[hH][ \t]*[0-9a-fA-FxzXZ_\?]+ {
+     yylloc.first_column = yylloc.last_column;
+     yylloc.last_column += strlen( yytext );
      if( ignore_mode == 0 ) {
        yylval.number = vector_from_string( &yytext );
        if( yylval.number != NULL ) {
@@ -299,6 +387,8 @@ WSPACE [ \t\b\f]+
 
   /* Decimal number - unsized */
 \'[sS]?[dD][ \t]*[0-9][0-9_]* {
+     yylloc.first_column = yylloc.last_column;
+     yylloc.last_column += strlen( yytext );
      if( ignore_mode == 0 ) {
        yylval.number = vector_from_string( &yytext );
        if( yylval.number != NULL ) {
@@ -313,6 +403,8 @@ WSPACE [ \t\b\f]+
 
   /* Binary number - unsized */
 \'[sS]?[bB][ \t]*[0-1xzXZ_\?]+ {
+     yylloc.first_column = yylloc.last_column;
+     yylloc.last_column += strlen( yytext );
      if( ignore_mode == 0 ) {
        yylval.number = vector_from_string( &yytext );
        if( yylval.number != NULL ) {
@@ -327,6 +419,8 @@ WSPACE [ \t\b\f]+
 
   /* Octal number - unsized */
 \'[sS]?[oO][ \t]*[0-7xzXZ_\?]+ {
+     yylloc.first_column = yylloc.last_column;
+     yylloc.last_column += strlen( yytext );
      if( ignore_mode == 0 ) {
        yylval.number = vector_from_string( &yytext );
        if( yylval.number != NULL ) {
@@ -341,6 +435,8 @@ WSPACE [ \t\b\f]+
 
   /* Hexidecimal number - unsized */
 \'[sS]?[hH][ \t]*[0-9a-fA-FxzXZ_\?]+ {
+     yylloc.first_column = yylloc.last_column;
+     yylloc.last_column += strlen( yytext );
      if( ignore_mode == 0 ) {
        yylval.number = vector_from_string( &yytext );
        if( yylval.number != NULL ) {
@@ -355,6 +451,8 @@ WSPACE [ \t\b\f]+
 
   /* Unsized decimal number */
 [0-9][0-9_]* {
+     yylloc.first_column = yylloc.last_column;
+     yylloc.last_column += strlen( yytext );
      if( ignore_mode == 0 ) {
        yylval.number = vector_from_string( &yytext );
        if( yylval.number != NULL ) {
@@ -369,6 +467,8 @@ WSPACE [ \t\b\f]+
 
   /* Real numbers -- we ignore this information */
 [0-9][0-9_]*\.[0-9][0-9_]*([Ee][+-]?[0-9][0-9_]*)? { 
+     yylloc.first_column = yylloc.last_column;
+     yylloc.last_column += strlen( yytext );
      if( ignore_mode == 0 ) {
        return REALTIME;
      } else {
@@ -378,6 +478,8 @@ WSPACE [ \t\b\f]+
 
   /* Real numbers -- we ignore this information */
 [0-9][0-9_]*[Ee][+-]?[0-9][0-9_]* { 
+     yylloc.first_column = yylloc.last_column;
+     yylloc.last_column += strlen( yytext );
      if( ignore_mode == 0 ) {
        return REALTIME;
      } else {
@@ -386,33 +488,43 @@ WSPACE [ \t\b\f]+
  }
 
   /* Timescale directive -- we ignore this information */
-^{WSPACE}?`timescale { BEGIN( PPTIMESCALE ); }
-<PPTIMESCALE>.       { yymore();             }
+^{WSPACE}?`timescale {
+	yylloc.first_column = yylloc.last_column;
+	yylloc.last_column += strlen( yytext );
+	BEGIN( PPTIMESCALE );
+ }
+<PPTIMESCALE>.       {
+	yylloc.last_column += 1;
+	yymore();
+ }
 <PPTIMESCALE>\n      {
      yylloc.first_line += 1;
      BEGIN( 0 );
+     yylloc.last_column = 0;
  }
 
   /* Miscellaneous directives -- we ignore this information */
-^{WSPACE}?`celldefine{WSPACE}?.*             { }
-^{WSPACE}?`default_nettype{WSPACE}?.*        { }
-^{WSPACE}?`delay_mode_distributed{WSPACE}?.* { }
-^{WSPACE}?`delay_mode_unit{WSPACE}?.*        { }
-^{WSPACE}?`delay_mode_path{WSPACE}?.*        { }
-^{WSPACE}?`disable_portfaults{WSPACE}?.*     { }
-^{WSPACE}?`enable_portfaults{WSPACE}?.*      { }
-^{WSPACE}?`endcelldefine{WSPACE}?.*          { }
-^{WSPACE}?`endprotect{WSPACE}?.*             { }
-^{WSPACE}?`nosuppress_faults{WSPACE}?.*      { }
-^{WSPACE}?`nounconnected_drive{WSPACE}?.*    { }
-^{WSPACE}?`protect{WSPACE}?.*                { }
-^{WSPACE}?`resetall{WSPACE}?.*               { }
-^{WSPACE}?`suppress_faults{WSPACE}?.*        { }
-^{WSPACE}?`unconnected_drive{WSPACE}?.*      { }
-^{WSPACE}?`uselib{WSPACE}?.*                 { }
+^{WSPACE}?`celldefine{WSPACE}?.*             { yylloc.last_column = strlen( yytext ); }
+^{WSPACE}?`default_nettype{WSPACE}?.*        { yylloc.last_column = strlen( yytext ); }
+^{WSPACE}?`delay_mode_distributed{WSPACE}?.* { yylloc.last_column = strlen( yytext ); }
+^{WSPACE}?`delay_mode_unit{WSPACE}?.*        { yylloc.last_column = strlen( yytext ); }
+^{WSPACE}?`delay_mode_path{WSPACE}?.*        { yylloc.last_column = strlen( yytext ); }
+^{WSPACE}?`disable_portfaults{WSPACE}?.*     { yylloc.last_column = strlen( yytext ); }
+^{WSPACE}?`enable_portfaults{WSPACE}?.*      { yylloc.last_column = strlen( yytext ); }
+^{WSPACE}?`endcelldefine{WSPACE}?.*          { yylloc.last_column = strlen( yytext ); }
+^{WSPACE}?`endprotect{WSPACE}?.*             { yylloc.last_column = strlen( yytext ); }
+^{WSPACE}?`nosuppress_faults{WSPACE}?.*      { yylloc.last_column = strlen( yytext ); }
+^{WSPACE}?`nounconnected_drive{WSPACE}?.*    { yylloc.last_column = strlen( yytext ); }
+^{WSPACE}?`protect{WSPACE}?.*                { yylloc.last_column = strlen( yytext ); }
+^{WSPACE}?`resetall{WSPACE}?.*               { yylloc.last_column = strlen( yytext ); }
+^{WSPACE}?`suppress_faults{WSPACE}?.*        { yylloc.last_column = strlen( yytext ); }
+^{WSPACE}?`unconnected_drive{WSPACE}?.*      { yylloc.last_column = strlen( yytext ); }
+^{WSPACE}?`uselib{WSPACE}?.*                 { yylloc.last_column = strlen( yytext ); }
 
   /* Handle lines with errors */
-<ERROR_LINE>.* { yy_pop_state(); }
+<ERROR_LINE>.* {
+	yy_pop_state();
+ }
 
   /* Final catchall. something got lost or mishandled. */
 . { fprintf( stderr, "%d: unmatched character (%c)\n", yylloc.first_line, yytext[0] ); }
@@ -555,9 +667,9 @@ static int yywrap() {
   
   yyrestart( fopen( ppfilename, "r" ) );
   
-  yylloc.first_line   = 1;
-  yylloc.first_column = 1;
-  yylloc.text         = fname;
+  yylloc.first_line  = 1;
+  yylloc.last_column = 0;
+  yylloc.text        = fname;
   
   filelist_curr = curr->next;
   
@@ -603,9 +715,9 @@ void reset_lexer( str_link* file_list_head ) {
   
   yyrestart( fopen( ppfilename, "r" ) );
 
-  yylloc.text         = curr->str;
-  yylloc.first_line   = 1;
-  yylloc.first_column = 1;
+  yylloc.text        = curr->str;
+  yylloc.first_line  = 1;
+  yylloc.last_column = 0;
   
   filelist_head = file_list_head;
   filelist_curr = file_list_head->next;

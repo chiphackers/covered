@@ -253,7 +253,7 @@ void stmt_link_display( stmt_link* head ) {
   while( curr.curr != NULL ) {
     assert( curr.curr->stmt != NULL );
     assert( curr.curr->stmt->exp != NULL );
-    printf( "  id: %d\n", curr.curr->stmt->exp->id );
+    printf( "  id: %d, line: %d\n", curr.curr->stmt->exp->id, curr.curr->stmt->exp->line );
     stmt_iter_next( &curr );
   }
 
@@ -718,6 +718,10 @@ void mod_link_delete_list( mod_link* head ) {
 
 /*
  $Log$
+ Revision 1.27  2004/03/30 15:42:14  phase1geo
+ Renaming signal type to vsignal type to eliminate compilation problems on systems
+ that contain a signal type in the OS.
+
  Revision 1.26  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,

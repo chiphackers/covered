@@ -10,7 +10,7 @@
  TRUE (non-zero value) or FALSE (zero value).  To minimize memory use, a statement 
  uses some of the unused bits in its root expression supplemental field instead of
  having its own supplemental field.  There are two bits in the expression
- supplemental value that are only used by expressions:  #SUPPL_LSB_STMT_HEAD and
+ supplemental value that are only used by statements:  #SUPPL_LSB_STMT_HEAD and
  #SUPPL_LSB_STMT_STOP.
 
  \par
@@ -79,17 +79,6 @@
  This NULL assignment indicates to the statement simulation engine that this statement
  will receive the STMT_HEAD bit and the current statement tree is finished for this
  timestep.
-
- \par Other Notes
- A statement must always be connected to an expression tree (this is were it gets its
- unique identifier and some control bits from in the first place).  When a statement
- is deallocated, the pointer to its expression is set to a value of NULL to indicate
- to all other functions that this statement no longer exists.  This is necessary for
- deallocating statement trees because a statement cannot tell other statements pointing
- to it that it no longer exists.  When the statements connected to it are deallocated
- they will look at the next_true and next_false pointers, check to see if the expressions
- are NULL and do the appropriate action.  This algorithm will only work as long as there
- are no malloc calls during the statement deallocation process.
 */
 
 #ifdef HAVE_CONFIG_H
@@ -583,6 +572,9 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.48  2004/03/16 14:01:47  phase1geo
+ Cleaning up verbose output.
+
  Revision 1.47  2004/03/16 13:56:05  phase1geo
  Fixing bug with statement removal to make it less prone to segmentation faulting.
 

@@ -540,7 +540,7 @@ void expression_get_wait_sig_list( expression* expr, sig_link** head, sig_link**
 */
 void expression_db_write( expression* expr, FILE* file ) {
 
-  fprintf( file, "%d %d %d %d %x %d %d ",
+  fprintf( file, "%d %d %d %x %x %d %d ",
     DB_TYPE_EXPRESSION,
     expr->id,
     expr->line,
@@ -597,7 +597,7 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
   expression  texp;           /* Temporary expression link holder for searching   */
   exp_link*   expl;           /* Pointer to found expression in module            */
 
-  if( sscanf( *line, "%d %d %d %x %d %d%n", &id, &linenum, &column, &suppl, &right_id, &left_id, &chars_read ) == 6 ) {
+  if( sscanf( *line, "%d %d %x %x %d %d%n", &id, &linenum, &column, &suppl, &right_id, &left_id, &chars_read ) == 6 ) {
 
     *line = *line + chars_read;
 
@@ -751,7 +751,7 @@ bool expression_db_merge( expression* base, char** line, bool same ) {
 
   assert( base != NULL );
 
-  if( sscanf( *line, "%d %d %d %x %d %d%n", &id, &linenum, &column, &suppl, &right_id, &left_id, &chars_read ) == 6 ) {
+  if( sscanf( *line, "%d %d %x %x %d %d%n", &id, &linenum, &column, &suppl, &right_id, &left_id, &chars_read ) == 6 ) {
 
     *line = *line + chars_read;
 
@@ -821,7 +821,7 @@ bool expression_db_replace( expression* base, char** line ) {
 
   assert( base != NULL );
 
-  if( sscanf( *line, "%d %d %d %x %d %d%n", &id, &linenum, &column, &suppl, &right_id, &left_id, &chars_read ) == 6 ) {
+  if( sscanf( *line, "%d %d %x %x %d %d%n", &id, &linenum, &column, &suppl, &right_id, &left_id, &chars_read ) == 6 ) {
 
     *line = *line + chars_read;
 
@@ -890,9 +890,10 @@ void expression_display( expression* expr ) {
     right_id = expr->right->id;
   }
 
-  printf( "  Expression =>  id: %d, line: %d, suppl: %x, width: %d, left: %d, right: %d\n", 
+  printf( "  Expression =>  id: %d, line: %d, col: %x, suppl: %x, width: %d, left: %d, right: %d\n", 
           expr->id,
           expr->line,
+	  expr->col,
           expr->suppl,
           expr->value->width,
           left_id, 
@@ -1479,6 +1480,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.98  2004/04/19 13:42:31  phase1geo
+ Forgot to modify replace function for column information.
+
  Revision 1.97  2004/04/19 04:54:55  phase1geo
  Adding first and last column information to expression and related code.  This is
  not working correctly yet.
