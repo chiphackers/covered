@@ -383,7 +383,7 @@ void combination_display_verbose( FILE* ofile, exp_link* expl ) {
   char*       underline;       /* Underline string for specified code         */
   int         last_line = -1;  /* Line number of last line found to be missed */
 
-  fprintf( ofile, "Missed Combinations\n" );
+  fprintf( ofile, "Missed Combinations\n\n" );
 
   /* Display current instance missed lines */
   while( expl != NULL ) {

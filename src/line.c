@@ -143,22 +143,14 @@ void line_display_verbose( FILE* ofile, exp_link* expl ) {
   char*       code;            /* Pointer to code string from code generator  */
   int         last_line = -1;  /* Line number of last line found to be missed */
 
-  fprintf( ofile, "Hit Lines\n" );
-/*
-  fprintf( ofile, "Missed Lines\n" );
-*/
+  fprintf( ofile, "Missed Lines\n\n" );
 
   /* Display current instance missed lines */
   while( expl != NULL ) {
 
-    if(   (   (SUPPL_WAS_EXECUTED( expl->exp->suppl ) == 1)
-           || (expl->exp->op == EXP_OP_NONE))
-       && (expl->exp->line != last_line) ) {
-/*
     if(   (SUPPL_WAS_EXECUTED( expl->exp->suppl ) == 0)
        && (expl->exp->op != EXP_OP_NONE)
        && (expl->exp->line != last_line) ) {
-*/
 
       last_line  = expl->exp->line;
       unexec_exp = expl->exp;

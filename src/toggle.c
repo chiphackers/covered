@@ -162,11 +162,14 @@ void toggle_display_verbose( FILE* ofile, sig_link* sigl ) {
   int       hit01;      /* Number of bits that toggled from 0 to 1        */
   int       hit10;      /* Number of bits that toggled from 1 to 0        */
 
-  fprintf( ofile, "Signals not getting 100%% toggle coverage\n" );
+  fprintf( ofile, "Signals not getting 100%% toggle coverage\n\n" );
 
   curr_sig = sigl;
 
   while( curr_sig != NULL ) {
+
+    hit01 = 0;
+    hit10 = 0;
 
     vector_toggle_count( curr_sig->sig->value, &hit01, &hit10 );
 
