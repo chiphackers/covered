@@ -985,6 +985,10 @@ list_of_variables
 		  tmp->next = NULL;
 		  $$ = tmp;
 		}
+        | UNUSED_IDENTIFIER
+                {
+                  $$ = NULL;
+                }
 	| list_of_variables ',' IDENTIFIER
 		{
 		  str_link* tmp = (str_link*)malloc( sizeof( str_link ) );
@@ -992,6 +996,10 @@ list_of_variables
 		  tmp->next = $1;
 		  $$ = tmp;
 		}
+        | list_of_variables ',' UNUSED_IDENTIFIER
+                {
+                  $$ = $1;
+                }
 	;
 
   /* I don't know what to do with UDPs.  This is included to allow designs that contain
