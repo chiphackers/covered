@@ -94,15 +94,16 @@ int combination_calc_depth( expression* exp, unsigned int curr_depth, bool left 
 
 /*!
  \param exp    Pointer to expression to calculate hit and total of multi-expression subtrees.
+ \param ulid   Pointer to current underline ID.
  \param hit    Pointer to value containing number of hit expression values in this expression.
  \param total  Pointer to value containing total number of expression values in this expression.
 
  Parses the specified expression tree, calculating the hit and total values of all
  sub-expressions that are the same operation types as their left children.
 */
-void combination_multi_expr_calc( expression* exp, int* hit, float* total ) {
+void combination_multi_expr_calc( expression* exp, int* ulid, int* hit, float* total ) {
 
-  bool and_op;   /* Specifies if current expression is an AND or LAND operation */
+  bool and_op;  /* Specifies if current expression is an AND or LAND operation */
 
   if( exp != NULL ) {
 
@@ -114,15 +115,23 @@ void combination_multi_expr_calc( expression* exp, int* hit, float* total ) {
       } else {
         *hit += SUPPL_WAS_TRUE( exp->left->suppl );
       }
+      if( (exp->left->ulid == -1) && (*ulid != -1) ) {
+        exp->left->ulid = *ulid;
+        (*ulid)++;
+      }
       (*total)++;
     } else {
-      combination_multi_expr_calc( exp->left, hit, total );
+      combination_multi_expr_calc( exp->left, ulid, hit, total );
     }
 
     if( and_op ) {
       *hit += SUPPL_WAS_FALSE( exp->right->suppl );
     } else {
       *hit += SUPPL_WAS_TRUE( exp->right->suppl );
+    }
+    if( (exp->right->ulid == -1) && (*ulid != -1) ) {
+      exp->right->ulid = *ulid;
+      (*ulid)++;
     }
     (*total)++;
 
@@ -131,6 +140,10 @@ void combination_multi_expr_calc( expression* exp, int* hit, float* total ) {
         *hit += ((exp->suppl >> SUPPL_LSB_EVAL_11) & 0x1);
       } else {
         *hit += ((exp->suppl >> SUPPL_LSB_EVAL_00) & 0x1);
+      }
+      if( (exp->ulid == -1) && (*ulid != -1) ) {
+        exp->ulid = *ulid;
+        (*ulid)++;
       }
       (*total)++;
     }
@@ -141,6 +154,7 @@ void combination_multi_expr_calc( expression* exp, int* hit, float* total ) {
 
 /*!
  \param exp         Pointer to expression tree to traverse.
+ \param ulid        Pointer to current underline ID.
  \param curr_depth  Current search depth in given expression tree.
  \param total       Pointer to total number of logical combinations.
  \param hit         Pointer to number of logical combinations hit during simulation.
@@ -150,7 +164,10 @@ void combination_multi_expr_calc( expression* exp, int* hit, float* total ) {
  hit during the course of simulation.  An expression can be considered for
  combinational coverage if the "measured" bit is set in the expression.
 */
-void combination_get_tree_stats( expression* exp, unsigned int curr_depth, float* total, int* hit ) {
+void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_depth, float* total, int* hit ) {
+
+  int num_hit  = 0;   /* Number of expression value hits for the current expression */
+  int tmp_ulid = -1;  /* Underline value that won't cause underlines                */
 
   if( exp != NULL ) {
 
@@ -172,20 +189,34 @@ void combination_get_tree_stats( expression* exp, unsigned int curr_depth, float
                (SUPPL_OP( exp->suppl ) == EXP_OP_OR)   ||
                (SUPPL_OP( exp->suppl ) == EXP_OP_LAND) ||
                (SUPPL_OP( exp->suppl ) == EXP_OP_LOR)) ) {
-            combination_multi_expr_calc( exp, hit, total );
+            if( (SUPPL_WAS_TRUE( exp->suppl ) == 1) && (SUPPL_WAS_FALSE( exp->suppl ) == 1) ) {
+              combination_multi_expr_calc( exp, &tmp_ulid, hit, total );
+            } else {
+              combination_multi_expr_calc( exp, ulid, hit, total );
+            }
           } else {
             if( expression_is_static_only( exp ) ) {
               *total = *total + 2;
               *hit   = *hit + 2;
             } else if( EXPR_IS_COMB( exp ) == 1 ) {
-              *total = *total + 4;
-              *hit   = *hit + ((exp->suppl >> SUPPL_LSB_EVAL_00) & 0x1) +
-                              ((exp->suppl >> SUPPL_LSB_EVAL_01) & 0x1) +
-                              ((exp->suppl >> SUPPL_LSB_EVAL_10) & 0x1) +
-                              ((exp->suppl >> SUPPL_LSB_EVAL_11) & 0x1);
+              *total  = *total + 4;
+              num_hit = ((exp->suppl >> SUPPL_LSB_EVAL_00) & 0x1) +
+                        ((exp->suppl >> SUPPL_LSB_EVAL_01) & 0x1) +
+                        ((exp->suppl >> SUPPL_LSB_EVAL_10) & 0x1) +
+                        ((exp->suppl >> SUPPL_LSB_EVAL_11) & 0x1);
+              *hit    = *hit + num_hit;
+              if( (num_hit != 4) && (exp->ulid == -1) ) {
+                exp->ulid = *ulid;
+                (*ulid)++;
+              }
             } else {
-              *total = *total + 2;
-              *hit = *hit + SUPPL_WAS_TRUE( exp->suppl ) + SUPPL_WAS_FALSE( exp->suppl );
+              *total  = *total + 2;
+              num_hit = SUPPL_WAS_TRUE( exp->suppl ) + SUPPL_WAS_FALSE( exp->suppl );
+              *hit    = *hit + num_hit;
+              if( (num_hit != 2) && (exp->ulid == -1) ) {
+                exp->ulid = *ulid;
+                (*ulid)++;
+              }
             }
           }
 
@@ -199,8 +230,8 @@ void combination_get_tree_stats( expression* exp, unsigned int curr_depth, float
     exp->suppl = exp->suppl | (0x1 << SUPPL_LSB_COMB_CNTD);
 
     /* Calculate children */
-    combination_get_tree_stats( exp->right, combination_calc_depth( exp, curr_depth, FALSE ), total, hit );
-    combination_get_tree_stats( exp->left,  combination_calc_depth( exp, curr_depth, TRUE ),  total, hit );
+    combination_get_tree_stats( exp->right, ulid, combination_calc_depth( exp, curr_depth, FALSE ), total, hit );
+    combination_get_tree_stats( exp->left,  ulid, combination_calc_depth( exp, curr_depth, TRUE ),  total, hit );
 
   }
 
@@ -217,13 +248,15 @@ void combination_get_tree_stats( expression* exp, unsigned int curr_depth, float
 */
 void combination_get_stats( exp_link* expl, float* total, int* hit ) {
 
-  exp_link* curr_exp;    /* Pointer to the current expression link in the list */
+  exp_link* curr_exp;  /* Pointer to the current expression link in the list */
+  int       ulid;      /* Current underline ID for this expression           */
   
   curr_exp = expl;
 
   while( curr_exp != NULL ) {
     if( SUPPL_IS_ROOT( curr_exp->exp->suppl ) == 1 ) {
-      combination_get_tree_stats( curr_exp->exp, 0, total, hit );
+      ulid = 1;
+      combination_get_tree_stats( curr_exp->exp, &ulid, 0, total, hit );
     }
     curr_exp = curr_exp->next;
   }
@@ -417,7 +450,6 @@ void combination_draw_centered_line( char* line, int size, int exp_id, bool left
  \param lines            Stack of lines for left child.
  \param depth            Pointer to top of left child stack.
  \param size             Pointer to character width of this node.
- \param exp_id           Pointer to current expression ID to use in labeling.
  \param parent_op        Expression operation of parent used for calculating parenthesis.
  \param center           Specifies if expression IDs should be centered in underlines or at beginning.
  \param force_underline  Forces the current expression to be underlined.
@@ -425,7 +457,7 @@ void combination_draw_centered_line( char* line, int size, int exp_id, bool left
  Recursively parses specified expression tree, underlining and labeling each
  measurable expression.
 */
-void combination_underline_tree( expression* exp, unsigned int curr_depth, char*** lines, int* depth, int* size, int* exp_id, int parent_op, bool center, bool force_underline ) {
+void combination_underline_tree( expression* exp, unsigned int curr_depth, char*** lines, int* depth, int* size, int parent_op, bool center, bool force_underline ) {
 
   char** l_lines;       /* Pointer to left underline stack              */
   char** r_lines;       /* Pointer to right underline stack             */
@@ -503,8 +535,8 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
           need_to_force_l = TRUE;
         }
 
-        combination_underline_tree( exp->left,  combination_calc_depth( exp, curr_depth, TRUE ),  &l_lines, &l_depth, &l_size, exp_id, SUPPL_OP( exp->suppl ), center, need_to_force_l );
-        combination_underline_tree( exp->right, combination_calc_depth( exp, curr_depth, FALSE ), &r_lines, &r_depth, &r_size, exp_id, SUPPL_OP( exp->suppl ), center, need_to_force_r );
+        combination_underline_tree( exp->left,  combination_calc_depth( exp, curr_depth, TRUE ),  &l_lines, &l_depth, &l_size, SUPPL_OP( exp->suppl ), center, need_to_force_l );
+        combination_underline_tree( exp->right, combination_calc_depth( exp, curr_depth, FALSE ), &r_lines, &r_depth, &r_size, SUPPL_OP( exp->suppl ), center, need_to_force_r );
 
         if( parent_op == SUPPL_OP( exp->suppl ) ) {
 
@@ -683,12 +715,11 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
         /* Create underline or space */
         if( comb_missed == 1 ) {
           if( center ) {
-            combination_draw_centered_line( (*lines)[(*depth)-1], *size, *exp_id, TRUE, TRUE );
+            combination_draw_centered_line( (*lines)[(*depth)-1], *size, exp->ulid, TRUE, TRUE );
           } else {
-            combination_draw_line( (*lines)[(*depth)-1], *size, *exp_id );
+            combination_draw_line( (*lines)[(*depth)-1], *size, exp->ulid );
           }
           /* printf( "Drawing line (%s), size: %d, depth: %d\n", (*lines)[(*depth)-1], *size, (*depth) ); */
-          *exp_id = *exp_id + 1;
         }
 
         /* Combine the left and right line stacks */
@@ -870,16 +901,14 @@ void combination_underline( FILE* ofile, char** code, int code_depth, expression
   char** lines;    /* Pointer to a stack of lines     */
   int    depth;    /* Depth of underline stack        */
   int    size;     /* Width of stack in characters    */
-  int    exp_id;   /* Expression ID to place in label */
   int    i;        /* Loop iterator                   */
   int    j;        /* Loop iterator                   */
   char*  tmpstr;   /* Temporary string variable       */
   int    start;    /* Starting index                  */
 
-  exp_id = 1;
-  start  = 0;
+  start = 0;
 
-  combination_underline_tree( exp, 0, &lines, &depth, &size, &exp_id, SUPPL_OP( exp->suppl ), (code_depth == 1), FALSE );
+  combination_underline_tree( exp, 0, &lines, &depth, &size, SUPPL_OP( exp->suppl ), (code_depth == 1), FALSE );
 
   for( j=0; j<code_depth; j++ ) {
 
@@ -925,13 +954,12 @@ void combination_underline( FILE* ofile, char** code, int code_depth, expression
 /*!
  \param ofile  Pointer to file to output results to.
  \param exp    Pointer to expression to evaluate.
- \param id     ID of current expression.
  \param op     String showing current expression operation type.
 
  Displays the missed unary combination(s) that keep the combination coverage for
  the specified expression from achieving 100% coverage.
 */
-void combination_unary( FILE* ofile, expression* exp, int id, char* op ) {
+void combination_unary( FILE* ofile, expression* exp, char* op ) {
 
   int hit = 0;
 
@@ -940,7 +968,9 @@ void combination_unary( FILE* ofile, expression* exp, int id, char* op ) {
   /* Get hit information */
   hit = SUPPL_WAS_FALSE( exp->suppl ) + SUPPL_WAS_TRUE( exp->suppl );
 
-  fprintf( ofile, "Expression %d   (%d/2)\n", id, hit );
+  assert( exp->ulid != -1 );
+
+  fprintf( ofile, "Expression %d   (%d/2)\n", exp->ulid, hit );
   fprintf( ofile, "^^^^^^^^^^^^^ - %s\n", op );
   fprintf( ofile, " E | E\n" );
   fprintf( ofile, "=0=|=1=\n" );
@@ -953,13 +983,12 @@ void combination_unary( FILE* ofile, expression* exp, int id, char* op ) {
 /*!
  \param ofile  Pointer to file to output results to.
  \param exp    Pointer to expression to evaluate.
- \param id     ID of current expression.
  \param op     String showing current expression operation type.
 
  Displays the missed combinational sequences for the specified expression to the
  specified output stream in tabular form.
 */
-void combination_two_vars( FILE* ofile, expression* exp, int id, char* op ) {
+void combination_two_vars( FILE* ofile, expression* exp, char* op ) {
 
   int hit = 0;
 
@@ -977,7 +1006,9 @@ void combination_two_vars( FILE* ofile, expression* exp, int id, char* op ) {
         ((exp->suppl >> SUPPL_LSB_EVAL_10) & 0x1) +
         ((exp->suppl >> SUPPL_LSB_EVAL_11) & 0x1);
 
-  fprintf( ofile, "Expression %d   (%d/4)\n", id, hit );
+  assert( exp->ulid != -1 );
+
+  fprintf( ofile, "Expression %d   (%d/4)\n", exp->ulid, hit );
   fprintf( ofile, "^^^^^^^^^^^^^ - %s\n", op );
   fprintf( ofile, " LR | LR | LR | LR \n" );
   fprintf( ofile, "=00=|=01=|=10=|=11=\n" );
@@ -989,14 +1020,20 @@ void combination_two_vars( FILE* ofile, expression* exp, int id, char* op ) {
 
 }
 
-void combination_multi_var_exprs( char** line1, char** line2, char** line3, expression* exp, int id ) {
+/*!
+ \param line1  Pointer to first line of multi-variable expression output.
+ \param line2  Pointer to second line of multi-variable expression output.
+ \param line3  Pointer to third line of multi-variable expression output.
+ \param exp    Pointer to current expression to output.
+
+*/
+void combination_multi_var_exprs( char** line1, char** line2, char** line3, expression* exp ) {
 
   char* left_line1;
   char* left_line2;
   char* left_line3;
   char  curr_id_str[20];
   int   curr_id_str_len;
-  int   curr_id = id;
   int   i;
   bool  and_op;
 
@@ -1007,12 +1044,13 @@ void combination_multi_var_exprs( char** line1, char** line2, char** line3, expr
     /* If we have hit the left-most expression, start creating string here */
     if( (exp->left != NULL) && (SUPPL_OP( exp->suppl ) != SUPPL_OP( exp->left->suppl )) ) {
 
-      snprintf( curr_id_str, 20, "%d", (curr_id - 1) );
+      assert( exp->left->ulid != -1 );
+      snprintf( curr_id_str, 20, "%d", exp->left->ulid );
       curr_id_str_len = strlen( curr_id_str );
       left_line1 = (char*)malloc_safe( curr_id_str_len + 4 );
       left_line2 = (char*)malloc_safe( curr_id_str_len + 4 );
       left_line3 = (char*)malloc_safe( curr_id_str_len + 4 );
-      snprintf( left_line1, (curr_id_str_len + 4), " %d |", (curr_id - 1) );
+      snprintf( left_line1, (curr_id_str_len + 4), " %s |", curr_id_str );
       for( i=0; i<(curr_id_str_len-1); i++ ) {
         curr_id_str[i] = '=';
       }
@@ -1034,18 +1072,19 @@ void combination_multi_var_exprs( char** line1, char** line2, char** line3, expr
 
     } else {
 
-      combination_multi_var_exprs( &left_line1, &left_line2, &left_line3, exp->left, (id - 1) );
+      combination_multi_var_exprs( &left_line1, &left_line2, &left_line3, exp->left );
 
     }
 
     /* Take left side and merge it with right side */
     assert( left_line1 != NULL );
-    snprintf( curr_id_str, 20, "%d", curr_id );
+    assert( exp->right->ulid != -1 );
+    snprintf( curr_id_str, 20, "%d", exp->right->ulid );
     curr_id_str_len = strlen( curr_id_str );
     *line1 = (char*)malloc_safe( strlen( left_line1 ) + curr_id_str_len + 4 );
     *line2 = (char*)malloc_safe( strlen( left_line2 ) + curr_id_str_len + 4 );
     *line3 = (char*)malloc_safe( strlen( left_line3 ) + curr_id_str_len + 4 );
-    snprintf( *line1, (strlen( left_line1 ) + curr_id_str_len + 4), "%s %d |", left_line1, curr_id );
+    snprintf( *line1, (strlen( left_line1 ) + curr_id_str_len + 4), "%s %s |", left_line1, curr_id_str );
     for( i=0; i<(curr_id_str_len-1); i++ ) {
       curr_id_str[i] = '=';
     }
@@ -1096,6 +1135,12 @@ void combination_multi_var_exprs( char** line1, char** line2, char** line3, expr
 
 }
 
+/*!
+ \param ofile  Pointer to file to output report contents to.
+ \param line1  First line of multi-variable expression output.
+ \param line2  Second line of multi-variable expression output.
+ \param line3  Third line of multi-variable expression output.
+*/
 void combination_multi_expr_output( FILE* ofile, char* line1, char* line2, char* line3 ) {
 
   int start = 0;
@@ -1129,46 +1174,51 @@ void combination_multi_expr_output( FILE* ofile, char* line1, char* line2, char*
 /*!
  \param ofile  Pointer to file to output results to.
  \param exp    Pointer to top-level AND/OR expression to evaluate.
- \param id     ID of current expression.
 
  Displays the missed combinational sequences for the specified expression to the
  specified output stream in tabular form.
 */
-void combination_multi_vars( FILE* ofile, expression* exp, int id ) {
+void combination_multi_vars( FILE* ofile, expression* exp ) {
 
   expression* curr_exp;       /* Pointer to current expression */
   int         i;
   int         uniq_shift;
   int         eval_shift;
   int         eval_val;
+  int         ulid    = 1;
   float       total   = 0;
   int         hit     = 0;
   char*       line1   = NULL;
   char*       line2   = NULL;
   char*       line3   = NULL;
 
-  /* Gather report output for this expression */
-  combination_multi_var_exprs( &line1, &line2, &line3, exp, (id - 1) );
+  /* Only output this expression if we are missing coverage. */
+  if( exp->ulid != -1 ) {
 
-  /* Calculate hit and total values for this sub-expression */
-  combination_multi_expr_calc( exp, &hit, &total );
+    /* Gather report output for this expression */
+    combination_multi_var_exprs( &line1, &line2, &line3, exp );
 
-  fprintf( ofile, "Expression %d   (%d/%.0f)\n", id, hit, total );
+    /* Calculate hit and total values for this sub-expression */
+    combination_multi_expr_calc( exp, &ulid, &hit, &total );
 
-  switch( SUPPL_OP( exp->suppl ) ) {
-    case EXP_OP_AND  :  fprintf( ofile, "^^^^^^^^^^^^^ - &\n" );   break;
-    case EXP_OP_OR   :  fprintf( ofile, "^^^^^^^^^^^^^ - |\n" );   break;
-    case EXP_OP_LAND :  fprintf( ofile, "^^^^^^^^^^^^^ - &&\n" );  break;
-    case EXP_OP_LOR  :  fprintf( ofile, "^^^^^^^^^^^^^ - ||\n" );  break;
-    default          :  break;
+    fprintf( ofile, "Expression %d   (%d/%.0f)\n", exp->ulid, hit, total );
+
+    switch( SUPPL_OP( exp->suppl ) ) {
+      case EXP_OP_AND  :  fprintf( ofile, "^^^^^^^^^^^^^ - &\n" );   break;
+      case EXP_OP_OR   :  fprintf( ofile, "^^^^^^^^^^^^^ - |\n" );   break;
+      case EXP_OP_LAND :  fprintf( ofile, "^^^^^^^^^^^^^ - &&\n" );  break;
+      case EXP_OP_LOR  :  fprintf( ofile, "^^^^^^^^^^^^^ - ||\n" );  break;
+      default          :  break;
+    }
+
+    /* Output the lines paying attention to the current line width */
+    combination_multi_expr_output( ofile, line1, line2, line3 );
+
+    free_safe( line1 );
+    free_safe( line2 );
+    free_safe( line3 );
+
   }
-
-  /* Output the lines paying attention to the current line width */
-  combination_multi_expr_output( ofile, line1, line2, line3 );
-
-  free_safe( line1 );
-  free_safe( line2 );
-  free_safe( line3 );
 
 }
 
@@ -1176,36 +1226,18 @@ void combination_multi_vars( FILE* ofile, expression* exp, int id ) {
  \param ofile       Pointer to file to output results to.
  \param exp         Pointer to expression tree to evaluate.
  \param curr_depth  Specifies current depth of expression tree.
- \param exp_id      Pointer to current expression ID to use.
- \param adv_id      If TRUE, causes expression ID to increment by one (for forced underlines).
 
  Describe which combinations were not hit for all subexpressions in the
  specified expression tree.  We display the value of missed combinations by
  displaying the combinations of the children expressions that were not run
  during simulation.
 */
-void combination_list_missed( FILE* ofile, expression* exp, unsigned int curr_depth, int* exp_id, bool adv_id ) {
-
-  bool need_to_adv_r = FALSE;
-  bool need_to_adv_l = FALSE;
+void combination_list_missed( FILE* ofile, expression* exp, unsigned int curr_depth ) {
 
   if( exp != NULL ) {
     
-    if( ((exp->left != NULL) && (SUPPL_OP( exp->suppl ) == SUPPL_OP( exp->left->suppl )) ||
-          (SUPPL_IS_ROOT( exp->suppl ) == 0) && (SUPPL_OP( exp->suppl ) == SUPPL_OP( exp->parent->expr->suppl ))) &&
-            ((SUPPL_OP( exp->suppl ) == EXP_OP_AND)  ||
-             (SUPPL_OP( exp->suppl ) == EXP_OP_OR)   ||
-             (SUPPL_OP( exp->suppl ) == EXP_OP_LAND) ||
-             (SUPPL_OP( exp->suppl ) == EXP_OP_LOR)) ) {
-      need_to_adv_r = TRUE;
-    }
-
-    if( need_to_adv_r && (exp->left != NULL) && (SUPPL_OP( exp->suppl ) != SUPPL_OP( exp->left->suppl )) ) {
-      need_to_adv_l = TRUE;
-    }
-
-    combination_list_missed( ofile, exp->left,  combination_calc_depth( exp, curr_depth, TRUE ),  exp_id, need_to_adv_l );
-    combination_list_missed( ofile, exp->right, combination_calc_depth( exp, curr_depth, FALSE ), exp_id, need_to_adv_r );
+    combination_list_missed( ofile, exp->left,  combination_calc_depth( exp, curr_depth, TRUE ) );
+    combination_list_missed( ofile, exp->right, combination_calc_depth( exp, curr_depth, FALSE ) );
 
     if( (EXPR_COMB_MISSED( exp ) == 1) && 
         (((report_comb_depth == REPORT_DETAILED) && (curr_depth <= report_comb_depth)) ||
@@ -1223,70 +1255,62 @@ void combination_list_missed( FILE* ofile, expression* exp, unsigned int curr_de
              (SUPPL_OP( exp->suppl ) == EXP_OP_LAND) ||
              (SUPPL_OP( exp->suppl ) == EXP_OP_LOR)) ) {
 
-          combination_multi_vars( ofile, exp, *exp_id );
+          combination_multi_vars( ofile, exp );
 
         } else {
 
           /* Create combination table */
           switch( SUPPL_OP( exp->suppl ) ) {
-            case EXP_OP_SIG        :  combination_unary( ofile, exp, *exp_id, "" );         break;
-            case EXP_OP_XOR        :  combination_two_vars( ofile, exp, *exp_id, "^" );     break;
-            case EXP_OP_ADD        :  combination_two_vars( ofile, exp, *exp_id, "+" );     break;
-            case EXP_OP_SUBTRACT   :  combination_two_vars( ofile, exp, *exp_id, "-" );     break;
-            case EXP_OP_MULTIPLY   :  combination_unary( ofile, exp, *exp_id, "*" );        break;
-            case EXP_OP_DIVIDE     :  combination_unary( ofile, exp, *exp_id, "/" );        break;
-            case EXP_OP_MOD        :  combination_unary( ofile, exp, *exp_id, "%%" );       break;
-            case EXP_OP_AND        :  combination_two_vars( ofile, exp, *exp_id, "&" );     break;
-            case EXP_OP_OR         :  combination_two_vars( ofile, exp, *exp_id, "|" );     break;
-            case EXP_OP_NAND       :  combination_two_vars( ofile, exp, *exp_id, "~&" );    break;
-            case EXP_OP_NOR        :  combination_two_vars( ofile, exp, *exp_id, "~|" );    break;
-            case EXP_OP_NXOR       :  combination_two_vars( ofile, exp, *exp_id, "~^" );    break;
-            case EXP_OP_LT         :  combination_unary( ofile, exp, *exp_id, "<" );        break;
-            case EXP_OP_GT         :  combination_unary( ofile, exp, *exp_id, ">" );        break;
-            case EXP_OP_LSHIFT     :  combination_unary( ofile, exp, *exp_id, "<<" );       break;
-            case EXP_OP_RSHIFT     :  combination_unary( ofile, exp, *exp_id, ">>" );       break;
-            case EXP_OP_EQ         :  combination_unary( ofile, exp, *exp_id, "==" );       break;
-            case EXP_OP_CEQ        :  combination_unary( ofile, exp, *exp_id, "===" );      break;
-            case EXP_OP_LE         :  combination_unary( ofile, exp, *exp_id, "<=" );       break;
-            case EXP_OP_GE         :  combination_unary( ofile, exp, *exp_id, ">=" );       break;
-            case EXP_OP_NE         :  combination_unary( ofile, exp, *exp_id, "!=" );       break;
-            case EXP_OP_CNE        :  combination_unary( ofile, exp, *exp_id, "!==" );      break;
-            case EXP_OP_COND       :  combination_unary( ofile, exp, *exp_id, "?:" );       break;
-            case EXP_OP_LOR        :  combination_two_vars( ofile, exp, *exp_id, "||" );    break;
-            case EXP_OP_LAND       :  combination_two_vars( ofile, exp, *exp_id, "&&" );    break;
-            case EXP_OP_UINV       :  combination_unary( ofile, exp, *exp_id, "~" );        break;
-            case EXP_OP_UAND       :  combination_unary( ofile, exp, *exp_id, "&" );        break;
-            case EXP_OP_UNOT       :  combination_unary( ofile, exp, *exp_id, "!" );        break;
-            case EXP_OP_UOR        :  combination_unary( ofile, exp, *exp_id, "|" );        break;
-            case EXP_OP_UXOR       :  combination_unary( ofile, exp, *exp_id, "^" );        break;
-            case EXP_OP_UNAND      :  combination_unary( ofile, exp, *exp_id, "~&" );       break;
-            case EXP_OP_UNOR       :  combination_unary( ofile, exp, *exp_id, "~|" );       break;
-            case EXP_OP_UNXOR      :  combination_unary( ofile, exp, *exp_id, "~^" );       break;
+            case EXP_OP_SIG        :  combination_unary( ofile, exp, "" );         break;
+            case EXP_OP_XOR        :  combination_two_vars( ofile, exp, "^" );     break;
+            case EXP_OP_ADD        :  combination_two_vars( ofile, exp, "+" );     break;
+            case EXP_OP_SUBTRACT   :  combination_two_vars( ofile, exp, "-" );     break;
+            case EXP_OP_MULTIPLY   :  combination_unary( ofile, exp, "*" );        break;
+            case EXP_OP_DIVIDE     :  combination_unary( ofile, exp, "/" );        break;
+            case EXP_OP_MOD        :  combination_unary( ofile, exp, "%%" );       break;
+            case EXP_OP_AND        :  combination_two_vars( ofile, exp, "&" );     break;
+            case EXP_OP_OR         :  combination_two_vars( ofile, exp, "|" );     break;
+            case EXP_OP_NAND       :  combination_two_vars( ofile, exp, "~&" );    break;
+            case EXP_OP_NOR        :  combination_two_vars( ofile, exp, "~|" );    break;
+            case EXP_OP_NXOR       :  combination_two_vars( ofile, exp, "~^" );    break;
+            case EXP_OP_LT         :  combination_unary( ofile, exp, "<" );        break;
+            case EXP_OP_GT         :  combination_unary( ofile, exp, ">" );        break;
+            case EXP_OP_LSHIFT     :  combination_unary( ofile, exp, "<<" );       break;
+            case EXP_OP_RSHIFT     :  combination_unary( ofile, exp, ">>" );       break;
+            case EXP_OP_EQ         :  combination_unary( ofile, exp, "==" );       break;
+            case EXP_OP_CEQ        :  combination_unary( ofile, exp, "===" );      break;
+            case EXP_OP_LE         :  combination_unary( ofile, exp, "<=" );       break;
+            case EXP_OP_GE         :  combination_unary( ofile, exp, ">=" );       break;
+            case EXP_OP_NE         :  combination_unary( ofile, exp, "!=" );       break;
+            case EXP_OP_CNE        :  combination_unary( ofile, exp, "!==" );      break;
+            case EXP_OP_COND       :  combination_unary( ofile, exp, "?:" );       break;
+            case EXP_OP_LOR        :  combination_two_vars( ofile, exp, "||" );    break;
+            case EXP_OP_LAND       :  combination_two_vars( ofile, exp, "&&" );    break;
+            case EXP_OP_UINV       :  combination_unary( ofile, exp, "~" );        break;
+            case EXP_OP_UAND       :  combination_unary( ofile, exp, "&" );        break;
+            case EXP_OP_UNOT       :  combination_unary( ofile, exp, "!" );        break;
+            case EXP_OP_UOR        :  combination_unary( ofile, exp, "|" );        break;
+            case EXP_OP_UXOR       :  combination_unary( ofile, exp, "^" );        break;
+            case EXP_OP_UNAND      :  combination_unary( ofile, exp, "~&" );       break;
+            case EXP_OP_UNOR       :  combination_unary( ofile, exp, "~|" );       break;
+            case EXP_OP_UNXOR      :  combination_unary( ofile, exp, "~^" );       break;
             case EXP_OP_PARAM_SBIT :
-            case EXP_OP_SBIT_SEL   :  combination_unary( ofile, exp, *exp_id, "[]" );       break;
+            case EXP_OP_SBIT_SEL   :  combination_unary( ofile, exp, "[]" );       break;
             case EXP_OP_PARAM_MBIT :
-            case EXP_OP_MBIT_SEL   :  combination_unary( ofile, exp, *exp_id, "[:]" );      break;
-            case EXP_OP_EXPAND     :  combination_unary( ofile, exp, *exp_id, "{{}}" );     break;
-            case EXP_OP_CONCAT     :  combination_unary( ofile, exp, *exp_id, "{}" );       break;
-            case EXP_OP_CASE       :  combination_unary( ofile, exp, *exp_id, "" );         break;
-            case EXP_OP_CASEX      :  combination_unary( ofile, exp, *exp_id, "" );         break;
-            case EXP_OP_CASEZ      :  combination_unary( ofile, exp, *exp_id, "" );         break;        
-            case EXP_OP_PEDGE      :  combination_unary( ofile, exp, *exp_id, "posedge" );  break;
-            case EXP_OP_NEDGE      :  combination_unary( ofile, exp, *exp_id, "negedge" );  break;
-            case EXP_OP_AEDGE      :  combination_unary( ofile, exp, *exp_id, "" );         break;
+            case EXP_OP_MBIT_SEL   :  combination_unary( ofile, exp, "[:]" );      break;
+            case EXP_OP_EXPAND     :  combination_unary( ofile, exp, "{{}}" );     break;
+            case EXP_OP_CONCAT     :  combination_unary( ofile, exp, "{}" );       break;
+            case EXP_OP_CASE       :  combination_unary( ofile, exp, "" );         break;
+            case EXP_OP_CASEX      :  combination_unary( ofile, exp, "" );         break;
+            case EXP_OP_CASEZ      :  combination_unary( ofile, exp, "" );         break;        
+            case EXP_OP_PEDGE      :  combination_unary( ofile, exp, "posedge" );  break;
+            case EXP_OP_NEDGE      :  combination_unary( ofile, exp, "negedge" );  break;
+            case EXP_OP_AEDGE      :  combination_unary( ofile, exp, "" );         break;
             default                :  break;
           }
       
         }
 
-        *exp_id = *exp_id + 1;
-      
-      }
-
-    } else {
- 
-      if( adv_id ) {
-        *exp_id = *exp_id + 1;
       }
 
     }
@@ -1353,7 +1377,6 @@ void combination_display_verbose( FILE* ofile, stmt_link* stmtl ) {
   expression* unexec_exp;    /* Pointer to current unexecuted expression           */
   char**      code;          /* Code string from code generator                    */
   int         code_depth;    /* Depth of code array                                */
-  int         exp_id;        /* Current expression ID of missed expression         */
   int         i;             /* Loop iterator                                      */
 
   if( report_covered ) {
@@ -1372,7 +1395,6 @@ void combination_display_verbose( FILE* ofile, stmt_link* stmtl ) {
 
       stmti.curr->stmt->exp->suppl = stmti.curr->stmt->exp->suppl & ~(0x1 << SUPPL_LSB_COMB_CNTD);
       unexec_exp = stmti.curr->stmt->exp;
-      exp_id     = 1;
 
       fprintf( ofile, "====================================================\n" );
       fprintf( ofile, " Line #     Expression\n" );
@@ -1386,7 +1408,7 @@ void combination_display_verbose( FILE* ofile, stmt_link* stmtl ) {
       fprintf( ofile, "\n\n" );
 
       /* Output logical combinations that missed complete coverage */
-      combination_list_missed( ofile, unexec_exp, 0, &exp_id, FALSE );
+      combination_list_missed( ofile, unexec_exp, 0 );
 
     }
     
@@ -1522,6 +1544,14 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.82  2004/01/25 03:41:48  phase1geo
+ Fixes bugs in summary information not matching verbose information.  Also fixes
+ bugs where instances were output when no logic was missing, where instance
+ children were missing but not output.  Changed code to output summary
+ information on a per instance basis (where children instances are not merged
+ into parent instance summary information).  Updated regressions as a result.
+ Updates to user documentation (though this is not complete at this time).
+
  Revision 1.81  2004/01/23 14:36:26  phase1geo
  Fixing output of instance line, toggle, comb and fsm to only output module
  name if logic is detected missing in that instance.  Full regression fails
