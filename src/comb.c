@@ -1347,40 +1347,26 @@ void combination_list_missed( FILE* ofile, expression* exp, unsigned int curr_de
  if an expression is found that has not received 100% coverage for
  combinational logic.
 */
-bool combination_output_expr( expression* expr, unsigned int curr_depth ) {
-
-  bool output_right;  /* Set to TRUE if right expression should be output */
-  bool output_left;   /* Set to TRUE if left expression should be output  */
+bool combination_output_expr( expression* expr, unsigned int curr_depth, int* any_missed, int* any_measurable ) {
 
   if( (expr != NULL) && (SUPPL_WAS_COMB_COUNTED( expr->suppl ) == 1) ) {
 
     expr->suppl  = expr->suppl & ~(0x1 << SUPPL_LSB_COMB_CNTD);
 
-    output_right = combination_output_expr( expr->right, combination_calc_depth( expr, curr_depth, FALSE ) );
-    output_left  = combination_output_expr( expr->left,  combination_calc_depth( expr, curr_depth, TRUE ) );
+    combination_output_expr( expr->right, combination_calc_depth( expr, curr_depth, FALSE ), any_missed, any_measurable );
+    combination_output_expr( expr->left,  combination_calc_depth( expr, curr_depth, TRUE ),  any_missed, any_measurable );
 
     if( ((report_comb_depth == REPORT_DETAILED) && (curr_depth <= report_comb_depth)) ||
          (report_comb_depth == REPORT_VERBOSE) ) {
-
-      if( report_covered ) {
-        return( (EXPR_IS_MEASURABLE( expr ) == 1) && output_right && output_left );
-      } else {
-        return( (expr->ulid != -1) || output_right || output_left );
+ 
+      if( expr->ulid != -1 ) {
+        *any_missed = 1;
       }
-
-    } else {
-
-      if( report_covered ) {
-        return( output_right && output_left );
-      } else {
-        return( output_right || output_left );
+      if( EXPR_IS_MEASURABLE( expr ) == 1 ) {
+        *any_measurable = 1;
       }
 
     }
-
-  } else {
-
-    return( FALSE );
 
   }
 
@@ -1404,6 +1390,8 @@ void combination_display_verbose( FILE* ofile, stmt_link* stmtl ) {
   expression* unexec_exp;    /* Pointer to current unexecuted expression */
   char**      code;          /* Code string from code generator          */
   int         code_depth;    /* Depth of code array                      */
+  int         any_missed     = 0;
+  int         any_measurable = 0;
 
   if( report_covered ) {
     fprintf( ofile, "    Hit Combinations\n\n" );
@@ -1417,8 +1405,11 @@ void combination_display_verbose( FILE* ofile, stmt_link* stmtl ) {
 
   while( stmti.curr != NULL ) {
 
-    if( combination_output_expr( stmti.curr->stmt->exp, 0 ) ) {
+    combination_output_expr( stmti.curr->stmt->exp, 0, &any_missed, &any_measurable );
 
+    if( ((report_covered == 0) && (any_missed == 1)) ||
+        ((report_covered == 1) && (any_missed == 0) && (any_measurable == 1)) ) {
+ 
       stmti.curr->stmt->exp->suppl = stmti.curr->stmt->exp->suppl & ~(0x1 << SUPPL_LSB_COMB_CNTD);
       unexec_exp = stmti.curr->stmt->exp;
 
@@ -1576,6 +1567,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.94  2004/03/18 04:43:23  phase1geo
+ Cleaning up verbose output.  The last modification still isn't working
+ exactly as hoped; more work to do here.
+
  Revision 1.93  2004/03/17 23:04:08  phase1geo
  Attempting to fix output problem when -c option is specified for expressions
  that contain non-measurable subexpressions.
