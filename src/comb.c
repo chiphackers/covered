@@ -11,6 +11,7 @@
 #include "comb.h"
 #include "codegen.h"
 #include "util.h"
+#include "vector.h"
 
 
 extern mod_inst* instance_root;
@@ -196,7 +197,8 @@ void combination_underline_tree( expression* exp, char*** lines, int* depth, int
   int    r_size;        /* Number of characters for right expression    */
   int    i;             /* Loop iterator                                */
   char   exp_sp[256];   /* Space to take place of missing expression(s) */
-  char   code_fmt[12];  /* Contains format string for rest of stack     */
+  char   code_fmt[20];  /* Contains format string for rest of stack     */
+  char*  tmpstr;        /* Temporary string value                       */
   
   *depth  = 0;
   *size   = 0;
@@ -211,8 +213,22 @@ void combination_underline_tree( expression* exp, char*** lines, int* depth, int
 
     } else if( SUPPL_OP( exp->suppl ) == EXP_OP_NONE ) {
       
-      snprintf( code_fmt, 12, "%d", exp->value->width );
+      if( (SUPPL_IS_ROOT( exp->suppl ) == 0) &&
+          (exp->parent->expr != NULL) &&
+          ((SUPPL_OP( exp->parent->expr->suppl ) == EXP_OP_SBIT_SEL) ||
+           (SUPPL_OP( exp->parent->expr->suppl ) == EXP_OP_MBIT_SEL)) ) {
+        snprintf( code_fmt, 20, "%d", vector_to_int( exp->value ) );
+        *size = strlen( code_fmt ) + strlen( exp->parent->expr->sig->name );
+      } else {
+        tmpstr = vector_to_string( exp->value, HEXIDECIMAL );
+        *size = strlen( tmpstr );
+        free_safe( tmpstr );
+      }
+
+/*
+      snprintf( code_fmt, 20, "%d", exp->value->width );
       *size = strlen( code_fmt ) + VECTOR_SIZE( exp->value->width ) + 2;
+*/
 
     } else {
 
@@ -710,6 +726,11 @@ void combination_report( FILE* ofile, bool verbose, bool instance ) {
 
 
 /* $Log$
+/* Revision 1.26  2002/07/09 03:24:48  phase1geo
+/* Various fixes for module instantiantion handling.  This now works.  Also
+/* modified report output for toggle, line and combinational information.
+/* Regression passes.
+/*
 /* Revision 1.25  2002/07/05 05:01:51  phase1geo
 /* Removing unecessary debugging output.
 /*

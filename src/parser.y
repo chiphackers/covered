@@ -1307,7 +1307,11 @@ statement
                   if( ignore_mode == 0 ) {
                     c_expr->suppl = c_expr->suppl | (0x1 << SUPPL_LSB_ROOT);
                     while( c_stmt != NULL ) {
-                      expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASE, c_stmt->line, NULL );
+                      if( c_stmt->expr != NULL ) {
+                        expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASE, c_stmt->line, NULL );
+                      } else {
+                        expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, c_stmt->line, NULL );
+                      }
                       db_add_expression( expr );
                       stmt = db_create_statement( expr );
                       db_connect_statement_true( stmt, c_stmt->stmt );
@@ -1336,7 +1340,11 @@ statement
                   if( ignore_mode == 0 ) {
                     c_expr->suppl = c_expr->suppl | (0x1 << SUPPL_LSB_ROOT);
                     while( c_stmt != NULL ) {
-                      expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASEX, c_stmt->line, NULL );
+                      if( c_stmt->expr != NULL ) {
+                        expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASEX, c_stmt->line, NULL );
+                      } else {
+                        expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, c_stmt->line, NULL );
+                      }
                       db_add_expression( expr );
                       stmt = db_create_statement( expr );
                       db_connect_statement_true( stmt, c_stmt->stmt );
@@ -1365,7 +1373,11 @@ statement
                   if( ignore_mode == 0 ) {
                     c_expr->suppl = c_expr->suppl | (0x1 << SUPPL_LSB_ROOT);
                     while( c_stmt != NULL ) {
-                      expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASEZ, c_stmt->line, NULL );
+                      if( c_stmt->expr != NULL ) {
+                        expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASEZ, c_stmt->line, NULL );
+                      } else {
+                        expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, c_stmt->line, NULL );
+                      }
                       db_add_expression( expr );
                       stmt = db_create_statement( expr );
                       db_connect_statement_true( stmt, c_stmt->stmt );

@@ -665,34 +665,30 @@ void vector_set_static( vector* vec, char* str, int bits_per_char ) {
 */
 char* vector_to_string( vector* vec, int type ) {
 
-  char*  str = NULL;  /* Pointer to allocated string                         */
-  char*  tmp;         /* Pointer to temporary string value                   */
-  int    i;           /* Loop iterator                                       */
-  int    str_size;    /* Number of characters the vector is in string format */
-  int    vec_size;    /* Number of characters needed to hold vector value    */
-  int    group;       /* Number of vector bits to group together for type    */
-  char   type_char;   /* Character type specifier                            */
-  int    pos;         /* Current bit position in string                      */
-  nibble value;       /* Current value of string character                   */
-
-  // vector_display( vec );
+  char*  str = NULL;     /* Pointer to allocated string                          */
+  char*  tmp;            /* Pointer to temporary string value                    */
+  int    i;              /* Loop iterator                                        */
+  int    str_size;       /* Number of characters needed to hold vector string    */
+  int    vec_size;       /* Number of characters needed to hold vector value     */
+  int    group;          /* Number of vector bits to group together for type     */
+  char   type_char;      /* Character type specifier                             */
+  int    pos;            /* Current bit position in string                       */
+  nibble value;          /* Current value of string character                    */
+  char   width_str[20];  /* Holds value of width string to calculate string size */
 
   switch( type ) {
     case BINARY :  
-      str_size  = (vec->width + 13);
       vec_size  = (vec->width + 1);
       group     = 1;
       type_char = 'b';
       break;
     case OCTAL :  
-      str_size  = (vec->width / 3) + 14;
       vec_size  = ((vec->width % 3) == 0) ? ((vec->width / 3) + 1)
                                           : ((vec->width / 3) + 2);
       group     = 3;
       type_char = 'o';
       break;
     case HEXIDECIMAL :  
-      str_size  = (vec->width / 4) + 14;
       vec_size  = ((vec->width % 4) == 0) ? ((vec->width / 4) + 1)
                                           : ((vec->width / 4) + 2);
       group     = 4;
@@ -704,14 +700,11 @@ char* vector_to_string( vector* vec, int type ) {
       break;
   }
 
-  str   = (char*)malloc_safe( str_size );
   tmp   = (char*)malloc_safe( vec_size );
   value = 0;
-  pos   = vec_size - 2;
+  pos   = 0;
 
-  tmp[vec_size-1] = '\0';
-
-  for( i=0; i<vec->width; i++ ) {
+  for( i=(vec->width - 1); i>=0; i-- ) {
     switch( vector_bit_val( vec->value, i ) ) {
       case 0 :  value = value;                                              break;
       case 1 :  value = (value < 16) ? ((1 << (i%group)) | value) : value;  break;
@@ -719,37 +712,41 @@ char* vector_to_string( vector* vec, int type ) {
       case 3 :  value = 17;                                                 break;
       default:  break;
     }
-    assert( pos >= 0 );
-    if( (((i + 1) % group) == 0) || (((i + 1) == vec->width) && (pos == 0)) ) {
+    assert( pos < vec_size );
+    if( (i % group) == 0 ) {
       switch( value ) {
-        case 0x0 :  tmp[pos] = '0';  break;
-        case 0x1 :  tmp[pos] = '1';  break;
-        case 0x2 :  tmp[pos] = '2';  break;
-        case 0x3 :  tmp[pos] = '3';  break;
-        case 0x4 :  tmp[pos] = '4';  break;
-        case 0x5 :  tmp[pos] = '5';  break;
-        case 0x6 :  tmp[pos] = '6';  break;
-        case 0x7 :  tmp[pos] = '7';  break;
-        case 0x8 :  tmp[pos] = '8';  break;
-        case 0x9 :  tmp[pos] = '9';  break;
-        case 0xa :  tmp[pos] = 'A';  break;
-        case 0xb :  tmp[pos] = 'B';  break;
-        case 0xc :  tmp[pos] = 'C';  break;
-        case 0xd :  tmp[pos] = 'D';  break;
-        case 0xe :  tmp[pos] = 'E';  break;
-        case 0xf :  tmp[pos] = 'F';  break;
-        case 16  :  tmp[pos] = 'X';  break;
-        case 17  :  tmp[pos] = 'Z';  break;
+        case 0x0 :  if( (pos > 0) || (i == 0) ) { tmp[pos] = '0';  pos++; }  break;
+        case 0x1 :  tmp[pos] = '1';  pos++;  break;
+        case 0x2 :  tmp[pos] = '2';  pos++;  break;
+        case 0x3 :  tmp[pos] = '3';  pos++;  break;
+        case 0x4 :  tmp[pos] = '4';  pos++;  break;
+        case 0x5 :  tmp[pos] = '5';  pos++;  break;
+        case 0x6 :  tmp[pos] = '6';  pos++;  break;
+        case 0x7 :  tmp[pos] = '7';  pos++;  break;
+        case 0x8 :  tmp[pos] = '8';  pos++;  break;
+        case 0x9 :  tmp[pos] = '9';  pos++;  break;
+        case 0xa :  tmp[pos] = 'A';  pos++;  break;
+        case 0xb :  tmp[pos] = 'B';  pos++;  break;
+        case 0xc :  tmp[pos] = 'C';  pos++;  break;
+        case 0xd :  tmp[pos] = 'D';  pos++;  break;
+        case 0xe :  tmp[pos] = 'E';  pos++;  break;
+        case 0xf :  tmp[pos] = 'F';  pos++;  break;
+        case 16  :  tmp[pos] = 'X';  pos++;  break;
+        case 17  :  tmp[pos] = 'Z';  pos++;  break;
         default  :  
           print_output( "Internal Error:  Value in vector_to_string exceeds allowed limit\n", FATAL );
           exit( 1 );
           break;
       }
-      pos--;
       value = 0;
     }
   }
 
+  tmp[pos] = '\0';
+
+  snprintf( width_str, 20, "%d", vec->width );
+  str_size = strlen( width_str ) + 2 + strlen( tmp ) + 1;
+  str      = (char*)malloc_safe( str_size );
   snprintf( str, str_size, "%d'%c%s", vec->width, type_char, tmp );
 
   free_safe( tmp );
@@ -1340,6 +1337,14 @@ void vector_dealloc( vector* vec ) {
 }
 
 /* $Log$
+/* Revision 1.9  2002/07/05 16:49:47  phase1geo
+/* Modified a lot of code this go around.  Fixed VCD reader to handle changes in
+/* the reverse order (last changes are stored instead of first for timestamp).
+/* Fixed problem with AEDGE operator to handle vector value changes correctly.
+/* Added casez2.v diagnostic to verify proper handling of casez with '?' characters.
+/* Full regression passes; however, the recent changes seem to have impacted
+/* performance -- need to look into this.
+/*
 /* Revision 1.8  2002/07/05 04:35:53  phase1geo
 /* Adding fixes for casex and casez for proper equality calculations.  casex has
 /* now been tested and added to regression suite.  Full regression passes.

@@ -121,7 +121,8 @@ expression* expression_create( expression* right, expression* left, int op, int 
              (op == EXP_OP_EOR)   ||
              (op == EXP_OP_CASE)  ||
              (op == EXP_OP_CASEX) ||
-             (op == EXP_OP_CASEZ) ) {
+             (op == EXP_OP_CASEZ) ||
+             (op == EXP_OP_DEFAULT) ) {
 
     /* If this expression will evaluate to a single bit, create vector now */
     expression_create_value( new_expr, 1, 0 );
@@ -712,6 +713,11 @@ void expression_operate( expression* expr ) {
         vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CZEQ );
         break;
 
+      case EXP_OP_DEFAULT :
+        bit = 1;
+        vector_set_value( expr->value, &bit, 1, 0, 0 );
+        break;
+
       default :
         print_output( "Internal error:  Unidentified expression operation!", FATAL );
         exit( 1 );
@@ -799,6 +805,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.35  2002/07/09 04:46:26  phase1geo
+/* Adding -D and -Q options to covered for outputting debug information or
+/* suppressing normal output entirely.  Updated generated documentation and
+/* modified Verilog diagnostic Makefile to use these new options.
+/*
 /* Revision 1.34  2002/07/09 03:24:48  phase1geo
 /* Various fixes for module instantiantion handling.  This now works.  Also
 /* modified report output for toggle, line and combinational information.

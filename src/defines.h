@@ -429,6 +429,7 @@
 #define EXP_OP_CASE     0x2d    /*!< 45 case equality expression      */
 #define EXP_OP_CASEX    0x2e    /*!< 46 casex equality expression     */
 #define EXP_OP_CASEZ    0x2f    /*!< 47 casez equality expression     */
+#define EXP_OP_DEFAULT  0x30    /*!< 48 case default expression       */
 
 /*! @} */
 
@@ -832,6 +833,11 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.28  2002/07/09 04:46:26  phase1geo
+/* Adding -D and -Q options to covered for outputting debug information or
+/* suppressing normal output entirely.  Updated generated documentation and
+/* modified Verilog diagnostic Makefile to use these new options.
+/*
 /* Revision 1.27  2002/07/05 16:49:47  phase1geo
 /* Modified a lot of code this go around.  Fixed VCD reader to handle changes in
 /* the reverse order (last changes are stored instead of first for timestamp).
