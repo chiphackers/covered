@@ -249,6 +249,7 @@ void instance_calc_params( mod_inst* inst ) {
 
 }
 
+#ifdef DEPRECATED
 /*!
  \param inst  Pointer to instance to generate parameters for.
 
@@ -290,6 +291,7 @@ void instance_param_destroy( mod_inst* inst ) {
   }
 
 }
+#endif
 
 /*!
  \param root        Root of module instance tree to write.
@@ -309,18 +311,22 @@ void instance_db_write( mod_inst* root, FILE* file, char* scope, bool parse_mode
 
   assert( scope != NULL );
 
+#ifdef DEPRECATED
   /* Handle parameters at this time */
   if( parse_mode ) {
     instance_calc_params( root );
     instance_param_generate( root );
   }
+#endif
 
   /* Display root module */
   module_db_write( root->mod, scope, file );
 
+#ifdef DEPRECATED
   if( parse_mode ) {
     instance_param_destroy( root );
   }
+#endif
 
   /* Display children */
   curr = root->child_head;
@@ -433,6 +439,11 @@ void instance_dealloc( mod_inst* root, char* scope ) {
 }
 
 /* $Log$
+/* Revision 1.12  2002/09/19 05:25:19  phase1geo
+/* Fixing incorrect simulation of static values and fixing reports generated
+/* from these static expressions.  Also includes some modifications for parameters
+/* though these changes are not useful at this point.
+/*
 /* Revision 1.11  2002/09/06 03:05:28  phase1geo
 /* Some ideas about handling parameters have been added to these files.  Added
 /* "Special Thanks" section in User's Guide for acknowledgements to people

@@ -270,7 +270,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
       } else {
         *ptr = '\0';
         ptr++;
-        // param_add_defparam( argv[i], vector_from_string( ptr ) );
+        defparam_add( argv[i], vector_from_string( ptr ) );
       }
         
     } else {
@@ -350,6 +350,11 @@ int command_score( int argc, int last_arg, char** argv ) {
 }
 
 /* $Log$
+/* Revision 1.21  2002/09/19 05:25:19  phase1geo
+/* Fixing incorrect simulation of static values and fixing reports generated
+/* from these static expressions.  Also includes some modifications for parameters
+/* though these changes are not useful at this point.
+/*
 /* Revision 1.20  2002/08/26 21:31:22  phase1geo
 /* Updating score help output to reflect previous changes to score command.
 /*

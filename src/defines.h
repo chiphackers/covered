@@ -407,6 +407,47 @@
 /*! @} */
 
 /*!
+ \addtogroup param_suppl Instance/module parameter supplemental field definitions.
+
+ @{
+*/
+
+/*!
+ Specifies the least significant bit of the parameter order for current parameter
+ in module.
+*/
+#define PARAM_LSB_ORDER                 0
+
+/*!
+ Specifies the least significant bit of the parameter type (declared/override).
+*/
+#define PARAM_LSB_TYPE                  16
+
+/*!
+ Specifies that the current module parameter is a declared type (belongs to current 
+ module).
+*/
+#define PARAM_TYPE_DECLARED             0
+
+/*!
+ Specifies that the current module parameter is an override type (overrides the value
+ of an instantiated modules parameter declaration).
+*/
+#define PARAM_TYPE_OVERRIDE             1
+
+/*!
+ Returns the order for the specified modparm type.
+*/
+#define PARAM_ORDER(x)                  ((x->suppl >> PARAM_LSB_ORDER) & 0xffff)
+
+/*!
+ Returns the type (declared/override) of the specified modparm type.
+*/
+#define PARAM_TYPE(x)                   ((x->suppl >> PARAM_LSB_TYPE) & 0x1)
+
+/*! @} */
+
+/*!
  \addtogroup expr_ops Expression operations
 
  The following defines are used for identifying expression operations.
@@ -414,57 +455,59 @@
  @{
 */
 
-#define EXP_OP_STATIC   0x0     /*!<  0 Specifies constant value */
-#define EXP_OP_SIG	0x1	/*!<  1 Specifes that this expression contains signal value    */
-#define EXP_OP_XOR	0x2	/*!<  2 '^'   operator */
-#define EXP_OP_MULTIPLY	0x3    	/*!<  3 '*'   operator */
-#define EXP_OP_DIVIDE	0x4	/*!<  4 '/'   operator */
-#define EXP_OP_MOD	0x5	/*!<  5 '%'   operator */
-#define EXP_OP_ADD	0x6	/*!<  6 '+'   operator */
-#define EXP_OP_SUBTRACT	0x7	/*!<  7 '-'   operator */
-#define EXP_OP_AND	0x8	/*!<  8 '&'   operator */
-#define EXP_OP_OR	0x9	/*!<  9 '|'   operator */
-#define EXP_OP_NAND     0xa     /*!< 10 '~&'  operator */
-#define EXP_OP_NOR	0xb	/*!< 11 '~|'  operator */
-#define EXP_OP_NXOR	0xc	/*!< 12 '~^'  operator */
-#define EXP_OP_LT	0xd	/*!< 13 '<'   operator */
-#define EXP_OP_GT	0xe	/*!< 14 '>'   operator */
-#define EXP_OP_LSHIFT	0xf	/*!< 15 '<<'  operator */
-#define EXP_OP_RSHIFT	0x10	/*!< 16 '>>'  operator */
-#define EXP_OP_EQ	0x11	/*!< 17 '=='  operator */
-#define EXP_OP_CEQ	0x12	/*!< 18 '===' operator */
-#define EXP_OP_LE	0x13	/*!< 19 '<='  operator */
-#define EXP_OP_GE	0x14	/*!< 20 '>='  operator */
-#define EXP_OP_NE	0x15	/*!< 21 '!='  operator */
-#define EXP_OP_CNE	0x16	/*!< 22 '!==' operator */
-#define EXP_OP_LOR	0x17	/*!< 23 '||'  operator */
-#define EXP_OP_LAND	0x18	/*!< 24 '&&'  operator */
-#define EXP_OP_COND  	0x19	/*!< 25 '?:' conditional operator     */
-#define EXP_OP_COND_SEL 0x1a    /*!< 26 '?:' conditional select       */
-#define EXP_OP_UINV	0x1b	/*!< 27 unary '~'  operator           */
-#define EXP_OP_UAND	0x1c	/*!< 28 unary '&'  operator           */
-#define EXP_OP_UNOT	0x1d	/*!< 29 unary '!'  operator           */
-#define EXP_OP_UOR	0x1e	/*!< 30 unary '|'  operator           */
-#define EXP_OP_UXOR	0x1f 	/*!< 31 unary '^'  operator           */
-#define EXP_OP_UNAND	0x20	/*!< 32 unary '~&' operator           */
-#define EXP_OP_UNOR	0x21	/*!< 33 unary '~|' operator           */
-#define EXP_OP_UNXOR	0x22	/*!< 34 unary '~^' operator           */
-#define EXP_OP_SBIT_SEL	0x23	/*!< 35 single-bit signal select      */
-#define EXP_OP_MBIT_SEL	0x24	/*!< 36 multi-bit signal select       */
-#define EXP_OP_EXPAND	0x25	/*!< 37 bit expansion operator        */
-#define EXP_OP_CONCAT	0x26	/*!< 38 signal concatenation operator */
-#define EXP_OP_PEDGE	0x27	/*!< 39 posedge operator              */
-#define EXP_OP_NEDGE	0x28	/*!< 40 negedge operator              */
-#define EXP_OP_AEDGE	0x29	/*!< 41 anyedge operator              */
-#define EXP_OP_LAST     0x2a    /*!< 42 1-bit value holder for parent */
-#define EXP_OP_EOR      0x2b    /*!< 43 event OR operator             */
-#define EXP_OP_DELAY    0x2c    /*!< 44 delay operator                */
-#define EXP_OP_CASE     0x2d    /*!< 45 case equality expression      */
-#define EXP_OP_CASEX    0x2e    /*!< 46 casex equality expression     */
-#define EXP_OP_CASEZ    0x2f    /*!< 47 casez equality expression     */
-#define EXP_OP_DEFAULT  0x30    /*!< 48 case default expression       */
-#define EXP_OP_LIST     0x31    /*!< 49 comma separated expression list */
-#define EXP_OP_PARAM    0x32    /*!< 50 */
+#define EXP_OP_STATIC     0x0   /*!<  0 Specifies constant value */
+#define EXP_OP_SIG	  0x1	/*!<  1 Specifes that this expression contains signal value    */
+#define EXP_OP_XOR	  0x2	/*!<  2 '^'   operator */
+#define EXP_OP_MULTIPLY	  0x3   /*!<  3 '*'   operator */
+#define EXP_OP_DIVIDE	  0x4	/*!<  4 '/'   operator */
+#define EXP_OP_MOD	  0x5	/*!<  5 '%'   operator */
+#define EXP_OP_ADD	  0x6	/*!<  6 '+'   operator */
+#define EXP_OP_SUBTRACT	  0x7	/*!<  7 '-'   operator */
+#define EXP_OP_AND	  0x8	/*!<  8 '&'   operator */
+#define EXP_OP_OR	  0x9	/*!<  9 '|'   operator */
+#define EXP_OP_NAND       0xa   /*!< 10 '~&'  operator */
+#define EXP_OP_NOR	  0xb	/*!< 11 '~|'  operator */
+#define EXP_OP_NXOR	  0xc	/*!< 12 '~^'  operator */
+#define EXP_OP_LT	  0xd	/*!< 13 '<'   operator */
+#define EXP_OP_GT	  0xe	/*!< 14 '>'   operator */
+#define EXP_OP_LSHIFT	  0xf	/*!< 15 '<<'  operator */
+#define EXP_OP_RSHIFT	  0x10	/*!< 16 '>>'  operator */
+#define EXP_OP_EQ	  0x11	/*!< 17 '=='  operator */
+#define EXP_OP_CEQ	  0x12	/*!< 18 '===' operator */
+#define EXP_OP_LE	  0x13	/*!< 19 '<='  operator */
+#define EXP_OP_GE	  0x14	/*!< 20 '>='  operator */
+#define EXP_OP_NE	  0x15	/*!< 21 '!='  operator */
+#define EXP_OP_CNE	  0x16	/*!< 22 '!==' operator */
+#define EXP_OP_LOR	  0x17	/*!< 23 '||'  operator */
+#define EXP_OP_LAND	  0x18	/*!< 24 '&&'  operator */
+#define EXP_OP_COND  	  0x19	/*!< 25 '?:' conditional operator     */
+#define EXP_OP_COND_SEL   0x1a  /*!< 26 '?:' conditional select       */
+#define EXP_OP_UINV	  0x1b	/*!< 27 unary '~'  operator           */
+#define EXP_OP_UAND	  0x1c	/*!< 28 unary '&'  operator           */
+#define EXP_OP_UNOT	  0x1d	/*!< 29 unary '!'  operator           */
+#define EXP_OP_UOR	  0x1e	/*!< 30 unary '|'  operator           */
+#define EXP_OP_UXOR	  0x1f 	/*!< 31 unary '^'  operator           */
+#define EXP_OP_UNAND	  0x20	/*!< 32 unary '~&' operator           */
+#define EXP_OP_UNOR	  0x21	/*!< 33 unary '~|' operator           */
+#define EXP_OP_UNXOR	  0x22	/*!< 34 unary '~^' operator           */
+#define EXP_OP_SBIT_SEL	  0x23	/*!< 35 single-bit signal select      */
+#define EXP_OP_MBIT_SEL	  0x24	/*!< 36 multi-bit signal select       */
+#define EXP_OP_EXPAND	  0x25	/*!< 37 bit expansion operator        */
+#define EXP_OP_CONCAT	  0x26	/*!< 38 signal concatenation operator */
+#define EXP_OP_PEDGE	  0x27	/*!< 39 posedge operator              */
+#define EXP_OP_NEDGE	  0x28	/*!< 40 negedge operator              */
+#define EXP_OP_AEDGE	  0x29	/*!< 41 anyedge operator              */
+#define EXP_OP_LAST       0x2a  /*!< 42 1-bit value holder for parent */
+#define EXP_OP_EOR        0x2b  /*!< 43 event OR operator             */
+#define EXP_OP_DELAY      0x2c  /*!< 44 delay operator                */
+#define EXP_OP_CASE       0x2d  /*!< 45 case equality expression      */
+#define EXP_OP_CASEX      0x2e  /*!< 46 casex equality expression     */
+#define EXP_OP_CASEZ      0x2f  /*!< 47 casez equality expression     */
+#define EXP_OP_DEFAULT    0x30  /*!< 48 case default expression       */
+#define EXP_OP_LIST       0x31  /*!< 49 comma separated expression list */
+#define EXP_OP_PARAM      0x32  /*!< 50 full parameter                  */
+#define EXP_OP_PARAM_SBIT 0x33  /*!< 51 single bit select parameter     */
+#define EXP_OP_PARAM_MBIT 0x34  /*!< 52 multi-bit select parameter      */
 
 /*! @} */
 
@@ -804,16 +847,40 @@ struct exp_exp_s {
 
 //------------------------------------------------------------------------------
 /*!
- Structure containing parts for parameter definition.
+ Structure containing parts for a module parameter definition.
 */
-struct parameter_s;
+struct mod_parm_s;
 
-typedef struct parameter_s parameter;
+typedef struct mod_parm_s mod_parm;
 
-struct parameter_s {
-  char*       name;      /*!< Full hierarchical name of associated parameter */
-  expression* expr;      /*!< Expression tree containing value of parameter  */
-  parameter*  next;      /*!< Pointer to next parameter in list              */
+struct mod_parm_s {
+  char*        name;     /*!< Full hierarchical name of associated parameter      */
+  expression*  expr;     /*!< Expression tree containing value of parameter       */
+  unsigned int suppl;    /*!< Supplemental field containing type and order number */
+  exp_link*    exp_head; /*!< Pointer to head of expression list for dependents   */
+  exp_link*    exp_tail; /*!< Pointer to tail of expression list for dependents   */
+  sig_link*    sig_head; /*!< Pointer to head of signal list for dependents       */
+  sig_link*    sig_tail; /*!< Pointer to tail of signal list for dependents       */
+  mod_parm*    next;     /*!< Pointer to next module parameter in list            */
+};
+
+//------------------------------------------------------------------------------
+/*!
+ Structure containing parts for an instance parameter.
+*/
+struct inst_parm_s;
+
+typedef struct inst_parm_s inst_parm;
+
+struct inst_parm_s {
+  char*        name;   /*!< Name of associated parameter (no hierarchy)         */
+  vector*      value;  /*!< Pointer to value of instance parameter              */
+  unsigned int suppl;  /*!< Supplemental field containing type and order number */
+  exp_link*    exp_head; /*!< Pointer to head of expression list for dependents */
+  exp_link*    exp_tail; /*!< Pointer to tail of expression list for dependents */
+  sig_link*    sig_head; /*!< Pointer to head of signal list for dependents     */
+  sig_link*    sig_tail; /*!< Pointer to tail of signal list for dependents     */
+  inst_parm*   next;   /*!< Pointer to next instance parameter in list          */
 };
 
 //------------------------------------------------------------------------------
@@ -831,8 +898,8 @@ struct module_s {
   exp_link*  exp_tail;   /*!< Tail pointer to list of expressions in this module */
   stmt_link* stmt_head;  /*!< Head pointer to list of statements in this module  */
   stmt_link* stmt_tail;  /*!< Tail pointer to list of statements in this module  */
-  parameter* param_head; /*!< Head pointer to list of parameters in this module  */
-  parameter* param_tail; /*!< Tail pointer to list of parameters in this module  */
+  mod_parm*  param_head; /*!< Head pointer to list of parameters in this module  */
+  mod_parm*  param_tail; /*!< Tail pointer to list of parameters in this module  */
 };
 
 typedef struct module_s module;
@@ -920,8 +987,8 @@ struct mod_inst_s {
   char*      name;          /*!< Instance name of this module instance                      */
   module*    mod;           /*!< Pointer to module this instance represents                 */
   statistic* stat;          /*!< Pointer to statistic holder                                */
-  parameter* param_head;    /*!< Head pointer to list of parameter overrides in this module */
-  parameter* param_tail;    /*!< Tail pointer to list of parameter overrides in this module */
+  inst_parm* param_head;    /*!< Head pointer to list of parameter overrides in this module */
+  inst_parm* param_tail;    /*!< Tail pointer to list of parameter overrides in this module */
   sig_sig*   psig_head;     /*!< Head pointer to parameter signal list                      */
   sig_sig*   psig_tail;     /*!< Tail pointer to parameter signal list                      */
   exp_exp*   pexp_head;     /*!< Head pointer to parameter expression list                  */
@@ -940,6 +1007,11 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.43  2002/09/19 05:25:19  phase1geo
+/* Fixing incorrect simulation of static values and fixing reports generated
+/* from these static expressions.  Also includes some modifications for parameters
+/* though these changes are not useful at this point.
+/*
 /* Revision 1.42  2002/09/13 05:12:25  phase1geo
 /* Adding final touches to -d option to report.  Adding documentation and
 /* updating development documentation to stay in sync.
