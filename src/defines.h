@@ -733,7 +733,8 @@
                                        ((SUPPL_OP( x->suppl ) == EXP_OP_SIG) || \
                                         (SUPPL_OP( x->suppl ) == EXP_OP_SBIT_SEL) || \
                                         (SUPPL_OP( x->suppl ) == EXP_OP_MBIT_SEL)) && \
-                                       (SUPPL_OP( x->parent->expr->suppl ) != EXP_OP_COND))) ? 1 : 0)
+                                       (SUPPL_OP( x->parent->expr->suppl ) != EXP_OP_COND)) && \
+                                     (x->line != 0)) ? 1 : 0)
 
 /*!
  Returns a value of TRUE if the specified expression is a STATIC, PARAM, PARAM_SBIT or PARAM_MBIT
@@ -1468,6 +1469,10 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.83  2003/10/11 05:15:07  phase1geo
+ Updates for code optimizations for vector value data type (integers to chars).
+ Updated regression for changes.
+
  Revision 1.82  2003/10/10 20:52:07  phase1geo
  Initial submission of FSM expression allowance code.  We are still not quite
  there yet, but we are getting close.

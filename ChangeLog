@@ -1,3 +1,39 @@
+2003-10-03 16:28  phase1geo
+
+	* src/: Makefile.am, Makefile.in, db.c, defines.h, fsm.c,
+	fsm_arg.c, fsm_sig.c, fsm_sig.h, fsm_var.c, fsm_var.h, score.c:
+	Restructuring FSM handling to be better suited to handle new FSM
+	input/output state variable allowances.  Regression should still
+	pass but new FSM support is not supported.
+
+2003-10-03 07:31  phase1geo
+
+	* src/: line.c, toggle.c: More report tweaking.
+
+2003-10-02 22:08  phase1geo
+
+	* src/: comb.c, fsm.c, line.c, toggle.c, util.c, util.h: Modifying
+	filename in summary output to only specify basename of file instead
+	of entire path.  The verbose report contains the full pathname
+	still, however.
+
+2003-10-02 07:30  phase1geo
+
+	* src/: Makefile.am, Makefile.in, fsm_arg.c, fsm_arg.h, signal.c,
+	signal.h: Initial code modifications to handle more robust FSM
+	cases.
+
+2003-09-25 08:42  phase1geo
+
+	* config.h, configure: Final file updates for development release.
+
+2003-09-25 08:41  phase1geo
+
+	* ChangeLog, NEWS, configure.in, doc/manstyle/user,
+	doc/user/covered.1, doc/user/index.html: Updating NEWS, ChangeLog,
+	configure.in and documentation for new development release
+	covered-20030925.
+
 2003-09-24 10:28  phase1geo
 
 	* TODO: Updating TODO list for new 0.3 feature adds.

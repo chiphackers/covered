@@ -95,7 +95,7 @@ void stmt_iter_get_next_in_order( stmt_iter* si ) {
 
   stmt_iter_next( si );
   
-  if( (si->curr == NULL) || (si->curr->stmt->exp->line < si->last->stmt->exp->line) ) {
+  if( (si->curr == NULL) || (si->curr->stmt->exp->line < si->last->stmt->exp->line) || (si->curr->stmt->exp->line == 0) ) {
     stmt_iter_reverse( si );
     stmt_iter_find_head( si, TRUE );
   }
@@ -105,6 +105,10 @@ void stmt_iter_get_next_in_order( stmt_iter* si ) {
 
 /*
  $Log$
+ Revision 1.5  2003/01/27 16:06:10  phase1geo
+ Fixing bug with line ordering where case statement lines were not being
+ output to reports.  Updating regression to reflect fixes.
+
  Revision 1.4  2002/12/07 17:46:53  phase1geo
  Fixing bug with handling memory declarations.  Added diagnostic to verify
  that memory declarations are handled properly.  Fixed bug with infinite

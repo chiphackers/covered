@@ -48,11 +48,12 @@ void line_get_stats( stmt_link* stmtl, float* total, int* hit ) {
   
   while( curr.curr != NULL ) {
 
-    if( (SUPPL_OP( curr.curr->stmt->exp->suppl ) != EXP_OP_DELAY) &&
-        (SUPPL_OP( curr.curr->stmt->exp->suppl ) != EXP_OP_CASE)  &&
-        (SUPPL_OP( curr.curr->stmt->exp->suppl ) != EXP_OP_CASEX) &&
-        (SUPPL_OP( curr.curr->stmt->exp->suppl ) != EXP_OP_CASEZ) &&
-        (SUPPL_OP( curr.curr->stmt->exp->suppl ) != EXP_OP_DEFAULT) ) {
+    if( (SUPPL_OP( curr.curr->stmt->exp->suppl ) != EXP_OP_DELAY)   &&
+        (SUPPL_OP( curr.curr->stmt->exp->suppl ) != EXP_OP_CASE)    &&
+        (SUPPL_OP( curr.curr->stmt->exp->suppl ) != EXP_OP_CASEX)   &&
+        (SUPPL_OP( curr.curr->stmt->exp->suppl ) != EXP_OP_CASEZ)   &&
+        (SUPPL_OP( curr.curr->stmt->exp->suppl ) != EXP_OP_DEFAULT) &&
+        (curr.curr->stmt->exp->line != 0) ) {
       *total = *total + 1;
       if( SUPPL_WAS_EXECUTED( curr.curr->stmt->exp->suppl ) == 1 ) {
         (*hit)++;
@@ -186,11 +187,12 @@ void line_display_verbose( FILE* ofile, stmt_link* stmtl ) {
   
   while( stmti.curr != NULL ) {
 
-    if( (SUPPL_OP( stmti.curr->stmt->exp->suppl ) != EXP_OP_DELAY) &&
-        (SUPPL_OP( stmti.curr->stmt->exp->suppl ) != EXP_OP_CASE)  &&
-        (SUPPL_OP( stmti.curr->stmt->exp->suppl ) != EXP_OP_CASEX) &&
-        (SUPPL_OP( stmti.curr->stmt->exp->suppl ) != EXP_OP_CASEZ) &&
-        (SUPPL_OP( stmti.curr->stmt->exp->suppl ) != EXP_OP_DEFAULT) ) {
+    if( (SUPPL_OP( stmti.curr->stmt->exp->suppl ) != EXP_OP_DELAY)   &&
+        (SUPPL_OP( stmti.curr->stmt->exp->suppl ) != EXP_OP_CASE)    &&
+        (SUPPL_OP( stmti.curr->stmt->exp->suppl ) != EXP_OP_CASEX)   &&
+        (SUPPL_OP( stmti.curr->stmt->exp->suppl ) != EXP_OP_CASEZ)   &&
+        (SUPPL_OP( stmti.curr->stmt->exp->suppl ) != EXP_OP_DEFAULT) &&
+        (stmti.curr->stmt->exp->line != 0) ) {
 
       if( SUPPL_WAS_EXECUTED( stmti.curr->stmt->exp->suppl ) == report_covered ) {
 
@@ -332,6 +334,9 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.31  2003/10/03 12:31:04  phase1geo
+ More report tweaking.
+
  Revision 1.30  2003/10/03 03:08:44  phase1geo
  Modifying filename in summary output to only specify basename of file instead
  of entire path.  The verbose report contains the full pathname still, however.
