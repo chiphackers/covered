@@ -284,47 +284,55 @@ void vcd_parse_sim_ignore( FILE* vcd ) {
 */
 void vcd_parse_sim( FILE* vcd ) {
 
-  char token[4100];         /* Current token from VCD file       */
-  int  last_timestep = -1;  /* Value of last timestamp from file */
-  int  chars_read;          /* Number of characters scanned in   */
+  char token[4100];            /* Current token from VCD file           */
+  int  last_timestep = -1;     /* Value of last timestamp from file     */
+  int  chars_read;             /* Number of characters scanned in       */
+  bool carry_over    = FALSE;  /* Specifies if last string was too long */
  
-  while( !feof( vcd ) && (fscanf( vcd, "%s%n", token, &chars_read ) == 1) ) {
+  while( !feof( vcd ) && (fscanf( vcd, "%4099s%n", token, &chars_read ) == 1) ) {
 
-    assert( chars_read <= 4100 );
+    if( chars_read < 4099 ) {
     
-    if( token[0] == '$' ) {
+      if( token[0] == '$' ) {
 
-      /* Currently ignore all simulation keywords */
+        /* Currently ignore all simulation keywords */
 
-    } else if( (token[0] == 'b') || (token[0] == 'B') ) {
+      } else if( (token[0] == 'b') || (token[0] == 'B') ) {
 
-      vcd_parse_sim_vector( vcd, (token + 1) );
+        vcd_parse_sim_vector( vcd, (token + 1) );
 
-    } else if( (token[0] == 'r') || (token[0] == 'B') ) {
+      } else if( (token[0] == 'r') || (token[0] == 'B') || carry_over ) {
 
-      vcd_parse_sim_ignore( vcd );
+        vcd_parse_sim_ignore( vcd );
+        carry_over = FALSE;
 
-    } else if( token[0] == '#' ) {
+      } else if( token[0] == '#' ) {
 
-      if( last_timestep >= 0 ) {
-        db_do_timestep( last_timestep );
+        if( last_timestep >= 0 ) {
+          db_do_timestep( last_timestep );
+        }
+        last_timestep = atol( token + 1 );
+
+      } else if( (token[0] == '0') ||
+                 (token[0] == '1') ||
+                 (token[0] == 'x') ||
+                 (token[0] == 'X') ||
+                 (token[0] == 'z') ||
+                 (token[0] == 'Z') ) {
+
+        db_set_symbol_char( token + 1, token[0] );
+
+      } else {
+
+        snprintf( user_msg, USER_MSG_LENGTH, "Badly placed token \"%s\"", token );
+        print_output( user_msg, FATAL );
+        exit( 1 );
+
       }
-      last_timestep = atol( token + 1 );
-
-    } else if( (token[0] == '0') ||
-               (token[0] == '1') ||
-               (token[0] == 'x') ||
-               (token[0] == 'X') ||
-               (token[0] == 'z') ||
-               (token[0] == 'Z') ) {
-
-      db_set_symbol_char( token + 1, token[0] );
 
     } else {
-
-      snprintf( user_msg, USER_MSG_LENGTH, "Badly placed token \"%s\"", token );
-      print_output( user_msg, FATAL );
-      exit( 1 );
+ 
+      carry_over = TRUE;
 
     }
 
@@ -382,6 +390,12 @@ void vcd_parse( char* vcd_file ) {
 
 /*
  $Log$
+ Revision 1.15  2003/10/19 04:23:49  phase1geo
+ Fixing bug in VCD parser for new Icarus Verilog VCD dumpfile formatting.
+ Fixing bug in signal.c for signal merging.  Updates all CDD files to match
+ new format.  Added new diagnostics to test advanced FSM state variable
+ features.
+
  Revision 1.14  2003/10/07 03:10:04  phase1geo
  Fixing VCD reader to allow vector selects that are attached (no spaces) to
  reference names to be read properly.  New version of Icarus seems to output
