@@ -8,10 +8,10 @@
 
 COVERED_SRC   = ../../src
 COVERED       = $(COVERED_SRC)/covered
-COVERED_FLAGS = -y ../vlib
+COVERED_FLAGS = -y ./lib -I ./include
 
 VERILOG       = iverilog
-VERILOG_FLAGS = -y ../vlib
+VERILOG_FLAGS = -y ./lib -I ./include
 VERILOG_EXEC  = a.out
 
 CDD_DIR       = ../cdd
@@ -53,7 +53,9 @@ DIAGLIST = assign3.2A \
            define1.1 \
 	   define2 \
 	   define2.1 \
-           static1
+           static1 \
+           include1 \
+           include1.1
 
 regress:	$(COVERED) clean $(DIAGLIST)
 

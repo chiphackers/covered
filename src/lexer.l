@@ -889,7 +889,7 @@ static void do_include() {
 
     }
 
-    if( curr == NULL ) {
+    if( (curr == NULL) && (standby->file == 0) ) {
       snprintf( msg, 4096, "Unable to find `include file \"%s\" in include path", standby->path );
       print_output( msg, FATAL );
       exit( 1 );
@@ -903,6 +903,9 @@ static void do_include() {
   istack->yybs  = YY_CURRENT_BUFFER;
   istack        = standby;
   standby       = 0;
+
+  snprintf( msg, 4096, "Parsing include file \"%s\"", path );
+  print_output( msg, NORMAL );
 
   yy_switch_to_buffer( yy_new_buffer( istack->file, YY_BUF_SIZE ) );
 
@@ -990,15 +993,6 @@ void reset_lexer( FILE* out, str_link* file_list_head ) {
 
   struct include_stack_t* isp = malloc( sizeof( struct include_stack_t ) );
   str_link* curr;
-
-/*
-  printf( "List of files to search:\n" );
-  curr = file_list_head;
-  while( curr != NULL ) {
-    printf( "  %s\n", curr->str );
-    curr = curr->next;
-  }
-*/
 
   isp->path   = strdup( file_list_head->str );
   isp->file   = fopen( isp->path, "r" );
