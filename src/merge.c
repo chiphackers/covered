@@ -89,6 +89,10 @@ bool merge_parse_args( int argc, int last_arg, char** argv ) {
           merged_file = strdup( argv[i] );
         }
         merge_in0 = strdup( argv[i] );
+      } else {
+        snprintf( user_msg, USER_MSG_LENGTH, "First CDD (%s) file does not exist", argv[i] );
+        print_output( user_msg, FATAL );
+        retval = FALSE;
       }
 
     } else if( (i + 1) == argc ) {
@@ -96,6 +100,10 @@ bool merge_parse_args( int argc, int last_arg, char** argv ) {
       /* Last argument.  This must be filename */
       if( file_exists( argv[i] ) ) {
         merge_in1 = strdup( argv[i] );
+      } else {
+        snprintf( user_msg, USER_MSG_LENGTH, "Second CDD (%s) file does not exist", argv[i] );
+        print_output( user_msg, FATAL );
+        retval = FALSE;
       }
 
     } else {
@@ -157,6 +165,10 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.11  2002/11/05 00:20:07  phase1geo
+ Adding development documentation.  Fixing problem with combinational logic
+ output in report command and updating full regression.
+
  Revision 1.10  2002/11/02 16:16:20  phase1geo
  Cleaned up all compiler warnings in source and header files.
 
