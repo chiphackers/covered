@@ -18,6 +18,7 @@
 extern mod_inst* instance_root;
 extern mod_link* mod_head;
 
+extern bool      report_covered;
 
 /*!
  \param expl   Pointer to current expression link to evaluate.
@@ -538,8 +539,6 @@ void combination_list_missed( FILE* ofile, expression* exp, int* exp_id ) {
 
     if( EXPR_COMB_MISSED( exp ) == 1 ) {
 
-      // printf( "missed expression, op: %d, id: %d\n", SUPPL_OP( exp->suppl ), exp->id );
-
       fprintf( ofile, "Expression %d\n", *exp_id );
       fprintf( ofile, "^^^^^^^^^^^^^\n" );
 
@@ -635,12 +634,16 @@ void combination_display_verbose( FILE* ofile, stmt_link* stmtl ) {
   char*       code;            /* Code string from code generator             */
   int         exp_id;          /* Current expression ID of missed expression  */
 
-  fprintf( ofile, "Missed Combinations\n" );
+  if( report_covered ) {
+    fprintf( ofile, "Hit Combinations\n" );
+  } else { 
+    fprintf( ofile, "Missed Combinations\n" );
+  }
 
   /* Display current instance missed lines */
   while( stmtl != NULL ) {
 
-    if( combination_missed_expr( stmtl->stmt->exp ) ) {
+    if( combination_missed_expr( stmtl->stmt->exp ) == !report_covered ) {
 
       unexec_exp = stmtl->stmt->exp;
       exp_id     = 1;
@@ -785,6 +788,10 @@ void combination_report( FILE* ofile, bool verbose, bool instance ) {
 
 
 /* $Log$
+/* Revision 1.37  2002/08/19 04:59:49  phase1geo
+/* Adjusting summary format to allow for larger line, toggle and combination
+/* counts.
+/*
 /* Revision 1.36  2002/07/20 18:46:38  phase1geo
 /* Causing fully covered modules to not be output in reports.  Adding
 /* instance3.v diagnostic to verify this works correctly.

@@ -58,6 +58,13 @@ bool report_verbose    = FALSE;
 */
 bool report_instance   = FALSE;
 
+/*!
+ If set to a boolean value of TRUE, displays covered logic for a particular CDD file.
+ By default, Covered will display uncovered logic.  Must be used in conjunction with
+ the -v (verbose output) option.
+*/
+bool report_covered    = FALSE;
+
 char* output_file      = NULL;
 char* input_db         = NULL;
 
@@ -77,6 +84,8 @@ void report_usage() {
   printf( "      -m [l][t][c][f]         Type(s) of metrics to report.  Default is ltc.\n" );
   printf( "      -v                      Provide verbose information in report.  Default is summarize.\n" );
   printf( "      -i                      Provides coverage information for instances instead of module.\n" );
+  printf( "      -c                      If -v is specified, displays covered line, toggle and combinational cases.\n" );
+  printf( "                              Default is to display uncovered information.\n" );
   printf( "      -o <filename>           File to output report information to.  Default is standard output.\n" );
   printf( "      -h                      Displays this help information.\n" );
   printf( "\n" );
@@ -162,6 +171,10 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
     } else if( strncmp( "-i", argv[i], 2 ) == 0 ) {
 
       report_instance = TRUE;
+
+    } else if( strncmp( "-c", argv[i], 2 ) == 0 ) {
+
+      report_covered = TRUE;
 
     } else if( strncmp( "-o", argv[i], 2 ) == 0 ) {
 
@@ -427,6 +440,11 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 
 /* $Log$
+/* Revision 1.11  2002/08/19 04:34:07  phase1geo
+/* Fixing bug in database reading code that dealt with merging modules.  Module
+/* merging is now performed in a more optimal way.  Full regression passes and
+/* own examples pass as well.
+/*
 /* Revision 1.10  2002/07/20 18:46:38  phase1geo
 /* Causing fully covered modules to not be output in reports.  Adding
 /* instance3.v diagnostic to verify this works correctly.

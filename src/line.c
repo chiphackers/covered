@@ -16,6 +16,8 @@
 extern mod_inst* instance_root;
 extern mod_link* mod_head;
 
+extern bool      report_covered;
+
 /*!
  \param stmtl  Pointer to current statement list to explore.
  \param total  Holds total number of lines parsed.
@@ -44,7 +46,7 @@ void line_get_stats( stmt_link* stmtl, float* total, int* hit ) {
       }
     }
         
-    curr      = curr->next;
+    curr = curr->next;
 
   }
 
@@ -152,23 +154,30 @@ void line_display_verbose( FILE* ofile, stmt_link* stmtl ) {
   expression* unexec_exp;      /* Pointer to current unexecuted expression    */
   char*       code;            /* Pointer to code string from code generator  */
 
-  fprintf( ofile, "Missed Lines\n\n" );
+  if( report_covered ) {
+    fprintf( ofile, "Hit Lines\n\n" );
+  } else {
+    fprintf( ofile, "Missed Lines\n\n" );
+  }
 
   /* Display current instance missed lines */
   while( stmtl != NULL ) {
 
-    if( (SUPPL_WAS_EXECUTED( stmtl->stmt->exp->suppl ) == 0)  &&
-        (SUPPL_OP( stmtl->stmt->exp->suppl ) != EXP_OP_DELAY) &&
+    if( (SUPPL_OP( stmtl->stmt->exp->suppl ) != EXP_OP_DELAY) &&
         (SUPPL_OP( stmtl->stmt->exp->suppl ) != EXP_OP_CASE)  &&
         (SUPPL_OP( stmtl->stmt->exp->suppl ) != EXP_OP_CASEX) &&
         (SUPPL_OP( stmtl->stmt->exp->suppl ) != EXP_OP_CASEZ) &&
         (SUPPL_OP( stmtl->stmt->exp->suppl ) != EXP_OP_DEFAULT) ) {
 
-      unexec_exp = stmtl->stmt->exp;
+      if( SUPPL_WAS_EXECUTED( stmtl->stmt->exp->suppl ) == report_covered ) {
 
-      code = codegen_gen_expr( unexec_exp, unexec_exp->line );
-      fprintf( ofile, "%7d:    %s\n", unexec_exp->line, code );
-      free_safe( code );
+        unexec_exp = stmtl->stmt->exp;
+
+        code = codegen_gen_expr( unexec_exp, unexec_exp->line );
+        fprintf( ofile, "%7d:    %s\n", unexec_exp->line, code );
+        free_safe( code );
+
+      }
 
     }
 
@@ -291,6 +300,10 @@ void line_report( FILE* ofile, bool verbose, bool instance ) {
 }
 
 /* $Log$
+/* Revision 1.17  2002/08/19 04:59:49  phase1geo
+/* Adjusting summary format to allow for larger line, toggle and combination
+/* counts.
+/*
 /* Revision 1.16  2002/07/20 18:46:38  phase1geo
 /* Causing fully covered modules to not be output in reports.  Adding
 /* instance3.v diagnostic to verify this works correctly.
