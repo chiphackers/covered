@@ -394,8 +394,10 @@ void vector_display( vector* vec ) {
 
   printf( "Vector => width: %d, lsb: %d, ", vec->width, vec->lsb );
 
-  if( (vec->lsb >= 0) && (vec->width > 0) ) {
+  if( (vec->lsb >= 0) && (vec->width > 0) && (vec->value != NULL) ) {
     vector_display_nibble( vec->value, vec->width, vec->lsb );
+  } else {
+    printf( "NO DATA" );
   }
 
   printf( "\n" );
@@ -1465,6 +1467,9 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.29  2003/01/04 03:56:28  phase1geo
+ Fixing bug with parameterized modules.  Updated regression suite for changes.
+
  Revision 1.28  2002/12/30 05:31:33  phase1geo
  Fixing bug in module merge for reports when parameterized modules are merged.
  These modules should not output an error to the user when mismatching modules

@@ -730,8 +730,9 @@ void db_add_expression( expression* root ) {
 
     if( exp_link_find( root, curr_module->exp_head ) == NULL ) {
     
-      snprintf( user_msg, USER_MSG_LENGTH, "In db_add_expression, id: %d, op: %d", root->id, SUPPL_OP( root->suppl ) );
-      print_output( user_msg, DEBUG );
+      snprintf( user_msg, USER_MSG_LENGTH, "In db_add_expression, id: %d, op: %d, line: %d", 
+                root->id, SUPPL_OP( root->suppl ), root->line );
+      print_output( user_msg, NORMAL );
 
       /* Add expression's children first. */
       db_add_expression( root->right );
@@ -760,8 +761,8 @@ statement* db_create_statement( expression* exp ) {
 
   statement* stmt;       /* Pointer to newly created statement */
 
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_create_statement, id: %d", exp->id );
-  print_output( user_msg, DEBUG );
+  snprintf( user_msg, USER_MSG_LENGTH, "In db_create_statement, id: %d, line: %d", exp->id, exp->line );
+  print_output( user_msg, NORMAL );
 
   stmt = statement_create( exp );
 
@@ -802,13 +803,25 @@ void db_add_statement( statement* stmt, statement* start ) {
 /*!
  \param stmt  Pointer to statement to remove from memory.
 
- Removes specified statement expression from current module expression list and deallocates
+ Removes specified statement expression and its tree from current module expression list and deallocates
  both the expression and statement from heap memory.  Called when a statement structure is
  found to contain a statement that is not supported by Covered.
 */
 void db_remove_statement( statement* stmt ) {
 
   if( stmt != NULL ) {
+
+    if( stmt->exp != NULL ) {
+      snprintf( user_msg, USER_MSG_LENGTH, "In db_remove_statement, stmt id: %d, line: %d", 
+                stmt->exp->id, stmt->exp->line );
+    } else {
+      snprintf( user_msg, USER_MSG_LENGTH, "In db_remove_statement, stmt id: ???, line: ???" );
+    }
+    print_output( user_msg, NORMAL );
+
+    /* Remove true/false paths */
+    db_remove_statement( stmt->next_true  );
+    db_remove_statement( stmt->next_false );
 
     /* Remove expression from current module expression list */
     exp_link_remove( stmt->exp, &(curr_module->exp_head), &(curr_module->exp_tail) );
@@ -1116,6 +1129,9 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.81  2003/02/03 17:17:38  phase1geo
+ Fixing bug with statement deallocation for NULL statements.
+
  Revision 1.80  2003/01/25 22:39:02  phase1geo
  Fixing case where statement is found to be unsupported in middle of statement
  tree.  The entire statement tree is removed from consideration for simulation.

@@ -243,7 +243,7 @@ void exp_link_display( exp_link* head ) {
 
   curr = head;
   while( curr != NULL ) {
-    printf( "  id: %d, op: %d\n", curr->exp->id, SUPPL_OP( curr->exp->suppl ) );
+    printf( "  id: %d, op: %d, line: %d\n", curr->exp->id, SUPPL_OP( curr->exp->suppl ), curr->exp->line );
     curr = curr->next;
   }
 
@@ -617,6 +617,9 @@ void mod_link_delete_list( mod_link* head ) {
 
 /*
  $Log$
+ Revision 1.17  2003/01/04 09:33:28  phase1geo
+ Updating documentation to match recent code fixes/changes.
+
  Revision 1.16  2003/01/04 09:25:15  phase1geo
  Fixing file search algorithm to fix bug where unexpected module that was
  ignored cannot be found.  Added instance7.v diagnostic to verify appropriate
