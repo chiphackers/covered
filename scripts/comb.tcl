@@ -1,5 +1,5 @@
-set comb_level 0
-set comb_ul_ip 0
+set comb_ul_ip         0
+set comb_curr_uline_id 0
 
 proc K {x y} {
   set x
@@ -45,7 +45,7 @@ proc display_comb_info {} {
 
   global comb_code comb_uline_groups comb_ulines
   global comb_uline_indexes comb_first_uline
-  global comb_gen_ulines
+  global comb_gen_ulines comb_curr_uline_id
   global comb_curr_cursor
   global uncov_fgColor
 
@@ -130,7 +130,7 @@ proc display_comb_info {} {
 
 proc get_expr_index_from_range {selected_range} {
 
-  global comb_uline_exprs
+  global comb_uline_exprs comb_curr_uline_id
 
   # Get range information
   set start_info [split [lindex $selected_range 0] .]
@@ -169,7 +169,17 @@ proc get_expr_index_from_range {selected_range} {
   }
 
   if {$found == 1} {
+
+    # Get current expression underline ID for lookup purposes
+    set comb_curr_uline_id [lindex $curr_expr 2]
+
+    # Output current expression in information bar
+    if {$comb_curr_uline_id != 0} {
+      .combwin.f.info configure -text "Current Expression: $comb_curr_uline_id"
+    }
+
     return $i
+
   } else {
     return -1
   }
@@ -236,7 +246,7 @@ proc get_underline_expressions {parent} {
 
         }
         set curr_char [string first "|" $curr_uline [expr $curr_char + 1]]
-        set child_ulid [regexp -inline -start [expr $curr_char + 1] -- {\d+} $curr_uline]
+        # set child_ulid [regexp -inline -start [expr $curr_char + 1] -- {\d+} $curr_uline]
       }
 
       if {$uline_ip == 1} { 
@@ -314,7 +324,7 @@ proc move_display_up {child_index} {
   set child_expr [lindex $comb_uline_exprs $child_index]
   set parent     [lindex $child_expr 4]
 
-  if {$parent != -1} {
+  if {$parent != 0} {
 
     # Set parent display to 1
     set parent_expr      [lindex $comb_uline_exprs $parent]
@@ -410,7 +420,6 @@ proc generate_underlines {} {
 proc create_comb_window {mod_name expr_id} {
 
   global comb_code comb_uline_groups comb_ulines
-  global comb_level
 
   # Now create the window and set the grab to this window
   if {[winfo exists .combwin] == 0} {
@@ -421,12 +430,17 @@ proc create_comb_window {mod_name expr_id} {
 
     frame .combwin.f
 
-    # Add toggle information
+    # Add expression information
     label .combwin.f.l0 -anchor w -text "Expression:"
-    text  .combwin.f.t -height 20 -width 100 -xscrollcommand ".combwin.f.hb set" -yscrollcommand ".combwin.f.vb set" -wrap none
+    text  .combwin.f.t -height 20 -width 100 -xscrollcommand ".combwin.f.thb set" -yscrollcommand ".combwin.f.tvb set" -wrap none
+    scrollbar .combwin.f.thb -orient horizontal -command ".combwin.f.t xview"
+    scrollbar .combwin.f.tvb -orient vertical   -command ".combwin.f.t yview"
 
-    scrollbar .combwin.f.hb -orient horizontal -command ".combwin.f.t xview"
-    scrollbar .combwin.f.vb -orient vertical   -command ".combwin.f.t yview"
+    # Add expression coverage information
+    label .combwin.f.l1 -anchor w -text "Coverage Information:"
+    text  .combwin.f.tc -height 20 -width 100 -xscrollcommand ".combwin.f.chb set" -yscrollcommand ".combwin.f.cvb set" -wrap none
+    scrollbar .combwin.f.chb -orient horizontal -command ".combwin.f.tc xview"
+    scrollbar .combwin.f.cvb -orient vertical   -command ".combwin.f.tc yview"
 
     # Create bottom information bar
     label .combwin.f.info -anchor w
@@ -437,9 +451,13 @@ proc create_comb_window {mod_name expr_id} {
     grid columnconfigure .combwin.f 1 -weight 0
     grid .combwin.f.l0   -row 0 -column 0 -sticky nsew
     grid .combwin.f.t    -row 1 -column 0 -sticky nsew
-    grid .combwin.f.hb   -row 2 -column 0 -sticky ew
-    grid .combwin.f.vb   -row 1 -column 1 -sticky ns
-    grid .combwin.f.info -row 3 -column 0 -sticky ew
+    grid .combwin.f.thb  -row 2 -column 0 -sticky ew
+    grid .combwin.f.tvb  -row 1 -column 1 -sticky ns
+    grid .combwin.f.l1   -row 3 -column 0 -sticky nsew
+    grid .combwin.f.tc   -row 4 -column 0 -sticky nsew
+    grid .combwin.f.chb  -row 5 -column 0 -sticky ew
+    grid .combwin.f.cvb  -row 4 -column 1 -sticky ns
+    grid .combwin.f.info -row 6 -column 0 -sticky ew
 
     pack .combwin.f -fill both -expand yes -side bottom
 
