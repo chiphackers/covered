@@ -33,9 +33,9 @@ X  5.  Work on increasing performance of score command.
    9.  Add feature to cause Covered to omit the simulation phase for toggle and
        FSM coverage results.
 
-IP 10. Add race condition checkers.
+X  10. Add race condition checkers.
 
-   11. Add race condition information to CDD file for reporting purposes.
+X  11. Add race condition information to CDD file for reporting purposes.
 
    12. Add ability to perform assignments for signals that are within modules being Covered.
 
@@ -48,7 +48,9 @@ Report command
 
 X  1.  Update look of text reports to make them more robust and comprehensible.
 
-IP 2.  Work on GUI interface for report function.
+X  2.  Work on GUI interface for report function.
+
+X  3.  Add race condition outputting.
 
 Miscellaneous
 -------------
@@ -68,3 +70,5 @@ X  2.  Add toggle and combinational logic verbose output
    3.  Add FSM coverage output
 
 X  4.  Make TCL and TK libraries build better in configure scripts
+
+X  5.  Add race condition output
