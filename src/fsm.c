@@ -613,13 +613,13 @@ bool fsm_module_summary( FILE* ofile, mod_link* head ) {
     if( (head->mod->stat->state_total == -1) || (head->mod->stat->arc_total == -1) ) {
       fprintf( ofile, "  %-20.20s    %-20.20s   %4d/  ? /  ?        ? %%         %4d/  ? /  ?        ? %%\n",
            head->mod->name,
-           head->mod->filename,
+           get_basename( head->mod->filename ),
            head->mod->stat->state_hit,
            head->mod->stat->arc_hit );
     } else {
       fprintf( ofile, "  %-20.20s    %-20.20s   %4d/%4.0f/%4.0f      %3.0f%%         %4d/%4.0f/%4.0f      %3.0f%%\n",
              head->mod->name,
-             head->mod->filename,
+             get_basename( head->mod->filename ),
              head->mod->stat->state_hit,
              state_miss,
              head->mod->stat->state_total,
@@ -902,6 +902,9 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.18  2003/09/23 12:28:08  phase1geo
+ Fixes for development documentation.
+
  Revision 1.17  2003/09/22 19:42:31  phase1geo
  Adding print_output WARNING_WRAP and FATAL_WRAP lines to allow multi-line
  error output to be properly formatted to the output stream.

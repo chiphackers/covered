@@ -200,6 +200,31 @@ bool is_directory( char* token ) {
 }
 
 /*!
+ \param str  String containing pathname to file.
+
+ \return Returns pointer to string containing only base filename.
+
+ Extracts the file basename of the specified filename string.
+*/
+char* get_basename( char* str ) {
+
+  char* ptr;  /* Pointer to current character in str */
+
+  ptr = (str + strlen( str )) - 1;
+
+  while( (ptr > str) && (*ptr != '/') ) {
+    ptr--;
+  }
+
+  if( *ptr == '/' ) {
+    ptr++;
+  }
+
+  return( ptr );
+
+}
+
+/*!
  \param dir Name of directory to check for existence.
  \return Returns TRUE if the specified directory exists; otherwise, returns FALSE.
 
@@ -708,6 +733,10 @@ void timer_stop( timer** tm ) {
 
 /*
  $Log$
+ Revision 1.24  2003/09/22 19:42:31  phase1geo
+ Adding print_output WARNING_WRAP and FATAL_WRAP lines to allow multi-line
+ error output to be properly formatted to the output stream.
+
  Revision 1.23  2003/08/15 20:02:08  phase1geo
  Added check for sys/times.h file for new code additions.
 

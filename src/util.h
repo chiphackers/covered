@@ -28,6 +28,9 @@ bool is_variable( char* token );
 /*! \brief Returns TRUE if the specified string is a legal directory string. */
 bool is_directory( char* token );
 
+/*! \brief Extracts filename from file pathname. */
+char* get_basename( char* str );
+
 /*! \brief Returns TRUE if the specified directory exists. */
 bool directory_exists( char* dir );
 
@@ -81,6 +84,9 @@ void timer_stop( timer** tm );
 
 /*
  $Log$
+ Revision 1.14  2003/08/15 20:02:08  phase1geo
+ Added check for sys/times.h file for new code additions.
+
  Revision 1.13  2003/08/15 03:52:22  phase1geo
  More checkins of last checkin and adding some missing files.
 
