@@ -292,6 +292,9 @@ int arc_find( char* arcs, vector* from_st, vector* to_st, int* ptr ) {
   *ptr       = -1;
 
   /* Initialize tmp */
+  for( i=0; i<264; i++ ) {
+    tmp[i] = 0;
+  }
   arc_set_width( tmp, arc_get_width( arcs ) );
 
   i = 0;
@@ -334,6 +337,10 @@ int arc_find( char* arcs, vector* from_st, vector* to_st, int* ptr ) {
       }
     }
     i++;
+  }
+
+  if( (i != 2) || (*ptr != -1) ) {
+    i = i - 1;
   }
 
   return( i );
@@ -834,66 +841,6 @@ bool arc_db_read( char** arcs, char** line ) {
 }
 
 /*!
- \param base  Pointer to arc table to merge data into.
- \param line  Pointer to read in line from CDD file to merge.
- \param same  Specifies if arc table to merge needs to be exactly the same as the existing arc table.
-
- \return Returns TRUE if line was read in correctly; otherwise, returns FALSE.
-
-*/
-bool arc_db_merge( char* base, char** line, bool same ) {
-
-  bool retval = TRUE;  /* Return value for this function */
-  int  width;          /* State variable width of table  */
-  int  max_size;       /* Largest size of table          */
-  int  curr_size;      /* Size of arc table              */
-  int  i;              /* Loop iterator                  */
-  int  val;            /* Value of current character     */
-  int  entry_size;     /* Character size of arc entry    */
-  int  suppl;          /* Supplemental field value       */
-
-  /* Get sizing information */
-  width     =  (arc_read_get_next_value( line ) & 0xff) |
-              ((arc_read_get_next_value( line ) & 0xff) << 8);
-  max_size  =  (arc_read_get_next_value( line ) & 0xff) |
-              ((arc_read_get_next_value( line ) & 0xff) << 8);
-  curr_size =  (arc_read_get_next_value( line ) & 0xff) |
-              ((arc_read_get_next_value( line ) & 0xff) << 8);
-  suppl     =  (arc_read_get_next_value( line ) & 0xff);
-
-  if( same ) {
-    if( width != arc_get_width( base ) ) {
-      print_output( "Attempting to merge two databases derived from different designs.  Unable to merge", FATAL );
-      exit( 1 );
-    }
-    if( curr_size != arc_get_curr_size( base ) ) {
-      print_output( "Attempting to merge two databases derived from different designs.  Unable to merge", FATAL );
-      exit( 1 );
-    }
-  }
-
-  entry_size = arc_get_entry_width( width );
-  i          = ARC_STATUS_SIZE;
-  while( (i < ((curr_size * arc_get_entry_width( width )) + ARC_STATUS_SIZE)) && retval ) {
-    if( (val = arc_read_get_next_value( line )) != -1 ) {
-      if( same ) {
-        if( ((((i - ARC_STATUS_SIZE) % entry_size) == 0) && ((char)(val & 0xfc) != (base[i] & 0xfc))) || ((char)val != base[i]) ) {
-          print_output( "Attempting to merge two databases derived from different designs.  Unable to merge", FATAL );
-          exit( 1 );
-        }
-      }
-      base[i] = base[i] | (char)(val & 0xff);
-    } else {
-      retval = FALSE;
-    }
-    i++;
-  }
-
-  return( retval );
-
-}
-
-/*!
  \param arcs   Pointer to state transition arc array.
  \param index  Arc entry index to convert,
  \param left   If true, converts left state; otherwise, converts right state of entry.
@@ -947,6 +894,79 @@ void arc_state_to_string( char* arcs, int index, bool left, char* str ) {
     snprintf( tmp, 2, "%x", val );
     str[str_index] = tmp[0];
   }
+
+}
+
+/*!
+ \param base  Pointer to arc table to merge data into.
+ \param line  Pointer to read in line from CDD file to merge.
+ \param same  Specifies if arc table to merge needs to be exactly the same as the existing arc table.
+
+ \return Returns TRUE if line was read in correctly; otherwise, returns FALSE.
+
+*/
+bool arc_db_merge( char** base, char** line, bool same ) {
+
+  bool    retval = TRUE;  /* Return value for this function */
+  char*   arcs;           /* Read arc array                 */
+  char*   strl;           /* Left state value string        */
+  char*   strr;           /* Right state value string       */
+  vector* vecl;           /* Left state vector value        */
+  vector* vecr;           /* Right state vector value       */
+  int     i;              /* Loop iterator                  */
+  char    str_width[20];  /* Temporary string holder        */
+
+  if( arc_db_read( &arcs, line ) ) {
+
+    /* Check to make sure that arc arrays are compatible */
+    if( same && (arc_get_width( *base ) != arc_get_width( arcs )) ) {
+      print_output( "Attempting to merge two databases derived from different designs.  Unable to merge", FATAL );
+      exit( 1 );
+    }
+
+    /* Calculate strlen of arc array width */
+    snprintf( str_width, 20, "%d", arc_get_width( arcs ) );
+
+    /* Allocate string to hold value string */
+    strl = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 4 + strlen( str_width ) );
+    strr = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 4 + strlen( str_width ) );
+
+    /* Get prefix of left and right state value strings ready */
+    snprintf( strl, ((arc_get_width( arcs ) / 4) + 4 + strlen( str_width )), "%s'h", str_width );
+    snprintf( strr, ((arc_get_width( arcs ) / 4) + 4 + strlen( str_width )), "%s'h", str_width );
+
+    for( i=0; i<arc_get_curr_size( arcs ); i++ ) {
+
+      /* Get string versions of state values */
+      arc_state_to_string( arcs, i, TRUE,  (strl + 2 + strlen( str_width )) );      
+      arc_state_to_string( arcs, i, FALSE, (strr + 2 + strlen( str_width )) );      
+
+      /* Convert these strings to vectors */
+      vecl = vector_from_string( strl );
+      vecr = vector_from_string( strr );
+
+      /* Add these states to the base arc array */
+      arc_add( base, arc_get_width( arcs ), vecl, vecr, arc_get_entry_suppl( arcs, i, ARC_HIT_F ) );
+      if( arc_get_entry_suppl( arcs, i, ARC_BIDIR ) == 1 ) {
+        arc_add( base, arc_get_width( arcs ), vecr, vecl, arc_get_entry_suppl( arcs, i, ARC_HIT_R ) );
+      }
+
+      vector_dealloc( vecl );
+      vector_dealloc( vecr );
+
+    }
+
+    free_safe( strl );
+    free_safe( strr );
+    free_safe( arcs );
+
+  } else {
+
+    retval = FALSE;
+
+  }
+
+  return( retval );
 
 }
 
@@ -1051,6 +1071,11 @@ void arc_dealloc( char* arcs ) {
 
 /*
  $Log$
+ Revision 1.11  2003/09/19 02:34:51  phase1geo
+ Added new fsm1.3 diagnostic to regress suite which found a bug in arc.c that is
+ now fixed.  It had to do with resizing an arc array and copying its values.
+ Additionally, some output was fixed in the FSM reports.
+
  Revision 1.10  2003/09/15 02:37:03  phase1geo
  Adding development documentation for functions that needed them.
 

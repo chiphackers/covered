@@ -398,9 +398,9 @@ bool fsm_db_merge( fsm* base, char** line, bool same ) {
   assert( base->from_sig != NULL );
   assert( base->to_sig != NULL );
 
-  if( sscanf( *line, "%s %s%n", iname, oname, &chars_read ) == 1 ) {
+  if( sscanf( *line, "%s %s%n", iname, oname, &chars_read ) == 2 ) {
 
-    *line = *line + chars_read;
+    *line = *line + chars_read + 1;
 
     if( (strcmp( base->from_sig->name, iname ) != 0) || (strcmp( base->to_sig->name, oname ) != 0) ) {
 
@@ -409,7 +409,7 @@ bool fsm_db_merge( fsm* base, char** line, bool same ) {
 
     } else {
 
-      arc_db_merge( base->table, line, same );
+      arc_db_merge( &(base->table), line, same );
           
     }
 
@@ -855,6 +855,11 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.13  2003/09/19 02:34:51  phase1geo
+ Added new fsm1.3 diagnostic to regress suite which found a bug in arc.c that is
+ now fixed.  It had to do with resizing an arc array and copying its values.
+ Additionally, some output was fixed in the FSM reports.
+
  Revision 1.12  2003/09/15 02:37:03  phase1geo
  Adding development documentation for functions that needed them.
 

@@ -37,7 +37,7 @@ DIAGS1        = always1        always2        always3        always3.1.11A  alwa
                 concat5        concat6        cond1          cond2          delay1 \
                 delay2         define1        define1.1      define1.2      define2 \
                 define2.1      define3        define4        expand1        expand2 \
-                expand3        fsm1           fsm1.1         fsm1.2         fsm1.3        gate1 \
+                expand3        fsm1           fsm1.1         fsm1.2         fsm1.3        fsm1.4        gate1 \
                 hier1          ifdef1         ifdef1.2       ifdef2.1       ifdef2.2 \
                 ifdef2.3       ifelse1        include1       include1.1     include2 \
                 instance1      instance1.1    instance1.2    instance2      instance3 \
@@ -54,7 +54,7 @@ DIAGS2        = delay1.1
 DIAGS3        = delay1.2
 DIAGS4        = delay1.3
 
-MERGE1        = merge1
+MERGE1        = merge1         fsm2
            
 IVONLYDIAGS1  = always5.1      assign1        assign2.8      ifdef1.1       implicit1 \
                 implicit2      real1.1        static2        static2.1      static2.2
