@@ -813,65 +813,70 @@ char* vector_to_string( vector* vec, int type ) {
 }
 
 /*!
- \param str    String version of value.
- \param sized  Specifies if string value is sized or unsized.
- \param type   Type of string value.
-
- \return Returns pointer to newly create vector holding string value.
+ \param str  String version of value.
+ 
+ \return Returns pointer to newly created vector holding string value.
 
  Converts a string value from the lexer into a vector structure appropriately
  sized.
 */
-vector* vector_from_string( char* str, bool sized, int type ) {
+vector* vector_from_string( char* str ) {
 
   vector* vec;                   /* Temporary holder for newly created vector                                */
   int     bits_per_char;         /* Number of bits represented by a single character in the value string str */
   int     size;                  /* Specifies bit width of vector to create                                  */
   char*   ptr;                   /* Pointer to current character being evaluated in string str               */
   char    value[MAX_BIT_WIDTH];  /* String to store string value in                                          */
-  char    stype[2];              /* Type of string being parsed                                              */
+  char    stype[2];              /* Temporary holder for type of string being parsed                         */
+  int     type;                  /* Type of string being parsed                                              */
 
-  if( sized ) {
-
-    switch( type ) {
-      case DECIMAL     :  bits_per_char = 10;  assert( sscanf( str, "%d'%[sSdD]%[0-9]",              &size, stype, value ) == 3 );  break;
-      case BINARY      :  bits_per_char = 1;   assert( sscanf( str, "%d'%[sSbB]%[01xXzZ_\?]",        &size, stype, value ) == 3 );  break;
-      case OCTAL       :  bits_per_char = 3;   assert( sscanf( str, "%d'%[sSoO]%[0-7xXzZ_\?]",       &size, stype, value ) == 3 );  break;
-      case HEXIDECIMAL :  bits_per_char = 4;   assert( sscanf( str, "%d'%[sShH]%[0-9a-fA-FxXzZ_\?]", &size, stype, value ) == 3 );  break;
-      default          :
-        print_output( "Internal error:  Unknown type specified for function vector_from_string call", FATAL );
-        exit( 1 );
-        break;
-    }
-
+  if( sscanf( str, "%d'%[sSdD]%[0-9]", &size, stype, value ) == 3 ) {
+    bits_per_char = 10;
+    type          = DECIMAL;
+  } else if( sscanf( str, "%d'%[sSbB]%[01xXzZ_\?]", &size, stype, value ) == 3 ) {
+    bits_per_char = 1;
+    type          = BINARY;
+  } else if( sscanf( str, "%d'%[sSoO]%[0-7xXzZ_\?]", &size, stype, value ) == 3 ) {
+    bits_per_char = 3;
+    type          = OCTAL;
+  } else if( sscanf( str, "%d'%[sShH]%[0-9a-fA-FxXzZ_\?]", &size, stype, value ) == 3 ) {
+    bits_per_char = 4;
+    type          = HEXIDECIMAL;
+  } else if( sscanf( str, "'%[sSdD]%[0-9]", stype, value ) == 2 ) {
+    bits_per_char = 10;
+    type          = DECIMAL;
+    size          = 32;
+  } else if( sscanf( str, "'%[sSbB]%[01xXzZ_\?]", stype, value ) == 2 ) {
+    bits_per_char = 1;
+    type          = BINARY;
+    size          = 32;
+  } else if( sscanf( str, "'%[sSoO]%[0-7xXzZ_\?]", stype, value ) == 2 ) {
+    bits_per_char = 3;
+    type          = OCTAL;
+    size          = 32;
+  } else if( sscanf( str, "'%[sShH]%[0-9a-fA-FxXzZ_\?]", stype, value ) == 2 ) {
+    bits_per_char = 4;
+    type          = HEXIDECIMAL;
+    size          = 32;
+  } else if( sscanf( str, "%[0-9_]", value ) == 1 ) {
+    bits_per_char = 10;
+    type          = DECIMAL;
+    size          = 32;
   } else {
-
-    switch( type ) {
-      case DECIMAL     :  bits_per_char = 10;  assert( sscanf( str, "'%[sSdD]%[0-9]",              stype, value ) == 2 );  break;
-      case BINARY      :  bits_per_char = 1;   assert( sscanf( str, "'%[sSbB]%[01xXzZ_\?]",        stype, value ) == 2 );  break;
-      case OCTAL       :  bits_per_char = 3;   assert( sscanf( str, "'%[sSoO]%[0-7xXzZ_\?]",       stype, value ) == 2 );  break;
-      case HEXIDECIMAL :  bits_per_char = 4;   assert( sscanf( str, "'%[sShH]%[0-9a-fA-FxXzZ_\?]", stype, value ) == 2 );  break;
-      default          :
-        print_output( "Internal error:  Unknown type specified for function vector_from_string call", FATAL );
-        exit( 1 );
-        break;
-    }
-
-    /* Calculate size */
-    ptr  = value + strlen( value );
-    size = 0;
-    while( ptr >= value ) {
-      if( *ptr != '_' ) { size++; }
-      ptr--;
-    }
-
+    /* If the specified string is none of the above, return NULL */
+    return( NULL );
   }
 
   /* Create vector */
   vec = vector_create( size, 0 );
 
   vector_set_type( vec, type );
-  vector_set_static( vec, value, bits_per_char ); 
+
+  if( type == DECIMAL ) {
+    vector_from_int( vec, atol( value ) );
+  } else {
+    vector_set_static( vec, value, bits_per_char ); 
+  }
 
   return( vec );
 
@@ -1393,6 +1398,11 @@ void vector_dealloc( vector* vec ) {
 }
 
 /* $Log$
+/* Revision 1.15  2002/08/19 04:34:07  phase1geo
+/* Fixing bug in database reading code that dealt with merging modules.  Module
+/* merging is now performed in a more optimal way.  Full regression passes and
+/* own examples pass as well.
+/*
 /* Revision 1.14  2002/07/23 12:56:22  phase1geo
 /* Fixing some memory overflow issues.  Still getting core dumps in some areas.
 /*

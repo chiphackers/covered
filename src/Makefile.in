@@ -80,6 +80,7 @@ covered_SOURCES = parser.c \
 		  main.c \
 		  merge.c \
 		  module.c \
+		  param.c \
 		  parse.c \
 		  parser_misc.c \
 		  report.c \
@@ -106,8 +107,8 @@ LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
 covered_OBJECTS =  parser.o binding.o codegen.o comb.o db.o expr.o fsm.o \
 instance.o keywords.o lexer.o line.o link.o main.o merge.o module.o \
-parse.o parser_misc.o report.o score.o search.o signal.o sim.o stat.o \
-statement.o symtable.o toggle.o util.o vcd.o vector.o
+param.o parse.o parser_misc.o report.o score.o search.o signal.o sim.o \
+stat.o statement.o symtable.o toggle.o util.o vcd.o vector.o
 covered_LDADD = $(LDADD)
 covered_DEPENDENCIES = 
 covered_LDFLAGS = 
@@ -125,10 +126,10 @@ GZIP_ENV = --best
 DEP_FILES =  .deps/binding.P .deps/codegen.P .deps/comb.P .deps/db.P \
 .deps/expr.P .deps/fsm.P .deps/instance.P .deps/keywords.P \
 .deps/lexer.P .deps/line.P .deps/link.P .deps/main.P .deps/merge.P \
-.deps/module.P .deps/parse.P .deps/parser.P .deps/parser_misc.P \
-.deps/report.P .deps/score.P .deps/search.P .deps/signal.P .deps/sim.P \
-.deps/stat.P .deps/statement.P .deps/symtable.P .deps/toggle.P \
-.deps/util.P .deps/vcd.P .deps/vector.P
+.deps/module.P .deps/param.P .deps/parse.P .deps/parser.P \
+.deps/parser_misc.P .deps/report.P .deps/score.P .deps/search.P \
+.deps/signal.P .deps/sim.P .deps/stat.P .deps/statement.P \
+.deps/symtable.P .deps/toggle.P .deps/util.P .deps/vcd.P .deps/vector.P
 SOURCES = $(covered_SOURCES)
 OBJECTS = $(covered_OBJECTS)
 

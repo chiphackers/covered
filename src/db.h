@@ -26,6 +26,9 @@ void db_add_module( char* name, char* file );
 //! Adds specified signal to signal list.  Called by parser.
 void db_add_signal( char* name, int width, int lsb, int is_static );
 
+//! Adds specified parameter to parameter list.  Called by parser.
+void db_add_parameter( char* name, int value );
+
 //! Finds specified signal in module and returns pointer to the signal structure.  Called by parser.
 signal* db_find_signal( char* name );
 
@@ -69,6 +72,10 @@ void db_set_symbol_string( char* sym, char* value );
 void db_do_timestep( int time ); 
 
 /* $Log$
+/* Revision 1.11  2002/07/22 05:24:46  phase1geo
+/* Creating new VCD parser.  This should have performance benefits as well as
+/* have the ability to handle any problems that come up in parsing.
+/*
 /* Revision 1.10  2002/07/05 16:49:47  phase1geo
 /* Modified a lot of code this go around.  Fixed VCD reader to handle changes in
 /* the reverse order (last changes are stored instead of first for timestamp).

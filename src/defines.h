@@ -737,6 +737,8 @@ struct module_s {
   exp_link*  exp_tail;   /*!< Tail pointer to list of expressions in this module */
   stmt_link* stmt_head;  /*!< Head pointer to list of statements in this module  */
   stmt_link* stmt_tail;  /*!< Tail pointer to list of statements in this module  */
+  sig_link*  parm_head;  /*!< Head pointer to list of parameters in this module  */
+  sig_link*  parm_tail;  /*!< Tail pointer to list of parameters in this module  */
 };
 
 typedef struct module_s module;
@@ -838,6 +840,9 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.37  2002/07/23 12:56:22  phase1geo
+/* Fixing some memory overflow issues.  Still getting core dumps in some areas.
+/*
 /* Revision 1.36  2002/07/22 05:24:46  phase1geo
 /* Creating new VCD parser.  This should have performance benefits as well as
 /* have the ability to handle any problems that come up in parsing.

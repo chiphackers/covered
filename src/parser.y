@@ -88,7 +88,6 @@ int ignore_mode = 0;
 %type <text>      range_or_type_opt
 %type <text>      defparam_assign_list defparam_assign
 %type <text>      gate_instance
-%type <text>      parameter_assign_list parameter_assign
 %type <text>      localparam_assign_list localparam_assign
 %type <strlink>   register_variable_list list_of_variables
 %type <strlink>   net_decl_assigns gate_instance_list
@@ -2672,19 +2671,16 @@ parameter_assign_list
 	: parameter_assign
 	| range parameter_assign
 		{
-		  $$ = 0;
+		  free_safe( $1 );
 		}
 	| parameter_assign_list ',' parameter_assign
 
 parameter_assign
 	: IDENTIFIER '=' static_expr
 		{
-		  $$ = $1;
+                  db_add_parameter( $1, $3 );
 		}
         | UNUSED_IDENTIFIER '=' static_expr
-                {
-                  $$ = NULL;
-                }
 	;
 
 localparam_assign_list

@@ -14,6 +14,8 @@
 #include "link.h"
 #include "search.h"
 #include "parse.h"
+#include "param.h"
+#include "vector.h"
 
 
 char* top_module   = NULL;    /*!< Name of top-level module to score              */
@@ -38,20 +40,21 @@ void score_usage() {
   printf( "Usage:  covered score -t <top-level_module_name> -vcd <dumpfile> [<options>]\n" );
   printf( "\n" );
   printf( "   Options:\n" );
-  printf( "      -vcd <dumpfile>             Name of dumpfile to score design with.  If this option\n" );
-  printf( "                                  is not used, Covered will only create an initial CDD file\n" );
-  printf( "                                  from the design and will not attempt to score the design.\n" );
-  printf( "      -i <instance_name>          Instance name of top-level module.  Necessary if module\n" );
-  printf( "                                  to verify coverage is not the top-level module in the design.\n" );
-  printf( "                                  If not specified, -t value is used.\n" );
-  printf( "      -o <database_filename>      Name of database to write coverage information to.\n" );
-  printf( "      -I <directory>              Directory to find included Verilog files\n" );
-  printf( "      -f <filename>               Name of file containing additional arguments to parse\n" );
-  printf( "      -y <directory>              Directory to find unspecified Verilog files\n" );
-  printf( "      -v <filename>               Name of specific Verilog file to score\n" );
-  printf( "      -e <module_name>            Name of module to not score\n" );
-  printf( "      -D <define_name>(=<value>)  Defines the specified name to 1 or the specified value\n" );
-  printf( "      -h                          Displays this help information\n" );
+  printf( "      -vcd <dumpfile>              Name of dumpfile to score design with.  If this option\n" );
+  printf( "                                   is not used, Covered will only create an initial CDD file\n" );
+  printf( "                                   from the design and will not attempt to score the design.\n" );
+  printf( "      -i <instance_name>           Instance name of top-level module.  Necessary if module\n" );
+  printf( "                                   to verify coverage is not the top-level module in the design\n" );
+  printf( "                                   If not specified, -t value is used.\n" );
+  printf( "      -o <database_filename>       Name of database to write coverage information to.\n" );
+  printf( "      -I <directory>               Directory to find included Verilog files.\n" );
+  printf( "      -f <filename>                Name of file containing additional arguments to parse.\n" );
+  printf( "      -y <directory>               Directory to find unspecified Verilog files.\n" );
+  printf( "      -v <filename>                Name of specific Verilog file to score.\n" );
+  printf( "      -e <module_name>             Name of module to not score.\n" );
+  printf( "      -D <define_name>(=<value>)   Defines the specified name to 1 or the specified value.\n" );
+  printf( "      -P <parameter_scope>=<value> Performs a defparam on the specified parameter with value.\n" );
+  printf( "      -h                           Displays this help information.\n" );
   printf( "\n" );
   printf( "      +libext+.<extension>(+.<extension>)+\n" );
   printf( "                                  Extensions of Verilog files to allow in scoring\n" );
@@ -254,9 +257,25 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
         define_macro( argv[i], "1" );
       }
 
+    } else if( strncmp( "-P", argv[i], 2 ) == 0 ) {
+
+      i++;
+      ptr = argv[i];
+      while( (*ptr != '\0') && (*ptr != '=') ) {
+        ptr++;
+      }
+      if( *ptr == '\0' ) {
+        print_output( "Option -P must specify a value to assign.  See \"covered score -h\" for more information.", FATAL );
+        exit( 1 );
+      } else {
+        *ptr = '\0';
+        ptr++;
+        param_add_defparam( argv[i], vector_from_string( ptr ) );
+      }
+        
     } else {
 
-      snprintf( err_msg, 4096, "Unknown score command option \"%s\".  See \"covered -h\" for more information.", argv[i] );
+      snprintf( err_msg, 4096, "Unknown score command option \"%s\".  See \"covered score -h\" for more information.", argv[i] );
       print_output( err_msg, FATAL );
       retval = FALSE;
 
@@ -331,6 +350,11 @@ int command_score( int argc, int last_arg, char** argv ) {
 }
 
 /* $Log$
+/* Revision 1.18  2002/08/19 21:36:25  phase1geo
+/* Fixing memory corruption bug in score function for adding Verilog modules
+/* to use_files list.  This caused a core dump to occur when the -f option
+/* was used.
+/*
 /* Revision 1.17  2002/07/21 00:08:58  phase1geo
 /* Updating score usage information.  Updated manstyle user documentation though
 /* there seems to be some problem getting the HTML generated from this.  Getting

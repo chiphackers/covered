@@ -416,6 +416,33 @@ void db_add_signal( char* name, int width, int lsb, int is_static ) {
 }
 
 /*!
+ \param name   Name of parameter to add.
+ \param value  Static default value to assign to this parameter value.
+
+ Searches current module to verify that specified parameter name has not been previously
+ used in the module.  If the parameter name has not been found, it is created added to
+ the current module's parameter list.
+*/
+void db_add_parameter( char* name, int value ) {
+
+  signal  tmpparm;    /* Temporary parameter for parameter searching */
+  signal* parm;       /* Pointer to newly created parameter          */
+  char    msg[4096];  /* Display message string                      */
+
+  snprintf( msg, 4096, "In db_add_parameter, param: %s, value: %d\n", name, value );
+  print_output( msg, DEBUG );
+
+  tmpparm.name = name;
+
+  if( sig_link_find( &tmpparm, curr_module->parm_head ) == NULL ) {
+    parm = signal_create( name, 32, 0, TRUE );
+    vector_from_int( parm->value, value );
+    sig_link_add( parm, &(curr_module->parm_head), &(curr_module->parm_tail) );
+  }
+
+}
+
+/*!
  \param name  String name of signal to find in current module.
 
  \return Returns pointer to the found signal.  If signal is not found, internal error.
@@ -956,6 +983,11 @@ void db_do_timestep( int time ) {
 }
 
 /* $Log$
+/* Revision 1.51  2002/08/19 04:34:06  phase1geo
+/* Fixing bug in database reading code that dealt with merging modules.  Module
+/* merging is now performed in a more optimal way.  Full regression passes and
+/* own examples pass as well.
+/*
 /* Revision 1.50  2002/08/14 04:52:48  phase1geo
 /* Removing unnecessary calls to signal_dealloc function and fixing bug
 /* with signal_dealloc function.

@@ -14,6 +14,7 @@ covered_SOURCES = parser.c \
 		  main.c \
 		  merge.c \
 		  module.c \
+		  param.c \
 		  parse.c \
 		  parser_misc.c \
 		  report.c \
