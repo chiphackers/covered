@@ -34,7 +34,7 @@ proc help_show_manual {section} {
 
   set fpath [file join $HOME doc $section].html
 
-  if {[catch {exec $BROWSER -remote $fpath}]} {
+  if {[catch {exec $BROWSER -remote "openFile( $fpath )"}]} {
 
     # perhaps browser doesn't understand -remote flag
     if {[catch "exec $BROWSER \"$fpath\" &" emsg]} {
