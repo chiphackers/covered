@@ -53,7 +53,7 @@
  If -w option is specified to report command, specifies number of characters of width
  we will output.
 */
-#define DEFAULT_LINE_WIDTH 80
+#define DEFAULT_LINE_WIDTH 115
 
 /*!
  \addtogroup output_type Output type
@@ -1534,6 +1534,10 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.94  2003/12/18 18:40:23  phase1geo
+ Increasing detailed depth from 1 to 2 and making detail depth somewhat
+ programmable.
+
  Revision 1.93  2003/12/16 23:22:07  phase1geo
  Adding initial code for line width specification for report output.
 

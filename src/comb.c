@@ -48,6 +48,7 @@ extern bool         report_covered;
 extern unsigned int report_comb_depth;
 extern bool         report_instance;
 extern char         leading_hierarchy[4096];
+extern int          line_width;
 
 
 /*!
@@ -91,6 +92,46 @@ int combination_calc_depth( expression* exp, unsigned int curr_depth, bool left 
 
 }
 
+void combination_multi_expr_calc( expression* exp, int* hit, float* total ) {
+
+  bool and_op;   /* Specifies if current expression is an AND or LAND operation */
+
+  if( exp != NULL ) {
+
+    and_op = (SUPPL_OP( exp->suppl ) == EXP_OP_AND) || (SUPPL_OP( exp->suppl ) == EXP_OP_LAND);
+
+    /* If we have hit the left-most expression, start creating string here */
+    if( (exp->left != NULL) && (SUPPL_OP( exp->suppl ) != SUPPL_OP( exp->left->suppl )) ) {
+      if( and_op ) {
+        *hit += SUPPL_WAS_FALSE( exp->left->suppl );
+      } else {
+        *hit += SUPPL_WAS_TRUE( exp->left->suppl );
+      }
+      (*total)++;
+    } else {
+      combination_multi_expr_calc( exp->left, hit, total );
+    }
+
+    if( and_op ) {
+      *hit += SUPPL_WAS_FALSE( exp->right->suppl );
+    } else {
+      *hit += SUPPL_WAS_TRUE( exp->right->suppl );
+    }
+    (*total)++;
+
+    if( (SUPPL_IS_ROOT( exp->suppl ) == 1) || (SUPPL_OP( exp->suppl ) != SUPPL_OP( exp->parent->expr->suppl )) ) {
+      if( and_op ) {
+        *hit += ((exp->suppl >> SUPPL_LSB_EVAL_11) & 0x1);
+      } else {
+        *hit += ((exp->suppl >> SUPPL_LSB_EVAL_00) & 0x1);
+      }
+      (*total)++;
+    }
+
+  }
+
+}
+
 /*!
  \param exp         Pointer to expression tree to traverse.
  \param curr_depth  Current search depth in given expression tree.
@@ -110,16 +151,26 @@ void combination_get_tree_stats( expression* exp, unsigned int curr_depth, float
          (report_comb_depth == REPORT_VERBOSE) ||
          (report_comb_depth == REPORT_SUMMARY) ) {
 
-      if( (SUPPL_IS_ROOT( exp->suppl ) == 1) || (SUPPL_OP( exp->suppl ) != SUPPL_OP( exp->parent->expr->suppl )) ) {
+      if( (EXPR_IS_MEASURABLE( exp ) == 1) && (SUPPL_WAS_COMB_COUNTED( exp->suppl ) == 0) ) {
 
-        /* Calculate current expression combination coverage */
-        if( (EXPR_IS_MEASURABLE( exp ) == 1) && (SUPPL_WAS_COMB_COUNTED( exp->suppl ) == 0) ) {
-          *total = *total + 2;
-          if( expression_is_static_only( exp ) ) {
-            *hit = *hit + 2;
+        if( (SUPPL_IS_ROOT( exp->suppl ) == 1) || (SUPPL_OP( exp->suppl ) != SUPPL_OP( exp->parent->expr->suppl )) ) {
+
+          /* Calculate current expression combination coverage */
+          if( (exp->left != NULL) && (SUPPL_OP( exp->suppl ) == SUPPL_OP( exp->left->suppl )) &&
+              ((SUPPL_OP( exp->suppl ) == EXP_OP_AND)  ||
+               (SUPPL_OP( exp->suppl ) == EXP_OP_OR)   ||
+               (SUPPL_OP( exp->suppl ) == EXP_OP_LAND) ||
+               (SUPPL_OP( exp->suppl ) == EXP_OP_LOR)) ) {
+            combination_multi_expr_calc( exp, hit, total );
           } else {
-            *hit = *hit + SUPPL_WAS_TRUE( exp->suppl ) + SUPPL_WAS_FALSE( exp->suppl );
+            *total = *total + 2;
+            if( expression_is_static_only( exp ) ) {
+              *hit = *hit + 2;
+            } else {
+              *hit = *hit + SUPPL_WAS_TRUE( exp->suppl ) + SUPPL_WAS_FALSE( exp->suppl );
+            }
           }
+
         }
 
       }
@@ -717,7 +768,7 @@ char* combination_prep_line( char* line, int start, int len ) {
   int   start_ul;           /* Index of starting underline                       */
 
   /* Allocate memory for string to return */
-  str = (char*)malloc_safe( len + 1 );
+  str = (char*)malloc_safe( len + 2 );
 
   i          = 0;
   curr_index = 0;
@@ -923,7 +974,7 @@ void combination_two_vars( FILE* ofile, expression* exp, int val0, int val1, int
         ((exp->suppl >> SUPPL_LSB_EVAL_10) & 0x1) +
         ((exp->suppl >> SUPPL_LSB_EVAL_11) & 0x1);
 
-  fprintf( ofile, "Expression %d   (%d/%d)\n", id, hit );
+  fprintf( ofile, "Expression %d   (%d/4)\n", id, hit );
   fprintf( ofile, "^^^^^^^^^^^^^ - %s\n", op );
   fprintf( ofile, " L | R | Value\n" );
   fprintf( ofile, "---+---+------\n" );
@@ -964,12 +1015,14 @@ void combination_two_vars( FILE* ofile, expression* exp, int val0, int val1, int
 
 }
 
-void combination_multi_var_exprs( char** line1, char** line2, char** line3, int* hit, int* total, expression* exp, int* curr_id ) {
+void combination_multi_var_exprs( char** line1, char** line2, char** line3, expression* exp, int id ) {
 
   char* left_line1;
   char* left_line2;
   char* left_line3;
   char  curr_id_str[20];
+  int   curr_id_str_len;
+  int   curr_id = id;
   int   i;
   bool  and_op;
 
@@ -980,47 +1033,55 @@ void combination_multi_var_exprs( char** line1, char** line2, char** line3, int*
     /* If we have hit the left-most expression, start creating string here */
     if( (exp->left != NULL) && (SUPPL_OP( exp->suppl ) != SUPPL_OP( exp->left->suppl )) ) {
 
-      assert( *curr_id == 1 );
-      left_line1 = (char*)malloc_safe( 5 );
-      left_line2 = (char*)malloc_safe( 5 );
-      left_line3 = (char*)malloc_safe( 5 );
-      snprintf( left_line1, 5, " %d |", *curr_id );
-      snprintf( left_line2, 5, "---+",  *curr_id );
-      if( and_op ) {
-        snprintf( left_line3, 5, " %d  ", SUPPL_WAS_FALSE( exp->left->suppl ) );
-        *hit += SUPPL_WAS_FALSE( exp->left->suppl );
-      } else {
-        snprintf( left_line3, 5, " %d  ", SUPPL_WAS_TRUE( exp->left->suppl ) );
-        *hit += SUPPL_WAS_TRUE( exp->left->suppl );
+      snprintf( curr_id_str, 20, "%d", (curr_id - 1) );
+      curr_id_str_len = strlen( curr_id_str );
+      left_line1 = (char*)malloc_safe( curr_id_str_len + 4 );
+      left_line2 = (char*)malloc_safe( curr_id_str_len + 4 );
+      left_line3 = (char*)malloc_safe( curr_id_str_len + 4 );
+      snprintf( left_line1, (curr_id_str_len + 4), " %d |", (curr_id - 1) );
+      for( i=0; i<curr_id_str_len; i++ ) {
+        curr_id_str[i] = '-';
       }
-      (*total)++;
-      (*curr_id)++;
+      snprintf( left_line2, (curr_id_str_len + 4), "-%s-+", curr_id_str );
+      for( i=0; i<(curr_id_str_len - 1); i++ ) {
+        curr_id_str[i] = ' ';
+      }
+      curr_id_str[i] = '\0';
+      if( and_op ) {
+        snprintf( left_line3, (curr_id_str_len + 4), " %d%s  ", SUPPL_WAS_FALSE( exp->left->suppl ), curr_id_str );
+      } else {
+        snprintf( left_line3, (curr_id_str_len + 4), " %d%s  ", SUPPL_WAS_TRUE( exp->left->suppl ),  curr_id_str );
+      }
 
     } else {
 
-      combination_multi_var_exprs( &left_line1, &left_line2, &left_line3, hit, total, exp->left, curr_id );
+      combination_multi_var_exprs( &left_line1, &left_line2, &left_line3, exp->left, (id - 1) );
 
     }
 
     /* Take left side and merge it with right side */
     assert( left_line1 != NULL );
-    snprintf( curr_id_str, 20, "%d", *curr_id );
-    *line1 = (char*)malloc_safe( strlen( left_line1 ) + strlen( curr_id_str ) + 4 );
-    *line2 = (char*)malloc_safe( strlen( left_line2 ) + strlen( curr_id_str ) + 4 );
-    *line3 = (char*)malloc_safe( strlen( left_line3 ) + strlen( curr_id_str ) + 4 );
-    snprintf( *line1, (strlen( left_line1 ) + strlen( curr_id_str ) + 4), "%s %d |", left_line1, *curr_id );
-    for( i=0; i<strlen( curr_id_str ); i++ ) {
+    snprintf( curr_id_str, 20, "%d", curr_id );
+    curr_id_str_len = strlen( curr_id_str );
+    *line1 = (char*)malloc_safe( strlen( left_line1 ) + curr_id_str_len + 4 );
+    *line2 = (char*)malloc_safe( strlen( left_line2 ) + curr_id_str_len + 4 );
+    *line3 = (char*)malloc_safe( strlen( left_line3 ) + curr_id_str_len + 4 );
+    snprintf( *line1, (strlen( left_line1 ) + curr_id_str_len + 4), "%s %d |", left_line1, curr_id );
+    for( i=0; i<curr_id_str_len; i++ ) {
       curr_id_str[i] = '-';
     }
-    snprintf( *line2, (strlen( left_line2 ) + strlen( curr_id_str ) + 4), "%s-%s-+", left_line2, curr_id_str );
-    if( and_op ) {
-      snprintf( *line3, (strlen( left_line3 ) + strlen( curr_id_str ) + 4), "%s %d  ", left_line3, SUPPL_WAS_FALSE( exp->right->suppl ) );
-      *hit += SUPPL_WAS_FALSE( exp->right->suppl );
-    } else {
-      snprintf( *line3, (strlen( left_line3 ) + strlen( curr_id_str ) + 4), "%s %d  ", left_line3, SUPPL_WAS_TRUE( exp->right->suppl ) );
-      *hit += SUPPL_WAS_TRUE( exp->right->suppl );
+    snprintf( *line2, (strlen( left_line2 ) + curr_id_str_len + 4), "%s-%s-+", left_line2, curr_id_str );
+    for( i=0; i<(curr_id_str_len - 1); i++ ) {
+      curr_id_str[i] = ' ';
     }
-    (*total)++;
+    curr_id_str[i] = '\0';
+    if( and_op ) {
+      snprintf( *line3, (strlen( left_line3 ) + curr_id_str_len + 4), "%s %d%s  ",
+                left_line3, SUPPL_WAS_FALSE( exp->right->suppl ), curr_id_str );
+    } else {
+      snprintf( *line3, (strlen( left_line3 ) + curr_id_str_len + 4), "%s %d%s  ",
+                left_line3, SUPPL_WAS_TRUE( exp->right->suppl ),  curr_id_str );
+    }
     free_safe( left_line1 );
     free_safe( left_line2 );
     free_safe( left_line3 );
@@ -1037,20 +1098,45 @@ void combination_multi_var_exprs( char** line1, char** line2, char** line3, int*
         snprintf( *line1, (strlen( left_line1 ) + 7), "%s All 1", left_line1 );
         snprintf( *line2, (strlen( left_line2 ) + 7), "%s------",  left_line2 );
         snprintf( *line3, (strlen( left_line3 ) + 7), "%s  %d  ",  left_line3, ((exp->suppl >> SUPPL_LSB_EVAL_11) & 0x1) );
-        *hit += ((exp->suppl >> SUPPL_LSB_EVAL_11) & 0x1);
       } else {
-        snprintf( *line1, (strlen( left_line1 ) + 7), "%s All 1", left_line1 );
+        snprintf( *line1, (strlen( left_line1 ) + 7), "%s All 0", left_line1 );
         snprintf( *line2, (strlen( left_line2 ) + 7), "%s------",  left_line2 );
         snprintf( *line3, (strlen( left_line3 ) + 7), "%s  %d  ",  left_line3, ((exp->suppl >> SUPPL_LSB_EVAL_00) & 0x1) );
-        *hit += ((exp->suppl >> SUPPL_LSB_EVAL_00) & 0x1);
       }
-      (*total)++;
       free_safe( left_line1 );
       free_safe( left_line2 );
       free_safe( left_line3 );
     }
 
-    (*curr_id)++;
+  }
+
+}
+
+void combination_multi_expr_output( FILE* ofile, char* line1, char* line2, char* line3 ) {
+
+  int start = 0;
+  int i;
+  int len   = strlen( line1 );
+
+  for( i=0; i<len; i++ ) {
+
+    if( (i + 1) == len ) {
+
+      fprintf( ofile, "%s\n",   (line1 + start) );
+      fprintf( ofile, "%s\n",   (line2 + start) );
+      fprintf( ofile, "%s\n\n", (line3 + start) );
+
+    } else if( (line1[i] == '|') && ((i - start) >= line_width) ) {
+
+      line1[i] = '\0';
+      line2[i] = '\0';
+      line3[i] = '\0';
+      fprintf( ofile, "%s|\n",   (line1 + start) );
+      fprintf( ofile, "%s+\n",   (line2 + start) );
+      fprintf( ofile, "%s \n\n", (line3 + start) );
+      start = i + 1;
+
+    }
 
   }
 
@@ -1071,17 +1157,19 @@ void combination_multi_vars( FILE* ofile, expression* exp, int id ) {
   int         uniq_shift;
   int         eval_shift;
   int         eval_val;
-  int         total   = 0;
+  float       total   = 0;
   int         hit     = 0;
   char*       line1   = NULL;
   char*       line2   = NULL;
   char*       line3   = NULL;
-  int         curr_id = 1;
 
   /* Gather report output for this expression */
-  combination_multi_var_exprs( &line1, &line2, &line3, &hit, &total, exp, &curr_id );
+  combination_multi_var_exprs( &line1, &line2, &line3, exp, (id - 1) );
 
-  fprintf( ofile, "Expression %d   (%d/%d)\n", id, hit, total );
+  /* Calculate hit and total values for this sub-expression */
+  combination_multi_expr_calc( exp, &hit, &total );
+
+  fprintf( ofile, "Expression %d   (%d/%.0f)\n", id, hit, total );
 
   switch( SUPPL_OP( exp->suppl ) ) {
     case EXP_OP_AND  :  fprintf( ofile, "^^^^^^^^^^^^^ - &\n" );   break;
@@ -1092,9 +1180,13 @@ void combination_multi_vars( FILE* ofile, expression* exp, int id ) {
   }
 
   /* Output the lines paying attention to the current line width */
-  fprintf( ofile, "%s\n", line1 );
-  fprintf( ofile, "%s\n", line2 );
-  fprintf( ofile, "%s\n", line3 );
+  combination_multi_expr_output( ofile, line1, line2, line3 );
+/*
+  fprintf( ofile, "%s\n",   line1 );
+  fprintf( ofile, "%s\n",   line2 );
+  fprintf( ofile, "%s\n\n", line3 );
+*/
+
   free_safe( line1 );
   free_safe( line2 );
   free_safe( line3 );
@@ -1106,18 +1198,35 @@ void combination_multi_vars( FILE* ofile, expression* exp, int id ) {
  \param exp         Pointer to expression tree to evaluate.
  \param curr_depth  Specifies current depth of expression tree.
  \param exp_id      Pointer to current expression ID to use.
+ \param adv_id      If TRUE, causes expression ID to increment by one (for forced underlines).
 
  Describe which combinations were not hit for all subexpressions in the
  specified expression tree.  We display the value of missed combinations by
  displaying the combinations of the children expressions that were not run
  during simulation.
 */
-void combination_list_missed( FILE* ofile, expression* exp, unsigned int curr_depth, int* exp_id ) {
+void combination_list_missed( FILE* ofile, expression* exp, unsigned int curr_depth, int* exp_id, bool adv_id ) {
+
+  bool need_to_adv_r = FALSE;
+  bool need_to_adv_l = FALSE;
 
   if( exp != NULL ) {
     
-    combination_list_missed( ofile, exp->left,  combination_calc_depth( exp, curr_depth, TRUE ),  exp_id );
-    combination_list_missed( ofile, exp->right, combination_calc_depth( exp, curr_depth, FALSE ), exp_id );
+    if( ((exp->left != NULL) && (SUPPL_OP( exp->suppl ) == SUPPL_OP( exp->left->suppl )) ||
+          (SUPPL_IS_ROOT( exp->suppl ) == 0) && (SUPPL_OP( exp->suppl ) == SUPPL_OP( exp->parent->expr->suppl ))) &&
+            ((SUPPL_OP( exp->suppl ) == EXP_OP_AND)  ||
+             (SUPPL_OP( exp->suppl ) == EXP_OP_OR)   ||
+             (SUPPL_OP( exp->suppl ) == EXP_OP_LAND) ||
+             (SUPPL_OP( exp->suppl ) == EXP_OP_LOR)) ) {
+      need_to_adv_r = TRUE;
+    }
+
+    if( need_to_adv_r && (exp->left != NULL) && (SUPPL_OP( exp->suppl ) != SUPPL_OP( exp->left->suppl )) ) {
+      need_to_adv_l = TRUE;
+    }
+
+    combination_list_missed( ofile, exp->left,  combination_calc_depth( exp, curr_depth, TRUE ),  exp_id, need_to_adv_l );
+    combination_list_missed( ofile, exp->right, combination_calc_depth( exp, curr_depth, FALSE ), exp_id, need_to_adv_r );
 
     if( (EXPR_COMB_MISSED( exp ) == 1) && 
         (((report_comb_depth == REPORT_DETAILED) && (curr_depth <= report_comb_depth)) ||
@@ -1188,8 +1297,14 @@ void combination_list_missed( FILE* ofile, expression* exp, unsigned int curr_de
       
         }
 
-      *exp_id = *exp_id + 1;
+        *exp_id = *exp_id + 1;
       
+      }
+
+    } else {
+ 
+      if( adv_id ) {
+        *exp_id = *exp_id + 1;
       }
 
     }
@@ -1289,7 +1404,7 @@ void combination_display_verbose( FILE* ofile, stmt_link* stmtl ) {
       fprintf( ofile, "\n\n" );
 
       /* Output logical combinations that missed complete coverage */
-      combination_list_missed( ofile, unexec_exp, 0, &exp_id );
+      combination_list_missed( ofile, unexec_exp, 0, &exp_id, FALSE );
 
     }
     
@@ -1425,6 +1540,9 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.75  2003/12/22 23:37:02  phase1geo
+ More fixes to report output code.
+
  Revision 1.74  2003/12/22 23:18:09  phase1geo
  More work on combinational logic report output.  Still not quite there in the
  look and feel and full regression should still fail.
