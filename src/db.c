@@ -34,21 +34,21 @@ extern nibble or_optab[16];
 /*!
  Specifies the string Verilog scope that is currently specified in the VCD file.
 */
-char* curr_inst_scope = NULL;
+char* curr_inst_scope   = NULL;
 
 /*!
  Pointer to the current instance selected by the VCD parser.  If this value is
  NULL, the current instance does not reside in the design specified for coverage.
 */
-mod_inst* curr_instance  = NULL;
+mod_inst* curr_instance = NULL;
 
-str_link* modlist_head      = NULL;
-str_link* modlist_tail      = NULL;
+str_link* modlist_head  = NULL;
+str_link* modlist_tail  = NULL;
 
-module*   curr_module       = NULL;
+module*   curr_module   = NULL;
 
-symtable* vcd_symtab        = NULL;
-symtable* timestep_tab      = NULL;
+symtable* vcd_symtab    = NULL;
+symtable* timestep_tab  = NULL;
 
 /*!
  This static value contains the current expression ID number to use for the next expression found, it
@@ -301,6 +301,7 @@ void db_add_instance( char* scope, char* modname ) {
   mod_link* found_mod_link;  /* Pointer to found mod_link in module list */
   char      msg[4096];       /* Display message string                   */
   str_link* mod_in_list;     /* Pointer to found module name in modlist  */
+  mod_parm* mparm;           /* Module parameter to add to instance      */
 
   /* There should always be a parent so internal error if it does not exist. */
   assert( curr_module != NULL );
@@ -393,6 +394,114 @@ void db_end_module() {
 }
 
 /*!
+ \param name  Name of declared parameter to add.
+ \param expr  Expression containing value of this parameter.
+
+ Searches current module to verify that specified parameter name has not been previously
+ used in the module.  If the parameter name has not been found, it is created added to
+ the current module's parameter list.
+*/
+void db_add_declared_param( char* name, expression* expr ) {
+
+  char      scope[4096];  /* String containing current instance scope */
+  mod_inst* inst;         /* Pointer to found module instance         */
+  char      msg[4096];    /* Display message string                   */
+  int       ignore;       /* Number of matching modules to ignore     */
+  int       i;            /* Loop iterator                            */
+  mod_parm* mparm;        /* Pointer to added module parameter        */
+
+  snprintf( msg, 4096, "In db_add_declared_param, param: %s\n", name );
+  print_output( msg, DEBUG );
+
+  if( mod_parm_find( name, curr_module->param_head ) == NULL ) {
+
+    /* Add parameter to module parameter list */
+    mparm = mod_parm_add( name, expr, PARAM_TYPE_DECLARED, &(curr_module->param_head), &(curr_module->param_tail) );
+
+    /* Also add this to all associated instance parameter lists */
+    i      = 0;
+    ignore = 0;
+    while( (inst = instance_find_by_module( instance_root, curr_module, &ignore )) != NULL ) {
+
+      /* Reset scope */
+      scope[0] = '\0';
+
+      /* Find scope for current instance */
+      instance_gen_scope( scope, inst );
+
+      if( inst->parent == NULL ) {
+        param_resolve_declared( scope, mparm, NULL, &(inst->param_head), &(inst->param_tail) );
+      } else {
+        param_resolve_declared( scope, mparm, inst->parent->param_head, &(inst->param_head), &(inst->param_tail) );
+      }
+
+      i++;
+      ignore = i;
+
+    }
+
+  }
+
+}
+
+/*!
+ \param name  Name of override parameter to add.
+ \param expr  Expression containing value of this parameter.
+
+ Creates override parameter and stores this in the current module as well
+ as all associated instances.
+*/
+void db_add_override_param( expression* expr ) {
+
+  mod_parm* mparm;      /* Pointer to module parameter added to current module */
+  mod_inst* inst;       /* Pointer to current instance to add parameter to     */
+  char      msg[4096];  /* Display message string                              */
+  int       ignore;     /* Specifies how many matching instances to ignore     */
+  int       i;          /* Loop iterator                                       */
+
+#ifdef NOT_YET
+  snprintf( msg, 4096, "In db_add_override_param, param: %s\n", name );
+  print_output( msg, DEBUG );
+
+  /* Add override parameter to module parameter list */
+  mparm = mod_parm_add( name, expr, PARAM_TYPE_OVERRIDE, &(curr_module->param_head), &(curr_module->param_tail) );
+#endif
+
+  /* Also add this to all associated instance parameter lists */
+  i      = 0;
+  ignore = 0;
+  while( (inst = instance_find_by_module( instance_root, curr_module, &ignore )) != NULL ) {
+
+    param_resolve_override( mparm, &(inst->param_head), &(inst->param_tail) );
+
+    i++;
+    ignore = i;
+
+  }
+
+}
+
+/*!
+ \param name  Name of parameter value to override.
+ \param expr  Expression value of parameter override.
+
+ Adds specified parameter to the defparam list.
+*/
+void db_add_defparam( char* name, expression* expr ) {
+
+  char msg[4096];  /* Display message string */
+
+  snprintf( msg, 4096, "In db_add_defparam, defparam: %s\n", name );
+  print_output( msg, DEBUG );
+
+  snprintf( msg, 4096, "defparam construct is not supported, line: %d.  Use -P option to score instead", expr->line );
+  print_output( msg, WARNING );
+
+  expression_dealloc( expr, FALSE );
+
+}
+
+/*!
  \param name       Name of signal being added.
  \param width      Bit width of signal being added.
  \param lsb        Least significant bit of signal.
@@ -415,44 +524,6 @@ void db_add_signal( char* name, int width, int lsb, int is_static ) {
     sig_link_add( signal_create( name, width, lsb, is_static ), &(curr_module->sig_head), &(curr_module->sig_tail) );
   }
   
-}
-
-/*!
- \param name  Name of parameter to add.
- \param expr  Expression containing value of this parameter.
-
- Searches current module to verify that specified parameter name has not been previously
- used in the module.  If the parameter name has not been found, it is created added to
- the current module's parameter list.
-*/
-void db_add_parameter( char* name, expression* expr ) {
-
-  char    msg[4096];  /* Display message string                      */
-
-  snprintf( msg, 4096, "In db_add_parameter, param: %s\n", name );
-  print_output( msg, DEBUG );
-
-/*
-  if( param_find( name, curr_module->param_head ) == NULL ) {
-    param_add( name, expr, curr_module );
-  }
-*/
-
-}
-
-/*!
- \param name  Name of parameter value to override.
- \param expr  Expression value of parameter override.
-
- Adds specified parameter to the defparam list.
-*/
-void db_add_defparam( char* name, expression* expr ) {
-
-  char msg[4096];  /* Display message string */
-
-  snprintf( msg, 4096, "In db_add_defparam, defparam: %s\n", name );
-  print_output( msg, DEBUG );
-
 }
 
 /*!
@@ -1003,6 +1074,11 @@ void db_do_timestep( int time ) {
 }
 
 /* $Log$
+/* Revision 1.55  2002/09/19 05:25:19  phase1geo
+/* Fixing incorrect simulation of static values and fixing reports generated
+/* from these static expressions.  Also includes some modifications for parameters
+/* though these changes are not useful at this point.
+/*
 /* Revision 1.54  2002/09/06 03:05:27  phase1geo
 /* Some ideas about handling parameters have been added to these files.  Added
 /* "Special Thanks" section in User's Guide for acknowledgements to people

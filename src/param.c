@@ -78,6 +78,30 @@ inst_parm* defparam_tail = NULL;   /*!< Pointer to tail of parameter list for gl
 
 
 /*!
+ \param name  Name of parameter value to find.
+ \param parm  Pointer to head of module parameter list to search.
+
+ \return Returns pointer to found module parameter or NULL if module parameter is not
+         found.
+
+ Searches specified module parameter list for an module parameter that matches 
+ the name of the specified module parameter.  If a match is found, a pointer to 
+ the found module parameter is returned to the calling function; otherwise, a value of NULL
+ is returned if no match was found.
+*/
+mod_parm* mod_parm_find( char* name, mod_parm* parm ) {
+
+  assert( name != NULL );
+
+  while( (parm != NULL) && (strcmp( parm->name, name ) != 0) ) {
+    parm = parm->next;
+  }
+
+  return( parm );
+ 
+}
+
+/*!
  \param scope  Full hierarchical name of parameter value.
  \param expr   Expression tree for current module parameter.
  \param type   Specifies type of module parameter (declared/override).
@@ -361,7 +385,6 @@ inst_parm* param_has_override( char* mname, mod_parm* mparm, inst_parm* ip_head,
 
   assert( mname != NULL );
   assert( mparm != NULL );
-  assert( ip_head != NULL );
 
   /* First, check to see if the parent instance contains an override in its instance list. */
   icurr = ip_head;
@@ -501,57 +524,15 @@ void param_resolve_override( mod_parm* oparm, inst_parm** ihead, inst_parm** ita
 
 }
 
-/************************************************************************************/
-
-#ifdef DEPRECATED
-void param_generate_sig( parameter* parm ) {
-
-  sig_sig* curr_sig;     /* Pointer to current sig_sig to process */
-
-#ifdef SKIP
-  curr_sig = parm->sig_head;
-
-  while( sig_sig != NULL ) {
-
-    /* Create new signal based on     
-    /*
-     Iterate through current original signal's expression list, changing
-     expression signal pointers to point to this signal.
-    */
-
-    /* Create copy of original signal */
-    curr_sig->new_sig = signal_copy( curr_sig->orig_sig );
-
-    curr_sig = curr_sig->next;
-
-  }
-#endif
-
-}
-
-/*!
- \param parm  Pointer to current parameter to handle.
-
-*/
-void param_generate( parameter* parm ) {
-
-  signal*     curr_sig;   /* Pointer to current signal in parameter     */
-  expression* curr_exp;   /* Pointer to current expression in parameter */
-
-  
-}
-
-/*!
- \param parm  Pointer to current parameter to destroy.
-
-*/
-void param_destroy( parameter* parm ) {
-
-}
-
-#endif
 
 /* $Log$
+/* Revision 1.7  2002/09/21 04:11:32  phase1geo
+/* Completed phase 1 for adding in parameter support.  Main code is written
+/* that will create an instance parameter from a given module parameter in
+/* its entirety.  The next step will be to complete the module parameter
+/* creation code all the way to the parser.  Regression still passes and
+/* everything compiles at this point.
+/*
 /* Revision 1.6  2002/09/19 05:25:19  phase1geo
 /* Fixing incorrect simulation of static values and fixing reports generated
 /* from these static expressions.  Also includes some modifications for parameters

@@ -819,34 +819,6 @@ struct statistic_s {
 
 //------------------------------------------------------------------------------
 /*!
- Structure containing two signal pointers used by parameters.
-*/
-struct sig_sig_s;
-
-typedef struct sig_sig_s sig_sig;
-
-struct sig_sig_s {
-  signal*  new_sig;   /*!< Pointer to newly created signal */
-  signal*  old_sig;   /*!< Pointer to original signal      */
-  sig_sig* next;      /*!< Pointer to next sig_sig in list */
-};
-
-//------------------------------------------------------------------------------
-/*!
- Structure containing two expression pointers used by parameters.
-*/
-struct exp_exp_s;
-
-typedef struct exp_exp_s exp_exp;
-
-struct exp_exp_s {
-  expression* new_exp;  /*!< Pointer to newly created expression */
-  expression* old_exp;  /*!< Pointer to original expression      */
-  exp_exp*    next;     /*!< Pointer to next exp_exp in list     */
-};
-
-//------------------------------------------------------------------------------
-/*!
  Structure containing parts for a module parameter definition.
 */
 struct mod_parm_s;
@@ -989,10 +961,7 @@ struct mod_inst_s {
   statistic* stat;          /*!< Pointer to statistic holder                                */
   inst_parm* param_head;    /*!< Head pointer to list of parameter overrides in this module */
   inst_parm* param_tail;    /*!< Tail pointer to list of parameter overrides in this module */
-  sig_sig*   psig_head;     /*!< Head pointer to parameter signal list                      */
-  sig_sig*   psig_tail;     /*!< Tail pointer to parameter signal list                      */
-  exp_exp*   pexp_head;     /*!< Head pointer to parameter expression list                  */
-  exp_exp*   pexp_tail;     /*!< Tail pointer to parameter expression list                  */
+  mod_inst*  parent;        /*!< Pointer to parent instance -- used for convenience only    */
   mod_inst*  child_head;    /*!< Pointer to head of child list                              */
   mod_inst*  child_tail;    /*!< Pointer to tail of child list                              */
   mod_inst*  next;          /*!< Pointer to next child in parents list                      */
@@ -1007,6 +976,13 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.44  2002/09/21 04:11:32  phase1geo
+/* Completed phase 1 for adding in parameter support.  Main code is written
+/* that will create an instance parameter from a given module parameter in
+/* its entirety.  The next step will be to complete the module parameter
+/* creation code all the way to the parser.  Regression still passes and
+/* everything compiles at this point.
+/*
 /* Revision 1.43  2002/09/19 05:25:19  phase1geo
 /* Fixing incorrect simulation of static values and fixing reports generated
 /* from these static expressions.  Also includes some modifications for parameters

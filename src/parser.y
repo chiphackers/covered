@@ -2567,8 +2567,7 @@ parameter_value_opt
                   if( ignore_mode == 0 ) {
 		    expression_dealloc( $3, FALSE );
                   } else {
-                    // We need to handle parameter overriding here
-                    
+                    // db_add_override_param( $3 );
                   }
 		}
 	| '#' '(' parameter_value_byname_list ')'
@@ -2687,7 +2686,7 @@ parameter_assign_list
 parameter_assign
 	: IDENTIFIER '=' expression
 		{
-                  db_add_parameter( $1, $3 );
+                  db_add_declared_param( $1, $3 );
 		}
         | UNUSED_IDENTIFIER '=' expression
 	;

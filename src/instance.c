@@ -34,15 +34,38 @@ mod_inst* instance_create( module* mod, char* inst_name ) {
   new_inst->stat       = NULL;
   new_inst->param_head = NULL;
   new_inst->param_tail = NULL;
-  new_inst->psig_head  = NULL;
-  new_inst->psig_tail  = NULL;
-  new_inst->pexp_head  = NULL;
-  new_inst->pexp_tail  = NULL;
+  new_inst->parent     = NULL;
   new_inst->child_head = NULL;
   new_inst->child_tail = NULL;
   new_inst->next       = NULL;
 
   return( new_inst );
+
+}
+
+/*!
+ \param scope  String pointer to store generated scope (assumed to be allocated)
+ \param leaf   Pointer to leaf instance in scope.
+
+ Recursively travels up to the root of the instance tree, building the scope
+ string as it goes.  When the root instance is reached, the string is returned.
+ Assumes that scope is initialized to the NULL character.
+*/
+void instance_gen_scope( char* scope, mod_inst* leaf ) {
+
+  if( leaf != NULL ) {
+
+    /* Call parent instance first */
+    instance_gen_scope( scope, leaf->parent );
+
+    if( scope[0] != '\0' ) {
+      strcat( scope, "." );
+      strcat( scope, leaf->name );
+    } else {
+      strcpy( scope, leaf->name );
+    }
+
+  }
 
 }
 
@@ -141,6 +164,35 @@ mod_inst* instance_find_by_module( mod_inst* root, module* mod, int* ignore ) {
 }
 
 /*!
+ \param mparm  Pointer to module parameter list to resolve.
+ \param inst   Pointer to current instance to resolve parameters into.
+
+ Performs parameter resolution for all module parameters in mparm list
+ and places them into the instance parameter list located in the inst
+ structure.  Note:  This function MUST be called after the specified
+ instance is attached to the instance tree.
+*/
+void instance_resolve_params( mod_parm* mparm, mod_inst* inst ) {
+
+  char scope[4096];     /* String containing full hierarchical scope of instance */
+
+  /* Generate current instance scope */
+  scope[0] = '\0';
+  instance_gen_scope( scope, inst );
+
+  while( mparm != NULL ) {
+    if( PARAM_TYPE( mparm ) == PARAM_TYPE_DECLARED ) {
+      param_resolve_declared( scope, mparm, inst->parent->param_head, &(inst->param_head), &(inst->param_tail) );
+    } else {
+      assert( PARAM_TYPE( mparm ) == PARAM_TYPE_OVERRIDE );
+      param_resolve_override( mparm, &(inst->param_head), &(inst->param_tail) );
+    }
+    mparm = mparm->next;
+  }
+
+}
+
+/*!
  \param root       Root mod_inst pointer of module instance tree.
  \param parent     Pointer to parent module of specified child.
  \param child      Pointer to child module to add.
@@ -160,15 +212,15 @@ void instance_parse_add( mod_inst** root, module* parent, module* child, char* i
 
   if( *root == NULL ) {
 
-    // printf( "In instance_parse_add, top instance name: %s\n", inst_name );
     *root = instance_create( child, inst_name );
+
+    /* Resolve all parameters for new instance */
+    instance_resolve_params( child->param_head, *root );
 
   } else {
 
     assert( parent != NULL );
   
-    // printf( "In instance_parse_add, parent name: %s, child instance: %s\n", parent->name, inst_name );
-
     i      = 0;
     ignore = 0;
 
@@ -184,6 +236,12 @@ void instance_parse_add( mod_inst** root, module* parent, module* child, char* i
         inst->child_tail       = new_inst;
       }
 
+      /* Point this instance's parent pointer to its parent */
+      new_inst->parent = inst;
+
+      /* Resolve all parameters for new instance */
+      instance_resolve_params( child->param_head, new_inst );
+
       i++;
       ignore = i;
 
@@ -197,9 +255,9 @@ void instance_parse_add( mod_inst** root, module* parent, module* child, char* i
 }
 
 /*!
- \param root    Pointer to root instance of module instance tree.
- \param parent  String scope of parent instance.
- \param child   Pointer to child module to add to specified parent's child list.
+ \param root       Pointer to root instance of module instance tree.
+ \param parent     String scope of parent instance.
+ \param child      Pointer to child module to add to specified parent's child list.
  \param inst_name  Instance name of this child module instance.
 
  Adds the child module to the child module pointer list located in
@@ -242,56 +300,6 @@ void instance_read_add( mod_inst** root, char* parent, module* child, char* inst
   }
 
 }
-
-void instance_calc_params( mod_inst* inst ) {
-
-    
-
-}
-
-#ifdef DEPRECATED
-/*!
- \param inst  Pointer to instance to generate parameters for.
-
- Iterates through entire instance parameter list, calling the param_generate
- routine for each parameter in this list.
-*/
-void instance_param_generate( mod_inst* inst ) {
-
-  parameter* parm;    /* Pointer to current parameter in list */
-
-  assert( inst != NULL );
-
-  parm = inst->param_head;
-
-  while( parm != NULL ) {
-    param_generate( parm );
-    parm = parm->next;
-  }
-
-}
-
-/*!
- \param inst  Pointer to instance to destroy parameters for.
-
- Iterates through entire instance parameter list, calling the param_destroy
- routine for each parameter in this list.
-*/
-void instance_param_destroy( mod_inst* inst ) {
-
-  parameter* parm;    /* Pointer to current parameter in list */
-
-  assert( inst != NULL );
-
-  parm = inst->param_head;
-
-  while( parm != NULL ) {
-    param_destroy( parm );
-    parm = parm->next;
-  }
-
-}
-#endif
 
 /*!
  \param root        Root of module instance tree to write.
@@ -439,6 +447,13 @@ void instance_dealloc( mod_inst* root, char* scope ) {
 }
 
 /* $Log$
+/* Revision 1.13  2002/09/21 04:11:32  phase1geo
+/* Completed phase 1 for adding in parameter support.  Main code is written
+/* that will create an instance parameter from a given module parameter in
+/* its entirety.  The next step will be to complete the module parameter
+/* creation code all the way to the parser.  Regression still passes and
+/* everything compiles at this point.
+/*
 /* Revision 1.12  2002/09/19 05:25:19  phase1geo
 /* Fixing incorrect simulation of static values and fixing reports generated
 /* from these static expressions.  Also includes some modifications for parameters
