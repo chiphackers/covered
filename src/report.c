@@ -560,6 +560,7 @@ int command_report( int argc, int last_arg, char** argv ) {
   FILE* ofile;            /* Pointer to output stream                          */
   char* covered_home;     /* Pathname to Covered's home installation directory */
   char* covered_browser;  /* Name of browser to use for GUI help pages         */
+  char* covered_version;  /* String version of current Covered version         */
   char* main_file;        /* Name of main TCL file to interpret                */ 
 
   /* Parse score command-line */
@@ -657,8 +658,10 @@ int command_report( int argc, int last_arg, char** argv ) {
       covered_browser = strdup( COVERED_BROWSER );
 #endif
 
+      covered_version = strdup( VERSION );
+
       /* Initialize TCL */
-      tcl_func_initialize( interp, covered_home, covered_browser );
+      tcl_func_initialize( interp, covered_home, covered_version, covered_browser );
 
       /* Call the top-level Tcl file */
       main_file = (char*)malloc( strlen( covered_home ) + 30 );
@@ -683,6 +686,10 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.39  2004/09/14 04:54:58  phase1geo
+ Adding check for browser to configuration build scripts.  Adding code to set
+ BROWSER global variable in Tcl scripts.
+
  Revision 1.38  2004/08/13 20:45:05  phase1geo
  More added for combinational logic verbose reporting.  At this point, the
  code is being output with underlines that can move up and down the expression

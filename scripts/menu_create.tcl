@@ -23,6 +23,7 @@ proc menu_create {.menubar} {
 
   global start_line end_line
   global file_name file_types
+  global BROWSER
 
   # Create the menu-buttons for File, Preferences and About
   menubutton .menubar.file   -text "File"        -underline 0
@@ -221,10 +222,17 @@ proc menu_create {.menubar} {
   set thm [menu .menubar.help.menu -tearoff false]
 
   # Add Manual and About information
-  $thm add command -label "Manual" -state disabled
+  $thm add command -label "Manual" -state disabled -command {
+    help_show_manual "welcome"
+  }
   $thm add separator
   $thm add command -label "About Covered" -command {
     help_show_about
+  }
+
+  # Enable the manual help entry if we have a browser to use
+  if {$BROWSER != ""} {
+    $thm entryconfigure 0 -state normal
   }
     
   # Pack the .menubar frame

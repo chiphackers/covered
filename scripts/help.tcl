@@ -1,11 +1,8 @@
 # Contains procs for handling help menu windows
 
-set covered_version "20040820"
-set BROWSER         ""
-
 proc help_show_about {} {
 
-  global covered_version HOME
+  global VERSION HOME
 
   if {[winfo exists .helpabout]} {
 
@@ -18,8 +15,8 @@ proc help_show_about {} {
     wm title .helpabout "About Covered"
 
     label .helpabout.i -background white -image [image create photo -file "$HOME/scripts/banner.gif"]
-    label .helpabout.l -background white -justify center -text "Covered $covered_version\n\nAuthor:  Trevor Williams\nEmail:  trevorw@charter.net\nHomepage:  http://covered.sourceforge.net\n\nFreely distributable under the GPL license"
-    button .helpabout.b -text "Dismiss" -command {
+    label .helpabout.l -background white -justify left -text "Version:      $VERSION\nAuthor:       Trevor Williams\nEmail:         trevorw@charter.net\nHomepage:  http://covered.sourceforge.net\n\nFreely distributable under the GPL license"
+    button .helpabout.b -text "Close" -command {
       destroy .helpabout
     }
 
@@ -28,5 +25,9 @@ proc help_show_about {} {
     pack .helpabout.b -pady 10
 
   } 
+
+}
+
+proc help_show_manual {section} {
 
 }

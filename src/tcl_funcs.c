@@ -658,7 +658,7 @@ int tcl_func_get_comb_summary( ClientData d, Tcl_Interp* tcl, int argc, const ch
 
 }
 
-void tcl_func_initialize( Tcl_Interp* tcl, char* home, char* browser ) {
+void tcl_func_initialize( Tcl_Interp* tcl, char* home, char* version, char* browser ) {
 
   Tcl_CreateCommand( tcl, "tcl_func_get_module_list",           (Tcl_CmdProc*)(tcl_func_get_module_list),           0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_instance_list",         (Tcl_CmdProc*)(tcl_func_get_instance_list),         0, 0 );
@@ -682,13 +682,22 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* home, char* browser ) {
   /* Set HOME variable to location of scripts */
   Tcl_SetVar( tcl, "HOME", home, TCL_GLOBAL_ONLY );
 
-  /* Set BROWSER variable to locate browser to use for help pages */
-  Tcl_SetVar( tcl, "BROWSER", browser, TCL_GLOBAL_ONLY );
+  /* Set VERSION variable */
+  Tcl_SetVar( tcl, "VERSION", version, TCL_GLOBAL_ONLY );
+
+  /* Set BROWSER variable to locate browser to use for help pages if one has been specified */
+  if( browser != NULL ) {
+    Tcl_SetVar( tcl, "BROWSER", browser, TCL_GLOBAL_ONLY );
+  }
 
 }
 
 /*
  $Log$
+ Revision 1.13  2004/09/14 04:54:58  phase1geo
+ Adding check for browser to configuration build scripts.  Adding code to set
+ BROWSER global variable in Tcl scripts.
+
  Revision 1.12  2004/08/17 15:23:37  phase1geo
  Added combinational logic coverage output to GUI.  Modified comb.c code to get this
  to work that impacts ASCII coverage output; however, regression is fully passing with
