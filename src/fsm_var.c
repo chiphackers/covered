@@ -340,8 +340,6 @@ void fsm_var_stmt_add( statement* stmt, char* mod_name ) {
 }
 
 /*!
- \param mod_head  Pointer to head of module linked list.
-
  After Verilog parsing has completed, this function should be called to bind all signals
  to their associated FSM state expressions and modules.  For each entry in the FSM binding list
  the signal name is looked in the module specified in the binding entry.  If the signal is found,
@@ -464,6 +462,11 @@ void fsm_var_remove( fsm_var* fv ) {
 
 /*
  $Log$
+ Revision 1.12  2003/11/11 21:48:09  phase1geo
+ Fixing bug where next pointers in bind lists were not being initialized to
+ NULL (manifested itself in Irix).  Also added missing development documentation
+ to functions in fsm_var.c and removed unnecessary function.
+
  Revision 1.11  2003/11/11 13:38:00  phase1geo
  Fixing bug in fsm_var that bound FSM statements early.  This caused an
  incorrect ordering of statements that results in incorrect FSM coverage.

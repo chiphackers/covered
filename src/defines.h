@@ -848,7 +848,7 @@
 
  The following defines specify the attribute types that are parseable by Covered.
 
- !{
+ @{
 */
 
 #define ATTRIBUTE_UNKNOWN       0       /*!< This attribute is not recognized by Covered */
@@ -1509,6 +1509,9 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.88  2003/11/05 05:22:56  phase1geo
+ Final fix for bug 835366.  Full regression passes once again.
+
  Revision 1.87  2003/10/28 00:18:05  phase1geo
  Adding initial support for inline attributes to specify FSMs.  Still more
  work to go but full regression still passes at this point.
