@@ -144,6 +144,16 @@ void sim_expr_changed( expression* expr ) {
       /* Continue up the tree */
       sim_expr_changed( expr->parent->expr );
 
+    } else {
+
+      /*
+       If this expression is only 1-level deep, set one of the changed bits to let the simulator
+       know that it needs to evaluate the expression.
+      */
+      if( (SUPPL_IS_LEFT_CHANGED( expr->suppl ) == 0) && (SUPPL_IS_RIGHT_CHANGED( expr->suppl ) == 0) ) {
+        expr->suppl = expr->suppl | (0x1 << SUPPL_LSB_LEFT_CHANGED);
+      }
+
     }
 
   }
@@ -223,7 +233,7 @@ void sim_expression( expression* expr ) {
      An EOR expression is special in that it will automatically traverse down its tree when
      its operation is performed so don't traverse the tree now.
     */
-    if( SUPPL_OP( expr->suppl ) != EXP_OP_EOR ) {
+    if( (SUPPL_OP( expr->suppl ) != EXP_OP_EOR) && (expr->left != NULL) ) {
       sim_expression( expr->left );
     }
 
@@ -237,7 +247,7 @@ void sim_expression( expression* expr ) {
   if( SUPPL_IS_RIGHT_CHANGED( expr->suppl ) == 1 ) {
 
     /* See explanation above */
-    if( SUPPL_OP( expr->suppl ) != EXP_OP_EOR ) {
+    if( (SUPPL_OP( expr->suppl ) != EXP_OP_EOR) && (expr->right != NULL) ) {
       sim_expression( expr->right );
     }
 
@@ -377,6 +387,9 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.32  2003/10/13 22:10:07  phase1geo
+ More changes for FSM support.  Still not quite there.
+
  Revision 1.31  2003/08/15 03:52:22  phase1geo
  More checkins of last checkin and adding some missing files.
 

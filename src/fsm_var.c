@@ -136,20 +136,16 @@ void fsm_var_check_for_unused() {
     curr = fsm_var_head;
     while( curr != NULL ) {
       if( curr->iexp == NULL ) {
-/*
         code = codegen_gen_expr( curr->ivar, -1, SUPPL_OP( curr->ivar->suppl ) );
         snprintf( user_msg, USER_MSG_LENGTH, "%-25.25s  %s", curr->mod, code );
         print_output( user_msg, WARNING_WRAP );
         free_safe( code );
-*/
       }
       if( curr->table == NULL ) {
-/*
         code = codegen_gen_expr( curr->ovar, -1, SUPPL_OP( curr->ovar->suppl ) );
         snprintf( user_msg, USER_MSG_LENGTH, "%-25.25s  %s", curr->mod, code );
         print_output( user_msg, WARNING_WRAP );
         free_safe( code );
-*/
       }
       curr = curr->next;
     }
@@ -358,6 +354,9 @@ void fsm_var_remove( fsm_var* fv ) {
 
 /*
  $Log$
+ Revision 1.4  2003/10/13 12:27:25  phase1geo
+ More fixes to FSM stuff.
+
  Revision 1.3  2003/10/13 03:56:29  phase1geo
  Fixing some problems with new FSM code.  Not quite there yet.
 

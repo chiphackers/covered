@@ -1173,6 +1173,11 @@ void expression_operate( expression* expr ) {
     /* If this expression is attached to an FSM, perform the FSM calculation now */
     if( expr->table != NULL ) {
       fsm_table_set( expr->table );
+      /* If from_state was not specified, we need to copy the current contents of to_state to from_state */
+      if( expr->table->from_state->id == expr->id ) {
+        vector_dealloc( expr->table->from_state->value );
+        vector_copy( expr->value, &(expr->table->from_state->value) );
+      }
     }
 
   }
@@ -1327,6 +1332,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.80  2003/10/11 05:15:08  phase1geo
+ Updates for code optimizations for vector value data type (integers to chars).
+ Updated regression for changes.
+
  Revision 1.79  2003/10/10 20:52:07  phase1geo
  Initial submission of FSM expression allowance code.  We are still not quite
  there yet, but we are getting close.

@@ -110,11 +110,11 @@ FINITE STATE MACHINE COVERAGE RESULTS BY INSTANCE
                                                                State                             Arc
 Instance                                          Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
 ----------------------------------------------------------------------------------------------------------------
-  main                                              4/  ? /  ?        ? %            6/  ? /  ?        ? %
+  main                                              4/  ? /  ?        ? %            4/  ? /  ?        ? %
 
 Module: main, File: fsm4.1.v, Instance: main
 --------------------------------------------------------
-FSM input/output state (state)
+FSM input state (state), output state (state)
 
   Hit States
 
@@ -129,12 +129,10 @@ FSM input/output state (state)
 
     From State    To State  
     ==========    ==========
-    16'h0001   -> 16'h0010  
-    16'h0010   -> 16'h0100  
-    16'h0100   -> 16'h1000  
-    16'h1000   -> 16'h0010  
-    16'h0010   -> 16'h1000  
-    16'h1000   -> 16'h0001  
+    16'h0001   -> 16'h0001  
+    16'h0010   -> 16'h0010  
+    16'h0100   -> 16'h0100  
+    16'h1000   -> 16'h1000  
 
 =================================================================================
 
