@@ -935,22 +935,10 @@ void combination_unary( FILE* ofile, expression* exp, int id, char* op ) {
 
   fprintf( ofile, "Expression %d   (%d/2)\n", id, hit );
   fprintf( ofile, "^^^^^^^^^^^^^ - %s\n", op );
-  fprintf( ofile, " Value\n" );
-  fprintf( ofile, "-------\n" );
-  
-  if( SUPPL_WAS_FALSE( exp->suppl ) == 0 ) {
-    fprintf( ofile, "   0\n" );
-  }
-
-  if( SUPPL_WAS_TRUE( exp->suppl ) == 0 ) {
-    if( exp->value->width > 1 ) {
-      fprintf( ofile, "   1+\n" );
-    } else {
-      fprintf( ofile, "   1\n" );
-    }
-  }
-
-  fprintf( ofile, "\n" );
+  fprintf( ofile, "=0=|=1=\n" );
+  fprintf( ofile, " %c   %c\n\n",
+		  ((SUPPL_WAS_FALSE( exp->suppl ) == 1) ? ' ' : 'M'),
+		  ((SUPPL_WAS_TRUE( exp->suppl )  == 1) ? ' ' : 'M') );
 
 }
 
@@ -987,42 +975,13 @@ void combination_two_vars( FILE* ofile, expression* exp, int val0, int val1, int
 
   fprintf( ofile, "Expression %d   (%d/4)\n", id, hit );
   fprintf( ofile, "^^^^^^^^^^^^^ - %s\n", op );
-  fprintf( ofile, " L | R | Value\n" );
-  fprintf( ofile, "---+---+------\n" );
-
-  if( ((exp->suppl >> SUPPL_LSB_EVAL_00) & 0x1) == 0 ) {
-    fprintf( ofile, " 0 | 0 |    %d\n", val0 );
-  }
-
-  if( ((exp->suppl >> SUPPL_LSB_EVAL_01) & 0x1) == 0 ) {
-    if( exp->right->value->width > 1 ) {
-      fprintf( ofile, " 0 | 1+|    %d\n", val1 );
-    } else {
-      fprintf( ofile, " 0 | 1 |    %d\n", val1 );
-    }
-  }
-
-  if( ((exp->suppl >> SUPPL_LSB_EVAL_10) & 0x1) == 0 ) {
-    if( exp->left->value->width > 1 ) {
-      fprintf( ofile, " 1+| 0 |    %d\n", val2 );
-    } else {
-      fprintf( ofile, " 1 | 0 |    %d\n", val2 );
-    }
-  }
-
-  if( ((exp->suppl >> SUPPL_LSB_EVAL_11) & 0x1) == 0 ) {
-    if( (exp->left->value->width > 1) && (exp->right->value->width > 1) ) {
-      fprintf( ofile, " 1+| 1+|    %d\n", val3 );
-    } else if( exp->left->value->width > 1 ) {
-      fprintf( ofile, " 1+| 1 |    %d\n", val3 );
-    } else if( exp->right->value->width > 1 ) {
-      fprintf( ofile, " 1 | 1+|    %d\n", val3 );
-    } else {
-      fprintf( ofile, " 1 | 1 |    %d\n", val3 );
-    }
-  }
-
-  fprintf( ofile, "\n" );
+  fprintf( ofile, " LR | LR | LR | LR \n" );
+  fprintf( ofile, "=00=|=01=|=10=|=11=\n" );
+  fprintf( ofile, " %c    %c    %c    %c\n\n",
+                  ((((exp->suppl >> SUPPL_LSB_EVAL_00) & 0x1) == 1) ? ' ' : 'M'),
+                  ((((exp->suppl >> SUPPL_LSB_EVAL_01) & 0x1) == 1) ? ' ' : 'M'),
+                  ((((exp->suppl >> SUPPL_LSB_EVAL_10) & 0x1) == 1) ? ' ' : 'M'),
+                  ((((exp->suppl >> SUPPL_LSB_EVAL_11) & 0x1) == 1) ? ' ' : 'M') );
 
 }
 
@@ -1050,18 +1009,23 @@ void combination_multi_var_exprs( char** line1, char** line2, char** line3, expr
       left_line2 = (char*)malloc_safe( curr_id_str_len + 4 );
       left_line3 = (char*)malloc_safe( curr_id_str_len + 4 );
       snprintf( left_line1, (curr_id_str_len + 4), " %d |", (curr_id - 1) );
-      for( i=0; i<curr_id_str_len; i++ ) {
-        curr_id_str[i] = '-';
+      for( i=0; i<(curr_id_str_len-1); i++ ) {
+        curr_id_str[i] = '=';
       }
-      snprintf( left_line2, (curr_id_str_len + 4), "-%s-+", curr_id_str );
+      curr_id_str[i] = '\0'; 
+      if( and_op ) { 
+        snprintf( left_line2, (curr_id_str_len + 4), "=0%s=|", curr_id_str );
+      } else { 
+        snprintf( left_line2, (curr_id_str_len + 4), "=1%s=|", curr_id_str );
+      }
       for( i=0; i<(curr_id_str_len - 1); i++ ) {
         curr_id_str[i] = ' ';
       }
       curr_id_str[i] = '\0';
       if( and_op ) {
-        snprintf( left_line3, (curr_id_str_len + 4), " %d%s  ", SUPPL_WAS_FALSE( exp->left->suppl ), curr_id_str );
+        snprintf( left_line3, (curr_id_str_len + 4), " %c%s  ", ((SUPPL_WAS_FALSE( exp->left->suppl ) == 1) ? ' ' : 'M'), curr_id_str );
       } else {
-        snprintf( left_line3, (curr_id_str_len + 4), " %d%s  ", SUPPL_WAS_TRUE( exp->left->suppl ),  curr_id_str );
+        snprintf( left_line3, (curr_id_str_len + 4), " %c%s  ", ((SUPPL_WAS_TRUE( exp->left->suppl )  == 1) ? ' ' : 'M'), curr_id_str );
       }
 
     } else {
@@ -1078,20 +1042,25 @@ void combination_multi_var_exprs( char** line1, char** line2, char** line3, expr
     *line2 = (char*)malloc_safe( strlen( left_line2 ) + curr_id_str_len + 4 );
     *line3 = (char*)malloc_safe( strlen( left_line3 ) + curr_id_str_len + 4 );
     snprintf( *line1, (strlen( left_line1 ) + curr_id_str_len + 4), "%s %d |", left_line1, curr_id );
-    for( i=0; i<curr_id_str_len; i++ ) {
-      curr_id_str[i] = '-';
+    for( i=0; i<(curr_id_str_len-1); i++ ) {
+      curr_id_str[i] = '=';
     }
-    snprintf( *line2, (strlen( left_line2 ) + curr_id_str_len + 4), "%s-%s-+", left_line2, curr_id_str );
+    curr_id_str[i] = '\0'; 
+    if( and_op ) {
+      snprintf( *line2, (strlen( left_line2 ) + curr_id_str_len + 4), "%s=0%s=|", left_line2, curr_id_str );
+    } else { 
+      snprintf( *line2, (strlen( left_line2 ) + curr_id_str_len + 4), "%s=1%s=|", left_line2, curr_id_str );
+    }
     for( i=0; i<(curr_id_str_len - 1); i++ ) {
       curr_id_str[i] = ' ';
     }
     curr_id_str[i] = '\0';
     if( and_op ) {
-      snprintf( *line3, (strlen( left_line3 ) + curr_id_str_len + 4), "%s %d%s  ",
-                left_line3, SUPPL_WAS_FALSE( exp->right->suppl ), curr_id_str );
+      snprintf( *line3, (strlen( left_line3 ) + curr_id_str_len + 4), "%s %c%s  ",
+                left_line3, ((SUPPL_WAS_FALSE( exp->right->suppl ) == 1) ? ' ' : 'M'), curr_id_str );
     } else {
-      snprintf( *line3, (strlen( left_line3 ) + curr_id_str_len + 4), "%s %d%s  ",
-                left_line3, SUPPL_WAS_TRUE( exp->right->suppl ),  curr_id_str );
+      snprintf( *line3, (strlen( left_line3 ) + curr_id_str_len + 4), "%s %c%s  ",
+                left_line3, ((SUPPL_WAS_TRUE( exp->right->suppl )  == 1) ? ' ' : 'M'),  curr_id_str );
     }
     free_safe( left_line1 );
     free_safe( left_line2 );
@@ -1106,13 +1075,13 @@ void combination_multi_var_exprs( char** line1, char** line2, char** line3, expr
       *line2     = (char*)malloc_safe( strlen( left_line2 ) + 7 );
       *line3     = (char*)malloc_safe( strlen( left_line3 ) + 7 );
       if( and_op ) {
-        snprintf( *line1, (strlen( left_line1 ) + 7), "%s All 1", left_line1 );
-        snprintf( *line2, (strlen( left_line2 ) + 7), "%s------",  left_line2 );
-        snprintf( *line3, (strlen( left_line3 ) + 7), "%s  %d  ",  left_line3, ((exp->suppl >> SUPPL_LSB_EVAL_11) & 0x1) );
+        snprintf( *line1, (strlen( left_line1 ) + 7), "%s All",   left_line1 );
+        snprintf( *line2, (strlen( left_line2 ) + 7), "%s==1==",  left_line2 );
+        snprintf( *line3, (strlen( left_line3 ) + 7), "%s  %c  ", left_line3, ((((exp->suppl >> SUPPL_LSB_EVAL_11) & 0x1) == 1) ? ' ' : 'M') );
       } else {
-        snprintf( *line1, (strlen( left_line1 ) + 7), "%s All 0", left_line1 );
-        snprintf( *line2, (strlen( left_line2 ) + 7), "%s------",  left_line2 );
-        snprintf( *line3, (strlen( left_line3 ) + 7), "%s  %d  ",  left_line3, ((exp->suppl >> SUPPL_LSB_EVAL_00) & 0x1) );
+        snprintf( *line1, (strlen( left_line1 ) + 7), "%s All",   left_line1 );
+        snprintf( *line2, (strlen( left_line2 ) + 7), "%s==0==",  left_line2 );
+        snprintf( *line3, (strlen( left_line3 ) + 7), "%s  %c  ", left_line3, ((((exp->suppl >> SUPPL_LSB_EVAL_00) & 0x1) == 1) ? ' ' : 'M') );
       }
       free_safe( left_line1 );
       free_safe( left_line2 );
@@ -1143,7 +1112,7 @@ void combination_multi_expr_output( FILE* ofile, char* line1, char* line2, char*
       line2[i] = '\0';
       line3[i] = '\0';
       fprintf( ofile, "%s|\n",   (line1 + start) );
-      fprintf( ofile, "%s+\n",   (line2 + start) );
+      fprintf( ofile, "%s|\n",   (line2 + start) );
       fprintf( ofile, "%s \n\n", (line3 + start) );
       start = i + 1;
 
@@ -1549,6 +1518,9 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.78  2004/01/03 06:03:51  phase1geo
+ Fixing file changes from last checkin.
+
  Revision 1.77  2004/01/02 22:11:03  phase1geo
  Updating regression for latest batch of changes.  Full regression now passes.
  Fixed bug with event or operation in report command.
