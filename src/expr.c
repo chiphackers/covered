@@ -117,7 +117,8 @@ expression* expression_create( expression* right, expression* left, int op, int 
              (op == EXP_OP_UXOR ) ||
              (op == EXP_OP_UNAND) ||
              (op == EXP_OP_UNOR ) ||
-             (op == EXP_OP_UNXOR) ) {
+             (op == EXP_OP_UNXOR) ||
+             (op == EXP_OP_LAST) ) {
 
     /* If this expression will evaluate to a single bit, create vector now */
     expression_create_value( new_expr, 1, 0 );
@@ -574,6 +575,7 @@ void expression_operate( expression* expr ) {
 
       case EXP_OP_SIG :
       case EXP_OP_NONE :
+      case EXP_OP_LAST :
         break;
 
       case EXP_OP_SBIT_SEL :
@@ -615,29 +617,45 @@ void expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_PEDGE :
-        if( vector_bit_val( expr->right->value->value, 0 ) == 1 ) {
+        value1a = vector_bit_val( expr->right->value->value, 0 );
+        value1b = vector_bit_val( expr->left->value->value,  0 );
+        if( (value1a != value1b) && (value1a == 1) ) {
           bit = 1;
           vector_set_value( expr->value, &bit, 1, 0, 0 );
         } else {
           bit = 0;
           vector_set_value( expr->value, &bit, 1, 0, 0 );
         }
+        /* Set left LAST value to current value of right */
+        vector_set_value( expr->left->value, &value1a, 1, 0, 0 );
         break;
  
       case EXP_OP_NEDGE :
-        bit = 1;
-        if( vector_bit_val( expr->right->value->value, 0 ) == 0 ) {
+        value1a = vector_bit_val( expr->right->value->value, 0 );
+        value1b = vector_bit_val( expr->left->value->value,  0 );
+        if( (value1a != value1b) && (value1a == 0) ) {
+          bit = 1;
+          vector_set_value( expr->value, &bit, 1, 0, 0 );
+       } else {
+          bit = 0;
+          vector_set_value( expr->value, &bit, 1, 0, 0 );
+        }
+        /* Set left LAST value to current value of right */
+        vector_set_value( expr->left->value, &value1a, 1, 0, 0 );
+        break;
+
+      case EXP_OP_AEDGE :
+        value1a = vector_bit_val( expr->right->value->value, 0 );
+        value1b = vector_bit_val( expr->left->value->value,  0 );
+        if( value1a != value1b ) {
           bit = 1;
           vector_set_value( expr->value, &bit, 1, 0, 0 );
         } else {
           bit = 0;
           vector_set_value( expr->value, &bit, 1, 0, 0 );
         }
-        break;
-
-      case EXP_OP_AEDGE :
-        bit = 1;
-        vector_set_value( expr->value, &bit, 1, 0, 0 );
+        /* Set left LAST value to current value of right */
+        vector_set_value( expr->left->value, &value1a, 1, 0, 0 );
         break;
 
       case EXP_OP_DELAY :
@@ -744,6 +762,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.24  2002/07/03 03:11:01  phase1geo
+/* Fixing multiplication handling error.
+/*
 /* Revision 1.23  2002/07/03 00:59:14  phase1geo
 /* Fixing bug with conditional statements and other "deep" expression trees.
 /*

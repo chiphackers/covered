@@ -1,0 +1,10 @@
+3 main main always2.v
+2 4 main 5 3001 0 0 
+2 5 main 5 359b 4 0 1 0 11100
+2 1 main 5 3001 0 0 
+2 2 main 5 2a 0 0 1 0 11100
+2 3 main 5 33a7 1 2 1 0 11100
+1 d main 1 0 11100 4
+1 c main 1 0 11100 1
+4 5 main 3 3
+4 3 main 5 0

@@ -920,6 +920,7 @@ void db_do_timestep( int time ) {
 
   snprintf( msg, 4096, "Performing timestep #%d", time );
   print_output( msg, NORMAL );
+  printf( "%s\n", msg );
 
   curr_sim_time = time;
 
@@ -963,6 +964,11 @@ int db_get_signal_size( char* symbol ) {
 
 
 /* $Log$
+/* Revision 1.26  2002/07/02 19:52:50  phase1geo
+/* Removing unecessary diagnostics.  Cleaning up extraneous output and
+/* generating new documentation from source.  Regression passes at the
+/* current time.
+/*
 /* Revision 1.25  2002/07/02 18:42:18  phase1geo
 /* Various bug fixes.  Added support for multiple signals sharing the same VCD
 /* symbol.  Changed conditional support to allow proper simulation results.

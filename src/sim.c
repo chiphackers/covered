@@ -179,7 +179,7 @@ void sim_expression( expression* expr ) {
   }
 
   /* Now perform expression operation for this expression */
-  // printf( "Performing expression operation: %d, id: %d\n", SUPPL_OP( expr->suppl ), expr->id );
+  printf( "Performing expression operation: %d, id: %d\n", SUPPL_OP( expr->suppl ), expr->id );
   expression_operate( expr );
 
 }
@@ -286,6 +286,9 @@ void sim_simulate() {
 }
 
 /* $Log$
+/* Revision 1.15  2002/07/03 00:59:14  phase1geo
+/* Fixing bug with conditional statements and other "deep" expression trees.
+/*
 /* Revision 1.14  2002/07/02 19:52:50  phase1geo
 /* Removing unecessary diagnostics.  Cleaning up extraneous output and
 /* generating new documentation from source.  Regression passes at the

@@ -39,7 +39,11 @@ char* codegen_gen_expr( expression* expr, int line ) {
     left_code  = codegen_gen_expr( expr->left,  line );
     right_code = codegen_gen_expr( expr->right, line );
 
-    if( SUPPL_OP( expr->suppl ) == EXP_OP_NONE ) {
+    if( SUPPL_OP( expr->suppl ) == EXP_OP_LAST ) {
+
+      my_code = NULL;
+
+    } else if( SUPPL_OP( expr->suppl ) == EXP_OP_NONE ) {
 
       my_code = vector_to_string( expr->value, HEXIDECIMAL );
 
@@ -142,6 +146,11 @@ char* codegen_gen_expr( expression* expr, int line ) {
 
 
 /* $Log$
+/* Revision 1.8  2002/07/02 19:52:50  phase1geo
+/* Removing unecessary diagnostics.  Cleaning up extraneous output and
+/* generating new documentation from source.  Regression passes at the
+/* current time.
+/*
 /* Revision 1.7  2002/07/02 18:42:18  phase1geo
 /* Various bug fixes.  Added support for multiple signals sharing the same VCD
 /* symbol.  Changed conditional support to allow proper simulation results.

@@ -1021,10 +1021,10 @@ module_item
                   */
 		}
 	| K_task IDENTIFIER ';'
-	    task_item_list_opt statement_opt
+	    task_item_list_opt unused_stmt_opt
 	  K_endtask
 	| K_function range_or_type_opt IDENTIFIER ';'
-	    function_item_list statement
+	    function_item_list unused_stmt
 	  K_endfunction
 	| K_specify K_endspecify
 	| K_specify error K_endspecify
@@ -1062,7 +1062,7 @@ unused_stmt
 	| K_release lavalue ';'
 	| K_begin unused_stmt_list K_end
 	| K_begin ':' IDENTIFIER
-	    block_item_decls_opt
+	    unused_block_item_decls_opt
 	    unused_stmt_list
 	  K_end
                 {
@@ -1075,7 +1075,7 @@ unused_stmt
                 }
 	| K_begin error K_end
 	| K_fork ':' IDENTIFIER
-	    block_item_decls_opt
+	    unused_block_item_decls_opt
 	    unused_stmt_list
 	  K_join
                 {
@@ -1226,11 +1226,11 @@ statement
                   $$ = $2;
 		}
 	| K_begin ':' IDENTIFIER
-	    block_item_decls_opt
-	    statement_list
+	    unused_block_item_decls_opt
+	    unused_stmt_list
 	  K_end
 		{
-                  $$ = $5;
+                  $$ = NULL;
 		}
 	| K_begin K_end
 		{
@@ -1246,7 +1246,7 @@ statement
                   $$ = NULL;
 		}
 	| K_fork ':' IDENTIFIER
-	    block_item_decls_opt
+	    unused_block_item_decls_opt
 	    unused_stmt_list
 	  K_join
 		{
@@ -1420,6 +1420,7 @@ statement
 		{
                   statement* stmt = db_create_statement( $1 );
                   db_add_expression( $1 );
+                  db_statement_connect( stmt, $2 );
                   $$ = stmt;
 		}
 	| lpvalue '=' expression ';'
@@ -1556,6 +1557,29 @@ lavalue
 		  $$ = 0;
 		}
 	;
+
+unused_block_item_decls_opt
+        : unused_block_item_decls
+        | 
+        ;
+
+unused_block_item_decls
+        : block_item_decl
+        | block_item_decls block_item_decl
+        ;
+
+unused_block_item_decl
+        : K_reg range register_variable_list ';'
+        | K_reg register_variable_list ';'
+        | K_reg K_signed range register_variable_list ';'
+        | K_reg K_signed register_variable_list ';'
+        | K_integer register_variable_list ';'
+	| K_time register_variable_list ';'
+	| K_real list_of_variables ';'
+	| K_realtime list_of_variables ';'
+	| K_parameter parameter_assign_list ';'
+	| K_localparam localparam_assign_list ';'
+	| K_reg error ';'
 
 block_item_decls_opt
 	: block_item_decls
@@ -1972,7 +1996,7 @@ task_item_list
 	;
 
 task_item
-	: block_item_decl
+	: unused_block_item_decl
 	| K_input range_opt list_of_variables ';'
 		{
 		  str_link_delete_list( $3 );
@@ -2107,21 +2131,34 @@ event_expression_list
 event_expression
 	: K_posedge expression
 		{
-		  expression* tmp;
-		  tmp = db_create_expression( $2, NULL, EXP_OP_PEDGE, @1.first_line, NULL );
-		  $$ = tmp;
+                  expression* tmp1;
+		  expression* tmp2;
+                  nibble      val = 0x2;
+                  /* Create 1-bit expression to hold last value of right expression */
+                  tmp1 = db_create_expression( NULL, NULL, EXP_OP_LAST, @1.first_line, NULL );
+                  vector_set_value( tmp1->value, &val, 1, 0, 0 );
+		  tmp2 = db_create_expression( $2, tmp1, EXP_OP_PEDGE, @1.first_line, NULL );
+		  $$ = tmp2;
 		}
 	| K_negedge expression
 		{
-		  expression* tmp;
-		  tmp = db_create_expression( $2, NULL, EXP_OP_NEDGE, @1.first_line, NULL );
-		  $$ = tmp;
+		  expression* tmp1;
+                  expression* tmp2;
+                  nibble      val = 0x2;
+                  tmp1 = db_create_expression( NULL, NULL, EXP_OP_LAST, @1.first_line, NULL );
+                  vector_set_value( tmp1->value, &val, 1, 0, 0 );
+		  tmp2 = db_create_expression( $2, tmp1, EXP_OP_NEDGE, @1.first_line, NULL );
+		  $$ = tmp2;
 		}
 	| expression
 		{
-		  expression* tmp;
-		  tmp = db_create_expression( $1, NULL, EXP_OP_AEDGE, @1.first_line, NULL );
-		  $$ = tmp;
+		  expression* tmp1;
+                  expression* tmp2;
+                  nibble      val = 0x2;
+                  tmp1 = db_create_expression( NULL, NULL, EXP_OP_LAST, @1.first_line, NULL );
+                  vector_set_value( tmp1->value, &val, 1, 0, 0 );
+		  tmp2 = db_create_expression( $1, tmp1, EXP_OP_AEDGE, @1.first_line, NULL );
+		  $$ = tmp2;
 		}
 	;
 		
@@ -2241,7 +2278,7 @@ function_item
 		  str_link_delete_list( $3 );
 		  free_safe( $2 );
 		}
-	| block_item_decl
+	| unused_block_item_decl
 	;
 
 parameter_assign_list
