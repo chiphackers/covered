@@ -8,8 +8,8 @@
 
 COVERED_SRC   = ../../src
 COVERED       = $(COVERED_SRC)/covered
-COVERED_FLAGS = -q
-# COVERED_FLAGS = 
+# COVERED_FLAGS = -q
+COVERED_FLAGS = 
 
 VERILOG       = iverilog
 VERILOG_FLAGS =

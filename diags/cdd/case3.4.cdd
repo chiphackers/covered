@@ -1,0 +1,28 @@
+3 main main case3.4.v
+2 6 main 7 2580 0 0 1 0 1
+2 8 main 8 1580 0 0 1 0 0
+2 10 main 9 2580 0 0 1 0 1
+2 12 main 10 480 0 0 1 0 0
+2 11 main 10 0 0 0 1 0 3
+2 4 main 6 3081 0 0 
+2 13 main 10 4ad 11 4 1 0 0
+2 9 main 9 0 0 0 1 0 2
+2 14 main 9 21ad 9 4 1 0 10000
+2 7 main 8 0 0 0 1 0 1
+2 15 main 8 31ad 7 4 1 0 11100
+2 5 main 7 0 0 0 1 0 0
+2 16 main 7 31ad 5 4 1 0 11100
+2 1 main 5 3001 0 0 
+2 2 main 5 2a 0 0 1 0 10100
+2 3 main 5 33a9 1 2 1 0 11100
+1 b main 1 0 11100
+1 a main 1 0 10100 1 4
+4 12 main 3 3
+4 13 main 12 0
+4 10 main 3 3
+4 14 main 10 13
+4 8 main 3 3
+4 15 main 8 14
+4 6 main 3 3
+4 16 main 6 15
+4 3 main 16 0

@@ -75,7 +75,7 @@
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a51">YY_MORE_ADJ</a>&nbsp;&nbsp;&nbsp;<a class="el" href="lexer_8c.html#a104">yy_more_len</a></td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a52">YY_RESTORE_YY_MORE_OFFSET</a></td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a53">INITIAL</a>&nbsp;&nbsp;&nbsp;0</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a54">yylval</a>&nbsp;&nbsp;&nbsp;<a class="el" href="parser_8h.html#a143">VLlval</a></td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a54">yylval</a>&nbsp;&nbsp;&nbsp;<a class="el" href="parser_8h.html#a151">VLlval</a></td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a55">YYDEBUG</a>&nbsp;&nbsp;&nbsp;1</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a56">YY_STACK_USED</a>&nbsp;&nbsp;&nbsp;1</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a57">LCOMMENT</a>&nbsp;&nbsp;&nbsp;1</td></tr>
@@ -106,34 +106,34 @@
 <tr><td nowrap align=right valign=top>typedef unsigned char&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a91">YY_CHAR</a></td></tr>
 <tr><td nowrap align=right valign=top>typedef int&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a92">yy_state_type</a></td></tr>
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
-<tr><td nowrap align=right valign=top>void yyrestart&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a125">YY_PROTO</a> ((FILE *input_file))</td></tr>
-<tr><td nowrap align=right valign=top>void yy_switch_to_buffer&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a126">YY_PROTO</a> ((<a class="el" href="lexer_8c.html#a79">YY_BUFFER_STATE</a> new_buffer))</td></tr>
-<tr><td nowrap align=right valign=top>void yy_load_buffer_state&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a127">YY_PROTO</a> ((void))</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="lexer_8c.html#a79">YY_BUFFER_STATE</a> yy_create_buffer&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a128">YY_PROTO</a> ((FILE *<a class="el" href="lexer_8c.html#a121">file</a>, int <a class="el" href="lexer_8c.html#a120">size</a>))</td></tr>
-<tr><td nowrap align=right valign=top>void yy_delete_buffer&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a129">YY_PROTO</a> ((<a class="el" href="lexer_8c.html#a79">YY_BUFFER_STATE</a> b))</td></tr>
-<tr><td nowrap align=right valign=top>void yy_init_buffer&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a130">YY_PROTO</a> ((<a class="el" href="lexer_8c.html#a79">YY_BUFFER_STATE</a> b, FILE *<a class="el" href="lexer_8c.html#a121">file</a>))</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="lexer_8c.html#a79">YY_BUFFER_STATE</a> yy_scan_buffer&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a131">YY_PROTO</a> ((char *base, <a class="el" href="lexer_8c.html#a83">yy_size_t</a> <a class="el" href="lexer_8c.html#a120">size</a>))</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="lexer_8c.html#a79">YY_BUFFER_STATE</a> yy_scan_string&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a132">YY_PROTO</a> ((yyconst char *yy_str))</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="lexer_8c.html#a79">YY_BUFFER_STATE</a> yy_scan_bytes&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a133">YY_PROTO</a> ((yyconst char *bytes, int <a class="el" href="lexer_8c.html#a122">len</a>))</td></tr>
-<tr><td nowrap align=right valign=top>void *yy_flex_alloc&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a134">YY_PROTO</a> ((<a class="el" href="lexer_8c.html#a83">yy_size_t</a>))</td></tr>
-<tr><td nowrap align=right valign=top>void *yy_flex_realloc&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a135">YY_PROTO</a> ((void *, <a class="el" href="lexer_8c.html#a83">yy_size_t</a>))</td></tr>
-<tr><td nowrap align=right valign=top>void yy_flex_free&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a136">YY_PROTO</a> ((void *))</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="lexer_8c.html#a92">yy_state_type</a> yy_try_NUL_trans&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a137">YY_PROTO</a> ((<a class="el" href="lexer_8c.html#a92">yy_state_type</a> current_state))</td></tr>
-<tr><td nowrap align=right valign=top>void yy_fatal_error&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a138">YY_PROTO</a> ((yyconst char msg[]))</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a139">def_match</a> ()</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a140">def_start</a> ()</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a141">def_finish</a> ()</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a142">def_undefine</a> ()</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a143">do_define</a> ()</td></tr>
-<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a144">is_defined</a> (const char *name)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a145">include_filename</a> ()</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a146">do_include</a> ()</td></tr>
-<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a147">yywrap</a> ()</td></tr>
-<tr><td nowrap align=right valign=top>void yyunput&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a148">YY_PROTO</a> ((int c, char *buf_ptr))</td></tr>
-<tr><td nowrap align=right valign=top>void yy_push_state&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a149">YY_PROTO</a> ((int new_state))</td></tr>
-<tr><td nowrap align=right valign=top>define_t *&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a150">def_lookup</a> (const char *name)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a151">define_macro</a> (const char *name, const char *value, int <a class="el" href="structkeyword.html">keyword</a>)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a152">reset_lexer</a> (FILE *out, <a class="el" href="defines_8h.html#a114">str_link</a> *file_list_head)</td></tr>
+<tr><td nowrap align=right valign=top>void yyrestart&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a126">YY_PROTO</a> ((FILE *input_file))</td></tr>
+<tr><td nowrap align=right valign=top>void yy_switch_to_buffer&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a127">YY_PROTO</a> ((<a class="el" href="lexer_8c.html#a79">YY_BUFFER_STATE</a> new_buffer))</td></tr>
+<tr><td nowrap align=right valign=top>void yy_load_buffer_state&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a128">YY_PROTO</a> ((void))</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="lexer_8c.html#a79">YY_BUFFER_STATE</a> yy_create_buffer&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a129">YY_PROTO</a> ((FILE *<a class="el" href="lexer_8c.html#a122">file</a>, int <a class="el" href="lexer_8c.html#a121">size</a>))</td></tr>
+<tr><td nowrap align=right valign=top>void yy_delete_buffer&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a130">YY_PROTO</a> ((<a class="el" href="lexer_8c.html#a79">YY_BUFFER_STATE</a> b))</td></tr>
+<tr><td nowrap align=right valign=top>void yy_init_buffer&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a131">YY_PROTO</a> ((<a class="el" href="lexer_8c.html#a79">YY_BUFFER_STATE</a> b, FILE *<a class="el" href="lexer_8c.html#a122">file</a>))</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="lexer_8c.html#a79">YY_BUFFER_STATE</a> yy_scan_buffer&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a132">YY_PROTO</a> ((char *base, <a class="el" href="lexer_8c.html#a83">yy_size_t</a> <a class="el" href="lexer_8c.html#a121">size</a>))</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="lexer_8c.html#a79">YY_BUFFER_STATE</a> yy_scan_string&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a133">YY_PROTO</a> ((yyconst char *yy_str))</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="lexer_8c.html#a79">YY_BUFFER_STATE</a> yy_scan_bytes&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a134">YY_PROTO</a> ((yyconst char *bytes, int <a class="el" href="lexer_8c.html#a123">len</a>))</td></tr>
+<tr><td nowrap align=right valign=top>void *yy_flex_alloc&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a135">YY_PROTO</a> ((<a class="el" href="lexer_8c.html#a83">yy_size_t</a>))</td></tr>
+<tr><td nowrap align=right valign=top>void *yy_flex_realloc&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a136">YY_PROTO</a> ((void *, <a class="el" href="lexer_8c.html#a83">yy_size_t</a>))</td></tr>
+<tr><td nowrap align=right valign=top>void yy_flex_free&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a137">YY_PROTO</a> ((void *))</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="lexer_8c.html#a92">yy_state_type</a> yy_try_NUL_trans&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a138">YY_PROTO</a> ((<a class="el" href="lexer_8c.html#a92">yy_state_type</a> current_state))</td></tr>
+<tr><td nowrap align=right valign=top>void yy_fatal_error&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a139">YY_PROTO</a> ((yyconst char msg[]))</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a140">def_match</a> ()</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a141">def_start</a> ()</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a142">def_finish</a> ()</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a143">def_undefine</a> ()</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a144">do_define</a> ()</td></tr>
+<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a145">is_defined</a> (const char *name)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a146">include_filename</a> ()</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a147">do_include</a> ()</td></tr>
+<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a148">yywrap</a> ()</td></tr>
+<tr><td nowrap align=right valign=top>void yyunput&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a149">YY_PROTO</a> ((int c, char *buf_ptr))</td></tr>
+<tr><td nowrap align=right valign=top>void yy_push_state&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a150">YY_PROTO</a> ((int new_state))</td></tr>
+<tr><td nowrap align=right valign=top>define_t *&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a151">def_lookup</a> (const char *name)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a152">define_macro</a> (const char *name, const char *value, int <a class="el" href="structkeyword.html">keyword</a>)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a153">reset_lexer</a> (FILE *out, <a class="el" href="defines_8h.html#a119">str_link</a> *file_list_head)</td></tr>
 <tr><td colspan=2><br><h2>Variables</h2></td></tr>
 <tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a80">yyleng</a></td></tr>
 <tr><td nowrap align=right valign=top>FILE *&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a81">yyin</a> = (FILE *) 0</td></tr>
@@ -158,25 +158,26 @@
 <tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a103">yy_more_flag</a> = 0</td></tr>
 <tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a104">yy_more_len</a> = 0</td></tr>
 <tr><td nowrap align=right valign=top>YYLTYPE&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a105">yylloc</a></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a114">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a106">inc_paths_head</a></td></tr>
-<tr><td nowrap align=right valign=top>char&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a107">error_msg</a> [500]</td></tr>
-<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a108">comment_enter</a></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a114">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a109">filelist_head</a> = 0</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a114">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a110">filelist_curr</a> = 0</td></tr>
-<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a111">last_keyword</a> = 0</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a114">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a112">modlist_head</a></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a114">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a113">modlist_tail</a></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="structinclude__stack__t.html">include_stack_t</a> *&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a114">istack</a> = 0</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="structinclude__stack__t.html">include_stack_t</a> *&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a115">standby</a> = 0</td></tr>
-<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a116">yy_start_stack_ptr</a> = 0</td></tr>
-<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a117">yy_start_stack_depth</a> = 0</td></tr>
-<tr><td nowrap align=right valign=top>int *&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a118">yy_start_stack</a> = 0</td></tr>
-<tr><td nowrap align=right valign=top>register char *&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a119">yy_bp</a></td></tr>
-<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a120">size</a></td></tr>
-<tr><td nowrap align=right valign=top>FILE *&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a121">file</a></td></tr>
-<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a122">len</a></td></tr>
-<tr><td nowrap align=right valign=top>define_t *&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a123">def_table</a> = 0</td></tr>
-<tr><td nowrap align=right valign=top>char&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a124">def_name</a> [256]</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a119">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a106">inc_paths_head</a></td></tr>
+<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a107">ignore_mode</a></td></tr>
+<tr><td nowrap align=right valign=top>char&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a108">error_msg</a> [500]</td></tr>
+<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a109">comment_enter</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a119">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a110">filelist_head</a> = 0</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a119">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a111">filelist_curr</a> = 0</td></tr>
+<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a112">last_keyword</a> = 0</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a119">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a113">modlist_head</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a119">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a114">modlist_tail</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="structinclude__stack__t.html">include_stack_t</a> *&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a115">istack</a> = 0</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="structinclude__stack__t.html">include_stack_t</a> *&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a116">standby</a> = 0</td></tr>
+<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a117">yy_start_stack_ptr</a> = 0</td></tr>
+<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a118">yy_start_stack_depth</a> = 0</td></tr>
+<tr><td nowrap align=right valign=top>int *&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a119">yy_start_stack</a> = 0</td></tr>
+<tr><td nowrap align=right valign=top>register char *&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a120">yy_bp</a></td></tr>
+<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a121">size</a></td></tr>
+<tr><td nowrap align=right valign=top>FILE *&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a122">file</a></td></tr>
+<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a123">len</a></td></tr>
+<tr><td nowrap align=right valign=top>define_t *&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a124">def_table</a> = 0</td></tr>
+<tr><td nowrap align=right valign=top>char&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a125">def_name</a> [256]</td></tr>
 </table>
 <hr><h2>Define Documentation</h2>
 <a name="a24" doxytag="lexer.c::BEGIN"></a><p>
@@ -1833,7 +1834,7 @@
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> #define yylval&nbsp;&nbsp;&nbsp;<a class="el" href="parser_8h.html#a143">VLlval</a>
+          <td class="md" nowrap valign="top"> #define yylval&nbsp;&nbsp;&nbsp;<a class="el" href="parser_8h.html#a151">VLlval</a>
       </table>
     </td>
   </tr>
@@ -2125,7 +2126,7 @@
   </tr>
 </table>
 <hr><h2>Function Documentation</h2>
-<a name="a141" doxytag="lexer.c::def_finish"></a><p>
+<a name="a142" doxytag="lexer.c::def_finish"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2153,7 +2154,7 @@
 Completes the define addition phase.     </td>
   </tr>
 </table>
-<a name="a150" doxytag="lexer.c::def_lookup"></a><p>
+<a name="a151" doxytag="lexer.c::def_lookup"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2190,7 +2191,7 @@ Returns: </b><dd>
 Pointer to defined value.</dl>Looks up the specified define identifier in the binary tree lookup table. Returns NULL (0), if the define was not found in the lookup tree; otherwise, returns a pointer to the defined value.     </td>
   </tr>
 </table>
-<a name="a139" doxytag="lexer.c::def_match"></a><p>
+<a name="a140" doxytag="lexer.c::def_match"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2218,7 +2219,7 @@ Pointer to defined value.</dl>Looks up the specified define identifier in the bi
 When a macro use is discovered in the source, this function is used to look up the name and emit the substitution in its place. If the name is not found, then the `name string is written out instead.     </td>
   </tr>
 </table>
-<a name="a140" doxytag="lexer.c::def_start"></a><p>
+<a name="a141" doxytag="lexer.c::def_start"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2246,7 +2247,7 @@ When a macro use is discovered in the source, this function is used to look up t
 Extracts define identifier string from define directive match.     </td>
   </tr>
 </table>
-<a name="a142" doxytag="lexer.c::def_undefine"></a><p>
+<a name="a143" doxytag="lexer.c::def_undefine"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2274,7 +2275,7 @@ Extracts define identifier string from define directive match.     </td>
 Performs an undefine of an undef indentifier by searching for the matching define node and removing it from the tree.     </td>
   </tr>
 </table>
-<a name="a151" doxytag="lexer.c::define_macro"></a><p>
+<a name="a152" doxytag="lexer.c::define_macro"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2328,7 +2329,7 @@ If set to 1, specifies that a keyword is in the value</td></tr>
 </dl>Stores define identifer with its value in a define node and placed in the binary search tree for quick lookup later on.     </td>
   </tr>
 </table>
-<a name="a143" doxytag="lexer.c::do_define"></a><p>
+<a name="a144" doxytag="lexer.c::do_define"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2362,7 +2363,7 @@ This strips trailing line comments out of the definition. It's not adequate as t
 Prepares define value and identifier for storage in the lookup tree and then performs the store.     </td>
   </tr>
 </table>
-<a name="a146" doxytag="lexer.c::do_include"></a><p>
+<a name="a147" doxytag="lexer.c::do_include"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2390,7 +2391,7 @@ Prepares define value and identifier for storage in the lookup tree and then per
 Performs the file context switch and gets everything ready for parsing the new file.     </td>
   </tr>
 </table>
-<a name="a145" doxytag="lexer.c::include_filename"></a><p>
+<a name="a146" doxytag="lexer.c::include_filename"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2418,7 +2419,7 @@ Performs the file context switch and gets everything ready for parsing the new f
 Adds include directive filename to file parsing stack.     </td>
   </tr>
 </table>
-<a name="a144" doxytag="lexer.c::is_defined"></a><p>
+<a name="a145" doxytag="lexer.c::is_defined"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2455,7 +2456,7 @@ Returns: </b><dd>
 Returns 1 if define is found in lookup table; otherwise, returns 0.</dl>Checks lookup table to see if specified define identifier has been previously defined.     </td>
   </tr>
 </table>
-<a name="a152" doxytag="lexer.c::reset_lexer"></a><p>
+<a name="a153" doxytag="lexer.c::reset_lexer"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2469,7 +2470,7 @@ Returns 1 if define is found in lookup table; otherwise, returns 0.</dl>Checks l
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a114">str_link</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a119">str_link</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>file_list_head</em></td>
         </tr>
         <tr>
@@ -2493,7 +2494,7 @@ Returns 1 if define is found in lookup table; otherwise, returns 0.</dl>Checks l
     </td>
   </tr>
 </table>
-<a name="a149" doxytag="lexer.c::YY_PROTO"></a><p>
+<a name="a150" doxytag="lexer.c::YY_PROTO"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2522,7 +2523,7 @@ Returns 1 if define is found in lookup table; otherwise, returns 0.</dl>Checks l
     </td>
   </tr>
 </table>
-<a name="a148" doxytag="lexer.c::YY_PROTO"></a><p>
+<a name="a149" doxytag="lexer.c::YY_PROTO"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2551,7 +2552,7 @@ Returns 1 if define is found in lookup table; otherwise, returns 0.</dl>Checks l
     </td>
   </tr>
 </table>
-<a name="a138" doxytag="lexer.c::YY_PROTO"></a><p>
+<a name="a139" doxytag="lexer.c::YY_PROTO"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2580,7 +2581,7 @@ Returns 1 if define is found in lookup table; otherwise, returns 0.</dl>Checks l
     </td>
   </tr>
 </table>
-<a name="a137" doxytag="lexer.c::YY_PROTO"></a><p>
+<a name="a138" doxytag="lexer.c::YY_PROTO"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2609,7 +2610,7 @@ Returns 1 if define is found in lookup table; otherwise, returns 0.</dl>Checks l
     </td>
   </tr>
 </table>
-<a name="a136" doxytag="lexer.c::YY_PROTO"></a><p>
+<a name="a137" doxytag="lexer.c::YY_PROTO"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2638,7 +2639,7 @@ Returns 1 if define is found in lookup table; otherwise, returns 0.</dl>Checks l
     </td>
   </tr>
 </table>
-<a name="a135" doxytag="lexer.c::YY_PROTO"></a><p>
+<a name="a136" doxytag="lexer.c::YY_PROTO"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2667,7 +2668,7 @@ Returns 1 if define is found in lookup table; otherwise, returns 0.</dl>Checks l
     </td>
   </tr>
 </table>
-<a name="a134" doxytag="lexer.c::YY_PROTO"></a><p>
+<a name="a135" doxytag="lexer.c::YY_PROTO"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2696,7 +2697,7 @@ Returns 1 if define is found in lookup table; otherwise, returns 0.</dl>Checks l
     </td>
   </tr>
 </table>
-<a name="a133" doxytag="lexer.c::YY_PROTO"></a><p>
+<a name="a134" doxytag="lexer.c::YY_PROTO"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2704,7 +2705,7 @@ Returns 1 if define is found in lookup table; otherwise, returns 0.</dl>Checks l
         <tr>
           <td class="md" nowrap valign="top"> <a class="el" href="lexer_8c.html#a79">YY_BUFFER_STATE</a> yy_scan_bytes YY_PROTO </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top">(yyconst char *bytes, int <a class="el" href="lexer_8c.html#a122">len</a>)&nbsp;</td>
+          <td class="md" nowrap valign="top">(yyconst char *bytes, int <a class="el" href="lexer_8c.html#a123">len</a>)&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
           <td class="md" valign="top">)&nbsp;</td>
           <td class="md" nowrap></td>
@@ -2725,7 +2726,7 @@ Returns 1 if define is found in lookup table; otherwise, returns 0.</dl>Checks l
     </td>
   </tr>
 </table>
-<a name="a132" doxytag="lexer.c::YY_PROTO"></a><p>
+<a name="a133" doxytag="lexer.c::YY_PROTO"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2754,7 +2755,7 @@ Returns 1 if define is found in lookup table; otherwise, returns 0.</dl>Checks l
     </td>
   </tr>
 </table>
-<a name="a131" doxytag="lexer.c::YY_PROTO"></a><p>
+<a name="a132" doxytag="lexer.c::YY_PROTO"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2762,7 +2763,36 @@ Returns 1 if define is found in lookup table; otherwise, returns 0.</dl>Checks l
         <tr>
           <td class="md" nowrap valign="top"> <a class="el" href="lexer_8c.html#a79">YY_BUFFER_STATE</a> yy_scan_buffer YY_PROTO </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top">(char *base, <a class="el" href="lexer_8c.html#a83">yy_size_t</a> <a class="el" href="lexer_8c.html#a120">size</a>)&nbsp;</td>
+          <td class="md" nowrap valign="top">(char *base, <a class="el" href="lexer_8c.html#a83">yy_size_t</a> <a class="el" href="lexer_8c.html#a121">size</a>)&nbsp;</td>
+          <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
+          <td class="md" valign="top">)&nbsp;</td>
+          <td class="md" nowrap></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+    </td>
+  </tr>
+</table>
+<a name="a131" doxytag="lexer.c::YY_PROTO"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> void yy_init_buffer YY_PROTO </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="md" nowrap valign="top">(<a class="el" href="lexer_8c.html#a79">YY_BUFFER_STATE</a> b, FILE *<a class="el" href="lexer_8c.html#a122">file</a>)&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
           <td class="md" valign="top">)&nbsp;</td>
           <td class="md" nowrap></td>
@@ -2784,35 +2814,6 @@ Returns 1 if define is found in lookup table; otherwise, returns 0.</dl>Checks l
   </tr>
 </table>
 <a name="a130" doxytag="lexer.c::YY_PROTO"></a><p>
-<table width="100%" cellpadding="2" cellspacing="0" border="0">
-  <tr>
-    <td class="md">
-      <table cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td class="md" nowrap valign="top"> void yy_init_buffer YY_PROTO </td>
-          <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top">(<a class="el" href="lexer_8c.html#a79">YY_BUFFER_STATE</a> b, FILE *<a class="el" href="lexer_8c.html#a121">file</a>)&nbsp;</td>
-          <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
-          <td class="md" valign="top">)&nbsp;</td>
-          <td class="md" nowrap></td>
-        </tr>
-
-      </table>
-    </td>
-  </tr>
-</table>
-<table cellspacing=5 cellpadding=0 border=0>
-  <tr>
-    <td>
-      &nbsp;
-    </td>
-    <td>
-
-<p>
-    </td>
-  </tr>
-</table>
-<a name="a129" doxytag="lexer.c::YY_PROTO"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2841,7 +2842,7 @@ Returns 1 if define is found in lookup table; otherwise, returns 0.</dl>Checks l
     </td>
   </tr>
 </table>
-<a name="a128" doxytag="lexer.c::YY_PROTO"></a><p>
+<a name="a129" doxytag="lexer.c::YY_PROTO"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2849,7 +2850,7 @@ Returns 1 if define is found in lookup table; otherwise, returns 0.</dl>Checks l
         <tr>
           <td class="md" nowrap valign="top"> <a class="el" href="lexer_8c.html#a79">YY_BUFFER_STATE</a> yy_create_buffer YY_PROTO </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top">(FILE *<a class="el" href="lexer_8c.html#a121">file</a>, int <a class="el" href="lexer_8c.html#a120">size</a>)&nbsp;</td>
+          <td class="md" nowrap valign="top">(FILE *<a class="el" href="lexer_8c.html#a122">file</a>, int <a class="el" href="lexer_8c.html#a121">size</a>)&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
           <td class="md" valign="top">)&nbsp;</td>
           <td class="md" nowrap></td>
@@ -2870,7 +2871,7 @@ Returns 1 if define is found in lookup table; otherwise, returns 0.</dl>Checks l
     </td>
   </tr>
 </table>
-<a name="a127" doxytag="lexer.c::YY_PROTO"></a><p>
+<a name="a128" doxytag="lexer.c::YY_PROTO"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2899,7 +2900,7 @@ Returns 1 if define is found in lookup table; otherwise, returns 0.</dl>Checks l
     </td>
   </tr>
 </table>
-<a name="a126" doxytag="lexer.c::YY_PROTO"></a><p>
+<a name="a127" doxytag="lexer.c::YY_PROTO"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2928,7 +2929,7 @@ Returns 1 if define is found in lookup table; otherwise, returns 0.</dl>Checks l
     </td>
   </tr>
 </table>
-<a name="a125" doxytag="lexer.c::YY_PROTO"></a><p>
+<a name="a126" doxytag="lexer.c::YY_PROTO"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2957,7 +2958,7 @@ Returns 1 if define is found in lookup table; otherwise, returns 0.</dl>Checks l
     </td>
   </tr>
 </table>
-<a name="a147" doxytag="lexer.c::yywrap"></a><p>
+<a name="a148" doxytag="lexer.c::yywrap"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2986,7 +2987,7 @@ Returns 1 if define is found in lookup table; otherwise, returns 0.</dl>Checks l
   </tr>
 </table>
 <hr><h2>Variable Documentation</h2>
-<a name="a108" doxytag="lexer.c::comment_enter"></a><p>
+<a name="a109" doxytag="lexer.c::comment_enter"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -3008,7 +3009,7 @@ Returns 1 if define is found in lookup table; otherwise, returns 0.</dl>Checks l
 Contains state before entering comment block.     </td>
   </tr>
 </table>
-<a name="a124" doxytag="lexer.c::def_name"></a><p>
+<a name="a125" doxytag="lexer.c::def_name"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -3030,7 +3031,7 @@ Contains state before entering comment block.     </td>
 Holds current define identifier string.     </td>
   </tr>
 </table>
-<a name="a123" doxytag="lexer.c::def_table"></a><p>
+<a name="a124" doxytag="lexer.c::def_table"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -3052,7 +3053,7 @@ Holds current define identifier string.     </td>
 Define table.     </td>
   </tr>
 </table>
-<a name="a107" doxytag="lexer.c::error_msg"></a><p>
+<a name="a108" doxytag="lexer.c::error_msg"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -3074,7 +3075,7 @@ Define table.     </td>
 Contains error message if something wrong is found.     </td>
   </tr>
 </table>
-<a name="a121" doxytag="lexer.c::file"></a><p>
+<a name="a122" doxytag="lexer.c::file"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -3096,13 +3097,13 @@ Contains error message if something wrong is found.     </td>
     </td>
   </tr>
 </table>
-<a name="a110" doxytag="lexer.c::filelist_curr"></a><p>
+<a name="a111" doxytag="lexer.c::filelist_curr"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a114">str_link</a>* filelist_curr = 0<code> [static]</code>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a119">str_link</a>* filelist_curr = 0<code> [static]</code>
       </table>
     </td>
   </tr>
@@ -3118,13 +3119,35 @@ Contains error message if something wrong is found.     </td>
     </td>
   </tr>
 </table>
-<a name="a109" doxytag="lexer.c::filelist_head"></a><p>
+<a name="a110" doxytag="lexer.c::filelist_head"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a114">str_link</a>* filelist_head = 0<code> [static]</code>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a119">str_link</a>* filelist_head = 0<code> [static]</code>
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+    </td>
+  </tr>
+</table>
+<a name="a107" doxytag="lexer.c::ignore_mode"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> int ignore_mode
       </table>
     </td>
   </tr>
@@ -3146,7 +3169,7 @@ Contains error message if something wrong is found.     </td>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a114">str_link</a>* inc_paths_head </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a119">str_link</a>* inc_paths_head </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
           <td class="md" valign="top">)&nbsp;</td>
@@ -3168,7 +3191,7 @@ Contains error message if something wrong is found.     </td>
 Pointer to head element of include paths list     </td>
   </tr>
 </table>
-<a name="a114" doxytag="lexer.c::istack"></a><p>
+<a name="a115" doxytag="lexer.c::istack"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -3190,7 +3213,7 @@ Pointer to head element of include paths list     </td>
     </td>
   </tr>
 </table>
-<a name="a111" doxytag="lexer.c::last_keyword"></a><p>
+<a name="a112" doxytag="lexer.c::last_keyword"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -3212,7 +3235,7 @@ Pointer to head element of include paths list     </td>
     </td>
   </tr>
 </table>
-<a name="a122" doxytag="lexer.c::len"></a><p>
+<a name="a123" doxytag="lexer.c::len"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -3234,13 +3257,13 @@ Pointer to head element of include paths list     </td>
     </td>
   </tr>
 </table>
-<a name="a112" doxytag="lexer.c::modlist_head"></a><p>
+<a name="a113" doxytag="lexer.c::modlist_head"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a114">str_link</a>* modlist_head
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a119">str_link</a>* modlist_head
       </table>
     </td>
   </tr>
@@ -3256,13 +3279,13 @@ Pointer to head element of include paths list     </td>
     </td>
   </tr>
 </table>
-<a name="a113" doxytag="lexer.c::modlist_tail"></a><p>
+<a name="a114" doxytag="lexer.c::modlist_tail"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a114">str_link</a>* modlist_tail
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a119">str_link</a>* modlist_tail
       </table>
     </td>
   </tr>
@@ -3278,7 +3301,7 @@ Pointer to head element of include paths list     </td>
     </td>
   </tr>
 </table>
-<a name="a120" doxytag="lexer.c::size"></a><p>
+<a name="a121" doxytag="lexer.c::size"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -3300,7 +3323,7 @@ Pointer to head element of include paths list     </td>
     </td>
   </tr>
 </table>
-<a name="a115" doxytag="lexer.c::standby"></a><p>
+<a name="a116" doxytag="lexer.c::standby"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -3366,7 +3389,7 @@ Pointer to head element of include paths list     </td>
     </td>
   </tr>
 </table>
-<a name="a119" doxytag="lexer.c::yy_bp"></a><p>
+<a name="a120" doxytag="lexer.c::yy_bp"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -3748,7 +3771,7 @@ Pointer to head element of include paths list     </td>
     </td>
   </tr>
 </table>
-<a name="a118" doxytag="lexer.c::yy_start_stack"></a><p>
+<a name="a119" doxytag="lexer.c::yy_start_stack"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -3770,7 +3793,7 @@ Pointer to head element of include paths list     </td>
     </td>
   </tr>
 </table>
-<a name="a117" doxytag="lexer.c::yy_start_stack_depth"></a><p>
+<a name="a118" doxytag="lexer.c::yy_start_stack_depth"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -3792,7 +3815,7 @@ Pointer to head element of include paths list     </td>
     </td>
   </tr>
 </table>
-<a name="a116" doxytag="lexer.c::yy_start_stack_ptr"></a><p>
+<a name="a117" doxytag="lexer.c::yy_start_stack_ptr"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -3924,7 +3947,7 @@ Pointer to head element of include paths list     </td>
     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Wed Jul 3 16:28:35 2002 for Covered by
+<hr><address align="right"><small>Generated on Thu Jul 4 23:10:38 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>
