@@ -35,6 +35,10 @@
 #include "vector.h"
 
 
+extern bool flag_use_line_width;
+extern int  line_width;
+
+
 /*!
  \param code             Array of strings containing generated code lines.
  \param code_index       Index to current string in code array to set.
@@ -172,6 +176,8 @@ void codegen_create_expr( char*** code,
                           int     right_line,
                           char*   last ) {
 
+  int total_len = 0;  /* Total length of first, left, middle, right, and last strings */
+
   *code_depth = 0;
 
   if( (left_depth > 0) || (right_depth > 0) ) {
@@ -183,20 +189,43 @@ void codegen_create_expr( char*** code,
     if( right_depth > 0 ) {
       *code_depth += right_depth;
     }
-    if( (left_depth > 0) && (right_depth > 0) && (left_line == right_line) ) {
-      *code_depth -= 1;
+
+    if( flag_use_line_width ) {
+
+      if( first != NULL   ) { total_len += strlen( first );                }
+      if( left_depth > 0  ) { total_len += strlen( left[left_depth - 1] ); }
+      if( middle != NULL  ) { total_len += strlen( middle );               }
+      if( right_depth > 0 ) { total_len += strlen( right[0] );             }
+      if( last != NULL    ) { total_len += strlen( last );                 }
+
+      if( (left_depth > 0) && (right_depth > 0) && (total_len <= line_width) ) {
+        *code_depth -= 1;
+      }
+
+    } else {
+
+      if( (left_depth > 0) && (right_depth > 0) && (left_line == right_line) ) {
+        *code_depth -= 1;
+      }
+      if( (left_depth > 0) && (left_line > curr_line) ) {
+        *code_depth += 1;
+      }
+      if( (left_depth == 0) && (right_depth > 0) && (right_line != curr_line) ) {
+        *code_depth += 1;
+      }
+
     }
-    if( (left_depth > 0) && (left_line > curr_line) ) {
-      *code_depth += 1;
-    }
-    if( (left_depth == 0) && (right_depth > 0) && (right_line != curr_line) ) {
-      *code_depth += 1;
-    }
+
     *code = (char**)malloc_safe( sizeof( char* ) * (*code_depth) );
 
     /* Now generate expression string array */
-    codegen_create_expr_helper( *code, 0, first, left, left_depth, (curr_line >= left_line), middle,
-                                right, right_depth, (left_line == right_line), last );
+    if( flag_use_line_width ) {
+      codegen_create_expr_helper( *code, 0, first, left, left_depth, TRUE, middle,
+                                  right, right_depth, (total_len <= line_width), last );
+    } else {
+      codegen_create_expr_helper( *code, 0, first, left, left_depth, (curr_line >= left_line), middle,
+                                  right, right_depth, (left_line == right_line), last );
+    }
 
   }
 
@@ -588,6 +617,9 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.32  2003/12/13 05:52:02  phase1geo
+ Removed verbose output and updated development documentation for new code.
+
  Revision 1.31  2003/12/13 03:18:16  phase1geo
  Fixing bug found in difference between Linux and Irix snprintf() algorithm.
  Full regression now passes.

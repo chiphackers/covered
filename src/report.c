@@ -36,46 +36,54 @@ extern mod_link* mod_head;
  If set to a boolean value of TRUE, reports the line coverage for the specified database
  file; otherwise, omits line coverage from the report output.
 */
-bool report_line        = TRUE;
+bool report_line         = TRUE;
 
 /*!
  If set to a boolean value of TRUE, reports the toggle coverage for the specified database
  file; otherwise, omits toggle coverage from the report output.
 */
-bool report_toggle      = TRUE;
+bool report_toggle       = TRUE;
 
 /*!
  If set to a boolean value of TRUE, reports the combinational logic coverage for the specified
  database file; otherwise, omits combinational logic coverage from the report output.
 */
-bool report_combination = TRUE;
+bool report_combination  = TRUE;
 
 /*!
  If set to a boolean value of TRUE, reports the finite state machine coverage for the
  specified database file; otherwise, omits finite state machine coverage from the
  report output.
 */
-bool report_fsm         = TRUE;
+bool report_fsm          = TRUE;
 
 /*!
  If set to a boolean value of TRUE, provides a coverage information for individual
  module instances.  If set to a value of FALSE, reports coverage information on a
  module basis, merging results from all instances of same module.
 */
-bool report_instance    = FALSE;
+bool report_instance     = FALSE;
 
 /*!
  If set to a boolean value of TRUE, displays covered logic for a particular CDD file.
  By default, Covered will display uncovered logic.  Must be used in conjunction with
  the -v (verbose output) option.
 */
-bool report_covered     = FALSE;
+bool report_covered      = FALSE;
 
 /*!
  If set to a boolean value of TRUE, displays GUI report viewer instead of generating text
  report files.
 */
-bool report_gui         = FALSE;
+bool report_gui          = FALSE;
+
+/*!
+ If set to a boolean value of TRUE, displays combination logic output in a by-line-width
+ format (instead of the user specified Verilog source format).
+*/
+bool flag_use_line_width = FALSE;
+
+int line_width           = DEFAULT_LINE_WIDTH;
 
 /*!
  If set to a non-zero value, causes Covered to only generate combinational logic
@@ -117,6 +125,11 @@ void report_usage() {
   printf( "      -c                      If '-d d' or '-d v' is specified, displays covered line, toggle\n" );
   printf( "                               and combinational cases.  Default is to display uncovered results.\n" );
   printf( "      -o <filename>           File to output report information to.  Default is standard output.\n" );
+  printf( "      -w [<line_width>]       Causes expressions to be output to best-fit to the specified line\n" );
+  printf( "                               width.  If the -w option is specified without a value, the default\n" );
+  printf( "                               line width of 80 is used.  If the -w option is not specified, all\n" );
+  printf( "                               expressions are output in the format that the user specified in the\n" );
+  printf( "                               Verilog source.\n" );
   printf( "\n" );
 
 }
@@ -174,8 +187,9 @@ void report_parse_metrics( char* metrics ) {
 */
 bool report_parse_args( int argc, int last_arg, char** argv ) {
 
-  bool retval = TRUE;  /* Return value for this function */
-  int  i;              /* Loop iterator                  */
+  bool retval = TRUE;  /* Return value for this function           */
+  int  i;              /* Loop iterator                            */
+  int  chars_read;     /* Number of characters read in from sscanf */
 
   i = last_arg + 1;
 
@@ -228,6 +242,21 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
   	snprintf( user_msg, USER_MSG_LENGTH, "Illegal output directory specified \"%s\"", argv[i] );
         print_output( user_msg, FATAL );
         retval = FALSE;
+      }
+
+    } else if( strncmp( "-w", argv[i], 2 ) == 0 ) {
+
+      flag_use_line_width = TRUE;
+
+      /* Check to see if user specified a line width value */
+      if( sscanf( argv[i+1], "%d%n", &line_width, &chars_read ) == 1 ) {
+        if( strlen( argv[i+1] ) != chars_read ) {
+          line_width = DEFAULT_LINE_WIDTH;
+        } else {
+          i++;
+        }
+      } else {
+        line_width = DEFAULT_LINE_WIDTH;
       }
 
     } else if( (i + 1) == argc ) {
@@ -541,6 +570,10 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.24  2003/11/22 20:44:58  phase1geo
+ Adding function to get array of missed line numbers for GUI purposes.  Updates
+ to report command for getting information ready when running the GUI.
+
  Revision 1.23  2003/11/01 01:30:12  phase1geo
  Adding the -view option to the report command parser.  At the current time,
  this option will display an error message to standard error if it is found
