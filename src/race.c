@@ -35,6 +35,51 @@
 extern bool race_flag = false;
 
 
+bool race_find_lhs_sigs( expression* exp, statement* root, bool* blocking ) {
+
+  bool found = FALSE;  /* Return value for this function */
+
+  if( exp != NULL ) {
+
+    /* If the current expression was an assignment operator, return if it was blocking/non-blocking */
+    if( (SUPPL_OP( exp->suppl ) == EXP_OP_ASSIGN) ||
+        (SUPPL_OP( exp->suppl ) == EXP_OP_BASSIGN) ) {
+      *blocking = TRUE;
+    }
+
+    /* If the current expression is a signal that is on the LHS, add it to the stmt_sig array */
+    if( (SUPPL_IS_LHS( exp->suppl ) == 1) &&
+        ((SUPPL_OP( exp->suppl ) == EXP_OP_SIG     ) ||
+         (SUPPL_OP( exp->suppl ) == EXP_OP_SBIT_SEL) ||
+         (SUPPL_OP( exp->suppl ) == EXP_OP_MBIT_SEL)) ) {
+
+      /* Create new stmt_sig structure */
+      new_stmt_sig       = (stmt_sig*)malloc( sizeof( stmt_sig ) );
+      new_stmt_sig->sig  = exp->sig;
+      new_stmt_sig->stmt = root;
+      new_stmt_sig->next = NULL;
+      
+      /* Add new stmt_sig structure to list */
+      if( stmt_sig_head == NULL ) {
+        stmt_sig_head = stmt_sig_tail = new_stmt_sig;
+      } else {
+        stmt_sig_tail->next = new_stmt_sig;
+        stmt_sig_tail       = new_stmt_sig;
+      }
+
+    }
+
+    /*
+     TBD - We could make this code more efficient by first searching for an assignment operator and then
+     searching for all LHS signals.
+    */
+    race_find_lhs_sigs( exp->left  );
+    race_find_lhs_sigs( exp->right );
+
+  } 
+
+}
+
 /*!
  \param stmt  Pointer to current statement to find signals for.
  \param root  Pointer to root statement in statement tree.
@@ -48,10 +93,34 @@ extern bool race_flag = false;
 */
 void race_find_and_add_stmt_sigs( statement* stmt, statement* root ) {
 
+  expression* curr_expr;  /* Pointer to current expression in stmt expression tree */
+
+  if( stmt != NULL ) {
+
+    /* First, find all signals in the current statement that are labeled as LHS */
+    curr_expr = stmt->exp;
+
+    while( curr_expr != NULL ) {
+
+    assert( curr_sigl->sig != NULL );
+    assert( curr_sigl->sig->value != NULL );
+
+    if( SUPPL_IS_LHS( curr_sigl->sig->value->suppl ) == 1 ) {
+
+      /* This signal is assigned within this statement */
+    }
+
+    curr_sigl = curr_sigl->next;
+
+  }
+
 }
 
 
 /*
  $Log$
+ Revision 1.2  2004/12/16 15:22:01  phase1geo
+ Adding race.c compilation to Makefile and adding documentation to race.c.
+
 */
 
