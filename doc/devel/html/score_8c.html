@@ -17,12 +17,12 @@
 <code>#include "<a class="el" href="vector_8h-source.html">vector.h</a>"</code><br>
 <table border=0 cellpadding=0 cellspacing=0>
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="score_8c.html#a7">define_macro</a> (const char *name, const char *value)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="score_8c.html#a8">score_usage</a> ()</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a147">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="score_8c.html#a9">read_command_file</a> (char *cmd_file, char ***arg_list, int *arg_num)</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a147">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="score_8c.html#a10">score_parse_args</a> (int argc, int last_arg, char **argv)</td></tr>
-<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="score_8c.html#a11">command_score</a> (int argc, int last_arg, char **argv)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Parses score command-line and performs score.</em> <a href="#a11"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="score_8c.html#a8">define_macro</a> (const char *name, const char *value)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="score_8c.html#a9">score_usage</a> ()</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a163">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="score_8c.html#a10">read_command_file</a> (char *cmd_file, char ***arg_list, int *arg_num)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a163">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="score_8c.html#a11">score_parse_args</a> (int argc, int last_arg, char **argv)</td></tr>
+<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="score_8c.html#a12">command_score</a> (int argc, int last_arg, char **argv)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Parses score command-line and performs score.</em> <a href="#a12"></a><em></em></font><br><br></td></tr>
 <tr><td colspan=2><br><h2>Variables</h2></td></tr>
 <tr><td nowrap align=right valign=top>char *&nbsp;</td><td valign=bottom><a class="el" href="score_8c.html#a0">top_module</a> = NULL</td></tr>
 <tr><td nowrap align=right valign=top>char *&nbsp;</td><td valign=bottom><a class="el" href="score_8c.html#a1">top_instance</a> = NULL</td></tr>
@@ -30,7 +30,8 @@
 <tr><td nowrap align=right valign=top>char *&nbsp;</td><td valign=bottom><a class="el" href="score_8c.html#a3">vcd_file</a> = NULL</td></tr>
 <tr><td nowrap align=right valign=top>unsigned long&nbsp;</td><td valign=bottom><a class="el" href="score_8c.html#a4">largest_malloc_size</a></td></tr>
 <tr><td nowrap align=right valign=top>unsigned long&nbsp;</td><td valign=bottom><a class="el" href="score_8c.html#a5">curr_malloc_size</a></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a126">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="score_8c.html#a6">use_files_head</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a140">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="score_8c.html#a6">use_files_head</a></td></tr>
+<tr><td nowrap align=right valign=top>char&nbsp;</td><td valign=bottom><a class="el" href="score_8c.html#a7">user_msg</a> [USER_MSG_LENGTH]</td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 
@@ -40,7 +41,7 @@ Author: </b><dd>
 Trevor Williams (<a href="mailto:trevorw@charter.net">trevorw@charter.net</a>) </dl><dl compact><dt><b>
 Date: </b><dd>
 11/29/2001</dl><hr><h2>Function Documentation</h2>
-<a name="a11" doxytag="score.c::command_score"></a><p>
+<a name="a12" doxytag="score.c::command_score"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -98,7 +99,7 @@ Returns: </b><dd>
 Returns 0 if scoring is successful; otherwise, returns -1.</dl>Performs score command functionality.     </td>
   </tr>
 </table>
-<a name="a7" doxytag="score.c::define_macro"></a><p>
+<a name="a8" doxytag="score.c::define_macro"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -144,13 +145,13 @@ String value associated with define identifier</td></tr>
 </dl>Stores define identifer with its value in a define node and placed in the binary search tree for quick lookup later on.     </td>
   </tr>
 </table>
-<a name="a9" doxytag="score.c::read_command_file"></a><p>
+<a name="a10" doxytag="score.c::read_command_file"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a147">bool</a> read_command_file </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a163">bool</a> read_command_file </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top">char *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>cmd_file</em>, </td>
@@ -200,13 +201,13 @@ Returns: </b><dd>
 Returns TRUE if read of command file was successful; otherwise, returns FALSE. </dl>    </td>
   </tr>
 </table>
-<a name="a10" doxytag="score.c::score_parse_args"></a><p>
+<a name="a11" doxytag="score.c::score_parse_args"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a147">bool</a> score_parse_args </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a163">bool</a> score_parse_args </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top">int&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>argc</em>, </td>
@@ -256,7 +257,7 @@ Returns: </b><dd>
 Returns TRUE if successful in dealing with arguments; otherwise, returns FALSE.</dl>Parses score command argument list and performs specified functions based on these arguments.     </td>
   </tr>
 </table>
-<a name="a8" doxytag="score.c::score_usage"></a><p>
+<a name="a9" doxytag="score.c::score_usage"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -413,7 +414,7 @@ Name of top-level module to score     </td>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a126">str_link</a>* use_files_head </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a140">str_link</a>* use_files_head </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
           <td class="md" valign="top">)&nbsp;</td>
@@ -433,6 +434,28 @@ Name of top-level module to score     </td>
 
 <p>
 Pointer to head element of used files list     </td>
+  </tr>
+</table>
+<a name="a7" doxytag="score.c::user_msg"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> char user_msg[USER_MSG_LENGTH]
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+    </td>
   </tr>
 </table>
 <a name="a3" doxytag="score.c::vcd_file"></a><p>
@@ -457,7 +480,7 @@ Pointer to head element of used files list     </td>
 Name of VCD output file to parse     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Fri Sep 13 00:09:06 2002 for Covered by
+<hr><address align="right"><small>Generated on Sat Oct 12 01:53:16 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

@@ -8,6 +8,7 @@
 {\tt \#include \char`\"{}search.h\char`\"{}}\par
 {\tt \#include \char`\"{}link.h\char`\"{}}\par
 {\tt \#include \char`\"{}module.h\char`\"{}}\par
+{\tt \#include \char`\"{}util.h\char`\"{}}\par
 \subsection*{Functions}
 \begin{CompactItemize}
 \item 
@@ -53,6 +54,8 @@ void {\bf search\_\-free\_\-lists} ()
 char $\ast$ {\bf top\_\-module}
 \item 
 char $\ast$ {\bf top\_\-instance}
+\item 
+char {\bf user\_\-msg} [USER\_\-MSG\_\-LENGTH]
 \end{CompactItemize}
 
 
@@ -70,7 +73,7 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsection{Function Documentation}
 \index{search.c@{search.c}!search_add_directory_path@{search\_\-add\_\-directory\_\-path}}
 \index{search_add_directory_path@{search\_\-add\_\-directory\_\-path}!search.c@{search.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} search\_\-add\_\-directory\_\-path (char $\ast$ {\em path})}\label{search_8c_a15}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} search\_\-add\_\-directory\_\-path (char $\ast$ {\em path})}\label{search_8c_a16}
 
 
 Adds a directory to the list of directories to find unspecified Verilog modules.
@@ -86,7 +89,7 @@ path}]Name of directory to find unspecified Verilog files \end{description}
 Returns TRUE if the specified string is a legal directory string and specifies an existing directory; otherwise, returns FALSE. \end{Desc}
 \index{search.c@{search.c}!search_add_extensions@{search\_\-add\_\-extensions}}
 \index{search_add_extensions@{search\_\-add\_\-extensions}!search.c@{search.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} search\_\-add\_\-extensions (char $\ast$ {\em ext\_\-list})}\label{search_8c_a18}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} search\_\-add\_\-extensions (char $\ast$ {\em ext\_\-list})}\label{search_8c_a19}
 
 
 Adds specified extensions to allowed file extension list.
@@ -102,7 +105,7 @@ ext\_\-list}]String containing extensions to allow in search. \end{description}
 Returns TRUE if the specified string is in the correct format; otherwise, returns FALSE. \end{Desc}
 \index{search.c@{search.c}!search_add_file@{search\_\-add\_\-file}}
 \index{search_add_file@{search\_\-add\_\-file}!search.c@{search.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} search\_\-add\_\-file (char $\ast$ {\em file})}\label{search_8c_a16}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} search\_\-add\_\-file (char $\ast$ {\em file})}\label{search_8c_a17}
 
 
 Adds a specific Verilog module to the list of modules to score.
@@ -118,7 +121,7 @@ file}]Name of Verilog file to add to scoring list. \end{description}
 Returns TRUE if the specified file exists; otherwise, returns FALSE. \end{Desc}
 \index{search.c@{search.c}!search_add_include_path@{search\_\-add\_\-include\_\-path}}
 \index{search_add_include_path@{search\_\-add\_\-include\_\-path}!search.c@{search.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} search\_\-add\_\-include\_\-path (char $\ast$ {\em path})}\label{search_8c_a14}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} search\_\-add\_\-include\_\-path (char $\ast$ {\em path})}\label{search_8c_a15}
 
 
 Adds an include directory to the list of directories to search for `include directives.
@@ -134,7 +137,7 @@ path}]Name of include path to search for `include directives. \end{description}
 Returns TRUE if the specified path is a legal directory string and specifies an existing directory; otherwise, returns FALSE. \end{Desc}
 \index{search.c@{search.c}!search_add_no_score_module@{search\_\-add\_\-no\_\-score\_\-module}}
 \index{search_add_no_score_module@{search\_\-add\_\-no\_\-score\_\-module}!search.c@{search.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} search\_\-add\_\-no\_\-score\_\-module (char $\ast$ {\em module})}\label{search_8c_a17}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} search\_\-add\_\-no\_\-score\_\-module (char $\ast$ {\em module})}\label{search_8c_a18}
 
 
 Adds specified module to list of modules not to score.
@@ -150,14 +153,14 @@ module}]Name of module to specifically not score \end{description}
 Returns TRUE if the specified string is a legal module name; otherwise, returns FALSE. \end{Desc}
 \index{search.c@{search.c}!search_free_lists@{search\_\-free\_\-lists}}
 \index{search_free_lists@{search\_\-free\_\-lists}!search.c@{search.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void search\_\-free\_\-lists ()}\label{search_8c_a19}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void search\_\-free\_\-lists ()}\label{search_8c_a20}
 
 
 Deallocates all used memory for search lists.
 
 This function should be called after all parsing is completed.  Deletes all initialized lists. \index{search.c@{search.c}!search_init@{search\_\-init}}
 \index{search_init@{search\_\-init}!search.c@{search.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void search\_\-init ()}\label{search_8c_a13}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void search\_\-init ()}\label{search_8c_a14}
 
 
 Initializes search maintained pointers.
@@ -230,4 +233,8 @@ Pointer to head element of used files list \index{search.c@{search.c}!use_files_
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ use\_\-files\_\-tail = NULL}\label{search_8c_a3}
 
 
-Pointer to tail element of used files list 
+Pointer to tail element of used files list \index{search.c@{search.c}!user_msg@{user\_\-msg}}
+\index{user_msg@{user\_\-msg}!search.c@{search.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char user\_\-msg[USER\_\-MSG\_\-LENGTH]}\label{search_8c_a13}
+
+

@@ -1,0 +1,79 @@
+\section{Instance/module parameter supplemental field definitions.}
+\label{group__param__suppl}\index{Instance/module parameter supplemental field definitions.@{Instance/module parameter supplemental field definitions.}}
+\subsection*{Defines}
+\begin{CompactItemize}
+\item 
+\#define {\bf PARAM\_\-LSB\_\-ORDER}\ 0
+\item 
+\#define {\bf PARAM\_\-LSB\_\-TYPE}\ 16
+\item 
+\#define {\bf PARAM\_\-TYPE\_\-DECLARED}\ 0
+\item 
+\#define {\bf PARAM\_\-TYPE\_\-OVERRIDE}\ 1
+\item 
+\#define {\bf PARAM\_\-TYPE\_\-SIG\_\-LSB}\ 2
+\item 
+\#define {\bf PARAM\_\-TYPE\_\-SIG\_\-MSB}\ 3
+\item 
+\#define {\bf PARAM\_\-TYPE\_\-EXP\_\-LSB}\ 4
+\item 
+\#define {\bf PARAM\_\-TYPE\_\-EXP\_\-MSB}\ 5
+\item 
+\#define {\bf PARAM\_\-ORDER}(x)\ ((x $\rightarrow$ suppl $>$$>$ PARAM\_\-LSB\_\-ORDER) \& 0xffff)
+\item 
+\#define {\bf PARAM\_\-TYPE}(x)\ ((x $\rightarrow$ suppl $>$$>$ PARAM\_\-LSB\_\-TYPE) \& 0x7)
+\end{CompactItemize}
+
+
+\subsection{Define Documentation}
+\index{param_suppl@{param\_\-suppl}!PARAM_LSB_ORDER@{PARAM\_\-LSB\_\-ORDER}}
+\index{PARAM_LSB_ORDER@{PARAM\_\-LSB\_\-ORDER}!param_suppl@{param\_\-suppl}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define PARAM\_\-LSB\_\-ORDER\ 0}\label{group__param__suppl_a0}
+
+
+Specifies the least significant bit of the parameter order for current parameter in module. \index{param_suppl@{param\_\-suppl}!PARAM_LSB_TYPE@{PARAM\_\-LSB\_\-TYPE}}
+\index{PARAM_LSB_TYPE@{PARAM\_\-LSB\_\-TYPE}!param_suppl@{param\_\-suppl}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define PARAM\_\-LSB\_\-TYPE\ 16}\label{group__param__suppl_a1}
+
+
+Specifies the least significant bit of the parameter type (declared/override). \index{param_suppl@{param\_\-suppl}!PARAM_ORDER@{PARAM\_\-ORDER}}
+\index{PARAM_ORDER@{PARAM\_\-ORDER}!param_suppl@{param\_\-suppl}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define PARAM\_\-ORDER(x)\ ((x $\rightarrow$ suppl $>$$>$ PARAM\_\-LSB\_\-ORDER) \& 0xffff)}\label{group__param__suppl_a8}
+
+
+Returns the order for the specified modparm type. \index{param_suppl@{param\_\-suppl}!PARAM_TYPE@{PARAM\_\-TYPE}}
+\index{PARAM_TYPE@{PARAM\_\-TYPE}!param_suppl@{param\_\-suppl}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define PARAM\_\-TYPE(x)\ ((x $\rightarrow$ suppl $>$$>$ PARAM\_\-LSB\_\-TYPE) \& 0x7)}\label{group__param__suppl_a9}
+
+
+Returns the type (declared/override) of the specified modparm type. \index{param_suppl@{param\_\-suppl}!PARAM_TYPE_DECLARED@{PARAM\_\-TYPE\_\-DECLARED}}
+\index{PARAM_TYPE_DECLARED@{PARAM\_\-TYPE\_\-DECLARED}!param_suppl@{param\_\-suppl}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define PARAM\_\-TYPE\_\-DECLARED\ 0}\label{group__param__suppl_a2}
+
+
+Specifies that the current module parameter is a declared type (belongs to current  module). \index{param_suppl@{param\_\-suppl}!PARAM_TYPE_EXP_LSB@{PARAM\_\-TYPE\_\-EXP\_\-LSB}}
+\index{PARAM_TYPE_EXP_LSB@{PARAM\_\-TYPE\_\-EXP\_\-LSB}!param_suppl@{param\_\-suppl}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define PARAM\_\-TYPE\_\-EXP\_\-LSB\ 4}\label{group__param__suppl_a6}
+
+
+Specifies that the current module parameter specifies the value for an expression LSB value. \index{param_suppl@{param\_\-suppl}!PARAM_TYPE_EXP_MSB@{PARAM\_\-TYPE\_\-EXP\_\-MSB}}
+\index{PARAM_TYPE_EXP_MSB@{PARAM\_\-TYPE\_\-EXP\_\-MSB}!param_suppl@{param\_\-suppl}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define PARAM\_\-TYPE\_\-EXP\_\-MSB\ 5}\label{group__param__suppl_a7}
+
+
+Specifies that the current module parameter specifies the value for an expression MSB value. \index{param_suppl@{param\_\-suppl}!PARAM_TYPE_OVERRIDE@{PARAM\_\-TYPE\_\-OVERRIDE}}
+\index{PARAM_TYPE_OVERRIDE@{PARAM\_\-TYPE\_\-OVERRIDE}!param_suppl@{param\_\-suppl}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define PARAM\_\-TYPE\_\-OVERRIDE\ 1}\label{group__param__suppl_a3}
+
+
+Specifies that the current module parameter is an override type (overrides the value of an instantiated modules parameter declaration). \index{param_suppl@{param\_\-suppl}!PARAM_TYPE_SIG_LSB@{PARAM\_\-TYPE\_\-SIG\_\-LSB}}
+\index{PARAM_TYPE_SIG_LSB@{PARAM\_\-TYPE\_\-SIG\_\-LSB}!param_suppl@{param\_\-suppl}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define PARAM\_\-TYPE\_\-SIG\_\-LSB\ 2}\label{group__param__suppl_a4}
+
+
+Specifies that the current module parameter specifies the value for a signal LSB value. \index{param_suppl@{param\_\-suppl}!PARAM_TYPE_SIG_MSB@{PARAM\_\-TYPE\_\-SIG\_\-MSB}}
+\index{PARAM_TYPE_SIG_MSB@{PARAM\_\-TYPE\_\-SIG\_\-MSB}!param_suppl@{param\_\-suppl}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define PARAM\_\-TYPE\_\-SIG\_\-MSB\ 3}\label{group__param__suppl_a5}
+
+
+Specifies that the current module parameter specifies the value for a signal MSB value. 

@@ -303,7 +303,7 @@ YYLTYPE {\bf yylloc}
 \item 
 int {\bf ignore\_\-mode}
 \item 
-char {\bf error\_\-msg} [500]
+char {\bf user\_\-msg} [USER\_\-MSG\_\-LENGTH]
 \item 
 int {\bf comment\_\-enter}
 \item 
@@ -1021,12 +1021,7 @@ Holds current define identifier string. \index{lexer.c@{lexer.c}!def_table@{def\
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}struct define\_\-t$\ast$ def\_\-table = 0\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a124}
 
 
-Define table. \index{lexer.c@{lexer.c}!error_msg@{error\_\-msg}}
-\index{error_msg@{error\_\-msg}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char error\_\-msg[500]\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a108}
-
-
-Contains error message if something wrong is found. \index{lexer.c@{lexer.c}!file@{file}}
+Define table. \index{lexer.c@{lexer.c}!file@{file}}
 \index{file@{file}!lexer.c@{lexer.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}FILE$\ast$ file}\label{lexer_8c_a122}
 
@@ -1084,6 +1079,11 @@ Pointer to head element of include paths list \index{lexer.c@{lexer.c}!istack@{i
 \index{lexer.c@{lexer.c}!standby@{standby}}
 \index{standby@{standby}!lexer.c@{lexer.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}struct {\bf include\_\-stack\_\-t}$\ast$ standby = 0\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a116}
+
+
+\index{lexer.c@{lexer.c}!user_msg@{user\_\-msg}}
+\index{user_msg@{user\_\-msg}!lexer.c@{lexer.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char user\_\-msg[USER\_\-MSG\_\-LENGTH]}\label{lexer_8c_a108}
 
 
 \index{lexer.c@{lexer.c}!yy_accept@{yy\_\-accept}}

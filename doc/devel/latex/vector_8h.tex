@@ -10,7 +10,7 @@ Contains vector-related functions for signal vectors.
 \item 
 void {\bf vector\_\-init} ({\bf vector} $\ast$vec, {\bf nibble} $\ast$value, int width, int lsb)
 \begin{CompactList}\small\item\em Initializes specified vector.\item\end{CompactList}\item 
-{\bf vector} $\ast$ {\bf vector\_\-create} (int width, int lsb)
+{\bf vector} $\ast$ {\bf vector\_\-create} (int width, int lsb, {\bf bool} data)
 \begin{CompactList}\small\item\em Creates and initializes new vector.\item\end{CompactList}\item 
 void {\bf vector\_\-db\_\-write} ({\bf vector} $\ast$vec, FILE $\ast${\bf file}, {\bf bool} write\_\-data)
 \begin{CompactList}\small\item\em Displays vector information to specified database file.\item\end{CompactList}\item 
@@ -102,7 +102,7 @@ optab}]16-entry operation table.\end{description}
 \end{Desc}
 Generic function that takes in two vectors and performs a bitwise operation by using the specified operation table. The operation table consists of an array of 16 integers where the integer values range from 0 to 3 (0=0, 1=1, 2=x, 3=z). src1 will be left shifted by 2 and added to the value of src2 to obtain an index to the operation table. The value specified at that location will be assigned to the corresponding bit location of the target vector. Vector sizes will be properly compensated by placing zeroes. \index{vector.h@{vector.h}!vector_create@{vector\_\-create}}
 \index{vector_create@{vector\_\-create}!vector.h@{vector.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf vector}$\ast$ vector\_\-create (int {\em width}, int {\em lsb})}\label{vector_8h_a1}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf vector}$\ast$ vector\_\-create (int {\em width}, int {\em lsb}, {\bf bool} {\em data})}\label{vector_8h_a1}
 
 
 Creates and initializes new vector.
@@ -112,7 +112,8 @@ Creates and initializes new vector.
 \begin{description}
 \item[{\em 
 width}]Bit width of this vector. \item[{\em 
-lsb}]Least significant bit for this vector. \end{description}
+lsb}]Least significant bit for this vector. \item[{\em 
+data}]If FALSE only initializes width and lsb but does not allocate a nibble array.\end{description}
 \end{Desc}
 \begin{Desc}
 \item[Returns: ]\par
@@ -301,7 +302,7 @@ value}]Pointer to nibble array for vector. \item[{\em
 width}]Bit width of specified vector. \item[{\em 
 lsb}]Least-significant bit of vector.\end{description}
 \end{Desc}
-Initializes the specified vector with the contents of width, lsb and value. Initializes all contents of value array to 0. \index{vector.h@{vector.h}!vector_logic_count@{vector\_\-logic\_\-count}}
+Initializes the specified vector with the contents of width, lsb and value (if value != NULL). If value != NULL, initializes all contents  of value array to 0x2 (X-value). \index{vector.h@{vector.h}!vector_logic_count@{vector\_\-logic\_\-count}}
 \index{vector_logic_count@{vector\_\-logic\_\-count}!vector.h@{vector.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vector\_\-logic\_\-count ({\bf vector} $\ast$ {\em vec}, int $\ast$ {\em false\_\-cnt}, int $\ast$ {\em true\_\-cnt})}\label{vector_8h_a18}
 

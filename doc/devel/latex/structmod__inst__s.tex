@@ -11,9 +11,11 @@ char $\ast$ {\bf name}
 \item 
 {\bf statistic} $\ast$ {\bf stat}
 \item 
-{\bf parameter} $\ast$ {\bf param\_\-head}
+{\bf inst\_\-parm} $\ast$ {\bf param\_\-head}
 \item 
-{\bf parameter} $\ast$ {\bf param\_\-tail}
+{\bf inst\_\-parm} $\ast$ {\bf param\_\-tail}
+\item 
+{\bf mod\_\-inst} $\ast$ {\bf parent}
 \item 
 {\bf mod\_\-inst} $\ast$ {\bf child\_\-head}
 \item 
@@ -26,12 +28,12 @@ char $\ast$ {\bf name}
 \subsection{Member Data Documentation}
 \index{mod_inst_s@{mod\_\-inst\_\-s}!child_head@{child\_\-head}}
 \index{child_head@{child\_\-head}!mod_inst_s@{mod\_\-inst\_\-s}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-inst}$\ast$ mod\_\-inst\_\-s::child\_\-head}\label{structmod__inst__s_m5}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-inst}$\ast$ mod\_\-inst\_\-s::child\_\-head}\label{structmod__inst__s_m6}
 
 
 Pointer to head of child list \index{mod_inst_s@{mod\_\-inst\_\-s}!child_tail@{child\_\-tail}}
 \index{child_tail@{child\_\-tail}!mod_inst_s@{mod\_\-inst\_\-s}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-inst}$\ast$ mod\_\-inst\_\-s::child\_\-tail}\label{structmod__inst__s_m6}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-inst}$\ast$ mod\_\-inst\_\-s::child\_\-tail}\label{structmod__inst__s_m7}
 
 
 Pointer to tail of child list \index{mod_inst_s@{mod\_\-inst\_\-s}!mod@{mod}}
@@ -46,20 +48,25 @@ Pointer to module this instance represents \index{mod_inst_s@{mod\_\-inst\_\-s}!
 
 Instance name of this module instance \index{mod_inst_s@{mod\_\-inst\_\-s}!next@{next}}
 \index{next@{next}!mod_inst_s@{mod\_\-inst\_\-s}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-inst}$\ast$ mod\_\-inst\_\-s::next}\label{structmod__inst__s_m7}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-inst}$\ast$ mod\_\-inst\_\-s::next}\label{structmod__inst__s_m8}
 
 
 Pointer to next child in parents list \index{mod_inst_s@{mod\_\-inst\_\-s}!param_head@{param\_\-head}}
 \index{param_head@{param\_\-head}!mod_inst_s@{mod\_\-inst\_\-s}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf parameter}$\ast$ mod\_\-inst\_\-s::param\_\-head}\label{structmod__inst__s_m3}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf inst\_\-parm}$\ast$ mod\_\-inst\_\-s::param\_\-head}\label{structmod__inst__s_m3}
 
 
 Head pointer to list of parameter overrides in this module \index{mod_inst_s@{mod\_\-inst\_\-s}!param_tail@{param\_\-tail}}
 \index{param_tail@{param\_\-tail}!mod_inst_s@{mod\_\-inst\_\-s}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf parameter}$\ast$ mod\_\-inst\_\-s::param\_\-tail}\label{structmod__inst__s_m4}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf inst\_\-parm}$\ast$ mod\_\-inst\_\-s::param\_\-tail}\label{structmod__inst__s_m4}
 
 
-Tail pointer to list of parameter overrides in this module \index{mod_inst_s@{mod\_\-inst\_\-s}!stat@{stat}}
+Tail pointer to list of parameter overrides in this module \index{mod_inst_s@{mod\_\-inst\_\-s}!parent@{parent}}
+\index{parent@{parent}!mod_inst_s@{mod\_\-inst\_\-s}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-inst}$\ast$ mod\_\-inst\_\-s::parent}\label{structmod__inst__s_m5}
+
+
+Pointer to parent instance -- used for convenience only \index{mod_inst_s@{mod\_\-inst\_\-s}!stat@{stat}}
 \index{stat@{stat}!mod_inst_s@{mod\_\-inst\_\-s}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf statistic}$\ast$ mod\_\-inst\_\-s::stat}\label{structmod__inst__s_m2}
 

@@ -454,6 +454,7 @@ Least-significant bit position of expression supplemental field indicating that 
 
 <p>
 <b>Value:</b><div class="fragment"><pre>((0x7f &lt;&lt; <a class="code" href="defines_8h.html#a0">SUPPL_LSB_OP</a>)        | \
+                                     (0x1  &lt;&lt; <a class="code" href="defines_8h.html#a1">SUPPL_LSB_ROOT</a>)      | \
                                      (0x1  &lt;&lt; <a class="code" href="defines_8h.html#a2">SUPPL_LSB_EXECUTED</a>)  | \
                                      (0x1  &lt;&lt; <a class="code" href="defines_8h.html#a7">SUPPL_LSB_TRUE</a>)      | \
                                      (0x1  &lt;&lt; <a class="code" href="defines_8h.html#a6">SUPPL_LSB_FALSE</a>)     | \
@@ -572,7 +573,7 @@ Returns a value of 1 if the specified supplemental belongs to an expression that
 Returns a value of 1 if the specified supplemental belongs to an expression that has evaluated to a value of TRUE (1) during simulation.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Fri Sep 13 00:09:08 2002 for Covered by
+<hr><address align="right"><small>Generated on Sat Oct 12 01:53:18 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

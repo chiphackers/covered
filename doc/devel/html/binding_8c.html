@@ -15,22 +15,23 @@
 <code>#include "<a class="el" href="link_8h-source.html">link.h</a>"</code><br>
 <code>#include "<a class="el" href="util_8h-source.html">util.h</a>"</code><br>
 <code>#include "<a class="el" href="vector_8h-source.html">vector.h</a>"</code><br>
+<code>#include "<a class="el" href="param_8h-source.html">param.h</a>"</code><br>
 <table border=0 cellpadding=0 cellspacing=0>
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a4">bind_add</a> (char *sig_name, <a class="el" href="defines_8h.html#a129">expression</a> *exp, char *mod_name)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Adds signal and expression to binding list.</em> <a href="#a4"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a5">bind_remove</a> (int id)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Removes the expression with ID of id from binding list.</em> <a href="#a5"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a6">bind_set_tree</a> (<a class="el" href="defines_8h.html#a129">expression</a> *expr)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a7">bind_perform</a> (char *sig_name, <a class="el" href="defines_8h.html#a129">expression</a> *exp, <a class="el" href="defines_8h.html#a138">module</a> *mod, <a class="el" href="defines_8h.html#a147">bool</a> implicit_allowed)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a5">bind_add</a> (char *sig_name, <a class="el" href="defines_8h.html#a143">expression</a> *exp, <a class="el" href="defines_8h.html#a153">module</a> *mod)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Adds signal and expression to binding list.</em> <a href="#a5"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a6">bind_remove</a> (int id)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Removes the expression with ID of id from binding list.</em> <a href="#a6"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a7">bind_perform</a> (char *sig_name, <a class="el" href="defines_8h.html#a143">expression</a> *exp, <a class="el" href="defines_8h.html#a153">module</a> *mod_sig, <a class="el" href="defines_8h.html#a153">module</a> *mod_exp, <a class="el" href="defines_8h.html#a163">bool</a> implicit_allowed)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Finds signal in module and bind the expression to this signal.</em> <a href="#a7"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a8">bind</a> ()</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Performs signal/expression bind (performed after parse completed).</em> <a href="#a8"></a><em></em></font><br><br></td></tr>
 <tr><td colspan=2><br><h2>Variables</h2></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a142">sig_exp_bind</a> *&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a0">seb_head</a></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a142">sig_exp_bind</a> *&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a1">seb_tail</a></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a144">mod_inst</a> *&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a2">instance_root</a></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a139">mod_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a3">mod_head</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a158">sig_exp_bind</a> *&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a0">seb_head</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a158">sig_exp_bind</a> *&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a1">seb_tail</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a160">mod_inst</a> *&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a2">instance_root</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a154">mod_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a3">mod_head</a></td></tr>
+<tr><td nowrap align=right valign=top>char&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a4">user_msg</a> [USER_MSG_LENGTH]</td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 
@@ -70,7 +71,7 @@ Performs signal/expression bind (performed after parse completed).
 Binding is the process of setting pointers in signals and expressions to point to each other. These pointers are required for scoring purposes. Binding is required for two purposes: 1. The signal that is being bound may not have been parsed (hierarchical referencing allows for this). 2. An expression does not have a pointer to a signal but rather its vector. In the process of binding, we go through each element of the binding list, finding the signal to be bound in the specified tree, adding the expression to the signal's expression pointer list, and setting the expression vector pointer to point to the signal vector.     </td>
   </tr>
 </table>
-<a name="a4" doxytag="binding.c::bind_add"></a><p>
+<a name="a5" doxytag="binding.c::bind_add"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -84,14 +85,14 @@ Binding is the process of setting pointers in signals and expressions to point t
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a129">expression</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a143">expression</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>exp</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap>char *&nbsp;</td>
-          <td class="mdname" nowrap>&nbsp; <em>mod_name</em></td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a153">module</a> *&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>mod</em></td>
         </tr>
         <tr>
           <td></td>
@@ -120,8 +121,8 @@ Parameters: </b><dd>
 Signal scope to bind. </td></tr>
 <tr><td valign=top><em>exp</em>&nbsp;</td><td>
 Expression ID to bind. </td></tr>
-<tr><td valign=top><em>mod_name</em>&nbsp;</td><td>
-Name of module containing specified expression.</td></tr>
+<tr><td valign=top><em>mod</em>&nbsp;</td><td>
+Pointer to module containing specified expression.</td></tr>
 </table>
 </dl>Adds the specified signal and expression to the bindings linked list. This bindings list will be handled after all input Verilog has been parsed.     </td>
   </tr>
@@ -140,19 +141,25 @@ Name of module containing specified expression.</td></tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a129">expression</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a143">expression</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>exp</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a138">module</a> *&nbsp;</td>
-          <td class="mdname" nowrap>&nbsp; <em>mod</em>, </td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a153">module</a> *&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>mod_sig</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a147">bool</a>&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a153">module</a> *&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>mod_exp</em>, </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a163">bool</a>&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>implicit_allowed</em></td>
         </tr>
         <tr>
@@ -182,15 +189,17 @@ Parameters: </b><dd>
 String name of signal to bind to specified expression. </td></tr>
 <tr><td valign=top><em>exp</em>&nbsp;</td><td>
 Pointer to expression to bind. </td></tr>
-<tr><td valign=top><em>mod</em>&nbsp;</td><td>
+<tr><td valign=top><em>mod_sig</em>&nbsp;</td><td>
 Pointer to module containing signal. </td></tr>
+<tr><td valign=top><em>mod_exp</em>&nbsp;</td><td>
+Pointer to module containing expression. </td></tr>
 <tr><td valign=top><em>implicit_allowed</em>&nbsp;</td><td>
 If set to TRUE, creates any signals that are implicitly defined.</td></tr>
 </table>
 </dl>Performs a binding of an expression and signal based on the name of the signal. Looks up signal name in the specified module and sets the expression and signal to point to each other.     </td>
   </tr>
 </table>
-<a name="a5" doxytag="binding.c::bind_remove"></a><p>
+<a name="a6" doxytag="binding.c::bind_remove"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -227,41 +236,6 @@ Expression ID of binding to remove.</td></tr>
 </dl>Removes the binding containing the expression ID of id. This needs to be called before an expression is removed.     </td>
   </tr>
 </table>
-<a name="a6" doxytag="binding.c::bind_set_tree"></a><p>
-<table width="100%" cellpadding="2" cellspacing="0" border="0">
-  <tr>
-    <td class="md">
-      <table cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td class="md" nowrap valign="top"> void bind_set_tree </td>
-          <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a129">expression</a> *&nbsp;</td>
-          <td class="mdname1" valign="top" nowrap>&nbsp; <em>expr</em>          </td>
-          <td class="md" valign="top">)&nbsp;</td>
-          <td class="md" nowrap></td>
-        </tr>
-
-      </table>
-    </td>
-  </tr>
-</table>
-<table cellspacing=5 cellpadding=0 border=0>
-  <tr>
-    <td>
-      &nbsp;
-    </td>
-    <td>
-
-<p>
-<dl compact><dt><b>
-Parameters: </b><dd>
-<table border=0 cellspacing=2 cellpadding=0>
-<tr><td valign=top><em>expr</em>&nbsp;</td><td>
-Pointer to expression to set bit widths in its expression tree.</td></tr>
-</table>
-</dl>This function is called after all signals have been bound to their respective expressions. It recursively moves up the given expression tree towards the root, setting the expression sizes of all expressions that do not currently have a vector size associated with them.     </td>
-  </tr>
-</table>
 <hr><h2>Variable Documentation</h2>
 <a name="a2" doxytag="binding.c::instance_root"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
@@ -269,7 +243,7 @@ Pointer to expression to set bit widths in its expression tree.</td></tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a144">mod_inst</a>* instance_root
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a160">mod_inst</a>* instance_root
       </table>
     </td>
   </tr>
@@ -291,7 +265,7 @@ Pointer to expression to set bit widths in its expression tree.</td></tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a139">mod_link</a>* mod_head
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a154">mod_link</a>* mod_head
       </table>
     </td>
   </tr>
@@ -313,7 +287,7 @@ Pointer to expression to set bit widths in its expression tree.</td></tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a142">sig_exp_bind</a>* seb_head
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a158">sig_exp_bind</a>* seb_head
       </table>
     </td>
   </tr>
@@ -335,7 +309,7 @@ Pointer to expression to set bit widths in its expression tree.</td></tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a142">sig_exp_bind</a>* seb_tail
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a158">sig_exp_bind</a>* seb_tail
       </table>
     </td>
   </tr>
@@ -351,7 +325,29 @@ Pointer to expression to set bit widths in its expression tree.</td></tr>
     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Fri Sep 13 00:09:04 2002 for Covered by
+<a name="a4" doxytag="binding.c::user_msg"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> char user_msg[USER_MSG_LENGTH]
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+    </td>
+  </tr>
+</table>
+<hr><address align="right"><small>Generated on Sat Oct 12 01:53:14 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

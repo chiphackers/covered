@@ -31,6 +31,8 @@ int {\bf VLdebug}
 {\bf str\_\-link} $\ast$ {\bf modlist\_\-head}
 \item 
 {\bf str\_\-link} $\ast$ {\bf modlist\_\-tail}
+\item 
+char {\bf user\_\-msg} [USER\_\-MSG\_\-LENGTH]
 \end{CompactItemize}
 
 
@@ -48,7 +50,7 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsection{Function Documentation}
 \index{parse.c@{parse.c}!parse_and_score_dumpfile@{parse\_\-and\_\-score\_\-dumpfile}}
 \index{parse_and_score_dumpfile@{parse\_\-and\_\-score\_\-dumpfile}!parse.c@{parse.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} parse\_\-and\_\-score\_\-dumpfile (char $\ast$ {\em db}, char $\ast$ {\em vcd})}\label{parse_8c_a8}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} parse\_\-and\_\-score\_\-dumpfile (char $\ast$ {\em db}, char $\ast$ {\em vcd})}\label{parse_8c_a9}
 
 
 Parses VCD dumpfile and scores design.
@@ -65,7 +67,7 @@ vcd}]Name of VCD file to parse for scoring. \end{description}
 Returns TRUE if VCD parsing and scoring is successful; otherwise, returns FALSE. \end{Desc}
 \index{parse.c@{parse.c}!parse_design@{parse\_\-design}}
 \index{parse_design@{parse\_\-design}!parse.c@{parse.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} parse\_\-design (char $\ast$ {\em top}, char $\ast$ {\em output\_\-db})}\label{parse_8c_a7}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} parse\_\-design (char $\ast$ {\em top}, char $\ast$ {\em output\_\-db})}\label{parse_8c_a8}
 
 
 Parses the specified design and generates scoring modules.
@@ -82,7 +84,7 @@ output\_\-db}]Name of output directory for generated scored files.\end{descripti
 Returns TRUE if parsing is successful; otherwise, returns FALSE.\end{Desc}
 Resets the lexer and parses all Verilog files specified in use\_\-files list. After all design files are parsed, their information will be appropriately stored in the associated lists. \index{parse.c@{parse.c}!parse_readline@{parse\_\-readline}}
 \index{parse_readline@{parse\_\-readline}!parse.c@{parse.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int parse\_\-readline (FILE $\ast$ {\em file}, char $\ast$ {\em line}, int {\em size})}\label{parse_8c_a6}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int parse\_\-readline (FILE $\ast$ {\em file}, char $\ast$ {\em line}, int {\em size})}\label{parse_8c_a7}
 
 
 \begin{Desc}
@@ -98,12 +100,12 @@ size}]Maximum number of characters that can be stored in line. \end{description}
 Returns the number of characters read from this line.\end{Desc}
 Reads from specified file, one character at a time, until either a newline or EOF is encountered. Returns the read line and the number of characters stored in the line. No newline character is added to the line. \index{parse.c@{parse.c}!reset_lexer@{reset\_\-lexer}}
 \index{reset_lexer@{reset\_\-lexer}!parse.c@{parse.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void reset\_\-lexer (FILE $\ast$ {\em out}, {\bf str\_\-link} $\ast$ {\em file\_\-list\_\-head})}\label{parse_8c_a4}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void reset\_\-lexer (FILE $\ast$ {\em out}, {\bf str\_\-link} $\ast$ {\em file\_\-list\_\-head})}\label{parse_8c_a5}
 
 
 \index{parse.c@{parse.c}!VLparse@{VLparse}}
 \index{VLparse@{VLparse}!parse.c@{parse.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int VLparse ()}\label{parse_8c_a5}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int VLparse ()}\label{parse_8c_a6}
 
 
 
@@ -122,6 +124,11 @@ Reads from specified file, one character at a time, until either a newline or EO
 \index{parse.c@{parse.c}!use_files_head@{use\_\-files\_\-head}}
 \index{use_files_head@{use\_\-files\_\-head}!parse.c@{parse.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ use\_\-files\_\-head}\label{parse_8c_a1}
+
+
+\index{parse.c@{parse.c}!user_msg@{user\_\-msg}}
+\index{user_msg@{user\_\-msg}!parse.c@{parse.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char user\_\-msg[USER\_\-MSG\_\-LENGTH]}\label{parse_8c_a4}
 
 
 \index{parse.c@{parse.c}!VLdebug@{VLdebug}}

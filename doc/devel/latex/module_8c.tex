@@ -10,6 +10,8 @@
 {\tt \#include \char`\"{}expr.h\char`\"{}}\par
 {\tt \#include \char`\"{}signal.h\char`\"{}}\par
 {\tt \#include \char`\"{}statement.h\char`\"{}}\par
+{\tt \#include \char`\"{}param.h\char`\"{}}\par
+{\tt \#include \char`\"{}link.h\char`\"{}}\par
 \subsection*{Functions}
 \begin{CompactItemize}
 \item 
@@ -17,7 +19,9 @@ void {\bf module\_\-init} ({\bf module} $\ast$mod)
 \begin{CompactList}\small\item\em Initializes all values of module.\item\end{CompactList}\item 
 {\bf module} $\ast$ {\bf module\_\-create} ()
 \begin{CompactList}\small\item\em Creates new module from heap and initializes structure.\item\end{CompactList}\item 
-{\bf bool} {\bf module\_\-db\_\-write} ({\bf module} $\ast$mod, char $\ast$scope, FILE $\ast${\bf file})
+void {\bf module\_\-size\_\-elements} ({\bf module} $\ast$mod, {\bf mod\_\-inst} $\ast$inst)
+\item 
+{\bf bool} {\bf module\_\-db\_\-write} ({\bf module} $\ast$mod, char $\ast$scope, FILE $\ast${\bf file}, {\bf mod\_\-inst} $\ast$inst)
 \begin{CompactList}\small\item\em Writes contents of provided module to specified output.\item\end{CompactList}\item 
 {\bf bool} {\bf module\_\-db\_\-read} ({\bf module} $\ast$mod, char $\ast$scope, char $\ast$$\ast$line)
 \begin{CompactList}\small\item\em Read contents of current line from specified file, creates module and adds to module list.\item\end{CompactList}\item 
@@ -31,6 +35,11 @@ void {\bf module\_\-clean} ({\bf module} $\ast$mod)
 \begin{CompactList}\small\item\em Deallocates module element contents only from heap.\item\end{CompactList}\item 
 void {\bf module\_\-dealloc} ({\bf module} $\ast$mod)
 \begin{CompactList}\small\item\em Deallocates module element from heap.\item\end{CompactList}\end{CompactItemize}
+\subsection*{Variables}
+\begin{CompactItemize}
+\item 
+char {\bf user\_\-msg} [USER\_\-MSG\_\-LENGTH]
+\end{CompactItemize}
 
 
 \subsection{Detailed Description}
@@ -47,7 +56,7 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsection{Function Documentation}
 \index{module.c@{module.c}!module_clean@{module\_\-clean}}
 \index{module_clean@{module\_\-clean}!module.c@{module.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void module\_\-clean ({\bf module} $\ast$ {\em mod})}\label{module_8c_a7}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void module\_\-clean ({\bf module} $\ast$ {\em mod})}\label{module_8c_a9}
 
 
 Deallocates module element contents only from heap.
@@ -60,7 +69,7 @@ mod}]Pointer to module element to clean.\end{description}
 \end{Desc}
 Deallocates module contents: name and filename strings. \index{module.c@{module.c}!module_create@{module\_\-create}}
 \index{module_create@{module\_\-create}!module.c@{module.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf module}$\ast$ module\_\-create ()}\label{module_8c_a1}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf module}$\ast$ module\_\-create ()}\label{module_8c_a2}
 
 
 Creates new module from heap and initializes structure.
@@ -70,7 +79,7 @@ Creates new module from heap and initializes structure.
 Returns pointer to newly created module element that has been properly initialized.\end{Desc}
 Allocates memory from the heap for a module element and initializes all contents to NULL. Returns a pointer to the newly created module. \index{module.c@{module.c}!module_db_merge@{module\_\-db\_\-merge}}
 \index{module_db_merge@{module\_\-db\_\-merge}!module.c@{module.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} module\_\-db\_\-merge ({\bf module} $\ast$ {\em base}, FILE $\ast$ {\em file})}\label{module_8c_a4}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} module\_\-db\_\-merge ({\bf module} $\ast$ {\em base}, FILE $\ast$ {\em file})}\label{module_8c_a6}
 
 
 Reads and merges two modules into base module.
@@ -87,7 +96,7 @@ file}]Pointer to CDD file handle to read.\end{description}
 Returns TRUE if parse and merge was successful; otherwise, returns FALSE.\end{Desc}
 Parses specified line for module information and performs a merge of the two  specified modules, placing the resulting merge module into the module named base. If there are any differences between the two modules, a warning or error will be displayed to the user. \index{module.c@{module.c}!module_db_read@{module\_\-db\_\-read}}
 \index{module_db_read@{module\_\-db\_\-read}!module.c@{module.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} module\_\-db\_\-read ({\bf module} $\ast$ {\em mod}, char $\ast$ {\em scope}, char $\ast$$\ast$ {\em line})}\label{module_8c_a3}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} module\_\-db\_\-read ({\bf module} $\ast$ {\em mod}, char $\ast$ {\em scope}, char $\ast$$\ast$ {\em line})}\label{module_8c_a5}
 
 
 Read contents of current line from specified file, creates module and adds to module list.
@@ -105,7 +114,7 @@ line}]Pointer to current line to parse.\end{description}
 Returns TRUE if read was successful; otherwise, returns FALSE.\end{Desc}
 Reads the current line of the specified file and parses it for a module. If all is successful, returns TRUE; otherwise, returns FALSE. \index{module.c@{module.c}!module_db_write@{module\_\-db\_\-write}}
 \index{module_db_write@{module\_\-db\_\-write}!module.c@{module.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} module\_\-db\_\-write ({\bf module} $\ast$ {\em mod}, char $\ast$ {\em scope}, FILE $\ast$ {\em file})}\label{module_8c_a2}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} module\_\-db\_\-write ({\bf module} $\ast$ {\em mod}, char $\ast$ {\em scope}, FILE $\ast$ {\em file}, {\bf mod\_\-inst} $\ast$ {\em inst})}\label{module_8c_a4}
 
 
 Writes contents of provided module to specified output.
@@ -116,14 +125,15 @@ Writes contents of provided module to specified output.
 \item[{\em 
 mod}]Pointer to module to write to output. \item[{\em 
 scope}]String version of module scope in hierarchy. \item[{\em 
-file}]Pointer to specified output file to write contents. \end{description}
+file}]Pointer to specified output file to write contents. \item[{\em 
+inst}]Pointer to the current module instance.\end{description}
 \end{Desc}
 \begin{Desc}
 \item[Returns: ]\par
 Returns TRUE if file output was successful; otherwise, returns FALSE.\end{Desc}
 Prints the database line for the specified module to the specified database file. If there are any problems with the write, returns FALSE; otherwise, returns TRUE. \index{module.c@{module.c}!module_dealloc@{module\_\-dealloc}}
 \index{module_dealloc@{module\_\-dealloc}!module.c@{module.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void module\_\-dealloc ({\bf module} $\ast$ {\em mod})}\label{module_8c_a8}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void module\_\-dealloc ({\bf module} $\ast$ {\em mod})}\label{module_8c_a10}
 
 
 Deallocates module element from heap.
@@ -136,7 +146,7 @@ mod}]Pointer to module element to deallocate.\end{description}
 \end{Desc}
 Deallocates module; name and filename strings; and finally the structure itself from the heap. \index{module.c@{module.c}!module_display_expressions@{module\_\-display\_\-expressions}}
 \index{module_display_expressions@{module\_\-display\_\-expressions}!module.c@{module.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void module\_\-display\_\-expressions ({\bf module} $\ast$ {\em mod})}\label{module_8c_a6}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void module\_\-display\_\-expressions ({\bf module} $\ast$ {\em mod})}\label{module_8c_a8}
 
 
 Displays expressions stored in this module.
@@ -149,7 +159,7 @@ mod}]Pointer to module element to display expressions\end{description}
 \end{Desc}
 Iterates through expression list of specified module, displaying each expression's id. \index{module.c@{module.c}!module_display_signals@{module\_\-display\_\-signals}}
 \index{module_display_signals@{module\_\-display\_\-signals}!module.c@{module.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void module\_\-display\_\-signals ({\bf module} $\ast$ {\em mod})}\label{module_8c_a5}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void module\_\-display\_\-signals ({\bf module} $\ast$ {\em mod})}\label{module_8c_a7}
 
 
 Displays signals stored in this module.
@@ -162,7 +172,7 @@ mod}]Pointer to module element to display signals.\end{description}
 \end{Desc}
 Iterates through signal list of specified module, displaying each signal's name, width, lsb and value. \index{module.c@{module.c}!module_init@{module\_\-init}}
 \index{module_init@{module\_\-init}!module.c@{module.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void module\_\-init ({\bf module} $\ast$ {\em mod})}\label{module_8c_a0}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void module\_\-init ({\bf module} $\ast$ {\em mod})}\label{module_8c_a1}
 
 
 Initializes all values of module.
@@ -173,4 +183,23 @@ Initializes all values of module.
 \item[{\em 
 mod}]Pointer to module to initialize.\end{description}
 \end{Desc}
-Initializes all contents to NULL. 
+Initializes all contents to NULL. \index{module.c@{module.c}!module_size_elements@{module\_\-size\_\-elements}}
+\index{module_size_elements@{module\_\-size\_\-elements}!module.c@{module.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void module\_\-size\_\-elements ({\bf module} $\ast$ {\em mod}, {\bf mod\_\-inst} $\ast$ {\em inst})}\label{module_8c_a3}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+mod}]Pointer to module containing elements to resize. \item[{\em 
+inst}]Pointer to instance containing this module.\end{description}
+\end{Desc}
+Resizes signals if they are contigent upon parameter values. After all signals have been resized, the signal's corresponding expressions are resized. This function should be called just prior to outputting this module's contents to the CDD file (after parsing phase only) 
+
+\subsection{Variable Documentation}
+\index{module.c@{module.c}!user_msg@{user\_\-msg}}
+\index{user_msg@{user\_\-msg}!module.c@{module.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char user\_\-msg[USER\_\-MSG\_\-LENGTH]}\label{module_8c_a0}
+
+

@@ -12,7 +12,7 @@ void {\bf module\_\-init} ({\bf module} $\ast$mod)
 \begin{CompactList}\small\item\em Initializes all values of module.\item\end{CompactList}\item 
 {\bf module} $\ast$ {\bf module\_\-create} ()
 \begin{CompactList}\small\item\em Creates new module from heap and initializes structure.\item\end{CompactList}\item 
-{\bf bool} {\bf module\_\-db\_\-write} ({\bf module} $\ast$mod, char $\ast$scope, FILE $\ast${\bf file})
+{\bf bool} {\bf module\_\-db\_\-write} ({\bf module} $\ast$mod, char $\ast$scope, FILE $\ast${\bf file}, {\bf mod\_\-inst} $\ast$inst)
 \begin{CompactList}\small\item\em Writes contents of provided module to specified output.\item\end{CompactList}\item 
 {\bf bool} {\bf module\_\-db\_\-read} ({\bf module} $\ast$mod, char $\ast$scope, char $\ast$$\ast$line)
 \begin{CompactList}\small\item\em Read contents of current line from specified file, creates module and adds to module list.\item\end{CompactList}\item 
@@ -102,7 +102,7 @@ line}]Pointer to current line to parse.\end{description}
 Returns TRUE if read was successful; otherwise, returns FALSE.\end{Desc}
 Reads the current line of the specified file and parses it for a module. If all is successful, returns TRUE; otherwise, returns FALSE. \index{module.h@{module.h}!module_db_write@{module\_\-db\_\-write}}
 \index{module_db_write@{module\_\-db\_\-write}!module.h@{module.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} module\_\-db\_\-write ({\bf module} $\ast$ {\em mod}, char $\ast$ {\em scope}, FILE $\ast$ {\em file})}\label{module_8h_a2}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} module\_\-db\_\-write ({\bf module} $\ast$ {\em mod}, char $\ast$ {\em scope}, FILE $\ast$ {\em file}, {\bf mod\_\-inst} $\ast$ {\em inst})}\label{module_8h_a2}
 
 
 Writes contents of provided module to specified output.
@@ -113,7 +113,8 @@ Writes contents of provided module to specified output.
 \item[{\em 
 mod}]Pointer to module to write to output. \item[{\em 
 scope}]String version of module scope in hierarchy. \item[{\em 
-file}]Pointer to specified output file to write contents. \end{description}
+file}]Pointer to specified output file to write contents. \item[{\em 
+inst}]Pointer to the current module instance.\end{description}
 \end{Desc}
 \begin{Desc}
 \item[Returns: ]\par

@@ -5,6 +5,7 @@
 {\tt \#include $<$stdlib.h$>$}\par
 {\tt \#include \char`\"{}defines.h\char`\"{}}\par
 {\tt \#include \char`\"{}merge.h\char`\"{}}\par
+{\tt \#include \char`\"{}util.h\char`\"{}}\par
 \subsection*{Functions}
 \begin{CompactItemize}
 \item 
@@ -22,6 +23,8 @@ char $\ast$ {\bf merged\_\-file} = NULL
 char $\ast$ {\bf merge\_\-in0} = NULL
 \item 
 char $\ast$ {\bf merge\_\-in1} = NULL
+\item 
+char {\bf user\_\-msg} [USER\_\-MSG\_\-LENGTH]
 \end{CompactItemize}
 
 
@@ -39,7 +42,7 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsection{Function Documentation}
 \index{merge.c@{merge.c}!command_merge@{command\_\-merge}}
 \index{command_merge@{command\_\-merge}!merge.c@{merge.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int command\_\-merge (int {\em argc}, int {\em last\_\-arg}, char $\ast$$\ast$ {\em argv})}\label{merge_8c_a5}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int command\_\-merge (int {\em argc}, int {\em last\_\-arg}, char $\ast$$\ast$ {\em argv})}\label{merge_8c_a6}
 
 
 Parses command-line for merge options and performs merge command.
@@ -57,7 +60,7 @@ argv}]List of arguments from command-line to parse.\end{description}
 Returns 0 if merge is successful; otherwise, returns -1.\end{Desc}
 Performs merge command functionality. \index{merge.c@{merge.c}!merge_parse_args@{merge\_\-parse\_\-args}}
 \index{merge_parse_args@{merge\_\-parse\_\-args}!merge.c@{merge.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} merge\_\-parse\_\-args (int {\em argc}, int {\em last\_\-arg}, char $\ast$$\ast$ {\em argv})}\label{merge_8c_a4}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} merge\_\-parse\_\-args (int {\em argc}, int {\em last\_\-arg}, char $\ast$$\ast$ {\em argv})}\label{merge_8c_a5}
 
 
 \begin{Desc}
@@ -73,7 +76,7 @@ argv}]Argument list passed to this program.\end{description}
 Returns TRUE if argument parsing was successful; otherwise, returns FALSE.\end{Desc}
 Parses the merge argument list, placing all parsed values into global variables. If an argument is found that is not valid for the merge operation, an error message is displayed to the user. \index{merge.c@{merge.c}!merge_usage@{merge\_\-usage}}
 \index{merge_usage@{merge\_\-usage}!merge.c@{merge.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void merge\_\-usage ()}\label{merge_8c_a3}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void merge\_\-usage ()}\label{merge_8c_a4}
 
 
 Outputs usage informaiton to standard output for merge command. 
@@ -92,5 +95,10 @@ Outputs usage informaiton to standard output for merge command.
 \index{merge.c@{merge.c}!merged_file@{merged\_\-file}}
 \index{merged_file@{merged\_\-file}!merge.c@{merge.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ merged\_\-file = NULL}\label{merge_8c_a0}
+
+
+\index{merge.c@{merge.c}!user_msg@{user\_\-msg}}
+\index{user_msg@{user\_\-msg}!merge.c@{merge.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char user\_\-msg[USER\_\-MSG\_\-LENGTH]}\label{merge_8c_a3}
 
 

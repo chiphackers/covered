@@ -10,7 +10,7 @@ Contains functions for handling signals.
 \item 
 void {\bf signal\_\-init} ({\bf signal} $\ast$sig, char $\ast$name, {\bf vector} $\ast$value)
 \begin{CompactList}\small\item\em Initializes specified signal with specified values.\item\end{CompactList}\item 
-{\bf signal} $\ast$ {\bf signal\_\-create} (char $\ast$name, int width, int lsb, int is\_\-static)
+{\bf signal} $\ast$ {\bf signal\_\-create} (char $\ast$name, int width, int lsb)
 \begin{CompactList}\small\item\em Creates a new signal based on the information passed to this function.\item\end{CompactList}\item 
 void {\bf signal\_\-db\_\-write} ({\bf signal} $\ast$sig, FILE $\ast${\bf file}, char $\ast$modname)
 \begin{CompactList}\small\item\em Outputs this signal information to specified file.\item\end{CompactList}\item 
@@ -56,7 +56,7 @@ expr}]Expression to add to list.\end{description}
 \end{Desc}
 Adds the specified expression to the end of this signal's expression list. \index{signal.h@{signal.h}!signal_create@{signal\_\-create}}
 \index{signal_create@{signal\_\-create}!signal.h@{signal.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf signal}$\ast$ signal\_\-create (char $\ast$ {\em name}, int {\em width}, int {\em lsb}, int {\em is\_\-static})}\label{signal_8h_a1}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf signal}$\ast$ signal\_\-create (char $\ast$ {\em name}, int {\em width}, int {\em lsb})}\label{signal_8h_a1}
 
 
 Creates a new signal based on the information passed to this function.
@@ -67,8 +67,7 @@ Creates a new signal based on the information passed to this function.
 \item[{\em 
 name}]Full hierarchical name of this signal. \item[{\em 
 width}]Bit width of this signal. \item[{\em 
-lsb}]Bit position of least significant bit. \item[{\em 
-is\_\-static}]Specifies if this signal is a static value.\end{description}
+lsb}]Bit position of least significant bit.\end{description}
 \end{Desc}
 \begin{Desc}
 \item[Returns: ]\par

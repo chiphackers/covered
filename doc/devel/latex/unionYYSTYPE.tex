@@ -19,9 +19,13 @@ double {\bf realtime}
 \item 
 {\bf statement} $\ast$ {\bf state}
 \item 
-{\bf signal\_\-width} $\ast$ {\bf sigwidth}
+{\bf static\_\-expr} $\ast$ {\bf statexp}
+\item 
+{\bf vector\_\-width} $\ast$ {\bf vecwidth}
 \item 
 {\bf str\_\-link} $\ast$ {\bf strlink}
+\item 
+{\bf exp\_\-link} $\ast$ {\bf explink}
 \item 
 {\bf case\_\-statement} $\ast$ {\bf case\_\-stmt}
 \item 
@@ -35,9 +39,13 @@ char $\ast$ {\bf text}
 \item 
 {\bf statement} $\ast$ {\bf state}
 \item 
-{\bf signal\_\-width} $\ast$ {\bf sigwidth}
+{\bf static\_\-expr} $\ast$ {\bf statexp}
+\item 
+{\bf vector\_\-width} $\ast$ {\bf vecwidth}
 \item 
 {\bf str\_\-link} $\ast$ {\bf strlink}
+\item 
+{\bf exp\_\-link} $\ast$ {\bf explink}
 \item 
 {\bf case\_\-statement} $\ast$ {\bf case\_\-stmt}
 \end{CompactItemize}
@@ -46,17 +54,27 @@ char $\ast$ {\bf text}
 \subsection{Member Data Documentation}
 \index{YYSTYPE@{YYSTYPE}!case_stmt@{case\_\-stmt}}
 \index{case_stmt@{case\_\-stmt}!YYSTYPE@{YYSTYPE}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf case\_\-statement}$\ast$ YYSTYPE::case\_\-stmt}\label{unionYYSTYPE_m17}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf case\_\-statement}$\ast$ YYSTYPE::case\_\-stmt}\label{unionYYSTYPE_m21}
 
 
 \index{YYSTYPE@{YYSTYPE}!case_stmt@{case\_\-stmt}}
 \index{case_stmt@{case\_\-stmt}!YYSTYPE@{YYSTYPE}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf case\_\-statement}$\ast$ YYSTYPE::case\_\-stmt}\label{unionYYSTYPE_m9}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf case\_\-statement}$\ast$ YYSTYPE::case\_\-stmt}\label{unionYYSTYPE_m11}
+
+
+\index{YYSTYPE@{YYSTYPE}!explink@{explink}}
+\index{explink@{explink}!YYSTYPE@{YYSTYPE}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf exp\_\-link}$\ast$ YYSTYPE::explink}\label{unionYYSTYPE_m20}
+
+
+\index{YYSTYPE@{YYSTYPE}!explink@{explink}}
+\index{explink@{explink}!YYSTYPE@{YYSTYPE}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf exp\_\-link}$\ast$ YYSTYPE::explink}\label{unionYYSTYPE_m10}
 
 
 \index{YYSTYPE@{YYSTYPE}!expr@{expr}}
 \index{expr@{expr}!YYSTYPE@{YYSTYPE}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf expression}$\ast$ YYSTYPE::expr}\label{unionYYSTYPE_m13}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf expression}$\ast$ YYSTYPE::expr}\label{unionYYSTYPE_m15}
 
 
 \index{YYSTYPE@{YYSTYPE}!expr@{expr}}
@@ -71,7 +89,7 @@ char $\ast$ {\bf text}
 
 \index{YYSTYPE@{YYSTYPE}!number@{number}}
 \index{number@{number}!YYSTYPE@{YYSTYPE}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf vector}$\ast$ YYSTYPE::number}\label{unionYYSTYPE_m11}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf vector}$\ast$ YYSTYPE::number}\label{unionYYSTYPE_m13}
 
 
 \index{YYSTYPE@{YYSTYPE}!number@{number}}
@@ -86,7 +104,7 @@ char $\ast$ {\bf text}
 
 \index{YYSTYPE@{YYSTYPE}!sig@{sig}}
 \index{sig@{sig}!YYSTYPE@{YYSTYPE}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf signal}$\ast$ YYSTYPE::sig}\label{unionYYSTYPE_m12}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf signal}$\ast$ YYSTYPE::sig}\label{unionYYSTYPE_m14}
 
 
 \index{YYSTYPE@{YYSTYPE}!sig@{sig}}
@@ -94,19 +112,9 @@ char $\ast$ {\bf text}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf signal}$\ast$ YYSTYPE::sig}\label{unionYYSTYPE_m4}
 
 
-\index{YYSTYPE@{YYSTYPE}!sigwidth@{sigwidth}}
-\index{sigwidth@{sigwidth}!YYSTYPE@{YYSTYPE}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf signal\_\-width}$\ast$ YYSTYPE::sigwidth}\label{unionYYSTYPE_m15}
-
-
-\index{YYSTYPE@{YYSTYPE}!sigwidth@{sigwidth}}
-\index{sigwidth@{sigwidth}!YYSTYPE@{YYSTYPE}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf signal\_\-width}$\ast$ YYSTYPE::sigwidth}\label{unionYYSTYPE_m7}
-
-
 \index{YYSTYPE@{YYSTYPE}!state@{state}}
 \index{state@{state}!YYSTYPE@{YYSTYPE}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf statement}$\ast$ YYSTYPE::state}\label{unionYYSTYPE_m14}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf statement}$\ast$ YYSTYPE::state}\label{unionYYSTYPE_m16}
 
 
 \index{YYSTYPE@{YYSTYPE}!state@{state}}
@@ -114,24 +122,44 @@ char $\ast$ {\bf text}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf statement}$\ast$ YYSTYPE::state}\label{unionYYSTYPE_m6}
 
 
-\index{YYSTYPE@{YYSTYPE}!strlink@{strlink}}
-\index{strlink@{strlink}!YYSTYPE@{YYSTYPE}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ YYSTYPE::strlink}\label{unionYYSTYPE_m16}
+\index{YYSTYPE@{YYSTYPE}!statexp@{statexp}}
+\index{statexp@{statexp}!YYSTYPE@{YYSTYPE}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf static\_\-expr}$\ast$ YYSTYPE::statexp}\label{unionYYSTYPE_m17}
+
+
+\index{YYSTYPE@{YYSTYPE}!statexp@{statexp}}
+\index{statexp@{statexp}!YYSTYPE@{YYSTYPE}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf static\_\-expr}$\ast$ YYSTYPE::statexp}\label{unionYYSTYPE_m7}
 
 
 \index{YYSTYPE@{YYSTYPE}!strlink@{strlink}}
 \index{strlink@{strlink}!YYSTYPE@{YYSTYPE}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ YYSTYPE::strlink}\label{unionYYSTYPE_m8}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ YYSTYPE::strlink}\label{unionYYSTYPE_m19}
+
+
+\index{YYSTYPE@{YYSTYPE}!strlink@{strlink}}
+\index{strlink@{strlink}!YYSTYPE@{YYSTYPE}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ YYSTYPE::strlink}\label{unionYYSTYPE_m9}
 
 
 \index{YYSTYPE@{YYSTYPE}!text@{text}}
 \index{text@{text}!YYSTYPE@{YYSTYPE}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ YYSTYPE::text}\label{unionYYSTYPE_m10}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ YYSTYPE::text}\label{unionYYSTYPE_m12}
 
 
 \index{YYSTYPE@{YYSTYPE}!text@{text}}
 \index{text@{text}!YYSTYPE@{YYSTYPE}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ YYSTYPE::text}\label{unionYYSTYPE_m0}
+
+
+\index{YYSTYPE@{YYSTYPE}!vecwidth@{vecwidth}}
+\index{vecwidth@{vecwidth}!YYSTYPE@{YYSTYPE}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf vector\_\-width}$\ast$ YYSTYPE::vecwidth}\label{unionYYSTYPE_m18}
+
+
+\index{YYSTYPE@{YYSTYPE}!vecwidth@{vecwidth}}
+\index{vecwidth@{vecwidth}!YYSTYPE@{YYSTYPE}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf vector\_\-width}$\ast$ YYSTYPE::vecwidth}\label{unionYYSTYPE_m8}
 
 
 

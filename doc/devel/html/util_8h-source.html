@@ -12,33 +12,33 @@
 00013 <font class="preprocessor">#include "<a class="code" href="defines_8h.html">defines.h</a>"</font>
 00014 
 00015 
-00017 <font class="keywordtype">void</font> <a class="code" href="util_8c.html#a4">set_output_suppression</a>( <font class="keywordtype">bool</font> value );
+00017 <font class="keywordtype">void</font> <a class="code" href="util_8c.html#a5">set_output_suppression</a>( <font class="keywordtype">bool</font> value );
 00018 
-00020 <font class="keywordtype">void</font> <a class="code" href="util_8c.html#a6">print_output</a>( <font class="keywordtype">char</font>* msg, <font class="keywordtype">int</font> type );
+00020 <font class="keywordtype">void</font> <a class="code" href="util_8c.html#a7">print_output</a>( <font class="keywordtype">char</font>* msg, <font class="keywordtype">int</font> type );
 00021 
-00023 <font class="keywordtype">bool</font> <a class="code" href="util_8c.html#a7">is_variable</a>( <font class="keywordtype">char</font>* token );
+00023 <font class="keywordtype">bool</font> <a class="code" href="util_8c.html#a8">is_variable</a>( <font class="keywordtype">char</font>* token );
 00024 
-00026 <font class="keywordtype">bool</font> <a class="code" href="util_8c.html#a8">is_directory</a>( <font class="keywordtype">char</font>* token );
+00026 <font class="keywordtype">bool</font> <a class="code" href="util_8c.html#a9">is_directory</a>( <font class="keywordtype">char</font>* token );
 00027 
-00029 <font class="keywordtype">bool</font> <a class="code" href="util_8c.html#a9">directory_exists</a>( <font class="keywordtype">char</font>* dir );
+00029 <font class="keywordtype">bool</font> <a class="code" href="util_8c.html#a10">directory_exists</a>( <font class="keywordtype">char</font>* dir );
 00030 
-00032 <font class="keywordtype">void</font> <a class="code" href="util_8c.html#a10">directory_load</a>( <font class="keywordtype">char</font>* dir, <a class="code" href="structstr__link__s.html">str_link</a>* ext_head, <a class="code" href="structstr__link__s.html">str_link</a>** file_head, <a class="code" href="structstr__link__s.html">str_link</a>** file_tail );
+00032 <font class="keywordtype">void</font> <a class="code" href="util_8c.html#a11">directory_load</a>( <font class="keywordtype">char</font>* dir, <a class="code" href="structstr__link__s.html">str_link</a>* ext_head, <a class="code" href="structstr__link__s.html">str_link</a>** file_head, <a class="code" href="structstr__link__s.html">str_link</a>** file_tail );
 00033 
-00035 <font class="keywordtype">bool</font> <a class="code" href="util_8c.html#a11">file_exists</a>( <font class="keywordtype">char</font>* <a class="code" href="lexer_8c.html#a122">file</a> );
+00035 <font class="keywordtype">bool</font> <a class="code" href="util_8c.html#a12">file_exists</a>( <font class="keywordtype">char</font>* <a class="code" href="lexer_8c.html#a122">file</a> );
 00036 
-00038 <font class="keywordtype">bool</font> <a class="code" href="util_8c.html#a12">readline</a>( FILE* <a class="code" href="lexer_8c.html#a122">file</a>, <font class="keywordtype">char</font>** line );
+00038 <font class="keywordtype">bool</font> <a class="code" href="util_8c.html#a13">readline</a>( FILE* <a class="code" href="lexer_8c.html#a122">file</a>, <font class="keywordtype">char</font>** line );
 00039 
-00041 <font class="keywordtype">void</font> <a class="code" href="util_8c.html#a13">scope_extract_front</a>( <font class="keywordtype">char</font>* scope, <font class="keywordtype">char</font>* front, <font class="keywordtype">char</font>* rest );
+00041 <font class="keywordtype">void</font> <a class="code" href="util_8c.html#a14">scope_extract_front</a>( <font class="keywordtype">char</font>* scope, <font class="keywordtype">char</font>* front, <font class="keywordtype">char</font>* rest );
 00042 
-00044 <font class="keywordtype">void</font> <a class="code" href="util_8c.html#a14">scope_extract_back</a>( <font class="keywordtype">char</font>* scope, <font class="keywordtype">char</font>* back, <font class="keywordtype">char</font>* rest );
+00044 <font class="keywordtype">void</font> <a class="code" href="util_8c.html#a15">scope_extract_back</a>( <font class="keywordtype">char</font>* scope, <font class="keywordtype">char</font>* back, <font class="keywordtype">char</font>* rest );
 00045 
-00047 <font class="keywordtype">bool</font> <a class="code" href="util_8c.html#a15">scope_local</a>( <font class="keywordtype">char</font>* scope );
+00047 <font class="keywordtype">bool</font> <a class="code" href="util_8c.html#a16">scope_local</a>( <font class="keywordtype">char</font>* scope );
 00048 
-00050 <font class="keywordtype">void</font>* <a class="code" href="util_8c.html#a16">malloc_safe</a>( <font class="keywordtype">int</font> <a class="code" href="lexer_8c.html#a121">size</a> );
+00050 <font class="keywordtype">void</font>* <a class="code" href="util_8c.html#a17">malloc_safe</a>( <font class="keywordtype">int</font> <a class="code" href="lexer_8c.html#a121">size</a> );
 00051 
-00053 <font class="keywordtype">void</font> <a class="code" href="util_8c.html#a17">free_safe</a>( <font class="keywordtype">void</font>* ptr );
+00053 <font class="keywordtype">void</font> <a class="code" href="util_8c.html#a18">free_safe</a>( <font class="keywordtype">void</font>* ptr );
 00054 
-00056 <font class="keywordtype">void</font> <a class="code" href="util_8c.html#a18">gen_space</a>( <font class="keywordtype">char</font>* spaces, <font class="keywordtype">int</font> num_spaces );
+00056 <font class="keywordtype">void</font> <a class="code" href="util_8c.html#a19">gen_space</a>( <font class="keywordtype">char</font>* spaces, <font class="keywordtype">int</font> num_spaces );
 00057 
 00058 <font class="comment">/* $Log$</font>
 00059 <font class="comment">/* Revision 1.5  2002/07/18 22:02:35  phase1geo</font>
@@ -57,7 +57,7 @@
 00072 
 00073 <font class="preprocessor">#endif</font>
 00074 <font class="preprocessor"></font>
-</pre></div><hr><address align="right"><small>Generated on Fri Sep 13 00:09:04 2002 for Covered by
+</pre></div><hr><address align="right"><small>Generated on Sat Oct 12 01:53:14 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

@@ -7,32 +7,40 @@
 <h1>binding.h</h1><a href="binding_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre>00001 <font class="preprocessor">#ifndef __BINDING_H__</font>
 00002 <font class="preprocessor"></font><font class="preprocessor">#define __BINDING_H__</font>
 00003 <font class="preprocessor"></font>
-00011 <font class="preprocessor">#include "<a class="code" href="signal_8h.html">signal.h</a>"</font>
-00012 <font class="preprocessor">#include "<a class="code" href="expr_8h.html">expr.h</a>"</font>
-00013 <font class="preprocessor">#include "<a class="code" href="module_8h.html">module.h</a>"</font>
-00014 
-00016 <font class="keywordtype">void</font> <a class="code" href="binding_8c.html#a4">bind_add</a>( <font class="keywordtype">char</font>* sig_name, <a class="code" href="structexpression__s.html">expression</a>* exp, <font class="keywordtype">char</font>* mod_name );
-00017 
-00019 <font class="keywordtype">void</font> <a class="code" href="binding_8c.html#a5">bind_remove</a>( <font class="keywordtype">int</font> id );
-00020 
-00022 <font class="keywordtype">void</font> <a class="code" href="binding_8c.html#a7">bind_perform</a>( <font class="keywordtype">char</font>* sig_name, <a class="code" href="structexpression__s.html">expression</a>* exp, <a class="code" href="structmodule__s.html">module</a>* mod, <font class="keywordtype">bool</font> implicit_allowed );
-00023 
-00025 <font class="keywordtype">void</font> <a class="code" href="binding_8c.html#a8">bind</a>();
-00026 
-00027 <font class="comment">/* $Log$</font>
-00028 <font class="comment">/* Revision 1.4  2002/07/20 22:22:52  phase1geo</font>
-00029 <font class="comment">/* Added ability to create implicit signals for local signals.  Added implicit1.v</font>
-00030 <font class="comment">/* diagnostic to test for correctness.  Full regression passes.  Other tweaks to</font>
-00031 <font class="comment">/* output information.</font>
-00032 <font class="comment">/*</font>
-00033 <font class="comment">/* Revision 1.3  2002/07/18 22:02:35  phase1geo</font>
-00034 <font class="comment">/* In the middle of making improvements/fixes to the expression/signal</font>
-00035 <font class="comment">/* binding phase.</font>
-00036 <font class="comment">/* */</font>
-00037 
-00038 <font class="preprocessor">#endif</font>
-00039 <font class="preprocessor"></font>
-</pre></div><hr><address align="right"><small>Generated on Fri Sep 13 00:09:04 2002 for Covered by
+00011 <font class="preprocessor">#include "<a class="code" href="defines_8h.html">defines.h</a>"</font>
+00012 
+00013 
+00015 <font class="keywordtype">void</font> <a class="code" href="binding_8c.html#a5">bind_add</a>( <font class="keywordtype">char</font>* sig_name, <a class="code" href="structexpression__s.html">expression</a>* exp, <a class="code" href="structmodule__s.html">module</a>* mod );
+00016 
+00018 <font class="keywordtype">void</font> <a class="code" href="binding_8c.html#a6">bind_remove</a>( <font class="keywordtype">int</font> id );
+00019 
+00021 <font class="keywordtype">void</font> <a class="code" href="binding_8c.html#a7">bind_perform</a>( <font class="keywordtype">char</font>* sig_name, <a class="code" href="structexpression__s.html">expression</a>* exp, <a class="code" href="structmodule__s.html">module</a>* mod_sig, <a class="code" href="structmodule__s.html">module</a>* mod_exp, <font class="keywordtype">bool</font> implicit_allowed );
+00022 
+00024 <font class="keywordtype">void</font> <a class="code" href="binding_8c.html#a8">bind</a>();
+00025 
+00026 <font class="comment">/* $Log$</font>
+00027 <font class="comment">/* Revision 1.5  2002/10/11 04:24:01  phase1geo</font>
+00028 <font class="comment">/* This checkin represents some major code renovation in the score command to</font>
+00029 <font class="comment">/* fully accommodate parameter support.  All parameter support is in at this</font>
+00030 <font class="comment">/* point and the most commonly used parameter usages have been verified.  Some</font>
+00031 <font class="comment">/* bugs were fixed in handling default values of constants and expression tree</font>
+00032 <font class="comment">/* resizing has been optimized to its fullest.  Full regression has been</font>
+00033 <font class="comment">/* updated and passes.  Adding new diagnostics to test suite.  Fixed a few</font>
+00034 <font class="comment">/* problems in report outputting.</font>
+00035 <font class="comment">/*</font>
+00036 <font class="comment">/* Revision 1.4  2002/07/20 22:22:52  phase1geo</font>
+00037 <font class="comment">/* Added ability to create implicit signals for local signals.  Added implicit1.v</font>
+00038 <font class="comment">/* diagnostic to test for correctness.  Full regression passes.  Other tweaks to</font>
+00039 <font class="comment">/* output information.</font>
+00040 <font class="comment">/*</font>
+00041 <font class="comment">/* Revision 1.3  2002/07/18 22:02:35  phase1geo</font>
+00042 <font class="comment">/* In the middle of making improvements/fixes to the expression/signal</font>
+00043 <font class="comment">/* binding phase.</font>
+00044 <font class="comment">/* */</font>
+00045 
+00046 <font class="preprocessor">#endif</font>
+00047 <font class="preprocessor"></font>
+</pre></div><hr><address align="right"><small>Generated on Sat Oct 12 01:53:13 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

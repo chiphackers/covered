@@ -4,7 +4,38 @@
  \date     8/22/2002
  
  \par
+ Providing parameter support for a tool such as Covered was deemed necessary due to its
+ influences in signal sizes (affects toggle coverage and expression sizing) and its 
+ influences in expression calculation (a parameter can act just like a static value or a
+ signal -- depending on how you look at it).  This latter effect can affect the calculation
+ of the expression itself which will have a direct effect on combinational logic coverage.
+ To accommodate logic designer's usage of the parameter (which can be quite extensive), all
+ IEEE1394-1995 compliant parameter-related constructs are supported with the exception of
+ defparams (which will be explained later).  In the future, all IEEE1394-2001 parameter
+ constructs are planned to be supported.
  
+ \par
+ Adding parameter support is tricky from the standpoint of making the process of incorporating
+ them into the existing Covered structure as easy as possible (changing as little code as
+ possible) while still making their handling as efficient as possible.  Additionally tricky
+ was the fact that parameters can be used in both expressions and signal declarations.  Since
+ parameters can be overridden via defparams (or in Covered's case the -P option -- more on
+ this later) or in-line parameter overrides, their values are not the same for each
+ instantiation of the module that the parameter is defined in (so the value of the parameter
+ must remain with the instance).  However, to keep from having multiple copies of modules
+ for each instance (a big efficiency problem in the parsing stage), the expression that makes
+ up the value of the parameter needed to stay with the module (instead of copied to all
+ instances).
+ 
+ \par
+ To accommodate these requirements, two parameter types exist internally in Covered:  module
+ parameters and instance parameters.  A module parameter is stored in the module structure and
+ contains the expression tree required for calculating the parameter value.  An instance 
+ parameter is stored for each parameter in the instance structure.  It contains the value
+ of the parameter for the particular instance.  Instance parameter values are always calculated
+ immediately upon being added to the instance's instance parameter list.  The two parameter
+ structures are linked together via a mod_parm pointer located in the instance parameter
+ structure.
 */
 
 #include <stdio.h>
@@ -435,7 +466,7 @@ inst_parm* param_has_override( char* mname, mod_parm* mparm, inst_parm* ip_head,
 
 /*!
  \param scope  Full hierarchical scope of parameter to check.
- \param name   Parameter name.
+ \param mparm  Pointer to module parameter to attach new instance parameter to.
  \param ihead  Pointer to head of instance parameter list to add to.
  \param itail  Pointer to tail of instance parameter list to add to.
 
@@ -651,6 +682,10 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 
 /* $Log$
+/* Revision 1.18  2002/10/11 05:23:21  phase1geo
+/* Removing local user message allocation and replacing with global to help
+/* with memory efficiency.
+/*
 /* Revision 1.17  2002/10/11 04:24:02  phase1geo
 /* This checkin represents some major code renovation in the score command to
 /* fully accommodate parameter support.  All parameter support is in at this

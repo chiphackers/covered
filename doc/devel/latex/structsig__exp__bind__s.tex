@@ -9,7 +9,7 @@ char $\ast$ {\bf sig\_\-name}
 \item 
 {\bf expression} $\ast$ {\bf exp}
 \item 
-char $\ast$ {\bf mod\_\-name}
+{\bf module} $\ast$ {\bf mod}
 \item 
 {\bf sig\_\-exp\_\-bind} $\ast$ {\bf next}
 \end{CompactItemize}
@@ -21,12 +21,12 @@ char $\ast$ {\bf mod\_\-name}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf expression}$\ast$ sig\_\-exp\_\-bind\_\-s::exp}\label{structsig__exp__bind__s_m1}
 
 
-Expression to bind. \index{sig_exp_bind_s@{sig\_\-exp\_\-bind\_\-s}!mod_name@{mod\_\-name}}
-\index{mod_name@{mod\_\-name}!sig_exp_bind_s@{sig\_\-exp\_\-bind\_\-s}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ sig\_\-exp\_\-bind\_\-s::mod\_\-name}\label{structsig__exp__bind__s_m2}
+Expression to bind. \index{sig_exp_bind_s@{sig\_\-exp\_\-bind\_\-s}!mod@{mod}}
+\index{mod@{mod}!sig_exp_bind_s@{sig\_\-exp\_\-bind\_\-s}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf module}$\ast$ sig\_\-exp\_\-bind\_\-s::mod}\label{structsig__exp__bind__s_m2}
 
 
-Name of Verilog module containing expression \index{sig_exp_bind_s@{sig\_\-exp\_\-bind\_\-s}!next@{next}}
+Pointer to module containing expression \index{sig_exp_bind_s@{sig\_\-exp\_\-bind\_\-s}!next@{next}}
 \index{next@{next}!sig_exp_bind_s@{sig\_\-exp\_\-bind\_\-s}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf sig\_\-exp\_\-bind}$\ast$ sig\_\-exp\_\-bind\_\-s::next}\label{structsig__exp__bind__s_m3}
 

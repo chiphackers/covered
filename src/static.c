@@ -2,6 +2,37 @@
  \file     static.c
  \author   Trevor Williams  (trevorw@charter.net)
  \date     10/02/2002
+ 
+ \par
+ To accommodate the need for parameters (variables) in static expressions, the static_expr
+ structure and supporting code was created to maintain the efficiency of static expressions
+ that consist of known values while being able to keep track of parameter uses in
+ static expressions.
+ 
+ \par
+ A static_expr structure consists of members:  an int (stores known integer values) and an
+ expression pointer.  If the expression pointer is set to NULL for the given static_expr,
+ it is assumed that the static_expr structure contains a valid, known value that can be
+ used in immediate computations.  If the expression pointer is not NULL, it is assumed
+ that the static_expr structure contains an expression tree that needs to be evaluated at
+ a later time (when parameters are being elaborated).
+ 
+ \par
+ When a static expression is being parsed and a static value (integer value) is encountered,
+ a new static_expr is allocated from heap memory and the number field is assigned to this
+ integer value.  The new static_expr structure is then passed up the tree to be used in
+ further calculations, if necessary.  If a static expression is being parsed and an identifier
+ (parameter) is encountered, an expression is created with an operation type of EXP_OP_SIG
+ to indicate that a parameter is required during elaboration.  The name of the necessary
+ parameter is bound to the newly created expression.
+ 
+ \par
+ Using this strategy for handling static expressions, it becomes evident that we retain
+ the efficiency of calculating static expression that consists entirely of known values (the
+ only overhead is the allocation/deallocation of a static_expr structure from the heap).
+ If a parameter is found during the parse stage, more effort is required to calculate the
+ static_expr, but this is considered necessary in the larger scope of things so we will not
+ concern ourselves with this overhead (which is fairly minimal anyways).
 */
 
 #include <stdio.h>
@@ -21,6 +52,14 @@
 
  \return Returns pointer to new static_expr structure.
 
+ Used by the parser to calculate a new static_expr structure based on the
+ unary operation encountered while parsing.  Based on the operation type
+ specified in the argument list, performs unary operation (if operand is
+ a static number and not an expression -- parameter in operand expression
+ tree), storing result into original static_expr number field and returns
+ the original structure back to the calling function.  If the operand is an
+ expression, create an expression for the specified operation type and store
+ this expression in the original expression pointer field.
 */
 static_expr* static_expr_gen_unary( static_expr* stexp, int op, int line ) {
 
@@ -99,6 +138,15 @@ static_expr* static_expr_gen_unary( static_expr* stexp, int op, int line ) {
 
  \return Returns pointer to new static_expr structure.
 
+ Used by the parser to calculate a new static_expr structure based on the
+ operation encountered while parsing.  Based on the operation type
+ specified in the argument list, performs unary operation (if both operands
+ are static numbers, storing result into original static_expr number field and returns
+ If only one of the operands is an expression, create a EXP_OP_STATIC expression for
+ the other operand and create an expression consisting of these two expressions and
+ the specified operation.  If both operands are expressions, simply create a new expression
+ consisting of those two expressions and specified operator.  Store the newly create
+ expression in the original right static_expr and deallocate the left static_expr.
 */
 static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int line ) {
 
@@ -195,6 +243,15 @@ void static_expr_dealloc( static_expr* stexp, bool rm_exp ) {
 }
 
 /* $Log$
+/* Revision 1.2  2002/10/11 04:24:02  phase1geo
+/* This checkin represents some major code renovation in the score command to
+/* fully accommodate parameter support.  All parameter support is in at this
+/* point and the most commonly used parameter usages have been verified.  Some
+/* bugs were fixed in handling default values of constants and expression tree
+/* resizing has been optimized to its fullest.  Full regression has been
+/* updated and passes.  Adding new diagnostics to test suite.  Fixed a few
+/* problems in report outputting.
+/*
 /* Revision 1.1  2002/10/02 18:55:29  phase1geo
 /* Adding static.c and static.h files for handling static expressions found by
 /* the parser.  Initial versions which compile but have not been tested.

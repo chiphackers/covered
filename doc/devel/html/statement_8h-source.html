@@ -11,17 +11,17 @@
 00012 <font class="preprocessor">#include "<a class="code" href="expr_8h.html">expr.h</a>"</font>
 00013 
 00014 
-00016 <a class="code" href="structstatement__s.html">statement</a>* <a class="code" href="statement_8c.html#a1">statement_create</a>( <a class="code" href="structexpression__s.html">expression</a>* exp );
+00016 <a class="code" href="structstatement__s.html">statement</a>* <a class="code" href="statement_8c.html#a2">statement_create</a>( <a class="code" href="structexpression__s.html">expression</a>* exp );
 00017 
-00019 <font class="keywordtype">void</font> <a class="code" href="statement_8c.html#a4">statement_db_write</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt, FILE* ofile, <font class="keywordtype">char</font>* scope );
+00019 <font class="keywordtype">void</font> <a class="code" href="statement_8c.html#a5">statement_db_write</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt, FILE* ofile, <font class="keywordtype">char</font>* scope );
 00020 
-00022 <font class="keywordtype">bool</font> <a class="code" href="statement_8c.html#a5">statement_db_read</a>( <font class="keywordtype">char</font>** line, <a class="code" href="structmodule__s.html">module</a>* curr_mod, <font class="keywordtype">int</font> read_mode );
+00022 <font class="keywordtype">bool</font> <a class="code" href="statement_8c.html#a6">statement_db_read</a>( <font class="keywordtype">char</font>** line, <a class="code" href="structmodule__s.html">module</a>* curr_mod, <font class="keywordtype">int</font> read_mode );
 00023 
-00025 <font class="keywordtype">void</font> <a class="code" href="statement_8c.html#a6">statement_connect</a>( <a class="code" href="structstatement__s.html">statement</a>* curr_stmt, <a class="code" href="structstatement__s.html">statement</a>* next_stmt );
+00025 <font class="keywordtype">void</font> <a class="code" href="statement_8c.html#a7">statement_connect</a>( <a class="code" href="structstatement__s.html">statement</a>* curr_stmt, <a class="code" href="structstatement__s.html">statement</a>* next_stmt );
 00026 
-00028 <font class="keywordtype">void</font> <a class="code" href="statement_8c.html#a7">statement_set_stop</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt, <a class="code" href="structstatement__s.html">statement</a>* post, <font class="keywordtype">bool</font> true_path, <font class="keywordtype">bool</font> both );
+00028 <font class="keywordtype">void</font> <a class="code" href="statement_8c.html#a8">statement_set_stop</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt, <a class="code" href="structstatement__s.html">statement</a>* post, <font class="keywordtype">bool</font> true_path, <font class="keywordtype">bool</font> both );
 00029 
-00031 <font class="keywordtype">void</font> <a class="code" href="statement_8c.html#a8">statement_dealloc</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt );
+00031 <font class="keywordtype">void</font> <a class="code" href="statement_8c.html#a9">statement_dealloc</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt );
 00032 
 00033 
 00034 <font class="comment">/* $Log$</font>
@@ -65,7 +65,7 @@
 00072 <font class="comment">/* */</font>
 00073 
 00074 <font class="preprocessor">#endif</font>
-</pre></div><hr><address align="right"><small>Generated on Fri Sep 13 00:09:04 2002 for Covered by
+</pre></div><hr><address align="right"><small>Generated on Sat Oct 12 01:53:14 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

@@ -15,22 +15,23 @@
 <code>#include "<a class="el" href="sim_8h-source.html">sim.h</a>"</code><br>
 <table border=0 cellpadding=0 cellspacing=0>
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a131">statement</a> *&nbsp;</td><td valign=bottom><a class="el" href="statement_8c.html#a1">statement_create</a> (<a class="el" href="defines_8h.html#a129">expression</a> *exp)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Creates new statement structure.</em> <a href="#a1"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="statement_8c.html#a2">statement_stack_push</a> (<a class="el" href="defines_8h.html#a131">statement</a> *stmt, int id)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="statement_8c.html#a3">statement_stack_compare</a> (<a class="el" href="defines_8h.html#a131">statement</a> *stmt)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="statement_8c.html#a4">statement_db_write</a> (<a class="el" href="defines_8h.html#a131">statement</a> *stmt, FILE *ofile, char *scope)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Writes specified statement to the specified output file.</em> <a href="#a4"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a147">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="statement_8c.html#a5">statement_db_read</a> (char **line, <a class="el" href="defines_8h.html#a138">module</a> *curr_mod, int read_mode)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Reads in statement line from specified string and stores statement in specified module.</em> <a href="#a5"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="statement_8c.html#a6">statement_connect</a> (<a class="el" href="defines_8h.html#a131">statement</a> *curr_stmt, <a class="el" href="defines_8h.html#a131">statement</a> *next_stmt)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Connects statement sequence to next statement.</em> <a href="#a6"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="statement_8c.html#a7">statement_set_stop</a> (<a class="el" href="defines_8h.html#a131">statement</a> *stmt, <a class="el" href="defines_8h.html#a131">statement</a> *post, <a class="el" href="defines_8h.html#a147">bool</a> true_path, <a class="el" href="defines_8h.html#a147">bool</a> both)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Sets stop bits in specified statement tree.</em> <a href="#a7"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="statement_8c.html#a8">statement_dealloc</a> (<a class="el" href="defines_8h.html#a131">statement</a> *stmt)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Deallocates statement memory and associated expression tree from the heap.</em> <a href="#a8"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a145">statement</a> *&nbsp;</td><td valign=bottom><a class="el" href="statement_8c.html#a2">statement_create</a> (<a class="el" href="defines_8h.html#a143">expression</a> *exp)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Creates new statement structure.</em> <a href="#a2"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="statement_8c.html#a3">statement_stack_push</a> (<a class="el" href="defines_8h.html#a145">statement</a> *stmt, int id)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="statement_8c.html#a4">statement_stack_compare</a> (<a class="el" href="defines_8h.html#a145">statement</a> *stmt)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="statement_8c.html#a5">statement_db_write</a> (<a class="el" href="defines_8h.html#a145">statement</a> *stmt, FILE *ofile, char *scope)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Writes specified statement to the specified output file.</em> <a href="#a5"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a163">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="statement_8c.html#a6">statement_db_read</a> (char **line, <a class="el" href="defines_8h.html#a153">module</a> *curr_mod, int read_mode)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Reads in statement line from specified string and stores statement in specified module.</em> <a href="#a6"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="statement_8c.html#a7">statement_connect</a> (<a class="el" href="defines_8h.html#a145">statement</a> *curr_stmt, <a class="el" href="defines_8h.html#a145">statement</a> *next_stmt)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Connects statement sequence to next statement.</em> <a href="#a7"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="statement_8c.html#a8">statement_set_stop</a> (<a class="el" href="defines_8h.html#a145">statement</a> *stmt, <a class="el" href="defines_8h.html#a145">statement</a> *post, <a class="el" href="defines_8h.html#a163">bool</a> true_path, <a class="el" href="defines_8h.html#a163">bool</a> both)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Sets stop bits in specified statement tree.</em> <a href="#a8"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="statement_8c.html#a9">statement_dealloc</a> (<a class="el" href="defines_8h.html#a145">statement</a> *stmt)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Deallocates statement memory and associated expression tree from the heap.</em> <a href="#a9"></a><em></em></font><br><br></td></tr>
 <tr><td colspan=2><br><h2>Variables</h2></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a134">stmt_loop_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="statement_8c.html#a0">stmt_loop_stack</a> = NULL</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a148">stmt_loop_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="statement_8c.html#a0">stmt_loop_stack</a> = NULL</td></tr>
+<tr><td nowrap align=right valign=top>char&nbsp;</td><td valign=bottom><a class="el" href="statement_8c.html#a1">user_msg</a> [USER_MSG_LENGTH]</td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 
@@ -73,7 +74,7 @@ Cyclic Statement Trees</b><dd>
  Many times a statement tree will "loopback" on itself. These statement trees are considered to be cyclic in nature and, as such, must have leaf statements of the statement tree tied to the first statement of the tree. The following Verilog constructs have cyclic behavior: <code>always</code>, <code>forever</code>, <code>for</code>, <code>repeat</code>, and <code>while</code>.</dl><dl compact><dt><b>
 Traversing Statement Tree</b><dd>
  Starting at the head statement, the value of the head statement is determined to be TRUE or FALSE. If the value is TRUE (non-zero), the next_true path is taken. If the value is FALSE (zero), the next_false path is taken. For statements that express an assignment (or other statements that do not branch), both the next_true and next_false paths point to the same statement. For statements that express a wait-for-event (ex. <code>wait</code>, <code>@</code>, etc.), the next_true pointer will point to the next statement in the tree; however, the next_false pointer will point to NULL. This NULL assignment indicates to the statement simulation engine that this statement will receive the STMT_HEAD bit and the current statement tree is finished for this timestep.</dl><hr><h2>Function Documentation</h2>
-<a name="a6" doxytag="statement.c::statement_connect"></a><p>
+<a name="a7" doxytag="statement.c::statement_connect"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -81,13 +82,13 @@ Traversing Statement Tree</b><dd>
         <tr>
           <td class="md" nowrap valign="top"> void statement_connect </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a131">statement</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a145">statement</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>curr_stmt</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a131">statement</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a145">statement</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>next_stmt</em></td>
         </tr>
         <tr>
@@ -121,15 +122,15 @@ Pointer to statement to connect ends to.</td></tr>
 </dl>Recursively traverses the specified stmt sequence. When it reaches a statement  that has either next_true or next_false set to NULL, sets next_true and/or  next_false of that statement to point to the next_stmt statement.     </td>
   </tr>
 </table>
-<a name="a1" doxytag="statement.c::statement_create"></a><p>
+<a name="a2" doxytag="statement.c::statement_create"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a131">statement</a>* statement_create </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a145">statement</a>* statement_create </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a129">expression</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a143">expression</a> *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>exp</em>          </td>
           <td class="md" valign="top">)&nbsp;</td>
           <td class="md" nowrap></td>
@@ -160,13 +161,13 @@ Returns: </b><dd>
 Returns pointer to the newly created statement.</dl>Creates a new statement structure from heap memory and initializes it with the specified parameter information.     </td>
   </tr>
 </table>
-<a name="a5" doxytag="statement.c::statement_db_read"></a><p>
+<a name="a6" doxytag="statement.c::statement_db_read"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a147">bool</a> statement_db_read </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a163">bool</a> statement_db_read </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top">char **&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>line</em>, </td>
@@ -174,7 +175,7 @@ Returns pointer to the newly created statement.</dl>Creates a new statement stru
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a138">module</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a153">module</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>curr_mod</em>, </td>
         </tr>
         <tr>
@@ -218,7 +219,7 @@ Returns: </b><dd>
 Returns TRUE if the line is read without error; otherwise, returns FALSE.</dl>Reads in the contents of the statement from the specified line, creates a statement structure to hold the contents.     </td>
   </tr>
 </table>
-<a name="a4" doxytag="statement.c::statement_db_write"></a><p>
+<a name="a5" doxytag="statement.c::statement_db_write"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -226,7 +227,7 @@ Returns TRUE if the line is read without error; otherwise, returns FALSE.</dl>Re
         <tr>
           <td class="md" nowrap valign="top"> void statement_db_write </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a131">statement</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a145">statement</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>stmt</em>, </td>
         </tr>
         <tr>
@@ -274,7 +275,7 @@ Scope of parent module which contains the specified statement.</td></tr>
 </dl>Recursively writes the contents of the specified statement tree (and its associated expression trees to the specified output stream.     </td>
   </tr>
 </table>
-<a name="a8" doxytag="statement.c::statement_dealloc"></a><p>
+<a name="a9" doxytag="statement.c::statement_dealloc"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -282,7 +283,7 @@ Scope of parent module which contains the specified statement.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void statement_dealloc </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a131">statement</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a145">statement</a> *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>stmt</em>          </td>
           <td class="md" valign="top">)&nbsp;</td>
           <td class="md" nowrap></td>
@@ -311,7 +312,7 @@ Pointer to statement to deallocate.</td></tr>
 </dl>Deallocates specified statement from heap memory. First remove expression tree of this statement. Second, remove all statements following this statement. Finally, remove the specified statement itself. Since statements can be circular in nature, we will not remove a statement that has its expression tree already deallocated. This will prevent this function from getting into an infinite loop (or stack overflow since this function is recursive).     </td>
   </tr>
 </table>
-<a name="a7" doxytag="statement.c::statement_set_stop"></a><p>
+<a name="a8" doxytag="statement.c::statement_set_stop"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -319,25 +320,25 @@ Pointer to statement to deallocate.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void statement_set_stop </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a131">statement</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a145">statement</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>stmt</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a131">statement</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a145">statement</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>post</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a147">bool</a>&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a163">bool</a>&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>true_path</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a147">bool</a>&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a163">bool</a>&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>both</em></td>
         </tr>
         <tr>
@@ -375,7 +376,7 @@ If TRUE, causes both false and true paths to set stop bits when next statement i
 </dl>Recursively traverses specified statement tree, setting the statement's stop bits that have either their next_true or next_false pointers pointing to the statement called post.     </td>
   </tr>
 </table>
-<a name="a3" doxytag="statement.c::statement_stack_compare"></a><p>
+<a name="a4" doxytag="statement.c::statement_stack_compare"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -383,7 +384,7 @@ If TRUE, causes both false and true paths to set stop bits when next statement i
         <tr>
           <td class="md" nowrap valign="top"> void statement_stack_compare </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a131">statement</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a145">statement</a> *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>stmt</em>          </td>
           <td class="md" valign="top">)&nbsp;</td>
           <td class="md" nowrap></td>
@@ -410,7 +411,7 @@ Pointer to statement being read out of the CDD.</td></tr>
 </dl>Compares the specified statement against the top of the statement loop stack. If the ID at the top of the stack matches this statement's ID, the top of the stack is popped and the next_true and next_false pointers of the stored statement are pointed to the specified statement. The next head is also compared against this statement and the process is repeated until a match is not found. Once an ID at the top of the stack does not match, no further action is taken.     </td>
   </tr>
 </table>
-<a name="a2" doxytag="statement.c::statement_stack_push"></a><p>
+<a name="a3" doxytag="statement.c::statement_stack_push"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -418,7 +419,7 @@ Pointer to statement being read out of the CDD.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void statement_stack_push </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a131">statement</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a145">statement</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>stmt</em>, </td>
         </tr>
         <tr>
@@ -463,7 +464,7 @@ ID of statement to be read out later.</td></tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a134">stmt_loop_link</a>* stmt_loop_stack = NULL
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a148">stmt_loop_link</a>* stmt_loop_stack = NULL
       </table>
     </td>
   </tr>
@@ -479,7 +480,29 @@ ID of statement to be read out later.</td></tr>
     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Fri Sep 13 00:09:06 2002 for Covered by
+<a name="a1" doxytag="statement.c::user_msg"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> char user_msg[USER_MSG_LENGTH]
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+    </td>
+  </tr>
+</table>
+<hr><address align="right"><small>Generated on Sat Oct 12 01:53:16 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>
