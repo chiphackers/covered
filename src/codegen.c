@@ -282,6 +282,12 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
         snprintf( code_format, 20, "%d", vector_to_int( expr->value ) );
         (*code)[0] = strdup_safe( code_format, __FILE__, __LINE__ );
 
+      } else if( expr->value->suppl.part.base == QSTRING ) {
+
+        tmpstr = vector_to_string( expr->value );
+        (*code)[0] = (char*)malloc_safe( (strlen( tmpstr ) + 3), __FILE__, __LINE__ );
+        snprintf( (*code)[0], (strlen( tmpstr ) + 3), "\"%s\"", tmpstr );
+
       } else { 
 
         (*code)[0] = vector_to_string( expr->value );
@@ -609,6 +615,11 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.39  2005/01/07 23:00:05  phase1geo
+ Regression now passes for previous changes.  Also added ability to properly
+ convert quoted strings to vectors and vectors to quoted strings.  This will
+ allow us to support strings in expressions.  This is a known good.
+
  Revision 1.38  2005/01/06 23:51:16  phase1geo
  Intermediate checkin.  Files don't fully compile yet.
 

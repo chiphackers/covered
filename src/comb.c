@@ -589,6 +589,11 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
         *size  = strlen( tmpstr );
         free_safe( tmpstr );
 
+        /* Adjust for quotation marks */
+        if( exp->value->suppl.part.base == QSTRING ) {
+          *size += 2;
+        }
+
       }
 
     } else {
@@ -1928,6 +1933,11 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.105  2005/01/07 23:00:09  phase1geo
+ Regression now passes for previous changes.  Also added ability to properly
+ convert quoted strings to vectors and vectors to quoted strings.  This will
+ allow us to support strings in expressions.  This is a known good.
+
  Revision 1.104  2005/01/06 23:51:16  phase1geo
  Intermediate checkin.  Files don't fully compile yet.
 
