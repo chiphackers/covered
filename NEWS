@@ -1,5 +1,23 @@
 Covered-Related NEWS
 ====================
+    * 7/21/2002
+
+Release covered-20020721 made.  Lots of bug fixes and feature enhancements.  Fixed output
+to a more understandable format when modules cannot be found during parsing.  Added support
+for the -e option which allows the user to omit modules from coverage.  Fixed single and
+multi-bit selectors.  These should work properly now, selecting the correct values from
+vectors.  Added -D option to allow the user define values at the command-line.  Fixed
+problems associated with the `ifdef/`ifndef directives.  Fixed problem with module trees
+that were 3 or more modules deep.  Created TODO list for items that I want to complete
+before 0.1 stable release.  This will give users/developers an insight to the short-term
+goals of the project.  All items in TODO list preceded by an X have also been worked on
+in this release.  Improved performance of signal/expression binding.  Support has been
+added to allow implicit wire declarations.  Added ability to parse the design and score
+the dumpfile in two calls to the score command.  This could aid performance later as a
+design would only need to be parsed once.  More diagnostics have been added to the
+Verilog test suite.  Development and user documentation has been updated to bring them
+up-to-date with current functionality.
+
     * 7/15/2002
 
 Release covered-20020715 made.  Several bug fixes for problems found in previous release

@@ -1,3 +1,561 @@
+2002-07-20 19:08  phase1geo
+
+	* doc/devel/html/annotated.html, doc/devel/html/binding_8c.html,
+	doc/devel/html/binding_8h-source.html,
+	doc/devel/html/binding_8h.html, doc/devel/html/bug.html,
+	doc/devel/html/codegen_8c.html,
+	doc/devel/html/codegen_8h-source.html,
+	doc/devel/html/codegen_8h.html, doc/devel/html/comb_8c.html,
+	doc/devel/html/comb_8h-source.html, doc/devel/html/comb_8h.html,
+	doc/devel/html/db_8c.html, doc/devel/html/db_8h-source.html,
+	doc/devel/html/db_8h.html, doc/devel/html/defines_8h-source.html,
+	doc/devel/html/defines_8h.html,
+	doc/devel/html/devel__doc_8h-source.html,
+	doc/devel/html/devel__doc_8h.html, doc/devel/html/expr_8c.html,
+	doc/devel/html/expr_8h-source.html, doc/devel/html/expr_8h.html,
+	doc/devel/html/files.html, doc/devel/html/fsm_8c.html,
+	doc/devel/html/fsm_8h-source.html, doc/devel/html/fsm_8h.html,
+	doc/devel/html/functions.html, doc/devel/html/globals.html,
+	doc/devel/html/group__comparison__types.html,
+	doc/devel/html/group__db__types.html,
+	doc/devel/html/group__expr__ops.html,
+	doc/devel/html/group__expr__suppl.html,
+	doc/devel/html/group__lexer__val__types.html,
+	doc/devel/html/group__op__tables.html,
+	doc/devel/html/group__output__type.html,
+	doc/devel/html/group__read__modes.html,
+	doc/devel/html/group__tree__fname__comps.html,
+	doc/devel/html/group__vector__defs.html, doc/devel/html/index.html,
+	doc/devel/html/instance_8c.html,
+	doc/devel/html/instance_8h-source.html,
+	doc/devel/html/instance_8h.html, doc/devel/html/keywords_8c.html,
+	doc/devel/html/keywords_8h-source.html,
+	doc/devel/html/keywords_8h.html, doc/devel/html/lexer_8c.html,
+	doc/devel/html/line_8c.html, doc/devel/html/line_8h-source.html,
+	doc/devel/html/line_8h.html, doc/devel/html/link_8c.html,
+	doc/devel/html/link_8h-source.html, doc/devel/html/link_8h.html,
+	doc/devel/html/main_8c.html, doc/devel/html/merge_8c.html,
+	doc/devel/html/merge_8h-source.html, doc/devel/html/merge_8h.html,
+	doc/devel/html/module_8c.html,
+	doc/devel/html/module_8h-source.html,
+	doc/devel/html/module_8h.html, doc/devel/html/modules.html,
+	doc/devel/html/page_big_picture.html,
+	doc/devel/html/page_code_details.html,
+	doc/devel/html/page_code_style.html,
+	doc/devel/html/page_intro.html, doc/devel/html/page_misc.html,
+	doc/devel/html/page_project_plan.html,
+	doc/devel/html/page_testing.html, doc/devel/html/page_tools.html,
+	doc/devel/html/pages.html, doc/devel/html/parse_8c.html,
+	doc/devel/html/parse_8h-source.html, doc/devel/html/parse_8h.html,
+	doc/devel/html/parser_8c.html,
+	doc/devel/html/parser_8h-source.html,
+	doc/devel/html/parser_8h.html, doc/devel/html/parser__misc_8c.html,
+	doc/devel/html/parser__misc_8h-source.html,
+	doc/devel/html/parser__misc_8h.html, doc/devel/html/report_8c.html,
+	doc/devel/html/report_8h-source.html,
+	doc/devel/html/report_8h.html, doc/devel/html/score_8c.html,
+	doc/devel/html/score_8h-source.html, doc/devel/html/score_8h.html,
+	doc/devel/html/search_8c.html,
+	doc/devel/html/search_8h-source.html,
+	doc/devel/html/search_8h.html, doc/devel/html/signal_8c.html,
+	doc/devel/html/signal_8h-source.html,
+	doc/devel/html/signal_8h.html, doc/devel/html/sim_8c.html,
+	doc/devel/html/sim_8h-source.html, doc/devel/html/sim_8h.html,
+	doc/devel/html/stat_8c.html, doc/devel/html/stat_8h-source.html,
+	doc/devel/html/stat_8h.html, doc/devel/html/statement_8c.html,
+	doc/devel/html/statement_8h-source.html,
+	doc/devel/html/statement_8h.html,
+	doc/devel/html/structcase__stmt__s-members.html,
+	doc/devel/html/structcase__stmt__s.html,
+	doc/devel/html/structexp__link__s-members.html,
+	doc/devel/html/structexp__link__s.html,
+	doc/devel/html/structexpression__s-members.html,
+	doc/devel/html/structexpression__s.html,
+	doc/devel/html/structinclude__stack__t-members.html,
+	doc/devel/html/structinclude__stack__t.html,
+	doc/devel/html/structkeyword-members.html,
+	doc/devel/html/structkeyword.html,
+	doc/devel/html/structmod__inst__s-members.html,
+	doc/devel/html/structmod__inst__s.html,
+	doc/devel/html/structmod__link__s-members.html,
+	doc/devel/html/structmod__link__s.html,
+	doc/devel/html/structmodule__s-members.html,
+	doc/devel/html/structmodule__s.html,
+	doc/devel/html/structsig__exp__bind__s-members.html,
+	doc/devel/html/structsig__exp__bind__s.html,
+	doc/devel/html/structsig__link__s-members.html,
+	doc/devel/html/structsig__link__s.html,
+	doc/devel/html/structsignal__s-members.html,
+	doc/devel/html/structsignal__s.html,
+	doc/devel/html/structsignal__width__s-members.html,
+	doc/devel/html/structsignal__width__s.html,
+	doc/devel/html/structsigwidth__s-members.html,
+	doc/devel/html/structsigwidth__s.html,
+	doc/devel/html/structstatement__s-members.html,
+	doc/devel/html/structstatement__s.html,
+	doc/devel/html/structstatistic__s-members.html,
+	doc/devel/html/structstatistic__s.html,
+	doc/devel/html/structstmt__link__s-members.html,
+	doc/devel/html/structstmt__link__s.html,
+	doc/devel/html/structstmt__loop__link__s-members.html,
+	doc/devel/html/structstmt__loop__link__s.html,
+	doc/devel/html/structstr__link__s-members.html,
+	doc/devel/html/structstr__link__s.html,
+	doc/devel/html/structsymtable__s-members.html,
+	doc/devel/html/structsymtable__s.html,
+	doc/devel/html/structvalchange__s-members.html,
+	doc/devel/html/structvalchange__s.html,
+	doc/devel/html/structvcdltype-members.html,
+	doc/devel/html/structvcdltype.html,
+	doc/devel/html/structvector__s-members.html,
+	doc/devel/html/structvector__s.html,
+	doc/devel/html/structvlltype-members.html,
+	doc/devel/html/structvlltype.html,
+	doc/devel/html/structyy__buffer__state-members.html,
+	doc/devel/html/structyy__buffer__state.html,
+	doc/devel/html/structyyltype-members.html,
+	doc/devel/html/structyyltype.html, doc/devel/html/symtable_8c.html,
+	doc/devel/html/symtable_8h-source.html,
+	doc/devel/html/symtable_8h.html, doc/devel/html/toggle_8c.html,
+	doc/devel/html/toggle_8h-source.html,
+	doc/devel/html/toggle_8h.html,
+	doc/devel/html/unionYYSTYPE-members.html,
+	doc/devel/html/unionYYSTYPE.html,
+	doc/devel/html/unionexpr__stmt__u-members.html,
+	doc/devel/html/unionexpr__stmt__u.html,
+	doc/devel/html/util_8c.html, doc/devel/html/util_8h-source.html,
+	doc/devel/html/util_8h.html, doc/devel/html/vcd__lexer_8c.html,
+	doc/devel/html/vcd__parser_8c.html,
+	doc/devel/html/vcd__parser_8h-source.html,
+	doc/devel/html/vcd__parser_8h.html,
+	doc/devel/html/vcd__parser__misc_8c.html,
+	doc/devel/html/vcd__parser__misc_8h-source.html,
+	doc/devel/html/vcd__parser__misc_8h.html,
+	doc/devel/html/vector_8c.html,
+	doc/devel/html/vector_8h-source.html,
+	doc/devel/html/vector_8h.html, doc/devel/latex/binding_8c.tex,
+	doc/devel/latex/binding_8h.tex, doc/devel/latex/db_8c.tex,
+	doc/devel/latex/defines_8h.tex, doc/devel/latex/doxygen.sty,
+	doc/devel/latex/lexer_8c.tex, doc/devel/latex/link_8c.tex,
+	doc/devel/latex/link_8h.tex, doc/devel/latex/parse_8c.tex,
+	doc/devel/latex/parse_8h.tex, doc/devel/latex/refman.tex,
+	doc/devel/latex/report_8c.tex, doc/devel/latex/score_8c.tex,
+	doc/devel/latex/structmodule__s.tex, doc/devel/latex/util_8c.tex,
+	doc/devel/latex/util_8h.tex, doc/manstyle/011.mas, src/score.c:
+	Updating score usage information.  Updated manstyle user
+	documentation though there seems to be some problem getting the
+	HTML generated from this.  Getting ready for the next release.
+
+2002-07-20 17:22  phase1geo
+
+	* TODO, diags/cdd/implicit1.cdd, diags/verilog/Makefile,
+	diags/verilog/implicit1.v, src/binding.c, src/binding.h, src/db.c,
+	src/score.c, src/util.c: Added ability to create implicit signals
+	for local signals.  Added implicit1.v diagnostic to test for
+	correctness.  Full regression passes.  Other tweaks to output
+	information.
+
+2002-07-20 16:34  phase1geo
+
+	* TODO, src/parse.c, src/parse.h, src/score.c, src/score.h:
+	Separating ability to parse design and score dumpfile.	Now both or
+	either can be done (allowing one to parse once and score multiple
+	times).
+
+2002-07-20 15:48  phase1geo
+
+	* TODO, src/search.c, src/util.c: Fixing a bug that caused the same
+	file to be added to the use_files list more than once.	A filename
+	will only appear once in this list now.  Updates to the TODO list.
+
+2002-07-20 13:46  phase1geo
+
+	* TODO, diags/cdd/instance3.cdd, diags/verilog/Makefile,
+	diags/verilog/instance3.v, src/comb.c, src/defines.h, src/line.c,
+	src/module.c, src/report.c, src/toggle.c: Causing fully covered
+	modules to not be output in reports.  Adding instance3.v diagnostic
+	to verify this works correctly.
+
+2002-07-20 08:59  phase1geo
+
+	* TODO, diags/verilog/Makefile: Added mbit_sel1.v diagnostic to
+	regression suite and updating TODO list.
+
+2002-07-20 08:58  phase1geo
+
+	* TODO, diags/cdd/include1.1.cdd, diags/cdd/include1.cdd,
+	diags/cdd/mbit_sel1.cdd, diags/verilog/mbit_sel1.v, src/comb.c,
+	src/expr.c, src/lexer.l, src/parser.y: Fixing bug in EXP_OP_LAST
+	for changes in binding.  Adding correct line numbering to lexer
+	(tested).  Added '+' to report outputting for signals larger than 1
+	bit.  Added mbit_sel1.v diagnostic to verify some multi-bit
+	functionality.	Full regression passes.
+
+2002-07-19 08:10  phase1geo
+
+	* src/: expr.c, signal.c: Various fixes to binding scheme.
+
+2002-07-18 17:03  phase1geo
+
+	* TODO: Adding another note to the scope list.
+
+2002-07-18 17:02  phase1geo
+
+	* src/: binding.c, binding.h, db.c, expr.c, link.c, link.h,
+	parse.c, signal.c, util.c, util.h: In the middle of making
+	improvements/fixes to the expression/signal binding phase.
+
+2002-07-18 01:29  phase1geo
+
+	* TODO: Yet another idea that I thought about after-the-fact.
+
+2002-07-18 01:24  phase1geo
+
+	* TODO: Adding item that was missed earlier.
+
+2002-07-18 01:18  phase1geo
+
+	* TODO: Starting ToDo list for things that I need to complete
+	before stable release 1.0 can be made.
+
+2002-07-18 00:50  phase1geo
+
+	* diags/cdd/include1.1.cdd, diags/cdd/include1.cdd,
+	diags/cdd/instance2.cdd, diags/verilog/Makefile,
+	diags/verilog/instance2.v, diags/verilog/lib/adder1.v,
+	diags/verilog/lib/adder4.v, doc/devel/html/annotated.html,
+	doc/devel/html/binding_8c.html,
+	doc/devel/html/binding_8h-source.html,
+	doc/devel/html/binding_8h.html, doc/devel/html/bug.html,
+	doc/devel/html/codegen_8c.html,
+	doc/devel/html/codegen_8h-source.html,
+	doc/devel/html/codegen_8h.html, doc/devel/html/comb_8c.html,
+	doc/devel/html/comb_8h-source.html, doc/devel/html/comb_8h.html,
+	doc/devel/html/db_8c.html, doc/devel/html/db_8h-source.html,
+	doc/devel/html/db_8h.html, doc/devel/html/defines_8h-source.html,
+	doc/devel/html/defines_8h.html,
+	doc/devel/html/devel__doc_8h-source.html,
+	doc/devel/html/devel__doc_8h.html, doc/devel/html/expr_8c.html,
+	doc/devel/html/expr_8h-source.html, doc/devel/html/expr_8h.html,
+	doc/devel/html/files.html, doc/devel/html/fsm_8c.html,
+	doc/devel/html/fsm_8h-source.html, doc/devel/html/fsm_8h.html,
+	doc/devel/html/functions.html, doc/devel/html/globals.html,
+	doc/devel/html/group__comparison__types.html,
+	doc/devel/html/group__db__types.html,
+	doc/devel/html/group__expr__ops.html,
+	doc/devel/html/group__expr__suppl.html,
+	doc/devel/html/group__lexer__val__types.html,
+	doc/devel/html/group__op__tables.html,
+	doc/devel/html/group__output__type.html,
+	doc/devel/html/group__read__modes.html,
+	doc/devel/html/group__tree__fname__comps.html,
+	doc/devel/html/group__vector__defs.html, doc/devel/html/index.html,
+	doc/devel/html/instance_8c.html,
+	doc/devel/html/instance_8h-source.html,
+	doc/devel/html/instance_8h.html, doc/devel/html/keywords_8c.html,
+	doc/devel/html/keywords_8h-source.html,
+	doc/devel/html/keywords_8h.html, doc/devel/html/lexer_8c.html,
+	doc/devel/html/line_8c.html, doc/devel/html/line_8h-source.html,
+	doc/devel/html/line_8h.html, doc/devel/html/link_8c.html,
+	doc/devel/html/link_8h-source.html, doc/devel/html/link_8h.html,
+	doc/devel/html/main_8c.html, doc/devel/html/merge_8c.html,
+	doc/devel/html/merge_8h-source.html, doc/devel/html/merge_8h.html,
+	doc/devel/html/module_8c.html,
+	doc/devel/html/module_8h-source.html,
+	doc/devel/html/module_8h.html, doc/devel/html/modules.html,
+	doc/devel/html/page_big_picture.html,
+	doc/devel/html/page_code_details.html,
+	doc/devel/html/page_code_style.html,
+	doc/devel/html/page_intro.html, doc/devel/html/page_misc.html,
+	doc/devel/html/page_project_plan.html,
+	doc/devel/html/page_testing.html, doc/devel/html/page_tools.html,
+	doc/devel/html/pages.html, doc/devel/html/parse_8c.html,
+	doc/devel/html/parse_8h-source.html, doc/devel/html/parse_8h.html,
+	doc/devel/html/parser_8c.html,
+	doc/devel/html/parser_8h-source.html,
+	doc/devel/html/parser_8h.html, doc/devel/html/parser__misc_8c.html,
+	doc/devel/html/parser__misc_8h-source.html,
+	doc/devel/html/parser__misc_8h.html, doc/devel/html/report_8c.html,
+	doc/devel/html/report_8h-source.html,
+	doc/devel/html/report_8h.html, doc/devel/html/score_8c.html,
+	doc/devel/html/score_8h-source.html, doc/devel/html/score_8h.html,
+	doc/devel/html/search_8c.html,
+	doc/devel/html/search_8h-source.html,
+	doc/devel/html/search_8h.html, doc/devel/html/signal_8c.html,
+	doc/devel/html/signal_8h-source.html,
+	doc/devel/html/signal_8h.html, doc/devel/html/sim_8c.html,
+	doc/devel/html/sim_8h-source.html, doc/devel/html/sim_8h.html,
+	doc/devel/html/stat_8c.html, doc/devel/html/stat_8h-source.html,
+	doc/devel/html/stat_8h.html, doc/devel/html/statement_8c.html,
+	doc/devel/html/statement_8h-source.html,
+	doc/devel/html/statement_8h.html,
+	doc/devel/html/structcase__stmt__s-members.html,
+	doc/devel/html/structcase__stmt__s.html,
+	doc/devel/html/structexp__link__s-members.html,
+	doc/devel/html/structexp__link__s.html,
+	doc/devel/html/structexpression__s-members.html,
+	doc/devel/html/structexpression__s.html,
+	doc/devel/html/structinclude__stack__t-members.html,
+	doc/devel/html/structinclude__stack__t.html,
+	doc/devel/html/structkeyword-members.html,
+	doc/devel/html/structkeyword.html,
+	doc/devel/html/structmod__inst__s-members.html,
+	doc/devel/html/structmod__inst__s.html,
+	doc/devel/html/structmod__link__s-members.html,
+	doc/devel/html/structmod__link__s.html,
+	doc/devel/html/structmodule__s-members.html,
+	doc/devel/html/structmodule__s.html,
+	doc/devel/html/structsig__exp__bind__s-members.html,
+	doc/devel/html/structsig__exp__bind__s.html,
+	doc/devel/html/structsig__link__s-members.html,
+	doc/devel/html/structsig__link__s.html,
+	doc/devel/html/structsignal__s-members.html,
+	doc/devel/html/structsignal__s.html,
+	doc/devel/html/structsignal__width__s-members.html,
+	doc/devel/html/structsignal__width__s.html,
+	doc/devel/html/structsigwidth__s-members.html,
+	doc/devel/html/structsigwidth__s.html,
+	doc/devel/html/structstatement__s-members.html,
+	doc/devel/html/structstatement__s.html,
+	doc/devel/html/structstatistic__s-members.html,
+	doc/devel/html/structstatistic__s.html,
+	doc/devel/html/structstmt__link__s-members.html,
+	doc/devel/html/structstmt__link__s.html,
+	doc/devel/html/structstmt__loop__link__s-members.html,
+	doc/devel/html/structstmt__loop__link__s.html,
+	doc/devel/html/structstr__link__s-members.html,
+	doc/devel/html/structstr__link__s.html,
+	doc/devel/html/structsymtable__s-members.html,
+	doc/devel/html/structsymtable__s.html,
+	doc/devel/html/structvalchange__s-members.html,
+	doc/devel/html/structvalchange__s.html,
+	doc/devel/html/structvcdltype-members.html,
+	doc/devel/html/structvcdltype.html,
+	doc/devel/html/structvector__s-members.html,
+	doc/devel/html/structvector__s.html,
+	doc/devel/html/structvlltype-members.html,
+	doc/devel/html/structvlltype.html,
+	doc/devel/html/structyy__buffer__state-members.html,
+	doc/devel/html/structyy__buffer__state.html,
+	doc/devel/html/structyyltype-members.html,
+	doc/devel/html/structyyltype.html, doc/devel/html/symtable_8c.html,
+	doc/devel/html/symtable_8h-source.html,
+	doc/devel/html/symtable_8h.html, doc/devel/html/toggle_8c.html,
+	doc/devel/html/toggle_8h-source.html,
+	doc/devel/html/toggle_8h.html,
+	doc/devel/html/unionYYSTYPE-members.html,
+	doc/devel/html/unionYYSTYPE.html,
+	doc/devel/html/unionexpr__stmt__u-members.html,
+	doc/devel/html/unionexpr__stmt__u.html,
+	doc/devel/html/util_8c.html, doc/devel/html/util_8h-source.html,
+	doc/devel/html/util_8h.html, doc/devel/html/vcd__lexer_8c.html,
+	doc/devel/html/vcd__parser_8c.html,
+	doc/devel/html/vcd__parser_8h-source.html,
+	doc/devel/html/vcd__parser_8h.html,
+	doc/devel/html/vcd__parser__misc_8c.html,
+	doc/devel/html/vcd__parser__misc_8h-source.html,
+	doc/devel/html/vcd__parser__misc_8h.html,
+	doc/devel/html/vector_8c.html,
+	doc/devel/html/vector_8h-source.html,
+	doc/devel/html/vector_8h.html, doc/devel/latex/doxygen.sty,
+	doc/devel/latex/instance_8c.tex, doc/devel/latex/instance_8h.tex,
+	doc/devel/latex/refman.tex, src/db.c, src/instance.c,
+	src/instance.h, src/search.c: Fixes should be just about complete
+	for instance depth problems now.  Diagnostics to help verify
+	instance handling are added to regression.  Full regression passes.
+
+2002-07-17 21:33  phase1geo
+
+	* diags/cdd/instance1.cdd, diags/verilog/instance1.v,
+	doc/devel/html/annotated.html, doc/devel/html/binding_8c.html,
+	doc/devel/html/binding_8h-source.html,
+	doc/devel/html/binding_8h.html, doc/devel/html/bug.html,
+	doc/devel/html/codegen_8c.html,
+	doc/devel/html/codegen_8h-source.html,
+	doc/devel/html/codegen_8h.html, doc/devel/html/comb_8c.html,
+	doc/devel/html/comb_8h-source.html, doc/devel/html/comb_8h.html,
+	doc/devel/html/db_8c.html, doc/devel/html/db_8h-source.html,
+	doc/devel/html/db_8h.html, doc/devel/html/defines_8h-source.html,
+	doc/devel/html/defines_8h.html,
+	doc/devel/html/devel__doc_8h-source.html,
+	doc/devel/html/devel__doc_8h.html, doc/devel/html/expr_8c.html,
+	doc/devel/html/expr_8h-source.html, doc/devel/html/expr_8h.html,
+	doc/devel/html/files.html, doc/devel/html/fsm_8c.html,
+	doc/devel/html/fsm_8h-source.html, doc/devel/html/fsm_8h.html,
+	doc/devel/html/functions.html, doc/devel/html/globals.html,
+	doc/devel/html/group__comparison__types.html,
+	doc/devel/html/group__db__types.html,
+	doc/devel/html/group__expr__ops.html,
+	doc/devel/html/group__expr__suppl.html,
+	doc/devel/html/group__lexer__val__types.html,
+	doc/devel/html/group__op__tables.html,
+	doc/devel/html/group__output__type.html,
+	doc/devel/html/group__read__modes.html,
+	doc/devel/html/group__tree__fname__comps.html,
+	doc/devel/html/group__vector__defs.html, doc/devel/html/index.html,
+	doc/devel/html/instance_8c.html,
+	doc/devel/html/instance_8h-source.html,
+	doc/devel/html/instance_8h.html, doc/devel/html/keywords_8c.html,
+	doc/devel/html/keywords_8h-source.html,
+	doc/devel/html/keywords_8h.html, doc/devel/html/lexer_8c.html,
+	doc/devel/html/line_8c.html, doc/devel/html/line_8h-source.html,
+	doc/devel/html/line_8h.html, doc/devel/html/link_8c.html,
+	doc/devel/html/link_8h-source.html, doc/devel/html/link_8h.html,
+	doc/devel/html/main_8c.html, doc/devel/html/merge_8c.html,
+	doc/devel/html/merge_8h-source.html, doc/devel/html/merge_8h.html,
+	doc/devel/html/module_8c.html,
+	doc/devel/html/module_8h-source.html,
+	doc/devel/html/module_8h.html, doc/devel/html/modules.html,
+	doc/devel/html/page_big_picture.html,
+	doc/devel/html/page_code_details.html,
+	doc/devel/html/page_code_style.html,
+	doc/devel/html/page_intro.html, doc/devel/html/page_misc.html,
+	doc/devel/html/page_project_plan.html,
+	doc/devel/html/page_testing.html, doc/devel/html/page_tools.html,
+	doc/devel/html/pages.html, doc/devel/html/parse_8c.html,
+	doc/devel/html/parse_8h-source.html, doc/devel/html/parse_8h.html,
+	doc/devel/html/parser_8c.html,
+	doc/devel/html/parser_8h-source.html,
+	doc/devel/html/parser_8h.html, doc/devel/html/parser__misc_8c.html,
+	doc/devel/html/parser__misc_8h-source.html,
+	doc/devel/html/parser__misc_8h.html, doc/devel/html/report_8c.html,
+	doc/devel/html/report_8h-source.html,
+	doc/devel/html/report_8h.html, doc/devel/html/score_8c.html,
+	doc/devel/html/score_8h-source.html, doc/devel/html/score_8h.html,
+	doc/devel/html/search_8c.html,
+	doc/devel/html/search_8h-source.html,
+	doc/devel/html/search_8h.html, doc/devel/html/signal_8c.html,
+	doc/devel/html/signal_8h-source.html,
+	doc/devel/html/signal_8h.html, doc/devel/html/sim_8c.html,
+	doc/devel/html/sim_8h-source.html, doc/devel/html/sim_8h.html,
+	doc/devel/html/stat_8c.html, doc/devel/html/stat_8h-source.html,
+	doc/devel/html/stat_8h.html, doc/devel/html/statement_8c.html,
+	doc/devel/html/statement_8h-source.html,
+	doc/devel/html/statement_8h.html,
+	doc/devel/html/structcase__stmt__s-members.html,
+	doc/devel/html/structcase__stmt__s.html,
+	doc/devel/html/structexp__link__s-members.html,
+	doc/devel/html/structexp__link__s.html,
+	doc/devel/html/structexpression__s-members.html,
+	doc/devel/html/structexpression__s.html,
+	doc/devel/html/structinclude__stack__t-members.html,
+	doc/devel/html/structinclude__stack__t.html,
+	doc/devel/html/structkeyword-members.html,
+	doc/devel/html/structkeyword.html,
+	doc/devel/html/structmod__inst__s-members.html,
+	doc/devel/html/structmod__inst__s.html,
+	doc/devel/html/structmod__link__s-members.html,
+	doc/devel/html/structmod__link__s.html,
+	doc/devel/html/structmodule__s-members.html,
+	doc/devel/html/structmodule__s.html,
+	doc/devel/html/structsig__exp__bind__s-members.html,
+	doc/devel/html/structsig__exp__bind__s.html,
+	doc/devel/html/structsig__link__s-members.html,
+	doc/devel/html/structsig__link__s.html,
+	doc/devel/html/structsignal__s-members.html,
+	doc/devel/html/structsignal__s.html,
+	doc/devel/html/structsignal__width__s-members.html,
+	doc/devel/html/structsignal__width__s.html,
+	doc/devel/html/structsigwidth__s-members.html,
+	doc/devel/html/structsigwidth__s.html,
+	doc/devel/html/structstatement__s-members.html,
+	doc/devel/html/structstatement__s.html,
+	doc/devel/html/structstatistic__s-members.html,
+	doc/devel/html/structstatistic__s.html,
+	doc/devel/html/structstmt__link__s-members.html,
+	doc/devel/html/structstmt__link__s.html,
+	doc/devel/html/structstmt__loop__link__s-members.html,
+	doc/devel/html/structstmt__loop__link__s.html,
+	doc/devel/html/structstr__link__s-members.html,
+	doc/devel/html/structstr__link__s.html,
+	doc/devel/html/structsymtable__s-members.html,
+	doc/devel/html/structsymtable__s.html,
+	doc/devel/html/structvalchange__s-members.html,
+	doc/devel/html/structvalchange__s.html,
+	doc/devel/html/structvcdltype-members.html,
+	doc/devel/html/structvcdltype.html,
+	doc/devel/html/structvector__s-members.html,
+	doc/devel/html/structvector__s.html,
+	doc/devel/html/structvlltype-members.html,
+	doc/devel/html/structvlltype.html,
+	doc/devel/html/structyy__buffer__state-members.html,
+	doc/devel/html/structyy__buffer__state.html,
+	doc/devel/html/structyyltype-members.html,
+	doc/devel/html/structyyltype.html, doc/devel/html/symtable_8c.html,
+	doc/devel/html/symtable_8h-source.html,
+	doc/devel/html/symtable_8h.html, doc/devel/html/toggle_8c.html,
+	doc/devel/html/toggle_8h-source.html,
+	doc/devel/html/toggle_8h.html,
+	doc/devel/html/unionYYSTYPE-members.html,
+	doc/devel/html/unionYYSTYPE.html,
+	doc/devel/html/unionexpr__stmt__u-members.html,
+	doc/devel/html/unionexpr__stmt__u.html,
+	doc/devel/html/util_8c.html, doc/devel/html/util_8h-source.html,
+	doc/devel/html/util_8h.html, doc/devel/html/vcd__lexer_8c.html,
+	doc/devel/html/vcd__parser_8c.html,
+	doc/devel/html/vcd__parser_8h-source.html,
+	doc/devel/html/vcd__parser_8h.html,
+	doc/devel/html/vcd__parser__misc_8c.html,
+	doc/devel/html/vcd__parser__misc_8h-source.html,
+	doc/devel/html/vcd__parser__misc_8h.html,
+	doc/devel/html/vector_8c.html,
+	doc/devel/html/vector_8h-source.html,
+	doc/devel/html/vector_8h.html, doc/devel/latex/db_8c.tex,
+	doc/devel/latex/db_8h.tex, doc/devel/latex/doxygen.sty,
+	doc/devel/latex/instance_8c.tex, doc/devel/latex/instance_8h.tex,
+	doc/devel/latex/lexer_8c.tex, doc/devel/latex/module_8c.tex,
+	doc/devel/latex/module_8h.tex, doc/devel/latex/refman.tex,
+	doc/devel/latex/score_8c.tex, doc/devel/latex/signal_8c.tex,
+	doc/devel/latex/signal_8h.tex, doc/devel/latex/sim_8c.tex,
+	doc/devel/latex/sim_8h.tex, doc/devel/latex/structmodule__s.tex,
+	doc/devel/latex/vector_8c.tex, doc/devel/latex/vector_8h.tex,
+	src/db.c, src/defines.h, src/expr.c, src/instance.c,
+	src/instance.h, src/module.c, src/module.h, src/search.c,
+	src/signal.c, src/statement.c: Fixed instantiation addition. 
+	Multiple hierarchy instantiation trees should now work.
+
+2002-07-17 16:45  phase1geo
+
+	* src/: db.c, instance.c, lexer.l: Fixing case where `define does
+	not set to a value.  Looking into problem with embedded instances
+	(at least 3 deep).
+
+2002-07-17 07:53  phase1geo
+
+	* diags/cdd/define1.cdd, diags/cdd/ifdef2.1.cdd,
+	diags/verilog/Makefile, diags/verilog/define1.v, src/lexer.l,
+	src/score.c: Added -D option to score command and verified that
+	this works properly.
+
+2002-07-17 01:27  phase1geo
+
+	* diags/cdd/always1.cdd, diags/cdd/always5.cdd,
+	diags/cdd/ifelse1.cdd, diags/cdd/sbit_sel1.cdd,
+	diags/verilog/Makefile, diags/verilog/sbit_sel1.v,
+	doc/manstyle/011.mas, src/binding.c, src/expr.c, src/signal.c,
+	src/signal.h, src/toggle.c, src/vector.c, src/vector.h: Added start
+	for fixes to bit select code starting with single bit selection. 
+	Full regression passes with addition of sbit_sel1 diagnostic.
+
+2002-07-16 19:13  phase1geo
+
+	* src/: db.c, lexer.l, score.c: Added support for -e option and
+	informally tested.
+
+2002-07-16 17:00  phase1geo
+
+	* src/: Makefile.in, lexer.l: Fixing output when module(s) are not
+	found in search process to indicate this more clearly to the user.
+
+2002-07-15 22:29  phase1geo
+
+	* ChangeLog, INSTALL, NEWS, aclocal.m4, config.status, configure,
+	configure.in, diags/verilog/Makefile, src/score.c: Updates to NEWS,
+	INSTALL, ChangeLog for release.  Modifications to Verilog
+	diagnostic Makefile to make it easier to read.	Added user warning
+	if -e option is specified since this is not supported at this time.
+	 Removed mpatrol from configure.in.
+
 2002-07-15 19:04  phase1geo
 
 	* diags/cdd/assign1.cdd, diags/cdd/concat2.cdd,

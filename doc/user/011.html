@@ -95,7 +95,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="code">covered score -t &lt;top_instance&gt; -vcd &lt;vcd_dumpfile&gt; [&lt;options&gt;]</P>
+      <P class="code">covered score -t &lt;top_module&gt; [&lt;options&gt;]</P>
     </TD>
   </TR>
 
@@ -106,7 +106,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">The <i>top_instance</i> parameter is required for the scoring purposes and represents the top-most module instance in the module instance hierarchy that will be covered. Covered is limited to being able to gain coverage results for either a single module or a single module tree. The following figure shows a design in its hierachical form to illustrate how to get Covered to generate coverage results for a part of the design.</P>
+      <P class="pg">The <i>top_module</i> parameter is required for the scoring purposes and represents the top-most module that will be covered. Covered is limited to being able to gain coverage results for either a single module or a single module tree. With the combination of the -t, -i and -e options, all relevant modules in a design can be selected for coverage. The following figure shows a design in its hierachical form to illustrate how to get Covered to generate coverage results for a part of the design.</P>
     </TD>
   </TR>
 
@@ -128,7 +128,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">To get coverage for the entire design, the <i>top_instance</i> value would be "test".</P>
+      <P class="pg">Assume that the following Verilog modules are used to create this tree.</P>
     </TD>
   </TR>
 
@@ -139,7 +139,106 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">To get coverage for the instance foo and all modules below it, the <i>top_instance</i> value would be "test.foo".</P>
+      <P class="pg"><ul> <li>module "test" instantiated as "test" in the above figure</li> <li>module "foomod" instantiated as "foo"</li> <li>module "barmod" instantiated as "bar"</li> <li>module "amod" instantiated as "a"</li> <li>module "bmod" instantiated as "b"</li> </ul></P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">To get coverage for the entire design, the covered command line would be:</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin">Command</P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="code">covered score -t test -i test(rest of command-line)</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">Because both the -t and -i options are the same value (the module name is the same as the instance name), only the -t option needs to be specified. If the -i option is not specified, Covered will assume that the instance name of the top module is the same name as the top module itself. Note that the -t option always needs to be specified for the score command.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">To get coverage for the instance foo and all modules below it, the covered command line would be:</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin">Command</P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="code">covered score -t foomod -i foo (rest of command-line)</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">In this case, because the name of the top-level module is different than its instantiated name, both the -t and -i options must be specified on the command-line.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">To get coverage for only the instance foo (and none of the modules instantiated below it in the hierarchy), Covered command-line would look like the following:</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin">Command</P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="code">covered score -t foomod -i foo -e amod -e bmod</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">Here we see the use of the -e option, it takes a module name as its value. When a module with the matching name is found in the hierarchy, it and all of its submodules are removed from coverage. You may specify as many -e arguments as necessary to select the appropriate modules to cover.</P>
     </TD>
   </TR>
 
@@ -201,7 +300,7 @@
             <P class="blockIndentLeft">&nbsp;</P>
           </TD>
           <TD width=100% align=center>
-<table cellspacing=2 cellpadding=4 border=1> <tr> <td colspan=2 class="tableHeader"> Options to score Command </td> </tr> <tr> <td> <strong>Option</strong> </td> <td> <strong>Description</strong> <td> </tr> <tr> <td> -i &lt;instance&gt; </td> <td> Instance name of top-level module. Necessary if module to verify coverage is not the top-level module in the design. If not specified, -t value is used. </td> </tr> <tr> <td> -o &lt;<i>filename</i>&gt; </td> <td> Name of CDD to write coverage information to </td> </tr> <tr> <td> -I &lt;<i>directory</i>&gt; </td> <td> Directory to find included Verilog files. You may use this option as many times as necessary on the command-line, one for each directory. </td> </tr> <tr> <td> -f &lt;<i>filename</i>&gt; </td> <td> Name of file containing additional arguments to parse. You may specify this option more than once on a command-line. </td> </tr> <tr> <td> -y &lt;<i>directory</i>&gt; </td> <td> Directory to find unspecified Verilog files. You may specify this option more than once on a command-line; one for each directory required. </td> </tr> <tr> <td> -v &lt;<i>filename</i>&gt; </td> <td> Name of specific Verilog file to score. You may specify this option more than once on a command-line; one for each filename to parse. </td> </tr> <tr> <td> -e &lt;<i>module</i>&gt; </td> <td> Name of module to not score. You may specify this option more than once on a command-line; one for each module to remove from coverage. </td> </tr> <tr> <td> -q </td> <td> Suppresses output to standard output </td> </tr> <tr> <td> -h </td> <td> Outputs usage information for the score command </td> </tr> </table>
+<table cellspacing=2 cellpadding=4 border=1> <tr> <td colspan=2 class="tableHeader"> Options to score Command </td> </tr> <tr> <td> <strong>Option</strong> </td> <td> <strong>Description</strong> <td> </tr> <tr> <td> -vcd &lt;dumpfile&gt; </td> <td> Name of dumpfile to score design with. If this option is not used, Covered will only create an initial CDD file from the design and will not attempt to score the design. </td> </tr> <tr> <td> -i &lt;instance&gt; </td> <td> Instance name of top-level module. Necessary if module to verify coverage is not the top-level module in the design. If not specified, -t value is used. </td> </tr> <tr> <td> -o &lt;<i>filename</i>&gt; </td> <td> Name of CDD to write coverage information to </td> </tr> <tr> <td> -I &lt;<i>directory</i>&gt; </td> <td> Directory to find included Verilog files. You may use this option as many times as necessary on the command-line, one for each directory. </td> </tr> <tr> <td> -f &lt;<i>filename</i>&gt; </td> <td> Name of file containing additional arguments to parse. You may specify this option more than once on a command-line. </td> </tr> <tr> <td> -y &lt;<i>directory</i>&gt; </td> <td> Directory to find unspecified Verilog files. You may specify this option more than once on a command-line; one for each directory required. </td> </tr> <tr> <td> -v &lt;<i>filename</i>&gt; </td> <td> Name of specific Verilog file to score. You may specify this option more than once on a command-line; one for each filename to parse. </td> </tr> <tr> <td> -e &lt;<i>module</i>&gt; </td> <td> Name of module to not score. You may specify this option more than once on a command-line; one for each module to remove from coverage. </td> </tr> <tr> <td> -q </td> <td> Suppresses output to standard output </td> </tr> <tr> <td> -D <name>(=<value>) </td> <td> Defines the specified name to 1 or the specified value. </td> </tr> <tr> <td> -h </td> <td> Outputs usage information for the score command </td> </tr> </table>
           </TD>
           <TD>
             <P class="blockIndentRight">&nbsp;</P>
