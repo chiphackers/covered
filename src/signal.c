@@ -325,8 +325,7 @@ void signal_display( signal* sig ) {
 */
 void signal_dealloc( signal* sig ) {
 
-  exp_link* curr_exp;    /* Pointer to current expression link in signal expression list */
-  exp_link* tmp_exp;     /* Temporary pointer to expression link                         */
+  exp_link* curr_expl;   /* Pointer to current expression link to set to NULL */
 
   if( sig != NULL ) {
 
@@ -340,15 +339,14 @@ void signal_dealloc( signal* sig ) {
     sig->value = NULL;
 
     /* Free up memory for expression list */
-    curr_exp = sig->exp_head;
-    while( curr_exp != NULL ) {
-      curr_exp->exp->sig = NULL;
-      tmp_exp            = curr_exp;
-      curr_exp           = curr_exp->next;
-      free_safe( tmp_exp );
+    curr_expl = sig->exp_head;
+    while( curr_expl != NULL ) {
+      curr_expl->exp->sig = NULL;
+      curr_expl = curr_expl->next;
     }
 
-    sig->exp_head = sig->exp_tail = NULL;
+    exp_link_delete_list( sig->exp_head, FALSE );
+    sig->exp_head = NULL;
 
     /* Finally free up the memory for this signal */
     free_safe( sig );
@@ -358,6 +356,9 @@ void signal_dealloc( signal* sig ) {
 }
 
 /* $Log$
+/* Revision 1.13  2002/07/23 12:56:22  phase1geo
+/* Fixing some memory overflow issues.  Still getting core dumps in some areas.
+/*
 /* Revision 1.12  2002/07/19 13:10:07  phase1geo
 /* Various fixes to binding scheme.
 /*
