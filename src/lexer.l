@@ -460,8 +460,8 @@ static int yywrap() {
 
   str_link* curr;
   str_link* tmpm;
+  char*     fname = NULL;
   FILE*     out;
-  bool      found = FALSE;
   tnode*    node;
   
   /* Close input file */
@@ -469,6 +469,11 @@ static int yywrap() {
     fclose( yyin );
   }
   
+  /*
+   If we have no more modules to find in our module list, then remove the
+   temporary preprocessor file, deallocate the found_modules tree and
+   stop parsing.
+  */
   if( modlist_head == NULL ) {
     assert( unlink( ppfilename ) == 0 );
     tree_dealloc( found_modules );
@@ -478,16 +483,15 @@ static int yywrap() {
   curr = filelist_curr;
   tmpm = modlist_head;
   
-  while( (tmpm != NULL) && !found ) {
+  while( (tmpm != NULL) && (fname == NULL) ) {
     if( (node = tree_find( tmpm->str, found_modules )) != NULL ) {
-      curr->str = node->value;
-      found     = TRUE;
+      fname = node->value;
     } else {
       if( (curr = get_next_vfile( curr, tmpm->str )) == NULL ) {
         tmpm = tmpm->next;
         curr = filelist_curr;
       } else {
-        found = TRUE;
+        fname = curr->str;
       }
     }
   }
@@ -509,7 +513,7 @@ static int yywrap() {
   assert( out != NULL );
   
   /* Now the preprocessor on this file first */
-  reset_pplexer( curr->str, out );
+  reset_pplexer( fname, out );
   PPVLlex();
   
   fclose( out );
@@ -517,10 +521,7 @@ static int yywrap() {
   yyrestart( fopen( ppfilename, "r" ) );
   
   yylloc.first_line = 1;
-  yylloc.text       = curr->str;
-  
-  /* Set bit to allow this library file to  */
-  curr->suppl = (curr->suppl | 0x4);
+  yylloc.text       = fname;
   
   filelist_curr = curr->next;
   
