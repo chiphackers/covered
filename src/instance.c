@@ -31,6 +31,8 @@ mod_inst* instance_create( module* mod, char* inst_name ) {
   new_inst->mod        = mod;
   new_inst->name       = strdup( inst_name );
   new_inst->stat       = NULL;
+  new_inst->param_head = NULL;
+  new_inst->param_tail = NULL;
   new_inst->child_head = NULL;
   new_inst->child_tail = NULL;
   new_inst->next       = NULL;
@@ -367,6 +369,11 @@ void instance_dealloc( mod_inst* root, char* scope ) {
 }
 
 /* $Log$
+/* Revision 1.10  2002/08/19 04:34:07  phase1geo
+/* Fixing bug in database reading code that dealt with merging modules.  Module
+/* merging is now performed in a more optimal way.  Full regression passes and
+/* own examples pass as well.
+/*
 /* Revision 1.9  2002/07/18 05:50:45  phase1geo
 /* Fixes should be just about complete for instance depth problems now.  Diagnostics
 /* to help verify instance handling are added to regression.  Full regression passes.

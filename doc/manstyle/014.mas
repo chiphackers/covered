@@ -24,6 +24,23 @@ Covered is programmed and documented by
 </_pg>
 
 <_header2>
+Special Thanks
+</_header2>
+
+<_pg>
+I would like to acknowledge certain individuals for their help in
+making Covered the tool that it is today.
+</_pg>
+
+<_pg>
+<ul>
+  <li>Stephen Williams - Thanks for helping me understand some of
+the ins and outs of what's required "under the hood" to handle some
+of Verilog's constructs.
+</ul>
+</_pg>
+
+<_header2>
 Reporting Bugs
 </_header2>
 

@@ -20,7 +20,6 @@
 char err_msg[4096];
 
 int ignore_mode = 0;
-int param_mode  = 0;
 
 /* Uncomment these lines to turn debugging on */
 //#define YYDEBUG 1
@@ -845,12 +844,8 @@ expr_primary
 		{
                   expression* tmp;
                   if( ignore_mode == 0 ) {
-                    if( param_mode == 1 ) {
-                      tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, @1.first_line, NULL );
-                    } else {
-                      tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, @1.first_line, $1 );
-                    }
-                    $$ = tmp;
+                    tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, @1.first_line, $1 );
+                    $$  = tmp;
 		    free_safe( $1 );
                   } else {
                     $$ = NULL;
@@ -868,12 +863,8 @@ expr_primary
 		{
 		  expression* tmp;
                   if( ignore_mode == 0 ) {
-                    if( param_mode == 1 ) {
-                      tmp = db_create_expression( $3, NULL, EXP_OP_SBIT_SEL, @1.first_line, NULL );
-                    } else {
-                      tmp = db_create_expression( $3, NULL, EXP_OP_SBIT_SEL, @1.first_line, $1 );
-                    }
-		    $$ = tmp;
+                    tmp = db_create_expression( $3, NULL, EXP_OP_SBIT_SEL, @1.first_line, $1 );
+		    $$  = tmp;
 		    free_safe( $1 );
                   } else {
                     $$ = NULL;
@@ -883,12 +874,8 @@ expr_primary
 		{		  
                   expression* tmp;
                   if( ignore_mode == 0 ) {
-                    if( param_mode == 1 ) {
-                      tmp = db_create_expression( $5, $3, EXP_OP_MBIT_SEL, @1.first_line, NULL );
-                    } else {
-                      tmp = db_create_expression( $5, $3, EXP_OP_MBIT_SEL, @1.first_line, $1 );
-                    }
-                    $$ = tmp;
+                    tmp = db_create_expression( $5, $3, EXP_OP_MBIT_SEL, @1.first_line, $1 );
+                    $$  = tmp;
                     free_safe( $1 );
                   } else {
                     $$ = NULL;
@@ -1216,15 +1203,15 @@ module_item
 		}
 
   /* Handles instantiations of modules and user-defined primitives. */
-	| IDENTIFIER { param_mode = 1; } parameter_value_opt { param_mode = 0; } gate_instance_list ';'
+	| IDENTIFIER parameter_value_opt gate_instance_list ';'
 		{
-		  str_link* tmp = $5;
+		  str_link* tmp = $3;
 		  str_link* curr = tmp;
 		  while( curr != NULL ) {
 		    db_add_instance( curr->str, $1 );
 		    curr = curr->next;
 		  }
-		  str_link_delete_list( $5 );
+		  str_link_delete_list( $3 );
 		}
 
 	| K_assign drive_strength_opt { ignore_mode++; } delay3_opt { ignore_mode--; } assign_list ';'
@@ -2698,9 +2685,9 @@ parameter_assign_list
 	| parameter_assign_list ',' parameter_assign
 
 parameter_assign
-	: IDENTIFIER '=' { param_mode = 1; } expression { param_mode = 0; }
+	: IDENTIFIER '=' expression
 		{
-                  db_add_parameter( $1, $4 );
+                  db_add_parameter( $1, $3 );
 		}
         | UNUSED_IDENTIFIER '=' expression
 	;
