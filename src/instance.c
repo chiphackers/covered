@@ -70,8 +70,9 @@ void instance_gen_scope( char* scope, mod_inst* leaf ) {
 }
 
 /*!
- \param root    Root of mod_inst tree to parse for scope.
- \param scope   Scope to search for.
+ \param root        Root of mod_inst tree to parse for scope.
+ \param curr_scope  Scope name (instance name) of current instance.
+ \param rest_scope  Rest of scope name.
  
  \return Returns pointer to module instance found by scope.
  
@@ -79,32 +80,31 @@ void instance_gen_scope( char* scope, mod_inst* leaf ) {
  scope.  When the module instance is found, a pointer to that
  module instance is passed back to the calling function.
 */
-mod_inst* instance_find_scope( mod_inst* root, char* scope ) {
+mod_inst* instance_find_scope_helper( mod_inst* root, char* curr_scope, char* rest_scope ) {
  
   int       i;           /* Loop iterator                                        */
   char      front[256];  /* Highest level of hierarchy in hierarchical reference */
   char      rest[4096];  /* Rest of scope value                                  */
   mod_inst* inst;        /* Pointer to found instance                            */
   mod_inst* child;       /* Pointer to child instance of this module instance    */
-  
+    
   if( root != NULL ) {
 
-    assert( scope != NULL );
+    assert( curr_scope != NULL );
 
-    scope_extract_front( scope, front, rest );
-  
-    if( strcmp( front, root->name ) == 0 ) {
-      if( rest[0] == '\0' ) {
+    if( strcmp( curr_scope, root->name ) == 0 ) {
+      if( rest_scope[0] == '\0' ) {
         return( root );
       } else {
+        scope_extract_front( rest_scope, front, rest );
         child = root->child_head;
-        while( (child != NULL) && ((inst = instance_find_scope( child, rest )) == NULL) ) {
-	  child = child->next;
+        while( (child != NULL) && ((inst = instance_find_scope_helper( child, front, rest )) == NULL) ) {
+          child = child->next;
         }
         if( child == NULL ) {
-	  return( NULL );
+          return( NULL );
         } else {
-	  return( inst );
+          return( inst );
         }
       }
     } else {
@@ -117,6 +117,42 @@ mod_inst* instance_find_scope( mod_inst* root, char* scope ) {
 
   }
 				
+}
+
+/*!
+ \param root   Root of mod_inst tree to parse for scope.
+ \param scope  Scope to search for.
+ 
+ \return Returns pointer to module instance found by scope.
+ 
+ Searches the specified module instance tree for the specified
+ scope.  When the module instance is found, a pointer to that
+ module instance is passed back to the calling function.
+*/
+mod_inst* instance_find_scope( mod_inst* root, char* scope ) {
+ 
+  char tmp_scope[4096];  /* Rest of scope value */
+  
+  assert( root != NULL );
+      
+  /* Strip root name from scope */
+  if( strncmp( scope, root->name, strlen( root->name ) ) == 0 ) {
+    
+    strcpy( tmp_scope, scope );
+    
+    if( strlen( root->name ) == strlen( scope ) ) {
+      return( instance_find_scope_helper( root, tmp_scope, tmp_scope + strlen( root->name ) ) );
+    } else {
+      tmp_scope[ strlen( root->name ) ] = '\0';
+      return( instance_find_scope_helper( root, tmp_scope, tmp_scope + strlen( root->name ) + 1 ) );
+    }
+    
+  } else {
+    
+    return( NULL );
+    
+  }
+  
 }
 
 /*!
@@ -393,21 +429,25 @@ void instance_dealloc( mod_inst* root, char* scope ) {
   char      back[256];   /* Highest level of hierarchy in hierarchical reference */
   char      rest[4096];  /* Rest of scope value                                  */
   
-  /* 
-   First, find parent instance of given scope and remove this instance
-   from its child list.
-  */  
-  scope_extract_back( scope, back, rest );
-
-  if( rest[0] == '\0' ) {
-    /* Current scope is root */
-    inst = NULL;
+  assert( root  != NULL );
+  assert( scope != NULL );
+  
+  if( strcmp( root->name, scope ) == 0 ) {
+    
+    /* We are the root so just remove the whole tree */
+    instance_dealloc_tree( root );
+    
   } else {
-    inst = instance_find_scope( root, rest );
-  }
+    
+    /* 
+     Find parent instance of given scope and remove this instance
+     from its child list.
+    */  
+    scope_extract_back( scope, back, rest );
+    assert( rest[0] != '\0' );
 
-  /* If inst is NULL, the scope is the root instance so no child removal is necessary */
-  if( inst != NULL ) {
+    inst = instance_find_scope( root, rest );
+    assert( inst != NULL );
 
     curr = inst->child_head;
     last = NULL;
@@ -432,15 +472,17 @@ void instance_dealloc( mod_inst* root, char* scope ) {
 
     instance_dealloc_tree( curr );
 
-  } else {
-
-    instance_dealloc_tree( root );
-
   }
 
 }
 
 /* $Log$
+/* Revision 1.18  2002/10/01 13:21:25  phase1geo
+/* Fixing bug in report output for single and multi-bit selects.  Also modifying
+/* the way that parameters are dealt with to allow proper handling of run-time
+/* changing bit selects of parameter values.  Full regression passes again and
+/* all report generators have been updated for changes.
+/*
 /* Revision 1.17  2002/09/25 05:36:08  phase1geo
 /* Initial version of parameter support is now in place.  Parameters work on a
 /* basic level.  param1.v tests this basic functionality and param1.cdd contains

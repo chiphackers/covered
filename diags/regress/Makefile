@@ -30,7 +30,7 @@ DIAGS    = assign3.2A    always1       always3.1.11A  cond1 \
            sbit_sel1     instance1     instance2     instance3      mbit_sel1 \
            param1        concat3       concat4.1     concat4.2      param1.1 \
            param3        param3.1      param3.2      param1.2       always6 \
-           param4        param5        include2      mbit_sel2
+           param4        param5        include2      mbit_sel2      instance1.1
 
 IVONLYDIAGS = assign1    implicit1
 

@@ -33,7 +33,7 @@ $(DIAGLIST):
 	@echo Running $@
 	@$(VERILOG) $(VERILOG_FLAGS) $@.v
 	@./$(VERILOG_EXEC)
-	@$(COVERED) $(COVERED_GFLAG) score -t main -f ../regress/$@.cfg
+	@$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@.cfg
 	@diff $@.cdd $(CDD_DIR)/$@.cdd
 	@rm -rf a.out $@.vcd $@.cdd
 

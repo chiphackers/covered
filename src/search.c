@@ -59,10 +59,10 @@ void search_init() {
 
   /* Initialize instance tree */
   if( top_instance == NULL ) {
-    instance_parse_add( &instance_root, NULL, mod, strdup( top_module ) );
-  } else {
-    instance_parse_add( &instance_root, NULL, mod, strdup( top_instance ) );
+    top_instance = strdup( top_module );
   }
+  
+  instance_parse_add( &instance_root, NULL, mod, strdup( top_instance ) );
 
 }
  
@@ -210,6 +210,10 @@ void search_free_lists() {
 }
 
 /* $Log$
+/* Revision 1.10  2002/10/11 05:23:21  phase1geo
+/* Removing local user message allocation and replacing with global to help
+/* with memory efficiency.
+/*
 /* Revision 1.9  2002/08/19 21:36:26  phase1geo
 /* Fixing memory corruption bug in score function for adding Verilog modules
 /* to use_files list.  This caused a core dump to occur when the -f option

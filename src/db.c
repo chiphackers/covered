@@ -185,23 +185,25 @@ bool db_read( char* file, int read_mode ) {
 
             /* Finish handling last module read from CDD file */
             if( curr_module != NULL ) {
-  
-              /* Add module to instance tree and module list */
-              scope_extract_back( mod_scope, back, parent_scope );
-
-              if( (parent_scope[0] != '\0') && ((foundinst = instance_find_scope( instance_root, parent_scope )) == NULL) ) {
-
-                print_output( "Internal error:  module in database written before its parent module", FATAL );
-                retval = FALSE;
-
+              
+              if( instance_root == NULL ) {
+                
+                instance_read_add( &instance_root, NULL, curr_module, mod_scope );
+                
               } else {
+                
+                /* Add module to instance tree and module list */
+                scope_extract_back( mod_scope, back, parent_scope );
+
+                /* Make sure that module in database was not written before its parent module */
+                assert( instance_find_scope( instance_root, parent_scope ) != NULL );
 
                 /* Add module to instance tree and module list */
                 instance_read_add( &instance_root, parent_scope, curr_module, back );
-                mod_link_add( curr_module, &mod_head, &mod_tail );
-
+                
               }
-
+              
+              mod_link_add( curr_module, &mod_head, &mod_tail );
               curr_module = NULL;
 
             }
@@ -214,7 +216,7 @@ bool db_read( char* file, int read_mode ) {
 
           /* Now finish reading module line */
           if( retval = module_db_read( &tmpmod, mod_scope, &rest_line ) ) {
-
+            
             if( (read_mode == READ_MODE_MERGE_INST_MERGE) && ((foundinst = instance_find_scope( instance_root, mod_scope )) != NULL) ) {
               merge_mode = TRUE;
               module_db_merge( foundinst->mod, db_handle );
@@ -262,22 +264,24 @@ bool db_read( char* file, int read_mode ) {
   /* If the last module was being read and not merged, add it now */
   if( !merge_mode && (curr_module != NULL) ) {
 
-    /* Add module to instance tree and module list */
-    scope_extract_back( mod_scope, back, parent_scope );
-
-    if( (parent_scope[0] != '\0') && ((foundinst = instance_find_scope( instance_root, parent_scope )) == NULL) ) {
-
-      print_output( "Internal error:  module in database written before its parent module", FATAL );
-      retval = FALSE;
-
+    if( instance_root == NULL ) {
+      
+      instance_read_add( &instance_root, NULL, curr_module, mod_scope );
+      
     } else {
+      
+      /* Add module to instance tree and module list */
+      scope_extract_back( mod_scope, back, parent_scope );
+    
+      /* Make sure that module in database not written before its parent module */
+      assert( instance_find_scope( instance_root, parent_scope ) != NULL );
 
       /* Add module to instance tree and module list */
       instance_read_add( &instance_root, parent_scope, curr_module, back );
-      mod_link_add( curr_module, &mod_head, &mod_tail );
-
+      
     }
-
+    
+    mod_link_add( curr_module, &mod_head, &mod_tail );
     curr_module = NULL;
 
   }
@@ -962,26 +966,19 @@ void db_set_vcd_scope( char* scope ) {
 
   assert( scope != NULL );
 
-  if( curr_inst_scope != NULL ) {
-
-    scope_len = strlen( curr_inst_scope ) + strlen( scope ) + 2; 
-    tmpscope  = (char*)malloc_safe( scope_len );
-    snprintf( tmpscope, scope_len, "%s.%s", curr_inst_scope, scope );
-
-    free_safe( curr_inst_scope );
-    curr_inst_scope = tmpscope;
-
-    curr_instance = instance_find_scope( instance_root, tmpscope );
+  if( curr_inst_scope == NULL ) {
+    
+    curr_inst_scope = (char*)malloc_safe( 4096 );
+    strcpy( curr_inst_scope, scope );
 
   } else {
-
-    tmpscope = strdup( scope );
-
-    if( (curr_instance = instance_find_scope( instance_root, tmpscope )) != NULL ) {
-      curr_inst_scope = tmpscope;
-    }
+    
+    strcat( curr_inst_scope, "." );
+    strcat( curr_inst_scope, scope );
 
   }
+    
+  curr_instance = instance_find_scope( instance_root, curr_inst_scope );
 
 }
 
@@ -1178,6 +1175,11 @@ void db_do_timestep( int time ) {
 }
 
 /* $Log$
+/* Revision 1.63  2002/10/12 22:21:35  phase1geo
+/* Making code fix for parameters when parameter is used in calculation of
+/* signal size.  Also adding parse ability for real numbers in a VCD file
+/* (though real number support is still avoided).
+/*
 /* Revision 1.62  2002/10/11 05:23:21  phase1geo
 /* Removing local user message allocation and replacing with global to help
 /* with memory efficiency.
