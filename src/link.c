@@ -392,6 +392,43 @@ mod_link* mod_link_find( module* mod, mod_link* head ) {
 }
 
 /*!
+ \param exp   Pointer to expression to find and remove.
+ \param head  Pointer to head of expression list.
+ \param tail  Pointer to tail of expression list.
+
+ Searches specified list for expression that matches the specified expression.  If
+ a match is found, remove it from the list and deallocate the link memory.
+*/
+void exp_link_remove( expression* exp, exp_link** head, exp_link** tail ) {
+
+  exp_link* curr;        /* Pointer to current expression in list */
+  exp_link* last;        /* Pointer to last expression in list    */
+
+  curr = *head;
+  last = NULL;
+  while( (curr != NULL) && (curr->exp->id != exp->id) ) {
+    last = curr;
+    curr = curr->next;
+  }
+
+  if( curr != NULL ) {
+
+    if( curr == *head ) {
+      *head         = curr->next;
+    } else if( curr == *tail ) {
+      *tail         = last;
+      (*tail)->next = NULL;
+    } else {
+      last->next = curr->next;
+    }
+
+    free_safe( curr );
+
+  }
+
+}
+
+/*!
  \param head  Pointer to head str_link element of list.
 
  Deletes each element of the specified list.
@@ -523,6 +560,9 @@ void mod_link_delete_list( mod_link* head ) {
 
 
 /* $Log$
+/* Revision 1.7  2002/06/26 22:09:17  phase1geo
+/* Removing unecessary output and updating regression Makefile.
+/*
 /* Revision 1.6  2002/06/26 03:45:48  phase1geo
 /* Fixing more bugs in simulator and report functions.  About to add support
 /* for delay statements.

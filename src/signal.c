@@ -118,6 +118,8 @@ void signal_db_write( signal* sig, FILE* file, char* modname ) {
     modname
   );
 
+  printf( "Writing signal:  %d %s %s ", DB_TYPE_SIGNAL, sig->name, modname );
+
   vector_db_write( sig->value, file, FALSE );
 
   curr = sig->exp_head;
@@ -348,6 +350,10 @@ void signal_dealloc( signal* sig ) {
 }
 
 /* $Log$
+/* Revision 1.10  2002/07/18 02:33:24  phase1geo
+/* Fixed instantiation addition.  Multiple hierarchy instantiation trees should
+/* now work.
+/*
 /* Revision 1.9  2002/07/17 06:27:18  phase1geo
 /* Added start for fixes to bit select code starting with single bit selection.
 /* Full regression passes with addition of sbit_sel1 diagnostic.

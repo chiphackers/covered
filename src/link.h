@@ -62,6 +62,10 @@ sig_link* sig_link_find( signal* sig, sig_link* head );
 mod_link* mod_link_find( module* mod, mod_link* head );
 
 
+//! Searches for and removes specified expression link from list.
+void exp_link_remove( expression* exp, exp_link** head, exp_link** tail );
+
+
 //! Deletes entire list specified by head pointer.
 void str_link_delete_list( str_link* head );
 
@@ -79,6 +83,10 @@ void mod_link_delete_list( mod_link* head );
 
 
 /* $Log$
+/* Revision 1.3  2002/06/25 03:39:03  phase1geo
+/* Fixed initial scoring bugs.  We now generate a legal CDD file for reporting.
+/* Fixed some report bugs though there are still some remaining.
+/*
 /* Revision 1.2  2002/05/03 03:39:36  phase1geo
 /* Removing all syntax errors due to addition of statements.  Added more statement
 /* support code.  Still have a ways to go before we can try anything.  Removed lines

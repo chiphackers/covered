@@ -389,6 +389,30 @@ void scope_extract_back( char* scope, char* back, char* rest ) {
   
 }
 
+/*
+ \param scope  Scope of some signal.
+
+ \return Returns TRUE if specified scope is local to this module (no hierarchy given);
+         otherwise, returns FALSE.
+
+ Parses specified scope for '.' character.  If one is found, returns FALSE; otherwise,
+ returns TRUE.
+*/
+bool scope_local( char* scope ) {
+
+  char* ptr;    /* Pointer to current character */
+
+  assert( scope != NULL );
+
+  ptr = scope;
+  while( (*ptr != '\0') && (*ptr != '.') ) {
+    ptr++;
+  }
+
+  return( *ptr == '\0' );
+
+}
+
 /*!
  \param size  Number of bytes to allocate.
 
@@ -465,6 +489,11 @@ void gen_space( char* spaces, int num_spaces ) {
 }
 
 /* $Log$
+/* Revision 1.7  2002/07/09 04:46:26  phase1geo
+/* Adding -D and -Q options to covered for outputting debug information or
+/* suppressing normal output entirely.  Updated generated documentation and
+/* modified Verilog diagnostic Makefile to use these new options.
+/*
 /* Revision 1.6  2002/07/08 12:35:31  phase1geo
 /* Added initial support for library searching.  Code seems to be broken at the
 /* moment.

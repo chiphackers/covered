@@ -814,7 +814,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
     } else {
 
-      bind_remove( expr->id );
+      if( expr->sig == NULL ) {
+        bind_remove( expr->id );
+      } else {
+        exp_link_remove( expr, &(expr->sig->exp_head), &(expr->sig->exp_tail) );
+      }  
  
     }
 
@@ -839,6 +843,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.42  2002/07/18 02:33:23  phase1geo
+/* Fixed instantiation addition.  Multiple hierarchy instantiation trees should
+/* now work.
+/*
 /* Revision 1.41  2002/07/17 06:27:18  phase1geo
 /* Added start for fixes to bit select code starting with single bit selection.
 /* Full regression passes with addition of sbit_sel1 diagnostic.

@@ -43,6 +43,9 @@ void scope_extract_front( char* scope, char* front, char* rest );
 //! Extracts lowest level of hierarchy from specified scope.
 void scope_extract_back( char* scope, char* back, char* rest );
 
+//! Returns TRUE if specified scope is local (contains no periods).
+bool scope_local( char* scope );
+
 //! Performs safe malloc call.
 void* malloc_safe( int size );
 
@@ -53,6 +56,10 @@ void free_safe( void* ptr );
 void gen_space( char* spaces, int num_spaces );
 
 /* $Log$
+/* Revision 1.4  2002/07/08 12:35:31  phase1geo
+/* Added initial support for library searching.  Code seems to be broken at the
+/* moment.
+/*
 /* Revision 1.3  2002/07/03 03:31:11  phase1geo
 /* Adding RCS Log strings in files that were missing them so that file version
 /* information is contained in every source and header file.  Reordering src

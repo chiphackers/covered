@@ -193,8 +193,63 @@ void bind_set_tree( expression* expr ) {
 }
 
 /*!
- \param mode  If set to 0, searches instance tree; otherwise, searches tree.
- 
+ \param sig_name  String name of signal to bind to specified expression.
+ \param exp       Pointer to expression to bind.
+ \param mod       Pointer to module containing signal.
+
+ Performs a binding of an expression and signal based on the name of the
+ signal.  Looks up signal name in the specified module and sets the expression
+ and signal to point to each other.
+*/
+void bind_perform( char* sig_name, expression* exp, module* mod ) {
+
+  signal    sig;        /* Temporary signal for comparison purposes    */
+  sig_link* sigl;       /* Pointer to found signal in specified module */
+  char      msg[4096];  /* Error message to user                       */
+
+  /* Search for specified signal in current module */
+  signal_init( &sig, sig_name, NULL );
+  sigl = sig_link_find( &sig, mod->sig_head );
+
+  if( sigl == NULL ) {
+    /* Bad hierarchical reference -- user error */
+    snprintf( msg, 4096, "Hierarchical reference to undefined signal \"%s\" in module %s, line %d", 
+              sig_name,
+              mod->name,
+              exp->line );
+    print_output( msg, FATAL );
+    exit( 1 );
+  }
+
+  /* Add expression to signal expression list */
+  exp_link_add( exp, &(sigl->sig->exp_head), &(sigl->sig->exp_tail) );
+
+  /* Make expression vector be signal vector*/
+  switch( SUPPL_OP( exp->suppl ) ) {
+    case EXP_OP_SIG :
+      vector_dealloc( exp->value );
+      exp->value = sigl->sig->value;
+      break;
+    case EXP_OP_SBIT_SEL :
+      exp->value->value = sigl->sig->value->value;
+      exp->value->width = 1;
+      exp->suppl        = exp->suppl | ((sigl->sig->value->lsb & 0xffff) << SUPPL_LSB_SIG_LSB);
+      break;
+    case EXP_OP_MBIT_SEL :
+      exp->value->value = sigl->sig->value->value;
+      exp->suppl        = exp->suppl | ((sigl->sig->value->lsb & 0xffff) << SUPPL_LSB_SIG_LSB);
+      break;
+    default :
+      snprintf( msg, 4096, "Internal error:  Expression with bad operation (%d) in binding function", 
+                SUPPL_OP( exp->suppl ) );
+      print_output( msg, FATAL );
+      exit( 1 );
+      break;
+  }
+
+}
+
+/*!
  Binding is the process of setting pointers in signals and expressions to
  point to each other.  These pointers are required for scoring purposes.
  Binding is required for two purposes:
@@ -206,9 +261,10 @@ void bind_set_tree( expression* expr ) {
  to the signal's expression pointer list, and setting the expression vector pointer
  to point to the signal vector.
 */
-void bind( int mode ) {
+void bind() {
   
   mod_inst*     modi;          /* Pointer to found module instance                            */
+  module        tmod;          /* Pointer to temporary module used for comparison purposes    */
   module*       mod;           /* Pointer to found module                                     */
   mod_link*     modl;          /* Pointer to found module link                                */
   signal        sig;           /* Temporary signal used for matching                          */
@@ -229,73 +285,26 @@ void bind( int mode ) {
 
     assert( curr_seb->exp != NULL );
 
-    if( mode == 0 ) {
+    /* Find module where signal resides */
+    scope_extract_back( curr_seb->sig_name, sig_name, scope );
 
-      /* Find module where signal resides */
-      scope_extract_back( curr_seb->sig_name, sig_name, scope );
+    /* We should never see a "scopeless" signal */
+    assert( scope[0] != '\0' );
 
-      if( scope[0] == '\0' ) {
+    /* Scope present, search for module based on scope */
+    modi = instance_find_scope( instance_root, scope );
 
-        /* No scope, signal was in same module as expression so search for module name */
-        mod       = module_create();
-        mod->name = strdup( curr_seb->mod_name );
-        modl      = mod_link_find( mod, mod_head );
-        assert( modl != NULL );
-        module_dealloc( mod );
-        mod       = modl->mod;
-
-      } else {
-        
-        /* Scope present, search for module based on scope */
-        modi = instance_find_scope( instance_root, scope );
-
-        if( modi == NULL ) {
-          /* Bad hierarchical reference */
-          snprintf( msg, 4096, "Undefined hierarchical reference: %s", seb_head->sig_name );
-          print_output( msg, FATAL );
-          exit( 1 );
-        } else {
-          mod = modi->mod;
-        }
-
-      }
-
-      signal_init( &sig, sig_name, NULL );
-      sigl = sig_link_find( &sig, mod->sig_head );
-
-      if( sigl == NULL ) {
-        /* Bad hierarchical reference */
-        snprintf( msg, 4096, "Hierarchical reference to undefined signal: %s", seb_head->sig_name );
-        print_output( msg, FATAL );
-        exit( 1 );
-      }
-
-      /* Add expression to signal expression list */
-      exp_link_add( curr_seb->exp, &(sigl->sig->exp_head), &(sigl->sig->exp_tail) );
-
-      /* Make expression vector be signal vector*/
-      switch( SUPPL_OP( curr_seb->exp->suppl ) ) {
-        case EXP_OP_SIG :
-          vector_dealloc( curr_seb->exp->value );
-          curr_seb->exp->value = sigl->sig->value;
-          break;
-        case EXP_OP_SBIT_SEL :
-          curr_seb->exp->value->value = sigl->sig->value->value;
-          curr_seb->exp->value->width = 1;
-          curr_seb->exp->suppl        = curr_seb->exp->suppl | ((sigl->sig->value->lsb & 0xffff) << SUPPL_LSB_SIG_LSB);
-          break;
-        case EXP_OP_MBIT_SEL :
-          curr_seb->exp->value->value = sigl->sig->value->value;
-          curr_seb->exp->suppl        = curr_seb->exp->suppl | ((sigl->sig->value->lsb & 0xffff) << SUPPL_LSB_SIG_LSB);
-          break;
-        default :
-          snprintf( msg, 4096, "Internal error:  Expression with bad operation (%d) in binding function", SUPPL_OP( seb_head->exp->suppl ) );
-          print_output( msg, FATAL );
-          exit( 1 );
-          break;
-      }
-
+    if( modi == NULL ) {
+      /* Bad hierarchical reference */
+      snprintf( msg, 4096, "Undefined hierarchical reference: %s", curr_seb->sig_name );
+      print_output( msg, FATAL );
+      exit( 1 );
+    } else {
+      mod = modi->mod;
     }
+
+    /* Now bind the signal to the expression */
+    bind_perform( curr_seb->sig_name, curr_seb->exp, mod );
 
     curr_seb = curr_seb->next;
 
@@ -319,6 +328,10 @@ void bind( int mode ) {
 }
 
 /* $Log$
+/* Revision 1.10  2002/07/17 06:27:18  phase1geo
+/* Added start for fixes to bit select code starting with single bit selection.
+/* Full regression passes with addition of sbit_sel1 diagnostic.
+/*
 /* Revision 1.9  2002/07/16 00:05:31  phase1geo
 /* Adding support for replication operator (EXPAND).  All expressional support
 /* should now be available.  Added diagnostics to test replication operator.

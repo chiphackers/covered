@@ -507,7 +507,13 @@ expression* db_create_expression( expression* right, expression* left, int op, i
 
   /* Add expression and signal to binding list */
   if( sig_name != NULL ) {
-    bind_add( sig_name, expr, curr_module->name );
+
+    /* If signal is located in this current module, bind now; else, bind later. */
+    if( scope_local( sig_name ) ) {
+      bind_perform( sig_name, expr, curr_module );
+    } else {
+      bind_add( sig_name, expr, curr_module->name );
+    }
   }
 
   return( expr );
@@ -962,6 +968,10 @@ void db_do_timestep( int time ) {
 }
 
 /* $Log$
+/* Revision 1.45  2002/07/18 05:50:45  phase1geo
+/* Fixes should be just about complete for instance depth problems now.  Diagnostics
+/* to help verify instance handling are added to regression.  Full regression passes.
+/*
 /* Revision 1.44  2002/07/18 02:33:23  phase1geo
 /* Fixed instantiation addition.  Multiple hierarchy instantiation trees should
 /* now work.
