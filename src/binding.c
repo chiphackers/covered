@@ -118,20 +118,38 @@ void bind_remove( int id ) {
  \param mod_exp           Pointer to module containing expression.
  \param implicit_allowed  If set to TRUE, creates any signals that are implicitly defined.
 
+ \return Returns TRUE if bind occurred successfully; otherwise, returns FALSE.
+ 
  Performs a binding of an expression and signal based on the name of the
  signal.  Looks up signal name in the specified module and sets the expression
- and signal to point to each other.
+ and signal to point to each other.  If the signal name is not found, it is checked to
+ see if the signal is an unused type (name preceded by the '!' character).  If the signal
+ is unused, the bind does not occur and the function returns a value of FALSE.  If the
+ signal neither exists or is an unused signal, it is considered to be an implicit signal
+ and a 1-bit signal is created.
 */
-void bind_perform( char* sig_name, expression* exp, module* mod_sig, module* mod_exp, bool implicit_allowed ) {
+bool bind_perform( char* sig_name, expression* exp, module* mod_sig, module* mod_exp, bool implicit_allowed ) {
 
-  signal    tsig;  /* Temporary signal for comparison purposes    */
-  sig_link* sigl;  /* Pointer to found signal in specified module */
+  signal    tsig;           /* Temporary signal for comparison purposes          */
+  sig_link* sigl;           /* Pointer to found signal in specified module       */
+  char*     tmpname;        /* Temporary name containing unused signal character */
+  bool      retval = TRUE;  /* Return value for this function                    */
 
-  /* printf( "Performing bind for signal %s to expression %d\n", sig_name, exp->id ); */
-  
   /* Search for specified signal in current module */
   signal_init( &tsig, sig_name, NULL );
   sigl = sig_link_find( &tsig, mod_sig->sig_head );
+
+  /* If standard signal is not found, check to see if it is an unused signal */
+  if( sigl == NULL ) {
+    tmpname = (char*)malloc_safe( strlen( sig_name ) + 2 );
+    snprintf( tmpname, (strlen( sig_name ) + 2), "!%s", sig_name );
+    signal_init( &tsig, tmpname, NULL );
+    sigl = sig_link_find( &tsig, mod_sig->sig_head );
+    if( sigl != NULL ) {
+      retval = FALSE;
+    }
+    free_safe( tmpname );
+  }
 
   if( sigl == NULL ) {
     if( !implicit_allowed ) {
@@ -150,12 +168,18 @@ void bind_perform( char* sig_name, expression* exp, module* mod_sig, module* mod
     }
   }
 
-  /* Add expression to signal expression list */
-  exp_link_add( exp, &(sigl->sig->exp_head), &(sigl->sig->exp_tail) );
-  
-  /* Set expression to point at signal */
-  exp->sig = sigl->sig;
-  
+  if( retval ) {
+
+    /* Add expression to signal expression list */
+    exp_link_add( exp, &(sigl->sig->exp_head), &(sigl->sig->exp_tail) );
+
+    /* Set expression to point at signal */
+    exp->sig = sigl->sig;
+
+  }
+
+  return( retval );
+
 }
 
 /*!
@@ -271,6 +295,12 @@ void bind() {
 
 /* 
  $Log$
+ Revision 1.20  2002/12/13 16:49:45  phase1geo
+ Fixing infinite loop bug with statement set_stop function.  Removing
+ hierarchical references from scoring (same problem as defparam statement).
+ Fixing problem with checked in version of param.c and fixing error output
+ in bind() function to be more meaningful to user.
+
  Revision 1.19  2002/11/05 00:20:06  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.

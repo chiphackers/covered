@@ -73,6 +73,7 @@ iverilog:    clean
 	$(MAKE) VERILOG=$(IVERILOG) VERILOG_FLAGS="$(IVERILOG_FLAGS4)" VERILOG_EXEC=$(IVERILOG_EXEC) DIAGLIST="$(DIAGS4) $(IVONLYDIAGS4)" regress
 	@echo
 	@cat ../verilog/regress.output
+	@echo
 	@cd ../verilog;  $(MAKE) clean
 
 vcs:         clean
@@ -86,6 +87,7 @@ vcs:         clean
 	$(MAKE) VERILOG=$(VCS) VERILOG_FLAGS="$(VCS_FLAGS4)" VERILOG_EXEC=$(VCS_EXEC) DIAGLIST="$(DIAGS4) $(VCSONLYDIAGS4)" regress
 	@echo
 	@cat ../verilog/regress.output
+	@echo
 	@cd ../verilog;  $(MAKE) clean
 
 clean:

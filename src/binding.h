@@ -18,7 +18,7 @@ void bind_add( char* sig_name, expression* exp, module* mod );
 void bind_remove( int id );
 
 /*! \brief Finds signal in module and bind the expression to this signal. */
-void bind_perform( char* sig_name, expression* exp, module* mod_sig, module* mod_exp, bool implicit_allowed );
+bool bind_perform( char* sig_name, expression* exp, module* mod_sig, module* mod_exp, bool implicit_allowed );
 
 /*! \brief Performs signal/expression bind (performed after parse completed). */
 void bind();
@@ -26,6 +26,10 @@ void bind();
 
 /* 
  $Log$
+ Revision 1.8  2002/11/05 00:20:06  phase1geo
+ Adding development documentation.  Fixing problem with combinational logic
+ output in report command and updating full regression.
+
  Revision 1.7  2002/10/31 23:13:19  phase1geo
  Fixing C compatibility problems with cc and gcc.  Found a few possible problems
  with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that

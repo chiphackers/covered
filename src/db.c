@@ -703,7 +703,10 @@ expression* db_create_expression( expression* right, expression* left, int op, i
 
       /* If signal is located in this current module, bind now; else, bind later */
       if( scope_local( sig_name ) ) {
-        bind_perform( sig_name, expr, curr_module, curr_module, TRUE );
+        if( !bind_perform( sig_name, expr, curr_module, curr_module, TRUE ) ) {
+          expression_dealloc( expr, FALSE );
+          expr = NULL;
+        }
       } else {
         bind_add( sig_name, expr, curr_module );
       }
@@ -996,6 +999,7 @@ void db_assign_symbol( char* name, char* symbol ) {
 
     } else {
 
+      /* Check to see if 
       snprintf( user_msg, USER_MSG_LENGTH, "VCD signal \"%s.%s\" found that is not part of design", curr_inst_scope, name );
       print_output( user_msg, WARNING );
 
@@ -1089,6 +1093,11 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.77  2003/01/03 05:52:00  phase1geo
+ Adding code to help safeguard from segmentation faults due to array overflow
+ in VCD parser and symtable.  Reorganized code for symtable symbol lookup and
+ value assignment.
+
  Revision 1.76  2003/01/03 02:07:40  phase1geo
  Fixing segmentation fault in lexer caused by not closing the temporary
  input file before unlinking it.  Fixed case where module was parsed but not

@@ -1267,7 +1267,6 @@ module_item
           db_add_signal( curr->str, $2->left, $2->right );
           curr = curr->next;
         }
-        /* What to do about assignments? */
       }
       str_link_delete_list( $3 );
       if( $2 != NULL ) {
@@ -2503,10 +2502,15 @@ register_variable
   | IDENTIFIER '[' static_expr ':' static_expr ']'
     {
       /* We don't support memory coverage */
+      char* name;
       if( $1 != NULL ) {
+        name = (char*)malloc_safe( strlen( $1 ) + 2 );
+        snprintf( name, (strlen( $1 ) + 2), "!%s", $1 );
         free_safe( $1 );
+        $$ = name;
+      } else {
+        $$ = NULL;
       }
-      $$ = NULL;
     }
   | UNUSED_IDENTIFIER '[' static_expr ':' static_expr ']'
     {
@@ -2530,11 +2534,15 @@ register_variable_list
   | register_variable_list ',' register_variable
     {
       str_link* tmp;
-      if( (ignore_mode == 0) && ($3 != NULL) ) {
-        tmp = (str_link*)malloc( sizeof( str_link ) );
-        tmp->str  = $3;
-        tmp->next = $1;
-        $$ = tmp;
+      if( ignore_mode == 0 ) {
+        if( $3 != NULL ) {
+          tmp = (str_link*)malloc( sizeof( str_link ) );
+          tmp->str  = $3;
+          tmp->next = $1;
+          $$ = tmp;
+        } else {
+          $$ = $1;
+        }
       } else {
         $$ = NULL;
       }

@@ -62,7 +62,7 @@ s%@INSTALL_PROGRAM@%${INSTALL}%g
 s%@INSTALL_SCRIPT@%${INSTALL_PROGRAM}%g
 s%@INSTALL_DATA@%${INSTALL} -m 644%g
 s%@PACKAGE@%covered%g
-s%@VERSION@%0.1-20021214%g
+s%@VERSION@%0.2pre1-20030105%g
 s%@ACLOCAL@%aclocal%g
 s%@AUTOCONF@%autoconf%g
 s%@AUTOMAKE@%automake%g
@@ -205,9 +205,9 @@ for ac_file in .. $CONFIG_HEADERS; do if test "x$ac_file" != x..; then
 ${ac_dA}PACKAGE${ac_dB}PACKAGE${ac_dC}"covered"${ac_dD}
 ${ac_uA}PACKAGE${ac_uB}PACKAGE${ac_uC}"covered"${ac_uD}
 ${ac_eA}PACKAGE${ac_eB}PACKAGE${ac_eC}"covered"${ac_eD}
-${ac_dA}VERSION${ac_dB}VERSION${ac_dC}"0.1-20021214"${ac_dD}
-${ac_uA}VERSION${ac_uB}VERSION${ac_uC}"0.1-20021214"${ac_uD}
-${ac_eA}VERSION${ac_eB}VERSION${ac_eC}"0.1-20021214"${ac_eD}
+${ac_dA}VERSION${ac_dB}VERSION${ac_dC}"0.2pre1-20030105"${ac_dD}
+${ac_uA}VERSION${ac_uB}VERSION${ac_uC}"0.2pre1-20030105"${ac_uD}
+${ac_eA}VERSION${ac_eB}VERSION${ac_eC}"0.2pre1-20030105"${ac_eD}
 ${ac_dA}HAVE_STRING_H${ac_dB}HAVE_STRING_H${ac_dC}1${ac_dD}
 ${ac_uA}HAVE_STRING_H${ac_uB}HAVE_STRING_H${ac_uC}1${ac_uD}
 ${ac_eA}HAVE_STRING_H${ac_eB}HAVE_STRING_H${ac_eC}1${ac_eD}
