@@ -52,8 +52,7 @@ void vector_init( vector* vec, nibble* value, int width, int lsb ) {
     assert( width > 0 );
 
     for( i=0; i<VECTOR_SIZE( width ); i++ ) {
-      //vec->value[i] = 0x0;
-      vec->value[i] = 0xaa;
+      vec->value[i] = 0x0;
     }
 
   }
@@ -83,10 +82,7 @@ vector* vector_create( int width, int lsb, bool data ) {
     value = (nibble*)malloc_safe( sizeof( nibble ) * VECTOR_SIZE( width ) );
   }
 
-  vector_init( new_vec,
-               value,
-               width,
-               lsb );
+  vector_init( new_vec, value, width, lsb );
 
   return( new_vec );
 
@@ -356,7 +352,9 @@ void vector_display( vector* vec ) {
 
   printf( "Vector => width: %d, lsb: %d, ", vec->width, vec->lsb );
 
-  vector_display_nibble( vec->value, vec->width, vec->lsb );
+  if( (vec->lsb >= 0) && (vec->width > 0) ) {
+    vector_display_nibble( vec->value, vec->width, vec->lsb );
+  }
 
   printf( "\n" );
 
@@ -1248,15 +1246,19 @@ void vector_op_subtract( vector* tgt, vector* left, vector* right ) {
 
   /* Create vector with a value of 1 */
   vector_set_bit( vec1->value, 1, 0 );
+  // printf( "vec1:\n" );  vector_display( vec1 );
 
   /* Perform twos complement inversion on right expression */
   vector_unary_inv( vec2, right );
+  // vector_display( vec2 );
 
   /* Add one to the inverted value */
   vector_op_add( vec3, vec2, vec1 );  
+  // vector_display( vec3 );
 
   /* Add new value to left value */
   vector_op_add( tgt, left, vec3 );
+  // vector_display( tgt );
 
   vector_dealloc( vec1 );
   vector_dealloc( vec2 );
@@ -1288,7 +1290,7 @@ void vector_op_multiply( vector* tgt, vector* left, vector* right ) {
   /* Initialize temporary vectors */
   vector_init( &lcomp, &lcomp_val, 1, 0 );
   vector_init( &rcomp, &rcomp_val, 1, 0 );
-  vector_init( &vec, vec_val, 32, 0 );
+  vector_init( &vec,   vec_val,   32, 0 );
 
   vector_unary_op( &lcomp, left,  xor_optab );
   vector_unary_op( &rcomp, right, xor_optab );
@@ -1436,6 +1438,11 @@ void vector_dealloc( vector* vec ) {
 }
 
 /* $Log$
+/* Revision 1.19  2002/09/25 02:51:44  phase1geo
+/* Removing need of vector nibble array allocation and deallocation during
+/* expression resizing for efficiency and bug reduction.  Other enhancements
+/* for parameter support.  Parameter stuff still not quite complete.
+/*
 /* Revision 1.18  2002/09/19 02:50:02  phase1geo
 /* Causing previously assigned bit to not get set when value does not change.
 /* This is necessary to support different Verilog compiler approaches to displaying

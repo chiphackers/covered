@@ -17,6 +17,7 @@
 #include "db.h"
 #include "link.h"
 #include "parser_misc.h"
+#include "static.h"
 
 char err_msg[4096];
 
@@ -27,9 +28,9 @@ exp_link* param_exp_head = NULL;
 exp_link* param_exp_tail = NULL;
 
 /* Uncomment these lines to turn debugging on */
-//#define YYDEBUG 1
+// #define YYDEBUG 1
 #define YYERROR_VERBOSE 1
-//int yydebug = 1;
+// int yydebug = 1;
 %}
 
 %union {
@@ -40,7 +41,8 @@ exp_link* param_exp_tail = NULL;
   signal*         sig;
   expression*     expr;
   statement*      state;
-  signal_width*   sigwidth; 
+  static_expr*    statexp;
+  vector_width*   vecwidth; 
   str_link*       strlink;
   exp_link*       explink;
   case_statement* case_stmt;
@@ -82,8 +84,8 @@ exp_link* param_exp_tail = NULL;
 %token KK_attribute
 
 %type <integer>   net_type
-%type <sigwidth>  range_opt range
-%type <integer>   static_expr static_expr_primary
+%type <vecwidth>  range_opt range
+%type <statexp>   static_expr static_expr_primary
 %type <text>      identifier port_reference port port_opt port_reference_list
 %type <text>      list_of_ports list_of_ports_opt
 %type <expr>      expr_primary expression_list expression
@@ -241,153 +243,175 @@ static_expr
 		}
 	| '+' static_expr_primary %prec UNARY_PREC
 		{
-		  $$ = +$2;
+                  static_expr* tmp = $2;
+                  if( tmp != NULL ) {
+                    if( tmp->exp == NULL ) {
+                      tmp->num = 0 + tmp->num;
+                    }
+                  }
+		  $$ = tmp;
 		}
 	| '-' static_expr_primary %prec UNARY_PREC
 		{
-		  $$ = -$2;
+                  static_expr* tmp = $2;
+                  if( tmp != NULL ) {
+                    if( tmp->exp == NULL ) {
+                      tmp->num = 0 - tmp->num;
+                    }
+                  }
+		  $$ = tmp;
 		}
         | '~' static_expr_primary %prec UNARY_PREC
 		{
-		  $$ = ~$2;
+                  static_expr* tmp;
+                  tmp = static_expr_gen_unary( $2, EXP_OP_UINV, @1.first_line );
+		  $$ = tmp;
 		}
         | '&' static_expr_primary %prec UNARY_PREC
 		{
-		  int tmp = $2;
-		  int uop = tmp & 0x1;
-		  int i;
-		  for( i=1; i<(SIZEOF_INT * 8); i++ ) {
-		    uop = uop & ((tmp >> i) & 0x1);
-		  }
-		  $$ = uop;
+                  static_expr* tmp;
+                  tmp = static_expr_gen_unary( $2, EXP_OP_UAND, @1.first_line );
+		  $$ = tmp;
 		}
         | '!' static_expr_primary %prec UNARY_PREC
 		{
-		  $$ = ($2 == 0) ? 1 : 0;
+                  static_expr* tmp;
+                  tmp = static_expr_gen_unary( $2, EXP_OP_UNOT, @1.first_line );
+		  $$ = tmp;
 		}
         | '|' static_expr_primary %prec UNARY_PREC
 		{
-		  int tmp = $2;
-		  int uop = tmp & 0x1;
-		  int i;
-		  for( i=1; i<(SIZEOF_INT * 8); i++ ) {
-		    uop = uop | ((tmp >> i) & 0x1);
-		  }
-		  $$ = uop;
+                  static_expr* tmp;
+                  tmp = static_expr_gen_unary( $2, EXP_OP_UOR, @1.first_line );
+		  $$ = tmp;
 		}
         | '^' static_expr_primary %prec UNARY_PREC
 		{
-		  int tmp = $2;
-		  int uop = uop & 0x1;
-		  int i;
-		  for( i=1; i<(SIZEOF_INT * 8); i++ ) {
-		    uop = uop ^ ((tmp >> i) & 0x1);
-		  }
-		  $$ = uop;
+                  static_expr* tmp;
+                  tmp = static_expr_gen_unary( $2, EXP_OP_UXOR, @1.first_line );
+		  $$ = tmp;
 		}
         | K_NAND static_expr_primary %prec UNARY_PREC
 		{
-                  int tmp = $2;
-                  int uop = tmp & 0x1;
-                  int i;
-                  for( i=1; i<(SIZEOF_INT * 8); i++ ) {
-                    uop = uop & ((tmp >> i) & 0x1);
-                  }
-                  $$ = (uop == 0) ? 1 : 0;
+                  static_expr* tmp;
+                  tmp = static_expr_gen_unary( $2, EXP_OP_UNAND, @1.first_line );
+		  $$ = tmp;
 		}
         | K_NOR static_expr_primary %prec UNARY_PREC
 		{
-                  int tmp = $2;
-                  int uop = tmp & 0x1;
-                  int i;
-                  for( i=1; i<(SIZEOF_INT * 8); i++ ) {
-                    uop = uop | ((tmp >> i) & 0x1);
-                  }
-                  $$ = (uop == 0) ? 1 : 0;
+                  static_expr* tmp;
+                  tmp = static_expr_gen_unary( $2, EXP_OP_UNOR, @1.first_line );
+		  $$ = tmp;
 		}
         | K_NXOR static_expr_primary %prec UNARY_PREC
 		{
-                  int tmp = $2;
-                  int uop = uop & 0x1;
-                  int i;
-                  for( i=1; i<(SIZEOF_INT * 8); i++ ) {
-                    uop = uop ^ ((tmp >> i) & 0x1);
-                  }
-                  $$ = (uop == 0) ? 1 : 0;
+                  static_expr* tmp;
+                  tmp = static_expr_gen_unary( $2, EXP_OP_UNXOR, @1.first_line );
+		  $$ = tmp;
 		}
 
         | static_expr '^' static_expr
 		{
-		  $$ = $1 ^ $3;
+                  static_expr* tmp;
+                  tmp = static_expr_gen( $3, $1, EXP_OP_XOR, @1.first_line );
+                  $$ = tmp;
 		}
         | static_expr '*' static_expr
 		{
-		  $$ = $1 * $3;
+                  static_expr* tmp;
+                  tmp = static_expr_gen( $3, $1, EXP_OP_MULTIPLY, @1.first_line );
+                  $$ = tmp;
 		}
         | static_expr '/' static_expr
 		{
-                  if( ignore_mode == 0 ) {
-		    $$ = $1 / $3;
-                  } else {
-                    $$ = 0;
-                  }
+                  static_expr* tmp;
+                  tmp = static_expr_gen( $3, $1, EXP_OP_DIVIDE, @1.first_line );
+                  $$ = tmp;
 		}
         | static_expr '%' static_expr
 		{
-                  if( ignore_mode == 0 ) {
-		    $$ = $1 % $3;
-                  } else {
-                    $$ = 0;
-                  }
+                  static_expr* tmp;
+                  tmp = static_expr_gen( $3, $1, EXP_OP_MOD, @1.first_line );
+                  $$ = tmp;
 		}
         | static_expr '+' static_expr
 		{
-		  $$ = $1 + $3;
+                  static_expr* tmp;
+                  tmp = static_expr_gen( $3, $1, EXP_OP_ADD, @1.first_line );
+                  $$ = tmp;
 		}
         | static_expr '-' static_expr
 		{
-	  	  $$ = $1 - $3;
+                  static_expr* tmp;
+                  tmp = static_expr_gen( $3, $1, EXP_OP_SUBTRACT, @1.first_line );
+                  $$ = tmp;
 		}
         | static_expr '&' static_expr
 		{
-		  $$ = $1 & $3;
+                  static_expr* tmp;
+                  tmp = static_expr_gen( $3, $1, EXP_OP_AND, @1.first_line );
+                  $$ = tmp;
 		}
         | static_expr '|' static_expr
 		{
-		  $$ = $1 | $3;
+                  static_expr* tmp;
+                  tmp = static_expr_gen( $3, $1, EXP_OP_OR, @1.first_line );
+                  $$ = tmp;
 		}
         | static_expr K_NOR static_expr
 		{
-		  $$ = ~($1 | $3);
+                  static_expr* tmp;
+                  tmp = static_expr_gen( $3, $1, EXP_OP_NOR, @1.first_line );
+                  $$ = tmp;
 		}
      	| static_expr K_NAND static_expr
 		{
-		  $$ = ~($1 & $3);
+                  static_expr* tmp;
+                  tmp = static_expr_gen( $3, $1, EXP_OP_NAND, @1.first_line );
+                  $$ = tmp;
 		}
         | static_expr K_NXOR static_expr
 		{
-		  $$ = ~($1 ^ $3);
+                  static_expr* tmp;
+                  tmp = static_expr_gen( $3, $1, EXP_OP_NXOR, @1.first_line );
+                  $$ = tmp;
 		}
 	;
 
 static_expr_primary
 	: NUMBER
 		{
-		  $$ = vector_to_int( $1 );
-		  vector_dealloc( $1 );
+                  static_expr* tmp;
+                  if( ignore_mode == 0 ) {
+                    tmp = (static_expr*)malloc_safe( sizeof( static_expr ) );
+                    tmp->num = vector_to_int( $1 );
+                    tmp->exp = NULL;
+                    vector_dealloc( $1 );
+                    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
         | UNUSED_NUMBER
                 {
-                  $$ = 0;
+                  $$ = NULL;
                 }
         | IDENTIFIER
                 {
-                  /* This is a parameter value */
-                  $$ = 0;
+                  static_expr* tmp;
+                  if( ignore_mode == 0 ) {
+                    tmp = (static_expr*)malloc_safe( sizeof( static_expr ) );
+                    tmp->num = -1;
+                    tmp->exp = db_create_expression( NULL, NULL, EXP_OP_SIG, @1.first_line, $1 );
+                    free_safe( $1 );
+                    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
                 }
         | UNUSED_IDENTIFIER
                 {
-                  $$ = 0;
+                  $$ = NULL;
                 }
 	| '(' static_expr ')'
 		{
@@ -1150,17 +1174,18 @@ module_item_list
 module_item
 	: net_type range_opt list_of_variables ';'
 		{
-		  str_link* tmp  = $3;
-		  str_link* curr = tmp;
+		  str_link*     tmp  = $3;
+		  str_link*     curr = tmp;
+                  vector_width* vw   = $2;
 		  if( $1 == 1 ) {
 		    /* Creating signal(s) */
 		    while( curr != NULL ) {
-		      db_add_signal( curr->str, $2->width, $2->lsb );
+		      db_add_signal( curr->str, vw->left, vw->right );
 		      curr = curr->next;
 		    }
 		  }
 		  str_link_delete_list( $3 );
-		  free_safe( $2 );
+		  free_safe( vw );
 		}
 	| net_type range_opt net_decl_assigns ';'
 		{
@@ -1169,22 +1194,28 @@ module_item
 		  if( $1 == 1 ) {
 		    /* Create signal(s) */
 		    while( curr != NULL ) {
-                      db_add_signal( curr->str, $2->width, $2->lsb );
+                      db_add_signal( curr->str, $2->left, $2->right );
                       curr = curr->next;
                     }
 		    /* What to do about assignments? */
 		  }
 		  str_link_delete_list( $3 );
+                  static_expr_dealloc( $2->left, FALSE );
+                  static_expr_dealloc( $2->right, FALSE );
 		  free_safe( $2 );
 		}
 	| net_type drive_strength net_decl_assigns ';'
 		{
-		  str_link* tmp  = $3;
-		  str_link* curr = tmp;
+		  str_link*   tmp  = $3;
+		  str_link*   curr = tmp;
+                  static_expr left;
+                  static_expr right;
 		  if( $1 == 1 ) {
 		    /* Create signal(s) */
+                    left.num  = 1;
+                    right.num = 0;
 	            while( curr != NULL ) {
-                      db_add_signal( curr->str, 1, 0 );
+                      db_add_signal( curr->str, &left, &right );
                       curr = curr->next;
                     }
                     /* What to do about assignments? */
@@ -1201,10 +1232,12 @@ module_item
 		  str_link* tmp  = $3;
                   str_link* curr = tmp;
 		  while( curr != NULL ) {
-                    db_add_signal( curr->str, $2->width, $2->lsb );
+                    db_add_signal( curr->str, $2->left, $2->right );
                     curr = curr->next;
                   }
 		  str_link_delete_list( $3 );
+                  static_expr_dealloc( $2->left, FALSE );
+                  static_expr_dealloc( $2->right, FALSE );
 		  free_safe( $2 );
 		}
 	| port_type range_opt error ';'
@@ -1779,8 +1812,8 @@ statement_opt
      This rule handles only procedural assignments. */
 lpvalue
 	: identifier
-	| identifier '[' static_expr ']'
-	| identifier '[' static_expr ':' static_expr ']'
+	| identifier '[' { ignore_mode++; } static_expr { ignore_mode--; } ']'
+	| identifier '[' { ignore_mode++; } static_expr ':' static_expr { ignore_mode--; } ']'
 	| '{' { ignore_mode++; } expression_list { ignore_mode--; } '}'
 		{
 		  $$ = 0;
@@ -1792,15 +1825,9 @@ lpvalue
      expression meets the constraints of continuous assignments. */
 lavalue
 	: identifier
-	| identifier '[' static_expr ']'
-	| identifier range
-		{
-		  free_safe( $2 );
-		}
+	| identifier '[' { ignore_mode++; } static_expr { ignore_mode--; } ']'
+	| identifier { ignore_mode++; } range { ignore_mode--; }
 	| '{' { ignore_mode++; } expression_list { ignore_mode--; } '}'
-		{
-		  $$ = 0;
-		}
 	;
 
 block_item_decls_opt
@@ -1824,23 +1851,29 @@ block_item_decl
 		  /* Create new signal */
 		  str_link* tmp  = $3;
 		  str_link* curr = tmp;
-                  if( ignore_mode == 0 ) {
+      if( ignore_mode == 0 ) {
 		    while( curr != NULL ) {
-		      db_add_signal( curr->str, $2->width, $2->lsb );
+		      db_add_signal( curr->str, $2->left, $2->right );
 		      curr = curr->next;
 		    }
 		    str_link_delete_list( tmp );
+        static_expr_dealloc( $2->left, FALSE );
+        static_expr_dealloc( $2->right, FALSE );
 		    free_safe( $2 );
-                  }
+      }
 		}
 	| K_reg register_variable_list ';'
 		{
 		  /* Create new signal */
-		  str_link* tmp  = $2;
-		  str_link* curr = tmp;
+		  str_link*   tmp  = $2;
+		  str_link*   curr = tmp;
+                  static_expr left;
+                  static_expr right;
                   if( ignore_mode == 0 ) {
+                    left.num  = 0;
+                    right.num = 0;
 		    while( curr != NULL ) {
-		      db_add_signal( curr->str, 1, 0 );
+		      db_add_signal( curr->str, &left, &right );
 		      curr = curr->next;
 		    }
 		    str_link_delete_list( tmp );
@@ -1853,21 +1886,27 @@ block_item_decl
                   str_link* curr = tmp;
                   if( ignore_mode == 0 ) {
                     while( curr != NULL ) {
-                      db_add_signal( curr->str, $3->width, $3->lsb );
+                      db_add_signal( curr->str, $3->left, $3->right );
                       curr = curr->next;
                     }
                     str_link_delete_list( tmp );
+                    static_expr_dealloc( $3->left, FALSE );
+                    static_expr_dealloc( $3->right, FALSE );
 		    free_safe( $3 );
                   }
 		}
 	| K_reg K_signed register_variable_list ';'
 		{
 		  /* Create new signal */
-                  str_link* tmp  = $3;
-                  str_link* curr = tmp;
+                  str_link*   tmp  = $3;
+                  str_link*   curr = tmp;
+                  static_expr left;
+                  static_expr right;
                   if( ignore_mode == 0 ) {
+                    left.num  = 1;
+                    right.num = 0;
                     while( curr != NULL ) {
-                      db_add_signal( curr->str, 1, 0 );
+                      db_add_signal( curr->str, &left, &right );
                       curr = curr->next;
                     }
                     str_link_delete_list( tmp );
@@ -2103,15 +2142,17 @@ delay3_opt
 delay_value
 	: static_expr
                 {
-                  vector*     vec;
-                  expression* tmp;
+                  expression*  tmp;
+                  static_expr* se = $1;
                   if( ignore_mode == 0 ) {
-                    vec = vector_create( 32, 0, TRUE );
-                    tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
-                    vector_from_int( vec, $1 );
-                    assert( tmp->value->value == NULL );
-                    free_safe( tmp->value );
-                    tmp->value = vec;
+                    if( se->exp == NULL ) {
+                      tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
+                      vector_init( tmp->value, (nibble*)malloc_safe( sizeof( nibble ) * VECTOR_SIZE( 32 ) ), 32, 0 );  
+                      vector_from_int( tmp->value, se->num );
+                    } else {
+                      tmp = se->exp;
+                      static_expr_dealloc( se, FALSE );
+                    }
                     $$ = tmp;
                   } else {
                     $$ = NULL;
@@ -2119,19 +2160,25 @@ delay_value
                 }
 	| static_expr ':' static_expr ':' static_expr
                 {
-                  vector*     vec;
-                  expression* tmp;
+                  expression*  tmp;
+                  static_expr* se1 = $1;
+                  static_expr* se2 = $3;
+                  static_expr* se3 = $5;
                   if( ignore_mode == 0 ) {
-                    vec = vector_create( 32, 0, TRUE );
-                    tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
-                    vector_from_int( vec, $3 );
-                    assert( tmp->value->value == NULL );
-                    free_safe( tmp->value );
-                    tmp->value = vec;
+                    if( se2->exp == NULL ) {
+                      tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
+                      vector_init( tmp->value, (nibble*)malloc_safe( sizeof( nibble ) * VECTOR_SIZE( 32 ) ), 32, 0 );  
+                      vector_from_int( tmp->value, se2->num );
+                    } else {
+                      tmp = se2->exp;
+                      free_safe( se2 );
+                    }
                     $$ = tmp;
                   } else {
                     $$ = NULL;
                   }
+                  static_expr_dealloc( se1, TRUE );
+                  static_expr_dealloc( se3, TRUE );
                 }                  
 	;
 
@@ -2211,11 +2258,19 @@ range_opt
 		}
 	|
 		{
-		  signal_width* tmp;
+		  vector_width* tmp;
+                  static_expr*  left;
+                  static_expr*  right;
                   if( ignore_mode == 0 ) {
-                    tmp = (signal_width*)malloc( sizeof( signal_width ) );
-		    tmp->width = 1;
-		    tmp->lsb   = 0;
+                    left = (static_expr*)malloc_safe( sizeof( static_expr ) );
+                    left->exp = NULL;
+                    left->num = 0;
+                    right = (static_expr*)malloc_safe( sizeof( static_expr ) );
+                    right->exp = NULL;
+                    right->num = 0;
+                    tmp = (vector_width*)malloc_safe( sizeof( vector_width ) );
+		    tmp->left  = left;
+		    tmp->right = right;
 		    $$ = tmp;
                   } else {
                     $$ = NULL;
@@ -2226,26 +2281,11 @@ range_opt
 range
 	: '[' static_expr ':' static_expr ']'
 		{
-		  signal_width* tmp;
+		  vector_width* tmp;
                   if( ignore_mode == 0 ) {
-                    tmp = (signal_width*)malloc( sizeof( signal_width ) );
-		    if( $2 >= $4 ) {
-		      tmp->width = ($2 - $4) + 1;
-		      tmp->lsb   = $4;
-		    } else {
-		      tmp->width = $4 - $2;
-		      tmp->lsb   = $2;
-		    }
-                    if( tmp->lsb < 0 ) {
-                      snprintf( err_msg, 4096, "Range LSB is less than 0, file: %s, line: %d", @1.text, @1.first_line );
-                      print_output( err_msg, FATAL );
-                      exit( 1 );
-                    }
-                    if( tmp->width < 0 ) {
-                      snprintf( err_msg, 4096, "Range width is less than 0, file: %s, line: %d", @1.text, @1.first_line );
-                      print_output( err_msg, FATAL );
-                      exit( 1 );
-                    }
+                    tmp = (vector_width*)malloc_safe( sizeof( vector_width ) );
+                    tmp->left  = $2;
+                    tmp->right = $4;
 		    $$ = tmp;
                   } else {
                     $$ = NULL;
@@ -2256,8 +2296,15 @@ range
 range_or_type_opt
 	: range      
                 { 
+                  vector_width* tmp = $1;
                   if( ignore_mode == 0 ) {
-                    free_safe( $1 );
+                    if( tmp->left != NULL ) {
+                      free_safe( tmp->left );
+                    }
+                    if( tmp->right != NULL ) {
+                      free_safe( tmp->right );
+                    }
+                    free_safe( tmp );
                   }
                   $$ = NULL;
                 }

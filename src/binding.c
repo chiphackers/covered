@@ -16,6 +16,7 @@
 #include "link.h"
 #include "util.h"
 #include "vector.h"
+#include "param.h"
 
 
 sig_exp_bind* seb_head;
@@ -27,20 +28,20 @@ extern mod_link* mod_head;
 /*!
  \param sig_name  Signal scope to bind.
  \param exp       Expression ID to bind.
- \param mod_name  Name of module containing specified expression.
+ \param mod       Pointer to module containing specified expression.
 
  Adds the specified signal and expression to the bindings linked list.
  This bindings list will be handled after all input Verilog has been
  parsed.
 */
-void bind_add( char* sig_name, expression* exp, char* mod_name ) {
+void bind_add( char* sig_name, expression* exp, module* mod ) {
   
   sig_exp_bind* seb;   /* Temporary pointer to signal/expressing binding */
   
   /* Create new signal/expression binding */
   seb           = (sig_exp_bind *)malloc_safe( sizeof( sig_exp_bind ) );
   seb->sig_name = strdup( sig_name );
-  seb->mod_name = strdup( mod_name );
+  seb->mod      = mod;
   seb->exp      = exp;
   seb->next     = NULL;
   
@@ -88,7 +89,6 @@ void bind_remove( int id ) {
 
       /* Now free the binding element memory */
       free_safe( curr->sig_name );
-      free_safe( curr->mod_name );
       free_safe( curr );
 
       curr = NULL;
@@ -105,95 +105,51 @@ void bind_remove( int id ) {
 }
 
 /*!
- \param expr  Pointer to expression to set bit widths in its expression tree.
-
- This function is called after all signals have been bound to their respective
- expressions.  It recursively moves up the given expression tree towards the root,
- setting the expression sizes of all expressions that do not currently have a
- vector size associated with them.
-*/
-void bind_set_tree( expression* expr ) {
-
-  nibble value1;     /* Value to initialize LAST element of AEDGE operation */
-  int    i;          /* Loop iterator                                       */
-
-  expression_resize( expr );
-
-  switch( SUPPL_OP( expr->suppl ) ) {
-    case EXP_OP_SIG :
-    case EXP_OP_SBIT_SEL :
-    case EXP_OP_MBIT_SEL :
-      bind_remove( expr->id );
-      break;
-    default : break;
-  } 
-
-}
-
-/*!
  \param sig_name          String name of signal to bind to specified expression.
  \param exp               Pointer to expression to bind.
- \param mod               Pointer to module containing signal.
+ \param mod_sig           Pointer to module containing signal.
+ \param mod_exp           Pointer to module containing expression.
  \param implicit_allowed  If set to TRUE, creates any signals that are implicitly defined.
 
  Performs a binding of an expression and signal based on the name of the
  signal.  Looks up signal name in the specified module and sets the expression
  and signal to point to each other.
 */
-void bind_perform( char* sig_name, expression* exp, module* mod, bool implicit_allowed ) {
+void bind_perform( char* sig_name, expression* exp, module* mod_sig, module* mod_exp, bool implicit_allowed ) {
 
   signal    tsig;       /* Temporary signal for comparison purposes    */
   sig_link* sigl;       /* Pointer to found signal in specified module */
   char      msg[4096];  /* Error message to user                       */
 
+  // printf( "Performing bind for signal %s to expression %d\n", sig_name, exp->id );
+  
   /* Search for specified signal in current module */
   signal_init( &tsig, sig_name, NULL );
-  sigl = sig_link_find( &tsig, mod->sig_head );
+  sigl = sig_link_find( &tsig, mod_sig->sig_head );
 
   if( sigl == NULL ) {
     if( !implicit_allowed ) {
       /* Bad hierarchical reference -- user error */
-      snprintf( msg, 4096, "Hierarchical reference to undefined signal \"%s\" in module %s, line %d", 
+      snprintf( msg, 4096, "Hierarchical reference to undefined signal \"%s\" in %s, line %d", 
                 sig_name,
-                mod->name,
+                mod_exp->filename,
                 exp->line );
       print_output( msg, FATAL );
       exit( 1 );
     } else {
       snprintf( msg, 4096, "Implicit declaration of signal \"%s\", creating 1-bit version of signal", sig_name );
       print_output( msg, WARNING );
-      sig_link_add( signal_create( sig_name, 1, 0 ), &(mod->sig_head), &(mod->sig_tail) );
-      sigl = mod->sig_tail;
+      sig_link_add( signal_create( sig_name, 1, 0 ), &(mod_sig->sig_head), &(mod_sig->sig_tail) );
+      sigl = mod_sig->sig_tail;
     }
   }
 
   /* Add expression to signal expression list */
   exp_link_add( exp, &(sigl->sig->exp_head), &(sigl->sig->exp_tail) );
-
-  /* Make expression vector be signal vector*/
-  switch( SUPPL_OP( exp->suppl ) ) {
-    case EXP_OP_SIG :
-      exp->value->value = sigl->sig->value->value;
-      exp->value->width = sigl->sig->value->width;
-      exp->value->lsb   = 0;
-      break;
-    case EXP_OP_SBIT_SEL :
-      exp->value->value = sigl->sig->value->value;
-      exp->value->width = 1;
-      exp->suppl        = exp->suppl | ((sigl->sig->value->lsb & 0xffff) << SUPPL_LSB_SIG_LSB);
-      break;
-    case EXP_OP_MBIT_SEL :
-      exp->value->value = sigl->sig->value->value;
-      exp->suppl        = exp->suppl | ((sigl->sig->value->lsb & 0xffff) << SUPPL_LSB_SIG_LSB);
-      break;
-    default :
-      snprintf( msg, 4096, "Internal error:  Expression with bad operation (%d) in binding function", 
-                SUPPL_OP( exp->suppl ) );
-      print_output( msg, FATAL );
-      exit( 1 );
-      break;
-  }
-
+  
+  /* Set expression to point at signal */
+  exp->sig = sigl->sig;
+  
 }
 
 /*!
@@ -210,27 +166,28 @@ void bind_perform( char* sig_name, expression* exp, module* mod, bool implicit_a
 */
 void bind() {
   
-  mod_inst*     modi;          /* Pointer to found module instance                            */
-  module        tmod;          /* Pointer to temporary module used for comparison purposes    */
-  module*       mod;           /* Pointer to found module                                     */
-  mod_link*     modl;          /* Pointer to found module link                                */
-  signal        sig;           /* Temporary signal used for matching                          */
-  sig_link*     sigl;          /* Found signal in module                                      */
-  char          scope[4096];   /* Scope of signal's parent module                             */
-  char          sig_name[256]; /* Name of signal in module                                    */
-  char          msg[4096];     /* Error message to display to user                            */
-  expression*   curr_parent;   /* Pointer to current parent expression                        */
-  int           tmp_width;     /* Temporary storage of old vector width for multiplication    */
-  int           i;             /* Loop iterator                                               */
-  nibble        value1;        /* Temporary holder of vector nibble data for AEDGE expr's     */
-  sig_exp_bind* curr_seb;      /* Pointer to current signal/expression binding to evaluate    */
-  sig_exp_bind* last_seb;      /* Temporary holder of last binding for error control purposes */
-
+  mod_inst*     modi;          /* Pointer to found module instance             */
+  char          scope[4096];   /* Scope of signal's parent module              */
+  char          sig_name[256]; /* Name of signal in module                     */
+  char          msg[4096];     /* Error message to display to user             */
+  sig_exp_bind* curr_seb;      /* Pointer to current signal/expression binding */
+  int           id;            /* Current expression id -- used for removal    */
+  
+  mod_parm*     mparm;         /* Newly created module parameter               */
+  int           i;             /* Loop iterator                                */
+  int           ignore;        /* Number of instances to ignore                */
+  mod_inst*     inst;          /* Pointer to current instance to modify        */
+  inst_parm*    curr_iparm;    /* Pointer to current instance parameter        */
+  bool          done = FALSE;  /* Specifies if the current signal is completed */
+  int           orig_width;    /* Original width of found signal               */
+  int           orig_lsb;      /* Original lsb of found signal                 */
+    
   curr_seb = seb_head;
 
   while( curr_seb != NULL ) {
 
     assert( curr_seb->exp != NULL );
+    id = curr_seb->exp->id;
 
     /* Find module where signal resides */
     scope_extract_back( curr_seb->sig_name, sig_name, scope );
@@ -246,35 +203,70 @@ void bind() {
       snprintf( msg, 4096, "Undefined hierarchical reference: %s", curr_seb->sig_name );
       print_output( msg, FATAL );
       exit( 1 );
-    } else {
-      mod = modi->mod;
     }
 
     /* Now bind the signal to the expression */
-    bind_perform( curr_seb->sig_name, curr_seb->exp, mod, FALSE );
+    bind_perform( curr_seb->sig_name, curr_seb->exp, modi->mod, curr_seb->mod, FALSE );
 
+    /************************************************************************************
+     *  THIS CODE COULD PROBABLY BE PUT SOMEWHERE ELSE BUT WE WILL KEEP IT HERE FOR NOW *
+     ************************************************************************************/
+     
+    /* Create parameter for remote signal in current expression's module */
+    mparm = mod_parm_add( NULL, NULL, PARAM_TYPE_EXP_LSB, &(curr_seb->mod->param_head), &(curr_seb->mod->param_tail) );
+    
+    orig_width = curr_seb->exp->sig->value->width;
+    orig_lsb   = curr_seb->exp->sig->value->lsb;
+    i          = 0;
+    ignore     = 0;
+    while( (inst = instance_find_by_module( instance_root, curr_seb->mod, &ignore )) != NULL ) {
+      
+      /* Add instance parameter based on size of current signal */
+      if( (curr_seb->exp->sig->value->width == -1) || (curr_seb->exp->sig->value->lsb == -1) ) {
+        /* Signal size not known yet, figure out its size based on parameters */
+        curr_iparm = inst->param_head;
+        while( (curr_iparm != NULL) && !done ) {
+          assert( curr_iparm->mparm != NULL );
+          /* This parameter sizes a signal so perform the signal size */
+          if( curr_iparm->mparm->sig == curr_seb->exp->sig ) {
+            done = param_set_sig_size( curr_iparm->mparm->sig, curr_iparm );
+          }
+          curr_iparm = curr_iparm->next;
+        }
+      }
+      inst_parm_add( NULL, curr_seb->exp->sig->value, mparm, &(inst->param_head), &(inst->param_tail) );
+      
+      i++;
+      ignore = i;
+      
+    }
+
+    /* Revert signal to its previous state */
+    curr_seb->exp->sig->value->width = orig_width;
+    curr_seb->exp->sig->value->lsb   = orig_lsb;
+    
+    /* Signify that current expression is getting its value elsewhere */
+    curr_seb->exp->sig = NULL;
+    
+    /*************************
+     * End of misplaced code *
+     *************************/
+   
     curr_seb = curr_seb->next;
 
-  }
+    /* Remove binding from list */
+    bind_remove( id );
 
-  /*
-   Now that all of the signals have been tied to their corresponding expressions, we need to traverse
-   all of the affected expression trees and update the expression bit-width sizes to match.
-  */
-  while( seb_head != NULL ) {
-    last_seb = seb_head;
-    if( SUPPL_IS_ROOT( seb_head->exp->suppl ) == 0 ) {
-      bind_set_tree( seb_head->exp->parent->expr );    
-    } else {
-      bind_remove( seb_head->exp->id );
-    }
-    /* Verify that we always make forward progress on eliminating the SEB list */
-    assert( last_seb != seb_head );
   }
   
 }
 
 /* $Log$
+/* Revision 1.14  2002/09/29 02:16:51  phase1geo
+/* Updates to parameter CDD files for changes affecting these.  Added support
+/* for bit-selecting parameters.  param4.v diagnostic added to verify proper
+/* support for this bit-selecting.  Full regression still passes.
+/*
 /* Revision 1.13  2002/09/25 02:51:44  phase1geo
 /* Removing need of vector nibble array allocation and deallocation during
 /* expression resizing for efficiency and bug reduction.  Other enhancements

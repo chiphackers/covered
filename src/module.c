@@ -61,6 +61,66 @@ module* module_create() {
 }
 
 /*!
+ \param mod   Pointer to module containing elements to resize.
+ \param inst  Pointer to instance containing this module.
+ 
+ Resizes signals if they are contigent upon parameter values.  After
+ all signals have been resized, the signal's corresponding expressions
+ are resized.  This function should be called just prior to outputting
+ this module's contents to the CDD file (after parsing phase only)
+*/
+void module_size_elements( module* mod, mod_inst* inst ) {
+  
+  inst_parm* curr_iparm;   /* Pointer to current instance parameter to evaluate */
+  exp_link*  curr_exp;     /* Pointer to current expression link to evaluate    */
+  
+  assert( mod  != NULL );
+  assert( inst != NULL );
+  
+  /* 
+   First, traverse through current instance's instance parameter list and
+   set sizes of signals and expressions.
+  */
+  curr_iparm = inst->param_head;
+  while( curr_iparm != NULL ) {
+    assert( curr_iparm->mparm != NULL );
+    
+    /* This parameter sizes a signal so perform the signal size */
+    if( curr_iparm->mparm->sig != NULL ) {
+      param_set_sig_size( curr_iparm->mparm->sig, curr_iparm );
+    } else {
+      /* This parameter attaches to an expression tree */
+      curr_exp = curr_iparm->mparm->exp_head;
+      while( curr_exp != NULL ) {
+        expression_set_value( curr_exp->exp, curr_iparm->value );
+        curr_exp = curr_exp->next;
+      }
+    }
+    
+    curr_iparm = curr_iparm->next;
+  }
+  
+  /*
+   Second, traverse all expressions and set expressions to specified
+   signals.  Makes the assumption that all children expressions come
+   before the root expression in the list (this is currently the case).
+  */
+  curr_exp = mod->exp_head;
+  while( curr_exp != NULL ) {
+    if( SUPPL_IS_ROOT( curr_exp->exp->suppl ) ) {
+      /* Perform an entire expression resize */
+      expression_resize( curr_exp->exp, TRUE );
+    } else {
+      if( curr_exp->exp->sig != NULL ) {
+        expression_set_value( curr_exp->exp, curr_exp->exp->sig->value );
+      }
+    }
+    curr_exp = curr_exp->next;
+  }
+    
+}
+
+/*!
  \param mod    Pointer to module to write to output.
  \param scope  String version of module scope in hierarchy.
  \param file   Pointer to specified output file to write contents.
@@ -93,36 +153,26 @@ bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst ) {
     mod->filename
   );
 
+  /* Size all elements in this module if we are in parse mode */
+  if( inst != NULL ) {
+    module_size_elements( mod, inst );
+  }
+  
   // module_display_expressions( mod );
 
   /* Now print all expressions in module */
   curr_exp = mod->exp_head;
   while( curr_exp != NULL ) {
-    
-    /* If this expression is a parameter, find the associated instance parameter */
-    if( (inst != NULL) &&
-        ((SUPPL_OP( curr_exp->exp->suppl ) == EXP_OP_PARAM)      ||
-         (SUPPL_OP( curr_exp->exp->suppl ) == EXP_OP_PARAM_SBIT) ||
-         (SUPPL_OP( curr_exp->exp->suppl ) == EXP_OP_PARAM_MBIT)) ) {
-
-      param_find_and_set_expr_value( curr_exp->exp, inst->param_head );
-
-    }
-
     expression_db_write( curr_exp->exp, file, scope );
-
     curr_exp = curr_exp->next;
-
   }
 
   /* Now print all parameters in module */
   if( inst != NULL ) {
     curr_parm = inst->param_head;
     while( curr_parm != NULL ) {
-
       param_db_write( curr_parm, file, scope );
       curr_parm = curr_parm->next;
-
     }
   }
 
@@ -131,10 +181,8 @@ bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst ) {
   /* Now print all signals in module */
   curr_sig = mod->sig_head;
   while( curr_sig != NULL ) {
-
     signal_db_write( curr_sig->sig, file, scope );
     curr_sig = curr_sig->next; 
-
   }
 
   // module_display_statements( mod );
@@ -142,10 +190,8 @@ bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst ) {
   /* Now print all statements in module */
   curr_stmt = mod->stmt_head;
   while( curr_stmt != NULL ) {
-
     statement_db_write( curr_stmt->stmt, file, scope );
     curr_stmt = curr_stmt->next;
-
   }
 
   return( retval );
@@ -386,6 +432,12 @@ void module_dealloc( module* mod ) {
 
 
 /* $Log$
+/* Revision 1.19  2002/10/01 13:21:25  phase1geo
+/* Fixing bug in report output for single and multi-bit selects.  Also modifying
+/* the way that parameters are dealt with to allow proper handling of run-time
+/* changing bit selects of parameter values.  Full regression passes again and
+/* all report generators have been updated for changes.
+/*
 /* Revision 1.18  2002/09/29 02:16:51  phase1geo
 /* Updates to parameter CDD files for changes affecting these.  Added support
 /* for bit-selecting parameters.  param4.v diagnostic added to verify proper

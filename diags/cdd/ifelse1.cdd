@@ -6,7 +6,7 @@
 1 clock main 1 0 111aa
 1 z main 1 0 101aa
 3 mux main.switch ./lib/mux.v
-2 5 main.switch 14 1580 0 0 1 0 1000a8
+2 5 main.switch 14 1580 0 0 1 0 100000
 2 7 main.switch 17 2581 0 0 
 2 8 main.switch 19 1581 0 0 
 2 6 main.switch 16 3181 0 0 

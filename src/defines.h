@@ -297,6 +297,7 @@
  - STMT_CONTINUOUS
 */
 #define SUPPL_MERGE_MASK            ((0x7f << SUPPL_LSB_OP)        | \
+                                     (0x1  << SUPPL_LSB_ROOT)      | \
                                      (0x1  << SUPPL_LSB_EXECUTED)  | \
                                      (0x1  << SUPPL_LSB_TRUE)      | \
                                      (0x1  << SUPPL_LSB_FALSE)     | \
@@ -436,6 +437,30 @@
 #define PARAM_TYPE_OVERRIDE             1
 
 /*!
+ Specifies that the current module parameter specifies the value for a signal LSB
+ value.
+*/
+#define PARAM_TYPE_SIG_LSB              2
+
+/*!
+ Specifies that the current module parameter specifies the value for a signal MSB
+ value.
+*/
+#define PARAM_TYPE_SIG_MSB              3
+
+/*!
+ Specifies that the current module parameter specifies the value for an expression
+ LSB value.
+*/
+#define PARAM_TYPE_EXP_LSB              4
+
+/*!
+ Specifies that the current module parameter specifies the value for an expression
+ MSB value.
+*/
+#define PARAM_TYPE_EXP_MSB              5
+
+/*!
  Returns the order for the specified modparm type.
 */
 #define PARAM_ORDER(x)                  ((x->suppl >> PARAM_LSB_ORDER) & 0xffff)
@@ -443,7 +468,7 @@
 /*!
  Returns the type (declared/override) of the specified modparm type.
 */
-#define PARAM_TYPE(x)                   ((x->suppl >> PARAM_LSB_TYPE) & 0x1)
+#define PARAM_TYPE(x)                   ((x->suppl >> PARAM_LSB_TYPE) & 0x7)
 
 /*! @} */
 
@@ -524,7 +549,7 @@
                                      (SUPPL_OP( x->suppl ) != EXP_OP_DEFAULT) && \
                                      !((SUPPL_IS_ROOT( x->suppl ) == 0) && \
                                        ((SUPPL_OP( x->suppl ) == EXP_OP_SIG) || \
-				        (SUPPL_OP( x->suppl ) == EXP_OP_SBIT_SEL) || \
+                                        (SUPPL_OP( x->suppl ) == EXP_OP_SBIT_SEL) || \
                                         (SUPPL_OP( x->suppl ) == EXP_OP_MBIT_SEL)) && \
                                        (SUPPL_OP( x->parent->expr->suppl ) != EXP_OP_COND)) && \
                                      (SUPPL_OP( x->suppl ) != EXP_OP_DELAY)) ? 1 : 0)
@@ -832,8 +857,7 @@ struct mod_parm_s {
   unsigned int suppl;    /*!< Supplemental field containing type and order number */
   exp_link*    exp_head; /*!< Pointer to head of expression list for dependents   */
   exp_link*    exp_tail; /*!< Pointer to tail of expression list for dependents   */
-  sig_link*    sig_head; /*!< Pointer to head of signal list for dependents       */
-  sig_link*    sig_tail; /*!< Pointer to tail of signal list for dependents       */
+  signal*      sig;      /*!< Pointer to associated signal (if one is available)  */
   mod_parm*    next;     /*!< Pointer to next module parameter in list            */
 };
 
@@ -904,14 +928,25 @@ struct symtable_s {
 
 //------------------------------------------------------------------------------
 /*!
- Specifies bit range of this signal
+ Specifies possible values for a static expression (constant value).
 */
-struct signal_width_s {
-  int width;
-  int lsb;
+struct static_expr_s {
+  expression* exp;        /*!< Specifies if static value is an expression   */
+  int         num;        /*!< Specifies if static value is a numeric value */
 };
 
-typedef struct signal_width_s signal_width;
+typedef struct static_expr_s static_expr;
+
+//------------------------------------------------------------------------------
+/*!
+ Specifies bit range of a signal or expression.
+*/
+struct vector_width_s {
+  static_expr* left;      /*!< Specifies left bit value of bit range  */
+  static_expr* right;     /*!< Specifies right bit value of bit range */
+};
+
+typedef struct vector_width_s vector_width;
 
 //------------------------------------------------------------------------------
 /*!
@@ -922,10 +957,10 @@ struct sig_exp_bind_s;
 typedef struct sig_exp_bind_s sig_exp_bind;
 
 struct sig_exp_bind_s {
-  char*         sig_name;  /*!< Name of Verilog scoped signal                */
-  expression*   exp;       /*!< Expression to bind.                          */
-  char*         mod_name;  /*!< Name of Verilog module containing expression */
-  sig_exp_bind* next;      /*!< Pointer to next binding in list              */
+  char*         sig_name;  /*!< Name of Verilog scoped signal           */
+  expression*   exp;       /*!< Expression to bind.                     */
+  module*       mod;       /*!< Pointer to module containing expression */
+  sig_exp_bind* next;      /*!< Pointer to next binding in list         */
 };
 
 //------------------------------------------------------------------------------
@@ -973,6 +1008,9 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.47  2002/09/26 22:58:46  phase1geo
+/* Fixing syntax error.
+/*
 /* Revision 1.46  2002/09/25 02:51:44  phase1geo
 /* Removing need of vector nibble array allocation and deallocation during
 /* expression resizing for efficiency and bug reduction.  Other enhancements

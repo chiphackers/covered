@@ -1,6 +1,6 @@
 3 main main define1.1.v
 2 2 main 8 3001 0 0 
-2 1 main 8 1000 0 0 1 0 1000a8
+2 1 main 8 1000 0 0 1 0 100000
 2 3 main 8 3f89 2 1 1 0 101aa
 1 a main 1 0 101aa
 1 b main 1 0 101aa 2

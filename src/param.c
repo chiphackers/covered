@@ -2,6 +2,9 @@
  \file     param.c
  \author   Trevor Williams  (trevorw@charter.net)
  \date     8/22/2002
+ 
+ \par
+ 
 */
 
 #include <stdio.h>
@@ -37,12 +40,35 @@ mod_parm* mod_parm_find( char* name, mod_parm* parm ) {
 
   assert( name != NULL );
 
-  while( (parm != NULL) && (strcmp( parm->name, name ) != 0) ) {
+  while( (parm != NULL) && ((parm->name == NULL) || (strcmp( parm->name, name ) != 0)) ) {
     parm = parm->next;
   }
 
   return( parm );
  
+}
+
+/*!
+ \param name  Name of signal to search for signal-parameter dependency
+ \param parm  Pointer to head of module parameter list to search.
+ 
+ \return Returns pointer to found module parameter or NULL if search was unsuccessful
+ 
+ Searches the specified module list for a parameter that points to a signal that
+ matches the specified name.  This indicates that the signal specified by the given
+ name is dependent upon the value of this parameter.  Returns a pointer to the found
+ module parameter if a match is found; otherwise, returns NULL.
+*/ 
+mod_parm* mod_parm_find_sig_dependent( char* name, mod_parm* parm ) {
+
+  assert( name != NULL );
+  
+  while( (parm != NULL) && ((parm->sig == NULL) || (parm->sig->name == NULL) || (strcmp( parm->sig->name, name ) != 0)) ) {
+    parm = parm->next;
+  }
+  
+  return( parm );
+  
 }
 
 /*!
@@ -63,9 +89,13 @@ mod_parm* mod_parm_add( char* scope, expression* expr, int type, mod_parm** head
   mod_parm* curr;    /* Pointer to current module parameter for ordering purposes */
   int       order;   /* Current order of parameter                                */
   
-  assert( scope != NULL );
   assert( expr != NULL );
-  assert( (type == PARAM_TYPE_DECLARED) || (type == PARAM_TYPE_OVERRIDE) );
+  assert( (type == PARAM_TYPE_DECLARED) || 
+          (type == PARAM_TYPE_OVERRIDE) ||
+          (type == PARAM_TYPE_SIG_LSB)  ||
+          (type == PARAM_TYPE_SIG_MSB)  ||
+          (type == PARAM_TYPE_EXP_LSB)  ||
+          (type == PARAM_TYPE_EXP_MSB) );
 
   /* Determine parameter order */
   if( type == PARAM_TYPE_DECLARED ) {
@@ -77,11 +107,12 @@ mod_parm* mod_parm_add( char* scope, expression* expr, int type, mod_parm** head
       }
       curr = curr->next;
     }
-  } else {
+  } else if( type == PARAM_TYPE_OVERRIDE ) {
     curr  = *head;
     order = 0;
     while( curr != NULL ) {
-      if( (PARAM_TYPE( curr ) == PARAM_TYPE_OVERRIDE) &&          (strcmp( scope, curr->name ) == 0) ) {
+      if( (PARAM_TYPE( curr ) == PARAM_TYPE_OVERRIDE) &&
+          (strcmp( scope, curr->name ) == 0) ) {
         order++;
       }
       curr = curr->next;
@@ -90,13 +121,16 @@ mod_parm* mod_parm_add( char* scope, expression* expr, int type, mod_parm** head
 
   /* Create new signal/expression binding */
   parm           = (mod_parm*)malloc_safe( sizeof( mod_parm ) );
-  parm->name     = strdup( scope );
+  if( scope != NULL ) {
+    parm->name = strdup( scope );
+  } else {
+    parm->name = NULL;
+  }
   parm->expr     = expr;
-  parm->suppl    = ((type & 0x1) << PARAM_LSB_TYPE) | ((order & 0xffff) << PARAM_LSB_ORDER);
+  parm->suppl    = ((type & 0x7) << PARAM_LSB_TYPE) | ((order & 0xffff) << PARAM_LSB_ORDER);
   parm->exp_head = NULL;
   parm->exp_tail = NULL;
-  parm->sig_head = NULL;
-  parm->sig_tail = NULL;
+  parm->sig      = NULL;
   parm->next     = NULL;
 
   /* Now add the parameter to the current expression */
@@ -121,8 +155,12 @@ void mod_parm_display( mod_parm* mparm ) {
 
   while( mparm != NULL ) {
     assert( mparm->expr != NULL );
-    printf( "  mparam =>  name: %s, suppl: %d, exp_id: %d\n", mparm->name, mparm->suppl, mparm->expr->id );
-    printf( "    " );  sig_link_display( mparm->sig_head );
+    if( mparm->name == NULL ) {
+      printf( "  mparam => suppl: %d, exp_id: %d\n", mparm->suppl, mparm->expr->id );
+    } else {
+      printf( "  mparam =>  name: %s, suppl: %d, exp_id: %d\n", mparm->name, mparm->suppl, mparm->expr->id );
+    }
+    printf( "    " );  signal_display( mparm->sig );
     printf( "    " );  exp_link_display( mparm->exp_head );
     mparm = mparm->next;
   }
@@ -147,7 +185,7 @@ inst_parm* inst_parm_find( char* name, inst_parm* parm ) {
 
   assert( name != NULL );
 
-  while( (parm != NULL) && (strcmp( parm->name, name ) != 0) ) {
+  while( (parm != NULL) && ((parm->name == NULL) || (strcmp( parm->name, name ) != 0)) ) {
     parm = parm->next;
   }
 
@@ -171,12 +209,15 @@ inst_parm* inst_parm_add( char* scope, vector* value, mod_parm* mparm, inst_parm
 
   inst_parm* parm;    /* Temporary pointer to instance parameter */
   
-  assert( scope != NULL );
   assert( value != NULL );
 
   /* Create new signal/expression binding */
   parm        = (inst_parm*)malloc_safe( sizeof( inst_parm ) );
-  parm->name  = strdup( scope );
+  if( scope != NULL ) {
+    parm->name = strdup( scope );
+  } else {
+    parm->name = NULL;
+  }
   parm->value = value;
   parm->mparm = mparm;
   parm->next  = NULL;
@@ -239,47 +280,62 @@ void defparam_add( char* scope, vector* value ) {
  a parameter value is used without being defined).
 */
 void param_find_and_set_expr_value( expression* expr, inst_parm* icurr ) {
-
+  
   char err_msg[4096];  /* Error message to user */
-
-  assert( expr != NULL );
-  assert( expr->value != NULL );
-  assert( (SUPPL_OP( expr->suppl ) == EXP_OP_PARAM)      ||
-          (SUPPL_OP( expr->suppl ) == EXP_OP_PARAM_SBIT) ||
-          (SUPPL_OP( expr->suppl ) == EXP_OP_PARAM_MBIT) );
-
-  // printf( "In param_find_and_set_expr_value, exp ID: %d, op: %d\n", expr->id, SUPPL_OP( expr->suppl ) );
-
+  
   while( (icurr != NULL) && (exp_link_find( expr, icurr->mparm->exp_head ) == NULL) ) {
     icurr = icurr->next;
   }
-
+  
   if( icurr == NULL ) {
     snprintf( err_msg, 4096, "Parameter used in expression but not defined in current module, line %d", expr->line );
     print_output( err_msg, FATAL );
     exit( 1 );
   }
+  
+  expression_set_value( expr, icurr->value );
+  
+}
 
-  switch( SUPPL_OP( expr->suppl ) ) {
-    case EXP_OP_PARAM :
-      expr->value->value = icurr->value->value;
-      expr->value->width = icurr->value->width;
-      expr->value->lsb   = 0;
-      expression_resize( expr );
-      break;
-    case EXP_OP_PARAM_SBIT :
-      expr->value->value = icurr->value->value;
-      expr->value->width = 1;
-      expr->suppl        = expr->suppl | ((icurr->value->lsb & 0xffff) << SUPPL_LSB_SIG_LSB);
-      expression_resize( expr );
-      break;
-    case EXP_OP_PARAM_MBIT :
-      expr->value->value = icurr->value->value;
-      expr->suppl        = expr->suppl | ((icurr->value->lsb & 0xffff) << SUPPL_LSB_SIG_LSB);
-      expression_resize( expr );
-      break;
-    default :  break;
+/*!
+ \param sig    Pointer to signal to search for in instance parameter list.
+ \param icurr  Pointer to head of instance parameter list to search.
+ 
+ \return Returns TRUE if signal size is fully established; otherwise, returns FALSE.
+
+ Sizes the specified signal according to the value of the specified
+ instance parameter value.
+*/
+bool param_set_sig_size( signal* sig, inst_parm* icurr ) {
+
+  bool established = FALSE;  /* Specifies if current signal size is fully established */
+  int  bit_sel;              /* MSB/LSB bit select value from instance parameter      */
+
+  assert( sig != NULL );
+  assert( sig->name != NULL );
+
+  bit_sel = vector_to_int( icurr->value );
+
+  /* LSB gets set to first value found, we may adjust this later. */
+  if( sig->value->lsb == -1 ) {
+    
+    sig->value->lsb = bit_sel;
+    
+  } else {
+    
+    /* LSB is known so adjust the LSB and width with this value */
+    if( sig->value->lsb <= bit_sel ) {
+      sig->value->width = (bit_sel - sig->value->lsb) + 1;
+    } else {
+      sig->value->width = (sig->value->lsb - bit_sel) + 1;
+      sig->value->lsb   = bit_sel;
+    }
+    
+    established = TRUE;
+    
   }
+  
+  return( established );
 
 }
 
@@ -302,14 +358,12 @@ void param_expr_eval( expression* expr, inst_parm* ihead ) {
   if( expr != NULL ) {
 
     /* Evaluate children first */
-    if( (expr->left == NULL) && (expr->right == NULL) ) {
-      expression_resize( expr );
-    } else {
-      param_expr_eval( expr->left,  ihead );
-      param_expr_eval( expr->right, ihead );
-    }
+    param_expr_eval( expr->left,  ihead );
+    param_expr_eval( expr->right, ihead );
 
     switch( SUPPL_OP( expr->suppl ) ) {
+      case EXP_OP_STATIC :
+        break;
       case EXP_OP_PARAM      :
       case EXP_OP_PARAM_SBIT :
       case EXP_OP_PARAM_MBIT :
@@ -321,12 +375,12 @@ void param_expr_eval( expression* expr, inst_parm* ihead ) {
          if we don't have some already.
         */
         assert( expr->value != NULL );
+        assert( expr->value->value == NULL );
         assert( (SUPPL_OP( expr->suppl ) != EXP_OP_SIG)      &&
                 (SUPPL_OP( expr->suppl ) != EXP_OP_SBIT_SEL) &&
                 (SUPPL_OP( expr->suppl ) != EXP_OP_MBIT_SEL) );
-        if( expr->value->value == NULL ) {
-          expression_create_value( expr, expr->value->width, expr->value->lsb, TRUE );
-        }
+        expression_resize( expr, FALSE );
+        expression_create_value( expr, expr->value->width, expr->value->lsb, TRUE );
         break;
     }
 
@@ -518,24 +572,30 @@ void param_db_write( inst_parm* iparm, FILE* file, char* scope ) {
 
   exp_link* curr;      /* Pointer to current expression link element */
 
-  /* Display identification and value information first */
-  fprintf( file, "%d #%s %s ",
-    DB_TYPE_SIGNAL,
-    iparm->name,
-    scope
-  );
+  /*
+   If the parameter does not have a name, it will not be used in expressions;
+   therefore, there is no reason to output this parameter to the CDD file.
+  */
+  if( iparm->name != NULL ) {
 
-  // printf( "Writing parameter:  %d #%s %s ", DB_TYPE_SIGNAL, iparm->name, scope );
+    /* Display identification and value information first */
+    fprintf( file, "%d #%s %s ",
+      DB_TYPE_SIGNAL,
+      iparm->name,
+      scope
+    );
 
-  vector_db_write( iparm->value, file, TRUE );
+    vector_db_write( iparm->value, file, TRUE );
 
-  curr = iparm->mparm->exp_head;
-  while( curr != NULL ) {
-    fprintf( file, " %d", expression_get_id( curr->exp ) );
-    curr = curr->next;
+    curr = iparm->mparm->exp_head;
+    while( curr != NULL ) {
+      fprintf( file, " %d", expression_get_id( curr->exp ) );
+      curr = curr->next;
+    }
+
+    fprintf( file, "\n" );
+
   }
-
-  fprintf( file, "\n" );
 
 }
 
@@ -561,7 +621,6 @@ void mod_parm_dealloc( mod_parm* parm, bool recursive ) {
     free_safe( parm->name );
 
     exp_link_delete_list( parm->exp_head, FALSE );
-    sig_link_delete_list( parm->sig_head );
 
     free_safe( parm );
 
@@ -595,6 +654,12 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 
 /* $Log$
+/* Revision 1.16  2002/10/01 13:21:25  phase1geo
+/* Fixing bug in report output for single and multi-bit selects.  Also modifying
+/* the way that parameters are dealt with to allow proper handling of run-time
+/* changing bit selects of parameter values.  Full regression passes again and
+/* all report generators have been updated for changes.
+/*
 /* Revision 1.15  2002/09/29 02:16:51  phase1geo
 /* Updates to parameter CDD files for changes affecting these.  Added support
 /* for bit-selecting parameters.  param4.v diagnostic added to verify proper

@@ -15,12 +15,12 @@ IP 1.  Verify that single and multi-bit selectors work in all cases.
 X  2.  When `include is encountered, store current line number in stack for retrieval
        when file parsing is resumed for that file.
 
-   3.  When parser error occurs, output something more meaningful (for debugging purposes)
+IP 3.  When parser error occurs, output something more meaningful (for debugging purposes)
        and cause tool to exit rather than continue on.
 
    4.  Add performance monitor facility and attach monitors to all parser and lexer rules.
 
-IP 5.  Handle parameters
+X  5.  Handle parameters
 
 X  6.  Verify that -D option works when a value is specified.
 

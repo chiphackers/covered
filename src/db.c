@@ -482,6 +482,48 @@ void db_add_override_param( char* inst_name, expression* expr ) {
 }
 
 /*!
+ \param sig   Pointer to signal to attach parameter to.
+ \param expr  Expression containing value of vector parameter.
+ \param type  Type of signal vector parameter to create (LSB or MSB).
+
+ Creates a signal vector parameter for the specified signal with the specified
+ expression.  This function is called by the parser.
+*/
+void db_add_sig_vector_param( signal* sig, expression* expr, int type ) {
+
+  mod_parm* mparm;      /* Holds newly created module parameter                        */
+  mod_inst* inst;       /* Pointer to instance that is found to contain current module */
+  int       i;          /* Loop iterator                                               */
+  int       ignore;     /* Number of matching instances to ignore before selecting     */
+  char      msg[4096];  /* User message                                                */
+
+  assert( sig != NULL );
+  assert( (type == PARAM_TYPE_SIG_LSB) || (type == PARAM_TYPE_SIG_MSB) );
+
+  snprintf( msg, 4096, "In db_add_sig_vector_param, signal: %s, type: %d", sig->name, type );
+  print_output( msg, DEBUG );
+
+  /* Add signal vector parameter to module parameter list */
+  mparm = mod_parm_add( NULL, expr, type, &(curr_module->param_head), &(curr_module->param_tail) );
+
+  /* Add signal to module parameter list */
+  mparm->sig = sig;
+
+  /* Also add this to all associated instance parameter lists */
+  i      = 0;
+  ignore = 0;
+  while( (inst = instance_find_by_module( instance_root, curr_module, &ignore )) != NULL ) {
+
+    param_resolve_override( mparm, &(inst->param_head), &(inst->param_tail) );
+
+    i++;
+    ignore = i;
+
+  }
+
+}
+
+/*!
  \param name  Name of parameter value to override.
  \param expr  Expression value of parameter override.
 
@@ -503,24 +545,74 @@ void db_add_defparam( char* name, expression* expr ) {
 
 /*!
  \param name   Name of signal being added.
- \param width  Bit width of signal being added.
- \param lsb    Least significant bit of signal.
+ \param left   Specifies constant value for calculation of left-hand vector value.
+ \param right  Specifies constant value for calculation of right-hand vector value.
 
  Creates a new signal with the specified parameter information and adds this
- to the signal list if it does not already exist.
+ to the signal list if it does not already exist.  If width == 0, the sig_msb
+ and sig_lsb values are interrogated.  If sig_msb and/or is non-NULL, its value is
+ add to the current module's parameter list and all associated instances are
+ updated to contain new value.
 */
-void db_add_signal( char* name, int width, int lsb ) {
+void db_add_signal( char* name, static_expr* left, static_expr* right ) {
 
-  signal  tmpsig;     /* Temporary signal for signal searching */
-  char    msg[4096];  /* Display message string                */
+  signal  tmpsig;      /* Temporary signal for signal searching */
+  signal* sig;         /* Container for newly created signal    */
+  char    msg[4096];   /* Display message string                */
+  int     lsb   = -1;  /* Signal LSB                            */
+  int     width = -1;  /* Signal width                          */
 
-  snprintf( msg, 4096, "In db_add_signal, signal: %s, width: %d, lsb: %d", name, width, lsb );
+  snprintf( msg, 4096, "In db_add_signal, signal: %s", name );
   print_output( msg, DEBUG );
 
   tmpsig.name = name;
 
+  /* Add signal to current module's signal list if it does not already exist */
   if( sig_link_find( &tmpsig, curr_module->sig_head ) == NULL ) {
-    sig_link_add( signal_create( name, width, lsb ), &(curr_module->sig_head), &(curr_module->sig_tail) );
+
+    if( (right != NULL) && (right->exp == NULL) ) {
+      lsb = right->num;
+      assert( lsb >= 0 );
+    }
+
+    if( (left != NULL) && (left->exp == NULL) ) {
+      if( lsb != -1 ) { 
+        if( lsb <= left->num ) {
+          width = (left->num - lsb) + 1;
+          assert( width > 0 );
+        } else {
+          width = (lsb - left->num) + 1;
+          lsb   = left->num;
+          assert( width > 0 );
+          assert( lsb >= 0 );
+        }
+      } else {
+        lsb = left->num;
+        assert( lsb >= 0 );
+      }
+    }
+     
+    if( (lsb != -1) && (width != -1) ) { 
+      sig = signal_create( name, width, lsb );
+    } else {
+      sig = (signal*)malloc_safe( sizeof( signal ) );
+      signal_init( sig, strdup( name ), (vector*)malloc_safe( sizeof( vector ) ) );
+      sig->value->lsb   = -1;
+      sig->value->width = -1;      
+      if( lsb != -1 ) {
+        sig->value->lsb = lsb;
+      }
+      if( (left != NULL) && (left->exp != NULL) ) {
+        db_add_sig_vector_param( sig, left->exp, PARAM_TYPE_SIG_MSB );
+      }
+      if( (right != NULL) && (right->exp != NULL) ) {
+        db_add_sig_vector_param( sig, right->exp, PARAM_TYPE_SIG_LSB );
+      }
+    }
+
+    /* Add signal to current module's signal list */
+    sig_link_add( sig, &(curr_module->sig_head), &(curr_module->sig_tail) );
+
   }
   
 }
@@ -645,11 +737,11 @@ expression* db_create_expression( expression* right, expression* left, int op, i
 
     } else {
 
-      /* If signal is located in this current module, bind now; else, bind later. */
+      /* If signal is located in this current module, bind now; else, bind later */
       if( scope_local( sig_name ) ) {
-        bind_perform( sig_name, expr, curr_module, TRUE );
+        bind_perform( sig_name, expr, curr_module, curr_module, TRUE );
       } else {
-        bind_add( sig_name, expr, curr_module->name );
+        bind_add( sig_name, expr, curr_module );
       }
 
     }
@@ -677,7 +769,8 @@ void db_add_expression( expression* root ) {
       print_output( msg, DEBUG );
 
 #ifdef DEPRECATED   
-      if( (SUPPL_OP( root->suppl ) != EXP_OP_PARAM) &&          (SUPPL_OP( root->suppl ) != EXP_OP_PARAM_SBIT) &&
+      if( (SUPPL_OP( root->suppl ) != EXP_OP_PARAM) &&
+          (SUPPL_OP( root->suppl ) != EXP_OP_PARAM_SBIT) &&
           (SUPPL_OP( root->suppl ) != EXP_OP_PARAM_MBIT) ) {
 #endif
 
@@ -820,7 +913,8 @@ void db_statement_connect( statement* curr_stmt, statement* next_stmt ) {
   int  curr_id;     /* Current statement ID       */
   int  next_id;     /* Next statement ID          */
 
-  if( curr_stmt == NULL ) {    curr_id = 0;
+  if( curr_stmt == NULL ) {
+    curr_id = 0;
   } else {
     curr_id = curr_stmt->exp->id;
   }
@@ -1109,6 +1203,12 @@ void db_do_timestep( int time ) {
 }
 
 /* $Log$
+/* Revision 1.60  2002/10/01 13:21:24  phase1geo
+/* Fixing bug in report output for single and multi-bit selects.  Also modifying
+/* the way that parameters are dealt with to allow proper handling of run-time
+/* changing bit selects of parameter values.  Full regression passes again and
+/* all report generators have been updated for changes.
+/*
 /* Revision 1.59  2002/09/29 02:16:51  phase1geo
 /* Updates to parameter CDD files for changes affecting these.  Added support
 /* for bit-selecting parameters.  param4.v diagnostic added to verify proper

@@ -30,7 +30,7 @@ extern int curr_sim_time;
  \param exp    Pointer to expression to add value to.
  \param width  Width of value to create.
  \param lsb    Least significant value of value field.
- \param data   Specifies if 
+ \param data   Specifies if nibble array should be allocated for vector.
 
  Creates a value vector that is large enough to store width number of
  bits in value and sets the specified expression value to this value.  This
@@ -46,10 +46,7 @@ void expression_create_value( expression* exp, int width, int lsb, bool data ) {
   }
 
   /* Create value */
-  vector_init( exp->value, 
-               value,
-               width, 
-               lsb );
+  vector_init( exp->value, value, width, lsb );
 
 }
 
@@ -129,7 +126,6 @@ expression* expression_create( expression* right, expression* left, int op, int 
              (op == EXP_OP_CNE  ) ||
              (op == EXP_OP_LOR  ) ||
              (op == EXP_OP_LAND ) ||
-             (op == EXP_OP_UINV ) ||
              (op == EXP_OP_UAND ) ||
              (op == EXP_OP_UNOT ) ||
              (op == EXP_OP_UOR  ) ||
@@ -181,29 +177,73 @@ expression* expression_create( expression* right, expression* left, int op, int 
 }
 
 /*!
- \param expr  Pointer to expression to potentially resize.
-
- Recursively evaluates current expression tree to determine if the size of 
- the expression's vector value is currently correct.  It is expected that
- the first expression to call this function is the root expression of the
- expression tree.
+ \param exp  Pointer to expression to set value to.
+ \param vec  Pointer to vector value to set expression to.
+ 
+ Sets the specified expression (if necessary) to the value of the
+ specified vector value.
 */
-void expression_resize( expression* expr ) {
+void expression_set_value( expression* exp, vector* vec ) {
+  
+  assert( exp != NULL );
+  assert( exp->value != NULL );
+  assert( vec != NULL );
+  
+  switch( SUPPL_OP( exp->suppl ) ) {
+    case EXP_OP_SIG   :
+    case EXP_OP_PARAM :
+      exp->value->value = vec->value;
+      exp->value->width = vec->width;
+      exp->value->lsb   = 0;
+      break;
+    case EXP_OP_SBIT_SEL   :
+    case EXP_OP_PARAM_SBIT :
+      exp->value->value = vec->value;
+      exp->value->width = 1;
+      exp->suppl        = exp->suppl | ((vec->lsb & 0xffff) << SUPPL_LSB_SIG_LSB);
+      break;
+    case EXP_OP_MBIT_SEL   :
+    case EXP_OP_PARAM_MBIT :
+      exp->value->value = vec->value;
+      exp->suppl        = exp->suppl | ((vec->lsb & 0xffff) << SUPPL_LSB_SIG_LSB);
+      break;
+    default :  break;
+  }
+  
+}
+
+/*!
+ \param expr       Pointer to expression to potentially resize.
+ \param recursive  Specifies if we should perform a recursive depth-first resize
+
+ Resizes the given expression depending on the expression operation and its
+ children's sizes.  If recursive is TRUE, performs the resize in a depth-first
+ fashion, resizing the children before resizing the current expression.  If
+ recursive is FALSE, only the given expression is evaluated and resized.
+*/
+void expression_resize( expression* expr, bool recursive ) {
 
   int  largest_width;  /* Holds larger width of left and right children */
 
   if( expr != NULL ) {
+        
+    if( recursive ) {
+      expression_resize( expr->left, recursive );
+      expression_resize( expr->right, recursive );
+    }
+    
+    // printf( "Resizing expression %d, op: %d, presize: %d\n", expr->id, SUPPL_OP( expr->suppl ), expr->value->width );
 
     switch( SUPPL_OP( expr->suppl ) ) {
 
       /* These operations will already be sized so nothing to do here */
       case EXP_OP_STATIC     :
-      case EXP_OP_SIG        :
-      case EXP_OP_SBIT_SEL   :
-      case EXP_OP_MBIT_SEL   :
       case EXP_OP_PARAM      :
       case EXP_OP_PARAM_SBIT :
       case EXP_OP_PARAM_MBIT :
+      case EXP_OP_SIG :
+      case EXP_OP_SBIT_SEL :
+      case EXP_OP_MBIT_SEL :
         break;
 
       /* These operations should always be set to a width 1 */
@@ -217,7 +257,6 @@ void expression_resize( expression* expr ) {
       case EXP_OP_CNE     :
       case EXP_OP_LOR     :
       case EXP_OP_LAND    :
-      case EXP_OP_UINV    :
       case EXP_OP_UAND    :
       case EXP_OP_UNOT    :
       case EXP_OP_UOR     :
@@ -280,9 +319,7 @@ void expression_resize( expression* expr ) {
 
     }
 
-    if( SUPPL_IS_ROOT( expr->suppl ) == 0 ) {
-      expression_resize( expr->parent->expr );
-    }
+    // printf( "Resized expression %d, op: %d, size: %d\n", expr->id, SUPPL_OP( expr->suppl ), expr->value->width );
 
   }
 
@@ -331,7 +368,6 @@ void expression_db_write( expression* expr, FILE* file, char* scope ) {
   if( (SUPPL_OP( expr->suppl ) != EXP_OP_SIG) && 
       (SUPPL_OP( expr->suppl ) != EXP_OP_SBIT_SEL) && 
       (SUPPL_OP( expr->suppl ) != EXP_OP_MBIT_SEL) ) {
-//    printf( "Expression value to write: " );  vector_display( expr->value );
     vector_db_write( expr->value, file, (SUPPL_OP( expr->suppl ) == EXP_OP_STATIC) );
   }
 
@@ -373,8 +409,6 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
   if( sscanf( *line, "%d %s %d %x %d %d%n", &id, modname, &linenum, &suppl, &right_id, &left_id, &chars_read ) == 6 ) {
 
     *line = *line + chars_read;
-
-    // printf( "Read in expression id: %d\n", id );
 
     /* Find module instance name */
     if( curr_mod == NULL ) {
@@ -420,7 +454,8 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
       /* Don't set left child's parent if the parent is a CASE, CASEX, or CASEZ type expression */
       if( (left != NULL) && 
           (SUPPL_OP( suppl ) != EXP_OP_CASE) &&
-          (SUPPL_OP( suppl ) != EXP_OP_CASEX) &&          (SUPPL_OP( suppl ) != EXP_OP_CASEZ) ) {
+          (SUPPL_OP( suppl ) != EXP_OP_CASEX) &&
+          (SUPPL_OP( suppl ) != EXP_OP_CASEZ) ) {
         left->parent->expr = expr;
       }
 
@@ -455,7 +490,7 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
         expression_operate( expr );
         expr->suppl = expr->suppl | (0x1 << SUPPL_LSB_EXECUTED);
       }
-
+      
     }
 
   } else {
@@ -1014,6 +1049,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.51  2002/09/29 02:16:51  phase1geo
+/* Updates to parameter CDD files for changes affecting these.  Added support
+/* for bit-selecting parameters.  param4.v diagnostic added to verify proper
+/* support for this bit-selecting.  Full regression still passes.
+/*
 /* Revision 1.50  2002/09/25 05:36:08  phase1geo
 /* Initial version of parameter support is now in place.  Parameters work on a
 /* basic level.  param1.v tests this basic functionality and param1.cdd contains

@@ -4,8 +4,8 @@
 2 8 main 9 301a 7 6 1 0 110aa
 2 5 main 9 3001 0 0 
 2 9 main 9 3f99 8 5 1 0 110aa
-1 #value0 main 1 0 1000a8 6
-1 #value1 main 1 0 100a9 7
+1 #value0 main 1 0 100000 6
+1 #value1 main 1 0 10001 7
 1 a main 1 0 110aa
 1 b main 1 0 101aa 5
 4 9 main 9 9

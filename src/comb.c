@@ -82,7 +82,7 @@ void combination_get_tree_stats( expression* exp, unsigned int curr_depth, float
     if( ((report_comb_depth == REPORT_DETAILED) && (curr_depth == report_comb_depth)) ||
          (report_comb_depth == REPORT_VERBOSE) ||
          (report_comb_depth == REPORT_SUMMARY) ) {
-
+      
       /* Calculate current expression combination coverage */
       if( EXPR_IS_MEASURABLE( exp ) == 1 ) {
         *total = *total + 2;
@@ -115,7 +115,7 @@ void combination_get_tree_stats( expression* exp, unsigned int curr_depth, float
 void combination_get_stats( exp_link* expl, float* total, int* hit ) {
 
   exp_link* curr_exp;    /* Pointer to the current expression link in the list */
-
+  
   curr_exp = expl;
 
   while( curr_exp != NULL ) {
@@ -928,6 +928,12 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 
 /* $Log$
+/* Revision 1.45  2002/10/01 13:21:24  phase1geo
+/* Fixing bug in report output for single and multi-bit selects.  Also modifying
+/* the way that parameters are dealt with to allow proper handling of run-time
+/* changing bit selects of parameter values.  Full regression passes again and
+/* all report generators have been updated for changes.
+/*
 /* Revision 1.44  2002/09/25 22:41:29  phase1geo
 /* Adding diagnostics to check missing concatenation cases that uncovered bugs
 /* in testing other codes.  Also fixed case in report command for summary information.

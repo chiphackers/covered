@@ -431,10 +431,10 @@ void* malloc_safe( int size ) {
   if( size > 10000 ) {
     print_output( "Allocating memory chunk larger than 10000 bytes.  Possible error.", WARNING );
     // printf( "  Memory block size request: %d bytes\n", size );
-    assert( size > 10000 );
+    assert( size <= 10000 );
   } else if( size <= 0 ) {
     print_output( "Internal:  Attempting to allocate memory of size <= 0", FATAL );
-    assert( size <= 0 );
+    assert( size > 0 );
   }
 
   curr_malloc_size += size;
@@ -494,6 +494,11 @@ void gen_space( char* spaces, int num_spaces ) {
 }
 
 /* $Log$
+/* Revision 1.11  2002/09/25 05:36:08  phase1geo
+/* Initial version of parameter support is now in place.  Parameters work on a
+/* basic level.  param1.v tests this basic functionality and param1.cdd contains
+/* the correct CDD output from handling parameters in this file.  Yeah!
+/*
 /* Revision 1.10  2002/07/20 22:22:52  phase1geo
 /* Added ability to create implicit signals for local signals.  Added implicit1.v
 /* diagnostic to test for correctness.  Full regression passes.  Other tweaks to

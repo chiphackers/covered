@@ -1,0 +1,10 @@
+3 main main always6.v
+2 4 main 6 2000 0 0 32 0 1,0,0,0,0,0,0,0
+2 5 main 6 35a3 4 0 
+2 1 main 6 2001 0 0 
+2 2 main 6 2a 0 0 2 0 312aa
+2 3 main 6 33a9 1 2 1 0 111aa
+1 a main 2 1 312aa 1 5
+1 b main 1 0 110aa
+4 5 main 3 3
+4 3 main 5 0

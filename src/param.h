@@ -16,6 +16,9 @@
 //! Searches specified module parameter list for matching parameter.
 mod_parm* mod_parm_find( char* name, mod_parm* parm );
 
+//! Searches specified module parameter list for matching signal dependency.
+mod_parm* mod_parm_find_sig_dependent( char* name, mod_parm* parm );
+
 //! Creates new module parameter and adds it to the specified list.
 mod_parm* mod_parm_add( char* scope, expression* expr, int type, mod_parm** head, mod_parm** tail );
 
@@ -25,11 +28,17 @@ void mod_parm_display( mod_parm* mparm );
 //! Searches specified instance parameter list for matching parameter.
 inst_parm* inst_parm_find( char* name, inst_parm* parm );
 
+//! Creates and adds new instance parameter to specified instance parameter list.
+inst_parm* inst_parm_add( char* scope, vector* value, mod_parm* mparm, inst_parm** head, inst_parm** tail );
+
 //! Adds parameter override to defparam list.
 void defparam_add( char* scope, vector* expr );
 
-//! Finds matching instance parameter value, assigns it to the specified expression, and resizes the expression tree.
-void param_find_and_set_expr_value( expression* expr, inst_parm* icurr );
+//! Sets the specified expression value to the instance parameter value.
+void param_set_expr_size( expression* expr, inst_parm* icurr );
+
+//! Sets the specified signal size according to the specified instance parameter and resizes attached expressions.
+bool param_set_sig_size( signal* sig, inst_parm* icurr );
 
 //! Transforms a declared module parameter into an instance parameter.
 void param_resolve_declared( char* mscope, mod_parm* mparm, inst_parm* ip_head, inst_parm** ihead, inst_parm** itail );
@@ -48,6 +57,12 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive );
 
 
 /* $Log$
+/* Revision 1.8  2002/10/01 13:21:25  phase1geo
+/* Fixing bug in report output for single and multi-bit selects.  Also modifying
+/* the way that parameters are dealt with to allow proper handling of run-time
+/* changing bit selects of parameter values.  Full regression passes again and
+/* all report generators have been updated for changes.
+/*
 /* Revision 1.7  2002/09/25 02:51:44  phase1geo
 /* Removing need of vector nibble array allocation and deallocation during
 /* expression resizing for efficiency and bug reduction.  Other enhancements

@@ -55,7 +55,7 @@ void signal_init( signal* sig, char* name, vector* value ) {
 */
 signal* signal_create( char* name, int width, int lsb ) {
 
-  signal* new_sig;     /* Pointer to newly created signal */
+  signal* new_sig;       /* Pointer to newly created signal */
 
   new_sig = (signal*)malloc_safe( sizeof( signal ) );
 
@@ -374,6 +374,12 @@ void signal_dealloc( signal* sig ) {
 }
 
 /* $Log$
+/* Revision 1.18  2002/10/01 13:21:25  phase1geo
+/* Fixing bug in report output for single and multi-bit selects.  Also modifying
+/* the way that parameters are dealt with to allow proper handling of run-time
+/* changing bit selects of parameter values.  Full regression passes again and
+/* all report generators have been updated for changes.
+/*
 /* Revision 1.17  2002/09/29 02:16:51  phase1geo
 /* Updates to parameter CDD files for changes affecting these.  Added support
 /* for bit-selecting parameters.  param4.v diagnostic added to verify proper
