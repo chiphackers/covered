@@ -191,7 +191,7 @@ symtable* symtable_create( signal* sig, int msb, int lsb, bool init ) {
   symtab->sig_head = NULL;
   symtab->sig_tail = NULL;
   symtab->value    = NULL;
-  for( i=0; i<255; i++ ) {
+  for( i=0; i<256; i++ ) {
     symtab->table[i] = NULL;
   }
 
@@ -363,6 +363,9 @@ void symtable_dealloc( symtable* symtab ) {
 
 /*
  $Log$
+ Revision 1.12  2003/08/15 03:52:22  phase1geo
+ More checkins of last checkin and adding some missing files.
+
  Revision 1.11  2003/08/05 20:25:05  phase1geo
  Fixing non-blocking bug and updating regression files according to the fix.
  Also added function vector_is_unknown() which can be called before making
