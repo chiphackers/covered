@@ -62,6 +62,7 @@ char* output_file      = NULL;
 char* input_db         = NULL;
 
 extern mod_inst* instance_root;
+extern mod_link* mod_head;
 
 
 /*!
@@ -212,7 +213,7 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
  will have the accumulated information from themselves and all of their
  children.
 */
-void report_gather_stats( mod_inst* root ) {
+void report_gather_instance_stats( mod_inst* root ) {
 
   mod_inst* curr;    /* Pointer to current instance being evaluated */
 
@@ -224,7 +225,7 @@ void report_gather_stats( mod_inst* root ) {
   /* Get coverage results for all children first */
   curr = root->child_head;
   while( curr != NULL ) {
-    report_gather_stats( curr );
+    report_gather_instance_stats( curr );
     assert( curr->stat != NULL );
     statistic_merge( root->stat, curr->stat );
     curr = curr->next;
@@ -251,6 +252,47 @@ void report_gather_stats( mod_inst* root ) {
 
   if( report_fsm ) {
     /* TBD */
+  }
+
+}
+
+/*!
+ \param head  Pointer to head of module list to search.
+ 
+ Traverses module list, creating statistic structures for each
+ of the modules in the tree, and calculates summary coverage information.
+*/
+void report_gather_module_stats( mod_link* head ) {
+
+  while( head != NULL ) {
+
+    head->mod->stat = statistic_create();
+
+    /* Get coverage results for this instance */
+    if( report_line ) {
+      line_get_stats( head->mod->stmt_head, &(head->mod->stat->line_total), &(head->mod->stat->line_hit) );
+    }
+
+    if( report_toggle ) {
+      toggle_get_stats( head->mod->exp_head, 
+                        head->mod->sig_head, 
+                        &(head->mod->stat->tog_total), 
+                        &(head->mod->stat->tog01_hit), 
+                        &(head->mod->stat->tog10_hit) );
+    }
+
+    if( report_combination ) {
+      combination_get_stats( head->mod->exp_head,
+                             &(head->mod->stat->comb_total),
+                             &(head->mod->stat->comb_hit) );
+    }
+
+    if( report_fsm ) {
+      /* TBD */
+    }
+
+    head = head->next;
+
   }
 
 }
@@ -284,9 +326,11 @@ void report_generate( FILE* ofile ) {
 
   report_print_header( ofile );
 
-  /* If we are reporting on an instance, gather statistics first */
+  /* Gather statistics first */
   if( report_instance ) {
-    report_gather_stats( instance_root );
+    report_gather_instance_stats( instance_root );
+  } else {
+    report_gather_module_stats( mod_head );
   }
 
   /* Call out the proper reports for the specified metrics to report */
@@ -383,6 +427,11 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 
 /* $Log$
+/* Revision 1.9  2002/07/09 04:46:26  phase1geo
+/* Adding -D and -Q options to covered for outputting debug information or
+/* suppressing normal output entirely.  Updated generated documentation and
+/* modified Verilog diagnostic Makefile to use these new options.
+/*
 /* Revision 1.8  2002/07/08 16:06:33  phase1geo
 /* Updating help information.
 /*

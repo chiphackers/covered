@@ -126,50 +126,50 @@ bool toggle_instance_summary( FILE* ofile, mod_inst* root, char* parent_inst ) {
 */
 bool toggle_module_summary( FILE* ofile, mod_link* head ) {
 
-  float     total_tog = 0;  /* Total number of bits in module                        */
-  int       tog01_hit = 0;  /* Number of bits that toggled from 0 to 1               */
-  int       tog10_hit = 0;  /* Number of bits that toggled from 1 to 0               */
-  mod_inst* curr;           /* Pointer to current child module instance of this node */
-  float     percent01;      /* Percentage of bits that toggled from 0 to 1           */
-  float     percent10;      /* Percentage of bits that toggled from 1 to 0           */
-  float     miss01;         /* Number of bits that did not toggle from 0 to 1        */
-  float     miss10;         /* Number of bits that did not toggle from 1 to 0        */
+  mod_inst* curr;                /* Pointer to current child module instance of this node */
+  float     percent01;           /* Percentage of bits that toggled from 0 to 1           */
+  float     percent10;           /* Percentage of bits that toggled from 1 to 0           */
+  float     miss01;              /* Number of bits that did not toggle from 0 to 1        */
+  float     miss10;              /* Number of bits that did not toggle from 1 to 0        */
+  float     miss_found = FALSE;  /* Set to TRUE if missing toggles were found             */
 
-  toggle_get_stats( head->mod->exp_head, head->mod->sig_head, &total_tog, &tog01_hit, &tog10_hit );
+  while( head != NULL ) {
 
-  /* Calculate for toggle01 */
-  if( total_tog == 0 ) {
-    percent01 = 100;
-  } else {
-    percent01 = ((tog01_hit / total_tog) * 100);
+    /* Calculate for toggle01 */
+    if( head->mod->stat->tog_total == 0 ) {
+      percent01 = 100;
+    } else {
+      percent01 = ((head->mod->stat->tog01_hit / head->mod->stat->tog_total) * 100);
+    }
+    miss01 = (head->mod->stat->tog_total - head->mod->stat->tog01_hit);
+
+    /* Calculate for toggle10 */
+    if( head->mod->stat->tog_total == 0 ) {
+      percent10 = 100;
+    } else {
+      percent10 = ((head->mod->stat->tog10_hit / head->mod->stat->tog_total) * 100);
+    }
+    miss10 = (head->mod->stat->tog_total - head->mod->stat->tog10_hit);
+
+    miss_found = ((miss01 > 0) || (miss10 > 0)) ? TRUE : miss_found;
+
+    fprintf( ofile, "  %-20.20s    %-20.20s    %3d/%3.0f/%3.0f      %3.0f%%            %3d/%3.0f/%3.0f      %3.0f%%\n", 
+             head->mod->name,
+             head->mod->filename,
+             head->mod->stat->tog01_hit,
+             miss01,
+             head->mod->stat->tog_total,
+             percent01,
+             head->mod->stat->tog10_hit,
+             miss10,
+             head->mod->stat->tog_total,
+             percent10 );
+
+    head = head->next;
+
   }
-  miss01    = (total_tog - tog01_hit);
 
-  /* Calculate for toggle10 */
-  if( total_tog == 0 ) {
-    percent10 = 100;
-  } else {
-    percent10 = ((tog10_hit / total_tog) * 100);
-  }
-  miss10    = (total_tog - tog10_hit);
-
-  fprintf( ofile, "  %-20.20s    %-20.20s    %3d/%3.0f/%3.0f      %3.0f%%            %3d/%3.0f/%3.0f      %3.0f%%\n", 
-           head->mod->name,
-           head->mod->filename,
-           tog01_hit,
-           miss01,
-           total_tog,
-           percent01,
-           tog10_hit,
-           miss10,
-           total_tog,
-           percent10 );
-
-  if( head->next != NULL ) {
-    miss01 = miss01 + toggle_module_summary( ofile, head->next );
-  }
-
-  return( (miss01 > 0) || (miss10 > 0) );
+  return( miss_found );
 
 }
 
@@ -257,18 +257,23 @@ void toggle_instance_verbose( FILE* ofile, mod_inst* root ) {
 */
 void toggle_module_verbose( FILE* ofile, mod_link* head ) {
 
-  assert( head != NULL );
+  while( head != NULL ) {
 
-  fprintf( ofile, "\n" );
-  fprintf( ofile, "Module: %s, File: %s\n",
-           head->mod->name,
-           head->mod->filename );
-  fprintf( ofile, "--------------------------------------------------------\n" );
+    if( (head->mod->stat->tog01_hit < head->mod->stat->tog_total) ||
+        (head->mod->stat->tog10_hit < head->mod->stat->tog_total) ) {
 
-  toggle_display_verbose( ofile, head->mod->sig_head );
+      fprintf( ofile, "\n" );
+      fprintf( ofile, "Module: %s, File: %s\n",
+               head->mod->name,
+               head->mod->filename );
+      fprintf( ofile, "--------------------------------------------------------\n" );
 
-  if( head->next != NULL ) {
-    toggle_module_verbose( ofile, head->next );
+      toggle_display_verbose( ofile, head->mod->sig_head );
+
+    }
+
+    head = head->next;
+
   }
 
 }
@@ -323,6 +328,10 @@ void toggle_report( FILE* ofile, bool verbose, bool instance ) {
 }
 
 /* $Log$
+/* Revision 1.8  2002/07/17 06:27:18  phase1geo
+/* Added start for fixes to bit select code starting with single bit selection.
+/* Full regression passes with addition of sbit_sel1 diagnostic.
+/*
 /* Revision 1.7  2002/07/14 05:27:34  phase1geo
 /* Fixing report outputting to allow multiple modules/instances to be
 /* output.

@@ -22,7 +22,7 @@ X  2.  When `include is encountered, store current line number in stack for retr
 
    5.  Handle parameters
 
-   6.  Verify that -D option works when a value is specified.
+X  6.  Verify that -D option works when a value is specified.
 
    7.  Make sure that expression widths are correct (may have to look at left-hand-side bit
        width to calculate this correctly).
@@ -56,9 +56,11 @@ Report command
 
 X  5.  Add '+' to combinational logic output for values equal to or greater than one.
 
-   6.  Make sure that all unnecessary output is removed from verbose output (sometimes
+X  6.  Make sure that all unnecessary output is removed from verbose output (sometimes
        modules/instances that have received 100% coverage still get some message).
 
    7.  Add depth option for combination logic analyzer.
 
    8.  Add option to output what has been covered (instead of what has not been covered)
+
+   9.  Make sure that line coverage reports lines not statements

@@ -110,34 +110,36 @@ bool combination_instance_summary( FILE* ofile, mod_inst* root, char* parent ) {
 */
 bool combination_module_summary( FILE* ofile, mod_link* head ) {
 
-  float     total_lines = 0;  /* Total number of lines parsed                         */
-  int       hit_lines   = 0;  /* Number of lines executed during simulation           */
-  mod_inst* curr;             /* Pointer to current child module instance of this node */
-  float     percent;          /* Percentage of lines hit                               */
-  float     miss;             /* Number of lines missed                                */
+  mod_inst* curr;                /* Pointer to current child module instance of this node */
+  float     percent;             /* Percentage of lines hit                               */
+  float     miss;                /* Number of lines missed                                */
+  float     miss_found = FALSE;  /* Set to TRUE if missing combinations were found        */
 
-  combination_get_stats( head->mod->exp_head, &total_lines, &hit_lines );
+  while( head != NULL ) {
 
-  if( total_lines == 0 ) {
-    percent = 100;
-  } else {
-    percent = ((hit_lines / total_lines) * 100);
+    if( head->mod->stat->comb_total == 0 ) {
+      percent = 100;
+    } else {
+      percent = ((head->mod->stat->comb_hit / head->mod->stat->comb_total) * 100);
+    }
+    miss = (head->mod->stat->comb_total - head->mod->stat->comb_hit);
+    if( miss > 0 ) {
+      miss_found = TRUE;
+    }
+
+    fprintf( ofile, "  %-20.20s    %-20.20s    %3d/%3.0f/%3.0f      %3.0f%%\n", 
+             head->mod->name,
+             head->mod->filename,
+             head->mod->stat->comb_hit,
+             miss,
+             head->mod->stat->comb_total,
+             percent );
+
+    head = head->next;
+
   }
-  miss    = (total_lines - hit_lines);
 
-  fprintf( ofile, "  %-20.20s    %-20.20s    %3d/%3.0f/%3.0f      %3.0f%%\n", 
-           head->mod->name,
-           head->mod->filename,
-           hit_lines,
-           miss,
-           total_lines,
-           percent );
-
-  if( head->next != NULL ) {
-    miss = miss + combination_module_summary( ofile, head->next );
-  }
-
-  return( miss > 0 );
+  return( miss_found );
 
 }
 
@@ -685,19 +687,23 @@ void combination_instance_verbose( FILE* ofile, mod_inst* root ) {
 
   assert( root != NULL );
 
-  fprintf( ofile, "\n" );
-  fprintf( ofile, "Module: %s, File: %s, Instance: %s\n", 
-           root->mod->name, 
-           root->mod->filename,
-           root->name );
-  fprintf( ofile, "--------------------------------------------------------\n" );
+  if( root->stat->comb_hit < root->stat->comb_total ) {
 
-  combination_display_verbose( ofile, root->mod->stmt_head );
+    fprintf( ofile, "\n" );
+    fprintf( ofile, "Module: %s, File: %s, Instance: %s\n", 
+             root->mod->name, 
+             root->mod->filename,
+             root->name );
+    fprintf( ofile, "--------------------------------------------------------\n" );
 
-  curr_inst = root->child_head;
-  while( curr_inst != NULL ) {
-    combination_instance_verbose( ofile, curr_inst );
-    curr_inst = curr_inst->next;
+    combination_display_verbose( ofile, root->mod->stmt_head );
+
+    curr_inst = root->child_head;
+    while( curr_inst != NULL ) {
+      combination_instance_verbose( ofile, curr_inst );
+      curr_inst = curr_inst->next;
+    }
+
   }
 
 }
@@ -711,18 +717,22 @@ void combination_instance_verbose( FILE* ofile, mod_inst* root ) {
 */
 void combination_module_verbose( FILE* ofile, mod_link* head ) {
 
-  assert( head != NULL );
+  while( head != NULL ) {
 
-  fprintf( ofile, "\n" );
-  fprintf( ofile, "Module: %s, File: %s\n", 
-           head->mod->name, 
-           head->mod->filename );
-  fprintf( ofile, "--------------------------------------------------------\n" );
+    if( head->mod->stat->comb_hit < head->mod->stat->comb_total ) {
 
-  combination_display_verbose( ofile, head->mod->stmt_head );
+      fprintf( ofile, "\n" );
+      fprintf( ofile, "Module: %s, File: %s\n", 
+               head->mod->name, 
+               head->mod->filename );
+      fprintf( ofile, "--------------------------------------------------------\n" );
+
+      combination_display_verbose( ofile, head->mod->stmt_head );
   
-  if( head->next != NULL ) {
-    combination_module_verbose( ofile, head->next );
+    }
+
+    head = head->next;
+
   }
 
 }
@@ -775,6 +785,12 @@ void combination_report( FILE* ofile, bool verbose, bool instance ) {
 
 
 /* $Log$
+/* Revision 1.35  2002/07/20 13:58:01  phase1geo
+/* Fixing bug in EXP_OP_LAST for changes in binding.  Adding correct line numbering
+/* to lexer (tested).  Added '+' to report outputting for signals larger than 1 bit.
+/* Added mbit_sel1.v diagnostic to verify some multi-bit functionality.  Full
+/* regression passes.
+/*
 /* Revision 1.34  2002/07/16 00:05:31  phase1geo
 /* Adding support for replication operator (EXPAND).  All expressional support
 /* should now be available.  Added diagnostics to test replication operator.

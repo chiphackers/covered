@@ -26,6 +26,7 @@ void module_init( module* mod ) {
     
   mod->name      = NULL;
   mod->filename  = NULL;
+  mod->stat      = NULL;
   mod->sig_head  = NULL;
   mod->sig_tail  = NULL;
   mod->exp_head  = NULL;
@@ -337,6 +338,10 @@ void module_dealloc( module* mod ) {
 
 
 /* $Log$
+/* Revision 1.9  2002/07/18 02:33:24  phase1geo
+/* Fixed instantiation addition.  Multiple hierarchy instantiation trees should
+/* now work.
+/*
 /* Revision 1.8  2002/07/14 05:10:42  phase1geo
 /* Added support for signal concatenation in score and report commands.  Fixed
 /* bugs in this code (and multiplication).

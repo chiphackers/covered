@@ -108,34 +108,35 @@ bool line_instance_summary( FILE* ofile, mod_inst* root, char* parent_inst ) {
 */
 bool line_module_summary( FILE* ofile, mod_link* head ) {
 
-  float     total_lines = 0;  /* Total number of lines parsed                         */
-  int       hit_lines   = 0;  /* Number of lines executed during simulation           */
-  mod_inst* curr;             /* Pointer to current child module instance of this node */
-  float     percent;          /* Percentage of lines hit                               */
-  float     miss;             /* Number of lines missed                                */
+  mod_inst* curr;                /* Pointer to current child module instance of this node */
+  float     percent;             /* Percentage of lines hit                               */
+  float     miss;                /* Number of lines missed                                */
+  bool      miss_found = FALSE;  /* Set to TRUE if line was found to be missed            */
 
-  line_get_stats( head->mod->stmt_head, &total_lines, &hit_lines );
+  while( head != NULL ) {
 
-  if( total_lines == 0 ) {
-    percent = 100.0;
-  } else {
-    percent = ((hit_lines / total_lines) * 100);
+    if( head->mod->stat->line_total == 0 ) {
+      percent = 100.0;
+    } else {
+      percent = ((head->mod->stat->line_hit / head->mod->stat->line_total) * 100);
+    }
+
+    miss       = (head->mod->stat->line_total - head->mod->stat->line_hit);
+    miss_found = (miss > 0) ? TRUE : miss_found;
+
+    fprintf( ofile, "  %-20.20s    %-20.20s    %3d/%3.0f/%3.0f      %3.0f%%\n", 
+             head->mod->name,
+             head->mod->filename,
+             head->mod->stat->line_hit,
+             miss,
+             head->mod->stat->line_total,
+             percent );
+
+    head = head->next;
+
   }
-  miss    = (total_lines - hit_lines);
 
-  fprintf( ofile, "  %-20.20s    %-20.20s    %3d/%3.0f/%3.0f      %3.0f%%\n", 
-           head->mod->name,
-           head->mod->filename,
-           hit_lines,
-           miss,
-           total_lines,
-           percent );
-
-  if( head->next != NULL ) {
-    miss = miss + line_module_summary( ofile, head->next );
-  }
-
-  return( miss > 0 );
+  return( miss_found );
 
 }
 
@@ -222,18 +223,22 @@ void line_instance_verbose( FILE* ofile, mod_inst* root ) {
 */
 void line_module_verbose( FILE* ofile, mod_link* head ) {
 
-  assert( head != NULL );
+  while( head != NULL ) {
 
-  fprintf( ofile, "\n" );
-  fprintf( ofile, "Module: %s, File: %s\n", 
-           head->mod->name, 
-           head->mod->filename );
-  fprintf( ofile, "--------------------------------------------------------\n" );
+    if( head->mod->stat->line_hit < head->mod->stat->line_total ) {
 
-  line_display_verbose( ofile, head->mod->stmt_head );
+      fprintf( ofile, "\n" );
+      fprintf( ofile, "Module: %s, File: %s\n", 
+               head->mod->name, 
+               head->mod->filename );
+      fprintf( ofile, "--------------------------------------------------------\n" );
+
+      line_display_verbose( ofile, head->mod->stmt_head );
   
-  if( head->next != NULL ) {
-    line_module_verbose( ofile, head->next );
+    }
+
+    head = head->next;
+ 
   }
 
 }
@@ -286,6 +291,10 @@ void line_report( FILE* ofile, bool verbose, bool instance ) {
 }
 
 /* $Log$
+/* Revision 1.15  2002/07/14 05:27:34  phase1geo
+/* Fixing report outputting to allow multiple modules/instances to be
+/* output.
+/*
 /* Revision 1.14  2002/07/10 13:15:57  phase1geo
 /* Adding case1.1.v Verilog diagnostic to check default case statement.  There
 /* were reporting problems related to this.  Report problems have been fixed and

@@ -704,12 +704,32 @@ struct sig_link_s {
 
 //------------------------------------------------------------------------------
 /*!
+ Contains statistics for coverage results which is stored in a module instance.
+ NOTE:  FSM WILL BE HANDLED AT A LATER TIME.
+*/
+struct statistic_s;
+
+typedef struct statistic_s statistic;
+
+struct statistic_s {
+  float line_total;    /*!< Total number of lines parsed               */
+  int   line_hit;      /*!< Number of lines executed during simulation */
+  float tog_total;     /*!< Total number of bits to toggle             */
+  int   tog01_hit;     /*!< Number of bits toggling from 0 to 1        */
+  int   tog10_hit;     /*!< Number of bits toggling from 1 to 0        */
+  float comb_total;    /*!< Total number of expression combinations    */
+  int   comb_hit;      /*!< Number of logic combinations hit           */
+};
+
+//------------------------------------------------------------------------------
+/*!
  Contains information for a Verilog module.  A module contains a list of signals within the
  module.
 */
 struct module_s {
   char*      name;       /*!< Module name                                        */
   char*      filename;   /*!< File name where module exists                      */
+  statistic* stat;       /*!< Pointer to module coverage statistics structure    */
   sig_link*  sig_head;   /*!< Head pointer to list of signals in this module     */
   sig_link*  sig_tail;   /*!< Tail pointer to list of signals in this module     */
   exp_link*  exp_head;   /*!< Head pointer to list of expressions in this module */
@@ -793,25 +813,6 @@ struct case_stmt_s {
 
 //------------------------------------------------------------------------------
 /*!
- Contains statistics for coverage results which is stored in a module instance.
- NOTE:  FSM WILL BE HANDLED AT A LATER TIME.
-*/
-struct statistic_s;
-
-typedef struct statistic_s statistic;
-
-struct statistic_s {
-  float line_total;    /*!< Total number of lines parsed               */
-  int   line_hit;      /*!< Number of lines executed during simulation */
-  float tog_total;     /*!< Total number of bits to toggle             */
-  int   tog01_hit;     /*!< Number of bits toggling from 0 to 1        */
-  int   tog10_hit;     /*!< Number of bits toggling from 1 to 0        */
-  float comb_total;    /*!< Total number of expression combinations    */
-  int   comb_hit;      /*!< Number of logic combinations hit           */
-};
-
-//------------------------------------------------------------------------------
-/*!
  A module instance element in the module instance tree.
 */
 struct mod_inst_s;
@@ -836,6 +837,10 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.34  2002/07/18 02:33:23  phase1geo
+/* Fixed instantiation addition.  Multiple hierarchy instantiation trees should
+/* now work.
+/*
 /* Revision 1.33  2002/07/14 05:10:42  phase1geo
 /* Added support for signal concatenation in score and report commands.  Fixed
 /* bugs in this code (and multiplication).
