@@ -1,8 +1,8 @@
 <!--
 [variables]
 {
-  $page_title = "Reading FSM Coverage"
-  $page_title_english = "Reading FSM Coverage"
+  $page_title = "Reading Combinational Logic Coverage"
+  $page_title_english = "Reading Combinational Logic Coverage"
   $file_prev = "019.html"
   $file_next = "021.html"
   $real_page_number = "20"
@@ -19,12 +19,12 @@ Summary Information Description - Module-based
 </_header3>
 
 <_pg>
-For module-based reports, the summary table for FSM metrics includes information for the
-name of each module that was covered and the name of the file in which the module is
-described in.  Lines <a href="example.rptM.html#125">125 through 131</a> of the module-based
-report show what this information looks like in the report.  We have two modules that were
-scored within our DUT:  main and foobar.  The table shows that both modules were described
-in the file "example.v".
+For module-based reports, the summary table for combinational logic metrics includes
+information for the name of each module that was covered and the name of the file in which
+the module is described in.  Lines <a href="example.rptM.html#60">60 through 66</a> of the
+module-based report show what this information looks like in the report.  We have two
+modules that were scored within our DUT:  main and foobar.  The table shows that both
+modules were described in the file "example.v".
 </_pg>
 
 <_header3>
@@ -32,11 +32,11 @@ Summary Information Description - Instance-based
 </_header3>
 
 <_pg>
-For instance-based reports, the summary table for FSM metrics includes information for
-the Verilog hierarchy pertaining to each instance on the left-hand-side of each row.  Lines
-<a href="example.rptI.html#131">131 through 137</a> of the instance-based report show what this
-information looks like in the report.  In our DUT example, there are two instances within the
-design with the Verilog hierarchies of "main" and "main.bar".
+For instance-based reports, the summary table for combinational logic metrics includes
+information for the Verilog hierarchy pertaining to each instance on the left-hand-side of
+each row.  Lines <a href="example.rptI.html#66">66 through 72</a> of the instance-based report
+show what this information looks like in the report.  In our DUT example, there are two
+instances within the design with the Verilog hierarchies of "main" and "main.bar".
 </_pg>
 
 <_header3>
@@ -45,28 +45,24 @@ Summary Information Description - Both
 
 <_pg>
 On the right-hand side of each row in the table are the hit, miss and total numbers for the
-FSM state coverage, followed by a calculated percent of the FSM states that were hit
-(calculated by taking the number of FSM states hit during simulation divided by the total
-number of FSM states that Covered could have simulated).  The hit value indicates how many
-FSM states were executed during the simulation; the miss value indicates the number of FSM
-states not executed during simulation; and the total value indicates the total number of FSM
-states within the specified module/instance that Covered can simulate.
+combinational logic coverage, followed by a calculated percent of the combinational logic
+expression values that were hit (calculated by taking the number of combinational logic
+expression values hit during simulation divided by the total number of expression values
+that Covered could have simulated).  The hit value indicates how many expression values
+were achieved during the simulation; the miss value indicates the number of expression
+values not achieved during simulation; and the total value indicates the total number of 
+combinational logic expression values that could have been achieved in the specified
+module/instance.
 </_pg>
 
 <_pg>
-To the right of the FSM state summary information is the FSM state-transition hit, miss,
-total and percentage hit summary information for each module/instance.
-</_pg>
-
-<_pg>
-If the percentage value in the far left of the summary table is 100%, this indicates that all
-FSM states and state-transitions that Covered was capable of simulating (for the
-module/instance of this row) were executed.  If the value of the percentage is less than
-100%, this indicates that some number of FSM states and/or FSM state-transitions were not
-executed and full coverage was not achieved for that module/instance.  Note that for a
-module/instance which does not contain any FSMs in which Covered was able to
-simulate, the values of hit, miss, and total will be 0 while the hit percentage value will
-indicate 100%.
+If the percentage value in the far left of the summary table is 100%, this indicates that
+all combinational logic expression values that Covered was capable of achieving (for the
+module/instance of this row) were hit.  If the value of the percentage is less than 100%,
+this indicates that some number of expression values were not achieved and full coverage
+was not achieved for that module/instance.  Note that for a module/instance which does not
+contain any combinational logic expressions in which Covered was able to simulate, the
+values of hit, miss, and total will be 0 while the hit percentage value will indicate 100%.
 </_pg>
 
 <_header3>
@@ -74,32 +70,44 @@ Verbose Information Description - Both
 </_header3>
 
 <_pg>
-The verbose output for FSM coverage is split into the state coverage information
-and the state transition coverage information.  When an FSM is found to be not
-fully covered (i.e., the number of hit states/state transitions is not equal to
-the number of attainable states/state transitions), the missed states are output
-to the report as a list of state values in hexidecimal format as follows:
+The verbose output for combinational coverage is a bit more sophisticated than the line or
+toggle.  Basically, for each expression that was found to not be fully covered (either the
+expression itself or some sub-expression in the tree was not fully covered), the expression
+is output with various sub-expressions underlined and identified with a number.  Each
+expression is also supplied with the line number that the expression started at in its module
+file.  In our example, there is one expression in the module called "main" (see
+lines <a href="example.rptM.html#74">74 through 77</a> and one expression in the module called
+"foobar" (see lines <a href="example.rptM.html#112">112 through 113</a>.
 </_pg>
 
 <_pg>
-&lt;<i>hexidecimal value</i>&gt;
+Below each expression, there will be one or more tables which specify a particular
+sub-expression that was not fully covered along with information describing what cases were
+not covered for that sub-expression.
 </_pg>
 
 <_pg>
-When an FSM is found to be not fully covered, the missed state transitions are
-output to the report as a list of state transitions in the format below:
+In the report output above, we see that there was one expression that did not have 100%
+coverage on it and its subexpressions that starts on line 6 of the Verilog source.  The
+expression is output to the report with certain sub-expressions underlined and labeled with
+an integer value for reference.
 </_pg>
 
 <_pg>
-&lt;<i>hexidecimal input state value</i>&gt; -&gt; &lt;<i>hexidecimal output state value</i>&gt;
+For this one expression, there were found to be four subexpressions (labeled 1, 2, 6, 7) that
+were found to not be 100% covered.  Taking a look at subexpression 1 report output, the
+numbers to the right of the string "Expression 1" tell us the number of values of this
+subexpression that were hit (in this case 1 value was hit) and the total number of values
+that this subexpression can have (in this case 2 values were achievable).  The character
+string below this information tells us the type of subexpression that we are examining.
+For subexpression 1, the type is the unary NOT operator (~).
 </_pg>
 
 <_pg>
-If the -c option is used or the number of attainable state/state transitions are
-unknown for the specified FSM, Covered outputs this information in the same way
-as the missed cases except that the title of the output is "Hit cases".  If the
-number of attainable states/state transitions is unknown, providing the cases that
-were hit during simulation is useful in aiding the user in determining coverage.
-In this case, the summary report will output question marks in the missed and total
-categories, showing the user that this information was not known by Covered.
+The table below this information for subexpression 1, lists the potential values that this
+subexpression could have reached with a '*' character placed underneath the value(s) that was
+missed.  In the case of subexpression 1, the value of 0 was not hit (meaning that the value
+of the register b was never assigned the value of 1).  The letter 'E' above each possible
+value indicates that this subexpression is a unary expression (its value comes from one
+variable) and 'E' represents this subexpression's value (not the value of its subexpressions).
 </_pg>

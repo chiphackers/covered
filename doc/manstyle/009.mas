@@ -1,8 +1,8 @@
 <!--
 [variables]
 {
-  $page_title = "Installation"
-  $page_title_english = "Installation"
+  $page_title = "Race Condition Checking"
+  $page_title_english = "Race Condition Checking"
   $file_prev = "008.html"
   $file_next = "010.html"
   $real_page_number = "9"
@@ -14,109 +14,100 @@
 $page_title
 </_header1>
 
-<_header2>
-Prerequisites
-</_header2>
-
 <_pg>
-The goal of Covered was to create a tool that has very few requirements to allow it to be
-compiled and run on all platforms.  The following is a list of all utilities/resources
-required to compile Covered.  However, Covered is primarily developed on RedHat Linux
-and as such is primarily tested by the developers on that platform.
-</_pg>
-
-<_pg>
-<ul>
-  <li>gcc  (Version 2.96 -- not sure if >=3.0 versions will work yet)</li>
-  <li>flex (Version 2.5.4 or higher)</li>
-  <li>bison (Version 1.28 or higher)</li>
-  <li>GNU make (Version 3.27.1 or higher)</li>
-  <li>GNU gperf (Version 2.7.2 or higher)</li>
-</ul>
-
-</_pg>
-
-<_pg>
-Covered is primarily developed on RedHat 7.3 but has been known to compile with 32-bit 
-and 64-bit compilers that contain the general GNU library of tools.
+Due to Covered's method of abstracting coverage from a dumpfile, a partial
+"resimulation" of the design is needed to obtain proper statistics for line,
+combinational logic and FSM metrics.  Therefore, accurately resimulating 
+what occurred in the actual simulation is a requirement for obtaining correct
+results.  This can be easily achieved so long as the design doesn't contain
+any code that could result in potential race conditions.
 </_pg>
 
 <_header2>
-Downloading source
+Checked Coding Guidelines
 </_header2>
 
 <_pg>
-To download the source files in .tar.gz format, go to the
-following URL:
+To avoid this problem Covered now performs automatic race condition checking
+on the specified design after parsing has been completed but before
+simulation/scoring is performed.  All statement blocks in the design that
+don't adhere to certain coding guidelines are removed from coverage
+consideration by Covered.  By following these coding guidelines, a design
+should be void of race condition scenarios that would lead to faulty
+simulation results.  The following coding guidelines are applied by Covered
+when checking for race conditions:
 </_pg>
 
-<_pg>
-<a href="http://covered.sourceforge.net/downloads">http://covered.sourceforge.net/downloads</a>
-</_pg>
+<_margin>Race-condition-free
+Coding Guidelines</_margin>
 
 <_pg>
-Double-click on the .tar.gz version that you wish to install.
-The browser should immediately bring up a window asking if
-you would like to save to disk or open immediately.  Choose the
-"Save to Disk" option.  Another window will pop up, allowing
-you to choose the directory to store the tarball in.  After
-selecting a directory, click the "Save" button.  The download
-utility will begin downloading the tarball to the selected
-directory.
+<ol>
+  <li> All sequential logic and latches use non-blocking assignments.</li>
+  <li> All combinational logic in an always block uses blocking
+       assignments.</li>
+  <li> All mixed sequential and combinational logic in the same always
+       block uses non-blocking assignments.</li>
+  <li> Blocking and non-blocking assignments should not be used in the
+       same always block.<li>
+  <li> Assignments made to a variable should only be done within one
+       always block.</li>
+  <li> The $strobe system call should only be used to display variables
+       that were assigned using non-blocking assignments. (Not currently
+       implemented)</li>
+  <li> No #0 procedural assignments should exist.  (Not currently
+       implemented)</li>
+</ol>
+
 </_pg>
 
 <_header2>
-Installing from source
+Race Condition Handling
 </_header2>
 
 <_pg>
-Once you have downloaded a tarball, enter the following to
-unzip and untar the package:
+If Covered detects an always block as violating any one of the above
+mentioned coding guidelines, it will do one of two things depending on
+options specified to the score command by the user.
 </_pg>
 
-<_code>
->  gzip -dc <i>tarball_filename</i> | tar xvf -
-</_code>
-
 <_pg>
-This will create a directory called <tt>covered-<i>version</i></tt>.
-Change your current directory to this directory and enter the
-following command:
+<ol>
+  <li> If the -rS, -rW or none of the -r options are specified, Covered will
+       simply remove the non-conforming always block from coverage
+       consideration and continue with scoring.  -rW will display a message
+       describing detected race conditions during the scoring command while
+       the -rS option will display no messages.</li>
+  <li> If the -rE option is specified, Covered will halt the score command
+       after all race condition checking has been performed with a message
+       to the user specifying how many always blocks were found to be in
+       non-compliance to the race-condition-free coding guidelines.</li>
+</ol>
 </_pg>
 
-<_code>
->  ./configure
-</_code>
-
 <_pg>
-This command will create the Makefiles necessary for your
-machine to compile the source code correctly.  If any errors
-are generated during this command run, it is usually an
-indication that some program or library is missing from your
-computer that is necessary for Covered to compile/run.  Please
-install any missing programs/libraries and type this command
-again.  If the configure script completes successfully, you may
-compile the source with the following command:
+The first mode of operation is the recommended mode of operation as this
+will allow Covered to continue calculating coverage information for the
+design while still providing accurate coverage information for the logic
+that is still under consideration.  The second mode of operation is meant
+to allow the user to use Covered as a race-condition checking tool.
 </_pg>
 
-<_code>
->  make
-</_code>
+<_header2>
+Reporting Race Conditions
+</_header2>
 
 <_pg>
-This will begin the process of compiling/linking the source
-code for Covered.  This stage may take a while.  When the source
-files have been compiled, the <tt>covered</tt> executable file
-will have been created.  To install this executable in your
-<tt>/usr/local/bin</tt> directory, enter the following command:
-</_pg>
-
-<_code>
->  make install
-</_code>
-
-<_pg>
-This will install the covered executable and manpage help files.
-Once covered is installed, make sure that <tt>/usr/local/bin</tt>
-is in your environment path.  You are now ready to run Covered.
+Even though race condition information is displayed (assuming the -rS option
+was not specified in the score command-line) during the scoring process, it
+may be convenient to view this information in a generated report as well.
+Because of this need, Covered saves all race condition information to the
+CDD file for use in using the report command.  By specifying 'r' in the -m
+option to the report command (race condition report output is not turned on
+by default), the statement blocks which were eliminated from coverage
+consideration will be output to the coverage report file.  Summary coverage
+will contain the total number of statement blocks eliminated for each
+module.  Verbose coverage will contain each eliminated statement block,
+organized by module, specifying both the starting line of the eliminated
+statement block and the reason for why the statement block was removed.
 </_pg>

@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
 <HTML>
 <HEAD>
-  <TITLE>Covered - Reading Line Coverage</TITLE>
+  <TITLE>Covered - Reading the Report</TITLE>
   <META name="GENERATOR" content="ManStyle">
   <META name="AUTHOR" content="Trevor Williams">
   <LINK rel=stylesheet type="text/css" href="styles.css">
@@ -36,7 +36,7 @@
         <TR>
           <TD width=460 align=center valign=top class="navigator">
             <P class="navigator"><IMG src="img/000000.gif" height=2 width=460><BR>
-            <IMG src="img/toolbar_left.png" border=0><A href="001.html" alt="Contents"><IMG src="img/toolbar_cont.png" border=0></A><A href="index.html" alt="First Page"><IMG src="img/toolbar_first.png" border=0></A><A href="016.html" alt="Previous Page"><IMG src="img/toolbar_prev.png" border=0></A><A href="index.html" alt="Home"><IMG src="img/toolbar_home.png" border=0></A><A href="018.html" alt="Next Page"><IMG src="img/toolbar_next.png" border=0></A><A href="022.html" alt="Last Page"><IMG src="img/toolbar_last.png" border=0></A><IMG src="img/toolbar_right.png" border=0>
+            <IMG src="img/toolbar_left.png" border=0><A href="001.html" alt="Contents"><IMG src="img/toolbar_cont.png" border=0></A><A href="index.html" alt="First Page"><IMG src="img/toolbar_first.png" border=0></A><A href="016.html" alt="Previous Page"><IMG src="img/toolbar_prev.png" border=0></A><A href="index.html" alt="Home"><IMG src="img/toolbar_home.png" border=0></A><A href="018.html" alt="Next Page"><IMG src="img/toolbar_next.png" border=0></A><A href="023.html" alt="Last Page"><IMG src="img/toolbar_last.png" border=0></A><IMG src="img/toolbar_right.png" border=0>
             <BR><IMG src="img/000000.gif" height=2 width=460></P>
           </TD>
         </TR>
@@ -62,7 +62,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="header2">11.1&nbsp; <A name="11_1"></A>Reading Line Coverage</P>
+      <P class="header1">12&nbsp;&nbsp; <A name="12"></A>Reading the Report<BR><IMG src="img/12568c.gif" height=2 width=460></P>
     </TD>
   </TR>
 
@@ -73,7 +73,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="header3">11.1.1 <A name="11_1_1"></A>Summary Information Description - Module-based</P>
+      <P class="pg"></P>
     </TD>
   </TR>
 
@@ -84,7 +84,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">For module-based reports, the summary table for line metrics includes information for the name of each module that was covered and the name of the file in which the module is described in. Lines <a href="example.rptM.html#4">4 through 9</a> of the module-based report show what this information looks like in the report. We have two modules that were scored within our DUT: main and foobar. The table shows that both modules were described in the file "test.v".</P>
+      <P class="pg">This chapter describes the meanings of the textual report output that Covered generates when the report command is issued. It is well understood by the developers of Covered that a code coverage tool is only as good as the output that it generates, and this, of course, includes the ability to discern the information provided by the report.</P>
     </TD>
   </TR>
 
@@ -95,7 +95,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="header3">11.1.2 <A name="11_1_2"></A>Summary Information Description - Instance-based</P>
+      <P class="pg">To help describe the various sections of a Covered report, we will use a relatively small Verilog file containing our DUT, generating the two main types of reports (module and instance) based on the CDD generated for this file. This example file is provided <a href="example.v.html">here</a>.</P>
     </TD>
   </TR>
 
@@ -106,7 +106,18 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">For instance-based reports, the summary table for line metrics includes information for the Verilog hierarchy pertaining to each instance on the left-hand-side of each row. Lines <a href="example.rptI.html#4">4 through 9</a> of the instance-based report show what this information looks like in the report. In our DUT example, there are two instances within the design with the Verilog hierarchies of "main" and "main.bar".</P>
+      <P class="pg">After being compiled and run, this module is scored with the following Covered command:</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin">Score Command</P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="code">covered score -t main -v example.v -o example.cdd -vcd example.vcd</P>
     </TD>
   </TR>
 
@@ -117,7 +128,18 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="header3">11.1.3 <A name="11_1_3"></A>Summary Information Description - Both</P>
+      <P class="pg">The module-based verbose report can be viewed in its entirety <a href="example.rptM.html">here</a> and is generated with the following command:</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin">Module-base report command</P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="code">covered report -d v example.cdd</P>
     </TD>
   </TR>
 
@@ -128,7 +150,18 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">On the right-hand side of each row in the table are the hit, miss and total numbers for the line coverage, followed by a calculated percent of the lines that were hit (calculated by taking the number of lines hit during simulation divided by the total number of lines that Covered simulated). The hit value indicates how many lines were executed during the simulation; the miss value indicates the number of lines not executed during simulation; and the total value indicates the total number of lines within the specified module/instance that Covered was able to simulate.</P>
+      <P class="pg">The instance-based verbose report can be viewed in its entirety <a href="example.rptI.html">here</a> and is generated with the following command:</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin">Instance-based report command</P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="code">covered report -i -d v example.cdd</P>
     </TD>
   </TR>
 
@@ -139,7 +172,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">If the percentage value in the far left of the summary table is 100%, this indicates that all lines that Covered was capable of simulating (for the module/instance of this row) were executed. If the value of the percentage is less than 100%, this indicates that some number of lines were not executed and full coverage was not achieved for that module/instance. Note that for a module/instance which does not contain any lines in which Covered was able to simulate, the values of hit, miss, and total will be 0 while the hit percentage value will indicate 100%.</P>
+      <P class="pg">The instructions for analyzing each of the four types of coverage information from the report can be found on the following pages.</P>
     </TD>
   </TR>
 
@@ -150,7 +183,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="header3">11.1.4 <A name="11_1_4"></A>Verbose Information Description - Both</P>
+      <P class="pg"><ol> <li><A href="018.html">Reading Line Coverage</A></li> <li><A href="019.html">Reading Toggle Coverage</A></li> <li><A href="020.html">Reading Combinational Logic Coverage</A></li> <li><A href="021.html">Reading FSM Coverage</A></li> </ol></P>
     </TD>
   </TR>
 
@@ -161,84 +194,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">If the miss value for a particular module was not 0 (indicating that lines were missed during simulation) and the '-d v' option was specified on the command-line (specifying to output verbose reporting information), the line that was missed during simulation will be output below the summary information per module that contained missed lines. In our sample report, there was one line that was missed during simulation (according to the summary output) for the module/instance called 'main'. The line number and Verilog line that was missed is output in lines <a href="example.rptM.html#11">11 through 16</a> of the module-based report and in lines <a href="example.rptI.html#11">11 through 22</a> of the instance-based report.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">If a module does not contain any missed lines and the '-d v' option was specified, no verbose output will be displayed for this module. Likewise, if a module/instance does not contain any lines that Covered could execute, no verbose output will be displayed.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="header4"><A name="11_1_4_1"></A>Important Note</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">The definition of what Covered considers a line is an expression (ex. assignment, conditional, etc.). If an expression is written in such a way that it consumes multiple file lines, Covered only counts the expression as one line. The user can assume that if the beginning of an expression is labeled as missed, the entire expression was missed (not just the first line of the expression). For example, consider the following code:</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">always @(posedge b)<br> &nbsp;&nbsp;a &lt;= (b & c) |<br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(d & e);</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">If the expression <code> a &lt;= (b & c) | (d & e);<code> is not executed during simulation, Covered will indicate that only one line was missed during execution (not two), and it will display the missing line (if verbose reporting is specified with the '-d v' option) as the following:</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;assign a &lt;= (b & c) ...</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">The "..." notation at the end of the Verilog output indicates that the expression was a multiline expression in the source code but is only considered one line.</P>
+      <P class="pg">For information on reading race condition information in the report, please see the user guide page detailing race conditions and viewing the reports.</P>
     </TD>
   </TR>
 
@@ -255,9 +211,9 @@
        <A href="016.html">Previous Page</A>&nbsp;&nbsp;|&nbsp;
        <A href="index.html">Home</A>&nbsp;
        &nbsp;|&nbsp;<A href="018.html">Next Page</A>&nbsp;&nbsp;|&nbsp;
-       <A href="022.html">Last Page</A>&nbsp;
+       <A href="023.html">Last Page</A>&nbsp;
        ]<BR>
-       [&nbsp; <A href="001.html">1</A>&nbsp;|&nbsp;<A href="002.html">2</A>&nbsp;|&nbsp;<A href="003.html">3</A>&nbsp;|&nbsp;<A href="004.html">4</A>&nbsp;|&nbsp;<A href="005.html">5</A>&nbsp;|&nbsp;<A href="006.html">6</A>&nbsp;|&nbsp;<A href="007.html">7</A>&nbsp;|&nbsp;<A href="008.html">8</A>&nbsp;|&nbsp;<A href="009.html">9</A>&nbsp;|&nbsp;<A href="010.html">10</A>&nbsp;|&nbsp;<A href="011.html">11</A>&nbsp;|&nbsp;<A href="012.html">12</A>&nbsp;|&nbsp;<A href="013.html">13</A>&nbsp;|&nbsp;<A href="014.html">14</A>&nbsp;|&nbsp;<A href="015.html">15</A>&nbsp;|&nbsp;<A href="016.html">16</A>&nbsp;|&nbsp;<A href="017.html">17</A>&nbsp;|&nbsp;<A href="018.html">18</A>&nbsp;|&nbsp;<A href="019.html">19</A>&nbsp;|&nbsp;<A href="020.html">20</A>&nbsp;|&nbsp;<A href="021.html">21</A>&nbsp;|&nbsp;<A href="022.html">22</A> &nbsp;]
+       [&nbsp; <A href="001.html">1</A>&nbsp;|&nbsp;<A href="002.html">2</A>&nbsp;|&nbsp;<A href="003.html">3</A>&nbsp;|&nbsp;<A href="004.html">4</A>&nbsp;|&nbsp;<A href="005.html">5</A>&nbsp;|&nbsp;<A href="006.html">6</A>&nbsp;|&nbsp;<A href="007.html">7</A>&nbsp;|&nbsp;<A href="008.html">8</A>&nbsp;|&nbsp;<A href="009.html">9</A>&nbsp;|&nbsp;<A href="010.html">10</A>&nbsp;|&nbsp;<A href="011.html">11</A>&nbsp;|&nbsp;<A href="012.html">12</A>&nbsp;|&nbsp;<A href="013.html">13</A>&nbsp;|&nbsp;<A href="014.html">14</A>&nbsp;|&nbsp;<A href="015.html">15</A>&nbsp;|&nbsp;<A href="016.html">16</A>&nbsp;|&nbsp;<A href="017.html">17</A>&nbsp;|&nbsp;<A href="018.html">18</A>&nbsp;|&nbsp;<A href="019.html">19</A>&nbsp;|&nbsp;<A href="020.html">20</A>&nbsp;|&nbsp;<A href="021.html">21</A>&nbsp;|&nbsp;<A href="022.html">22</A>&nbsp;|&nbsp;<A href="023.html">23</A> &nbsp;]
        <BR>
        <B>License: GPL</B><BR>
        This Manual was created with <A HREF="http://manstyle.sourceforge.net">ManStyle</A>.

@@ -42,6 +42,7 @@ What logic can be analyzed?
       <li>Triregs: trireg</li>
       <li>Registers: reg</li>
       <li>Parameter values</li>
+      <li>String values</li>
       <li>Unary operators: +, -, ~, &, |, ^, ~&, ~|, ~^</li>
       <li>Arithmetic operators: +, -, *, /, %</li>
       <li>Logical operators: &&, ||, !</li>
@@ -73,7 +74,7 @@ What logic cannot be currently analyzed?
   <li>All gate types (i.e., buf, not, or, and, etc.)</li>
   <li>All user defined primitives (UDPs)</li>
   <li>Memories</li>
-  <li>All expressions containing types: integer, time, real, realtime, string</li>
+  <li>All expressions containing types: integer, time, real, realtime</li>
   <li>System task calls (or any $... call)</li>
 </ol>
 </_pg>

@@ -1,8 +1,8 @@
 <!--
 [variables]
 {
-  $page_title = "Reading Line Coverage"
-  $page_title_english = "Reading Line Coverage"
+  $page_title = "Reading the Report"
+  $page_title_english = "Reading the Report"
   $file_prev = "016.html"
   $file_next = "018.html"
   $real_page_number = "17"
@@ -10,110 +10,75 @@
 }
 -->
 
-<_header2>
-Reading Line Coverage
-</_header2>
-
-<_header3>
-Summary Information Description - Module-based
-</_header3>
+<_header1>
+$page_title
+</_header1>
 
 <_pg>
-For module-based reports, the summary table for line metrics includes information for the
-name of each module that was covered and the name of the file in which the module is
-described in.  Lines <a href="example.rptM.html#4">4 through 9</a> of the module-based report
-show what this information looks like in the report.  We have two modules that were scored
-within our DUT:  main and foobar.  The table shows that both modules were described in the
-file "test.v".
-</_pg>
 
-<_header3>
-Summary Information Description - Instance-based
-</_header3>
-
-<_pg>
-For instance-based reports, the summary table for line metrics includes information for
-the Verilog hierarchy pertaining to each instance on the left-hand-side of each row.  Lines
-<a href="example.rptI.html#4">4 through 9</a> of the instance-based report show what this
-information looks like in the report.  In our DUT example, there are two instances within the
-design with the Verilog hierarchies of "main" and "main.bar".
-</_pg>
-
-<_header3>
-Summary Information Description - Both
-</_header3>
-
-<_pg>
-On the right-hand side of each row in the table are the hit, miss and total numbers for the
-line coverage, followed by a calculated percent of the lines that were hit (calculated by
-taking the number of lines hit during simulation divided by the total number of lines that
-Covered simulated).  The hit value indicates how many lines were executed during the
-simulation; the miss value indicates the number of lines not executed during simulation; and
-the total value indicates the total number of lines within the specified module/instance
-that Covered was able to simulate.
 </_pg>
 
 <_pg>
-If the percentage value in the far left of the summary table is 100%, this indicates that all
-lines that Covered was capable of simulating (for the module/instance of this row) were
-executed.  If the value of the percentage is less than 100%, this indicates that some number
-of lines were not executed and full coverage was not achieved for that module/instance.  Note
-that for a module/instance which does not contain any lines in which Covered was able to
-simulate, the values of hit, miss, and total will be 0 while the hit percentage value will
-indicate 100%.
-</_pg>
-
-<_header3>
-Verbose Information Description - Both
-</_header3>
-
-<_pg>
-If the miss value for a particular module was not 0 (indicating that lines were missed during
-simulation) and the '-d v' option was specified on the command-line (specifying to output
-verbose reporting information), the line that was missed during simulation will be output
-below the summary information per module that contained missed lines.  In our sample report,
-there was one line that was missed during simulation (according to the summary output) for
-the module/instance called 'main'.  The line number and Verilog line that was missed is
-output in lines <a href="example.rptM.html#11">11 through 16</a> of the module-based report
-and in lines <a href="example.rptI.html#11">11 through 22</a> of the instance-based report.
+This chapter describes the meanings of the textual report output that Covered generates
+when the report command is issued.  It is well understood by the developers of Covered that
+a code coverage tool is only as good as the output that it generates, and this, of course,
+includes the ability to discern the information provided by the report.
 </_pg>
 
 <_pg>
-If a module does not contain any missed lines and the '-d v' option was specified, no verbose
-output will be displayed for this module.  Likewise, if a module/instance does not contain
-any lines that Covered could execute, no verbose output will be displayed.
-</_pg>
-
-<_header4>
-Important Note
-</_header4>
-
-<_pg>
-The definition of what Covered considers a line is an expression (ex. assignment, conditional, 
-etc.).  If an expression is written in such a way that it consumes multiple file lines, 
-Covered only counts the expression as one line.  The user can assume that if the beginning
-of an expression is labeled as missed, the entire expression was missed (not just the first
-line of the expression).  For example, consider the following code:
+To help describe the various sections of a Covered report, we will use a relatively small
+Verilog file containing our DUT, generating the two main types of reports (module and
+instance) based on the CDD generated for this file.  This example file is provided 
+<a href="example.v.html">here</a>.
 </_pg>
 
 <_pg>
-always @(posedge b)<br>
-$sp2;a &lt;= (b & c) |<br>
-$sp7;(d & e);
+After being compiled and run, this module is scored with the following Covered command:
+</_pg>
+
+<_margin>Score Command</_margin>
+
+<_code>
+covered score -t main -v example.v -o example.cdd -vcd example.vcd
+</_code>
+
+<_pg>
+The module-based verbose report can be viewed in its entirety
+<a href="example.rptM.html">here</a> and is generated with the following command:
+</_pg>
+
+<_margin>Module-base report command</_margin>
+
+<_code>
+covered report -d v example.cdd
+</_code>
+
+<_pg>
+The instance-based verbose report can be viewed in its entirety
+<a href="example.rptI.html">here</a> and is generated with the following command:
+</_pg>
+
+<_margin>Instance-based report command</_margin>
+
+<_code>
+covered report -i -d v example.cdd
+</_code>
+
+<_pg>
+The instructions for analyzing each of the four types of coverage information from the report
+can be found on the following pages.
 </_pg>
 
 <_pg>
-If the expression <code> a &lt;= (b & c) | (d & e);<code> is not executed during simulation,
-Covered will indicate that only one line was missed during execution (not two), and it will
-display the missing line (if verbose reporting is specified with the '-d v' option) as the
-following:
+<ol>
+  <li>$link_to_page_reading_line_coverage</li>
+  <li>$link_to_page_reading_toggle_coverage</li>
+  <li>$link_to_page_reading_combinational_logic_coverage</li>
+  <li>$link_to_page_reading_fsm_coverage</li>
+</ol>
 </_pg>
 
 <_pg>
-$sp5;2:$sp6;assign a &lt;= (b & c) ...
-</_pg>
-
-<_pg>
-The "..." notation at the end of the Verilog output indicates that the expression was a
-multiline expression in the source code but is only considered one line.
+For information on reading race condition information in the report, please
+see the user guide page detailing race conditions and viewing the reports.
 </_pg>

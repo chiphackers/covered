@@ -1,8 +1,8 @@
 <!--
 [variables]
 {
-  $page_title = "Using Covered"
-  $page_title_english = "Using Covered"
+  $page_title = "Getting Started"
+  $page_title_english = "Getting Started"
   $file_prev = "010.html"
   $file_next = "012.html"
   $real_page_number = "11"
@@ -15,201 +15,99 @@ $page_title
 </_header1>
 
 <_header2>
-Work Flow
+What do you need?
 </_header2>
 
 <_pg>
-Covered has three basic commands that it uses for gaining coverage
-information about a design and displaying that information to
-the user.
-</_pg>
-
-<_pg>
-<UL>
- <LI> score
- <LI> merge
- <LI> report
-</UL>
-</_pg>
-
-<_header3>
-Scoring the Design
-</_header3>
-
-<_pg>
-To begin using Covered, you will need to create a special database
-file called a coverage description database (CDD).  Covered 
-uses this file to store coverage-specific information about the
-DUT.  This file is a text-based file that is written in a
-specific format (the format of this file is not discussed in
-this document but can be found in the developer's document) that
-Covered understands.
-</_pg>
-
-<_pg>
-To create the CDD and populate it with the simulation dumpfile
-results, you must use the score (see $link_to_page_the_score_command
-for details) command.  This command parses in the DUT files
-and generates an initial CDD for the design.  This CDD does not
-contain any coverage details but only the design elements that
-Covered needs to gain coverage results.
-</_pg>
-
-<_pg>
-Once the initial CDD has been created, the score command reads
-in the specified VCD dumpfile from the given DUT.  If Covered
-recognizes that the VCD dumpfile does not correspond to the
-DUT that it parses (dumpfile was not generated from the DUT
-specified), an error message is supplied to the user telling
-them this.  Once the dumpfile has been parsed, Covered generates
-a new version of the CDD containing a populated database.  This
-CDD may be merged with another CDD from the same DUT and/or
-reports may be generated from this CDD.
-</_pg>
-
-<_header3>
-Merging CDDs
-</_header3>
-
-<_pg>
-When two or more CDDs have been generated from the same DUT.  It
-is often desirable to merge their contents to see what the total
-coverage is for both simulation runs.  The reasons why merging
-is desirable is that often several tests are written to exercise
-the entire design (not just one).  This makes tests easier to
-write and maintain.  Since, typically, only one test is run
-per simulation run and that test does not fully test the DUT,
-it is necessary to combine the results of the multiple simulations
-to the see the combined effect of the tests on the design.
-This is where merging comes into play.
-</_pg>
-
-<_pg>
-Merging multiple CDDs from the same design is easy with Covered,
-and is accomplished with the merge (see $link_to_page_the_merge_command
-for details) command.  This command reads in two CDDs, merges
-their results and outputs the merged CDD to a different file
-or replaces one of the two CDDs with the results of the merge.
-</_pg>
-
-<_header3>
-Creating Coverage Reports
-</_header3>
-
-<_pg>
-After a CDD is created or merged, the contents of the CDD
-can be extracted and transformed into human readable coverage
-reports with the report (see $link_to_page_the_report_command
-for details) command.  A summary report containing the percentage
-of metrics covered is generated for each module.  Additionally,
-to aid in understanding what and why something was not covered,
-a verbose reporting mechanism exists.  Verbose reporting will
-explicitly point to and describe why something was not fully
-covered for a specific metric.
-</_pg>
-
-<_pg>
-Reports are text-based output that by default are directed
-toward standard output but may, with the use of an option flag,
-be output to a specific file for storage purposes.
+Before Covered can be invoked, you must have a simulatable
+Verilog design and a VCD dumpfile containing information from
+a simulation run of the design that dumps the module(s) that 
+you want to check for coverage.  The VCD dumpfile style was
+chosen due to its universal support by Verilog simulators.
+That is, most, if not all, Verilog simulators have a mechanism
+for generating VCD dumpfiles.  Once you have these two parts,
+you are ready to begin generating coverage results.
 </_pg>
 
 <_header2>
-Covered usage
+Creating a VCD dumpfile
 </_header2>
 
 <_pg>
-Covered is initiated with the following command:
+In Verilog, the way that you create the VCD dumpfile is by
+using two types of Verilog system calls (1) &dol;dumpfile and (2)
+&dol;dumpvars.  The following example shows how to create and 
+generate a dumpfile called "test.vcd" that will dump the submodule
+called "foo".
 </_pg>
+
+<_margin>Example</_margin>
 
 <_code>
-covered (-h | -v | (-D) (-Q) &lt;command&gt; (&lt;command_options&gt;))
+module test;<br>
+<br>
+initial<br>
+$sp begin<br>
+$sp$sp$sp &dol;dumpfile( "test.vcd" );<br>
+$sp$sp$sp &dol;dumpvars( 1, test.foo );<br>
+$sp end<br>
+<br>
+foo_mod foo();<br>
+<br>
+endmodule<br>
+<br>
+module foo_mod;<br>
+<br>
+...<br>
+<br>
+endmodule
 </_code>
 
+<_margin>&dol;dumpfile</_margin>
+
 <_pg>
-The -v command (described below) is mutually exclusive from the rest of the commands and has
-the highest priority.  If Covered is called with this option and any other options, the 
-version will only be displayed.
+The &dol;dumpfile system call takes in one parameter that is
+a string of the name of the dumpfile to create, in this case
+the dumpfile we want to create is called "test.foo".  The purpose
+of this function to create the file (open it for writing) and
+outputs some initialization information to the file.
+</_pg>
+
+<_margin>&dol;dumpvars</_margin>
+
+<_pg>
+The &dol;dumpvars system call takes in two parameters.  The first
+is the number of levels of hierarchy that you want to dump.  In
+the example, we want to only dump the module instance called
+"foo" which is why the dump level was set to 1.  To dump foo and
+the level of submodules just beneath it, you would set the
+dump level to 2 and so on.  To dump a module and all submodules
+beneath it, set the dump level value to 0 (this means the level
+specified and all levels below it).  The second parameter is
+a Verilog hierarchical reference to the top-level module
+instance that you want to dump.
 </_pg>
 
 <_pg>
-The -h command (described below) is mutually exclusive from the rest of the commands and has
-the second highest priority.  If Covered is called with this option and the -v option is
-not specified, the usage information will be displayed to the screen.
+The &dol;dumpfile system call may only be called once within
+a Verilog design.  Typically, it is called in the top-most
+level of the design (or testbench as it is commonly referred
+to as); however, the language allows you to call it from anywhere
+in your design as long as it precedes any calls to &dol;dumpvars.
 </_pg>
 
 <_pg>
-The -Q option suppresses all normal user output from standard output.  The only output that
-will not be suppressed are messages to standard error.  This option may be used with any
-of the Covered commands to achieve this effect.  By default, normal user output is sent
-to standard output.
+The &dol;dumpvars system call may be called as many times as
+necessary to dump the Verilog that you need.  For example, if
+you want to get coverage results for several modules scattered
+around the design, you may make several &dol;dumpvars calls to
+dump exactly those modules that you want to see coverage for.
 </_pg>
 
 <_pg>
-The -D option outputs debug information to standard output.  Its effect overrides the -Q
-option.  This option may be used in conjunction with any other Covered command for the
-purposes of debugging tool failures.  By default, debug mode is turned off.  This command
-should only be used for debugging as it generates an immense amount of output which may hinder
-performance.
+For the most part, that is about all there is to creating
+VCD dumpfiles for the design.  All you need to do is run a simulation
+with these system calls in it and a dumpfile will be generated
+for that run.  Once you have this file, you are ready to see if
+your design is Covered!
 </_pg>
-
-<_header2>
-Covered options
-</_header2>
-
-<_pg>
-The following table describes options that Covered will accept
-apart from its normal commands which are described in the next
-several chapters.
-</_pg>
-
-<_block>
-<table cellspacing=2 cellpadding=4 border=1>
-  <tr>
-    <td colspan=2 class="tableHeader">
-      Options to Covered
-    </td>
-  </tr>
-  <tr>
-    <td>
-      <strong>Option</strong>
-    </td>
-    <td>
-      <strong>Description</strong>
-    <td>
-  </tr>
-  <tr>
-    <td>
-      -Q
-    </td>
-    <td>
-      Quite mode.  Suppresses user output to screen.  Use in conjunction with a command.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      -D
-    </td>
-    <td>
-      Debug mode.  Outputs code debug information to screen.  Use in conjunction with 
-      commands.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      -h
-    </td>
-    <td>
-      Generates usage output to standard output
-    </td>
-  </tr>
-  <tr>
-    <td>
-      -v
-    </td>
-    <td>
-      Outputs current version of Covered
-    </td>
-  </tr>
-</table>
-</_block>
