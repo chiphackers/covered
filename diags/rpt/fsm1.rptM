@@ -118,6 +118,28 @@ FINITE STATE MACHINE COVERAGE RESULTS BY MODULE
                                                                State                             Arc
 Module                    Filename                Hit/Miss/Total    Percent Hit    Hit/Miss/Total    Percent hit
 ----------------------------------------------------------------------------------------------------------------
-  main                    fsm1.v                    3/ ???/ ???      ???%            4/ ???/ ???      ???%
+  main                    fsm1.v                    3/  ? /  ?        ? %            4/  ? /  ?        ? %
+
+Module: main, File: fsm1.v
+--------------------------------------------------------
+FSM input state (state), output state (next_state)
+
+  Hit States
+
+    States
+    ======
+    2'h0
+    2'h2
+    2'h3
+
+  Hit State Transitions
+
+    From State    To State  
+    ==========    ==========
+    2'h0       -> 2'h0      
+    2'h0       -> 2'h2      
+    2'h2       -> 2'h3      
+    2'h2       -> 2'h0      
+
 =================================================================================
 
