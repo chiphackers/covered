@@ -1,10 +1,11 @@
 # This file is used to create snapshots of the Covered tool.  It is used by
-# my home-brewed release script.  Please add any directories/files that need
-# to be removed prior to creating a tarball, one file/directory per line.
+# my home-brewed release script.  Please add any commands that need
+# to be executed prior to creating a tarball, one command per line.
 #
 # All directories within the project will have the CVS directory removed as
 # well as this file before tarball'ing.
 
-./doc/htdocs
-./doc/manstyle
-./covered.dox
+rm -rf ./doc/htdocs
+rm -rf ./doc/manstyle
+rm -f ./covered.dox
+cd ./doc/devel/html; tar cvlf ../../../../devel.tar *; gzip -dc ../../../../devel.tar
