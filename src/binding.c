@@ -119,15 +119,16 @@ void bind_remove( int id ) {
 */
 void bind( int mode ) {
   
-  mod_inst*     modi;          /* Pointer to found module instance     */
-  module*       mod;           /* Pointer to found module              */
-  mod_link*     modl;          /* Pointer to found module link         */
-  signal        sig;           /* Temporary signal used for matching   */
-  sig_link*     sigl;          /* Found signal in module               */
-  char          scope[4096];   /* Scope of signal's parent module      */
-  char          sig_name[256]; /* Name of signal in module             */
-  char          msg[4096];     /* Error message to display to user     */
-  expression*   curr_parent;   /* Pointer to current parent expression */
+  mod_inst*     modi;          /* Pointer to found module instance                         */
+  module*       mod;           /* Pointer to found module                                  */
+  mod_link*     modl;          /* Pointer to found module link                             */
+  signal        sig;           /* Temporary signal used for matching                       */
+  sig_link*     sigl;          /* Found signal in module                                   */
+  char          scope[4096];   /* Scope of signal's parent module                          */
+  char          sig_name[256]; /* Name of signal in module                                 */
+  char          msg[4096];     /* Error message to display to user                         */
+  expression*   curr_parent;   /* Pointer to current parent expression                     */
+  int           tmp_width;     /* Temporary storage of old vector width for multiplication */
 
   while( seb_head != NULL ) {
 
@@ -204,7 +205,18 @@ void bind( int mode ) {
       */
       curr_parent = seb_head->exp->parent->expr;
       while( (curr_parent != NULL) && (curr_parent->value->width == 0) ) {
-        expression_create_value( curr_parent, seb_head->exp->value->width, seb_head->exp->value->lsb );
+        if( curr_parent->value->width == 0 ) {
+          expression_create_value( curr_parent, seb_head->exp->value->width, seb_head->exp->value->lsb );
+        } else if( SUPPL_OP( curr_parent->suppl ) == EXP_OP_MULTIPLY ) {
+          /* 
+           In the case of a MULTIPLY operation, its expression width must be the sum of its
+           children's width.  Remove the current vector and replace it with the appropriately
+           sized vector.
+          */
+          tmp_width = curr_parent->value->width;
+          vector_dealloc( curr_parent->value );
+          expression_create_value( curr_parent, (seb_head->exp->value->width + tmp_width), seb_head->exp->value->lsb );
+        }
         curr_parent = curr_parent->parent->expr;
       }
 

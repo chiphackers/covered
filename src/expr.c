@@ -93,7 +93,7 @@ expression* expression_create( expression* right, expression* left, int op, int 
   }
 
   /* Create value vector */
-  if( op == EXP_OP_MULTIPLY ) {
+  if( (op == EXP_OP_MULTIPLY) && (rwidth > 0) && (lwidth > 0) ) {
 
     /* For multiplication, we need a width the sum of the left and right expressions */
     assert( rwidth < 1024 );
@@ -744,6 +744,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.23  2002/07/03 00:59:14  phase1geo
+/* Fixing bug with conditional statements and other "deep" expression trees.
+/*
 /* Revision 1.22  2002/07/02 19:52:50  phase1geo
 /* Removing unecessary diagnostics.  Cleaning up extraneous output and
 /* generating new documentation from source.  Regression passes at the
