@@ -407,6 +407,8 @@ void arc_add( char** arcs, int width, vector* fr_st, vector* to_st, int hit ) {
 
   if( !vector_is_unknown( fr_st ) && !vector_is_unknown( to_st ) ) {
 
+    // printf( "Adding state transition %d -> %d\n", vector_to_int( fr_st ), vector_to_int( to_st ) );
+
     ptr  = 1;   /* Tell find function to check for a match even if opposite bit is not set. */
     side = arc_find( *arcs, fr_st, to_st, &ptr );
 
@@ -833,11 +835,11 @@ bool arc_db_read( char** arcs, char** line ) {
   suppl     =  (arc_read_get_next_value( line ) & 0xff);
 
   /* Allocate memory */
-  *arcs = (char*)malloc_safe( (arc_get_entry_width( width ) * max_size) + ARC_STATUS_SIZE );
+  *arcs = (char*)malloc_safe( (arc_get_entry_width( width ) * curr_size) + ARC_STATUS_SIZE );
 
   /* Initialize */
   arc_set_width( *arcs, width );
-  arc_set_max_size( *arcs, max_size );
+  arc_set_max_size( *arcs, curr_size );
   arc_set_curr_size( *arcs, curr_size );
   arc_set_suppl( *arcs, suppl );
 
@@ -1096,6 +1098,10 @@ void arc_dealloc( char* arcs ) {
 
 /*
  $Log$
+ Revision 1.17  2003/11/07 05:18:40  phase1geo
+ Adding working code for inline FSM attribute handling.  Full regression fails
+ at this point but the code seems to be working correctly.
+
  Revision 1.16  2003/10/28 13:28:00  phase1geo
  Updates for more FSM attribute handling.  Not quite there yet but full regression
  still passes.

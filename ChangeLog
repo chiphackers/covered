@@ -1,3 +1,101 @@
+2003-11-04 23:34  phase1geo
+
+	* diags/: cdd/assign1.cdd, cdd/unary1.cdd, regress/Makefile,
+	regress/unary1.cfg, rpt/unary1.rptI, rpt/unary1.rptM,
+	verilog/unary1.v: Adding unary1 diagnostic to regression suite to
+	verify correct handling of single bit unary operations.  Updated
+	assign1.cdd for changes to code in this area.
+
+2003-11-04 23:22  phase1geo
+
+	* src/: defines.h, signal.c, sim.c, vector.c: Final fix for bug
+	835366.  Full regression passes once again.
+
+2003-10-31 19:30  phase1geo
+
+	* src/report.c: Adding the -view option to the report command
+	parser.  At the current time, this option will display an error
+	message to standard error if it is found on the command-line.
+
+2003-10-30 23:15  phase1geo
+
+	* diags/: cdd/expand4.4.cdd, regress/Makefile,
+	regress/expand4.4.cfg, rpt/expand4.4.rptI, rpt/expand4.4.rptM,
+	verilog/expand4.4.v: Adding new diagnostic to verify case where
+	expression is in right-hand side of expand operator expression.
+
+2003-10-30 19:38  phase1geo
+
+	* diags/cdd/expand4.1.cdd, diags/cdd/expand4.2.cdd,
+	diags/cdd/expand4.3.cdd, diags/cdd/expand4.cdd,
+	diags/regress/Makefile, diags/regress/expand4.1.cfg,
+	diags/regress/expand4.2.cfg, diags/regress/expand4.3.cfg,
+	diags/rpt/expand4.1.rptI, diags/rpt/expand4.1.rptM,
+	diags/rpt/expand4.2.rptI, diags/rpt/expand4.2.rptM,
+	diags/rpt/expand4.3.rptI, diags/rpt/expand4.3.rptM,
+	diags/rpt/expand4.rptI, diags/rpt/expand4.rptM,
+	diags/verilog/expand4.1.v, diags/verilog/expand4.2.v,
+	diags/verilog/expand4.3.v, diags/verilog/expand4.v, src/expr.c:
+	Adding new expand diagnostics to verify more situations regarding
+	expansion operators.  Fixing expression_create to properly handle
+	all situations of this operator's use.
+
+2003-10-29 23:05  phase1geo
+
+	* src/: expr.c, vector.c: Partial fix to bug 832730.  This doesn't
+	seem to completely fix the parameter case, however.
+
+2003-10-29 22:40  phase1geo
+
+	* diags/: regress/expand4.cfg, verilog/expand4.v: Adding diagnostic
+	to replicate bug 832730.
+
+2003-10-28 07:28  phase1geo
+
+	* src/: arc.c, fsm.c, fsm_arg.c, lexer.l, score.c, vector.c,
+	vector.h: Updates for more FSM attribute handling.  Not quite there
+	yet but full regression still passes.
+
+2003-10-28 07:16  phase1geo
+
+	* diags/: cdd/fsm6.cdd, regress/Makefile, regress/fsm6.cfg,
+	rpt/fsm6.rptI, rpt/fsm6.rptM, verilog/fsm6.v: Adding new fsm6
+	diagnostic which uses the inline Verilog-2001 attribute to inform
+	Covered about FSMs.
+
+2003-10-27 19:09  phase1geo
+
+	* src/: db.c, fsm_arg.c, fsm_var.c, parser.y: Cleaning up
+	unnecessary output.
+
+2003-10-27 18:18  phase1geo
+
+	* src/: Makefile.am, Makefile.in, attr.c, attr.h, db.c, db.h,
+	defines.h, fsm.c, fsm_arg.c, fsm_arg.h, fsm_var.c, fsm_var.h,
+	lexer.l, link.c, link.h, parse.c, parser.y: Adding initial support
+	for inline attributes to specify FSMs.	Still more work to go but
+	full regression still passes at this point.
+
+2003-10-20 16:38  phase1geo
+
+	* src/fsm_var.c: Adding function documentation to functions that
+	were missing it.
+
+2003-10-20 11:05  phase1geo
+
+	* src/signal.c: Fixing bug for older versions of Icarus that does
+	not output the correct bit select in the VCD dumpfile.	Covered
+	will automatically adjust the bit-select range if this occurrence
+	is found in the dumpfile.
+
+2003-10-19 22:44  phase1geo
+
+	* ChangeLog, NEWS, config.h, configure, configure.in,
+	doc/manstyle/012.mas, doc/manstyle/user, doc/user/012.html,
+	doc/user/covered.1, doc/user/index.html: Updating user
+	documentation, NEWS, ChangeLog, configure.in, covered.1 and other
+	files for new development release.
+
 2003-10-19 00:13  phase1geo
 
 	* diags/cdd/fsm5.3.cdd, diags/regress/Makefile,
