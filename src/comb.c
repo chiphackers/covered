@@ -268,16 +268,22 @@ void combination_underline_tree( expression* exp, char*** lines, int* depth, int
           case EXP_OP_LAND     :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "       );  break;
           case EXP_OP_COND     :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s   %s"          );  break;
           case EXP_OP_COND_SEL :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s   %s"          );  break;
-          case EXP_OP_UINV     :  *size = l_size + r_size + 2;  strcpy( code_fmt, " %s "             );  break;
-          case EXP_OP_UAND     :  *size = l_size + r_size + 2;  strcpy( code_fmt, " %s "             );  break;
-          case EXP_OP_UNOT     :  *size = l_size + r_size + 2;  strcpy( code_fmt, " %s "             );  break;
-          case EXP_OP_UOR      :  *size = l_size + r_size + 2;  strcpy( code_fmt, " %s "             );  break;
-          case EXP_OP_UXOR     :  *size = l_size + r_size + 2;  strcpy( code_fmt, " %s "             );  break;
+          case EXP_OP_UINV     :  *size = l_size + r_size + 1;  strcpy( code_fmt, " %s"              );  break;
+          case EXP_OP_UAND     :  *size = l_size + r_size + 1;  strcpy( code_fmt, " %s"              );  break;
+          case EXP_OP_UNOT     :  *size = l_size + r_size + 1;  strcpy( code_fmt, " %s"              );  break;
+          case EXP_OP_UOR      :  *size = l_size + r_size + 1;  strcpy( code_fmt, " %s"              );  break;
+          case EXP_OP_UXOR     :  *size = l_size + r_size + 1;  strcpy( code_fmt, " %s"              );  break;
           case EXP_OP_UNAND    :  *size = l_size + r_size + 2;  strcpy( code_fmt, "  %s"             );  break;
           case EXP_OP_UNOR     :  *size = l_size + r_size + 2;  strcpy( code_fmt, "  %s"             );  break;
           case EXP_OP_UNXOR    :  *size = l_size + r_size + 2;  strcpy( code_fmt, "  %s"             );  break;
-          case EXP_OP_SBIT_SEL :  *size = l_size + r_size + 2;  strcpy( code_fmt, "%s"               );  break;
-          case EXP_OP_MBIT_SEL :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s"               );  break;
+          case EXP_OP_SBIT_SEL :  
+            *size = l_size + r_size + strlen( exp->sig->name ) + 2;  
+            strcpy( code_fmt, "%s" );  
+            break;
+          case EXP_OP_MBIT_SEL :  
+            *size = l_size + r_size + strlen( exp->sig->name ) + 3;  
+            strcpy( code_fmt, "%s" );  
+            break;
           case EXP_OP_EXPAND   :  *size = l_size + r_size + 0;  strcpy( code_fmt, "%s"               );  break;  // ???
           case EXP_OP_CONCAT   :  *size = l_size + r_size + 0;  strcpy( code_fmt, "%s"               );  break;  // ???
           case EXP_OP_PEDGE    :  *size = l_size + r_size + 8;  strcpy( code_fmt, "        %s"       );  break;
@@ -746,6 +752,12 @@ void combination_report( FILE* ofile, bool verbose, bool instance ) {
 
 
 /* $Log$
+/* Revision 1.30  2002/07/10 04:57:07  phase1geo
+/* Adding bits to vector nibble to allow us to specify what type of input
+/* static value was read in so that the output value may be displayed in
+/* the same format (DECIMAL, BINARY, OCTAL, HEXIDECIMAL).  Full regression
+/* passes.
+/*
 /* Revision 1.29  2002/07/10 03:01:50  phase1geo
 /* Added define1.v and define2.v diagnostics to regression suite.  Both diagnostics
 /* now pass.  Fixed cases where constants were not causing proper TRUE/FALSE values

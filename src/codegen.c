@@ -143,11 +143,11 @@ char* codegen_gen_expr( expression* expr, int line ) {
         case EXP_OP_LAND     :  code_size = 7;  strcpy( code_format, "(%s && %s)" );        both = TRUE;   break;
         case EXP_OP_COND     :  code_size = 4;  strcpy( code_format, "%s ? %s" );           both = TRUE;   break;
         case EXP_OP_COND_SEL :  code_size = 4;  strcpy( code_format, "%s : %s" );           both = TRUE;   break;
-        case EXP_OP_UINV     :  code_size = 3;  strcpy( code_format, "~%s " );              both = FALSE;  break;
-        case EXP_OP_UAND     :  code_size = 3;  strcpy( code_format, "&%s " );              both = FALSE;  break;
-        case EXP_OP_UNOT     :  code_size = 3;  strcpy( code_format, "!%s " );              both = FALSE;  break;
-        case EXP_OP_UOR      :  code_size = 3;  strcpy( code_format, "|%s " );              both = FALSE;  break;
-        case EXP_OP_UXOR     :  code_size = 3;  strcpy( code_format, "^%s " );              both = FALSE;  break;
+        case EXP_OP_UINV     :  code_size = 2;  strcpy( code_format, "~%s" );               both = FALSE;  break;
+        case EXP_OP_UAND     :  code_size = 2;  strcpy( code_format, "&%s" );               both = FALSE;  break;
+        case EXP_OP_UNOT     :  code_size = 2;  strcpy( code_format, "!%s" );               both = FALSE;  break;
+        case EXP_OP_UOR      :  code_size = 2;  strcpy( code_format, "|%s" );               both = FALSE;  break;
+        case EXP_OP_UXOR     :  code_size = 2;  strcpy( code_format, "^%s" );               both = FALSE;  break;
         case EXP_OP_UNAND    :  code_size = 3;  strcpy( code_format, "~&%s" );              both = FALSE;  break;
         case EXP_OP_UNOR     :  code_size = 3;  strcpy( code_format, "~|%s" );              both = FALSE;  break;
         case EXP_OP_UNXOR    :  code_size = 3;  strcpy( code_format, "~^%s" );              both = FALSE;  break;
@@ -217,6 +217,12 @@ char* codegen_gen_expr( expression* expr, int line ) {
 
 
 /* $Log$
+/* Revision 1.14  2002/07/10 04:57:07  phase1geo
+/* Adding bits to vector nibble to allow us to specify what type of input
+/* static value was read in so that the output value may be displayed in
+/* the same format (DECIMAL, BINARY, OCTAL, HEXIDECIMAL).  Full regression
+/* passes.
+/*
 /* Revision 1.13  2002/07/09 17:27:25  phase1geo
 /* Fixing default case item handling and in the middle of making fixes for
 /* report outputting.
