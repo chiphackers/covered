@@ -645,6 +645,10 @@ void expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_DELAY :
+        /* If this expression is not the current head, set the start time of delay */
+        if( SUPPL_IS_STMT_HEAD( expr->suppl ) == 0 ) {
+          vector_from_int( expr->left->value, curr_sim_time );
+        }
         intval1 = vector_to_int( expr->left->value );           // Start time of delay
         intval2 = vector_to_int( expr->right->value );          // Number of clocks to delay
         if( ((intval1 + intval2) <= curr_sim_time) || (curr_sim_time == -1) ) {
@@ -741,6 +745,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.18  2002/06/28 03:04:59  phase1geo
+/* Fixing more errors found by diagnostics.  Things are running pretty well at
+/* this point with current diagnostics.  Still some report output problems.
+/*
 /* Revision 1.17  2002/06/28 00:40:37  phase1geo
 /* Cleaning up extraneous output from debugging.
 /*

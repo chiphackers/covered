@@ -1430,7 +1430,9 @@ statement
 		}
 	| event_control statement_opt
 		{
-                  $$ = NULL;
+                  statement* stmt = db_create_statement( $1 );
+                  db_add_expression( $1 );
+                  $$ = stmt;
 		}
 	| lpvalue '=' expression ';'
 		{
@@ -1457,23 +1459,23 @@ statement
 		  db_add_expression( $4 );
                   $$ = stmt;
 		}
-	| lpvalue '=' event_control expression ';'
+	| lpvalue '=' unused_event_control expression ';'
 		{
 		  statement* stmt = db_create_statement( $4 );
 		  db_add_expression( $4 );
                   $$ = stmt;
 		}
-	| lpvalue '=' K_repeat '(' unused_expr ')' event_control unused_expr ';'
+	| lpvalue '=' K_repeat '(' unused_expr ')' unused_event_control unused_expr ';'
 		{
                   $$ = NULL;
 		}
-	| lpvalue K_LE event_control expression ';'
+	| lpvalue K_LE unused_event_control expression ';'
 		{
                   statement* stmt = db_create_statement( $4 );
 		  db_add_expression( $4 );
                   $$ = stmt;
 		}
-	| lpvalue K_LE K_repeat '(' unused_expr ')' event_control unused_expr ';'
+	| lpvalue K_LE K_repeat '(' unused_expr ')' unused_event_control unused_expr ';'
 		{
                   $$ = NULL;
 		}
