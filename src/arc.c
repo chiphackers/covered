@@ -890,6 +890,117 @@ bool arc_db_merge( char* base, char** line, bool same ) {
 
 }
 
+void arc_state_to_string( char* arcs, int index, bool left, char* str ) {
+
+  char tmp[2];       /* Temporary string holder                       */
+  int  val;          /* Temporary storage for integer value of 4-bits */
+  int  str_index;    /* Index to store next character into str        */
+  int  pos;          /* Specifies current bit position to extract     */
+  int  entry_width;  /* Character width to store one arc entry        */
+  int  i;            /* Loop iterator                                 */
+
+  /* Initialize variables */
+  str_index   = ((arc_get_width( arcs ) % 4) == 0) ? (arc_get_width( arcs ) / 4) : ((arc_get_width( arcs ) / 4) + 1);
+  val         = 0;
+  entry_width = arc_get_entry_width( arc_get_width( arcs ) );
+
+  if( left ) {
+    index = (index * entry_width) + ((arc_get_width( arcs ) + ARC_ENTRY_SUPPL_SIZE) / 8) + ARC_STATUS_SIZE;
+    pos   = (arc_get_width( arcs ) + ARC_ENTRY_SUPPL_SIZE) % 8;
+  } else {
+    index = (index * entry_width) + ARC_STATUS_SIZE;
+    pos   = ARC_ENTRY_SUPPL_SIZE;
+  }
+
+  /* Store the NULL character to the string */
+  str[str_index] = '\0';
+  str_index--;
+
+  /* Make a bit-wise extraction of current state */
+  for( i=0; i<arc_get_width( arcs ); i++ ) {
+    val <<= 1;
+    val  |= (int)(arcs[index] >> pos) & 0x1;  
+    if( (i % 4) == 3 ) {
+      printf( "-value: %d\n", val );
+      snprintf( tmp, 2, "%x", val );
+      str[str_index] = tmp[0];
+      str_index--;
+      val = 0;
+    }
+    pos   = (pos + 1) % 8;
+    index = (pos == 0) ? (index + 1) : index;
+  } 
+ 
+  if( (i % 4) != 0 ) {
+    snprintf( tmp, 2, "%x", val );
+    str[str_index] = tmp[0];
+  }
+
+}
+
+void arc_display_states( FILE* ofile, char* fstr, char* arcs, bool hit ) {
+
+  char* str;  /* Holder for string value of current state */
+  int   i;    /* Loop iterator                            */
+  int   j;    /* Loop iterator                            */
+
+  str = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 2 );
+
+  for( i=0; i<arc_get_curr_size( arcs ); i++ ) {
+    for( j=0; j<2; j++ ) {
+
+      /* Check left first */
+      if( j == 0 ) {
+        if( arc_get_entry_suppl( arcs, i, ARC_NOT_UNIQUE_L ) == 0 ) {
+          if( arc_get_entry_suppl( arcs, i, ARC_HIT_F ) == hit ) {
+            arc_state_to_string( arcs, i, TRUE, str );
+            fprintf( ofile, fstr, arc_get_width( arcs ), str );
+          }
+        }
+      } else {
+        if( arc_get_entry_suppl( arcs, i, ARC_NOT_UNIQUE_R ) == 0 ) {
+          if( arc_get_entry_suppl( arcs, i, ARC_HIT_F ) == hit ) {
+            arc_state_to_string( arcs, i, FALSE, str );
+            fprintf( ofile, fstr, arc_get_width( arcs ), str );
+          }
+        }
+      }    
+
+    }
+  }
+
+  free_safe( str );
+
+}
+
+void arc_display_transitions( FILE* ofile, char* fstr, char* arcs, bool hit ) {
+
+  char* strl;
+  char* strr;
+  int   i;     /* Loop iterator */
+
+  strl = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 2 );
+  strr = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 2 );
+
+  for( i=0; i<arc_get_curr_size( arcs ); i++ ) {
+
+    /* Check forward first */
+    if( arc_get_entry_suppl( arcs, i, ARC_HIT_F ) == hit ) {
+      arc_state_to_string( arcs, i, TRUE, strl );
+      arc_state_to_string( arcs, i, FALSE, strr );
+      fprintf( ofile, fstr, strl, strr );
+    }
+
+    if( arc_get_entry_suppl( arcs, i, ARC_HIT_R ) == hit ) {
+      arc_state_to_string( arcs, i, TRUE,  strl );
+      arc_state_to_string( arcs, i, FALSE, strr );
+      fprintf( ofile, fstr, strr, strl );
+    }
+
+  }
+
+}
+
 /*!
  \param arcs  Pointer to state transition arc array.
 
@@ -906,6 +1017,11 @@ void arc_dealloc( char* arcs ) {
 
 /*
  $Log$
+ Revision 1.7  2003/09/13 19:53:59  phase1geo
+ Adding correct way of calculating state and state transition totals.  Modifying
+ FSM summary reporting to reflect these changes.  Also added function documentation
+ that was missing from last submission.
+
  Revision 1.6  2003/09/13 06:05:12  phase1geo
  Adding code to properly count unique hit states.
 

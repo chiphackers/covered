@@ -504,7 +504,7 @@ bool fsm_instance_summary( FILE* ofile, mod_inst* root, char* parent_inst ) {
   }
 
   if( (root->stat->state_total == -1) || (root->stat->arc_total == -1) ) {
-    fprintf( ofile, "  %-43.43s    %4d/ ???/ ???      ???%%         %4d/ ???/ ???      ???%%\n",
+    fprintf( ofile, "  %-43.43s    %4d/  ? /  ?        ? %%         %4d/  ? /  ?        ? %%\n",
            tmpname,
            root->stat->state_hit,
            root->stat->arc_hit );
@@ -527,7 +527,7 @@ bool fsm_instance_summary( FILE* ofile, mod_inst* root, char* parent_inst ) {
     curr = curr->next;
   } 
 
-  return( (state_miss > 0) || (arc_miss > 0) );
+  return( (state_miss != 0) || (arc_miss != 0) );
 
 }
 
@@ -563,10 +563,10 @@ bool fsm_module_summary( FILE* ofile, mod_link* head ) {
 
     state_miss = (head->mod->stat->state_total - head->mod->stat->state_hit);
     arc_miss   = (head->mod->stat->arc_total   - head->mod->stat->arc_hit);
-    miss_found = ((state_miss > 0) || (arc_miss > 0)) ? TRUE : miss_found;
+    miss_found = ((state_miss != 0) || (arc_miss != 0)) ? TRUE : miss_found;
 
     if( (head->mod->stat->state_total == -1) || (head->mod->stat->arc_total == -1) ) {
-      fprintf( ofile, "  %-20.20s    %-20.20s   %4d/ ???/ ???      ???%%         %4d/ ???/ ???      ???%%\n",
+      fprintf( ofile, "  %-20.20s    %-20.20s   %4d/  ? /  ?        ? %%         %4d/  ? /  ?        ? %%\n",
            head->mod->name,
            head->mod->filename,
            head->mod->stat->state_hit,
@@ -593,6 +593,91 @@ bool fsm_module_summary( FILE* ofile, mod_link* head ) {
 
 }
 
+void fsm_display_state_verbose( FILE* ofile, fsm* table ) {
+
+  bool trans_known;
+
+  /* Figure out if transactions were known */
+  trans_known = (arc_get_suppl( table->table, ARC_TRANS_KNOWN ) == 0) ? TRUE : FALSE;
+
+  if( report_covered || trans_known ) {
+    fprintf( ofile, "  Hit States\n\n" );
+  } else {
+    fprintf( ofile, "  Missed States\n\n" );
+  }
+
+  /* Create format string */
+  fprintf( ofile, "    States\n" );
+  fprintf( ofile, "    ======\n" );
+
+  arc_display_states( ofile, "    %d'h%s\n", table->table, (report_covered || trans_known) );
+
+  fprintf( ofile, "\n" );
+
+}
+
+void fsm_display_arc_verbose( FILE* ofile, fsm* table ) {
+
+  bool trans_known;
+  char fstr[100];
+  char tmp[20];
+  int  width;
+  int  val_width;
+  int  len_width;
+
+  /* Figure out if transactions were known */
+  trans_known = (arc_get_suppl( table->table, ARC_TRANS_KNOWN ) == 0) ? TRUE : FALSE;
+
+  if( report_covered || trans_known ) {
+    fprintf( ofile, "  Hit State Transitions\n\n" );
+  } else {
+    fprintf( ofile, "  Missed State Transitions\n\n" );
+  }
+
+  val_width = table->to_sig->value->width;
+
+  /* Calculate width of length string */
+  snprintf( tmp, 20, "%d", val_width );
+  len_width = strlen( tmp );
+
+  /* Create format string to hold largest output value */
+  width = ((val_width % 4) == 0) ? (val_width / 4) : ((val_width / 4) + 1);
+  width = width + len_width + 2;
+  width = (width > 10) ? width : 10;
+  snprintf( fstr, 100, "    %%-%d.%ds    %%-%d.%ds\n", width, width, width, width );
+
+  fprintf( ofile, fstr, "From State", "To State" );
+  fprintf( ofile, fstr, "==========", "==========" );
+
+  /* Get formatting string for states */
+  width = width - len_width - 2;
+  snprintf( fstr, 100, "    %d'h%%-%d.%ds -> %d'h%%-%d.%ds\n", val_width, width, width, val_width, width, width );
+
+  arc_display_transitions( ofile, fstr, table->table, (report_covered || trans_known) );
+
+  fprintf( ofile, "\n" );
+
+}
+
+void fsm_display_verbose( FILE* ofile, fsm_link* head ) {
+
+  while( head != NULL ) {
+
+    fprintf( ofile, "FSM input state (%s), output state (%s)\n\n", head->table->from_sig->name, head->table->to_sig->name );
+
+    fsm_display_state_verbose( ofile, head->table );
+    fsm_display_arc_verbose( ofile, head->table );
+
+    if( head->next != NULL ) {
+      fprintf( ofile, "- - - - - - - - - - - - - - - - - - - - - - - - - - - -\n" );
+    }
+
+    head = head->next;
+
+  }
+
+}
+
 /*!
  \param ofile  Pointer to output file to display report contents to.
  \param root   Pointer to root of instance tree to traverse.
@@ -602,6 +687,32 @@ bool fsm_module_summary( FILE* ofile, mod_link* head ) {
 */
 void fsm_instance_verbose( FILE* ofile, mod_inst* root, char* parent_inst ) {
 
+  mod_inst* curr_inst;      /* Pointer to current instance being evaluated */
+  char      tmpname[4096];  /* Temporary name holder for instance          */
+
+  assert( root != NULL );
+
+  if( strcmp( parent_inst, "*" ) == 0 ) {
+    strcpy( tmpname, root->name );
+  } else {
+    snprintf( tmpname, 4096, "%s.%s", parent_inst, root->name );
+  }
+
+  fprintf( ofile, "\n" );
+  fprintf( ofile, "Module: %s, File: %s, Instance: %s\n",
+           root->mod->name,
+           root->mod->filename,
+           tmpname );
+  fprintf( ofile, "--------------------------------------------------------\n" );
+
+  fsm_display_verbose( ofile, root->mod->fsm_head );
+
+  curr_inst = root->child_head;
+  while( curr_inst != NULL ) {
+    fsm_instance_verbose( ofile, curr_inst, tmpname );
+    curr_inst = curr_inst->next;
+  }
+
 }
 
 /*! 
@@ -610,7 +721,26 @@ void fsm_instance_verbose( FILE* ofile, mod_inst* root, char* parent_inst ) {
 
  Generates a module verbose report of the current FSM states and arcs hit during simulation.
 */
-void fsm_module_verbose( FILE* ofile, mod_link* mod ) {
+void fsm_module_verbose( FILE* ofile, mod_link* head ) {
+
+  while( head != NULL ) {
+
+    if( ((head->mod->stat->line_hit < head->mod->stat->line_total) && !report_covered) ||
+        ((head->mod->stat->line_hit > 0) && report_covered) ) {
+
+      fprintf( ofile, "\n" );
+      fprintf( ofile, "Module: %s, File: %s\n",
+               head->mod->name,
+               head->mod->filename );
+      fprintf( ofile, "--------------------------------------------------------\n" );
+
+      fsm_display_verbose( ofile, head->mod->fsm_head );
+
+    }
+
+    head = head->next;
+
+  }
 
 }
 
@@ -694,6 +824,11 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.10  2003/09/13 19:53:59  phase1geo
+ Adding correct way of calculating state and state transition totals.  Modifying
+ FSM summary reporting to reflect these changes.  Also added function documentation
+ that was missing from last submission.
+
  Revision 1.9  2003/09/13 02:59:34  phase1geo
  Fixing bugs in arc.c created by extending entry supplemental field to 5 bits
  from 3 bits.  Additional two bits added for calculating unique states.

@@ -31,11 +31,22 @@ bool arc_db_read( char** arcs, char** line );
 /*! \brief Merges contents of arc table from line to specified base array. */
 bool arc_db_merge( char* arcs, char** line, bool same );
 
+/*! \brief Outputs arc array state values to specified output stream. */
+void arc_display_states( FILE* ofile, char* fstr, char* arcs, bool hit );
+
+/*! \brief Outputs arc array state transition values to specified output stream. */
+void arc_display_transitions( FILE* ofile, char* fstr, char* arcs, bool hit );
+
 /*! \brief Deallocates memory for specified arcs array. */
 void arc_dealloc( char* arcs );
 
 /*
  $Log$
+ Revision 1.5  2003/09/13 19:53:59  phase1geo
+ Adding correct way of calculating state and state transition totals.  Modifying
+ FSM summary reporting to reflect these changes.  Also added function documentation
+ that was missing from last submission.
+
  Revision 1.4  2003/09/13 02:59:34  phase1geo
  Fixing bugs in arc.c created by extending entry supplemental field to 5 bits
  from 3 bits.  Additional two bits added for calculating unique states.
