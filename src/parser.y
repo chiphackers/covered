@@ -406,6 +406,14 @@ static_expr_primary
     {
       $$ = NULL;
     }
+  | REALTIME
+    {
+      $$ = NULL;
+    }
+  | UNUSED_REALTIME
+    {
+      $$ = NULL;
+    }
   | IDENTIFIER
     {
       static_expr* tmp;
@@ -1325,6 +1333,22 @@ module_item
         free_safe( $2 );
       }
       VLerror( "Invalid variable list in port declaration" );
+    }
+  | K_pullup gate_instance_list ';'
+    {
+      str_link_delete_list( $2 );
+    }
+  | K_pulldown gate_instance_list ';'
+    {
+      str_link_delete_list( $2 );
+    }
+  | K_pullup '(' dr_strength1 ')' gate_instance_list ';'
+    {
+      str_link_delete_list( $5 );
+    }
+  | K_pulldown '(' dr_strength0 ')' gate_instance_list ';'
+    {
+      str_link_delete_list( $5 );
     }
   | block_item_decl
   | K_defparam defparam_assign_list ';'
@@ -2292,7 +2316,7 @@ delay_value
     {
       expression*  tmp;
       static_expr* se = $1;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && (se != NULL) ) {
         if( se->exp == NULL ) {
           tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
           vector_init( tmp->value, (nibble*)malloc_safe( sizeof( nibble ) * VECTOR_SIZE( 32 ) ), 32, 0 );  
@@ -2342,15 +2366,19 @@ delay_value
                     (delay_expr_type == DELAY_EXPR_MAX) );
             break;
         }
-        if( se->exp == NULL ) {
-          tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
-          vector_init( tmp->value, (nibble*)malloc_safe( sizeof( nibble ) * VECTOR_SIZE( 32 ) ), 32, 0 );  
-          vector_from_int( tmp->value, se->num );
+        if( se != NULL ) {
+          if( se->exp == NULL ) {
+            tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
+            vector_init( tmp->value, (nibble*)malloc_safe( sizeof( nibble ) * VECTOR_SIZE( 32 ) ), 32, 0 );  
+            vector_from_int( tmp->value, se->num );
+          } else {
+            tmp = se->exp;
+            free_safe( se );
+          }
+          $$ = tmp;
         } else {
-          tmp = se->exp;
-          free_safe( se );
+          $$ = NULL;
         }
-        $$ = tmp;
       } else {
         $$ = NULL;
       }
