@@ -117,26 +117,26 @@ extern char user_msg[USER_MSG_LENGTH];
 
 /*!
  \param exp   Pointer to root expression of expression tree for this statement.
- \param head  Pointer to head of wait event signal list.
- \param tail  Pointer to tail of wait event signal list.
   
  \return Returns pointer to the newly created statement.
 
  Creates a new statement structure from heap memory and initializes it with the
  specified parameter information.
 */
-statement* statement_create( expression* exp, sig_link* head, sig_link* tail ) {
+statement* statement_create( expression* exp ) {
 
-  statement* stmt;   /* Pointer to newly created statement */
+  statement* stmt;  /* Pointer to newly created statement */
 
   stmt                    = (statement*)malloc_safe( sizeof( statement ) );
   stmt->exp               = exp;
   stmt->exp->parent->stmt = stmt;
   stmt->exp->suppl        = stmt->exp->suppl | (0x1 << SUPPL_LSB_ROOT);
-  stmt->wait_sig_head     = head;
-  stmt->wait_sig_tail     = tail;
+  stmt->wait_sig_head     = NULL;
+  stmt->wait_sig_tail     = NULL;
   stmt->next_true         = NULL;
   stmt->next_false        = NULL;
+
+  expression_get_wait_sig_list( exp, &(stmt->wait_sig_head), &(stmt->wait_sig_tail) );
 
   return( stmt );
 
@@ -216,8 +216,6 @@ void statement_stack_compare( statement* stmt ) {
 */
 void statement_db_write( statement* stmt, FILE* ofile, char* scope ) {
 
-  sig_link* curr_sig;  /* Pointer to current signal link */
-
   assert( stmt != NULL );
 
 #ifdef EFFICIENCY_CODE
@@ -254,13 +252,6 @@ void statement_db_write( statement* stmt, FILE* ofile, char* scope ) {
     fprintf( ofile, " %d", stmt->next_false->exp->id );
   }
 
-  /* Print out all wait event signal names */
-  curr_sig = stmt->wait_sig_head;
-  while( curr_sig != NULL ) {
-    fprintf( ofile, " %s", curr_sig->sig->name );
-    curr_sig = curr_sig->next;
-  }
-
   fprintf( ofile, "\n" );
 
 }
@@ -287,8 +278,6 @@ bool statement_db_read( char** line, module* curr_mod, int read_mode ) {
   exp_link*  expl;           /* Pointer to found expression link                                       */
   stmt_link* stmtl;          /* Pointer to found statement link                                        */
   int        chars_read;     /* Number of characters read from line                                    */
-  sig_link*  sigl;           /* Pointer to found signal link                                           */     
-  signal     sig;            /* Temporary signal for searching purposes                                */
 
   if( sscanf( *line, "%d %s %d %d%n", &id, name, &true_id, &false_id, &chars_read ) == 4 ) {
 
@@ -305,7 +294,7 @@ bool statement_db_read( char** line, module* curr_mod, int read_mode ) {
       tmpexp.id = id;
       expl = exp_link_find( &tmpexp, curr_mod->exp_head );
 
-      stmt = statement_create( expl->exp, NULL, NULL );
+      stmt = statement_create( expl->exp );
 
       /* Find and link next_true */
       if( true_id == id ) {
@@ -345,18 +334,6 @@ bool statement_db_read( char** line, module* curr_mod, int read_mode ) {
 
       /* Possibly add statement to presimulation queue */
       sim_add_stmt_to_queue( stmt );
-
-      /* Finally, read in all wait event signals */
-      sig.name = name;
-      while( (sscanf( *line, "%s%n", sig.name, &chars_read ) == 1) && retval ) {
-        *line = *line + chars_read;
-        if( (sigl = sig_link_find( &sig, curr_mod->sig_head )) == NULL ) {
-          print_output( "Internal error:  statement in database written before its module", FATAL );
-          retval = FALSE;
-        } else {
-          sig_link_add( sigl->sig, &(stmt->wait_sig_head), &(stmt->wait_sig_tail) ); 
-        }
-      }
 
     }
 
@@ -617,6 +594,13 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.41  2003/08/05 20:25:05  phase1geo
+ Fixing non-blocking bug and updating regression files according to the fix.
+ Also added function vector_is_unknown() which can be called before making
+ a call to vector_to_int() which will eleviate any X/Z-values causing problems
+ with this conversion.  Additionally, the real1.1 regression report files were
+ updated.
+
  Revision 1.40  2003/02/08 21:54:07  phase1geo
  Fixing memory problems with db_remove_statement function.  Updating comments
  in statement.c to explain some of the changes necessary to properly remove

@@ -4,12 +4,38 @@
  \date     3/4/2002
  
  \par Binding
- Binding is the process of setting pointers in signals and expressions to
- point to each other.  These pointers are required for scoring purposes.
- Binding is required for two purposes:
-   -# The signal that is being bound may not have been parsed (hierarchical
-      referencing allows for this).
-   -# An expression does not have a pointer to a signal but rather its vector.
+ When a input, output, inout, reg, wire, etc. is parsed in a module a new signal
+ structure is created and is placed into the current module's signal list.  However,
+ the expression list of the newly created signal is initially empty (because we have
+ not encountered any expressions that use the signal yet).  Each signal contains a
+ list of expressions that the signal is a part of so that when the signal changes its
+ value during simulation time, it can notify the expressions that it is a part of that
+ they need to be re-evaluated.
+
+ \par
+ Additionally, the expression structure contains a pointer to the signal from which
+ it receives its value.  However, not all expressions point to signals.  Only the
+ expressions which have an operation type of EXP_OP_SIG, EXP_OP_SBIT_SEL, and
+ EXP_OP_MBIT_SEL have pointers to signals.  These pointers are used for quick
+ retrieval of the signal name when outputting expressions.
+
+ \par
+ Because both signals and expressions point to each other, we say that signals and
+ expressions need to be bound to each other.  The process of binding takes place at
+ two different points in the scoring process:
+   -# When an expression is parsed and the signal that it needs to point to is
+      a signal that is local to the current module that the expression exists in.
+      If the signal is not local (a hierarchical reference), we cannot bind at this
+      time because the signal may be referring to a signal in a module which has not
+      been parsed yet.  Because of this, binding also occurs in the second point of
+      the score command.
+   -# After all parsing has been performed, all signals and expressions which have
+      not been bound at point 1 are now bound.
+
+ \par Implicit Signal Creation
+ The Verilog 
+
+
 */
 
 #ifdef HAVE_CONFIG_H
@@ -297,6 +323,9 @@ void bind() {
 
 /* 
  $Log$
+ Revision 1.22  2003/02/18 13:35:51  phase1geo
+ Updates for RedHat8.0 compilation.
+
  Revision 1.21  2003/01/05 22:25:22  phase1geo
  Fixing bug with declared integers, time, real, realtime and memory types where
  they are confused with implicitly declared signals and given 1-bit value types.

@@ -51,7 +51,7 @@ expression* db_create_expression( expression* right, expression* left, int op, i
 void db_add_expression( expression* root );
 
 /*! \brief Creates new statement expression from specified information.  Called by parser. */
-statement* db_create_statement( expression* exp, sig_link** head, sig_link** tail );
+statement* db_create_statement( expression* exp );
 
 /*! \brief Adds specified statement to current module's statement list.  Called by parser. */
 void db_add_statement( statement* stmt, statement* start );
@@ -92,6 +92,13 @@ void db_do_timestep( int time );
 
 /*
  $Log$
+ Revision 1.29  2003/08/05 20:25:05  phase1geo
+ Fixing non-blocking bug and updating regression files according to the fix.
+ Also added function vector_is_unknown() which can be called before making
+ a call to vector_to_int() which will eleviate any X/Z-values causing problems
+ with this conversion.  Additionally, the real1.1 regression report files were
+ updated.
+
  Revision 1.28  2003/02/13 23:44:08  phase1geo
  Tentative fix for VCD file reading.  Not sure if it works correctly when
  original signal LSB is != 0.  Icarus Verilog testsuite passes.

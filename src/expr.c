@@ -425,6 +425,51 @@ int expression_get_id( expression* expr ) {
 
 }
 
+void expression_get_wait_sig_list_helper( expression* expr, sig_link** head, sig_link** tail ) {
+
+  if( expr != NULL ) {
+
+    if( SUPPL_OP( expr->suppl ) == EXP_OP_SIG ) {
+ 
+      assert( expr->sig != NULL );
+      sig_link_add( expr->sig, head, tail );
+
+    } else {
+
+      if( (SUPPL_OP( expr->suppl ) == EXP_OP_SBIT_SEL) ||
+          (SUPPL_OP( expr->suppl ) == EXP_OP_MBIT_SEL) ) {
+        assert( expr->sig != NULL );
+        sig_link_add( expr->sig, head, tail );
+      }
+
+      expression_get_wait_sig_list_helper( expr->right, head, tail );
+      expression_get_wait_sig_list_helper( expr->left,  head, tail );
+
+    }
+
+  }
+
+}
+
+void expression_get_wait_sig_list( expression* expr, sig_link** head, sig_link** tail ) {
+
+  if( (expr != NULL) &&
+      ((SUPPL_OP( expr->suppl ) == EXP_OP_EOR)   ||
+       (SUPPL_OP( expr->suppl ) == EXP_OP_PEDGE) ||
+       (SUPPL_OP( expr->suppl ) == EXP_OP_NEDGE) ||
+       (SUPPL_OP( expr->suppl ) == EXP_OP_AEDGE)) ) {
+
+    expression_get_wait_sig_list_helper( expr, head, tail );
+
+  } else {
+
+    *head = NULL;
+    *tail = NULL;
+
+  }
+
+}
+
 /*!
  \param expr   Pointer to expression to write to database file.
  \param file   Pointer to database file to write to.
@@ -1241,6 +1286,13 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.75  2003/08/05 20:25:05  phase1geo
+ Fixing non-blocking bug and updating regression files according to the fix.
+ Also added function vector_is_unknown() which can be called before making
+ a call to vector_to_int() which will eleviate any X/Z-values causing problems
+ with this conversion.  Additionally, the real1.1 regression report files were
+ updated.
+
  Revision 1.74  2003/02/26 23:00:46  phase1geo
  Fixing bug with single-bit parameter handling (param4.v diagnostic miscompare
  between Linux and Irix OS's).  Updates to testsuite and new diagnostic added

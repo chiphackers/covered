@@ -28,6 +28,9 @@ void expression_resize( expression* expr, bool recursive );
 /*! \brief Returns expression ID of this expression. */
 int expression_get_id( expression* expr );
 
+/*! \brief Finds all wait event signals in specified expression */
+void expression_get_wait_sig_list( expression* expr, sig_link** head, sig_link** tail );
+
 /*! \brief Writes this expression to the specified database file. */
 void expression_db_write( expression* expr, FILE* file, char* scope );
 
@@ -58,6 +61,11 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.19  2002/12/30 05:31:33  phase1geo
+ Fixing bug in module merge for reports when parameterized modules are merged.
+ These modules should not output an error to the user when mismatching modules
+ are found.
+
  Revision 1.18  2002/11/27 03:49:20  phase1geo
  Fixing bugs in score and report commands for regression.  Finally fixed
  static expression calculation to yield proper coverage results for constant

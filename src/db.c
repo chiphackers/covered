@@ -781,27 +781,21 @@ void db_add_expression( expression* root ) {
 }
 
 /*!
- \param exp   Pointer to associated "root" expression.
- \param head  Pointer to head of wait event signal list.
- \param tail  Pointer to tail of wait event signal list.
+ \param exp  Pointer to associated "root" expression.
 
  \return Returns pointer to created statement.
 
  Creates an statement structure and adds created statement to current
  module's statement list.
 */
-statement* db_create_statement( expression* exp, sig_link** head, sig_link** tail ) {
+statement* db_create_statement( expression* exp ) {
 
   statement* stmt;  /* Pointer to newly created statement */
 
   snprintf( user_msg, USER_MSG_LENGTH, "In db_create_statement, id: %d, line: %d", exp->id, exp->line );
   print_output( user_msg, DEBUG );
 
-  stmt = statement_create( exp, *head, *tail );
-
-  /* Clear head and tail pointers for next statement */
-  *head = NULL;
-  *tail = NULL;
+  stmt = statement_create( exp );
 
   return( stmt );
 
@@ -1217,6 +1211,10 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.93  2003/08/07 15:41:43  phase1geo
+ Adding -ts option to score command to allow the current timestep to be
+ output during the simulation phase.
+
  Revision 1.92  2003/08/05 20:25:05  phase1geo
  Fixing non-blocking bug and updating regression files according to the fix.
  Also added function vector_is_unknown() which can be called before making

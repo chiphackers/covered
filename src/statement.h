@@ -12,7 +12,7 @@
 
 
 /*! \brief Creates new statement structure. */
-statement* statement_create( expression* exp, sig_link* head, sig_link* tail );
+statement* statement_create( expression* exp );
 
 /*! \brief Writes specified statement to the specified output file. */
 void statement_db_write( statement* stmt, FILE* ofile, char* scope );
@@ -35,6 +35,13 @@ void statement_dealloc( statement* stmt );
 
 /*
  $Log$
+ Revision 1.14  2003/08/05 20:25:05  phase1geo
+ Fixing non-blocking bug and updating regression files according to the fix.
+ Also added function vector_is_unknown() which can be called before making
+ a call to vector_to_int() which will eleviate any X/Z-values causing problems
+ with this conversion.  Additionally, the real1.1 regression report files were
+ updated.
+
  Revision 1.13  2002/11/05 00:20:08  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.

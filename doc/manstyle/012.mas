@@ -175,6 +175,16 @@ coverage.
   </tr>
   <tr>
     <td>
+      -t &lt;number&gt;
+    </td>
+    <td>
+      When scoring occurs, this option allows the user to see how far the simulator
+      has progressed by outputting the current timestep to standard output.  The
+      value of &lt;number&gt; specifies how many timesteps are allowed to be simulated
+      before outputting the current timestep (results in less calls to output stream).
+    </td>
+  <tr>
+    <td>
       -h
     </td>
     <td>
