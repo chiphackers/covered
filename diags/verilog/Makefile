@@ -11,9 +11,9 @@ COVERED       = $(COVERED_SRC)/covered
 # COVERED_FLAGS = -q
 COVERED_FLAGS = 
 
-IVERILOG       = iverilog
-IVERILOG_FLAGS =
-IVERILOG_EXEC  = a.out
+VERILOG       = iverilog
+VERILOG_FLAGS =
+VERILOG_EXEC  = a.out
 
 LOGFILE = regress.log
 
@@ -22,9 +22,9 @@ DIAGLIST = addsr \
 
 regress:	$(COVERED) clean $(DIAGLIST)
 
-$(DIAGLIST):	
-	$(IVERILOG) $(IVERILOG_FLAGS) $@.v
-	./$(IVERILOG_EXEC)
+$(DIAGLIST):
+	$(VERILOG) $(VERILOG_FLAGS) $@.v
+	./$(VERILOG_EXEC)
 	$(COVERED) score -t main -vcd $@.vcd $(COVERED_FLAGS) -o $@.db -v $@.v
 
 $(COVERED):
