@@ -1,17 +1,21 @@
 3 main main param3.1.v
+1 #bar1 main 32 0 0,0,0,0,0,0,0,0
+1 #bar2 main 32 0 1,0,0,0,0,0,0,0
 1 y main 1 0 100aa
 1 x main 1 0 111aa
 3 foo main.bar1 param3.1.v
-2 5 main.bar1 28 1000 0 0 32 0 0,0,0,0,0,0,0,0
+2 5 main.bar1 28 132 0 0 32 0 aa,aa,aa,aa,aa,aa,aa,aa
 2 4 main.bar1 28 3001 0 0 
 2 6 main.bar1 28 3f82 5 4 32 0 f11aa,f00aa,f00aa,f00aa,f00aa,f00aa,f00aa,f00aa
+1 #alpha main.bar1 32 0 0,0,0,0,0,0,0,0 5
 1 b main.bar1 1 0 111aa 4
 1 a main.bar1 1 0 111aa
 4 6 main.bar1 6 6
 3 foo main.bar2 param3.1.v
-2 5 main.bar2 28 3000 0 0 32 0 1,0,0,0,0,0,0,0
+2 5 main.bar2 28 132 0 0 32 0 aa,aa,aa,aa,aa,aa,aa,aa
 2 4 main.bar2 28 1001 0 0 
 2 6 main.bar2 28 2f82 5 4 32 0 f00aa,f00aa,f00aa,f00aa,f00aa,f00aa,f00aa,f00aa
+1 #alpha main.bar2 32 0 1,0,0,0,0,0,0,0 5
 1 b main.bar2 1 0 100aa 4
 1 a main.bar2 1 0 100aa
 4 6 main.bar2 6 6

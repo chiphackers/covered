@@ -32,6 +32,7 @@ char* codegen_gen_expr( expression* expr, int line ) {
   int   code_size;       /* Number of bytes wide my_code is                                           */
   char  code_format[20]; /* Format for creating my_code string                                        */
   bool  both;            /* Specifies if both expressions or just right expression should be output   */
+  char* tmpname;         /* Temporary signal name holder                                              */
 
   if( (expr != NULL) && ((line == -1) || (expr->line == line)) ) {
 
@@ -78,38 +79,60 @@ char* codegen_gen_expr( expression* expr, int line ) {
 
       }
 
-    } else if( SUPPL_OP( expr->suppl ) == EXP_OP_SIG ) {
+    } else if( (SUPPL_OP( expr->suppl ) == EXP_OP_SIG) ||               (SUPPL_OP( expr->suppl ) == EXP_OP_PARAM) ) {
 
       assert( expr->sig != NULL );
 
-      switch( strlen( expr->sig->name ) ) {
-        case 0 :  assert( strlen( expr->sig->name ) > 0 );  break;
+      if( expr->sig->name[0] == '#' ) {
+        tmpname = expr->sig->name + 1;
+      } else {
+        tmpname = expr->sig->name;
+      }
+
+      switch( strlen( tmpname ) ) {
+        case 0 :  assert( strlen( tmpname ) > 0 );  break;
         case 1 :
           my_code = (char*)malloc_safe( 4 );
-          snprintf( my_code, 4, " %s ", expr->sig->name );
+          snprintf( my_code, 4, " %s ", tmpname );
           break;
         case 2 :
           my_code = (char*)malloc_safe( 4 );
-          snprintf( my_code, 4, " %s", expr->sig->name );
+          snprintf( my_code, 4, " %s", tmpname );
           break;
         default :
-          my_code = strdup( expr->sig->name );
+          my_code = strdup( tmpname );
           break;
       }
 
-    } else if( SUPPL_OP( expr->suppl ) == EXP_OP_SBIT_SEL ) {
+    } else if( (SUPPL_OP( expr->suppl ) == EXP_OP_SBIT_SEL) ||
+               (SUPPL_OP( expr->suppl ) == EXP_OP_PARAM_SBIT) ) {
 
       assert( expr->sig != NULL );
-      code_size = strlen( expr->sig->name ) + strlen( right_code ) + 3;
-      my_code   = (char*)malloc_safe( code_size );
-      snprintf( my_code, code_size, "%s[%s]", expr->sig->name, right_code );
 
-    } else if( SUPPL_OP( expr->suppl ) == EXP_OP_MBIT_SEL ) {
+      if( expr->sig->name[0] == '#' ) {
+        tmpname = expr->sig->name + 1;
+      } else {
+        tmpname = expr->sig->name;
+      }
+
+      code_size = strlen( tmpname ) + strlen( right_code ) + 3;
+      my_code   = (char*)malloc_safe( code_size );
+      snprintf( my_code, code_size, "%s[%s]", tmpname, right_code );
+
+    } else if( (SUPPL_OP( expr->suppl ) == EXP_OP_MBIT_SEL) ||
+               (SUPPL_OP( expr->suppl ) == EXP_OP_PARAM_MBIT) ) {
 
       assert( expr->sig != NULL );
-      code_size = strlen( expr->sig->name ) + strlen( left_code ) + strlen( right_code ) + 4;
+
+      if( expr->sig->name[0] == '#' ) {
+        tmpname = expr->sig->name + 1;
+      } else {
+        tmpname = expr->sig->name;
+      }
+
+      code_size = strlen( tmpname ) + strlen( left_code ) + strlen( right_code ) + 4;
       my_code   = (char*)malloc_safe( code_size );
-      snprintf( my_code, code_size, "%s[%s:%s]", expr->sig->name, left_code, right_code );
+      snprintf( my_code, code_size, "%s[%s:%s]", tmpname, left_code, right_code );
 
     } else if( SUPPL_OP( expr->suppl ) == EXP_OP_DEFAULT ) {
 
@@ -218,6 +241,11 @@ char* codegen_gen_expr( expression* expr, int line ) {
 
 
 /* $Log$
+/* Revision 1.17  2002/07/16 00:05:31  phase1geo
+/* Adding support for replication operator (EXPAND).  All expressional support
+/* should now be available.  Added diagnostics to test replication operator.
+/* Rewrote binding code to be more efficient with memory use.
+/*
 /* Revision 1.16  2002/07/14 05:10:42  phase1geo
 /* Added support for signal concatenation in score and report commands.  Fixed
 /* bugs in this code (and multiplication).

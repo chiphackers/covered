@@ -320,8 +320,10 @@ void instance_db_write( mod_inst* root, FILE* file, char* scope, bool parse_mode
 
   assert( scope != NULL );
 
+  curr = parse_mode ? root : NULL;
+
   /* Display root module */
-  module_db_write( root->mod, scope, file, root );
+  module_db_write( root->mod, scope, file, curr );
 
   /* Display children */
   curr = root->child_head;
@@ -439,6 +441,11 @@ void instance_dealloc( mod_inst* root, char* scope ) {
 }
 
 /* $Log$
+/* Revision 1.17  2002/09/25 05:36:08  phase1geo
+/* Initial version of parameter support is now in place.  Parameters work on a
+/* basic level.  param1.v tests this basic functionality and param1.cdd contains
+/* the correct CDD output from handling parameters in this file.  Yeah!
+/*
 /* Revision 1.16  2002/09/25 02:51:44  phase1geo
 /* Removing need of vector nibble array allocation and deallocation during
 /* expression resizing for efficiency and bug reduction.  Other enhancements

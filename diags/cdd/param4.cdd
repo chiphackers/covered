@@ -1,7 +1,11 @@
 3 main main param4.v
-2 4 main 9 2f80 0 0 16 0 300015,14,11,10
-2 6 main 10 3f80 0 0 1 16 300015
-2 7 main 11 2f80 0 0 32 0 300015,14,11,10,5,4,1,0
+2 3 main 9 1000 0 0 32 0 0,0,0,0,0,0,0,0
+2 2 main 9 2000 0 0 32 0 55,0,0,0,0,0,0,0
+2 4 main 9 2fb4 3 2 16 0 3000aa,aa,aa,aa
+2 5 main 10 2000 0 0 32 0 0,1,0,0,0,0,0,0
+2 6 main 10 3fb3 5 0 1 16 3000aa
+2 7 main 11 2fb2 0 0 32 0 3000aa,aa,aa,aa,aa,aa,aa,aa
+1 #vec main 32 0 300015,14,11,10,5,4,1,0 4 6 7
 1 a main 16 0 f00aa,f00aa,f00aa,f00aa
 1 b main 1 0 100aa
 1 c main 32 0 f00aa,f00aa,f00aa,f00aa,f00aa,f00aa,f00aa,f00aa

@@ -87,7 +87,7 @@ void signal_db_write( signal* sig, FILE* file, char* modname ) {
 
   // printf( "Writing signal:  %d %s %s ", DB_TYPE_SIGNAL, sig->name, modname );
 
-  vector_db_write( sig->value, file, FALSE );
+  vector_db_write( sig->value, file, (sig->name[0] == '#') );
 
   curr = sig->exp_head;
   while( curr != NULL ) {
@@ -170,34 +170,43 @@ bool signal_db_read( char** line, module* curr_mod ) {
 	   If expression is a signal holder, we need to set the expression's vector to point
 	   to our vector and set its signal pointer to point to us.
 	  */
-          if( (SUPPL_OP( expl->exp->suppl ) == EXP_OP_SIG      ) ||
-              (SUPPL_OP( expl->exp->suppl ) == EXP_OP_SBIT_SEL ) ||
-              (SUPPL_OP( expl->exp->suppl ) == EXP_OP_MBIT_SEL ) ) {
+          switch( SUPPL_OP( expl->exp->suppl ) ) {
 
-            if( SUPPL_OP( expl->exp->suppl ) == EXP_OP_SIG ) {
+            case EXP_OP_SIG   :
+            case EXP_OP_PARAM :
               expl->exp->value->value = sig->value->value;
               expl->exp->value->width = sig->value->width;
               expl->exp->value->lsb   = 0;
               expl->exp->sig          = sig;
-            } else if( SUPPL_OP( expl->exp->suppl ) == EXP_OP_SBIT_SEL ) {
+              break;
+
+            case EXP_OP_SBIT_SEL   :
+            case EXP_OP_PARAM_SBIT :
               expl->exp->value->value = sig->value->value;
               expl->exp->value->width = 1;
               expl->exp->suppl        = expl->exp->suppl | ((sig->value->lsb & 0xffff) << SUPPL_LSB_SIG_LSB);
               expl->exp->sig          = sig;
-            } else if( SUPPL_OP( expl->exp->suppl ) == EXP_OP_MBIT_SEL ) {
+              break;
+
+            case EXP_OP_MBIT_SEL   :
+            case EXP_OP_PARAM_MBIT :
               expl->exp->value->value = sig->value->value;
               expl->exp->suppl        = expl->exp->suppl | ((sig->value->lsb & 0xffff) << SUPPL_LSB_SIG_LSB);
               expl->exp->sig          = sig;
-            }
+              break;
+
+            default :  break;
 
           }
 
         } else {
 
-          snprintf( msg, 4096, "Expression %d not found for signal %s", texp.id, sig->name );
-	  print_output( msg, FATAL );
-	  retval = FALSE;
-          exit( 1 );
+          if( name[0] != '#' ) {
+            snprintf( msg, 4096, "Expression %d not found for signal %s", texp.id, sig->name );
+	    print_output( msg, FATAL );
+	    retval = FALSE;
+            exit( 1 );
+          }
 
         }
 
@@ -365,6 +374,11 @@ void signal_dealloc( signal* sig ) {
 }
 
 /* $Log$
+/* Revision 1.17  2002/09/29 02:16:51  phase1geo
+/* Updates to parameter CDD files for changes affecting these.  Added support
+/* for bit-selecting parameters.  param4.v diagnostic added to verify proper
+/* support for this bit-selecting.  Full regression still passes.
+/*
 /* Revision 1.16  2002/09/25 02:51:44  phase1geo
 /* Removing need of vector nibble array allocation and deallocation during
 /* expression resizing for efficiency and bug reduction.  Other enhancements

@@ -2,63 +2,6 @@
  \file     param.c
  \author   Trevor Williams  (trevorw@charter.net)
  \date     8/22/2002
-
- The following is a list of the goals that I would ideally like for parameters:
-
- -#  All parameter information is encapsulated in a module structure (nothing in the
-     instance structures).
-
- -#  Parameter support should have a minimal impact on parsing performance.
-
- -#  All parameter information should be handled by the time that the parsed information
-     is initially output to the CDD file.
-
- -#  The defparam statement will be ignored for all found statements and a warning generated
-     to standard error for all found defparams.
-
- -#  Parameter overloading will be allowed at the instance declaration for instances that
-     are deemed to be parsed.
-
- -#  A Verilog module need only be parsed once.
-
- -#  No module copying is to occur.
-
- -#  Parameter structure is to be as condensed as possible.  A parameter structure should
-     contain at least the following information:
-     - Name of parameter in module OR relative hierarchical name of parameter in submodule.
-     - Pointer to vector containing value of parameter or parameter override (might require
-       expression tree instead of vector -- root of expression tree eventually contains
-       vector value of parameter).
-
- -#  Any code allowed for assigning parameters is allowed (with the noted exception of the
-     defparam statement).
-
-
- So how do all of these goals get met?
-
- -#  All parameter information can be stored in the module structure by storing parameter
-     assignments and parameter overloads (for submodules) in current module.
-
- -#  Both signals and expressions will need to change the way that they write themselves to
-     the CDD file.  If a signal's width/lsb is determined with parameters, the signal and
-     associated expressions will need to have width's and/or lsb's reset to new values.
-     If an expression's value is determined with parameters, the expression will need
-     to have width's reset to new values.
-
- -#  If all Verilog information can be contained in the module structure only, it will not
-     be necessary to reparse a module or to copy an existing module.
-
- -#  It is important to note that parameters can have chain reactions in submodule evaluations
-     due to instance parameter overriding of parameters that are used to override other
-     submodule instance parameters.  Therefore, all parameters will need to be evaluated in
-     a top-down manner (root module will need to be evaluated first followed by its children, etc.)
-
- -#  All defparam values supplied by the user must be static values (no expressions allowed).
-
- -#  Defparam overrides should be applied before default values to eliminate unnecessary default
-     parameter expression evaluation.
-
- -#  Expression trees need to be stored in module parameter lists for parameter expressions.
 */
 
 #include <stdio.h>
@@ -295,14 +238,17 @@ void defparam_add( char* scope, vector* value ) {
  an error message is displayed to the user (the user has created a module in which
  a parameter value is used without being defined).
 */
-vector* param_find_value_for_expr( expression* expr, inst_parm* icurr ) {
+void param_find_and_set_expr_value( expression* expr, inst_parm* icurr ) {
 
   char err_msg[4096];  /* Error message to user */
 
   assert( expr != NULL );
+  assert( expr->value != NULL );
   assert( (SUPPL_OP( expr->suppl ) == EXP_OP_PARAM)      ||
           (SUPPL_OP( expr->suppl ) == EXP_OP_PARAM_SBIT) ||
           (SUPPL_OP( expr->suppl ) == EXP_OP_PARAM_MBIT) );
+
+  // printf( "In param_find_and_set_expr_value, exp ID: %d, op: %d\n", expr->id, SUPPL_OP( expr->suppl ) );
 
   while( (icurr != NULL) && (exp_link_find( expr, icurr->mparm->exp_head ) == NULL) ) {
     icurr = icurr->next;
@@ -314,17 +260,34 @@ vector* param_find_value_for_expr( expression* expr, inst_parm* icurr ) {
     exit( 1 );
   }
 
-  assert( icurr->value != NULL );
-
-  return( icurr->value );
+  switch( SUPPL_OP( expr->suppl ) ) {
+    case EXP_OP_PARAM :
+      expr->value->value = icurr->value->value;
+      expr->value->width = icurr->value->width;
+      expr->value->lsb   = 0;
+      expression_resize( expr );
+      break;
+    case EXP_OP_PARAM_SBIT :
+      expr->value->value = icurr->value->value;
+      expr->value->width = 1;
+      expr->suppl        = expr->suppl | ((icurr->value->lsb & 0xffff) << SUPPL_LSB_SIG_LSB);
+      expression_resize( expr );
+      break;
+    case EXP_OP_PARAM_MBIT :
+      expr->value->value = icurr->value->value;
+      expr->suppl        = expr->suppl | ((icurr->value->lsb & 0xffff) << SUPPL_LSB_SIG_LSB);
+      expression_resize( expr );
+      break;
+    default :  break;
+  }
 
 }
 
 /*************************************************************************************/
 
 /*!
- \param expr   Current expression to evaluate.
- \param ihead  Pointer to head of current instance instance parameter list.
+ \param expr         Current expression to evaluate.
+ \param ihead        Pointer to head of current instance instance parameter list.
 
  Recursively evaluates the specified expression tree, calculating the value of leaf nodes
  first.  If a another parameter value is encountered, lookup the value of this parameter
@@ -347,25 +310,10 @@ void param_expr_eval( expression* expr, inst_parm* ihead ) {
     }
 
     switch( SUPPL_OP( expr->suppl ) ) {
-      case EXP_OP_PARAM :
-        tmpval = param_find_value_for_expr( expr, ihead );
-        assert( expr->value != NULL );
-        expr->value->value = tmpval->value;
-        expr->value->width = tmpval->width;
-        expr->value->lsb   = 0;
-        break;
+      case EXP_OP_PARAM      :
       case EXP_OP_PARAM_SBIT :
-        tmpval = param_find_value_for_expr( expr, ihead );
-        assert( expr->value != NULL );
-        expr->value->value = tmpval->value;
-        expr->value->width = 1;
-        expr->suppl        = expr->suppl | ((tmpval->lsb & 0xffff) << SUPPL_LSB_SIG_LSB);
-        break;
       case EXP_OP_PARAM_MBIT :
-        tmpval = param_find_value_for_expr( expr, ihead );
-        assert( expr->value != NULL );
-        expr->value->value = tmpval->value;
-        expr->suppl        = expr->suppl | ((tmpval->lsb & 0xffff) << SUPPL_LSB_SIG_LSB);
+        param_find_and_set_expr_value( expr, ihead );
         break;
       default :
         /*
@@ -555,6 +503,42 @@ void param_resolve_override( mod_parm* oparm, inst_parm** ihead, inst_parm** ita
 
 }
 
+/*!
+ \param iparm  Pointer to instance parameter to output to file.
+ \param file   Pointer to file handle to write parameter contents to.
+ \param scope  Current scope of parameter to output.
+
+ Prints contents of specified instance parameter to the specified output stream.
+ Parameters get output in the same format as signals (they type specified for parameters
+ is DB_TYPE_SIGNAL).  A leading # sign is attached to the parameter name to indicate
+ that the current signal is a parameter and not a signal, and should therefore not
+ be scored as a signal.
+*/
+void param_db_write( inst_parm* iparm, FILE* file, char* scope ) {
+
+  exp_link* curr;      /* Pointer to current expression link element */
+
+  /* Display identification and value information first */
+  fprintf( file, "%d #%s %s ",
+    DB_TYPE_SIGNAL,
+    iparm->name,
+    scope
+  );
+
+  // printf( "Writing parameter:  %d #%s %s ", DB_TYPE_SIGNAL, iparm->name, scope );
+
+  vector_db_write( iparm->value, file, TRUE );
+
+  curr = iparm->mparm->exp_head;
+  while( curr != NULL ) {
+    fprintf( file, " %d", expression_get_id( curr->exp ) );
+    curr = curr->next;
+  }
+
+  fprintf( file, "\n" );
+
+}
+
 /**********************************************************************************/
 
 /*!
@@ -611,6 +595,11 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 
 /* $Log$
+/* Revision 1.15  2002/09/29 02:16:51  phase1geo
+/* Updates to parameter CDD files for changes affecting these.  Added support
+/* for bit-selecting parameters.  param4.v diagnostic added to verify proper
+/* support for this bit-selecting.  Full regression still passes.
+/*
 /* Revision 1.14  2002/09/27 01:19:38  phase1geo
 /* Fixed problems with parameter overriding from command-line.  This now works
 /* and param1.2.v has been added to test this functionality.  Totally reworked

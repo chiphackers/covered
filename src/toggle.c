@@ -38,8 +38,10 @@ void toggle_get_stats( exp_link* expl, sig_link* sigl, float* total, int* hit01,
   
   /* Search signal list */
   while( curr_sig != NULL ) {
-    *total = *total + curr_sig->sig->value->width;
-    vector_toggle_count( curr_sig->sig->value, hit01, hit10 );
+    if( curr_sig->sig->name[0] != '#' ) {
+      *total = *total + curr_sig->sig->value->width;
+      vector_toggle_count( curr_sig->sig->value, hit01, hit10 );
+    }
     curr_sig = curr_sig->next;
   }
 
@@ -205,25 +207,29 @@ void toggle_display_verbose( FILE* ofile, sig_link* sigl ) {
     hit01 = 0;
     hit10 = 0;
 
-    vector_toggle_count( curr_sig->sig->value, &hit01, &hit10 );
+    if( curr_sig->sig->name[0] != '#' ) {
 
-    if( report_covered ) {
+      vector_toggle_count( curr_sig->sig->value, &hit01, &hit10 );
 
-      if( (hit01 == curr_sig->sig->value->width) && (hit10 == curr_sig->sig->value->width) ) {
+      if( report_covered ) {
+
+        if( (hit01 == curr_sig->sig->value->width) && (hit10 == curr_sig->sig->value->width) ) {
         
-        fprintf( ofile, "%-24s\n", curr_sig->sig->name );
+          fprintf( ofile, "%-24s\n", curr_sig->sig->name );
 
-      }
+        }
 
-    } else {
+      } else {
 
-      if( (hit01 < curr_sig->sig->value->width) || (hit10 < curr_sig->sig->value->width) ) {
+        if( (hit01 < curr_sig->sig->value->width) || (hit10 < curr_sig->sig->value->width) ) {
 
-        fprintf( ofile, "%-24s  0->1: ", curr_sig->sig->name );
-        vector_display_toggle01( curr_sig->sig->value->value, curr_sig->sig->value->width, 0, ofile );      
-        fprintf( ofile, "\n......................... 1->0: " );
-        vector_display_toggle10( curr_sig->sig->value->value, curr_sig->sig->value->width, 0, ofile );      
-        fprintf( ofile, " ...\n" );
+          fprintf( ofile, "%-24s  0->1: ", curr_sig->sig->name );
+          vector_display_toggle01( curr_sig->sig->value->value, curr_sig->sig->value->width, 0, ofile );      
+          fprintf( ofile, "\n......................... 1->0: " );
+          vector_display_toggle10( curr_sig->sig->value->value, curr_sig->sig->value->width, 0, ofile );      
+          fprintf( ofile, " ...\n" );
+
+        }
 
       }
 
@@ -347,6 +353,10 @@ void toggle_report( FILE* ofile, bool verbose ) {
 }
 
 /* $Log$
+/* Revision 1.12  2002/09/13 05:12:25  phase1geo
+/* Adding final touches to -d option to report.  Adding documentation and
+/* updating development documentation to stay in sync.
+/*
 /* Revision 1.11  2002/08/20 04:48:18  phase1geo
 /* Adding option to report command that allows the user to display logic that is
 /* being covered (-c option).  This overrides the default behavior of displaying

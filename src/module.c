@@ -78,6 +78,7 @@ bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst ) {
   sig_link*  curr_sig;        /* Pointer to current module sig_link element     */
   exp_link*  curr_exp;        /* Pointer to current module exp_link element     */
   stmt_link* curr_stmt;       /* Pointer to current module stmt_link element    */
+  inst_parm* curr_parm;       /* Pointer to current instance parameter          */
   char       msg[4096];       /* Display message string                         */
   int        old_suppl;       /* Contains supplemental value of parameter expr  */
   bool       param_op;        /* Specifies if current expression is a parameter */
@@ -98,33 +99,31 @@ bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst ) {
   curr_exp = mod->exp_head;
   while( curr_exp != NULL ) {
     
-    param_op = ((SUPPL_OP( curr_exp->exp->suppl ) == EXP_OP_PARAM)      ||
-                (SUPPL_OP( curr_exp->exp->suppl ) == EXP_OP_PARAM_SBIT) ||
-                (SUPPL_OP( curr_exp->exp->suppl ) == EXP_OP_PARAM_MBIT));
-
     /* If this expression is a parameter, find the associated instance parameter */
-    if( param_op ) {
+    if( (inst != NULL) &&
+        ((SUPPL_OP( curr_exp->exp->suppl ) == EXP_OP_PARAM)      ||
+         (SUPPL_OP( curr_exp->exp->suppl ) == EXP_OP_PARAM_SBIT) ||
+         (SUPPL_OP( curr_exp->exp->suppl ) == EXP_OP_PARAM_MBIT)) ) {
 
-      param_expr_eval( curr_exp->exp, inst->param_head );
+      param_find_and_set_expr_value( curr_exp->exp, inst->param_head );
 
-      /* Resize the current expression tree */
-      expression_resize( curr_exp->exp );
-
-      /* Finally, change the expression operation to STATIC */
-      old_suppl = curr_exp->exp->suppl;
-      curr_exp->exp->suppl = (curr_exp->exp->suppl & ~(0x7f << SUPPL_LSB_OP)) | 
-                             ((EXP_OP_STATIC & 0x7f) << SUPPL_LSB_OP);
     }
 
     expression_db_write( curr_exp->exp, file, scope );
 
-    if( param_op ) {
-      /* Set operation back to previous */
-      curr_exp->exp->suppl = old_suppl;
-    }
-
     curr_exp = curr_exp->next;
 
+  }
+
+  /* Now print all parameters in module */
+  if( inst != NULL ) {
+    curr_parm = inst->param_head;
+    while( curr_parm != NULL ) {
+
+      param_db_write( curr_parm, file, scope );
+      curr_parm = curr_parm->next;
+
+    }
   }
 
   // module_display_signals( mod );
@@ -387,6 +386,11 @@ void module_dealloc( module* mod ) {
 
 
 /* $Log$
+/* Revision 1.18  2002/09/29 02:16:51  phase1geo
+/* Updates to parameter CDD files for changes affecting these.  Added support
+/* for bit-selecting parameters.  param4.v diagnostic added to verify proper
+/* support for this bit-selecting.  Full regression still passes.
+/*
 /* Revision 1.17  2002/09/26 13:43:45  phase1geo
 /* Making code adjustments to correctly support parameter overriding.  Added
 /* parameter tests to verify supported functionality.  Full regression passes.
