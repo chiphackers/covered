@@ -30,4 +30,17 @@ proc help_show_about {} {
 
 proc help_show_manual {section} {
 
+  global HOME BROWSER
+
+  set fpath [file join $HOME doc $section].html
+
+  if {[catch {exec $BROWSER -remote $fpath}]} {
+
+    # perhaps browser doesn't understand -remote flag
+    if {[catch "exec $BROWSER \"$fpath\" &" emsg]} {
+      error "Error displaying $fname in browser\n$emsg"
+    }
+
+  }
+
 }
