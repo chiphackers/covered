@@ -14,21 +14,19 @@ doc_DATA = comb.html \
            report_menu.html \
            summary_bar.html \
            toggle.html \
-           welcome.html
-
-imagedir = $(datadir)/covered/doc/gui/images
-image_DATA = images/banner.gif \
-             images/file_view.jpg \
-             images/main_info.jpg \
-             images/main_summary.jpg \
-             images/open_cdd.jpg \
-             images/report_view.jpg \
-             images/color.jpg \
-             images/help_view.jpg \
-             images/main_lb.jpg \
-             images/main_viewer.jpg \
-             images/populated_lb.jpg \
-             images/main_cov.jpg \
-             images/main_menu.jpg \
-             images/main_window.jpg \
-             images/pref_view.jpg
+           welcome.html \
+           images/banner.gif \
+           images/file_view.jpg \
+           images/main_info.jpg \
+           images/main_summary.jpg \
+           images/open_cdd.jpg \
+           images/report_view.jpg \
+           images/color.jpg \
+           images/help_view.jpg \
+           images/main_lb.jpg \
+           images/main_viewer.jpg \
+           images/populated_lb.jpg \
+           images/main_cov.jpg \
+           images/main_menu.jpg \
+           images/main_window.jpg \
+           images/pref_view.jpg
