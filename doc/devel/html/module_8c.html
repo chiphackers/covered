@@ -18,24 +18,24 @@
 <code>#include "<a class="el" href="iter_8h-source.html">iter.h</a>"</code><br>
 <table border=0 cellpadding=0 cellspacing=0>
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="module_8c.html#a1">module_init</a> (<a class="el" href="defines_8h.html#a160">module</a> *mod)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="module_8c.html#a1">module_init</a> (<a class="el" href="defines_8h.html#a168">module</a> *mod)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Initializes all values of module.</em> <a href="#a1"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a160">module</a> *&nbsp;</td><td valign=bottom><a class="el" href="module_8c.html#a2">module_create</a> ()</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a168">module</a> *&nbsp;</td><td valign=bottom><a class="el" href="module_8c.html#a2">module_create</a> ()</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Creates new module from heap and initializes structure.</em> <a href="#a2"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="module_8c.html#a3">module_size_elements</a> (<a class="el" href="defines_8h.html#a160">module</a> *mod, <a class="el" href="defines_8h.html#a167">mod_inst</a> *inst)</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a170">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="module_8c.html#a4">module_db_write</a> (<a class="el" href="defines_8h.html#a160">module</a> *mod, char *scope, FILE *<a class="el" href="lexer_8c.html#a122">file</a>, <a class="el" href="defines_8h.html#a167">mod_inst</a> *inst)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="module_8c.html#a3">module_size_elements</a> (<a class="el" href="defines_8h.html#a168">module</a> *mod, <a class="el" href="defines_8h.html#a175">mod_inst</a> *inst)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a178">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="module_8c.html#a4">module_db_write</a> (<a class="el" href="defines_8h.html#a168">module</a> *mod, char *scope, FILE *<a class="el" href="lexer_8c.html#a122">file</a>, <a class="el" href="defines_8h.html#a175">mod_inst</a> *inst)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Writes contents of provided module to specified output.</em> <a href="#a4"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a170">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="module_8c.html#a5">module_db_read</a> (<a class="el" href="defines_8h.html#a160">module</a> *mod, char *scope, char **line)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a178">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="module_8c.html#a5">module_db_read</a> (<a class="el" href="defines_8h.html#a168">module</a> *mod, char *scope, char **line)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Read contents of current line from specified file, creates module and adds to module list.</em> <a href="#a5"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a170">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="module_8c.html#a6">module_db_merge</a> (<a class="el" href="defines_8h.html#a160">module</a> *base, FILE *<a class="el" href="lexer_8c.html#a122">file</a>)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a178">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="module_8c.html#a6">module_db_merge</a> (<a class="el" href="defines_8h.html#a168">module</a> *base, FILE *<a class="el" href="lexer_8c.html#a122">file</a>)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Reads and merges two modules into base module.</em> <a href="#a6"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="module_8c.html#a7">module_display_signals</a> (<a class="el" href="defines_8h.html#a160">module</a> *mod)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="module_8c.html#a7">module_display_signals</a> (<a class="el" href="defines_8h.html#a168">module</a> *mod)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Displays signals stored in this module.</em> <a href="#a7"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="module_8c.html#a8">module_display_expressions</a> (<a class="el" href="defines_8h.html#a160">module</a> *mod)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="module_8c.html#a8">module_display_expressions</a> (<a class="el" href="defines_8h.html#a168">module</a> *mod)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Displays expressions stored in this module.</em> <a href="#a8"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="module_8c.html#a9">module_clean</a> (<a class="el" href="defines_8h.html#a160">module</a> *mod)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="module_8c.html#a9">module_clean</a> (<a class="el" href="defines_8h.html#a168">module</a> *mod)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Deallocates module element contents only from heap.</em> <a href="#a9"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="module_8c.html#a10">module_dealloc</a> (<a class="el" href="defines_8h.html#a160">module</a> *mod)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="module_8c.html#a10">module_dealloc</a> (<a class="el" href="defines_8h.html#a168">module</a> *mod)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Deallocates module element from heap.</em> <a href="#a10"></a><em></em></font><br><br></td></tr>
 <tr><td colspan=2><br><h2>Variables</h2></td></tr>
 <tr><td nowrap align=right valign=top>char&nbsp;</td><td valign=bottom><a class="el" href="module_8c.html#a0">user_msg</a> [USER_MSG_LENGTH]</td></tr>
@@ -56,7 +56,7 @@ Date: </b><dd>
         <tr>
           <td class="md" nowrap valign="top"> void module_clean </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a160">module</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a168">module</a> *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>mod</em>          </td>
           <td class="md" valign="top">)&nbsp;</td>
           <td class="md" nowrap></td>
@@ -91,7 +91,7 @@ Pointer to module element to clean.</td></tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a160">module</a>* module_create </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a168">module</a>* module_create </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
           <td class="md" valign="top">)&nbsp;</td>
@@ -123,9 +123,9 @@ Returns pointer to newly created module element that has been properly initializ
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a170">bool</a> module_db_merge </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a178">bool</a> module_db_merge </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a160">module</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a168">module</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>base</em>, </td>
         </tr>
         <tr>
@@ -173,9 +173,9 @@ Returns TRUE if parse and merge was successful; otherwise, returns FALSE.</dl>Pa
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a170">bool</a> module_db_read </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a178">bool</a> module_db_read </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a160">module</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a168">module</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>mod</em>, </td>
         </tr>
         <tr>
@@ -231,9 +231,9 @@ Returns TRUE if read was successful; otherwise, returns FALSE.</dl>Reads the cur
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a170">bool</a> module_db_write </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a178">bool</a> module_db_write </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a160">module</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a168">module</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>mod</em>, </td>
         </tr>
         <tr>
@@ -251,7 +251,7 @@ Returns TRUE if read was successful; otherwise, returns FALSE.</dl>Reads the cur
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a167">mod_inst</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a175">mod_inst</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>inst</em></td>
         </tr>
         <tr>
@@ -299,7 +299,7 @@ Returns TRUE if file output was successful; otherwise, returns FALSE.</dl>Prints
         <tr>
           <td class="md" nowrap valign="top"> void module_dealloc </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a160">module</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a168">module</a> *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>mod</em>          </td>
           <td class="md" valign="top">)&nbsp;</td>
           <td class="md" nowrap></td>
@@ -336,7 +336,7 @@ Pointer to module element to deallocate.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void module_display_expressions </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a160">module</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a168">module</a> *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>mod</em>          </td>
           <td class="md" valign="top">)&nbsp;</td>
           <td class="md" nowrap></td>
@@ -373,7 +373,7 @@ Pointer to module element to display expressions</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void module_display_signals </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a160">module</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a168">module</a> *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>mod</em>          </td>
           <td class="md" valign="top">)&nbsp;</td>
           <td class="md" nowrap></td>
@@ -410,7 +410,7 @@ Pointer to module element to display signals.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void module_init </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a160">module</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a168">module</a> *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>mod</em>          </td>
           <td class="md" valign="top">)&nbsp;</td>
           <td class="md" nowrap></td>
@@ -447,13 +447,13 @@ Pointer to module to initialize.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void module_size_elements </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a160">module</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a168">module</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>mod</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a167">mod_inst</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a175">mod_inst</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>inst</em></td>
         </tr>
         <tr>
@@ -508,7 +508,7 @@ Pointer to instance containing this module.</td></tr>
     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Sun Nov 3 21:15:59 2002 for Covered by
+<hr><address align="right"><small>Generated on Sat Nov 23 09:16:04 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

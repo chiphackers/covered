@@ -328,7 +328,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
 
       if( vector_get_type( exp->value ) == DECIMAL ) {
 
-        snprintf( code_fmt, 20, "%d", vector_to_int( exp->value ) );
+        snprintf( code_fmt, 300, "%d", vector_to_int( exp->value ) );
         *size = strlen( code_fmt );
       
       } else {
@@ -446,8 +446,9 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
               *size = l_size + r_size + strlen( tmpname ) + 2;
               for( i=0; i<strlen( tmpname ); i++ ) {
                 code_fmt[i] = ' ';
-              }  
-              strcat( code_fmt, " %s " );  
+              }
+              code_fmt[i] = '\0';
+              strcat( code_fmt, " %s " );
               break;
             case EXP_OP_PARAM_MBIT :
             case EXP_OP_MBIT_SEL   :  
@@ -460,7 +461,8 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
               for( i=0; i<strlen( tmpname ); i++ ) {
                 code_fmt[i] = ' ';
               }
-              strcat( code_fmt, " %s %s " );  
+              code_fmt[i] = '\0';
+              strcat( code_fmt, " %s %s " );
               break;
             case EXP_OP_EXPAND   :  *size = l_size + r_size + 4;  strcpy( code_fmt, " %s %s  "         );  break;
             case EXP_OP_CONCAT   :  *size = l_size + r_size + 2;  strcpy( code_fmt, " %s "             );  break;
@@ -492,7 +494,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
       }
       
       if( *depth > 0 ) {
-
+                
         /* Allocate all memory for the stack */
         *lines = (char**)malloc_safe( sizeof( char* ) * (*depth) );
 
@@ -512,15 +514,15 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
           (*lines)[i] = (char*)malloc_safe( *size + 1 );
 
           if( (i < l_depth) && (i < r_depth) ) {
-         
+            
             /* Merge left and right lines */
             snprintf( (*lines)[i], (*size + 1), code_fmt, l_lines[i], r_lines[i] );
-
+            
             free_safe( l_lines[i] );
             free_safe( r_lines[i] );
 
           } else if( i < l_depth ) {
-
+            
             /* Create spaces for right side */
             exp_sp = (char*)malloc_safe( r_size + 1 );
             gen_space( exp_sp, r_size );
@@ -534,7 +536,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
           } else if( i < r_depth ) {
 
             if( l_size == 0 ) { 
- 
+
               snprintf( (*lines)[i], (*size + 1), code_fmt, r_lines[i] );
 
             } else {
@@ -1001,6 +1003,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.54  2002/11/05 00:20:06  phase1geo
+ Adding development documentation.  Fixing problem with combinational logic
+ output in report command and updating full regression.
+
  Revision 1.53  2002/11/02 16:16:20  phase1geo
  Cleaned up all compiler warnings in source and header files.
 

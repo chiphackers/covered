@@ -68,7 +68,11 @@ unsigned int {\bf report\_\-comb\_\-depth}
 Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
 \item[Date: ]\par
-3/31/2002\end{Desc}
+3/31/2002
+
+ The functions in this file are used by the report command to calculate and display all  report output for combination logic coverage. Combinational logic coverage is calculated solely from the list of expression trees in the scored design. For each module or instance, the expression list is passed to the calculation routine which iterates through each expression tree, tallying the total number of expression values and the total number of expression values reached.
+
+ Every expression contains two possible expression values during simulation: 0 and 1 (or 1+). If an expression evaluated to some unknown value, this is not recorded by Covered. If an expression has evaluated to 0, the WAS\_\-FALSE bit of the expression's supplemental field will be set. If the expression has evaluated to 1 or a value greater than 1, the WAS\_\-TRUE bit of the expression's supplemental field will be set. If both the WAS\_\-FALSE and the WAS\_\-TRUE bits are set after scoring, the expression is considered to be fully covered.\end{Desc}
 
 
 \subsection{Function Documentation}

@@ -230,9 +230,6 @@ void expression_set_value( expression* exp, vector* vec ) {
   assert( exp->value != NULL );
   assert( vec != NULL );
   
-  printf( "In expression_set_value, exp_id: %d, op: %d\n", exp->id, SUPPL_OP( exp->suppl ) );
-  printf( "\n" );
-  
   switch( SUPPL_OP( exp->suppl ) ) {
     case EXP_OP_SIG   :
     case EXP_OP_PARAM :
@@ -439,7 +436,7 @@ void expression_db_write( expression* expr, FILE* file, char* scope ) {
     expr->id,
     scope,
     expr->line,
-    (expr->suppl & 0x000fffff),
+    expr->suppl,
     (SUPPL_OP( expr->suppl ) == EXP_OP_STATIC) ? 0 : expression_get_id( expr->right ),
     (SUPPL_OP( expr->suppl ) == EXP_OP_STATIC) ? 0 : expression_get_id( expr->left )
   );
@@ -1034,7 +1031,10 @@ void expression_operate( expression* expr ) {
     }
     
     /* Clear current TRUE/FALSE indicators */
-    expr->suppl = expr->suppl & ~((0x1 << SUPPL_LSB_EVAL_T) | (0x1 << SUPPL_LSB_EVAL_F));
+    if( (SUPPL_OP( expr->suppl ) != EXP_OP_STATIC) &&
+        (SUPPL_OP( expr->suppl ) != EXP_OP_PARAM ) ) {
+      expr->suppl = expr->suppl & ~((0x1 << SUPPL_LSB_EVAL_T) | (0x1 << SUPPL_LSB_EVAL_F));
+    }
     
     /* Set TRUE/FALSE bits to indicate value */
     vector_init( &vec1, &value1a, 1, 0 );
@@ -1047,6 +1047,7 @@ void expression_operate( expression* expr ) {
     
     /* Set EVAL00, EVAL01, EVAL10 or EVAL11 bits based on current value of children */
     if( (expr->left != NULL) && (expr->right != NULL) ) {
+      printf( "Right operation type: %d\n", SUPPL_OP( expr->right->suppl ) );
       lf = SUPPL_IS_FALSE( expr->left->suppl  );
       lt = SUPPL_IS_TRUE(  expr->left->suppl  );
       rf = SUPPL_IS_FALSE( expr->right->suppl );
@@ -1056,6 +1057,7 @@ void expression_operate( expression* expr ) {
                     ((lf & rt) << SUPPL_LSB_EVAL_01) |
                     ((lt & rf) << SUPPL_LSB_EVAL_10) |
                     ((lt & rt) << SUPPL_LSB_EVAL_11);
+      printf( "Calculating dual operation types, lf: %d, lt: %d, rf: %d, rt: %d, suppl: %x\n", lf, lt, rf, rt, expr->suppl );
     }
 
   }
@@ -1182,6 +1184,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.64  2002/11/08 00:58:04  phase1geo
+ Attempting to fix problem with parameter handling.  Updated some diagnostics
+ in test suite.  Other diagnostics to follow.
+
  Revision 1.63  2002/11/05 22:27:02  phase1geo
  Adding diagnostic to verify usage of parameters in signal sizing expressions.
  Added diagnostic to regression suite.  Fixed bug with sizing of EXPAND

@@ -906,8 +906,8 @@ expr_primary
       tmp->value = $1;
       /* Calculate TRUE/FALSE-ness of NUMBER now */
       switch( expression_bit_value( tmp ) ) {
-        case 0 :  tmp->suppl = tmp->suppl | (0x1 << SUPPL_LSB_FALSE);  break;
-        case 1 :  tmp->suppl = tmp->suppl | (0x1 << SUPPL_LSB_TRUE);   break;
+        case 0 :  tmp->suppl = tmp->suppl | (0x1 << SUPPL_LSB_FALSE) | (0x1 << SUPPL_LSB_EVAL_F);  break;
+        case 1 :  tmp->suppl = tmp->suppl | (0x1 << SUPPL_LSB_TRUE)  | (0x1 << SUPPL_LSB_EVAL_T);  break;
         default:  break;
       }
       $$ = tmp;
@@ -1030,7 +1030,7 @@ expr_primary
     }
   | '{' expression '{' expression_list '}' '}'
     {
-      expression* tmp;
+      expression*  tmp;
       if( (ignore_mode == 0) && ($2 != NULL) && ($4 != NULL) ) {
         tmp = db_create_expression( $4, $2, EXP_OP_EXPAND, @1.first_line, NULL );
         $$ = tmp;

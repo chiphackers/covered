@@ -345,19 +345,7 @@
  - STMT_CONTINUOUS
  - EVAL 00, 01, 10, 11
 */
-#define SUPPL_MERGE_MASK            ((0x3f << SUPPL_LSB_OP)              | \
-                                     (0x1  << SUPPL_LSB_SWAPPED)         | \
-                                     (0x1  << SUPPL_LSB_ROOT)            | \
-                                     (0x1  << SUPPL_LSB_EXECUTED)        | \
-                                     (0x1  << SUPPL_LSB_TRUE)            | \
-                                     (0x1  << SUPPL_LSB_FALSE)           | \
-                                     (0x1  << SUPPL_LSB_STMT_HEAD)       | \
-                                     (0x1  << SUPPL_LSB_STMT_STOP)       | \
-                                     (0x1  << SUPPL_LSB_STMT_CONTINUOUS) | \
-                                     (0x1  << SUPPL_LSB_EVAL_00)         | \
-                                     (0x1  << SUPPL_LSB_EVAL_01)         | \
-                                     (0x1  << SUPPL_LSB_EVAL_10)         | \
-                                     (0x1  << SUPPL_LSB_EVAL_11))
+#define SUPPL_MERGE_MASK            0xffffffff
 
 /*!
  Returns a value of 1 if the specified supplemental value has the SWAPPED
@@ -652,6 +640,9 @@
                                      (SUPPL_OP( x->suppl ) != EXP_OP_CASEX) && \
                                      (SUPPL_OP( x->suppl ) != EXP_OP_CASEZ) && \
                                      (SUPPL_OP( x->suppl ) != EXP_OP_DEFAULT) && \
+                                     (SUPPL_OP( x->suppl ) != EXP_OP_PARAM) && \
+                                     (SUPPL_OP( x->suppl ) != EXP_OP_PARAM_SBIT) && \
+                                     (SUPPL_OP( x->suppl ) != EXP_OP_PARAM_MBIT) && \
                                      !((SUPPL_IS_ROOT( x->suppl ) == 0) && \
                                        ((SUPPL_OP( x->suppl ) == EXP_OP_SIG) || \
                                         (SUPPL_OP( x->suppl ) == EXP_OP_SBIT_SEL) || \
@@ -1132,6 +1123,10 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.56  2002/11/05 00:20:06  phase1geo
+ Adding development documentation.  Fixing problem with combinational logic
+ output in report command and updating full regression.
+
  Revision 1.55  2002/10/31 23:13:36  phase1geo
  Fixing C compatibility problems with cc and gcc.  Found a few possible problems
  with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that
