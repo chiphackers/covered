@@ -80,7 +80,7 @@ void vector_from_int( vector* vec, int value );
 char* vector_to_string( vector* vec, int type );
 
 /*! \brief Converts character string value into vector. */
-vector* vector_from_string( char** str );
+vector* vector_from_string( char** str, bool quoted );
 
 /*! \brief Assigns specified VCD value to specified vector. */
 bool vector_vcd_assign( vector* vec, char* value, int msb, int lsb );
@@ -127,6 +127,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.24  2004/11/06 13:22:48  phase1geo
+ Updating CDD files for change where EVAL_T and EVAL_F bits are now being masked out
+ of the CDD files.
+
  Revision 1.23  2004/10/22 22:03:32  phase1geo
  More incremental changes to increase score command efficiency.
 

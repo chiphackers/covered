@@ -265,16 +265,16 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
   if( expr != NULL ) {
 
-    codegen_gen_expr( expr->left,  SUPPL_OP( expr->suppl ), &left_code,  &left_code_depth  );
-    codegen_gen_expr( expr->right, SUPPL_OP( expr->suppl ), &right_code, &right_code_depth );
+    codegen_gen_expr( expr->left,  expr->op, &left_code,  &left_code_depth  );
+    codegen_gen_expr( expr->right, expr->op, &right_code, &right_code_depth );
 
-    if( SUPPL_OP( expr->suppl ) == EXP_OP_LAST ) {
+    if( expr->op == EXP_OP_LAST ) {
 
       /* Do nothing. */
 
-    } else if( SUPPL_OP( expr->suppl ) == EXP_OP_STATIC ) {
+    } else if( expr->op == EXP_OP_STATIC ) {
 
-      switch( expr->value->suppl ) {
+      switch( expr->value->suppl.part.base ) {
 
         case DECIMAL :
           snprintf( code_format, 20, "%d", vector_to_int( expr->value ) );
@@ -305,8 +305,7 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
       }
 
-    } else if( (SUPPL_OP( expr->suppl ) == EXP_OP_SIG) ||
-               (SUPPL_OP( expr->suppl ) == EXP_OP_PARAM) ) {
+    } else if( (expr->op == EXP_OP_SIG) || (expr->op == EXP_OP_PARAM) ) {
 
       assert( expr->sig != NULL );
 
@@ -337,8 +336,7 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
           break;
       }
 
-    } else if( (SUPPL_OP( expr->suppl ) == EXP_OP_SBIT_SEL) ||
-               (SUPPL_OP( expr->suppl ) == EXP_OP_PARAM_SBIT) ) {
+    } else if( (expr->op == EXP_OP_SBIT_SEL) || (expr->op == EXP_OP_PARAM_SBIT) ) {
 
       assert( expr->sig != NULL );
 
@@ -354,8 +352,7 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
       free_safe( tmpstr );
 
-    } else if( (SUPPL_OP( expr->suppl ) == EXP_OP_MBIT_SEL) ||
-               (SUPPL_OP( expr->suppl ) == EXP_OP_PARAM_MBIT) ) {
+    } else if( (expr->op == EXP_OP_MBIT_SEL) || (expr->op == EXP_OP_PARAM_MBIT) ) {
 
       assert( expr->sig != NULL );
 
@@ -367,7 +364,7 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
         snprintf( tmpstr, (strlen( expr->sig->name ) + 2), "%s[", expr->sig->name );
       }
 
-      if( SUPPL_WAS_SWAPPED( expr->suppl ) ) {
+      if( ESUPPL_WAS_SWAPPED( expr->suppl ) ) {
         codegen_create_expr( code, code_depth, expr->line, tmpstr, right_code, right_code_depth, expr->right->line, ":",
                              left_code, left_code_depth, expr->left->line, "]" );
       } else {
@@ -375,7 +372,7 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
                              right_code, right_code_depth, expr->right->line, "]" );
       }
 
-    } else if( SUPPL_OP( expr->suppl ) == EXP_OP_DEFAULT ) {
+    } else if( expr->op == EXP_OP_DEFAULT ) {
 
       *code       = (char**)malloc_safe( sizeof( char* ), __FILE__, __LINE__ );
       (*code)[0]  = strdup_safe( "default :", __FILE__, __LINE__ );
@@ -383,7 +380,7 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
     } else {
 
-      if( parent_op == SUPPL_OP( expr->suppl ) ) {
+      if( parent_op == expr->op ) {
         before = NULL;
         after  = NULL;
       } else {
@@ -391,7 +388,7 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
         after  = strdup_safe( ")", __FILE__, __LINE__ );
       }
 
-      switch( SUPPL_OP( expr->suppl ) ) {
+      switch( expr->op ) {
         case EXP_OP_XOR      :
           codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left->line, " ^ ",
                                right_code, right_code_depth, expr->right->line, after );
@@ -537,7 +534,7 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
                                NULL, 0, 0, NULL );
           break;
         case EXP_OP_PEDGE    :
-          if( SUPPL_IS_ROOT( expr->suppl ) == 1 ) {
+          if( ESUPPL_IS_ROOT( expr->suppl ) == 1 ) {
             codegen_create_expr( code, code_depth, expr->line, "@(posedge ", right_code, right_code_depth, expr->right->line, ")",
                                  NULL, 0, 0, NULL );
           } else {
@@ -546,7 +543,7 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
           }
           break;
         case EXP_OP_NEDGE    :
-          if( SUPPL_IS_ROOT( expr->suppl ) == 1 ) {
+          if( ESUPPL_IS_ROOT( expr->suppl ) == 1 ) {
             codegen_create_expr( code, code_depth, expr->line, "@(negedge ", right_code, right_code_depth, expr->right->line, ")",
                                  NULL, 0, 0, NULL );
           } else {
@@ -555,7 +552,7 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
           }
           break;
         case EXP_OP_AEDGE    :
-          if( SUPPL_IS_ROOT( expr->suppl ) == 1 ) {
+          if( ESUPPL_IS_ROOT( expr->suppl ) == 1 ) {
             codegen_create_expr( code, code_depth, expr->line, "@(", right_code, right_code_depth, expr->right->line, ")",
                                  NULL, 0, 0, NULL );
           } else {
@@ -564,7 +561,7 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
           }
           break;
         case EXP_OP_EOR      :
-          if( SUPPL_IS_ROOT( expr->suppl ) == 1 ) {
+          if( ESUPPL_IS_ROOT( expr->suppl ) == 1 ) {
             codegen_create_expr( code, code_depth, expr->line, "@(", left_code, left_code_depth, expr->left->line, " or ",
                                  right_code, right_code_depth, expr->right->line, ")" );
           } else {
@@ -607,7 +604,7 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
         default:  break;
       }
 
-      if( parent_op != SUPPL_OP( expr->suppl ) ) {
+      if( parent_op != expr->op ) {
         free_safe( before );
         free_safe( after );
       }
@@ -629,6 +626,10 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.37  2004/03/17 13:25:00  phase1geo
+ Fixing some more report-related bugs.  Added new diagnostics to regression
+ suite to test for these.
+
  Revision 1.36  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,

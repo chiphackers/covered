@@ -71,7 +71,7 @@ int combination_calc_depth( expression* exp, unsigned int curr_depth, bool left 
 
     if( left ) {
 
-      if( (exp->left != NULL) && (SUPPL_OP( exp->suppl ) == SUPPL_OP( exp->left->suppl )) ) {
+      if( (exp->left != NULL) && (exp->op == exp->left->op) ) {
         return( curr_depth );
       } else {
         return( curr_depth + 1 );
@@ -79,7 +79,7 @@ int combination_calc_depth( expression* exp, unsigned int curr_depth, bool left 
 
     } else {
 
-      if( (exp->right != NULL) && (SUPPL_OP( exp->suppl ) == SUPPL_OP( exp->right->suppl )) ) {
+      if( (exp->right != NULL) && (exp->op == exp->right->op) ) {
         return( curr_depth );
       } else {
         return( curr_depth + 1 );
@@ -114,22 +114,22 @@ bool combination_multi_expr_calc( expression* exp, int* ulid, bool ul, int* hit,
   if( exp != NULL ) {
 
     /* Figure out if this is an AND/LAND operation */
-    and_op = (SUPPL_OP( exp->suppl ) == EXP_OP_AND) || (SUPPL_OP( exp->suppl ) == EXP_OP_LAND);
+    and_op = (exp->op == EXP_OP_AND) || (exp->op == EXP_OP_LAND);
 
     /* Decide if our expression requires that this sequence gets underlined */
     if( !ul ) {
       if( and_op ) {
-        ul = (((exp->suppl >> SUPPL_LSB_EVAL_11) & 0x1) == 0) || (SUPPL_WAS_FALSE( exp->left->suppl ) == 0) || (SUPPL_WAS_FALSE( exp->right->suppl ) == 0);
+        ul = (exp->suppl.part.eval_11 == 0) || (ESUPPL_WAS_FALSE( exp->left->suppl ) == 0) || (ESUPPL_WAS_FALSE( exp->right->suppl ) == 0);
       } else {
-        ul = (((exp->suppl >> SUPPL_LSB_EVAL_00) & 0x1) == 0) || (SUPPL_WAS_TRUE( exp->left->suppl )  == 0) || (SUPPL_WAS_TRUE( exp->right->suppl )  == 0);
+        ul = (exp->suppl.part.eval_00 == 0) || (ESUPPL_WAS_TRUE( exp->left->suppl )  == 0) || (ESUPPL_WAS_TRUE( exp->right->suppl )  == 0);
       }
     }
 
-    if( (exp->left != NULL) && (SUPPL_OP( exp->suppl ) != SUPPL_OP( exp->left->suppl )) ) {
+    if( (exp->left != NULL) && (exp->op != exp->left->op) ) {
       if( and_op ) {
-        *hit += SUPPL_WAS_FALSE( exp->left->suppl );
+        *hit += ESUPPL_WAS_FALSE( exp->left->suppl );
       } else {
-        *hit += SUPPL_WAS_TRUE( exp->left->suppl );
+        *hit += ESUPPL_WAS_TRUE( exp->left->suppl );
       }
       if( (exp->left->ulid == -1) && ul ) { 
         exp->left->ulid = *ulid;
@@ -140,11 +140,11 @@ bool combination_multi_expr_calc( expression* exp, int* ulid, bool ul, int* hit,
       ul = combination_multi_expr_calc( exp->left, ulid, ul, hit, total );
     }
 
-    if( (exp->right != NULL) && (SUPPL_OP( exp->suppl ) != SUPPL_OP( exp->right->suppl )) ) {
+    if( (exp->right != NULL) && (exp->op != exp->right->op) ) {
       if( and_op ) {
-        *hit += SUPPL_WAS_FALSE( exp->right->suppl );
+        *hit += ESUPPL_WAS_FALSE( exp->right->suppl );
       } else {
-        *hit += SUPPL_WAS_TRUE( exp->right->suppl );
+        *hit += ESUPPL_WAS_TRUE( exp->right->suppl );
       }
       if( (exp->right->ulid == -1) && ul ) {
         exp->right->ulid = *ulid;
@@ -155,11 +155,11 @@ bool combination_multi_expr_calc( expression* exp, int* ulid, bool ul, int* hit,
       ul = combination_multi_expr_calc( exp->right, ulid, ul, hit, total );
     }
 
-    if( (SUPPL_IS_ROOT( exp->suppl ) == 1) || (SUPPL_OP( exp->suppl ) != SUPPL_OP( exp->parent->expr->suppl )) ) {
+    if( (ESUPPL_IS_ROOT( exp->suppl ) == 1) || (exp->op != exp->parent->expr->op) ) {
       if( and_op ) {
-        *hit += ((exp->suppl >> SUPPL_LSB_EVAL_11) & 0x1);
+        *hit += exp->suppl.part.eval_11;
       } else {
-        *hit += ((exp->suppl >> SUPPL_LSB_EVAL_00) & 0x1);
+        *hit += exp->suppl.part.eval_00;
       }
       if( (exp->ulid == -1) && ul ) {
         exp->ulid = *ulid;
@@ -191,19 +191,19 @@ bool combination_multi_expr_calc( expression* exp, int* ulid, bool ul, int* hit,
 bool combination_is_expr_multi_node( expression* exp ) {
 
   return( (exp != NULL) &&
-          (SUPPL_IS_ROOT( exp->suppl ) == 0) && 
+          (ESUPPL_IS_ROOT( exp->suppl ) == 0) && 
           (exp->parent->expr->left  != NULL) &&
           (exp->parent->expr->right != NULL) &&
           ( ( (exp->parent->expr->right->id == exp->id) &&
               (exp->parent->expr->left->ulid == -1) ) ||
             (exp->parent->expr->left->id == exp->id) ) &&
-          ( (SUPPL_OP( exp->parent->expr->suppl ) == EXP_OP_AND)  ||
-            (SUPPL_OP( exp->parent->expr->suppl ) == EXP_OP_LAND) ||
-            (SUPPL_OP( exp->parent->expr->suppl ) == EXP_OP_OR)   ||
-            (SUPPL_OP( exp->parent->expr->suppl ) == EXP_OP_LOR) ) &&
-          ( ( (SUPPL_IS_ROOT( exp->parent->expr->suppl ) == 0) &&
-              (SUPPL_OP( exp->parent->expr->suppl ) == SUPPL_OP( exp->parent->expr->parent->expr->suppl )) ) ||
-            (SUPPL_OP( exp->parent->expr->left->suppl ) == SUPPL_OP( exp->parent->expr->suppl )) ) );
+          ( (exp->parent->expr->op == EXP_OP_AND)  ||
+            (exp->parent->expr->op == EXP_OP_LAND) ||
+            (exp->parent->expr->op == EXP_OP_OR)   ||
+            (exp->parent->expr->op == EXP_OP_LOR) ) &&
+          ( ( (ESUPPL_IS_ROOT( exp->parent->expr->suppl ) == 0) &&
+              (exp->parent->expr->op == exp->parent->expr->parent->expr->op) ) ||
+            (exp->parent->expr->left->op == exp->parent->expr->op) ) );
 
 }
 
@@ -233,23 +233,23 @@ void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_d
          (report_comb_depth == REPORT_VERBOSE) ||
          (report_comb_depth == REPORT_SUMMARY) ) {
 
-      if( (EXPR_IS_MEASURABLE( exp ) == 1) && (SUPPL_WAS_COMB_COUNTED( exp->suppl ) == 0) ) {
+      if( (EXPR_IS_MEASURABLE( exp ) == 1) && (ESUPPL_WAS_COMB_COUNTED( exp->suppl ) == 0) ) {
 
-        if( (SUPPL_IS_ROOT( exp->suppl ) == 1) || (SUPPL_OP( exp->suppl ) != SUPPL_OP( exp->parent->expr->suppl )) ||
-            ((SUPPL_OP( exp->suppl ) != EXP_OP_AND) &&
-             (SUPPL_OP( exp->suppl ) != EXP_OP_LAND) &&
-             (SUPPL_OP( exp->suppl ) != EXP_OP_OR)   &&
-             (SUPPL_OP( exp->suppl ) != EXP_OP_LOR)) ) {
+        if( (ESUPPL_IS_ROOT( exp->suppl ) == 1) || (exp->op != exp->parent->expr->op) ||
+            ((exp->op != EXP_OP_AND) &&
+             (exp->op != EXP_OP_LAND) &&
+             (exp->op != EXP_OP_OR)   &&
+             (exp->op != EXP_OP_LOR)) ) {
 
           /* Calculate current expression combination coverage */
           if( (((exp->left != NULL) &&
-                (SUPPL_OP( exp->suppl ) == SUPPL_OP( exp->left->suppl ))) ||
+                (exp->op == exp->left->op)) ||
                ((exp->right != NULL) &&
-                (SUPPL_OP( exp->suppl ) == SUPPL_OP( exp->right->suppl )))) &&
-              ((SUPPL_OP( exp->suppl ) == EXP_OP_AND)  ||
-               (SUPPL_OP( exp->suppl ) == EXP_OP_OR)   ||
-               (SUPPL_OP( exp->suppl ) == EXP_OP_LAND) ||
-               (SUPPL_OP( exp->suppl ) == EXP_OP_LOR)) ) {
+                (exp->op == exp->right->op))) &&
+              ((exp->op == EXP_OP_AND)  ||
+               (exp->op == EXP_OP_OR)   ||
+               (exp->op == EXP_OP_LAND) ||
+               (exp->op == EXP_OP_LOR)) ) {
             combination_multi_expr_calc( exp, ulid, FALSE, hit, total );
           } else {
             if( expression_is_static_only( exp ) ) {
@@ -257,10 +257,10 @@ void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_d
               *hit   = *hit + 2;
             } else if( EXPR_IS_COMB( exp ) == 1 ) {
               *total  = *total + 4;
-              num_hit = ((exp->suppl >> SUPPL_LSB_EVAL_00) & 0x1) +
-                        ((exp->suppl >> SUPPL_LSB_EVAL_01) & 0x1) +
-                        ((exp->suppl >> SUPPL_LSB_EVAL_10) & 0x1) +
-                        ((exp->suppl >> SUPPL_LSB_EVAL_11) & 0x1);
+              num_hit = exp->suppl.part.eval_00 +
+                        exp->suppl.part.eval_01 +
+                        exp->suppl.part.eval_10 +
+                        exp->suppl.part.eval_11;
               *hit    = *hit + num_hit;
               if( (num_hit != 4) && (exp->ulid == -1) && !combination_is_expr_multi_node( exp ) ) {
                 exp->ulid = *ulid;
@@ -268,7 +268,7 @@ void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_d
               }
             } else {
               *total  = *total + 2;
-              num_hit = SUPPL_WAS_TRUE( exp->suppl ) + SUPPL_WAS_FALSE( exp->suppl );
+              num_hit = ESUPPL_WAS_TRUE( exp->suppl ) + ESUPPL_WAS_FALSE( exp->suppl );
               *hit    = *hit + num_hit;
               if( (num_hit != 2) && (exp->ulid == -1) && !combination_is_expr_multi_node( exp ) ) {
                 exp->ulid = *ulid;
@@ -284,7 +284,7 @@ void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_d
     }
 
     /* Consider this expression to be counted */
-    exp->suppl = exp->suppl | (0x1 << SUPPL_LSB_COMB_CNTD);
+    exp->suppl.part.comb_cntd = 1;
 
   }
 
@@ -300,7 +300,7 @@ void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_d
 void combination_reset_counted_exprs( exp_link* expl ) {
 
   while( expl != NULL ) {
-    expl->exp->suppl = expl->exp->suppl | (0x1 << SUPPL_LSB_COMB_CNTD);
+    expl->exp->suppl.part.comb_cntd = 1;
     expl             = expl->next;
   }
 
@@ -323,7 +323,7 @@ void combination_get_stats( exp_link* expl, float* total, int* hit ) {
   curr_exp = expl;
 
   while( curr_exp != NULL ) {
-    if( SUPPL_IS_ROOT( curr_exp->exp->suppl ) == 1 ) {
+    if( ESUPPL_IS_ROOT( curr_exp->exp->suppl ) == 1 ) {
       ulid = 1;
       combination_get_tree_stats( curr_exp->exp, &ulid, 0, total, hit );
     }
@@ -572,20 +572,20 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
 
   if( exp != NULL ) {
     
-    if( SUPPL_OP( exp->suppl ) == EXP_OP_LAST ) {
+    if( exp->op == EXP_OP_LAST ) {
 
       *size = 0;
 
-    } else if( SUPPL_OP( exp->suppl ) == EXP_OP_STATIC ) {
+    } else if( exp->op == EXP_OP_STATIC ) {
 
-      if( exp->value->suppl == DECIMAL ) {
+      if( exp->value->suppl.part.base == DECIMAL ) {
 
         snprintf( code_fmt, 300, "%d", vector_to_int( exp->value ) );
         *size = strlen( code_fmt );
       
       } else {
 
-        tmpstr = vector_to_string( exp->value, exp->value->suppl );
+        tmpstr = vector_to_string( exp->value, exp->value->suppl.part.base );
         *size  = strlen( tmpstr );
         free_safe( tmpstr );
 
@@ -593,8 +593,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
 
     } else {
 
-      if( (SUPPL_OP( exp->suppl ) == EXP_OP_SIG) ||
-          (SUPPL_OP( exp->suppl ) == EXP_OP_PARAM) ) {
+      if( (exp->op == EXP_OP_SIG) || (exp->op == EXP_OP_PARAM) ) {
 
         if( exp->sig->name[0] == '#' ) {
           tmpname = exp->sig->name + 1;
@@ -612,12 +611,12 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
         
       } else {
 
-        combination_underline_tree( exp->left,  combination_calc_depth( exp, curr_depth, TRUE ),  &l_lines, &l_depth, &l_size, SUPPL_OP( exp->suppl ), center );
-        combination_underline_tree( exp->right, combination_calc_depth( exp, curr_depth, FALSE ), &r_lines, &r_depth, &r_size, SUPPL_OP( exp->suppl ), center );
+        combination_underline_tree( exp->left,  combination_calc_depth( exp, curr_depth, TRUE ),  &l_lines, &l_depth, &l_size, exp->op, center );
+        combination_underline_tree( exp->right, combination_calc_depth( exp, curr_depth, FALSE ), &r_lines, &r_depth, &r_size, exp->op, center );
 
-        if( parent_op == SUPPL_OP( exp->suppl ) ) {
+        if( parent_op == exp->op ) {
 
-          switch( SUPPL_OP( exp->suppl ) ) {
+          switch( exp->op ) {
             case EXP_OP_XOR        :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s   %s"        );  break;
             case EXP_OP_MULTIPLY   :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s   %s"        );  break;
             case EXP_OP_DIVIDE     :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s   %s"        );  break;
@@ -646,7 +645,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
 
         } else {
 
-          switch( SUPPL_OP( exp->suppl ) ) {
+          switch( exp->op ) {
             case EXP_OP_XOR        :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "        );  break;
             case EXP_OP_MULTIPLY   :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "        );  break;
             case EXP_OP_DIVIDE     :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "        );  break;
@@ -677,7 +676,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
 
         if( *size == 0 ) {
 
-          switch( SUPPL_OP( exp->suppl ) ) {
+          switch( exp->op ) {
             case EXP_OP_COND       :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s   %s"          );  break;
             case EXP_OP_COND_SEL   :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s   %s"          );  break;
             case EXP_OP_UINV       :  *size = l_size + r_size + 1;  strcpy( code_fmt, " %s"              );  break;
@@ -720,28 +719,28 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
             case EXP_OP_CONCAT   :  *size = l_size + r_size + 2;  strcpy( code_fmt, " %s "             );  break;
             case EXP_OP_LIST     :  *size = l_size + r_size + 2;  strcpy( code_fmt, "%s  %s"           );  break;
             case EXP_OP_PEDGE    :
-              if( SUPPL_IS_ROOT( exp->suppl ) == 1 ) {
+              if( ESUPPL_IS_ROOT( exp->suppl ) == 1 ) {
                 *size = l_size + r_size + 11;  strcpy( code_fmt, "          %s " );
               } else {
                 *size = l_size + r_size + 8;   strcpy( code_fmt, "        %s" );
               }
               break;
             case EXP_OP_NEDGE    :
-              if( SUPPL_IS_ROOT( exp->suppl ) == 1 ) {
+              if( ESUPPL_IS_ROOT( exp->suppl ) == 1 ) {
                 *size = l_size + r_size + 11;  strcpy( code_fmt, "          %s " );
               } else {
                 *size = l_size + r_size + 8;   strcpy( code_fmt, "        %s" );
               }
               break;
             case EXP_OP_AEDGE    :
-              if( SUPPL_IS_ROOT( exp->suppl ) == 1 ) {
+              if( ESUPPL_IS_ROOT( exp->suppl ) == 1 ) {
                 *size = l_size + r_size + 3;  strcpy( code_fmt, "  %s " );
               } else {
                 *size = l_size + r_size + 0;  strcpy( code_fmt, "%s" );
               }
               break;
             case EXP_OP_EOR      :
-              if( SUPPL_IS_ROOT( exp->suppl ) == 1 ) {
+              if( ESUPPL_IS_ROOT( exp->suppl ) == 1 ) {
                 *size = l_size + r_size + 7;  strcpy( code_fmt, "  %s    %s " );
               } else {
                 *size = l_size + r_size + 4;  strcpy( code_fmt, "%s    %s" );
@@ -757,7 +756,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
             case EXP_OP_IF       :  *size = r_size + 6;           strcpy( code_fmt, "    %s  " );          break;
             default              :
               snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  Unknown expression type in combination_underline_tree (%d)",
-                        SUPPL_OP( exp->suppl ) );
+                        exp->op );
               print_output( user_msg, FATAL, __FILE__, __LINE__ );
               exit( 1 );
               break;
@@ -981,7 +980,7 @@ void combination_underline( FILE* ofile, char** code, int code_depth, expression
 
   start = 0;
 
-  combination_underline_tree( exp, 0, &lines, &depth, &size, SUPPL_OP( exp->suppl ), (code_depth == 1) );
+  combination_underline_tree( exp, 0, &lines, &depth, &size, exp->op, (code_depth == 1) );
 
   for( j=0; j<code_depth; j++ ) {
 
@@ -1044,7 +1043,7 @@ void combination_unary( char*** info, int* info_size, expression* exp, char* op 
   assert( exp != NULL );
 
   /* Get hit information */
-  hit = SUPPL_WAS_FALSE( exp->suppl ) + SUPPL_WAS_TRUE( exp->suppl );
+  hit = ESUPPL_WAS_FALSE( exp->suppl ) + ESUPPL_WAS_TRUE( exp->suppl );
 
   assert( exp->ulid != -1 );
 
@@ -1065,8 +1064,8 @@ void combination_unary( char*** info, int* info_size, expression* exp, char* op 
 
   length = 15;  (*info)[4] = (char*)malloc_safe( length, __FILE__, __LINE__ );
   snprintf( (*info)[4], length, "         %c   %c",
-		  ((SUPPL_WAS_FALSE( exp->suppl ) == 1) ? ' ' : '*'),
-		  ((SUPPL_WAS_TRUE( exp->suppl )  == 1) ? ' ' : '*') );
+		  ((ESUPPL_WAS_FALSE( exp->suppl ) == 1) ? ' ' : '*'),
+		  ((ESUPPL_WAS_TRUE( exp->suppl )  == 1) ? ' ' : '*') );
 
 }
 
@@ -1094,10 +1093,10 @@ void combination_two_vars( char*** info, int* info_size, expression* exp, char* 
   assert( exp->right != NULL );
 
   /* Get hit information */
-  hit = ((exp->suppl >> SUPPL_LSB_EVAL_00) & 0x1) +
-        ((exp->suppl >> SUPPL_LSB_EVAL_01) & 0x1) +
-        ((exp->suppl >> SUPPL_LSB_EVAL_10) & 0x1) +
-        ((exp->suppl >> SUPPL_LSB_EVAL_11) & 0x1);
+  hit = exp->suppl.part.eval_00 +
+        exp->suppl.part.eval_01 +
+        exp->suppl.part.eval_10 +
+        exp->suppl.part.eval_11;
 
   assert( exp->ulid != -1 );
 
@@ -1120,10 +1119,10 @@ void combination_two_vars( char*** info, int* info_size, expression* exp, char* 
   length = 26;
   (*info)[4] = (char*)malloc_safe( length, __FILE__, __LINE__ );
   snprintf( (*info)[4], length, "         %c    %c    %c    %c",
-                  ((((exp->suppl >> SUPPL_LSB_EVAL_00) & 0x1) == 1) ? ' ' : '*'),
-                  ((((exp->suppl >> SUPPL_LSB_EVAL_01) & 0x1) == 1) ? ' ' : '*'),
-                  ((((exp->suppl >> SUPPL_LSB_EVAL_10) & 0x1) == 1) ? ' ' : '*'),
-                  ((((exp->suppl >> SUPPL_LSB_EVAL_11) & 0x1) == 1) ? ' ' : '*') );
+                  ((exp->suppl.part.eval_00 == 1) ? ' ' : '*'),
+                  ((exp->suppl.part.eval_01 == 1) ? ' ' : '*'),
+                  ((exp->suppl.part.eval_10 == 1) ? ' ' : '*'),
+                  ((exp->suppl.part.eval_11 == 1) ? ' ' : '*') );
 
 }
 
@@ -1146,10 +1145,10 @@ void combination_multi_var_exprs( char** line1, char** line2, char** line3, expr
 
   if( exp != NULL ) {
 
-    and_op = (SUPPL_OP( exp->suppl ) == EXP_OP_AND) || (SUPPL_OP( exp->suppl ) == EXP_OP_LAND);
+    and_op = (exp->op == EXP_OP_AND) || (exp->op == EXP_OP_LAND);
 
     /* If we have hit the left-most expression, start creating string here */
-    if( (exp->left != NULL) && (SUPPL_OP( exp->suppl ) != SUPPL_OP( exp->left->suppl )) ) {
+    if( (exp->left != NULL) && (exp->op != exp->left->op) ) {
 
       assert( exp->left->ulid != -1 );
       snprintf( curr_id_str, 20, "%d", exp->left->ulid );
@@ -1172,9 +1171,9 @@ void combination_multi_var_exprs( char** line1, char** line2, char** line3, expr
       }
       curr_id_str[i] = '\0';
       if( and_op ) {
-        snprintf( left_line3, (curr_id_str_len + 4), " %c%s  ", ((SUPPL_WAS_FALSE( exp->left->suppl ) == 1) ? ' ' : '*'), curr_id_str );
+        snprintf( left_line3, (curr_id_str_len + 4), " %c%s  ", ((ESUPPL_WAS_FALSE( exp->left->suppl ) == 1) ? ' ' : '*'), curr_id_str );
       } else {
-        snprintf( left_line3, (curr_id_str_len + 4), " %c%s  ", ((SUPPL_WAS_TRUE( exp->left->suppl )  == 1) ? ' ' : '*'), curr_id_str );
+        snprintf( left_line3, (curr_id_str_len + 4), " %c%s  ", ((ESUPPL_WAS_TRUE( exp->left->suppl )  == 1) ? ' ' : '*'), curr_id_str );
       }
 
     } else {
@@ -1207,17 +1206,17 @@ void combination_multi_var_exprs( char** line1, char** line2, char** line3, expr
     curr_id_str[i] = '\0';
     if( and_op ) {
       snprintf( *line3, (strlen( left_line3 ) + curr_id_str_len + 4), "%s %c%s  ",
-                left_line3, ((SUPPL_WAS_FALSE( exp->right->suppl ) == 1) ? ' ' : '*'), curr_id_str );
+                left_line3, ((ESUPPL_WAS_FALSE( exp->right->suppl ) == 1) ? ' ' : '*'), curr_id_str );
     } else {
       snprintf( *line3, (strlen( left_line3 ) + curr_id_str_len + 4), "%s %c%s  ",
-                left_line3, ((SUPPL_WAS_TRUE( exp->right->suppl )  == 1) ? ' ' : '*'),  curr_id_str );
+                left_line3, ((ESUPPL_WAS_TRUE( exp->right->suppl )  == 1) ? ' ' : '*'),  curr_id_str );
     }
     free_safe( left_line1 );
     free_safe( left_line2 );
     free_safe( left_line3 );
 
     /* If we are the root, output all value */
-    if( (SUPPL_IS_ROOT( exp->suppl ) == 1) || (SUPPL_OP( exp->suppl ) != SUPPL_OP( exp->parent->expr->suppl )) ) {
+    if( (ESUPPL_IS_ROOT( exp->suppl ) == 1) || (exp->op != exp->parent->expr->op) ) {
       left_line1 = *line1;
       left_line2 = *line2;
       left_line3 = *line3;
@@ -1227,11 +1226,11 @@ void combination_multi_var_exprs( char** line1, char** line2, char** line3, expr
       if( and_op ) {
         snprintf( *line1, (strlen( left_line1 ) + 7), "%s All",   left_line1 );
         snprintf( *line2, (strlen( left_line2 ) + 7), "%s==1==",  left_line2 );
-        snprintf( *line3, (strlen( left_line3 ) + 7), "%s  %c  ", left_line3, ((((exp->suppl >> SUPPL_LSB_EVAL_11) & 0x1) == 1) ? ' ' : '*') );
+        snprintf( *line3, (strlen( left_line3 ) + 7), "%s  %c  ", left_line3, ((exp->suppl.part.eval_11 == 1) ? ' ' : '*') );
       } else {
         snprintf( *line1, (strlen( left_line1 ) + 7), "%s All",   left_line1 );
         snprintf( *line2, (strlen( left_line2 ) + 7), "%s==0==",  left_line2 );
-        snprintf( *line3, (strlen( left_line3 ) + 7), "%s  %c  ", left_line3, ((((exp->suppl >> SUPPL_LSB_EVAL_00) & 0x1) == 1) ? ' ' : '*') );
+        snprintf( *line3, (strlen( left_line3 ) + 7), "%s  %c  ", left_line3, ((exp->suppl.part.eval_00 == 1) ? ' ' : '*') );
       }
       free_safe( left_line1 );
       free_safe( left_line2 );
@@ -1355,7 +1354,7 @@ void combination_multi_vars( char*** info, int* info_size, expression* exp ) {
     
     snprintf( (*info)[0], line_size, "        Expression %d   (%d/%.0f)", exp->ulid, hit, total );
     
-    switch( SUPPL_OP( exp->suppl ) ) {
+    switch( exp->op ) {
       case EXP_OP_AND  :  (*info)[1] = strdup( "        ^^^^^^^^^^^^^ - &" );   break;
       case EXP_OP_OR   :  (*info)[1] = strdup( "        ^^^^^^^^^^^^^ - |" );   break;
       case EXP_OP_LAND :  (*info)[1] = strdup( "        ^^^^^^^^^^^^^ - &&" );  break;
@@ -1384,24 +1383,24 @@ void combination_get_missed_expr( char*** info, int* info_size, expression* exp,
       (((report_comb_depth == REPORT_DETAILED) && (curr_depth <= report_comb_depth)) ||
         (report_comb_depth == REPORT_VERBOSE)) ) {
 
-    if( (SUPPL_IS_ROOT( exp->suppl ) == 1) || (SUPPL_OP( exp->suppl ) != SUPPL_OP( exp->parent->expr->suppl )) ||
-        ((SUPPL_OP( exp->suppl ) != EXP_OP_AND)  &&
-         (SUPPL_OP( exp->suppl ) != EXP_OP_LAND) &&
-         (SUPPL_OP( exp->suppl ) != EXP_OP_OR)   &&
-         (SUPPL_OP( exp->suppl ) != EXP_OP_LOR)) ) {
+    if( (ESUPPL_IS_ROOT( exp->suppl ) == 1) || (exp->op != exp->parent->expr->op) ||
+        ((exp->op != EXP_OP_AND)  &&
+         (exp->op != EXP_OP_LAND) &&
+         (exp->op != EXP_OP_OR)   &&
+         (exp->op != EXP_OP_LOR)) ) {
 
-      if( (exp->left != NULL) && (SUPPL_OP( exp->suppl ) == SUPPL_OP( exp->left->suppl )) &&
-          ((SUPPL_OP( exp->suppl ) == EXP_OP_AND)  ||
-           (SUPPL_OP( exp->suppl ) == EXP_OP_OR)   ||
-           (SUPPL_OP( exp->suppl ) == EXP_OP_LAND) ||
-           (SUPPL_OP( exp->suppl ) == EXP_OP_LOR)) ) {
+      if( (exp->left != NULL) && (exp->op == exp->left->op) &&
+          ((exp->op == EXP_OP_AND)  ||
+           (exp->op == EXP_OP_OR)   ||
+           (exp->op == EXP_OP_LAND) ||
+           (exp->op == EXP_OP_LOR)) ) {
 
         combination_multi_vars( info, info_size, exp );
 
       } else {
 
         /* Create combination table */
-        switch( SUPPL_OP( exp->suppl ) ) {
+        switch( exp->op ) {
           case EXP_OP_SIG        :  combination_unary( info, info_size, exp, "" );         break;
           case EXP_OP_XOR        :  combination_two_vars( info, info_size, exp, "^" );     break;
           case EXP_OP_ADD        :  combination_two_vars( info, info_size, exp, "+" );     break;
@@ -1514,9 +1513,9 @@ void combination_list_missed( FILE* ofile, expression* exp, unsigned int curr_de
 */
 bool combination_output_expr( expression* expr, unsigned int curr_depth, int* any_missed, int* any_measurable ) {
 
-  if( (expr != NULL) && (SUPPL_WAS_COMB_COUNTED( expr->suppl ) == 1) ) {
+  if( (expr != NULL) && (ESUPPL_WAS_COMB_COUNTED( expr->suppl ) == 1) ) {
 
-    expr->suppl = expr->suppl & ~(0x1 << SUPPL_LSB_COMB_CNTD);
+    expr->suppl.part.comb_cntd = 0;
 
     combination_output_expr( expr->right, combination_calc_depth( expr, curr_depth, FALSE ), any_missed, any_measurable );
     combination_output_expr( expr->left,  combination_calc_depth( expr, curr_depth, TRUE ),  any_missed, any_measurable );
@@ -1578,7 +1577,7 @@ void combination_display_verbose( FILE* ofile, stmt_link* stmtl ) {
     if( ((report_covered == 0) && (any_missed == 1)) ||
         ((report_covered == 1) && (any_missed == 0) && (any_measurable == 1)) ) {
  
-      stmti.curr->stmt->exp->suppl = stmti.curr->stmt->exp->suppl & ~(0x1 << SUPPL_LSB_COMB_CNTD);
+      stmti.curr->stmt->exp->suppl.part.comb_cntd = 0;
       unexec_exp = stmti.curr->stmt->exp;
 
       fprintf( ofile, "      =========================================================================================================\n" );
@@ -1586,7 +1585,7 @@ void combination_display_verbose( FILE* ofile, stmt_link* stmtl ) {
       fprintf( ofile, "      =========================================================================================================\n" );
 
       /* Generate line of code that missed combinational coverage */
-      codegen_gen_expr( unexec_exp, SUPPL_OP( unexec_exp->suppl ), &code, &code_depth );
+      codegen_gen_expr( unexec_exp, unexec_exp->op, &code, &code_depth );
 
       /* Output underlining feature for missed expressions */
       combination_underline( ofile, code, code_depth, unexec_exp );
@@ -1723,7 +1722,7 @@ bool combination_collect( const char* mod_name, expression*** covs, int* cov_cnt
           (*uncovs)[(*uncov_cnt)] = stmti.curr->stmt->exp;
           (*uncov_cnt)++;
         }
-        stmti.curr->stmt->exp->suppl = stmti.curr->stmt->exp->suppl & ~(0x1 << SUPPL_LSB_COMB_CNTD);
+        stmti.curr->stmt->exp->suppl.part.comb_cntd = 0;
       }
 
       /* Check for covered statements */
@@ -1736,7 +1735,7 @@ bool combination_collect( const char* mod_name, expression*** covs, int* cov_cnt
           (*covs)[(*cov_cnt)] = stmti.curr->stmt->exp;
           (*cov_cnt)++;
         }
-        stmti.curr->stmt->exp->suppl = stmti.curr->stmt->exp->suppl & ~(0x1 << SUPPL_LSB_COMB_CNTD);
+        stmti.curr->stmt->exp->suppl.part.comb_cntd = 0;
       }
 
       stmt_iter_get_next_in_order( &stmti );
@@ -1774,11 +1773,11 @@ bool combination_get_expression( char* mod_name, int expr_id, char*** code, int*
     if( (expl = exp_link_find( &exp, modl->mod->exp_head )) != NULL ) {
 
       /* Generate line of code that missed combinational coverage */
-      codegen_gen_expr( expl->exp, SUPPL_OP( expl->exp->suppl ), code, code_size );
+      codegen_gen_expr( expl->exp, expl->exp->op, code, code_size );
       *uline_groups = (int*)malloc_safe( sizeof( int ) * (*code_size), __FILE__, __LINE__ );
 
       /* Output underlining feature for missed expressions */
-      combination_underline_tree( expl->exp, 0, &tmp_ulines, &tmp_uline_size, &tmp, SUPPL_OP( expl->exp->suppl ), (*code_size == 1) );
+      combination_underline_tree( expl->exp, 0, &tmp_ulines, &tmp_uline_size, &tmp, expl->exp->op, (*code_size == 1) );
 
       *ulines     = (char**)malloc_safe( sizeof( char* ) * uline_max, __FILE__, __LINE__ );
       *uline_size = 0;
@@ -1929,6 +1928,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.103  2004/09/07 03:17:13  phase1geo
+ Fixing bug that did not allow combinational logic to be revisited in GUI properly.
+ Also removing comments from bgerror function in Tcl code.
+
  Revision 1.102  2004/08/17 15:23:37  phase1geo
  Added combinational logic coverage output to GUI.  Modified comb.c code to get this
  to work that impacts ASCII coverage output; however, regression is fully passing with

@@ -267,7 +267,7 @@ expression* fsm_arg_parse_value( char** str, module* mod ) {
   int         chars_read;    /* Number of characters read from sscanf()      */
   mod_parm*   mparm;         /* Pointer to module parameter found            */
 
-  if( (vec = vector_from_string( str )) != NULL ) {
+  if( (vec = vector_from_string( str, FALSE )) != NULL ) {
 
     /* This value represents a static value, handle as such */
     expr = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
@@ -506,6 +506,10 @@ void fsm_arg_parse_attr( attr_param* ap, module* mod ) {
 
 /*
  $Log$
+ Revision 1.16  2004/04/19 04:54:56  phase1geo
+ Adding first and last column information to expression and related code.  This is
+ not working correctly yet.
+
  Revision 1.15  2004/03/30 15:42:14  phase1geo
  Renaming signal type to vsignal type to eliminate compilation problems on systems
  that contain a signal type in the OS.

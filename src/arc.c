@@ -1084,8 +1084,8 @@ bool arc_db_merge( char** base, char** line, bool same ) {
       arc_state_to_string( arcs, i, FALSE, (strr + 2 + strlen( str_width )) );      
 
       /* Convert these strings to vectors */
-      vecl = vector_from_string( &strl );
-      vecr = vector_from_string( &strr );
+      vecl = vector_from_string( &strl, FALSE );
+      vecr = vector_from_string( &strr, FALSE );
 
       /* Add these states to the base arc array */
       arc_add( base, vecl, vecr, arc_get_entry_suppl( arcs, i, ARC_HIT_F ) );
@@ -1262,6 +1262,10 @@ void arc_dealloc( char* arcs ) {
 
 /*
  $Log$
+ Revision 1.24  2004/04/05 12:30:52  phase1geo
+ Adding *db_replace functions to allow a design to be opened with new CDD
+ results (for GUI purposes only).
+
  Revision 1.23  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,

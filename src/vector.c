@@ -483,7 +483,7 @@ char* vector_get_toggle01( nibble* nib, int width ) {
   char  tmp[2];
 
   for( i=(width - 1); i>=0; i-- ) {
-    snprintf( tmp, 2, "%x", VECTOR_TOG01( nib[i] ) );
+    snprintf( tmp, 2, "%x", nib[i].part.tog01 );
     bits[((width - 1) - i)] = tmp[0];
   }
 
@@ -500,7 +500,7 @@ char* vector_get_toggle10( nibble* nib, int width ) {
   char  tmp[2];
 
   for( i=(width - 1); i>=0; i-- ) {
-    snprintf( tmp, 2, "%x", VECTOR_TOG10( nib[i] ) );
+    snprintf( tmp, 2, "%x", nib[i].part.tog10 ) );
     bits[((width - 1) - i)] = tmp[0];
   }
 
@@ -526,7 +526,7 @@ void vector_display_toggle01( nibble* nib, int width, FILE* ofile ) {
   fprintf( ofile, "%d'h", width );
 
   for( i=(width - 1); i>=0; i-- ) {
-    value = value | (VECTOR_TOG01( nib[i] ) << (i % 4));
+    value = value | (nib[i].part.tog01 << (i % 4));
     if( (i % 4) == 0 ) {
       fprintf( ofile, "%1x", value );
       value = 0;
@@ -554,7 +554,7 @@ void vector_display_toggle10( nibble* nib, int width, FILE* ofile ) {
   fprintf( ofile, "%d'h", width );
 
   for( i=(width - 1); i>=0; i-- ) {
-    value = value | (VECTOR_TOG10( nib[i] ) << (i % 4));
+    value = value | (nib[i].part.tog10 << (i % 4));
     if( (i % 4) == 0 ) {
       fprintf( ofile, "%1x", value );
       value = 0;
@@ -588,7 +588,7 @@ void vector_display_nibble( nibble* nib, int width ) {
   printf( ", value: %d'b", width );
 
   for( i=(width - 1); i>=0; i-- ) {
-    switch( VECTOR_VAL( nib[i] ) ) {
+    switch( nib[i].part.value ) ) {
       case 0 :  printf( "0" );  break;
       case 1 :  printf( "1" );  break;
       case 2 :  printf( "x" );  break;
@@ -609,21 +609,21 @@ void vector_display_nibble( nibble* nib, int width ) {
   printf( ", set: %d'b", width );
 
   for( i=(width - 1); i>=0; i-- ) {
-    printf( "%d", VECTOR_SET( nib[i] ) );
+    printf( "%d", nib[i].part.set );
   }
 
   /* Display bit FALSE information */
   printf( ", FALSE: %d'b", width );
 
   for( i=(width - 1); i>=0; i-- ) {
-    printf( "%d", VECTOR_FALSE( nib[i] ) );
+    printf( "%d", nib[i].part.false );
   }
 
   /* Display bit TRUE information */
   printf( ", TRUE: %d'b", width );
 
   for( i=(width - 1); i>=0; i-- ) {
-    printf( "%d", VECTOR_TRUE( nib[i] ) );
+    printf( "%d", nib[i].part.true );
   }
 
 }
@@ -663,8 +663,8 @@ void vector_toggle_count( vector* vec, int* tog01_cnt, int* tog10_cnt ) {
   int i;  /* Loop iterator */
 
   for( i=0; i<vec->width; i++ ) {
-    *tog01_cnt = *tog01_cnt + VECTOR_TOG01( vec->value[i] );
-    *tog10_cnt = *tog10_cnt + VECTOR_TOG10( vec->value[i] );
+    *tog01_cnt = *tog01_cnt + vec->value[i].part.tog01;
+    *tog10_cnt = *tog10_cnt + vec->value[i].part.tog10;
   }
 
 }
@@ -683,8 +683,8 @@ void vector_logic_count( vector* vec, int* false_cnt, int* true_cnt ) {
   int i;  /* Loop iterator */
 
   for( i=0; i<vec->width; i++ ) {
-    *false_cnt = *false_cnt + VECTOR_FALSE( vec->value[i] );
-    *true_cnt  = *true_cnt  + VECTOR_TRUE( vec->value[i] );
+    *false_cnt = *false_cnt + vec->value[i].part.false;
+    *true_cnt  = *true_cnt  + vec->value[i].part.true;
   }
 
 }
@@ -706,11 +706,12 @@ void vector_logic_count( vector* vec, int* false_cnt, int* true_cnt ) {
 */
 bool vector_set_value( vector* vec, nibble* value, int width, int from_idx, int to_idx ) {
 
-  bool   retval = FALSE;  /* Return value for this function            */
-  nibble from_val;        /* Current bit value of value being assigned */
-  nibble to_val;          /* Current bit value of previous value       */
-  int    i;               /* Loop iterator                             */
-  nibble set_val;         /* Value to set current vec value to         */
+  bool      retval = FALSE;       /* Return value for this function            */
+  nibble    from_val;             /* Current bit value of value being assigned */
+  nibble    to_val;               /* Current bit value of previous value       */
+  int       i;                    /* Loop iterator                             */
+  vec_data  set_val;              /* Value to set current vec value to         */
+  vec_data* vval   = vec->value;  /* Pointer to vector value array             */
 
   assert( vec != NULL );
 
@@ -724,35 +725,35 @@ bool vector_set_value( vector* vec, nibble* value, int width, int from_idx, int 
 
   for( i=0; i<width; i++ ) {
 
-    set_val  = vec->value[i + to_idx];
-    from_val = VECTOR_VAL( value[i + from_idx] );
-    to_val   = VECTOR_VAL( set_val );
+    set_val  = vval[i + to_idx];
+    from_val = value[i + from_idx].part.value;
+    to_val   = set_val.part.value;
 
-    if( (from_val != to_val) || (VECTOR_SET( set_val ) == 0x0) ) {
+    if( (from_val != to_val) || (set_val.part.set == 0x0) ) {
 
-      if( VECTOR_SET( set_val ) == 0x1 ) {
+      if( set_val.part.set ) == 0x1 ) {
 
         /* Assign toggle values if necessary */
   
         if( (to_val == 0) && (from_val == 1) ) {
-          set_val |= (0x1 << VECTOR_LSB_TOG01);
+          set_val.part.tog01 = 1;
         } else if( (to_val == 1) && (from_val == 0) ) {
-          set_val |= (0x1 << VECTOR_LSB_TOG10);
+          set_val.part.tog10 = 1;
         }
 
       }
 
       /* Assign TRUE/FALSE values if necessary */
       if( from_val == 0 ) {
-        set_val |= (0x1 << VECTOR_LSB_FALSE);
+        set_val.part.false = 1;
       } else if( from_val == 1 ) {
-        set_val |= (0x1 << VECTOR_LSB_TRUE);
+        set_val.part.true  = 1;
       }
 
       /* Perform value assignment */
-      set_val |= (0x1 << VECTOR_LSB_SET);
-      VECTOR_SET_VAL( set_val, from_val );
-      vec->value[i + to_idx] = set_val;
+      set_val.part.set   = 1;
+      set_val.part.value = from_val;
+      vval[i + to_idx]   = set_val;
 
       retval = TRUE;
 
@@ -779,7 +780,7 @@ bool vector_is_unknown( vector* vec ) {
   int  val;              /* Bit value of current bit                    */
 
   for( i=0; i<vec->width; i++ ) {
-    val = VECTOR_VAL( vec->value[i] );
+    val = vec->value[i].part.value;
     if( (val == 0x2) || (val == 0x3) ) {
       unknown = TRUE;
     }
@@ -807,12 +808,12 @@ int vector_to_int( vector* vec ) {
   width = (vec->width > (SIZEOF_INT * 8)) ? 32 : vec->width;
 
   for( i=(width - 1); i>=0; i-- ) {
-    switch( VECTOR_VAL( vec->value[i] ) ) {
+    switch( vec->value[i].part.value ) {
       case 0 :  retval = (retval << 1) | 0;  break;
       case 1 :  retval = (retval << 1) | 1;  break;
       default:
         print_output( "Vector converting to integer contains X or Z values", FATAL, __FILE__, __LINE__ );
-        assert( VECTOR_VAL( vec->value[i] ) < 2 );
+        assert( vec->value[i].part.value < 2 );
         break;
     }
   }
@@ -839,7 +840,7 @@ void vector_from_int( vector* vec, int value ) {
   width = (vec->width < (SIZEOF_INT * 8)) ? vec->width : (SIZEOF_INT * 8);
 
   for( i=0; i<width; i++ ) {
-    VECTOR_SET_VAL( vec->value[i], (value & 0x1) );
+    vec->value[i].part.value = (value & 0x1);
     value >>= 1;
   }
 
@@ -869,13 +870,13 @@ void vector_set_static( vector* vec, char* str, int bits_per_char ) {
       if( (*ptr == 'x') || (*ptr == 'X') ) {
         for( i=0; i<bits_per_char; i++ ) {
           if( (i + pos) < vec->width ) { 
-            VECTOR_SET_VAL( vec->value[i + pos], 0x2 );
+            vec->value[i + pos].part.value = 0x2;
           }
         }
       } else if( (*ptr == 'z') || (*ptr == 'Z') || (*ptr == '?') ) {
         for( i=0; i<bits_per_char; i++ ) {
           if( (i + pos) < vec->width ) { 
-            VECTOR_SET_VAL( vec->value[i + pos], 0x3 );
+            vec->value[i + pos].part.value = 0x3;
           }
         }
       } else {
@@ -889,7 +890,7 @@ void vector_set_static( vector* vec, char* str, int bits_per_char ) {
         }
         for( i=0; i<bits_per_char; i++ ) {
           if( (i + pos) < vec->width ) {
-            VECTOR_SET_VAL( vec->value[i + pos], ((val >> i) & 0x1) );
+            vec->value[i + pos].part.value = ((val >> i) & 0x1);
           } 
         }
       }
@@ -952,7 +953,7 @@ char* vector_to_string( vector* vec, int type ) {
   pos   = 0;
 
   for( i=(vec->width - 1); i>=0; i-- ) {
-    switch( VECTOR_VAL( vec->value[i] ) ) {
+    switch( vec->value[i].part.value ) {
       case 0 :  value = value;                                              break;
       case 1 :  value = (value < 16) ? ((1 << (i%group)) | value) : value;  break;
       case 2 :  value = 16;                                                 break;
@@ -1003,7 +1004,8 @@ char* vector_to_string( vector* vec, int type ) {
 }
 
 /*!
- \param str  String version of value.
+ \param str     String version of value.
+ \param quoted  If TRUE, treat the string as a literal.
  
  \return Returns pointer to newly created vector holding string value.
 
@@ -1011,7 +1013,7 @@ char* vector_to_string( vector* vec, int type ) {
  sized.  If the string value size exceeds Covered's maximum bit allowance, return
  a value of NULL to indicate this to the calling function.
 */
-vector* vector_from_string( char** str ) {
+vector* vector_from_string( char** str, bool quoted ) {
 
   vector* vec;                   /* Temporary holder for newly created vector                                */
   int     bits_per_char;         /* Number of bits represented by a single character in the value string str */
@@ -1020,69 +1022,98 @@ vector* vector_from_string( char** str ) {
   char    stype[2];              /* Temporary holder for type of string being parsed                         */
   nibble  type;                  /* Type of string being parsed                                              */
   int     chars_read;            /* Number of characters read by a sscanf() function call                    */
+  int     i;                     /* Loop iterator                                                            */
 
-  if( sscanf( *str, "%d'%[sSdD]%[0-9]%n", &size, stype, value, &chars_read ) == 3 ) {
-    bits_per_char = 10;
-    type          = DECIMAL;
-    *str          = *str + chars_read;
-  } else if( sscanf( *str, "%d'%[sSbB]%[01xXzZ_\?]%n", &size, stype, value, &chars_read ) == 3 ) {
-    bits_per_char = 1;
-    type          = BINARY;
-    *str          = *str + chars_read;
-  } else if( sscanf( *str, "%d'%[sSoO]%[0-7xXzZ_\?]%n", &size, stype, value, &chars_read ) == 3 ) {
-    bits_per_char = 3;
-    type          = OCTAL;
-    *str          = *str + chars_read;
-  } else if( sscanf( *str, "%d'%[sShH]%[0-9a-fA-FxXzZ_\?]%n", &size, stype, value, &chars_read ) == 3 ) {
-    bits_per_char = 4;
-    type          = HEXIDECIMAL;
-    *str          = *str + chars_read;
-  } else if( sscanf( *str, "'%[sSdD]%[0-9]%n", stype, value, &chars_read ) == 2 ) {
-    bits_per_char = 10;
-    type          = DECIMAL;
-    size          = 32;
-    *str          = *str + chars_read;
-  } else if( sscanf( *str, "'%[sSbB]%[01xXzZ_\?]%n", stype, value, &chars_read ) == 2 ) {
-    bits_per_char = 1;
-    type          = BINARY;
-    size          = 32;
-    *str          = *str + chars_read;
-  } else if( sscanf( *str, "'%[sSoO]%[0-7xXzZ_\?]%n", stype, value, &chars_read ) == 2 ) {
-    bits_per_char = 3;
-    type          = OCTAL;
-    size          = 32;
-    *str          = *str + chars_read;
-  } else if( sscanf( *str, "'%[sShH]%[0-9a-fA-FxXzZ_\?]%n", stype, value, &chars_read ) == 2 ) {
-    bits_per_char = 4;
-    type          = HEXIDECIMAL;
-    size          = 32;
-    *str          = *str + chars_read;
-  } else if( sscanf( *str, "%[0-9_]%n", value, &chars_read ) == 1 ) {
-    bits_per_char = 10;
-    type          = DECIMAL;
-    size          = 32;
-    *str          = *str + chars_read;
-  } else {
-    /* If the specified string is none of the above, return NULL */
-    return( NULL );
-  }
+  if( quoted ) {
 
-  /* If we have exceeded the maximum number of bits, return a value of NULL */
-  if( size > MAX_BIT_WIDTH ) {
+    size = strlen( *str ) * 8;
 
-    vec = NULL;
+    /* If we have exceeded the maximum number of bits, return a value of NULL */
+    if( size > MAX_BIT_WIDTH ) {
 
-  } else {
+      vec = NULL;
 
-    /* Create vector */
-    vec = vector_create( size, TRUE );
-
-    vec->suppl = type;
-
-    if( type == DECIMAL ) {
-      vector_from_int( vec, atol( value ) );
     } else {
-      vector_set_static( vec, value, bits_per_char ); 
+
+      /* Create vector */
+      vec = vector_create( size, TRUE );
+
+      vec->suppl.part.base = QSTRING;
+
+      for( i=0; i<strlen( *str ); i++ ) {
+        for( j=0; j<8; j++ ) {
+          vec->value[(i*8) + j].part.value = ((nibble)((*str)[i]) >> j) & 0x1;
+        }
+      }
+
+    }
+
+  } else {
+
+    if( sscanf( *str, "%d'%[sSdD]%[0-9]%n", &size, stype, value, &chars_read ) == 3 ) {
+      bits_per_char = 10;
+      type          = DECIMAL;
+      *str          = *str + chars_read;
+    } else if( sscanf( *str, "%d'%[sSbB]%[01xXzZ_\?]%n", &size, stype, value, &chars_read ) == 3 ) {
+      bits_per_char = 1;
+      type          = BINARY;
+      *str          = *str + chars_read;
+    } else if( sscanf( *str, "%d'%[sSoO]%[0-7xXzZ_\?]%n", &size, stype, value, &chars_read ) == 3 ) {
+      bits_per_char = 3;
+      type          = OCTAL;
+      *str          = *str + chars_read;
+    } else if( sscanf( *str, "%d'%[sShH]%[0-9a-fA-FxXzZ_\?]%n", &size, stype, value, &chars_read ) == 3 ) {
+      bits_per_char = 4;
+      type          = HEXIDECIMAL;
+      *str          = *str + chars_read;
+    } else if( sscanf( *str, "'%[sSdD]%[0-9]%n", stype, value, &chars_read ) == 2 ) {
+      bits_per_char = 10;
+      type          = DECIMAL;
+      size          = 32;
+      *str          = *str + chars_read;
+    } else if( sscanf( *str, "'%[sSbB]%[01xXzZ_\?]%n", stype, value, &chars_read ) == 2 ) {
+      bits_per_char = 1;
+      type          = BINARY;
+      size          = 32;
+      *str          = *str + chars_read;
+    } else if( sscanf( *str, "'%[sSoO]%[0-7xXzZ_\?]%n", stype, value, &chars_read ) == 2 ) {
+      bits_per_char = 3;
+      type          = OCTAL;
+      size          = 32;
+      *str          = *str + chars_read;
+    } else if( sscanf( *str, "'%[sShH]%[0-9a-fA-FxXzZ_\?]%n", stype, value, &chars_read ) == 2 ) {
+      bits_per_char = 4;
+      type          = HEXIDECIMAL;
+      size          = 32;
+      *str          = *str + chars_read;
+    } else if( sscanf( *str, "%[0-9_]%n", value, &chars_read ) == 1 ) {
+      bits_per_char = 10;
+      type          = DECIMAL;
+      size          = 32;
+      *str          = *str + chars_read;
+    } else {
+      /* If the specified string is none of the above, return NULL */
+      return( NULL );
+    }
+
+    /* If we have exceeded the maximum number of bits, return a value of NULL */
+    if( size > MAX_BIT_WIDTH ) {
+
+      vec = NULL;
+
+    } else {
+
+      /* Create vector */
+      vec = vector_create( size, TRUE );
+
+      vec->suppl.part.base = type;
+
+      if( type == DECIMAL ) {
+        vector_from_int( vec, atol( value ) );
+      } else {
+        vector_set_static( vec, value, bits_per_char ); 
+      }
+
     }
 
   }
@@ -1185,18 +1216,18 @@ bool vector_bitwise_op( vector* tgt, vector* src1, vector* src2, nibble* optab )
   for( i=0; i<tgt->width; i++ ) {
 
     if( src1->width > i ) {
-      bit1 = VECTOR_VAL( src1->value[i] );
+      bit1 = src1->value[i].part.value;
     } else {
       bit1 = 0;
     }
 
     if( src2->width > i ) {
-      bit2 = VECTOR_VAL( src2->value[i] );
+      bit2 = src2->value[i].part.value;
     } else {
       bit2 = 0;
     }
 
-    VECTOR_SET_VAL( vec.value[0], optab[ ((bit1 << 2) | bit2) ] );
+    vec.value[0].part.value = optab[ ((bit1 << 2) | bit2) ];
     retval |= vector_set_value( tgt, vec.value, 1, 0, i );
     
   }
@@ -1235,13 +1266,13 @@ bool vector_op_compare( vector* tgt, vector* left, vector* right, int comp_type 
   while( (pos >= 0) && !done ) {
 
     if( pos < left->width ) {
-      lbit = VECTOR_VAL( left->value[pos] );
+      lbit = left->value[pos].part.value;
     } else {
       lbit = 0;
     }
 
     if( pos < right->width ) {
-      rbit = VECTOR_VAL( right->value[pos] );
+      rbit = right->value[pos].part.value;
     } else {
       rbit = 0;
     }
@@ -1412,13 +1443,13 @@ bool vector_op_add( vector* tgt, vector* left, vector* right ) {
   for( i=0; i<tgt->width; i++ ) {
     
     if( i < left->width ) {
-      lbit = VECTOR_VAL( left->value[i] );
+      lbit = left->value[i].part.value;
     } else {
       lbit = 0;
     }
 
     if( i < right->width ) {
-      rbit = VECTOR_VAL( right->value[i] );
+      rbit = right->value[i].part.value;
     } else {
       rbit = 0;
     }
@@ -1461,7 +1492,7 @@ bool vector_op_subtract( vector* tgt, vector* left, vector* right ) {
   vec3 = vector_create( tgt->width, TRUE );
 
   /* Create vector with a value of 1 */
-  VECTOR_SET_VAL( vec1->value[0], 1 );
+  vec1->value[0].part.value = 1;
 
   /* Perform twos complement inversion on right expression */
   vector_unary_inv( vec2, right );
@@ -1517,7 +1548,7 @@ bool vector_op_multiply( vector* tgt, vector* left, vector* right ) {
   if( ((lcomp.value[0] & 0x3) == 2) && ((rcomp.value[0] & 0x3) == 2) ) {
 
     for( i=0; i<vec.width; i++ ) {
-      VECTOR_SET_VAL( vec.value[i], 2 );
+      vec.value[i].part.value = 2;
     }
 
   } else if( ((lcomp.value[0] & 0x3) != 2) && ((rcomp.value[0] & 0x3) == 2) ) {
@@ -1528,7 +1559,7 @@ bool vector_op_multiply( vector* tgt, vector* left, vector* right ) {
       vector_set_value( &vec, right->value, right->width, 0, 0 );
     } else {
       for( i=0; i<vec.width; i++ ) {
-        VECTOR_SET_VAL( vec.value[i], 2 );
+        vec.value[i].part.value = 2;
       }
     }
 
@@ -1540,7 +1571,7 @@ bool vector_op_multiply( vector* tgt, vector* left, vector* right ) {
       vector_set_value( &vec, left->value, left->width, 0, 0 );
     } else {
       for( i=0; i<vec.width; i++ ) {
-        VECTOR_SET_VAL( vec.value[i], 2 );
+        vec.value[i].part.value = 2;
       }
     }
 
@@ -1577,12 +1608,12 @@ bool vector_unary_inv( vector* tgt, vector* src ) {
 
   for( i=0; i<src->width; i++ ) {
 
-    bit = VECTOR_VAL( src->value[i] );
+    bit = src->value[i].part.value;
 
     switch( bit ) {
-      case 0  :  VECTOR_SET_VAL( vec.value[0], 1 );  break;
-      case 1  :  VECTOR_SET_VAL( vec.value[0], 0 );  break;
-      default :  VECTOR_SET_VAL( vec.value[0], 2 );  break;
+      case 0  :  vec.value[0].part.value = 1;  break;
+      case 1  :  vec.value[0].part.value = 0;  break;
+      default :  vec.value[0].part.value = 2;  break;
     }
     retval |= vector_set_value( tgt, vec.value, 1, 0, i );
 
@@ -1620,14 +1651,14 @@ bool vector_unary_op( vector* tgt, vector* src, nibble* optab ) {
 
     vector_init( &vec, &vec_val, 1 );
 
-    uval = VECTOR_VAL( src->value[0] );
+    uval = src->value[0].part.value;
 
     for( i=1; i<src->width; i++ ) {
-      bit  = VECTOR_VAL( src->value[i] );
+      bit  = src->value[i].part.value;
       uval = optab[ ((uval << 2) | bit) ]; 
     }
 
-    VECTOR_SET_VAL( vec.value[0], uval );
+    vec.value[0].part.value = uval;
     retval = vector_set_value( tgt, vec.value, 1, 0, 0 );
 
   }
@@ -1680,6 +1711,10 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.53  2004/11/06 13:22:48  phase1geo
+ Updating CDD files for change where EVAL_T and EVAL_F bits are now being masked out
+ of the CDD files.
+
  Revision 1.52  2004/10/22 22:03:32  phase1geo
  More incremental changes to increase score command efficiency.
 

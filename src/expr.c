@@ -122,18 +122,20 @@ expression* expression_create( expression* right, expression* left, int op, bool
 
   new_expr = (expression*)malloc_safe( sizeof( expression ), __FILE__, __LINE__ );
 
-  new_expr->suppl        = (((int)lhs & 0x1) << SUPPL_LSB_LHS) | ((op & 0x7f) << SUPPL_LSB_OP);
-  new_expr->id           = id;
-  new_expr->ulid         = -1;
-  new_expr->line         = line;
-  new_expr->col          = ((first & 0xffff) << 16) | (last & 0xffff);
-  new_expr->sig          = NULL;
-  new_expr->parent       = (expr_stmt*)malloc_safe( sizeof( expr_stmt ), __FILE__, __LINE__ );
-  new_expr->parent->expr = NULL;
-  new_expr->right        = right;
-  new_expr->left         = left;
-  new_expr->value        = (vector*)malloc_safe( sizeof( vector ), __FILE__, __LINE__ );
-  new_expr->table        = NULL;
+  new_expr->suppl.all      = 0;
+  new_expr->suppl.part.lhs = (int)lhs & 0x1;
+  new_expr->op             = op & 0x7f;
+  new_expr->id             = id;
+  new_expr->ulid           = -1;
+  new_expr->line           = line;
+  new_expr->col            = ((first & 0xffff) << 16) | (last & 0xffff);
+  new_expr->sig            = NULL;
+  new_expr->parent         = (expr_stmt*)malloc_safe( sizeof( expr_stmt ), __FILE__, __LINE__ );
+  new_expr->parent->expr   = NULL;
+  new_expr->right          = right;
+  new_expr->left           = left;
+  new_expr->value          = (vector*)malloc_safe( sizeof( vector ), __FILE__, __LINE__ );
+  new_expr->table          = NULL;
 
   if( right != NULL ) {
 
@@ -257,11 +259,11 @@ void expression_set_value( expression* exp, vector* vec ) {
   assert( exp->value != NULL );
   assert( vec != NULL );
   
-  if( SUPPL_IS_LHS( exp->suppl ) == 0 ) {
+  if( ESUPPL_IS_LHS( exp->suppl ) == 0 ) {
 
-    /* printf( "In expression_set_value, expr: %d, op: %d, line: %d\n", exp->id, SUPPL_OP( exp->suppl ), exp->line ); */
+    /* printf( "In expression_set_value, expr: %d, op: %d, line: %d\n", exp->id, exp->op, exp->line ); */
   
-    switch( SUPPL_OP( exp->suppl ) ) {
+    switch( exp->op ) {
       case EXP_OP_SIG   :
       case EXP_OP_PARAM :
         exp->value->value = vec->value;
@@ -280,14 +282,14 @@ void expression_set_value( expression* exp, vector* vec ) {
         rbit = vector_to_int( exp->right->value );
         if( lbit <= rbit ) {
           exp->value->width = ((rbit - lbit) + 1);
-          if( SUPPL_OP( exp->suppl ) == EXP_OP_PARAM_MBIT ) {
+          if( exp->op == EXP_OP_PARAM_MBIT ) {
             exp->value->value = vec->value + lbit;
           } else {
             exp->value->value = vec->value + (lbit - exp->sig->lsb);
           }
         } else {
           exp->value->width = ((lbit - rbit) + 1);
-          if( SUPPL_OP( exp->suppl ) == EXP_OP_PARAM_MBIT ) {
+          if( exp->op == EXP_OP_PARAM_MBIT ) {
             exp->value->value = vec->value + rbit;
           } else {
             exp->value->value = vec->value + (rbit - exp->sig->lsb);
@@ -321,7 +323,7 @@ void expression_resize( expression* expr, bool recursive ) {
       expression_resize( expr->right, recursive );
     }
 
-    switch( SUPPL_OP( expr->suppl ) ) {
+    switch( expr->op ) {
 
       /* These operations will already be sized so nothing to do here */
       case EXP_OP_STATIC     :
@@ -491,15 +493,15 @@ void expression_get_wait_sig_list_helper( expression* expr, sig_link** head, sig
 
   if( expr != NULL ) {
 
-    if( SUPPL_OP( expr->suppl ) == EXP_OP_SIG ) {
+    if( expr->op == EXP_OP_SIG ) {
  
       assert( expr->sig != NULL );
       sig_link_add( expr->sig, head, tail );
 
     } else {
 
-      if( (SUPPL_OP( expr->suppl ) == EXP_OP_SBIT_SEL) ||
-          (SUPPL_OP( expr->suppl ) == EXP_OP_MBIT_SEL) ) {
+      if( (expr->op == EXP_OP_SBIT_SEL) ||
+          (expr->op == EXP_OP_MBIT_SEL) ) {
         assert( expr->sig != NULL );
         sig_link_add( expr->sig, head, tail );
       }
@@ -525,10 +527,10 @@ void expression_get_wait_sig_list_helper( expression* expr, sig_link** head, sig
 void expression_get_wait_sig_list( expression* expr, sig_link** head, sig_link** tail ) {
 
   if( (expr != NULL) &&
-      ((SUPPL_OP( expr->suppl ) == EXP_OP_EOR)   ||
-       (SUPPL_OP( expr->suppl ) == EXP_OP_PEDGE) ||
-       (SUPPL_OP( expr->suppl ) == EXP_OP_NEDGE) ||
-       (SUPPL_OP( expr->suppl ) == EXP_OP_AEDGE)) ) {
+      ((expr->op == EXP_OP_EOR)   ||
+       (expr->op == EXP_OP_PEDGE) ||
+       (expr->op == EXP_OP_NEDGE) ||
+       (expr->op == EXP_OP_AEDGE)) ) {
 
     expression_get_wait_sig_list_helper( expr, head, tail );
 
@@ -545,28 +547,29 @@ void expression_get_wait_sig_list( expression* expr, sig_link** head, sig_link**
 */
 void expression_db_write( expression* expr, FILE* file ) {
 
-  fprintf( file, "%d %d %d %x %x %d %d ",
+  fprintf( file, "%d %d %d %x %x %x %d %d ",
     DB_TYPE_EXPRESSION,
     expr->id,
     expr->line,
     expr->col,
-    (expr->suppl & SUPPL_MERGE_MASK),
-    (SUPPL_OP( expr->suppl ) == EXP_OP_STATIC) ? 0 : expression_get_id( expr->right ),
-    (SUPPL_OP( expr->suppl ) == EXP_OP_STATIC) ? 0 : expression_get_id( expr->left )
+    expr->op,
+    (expr->suppl.all & ESUPPL_MERGE_MASK),
+    (expr->op == EXP_OP_STATIC) ? 0 : expression_get_id( expr->right ),
+    (expr->op == EXP_OP_STATIC) ? 0 : expression_get_id( expr->left )
   );
 
-  if( (SUPPL_OP( expr->suppl ) != EXP_OP_SIG)        &&
-      (SUPPL_OP( expr->suppl ) != EXP_OP_SBIT_SEL)   &&
-      (SUPPL_OP( expr->suppl ) != EXP_OP_MBIT_SEL)   &&
-      (SUPPL_OP( expr->suppl ) != EXP_OP_PARAM)      &&
-      (SUPPL_OP( expr->suppl ) != EXP_OP_PARAM_SBIT) &&
-      (SUPPL_OP( expr->suppl ) != EXP_OP_PARAM_MBIT) &&
-      (SUPPL_OP( expr->suppl ) != EXP_OP_ASSIGN)     &&
-      (SUPPL_OP( expr->suppl ) != EXP_OP_BASSIGN)    &&
-      (SUPPL_OP( expr->suppl ) != EXP_OP_NASSIGN)    &&
-      (SUPPL_OP( expr->suppl ) != EXP_OP_IF)         &&
-      ((SUPPL_OP( expr->suppl ) == EXP_OP_STATIC) || (SUPPL_IS_LHS( expr->suppl ) == 0)) ) {
-    vector_db_write( expr->value, file, (SUPPL_OP( expr->suppl ) == EXP_OP_STATIC) );
+  if( (expr->op != EXP_OP_SIG)        &&
+      (expr->op != EXP_OP_SBIT_SEL)   &&
+      (expr->op != EXP_OP_MBIT_SEL)   &&
+      (expr->op != EXP_OP_PARAM)      &&
+      (expr->op != EXP_OP_PARAM_SBIT) &&
+      (expr->op != EXP_OP_PARAM_MBIT) &&
+      (expr->op != EXP_OP_ASSIGN)     &&
+      (expr->op != EXP_OP_BASSIGN)    &&
+      (expr->op != EXP_OP_NASSIGN)    &&
+      (expr->op != EXP_OP_IF)         &&
+      ((expr->op == EXP_OP_STATIC) || (ESUPPL_IS_LHS( expr->suppl ) == 0)) ) {
+    vector_db_write( expr->value, file, (expr->op == EXP_OP_STATIC) );
   }
 
   fprintf( file, "\n" );
@@ -592,7 +595,8 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
   expression* expr;           /* Pointer to newly created expression              */
   int         linenum;        /* Holder of current line for this expression       */
   int         column;         /* Holder of column alignment information           */
-  control     suppl;          /* Holder of supplemental value of this expression  */
+  control     op;             /* Holder of expression operation                   */
+  esuppl      suppl;          /* Holder of supplemental value of this expression  */
   int         right_id;       /* Holder of expression ID to the right             */
   int         left_id;        /* Holder of expression ID to the left              */
   expression* right;          /* Pointer to current expression's right expression */
@@ -602,7 +606,7 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
   expression  texp;           /* Temporary expression link holder for searching   */
   exp_link*   expl;           /* Pointer to found expression in module            */
 
-  if( sscanf( *line, "%d %d %x %x %d %d%n", &id, &linenum, &column, &suppl, &right_id, &left_id, &chars_read ) == 6 ) {
+  if( sscanf( *line, "%d %d %x %x %x %d %d%n", &id, &linenum, &column, &op, &(suppl.all), &right_id, &left_id, &chars_read ) == 6 ) {
 
     *line = *line + chars_read;
 
@@ -640,20 +644,21 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
       }
 
       /* Create new expression */
-      expr = expression_create( right, left, SUPPL_OP( suppl ), SUPPL_IS_LHS( suppl ), id, linenum,
+      expr = expression_create( right, left, op, ESUPPL_IS_LHS( suppl ), id, linenum,
                                 ((column >> 16) & 0xffff), (column & 0xffff),
-                                ((SUPPL_OP( suppl ) != EXP_OP_SIG)        && 
-                                 (SUPPL_OP( suppl ) != EXP_OP_PARAM)      &&
-                                 (SUPPL_OP( suppl ) != EXP_OP_SBIT_SEL)   &&
-                                 (SUPPL_OP( suppl ) != EXP_OP_PARAM_SBIT) &&
-                                 (SUPPL_OP( suppl ) != EXP_OP_MBIT_SEL)   &&
-                                 (SUPPL_OP( suppl ) != EXP_OP_PARAM_MBIT) &&
-                                 (SUPPL_OP( suppl ) != EXP_OP_ASSIGN)     &&
-                                 (SUPPL_OP( suppl ) != EXP_OP_BASSIGN)    &&
-                                 (SUPPL_OP( suppl ) != EXP_OP_NASSIGN)    &&
-                                 (SUPPL_OP( suppl ) != EXP_OP_IF)         &&
-                                 ((SUPPL_OP( suppl ) == EXP_OP_STATIC) || (SUPPL_IS_LHS( suppl ) == 0))) );
-      expr->suppl = suppl;
+                                ((op != EXP_OP_SIG)        && 
+                                 (op != EXP_OP_PARAM)      &&
+                                 (op != EXP_OP_SBIT_SEL)   &&
+                                 (op != EXP_OP_PARAM_SBIT) &&
+                                 (op != EXP_OP_MBIT_SEL)   &&
+                                 (op != EXP_OP_PARAM_MBIT) &&
+                                 (op != EXP_OP_ASSIGN)     &&
+                                 (op != EXP_OP_BASSIGN)    &&
+                                 (op != EXP_OP_NASSIGN)    &&
+                                 (op != EXP_OP_IF)         &&
+                                 ((op == EXP_OP_STATIC) || (ESUPPL_IS_LHS( suppl ) == 0))) );
+
+      expr->suppl.all = suppl.all;
 
       if( right != NULL ) {
         right->parent->expr = expr;
@@ -661,23 +666,23 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
 
       /* Don't set left child's parent if the parent is a CASE, CASEX, or CASEZ type expression */
       if( (left != NULL) && 
-          (SUPPL_OP( suppl ) != EXP_OP_CASE)  &&
-          (SUPPL_OP( suppl ) != EXP_OP_CASEX) &&
-          (SUPPL_OP( suppl ) != EXP_OP_CASEZ) ) {
+          (op != EXP_OP_CASE)  &&
+          (op != EXP_OP_CASEX) &&
+          (op != EXP_OP_CASEZ) ) {
         left->parent->expr = expr;
       }
 
-      if( (SUPPL_OP( suppl ) != EXP_OP_SIG)        && 
-          (SUPPL_OP( suppl ) != EXP_OP_SBIT_SEL)   && 
-          (SUPPL_OP( suppl ) != EXP_OP_MBIT_SEL)   &&
-          (SUPPL_OP( suppl ) != EXP_OP_PARAM)      &&
-          (SUPPL_OP( suppl ) != EXP_OP_PARAM_SBIT) &&
-          (SUPPL_OP( suppl ) != EXP_OP_PARAM_MBIT) &&
-          (SUPPL_OP( suppl ) != EXP_OP_ASSIGN)     &&
-          (SUPPL_OP( suppl ) != EXP_OP_BASSIGN)    &&
-          (SUPPL_OP( suppl ) != EXP_OP_NASSIGN)    &&
-          (SUPPL_OP( suppl ) != EXP_OP_IF)         &&
-          ((SUPPL_OP( suppl ) == EXP_OP_STATIC) || (SUPPL_IS_LHS( suppl ) == 0)) ) {
+      if( (op != EXP_OP_SIG)        && 
+          (op != EXP_OP_SBIT_SEL)   && 
+          (op != EXP_OP_MBIT_SEL)   &&
+          (op != EXP_OP_PARAM)      &&
+          (op != EXP_OP_PARAM_SBIT) &&
+          (op != EXP_OP_PARAM_MBIT) &&
+          (op != EXP_OP_ASSIGN)     &&
+          (op != EXP_OP_BASSIGN)    &&
+          (op != EXP_OP_NASSIGN)    &&
+          (op != EXP_OP_IF)         &&
+          ((op == EXP_OP_STATIC) || (ESUPPL_IS_LHS( suppl ) == 0)) ) {
 
         /* Read in vector information */
         if( vector_db_read( &vec, line ) ) {
@@ -696,10 +701,10 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
       }
 
       /* If we are an assignment operator, set our vector value to that of the right child */
-      if( (SUPPL_OP( suppl ) == EXP_OP_ASSIGN)  ||
-          (SUPPL_OP( suppl ) == EXP_OP_BASSIGN) ||
-          (SUPPL_OP( suppl ) == EXP_OP_NASSIGN) ||
-          (SUPPL_OP( suppl ) == EXP_OP_IF) ) {
+      if( (op == EXP_OP_ASSIGN)  ||
+          (op == EXP_OP_BASSIGN) ||
+          (op == EXP_OP_NASSIGN) ||
+          (op == EXP_OP_IF) ) {
 
         vector_dealloc( expr->value );
         expr->value = right->value;
@@ -712,7 +717,7 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
        If this expression is a constant expression, force the simulator to evaluate
        this expression and all parent expressions of it.
       */
-      if( eval && EXPR_IS_STATIC( expr ) && (SUPPL_IS_LHS( suppl ) == 0) ) {
+      if( eval && EXPR_IS_STATIC( expr ) && (ESUPPL_IS_LHS( suppl ) == 0) ) {
         exp_link_add( expr, &static_expr_head, &static_expr_tail );
       }
       
@@ -745,22 +750,23 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
 */
 bool expression_db_merge( expression* base, char** line, bool same ) {
 
-  bool retval = TRUE;  /* Return value for this function */
-  int  id;             /* Expression ID field            */
-  int  linenum;        /* Expression line number         */
-  int  column;         /* Column information             */
-  int  suppl;          /* Supplemental field             */
-  int  right_id;       /* ID of right child              */
-  int  left_id;        /* ID of left child               */
-  int  chars_read;     /* Number of characters read      */
+  bool    retval = TRUE;  /* Return value for this function */
+  int     id;             /* Expression ID field            */
+  int     linenum;        /* Expression line number         */
+  int     column;         /* Column information             */
+  control op;             /* Expression operation           */
+  esuppl  suppl;          /* Supplemental field             */
+  int     right_id;       /* ID of right child              */
+  int     left_id;        /* ID of left child               */
+  int     chars_read;     /* Number of characters read      */
 
   assert( base != NULL );
 
-  if( sscanf( *line, "%d %d %x %x %d %d%n", &id, &linenum, &column, &suppl, &right_id, &left_id, &chars_read ) == 6 ) {
+  if( sscanf( *line, "%d %d %x %x %x %d %d%n", &id, &linenum, &column, &op, &(suppl.all), &right_id, &left_id, &chars_read ) == 6 ) {
 
     *line = *line + chars_read;
 
-    if( (base->id != id) || (SUPPL_OP( base->suppl ) != SUPPL_OP( suppl )) ) {
+    if( (base->id != id) || (base->op != op) ) {
 
       print_output( "Attempting to merge databases derived from different designs.  Unable to merge",
                     FATAL, __FILE__, __LINE__ );
@@ -769,19 +775,19 @@ bool expression_db_merge( expression* base, char** line, bool same ) {
     } else {
 
       /* Merge expression supplemental fields */
-      base->suppl = (base->suppl & SUPPL_MERGE_MASK) | (suppl & SUPPL_MERGE_MASK);
+      base->suppl.all = (base->suppl.all & ESUPPL_MERGE_MASK) | (suppl.all & ESUPPL_MERGE_MASK);
 
-      if( (SUPPL_OP( suppl ) != EXP_OP_SIG)        &&
-          (SUPPL_OP( suppl ) != EXP_OP_SBIT_SEL)   &&
-          (SUPPL_OP( suppl ) != EXP_OP_MBIT_SEL)   &&
-          (SUPPL_OP( suppl ) != EXP_OP_PARAM)      &&
-          (SUPPL_OP( suppl ) != EXP_OP_PARAM_SBIT) &&
-          (SUPPL_OP( suppl ) != EXP_OP_PARAM_MBIT) &&
-          (SUPPL_OP( suppl ) != EXP_OP_ASSIGN)     &&
-          (SUPPL_OP( suppl ) != EXP_OP_BASSIGN)    &&
-          (SUPPL_OP( suppl ) != EXP_OP_NASSIGN)    &&
-          (SUPPL_OP( suppl ) != EXP_OP_IF)         &&
-          ((SUPPL_OP( suppl ) == EXP_OP_STATIC) || (SUPPL_IS_LHS( suppl ) == 0)) ) {
+      if( (op != EXP_OP_SIG)        &&
+          (op != EXP_OP_SBIT_SEL)   &&
+          (op != EXP_OP_MBIT_SEL)   &&
+          (op != EXP_OP_PARAM)      &&
+          (op != EXP_OP_PARAM_SBIT) &&
+          (op != EXP_OP_PARAM_MBIT) &&
+          (op != EXP_OP_ASSIGN)     &&
+          (op != EXP_OP_BASSIGN)    &&
+          (op != EXP_OP_NASSIGN)    &&
+          (op != EXP_OP_IF)         &&
+          ((op == EXP_OP_STATIC) || (ESUPPL_IS_LHS( suppl ) == 0)) ) {
 
         /* Merge expression vectors */
         retval = vector_db_merge( base->value, line, same );
@@ -815,22 +821,23 @@ bool expression_db_merge( expression* base, char** line, bool same ) {
 */
 bool expression_db_replace( expression* base, char** line ) {
 
-  bool retval = TRUE;  /* Return value for this function */
-  int  id;             /* Expression ID field            */
-  int  linenum;        /* Expression line number         */
-  int  column;         /* Column location information    */
-  int  suppl;          /* Supplemental field             */
-  int  right_id;       /* ID of right child              */
-  int  left_id;        /* ID of left child               */
-  int  chars_read;     /* Number of characters read      */
+  bool    retval = TRUE;  /* Return value for this function */
+  int     id;             /* Expression ID field            */
+  int     linenum;        /* Expression line number         */
+  int     column;         /* Column location information    */
+  control op;             /* Expression operation           */
+  esuppl  suppl;          /* Supplemental field             */
+  int     right_id;       /* ID of right child              */
+  int     left_id;        /* ID of left child               */
+  int     chars_read;     /* Number of characters read      */
 
   assert( base != NULL );
 
-  if( sscanf( *line, "%d %d %x %x %d %d%n", &id, &linenum, &column, &suppl, &right_id, &left_id, &chars_read ) == 6 ) {
+  if( sscanf( *line, "%d %d %x %x %d %d%n", &id, &linenum, &column, &op, &(suppl.all), &right_id, &left_id, &chars_read ) == 6 ) {
 
     *line = *line + chars_read;
 
-    if( (base->id != id) || (SUPPL_OP( base->suppl ) != SUPPL_OP( suppl )) ) {
+    if( (base->id != id) || (base->op != op) ) {
 
       print_output( "Attempting to replace a database derived from a different design.  Unable to replace",
                     FATAL, __FILE__, __LINE__ );
@@ -839,19 +846,19 @@ bool expression_db_replace( expression* base, char** line ) {
     } else {
 
       /* Merge expression supplemental fields */
-      base->suppl = suppl;
+      base->suppl.all = suppl;
 
-      if( (SUPPL_OP( suppl ) != EXP_OP_SIG)        &&
-          (SUPPL_OP( suppl ) != EXP_OP_SBIT_SEL)   &&
-          (SUPPL_OP( suppl ) != EXP_OP_MBIT_SEL)   &&
-          (SUPPL_OP( suppl ) != EXP_OP_PARAM)      &&
-          (SUPPL_OP( suppl ) != EXP_OP_PARAM_SBIT) &&
-          (SUPPL_OP( suppl ) != EXP_OP_PARAM_MBIT) &&
-          (SUPPL_OP( suppl ) != EXP_OP_ASSIGN)     &&
-          (SUPPL_OP( suppl ) != EXP_OP_BASSIGN)    &&
-          (SUPPL_OP( suppl ) != EXP_OP_NASSIGN)    &&
-          (SUPPL_OP( suppl ) != EXP_OP_IF)         &&
-          ((SUPPL_OP( suppl ) == EXP_OP_STATIC) || (SUPPL_IS_LHS( suppl ) == 0)) ) {
+      if( (op != EXP_OP_SIG)        &&
+          (op != EXP_OP_SBIT_SEL)   &&
+          (op != EXP_OP_MBIT_SEL)   &&
+          (op != EXP_OP_PARAM)      &&
+          (op != EXP_OP_PARAM_SBIT) &&
+          (op != EXP_OP_PARAM_MBIT) &&
+          (op != EXP_OP_ASSIGN)     &&
+          (op != EXP_OP_BASSIGN)    &&
+          (op != EXP_OP_NASSIGN)    &&
+          (op != EXP_OP_IF)         &&
+          ((op == EXP_OP_STATIC) || (ESUPPL_IS_LHS( suppl ) == 0)) ) {
 
         /* Merge expression vectors */
         retval = vector_db_replace( base->value, line );
@@ -935,13 +942,13 @@ bool expression_operate( expression* expr ) {
 
   if( expr != NULL ) {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "In expression_operate, id: %d, op: %d, line: %d", expr->id, SUPPL_OP( expr->suppl ), expr->line );
+    snprintf( user_msg, USER_MSG_LENGTH, "In expression_operate, id: %d, op: %d, line: %d", expr->id, expr->op, expr->line );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
     assert( expr->value != NULL );
-    assert( SUPPL_IS_LHS( expr->suppl ) == 0 );
+    assert( ESUPPL_IS_LHS( expr->suppl ) == 0 );
 
-    switch( SUPPL_OP( expr->suppl ) ) {
+    switch( expr->op ) {
 
       case EXP_OP_XOR :
         retval = vector_bitwise_op( expr->value, expr->left->value, expr->right->value, xor_optab );
@@ -1083,14 +1090,14 @@ bool expression_operate( expression* expr ) {
       case EXP_OP_COND_SEL :
         vector_init( &vec1, &value1a, 1 );
         vector_unary_op( &vec1, expr->parent->expr->left->value, or_optab );
-        if( VECTOR_VAL( vec1.value[0] ) == 0 ) {
+        if( vec1.value[0].part.value == 0 ) {
           retval = vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
-        } else if( VECTOR_VAL( vec1.value[0] ) == 1 ) {
+        } else if( vec1.value[0].part.value == 1 ) {
           retval = vector_set_value( expr->value, expr->left->value->value, expr->left->value->width, 0, 0 );
         } else {
           vec = vector_create( expr->value->width, TRUE );
           for( i=0; i<vec->width; i++ ) {
-            VECTOR_SET_VAL( vec->value[i], 2 );
+            vec->value[i].part.value = 2;
           }
           retval = vector_set_value( expr->value, vec->value, vec->width, 0, 0 );
           vector_dealloc( vec );
@@ -1157,7 +1164,7 @@ bool expression_operate( expression* expr ) {
           }
         } else {
           for( j=0; j<expr->right->value->width; j++ ) {
-            bit = VECTOR_VAL( expr->right->value->value[j] );
+            bit = expr->right->value->value[j].part.value;
             for( i=0; i<vector_to_int( expr->left->value ); i++ ) {
               retval |= vector_set_value( expr->value, &bit, 1, 0, ((j * expr->right->value->width) + i) );
             }
@@ -1175,10 +1182,10 @@ bool expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_PEDGE :
-        value1a = VECTOR_VAL( expr->right->value->value[0] );
+        value1a = expr->right->value->value[0].part.value;
         value1b = expr->left->value->value[0];
         /* If the event has been armed previously, evaluate */
-        if( ((value1b & 0x80) == 0x80) && (value1a != VECTOR_VAL( expr->left->value->value[0] )) && (value1a == 1) ) {
+        if( ((value1b & 0x80) == 0x80) && (value1a != expr->left->value->value[0].part.value) && (value1a == 1) ) {
           bit = 1;
           retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
           /* Clear armed bit */
@@ -1194,9 +1201,9 @@ bool expression_operate( expression* expr ) {
         break;
  
       case EXP_OP_NEDGE :
-        value1a = VECTOR_VAL( expr->right->value->value[0] );
+        value1a = expr->right->value->value[0].part.value;
         value1b = expr->left->value->value[0];
-        if( ((value1b & 0x80) == 0x80) && (value1a != VECTOR_VAL( expr->left->value->value[0] )) && (value1a == 0) ) {
+        if( ((value1b & 0x80) == 0x80) && (value1a != expr->left->value->value[0].part.value) && (value1a == 0) ) {
           bit = 1;
           retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
           /* Clear armed bit */
@@ -1297,17 +1304,17 @@ bool expression_operate( expression* expr ) {
     if( retval ) {
 
       /* Clear current TRUE/FALSE indicators */
-      if( (SUPPL_OP( expr->suppl ) != EXP_OP_STATIC) &&
-          (SUPPL_OP( expr->suppl ) != EXP_OP_PARAM ) ) {
-        expr->suppl = expr->suppl & ~((0x1 << SUPPL_LSB_EVAL_T) | (0x1 << SUPPL_LSB_EVAL_F));
+      if( (expr->op != EXP_OP_STATIC) && (expr->op != EXP_OP_PARAM ) ) {
+        expr->suppl.part.eval_t = 0;
+        expr->suppl.part.eval_f = 0;
       }
     
       /* Set TRUE/FALSE bits to indicate value */
       vector_init( &vec1, &value1a, 1 );
       vector_unary_op( &vec1, expr->value, or_optab );
-      switch( VECTOR_VAL( vec1.value[0] ) ) {
-        case 0 :  expr->suppl = expr->suppl | (0x1 << SUPPL_LSB_FALSE) | (0x1 << SUPPL_LSB_EVAL_F);  break;
-        case 1 :  expr->suppl = expr->suppl | (0x1 << SUPPL_LSB_TRUE)  | (0x1 << SUPPL_LSB_EVAL_T);  break;
+      switch( vec1.value[0].part.value ) {
+        case 0 :  expr->suppl.part.false = 1;  expr->suppl.part.eval_f = 1;  break;
+        case 1 :  expr->suppl.part.true  = 1;  expr->suppl.part.eval_t = 1;  break;
         default:  break;
       }
 
@@ -1315,16 +1322,15 @@ bool expression_operate( expression* expr ) {
 
     /* Set EVAL00, EVAL01, EVAL10 or EVAL11 bits based on current value of children */
     if( (expr->left != NULL) && (expr->right != NULL) ) {
-      lf = SUPPL_IS_FALSE( expr->left->suppl  );
-      lt = SUPPL_IS_TRUE(  expr->left->suppl  );
-      rf = SUPPL_IS_FALSE( expr->right->suppl );
-      rt = SUPPL_IS_TRUE(  expr->right->suppl );
+      lf = ESUPPL_IS_FALSE( expr->left->suppl  );
+      lt = ESUPPL_IS_TRUE(  expr->left->suppl  );
+      rf = ESUPPL_IS_FALSE( expr->right->suppl );
+      rt = ESUPPL_IS_TRUE(  expr->right->suppl );
       /* printf( "expr %d, lf: %d, lt: %d, rf: %d, rt: %d\n", expr->id, lf, lt, rf, rt ); */
-      expr->suppl = expr->suppl | 
-                    ((lf & rf) << SUPPL_LSB_EVAL_00) |
-                    ((lf & rt) << SUPPL_LSB_EVAL_01) |
-                    ((lt & rf) << SUPPL_LSB_EVAL_10) |
-                    ((lt & rt) << SUPPL_LSB_EVAL_11);
+      expr->suppl.part.eval_00 = lf & rf;
+      expr->suppl.part.eval_01 = lf & rt;
+      expr->suppl.part.eval_10 = lt & rf;
+      expr->suppl.part.eval_11 = lt & rt;
     }
 
     /* If this expression is attached to an FSM, perform the FSM calculation now */
@@ -1360,9 +1366,9 @@ void expression_operate_recursively( expression* expr ) {
      should catch this error before us, so no user error (too much work to find
      expression in module expression list for now.
     */
-    assert( (SUPPL_OP( expr->suppl ) != EXP_OP_SIG)      &&
-            (SUPPL_OP( expr->suppl ) != EXP_OP_SBIT_SEL) &&
-            (SUPPL_OP( expr->suppl ) != EXP_OP_MBIT_SEL) );
+    assert( (expr->op != EXP_OP_SIG)      &&
+            (expr->op != EXP_OP_SBIT_SEL) &&
+            (expr->op != EXP_OP_MBIT_SEL) );
 
     /* Evaluate children */
     expression_operate_recursively( expr->left  );
@@ -1418,12 +1424,12 @@ bool expression_is_static_only( expression* expr ) {
 
   if( expr != NULL ) {
 
-    if( (EXPR_IS_STATIC( expr ) == 1) || (SUPPL_IS_LHS( expr->suppl ) == 1) ) {
+    if( (EXPR_IS_STATIC( expr ) == 1) || (ESUPPL_IS_LHS( expr->suppl ) == 1) ) {
       return( TRUE );
     } else {
-      return( ((SUPPL_OP( expr->suppl ) != EXP_OP_MBIT_SEL) &&
-               expression_is_static_only( expr->left )      &&
-               expression_is_static_only( expr->right )) );
+      return( (expr->op != EXP_OP_MBIT_SEL)           &&
+              expression_is_static_only( expr->left ) &&
+              expression_is_static_only( expr->right ) );
     }
 
   } else {
@@ -1446,7 +1452,7 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
   if( expr != NULL ) {
 
-    op = SUPPL_OP( expr->suppl );
+    op = expr->op;
 
     if( (op != EXP_OP_SIG       ) && 
         (op != EXP_OP_SBIT_SEL  ) &&
@@ -1458,7 +1464,7 @@ void expression_dealloc( expression* expr, bool exp_only ) {
         (op != EXP_OP_BASSIGN   ) &&
         (op != EXP_OP_NASSIGN   ) &&
         (op != EXP_OP_IF        ) &&
-        ((SUPPL_IS_LHS( expr->suppl ) == 0) || (op == EXP_OP_STATIC)) ) {
+        ((ESUPPL_IS_LHS( expr->suppl ) == 0) || (op == EXP_OP_STATIC)) ) {
 
       /* Free up memory from vector value storage */
       vector_dealloc( expr->value );
@@ -1496,6 +1502,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.105  2004/11/06 14:49:43  phase1geo
+ Fixing problem in expression_operate.  This removes some more code from the score command
+ to improve run-time efficiency.
+
  Revision 1.104  2004/11/06 13:22:48  phase1geo
  Updating CDD files for change where EVAL_T and EVAL_F bits are now being masked out
  of the CDD files.

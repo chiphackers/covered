@@ -200,6 +200,7 @@ WSPACE [ \t\b\f]+
         if( (ignore_mode == 0) && (attr_mode > 0) ) {
           yylval.text = strdup_safe( yytext, __FILE__, __LINE__ );
           yylval.text[ strlen( yytext ) - 1 ] = '\0';
+          yylval.number = vector_from_string( &yylval.text, TRUE );
           return STRING;
         } else {
           return UNUSED_STRING;
@@ -326,7 +327,7 @@ WSPACE [ \t\b\f]+
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
      if( ignore_mode == 0 ) {
-       yylval.number = vector_from_string( &yytext );
+       yylval.number = vector_from_string( &yytext, FALSE );
        if( yylval.number != NULL ) {
          return NUMBER;
        } else {
@@ -342,7 +343,7 @@ WSPACE [ \t\b\f]+
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
      if( ignore_mode == 0 ) {
-       yylval.number = vector_from_string( &yytext );
+       yylval.number = vector_from_string( &yytext, FALSE );
        if( yylval.number != NULL ) {
          return NUMBER;
        } else {
@@ -358,7 +359,7 @@ WSPACE [ \t\b\f]+
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
      if( ignore_mode == 0 ) {
-       yylval.number = vector_from_string( &yytext );
+       yylval.number = vector_from_string( &yytext, FALSE );
        if( yylval.number != NULL ) {
          return NUMBER;
        } else {
@@ -374,7 +375,7 @@ WSPACE [ \t\b\f]+
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
      if( ignore_mode == 0 ) {
-       yylval.number = vector_from_string( &yytext );
+       yylval.number = vector_from_string( &yytext, FALSE );
        if( yylval.number != NULL ) {
          return NUMBER;
        } else {
@@ -390,7 +391,7 @@ WSPACE [ \t\b\f]+
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
      if( ignore_mode == 0 ) {
-       yylval.number = vector_from_string( &yytext );
+       yylval.number = vector_from_string( &yytext, FALSE );
        if( yylval.number != NULL ) {
          return NUMBER;
        } else {
@@ -406,7 +407,7 @@ WSPACE [ \t\b\f]+
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
      if( ignore_mode == 0 ) {
-       yylval.number = vector_from_string( &yytext );
+       yylval.number = vector_from_string( &yytext, FALSE );
        if( yylval.number != NULL ) {
          return NUMBER;
        } else {
@@ -422,7 +423,7 @@ WSPACE [ \t\b\f]+
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
      if( ignore_mode == 0 ) {
-       yylval.number = vector_from_string( &yytext );
+       yylval.number = vector_from_string( &yytext, FALSE );
        if( yylval.number != NULL ) {
          return NUMBER;
        } else {
@@ -438,7 +439,7 @@ WSPACE [ \t\b\f]+
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
      if( ignore_mode == 0 ) {
-       yylval.number = vector_from_string( &yytext );
+       yylval.number = vector_from_string( &yytext, FALSE );
        if( yylval.number != NULL ) {
          return NUMBER;
        } else {
@@ -454,7 +455,7 @@ WSPACE [ \t\b\f]+
      yylloc.first_column = yylloc.last_column;
      yylloc.last_column += strlen( yytext );
      if( ignore_mode == 0 ) {
-       yylval.number = vector_from_string( &yytext );
+       yylval.number = vector_from_string( &yytext, FALSE );
        if( yylval.number != NULL ) {
          return NUMBER;
        } else {

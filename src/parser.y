@@ -87,11 +87,11 @@ int yydebug = 1;
   sig_exp_bind*   sigexp;
 };
 
-%token <text>   IDENTIFIER
-%token <text>   PATHPULSE_IDENTIFIER
-%token <number> NUMBER
+%token <text>     IDENTIFIER
+%token <text>     PATHPULSE_IDENTIFIER
+%token <number>   NUMBER
 %token <realtime> REALTIME
-%token <text>     STRING
+%token <number>   STRING
 %token SYSTEM_IDENTIFIER IGNORE
 %token UNUSED_IDENTIFIER
 %token UNUSED_PATHPULSE_IDENTIFIER
@@ -958,11 +958,8 @@ expr_primary
   | STRING
     {
       expression* tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
-      vector*     vec = vector_create( (strlen( $1 ) + 1), FALSE );
       vector_dealloc( tmp->value );
-      tmp->value        = vec;
-      tmp->value->value = (nibble*)strdup_safe( $1, __FILE__, __LINE__ );
-      free_safe( $1 );
+      tmp->value = $1;
       $$ = tmp;
     }
   | UNUSED_STRING
@@ -1346,9 +1343,9 @@ module_item
             tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, curr->exp->line, 0, 0, curr->sig_name );
             tmp  = db_create_expression( curr->exp, tmp, EXP_OP_BASSIGN, FALSE, curr->exp->line, 0, 0, NULL );
             stmt = db_create_statement( tmp );
-            stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
-            stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);
-            stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_CONTINUOUS);
+            stmt->exp->suppl.part.stmt_head = 1;
+            stmt->exp->suppl.part.stmt_stop = 1;
+            stmt->exp->suppl.part.stmt_cont = 1;
             /* Statement will be looped back to itself */
             db_connect_statement_true( stmt, stmt );
             db_connect_statement_false( stmt, stmt );
@@ -1390,9 +1387,9 @@ module_item
             tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, curr->exp->line, 0, 0, curr->sig_name );
             tmp  = db_create_expression( curr->exp, tmp, EXP_OP_BASSIGN, FALSE, curr->exp->line, 0, 0, NULL );
             stmt = db_create_statement( tmp );
-            stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
-            stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);
-            stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_CONTINUOUS);
+            stmt->exp->suppl.part.stmt_head = 1;
+            stmt->exp->suppl.part.stmt_stop = 1;
+            stmt->exp->suppl.part.stmt_cont = 1;
             /* Statement will be looped back to itself */
             db_connect_statement_true( stmt, stmt );
             db_connect_statement_false( stmt, stmt );
@@ -1539,7 +1536,7 @@ module_item
       if( stmt != NULL ) {
         db_statement_connect( stmt, stmt );
         db_statement_set_stop( stmt, stmt, TRUE );
-        stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
+        stmt->exp->suppl.part.stmt_head = 1;
         db_add_statement( stmt, stmt );
       }
     }
@@ -1549,7 +1546,7 @@ module_item
       /*
       statement* stmt = $2;
       db_statement_set_stop( stmt, NULL, FALSE );
-      stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
+      stmt->exp->suppl.part.stmt_head = 1;
       db_add_statement( stmt, stmt );
       */
     }
@@ -1653,7 +1650,7 @@ statement
       case_statement* c_stmt    = $5;
       case_statement* tc_stmt;
       if( (ignore_mode == 0) && ($3 != NULL) ) {
-        c_expr->suppl = c_expr->suppl | (0x1 << SUPPL_LSB_ROOT);
+        c_expr->suppl.part.root = 1;
         while( c_stmt != NULL ) {
           if( c_stmt->expr != NULL ) {
             expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASE, lhs_mode, c_stmt->line, 0, 0, NULL );
@@ -1695,7 +1692,7 @@ statement
       case_statement* c_stmt    = $5;
       case_statement* tc_stmt;
       if( (ignore_mode == 0) && ($3 != NULL) ) {
-        c_expr->suppl = c_expr->suppl | (0x1 << SUPPL_LSB_ROOT);
+        c_expr->suppl.part.root = 1;
         while( c_stmt != NULL ) {
           if( c_stmt->expr != NULL ) {
             expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASEX, lhs_mode, c_stmt->line, 0, 0, NULL );
@@ -1737,7 +1734,7 @@ statement
       case_statement* c_stmt    = $5;
       case_statement* tc_stmt;
       if( (ignore_mode == 0) && ($3 != NULL) ) {
-        c_expr->suppl = c_expr->suppl | (0x1 << SUPPL_LSB_ROOT);
+        c_expr->suppl.part.root = 1;
         while( c_stmt != NULL ) {
           if( c_stmt->expr != NULL ) {
             expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASEZ, lhs_mode, c_stmt->line, 0, 0, NULL );
@@ -2735,9 +2732,9 @@ assign
         vector_dealloc( tmp->value );
         tmp->value = $3->value;
         stmt = db_create_statement( tmp );
-        stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
-        stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);
-        stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_CONTINUOUS);
+        stmt->exp->suppl.part.stmt_head = 1;
+        stmt->exp->suppl.part.stmt_stop = 1;
+        stmt->exp->suppl.part.stmt_cont = 1;
         /* Statement will be looped back to itself */
         db_connect_statement_true( stmt, stmt );
         db_connect_statement_false( stmt, stmt );

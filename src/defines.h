@@ -205,40 +205,6 @@
 /*! @} */
 
 /*!
- \addtogroup vector_defs Vector-specific defines.
-
- The following defines are used for vector-based operations.
-
- @{
-*/
-
-#define VECTOR_LSB_VAL       0
-
-#define VECTOR_LSB_TOG01     2
-
-#define VECTOR_LSB_TOG10     3
-
-#define VECTOR_LSB_SET       4
-
-#define VECTOR_LSB_FALSE     5
-
-#define VECTOR_LSB_TRUE      6
-
-#define VECTOR_VAL(x)        (x & 0x3)
-
-#define VECTOR_TOG01(x)      ((x >> VECTOR_LSB_TOG01) & 0x1)
-
-#define VECTOR_TOG10(x)      ((x >> VECTOR_LSB_TOG10) & 0x1)
-
-#define VECTOR_SET(x)        ((x >> VECTOR_LSB_SET) & 0x1)
-
-#define VECTOR_FALSE(x)      ((x >> VECTOR_LSB_FALSE) & 0x1)
-
-#define VECTOR_TRUE(x)       ((x >> VECTOR_LSB_TRUE) & 0x1)
-
-#define VECTOR_SET_VAL(x,y)  x = ((x & 0xfc) | y)
-
-/*!
  Used for merging two vector nibbles from two vectors.  Both vector nibble
  fields are ANDed with this mask and ORed together to perform the merge.  
  Fields that are merged are:
@@ -249,8 +215,6 @@
 */
 #define VECTOR_MERGE_MASK    0x6c
 
-/*! @} */
-
 /*!
  \addtogroup expr_suppl Expression supplemental field defines and macros.
 
@@ -258,150 +222,9 @@
 */
 
 /*!
- Least-significant bit position of expression supplemental field indicating the
- expression's operation type.  The type is 6-bits wide.
-*/
-#define SUPPL_LSB_OP                0
-
-/*!
- Least-significant bit position of expression supplemental field indicating that the
- children of this expression have been swapped.  The swapping of the positions is
- performed by the score command (for multi-bit selects) and this bit indicates to the
- report code to swap them back when displaying them in a report.
-*/
-#define SUPPL_LSB_SWAPPED           6
-
-/*!
- Least-significant bit position of expression supplemental field indicating that this
- expression is a root expression.  Traversing to the parent pointer will take you to
- a statement type.
-*/
-#define SUPPL_LSB_ROOT              7
-
-/*!
- Least-significant bit position of expression supplemental field indicating that this
- expression has been executed in the queue during the lifetime of the simulation.
-*/
-#define SUPPL_LSB_EXECUTED          8
-
-/*!
- Least-significant bit position of expression supplemental field indicating the
- statement which this expression belongs is a head statement (only valid for root
- expressions -- parent expression == NULL).
-*/
-#define SUPPL_LSB_STMT_HEAD         9
-
-/*!
- Least-significant bit position of expression supplemental field indicating the
- statement which this expression belongs should write itself to the CDD and not
- continue to traverse its next_true and next_false pointers.
-*/
-#define SUPPL_LSB_STMT_STOP         10
-
-/*!
- Least-significant bit position of expression supplemental field indicating the
- statement which this expression belongs is part of a continuous assignment.  As such,
- stop simulating this statement tree after this expression tree is evaluated.
-*/
-#define SUPPL_LSB_STMT_CONTINUOUS   11
-
-/*!
- Least-significant bit position of expression supplemental field indicating that this
- expression has evaluated to a value of FALSE during the lifetime of the simulation.
-*/
-#define SUPPL_LSB_FALSE             12
-
-/*!
- Least-significant bit position of expression supplemental field indicating that this
- expression has evaluated to a value of TRUE during the lifetime of the simulation.
-*/
-#define SUPPL_LSB_TRUE              13
-
-/*!
- Least-significant bit position of expression supplemental field indicating that this
- expression has its left child expression in a changed state during this timestamp.
-*/
-#define SUPPL_LSB_LEFT_CHANGED      14
-
-/*!
- Least-significant bit position of expression supplemental field indicating that this
- expression has its right child expression in a changed state during this timestamp.
-*/
-#define SUPPL_LSB_RIGHT_CHANGED     15
-
-/*!
- Least-significant bit position of expression supplemental field indicating that the
- value of the left child expression evaluated to FALSE and the right child expression
- evaluated to FALSE.
-*/
-#define SUPPL_LSB_EVAL_00           16
-
-/*!
- Least-significant bit position of expression supplemental field indicating that the
- value of the left child expression evaluated to FALSE and the right child expression
- evaluated to TRUE.
-*/
-#define SUPPL_LSB_EVAL_01           17
-
-/*!
- Least-significant bit position of expression supplemental field indicating that the
- value of the left child expression evaluated to TRUE and the right child expression
- evaluated to FALSE.
-*/
-#define SUPPL_LSB_EVAL_10           18
-
-/*!
- Least-significant bit position of expression supplemental field indicating that the
- value of the left child expression evaluated to TRUE and the right child expression
- evaluated to TRUE.
-*/
-#define SUPPL_LSB_EVAL_11           19
-
-/*!
- Least-significant bit position of expression supplemental field indicating that the
- value of the current expression currently set to TRUE (temporary value).
-*/
-#define SUPPL_LSB_EVAL_T            20
-
-/*!
- Least-significant bit position of expression supplemental field indicating that the
- value of the current expression currently set to FALSE (temporary value).
-*/
-#define SUPPL_LSB_EVAL_F            21
-
-/*!
- Least-significant bit position of expression supplemental field indicating that the
- current expression has been previously counted for combinational coverage.  Only set
- by report command (therefore this bit will always be a zero when written to CDD file.
-*/
-#define SUPPL_LSB_COMB_CNTD         22
-
-/*!
- Temporary bit value used by the score command but not displayed to the CDD file.  When
- this bit is set to a one, it indicates to the statement_connect function that this
- statement and all children statements do not need to be connected to another statement.
-*/
-#define SUPPL_LSB_STMT_CONNECTED    23
-
-/*!
- Temporary bit value used by the score command but not displayed to the CDD file.  When
- this bit is set to a one, it indicates to the db_add_statement function that this
- statement and all children statements have already been added to the module statement
- list and should not be added again.
-*/
-#define SUPPL_LSB_STMT_ADDED        24
-
-/*!
- Least-significant bit position of expression supplemental field indicating that this
- expression exists on the left-hand side of an assignment operation.
-*/
-#define SUPPL_LSB_LHS               25
-
-/*!
  Used for merging two supplemental fields from two expressions.  Both expression
  supplemental fields are ANDed with this mask and ORed together to perform the
  merge.  Fields that are merged are:
- - OPERATION
  - SWAPPED
  - ROOT
  - EXECUTED
@@ -412,99 +235,94 @@
  - STMT_CONTINUOUS
  - EVAL 00, 01, 10, 11
 */
-#define SUPPL_MERGE_MASK            0xfe4fffff
+#define ESUPPL_MERGE_MASK            0x3f93fff
 
 /*!
  Returns a value of 1 if the specified supplemental value has the SWAPPED
  bit set indicating that the children of the current expression were
  swapped positions during the scoring phase.
 */
-#define SUPPL_WAS_SWAPPED(x)        ((x >> SUPPL_LSB_SWAPPED) & 0x1)
+#define ESUPPL_WAS_SWAPPED(x)        x.part.swapped
 
 /*!
  Returns a value of 1 if the specified supplemental value has the ROOT bit
  set indicating that the current expression is the root expression of its
  expression tree.
 */
-#define SUPPL_IS_ROOT(x)            ((x >> SUPPL_LSB_ROOT) & 0x1)
+#define ESUPPL_IS_ROOT(x)            x.part.root
 
 /*!
  Returns a value of 1 if the specified supplemental value has the executed
  bit set; otherwise, returns a value of 0 to indicate whether the
  corresponding expression was executed during simulation or not.
 */
-#define SUPPL_WAS_EXECUTED(x)       ((x >> SUPPL_LSB_EXECUTED) & 0x1)
+#define ESUPPL_WAS_EXECUTED(x)       x.part.executed
 
 /*!
  Returns a value of 1 if the specified supplemental belongs to an expression
  whose associated statement is a head statement.
 */
-#define SUPPL_IS_STMT_HEAD(x)       ((x >> SUPPL_LSB_STMT_HEAD) & 0x1)
+#define ESUPPL_IS_STMT_HEAD(x)       x.part.stmt_head
 
 /*!
  Returns a value of 1 if the specified supplemental belongs to an expression
  whose associated statement is a stop (for writing purposes).
 */
-#define SUPPL_IS_STMT_STOP(x)       ((x >> SUPPL_LSB_STMT_STOP) & 0x1)
+#define ESUPPL_IS_STMT_STOP(x)       x.part.stmt_stop
 
 /*!
  Returns a value of 1 if the specified supplemental belongs to an expression
  whose associated statement is a continous assignment.
 */
-#define SUPPL_IS_STMT_CONTINUOUS(x) ((x >> SUPPL_LSB_STMT_CONTINUOUS) & 0x1)
+#define ESUPPL_IS_STMT_CONTINUOUS(x) x.part.stmt_cont
 
 /*!
  Returns a value of 1 if the specified supplemental belongs to an expression
  who was just evaluated to TRUE.
 */
-#define SUPPL_IS_TRUE(x)            ((x >> SUPPL_LSB_EVAL_T) & 0x1)
+#define ESUPPL_IS_TRUE(x)            x.part.eval_t
 
 /*!
  Returns a value of 1 if the specified supplemental belongs to an expression
  who was just evaluated to FALSE.
 */
-#define SUPPL_IS_FALSE(x)           ((x >> SUPPL_LSB_EVAL_F) & 0x1)
+#define ESUPPL_IS_FALSE(x)           x.part.eval_f
 
 /*!
  Returns a value of 1 if the specified supplemental belongs to an expression
  that has evaluated to a value of TRUE (1) during simulation.
 */
-#define SUPPL_WAS_TRUE(x)           ((x >> SUPPL_LSB_TRUE) & 0x1)
+#define ESUPPL_WAS_TRUE(x)           x.part.true
 
 /*!
  Returns a value of 1 if the specified supplemental belongs to an expression
  that has evaluated to a value of FALSE (0) during simulation.
 */
-#define SUPPL_WAS_FALSE(x)          ((x >> SUPPL_LSB_FALSE) & 0x1)
+#define ESUPPL_WAS_FALSE(x)          x.part.false
 
 /*!
  Returns a value of 1 if the left child expression was changed during this
  timestamp.
 */
-#define SUPPL_IS_LEFT_CHANGED(x)    ((x >> SUPPL_LSB_LEFT_CHANGED) & 0x1)
+#define ESUPPL_IS_LEFT_CHANGED(x)    x.part.left_changed
 
 /*!
  Returns a value of 1 if the right child expression was changed during this
  timestamp.
 */
-#define SUPPL_IS_RIGHT_CHANGED(x)   ((x >> SUPPL_LSB_RIGHT_CHANGED) & 0x1)
+#define ESUPPL_IS_RIGHT_CHANGED(x)   x.part.right_changed
 
 /*!
  Returns a value of 1 if the specified expression has already been counted
  for combinational coverage.
 */
-#define SUPPL_WAS_COMB_COUNTED(x)   ((x >> SUPPL_LSB_COMB_CNTD) & 0x1)
-
-/*!
- Returns the specified expression's operation.
-*/
-#define SUPPL_OP(x)                 ((x >> SUPPL_LSB_OP) & 0x3f)
+#define ESUPPL_WAS_COMB_COUNTED(x)   x.part.comb_cntd
 
 /*!
  Returns a value of 1 if the specified expression exists on the left-hand side
  of an assignment operation.
 */
-#define SUPPL_IS_LHS(x)             ((x >> SUPPL_LSB_LHS) & 0x1)
+#define ESUPPL_IS_LHS(x)             x.part.lhs
 
 /*! @} */
      
@@ -778,58 +596,58 @@
 /*!
  Returns a value of 1 if the specified expression is considered to be measurable.
 */
-#define EXPR_IS_MEASURABLE(x)      (((SUPPL_OP( x->suppl ) != EXP_OP_STATIC) && \
-                                     (SUPPL_OP( x->suppl ) != EXP_OP_LAST) && \
-                                     (SUPPL_OP( x->suppl ) != EXP_OP_LIST) && \
-                                     (SUPPL_OP( x->suppl ) != EXP_OP_COND_SEL) && \
-                                     (SUPPL_OP( x->suppl ) != EXP_OP_CASE) && \
-                                     (SUPPL_OP( x->suppl ) != EXP_OP_CASEX) && \
-                                     (SUPPL_OP( x->suppl ) != EXP_OP_CASEZ) && \
-                                     (SUPPL_OP( x->suppl ) != EXP_OP_DEFAULT) && \
-                                     (SUPPL_OP( x->suppl ) != EXP_OP_PARAM) && \
-                                     (SUPPL_OP( x->suppl ) != EXP_OP_PARAM_SBIT) && \
-                                     (SUPPL_OP( x->suppl ) != EXP_OP_PARAM_MBIT) && \
-                                     (SUPPL_OP( x->suppl ) != EXP_OP_DELAY) && \
-                                     (SUPPL_OP( x->suppl ) != EXP_OP_EOR) && \
-                                     (SUPPL_OP( x->suppl ) != EXP_OP_ASSIGN) && \
-                                     (SUPPL_OP( x->suppl ) != EXP_OP_BASSIGN) && \
-                                     (SUPPL_OP( x->suppl ) != EXP_OP_NASSIGN) && \
-                                     (SUPPL_OP( x->suppl ) != EXP_OP_IF) && \
-                                     (SUPPL_IS_LHS( x->suppl ) == 0) && \
-                                     !((SUPPL_IS_ROOT( x->suppl ) == 0) && \
-                                       ((SUPPL_OP( x->suppl ) == EXP_OP_SIG) || \
-                                        (SUPPL_OP( x->suppl ) == EXP_OP_SBIT_SEL) || \
-                                        (SUPPL_OP( x->suppl ) == EXP_OP_MBIT_SEL)) && \
-                                       (SUPPL_OP( x->parent->expr->suppl ) != EXP_OP_ASSIGN) && \
-                                       (SUPPL_OP( x->parent->expr->suppl ) != EXP_OP_BASSIGN) && \
-                                       (SUPPL_OP( x->parent->expr->suppl ) != EXP_OP_NASSIGN) && \
-                                       (SUPPL_OP( x->parent->expr->suppl ) != EXP_OP_IF) && \
-                                       (SUPPL_OP( x->parent->expr->suppl ) != EXP_OP_COND)) && \
+#define EXPR_IS_MEASURABLE(x)      (((x->op != EXP_OP_STATIC) && \
+                                     (x->op != EXP_OP_LAST) && \
+                                     (x->op != EXP_OP_LIST) && \
+                                     (x->op != EXP_OP_COND_SEL) && \
+                                     (x->op != EXP_OP_CASE) && \
+                                     (x->op != EXP_OP_CASEX) && \
+                                     (x->op != EXP_OP_CASEZ) && \
+                                     (x->op != EXP_OP_DEFAULT) && \
+                                     (x->op != EXP_OP_PARAM) && \
+                                     (x->op != EXP_OP_PARAM_SBIT) && \
+                                     (x->op != EXP_OP_PARAM_MBIT) && \
+                                     (x->op != EXP_OP_DELAY) && \
+                                     (x->op != EXP_OP_EOR) && \
+                                     (x->op != EXP_OP_ASSIGN) && \
+                                     (x->op != EXP_OP_BASSIGN) && \
+                                     (x->op != EXP_OP_NASSIGN) && \
+                                     (x->op != EXP_OP_IF) && \
+                                     (ESUPPL_IS_LHS( x->suppl ) == 0) && \
+                                     !((ESUPPL_IS_ROOT( x->suppl ) == 0) && \
+                                       ((x->op == EXP_OP_SIG) || \
+                                        (x->op == EXP_OP_SBIT_SEL) || \
+                                        (x->op == EXP_OP_MBIT_SEL)) && \
+                                       (x->parent->expr->op != EXP_OP_ASSIGN) && \
+                                       (x->parent->expr->op != EXP_OP_BASSIGN) && \
+                                       (x->parent->expr->op != EXP_OP_NASSIGN) && \
+                                       (x->parent->expr->op != EXP_OP_IF) && \
+                                       (x->parent->expr->op != EXP_OP_COND)) && \
                                      (x->line != 0)) ? 1 : 0)
 
 /*!
  Returns a value of TRUE if the specified expression is a STATIC, PARAM, PARAM_SBIT or PARAM_MBIT
  operation type.
 */
-#define EXPR_IS_STATIC(x)        ((SUPPL_OP( x->suppl ) == EXP_OP_STATIC)     || \
-                                  (SUPPL_OP( x->suppl ) == EXP_OP_PARAM)      || \
-                                  (SUPPL_OP( x->suppl ) == EXP_OP_PARAM_SBIT) || \
-                                  (SUPPL_OP( x->suppl ) == EXP_OP_PARAM_MBIT))
+#define EXPR_IS_STATIC(x)        ((x->op == EXP_OP_STATIC)     || \
+                                  (x->op == EXP_OP_PARAM)      || \
+                                  (x->op == EXP_OP_PARAM_SBIT) || \
+                                  (x->op == EXP_OP_PARAM_MBIT))
 
 /*!
  Returns a value of true if the specified expression is considered a combination expression by
  the combinational logic report generator.
 */
-#define EXPR_IS_COMB(x)         ((SUPPL_OP( x->suppl ) == EXP_OP_XOR)      || \
-		                 (SUPPL_OP( x->suppl ) == EXP_OP_ADD)      || \
-				 (SUPPL_OP( x->suppl ) == EXP_OP_SUBTRACT) || \
-				 (SUPPL_OP( x->suppl ) == EXP_OP_AND)      || \
-				 (SUPPL_OP( x->suppl ) == EXP_OP_OR)       || \
-				 (SUPPL_OP( x->suppl ) == EXP_OP_NAND)     || \
-				 (SUPPL_OP( x->suppl ) == EXP_OP_NOR)      || \
-				 (SUPPL_OP( x->suppl ) == EXP_OP_NXOR)     || \
-				 (SUPPL_OP( x->suppl ) == EXP_OP_LOR)      || \
-				 (SUPPL_OP( x->suppl ) == EXP_OP_LAND))
+#define EXPR_IS_COMB(x)         ((x->op == EXP_OP_XOR)      || \
+		                 (x->op == EXP_OP_ADD)      || \
+				 (x->op == EXP_OP_SUBTRACT) || \
+				 (x->op == EXP_OP_AND)      || \
+				 (x->op == EXP_OP_OR)       || \
+				 (x->op == EXP_OP_NAND)     || \
+				 (x->op == EXP_OP_NOR)      || \
+				 (x->op == EXP_OP_NXOR)     || \
+				 (x->op == EXP_OP_LOR)      || \
+				 (x->op == EXP_OP_LAND))
 
 /*!
  Returns a value of true if the specified expression is considered a unary expression by
@@ -844,12 +662,12 @@
 #define EXPR_COMB_MISSED(x)        (EXPR_IS_MEASURABLE( x ) && \
                                     !expression_is_static_only( x ) && \
 				    ((EXPR_IS_COMB( x ) && \
-				      (!((x->suppl >> SUPPL_LSB_EVAL_00) & 0x1) || \
-                                       !((x->suppl >> SUPPL_LSB_EVAL_01) & 0x1) || \
-                                       !((x->suppl >> SUPPL_LSB_EVAL_10) & 0x1) || \
-                                       !((x->suppl >> SUPPL_LSB_EVAL_11) & 0x1))) || \
-				     !SUPPL_WAS_TRUE( x->suppl ) || \
-				     !SUPPL_WAS_FALSE( x->suppl )))
+				      (!x->suppl.part.eval_00 || \
+                                       !x->suppl.part.eval_01 || \
+                                       !x->suppl.part.eval_10 || \
+                                       !x->suppl.part.eval_11)) || \
+				     !ESUPPL_WAS_TRUE( x->suppl ) || \
+				     !ESUPPL_WAS_FALSE( x->suppl )))
 
 /*!
  \addtogroup op_tables
@@ -911,6 +729,7 @@
 #define BINARY			1	/*!< String in format [bB][01xXzZ_\?]+             */
 #define OCTAL			2	/*!< String in format [oO][0-7xXzZ_\?]+            */
 #define HEXIDECIMAL		3	/*!< String in format [hH][0-9a-fA-FxXzZ_\?]+      */
+#define QSTRING                 4       /*!< Quoted string                                 */
 
 /*! @} */
 
@@ -961,46 +780,12 @@ typedef enum {
 #if SIZEOF_INT == 4
 
 /*!
- A nibble is a 8-bit value that is subdivided into the following parts:
- <table>
-   <tr> <td> <strong> Bits </strong> </td> <td> <strong> Field Description </strong> </td> </tr>
-   <tr> <td> 1:0 </td> <td> 2-state value </td> </tr>
-   <tr> <td> 2   </td> <td> Indicator if bit was toggled from 0->1 </td> </tr>
-   <tr> <td> 3   </td> <td> Indicator if bit was toggled from 1->0 </td> </tr>
-   <tr> <td> 4   </td> <td> Indicator if bit has been previously assigned this timestep </td> </tr>
-   <tr> <td> 5   </td> <td> Indicator if bit was set to a value of 0 (FALSE) </td> </tr>
-   <tr> <td> 6   </td> <td> Indicator if bit was set to a value of 1 (TRUE) </td> </tr>
-   <tr> <td> 7   </td> <td> Reserved </td> </tr>
- </table>
+ A nibble is a 8-bit value.
 */
 typedef unsigned char nibble;
 
 /*!
- A control is a 32-bit value that is subdivided into the following parts:
- <table>
-   <tr> <td> <strong> Bits </strong> </td> <td> <strong> Field Description </strong> </td> </tr>
-   <tr> <td> 5:0   </td> <td> See \ref SUPPL_LSB_OP </td> </tr>
-   <tr> <td> 6     </td> <td> See \ref SUPPL_LSB_SWAPPED </td> </tr>
-   <tr> <td> 7     </td> <td> See \ref SUPPL_LSB_ROOT </td> </tr>
-   <tr> <td> 8     </td> <td> See \ref SUPPL_LSB_EXECUTED </td> </tr>
-   <tr> <td> 9     </td> <td> See \ref SUPPL_LSB_STMT_HEAD </td> </tr>
-   <tr> <td> 10    </td> <td> See \ref SUPPL_LSB_STMT_STOP </td> </tr>
-   <tr> <td> 11    </td> <td> See \ref SUPPL_LSB_STMT_CONTINUOUS </td> </tr>
-   <tr> <td> 12    </td> <td> See \ref SUPPL_LSB_FALSE </td> </tr>
-   <tr> <td> 13    </td> <td> See \ref SUPPL_LSB_TRUE </td> </tr>
-   <tr> <td> 14    </td> <td> See \ref SUPPL_LSB_LEFT_CHANGED </td> </tr>
-   <tr> <td> 15    </td> <td> See \ref SUPPL_LSB_RIGHT_CHANGED </td> </tr>
-   <tr> <td> 16    </td> <td> See \ref SUPPL_LSB_EVAL_00 </td> </tr>
-   <tr> <td> 17    </td> <td> See \ref SUPPL_LSB_EVAL_01 </td> </tr>
-   <tr> <td> 18    </td> <td> See \ref SUPPL_LSB_EVAL_10 </td> </tr>
-   <tr> <td> 19    </td> <td> See \ref SUPPL_LSB_EVAL_11 </td> </tr>
-   <tr> <td> 20    </td> <td> See \ref SUPPL_LSB_EVAL_T </td> </tr>
-   <tr> <td> 21    </td> <td> See \ref SUPPL_LSB_EVAL_F </td> </tr>
-   <tr> <td> 22    </td> <td> See \ref SUPPL_LSB_COMB_CNTD </td> </tr>
-   <tr> <td> 23    </td> <td> See \ref SUPPL_LSB_STMT_CONNECTED </td> </tr>
-   <tr> <td> 24    </td> <td> See \ref SUPPL_LSB_STMT_ADDED </td> </tr>
-   <tr> <td> 31:25 </td> <td> Reserved </td> </tr>
- </table>
+ A control is a 32-bit value.
 */
 typedef unsigned int control;
 #else
@@ -1009,6 +794,94 @@ typedef unsigned long nibble;
 typedef unsigned long control;
 #endif
 #endif
+
+/*------------------------------------------------------------------------------*/
+/*!
+ A vec_data is an 8-bit value that represents one bit of data in a signal or expression/subexpression
+*/
+union vec_data_u;
+
+/*!
+ Renaming vec_data_u for naming convenience.
+*/
+typedef union vec_data_u vec_data;
+
+union vec_data_u {
+  nibble all;        /*!< Reference to all bits in this union                         */
+  struct {
+    nibble value:2;  /*!< 4-state value                                               */
+    nibble tog01:1;  /*!< Indicator if bit was toggled from 0->1                      */
+    nibble tog10:1;  /*!< Indicator if bit was toggled from 1->0                      */
+    nibble set  :1;  /*!< Indicator if bit has been previously assigned this timestep */
+    nibble false:1;  /*!< Indicator if bit was set to a value of 0 (FALSE)            */
+    nibble true :1;  /*!< Indicator if bit was set to a value of 1 (TRUE)             */
+  } part;
+};
+
+/*------------------------------------------------------------------------------*/
+/*!
+ A esuppl is a 32-bit value that represents the supplemental field of an expression.
+*/
+union esuppl_u;
+
+/*!
+ Renaming esuppl_u for naming convenience.
+*/
+typedef union esuppl_u esuppl;
+
+union esuppl_u {
+  control   all;               /*!< Controls all bits within this union                                             */
+  struct {
+    control swapped       :1;  /*!< Indicates that the children of this expression have been swapped.  The swapping
+                                    of the positions is performed by the score command (for multi-bit selects) and
+                                    this bit indicates to the report code to swap them back when displaying them in
+                                    a report.                                                                       */
+    control root          :1;  /*!< Indicates that this expression is a root expression.  Traversing to the parent
+                                    pointer will take you to a statement type.                                      */
+    control executed      :1;  /*!< Indicates that this expression has been executed in the queue during the
+                                    lifetime of the simulation.                                                     */
+    control stmt_head     :1;  /*!< Indicates the statement which this expression belongs is a head statement (only
+                                    valid for root expressions -- parent expression == NULL).                       */
+    control stmt_stop     :1;  /*!< Indicates the statement which this expression belongs should write itself to
+                                    the CDD and not continue to traverse its next_true and next_false pointers.     */
+    control stmt_cont     :1;  /*!< Indicates the statement which this expression belongs is part of a continuous
+                                    assignment.  As such, stop simulating this statement tree after this expression
+                                    tree is evaluated.                                                              */
+    control false         :1;  /*!< Indicates that this expression has evaluated to a value of FALSE during the
+                                    lifetime of the simulation.                                                     */
+    control true          :1;  /*!< Indicates that this expression has evaluated to a value of TRUE during the
+                                    lifetime of the simulation.                                                     */
+    control left_changed  :1;  /*!< Indicates that this expression has its left child expression in a changed
+                                    state during this timestamp.                                                    */
+    control right_changed :1;  /*!< Indicates that this expression has its right child expression in a changed
+                                    state during this timestamp.                                                    */
+    control eval_00       :1;  /*!< Indicates that the value of the left child expression evaluated to FALSE
+                                    and the right child expression evaluated to FALSE.                              */
+    control eval_01       :1;  /*!< Indicates that the value of the left child expression evaluated to FALSE and
+                                    the right child expression evaluated to TRUE.                                   */
+    control eval_10       :1;  /*!< Indicates that the value of the left child expression evaluated to TRUE and the
+                                    right child expression evaluated to FALSE.                                      */
+    control eval_11       :1;  /*!< Indicates that the value of the left child expression evaluated to TRUE and the
+                                    right child expression evaluated to TRUE.                                       */
+    control eval_t        :1;  /*!< Indicates that the value of the current expression is currently set to TRUE
+                                    (temporary value).                                                              */
+    control eval_f        :1;  /*!< Indicates that the value of the current expression is currently set to FALSE
+                                    (temporary value).                                                              */
+    control comb_cntd     :1;  /*!< Indicates that the current expression has been previously counted for
+                                    combinational coverage.  Only set by report command (therefore this bit will
+                                    always be a zero when written to CDD file.                                      */
+    control stmt_connected:1;  /*!< Temporary bit value used by the score command but not displayed to the CDD
+                                     file.  When this bit is set to a one, it indicates to the statement_connect
+                                     function that this statement and all children statements do not need to be
+                                     connected to another statement.                                                */
+    control stmt_added    :1;  /*!< Temporary bit value used by the score command but not displayed to the CDD
+                                     file.  When this bit is set to a one, it indicates to the db_add_statement
+                                     function that this statement and all children statements have already been
+                                     added to the module statement list and should not be added again.              */
+    control lhs           :1;  /*!< Indicates that this expression exists on the left-hand side of an assignment
+                                    operation.                                                                      */
+  } part;
+};
 
 
 /*------------------------------------------------------------------------------*/
@@ -1025,9 +898,9 @@ struct str_link_s;
 typedef struct str_link_s str_link;
 
 struct str_link_s {
-  char*     str;     /*!< String to store                  */
-  char      suppl;   /*!< 8-bit additional information     */
-  str_link* next;    /*!< Pointer to next str_link element */
+  char*     str;    /*!< String to store                  */
+  char      suppl;  /*!< 8-bit additional information     */
+  str_link* next;   /*!< Pointer to next str_link element */
 };
 
 /*------------------------------------------------------------------------------*/
@@ -1037,9 +910,15 @@ struct str_link_s {
  manipulate this information.
 */
 struct vector_s {
-  int     width;     /*!< Bit width of this vector                 */
-  nibble  suppl;     /*!< Supplemental field                       */
-  nibble* value;     /*!< 4-state current value and toggle history */
+  int        width;     /*!< Bit width of this vector                          */
+  union {
+    nibble   all;       /*!< Allows us to set all bits in the suppl field      */
+    struct {
+      nibble base  :2;  /*!< Base-type of this data when originally parsed     */
+      nibble inport:1;  /*!< Specifies if this vector is part of an input port */
+    } part;
+  } suppl;              /*!< Supplemental field                                */
+  vec_data*  value;     /*!< 4-state current value and toggle history          */
 };
 
 /*!
@@ -1086,80 +965,18 @@ typedef struct vsignal_s     vsignal;
 typedef struct fsm_s fsm;
 
 struct expression_s {
-  vector*     value;       /*!< Current value and toggle information of this expression                         */
-  control     op;          /*!< Expression operation type                                                       */
-  union {
-    control   all;         /*!< Controls all bits within this union                                             */
-    struct {
-      control swapped:1;   /*!< Indicates that the children of this expression have been swapped.  The swapping 
-                                of the positions is performed by the score command (for multi-bit selects) and
-				this bit indicates to the report code to swap them back when displaying them in
-				a report.                                                                       */
-      control root:1;      /*!< Indicates that this expression is a root expression.  Traversing to the parent
-                                pointer will take you to a statement type.                                      */
-      control executed:1;  /*!< Indicates that this expression has been executed in the queue during the
-                                lifetime of the simulation.                                                     */
-      control stmt_head:1; /*!< Indicates the statement which this expression belongs is a head statement (only
-                                valid for root expressions -- parent expression == NULL).                       */
-      control stmt_stop:1; /*!< Indicates the statement which this expression belongs should write itself to
-                                the CDD and not continue to traverse its next_true and next_false pointers.     */
-      control stmt_cont:1; /*!< Indicates the statement which this expression belongs is part of a continuous
-                                assignment.  As such, stop simulating this statement tree after this expression
-				tree is evaluated.                                                              */
-      control false:1;     /*!< Indicates that this expression has evaluated to a value of FALSE during the
-                                lifetime of the simulation.                                                     */
-      control true:1;      /*!< Indicates that this expression has evaluated to a value of TRUE during the
-                                lifetime of the simulation.                                                     */
-      control left_changed:1; /*!< Indicates that this expression has its left child expression in a changed
-                                   state during this timestamp.                                                 */
-      control right_changed:1;  /*!< Indicates that this expression has its right child expression in a changed
-                                     state during this timestamp.                                               */
-      control eval_00:1;        /*!< Indicates that the value of the left child expression evaluated to FALSE
-                                     and the right child expression evaluated to FALSE.                         */
-       /*!
-        Least-significant bit position of expression supplemental field indicating that the
-	 value of the left child expression evaluated to FALSE and the right child expression
-	  evaluated to TRUE.
-	  */
-#define SUPPL_LSB_EVAL_01           17
-
-	  /*!
-	   Least-significant bit position of expression supplemental field indicating that the
-	    value of the left child expression evaluated to TRUE and the right child expression
-	     evaluated to FALSE.
-	     */
-#define SUPPL_LSB_EVAL_10           18
-
-	     /*!
-	      Least-significant bit position of expression supplemental field indicating that the
-	       value of the left child expression evaluated to TRUE and the right child expression
-	        evaluated to TRUE.
-		*/
-#define SUPPL_LSB_EVAL_11           19
-
-		/*!
-		 Least-significant bit position of expression supplemental field indicating that the
-		  value of the current expression currently set to TRUE (temporary value).
-		  */
-#define SUPPL_LSB_EVAL_T            20
-
-		  /*!
-		   Least-significant bit position of expression supplemental field indicating that the
-		    value of the current expression currently set to FALSE (temporary value).
-		    */
-#define SUPPL_LSB_EVAL_F            21
-
-    } part;
-  } suppl;
-  int         id;          /*!< Specifies unique ID for this expression in the parent          */
-  int         ulid;        /*!< Specifies underline ID for reporting purposes                  */
-  int         line;        /*!< Specified line in file that this expression is found on        */
-  control     col;         /*!< Specifies column location of beginning/ending of expression    */
-  vsignal*    sig;         /*!< Pointer to signal.  If NULL then no signal is attached         */
-  expr_stmt*  parent;      /*!< Parent expression/statement                                    */
-  expression* right;       /*!< Pointer to expression on right                                 */
-  expression* left;        /*!< Pointer to expression on left                                  */
-  fsm*        table;       /*!< Pointer to FSM table associated with this expression           */
+  vector*     value;   /*!< Current value and toggle information of this expression     */
+  control     op;      /*!< Expression operation type                                   */
+  esuppl      suppl;   /*!< Supplemental information for the expression                 */
+  int         id;      /*!< Specifies unique ID for this expression in the parent       */
+  int         ulid;    /*!< Specifies underline ID for reporting purposes               */
+  int         line;    /*!< Specified line in file that this expression is found on     */
+  control     col;     /*!< Specifies column location of beginning/ending of expression */
+  vsignal*    sig;     /*!< Pointer to signal.  If NULL then no signal is attached      */
+  expr_stmt*  parent;  /*!< Parent expression/statement                                 */
+  expression* right;   /*!< Pointer to expression on right                              */
+  expression* left;    /*!< Pointer to expression on left                               */
+  fsm*        table;   /*!< Pointer to FSM table associated with this expression        */
 };
 
 /*------------------------------------------------------------------------------*/
@@ -1680,6 +1497,9 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.112  2005/01/06 14:32:24  phase1geo
+ Starting to make updates to supplemental fields.  Work is in progress.
+
  Revision 1.111  2005/01/04 14:37:00  phase1geo
  New changes for race condition checking.  Things are uncompilable at this
  point.
