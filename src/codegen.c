@@ -68,7 +68,9 @@ void codegen_create_expr_helper( char** code,
     snprintf( code[code_index], (code_size + 1), "%s", first );
   }
   if( first_same_line ) {
-    snprintf( code[code_index], (code_size + 1), "%s%s", code[code_index], left[0] );
+    tmpstr = strdup( code[code_index] );
+    snprintf( code[code_index], (code_size + 1), "%s%s", tmpstr, left[0] );
+    free_safe( tmpstr );
     free_safe( left[0] );
     if( (left_depth == 1) && (middle != NULL) ) {
       code_size = strlen( code[code_index] ) + strlen( middle );
@@ -170,9 +172,14 @@ void codegen_create_expr( char*** code,
     *code = (char**)malloc_safe( sizeof( char* ) * (*code_depth) );
 
     /* Now generate expression string array */
+
 /*
     printf( "left[0]: %s, right[0]: %s, first: %s, middle: %s, last: %s, left_depth: %d, right_depth: %d, curr_line: %d, left_line: %d, right_line: %d\n",
-            left[0], right[0], first, middle, last, left_depth, right_depth, curr_line, left_line, right_line );
+            ((left_depth  == 0) ? "NULL" : left[0]),
+            ((right_depth == 0) ? "NULL" : right[0]),
+            ((first       == NULL) ? "NULL" : first),
+            ((middle      == NULL) ? "NULL" : middle),
+            ((last        == NULL) ? "NULL" : last), left_depth, right_depth, curr_line, left_line, right_line );
 */
 
     codegen_create_expr_helper( *code, 0, first, left, left_depth, (curr_line >= left_line), middle,
@@ -578,6 +585,10 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.30  2003/12/12 17:16:25  phase1geo
+ Changing code generator to output logic based on user supplied format.  Full
+ regression fails at this point due to mismatching report files.
+
  Revision 1.29  2003/11/30 05:46:44  phase1geo
  Adding IF report outputting capability.  Updated always9 diagnostic for these
  changes and updated rest of regression CDD files accordingly.
