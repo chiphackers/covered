@@ -1288,8 +1288,10 @@ bool expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_BASSIGN :
+#ifdef PERFORM_ASSIGNMENT
         intval1 = 0;
         expression_assign( expr->left, expr->right, &intval1 );
+#endif
         break;
 
       case EXP_OP_ASSIGN :
@@ -1493,6 +1495,7 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
     switch( lhs->op ) {
       case EXP_OP_SIG      :
         vector_set_value( lhs->value, rhs->value->value, lhs->value->width, *lsb, 0 );
+        vector_display( rhs->value );
 	vector_display( lhs->value );
         *lsb = *lsb + lhs->value->width;
         break;
@@ -1593,6 +1596,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.112  2005/02/09 14:12:22  phase1geo
+ More code for supporting expression assignments.
+
  Revision 1.111  2005/02/08 23:18:23  phase1geo
  Starting to add code to handle expression assignment for blocking assignments.
  At this point, regressions will probably still pass but new code isn't doing exactly

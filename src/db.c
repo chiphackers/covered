@@ -832,6 +832,7 @@ expression* db_create_expression( expression* right, expression* left, int op, b
 
   } else {
 
+#ifdef PERFORM_ASSIGNMENT
     /*
      If this is a blocking assignment, set the assigned vector attribute in all signals to the
      left of the blocking assignment operator to TRUE.
@@ -839,6 +840,7 @@ expression* db_create_expression( expression* right, expression* left, int op, b
     if( op == EXP_OP_BASSIGN ) {
       expression_set_assigned( expr->left );
     }
+#endif
 
   }
  
@@ -1349,6 +1351,9 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.126  2005/02/09 14:12:20  phase1geo
+ More code for supporting expression assignments.
+
  Revision 1.125  2005/02/08 23:18:22  phase1geo
  Starting to add code to handle expression assignment for blocking assignments.
  At this point, regressions will probably still pass but new code isn't doing exactly
