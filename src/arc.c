@@ -893,6 +893,15 @@ bool arc_db_merge( char* base, char** line, bool same ) {
 
 }
 
+/*!
+ \param arcs   Pointer to state transition arc array.
+ \param index  Arc entry index to convert,
+ \param left   If true, converts left state; otherwise, converts right state of entry.
+ \param str    String to store converted value to.
+
+ Converts the state specified by index and left parameters from its compacted bit format
+ to a hexidecimal string format.
+*/
 void arc_state_to_string( char* arcs, int index, bool left, char* str ) {
 
   char tmp[2];       /* Temporary string holder                       */
@@ -941,6 +950,17 @@ void arc_state_to_string( char* arcs, int index, bool left, char* str ) {
 
 }
 
+/*!
+ \param ofile  Pointer to file handle for report output.
+ \param fstr   Formatting string for string output.
+ \param arcs   Pointer to state transition arc array.
+ \param hit    Specifies if hit or missed transitions should be displayed.
+
+ Traverses entire arc array, displaying all states that were hit
+ during simulation (if hit parameter is true) or missed during simulation
+ (if hit parameter is false).  All output is sent to the file ofile using
+ the formatting string specified by fstr.
+*/
 void arc_display_states( FILE* ofile, char* fstr, char* arcs, bool hit ) {
 
   char* str;  /* Holder for string value of current state */
@@ -976,6 +996,17 @@ void arc_display_states( FILE* ofile, char* fstr, char* arcs, bool hit ) {
 
 }
 
+/*!
+ \param ofile  Pointer to file handle for report output.
+ \param fstr   Formatting string for string output.
+ \param arcs   Pointer to state transition arc array.
+ \param hit    Specifies if hit or missed transitions should be displayed.
+
+ Traverses entire arc array, displaying all state transitions that were hit
+ during simulation (if hit parameter is true) or missed during simulation
+ (if hit parameter is false).  All output is sent to the file ofile using
+ the formatting string specified by fstr.
+*/
 void arc_display_transitions( FILE* ofile, char* fstr, char* arcs, bool hit ) {
 
   char* strl;
@@ -1020,6 +1051,10 @@ void arc_dealloc( char* arcs ) {
 
 /*
  $Log$
+ Revision 1.9  2003/09/15 01:13:57  phase1geo
+ Fixing bug in vector_to_int() function when LSB is not 0.  Fixing
+ bug in arc_state_to_string() function in creating string version of state.
+
  Revision 1.8  2003/09/14 01:09:20  phase1geo
  Added verbose output for FSMs.
 

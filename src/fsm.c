@@ -593,6 +593,13 @@ bool fsm_module_summary( FILE* ofile, mod_link* head ) {
 
 }
 
+/*!
+ \param ofile  File handle of output file to send report output to.
+ \param table  Pointer to FSM structure to output.
+
+ Displays verbose information for hit/missed states to the specified
+ output file.
+*/
 void fsm_display_state_verbose( FILE* ofile, fsm* table ) {
 
   bool trans_known;
@@ -616,6 +623,13 @@ void fsm_display_state_verbose( FILE* ofile, fsm* table ) {
 
 }
 
+/*!
+ \param ofile  File handle of output file to send report output to.
+ \param table  Pointer to FSM structure to output.
+
+ Displays verbose information for hit/missed state transitions to
+ the specified output file.
+*/
 void fsm_display_arc_verbose( FILE* ofile, fsm* table ) {
 
   bool trans_known;
@@ -659,6 +673,13 @@ void fsm_display_arc_verbose( FILE* ofile, fsm* table ) {
 
 }
 
+/*!
+ \param ofile  File handle of output file to send report output to.
+ \param head   Pointer to head of FSM link for a module.
+
+ Displays the verbose FSM state and state transition information to the specified
+ output file.
+*/
 void fsm_display_verbose( FILE* ofile, fsm_link* head ) {
 
   while( head != NULL ) {
@@ -824,6 +845,9 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.11  2003/09/14 01:09:20  phase1geo
+ Added verbose output for FSMs.
+
  Revision 1.10  2003/09/13 19:53:59  phase1geo
  Adding correct way of calculating state and state transition totals.  Modifying
  FSM summary reporting to reflect these changes.  Also added function documentation
