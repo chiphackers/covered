@@ -1,2 +1,10 @@
 tcldir      = $(datadir)/covered/scripts
-tcl_SCRIPTS = cov_create.tcl main_view.tcl menu_create.tcl process_file.tcl toggle.tcl comb.tcl
+tcl_SCRIPTS = banner.gif \
+              comb.tcl \
+              cov_create.tcl \
+              help.tcl \
+              main_view.tcl \
+              menu_create.tcl \
+              misc.tcl \
+              process_file.tcl \
+              toggle.tcl

@@ -223,7 +223,9 @@ proc menu_create {.menubar} {
   # Add Manual and About information
   $thm add command -label "Manual" -state disabled
   $thm add separator
-  $thm add command -label "About Covered" -command {tk_dialog .about "About Covered" "Covered\nWritten by:  Trevor Williams  (trevorw@charter.net)\n" "" 0 "Close"}
+  $thm add command -label "About Covered" -command {
+    help_show_about
+  }
     
   # Pack the .menubar frame
   pack .menubar -side top -fill x
