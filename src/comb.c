@@ -343,11 +343,12 @@ void combination_draw_centered_line( char* line, int size, int exp_id, bool left
  \param size        Pointer to character width of this node.
  \param exp_id      Pointer to current expression ID to use in labeling.
  \param parent_op   Expression operation of parent used for calculating parenthesis.
+ \param center      Specifies if expression IDs should be centered in underlines or at beginning.
 
  Recursively parses specified expression tree, underlining and labeling each
  measurable expression.
 */
-void combination_underline_tree( expression* exp, unsigned int curr_depth, char*** lines, int* depth, int* size, int* exp_id, int parent_op ) {
+void combination_underline_tree( expression* exp, unsigned int curr_depth, char*** lines, int* depth, int* size, int* exp_id, int parent_op, bool center ) {
 
   char** l_lines;       /* Pointer to left underline stack              */
   char** r_lines;       /* Pointer to right underline stack             */
@@ -410,8 +411,8 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
         
       } else {
 
-        combination_underline_tree( exp->left,  combination_calc_depth( exp, curr_depth, TRUE ),  &l_lines, &l_depth, &l_size, exp_id, SUPPL_OP( exp->suppl ) );
-        combination_underline_tree( exp->right, combination_calc_depth( exp, curr_depth, FALSE ), &r_lines, &r_depth, &r_size, exp_id, SUPPL_OP( exp->suppl ) );
+        combination_underline_tree( exp->left,  combination_calc_depth( exp, curr_depth, TRUE ),  &l_lines, &l_depth, &l_size, exp_id, SUPPL_OP( exp->suppl ), center );
+        combination_underline_tree( exp->right, combination_calc_depth( exp, curr_depth, FALSE ), &r_lines, &r_depth, &r_size, exp_id, SUPPL_OP( exp->suppl ), center );
 
         if( parent_op == SUPPL_OP( exp->suppl ) ) {
 
@@ -581,7 +582,11 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
 
         /* Create underline or space */
         if( comb_missed == 1 ) {
-          combination_draw_line( (*lines)[(*depth)-1], *size, *exp_id );
+          if( center ) {
+            combination_draw_centered_line( (*lines)[(*depth)-1], *size, *exp_id, TRUE, TRUE );
+          } else {
+            combination_draw_line( (*lines)[(*depth)-1], *size, *exp_id );
+          }
           /* printf( "Drawing line (%s), size: %d, depth: %d\n", (*lines)[(*depth)-1], *size, (*depth) ); */
           *exp_id = *exp_id + 1;
         }
@@ -659,6 +664,16 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
     
 }
 
+/*!
+ \param line   Line containing underlines that needs to be reformatted for line wrap.
+ \param start  Starting index in line to take underline information from.
+ \param len    Number of characters to use for the current line.
+
+ \return Returns a newly allocated string that contains the underline information for
+         the current line.  If there is no underline information to return, a value of
+         NULL is returned.
+
+*/
 char* combination_prep_line( char* line, int start, int len ) {
 
   char* str;                /* Prepared line to return                           */
@@ -764,7 +779,7 @@ void combination_underline( FILE* ofile, char** code, int code_depth, expression
   exp_id = 1;
   start  = 0;
 
-  combination_underline_tree( exp, 0, &lines, &depth, &size, &exp_id, SUPPL_OP( exp->suppl ) );
+  combination_underline_tree( exp, 0, &lines, &depth, &size, &exp_id, SUPPL_OP( exp->suppl ), (code_depth == 1) );
 
   for( j=0; j<code_depth; j++ ) {
 
@@ -774,10 +789,16 @@ void combination_underline( FILE* ofile, char** code, int code_depth, expression
       fprintf( ofile, "            %s\n", code[j] );
     }
 
-    for( i=0; i<depth; i++ ) {
-      if( (tmpstr = combination_prep_line( lines[i], start, strlen( code[j] ) )) != NULL ) {
-        fprintf( ofile, "            %s\n", tmpstr );
-        free_safe( tmpstr );
+    if( code_depth == 1 ) {
+      for( i=0; i<depth; i++ ) {
+        fprintf( ofile, "            %s\n", lines[i] );
+      }
+    } else {
+      for( i=0; i<depth; i++ ) {
+        if( (tmpstr = combination_prep_line( lines[i], start, strlen( code[j] ) )) != NULL ) {
+          fprintf( ofile, "            %s\n", tmpstr );
+          free_safe( tmpstr );
+        }
       }
     }
 
@@ -1204,6 +1225,9 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.69  2003/12/12 22:39:13  phase1geo
+ Adding rest of line wrap code.  Full regression should now pass.
+
  Revision 1.68  2003/12/12 17:16:25  phase1geo
  Changing code generator to output logic based on user supplied format.  Full
  regression fails at this point due to mismatching report files.
