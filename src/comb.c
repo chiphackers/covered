@@ -1011,16 +1011,19 @@ void combination_underline( FILE* ofile, char** code, int code_depth, expression
 }
 
 /*!
- \param ofile  Pointer to file to output results to.
- \param exp    Pointer to expression to evaluate.
- \param op     String showing current expression operation type.
+ \param info       Pointer to array of strings that will contain the coverage information for this expression
+ \param info_size  Pointer to integer containing number of elements in info array 
+ \param exp        Pointer to expression to evaluate.
+ \param op         String showing current expression operation type.
 
  Displays the missed unary combination(s) that keep the combination coverage for
  the specified expression from achieving 100% coverage.
 */
-void combination_unary( FILE* ofile, expression* exp, char* op ) {
+void combination_unary( char*** info, int* info_size, expression* exp, char* op ) {
 
-  int hit = 0;
+  int  hit = 0;
+  char tmp[20]; 
+  int  length; 
 
   assert( exp != NULL );
 
@@ -1029,27 +1032,42 @@ void combination_unary( FILE* ofile, expression* exp, char* op ) {
 
   assert( exp->ulid != -1 );
 
-  fprintf( ofile, "        Expression %d   (%d/2)\n", exp->ulid, hit );
-  fprintf( ofile, "        ^^^^^^^^^^^^^ - %s\n", op );
-  fprintf( ofile, "         E | E\n" );
-  fprintf( ofile, "        =0=|=1=\n" );
-  fprintf( ofile, "         %c   %c\n\n",
+  /* Allocate memory for info array */
+  *info_size = 5;
+  *info      = (char**)malloc_safe( sizeof( char* ) * (*info_size), __FILE__, __LINE__ );
+
+  /* Allocate lines and assign values */ 
+  length = 27;  snprintf( tmp, 20, "%d", exp->ulid );  length += strlen( tmp );  snprintf( tmp, 20, "%d", hit );  length += strlen( tmp );
+  (*info)[0] = (char*)malloc_safe( length, __FILE__, __LINE__ );
+  snprintf( (*info)[0], length, "        Expression %d   (%d/2)", exp->ulid, hit );
+
+  length  = 25 + strlen( op );  (*info)[1] = (char*)malloc_safe( length, __FILE__, __LINE__ );
+  snprintf( (*info)[1], length, "        ^^^^^^^^^^^^^ - %s", op );
+
+  (*info)[2] = strdup( "         E | E" );
+  (*info)[3] = strdup( "        =0=|=1=" );
+
+  length = 15;  (*info)[4] = (char*)malloc_safe( length, __FILE__, __LINE__ );
+  snprintf( (*info)[4], length, "         %c   %c",
 		  ((SUPPL_WAS_FALSE( exp->suppl ) == 1) ? ' ' : '*'),
 		  ((SUPPL_WAS_TRUE( exp->suppl )  == 1) ? ' ' : '*') );
 
 }
 
 /*!
- \param ofile  Pointer to file to output results to.
- \param exp    Pointer to expression to evaluate.
- \param op     String showing current expression operation type.
+ \param info       Pointer to array of strings that will contain the coverage information for this expression
+ \param info_size  Pointer to integer containing number of elements in info array 
+ \param exp        Pointer to expression to evaluate.
+ \param op         String showing current expression operation type.
 
  Displays the missed combinational sequences for the specified expression to the
  specified output stream in tabular form.
 */
-void combination_two_vars( FILE* ofile, expression* exp, char* op ) {
+void combination_two_vars( char*** info, int* info_size, expression* exp, char* op ) {
 
-  int hit = 0;
+  int  hit = 0;
+  char tmp[20];
+  int  length; 
 
   assert( exp != NULL );
 
@@ -1067,11 +1085,25 @@ void combination_two_vars( FILE* ofile, expression* exp, char* op ) {
 
   assert( exp->ulid != -1 );
 
-  fprintf( ofile, "        Expression %d   (%d/4)\n", exp->ulid, hit );
-  fprintf( ofile, "        ^^^^^^^^^^^^^ - %s\n", op );
-  fprintf( ofile, "         LR | LR | LR | LR \n" );
-  fprintf( ofile, "        =00=|=01=|=10=|=11=\n" );
-  fprintf( ofile, "         %c    %c    %c    %c\n\n",
+  /* Allocate memory for info array */
+  *info_size = 5;
+  *info      = (char**)malloc_safe( sizeof( char* ) * (*info_size), __FILE__, __LINE__ );
+
+  /* Allocate lines and assign values */ 
+  length = 27;  snprintf( tmp, 20, "%d", exp->ulid );  length += strlen( tmp );  snprintf( tmp, 20, "%d", hit );  length += strlen( tmp );
+  (*info)[0] = (char*)malloc_safe( length, __FILE__, __LINE__ );
+  snprintf( (*info)[0], length, "        Expression %d   (%d/4)", exp->ulid, hit );
+
+  length = 24 + strlen( op );
+  (*info)[1] = (char*)malloc_safe( length, __FILE__, __LINE__ );
+  snprintf( (*info)[1], length, "        ^^^^^^^^^^^^^ - %s", op );
+
+  (*info)[2] = strdup( "         LR | LR | LR | LR " );
+  (*info)[3] = strdup( "        =00=|=01=|=10=|=11=" );
+
+  length = 26;
+  (*info)[4] = (char*)malloc_safe( length, __FILE__, __LINE__ );
+  snprintf( (*info)[4], length, "         %c    %c    %c    %c",
                   ((((exp->suppl >> SUPPL_LSB_EVAL_00) & 0x1) == 1) ? ' ' : '*'),
                   ((((exp->suppl >> SUPPL_LSB_EVAL_01) & 0x1) == 1) ? ' ' : '*'),
                   ((((exp->suppl >> SUPPL_LSB_EVAL_10) & 0x1) == 1) ? ' ' : '*'),
@@ -1765,6 +1797,11 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.100  2004/08/13 20:45:05  phase1geo
+ More added for combinational logic verbose reporting.  At this point, the
+ code is being output with underlines that can move up and down the expression
+ tree.  No expression reporting is being done at this time, however.
+
  Revision 1.99  2004/08/11 22:11:38  phase1geo
  Initial beginnings of combinational logic verbose reporting to GUI.
 
