@@ -2,12 +2,13 @@
 \label{parser__misc_8c}\index{parser_misc.c@{parser\_\-misc.c}}
 {\tt \#include $<$stdio.h$>$}\par
 {\tt \#include \char`\"{}parser\_\-misc.h\char`\"{}}\par
+{\tt \#include \char`\"{}util.h\char`\"{}}\par
 \subsection*{Functions}
 \begin{CompactItemize}
 \item 
 void {\bf VLerror} (char $\ast$msg)
 \item 
-void {\bf yywarn} (char $\ast$msg)
+void {\bf VLwarn} (char $\ast$msg)
 \item 
 int {\bf VLwrap} ()
 \end{CompactItemize}
@@ -15,6 +16,8 @@ int {\bf VLwrap} ()
 \begin{CompactItemize}
 \item 
 const char $\ast$ {\bf vl\_\-file}
+\item 
+char {\bf user\_\-msg} [USER\_\-MSG\_\-LENGTH]
 \item 
 unsigned {\bf error\_\-count} = 0
 \item 
@@ -36,17 +39,17 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsection{Function Documentation}
 \index{parser_misc.c@{parser\_\-misc.c}!VLerror@{VLerror}}
 \index{VLerror@{VLerror}!parser_misc.c@{parser\_\-misc.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void VLerror (char $\ast$ {\em msg})}\label{parser__misc_8c_a3}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void VLerror (char $\ast$ {\em msg})}\label{parser__misc_8c_a4}
+
+
+\index{parser_misc.c@{parser\_\-misc.c}!VLwarn@{VLwarn}}
+\index{VLwarn@{VLwarn}!parser_misc.c@{parser\_\-misc.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void VLwarn (char $\ast$ {\em msg})}\label{parser__misc_8c_a5}
 
 
 \index{parser_misc.c@{parser\_\-misc.c}!VLwrap@{VLwrap}}
 \index{VLwrap@{VLwrap}!parser_misc.c@{parser\_\-misc.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int VLwrap ()}\label{parser__misc_8c_a5}
-
-
-\index{parser_misc.c@{parser\_\-misc.c}!yywarn@{yywarn}}
-\index{yywarn@{yywarn}!parser_misc.c@{parser\_\-misc.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yywarn (char $\ast$ {\em msg})}\label{parser__misc_8c_a4}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int VLwrap ()}\label{parser__misc_8c_a6}
 
 
 
@@ -54,7 +57,12 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsection{Variable Documentation}
 \index{parser_misc.c@{parser\_\-misc.c}!error_count@{error\_\-count}}
 \index{error_count@{error\_\-count}!parser_misc.c@{parser\_\-misc.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}unsigned error\_\-count = 0}\label{parser__misc_8c_a1}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}unsigned error\_\-count = 0}\label{parser__misc_8c_a2}
+
+
+\index{parser_misc.c@{parser\_\-misc.c}!user_msg@{user\_\-msg}}
+\index{user_msg@{user\_\-msg}!parser_misc.c@{parser\_\-misc.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char user\_\-msg[USER\_\-MSG\_\-LENGTH]}\label{parser__misc_8c_a1}
 
 
 \index{parser_misc.c@{parser\_\-misc.c}!vl_file@{vl\_\-file}}
@@ -64,6 +72,6 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 
 \index{parser_misc.c@{parser\_\-misc.c}!warn_count@{warn\_\-count}}
 \index{warn_count@{warn\_\-count}!parser_misc.c@{parser\_\-misc.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}unsigned warn\_\-count = 0}\label{parser__misc_8c_a2}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}unsigned warn\_\-count = 0}\label{parser__misc_8c_a3}
 
 

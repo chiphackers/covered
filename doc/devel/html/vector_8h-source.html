@@ -12,7 +12,7 @@
 00013 <font class="preprocessor">#include "<a class="code" href="defines_8h.html">defines.h</a>"</font>
 00014 
 00015 
-00017 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a8">vector_init</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <a class="code" href="defines_8h.html#a154">nibble</a>* value, <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> lsb );
+00017 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a8">vector_init</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <a class="code" href="defines_8h.html#a155">nibble</a>* value, <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> lsb );
 00018 
 00020 <a class="code" href="structvector__s.html">vector</a>* <a class="code" href="vector_8c.html#a9">vector_create</a>( <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> lsb, <font class="keywordtype">bool</font> data );
 00021 
@@ -22,19 +22,19 @@
 00027 
 00029 <font class="keywordtype">bool</font> <a class="code" href="vector_8c.html#a12">vector_db_merge</a>( <a class="code" href="structvector__s.html">vector</a>* base, <font class="keywordtype">char</font>** line );
 00030 
-00032 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a13">vector_display_toggle01</a>( <a class="code" href="defines_8h.html#a154">nibble</a>* nib, <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> lsb, FILE* ofile );
+00032 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a13">vector_display_toggle01</a>( <a class="code" href="defines_8h.html#a155">nibble</a>* nib, <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> lsb, FILE* ofile );
 00033 
-00035 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a14">vector_display_toggle10</a>( <a class="code" href="defines_8h.html#a154">nibble</a>* nib, <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> lsb, FILE* ofile );
+00035 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a14">vector_display_toggle10</a>( <a class="code" href="defines_8h.html#a155">nibble</a>* nib, <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> lsb, FILE* ofile );
 00036 
-00038 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a15">vector_display_nibble</a>( <a class="code" href="defines_8h.html#a154">nibble</a>* nib, <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> lsb );
+00038 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a15">vector_display_nibble</a>( <a class="code" href="defines_8h.html#a155">nibble</a>* nib, <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> lsb );
 00039 
 00041 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a16">vector_display</a>( <a class="code" href="structvector__s.html">vector</a>* vec );
 00042 
-00044 <a class="code" href="defines_8h.html#a154">nibble</a> <a class="code" href="vector_8c.html#a17">vector_bit_val</a>( <a class="code" href="defines_8h.html#a154">nibble</a>* value, <font class="keywordtype">int</font> pos );
+00044 <a class="code" href="defines_8h.html#a155">nibble</a> <a class="code" href="vector_8c.html#a17">vector_bit_val</a>( <a class="code" href="defines_8h.html#a155">nibble</a>* value, <font class="keywordtype">int</font> pos );
 00045 
-00047 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a18">vector_set_bit</a>( <a class="code" href="defines_8h.html#a154">nibble</a>* nib, <a class="code" href="defines_8h.html#a154">nibble</a> value, <font class="keywordtype">int</font> pos );
+00047 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a18">vector_set_bit</a>( <a class="code" href="defines_8h.html#a155">nibble</a>* nib, <a class="code" href="defines_8h.html#a155">nibble</a> value, <font class="keywordtype">int</font> pos );
 00048 
-00050 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a25">vector_set_value</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <a class="code" href="defines_8h.html#a154">nibble</a>* value, <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> from_idx, <font class="keywordtype">int</font> to_idx );
+00050 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a25">vector_set_value</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <a class="code" href="defines_8h.html#a155">nibble</a>* value, <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> from_idx, <font class="keywordtype">int</font> to_idx );
 00051 
 00053 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a26">vector_set_type</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <font class="keywordtype">int</font> type );
 00054 
@@ -54,7 +54,7 @@
 00075 
 00077 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a24">vector_logic_count</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <font class="keywordtype">int</font>* false_cnt, <font class="keywordtype">int</font>* true_cnt );
 00078 
-00080 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a34">vector_bitwise_op</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* src1, <a class="code" href="structvector__s.html">vector</a>* src2, <a class="code" href="defines_8h.html#a154">nibble</a>* optab );
+00080 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a34">vector_bitwise_op</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* src1, <a class="code" href="structvector__s.html">vector</a>* src2, <a class="code" href="defines_8h.html#a155">nibble</a>* optab );
 00081 
 00083 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a35">vector_op_compare</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* left, <a class="code" href="structvector__s.html">vector</a>* right, <font class="keywordtype">int</font> comp_type );
 00084 
@@ -70,7 +70,7 @@
 00099 
 00101 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a41">vector_unary_inv</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* src );
 00102 
-00104 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a42">vector_unary_op</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* src, <a class="code" href="defines_8h.html#a154">nibble</a>* optab );
+00104 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a42">vector_unary_op</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* src, <a class="code" href="defines_8h.html#a155">nibble</a>* optab );
 00105 
 00107 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a43">vector_unary_not</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* src );
 00108 
@@ -128,7 +128,7 @@
 00161 
 00162 <font class="preprocessor">#endif</font>
 00163 <font class="preprocessor"></font>
-</pre></div><hr><address align="right"><small>Generated on Wed Nov 27 09:23:04 2002 for Covered by
+</pre></div><hr><address align="right"><small>Generated on Sat Dec 14 01:04:22 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

@@ -39,7 +39,7 @@ X  10. Make sure that extension order is maintained for a given library path.
 X  11. Remove all local creations of err_msg string and just create one global version of this
        for efficiency sake.
 
-   13. Make -v option to score command work like Verilog simulators and allow Verilog files
+X  12. Make -v option to score command work like Verilog simulators and allow Verilog files
        to be specified without the -v option.  Also force rule that filename must match
        needed module in -y options.
 

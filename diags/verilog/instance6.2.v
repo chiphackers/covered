@@ -5,7 +5,7 @@
 
 module main;
 
-reg [2:0] a, b;
+reg [3:0] a, b;
 
 foobar foo( a );
 barfoo bar( b );
@@ -13,12 +13,12 @@ barfoo bar( b );
 initial begin
 	$dumpfile( "instance6.2.vcd" );
 	$dumpvars( 0, main );
-	a = 3'b000;
-        b = 3'b111;
+	a = 4'b0000;
+        b = 4'b0111;
 	#5;
-	a = 3'b001;
+	a = 4'b0001;
 	#5;
-	a = 3'b100;
+	a = 4'b0100;
 	#5;
 	$finish;
 end
@@ -28,7 +28,7 @@ endmodule
 
 module foobar( b );
 
-parameter bsize = 3;
+parameter bsize = 4;
 
 input [bsize-1:0]  b;
 
@@ -41,7 +41,7 @@ endmodule
 
 module barfoo( b );
 
-input [2:0]  b;
+input [3:0]  b;
 
 foobar #(2) dude( b[2:1] );
 

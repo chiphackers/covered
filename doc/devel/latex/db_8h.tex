@@ -19,7 +19,7 @@ void {\bf db\_\-add\_\-declared\_\-param} (char $\ast$name, {\bf expression} $\a
 \begin{CompactList}\small\item\em Adds specified declared parameter to parameter list. Called by parser.\item\end{CompactList}\item 
 void {\bf db\_\-add\_\-override\_\-param} (char $\ast$inst\_\-name, {\bf expression} $\ast$expr)
 \begin{CompactList}\small\item\em Adds specified override parameter to parameter list. Called by parser.\item\end{CompactList}\item 
-void {\bf db\_\-add\_\-vector\_\-param} ({\bf signal} $\ast$sig, {\bf expression} $\ast$exp, {\bf expression} $\ast$parm\_\-exp, int type)
+void {\bf db\_\-add\_\-vector\_\-param} ({\bf signal} $\ast$sig, {\bf expression} $\ast$parm\_\-exp, int type)
 \begin{CompactList}\small\item\em Adds signal/expression vector parameter to parameter list.\item\end{CompactList}\item 
 void {\bf db\_\-add\_\-defparam} (char $\ast$name, {\bf expression} $\ast$expr)
 \begin{CompactList}\small\item\em Adds specified defparam to parameter override list. Called by parser.\item\end{CompactList}\item 
@@ -35,7 +35,7 @@ void {\bf db\_\-add\_\-expression} ({\bf expression} $\ast$root)
 \begin{CompactList}\small\item\em Adds specified expression to expression list. Called by parser.\item\end{CompactList}\item 
 {\bf statement} $\ast$ {\bf db\_\-create\_\-statement} ({\bf expression} $\ast$exp)
 \begin{CompactList}\small\item\em Creates new statement expression from specified information. Called by parser.\item\end{CompactList}\item 
-void {\bf db\_\-add\_\-statement} ({\bf statement} $\ast$stmt)
+void {\bf db\_\-add\_\-statement} ({\bf statement} $\ast$stmt, {\bf statement} $\ast$start)
 \begin{CompactList}\small\item\em Adds specified statement to current module's statement list. Called by parser.\item\end{CompactList}\item 
 void {\bf db\_\-statement\_\-connect} ({\bf statement} $\ast$curr\_\-stmt, {\bf statement} $\ast$next\_\-stmt)
 \begin{CompactList}\small\item\em Connects one statement block to another.\item\end{CompactList}\item 
@@ -173,7 +173,7 @@ right}]Specifies constant value for calculation of right-hand vector value.\end{
 \end{Desc}
 Creates a new signal with the specified parameter information and adds this to the signal list if it does not already exist. If width == 0, the sig\_\-msb and sig\_\-lsb values are interrogated. If sig\_\-msb and/or is non-NULL, its value is add to the current module's parameter list and all associated instances are updated to contain new value. \index{db.h@{db.h}!db_add_statement@{db\_\-add\_\-statement}}
 \index{db_add_statement@{db\_\-add\_\-statement}!db.h@{db.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-add\_\-statement ({\bf statement} $\ast$ {\em stmt})}\label{db_8h_a14}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-add\_\-statement ({\bf statement} $\ast$ {\em stmt}, {\bf statement} $\ast$ {\em start})}\label{db_8h_a14}
 
 
 Adds specified statement to current module's statement list. Called by parser.
@@ -182,11 +182,12 @@ Adds specified statement to current module's statement list. Called by parser.
 \item[Parameters: ]\par
 \begin{description}
 \item[{\em 
-stmt}]Pointer to statement add to current module's statement list.\end{description}
+stmt}]Pointer to statement add to current module's statement list. \item[{\em 
+start}]Pointer to starting statement of statement tree.\end{description}
 \end{Desc}
-Adds the specified statement tree to the tail of the current module's statement list. \index{db.h@{db.h}!db_add_vector_param@{db\_\-add\_\-vector\_\-param}}
+Adds the specified statement tree to the tail of the current module's statement list. The start statement is specified to avoid infinite looping. \index{db.h@{db.h}!db_add_vector_param@{db\_\-add\_\-vector\_\-param}}
 \index{db_add_vector_param@{db\_\-add\_\-vector\_\-param}!db.h@{db.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-add\_\-vector\_\-param ({\bf signal} $\ast$ {\em sig}, {\bf expression} $\ast$ {\em exp}, {\bf expression} $\ast$ {\em parm\_\-exp}, int {\em type})}\label{db_8h_a6}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-add\_\-vector\_\-param ({\bf signal} $\ast$ {\em sig}, {\bf expression} $\ast$ {\em parm\_\-exp}, int {\em type})}\label{db_8h_a6}
 
 
 Adds signal/expression vector parameter to parameter list.
@@ -196,7 +197,6 @@ Adds signal/expression vector parameter to parameter list.
 \begin{description}
 \item[{\em 
 sig}]Pointer to signal to attach parameter to. \item[{\em 
-exp}]Pointer to expression to attach parameter to. \item[{\em 
 parm\_\-exp}]Expression containing value of vector parameter. \item[{\em 
 type}]Type of signal vector parameter to create (LSB or MSB).\end{description}
 \end{Desc}
