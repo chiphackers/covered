@@ -1488,9 +1488,10 @@ statement
                     $$ = NULL;
                   }
 		}
-	| lpvalue '=' { ignore_mode++; } delay1 { ignore_mode--; } expression ';'
+	| lpvalue '=' delay1 expression ';'
 		{
 		  statement* stmt;
+                  expression_dealloc( $3, FALSE );
                   if( ignore_mode == 0 ) {
                     stmt = db_create_statement( $4 );
 		    db_add_expression( $4 );
@@ -1499,9 +1500,10 @@ statement
                     $$ = NULL;
                   }
 		}
-	| lpvalue K_LE { ignore_mode++; } delay1 { ignore_mode--; } expression ';'
+	| lpvalue K_LE delay1 expression ';'
 		{
 		  statement* stmt;
+                  expression_dealloc( $3, FALSE );
                   if( ignore_mode == 0 ) {
                     stmt = db_create_statement( $4 );
 		    db_add_expression( $4 );
@@ -1510,9 +1512,22 @@ statement
                     $$ = NULL;
                   }
 		}
-	| lpvalue '=' { ignore_mode++; } event_control { ignore_mode--; } expression ';'
+	| lpvalue '=' event_control expression ';'
 		{
 		  statement* stmt;
+                  expression_dealloc( $3, FALSE );
+                  if( ignore_mode == 0 ) {
+                    stmt = db_create_statement( $4 );
+		    db_add_expression( $4 );
+                    $$ = stmt;
+                  } else {
+                    $$ = NULL;
+                  }
+		}
+	| lpvalue K_LE event_control expression ';'
+		{
+                  statement* stmt;
+                  expression_dealloc( $3, FALSE );
                   if( ignore_mode == 0 ) {
                     stmt = db_create_statement( $4 );
 		    db_add_expression( $4 );
@@ -1524,17 +1539,6 @@ statement
 	| lpvalue '=' K_repeat { ignore_mode++; } '(' expression ')' event_control expression ';' { ignore_mode--; }
 		{
                   $$ = NULL;
-		}
-	| lpvalue K_LE { ignore_mode++; } event_control { ignore_mode--; } expression ';'
-		{
-                  statement* stmt;
-                  if( ignore_mode == 0 ) {
-                    stmt = db_create_statement( $4 );
-		    db_add_expression( $4 );
-                    $$ = stmt;
-                  } else {
-                    $$ = NULL;
-                  }
 		}
 	| lpvalue K_LE K_repeat { ignore_mode++; } '(' expression ')' event_control expression ';' { ignore_mode--; }
 		{

@@ -145,9 +145,6 @@ WSPACE [ \t\b\f]+
                 return STRING; }
 <CSTRING>.    { yymore();      }
 
-  /* Macro identifier */
-`[a-zA-Z_][a-zA-Z0-9_]* { def_match(); }
-
   /* Ignore modules that are not needed by the parser. */
 <IGNORE_MODULE>endmodule { BEGIN( 0 ); 
 			   return I_endmodule; }
@@ -413,13 +410,11 @@ WSPACE [ \t\b\f]+
 <DEFINE>(\n|"\r\n"|"\n\r")                              {
      def_finish();
      yylloc.first_line += 1;
-     fputc( '\n', yyout );
      yy_pop_state();
  }
 <DEFINE><<EOF>>                                         {
      def_finish();
      yylloc.first_line += 1;
-     fputc( '\n', yyout );
      yy_pop_state();
  }
 
@@ -471,11 +466,13 @@ WSPACE [ \t\b\f]+
 <IFDEF_FALSE,IFDEF_SUPR>.     { }
 <IFDEF_FALSE,IFDEF_SUPR>\n    {
      yylloc.first_line += 1;
-     fputc( '\n', yyout );
  }
 
   /* endif directive */
 <IFDEF_FALSE,IFDEF_TRUE,IFDEF_SUPR>^{WSPACE}?`endif.* { yy_pop_state(); }
+
+  /* Macro identifier */
+`[a-zA-Z_][a-zA-Z0-9_]* { def_match(); }
 
   /* Handle lines with errors */
 <ERROR_LINE>.* { yy_pop_state(); }
@@ -495,9 +492,6 @@ WSPACE [ \t\b\f]+
 struct define_t {
   char* name;
   char* value;
-
-  /* keywords don't get rescanned for fresh values. */
-  int keyword;
 
   struct define_t* left;
   struct define_t* right;
@@ -564,13 +558,12 @@ static void def_match() {
 
   struct define_t*        cur = def_lookup( yytext + 1 );  /* Pointer to define identifier node */
   struct include_stack_t* isp;                             /* Pointer to include stack          */
+  int                     i;                               /* Loop iterator                     */
 
   if( cur ) {
 
-    if( cur->keyword ) {
-
-      fprintf(yyout, "%s", cur->value);
-
+    for( i=strlen( cur->value ) - 1; i>=0; i-- ) {
+      unput( cur->value[i] );
     }
 
   } else {
@@ -599,12 +592,11 @@ static void def_start() {
 /*!
  \param name     String value of define identifier
  \param value    String value associated with define identifier
- \param keyword  If set to 1, specifies that a keyword is in the value
 
  Stores define identifer with its value in a define node and placed in
  the binary search tree for quick lookup later on.
 */
-void define_macro( const char* name, const char* value, int keyword ) {
+void define_macro( const char* name, const char* value ) {
 
   struct define_t* def;         /* Pointer to newly created define node               */
   struct define_t* cur;         /* Pointer to current define node in tree             */
@@ -615,7 +607,6 @@ void define_macro( const char* name, const char* value, int keyword ) {
   /* Initialize define node */
   def->name    = strdup( name );
   def->value   = strdup( value );
-  def->keyword = keyword;
   def->left    = 0;
   def->right   = 0;
   def->up      = 0;
@@ -694,7 +685,7 @@ static void do_define() {
     *cp = '\0';
   }
 
-  define_macro( def_name, yytext, 0 );
+  define_macro( def_name, yytext );
 
   def_name[0] = '\0';
 
@@ -706,7 +697,7 @@ static void do_define() {
 static void def_finish() {
 
   if( def_name[0] ) {
-    define_macro( def_name, "1", 0 );
+    define_macro( def_name, "1" );
   }
 
 }
@@ -871,10 +862,16 @@ static void do_include() {
 
   char      path[4096];  /* Full pathname to include file           */
   str_link* curr;        /* Pointer to current include file element */
+  char      msg[4096];   /* Error message to user                   */
 
   if( standby->path[0] == '/') {
 
     standby->file = fopen(standby->path, "r");
+
+    if( standby->file == 0 ) {
+      snprintf( msg, 4096, "Unable to open `include file \"%s\"", standby->path );
+      print_output( msg, FATAL );
+    }
 
   } else {
 
@@ -889,11 +886,12 @@ static void do_include() {
 
     }
 
-  }
+    if( curr == NULL ) {
+      snprintf( msg, 4096, "Unable to find `include file \"%s\" in include path", standby->path );
+      print_output( msg, FATAL );
+      exit( 1 );
+    }
 
-  if( standby->file == 0 ) {
-    perror( standby->path );
-    exit( 1 );
   }
 
   assert( standby->file );
