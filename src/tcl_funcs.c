@@ -34,6 +34,9 @@ int tcl_func_get_module_list( ClientData d, Tcl_Interp* tcl, int argc, const cha
       Tcl_SetVar( tcl, "mod_list", mod_list[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
     }
   } else {
+    snprintf( user_msg, USER_MSG_LENGTH, "Unable to get modules list from this design" );
+    Tcl_AddErrorInfo( tcl, user_msg );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = TCL_ERROR;
   }
 
@@ -58,7 +61,7 @@ int tcl_func_get_instances( Tcl_Interp* tcl, mod_inst* root ) {
     curr = curr->next;
   }
 
-  return( 0 );
+  return( TCL_OK );
 
 }
 
@@ -69,6 +72,11 @@ int tcl_func_get_instance_list( ClientData d, Tcl_Interp* tcl, int argc, const c
 
   if( instance_root != NULL ) {
     tcl_func_get_instances( tcl, instance_root );
+  } else {
+    snprintf( user_msg, USER_MSG_LENGTH, "Unable to get instance list from this design" );
+    Tcl_AddErrorInfo( tcl, user_msg );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    retval = TCL_ERROR;
   }
 
   return( retval );
@@ -83,6 +91,9 @@ int tcl_func_get_filename( ClientData d, Tcl_Interp* tcl, int argc, const char* 
   if( (filename = module_get_filename( argv[1] )) != NULL ) {
     Tcl_SetVar( tcl, "file_name", filename, TCL_GLOBAL_ONLY );
   } else {
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find filename for module %s", argv[1] );
+    Tcl_AddErrorInfo( tcl, user_msg );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = TCL_ERROR;
   }
 
@@ -103,6 +114,9 @@ int tcl_func_get_module_start_and_end( ClientData d, Tcl_Interp* tcl, int argc, 
     snprintf( linenum, 20, "%d", end_line );
     Tcl_SetVar( tcl, "end_line",   linenum, TCL_GLOBAL_ONLY );
   } else {
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find start and end lines for module %s", argv[1] );
+    Tcl_AddErrorInfo( tcl, user_msg );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = TCL_ERROR;
   }
 
@@ -122,13 +136,20 @@ int tcl_func_collect_uncovered_lines( ClientData d, Tcl_Interp* tcl, int argc, c
 
     for( i=0; i<line_cnt; i++ ) {
       snprintf( line, 20, "%d", lines[i] );
-      Tcl_SetVar( tcl, "uncovered_lines", line, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      if( i == 0 ) {
+        Tcl_SetVar( tcl, "uncovered_lines", line, (TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT) );
+      } else {
+        Tcl_SetVar( tcl, "uncovered_lines", line, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      }
     }
 
     free_safe( lines );
 
   } else {
 
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find module %s in design", argv[1] );
+    Tcl_AddErrorInfo( tcl, user_msg );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = TCL_ERROR;
 
   }
@@ -152,13 +173,20 @@ int tcl_func_collect_covered_lines( ClientData d, Tcl_Interp* tcl, int argc, con
 
     for( i=0; i<line_cnt; i++ ) {
       snprintf( line, 20, "%d", lines[i] );
-      Tcl_SetVar( tcl, "covered_lines", line, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      if( i == 0 ) {
+        Tcl_SetVar( tcl, "covered_lines", line, (TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT) );
+      } else {
+        Tcl_SetVar( tcl, "covered_lines", line, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      }
     }
 
     free_safe( lines );
 
   } else {
 
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find module %s in design", argv[1] );
+    Tcl_AddErrorInfo( tcl, user_msg );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = TCL_ERROR;
 
   }
@@ -198,6 +226,9 @@ int tcl_func_collect_uncovered_toggles( ClientData d, Tcl_Interp* tcl, int argc,
 
   } else {
 
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find module %s in design", argv[1] );
+    Tcl_AddErrorInfo( tcl, user_msg );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = TCL_ERROR;
 
   }
@@ -237,6 +268,9 @@ int tcl_func_collect_covered_toggles( ClientData d, Tcl_Interp* tcl, int argc, c
 
   } else {
 
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find module %s in design", argv[1] );
+    Tcl_AddErrorInfo( tcl, user_msg );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = TCL_ERROR;
 
   }
@@ -275,6 +309,9 @@ int tcl_func_get_toggle_coverage( ClientData d, Tcl_Interp* tcl, int argc, const
     free_safe( tog10 );
 
   } else {
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find module %s in design", argv[1] );
+    Tcl_AddErrorInfo( tcl, user_msg );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = TCL_ERROR;
   }
 
@@ -298,6 +335,7 @@ int tcl_func_open_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv
 
     if( !report_read_cdd_and_ready( ifile, READ_MODE_REPORT_MOD_MERGE ) ) {
       snprintf( user_msg, USER_MSG_LENGTH, "Unable to open CDD \"%s\"", ifile );
+      Tcl_AddErrorInfo( tcl, user_msg );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       retval = TCL_ERROR;
     }
@@ -322,6 +360,7 @@ int tcl_func_replace_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* a
 
     if( !report_read_cdd_and_ready( ifile, READ_MODE_REPORT_MOD_REPLACE ) ) {
       snprintf( user_msg, USER_MSG_LENGTH, "Unable to replace current CDD with \"%s\"", ifile );
+      Tcl_AddErrorInfo( tcl, user_msg );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       retval = TCL_ERROR;
     }
@@ -346,6 +385,7 @@ int tcl_func_merge_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* arg
 
     if( !report_read_cdd_and_ready( ifile, READ_MODE_REPORT_MOD_MERGE ) ) {
       snprintf( user_msg, USER_MSG_LENGTH, "Unable to merge current CDD with \"%s\"", ifile );
+      Tcl_AddErrorInfo( tcl, user_msg );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       retval = TCL_ERROR;
     }
@@ -374,6 +414,9 @@ int tcl_func_get_line_summary( ClientData d, Tcl_Interp* tcl, int argc, const ch
     snprintf( value, 20, "%d", hit );
     Tcl_SetVar( tcl, "line_summary_hit", value, TCL_GLOBAL_ONLY );
   } else {
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find module %s", mod_name );
+    Tcl_AddErrorInfo( tcl, user_msg );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = TCL_ERROR;
   }
 
@@ -402,6 +445,9 @@ int tcl_func_get_toggle_summary( ClientData d, Tcl_Interp* tcl, int argc, const 
     snprintf( value, 20, "%d", hit10 );
     Tcl_SetVar( tcl, "toggle_summary_hit10", value, TCL_GLOBAL_ONLY );
   } else {
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find module %s", mod_name );
+    Tcl_AddErrorInfo( tcl, user_msg );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = TCL_ERROR;
   }
 
@@ -435,6 +481,10 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* home ) {
 
 /*
  $Log$
+ Revision 1.7  2004/08/10 15:58:13  phase1geo
+ Fixing problems with toggle coverage when modules start on lines above 1 and
+ problems when signal is a single or multi-bit select.
+
  Revision 1.6  2004/08/08 12:50:27  phase1geo
  Snapshot of addition of toggle coverage in GUI.  This is not working exactly as
  it will be, but it is getting close.

@@ -16,10 +16,6 @@ proc main_view {} {
   frame .menubar -width 710 -height 20 
   menu_create .menubar
 
-  # Create the frame for toolbars
-  #frame .toolbar -width 710 -height 12
-  #toolbar_create .toolbar
-
   # Create the information frame
   frame .covbox -width 710 -height 25
   cov_create .covbox
@@ -39,7 +35,7 @@ proc main_view {} {
   scrollbar .bot.lvb -command ".bot.l yview"
   scrollbar .bot.lhb -orient horizontal -command ".bot.l xview"
 
-  populate_listbox .bot.l
+  # populate_listbox .bot.l
 
   # Create the text widget to display the modules/instances
   text .bot.txt -yscrollcommand ".bot.vb set" -xscrollcommand ".bot.hb set" -wrap none -state disabled
@@ -64,7 +60,6 @@ proc main_view {} {
   grid .bot.info -row 3 -column 0 -columnspan 4 -sticky ew
 
   # Pack the widgets
-  # pack .covbar -fill both -side top
   pack .bot -fill both -expand yes -side bottom
 
   # Set the window icon
@@ -79,35 +74,74 @@ proc main_view {} {
 
 proc populate_listbox {listbox_w} {
 
-  global mod_inst_type mod_list inst_list
+  global mod_inst_type mod_list inst_list cov_rb file_name
   global line_summary_total line_summary_hit
+  global toggle_summary_total toggle_summary_hit01 toggle_summary_hit10
   global uncov_fgColor uncov_bgColor
+  global lb_fgColor lb_bgColor
  
-  # Remove contents currently in listbox
-  set lb_size [$listbox_w size]
-  $listbox_w delete 0 $lb_size
+  if {$file_name != 0} {
 
-  # If we are in module mode, list modules (otherwise, list instances)
-  if {$mod_inst_type == "module"} {
-    set mod_list ""
-    tcl_func_get_module_list 
+    # Remove contents currently in listbox
+    set lb_size [$listbox_w size]
+    $listbox_w delete 0 $lb_size
+
+    # If we are in module mode, list modules (otherwise, list instances)
+    if {$mod_inst_type == "module"} {
+      set mod_list ""
+      tcl_func_get_module_list 
+      foreach mod_name $mod_list {
+        $listbox_w insert end $mod_name
+      }
+    } else {
+      set inst_list ""
+      tcl_func_get_instance_list
+      foreach inst_name $inst_list {
+        $listbox_w insert end $inst_name
+      }
+    }
+
+    # Get default colors of listbox
+    set lb_fgColor [.bot.l itemcget 0 -foreground]
+    set lb_bgColor [.bot.l itemcget 0 -background]
+
+    highlight_listbox
+
+  }
+
+}
+
+proc highlight_listbox {} {
+
+  global file_name mod_list cov_rb
+  global uncov_fgColor uncov_bgColor lb_fgColor lb_bgColor
+  global line_summary_total line_summary_hit
+  global toggle_summary_total toggle_summary_hit01 toggle_summary_hit10
+
+  if {$file_name != 0} {
+
+    # If we are in module mode, list modules (otherwise, list instances)
+    set curr_line 0
     foreach mod_name $mod_list {
-      $listbox_w insert end $mod_name
-      tcl_func_get_line_summary $mod_name
-      if {$line_summary_total != $line_summary_hit} {
-        $listbox_w itemconfigure [expr [$listbox_w size] - 1] -foreground $uncov_fgColor -background $uncov_bgColor
+      if {$cov_rb == "line"} {
+        tcl_func_get_line_summary $mod_name
+        set fully_covered [expr $line_summary_total == $line_summary_hit]
+      } elseif {$cov_rb == "toggle"} {
+        tcl_func_get_toggle_summary $mod_name
+        set fully_covered [expr [expr $toggle_summary_total == $toggle_summary_hit01] && [expr $toggle_summary_total == $toggle_summary_hit10]]
+      } elseif {$cov_rb == "comb"} {
+      } elseif {$cov_rb == "fsm"} {
+      } else {
+        # ERROR
       }
-    }
-  } else {
-    set inst_list ""
-    tcl_func_get_instance_list
-    foreach inst_name $inst_list {
-      $listbox_w insert end $inst_name
-      tcl_func_get_line_summary [lindex $mod_list [expr [$listbox_w size] - 1]]
-      if {$line_summary_total != $line_summary_hit} {
-        $listbox_w itemconfigure [expr [$listbox_w size] - 1] -foreground $uncov_fgColor -background $uncov_bgColor
+      if {$fully_covered == 0} {
+        .bot.l itemconfigure $curr_line -foreground $uncov_fgColor -background $uncov_bgColor
+      } else {
+        .bot.l itemconfigure $curr_line -foreground $lb_fgColor -background $lb_bgColor
       }
+      incr curr_line
     }
+
   }
 
 }

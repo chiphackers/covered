@@ -29,28 +29,32 @@ proc process_module_line_cov {} {
   global fileContent file_name start_line end_line
   global curr_mod_name
 
-  tcl_func_get_filename $curr_mod_name
+  if {$curr_mod_name != 0} {
 
-  if {[catch {set fileText $fileContent($file_name)}]} {
-    if {[catch {set fp [open $file_name "r"]}]} {
-      tk_messageBox -message "File $file_name Not Found!" \
-                    -title "No File" -icon error
-      return
-    } 
-    set fileText [read $fp]
-    set fileContent($file_name) $fileText
-    close $fp
+    tcl_func_get_filename $curr_mod_name
+
+    if {[catch {set fileText $fileContent($file_name)}]} {
+      if {[catch {set fp [open $file_name "r"]}]} {
+        tk_messageBox -message "File $file_name Not Found!" \
+                      -title "No File" -icon error
+        return
+      } 
+      set fileText [read $fp]
+      set fileContent($file_name) $fileText
+      close $fp
+    }
+
+    # Get start and end line numbers of this module
+    set start_line 0
+    set end_line   0
+    tcl_func_get_module_start_and_end $curr_mod_name
+
+    # Get line summary information and display this now
+    tcl_func_get_line_summary $curr_mod_name
+
+    calc_and_display_line_cov
+
   }
-
-  # Get start and end line numbers of this module
-  set start_line 0
-  set end_line   0
-  tcl_func_get_module_start_and_end $curr_mod_name
-
-  # Get line summary information and display this now
-  tcl_func_get_line_summary $curr_mod_name
-
-  calc_and_display_line_cov
 
 }
 
