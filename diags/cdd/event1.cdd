@@ -1,27 +1,2 @@
 3 main main event1.v
-2 4 main 11 0 0 0 32 0 11,0,0,0,0,0,0,0
-2 5 main 11 0 0 0 32 0 55,55,55,55,55,55,55,55
-2 6 main 11 c4ac 4 5 32 0 aa,aa,aa,aa,aa,aa,aa,aa
-2 1 main 8 1 0 0 
-2 2 main 8 2a 0 0 1 0 aa
-2 3 main 8 2013a9 1 2 1 0 100aa
-2 10 main 15 1 0 0 
-2 11 main 15 849b 10 0 1 0 aa
-2 7 main 15 1 0 0 
-2 8 main 15 2a 0 0 1 0 aa
-2 9 main 15 2013a9 7 8 1 0 100aa
-2 15 main 16 1 0 0 
-2 16 main 16 849b 15 0 1 0 aa
-2 12 main 16 1 0 0 
-2 13 main 16 2a 0 0 1 0 aa
-2 14 main 16 2013a9 12 13 1 0 100aa
-1 d main 1 0 111aa 10 15
-1 a main 1 0 aa 1
-1 b main 1 0 aa 7
-1 c main 1 0 aa 12
-4 6 main 3 3
-4 3 main 6 0
-4 11 main 9 9
-4 9 main 11 0
-4 16 main 14 14
-4 14 main 16 0
+1 d main 1 0 111aa
