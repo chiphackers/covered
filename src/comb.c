@@ -76,7 +76,7 @@ bool combination_instance_summary( FILE* ofile, mod_inst* root, char* parent ) {
   }
   miss    = (root->stat->comb_total - root->stat->comb_hit);
 
-  fprintf( ofile, "  %-20.20s    %-20.20s    %3d/%3.0f/%3.0f      %3.0f%%\n",
+  fprintf( ofile, "  %-20.20s    %-20.20s    %4d/%4.0f/%4.0f      %3.0f%%\n",
            root->name,
            parent,
            root->stat->comb_hit,
@@ -127,7 +127,7 @@ bool combination_module_summary( FILE* ofile, mod_link* head ) {
       miss_found = TRUE;
     }
 
-    fprintf( ofile, "  %-20.20s    %-20.20s    %3d/%3.0f/%3.0f      %3.0f%%\n", 
+    fprintf( ofile, "  %-20.20s    %-20.20s    %4d/%4.0f/%4.0f      %3.0f%%\n", 
              head->mod->name,
              head->mod->filename,
              head->mod->stat->comb_hit,
@@ -756,8 +756,8 @@ void combination_report( FILE* ofile, bool verbose, bool instance ) {
     fprintf( ofile, "COMBINATIONAL LOGIC COVERAGE RESULTS BY INSTANCE\n" );
     fprintf( ofile, "------------------------------------------------\n" );
     fprintf( ofile, "Instance                  Parent                       Logic Combinations\n" );
-    fprintf( ofile, "                                                 Hit/Miss/Total    Percent hit\n" );
-    fprintf( ofile, "------------------------------------------------------------------------------\n" );
+    fprintf( ofile, "                                                  Hit/Miss/Total    Percent hit\n" );
+    fprintf( ofile, "-------------------------------------------------------------------------------\n" );
 
     missed_found = combination_instance_summary( ofile, instance_root, "<root>" );
     
@@ -770,8 +770,8 @@ void combination_report( FILE* ofile, bool verbose, bool instance ) {
     fprintf( ofile, "COMBINATIONAL LOGIC COVERAGE RESULTS BY MODULE\n" );
     fprintf( ofile, "----------------------------------------------\n" );
     fprintf( ofile, "Module                    Filename                     Logical Combinations\n" );
-    fprintf( ofile, "                                                 Hit/Miss/Total    Percent hit\n" );
-    fprintf( ofile, "------------------------------------------------------------------------------\n" );
+    fprintf( ofile, "                                                  Hit/Miss/Total    Percent hit\n" );
+    fprintf( ofile, "-------------------------------------------------------------------------------\n" );
 
     missed_found = combination_module_summary( ofile, mod_head );
 
@@ -785,6 +785,10 @@ void combination_report( FILE* ofile, bool verbose, bool instance ) {
 
 
 /* $Log$
+/* Revision 1.36  2002/07/20 18:46:38  phase1geo
+/* Causing fully covered modules to not be output in reports.  Adding
+/* instance3.v diagnostic to verify this works correctly.
+/*
 /* Revision 1.35  2002/07/20 13:58:01  phase1geo
 /* Fixing bug in EXP_OP_LAST for changes in binding.  Adding correct line numbering
 /* to lexer (tested).  Added '+' to report outputting for signals larger than 1 bit.

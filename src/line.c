@@ -78,7 +78,7 @@ bool line_instance_summary( FILE* ofile, mod_inst* root, char* parent_inst ) {
   }
   miss    = (root->stat->line_total - root->stat->line_hit);
 
-  fprintf( ofile, "  %-20.20s    %-20.20s    %3d/%3.0f/%3.0f      %3.0f%%\n",
+  fprintf( ofile, "  %-20.20s    %-20.20s    %4d/%4.0f/%4.0f      %3.0f%%\n",
            root->name,
            parent_inst,
            root->stat->line_hit,
@@ -124,7 +124,7 @@ bool line_module_summary( FILE* ofile, mod_link* head ) {
     miss       = (head->mod->stat->line_total - head->mod->stat->line_hit);
     miss_found = (miss > 0) ? TRUE : miss_found;
 
-    fprintf( ofile, "  %-20.20s    %-20.20s    %3d/%3.0f/%3.0f      %3.0f%%\n", 
+    fprintf( ofile, "  %-20.20s    %-20.20s    %4d/%4.0f/%4.0f      %3.0f%%\n", 
              head->mod->name,
              head->mod->filename,
              head->mod->stat->line_hit,
@@ -261,8 +261,8 @@ void line_report( FILE* ofile, bool verbose, bool instance ) {
 
     fprintf( ofile, "LINE COVERAGE RESULTS BY INSTANCE\n" );
     fprintf( ofile, "---------------------------------\n" );
-    fprintf( ofile, "Instance                  Parent                 Hit/Miss/Total    Percent hit\n" );
-    fprintf( ofile, "------------------------------------------------------------------------------\n" );
+    fprintf( ofile, "Instance                  Parent                  Hit/Miss/Total    Percent hit\n" );
+    fprintf( ofile, "-------------------------------------------------------------------------------\n" );
 
     missed_found = line_instance_summary( ofile, instance_root, "<root>" );
     
@@ -274,8 +274,8 @@ void line_report( FILE* ofile, bool verbose, bool instance ) {
 
     fprintf( ofile, "LINE COVERAGE RESULTS BY MODULE\n" );
     fprintf( ofile, "-------------------------------\n" );
-    fprintf( ofile, "Module                    Filename               Hit/Miss/Total    Percent hit\n" );
-    fprintf( ofile, "------------------------------------------------------------------------------\n" );
+    fprintf( ofile, "Module                    Filename                Hit/Miss/Total    Percent hit\n" );
+    fprintf( ofile, "-------------------------------------------------------------------------------\n" );
 
     missed_found = line_module_summary( ofile, mod_head );
 
@@ -285,12 +285,16 @@ void line_report( FILE* ofile, bool verbose, bool instance ) {
 
   }
 
-  fprintf( ofile, "==============================================================================\n" );
+  fprintf( ofile, "=================================================================================\n" );
   fprintf( ofile, "\n" );
 
 }
 
 /* $Log$
+/* Revision 1.16  2002/07/20 18:46:38  phase1geo
+/* Causing fully covered modules to not be output in reports.  Adding
+/* instance3.v diagnostic to verify this works correctly.
+/*
 /* Revision 1.15  2002/07/14 05:27:34  phase1geo
 /* Fixing report outputting to allow multiple modules/instances to be
 /* output.

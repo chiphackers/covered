@@ -93,7 +93,7 @@ bool toggle_instance_summary( FILE* ofile, mod_inst* root, char* parent_inst ) {
   }
   miss10    = (root->stat->tog_total - root->stat->tog10_hit);
 
-  fprintf( ofile, "  %-20.20s    %-20.20s    %3d/%3.0f/%3.0f      %3.0f%%            %3d/%3.0f/%3.0f      %3.0f\%\n",
+  fprintf( ofile, "  %-20.20s    %-20.20s    %4d/%4.0f/%4.0f      %3.0f%%         %4d/%4.0f/%4.0f      %3.0f\%\n",
            root->name,
            parent_inst,
            root->stat->tog01_hit,
@@ -153,7 +153,7 @@ bool toggle_module_summary( FILE* ofile, mod_link* head ) {
 
     miss_found = ((miss01 > 0) || (miss10 > 0)) ? TRUE : miss_found;
 
-    fprintf( ofile, "  %-20.20s    %-20.20s    %3d/%3.0f/%3.0f      %3.0f%%            %3d/%3.0f/%3.0f      %3.0f%%\n", 
+    fprintf( ofile, "  %-20.20s    %-20.20s    %4d/%4.0f/%4.0f      %3.0f%%         %4d/%4.0f/%4.0f      %3.0f%%\n", 
              head->mod->name,
              head->mod->filename,
              head->mod->stat->tog01_hit,
@@ -296,9 +296,9 @@ void toggle_report( FILE* ofile, bool verbose, bool instance ) {
 
     fprintf( ofile, "TOGGLE COVERAGE RESULTS BY INSTANCE\n" );
     fprintf( ofile, "-----------------------------------\n" );
-    fprintf( ofile, "Instance                  Parent                          Toggle 0 -> 1                    Toggle 1 -> 0\n" );
-    fprintf( ofile, "                                                 Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit\n" );
-    fprintf( ofile, "---------------------------------------------------------------------------------------------------------------\n" );
+    fprintf( ofile, "Instance                  Parent                           Toggle 0 -> 1                    Toggle 1 -> 0\n" );
+    fprintf( ofile, "                                                  Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit\n" );
+    fprintf( ofile, "----------------------------------------------------------------------------------------------------------------\n" );
 
     missed_found = toggle_instance_summary( ofile, instance_root, "<root>" );
     
@@ -310,9 +310,9 @@ void toggle_report( FILE* ofile, bool verbose, bool instance ) {
 
     fprintf( ofile, "TOGGLE COVERAGE RESULTS BY MODULE\n" );
     fprintf( ofile, "---------------------------------\n" );
-    fprintf( ofile, "Module                    Filename                        Toggle 0 -> 1                    Toggle 1 -> 0\n" );
-    fprintf( ofile, "                                                 Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit\n" );
-    fprintf( ofile, "---------------------------------------------------------------------------------------------------------------\n" );
+    fprintf( ofile, "Module                    Filename                         Toggle 0 -> 1                    Toggle 1 -> 0\n" );
+    fprintf( ofile, "                                                  Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit\n" );
+    fprintf( ofile, "----------------------------------------------------------------------------------------------------------------\n" );
 
     missed_found = toggle_module_summary( ofile, mod_head );
 
@@ -328,6 +328,10 @@ void toggle_report( FILE* ofile, bool verbose, bool instance ) {
 }
 
 /* $Log$
+/* Revision 1.9  2002/07/20 18:46:38  phase1geo
+/* Causing fully covered modules to not be output in reports.  Adding
+/* instance3.v diagnostic to verify this works correctly.
+/*
 /* Revision 1.8  2002/07/17 06:27:18  phase1geo
 /* Added start for fixes to bit select code starting with single bit selection.
 /* Full regression passes with addition of sbit_sel1 diagnostic.
