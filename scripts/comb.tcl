@@ -1,5 +1,6 @@
 set comb_ul_ip         0
 set comb_curr_uline_id 0
+set comb_bheight       -1
 
 proc K {x y} {
   set x
@@ -471,18 +472,21 @@ proc create_comb_window {mod_name expr_id} {
 
     place .combwin.f.top -relwidth 1 -height -1
     place .combwin.f.bot -relwidth 1 -rely 1 -anchor sw -height -1
-    place .combwin.f.handle -relx 0.5 -anchor e -width 8 -height 8
+    place .combwin.f.handle -relx 0.8 -anchor e -width 8 -height 8
 
     bind .combwin.f <Configure> {
       set H [winfo height .combwin.f]
       set Y0 [winfo rooty .combwin.f]
+      if {$comb_bheight == -1} {
+        set comb_bheight [expr .4 * $H]
+      }
+      comb_place $H $comb_bheight
     }
 
     bind .combwin.f.handle <B1-Motion> {
-      comb_place [expr {(%Y-$Y0)/double($H)}]
+      set comb_bheight [expr $H - [expr %Y - $Y0]]
+      comb_place $H $comb_bheight
     }
-
-    comb_place .6
 
     # Add expression information
     label .combwin.f.top.l -anchor w -text "Expression:"
@@ -532,10 +536,10 @@ proc create_comb_window {mod_name expr_id} {
 
 }
 
-proc comb_place {fract} {
+proc comb_place {height value} {
 
-  place .combwin.f.top -relheight $fract
-  place .combwin.f.handle -rely $fract
-  place .combwin.f.bot -relheight [expr {1.0 - $fract}]
+  place .combwin.f.top    -height [expr $height - $value]
+  place .combwin.f.handle -y [expr $height - $value]
+  place .combwin.f.bot    -height $value
 
 }
