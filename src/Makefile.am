@@ -9,6 +9,7 @@ covered_SOURCES = parser.c \
 		  instance.c \
  		  iter.c \
 		  keywords.c \
+                  pplexer.c \
 		  lexer.c \
 		  line.c \
                   link.c \
@@ -36,13 +37,16 @@ INCLUDES=	-I..
 parser.h parser.c: $(srcdir)/parser.y
 	bison --verbose -t -p VL -d -o parser.c $(srcdir)/parser.y
 	
+pplexer.c: $(srcdir)/pplexer.l
+	flex -PPPVL -opplexer.c $(srcdir)/pplexer.l
+
 lexer.c:  $(srcdir)/lexer.l
-	flex -PVL -s -olexer.c $(srcdir)/lexer.l
+	flex -PVL -olexer.c $(srcdir)/lexer.l
 
 keywords.c:  keywords.gperf
 	gperf -o -i 7 -C -k 1-3,$$ -L ANSI-C -H keyword_hash -N check_identifier -t $(srcdir)/keywords.gperf > keywords.c || (rm -f keywords.c ; false)
 
 clean:
-	rm -f lexer.c keywords.c
+	rm -f pplexer.c lexer.c keywords.c
 	rm -f parser.c parser.h parser.output
 	rm -rf .deps

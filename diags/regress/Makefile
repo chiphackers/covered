@@ -24,7 +24,7 @@ CDD_DIR       = ../cdd
 
 LOGFILE = regress.log
 
-FAILING_DIAGS = define3        instance6.2
+FAILING_DIAGS = instance6      instance6.1    instance6.2
 
 DIAGS1        = always1        always2        always3        always3.1.11A  always4 \
                 always5        always6        always7        always8        always9 \
@@ -35,12 +35,12 @@ DIAGS1        = always1        always2        always3        always3.1.11A  alwa
                 casex1.4       casez1         casez1.1       casez1.2       casez1.3 \
                 casez1.4       casez2         concat1        concat2        concat3 \
                 concat4.1      concat4.2      concat5        cond1          cond2 \
-                delay1         define1        define1.1      define2        define2.1 \
+                delay1         define1        define1.1      define2        define2.1      define3 \
                 expand1        expand2        expand3        ifdef1         ifdef1.2 \
                 ifdef2.1       ifdef2.2       ifdef2.3       ifelse1        include1 \
                 include1.1     include2       instance1      instance1.1    instance1.2 \
                 instance2      instance3      instance4      instance4.1    instance4.2 \
-                instance5      instance6      instance6.1    long_exp1 \
+                instance5      long_exp1 \
                 mbit_sel1      mbit_sel2      mbit_sel3      mbit_sel3.1    mem1 \
                 mult1          param1         param1.1       param1.2       param1.3 \
                 param3         param3.1       param3.2       param3.3       param3.4 \

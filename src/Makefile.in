@@ -75,6 +75,7 @@ covered_SOURCES = parser.c \
 		  instance.c \
  		  iter.c \
 		  keywords.c \
+                  pplexer.c \
 		  lexer.c \
 		  line.c \
                   link.c \
@@ -111,10 +112,10 @@ CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
 covered_OBJECTS =  parser.o binding.o codegen.o comb.o db.o expr.o fsm.o \
-instance.o iter.o keywords.o lexer.o line.o link.o main.o merge.o \
-module.o param.o parse.o parser_misc.o report.o score.o search.o \
-signal.o sim.o stat.o static.o statement.o symtable.o toggle.o util.o \
-vcd.o vector.o
+instance.o iter.o keywords.o pplexer.o lexer.o line.o link.o main.o \
+merge.o module.o param.o parse.o parser_misc.o report.o score.o \
+search.o signal.o sim.o stat.o static.o statement.o symtable.o toggle.o \
+util.o vcd.o vector.o
 covered_LDADD = $(LDADD)
 covered_DEPENDENCIES = 
 covered_LDFLAGS = 
@@ -133,10 +134,10 @@ DEP_FILES =  .deps/binding.P .deps/codegen.P .deps/comb.P .deps/db.P \
 .deps/expr.P .deps/fsm.P .deps/instance.P .deps/iter.P .deps/keywords.P \
 .deps/lexer.P .deps/line.P .deps/link.P .deps/main.P .deps/merge.P \
 .deps/module.P .deps/param.P .deps/parse.P .deps/parser.P \
-.deps/parser_misc.P .deps/report.P .deps/score.P .deps/search.P \
-.deps/signal.P .deps/sim.P .deps/stat.P .deps/statement.P \
-.deps/static.P .deps/symtable.P .deps/toggle.P .deps/util.P .deps/vcd.P \
-.deps/vector.P
+.deps/parser_misc.P .deps/pplexer.P .deps/report.P .deps/score.P \
+.deps/search.P .deps/signal.P .deps/sim.P .deps/stat.P \
+.deps/statement.P .deps/static.P .deps/symtable.P .deps/toggle.P \
+.deps/util.P .deps/vcd.P .deps/vector.P
 SOURCES = $(covered_SOURCES)
 OBJECTS = $(covered_OBJECTS)
 
@@ -352,14 +353,17 @@ maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 parser.h parser.c: $(srcdir)/parser.y
 	bison --verbose -t -p VL -d -o parser.c $(srcdir)/parser.y
 
+pplexer.c: $(srcdir)/pplexer.l
+	flex -PPPVL -opplexer.c $(srcdir)/pplexer.l
+
 lexer.c:  $(srcdir)/lexer.l
-	flex -PVL -s -olexer.c $(srcdir)/lexer.l
+	flex -PVL -olexer.c $(srcdir)/lexer.l
 
 keywords.c:  keywords.gperf
 	gperf -o -i 7 -C -k 1-3,$$ -L ANSI-C -H keyword_hash -N check_identifier -t $(srcdir)/keywords.gperf > keywords.c || (rm -f keywords.c ; false)
 
 clean:
-	rm -f lexer.c keywords.c
+	rm -f pplexer.c lexer.c keywords.c
 	rm -f parser.c parser.h parser.output
 	rm -rf .deps
 
