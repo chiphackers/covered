@@ -453,14 +453,16 @@ int command_report( int argc, int last_arg, char** argv ) {
     } else {
 
       if( report_instance ) {
-        db_read( input_db, READ_MODE_REPORT_NO_MERGE );
+        if( db_read( input_db, READ_MODE_REPORT_NO_MERGE ) ) {
+          report_generate( ofile );
+        }
       } else {
-        db_read( input_db, READ_MODE_REPORT_MOD_MERGE );
+        if( db_read( input_db, READ_MODE_REPORT_MOD_MERGE ) ) {
+          report_generate( ofile );
+        }
       }
 
     }
-
-    report_generate( ofile );
 
     fclose( ofile );
 
@@ -473,6 +475,13 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.19  2002/12/29 06:09:32  phase1geo
+ Fixing bug where output was not squelched in report command when -Q option
+ is specified.  Fixed bug in preprocessor where spaces where added in when newlines
+ found in C-style comment blocks.  Modified regression run to check CDD file and
+ generated module and instance reports.  Started to add code to handle signals that
+ are specified in design but unused in Covered.
+
  Revision 1.18  2002/11/02 16:16:20  phase1geo
  Cleaned up all compiler warnings in source and header files.
 

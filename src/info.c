@@ -50,10 +50,13 @@ bool info_db_read( char** line ) {
 
   bool retval = TRUE;  /* Return value for this function                 */
   int  chars_read;     /* Number of characters scanned in from this line */
+  bool scored;         /* Indicates if this file contains scored data    */
 
-  if( sscanf( *line, "%d %s%n", &flag_scored, leading_hierarchy, &chars_read ) == 2 ) {
+  if( sscanf( *line, "%d %s%n", &scored, leading_hierarchy, &chars_read ) == 2 ) {
 
     *line = *line + chars_read;
+
+    flag_scored = scored ? TRUE : flag_scored;
 
   } else {
 
@@ -68,5 +71,9 @@ bool info_db_read( char** line ) {
 
 /*
  $Log$
+ Revision 1.1  2003/02/12 14:56:26  phase1geo
+ Adding info.c and info.h files to handle new general information line in
+ CDD file.  Support for this new feature is not complete at this time.
+
 */
 

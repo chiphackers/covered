@@ -26,6 +26,7 @@ extern str_link* modlist_tail;
 
 extern char user_msg[USER_MSG_LENGTH];
 extern int  error_count;
+extern bool flag_scored;
 
 /*!
  \param file  Pointer to file to read
@@ -149,6 +150,9 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
   snprintf( user_msg, USER_MSG_LENGTH, "========  Writing database %s  ========\n", db );
   print_output( user_msg, DEBUG );
 
+  /* Indicate that this CDD contains scored information */
+  flag_scored = TRUE;
+
   /* Write contents to database file */
   if( !db_write( db, FALSE ) ) {
     print_output( "Unable to write database file", FATAL );
@@ -161,6 +165,10 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
 
 /*
  $Log$
+ Revision 1.17  2003/01/03 05:48:04  phase1geo
+ Reorganizing file opening/closing code in lexer.l and pplexer.l to make some
+ sense out of the madness.
+
  Revision 1.16  2002/12/01 06:37:52  phase1geo
  Adding appropriate error output and causing score command to proper exit
  if parser errors are found.

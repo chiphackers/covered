@@ -40,6 +40,7 @@ extern nibble    or_optab[16];
 extern char      user_msg[USER_MSG_LENGTH];
 extern bool      one_instance_found;
 extern char      leading_hierarchy[4096];
+extern bool      flag_scored;
 
 /*!
  Specifies the string Verilog scope that is currently specified in the VCD file.
@@ -173,6 +174,14 @@ bool db_read( char* file, int read_mode ) {
           
           /* Parse rest of line for general info */
           retval = info_db_read( &rest_line );
+
+          /* If we are in report mode and this CDD file has not been written bow out now */
+          if( !flag_scored && 
+              ((read_mode == READ_MODE_REPORT_NO_MERGE) ||
+               (read_mode == READ_MODE_REPORT_MOD_MERGE)) ) {
+            print_output( "Attempting to generate report on non-scored design.  Not supported.", FATAL );
+            retval = FALSE;
+          }
           
         } else if( type == DB_TYPE_SIGNAL ) {
 
@@ -1169,6 +1178,12 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.89  2003/02/17 22:47:20  phase1geo
+ Fixing bug with merging same DUTs from different testbenches.  Updated reports
+ to display full path instead of instance name and parent instance name.  Added
+ merge tests and added merge testing into regression test suite.  Fixing bug with
+ -D/-Q option specified with merge command.  Full regression passing.
+
  Revision 1.88  2003/02/13 23:44:08  phase1geo
  Tentative fix for VCD file reading.  Not sure if it works correctly when
  original signal LSB is != 0.  Icarus Verilog testsuite passes.
