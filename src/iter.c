@@ -95,7 +95,7 @@ void stmt_iter_get_next_in_order( stmt_iter* si ) {
 
   stmt_iter_next( si );
   
-  if( (si->curr == NULL) || (si->curr->stmt->exp->id < si->last->stmt->exp->id) ) {
+  if( (si->curr == NULL) || (si->curr->stmt->exp->line < si->last->stmt->exp->line) ) {
     stmt_iter_reverse( si );
     stmt_iter_find_head( si, TRUE );
   }
@@ -105,6 +105,14 @@ void stmt_iter_get_next_in_order( stmt_iter* si ) {
 
 /*
  $Log$
+ Revision 1.4  2002/12/07 17:46:53  phase1geo
+ Fixing bug with handling memory declarations.  Added diagnostic to verify
+ that memory declarations are handled properly.  Fixed bug with infinite
+ looping in statement_connect function and optimized this part of the score
+ command.  Added diagnostic to verify this fix (always9.v).  Fixed bug in
+ report command with ordering of lines and combinational logic verbose output.
+ This is now fixed correctly.
+
  Revision 1.3  2002/10/29 19:57:50  phase1geo
  Fixing problems with beginning block comments within comments which are
  produced automatically by CVS.  Should fix warning messages from compiler.
