@@ -25,7 +25,7 @@ proc main_view {} {
   frame .bot -width 120 -height 300
 
   # Create the tree widget to display file names
-  listbox .bot.l -yscrollcommand ".bot.lvb set" -xscrollcommand ".bot.lhb set" -width 20
+  listbox .bot.l -yscrollcommand ".bot.lvb set" -xscrollcommand ".bot.lhb set" -width 30
   bind .bot.l <<ListboxSelect>> populate_text
   scrollbar .bot.lvb -command ".bot.l yview"
   scrollbar .bot.lhb -orient horizontal -command ".bot.l xview"
@@ -40,8 +40,9 @@ proc main_view {} {
   label .bot.info -relief sunken -anchor w
 
   # Pack the widgets into the bottom frame
-  grid rowconfigure .bot 0 -weight 1
+  grid rowconfigure    .bot 0 -weight 1
   grid columnconfigure .bot 0 -weight 0
+  grid columnconfigure .bot 2 -weight 1
   grid .bot.l    -row 0 -column 0 -sticky nsew
   grid .bot.lvb  -row 0 -column 1 -sticky ns
   grid .bot.lhb  -row 1 -column 0 -sticky ew
