@@ -178,7 +178,6 @@ void sim_expression( expression* expr ) {
 
 /*!
  \param head_stmt  Pointer to head statement to simulate.
- \param time       Current timestep from VCD file.
 
  \return Returns a pointer to the first statement to execute in the next timestep
 
@@ -187,7 +186,7 @@ void sim_expression( expression* expr ) {
  it.  Continues to run for current statement tree until statement tree hits a
  wait-for-event condition (or we reach the end of a simulation tree).
 */
-statement* sim_statement( statement* head_stmt, int time ) {
+statement* sim_statement( statement* head_stmt ) {
 
   statement* stmt;              /* Pointer to current statement to evaluate */
   statement* last_stmt = NULL;  /* Pointer to the last statement evaluated  */
@@ -239,13 +238,11 @@ statement* sim_statement( statement* head_stmt, int time ) {
 }
 
 /*!
- \param time  Current timestep.
-
  This function is the heart of the simulation engine.  It is called by the
  db_do_timestep() function in db.c  and moves the statements and expressions into
  the appropriate simulation functions.  See above explanation on this procedure.
 */
-void sim_simulate( int time ) {
+void sim_simulate() {
 
   stmt_link* curr_stmt;   /* Pointer to current statement to simulate */
   stmt_link* last_stmt;   /* Pointer to last statement evaluated      */
@@ -262,7 +259,7 @@ void sim_simulate( int time ) {
     printf( "Executing statement %d\n", curr_stmt->stmt->exp->id );
 
     /* Place current statement into statement simulation engine and call it */
-    curr_stmt->stmt = sim_statement( curr_stmt->stmt, time );
+    curr_stmt->stmt = sim_statement( curr_stmt->stmt );
 
     /* If the next statement is NULL, this statement tree is done for good so remove */
     if( curr_stmt->stmt == NULL ) {
@@ -292,6 +289,10 @@ void sim_simulate( int time ) {
 }
 
 /* $Log$
+/* Revision 1.7  2002/06/26 03:45:48  phase1geo
+/* Fixing more bugs in simulator and report functions.  About to add support
+/* for delay statements.
+/*
 /* Revision 1.6  2002/06/25 21:46:10  phase1geo
 /* Fixes to simulator and reporting.  Still some bugs here.
 /*

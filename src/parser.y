@@ -11,6 +11,7 @@
 #include "defines.h"
 #include "signal.h"
 #include "expr.h"
+#include "vector.h"
 #include "module.h"
 #include "db.h"
 #include "link.h"
@@ -76,7 +77,7 @@ char err_msg[1000];
 %type <expr>      event_control event_expression_list event_expression
 %type <text>      udp_port_list
 %type <text>      lpvalue lavalue
-%type <integer>   delay_value delay_value_simple
+%type <expr>      delay_value delay_value_simple
 %type <text>      range_or_type_opt
 %type <text>      defparam_assign_list defparam_assign
 %type <text>      gate_instance
@@ -87,6 +88,7 @@ char err_msg[1000];
 %type <text>      register_variable net_decl_assign
 %type <state>     statement statement_list statement_opt
 %type <case_stmt> case_items case_item
+%type <expr>      delay1 delay3 delay3_opt
 
 %token K_TAND
 %right '?' ':'
@@ -975,7 +977,7 @@ module_item
 		  }
 		  str_link_delete_list( $3 );
 		}
-	| K_trireg charge_strength_opt range_opt delay3_opt list_of_variables ';'
+	| K_trireg charge_strength_opt range_opt unused_delay3_opt list_of_variables ';'
 		{
 		  /* Tri-state signals are not currently supported by covered */
 		  str_link_delete_list( $5 );
@@ -1019,7 +1021,7 @@ module_item
 		  str_link_delete_list( $3 );
 		}
 
-	| K_assign drive_strength_opt delay3_opt assign_list ';'
+	| K_assign drive_strength_opt unused_delay3_opt assign_list ';'
 		{
 		}
 	| K_always statement
@@ -1128,7 +1130,7 @@ unused_stmt
 	| K_for '(' error ')' unused_stmt
 	| K_while '(' unused_expr ')' unused_stmt
 	| K_while '(' error ')' unused_stmt
-	| delay1 unused_stmt_opt
+	| unused_delay1 unused_stmt_opt
 	| unused_event_control unused_stmt_opt
 	| lpvalue '=' unused_expr ';'
                 {
@@ -1138,11 +1140,11 @@ unused_stmt
                 {
                   free_safe( $1 );
                 }
-	| lpvalue '=' delay1 unused_expr ';'
+	| lpvalue '=' unused_delay1 unused_expr ';'
                 {
                   free_safe( $1 );
                 }
-	| lpvalue K_LE delay1 unused_expr ';'
+	| lpvalue K_LE unused_delay1 unused_expr ';'
                 {
                   free_safe( $1 );
                 }
@@ -1422,7 +1424,9 @@ statement
 		}
 	| delay1 statement_opt
 		{
-                  $$ = NULL;
+                  statement* stmt = db_create_statement( $1 );
+                  db_add_expression( $1 );
+                  $$ = stmt;
 		}
 	| event_control statement_opt
 		{
@@ -1441,13 +1445,13 @@ statement
 		  db_add_expression( $3 );
                   $$ = stmt;
 		}
-	| lpvalue '=' delay1 expression ';'
+	| lpvalue '=' unused_delay1 expression ';'
 		{
 		  statement* stmt = db_create_statement( $4 );
 		  db_add_expression( $4 );
                   $$ = stmt;
 		}
-	| lpvalue K_LE delay1 expression ';'
+	| lpvalue K_LE unused_delay1 expression ';'
 		{
 		  statement* stmt = db_create_statement( $4 );
 		  db_add_expression( $4 );
@@ -1694,41 +1698,165 @@ case_items
                 }
 	;
 
+
 delay1
 	: '#' delay_value_simple
+                {
+                  vector*     vec = vector_create( 1, 0 );
+                  expression* exp; 
+                  expression* tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
+                  free_safe( tmp->value );
+                  tmp->value = vec;
+                  exp = db_create_expression( $2, tmp, EXP_OP_DELAY, @1.first_line, NULL );
+                  $$  = exp;
+                }
 	| '#' '(' delay_value ')'
+                {
+                  vector*     vec = vector_create( 1, 0 );
+                  expression* exp;
+                  expression* tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
+                  free_safe( tmp->value );
+                  tmp->value = vec;
+                  exp = db_create_expression( $3, tmp, EXP_OP_DELAY, @1.first_line, NULL );
+                  $$  = exp;
+                }
 	;
 
 delay3
 	: '#' delay_value_simple
+                {
+                  vector*     vec = vector_create( 1, 0 );
+                  expression* exp; 
+                  expression* tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
+                  free_safe( tmp->value );
+                  tmp->value = vec;
+                  exp = db_create_expression( $2, tmp, EXP_OP_DELAY, @1.first_line, NULL );
+                  $$  = exp;
+                }
 	| '#' '(' delay_value ')'
+                {
+                  vector*     vec = vector_create( 1, 0 );
+                  expression* exp; 
+                  expression* tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
+                  free_safe( tmp->value );
+                  tmp->value = vec;
+                  exp = db_create_expression( $3, tmp, EXP_OP_DELAY, @1.first_line, NULL );
+                  $$  = exp;
+                }
 	| '#' '(' delay_value ',' delay_value ')'
+                {
+                  vector*     vec = vector_create( 1, 0 );
+                  expression* exp; 
+                  expression* tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
+                  free_safe( tmp->value );
+                  tmp->value = vec;
+                  exp = db_create_expression( $3, tmp, EXP_OP_DELAY, @1.first_line, NULL );
+                  $$  = exp;
+                }
 	| '#' '(' delay_value ',' delay_value ',' delay_value ')'
+                {
+                  vector*     vec = vector_create( 1, 0 );
+                  expression* exp; 
+                  expression* tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
+                  free_safe( tmp->value );
+                  tmp->value = vec;
+                  exp = db_create_expression( $3, tmp, EXP_OP_DELAY, @1.first_line, NULL );
+                  $$  = exp;
+                }
 	;
 
 delay3_opt
 	: delay3
+                {
+                  $$ = $1;
+                }
 	|
+                {
+                  $$ = NULL;
+                }
 	;
 
 delay_value
 	: static_expr
+                {
+                  vector*     vec = vector_create( 32, 0 );
+                  expression* tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
+                  vector_from_int( vec, $1 );
+                  free_safe( tmp->value );
+                  tmp->value = vec;
+                  $$ = tmp;
+                }
 	| static_expr ':' static_expr ':' static_expr
+                {
+                  vector*     vec = vector_create( 32, 0 );
+                  expression* tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
+                  vector_from_int( vec, $1 );
+                  free_safe( tmp->value );
+                  tmp->value = vec;
+                  $$ = tmp;
+                }                  
 	;
 
 delay_value_simple
 	: NUMBER
 		{
-		  $$ = vector_to_int( $1 );
-		  vector_dealloc( $1 );
+		  expression* tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
+                  free_safe( tmp->value );
+		  tmp->value = $1;
+		  $$ = tmp;
 		}
 	| REALTIME
 		{
-		  $$ = 0;
+		  $$ = NULL;
 		}
 	| IDENTIFIER
 		{
-		  $$ = 0;
+                  expression* tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, @1.first_line, $1 );
+                  $$ = tmp;
+		  free_safe( $1 );
+		}
+	;
+
+unused_delay1
+	: '#' unused_delay_value_simple
+	| '#' '(' unused_delay_value ')'
+	;
+
+unused_delay3
+	: '#' unused_delay_value_simple
+	| '#' '(' unused_delay_value ')'
+	| '#' '(' unused_delay_value ',' unused_delay_value ')'
+	| '#' '(' unused_delay_value ',' unused_delay_value ',' unused_delay_value ')'
+	;
+
+unused_delay3_opt
+	: unused_delay3
+	|
+	;
+
+unused_delay_value
+	: static_expr
+                {
+                  int a = $1;
+                }
+	| static_expr ':' static_expr ':' static_expr
+                {
+                  int a = $1;
+                }
+	;
+
+unused_delay_value_simple
+	: NUMBER
+		{
+                  vector_dealloc( $1 );
+		}
+	| REALTIME
+                {
+                  double a = $1;
+                }
+	| IDENTIFIER
+		{
+                  free_safe( $1 );
 		}
 	;
 
@@ -1891,12 +2019,12 @@ net_decl_assigns
 	;
 
 net_decl_assign
-	: IDENTIFIER '=' expression
+	: IDENTIFIER '=' unused_expr
 		{
 		  /* Create root expression */
 		  $$ = $1;
 		}
-	| delay1 IDENTIFIER '=' expression
+	| unused_delay1 IDENTIFIER '=' unused_expr
 		{
 		  /* Create root expression */
 		  $$ = $2;

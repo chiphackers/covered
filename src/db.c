@@ -46,6 +46,12 @@ symtable* timestep_tab      = NULL;
 int       curr_expr_id  = 1;
 
 /*!
+ This static value contains the current simulation time which is specified by the db_do_timestep
+ function.  It is used for calculating delay expressions in the simulation engine.
+*/
+int       curr_sim_time = 0;
+
+/*!
  \param file  Name of database file to output contents to.
 
  \return Returns TRUE if database write was successful; otherwise, returns FALSE.
@@ -825,8 +831,10 @@ void db_do_timestep( int time ) {
   snprintf( msg, 4096, "Performing timestep #%d", time );
   print_output( msg, NORMAL );
 
+  curr_sim_time = time;
+
   /* Simulate the current timestep */
-  sim_simulate( time );
+  sim_simulate();
 
   /* Finally, clear timestep_tab */
   symtable_dealloc( timestep_tab );
@@ -865,6 +873,10 @@ int db_get_signal_size( char* symbol ) {
 
 
 /* $Log$
+/* Revision 1.17  2002/06/26 03:45:48  phase1geo
+/* Fixing more bugs in simulator and report functions.  About to add support
+/* for delay statements.
+/*
 /* Revision 1.16  2002/06/25 21:46:10  phase1geo
 /* Fixes to simulator and reporting.  Still some bugs here.
 /*
