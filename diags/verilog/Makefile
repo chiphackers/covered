@@ -58,7 +58,9 @@ DIAGLIST = assign3.2A \
            include1.1 \
            ifdef1 \
            ifdef2.1 \
-           ifdef2.2
+           ifdef2.2 \
+           concat1 \
+           concat2
 
 regress:	$(COVERED) clean $(DIAGLIST)
 
