@@ -3095,7 +3095,7 @@ event_expression
       expression* tmp2;
       if( (ignore_mode == 0) && ($2 != NULL) ) {
         /* Create 1-bit expression to hold last value of right expression */
-        tmp1 = db_create_expression( NULL, NULL, EXP_OP_LAST, lhs_mode, @1.first_line, @1.first_column, @3.last_column, NULL );
+        tmp1 = db_create_expression( NULL, NULL, EXP_OP_LAST, lhs_mode, @1.first_line, @1.first_column, @1.last_column, NULL );
         expression_create_value( tmp1, 1, FALSE );
         tmp2 = db_create_expression( $2, tmp1, EXP_OP_PEDGE, lhs_mode, @1.first_line, @1.first_column, @2.last_column, NULL );
         $$ = tmp2;
