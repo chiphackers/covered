@@ -62,7 +62,7 @@ extern char         leading_hierarchy[4096];
 */
 int combination_calc_depth( expression* exp, unsigned int curr_depth, bool left ) {
 
-  if( ((report_comb_depth == REPORT_DETAILED) && ((curr_depth + 1) == report_comb_depth)) ||
+  if( ((report_comb_depth == REPORT_DETAILED) && ((curr_depth + 1) <= report_comb_depth)) ||
        (report_comb_depth == REPORT_VERBOSE) ) {
 
     if( left ) {
@@ -106,7 +106,7 @@ void combination_get_tree_stats( expression* exp, unsigned int curr_depth, float
 
   if( exp != NULL ) {
 
-    if( ((report_comb_depth == REPORT_DETAILED) && (curr_depth == report_comb_depth)) ||
+    if( ((report_comb_depth == REPORT_DETAILED) && (curr_depth <= report_comb_depth)) ||
          (report_comb_depth == REPORT_VERBOSE) ||
          (report_comb_depth == REPORT_SUMMARY) ) {
 
@@ -566,7 +566,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
 
       }
 
-      comb_missed = (((report_comb_depth == REPORT_DETAILED) && (curr_depth == report_comb_depth)) ||
+      comb_missed = (((report_comb_depth == REPORT_DETAILED) && (curr_depth <= report_comb_depth)) ||
                       (report_comb_depth == REPORT_VERBOSE)) ? EXPR_COMB_MISSED( exp ) : 0;
 
       if( l_depth > r_depth ) {
@@ -942,7 +942,7 @@ void combination_list_missed( FILE* ofile, expression* exp, unsigned int curr_de
     combination_list_missed( ofile, exp->right, combination_calc_depth( exp, curr_depth, FALSE ), exp_id );
 
     if( (EXPR_COMB_MISSED( exp ) == 1) && 
-        (((report_comb_depth == REPORT_DETAILED) && (curr_depth == report_comb_depth)) ||
+        (((report_comb_depth == REPORT_DETAILED) && (curr_depth <= report_comb_depth)) ||
           (report_comb_depth == REPORT_VERBOSE)) ) {
 
       /* Create combination table */
@@ -1021,7 +1021,7 @@ bool combination_missed_expr( expression* expr, unsigned int curr_depth ) {
     missed_right = combination_missed_expr( expr->right, combination_calc_depth( expr, curr_depth, FALSE ) );
     missed_left  = combination_missed_expr( expr->left,  combination_calc_depth( expr, curr_depth, TRUE ) );
 
-    if( ((report_comb_depth == REPORT_DETAILED) && (curr_depth == report_comb_depth)) ||
+    if( ((report_comb_depth == REPORT_DETAILED) && (curr_depth <= report_comb_depth)) ||
          (report_comb_depth == REPORT_VERBOSE) ) {
 
       return( (EXPR_COMB_MISSED( expr ) == 1) || missed_right || missed_left );
@@ -1228,6 +1228,9 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.71  2003/12/13 05:52:02  phase1geo
+ Removed verbose output and updated development documentation for new code.
+
  Revision 1.70  2003/12/13 03:26:39  phase1geo
  Adding code to optimize cases where output code is only on one line (no
  need to reformat the line in this case).

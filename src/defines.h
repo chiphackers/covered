@@ -167,7 +167,7 @@
  for understanding where uncovered logic exists but not necessarily why it was not
  covered.
 */
-#define REPORT_DETAILED      0x1
+#define REPORT_DETAILED      0x2
 
 /*!
  Includes summary information and all verbose information for line, toggle and
@@ -1534,6 +1534,9 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.93  2003/12/16 23:22:07  phase1geo
+ Adding initial code for line width specification for report output.
+
  Revision 1.92  2003/12/01 23:27:15  phase1geo
  Adding code for retrieving line summary module coverage information for
  GUI.
