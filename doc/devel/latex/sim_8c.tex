@@ -14,6 +14,8 @@ void {\bf sim\_\-expr\_\-changed} ({\bf expression} $\ast$expr)
 \begin{CompactList}\small\item\em Adds specified expression's statement to pre-simulation statement queue.\item\end{CompactList}\item 
 void {\bf sim\_\-add\_\-stmt\_\-to\_\-queue} ({\bf statement} $\ast$stmt)
 \begin{CompactList}\small\item\em Adds specified statement to pre-simulation statement queue.\item\end{CompactList}\item 
+void {\bf sim\_\-add\_\-statics} ()
+\begin{CompactList}\small\item\em Adds static expression values to initial simulator.\item\end{CompactList}\item 
 void {\bf sim\_\-expression} ({\bf expression} $\ast$expr)
 \item 
 {\bf statement} $\ast$ {\bf sim\_\-statement} ({\bf statement} $\ast$head\_\-stmt)
@@ -25,9 +27,13 @@ void {\bf sim\_\-simulate} ()
 \item 
 {\bf nibble} {\bf or\_\-optab} [16]
 \item 
-{\bf stmt\_\-link} $\ast$ {\bf presim\_\-stmt\_\-head}
+{\bf exp\_\-link} $\ast$ {\bf static\_\-expr\_\-head} = NULL
 \item 
-{\bf stmt\_\-link} $\ast$ {\bf presim\_\-stmt\_\-tail}
+{\bf exp\_\-link} $\ast$ {\bf static\_\-expr\_\-tail} = NULL
+\item 
+{\bf stmt\_\-link} $\ast$ {\bf presim\_\-stmt\_\-head} = NULL
+\item 
+{\bf stmt\_\-link} $\ast$ {\bf presim\_\-stmt\_\-tail} = NULL
 \end{CompactItemize}
 
 
@@ -60,9 +66,16 @@ expression simulation engine\end{enumerate}
 
 
 \subsection{Function Documentation}
-\index{sim.c@{sim.c}!sim_add_stmt_to_queue@{sim\_\-add\_\-stmt\_\-to\_\-queue}}
+\index{sim.c@{sim.c}!sim_add_statics@{sim\_\-add\_\-statics}}
+\index{sim_add_statics@{sim\_\-add\_\-statics}!sim.c@{sim.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void sim\_\-add\_\-statics ()}\label{sim_8c_a7}
+
+
+Adds static expression values to initial simulator.
+
+Iterates through static expression list and causes the simulator to evaluate these expressions at simulation time. \index{sim.c@{sim.c}!sim_add_stmt_to_queue@{sim\_\-add\_\-stmt\_\-to\_\-queue}}
 \index{sim_add_stmt_to_queue@{sim\_\-add\_\-stmt\_\-to\_\-queue}!sim.c@{sim.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void sim\_\-add\_\-stmt\_\-to\_\-queue ({\bf statement} $\ast$ {\em stmt})}\label{sim_8c_a4}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void sim\_\-add\_\-stmt\_\-to\_\-queue ({\bf statement} $\ast$ {\em stmt})}\label{sim_8c_a6}
 
 
 Adds specified statement to pre-simulation statement queue.
@@ -75,7 +88,7 @@ stmt}]Pointer to statement to add to queue.\end{description}
 \end{Desc}
 Checks STMT\_\-HEAD bit of specified statement. If this is set to 1, adds this statement to the presimulation statement queue; otherwise, it does nothing with the statement \index{sim.c@{sim.c}!sim_expr_changed@{sim\_\-expr\_\-changed}}
 \index{sim_expr_changed@{sim\_\-expr\_\-changed}!sim.c@{sim.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void sim\_\-expr\_\-changed ({\bf expression} $\ast$ {\em expr})}\label{sim_8c_a3}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void sim\_\-expr\_\-changed ({\bf expression} $\ast$ {\em expr})}\label{sim_8c_a5}
 
 
 Adds specified expression's statement to pre-simulation statement queue.
@@ -88,7 +101,7 @@ expr}]Pointer to expression that contains a changed signal value.\end{descriptio
 \end{Desc}
 Traverses up expression tree pointed to by leaf node expr, setting the CHANGED bits as it reaches the root expression. When the root expression is found, the statement pointed to by the root's parent pointer is added to the pre-simulation statement queue for simulation at the end of the timestep. If, upon traversing the tree, an expression is found to already be have a CHANGED bit set, we know that the statement has already been added, so stop here and do not add the statement again. \index{sim.c@{sim.c}!sim_expression@{sim\_\-expression}}
 \index{sim_expression@{sim\_\-expression}!sim.c@{sim.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void sim\_\-expression ({\bf expression} $\ast$ {\em expr})}\label{sim_8c_a5}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void sim\_\-expression ({\bf expression} $\ast$ {\em expr})}\label{sim_8c_a8}
 
 
 \begin{Desc}
@@ -99,14 +112,14 @@ expr}]Pointer to expression to simulate.\end{description}
 \end{Desc}
 Recursively traverses specified expression tree, following the {\bf SUPPL\_\-LSB\_\-LEFT\_\-CHANGED} {\rm (p.\,\pageref{group__expr__suppl_a9})}  and {\bf SUPPL\_\-LSB\_\-RIGHT\_\-CHANGED} {\rm (p.\,\pageref{group__expr__suppl_a10})} bits in the supplemental field. Once an expression is found that has neither bit set, perform the expression operation and move back up the tree. Once both left and right children have calculated values, perform the expression operation for the current expression, clear both changed bits and return. \index{sim.c@{sim.c}!sim_simulate@{sim\_\-simulate}}
 \index{sim_simulate@{sim\_\-simulate}!sim.c@{sim.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void sim\_\-simulate ()}\label{sim_8c_a7}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void sim\_\-simulate ()}\label{sim_8c_a10}
 
 
 Simulates current timestep.
 
 This function is the heart of the simulation engine. It is called by the {\bf db\_\-do\_\-timestep}() {\rm (p.\,\pageref{db_8c_a40})} function in {\bf db.c} and moves the statements and expressions into the appropriate simulation functions. See above explanation on this procedure. \index{sim.c@{sim.c}!sim_statement@{sim\_\-statement}}
 \index{sim_statement@{sim\_\-statement}!sim.c@{sim.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf statement}$\ast$ sim\_\-statement ({\bf statement} $\ast$ {\em head\_\-stmt})}\label{sim_8c_a6}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf statement}$\ast$ sim\_\-statement ({\bf statement} $\ast$ {\em head\_\-stmt})}\label{sim_8c_a9}
 
 
 \begin{Desc}
@@ -128,11 +141,21 @@ Performs statement simulation as described above. Calls expression simulator if 
 
 OR operation table \index{sim.c@{sim.c}!presim_stmt_head@{presim\_\-stmt\_\-head}}
 \index{presim_stmt_head@{presim\_\-stmt\_\-head}!sim.c@{sim.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf stmt\_\-link}$\ast$ presim\_\-stmt\_\-head}\label{sim_8c_a1}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf stmt\_\-link}$\ast$ presim\_\-stmt\_\-head = NULL}\label{sim_8c_a3}
 
 
 \index{sim.c@{sim.c}!presim_stmt_tail@{presim\_\-stmt\_\-tail}}
 \index{presim_stmt_tail@{presim\_\-stmt\_\-tail}!sim.c@{sim.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf stmt\_\-link}$\ast$ presim\_\-stmt\_\-tail}\label{sim_8c_a2}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf stmt\_\-link}$\ast$ presim\_\-stmt\_\-tail = NULL}\label{sim_8c_a4}
+
+
+\index{sim.c@{sim.c}!static_expr_head@{static\_\-expr\_\-head}}
+\index{static_expr_head@{static\_\-expr\_\-head}!sim.c@{sim.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf exp\_\-link}$\ast$ static\_\-expr\_\-head = NULL}\label{sim_8c_a1}
+
+
+\index{sim.c@{sim.c}!static_expr_tail@{static\_\-expr\_\-tail}}
+\index{static_expr_tail@{static\_\-expr\_\-tail}!sim.c@{sim.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf exp\_\-link}$\ast$ static\_\-expr\_\-tail = NULL}\label{sim_8c_a2}
 
 

@@ -11,6 +11,8 @@ void {\bf sim\_\-expr\_\-changed} ({\bf expression} $\ast$expr)
 \begin{CompactList}\small\item\em Adds specified expression's statement to pre-simulation statement queue.\item\end{CompactList}\item 
 void {\bf sim\_\-add\_\-stmt\_\-to\_\-queue} ({\bf statement} $\ast$stmt)
 \begin{CompactList}\small\item\em Adds specified statement to pre-simulation statement queue.\item\end{CompactList}\item 
+void {\bf sim\_\-add\_\-statics} ()
+\begin{CompactList}\small\item\em Adds static expression values to initial simulator.\item\end{CompactList}\item 
 void {\bf sim\_\-simulate} ()
 \begin{CompactList}\small\item\em Simulates current timestep.\item\end{CompactList}\end{CompactItemize}
 
@@ -29,7 +31,14 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 
 
 \subsection{Function Documentation}
-\index{sim.h@{sim.h}!sim_add_stmt_to_queue@{sim\_\-add\_\-stmt\_\-to\_\-queue}}
+\index{sim.h@{sim.h}!sim_add_statics@{sim\_\-add\_\-statics}}
+\index{sim_add_statics@{sim\_\-add\_\-statics}!sim.h@{sim.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void sim\_\-add\_\-statics ()}\label{sim_8h_a2}
+
+
+Adds static expression values to initial simulator.
+
+Iterates through static expression list and causes the simulator to evaluate these expressions at simulation time. \index{sim.h@{sim.h}!sim_add_stmt_to_queue@{sim\_\-add\_\-stmt\_\-to\_\-queue}}
 \index{sim_add_stmt_to_queue@{sim\_\-add\_\-stmt\_\-to\_\-queue}!sim.h@{sim.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void sim\_\-add\_\-stmt\_\-to\_\-queue ({\bf statement} $\ast$ {\em stmt})}\label{sim_8h_a1}
 
@@ -57,7 +66,7 @@ expr}]Pointer to expression that contains a changed signal value.\end{descriptio
 \end{Desc}
 Traverses up expression tree pointed to by leaf node expr, setting the CHANGED bits as it reaches the root expression. When the root expression is found, the statement pointed to by the root's parent pointer is added to the pre-simulation statement queue for simulation at the end of the timestep. If, upon traversing the tree, an expression is found to already be have a CHANGED bit set, we know that the statement has already been added, so stop here and do not add the statement again. \index{sim.h@{sim.h}!sim_simulate@{sim\_\-simulate}}
 \index{sim_simulate@{sim\_\-simulate}!sim.h@{sim.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void sim\_\-simulate ()}\label{sim_8h_a2}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void sim\_\-simulate ()}\label{sim_8h_a3}
 
 
 Simulates current timestep.

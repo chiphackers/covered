@@ -11,12 +11,6 @@ initial begin
 	#5;
 	b = 1'b0;
 	#5;
-/*
-	b = 1'b1;
-	#5;
-	b = 1'b0;
-	#5;
-*/
 	b = 1'bz;
 	#5;
 	$finish;

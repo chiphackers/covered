@@ -51,6 +51,7 @@
 #include "vector.h"
 #include "binding.h"
 #include "util.h"
+#include "sim.h"
 
 
 extern nibble xor_optab[16];
@@ -62,6 +63,9 @@ extern nibble nxor_optab[16];
 
 extern int  curr_sim_time;
 extern char user_msg[USER_MSG_LENGTH];
+
+extern exp_link* static_expr_head;
+extern exp_link* static_expr_tail;
 
 
 /*!
@@ -395,8 +399,6 @@ void expression_resize( expression* expr, bool recursive ) {
 
     }
 
-    /* printf( "Resized expression %d, op: %d, size: %d\n", expr->id, SUPPL_OP( expr->suppl ), expr->value->width ); */
-
   }
 
 }
@@ -563,13 +565,11 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
       exp_link_add( expr, &(curr_mod->exp_head), &(curr_mod->exp_tail) );
 
       /*
-       If this expression has any combination of EXP_OP_STATIC or WAS_EXECUTED,
-       perform the expression operation now and set WAS_EXECUTED bit of expression's
-       supplemental field.
+       If this expression is a constant expression, force the simulator to evaluate
+       this expression and all parent expressions of it.
       */
-      if( eval && EXPR_EVAL_STATIC( expr ) ) {
-        expression_operate( expr );
-        expr->suppl = expr->suppl | (0x1 << SUPPL_LSB_EXECUTED);
+      if( eval && EXPR_IS_STATIC( expr ) ) {
+        exp_link_add( expr, &static_expr_head, &static_expr_tail );
       }
       
     }
@@ -1042,13 +1042,14 @@ void expression_operate( expression* expr ) {
       case 1 :  expr->suppl = expr->suppl | (0x1 << SUPPL_LSB_TRUE)  | (0x1 << SUPPL_LSB_EVAL_T);  break;
       default:  break;
     }
-    
+
     /* Set EVAL00, EVAL01, EVAL10 or EVAL11 bits based on current value of children */
     if( (expr->left != NULL) && (expr->right != NULL) ) {
       lf = SUPPL_IS_FALSE( expr->left->suppl  );
       lt = SUPPL_IS_TRUE(  expr->left->suppl  );
       rf = SUPPL_IS_FALSE( expr->right->suppl );
       rt = SUPPL_IS_TRUE(  expr->right->suppl );
+      /* printf( "expr %d, lf: %d, lt: %d, rf: %d, rt: %d\n", expr->id, lf, lt, rf, rt ); */
       expr->suppl = expr->suppl | 
                     ((lf & rf) << SUPPL_LSB_EVAL_00) |
                     ((lf & rt) << SUPPL_LSB_EVAL_01) |
@@ -1124,6 +1125,34 @@ int expression_bit_value( expression* expr ) {
 }
 
 /*!
+ \param expr  Pointer to expression to evaluate.
+ 
+ \return Returns TRUE if expression contains only static expressions; otherwise, returns FALSE.
+ 
+ Recursively iterates through specified expression tree and returns TRUE if all of
+ the children expressions are static expressions (STATIC or parameters).
+*/
+bool expression_is_static_only( expression* expr ) {
+
+  if( expr != NULL ) {
+
+    if( EXPR_IS_STATIC( expr ) == 1 ) {
+      return( TRUE );
+    } else {
+      return( (SUPPL_OP( expr->suppl ) != EXP_OP_MBIT_SEL) &&
+              expression_is_static_only( expr->left )      &&
+              expression_is_static_only( expr->right ) );
+    }
+
+  } else {
+
+    return( FALSE );
+
+  }
+
+}
+
+/*!
  \param expr      Pointer to root expression to deallocate.
  \param exp_only  Removes only the specified expression and not its children.
 
@@ -1180,6 +1209,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.66  2002/11/24 14:38:12  phase1geo
+ Updating more regression CDD files for bug fixes.  Fixing bugs where combinational
+ expressions were counted more than once.  Adding new diagnostics to regression
+ suite.
+
  Revision 1.65  2002/11/23 16:10:46  phase1geo
  Updating changelog and development documentation to include FSM description
  (this is a brainstorm on how to handle FSMs when we get to this point).  Fixed

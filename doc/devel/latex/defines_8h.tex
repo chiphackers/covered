@@ -138,6 +138,8 @@ struct {\bf vector\_\-width\_\-s}
 \item 
 \#define {\bf SUPPL\_\-LSB\_\-EVAL\_\-F}\ 21
 \item 
+\#define {\bf SUPPL\_\-LSB\_\-COMB\_\-CNTD}\ 22
+\item 
 \#define {\bf SUPPL\_\-MERGE\_\-MASK}\ 0xffffffff
 \item 
 \#define {\bf SUPPL\_\-WAS\_\-SWAPPED}(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-SWAPPED) \& 0x1)
@@ -163,6 +165,8 @@ struct {\bf vector\_\-width\_\-s}
 \#define {\bf SUPPL\_\-IS\_\-LEFT\_\-CHANGED}(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-LEFT\_\-CHANGED) \& 0x1)
 \item 
 \#define {\bf SUPPL\_\-IS\_\-RIGHT\_\-CHANGED}(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-RIGHT\_\-CHANGED) \& 0x1)
+\item 
+\#define {\bf SUPPL\_\-WAS\_\-COMB\_\-COUNTED}(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-COMB\_\-CNTD) \& 0x1)
 \item 
 \#define {\bf SUPPL\_\-OP}(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-OP) \& 0x3f)
 \item 
@@ -202,37 +206,37 @@ struct {\bf vector\_\-width\_\-s}
 \item 
 \#define {\bf DELAY\_\-EXPR\_\-MAX}\ 3
 \item 
-\#define {\bf EXP\_\-OP\_\-STATIC}\ 0x0
+\#define {\bf EXP\_\-OP\_\-STATIC}\ 0x00
 \item 
-\#define {\bf EXP\_\-OP\_\-SIG}\ 0x1
+\#define {\bf EXP\_\-OP\_\-SIG}\ 0x01
 \item 
-\#define {\bf EXP\_\-OP\_\-XOR}\ 0x2
+\#define {\bf EXP\_\-OP\_\-XOR}\ 0x02
 \item 
-\#define {\bf EXP\_\-OP\_\-MULTIPLY}\ 0x3
+\#define {\bf EXP\_\-OP\_\-MULTIPLY}\ 0x03
 \item 
-\#define {\bf EXP\_\-OP\_\-DIVIDE}\ 0x4
+\#define {\bf EXP\_\-OP\_\-DIVIDE}\ 0x04
 \item 
-\#define {\bf EXP\_\-OP\_\-MOD}\ 0x5
+\#define {\bf EXP\_\-OP\_\-MOD}\ 0x05
 \item 
-\#define {\bf EXP\_\-OP\_\-ADD}\ 0x6
+\#define {\bf EXP\_\-OP\_\-ADD}\ 0x06
 \item 
-\#define {\bf EXP\_\-OP\_\-SUBTRACT}\ 0x7
+\#define {\bf EXP\_\-OP\_\-SUBTRACT}\ 0x07
 \item 
-\#define {\bf EXP\_\-OP\_\-AND}\ 0x8
+\#define {\bf EXP\_\-OP\_\-AND}\ 0x08
 \item 
-\#define {\bf EXP\_\-OP\_\-OR}\ 0x9
+\#define {\bf EXP\_\-OP\_\-OR}\ 0x09
 \item 
-\#define {\bf EXP\_\-OP\_\-NAND}\ 0xa
+\#define {\bf EXP\_\-OP\_\-NAND}\ 0x0a
 \item 
-\#define {\bf EXP\_\-OP\_\-NOR}\ 0xb
+\#define {\bf EXP\_\-OP\_\-NOR}\ 0x0b
 \item 
-\#define {\bf EXP\_\-OP\_\-NXOR}\ 0xc
+\#define {\bf EXP\_\-OP\_\-NXOR}\ 0x0c
 \item 
-\#define {\bf EXP\_\-OP\_\-LT}\ 0xd
+\#define {\bf EXP\_\-OP\_\-LT}\ 0x0d
 \item 
-\#define {\bf EXP\_\-OP\_\-GT}\ 0xe
+\#define {\bf EXP\_\-OP\_\-GT}\ 0x0e
 \item 
-\#define {\bf EXP\_\-OP\_\-LSHIFT}\ 0xf
+\#define {\bf EXP\_\-OP\_\-LSHIFT}\ 0x0f
 \item 
 \#define {\bf EXP\_\-OP\_\-RSHIFT}\ 0x10
 \item 
@@ -310,7 +314,7 @@ struct {\bf vector\_\-width\_\-s}
 \item 
 \#define {\bf EXPR\_\-IS\_\-MEASURABLE}(x)
 \item 
-\#define {\bf EXPR\_\-EVAL\_\-STATIC}(x)
+\#define {\bf EXPR\_\-IS\_\-STATIC}(x)
 \item 
 \#define {\bf EXPR\_\-COMB\_\-MISSED}(x)
 \item 
@@ -449,41 +453,17 @@ Specifies current version of the Covered utility. \index{defines.h@{defines.h}!D
 
 Default database filename if not specified on command-line. \index{defines.h@{defines.h}!EXPR_COMB_MISSED@{EXPR\_\-COMB\_\-MISSED}}
 \index{EXPR_COMB_MISSED@{EXPR\_\-COMB\_\-MISSED}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define EXPR\_\-COMB\_\-MISSED(x)}\label{defines_8h_a129}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define EXPR\_\-COMB\_\-MISSED(x)}\label{defines_8h_a131}
 
 
 {\bf Value:}
 
 \footnotesize\begin{verbatim}(EXPR_IS_MEASURABLE( x ) & \
-                                    ~EXPR_EVAL_STATIC( x ) & \
+                                    ~expression_is_static_only( x ) & \
                                     (~SUPPL_WAS_TRUE( x->suppl ) | ~SUPPL_WAS_FALSE( x->suppl )))\end{verbatim}\normalsize 
-Returns a value of 1 if the specified expression was measurable for combinational  coverage but not fully covered during simulation. \index{defines.h@{defines.h}!EXPR_EVAL_STATIC@{EXPR\_\-EVAL\_\-STATIC}}
-\index{EXPR_EVAL_STATIC@{EXPR\_\-EVAL\_\-STATIC}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define EXPR\_\-EVAL\_\-STATIC(x)}\label{defines_8h_a128}
-
-
-{\bf Value:}
-
-\footnotesize\begin{verbatim}(((((x->left != NULL) && (SUPPL_OP( x->left->suppl ) == EXP_OP_STATIC))            || \
-                                    ((x->left != NULL) && (SUPPL_WAS_EXECUTED( x->left->suppl ) == 1))  || \
-                                    (x->left == NULL))                                                                && \
-                                   (((x->right != NULL) && (SUPPL_OP( x->right->suppl ) == EXP_OP_STATIC))          || \
-                                    ((x->right != NULL) && (SUPPL_WAS_EXECUTED( x->right->suppl ) == 1)) || \
-                                    (x->right == NULL))                                                               && \
-                                   (SUPPL_OP( x->suppl ) != EXP_OP_COND_SEL)   && \
-                                   (SUPPL_OP( x->suppl ) != EXP_OP_SBIT_SEL)   && \
-                                   (SUPPL_OP( x->suppl ) != EXP_OP_MBIT_SEL)   && \
-                                   (SUPPL_OP( x->suppl ) != EXP_OP_PARAM)      && \
-                                   (SUPPL_OP( x->suppl ) != EXP_OP_PARAM_SBIT) && \
-                                   (SUPPL_OP( x->suppl ) != EXP_OP_PARAM_MBIT) && \
-                                   (SUPPL_OP( x->suppl ) != EXP_OP_STATIC)     && \
-                                   (SUPPL_OP( x->suppl ) != EXP_OP_SIG)        && \
-                                   (SUPPL_OP( x->suppl ) != EXP_OP_LAST)       && \
-                                   (SUPPL_OP( x->suppl ) != EXP_OP_DEFAULT)    && \
-                                   (SUPPL_OP( x->suppl ) != EXP_OP_DELAY)) ? 1 : 0)\end{verbatim}\normalsize 
-Returns a value of TRUE if the specified expression should be immediately evaluated after being read from the CDD file due to containing only static values. \index{defines.h@{defines.h}!EXPR_IS_MEASURABLE@{EXPR\_\-IS\_\-MEASURABLE}}
+Returns a value of 1 if the specified expression was measurable for combinational  coverage but not fully covered during simulation. \index{defines.h@{defines.h}!EXPR_IS_MEASURABLE@{EXPR\_\-IS\_\-MEASURABLE}}
 \index{EXPR_IS_MEASURABLE@{EXPR\_\-IS\_\-MEASURABLE}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define EXPR\_\-IS\_\-MEASURABLE(x)}\label{defines_8h_a127}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define EXPR\_\-IS\_\-MEASURABLE(x)}\label{defines_8h_a129}
 
 
 {\bf Value:}
@@ -496,13 +476,27 @@ Returns a value of TRUE if the specified expression should be immediately evalua
                                      (SUPPL_OP( x->suppl ) != EXP_OP_CASEX) && \
                                      (SUPPL_OP( x->suppl ) != EXP_OP_CASEZ) && \
                                      (SUPPL_OP( x->suppl ) != EXP_OP_DEFAULT) && \
+                                     (SUPPL_OP( x->suppl ) != EXP_OP_PARAM) && \
+                                     (SUPPL_OP( x->suppl ) != EXP_OP_PARAM_SBIT) && \
+                                     (SUPPL_OP( x->suppl ) != EXP_OP_PARAM_MBIT) && \
+                                     (SUPPL_OP( x->suppl ) != EXP_OP_DELAY) && \
                                      !((SUPPL_IS_ROOT( x->suppl ) == 0) && \
                                        ((SUPPL_OP( x->suppl ) == EXP_OP_SIG) || \
                                         (SUPPL_OP( x->suppl ) == EXP_OP_SBIT_SEL) || \
                                         (SUPPL_OP( x->suppl ) == EXP_OP_MBIT_SEL)) && \
-                                       (SUPPL_OP( x->parent->expr->suppl ) != EXP_OP_COND)) && \
-                                     (SUPPL_OP( x->suppl ) != EXP_OP_DELAY)) ? 1 : 0)\end{verbatim}\normalsize 
-Returns a value of 1 if the specified expression is considered to be measurable. \index{defines.h@{defines.h}!INTEGER_WIDTH@{INTEGER\_\-WIDTH}}
+                                       (SUPPL_OP( x->parent->expr->suppl ) != EXP_OP_COND))) ? 1 : 0)\end{verbatim}\normalsize 
+Returns a value of 1 if the specified expression is considered to be measurable. \index{defines.h@{defines.h}!EXPR_IS_STATIC@{EXPR\_\-IS\_\-STATIC}}
+\index{EXPR_IS_STATIC@{EXPR\_\-IS\_\-STATIC}!defines.h@{defines.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define EXPR\_\-IS\_\-STATIC(x)}\label{defines_8h_a130}
+
+
+{\bf Value:}
+
+\footnotesize\begin{verbatim}((SUPPL_OP( x->suppl ) == EXP_OP_STATIC)     || \
+                                  (SUPPL_OP( x->suppl ) == EXP_OP_PARAM)      || \
+                                  (SUPPL_OP( x->suppl ) == EXP_OP_PARAM_SBIT) || \
+                                  (SUPPL_OP( x->suppl ) == EXP_OP_PARAM_MBIT))\end{verbatim}\normalsize 
+Returns a value of TRUE if the specified expression is a STATIC, PARAM, PARAM\_\-SBIT or PARAM\_\-MBIT operation type. \index{defines.h@{defines.h}!INTEGER_WIDTH@{INTEGER\_\-WIDTH}}
 \index{INTEGER_WIDTH@{INTEGER\_\-WIDTH}!defines.h@{defines.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define INTEGER\_\-WIDTH\ (SIZEOF\_\-INT $\ast$ 8)}\label{defines_8h_a3}
 
@@ -517,122 +511,122 @@ Length of user\_\-msg global string (used for inputs to snprintf calls).
 \subsection{Typedef Documentation}
 \index{defines.h@{defines.h}!case_statement@{case\_\-statement}}
 \index{case_statement@{case\_\-statement}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf case\_\-stmt\_\-s} case\_\-statement}\label{defines_8h_a174}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf case\_\-stmt\_\-s} case\_\-statement}\label{defines_8h_a176}
 
 
 \index{defines.h@{defines.h}!control@{control}}
 \index{control@{control}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef unsigned int control}\label{defines_8h_a153}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef unsigned int control}\label{defines_8h_a155}
 
 
 \index{defines.h@{defines.h}!exp_link@{exp\_\-link}}
 \index{exp_link@{exp\_\-link}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf exp\_\-link\_\-s} exp\_\-link}\label{defines_8h_a161}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf exp\_\-link\_\-s} exp\_\-link}\label{defines_8h_a163}
 
 
 \index{defines.h@{defines.h}!expr_stmt@{expr\_\-stmt}}
 \index{expr_stmt@{expr\_\-stmt}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef union {\bf expr\_\-stmt\_\-u} expr\_\-stmt}\label{defines_8h_a156}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef union {\bf expr\_\-stmt\_\-u} expr\_\-stmt}\label{defines_8h_a158}
 
 
 \index{defines.h@{defines.h}!expression@{expression}}
 \index{expression@{expression}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf expression\_\-s} expression}\label{defines_8h_a157}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf expression\_\-s} expression}\label{defines_8h_a159}
 
 
 \index{defines.h@{defines.h}!inst_parm@{inst\_\-parm}}
 \index{inst_parm@{inst\_\-parm}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf inst\_\-parm\_\-s} inst\_\-parm}\label{defines_8h_a167}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf inst\_\-parm\_\-s} inst\_\-parm}\label{defines_8h_a169}
 
 
 \index{defines.h@{defines.h}!mod_inst@{mod\_\-inst}}
 \index{mod_inst@{mod\_\-inst}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf mod\_\-inst\_\-s} mod\_\-inst}\label{defines_8h_a175}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf mod\_\-inst\_\-s} mod\_\-inst}\label{defines_8h_a177}
 
 
 \index{defines.h@{defines.h}!mod_link@{mod\_\-link}}
 \index{mod_link@{mod\_\-link}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf mod\_\-link\_\-s} mod\_\-link}\label{defines_8h_a169}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf mod\_\-link\_\-s} mod\_\-link}\label{defines_8h_a171}
 
 
 \index{defines.h@{defines.h}!mod_parm@{mod\_\-parm}}
 \index{mod_parm@{mod\_\-parm}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf mod\_\-parm\_\-s} mod\_\-parm}\label{defines_8h_a166}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf mod\_\-parm\_\-s} mod\_\-parm}\label{defines_8h_a168}
 
 
 \index{defines.h@{defines.h}!module@{module}}
 \index{module@{module}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf module\_\-s} module}\label{defines_8h_a168}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf module\_\-s} module}\label{defines_8h_a170}
 
 
 \index{defines.h@{defines.h}!nibble@{nibble}}
 \index{nibble@{nibble}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef unsigned int nibble}\label{defines_8h_a152}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef unsigned int nibble}\label{defines_8h_a154}
 
 
 A nibble is a 32-bit value that is subdivided into three parts: Bits 7 - 0 = 4 bits of 4-state value. Bits 11 - 8 = Toggle01 value for each of the four 4-state bits. Bits 15 - 12 = Toggle10 value for each of the four 4-state bits. Bits 19 - 16 = Indicates if this bit has been previously assigned. Bits 23 - 20 = Static value indicators for each of the four 4-state bits. Bits 27 - 24 = Indicates if this bit was set to a value of 0 (FALSE). Bits 31 - 28 = Indicates if this bit was set to a value of 1 (TRUE). \index{defines.h@{defines.h}!sig_exp_bind@{sig\_\-exp\_\-bind}}
 \index{sig_exp_bind@{sig\_\-exp\_\-bind}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf sig\_\-exp\_\-bind\_\-s} sig\_\-exp\_\-bind}\label{defines_8h_a173}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf sig\_\-exp\_\-bind\_\-s} sig\_\-exp\_\-bind}\label{defines_8h_a175}
 
 
 \index{defines.h@{defines.h}!sig_link@{sig\_\-link}}
 \index{sig_link@{sig\_\-link}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf sig\_\-link\_\-s} sig\_\-link}\label{defines_8h_a164}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf sig\_\-link\_\-s} sig\_\-link}\label{defines_8h_a166}
 
 
 \index{defines.h@{defines.h}!signal@{signal}}
 \index{signal@{signal}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf signal\_\-s} signal}\label{defines_8h_a158}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf signal\_\-s} signal}\label{defines_8h_a160}
 
 
 \index{defines.h@{defines.h}!statement@{statement}}
 \index{statement@{statement}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf statement\_\-s} statement}\label{defines_8h_a159}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf statement\_\-s} statement}\label{defines_8h_a161}
 
 
 \index{defines.h@{defines.h}!static_expr@{static\_\-expr}}
 \index{static_expr@{static\_\-expr}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf static\_\-expr\_\-s} static\_\-expr}\label{defines_8h_a171}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf static\_\-expr\_\-s} static\_\-expr}\label{defines_8h_a173}
 
 
 \index{defines.h@{defines.h}!statistic@{statistic}}
 \index{statistic@{statistic}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf statistic\_\-s} statistic}\label{defines_8h_a165}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf statistic\_\-s} statistic}\label{defines_8h_a167}
 
 
 \index{defines.h@{defines.h}!stmt_iter@{stmt\_\-iter}}
 \index{stmt_iter@{stmt\_\-iter}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf stmt\_\-iter\_\-s} stmt\_\-iter}\label{defines_8h_a160}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf stmt\_\-iter\_\-s} stmt\_\-iter}\label{defines_8h_a162}
 
 
 \index{defines.h@{defines.h}!stmt_link@{stmt\_\-link}}
 \index{stmt_link@{stmt\_\-link}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf stmt\_\-link\_\-s} stmt\_\-link}\label{defines_8h_a162}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf stmt\_\-link\_\-s} stmt\_\-link}\label{defines_8h_a164}
 
 
 \index{defines.h@{defines.h}!stmt_loop_link@{stmt\_\-loop\_\-link}}
 \index{stmt_loop_link@{stmt\_\-loop\_\-link}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf stmt\_\-loop\_\-link\_\-s} stmt\_\-loop\_\-link}\label{defines_8h_a163}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf stmt\_\-loop\_\-link\_\-s} stmt\_\-loop\_\-link}\label{defines_8h_a165}
 
 
 \index{defines.h@{defines.h}!str_link@{str\_\-link}}
 \index{str_link@{str\_\-link}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf str\_\-link\_\-s} str\_\-link}\label{defines_8h_a154}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf str\_\-link\_\-s} str\_\-link}\label{defines_8h_a156}
 
 
 \index{defines.h@{defines.h}!symtable@{symtable}}
 \index{symtable@{symtable}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf symtable\_\-s} symtable}\label{defines_8h_a170}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf symtable\_\-s} symtable}\label{defines_8h_a172}
 
 
 \index{defines.h@{defines.h}!vector@{vector}}
 \index{vector@{vector}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf vector\_\-s} vector}\label{defines_8h_a155}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf vector\_\-s} vector}\label{defines_8h_a157}
 
 
 \index{defines.h@{defines.h}!vector_width@{vector\_\-width}}
 \index{vector_width@{vector\_\-width}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf vector\_\-width\_\-s} vector\_\-width}\label{defines_8h_a172}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf vector\_\-width\_\-s} vector\_\-width}\label{defines_8h_a174}
 
 
 
@@ -640,16 +634,16 @@ A nibble is a 32-bit value that is subdivided into three parts: Bits 7 - 0 = 4 b
 \subsection{Enumeration Type Documentation}
 \index{defines.h@{defines.h}!bool@{bool}}
 \index{bool@{bool}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}enum bool}\label{defines_8h_a178}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}enum bool}\label{defines_8h_a180}
 
 
 Defines boolean variables used in most functions. \begin{Desc}
 \item[Enumeration values:]\par
 \begin{description}
 \index{FALSE@{FALSE}!defines.h@{defines.h}}\index{defines.h@{defines.h}!FALSE@{FALSE}}\item[{\em 
-{\em FALSE}\label{defines_8h_a178a176}
+{\em FALSE}\label{defines_8h_a180a178}
 }]Boolean false value \index{TRUE@{TRUE}!defines.h@{defines.h}}\index{defines.h@{defines.h}!TRUE@{TRUE}}\item[{\em 
-{\em TRUE}\label{defines_8h_a178a177}
+{\em TRUE}\label{defines_8h_a180a179}
 }]Boolean true value \end{description}
 \end{Desc}
 

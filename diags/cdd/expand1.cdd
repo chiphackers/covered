@@ -1,7 +1,7 @@
 3 main main expand1.v
 2 2 main 6 1001 0 0 
-2 1 main 6 2000 0 0 32 0 11,0,0,0,0,0,0,0
-2 3 main 6 1fa5 2 1 5 0 f00aa,100aa
+2 1 main 6 102000 0 0 32 0 11,0,0,0,0,0,0,0
+2 3 main 6 41fa5 2 1 5 0 f00aa,100aa
 1 a main 5 0 f00aa,100aa
 1 b main 1 0 100aa 2
 4 3 main 3 3

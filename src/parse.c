@@ -127,6 +127,8 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
     print_output( "Unable to read database file", FATAL );
     exit( 1 );
   }
+  
+  sim_add_statics();
 
   /* Read in contents of VCD file */
   if( vcd == NULL ) {
@@ -158,6 +160,9 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
 
 /*
  $Log$
+ Revision 1.14  2002/11/02 16:16:20  phase1geo
+ Cleaned up all compiler warnings in source and header files.
+
  Revision 1.13  2002/10/29 19:57:51  phase1geo
  Fixing problems with beginning block comments within comments which are
  produced automatically by CVS.  Should fix warning messages from compiler.

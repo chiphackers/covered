@@ -49,12 +49,19 @@ void expression_operate_recursively( expression* expr );
 /*! \brief Returns a compressed, 1-bit representation of the value after a unary OR. */
 int expression_bit_value( expression* expr );
 
+/*! \brief Returns TRUE if specified expression is found to contain all static leaf expressions. */
+bool expression_is_static_only( expression* expr );
+
 /*! \brief Deallocates memory used for expression. */
 void expression_dealloc( expression* expr, bool exp_only );
 
 
 /*
  $Log$
+ Revision 1.17  2002/11/05 00:20:07  phase1geo
+ Adding development documentation.  Fixing problem with combinational logic
+ output in report command and updating full regression.
+
  Revision 1.16  2002/10/31 23:13:47  phase1geo
  Fixing C compatibility problems with cc and gcc.  Found a few possible problems
  with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that

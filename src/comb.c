@@ -112,7 +112,7 @@ void combination_get_tree_stats( expression* exp, unsigned int curr_depth, float
       /* Calculate current expression combination coverage */
       if( (EXPR_IS_MEASURABLE( exp ) == 1) && (SUPPL_WAS_COMB_COUNTED( exp->suppl ) == 0) ) {
         *total = *total + 2;
-        if( EXPR_EVAL_STATIC( exp ) == 1 ) {
+        if( expression_is_static_only( exp ) ) {
           *hit = *hit + 2;
         } else {
           *hit   = *hit + SUPPL_WAS_TRUE( exp->suppl ) + SUPPL_WAS_FALSE( exp->suppl );
@@ -668,7 +668,7 @@ void combination_unary( FILE* ofile, expression* exp, int id, char* op ) {
 void combination_two_vars( FILE* ofile, expression* exp, int val0, int val1, int val2, int val3, int id, char* op ) {
 
   assert( exp != NULL );
-  
+
   /* Verify that left child expression is valid for this operation */
   assert( exp->left != NULL );
 
@@ -806,11 +806,11 @@ bool combination_missed_expr( expression* expr, unsigned int curr_depth ) {
 
   bool missed_right;     /* Set to TRUE if missed expression found on right */
   bool missed_left;      /* Set to TRUE if missed expression found on left  */
-    
+
   if( (expr != NULL) && (SUPPL_WAS_COMB_COUNTED( expr->suppl ) == 1) ) {
 
     expr->suppl  = expr->suppl & ~(0x1 << SUPPL_LSB_COMB_CNTD);
-    
+
     missed_right = combination_missed_expr( expr->right, combination_calc_depth( expr, curr_depth, FALSE ) );
     missed_left  = combination_missed_expr( expr->left,  combination_calc_depth( expr, curr_depth, TRUE ) );
 
@@ -821,11 +821,11 @@ bool combination_missed_expr( expression* expr, unsigned int curr_depth ) {
               missed_right || missed_left );
 
     } else {
-      
+
       return( missed_right || missed_left );
 
     }
-  
+
   } else {
 
     return( FALSE );
@@ -954,7 +954,7 @@ void combination_module_verbose( FILE* ofile, mod_link* head ) {
       fprintf( ofile, "--------------------------------------------------------\n" );
 
       combination_display_verbose( ofile, head->mod->stmt_tail );
-  
+
     }
 
     head = head->next;
@@ -1011,6 +1011,11 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.57  2002/11/24 14:38:12  phase1geo
+ Updating more regression CDD files for bug fixes.  Fixing bugs where combinational
+ expressions were counted more than once.  Adding new diagnostics to regression
+ suite.
+
  Revision 1.56  2002/11/23 21:27:25  phase1geo
  Fixing bug with combinational logic being output when unmeasurable.
 

@@ -9,6 +9,7 @@
 {\tt \#include \char`\"{}vector.h\char`\"{}}\par
 {\tt \#include \char`\"{}binding.h\char`\"{}}\par
 {\tt \#include \char`\"{}util.h\char`\"{}}\par
+{\tt \#include \char`\"{}sim.h\char`\"{}}\par
 \subsection*{Functions}
 \begin{CompactItemize}
 \item 
@@ -36,6 +37,8 @@ void {\bf expression\_\-operate\_\-recursively} ({\bf expression} $\ast$expr)
 \begin{CompactList}\small\item\em Performs recursive expression operation (parse mode only).\item\end{CompactList}\item 
 int {\bf expression\_\-bit\_\-value} ({\bf expression} $\ast$expr)
 \begin{CompactList}\small\item\em Returns a compressed, 1-bit representation of the value after a unary OR.\item\end{CompactList}\item 
+{\bf bool} {\bf expression\_\-is\_\-static\_\-only} ({\bf expression} $\ast$expr)
+\begin{CompactList}\small\item\em Returns TRUE if specified expression is found to contain all static leaf expressions.\item\end{CompactList}\item 
 void {\bf expression\_\-dealloc} ({\bf expression} $\ast$expr, {\bf bool} exp\_\-only)
 \begin{CompactList}\small\item\em Deallocates memory used for expression.\item\end{CompactList}\end{CompactItemize}
 \subsection*{Variables}
@@ -56,6 +59,10 @@ void {\bf expression\_\-dealloc} ({\bf expression} $\ast$expr, {\bf bool} exp\_\
 int {\bf curr\_\-sim\_\-time}
 \item 
 char {\bf user\_\-msg} [USER\_\-MSG\_\-LENGTH]
+\item 
+{\bf exp\_\-link} $\ast$ {\bf static\_\-expr\_\-head}
+\item 
+{\bf exp\_\-link} $\ast$ {\bf static\_\-expr\_\-tail}
 \end{CompactItemize}
 
 
@@ -85,7 +92,7 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsection{Function Documentation}
 \index{expr.c@{expr.c}!expression_bit_value@{expression\_\-bit\_\-value}}
 \index{expression_bit_value@{expression\_\-bit\_\-value}!expr.c@{expr.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int expression\_\-bit\_\-value ({\bf expression} $\ast$ {\em expr})}\label{expr_8c_a19}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int expression\_\-bit\_\-value ({\bf expression} $\ast$ {\em expr})}\label{expr_8c_a21}
 
 
 Returns a compressed, 1-bit representation of the value after a unary OR.
@@ -101,7 +108,7 @@ expr}]Pointer to expression to evaluate.\end{description}
 Returns the value of the expression after being compressed to 1 bit via a unary OR.\end{Desc}
 Returns a value of 1 if the specified expression contains at least one 1 value and no X or Z values in its bits. It accomplishes this by performing a unary  OR operation on the specified expression value and testing bit 0 of the result. \index{expr.c@{expr.c}!expression_create@{expression\_\-create}}
 \index{expression_create@{expression\_\-create}!expr.c@{expr.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf expression}$\ast$ expression\_\-create ({\bf expression} $\ast$ {\em right}, {\bf expression} $\ast$ {\em left}, int {\em op}, int {\em id}, int {\em line}, {\bf bool} {\em data})}\label{expr_8c_a9}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf expression}$\ast$ expression\_\-create ({\bf expression} $\ast$ {\em right}, {\bf expression} $\ast$ {\em left}, int {\em op}, int {\em id}, int {\em line}, {\bf bool} {\em data})}\label{expr_8c_a11}
 
 
 Creates new expression.
@@ -122,7 +129,7 @@ data}]Specifies if we should create a nibble array for the vector value.\end{des
 Returns pointer to newly created expression.\end{Desc}
 Creates a new expression from heap memory and initializes its values for usage. Right and left expressions need to be created before this function is called. \index{expr.c@{expr.c}!expression_create_value@{expression\_\-create\_\-value}}
 \index{expression_create_value@{expression\_\-create\_\-value}!expr.c@{expr.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-create\_\-value ({\bf expression} $\ast$ {\em exp}, int {\em width}, int {\em lsb}, {\bf bool} {\em data})}\label{expr_8c_a8}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-create\_\-value ({\bf expression} $\ast$ {\em exp}, int {\em width}, int {\em lsb}, {\bf bool} {\em data})}\label{expr_8c_a10}
 
 
 Creates an expression value and initializes it.
@@ -138,7 +145,7 @@ data}]Specifies if nibble array should be allocated for vector.\end{description}
 \end{Desc}
 Creates a value vector that is large enough to store width number of bits in value and sets the specified expression value to this value. This function should be called by either the expression\_\-create function, the bind function, or the signal db\_\-read function. \index{expr.c@{expr.c}!expression_db_merge@{expression\_\-db\_\-merge}}
 \index{expression_db_merge@{expression\_\-db\_\-merge}!expr.c@{expr.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} expression\_\-db\_\-merge ({\bf expression} $\ast$ {\em base}, char $\ast$$\ast$ {\em line})}\label{expr_8c_a15}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} expression\_\-db\_\-merge ({\bf expression} $\ast$ {\em base}, char $\ast$$\ast$ {\em line})}\label{expr_8c_a17}
 
 
 Reads and merges two expressions and stores result in base expression.
@@ -155,7 +162,7 @@ line}]Pointer to CDD line to parse.\end{description}
 Returns TRUE if parse and merge was sucessful; otherwise, returns FALSE.\end{Desc}
 Parses specified line for expression information and merges contents into the base expression. If the two expressions given are not the same (IDs, op, and/or line position differ) we know that the database files being merged  were not created from the same design; therefore, display an error message  to the user in this case. If both expressions are the same, perform the  merge. \index{expr.c@{expr.c}!expression_db_read@{expression\_\-db\_\-read}}
 \index{expression_db_read@{expression\_\-db\_\-read}!expr.c@{expr.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} expression\_\-db\_\-read (char $\ast$$\ast$ {\em line}, {\bf module} $\ast$ {\em curr\_\-mod}, {\bf bool} {\em eval})}\label{expr_8c_a14}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} expression\_\-db\_\-read (char $\ast$$\ast$ {\em line}, {\bf module} $\ast$ {\em curr\_\-mod}, {\bf bool} {\em eval})}\label{expr_8c_a16}
 
 
 Reads current line of specified file and parses for expression information.
@@ -173,7 +180,7 @@ eval}]If TRUE, evaluate expression if children are static.\end{description}
 Returns TRUE if parsing successful; otherwise, returns FALSE.\end{Desc}
 Reads in the specified expression information, creates new expression from heap, populates the expression with specified information from file and  returns that value in the specified expression pointer. If all is  successful, returns TRUE; otherwise, returns FALSE. \index{expr.c@{expr.c}!expression_db_write@{expression\_\-db\_\-write}}
 \index{expression_db_write@{expression\_\-db\_\-write}!expr.c@{expr.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-db\_\-write ({\bf expression} $\ast$ {\em expr}, FILE $\ast$ {\em file}, char $\ast$ {\em scope})}\label{expr_8c_a13}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-db\_\-write ({\bf expression} $\ast$ {\em expr}, FILE $\ast$ {\em file}, char $\ast$ {\em scope})}\label{expr_8c_a15}
 
 
 Writes this expression to the specified database file.
@@ -188,7 +195,7 @@ scope}]Name of Verilog hierarchical scope for this expression.\end{description}
 \end{Desc}
 This function recursively displays the expression information for the specified expression tree to the coverage database specified by file. \index{expr.c@{expr.c}!expression_dealloc@{expression\_\-dealloc}}
 \index{expression_dealloc@{expression\_\-dealloc}!expr.c@{expr.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-dealloc ({\bf expression} $\ast$ {\em expr}, {\bf bool} {\em exp\_\-only})}\label{expr_8c_a20}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-dealloc ({\bf expression} $\ast$ {\em expr}, {\bf bool} {\em exp\_\-only})}\label{expr_8c_a23}
 
 
 Deallocates memory used for expression.
@@ -202,7 +209,7 @@ exp\_\-only}]Removes only the specified expression and not its children.\end{des
 \end{Desc}
 Deallocates all heap memory allocated with the malloc routine. \index{expr.c@{expr.c}!expression_display@{expression\_\-display}}
 \index{expression_display@{expression\_\-display}!expr.c@{expr.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-display ({\bf expression} $\ast$ {\em expr})}\label{expr_8c_a16}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-display ({\bf expression} $\ast$ {\em expr})}\label{expr_8c_a18}
 
 
 Displays the specified expression information.
@@ -215,7 +222,7 @@ expr}]Pointer to expression to display.\end{description}
 \end{Desc}
 Displays contents of the specified expression to standard output. This function is called by the module\_\-display function. \index{expr.c@{expr.c}!expression_get_id@{expression\_\-get\_\-id}}
 \index{expression_get_id@{expression\_\-get\_\-id}!expr.c@{expr.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int expression\_\-get\_\-id ({\bf expression} $\ast$ {\em expr})}\label{expr_8c_a12}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int expression\_\-get\_\-id ({\bf expression} $\ast$ {\em expr})}\label{expr_8c_a14}
 
 
 Returns expression ID of this expression.
@@ -229,9 +236,25 @@ expr}]Pointer to expression to get ID from. \end{description}
 \begin{Desc}
 \item[Returns: ]\par
 Returns expression ID for this expression.\end{Desc}
-If specified expression is non-NULL, return expression ID of this expression; otherwise, return a value of 0 to indicate that this is a leaf node. \index{expr.c@{expr.c}!expression_operate@{expression\_\-operate}}
+If specified expression is non-NULL, return expression ID of this expression; otherwise, return a value of 0 to indicate that this is a leaf node. \index{expr.c@{expr.c}!expression_is_static_only@{expression\_\-is\_\-static\_\-only}}
+\index{expression_is_static_only@{expression\_\-is\_\-static\_\-only}!expr.c@{expr.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} expression\_\-is\_\-static\_\-only ({\bf expression} $\ast$ {\em expr})}\label{expr_8c_a22}
+
+
+Returns TRUE if specified expression is found to contain all static leaf expressions.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+expr}]Pointer to expression to evaluate.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns TRUE if expression contains only static expressions; otherwise, returns FALSE.\end{Desc}
+Recursively iterates through specified expression tree and returns TRUE if all of the children expressions are static expressions (STATIC or parameters). \index{expr.c@{expr.c}!expression_operate@{expression\_\-operate}}
 \index{expression_operate@{expression\_\-operate}!expr.c@{expr.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-operate ({\bf expression} $\ast$ {\em expr})}\label{expr_8c_a17}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-operate ({\bf expression} $\ast$ {\em expr})}\label{expr_8c_a19}
 
 
 Performs operation specified by parameter expression.
@@ -244,7 +267,7 @@ expr}]Pointer to expression to set value to.\end{description}
 \end{Desc}
 Performs expression operation. This function must only be run after its left and right expressions have been calculated during this clock period. Sets the value of the operation in its own vector value and updates the suppl nibble as necessary. \index{expr.c@{expr.c}!expression_operate_recursively@{expression\_\-operate\_\-recursively}}
 \index{expression_operate_recursively@{expression\_\-operate\_\-recursively}!expr.c@{expr.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-operate\_\-recursively ({\bf expression} $\ast$ {\em expr})}\label{expr_8c_a18}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-operate\_\-recursively ({\bf expression} $\ast$ {\em expr})}\label{expr_8c_a20}
 
 
 Performs recursive expression operation (parse mode only).
@@ -257,7 +280,7 @@ expr}]Pointer to top of expression tree to perform recursive operations.\end{des
 \end{Desc}
 Recursively performs the proper operations to cause the top-level expression to be set to a value. This function is called during the parse stage to derive  pre-CDD widths of multi-bit expressions. Each MSB/LSB is an expression tree that  needs to be evaluated to set the width properly on the MBIT\_\-SEL expression. \index{expr.c@{expr.c}!expression_resize@{expression\_\-resize}}
 \index{expression_resize@{expression\_\-resize}!expr.c@{expr.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-resize ({\bf expression} $\ast$ {\em expr}, {\bf bool} {\em recursive})}\label{expr_8c_a11}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-resize ({\bf expression} $\ast$ {\em expr}, {\bf bool} {\em recursive})}\label{expr_8c_a13}
 
 
 Recursively resizes specified expression tree leaf node.
@@ -271,7 +294,7 @@ recursive}]Specifies if we should perform a recursive depth-first resize\end{des
 \end{Desc}
 Resizes the given expression depending on the expression operation and its children's sizes. If recursive is TRUE, performs the resize in a depth-first fashion, resizing the children before resizing the current expression. If recursive is FALSE, only the given expression is evaluated and resized. \index{expr.c@{expr.c}!expression_set_value@{expression\_\-set\_\-value}}
 \index{expression_set_value@{expression\_\-set\_\-value}!expr.c@{expr.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-set\_\-value ({\bf expression} $\ast$ {\em exp}, {\bf vector} $\ast$ {\em vec})}\label{expr_8c_a10}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-set\_\-value ({\bf expression} $\ast$ {\em exp}, {\bf vector} $\ast$ {\em vec})}\label{expr_8c_a12}
 
 
 Sets the specified expression value to the specified vector value.
@@ -314,6 +337,16 @@ NOR operation table \index{expr.c@{expr.c}!nxor_optab@{nxor\_\-optab}}
 NXOR operation table \index{expr.c@{expr.c}!or_optab@{or\_\-optab}}
 \index{or_optab@{or\_\-optab}!expr.c@{expr.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf nibble} or\_\-optab[16]}\label{expr_8c_a2}
+
+
+\index{expr.c@{expr.c}!static_expr_head@{static\_\-expr\_\-head}}
+\index{static_expr_head@{static\_\-expr\_\-head}!expr.c@{expr.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf exp\_\-link}$\ast$ static\_\-expr\_\-head}\label{expr_8c_a8}
+
+
+\index{expr.c@{expr.c}!static_expr_tail@{static\_\-expr\_\-tail}}
+\index{static_expr_tail@{static\_\-expr\_\-tail}!expr.c@{expr.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf exp\_\-link}$\ast$ static\_\-expr\_\-tail}\label{expr_8c_a9}
 
 
 \index{expr.c@{expr.c}!user_msg@{user\_\-msg}}

@@ -1,8 +1,8 @@
 3 main main instance2.v
-2 2 main 9 3001 0 0 
-2 1 main 9 3001 0 0 
-2 3 main 9 62031 2 1 5 0 fdcaa,101aa
-2 4 main 9 2fa6 3 0 5 0 fdcaa,101aa
+2 2 main 9 203001 0 0 
+2 1 main 9 103001 0 0 
+2 3 main 9 162031 2 1 5 0 fdcaa,101aa
+2 4 main 9 102fa6 3 0 5 0 fdcaa,101aa
 1 a main 4 0 f08aa
 1 b main 4 0 f5caa
 1 z main 4 0 fdcaa 2
@@ -18,12 +18,12 @@
 1 c1 main.add 1 0 100aa
 1 c0 main.add 1 0 100aa
 3 adder1 main.add.bit0 ./lib/adder1.v
-2 6 main.add.bit0 15 3001 0 0 
-2 5 main.add.bit0 15 1001 0 0 
-2 7 main.add.bit0 15 33f82 6 5 1 0 110aa
-2 9 main.add.bit0 16 3001 0 0 
-2 8 main.add.bit0 16 1001 0 0 
-2 10 main.add.bit0 16 31f88 9 8 1 0 100aa
+2 6 main.add.bit0 15 203001 0 0 
+2 5 main.add.bit0 15 201001 0 0 
+2 7 main.add.bit0 15 233f82 6 5 1 0 110aa
+2 9 main.add.bit0 16 203001 0 0 
+2 8 main.add.bit0 16 201001 0 0 
+2 10 main.add.bit0 16 231f88 9 8 1 0 100aa
 1 a main.add.bit0 1 0 100aa 5 8
 1 b main.add.bit0 1 0 110aa 6 9
 1 c main.add.bit0 1 0 100aa
@@ -31,12 +31,12 @@
 4 7 main.add.bit0 7 7
 4 10 main.add.bit0 10 10
 3 adder1 main.add.bit1 ./lib/adder1.v
-2 6 main.add.bit1 15 1001 0 0 
-2 5 main.add.bit1 15 1001 0 0 
-2 7 main.add.bit1 15 11f82 6 5 1 0 100aa
-2 9 main.add.bit1 16 1001 0 0 
-2 8 main.add.bit1 16 1001 0 0 
-2 10 main.add.bit1 16 11f88 9 8 1 0 100aa
+2 6 main.add.bit1 15 201001 0 0 
+2 5 main.add.bit1 15 201001 0 0 
+2 7 main.add.bit1 15 211f82 6 5 1 0 100aa
+2 9 main.add.bit1 16 201001 0 0 
+2 8 main.add.bit1 16 201001 0 0 
+2 10 main.add.bit1 16 211f88 9 8 1 0 100aa
 1 a main.add.bit1 1 0 100aa 5 8
 1 b main.add.bit1 1 0 100aa 6 9
 1 c main.add.bit1 1 0 100aa
@@ -44,12 +44,12 @@
 4 7 main.add.bit1 7 7
 4 10 main.add.bit1 10 10
 3 adder1 main.add.bit2 ./lib/adder1.v
-2 6 main.add.bit2 15 3001 0 0 
-2 5 main.add.bit2 15 1001 0 0 
-2 7 main.add.bit2 15 33f82 6 5 1 0 111aa
-2 9 main.add.bit2 16 3001 0 0 
-2 8 main.add.bit2 16 1001 0 0 
-2 10 main.add.bit2 16 31f88 9 8 1 0 100aa
+2 6 main.add.bit2 15 203001 0 0 
+2 5 main.add.bit2 15 201001 0 0 
+2 7 main.add.bit2 15 233f82 6 5 1 0 111aa
+2 9 main.add.bit2 16 203001 0 0 
+2 8 main.add.bit2 16 201001 0 0 
+2 10 main.add.bit2 16 231f88 9 8 1 0 100aa
 1 a main.add.bit2 1 0 100aa 5 8
 1 b main.add.bit2 1 0 111aa 6 9
 1 c main.add.bit2 1 0 100aa
@@ -57,12 +57,12 @@
 4 7 main.add.bit2 7 7
 4 10 main.add.bit2 10 10
 3 adder1 main.add.bit3 ./lib/adder1.v
-2 6 main.add.bit3 15 3001 0 0 
-2 5 main.add.bit3 15 3001 0 0 
-2 7 main.add.bit3 15 d3f82 6 5 1 0 111aa
-2 9 main.add.bit3 16 3001 0 0 
-2 8 main.add.bit3 16 3001 0 0 
-2 10 main.add.bit3 16 d3f88 9 8 1 0 101aa
+2 6 main.add.bit3 15 103001 0 0 
+2 5 main.add.bit3 15 103001 0 0 
+2 7 main.add.bit3 15 2d3f82 6 5 1 0 111aa
+2 9 main.add.bit3 16 103001 0 0 
+2 8 main.add.bit3 16 103001 0 0 
+2 10 main.add.bit3 16 1d3f88 9 8 1 0 101aa
 1 a main.add.bit3 1 0 101aa 5 8
 1 b main.add.bit3 1 0 101aa 6 9
 1 c main.add.bit3 1 0 101aa

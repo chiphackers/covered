@@ -12,11 +12,11 @@
 <p>
 <a href="binding_8h-source.html">Go to the source code of this file.</a><table border=0 cellpadding=0 cellspacing=0>
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="binding_8h.html#a0">bind_add</a> (char *sig_name, <a class="el" href="defines_8h.html#a157">expression</a> *exp, <a class="el" href="defines_8h.html#a168">module</a> *mod)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="binding_8h.html#a0">bind_add</a> (char *sig_name, <a class="el" href="defines_8h.html#a159">expression</a> *exp, <a class="el" href="defines_8h.html#a170">module</a> *mod)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds signal and expression to binding list.</em> <a href="#a0"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="binding_8h.html#a1">bind_remove</a> (int id)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Removes the expression with ID of id from binding list.</em> <a href="#a1"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="binding_8h.html#a2">bind_perform</a> (char *sig_name, <a class="el" href="defines_8h.html#a157">expression</a> *exp, <a class="el" href="defines_8h.html#a168">module</a> *mod_sig, <a class="el" href="defines_8h.html#a168">module</a> *mod_exp, <a class="el" href="defines_8h.html#a178">bool</a> implicit_allowed)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="binding_8h.html#a2">bind_perform</a> (char *sig_name, <a class="el" href="defines_8h.html#a159">expression</a> *exp, <a class="el" href="defines_8h.html#a170">module</a> *mod_sig, <a class="el" href="defines_8h.html#a170">module</a> *mod_exp, <a class="el" href="defines_8h.html#a180">bool</a> implicit_allowed)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Finds signal in module and bind the expression to this signal.</em> <a href="#a2"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="binding_8h.html#a3">bind</a> ()</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Performs signal/expression bind (performed after parse completed).</em> <a href="#a3"></a><em></em></font><br><br></td></tr>
@@ -75,13 +75,13 @@ Binding is the process of setting pointers in signals and expressions to point t
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a157">expression</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a159">expression</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>exp</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a168">module</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a170">module</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>mod</em></td>
         </tr>
         <tr>
@@ -131,25 +131,25 @@ Pointer to module containing specified expression.</td></tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a157">expression</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a159">expression</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>exp</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a168">module</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a170">module</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>mod_sig</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a168">module</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a170">module</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>mod_exp</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a178">bool</a>&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a180">bool</a>&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>implicit_allowed</em></td>
         </tr>
         <tr>
@@ -226,7 +226,7 @@ Expression ID of binding to remove.</td></tr>
 </dl>Removes the binding containing the expression ID of id. This needs to be called before an expression is removed.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Sat Nov 23 09:16:02 2002 for Covered by
+<hr><address align="right"><small>Generated on Tue Nov 26 21:45:06 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

@@ -453,7 +453,7 @@
 /*!
  When new module is read from database file, it is placed in the module list and
  is placed in the correct hierarchical position in the instance tree.  Used when
- performing a MERGE command.
+ performing a MERGE command or reading after parsing source files.
 */
 #define READ_MODE_MERGE_NO_MERGE          0
 
@@ -586,48 +586,48 @@
  @{
 */
 
-#define EXP_OP_STATIC     0x0   /*!<  0 Specifies constant value */
-#define EXP_OP_SIG	  0x1	/*!<  1 Specifes that this expression contains signal value    */
-#define EXP_OP_XOR	  0x2	/*!<  2 '^'   operator */
-#define EXP_OP_MULTIPLY	  0x3   /*!<  3 '*'   operator */
-#define EXP_OP_DIVIDE	  0x4	/*!<  4 '/'   operator */
-#define EXP_OP_MOD	  0x5	/*!<  5 '%'   operator */
-#define EXP_OP_ADD	  0x6	/*!<  6 '+'   operator */
-#define EXP_OP_SUBTRACT	  0x7	/*!<  7 '-'   operator */
-#define EXP_OP_AND	  0x8	/*!<  8 '&'   operator */
-#define EXP_OP_OR	  0x9	/*!<  9 '|'   operator */
-#define EXP_OP_NAND       0xa   /*!< 10 '~&'  operator */
-#define EXP_OP_NOR	  0xb	/*!< 11 '~|'  operator */
-#define EXP_OP_NXOR	  0xc	/*!< 12 '~^'  operator */
-#define EXP_OP_LT	  0xd	/*!< 13 '<'   operator */
-#define EXP_OP_GT	  0xe	/*!< 14 '>'   operator */
-#define EXP_OP_LSHIFT	  0xf	/*!< 15 '<<'  operator */
-#define EXP_OP_RSHIFT	  0x10	/*!< 16 '>>'  operator */
-#define EXP_OP_EQ	  0x11	/*!< 17 '=='  operator */
-#define EXP_OP_CEQ	  0x12	/*!< 18 '===' operator */
-#define EXP_OP_LE	  0x13	/*!< 19 '<='  operator */
-#define EXP_OP_GE	  0x14	/*!< 20 '>='  operator */
-#define EXP_OP_NE	  0x15	/*!< 21 '!='  operator */
-#define EXP_OP_CNE	  0x16	/*!< 22 '!==' operator */
-#define EXP_OP_LOR	  0x17	/*!< 23 '||'  operator */
-#define EXP_OP_LAND	  0x18	/*!< 24 '&&'  operator */
-#define EXP_OP_COND  	  0x19	/*!< 25 '?:' conditional operator     */
+#define EXP_OP_STATIC     0x00  /*!<  0 Specifies constant value      */
+#define EXP_OP_SIG        0x01  /*!<  1 Specifes signal value         */
+#define EXP_OP_XOR        0x02  /*!<  2 '^'   operator                */
+#define EXP_OP_MULTIPLY   0x03  /*!<  3 '*'   operator                */
+#define EXP_OP_DIVIDE     0x04  /*!<  4 '/'   operator                */
+#define EXP_OP_MOD        0x05  /*!<  5 '%'   operator                */
+#define EXP_OP_ADD        0x06  /*!<  6 '+'   operator                */
+#define EXP_OP_SUBTRACT   0x07  /*!<  7 '-'   operator                */
+#define EXP_OP_AND        0x08  /*!<  8 '&'   operator                */
+#define EXP_OP_OR         0x09  /*!<  9 '|'   operator                */
+#define EXP_OP_NAND       0x0a  /*!< 10 '~&'  operator                */
+#define EXP_OP_NOR        0x0b  /*!< 11 '~|'  operator                */
+#define EXP_OP_NXOR       0x0c  /*!< 12 '~^'  operator                */
+#define EXP_OP_LT         0x0d  /*!< 13 '<'   operator                */
+#define EXP_OP_GT         0x0e  /*!< 14 '>'   operator                */
+#define EXP_OP_LSHIFT     0x0f  /*!< 15 '<<'  operator                */
+#define EXP_OP_RSHIFT     0x10  /*!< 16 '>>'  operator                */
+#define EXP_OP_EQ         0x11  /*!< 17 '=='  operator                */
+#define EXP_OP_CEQ        0x12  /*!< 18 '===' operator                */
+#define EXP_OP_LE         0x13  /*!< 19 '<='  operator                */
+#define EXP_OP_GE         0x14  /*!< 20 '>='  operator                */
+#define EXP_OP_NE         0x15  /*!< 21 '!='  operator                */
+#define EXP_OP_CNE        0x16  /*!< 22 '!==' operator                */
+#define EXP_OP_LOR        0x17  /*!< 23 '||'  operator                */
+#define EXP_OP_LAND       0x18  /*!< 24 '&&'  operator                */
+#define EXP_OP_COND       0x19  /*!< 25 '?:' conditional operator     */
 #define EXP_OP_COND_SEL   0x1a  /*!< 26 '?:' conditional select       */
-#define EXP_OP_UINV	  0x1b	/*!< 27 unary '~'  operator           */
-#define EXP_OP_UAND	  0x1c	/*!< 28 unary '&'  operator           */
-#define EXP_OP_UNOT	  0x1d	/*!< 29 unary '!'  operator           */
-#define EXP_OP_UOR	  0x1e	/*!< 30 unary '|'  operator           */
-#define EXP_OP_UXOR	  0x1f 	/*!< 31 unary '^'  operator           */
-#define EXP_OP_UNAND	  0x20	/*!< 32 unary '~&' operator           */
-#define EXP_OP_UNOR	  0x21	/*!< 33 unary '~|' operator           */
-#define EXP_OP_UNXOR	  0x22	/*!< 34 unary '~^' operator           */
-#define EXP_OP_SBIT_SEL	  0x23	/*!< 35 single-bit signal select      */
-#define EXP_OP_MBIT_SEL	  0x24	/*!< 36 multi-bit signal select       */
-#define EXP_OP_EXPAND	  0x25	/*!< 37 bit expansion operator        */
-#define EXP_OP_CONCAT	  0x26	/*!< 38 signal concatenation operator */
-#define EXP_OP_PEDGE	  0x27	/*!< 39 posedge operator              */
-#define EXP_OP_NEDGE	  0x28	/*!< 40 negedge operator              */
-#define EXP_OP_AEDGE	  0x29	/*!< 41 anyedge operator              */
+#define EXP_OP_UINV       0x1b  /*!< 27 unary '~'  operator           */
+#define EXP_OP_UAND       0x1c  /*!< 28 unary '&'  operator           */
+#define EXP_OP_UNOT       0x1d  /*!< 29 unary '!'  operator           */
+#define EXP_OP_UOR        0x1e  /*!< 30 unary '|'  operator           */
+#define EXP_OP_UXOR       0x1f  /*!< 31 unary '^'  operator           */
+#define EXP_OP_UNAND      0x20  /*!< 32 unary '~&' operator           */
+#define EXP_OP_UNOR       0x21  /*!< 33 unary '~|' operator           */
+#define EXP_OP_UNXOR      0x22  /*!< 34 unary '~^' operator           */
+#define EXP_OP_SBIT_SEL   0x23  /*!< 35 single-bit signal select      */
+#define EXP_OP_MBIT_SEL   0x24  /*!< 36 multi-bit signal select       */
+#define EXP_OP_EXPAND     0x25  /*!< 37 bit expansion operator        */
+#define EXP_OP_CONCAT     0x26  /*!< 38 signal concatenation operator */
+#define EXP_OP_PEDGE      0x27  /*!< 39 posedge operator              */
+#define EXP_OP_NEDGE      0x28  /*!< 40 negedge operator              */
+#define EXP_OP_AEDGE      0x29  /*!< 41 anyedge operator              */
 #define EXP_OP_LAST       0x2a  /*!< 42 1-bit value holder for parent */
 #define EXP_OP_EOR        0x2b  /*!< 43 event OR operator             */
 #define EXP_OP_DELAY      0x2c  /*!< 44 delay operator                */
@@ -635,10 +635,10 @@
 #define EXP_OP_CASEX      0x2e  /*!< 46 casex equality expression     */
 #define EXP_OP_CASEZ      0x2f  /*!< 47 casez equality expression     */
 #define EXP_OP_DEFAULT    0x30  /*!< 48 case default expression       */
-#define EXP_OP_LIST       0x31  /*!< 49 comma separated expression list */
-#define EXP_OP_PARAM      0x32  /*!< 50 full parameter                  */
-#define EXP_OP_PARAM_SBIT 0x33  /*!< 51 single bit select parameter     */
-#define EXP_OP_PARAM_MBIT 0x34  /*!< 52 multi-bit select parameter      */
+#define EXP_OP_LIST       0x31  /*!< 49 comma separated expr list     */
+#define EXP_OP_PARAM      0x32  /*!< 50 full parameter                */
+#define EXP_OP_PARAM_SBIT 0x33  /*!< 51 single bit select parameter   */
+#define EXP_OP_PARAM_MBIT 0x34  /*!< 52 multi-bit select parameter    */
 
 /*! @} */
 
@@ -664,33 +664,20 @@
                                        (SUPPL_OP( x->parent->expr->suppl ) != EXP_OP_COND))) ? 1 : 0)
 
 /*!
- Returns a value of TRUE if the specified expression should be immediately evaluated after
- being read from the CDD file due to containing only static values.
+ Returns a value of TRUE if the specified expression is a STATIC, PARAM, PARAM_SBIT or PARAM_MBIT
+ operation type.
 */
-#define EXPR_EVAL_STATIC(x)      (((((x->left != NULL) && (SUPPL_OP( x->left->suppl ) == EXP_OP_STATIC))            || \
-                                    ((x->left != NULL) && (SUPPL_WAS_EXECUTED( x->left->suppl ) == 1))  || \
-                                    (x->left == NULL))                                                                && \
-                                   (((x->right != NULL) && (SUPPL_OP( x->right->suppl ) == EXP_OP_STATIC))          || \
-                                    ((x->right != NULL) && (SUPPL_WAS_EXECUTED( x->right->suppl ) == 1)) || \
-                                    (x->right == NULL))                                                               && \
-                                   (SUPPL_OP( x->suppl ) != EXP_OP_COND_SEL)   && \
-                                   (SUPPL_OP( x->suppl ) != EXP_OP_SBIT_SEL)   && \
-                                   (SUPPL_OP( x->suppl ) != EXP_OP_MBIT_SEL)   && \
-                                   (SUPPL_OP( x->suppl ) != EXP_OP_PARAM)      && \
-                                   (SUPPL_OP( x->suppl ) != EXP_OP_PARAM_SBIT) && \
-                                   (SUPPL_OP( x->suppl ) != EXP_OP_PARAM_MBIT) && \
-                                   (SUPPL_OP( x->suppl ) != EXP_OP_STATIC)     && \
-                                   (SUPPL_OP( x->suppl ) != EXP_OP_SIG)        && \
-                                   (SUPPL_OP( x->suppl ) != EXP_OP_LAST)       && \
-                                   (SUPPL_OP( x->suppl ) != EXP_OP_DEFAULT)    && \
-                                   (SUPPL_OP( x->suppl ) != EXP_OP_DELAY)) ? 1 : 0)
+#define EXPR_IS_STATIC(x)        ((SUPPL_OP( x->suppl ) == EXP_OP_STATIC)     || \
+                                  (SUPPL_OP( x->suppl ) == EXP_OP_PARAM)      || \
+                                  (SUPPL_OP( x->suppl ) == EXP_OP_PARAM_SBIT) || \
+                                  (SUPPL_OP( x->suppl ) == EXP_OP_PARAM_MBIT))
 
 /*!
  Returns a value of 1 if the specified expression was measurable for combinational 
  coverage but not fully covered during simulation.
 */
 #define EXPR_COMB_MISSED(x)        (EXPR_IS_MEASURABLE( x ) & \
-                                    ~EXPR_EVAL_STATIC( x ) & \
+                                    ~expression_is_static_only( x ) & \
                                     (~SUPPL_WAS_TRUE( x->suppl ) | ~SUPPL_WAS_FALSE( x->suppl )))
 
 /*!
@@ -1136,6 +1123,11 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.59  2002/11/24 14:38:12  phase1geo
+ Updating more regression CDD files for bug fixes.  Fixing bugs where combinational
+ expressions were counted more than once.  Adding new diagnostics to regression
+ suite.
+
  Revision 1.58  2002/11/23 21:27:25  phase1geo
  Fixing bug with combinational logic being output when unmeasurable.
 

@@ -12,12 +12,14 @@
 <p>
 <a href="sim_8h-source.html">Go to the source code of this file.</a><table border=0 cellpadding=0 cellspacing=0>
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="sim_8h.html#a0">sim_expr_changed</a> (<a class="el" href="defines_8h.html#a157">expression</a> *expr)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="sim_8h.html#a0">sim_expr_changed</a> (<a class="el" href="defines_8h.html#a159">expression</a> *expr)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds specified expression's statement to pre-simulation statement queue.</em> <a href="#a0"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="sim_8h.html#a1">sim_add_stmt_to_queue</a> (<a class="el" href="defines_8h.html#a159">statement</a> *stmt)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="sim_8h.html#a1">sim_add_stmt_to_queue</a> (<a class="el" href="defines_8h.html#a161">statement</a> *stmt)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds specified statement to pre-simulation statement queue.</em> <a href="#a1"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="sim_8h.html#a2">sim_simulate</a> ()</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Simulates current timestep.</em> <a href="#a2"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="sim_8h.html#a2">sim_add_statics</a> ()</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Adds static expression values to initial simulator.</em> <a href="#a2"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="sim_8h.html#a3">sim_simulate</a> ()</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Simulates current timestep.</em> <a href="#a3"></a><em></em></font><br><br></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 Contains functions for simulation engine.
@@ -29,6 +31,36 @@ Author: </b><dd>
 Trevor Williams (<a href="mailto:trevorw@charter.net">trevorw@charter.net</a>) </dl><dl compact><dt><b>
 Date: </b><dd>
 6/20/2002</dl><hr><h2>Function Documentation</h2>
+<a name="a2" doxytag="sim.h::sim_add_statics"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> void sim_add_statics </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
+          <td class="md" valign="top">)&nbsp;</td>
+          <td class="md" nowrap></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+Adds static expression values to initial simulator.
+<p>
+Iterates through static expression list and causes the simulator to evaluate these expressions at simulation time.     </td>
+  </tr>
+</table>
 <a name="a1" doxytag="sim.h::sim_add_stmt_to_queue"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
@@ -37,7 +69,7 @@ Date: </b><dd>
         <tr>
           <td class="md" nowrap valign="top"> void sim_add_stmt_to_queue </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a159">statement</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a161">statement</a> *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>stmt</em>          </td>
           <td class="md" valign="top">)&nbsp;</td>
           <td class="md" nowrap></td>
@@ -74,7 +106,7 @@ Pointer to statement to add to queue.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void sim_expr_changed </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a157">expression</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a159">expression</a> *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>expr</em>          </td>
           <td class="md" valign="top">)&nbsp;</td>
           <td class="md" nowrap></td>
@@ -103,7 +135,7 @@ Pointer to expression that contains a changed signal value.</td></tr>
 </dl>Traverses up expression tree pointed to by leaf node expr, setting the CHANGED bits as it reaches the root expression. When the root expression is found, the statement pointed to by the root's parent pointer is added to the pre-simulation statement queue for simulation at the end of the timestep. If, upon traversing the tree, an expression is found to already be have a CHANGED bit set, we know that the statement has already been added, so stop here and do not add the statement again.     </td>
   </tr>
 </table>
-<a name="a2" doxytag="sim.h::sim_simulate"></a><p>
+<a name="a3" doxytag="sim.h::sim_simulate"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -133,7 +165,7 @@ Simulates current timestep.
 This function is the heart of the simulation engine. It is called by the <a class="el" href="db_8c.html#a40">db_do_timestep</a>() function in <a class="el" href="db_8c.html">db.c</a> and moves the statements and expressions into the appropriate simulation functions. See above explanation on this procedure.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Sat Nov 23 09:16:06 2002 for Covered by
+<hr><address align="right"><small>Generated on Tue Nov 26 21:45:08 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

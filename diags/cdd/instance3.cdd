@@ -1,15 +1,15 @@
 3 main main instance3.v
 3 foo main.bar instance3.v
-2 3 main.bar 17 2000 0 0 1 0 100001
-2 2 main.bar 17 1000 0 0 1 0 100000
-2 4 main.bar 17 301a 3 2 1 0 110aa
-2 1 main.bar 17 3001 0 0 
-2 5 main.bar 17 63f99 4 1 1 0 110aa
+2 3 main.bar 17 102000 0 0 1 0 100001
+2 2 main.bar 17 201000 0 0 1 0 100000
+2 4 main.bar 17 22301a 3 2 1 0 110aa
+2 1 main.bar 17 103001 0 0 
+2 5 main.bar 17 263f99 4 1 1 0 110aa
 2 9 main.bar 19 1 0 0 
 2 10 main.bar 19 849b 9 0 1 0 aa
-2 6 main.bar 19 1001 0 0 
+2 6 main.bar 19 201001 0 0 
 2 7 main.bar 19 2a 0 0 1 0 100aa
-2 8 main.bar 19 13a7 6 7 1 0 100aa
+2 8 main.bar 19 2013a7 6 7 1 0 100aa
 1 a main.bar 1 0 110aa
 1 d main.bar 1 0 100aa 9
 1 c main.bar 1 0 100aa 6

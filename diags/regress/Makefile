@@ -34,7 +34,7 @@ DIAGS    = assign3.2A    always1       always3.1.11A  cond1 \
            instance1.2   instance4     instance4.1   instance4.2    mbit_sel3 \
            mbit_sel3.1   long_exp1     real1.1       expand3        param3.3 \
            param6        ifdef1.1      ifdef1.2      ifdef2.3       case1.2 \
-           case1.3
+           case1.3       static2       static2.1     static2.2
 
 IVONLYDIAGS = assign1    implicit1     always5.1
 

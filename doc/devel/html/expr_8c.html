@@ -13,43 +13,48 @@
 <code>#include "<a class="el" href="vector_8h-source.html">vector.h</a>"</code><br>
 <code>#include "<a class="el" href="binding_8h-source.html">binding.h</a>"</code><br>
 <code>#include "<a class="el" href="util_8h-source.html">util.h</a>"</code><br>
+<code>#include "<a class="el" href="sim_8h-source.html">sim.h</a>"</code><br>
 <table border=0 cellpadding=0 cellspacing=0>
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a8">expression_create_value</a> (<a class="el" href="defines_8h.html#a157">expression</a> *exp, int width, int lsb, <a class="el" href="defines_8h.html#a178">bool</a> data)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Creates an expression value and initializes it.</em> <a href="#a8"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a157">expression</a> *&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a9">expression_create</a> (<a class="el" href="defines_8h.html#a157">expression</a> *right, <a class="el" href="defines_8h.html#a157">expression</a> *left, int op, int id, int line, <a class="el" href="defines_8h.html#a178">bool</a> data)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Creates new expression.</em> <a href="#a9"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a10">expression_set_value</a> (<a class="el" href="defines_8h.html#a157">expression</a> *exp, <a class="el" href="defines_8h.html#a155">vector</a> *vec)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Sets the specified expression value to the specified vector value.</em> <a href="#a10"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a11">expression_resize</a> (<a class="el" href="defines_8h.html#a157">expression</a> *expr, <a class="el" href="defines_8h.html#a178">bool</a> recursive)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Recursively resizes specified expression tree leaf node.</em> <a href="#a11"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a12">expression_get_id</a> (<a class="el" href="defines_8h.html#a157">expression</a> *expr)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Returns expression ID of this expression.</em> <a href="#a12"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a13">expression_db_write</a> (<a class="el" href="defines_8h.html#a157">expression</a> *expr, FILE *<a class="el" href="lexer_8c.html#a122">file</a>, char *scope)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Writes this expression to the specified database file.</em> <a href="#a13"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a178">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a14">expression_db_read</a> (char **line, <a class="el" href="defines_8h.html#a168">module</a> *curr_mod, <a class="el" href="defines_8h.html#a178">bool</a> eval)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Reads current line of specified file and parses for expression information.</em> <a href="#a14"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a178">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a15">expression_db_merge</a> (<a class="el" href="defines_8h.html#a157">expression</a> *base, char **line)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Reads and merges two expressions and stores result in base expression.</em> <a href="#a15"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a16">expression_display</a> (<a class="el" href="defines_8h.html#a157">expression</a> *expr)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Displays the specified expression information.</em> <a href="#a16"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a17">expression_operate</a> (<a class="el" href="defines_8h.html#a157">expression</a> *expr)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Performs operation specified by parameter expression.</em> <a href="#a17"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a18">expression_operate_recursively</a> (<a class="el" href="defines_8h.html#a157">expression</a> *expr)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Performs recursive expression operation (parse mode only).</em> <a href="#a18"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a19">expression_bit_value</a> (<a class="el" href="defines_8h.html#a157">expression</a> *expr)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Returns a compressed, 1-bit representation of the value after a unary OR.</em> <a href="#a19"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a20">expression_dealloc</a> (<a class="el" href="defines_8h.html#a157">expression</a> *expr, <a class="el" href="defines_8h.html#a178">bool</a> exp_only)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Deallocates memory used for expression.</em> <a href="#a20"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a10">expression_create_value</a> (<a class="el" href="defines_8h.html#a159">expression</a> *exp, int width, int lsb, <a class="el" href="defines_8h.html#a180">bool</a> data)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Creates an expression value and initializes it.</em> <a href="#a10"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a159">expression</a> *&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a11">expression_create</a> (<a class="el" href="defines_8h.html#a159">expression</a> *right, <a class="el" href="defines_8h.html#a159">expression</a> *left, int op, int id, int line, <a class="el" href="defines_8h.html#a180">bool</a> data)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Creates new expression.</em> <a href="#a11"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a12">expression_set_value</a> (<a class="el" href="defines_8h.html#a159">expression</a> *exp, <a class="el" href="defines_8h.html#a157">vector</a> *vec)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Sets the specified expression value to the specified vector value.</em> <a href="#a12"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a13">expression_resize</a> (<a class="el" href="defines_8h.html#a159">expression</a> *expr, <a class="el" href="defines_8h.html#a180">bool</a> recursive)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Recursively resizes specified expression tree leaf node.</em> <a href="#a13"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a14">expression_get_id</a> (<a class="el" href="defines_8h.html#a159">expression</a> *expr)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Returns expression ID of this expression.</em> <a href="#a14"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a15">expression_db_write</a> (<a class="el" href="defines_8h.html#a159">expression</a> *expr, FILE *<a class="el" href="lexer_8c.html#a122">file</a>, char *scope)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Writes this expression to the specified database file.</em> <a href="#a15"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a180">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a16">expression_db_read</a> (char **line, <a class="el" href="defines_8h.html#a170">module</a> *curr_mod, <a class="el" href="defines_8h.html#a180">bool</a> eval)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Reads current line of specified file and parses for expression information.</em> <a href="#a16"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a180">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a17">expression_db_merge</a> (<a class="el" href="defines_8h.html#a159">expression</a> *base, char **line)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Reads and merges two expressions and stores result in base expression.</em> <a href="#a17"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a18">expression_display</a> (<a class="el" href="defines_8h.html#a159">expression</a> *expr)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Displays the specified expression information.</em> <a href="#a18"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a19">expression_operate</a> (<a class="el" href="defines_8h.html#a159">expression</a> *expr)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Performs operation specified by parameter expression.</em> <a href="#a19"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a20">expression_operate_recursively</a> (<a class="el" href="defines_8h.html#a159">expression</a> *expr)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Performs recursive expression operation (parse mode only).</em> <a href="#a20"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a21">expression_bit_value</a> (<a class="el" href="defines_8h.html#a159">expression</a> *expr)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Returns a compressed, 1-bit representation of the value after a unary OR.</em> <a href="#a21"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a180">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a22">expression_is_static_only</a> (<a class="el" href="defines_8h.html#a159">expression</a> *expr)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Returns TRUE if specified expression is found to contain all static leaf expressions.</em> <a href="#a22"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a23">expression_dealloc</a> (<a class="el" href="defines_8h.html#a159">expression</a> *expr, <a class="el" href="defines_8h.html#a180">bool</a> exp_only)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Deallocates memory used for expression.</em> <a href="#a23"></a><em></em></font><br><br></td></tr>
 <tr><td colspan=2><br><h2>Variables</h2></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a152">nibble</a>&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a0">xor_optab</a> [16]</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a152">nibble</a>&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a1">and_optab</a> [16]</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a152">nibble</a>&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a2">or_optab</a> [16]</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a152">nibble</a>&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a3">nand_optab</a> [16]</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a152">nibble</a>&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a4">nor_optab</a> [16]</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a152">nibble</a>&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a5">nxor_optab</a> [16]</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a154">nibble</a>&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a0">xor_optab</a> [16]</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a154">nibble</a>&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a1">and_optab</a> [16]</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a154">nibble</a>&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a2">or_optab</a> [16]</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a154">nibble</a>&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a3">nand_optab</a> [16]</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a154">nibble</a>&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a4">nor_optab</a> [16]</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a154">nibble</a>&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a5">nxor_optab</a> [16]</td></tr>
 <tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a6">curr_sim_time</a></td></tr>
 <tr><td nowrap align=right valign=top>char&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a7">user_msg</a> [USER_MSG_LENGTH]</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a163">exp_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a8">static_expr_head</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a163">exp_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="expr_8c.html#a9">static_expr_tail</a></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 
@@ -67,7 +72,7 @@ EXP_OP_SBIT_SEL</b><dd>
  A single-bit signal expression has its left child pointed to the expression tree that is required to select the bit from the specified signal value. The left child is allowed to change values during simulation. To verify that the current bit select has not exceeded the ranges of the signal, the signal pointer value in the expression structure is used to reference the signal. The LSB and width values from the actual signal can then be used to verify that we are still within range. If we are found to be out of range, a value of X must be assigned the the SBIT_SEL expression. The width of an SBIT_SEL is always constant (1). The LSB of the SBIT_SEL is manipulated by the left expression value.</dl><dl compact><dt><b>
 EXP_OP_MBIT_SEL</b><dd>
  A multi-bit signal expression has its left child set to the expression tree on the left side of the ':' in the vector and the right child set to the expression tree on the right side of the ':' in the vector. The width of the MBIT_SEL must be constant but is related to the difference between the left and right child values; therefore, it is required that the left and right child values be constant expressions (consisting of only expressions, parameters, and static values). The width of the MBIT_SEL expression is calculated after reading in the MBIT_SEL expression from the CDD file. If the left or right child expressions are found to not be constant, an error is signaled to the user immediately. The LSB is also calculated to be the lesser of the two child values. The width and lsb are assigned to the MBIT_SEL expression vector immediately. In the case of MBIT_SEL, the LSB is also constant. Vector direction is currently not considered at this point.</dl><hr><h2>Function Documentation</h2>
-<a name="a19" doxytag="expr.c::expression_bit_value"></a><p>
+<a name="a21" doxytag="expr.c::expression_bit_value"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -75,7 +80,7 @@ EXP_OP_MBIT_SEL</b><dd>
         <tr>
           <td class="md" nowrap valign="top"> int expression_bit_value </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a157">expression</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a159">expression</a> *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>expr</em>          </td>
           <td class="md" valign="top">)&nbsp;</td>
           <td class="md" nowrap></td>
@@ -106,21 +111,21 @@ Returns: </b><dd>
 Returns the value of the expression after being compressed to 1 bit via a unary OR.</dl>Returns a value of 1 if the specified expression contains at least one 1 value and no X or Z values in its bits. It accomplishes this by performing a unary  OR operation on the specified expression value and testing bit 0 of the result.     </td>
   </tr>
 </table>
-<a name="a9" doxytag="expr.c::expression_create"></a><p>
+<a name="a11" doxytag="expr.c::expression_create"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a157">expression</a>* expression_create </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a159">expression</a>* expression_create </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a157">expression</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a159">expression</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>right</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a157">expression</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a159">expression</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>left</em>, </td>
         </tr>
         <tr>
@@ -144,7 +149,7 @@ Returns the value of the expression after being compressed to 1 bit via a unary 
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a178">bool</a>&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a180">bool</a>&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>data</em></td>
         </tr>
         <tr>
@@ -188,7 +193,7 @@ Returns: </b><dd>
 Returns pointer to newly created expression.</dl>Creates a new expression from heap memory and initializes its values for usage. Right and left expressions need to be created before this function is called.     </td>
   </tr>
 </table>
-<a name="a8" doxytag="expr.c::expression_create_value"></a><p>
+<a name="a10" doxytag="expr.c::expression_create_value"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -196,7 +201,7 @@ Returns pointer to newly created expression.</dl>Creates a new expression from h
         <tr>
           <td class="md" nowrap valign="top"> void expression_create_value </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a157">expression</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a159">expression</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>exp</em>, </td>
         </tr>
         <tr>
@@ -214,7 +219,7 @@ Returns pointer to newly created expression.</dl>Creates a new expression from h
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a178">bool</a>&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a180">bool</a>&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>data</em></td>
         </tr>
         <tr>
@@ -252,15 +257,15 @@ Specifies if nibble array should be allocated for vector.</td></tr>
 </dl>Creates a value vector that is large enough to store width number of bits in value and sets the specified expression value to this value. This function should be called by either the expression_create function, the bind function, or the signal db_read function.     </td>
   </tr>
 </table>
-<a name="a15" doxytag="expr.c::expression_db_merge"></a><p>
+<a name="a17" doxytag="expr.c::expression_db_merge"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a178">bool</a> expression_db_merge </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a180">bool</a> expression_db_merge </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a157">expression</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a159">expression</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>base</em>, </td>
         </tr>
         <tr>
@@ -302,13 +307,13 @@ Returns: </b><dd>
 Returns TRUE if parse and merge was sucessful; otherwise, returns FALSE.</dl>Parses specified line for expression information and merges contents into the base expression. If the two expressions given are not the same (IDs, op, and/or line position differ) we know that the database files being merged  were not created from the same design; therefore, display an error message  to the user in this case. If both expressions are the same, perform the  merge.     </td>
   </tr>
 </table>
-<a name="a14" doxytag="expr.c::expression_db_read"></a><p>
+<a name="a16" doxytag="expr.c::expression_db_read"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a178">bool</a> expression_db_read </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a180">bool</a> expression_db_read </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top">char **&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>line</em>, </td>
@@ -316,13 +321,13 @@ Returns TRUE if parse and merge was sucessful; otherwise, returns FALSE.</dl>Par
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a168">module</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a170">module</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>curr_mod</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a178">bool</a>&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a180">bool</a>&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>eval</em></td>
         </tr>
         <tr>
@@ -360,7 +365,7 @@ Returns: </b><dd>
 Returns TRUE if parsing successful; otherwise, returns FALSE.</dl>Reads in the specified expression information, creates new expression from heap, populates the expression with specified information from file and  returns that value in the specified expression pointer. If all is  successful, returns TRUE; otherwise, returns FALSE.     </td>
   </tr>
 </table>
-<a name="a13" doxytag="expr.c::expression_db_write"></a><p>
+<a name="a15" doxytag="expr.c::expression_db_write"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -368,7 +373,7 @@ Returns TRUE if parsing successful; otherwise, returns FALSE.</dl>Reads in the s
         <tr>
           <td class="md" nowrap valign="top"> void expression_db_write </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a157">expression</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a159">expression</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>expr</em>, </td>
         </tr>
         <tr>
@@ -416,7 +421,7 @@ Name of Verilog hierarchical scope for this expression.</td></tr>
 </dl>This function recursively displays the expression information for the specified expression tree to the coverage database specified by file.     </td>
   </tr>
 </table>
-<a name="a20" doxytag="expr.c::expression_dealloc"></a><p>
+<a name="a23" doxytag="expr.c::expression_dealloc"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -424,13 +429,13 @@ Name of Verilog hierarchical scope for this expression.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void expression_dealloc </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a157">expression</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a159">expression</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>expr</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a178">bool</a>&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a180">bool</a>&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>exp_only</em></td>
         </tr>
         <tr>
@@ -464,7 +469,7 @@ Removes only the specified expression and not its children.</td></tr>
 </dl>Deallocates all heap memory allocated with the malloc routine.     </td>
   </tr>
 </table>
-<a name="a16" doxytag="expr.c::expression_display"></a><p>
+<a name="a18" doxytag="expr.c::expression_display"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -472,7 +477,7 @@ Removes only the specified expression and not its children.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void expression_display </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a157">expression</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a159">expression</a> *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>expr</em>          </td>
           <td class="md" valign="top">)&nbsp;</td>
           <td class="md" nowrap></td>
@@ -501,7 +506,7 @@ Pointer to expression to display.</td></tr>
 </dl>Displays contents of the specified expression to standard output. This function is called by the module_display function.     </td>
   </tr>
 </table>
-<a name="a12" doxytag="expr.c::expression_get_id"></a><p>
+<a name="a14" doxytag="expr.c::expression_get_id"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -509,7 +514,7 @@ Pointer to expression to display.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> int expression_get_id </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a157">expression</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a159">expression</a> *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>expr</em>          </td>
           <td class="md" valign="top">)&nbsp;</td>
           <td class="md" nowrap></td>
@@ -540,7 +545,46 @@ Returns: </b><dd>
 Returns expression ID for this expression.</dl>If specified expression is non-NULL, return expression ID of this expression; otherwise, return a value of 0 to indicate that this is a leaf node.     </td>
   </tr>
 </table>
-<a name="a17" doxytag="expr.c::expression_operate"></a><p>
+<a name="a22" doxytag="expr.c::expression_is_static_only"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a180">bool</a> expression_is_static_only </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a159">expression</a> *&nbsp;</td>
+          <td class="mdname1" valign="top" nowrap>&nbsp; <em>expr</em>          </td>
+          <td class="md" valign="top">)&nbsp;</td>
+          <td class="md" nowrap></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+Returns TRUE if specified expression is found to contain all static leaf expressions.
+<p>
+<dl compact><dt><b>
+Parameters: </b><dd>
+<table border=0 cellspacing=2 cellpadding=0>
+<tr><td valign=top><em>expr</em>&nbsp;</td><td>
+Pointer to expression to evaluate.</td></tr>
+</table>
+</dl><dl compact><dt><b>
+Returns: </b><dd>
+Returns TRUE if expression contains only static expressions; otherwise, returns FALSE.</dl>Recursively iterates through specified expression tree and returns TRUE if all of the children expressions are static expressions (STATIC or parameters).     </td>
+  </tr>
+</table>
+<a name="a19" doxytag="expr.c::expression_operate"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -548,7 +592,7 @@ Returns expression ID for this expression.</dl>If specified expression is non-NU
         <tr>
           <td class="md" nowrap valign="top"> void expression_operate </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a157">expression</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a159">expression</a> *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>expr</em>          </td>
           <td class="md" valign="top">)&nbsp;</td>
           <td class="md" nowrap></td>
@@ -577,7 +621,7 @@ Pointer to expression to set value to.</td></tr>
 </dl>Performs expression operation. This function must only be run after its left and right expressions have been calculated during this clock period. Sets the value of the operation in its own vector value and updates the suppl nibble as necessary.     </td>
   </tr>
 </table>
-<a name="a18" doxytag="expr.c::expression_operate_recursively"></a><p>
+<a name="a20" doxytag="expr.c::expression_operate_recursively"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -585,7 +629,7 @@ Pointer to expression to set value to.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void expression_operate_recursively </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a157">expression</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a159">expression</a> *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>expr</em>          </td>
           <td class="md" valign="top">)&nbsp;</td>
           <td class="md" nowrap></td>
@@ -614,7 +658,7 @@ Pointer to top of expression tree to perform recursive operations.</td></tr>
 </dl>Recursively performs the proper operations to cause the top-level expression to be set to a value. This function is called during the parse stage to derive  pre-CDD widths of multi-bit expressions. Each MSB/LSB is an expression tree that  needs to be evaluated to set the width properly on the MBIT_SEL expression.     </td>
   </tr>
 </table>
-<a name="a11" doxytag="expr.c::expression_resize"></a><p>
+<a name="a13" doxytag="expr.c::expression_resize"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -622,13 +666,13 @@ Pointer to top of expression tree to perform recursive operations.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void expression_resize </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a157">expression</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a159">expression</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>expr</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a178">bool</a>&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a180">bool</a>&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>recursive</em></td>
         </tr>
         <tr>
@@ -662,7 +706,7 @@ Specifies if we should perform a recursive depth-first resize</td></tr>
 </dl>Resizes the given expression depending on the expression operation and its children's sizes. If recursive is TRUE, performs the resize in a depth-first fashion, resizing the children before resizing the current expression. If recursive is FALSE, only the given expression is evaluated and resized.     </td>
   </tr>
 </table>
-<a name="a10" doxytag="expr.c::expression_set_value"></a><p>
+<a name="a12" doxytag="expr.c::expression_set_value"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -670,13 +714,13 @@ Specifies if we should perform a recursive depth-first resize</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void expression_set_value </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a157">expression</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a159">expression</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>exp</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a155">vector</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a157">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>vec</em></td>
         </tr>
         <tr>
@@ -717,7 +761,7 @@ Pointer to vector value to set expression to.</td></tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a152">nibble</a> and_optab[16] </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a154">nibble</a> and_optab[16] </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
           <td class="md" valign="top">)&nbsp;</td>
@@ -773,7 +817,7 @@ This static value contains the current simulation time which is specified by the
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a152">nibble</a> nand_optab[16] </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a154">nibble</a> nand_optab[16] </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
           <td class="md" valign="top">)&nbsp;</td>
@@ -801,7 +845,7 @@ NAND operation table     </td>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a152">nibble</a> nor_optab[16] </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a154">nibble</a> nor_optab[16] </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
           <td class="md" valign="top">)&nbsp;</td>
@@ -829,7 +873,7 @@ NOR operation table     </td>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a152">nibble</a> nxor_optab[16] </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a154">nibble</a> nxor_optab[16] </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
           <td class="md" valign="top">)&nbsp;</td>
@@ -857,7 +901,51 @@ NXOR operation table     </td>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a152">nibble</a> or_optab[16]
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a154">nibble</a> or_optab[16]
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+    </td>
+  </tr>
+</table>
+<a name="a8" doxytag="expr.c::static_expr_head"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a163">exp_link</a>* static_expr_head
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+    </td>
+  </tr>
+</table>
+<a name="a9" doxytag="expr.c::static_expr_tail"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a163">exp_link</a>* static_expr_tail
       </table>
     </td>
   </tr>
@@ -901,7 +989,7 @@ NXOR operation table     </td>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a152">nibble</a> xor_optab[16] </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a154">nibble</a> xor_optab[16] </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
           <td class="md" valign="top">)&nbsp;</td>
@@ -923,7 +1011,7 @@ NXOR operation table     </td>
 XOR operation table     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Sat Nov 23 09:16:03 2002 for Covered by
+<hr><address align="right"><small>Generated on Tue Nov 26 21:45:06 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

@@ -32,6 +32,8 @@ void {\bf expression\_\-operate\_\-recursively} ({\bf expression} $\ast$expr)
 \begin{CompactList}\small\item\em Performs recursive expression operation (parse mode only).\item\end{CompactList}\item 
 int {\bf expression\_\-bit\_\-value} ({\bf expression} $\ast$expr)
 \begin{CompactList}\small\item\em Returns a compressed, 1-bit representation of the value after a unary OR.\item\end{CompactList}\item 
+{\bf bool} {\bf expression\_\-is\_\-static\_\-only} ({\bf expression} $\ast$expr)
+\begin{CompactList}\small\item\em Returns TRUE if specified expression is found to contain all static leaf expressions.\item\end{CompactList}\item 
 void {\bf expression\_\-dealloc} ({\bf expression} $\ast$expr, {\bf bool} exp\_\-only)
 \begin{CompactList}\small\item\em Deallocates memory used for expression.\item\end{CompactList}\end{CompactItemize}
 
@@ -155,7 +157,7 @@ scope}]Name of Verilog hierarchical scope for this expression.\end{description}
 \end{Desc}
 This function recursively displays the expression information for the specified expression tree to the coverage database specified by file. \index{expr.h@{expr.h}!expression_dealloc@{expression\_\-dealloc}}
 \index{expression_dealloc@{expression\_\-dealloc}!expr.h@{expr.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-dealloc ({\bf expression} $\ast$ {\em expr}, {\bf bool} {\em exp\_\-only})}\label{expr_8h_a12}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-dealloc ({\bf expression} $\ast$ {\em expr}, {\bf bool} {\em exp\_\-only})}\label{expr_8h_a13}
 
 
 Deallocates memory used for expression.
@@ -196,7 +198,23 @@ expr}]Pointer to expression to get ID from. \end{description}
 \begin{Desc}
 \item[Returns: ]\par
 Returns expression ID for this expression.\end{Desc}
-If specified expression is non-NULL, return expression ID of this expression; otherwise, return a value of 0 to indicate that this is a leaf node. \index{expr.h@{expr.h}!expression_operate@{expression\_\-operate}}
+If specified expression is non-NULL, return expression ID of this expression; otherwise, return a value of 0 to indicate that this is a leaf node. \index{expr.h@{expr.h}!expression_is_static_only@{expression\_\-is\_\-static\_\-only}}
+\index{expression_is_static_only@{expression\_\-is\_\-static\_\-only}!expr.h@{expr.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} expression\_\-is\_\-static\_\-only ({\bf expression} $\ast$ {\em expr})}\label{expr_8h_a12}
+
+
+Returns TRUE if specified expression is found to contain all static leaf expressions.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+expr}]Pointer to expression to evaluate.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns TRUE if expression contains only static expressions; otherwise, returns FALSE.\end{Desc}
+Recursively iterates through specified expression tree and returns TRUE if all of the children expressions are static expressions (STATIC or parameters). \index{expr.h@{expr.h}!expression_operate@{expression\_\-operate}}
 \index{expression_operate@{expression\_\-operate}!expr.h@{expr.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-operate ({\bf expression} $\ast$ {\em expr})}\label{expr_8h_a9}
 

@@ -23,9 +23,9 @@
 <code>#include "<a class="el" href="static_8h-source.html">static.h</a>"</code><br>
 <table border=0 cellpadding=0 cellspacing=0>
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a178">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a16">db_write</a> (char *<a class="el" href="lexer_8c.html#a122">file</a>, <a class="el" href="defines_8h.html#a178">bool</a> parse_mode)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a180">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a16">db_write</a> (char *<a class="el" href="lexer_8c.html#a122">file</a>, <a class="el" href="defines_8h.html#a180">bool</a> parse_mode)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Writes contents of expressions, modules and signals to database file.</em> <a href="#a16"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a178">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a17">db_read</a> (char *<a class="el" href="lexer_8c.html#a122">file</a>, int read_mode)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a180">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a17">db_read</a> (char *<a class="el" href="lexer_8c.html#a122">file</a>, int read_mode)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Reads contents of database file and stores into internal lists.</em> <a href="#a17"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a18">db_add_instance</a> (char *scope, char *modname)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds specified module node to module tree. Called by parser.</em> <a href="#a18"></a><em></em></font><br><br></td></tr>
@@ -33,33 +33,33 @@
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds specified module to module list. Called by parser.</em> <a href="#a19"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a20">db_end_module</a> ()</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Called when the endmodule keyword is parsed.</em> <a href="#a20"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a21">db_add_declared_param</a> (char *name, <a class="el" href="defines_8h.html#a157">expression</a> *expr)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a21">db_add_declared_param</a> (char *name, <a class="el" href="defines_8h.html#a159">expression</a> *expr)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds specified declared parameter to parameter list. Called by parser.</em> <a href="#a21"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a22">db_add_override_param</a> (char *inst_name, <a class="el" href="defines_8h.html#a157">expression</a> *expr)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a22">db_add_override_param</a> (char *inst_name, <a class="el" href="defines_8h.html#a159">expression</a> *expr)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds specified override parameter to parameter list. Called by parser.</em> <a href="#a22"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a23">db_add_vector_param</a> (<a class="el" href="defines_8h.html#a158">signal</a> *sig, <a class="el" href="defines_8h.html#a157">expression</a> *exp, <a class="el" href="defines_8h.html#a157">expression</a> *parm_exp, int type)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a23">db_add_vector_param</a> (<a class="el" href="defines_8h.html#a160">signal</a> *sig, <a class="el" href="defines_8h.html#a159">expression</a> *exp, <a class="el" href="defines_8h.html#a159">expression</a> *parm_exp, int type)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds signal/expression vector parameter to parameter list.</em> <a href="#a23"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a24">db_add_defparam</a> (char *name, <a class="el" href="defines_8h.html#a157">expression</a> *expr)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a24">db_add_defparam</a> (char *name, <a class="el" href="defines_8h.html#a159">expression</a> *expr)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds specified defparam to parameter override list. Called by parser.</em> <a href="#a24"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a25">db_add_signal</a> (char *name, <a class="el" href="defines_8h.html#a171">static_expr</a> *left, <a class="el" href="defines_8h.html#a171">static_expr</a> *right)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a25">db_add_signal</a> (char *name, <a class="el" href="defines_8h.html#a173">static_expr</a> *left, <a class="el" href="defines_8h.html#a173">static_expr</a> *right)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds specified signal to signal list. Called by parser.</em> <a href="#a25"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a158">signal</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a26">db_find_signal</a> (char *name)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a160">signal</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a26">db_find_signal</a> (char *name)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Finds specified signal in module and returns pointer to the signal structure. Called by parser.</em> <a href="#a26"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a157">expression</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a27">db_create_expression</a> (<a class="el" href="defines_8h.html#a157">expression</a> *right, <a class="el" href="defines_8h.html#a157">expression</a> *left, int op, int line, char *sig_name)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a159">expression</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a27">db_create_expression</a> (<a class="el" href="defines_8h.html#a159">expression</a> *right, <a class="el" href="defines_8h.html#a159">expression</a> *left, int op, int line, char *sig_name)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Creates new expression from specified information. Called by parser and db_add_expression.</em> <a href="#a27"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a28">db_add_expression</a> (<a class="el" href="defines_8h.html#a157">expression</a> *root)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a28">db_add_expression</a> (<a class="el" href="defines_8h.html#a159">expression</a> *root)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds specified expression to expression list. Called by parser.</em> <a href="#a28"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a159">statement</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a29">db_create_statement</a> (<a class="el" href="defines_8h.html#a157">expression</a> *exp)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a161">statement</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a29">db_create_statement</a> (<a class="el" href="defines_8h.html#a159">expression</a> *exp)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Creates new statement expression from specified information. Called by parser.</em> <a href="#a29"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a30">db_add_statement</a> (<a class="el" href="defines_8h.html#a159">statement</a> *stmt)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a30">db_add_statement</a> (<a class="el" href="defines_8h.html#a161">statement</a> *stmt)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds specified statement to current module's statement list. Called by parser.</em> <a href="#a30"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a31">db_connect_statement_true</a> (<a class="el" href="defines_8h.html#a159">statement</a> *stmt, <a class="el" href="defines_8h.html#a159">statement</a> *next_true)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a31">db_connect_statement_true</a> (<a class="el" href="defines_8h.html#a161">statement</a> *stmt, <a class="el" href="defines_8h.html#a161">statement</a> *next_true)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Connects true statement to specified statement.</em> <a href="#a31"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a32">db_connect_statement_false</a> (<a class="el" href="defines_8h.html#a159">statement</a> *stmt, <a class="el" href="defines_8h.html#a159">statement</a> *next_false)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a32">db_connect_statement_false</a> (<a class="el" href="defines_8h.html#a161">statement</a> *stmt, <a class="el" href="defines_8h.html#a161">statement</a> *next_false)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Connects false statement to specified statement.</em> <a href="#a32"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a33">db_statement_connect</a> (<a class="el" href="defines_8h.html#a159">statement</a> *curr_stmt, <a class="el" href="defines_8h.html#a159">statement</a> *next_stmt)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a33">db_statement_connect</a> (<a class="el" href="defines_8h.html#a161">statement</a> *curr_stmt, <a class="el" href="defines_8h.html#a161">statement</a> *next_stmt)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Connects one statement block to another.</em> <a href="#a33"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a34">db_statement_set_stop</a> (<a class="el" href="defines_8h.html#a159">statement</a> *stmt, <a class="el" href="defines_8h.html#a159">statement</a> *post, <a class="el" href="defines_8h.html#a178">bool</a> both)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a34">db_statement_set_stop</a> (<a class="el" href="defines_8h.html#a161">statement</a> *stmt, <a class="el" href="defines_8h.html#a161">statement</a> *post, <a class="el" href="defines_8h.html#a180">bool</a> both)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Sets STMT_STOP bit in the appropriate statements.</em> <a href="#a34"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a35">db_set_vcd_scope</a> (char *scope)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Sets current VCD scope to specified scope.</em> <a href="#a35"></a><em></em></font><br><br></td></tr>
@@ -75,19 +75,19 @@
 <tr><td>&nbsp;</td><td><font size=-1><em>Performs a timestep for all signal changes during this timestep.</em> <a href="#a40"></a><em></em></font><br><br></td></tr>
 <tr><td colspan=2><br><h2>Variables</h2></td></tr>
 <tr><td nowrap align=right valign=top>char *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a0">top_module</a></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a175">mod_inst</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a1">instance_root</a></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a154">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a2">no_score_head</a></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a169">mod_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a3">mod_head</a></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a169">mod_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a4">mod_tail</a></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a152">nibble</a>&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a5">or_optab</a> [16]</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a177">mod_inst</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a1">instance_root</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a156">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a2">no_score_head</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a171">mod_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a3">mod_head</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a171">mod_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a4">mod_tail</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a154">nibble</a>&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a5">or_optab</a> [16]</td></tr>
 <tr><td nowrap align=right valign=top>char&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a6">user_msg</a> [USER_MSG_LENGTH]</td></tr>
 <tr><td nowrap align=right valign=top>char *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a7">curr_inst_scope</a> = NULL</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a175">mod_inst</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a8">curr_instance</a> = NULL</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a154">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a9">modlist_head</a> = NULL</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a154">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a10">modlist_tail</a> = NULL</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a168">module</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a11">curr_module</a> = NULL</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a170">symtable</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a12">vcd_symtab</a> = NULL</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a170">symtable</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a13">timestep_tab</a> = NULL</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a177">mod_inst</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a8">curr_instance</a> = NULL</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a156">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a9">modlist_head</a> = NULL</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a156">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a10">modlist_tail</a> = NULL</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a170">module</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a11">curr_module</a> = NULL</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a172">symtable</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a12">vcd_symtab</a> = NULL</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a172">symtable</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a13">timestep_tab</a> = NULL</td></tr>
 <tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a14">curr_expr_id</a> = 1</td></tr>
 <tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a15">curr_sim_time</a> = 0</td></tr>
 </table>
@@ -113,7 +113,7 @@ Date: </b><dd>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a157">expression</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a159">expression</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>expr</em></td>
         </tr>
         <tr>
@@ -161,7 +161,7 @@ Expression containing value of this parameter.</td></tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a157">expression</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a159">expression</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>expr</em></td>
         </tr>
         <tr>
@@ -203,7 +203,7 @@ Expression value of parameter override.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void db_add_expression </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a157">expression</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a159">expression</a> *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>root</em>          </td>
           <td class="md" valign="top">)&nbsp;</td>
           <td class="md" nowrap></td>
@@ -342,7 +342,7 @@ Filename that module is a part of.</td></tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a157">expression</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a159">expression</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>expr</em></td>
         </tr>
         <tr>
@@ -390,13 +390,13 @@ Expression containing value of override parameter.</td></tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a171">static_expr</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a173">static_expr</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>left</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a171">static_expr</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a173">static_expr</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>right</em></td>
         </tr>
         <tr>
@@ -440,7 +440,7 @@ Specifies constant value for calculation of right-hand vector value.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void db_add_statement </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a159">statement</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a161">statement</a> *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>stmt</em>          </td>
           <td class="md" valign="top">)&nbsp;</td>
           <td class="md" nowrap></td>
@@ -477,19 +477,19 @@ Pointer to statement add to current module's statement list.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void db_add_vector_param </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a158">signal</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a160">signal</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>sig</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a157">expression</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a159">expression</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>exp</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a157">expression</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a159">expression</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>parm_exp</em>, </td>
         </tr>
         <tr>
@@ -589,13 +589,13 @@ Symbol value of signal used in VCD dumpfile.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void db_connect_statement_false </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a159">statement</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a161">statement</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>stmt</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a159">statement</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a161">statement</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>next_false</em></td>
         </tr>
         <tr>
@@ -637,13 +637,13 @@ Pointer to statement to run if statement evaluates to FALSE.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void db_connect_statement_true </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a159">statement</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a161">statement</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>stmt</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a159">statement</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a161">statement</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>next_true</em></td>
         </tr>
         <tr>
@@ -683,15 +683,15 @@ Pointer to statement to run if statement evaluates to TRUE.</td></tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a157">expression</a>* db_create_expression </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a159">expression</a>* db_create_expression </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a157">expression</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a159">expression</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>right</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a157">expression</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a159">expression</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>left</em>, </td>
         </tr>
         <tr>
@@ -757,9 +757,9 @@ Returns pointer to newly created expression.</dl>Creates a new expression with t
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a159">statement</a>* db_create_statement </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a161">statement</a>* db_create_statement </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a157">expression</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a159">expression</a> *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>exp</em>          </td>
           <td class="md" valign="top">)&nbsp;</td>
           <td class="md" nowrap></td>
@@ -863,7 +863,7 @@ Updates the modlist for parsing purposes.     </td>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a158">signal</a>* db_find_signal </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a160">signal</a>* db_find_signal </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top">char *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>name</em>          </td>
@@ -902,7 +902,7 @@ Returns pointer to the found signal. If signal is not found, internal error.</dl
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a178">bool</a> db_read </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a180">bool</a> db_read </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top">char *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>file</em>, </td>
@@ -1089,13 +1089,13 @@ Current VCD scope.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void db_statement_connect </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a159">statement</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a161">statement</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>curr_stmt</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a159">statement</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a161">statement</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>next_stmt</em></td>
         </tr>
         <tr>
@@ -1137,19 +1137,19 @@ Pointer to next statement to attach to.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void db_statement_set_stop </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a159">statement</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a161">statement</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>stmt</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a159">statement</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a161">statement</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>post</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a178">bool</a>&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a180">bool</a>&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>both</em></td>
         </tr>
         <tr>
@@ -1221,7 +1221,7 @@ Moves the curr_inst_scope up one level of hierarchy. This function is called whe
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a178">bool</a> db_write </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a180">bool</a> db_write </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top">char *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>file</em>, </td>
@@ -1229,7 +1229,7 @@ Moves the curr_inst_scope up one level of hierarchy. This function is called whe
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a178">bool</a>&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a180">bool</a>&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>parse_mode</em></td>
         </tr>
         <tr>
@@ -1316,7 +1316,7 @@ Specifies the string Verilog scope that is currently specified in the VCD file. 
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a175">mod_inst</a>* curr_instance = NULL
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a177">mod_inst</a>* curr_instance = NULL
       </table>
     </td>
   </tr>
@@ -1338,7 +1338,7 @@ Pointer to the current instance selected by the VCD parser. If this value is NUL
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a168">module</a>* curr_module = NULL
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a170">module</a>* curr_module = NULL
       </table>
     </td>
   </tr>
@@ -1382,7 +1382,7 @@ This static value contains the current simulation time which is specified by the
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a175">mod_inst</a>* instance_root
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a177">mod_inst</a>* instance_root
       </table>
     </td>
   </tr>
@@ -1404,7 +1404,7 @@ This static value contains the current simulation time which is specified by the
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a169">mod_link</a>* mod_head
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a171">mod_link</a>* mod_head
       </table>
     </td>
   </tr>
@@ -1426,7 +1426,7 @@ This static value contains the current simulation time which is specified by the
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a169">mod_link</a>* mod_tail </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a171">mod_link</a>* mod_tail </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
           <td class="md" valign="top">)&nbsp;</td>
@@ -1454,7 +1454,7 @@ Pointer to tail element of module list     </td>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a154">str_link</a>* modlist_head = NULL
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a156">str_link</a>* modlist_head = NULL
       </table>
     </td>
   </tr>
@@ -1476,7 +1476,7 @@ Pointer to tail element of module list     </td>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a154">str_link</a>* modlist_tail = NULL
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a156">str_link</a>* modlist_tail = NULL
       </table>
     </td>
   </tr>
@@ -1498,7 +1498,7 @@ Pointer to tail element of module list     </td>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a154">str_link</a>* no_score_head </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a156">str_link</a>* no_score_head </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
           <td class="md" valign="top">)&nbsp;</td>
@@ -1526,7 +1526,7 @@ Pointer to head element of modules not-to-score list     </td>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a152">nibble</a> or_optab[16]
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a154">nibble</a> or_optab[16]
       </table>
     </td>
   </tr>
@@ -1548,7 +1548,7 @@ Pointer to head element of modules not-to-score list     </td>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a170">symtable</a>* timestep_tab = NULL
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a172">symtable</a>* timestep_tab = NULL
       </table>
     </td>
   </tr>
@@ -1614,7 +1614,7 @@ Pointer to head element of modules not-to-score list     </td>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a170">symtable</a>* vcd_symtab = NULL
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a172">symtable</a>* vcd_symtab = NULL
       </table>
     </td>
   </tr>
@@ -1630,7 +1630,7 @@ Pointer to head element of modules not-to-score list     </td>
     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Sat Nov 23 09:16:02 2002 for Covered by
+<hr><address align="right"><small>Generated on Tue Nov 26 21:45:06 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

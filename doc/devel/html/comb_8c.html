@@ -16,30 +16,30 @@
 <code>#include "<a class="el" href="iter_8h-source.html">iter.h</a>"</code><br>
 <table border=0 cellpadding=0 cellspacing=0>
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
-<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a5">combination_calc_depth</a> (<a class="el" href="defines_8h.html#a157">expression</a> *exp, unsigned int curr_depth, <a class="el" href="defines_8h.html#a178">bool</a> left)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a6">combination_get_tree_stats</a> (<a class="el" href="defines_8h.html#a157">expression</a> *exp, unsigned int curr_depth, float *total, int *hit)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a7">combination_get_stats</a> (<a class="el" href="defines_8h.html#a161">exp_link</a> *expl, float *total, int *hit)</td></tr>
+<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a5">combination_calc_depth</a> (<a class="el" href="defines_8h.html#a159">expression</a> *exp, unsigned int curr_depth, <a class="el" href="defines_8h.html#a180">bool</a> left)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a6">combination_get_tree_stats</a> (<a class="el" href="defines_8h.html#a159">expression</a> *exp, unsigned int curr_depth, float *total, int *hit)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a7">combination_get_stats</a> (<a class="el" href="defines_8h.html#a163">exp_link</a> *expl, float *total, int *hit)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Calculates combination logic statistics for summary output.</em> <a href="#a7"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a178">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a8">combination_instance_summary</a> (FILE *ofile, <a class="el" href="defines_8h.html#a175">mod_inst</a> *root, char *parent)</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a178">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a9">combination_module_summary</a> (FILE *ofile, <a class="el" href="defines_8h.html#a169">mod_link</a> *head)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a180">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a8">combination_instance_summary</a> (FILE *ofile, <a class="el" href="defines_8h.html#a177">mod_inst</a> *root, char *parent)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a180">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a9">combination_module_summary</a> (FILE *ofile, <a class="el" href="defines_8h.html#a171">mod_link</a> *head)</td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a10">combination_draw_line</a> (char *line, int <a class="el" href="lexer_8c.html#a121">size</a>, int exp_id)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a11">combination_underline_tree</a> (<a class="el" href="defines_8h.html#a157">expression</a> *exp, unsigned int curr_depth, char ***lines, int *depth, int *<a class="el" href="lexer_8c.html#a121">size</a>, int *exp_id, int parent_op)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a12">combination_underline</a> (FILE *ofile, <a class="el" href="defines_8h.html#a157">expression</a> *exp, char *begin_sp)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a13">combination_unary</a> (FILE *ofile, <a class="el" href="defines_8h.html#a157">expression</a> *exp, int id, char *op)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a14">combination_two_vars</a> (FILE *ofile, <a class="el" href="defines_8h.html#a157">expression</a> *exp, int val0, int val1, int val2, int val3, int id, char *op)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a15">combination_list_missed</a> (FILE *ofile, <a class="el" href="defines_8h.html#a157">expression</a> *exp, unsigned int curr_depth, int *exp_id)</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a178">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a16">combination_missed_expr</a> (<a class="el" href="defines_8h.html#a157">expression</a> *expr, unsigned int curr_depth)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a17">combination_display_verbose</a> (FILE *ofile, <a class="el" href="defines_8h.html#a162">stmt_link</a> *stmtl)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a18">combination_instance_verbose</a> (FILE *ofile, <a class="el" href="defines_8h.html#a175">mod_inst</a> *root)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a19">combination_module_verbose</a> (FILE *ofile, <a class="el" href="defines_8h.html#a169">mod_link</a> *head)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a20">combination_report</a> (FILE *ofile, <a class="el" href="defines_8h.html#a178">bool</a> verbose)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a11">combination_underline_tree</a> (<a class="el" href="defines_8h.html#a159">expression</a> *exp, unsigned int curr_depth, char ***lines, int *depth, int *<a class="el" href="lexer_8c.html#a121">size</a>, int *exp_id, int parent_op)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a12">combination_underline</a> (FILE *ofile, <a class="el" href="defines_8h.html#a159">expression</a> *exp, char *begin_sp)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a13">combination_unary</a> (FILE *ofile, <a class="el" href="defines_8h.html#a159">expression</a> *exp, int id, char *op)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a14">combination_two_vars</a> (FILE *ofile, <a class="el" href="defines_8h.html#a159">expression</a> *exp, int val0, int val1, int val2, int val3, int id, char *op)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a15">combination_list_missed</a> (FILE *ofile, <a class="el" href="defines_8h.html#a159">expression</a> *exp, unsigned int curr_depth, int *exp_id)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a180">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a16">combination_missed_expr</a> (<a class="el" href="defines_8h.html#a159">expression</a> *expr, unsigned int curr_depth)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a17">combination_display_verbose</a> (FILE *ofile, <a class="el" href="defines_8h.html#a164">stmt_link</a> *stmtl)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a18">combination_instance_verbose</a> (FILE *ofile, <a class="el" href="defines_8h.html#a177">mod_inst</a> *root)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a19">combination_module_verbose</a> (FILE *ofile, <a class="el" href="defines_8h.html#a171">mod_link</a> *head)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a20">combination_report</a> (FILE *ofile, <a class="el" href="defines_8h.html#a180">bool</a> verbose)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Generates report output for combinational logic coverage.</em> <a href="#a20"></a><em></em></font><br><br></td></tr>
 <tr><td colspan=2><br><h2>Variables</h2></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a175">mod_inst</a> *&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a0">instance_root</a></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a169">mod_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a1">mod_head</a></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a178">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a2">report_covered</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a177">mod_inst</a> *&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a0">instance_root</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a171">mod_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a1">mod_head</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a180">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a2">report_covered</a></td></tr>
 <tr><td nowrap align=right valign=top>unsigned int&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a3">report_comb_depth</a></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a178">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a4">report_instance</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a180">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a4">report_instance</a></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 
@@ -61,7 +61,7 @@ Date: </b><dd>
         <tr>
           <td class="md" nowrap valign="top"> int combination_calc_depth </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a157">expression</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a159">expression</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>exp</em>, </td>
         </tr>
         <tr>
@@ -73,7 +73,7 @@ Date: </b><dd>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a178">bool</a>&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a180">bool</a>&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>left</em></td>
         </tr>
         <tr>
@@ -123,7 +123,7 @@ Returns new depth value for specified child expression.</dl>Based on the current
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a162">stmt_link</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a164">stmt_link</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>stmtl</em></td>
         </tr>
         <tr>
@@ -217,7 +217,7 @@ ID to place in underline.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void combination_get_stats </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a161">exp_link</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a163">exp_link</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>expl</em>, </td>
         </tr>
         <tr>
@@ -273,7 +273,7 @@ Pointer to number of logical combinations hit during simulation.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void combination_get_tree_stats </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a157">expression</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a159">expression</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>exp</em>, </td>
         </tr>
         <tr>
@@ -333,7 +333,7 @@ Pointer to number of logical combinations hit during simulation.</td></tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a178">bool</a> combination_instance_summary </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a180">bool</a> combination_instance_summary </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top">FILE *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>ofile</em>, </td>
@@ -341,7 +341,7 @@ Pointer to number of logical combinations hit during simulation.</td></tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a175">mod_inst</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a177">mod_inst</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>root</em>, </td>
         </tr>
         <tr>
@@ -397,7 +397,7 @@ Returns TRUE if combinations were found to be missed; otherwise, returns FALSE.<
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a175">mod_inst</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a177">mod_inst</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>root</em></td>
         </tr>
         <tr>
@@ -443,7 +443,7 @@ Pointer to current module instance to evaluate.</td></tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a157">expression</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a159">expression</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>exp</em>, </td>
         </tr>
         <tr>
@@ -497,9 +497,9 @@ Pointer to current expression ID to use.</td></tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a178">bool</a> combination_missed_expr </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a180">bool</a> combination_missed_expr </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a157">expression</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a159">expression</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>expr</em>, </td>
         </tr>
         <tr>
@@ -543,7 +543,7 @@ Specifies current depth of expression tree.</td></tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a178">bool</a> combination_module_summary </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a180">bool</a> combination_module_summary </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top">FILE *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>ofile</em>, </td>
@@ -551,7 +551,7 @@ Specifies current depth of expression tree.</td></tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a169">mod_link</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a171">mod_link</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>head</em></td>
         </tr>
         <tr>
@@ -599,7 +599,7 @@ Returns TRUE if combinations were found to be missed; otherwise, returns FALSE.<
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a169">mod_link</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a171">mod_link</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>head</em></td>
         </tr>
         <tr>
@@ -645,7 +645,7 @@ Pointer to current module to evaluate.</td></tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a178">bool</a>&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a180">bool</a>&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>verbose</em></td>
         </tr>
         <tr>
@@ -693,7 +693,7 @@ Specifies whether or not to provide verbose information</td></tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a157">expression</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a159">expression</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>exp</em>, </td>
         </tr>
         <tr>
@@ -787,7 +787,7 @@ String showing current expression operation type.</td></tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a157">expression</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a159">expression</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>exp</em>, </td>
         </tr>
         <tr>
@@ -849,7 +849,7 @@ String showing current expression operation type.</td></tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a157">expression</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a159">expression</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>exp</em>, </td>
         </tr>
         <tr>
@@ -897,7 +897,7 @@ Spacing that is placed at the beginning of the generated line.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void combination_underline_tree </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a157">expression</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a159">expression</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>exp</em>, </td>
         </tr>
         <tr>
@@ -982,7 +982,7 @@ Expression operation of parent used for calculating parenthesis.</td></tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a175">mod_inst</a>* instance_root
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a177">mod_inst</a>* instance_root
       </table>
     </td>
   </tr>
@@ -1004,7 +1004,7 @@ Expression operation of parent used for calculating parenthesis.</td></tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a169">mod_link</a>* mod_head
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a171">mod_link</a>* mod_head
       </table>
     </td>
   </tr>
@@ -1048,7 +1048,7 @@ Expression operation of parent used for calculating parenthesis.</td></tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a178">bool</a> report_covered
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a180">bool</a> report_covered
       </table>
     </td>
   </tr>
@@ -1070,7 +1070,7 @@ Expression operation of parent used for calculating parenthesis.</td></tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a178">bool</a> report_instance
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a180">bool</a> report_instance
       </table>
     </td>
   </tr>
@@ -1086,7 +1086,7 @@ Expression operation of parent used for calculating parenthesis.</td></tr>
     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Sat Nov 23 09:16:02 2002 for Covered by
+<hr><address align="right"><small>Generated on Tue Nov 26 21:45:06 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

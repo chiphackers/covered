@@ -18,12 +18,19 @@ void sim_expr_changed( expression* expr );
 /*! \brief Adds specified statement to pre-simulation statement queue. */
 void sim_add_stmt_to_queue( statement* stmt );
 
+/*! \brief Adds static expression values to initial simulator */
+void sim_add_statics();
+
 /*! \brief Simulates current timestep. */
 void sim_simulate();
 
 
 /*
  $Log$
+ Revision 1.6  2002/11/05 00:20:08  phase1geo
+ Adding development documentation.  Fixing problem with combinational logic
+ output in report command and updating full regression.
+
  Revision 1.5  2002/10/31 23:14:25  phase1geo
  Fixing C compatibility problems with cc and gcc.  Found a few possible problems
  with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that
