@@ -26,6 +26,7 @@
 #include "stat.h"
 #include "db.h"
 #include "fsm.h"
+#include "info.h"
 
 
 extern char      user_msg[USER_MSG_LENGTH];
@@ -316,8 +317,6 @@ void report_gather_instance_stats( mod_inst* root ) {
   curr = root->child_head;
   while( curr != NULL ) {
     report_gather_instance_stats( curr );
-    // assert( curr->stat != NULL );
-    // statistic_merge( root->stat, curr->stat );
     curr = curr->next;
   }
 
@@ -327,8 +326,7 @@ void report_gather_instance_stats( mod_inst* root ) {
   }
 
   if( report_toggle ) {
-    toggle_get_stats( root->mod->exp_head, 
-                      root->mod->sig_head, 
+    toggle_get_stats( root->mod->sig_head, 
                       &(root->stat->tog_total), 
                       &(root->stat->tog01_hit), 
                       &(root->stat->tog10_hit) );
@@ -368,8 +366,7 @@ void report_gather_module_stats( mod_link* head ) {
     }
 
     if( report_toggle ) {
-      toggle_get_stats( head->mod->exp_head, 
-                        head->mod->sig_head, 
+      toggle_get_stats( head->mod->sig_head, 
                         &(head->mod->stat->tog_total), 
                         &(head->mod->stat->tog01_hit), 
                         &(head->mod->stat->tog10_hit) );
@@ -628,6 +625,13 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.29  2004/01/31 18:58:43  phase1geo
+ Finished reformatting of reports.  Fixed bug where merged reports with
+ different leading hierarchies were outputting the leading hierarchy of one
+ which lead to confusion when interpreting reports.  Also made modification
+ to information line in CDD file for these cases.  Full regression runs clean
+ with Icarus Verilog at this point.
+
  Revision 1.28  2004/01/30 23:23:27  phase1geo
  More report output improvements.  Still not ready with regressions.
 

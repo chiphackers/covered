@@ -15,6 +15,7 @@
 #endif
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <assert.h>
 #ifdef HAVE_STRING_H
 #include <string.h>
@@ -102,16 +103,11 @@ void fsm_create_tables( fsm* table ) {
 
   fsm_arc* curr_arc;    /* Pointer to current FSM arc structure       */
   bool     set = TRUE;  /* Specifies if specified bit was set         */
-  int      from_state;  /* Integer value of the from_state expression */
-  int      to_state;    /* Integer value of the to_state expression   */
-  int      index;       /* Index of table entry to set                */
-  nibble   value;       /* Bit within index to set in table entry     */
-  int      i;           /* Loop iterator                              */
 
   /* Create the FSM arc transition table */
   assert( table != NULL );
   assert( table->to_state != NULL );
-  assert( table->to_state-> value != NULL );
+  assert( table->to_state->value != NULL );
   assert( table->table == NULL );
   table->table = arc_create( table->to_state->value->width );
 
@@ -124,7 +120,7 @@ void fsm_create_tables( fsm* table ) {
     expression_operate( curr_arc->to_state   );
 
     /* Set table entry in table, if possible */
-    arc_add( &(table->table), table->to_state->value->width, curr_arc->from_state->value, curr_arc->to_state->value, 0 );
+    arc_add( &(table->table), curr_arc->from_state->value, curr_arc->to_state->value, 0 );
 
     curr_arc = curr_arc->next;
 
@@ -143,7 +139,6 @@ void fsm_create_tables( fsm* table ) {
 bool fsm_db_write( fsm* table, FILE* file ) {
 
   bool retval = TRUE;  /* Return value for this function */
-  int  i;              /* Loop iterator                  */
 
   fprintf( file, "%d %d %d ",
     DB_TYPE_FSM,
@@ -187,7 +182,6 @@ bool fsm_db_read( char** line, module* mod ) {
   expression oexp;             /* Temporary signal used for finding state variable   */
   exp_link*  iexpl;            /* Pointer to found state variable                    */
   exp_link*  oexpl;            /* Pointer to found state variable                    */
-  int        i;                /* Loop iterator                                      */
   int        chars_read;       /* Number of characters read from sscanf              */
   fsm*       table;            /* Pointer to newly created FSM structure from CDD    */
   int        is_table;         /* Holds value of is_table entry of FSM output        */
@@ -276,8 +270,6 @@ bool fsm_db_merge( fsm* base, char** line, bool same ) {
   int    iid;            /* Input state variable expression ID  */
   int    oid;            /* Output state variable expression ID */
   int    chars_read;     /* Number of characters read from line */
-  int    i;              /* Loop iterator                       */
-  nibble nib;            /* Temporary nibble storage            */
   int    is_table;       /* Holds value of is_table signifier   */
 
   assert( base != NULL );
@@ -318,7 +310,7 @@ bool fsm_db_merge( fsm* base, char** line, bool same ) {
 */
 void fsm_table_set( fsm* table ) {
 
-  arc_add( &(table->table), table->to_state->value->width, table->from_state->value, table->to_state->value, 1 );
+  arc_add( &(table->table), table->from_state->value, table->to_state->value, 1 );
 
 }
 
@@ -334,11 +326,6 @@ void fsm_table_set( fsm* table ) {
 void fsm_get_stats( fsm_link* table, float* state_total, int* state_hit, float* arc_total, int* arc_hit ) {
 
   fsm_link* curr;   /* Pointer to current FSM in table list             */
-  int       index;  /* Current index in FSM table to evaluate           */
-  nibble    value;  /* Value of current index in table to evaluate      */
-  bool      hit;    /* Specifies whether the current state has been hit */
-  int       i;      /* Loop iterator                                    */
-  int       j;      /* Loop iterator                                    */
 
   curr = table;
   while( curr != NULL ) {
@@ -777,6 +764,13 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.37  2004/01/31 18:58:43  phase1geo
+ Finished reformatting of reports.  Fixed bug where merged reports with
+ different leading hierarchies were outputting the leading hierarchy of one
+ which lead to confusion when interpreting reports.  Also made modification
+ to information line in CDD file for these cases.  Full regression runs clean
+ with Icarus Verilog at this point.
+
  Revision 1.36  2004/01/30 23:23:27  phase1geo
  More report output improvements.  Still not ready with regressions.
 

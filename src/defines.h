@@ -934,7 +934,7 @@ typedef enum {
 #if SIZEOF_INT == 4
 
 /*!
- A nibble is a 32-bit value that is subdivided into the following parts:
+ A nibble is a 8-bit value that is subdivided into the following parts:
  <table>
    <tr> <td> <strong> Bits </strong> </td> <td> <strong> Field Description </strong> </td> </tr>
    <tr> <td> 1:0 </td> <td> 2-state value </td> </tr>
@@ -944,17 +944,6 @@ typedef enum {
    <tr> <td> 5   </td> <td> Indicator if bit was set to a value of 0 (FALSE) </td> </tr>
    <tr> <td> 6   </td> <td> Indicator if bit was set to a value of 1 (TRUE) </td> </tr>
    <tr> <td> 7   </td> <td> Reserved </td> </tr>
- </table>
- <table>
-   <tr> <td> <strong> Bits </strong> </td> <td> <strong> Field Description </strong> </td> </tr>
-   <tr> <td> 7:0   </td> <td> Current 4-state value for bits 3-0 </td> </tr>
-   <tr> <td> 11:8  </td> <td> Indicator if associated bit was toggled from 0->1 </td> </tr>
-   <tr> <td> 15:12 </td> <td> Indicator if associated bit was toggled from 1->0 </td></tr>
-   <tr> <td> 19:16 </td> <td> Indicator if associated bit has been previously assigned this timestep </td> </tr>
-   <tr> <td> 21:20 </td> <td> Indicates original value type (HEXIDECIMAL, OCTAL, BINARY, DECIMAL) </td> </tr>
-   <tr> <td> 23:22 </td> <td> General purpose bits </td> </tr>
-   <tr> <td> 27:24 </td> <td> Indicator if associated bit was set to a value of 0 (FALSE) </td> </tr>
-   <tr> <td> 31:28 </td> <td> Indicator if associated bit was set to a value of 1 (TRUE) </td> </tr>
  </table>
 */
 typedef unsigned char nibble;
@@ -1579,6 +1568,11 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.102  2004/01/30 06:04:43  phase1geo
+ More report output format tweaks.  Adjusted lines and spaces to make things
+ look more organized.  Still some more to go.  Regression will fail at this
+ point.
+
  Revision 1.101  2004/01/25 03:41:48  phase1geo
  Fixes bugs in summary information not matching verbose information.  Also fixes
  bugs where instances were output when no logic was missing, where instance

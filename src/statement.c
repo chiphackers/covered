@@ -303,7 +303,6 @@ bool statement_db_read( char** line, module* curr_mod, int read_mode ) {
       } else if( true_id != 0 ) {
         stmtl = stmt_link_find( true_id, curr_mod->stmt_head );
         if( stmtl == NULL ) {
-          // assert( true_id == false_id );
           /* Add to statement loop stack */
           statement_stack_push( stmt, true_id );
         } else {
@@ -359,33 +358,9 @@ bool statement_db_read( char** line, module* curr_mod, int read_mode ) {
 */
 void statement_connect( statement* curr_stmt, statement* next_stmt ) {
 
-  int true_id;
-  int false_id;
-
   assert( curr_stmt != NULL );
   assert( next_stmt != NULL );
     
-  if( curr_stmt->next_true == NULL ) {
-    true_id = 0;
-  } else {
-    true_id = curr_stmt->next_true->exp->id;
-  }
-
-  if( curr_stmt->next_false == NULL ) {
-    false_id = 0;
-  } else {
-    false_id = curr_stmt->next_false->exp->id;
-  }
-
-  /*
-  printf( "In statement_connect, curr_stmt: %d, line: %d, curr_true: %d, curr_false: %d, next_stmt: %d\n", 
-          curr_stmt->exp->id,
-          curr_stmt->exp->line,
-          true_id,
-          false_id,
-          next_stmt->exp->id );
-  */
-
   /* If both paths go to the same destination, only parse one path */
   if( (curr_stmt->next_true == curr_stmt->next_false) || 
       (((curr_stmt->exp->suppl >> SUPPL_LSB_STMT_CONNECTED) & 0x1) == 1) ) {
@@ -447,40 +422,7 @@ void statement_connect( statement* curr_stmt, statement* next_stmt ) {
 */
 void statement_set_stop( statement* stmt, statement* post, bool true_path, bool both ) {
 
-  /* static int count = 0; */
-  int        true_id;
-  int        false_id;
-  int        post_id;
-
   assert( stmt != NULL );
-
-/*
-  if( count > 20 ) {
-    assert( count == 0 );
-  } else {
-    count++;
-  }
-*/
-
-  if( post == NULL ) {
-    post_id = 0;
-  } else {
-    post_id = post->exp->id;
-  }
-
-  if( stmt->next_true == NULL ) {
-    true_id = 0;
-  } else {
-    true_id = stmt->next_true->exp->id;
-  }
-
-  if( stmt->next_false == NULL ) {
-    false_id = 0;
-  } else {
-    false_id = stmt->next_false->exp->id;
-  }
-
-  /* printf( "In statement_set_stop, stmt: %d, post: %d, next_true: %d, next_false: %d\n", stmt->exp->id, post_id, true_id, false_id ); */
 
   if( ((stmt->next_true == post) && (stmt->next_false == post)) ||
       ((stmt->next_true == post) && (stmt->next_false == NULL)) ||
@@ -595,6 +537,11 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.44  2004/01/08 23:24:41  phase1geo
+ Removing unnecessary scope information from signals, expressions and
+ statements to reduce file sizes of CDDs and slightly speeds up fscanf
+ function calls.  Updated regression for this fix.
+
  Revision 1.43  2003/08/10 03:50:10  phase1geo
  More development documentation updates.  All global variables are now
  documented correctly.  Also fixed some generated documentation warnings.

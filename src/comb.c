@@ -495,12 +495,11 @@ void combination_draw_centered_line( char* line, int size, int exp_id, bool left
  \param size             Pointer to character width of this node.
  \param parent_op        Expression operation of parent used for calculating parenthesis.
  \param center           Specifies if expression IDs should be centered in underlines or at beginning.
- \param force_underline  Forces the current expression to be underlined.
 
  Recursively parses specified expression tree, underlining and labeling each
  measurable expression.
 */
-void combination_underline_tree( expression* exp, unsigned int curr_depth, char*** lines, int* depth, int* size, int parent_op, bool center, bool force_underline ) {
+void combination_underline_tree( expression* exp, unsigned int curr_depth, char*** lines, int* depth, int* size, int parent_op, bool center ) {
 
   char** l_lines;       /* Pointer to left underline stack              */
   char** r_lines;       /* Pointer to right underline stack             */
@@ -514,8 +513,6 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
   char*  tmpstr;        /* Temporary string value                       */
   int    comb_missed;   /* If set to 1, current combination was missed  */
   char*  tmpname;       /* Temporary pointer to current signal name     */
-  bool   need_to_force_l = FALSE;
-  bool   need_to_force_r = FALSE;
   
   *depth  = 0;
   *size   = 0;
@@ -565,21 +562,8 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
         
       } else {
 
-        if( ((exp->left != NULL) && (SUPPL_OP( exp->suppl ) == SUPPL_OP( exp->left->suppl )) ||
-             (SUPPL_IS_ROOT( exp->suppl ) == 0) && (SUPPL_OP( exp->suppl ) == SUPPL_OP( exp->parent->expr->suppl ))) &&
-            ((SUPPL_OP( exp->suppl ) == EXP_OP_AND)  ||
-             (SUPPL_OP( exp->suppl ) == EXP_OP_OR)   ||
-             (SUPPL_OP( exp->suppl ) == EXP_OP_LAND) ||
-             (SUPPL_OP( exp->suppl ) == EXP_OP_LOR)) ) {
-          need_to_force_r = TRUE;
-        }
-
-        if( need_to_force_r && (exp->left != NULL) && (SUPPL_OP( exp->suppl ) != SUPPL_OP( exp->left->suppl )) ) {
-          need_to_force_l = TRUE;
-        }
-
-        combination_underline_tree( exp->left,  combination_calc_depth( exp, curr_depth, TRUE ),  &l_lines, &l_depth, &l_size, SUPPL_OP( exp->suppl ), center, need_to_force_l );
-        combination_underline_tree( exp->right, combination_calc_depth( exp, curr_depth, FALSE ), &r_lines, &r_depth, &r_size, SUPPL_OP( exp->suppl ), center, need_to_force_r );
+        combination_underline_tree( exp->left,  combination_calc_depth( exp, curr_depth, TRUE ),  &l_lines, &l_depth, &l_size, SUPPL_OP( exp->suppl ), center );
+        combination_underline_tree( exp->right, combination_calc_depth( exp, curr_depth, FALSE ), &r_lines, &r_depth, &r_size, SUPPL_OP( exp->suppl ), center );
 
         if( parent_op == SUPPL_OP( exp->suppl ) ) {
 
@@ -729,19 +713,6 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
         }
 
       }
-
-/*
-      if( force_underline ) {
-        comb_missed = 1;
-      } else {
-        if( (SUPPL_IS_ROOT( exp->suppl ) == 1) || (SUPPL_OP( exp->suppl ) != SUPPL_OP( exp->parent->expr->suppl )) ) {
-          comb_missed = (((report_comb_depth == REPORT_DETAILED) && (curr_depth <= report_comb_depth)) ||
-                          (report_comb_depth == REPORT_VERBOSE)) ? EXPR_COMB_MISSED( exp ) : 0;
-        } else {
-          comb_missed = 0;
-        }
-      }
-*/
 
       comb_missed = (((report_comb_depth == REPORT_DETAILED) && (curr_depth <= report_comb_depth)) ||
                       (report_comb_depth == REPORT_VERBOSE)) ? ((exp->ulid != -1) ? 1 : 0) : 0;
@@ -956,7 +927,7 @@ void combination_underline( FILE* ofile, char** code, int code_depth, expression
 
   start = 0;
 
-  combination_underline_tree( exp, 0, &lines, &depth, &size, SUPPL_OP( exp->suppl ), (code_depth == 1), FALSE );
+  combination_underline_tree( exp, 0, &lines, &depth, &size, SUPPL_OP( exp->suppl ), (code_depth == 1) );
 
   for( j=0; j<code_depth; j++ ) {
 
@@ -1228,11 +1199,6 @@ void combination_multi_expr_output( FILE* ofile, char* line1, char* line2, char*
 */
 void combination_multi_vars( FILE* ofile, expression* exp ) {
 
-  expression* curr_exp;       /* Pointer to current expression */
-  int         i;
-  int         uniq_shift;
-  int         eval_shift;
-  int         eval_val;
   int         ulid    = 1;
   float       total   = 0;
   int         hit     = 0;
@@ -1420,12 +1386,10 @@ bool combination_missed_expr( expression* expr, unsigned int curr_depth ) {
 */
 void combination_display_verbose( FILE* ofile, stmt_link* stmtl ) {
 
-  stmt_iter   stmti;         /* Statement list iterator                            */
-  stmt_link*  stmtt = NULL;  /* Temporary statement link pointer used for ordering */
-  expression* unexec_exp;    /* Pointer to current unexecuted expression           */
-  char**      code;          /* Code string from code generator                    */
-  int         code_depth;    /* Depth of code array                                */
-  int         i;             /* Loop iterator                                      */
+  stmt_iter   stmti;         /* Statement list iterator                  */
+  expression* unexec_exp;    /* Pointer to current unexecuted expression */
+  char**      code;          /* Code string from code generator          */
+  int         code_depth;    /* Depth of code array                      */
 
   if( report_covered ) {
     fprintf( ofile, "    Hit Combinations\n\n" );
@@ -1598,6 +1562,13 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.89  2004/01/31 18:58:35  phase1geo
+ Finished reformatting of reports.  Fixed bug where merged reports with
+ different leading hierarchies were outputting the leading hierarchy of one
+ which lead to confusion when interpreting reports.  Also made modification
+ to information line in CDD file for these cases.  Full regression runs clean
+ with Icarus Verilog at this point.
+
  Revision 1.88  2004/01/30 23:23:22  phase1geo
  More report output improvements.  Still not ready with regressions.
 

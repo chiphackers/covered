@@ -22,6 +22,7 @@
 #include "link.h"
 #include "binding.h"
 #include "fsm.h"
+#include "db.h"
 
 
 extern char      user_msg[USER_MSG_LENGTH];
@@ -462,6 +463,9 @@ void fsm_var_remove( fsm_var* fv ) {
 
 /*
  $Log$
+ Revision 1.13  2003/11/15 04:21:57  phase1geo
+ Fixing syntax errors found in Doxygen and GCC compiler.
+
  Revision 1.12  2003/11/11 21:48:09  phase1geo
  Fixing bug where next pointers in bind lists were not being initialized to
  NULL (manifested itself in Irix).  Also added missing development documentation

@@ -23,6 +23,7 @@
 #include "util.h"
 #include "statement.h"
 #include "iter.h"
+#include "fsm.h"
 
 
 /*!
@@ -717,6 +718,10 @@ void mod_link_delete_list( mod_link* head ) {
 
 /*
  $Log$
+ Revision 1.24  2003/10/28 00:18:06  phase1geo
+ Adding initial support for inline attributes to specify FSMs.  Still more
+ work to go but full regression still passes at this point.
+
  Revision 1.23  2003/10/13 03:56:29  phase1geo
  Fixing some problems with new FSM code.  Not quite there yet.
 

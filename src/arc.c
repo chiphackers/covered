@@ -287,7 +287,7 @@ bool arc_set_states( char* arcs, int start, vector* left, vector* right ) {
 
   } else {
 
-    // printf( "Setting state (%d) to (%d)\n", vector_to_int( left ), vector_to_int( right ) );
+    /* printf( "Setting state (%d) to (%d)\n", vector_to_int( left ), vector_to_int( right ) ); */
 
     entry_size = arc_get_entry_width( arc_get_width( arcs ) );
 
@@ -313,7 +313,7 @@ bool arc_set_states( char* arcs, int start, vector* left, vector* right ) {
           mask  |= (0x1 << pos);
         }
         arcs[curr] |= ((vector_to_int( &value ) << pos) & mask);
-        // printf( "arcs[%d]: %x, value: %x\n", curr, ((int)arcs[curr] & 0xff), ((vector_to_int( &value ) << pos) & mask) );
+        /* printf( "arcs[%d]: %x, value: %x\n", curr, ((int)arcs[curr] & 0xff), ((vector_to_int( &value ) << pos) & mask) ); */
         index       += value.width;
         value.value += value.width;
         value.width  = ((arc_get_width( arcs ) - index) > 8) ? 8 : (arc_get_width( arcs ) - index);
@@ -484,7 +484,6 @@ char* arc_create( int width ) {
 
 /*!
  \param arcs   Pointer to state transition arc array to add to.
- \param width  Width of state variable for this FSM.
  \param fr_st  Pointer to vector containing the from state.
  \param to_st  Pointer to vector containing the to state.
  \param hit    Specifies if arc entry should be marked as hit.
@@ -497,7 +496,7 @@ char* arc_create( int width ) {
  a state transition entry from the fr_st and to_st expressions, setting the
  hit bits in the entry to 0.
 */
-void arc_add( char** arcs, int width, vector* fr_st, vector* to_st, int hit ) {
+void arc_add( char** arcs, vector* fr_st, vector* to_st, int hit ) {
 
   char* tmp;          /* Temporary char array holder              */
   int   entry_width;  /* Width of a signal entry in the arc array */
@@ -509,7 +508,7 @@ void arc_add( char** arcs, int width, vector* fr_st, vector* to_st, int hit ) {
 
   if( !vector_is_unknown( fr_st ) && !vector_is_unknown( to_st ) ) {
 
-    // printf( "Adding state transition %d -> %d\n", vector_to_int( fr_st ), vector_to_int( to_st ) );
+    /* printf( "Adding state transition %d -> %d\n", vector_to_int( fr_st ), vector_to_int( to_st ) ); */
 
     ptr  = 1;   /* Tell find function to check for a match even if opposite bit is not set. */
     side = arc_find( *arcs, fr_st, to_st, &ptr );
@@ -546,7 +545,7 @@ void arc_add( char** arcs, int width, vector* fr_st, vector* to_st, int hit ) {
     if( side == 2 ) {
 
       /* Initialize arc entry */
-      // printf( "Actually setting state now, hit: %d, %d\n", hit, arc_get_curr_size( *arcs ) );
+      /* printf( "Actually setting state now, hit: %d, %d\n", hit, arc_get_curr_size( *arcs ) ); */
       if( arc_set_states( *arcs, arc_get_curr_size( *arcs ), fr_st, to_st ) ) {
         arc_set_entry_suppl( *arcs, arc_get_curr_size( *arcs ), ARC_HIT_F, hit );
         arc_set_entry_suppl( *arcs, arc_get_curr_size( *arcs ), ARC_HIT_R, 0 );
@@ -555,13 +554,13 @@ void arc_add( char** arcs, int width, vector* fr_st, vector* to_st, int hit ) {
 
     } else if( side == 1 ) {
 
-      // printf( "Setting reverse state now, hit: %d, ptr: %d\n", hit, ptr );
+      /* printf( "Setting reverse state now, hit: %d, ptr: %d\n", hit, ptr ); */
       arc_set_entry_suppl( *arcs, ptr, ARC_BIDIR, 1 );
       arc_set_entry_suppl( *arcs, ptr, ARC_HIT_R, hit );
 
     } else if( side == 0 ) {
 
-      // printf( "Setting forward state now, hit: %d, ptr: %d\n", hit, ptr );
+      /* printf( "Setting forward state now, hit: %d, ptr: %d\n", hit, ptr ); */
       arc_set_entry_suppl( *arcs, ptr, ARC_HIT_F, hit );
 
     }
@@ -634,7 +633,7 @@ void arc_compare_all_states( char* arcs, int start, bool left ) {
   entry_size  = arc_get_entry_width( arc_get_width( arcs ) );
   hit_forward = arc_get_entry_suppl( arcs, start, ARC_HIT_F );
 
-  // printf( "Comparing against start: %d, left: %d\n", start, left );
+  /* printf( "Comparing against start: %d, left: %d\n", start, left ); */
 
   if( left ) {
     state1_pos   = (arc_get_width( arcs ) + ARC_ENTRY_SUPPL_SIZE) % 8;
@@ -650,7 +649,7 @@ void arc_compare_all_states( char* arcs, int start, bool left ) {
   for( i=start; i<arc_get_curr_size( arcs ); i++ ) {
     for( ; j<2; j++ ) {
    
-      // printf( "Comparing with i: %d, j: %d\n", i, j );
+      /* printf( "Comparing with i: %d, j: %d\n", i, j ); */
 
       /* Left */
       if( j == 0 ) {
@@ -662,7 +661,7 @@ void arc_compare_all_states( char* arcs, int start, bool left ) {
       }
 
       if( arc_compare_states( arcs, state1_index, state1_pos, state2_index, state2_pos ) ) {
-        // printf( "Found match\n" );
+        /* printf( "Found match\n" ); */
         if( hit_forward == 0 ) {
           if( left ) {
             arc_set_entry_suppl( arcs, start, ARC_NOT_UNIQUE_L, 1 );
@@ -739,7 +738,6 @@ int arc_state_hits( char* arcs ) {
           if( arc_get_entry_suppl( arcs, i, ARC_HIT_F ) == 1 ) {
             hit++;
           }
-          // printf( "1 Hit: %d\n", hit );
         }
       } else {
         if( arc_get_entry_suppl( arcs, i, ARC_NOT_UNIQUE_R ) == 0 ) {
@@ -749,7 +747,6 @@ int arc_state_hits( char* arcs ) {
           if( arc_get_entry_suppl( arcs, i, ARC_HIT_F ) == 1 ) {
             hit++;
           }
-          // printf( "2 Hit: %d\n", hit );
         }
       }
 
@@ -803,14 +800,12 @@ float arc_transition_total( char* arcs ) {
 */
 int arc_transition_hits( char* arcs ) {
 
-  int hit = 0;     /* Number of arcs hit                          */
-  int i;           /* Loop iterator                               */
-  int curr_size;   /* Current size of arc array                   */
-  int entry_size;  /* Number of characters that contain one entry */
+  int hit = 0;     /* Number of arcs hit        */
+  int i;           /* Loop iterator             */
+  int curr_size;   /* Current size of arc array */
 
   /* Get some size values */
   curr_size  = arc_get_curr_size( arcs );
-  entry_size = arc_get_entry_width( arc_get_width( arcs ) );
 
   /* Count the number of hits in the FSM arc */
   for( i=0; i<curr_size; i++ ) {
@@ -869,7 +864,7 @@ bool arc_db_write( char* arcs, FILE* file ) {
   int  i;              /* Loop iterator                  */
 
   for( i=0; i<(arc_get_curr_size( arcs ) * arc_get_entry_width( arc_get_width( arcs ) )) + ARC_STATUS_SIZE; i++ ) {
-    // printf( "arcs[%d]; %x\n", i, (int)arcs[i] & 0xff );
+    /* printf( "arcs[%d]; %x\n", i, (int)arcs[i] & 0xff ); */
     if( (int)arcs[i] == 0 ) {
       fprintf( file, "," );
     } else {
@@ -933,15 +928,17 @@ bool arc_db_read( char** arcs, char** line ) {
   int  i;              /* Loop iterator                  */
   int  val;            /* Current character value        */
   int  width;          /* Arc signal width               */
-  int  max_size;       /* Size of arc array              */
   int  curr_size;      /* Current size of arc array      */
   int  suppl;          /* Supplemental field             */
 
   /* Get sizing information */
   width     =  (arc_read_get_next_value( line ) & 0xff) | 
               ((arc_read_get_next_value( line ) & 0xff) << 8);
-  max_size  =  (arc_read_get_next_value( line ) & 0xff) |
-              ((arc_read_get_next_value( line ) & 0xff) << 8);
+
+  /* We don't need the max_size information, so we just read it */
+  arc_read_get_next_value( line );
+  arc_read_get_next_value( line );
+
   curr_size =  (arc_read_get_next_value( line ) & 0xff) |
               ((arc_read_get_next_value( line ) & 0xff) << 8);
   suppl     =  (arc_read_get_next_value( line ) & 0xff);
@@ -1081,9 +1078,9 @@ bool arc_db_merge( char** base, char** line, bool same ) {
       vecr = vector_from_string( &strr );
 
       /* Add these states to the base arc array */
-      arc_add( base, arc_get_width( arcs ), vecl, vecr, arc_get_entry_suppl( arcs, i, ARC_HIT_F ) );
+      arc_add( base, vecl, vecr, arc_get_entry_suppl( arcs, i, ARC_HIT_F ) );
       if( arc_get_entry_suppl( arcs, i, ARC_BIDIR ) == 1 ) {
-        arc_add( base, arc_get_width( arcs ), vecr, vecl, arc_get_entry_suppl( arcs, i, ARC_HIT_R ) );
+        arc_add( base, vecr, vecl, arc_get_entry_suppl( arcs, i, ARC_HIT_R ) );
       }
 
       strl = tmpl;
@@ -1210,6 +1207,9 @@ void arc_dealloc( char* arcs ) {
 
 /*
  $Log$
+ Revision 1.21  2003/11/16 04:03:38  phase1geo
+ Updating development documentation for FSMs.
+
  Revision 1.20  2003/11/10 04:25:50  phase1geo
  Adding more FSM diagnostics to regression suite.  All major testing for
  current FSM code should be complete at this time.  A few bug fixes to files

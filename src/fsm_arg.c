@@ -5,6 +5,7 @@
 */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <assert.h>
 
 #include "defines.h"
@@ -192,7 +193,6 @@ bool fsm_arg_parse( char* arg ) {
 
   bool        retval = TRUE;  /* Return value for this function        */
   char*       ptr    = arg;   /* Pointer to current character in arg   */
-  fsm_var*    fv;             /* Pointer to newly created FSM variable */
   expression* in_state;       /* Pointer to input state expression     */
   expression* out_state;      /* Pointer to output state expression    */
 
@@ -505,6 +505,10 @@ void fsm_arg_parse_attr( attr_param* ap, module* mod ) {
 
 /*
  $Log$
+ Revision 1.12  2003/11/26 23:14:41  phase1geo
+ Adding code to include left-hand-side expressions of statements for report
+ outputting purposes.  Full regression does not yet pass.
+
  Revision 1.11  2003/11/15 04:25:02  phase1geo
  Fixing syntax error found in Doxygen.
 

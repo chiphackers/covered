@@ -357,7 +357,6 @@ void db_add_instance( char* scope, char* modname ) {
 
   module*   mod;             /* Pointer to module                        */
   mod_link* found_mod_link;  /* Pointer to found mod_link in module list */
-  str_link* mod_in_list;     /* Pointer to found module name in modlist  */
 
   /* There should always be a parent so internal error if it does not exist. */
   assert( curr_module != NULL );
@@ -386,7 +385,7 @@ void db_add_instance( char* scope, char* modname ) {
       /* Add instance. */
       instance_parse_add( &instance_root, curr_module, mod, scope );
 
-      if( (mod_in_list = str_link_find( modname, modlist_head )) == NULL ) {
+      if( str_link_find( modname, modlist_head ) == NULL ) {
         str_link_add( modname, &modlist_head, &modlist_tail );
       }
       
@@ -414,9 +413,6 @@ void db_add_module( char* name, char* file, int start_line ) {
   snprintf( user_msg, USER_MSG_LENGTH, "In db_add_module, module: %s, file: %s, start_line: %d", name, file, start_line );
   print_output( user_msg, DEBUG );
 
-  /* Make sure that modlist_head name is the same as the specified name */
-  // assert( strcmp( name, modlist_head->str ) == 0 );
-
   /* Set current module to this module */
   mod.name = name;
 
@@ -436,8 +432,6 @@ void db_add_module( char* name, char* file, int start_line ) {
  Updates the modlist for parsing purposes.
 */
 void db_end_module( int end_line ) {
-
-  str_link* str;    /* Temporary pointer to current modlist entry at head */
 
   snprintf( user_msg, USER_MSG_LENGTH, "In db_end_module, end_line: %d", end_line );
   print_output( user_msg, DEBUG );
@@ -1038,7 +1032,7 @@ void db_statement_set_stop( statement* stmt, statement* post, bool both ) {
 */
 attr_param* db_create_attr_param( char* name, expression* expr ) {
 
-  attr_param* ap;  /* Pointer to newly allocated/initialized attribute parameter */
+  attr_param* attr;  /* Pointer to newly allocated/initialized attribute parameter */
 
   if( expr != NULL ) {
     snprintf( user_msg, USER_MSG_LENGTH, "In db_create_attr_param, name: %s, expr: %d", name, expr->id );
@@ -1047,9 +1041,9 @@ attr_param* db_create_attr_param( char* name, expression* expr ) {
   }
   print_output( user_msg, DEBUG );
 
-  ap = attribute_create( name, expr );
+  attr = attribute_create( name, expr );
 
-  return( ap );
+  return( attr );
 
 }
 
@@ -1262,6 +1256,12 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.109  2004/01/04 04:52:03  phase1geo
+ Updating ChangeLog and TODO files.  Adding merge information to INFO line
+ of CDD files and outputting this information to the merged reports.  Adding
+ starting and ending line information to modules and added function for GUI
+ to retrieve this information.  Updating full regression.
+
  Revision 1.108  2003/11/26 23:14:41  phase1geo
  Adding code to include left-hand-side expressions of statements for report
  outputting purposes.  Full regression does not yet pass.

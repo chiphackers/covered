@@ -17,6 +17,7 @@
 #include "toggle.h"
 #include "defines.h"
 #include "vector.h"
+#include "util.h"
 
 
 extern mod_inst* instance_root;
@@ -28,7 +29,6 @@ extern char leading_hierarchy[4096];
 extern char second_hierarchy[4096];
 
 /*!
- \param expl   Pointer to expression list to search.
  \param sigl   Pointer to signal list to search.
  \param total  Total number of bits in the design/module.
  \param hit01  Number of bits toggling from 0 to 1 during simulation.
@@ -40,7 +40,7 @@ extern char second_hierarchy[4096];
  the value of hit01 is incremented by one.  For each bit that toggled from
  a 1 to a 0, the value of hit10 is incremented by one.
 */
-void toggle_get_stats( exp_link* expl, sig_link* sigl, float* total, int* hit01, int* hit10 ) {
+void toggle_get_stats( sig_link* sigl, float* total, int* hit01, int* hit10 ) {
 
   sig_link* curr_sig = sigl;    /* Current signal being evaluated     */
   
@@ -375,6 +375,13 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.25  2004/01/31 18:58:43  phase1geo
+ Finished reformatting of reports.  Fixed bug where merged reports with
+ different leading hierarchies were outputting the leading hierarchy of one
+ which lead to confusion when interpreting reports.  Also made modification
+ to information line in CDD file for these cases.  Full regression runs clean
+ with Icarus Verilog at this point.
+
  Revision 1.24  2004/01/30 23:23:27  phase1geo
  More report output improvements.  Still not ready with regressions.
 

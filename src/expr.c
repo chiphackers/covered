@@ -256,7 +256,7 @@ void expression_set_value( expression* exp, vector* vec ) {
   
   if( SUPPL_IS_LHS( exp->suppl ) == 0 ) {
 
-    // printf( "In expression_set_value, expr: %d, op: %d, line: %d\n", exp->id, SUPPL_OP( exp->suppl ), exp->line );
+    /* printf( "In expression_set_value, expr: %d, op: %d, line: %d\n", exp->id, SUPPL_OP( exp->suppl ), exp->line ); */
   
     switch( SUPPL_OP( exp->suppl ) ) {
       case EXP_OP_SIG   :
@@ -1401,6 +1401,14 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.93  2004/01/25 03:41:48  phase1geo
+ Fixes bugs in summary information not matching verbose information.  Also fixes
+ bugs where instances were output when no logic was missing, where instance
+ children were missing but not output.  Changed code to output summary
+ information on a per instance basis (where children instances are not merged
+ into parent instance summary information).  Updated regressions as a result.
+ Updates to user documentation (though this is not complete at this time).
+
  Revision 1.92  2004/01/08 23:24:41  phase1geo
  Removing unnecessary scope information from signals, expressions and
  statements to reduce file sizes of CDDs and slightly speeds up fscanf

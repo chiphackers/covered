@@ -17,6 +17,7 @@
 
 #include "defines.h"
 #include "info.h"
+#include "util.h"
 
 
 extern char* merge_in0;
@@ -177,6 +178,13 @@ bool info_db_read( char** line ) {
 
 /*
  $Log$
+ Revision 1.5  2004/01/31 18:58:43  phase1geo
+ Finished reformatting of reports.  Fixed bug where merged reports with
+ different leading hierarchies were outputting the leading hierarchy of one
+ which lead to confusion when interpreting reports.  Also made modification
+ to information line in CDD file for these cases.  Full regression runs clean
+ with Icarus Verilog at this point.
+
  Revision 1.4  2004/01/04 04:52:03  phase1geo
  Updating ChangeLog and TODO files.  Adding merge information to INFO line
  of CDD files and outputting this information to the merged reports.  Adding

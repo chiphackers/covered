@@ -437,11 +437,13 @@ void scope_extract_back( char* scope, char* back, char* rest ) {
   
 }
 
-void scope_extract_scope( char* scope, char* front, char* back ) {
+/*!
+ \param scope
+ \param front
+ \param back
 
-  char* last_ptr = '\0';   /* Pointer to last dot seen */
-  char* ptr1     = scope;  /* Pointer to scope         */
-  char* ptr2     = front;  /* Pointer to front         */
+*/
+void scope_extract_scope( char* scope, char* front, char* back ) {
 
   back[0]  = '\0';
 
@@ -733,6 +735,10 @@ void timer_stop( timer** tm ) {
 
 /*
  $Log$
+ Revision 1.25  2003/10/03 03:08:44  phase1geo
+ Modifying filename in summary output to only specify basename of file instead
+ of entire path.  The verbose report contains the full pathname still, however.
+
  Revision 1.24  2003/09/22 19:42:31  phase1geo
  Adding print_output WARNING_WRAP and FATAL_WRAP lines to allow multi-line
  error output to be properly formatted to the output stream.

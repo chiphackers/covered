@@ -113,11 +113,9 @@ bool search_add_include_path( char* path ) {
 */
 bool search_add_directory_path( char* path ) {
 
-  bool  retval = TRUE;   /* Return value for this function */
-  char* tmp;             /* Temporary directory name       */
+  bool retval = TRUE;  /* Return value for this function */
 
   if( is_directory( path ) && directory_exists( path ) ) {
-    tmp = strdup( path );
     /* If no library extensions have been specified, assume *.v */
     if( extensions_head == NULL ) {
       str_link_add( strdup( "v" ), &(extensions_head), &(extensions_tail) );
@@ -228,6 +226,12 @@ void search_free_lists() {
 
 /*
  $Log$
+ Revision 1.14  2003/02/17 22:47:20  phase1geo
+ Fixing bug with merging same DUTs from different testbenches.  Updated reports
+ to display full path instead of instance name and parent instance name.  Added
+ merge tests and added merge testing into regression test suite.  Fixing bug with
+ -D/-Q option specified with merge command.  Full regression passing.
+
  Revision 1.13  2002/11/02 16:16:20  phase1geo
  Cleaned up all compiler warnings in source and header files.
 

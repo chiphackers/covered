@@ -17,7 +17,10 @@
 char* arc_create( int width );
 
 /*! \brief Adds new state transition arc entry to specified table. */
-void arc_add( char** arcs, int width, vector* fr_st, vector* to_st, int hit );
+void arc_add( char** arcs, vector* fr_st, vector* to_st, int hit );
+
+/*! \brief Gets supplemental field value from specified arc entry table. */
+int arc_get_suppl( char* arcs, int type );
 
 /*! \brief Calculates all state and state transition values for reporting purposes. */
 void arc_get_stats( char* arcs, float* state_total, int* state_hits, float* arc_total, int* arc_hits );
@@ -42,6 +45,10 @@ void arc_dealloc( char* arcs );
 
 /*
  $Log$
+ Revision 1.7  2003/09/19 13:25:28  phase1geo
+ Adding new FSM diagnostics including diagnostics to verify FSM merging function.
+ FSM merging code was modified to work correctly.  Full regression passes.
+
  Revision 1.6  2003/09/14 01:09:20  phase1geo
  Added verbose output for FSMs.
 

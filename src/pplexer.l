@@ -378,9 +378,6 @@ static void def_finish() {
 */
 static void def_undefine() {
 
-  struct define_t* cur;   /* Pointer to current define node */
-  struct define_t* tail;  /* Pointer to last define node    */
-
   /* Get undef directive identifier string */
   sscanf( yytext, "`undef %s", def_name );
 
@@ -482,7 +479,6 @@ static void do_include() {
 static int yywrap() {
 
   struct include_stack_t* isp = istack;
-  str_link*               curr;
 
   istack = isp->next;
 

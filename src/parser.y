@@ -941,12 +941,6 @@ expr_primary
       expression* tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, NULL );
       vector_dealloc( tmp->value );
       tmp->value = $1;
-      /* Calculate TRUE/FALSE-ness of NUMBER now */
-      //switch( expression_bit_value( tmp ) ) {
-      //  case 0 :  tmp->suppl = tmp->suppl | (0x1 << SUPPL_LSB_FALSE) | (0x1 << SUPPL_LSB_EVAL_F);  break;
-      //  case 1 :  tmp->suppl = tmp->suppl | (0x1 << SUPPL_LSB_TRUE)  | (0x1 << SUPPL_LSB_EVAL_T);  break;
-      //  default:  break;
-      //}
       $$ = tmp;
     }
   | UNUSED_NUMBER
