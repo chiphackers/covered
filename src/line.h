@@ -15,12 +15,19 @@
 /*! \brief Calculates line coverage numbers for the specified expression list. */
 void line_get_stats( stmt_link* stmtl, float* total, int* hit );
 
+/*! \brief Gathers line numbers from specified module that were not hit during simulation. */
+bool line_collect_uncovered( char* mod_name, int** lines, int* line_cnt );
+
 /*! \brief Generates report output for line coverage. */
 void line_report( FILE* ofile, bool verbose );
 
 
 /*
  $Log$
+ Revision 1.8  2002/11/05 00:20:07  phase1geo
+ Adding development documentation.  Fixing problem with combinational logic
+ output in report command and updating full regression.
+
  Revision 1.7  2002/10/31 23:13:55  phase1geo
  Fixing C compatibility problems with cc and gcc.  Found a few possible problems
  with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that

@@ -67,6 +67,69 @@ void line_get_stats( stmt_link* stmtl, float* total, int* hit ) {
 }
 
 /*!
+ \param mod_name  Name of module to get missed line number array from.
+ \param lines     Pointer to array of integers that will contain the missed lines.
+ \param line_cnt  Pointer to size of lines array.
+
+ \return Returns TRUE if module specified was found; otherwise, returns FALSE.
+
+ Searches design for specified module name.  If the module name is found, the lines
+ array and line_cnt values are initialized and filled with the line numbers that were
+ not hit during simulation and a value of TRUE is returned.  If the module name was
+ not found, a value of FALSE is returned.
+*/
+bool line_collect_uncovered( char* mod_name, int** lines, int* line_cnt ) {
+
+  bool      retval = TRUE;  /* Return value for this function */
+  stmt_iter stmti;          /* Statement list iterator        */
+  module    mod;            /* Module used for searching      */
+  mod_link* modl;           /* Pointer to found module link   */
+  int       i      = 0;     /* Array index                    */
+
+  /* First, find module in module array */
+  mod.name = mod_name;
+  if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
+
+    /* Create an array that will hold the number of uncovered lines */
+    *line_cnt = modl->mod->stat->line_total - modl->mod->stat->line_hit;
+    *lines    = (int*)malloc_safe( sizeof( int ) * (*line_cnt) );
+
+    stmt_iter_reset( &stmti, modl->mod->stmt_tail );
+    stmt_iter_find_head( &stmti, FALSE );
+
+    while( stmti.curr != NULL ) {
+
+      if( (SUPPL_OP( stmti.curr->stmt->exp->suppl ) != EXP_OP_DELAY)   &&
+          (SUPPL_OP( stmti.curr->stmt->exp->suppl ) != EXP_OP_CASE)    &&
+          (SUPPL_OP( stmti.curr->stmt->exp->suppl ) != EXP_OP_CASEX)   &&
+          (SUPPL_OP( stmti.curr->stmt->exp->suppl ) != EXP_OP_CASEZ)   &&
+          (SUPPL_OP( stmti.curr->stmt->exp->suppl ) != EXP_OP_DEFAULT) &&
+          (stmti.curr->stmt->exp->line != 0) ) {
+
+        if( !SUPPL_WAS_EXECUTED( stmti.curr->stmt->exp->suppl ) ) {
+
+          (*lines)[i] = stmti.curr->stmt->exp->line;
+          i++;
+
+        }
+
+      }
+
+      stmt_iter_get_next_in_order( &stmti );
+
+    }
+
+  } else {
+
+    retval = FALSE;
+
+  }
+
+  return( retval );
+
+}
+
+/*!
  \param ofile        Pointer to file to output results to.
  \param root         Current node in instance tree.
  \param parent_inst  Name of parent instance.
@@ -334,6 +397,9 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.32  2003/10/13 03:56:29  phase1geo
+ Fixing some problems with new FSM code.  Not quite there yet.
+
  Revision 1.31  2003/10/03 12:31:04  phase1geo
  More report tweaking.
 

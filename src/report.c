@@ -426,6 +426,35 @@ void report_generate( FILE* ofile ) {
 }
 
 /*!
+ \param ifile  Name of CDD file to read from.
+ 
+ \return Returns TRUE if CDD file was read properly; otherwise, returns FALSE.
+
+ Reads in specified CDD file and gathers module statistics to get ready for GUI
+ interaction with this CDD file. 
+*/
+bool report_read_cdd_and_ready( char* ifile ) {
+
+  bool retval = TRUE;  /* Return value for this function */
+
+  /* Open database file for reading */
+  if( ifile == NULL ) {
+
+    retval = FALSE;
+
+  } else {
+
+    if( retval = db_read( ifile, READ_MODE_REPORT_MOD_MERGE ) ) {
+      report_gather_module_stats( mod_head );
+    }
+
+  }
+
+  return( retval );
+
+}
+
+/*!
  \param argc      Number of arguments in report command-line.
  \param last_arg  Index of last parsed argument from list.
  \param argv      Arguments passed to report command to parse.
@@ -494,6 +523,10 @@ int command_report( int argc, int last_arg, char** argv ) {
 
     } else {
 
+      if( input_db != NULL ) {
+        report_read_cdd_and_ready( input_db );
+      }
+
       /* Call GUI here */
       print_output( "The -view option is currently not available\n", FATAL );
 
@@ -508,6 +541,11 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.23  2003/11/01 01:30:12  phase1geo
+ Adding the -view option to the report command parser.  At the current time,
+ this option will display an error message to standard error if it is found
+ on the command-line.
+
  Revision 1.22  2003/08/25 13:02:04  phase1geo
  Initial stab at adding FSM support.  Contains summary reporting capability
  at this point and roughly works.  Updated regress suite as a result of these
