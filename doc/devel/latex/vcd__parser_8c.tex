@@ -1,0 +1,903 @@
+\section{vcd\_\-parser.c File Reference}
+\label{vcd__parser_8c}\index{vcd_parser.c@{vcd\_\-parser.c}}
+{\tt \#include $<$stdio.h$>$}\par
+{\tt \#include \char`\"{}defines.h\char`\"{}}\par
+{\tt \#include \char`\"{}db.h\char`\"{}}\par
+{\tt \#include \char`\"{}vector.h\char`\"{}}\par
+{\tt \#include \char`\"{}vcd\_\-parser\_\-misc.h\char`\"{}}\par
+\subsection*{Compounds}
+\begin{CompactItemize}
+\item 
+union {\bf YYSTYPE}
+\end{CompactItemize}
+\subsection*{Defines}
+\begin{CompactItemize}
+\item 
+\#define {\bf YYBISON}\ 1
+\item 
+\#define {\bf yyparse}\ VCDparse
+\item 
+\#define {\bf yylex}\ VCDlex
+\item 
+\#define {\bf yyerror}\ VCDerror
+\item 
+\#define {\bf yylval}\ {\bf VCDlval}
+\item 
+\#define {\bf yychar}\ VCDchar
+\item 
+\#define {\bf yydebug}\ VCDdebug
+\item 
+\#define {\bf yynerrs}\ VCDnerrs
+\item 
+\#define {\bf YYLSP\_\-NEEDED}
+\item 
+\#define {\bf VALUE}\ 257
+\item 
+\#define {\bf IDENTIFIER}\ 258
+\item 
+\#define {\bf HIDENTIFIER}\ 259
+\item 
+\#define {\bf SIGWIDTH}\ 260
+\item 
+\#define {\bf CHANGE}\ 261
+\item 
+\#define {\bf TIMESTAMP}\ 262
+\item 
+\#define {\bf V\_\-var}\ 263
+\item 
+\#define {\bf V\_\-end}\ 264
+\item 
+\#define {\bf V\_\-scope}\ 265
+\item 
+\#define {\bf V\_\-upscope}\ 266
+\item 
+\#define {\bf V\_\-comment}\ 267
+\item 
+\#define {\bf V\_\-date}\ 268
+\item 
+\#define {\bf V\_\-dumpall}\ 269
+\item 
+\#define {\bf V\_\-dumpoff}\ 270
+\item 
+\#define {\bf V\_\-dumpon}\ 271
+\item 
+\#define {\bf V\_\-dumpvars}\ 272
+\item 
+\#define {\bf V\_\-enddefinitions}\ 273
+\item 
+\#define {\bf V\_\-dumpports}\ 274
+\item 
+\#define {\bf V\_\-dumpportsoff}\ 275
+\item 
+\#define {\bf V\_\-dumpportson}\ 276
+\item 
+\#define {\bf V\_\-dumpportsall}\ 277
+\item 
+\#define {\bf V\_\-timescale}\ 278
+\item 
+\#define {\bf V\_\-version}\ 279
+\item 
+\#define {\bf V\_\-vcdclose}\ 280
+\item 
+\#define {\bf V\_\-event}\ 281
+\item 
+\#define {\bf V\_\-parameter}\ 282
+\item 
+\#define {\bf V\_\-unknown}\ 283
+\item 
+\#define {\bf V\_\-integer}\ 284
+\item 
+\#define {\bf V\_\-real}\ 285
+\item 
+\#define {\bf V\_\-reg}\ 286
+\item 
+\#define {\bf V\_\-supply0}\ 287
+\item 
+\#define {\bf V\_\-supply1}\ 288
+\item 
+\#define {\bf V\_\-time}\ 289
+\item 
+\#define {\bf V\_\-tri}\ 290
+\item 
+\#define {\bf V\_\-triand}\ 291
+\item 
+\#define {\bf V\_\-trior}\ 292
+\item 
+\#define {\bf V\_\-trireg}\ 293
+\item 
+\#define {\bf V\_\-tri0}\ 294
+\item 
+\#define {\bf V\_\-tri1}\ 295
+\item 
+\#define {\bf V\_\-wand}\ 296
+\item 
+\#define {\bf V\_\-wire}\ 297
+\item 
+\#define {\bf V\_\-wor}\ 298
+\item 
+\#define {\bf V\_\-port}\ 299
+\item 
+\#define {\bf V\_\-module}\ 300
+\item 
+\#define {\bf V\_\-task}\ 301
+\item 
+\#define {\bf V\_\-function}\ 302
+\item 
+\#define {\bf V\_\-begin}\ 303
+\item 
+\#define {\bf V\_\-fork}\ 304
+\item 
+\#define {\bf YYDEBUG}\ 1
+\item 
+\#define {\bf const}
+\item 
+\#define {\bf YYFINAL}\ 75
+\item 
+\#define {\bf YYFLAG}\ -32768
+\item 
+\#define {\bf YYNTBASE}\ 51
+\item 
+\#define {\bf YYTRANSLATE}(x)\ ((unsigned)(x) $<$= 304 ? {\bf yytranslate}[x] : 62)
+\item 
+\#define {\bf YYLAST}\ 69
+\item 
+\#define {\bf YYSTACK\_\-ALLOC}\ malloc
+\item 
+\#define {\bf yyerrok}\ (yyerrstatus = 0)
+\item 
+\#define {\bf yyclearin}\ (yychar = YYEMPTY)
+\item 
+\#define {\bf YYEMPTY}\ -2
+\item 
+\#define {\bf YYEOF}\ 0
+\item 
+\#define {\bf YYACCEPT}\ goto yyacceptlab
+\item 
+\#define {\bf YYABORT}\ goto yyabortlab
+\item 
+\#define {\bf YYERROR}\ goto yyerrlab1
+\item 
+\#define {\bf YYFAIL}\ goto yyerrlab
+\item 
+\#define {\bf YYRECOVERING}()\ (!!yyerrstatus)
+\item 
+\#define {\bf YYBACKUP}(token, value)
+\item 
+\#define {\bf YYTERROR}\ 1
+\item 
+\#define {\bf YYERRCODE}\ 256
+\item 
+\#define {\bf YYLEX}\ yylex()
+\item 
+\#define {\bf YYINITDEPTH}\ 200
+\item 
+\#define {\bf YYMAXDEPTH}\ 10000
+\item 
+\#define {\bf YYPARSE\_\-PARAM\_\-ARG}
+\item 
+\#define {\bf YYPARSE\_\-PARAM\_\-DECL}
+\item 
+\#define {\bf YYPOPSTACK}\ (yyvsp--, yyssp--, yylsp--)
+\end{CompactItemize}
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+void {\bf \_\-\_\-yy\_\-memcpy} (to, {\bf from}, {\bf count}) char $\ast$to
+\end{CompactItemize}
+\subsection*{Variables}
+\begin{CompactItemize}
+\item 
+const char {\bf yytranslate} [$\,$]
+\item 
+const short {\bf yyprhs} [$\,$]
+\item 
+const short {\bf yyrhs} [$\,$]
+\item 
+const short {\bf yyrline} [$\,$]
+\item 
+const char $\ast$const {\bf yytname} [$\,$]
+\item 
+const short {\bf yyr1} [$\,$]
+\item 
+const short {\bf yyr2} [$\,$]
+\item 
+const short {\bf yydefact} [$\,$]
+\item 
+const short {\bf yydefgoto} [$\,$]
+\item 
+const short {\bf yypact} [$\,$]
+\item 
+const short {\bf yypgoto} [$\,$]
+\item 
+const short {\bf yytable} [$\,$]
+\item 
+const short {\bf yycheck} [$\,$]
+\item 
+int {\bf yychar}
+\item 
+{\bf YYSTYPE} {\bf yylval}
+\item 
+YYLTYPE {\bf yylloc}
+\item 
+int {\bf yynerrs}
+\item 
+int {\bf yydebug}
+\item 
+char $\ast$ {\bf from}
+\item 
+unsigned int {\bf count}
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+\begin{Desc}
+\item[Author: ]\par
+Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\begin{Desc}
+\item[Date: ]\par
+1/2/2001\end{Desc}
+
+
+\subsection{Define Documentation}
+\index{vcd_parser.c@{vcd\_\-parser.c}!CHANGE@{CHANGE}}
+\index{CHANGE@{CHANGE}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define CHANGE\ 261}\label{vcd__parser_8c_a13}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!const@{const}}
+\index{const@{const}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define const}\label{vcd__parser_8c_a58}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!HIDENTIFIER@{HIDENTIFIER}}
+\index{HIDENTIFIER@{HIDENTIFIER}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define HIDENTIFIER\ 259}\label{vcd__parser_8c_a11}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!IDENTIFIER@{IDENTIFIER}}
+\index{IDENTIFIER@{IDENTIFIER}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define IDENTIFIER\ 258}\label{vcd__parser_8c_a10}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!SIGWIDTH@{SIGWIDTH}}
+\index{SIGWIDTH@{SIGWIDTH}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SIGWIDTH\ 260}\label{vcd__parser_8c_a12}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!TIMESTAMP@{TIMESTAMP}}
+\index{TIMESTAMP@{TIMESTAMP}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define TIMESTAMP\ 262}\label{vcd__parser_8c_a14}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_begin@{V\_\-begin}}
+\index{V_begin@{V\_\-begin}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-begin\ 303}\label{vcd__parser_8c_a55}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_comment@{V\_\-comment}}
+\index{V_comment@{V\_\-comment}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-comment\ 267}\label{vcd__parser_8c_a19}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_date@{V\_\-date}}
+\index{V_date@{V\_\-date}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-date\ 268}\label{vcd__parser_8c_a20}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_dumpall@{V\_\-dumpall}}
+\index{V_dumpall@{V\_\-dumpall}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-dumpall\ 269}\label{vcd__parser_8c_a21}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_dumpoff@{V\_\-dumpoff}}
+\index{V_dumpoff@{V\_\-dumpoff}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-dumpoff\ 270}\label{vcd__parser_8c_a22}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_dumpon@{V\_\-dumpon}}
+\index{V_dumpon@{V\_\-dumpon}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-dumpon\ 271}\label{vcd__parser_8c_a23}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_dumpports@{V\_\-dumpports}}
+\index{V_dumpports@{V\_\-dumpports}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-dumpports\ 274}\label{vcd__parser_8c_a26}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_dumpportsall@{V\_\-dumpportsall}}
+\index{V_dumpportsall@{V\_\-dumpportsall}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-dumpportsall\ 277}\label{vcd__parser_8c_a29}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_dumpportsoff@{V\_\-dumpportsoff}}
+\index{V_dumpportsoff@{V\_\-dumpportsoff}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-dumpportsoff\ 275}\label{vcd__parser_8c_a27}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_dumpportson@{V\_\-dumpportson}}
+\index{V_dumpportson@{V\_\-dumpportson}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-dumpportson\ 276}\label{vcd__parser_8c_a28}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_dumpvars@{V\_\-dumpvars}}
+\index{V_dumpvars@{V\_\-dumpvars}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-dumpvars\ 272}\label{vcd__parser_8c_a24}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_end@{V\_\-end}}
+\index{V_end@{V\_\-end}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-end\ 264}\label{vcd__parser_8c_a16}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_enddefinitions@{V\_\-enddefinitions}}
+\index{V_enddefinitions@{V\_\-enddefinitions}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-enddefinitions\ 273}\label{vcd__parser_8c_a25}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_event@{V\_\-event}}
+\index{V_event@{V\_\-event}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-event\ 281}\label{vcd__parser_8c_a33}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_fork@{V\_\-fork}}
+\index{V_fork@{V\_\-fork}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-fork\ 304}\label{vcd__parser_8c_a56}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_function@{V\_\-function}}
+\index{V_function@{V\_\-function}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-function\ 302}\label{vcd__parser_8c_a54}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_integer@{V\_\-integer}}
+\index{V_integer@{V\_\-integer}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-integer\ 284}\label{vcd__parser_8c_a36}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_module@{V\_\-module}}
+\index{V_module@{V\_\-module}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-module\ 300}\label{vcd__parser_8c_a52}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_parameter@{V\_\-parameter}}
+\index{V_parameter@{V\_\-parameter}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-parameter\ 282}\label{vcd__parser_8c_a34}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_port@{V\_\-port}}
+\index{V_port@{V\_\-port}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-port\ 299}\label{vcd__parser_8c_a51}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_real@{V\_\-real}}
+\index{V_real@{V\_\-real}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-real\ 285}\label{vcd__parser_8c_a37}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_reg@{V\_\-reg}}
+\index{V_reg@{V\_\-reg}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-reg\ 286}\label{vcd__parser_8c_a38}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_scope@{V\_\-scope}}
+\index{V_scope@{V\_\-scope}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-scope\ 265}\label{vcd__parser_8c_a17}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_supply0@{V\_\-supply0}}
+\index{V_supply0@{V\_\-supply0}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-supply0\ 287}\label{vcd__parser_8c_a39}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_supply1@{V\_\-supply1}}
+\index{V_supply1@{V\_\-supply1}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-supply1\ 288}\label{vcd__parser_8c_a40}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_task@{V\_\-task}}
+\index{V_task@{V\_\-task}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-task\ 301}\label{vcd__parser_8c_a53}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_time@{V\_\-time}}
+\index{V_time@{V\_\-time}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-time\ 289}\label{vcd__parser_8c_a41}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_timescale@{V\_\-timescale}}
+\index{V_timescale@{V\_\-timescale}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-timescale\ 278}\label{vcd__parser_8c_a30}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_tri@{V\_\-tri}}
+\index{V_tri@{V\_\-tri}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-tri\ 290}\label{vcd__parser_8c_a42}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_tri0@{V\_\-tri0}}
+\index{V_tri0@{V\_\-tri0}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-tri0\ 294}\label{vcd__parser_8c_a46}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_tri1@{V\_\-tri1}}
+\index{V_tri1@{V\_\-tri1}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-tri1\ 295}\label{vcd__parser_8c_a47}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_triand@{V\_\-triand}}
+\index{V_triand@{V\_\-triand}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-triand\ 291}\label{vcd__parser_8c_a43}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_trior@{V\_\-trior}}
+\index{V_trior@{V\_\-trior}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-trior\ 292}\label{vcd__parser_8c_a44}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_trireg@{V\_\-trireg}}
+\index{V_trireg@{V\_\-trireg}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-trireg\ 293}\label{vcd__parser_8c_a45}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_unknown@{V\_\-unknown}}
+\index{V_unknown@{V\_\-unknown}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-unknown\ 283}\label{vcd__parser_8c_a35}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_upscope@{V\_\-upscope}}
+\index{V_upscope@{V\_\-upscope}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-upscope\ 266}\label{vcd__parser_8c_a18}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_var@{V\_\-var}}
+\index{V_var@{V\_\-var}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-var\ 263}\label{vcd__parser_8c_a15}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_vcdclose@{V\_\-vcdclose}}
+\index{V_vcdclose@{V\_\-vcdclose}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-vcdclose\ 280}\label{vcd__parser_8c_a32}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_version@{V\_\-version}}
+\index{V_version@{V\_\-version}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-version\ 279}\label{vcd__parser_8c_a31}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_wand@{V\_\-wand}}
+\index{V_wand@{V\_\-wand}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-wand\ 296}\label{vcd__parser_8c_a48}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_wire@{V\_\-wire}}
+\index{V_wire@{V\_\-wire}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-wire\ 297}\label{vcd__parser_8c_a49}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!V_wor@{V\_\-wor}}
+\index{V_wor@{V\_\-wor}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define V\_\-wor\ 298}\label{vcd__parser_8c_a50}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!VALUE@{VALUE}}
+\index{VALUE@{VALUE}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define VALUE\ 257}\label{vcd__parser_8c_a9}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!YYABORT@{YYABORT}}
+\index{YYABORT@{YYABORT}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYABORT\ goto yyabortlab}\label{vcd__parser_8c_a70}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!YYACCEPT@{YYACCEPT}}
+\index{YYACCEPT@{YYACCEPT}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYACCEPT\ goto yyacceptlab}\label{vcd__parser_8c_a69}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!YYBACKUP@{YYBACKUP}}
+\index{YYBACKUP@{YYBACKUP}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYBACKUP(token, value)}\label{vcd__parser_8c_a74}
+
+
+{\bf Value:}
+
+\footnotesize\begin{verbatim}do                                                              \
+  if (yychar == YYEMPTY && yylen == 1)                          \
+    { yychar = (token), yylval = (value);                       \
+      yychar1 = YYTRANSLATE (yychar);                           \
+      YYPOPSTACK;                                               \
+      goto yybackup;                                            \
+    }                                                           \
+  else                                                          \
+    { yyerror ("syntax error: cannot back up"); YYERROR; }      \
+while (0)\end{verbatim}\normalsize 
+\index{vcd_parser.c@{vcd\_\-parser.c}!YYBISON@{YYBISON}}
+\index{YYBISON@{YYBISON}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYBISON\ 1}\label{vcd__parser_8c_a0}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!yychar@{yychar}}
+\index{yychar@{yychar}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yychar\ VCDchar}\label{vcd__parser_8c_a5}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!yyclearin@{yyclearin}}
+\index{yyclearin@{yyclearin}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yyclearin\ (yychar = YYEMPTY)}\label{vcd__parser_8c_a66}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!YYDEBUG@{YYDEBUG}}
+\index{YYDEBUG@{YYDEBUG}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYDEBUG\ 1}\label{vcd__parser_8c_a57}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!yydebug@{yydebug}}
+\index{yydebug@{yydebug}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yydebug\ VCDdebug}\label{vcd__parser_8c_a6}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!YYEMPTY@{YYEMPTY}}
+\index{YYEMPTY@{YYEMPTY}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYEMPTY\ -2}\label{vcd__parser_8c_a67}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!YYEOF@{YYEOF}}
+\index{YYEOF@{YYEOF}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYEOF\ 0}\label{vcd__parser_8c_a68}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!YYERRCODE@{YYERRCODE}}
+\index{YYERRCODE@{YYERRCODE}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYERRCODE\ 256}\label{vcd__parser_8c_a76}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!yyerrok@{yyerrok}}
+\index{yyerrok@{yyerrok}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yyerrok\ (yyerrstatus = 0)}\label{vcd__parser_8c_a65}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!YYERROR@{YYERROR}}
+\index{YYERROR@{YYERROR}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYERROR\ goto yyerrlab1}\label{vcd__parser_8c_a71}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!yyerror@{yyerror}}
+\index{yyerror@{yyerror}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yyerror\ VCDerror}\label{vcd__parser_8c_a3}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!YYFAIL@{YYFAIL}}
+\index{YYFAIL@{YYFAIL}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYFAIL\ goto yyerrlab}\label{vcd__parser_8c_a72}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!YYFINAL@{YYFINAL}}
+\index{YYFINAL@{YYFINAL}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYFINAL\ 75}\label{vcd__parser_8c_a59}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!YYFLAG@{YYFLAG}}
+\index{YYFLAG@{YYFLAG}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYFLAG\ -32768}\label{vcd__parser_8c_a60}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!YYINITDEPTH@{YYINITDEPTH}}
+\index{YYINITDEPTH@{YYINITDEPTH}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYINITDEPTH\ 200}\label{vcd__parser_8c_a78}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!YYLAST@{YYLAST}}
+\index{YYLAST@{YYLAST}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYLAST\ 69}\label{vcd__parser_8c_a63}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!YYLEX@{YYLEX}}
+\index{YYLEX@{YYLEX}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYLEX\ yylex()}\label{vcd__parser_8c_a77}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!yylex@{yylex}}
+\index{yylex@{yylex}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yylex\ VCDlex}\label{vcd__parser_8c_a2}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!YYLSP_NEEDED@{YYLSP\_\-NEEDED}}
+\index{YYLSP_NEEDED@{YYLSP\_\-NEEDED}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYLSP\_\-NEEDED}\label{vcd__parser_8c_a8}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!yylval@{yylval}}
+\index{yylval@{yylval}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yylval\ {\bf VCDlval}}\label{vcd__parser_8c_a4}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!YYMAXDEPTH@{YYMAXDEPTH}}
+\index{YYMAXDEPTH@{YYMAXDEPTH}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYMAXDEPTH\ 10000}\label{vcd__parser_8c_a79}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!yynerrs@{yynerrs}}
+\index{yynerrs@{yynerrs}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yynerrs\ VCDnerrs}\label{vcd__parser_8c_a7}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!YYNTBASE@{YYNTBASE}}
+\index{YYNTBASE@{YYNTBASE}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYNTBASE\ 51}\label{vcd__parser_8c_a61}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!yyparse@{yyparse}}
+\index{yyparse@{yyparse}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yyparse\ VCDparse}\label{vcd__parser_8c_a1}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!YYPARSE_PARAM_ARG@{YYPARSE\_\-PARAM\_\-ARG}}
+\index{YYPARSE_PARAM_ARG@{YYPARSE\_\-PARAM\_\-ARG}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYPARSE\_\-PARAM\_\-ARG}\label{vcd__parser_8c_a80}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!YYPARSE_PARAM_DECL@{YYPARSE\_\-PARAM\_\-DECL}}
+\index{YYPARSE_PARAM_DECL@{YYPARSE\_\-PARAM\_\-DECL}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYPARSE\_\-PARAM\_\-DECL}\label{vcd__parser_8c_a81}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!YYPOPSTACK@{YYPOPSTACK}}
+\index{YYPOPSTACK@{YYPOPSTACK}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYPOPSTACK\ (yyvsp--, yyssp--, yylsp--)}\label{vcd__parser_8c_a82}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!YYRECOVERING@{YYRECOVERING}}
+\index{YYRECOVERING@{YYRECOVERING}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYRECOVERING()\ (!!yyerrstatus)}\label{vcd__parser_8c_a73}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!YYSTACK_ALLOC@{YYSTACK\_\-ALLOC}}
+\index{YYSTACK_ALLOC@{YYSTACK\_\-ALLOC}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYSTACK\_\-ALLOC\ malloc}\label{vcd__parser_8c_a64}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!YYTERROR@{YYTERROR}}
+\index{YYTERROR@{YYTERROR}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYTERROR\ 1}\label{vcd__parser_8c_a75}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!YYTRANSLATE@{YYTRANSLATE}}
+\index{YYTRANSLATE@{YYTRANSLATE}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYTRANSLATE(x)\ ((unsigned)(x) $<$= 304 ? {\bf yytranslate}[x] : 62)}\label{vcd__parser_8c_a62}
+
+
+
+
+\subsection{Function Documentation}
+\index{vcd_parser.c@{vcd\_\-parser.c}!__yy_memcpy@{\_\-\_\-yy\_\-memcpy}}
+\index{__yy_memcpy@{\_\-\_\-yy\_\-memcpy}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void \_\-\_\-yy\_\-memcpy (to, {\bf from}, {\bf count})\hspace{0.3cm}{\tt  [static]}}\label{vcd__parser_8c_a103}
+
+
+
+
+\subsection{Variable Documentation}
+\index{vcd_parser.c@{vcd\_\-parser.c}!count@{count}}
+\index{count@{count}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}unsigned int count}\label{vcd__parser_8c_a102}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!from@{from}}
+\index{from@{from}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ from}\label{vcd__parser_8c_a101}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!yychar@{yychar}}
+\index{yychar@{yychar}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yychar}\label{vcd__parser_8c_a96}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!yycheck@{yycheck}}
+\index{yycheck@{yycheck}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yycheck[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{vcd__parser_8c_a95}
+
+
+{\bf Initial value:}
+
+\footnotesize\begin{verbatim} {     9,
+     8,    11,    12,     9,     3,    11,    12,     7,    10,    19,
+    46,    47,    48,    49,    50,    15,    16,    17,    18,    29,
+     4,     5,     3,    29,    27,    28,     3,    30,    31,    32,
+    33,    34,    35,    36,    37,    38,    39,    40,    41,    42,
+    43,    44,    45,    10,    53,    54,    55,    56,    57,     4,
+     5,     3,    10,    10,    10,     6,     6,    10,     7,     0,
+     0,    43,    10,    10,    10,    10,    -1,     6,    48
+}\end{verbatim}\normalsize 
+\index{vcd_parser.c@{vcd\_\-parser.c}!yydebug@{yydebug}}
+\index{yydebug@{yydebug}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yydebug}\label{vcd__parser_8c_a100}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!yydefact@{yydefact}}
+\index{yydefact@{yydefact}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yydefact[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{vcd__parser_8c_a90}
+
+
+{\bf Initial value:}
+
+\footnotesize\begin{verbatim} {     2,
+     0,     0,     0,    11,     1,     0,     4,    19,    20,    21,
+    22,    17,    23,    24,    25,    26,    27,    28,    29,    30,
+    31,    32,    18,    33,    34,     0,     0,    12,    13,    14,
+    15,    16,     0,     8,     0,     5,     0,     0,     0,     0,
+     0,     0,     0,     7,     6,     0,     3,    39,    35,    37,
+     0,     0,    46,     0,     0,     0,     0,    41,    40,    36,
+    38,     9,    10,    47,     0,     0,     0,     0,    43,    45,
+    44,    42,     0,     0,     0
+}\end{verbatim}\normalsize 
+\index{vcd_parser.c@{vcd\_\-parser.c}!yydefgoto@{yydefgoto}}
+\index{yydefgoto@{yydefgoto}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yydefgoto[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{vcd__parser_8c_a91}
+
+
+{\bf Initial value:}
+
+\footnotesize\begin{verbatim} {    73,
+     5,     6,     7,    33,    26,    27,    51,    47,    48,    58
+}\end{verbatim}\normalsize 
+\index{vcd_parser.c@{vcd\_\-parser.c}!yylloc@{yylloc}}
+\index{yylloc@{yylloc}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}YYLTYPE yylloc}\label{vcd__parser_8c_a98}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!yylval@{yylval}}
+\index{yylval@{yylval}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf YYSTYPE} yylval}\label{vcd__parser_8c_a97}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!yynerrs@{yynerrs}}
+\index{yynerrs@{yynerrs}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yynerrs}\label{vcd__parser_8c_a99}
+
+
+\index{vcd_parser.c@{vcd\_\-parser.c}!yypact@{yypact}}
+\index{yypact@{yypact}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yypact[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{vcd__parser_8c_a92}
+
+
+{\bf Initial value:}
+
+\footnotesize\begin{verbatim} {    -5,
+    -2,   -35,    -1,-32768,-32768,    -9,-32768,-32768,-32768,-32768,
+-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
+-32768,-32768,-32768,-32768,-32768,     2,    20,-32768,-32768,-32768,
+-32768,-32768,    17,-32768,    34,-32768,    24,    49,    43,    44,
+    -7,    46,    46,-32768,-32768,     1,-32768,    -7,    50,    51,
+    45,    48,    52,    52,    52,    52,    52,-32768,-32768,-32768,
+-32768,-32768,-32768,-32768,    53,    54,    55,    56,-32768,-32768,
+-32768,-32768,    60,    61,-32768
+}\end{verbatim}\normalsize 
+\index{vcd_parser.c@{vcd\_\-parser.c}!yypgoto@{yypgoto}}
+\index{yypgoto@{yypgoto}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yypgoto[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{vcd__parser_8c_a93}
+
+
+{\bf Initial value:}
+
+\footnotesize\begin{verbatim} {-32768,
+-32768,-32768,    62,-32768,-32768,-32768,    19,    21,-32768,    -8
+}\end{verbatim}\normalsize 
+\index{vcd_parser.c@{vcd\_\-parser.c}!yyprhs@{yyprhs}}
+\index{yyprhs@{yyprhs}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yyprhs[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{vcd__parser_8c_a84}
+
+
+{\bf Initial value:}
+
+\footnotesize\begin{verbatim} {     0,
+     0,     2,     3,     8,    10,    13,    18,    23,    26,    33,
+    40,    42,    44,    46,    48,    50,    52,    54,    56,    58,
+    60,    62,    64,    66,    68,    70,    72,    74,    76,    78,
+    80,    82,    84,    86,    88,    90,    93,    95,    98,   100,
+   103,   106,   111,   116,   121,   126,   128
+}\end{verbatim}\normalsize 
+\index{vcd_parser.c@{vcd\_\-parser.c}!yyr1@{yyr1}}
+\index{yyr1@{yyr1}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yyr1[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{vcd__parser_8c_a88}
+
+
+{\bf Initial value:}
+
+\footnotesize\begin{verbatim} {     0,
+    51,    51,    52,    53,    53,    54,    54,    54,    54,    54,
+    54,    55,    55,    55,    55,    55,    56,    56,    57,    57,
+    57,    57,    57,    57,    57,    57,    57,    57,    57,    57,
+    57,    57,    57,    57,    58,    58,    58,    58,    59,    59,
+    60,    60,    60,    60,    60,    61,    61
+}\end{verbatim}\normalsize 
+\index{vcd_parser.c@{vcd\_\-parser.c}!yyr2@{yyr2}}
+\index{yyr2@{yyr2}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yyr2[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{vcd__parser_8c_a89}
+
+
+{\bf Initial value:}
+
+\footnotesize\begin{verbatim} {     0,
+     1,     0,     4,     1,     2,     4,     4,     2,     6,     6,
+     1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
+     1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
+     1,     1,     1,     1,     1,     2,     1,     2,     1,     2,
+     2,     4,     4,     4,     4,     1,     2
+}\end{verbatim}\normalsize 
+\index{vcd_parser.c@{vcd\_\-parser.c}!yyrhs@{yyrhs}}
+\index{yyrhs@{yyrhs}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yyrhs[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{vcd__parser_8c_a85}
+
+
+{\bf Initial value:}
+
+\footnotesize\begin{verbatim} {    52,
+     0,     0,    53,    19,    10,    59,     0,    54,     0,    53,
+    54,     0,    11,    55,     5,    10,     0,    11,    55,     4,
+    10,     0,    12,    10,     0,     9,    56,     3,     3,    58,
+    10,     0,     9,    57,     3,     3,    58,    10,     0,    29,
+     0,    46,     0,    47,     0,    48,     0,    49,     0,    50,
+     0,    32,     0,    43,     0,    27,     0,    28,     0,    30,
+     0,    31,     0,    33,     0,    34,     0,    35,     0,    36,
+     0,    37,     0,    38,     0,    39,     0,    40,     0,    41,
+     0,    42,     0,    44,     0,    45,     0,     4,     0,     4,
+     6,     0,     5,     0,     5,     6,     0,    60,     0,    60,
+    59,     0,     8,    61,     0,     8,    18,    61,    10,     0,
+     8,    15,    61,    10,     0,     8,    17,    61,    10,     0,
+     8,    16,    61,    10,     0,     7,     0,     7,    61,     0
+}\end{verbatim}\normalsize 
+\index{vcd_parser.c@{vcd\_\-parser.c}!yyrline@{yyrline}}
+\index{yyrline@{yyrline}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yyrline[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{vcd__parser_8c_a86}
+
+
+{\bf Initial value:}
+
+\footnotesize\begin{verbatim} { 0,
+    47,    48,    52,    58,    59,    63,    68,    73,    77,    85,
+    89,    97,    98,    99,   100,   101,   105,   106,   110,   111,
+   112,   113,   114,   115,   116,   117,   118,   119,   120,   121,
+   122,   123,   124,   125,   129,   130,   131,   132,   136,   137,
+   140,   145,   150,   155,   160,   168,   169
+}\end{verbatim}\normalsize 
+\index{vcd_parser.c@{vcd\_\-parser.c}!yytable@{yytable}}
+\index{yytable@{yytable}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yytable[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{vcd__parser_8c_a94}
+
+
+{\bf Initial value:}
+
+\footnotesize\begin{verbatim} {     1,
+    46,     2,     3,     1,    37,     2,     3,    53,    34,    35,
+    28,    29,    30,    31,    32,    54,    55,    56,    57,     4,
+    39,    40,    38,     4,     8,     9,    42,    10,    11,    12,
+    13,    14,    15,    16,    17,    18,    19,    20,    21,    22,
+    23,    24,    25,    41,    64,    65,    66,    67,    68,    49,
+    50,    43,    44,    45,    62,    60,    61,    63,    53,    74,
+    75,    52,    69,    70,    71,    72,     0,    36,    59
+}\end{verbatim}\normalsize 
+\index{vcd_parser.c@{vcd\_\-parser.c}!yytname@{yytname}}
+\index{yytname@{yytname}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const char$\ast$ const yytname[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{vcd__parser_8c_a87}
+
+
+{\bf Initial value:}
+
+\footnotesize\begin{verbatim} {   "$","error","$undefined.","VALUE",
+"IDENTIFIER","HIDENTIFIER","SIGWIDTH","CHANGE","TIMESTAMP","V_var","V_end","V_scope",
+"V_upscope","V_comment","V_date","V_dumpall","V_dumpoff","V_dumpon","V_dumpvars",
+"V_enddefinitions","V_dumpports","V_dumpportsoff","V_dumpportson","V_dumpportsall",
+"V_timescale","V_version","V_vcdclose","V_event","V_parameter","V_unknown","V_integer",
+"V_real","V_reg","V_supply0","V_supply1","V_time","V_tri","V_triand","V_trior",
+"V_trireg","V_tri0","V_tri1","V_wand","V_wire","V_wor","V_port","V_module","V_task",
+"V_function","V_begin","V_fork","main","dumpcode","definitions","definition",
+"scope_type","supported_vartype","unsupported_vartype","signame","changelists",
+"changelist","changes", NULL
+}\end{verbatim}\normalsize 
+\index{vcd_parser.c@{vcd\_\-parser.c}!yytranslate@{yytranslate}}
+\index{yytranslate@{yytranslate}!vcd_parser.c@{vcd\_\-parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const char yytranslate[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{vcd__parser_8c_a83}
+
+

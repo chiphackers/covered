@@ -1,0 +1,59 @@
+\section{Section 4.  Development Tools}\label{page_tools}
+ 
+
+ The following is a list and description of what outside tools are used in the development of Covered, how they are used within the project, and where to find these tools.\begin{Desc}
+\item[Section 4.1.  Doxygen]\par
+ Doxygen is a command-line tool that takes in a configuration file to specify how to generate the appropriate documentation. The name of Covered's Doxygen configuration file is located in the root directory of Covered called covered.dox. To generate documentation for the source files, enter the following command:
+
+ {\tt doxygen} {\tt covered.dox}
+
+ The Covered project uses Doxygen's source file documentation extraction capabilities for generating this developer's document. The output of Doxygen is two directories underneath the {\tt covered/doc} directory: html and latex. It also places a Makefile in the latex directory for creating PDF versions of the documentation.
+
+ The input files for Doxygen are all $\ast$.h and $\ast$.c files located in the {\tt covered/src} directory. Because Doxygen is unable to understand/parse Flex and Bison files, the $\ast$.l and $\ast$.y files are omitted from documentation generation. Placing Doxygen-style comments in these files will not result in developer documentation apart from the source file itself.
+
+ For a complete description on how to use Doxygen and where to download it from, check out the Doxygen homepage at:
+
+ {\tt http://www.stack.nl/$\sim$dimitri/doxygen/index.html}\end{Desc}
+
+
+\begin{Desc}
+\item[Section 4.2.  Man\-Style]\par
+ The Man\-Style project is basically an HTML document generator with an easy to use GUI  interface. It was used in Covered to create the user's manual and is mentioned mostly for credit sake. The {\tt covered/manstyle} directory contains the source files that Man\-Style creates when you use the GUI. If you are interested in updating the user manual and would like to use the Man\-Style utility for doing so, the main project file to be opened, when performing an \char`\"{}open\char`\"{} procedure in Man\-Style, is \char`\"{}user\char`\"{}. Opening this file will load the entire user's manual for the project. Note that the user's manual is an HTML document only and, as such, may be edited with any editor.
+
+ You can download Man\-Style from the following website:
+
+ {\tt http://manstyle.sourceforge.net/index.php3}\end{Desc}
+
+
+\begin{Desc}
+\item[Section 4.3.  CVS]\par
+ CVS is used as the file revision and project management tool for Covered. The CVS server is provided by Source\-Forge ( {\tt http://sourceforge.net} ). It was chosen due its ability to allow multiple developer's from all over the globe to access and work on this project simultaneously. It was also chosen because of its availability for most development platforms.\end{Desc}
+
+
+\begin{Desc}
+\item[Section 4.4.  MPatrol]\par
+ Like most good C codes, Covered performs a lot heap memory allocations and deallocations, using lots of pointers to keep track of memory locations. As such, it is possible that during development and debugging that a memory leak or memory allocation/deallocation error will occur (go figure). To aid in dynamic memory allocation/deallocation debugging, the Covered project uses a library called \char`\"{}MPatrol\char`\"{} which contains all of the dynamic memory functions available for most C codes but are special in that they can track memory allocations, memory deallocations, and related function failures and display this in meaningful output files. This utility has saved a lot of time and frustration so far in the project development and will probably serve a great deal more use in the future.
+
+ Since MPatrol is a library, it may be linked with the executable (overriding the standard functions) or may not be linked, allowing the use of the standard library. By default, MPatrol is not linked with the executable as MPatrol does add some overhead to the overall runtime of Covered. This is the mode that we want to release to Covered user's. However, during development, it may be useful, if not necessary, to link in the MPatrol library. This is simply achieved by calling the .{\tt /configure} script in the following way:
+
+ .{\tt /configure} {\tt -with-mpatrol}
+
+ This will create the appropriate Makefiles to include the MPatrol library into all compiles of the project. Of course, this means that if you want to try compiling without MPatrol (after turning it on), you will have to call .{\tt /configure} again and recompile the project.
+
+ The MPatrol library and associated documentation can be downloaded from the following website:
+
+ {\tt http://www.cbmamiga.demon.co.uk/mpatrol/}\end{Desc}
+
+
+\begin{Desc}
+\item[Go To Section...]\par
+\begin{CompactItemize}
+\item 
+{\bf Section 1.  Introduction} {\rm (p.\,\pageref{page_intro})}\item 
+{\bf Section 2.  Project Plan} {\rm (p.\,\pageref{page_project_plan})}\item 
+{\bf Section 3.  Coding Style Guidelines} {\rm (p.\,\pageref{page_code_style})}\item 
+{\bf Section 5.  Project \char`\"{}Big Picture\char`\"{}} {\rm (p.\,\pageref{page_big_picture})}\item 
+{\bf Section 6.  Coverage Development Reference} {\rm (p.\,\pageref{page_code_details})}\item 
+{\bf Section 7.  Test and Checkout Procedure} {\rm (p.\,\pageref{page_testing})}\item 
+{\bf Section 8.  Odds and Ends Information} {\rm (p.\,\pageref{page_misc})}\end{CompactItemize}
+\end{Desc}

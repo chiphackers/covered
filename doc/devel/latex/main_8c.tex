@@ -1,0 +1,53 @@
+\section{main.c File Reference}
+\label{main_8c}\index{main.c@{main.c}}
+{\tt \#include $<$stdio.h$>$}\par
+{\tt \#include $<$string.h$>$}\par
+{\tt \#include $<$stdlib.h$>$}\par
+{\tt \#include $<$stdarg.h$>$}\par
+{\tt \#include \char`\"{}devel\_\-doc.h\char`\"{}}\par
+{\tt \#include \char`\"{}defines.h\char`\"{}}\par
+{\tt \#include \char`\"{}score.h\char`\"{}}\par
+{\tt \#include \char`\"{}merge.h\char`\"{}}\par
+{\tt \#include \char`\"{}report.h\char`\"{}}\par
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+void {\bf usage} ()
+\item 
+int {\bf main} (int argc, char $\ast$$\ast$argv)
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+\begin{Desc}
+\item[Author: ]\par
+Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\begin{Desc}
+\item[Date: ]\par
+11/26/2001\end{Desc}
+
+
+\subsection{Function Documentation}
+\index{main.c@{main.c}!main@{main}}
+\index{main@{main}!main.c@{main.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int main (int {\em argc}, char $\ast$$\ast$ {\em argv})}\label{main_8c_a1}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+argc}]Number of arguments specified in argv parameter list. \item[{\em 
+argv}]List of arguments passed to this process from the command-line. \end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns 0 to indicate a successful return; otherwise, returns a non-zero value.\end{Desc}
+Main function for the Covered utility. Parses command-line arguments and calls the appropriate functions. \index{main.c@{main.c}!usage@{usage}}
+\index{usage@{usage}!main.c@{main.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void usage ()}\label{main_8c_a0}
+
+
+Displays usage information about this utility. 
