@@ -14,11 +14,11 @@
 
 #include "defines.h"
 #include "signal.h"
+#include "parser_misc.h"
 #include "parser.h"
 #include "util.h"
 #include "link.h"
 #include "vector.h"
-#include "parser_misc.h"
 #include "keywords.h"
 #include "tree.h"
 

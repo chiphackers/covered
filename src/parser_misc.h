@@ -22,6 +22,11 @@ struct vlltype {
 };
 
 #define YYLTYPE struct vlltype
+
+/* This for compatibility with new and older bison versions. */
+#ifndef yylloc
+# define yylloc VLlloc
+#endif
 extern YYLTYPE yylloc;
 
 /*

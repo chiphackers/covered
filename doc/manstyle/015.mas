@@ -136,3 +136,35 @@ Covered has found a user error that must be fixed by the user.  Please do not su
 reports if these errors are encountered, unless you wish to add a question about it to the
 FAQ.
 </_pg>
+
+<_margin>Question</_margin>
+
+<_pg>
+<strong>Covered is giving me a parser error for Verilog code that seems to be syntactically
+correct.  What is wrong?</strong>
+</_pg>
+
+<_pg>
+If Covered displays a syntax (parse) error during the score command and the Verilog code is
+written correctly, it may be that either the code is supported in the Verilog-2001
+specification and not in older specifications or Covered's parser is incomplete.  If the
+former is true, see the next FAQ.  If the latter is true, please submit a bug or send an
+e-mail containing a code snippet of the unsupported Verilog.  
+</_pg>
+
+<_margin>Question</_margin>
+
+<_pg>
+<strong>Is Covered's Verilog parser Verilog-2001 compliant?</strong>
+</_pg>
+
+<_pg>
+Not yet.  The goal of the 0.2 stable release was to allow parsing of all Verilog-1995
+standard code.  Parsing support for the entire Verilog-2001 standard will be completed in
+the 0.3 stable release.  However, there are some constructs in the Verilog-2001 standard
+that have been supported (basically because Icarus Verilog currently supports them), so the
+recommendation is to use Covered on that code to find out if the parsing support is there.
+If not, please send a bug report or e-mail containing the code snippet that doesn't parse.
+I will make a point to provide a patch containing parsing support for this code as soon as
+possible.
+</_pg>

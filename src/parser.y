@@ -45,6 +45,18 @@ exp_link* param_exp_tail = NULL;
 #define YYDEBUG 1
 int yydebug = 1; 
 */
+
+/* Recent version of bison expect that the user supply a
+   YYLLOC_DEFAULT macro that makes up a yylloc value from existing
+   values. I need to supply an explicit version to account for the
+   text field, that otherwise won't be copied. */
+# define YYLLOC_DEFAULT(Current, Rhs, N)         \
+  Current.first_line   = Rhs[1].first_line;      \
+  Current.first_column = Rhs[1].first_column;    \
+  Current.last_line    = Rhs[N].last_line;       \
+  Current.last_column  = Rhs[N].last_column;     \
+  Current.text         = Rhs[1].text;
+
 %}
 
 %union {
@@ -1496,9 +1508,9 @@ statement
     {
       $$ = $2;
     }
-  | K_begin ':' { ignore_mode++; } named_begin_end_block { ignore_mode--; } K_end
+  | K_begin ':' named_begin_end_block K_end
     {
-      $$ = NULL;
+      $$ = $3;
     }
   | K_begin K_end
     {
@@ -1927,12 +1939,18 @@ while_statement
   ;
 
 named_begin_end_block
-  : UNUSED_IDENTIFIER block_item_decls_opt statement_list
+  : IDENTIFIER ignore_more block_item_decls_opt ignore_less statement_list
     {
-      $$ = NULL;
+      if( $1 != NULL ) {
+        free_safe( $1 );
+      }
+      $$ = $5;
     }
-  | UNUSED_IDENTIFIER K_end 
+  | IDENTIFIER K_end 
     {
+      if( $1 != NULL ) {
+        free_safe( $1 );
+      }
       $$ = NULL;
     }
   ;
