@@ -80,7 +80,7 @@ void line_instance_summary( FILE* ofile, mod_inst* root, char* parent_inst ) {
   percent = ((root->stat->line_hit / root->stat->line_total) * 100);
   miss    = (root->stat->line_total - root->stat->line_hit);
 
-  fprintf( ofile, "  %-20.20s    %-20.20s    %3d/%3.0f/%3.0f      %3.0f\%\n",
+  fprintf( ofile, "  %-20.20s    %-20.20s    %3d/%3.0f/%3.0f      %3.0f%%\n",
            root->name,
            parent_inst,
            root->stat->line_hit,
@@ -116,7 +116,7 @@ void line_module_summary( FILE* ofile, mod_link* head ) {
   percent = ((hit_lines / total_lines) * 100);
   miss    = (total_lines - hit_lines);
 
-  fprintf( ofile, "  %-20.20s    %-20.20s    %3d/%3.0f/%3.0f      %3.0f\%\n", 
+  fprintf( ofile, "  %-20.20s    %-20.20s    %3d/%3.0f/%3.0f      %3.0f%%\n", 
            head->mod->name,
            head->mod->filename,
            hit_lines,
