@@ -53,7 +53,7 @@
  If -w option is specified to report command, specifies number of characters of width
  we will output.
 */
-#define DEFAULT_LINE_WIDTH 115
+#define DEFAULT_LINE_WIDTH 105
 
 /*!
  \addtogroup output_type Output type
@@ -1579,6 +1579,14 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.101  2004/01/25 03:41:48  phase1geo
+ Fixes bugs in summary information not matching verbose information.  Also fixes
+ bugs where instances were output when no logic was missing, where instance
+ children were missing but not output.  Changed code to output summary
+ information on a per instance basis (where children instances are not merged
+ into parent instance summary information).  Updated regressions as a result.
+ Updates to user documentation (though this is not complete at this time).
+
  Revision 1.100  2004/01/21 22:26:56  phase1geo
  Changed default CDD file name from "cov.db" to "cov.cdd".  Changed instance
  statistic gathering from a child merging algorithm to just calculating

@@ -493,16 +493,16 @@ void fsm_display_state_verbose( FILE* ofile, fsm* table ) {
   trans_known = (arc_get_suppl( table->table, ARC_TRANS_KNOWN ) == 0) ? TRUE : FALSE;
 
   if( report_covered || trans_known ) {
-    fprintf( ofile, "  Hit States\n\n" );
+    fprintf( ofile, "        Hit States\n\n" );
   } else {
-    fprintf( ofile, "  Missed States\n\n" );
+    fprintf( ofile, "        Missed States\n\n" );
   }
 
   /* Create format string */
-  fprintf( ofile, "    States\n" );
-  fprintf( ofile, "    ======\n" );
+  fprintf( ofile, "          States\n" );
+  fprintf( ofile, "          ======\n" );
 
-  arc_display_states( ofile, "    %d'h%s\n", table->table, (report_covered || trans_known) );
+  arc_display_states( ofile, "          %d'h%s\n", table->table, (report_covered || trans_known) );
 
   fprintf( ofile, "\n" );
 
@@ -528,9 +528,9 @@ void fsm_display_arc_verbose( FILE* ofile, fsm* table ) {
   trans_known = (arc_get_suppl( table->table, ARC_TRANS_KNOWN ) == 0) ? TRUE : FALSE;
 
   if( report_covered || trans_known ) {
-    fprintf( ofile, "  Hit State Transitions\n\n" );
+    fprintf( ofile, "        Hit State Transitions\n\n" );
   } else {
-    fprintf( ofile, "  Missed State Transitions\n\n" );
+    fprintf( ofile, "        Missed State Transitions\n\n" );
   }
 
   val_width = table->to_state->value->width;
@@ -543,14 +543,14 @@ void fsm_display_arc_verbose( FILE* ofile, fsm* table ) {
   width = ((val_width % 4) == 0) ? (val_width / 4) : ((val_width / 4) + 1);
   width = width + len_width + 2;
   width = (width > 10) ? width : 10;
-  snprintf( fstr, 100, "    %%-%d.%ds    %%-%d.%ds\n", width, width, width, width );
+  snprintf( fstr, 100, "          %%-%d.%ds    %%-%d.%ds\n", width, width, width, width );
 
   fprintf( ofile, fstr, "From State", "To State" );
   fprintf( ofile, fstr, "==========", "==========" );
 
   /* Get formatting string for states */
   width = width - len_width - 2;
-  snprintf( fstr, 100, "    %d'h%%-%d.%ds -> %d'h%%-%d.%ds\n", val_width, width, width, val_width, width, width );
+  snprintf( fstr, 100, "          %d'h%%-%d.%ds -> %d'h%%-%d.%ds\n", val_width, width, width, val_width, width, width );
 
   arc_display_transitions( ofile, fstr, table->table, (report_covered || trans_known) );
 
@@ -577,7 +577,7 @@ void fsm_display_verbose( FILE* ofile, fsm_link* head ) {
 
     if( head->table->from_state->id == head->table->to_state->id ) {
       codegen_gen_expr( head->table->to_state, SUPPL_OP( head->table->to_state->suppl ), &ocode, &ocode_depth );
-      fprintf( ofile, "FSM input/output state (%s)\n\n", ocode[0] );
+      fprintf( ofile, "      FSM input/output state (%s)\n\n", ocode[0] );
       for( i=0; i<ocode_depth; i++ ) {
         free_safe( ocode[i] );
       }
@@ -585,7 +585,7 @@ void fsm_display_verbose( FILE* ofile, fsm_link* head ) {
     } else {
       codegen_gen_expr( head->table->from_state, SUPPL_OP( head->table->from_state->suppl ), &icode, &icode_depth );
       codegen_gen_expr( head->table->to_state,   SUPPL_OP( head->table->to_state->suppl   ), &ocode, &ocode_depth );
-      fprintf( ofile, "FSM input state (%s), output state (%s)\n\n", icode[0], ocode[0] );
+      fprintf( ofile, "      FSM input state (%s), output state (%s)\n\n", icode[0], ocode[0] );
       for( i=0; i<icode_depth; i++ ) {
         free_safe( icode[i] );
       }
@@ -600,7 +600,7 @@ void fsm_display_verbose( FILE* ofile, fsm_link* head ) {
     fsm_display_arc_verbose( ofile, head->table );
 
     if( head->next != NULL ) {
-      fprintf( ofile, "- - - - - - - - - - - - - - - - - - - - - - - - - - - -\n" );
+      fprintf( ofile, "      - - - - - - - - - - - - - - - - - - - - - - - - - - - -\n" );
     }
 
     head = head->next;
@@ -635,11 +635,11 @@ void fsm_instance_verbose( FILE* ofile, mod_inst* root, char* parent_inst ) {
       (((root->stat->state_hit > 0) || (root->stat->arc_hit > 0)) && report_covered) ) {
 
     fprintf( ofile, "\n" );
-    fprintf( ofile, "Module: %s, File: %s, Instance: %s\n",
+    fprintf( ofile, "    Module: %s, File: %s, Instance: %s\n",
              root->mod->name,
              root->mod->filename,
              tmpname );
-    fprintf( ofile, "--------------------------------------------------------\n" );
+    fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
     fsm_display_verbose( ofile, root->mod->fsm_head );
 
@@ -670,10 +670,10 @@ void fsm_module_verbose( FILE* ofile, mod_link* head ) {
         (((head->mod->stat->state_hit > 0) || (head->mod->stat->arc_hit > 0)) && report_covered) ) {
 
       fprintf( ofile, "\n" );
-      fprintf( ofile, "Module: %s, File: %s\n",
+      fprintf( ofile, "    Module: %s, File: %s\n",
                head->mod->name,
                head->mod->filename );
-      fprintf( ofile, "--------------------------------------------------------\n" );
+      fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
       fsm_display_verbose( ofile, head->mod->fsm_head );
 
@@ -704,11 +704,12 @@ void fsm_report( FILE* ofile, bool verbose ) {
     fprintf( ofile, "-------------------------------------------------\n" );
     fprintf( ofile, "                                                               State                             Arc\n" );
     fprintf( ofile, "Instance                                          Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit\n" );
-    fprintf( ofile, "----------------------------------------------------------------------------------------------------------------\n" );
+    fprintf( ofile, "----------------------------------------------------------------------------------------------------------------------\n" );
 
     missed_found = fsm_instance_summary( ofile, instance_root, leading_hierarchy );
    
     if( verbose && (missed_found || report_covered) ) {
+      fprintf( ofile, "----------------------------------------------------------------------------------------------------------------------\n" );
       fsm_instance_verbose( ofile, instance_root, leading_hierarchy );
     }
 
@@ -718,17 +719,18 @@ void fsm_report( FILE* ofile, bool verbose ) {
     fprintf( ofile, "-----------------------------------------------\n" );
     fprintf( ofile, "                                                               State                             Arc\n" );
     fprintf( ofile, "Module                    Filename                Hit/Miss/Total    Percent Hit    Hit/Miss/Total    Percent hit\n" );
-    fprintf( ofile, "----------------------------------------------------------------------------------------------------------------\n" );
+    fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
     missed_found = fsm_module_summary( ofile, mod_head );
 
     if( verbose && (missed_found || report_covered) ) {
+      fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
       fsm_module_verbose( ofile, mod_head );
     }
 
   }
 
-  fprintf( ofile, "=================================================================================\n" );
+  fprintf( ofile, "=====================================================================================================================\n" );
   fprintf( ofile, "\n" );
 
 }
@@ -768,6 +770,10 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.34  2003/12/12 17:16:25  phase1geo
+ Changing code generator to output logic based on user supplied format.  Full
+ regression fails at this point due to mismatching report files.
+
  Revision 1.33  2003/11/26 23:14:41  phase1geo
  Adding code to include left-hand-side expressions of statements for report
  outputting purposes.  Full regression does not yet pass.

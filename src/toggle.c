@@ -41,9 +41,6 @@ extern char leading_hierarchy[4096];
 */
 void toggle_get_stats( exp_link* expl, sig_link* sigl, float* total, int* hit01, int* hit10 ) {
 
-#ifdef USE_TOGGLE_EXPR
-  exp_link* curr_exp = expl;    /* Current expression being evaluated */
-#endif
   sig_link* curr_sig = sigl;    /* Current signal being evaluated     */
   
   /* Search signal list */
@@ -55,19 +52,6 @@ void toggle_get_stats( exp_link* expl, sig_link* sigl, float* total, int* hit01,
     curr_sig = curr_sig->next;
   }
 
-#ifdef USE_TOGGLE_EXPR
-  /* Search expression list */
-  while( curr_exp != NULL ) {
-    if( (SUPPL_OP( curr_exp->exp->suppl ) != EXP_OP_SIG) &&
-        (SUPPL_OP( curr_exp->exp->suppl ) != EXP_OP_SBIT_SEL) &&
-        (SUPPL_OP( curr_exp->exp->suppl ) != EXP_OP_MBIT_SEL) ) {
-      *total = *total + curr_exp->exp->value->width;
-      vector_toggle_count( curr_exp->exp->value, hit01, hit10 );
-    }
-    curr_exp = curr_exp->next;
-  }
-#endif
-    
 }
 
 /*!
@@ -207,13 +191,13 @@ void toggle_display_verbose( FILE* ofile, sig_link* sigl ) {
   int       hit10;      /* Number of bits that toggled from 1 to 0        */
 
   if( report_covered ) {
-    fprintf( ofile, "Signals getting 100%% toggle coverage\n\n" );
+    fprintf( ofile, "    Signals getting 100%% toggle coverage\n\n" );
   } else {
-    fprintf( ofile, "Signals not getting 100%% toggle coverage\n\n" );
-    fprintf( ofile, "Signal                    Toggle\n" );
+    fprintf( ofile, "    Signals not getting 100%% toggle coverage\n\n" );
+    fprintf( ofile, "      Signal                    Toggle\n" );
   }
 
-  fprintf( ofile, "----------------------------------------------------------------------------------\n" );
+  fprintf( ofile, "      ---------------------------------------------------------------------------------------------------------\n" );
 
   curr_sig = sigl;
 
@@ -230,7 +214,7 @@ void toggle_display_verbose( FILE* ofile, sig_link* sigl ) {
 
         if( (hit01 == curr_sig->sig->value->width) && (hit10 == curr_sig->sig->value->width) ) {
         
-          fprintf( ofile, "%-24s\n", curr_sig->sig->name );
+          fprintf( ofile, "      %-24s\n", curr_sig->sig->name );
 
         }
 
@@ -238,9 +222,9 @@ void toggle_display_verbose( FILE* ofile, sig_link* sigl ) {
 
         if( (hit01 < curr_sig->sig->value->width) || (hit10 < curr_sig->sig->value->width) ) {
 
-          fprintf( ofile, "%-24s  0->1: ", curr_sig->sig->name );
+          fprintf( ofile, "      %-24s  0->1: ", curr_sig->sig->name );
           vector_display_toggle01( curr_sig->sig->value->value, curr_sig->sig->value->width, ofile );      
-          fprintf( ofile, "\n......................... 1->0: " );
+          fprintf( ofile, "\n      ......................... 1->0: " );
           vector_display_toggle10( curr_sig->sig->value->value, curr_sig->sig->value->width, ofile );      
           fprintf( ofile, " ...\n" );
 
@@ -253,6 +237,8 @@ void toggle_display_verbose( FILE* ofile, sig_link* sigl ) {
     curr_sig = curr_sig->next;
 
   }
+
+  fprintf( ofile, "\n" );
 
 }
 
@@ -282,11 +268,11 @@ void toggle_instance_verbose( FILE* ofile, mod_inst* root, char* parent_inst ) {
       (root->stat->tog10_hit < root->stat->tog_total) ) {
 
     fprintf( ofile, "\n" );
-    fprintf( ofile, "Module: %s, File: %s, Instance: %s\n",
+    fprintf( ofile, "    Module: %s, File: %s, Instance: %s\n",
              root->mod->name,
              root->mod->filename,
              tmpname );
-    fprintf( ofile, "--------------------------------------------------------\n" );
+    fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
     toggle_display_verbose( ofile, root->mod->sig_head );
 
@@ -317,10 +303,10 @@ void toggle_module_verbose( FILE* ofile, mod_link* head ) {
         (head->mod->stat->tog10_hit < head->mod->stat->tog_total) ) {
 
       fprintf( ofile, "\n" );
-      fprintf( ofile, "Module: %s, File: %s\n",
+      fprintf( ofile, "    Module: %s, File: %s\n",
                head->mod->name,
                head->mod->filename );
-      fprintf( ofile, "--------------------------------------------------------\n" );
+      fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
       toggle_display_verbose( ofile, head->mod->sig_head );
 
@@ -356,6 +342,7 @@ void toggle_report( FILE* ofile, bool verbose ) {
     missed_found = toggle_instance_summary( ofile, instance_root, leading_hierarchy );
     
     if( verbose && missed_found ) {
+      fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
       toggle_instance_verbose( ofile, instance_root, leading_hierarchy );
     }
 
@@ -370,18 +357,24 @@ void toggle_report( FILE* ofile, bool verbose ) {
     missed_found = toggle_module_summary( ofile, mod_head );
 
     if( verbose && missed_found ) {
+      fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
       toggle_module_verbose( ofile, mod_head );
     }
 
   }
 
-  fprintf( ofile, "===============================================================================================================\n" );
+  fprintf( ofile, "=====================================================================================================================\n" );
   fprintf( ofile, "\n" );
 
 }
 
 /*
  $Log$
+ Revision 1.22  2004/01/23 14:37:41  phase1geo
+ Fixing output of instance line, toggle, comb and fsm to only output module
+ name if logic is detected missing in that instance.  Full regression fails
+ with this fix.
+
  Revision 1.21  2003/10/17 12:55:36  phase1geo
  Intermediate checkin for LSB fixes.
 

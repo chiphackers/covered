@@ -140,6 +140,20 @@ bool line_collect_uncovered( char* mod_name, int** lines, int* line_cnt ) {
 
 }
 
+/*!
+ \param mod_name  Name of module to retrieve summary information from.
+ \param total     Pointer to total number of lines in this module.
+ \param hit       Pointer to number of lines hit in this module.
+
+ \return Returns TRUE if specified module was found in design; otherwise,
+         returns FALSE.
+
+ Looks up summary information for specified module.  If the module was found,
+ the hit and total values for this module are returned to the calling function.
+ If the module was not found, a value of FALSE is returned to the calling
+ function, indicating that the module was not found in the design and the values
+ of total and hit should not be used.
+*/
 bool line_get_module_summary( char* mod_name, int* total, int* hit ) {
 
   bool      retval = TRUE;  /* Return value for this function */
@@ -277,9 +291,9 @@ void line_display_verbose( FILE* ofile, stmt_link* stmtl ) {
   int         i;           /* Loop iterator                              */
 
   if( report_covered ) {
-    fprintf( ofile, "Hit Lines\n\n" );
+    fprintf( ofile, "    Hit Lines\n\n" );
   } else {
-    fprintf( ofile, "Missed Lines\n\n" );
+    fprintf( ofile, "    Missed Lines\n\n" );
   }
 
   /* Display current instance missed lines */
@@ -301,9 +315,9 @@ void line_display_verbose( FILE* ofile, stmt_link* stmtl ) {
 
         codegen_gen_expr( unexec_exp, SUPPL_OP( unexec_exp->suppl ), &code, &code_depth );
         if( code_depth == 1 ) {
-          fprintf( ofile, "%7d:    %s\n", unexec_exp->line, code[0] );
+          fprintf( ofile, "      %7d:    %s\n", unexec_exp->line, code[0] );
         } else {
-          fprintf( ofile, "%7d:    %s...\n", unexec_exp->line, code[0] );
+          fprintf( ofile, "      %7d:    %s...\n", unexec_exp->line, code[0] );
         }
         for( i=0; i<code_depth; i++ ) {
           free_safe( code[i] );
@@ -349,11 +363,11 @@ void line_instance_verbose( FILE* ofile, mod_inst* root, char* parent_inst ) {
         ((root->stat->line_hit > 0) && report_covered) ) {
 
     fprintf( ofile, "\n" );
-    fprintf( ofile, "Module: %s, File: %s, Instance: %s\n", 
+    fprintf( ofile, "    Module: %s, File: %s, Instance: %s\n", 
              root->mod->name, 
              root->mod->filename,
              tmpname );
-    fprintf( ofile, "--------------------------------------------------------\n" );
+    fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
     line_display_verbose( ofile, root->mod->stmt_tail );
 
@@ -384,10 +398,10 @@ void line_module_verbose( FILE* ofile, mod_link* head ) {
         ((head->mod->stat->line_hit > 0) && report_covered) ) {
 
       fprintf( ofile, "\n" );
-      fprintf( ofile, "Module: %s, File: %s\n", 
+      fprintf( ofile, "    Module: %s, File: %s\n", 
                head->mod->name, 
                head->mod->filename );
-      fprintf( ofile, "--------------------------------------------------------\n" );
+      fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
       line_display_verbose( ofile, head->mod->stmt_tail );
   
@@ -417,11 +431,12 @@ void line_report( FILE* ofile, bool verbose ) {
     fprintf( ofile, "LINE COVERAGE RESULTS BY INSTANCE\n" );
     fprintf( ofile, "---------------------------------\n" );
     fprintf( ofile, "Instance                                           Hit/ Miss/Total    Percent hit\n" );
-    fprintf( ofile, "---------------------------------------------------------------------------------\n" );
+    fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
     missed_found = line_instance_summary( ofile, instance_root, leading_hierarchy );
     
     if( verbose && (missed_found || report_covered) ) {
+      fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
       line_instance_verbose( ofile, instance_root, leading_hierarchy );
     }
 
@@ -430,23 +445,29 @@ void line_report( FILE* ofile, bool verbose ) {
     fprintf( ofile, "LINE COVERAGE RESULTS BY MODULE\n" );
     fprintf( ofile, "-------------------------------\n" );
     fprintf( ofile, "Module                    Filename                 Hit/ Miss/Total    Percent hit\n" );
-    fprintf( ofile, "---------------------------------------------------------------------------------\n" );
+    fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
     missed_found = line_module_summary( ofile, mod_head );
 
     if( verbose && (missed_found || report_covered) ) {
+      fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
       line_module_verbose( ofile, mod_head );
     }
 
   }
 
-  fprintf( ofile, "=================================================================================\n" );
+  fprintf( ofile, "=====================================================================================================================\n" );
   fprintf( ofile, "\n" );
 
 }
 
 /*
  $Log$
+ Revision 1.38  2004/01/23 14:37:09  phase1geo
+ Fixing output of instance line, toggle, comb and fsm to only output module
+ name if logic is detected missing in that instance.  Full regression fails
+ with this fix.
+
  Revision 1.37  2003/12/12 17:16:25  phase1geo
  Changing code generator to output logic based on user supplied format.  Full
  regression fails at this point due to mismatching report files.

@@ -960,19 +960,19 @@ void combination_underline( FILE* ofile, char** code, int code_depth, expression
   for( j=0; j<code_depth; j++ ) {
 
     if( j == 0 ) {
-      fprintf( ofile, "%7d:    %s\n", exp->line, code[j] );
+      fprintf( ofile, "        %7d:    %s\n", exp->line, code[j] );
     } else {
-      fprintf( ofile, "            %s\n", code[j] );
+      fprintf( ofile, "                    %s\n", code[j] );
     }
 
     if( code_depth == 1 ) {
       for( i=0; i<depth; i++ ) {
-        fprintf( ofile, "            %s\n", lines[i] );
+        fprintf( ofile, "                    %s\n", lines[i] );
       }
     } else {
       for( i=0; i<depth; i++ ) {
         if( (tmpstr = combination_prep_line( lines[i], start, strlen( code[j] ) )) != NULL ) {
-          fprintf( ofile, "            %s\n", tmpstr );
+          fprintf( ofile, "                    %s\n", tmpstr );
           free_safe( tmpstr );
         }
       }
@@ -1017,11 +1017,11 @@ void combination_unary( FILE* ofile, expression* exp, char* op ) {
 
   assert( exp->ulid != -1 );
 
-  fprintf( ofile, "Expression %d   (%d/2)\n", exp->ulid, hit );
-  fprintf( ofile, "^^^^^^^^^^^^^ - %s\n", op );
-  fprintf( ofile, " E | E\n" );
-  fprintf( ofile, "=0=|=1=\n" );
-  fprintf( ofile, " %c   %c\n\n",
+  fprintf( ofile, "        Expression %d   (%d/2)\n", exp->ulid, hit );
+  fprintf( ofile, "        ^^^^^^^^^^^^^ - %s\n", op );
+  fprintf( ofile, "         E | E\n" );
+  fprintf( ofile, "        =0=|=1=\n" );
+  fprintf( ofile, "         %c   %c\n\n",
 		  ((SUPPL_WAS_FALSE( exp->suppl ) == 1) ? ' ' : '*'),
 		  ((SUPPL_WAS_TRUE( exp->suppl )  == 1) ? ' ' : '*') );
 
@@ -1055,11 +1055,11 @@ void combination_two_vars( FILE* ofile, expression* exp, char* op ) {
 
   assert( exp->ulid != -1 );
 
-  fprintf( ofile, "Expression %d   (%d/4)\n", exp->ulid, hit );
-  fprintf( ofile, "^^^^^^^^^^^^^ - %s\n", op );
-  fprintf( ofile, " LR | LR | LR | LR \n" );
-  fprintf( ofile, "=00=|=01=|=10=|=11=\n" );
-  fprintf( ofile, " %c    %c    %c    %c\n\n",
+  fprintf( ofile, "        Expression %d   (%d/4)\n", exp->ulid, hit );
+  fprintf( ofile, "        ^^^^^^^^^^^^^ - %s\n", op );
+  fprintf( ofile, "         LR | LR | LR | LR \n" );
+  fprintf( ofile, "        =00=|=01=|=10=|=11=\n" );
+  fprintf( ofile, "         %c    %c    %c    %c\n\n",
                   ((((exp->suppl >> SUPPL_LSB_EVAL_00) & 0x1) == 1) ? ' ' : '*'),
                   ((((exp->suppl >> SUPPL_LSB_EVAL_01) & 0x1) == 1) ? ' ' : '*'),
                   ((((exp->suppl >> SUPPL_LSB_EVAL_10) & 0x1) == 1) ? ' ' : '*'),
@@ -1198,18 +1198,18 @@ void combination_multi_expr_output( FILE* ofile, char* line1, char* line2, char*
 
     if( (i + 1) == len ) {
 
-      fprintf( ofile, "%s\n",   (line1 + start) );
-      fprintf( ofile, "%s\n",   (line2 + start) );
-      fprintf( ofile, "%s\n\n", (line3 + start) );
+      fprintf( ofile, "        %s\n",   (line1 + start) );
+      fprintf( ofile, "        %s\n",   (line2 + start) );
+      fprintf( ofile, "        %s\n\n", (line3 + start) );
 
     } else if( (line1[i] == '|') && ((i - start) >= line_width) ) {
 
       line1[i] = '\0';
       line2[i] = '\0';
       line3[i] = '\0';
-      fprintf( ofile, "%s|\n",   (line1 + start) );
-      fprintf( ofile, "%s|\n",   (line2 + start) );
-      fprintf( ofile, "%s \n\n", (line3 + start) );
+      fprintf( ofile, "        %s|\n",   (line1 + start) );
+      fprintf( ofile, "        %s|\n",   (line2 + start) );
+      fprintf( ofile, "        %s \n\n", (line3 + start) );
       start = i + 1;
 
     }
@@ -1248,13 +1248,13 @@ void combination_multi_vars( FILE* ofile, expression* exp ) {
     /* Calculate hit and total values for this sub-expression */
     combination_multi_expr_calc( exp, &ulid, FALSE, &hit, &total );
 
-    fprintf( ofile, "Expression %d   (%d/%.0f)\n", exp->ulid, hit, total );
+    fprintf( ofile, "        Expression %d   (%d/%.0f)\n", exp->ulid, hit, total );
 
     switch( SUPPL_OP( exp->suppl ) ) {
-      case EXP_OP_AND  :  fprintf( ofile, "^^^^^^^^^^^^^ - &\n" );   break;
-      case EXP_OP_OR   :  fprintf( ofile, "^^^^^^^^^^^^^ - |\n" );   break;
-      case EXP_OP_LAND :  fprintf( ofile, "^^^^^^^^^^^^^ - &&\n" );  break;
-      case EXP_OP_LOR  :  fprintf( ofile, "^^^^^^^^^^^^^ - ||\n" );  break;
+      case EXP_OP_AND  :  fprintf( ofile, "        ^^^^^^^^^^^^^ - &\n" );   break;
+      case EXP_OP_OR   :  fprintf( ofile, "        ^^^^^^^^^^^^^ - |\n" );   break;
+      case EXP_OP_LAND :  fprintf( ofile, "        ^^^^^^^^^^^^^ - &&\n" );  break;
+      case EXP_OP_LOR  :  fprintf( ofile, "        ^^^^^^^^^^^^^ - ||\n" );  break;
       default          :  break;
     }
 
@@ -1427,9 +1427,9 @@ void combination_display_verbose( FILE* ofile, stmt_link* stmtl ) {
   int         i;             /* Loop iterator                                      */
 
   if( report_covered ) {
-    fprintf( ofile, "Hit Combinations\n" );
+    fprintf( ofile, "    Hit Combinations\n\n" );
   } else { 
-    fprintf( ofile, "Missed Combinations\n" );
+    fprintf( ofile, "    Missed Combinations\n\n" );
   }
 
   /* Display current instance missed lines */
@@ -1443,9 +1443,9 @@ void combination_display_verbose( FILE* ofile, stmt_link* stmtl ) {
       stmti.curr->stmt->exp->suppl = stmti.curr->stmt->exp->suppl & ~(0x1 << SUPPL_LSB_COMB_CNTD);
       unexec_exp = stmti.curr->stmt->exp;
 
-      fprintf( ofile, "====================================================\n" );
-      fprintf( ofile, " Line #     Expression\n" );
-      fprintf( ofile, "====================================================\n" );
+      fprintf( ofile, "      =========================================================================================================\n" );
+      fprintf( ofile, "       Line #     Expression\n" );
+      fprintf( ofile, "      =========================================================================================================\n" );
 
       /* Generate line of code that missed combinational coverage */
       codegen_gen_expr( unexec_exp, SUPPL_OP( unexec_exp->suppl ), &code, &code_depth );
@@ -1492,11 +1492,11 @@ void combination_instance_verbose( FILE* ofile, mod_inst* root, char* parent ) {
       ((root->stat->comb_hit > 0) && report_covered) ) {
 
     fprintf( ofile, "\n" );
-    fprintf( ofile, "Module: %s, File: %s, Instance: %s\n", 
+    fprintf( ofile, "    Module: %s, File: %s, Instance: %s\n", 
              root->mod->name, 
              root->mod->filename,
              tmpname );
-    fprintf( ofile, "--------------------------------------------------------\n" );
+    fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
     combination_display_verbose( ofile, root->mod->stmt_tail );
 
@@ -1525,10 +1525,10 @@ void combination_module_verbose( FILE* ofile, mod_link* head ) {
         ((head->mod->stat->comb_hit > 0) && report_covered) ) {
 
       fprintf( ofile, "\n" );
-      fprintf( ofile, "Module: %s, File: %s\n", 
+      fprintf( ofile, "    Module: %s, File: %s\n", 
                head->mod->name, 
                head->mod->filename );
-      fprintf( ofile, "--------------------------------------------------------\n" );
+      fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
       combination_display_verbose( ofile, head->mod->stmt_tail );
 
@@ -1559,11 +1559,12 @@ void combination_report( FILE* ofile, bool verbose ) {
     fprintf( ofile, "------------------------------------------------\n" );
     fprintf( ofile, "Instance                                               Logic Combinations\n" );
     fprintf( ofile, "                                                  Hit/Miss/Total    Percent hit\n" );
-    fprintf( ofile, "-------------------------------------------------------------------------------\n" );
+    fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
     missed_found = combination_instance_summary( ofile, instance_root, leading_hierarchy );
     
     if( verbose && (missed_found || report_covered) ) {
+      fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
       combination_instance_verbose( ofile, instance_root, leading_hierarchy );
     }
 
@@ -1573,17 +1574,18 @@ void combination_report( FILE* ofile, bool verbose ) {
     fprintf( ofile, "----------------------------------------------\n" );
     fprintf( ofile, "Module                    Filename                     Logical Combinations\n" );
     fprintf( ofile, "                                                  Hit/Miss/Total    Percent hit\n" );
-    fprintf( ofile, "-------------------------------------------------------------------------------\n" );
+    fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
     missed_found = combination_module_summary( ofile, mod_head );
 
     if( verbose && (missed_found || report_covered) ) {
+      fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
       combination_module_verbose( ofile, mod_head );
     }
 
   }
 
-  fprintf( ofile, "=================================================================================\n" );
+  fprintf( ofile, "=====================================================================================================================\n" );
   fprintf( ofile, "\n" );
 
 }
@@ -1591,6 +1593,11 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.86  2004/01/27 23:16:08  phase1geo
+ Tweaks and bug fix to combination_is_multi_expr function.  Removed test.v
+ and test1.v and renamed them to multi_exp2.v and multi_exp2.1.v, respectively.
+ Added these new diagnostics to the regression suite.
+
  Revision 1.85  2004/01/27 13:34:30  phase1geo
  Working version of combinational logic report output but I still want to clean
  this code up.
