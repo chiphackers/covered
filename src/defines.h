@@ -937,7 +937,6 @@ struct str_link_s {
 */
 struct vector_s {
   int     width;     /*!< Bit width of this vector                 */
-  int     lsb;       /*!< Least significant bit                    */
   nibble  suppl;     /*!< Supplemental field                       */
   nibble* value;     /*!< 4-state current value and toggle history */
 };
@@ -1114,6 +1113,7 @@ struct stmt_loop_link_s {
 struct signal_s {
   char*      name;      /*!< Full hierarchical name of signal in design       */
   vector*    value;     /*!< Pointer to vector value of this signal           */
+  int        lsb;       /*!< Least-significant bit position of this signal    */
   exp_link*  exp_head;  /*!< Head pointer to list of expressions              */
   exp_link*  exp_tail;  /*!< Tail pointer to list of expressions              */
 };
@@ -1475,6 +1475,10 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.85  2003/10/17 02:12:38  phase1geo
+ Adding CDD version information to info line of CDD file.  Updating regression
+ for this change.
+
  Revision 1.84  2003/10/13 03:56:29  phase1geo
  Fixing some problems with new FSM code.  Not quite there yet.
 

@@ -622,8 +622,7 @@ void db_add_signal( char* name, static_expr* left, static_expr* right ) {
       sig = signal_create( name, width, lsb );
     } else {
       sig = (signal*)malloc_safe( sizeof( signal ) );
-      signal_init( sig, strdup( name ), (vector*)malloc_safe( sizeof( vector ) ) );
-      sig->value->lsb   = lsb;
+      signal_init( sig, strdup( name ), (vector*)malloc_safe( sizeof( vector ) ), lsb );
       sig->value->width = width;      
       sig->value->value = NULL;
       if( (left != NULL) && (left->exp != NULL) ) {
@@ -1200,6 +1199,11 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.103  2003/10/16 04:26:01  phase1geo
+ Adding new fsm5 diagnostic to testsuite and regression.  Added proper support
+ for FSM variables that are not able to be bound correctly.  Fixing bug in
+ signal_from_string function.
+
  Revision 1.102  2003/10/10 20:52:07  phase1geo
  Initial submission of FSM expression allowance code.  We are still not quite
  there yet, but we are getting close.

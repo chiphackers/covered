@@ -14,7 +14,7 @@
 
 
 /*! \brief Creates an expression value and initializes it. */
-void expression_create_value( expression* exp, int width, int lsb, bool data );
+void expression_create_value( expression* exp, int width, bool data );
 
 /*! \brief Creates new expression. */
 expression* expression_create( expression* right, expression* left, int op, int id, int line, bool data );
@@ -61,6 +61,11 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.20  2003/08/09 22:10:41  phase1geo
+ Removing wait event signals from CDD file generation in support of another method
+ that fixes a bug when multiple wait event statements exist within the same
+ statement tree.
+
  Revision 1.19  2002/12/30 05:31:33  phase1geo
  Fixing bug in module merge for reports when parameterized modules are merged.
  These modules should not output an error to the user when mismatching modules

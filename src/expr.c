@@ -72,7 +72,6 @@ extern exp_link* static_expr_tail;
 /*!
  \param exp    Pointer to expression to add value to.
  \param width  Width of value to create.
- \param lsb    Least significant value of value field.
  \param data   Specifies if nibble array should be allocated for vector.
 
  Creates a value vector that is large enough to store width number of
@@ -80,7 +79,7 @@ extern exp_link* static_expr_tail;
  function should be called by either the expression_create function, the bind
  function, or the signal db_read function.
 */
-void expression_create_value( expression* exp, int width, int lsb, bool data ) {
+void expression_create_value( expression* exp, int width, bool data ) {
 
   nibble* value = NULL;    /* Temporary storage of vector nibble array */
 
@@ -89,7 +88,7 @@ void expression_create_value( expression* exp, int width, int lsb, bool data ) {
   }
 
   /* Create value */
-  vector_init( exp->value, value, width, lsb );
+  vector_init( exp->value, value, width );
 
 }
 
@@ -147,18 +146,18 @@ expression* expression_create( expression* right, expression* left, int op, int 
     /* For multiplication, we need a width the sum of the left and right expressions */
     assert( rwidth < 1024 );
     assert( lwidth < 1024 );
-    expression_create_value( new_expr, (lwidth + rwidth), 0, data );
+    expression_create_value( new_expr, (lwidth + rwidth), data );
 
   } else if( (op == EXP_OP_CONCAT) && (rwidth > 0) ) {
 
     assert( rwidth < 1024 );
-    expression_create_value( new_expr, rwidth, 0, data );
+    expression_create_value( new_expr, rwidth, data );
 
   } else if( (op == EXP_OP_EXPAND) && (rwidth > 0) && (lwidth > 0) && (left->value->value != NULL) ) {
 
     assert( rwidth < 1024 );
     assert( lwidth < 1024 );
-    expression_create_value( new_expr, (vector_to_int( left->value ) * rwidth), 0, data );
+    expression_create_value( new_expr, (vector_to_int( left->value ) * rwidth), data );
 
   } else if( (op == EXP_OP_LT   ) ||
              (op == EXP_OP_GT   ) ||
@@ -187,7 +186,7 @@ expression* expression_create( expression* right, expression* left, int op, int 
              (op == EXP_OP_DEFAULT) ) {
 
     /* If this expression will evaluate to a single bit, create vector now */
-    expression_create_value( new_expr, 1, 0, data );
+    expression_create_value( new_expr, 1, data );
 
   } else {
 
@@ -199,16 +198,16 @@ expression* expression_create( expression* right, expression* left, int op, int 
       if( rwidth >= lwidth ) {
         /* Check to make sure that nothing has gone drastically wrong */
         assert( rwidth < 1024 );
-        expression_create_value( new_expr, rwidth, 0, data );
+        expression_create_value( new_expr, rwidth, data );
       } else {
         /* Check to make sure that nothing has gone drastically wrong */
         assert( lwidth < 1024 );
-        expression_create_value( new_expr, lwidth, 0, data );
+        expression_create_value( new_expr, lwidth, data );
       }
 
     } else {
  
-      expression_create_value( new_expr, 0, 0, FALSE );
+      expression_create_value( new_expr, 0, FALSE );
  
     }
 
@@ -245,7 +244,6 @@ void expression_set_value( expression* exp, vector* vec ) {
     case EXP_OP_PARAM :
       exp->value->value = vec->value;
       exp->value->width = vec->width;
-      exp->value->lsb   = 0;
       break;
     case EXP_OP_SBIT_SEL   :
     case EXP_OP_PARAM_SBIT :
@@ -261,22 +259,18 @@ void expression_set_value( expression* exp, vector* vec ) {
       if( lbit <= rbit ) {
         exp->value->width = ((rbit - lbit) + 1);
         if( SUPPL_OP( exp->suppl ) == EXP_OP_PARAM_MBIT ) {
-          exp->value->lsb = lbit;
+          exp->value->value = vec->value + lbit;
         } else {
-          exp->value->lsb = lbit - exp->sig->value->lsb;
+          exp->value->value = vec->value + (lbit - exp->sig->lsb);
         }
       } else {
         exp->value->width = ((lbit - rbit) + 1);
         if( SUPPL_OP( exp->suppl ) == EXP_OP_PARAM_MBIT ) {
-          exp->value->lsb = rbit;
+          exp->value->value = vec->value + rbit;
         } else {
-          exp->value->lsb = rbit - exp->sig->value->lsb;
+          exp->value->value = vec->value + (rbit - exp->sig->lsb);
         }
       }
-      assert( exp->value->width <= vec->width );
-      // assert( exp->value->value == NULL );
-      // assert( vec->value != NULL );
-      exp->value->value = vec->value;
       break;
     default :  break;
   }
@@ -342,14 +336,14 @@ void expression_resize( expression* expr, bool recursive ) {
       case EXP_OP_DEFAULT :
         if( (expr->value->width != 1) || (expr->value->value == NULL) ) {
           assert( expr->value->value == NULL );
-          expression_create_value( expr, 1, 0, FALSE );
+          expression_create_value( expr, 1, FALSE );
         }
         break;
 
       case EXP_OP_LAST    :
         if( (expr->value->width != 2) || (expr->value->value == NULL) ) {
           assert( expr->value->value == NULL );
-          expression_create_value( expr, 2, 0, FALSE );
+          expression_create_value( expr, 2, FALSE );
         }
         break;
 
@@ -360,11 +354,11 @@ void expression_resize( expression* expr, bool recursive ) {
       case EXP_OP_AEDGE :
         if( (expr->left->value->width != expr->right->value->width) || (expr->left->value->value == NULL) ) {
           assert( expr->left->value->value == NULL );
-          expression_create_value( expr->left, (expr->right->value->width + 1), expr->right->value->lsb, FALSE );
+          expression_create_value( expr->left, (expr->right->value->width + 1), FALSE );
         }
         if( (expr->value->width != 1) || (expr->value->value == NULL) ) {
           assert( expr->value->value == NULL );
-          expression_create_value( expr, 1, 0, FALSE );
+          expression_create_value( expr, 1, FALSE );
         }
         break;
 
@@ -377,7 +371,7 @@ void expression_resize( expression* expr, bool recursive ) {
         if( (expr->value->width != (vector_to_int( expr->left->value ) * expr->right->value->width)) ||
             (expr->value->value == NULL) ) {
           assert( expr->value->value == NULL );
-          expression_create_value( expr, (vector_to_int( expr->left->value ) * expr->right->value->width), 0, FALSE );
+          expression_create_value( expr, (vector_to_int( expr->left->value ) * expr->right->value->width), FALSE );
         }
         break;
 
@@ -391,7 +385,7 @@ void expression_resize( expression* expr, bool recursive ) {
         if( (expr->value->width != (expr->left->value->width + expr->right->value->width)) ||
             (expr->value->value == NULL) ) {
           assert( expr->value->value == NULL );
-          expression_create_value( expr, (expr->left->value->width + expr->right->value->width), 0, FALSE );
+          expression_create_value( expr, (expr->left->value->width + expr->right->value->width), FALSE );
         }
         break;
 
@@ -405,7 +399,7 @@ void expression_resize( expression* expr, bool recursive ) {
         }
         if( (expr->value->width != largest_width) || (expr->value->value == NULL) ) {
           assert( expr->value->value == NULL );
-          expression_create_value( expr, largest_width, 0, FALSE );
+          expression_create_value( expr, largest_width, FALSE );
         }
         break;
 
@@ -806,7 +800,7 @@ void expression_operate( expression* expr ) {
             vector_set_value( expr->value, &bit, 1, 0, i );
           }
         } else {
-          vector_init( &vec1, value32, 32, 0 );
+          vector_init( &vec1, value32, 32 );
           intval1 = vector_to_int( expr->left->value );
           intval2 = vector_to_int( expr->right->value );
           if( intval2 == 0 ) {
@@ -826,7 +820,7 @@ void expression_operate( expression* expr ) {
             vector_set_value( expr->value, &bit, 1, 0, i );
           }
         } else {
-          vector_init( &vec1, value32, 32, 0 );
+          vector_init( &vec1, value32, 32 );
           intval1 = vector_to_int( expr->left->value );
           intval2 = vector_to_int( expr->right->value );
           if( intval2 == 0 ) {
@@ -908,16 +902,16 @@ void expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_LOR :
-        vector_init( &vec1, &value1a, 1, 0 );
-        vector_init( &vec2, &value1b, 1, 0 );
+        vector_init( &vec1, &value1a, 1 );
+        vector_init( &vec2, &value1b, 1 );
         vector_unary_op( &vec1, expr->left->value,  or_optab );
         vector_unary_op( &vec2, expr->right->value, or_optab );
         vector_bitwise_op( expr->value, &vec1, &vec2, or_optab );
         break;
 
       case EXP_OP_LAND :
-        vector_init( &vec1, &value1a, 1, 0 );
-        vector_init( &vec2, &value1b, 1, 0 );
+        vector_init( &vec1, &value1a, 1 );
+        vector_init( &vec2, &value1b, 1 );
         vector_unary_op( &vec1, expr->left->value,  or_optab );
         vector_unary_op( &vec2, expr->right->value, or_optab );
         vector_bitwise_op( expr->value, &vec1, &vec2, and_optab );
@@ -929,20 +923,18 @@ void expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_COND_SEL :
-        vector_init( &vec1, &value1a, 1, 0 );
+        vector_init( &vec1, &value1a, 1 );
         vector_unary_op( &vec1, expr->parent->expr->left->value, or_optab );
         if( VECTOR_VAL( vec1.value[0] ) == 0 ) {
-          vector_set_value( expr->value, expr->right->value->value, expr->right->value->width,
-                            expr->right->value->lsb, 0 );
+          vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
         } else if( VECTOR_VAL( vec1.value[0] ) == 1 ) {
-          vector_set_value( expr->value, expr->left->value->value, expr->left->value->width,
-                            expr->left->value->lsb, 0 );
+          vector_set_value( expr->value, expr->left->value->value, expr->left->value->width, 0, 0 );
         } else {
-          vec = vector_create( expr->value->width, 0, TRUE );
+          vec = vector_create( expr->value->width, TRUE );
           for( i=0; i<vec->width; i++ ) {
             VECTOR_SET_VAL( vec->value[i], 2 );
           }
-          vector_set_value( expr->value, vec->value, vec->width, vec->lsb, 0 );
+          vector_set_value( expr->value, vec->value, vec->width, 0, 0 );
           vector_dealloc( vec );
         }
         break;
@@ -987,15 +979,11 @@ void expression_operate( expression* expr ) {
 
       case EXP_OP_SBIT_SEL   :
       case EXP_OP_PARAM_SBIT :
-        vector_init( &vec1, &value1a, 1, 0 );
-        vector_unary_op( &vec1, expr->left->value, or_optab );
-        if( (vec1.value[0] & 0x3) != 2 ) {
-          expr->value->lsb = vector_to_int( expr->left->value ) - expr->sig->value->lsb;
-          if( expr->value->lsb >= expr->sig->value->width ) {
-            expr->value->lsb = -1;
-          }
-        } else {
-          expr->value->lsb = -1;
+        if( !vector_is_unknown( expr->left->value ) ) {
+          intval1 = vector_to_int( expr->left->value ) - expr->sig->lsb;
+          assert( intval1 >= 0 );
+          assert( intval1 < expr->sig->value->width );
+          expr->value->value = expr->sig->value->value + intval1;
         }
         break;
 
@@ -1020,8 +1008,8 @@ void expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_LIST :
-        vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, expr->right->value->lsb, 0 );
-        vector_set_value( expr->value, expr->left->value->value,  expr->left->value->width,  expr->left->value->lsb,  expr->right->value->width );
+        vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
+        vector_set_value( expr->value, expr->left->value->value,  expr->left->value->width,  0, expr->right->value->width );
         break;
 
       case EXP_OP_CONCAT :
@@ -1066,11 +1054,11 @@ void expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_AEDGE :
-        vector_init( &vec1, &value1a, 1, 0 );
+        vector_init( &vec1, &value1a, 1 );
         vector_op_compare( &vec1, expr->left->value, expr->right->value, COMP_CEQ );
         value1b = expr->left->value->value[0];
         /* Set left LAST value to current value of right */
-        vector_set_value( expr->left->value, expr->right->value->value, expr->right->value->width, expr->right->value->lsb, 0 );
+        vector_set_value( expr->left->value, expr->right->value->value, expr->right->value->width, 0, 0 );
         if( ((value1b & 0x80) == 0x80) && (vector_to_int( &vec1 ) == 0) ) {
           bit = 1;
           vector_set_value( expr->value, &bit, 1, 0, 0 );
@@ -1085,8 +1073,8 @@ void expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_EOR :
-        vector_init( &vec1, &value1a, 1, 0 );
-        vector_init( &vec2, &value1b, 1, 0 );
+        vector_init( &vec1, &value1a, 1 );
+        vector_init( &vec2, &value1b, 1 );
         expression_operate( expr->left );
         expression_operate( expr->right );
         vector_unary_op( &vec1, expr->left->value,  or_optab );
@@ -1152,7 +1140,7 @@ void expression_operate( expression* expr ) {
     }
     
     /* Set TRUE/FALSE bits to indicate value */
-    vector_init( &vec1, &value1a, 1, 0 );
+    vector_init( &vec1, &value1a, 1 );
     vector_unary_op( &vec1, expr->value, or_optab );
     switch( VECTOR_VAL( vec1.value[0] ) ) {
       case 0 :  expr->suppl = expr->suppl | (0x1 << SUPPL_LSB_FALSE) | (0x1 << SUPPL_LSB_EVAL_F);  break;
@@ -1218,7 +1206,7 @@ void expression_operate_recursively( expression* expr ) {
     
     /* Create vector value to store operation information */
     if( expr->value->value == NULL ) {
-      expression_create_value( expr, expr->value->width, expr->value->lsb, TRUE );
+      expression_create_value( expr, expr->value->width, TRUE );
     }
     
     /* Perform operation */
@@ -1244,7 +1232,7 @@ int expression_bit_value( expression* expr ) {
   nibble data;          /* Data for result vector                      */
 
   /* Evaluate the value of the root expression and return this value */
-  vector_init( &result, &data, 1, 0 );
+  vector_init( &result, &data, 1 );
   vector_unary_op( &result, expr->value, or_optab );
 
   return( data & 0x3 );
@@ -1336,6 +1324,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.82  2003/10/16 12:27:19  phase1geo
+ Fixing bug in arc.c related to non-zero LSBs.
+
  Revision 1.81  2003/10/14 04:02:44  phase1geo
  Final fixes for new FSM support.  Full regression now passes.  Need to
  add new diagnostics to verify new functionality, but at least all existing

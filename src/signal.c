@@ -30,19 +30,21 @@ extern char   user_msg[USER_MSG_LENGTH];
 
 
 /*!
- \param sig        Pointer to signal to initialize.
- \param name       Pointer to signal name string.
- \param value      Pointer to signal value.
+ \param sig    Pointer to signal to initialize.
+ \param name   Pointer to signal name string.
+ \param value  Pointer to signal value.
+ \param lsb    Least-significant bit position in this string.
  
- Initializes the specified signal with the values of name and value.  This
+ Initializes the specified signal with the values of name, value and lsb.  This
  function is called by the signal_create routine and is also useful for
  creating temporary signals (reduces the need for dynamic memory allocation).
  for performance enhancing purposes.
 */
-void signal_init( signal* sig, char* name, vector* value ) {
+void signal_init( signal* sig, char* name, vector* value, int lsb ) {
 
   sig->name     = name;
   sig->value    = value;
+  sig->lsb      = lsb;
   sig->exp_head = NULL;
   sig->exp_tail = NULL;
 
@@ -66,7 +68,7 @@ signal* signal_create( char* name, int width, int lsb ) {
 
   new_sig = (signal*)malloc_safe( sizeof( signal ) );
 
-  signal_init( new_sig, strdup( name ), vector_create( width, lsb, TRUE ) );
+  signal_init( new_sig, strdup( name ), vector_create( width, TRUE ), lsb );
 
   return( new_sig );
 
@@ -89,10 +91,11 @@ void signal_db_write( signal* sig, FILE* file, char* modname ) {
   if( sig->name[0] != '!' ) {
 
     /* Display identification and value information first */
-    fprintf( file, "%d %s %s ",
+    fprintf( file, "%d %s %s %d ",
       DB_TYPE_SIGNAL,
       sig->name,
-      modname
+      modname,
+      sig->lsb
     );
 
     vector_db_write( sig->value, file, (sig->name[0] == '#') );
@@ -116,12 +119,6 @@ void signal_db_write( signal* sig, FILE* file, char* modname ) {
  \return Returns TRUE if signal information read successfully; otherwise,
          returns FALSE.
 
- \bug 
- A signal will only look in the current module for a matching expression.  In the case
- of a hierarchical reference, it is possible that an expression outside the current module
- is referencing this signal.  We need to check for this case (hierarchical expression)
- and find the expression elsewhere.
-
  Creates a new signal structure, parses current file line for signal
  information and stores it to the specified signal.  If there are any problems
  in reading in the current line, returns FALSE; otherwise, returns TRUE.
@@ -132,6 +129,7 @@ bool signal_db_read( char** line, module* curr_mod ) {
   char       name[256];      /* Name of current signal                           */
   signal*    sig;            /* Pointer to the newly created signal              */
   vector*    vec;            /* Vector value for this signal                     */
+  int        lsb;            /* Least-significant bit of this signal             */
   int        exp_id;         /* Expression ID                                    */
   int        chars_read;     /* Number of characters read from line              */
   char       modname[4096];  /* Name of signal's module                          */
@@ -139,7 +137,7 @@ bool signal_db_read( char** line, module* curr_mod ) {
   exp_link*  expl;           /* Temporary expression link for storage            */
 
   /* Get name values. */
-  if( sscanf( *line, "%s %s %n", name, modname, &chars_read ) == 2 ) {
+  if( sscanf( *line, "%s %s %d %n", name, modname, &lsb, &chars_read ) == 3 ) {
 
     *line = *line + chars_read;
 
@@ -147,7 +145,7 @@ bool signal_db_read( char** line, module* curr_mod ) {
     if( vector_db_read( &vec, line ) ) {
 
       /* Create new signal */
-      sig = signal_create( name, vec->width, vec->lsb );
+      sig = signal_create( name, vec->width, lsb );
 
       /* Copy over vector value */
       vector_dealloc( sig->value );
@@ -232,20 +230,21 @@ bool signal_db_read( char** line, module* curr_mod ) {
  vectors.
 */
 bool signal_db_merge( signal* base, char** line, bool same ) {
-
-  bool retval;         /* Return value of this function       */
-  char name[256];      /* Name of current signal              */
-  char modname[4096];  /* Name of current signal's module     */
-  int  chars_read;     /* Number of characters read from line */
+ 
+  bool retval;         /* Return value of this function        */
+  char name[256];      /* Name of current signal               */
+  char modname[4096];  /* Name of current signal's module      */
+  int  lsb;            /* Least-significant bit of this signal */
+  int  chars_read;     /* Number of characters read from line  */
 
   assert( base != NULL );
   assert( base->name != NULL );
 
-  if( sscanf( *line, "%s %s %n", name, modname, &chars_read ) == 2 ) {
+  if( sscanf( *line, "%s %s %d %n", name, modname, &lsb, &chars_read ) == 2 ) {
 
     *line = *line + chars_read;
 
-    if( strcmp( base->name, name ) != 0 ) {
+    if( (strcmp( base->name, name ) != 0) || (base->lsb != lsb) ) {
 
       print_output( "Attempting to merge two databases derived from different designs.  Unable to merge", FATAL );
       exit( 1 );
@@ -322,6 +321,8 @@ void signal_vcd_assign( signal* sig, char* value, int msb, int lsb ) {
   /* Set signal value to specified value */
   vector_vcd_assign( sig->value, value, msb, lsb );
 
+  /* TBD - may need to alter msb and lsb for this signal's lsb value */
+
   /* Iterate through signal's expression list */
   curr_expr = sig->exp_head;
   while( curr_expr != NULL ) {
@@ -357,7 +358,7 @@ void signal_display( signal* sig ) {
 
   assert( sig != NULL );
 
-  printf( "  Signal =>  name: %s, ", sig->name );
+  printf( "  Signal =>  name: %s, lsb: %d", sig->name, sig->lsb );
   
   vector_display( sig->value );
 
@@ -440,6 +441,11 @@ void signal_dealloc( signal* sig ) {
 
 /*
  $Log$
+ Revision 1.39  2003/10/16 04:26:01  phase1geo
+ Adding new fsm5 diagnostic to testsuite and regression.  Added proper support
+ for FSM variables that are not able to be bound correctly.  Fixing bug in
+ signal_from_string function.
+
  Revision 1.38  2003/10/13 22:10:07  phase1geo
  More changes for FSM support.  Still not quite there.
 

@@ -2298,7 +2298,7 @@ delay1
       expression* exp; 
       expression* tmp;
       if( (ignore_mode == 0) && ($2 != NULL) ) {
-        vec = vector_create( 32, 0, TRUE );
+        vec = vector_create( 32, TRUE );
         tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
         vector_from_int( vec, 0xffffffff );
         assert( tmp->value->value == NULL ); 
@@ -2316,7 +2316,7 @@ delay1
       expression* exp;
       expression* tmp;
       if( (ignore_mode == 0) && ($3 != NULL) ) {
-        vec = vector_create( 32, 0, TRUE );
+        vec = vector_create( 32, TRUE );
         tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
         vector_from_int( vec, 0xffffffff );
         assert( tmp->value->value == NULL );
@@ -2337,7 +2337,7 @@ delay3
       expression* exp; 
       expression* tmp;
       if( (ignore_mode == 0) && ($2 != NULL) ) {
-        vec = vector_create( 32, 0, TRUE );
+        vec = vector_create( 32, TRUE );
         tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
         vector_from_int( vec, 0xffffffff );
         assert( tmp->value->value == NULL );
@@ -2355,7 +2355,7 @@ delay3
       expression* exp; 
       expression* tmp;
       if( (ignore_mode == 0) && ($3 != NULL) ) {
-        vec = vector_create( 32, 0, TRUE );
+        vec = vector_create( 32, TRUE );
         tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
         vector_from_int( vec, 0xffffffff );
         assert( tmp->value->value == NULL );
@@ -2374,7 +2374,7 @@ delay3
       expression* tmp;
       expression_dealloc( $5, FALSE );
       if( (ignore_mode == 0) && ($3 != NULL) ) {
-        vec = vector_create( 32, 0, TRUE );
+        vec = vector_create( 32, TRUE );
         tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
         vector_from_int( vec, 0xffffffff );
         assert( tmp->value->value == NULL );
@@ -2394,7 +2394,7 @@ delay3
       expression_dealloc( $3, FALSE );
       expression_dealloc( $7, FALSE );
       if( ignore_mode == 0 ) {
-        vec = vector_create( 32, 0, TRUE );
+        vec = vector_create( 32, TRUE );
         tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
         vector_from_int( vec, 0xffffffff );
         assert( tmp->value->value == NULL );
@@ -2427,7 +2427,7 @@ delay_value
       if( (ignore_mode == 0) && (se != NULL) ) {
         if( se->exp == NULL ) {
           tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
-          vector_init( tmp->value, (nibble*)malloc_safe( sizeof( nibble ) * 32 ), 32, 0 );  
+          vector_init( tmp->value, (nibble*)malloc_safe( sizeof( nibble ) * 32 ), 32 );  
           vector_from_int( tmp->value, se->num );
         } else {
           tmp = se->exp;
@@ -2477,7 +2477,7 @@ delay_value
         if( se != NULL ) {
           if( se->exp == NULL ) {
             tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
-            vector_init( tmp->value, (nibble*)malloc_safe( sizeof( nibble ) * 32 ), 32, 0 );  
+            vector_init( tmp->value, (nibble*)malloc_safe( sizeof( nibble ) * 32 ), 32 );
             vector_from_int( tmp->value, se->num );
           } else {
             tmp = se->exp;
@@ -2915,7 +2915,7 @@ event_expression
       if( (ignore_mode == 0) && ($2 != NULL) ) {
         /* Create 1-bit expression to hold last value of right expression */
         tmp1 = db_create_expression( NULL, NULL, EXP_OP_LAST, @1.first_line, NULL );
-        expression_create_value( tmp1, 1, 0, FALSE );
+        expression_create_value( tmp1, 1, FALSE );
         tmp2 = db_create_expression( $2, tmp1, EXP_OP_PEDGE, @1.first_line, NULL );
         $$ = tmp2;
       } else {
@@ -2928,7 +2928,7 @@ event_expression
       expression* tmp2;
       if( (ignore_mode == 0) && ($2 != NULL) ) {
         tmp1 = db_create_expression( NULL, NULL, EXP_OP_LAST, @1.first_line, NULL );
-        expression_create_value( tmp1, 1, 0, FALSE );
+        expression_create_value( tmp1, 1, FALSE );
         tmp2 = db_create_expression( $2, tmp1, EXP_OP_NEDGE, @1.first_line, NULL );
         $$ = tmp2;
       } else {
@@ -2943,7 +2943,7 @@ event_expression
       if( (ignore_mode == 0) && ($1 != NULL ) ) {
         tmp1 = db_create_expression( NULL, NULL, EXP_OP_LAST, @1.first_line, NULL );
         tmp2 = db_create_expression( expr, tmp1, EXP_OP_AEDGE, @1.first_line, NULL );
-        expression_create_value( tmp1, expr->value->width, 0, FALSE );
+        expression_create_value( tmp1, expr->value->width, FALSE );
         $$ = tmp2;
       } else {
         $$ = NULL;

@@ -57,20 +57,16 @@ extern char user_msg[USER_MSG_LENGTH];
  \param vec    Pointer to vector to initialize.
  \param value  Pointer to nibble array for vector.
  \param width  Bit width of specified vector.
- \param lsb    Least-significant bit of vector.
  
- Initializes the specified vector with the contents of width, lsb
+ Initializes the specified vector with the contents of width
  and value (if value != NULL).  If value != NULL, initializes all contents 
  of value array to 0x2 (X-value).
 */
-void vector_init( vector* vec, nibble* value, int width, int lsb ) {
+void vector_init( vector* vec, nibble* value, int width ) {
 
   int i;        /* Loop iterator */
 
-  assert( lsb >= 0 );
-
   vec->width = width;
-  vec->lsb   = lsb;
   vec->suppl = 0;
   vec->value = value;
 
@@ -88,14 +84,13 @@ void vector_init( vector* vec, nibble* value, int width, int lsb ) {
 
 /*!
  \param width  Bit width of this vector.
- \param lsb    Least significant bit for this vector.
- \param data   If FALSE only initializes width and lsb but does not allocate a nibble array.
+ \param data   If FALSE only initializes width but does not allocate a nibble array.
 
  \return Pointer to newly created vector.
 
  Creates new vector from heap memory and initializes all vector contents.
 */
-vector* vector_create( int width, int lsb, bool data ) {
+vector* vector_create( int width, bool data ) {
 
   vector* new_vec;       /* Pointer to newly created vector               */
   nibble* value = NULL;  /* Temporarily stores newly created vector value */
@@ -108,7 +103,7 @@ vector* vector_create( int width, int lsb, bool data ) {
     value = (nibble*)malloc_safe( sizeof( nibble ) * width );
   }
 
-  vector_init( new_vec, value, width, lsb );
+  vector_init( new_vec, value, width );
 
   return( new_vec );
 
@@ -132,7 +127,7 @@ void vector_copy( vector* from_vec, vector** to_vec ) {
   } else {
 
     /* Create vector */
-    *to_vec = vector_create( from_vec->width, from_vec->lsb, TRUE );
+    *to_vec = vector_create( from_vec->width, TRUE );
 
     /* Copy contents of value array */
     for( i=0; i<from_vec->width; i++ ) {
@@ -198,9 +193,8 @@ void vector_db_write( vector* vec, FILE* file, bool write_data ) {
   mask = write_data ? 0x1f : 0x1c;
 
   /* Output vector information to specified file */
-  fprintf( file, "%d %d %d",
+  fprintf( file, "%d %d",
     vec->width,
-    vec->lsb,
     vec->suppl
   );
 
@@ -262,7 +256,6 @@ bool vector_db_read( vector** vec, char** line ) {
 
   bool         retval = TRUE;  /* Return value for this function    */
   int          width;          /* Vector bit width                  */
-  int          lsb;            /* Vector LSB value                  */
   int          suppl;          /* Temporary supplemental value      */
   int          i;              /* Loop iterator                     */
   int          chars_read;     /* Number of characters read         */
@@ -270,12 +263,12 @@ bool vector_db_read( vector** vec, char** line ) {
   nibble       nibs[4];        /* Temporary nibble value containers */
 
   /* Read in vector information */
-  if( sscanf( *line, "%d %d %d%n", &width, &lsb, &suppl, &chars_read ) == 3 ) {
+  if( sscanf( *line, "%d %d%n", &width, &suppl, &chars_read ) == 2 ) {
 
     *line = *line + chars_read;
 
     /* Create new vector */
-    *vec = vector_create( width, lsb, TRUE );
+    *vec = vector_create( width, TRUE );
     (*vec)->suppl = (char)suppl & 0xff;
 
     i = 0;
@@ -329,7 +322,7 @@ bool vector_db_read( vector** vec, char** line ) {
 
  Parses current file line for vector information and performs vector merge of 
  base vector and read vector information.  If the vectors are found to be different
- (width or lsb are not equal), an error message is sent to the user and the
+ (width is not equal), an error message is sent to the user and the
  program is halted.  If the vectors are found to be equivalents, the merge is
  performed on the vector nibbles.
 */
@@ -337,7 +330,6 @@ bool vector_db_merge( vector* base, char** line, bool same ) {
 
   bool   retval = TRUE;   /* Return value of this function */
   int    width;           /* Width of read vector          */
-  int    lsb;             /* LSB of read vector            */
   int    suppl;           /* Supplemental value of vector  */
   int    chars_read;      /* Number of characters read     */
   int    i;               /* Loop iterator                 */
@@ -346,11 +338,11 @@ bool vector_db_merge( vector* base, char** line, bool same ) {
 
   assert( base != NULL );
 
-  if( sscanf( *line, "%d %d %d%n", &width, &lsb, &suppl, &chars_read ) == 3 ) {
+  if( sscanf( *line, "%d %d%n", &width, &suppl, &chars_read ) == 2 ) {
 
     *line = *line + chars_read;
 
-    if( (base->width != width) || (base->lsb != lsb) ) {
+    if( base->width != width ) {
 
       if( same ) {
         print_output( "Attempting to merge databases derived from different designs.  Unable to merge", FATAL );
@@ -406,19 +398,18 @@ bool vector_db_merge( vector* base, char** line, bool same ) {
 /*!
  \param nib    Nibble to display toggle information
  \param width  Number of bits of nibble to display
- \param lsb    Least significant bit of vector to display
  \param ofile  Stream to output information to.
  
  Displays the toggle01 information from the specified vector to the output
  stream specified in ofile.
 */
-void vector_display_toggle01( nibble* nib, int width, int lsb, FILE* ofile ) {
+void vector_display_toggle01( nibble* nib, int width, FILE* ofile ) {
 
   int i;    /* Loop iterator */
 
   fprintf( ofile, "%d'b", width );
 
-  for( i=((width - 1)+lsb); i>=lsb; i-- ) {
+  for( i=(width - 1); i>=0; i-- ) {
     fprintf( ofile, "%d", VECTOR_TOG01( nib[i] ) );
   }
 
@@ -427,19 +418,18 @@ void vector_display_toggle01( nibble* nib, int width, int lsb, FILE* ofile ) {
 /*!
  \param nib    Nibble to display toggle information
  \param width  Number of bits of nibble to display
- \param lsb    Least significant bit of vector to display
  \param ofile  Stream to output information to.
  
  Displays the toggle10 information from the specified vector to the output
  stream specified in ofile.
 */
-void vector_display_toggle10( nibble* nib, int width, int lsb, FILE* ofile ) {
+void vector_display_toggle10( nibble* nib, int width, FILE* ofile ) {
 
   int i;    /* Loop iterator */
 
   fprintf( ofile, "%d'b", width );
 
-  for( i=((width - 1)+lsb); i>=lsb; i-- ) {
+  for( i=(width - 1); i>=0; i-- ) {
     fprintf( ofile, "%d", VECTOR_TOG10( nib[i] ) );
   }
 
@@ -448,12 +438,11 @@ void vector_display_toggle10( nibble* nib, int width, int lsb, FILE* ofile ) {
 /*!
  \param nib    Nibble to display.
  \param width  Number of bits in nibble to display.
- \param lsb    Least significant bit of specified vector.
 
  Outputs the specified nibble array to standard output as described by the
- width and lsb parameters.
+ width parameter.
 */
-void vector_display_nibble( nibble* nib, int width, int lsb ) {
+void vector_display_nibble( nibble* nib, int width ) {
 
   int i;       /* Loop iterator */
 
@@ -467,7 +456,7 @@ void vector_display_nibble( nibble* nib, int width, int lsb ) {
   /* Display nibble value */
   printf( ", value: %d'b", width );
 
-  for( i=((width - 1)+lsb); i>=lsb; i-- ) {
+  for( i=(width - 1); i>=0; i-- ) {
     switch( VECTOR_VAL( nib[i] ) ) {
       case 0 :  printf( "0" );  break;
       case 1 :  printf( "1" );  break;
@@ -479,30 +468,30 @@ void vector_display_nibble( nibble* nib, int width, int lsb ) {
 
   /* Display nibble toggle01 history */
   printf( ", 0->1: " );
-  vector_display_toggle01( nib, width, lsb, stdout );
+  vector_display_toggle01( nib, width, stdout );
 
   /* Display nibble toggle10 history */
   printf( ", 1->0: " );
-  vector_display_toggle10( nib, width, lsb, stdout );
+  vector_display_toggle10( nib, width, stdout );
 
   /* Display bit set information */
   printf( ", set: %d'b", width );
 
-  for( i=((width - 1)+lsb); i>=lsb; i-- ) {
+  for( i=(width - 1); i>=0; i-- ) {
     printf( "%d", VECTOR_SET( nib[i] ) );
   }
 
   /* Display bit FALSE information */
   printf( ", FALSE: %d'b", width );
 
-  for( i=((width - 1)+lsb); i>=lsb; i-- ) {
+  for( i=(width - 1); i>=0; i-- ) {
     printf( "%d", VECTOR_FALSE( nib[i] ) );
   }
 
   /* Display bit TRUE information */
   printf( ", TRUE: %d'b", width );
 
-  for( i=((width - 1)+lsb); i>=lsb; i-- ) {
+  for( i=(width - 1); i>=0; i-- ) {
     printf( "%d", VECTOR_TRUE( nib[i] ) );
   }
 
@@ -517,10 +506,10 @@ void vector_display( vector* vec ) {
 
   assert( vec != NULL );
 
-  printf( "Vector => width: %d, lsb: %d, ", vec->width, vec->lsb );
+  printf( "Vector => width: %d, ", vec->width );
 
-  if( (vec->lsb >= 0) && (vec->width > 0) && (vec->value != NULL) ) {
-    vector_display_nibble( vec->value, vec->width, vec->lsb );
+  if( (vec->width > 0) && (vec->value != NULL) ) {
+    vector_display_nibble( vec->value, vec->width );
   } else {
     printf( "NO DATA" );
   }
@@ -574,7 +563,8 @@ void vector_logic_count( vector* vec, int* false_cnt, int* true_cnt ) {
  \param value     New value to set vector value to.
  \param width     Width of new value.
  \param from_idx  Starting bit index of value to start copying.
- \param to_idx    Starting bit index of vec value to copy to.
+ \param to_idx    Starting bit index of value to copy to.
+
  \return Returns TRUE if assignment was successful; otherwise, returns FALSE.
 
  Allows the calling function to set any bit vector within the vector
@@ -593,8 +583,8 @@ void vector_set_value( vector* vec, nibble* value, int width, int from_idx, int 
   assert( vec != NULL );
 
   /* Verify that index is within range */
-  /* printf( "to_idx: %d, vec->width: %d, vec->lsb: %d\n", to_idx, vec->width, vec->lsb ); */
-  assert( to_idx < (vec->width + vec->lsb) );
+  /* printf( "to_idx: %d, vec->width: %d\n", to_idx, vec->width ); */
+  assert( to_idx < vec->width );
   assert( to_idx >= 0 );
 
   /* Adjust width to smaller of two values */
@@ -680,7 +670,7 @@ int vector_to_int( vector* vec ) {
 
   width = (vec->width > (SIZEOF_INT * 8)) ? 32 : vec->width;
 
-  for( i=((width - 1) + vec->lsb); i>=vec->lsb; i-- ) {
+  for( i=(width - 1); i>=0; i-- ) {
     switch( VECTOR_VAL( vec->value[i] ) ) {
       case 0 :  retval = (retval << 1) | 0;  break;
       case 1 :  retval = (retval << 1) | 1;  break;
@@ -928,7 +918,7 @@ vector* vector_from_string( char* str ) {
   assert( size <= MAX_BIT_WIDTH );
 
   /* Create vector */
-  vec = vector_create( size, 0, TRUE );
+  vec = vector_create( size, TRUE );
 
   vec->suppl = type;
 
@@ -960,12 +950,12 @@ void vector_vcd_assign( vector* vec, char* value, int msb, int lsb ) {
 
   assert( vec != NULL );
   assert( value != NULL );
-  assert( msb <= (vec->lsb + vec->width) );
+  assert( msb <= vec->width );
 
   /* Set pointer to LSB */
   ptr = (value + strlen( value )) - 1;
-  i   = (lsb > 0) ? (lsb - vec->lsb) : 0;
-  msb = (lsb > 0) ? (msb - vec->lsb) : msb;
+  i   = (lsb > 0) ? lsb : 0;
+  msb = (lsb > 0) ? msb : msb;
     
   while( ptr >= value ) {
 
@@ -1021,7 +1011,7 @@ void vector_bitwise_op( vector* tgt, vector* src1, vector* src2, nibble* optab )
   nibble  bit1;   /* Current bit value for src1        */
   nibble  bit2;   /* Current bit value for src2        */
 
-  vector_init( &vec, &vecval, 1, 0 );
+  vector_init( &vec, &vecval, 1 );
 
   for( i=0; i<tgt->width; i++ ) {
 
@@ -1162,7 +1152,7 @@ void vector_op_lshift( vector* tgt, vector* left, vector* right ) {
     if( shift_val >= left->width ) {
       shift_val = left->width;
     } else {
-      vector_set_value( tgt, left->value, (left->width - shift_val), left->lsb, shift_val );
+      vector_set_value( tgt, left->value, (left->width - shift_val), 0, shift_val );
     }
 
     /* Zero-fill LSBs */
@@ -1272,9 +1262,9 @@ void vector_op_subtract( vector* tgt, vector* left, vector* right ) {
   vector* vec3;  /* Temporary vector holder */
 
   /* Create temp vectors */
-  vec1 = vector_create( tgt->width, 0, TRUE );
-  vec2 = vector_create( tgt->width, 0, TRUE );
-  vec3 = vector_create( tgt->width, 0, TRUE );
+  vec1 = vector_create( tgt->width, TRUE );
+  vec2 = vector_create( tgt->width, TRUE );
+  vec3 = vector_create( tgt->width, TRUE );
 
   /* Create vector with a value of 1 */
   VECTOR_SET_VAL( vec1->value[0], 1 );
@@ -1316,9 +1306,9 @@ void vector_op_multiply( vector* tgt, vector* left, vector* right ) {
   int     i;           /* Loop iterator        */
 
   /* Initialize temporary vectors */
-  vector_init( &lcomp, &lcomp_val, 1, 0 );
-  vector_init( &rcomp, &rcomp_val, 1, 0 );
-  vector_init( &vec,   vec_val,   32, 0 );
+  vector_init( &lcomp, &lcomp_val, 1 );
+  vector_init( &rcomp, &rcomp_val, 1 );
+  vector_init( &vec,   vec_val,    32 );
 
   vector_unary_op( &lcomp, left,  xor_optab );
   vector_unary_op( &rcomp, right, xor_optab );
@@ -1335,7 +1325,7 @@ void vector_op_multiply( vector* tgt, vector* left, vector* right ) {
     if( vector_to_int( left ) == 0 ) {
       vector_from_int( &vec, 0 );
     } else if( vector_to_int( left ) == 1 ) {
-      vector_set_value( &vec, right->value, right->width, right->lsb, 0 );
+      vector_set_value( &vec, right->value, right->width, 0, 0 );
     } else {
       for( i=0; i<vec.width; i++ ) {
         VECTOR_SET_VAL( vec.value[i], 2 );
@@ -1347,7 +1337,7 @@ void vector_op_multiply( vector* tgt, vector* left, vector* right ) {
     if( vector_to_int( right ) == 0 ) {
       vector_from_int( &vec, 0 );
     } else if( vector_to_int( right ) == 1 ) {
-      vector_set_value( &vec, left->value, left->width, left->lsb, 0 );
+      vector_set_value( &vec, left->value, left->width, 0, 0 );
     } else {
       for( i=0; i<vec.width; i++ ) {
         VECTOR_SET_VAL( vec.value[i], 2 );
@@ -1378,11 +1368,11 @@ void vector_unary_inv( vector* tgt, vector* src ) {
   nibble vec_val;  /* Temporary value                 */
   int    i;        /* Loop iterator                   */
 
-  vector_init( &vec, &vec_val, 1, 0 );
+  vector_init( &vec, &vec_val, 1 );
 
   for( i=0; i<src->width; i++ ) {
 
-    bit = VECTOR_VAL( src->value[i + src->lsb] );
+    bit = VECTOR_VAL( src->value[i] );
 
     switch( bit ) {
       case 0  :  VECTOR_SET_VAL( vec.value[0], 1 );  break;
@@ -1411,12 +1401,12 @@ void vector_unary_op( vector* tgt, vector* src, nibble* optab ) {
   nibble vec_val;  /* Temporary value              */
   int    i;        /* Loop iterator                */
 
-  vector_init( &vec, &vec_val, 1, 0 );
+  vector_init( &vec, &vec_val, 1 );
 
-  uval = VECTOR_VAL( src->value[src->lsb] );
+  uval = VECTOR_VAL( src->value[0] );
 
   for( i=1; i<src->width; i++ ) {
-    bit  = VECTOR_VAL( src->value[i + src->lsb] );
+    bit  = VECTOR_VAL( src->value[i] );
     uval = optab[ ((uval << 2) | bit) ]; 
   }
 
@@ -1467,6 +1457,10 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.39  2003/10/11 05:15:08  phase1geo
+ Updates for code optimizations for vector value data type (integers to chars).
+ Updated regression for changes.
+
  Revision 1.38  2003/09/15 01:13:57  phase1geo
  Fixing bug in vector_to_int() function when LSB is not 0.  Fixing
  bug in arc_state_to_string() function in creating string version of state.

@@ -223,7 +223,7 @@ bool fsm_db_read( char** line, module* mod ) {
       if( iexp.id == oexp.id ) {
         table->from_state = expression_create( NULL, NULL, EXP_OP_STATIC, iexp.id, 0, FALSE );
         vector_dealloc( table->from_state->value );
-        table->from_state->value = vector_create( iexpl->exp->value->width, iexpl->exp->value->lsb, TRUE );
+        table->from_state->value = vector_create( iexpl->exp->value->width, TRUE );
       } else {
         table->from_state = iexpl->exp;
       }
@@ -769,6 +769,9 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.26  2003/10/16 12:27:19  phase1geo
+ Fixing bug in arc.c related to non-zero LSBs.
+
  Revision 1.25  2003/10/16 04:26:01  phase1geo
  Adding new fsm5 diagnostic to testsuite and regression.  Added proper support
  for FSM variables that are not able to be bound correctly.  Fixing bug in

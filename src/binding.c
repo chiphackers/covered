@@ -192,14 +192,14 @@ bool bind_perform( char* sig_name, expression* exp, module* mod_sig, module* mod
   bool      retval = TRUE;  /* Return value for this function                    */
 
   /* Search for specified signal in current module */
-  signal_init( &tsig, sig_name, NULL );
+  signal_init( &tsig, sig_name, NULL, 0 );
   sigl = sig_link_find( &tsig, mod_sig->sig_head );
 
   /* If standard signal is not found, check to see if it is an unused signal */
   if( sigl == NULL ) {
     tmpname = (char*)malloc_safe( strlen( sig_name ) + 2 );
     snprintf( tmpname, (strlen( sig_name ) + 2), "!%s", sig_name );
-    signal_init( &tsig, tmpname, NULL );
+    signal_init( &tsig, tmpname, NULL, 0 );
     sigl = sig_link_find( &tsig, mod_sig->sig_head );
     if( sigl != NULL ) {
       retval = FALSE;
@@ -305,13 +305,13 @@ void bind() {
     mparm = mod_parm_add( NULL, NULL, PARAM_TYPE_EXP_LSB, &(curr_seb->mod->param_head), &(curr_seb->mod->param_tail) );
     
     orig_width = curr_seb->exp->sig->value->width;
-    orig_lsb   = curr_seb->exp->sig->value->lsb;
+    orig_lsb   = curr_seb->exp->sig->lsb;
     i          = 0;
     ignore     = 0;
     while( (inst = instance_find_by_module( instance_root, curr_seb->mod, &ignore )) != NULL ) {
       
       /* Add instance parameter based on size of current signal */
-      if( (curr_seb->exp->sig->value->width == -1) || (curr_seb->exp->sig->value->lsb == -1) ) {
+      if( (curr_seb->exp->sig->value->width == -1) || (curr_seb->exp->sig->lsb == -1) ) {
         /* Signal size not known yet, figure out its size based on parameters */
         curr_iparm = inst->param_head;
         while( (curr_iparm != NULL) && !done ) {
@@ -332,7 +332,7 @@ void bind() {
 
     /* Revert signal to its previous state */
     curr_seb->exp->sig->value->width = orig_width;
-    curr_seb->exp->sig->value->lsb   = orig_lsb;
+    curr_seb->exp->sig->lsb          = orig_lsb;
     
     /* Signify that current expression is getting its value elsewhere */
     curr_seb->exp->sig = NULL;
@@ -352,6 +352,11 @@ void bind() {
 
 /* 
  $Log$
+ Revision 1.25  2003/10/16 04:26:01  phase1geo
+ Adding new fsm5 diagnostic to testsuite and regression.  Added proper support
+ for FSM variables that are not able to be bound correctly.  Fixing bug in
+ signal_from_string function.
+
  Revision 1.24  2003/08/10 03:50:10  phase1geo
  More development documentation updates.  All global variables are now
  documented correctly.  Also fixed some generated documentation warnings.

@@ -53,8 +53,8 @@ expression* fsm_arg_parse_state( char** arg, char* mod_name ) {
           expr = expression_create( NULL, NULL, EXP_OP_STATIC, curr_expr_id, 0, FALSE );
           curr_expr_id++;
           vector_dealloc( expr->value );
-          expr->value = vector_create( 32, 0, TRUE );
-          vector_from_int( expr->value, sig->value->lsb );
+          expr->value = vector_create( 32, TRUE );
+          vector_from_int( expr->value, sig->lsb );
 
           expr = expression_create( NULL, expr, EXP_OP_SBIT_SEL, curr_expr_id, 0, FALSE );
           curr_expr_id++;
@@ -65,14 +65,14 @@ expression* fsm_arg_parse_state( char** arg, char* mod_name ) {
           expt = expression_create( NULL, NULL, EXP_OP_STATIC, curr_expr_id, 0, FALSE );
           curr_expr_id++;
           vector_dealloc( expt->value );
-          expt->value = vector_create( 32, 0, TRUE );
-          vector_from_int( expt->value, sig->value->lsb );
+          expt->value = vector_create( 32, TRUE );
+          vector_from_int( expt->value, sig->lsb );
 
           expr = expression_create( NULL, NULL, EXP_OP_STATIC, curr_expr_id, 0, FALSE );
           curr_expr_id++;
           vector_dealloc( expr->value );
-          expr->value = vector_create( 32, 0, TRUE );
-          vector_from_int( expr->value, ((sig->value->width - 1) + sig->value->lsb) );
+          expr->value = vector_create( 32, TRUE );
+          vector_from_int( expr->value, ((sig->value->width - 1) + sig->lsb) );
 
           expr = expression_create( expt, expr, EXP_OP_MBIT_SEL, curr_expr_id, 0, FALSE );
           curr_expr_id++;
@@ -115,8 +115,8 @@ expression* fsm_arg_parse_state( char** arg, char* mod_name ) {
         expr = expression_create( NULL, NULL, EXP_OP_STATIC, curr_expr_id, 0, FALSE );
         curr_expr_id++;
         vector_dealloc( expr->value );
-        expr->value = vector_create( 32, 0, TRUE );
-        vector_from_int( expr->value, sig->value->lsb );
+        expr->value = vector_create( 32, TRUE );
+        vector_from_int( expr->value, sig->lsb );
 
         expl = expression_create( NULL, expr, EXP_OP_SBIT_SEL, curr_expr_id, 0, FALSE );
         curr_expr_id++;
@@ -126,14 +126,14 @@ expression* fsm_arg_parse_state( char** arg, char* mod_name ) {
         expt = expression_create( NULL, NULL, EXP_OP_STATIC, curr_expr_id, 0, FALSE );
         curr_expr_id++;
         vector_dealloc( expt->value );
-        expt->value = vector_create( 32, 0, TRUE );
-        vector_from_int( expt->value, sig->value->lsb );
+        expt->value = vector_create( 32, TRUE );
+        vector_from_int( expt->value, sig->lsb );
 
         expr = expression_create( NULL, NULL, EXP_OP_STATIC, curr_expr_id, 0, FALSE );
         curr_expr_id++;
         vector_dealloc( expr->value );
-        expr->value = vector_create( 32, 0, TRUE );
-        vector_from_int( expr->value, ((sig->value->width - 1) + sig->value->lsb) );
+        expr->value = vector_create( 32, TRUE );
+        vector_from_int( expr->value, ((sig->value->width - 1) + sig->lsb) );
 
         expl = expression_create( expt, expr, EXP_OP_MBIT_SEL, curr_expr_id, 0, FALSE );
         curr_expr_id++;
@@ -230,6 +230,9 @@ bool fsm_arg_parse( char* arg ) {
 
 /*
  $Log$
+ Revision 1.4  2003/10/13 12:27:25  phase1geo
+ More fixes to FSM stuff.
+
  Revision 1.3  2003/10/10 20:52:07  phase1geo
  Initial submission of FSM expression allowance code.  We are still not quite
  there yet, but we are getting close.

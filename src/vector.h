@@ -14,10 +14,10 @@
 
 
 /*! \brief Initializes specified vector. */
-void vector_init( vector* vec, nibble* value, int width, int lsb );
+void vector_init( vector* vec, nibble* value, int width );
 
 /*! \brief Creates and initializes new vector */
-vector* vector_create( int width, int lsb, bool data );
+vector* vector_create( int width, bool data );
 
 /*! \brief Copies contents of from_vec to to_vec, allocating memory */
 void vector_copy( vector* from_vec, vector** to_vec );
@@ -32,13 +32,13 @@ bool vector_db_read( vector** vec, char** line );
 bool vector_db_merge( vector* base, char** line, bool same );
 
 /*! \brief Outputs the toggle01 information from the specified nibble to the specified output stream. */
-void vector_display_toggle01( nibble* nib, int width, int lsb, FILE* ofile );
+void vector_display_toggle01( nibble* nib, int width, FILE* ofile );
 
 /*! \brief Outputs the toggle10 information from the specified nibble to the specified output stream. */
-void vector_display_toggle10( nibble* nib, int width, int lsb, FILE* ofile );
+void vector_display_toggle10( nibble* nib, int width, FILE* ofile );
 
 /*! \brief Outputs nibble to standard output. */
-void vector_display_nibble( nibble* nib, int width, int lsb );
+void vector_display_nibble( nibble* nib, int width );
 
 /*! \brief Outputs vector contents to standard output. */
 void vector_display( vector* vec );
@@ -118,6 +118,13 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.17  2003/08/05 20:25:05  phase1geo
+ Fixing non-blocking bug and updating regression files according to the fix.
+ Also added function vector_is_unknown() which can be called before making
+ a call to vector_to_int() which will eleviate any X/Z-values causing problems
+ with this conversion.  Additionally, the real1.1 regression report files were
+ updated.
+
  Revision 1.16  2003/02/13 23:44:08  phase1geo
  Tentative fix for VCD file reading.  Not sure if it works correctly when
  original signal LSB is != 0.  Icarus Verilog testsuite passes.

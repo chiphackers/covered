@@ -239,9 +239,9 @@ void toggle_display_verbose( FILE* ofile, sig_link* sigl ) {
         if( (hit01 < curr_sig->sig->value->width) || (hit10 < curr_sig->sig->value->width) ) {
 
           fprintf( ofile, "%-24s  0->1: ", curr_sig->sig->name );
-          vector_display_toggle01( curr_sig->sig->value->value, curr_sig->sig->value->width, 0, ofile );      
+          vector_display_toggle01( curr_sig->sig->value->value, curr_sig->sig->value->width, ofile );      
           fprintf( ofile, "\n......................... 1->0: " );
-          vector_display_toggle10( curr_sig->sig->value->value, curr_sig->sig->value->width, 0, ofile );      
+          vector_display_toggle10( curr_sig->sig->value->value, curr_sig->sig->value->width, ofile );      
           fprintf( ofile, " ...\n" );
 
         }
@@ -377,6 +377,9 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.20  2003/10/03 12:31:04  phase1geo
+ More report tweaking.
+
  Revision 1.19  2003/10/03 03:08:44  phase1geo
  Modifying filename in summary output to only specify basename of file instead
  of entire path.  The verbose report contains the full pathname still, however.

@@ -14,7 +14,7 @@
 
 
 /*! \brief Initializes specified signal with specified values. */
-void signal_init( signal* sig, char* name, vector* value );
+void signal_init( signal* sig, char* name, vector* value, int lsb );
 
 /*! \brief Creates a new signal based on the information passed to this function. */
 signal* signal_create( char* name, int width, int lsb );
@@ -52,6 +52,10 @@ void signal_dealloc( signal* sig );
 
 /*
  $Log$
+ Revision 1.14  2003/10/10 20:52:07  phase1geo
+ Initial submission of FSM expression allowance code.  We are still not quite
+ there yet, but we are getting close.
+
  Revision 1.13  2003/10/02 12:30:56  phase1geo
  Initial code modifications to handle more robust FSM cases.
 
