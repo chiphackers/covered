@@ -157,8 +157,16 @@ expression* expression_create( expression* right, expression* left, int op, int 
 
     assert( rwidth < 1024 );
     assert( lwidth < 1024 );
-    expression_operate_recursively( left );
-    expression_create_value( new_expr, (vector_to_int( left->value ) * rwidth), data );
+
+    /*
+     If the left-hand expression is a known value, go ahead and create the value here; otherwise,
+     hold off because our vector value will be coming.
+    */
+    if( !vector_is_unknown( left->value ) ) {
+      expression_create_value( new_expr, (vector_to_int( left->value ) * rwidth), data );
+    } else {
+      expression_create_value( new_expr, 1, data );
+    }
 
   } else if( (op == EXP_OP_LT   ) ||
              (op == EXP_OP_GT   ) ||
@@ -1321,6 +1329,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.85  2003/10/30 05:05:11  phase1geo
+ Partial fix to bug 832730.  This doesn't seem to completely fix the parameter
+ case, however.
+
  Revision 1.84  2003/10/19 04:23:49  phase1geo
  Fixing bug in VCD parser for new Icarus Verilog VCD dumpfile formatting.
  Fixing bug in signal.c for signal merging.  Updates all CDD files to match

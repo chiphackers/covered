@@ -1,0 +1,8 @@
+5 1 * 1
+3 main main expand4.3.v
+2 2 main 6 201000 0 0 1 1 0
+2 1 main 6 102000 0 0 32 0 10 0 0 0 0 0 0 0
+2 3 main 6 241fa5 2 1 4 0 f00aa
+1 a main 0 4 0 f00aa
+1 b main 0 1 0 10002
+4 3 main 3 3

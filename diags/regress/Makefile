@@ -37,7 +37,8 @@ DIAGS1        = always1        always2        always3        always3.1.11A  alwa
                 concat5        concat6        cond1          cond2          delay1 \
                 delay2         define1        define1.1      define1.2      define2 \
                 define2.1      define3        define4        expand1        expand2 \
-                expand3        fsm1           fsm1.1         fsm1.2         fsm1.3 \
+                expand3        expand4        expand4.1      expand4.2      expand4.3 \
+                fsm1           fsm1.1         fsm1.2         fsm1.3 \
                 fsm1.4         fsm3           fsm4           fsm4.1         fsm5 \
                 fsm5.1         fsm5.2         fsm5.3         fsm6           gate1 \
                 hier1          ifdef1         ifdef1.2       ifdef2.1       ifdef2.2 \
