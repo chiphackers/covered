@@ -42,13 +42,13 @@
 #include "util.h"
 
 
-nibble xor_optab[16]  = { XOR_OP_TABLE  };  /*!< XOR operation table  */
-nibble and_optab[16]  = { AND_OP_TABLE  };  /*!< AND operation table  */
-nibble or_optab[16]   = { OR_OP_TABLE   };  /*!< OR operation table   */
-nibble nand_optab[16] = { NAND_OP_TABLE };  /*!< NAND operation table */
-nibble nor_optab[16]  = { NOR_OP_TABLE  };  /*!< NOR operation table  */
-nibble nxor_optab[16] = { NXOR_OP_TABLE };  /*!< NXOR operation table */
-nibble add_optab[16]  = { ADD_OP_TABLE  };  /*!< ADD operation table  */
+nibble xor_optab[OPTAB_SIZE]  = { XOR_OP_TABLE  };  /*!< XOR operation table  */
+nibble and_optab[OPTAB_SIZE]  = { AND_OP_TABLE  };  /*!< AND operation table  */
+nibble or_optab[OPTAB_SIZE]   = { OR_OP_TABLE   };  /*!< OR operation table   */
+nibble nand_optab[OPTAB_SIZE] = { NAND_OP_TABLE };  /*!< NAND operation table */
+nibble nor_optab[OPTAB_SIZE]  = { NOR_OP_TABLE  };  /*!< NOR operation table  */
+nibble nxor_optab[OPTAB_SIZE] = { NXOR_OP_TABLE };  /*!< NXOR operation table */
+nibble add_optab[OPTAB_SIZE]  = { ADD_OP_TABLE  };  /*!< ADD operation table  */
 
 extern char user_msg[USER_MSG_LENGTH];
 
@@ -1411,17 +1411,26 @@ void vector_unary_op( vector* tgt, vector* src, nibble* optab ) {
   nibble vec_val;  /* Temporary value              */
   int    i;        /* Loop iterator                */
 
-  vector_init( &vec, &vec_val, 1 );
+  if( (src->width == 1) && (optab[16] == 1) ) {
 
-  uval = VECTOR_VAL( src->value[0] );
+    /* Perform inverse operation if our source width is 1 and we are a NOT operation. */
+    vector_unary_inv( tgt, src );
 
-  for( i=1; i<src->width; i++ ) {
-    bit  = VECTOR_VAL( src->value[i] );
-    uval = optab[ ((uval << 2) | bit) ]; 
+  } else {
+
+    vector_init( &vec, &vec_val, 1 );
+
+    uval = VECTOR_VAL( src->value[0] );
+
+    for( i=1; i<src->width; i++ ) {
+      bit  = VECTOR_VAL( src->value[i] );
+      uval = optab[ ((uval << 2) | bit) ]; 
+    }
+
+    VECTOR_SET_VAL( vec.value[0], uval );
+    vector_set_value( tgt, vec.value, 1, 0, 0 );
+
   }
-
-  VECTOR_SET_VAL( vec.value[0], uval );
-  vector_set_value( tgt, vec.value, 1, 0, 0 );
 
 }
 
@@ -1467,6 +1476,10 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.42  2003/10/30 05:05:13  phase1geo
+ Partial fix to bug 832730.  This doesn't seem to completely fix the parameter
+ case, however.
+
  Revision 1.41  2003/10/28 13:28:00  phase1geo
  Updates for more FSM attribute handling.  Not quite there yet but full regression
  still passes.

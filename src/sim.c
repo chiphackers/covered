@@ -73,7 +73,7 @@
 #include "signal.h"
 
 
-extern nibble or_optab[16];
+extern nibble or_optab[OPTAB_SIZE];
 
 /*!
  Pointer to head of expression list that contains all expressions that contain static (non-changing)
@@ -387,6 +387,11 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.33  2003/10/14 04:02:44  phase1geo
+ Final fixes for new FSM support.  Full regression now passes.  Need to
+ add new diagnostics to verify new functionality, but at least all existing
+ cases are supported again.
+
  Revision 1.32  2003/10/13 22:10:07  phase1geo
  More changes for FSM support.  Still not quite there.
 

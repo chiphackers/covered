@@ -25,7 +25,7 @@
 #include "sim.h"
 
 
-extern nibble or_optab[16];
+extern nibble or_optab[OPTAB_SIZE];
 extern char   user_msg[USER_MSG_LENGTH];
 
 
@@ -443,6 +443,11 @@ void signal_dealloc( signal* sig ) {
 
 /*
  $Log$
+ Revision 1.43  2003/10/20 16:05:06  phase1geo
+ Fixing bug for older versions of Icarus that does not output the correct
+ bit select in the VCD dumpfile.  Covered will automatically adjust the bit-select
+ range if this occurrence is found in the dumpfile.
+
  Revision 1.42  2003/10/19 04:23:49  phase1geo
  Fixing bug in VCD parser for new Icarus Verilog VCD dumpfile formatting.
  Fixing bug in signal.c for signal merging.  Updates all CDD files to match
