@@ -1,5 +1,31 @@
 Covered-Related NEWS
 ====================
+    * 9/14/2002
+
+Release covered-20020914 made.  This release is mostly a feature release with a few
+bug fixes in place.  Code has been added and development documentation started to
+handle parameters.  To make Covered as efficient as possible in the score command,
+certain unnecessary steps were removed; however, this makes supporting parameters
+more complicated to code.  I am narrowing in on the implementation but as of yet
+parameter support is not included in this release.  The next release should provide
+support for parameters.  I did make some progress on checking off a few of the things
+on the TODO list before first stable release.  I have added the initial version of 
+combinational logic depth control.  When the -v option was present, all subexpressions 
+found to be not fully covered where output for combinational logic.  This type of 
+output, though very useful, was somewhat too verbose to gain an understanding of 
+initial coverage information.  To remedy the situation, I have removed the -v option 
+and added the -d (detail control) option which may take the following parameters:  
+s, summary output only; d, detail output (intermediate verbose output); and v, verbose 
+output (same as the old -v option).  The information contained in detailed output is 
+similar to most commercial coverage tools that I have used.  The -d v option will 
+provide that "over the top" information as to exactly what subexpressions where not 
+fully covered.  Additionally, bug fixes were made to the -c option to the report command, 
+and MULTIPLY, DIVIDE and MOD expressions should now be output in detailed and verbose 
+reports.  Fixed bug with initial value of signals that was causing Covered to report 
+incorrect coverage results for signals that were not initialized and not toggled during 
+simulation.  Updated regression test suite for all changes mentioned above and updated 
+user, manpage and development documentation.
+
     * 8/22/2002
 
 Release covered-20020822 finally made.  Took some time off away from the project to get

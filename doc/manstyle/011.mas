@@ -228,18 +228,18 @@ coverage.
   </tr>
   <tr>
     <td>
-      -q
+      -D &lt;name&gt;(=&lt;value&gt;)
     </td>
     <td>
-      Suppresses output to standard output
+      Defines the specified name to 1 or the specified value.
     </td>
   </tr>
   <tr>
     <td>
-      -D <name>(=<value>)
+      -P &lt;parameter_scope&gt;=&lt;value&gt;
     </td>
     <td>
-      Defines the specified name to 1 or the specified value.
+      Performs a defparam on the specified parameter with value.
     </td>
   </tr>
   <tr>
