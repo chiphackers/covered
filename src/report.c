@@ -522,7 +522,7 @@ bool report_read_cdd_and_ready( char* ifile ) {
   bool retval = TRUE;  /* Return value for this function */
 
   /* Open database file for reading */
-  if( ifile == NULL ) {
+  if( (ifile == NULL) || (ifile[0] == '\0') ) {
 
     retval = FALSE;
 
@@ -671,6 +671,10 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.33  2004/03/25 14:37:07  phase1geo
+ Fixing installation of TCL scripts and usage of the scripts in their installed
+ location.  We are almost ready to create the new development release.
+
  Revision 1.32  2004/03/22 13:26:52  phase1geo
  Updates for upcoming release.  We are not quite ready to release at this point.
 
