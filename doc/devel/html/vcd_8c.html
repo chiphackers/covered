@@ -17,9 +17,10 @@
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vcd_8c.html#a3">vcd_parse_def_scope</a> (FILE *vcd)</td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vcd_8c.html#a4">vcd_parse_def</a> (FILE *vcd)</td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vcd_8c.html#a5">vcd_parse_sim_vector</a> (FILE *vcd, char *value)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vcd_8c.html#a6">vcd_parse_sim</a> (FILE *vcd)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vcd_8c.html#a7">vcd_parse</a> (char *<a class="el" href="score_8c.html#a3">vcd_file</a>)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Parses specified VCD file, storing information into database.</em> <a href="#a7"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vcd_8c.html#a6">vcd_parse_sim_ignore</a> (FILE *vcd)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vcd_8c.html#a7">vcd_parse_sim</a> (FILE *vcd)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vcd_8c.html#a8">vcd_parse</a> (char *<a class="el" href="score_8c.html#a3">vcd_file</a>)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Parses specified VCD file, storing information into database.</em> <a href="#a8"></a><em></em></font><br><br></td></tr>
 <tr><td colspan=2><br><h2>Variables</h2></td></tr>
 <tr><td nowrap align=right valign=top>char&nbsp;</td><td valign=bottom><a class="el" href="vcd_8c.html#a0">user_msg</a> [USER_MSG_LENGTH]</td></tr>
 </table>
@@ -31,7 +32,7 @@ Author: </b><dd>
 Trevor Williams (<a href="mailto:trevorw@charter.net">trevorw@charter.net</a>) </dl><dl compact><dt><b>
 Date: </b><dd>
 7/21/2002</dl><hr><h2>Function Documentation</h2>
-<a name="a7" doxytag="vcd.c::vcd_parse"></a><p>
+<a name="a8" doxytag="vcd.c::vcd_parse"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -208,7 +209,7 @@ File handle pointer to opened VCD file.</td></tr>
 </dl>Parses definition $var keyword line until $end keyword is seen.     </td>
   </tr>
 </table>
-<a name="a6" doxytag="vcd.c::vcd_parse_sim"></a><p>
+<a name="a7" doxytag="vcd.c::vcd_parse_sim"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -241,6 +242,41 @@ Parameters: </b><dd>
 File handle of opened VCD file.</td></tr>
 </table>
 </dl>Parses all lines that occur in the simulation portion of the VCD file.     </td>
+  </tr>
+</table>
+<a name="a6" doxytag="vcd.c::vcd_parse_sim_ignore"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> void vcd_parse_sim_ignore </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="md" nowrap valign="top">FILE *&nbsp;</td>
+          <td class="mdname1" valign="top" nowrap>&nbsp; <em>vcd</em>          </td>
+          <td class="md" valign="top">)&nbsp;</td>
+          <td class="md" nowrap></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+<dl compact><dt><b>
+Parameters: </b><dd>
+<table border=0 cellspacing=2 cellpadding=0>
+<tr><td valign=top><em>vcd</em>&nbsp;</td><td>
+File handle of opened VCD file.</td></tr>
+</table>
+</dl>Reads in symbol from simulation vector line that is to be ignored  (unused). Signals an error message if the line is improperly formatted.     </td>
   </tr>
 </table>
 <a name="a5" doxytag="vcd.c::vcd_parse_sim_vector"></a><p>
@@ -312,7 +348,7 @@ String containing value of current signal.</td></tr>
     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Sat Oct 12 01:53:17 2002 for Covered by
+<hr><address align="right"><small>Generated on Fri Oct 25 17:40:18 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

@@ -14,26 +14,33 @@
 00016 
 00018 <a class="code" href="structstatic__expr__s.html">static_expr</a>* <a class="code" href="static_8c.html#a1">static_expr_gen</a>( <a class="code" href="structstatic__expr__s.html">static_expr</a>* right, <a class="code" href="structstatic__expr__s.html">static_expr</a>* left, <font class="keywordtype">int</font> op, <font class="keywordtype">int</font> line );
 00019 
-00021 <font class="keywordtype">void</font> <a class="code" href="static_8c.html#a2">static_expr_dealloc</a>( <a class="code" href="structstatic__expr__s.html">static_expr</a>* stexp, <font class="keywordtype">bool</font> rm_exp );
+00021 <font class="keywordtype">void</font> <a class="code" href="static_8c.html#a2">static_expr_calc_lsb_and_width</a>( <a class="code" href="structstatic__expr__s.html">static_expr</a>* left, <a class="code" href="structstatic__expr__s.html">static_expr</a>* right, <font class="keywordtype">int</font>* width, <font class="keywordtype">int</font>* lsb );
 00022 
-00023 <font class="comment">/* $Log$</font>
-00024 <font class="comment">/* Revision 1.2  2002/10/11 04:24:02  phase1geo</font>
-00025 <font class="comment">/* This checkin represents some major code renovation in the score command to</font>
-00026 <font class="comment">/* fully accommodate parameter support.  All parameter support is in at this</font>
-00027 <font class="comment">/* point and the most commonly used parameter usages have been verified.  Some</font>
-00028 <font class="comment">/* bugs were fixed in handling default values of constants and expression tree</font>
-00029 <font class="comment">/* resizing has been optimized to its fullest.  Full regression has been</font>
-00030 <font class="comment">/* updated and passes.  Adding new diagnostics to test suite.  Fixed a few</font>
-00031 <font class="comment">/* problems in report outputting.</font>
-00032 <font class="comment">/*</font>
-00033 <font class="comment">/* Revision 1.1  2002/10/02 18:55:29  phase1geo</font>
-00034 <font class="comment">/* Adding static.c and static.h files for handling static expressions found by</font>
-00035 <font class="comment">/* the parser.  Initial versions which compile but have not been tested.</font>
-00036 <font class="comment">/* */</font>
-00037 
-00038 <font class="preprocessor">#endif</font>
-00039 <font class="preprocessor"></font>
-</pre></div><hr><address align="right"><small>Generated on Sat Oct 12 01:53:14 2002 for Covered by
+00024 <font class="keywordtype">void</font> <a class="code" href="static_8c.html#a3">static_expr_dealloc</a>( <a class="code" href="structstatic__expr__s.html">static_expr</a>* stexp, <font class="keywordtype">bool</font> rm_exp );
+00025 
+00026 <font class="comment">/* $Log$</font>
+00027 <font class="comment">/* Revision 1.3  2002/10/23 03:39:07  phase1geo</font>
+00028 <font class="comment">/* Fixing bug in MBIT_SEL expressions to calculate the expression widths</font>
+00029 <font class="comment">/* correctly.  Updated diagnostic testsuite and added diagnostic that</font>
+00030 <font class="comment">/* found the original bug.  A few documentation updates.</font>
+00031 <font class="comment">/*</font>
+00032 <font class="comment">/* Revision 1.2  2002/10/11 04:24:02  phase1geo</font>
+00033 <font class="comment">/* This checkin represents some major code renovation in the score command to</font>
+00034 <font class="comment">/* fully accommodate parameter support.  All parameter support is in at this</font>
+00035 <font class="comment">/* point and the most commonly used parameter usages have been verified.  Some</font>
+00036 <font class="comment">/* bugs were fixed in handling default values of constants and expression tree</font>
+00037 <font class="comment">/* resizing has been optimized to its fullest.  Full regression has been</font>
+00038 <font class="comment">/* updated and passes.  Adding new diagnostics to test suite.  Fixed a few</font>
+00039 <font class="comment">/* problems in report outputting.</font>
+00040 <font class="comment">/*</font>
+00041 <font class="comment">/* Revision 1.1  2002/10/02 18:55:29  phase1geo</font>
+00042 <font class="comment">/* Adding static.c and static.h files for handling static expressions found by</font>
+00043 <font class="comment">/* the parser.  Initial versions which compile but have not been tested.</font>
+00044 <font class="comment">/* */</font>
+00045 
+00046 <font class="preprocessor">#endif</font>
+00047 <font class="preprocessor"></font>
+</pre></div><hr><address align="right"><small>Generated on Fri Oct 25 17:40:15 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

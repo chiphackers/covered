@@ -1,0 +1,40 @@
+\section{Delay expression types.}
+\label{group__delay__expr__types}\index{Delay expression types.@{Delay expression types.}}
+\subsection*{Defines}
+\begin{CompactItemize}
+\item 
+\#define {\bf DELAY\_\-EXPR\_\-DEFAULT}\ 0
+\item 
+\#define {\bf DELAY\_\-EXPR\_\-MIN}\ 1
+\item 
+\#define {\bf DELAY\_\-EXPR\_\-TYP}\ 2
+\item 
+\#define {\bf DELAY\_\-EXPR\_\-MAX}\ 3
+\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+The following defines are used select a delay expression type in the form min:typ:max when encountered during parsing. 
+
+\subsection{Define Documentation}
+\index{delay_expr_types@{delay\_\-expr\_\-types}!DELAY_EXPR_DEFAULT@{DELAY\_\-EXPR\_\-DEFAULT}}
+\index{DELAY_EXPR_DEFAULT@{DELAY\_\-EXPR\_\-DEFAULT}!delay_expr_types@{delay\_\-expr\_\-types}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define DELAY\_\-EXPR\_\-DEFAULT\ 0}\label{group__delay__expr__types_a0}
+
+
+Default value of delay expression selector to indicate that the user has not specified a value to use. \index{delay_expr_types@{delay\_\-expr\_\-types}!DELAY_EXPR_MAX@{DELAY\_\-EXPR\_\-MAX}}
+\index{DELAY_EXPR_MAX@{DELAY\_\-EXPR\_\-MAX}!delay_expr_types@{delay\_\-expr\_\-types}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define DELAY\_\-EXPR\_\-MAX\ 3}\label{group__delay__expr__types_a3}
+
+
+Causes parser to always use max value in min:typ:max delay expressions. \index{delay_expr_types@{delay\_\-expr\_\-types}!DELAY_EXPR_MIN@{DELAY\_\-EXPR\_\-MIN}}
+\index{DELAY_EXPR_MIN@{DELAY\_\-EXPR\_\-MIN}!delay_expr_types@{delay\_\-expr\_\-types}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define DELAY\_\-EXPR\_\-MIN\ 1}\label{group__delay__expr__types_a1}
+
+
+Causes parser to always use min value in min:typ:max delay expressions. \index{delay_expr_types@{delay\_\-expr\_\-types}!DELAY_EXPR_TYP@{DELAY\_\-EXPR\_\-TYP}}
+\index{DELAY_EXPR_TYP@{DELAY\_\-EXPR\_\-TYP}!delay_expr_types@{delay\_\-expr\_\-types}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define DELAY\_\-EXPR\_\-TYP\ 2}\label{group__delay__expr__types_a2}
+
+
+Causes parser to always use typ value in min:typ:max delay expressions. 

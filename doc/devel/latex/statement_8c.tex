@@ -47,7 +47,7 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \item[Date: ]\par
 5/1/2002
 
- Statements are used to indicate flow of execution for a given always or initial block. Each statement is assigned to exactly one expression tree and it contains a pointer to the next statement if its expression tree evaluates to TRUE (non-zero value) or FALSE (zero value). To minimize memory use, a statement  uses some of the unused bits in its root expression supplemental field instead of having its own supplemental field. There are two bits in the expression supplemental value that are only used by expressions: {\bf SUPPL\_\-LSB\_\-STMT\_\-HEAD} {\rm (p.\,\pageref{group__expr__suppl_a3})} and {\bf SUPPL\_\-LSB\_\-STMT\_\-STOP} {\rm (p.\,\pageref{group__expr__suppl_a4})}.
+ Statements are used to indicate flow of execution for a given always or initial block. Each statement is assigned to exactly one expression tree and it contains a pointer to the next statement if its expression tree evaluates to TRUE (non-zero value) or FALSE (zero value). To minimize memory use, a statement  uses some of the unused bits in its root expression supplemental field instead of having its own supplemental field. There are two bits in the expression supplemental value that are only used by expressions: {\bf SUPPL\_\-LSB\_\-STMT\_\-HEAD} {\rm (p.\,\pageref{group__expr__suppl_a4})} and {\bf SUPPL\_\-LSB\_\-STMT\_\-STOP} {\rm (p.\,\pageref{group__expr__suppl_a5})}.
 
  The STMT\_\-HEAD bit indicates that this statement should be loaded into the pre-simulation statement queue if any of its expressions change value in the current timestep. To begin with, the first statement in the always/initial block has this bit set, all other statements have this bit cleared.
 

@@ -28,6 +28,8 @@ void {\bf expression\_\-display} ({\bf expression} $\ast$expr)
 \begin{CompactList}\small\item\em Displays the specified expression information.\item\end{CompactList}\item 
 void {\bf expression\_\-operate} ({\bf expression} $\ast$expr)
 \begin{CompactList}\small\item\em Performs operation specified by parameter expression.\item\end{CompactList}\item 
+void {\bf expression\_\-operate\_\-recursively} ({\bf expression} $\ast$expr)
+\begin{CompactList}\small\item\em Performs recursive expression operation (parse mode only).\item\end{CompactList}\item 
 int {\bf expression\_\-bit\_\-value} ({\bf expression} $\ast$expr)
 \begin{CompactList}\small\item\em Returns a compressed, 1-bit representation of the value after a unary OR.\item\end{CompactList}\item 
 void {\bf expression\_\-dealloc} ({\bf expression} $\ast$expr, {\bf bool} exp\_\-only)
@@ -50,7 +52,7 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsection{Function Documentation}
 \index{expr.h@{expr.h}!expression_bit_value@{expression\_\-bit\_\-value}}
 \index{expression_bit_value@{expression\_\-bit\_\-value}!expr.h@{expr.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int expression\_\-bit\_\-value ({\bf expression} $\ast$ {\em expr})}\label{expr_8h_a10}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int expression\_\-bit\_\-value ({\bf expression} $\ast$ {\em expr})}\label{expr_8h_a11}
 
 
 Returns a compressed, 1-bit representation of the value after a unary OR.
@@ -153,7 +155,7 @@ scope}]Name of Verilog hierarchical scope for this expression.\end{description}
 \end{Desc}
 This function recursively displays the expression information for the specified expression tree to the coverage database specified by file. \index{expr.h@{expr.h}!expression_dealloc@{expression\_\-dealloc}}
 \index{expression_dealloc@{expression\_\-dealloc}!expr.h@{expr.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-dealloc ({\bf expression} $\ast$ {\em expr}, {\bf bool} {\em exp\_\-only})}\label{expr_8h_a11}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-dealloc ({\bf expression} $\ast$ {\em expr}, {\bf bool} {\em exp\_\-only})}\label{expr_8h_a12}
 
 
 Deallocates memory used for expression.
@@ -207,7 +209,20 @@ Performs operation specified by parameter expression.
 \item[{\em 
 expr}]Pointer to expression to set value to.\end{description}
 \end{Desc}
-Performs expression operation. This function must only be run after its left and right expressions have been calculated during this clock period. Sets the value of the operation in its own vector value and updates the suppl nibble as necessary. \index{expr.h@{expr.h}!expression_resize@{expression\_\-resize}}
+Performs expression operation. This function must only be run after its left and right expressions have been calculated during this clock period. Sets the value of the operation in its own vector value and updates the suppl nibble as necessary. \index{expr.h@{expr.h}!expression_operate_recursively@{expression\_\-operate\_\-recursively}}
+\index{expression_operate_recursively@{expression\_\-operate\_\-recursively}!expr.h@{expr.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-operate\_\-recursively ({\bf expression} $\ast$ {\em expr})}\label{expr_8h_a10}
+
+
+Performs recursive expression operation (parse mode only).
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+expr}]Pointer to top of expression tree to perform recursive operations.\end{description}
+\end{Desc}
+Recursively performs the proper operations to cause the top-level expression to be set to a value. This function is called during the parse stage to derive  pre-CDD widths of multi-bit expressions. Each MSB/LSB is an expression tree that  needs to be evaluated to set the width properly on the MBIT\_\-SEL expression. \index{expr.h@{expr.h}!expression_resize@{expression\_\-resize}}
 \index{expression_resize@{expression\_\-resize}!expr.h@{expr.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-resize ({\bf expression} $\ast$ {\em expr}, {\bf bool} {\em recursive})}\label{expr_8h_a3}
 

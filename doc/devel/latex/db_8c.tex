@@ -34,8 +34,8 @@ void {\bf db\_\-add\_\-declared\_\-param} (char $\ast$name, {\bf expression} $\a
 \begin{CompactList}\small\item\em Adds specified declared parameter to parameter list. Called by parser.\item\end{CompactList}\item 
 void {\bf db\_\-add\_\-override\_\-param} (char $\ast$inst\_\-name, {\bf expression} $\ast$expr)
 \begin{CompactList}\small\item\em Adds specified override parameter to parameter list. Called by parser.\item\end{CompactList}\item 
-void {\bf db\_\-add\_\-sig\_\-vector\_\-param} ({\bf signal} $\ast$sig, {\bf expression} $\ast$expr, int type)
-\item 
+void {\bf db\_\-add\_\-vector\_\-param} ({\bf signal} $\ast$sig, {\bf expression} $\ast$exp, {\bf expression} $\ast$parm\_\-exp, int type)
+\begin{CompactList}\small\item\em Adds signal/expression vector parameter to parameter list.\item\end{CompactList}\item 
 void {\bf db\_\-add\_\-defparam} (char $\ast$name, {\bf expression} $\ast$expr)
 \begin{CompactList}\small\item\em Adds specified defparam to parameter override list. Called by parser.\item\end{CompactList}\item 
 void {\bf db\_\-add\_\-signal} (char $\ast$name, {\bf static\_\-expr} $\ast$left, {\bf static\_\-expr} $\ast$right)
@@ -202,20 +202,7 @@ Adds specified override parameter to parameter list. Called by parser.
 inst\_\-name}]Name of instance being overriddent. \item[{\em 
 expr}]Expression containing value of override parameter.\end{description}
 \end{Desc}
-Creates override parameter and stores this in the current module as well as all associated instances. \index{db.c@{db.c}!db_add_sig_vector_param@{db\_\-add\_\-sig\_\-vector\_\-param}}
-\index{db_add_sig_vector_param@{db\_\-add\_\-sig\_\-vector\_\-param}!db.c@{db.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-add\_\-sig\_\-vector\_\-param ({\bf signal} $\ast$ {\em sig}, {\bf expression} $\ast$ {\em expr}, int {\em type})}\label{db_8c_a23}
-
-
-\begin{Desc}
-\item[Parameters: ]\par
-\begin{description}
-\item[{\em 
-sig}]Pointer to signal to attach parameter to. \item[{\em 
-expr}]Expression containing value of vector parameter. \item[{\em 
-type}]Type of signal vector parameter to create (LSB or MSB).\end{description}
-\end{Desc}
-Creates a signal vector parameter for the specified signal with the specified expression. This function is called by the parser. \index{db.c@{db.c}!db_add_signal@{db\_\-add\_\-signal}}
+Creates override parameter and stores this in the current module as well as all associated instances. \index{db.c@{db.c}!db_add_signal@{db\_\-add\_\-signal}}
 \index{db_add_signal@{db\_\-add\_\-signal}!db.c@{db.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-add\_\-signal (char $\ast$ {\em name}, {\bf static\_\-expr} $\ast$ {\em left}, {\bf static\_\-expr} $\ast$ {\em right})}\label{db_8c_a25}
 
@@ -243,7 +230,23 @@ Adds specified statement to current module's statement list. Called by parser.
 \item[{\em 
 stmt}]Pointer to statement add to current module's statement list.\end{description}
 \end{Desc}
-Adds the specified statement tree to the tail of the current module's statement list. \index{db.c@{db.c}!db_assign_symbol@{db\_\-assign\_\-symbol}}
+Adds the specified statement tree to the tail of the current module's statement list. \index{db.c@{db.c}!db_add_vector_param@{db\_\-add\_\-vector\_\-param}}
+\index{db_add_vector_param@{db\_\-add\_\-vector\_\-param}!db.c@{db.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-add\_\-vector\_\-param ({\bf signal} $\ast$ {\em sig}, {\bf expression} $\ast$ {\em exp}, {\bf expression} $\ast$ {\em parm\_\-exp}, int {\em type})}\label{db_8c_a23}
+
+
+Adds signal/expression vector parameter to parameter list.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+sig}]Pointer to signal to attach parameter to. \item[{\em 
+exp}]Pointer to expression to attach parameter to. \item[{\em 
+parm\_\-exp}]Expression containing value of vector parameter. \item[{\em 
+type}]Type of signal vector parameter to create (LSB or MSB).\end{description}
+\end{Desc}
+Creates a vector parameter for the specified signal or expression with the specified parameter expression. This function is called by the parser. \index{db.c@{db.c}!db_assign_symbol@{db\_\-assign\_\-symbol}}
 \index{db_assign_symbol@{db\_\-assign\_\-symbol}!db.c@{db.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-assign\_\-symbol (char $\ast$ {\em name}, char $\ast$ {\em symbol})}\label{db_8c_a37}
 

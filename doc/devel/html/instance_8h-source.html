@@ -13,17 +13,17 @@
 00014 
 00016 <font class="keywordtype">void</font> <a class="code" href="instance_8c.html#a1">instance_gen_scope</a>( <font class="keywordtype">char</font>* scope, <a class="code" href="structmod__inst__s.html">mod_inst</a>* leaf );
 00017 
-00019 <a class="code" href="structmod__inst__s.html">mod_inst</a>* <a class="code" href="instance_8c.html#a2">instance_find_scope</a>( <a class="code" href="structmod__inst__s.html">mod_inst</a>* root, <font class="keywordtype">char</font>* scope );
+00019 <a class="code" href="structmod__inst__s.html">mod_inst</a>* <a class="code" href="instance_8c.html#a3">instance_find_scope</a>( <a class="code" href="structmod__inst__s.html">mod_inst</a>* root, <font class="keywordtype">char</font>* scope );
 00020 
-00022 <a class="code" href="structmod__inst__s.html">mod_inst</a>* <a class="code" href="instance_8c.html#a3">instance_find_by_module</a>( <a class="code" href="structmod__inst__s.html">mod_inst</a>* root, <a class="code" href="structmodule__s.html">module</a>* mod, <font class="keywordtype">int</font>* ignore );
+00022 <a class="code" href="structmod__inst__s.html">mod_inst</a>* <a class="code" href="instance_8c.html#a4">instance_find_by_module</a>( <a class="code" href="structmod__inst__s.html">mod_inst</a>* root, <a class="code" href="structmodule__s.html">module</a>* mod, <font class="keywordtype">int</font>* ignore );
 00023 
-00025 <font class="keywordtype">void</font> <a class="code" href="instance_8c.html#a5">instance_parse_add</a>( <a class="code" href="structmod__inst__s.html">mod_inst</a>** root, <a class="code" href="structmodule__s.html">module</a>* parent, <a class="code" href="structmodule__s.html">module</a>* child, <font class="keywordtype">char</font>* inst_name );
+00025 <font class="keywordtype">void</font> <a class="code" href="instance_8c.html#a6">instance_parse_add</a>( <a class="code" href="structmod__inst__s.html">mod_inst</a>** root, <a class="code" href="structmodule__s.html">module</a>* parent, <a class="code" href="structmodule__s.html">module</a>* child, <font class="keywordtype">char</font>* inst_name );
 00026 
-00028 <font class="keywordtype">void</font> <a class="code" href="instance_8c.html#a6">instance_read_add</a>( <a class="code" href="structmod__inst__s.html">mod_inst</a>** root, <font class="keywordtype">char</font>* parent, <a class="code" href="structmodule__s.html">module</a>* child, <font class="keywordtype">char</font>* inst_name );
+00028 <font class="keywordtype">void</font> <a class="code" href="instance_8c.html#a7">instance_read_add</a>( <a class="code" href="structmod__inst__s.html">mod_inst</a>** root, <font class="keywordtype">char</font>* parent, <a class="code" href="structmodule__s.html">module</a>* child, <font class="keywordtype">char</font>* inst_name );
 00029 
-00031 <font class="keywordtype">void</font> <a class="code" href="instance_8c.html#a7">instance_db_write</a>( <a class="code" href="structmod__inst__s.html">mod_inst</a>* root, FILE* <a class="code" href="lexer_8c.html#a122">file</a>, <font class="keywordtype">char</font>* scope, <font class="keywordtype">bool</font> parse_mode );
+00031 <font class="keywordtype">void</font> <a class="code" href="instance_8c.html#a8">instance_db_write</a>( <a class="code" href="structmod__inst__s.html">mod_inst</a>* root, FILE* <a class="code" href="lexer_8c.html#a122">file</a>, <font class="keywordtype">char</font>* scope, <font class="keywordtype">bool</font> parse_mode );
 00032 
-00034 <font class="keywordtype">void</font> <a class="code" href="instance_8c.html#a9">instance_dealloc</a>( <a class="code" href="structmod__inst__s.html">mod_inst</a>* root, <font class="keywordtype">char</font>* scope );
+00034 <font class="keywordtype">void</font> <a class="code" href="instance_8c.html#a10">instance_dealloc</a>( <a class="code" href="structmod__inst__s.html">mod_inst</a>* root, <font class="keywordtype">char</font>* scope );
 00035 
 00036 <font class="comment">/* $Log$</font>
 00037 <font class="comment">/* Revision 1.6  2002/09/21 07:03:28  phase1geo</font>
@@ -48,7 +48,7 @@
 00056 
 00057 <font class="preprocessor">#endif</font>
 00058 <font class="preprocessor"></font>
-</pre></div><hr><address align="right"><small>Generated on Sat Oct 12 01:53:13 2002 for Covered by
+</pre></div><hr><address align="right"><small>Generated on Fri Oct 25 17:40:15 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

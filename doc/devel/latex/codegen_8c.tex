@@ -8,7 +8,7 @@
 \subsection*{Functions}
 \begin{CompactItemize}
 \item 
-char $\ast$ {\bf codegen\_\-gen\_\-expr} ({\bf expression} $\ast$expr, int line)
+char $\ast$ {\bf codegen\_\-gen\_\-expr} ({\bf expression} $\ast$expr, int line, int parent\_\-op)
 \begin{CompactList}\small\item\em Creates Verilog code string from specified expression tree.\item\end{CompactList}\end{CompactItemize}
 
 
@@ -26,7 +26,7 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsection{Function Documentation}
 \index{codegen.c@{codegen.c}!codegen_gen_expr@{codegen\_\-gen\_\-expr}}
 \index{codegen_gen_expr@{codegen\_\-gen\_\-expr}!codegen.c@{codegen.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ codegen\_\-gen\_\-expr ({\bf expression} $\ast$ {\em expr}, int {\em line})}\label{codegen_8c_a0}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ codegen\_\-gen\_\-expr ({\bf expression} $\ast$ {\em expr}, int {\em line}, int {\em parent\_\-op})}\label{codegen_8c_a0}
 
 
 Creates Verilog code string from specified expression tree.
@@ -36,7 +36,8 @@ Creates Verilog code string from specified expression tree.
 \begin{description}
 \item[{\em 
 expr}]Pointer to root of expression tree to generate. \item[{\em 
-line}]Specifies last line number to generate.\end{description}
+line}]Specifies last line number to generate. \item[{\em 
+parent\_\-op}]Operation of parent. If our op is the same, no surrounding parenthesis is needed.\end{description}
 \end{Desc}
 \begin{Desc}
 \item[Returns: ]\par

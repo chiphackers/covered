@@ -11,6 +11,8 @@ Contains functions for handling creation of static expressions.
 \begin{CompactList}\small\item\em Calculates new values for unary static expressions and returns the new static expression.\item\end{CompactList}\item 
 {\bf static\_\-expr} $\ast$ {\bf static\_\-expr\_\-gen} ({\bf static\_\-expr} $\ast$right, {\bf static\_\-expr} $\ast$left, int op, int line)
 \begin{CompactList}\small\item\em Calculates new values for static expression and returns the new static expression.\item\end{CompactList}\item 
+void {\bf static\_\-expr\_\-calc\_\-lsb\_\-and\_\-width} ({\bf static\_\-expr} $\ast$left, {\bf static\_\-expr} $\ast$right, int $\ast$width, int $\ast$lsb)
+\begin{CompactList}\small\item\em Calculates LSB and width for specified left/right pair for vector.\item\end{CompactList}\item 
 void {\bf static\_\-expr\_\-dealloc} ({\bf static\_\-expr} $\ast$stexp, {\bf bool} rm\_\-exp)
 \begin{CompactList}\small\item\em Deallocates static\_\-expr memory from heap.\item\end{CompactList}\end{CompactItemize}
 
@@ -29,9 +31,25 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 
 
 \subsection{Function Documentation}
-\index{static.h@{static.h}!static_expr_dealloc@{static\_\-expr\_\-dealloc}}
+\index{static.h@{static.h}!static_expr_calc_lsb_and_width@{static\_\-expr\_\-calc\_\-lsb\_\-and\_\-width}}
+\index{static_expr_calc_lsb_and_width@{static\_\-expr\_\-calc\_\-lsb\_\-and\_\-width}!static.h@{static.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void static\_\-expr\_\-calc\_\-lsb\_\-and\_\-width ({\bf static\_\-expr} $\ast$ {\em left}, {\bf static\_\-expr} $\ast$ {\em right}, int $\ast$ {\em width}, int $\ast$ {\em lsb})}\label{static_8h_a2}
+
+
+Calculates LSB and width for specified left/right pair for vector.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+left}]Pointer to static expression on left of vector. \item[{\em 
+right}]Pointer to static expression on right of vector. \item[{\em 
+width}]Calculated width of combined right/left static expressions. \item[{\em 
+lsb}]Calculated lsb of combined right/left static expressions.\end{description}
+\end{Desc}
+Calculates the LSB and width of a vector defined by the specified left and right static expressions. If the width cannot be obtained immediately (parameter in static expression), set width to -1. If the LSB cannot be obtained immediately (parameter in static expression), set LSB to -1. The returned width and lsb parameters can be used to size a vector instantiation. \index{static.h@{static.h}!static_expr_dealloc@{static\_\-expr\_\-dealloc}}
 \index{static_expr_dealloc@{static\_\-expr\_\-dealloc}!static.h@{static.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void static\_\-expr\_\-dealloc ({\bf static\_\-expr} $\ast$ {\em stexp}, {\bf bool} {\em rm\_\-exp})}\label{static_8h_a2}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void static\_\-expr\_\-dealloc ({\bf static\_\-expr} $\ast$ {\em stexp}, {\bf bool} {\em rm\_\-exp})}\label{static_8h_a3}
 
 
 Deallocates static\_\-expr memory from heap.

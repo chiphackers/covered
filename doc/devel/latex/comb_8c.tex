@@ -8,6 +8,7 @@
 {\tt \#include \char`\"{}util.h\char`\"{}}\par
 {\tt \#include \char`\"{}vector.h\char`\"{}}\par
 {\tt \#include \char`\"{}expr.h\char`\"{}}\par
+{\tt \#include \char`\"{}iter.h\char`\"{}}\par
 \subsection*{Functions}
 \begin{CompactItemize}
 \item 
@@ -23,7 +24,7 @@ void {\bf combination\_\-get\_\-stats} ({\bf exp\_\-link} $\ast$expl, float $\as
 \item 
 void {\bf combination\_\-draw\_\-line} (char $\ast$line, int {\bf size}, int exp\_\-id)
 \item 
-void {\bf combination\_\-underline\_\-tree} ({\bf expression} $\ast$exp, unsigned int curr\_\-depth, char $\ast$$\ast$$\ast$lines, int $\ast$depth, int $\ast${\bf size}, int $\ast$exp\_\-id)
+void {\bf combination\_\-underline\_\-tree} ({\bf expression} $\ast$exp, unsigned int curr\_\-depth, char $\ast$$\ast$$\ast$lines, int $\ast$depth, int $\ast${\bf size}, int $\ast$exp\_\-id, int parent\_\-op)
 \item 
 void {\bf combination\_\-underline} (FILE $\ast$ofile, {\bf expression} $\ast$exp, char $\ast$begin\_\-sp)
 \item 
@@ -280,7 +281,7 @@ begin\_\-sp}]Spacing that is placed at the beginning of the generated line.\end{
 \end{Desc}
 Traverses through the expression tree that is on the same line as the parent, creating underline strings. An underline is created for each expression that does not have complete combination logic coverage. Each underline (children to parent creates an inverted tree) and contains a number for the specified expression. \index{comb.c@{comb.c}!combination_underline_tree@{combination\_\-underline\_\-tree}}
 \index{combination_underline_tree@{combination\_\-underline\_\-tree}!comb.c@{comb.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-underline\_\-tree ({\bf expression} $\ast$ {\em exp}, unsigned int {\em curr\_\-depth}, char $\ast$$\ast$$\ast$ {\em lines}, int $\ast$ {\em depth}, int $\ast$ {\em size}, int $\ast$ {\em exp\_\-id})}\label{comb_8c_a11}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-underline\_\-tree ({\bf expression} $\ast$ {\em exp}, unsigned int {\em curr\_\-depth}, char $\ast$$\ast$$\ast$ {\em lines}, int $\ast$ {\em depth}, int $\ast$ {\em size}, int $\ast$ {\em exp\_\-id}, int {\em parent\_\-op})}\label{comb_8c_a11}
 
 
 \begin{Desc}
@@ -292,7 +293,8 @@ curr\_\-depth}]Specifies current depth in expression tree. \item[{\em
 lines}]Stack of lines for left child. \item[{\em 
 depth}]Pointer to top of left child stack. \item[{\em 
 size}]Pointer to character width of this node. \item[{\em 
-exp\_\-id}]Pointer to current expression ID to use in labeling.\end{description}
+exp\_\-id}]Pointer to current expression ID to use in labeling. \item[{\em 
+parent\_\-op}]Expression operation of parent used for calculating parenthesis.\end{description}
 \end{Desc}
 Recursively parses specified expression tree, underlining and labeling each measurable expression. 
 

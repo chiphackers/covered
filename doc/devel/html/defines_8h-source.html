@@ -61,652 +61,702 @@
 00212 <font class="preprocessor"></font>
 <a name="l00225"></a><a class="code" href="group__expr__suppl.html#a0">00225</a> <font class="preprocessor">#define SUPPL_LSB_OP                0</font>
 00226 <font class="preprocessor"></font>
-<a name="l00232"></a><a class="code" href="group__expr__suppl.html#a1">00232</a> <font class="preprocessor">#define SUPPL_LSB_ROOT              7</font>
-00233 <font class="preprocessor"></font>
-<a name="l00238"></a><a class="code" href="group__expr__suppl.html#a2">00238</a> <font class="preprocessor">#define SUPPL_LSB_EXECUTED          8</font>
-00239 <font class="preprocessor"></font>
-<a name="l00245"></a><a class="code" href="group__expr__suppl.html#a3">00245</a> <font class="preprocessor">#define SUPPL_LSB_STMT_HEAD         9</font>
-00246 <font class="preprocessor"></font>
-<a name="l00252"></a><a class="code" href="group__expr__suppl.html#a4">00252</a> <font class="preprocessor">#define SUPPL_LSB_STMT_STOP         10</font>
-00253 <font class="preprocessor"></font>
-<a name="l00259"></a><a class="code" href="group__expr__suppl.html#a5">00259</a> <font class="preprocessor">#define SUPPL_LSB_STMT_CONTINUOUS   11</font>
-00260 <font class="preprocessor"></font>
-<a name="l00265"></a><a class="code" href="group__expr__suppl.html#a6">00265</a> <font class="preprocessor">#define SUPPL_LSB_FALSE             12</font>
-00266 <font class="preprocessor"></font>
-<a name="l00271"></a><a class="code" href="group__expr__suppl.html#a7">00271</a> <font class="preprocessor">#define SUPPL_LSB_TRUE              13</font>
-00272 <font class="preprocessor"></font>
-<a name="l00277"></a><a class="code" href="group__expr__suppl.html#a8">00277</a> <font class="preprocessor">#define SUPPL_LSB_LEFT_CHANGED      14</font>
-00278 <font class="preprocessor"></font>
-<a name="l00283"></a><a class="code" href="group__expr__suppl.html#a9">00283</a> <font class="preprocessor">#define SUPPL_LSB_RIGHT_CHANGED     15</font>
-00284 <font class="preprocessor"></font>
-<a name="l00290"></a><a class="code" href="group__expr__suppl.html#a10">00290</a> <font class="preprocessor">#define SUPPL_LSB_SIG_LSB           16</font>
-00291 <font class="preprocessor"></font>
-<a name="l00304"></a><a class="code" href="group__expr__suppl.html#a11">00304</a> <font class="preprocessor">#define SUPPL_MERGE_MASK            ((0x7f &lt;&lt; SUPPL_LSB_OP)        | \</font>
-00305 <font class="preprocessor">                                     (0x1  &lt;&lt; SUPPL_LSB_ROOT)      | \</font>
-00306 <font class="preprocessor">                                     (0x1  &lt;&lt; SUPPL_LSB_EXECUTED)  | \</font>
-00307 <font class="preprocessor">                                     (0x1  &lt;&lt; SUPPL_LSB_TRUE)      | \</font>
-00308 <font class="preprocessor">                                     (0x1  &lt;&lt; SUPPL_LSB_FALSE)     | \</font>
-00309 <font class="preprocessor">                                     (0x1  &lt;&lt; SUPPL_LSB_STMT_HEAD) | \</font>
-00310 <font class="preprocessor">                                     (0x1  &lt;&lt; SUPPL_LSB_STMT_STOP) | \</font>
-00311 <font class="preprocessor">                                     (0x1  &lt;&lt; SUPPL_LSB_STMT_CONTINUOUS))</font>
-00312 <font class="preprocessor"></font>
-<a name="l00318"></a><a class="code" href="group__expr__suppl.html#a12">00318</a> <font class="preprocessor">#define SUPPL_IS_ROOT(x)            ((x &gt;&gt; SUPPL_LSB_ROOT) &amp; 0x1)</font>
-00319 <font class="preprocessor"></font>
-<a name="l00325"></a><a class="code" href="group__expr__suppl.html#a13">00325</a> <font class="preprocessor">#define SUPPL_WAS_EXECUTED(x)       ((x &gt;&gt; SUPPL_LSB_EXECUTED) &amp; 0x1)</font>
-00326 <font class="preprocessor"></font>
-<a name="l00331"></a><a class="code" href="group__expr__suppl.html#a14">00331</a> <font class="preprocessor">#define SUPPL_IS_STMT_HEAD(x)       ((x &gt;&gt; SUPPL_LSB_STMT_HEAD) &amp; 0x1)</font>
-00332 <font class="preprocessor"></font>
-<a name="l00337"></a><a class="code" href="group__expr__suppl.html#a15">00337</a> <font class="preprocessor">#define SUPPL_IS_STMT_STOP(x)       ((x &gt;&gt; SUPPL_LSB_STMT_STOP) &amp; 0x1)</font>
-00338 <font class="preprocessor"></font>
-<a name="l00343"></a><a class="code" href="group__expr__suppl.html#a16">00343</a> <font class="preprocessor">#define SUPPL_IS_STMT_CONTINUOUS(x) ((x &gt;&gt; SUPPL_LSB_STMT_CONTINUOUS) &amp; 0x1)</font>
-00344 <font class="preprocessor"></font>
-<a name="l00349"></a><a class="code" href="group__expr__suppl.html#a17">00349</a> <font class="preprocessor">#define SUPPL_WAS_TRUE(x)           ((x &gt;&gt; SUPPL_LSB_TRUE) &amp; 0x1)</font>
-00350 <font class="preprocessor"></font>
-<a name="l00355"></a><a class="code" href="group__expr__suppl.html#a18">00355</a> <font class="preprocessor">#define SUPPL_WAS_FALSE(x)          ((x &gt;&gt; SUPPL_LSB_FALSE) &amp; 0x1)</font>
-00356 <font class="preprocessor"></font>
-<a name="l00361"></a><a class="code" href="group__expr__suppl.html#a19">00361</a> <font class="preprocessor">#define SUPPL_IS_LEFT_CHANGED(x)    ((x &gt;&gt; SUPPL_LSB_LEFT_CHANGED) &amp; 0x1)</font>
-00362 <font class="preprocessor"></font>
-<a name="l00367"></a><a class="code" href="group__expr__suppl.html#a20">00367</a> <font class="preprocessor">#define SUPPL_IS_RIGHT_CHANGED(x)   ((x &gt;&gt; SUPPL_LSB_RIGHT_CHANGED) &amp; 0x1)</font>
-00368 <font class="preprocessor"></font>
-<a name="l00372"></a><a class="code" href="group__expr__suppl.html#a21">00372</a> <font class="preprocessor">#define SUPPL_OP(x)                 ((x &gt;&gt; SUPPL_LSB_OP) &amp; 0x7f)</font>
+<a name="l00233"></a><a class="code" href="group__expr__suppl.html#a1">00233</a> <font class="preprocessor">#define SUPPL_LSB_SWAPPED           6</font>
+00234 <font class="preprocessor"></font>
+<a name="l00240"></a><a class="code" href="group__expr__suppl.html#a2">00240</a> <font class="preprocessor">#define SUPPL_LSB_ROOT              7</font>
+00241 <font class="preprocessor"></font>
+<a name="l00246"></a><a class="code" href="group__expr__suppl.html#a3">00246</a> <font class="preprocessor">#define SUPPL_LSB_EXECUTED          8</font>
+00247 <font class="preprocessor"></font>
+<a name="l00253"></a><a class="code" href="group__expr__suppl.html#a4">00253</a> <font class="preprocessor">#define SUPPL_LSB_STMT_HEAD         9</font>
+00254 <font class="preprocessor"></font>
+<a name="l00260"></a><a class="code" href="group__expr__suppl.html#a5">00260</a> <font class="preprocessor">#define SUPPL_LSB_STMT_STOP         10</font>
+00261 <font class="preprocessor"></font>
+<a name="l00267"></a><a class="code" href="group__expr__suppl.html#a6">00267</a> <font class="preprocessor">#define SUPPL_LSB_STMT_CONTINUOUS   11</font>
+00268 <font class="preprocessor"></font>
+<a name="l00273"></a><a class="code" href="group__expr__suppl.html#a7">00273</a> <font class="preprocessor">#define SUPPL_LSB_FALSE             12</font>
+00274 <font class="preprocessor"></font>
+<a name="l00279"></a><a class="code" href="group__expr__suppl.html#a8">00279</a> <font class="preprocessor">#define SUPPL_LSB_TRUE              13</font>
+00280 <font class="preprocessor"></font>
+<a name="l00285"></a><a class="code" href="group__expr__suppl.html#a9">00285</a> <font class="preprocessor">#define SUPPL_LSB_LEFT_CHANGED      14</font>
+00286 <font class="preprocessor"></font>
+<a name="l00291"></a><a class="code" href="group__expr__suppl.html#a10">00291</a> <font class="preprocessor">#define SUPPL_LSB_RIGHT_CHANGED     15</font>
+00292 <font class="preprocessor"></font>
+<a name="l00307"></a><a class="code" href="group__expr__suppl.html#a11">00307</a> <font class="preprocessor">#define SUPPL_MERGE_MASK            ((0x3f &lt;&lt; SUPPL_LSB_OP)        | \</font>
+00308 <font class="preprocessor">                                     (0x1  &lt;&lt; SUPPL_LSB_SWAPPED)   | \</font>
+00309 <font class="preprocessor">                                     (0x1  &lt;&lt; SUPPL_LSB_ROOT)      | \</font>
+00310 <font class="preprocessor">                                     (0x1  &lt;&lt; SUPPL_LSB_EXECUTED)  | \</font>
+00311 <font class="preprocessor">                                     (0x1  &lt;&lt; SUPPL_LSB_TRUE)      | \</font>
+00312 <font class="preprocessor">                                     (0x1  &lt;&lt; SUPPL_LSB_FALSE)     | \</font>
+00313 <font class="preprocessor">                                     (0x1  &lt;&lt; SUPPL_LSB_STMT_HEAD) | \</font>
+00314 <font class="preprocessor">                                     (0x1  &lt;&lt; SUPPL_LSB_STMT_STOP) | \</font>
+00315 <font class="preprocessor">                                     (0x1  &lt;&lt; SUPPL_LSB_STMT_CONTINUOUS))</font>
+00316 <font class="preprocessor"></font>
+<a name="l00322"></a><a class="code" href="group__expr__suppl.html#a12">00322</a> <font class="preprocessor">#define SUPPL_WAS_SWAPPED(x)        ((x &gt;&gt; SUPPL_LSB_SWAPPED) &amp; 0x1)</font>
+00323 <font class="preprocessor"></font>
+<a name="l00329"></a><a class="code" href="group__expr__suppl.html#a13">00329</a> <font class="preprocessor">#define SUPPL_IS_ROOT(x)            ((x &gt;&gt; SUPPL_LSB_ROOT) &amp; 0x1)</font>
+00330 <font class="preprocessor"></font>
+<a name="l00336"></a><a class="code" href="group__expr__suppl.html#a14">00336</a> <font class="preprocessor">#define SUPPL_WAS_EXECUTED(x)       ((x &gt;&gt; SUPPL_LSB_EXECUTED) &amp; 0x1)</font>
+00337 <font class="preprocessor"></font>
+<a name="l00342"></a><a class="code" href="group__expr__suppl.html#a15">00342</a> <font class="preprocessor">#define SUPPL_IS_STMT_HEAD(x)       ((x &gt;&gt; SUPPL_LSB_STMT_HEAD) &amp; 0x1)</font>
+00343 <font class="preprocessor"></font>
+<a name="l00348"></a><a class="code" href="group__expr__suppl.html#a16">00348</a> <font class="preprocessor">#define SUPPL_IS_STMT_STOP(x)       ((x &gt;&gt; SUPPL_LSB_STMT_STOP) &amp; 0x1)</font>
+00349 <font class="preprocessor"></font>
+<a name="l00354"></a><a class="code" href="group__expr__suppl.html#a17">00354</a> <font class="preprocessor">#define SUPPL_IS_STMT_CONTINUOUS(x) ((x &gt;&gt; SUPPL_LSB_STMT_CONTINUOUS) &amp; 0x1)</font>
+00355 <font class="preprocessor"></font>
+<a name="l00360"></a><a class="code" href="group__expr__suppl.html#a18">00360</a> <font class="preprocessor">#define SUPPL_WAS_TRUE(x)           ((x &gt;&gt; SUPPL_LSB_TRUE) &amp; 0x1)</font>
+00361 <font class="preprocessor"></font>
+<a name="l00366"></a><a class="code" href="group__expr__suppl.html#a19">00366</a> <font class="preprocessor">#define SUPPL_WAS_FALSE(x)          ((x &gt;&gt; SUPPL_LSB_FALSE) &amp; 0x1)</font>
+00367 <font class="preprocessor"></font>
+<a name="l00372"></a><a class="code" href="group__expr__suppl.html#a20">00372</a> <font class="preprocessor">#define SUPPL_IS_LEFT_CHANGED(x)    ((x &gt;&gt; SUPPL_LSB_LEFT_CHANGED) &amp; 0x1)</font>
 00373 <font class="preprocessor"></font>
-<a name="l00389"></a><a class="code" href="group__read__modes.html#a0">00389</a> <font class="preprocessor">#define READ_MODE_MERGE_NO_MERGE          0</font>
-00390 <font class="preprocessor"></font>
-<a name="l00396"></a><a class="code" href="group__read__modes.html#a1">00396</a> <font class="preprocessor">#define READ_MODE_REPORT_NO_MERGE         1</font>
-00397 <font class="preprocessor"></font>
-<a name="l00404"></a><a class="code" href="group__read__modes.html#a2">00404</a> <font class="preprocessor">#define READ_MODE_MERGE_INST_MERGE        2</font>
-00405 <font class="preprocessor"></font>
-<a name="l00411"></a><a class="code" href="group__read__modes.html#a3">00411</a> <font class="preprocessor">#define READ_MODE_REPORT_MOD_MERGE        3</font>
-00412 <font class="preprocessor"></font>
-<a name="l00425"></a><a class="code" href="group__param__suppl.html#a0">00425</a> <font class="preprocessor">#define PARAM_LSB_ORDER                 0</font>
-00426 <font class="preprocessor"></font>
-<a name="l00430"></a><a class="code" href="group__param__suppl.html#a1">00430</a> <font class="preprocessor">#define PARAM_LSB_TYPE                  16</font>
-00431 <font class="preprocessor"></font>
-<a name="l00436"></a><a class="code" href="group__param__suppl.html#a2">00436</a> <font class="preprocessor">#define PARAM_TYPE_DECLARED             0</font>
+<a name="l00378"></a><a class="code" href="group__expr__suppl.html#a21">00378</a> <font class="preprocessor">#define SUPPL_IS_RIGHT_CHANGED(x)   ((x &gt;&gt; SUPPL_LSB_RIGHT_CHANGED) &amp; 0x1)</font>
+00379 <font class="preprocessor"></font>
+<a name="l00383"></a><a class="code" href="group__expr__suppl.html#a22">00383</a> <font class="preprocessor">#define SUPPL_OP(x)                 ((x &gt;&gt; SUPPL_LSB_OP) &amp; 0x3f)</font>
+00384 <font class="preprocessor"></font>
+<a name="l00400"></a><a class="code" href="group__read__modes.html#a0">00400</a> <font class="preprocessor">#define READ_MODE_MERGE_NO_MERGE          0</font>
+00401 <font class="preprocessor"></font>
+<a name="l00407"></a><a class="code" href="group__read__modes.html#a1">00407</a> <font class="preprocessor">#define READ_MODE_REPORT_NO_MERGE         1</font>
+00408 <font class="preprocessor"></font>
+<a name="l00415"></a><a class="code" href="group__read__modes.html#a2">00415</a> <font class="preprocessor">#define READ_MODE_MERGE_INST_MERGE        2</font>
+00416 <font class="preprocessor"></font>
+<a name="l00422"></a><a class="code" href="group__read__modes.html#a3">00422</a> <font class="preprocessor">#define READ_MODE_REPORT_MOD_MERGE        3</font>
+00423 <font class="preprocessor"></font>
+<a name="l00436"></a><a class="code" href="group__param__suppl.html#a0">00436</a> <font class="preprocessor">#define PARAM_LSB_ORDER                 0</font>
 00437 <font class="preprocessor"></font>
-<a name="l00442"></a><a class="code" href="group__param__suppl.html#a3">00442</a> <font class="preprocessor">#define PARAM_TYPE_OVERRIDE             1</font>
-00443 <font class="preprocessor"></font>
-<a name="l00448"></a><a class="code" href="group__param__suppl.html#a4">00448</a> <font class="preprocessor">#define PARAM_TYPE_SIG_LSB              2</font>
-00449 <font class="preprocessor"></font>
-<a name="l00454"></a><a class="code" href="group__param__suppl.html#a5">00454</a> <font class="preprocessor">#define PARAM_TYPE_SIG_MSB              3</font>
-00455 <font class="preprocessor"></font>
-<a name="l00460"></a><a class="code" href="group__param__suppl.html#a6">00460</a> <font class="preprocessor">#define PARAM_TYPE_EXP_LSB              4</font>
-00461 <font class="preprocessor"></font>
-<a name="l00466"></a><a class="code" href="group__param__suppl.html#a7">00466</a> <font class="preprocessor">#define PARAM_TYPE_EXP_MSB              5</font>
-00467 <font class="preprocessor"></font>
-<a name="l00471"></a><a class="code" href="group__param__suppl.html#a8">00471</a> <font class="preprocessor">#define PARAM_ORDER(x)                  ((x-&gt;suppl &gt;&gt; PARAM_LSB_ORDER) &amp; 0xffff)</font>
+<a name="l00441"></a><a class="code" href="group__param__suppl.html#a1">00441</a> <font class="preprocessor">#define PARAM_LSB_TYPE                  16</font>
+00442 <font class="preprocessor"></font>
+<a name="l00447"></a><a class="code" href="group__param__suppl.html#a2">00447</a> <font class="preprocessor">#define PARAM_TYPE_DECLARED             0</font>
+00448 <font class="preprocessor"></font>
+<a name="l00453"></a><a class="code" href="group__param__suppl.html#a3">00453</a> <font class="preprocessor">#define PARAM_TYPE_OVERRIDE             1</font>
+00454 <font class="preprocessor"></font>
+<a name="l00459"></a><a class="code" href="group__param__suppl.html#a4">00459</a> <font class="preprocessor">#define PARAM_TYPE_SIG_LSB              2</font>
+00460 <font class="preprocessor"></font>
+<a name="l00465"></a><a class="code" href="group__param__suppl.html#a5">00465</a> <font class="preprocessor">#define PARAM_TYPE_SIG_MSB              3</font>
+00466 <font class="preprocessor"></font>
+<a name="l00471"></a><a class="code" href="group__param__suppl.html#a6">00471</a> <font class="preprocessor">#define PARAM_TYPE_EXP_LSB              4</font>
 00472 <font class="preprocessor"></font>
-<a name="l00476"></a><a class="code" href="group__param__suppl.html#a9">00476</a> <font class="preprocessor">#define PARAM_TYPE(x)                   ((x-&gt;suppl &gt;&gt; PARAM_LSB_TYPE) &amp; 0x7)</font>
-00477 <font class="preprocessor"></font>
-<a name="l00488"></a><a class="code" href="group__expr__ops.html#a0">00488</a> <font class="preprocessor">#define EXP_OP_STATIC     0x0   </font>
-<a name="l00489"></a><a class="code" href="group__expr__ops.html#a1">00489</a> <font class="preprocessor">#define EXP_OP_SIG        0x1   </font>
-<a name="l00490"></a><a class="code" href="group__expr__ops.html#a2">00490</a> <font class="preprocessor">#define EXP_OP_XOR        0x2   </font>
-<a name="l00491"></a><a class="code" href="group__expr__ops.html#a3">00491</a> <font class="preprocessor">#define EXP_OP_MULTIPLY   0x3   </font>
-<a name="l00492"></a><a class="code" href="group__expr__ops.html#a4">00492</a> <font class="preprocessor">#define EXP_OP_DIVIDE     0x4   </font>
-<a name="l00493"></a><a class="code" href="group__expr__ops.html#a5">00493</a> <font class="preprocessor">#define EXP_OP_MOD        0x5   </font>
-<a name="l00494"></a><a class="code" href="group__expr__ops.html#a6">00494</a> <font class="preprocessor">#define EXP_OP_ADD        0x6   </font>
-<a name="l00495"></a><a class="code" href="group__expr__ops.html#a7">00495</a> <font class="preprocessor">#define EXP_OP_SUBTRACT   0x7   </font>
-<a name="l00496"></a><a class="code" href="group__expr__ops.html#a8">00496</a> <font class="preprocessor">#define EXP_OP_AND        0x8   </font>
-<a name="l00497"></a><a class="code" href="group__expr__ops.html#a9">00497</a> <font class="preprocessor">#define EXP_OP_OR         0x9   </font>
-<a name="l00498"></a><a class="code" href="group__expr__ops.html#a10">00498</a> <font class="preprocessor">#define EXP_OP_NAND       0xa   </font>
-<a name="l00499"></a><a class="code" href="group__expr__ops.html#a11">00499</a> <font class="preprocessor">#define EXP_OP_NOR        0xb   </font>
-<a name="l00500"></a><a class="code" href="group__expr__ops.html#a12">00500</a> <font class="preprocessor">#define EXP_OP_NXOR       0xc   </font>
-<a name="l00501"></a><a class="code" href="group__expr__ops.html#a13">00501</a> <font class="preprocessor">#define EXP_OP_LT         0xd   </font>
-<a name="l00502"></a><a class="code" href="group__expr__ops.html#a14">00502</a> <font class="preprocessor">#define EXP_OP_GT         0xe   </font>
-<a name="l00503"></a><a class="code" href="group__expr__ops.html#a15">00503</a> <font class="preprocessor">#define EXP_OP_LSHIFT     0xf   </font>
-<a name="l00504"></a><a class="code" href="group__expr__ops.html#a16">00504</a> <font class="preprocessor">#define EXP_OP_RSHIFT     0x10  </font>
-<a name="l00505"></a><a class="code" href="group__expr__ops.html#a17">00505</a> <font class="preprocessor">#define EXP_OP_EQ         0x11  </font>
-<a name="l00506"></a><a class="code" href="group__expr__ops.html#a18">00506</a> <font class="preprocessor">#define EXP_OP_CEQ        0x12  </font>
-<a name="l00507"></a><a class="code" href="group__expr__ops.html#a19">00507</a> <font class="preprocessor">#define EXP_OP_LE         0x13  </font>
-<a name="l00508"></a><a class="code" href="group__expr__ops.html#a20">00508</a> <font class="preprocessor">#define EXP_OP_GE         0x14  </font>
-<a name="l00509"></a><a class="code" href="group__expr__ops.html#a21">00509</a> <font class="preprocessor">#define EXP_OP_NE         0x15  </font>
-<a name="l00510"></a><a class="code" href="group__expr__ops.html#a22">00510</a> <font class="preprocessor">#define EXP_OP_CNE        0x16  </font>
-<a name="l00511"></a><a class="code" href="group__expr__ops.html#a23">00511</a> <font class="preprocessor">#define EXP_OP_LOR        0x17  </font>
-<a name="l00512"></a><a class="code" href="group__expr__ops.html#a24">00512</a> <font class="preprocessor">#define EXP_OP_LAND       0x18  </font>
-<a name="l00513"></a><a class="code" href="group__expr__ops.html#a25">00513</a> <font class="preprocessor">#define EXP_OP_COND       0x19  </font>
-<a name="l00514"></a><a class="code" href="group__expr__ops.html#a26">00514</a> <font class="preprocessor">#define EXP_OP_COND_SEL   0x1a  </font>
-<a name="l00515"></a><a class="code" href="group__expr__ops.html#a27">00515</a> <font class="preprocessor">#define EXP_OP_UINV       0x1b  </font>
-<a name="l00516"></a><a class="code" href="group__expr__ops.html#a28">00516</a> <font class="preprocessor">#define EXP_OP_UAND       0x1c  </font>
-<a name="l00517"></a><a class="code" href="group__expr__ops.html#a29">00517</a> <font class="preprocessor">#define EXP_OP_UNOT       0x1d  </font>
-<a name="l00518"></a><a class="code" href="group__expr__ops.html#a30">00518</a> <font class="preprocessor">#define EXP_OP_UOR        0x1e  </font>
-<a name="l00519"></a><a class="code" href="group__expr__ops.html#a31">00519</a> <font class="preprocessor">#define EXP_OP_UXOR       0x1f  </font>
-<a name="l00520"></a><a class="code" href="group__expr__ops.html#a32">00520</a> <font class="preprocessor">#define EXP_OP_UNAND      0x20  </font>
-<a name="l00521"></a><a class="code" href="group__expr__ops.html#a33">00521</a> <font class="preprocessor">#define EXP_OP_UNOR       0x21  </font>
-<a name="l00522"></a><a class="code" href="group__expr__ops.html#a34">00522</a> <font class="preprocessor">#define EXP_OP_UNXOR      0x22  </font>
-<a name="l00523"></a><a class="code" href="group__expr__ops.html#a35">00523</a> <font class="preprocessor">#define EXP_OP_SBIT_SEL   0x23  </font>
-<a name="l00524"></a><a class="code" href="group__expr__ops.html#a36">00524</a> <font class="preprocessor">#define EXP_OP_MBIT_SEL   0x24  </font>
-<a name="l00525"></a><a class="code" href="group__expr__ops.html#a37">00525</a> <font class="preprocessor">#define EXP_OP_EXPAND     0x25  </font>
-<a name="l00526"></a><a class="code" href="group__expr__ops.html#a38">00526</a> <font class="preprocessor">#define EXP_OP_CONCAT     0x26  </font>
-<a name="l00527"></a><a class="code" href="group__expr__ops.html#a39">00527</a> <font class="preprocessor">#define EXP_OP_PEDGE      0x27  </font>
-<a name="l00528"></a><a class="code" href="group__expr__ops.html#a40">00528</a> <font class="preprocessor">#define EXP_OP_NEDGE      0x28  </font>
-<a name="l00529"></a><a class="code" href="group__expr__ops.html#a41">00529</a> <font class="preprocessor">#define EXP_OP_AEDGE      0x29  </font>
-<a name="l00530"></a><a class="code" href="group__expr__ops.html#a42">00530</a> <font class="preprocessor">#define EXP_OP_LAST       0x2a  </font>
-<a name="l00531"></a><a class="code" href="group__expr__ops.html#a43">00531</a> <font class="preprocessor">#define EXP_OP_EOR        0x2b  </font>
-<a name="l00532"></a><a class="code" href="group__expr__ops.html#a44">00532</a> <font class="preprocessor">#define EXP_OP_DELAY      0x2c  </font>
-<a name="l00533"></a><a class="code" href="group__expr__ops.html#a45">00533</a> <font class="preprocessor">#define EXP_OP_CASE       0x2d  </font>
-<a name="l00534"></a><a class="code" href="group__expr__ops.html#a46">00534</a> <font class="preprocessor">#define EXP_OP_CASEX      0x2e  </font>
-<a name="l00535"></a><a class="code" href="group__expr__ops.html#a47">00535</a> <font class="preprocessor">#define EXP_OP_CASEZ      0x2f  </font>
-<a name="l00536"></a><a class="code" href="group__expr__ops.html#a48">00536</a> <font class="preprocessor">#define EXP_OP_DEFAULT    0x30  </font>
-<a name="l00537"></a><a class="code" href="group__expr__ops.html#a49">00537</a> <font class="preprocessor">#define EXP_OP_LIST       0x31  </font>
-<a name="l00538"></a><a class="code" href="group__expr__ops.html#a50">00538</a> <font class="preprocessor">#define EXP_OP_PARAM      0x32  </font>
-<a name="l00539"></a><a class="code" href="group__expr__ops.html#a51">00539</a> <font class="preprocessor">#define EXP_OP_PARAM_SBIT 0x33  </font>
-<a name="l00540"></a><a class="code" href="group__expr__ops.html#a52">00540</a> <font class="preprocessor">#define EXP_OP_PARAM_MBIT 0x34  </font>
-<a name="l00547"></a><a class="code" href="defines_8h.html#a114">00547</a> <font class="preprocessor">#define EXPR_IS_MEASURABLE(x)      (((SUPPL_OP( x-&gt;suppl ) != EXP_OP_STATIC) &amp;&amp; \</font>
-00548 <font class="preprocessor">                                     (SUPPL_OP( x-&gt;suppl ) != EXP_OP_LAST) &amp;&amp; \</font>
-00549 <font class="preprocessor">                                     (SUPPL_OP( x-&gt;suppl ) != EXP_OP_LIST) &amp;&amp; \</font>
-00550 <font class="preprocessor">                                     (SUPPL_OP( x-&gt;suppl ) != EXP_OP_COND_SEL) &amp;&amp; \</font>
-00551 <font class="preprocessor">                                     (SUPPL_OP( x-&gt;suppl ) != EXP_OP_CASE) &amp;&amp; \</font>
-00552 <font class="preprocessor">                                     (SUPPL_OP( x-&gt;suppl ) != EXP_OP_CASEX) &amp;&amp; \</font>
-00553 <font class="preprocessor">                                     (SUPPL_OP( x-&gt;suppl ) != EXP_OP_CASEZ) &amp;&amp; \</font>
-00554 <font class="preprocessor">                                     (SUPPL_OP( x-&gt;suppl ) != EXP_OP_DEFAULT) &amp;&amp; \</font>
-00555 <font class="preprocessor">                                     !((SUPPL_IS_ROOT( x-&gt;suppl ) == 0) &amp;&amp; \</font>
-00556 <font class="preprocessor">                                       ((SUPPL_OP( x-&gt;suppl ) == EXP_OP_SIG) || \</font>
-00557 <font class="preprocessor">                                        (SUPPL_OP( x-&gt;suppl ) == EXP_OP_SBIT_SEL) || \</font>
-00558 <font class="preprocessor">                                        (SUPPL_OP( x-&gt;suppl ) == EXP_OP_MBIT_SEL)) &amp;&amp; \</font>
-00559 <font class="preprocessor">                                       (SUPPL_OP( x-&gt;parent-&gt;expr-&gt;suppl ) != EXP_OP_COND)) &amp;&amp; \</font>
-00560 <font class="preprocessor">                                     (SUPPL_OP( x-&gt;suppl ) != EXP_OP_DELAY)) ? 1 : 0)</font>
-00561 <font class="preprocessor"></font>
-<a name="l00566"></a><a class="code" href="defines_8h.html#a115">00566</a> <font class="preprocessor">#define EXPR_EVAL_STATIC(x)      (((((x-&gt;left != NULL) &amp;&amp; (SUPPL_OP( x-&gt;left-&gt;suppl ) == EXP_OP_STATIC))            || \</font>
-00567 <font class="preprocessor">                                    ((x-&gt;left != NULL) &amp;&amp; (SUPPL_WAS_EXECUTED( x-&gt;left-&gt;suppl ) == 1))  || \</font>
-00568 <font class="preprocessor">                                    (x-&gt;left == NULL))                                                                &amp;&amp; \</font>
-00569 <font class="preprocessor">                                   (((x-&gt;right != NULL) &amp;&amp; (SUPPL_OP( x-&gt;right-&gt;suppl ) == EXP_OP_STATIC))          || \</font>
-00570 <font class="preprocessor">                                    ((x-&gt;right != NULL) &amp;&amp; (SUPPL_WAS_EXECUTED( x-&gt;right-&gt;suppl ) == 1)) || \</font>
-00571 <font class="preprocessor">                                    (x-&gt;right == NULL))                                                               &amp;&amp; \</font>
-00572 <font class="preprocessor">                                   (SUPPL_OP( x-&gt;suppl ) != EXP_OP_COND_SEL) &amp;&amp; \</font>
-00573 <font class="preprocessor">                                   (SUPPL_OP( x-&gt;suppl ) != EXP_OP_SBIT_SEL) &amp;&amp; \</font>
-00574 <font class="preprocessor">                                   (SUPPL_OP( x-&gt;suppl ) != EXP_OP_MBIT_SEL) &amp;&amp; \</font>
-00575 <font class="preprocessor">                                   (SUPPL_OP( x-&gt;suppl ) != EXP_OP_STATIC)   &amp;&amp; \</font>
-00576 <font class="preprocessor">                                   (SUPPL_OP( x-&gt;suppl ) != EXP_OP_SIG)      &amp;&amp; \</font>
-00577 <font class="preprocessor">                                   (SUPPL_OP( x-&gt;suppl ) != EXP_OP_LAST)     &amp;&amp; \</font>
-00578 <font class="preprocessor">                                   (SUPPL_OP( x-&gt;suppl ) != EXP_OP_DEFAULT)  &amp;&amp; \</font>
-00579 <font class="preprocessor">                                   (SUPPL_OP( x-&gt;suppl ) != EXP_OP_DELAY)) ? 1 : 0)</font>
-00580 <font class="preprocessor"></font>
-<a name="l00585"></a><a class="code" href="defines_8h.html#a116">00585</a> <font class="preprocessor">#define EXPR_COMB_MISSED(x)        (EXPR_IS_MEASURABLE( x ) &amp; \</font>
-00586 <font class="preprocessor">                                    ~EXPR_EVAL_STATIC( x ) &amp; \</font>
-00587 <font class="preprocessor">                                    (~SUPPL_WAS_TRUE( x-&gt;suppl ) | ~SUPPL_WAS_FALSE( x-&gt;suppl )))</font>
-00588 <font class="preprocessor"></font>
-00598 <font class="comment">//                        00  01  02  03  10  11  12  13  20  21  22  23  30  31  32  33</font>
-<a name="l00599"></a><a class="code" href="group__op__tables.html#a0">00599</a> <font class="preprocessor">#define AND_OP_TABLE      0,  0,  0,  0,  0,  1,  2,  2,  0,  2,  2,  2,  0,  2,  2,  2</font>
-<a name="l00600"></a><a class="code" href="group__op__tables.html#a1">00600</a> <font class="preprocessor"></font><font class="preprocessor">#define OR_OP_TABLE       0,  1,  2,  2,  1,  1,  1,  1,  2,  1,  2,  2,  2,  1,  2,  2</font>
-<a name="l00601"></a><a class="code" href="group__op__tables.html#a2">00601</a> <font class="preprocessor"></font><font class="preprocessor">#define XOR_OP_TABLE      0,  1,  2,  2,  1,  0,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2</font>
-<a name="l00602"></a><a class="code" href="group__op__tables.html#a3">00602</a> <font class="preprocessor"></font><font class="preprocessor">#define NAND_OP_TABLE     1,  1,  1,  1,  1,  0,  2,  2,  1,  2,  2,  2,  1,  2,  2,  2</font>
-<a name="l00603"></a><a class="code" href="group__op__tables.html#a4">00603</a> <font class="preprocessor"></font><font class="preprocessor">#define NOR_OP_TABLE      1,  0,  2,  2,  0,  0,  0,  0,  2,  0,  2,  2,  2,  0,  2,  2</font>
-<a name="l00604"></a><a class="code" href="group__op__tables.html#a5">00604</a> <font class="preprocessor"></font><font class="preprocessor">#define NXOR_OP_TABLE     1,  0,  2,  2,  0,  1,  1,  1,  2,  2,  2,  2,  2,  2,  2,  2</font>
-<a name="l00605"></a><a class="code" href="group__op__tables.html#a6">00605</a> <font class="preprocessor"></font><font class="preprocessor">#define ADD_OP_TABLE      0,  1,  10, 10, 1,  4,  10, 10, 10, 10, 10, 10, 10, 10, 10, 10  </font>
-00606 <font class="preprocessor"></font>
-<a name="l00617"></a><a class="code" href="group__comparison__types.html#a0">00617</a> <font class="preprocessor">#define COMP_LT         0       </font>
-<a name="l00618"></a><a class="code" href="group__comparison__types.html#a1">00618</a> <font class="preprocessor">#define COMP_GT         1       </font>
-<a name="l00619"></a><a class="code" href="group__comparison__types.html#a2">00619</a> <font class="preprocessor">#define COMP_LE         2       </font>
-<a name="l00620"></a><a class="code" href="group__comparison__types.html#a3">00620</a> <font class="preprocessor">#define COMP_GE         3       </font>
-<a name="l00621"></a><a class="code" href="group__comparison__types.html#a4">00621</a> <font class="preprocessor">#define COMP_EQ         4       </font>
-<a name="l00622"></a><a class="code" href="group__comparison__types.html#a5">00622</a> <font class="preprocessor">#define COMP_NE         5       </font>
-<a name="l00623"></a><a class="code" href="group__comparison__types.html#a6">00623</a> <font class="preprocessor">#define COMP_CEQ        6       </font>
-<a name="l00624"></a><a class="code" href="group__comparison__types.html#a7">00624</a> <font class="preprocessor">#define COMP_CNE        7       </font>
-<a name="l00625"></a><a class="code" href="group__comparison__types.html#a8">00625</a> <font class="preprocessor">#define COMP_CXEQ       8       </font>
-<a name="l00626"></a><a class="code" href="group__comparison__types.html#a9">00626</a> <font class="preprocessor">#define COMP_CZEQ       9       </font>
-<a name="l00639"></a><a class="code" href="group__lexer__val__types.html#a0">00639</a> <font class="preprocessor">#define MAX_BIT_WIDTH           1024    </font>
-<a name="l00640"></a><a class="code" href="group__lexer__val__types.html#a1">00640</a> <font class="preprocessor">#define DECIMAL                 0       </font>
-<a name="l00641"></a><a class="code" href="group__lexer__val__types.html#a2">00641</a> <font class="preprocessor">#define BINARY                  1       </font>
-<a name="l00642"></a><a class="code" href="group__lexer__val__types.html#a3">00642</a> <font class="preprocessor">#define OCTAL                   2       </font>
-<a name="l00643"></a><a class="code" href="group__lexer__val__types.html#a4">00643</a> <font class="preprocessor">#define HEXIDECIMAL             3       </font>
-<a name="l00650"></a><a class="code" href="defines_8h.html#a163">00650</a> <font class="preprocessor">typedef enum {</font>
-00651 <font class="preprocessor"></font>  <a class="code" href="defines_8h.html#a163a161">FALSE</a>,   
-00652   <a class="code" href="defines_8h.html#a163a162">TRUE</a>     
-00653 } <font class="keywordtype">bool</font>;
-00654 
-00665 <font class="preprocessor">#if SIZEOF_INT == 4</font>
-<a name="l00666"></a><a class="code" href="defines_8h.html#a139">00666</a> <font class="preprocessor"></font><font class="keyword">typedef</font> <font class="keywordtype">unsigned</font> <font class="keywordtype">int</font> <a class="code" href="defines_8h.html#a139">nibble</a>;
-00667 <font class="preprocessor">#else</font>
-00668 <font class="preprocessor"></font><font class="preprocessor">#if SIZEOF_LONG == 4</font>
-00669 <font class="preprocessor"></font><font class="keyword">typedef</font> <font class="keywordtype">unsigned</font> <font class="keywordtype">long</font> <a class="code" href="defines_8h.html#a139">nibble</a>;
-00670 <font class="preprocessor">#endif</font>
-00671 <font class="preprocessor"></font><font class="preprocessor">#endif</font>
-00672 <font class="preprocessor"></font>
-00673 <font class="comment">//------------------------------------------------------------------------------</font>
-00679 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structstr__link__s.html">str_link_s</a>;
-00680 
-<a name="l00681"></a><a class="code" href="defines_8h.html#a140">00681</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structstr__link__s.html">str_link_s</a> str_link;
-00682 
-<a name="l00683"></a><a class="code" href="structstr__link__s.html">00683</a> <font class="keyword">struct </font><a class="code" href="structstr__link__s.html">str_link_s</a> {
-<a name="l00684"></a><a class="code" href="structstr__link__s.html#m0">00684</a>   <font class="keywordtype">char</font>*     <a class="code" href="structstr__link__s.html#m0">str</a>;     
-<a name="l00685"></a><a class="code" href="structstr__link__s.html#m1">00685</a>   <font class="keywordtype">char</font>*     <a class="code" href="structstr__link__s.html#m1">suppl</a>;   
-<a name="l00686"></a><a class="code" href="structstr__link__s.html#m2">00686</a>   str_link* <a class="code" href="structstr__link__s.html#m2">next</a>;    
-00687 };
-00688 
-00689 <font class="comment">//------------------------------------------------------------------------------</font>
-<a name="l00695"></a><a class="code" href="structvector__s.html">00695</a> <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structvector__s.html">vector_s</a> {
-<a name="l00696"></a><a class="code" href="structvector__s.html#m0">00696</a>   <font class="keywordtype">int</font>     <a class="code" href="structvector__s.html#m0">width</a>;     
-<a name="l00697"></a><a class="code" href="structvector__s.html#m1">00697</a>   <font class="keywordtype">int</font>     <a class="code" href="structvector__s.html#m1">lsb</a>;       
-<a name="l00698"></a><a class="code" href="structvector__s.html#m2">00698</a>   <a class="code" href="defines_8h.html#a139">nibble</a>* <a class="code" href="structvector__s.html#m2">value</a>;     
-00699 };
+<a name="l00477"></a><a class="code" href="group__param__suppl.html#a7">00477</a> <font class="preprocessor">#define PARAM_TYPE_EXP_MSB              5</font>
+00478 <font class="preprocessor"></font>
+<a name="l00482"></a><a class="code" href="group__param__suppl.html#a8">00482</a> <font class="preprocessor">#define PARAM_ORDER(x)                  ((x-&gt;suppl &gt;&gt; PARAM_LSB_ORDER) &amp; 0xffff)</font>
+00483 <font class="preprocessor"></font>
+<a name="l00487"></a><a class="code" href="group__param__suppl.html#a9">00487</a> <font class="preprocessor">#define PARAM_TYPE(x)                   ((x-&gt;suppl &gt;&gt; PARAM_LSB_TYPE) &amp; 0x7)</font>
+00488 <font class="preprocessor"></font>
+<a name="l00504"></a><a class="code" href="group__delay__expr__types.html#a0">00504</a> <font class="preprocessor">#define DELAY_EXPR_DEFAULT      0</font>
+00505 <font class="preprocessor"></font>
+<a name="l00509"></a><a class="code" href="group__delay__expr__types.html#a1">00509</a> <font class="preprocessor">#define DELAY_EXPR_MIN          1</font>
+00510 <font class="preprocessor"></font>
+<a name="l00514"></a><a class="code" href="group__delay__expr__types.html#a2">00514</a> <font class="preprocessor">#define DELAY_EXPR_TYP          2</font>
+00515 <font class="preprocessor"></font>
+<a name="l00519"></a><a class="code" href="group__delay__expr__types.html#a3">00519</a> <font class="preprocessor">#define DELAY_EXPR_MAX          3</font>
+00520 <font class="preprocessor"></font>
+<a name="l00531"></a><a class="code" href="group__expr__ops.html#a0">00531</a> <font class="preprocessor">#define EXP_OP_STATIC     0x0   </font>
+<a name="l00532"></a><a class="code" href="group__expr__ops.html#a1">00532</a> <font class="preprocessor">#define EXP_OP_SIG        0x1   </font>
+<a name="l00533"></a><a class="code" href="group__expr__ops.html#a2">00533</a> <font class="preprocessor">#define EXP_OP_XOR        0x2   </font>
+<a name="l00534"></a><a class="code" href="group__expr__ops.html#a3">00534</a> <font class="preprocessor">#define EXP_OP_MULTIPLY   0x3   </font>
+<a name="l00535"></a><a class="code" href="group__expr__ops.html#a4">00535</a> <font class="preprocessor">#define EXP_OP_DIVIDE     0x4   </font>
+<a name="l00536"></a><a class="code" href="group__expr__ops.html#a5">00536</a> <font class="preprocessor">#define EXP_OP_MOD        0x5   </font>
+<a name="l00537"></a><a class="code" href="group__expr__ops.html#a6">00537</a> <font class="preprocessor">#define EXP_OP_ADD        0x6   </font>
+<a name="l00538"></a><a class="code" href="group__expr__ops.html#a7">00538</a> <font class="preprocessor">#define EXP_OP_SUBTRACT   0x7   </font>
+<a name="l00539"></a><a class="code" href="group__expr__ops.html#a8">00539</a> <font class="preprocessor">#define EXP_OP_AND        0x8   </font>
+<a name="l00540"></a><a class="code" href="group__expr__ops.html#a9">00540</a> <font class="preprocessor">#define EXP_OP_OR         0x9   </font>
+<a name="l00541"></a><a class="code" href="group__expr__ops.html#a10">00541</a> <font class="preprocessor">#define EXP_OP_NAND       0xa   </font>
+<a name="l00542"></a><a class="code" href="group__expr__ops.html#a11">00542</a> <font class="preprocessor">#define EXP_OP_NOR        0xb   </font>
+<a name="l00543"></a><a class="code" href="group__expr__ops.html#a12">00543</a> <font class="preprocessor">#define EXP_OP_NXOR       0xc   </font>
+<a name="l00544"></a><a class="code" href="group__expr__ops.html#a13">00544</a> <font class="preprocessor">#define EXP_OP_LT         0xd   </font>
+<a name="l00545"></a><a class="code" href="group__expr__ops.html#a14">00545</a> <font class="preprocessor">#define EXP_OP_GT         0xe   </font>
+<a name="l00546"></a><a class="code" href="group__expr__ops.html#a15">00546</a> <font class="preprocessor">#define EXP_OP_LSHIFT     0xf   </font>
+<a name="l00547"></a><a class="code" href="group__expr__ops.html#a16">00547</a> <font class="preprocessor">#define EXP_OP_RSHIFT     0x10  </font>
+<a name="l00548"></a><a class="code" href="group__expr__ops.html#a17">00548</a> <font class="preprocessor">#define EXP_OP_EQ         0x11  </font>
+<a name="l00549"></a><a class="code" href="group__expr__ops.html#a18">00549</a> <font class="preprocessor">#define EXP_OP_CEQ        0x12  </font>
+<a name="l00550"></a><a class="code" href="group__expr__ops.html#a19">00550</a> <font class="preprocessor">#define EXP_OP_LE         0x13  </font>
+<a name="l00551"></a><a class="code" href="group__expr__ops.html#a20">00551</a> <font class="preprocessor">#define EXP_OP_GE         0x14  </font>
+<a name="l00552"></a><a class="code" href="group__expr__ops.html#a21">00552</a> <font class="preprocessor">#define EXP_OP_NE         0x15  </font>
+<a name="l00553"></a><a class="code" href="group__expr__ops.html#a22">00553</a> <font class="preprocessor">#define EXP_OP_CNE        0x16  </font>
+<a name="l00554"></a><a class="code" href="group__expr__ops.html#a23">00554</a> <font class="preprocessor">#define EXP_OP_LOR        0x17  </font>
+<a name="l00555"></a><a class="code" href="group__expr__ops.html#a24">00555</a> <font class="preprocessor">#define EXP_OP_LAND       0x18  </font>
+<a name="l00556"></a><a class="code" href="group__expr__ops.html#a25">00556</a> <font class="preprocessor">#define EXP_OP_COND       0x19  </font>
+<a name="l00557"></a><a class="code" href="group__expr__ops.html#a26">00557</a> <font class="preprocessor">#define EXP_OP_COND_SEL   0x1a  </font>
+<a name="l00558"></a><a class="code" href="group__expr__ops.html#a27">00558</a> <font class="preprocessor">#define EXP_OP_UINV       0x1b  </font>
+<a name="l00559"></a><a class="code" href="group__expr__ops.html#a28">00559</a> <font class="preprocessor">#define EXP_OP_UAND       0x1c  </font>
+<a name="l00560"></a><a class="code" href="group__expr__ops.html#a29">00560</a> <font class="preprocessor">#define EXP_OP_UNOT       0x1d  </font>
+<a name="l00561"></a><a class="code" href="group__expr__ops.html#a30">00561</a> <font class="preprocessor">#define EXP_OP_UOR        0x1e  </font>
+<a name="l00562"></a><a class="code" href="group__expr__ops.html#a31">00562</a> <font class="preprocessor">#define EXP_OP_UXOR       0x1f  </font>
+<a name="l00563"></a><a class="code" href="group__expr__ops.html#a32">00563</a> <font class="preprocessor">#define EXP_OP_UNAND      0x20  </font>
+<a name="l00564"></a><a class="code" href="group__expr__ops.html#a33">00564</a> <font class="preprocessor">#define EXP_OP_UNOR       0x21  </font>
+<a name="l00565"></a><a class="code" href="group__expr__ops.html#a34">00565</a> <font class="preprocessor">#define EXP_OP_UNXOR      0x22  </font>
+<a name="l00566"></a><a class="code" href="group__expr__ops.html#a35">00566</a> <font class="preprocessor">#define EXP_OP_SBIT_SEL   0x23  </font>
+<a name="l00567"></a><a class="code" href="group__expr__ops.html#a36">00567</a> <font class="preprocessor">#define EXP_OP_MBIT_SEL   0x24  </font>
+<a name="l00568"></a><a class="code" href="group__expr__ops.html#a37">00568</a> <font class="preprocessor">#define EXP_OP_EXPAND     0x25  </font>
+<a name="l00569"></a><a class="code" href="group__expr__ops.html#a38">00569</a> <font class="preprocessor">#define EXP_OP_CONCAT     0x26  </font>
+<a name="l00570"></a><a class="code" href="group__expr__ops.html#a39">00570</a> <font class="preprocessor">#define EXP_OP_PEDGE      0x27  </font>
+<a name="l00571"></a><a class="code" href="group__expr__ops.html#a40">00571</a> <font class="preprocessor">#define EXP_OP_NEDGE      0x28  </font>
+<a name="l00572"></a><a class="code" href="group__expr__ops.html#a41">00572</a> <font class="preprocessor">#define EXP_OP_AEDGE      0x29  </font>
+<a name="l00573"></a><a class="code" href="group__expr__ops.html#a42">00573</a> <font class="preprocessor">#define EXP_OP_LAST       0x2a  </font>
+<a name="l00574"></a><a class="code" href="group__expr__ops.html#a43">00574</a> <font class="preprocessor">#define EXP_OP_EOR        0x2b  </font>
+<a name="l00575"></a><a class="code" href="group__expr__ops.html#a44">00575</a> <font class="preprocessor">#define EXP_OP_DELAY      0x2c  </font>
+<a name="l00576"></a><a class="code" href="group__expr__ops.html#a45">00576</a> <font class="preprocessor">#define EXP_OP_CASE       0x2d  </font>
+<a name="l00577"></a><a class="code" href="group__expr__ops.html#a46">00577</a> <font class="preprocessor">#define EXP_OP_CASEX      0x2e  </font>
+<a name="l00578"></a><a class="code" href="group__expr__ops.html#a47">00578</a> <font class="preprocessor">#define EXP_OP_CASEZ      0x2f  </font>
+<a name="l00579"></a><a class="code" href="group__expr__ops.html#a48">00579</a> <font class="preprocessor">#define EXP_OP_DEFAULT    0x30  </font>
+<a name="l00580"></a><a class="code" href="group__expr__ops.html#a49">00580</a> <font class="preprocessor">#define EXP_OP_LIST       0x31  </font>
+<a name="l00581"></a><a class="code" href="group__expr__ops.html#a50">00581</a> <font class="preprocessor">#define EXP_OP_PARAM      0x32  </font>
+<a name="l00582"></a><a class="code" href="group__expr__ops.html#a51">00582</a> <font class="preprocessor">#define EXP_OP_PARAM_SBIT 0x33  </font>
+<a name="l00583"></a><a class="code" href="group__expr__ops.html#a52">00583</a> <font class="preprocessor">#define EXP_OP_PARAM_MBIT 0x34  </font>
+<a name="l00590"></a><a class="code" href="defines_8h.html#a119">00590</a> <font class="preprocessor">#define EXPR_IS_MEASURABLE(x)      (((SUPPL_OP( x-&gt;suppl ) != EXP_OP_STATIC) &amp;&amp; \</font>
+00591 <font class="preprocessor">                                     (SUPPL_OP( x-&gt;suppl ) != EXP_OP_LAST) &amp;&amp; \</font>
+00592 <font class="preprocessor">                                     (SUPPL_OP( x-&gt;suppl ) != EXP_OP_LIST) &amp;&amp; \</font>
+00593 <font class="preprocessor">                                     (SUPPL_OP( x-&gt;suppl ) != EXP_OP_COND_SEL) &amp;&amp; \</font>
+00594 <font class="preprocessor">                                     (SUPPL_OP( x-&gt;suppl ) != EXP_OP_CASE) &amp;&amp; \</font>
+00595 <font class="preprocessor">                                     (SUPPL_OP( x-&gt;suppl ) != EXP_OP_CASEX) &amp;&amp; \</font>
+00596 <font class="preprocessor">                                     (SUPPL_OP( x-&gt;suppl ) != EXP_OP_CASEZ) &amp;&amp; \</font>
+00597 <font class="preprocessor">                                     (SUPPL_OP( x-&gt;suppl ) != EXP_OP_DEFAULT) &amp;&amp; \</font>
+00598 <font class="preprocessor">                                     !((SUPPL_IS_ROOT( x-&gt;suppl ) == 0) &amp;&amp; \</font>
+00599 <font class="preprocessor">                                       ((SUPPL_OP( x-&gt;suppl ) == EXP_OP_SIG) || \</font>
+00600 <font class="preprocessor">                                        (SUPPL_OP( x-&gt;suppl ) == EXP_OP_SBIT_SEL) || \</font>
+00601 <font class="preprocessor">                                        (SUPPL_OP( x-&gt;suppl ) == EXP_OP_MBIT_SEL)) &amp;&amp; \</font>
+00602 <font class="preprocessor">                                       (SUPPL_OP( x-&gt;parent-&gt;expr-&gt;suppl ) != EXP_OP_COND)) &amp;&amp; \</font>
+00603 <font class="preprocessor">                                     (SUPPL_OP( x-&gt;suppl ) != EXP_OP_DELAY)) ? 1 : 0)</font>
+00604 <font class="preprocessor"></font>
+<a name="l00609"></a><a class="code" href="defines_8h.html#a120">00609</a> <font class="preprocessor">#define EXPR_EVAL_STATIC(x)      (((((x-&gt;left != NULL) &amp;&amp; (SUPPL_OP( x-&gt;left-&gt;suppl ) == EXP_OP_STATIC))            || \</font>
+00610 <font class="preprocessor">                                    ((x-&gt;left != NULL) &amp;&amp; (SUPPL_WAS_EXECUTED( x-&gt;left-&gt;suppl ) == 1))  || \</font>
+00611 <font class="preprocessor">                                    (x-&gt;left == NULL))                                                                &amp;&amp; \</font>
+00612 <font class="preprocessor">                                   (((x-&gt;right != NULL) &amp;&amp; (SUPPL_OP( x-&gt;right-&gt;suppl ) == EXP_OP_STATIC))          || \</font>
+00613 <font class="preprocessor">                                    ((x-&gt;right != NULL) &amp;&amp; (SUPPL_WAS_EXECUTED( x-&gt;right-&gt;suppl ) == 1)) || \</font>
+00614 <font class="preprocessor">                                    (x-&gt;right == NULL))                                                               &amp;&amp; \</font>
+00615 <font class="preprocessor">                                   (SUPPL_OP( x-&gt;suppl ) != EXP_OP_COND_SEL)   &amp;&amp; \</font>
+00616 <font class="preprocessor">                                   (SUPPL_OP( x-&gt;suppl ) != EXP_OP_SBIT_SEL)   &amp;&amp; \</font>
+00617 <font class="preprocessor">                                   (SUPPL_OP( x-&gt;suppl ) != EXP_OP_MBIT_SEL)   &amp;&amp; \</font>
+00618 <font class="preprocessor">                                   (SUPPL_OP( x-&gt;suppl ) != EXP_OP_PARAM)      &amp;&amp; \</font>
+00619 <font class="preprocessor">                                   (SUPPL_OP( x-&gt;suppl ) != EXP_OP_PARAM_SBIT) &amp;&amp; \</font>
+00620 <font class="preprocessor">                                   (SUPPL_OP( x-&gt;suppl ) != EXP_OP_PARAM_MBIT) &amp;&amp; \</font>
+00621 <font class="preprocessor">                                   (SUPPL_OP( x-&gt;suppl ) != EXP_OP_STATIC)     &amp;&amp; \</font>
+00622 <font class="preprocessor">                                   (SUPPL_OP( x-&gt;suppl ) != EXP_OP_SIG)        &amp;&amp; \</font>
+00623 <font class="preprocessor">                                   (SUPPL_OP( x-&gt;suppl ) != EXP_OP_LAST)       &amp;&amp; \</font>
+00624 <font class="preprocessor">                                   (SUPPL_OP( x-&gt;suppl ) != EXP_OP_DEFAULT)    &amp;&amp; \</font>
+00625 <font class="preprocessor">                                   (SUPPL_OP( x-&gt;suppl ) != EXP_OP_DELAY)) ? 1 : 0)</font>
+00626 <font class="preprocessor"></font>
+<a name="l00631"></a><a class="code" href="defines_8h.html#a121">00631</a> <font class="preprocessor">#define EXPR_COMB_MISSED(x)        (EXPR_IS_MEASURABLE( x ) &amp; \</font>
+00632 <font class="preprocessor">                                    ~EXPR_EVAL_STATIC( x ) &amp; \</font>
+00633 <font class="preprocessor">                                    (~SUPPL_WAS_TRUE( x-&gt;suppl ) | ~SUPPL_WAS_FALSE( x-&gt;suppl )))</font>
+00634 <font class="preprocessor"></font>
+00644 <font class="comment">//                        00  01  02  03  10  11  12  13  20  21  22  23  30  31  32  33</font>
+<a name="l00645"></a><a class="code" href="group__op__tables.html#a0">00645</a> <font class="preprocessor">#define AND_OP_TABLE      0,  0,  0,  0,  0,  1,  2,  2,  0,  2,  2,  2,  0,  2,  2,  2</font>
+<a name="l00646"></a><a class="code" href="group__op__tables.html#a1">00646</a> <font class="preprocessor"></font><font class="preprocessor">#define OR_OP_TABLE       0,  1,  2,  2,  1,  1,  1,  1,  2,  1,  2,  2,  2,  1,  2,  2</font>
+<a name="l00647"></a><a class="code" href="group__op__tables.html#a2">00647</a> <font class="preprocessor"></font><font class="preprocessor">#define XOR_OP_TABLE      0,  1,  2,  2,  1,  0,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2</font>
+<a name="l00648"></a><a class="code" href="group__op__tables.html#a3">00648</a> <font class="preprocessor"></font><font class="preprocessor">#define NAND_OP_TABLE     1,  1,  1,  1,  1,  0,  2,  2,  1,  2,  2,  2,  1,  2,  2,  2</font>
+<a name="l00649"></a><a class="code" href="group__op__tables.html#a4">00649</a> <font class="preprocessor"></font><font class="preprocessor">#define NOR_OP_TABLE      1,  0,  2,  2,  0,  0,  0,  0,  2,  0,  2,  2,  2,  0,  2,  2</font>
+<a name="l00650"></a><a class="code" href="group__op__tables.html#a5">00650</a> <font class="preprocessor"></font><font class="preprocessor">#define NXOR_OP_TABLE     1,  0,  2,  2,  0,  1,  1,  1,  2,  2,  2,  2,  2,  2,  2,  2</font>
+<a name="l00651"></a><a class="code" href="group__op__tables.html#a6">00651</a> <font class="preprocessor"></font><font class="preprocessor">#define ADD_OP_TABLE      0,  1,  10, 10, 1,  4,  10, 10, 10, 10, 10, 10, 10, 10, 10, 10  </font>
+00652 <font class="preprocessor"></font>
+<a name="l00663"></a><a class="code" href="group__comparison__types.html#a0">00663</a> <font class="preprocessor">#define COMP_LT         0       </font>
+<a name="l00664"></a><a class="code" href="group__comparison__types.html#a1">00664</a> <font class="preprocessor">#define COMP_GT         1       </font>
+<a name="l00665"></a><a class="code" href="group__comparison__types.html#a2">00665</a> <font class="preprocessor">#define COMP_LE         2       </font>
+<a name="l00666"></a><a class="code" href="group__comparison__types.html#a3">00666</a> <font class="preprocessor">#define COMP_GE         3       </font>
+<a name="l00667"></a><a class="code" href="group__comparison__types.html#a4">00667</a> <font class="preprocessor">#define COMP_EQ         4       </font>
+<a name="l00668"></a><a class="code" href="group__comparison__types.html#a5">00668</a> <font class="preprocessor">#define COMP_NE         5       </font>
+<a name="l00669"></a><a class="code" href="group__comparison__types.html#a6">00669</a> <font class="preprocessor">#define COMP_CEQ        6       </font>
+<a name="l00670"></a><a class="code" href="group__comparison__types.html#a7">00670</a> <font class="preprocessor">#define COMP_CNE        7       </font>
+<a name="l00671"></a><a class="code" href="group__comparison__types.html#a8">00671</a> <font class="preprocessor">#define COMP_CXEQ       8       </font>
+<a name="l00672"></a><a class="code" href="group__comparison__types.html#a9">00672</a> <font class="preprocessor">#define COMP_CZEQ       9       </font>
+<a name="l00685"></a><a class="code" href="group__lexer__val__types.html#a0">00685</a> <font class="preprocessor">#define MAX_BIT_WIDTH           1024    </font>
+<a name="l00686"></a><a class="code" href="group__lexer__val__types.html#a1">00686</a> <font class="preprocessor">#define DECIMAL                 0       </font>
+<a name="l00687"></a><a class="code" href="group__lexer__val__types.html#a2">00687</a> <font class="preprocessor">#define BINARY                  1       </font>
+<a name="l00688"></a><a class="code" href="group__lexer__val__types.html#a3">00688</a> <font class="preprocessor">#define OCTAL                   2       </font>
+<a name="l00689"></a><a class="code" href="group__lexer__val__types.html#a4">00689</a> <font class="preprocessor">#define HEXIDECIMAL             3       </font>
+<a name="l00696"></a><a class="code" href="defines_8h.html#a170">00696</a> <font class="preprocessor">typedef enum {</font>
+00697 <font class="preprocessor"></font>  <a class="code" href="defines_8h.html#a170a168">FALSE</a>,   
+00698   <a class="code" href="defines_8h.html#a170a169">TRUE</a>     
+00699 } <font class="keywordtype">bool</font>;
 00700 
-<a name="l00701"></a><a class="code" href="defines_8h.html#a141">00701</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structvector__s.html">vector_s</a> vector;
-00702 
-00703 <font class="comment">//------------------------------------------------------------------------------</font>
-00708 <font class="comment"></font><font class="keyword">union </font><a class="code" href="unionexpr__stmt__u.html">expr_stmt_u</a>;
-00709 
-<a name="l00710"></a><a class="code" href="defines_8h.html#a142">00710</a> <font class="keyword">typedef</font> <font class="keyword">union </font><a class="code" href="unionexpr__stmt__u.html">expr_stmt_u</a> expr_stmt;
-00711 
-00719 <font class="keyword">struct </font><a class="code" href="structexpression__s.html">expression_s</a>;
-00720 <font class="keyword">struct </font><a class="code" href="structsignal__s.html">signal_s</a>;
-00721 
-<a name="l00722"></a><a class="code" href="defines_8h.html#a143">00722</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structexpression__s.html">expression_s</a> expression;
-<a name="l00723"></a><a class="code" href="defines_8h.html#a144">00723</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structsignal__s.html">signal_s</a>     signal;
-00724 
-<a name="l00725"></a><a class="code" href="structexpression__s.html">00725</a> <font class="keyword">struct </font><a class="code" href="structexpression__s.html">expression_s</a> {
-<a name="l00726"></a><a class="code" href="structexpression__s.html#m0">00726</a>   vector*     <a class="code" href="structexpression__s.html#m0">value</a>;       
-<a name="l00727"></a><a class="code" href="structexpression__s.html#m1">00727</a>   <a class="code" href="defines_8h.html#a139">nibble</a>      <a class="code" href="structexpression__s.html#m1">suppl</a>;       
-<a name="l00728"></a><a class="code" href="structexpression__s.html#m2">00728</a>   <font class="keywordtype">int</font>         <a class="code" href="structexpression__s.html#m2">id</a>;          
-<a name="l00729"></a><a class="code" href="structexpression__s.html#m3">00729</a>   <font class="keywordtype">int</font>         <a class="code" href="structexpression__s.html#m3">line</a>;        
-<a name="l00730"></a><a class="code" href="structexpression__s.html#m4">00730</a>   signal*     <a class="code" href="structexpression__s.html#m4">sig</a>;         
-<a name="l00731"></a><a class="code" href="structexpression__s.html#m5">00731</a>   expr_stmt*  <a class="code" href="structexpression__s.html#m5">parent</a>;      
-<a name="l00732"></a><a class="code" href="structexpression__s.html#m6">00732</a>   expression* <a class="code" href="structexpression__s.html#m6">right</a>;       
-<a name="l00733"></a><a class="code" href="structexpression__s.html#m7">00733</a>   expression* <a class="code" href="structexpression__s.html#m7">left</a>;        
-00734 };
-00735 
-00736 <font class="comment">//------------------------------------------------------------------------------</font>
-00749 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structstatement__s.html">statement_s</a>;
+00711 <font class="preprocessor">#if SIZEOF_INT == 4</font>
+<a name="l00712"></a><a class="code" href="defines_8h.html#a144">00712</a> <font class="preprocessor"></font><font class="keyword">typedef</font> <font class="keywordtype">unsigned</font> <font class="keywordtype">int</font> <a class="code" href="defines_8h.html#a144">nibble</a>;
+00713 <font class="preprocessor">#else</font>
+00714 <font class="preprocessor"></font><font class="preprocessor">#if SIZEOF_LONG == 4</font>
+00715 <font class="preprocessor"></font><font class="keyword">typedef</font> <font class="keywordtype">unsigned</font> <font class="keywordtype">long</font> <a class="code" href="defines_8h.html#a144">nibble</a>;
+00716 <font class="preprocessor">#endif</font>
+00717 <font class="preprocessor"></font><font class="preprocessor">#endif</font>
+00718 <font class="preprocessor"></font>
+00719 <font class="preprocessor">#if SIZEOF_SHORT == 2</font>
+<a name="l00720"></a><a class="code" href="defines_8h.html#a145">00720</a> <font class="preprocessor"></font><font class="keyword">typedef</font> <font class="keywordtype">unsigned</font> <font class="keywordtype">short</font> <a class="code" href="defines_8h.html#a145">control</a>;
+00721 <font class="preprocessor">#endif</font>
+00722 <font class="preprocessor"></font>
+00723 <font class="comment">//------------------------------------------------------------------------------</font>
+00729 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structstr__link__s.html">str_link_s</a>;
+00730 
+<a name="l00731"></a><a class="code" href="defines_8h.html#a146">00731</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structstr__link__s.html">str_link_s</a> str_link;
+00732 
+<a name="l00733"></a><a class="code" href="structstr__link__s.html">00733</a> <font class="keyword">struct </font><a class="code" href="structstr__link__s.html">str_link_s</a> {
+<a name="l00734"></a><a class="code" href="structstr__link__s.html#m0">00734</a>   <font class="keywordtype">char</font>*     <a class="code" href="structstr__link__s.html#m0">str</a>;     
+<a name="l00735"></a><a class="code" href="structstr__link__s.html#m1">00735</a>   <font class="keywordtype">char</font>*     <a class="code" href="structstr__link__s.html#m1">suppl</a>;   
+<a name="l00736"></a><a class="code" href="structstr__link__s.html#m2">00736</a>   str_link* <a class="code" href="structstr__link__s.html#m2">next</a>;    
+00737 };
+00738 
+00739 <font class="comment">//------------------------------------------------------------------------------</font>
+<a name="l00745"></a><a class="code" href="structvector__s.html">00745</a> <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structvector__s.html">vector_s</a> {
+<a name="l00746"></a><a class="code" href="structvector__s.html#m0">00746</a>   <font class="keywordtype">int</font>     <a class="code" href="structvector__s.html#m0">width</a>;     
+<a name="l00747"></a><a class="code" href="structvector__s.html#m1">00747</a>   <font class="keywordtype">int</font>     <a class="code" href="structvector__s.html#m1">lsb</a>;       
+<a name="l00748"></a><a class="code" href="structvector__s.html#m2">00748</a>   <a class="code" href="defines_8h.html#a144">nibble</a>* <a class="code" href="structvector__s.html#m2">value</a>;     
+00749 };
 00750 
-<a name="l00751"></a><a class="code" href="defines_8h.html#a145">00751</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structstatement__s.html">statement_s</a> statement;
+<a name="l00751"></a><a class="code" href="defines_8h.html#a147">00751</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structvector__s.html">vector_s</a> vector;
 00752 
-<a name="l00753"></a><a class="code" href="structstatement__s.html">00753</a> <font class="keyword">struct </font><a class="code" href="structstatement__s.html">statement_s</a> {
-<a name="l00754"></a><a class="code" href="structstatement__s.html#m0">00754</a>   expression* <a class="code" href="structstatement__s.html#m0">exp</a>;         
-<a name="l00755"></a><a class="code" href="structstatement__s.html#m1">00755</a>   statement*  <a class="code" href="structstatement__s.html#m1">next_true</a>;   
-<a name="l00756"></a><a class="code" href="structstatement__s.html#m2">00756</a>   statement*  <a class="code" href="structstatement__s.html#m2">next_false</a>;  
-00757 };
-00758  
-00759 <font class="comment">//------------------------------------------------------------------------------</font>
-00763 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structexp__link__s.html">exp_link_s</a>;
-00764 
-<a name="l00765"></a><a class="code" href="defines_8h.html#a146">00765</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structexp__link__s.html">exp_link_s</a> exp_link;
-00766 
-<a name="l00767"></a><a class="code" href="structexp__link__s.html">00767</a> <font class="keyword">struct </font><a class="code" href="structexp__link__s.html">exp_link_s</a> {
-<a name="l00768"></a><a class="code" href="structexp__link__s.html#m0">00768</a>   expression* <a class="code" href="structexp__link__s.html#m0">exp</a>;   
-<a name="l00769"></a><a class="code" href="structexp__link__s.html#m1">00769</a>   exp_link*   <a class="code" href="structexp__link__s.html#m1">next</a>;  
-00770 };
+00753 <font class="comment">//------------------------------------------------------------------------------</font>
+00758 <font class="comment"></font><font class="keyword">union </font><a class="code" href="unionexpr__stmt__u.html">expr_stmt_u</a>;
+00759 
+<a name="l00760"></a><a class="code" href="defines_8h.html#a148">00760</a> <font class="keyword">typedef</font> <font class="keyword">union </font><a class="code" href="unionexpr__stmt__u.html">expr_stmt_u</a> expr_stmt;
+00761 
+00769 <font class="keyword">struct </font><a class="code" href="structexpression__s.html">expression_s</a>;
+00770 <font class="keyword">struct </font><a class="code" href="structsignal__s.html">signal_s</a>;
 00771 
-00772 <font class="comment">//------------------------------------------------------------------------------</font>
-00776 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structstmt__link__s.html">stmt_link_s</a>;
-00777 
-<a name="l00778"></a><a class="code" href="defines_8h.html#a147">00778</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structstmt__link__s.html">stmt_link_s</a> stmt_link;
-00779 
-<a name="l00780"></a><a class="code" href="structstmt__link__s.html">00780</a> <font class="keyword">struct </font><a class="code" href="structstmt__link__s.html">stmt_link_s</a> {
-<a name="l00781"></a><a class="code" href="structstmt__link__s.html#m0">00781</a>   statement* <a class="code" href="structstmt__link__s.html#m0">stmt</a>;   
-<a name="l00782"></a><a class="code" href="structstmt__link__s.html#m1">00782</a>   stmt_link* <a class="code" href="structstmt__link__s.html#m1">next</a>;   
-00783 };
-00784 
-00785 <font class="comment">//------------------------------------------------------------------------------</font>
-00797 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structstmt__loop__link__s.html">stmt_loop_link_s</a>;
-00798 
-<a name="l00799"></a><a class="code" href="defines_8h.html#a148">00799</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structstmt__loop__link__s.html">stmt_loop_link_s</a> stmt_loop_link;
+<a name="l00772"></a><a class="code" href="defines_8h.html#a149">00772</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structexpression__s.html">expression_s</a> expression;
+<a name="l00773"></a><a class="code" href="defines_8h.html#a150">00773</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structsignal__s.html">signal_s</a>     signal;
+00774 
+<a name="l00775"></a><a class="code" href="structexpression__s.html">00775</a> <font class="keyword">struct </font><a class="code" href="structexpression__s.html">expression_s</a> {
+<a name="l00776"></a><a class="code" href="structexpression__s.html#m0">00776</a>   vector*     <a class="code" href="structexpression__s.html#m0">value</a>;       
+<a name="l00777"></a><a class="code" href="structexpression__s.html#m1">00777</a>   <a class="code" href="defines_8h.html#a145">control</a>     <a class="code" href="structexpression__s.html#m1">suppl</a>;       
+<a name="l00778"></a><a class="code" href="structexpression__s.html#m2">00778</a>   <font class="keywordtype">int</font>         <a class="code" href="structexpression__s.html#m2">id</a>;          
+<a name="l00779"></a><a class="code" href="structexpression__s.html#m3">00779</a>   <font class="keywordtype">int</font>         <a class="code" href="structexpression__s.html#m3">line</a>;        
+<a name="l00780"></a><a class="code" href="structexpression__s.html#m4">00780</a>   signal*     <a class="code" href="structexpression__s.html#m4">sig</a>;         
+<a name="l00781"></a><a class="code" href="structexpression__s.html#m5">00781</a>   expr_stmt*  <a class="code" href="structexpression__s.html#m5">parent</a>;      
+<a name="l00782"></a><a class="code" href="structexpression__s.html#m6">00782</a>   expression* <a class="code" href="structexpression__s.html#m6">right</a>;       
+<a name="l00783"></a><a class="code" href="structexpression__s.html#m7">00783</a>   expression* <a class="code" href="structexpression__s.html#m7">left</a>;        
+00784 };
+00785 
+00786 <font class="comment">//------------------------------------------------------------------------------</font>
+00799 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structstatement__s.html">statement_s</a>;
 00800 
-<a name="l00801"></a><a class="code" href="structstmt__loop__link__s.html">00801</a> <font class="keyword">struct </font><a class="code" href="structstmt__loop__link__s.html">stmt_loop_link_s</a> {
-<a name="l00802"></a><a class="code" href="structstmt__loop__link__s.html#m0">00802</a>   statement*      <a class="code" href="structstmt__loop__link__s.html#m0">stmt</a>;     <font class="comment">/* Pointer to last statement in loop  */</font>
-<a name="l00803"></a><a class="code" href="structstmt__loop__link__s.html#m1">00803</a>   <font class="keywordtype">int</font>             <a class="code" href="structstmt__loop__link__s.html#m1">id</a>;       <font class="comment">/* ID of next statement after last    */</font>
-<a name="l00804"></a><a class="code" href="structstmt__loop__link__s.html#m2">00804</a>   stmt_loop_link* <a class="code" href="structstmt__loop__link__s.html#m2">next</a>;     <font class="comment">/* Pointer to next statement in stack */</font>
-00805 };
-00806 
-00807 <font class="comment">//------------------------------------------------------------------------------</font>
-<a name="l00812"></a><a class="code" href="structsignal__s.html">00812</a> <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structsignal__s.html">signal_s</a> {
-<a name="l00813"></a><a class="code" href="structsignal__s.html#m0">00813</a>   <font class="keywordtype">char</font>*      <a class="code" href="structsignal__s.html#m0">name</a>;      
-<a name="l00814"></a><a class="code" href="structsignal__s.html#m1">00814</a>   vector*    <a class="code" href="structsignal__s.html#m1">value</a>;     
-<a name="l00815"></a><a class="code" href="structsignal__s.html#m2">00815</a>   exp_link*  <a class="code" href="structsignal__s.html#m2">exp_head</a>;  
-<a name="l00816"></a><a class="code" href="structsignal__s.html#m3">00816</a>   exp_link*  <a class="code" href="structsignal__s.html#m3">exp_tail</a>;  
-00817 };
-00818 
-00819 <font class="comment">//------------------------------------------------------------------------------</font>
-00823 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structsig__link__s.html">sig_link_s</a>;
+<a name="l00801"></a><a class="code" href="defines_8h.html#a151">00801</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structstatement__s.html">statement_s</a> statement;
+00802 
+<a name="l00803"></a><a class="code" href="structstatement__s.html">00803</a> <font class="keyword">struct </font><a class="code" href="structstatement__s.html">statement_s</a> {
+<a name="l00804"></a><a class="code" href="structstatement__s.html#m0">00804</a>   expression* <a class="code" href="structstatement__s.html#m0">exp</a>;         
+<a name="l00805"></a><a class="code" href="structstatement__s.html#m1">00805</a>   statement*  <a class="code" href="structstatement__s.html#m1">next_true</a>;   
+<a name="l00806"></a><a class="code" href="structstatement__s.html#m2">00806</a>   statement*  <a class="code" href="structstatement__s.html#m2">next_false</a>;  
+00807 };
+00808 
+00809 
+<a name="l00810"></a><a class="code" href="defines_8h.html#a152">00810</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structstmt__iter__s.html">stmt_iter_s</a> stmt_iter;
+00811 
+00812 <font class="comment">//------------------------------------------------------------------------------</font>
+00816 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structexp__link__s.html">exp_link_s</a>;
+00817 
+<a name="l00818"></a><a class="code" href="defines_8h.html#a153">00818</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structexp__link__s.html">exp_link_s</a> exp_link;
+00819 
+<a name="l00820"></a><a class="code" href="structexp__link__s.html">00820</a> <font class="keyword">struct </font><a class="code" href="structexp__link__s.html">exp_link_s</a> {
+<a name="l00821"></a><a class="code" href="structexp__link__s.html#m0">00821</a>   expression* <a class="code" href="structexp__link__s.html#m0">exp</a>;   
+<a name="l00822"></a><a class="code" href="structexp__link__s.html#m1">00822</a>   exp_link*   <a class="code" href="structexp__link__s.html#m1">next</a>;  
+00823 };
 00824 
-<a name="l00825"></a><a class="code" href="defines_8h.html#a149">00825</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structsig__link__s.html">sig_link_s</a> sig_link;
-00826 
-<a name="l00827"></a><a class="code" href="structsig__link__s.html">00827</a> <font class="keyword">struct </font><a class="code" href="structsig__link__s.html">sig_link_s</a> {
-<a name="l00828"></a><a class="code" href="structsig__link__s.html#m0">00828</a>   signal*   <a class="code" href="structsig__link__s.html#m0">sig</a>;   
-<a name="l00829"></a><a class="code" href="structsig__link__s.html#m1">00829</a>   sig_link* <a class="code" href="structsig__link__s.html#m1">next</a>;  
-00830 };
-00831 
-00832 <font class="comment">//------------------------------------------------------------------------------</font>
-00837 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structstatistic__s.html">statistic_s</a>;
-00838 
-<a name="l00839"></a><a class="code" href="defines_8h.html#a150">00839</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structstatistic__s.html">statistic_s</a> statistic;
-00840 
-<a name="l00841"></a><a class="code" href="structstatistic__s.html">00841</a> <font class="keyword">struct </font><a class="code" href="structstatistic__s.html">statistic_s</a> {
-<a name="l00842"></a><a class="code" href="structstatistic__s.html#m0">00842</a>   <font class="keywordtype">float</font> <a class="code" href="structstatistic__s.html#m0">line_total</a>;    
-<a name="l00843"></a><a class="code" href="structstatistic__s.html#m1">00843</a>   <font class="keywordtype">int</font>   <a class="code" href="structstatistic__s.html#m1">line_hit</a>;      
-<a name="l00844"></a><a class="code" href="structstatistic__s.html#m2">00844</a>   <font class="keywordtype">float</font> <a class="code" href="structstatistic__s.html#m2">tog_total</a>;     
-<a name="l00845"></a><a class="code" href="structstatistic__s.html#m3">00845</a>   <font class="keywordtype">int</font>   <a class="code" href="structstatistic__s.html#m3">tog01_hit</a>;     
-<a name="l00846"></a><a class="code" href="structstatistic__s.html#m4">00846</a>   <font class="keywordtype">int</font>   <a class="code" href="structstatistic__s.html#m4">tog10_hit</a>;     
-<a name="l00847"></a><a class="code" href="structstatistic__s.html#m5">00847</a>   <font class="keywordtype">float</font> <a class="code" href="structstatistic__s.html#m5">comb_total</a>;    
-<a name="l00848"></a><a class="code" href="structstatistic__s.html#m6">00848</a>   <font class="keywordtype">int</font>   <a class="code" href="structstatistic__s.html#m6">comb_hit</a>;      
-00849 };
-00850 
-00851 <font class="comment">//------------------------------------------------------------------------------</font>
-00855 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structmod__parm__s.html">mod_parm_s</a>;
-00856 
-<a name="l00857"></a><a class="code" href="defines_8h.html#a151">00857</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structmod__parm__s.html">mod_parm_s</a> mod_parm;
-00858 
-<a name="l00859"></a><a class="code" href="structmod__parm__s.html">00859</a> <font class="keyword">struct </font><a class="code" href="structmod__parm__s.html">mod_parm_s</a> {
-<a name="l00860"></a><a class="code" href="structmod__parm__s.html#m0">00860</a>   <font class="keywordtype">char</font>*        <a class="code" href="structmod__parm__s.html#m0">name</a>;     
-<a name="l00861"></a><a class="code" href="structmod__parm__s.html#m1">00861</a>   expression*  <a class="code" href="structmod__parm__s.html#m1">expr</a>;     
-<a name="l00862"></a><a class="code" href="structmod__parm__s.html#m2">00862</a>   <font class="keywordtype">unsigned</font> <font class="keywordtype">int</font> <a class="code" href="structmod__parm__s.html#m2">suppl</a>;    
-<a name="l00863"></a><a class="code" href="structmod__parm__s.html#m3">00863</a>   exp_link*    <a class="code" href="structmod__parm__s.html#m3">exp_head</a>; 
-<a name="l00864"></a><a class="code" href="structmod__parm__s.html#m4">00864</a>   exp_link*    <a class="code" href="structmod__parm__s.html#m4">exp_tail</a>; 
-<a name="l00865"></a><a class="code" href="structmod__parm__s.html#m5">00865</a>   signal*      <a class="code" href="structmod__parm__s.html#m5">sig</a>;      
-<a name="l00866"></a><a class="code" href="structmod__parm__s.html#m6">00866</a>   mod_parm*    <a class="code" href="structmod__parm__s.html#m6">next</a>;     
+00825 <font class="comment">//------------------------------------------------------------------------------</font>
+00829 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structstmt__link__s.html">stmt_link_s</a>;
+00830 
+<a name="l00831"></a><a class="code" href="defines_8h.html#a154">00831</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structstmt__link__s.html">stmt_link_s</a> stmt_link;
+00832 
+<a name="l00833"></a><a class="code" href="structstmt__link__s.html">00833</a> <font class="keyword">struct </font><a class="code" href="structstmt__link__s.html">stmt_link_s</a> {
+<a name="l00834"></a><a class="code" href="structstmt__link__s.html#m0">00834</a>   statement* <a class="code" href="structstmt__link__s.html#m0">stmt</a>;   
+<a name="l00835"></a><a class="code" href="structstmt__link__s.html#m1">00835</a>   stmt_link* <a class="code" href="structstmt__link__s.html#m1">ptr</a>;   
+00836 };
+00837 
+00838 <font class="comment">//------------------------------------------------------------------------------</font>
+<a name="l00842"></a><a class="code" href="structstmt__iter__s.html">00842</a> <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structstmt__iter__s.html">stmt_iter_s</a> {
+<a name="l00843"></a><a class="code" href="structstmt__iter__s.html#m0">00843</a>   stmt_link* <a class="code" href="structstmt__iter__s.html#m0">curr</a>;   
+<a name="l00844"></a><a class="code" href="structstmt__iter__s.html#m1">00844</a>   stmt_link* <a class="code" href="structstmt__iter__s.html#m1">last</a>;   
+00845 };
+00846 
+00847 <font class="comment">//------------------------------------------------------------------------------</font>
+00859 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structstmt__loop__link__s.html">stmt_loop_link_s</a>;
+00860 
+<a name="l00861"></a><a class="code" href="defines_8h.html#a155">00861</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structstmt__loop__link__s.html">stmt_loop_link_s</a> stmt_loop_link;
+00862 
+<a name="l00863"></a><a class="code" href="structstmt__loop__link__s.html">00863</a> <font class="keyword">struct </font><a class="code" href="structstmt__loop__link__s.html">stmt_loop_link_s</a> {
+<a name="l00864"></a><a class="code" href="structstmt__loop__link__s.html#m0">00864</a>   statement*      <a class="code" href="structstmt__loop__link__s.html#m0">stmt</a>;     <font class="comment">/* Pointer to last statement in loop  */</font>
+<a name="l00865"></a><a class="code" href="structstmt__loop__link__s.html#m1">00865</a>   <font class="keywordtype">int</font>             <a class="code" href="structstmt__loop__link__s.html#m1">id</a>;       <font class="comment">/* ID of next statement after last    */</font>
+<a name="l00866"></a><a class="code" href="structstmt__loop__link__s.html#m2">00866</a>   stmt_loop_link* <a class="code" href="structstmt__loop__link__s.html#m2">next</a>;     <font class="comment">/* Pointer to next statement in stack */</font>
 00867 };
 00868 
 00869 <font class="comment">//------------------------------------------------------------------------------</font>
-00873 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structinst__parm__s.html">inst_parm_s</a>;
-00874 
-<a name="l00875"></a><a class="code" href="defines_8h.html#a152">00875</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structinst__parm__s.html">inst_parm_s</a> inst_parm;
-00876 
-<a name="l00877"></a><a class="code" href="structinst__parm__s.html">00877</a> <font class="keyword">struct </font><a class="code" href="structinst__parm__s.html">inst_parm_s</a> {
-<a name="l00878"></a><a class="code" href="structinst__parm__s.html#m0">00878</a>   <font class="keywordtype">char</font>*        <a class="code" href="structinst__parm__s.html#m0">name</a>;     
-<a name="l00879"></a><a class="code" href="structinst__parm__s.html#m1">00879</a>   vector*      <a class="code" href="structinst__parm__s.html#m1">value</a>;    
-<a name="l00880"></a><a class="code" href="structinst__parm__s.html#m2">00880</a>   mod_parm*    <a class="code" href="structinst__parm__s.html#m2">mparm</a>;    
-<a name="l00881"></a><a class="code" href="structinst__parm__s.html#m3">00881</a>   inst_parm*   <a class="code" href="structinst__parm__s.html#m3">next</a>;     
-00882 };
-00883 
-00884 <font class="comment">//------------------------------------------------------------------------------</font>
-<a name="l00889"></a><a class="code" href="structmodule__s.html">00889</a> <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structmodule__s.html">module_s</a> {
-<a name="l00890"></a><a class="code" href="structmodule__s.html#m0">00890</a>   <font class="keywordtype">char</font>*      <a class="code" href="structmodule__s.html#m0">name</a>;       
-<a name="l00891"></a><a class="code" href="structmodule__s.html#m1">00891</a>   <font class="keywordtype">char</font>*      <a class="code" href="structmodule__s.html#m1">filename</a>;   
-<a name="l00892"></a><a class="code" href="structmodule__s.html#m2">00892</a>   statistic* <a class="code" href="structmodule__s.html#m2">stat</a>;       
-<a name="l00893"></a><a class="code" href="structmodule__s.html#m3">00893</a>   sig_link*  <a class="code" href="structmodule__s.html#m3">sig_head</a>;   
-<a name="l00894"></a><a class="code" href="structmodule__s.html#m4">00894</a>   sig_link*  <a class="code" href="structmodule__s.html#m4">sig_tail</a>;   
-<a name="l00895"></a><a class="code" href="structmodule__s.html#m5">00895</a>   exp_link*  <a class="code" href="structmodule__s.html#m5">exp_head</a>;   
-<a name="l00896"></a><a class="code" href="structmodule__s.html#m6">00896</a>   exp_link*  <a class="code" href="structmodule__s.html#m6">exp_tail</a>;   
-<a name="l00897"></a><a class="code" href="structmodule__s.html#m7">00897</a>   stmt_link* <a class="code" href="structmodule__s.html#m7">stmt_head</a>;  
-<a name="l00898"></a><a class="code" href="structmodule__s.html#m8">00898</a>   stmt_link* <a class="code" href="structmodule__s.html#m8">stmt_tail</a>;  
-<a name="l00899"></a><a class="code" href="structmodule__s.html#m9">00899</a>   mod_parm*  <a class="code" href="structmodule__s.html#m9">param_head</a>; 
-<a name="l00900"></a><a class="code" href="structmodule__s.html#m10">00900</a>   mod_parm*  <a class="code" href="structmodule__s.html#m10">param_tail</a>; 
-00901 };
+<a name="l00874"></a><a class="code" href="structsignal__s.html">00874</a> <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structsignal__s.html">signal_s</a> {
+<a name="l00875"></a><a class="code" href="structsignal__s.html#m0">00875</a>   <font class="keywordtype">char</font>*      <a class="code" href="structsignal__s.html#m0">name</a>;      
+<a name="l00876"></a><a class="code" href="structsignal__s.html#m1">00876</a>   vector*    <a class="code" href="structsignal__s.html#m1">value</a>;     
+<a name="l00877"></a><a class="code" href="structsignal__s.html#m2">00877</a>   exp_link*  <a class="code" href="structsignal__s.html#m2">exp_head</a>;  
+<a name="l00878"></a><a class="code" href="structsignal__s.html#m3">00878</a>   exp_link*  <a class="code" href="structsignal__s.html#m3">exp_tail</a>;  
+00879 };
+00880 
+00881 <font class="comment">//------------------------------------------------------------------------------</font>
+00885 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structsig__link__s.html">sig_link_s</a>;
+00886 
+<a name="l00887"></a><a class="code" href="defines_8h.html#a156">00887</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structsig__link__s.html">sig_link_s</a> sig_link;
+00888 
+<a name="l00889"></a><a class="code" href="structsig__link__s.html">00889</a> <font class="keyword">struct </font><a class="code" href="structsig__link__s.html">sig_link_s</a> {
+<a name="l00890"></a><a class="code" href="structsig__link__s.html#m0">00890</a>   signal*   <a class="code" href="structsig__link__s.html#m0">sig</a>;   
+<a name="l00891"></a><a class="code" href="structsig__link__s.html#m1">00891</a>   sig_link* <a class="code" href="structsig__link__s.html#m1">next</a>;  
+00892 };
+00893 
+00894 <font class="comment">//------------------------------------------------------------------------------</font>
+00899 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structstatistic__s.html">statistic_s</a>;
+00900 
+<a name="l00901"></a><a class="code" href="defines_8h.html#a157">00901</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structstatistic__s.html">statistic_s</a> statistic;
 00902 
-<a name="l00903"></a><a class="code" href="defines_8h.html#a153">00903</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structmodule__s.html">module_s</a> module;
-00904 
-00905 <font class="comment">//------------------------------------------------------------------------------</font>
-00909 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structmod__link__s.html">mod_link_s</a>;
-00910         
-<a name="l00911"></a><a class="code" href="defines_8h.html#a154">00911</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structmod__link__s.html">mod_link_s</a> mod_link;
-00912         
-<a name="l00913"></a><a class="code" href="structmod__link__s.html">00913</a> <font class="keyword">struct </font><a class="code" href="structmod__link__s.html">mod_link_s</a> {
-<a name="l00914"></a><a class="code" href="structmod__link__s.html#m0">00914</a>   module*    <a class="code" href="structmod__link__s.html#m0">mod</a>;   
-<a name="l00915"></a><a class="code" href="structmod__link__s.html#m1">00915</a>   mod_link* <a class="code" href="structmod__link__s.html#m1">next</a>;   
-00916 };
-00917 
-00918 <font class="comment">//------------------------------------------------------------------------------</font>
-00922 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structsymtable__s.html">symtable_s</a>;
-00923 
-<a name="l00924"></a><a class="code" href="defines_8h.html#a155">00924</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structsymtable__s.html">symtable_s</a> symtable;
-00925 
-<a name="l00926"></a><a class="code" href="structsymtable__s.html">00926</a> <font class="keyword">struct </font><a class="code" href="structsymtable__s.html">symtable_s</a> {
-<a name="l00927"></a><a class="code" href="structsymtable__s.html#m0">00927</a>   <font class="keywordtype">char</font>*     <a class="code" href="structsymtable__s.html#m0">sym</a>;          
-<a name="l00928"></a><a class="code" href="structsymtable__s.html#m1">00928</a>   signal*   <a class="code" href="structsymtable__s.html#m1">sig</a>;          
-<a name="l00929"></a><a class="code" href="structsymtable__s.html#m2">00929</a>   <font class="keywordtype">char</font>*     <a class="code" href="structsymtable__s.html#m2">value</a>;        
-<a name="l00930"></a><a class="code" href="structsymtable__s.html#m3">00930</a>   symtable* <a class="code" href="structsymtable__s.html#m3">right</a>;        
-<a name="l00931"></a><a class="code" href="structsymtable__s.html#m4">00931</a>   symtable* <a class="code" href="structsymtable__s.html#m4">left</a>;         
-00932 };
-00933 
-00934 <font class="comment">//------------------------------------------------------------------------------</font>
-<a name="l00938"></a><a class="code" href="structstatic__expr__s.html">00938</a> <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structstatic__expr__s.html">static_expr_s</a> {
-<a name="l00939"></a><a class="code" href="structstatic__expr__s.html#m0">00939</a>   expression* <a class="code" href="structstatic__expr__s.html#m0">exp</a>;        
-<a name="l00940"></a><a class="code" href="structstatic__expr__s.html#m1">00940</a>   <font class="keywordtype">int</font>         <a class="code" href="structstatic__expr__s.html#m1">num</a>;        
-00941 };
-00942 
-<a name="l00943"></a><a class="code" href="defines_8h.html#a156">00943</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structstatic__expr__s.html">static_expr_s</a> static_expr;
-00944 
-00945 <font class="comment">//------------------------------------------------------------------------------</font>
-<a name="l00949"></a><a class="code" href="structvector__width__s.html">00949</a> <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structvector__width__s.html">vector_width_s</a> {
-<a name="l00950"></a><a class="code" href="structvector__width__s.html#m0">00950</a>   static_expr* <a class="code" href="structvector__width__s.html#m0">left</a>;      
-<a name="l00951"></a><a class="code" href="structvector__width__s.html#m1">00951</a>   static_expr* <a class="code" href="structvector__width__s.html#m1">right</a>;     
-00952 };
-00953 
-<a name="l00954"></a><a class="code" href="defines_8h.html#a157">00954</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structvector__width__s.html">vector_width_s</a> vector_width;
-00955 
-00956 <font class="comment">//------------------------------------------------------------------------------</font>
-00960 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structsig__exp__bind__s.html">sig_exp_bind_s</a>;
-00961 
-<a name="l00962"></a><a class="code" href="defines_8h.html#a158">00962</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structsig__exp__bind__s.html">sig_exp_bind_s</a> sig_exp_bind;
-00963 
-<a name="l00964"></a><a class="code" href="structsig__exp__bind__s.html">00964</a> <font class="keyword">struct </font><a class="code" href="structsig__exp__bind__s.html">sig_exp_bind_s</a> {
-<a name="l00965"></a><a class="code" href="structsig__exp__bind__s.html#m0">00965</a>   <font class="keywordtype">char</font>*         <a class="code" href="structsig__exp__bind__s.html#m0">sig_name</a>;  
-<a name="l00966"></a><a class="code" href="structsig__exp__bind__s.html#m1">00966</a>   expression*   <a class="code" href="structsig__exp__bind__s.html#m1">exp</a>;       
-<a name="l00967"></a><a class="code" href="structsig__exp__bind__s.html#m2">00967</a>   module*       <a class="code" href="structsig__exp__bind__s.html#m2">mod</a>;       
-<a name="l00968"></a><a class="code" href="structsig__exp__bind__s.html#m3">00968</a>   sig_exp_bind* <a class="code" href="structsig__exp__bind__s.html#m3">next</a>;      
-00969 };
-00970 
-00971 <font class="comment">//------------------------------------------------------------------------------</font>
-00976 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structcase__stmt__s.html">case_stmt_s</a>;
-00977 
-<a name="l00978"></a><a class="code" href="defines_8h.html#a159">00978</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structcase__stmt__s.html">case_stmt_s</a> case_statement;
+<a name="l00903"></a><a class="code" href="structstatistic__s.html">00903</a> <font class="keyword">struct </font><a class="code" href="structstatistic__s.html">statistic_s</a> {
+<a name="l00904"></a><a class="code" href="structstatistic__s.html#m0">00904</a>   <font class="keywordtype">float</font> <a class="code" href="structstatistic__s.html#m0">line_total</a>;    
+<a name="l00905"></a><a class="code" href="structstatistic__s.html#m1">00905</a>   <font class="keywordtype">int</font>   <a class="code" href="structstatistic__s.html#m1">line_hit</a>;      
+<a name="l00906"></a><a class="code" href="structstatistic__s.html#m2">00906</a>   <font class="keywordtype">float</font> <a class="code" href="structstatistic__s.html#m2">tog_total</a>;     
+<a name="l00907"></a><a class="code" href="structstatistic__s.html#m3">00907</a>   <font class="keywordtype">int</font>   <a class="code" href="structstatistic__s.html#m3">tog01_hit</a>;     
+<a name="l00908"></a><a class="code" href="structstatistic__s.html#m4">00908</a>   <font class="keywordtype">int</font>   <a class="code" href="structstatistic__s.html#m4">tog10_hit</a>;     
+<a name="l00909"></a><a class="code" href="structstatistic__s.html#m5">00909</a>   <font class="keywordtype">float</font> <a class="code" href="structstatistic__s.html#m5">comb_total</a>;    
+<a name="l00910"></a><a class="code" href="structstatistic__s.html#m6">00910</a>   <font class="keywordtype">int</font>   <a class="code" href="structstatistic__s.html#m6">comb_hit</a>;      
+00911 };
+00912 
+00913 <font class="comment">//------------------------------------------------------------------------------</font>
+00917 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structmod__parm__s.html">mod_parm_s</a>;
+00918 
+<a name="l00919"></a><a class="code" href="defines_8h.html#a158">00919</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structmod__parm__s.html">mod_parm_s</a> mod_parm;
+00920 
+<a name="l00921"></a><a class="code" href="structmod__parm__s.html">00921</a> <font class="keyword">struct </font><a class="code" href="structmod__parm__s.html">mod_parm_s</a> {
+<a name="l00922"></a><a class="code" href="structmod__parm__s.html#m0">00922</a>   <font class="keywordtype">char</font>*        <a class="code" href="structmod__parm__s.html#m0">name</a>;     
+<a name="l00923"></a><a class="code" href="structmod__parm__s.html#m1">00923</a>   expression*  <a class="code" href="structmod__parm__s.html#m1">expr</a>;     
+<a name="l00924"></a><a class="code" href="structmod__parm__s.html#m2">00924</a>   <font class="keywordtype">unsigned</font> <font class="keywordtype">int</font> <a class="code" href="structmod__parm__s.html#m2">suppl</a>;    
+<a name="l00925"></a><a class="code" href="structmod__parm__s.html#m3">00925</a>   exp_link*    <a class="code" href="structmod__parm__s.html#m3">exp_head</a>; 
+<a name="l00926"></a><a class="code" href="structmod__parm__s.html#m4">00926</a>   exp_link*    <a class="code" href="structmod__parm__s.html#m4">exp_tail</a>; 
+<a name="l00927"></a><a class="code" href="structmod__parm__s.html#m5">00927</a>   signal*      <a class="code" href="structmod__parm__s.html#m5">sig</a>;      
+<a name="l00928"></a><a class="code" href="structmod__parm__s.html#m6">00928</a>   mod_parm*    <a class="code" href="structmod__parm__s.html#m6">next</a>;     
+00929 };
+00930 
+00931 <font class="comment">//------------------------------------------------------------------------------</font>
+00935 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structinst__parm__s.html">inst_parm_s</a>;
+00936 
+<a name="l00937"></a><a class="code" href="defines_8h.html#a159">00937</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structinst__parm__s.html">inst_parm_s</a> inst_parm;
+00938 
+<a name="l00939"></a><a class="code" href="structinst__parm__s.html">00939</a> <font class="keyword">struct </font><a class="code" href="structinst__parm__s.html">inst_parm_s</a> {
+<a name="l00940"></a><a class="code" href="structinst__parm__s.html#m0">00940</a>   <font class="keywordtype">char</font>*        <a class="code" href="structinst__parm__s.html#m0">name</a>;     
+<a name="l00941"></a><a class="code" href="structinst__parm__s.html#m1">00941</a>   vector*      <a class="code" href="structinst__parm__s.html#m1">value</a>;    
+<a name="l00942"></a><a class="code" href="structinst__parm__s.html#m2">00942</a>   mod_parm*    <a class="code" href="structinst__parm__s.html#m2">mparm</a>;    
+<a name="l00943"></a><a class="code" href="structinst__parm__s.html#m3">00943</a>   inst_parm*   <a class="code" href="structinst__parm__s.html#m3">next</a>;     
+00944 };
+00945 
+00946 <font class="comment">//------------------------------------------------------------------------------</font>
+<a name="l00951"></a><a class="code" href="structmodule__s.html">00951</a> <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structmodule__s.html">module_s</a> {
+<a name="l00952"></a><a class="code" href="structmodule__s.html#m0">00952</a>   <font class="keywordtype">char</font>*      <a class="code" href="structmodule__s.html#m0">name</a>;       
+<a name="l00953"></a><a class="code" href="structmodule__s.html#m1">00953</a>   <font class="keywordtype">char</font>*      <a class="code" href="structmodule__s.html#m1">filename</a>;   
+<a name="l00954"></a><a class="code" href="structmodule__s.html#m2">00954</a>   statistic* <a class="code" href="structmodule__s.html#m2">stat</a>;       
+<a name="l00955"></a><a class="code" href="structmodule__s.html#m3">00955</a>   sig_link*  <a class="code" href="structmodule__s.html#m3">sig_head</a>;   
+<a name="l00956"></a><a class="code" href="structmodule__s.html#m4">00956</a>   sig_link*  <a class="code" href="structmodule__s.html#m4">sig_tail</a>;   
+<a name="l00957"></a><a class="code" href="structmodule__s.html#m5">00957</a>   exp_link*  <a class="code" href="structmodule__s.html#m5">exp_head</a>;   
+<a name="l00958"></a><a class="code" href="structmodule__s.html#m6">00958</a>   exp_link*  <a class="code" href="structmodule__s.html#m6">exp_tail</a>;   
+<a name="l00959"></a><a class="code" href="structmodule__s.html#m7">00959</a>   stmt_link* <a class="code" href="structmodule__s.html#m7">stmt_head</a>;  
+<a name="l00960"></a><a class="code" href="structmodule__s.html#m8">00960</a>   stmt_link* <a class="code" href="structmodule__s.html#m8">stmt_tail</a>;  
+<a name="l00961"></a><a class="code" href="structmodule__s.html#m9">00961</a>   mod_parm*  <a class="code" href="structmodule__s.html#m9">param_head</a>; 
+<a name="l00962"></a><a class="code" href="structmodule__s.html#m10">00962</a>   mod_parm*  <a class="code" href="structmodule__s.html#m10">param_tail</a>; 
+00963 };
+00964 
+<a name="l00965"></a><a class="code" href="defines_8h.html#a160">00965</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structmodule__s.html">module_s</a> module;
+00966 
+00967 <font class="comment">//------------------------------------------------------------------------------</font>
+00971 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structmod__link__s.html">mod_link_s</a>;
+00972         
+<a name="l00973"></a><a class="code" href="defines_8h.html#a161">00973</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structmod__link__s.html">mod_link_s</a> mod_link;
+00974         
+<a name="l00975"></a><a class="code" href="structmod__link__s.html">00975</a> <font class="keyword">struct </font><a class="code" href="structmod__link__s.html">mod_link_s</a> {
+<a name="l00976"></a><a class="code" href="structmod__link__s.html#m0">00976</a>   module*    <a class="code" href="structmod__link__s.html#m0">mod</a>;   
+<a name="l00977"></a><a class="code" href="structmod__link__s.html#m1">00977</a>   mod_link* <a class="code" href="structmod__link__s.html#m1">next</a>;   
+00978 };
 00979 
-<a name="l00980"></a><a class="code" href="structcase__stmt__s.html">00980</a> <font class="keyword">struct </font><a class="code" href="structcase__stmt__s.html">case_stmt_s</a> {
-<a name="l00981"></a><a class="code" href="structcase__stmt__s.html#m0">00981</a>   expression*     <a class="code" href="structcase__stmt__s.html#m0">expr</a>;    
-<a name="l00982"></a><a class="code" href="structcase__stmt__s.html#m1">00982</a>   statement*      <a class="code" href="structcase__stmt__s.html#m1">stmt</a>;    
-<a name="l00983"></a><a class="code" href="structcase__stmt__s.html#m2">00983</a>   <font class="keywordtype">int</font>             <a class="code" href="structcase__stmt__s.html#m2">line</a>;    
-<a name="l00984"></a><a class="code" href="structcase__stmt__s.html#m3">00984</a>   case_statement* <a class="code" href="structcase__stmt__s.html#m3">prev</a>;    
-00985 };
-00986 
-00987 <font class="comment">//------------------------------------------------------------------------------</font>
-00991 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structmod__inst__s.html">mod_inst_s</a>;
-00992 
-<a name="l00993"></a><a class="code" href="defines_8h.html#a160">00993</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structmod__inst__s.html">mod_inst_s</a> mod_inst;
-00994 
-<a name="l00995"></a><a class="code" href="structmod__inst__s.html">00995</a> <font class="keyword">struct </font><a class="code" href="structmod__inst__s.html">mod_inst_s</a> {
-<a name="l00996"></a><a class="code" href="structmod__inst__s.html#m0">00996</a>   <font class="keywordtype">char</font>*      <a class="code" href="structmod__inst__s.html#m0">name</a>;          
-<a name="l00997"></a><a class="code" href="structmod__inst__s.html#m1">00997</a>   module*    <a class="code" href="structmod__inst__s.html#m1">mod</a>;           
-<a name="l00998"></a><a class="code" href="structmod__inst__s.html#m2">00998</a>   statistic* <a class="code" href="structmod__inst__s.html#m2">stat</a>;          
-<a name="l00999"></a><a class="code" href="structmod__inst__s.html#m3">00999</a>   inst_parm* <a class="code" href="structmod__inst__s.html#m3">param_head</a>;    
-<a name="l01000"></a><a class="code" href="structmod__inst__s.html#m4">01000</a>   inst_parm* <a class="code" href="structmod__inst__s.html#m4">param_tail</a>;    
-<a name="l01001"></a><a class="code" href="structmod__inst__s.html#m5">01001</a>   mod_inst*  <a class="code" href="structmod__inst__s.html#m5">parent</a>;        
-<a name="l01002"></a><a class="code" href="structmod__inst__s.html#m6">01002</a>   mod_inst*  <a class="code" href="structmod__inst__s.html#m6">child_head</a>;    
-<a name="l01003"></a><a class="code" href="structmod__inst__s.html#m7">01003</a>   mod_inst*  <a class="code" href="structmod__inst__s.html#m7">child_tail</a>;    
-<a name="l01004"></a><a class="code" href="structmod__inst__s.html#m8">01004</a>   mod_inst*  <a class="code" href="structmod__inst__s.html#m8">next</a>;          
-01005 };
+00980 <font class="comment">//------------------------------------------------------------------------------</font>
+00984 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structsymtable__s.html">symtable_s</a>;
+00985 
+<a name="l00986"></a><a class="code" href="defines_8h.html#a162">00986</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structsymtable__s.html">symtable_s</a> symtable;
+00987 
+<a name="l00988"></a><a class="code" href="structsymtable__s.html">00988</a> <font class="keyword">struct </font><a class="code" href="structsymtable__s.html">symtable_s</a> {
+<a name="l00989"></a><a class="code" href="structsymtable__s.html#m0">00989</a>   <font class="keywordtype">char</font>*     <a class="code" href="structsymtable__s.html#m0">sym</a>;          
+<a name="l00990"></a><a class="code" href="structsymtable__s.html#m1">00990</a>   signal*   <a class="code" href="structsymtable__s.html#m1">sig</a>;          
+<a name="l00991"></a><a class="code" href="structsymtable__s.html#m2">00991</a>   <font class="keywordtype">char</font>*     <a class="code" href="structsymtable__s.html#m2">value</a>;        
+<a name="l00992"></a><a class="code" href="structsymtable__s.html#m3">00992</a>   symtable* <a class="code" href="structsymtable__s.html#m3">right</a>;        
+<a name="l00993"></a><a class="code" href="structsymtable__s.html#m4">00993</a>   symtable* <a class="code" href="structsymtable__s.html#m4">left</a>;         
+00994 };
+00995 
+00996 <font class="comment">//------------------------------------------------------------------------------</font>
+<a name="l01000"></a><a class="code" href="structstatic__expr__s.html">01000</a> <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structstatic__expr__s.html">static_expr_s</a> {
+<a name="l01001"></a><a class="code" href="structstatic__expr__s.html#m0">01001</a>   expression* <a class="code" href="structstatic__expr__s.html#m0">exp</a>;        
+<a name="l01002"></a><a class="code" href="structstatic__expr__s.html#m1">01002</a>   <font class="keywordtype">int</font>         <a class="code" href="structstatic__expr__s.html#m1">num</a>;        
+01003 };
+01004 
+<a name="l01005"></a><a class="code" href="defines_8h.html#a163">01005</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structstatic__expr__s.html">static_expr_s</a> static_expr;
 01006 
-01007 <font class="comment">//-------------------------------------------------------------------------------</font>
-01008 
-<a name="l01009"></a><a class="code" href="unionexpr__stmt__u.html">01009</a> <font class="keyword">union </font><a class="code" href="unionexpr__stmt__u.html">expr_stmt_u</a> {
-<a name="l01010"></a><a class="code" href="unionexpr__stmt__u.html#m0">01010</a>   expression* <a class="code" href="unionexpr__stmt__u.html#m0">expr</a>;         
-<a name="l01011"></a><a class="code" href="unionexpr__stmt__u.html#m1">01011</a>   statement*  <a class="code" href="unionexpr__stmt__u.html#m1">stmt</a>;         
-01012 };
-01013 
-01014 
-01015 <font class="comment">/* $Log$</font>
-01016 <font class="comment">/* Revision 1.49  2002/10/11 05:23:21  phase1geo</font>
-01017 <font class="comment">/* Removing local user message allocation and replacing with global to help</font>
-01018 <font class="comment">/* with memory efficiency.</font>
-01019 <font class="comment">/*</font>
-01020 <font class="comment">/* Revision 1.48  2002/10/11 04:24:01  phase1geo</font>
-01021 <font class="comment">/* This checkin represents some major code renovation in the score command to</font>
-01022 <font class="comment">/* fully accommodate parameter support.  All parameter support is in at this</font>
-01023 <font class="comment">/* point and the most commonly used parameter usages have been verified.  Some</font>
-01024 <font class="comment">/* bugs were fixed in handling default values of constants and expression tree</font>
-01025 <font class="comment">/* resizing has been optimized to its fullest.  Full regression has been</font>
-01026 <font class="comment">/* updated and passes.  Adding new diagnostics to test suite.  Fixed a few</font>
-01027 <font class="comment">/* problems in report outputting.</font>
-01028 <font class="comment">/*</font>
-01029 <font class="comment">/* Revision 1.47  2002/09/26 22:58:46  phase1geo</font>
-01030 <font class="comment">/* Fixing syntax error.</font>
-01031 <font class="comment">/*</font>
-01032 <font class="comment">/* Revision 1.46  2002/09/25 02:51:44  phase1geo</font>
-01033 <font class="comment">/* Removing need of vector nibble array allocation and deallocation during</font>
-01034 <font class="comment">/* expression resizing for efficiency and bug reduction.  Other enhancements</font>
-01035 <font class="comment">/* for parameter support.  Parameter stuff still not quite complete.</font>
-01036 <font class="comment">/*</font>
-01037 <font class="comment">/* Revision 1.45  2002/09/21 07:03:28  phase1geo</font>
-01038 <font class="comment">/* Attached all parameter functions into db.c.  Just need to finish getting</font>
-01039 <font class="comment">/* parser to correctly add override parameters.  Once this is complete, phase 3</font>
-01040 <font class="comment">/* can start and will include regenerating expressions and signals before</font>
-01041 <font class="comment">/* getting output to CDD file.</font>
-01042 <font class="comment">/*</font>
-01043 <font class="comment">/* Revision 1.44  2002/09/21 04:11:32  phase1geo</font>
-01044 <font class="comment">/* Completed phase 1 for adding in parameter support.  Main code is written</font>
-01045 <font class="comment">/* that will create an instance parameter from a given module parameter in</font>
-01046 <font class="comment">/* its entirety.  The next step will be to complete the module parameter</font>
-01047 <font class="comment">/* creation code all the way to the parser.  Regression still passes and</font>
-01048 <font class="comment">/* everything compiles at this point.</font>
-01049 <font class="comment">/*</font>
-01050 <font class="comment">/* Revision 1.43  2002/09/19 05:25:19  phase1geo</font>
-01051 <font class="comment">/* Fixing incorrect simulation of static values and fixing reports generated</font>
-01052 <font class="comment">/* from these static expressions.  Also includes some modifications for parameters</font>
-01053 <font class="comment">/* though these changes are not useful at this point.</font>
-01054 <font class="comment">/*</font>
-01055 <font class="comment">/* Revision 1.42  2002/09/13 05:12:25  phase1geo</font>
-01056 <font class="comment">/* Adding final touches to -d option to report.  Adding documentation and</font>
-01057 <font class="comment">/* updating development documentation to stay in sync.</font>
-01058 <font class="comment">/*</font>
-01059 <font class="comment">/* Revision 1.41  2002/09/06 03:05:28  phase1geo</font>
-01060 <font class="comment">/* Some ideas about handling parameters have been added to these files.  Added</font>
-01061 <font class="comment">/* "Special Thanks" section in User's Guide for acknowledgements to people</font>
-01062 <font class="comment">/* helping in project.</font>
-01063 <font class="comment">/*</font>
-01064 <font class="comment">/* Revision 1.40  2002/08/27 11:53:16  phase1geo</font>
-01065 <font class="comment">/* Adding more code for parameter support.  Moving parameters from being a</font>
-01066 <font class="comment">/* part of modules to being a part of instances and calling the expression</font>
-01067 <font class="comment">/* operation function in the parameter add functions.</font>
-01068 <font class="comment">/*</font>
-01069 <font class="comment">/* Revision 1.39  2002/08/26 12:57:03  phase1geo</font>
-01070 <font class="comment">/* In the middle of adding parameter support.  Intermediate checkin but does</font>
-01071 <font class="comment">/* not break regressions at this point.</font>
-01072 <font class="comment">/*</font>
-01073 <font class="comment">/* Revision 1.38  2002/08/23 12:55:33  phase1geo</font>
-01074 <font class="comment">/* Starting to make modifications for parameter support.  Added parameter source</font>
-01075 <font class="comment">/* and header files, changed vector_from_string function to be more verbose</font>
-01076 <font class="comment">/* and updated Makefiles for new param.h/.c files.</font>
-01077 <font class="comment">/*</font>
-01078 <font class="comment">/* Revision 1.37  2002/07/23 12:56:22  phase1geo</font>
-01079 <font class="comment">/* Fixing some memory overflow issues.  Still getting core dumps in some areas.</font>
-01080 <font class="comment">/*</font>
-01081 <font class="comment">/* Revision 1.36  2002/07/22 05:24:46  phase1geo</font>
-01082 <font class="comment">/* Creating new VCD parser.  This should have performance benefits as well as</font>
-01083 <font class="comment">/* have the ability to handle any problems that come up in parsing.</font>
-01084 <font class="comment">/*</font>
-01085 <font class="comment">/* Revision 1.35  2002/07/20 18:46:38  phase1geo</font>
-01086 <font class="comment">/* Causing fully covered modules to not be output in reports.  Adding</font>
-01087 <font class="comment">/* instance3.v diagnostic to verify this works correctly.</font>
-01088 <font class="comment">/*</font>
-01089 <font class="comment">/* Revision 1.34  2002/07/18 02:33:23  phase1geo</font>
-01090 <font class="comment">/* Fixed instantiation addition.  Multiple hierarchy instantiation trees should</font>
-01091 <font class="comment">/* now work.</font>
-01092 <font class="comment">/*</font>
-01093 <font class="comment">/* Revision 1.33  2002/07/14 05:10:42  phase1geo</font>
-01094 <font class="comment">/* Added support for signal concatenation in score and report commands.  Fixed</font>
-01095 <font class="comment">/* bugs in this code (and multiplication).</font>
-01096 <font class="comment">/*</font>
-01097 <font class="comment">/* Revision 1.32  2002/07/11 16:59:10  phase1geo</font>
-01098 <font class="comment">/* Added release information to NEWS for upcoming release.</font>
-01099 <font class="comment">/*</font>
-01100 <font class="comment">/* Revision 1.31  2002/07/10 13:15:57  phase1geo</font>
-01101 <font class="comment">/* Adding case1.1.v Verilog diagnostic to check default case statement.  There</font>
-01102 <font class="comment">/* were reporting problems related to this.  Report problems have been fixed and</font>
-01103 <font class="comment">/* full regression passes.</font>
+01007 <font class="comment">//------------------------------------------------------------------------------</font>
+<a name="l01011"></a><a class="code" href="structvector__width__s.html">01011</a> <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structvector__width__s.html">vector_width_s</a> {
+<a name="l01012"></a><a class="code" href="structvector__width__s.html#m0">01012</a>   static_expr* <a class="code" href="structvector__width__s.html#m0">left</a>;      
+<a name="l01013"></a><a class="code" href="structvector__width__s.html#m1">01013</a>   static_expr* <a class="code" href="structvector__width__s.html#m1">right</a>;     
+01014 };
+01015 
+<a name="l01016"></a><a class="code" href="defines_8h.html#a164">01016</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structvector__width__s.html">vector_width_s</a> vector_width;
+01017 
+01018 <font class="comment">//------------------------------------------------------------------------------</font>
+01022 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structsig__exp__bind__s.html">sig_exp_bind_s</a>;
+01023 
+<a name="l01024"></a><a class="code" href="defines_8h.html#a165">01024</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structsig__exp__bind__s.html">sig_exp_bind_s</a> sig_exp_bind;
+01025 
+<a name="l01026"></a><a class="code" href="structsig__exp__bind__s.html">01026</a> <font class="keyword">struct </font><a class="code" href="structsig__exp__bind__s.html">sig_exp_bind_s</a> {
+<a name="l01027"></a><a class="code" href="structsig__exp__bind__s.html#m0">01027</a>   <font class="keywordtype">char</font>*         <a class="code" href="structsig__exp__bind__s.html#m0">sig_name</a>;  
+<a name="l01028"></a><a class="code" href="structsig__exp__bind__s.html#m1">01028</a>   expression*   <a class="code" href="structsig__exp__bind__s.html#m1">exp</a>;       
+<a name="l01029"></a><a class="code" href="structsig__exp__bind__s.html#m2">01029</a>   module*       <a class="code" href="structsig__exp__bind__s.html#m2">mod</a>;       
+<a name="l01030"></a><a class="code" href="structsig__exp__bind__s.html#m3">01030</a>   sig_exp_bind* <a class="code" href="structsig__exp__bind__s.html#m3">next</a>;      
+01031 };
+01032 
+01033 <font class="comment">//------------------------------------------------------------------------------</font>
+01038 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structcase__stmt__s.html">case_stmt_s</a>;
+01039 
+<a name="l01040"></a><a class="code" href="defines_8h.html#a166">01040</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structcase__stmt__s.html">case_stmt_s</a> case_statement;
+01041 
+<a name="l01042"></a><a class="code" href="structcase__stmt__s.html">01042</a> <font class="keyword">struct </font><a class="code" href="structcase__stmt__s.html">case_stmt_s</a> {
+<a name="l01043"></a><a class="code" href="structcase__stmt__s.html#m0">01043</a>   expression*     <a class="code" href="structcase__stmt__s.html#m0">expr</a>;    
+<a name="l01044"></a><a class="code" href="structcase__stmt__s.html#m1">01044</a>   statement*      <a class="code" href="structcase__stmt__s.html#m1">stmt</a>;    
+<a name="l01045"></a><a class="code" href="structcase__stmt__s.html#m2">01045</a>   <font class="keywordtype">int</font>             <a class="code" href="structcase__stmt__s.html#m2">line</a>;    
+<a name="l01046"></a><a class="code" href="structcase__stmt__s.html#m3">01046</a>   case_statement* <a class="code" href="structcase__stmt__s.html#m3">prev</a>;    
+01047 };
+01048 
+01049 <font class="comment">//------------------------------------------------------------------------------</font>
+01053 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structmod__inst__s.html">mod_inst_s</a>;
+01054 
+<a name="l01055"></a><a class="code" href="defines_8h.html#a167">01055</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structmod__inst__s.html">mod_inst_s</a> mod_inst;
+01056 
+<a name="l01057"></a><a class="code" href="structmod__inst__s.html">01057</a> <font class="keyword">struct </font><a class="code" href="structmod__inst__s.html">mod_inst_s</a> {
+<a name="l01058"></a><a class="code" href="structmod__inst__s.html#m0">01058</a>   <font class="keywordtype">char</font>*      <a class="code" href="structmod__inst__s.html#m0">name</a>;          
+<a name="l01059"></a><a class="code" href="structmod__inst__s.html#m1">01059</a>   module*    <a class="code" href="structmod__inst__s.html#m1">mod</a>;           
+<a name="l01060"></a><a class="code" href="structmod__inst__s.html#m2">01060</a>   statistic* <a class="code" href="structmod__inst__s.html#m2">stat</a>;          
+<a name="l01061"></a><a class="code" href="structmod__inst__s.html#m3">01061</a>   inst_parm* <a class="code" href="structmod__inst__s.html#m3">param_head</a>;    
+<a name="l01062"></a><a class="code" href="structmod__inst__s.html#m4">01062</a>   inst_parm* <a class="code" href="structmod__inst__s.html#m4">param_tail</a>;    
+<a name="l01063"></a><a class="code" href="structmod__inst__s.html#m5">01063</a>   mod_inst*  <a class="code" href="structmod__inst__s.html#m5">parent</a>;        
+<a name="l01064"></a><a class="code" href="structmod__inst__s.html#m6">01064</a>   mod_inst*  <a class="code" href="structmod__inst__s.html#m6">child_head</a>;    
+<a name="l01065"></a><a class="code" href="structmod__inst__s.html#m7">01065</a>   mod_inst*  <a class="code" href="structmod__inst__s.html#m7">child_tail</a>;    
+<a name="l01066"></a><a class="code" href="structmod__inst__s.html#m8">01066</a>   mod_inst*  <a class="code" href="structmod__inst__s.html#m8">next</a>;          
+01067 };
+01068 
+01069 <font class="comment">//-------------------------------------------------------------------------------</font>
+01070 
+<a name="l01071"></a><a class="code" href="unionexpr__stmt__u.html">01071</a> <font class="keyword">union </font><a class="code" href="unionexpr__stmt__u.html">expr_stmt_u</a> {
+<a name="l01072"></a><a class="code" href="unionexpr__stmt__u.html#m0">01072</a>   expression* <a class="code" href="unionexpr__stmt__u.html#m0">expr</a>;         
+<a name="l01073"></a><a class="code" href="unionexpr__stmt__u.html#m1">01073</a>   statement*  <a class="code" href="unionexpr__stmt__u.html#m1">stmt</a>;         
+01074 };
+01075 
+01076 
+01077 <font class="comment">/* $Log$</font>
+01078 <font class="comment">/* Revision 1.53  2002/10/25 13:43:49  phase1geo</font>
+01079 <font class="comment">/* Adding statement iterators for moving in both directions in a list with a single</font>
+01080 <font class="comment">/* pointer (two-way).  This allows us to reverse statement lists without additional</font>
+01081 <font class="comment">/* memory and time (very efficient).  Full regression passes and TODO list items</font>
+01082 <font class="comment">/* 2 and 3 are completed.</font>
+01083 <font class="comment">/*</font>
+01084 <font class="comment">/* Revision 1.52  2002/10/24 05:48:58  phase1geo</font>
+01085 <font class="comment">/* Additional fixes for MBIT_SEL.  Changed some philosophical stuff around for</font>
+01086 <font class="comment">/* cleaner code and for correctness.  Added some development documentation for</font>
+01087 <font class="comment">/* expressions and vectors.  At this point, there is a bug in the way that</font>
+01088 <font class="comment">/* parameters are handled as far as scoring purposes are concerned but we no</font>
+01089 <font class="comment">/* longer segfault.</font>
+01090 <font class="comment">/*</font>
+01091 <font class="comment">/* Revision 1.51  2002/10/23 03:39:06  phase1geo</font>
+01092 <font class="comment">/* Fixing bug in MBIT_SEL expressions to calculate the expression widths</font>
+01093 <font class="comment">/* correctly.  Updated diagnostic testsuite and added diagnostic that</font>
+01094 <font class="comment">/* found the original bug.  A few documentation updates.</font>
+01095 <font class="comment">/*</font>
+01096 <font class="comment">/* Revision 1.50  2002/10/13 19:20:42  phase1geo</font>
+01097 <font class="comment">/* Added -T option to score command for properly handling min:typ:max delay expressions.</font>
+01098 <font class="comment">/* Updated documentation for -i and -T options to score command and added additional</font>
+01099 <font class="comment">/* diagnostic to test instance handling.</font>
+01100 <font class="comment">/*</font>
+01101 <font class="comment">/* Revision 1.49  2002/10/11 05:23:21  phase1geo</font>
+01102 <font class="comment">/* Removing local user message allocation and replacing with global to help</font>
+01103 <font class="comment">/* with memory efficiency.</font>
 01104 <font class="comment">/*</font>
-01105 <font class="comment">/* Revision 1.30  2002/07/10 04:57:07  phase1geo</font>
-01106 <font class="comment">/* Adding bits to vector nibble to allow us to specify what type of input</font>
-01107 <font class="comment">/* static value was read in so that the output value may be displayed in</font>
-01108 <font class="comment">/* the same format (DECIMAL, BINARY, OCTAL, HEXIDECIMAL).  Full regression</font>
-01109 <font class="comment">/* passes.</font>
-01110 <font class="comment">/*</font>
-01111 <font class="comment">/* Revision 1.29  2002/07/09 17:27:25  phase1geo</font>
-01112 <font class="comment">/* Fixing default case item handling and in the middle of making fixes for</font>
-01113 <font class="comment">/* report outputting.</font>
-01114 <font class="comment">/*</font>
-01115 <font class="comment">/* Revision 1.28  2002/07/09 04:46:26  phase1geo</font>
-01116 <font class="comment">/* Adding -D and -Q options to covered for outputting debug information or</font>
-01117 <font class="comment">/* suppressing normal output entirely.  Updated generated documentation and</font>
-01118 <font class="comment">/* modified Verilog diagnostic Makefile to use these new options.</font>
-01119 <font class="comment">/*</font>
-01120 <font class="comment">/* Revision 1.27  2002/07/05 16:49:47  phase1geo</font>
-01121 <font class="comment">/* Modified a lot of code this go around.  Fixed VCD reader to handle changes in</font>
-01122 <font class="comment">/* the reverse order (last changes are stored instead of first for timestamp).</font>
-01123 <font class="comment">/* Fixed problem with AEDGE operator to handle vector value changes correctly.</font>
-01124 <font class="comment">/* Added casez2.v diagnostic to verify proper handling of casez with '?' characters.</font>
-01125 <font class="comment">/* Full regression passes; however, the recent changes seem to have impacted</font>
-01126 <font class="comment">/* performance -- need to look into this.</font>
+01105 <font class="comment">/* Revision 1.48  2002/10/11 04:24:01  phase1geo</font>
+01106 <font class="comment">/* This checkin represents some major code renovation in the score command to</font>
+01107 <font class="comment">/* fully accommodate parameter support.  All parameter support is in at this</font>
+01108 <font class="comment">/* point and the most commonly used parameter usages have been verified.  Some</font>
+01109 <font class="comment">/* bugs were fixed in handling default values of constants and expression tree</font>
+01110 <font class="comment">/* resizing has been optimized to its fullest.  Full regression has been</font>
+01111 <font class="comment">/* updated and passes.  Adding new diagnostics to test suite.  Fixed a few</font>
+01112 <font class="comment">/* problems in report outputting.</font>
+01113 <font class="comment">/*</font>
+01114 <font class="comment">/* Revision 1.47  2002/09/26 22:58:46  phase1geo</font>
+01115 <font class="comment">/* Fixing syntax error.</font>
+01116 <font class="comment">/*</font>
+01117 <font class="comment">/* Revision 1.46  2002/09/25 02:51:44  phase1geo</font>
+01118 <font class="comment">/* Removing need of vector nibble array allocation and deallocation during</font>
+01119 <font class="comment">/* expression resizing for efficiency and bug reduction.  Other enhancements</font>
+01120 <font class="comment">/* for parameter support.  Parameter stuff still not quite complete.</font>
+01121 <font class="comment">/*</font>
+01122 <font class="comment">/* Revision 1.45  2002/09/21 07:03:28  phase1geo</font>
+01123 <font class="comment">/* Attached all parameter functions into db.c.  Just need to finish getting</font>
+01124 <font class="comment">/* parser to correctly add override parameters.  Once this is complete, phase 3</font>
+01125 <font class="comment">/* can start and will include regenerating expressions and signals before</font>
+01126 <font class="comment">/* getting output to CDD file.</font>
 01127 <font class="comment">/*</font>
-01128 <font class="comment">/* Revision 1.26  2002/07/05 05:00:13  phase1geo</font>
-01129 <font class="comment">/* Removing CASE, CASEX, and CASEZ from line and combinational logic results.</font>
-01130 <font class="comment">/*</font>
-01131 <font class="comment">/* Revision 1.25  2002/07/05 04:12:46  phase1geo</font>
-01132 <font class="comment">/* Correcting case, casex and casez equality calculation to conform to correct</font>
-01133 <font class="comment">/* equality check for each case type.  Verified that case statements work correctly</font>
-01134 <font class="comment">/* at this point.  Added diagnostics to verify case statements.</font>
-01135 <font class="comment">/*</font>
-01136 <font class="comment">/* Revision 1.24  2002/07/04 23:10:12  phase1geo</font>
-01137 <font class="comment">/* Added proper support for case, casex, and casez statements in score command.</font>
-01138 <font class="comment">/* Report command still incorrect for these statement types.</font>
+01128 <font class="comment">/* Revision 1.44  2002/09/21 04:11:32  phase1geo</font>
+01129 <font class="comment">/* Completed phase 1 for adding in parameter support.  Main code is written</font>
+01130 <font class="comment">/* that will create an instance parameter from a given module parameter in</font>
+01131 <font class="comment">/* its entirety.  The next step will be to complete the module parameter</font>
+01132 <font class="comment">/* creation code all the way to the parser.  Regression still passes and</font>
+01133 <font class="comment">/* everything compiles at this point.</font>
+01134 <font class="comment">/*</font>
+01135 <font class="comment">/* Revision 1.43  2002/09/19 05:25:19  phase1geo</font>
+01136 <font class="comment">/* Fixing incorrect simulation of static values and fixing reports generated</font>
+01137 <font class="comment">/* from these static expressions.  Also includes some modifications for parameters</font>
+01138 <font class="comment">/* though these changes are not useful at this point.</font>
 01139 <font class="comment">/*</font>
-01140 <font class="comment">/* Revision 1.23  2002/07/03 21:30:52  phase1geo</font>
-01141 <font class="comment">/* Fixed remaining issues with always statements.  Full regression is running</font>
-01142 <font class="comment">/* error free at this point.  Regenerated documentation.  Added EOR expression</font>
-01143 <font class="comment">/* operation to handle the or expression in event lists.</font>
-01144 <font class="comment">/*</font>
-01145 <font class="comment">/* Revision 1.22  2002/07/03 19:54:36  phase1geo</font>
-01146 <font class="comment">/* Adding/fixing code to properly handle always blocks with the event control</font>
-01147 <font class="comment">/* structures attached.  Added several new diagnostics to test this ability.</font>
-01148 <font class="comment">/* always1.v is still failing but the rest are passing.</font>
-01149 <font class="comment">/*</font>
-01150 <font class="comment">/* Revision 1.21  2002/07/02 19:52:50  phase1geo</font>
-01151 <font class="comment">/* Removing unecessary diagnostics.  Cleaning up extraneous output and</font>
-01152 <font class="comment">/* generating new documentation from source.  Regression passes at the</font>
-01153 <font class="comment">/* current time.</font>
-01154 <font class="comment">/*</font>
-01155 <font class="comment">/* Revision 1.20  2002/07/02 18:42:18  phase1geo</font>
-01156 <font class="comment">/* Various bug fixes.  Added support for multiple signals sharing the same VCD</font>
-01157 <font class="comment">/* symbol.  Changed conditional support to allow proper simulation results.</font>
-01158 <font class="comment">/* Updated VCD parser to allow for symbols containing only alphanumeric characters.</font>
-01159 <font class="comment">/*</font>
-01160 <font class="comment">/* Revision 1.19  2002/06/30 22:23:20  phase1geo</font>
-01161 <font class="comment">/* Working on fixing looping in parser.  Statement connector needs to be revamped.</font>
+01140 <font class="comment">/* Revision 1.42  2002/09/13 05:12:25  phase1geo</font>
+01141 <font class="comment">/* Adding final touches to -d option to report.  Adding documentation and</font>
+01142 <font class="comment">/* updating development documentation to stay in sync.</font>
+01143 <font class="comment">/*</font>
+01144 <font class="comment">/* Revision 1.41  2002/09/06 03:05:28  phase1geo</font>
+01145 <font class="comment">/* Some ideas about handling parameters have been added to these files.  Added</font>
+01146 <font class="comment">/* "Special Thanks" section in User's Guide for acknowledgements to people</font>
+01147 <font class="comment">/* helping in project.</font>
+01148 <font class="comment">/*</font>
+01149 <font class="comment">/* Revision 1.40  2002/08/27 11:53:16  phase1geo</font>
+01150 <font class="comment">/* Adding more code for parameter support.  Moving parameters from being a</font>
+01151 <font class="comment">/* part of modules to being a part of instances and calling the expression</font>
+01152 <font class="comment">/* operation function in the parameter add functions.</font>
+01153 <font class="comment">/*</font>
+01154 <font class="comment">/* Revision 1.39  2002/08/26 12:57:03  phase1geo</font>
+01155 <font class="comment">/* In the middle of adding parameter support.  Intermediate checkin but does</font>
+01156 <font class="comment">/* not break regressions at this point.</font>
+01157 <font class="comment">/*</font>
+01158 <font class="comment">/* Revision 1.38  2002/08/23 12:55:33  phase1geo</font>
+01159 <font class="comment">/* Starting to make modifications for parameter support.  Added parameter source</font>
+01160 <font class="comment">/* and header files, changed vector_from_string function to be more verbose</font>
+01161 <font class="comment">/* and updated Makefiles for new param.h/.c files.</font>
 01162 <font class="comment">/*</font>
-01163 <font class="comment">/* Revision 1.18  2002/06/28 03:04:59  phase1geo</font>
-01164 <font class="comment">/* Fixing more errors found by diagnostics.  Things are running pretty well at</font>
-01165 <font class="comment">/* this point with current diagnostics.  Still some report output problems.</font>
-01166 <font class="comment">/*</font>
-01167 <font class="comment">/* Revision 1.17  2002/06/27 21:18:48  phase1geo</font>
-01168 <font class="comment">/* Fixing report Verilog output.  simple.v verilog diagnostic now passes.</font>
+01163 <font class="comment">/* Revision 1.37  2002/07/23 12:56:22  phase1geo</font>
+01164 <font class="comment">/* Fixing some memory overflow issues.  Still getting core dumps in some areas.</font>
+01165 <font class="comment">/*</font>
+01166 <font class="comment">/* Revision 1.36  2002/07/22 05:24:46  phase1geo</font>
+01167 <font class="comment">/* Creating new VCD parser.  This should have performance benefits as well as</font>
+01168 <font class="comment">/* have the ability to handle any problems that come up in parsing.</font>
 01169 <font class="comment">/*</font>
-01170 <font class="comment">/* Revision 1.16  2002/06/27 20:39:43  phase1geo</font>
-01171 <font class="comment">/* Fixing scoring bugs as well as report bugs.  Things are starting to work</font>
-01172 <font class="comment">/* fairly well now.  Added rest of support for delays.</font>
+01170 <font class="comment">/* Revision 1.35  2002/07/20 18:46:38  phase1geo</font>
+01171 <font class="comment">/* Causing fully covered modules to not be output in reports.  Adding</font>
+01172 <font class="comment">/* instance3.v diagnostic to verify this works correctly.</font>
 01173 <font class="comment">/*</font>
-01174 <font class="comment">/* Revision 1.15  2002/06/26 04:59:50  phase1geo</font>
-01175 <font class="comment">/* Adding initial support for delays.  Support is not yet complete and is</font>
-01176 <font class="comment">/* currently untested.</font>
+01174 <font class="comment">/* Revision 1.34  2002/07/18 02:33:23  phase1geo</font>
+01175 <font class="comment">/* Fixed instantiation addition.  Multiple hierarchy instantiation trees should</font>
+01176 <font class="comment">/* now work.</font>
 01177 <font class="comment">/*</font>
-01178 <font class="comment">/* Revision 1.14  2002/06/23 21:18:21  phase1geo</font>
-01179 <font class="comment">/* Added appropriate statement support in parser.  All parts should be in place</font>
-01180 <font class="comment">/* and ready to start testing.</font>
+01178 <font class="comment">/* Revision 1.33  2002/07/14 05:10:42  phase1geo</font>
+01179 <font class="comment">/* Added support for signal concatenation in score and report commands.  Fixed</font>
+01180 <font class="comment">/* bugs in this code (and multiplication).</font>
 01181 <font class="comment">/*</font>
-01182 <font class="comment">/* Revision 1.13  2002/06/22 05:27:30  phase1geo</font>
-01183 <font class="comment">/* Additional supporting code for simulation engine and statement support in</font>
-01184 <font class="comment">/* parser.</font>
-01185 <font class="comment">/*</font>
-01186 <font class="comment">/* Revision 1.11  2002/05/13 03:02:58  phase1geo</font>
-01187 <font class="comment">/* Adding lines back to expressions and removing them from statements (since the line</font>
-01188 <font class="comment">/* number range of an expression can be calculated by looking at the expression line</font>
-01189 <font class="comment">/* numbers).</font>
-01190 <font class="comment">/*</font>
-01191 <font class="comment">/* Revision 1.10  2002/05/03 03:39:36  phase1geo</font>
-01192 <font class="comment">/* Removing all syntax errors due to addition of statements.  Added more statement</font>
-01193 <font class="comment">/* support code.  Still have a ways to go before we can try anything.  Removed lines</font>
-01194 <font class="comment">/* from expressions though we may want to consider putting these back for reporting</font>
-01195 <font class="comment">/* purposes.</font>
-01196 <font class="comment">/*</font>
-01197 <font class="comment">/* Revision 1.9  2002/05/02 03:27:42  phase1geo</font>
-01198 <font class="comment">/* Initial creation of statement structure and manipulation files.  Internals are</font>
-01199 <font class="comment">/* still in a chaotic state.</font>
-01200 <font class="comment">/*</font>
-01201 <font class="comment">/* Revision 1.8  2002/04/30 05:04:25  phase1geo</font>
-01202 <font class="comment">/* Added initial go-round of adding statement handling to parser.  Added simple</font>
-01203 <font class="comment">/* Verilog test to check correct statement handling.  At this point there is a</font>
-01204 <font class="comment">/* bug in the expression write function (we need to display statement trees in</font>
-01205 <font class="comment">/* the proper order since they are unlike normal expression trees.)</font>
-01206 <font class="comment">/* */</font>
-01207 
-01208 <font class="preprocessor">#endif</font>
-01209 <font class="preprocessor"></font>
-</pre></div><hr><address align="right"><small>Generated on Sat Oct 12 01:53:13 2002 for Covered by
+01182 <font class="comment">/* Revision 1.32  2002/07/11 16:59:10  phase1geo</font>
+01183 <font class="comment">/* Added release information to NEWS for upcoming release.</font>
+01184 <font class="comment">/*</font>
+01185 <font class="comment">/* Revision 1.31  2002/07/10 13:15:57  phase1geo</font>
+01186 <font class="comment">/* Adding case1.1.v Verilog diagnostic to check default case statement.  There</font>
+01187 <font class="comment">/* were reporting problems related to this.  Report problems have been fixed and</font>
+01188 <font class="comment">/* full regression passes.</font>
+01189 <font class="comment">/*</font>
+01190 <font class="comment">/* Revision 1.30  2002/07/10 04:57:07  phase1geo</font>
+01191 <font class="comment">/* Adding bits to vector nibble to allow us to specify what type of input</font>
+01192 <font class="comment">/* static value was read in so that the output value may be displayed in</font>
+01193 <font class="comment">/* the same format (DECIMAL, BINARY, OCTAL, HEXIDECIMAL).  Full regression</font>
+01194 <font class="comment">/* passes.</font>
+01195 <font class="comment">/*</font>
+01196 <font class="comment">/* Revision 1.29  2002/07/09 17:27:25  phase1geo</font>
+01197 <font class="comment">/* Fixing default case item handling and in the middle of making fixes for</font>
+01198 <font class="comment">/* report outputting.</font>
+01199 <font class="comment">/*</font>
+01200 <font class="comment">/* Revision 1.28  2002/07/09 04:46:26  phase1geo</font>
+01201 <font class="comment">/* Adding -D and -Q options to covered for outputting debug information or</font>
+01202 <font class="comment">/* suppressing normal output entirely.  Updated generated documentation and</font>
+01203 <font class="comment">/* modified Verilog diagnostic Makefile to use these new options.</font>
+01204 <font class="comment">/*</font>
+01205 <font class="comment">/* Revision 1.27  2002/07/05 16:49:47  phase1geo</font>
+01206 <font class="comment">/* Modified a lot of code this go around.  Fixed VCD reader to handle changes in</font>
+01207 <font class="comment">/* the reverse order (last changes are stored instead of first for timestamp).</font>
+01208 <font class="comment">/* Fixed problem with AEDGE operator to handle vector value changes correctly.</font>
+01209 <font class="comment">/* Added casez2.v diagnostic to verify proper handling of casez with '?' characters.</font>
+01210 <font class="comment">/* Full regression passes; however, the recent changes seem to have impacted</font>
+01211 <font class="comment">/* performance -- need to look into this.</font>
+01212 <font class="comment">/*</font>
+01213 <font class="comment">/* Revision 1.26  2002/07/05 05:00:13  phase1geo</font>
+01214 <font class="comment">/* Removing CASE, CASEX, and CASEZ from line and combinational logic results.</font>
+01215 <font class="comment">/*</font>
+01216 <font class="comment">/* Revision 1.25  2002/07/05 04:12:46  phase1geo</font>
+01217 <font class="comment">/* Correcting case, casex and casez equality calculation to conform to correct</font>
+01218 <font class="comment">/* equality check for each case type.  Verified that case statements work correctly</font>
+01219 <font class="comment">/* at this point.  Added diagnostics to verify case statements.</font>
+01220 <font class="comment">/*</font>
+01221 <font class="comment">/* Revision 1.24  2002/07/04 23:10:12  phase1geo</font>
+01222 <font class="comment">/* Added proper support for case, casex, and casez statements in score command.</font>
+01223 <font class="comment">/* Report command still incorrect for these statement types.</font>
+01224 <font class="comment">/*</font>
+01225 <font class="comment">/* Revision 1.23  2002/07/03 21:30:52  phase1geo</font>
+01226 <font class="comment">/* Fixed remaining issues with always statements.  Full regression is running</font>
+01227 <font class="comment">/* error free at this point.  Regenerated documentation.  Added EOR expression</font>
+01228 <font class="comment">/* operation to handle the or expression in event lists.</font>
+01229 <font class="comment">/*</font>
+01230 <font class="comment">/* Revision 1.22  2002/07/03 19:54:36  phase1geo</font>
+01231 <font class="comment">/* Adding/fixing code to properly handle always blocks with the event control</font>
+01232 <font class="comment">/* structures attached.  Added several new diagnostics to test this ability.</font>
+01233 <font class="comment">/* always1.v is still failing but the rest are passing.</font>
+01234 <font class="comment">/*</font>
+01235 <font class="comment">/* Revision 1.21  2002/07/02 19:52:50  phase1geo</font>
+01236 <font class="comment">/* Removing unecessary diagnostics.  Cleaning up extraneous output and</font>
+01237 <font class="comment">/* generating new documentation from source.  Regression passes at the</font>
+01238 <font class="comment">/* current time.</font>
+01239 <font class="comment">/*</font>
+01240 <font class="comment">/* Revision 1.20  2002/07/02 18:42:18  phase1geo</font>
+01241 <font class="comment">/* Various bug fixes.  Added support for multiple signals sharing the same VCD</font>
+01242 <font class="comment">/* symbol.  Changed conditional support to allow proper simulation results.</font>
+01243 <font class="comment">/* Updated VCD parser to allow for symbols containing only alphanumeric characters.</font>
+01244 <font class="comment">/*</font>
+01245 <font class="comment">/* Revision 1.19  2002/06/30 22:23:20  phase1geo</font>
+01246 <font class="comment">/* Working on fixing looping in parser.  Statement connector needs to be revamped.</font>
+01247 <font class="comment">/*</font>
+01248 <font class="comment">/* Revision 1.18  2002/06/28 03:04:59  phase1geo</font>
+01249 <font class="comment">/* Fixing more errors found by diagnostics.  Things are running pretty well at</font>
+01250 <font class="comment">/* this point with current diagnostics.  Still some report output problems.</font>
+01251 <font class="comment">/*</font>
+01252 <font class="comment">/* Revision 1.17  2002/06/27 21:18:48  phase1geo</font>
+01253 <font class="comment">/* Fixing report Verilog output.  simple.v verilog diagnostic now passes.</font>
+01254 <font class="comment">/*</font>
+01255 <font class="comment">/* Revision 1.16  2002/06/27 20:39:43  phase1geo</font>
+01256 <font class="comment">/* Fixing scoring bugs as well as report bugs.  Things are starting to work</font>
+01257 <font class="comment">/* fairly well now.  Added rest of support for delays.</font>
+01258 <font class="comment">/*</font>
+01259 <font class="comment">/* Revision 1.15  2002/06/26 04:59:50  phase1geo</font>
+01260 <font class="comment">/* Adding initial support for delays.  Support is not yet complete and is</font>
+01261 <font class="comment">/* currently untested.</font>
+01262 <font class="comment">/*</font>
+01263 <font class="comment">/* Revision 1.14  2002/06/23 21:18:21  phase1geo</font>
+01264 <font class="comment">/* Added appropriate statement support in parser.  All parts should be in place</font>
+01265 <font class="comment">/* and ready to start testing.</font>
+01266 <font class="comment">/*</font>
+01267 <font class="comment">/* Revision 1.13  2002/06/22 05:27:30  phase1geo</font>
+01268 <font class="comment">/* Additional supporting code for simulation engine and statement support in</font>
+01269 <font class="comment">/* parser.</font>
+01270 <font class="comment">/*</font>
+01271 <font class="comment">/* Revision 1.11  2002/05/13 03:02:58  phase1geo</font>
+01272 <font class="comment">/* Adding lines back to expressions and removing them from statements (since the line</font>
+01273 <font class="comment">/* number range of an expression can be calculated by looking at the expression line</font>
+01274 <font class="comment">/* numbers).</font>
+01275 <font class="comment">/*</font>
+01276 <font class="comment">/* Revision 1.10  2002/05/03 03:39:36  phase1geo</font>
+01277 <font class="comment">/* Removing all syntax errors due to addition of statements.  Added more statement</font>
+01278 <font class="comment">/* support code.  Still have a ways to go before we can try anything.  Removed lines</font>
+01279 <font class="comment">/* from expressions though we may want to consider putting these back for reporting</font>
+01280 <font class="comment">/* purposes.</font>
+01281 <font class="comment">/*</font>
+01282 <font class="comment">/* Revision 1.9  2002/05/02 03:27:42  phase1geo</font>
+01283 <font class="comment">/* Initial creation of statement structure and manipulation files.  Internals are</font>
+01284 <font class="comment">/* still in a chaotic state.</font>
+01285 <font class="comment">/*</font>
+01286 <font class="comment">/* Revision 1.8  2002/04/30 05:04:25  phase1geo</font>
+01287 <font class="comment">/* Added initial go-round of adding statement handling to parser.  Added simple</font>
+01288 <font class="comment">/* Verilog test to check correct statement handling.  At this point there is a</font>
+01289 <font class="comment">/* bug in the expression write function (we need to display statement trees in</font>
+01290 <font class="comment">/* the proper order since they are unlike normal expression trees.)</font>
+01291 <font class="comment">/* */</font>
+01292 
+01293 <font class="preprocessor">#endif</font>
+01294 <font class="preprocessor"></font>
+</pre></div><hr><address align="right"><small>Generated on Fri Oct 25 17:40:15 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

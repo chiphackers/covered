@@ -1,0 +1,58 @@
+\section{iter.c File Reference}
+\label{iter_8c}\index{iter.c@{iter.c}}
+{\tt \#include $<$stdlib.h$>$}\par
+{\tt \#include $<$assert.h$>$}\par
+{\tt \#include \char`\"{}defines.h\char`\"{}}\par
+{\tt \#include \char`\"{}iter.h\char`\"{}}\par
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+void {\bf stmt\_\-iter\_\-reset} ({\bf stmt\_\-iter} $\ast$si, {\bf stmt\_\-link} $\ast$start)
+\begin{CompactList}\small\item\em Resets the specified statement iterator at start point.\item\end{CompactList}\item 
+void {\bf stmt\_\-iter\_\-next} ({\bf stmt\_\-iter} $\ast$si)
+\begin{CompactList}\small\item\em Moves to the next statement link.\item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+\begin{Desc}
+\item[Author: ]\par
+Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\begin{Desc}
+\item[Date: ]\par
+10/24/2002\end{Desc}
+
+
+\subsection{Function Documentation}
+\index{iter.c@{iter.c}!stmt_iter_next@{stmt\_\-iter\_\-next}}
+\index{stmt_iter_next@{stmt\_\-iter\_\-next}!iter.c@{iter.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void stmt\_\-iter\_\-next ({\bf stmt\_\-iter} $\ast$ {\em si})}\label{iter_8c_a1}
+
+
+Moves to the next statement link.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+si}]Pointer to statement iterator to advance.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns pointer to next statement link.\end{Desc}
+Advances specified statement iterator to next statement link in statement list. \index{iter.c@{iter.c}!stmt_iter_reset@{stmt\_\-iter\_\-reset}}
+\index{stmt_iter_reset@{stmt\_\-iter\_\-reset}!iter.c@{iter.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void stmt\_\-iter\_\-reset ({\bf stmt\_\-iter} $\ast$ {\em si}, {\bf stmt\_\-link} $\ast$ {\em start})}\label{iter_8c_a0}
+
+
+Resets the specified statement iterator at start point.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+si}]Pointer to statement iterator to reset. \item[{\em 
+start}]Specifies link to start iterating through (can be head or tail).\end{description}
+\end{Desc}
+Initializes the specified statement iterator to begin advancing. 
