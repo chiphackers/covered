@@ -26,9 +26,9 @@
 00033 
 00035 <font class="keywordtype">void</font> <a class="code" href="util_8c.html#a11">directory_load</a>( <font class="keywordtype">char</font>* dir, <a class="code" href="structstr__link__s.html">str_link</a>* ext_head, <a class="code" href="structstr__link__s.html">str_link</a>** file_head, <a class="code" href="structstr__link__s.html">str_link</a>** file_tail );
 00036 
-00038 <font class="keywordtype">bool</font> <a class="code" href="util_8c.html#a12">file_exists</a>( <font class="keywordtype">char</font>* <a class="code" href="lexer_8c.html#a122">file</a> );
+00038 <font class="keywordtype">bool</font> <a class="code" href="util_8c.html#a12">file_exists</a>( <font class="keywordtype">char</font>* file );
 00039 
-00041 <font class="keywordtype">bool</font> <a class="code" href="util_8c.html#a13">readline</a>( FILE* <a class="code" href="lexer_8c.html#a122">file</a>, <font class="keywordtype">char</font>** line );
+00041 <font class="keywordtype">bool</font> <a class="code" href="util_8c.html#a13">readline</a>( FILE* file, <font class="keywordtype">char</font>** line );
 00042 
 00044 <font class="keywordtype">void</font> <a class="code" href="util_8c.html#a14">scope_extract_front</a>( <font class="keywordtype">char</font>* scope, <font class="keywordtype">char</font>* front, <font class="keywordtype">char</font>* rest );
 00045 
@@ -38,7 +38,7 @@
 00051 
 00053 <a class="code" href="structstr__link__s.html">str_link</a>* <a class="code" href="util_8c.html#a18">get_next_vfile</a>( <a class="code" href="structstr__link__s.html">str_link</a>* curr, <font class="keywordtype">char</font>* mod );
 00054 
-00056 <font class="keywordtype">void</font>* <a class="code" href="util_8c.html#a19">malloc_safe</a>(size_t <a class="code" href="lexer_8c.html#a121">size</a> );
+00056 <font class="keywordtype">void</font>* <a class="code" href="util_8c.html#a19">malloc_safe</a>(size_t size );
 00057 
 00059 <font class="keywordtype">void</font> <a class="code" href="util_8c.html#a20">free_safe</a>( <font class="keywordtype">void</font>* ptr );
 00060 
@@ -90,7 +90,7 @@
 00107 
 00108 <font class="preprocessor">#endif</font>
 00109 <font class="preprocessor"></font>
-</pre></div><hr><address align="right"><small>Generated on Sat Dec 14 01:04:22 2002 for Covered by
+</pre></div><hr><address align="right"><small>Generated on Sat Jan 4 03:27:31 2003 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

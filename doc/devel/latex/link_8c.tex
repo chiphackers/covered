@@ -46,6 +46,8 @@ void {\bf mod\_\-link\_\-display} ({\bf mod\_\-link} $\ast$head)
 \begin{CompactList}\small\item\em Finds specified signal in given sig\_\-link list.\item\end{CompactList}\item 
 {\bf mod\_\-link} $\ast$ {\bf mod\_\-link\_\-find} ({\bf module} $\ast$mod, {\bf mod\_\-link} $\ast$head)
 \begin{CompactList}\small\item\em Finds specified module in given mod\_\-link list.\item\end{CompactList}\item 
+void {\bf str\_\-link\_\-remove} (char $\ast$str, {\bf str\_\-link} $\ast$$\ast$head, {\bf str\_\-link} $\ast$$\ast$tail)
+\begin{CompactList}\small\item\em Searches for and removes specified string link from list.\item\end{CompactList}\item 
 void {\bf exp\_\-link\_\-remove} ({\bf expression} $\ast$exp, {\bf exp\_\-link} $\ast$$\ast$head, {\bf exp\_\-link} $\ast$$\ast$tail)
 \begin{CompactList}\small\item\em Searches for and removes specified expression link from list.\item\end{CompactList}\item 
 void {\bf str\_\-link\_\-delete\_\-list} ({\bf str\_\-link} $\ast$head)
@@ -89,7 +91,7 @@ tail}]Pointer to tail exp\_\-link element of list.\end{description}
 \end{Desc}
 Creates a new exp\_\-link element with the value specified for expr. Sets next pointer of element to NULL, sets the tail element to point to the new element and sets the tail value to the new element. \index{link.c@{link.c}!exp_link_delete_list@{exp\_\-link\_\-delete\_\-list}}
 \index{exp_link_delete_list@{exp\_\-link\_\-delete\_\-list}!link.c@{link.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void exp\_\-link\_\-delete\_\-list ({\bf exp\_\-link} $\ast$ {\em head}, {\bf bool} {\em del\_\-exp})}\label{link_8c_a19}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void exp\_\-link\_\-delete\_\-list ({\bf exp\_\-link} $\ast$ {\em head}, {\bf bool} {\em del\_\-exp})}\label{link_8c_a20}
 
 
 Deletes entire list specified by head pointer.
@@ -133,7 +135,7 @@ head}]Pointer to head of exp\_\-link list to search.\end{description}
 Returns the pointer to the found exp\_\-link or NULL if the search was unsuccessful.\end{Desc}
 Iteratively searches the exp\_\-link list specified by the head exp\_\-link element. If a matching expression is found, the pointer to this element is returned. If the specified expression could not be matched, the value of NULL is returned. \index{link.c@{link.c}!exp_link_remove@{exp\_\-link\_\-remove}}
 \index{exp_link_remove@{exp\_\-link\_\-remove}!link.c@{link.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void exp\_\-link\_\-remove ({\bf expression} $\ast$ {\em exp}, {\bf exp\_\-link} $\ast$$\ast$ {\em head}, {\bf exp\_\-link} $\ast$$\ast$ {\em tail})}\label{link_8c_a16}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void exp\_\-link\_\-remove ({\bf expression} $\ast$ {\em exp}, {\bf exp\_\-link} $\ast$$\ast$ {\em head}, {\bf exp\_\-link} $\ast$$\ast$ {\em tail})}\label{link_8c_a17}
 
 
 Searches for and removes specified expression link from list.
@@ -163,7 +165,7 @@ tail}]Pointer to tail mod\_\-link element of list.\end{description}
 \end{Desc}
 Creates a new mod\_\-link element with the value specified for mod. Sets next pointer of element to NULL, sets the tail element to point to the new element and sets the tail value to the new element. \index{link.c@{link.c}!mod_link_delete_list@{mod\_\-link\_\-delete\_\-list}}
 \index{mod_link_delete_list@{mod\_\-link\_\-delete\_\-list}!link.c@{link.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void mod\_\-link\_\-delete\_\-list ({\bf mod\_\-link} $\ast$ {\em head})}\label{link_8c_a21}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void mod\_\-link\_\-delete\_\-list ({\bf mod\_\-link} $\ast$ {\em head})}\label{link_8c_a22}
 
 
 Deletes entire list specified by head pointer.
@@ -221,7 +223,7 @@ tail}]Pointer to tail sig\_\-link element of list.\end{description}
 \end{Desc}
 Creates a new sig\_\-link element with the value specified for sig. Sets next pointer of element to NULL, sets the tail element to point to the new element and sets the tail value to the new element. \index{link.c@{link.c}!sig_link_delete_list@{sig\_\-link\_\-delete\_\-list}}
 \index{sig_link_delete_list@{sig\_\-link\_\-delete\_\-list}!link.c@{link.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void sig\_\-link\_\-delete\_\-list ({\bf sig\_\-link} $\ast$ {\em head})}\label{link_8c_a20}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void sig\_\-link\_\-delete\_\-list ({\bf sig\_\-link} $\ast$ {\em head})}\label{link_8c_a21}
 
 
 Deletes entire list specified by head pointer.
@@ -294,7 +296,7 @@ tail}]Pointer to tail str\_\-link element of list.\end{description}
 \end{Desc}
 Creates a new stmt\_\-link element with the value specified for stmt. Sets next pointer of element to NULL and sets the tail value to the new element. \index{link.c@{link.c}!stmt_link_delete_list@{stmt\_\-link\_\-delete\_\-list}}
 \index{stmt_link_delete_list@{stmt\_\-link\_\-delete\_\-list}!link.c@{link.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void stmt\_\-link\_\-delete\_\-list ({\bf stmt\_\-link} $\ast$ {\em head})}\label{link_8c_a18}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void stmt\_\-link\_\-delete\_\-list ({\bf stmt\_\-link} $\ast$ {\em head})}\label{link_8c_a19}
 
 
 Deletes entire list specified by head pointer.
@@ -352,7 +354,7 @@ tail}]Pointer to tail str\_\-link element of list.\end{description}
 \end{Desc}
 Creates a new str\_\-link element with the value specified for str. Sets next pointer of element to NULL, sets the tail element to point to the new element and sets the tail value to the new element. \index{link.c@{link.c}!str_link_delete_list@{str\_\-link\_\-delete\_\-list}}
 \index{str_link_delete_list@{str\_\-link\_\-delete\_\-list}!link.c@{link.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void str\_\-link\_\-delete\_\-list ({\bf str\_\-link} $\ast$ {\em head})}\label{link_8c_a17}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void str\_\-link\_\-delete\_\-list ({\bf str\_\-link} $\ast$ {\em head})}\label{link_8c_a18}
 
 
 Deletes entire list specified by head pointer.
@@ -393,4 +395,19 @@ head}]Pointer to head link in str\_\-link list to search. \end{description}
 \begin{Desc}
 \item[Returns: ]\par
 Returns the pointer to the found str\_\-link or NULL if the search was unsuccessful.\end{Desc}
-Iteratively searches the str\_\-link list specifed by the head str\_\-link element. If a matching string is found, the pointer to this element is returned. If the specified string could not be matched, the value of NULL is returned. 
+Iteratively searches the str\_\-link list specifed by the head str\_\-link element. If a matching string is found, the pointer to this element is returned. If the specified string could not be matched, the value of NULL is returned. \index{link.c@{link.c}!str_link_remove@{str\_\-link\_\-remove}}
+\index{str_link_remove@{str\_\-link\_\-remove}!link.c@{link.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void str\_\-link\_\-remove (char $\ast$ {\em str}, {\bf str\_\-link} $\ast$$\ast$ {\em head}, {\bf str\_\-link} $\ast$$\ast$ {\em tail})}\label{link_8c_a16}
+
+
+Searches for and removes specified string link from list.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+str}]Pointer to string to find and remove. \item[{\em 
+head}]Pointer to head of string list. \item[{\em 
+tail}]Pointer to tail of string list.\end{description}
+\end{Desc}
+Searches specified list for string that matches the specified string. If a match is found, remove it from the list and deallocate the link memory. 

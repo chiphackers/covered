@@ -21,11 +21,11 @@
 <tr><td>&nbsp;</td><td><font size=-1><em>Initializes specified signal with specified values.</em> <a href="#a2"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a161">signal</a> *&nbsp;</td><td valign=bottom><a class="el" href="signal_8c.html#a3">signal_create</a> (char *name, int width, int lsb)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Creates a new signal based on the information passed to this function.</em> <a href="#a3"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="signal_8c.html#a4">signal_db_write</a> (<a class="el" href="defines_8h.html#a161">signal</a> *sig, FILE *<a class="el" href="lexer_8c.html#a122">file</a>, char *modname)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="signal_8c.html#a4">signal_db_write</a> (<a class="el" href="defines_8h.html#a161">signal</a> *sig, FILE *<a class="el" href="pplexer_8c.html#a114">file</a>, char *modname)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Outputs this signal information to specified file.</em> <a href="#a4"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="signal_8c.html#a5">signal_db_read</a> (char **line, <a class="el" href="defines_8h.html#a171">module</a> *curr_mod)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="signal_8c.html#a5">signal_db_read</a> (char **line, <a class="el" href="defines_8h.html#a171">module</a> *curr_mod)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Reads signal information from specified file.</em> <a href="#a5"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="signal_8c.html#a6">signal_db_merge</a> (<a class="el" href="defines_8h.html#a161">signal</a> *base, char **line)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="signal_8c.html#a6">signal_db_merge</a> (<a class="el" href="defines_8h.html#a161">signal</a> *base, char **line, <a class="el" href="defines_8h.html#a182">bool</a> same)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Reads and merges two signals, placing result into base signal.</em> <a href="#a6"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="signal_8c.html#a7">signal_vcd_assign</a> (<a class="el" href="defines_8h.html#a161">signal</a> *sig, char *value)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Assigns specified VCD value to specified signal.</em> <a href="#a7"></a><em></em></font><br><br></td></tr>
@@ -159,7 +159,7 @@ Pointer to newly created signal.</dl>This function should be called by the Veril
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a181">bool</a> signal_db_merge </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a182">bool</a> signal_db_merge </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a161">signal</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>base</em>, </td>
@@ -168,7 +168,13 @@ Pointer to newly created signal.</dl>This function should be called by the Veril
           <td></td>
           <td></td>
           <td class="md" nowrap>char **&nbsp;</td>
-          <td class="mdname" nowrap>&nbsp; <em>line</em></td>
+          <td class="mdname" nowrap>&nbsp; <em>line</em>, </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>same</em></td>
         </tr>
         <tr>
           <td></td>
@@ -196,7 +202,9 @@ Parameters: </b><dd>
 <tr><td valign=top><em>base</em>&nbsp;</td><td>
 Signal to store result of merge into. </td></tr>
 <tr><td valign=top><em>line</em>&nbsp;</td><td>
-Pointer to line of CDD file to parse.</td></tr>
+Pointer to line of CDD file to parse. </td></tr>
+<tr><td valign=top><em>same</em>&nbsp;</td><td>
+Specifies if signal to merge needs to be exactly the same as the existing signal.</td></tr>
 </table>
 </dl><dl compact><dt><b>
 Returns: </b><dd>
@@ -209,7 +217,7 @@ Returns TRUE if parsing successful; otherwise, returns FALSE.</dl>Parses specifi
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a181">bool</a> signal_db_read </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a182">bool</a> signal_db_read </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top">char **&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>line</em>, </td>
@@ -538,7 +546,7 @@ String version of VCD value.</td></tr>
     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Sat Dec 14 01:04:25 2002 for Covered by
+<hr><address align="right"><small>Generated on Sat Jan 4 03:27:33 2003 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

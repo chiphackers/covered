@@ -20,7 +20,7 @@
 <tr><td>&nbsp;</td><td><font size=-1><em>Calculates new values for static expression and returns the new static expression.</em> <a href="#a1"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="static_8c.html#a2">static_expr_calc_lsb_and_width</a> (<a class="el" href="defines_8h.html#a174">static_expr</a> *left, <a class="el" href="defines_8h.html#a174">static_expr</a> *right, int *width, int *lsb)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Calculates LSB and width for specified left/right pair for vector.</em> <a href="#a2"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="static_8c.html#a3">static_expr_dealloc</a> (<a class="el" href="defines_8h.html#a174">static_expr</a> *stexp, <a class="el" href="defines_8h.html#a181">bool</a> rm_exp)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="static_8c.html#a3">static_expr_dealloc</a> (<a class="el" href="defines_8h.html#a174">static_expr</a> *stexp, <a class="el" href="defines_8h.html#a182">bool</a> rm_exp)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Deallocates static_expr memory from heap.</em> <a href="#a3"></a><em></em></font><br><br></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
@@ -117,7 +117,7 @@ Calculated lsb of combined right/left static expressions.</td></tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>rm_exp</em></td>
         </tr>
         <tr>
@@ -275,7 +275,7 @@ Returns: </b><dd>
 Returns pointer to new static_expr structure.</dl>Used by the parser to calculate a new static_expr structure based on the unary operation encountered while parsing. Based on the operation type specified in the argument list, performs unary operation (if operand is a static number and not an expression -- parameter in operand expression tree), storing result into original static_expr number field and returns the original structure back to the calling function. If the operand is an expression, create an expression for the specified operation type and store this expression in the original expression pointer field.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Sat Dec 14 01:04:25 2002 for Covered by
+<hr><address align="right"><small>Generated on Sat Jan 4 03:27:33 2003 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

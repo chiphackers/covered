@@ -267,9 +267,9 @@
 <a name="l00742"></a><a class="code" href="group__lexer__val__types.html#a2">00742</a> <font class="preprocessor">#define BINARY                  1       </font>
 <a name="l00743"></a><a class="code" href="group__lexer__val__types.html#a3">00743</a> <font class="preprocessor">#define OCTAL                   2       </font>
 <a name="l00744"></a><a class="code" href="group__lexer__val__types.html#a4">00744</a> <font class="preprocessor">#define HEXIDECIMAL             3       </font>
-<a name="l00751"></a><a class="code" href="defines_8h.html#a181">00751</a> <font class="preprocessor">typedef enum {</font>
-00752 <font class="preprocessor"></font>  <a class="code" href="defines_8h.html#a181a179">FALSE</a>,   
-00753   <a class="code" href="defines_8h.html#a181a180">TRUE</a>     
+<a name="l00751"></a><a class="code" href="defines_8h.html#a182">00751</a> <font class="preprocessor">typedef enum {</font>
+00752 <font class="preprocessor"></font>  <a class="code" href="defines_8h.html#a182a180">FALSE</a>,   
+00753   <a class="code" href="defines_8h.html#a182a181">TRUE</a>     
 00754 } <font class="keywordtype">bool</font>;
 00755 
 00766 <font class="preprocessor">#if SIZEOF_INT == 4</font>
@@ -472,343 +472,368 @@
 <a name="l01043"></a><a class="code" href="structsymtable__s.html#m0">01043</a>   <font class="keywordtype">char</font>*     <a class="code" href="structsymtable__s.html#m0">sym</a>;          
 <a name="l01044"></a><a class="code" href="structsymtable__s.html#m1">01044</a>   signal*   <a class="code" href="structsymtable__s.html#m1">sig</a>;          
 <a name="l01045"></a><a class="code" href="structsymtable__s.html#m2">01045</a>   <font class="keywordtype">char</font>*     <a class="code" href="structsymtable__s.html#m2">value</a>;        
-<a name="l01046"></a><a class="code" href="structsymtable__s.html#m3">01046</a>   symtable* <a class="code" href="structsymtable__s.html#m3">right</a>;        
-<a name="l01047"></a><a class="code" href="structsymtable__s.html#m4">01047</a>   symtable* <a class="code" href="structsymtable__s.html#m4">left</a>;         
-01048 };
-01049 
-01050 <font class="comment">/*------------------------------------------------------------------------------*/</font>
-<a name="l01054"></a><a class="code" href="structstatic__expr__s.html">01054</a> <font class="keyword">struct </font><a class="code" href="structstatic__expr__s.html">static_expr_s</a> {
-<a name="l01055"></a><a class="code" href="structstatic__expr__s.html#m0">01055</a>   expression* <a class="code" href="structstatic__expr__s.html#m0">exp</a>;        
-<a name="l01056"></a><a class="code" href="structstatic__expr__s.html#m1">01056</a>   <font class="keywordtype">int</font>         <a class="code" href="structstatic__expr__s.html#m1">num</a>;        
-01057 };
-01058 
-<a name="l01059"></a><a class="code" href="defines_8h.html#a174">01059</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structstatic__expr__s.html">static_expr_s</a> static_expr;
-01060 
-01061 <font class="comment">/*------------------------------------------------------------------------------*/</font>
-<a name="l01065"></a><a class="code" href="structvector__width__s.html">01065</a> <font class="keyword">struct </font><a class="code" href="structvector__width__s.html">vector_width_s</a> {
-<a name="l01066"></a><a class="code" href="structvector__width__s.html#m0">01066</a>   static_expr* <a class="code" href="structvector__width__s.html#m0">left</a>;      
-<a name="l01067"></a><a class="code" href="structvector__width__s.html#m1">01067</a>   static_expr* <a class="code" href="structvector__width__s.html#m1">right</a>;     
-01068 };
-01069 
-<a name="l01070"></a><a class="code" href="defines_8h.html#a175">01070</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structvector__width__s.html">vector_width_s</a> vector_width;
-01071 
-01072 <font class="comment">/*------------------------------------------------------------------------------*/</font>
-01076 <font class="keyword">struct </font><a class="code" href="structsig__exp__bind__s.html">sig_exp_bind_s</a>;
-01077 
-<a name="l01078"></a><a class="code" href="defines_8h.html#a176">01078</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structsig__exp__bind__s.html">sig_exp_bind_s</a> sig_exp_bind;
-01079 
-<a name="l01080"></a><a class="code" href="structsig__exp__bind__s.html">01080</a> <font class="keyword">struct </font><a class="code" href="structsig__exp__bind__s.html">sig_exp_bind_s</a> {
-<a name="l01081"></a><a class="code" href="structsig__exp__bind__s.html#m0">01081</a>   <font class="keywordtype">char</font>*         <a class="code" href="structsig__exp__bind__s.html#m0">sig_name</a>;  
-<a name="l01082"></a><a class="code" href="structsig__exp__bind__s.html#m1">01082</a>   expression*   <a class="code" href="structsig__exp__bind__s.html#m1">exp</a>;       
-<a name="l01083"></a><a class="code" href="structsig__exp__bind__s.html#m2">01083</a>   module*       <a class="code" href="structsig__exp__bind__s.html#m2">mod</a>;       
-<a name="l01084"></a><a class="code" href="structsig__exp__bind__s.html#m3">01084</a>   sig_exp_bind* <a class="code" href="structsig__exp__bind__s.html#m3">next</a>;      
-01085 };
-01086 
-01087 <font class="comment">/*------------------------------------------------------------------------------*/</font>
-01092 <font class="keyword">struct </font><a class="code" href="structcase__stmt__s.html">case_stmt_s</a>;
-01093 
-<a name="l01094"></a><a class="code" href="defines_8h.html#a177">01094</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structcase__stmt__s.html">case_stmt_s</a> case_statement;
-01095 
-<a name="l01096"></a><a class="code" href="structcase__stmt__s.html">01096</a> <font class="keyword">struct </font><a class="code" href="structcase__stmt__s.html">case_stmt_s</a> {
-<a name="l01097"></a><a class="code" href="structcase__stmt__s.html#m0">01097</a>   expression*     <a class="code" href="structcase__stmt__s.html#m0">expr</a>;    
-<a name="l01098"></a><a class="code" href="structcase__stmt__s.html#m1">01098</a>   statement*      <a class="code" href="structcase__stmt__s.html#m1">stmt</a>;    
-<a name="l01099"></a><a class="code" href="structcase__stmt__s.html#m2">01099</a>   <font class="keywordtype">int</font>             <a class="code" href="structcase__stmt__s.html#m2">line</a>;    
-<a name="l01100"></a><a class="code" href="structcase__stmt__s.html#m3">01100</a>   case_statement* <a class="code" href="structcase__stmt__s.html#m3">prev</a>;    
-01101 };
-01102 
-01103 <font class="comment">/*------------------------------------------------------------------------------*/</font>
-01107 <font class="keyword">struct </font><a class="code" href="structmod__inst__s.html">mod_inst_s</a>;
-01108 
-<a name="l01109"></a><a class="code" href="defines_8h.html#a178">01109</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structmod__inst__s.html">mod_inst_s</a> mod_inst;
-01110 
-<a name="l01111"></a><a class="code" href="structmod__inst__s.html">01111</a> <font class="keyword">struct </font><a class="code" href="structmod__inst__s.html">mod_inst_s</a> {
-<a name="l01112"></a><a class="code" href="structmod__inst__s.html#m0">01112</a>   <font class="keywordtype">char</font>*      <a class="code" href="structmod__inst__s.html#m0">name</a>;          
-<a name="l01113"></a><a class="code" href="structmod__inst__s.html#m1">01113</a>   module*    <a class="code" href="structmod__inst__s.html#m1">mod</a>;           
-<a name="l01114"></a><a class="code" href="structmod__inst__s.html#m2">01114</a>   statistic* <a class="code" href="structmod__inst__s.html#m2">stat</a>;          
-<a name="l01115"></a><a class="code" href="structmod__inst__s.html#m3">01115</a>   inst_parm* <a class="code" href="structmod__inst__s.html#m3">param_head</a>;    
-<a name="l01116"></a><a class="code" href="structmod__inst__s.html#m4">01116</a>   inst_parm* <a class="code" href="structmod__inst__s.html#m4">param_tail</a>;    
-<a name="l01117"></a><a class="code" href="structmod__inst__s.html#m5">01117</a>   mod_inst*  <a class="code" href="structmod__inst__s.html#m5">parent</a>;        
-<a name="l01118"></a><a class="code" href="structmod__inst__s.html#m6">01118</a>   mod_inst*  <a class="code" href="structmod__inst__s.html#m6">child_head</a>;    
-<a name="l01119"></a><a class="code" href="structmod__inst__s.html#m7">01119</a>   mod_inst*  <a class="code" href="structmod__inst__s.html#m7">child_tail</a>;    
-<a name="l01120"></a><a class="code" href="structmod__inst__s.html#m8">01120</a>   mod_inst*  <a class="code" href="structmod__inst__s.html#m8">next</a>;          
-01121 };
-01122 
-01123 <font class="comment">/*-------------------------------------------------------------------------------*/</font>
-01124 
-<a name="l01125"></a><a class="code" href="unionexpr__stmt__u.html">01125</a> <font class="keyword">union </font><a class="code" href="unionexpr__stmt__u.html">expr_stmt_u</a> {
-<a name="l01126"></a><a class="code" href="unionexpr__stmt__u.html#m0">01126</a>   expression* <a class="code" href="unionexpr__stmt__u.html#m0">expr</a>;         
-<a name="l01127"></a><a class="code" href="unionexpr__stmt__u.html#m1">01127</a>   statement*  <a class="code" href="unionexpr__stmt__u.html#m1">stmt</a>;         
-01128 };
-01129 
+<a name="l01046"></a><a class="code" href="structsymtable__s.html#m3">01046</a>   <font class="keywordtype">int</font>       <a class="code" href="structsymtable__s.html#m3">size</a>;         
+<a name="l01047"></a><a class="code" href="structsymtable__s.html#m4">01047</a>   symtable* <a class="code" href="structsymtable__s.html#m4">right</a>;        
+<a name="l01048"></a><a class="code" href="structsymtable__s.html#m5">01048</a>   symtable* <a class="code" href="structsymtable__s.html#m5">left</a>;         
+01049 };
+01050 
+01051 <font class="comment">/*------------------------------------------------------------------------------*/</font>
+<a name="l01055"></a><a class="code" href="structstatic__expr__s.html">01055</a> <font class="keyword">struct </font><a class="code" href="structstatic__expr__s.html">static_expr_s</a> {
+<a name="l01056"></a><a class="code" href="structstatic__expr__s.html#m0">01056</a>   expression* <a class="code" href="structstatic__expr__s.html#m0">exp</a>;        
+<a name="l01057"></a><a class="code" href="structstatic__expr__s.html#m1">01057</a>   <font class="keywordtype">int</font>         <a class="code" href="structstatic__expr__s.html#m1">num</a>;        
+01058 };
+01059 
+<a name="l01060"></a><a class="code" href="defines_8h.html#a174">01060</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structstatic__expr__s.html">static_expr_s</a> static_expr;
+01061 
+01062 <font class="comment">/*------------------------------------------------------------------------------*/</font>
+<a name="l01066"></a><a class="code" href="structvector__width__s.html">01066</a> <font class="keyword">struct </font><a class="code" href="structvector__width__s.html">vector_width_s</a> {
+<a name="l01067"></a><a class="code" href="structvector__width__s.html#m0">01067</a>   static_expr* <a class="code" href="structvector__width__s.html#m0">left</a>;      
+<a name="l01068"></a><a class="code" href="structvector__width__s.html#m1">01068</a>   static_expr* <a class="code" href="structvector__width__s.html#m1">right</a>;     
+01069 };
+01070 
+<a name="l01071"></a><a class="code" href="defines_8h.html#a175">01071</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structvector__width__s.html">vector_width_s</a> vector_width;
+01072 
+01073 <font class="comment">/*------------------------------------------------------------------------------*/</font>
+01077 <font class="keyword">struct </font><a class="code" href="structsig__exp__bind__s.html">sig_exp_bind_s</a>;
+01078 
+<a name="l01079"></a><a class="code" href="defines_8h.html#a176">01079</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structsig__exp__bind__s.html">sig_exp_bind_s</a> sig_exp_bind;
+01080 
+<a name="l01081"></a><a class="code" href="structsig__exp__bind__s.html">01081</a> <font class="keyword">struct </font><a class="code" href="structsig__exp__bind__s.html">sig_exp_bind_s</a> {
+<a name="l01082"></a><a class="code" href="structsig__exp__bind__s.html#m0">01082</a>   <font class="keywordtype">char</font>*         <a class="code" href="structsig__exp__bind__s.html#m0">sig_name</a>;  
+<a name="l01083"></a><a class="code" href="structsig__exp__bind__s.html#m1">01083</a>   expression*   <a class="code" href="structsig__exp__bind__s.html#m1">exp</a>;       
+<a name="l01084"></a><a class="code" href="structsig__exp__bind__s.html#m2">01084</a>   module*       <a class="code" href="structsig__exp__bind__s.html#m2">mod</a>;       
+<a name="l01085"></a><a class="code" href="structsig__exp__bind__s.html#m3">01085</a>   sig_exp_bind* <a class="code" href="structsig__exp__bind__s.html#m3">next</a>;      
+01086 };
+01087 
+01088 <font class="comment">/*------------------------------------------------------------------------------*/</font>
+01093 <font class="keyword">struct </font><a class="code" href="structcase__stmt__s.html">case_stmt_s</a>;
+01094 
+<a name="l01095"></a><a class="code" href="defines_8h.html#a177">01095</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structcase__stmt__s.html">case_stmt_s</a> case_statement;
+01096 
+<a name="l01097"></a><a class="code" href="structcase__stmt__s.html">01097</a> <font class="keyword">struct </font><a class="code" href="structcase__stmt__s.html">case_stmt_s</a> {
+<a name="l01098"></a><a class="code" href="structcase__stmt__s.html#m0">01098</a>   expression*     <a class="code" href="structcase__stmt__s.html#m0">expr</a>;    
+<a name="l01099"></a><a class="code" href="structcase__stmt__s.html#m1">01099</a>   statement*      <a class="code" href="structcase__stmt__s.html#m1">stmt</a>;    
+<a name="l01100"></a><a class="code" href="structcase__stmt__s.html#m2">01100</a>   <font class="keywordtype">int</font>             <a class="code" href="structcase__stmt__s.html#m2">line</a>;    
+<a name="l01101"></a><a class="code" href="structcase__stmt__s.html#m3">01101</a>   case_statement* <a class="code" href="structcase__stmt__s.html#m3">prev</a>;    
+01102 };
+01103 
+01104 <font class="comment">/*------------------------------------------------------------------------------*/</font>
+01108 <font class="keyword">struct </font><a class="code" href="structmod__inst__s.html">mod_inst_s</a>;
+01109 
+<a name="l01110"></a><a class="code" href="defines_8h.html#a178">01110</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structmod__inst__s.html">mod_inst_s</a> mod_inst;
+01111 
+<a name="l01112"></a><a class="code" href="structmod__inst__s.html">01112</a> <font class="keyword">struct </font><a class="code" href="structmod__inst__s.html">mod_inst_s</a> {
+<a name="l01113"></a><a class="code" href="structmod__inst__s.html#m0">01113</a>   <font class="keywordtype">char</font>*      <a class="code" href="structmod__inst__s.html#m0">name</a>;          
+<a name="l01114"></a><a class="code" href="structmod__inst__s.html#m1">01114</a>   module*    <a class="code" href="structmod__inst__s.html#m1">mod</a>;           
+<a name="l01115"></a><a class="code" href="structmod__inst__s.html#m2">01115</a>   statistic* <a class="code" href="structmod__inst__s.html#m2">stat</a>;          
+<a name="l01116"></a><a class="code" href="structmod__inst__s.html#m3">01116</a>   inst_parm* <a class="code" href="structmod__inst__s.html#m3">param_head</a>;    
+<a name="l01117"></a><a class="code" href="structmod__inst__s.html#m4">01117</a>   inst_parm* <a class="code" href="structmod__inst__s.html#m4">param_tail</a>;    
+<a name="l01118"></a><a class="code" href="structmod__inst__s.html#m5">01118</a>   mod_inst*  <a class="code" href="structmod__inst__s.html#m5">parent</a>;        
+<a name="l01119"></a><a class="code" href="structmod__inst__s.html#m6">01119</a>   mod_inst*  <a class="code" href="structmod__inst__s.html#m6">child_head</a>;    
+<a name="l01120"></a><a class="code" href="structmod__inst__s.html#m7">01120</a>   mod_inst*  <a class="code" href="structmod__inst__s.html#m7">child_tail</a>;    
+<a name="l01121"></a><a class="code" href="structmod__inst__s.html#m8">01121</a>   mod_inst*  <a class="code" href="structmod__inst__s.html#m8">next</a>;          
+01122 };
+01123 
+01124 <font class="comment">/*-------------------------------------------------------------------------------*/</font>
+01129 <font class="keyword">struct </font><a class="code" href="structtnode__s.html">tnode_s</a>;
 01130 
-01131 <font class="comment">/*</font>
-01132 <font class="comment"> $Log$</font>
-01133 <font class="comment"> Revision 1.62  2002/12/07 17:46:52  phase1geo</font>
-01134 <font class="comment"> Fixing bug with handling memory declarations.  Added diagnostic to verify</font>
-01135 <font class="comment"> that memory declarations are handled properly.  Fixed bug with infinite</font>
-01136 <font class="comment"> looping in statement_connect function and optimized this part of the score</font>
-01137 <font class="comment"> command.  Added diagnostic to verify this fix (always9.v).  Fixed bug in</font>
-01138 <font class="comment"> report command with ordering of lines and combinational logic verbose output.</font>
-01139 <font class="comment"> This is now fixed correctly.</font>
-01140 <font class="comment"></font>
-01141 <font class="comment"> Revision 1.61  2002/12/06 02:18:59  phase1geo</font>
-01142 <font class="comment"> Fixing bug with calculating list and concatenation lengths when MBIT_SEL</font>
-01143 <font class="comment"> expressions were included.  Also modified file parsing algorithm to be</font>
-01144 <font class="comment"> smarter when searching files for modules.  This change makes the parsing</font>
-01145 <font class="comment"> algorithm much more optimized and fixes the bug specified in our bug list.</font>
-01146 <font class="comment"> Added diagnostic to verify fix for first bug.</font>
-01147 <font class="comment"></font>
-01148 <font class="comment"> Revision 1.60  2002/11/27 03:49:20  phase1geo</font>
-01149 <font class="comment"> Fixing bugs in score and report commands for regression.  Finally fixed</font>
-01150 <font class="comment"> static expression calculation to yield proper coverage results for constant</font>
-01151 <font class="comment"> expressions.  Updated regression suite and development documentation for</font>
-01152 <font class="comment"> changes.</font>
-01153 <font class="comment"></font>
-01154 <font class="comment"> Revision 1.59  2002/11/24 14:38:12  phase1geo</font>
-01155 <font class="comment"> Updating more regression CDD files for bug fixes.  Fixing bugs where combinational</font>
-01156 <font class="comment"> expressions were counted more than once.  Adding new diagnostics to regression</font>
-01157 <font class="comment"> suite.</font>
-01158 <font class="comment"></font>
-01159 <font class="comment"> Revision 1.58  2002/11/23 21:27:25  phase1geo</font>
-01160 <font class="comment"> Fixing bug with combinational logic being output when unmeasurable.</font>
+<a name="l01131"></a><a class="code" href="defines_8h.html#a179">01131</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structtnode__s.html">tnode_s</a> tnode;
+01132 
+<a name="l01133"></a><a class="code" href="structtnode__s.html">01133</a> <font class="keyword">struct </font><a class="code" href="structtnode__s.html">tnode_s</a> {
+<a name="l01134"></a><a class="code" href="structtnode__s.html#m0">01134</a>   <font class="keywordtype">char</font>*  <a class="code" href="structtnode__s.html#m0">name</a>;     
+<a name="l01135"></a><a class="code" href="structtnode__s.html#m1">01135</a>   <font class="keywordtype">char</font>*  <a class="code" href="structtnode__s.html#m1">value</a>;    
+<a name="l01136"></a><a class="code" href="structtnode__s.html#m2">01136</a>   tnode* <a class="code" href="structtnode__s.html#m2">left</a>;     
+<a name="l01137"></a><a class="code" href="structtnode__s.html#m3">01137</a>   tnode* <a class="code" href="structtnode__s.html#m3">right</a>;    
+<a name="l01138"></a><a class="code" href="structtnode__s.html#m4">01138</a>   tnode* <a class="code" href="structtnode__s.html#m4">up</a>;       
+01139 };
+01140 
+01141 <font class="comment">/*-------------------------------------------------------------------------------*/</font>
+01142 
+<a name="l01143"></a><a class="code" href="unionexpr__stmt__u.html">01143</a> <font class="keyword">union </font><a class="code" href="unionexpr__stmt__u.html">expr_stmt_u</a> {
+<a name="l01144"></a><a class="code" href="unionexpr__stmt__u.html#m0">01144</a>   expression* <a class="code" href="unionexpr__stmt__u.html#m0">expr</a>;         
+<a name="l01145"></a><a class="code" href="unionexpr__stmt__u.html#m1">01145</a>   statement*  <a class="code" href="unionexpr__stmt__u.html#m1">stmt</a>;         
+01146 };
+01147 
+01148 
+01149 <font class="comment">/*</font>
+01150 <font class="comment"> $Log$</font>
+01151 <font class="comment"> Revision 1.64  2003/01/04 09:25:15  phase1geo</font>
+01152 <font class="comment"> Fixing file search algorithm to fix bug where unexpected module that was</font>
+01153 <font class="comment"> ignored cannot be found.  Added instance7.v diagnostic to verify appropriate</font>
+01154 <font class="comment"> handling of this problem.  Added tree.c and tree.h and removed define_t</font>
+01155 <font class="comment"> structure in lexer.</font>
+01156 <font class="comment"></font>
+01157 <font class="comment"> Revision 1.63  2003/01/03 05:52:01  phase1geo</font>
+01158 <font class="comment"> Adding code to help safeguard from segmentation faults due to array overflow</font>
+01159 <font class="comment"> in VCD parser and symtable.  Reorganized code for symtable symbol lookup and</font>
+01160 <font class="comment"> value assignment.</font>
 01161 <font class="comment"></font>
-01162 <font class="comment"> Revision 1.57  2002/11/23 16:10:46  phase1geo</font>
-01163 <font class="comment"> Updating changelog and development documentation to include FSM description</font>
-01164 <font class="comment"> (this is a brainstorm on how to handle FSMs when we get to this point).  Fixed</font>
-01165 <font class="comment"> bug with code underlining function in handling parameter in reports.  Fixing bugs</font>
-01166 <font class="comment"> with MBIT/SBIT handling (this is not verified to be completely correct yet).</font>
-01167 <font class="comment"></font>
-01168 <font class="comment"> Revision 1.56  2002/11/05 00:20:06  phase1geo</font>
-01169 <font class="comment"> Adding development documentation.  Fixing problem with combinational logic</font>
-01170 <font class="comment"> output in report command and updating full regression.</font>
-01171 <font class="comment"></font>
-01172 <font class="comment"> Revision 1.55  2002/10/31 23:13:36  phase1geo</font>
-01173 <font class="comment"> Fixing C compatibility problems with cc and gcc.  Found a few possible problems</font>
-01174 <font class="comment"> with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that</font>
-01175 <font class="comment"> lead to bus errors.  Ran full regression in 64-bit mode without error.</font>
+01162 <font class="comment"> Revision 1.62  2002/12/07 17:46:52  phase1geo</font>
+01163 <font class="comment"> Fixing bug with handling memory declarations.  Added diagnostic to verify</font>
+01164 <font class="comment"> that memory declarations are handled properly.  Fixed bug with infinite</font>
+01165 <font class="comment"> looping in statement_connect function and optimized this part of the score</font>
+01166 <font class="comment"> command.  Added diagnostic to verify this fix (always9.v).  Fixed bug in</font>
+01167 <font class="comment"> report command with ordering of lines and combinational logic verbose output.</font>
+01168 <font class="comment"> This is now fixed correctly.</font>
+01169 <font class="comment"></font>
+01170 <font class="comment"> Revision 1.61  2002/12/06 02:18:59  phase1geo</font>
+01171 <font class="comment"> Fixing bug with calculating list and concatenation lengths when MBIT_SEL</font>
+01172 <font class="comment"> expressions were included.  Also modified file parsing algorithm to be</font>
+01173 <font class="comment"> smarter when searching files for modules.  This change makes the parsing</font>
+01174 <font class="comment"> algorithm much more optimized and fixes the bug specified in our bug list.</font>
+01175 <font class="comment"> Added diagnostic to verify fix for first bug.</font>
 01176 <font class="comment"></font>
-01177 <font class="comment"> Revision 1.54  2002/10/29 19:57:50  phase1geo</font>
-01178 <font class="comment"> Fixing problems with beginning block comments within comments which are</font>
-01179 <font class="comment"> produced automatically by CVS.  Should fix warning messages from compiler.</font>
-01180 <font class="comment"></font>
-01181 <font class="comment"> Revision 1.53  2002/10/25 13:43:49  phase1geo</font>
-01182 <font class="comment"> Adding statement iterators for moving in both directions in a list with a single</font>
-01183 <font class="comment"> pointer (two-way).  This allows us to reverse statement lists without additional</font>
-01184 <font class="comment"> memory and time (very efficient).  Full regression passes and TODO list items</font>
-01185 <font class="comment"> 2 and 3 are completed.</font>
-01186 <font class="comment"></font>
-01187 <font class="comment"> Revision 1.52  2002/10/24 05:48:58  phase1geo</font>
-01188 <font class="comment"> Additional fixes for MBIT_SEL.  Changed some philosophical stuff around for</font>
-01189 <font class="comment"> cleaner code and for correctness.  Added some development documentation for</font>
-01190 <font class="comment"> expressions and vectors.  At this point, there is a bug in the way that</font>
-01191 <font class="comment"> parameters are handled as far as scoring purposes are concerned but we no</font>
-01192 <font class="comment"> longer segfault.</font>
-01193 <font class="comment"></font>
-01194 <font class="comment"> Revision 1.51  2002/10/23 03:39:06  phase1geo</font>
-01195 <font class="comment"> Fixing bug in MBIT_SEL expressions to calculate the expression widths</font>
-01196 <font class="comment"> correctly.  Updated diagnostic testsuite and added diagnostic that</font>
-01197 <font class="comment"> found the original bug.  A few documentation updates.</font>
-01198 <font class="comment"></font>
-01199 <font class="comment"> Revision 1.50  2002/10/13 19:20:42  phase1geo</font>
-01200 <font class="comment"> Added -T option to score command for properly handling min:typ:max delay expressions.</font>
-01201 <font class="comment"> Updated documentation for -i and -T options to score command and added additional</font>
-01202 <font class="comment"> diagnostic to test instance handling.</font>
-01203 <font class="comment"></font>
-01204 <font class="comment"> Revision 1.49  2002/10/11 05:23:21  phase1geo</font>
-01205 <font class="comment"> Removing local user message allocation and replacing with global to help</font>
-01206 <font class="comment"> with memory efficiency.</font>
-01207 <font class="comment"></font>
-01208 <font class="comment"> Revision 1.48  2002/10/11 04:24:01  phase1geo</font>
-01209 <font class="comment"> This checkin represents some major code renovation in the score command to</font>
-01210 <font class="comment"> fully accommodate parameter support.  All parameter support is in at this</font>
-01211 <font class="comment"> point and the most commonly used parameter usages have been verified.  Some</font>
-01212 <font class="comment"> bugs were fixed in handling default values of constants and expression tree</font>
-01213 <font class="comment"> resizing has been optimized to its fullest.  Full regression has been</font>
-01214 <font class="comment"> updated and passes.  Adding new diagnostics to test suite.  Fixed a few</font>
-01215 <font class="comment"> problems in report outputting.</font>
-01216 <font class="comment"></font>
-01217 <font class="comment"> Revision 1.47  2002/09/26 22:58:46  phase1geo</font>
-01218 <font class="comment"> Fixing syntax error.</font>
-01219 <font class="comment"></font>
-01220 <font class="comment"> Revision 1.46  2002/09/25 02:51:44  phase1geo</font>
-01221 <font class="comment"> Removing need of vector nibble array allocation and deallocation during</font>
-01222 <font class="comment"> expression resizing for efficiency and bug reduction.  Other enhancements</font>
-01223 <font class="comment"> for parameter support.  Parameter stuff still not quite complete.</font>
-01224 <font class="comment"></font>
-01225 <font class="comment"> Revision 1.45  2002/09/21 07:03:28  phase1geo</font>
-01226 <font class="comment"> Attached all parameter functions into db.c.  Just need to finish getting</font>
-01227 <font class="comment"> parser to correctly add override parameters.  Once this is complete, phase 3</font>
-01228 <font class="comment"> can start and will include regenerating expressions and signals before</font>
-01229 <font class="comment"> getting output to CDD file.</font>
-01230 <font class="comment"></font>
-01231 <font class="comment"> Revision 1.44  2002/09/21 04:11:32  phase1geo</font>
-01232 <font class="comment"> Completed phase 1 for adding in parameter support.  Main code is written</font>
-01233 <font class="comment"> that will create an instance parameter from a given module parameter in</font>
-01234 <font class="comment"> its entirety.  The next step will be to complete the module parameter</font>
-01235 <font class="comment"> creation code all the way to the parser.  Regression still passes and</font>
-01236 <font class="comment"> everything compiles at this point.</font>
-01237 <font class="comment"></font>
-01238 <font class="comment"> Revision 1.43  2002/09/19 05:25:19  phase1geo</font>
-01239 <font class="comment"> Fixing incorrect simulation of static values and fixing reports generated</font>
-01240 <font class="comment"> from these static expressions.  Also includes some modifications for parameters</font>
-01241 <font class="comment"> though these changes are not useful at this point.</font>
-01242 <font class="comment"></font>
-01243 <font class="comment"> Revision 1.42  2002/09/13 05:12:25  phase1geo</font>
-01244 <font class="comment"> Adding final touches to -d option to report.  Adding documentation and</font>
-01245 <font class="comment"> updating development documentation to stay in sync.</font>
-01246 <font class="comment"></font>
-01247 <font class="comment"> Revision 1.41  2002/09/06 03:05:28  phase1geo</font>
-01248 <font class="comment"> Some ideas about handling parameters have been added to these files.  Added</font>
-01249 <font class="comment"> "Special Thanks" section in User's Guide for acknowledgements to people</font>
-01250 <font class="comment"> helping in project.</font>
-01251 <font class="comment"></font>
-01252 <font class="comment"> Revision 1.40  2002/08/27 11:53:16  phase1geo</font>
-01253 <font class="comment"> Adding more code for parameter support.  Moving parameters from being a</font>
-01254 <font class="comment"> part of modules to being a part of instances and calling the expression</font>
-01255 <font class="comment"> operation function in the parameter add functions.</font>
-01256 <font class="comment"></font>
-01257 <font class="comment"> Revision 1.39  2002/08/26 12:57:03  phase1geo</font>
-01258 <font class="comment"> In the middle of adding parameter support.  Intermediate checkin but does</font>
-01259 <font class="comment"> not break regressions at this point.</font>
-01260 <font class="comment"></font>
-01261 <font class="comment"> Revision 1.38  2002/08/23 12:55:33  phase1geo</font>
-01262 <font class="comment"> Starting to make modifications for parameter support.  Added parameter source</font>
-01263 <font class="comment"> and header files, changed vector_from_string function to be more verbose</font>
-01264 <font class="comment"> and updated Makefiles for new param.h/.c files.</font>
-01265 <font class="comment"></font>
-01266 <font class="comment"> Revision 1.37  2002/07/23 12:56:22  phase1geo</font>
-01267 <font class="comment"> Fixing some memory overflow issues.  Still getting core dumps in some areas.</font>
-01268 <font class="comment"></font>
-01269 <font class="comment"> Revision 1.36  2002/07/22 05:24:46  phase1geo</font>
-01270 <font class="comment"> Creating new VCD parser.  This should have performance benefits as well as</font>
-01271 <font class="comment"> have the ability to handle any problems that come up in parsing.</font>
-01272 <font class="comment"></font>
-01273 <font class="comment"> Revision 1.35  2002/07/20 18:46:38  phase1geo</font>
-01274 <font class="comment"> Causing fully covered modules to not be output in reports.  Adding</font>
-01275 <font class="comment"> instance3.v diagnostic to verify this works correctly.</font>
-01276 <font class="comment"></font>
-01277 <font class="comment"> Revision 1.34  2002/07/18 02:33:23  phase1geo</font>
-01278 <font class="comment"> Fixed instantiation addition.  Multiple hierarchy instantiation trees should</font>
-01279 <font class="comment"> now work.</font>
+01177 <font class="comment"> Revision 1.60  2002/11/27 03:49:20  phase1geo</font>
+01178 <font class="comment"> Fixing bugs in score and report commands for regression.  Finally fixed</font>
+01179 <font class="comment"> static expression calculation to yield proper coverage results for constant</font>
+01180 <font class="comment"> expressions.  Updated regression suite and development documentation for</font>
+01181 <font class="comment"> changes.</font>
+01182 <font class="comment"></font>
+01183 <font class="comment"> Revision 1.59  2002/11/24 14:38:12  phase1geo</font>
+01184 <font class="comment"> Updating more regression CDD files for bug fixes.  Fixing bugs where combinational</font>
+01185 <font class="comment"> expressions were counted more than once.  Adding new diagnostics to regression</font>
+01186 <font class="comment"> suite.</font>
+01187 <font class="comment"></font>
+01188 <font class="comment"> Revision 1.58  2002/11/23 21:27:25  phase1geo</font>
+01189 <font class="comment"> Fixing bug with combinational logic being output when unmeasurable.</font>
+01190 <font class="comment"></font>
+01191 <font class="comment"> Revision 1.57  2002/11/23 16:10:46  phase1geo</font>
+01192 <font class="comment"> Updating changelog and development documentation to include FSM description</font>
+01193 <font class="comment"> (this is a brainstorm on how to handle FSMs when we get to this point).  Fixed</font>
+01194 <font class="comment"> bug with code underlining function in handling parameter in reports.  Fixing bugs</font>
+01195 <font class="comment"> with MBIT/SBIT handling (this is not verified to be completely correct yet).</font>
+01196 <font class="comment"></font>
+01197 <font class="comment"> Revision 1.56  2002/11/05 00:20:06  phase1geo</font>
+01198 <font class="comment"> Adding development documentation.  Fixing problem with combinational logic</font>
+01199 <font class="comment"> output in report command and updating full regression.</font>
+01200 <font class="comment"></font>
+01201 <font class="comment"> Revision 1.55  2002/10/31 23:13:36  phase1geo</font>
+01202 <font class="comment"> Fixing C compatibility problems with cc and gcc.  Found a few possible problems</font>
+01203 <font class="comment"> with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that</font>
+01204 <font class="comment"> lead to bus errors.  Ran full regression in 64-bit mode without error.</font>
+01205 <font class="comment"></font>
+01206 <font class="comment"> Revision 1.54  2002/10/29 19:57:50  phase1geo</font>
+01207 <font class="comment"> Fixing problems with beginning block comments within comments which are</font>
+01208 <font class="comment"> produced automatically by CVS.  Should fix warning messages from compiler.</font>
+01209 <font class="comment"></font>
+01210 <font class="comment"> Revision 1.53  2002/10/25 13:43:49  phase1geo</font>
+01211 <font class="comment"> Adding statement iterators for moving in both directions in a list with a single</font>
+01212 <font class="comment"> pointer (two-way).  This allows us to reverse statement lists without additional</font>
+01213 <font class="comment"> memory and time (very efficient).  Full regression passes and TODO list items</font>
+01214 <font class="comment"> 2 and 3 are completed.</font>
+01215 <font class="comment"></font>
+01216 <font class="comment"> Revision 1.52  2002/10/24 05:48:58  phase1geo</font>
+01217 <font class="comment"> Additional fixes for MBIT_SEL.  Changed some philosophical stuff around for</font>
+01218 <font class="comment"> cleaner code and for correctness.  Added some development documentation for</font>
+01219 <font class="comment"> expressions and vectors.  At this point, there is a bug in the way that</font>
+01220 <font class="comment"> parameters are handled as far as scoring purposes are concerned but we no</font>
+01221 <font class="comment"> longer segfault.</font>
+01222 <font class="comment"></font>
+01223 <font class="comment"> Revision 1.51  2002/10/23 03:39:06  phase1geo</font>
+01224 <font class="comment"> Fixing bug in MBIT_SEL expressions to calculate the expression widths</font>
+01225 <font class="comment"> correctly.  Updated diagnostic testsuite and added diagnostic that</font>
+01226 <font class="comment"> found the original bug.  A few documentation updates.</font>
+01227 <font class="comment"></font>
+01228 <font class="comment"> Revision 1.50  2002/10/13 19:20:42  phase1geo</font>
+01229 <font class="comment"> Added -T option to score command for properly handling min:typ:max delay expressions.</font>
+01230 <font class="comment"> Updated documentation for -i and -T options to score command and added additional</font>
+01231 <font class="comment"> diagnostic to test instance handling.</font>
+01232 <font class="comment"></font>
+01233 <font class="comment"> Revision 1.49  2002/10/11 05:23:21  phase1geo</font>
+01234 <font class="comment"> Removing local user message allocation and replacing with global to help</font>
+01235 <font class="comment"> with memory efficiency.</font>
+01236 <font class="comment"></font>
+01237 <font class="comment"> Revision 1.48  2002/10/11 04:24:01  phase1geo</font>
+01238 <font class="comment"> This checkin represents some major code renovation in the score command to</font>
+01239 <font class="comment"> fully accommodate parameter support.  All parameter support is in at this</font>
+01240 <font class="comment"> point and the most commonly used parameter usages have been verified.  Some</font>
+01241 <font class="comment"> bugs were fixed in handling default values of constants and expression tree</font>
+01242 <font class="comment"> resizing has been optimized to its fullest.  Full regression has been</font>
+01243 <font class="comment"> updated and passes.  Adding new diagnostics to test suite.  Fixed a few</font>
+01244 <font class="comment"> problems in report outputting.</font>
+01245 <font class="comment"></font>
+01246 <font class="comment"> Revision 1.47  2002/09/26 22:58:46  phase1geo</font>
+01247 <font class="comment"> Fixing syntax error.</font>
+01248 <font class="comment"></font>
+01249 <font class="comment"> Revision 1.46  2002/09/25 02:51:44  phase1geo</font>
+01250 <font class="comment"> Removing need of vector nibble array allocation and deallocation during</font>
+01251 <font class="comment"> expression resizing for efficiency and bug reduction.  Other enhancements</font>
+01252 <font class="comment"> for parameter support.  Parameter stuff still not quite complete.</font>
+01253 <font class="comment"></font>
+01254 <font class="comment"> Revision 1.45  2002/09/21 07:03:28  phase1geo</font>
+01255 <font class="comment"> Attached all parameter functions into db.c.  Just need to finish getting</font>
+01256 <font class="comment"> parser to correctly add override parameters.  Once this is complete, phase 3</font>
+01257 <font class="comment"> can start and will include regenerating expressions and signals before</font>
+01258 <font class="comment"> getting output to CDD file.</font>
+01259 <font class="comment"></font>
+01260 <font class="comment"> Revision 1.44  2002/09/21 04:11:32  phase1geo</font>
+01261 <font class="comment"> Completed phase 1 for adding in parameter support.  Main code is written</font>
+01262 <font class="comment"> that will create an instance parameter from a given module parameter in</font>
+01263 <font class="comment"> its entirety.  The next step will be to complete the module parameter</font>
+01264 <font class="comment"> creation code all the way to the parser.  Regression still passes and</font>
+01265 <font class="comment"> everything compiles at this point.</font>
+01266 <font class="comment"></font>
+01267 <font class="comment"> Revision 1.43  2002/09/19 05:25:19  phase1geo</font>
+01268 <font class="comment"> Fixing incorrect simulation of static values and fixing reports generated</font>
+01269 <font class="comment"> from these static expressions.  Also includes some modifications for parameters</font>
+01270 <font class="comment"> though these changes are not useful at this point.</font>
+01271 <font class="comment"></font>
+01272 <font class="comment"> Revision 1.42  2002/09/13 05:12:25  phase1geo</font>
+01273 <font class="comment"> Adding final touches to -d option to report.  Adding documentation and</font>
+01274 <font class="comment"> updating development documentation to stay in sync.</font>
+01275 <font class="comment"></font>
+01276 <font class="comment"> Revision 1.41  2002/09/06 03:05:28  phase1geo</font>
+01277 <font class="comment"> Some ideas about handling parameters have been added to these files.  Added</font>
+01278 <font class="comment"> "Special Thanks" section in User's Guide for acknowledgements to people</font>
+01279 <font class="comment"> helping in project.</font>
 01280 <font class="comment"></font>
-01281 <font class="comment"> Revision 1.33  2002/07/14 05:10:42  phase1geo</font>
-01282 <font class="comment"> Added support for signal concatenation in score and report commands.  Fixed</font>
-01283 <font class="comment"> bugs in this code (and multiplication).</font>
-01284 <font class="comment"></font>
-01285 <font class="comment"> Revision 1.32  2002/07/11 16:59:10  phase1geo</font>
-01286 <font class="comment"> Added release information to NEWS for upcoming release.</font>
-01287 <font class="comment"></font>
-01288 <font class="comment"> Revision 1.31  2002/07/10 13:15:57  phase1geo</font>
-01289 <font class="comment"> Adding case1.1.v Verilog diagnostic to check default case statement.  There</font>
-01290 <font class="comment"> were reporting problems related to this.  Report problems have been fixed and</font>
-01291 <font class="comment"> full regression passes.</font>
-01292 <font class="comment"></font>
-01293 <font class="comment"> Revision 1.30  2002/07/10 04:57:07  phase1geo</font>
-01294 <font class="comment"> Adding bits to vector nibble to allow us to specify what type of input</font>
-01295 <font class="comment"> static value was read in so that the output value may be displayed in</font>
-01296 <font class="comment"> the same format (DECIMAL, BINARY, OCTAL, HEXIDECIMAL).  Full regression</font>
-01297 <font class="comment"> passes.</font>
-01298 <font class="comment"></font>
-01299 <font class="comment"> Revision 1.29  2002/07/09 17:27:25  phase1geo</font>
-01300 <font class="comment"> Fixing default case item handling and in the middle of making fixes for</font>
-01301 <font class="comment"> report outputting.</font>
-01302 <font class="comment"></font>
-01303 <font class="comment"> Revision 1.28  2002/07/09 04:46:26  phase1geo</font>
-01304 <font class="comment"> Adding -D and -Q options to covered for outputting debug information or</font>
-01305 <font class="comment"> suppressing normal output entirely.  Updated generated documentation and</font>
-01306 <font class="comment"> modified Verilog diagnostic Makefile to use these new options.</font>
-01307 <font class="comment"></font>
-01308 <font class="comment"> Revision 1.27  2002/07/05 16:49:47  phase1geo</font>
-01309 <font class="comment"> Modified a lot of code this go around.  Fixed VCD reader to handle changes in</font>
-01310 <font class="comment"> the reverse order (last changes are stored instead of first for timestamp).</font>
-01311 <font class="comment"> Fixed problem with AEDGE operator to handle vector value changes correctly.</font>
-01312 <font class="comment"> Added casez2.v diagnostic to verify proper handling of casez with '?' characters.</font>
-01313 <font class="comment"> Full regression passes; however, the recent changes seem to have impacted</font>
-01314 <font class="comment"> performance -- need to look into this.</font>
-01315 <font class="comment"></font>
-01316 <font class="comment"> Revision 1.26  2002/07/05 05:00:13  phase1geo</font>
-01317 <font class="comment"> Removing CASE, CASEX, and CASEZ from line and combinational logic results.</font>
-01318 <font class="comment"></font>
-01319 <font class="comment"> Revision 1.25  2002/07/05 04:12:46  phase1geo</font>
-01320 <font class="comment"> Correcting case, casex and casez equality calculation to conform to correct</font>
-01321 <font class="comment"> equality check for each case type.  Verified that case statements work correctly</font>
-01322 <font class="comment"> at this point.  Added diagnostics to verify case statements.</font>
-01323 <font class="comment"></font>
-01324 <font class="comment"> Revision 1.24  2002/07/04 23:10:12  phase1geo</font>
-01325 <font class="comment"> Added proper support for case, casex, and casez statements in score command.</font>
-01326 <font class="comment"> Report command still incorrect for these statement types.</font>
+01281 <font class="comment"> Revision 1.40  2002/08/27 11:53:16  phase1geo</font>
+01282 <font class="comment"> Adding more code for parameter support.  Moving parameters from being a</font>
+01283 <font class="comment"> part of modules to being a part of instances and calling the expression</font>
+01284 <font class="comment"> operation function in the parameter add functions.</font>
+01285 <font class="comment"></font>
+01286 <font class="comment"> Revision 1.39  2002/08/26 12:57:03  phase1geo</font>
+01287 <font class="comment"> In the middle of adding parameter support.  Intermediate checkin but does</font>
+01288 <font class="comment"> not break regressions at this point.</font>
+01289 <font class="comment"></font>
+01290 <font class="comment"> Revision 1.38  2002/08/23 12:55:33  phase1geo</font>
+01291 <font class="comment"> Starting to make modifications for parameter support.  Added parameter source</font>
+01292 <font class="comment"> and header files, changed vector_from_string function to be more verbose</font>
+01293 <font class="comment"> and updated Makefiles for new param.h/.c files.</font>
+01294 <font class="comment"></font>
+01295 <font class="comment"> Revision 1.37  2002/07/23 12:56:22  phase1geo</font>
+01296 <font class="comment"> Fixing some memory overflow issues.  Still getting core dumps in some areas.</font>
+01297 <font class="comment"></font>
+01298 <font class="comment"> Revision 1.36  2002/07/22 05:24:46  phase1geo</font>
+01299 <font class="comment"> Creating new VCD parser.  This should have performance benefits as well as</font>
+01300 <font class="comment"> have the ability to handle any problems that come up in parsing.</font>
+01301 <font class="comment"></font>
+01302 <font class="comment"> Revision 1.35  2002/07/20 18:46:38  phase1geo</font>
+01303 <font class="comment"> Causing fully covered modules to not be output in reports.  Adding</font>
+01304 <font class="comment"> instance3.v diagnostic to verify this works correctly.</font>
+01305 <font class="comment"></font>
+01306 <font class="comment"> Revision 1.34  2002/07/18 02:33:23  phase1geo</font>
+01307 <font class="comment"> Fixed instantiation addition.  Multiple hierarchy instantiation trees should</font>
+01308 <font class="comment"> now work.</font>
+01309 <font class="comment"></font>
+01310 <font class="comment"> Revision 1.33  2002/07/14 05:10:42  phase1geo</font>
+01311 <font class="comment"> Added support for signal concatenation in score and report commands.  Fixed</font>
+01312 <font class="comment"> bugs in this code (and multiplication).</font>
+01313 <font class="comment"></font>
+01314 <font class="comment"> Revision 1.32  2002/07/11 16:59:10  phase1geo</font>
+01315 <font class="comment"> Added release information to NEWS for upcoming release.</font>
+01316 <font class="comment"></font>
+01317 <font class="comment"> Revision 1.31  2002/07/10 13:15:57  phase1geo</font>
+01318 <font class="comment"> Adding case1.1.v Verilog diagnostic to check default case statement.  There</font>
+01319 <font class="comment"> were reporting problems related to this.  Report problems have been fixed and</font>
+01320 <font class="comment"> full regression passes.</font>
+01321 <font class="comment"></font>
+01322 <font class="comment"> Revision 1.30  2002/07/10 04:57:07  phase1geo</font>
+01323 <font class="comment"> Adding bits to vector nibble to allow us to specify what type of input</font>
+01324 <font class="comment"> static value was read in so that the output value may be displayed in</font>
+01325 <font class="comment"> the same format (DECIMAL, BINARY, OCTAL, HEXIDECIMAL).  Full regression</font>
+01326 <font class="comment"> passes.</font>
 01327 <font class="comment"></font>
-01328 <font class="comment"> Revision 1.23  2002/07/03 21:30:52  phase1geo</font>
-01329 <font class="comment"> Fixed remaining issues with always statements.  Full regression is running</font>
-01330 <font class="comment"> error free at this point.  Regenerated documentation.  Added EOR expression</font>
-01331 <font class="comment"> operation to handle the or expression in event lists.</font>
-01332 <font class="comment"></font>
-01333 <font class="comment"> Revision 1.22  2002/07/03 19:54:36  phase1geo</font>
-01334 <font class="comment"> Adding/fixing code to properly handle always blocks with the event control</font>
-01335 <font class="comment"> structures attached.  Added several new diagnostics to test this ability.</font>
-01336 <font class="comment"> always1.v is still failing but the rest are passing.</font>
-01337 <font class="comment"></font>
-01338 <font class="comment"> Revision 1.21  2002/07/02 19:52:50  phase1geo</font>
-01339 <font class="comment"> Removing unecessary diagnostics.  Cleaning up extraneous output and</font>
-01340 <font class="comment"> generating new documentation from source.  Regression passes at the</font>
-01341 <font class="comment"> current time.</font>
-01342 <font class="comment"></font>
-01343 <font class="comment"> Revision 1.20  2002/07/02 18:42:18  phase1geo</font>
-01344 <font class="comment"> Various bug fixes.  Added support for multiple signals sharing the same VCD</font>
-01345 <font class="comment"> symbol.  Changed conditional support to allow proper simulation results.</font>
-01346 <font class="comment"> Updated VCD parser to allow for symbols containing only alphanumeric characters.</font>
+01328 <font class="comment"> Revision 1.29  2002/07/09 17:27:25  phase1geo</font>
+01329 <font class="comment"> Fixing default case item handling and in the middle of making fixes for</font>
+01330 <font class="comment"> report outputting.</font>
+01331 <font class="comment"></font>
+01332 <font class="comment"> Revision 1.28  2002/07/09 04:46:26  phase1geo</font>
+01333 <font class="comment"> Adding -D and -Q options to covered for outputting debug information or</font>
+01334 <font class="comment"> suppressing normal output entirely.  Updated generated documentation and</font>
+01335 <font class="comment"> modified Verilog diagnostic Makefile to use these new options.</font>
+01336 <font class="comment"></font>
+01337 <font class="comment"> Revision 1.27  2002/07/05 16:49:47  phase1geo</font>
+01338 <font class="comment"> Modified a lot of code this go around.  Fixed VCD reader to handle changes in</font>
+01339 <font class="comment"> the reverse order (last changes are stored instead of first for timestamp).</font>
+01340 <font class="comment"> Fixed problem with AEDGE operator to handle vector value changes correctly.</font>
+01341 <font class="comment"> Added casez2.v diagnostic to verify proper handling of casez with '?' characters.</font>
+01342 <font class="comment"> Full regression passes; however, the recent changes seem to have impacted</font>
+01343 <font class="comment"> performance -- need to look into this.</font>
+01344 <font class="comment"></font>
+01345 <font class="comment"> Revision 1.26  2002/07/05 05:00:13  phase1geo</font>
+01346 <font class="comment"> Removing CASE, CASEX, and CASEZ from line and combinational logic results.</font>
 01347 <font class="comment"></font>
-01348 <font class="comment"> Revision 1.19  2002/06/30 22:23:20  phase1geo</font>
-01349 <font class="comment"> Working on fixing looping in parser.  Statement connector needs to be revamped.</font>
-01350 <font class="comment"></font>
-01351 <font class="comment"> Revision 1.18  2002/06/28 03:04:59  phase1geo</font>
-01352 <font class="comment"> Fixing more errors found by diagnostics.  Things are running pretty well at</font>
-01353 <font class="comment"> this point with current diagnostics.  Still some report output problems.</font>
-01354 <font class="comment"></font>
-01355 <font class="comment"> Revision 1.17  2002/06/27 21:18:48  phase1geo</font>
-01356 <font class="comment"> Fixing report Verilog output.  simple.v verilog diagnostic now passes.</font>
-01357 <font class="comment"></font>
-01358 <font class="comment"> Revision 1.16  2002/06/27 20:39:43  phase1geo</font>
-01359 <font class="comment"> Fixing scoring bugs as well as report bugs.  Things are starting to work</font>
-01360 <font class="comment"> fairly well now.  Added rest of support for delays.</font>
+01348 <font class="comment"> Revision 1.25  2002/07/05 04:12:46  phase1geo</font>
+01349 <font class="comment"> Correcting case, casex and casez equality calculation to conform to correct</font>
+01350 <font class="comment"> equality check for each case type.  Verified that case statements work correctly</font>
+01351 <font class="comment"> at this point.  Added diagnostics to verify case statements.</font>
+01352 <font class="comment"></font>
+01353 <font class="comment"> Revision 1.24  2002/07/04 23:10:12  phase1geo</font>
+01354 <font class="comment"> Added proper support for case, casex, and casez statements in score command.</font>
+01355 <font class="comment"> Report command still incorrect for these statement types.</font>
+01356 <font class="comment"></font>
+01357 <font class="comment"> Revision 1.23  2002/07/03 21:30:52  phase1geo</font>
+01358 <font class="comment"> Fixed remaining issues with always statements.  Full regression is running</font>
+01359 <font class="comment"> error free at this point.  Regenerated documentation.  Added EOR expression</font>
+01360 <font class="comment"> operation to handle the or expression in event lists.</font>
 01361 <font class="comment"></font>
-01362 <font class="comment"> Revision 1.15  2002/06/26 04:59:50  phase1geo</font>
-01363 <font class="comment"> Adding initial support for delays.  Support is not yet complete and is</font>
-01364 <font class="comment"> currently untested.</font>
-01365 <font class="comment"></font>
-01366 <font class="comment"> Revision 1.14  2002/06/23 21:18:21  phase1geo</font>
-01367 <font class="comment"> Added appropriate statement support in parser.  All parts should be in place</font>
-01368 <font class="comment"> and ready to start testing.</font>
-01369 <font class="comment"></font>
-01370 <font class="comment"> Revision 1.13  2002/06/22 05:27:30  phase1geo</font>
-01371 <font class="comment"> Additional supporting code for simulation engine and statement support in</font>
-01372 <font class="comment"> parser.</font>
-01373 <font class="comment"></font>
-01374 <font class="comment"> Revision 1.11  2002/05/13 03:02:58  phase1geo</font>
-01375 <font class="comment"> Adding lines back to expressions and removing them from statements (since the line</font>
-01376 <font class="comment"> number range of an expression can be calculated by looking at the expression line</font>
-01377 <font class="comment"> numbers).</font>
-01378 <font class="comment"></font>
-01379 <font class="comment"> Revision 1.10  2002/05/03 03:39:36  phase1geo</font>
-01380 <font class="comment"> Removing all syntax errors due to addition of statements.  Added more statement</font>
-01381 <font class="comment"> support code.  Still have a ways to go before we can try anything.  Removed lines</font>
-01382 <font class="comment"> from expressions though we may want to consider putting these back for reporting</font>
-01383 <font class="comment"> purposes.</font>
-01384 <font class="comment"></font>
-01385 <font class="comment"> Revision 1.9  2002/05/02 03:27:42  phase1geo</font>
-01386 <font class="comment"> Initial creation of statement structure and manipulation files.  Internals are</font>
-01387 <font class="comment"> still in a chaotic state.</font>
-01388 <font class="comment"></font>
-01389 <font class="comment"> Revision 1.8  2002/04/30 05:04:25  phase1geo</font>
-01390 <font class="comment"> Added initial go-round of adding statement handling to parser.  Added simple</font>
-01391 <font class="comment"> Verilog test to check correct statement handling.  At this point there is a</font>
-01392 <font class="comment"> bug in the expression write function (we need to display statement trees in</font>
-01393 <font class="comment"> the proper order since they are unlike normal expression trees.)</font>
-01394 <font class="comment">*/</font>
-01395 
-01396 <font class="preprocessor">#endif</font>
-01397 <font class="preprocessor"></font>
-</pre></div><hr><address align="right"><small>Generated on Sat Dec 14 01:04:22 2002 for Covered by
+01362 <font class="comment"> Revision 1.22  2002/07/03 19:54:36  phase1geo</font>
+01363 <font class="comment"> Adding/fixing code to properly handle always blocks with the event control</font>
+01364 <font class="comment"> structures attached.  Added several new diagnostics to test this ability.</font>
+01365 <font class="comment"> always1.v is still failing but the rest are passing.</font>
+01366 <font class="comment"></font>
+01367 <font class="comment"> Revision 1.21  2002/07/02 19:52:50  phase1geo</font>
+01368 <font class="comment"> Removing unecessary diagnostics.  Cleaning up extraneous output and</font>
+01369 <font class="comment"> generating new documentation from source.  Regression passes at the</font>
+01370 <font class="comment"> current time.</font>
+01371 <font class="comment"></font>
+01372 <font class="comment"> Revision 1.20  2002/07/02 18:42:18  phase1geo</font>
+01373 <font class="comment"> Various bug fixes.  Added support for multiple signals sharing the same VCD</font>
+01374 <font class="comment"> symbol.  Changed conditional support to allow proper simulation results.</font>
+01375 <font class="comment"> Updated VCD parser to allow for symbols containing only alphanumeric characters.</font>
+01376 <font class="comment"></font>
+01377 <font class="comment"> Revision 1.19  2002/06/30 22:23:20  phase1geo</font>
+01378 <font class="comment"> Working on fixing looping in parser.  Statement connector needs to be revamped.</font>
+01379 <font class="comment"></font>
+01380 <font class="comment"> Revision 1.18  2002/06/28 03:04:59  phase1geo</font>
+01381 <font class="comment"> Fixing more errors found by diagnostics.  Things are running pretty well at</font>
+01382 <font class="comment"> this point with current diagnostics.  Still some report output problems.</font>
+01383 <font class="comment"></font>
+01384 <font class="comment"> Revision 1.17  2002/06/27 21:18:48  phase1geo</font>
+01385 <font class="comment"> Fixing report Verilog output.  simple.v verilog diagnostic now passes.</font>
+01386 <font class="comment"></font>
+01387 <font class="comment"> Revision 1.16  2002/06/27 20:39:43  phase1geo</font>
+01388 <font class="comment"> Fixing scoring bugs as well as report bugs.  Things are starting to work</font>
+01389 <font class="comment"> fairly well now.  Added rest of support for delays.</font>
+01390 <font class="comment"></font>
+01391 <font class="comment"> Revision 1.15  2002/06/26 04:59:50  phase1geo</font>
+01392 <font class="comment"> Adding initial support for delays.  Support is not yet complete and is</font>
+01393 <font class="comment"> currently untested.</font>
+01394 <font class="comment"></font>
+01395 <font class="comment"> Revision 1.14  2002/06/23 21:18:21  phase1geo</font>
+01396 <font class="comment"> Added appropriate statement support in parser.  All parts should be in place</font>
+01397 <font class="comment"> and ready to start testing.</font>
+01398 <font class="comment"></font>
+01399 <font class="comment"> Revision 1.13  2002/06/22 05:27:30  phase1geo</font>
+01400 <font class="comment"> Additional supporting code for simulation engine and statement support in</font>
+01401 <font class="comment"> parser.</font>
+01402 <font class="comment"></font>
+01403 <font class="comment"> Revision 1.11  2002/05/13 03:02:58  phase1geo</font>
+01404 <font class="comment"> Adding lines back to expressions and removing them from statements (since the line</font>
+01405 <font class="comment"> number range of an expression can be calculated by looking at the expression line</font>
+01406 <font class="comment"> numbers).</font>
+01407 <font class="comment"></font>
+01408 <font class="comment"> Revision 1.10  2002/05/03 03:39:36  phase1geo</font>
+01409 <font class="comment"> Removing all syntax errors due to addition of statements.  Added more statement</font>
+01410 <font class="comment"> support code.  Still have a ways to go before we can try anything.  Removed lines</font>
+01411 <font class="comment"> from expressions though we may want to consider putting these back for reporting</font>
+01412 <font class="comment"> purposes.</font>
+01413 <font class="comment"></font>
+01414 <font class="comment"> Revision 1.9  2002/05/02 03:27:42  phase1geo</font>
+01415 <font class="comment"> Initial creation of statement structure and manipulation files.  Internals are</font>
+01416 <font class="comment"> still in a chaotic state.</font>
+01417 <font class="comment"></font>
+01418 <font class="comment"> Revision 1.8  2002/04/30 05:04:25  phase1geo</font>
+01419 <font class="comment"> Added initial go-round of adding statement handling to parser.  Added simple</font>
+01420 <font class="comment"> Verilog test to check correct statement handling.  At this point there is a</font>
+01421 <font class="comment"> bug in the expression write function (we need to display statement trees in</font>
+01422 <font class="comment"> the proper order since they are unlike normal expression trees.)</font>
+01423 <font class="comment">*/</font>
+01424 
+01425 <font class="preprocessor">#endif</font>
+01426 <font class="preprocessor"></font>
+</pre></div><hr><address align="right"><small>Generated on Sat Jan 4 03:27:30 2003 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

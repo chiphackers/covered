@@ -11,6 +11,8 @@ char $\ast$ {\bf sym}
 \item 
 char $\ast$ {\bf value}
 \item 
+int {\bf size}
+\item 
 {\bf symtable} $\ast$ {\bf right}
 \item 
 {\bf symtable} $\ast$ {\bf left}
@@ -20,12 +22,12 @@ char $\ast$ {\bf value}
 \subsection{Member Data Documentation}
 \index{symtable_s@{symtable\_\-s}!left@{left}}
 \index{left@{left}!symtable_s@{symtable\_\-s}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf symtable}$\ast$ symtable\_\-s::left}\label{structsymtable__s_m4}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf symtable}$\ast$ symtable\_\-s::left}\label{structsymtable__s_m5}
 
 
 Pointer to next symtable entry to the left \index{symtable_s@{symtable\_\-s}!right@{right}}
 \index{right@{right}!symtable_s@{symtable\_\-s}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf symtable}$\ast$ symtable\_\-s::right}\label{structsymtable__s_m3}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf symtable}$\ast$ symtable\_\-s::right}\label{structsymtable__s_m4}
 
 
 Pointer to next symtable entry to the right \index{symtable_s@{symtable\_\-s}!sig@{sig}}
@@ -33,7 +35,12 @@ Pointer to next symtable entry to the right \index{symtable_s@{symtable\_\-s}!si
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf signal}$\ast$ symtable\_\-s::sig}\label{structsymtable__s_m1}
 
 
-Pointer to signal for this symbol \index{symtable_s@{symtable\_\-s}!sym@{sym}}
+Pointer to signal for this symbol \index{symtable_s@{symtable\_\-s}!size@{size}}
+\index{size@{size}!symtable_s@{symtable\_\-s}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int symtable\_\-s::size}\label{structsymtable__s_m3}
+
+
+Number of bytes allowed storage for value \index{symtable_s@{symtable\_\-s}!sym@{sym}}
 \index{sym@{sym}!symtable_s@{symtable\_\-s}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ symtable\_\-s::sym}\label{structsymtable__s_m0}
 

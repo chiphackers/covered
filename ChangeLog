@@ -1,3 +1,189 @@
+2003-01-04 03:25  phase1geo
+
+	* diags/cdd/instance7.cdd, diags/regress/Makefile,
+	diags/regress/instance7.cfg, diags/rpt/instance7.rptI,
+	diags/rpt/instance7.rptM, diags/verilog/instance7.v,
+	diags/verilog/lib/foo.v, src/Makefile.am, src/Makefile.in,
+	src/defines.h, src/lexer.l, src/link.c, src/pplexer.l, src/tree.c,
+	src/tree.h, src/util.c: Fixing file search algorithm to fix bug
+	where unexpected module that was ignored cannot be found.  Added
+	instance7.v diagnostic to verify appropriate handling of this
+	problem.  Added tree.c and tree.h and removed define_t structure in
+	lexer.
+
+2003-01-03 21:56  phase1geo
+
+	* diags/cdd/instance6.2.cdd, diags/cdd/param3.4.cdd,
+	diags/cdd/param4.cdd, diags/regress/Makefile,
+	diags/rpt/instance6.2.rptI, diags/rpt/instance6.2.rptM,
+	diags/rpt/param3.4.rptI, diags/rpt/param3.4.rptM,
+	diags/verilog/Makefile, src/instance.c, src/param.c, src/vector.c,
+	src/vector.h: Fixing bug with parameterized modules.  Updated
+	regression suite for changes.
+
+2003-01-02 23:53  phase1geo
+
+	* src/instance.c: Removing unnecessary spaces.
+
+2003-01-02 23:52  phase1geo
+
+	* src/: db.c, symtable.c, vcd.c, defines.h, symtable.h: Adding code
+	to help safeguard from segmentation faults due to array overflow in
+	VCD parser and symtable.  Reorganized code for symtable symbol
+	lookup and value assignment.
+
+2003-01-02 23:48  phase1geo
+
+	* src/: lexer.l, parser_misc.h, pplexer.l, parse.c: Reorganizing
+	file opening/closing code in lexer.l and pplexer.l to make some
+	sense out of the madness.
+
+2003-01-02 20:07  phase1geo
+
+	* src/: db.c, lexer.l, link.c, link.h, pplexer.l: Fixing
+	segmentation fault in lexer caused by not closing the temporary
+	input file before unlinking it.  Fixed case where module was parsed
+	but not at the head of the module list.
+
+2002-12-29 23:31  phase1geo
+
+	* src/: db.c, expr.c, expr.h, module.c, module.h, signal.c,
+	signal.h, vector.c, vector.h: Fixing bug in module merge for
+	reports when parameterized modules are merged.	These modules
+	should not output an error to the user when mismatching modules are
+	found.
+
+2002-12-29 00:19  phase1geo
+
+	* diags/regress/Makefile: Making tweak to regression Makefile to
+	remove all generated files after regression has completed.
+
+2002-12-29 00:09  phase1geo
+
+	* ChangeLog, diags/cdd/define4.cdd, diags/regress/Makefile,
+	diags/regress/define4.cfg, diags/regress/implicit2.1.cfg,
+	diags/regress/implicit2.cfg, diags/rpt/always1.rptI,
+	diags/rpt/always1.rptM, diags/rpt/always2.rptI,
+	diags/rpt/always2.rptM, diags/rpt/always3.1.11A.rptI,
+	diags/rpt/always3.1.11A.rptM, diags/rpt/always3.rptI,
+	diags/rpt/always3.rptM, diags/rpt/always4.rptI,
+	diags/rpt/always4.rptM, diags/rpt/always5.1.rptI,
+	diags/rpt/always5.1.rptM, diags/rpt/always5.rptI,
+	diags/rpt/always5.rptM, diags/rpt/always6.rptI,
+	diags/rpt/always6.rptM, diags/rpt/always7.rptI,
+	diags/rpt/always7.rptM, diags/rpt/always8.rptI,
+	diags/rpt/always8.rptM, diags/rpt/always9.rptI,
+	diags/rpt/always9.rptM, diags/rpt/assign1.rptI,
+	diags/rpt/assign1.rptM, diags/rpt/assign2.1.rptI,
+	diags/rpt/assign2.1.rptM, diags/rpt/assign2.2.rptI,
+	diags/rpt/assign2.2.rptM, diags/rpt/assign2.3.rptI,
+	diags/rpt/assign2.3.rptM, diags/rpt/assign2.8.rptI,
+	diags/rpt/assign2.8.rptM, diags/rpt/assign2.9.rptI,
+	diags/rpt/assign2.9.rptM, diags/rpt/assign2.rptI,
+	diags/rpt/assign2.rptM, diags/rpt/assign3.2A.rptI,
+	diags/rpt/assign3.2A.rptM, diags/rpt/case1.1.rptI,
+	diags/rpt/case1.1.rptM, diags/rpt/case1.2.rptI,
+	diags/rpt/case1.2.rptM, diags/rpt/case1.3.rptI,
+	diags/rpt/case1.3.rptM, diags/rpt/case1.rptI, diags/rpt/case1.rptM,
+	diags/rpt/case2.rptI, diags/rpt/case2.rptM, diags/rpt/case3.1.rptI,
+	diags/rpt/case3.1.rptM, diags/rpt/case3.2.rptI,
+	diags/rpt/case3.2.rptM, diags/rpt/case3.3.rptI,
+	diags/rpt/case3.3.rptM, diags/rpt/case3.4.rptI,
+	diags/rpt/case3.4.rptM, diags/rpt/case3.rptI, diags/rpt/case3.rptM,
+	diags/rpt/casex1.1.rptI, diags/rpt/casex1.1.rptM,
+	diags/rpt/casex1.2.rptI, diags/rpt/casex1.2.rptM,
+	diags/rpt/casex1.3.rptI, diags/rpt/casex1.3.rptM,
+	diags/rpt/casex1.4.rptI, diags/rpt/casex1.4.rptM,
+	diags/rpt/casex1.rptI, diags/rpt/casex1.rptM,
+	diags/rpt/casez1.1.rptI, diags/rpt/casez1.1.rptM,
+	diags/rpt/casez1.2.rptI, diags/rpt/casez1.2.rptM,
+	diags/rpt/casez1.3.rptI, diags/rpt/casez1.3.rptM,
+	diags/rpt/casez1.4.rptI, diags/rpt/casez1.4.rptM,
+	diags/rpt/casez1.rptI, diags/rpt/casez1.rptM,
+	diags/rpt/casez2.rptI, diags/rpt/casez2.rptM,
+	diags/rpt/concat1.rptI, diags/rpt/concat1.rptM,
+	diags/rpt/concat2.rptI, diags/rpt/concat2.rptM,
+	diags/rpt/concat3.rptI, diags/rpt/concat3.rptM,
+	diags/rpt/concat4.1.rptI, diags/rpt/concat4.1.rptM,
+	diags/rpt/concat4.2.rptI, diags/rpt/concat4.2.rptM,
+	diags/rpt/concat5.rptI, diags/rpt/concat5.rptM,
+	diags/rpt/cond1.rptI, diags/rpt/cond1.rptM, diags/rpt/cond2.rptI,
+	diags/rpt/cond2.rptM, diags/rpt/define1.1.rptI,
+	diags/rpt/define1.1.rptM, diags/rpt/define1.rptI,
+	diags/rpt/define1.rptM, diags/rpt/define2.1.rptI,
+	diags/rpt/define2.1.rptM, diags/rpt/define2.rptI,
+	diags/rpt/define2.rptM, diags/rpt/define3.rptI,
+	diags/rpt/define3.rptM, diags/rpt/define4.rptI,
+	diags/rpt/define4.rptM, diags/rpt/delay1.1.rptI,
+	diags/rpt/delay1.1.rptM, diags/rpt/delay1.2.rptI,
+	diags/rpt/delay1.2.rptM, diags/rpt/delay1.3.rptI,
+	diags/rpt/delay1.3.rptM, diags/rpt/delay1.rptI,
+	diags/rpt/delay1.rptM, diags/rpt/expand1.rptI,
+	diags/rpt/expand1.rptM, diags/rpt/expand2.rptI,
+	diags/rpt/expand2.rptM, diags/rpt/expand3.rptI,
+	diags/rpt/expand3.rptM, diags/rpt/ifdef1.1.rptI,
+	diags/rpt/ifdef1.1.rptM, diags/rpt/ifdef1.2.rptI,
+	diags/rpt/ifdef1.2.rptM, diags/rpt/ifdef1.rptI,
+	diags/rpt/ifdef1.rptM, diags/rpt/ifdef2.1.rptI,
+	diags/rpt/ifdef2.1.rptM, diags/rpt/ifdef2.2.rptI,
+	diags/rpt/ifdef2.2.rptM, diags/rpt/ifdef2.3.rptI,
+	diags/rpt/ifdef2.3.rptM, diags/rpt/ifelse1.rptI,
+	diags/rpt/ifelse1.rptM, diags/rpt/implicit1.rptI,
+	diags/rpt/implicit1.rptM, diags/rpt/implicit2.rptI,
+	diags/rpt/implicit2.rptM, diags/rpt/include1.1.rptI,
+	diags/rpt/include1.1.rptM, diags/rpt/include1.rptI,
+	diags/rpt/include1.rptM, diags/rpt/include2.rptI,
+	diags/rpt/include2.rptM, diags/rpt/instance1.1.rptI,
+	diags/rpt/instance1.1.rptM, diags/rpt/instance1.2.rptI,
+	diags/rpt/instance1.2.rptM, diags/rpt/instance1.rptI,
+	diags/rpt/instance1.rptM, diags/rpt/instance2.rptI,
+	diags/rpt/instance2.rptM, diags/rpt/instance3.rptI,
+	diags/rpt/instance3.rptM, diags/rpt/instance4.1.rptI,
+	diags/rpt/instance4.1.rptM, diags/rpt/instance4.2.rptI,
+	diags/rpt/instance4.2.rptM, diags/rpt/instance4.rptI,
+	diags/rpt/instance4.rptM, diags/rpt/instance5.rptI,
+	diags/rpt/instance5.rptM, diags/rpt/instance6.1.rptI,
+	diags/rpt/instance6.1.rptM, diags/rpt/instance6.rptI,
+	diags/rpt/instance6.rptM, diags/rpt/long_exp1.rptI,
+	diags/rpt/long_exp1.rptM, diags/rpt/mbit_sel1.rptI,
+	diags/rpt/mbit_sel1.rptM, diags/rpt/mbit_sel2.rptI,
+	diags/rpt/mbit_sel2.rptM, diags/rpt/mbit_sel3.1.rptI,
+	diags/rpt/mbit_sel3.1.rptM, diags/rpt/mbit_sel3.rptI,
+	diags/rpt/mbit_sel3.rptM, diags/rpt/mem1.rptI, diags/rpt/mem1.rptM,
+	diags/rpt/mult1.rptI, diags/rpt/mult1.rptM,
+	diags/rpt/param1.1.rptI, diags/rpt/param1.1.rptM,
+	diags/rpt/param1.2.rptI, diags/rpt/param1.2.rptM,
+	diags/rpt/param1.3.rptI, diags/rpt/param1.3.rptM,
+	diags/rpt/param1.rptI, diags/rpt/param1.rptM,
+	diags/rpt/param3.1.rptI, diags/rpt/param3.1.rptM,
+	diags/rpt/param3.2.rptI, diags/rpt/param3.2.rptM,
+	diags/rpt/param3.3.rptI, diags/rpt/param3.3.rptM,
+	diags/rpt/param3.4.rptI, diags/rpt/param3.4.rptM,
+	diags/rpt/param3.rptI, diags/rpt/param3.rptM,
+	diags/rpt/param4.rptI, diags/rpt/param4.rptM,
+	diags/rpt/param5.rptI, diags/rpt/param5.rptM,
+	diags/rpt/param6.1.rptI, diags/rpt/param6.1.rptM,
+	diags/rpt/param6.rptI, diags/rpt/param6.rptM,
+	diags/rpt/real1.1.rptI, diags/rpt/real1.1.rptM,
+	diags/rpt/sbit_sel1.rptI, diags/rpt/sbit_sel1.rptM,
+	diags/rpt/static1.rptI, diags/rpt/static1.rptM,
+	diags/rpt/static2.1.rptI, diags/rpt/static2.1.rptM,
+	diags/rpt/static2.2.rptI, diags/rpt/static2.2.rptM,
+	diags/rpt/static2.rptI, diags/rpt/static2.rptM,
+	diags/rpt/supply0.rptI, diags/rpt/supply0.rptM,
+	diags/rpt/supply1.rptI, diags/rpt/supply1.rptM, diags/rpt/tri.rptI,
+	diags/rpt/tri.rptM, diags/rpt/tri0.rptI, diags/rpt/tri0.rptM,
+	diags/rpt/tri1.rptI, diags/rpt/tri1.rptM, diags/verilog/Makefile,
+	diags/verilog/check_test, diags/verilog/define4.v,
+	diags/verilog/implicit2.1.v, diags/verilog/implicit2.v,
+	diags/verilog/include/define4.h, src/parser.y, src/pplexer.l,
+	src/report.c, src/signal.c: Fixing bug where output was not
+	squelched in report command when -Q option is specified.  Fixed bug
+	in preprocessor where spaces where added in when newlines found in
+	C-style comment blocks.  Modified regression run to check CDD file
+	and generated module and instance reports.  Started to add code to
+	handle signals that are specified in design but unused in Covered.
+
 2002-12-22 00:29  phase1geo
 
 	* src/: lexer.l, pplexer.l: Changing call to reset_pplexer to

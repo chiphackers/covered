@@ -14,10 +14,9 @@
 {\tt \#include \char`\"{}vector.h\char`\"{}}\par
 {\tt \#include \char`\"{}parser\_\-misc.h\char`\"{}}\par
 {\tt \#include \char`\"{}keywords.h\char`\"{}}\par
+{\tt \#include \char`\"{}tree.h\char`\"{}}\par
 \subsection*{Compounds}
 \begin{CompactItemize}
-\item 
-struct {\bf include\_\-stack\_\-t}
 \item 
 struct {\bf yy\_\-buffer\_\-state}
 \end{CompactItemize}
@@ -118,9 +117,9 @@ struct {\bf yy\_\-buffer\_\-state}
 \item 
 \#define {\bf YY\_\-DO\_\-BEFORE\_\-ACTION}
 \item 
-\#define {\bf YY\_\-NUM\_\-RULES}\ 98
+\#define {\bf YY\_\-NUM\_\-RULES}\ 80
 \item 
-\#define {\bf YY\_\-END\_\-OF\_\-BUFFER}\ 99
+\#define {\bf YY\_\-END\_\-OF\_\-BUFFER}\ 81
 \item 
 \#define {\bf REJECT}\ reject\_\-used\_\-but\_\-not\_\-detected
 \item 
@@ -136,29 +135,33 @@ struct {\bf yy\_\-buffer\_\-state}
 \item 
 \#define {\bf YYDEBUG}\ 1
 \item 
+\#define {\bf YYERROR\_\-VERBOSE}\ 1
+\item 
 \#define {\bf YY\_\-STACK\_\-USED}\ 1
 \item 
 \#define {\bf LCOMMENT}\ 1
 \item 
 \#define {\bf CCOMMENT}\ 2
 \item 
-\#define {\bf CSTRING}\ 3
+\#define {\bf PCOMMENT}\ 3
 \item 
-\#define {\bf DEFINE}\ 4
+\#define {\bf CSTRING}\ 4
 \item 
-\#define {\bf INCLUDE}\ 5
+\#define {\bf DEFINE}\ 5
 \item 
-\#define {\bf ERROR\_\-LINE}\ 6
+\#define {\bf INCLUDE}\ 6
 \item 
-\#define {\bf IGNORE\_\-MODULE}\ 7
+\#define {\bf ERROR\_\-LINE}\ 7
 \item 
-\#define {\bf IFDEF\_\-FALSE}\ 8
+\#define {\bf IGNORE\_\-MODULE}\ 8
 \item 
-\#define {\bf IFDEF\_\-TRUE}\ 9
+\#define {\bf IFDEF\_\-FALSE}\ 9
 \item 
-\#define {\bf IFDEF\_\-SUPR}\ 10
+\#define {\bf IFDEF\_\-TRUE}\ 10
 \item 
-\#define {\bf PPTIMESCALE}\ 11
+\#define {\bf IFDEF\_\-SUPR}\ 11
+\item 
+\#define {\bf PPTIMESCALE}\ 12
 \item 
 \#define {\bf YY\_\-READ\_\-BUF\_\-SIZE}\ 8192
 \item 
@@ -224,33 +227,17 @@ void yy\_\-flex\_\-free {\bf YY\_\-PROTO} ((void $\ast$))
 \item 
 void yy\_\-fatal\_\-error {\bf YY\_\-PROTO} ((yyconst char msg[$\,$]))
 \item 
-void {\bf def\_\-match} ()
+void {\bf reset\_\-pplexer} (char $\ast$filename, FILE $\ast$out)
 \item 
-void {\bf def\_\-start} ()
+void {\bf line\_\-directive} ()
 \item 
-void {\bf def\_\-finish} ()
-\item 
-void {\bf def\_\-undefine} ()
-\item 
-void {\bf do\_\-define} ()
-\item 
-int {\bf is\_\-defined} (const char $\ast$name)
-\item 
-void {\bf include\_\-filename} ()
-\item 
-void {\bf do\_\-include} ()
+void {\bf line\_\-directive2} ()
 \item 
 int {\bf yywrap} ()
 \item 
 void yyunput {\bf YY\_\-PROTO} ((int c, char $\ast$buf\_\-ptr))
 \item 
 void yy\_\-push\_\-state {\bf YY\_\-PROTO} ((int new\_\-state))
-\item 
-define\_\-t $\ast$ {\bf def\_\-lookup} (const char $\ast$name)
-\item 
-void {\bf define\_\-macro} (const char $\ast$name, const char $\ast$value)
-\item 
-void {\bf reset\_\-lexer} (FILE $\ast$out, {\bf str\_\-link} $\ast$file\_\-list\_\-head)
 \end{CompactItemize}
 \subsection*{Variables}
 \begin{CompactItemize}
@@ -277,19 +264,19 @@ int {\bf yy\_\-did\_\-buffer\_\-switch\_\-on\_\-eof}
 \item 
 char $\ast$ {\bf yytext}
 \item 
-yyconst short int {\bf yy\_\-accept} [742]
+yyconst short int {\bf yy\_\-accept} [418]
 \item 
 yyconst int {\bf yy\_\-ec} [256]
 \item 
-yyconst int {\bf yy\_\-meta} [59]
+yyconst int {\bf yy\_\-meta} [63]
 \item 
-yyconst short int {\bf yy\_\-base} [798]
+yyconst short int {\bf yy\_\-base} [458]
 \item 
-yyconst short int {\bf yy\_\-def} [798]
+yyconst short int {\bf yy\_\-def} [458]
 \item 
-yyconst short int {\bf yy\_\-nxt} [2779]
+yyconst short int {\bf yy\_\-nxt} [1160]
 \item 
-yyconst short int {\bf yy\_\-chk} [2779]
+yyconst short int {\bf yy\_\-chk} [1160]
 \item 
 {\bf yy\_\-state\_\-type} {\bf yy\_\-last\_\-accepting\_\-state}
 \item 
@@ -300,8 +287,6 @@ int {\bf yy\_\-more\_\-flag} = 0
 int {\bf yy\_\-more\_\-len} = 0
 \item 
 YYLTYPE {\bf yylloc}
-\item 
-{\bf str\_\-link} $\ast$ {\bf inc\_\-paths\_\-head}
 \item 
 int {\bf ignore\_\-mode}
 \item 
@@ -315,13 +300,13 @@ int {\bf comment\_\-enter}
 \item 
 int {\bf last\_\-keyword} = 0
 \item 
+{\bf tnode} $\ast$ {\bf found\_\-modules} = NULL
+\item 
+char {\bf ppfilename} [10]
+\item 
 {\bf str\_\-link} $\ast$ {\bf modlist\_\-head}
 \item 
 {\bf str\_\-link} $\ast$ {\bf modlist\_\-tail}
-\item 
-{\bf include\_\-stack\_\-t} $\ast$ {\bf istack} = 0
-\item 
-{\bf include\_\-stack\_\-t} $\ast$ {\bf standby} = 0
 \item 
 int {\bf yy\_\-start\_\-stack\_\-ptr} = 0
 \item 
@@ -336,10 +321,6 @@ int {\bf size}
 FILE $\ast$ {\bf file}
 \item 
 int {\bf len}
-\item 
-define\_\-t $\ast$ {\bf def\_\-table} = 0
-\item 
-char {\bf def\_\-name} [256]
 \end{CompactItemize}
 
 
@@ -351,22 +332,22 @@ char {\bf def\_\-name} [256]
 
 \index{lexer.c@{lexer.c}!CCOMMENT@{CCOMMENT}}
 \index{CCOMMENT@{CCOMMENT}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define CCOMMENT\ 2}\label{lexer_8c_a58}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define CCOMMENT\ 2}\label{lexer_8c_a59}
 
 
 \index{lexer.c@{lexer.c}!CSTRING@{CSTRING}}
 \index{CSTRING@{CSTRING}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define CSTRING\ 3}\label{lexer_8c_a59}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define CSTRING\ 4}\label{lexer_8c_a61}
 
 
 \index{lexer.c@{lexer.c}!DEFINE@{DEFINE}}
 \index{DEFINE@{DEFINE}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define DEFINE\ 4}\label{lexer_8c_a60}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define DEFINE\ 5}\label{lexer_8c_a62}
 
 
 \index{lexer.c@{lexer.c}!ECHO@{ECHO}}
 \index{ECHO@{ECHO}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define ECHO\ (void) fwrite( yytext, yyleng, 1, yyout )}\label{lexer_8c_a69}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define ECHO\ (void) fwrite( yytext, yyleng, 1, yyout )}\label{lexer_8c_a71}
 
 
 \index{lexer.c@{lexer.c}!EOB_ACT_CONTINUE_SCAN@{EOB\_\-ACT\_\-CONTINUE\_\-SCAN}}
@@ -386,7 +367,7 @@ char {\bf def\_\-name} [256]
 
 \index{lexer.c@{lexer.c}!ERROR_LINE@{ERROR\_\-LINE}}
 \index{ERROR_LINE@{ERROR\_\-LINE}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define ERROR\_\-LINE\ 6}\label{lexer_8c_a62}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define ERROR\_\-LINE\ 7}\label{lexer_8c_a64}
 
 
 \index{lexer.c@{lexer.c}!FLEX_SCANNER@{FLEX\_\-SCANNER}}
@@ -396,27 +377,27 @@ char {\bf def\_\-name} [256]
 
 \index{lexer.c@{lexer.c}!IFDEF_FALSE@{IFDEF\_\-FALSE}}
 \index{IFDEF_FALSE@{IFDEF\_\-FALSE}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define IFDEF\_\-FALSE\ 8}\label{lexer_8c_a64}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define IFDEF\_\-FALSE\ 9}\label{lexer_8c_a66}
 
 
 \index{lexer.c@{lexer.c}!IFDEF_SUPR@{IFDEF\_\-SUPR}}
 \index{IFDEF_SUPR@{IFDEF\_\-SUPR}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define IFDEF\_\-SUPR\ 10}\label{lexer_8c_a66}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define IFDEF\_\-SUPR\ 11}\label{lexer_8c_a68}
 
 
 \index{lexer.c@{lexer.c}!IFDEF_TRUE@{IFDEF\_\-TRUE}}
 \index{IFDEF_TRUE@{IFDEF\_\-TRUE}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define IFDEF\_\-TRUE\ 9}\label{lexer_8c_a65}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define IFDEF\_\-TRUE\ 10}\label{lexer_8c_a67}
 
 
 \index{lexer.c@{lexer.c}!IGNORE_MODULE@{IGNORE\_\-MODULE}}
 \index{IGNORE_MODULE@{IGNORE\_\-MODULE}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define IGNORE\_\-MODULE\ 7}\label{lexer_8c_a63}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define IGNORE\_\-MODULE\ 8}\label{lexer_8c_a65}
 
 
 \index{lexer.c@{lexer.c}!INCLUDE@{INCLUDE}}
 \index{INCLUDE@{INCLUDE}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define INCLUDE\ 5}\label{lexer_8c_a61}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define INCLUDE\ 6}\label{lexer_8c_a63}
 
 
 \index{lexer.c@{lexer.c}!INITIAL@{INITIAL}}
@@ -426,12 +407,17 @@ char {\bf def\_\-name} [256]
 
 \index{lexer.c@{lexer.c}!LCOMMENT@{LCOMMENT}}
 \index{LCOMMENT@{LCOMMENT}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define LCOMMENT\ 1}\label{lexer_8c_a57}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define LCOMMENT\ 1}\label{lexer_8c_a58}
+
+
+\index{lexer.c@{lexer.c}!PCOMMENT@{PCOMMENT}}
+\index{PCOMMENT@{PCOMMENT}!lexer.c@{lexer.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define PCOMMENT\ 3}\label{lexer_8c_a60}
 
 
 \index{lexer.c@{lexer.c}!PPTIMESCALE@{PPTIMESCALE}}
 \index{PPTIMESCALE@{PPTIMESCALE}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define PPTIMESCALE\ 11}\label{lexer_8c_a67}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define PPTIMESCALE\ 12}\label{lexer_8c_a69}
 
 
 \index{lexer.c@{lexer.c}!REJECT@{REJECT}}
@@ -451,7 +437,7 @@ char {\bf def\_\-name} [256]
 
 \index{lexer.c@{lexer.c}!YY_BREAK@{YY\_\-BREAK}}
 \index{YY_BREAK@{YY\_\-BREAK}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-BREAK\ break;}\label{lexer_8c_a75}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-BREAK\ break;}\label{lexer_8c_a77}
 
 
 \index{lexer.c@{lexer.c}!YY_BUF_SIZE@{YY\_\-BUF\_\-SIZE}}
@@ -486,7 +472,7 @@ char {\bf def\_\-name} [256]
 
 \index{lexer.c@{lexer.c}!YY_DECL@{YY\_\-DECL}}
 \index{YY_DECL@{YY\_\-DECL}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-DECL\ int yylex YY\_\-PROTO(( void ))}\label{lexer_8c_a74}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-DECL\ int yylex YY\_\-PROTO(( void ))}\label{lexer_8c_a76}
 
 
 \index{lexer.c@{lexer.c}!yy_delete_buffer@{yy\_\-delete\_\-buffer}}
@@ -509,7 +495,7 @@ char {\bf def\_\-name} [256]
         yy_c_buf_p = yy_cp;\end{verbatim}\normalsize 
 \index{lexer.c@{lexer.c}!YY_END_OF_BUFFER@{YY\_\-END\_\-OF\_\-BUFFER}}
 \index{YY_END_OF_BUFFER@{YY\_\-END\_\-OF\_\-BUFFER}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-END\_\-OF\_\-BUFFER\ 99}\label{lexer_8c_a48}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-END\_\-OF\_\-BUFFER\ 81}\label{lexer_8c_a48}
 
 
 \index{lexer.c@{lexer.c}!YY_END_OF_BUFFER_CHAR@{YY\_\-END\_\-OF\_\-BUFFER\_\-CHAR}}
@@ -519,12 +505,12 @@ char {\bf def\_\-name} [256]
 
 \index{lexer.c@{lexer.c}!YY_EXIT_FAILURE@{YY\_\-EXIT\_\-FAILURE}}
 \index{YY_EXIT_FAILURE@{YY\_\-EXIT\_\-FAILURE}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-EXIT\_\-FAILURE\ 2}\label{lexer_8c_a77}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-EXIT\_\-FAILURE\ 2}\label{lexer_8c_a79}
 
 
 \index{lexer.c@{lexer.c}!YY_FATAL_ERROR@{YY\_\-FATAL\_\-ERROR}}
 \index{YY_FATAL_ERROR@{YY\_\-FATAL\_\-ERROR}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-FATAL\_\-ERROR(msg)\ yy\_\-fatal\_\-error( msg )}\label{lexer_8c_a73}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-FATAL\_\-ERROR(msg)\ yy\_\-fatal\_\-error( msg )}\label{lexer_8c_a75}
 
 
 \index{lexer.c@{lexer.c}!yy_flex_debug@{yy\_\-flex\_\-debug}}
@@ -559,7 +545,7 @@ char {\bf def\_\-name} [256]
 
 \index{lexer.c@{lexer.c}!YY_INPUT@{YY\_\-INPUT}}
 \index{YY_INPUT@{YY\_\-INPUT}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-INPUT(buf, result, max\_\-size)}\label{lexer_8c_a70}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-INPUT(buf, result, max\_\-size)}\label{lexer_8c_a72}
 
 
 {\bf Value:}
@@ -606,7 +592,7 @@ char {\bf def\_\-name} [256]
 
 \index{lexer.c@{lexer.c}!YY_NUM_RULES@{YY\_\-NUM\_\-RULES}}
 \index{YY_NUM_RULES@{YY\_\-NUM\_\-RULES}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-NUM\_\-RULES\ 98}\label{lexer_8c_a47}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-NUM\_\-RULES\ 80}\label{lexer_8c_a47}
 
 
 \index{lexer.c@{lexer.c}!YY_PROTO@{YY\_\-PROTO}}
@@ -616,7 +602,7 @@ char {\bf def\_\-name} [256]
 
 \index{lexer.c@{lexer.c}!YY_READ_BUF_SIZE@{YY\_\-READ\_\-BUF\_\-SIZE}}
 \index{YY_READ_BUF_SIZE@{YY\_\-READ\_\-BUF\_\-SIZE}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-READ\_\-BUF\_\-SIZE\ 8192}\label{lexer_8c_a68}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-READ\_\-BUF\_\-SIZE\ 8192}\label{lexer_8c_a70}
 
 
 \index{lexer.c@{lexer.c}!YY_RESTORE_YY_MORE_OFFSET@{YY\_\-RESTORE\_\-YY\_\-MORE\_\-OFFSET}}
@@ -626,7 +612,7 @@ char {\bf def\_\-name} [256]
 
 \index{lexer.c@{lexer.c}!YY_RULE_SETUP@{YY\_\-RULE\_\-SETUP}}
 \index{YY_RULE_SETUP@{YY\_\-RULE\_\-SETUP}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-RULE\_\-SETUP}\label{lexer_8c_a76}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-RULE\_\-SETUP}\label{lexer_8c_a78}
 
 
 {\bf Value:}
@@ -681,7 +667,7 @@ char {\bf def\_\-name} [256]
         }\end{verbatim}\normalsize 
 \index{lexer.c@{lexer.c}!YY_STACK_USED@{YY\_\-STACK\_\-USED}}
 \index{YY_STACK_USED@{YY\_\-STACK\_\-USED}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-STACK\_\-USED\ 1}\label{lexer_8c_a56}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-STACK\_\-USED\ 1}\label{lexer_8c_a57}
 
 
 \index{lexer.c@{lexer.c}!YY_START@{YY\_\-START}}
@@ -691,7 +677,7 @@ char {\bf def\_\-name} [256]
 
 \index{lexer.c@{lexer.c}!YY_START_STACK_INCR@{YY\_\-START\_\-STACK\_\-INCR}}
 \index{YY_START_STACK_INCR@{YY\_\-START\_\-STACK\_\-INCR}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-START\_\-STACK\_\-INCR\ 25}\label{lexer_8c_a72}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-START\_\-STACK\_\-INCR\ 25}\label{lexer_8c_a74}
 
 
 \index{lexer.c@{lexer.c}!YY_STATE_EOF@{YY\_\-STATE\_\-EOF}}
@@ -714,6 +700,11 @@ char {\bf def\_\-name} [256]
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYDEBUG\ 1}\label{lexer_8c_a55}
 
 
+\index{lexer.c@{lexer.c}!YYERROR_VERBOSE@{YYERROR\_\-VERBOSE}}
+\index{YYERROR_VERBOSE@{YYERROR\_\-VERBOSE}!lexer.c@{lexer.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYERROR\_\-VERBOSE\ 1}\label{lexer_8c_a56}
+
+
 \index{lexer.c@{lexer.c}!yyin@{yyin}}
 \index{yyin@{yyin}!lexer.c@{lexer.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}FILE $\ast$ yyin\ VLin}\label{lexer_8c_a10}
@@ -726,7 +717,7 @@ char {\bf def\_\-name} [256]
 
 \index{lexer.c@{lexer.c}!yyless@{yyless}}
 \index{yyless@{yyless}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yyless(n)}\label{lexer_8c_a78}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yyless(n)}\label{lexer_8c_a80}
 
 
 {\bf Value:}
@@ -789,7 +780,7 @@ char {\bf def\_\-name} [256]
 
 \index{lexer.c@{lexer.c}!yyterminate@{yyterminate}}
 \index{yyterminate@{yyterminate}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yyterminate()\ return YY\_\-NULL}\label{lexer_8c_a71}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yyterminate()\ return YY\_\-NULL}\label{lexer_8c_a73}
 
 
 \index{lexer.c@{lexer.c}!yytext@{yytext}}
@@ -812,197 +803,125 @@ char {\bf def\_\-name} [256]
 \subsection{Typedef Documentation}
 \index{lexer.c@{lexer.c}!YY_BUFFER_STATE@{YY\_\-BUFFER\_\-STATE}}
 \index{YY_BUFFER_STATE@{YY\_\-BUFFER\_\-STATE}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf yy\_\-buffer\_\-state}$\ast$ YY\_\-BUFFER\_\-STATE}\label{lexer_8c_a79}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf yy\_\-buffer\_\-state}$\ast$ YY\_\-BUFFER\_\-STATE}\label{lexer_8c_a81}
 
 
 \index{lexer.c@{lexer.c}!YY_CHAR@{YY\_\-CHAR}}
 \index{YY_CHAR@{YY\_\-CHAR}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef unsigned char YY\_\-CHAR}\label{lexer_8c_a91}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef unsigned char YY\_\-CHAR}\label{lexer_8c_a93}
 
 
 \index{lexer.c@{lexer.c}!yy_size_t@{yy\_\-size\_\-t}}
 \index{yy_size_t@{yy\_\-size\_\-t}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef unsigned int yy\_\-size\_\-t}\label{lexer_8c_a83}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef unsigned int yy\_\-size\_\-t}\label{lexer_8c_a85}
 
 
 \index{lexer.c@{lexer.c}!yy_state_type@{yy\_\-state\_\-type}}
 \index{yy_state_type@{yy\_\-state\_\-type}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef int yy\_\-state\_\-type}\label{lexer_8c_a92}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef int yy\_\-state\_\-type}\label{lexer_8c_a94}
 
 
 
 
 \subsection{Function Documentation}
-\index{lexer.c@{lexer.c}!def_finish@{def\_\-finish}}
-\index{def_finish@{def\_\-finish}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void def\_\-finish ()\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a142}
+\index{lexer.c@{lexer.c}!line_directive@{line\_\-directive}}
+\index{line_directive@{line\_\-directive}!lexer.c@{lexer.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void line\_\-directive ()\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a140}
 
 
-Completes the define addition phase. \index{lexer.c@{lexer.c}!def_lookup@{def\_\-lookup}}
-\index{def_lookup@{def\_\-lookup}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}struct define\_\-t$\ast$ def\_\-lookup (const char $\ast$ {\em name})\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a151}
+\index{lexer.c@{lexer.c}!line_directive2@{line\_\-directive2}}
+\index{line_directive2@{line\_\-directive2}!lexer.c@{lexer.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void line\_\-directive2 ()\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a141}
 
 
-\begin{Desc}
-\item[Parameters: ]\par
-\begin{description}
-\item[{\em 
-name}]Name of define to lookup in table \end{description}
-\end{Desc}
-\begin{Desc}
-\item[Returns: ]\par
-Pointer to defined value.\end{Desc}
-Looks up the specified define identifier in the binary tree lookup table. Returns NULL (0), if the define was not found in the lookup tree; otherwise, returns a pointer to the defined value. \index{lexer.c@{lexer.c}!def_match@{def\_\-match}}
-\index{def_match@{def\_\-match}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void def\_\-match ()\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a140}
-
-
-When a macro use is discovered in the source, this function is used to look up the name and emit the substitution in its place. If the name is not found, then the `name string is written out instead. \index{lexer.c@{lexer.c}!def_start@{def\_\-start}}
-\index{def_start@{def\_\-start}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void def\_\-start ()\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a141}
-
-
-Extracts define identifier string from define directive match. \index{lexer.c@{lexer.c}!def_undefine@{def\_\-undefine}}
-\index{def_undefine@{def\_\-undefine}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void def\_\-undefine ()\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a143}
-
-
-Performs an undefine of an undef indentifier by searching for the matching define node and removing it from the tree. \index{lexer.c@{lexer.c}!define_macro@{define\_\-macro}}
-\index{define_macro@{define\_\-macro}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void define\_\-macro (const char $\ast$ {\em name}, const char $\ast$ {\em value})}\label{lexer_8c_a152}
-
-
-\begin{Desc}
-\item[Parameters: ]\par
-\begin{description}
-\item[{\em 
-name}]String value of define identifier \item[{\em 
-value}]String value associated with define identifier\end{description}
-\end{Desc}
-Stores define identifer with its value in a define node and placed in the binary search tree for quick lookup later on. \index{lexer.c@{lexer.c}!do_define@{do\_\-define}}
-\index{do_define@{do\_\-define}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void do\_\-define ()\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a144}
-
-
-
-
-\begin{Desc}
-\item[{\bf Bug: }]\par
-This strips trailing line comments out of the definition. It's not adequate as the \char`\"{}//\char`\"{} may have been quoted or commented, but it will do for now.\end{Desc}
-
-
-Prepares define value and identifier for storage in the lookup tree and then performs the store. \index{lexer.c@{lexer.c}!do_include@{do\_\-include}}
-\index{do_include@{do\_\-include}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void do\_\-include ()\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a147}
-
-
-Performs the file context switch and gets everything ready for parsing the new file. \index{lexer.c@{lexer.c}!include_filename@{include\_\-filename}}
-\index{include_filename@{include\_\-filename}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void include\_\-filename ()\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a146}
-
-
-Adds include directive filename to file parsing stack. \index{lexer.c@{lexer.c}!is_defined@{is\_\-defined}}
-\index{is_defined@{is\_\-defined}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int is\_\-defined (const char $\ast$ {\em name})\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a145}
-
-
-\begin{Desc}
-\item[Parameters: ]\par
-\begin{description}
-\item[{\em 
-name}]Name of defined value. \end{description}
-\end{Desc}
-\begin{Desc}
-\item[Returns: ]\par
-Returns 1 if define is found in lookup table; otherwise, returns 0.\end{Desc}
-Checks lookup table to see if specified define identifier has been previously defined. \index{lexer.c@{lexer.c}!reset_lexer@{reset\_\-lexer}}
-\index{reset_lexer@{reset\_\-lexer}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void reset\_\-lexer (FILE $\ast$ {\em out}, {\bf str\_\-link} $\ast$ {\em file\_\-list\_\-head})}\label{lexer_8c_a153}
+\index{lexer.c@{lexer.c}!reset_pplexer@{reset\_\-pplexer}}
+\index{reset_pplexer@{reset\_\-pplexer}!lexer.c@{lexer.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void reset\_\-pplexer (char $\ast$ {\em filename}, FILE $\ast$ {\em out})}\label{lexer_8c_a139}
 
 
 \index{lexer.c@{lexer.c}!YY_PROTO@{YY\_\-PROTO}}
 \index{YY_PROTO@{YY\_\-PROTO}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yy\_\-push\_\-state YY\_\-PROTO ((int new\_\-state))\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a150}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yy\_\-push\_\-state YY\_\-PROTO ((int new\_\-state))\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a144}
 
 
 \index{lexer.c@{lexer.c}!YY_PROTO@{YY\_\-PROTO}}
 \index{YY_PROTO@{YY\_\-PROTO}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yyunput YY\_\-PROTO ((int c, char $\ast$buf\_\-ptr))\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a149}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yyunput YY\_\-PROTO ((int c, char $\ast$buf\_\-ptr))\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a143}
 
 
 \index{lexer.c@{lexer.c}!YY_PROTO@{YY\_\-PROTO}}
 \index{YY_PROTO@{YY\_\-PROTO}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yy\_\-fatal\_\-error YY\_\-PROTO ((yyconst char msg[$\,$]))\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a139}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yy\_\-fatal\_\-error YY\_\-PROTO ((yyconst char msg[$\,$]))\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a138}
 
 
 \index{lexer.c@{lexer.c}!YY_PROTO@{YY\_\-PROTO}}
 \index{YY_PROTO@{YY\_\-PROTO}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf yy\_\-state\_\-type} yy\_\-try\_\-NUL\_\-trans YY\_\-PROTO (({\bf yy\_\-state\_\-type} current\_\-state))\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a138}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf yy\_\-state\_\-type} yy\_\-try\_\-NUL\_\-trans YY\_\-PROTO (({\bf yy\_\-state\_\-type} current\_\-state))\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a137}
 
 
 \index{lexer.c@{lexer.c}!YY_PROTO@{YY\_\-PROTO}}
 \index{YY_PROTO@{YY\_\-PROTO}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yy\_\-flex\_\-free YY\_\-PROTO ((void $\ast$))\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a137}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yy\_\-flex\_\-free YY\_\-PROTO ((void $\ast$))\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a136}
 
 
 \index{lexer.c@{lexer.c}!YY_PROTO@{YY\_\-PROTO}}
 \index{YY_PROTO@{YY\_\-PROTO}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ yy\_\-flex\_\-realloc YY\_\-PROTO ((void $\ast$, {\bf yy\_\-size\_\-t}))\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a136}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ yy\_\-flex\_\-realloc YY\_\-PROTO ((void $\ast$, {\bf yy\_\-size\_\-t}))\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a135}
 
 
 \index{lexer.c@{lexer.c}!YY_PROTO@{YY\_\-PROTO}}
 \index{YY_PROTO@{YY\_\-PROTO}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ yy\_\-flex\_\-alloc YY\_\-PROTO (({\bf yy\_\-size\_\-t}))\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a135}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ yy\_\-flex\_\-alloc YY\_\-PROTO (({\bf yy\_\-size\_\-t}))\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a134}
 
 
 \index{lexer.c@{lexer.c}!YY_PROTO@{YY\_\-PROTO}}
 \index{YY_PROTO@{YY\_\-PROTO}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf YY\_\-BUFFER\_\-STATE} yy\_\-scan\_\-bytes YY\_\-PROTO ((yyconst char $\ast$bytes, int {\bf len}))}\label{lexer_8c_a134}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf YY\_\-BUFFER\_\-STATE} yy\_\-scan\_\-bytes YY\_\-PROTO ((yyconst char $\ast$bytes, int {\bf len}))}\label{lexer_8c_a133}
 
 
 \index{lexer.c@{lexer.c}!YY_PROTO@{YY\_\-PROTO}}
 \index{YY_PROTO@{YY\_\-PROTO}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf YY\_\-BUFFER\_\-STATE} yy\_\-scan\_\-string YY\_\-PROTO ((yyconst char $\ast$yy\_\-str))}\label{lexer_8c_a133}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf YY\_\-BUFFER\_\-STATE} yy\_\-scan\_\-string YY\_\-PROTO ((yyconst char $\ast$yy\_\-str))}\label{lexer_8c_a132}
 
 
 \index{lexer.c@{lexer.c}!YY_PROTO@{YY\_\-PROTO}}
 \index{YY_PROTO@{YY\_\-PROTO}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf YY\_\-BUFFER\_\-STATE} yy\_\-scan\_\-buffer YY\_\-PROTO ((char $\ast$base, {\bf yy\_\-size\_\-t} {\bf size}))}\label{lexer_8c_a132}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf YY\_\-BUFFER\_\-STATE} yy\_\-scan\_\-buffer YY\_\-PROTO ((char $\ast$base, {\bf yy\_\-size\_\-t} {\bf size}))}\label{lexer_8c_a131}
 
 
 \index{lexer.c@{lexer.c}!YY_PROTO@{YY\_\-PROTO}}
 \index{YY_PROTO@{YY\_\-PROTO}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yy\_\-init\_\-buffer YY\_\-PROTO (({\bf YY\_\-BUFFER\_\-STATE} b, FILE $\ast${\bf file}))}\label{lexer_8c_a131}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yy\_\-init\_\-buffer YY\_\-PROTO (({\bf YY\_\-BUFFER\_\-STATE} b, FILE $\ast${\bf file}))}\label{lexer_8c_a130}
 
 
 \index{lexer.c@{lexer.c}!YY_PROTO@{YY\_\-PROTO}}
 \index{YY_PROTO@{YY\_\-PROTO}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yy\_\-flush\_\-buffer YY\_\-PROTO (({\bf YY\_\-BUFFER\_\-STATE} b))}\label{lexer_8c_a130}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yy\_\-flush\_\-buffer YY\_\-PROTO (({\bf YY\_\-BUFFER\_\-STATE} b))}\label{lexer_8c_a129}
 
 
 \index{lexer.c@{lexer.c}!YY_PROTO@{YY\_\-PROTO}}
 \index{YY_PROTO@{YY\_\-PROTO}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf YY\_\-BUFFER\_\-STATE} yy\_\-create\_\-buffer YY\_\-PROTO ((FILE $\ast${\bf file}, int {\bf size}))}\label{lexer_8c_a129}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf YY\_\-BUFFER\_\-STATE} yy\_\-create\_\-buffer YY\_\-PROTO ((FILE $\ast${\bf file}, int {\bf size}))}\label{lexer_8c_a128}
 
 
 \index{lexer.c@{lexer.c}!YY_PROTO@{YY\_\-PROTO}}
 \index{YY_PROTO@{YY\_\-PROTO}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-top\_\-state YY\_\-PROTO ((void))}\label{lexer_8c_a128}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-top\_\-state YY\_\-PROTO ((void))}\label{lexer_8c_a127}
 
 
 \index{lexer.c@{lexer.c}!YY_PROTO@{YY\_\-PROTO}}
 \index{YY_PROTO@{YY\_\-PROTO}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yy\_\-switch\_\-to\_\-buffer YY\_\-PROTO (({\bf YY\_\-BUFFER\_\-STATE} new\_\-buffer))}\label{lexer_8c_a127}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yy\_\-switch\_\-to\_\-buffer YY\_\-PROTO (({\bf YY\_\-BUFFER\_\-STATE} new\_\-buffer))}\label{lexer_8c_a126}
 
 
 \index{lexer.c@{lexer.c}!YY_PROTO@{YY\_\-PROTO}}
 \index{YY_PROTO@{YY\_\-PROTO}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yyrestart YY\_\-PROTO ((FILE $\ast$input\_\-file))}\label{lexer_8c_a126}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yyrestart YY\_\-PROTO ((FILE $\ast$input\_\-file))}\label{lexer_8c_a125}
 
 
 \index{lexer.c@{lexer.c}!yywrap@{yywrap}}
 \index{yywrap@{yywrap}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yywrap ()\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a148}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yywrap ()\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a142}
 
 
 
@@ -1010,227 +929,213 @@ Checks lookup table to see if specified define identifier has been previously de
 \subsection{Variable Documentation}
 \index{lexer.c@{lexer.c}!comment_enter@{comment\_\-enter}}
 \index{comment_enter@{comment\_\-enter}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int comment\_\-enter\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a109}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int comment\_\-enter\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a110}
 
 
-Contains state before entering comment block. \index{lexer.c@{lexer.c}!def_name@{def\_\-name}}
-\index{def_name@{def\_\-name}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char def\_\-name[256]\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a125}
-
-
-Holds current define identifier string. \index{lexer.c@{lexer.c}!def_table@{def\_\-table}}
-\index{def_table@{def\_\-table}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}struct define\_\-t$\ast$ def\_\-table = 0\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a124}
-
-
-Define table. \index{lexer.c@{lexer.c}!file@{file}}
+Contains state before entering comment block. \index{lexer.c@{lexer.c}!file@{file}}
 \index{file@{file}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}FILE$\ast$ file}\label{lexer_8c_a122}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}FILE$\ast$ file}\label{lexer_8c_a123}
 
 
 \index{lexer.c@{lexer.c}!filelist_curr@{filelist\_\-curr}}
 \index{filelist_curr@{filelist\_\-curr}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ filelist\_\-curr = 0\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a111}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ filelist\_\-curr = 0\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a112}
 
 
 \index{lexer.c@{lexer.c}!filelist_head@{filelist\_\-head}}
 \index{filelist_head@{filelist\_\-head}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ filelist\_\-head = 0\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a110}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ filelist\_\-head = 0\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a111}
+
+
+\index{lexer.c@{lexer.c}!found_modules@{found\_\-modules}}
+\index{found_modules@{found\_\-modules}!lexer.c@{lexer.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf tnode}$\ast$ found\_\-modules = NULL\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a114}
 
 
 \index{lexer.c@{lexer.c}!ignore_mode@{ignore\_\-mode}}
 \index{ignore_mode@{ignore\_\-mode}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int ignore\_\-mode}\label{lexer_8c_a107}
-
-
-\index{lexer.c@{lexer.c}!inc_paths_head@{inc\_\-paths\_\-head}}
-\index{inc_paths_head@{inc\_\-paths\_\-head}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ inc\_\-paths\_\-head ()}\label{lexer_8c_a106}
-
-
-Pointer to head element of include paths list \index{lexer.c@{lexer.c}!istack@{istack}}
-\index{istack@{istack}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}struct {\bf include\_\-stack\_\-t}$\ast$ istack = 0\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a115}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int ignore\_\-mode}\label{lexer_8c_a108}
 
 
 \index{lexer.c@{lexer.c}!last_keyword@{last\_\-keyword}}
 \index{last_keyword@{last\_\-keyword}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int last\_\-keyword = 0\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a112}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int last\_\-keyword = 0\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a113}
 
 
 \index{lexer.c@{lexer.c}!len@{len}}
 \index{len@{len}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int len}\label{lexer_8c_a123}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int len}\label{lexer_8c_a124}
 
 
 \index{lexer.c@{lexer.c}!modlist_head@{modlist\_\-head}}
 \index{modlist_head@{modlist\_\-head}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ modlist\_\-head}\label{lexer_8c_a113}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ modlist\_\-head}\label{lexer_8c_a116}
 
 
 \index{lexer.c@{lexer.c}!modlist_tail@{modlist\_\-tail}}
 \index{modlist_tail@{modlist\_\-tail}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ modlist\_\-tail}\label{lexer_8c_a114}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ modlist\_\-tail}\label{lexer_8c_a117}
+
+
+\index{lexer.c@{lexer.c}!ppfilename@{ppfilename}}
+\index{ppfilename@{ppfilename}!lexer.c@{lexer.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char ppfilename[10]\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a115}
 
 
 \index{lexer.c@{lexer.c}!size@{size}}
 \index{size@{size}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf yy\_\-size\_\-t} size}\label{lexer_8c_a121}
-
-
-\index{lexer.c@{lexer.c}!standby@{standby}}
-\index{standby@{standby}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}struct {\bf include\_\-stack\_\-t}$\ast$ standby = 0\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a116}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf yy\_\-size\_\-t} size}\label{lexer_8c_a122}
 
 
 \index{lexer.c@{lexer.c}!user_msg@{user\_\-msg}}
 \index{user_msg@{user\_\-msg}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char user\_\-msg[USER\_\-MSG\_\-LENGTH]}\label{lexer_8c_a108}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char user\_\-msg[USER\_\-MSG\_\-LENGTH]}\label{lexer_8c_a109}
 
 
 \index{lexer.c@{lexer.c}!yy_accept@{yy\_\-accept}}
 \index{yy_accept@{yy\_\-accept}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst short int yy\_\-accept[742]\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a94}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst short int yy\_\-accept[418]\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a96}
 
 
 \index{lexer.c@{lexer.c}!yy_base@{yy\_\-base}}
 \index{yy_base@{yy\_\-base}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst short int yy\_\-base[798]\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a97}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst short int yy\_\-base[458]\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a99}
 
 
 \index{lexer.c@{lexer.c}!yy_bp@{yy\_\-bp}}
 \index{yy_bp@{yy\_\-bp}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}register char$\ast$ yy\_\-bp}\label{lexer_8c_a120}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}register char$\ast$ yy\_\-bp}\label{lexer_8c_a121}
 
 
 \index{lexer.c@{lexer.c}!yy_c_buf_p@{yy\_\-c\_\-buf\_\-p}}
 \index{yy_c_buf_p@{yy\_\-c\_\-buf\_\-p}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ yy\_\-c\_\-buf\_\-p = (char $\ast$) 0\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a87}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ yy\_\-c\_\-buf\_\-p = (char $\ast$) 0\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a89}
 
 
 \index{lexer.c@{lexer.c}!yy_chk@{yy\_\-chk}}
 \index{yy_chk@{yy\_\-chk}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst short int yy\_\-chk[2779]\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a100}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst short int yy\_\-chk[1160]\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a102}
 
 
 \index{lexer.c@{lexer.c}!yy_current_buffer@{yy\_\-current\_\-buffer}}
 \index{yy_current_buffer@{yy\_\-current\_\-buffer}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf YY\_\-BUFFER\_\-STATE} yy\_\-current\_\-buffer = 0\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a84}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf YY\_\-BUFFER\_\-STATE} yy\_\-current\_\-buffer = 0\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a86}
 
 
 \index{lexer.c@{lexer.c}!yy_def@{yy\_\-def}}
 \index{yy_def@{yy\_\-def}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst short int yy\_\-def[798]\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a98}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst short int yy\_\-def[458]\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a100}
 
 
 \index{lexer.c@{lexer.c}!yy_did_buffer_switch_on_eof@{yy\_\-did\_\-buffer\_\-switch\_\-on\_\-eof}}
 \index{yy_did_buffer_switch_on_eof@{yy\_\-did\_\-buffer\_\-switch\_\-on\_\-eof}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-did\_\-buffer\_\-switch\_\-on\_\-eof\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a90}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-did\_\-buffer\_\-switch\_\-on\_\-eof\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a92}
 
 
 \index{lexer.c@{lexer.c}!yy_ec@{yy\_\-ec}}
 \index{yy_ec@{yy\_\-ec}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst int yy\_\-ec[256]\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a95}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst int yy\_\-ec[256]\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a97}
 
 
 \index{lexer.c@{lexer.c}!yy_hold_char@{yy\_\-hold\_\-char}}
 \index{yy_hold_char@{yy\_\-hold\_\-char}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char yy\_\-hold\_\-char\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a85}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char yy\_\-hold\_\-char\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a87}
 
 
 \index{lexer.c@{lexer.c}!yy_init@{yy\_\-init}}
 \index{yy_init@{yy\_\-init}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-init = 1\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a88}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-init = 1\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a90}
 
 
 \index{lexer.c@{lexer.c}!yy_last_accepting_cpos@{yy\_\-last\_\-accepting\_\-cpos}}
 \index{yy_last_accepting_cpos@{yy\_\-last\_\-accepting\_\-cpos}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ yy\_\-last\_\-accepting\_\-cpos\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a102}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ yy\_\-last\_\-accepting\_\-cpos\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a104}
 
 
 \index{lexer.c@{lexer.c}!yy_last_accepting_state@{yy\_\-last\_\-accepting\_\-state}}
 \index{yy_last_accepting_state@{yy\_\-last\_\-accepting\_\-state}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf yy\_\-state\_\-type} yy\_\-last\_\-accepting\_\-state\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a101}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf yy\_\-state\_\-type} yy\_\-last\_\-accepting\_\-state\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a103}
 
 
 \index{lexer.c@{lexer.c}!yy_meta@{yy\_\-meta}}
 \index{yy_meta@{yy\_\-meta}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst int yy\_\-meta[59]\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a96}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst int yy\_\-meta[63]\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a98}
 
 
 {\bf Initial value:}
 
 \footnotesize\begin{verbatim}
     {   0,
-        1,    2,    3,    4,    5,    1,    1,    1,    6,    1,
-        1,    1,    1,    1,    7,    1,    8,    8,    8,    1,
-        1,    1,    1,    9,   10,   10,   10,   10,   11,   11,
-       11,   11,   10,   12,    1,   10,    1,   10,   10,   10,
-       10,   10,   10,   11,   11,   11,   11,   11,   11,   11,
-       11,   11,   11,   11,   11,   11,    1,    1
+        1,    2,    3,    4,    5,    3,    1,    1,    1,    6,
+        1,    1,    1,    1,    1,    1,    1,    1,    7,    1,
+        8,    8,    8,    1,    1,    1,    1,    9,   10,   10,
+       10,   10,   11,   11,   11,   11,   10,   12,    1,   10,
+        1,   10,   10,   10,   10,   10,   10,   11,   11,   11,
+       11,   11,   11,   11,   11,   11,   11,   11,   11,   11,
+        1,    1
     }\end{verbatim}\normalsize 
 \index{lexer.c@{lexer.c}!yy_more_flag@{yy\_\-more\_\-flag}}
 \index{yy_more_flag@{yy\_\-more\_\-flag}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-more\_\-flag = 0\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a103}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-more\_\-flag = 0\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a105}
 
 
 \index{lexer.c@{lexer.c}!yy_more_len@{yy\_\-more\_\-len}}
 \index{yy_more_len@{yy\_\-more\_\-len}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-more\_\-len = 0\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a104}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-more\_\-len = 0\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a106}
 
 
 \index{lexer.c@{lexer.c}!yy_n_chars@{yy\_\-n\_\-chars}}
 \index{yy_n_chars@{yy\_\-n\_\-chars}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-n\_\-chars\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a86}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-n\_\-chars\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a88}
 
 
 \index{lexer.c@{lexer.c}!yy_nxt@{yy\_\-nxt}}
 \index{yy_nxt@{yy\_\-nxt}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst short int yy\_\-nxt[2779]\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a99}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst short int yy\_\-nxt[1160]\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a101}
 
 
 \index{lexer.c@{lexer.c}!yy_start@{yy\_\-start}}
 \index{yy_start@{yy\_\-start}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-start = 0\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a89}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-start = 0\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a91}
 
 
 \index{lexer.c@{lexer.c}!yy_start_stack@{yy\_\-start\_\-stack}}
 \index{yy_start_stack@{yy\_\-start\_\-stack}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int$\ast$ yy\_\-start\_\-stack = 0\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a119}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int$\ast$ yy\_\-start\_\-stack = 0\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a120}
 
 
 \index{lexer.c@{lexer.c}!yy_start_stack_depth@{yy\_\-start\_\-stack\_\-depth}}
 \index{yy_start_stack_depth@{yy\_\-start\_\-stack\_\-depth}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-start\_\-stack\_\-depth = 0\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a118}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-start\_\-stack\_\-depth = 0\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a119}
 
 
 \index{lexer.c@{lexer.c}!yy_start_stack_ptr@{yy\_\-start\_\-stack\_\-ptr}}
 \index{yy_start_stack_ptr@{yy\_\-start\_\-stack\_\-ptr}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-start\_\-stack\_\-ptr = 0\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a117}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-start\_\-stack\_\-ptr = 0\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a118}
 
 
 \index{lexer.c@{lexer.c}!yyin@{yyin}}
 \index{yyin@{yyin}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}FILE$\ast$ yyin = (FILE $\ast$) 0}\label{lexer_8c_a81}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}FILE$\ast$ yyin = (FILE $\ast$) 0}\label{lexer_8c_a83}
 
 
 \index{lexer.c@{lexer.c}!yyleng@{yyleng}}
 \index{yyleng@{yyleng}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yyleng}\label{lexer_8c_a80}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yyleng}\label{lexer_8c_a82}
 
 
 \index{lexer.c@{lexer.c}!yylloc@{yylloc}}
 \index{yylloc@{yylloc}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}YYLTYPE yylloc}\label{lexer_8c_a105}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}YYLTYPE yylloc}\label{lexer_8c_a107}
 
 
 \index{lexer.c@{lexer.c}!yyout@{yyout}}
 \index{yyout@{yyout}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}FILE $\ast$ yyout = (FILE $\ast$) 0}\label{lexer_8c_a82}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}FILE $\ast$ yyout = (FILE $\ast$) 0}\label{lexer_8c_a84}
 
 
 \index{lexer.c@{lexer.c}!yytext@{yytext}}
 \index{yytext@{yytext}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ yytext}\label{lexer_8c_a93}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ yytext}\label{lexer_8c_a95}
 
 

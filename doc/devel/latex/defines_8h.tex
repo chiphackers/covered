@@ -47,6 +47,8 @@ struct {\bf str\_\-link\_\-s}
 \item 
 struct {\bf symtable\_\-s}
 \item 
+struct {\bf tnode\_\-s}
+\item 
 struct {\bf vector\_\-s}
 \item 
 struct {\bf vector\_\-width\_\-s}
@@ -414,6 +416,8 @@ typedef {\bf sig\_\-exp\_\-bind\_\-s} {\bf sig\_\-exp\_\-bind}
 typedef {\bf case\_\-stmt\_\-s} {\bf case\_\-statement}
 \item 
 typedef {\bf mod\_\-inst\_\-s} {\bf mod\_\-inst}
+\item 
+typedef {\bf tnode\_\-s} {\bf tnode}
 \end{CompactItemize}
 \subsection*{Enumerations}
 \begin{CompactItemize}
@@ -621,6 +625,11 @@ A nibble is a 32-bit value that is subdivided into three parts: Bits 7 - 0 = 4 b
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf symtable\_\-s} symtable}\label{defines_8h_a173}
 
 
+\index{defines.h@{defines.h}!tnode@{tnode}}
+\index{tnode@{tnode}!defines.h@{defines.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf tnode\_\-s} tnode}\label{defines_8h_a179}
+
+
 \index{defines.h@{defines.h}!vector@{vector}}
 \index{vector@{vector}!defines.h@{defines.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf vector\_\-s} vector}\label{defines_8h_a158}
@@ -636,16 +645,16 @@ A nibble is a 32-bit value that is subdivided into three parts: Bits 7 - 0 = 4 b
 \subsection{Enumeration Type Documentation}
 \index{defines.h@{defines.h}!bool@{bool}}
 \index{bool@{bool}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}enum bool}\label{defines_8h_a181}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}enum bool}\label{defines_8h_a182}
 
 
 Defines boolean variables used in most functions. \begin{Desc}
 \item[Enumeration values:]\par
 \begin{description}
 \index{FALSE@{FALSE}!defines.h@{defines.h}}\index{defines.h@{defines.h}!FALSE@{FALSE}}\item[{\em 
-{\em FALSE}\label{defines_8h_a181a179}
+{\em FALSE}\label{defines_8h_a182a180}
 }]Boolean false value \index{TRUE@{TRUE}!defines.h@{defines.h}}\index{defines.h@{defines.h}!TRUE@{TRUE}}\item[{\em 
-{\em TRUE}\label{defines_8h_a181a180}
+{\em TRUE}\label{defines_8h_a182a181}
 }]Boolean true value \end{description}
 \end{Desc}
 

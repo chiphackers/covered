@@ -29,17 +29,17 @@
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds parameter override to defparam list.</em> <a href="#a6"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="param_8h.html#a7">param_set_expr_size</a> (<a class="el" href="defines_8h.html#a160">expression</a> *expr, <a class="el" href="defines_8h.html#a170">inst_parm</a> *icurr)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Sets the specified expression value to the instance parameter value.</em> <a href="#a7"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="param_8h.html#a8">param_set_sig_size</a> (<a class="el" href="defines_8h.html#a161">signal</a> *sig, <a class="el" href="defines_8h.html#a170">inst_parm</a> *icurr)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="param_8h.html#a8">param_set_sig_size</a> (<a class="el" href="defines_8h.html#a161">signal</a> *sig, <a class="el" href="defines_8h.html#a170">inst_parm</a> *icurr)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Sets the specified signal size according to the specified instance parameter and resizes attached expressions.</em> <a href="#a8"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="param_8h.html#a9">param_resolve_declared</a> (char *mscope, <a class="el" href="defines_8h.html#a169">mod_parm</a> *mparm, <a class="el" href="defines_8h.html#a170">inst_parm</a> *ip_head, <a class="el" href="defines_8h.html#a170">inst_parm</a> **ihead, <a class="el" href="defines_8h.html#a170">inst_parm</a> **itail)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Transforms a declared module parameter into an instance parameter.</em> <a href="#a9"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="param_8h.html#a10">param_resolve_override</a> (<a class="el" href="defines_8h.html#a169">mod_parm</a> *oparm, <a class="el" href="defines_8h.html#a170">inst_parm</a> **ihead, <a class="el" href="defines_8h.html#a170">inst_parm</a> **itail)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Transforms an override module parameter into an instance parameter.</em> <a href="#a10"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="param_8h.html#a11">param_db_write</a> (<a class="el" href="defines_8h.html#a170">inst_parm</a> *iparm, FILE *<a class="el" href="lexer_8c.html#a122">file</a>, char *scope)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="param_8h.html#a11">param_db_write</a> (<a class="el" href="defines_8h.html#a170">inst_parm</a> *iparm, FILE *<a class="el" href="pplexer_8c.html#a114">file</a>, char *scope)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Outputs specified instance parameter to specified output stream.</em> <a href="#a11"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="param_8h.html#a12">mod_parm_dealloc</a> (<a class="el" href="defines_8h.html#a169">mod_parm</a> *parm, <a class="el" href="defines_8h.html#a181">bool</a> recursive)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="param_8h.html#a12">mod_parm_dealloc</a> (<a class="el" href="defines_8h.html#a169">mod_parm</a> *parm, <a class="el" href="defines_8h.html#a182">bool</a> recursive)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Deallocates specified module parameter and possibly entire module parameter list.</em> <a href="#a12"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="param_8h.html#a13">inst_parm_dealloc</a> (<a class="el" href="defines_8h.html#a170">inst_parm</a> *parm, <a class="el" href="defines_8h.html#a181">bool</a> recursive)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="param_8h.html#a13">inst_parm_dealloc</a> (<a class="el" href="defines_8h.html#a170">inst_parm</a> *parm, <a class="el" href="defines_8h.html#a182">bool</a> recursive)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Deallocates specified instance parameter and possibly entire instance parameter list.</em> <a href="#a13"></a><em></em></font><br><br></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
@@ -188,7 +188,7 @@ Returns pointer to newly created instance parameter.</dl>Creates a new instance 
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>recursive</em></td>
         </tr>
         <tr>
@@ -360,7 +360,7 @@ Returns pointer to newly created module parameter.</dl>Creates a new module para
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>recursive</em></td>
         </tr>
         <tr>
@@ -763,7 +763,7 @@ Sets the specified expression value to the instance parameter value.
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a181">bool</a> param_set_sig_size </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a182">bool</a> param_set_sig_size </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a161">signal</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>sig</em>, </td>
@@ -807,7 +807,7 @@ Returns: </b><dd>
 Returns TRUE if signal size is fully established; otherwise, returns FALSE.</dl>Sizes the specified signal according to the value of the specified instance parameter value.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Sat Dec 14 01:04:24 2002 for Covered by
+<hr><address align="right"><small>Generated on Sat Jan 4 03:27:32 2003 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

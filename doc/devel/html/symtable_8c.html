@@ -14,12 +14,14 @@
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a173">symtable</a> *&nbsp;</td><td valign=bottom><a class="el" href="symtable_8c.html#a0">symtable_add</a> (char *sym, <a class="el" href="defines_8h.html#a161">signal</a> *sig, <a class="el" href="defines_8h.html#a173">symtable</a> **symtab)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Creates a new symtable entry and adds it to the specified symbol table.</em> <a href="#a0"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a173">symtable</a> *&nbsp;</td><td valign=bottom><a class="el" href="symtable_8c.html#a1">symtable_find</a> (char *sym, <a class="el" href="defines_8h.html#a173">symtable</a> *symtab, int skip)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Finds specified symbol in specified symbol table and returns pointer to signal.</em> <a href="#a1"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="symtable_8c.html#a2">symtable_assign</a> (<a class="el" href="defines_8h.html#a173">symtable</a> *symtab)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Assigns stored values to all associated signals stored in specified symbol table.</em> <a href="#a2"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="symtable_8c.html#a3">symtable_dealloc</a> (<a class="el" href="defines_8h.html#a173">symtable</a> *symtab)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Deallocates all symtable entries for specified symbol table.</em> <a href="#a3"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="symtable_8c.html#a1">symtable_find_and_set</a> (char *sym, <a class="el" href="defines_8h.html#a173">symtable</a> *symtab, char *value)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Sets all matching symtable entries to specified value.</em> <a href="#a1"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="symtable_8c.html#a2">symtable_move_and_set</a> (char *sym, <a class="el" href="defines_8h.html#a173">symtable</a> *from_tab, char *value, <a class="el" href="defines_8h.html#a173">symtable</a> **to_tab)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Copies all matching symtable entries from from_tab to to_tab and assigns value to it.</em> <a href="#a2"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="symtable_8c.html#a3">symtable_assign</a> (<a class="el" href="defines_8h.html#a173">symtable</a> *symtab)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Assigns stored values to all associated signals stored in specified symbol table.</em> <a href="#a3"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="symtable_8c.html#a4">symtable_dealloc</a> (<a class="el" href="defines_8h.html#a173">symtable</a> *symtab)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Deallocates all symtable entries for specified symbol table.</em> <a href="#a4"></a><em></em></font><br><br></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 
@@ -87,7 +89,7 @@ Returns: </b><dd>
 Returns pointer to newly created symtable entry.</dl>Using the symbol as a unique ID, creates a new symtable element for specified information and places it into the binary tree.     </td>
   </tr>
 </table>
-<a name="a2" doxytag="symtable.c::symtable_assign"></a><p>
+<a name="a3" doxytag="symtable.c::symtable_assign"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -124,7 +126,7 @@ Root of the symtable to assign values to.</td></tr>
 </dl>Recursively traverses entire symtable tree, assigning stored string value to the stored signal.     </td>
   </tr>
 </table>
-<a name="a3" doxytag="symtable.c::symtable_dealloc"></a><p>
+<a name="a4" doxytag="symtable.c::symtable_dealloc"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -161,13 +163,13 @@ Pointer to root of symtable to clear.</td></tr>
 </dl>Recursively deallocates all elements of specifies symbol table.     </td>
   </tr>
 </table>
-<a name="a1" doxytag="symtable.c::symtable_find"></a><p>
+<a name="a1" doxytag="symtable.c::symtable_find_and_set"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a173">symtable</a>* symtable_find </td>
+          <td class="md" nowrap valign="top"> int symtable_find_and_set </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top">char *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>sym</em>, </td>
@@ -181,8 +183,8 @@ Pointer to root of symtable to clear.</td></tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap>int&nbsp;</td>
-          <td class="mdname" nowrap>&nbsp; <em>skip</em></td>
+          <td class="md" nowrap>char *&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>value</em></td>
         </tr>
         <tr>
           <td></td>
@@ -202,7 +204,7 @@ Pointer to root of symtable to clear.</td></tr>
     <td>
 
 <p>
-Finds specified symbol in specified symbol table and returns pointer to signal.
+Sets all matching symtable entries to specified value.
 <p>
 <dl compact><dt><b>
 Parameters: </b><dd>
@@ -211,15 +213,79 @@ Parameters: </b><dd>
 Name of symbol to find in the table. </td></tr>
 <tr><td valign=top><em>symtab</em>&nbsp;</td><td>
 Root of the symtable to search in. </td></tr>
-<tr><td valign=top><em>skip</em>&nbsp;</td><td>
-Number of matching symbol values to skip.</td></tr>
+<tr><td valign=top><em>value</em>&nbsp;</td><td>
+Value to set symtable entry to when match found.</td></tr>
 </table>
 </dl><dl compact><dt><b>
 Returns: </b><dd>
-Returns pointer to found symtable entry or NULL if unable to find.</dl>Performs a binary search of the specified tree to find matching symtable entry. If a match is found,returns a pointer to the found symtable entry; otherwise, returns a value of NULL to indicate that the symtable entry was not found.     </td>
+Returns the number of matches that were found.</dl>Performs a binary search of the specified tree to find all matching symtable entries. When a match is found, the specified value is assigned to the symtable entry.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Sat Dec 14 01:04:25 2002 for Covered by
+<a name="a2" doxytag="symtable.c::symtable_move_and_set"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> void symtable_move_and_set </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="md" nowrap valign="top">char *&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>sym</em>, </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a173">symtable</a> *&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>from_tab</em>, </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td class="md" nowrap>char *&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>value</em>, </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a173">symtable</a> **&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>to_tab</em></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td class="md">)&nbsp;</td>
+          <td class="md" colspan="2"></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+Copies all matching symtable entries from from_tab to to_tab and assigns value to it.
+<p>
+<dl compact><dt><b>
+Parameters: </b><dd>
+<table border=0 cellspacing=2 cellpadding=0>
+<tr><td valign=top><em>sym</em>&nbsp;</td><td>
+Symbol name to search for. </td></tr>
+<tr><td valign=top><em>from_tab</em>&nbsp;</td><td>
+Table to pull symbol table information from. </td></tr>
+<tr><td valign=top><em>value</em>&nbsp;</td><td>
+Value to assign to newly created table entry. </td></tr>
+<tr><td valign=top><em>to_tab</em>&nbsp;</td><td>
+Reference to table to place new entry into.</td></tr>
+</table>
+</dl>Performs a binary search of the from_tab symtable in search of all entries that match the specified sym parameter. Whenever a match is found, a new entry is created and placed in the to_tab symtable containing the contents of the found entry. Additionally, the specified value is assigned to the new entry.     </td>
+  </tr>
+</table>
+<hr><address align="right"><small>Generated on Sat Jan 4 03:27:33 2003 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

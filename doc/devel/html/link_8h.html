@@ -44,18 +44,20 @@
 <tr><td>&nbsp;</td><td><font size=-1><em>Finds specified signal in given sig_link list.</em> <a href="#a14"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a172">mod_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="link_8h.html#a15">mod_link_find</a> (<a class="el" href="defines_8h.html#a171">module</a> *mod, <a class="el" href="defines_8h.html#a172">mod_link</a> *head)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Finds specified module in given mod_link list.</em> <a href="#a15"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="link_8h.html#a16">exp_link_remove</a> (<a class="el" href="defines_8h.html#a160">expression</a> *exp, <a class="el" href="defines_8h.html#a164">exp_link</a> **head, <a class="el" href="defines_8h.html#a164">exp_link</a> **tail)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Searches for and removes specified expression link from list.</em> <a href="#a16"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="link_8h.html#a17">str_link_delete_list</a> (<a class="el" href="defines_8h.html#a157">str_link</a> *head)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Deletes entire list specified by head pointer.</em> <a href="#a17"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="link_8h.html#a18">stmt_link_delete_list</a> (<a class="el" href="defines_8h.html#a165">stmt_link</a> *head)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="link_8h.html#a16">str_link_remove</a> (char *str, <a class="el" href="defines_8h.html#a157">str_link</a> **head, <a class="el" href="defines_8h.html#a157">str_link</a> **tail)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Searches for and removes specified string link from list.</em> <a href="#a16"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="link_8h.html#a17">exp_link_remove</a> (<a class="el" href="defines_8h.html#a160">expression</a> *exp, <a class="el" href="defines_8h.html#a164">exp_link</a> **head, <a class="el" href="defines_8h.html#a164">exp_link</a> **tail)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Searches for and removes specified expression link from list.</em> <a href="#a17"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="link_8h.html#a18">str_link_delete_list</a> (<a class="el" href="defines_8h.html#a157">str_link</a> *head)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Deletes entire list specified by head pointer.</em> <a href="#a18"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="link_8h.html#a19">exp_link_delete_list</a> (<a class="el" href="defines_8h.html#a164">exp_link</a> *head, <a class="el" href="defines_8h.html#a181">bool</a> del_exp)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="link_8h.html#a19">stmt_link_delete_list</a> (<a class="el" href="defines_8h.html#a165">stmt_link</a> *head)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Deletes entire list specified by head pointer.</em> <a href="#a19"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="link_8h.html#a20">sig_link_delete_list</a> (<a class="el" href="defines_8h.html#a167">sig_link</a> *head)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="link_8h.html#a20">exp_link_delete_list</a> (<a class="el" href="defines_8h.html#a164">exp_link</a> *head, <a class="el" href="defines_8h.html#a182">bool</a> del_exp)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Deletes entire list specified by head pointer.</em> <a href="#a20"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="link_8h.html#a21">mod_link_delete_list</a> (<a class="el" href="defines_8h.html#a172">mod_link</a> *head)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="link_8h.html#a21">sig_link_delete_list</a> (<a class="el" href="defines_8h.html#a167">sig_link</a> *head)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Deletes entire list specified by head pointer.</em> <a href="#a21"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="link_8h.html#a22">mod_link_delete_list</a> (<a class="el" href="defines_8h.html#a172">mod_link</a> *head)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Deletes entire list specified by head pointer.</em> <a href="#a22"></a><em></em></font><br><br></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 Contains functions to manipulate a linked lists.
@@ -123,7 +125,7 @@ Pointer to tail exp_link element of list.</td></tr>
 </dl>Creates a new exp_link element with the value specified for expr. Sets next pointer of element to NULL, sets the tail element to point to the new element and sets the tail value to the new element.     </td>
   </tr>
 </table>
-<a name="a19" doxytag="link.h::exp_link_delete_list"></a><p>
+<a name="a20" doxytag="link.h::exp_link_delete_list"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -137,7 +139,7 @@ Pointer to tail exp_link element of list.</td></tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>del_exp</em></td>
         </tr>
         <tr>
@@ -258,7 +260,7 @@ Returns: </b><dd>
 Returns the pointer to the found exp_link or NULL if the search was unsuccessful.</dl>Iteratively searches the exp_link list specified by the head exp_link element. If a matching expression is found, the pointer to this element is returned. If the specified expression could not be matched, the value of NULL is returned.     </td>
   </tr>
 </table>
-<a name="a16" doxytag="link.h::exp_link_remove"></a><p>
+<a name="a17" doxytag="link.h::exp_link_remove"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -370,7 +372,7 @@ Pointer to tail mod_link element of list.</td></tr>
 </dl>Creates a new mod_link element with the value specified for mod. Sets next pointer of element to NULL, sets the tail element to point to the new element and sets the tail value to the new element.     </td>
   </tr>
 </table>
-<a name="a21" doxytag="link.h::mod_link_delete_list"></a><p>
+<a name="a22" doxytag="link.h::mod_link_delete_list"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -550,7 +552,7 @@ Pointer to tail sig_link element of list.</td></tr>
 </dl>Creates a new sig_link element with the value specified for sig. Sets next pointer of element to NULL, sets the tail element to point to the new element and sets the tail value to the new element.     </td>
   </tr>
 </table>
-<a name="a20" doxytag="link.h::sig_link_delete_list"></a><p>
+<a name="a21" doxytag="link.h::sig_link_delete_list"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -786,7 +788,7 @@ Pointer to tail str_link element of list.</td></tr>
 </dl>Creates a new stmt_link element with the value specified for stmt. Sets next pointer of element to NULL and sets the tail value to the new element.     </td>
   </tr>
 </table>
-<a name="a18" doxytag="link.h::stmt_link_delete_list"></a><p>
+<a name="a19" doxytag="link.h::stmt_link_delete_list"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -966,7 +968,7 @@ Pointer to tail str_link element of list.</td></tr>
 </dl>Creates a new str_link element with the value specified for str. Sets next pointer of element to NULL, sets the tail element to point to the new element and sets the tail value to the new element.     </td>
   </tr>
 </table>
-<a name="a17" doxytag="link.h::str_link_delete_list"></a><p>
+<a name="a18" doxytag="link.h::str_link_delete_list"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -1090,7 +1092,63 @@ Returns: </b><dd>
 Returns the pointer to the found str_link or NULL if the search was unsuccessful.</dl>Iteratively searches the str_link list specifed by the head str_link element. If a matching string is found, the pointer to this element is returned. If the specified string could not be matched, the value of NULL is returned.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Sat Dec 14 01:04:24 2002 for Covered by
+<a name="a16" doxytag="link.h::str_link_remove"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> void str_link_remove </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="md" nowrap valign="top">char *&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>str</em>, </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a157">str_link</a> **&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>head</em>, </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a157">str_link</a> **&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>tail</em></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td class="md">)&nbsp;</td>
+          <td class="md" colspan="2"></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+Searches for and removes specified string link from list.
+<p>
+<dl compact><dt><b>
+Parameters: </b><dd>
+<table border=0 cellspacing=2 cellpadding=0>
+<tr><td valign=top><em>str</em>&nbsp;</td><td>
+Pointer to string to find and remove. </td></tr>
+<tr><td valign=top><em>head</em>&nbsp;</td><td>
+Pointer to head of string list. </td></tr>
+<tr><td valign=top><em>tail</em>&nbsp;</td><td>
+Pointer to tail of string list.</td></tr>
+</table>
+</dl>Searches specified list for string that matches the specified string. If a match is found, remove it from the list and deallocate the link memory.     </td>
+  </tr>
+</table>
+<hr><address align="right"><small>Generated on Sat Jan 4 03:27:32 2003 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

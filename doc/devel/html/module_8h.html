@@ -17,11 +17,11 @@
 <tr><td>&nbsp;</td><td><font size=-1><em>Initializes all values of module.</em> <a href="#a0"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a171">module</a> *&nbsp;</td><td valign=bottom><a class="el" href="module_8h.html#a1">module_create</a> ()</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Creates new module from heap and initializes structure.</em> <a href="#a1"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="module_8h.html#a2">module_db_write</a> (<a class="el" href="defines_8h.html#a171">module</a> *mod, char *scope, FILE *<a class="el" href="lexer_8c.html#a122">file</a>, <a class="el" href="defines_8h.html#a178">mod_inst</a> *inst)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="module_8h.html#a2">module_db_write</a> (<a class="el" href="defines_8h.html#a171">module</a> *mod, char *scope, FILE *<a class="el" href="pplexer_8c.html#a114">file</a>, <a class="el" href="defines_8h.html#a178">mod_inst</a> *inst)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Writes contents of provided module to specified output.</em> <a href="#a2"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="module_8h.html#a3">module_db_read</a> (<a class="el" href="defines_8h.html#a171">module</a> *mod, char *scope, char **line)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="module_8h.html#a3">module_db_read</a> (<a class="el" href="defines_8h.html#a171">module</a> *mod, char *scope, char **line)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Read contents of current line from specified file, creates module and adds to module list.</em> <a href="#a3"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="module_8h.html#a4">module_db_merge</a> (<a class="el" href="defines_8h.html#a171">module</a> *base, FILE *<a class="el" href="lexer_8c.html#a122">file</a>)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="module_8h.html#a4">module_db_merge</a> (<a class="el" href="defines_8h.html#a171">module</a> *base, FILE *<a class="el" href="pplexer_8c.html#a114">file</a>, <a class="el" href="defines_8h.html#a182">bool</a> same)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Reads and merges two modules into base module.</em> <a href="#a4"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="module_8h.html#a5">module_display_signals</a> (<a class="el" href="defines_8h.html#a171">module</a> *mod)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Displays signals stored in this module.</em> <a href="#a5"></a><em></em></font><br><br></td></tr>
@@ -117,7 +117,7 @@ Returns pointer to newly created module element that has been properly initializ
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a181">bool</a> module_db_merge </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a182">bool</a> module_db_merge </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a171">module</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>base</em>, </td>
@@ -126,7 +126,13 @@ Returns pointer to newly created module element that has been properly initializ
           <td></td>
           <td></td>
           <td class="md" nowrap>FILE *&nbsp;</td>
-          <td class="mdname" nowrap>&nbsp; <em>file</em></td>
+          <td class="mdname" nowrap>&nbsp; <em>file</em>, </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>same</em></td>
         </tr>
         <tr>
           <td></td>
@@ -154,7 +160,9 @@ Parameters: </b><dd>
 <tr><td valign=top><em>base</em>&nbsp;</td><td>
 Module that will merge in that data from the in module </td></tr>
 <tr><td valign=top><em>file</em>&nbsp;</td><td>
-Pointer to CDD file handle to read.</td></tr>
+Pointer to CDD file handle to read. </td></tr>
+<tr><td valign=top><em>same</em>&nbsp;</td><td>
+Specifies if module to be merged should match existing module exactly or not.</td></tr>
 </table>
 </dl><dl compact><dt><b>
 Returns: </b><dd>
@@ -167,7 +175,7 @@ Returns TRUE if parse and merge was successful; otherwise, returns FALSE.</dl>Pa
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a181">bool</a> module_db_read </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a182">bool</a> module_db_read </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a171">module</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>mod</em>, </td>
@@ -225,7 +233,7 @@ Returns TRUE if read was successful; otherwise, returns FALSE.</dl>Reads the cur
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a181">bool</a> module_db_write </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a182">bool</a> module_db_write </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a171">module</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>mod</em>, </td>
@@ -433,7 +441,7 @@ Pointer to module to initialize.</td></tr>
 </dl>Initializes all contents to NULL.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Sat Dec 14 01:04:24 2002 for Covered by
+<hr><address align="right"><small>Generated on Sat Jan 4 03:27:32 2003 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>
