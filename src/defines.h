@@ -1161,6 +1161,18 @@ struct mod_link_s {
 };
 
 /*------------------------------------------------------------------------------*/
+struct sym_sig_s;
+
+typedef struct sym_sig_s sym_sig;
+
+struct sym_sig_s {
+  signal*  sig;   /*!< Pointer to signal that this symtable entry refers to */
+  int      msb;   /*!< Most significant bit of value to set                 */
+  int      lsb;   /*!< Least significant bit of value to set                */
+  sym_sig* next;  /*!< Pointer to next sym_sig link in list                 */
+};
+
+/*------------------------------------------------------------------------------*/
 /*!
  Stores symbol name of signal along with pointer to signal itself into a lookup table
 */
@@ -1172,10 +1184,8 @@ struct symtable_s;
 typedef struct symtable_s symtable;
 
 struct symtable_s {
-  sig_link* sig_head;     /*!< Pointer to signal for this symbol           */
-  sig_link* sig_tail;     /*!< Pointer to signal for this symbol           */
-  int       msb;          /*!< Most significant bit of value to set        */
-  int       lsb;          /*!< Least significant bit of value to set       */
+  sym_sig*  sig_head;     /*!< Pointer to head of sym_sig list             */
+  sym_sig*  sig_tail;     /*!< Pointer to tail of sym_sig list             */
   char*     value;        /*!< String representation of last current value */
   int       size;         /*!< Number of bytes allowed storage for value   */
   symtable* table[256];   /*!< Array of symbol tables for next level       */
@@ -1322,6 +1332,9 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.72  2003/08/15 20:02:08  phase1geo
+ Added check for sys/times.h file for new code additions.
+
  Revision 1.71  2003/08/15 03:52:22  phase1geo
  More checkins of last checkin and adding some missing files.
 

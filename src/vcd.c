@@ -335,7 +335,7 @@ void vcd_parse( char* vcd_file ) {
   if( (vcd_handle = fopen( vcd_file, "r" )) != NULL ) {
 
     /* Create initial symbol table */
-    vcd_symtab = symtable_create( NULL, 0, 0, FALSE );
+    vcd_symtab = symtable_create();
 
     vcd_parse_def( vcd_handle );
 
@@ -366,6 +366,12 @@ void vcd_parse( char* vcd_file ) {
 
 /*
  $Log$
+ Revision 1.12  2003/08/20 22:08:39  phase1geo
+ Fixing problem with not closing VCD file after VCD parsing is completed.
+ Also fixed memory problem with symtable.c to cause timestep_tab entries
+ to only be loaded if they have not already been loaded during this timestep.
+ Also added info.h to include list of db.c.
+
  Revision 1.11  2003/08/15 03:52:22  phase1geo
  More checkins of last checkin and adding some missing files.
 

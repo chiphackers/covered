@@ -155,34 +155,54 @@ int        postsim_size    = 0;
  \param msb     Most-significant bit of symbol entry.
  \param lsb     Least-significant bit of symbol entry.
 
- Initializes the contents of a symbol table entry.
+ Creates and adds the specified symtable signal structure to the sym_sig
+ list for the specified symtab.
 */
-void symtable_init( symtable* symtab, signal* sig, int msb, int lsb ) {
+void symtable_add_sym_sig( symtable* symtab, signal* sig, int msb, int lsb ) {
 
-  assert( sig != NULL );
+  sym_sig* new_ss;  /* Pointer to newly created sym_sig structure */
 
-  sig_link_add( sig, &(symtab->sig_head), &(symtab->sig_tail) );
+  /* Create new sym_sig structure */
+  new_ss       = (sym_sig*)malloc_safe( sizeof( sym_sig ) );
+  new_ss->sig  = sig;
+  new_ss->msb  = msb;
+  new_ss->lsb  = lsb;
+  new_ss->next = NULL;
 
-  symtab->msb      = msb;
-  symtab->lsb      = lsb;
-  symtab->value    = (char*)malloc_safe( sig->value->width + 1 );
-  symtab->value[0] = '\0';
-  symtab->size     = (sig->value->width + 1);
+  /* Add new structure to symtable list */
+  if( symtab->sig_head == NULL ) {
+    symtab->sig_head = symtab->sig_tail = new_ss;
+  } else {
+    symtab->sig_tail->next = new_ss;
+    symtab->sig_tail       = new_ss;
+  }
 
 }
 
 /*!
- \param sig   Pointer to signal for this symbol.
- \param msb   Most-significant bit of symbol value.
- \param lsb   Least-significant bit of symbol value.
- \param init  Specifies if symbol table needs to be initialized.
+ \param symtab  Pointer to symbol table entry to initialize.
+ \param msb     Most-significant bit of symbol entry.
+ \param lsb     Least-significant bit of symbol entry.
 
+ Initializes the contents of a symbol table entry.
+*/
+void symtable_init( symtable* symtab, int msb, int lsb ) {
+
+  sym_sig* new_ss;  /* Pointer to newly create sym_sig */
+
+  symtab->value    = (char*)malloc_safe( (msb - lsb) + 2 );
+  symtab->value[0] = '\0';
+  symtab->size     = (msb - lsb) + 2;
+
+}
+
+/*!
  \return Returns a pointer to the newly created symbol table entry.
 
- Creates a new symbol table entry from the specified input and initializes
- the members of this new entry if specified.
+ Creates a new symbol table entry and returns a pointer to the
+ newly created structure.
 */
-symtable* symtable_create( signal* sig, int msb, int lsb, bool init ) {
+symtable* symtable_create() {
 
   symtable* symtab;  /* Pointer to new symtable entry */
   int       i;       /* Loop iterator                 */
@@ -193,10 +213,6 @@ symtable* symtable_create( signal* sig, int msb, int lsb, bool init ) {
   symtab->value    = NULL;
   for( i=0; i<256; i++ ) {
     symtab->table[i] = NULL;
-  }
-
-  if( init ) {
-    symtable_init( symtab, sig, msb, lsb );
   }
 
   return( symtab );
@@ -226,17 +242,17 @@ void symtable_add( char* sym, signal* sig, int msb, int lsb ) {
 
   while( *ptr != '\0' ) {
     if( curr->table[(int)*ptr] == NULL ) {
-      curr->table[(int)*ptr] = symtable_create( NULL, 0, 0, FALSE );      
+      curr->table[(int)*ptr] = symtable_create();
     }
     curr = curr->table[(int)*ptr];
     ptr++;
   }
 
   if( curr->sig_head == NULL ) {
-    symtable_init( curr, sig, msb, lsb );
-  } else {
-    sig_link_add( sig, &(curr->sig_head), &(curr->sig_tail) );
+    symtable_init( curr, msb, lsb );
   }
+
+  symtable_add_sym_sig( curr, sig, msb, lsb );
 
   /* 
    Finally increment the number of entries in the root table structure.
@@ -255,7 +271,7 @@ void symtable_add( char* sym, signal* sig, int msb, int lsb ) {
 void symtable_set_value( char* sym, char* value ) {
 
   symtable* curr;         /* Pointer to current symtable                                     */
-  sig_link* sigl;         /* Pointer to current signal in signal list                        */
+  sym_sig*  sig;          /* Pointer to current sym_sig in list                              */
   char*     ptr;          /* Pointer to current character in symbol                          */
   bool      set = FALSE;  /* Specifies if this symtable entry has been set this timestep yet */
 
@@ -286,13 +302,13 @@ void symtable_set_value( char* sym, char* value ) {
        See if current signal is to be placed in presim queue or postsim queue and
        put it there.
       */
-      sigl = curr->sig_head;
-      while( (sigl != NULL) && (signal_get_wait_bit( sigl->sig ) == 0) ) {
-        sigl = sigl->next;
+      sig = curr->sig_head;
+      while( (sig != NULL) && (signal_get_wait_bit( sig->sig ) == 0) ) {
+        sig = sig->next;
       }
 
       /* None of the signals are wait signals, place in postsim queue */
-      if( sigl == NULL ) {
+      if( sig == NULL ) {
         timestep_tab[((vcd_symtab_size - 1) - postsim_size)] = curr;
         postsim_size++;
       } else {
@@ -315,17 +331,17 @@ void symtable_set_value( char* sym, char* value ) {
 */
 void symtable_assign( bool presim ) {
 
-  symtable* curr;  /* Pointer to current symtable entry        */
-  sig_link* sigl;  /* Pointer to current signal in signal list */
-  int       i;     /* Loop iterator                            */
+  symtable* curr;  /* Pointer to current symtable entry  */
+  sym_sig*  sig;   /* Pointer to current sym_sig in list */
+  int       i;     /* Loop iterator                      */
 
   if( presim ) {
     for( i=0; i<presim_size; i++ ) {
       curr = timestep_tab[i];
-      sigl = curr->sig_head;
-      while( sigl != NULL ) {
-        signal_vcd_assign( sigl->sig, curr->value, curr->msb, curr->lsb );
-        sigl = sigl->next;
+      sig = curr->sig_head;
+      while( sig != NULL ) {
+        signal_vcd_assign( sig->sig, curr->value, sig->msb, sig->lsb );
+        sig = sig->next;
       }
       curr->value[0] = '\0';
     }
@@ -333,10 +349,10 @@ void symtable_assign( bool presim ) {
   } else {
     for( i=(vcd_symtab_size - 1); i>=(vcd_symtab_size - postsim_size); i-- ) {
       curr = timestep_tab[i];
-      sigl = curr->sig_head;
-      while( sigl != NULL ) {
-        signal_vcd_assign( sigl->sig, curr->value, curr->msb, curr->lsb );
-        sigl = sigl->next;
+      sig = curr->sig_head;
+      while( sig != NULL ) {
+        signal_vcd_assign( sig->sig, curr->value, sig->msb, sig->lsb );
+        sig = sig->next;
       }
       curr->value[0] = '\0';
     }
@@ -352,7 +368,9 @@ void symtable_assign( bool presim ) {
 */ 
 void symtable_dealloc( symtable* symtab ) {
 
-  int i;  /* Loop iterator */
+  sym_sig* curr;  /* Pointer to current sym_sig in list */
+  sym_sig* tmp;   /* Temporary pointer to sym_sig       */
+  int      i;     /* Loop iterator                      */
 
   if( symtab != NULL ) {
 
@@ -364,7 +382,13 @@ void symtable_dealloc( symtable* symtab ) {
       free_safe( symtab->value );
     }
 
-    sig_link_delete_list( symtab->sig_head, FALSE );
+    /* Remove sym_sig list */
+    curr = symtab->sig_head;
+    while( curr != NULL ) {
+      tmp = curr->next;
+      free_safe( curr );
+      curr = tmp;
+    }
 
     free_safe( symtab );
 
@@ -374,6 +398,12 @@ void symtable_dealloc( symtable* symtab ) {
 
 /*
  $Log$
+ Revision 1.14  2003/08/20 22:08:39  phase1geo
+ Fixing problem with not closing VCD file after VCD parsing is completed.
+ Also fixed memory problem with symtable.c to cause timestep_tab entries
+ to only be loaded if they have not already been loaded during this timestep.
+ Also added info.h to include list of db.c.
+
  Revision 1.13  2003/08/18 23:52:54  phase1geo
  Fixing bug in initialization function for a symtable to initialize all 256
  elements of the table array (instead of 255).

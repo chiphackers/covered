@@ -11,8 +11,8 @@
 #include "defines.h"
 
 
-/*! \brief Creates a new symtable structure and initializes if this is specified. */
-symtable* symtable_create( signal* sig, int msb, int lsb, bool init );
+/*! \brief Creates a new symtable structure. */
+symtable* symtable_create();
 
 /*! \brief Creates a new symtable entry and adds it to the specified symbol table. */
 void symtable_add( char* sym, signal* sig, int msb, int lsb );
@@ -29,6 +29,9 @@ void symtable_dealloc( symtable* symtab );
 
 /*
  $Log$
+ Revision 1.11  2003/08/15 03:52:22  phase1geo
+ More checkins of last checkin and adding some missing files.
+
  Revision 1.10  2003/08/05 20:25:05  phase1geo
  Fixing non-blocking bug and updating regression files according to the fix.
  Also added function vector_is_unknown() which can be called before making
