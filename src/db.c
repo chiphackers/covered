@@ -73,26 +73,6 @@ str_link* modlist_tail  = NULL;
 module*   curr_module   = NULL;
 
 /*!
- Pointer to the VCD symbol table tree structure that contains all signals and their
- corresponding VCD symbols.  Tree elements are sorted by symbol name for quick lookup.
-*/
-symtable* vcd_symtab           = NULL;
-
-/*!
- Pointer to the pre-simulation timestep table tree structure.  This tree contains copies
- of the VCD symbol table tree entries that are to be evaluated just prior to simulation
- for a particular timestep.
-*/
-symtable* presim_timestep_tab  = NULL;
-
-/*!
- Pointer to the post-simulation timestep table tree structure.  This tree contains copies
- of the VCD symbol table tree entries that are to be evaluated just after simulation for
- a particular timestep.
-*/
-symtable* postsim_timestep_tab = NULL;
-
-/*!
  This static value contains the current expression ID number to use for the next expression found, it
  is incremented by one when an expression is found.  This allows us to have a unique expression ID
  for each expression (since expressions have no intrinsic names).
@@ -1118,7 +1098,7 @@ void db_assign_symbol( char* name, char* symbol, int msb, int lsb ) {
     if( (slink = sig_link_find( &tmpsig, curr_instance->mod->sig_head )) != NULL ) {
 
       /* Add this signal */
-      symtable_add( strdup( symbol ), slink->sig, msb, lsb, &vcd_symtab );
+      symtable_add( strdup( symbol ), slink->sig, msb, lsb );
 
     } else {
 
@@ -1151,23 +1131,8 @@ void db_set_symbol_char( char* sym, char value ) {
   val[0] = value;
   val[1] = '\0';
 
-  /*
-   Set value of all matching occurrences in current timestep.  If no occurrences
-   were found, add it to the current timestep.
-  */
-  if( sim_is_curr_wait_signal( symtable_find_signal( sym, vcd_symtab ) ) ) {
-
-    if( symtable_find_and_set( sym, presim_timestep_tab, val ) == 0 ) {
-      symtable_move_and_set( sym, vcd_symtab, val, &(presim_timestep_tab) );
-    }
-
-  } else {
-
-    if( symtable_find_and_set( sym, postsim_timestep_tab, val ) == 0 ) {
-      symtable_move_and_set( sym, vcd_symtab, val, &(postsim_timestep_tab) );
-    }
-
-  }
+  /* Set value of all matching occurrences in current timestep. */
+  symtable_set_value( sym, val );
 
 }
 
@@ -1185,20 +1150,8 @@ void db_set_symbol_string( char* sym, char* value ) {
   snprintf( user_msg, USER_MSG_LENGTH, "In db_set_symbol_string, sym: %s, value: %s", sym, value );
   print_output( user_msg, DEBUG );
 
-  /* Only search VCD table if symbol has never been moved over */
-  if( sim_is_curr_wait_signal( symtable_find_signal( sym, vcd_symtab ) ) ) {
-
-    if( symtable_find_and_set( sym, presim_timestep_tab, value ) == 0 ) {
-      symtable_move_and_set( sym, vcd_symtab, value, &(presim_timestep_tab) );
-    }
-
-  } else {
-
-    if( symtable_find_and_set( sym, postsim_timestep_tab, value ) == 0 ) {
-      symtable_move_and_set( sym, vcd_symtab, value, &(postsim_timestep_tab) );
-    }
-
-  }
+  /* Set value of all matching occurrences in current timestep. */
+  symtable_set_value( sym, value );
 
 }
 
@@ -1225,26 +1178,24 @@ void db_do_timestep( int time ) {
 
   /* Assign all stored values in current pre-timestep to stored signals */
   print_output( "Assigning presimulation signals...", DEBUG );
-  symtable_assign( presim_timestep_tab );
+  symtable_assign( TRUE );
 
   /* Simulate the current timestep */
   sim_simulate();
 
   /* Assign all stored values in current post-timestep to stored signals */
   print_output( "Assigning postsimulation signals...", DEBUG );
-  symtable_assign( postsim_timestep_tab );
-
-  /* Finally, clear presim_timestep_tab and postsim_timestep_tab */
-  symtable_dealloc( presim_timestep_tab );
-  presim_timestep_tab = NULL;
-
-  symtable_dealloc( postsim_timestep_tab );
-  postsim_timestep_tab = NULL;
+  symtable_assign( FALSE );
 
 }
 
 /*
  $Log$
+ Revision 1.95  2003/08/10 03:50:10  phase1geo
+ More development documentation updates.  All global variables are now
+ documented correctly.  Also fixed some generated documentation warnings.
+ Removed some unnecessary global variables.
+
  Revision 1.94  2003/08/09 22:10:41  phase1geo
  Removing wait event signals from CDD file generation in support of another method
  that fixes a bug when multiple wait event statements exist within the same

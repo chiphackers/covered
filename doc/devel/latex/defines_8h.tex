@@ -4,6 +4,7 @@ Contains definitions/structures used in the Covered utility.
 
 
 {\tt \#include \char`\"{}../config.h\char`\"{}}\par
+{\tt \#include $<$sys/times.h$>$}\par
 \subsection*{Compounds}
 \begin{CompactItemize}
 \item 
@@ -46,6 +47,8 @@ struct {\bf stmt\_\-loop\_\-link\_\-s}
 struct {\bf str\_\-link\_\-s}
 \item 
 struct {\bf symtable\_\-s}
+\item 
+struct {\bf timer\_\-s}
 \item 
 struct {\bf tnode\_\-s}
 \item 
@@ -416,6 +419,8 @@ typedef {\bf case\_\-stmt\_\-s} {\bf case\_\-statement}
 typedef {\bf mod\_\-inst\_\-s} {\bf mod\_\-inst}
 \item 
 typedef {\bf tnode\_\-s} {\bf tnode}
+\item 
+typedef {\bf timer\_\-s} {\bf timer}
 \end{CompactItemize}
 \subsection*{Enumerations}
 \begin{CompactItemize}
@@ -661,7 +666,12 @@ Renaming string link structure for convenience. \index{defines.h@{defines.h}!sym
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf symtable\_\-s} {\bf symtable}}\label{defines_8h_a172}
 
 
-Renaming symbol table structure for convenience. \index{defines.h@{defines.h}!tnode@{tnode}}
+Renaming symbol table structure for convenience. \index{defines.h@{defines.h}!timer@{timer}}
+\index{timer@{timer}!defines.h@{defines.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf timer\_\-s} {\bf timer}}\label{defines_8h_a179}
+
+
+Renaming timer structure for convenience. \index{defines.h@{defines.h}!tnode@{tnode}}
 \index{tnode@{tnode}!defines.h@{defines.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf tnode\_\-s} {\bf tnode}}\label{defines_8h_a178}
 
@@ -681,16 +691,16 @@ Renaming vector width structure for convenience.
 \subsection{Enumeration Type Documentation}
 \index{defines.h@{defines.h}!bool@{bool}}
 \index{bool@{bool}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}enum {\bf bool}}\label{defines_8h_a181}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}enum {\bf bool}}\label{defines_8h_a182}
 
 
 Defines boolean variables used in most functions. \begin{Desc}
 \item[Enumeration values: ]\par
 \begin{description}
 \index{FALSE@{FALSE}!defines.h@{defines.h}}\index{defines.h@{defines.h}!FALSE@{FALSE}}\item[{\em 
-{\em FALSE}\label{defines_8h_a181a179}
+{\em FALSE}\label{defines_8h_a182a180}
 }]Boolean false value \index{TRUE@{TRUE}!defines.h@{defines.h}}\index{defines.h@{defines.h}!TRUE@{TRUE}}\item[{\em 
-{\em TRUE}\label{defines_8h_a181a180}
+{\em TRUE}\label{defines_8h_a182a181}
 }]Boolean true value \end{description}
 \end{Desc}
 

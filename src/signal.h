@@ -28,6 +28,12 @@ bool signal_db_read( char** line, module* curr_mod );
 /*! \brief Reads and merges two signals, placing result into base signal. */
 bool signal_db_merge( signal* base, char** line, bool same );
 
+/*! \brief Sets value of currently waiting bit of signal to specified value. */
+void signal_set_wait_bit( signal* sig, int val );
+
+/*! \brief Gets value of currently waiting bit of signal. */
+int signal_get_wait_bit( signal* sig );
+
 /*! \brief Assigns specified VCD value to specified signal. */
 void signal_vcd_assign( signal* sig, char* value, int msb, int lsb );
 
@@ -43,6 +49,10 @@ void signal_dealloc( signal* sig );
 
 /*
  $Log$
+ Revision 1.11  2003/02/13 23:44:08  phase1geo
+ Tentative fix for VCD file reading.  Not sure if it works correctly when
+ original signal LSB is != 0.  Icarus Verilog testsuite passes.
+
  Revision 1.10  2002/12/30 05:31:33  phase1geo
  Fixing bug in module merge for reports when parameterized modules are merged.
  These modules should not output an error to the user when mismatching modules

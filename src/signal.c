@@ -268,6 +268,39 @@ bool signal_db_merge( signal* base, char** line, bool same ) {
 }
 
 /*!
+ \param sig  Pointer to signal to set wait bit to.
+ \param val  Value to set wait bit to.
+
+ Sets the wait bit in the specified signal to the specified value.
+*/
+void signal_set_wait_bit( signal* sig, int val ) {
+
+  assert( sig != NULL );
+  assert( sig->value != NULL );
+  assert( sig->value->value != NULL );
+
+  sig->value->value[0] = (sig->value->value[0] & 0xffbfffff) | ((val & 0x1) << 22);
+
+}
+
+/*!
+ \param sig  Pointer to signal to retrieve wait bit value from.
+
+ \return Returns value of wait bit in specified signal.
+
+ Gets the value of the wait bit from the specified signal.
+*/
+int signal_get_wait_bit( signal* sig ) {
+
+  assert( sig != NULL );
+  assert( sig->value != NULL );
+  assert( sig->value->value != NULL );
+
+  return( (sig->value->value[0] & 0x400000) >> 22 );
+
+}
+
+/*!
  \param sig    Pointer to signal to assign VCD value to.
  \param value  String version of VCD value.
  \param msb    Most significant bit to assign to.
@@ -370,6 +403,13 @@ void signal_dealloc( signal* sig ) {
 
 /*
  $Log$
+ Revision 1.30  2003/08/05 20:25:05  phase1geo
+ Fixing non-blocking bug and updating regression files according to the fix.
+ Also added function vector_is_unknown() which can be called before making
+ a call to vector_to_int() which will eleviate any X/Z-values causing problems
+ with this conversion.  Additionally, the real1.1 regression report files were
+ updated.
+
  Revision 1.29  2003/02/26 23:00:50  phase1geo
  Fixing bug with single-bit parameter handling (param4.v diagnostic miscompare
  between Linux and Irix OS's).  Updates to testsuite and new diagnostic added

@@ -579,6 +579,41 @@ void* malloc_safe( size_t size ) {
 }
 
 /*!
+ \param size  Number of bytes to allocate.
+
+ \return Pointer to allocated memory.
+
+ Allocated memory like a malloc() call but performs some pre-allocation and
+ post-allocation checks to be sure that the malloc call works properly.  Unlike
+ malloc_safe, there is no upper bound on the amount of memory to allocate.
+*/
+void* malloc_safe_nolimit( size_t size ) {
+
+  void* obj;  /* Object getting malloc address */
+
+  if( size <= 0 ) {
+    print_output( "Internal:  Attempting to allocate memory of size <= 0", FATAL );
+    assert( size > 0 );
+  }
+
+  curr_malloc_size += size;
+
+  if( curr_malloc_size > largest_malloc_size ) {
+    largest_malloc_size = curr_malloc_size;
+  }
+
+  obj = malloc( size );
+
+  if( obj == NULL ) {
+    print_output( "Out of heap memory", FATAL );
+    exit( 1 );
+  }
+
+  return( obj );
+
+}
+
+/*!
  \param ptr  Pointer to object to deallocate.
 
  Safely performs a free function of heap memory.  Also keeps track
@@ -615,8 +650,62 @@ void gen_space( char* spaces, int num_spaces ) {
   
 }
 
+/*!
+ \param tm  Pointer to timer structure to clear.
+
+ Clears the total accumulated time in the specified timer structure.
+*/
+void timer_clear( timer** tm ) {
+
+  if( *tm == NULL ) {
+    *tm = (timer*)malloc_safe( sizeof( timer ) ); 
+  }
+
+  (*tm)->total = 0;
+
+}
+
+/*!
+ \param tm  Pointer to timer structure to start timing.
+
+ Starts the timer to start timing a segment of code.
+*/
+void timer_start( timer** tm ) {
+
+  if( *tm == NULL ) {
+    *tm = (timer*)malloc_safe( sizeof( timer ) );
+    timer_clear( tm );
+  }
+
+  times( &((*tm)->start) );
+
+}
+
+/*!
+ \param tm  Pointer to timer structure to stop timing.
+
+ Stops the specified running counter and totals up the amount
+ of user time that has accrued.
+*/
+void timer_stop( timer** tm ) {
+
+  struct tms tmp;  /* Temporary holder for stop time */
+
+  assert( *tm != NULL );
+
+  times( &tmp );
+  (*tm)->total += tmp.tms_utime - (*tm)->start.tms_utime;
+
+}
+
 /*
  $Log$
+ Revision 1.21  2003/02/17 22:47:20  phase1geo
+ Fixing bug with merging same DUTs from different testbenches.  Updated reports
+ to display full path instead of instance name and parent instance name.  Added
+ merge tests and added merge testing into regression test suite.  Fixing bug with
+ -D/-Q option specified with merge command.  Full regression passing.
+
  Revision 1.20  2003/02/10 06:08:56  phase1geo
  Lots of parser updates to properly handle UDPs, escaped identifiers, specify blocks,
  and other various Verilog structures that Covered was not handling correctly.  Fixes

@@ -159,46 +159,22 @@ void sim_expr_changed( expression* expr ) {
 */
 void sim_add_stmt_to_queue( statement* stmt ) {
 
+  sig_link* sigl;  /* Pointer to current signal in signal list */
+
   assert( stmt != NULL );
 
   if( SUPPL_IS_STMT_HEAD( stmt->exp->suppl ) == 1 ) {
 
     stmt_link_add_tail( stmt, &(presim_stmt_head), &(presim_stmt_tail) );
 
-  }
-
-}
-
-/*!
- \param sig  Pointer to signal to lookup.
-
- \return Returns TRUE if signal name was found in pre-simulation queue; otherwise, returns FALSE.
-
- Searches through all statements in pre-simulation queue, searching for one that
- contains the signal name specified in the parameter list.  If the signal name was found,
- return a value of TRUE; otherwise, returns a value of FALSE.
-*/
-bool sim_is_curr_wait_signal( signal* sig ) {
-
-  stmt_iter curr_stmt;      /* Statement list iterator     */
-  bool      found = FALSE;  /* Set to TRUE if signal found */
-
-  if( sig != NULL ) {
-
-    stmt_iter_reset( &curr_stmt, presim_stmt_head );
-
-    while( (curr_stmt.curr != NULL) && !found ) {
-      if( sig_link_find( sig, curr_stmt.curr->stmt->wait_sig_head ) != NULL ) {
-        found = TRUE;
-      }
-      stmt_iter_next( &curr_stmt );
+    /* Set wait signals */
+    sigl = stmt->wait_sig_head;
+    while( sigl != NULL ) {
+      signal_set_wait_bit( sigl->sig, 1 );
+      sigl = sigl->next;
     }
 
   }
-
-  /* printf( "is_curr_wait_signal (%s) found to be (%d)\n", sig->name, found ); */
-
-  return( found );
 
 }
 
@@ -283,8 +259,10 @@ void sim_expression( expression* expr ) {
 */
 statement* sim_statement( statement* head_stmt ) {
 
-  statement* stmt;              /* Pointer to current statement to evaluate */
-  statement* last_stmt = NULL;  /* Pointer to the last statement evaluated  */
+  statement* stmt;              /* Pointer to current statement to evaluate               */
+  statement* last_stmt = NULL;  /* Pointer to the last statement evaluated                */
+  bool       first     = TRUE;  /* Specifies that this is the first time through the loop */
+  sig_link*  sigl;              /* Pointer to current signal in signal list               */
 
   /* Set the value of stmt with the head_stmt */
   stmt = head_stmt;
@@ -299,6 +277,16 @@ statement* sim_statement( statement* head_stmt ) {
 
     /* printf( "Executed statement %d\n", stmt->exp->id ); */
       
+    /* Clear wait event signal bits */
+    if( first ) {
+      sigl = stmt->wait_sig_head;
+      while( sigl != NULL ) {
+        signal_set_wait_bit( sigl->sig, 0 );
+        sigl = sigl->next;
+      }
+      first = FALSE;
+    }
+
     last_stmt = stmt;
 
     if( SUPPL_IS_STMT_CONTINUOUS( stmt->exp->suppl ) == 1 ) {
@@ -330,8 +318,9 @@ statement* sim_statement( statement* head_stmt ) {
 */
 void sim_simulate() {
 
-  stmt_iter  curr_stmt;  /* Statement list iterator             */
-  stmt_link* tmp_stmt;   /* Temporary pointer to statement link */
+  stmt_iter  curr_stmt;  /* Statement list iterator                   */
+  stmt_link* tmp_stmt;   /* Temporary pointer to statement link       */
+  sig_link*  sigl;       /* Pointer to current element in signal list */
   
   stmt_iter_reset( &curr_stmt, presim_stmt_head );
   
@@ -340,7 +329,7 @@ void sim_simulate() {
     assert( curr_stmt.curr->stmt != NULL );
     
     curr_stmt.curr->stmt = sim_statement( curr_stmt.curr->stmt );
-    
+
     if( curr_stmt.curr->stmt == NULL ) {
       
       if( curr_stmt.curr == presim_stmt_head ) {
@@ -359,6 +348,13 @@ void sim_simulate() {
       stmt_iter_next( &curr_stmt );
       
     } else {
+
+      /* Set wait bits on current statement */
+      sigl = curr_stmt.curr->stmt->wait_sig_head;
+      while( sigl != NULL ) {
+        signal_set_wait_bit( sigl->sig, 1 );
+        sigl = sigl->next;
+      }
       
       stmt_iter_next( &curr_stmt );
       
@@ -371,6 +367,11 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.30  2003/08/10 03:50:10  phase1geo
+ More development documentation updates.  All global variables are now
+ documented correctly.  Also fixed some generated documentation warnings.
+ Removed some unnecessary global variables.
+
  Revision 1.29  2003/08/05 20:25:05  phase1geo
  Fixing non-blocking bug and updating regression files according to the fix.
  Also added function vector_is_unknown() which can be called before making

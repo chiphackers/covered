@@ -13,6 +13,7 @@
 #ifdef HAVE_STRING_H
 #include <string.h>
 #endif
+#include <sys/times.h>
 
 #include "defines.h"
 #include "score.h"
@@ -390,6 +391,10 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.34  2003/08/07 15:41:43  phase1geo
+ Adding -ts option to score command to allow the current timestep to be
+ output during the simulation phase.
+
  Revision 1.33  2003/02/07 23:12:30  phase1geo
  Optimizing db_add_statement function to avoid memory errors.  Adding check
  for -i option to avoid user error.

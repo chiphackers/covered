@@ -13,6 +13,7 @@
 */
 
 #include "../config.h"
+#include <sys/times.h>
 
 /*!
  Specifies current version of the Covered utility.
@@ -1168,14 +1169,13 @@ struct symtable_s;
 typedef struct symtable_s symtable;
 
 struct symtable_s {
-  char*     sym;          /*!< Name of VCD-specified signal                */
-  signal*   sig;          /*!< Pointer to signal for this symbol           */
+  sig_link* sig_head;     /*!< Pointer to signal for this symbol           */
+  sig_link* sig_tail;     /*!< Pointer to signal for this symbol           */
   int       msb;          /*!< Most significant bit of value to set        */
   int       lsb;          /*!< Least significant bit of value to set       */
   char*     value;        /*!< String representation of last current value */
   int       size;         /*!< Number of bytes allowed storage for value   */
-  symtable* right;        /*!< Pointer to next symtable entry to the right */
-  symtable* left;         /*!< Pointer to next symtable entry to the left  */
+  symtable* table[256];   /*!< Array of symbol tables for next level       */
 };
 
 /*------------------------------------------------------------------------------*/
@@ -1287,6 +1287,27 @@ struct tnode_s {
 };
 
 /*-------------------------------------------------------------------------------*/
+/*!
+ Structure for holding code timing data.  This information can be useful for optimizing
+ code segments.  To use a timer, create a pointer to a timer structure in global
+ memory and assign the pointer to the value NULL.  Then simply call timer_start to
+ start timing and timer_stop to stop timing.  You may call as many timer_start/timer_stop
+ pairs as needed and the total timed time will be kept in the structure's total variable.
+ To clear the total for a timer, call timer_clear.
+*/
+struct timer_s;
+ 
+/*!
+ Renaming timer structure for convenience.
+*/
+typedef struct timer_s timer;
+
+struct timer_s {
+  struct tms start;  /*!< Contains start time of a particular timer                     */
+  clock_t    total;  /*!< Contains the total amount of user time accrued for this timer */
+};
+
+/*-------------------------------------------------------------------------------*/
 
 union expr_stmt_u {
   expression* expr;         /*!< Pointer to expression */
@@ -1296,6 +1317,11 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.70  2003/08/10 03:50:10  phase1geo
+ More development documentation updates.  All global variables are now
+ documented correctly.  Also fixed some generated documentation warnings.
+ Removed some unnecessary global variables.
+
  Revision 1.69  2003/08/05 20:25:05  phase1geo
  Fixing non-blocking bug and updating regression files according to the fix.
  Also added function vector_is_unknown() which can be called before making

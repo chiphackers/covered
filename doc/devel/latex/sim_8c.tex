@@ -15,8 +15,6 @@ void {\bf sim\_\-expr\_\-changed} ({\bf expression} $\ast$expr)
 \begin{CompactList}\small\item\em Adds specified expression's statement to pre-simulation statement queue. \item\end{CompactList}\item 
 void {\bf sim\_\-add\_\-stmt\_\-to\_\-queue} ({\bf statement} $\ast$stmt)
 \begin{CompactList}\small\item\em Adds specified statement to pre-simulation statement queue. \item\end{CompactList}\item 
-{\bf bool} {\bf sim\_\-is\_\-curr\_\-wait\_\-signal} ({\bf signal} $\ast$sig)
-\begin{CompactList}\small\item\em Searches pre-simulation queue for specified signal name. \item\end{CompactList}\item 
 void {\bf sim\_\-add\_\-statics} ()
 \begin{CompactList}\small\item\em Adds static expression values to initial simulator. \item\end{CompactList}\item 
 void {\bf sim\_\-expression} ({\bf expression} $\ast$expr)
@@ -62,7 +60,7 @@ void {\bf sim\_\-simulate} ()
 \subsection{Function Documentation}
 \index{sim.c@{sim.c}!sim_add_statics@{sim\_\-add\_\-statics}}
 \index{sim_add_statics@{sim\_\-add\_\-statics}!sim.c@{sim.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void sim\_\-add\_\-statics ()}\label{sim_8c_a8}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void sim\_\-add\_\-statics ()}\label{sim_8c_a7}
 
 
 Adds static expression values to initial simulator. 
@@ -93,7 +91,7 @@ Adds specified expression's statement to pre-simulation statement queue.
 \end{Desc}
 Traverses up expression tree pointed to by leaf node expr, setting the CHANGED bits as it reaches the root expression. When the root expression is found, the statement pointed to by the root's parent pointer is added to the pre-simulation statement queue for simulation at the end of the timestep. If, upon traversing the tree, an expression is found to already be have a CHANGED bit set, we know that the statement has already been added, so stop here and do not add the statement again. \index{sim.c@{sim.c}!sim_expression@{sim\_\-expression}}
 \index{sim_expression@{sim\_\-expression}!sim.c@{sim.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void sim\_\-expression ({\bf expression} $\ast$ {\em expr})}\label{sim_8c_a9}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void sim\_\-expression ({\bf expression} $\ast$ {\em expr})}\label{sim_8c_a8}
 
 
 \begin{Desc}
@@ -101,30 +99,16 @@ Traverses up expression tree pointed to by leaf node expr, setting the CHANGED b
 \begin{description}
 \item[{\em expr}]Pointer to expression to simulate.\end{description}
 \end{Desc}
-Recursively traverses specified expression tree, following the {\bf SUPPL\_\-LSB\_\-LEFT\_\-CHANGED}{\rm (p.\,\pageref{group__expr__suppl_a9})} and {\bf SUPPL\_\-LSB\_\-RIGHT\_\-CHANGED}{\rm (p.\,\pageref{group__expr__suppl_a10})} bits in the supplemental field. Once an expression is found that has neither bit set, perform the expression operation and move back up the tree. Once both left and right children have calculated values, perform the expression operation for the current expression, clear both changed bits and return. \index{sim.c@{sim.c}!sim_is_curr_wait_signal@{sim\_\-is\_\-curr\_\-wait\_\-signal}}
-\index{sim_is_curr_wait_signal@{sim\_\-is\_\-curr\_\-wait\_\-signal}!sim.c@{sim.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} sim\_\-is\_\-curr\_\-wait\_\-signal ({\bf signal} $\ast$ {\em sig})}\label{sim_8c_a7}
-
-
-Searches pre-simulation queue for specified signal name. 
-
-\begin{Desc}
-\item[Parameters:]
-\begin{description}
-\item[{\em sig}]Pointer to signal to lookup.\end{description}
-\end{Desc}
-\begin{Desc}
-\item[Returns:]Returns TRUE if signal name was found in pre-simulation queue; otherwise, returns FALSE.\end{Desc}
-Searches through all statements in pre-simulation queue, searching for one that contains the signal name specified in the parameter list. If the signal name was found, return a value of TRUE; otherwise, returns a value of FALSE. \index{sim.c@{sim.c}!sim_simulate@{sim\_\-simulate}}
+Recursively traverses specified expression tree, following the {\bf SUPPL\_\-LSB\_\-LEFT\_\-CHANGED}{\rm (p.\,\pageref{group__expr__suppl_a9})} and {\bf SUPPL\_\-LSB\_\-RIGHT\_\-CHANGED}{\rm (p.\,\pageref{group__expr__suppl_a10})} bits in the supplemental field. Once an expression is found that has neither bit set, perform the expression operation and move back up the tree. Once both left and right children have calculated values, perform the expression operation for the current expression, clear both changed bits and return. \index{sim.c@{sim.c}!sim_simulate@{sim\_\-simulate}}
 \index{sim_simulate@{sim\_\-simulate}!sim.c@{sim.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void sim\_\-simulate ()}\label{sim_8c_a11}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void sim\_\-simulate ()}\label{sim_8c_a10}
 
 
 Simulates current timestep. 
 
-This function is the heart of the simulation engine. It is called by the {\bf db\_\-do\_\-timestep()}{\rm (p.\,\pageref{db_8c_a48})} function in {\bf db.c}{\rm (p.\,\pageref{db_8c})} and moves the statements and expressions into the appropriate simulation functions. See above explanation on this procedure. \index{sim.c@{sim.c}!sim_statement@{sim\_\-statement}}
+This function is the heart of the simulation engine. It is called by the {\bf db\_\-do\_\-timestep()}{\rm (p.\,\pageref{db_8c_a45})} function in {\bf db.c}{\rm (p.\,\pageref{db_8c})} and moves the statements and expressions into the appropriate simulation functions. See above explanation on this procedure. \index{sim.c@{sim.c}!sim_statement@{sim\_\-statement}}
 \index{sim_statement@{sim\_\-statement}!sim.c@{sim.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf statement}$\ast$ sim\_\-statement ({\bf statement} $\ast$ {\em head\_\-stmt})}\label{sim_8c_a10}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf statement}$\ast$ sim\_\-statement ({\bf statement} $\ast$ {\em head\_\-stmt})}\label{sim_8c_a9}
 
 
 \begin{Desc}

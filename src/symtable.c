@@ -2,6 +2,103 @@
  \file     symtable.c
  \author   Trevor Williams  (trevorw@charter.net)
  \date     1/3/2002
+
+ \par VCD Files
+ A VCD (Value Change Dump) file is broken into two parts:  a definition section and a
+ value change section.  The definition section may contain various information about
+ the tool that generated the dumpfile (ignored by Covered), the date that the dumpfile
+ was created (ignored by Covered), comments about the dumpfile (ignored by Covered),
+ and the scope and variable definition information (only part of definition section that
+ is used by Covered).
+
+ \par
+ In the scope and variable definition section, we learn about what variables (these
+ correspond to Covered's signals) are dumped and their corresponding VCD symbol.  A
+ VCD symbol can be any sequence of printable ASCII characters such that a sequence
+ is unique to the variable that it represents.  In some cases, more than one variable
+ is represented by the same VCD symbol.  This occurs when two differently named variables
+ actually reference the same value (as in a Verilog port -- the name changes when moving
+ from one module to another but it contains the same value).  Because all references to
+ variables in the simulation section of the VCD file use the VCD symbol as a lookup
+ mechanism, we need to store this variable information (symbol name, its value width,
+ pointer to the variable(s) being referrenced for that symbol name, etc.) in some sort
+ of quick access lookup table.  This table is referred to as a symtable in Covered.
+
+ \par
+ In the simulation section of a VCD file, a number of problems can arise when parsing
+ symbols within a timestep.  First, when a symbol is encountered, it may pertain to
+ information for several symbols.  Therefore, we need to take the value change information
+ and apply it to all variables (Covered signals) that correspond to that symbol.
+ Secondly, the value change information for one VCD symbol may be output several times
+ to the dumpfile.  This behavior is unnecessary but some simulators do this whenever a
+ variable changes value while others only output the last value of a VCD symbol prior to
+ changing timesteps.  Because of this, Covered will override the value change information
+ of a VCD symbol if multiple lines are found, causing only the last value for a particular
+ VCD symbol to be used.
+
+ \par The Symtable Structure
+ A symtable is a tree-like structure that is used to hold three pieces of information
+ that are used during the simulation phase of the score command:
+
+ \par
+ -# The name of the VCD symbol that a symtable entry represents
+ -# A list of pointers to signals which are represented by a VCD symbol.
+ -# A temporary storage facility to hold value change information for a particular
+    VCD symbol.
+
+ \par
+ The tree structure itself consists of nodes, one node per VCD symbol (with the exception
+ of the root node -- this will be explained later) and each node contains an array of 256
+ pointers to other nodes.  Having an array of 256 pointers allows us to use the name of the
+ VCD symbol as the lookup index into the table.  Because VCD symbols are allowed to use any
+ combination of printable ASCII characters, the length of a VCD symbol (even for a large
+ design) is usually between 1-4 characters.  This means that finding the information for any
+ given signal only takes between 0 and 3 node hops, making VCD symbol access during the
+ simulation phase extremely fast.
+
+ \par
+ The symtable is initially formed by creating a root node, the root node does not contain
+ any symbol information (because the only symbol it could hold is the NULL character which
+ is not an ASCII printable character).  Once the root node has been created, parsing of the
+ VCD definition section begins.  When the first VCD symbol is encountered (let's say the
+ character is '!'), we perform a symbol lookup by accessing the 33rd element of the root
+ array (33 is the decimal form of the '!' symbol).  In this case the element is a pointer
+ to NULL; therefore, a new node is created.  We then grab the next character in the VCD
+ symbol name which is NULL.  Because we have hit NULL, we know that the current node that
+ we are in (the newly created node) is the node for our VCD symbol.  Therefore, we initialize
+ the new node with the VCD symbol information for our symbol (note that we do not need to
+ store the VCD symbol string in the node because it is used as an index).  This process continues
+ until we have processed all VCD symbols in the VCD file, creating a tree structure that remains
+ in memory until the scoring process is complete.
+
+ \par
+ When the simulation section is being parsed, VCD symbols are looked up in the same way that they
+ were stored.  When we hit the NULL character in the VCD name string, we have found the node
+ that contains the information for that symbol.  We then store the new value into the node.
+
+ \par The Timestep Array
+ When a timestep is found in the VCD file, we need to perform a simulation of all signal changes
+ made during that timestep.  If the symtable structure was the only structure used to find all
+ signals that changed during that timestep, we would need to perform a complete traversal of the
+ tree for each timestep (i.e., we would need to check every signal in the design to see if it had
+ changed).  This is unnecessary and results in bad performance.
+
+ \par
+ To make this lookup of changed signals more efficient, an array called "timestep_tab" is used.  This
+ array is an array of pointers to symtable tree nodes, one entry for each node in the symtable tree.
+ The array is allocated after the symtable tree has been fully populated and is destroyed at the very
+ end of the score command.
+
+ \par
+ Two indices are used to maintain the array, presim_size and postsim_size.  All signals that changed
+ during the current timestep and need to be assigned to their appropriate signals before simulation
+ occurs for that timestep are placed in the lower elements of this array (i.e., starting at zero and
+ moving upperward).  The presim_size indicates how many elements are in the lower elements of the
+ array.  All signals that changed during the current timestep and need to be assigned to their
+ appropriate signals after simulation occurs for that timestep are placed in the upper elements of
+ this array (i.e., starting at the largest index and moving downward).  The postsim_size indicates how
+ many elements are in the upper elements of the array.  Both the presim_size and postsim_size signals
+ are set to zero before the next timestep.
 */
 
 #ifdef HAVE_CONFIG_H
@@ -18,186 +115,221 @@
 #include "symtable.h"
 #include "util.h"
 #include "signal.h"
+#include "link.h"
+#include "sim.h"
 
+
+/*!
+ Pointer to the VCD symbol table.  Please see the file description for how this
+ structure is used.
+*/
+symtable*  vcd_symtab      = NULL;
+
+/*!
+ Maintains current number of nodes in the VCD symbol table.  This value is used
+ to create the appropriately sized timestep_tab array.
+*/
+int        vcd_symtab_size = 0;
+
+/*!
+ Pointer to the current timestep table array.  Please see the file description for
+ how this structure is used.
+*/
+symtable** timestep_tab    = NULL;
+
+/*!
+ Maintains the current number of elements in the timestep_tab array that need to be
+ evaluated prior to simulation for a timestep.
+*/
+int        presim_size     = 0;
+
+/*!
+ Maintains the current number of elements in the timestep_tab array that need to be
+ evaluated after simulation for a timestep.
+*/
+int        postsim_size    = 0;
+
+
+/*!
+ \param symtab  Pointer to symbol table entry to initialize.
+ \param sig     Pointer to signal that will be stored in the symtable list.
+ \param msb     Most-significant bit of symbol entry.
+ \param lsb     Least-significant bit of symbol entry.
+
+ Initializes the contents of a symbol table entry.
+*/
+void symtable_init( symtable* symtab, signal* sig, int msb, int lsb ) {
+
+  assert( sig != NULL );
+
+  sig_link_add( sig, &(symtab->sig_head), &(symtab->sig_tail) );
+
+  symtab->msb   = msb;
+  symtab->lsb   = lsb;
+  symtab->value = (char*)malloc_safe( sig->value->width + 1 );
+  symtab->size  = (sig->value->width + 1);
+
+}
+
+/*!
+ \param sig   Pointer to signal for this symbol.
+ \param msb   Most-significant bit of symbol value.
+ \param lsb   Least-significant bit of symbol value.
+ \param init  Specifies if symbol table needs to be initialized.
+
+ \return Returns a pointer to the newly created symbol table entry.
+
+ Creates a new symbol table entry from the specified input and initializes
+ the members of this new entry if specified.
+*/
+symtable* symtable_create( signal* sig, int msb, int lsb, bool init ) {
+
+  symtable* symtab;  /* Pointer to new symtable entry */
+  int       i;       /* Loop iterator                 */
+
+  symtab           = (symtable*)malloc_safe( sizeof( symtable ) ); 
+  symtab->sig_head = NULL;
+  symtab->sig_tail = NULL;
+  symtab->value    = NULL;
+  for( i=0; i<255; i++ ) {
+    symtab->table[i] = NULL;
+  }
+
+  if( init ) {
+    symtable_init( symtab, sig, msb, lsb );
+  }
+
+  return( symtab );
+
+}
 
 /*!
  \param sym     VCD symbol for the specified signal.
  \param sig     Pointer to signal corresponding to the specified symbol.
  \param msb     Most significant bit of variable to set.
  \param lsb     Least significant bit of variable to set.
- \param symtab  Pointer to symtable to store the symtable entry to.
-
- \return Returns pointer to newly created symtable entry.
 
  Using the symbol as a unique ID, creates a new symtable element for specified information
  and places it into the binary tree.
 */
-symtable* symtable_add( char* sym, signal* sig, int msb, int lsb, symtable** symtab ) {
+void symtable_add( char* sym, signal* sig, int msb, int lsb ) {
 
-  symtable* entry;    /* Pointer to new symtable entry           */
-  symtable* curr;     /* Pointer to current symtable entry       */
-  symtable* last;     /* Pointer to last symtable entry examined */
+  symtable* curr;  /* Pointer to current symtable entry   */
+  char*     ptr;   /* Pointer to current character in sym */
 
-  /* Create new entry */
-  entry        = (symtable*)malloc_safe( sizeof( symtable ) );
-  entry->sym   = strdup( sym );
-  entry->sig   = sig;
-  entry->msb   = msb;
-  entry->lsb   = lsb;
-  entry->value = (char*)malloc_safe( sig->value->width + 1 );
-  entry->size  = (sig->value->width + 1);
-  entry->right = NULL;
-  entry->left  = NULL;
+  assert( vcd_symtab != NULL );
+  assert( sym[0]      != '\0' );
+  assert( sig->value  != NULL );
 
-  curr = *symtab;
-  last = NULL;
+  curr = vcd_symtab;
+  ptr  = sym;
 
-  /* Parse tree evaluating current sym name to the new sym name */
-  while( curr != NULL ) {
-    last = curr;
-    if( strcmp( sym, curr->sym ) > 0 ) {
-      curr = curr->right;
-    } else { 
-      curr = curr->left;
+  while( *ptr != '\0' ) {
+    if( curr->table[(int)*ptr] == NULL ) {
+      curr->table[(int)*ptr] = symtable_create( NULL, 0, 0, FALSE );      
     }
+    curr = curr->table[(int)*ptr];
+    ptr++;
   }
 
-  /* Place the new entry into the tree */
-  if( last == NULL ) {
-    /* symtab has no entries */
-    *symtab = entry;
+  if( curr->sig_head == NULL ) {
+    symtable_init( curr, sig, msb, lsb );
   } else {
-    if( strcmp( sym, last->sym ) > 0 ) {
-      last->right = entry;
-    } else {
-      last->left  = entry;
-    }
+    sig_link_add( sig, &(curr->sig_head), &(curr->sig_tail) );
   }
 
-  assert( entry->sig->value != NULL );
-
-  return( entry );
-
-}
-
-/*!
- \param sym  Symbol to be searched for.
- \param symtab  Symbol table to search for specified symbol.
-
- \return Returns pointer to found signal or NULL if symbol not found in table.
-
- Searches specified symbol table for an entry that matches the specified symbol.
- If the symbol is found, the signal pointer from this entry is returned; otherwise,
- if the symbol is not found, a value of NULL is returned.
-*/
-signal* symtable_find_signal( char* sym, symtable* symtab ) {
-
-  symtable* curr;        /* Pointer to current symtable       */
-  int       comp;        /* Specifies symbol comparison value */
-  signal*   sig = NULL;  /* Pointer to found signal           */
-
-  curr = symtab;
-  while( (curr != NULL) && (sig == NULL) ) {
-    comp = strcmp( sym, curr->sym );
-    if( comp == 0 ) {
-      sig = curr->sig;
-    } else if( comp > 0 ) {
-      curr = curr->right;
-    } else {
-      curr = curr->left;
-    }
-  }
-
-  return( sig ); 
+  /* 
+   Finally increment the number of entries in the root table structure.
+  */
+  vcd_symtab_size++;
 
 }
 
 /*!
  \param sym     Name of symbol to find in the table.
- \param symtab  Root of the symtable to search in.
  \param value   Value to set symtable entry to when match found.
 
- \return Returns the number of matches that were found.
-
  Performs a binary search of the specified tree to find all matching symtable entries.
- When a match is found, the specified value is assigned to the symtable entry.
+ When the signal is found, the specified value is assigned to the symtable entry.
 */
-int symtable_find_and_set( char* sym, symtable* symtab, char* value ) {
+void symtable_set_value( char* sym, char* value ) {
 
-  symtable* curr;         /* Pointer to current symtable            */
-  int       comp;         /* Specifies symbol comparison value      */
-  int       matches = 0;  /* Counts number of times we have matched */
+  symtable* curr;  /* Pointer to current symtable              */
+  sig_link* sigl;  /* Pointer to current signal in signal list */
+  char*     ptr;   /* Pointer to current character in symbol   */
 
-  curr = symtab;
-  while( curr != NULL ) {
-    comp = strcmp( sym, curr->sym );
-    if( comp == 0 ) {
-      assert( strlen( value ) < curr->size );     // Useful for debugging but not necessary
-      strcpy( curr->value, value );
-      matches++;
-    }
-    if( comp > 0 ) {
-      curr = curr->right;
-    } else {
-      curr = curr->left;
-    }
+  assert( vcd_symtab != NULL );
+  assert( sym[0] != '\0' );
+
+  curr = vcd_symtab;
+  ptr  = sym;
+
+  while( (curr != NULL) && (*ptr != '\0') ) {
+    curr = curr->table[(int)*ptr];
+    ptr++;
   }
 
-  return( matches );
+  if( (curr != NULL) && (curr->value != NULL) ) {
+
+    /* printf( "strlen( value ): %d, curr->size: %d\n", strlen( value ), curr->size ); */
+    assert( strlen( value ) < curr->size );     // Useful for debugging but not necessary
+    strcpy( curr->value, value );
+
+    /*
+     See if current signal is to be placed in presim queue or postsim queue and
+     put it there.
+    */
+    sigl = curr->sig_head;
+    while( (sigl != NULL) && (signal_get_wait_bit( sigl->sig ) == 0) ) {
+      sigl = sigl->next;
+    }
+
+    /* None of the signals are wait signals, place in postsim queue */
+    if( sigl == NULL ) {
+      timestep_tab[((vcd_symtab_size - 1) - postsim_size)] = curr;
+      postsim_size++;
+    } else {
+      timestep_tab[presim_size] = curr;
+      presim_size++;
+    }
+
+  }
 
 }
 
 /*!
- \param sym       Symbol name to search for.
- \param from_tab  Table to pull symbol table information from.
- \param value     Value to assign to newly created table entry.
- \param to_tab    Reference to table to place new entry into.
- 
- Performs a binary search of the from_tab symtable in search of all entries that match
- the specified sym parameter.  Whenever a match is found, a new entry is created and placed
- in the to_tab symtable containing the contents of the found entry.  Additionally, the
- specified value is assigned to the new entry.
-*/
-void symtable_move_and_set( char* sym, symtable* from_tab, char* value, symtable** to_tab ) {
-  
-  symtable* curr;    /* Pointer to current symtable           */
-  symtable* newsym;  /* Pointer to newly created symtab entry */
-  int       comp;    /* Specifies symbol comparison value     */
-  
-  curr = from_tab;
-  while( curr != NULL ) {
-    comp = strcmp( sym, curr->sym );
-    if( comp == 0 ) {
-      assert( curr->sig->value != NULL );
-      newsym = symtable_add( sym, curr->sig, curr->msb, curr->lsb, to_tab );
-      strcpy( newsym->value, value );
-    }
-    if( comp > 0 ) {
-      curr = curr->right;
-    } else {
-      curr = curr->left;
-    }
-  }
-  
-}
+ \param presim  If set to TRUE, assigns all signals for pre-simulation (else assign all signals
+                for post-simulation.
 
-/*!
- \param symtab  Root of the symtable to assign values to.
-
- Recursively traverses entire symtable tree, assigning stored string value to the
+ Traverses simulation symentry array, assigning stored string value to the
  stored signal.
 */
-void symtable_assign( symtable* symtab ) {
+void symtable_assign( bool presim ) {
 
-  if( symtab != NULL ) {
+  symtable* curr;  /* Pointer to current symtable entry        */
+  sig_link* sigl;  /* Pointer to current signal in signal list */
+  int       i;     /* Loop iterator                            */
 
-    /* Assign current symbol table entry */
-    signal_vcd_assign( symtab->sig, symtab->value, symtab->msb, symtab->lsb );
-
-    /* Assign children */
-    symtable_assign( symtab->right );
-    symtable_assign( symtab->left );
-
+  if( presim ) {
+    for( i=0; i<presim_size; i++ ) {
+      curr = timestep_tab[i];
+      sigl = curr->sig_head;
+      while( sigl != NULL ) {
+        signal_vcd_assign( sigl->sig, curr->value, curr->msb, curr->lsb );
+        sigl = sigl->next;
+      }
+    }
+    presim_size = 0;
+  } else {
+    for( i=(vcd_symtab_size - 1); i>=(vcd_symtab_size - postsim_size); i-- ) {
+      curr = timestep_tab[i];
+      sigl = curr->sig_head;
+      while( sigl != NULL ) {
+        signal_vcd_assign( sigl->sig, curr->value, curr->msb, curr->lsb );
+        sigl = sigl->next;
+      }
+    }
+    postsim_size = 0;
   }
 
 }
@@ -209,14 +341,19 @@ void symtable_assign( symtable* symtab ) {
 */ 
 void symtable_dealloc( symtable* symtab ) {
 
+  int i;  /* Loop iterator */
+
   if( symtab != NULL ) {
 
-    symtable_dealloc( symtab->right );
-    symtable_dealloc( symtab->left  );
-
-    if( symtab->sym != NULL ) {
-      free_safe( symtab->sym );
+    for( i=0; i<256; i++ ) {
+      symtable_dealloc( symtab->table[i] );
     }
+
+    if( symtab->value != NULL ) {
+      free_safe( symtab->value );
+    }
+
+    sig_link_delete_list( symtab->sig_head, FALSE );
 
     free_safe( symtab );
 
@@ -226,6 +363,13 @@ void symtable_dealloc( symtable* symtab ) {
 
 /*
  $Log$
+ Revision 1.11  2003/08/05 20:25:05  phase1geo
+ Fixing non-blocking bug and updating regression files according to the fix.
+ Also added function vector_is_unknown() which can be called before making
+ a call to vector_to_int() which will eleviate any X/Z-values causing problems
+ with this conversion.  Additionally, the real1.1 regression report files were
+ updated.
+
  Revision 1.10  2003/02/13 23:44:08  phase1geo
  Tentative fix for VCD file reading.  Not sure if it works correctly when
  original signal LSB is != 0.  Icarus Verilog testsuite passes.

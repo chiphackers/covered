@@ -15,14 +15,19 @@
 #include <string.h>
 #endif
 
+#include "defines.h"
 #include "vcd.h"
 #include "db.h"
 #include "util.h"
+#include "symtable.h"
 
 
-extern char  user_msg[USER_MSG_LENGTH];
-extern char* top_instance;
-extern bool  instance_specified;
+extern char       user_msg[USER_MSG_LENGTH];
+extern char*      top_instance;
+extern bool       instance_specified;
+extern symtable*  vcd_symtab;
+extern int        vcd_symtab_size;
+extern symtable** timestep_tab;
 
 /*!
  This flag is used to indicate if Covered was successfull in finding at least one
@@ -328,8 +333,23 @@ void vcd_parse( char* vcd_file ) {
 
   if( (vcd_handle = fopen( vcd_file, "r" )) != NULL ) {
 
+    /* Create initial symbol table */
+    vcd_symtab = symtable_create( NULL, 0, 0, FALSE );
+
     vcd_parse_def( vcd_handle );
+
+    /* Create timestep symbol table array */
+    if( vcd_symtab_size > 0 ) {
+      timestep_tab = malloc_safe_nolimit( sizeof( symtable*) * vcd_symtab_size );
+    }
+    
     vcd_parse_sim( vcd_handle );
+
+    /* Deallocate memory */
+    symtable_dealloc( vcd_symtab );
+    if( timestep_tab != NULL ) {
+      free_safe( timestep_tab );
+    }
 
   } else {
 
@@ -342,6 +362,13 @@ void vcd_parse( char* vcd_file ) {
 
 /*
  $Log$
+ Revision 1.10  2003/08/05 20:25:05  phase1geo
+ Fixing non-blocking bug and updating regression files according to the fix.
+ Also added function vector_is_unknown() which can be called before making
+ a call to vector_to_int() which will eleviate any X/Z-values causing problems
+ with this conversion.  Additionally, the real1.1 regression report files were
+ updated.
+
  Revision 1.9  2003/02/13 23:44:08  phase1geo
  Tentative fix for VCD file reading.  Not sure if it works correctly when
  original signal LSB is != 0.  Icarus Verilog testsuite passes.

@@ -6,21 +6,36 @@
 {\tt \#include \char`\"{}symtable.h\char`\"{}}\par
 {\tt \#include \char`\"{}util.h\char`\"{}}\par
 {\tt \#include \char`\"{}signal.h\char`\"{}}\par
+{\tt \#include \char`\"{}link.h\char`\"{}}\par
+{\tt \#include \char`\"{}sim.h\char`\"{}}\par
 \subsection*{Functions}
 \begin{CompactItemize}
 \item 
-{\bf symtable} $\ast$ {\bf symtable\_\-add} (char $\ast$sym, {\bf signal} $\ast$sig, int msb, int lsb, {\bf symtable} $\ast$$\ast$symtab)
+void {\bf symtable\_\-init} ({\bf symtable} $\ast$symtab, {\bf signal} $\ast$sig, int msb, int lsb)
+\item 
+{\bf symtable} $\ast$ {\bf symtable\_\-create} ({\bf signal} $\ast$sig, int msb, int lsb, {\bf bool} init)
+\begin{CompactList}\small\item\em Creates a new symtable structure and initializes if this is specified. \item\end{CompactList}\item 
+void {\bf symtable\_\-add} (char $\ast$sym, {\bf signal} $\ast$sig, int msb, int lsb)
 \begin{CompactList}\small\item\em Creates a new symtable entry and adds it to the specified symbol table. \item\end{CompactList}\item 
-{\bf signal} $\ast$ {\bf symtable\_\-find\_\-signal} (char $\ast$sym, {\bf symtable} $\ast$symtab)
-\begin{CompactList}\small\item\em Searches symbol table for specified symbol and returns pointer to signal. \item\end{CompactList}\item 
-int {\bf symtable\_\-find\_\-and\_\-set} (char $\ast$sym, {\bf symtable} $\ast$symtab, char $\ast$value)
+void {\bf symtable\_\-set\_\-value} (char $\ast$sym, char $\ast$value)
 \begin{CompactList}\small\item\em Sets all matching symtable entries to specified value. \item\end{CompactList}\item 
-void {\bf symtable\_\-move\_\-and\_\-set} (char $\ast$sym, {\bf symtable} $\ast$from\_\-tab, char $\ast$value, {\bf symtable} $\ast$$\ast$to\_\-tab)
-\begin{CompactList}\small\item\em Copies all matching symtable entries from from\_\-tab to to\_\-tab and assigns value to it. \item\end{CompactList}\item 
-void {\bf symtable\_\-assign} ({\bf symtable} $\ast$symtab)
+void {\bf symtable\_\-assign} ({\bf bool} presim)
 \begin{CompactList}\small\item\em Assigns stored values to all associated signals stored in specified symbol table. \item\end{CompactList}\item 
 void {\bf symtable\_\-dealloc} ({\bf symtable} $\ast$symtab)
 \begin{CompactList}\small\item\em Deallocates all symtable entries for specified symbol table. \item\end{CompactList}\end{CompactItemize}
+\subsection*{Variables}
+\begin{CompactItemize}
+\item 
+{\bf symtable} $\ast$ {\bf vcd\_\-symtab} = NULL
+\item 
+int {\bf vcd\_\-symtab\_\-size} = 0
+\item 
+{\bf symtable} $\ast$$\ast$ {\bf timestep\_\-tab} = NULL
+\item 
+int {\bf presim\_\-size} = 0
+\item 
+int {\bf postsim\_\-size} = 0
+\end{CompactItemize}
 
 
 \subsection{Detailed Description}
@@ -28,12 +43,36 @@ void {\bf symtable\_\-dealloc} ({\bf symtable} $\ast$symtab)
 \item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
 \item[Date:]1/3/2002\end{Desc}
+\begin{Desc}
+\item[VCD Files]A VCD (Value Change Dump) file is broken into two parts: a definition section and a value change section. The definition section may contain various information about the tool that generated the dumpfile (ignored by Covered), the date that the dumpfile was created (ignored by Covered), comments about the dumpfile (ignored by Covered), and the scope and variable definition information (only part of definition section that is used by Covered).\end{Desc}
+\begin{Desc}
+\item[]In the scope and variable definition section, we learn about what variables (these correspond to Covered's signals) are dumped and their corresponding VCD symbol. A VCD symbol can be any sequence of printable ASCII characters such that a sequence is unique to the variable that it represents. In some cases, more than one variable is represented by the same VCD symbol. This occurs when two differently named variables actually reference the same value (as in a Verilog port -- the name changes when moving from one module to another but it contains the same value). Because all references to variables in the simulation section of the VCD file use the VCD symbol as a lookup mechanism, we need to store this variable information (symbol name, its value width, pointer to the variable(s) being referrenced for that symbol name, etc.) in some sort of quick access lookup table. This table is referred to as a symtable in Covered.\end{Desc}
+\begin{Desc}
+\item[]In the simulation section of a VCD file, a number of problems can arise when parsing symbols within a timestep. First, when a symbol is encountered, it may pertain to information for several symbols. Therefore, we need to take the value change information and apply it to all variables (Covered signals) that correspond to that symbol. Secondly, the value change information for one VCD symbol may be output several times to the dumpfile. This behavior is unnecessary but some simulators do this whenever a variable changes value while others only output the last value of a VCD symbol prior to changing timesteps. Because of this, Covered will override the value change information of a VCD symbol if multiple lines are found, causing only the last value for a particular VCD symbol to be used.\end{Desc}
+\begin{Desc}
+\item[The Symtable Structure]A symtable is a tree-like structure that is used to hold three pieces of information that are used during the simulation phase of the score command:\end{Desc}
+\begin{Desc}
+\item[]\begin{enumerate}
+\item The name of the VCD symbol that a symtable entry represents\item A list of pointers to signals which are represented by a VCD symbol.\item A temporary storage facility to hold value change information for a particular VCD symbol.\end{enumerate}
+\end{Desc}
+\begin{Desc}
+\item[]The tree structure itself consists of nodes, one node per VCD symbol (with the exception of the root node -- this will be explained later) and each node contains an array of 256 pointers to other nodes. Having an array of 256 pointers allows us to use the name of the VCD symbol as the lookup index into the table. Because VCD symbols are allowed to use any combination of printable ASCII characters, the length of a VCD symbol (even for a large design) is usually between 1-4 characters. This means that finding the information for any given signal only takes between 0 and 3 node hops, making VCD symbol access during the simulation phase extremely fast.\end{Desc}
+\begin{Desc}
+\item[]The symtable is initially formed by creating a root node, the root node does not contain any symbol information (because the only symbol it could hold is the NULL character which is not an ASCII printable character). Once the root node has been created, parsing of the VCD definition section begins. When the first VCD symbol is encountered (let's say the character is '!'), we perform a symbol lookup by accessing the 33rd element of the root array (33 is the decimal form of the '!' symbol). In this case the element is a pointer to NULL; therefore, a new node is created. We then grab the next character in the VCD symbol name which is NULL. Because we have hit NULL, we know that the current node that we are in (the newly created node) is the node for our VCD symbol. Therefore, we initialize the new node with the VCD symbol information for our symbol (note that we do not need to store the VCD symbol string in the node because it is used as an index). This process continues until we have processed all VCD symbols in the VCD file, creating a tree structure that remains in memory until the scoring process is complete.\end{Desc}
+\begin{Desc}
+\item[]When the simulation section is being parsed, VCD symbols are looked up in the same way that they were stored. When we hit the NULL character in the VCD name string, we have found the node that contains the information for that symbol. We then store the new value into the node.\end{Desc}
+\begin{Desc}
+\item[The Timestep Array]When a timestep is found in the VCD file, we need to perform a simulation of all signal changes made during that timestep. If the symtable structure was the only structure used to find all signals that changed during that timestep, we would need to perform a complete traversal of the tree for each timestep (i.e., we would need to check every signal in the design to see if it had changed). This is unnecessary and results in bad performance.\end{Desc}
+\begin{Desc}
+\item[]To make this lookup of changed signals more efficient, an array called \char`\"{}timestep\_\-tab\char`\"{} is used. This array is an array of pointers to symtable tree nodes, one entry for each node in the symtable tree. The array is allocated after the symtable tree has been fully populated and is destroyed at the very end of the score command.\end{Desc}
+\begin{Desc}
+\item[]Two indices are used to maintain the array, presim\_\-size and postsim\_\-size. All signals that changed during the current timestep and need to be assigned to their appropriate signals before simulation occurs for that timestep are placed in the lower elements of this array (i.e., starting at zero and moving upperward). The presim\_\-size indicates how many elements are in the lower elements of the array. All signals that changed during the current timestep and need to be assigned to their appropriate signals after simulation occurs for that timestep are placed in the upper elements of this array (i.e., starting at the largest index and moving downward). The postsim\_\-size indicates how many elements are in the upper elements of the array. Both the presim\_\-size and postsim\_\-size signals are set to zero before the next timestep.\end{Desc}
 
 
 \subsection{Function Documentation}
 \index{symtable.c@{symtable.c}!symtable_add@{symtable\_\-add}}
 \index{symtable_add@{symtable\_\-add}!symtable.c@{symtable.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf symtable}$\ast$ symtable\_\-add (char $\ast$ {\em sym}, {\bf signal} $\ast$ {\em sig}, int {\em msb}, int {\em lsb}, {\bf symtable} $\ast$$\ast$ {\em symtab})}\label{symtable_8c_a0}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void symtable\_\-add (char $\ast$ {\em sym}, {\bf signal} $\ast$ {\em sig}, int {\em msb}, int {\em lsb})}\label{symtable_8c_a7}
 
 
 Creates a new symtable entry and adds it to the specified symbol table. 
@@ -41,13 +80,11 @@ Creates a new symtable entry and adds it to the specified symbol table.
 \begin{Desc}
 \item[Parameters:]
 \begin{description}
-\item[{\em sym}]VCD symbol for the specified signal. \item[{\em sig}]Pointer to signal corresponding to the specified symbol. \item[{\em msb}]Most significant bit of variable to set. \item[{\em lsb}]Least significant bit of variable to set. \item[{\em symtab}]Pointer to symtable to store the symtable entry to.\end{description}
+\item[{\em sym}]VCD symbol for the specified signal. \item[{\em sig}]Pointer to signal corresponding to the specified symbol. \item[{\em msb}]Most significant bit of variable to set. \item[{\em lsb}]Least significant bit of variable to set.\end{description}
 \end{Desc}
-\begin{Desc}
-\item[Returns:]Returns pointer to newly created symtable entry.\end{Desc}
 Using the symbol as a unique ID, creates a new symtable element for specified information and places it into the binary tree. \index{symtable.c@{symtable.c}!symtable_assign@{symtable\_\-assign}}
 \index{symtable_assign@{symtable\_\-assign}!symtable.c@{symtable.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void symtable\_\-assign ({\bf symtable} $\ast$ {\em symtab})}\label{symtable_8c_a4}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void symtable\_\-assign ({\bf bool} {\em presim})}\label{symtable_8c_a9}
 
 
 Assigns stored values to all associated signals stored in specified symbol table. 
@@ -55,11 +92,25 @@ Assigns stored values to all associated signals stored in specified symbol table
 \begin{Desc}
 \item[Parameters:]
 \begin{description}
-\item[{\em symtab}]Root of the symtable to assign values to.\end{description}
+\item[{\em presim}]If set to TRUE, assigns all signals for pre-simulation (else assign all signals for post-simulation.\end{description}
 \end{Desc}
-Recursively traverses entire symtable tree, assigning stored string value to the stored signal. \index{symtable.c@{symtable.c}!symtable_dealloc@{symtable\_\-dealloc}}
+Traverses simulation symentry array, assigning stored string value to the stored signal. \index{symtable.c@{symtable.c}!symtable_create@{symtable\_\-create}}
+\index{symtable_create@{symtable\_\-create}!symtable.c@{symtable.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf symtable}$\ast$ symtable\_\-create ({\bf signal} $\ast$ {\em sig}, int {\em msb}, int {\em lsb}, {\bf bool} {\em init})}\label{symtable_8c_a6}
+
+
+Creates a new symtable structure and initializes if this is specified. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em sig}]Pointer to signal for this symbol. \item[{\em msb}]Most-significant bit of symbol value. \item[{\em lsb}]Least-significant bit of symbol value. \item[{\em init}]Specifies if symbol table needs to be initialized.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns:]Returns a pointer to the newly created symbol table entry.\end{Desc}
+Creates a new symbol table entry from the specified input and initializes the members of this new entry if specified. \index{symtable.c@{symtable.c}!symtable_dealloc@{symtable\_\-dealloc}}
 \index{symtable_dealloc@{symtable\_\-dealloc}!symtable.c@{symtable.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void symtable\_\-dealloc ({\bf symtable} $\ast$ {\em symtab})}\label{symtable_8c_a5}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void symtable\_\-dealloc ({\bf symtable} $\ast$ {\em symtab})}\label{symtable_8c_a10}
 
 
 Deallocates all symtable entries for specified symbol table. 
@@ -69,9 +120,19 @@ Deallocates all symtable entries for specified symbol table.
 \begin{description}
 \item[{\em symtab}]Pointer to root of symtable to clear.\end{description}
 \end{Desc}
-Recursively deallocates all elements of specifies symbol table. \index{symtable.c@{symtable.c}!symtable_find_and_set@{symtable\_\-find\_\-and\_\-set}}
-\index{symtable_find_and_set@{symtable\_\-find\_\-and\_\-set}!symtable.c@{symtable.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int symtable\_\-find\_\-and\_\-set (char $\ast$ {\em sym}, {\bf symtable} $\ast$ {\em symtab}, char $\ast$ {\em value})}\label{symtable_8c_a2}
+Recursively deallocates all elements of specifies symbol table. \index{symtable.c@{symtable.c}!symtable_init@{symtable\_\-init}}
+\index{symtable_init@{symtable\_\-init}!symtable.c@{symtable.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void symtable\_\-init ({\bf symtable} $\ast$ {\em symtab}, {\bf signal} $\ast$ {\em sig}, int {\em msb}, int {\em lsb})}\label{symtable_8c_a5}
+
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em symtab}]Pointer to symbol table entry to initialize. \item[{\em sig}]Pointer to signal that will be stored in the symtable list. \item[{\em msb}]Most-significant bit of symbol entry. \item[{\em lsb}]Least-significant bit of symbol entry.\end{description}
+\end{Desc}
+Initializes the contents of a symbol table entry. \index{symtable.c@{symtable.c}!symtable_set_value@{symtable\_\-set\_\-value}}
+\index{symtable_set_value@{symtable\_\-set\_\-value}!symtable.c@{symtable.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void symtable\_\-set\_\-value (char $\ast$ {\em sym}, char $\ast$ {\em value})}\label{symtable_8c_a8}
 
 
 Sets all matching symtable entries to specified value. 
@@ -79,34 +140,34 @@ Sets all matching symtable entries to specified value.
 \begin{Desc}
 \item[Parameters:]
 \begin{description}
-\item[{\em sym}]Name of symbol to find in the table. \item[{\em symtab}]Root of the symtable to search in. \item[{\em value}]Value to set symtable entry to when match found.\end{description}
+\item[{\em sym}]Name of symbol to find in the table. \item[{\em value}]Value to set symtable entry to when match found.\end{description}
 \end{Desc}
-\begin{Desc}
-\item[Returns:]Returns the number of matches that were found.\end{Desc}
-Performs a binary search of the specified tree to find all matching symtable entries. When a match is found, the specified value is assigned to the symtable entry. \index{symtable.c@{symtable.c}!symtable_find_signal@{symtable\_\-find\_\-signal}}
-\index{symtable_find_signal@{symtable\_\-find\_\-signal}!symtable.c@{symtable.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf signal}$\ast$ symtable\_\-find\_\-signal (char $\ast$ {\em sym}, {\bf symtable} $\ast$ {\em symtab})}\label{symtable_8c_a1}
+Performs a binary search of the specified tree to find all matching symtable entries. When the signal is found, the specified value is assigned to the symtable entry. 
+
+\subsection{Variable Documentation}
+\index{symtable.c@{symtable.c}!postsim_size@{postsim\_\-size}}
+\index{postsim_size@{postsim\_\-size}!symtable.c@{symtable.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int {\bf postsim\_\-size} = 0}\label{symtable_8c_a4}
 
 
-Searches symbol table for specified symbol and returns pointer to signal. 
-
-\begin{Desc}
-\item[Parameters:]
-\begin{description}
-\item[{\em sym}]Symbol to be searched for. \item[{\em symtab}]Symbol table to search for specified symbol.\end{description}
-\end{Desc}
-\begin{Desc}
-\item[Returns:]Returns pointer to found signal or NULL if symbol not found in table.\end{Desc}
-Searches specified symbol table for an entry that matches the specified symbol. If the symbol is found, the signal pointer from this entry is returned; otherwise, if the symbol is not found, a value of NULL is returned. \index{symtable.c@{symtable.c}!symtable_move_and_set@{symtable\_\-move\_\-and\_\-set}}
-\index{symtable_move_and_set@{symtable\_\-move\_\-and\_\-set}!symtable.c@{symtable.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void symtable\_\-move\_\-and\_\-set (char $\ast$ {\em sym}, {\bf symtable} $\ast$ {\em from\_\-tab}, char $\ast$ {\em value}, {\bf symtable} $\ast$$\ast$ {\em to\_\-tab})}\label{symtable_8c_a3}
+Maintains the current number of elements in the timestep\_\-tab array that need to be evaluated after simulation for a timestep. \index{symtable.c@{symtable.c}!presim_size@{presim\_\-size}}
+\index{presim_size@{presim\_\-size}!symtable.c@{symtable.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int {\bf presim\_\-size} = 0}\label{symtable_8c_a3}
 
 
-Copies all matching symtable entries from from\_\-tab to to\_\-tab and assigns value to it. 
+Maintains the current number of elements in the timestep\_\-tab array that need to be evaluated prior to simulation for a timestep. \index{symtable.c@{symtable.c}!timestep_tab@{timestep\_\-tab}}
+\index{timestep_tab@{timestep\_\-tab}!symtable.c@{symtable.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf symtable}$\ast$$\ast$ {\bf timestep\_\-tab} = NULL}\label{symtable_8c_a2}
 
-\begin{Desc}
-\item[Parameters:]
-\begin{description}
-\item[{\em sym}]Symbol name to search for. \item[{\em from\_\-tab}]Table to pull symbol table information from. \item[{\em value}]Value to assign to newly created table entry. \item[{\em to\_\-tab}]Reference to table to place new entry into.\end{description}
-\end{Desc}
-Performs a binary search of the from\_\-tab symtable in search of all entries that match the specified sym parameter. Whenever a match is found, a new entry is created and placed in the to\_\-tab symtable containing the contents of the found entry. Additionally, the specified value is assigned to the new entry. 
+
+Pointer to the current timestep table array. Please see the file description for how this structure is used. \index{symtable.c@{symtable.c}!vcd_symtab@{vcd\_\-symtab}}
+\index{vcd_symtab@{vcd\_\-symtab}!symtable.c@{symtable.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf symtable}$\ast$ {\bf vcd\_\-symtab} = NULL}\label{symtable_8c_a0}
+
+
+Pointer to the VCD symbol table. Please see the file description for how this structure is used. \index{symtable.c@{symtable.c}!vcd_symtab_size@{vcd\_\-symtab\_\-size}}
+\index{vcd_symtab_size@{vcd\_\-symtab\_\-size}!symtable.c@{symtable.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int {\bf vcd\_\-symtab\_\-size} = 0}\label{symtable_8c_a1}
+
+
+Maintains current number of nodes in the VCD symbol table. This value is used to create the appropriately sized timestep\_\-tab array. 

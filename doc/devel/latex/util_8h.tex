@@ -38,10 +38,18 @@ void {\bf scope\_\-extract\_\-scope} (char $\ast$scope, char $\ast$front, char $
 \begin{CompactList}\small\item\em Returns next Verilog file to parse. \item\end{CompactList}\item 
 void $\ast$ {\bf malloc\_\-safe} (size\_\-t {\bf size})
 \begin{CompactList}\small\item\em Performs safe malloc call. \item\end{CompactList}\item 
+void $\ast$ {\bf malloc\_\-safe\_\-nolimit} (size\_\-t {\bf size})
+\begin{CompactList}\small\item\em Performs safe malloc call without upper bound on byte allocation. \item\end{CompactList}\item 
 void {\bf free\_\-safe} (void $\ast$ptr)
 \begin{CompactList}\small\item\em Performs safe deallocation of heap memory. \item\end{CompactList}\item 
 void {\bf gen\_\-space} (char $\ast$spaces, int num\_\-spaces)
-\begin{CompactList}\small\item\em Creates a string containing space characters. \item\end{CompactList}\end{CompactItemize}
+\begin{CompactList}\small\item\em Creates a string containing space characters. \item\end{CompactList}\item 
+void {\bf timer\_\-clear} ({\bf timer} $\ast$$\ast$tm)
+\begin{CompactList}\small\item\em Clears the specified timer structure. \item\end{CompactList}\item 
+void {\bf timer\_\-start} ({\bf timer} $\ast$$\ast$tm)
+\begin{CompactList}\small\item\em Starts timing the specified timer structure. \item\end{CompactList}\item 
+void {\bf timer\_\-stop} ({\bf timer} $\ast$$\ast$tm)
+\begin{CompactList}\small\item\em Stops timing the specified timer structure. \item\end{CompactList}\end{CompactItemize}
 
 
 \subsection{Detailed Description}
@@ -100,7 +108,7 @@ Returns TRUE if the specified file exists.
 \item[Returns:]Returns TRUE if the specified file exists; otherwise, returns FALSE.\end{Desc}
 Checks to see if the specified file actually exists in the file structure. If the file is found to exist, returns TRUE; otherwise, returns FALSE. \index{util.h@{util.h}!free_safe@{free\_\-safe}}
 \index{free_safe@{free\_\-safe}!util.h@{util.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void free\_\-safe (void $\ast$ {\em ptr})}\label{util_8h_a15}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void free\_\-safe (void $\ast$ {\em ptr})}\label{util_8h_a16}
 
 
 Performs safe deallocation of heap memory. 
@@ -112,7 +120,7 @@ Performs safe deallocation of heap memory.
 \end{Desc}
 Safely performs a free function of heap memory. Also keeps track of current memory usage for output information at end of program life. \index{util.h@{util.h}!gen_space@{gen\_\-space}}
 \index{gen_space@{gen\_\-space}!util.h@{util.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void gen\_\-space (char $\ast$ {\em spaces}, int {\em num\_\-spaces})}\label{util_8h_a16}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void gen\_\-space (char $\ast$ {\em spaces}, int {\em num\_\-spaces})}\label{util_8h_a17}
 
 
 Creates a string containing space characters. 
@@ -178,7 +186,21 @@ Performs safe malloc call.
 \end{Desc}
 \begin{Desc}
 \item[Returns:]Pointer to allocated memory.\end{Desc}
-Allocated memory like a malloc() call but performs some pre-allocation and post-allocation checks to be sure that the malloc call works properly. \index{util.h@{util.h}!print_output@{print\_\-output}}
+Allocated memory like a malloc() call but performs some pre-allocation and post-allocation checks to be sure that the malloc call works properly. \index{util.h@{util.h}!malloc_safe_nolimit@{malloc\_\-safe\_\-nolimit}}
+\index{malloc_safe_nolimit@{malloc\_\-safe\_\-nolimit}!util.h@{util.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ malloc\_\-safe\_\-nolimit (size\_\-t {\em size})}\label{util_8h_a15}
+
+
+Performs safe malloc call without upper bound on byte allocation. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em size}]Number of bytes to allocate.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns:]Pointer to allocated memory.\end{Desc}
+Allocated memory like a malloc() call but performs some pre-allocation and post-allocation checks to be sure that the malloc call works properly. Unlike malloc\_\-safe, there is no upper bound on the amount of memory to allocate. \index{util.h@{util.h}!print_output@{print\_\-output}}
 \index{print_output@{print\_\-output}!util.h@{util.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void print\_\-output (char $\ast$ {\em msg}, int {\em type})}\label{util_8h_a2}
 
@@ -266,4 +288,40 @@ Sets error suppression to specified value.
 \begin{description}
 \item[{\em value}]Boolean value of suppression.\end{description}
 \end{Desc}
-Sets the global variable output\_\-suppressed to the specified value. 
+Sets the global variable output\_\-suppressed to the specified value. \index{util.h@{util.h}!timer_clear@{timer\_\-clear}}
+\index{timer_clear@{timer\_\-clear}!util.h@{util.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void timer\_\-clear ({\bf timer} $\ast$$\ast$ {\em tm})}\label{util_8h_a18}
+
+
+Clears the specified timer structure. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em tm}]Pointer to timer structure to clear.\end{description}
+\end{Desc}
+Clears the total accumulated time in the specified timer structure. \index{util.h@{util.h}!timer_start@{timer\_\-start}}
+\index{timer_start@{timer\_\-start}!util.h@{util.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void timer\_\-start ({\bf timer} $\ast$$\ast$ {\em tm})}\label{util_8h_a19}
+
+
+Starts timing the specified timer structure. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em tm}]Pointer to timer structure to start timing.\end{description}
+\end{Desc}
+Starts the timer to start timing a segment of code. \index{util.h@{util.h}!timer_stop@{timer\_\-stop}}
+\index{timer_stop@{timer\_\-stop}!util.h@{util.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void timer\_\-stop ({\bf timer} $\ast$$\ast$ {\em tm})}\label{util_8h_a20}
+
+
+Stops timing the specified timer structure. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em tm}]Pointer to timer structure to stop timing.\end{description}
+\end{Desc}
+Stops the specified running counter and totals up the amount of user time that has accrued. 

@@ -11,6 +11,10 @@ void {\bf sim\_\-expr\_\-changed} ({\bf expression} $\ast$expr)
 \begin{CompactList}\small\item\em Adds specified expression's statement to pre-simulation statement queue. \item\end{CompactList}\item 
 void {\bf sim\_\-add\_\-stmt\_\-to\_\-queue} ({\bf statement} $\ast$stmt)
 \begin{CompactList}\small\item\em Adds specified statement to pre-simulation statement queue. \item\end{CompactList}\item 
+void {\bf sim\_\-set\_\-curr\_\-wait\_\-signals} ()
+\item 
+void {\bf sim\_\-clear\_\-curr\_\-wait\_\-signals} ()
+\item 
 {\bf bool} {\bf sim\_\-is\_\-curr\_\-wait\_\-signal} ({\bf signal} $\ast$sig)
 \begin{CompactList}\small\item\em Searches pre-simulation queue for specified signal name. \item\end{CompactList}\item 
 void {\bf sim\_\-add\_\-statics} ()
@@ -31,7 +35,7 @@ Contains functions for simulation engine.
 \subsection{Function Documentation}
 \index{sim.h@{sim.h}!sim_add_statics@{sim\_\-add\_\-statics}}
 \index{sim_add_statics@{sim\_\-add\_\-statics}!sim.h@{sim.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void sim\_\-add\_\-statics ()}\label{sim_8h_a3}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void sim\_\-add\_\-statics ()}\label{sim_8h_a5}
 
 
 Adds static expression values to initial simulator. 
@@ -48,7 +52,12 @@ Adds specified statement to pre-simulation statement queue.
 \begin{description}
 \item[{\em stmt}]Pointer to statement to add to queue.\end{description}
 \end{Desc}
-Checks STMT\_\-HEAD bit of specified statement. If this is set to 1, adds this statement to the presimulation statement queue; otherwise, it does nothing with the statement \index{sim.h@{sim.h}!sim_expr_changed@{sim\_\-expr\_\-changed}}
+Checks STMT\_\-HEAD bit of specified statement. If this is set to 1, adds this statement to the presimulation statement queue; otherwise, it does nothing with the statement \index{sim.h@{sim.h}!sim_clear_curr_wait_signals@{sim\_\-clear\_\-curr\_\-wait\_\-signals}}
+\index{sim_clear_curr_wait_signals@{sim\_\-clear\_\-curr\_\-wait\_\-signals}!sim.h@{sim.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void sim\_\-clear\_\-curr\_\-wait\_\-signals ()}\label{sim_8h_a3}
+
+
+\index{sim.h@{sim.h}!sim_expr_changed@{sim\_\-expr\_\-changed}}
 \index{sim_expr_changed@{sim\_\-expr\_\-changed}!sim.h@{sim.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void sim\_\-expr\_\-changed ({\bf expression} $\ast$ {\em expr})}\label{sim_8h_a0}
 
@@ -62,23 +71,21 @@ Adds specified expression's statement to pre-simulation statement queue.
 \end{Desc}
 Traverses up expression tree pointed to by leaf node expr, setting the CHANGED bits as it reaches the root expression. When the root expression is found, the statement pointed to by the root's parent pointer is added to the pre-simulation statement queue for simulation at the end of the timestep. If, upon traversing the tree, an expression is found to already be have a CHANGED bit set, we know that the statement has already been added, so stop here and do not add the statement again. \index{sim.h@{sim.h}!sim_is_curr_wait_signal@{sim\_\-is\_\-curr\_\-wait\_\-signal}}
 \index{sim_is_curr_wait_signal@{sim\_\-is\_\-curr\_\-wait\_\-signal}!sim.h@{sim.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} sim\_\-is\_\-curr\_\-wait\_\-signal ({\bf signal} $\ast$ {\em sig})}\label{sim_8h_a2}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} sim\_\-is\_\-curr\_\-wait\_\-signal ({\bf signal} $\ast$ {\em sig})}\label{sim_8h_a4}
 
 
 Searches pre-simulation queue for specified signal name. 
 
-\begin{Desc}
-\item[Parameters:]
-\begin{description}
-\item[{\em sig}]Pointer to signal to lookup.\end{description}
-\end{Desc}
-\begin{Desc}
-\item[Returns:]Returns TRUE if signal name was found in pre-simulation queue; otherwise, returns FALSE.\end{Desc}
-Searches through all statements in pre-simulation queue, searching for one that contains the signal name specified in the parameter list. If the signal name was found, return a value of TRUE; otherwise, returns a value of FALSE. \index{sim.h@{sim.h}!sim_simulate@{sim\_\-simulate}}
+\index{sim.h@{sim.h}!sim_set_curr_wait_signals@{sim\_\-set\_\-curr\_\-wait\_\-signals}}
+\index{sim_set_curr_wait_signals@{sim\_\-set\_\-curr\_\-wait\_\-signals}!sim.h@{sim.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void sim\_\-set\_\-curr\_\-wait\_\-signals ()}\label{sim_8h_a2}
+
+
+\index{sim.h@{sim.h}!sim_simulate@{sim\_\-simulate}}
 \index{sim_simulate@{sim\_\-simulate}!sim.h@{sim.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void sim\_\-simulate ()}\label{sim_8h_a4}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void sim\_\-simulate ()}\label{sim_8h_a6}
 
 
 Simulates current timestep. 
 
-This function is the heart of the simulation engine. It is called by the {\bf db\_\-do\_\-timestep()}{\rm (p.\,\pageref{db_8c_a48})} function in {\bf db.c}{\rm (p.\,\pageref{db_8c})} and moves the statements and expressions into the appropriate simulation functions. See above explanation on this procedure. 
+This function is the heart of the simulation engine. It is called by the {\bf db\_\-do\_\-timestep()}{\rm (p.\,\pageref{db_8c_a45})} function in {\bf db.c}{\rm (p.\,\pageref{db_8c})} and moves the statements and expressions into the appropriate simulation functions. See above explanation on this procedure. 

@@ -24,6 +24,10 @@ void {\bf signal\_\-db\_\-write} ({\bf signal} $\ast$sig, FILE $\ast${\bf file},
 \begin{CompactList}\small\item\em Reads signal information from specified file. \item\end{CompactList}\item 
 {\bf bool} {\bf signal\_\-db\_\-merge} ({\bf signal} $\ast$base, char $\ast$$\ast$line, {\bf bool} same)
 \begin{CompactList}\small\item\em Reads and merges two signals, placing result into base signal. \item\end{CompactList}\item 
+void {\bf signal\_\-set\_\-wait\_\-bit} ({\bf signal} $\ast$sig, int val)
+\begin{CompactList}\small\item\em Sets value of currently waiting bit of signal to specified value. \item\end{CompactList}\item 
+int {\bf signal\_\-get\_\-wait\_\-bit} ({\bf signal} $\ast$sig)
+\begin{CompactList}\small\item\em Gets value of currently waiting bit of signal. \item\end{CompactList}\item 
 void {\bf signal\_\-vcd\_\-assign} ({\bf signal} $\ast$sig, char $\ast$value, int msb, int lsb)
 \begin{CompactList}\small\item\em Assigns specified VCD value to specified signal. \item\end{CompactList}\item 
 void {\bf signal\_\-add\_\-expression} ({\bf signal} $\ast$sig, {\bf expression} $\ast$expr)
@@ -51,7 +55,7 @@ char {\bf user\_\-msg} [USER\_\-MSG\_\-LENGTH]
 \subsection{Function Documentation}
 \index{signal.c@{signal.c}!signal_add_expression@{signal\_\-add\_\-expression}}
 \index{signal_add_expression@{signal\_\-add\_\-expression}!signal.c@{signal.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-add\_\-expression ({\bf signal} $\ast$ {\em sig}, {\bf expression} $\ast$ {\em expr})}\label{signal_8c_a8}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-add\_\-expression ({\bf signal} $\ast$ {\em sig}, {\bf expression} $\ast$ {\em expr})}\label{signal_8c_a10}
 
 
 Adds an expression to the signal list. 
@@ -121,7 +125,7 @@ Outputs this signal information to specified file.
 \end{Desc}
 Prints the signal information for the specified signal to the specified file. This file will be the database coverage file for this design. \index{signal.c@{signal.c}!signal_dealloc@{signal\_\-dealloc}}
 \index{signal_dealloc@{signal\_\-dealloc}!signal.c@{signal.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-dealloc ({\bf signal} $\ast$ {\em sig})}\label{signal_8c_a10}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-dealloc ({\bf signal} $\ast$ {\em sig})}\label{signal_8c_a12}
 
 
 Deallocates the memory used for this signal. 
@@ -133,7 +137,7 @@ Deallocates the memory used for this signal.
 \end{Desc}
 Deallocates all malloc'ed memory back to the heap for the specified signal. \index{signal.c@{signal.c}!signal_display@{signal\_\-display}}
 \index{signal_display@{signal\_\-display}!signal.c@{signal.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-display ({\bf signal} $\ast$ {\em sig})}\label{signal_8c_a9}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-display ({\bf signal} $\ast$ {\em sig})}\label{signal_8c_a11}
 
 
 Displays signal contents to standard output. 
@@ -143,7 +147,21 @@ Displays signal contents to standard output.
 \begin{description}
 \item[{\em sig}]Pointer to signal to display to standard output.\end{description}
 \end{Desc}
-Displays signal's name, width, lsb and value vector to the standard output. \index{signal.c@{signal.c}!signal_init@{signal\_\-init}}
+Displays signal's name, width, lsb and value vector to the standard output. \index{signal.c@{signal.c}!signal_get_wait_bit@{signal\_\-get\_\-wait\_\-bit}}
+\index{signal_get_wait_bit@{signal\_\-get\_\-wait\_\-bit}!signal.c@{signal.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int signal\_\-get\_\-wait\_\-bit ({\bf signal} $\ast$ {\em sig})}\label{signal_8c_a8}
+
+
+Gets value of currently waiting bit of signal. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em sig}]Pointer to signal to retrieve wait bit value from.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns:]Returns value of wait bit in specified signal.\end{Desc}
+Gets the value of the wait bit from the specified signal. \index{signal.c@{signal.c}!signal_init@{signal\_\-init}}
 \index{signal_init@{signal\_\-init}!signal.c@{signal.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-init ({\bf signal} $\ast$ {\em sig}, char $\ast$ {\em name}, {\bf vector} $\ast$ {\em value})}\label{signal_8c_a2}
 
@@ -155,9 +173,21 @@ Initializes specified signal with specified values.
 \begin{description}
 \item[{\em sig}]Pointer to signal to initialize. \item[{\em name}]Pointer to signal name string. \item[{\em value}]Pointer to signal value.\end{description}
 \end{Desc}
-Initializes the specified signal with the values of name and value. This function is called by the signal\_\-create routine and is also useful for creating temporary signals (reduces the need for dynamic memory allocation). for performance enhancing purposes. \index{signal.c@{signal.c}!signal_vcd_assign@{signal\_\-vcd\_\-assign}}
+Initializes the specified signal with the values of name and value. This function is called by the signal\_\-create routine and is also useful for creating temporary signals (reduces the need for dynamic memory allocation). for performance enhancing purposes. \index{signal.c@{signal.c}!signal_set_wait_bit@{signal\_\-set\_\-wait\_\-bit}}
+\index{signal_set_wait_bit@{signal\_\-set\_\-wait\_\-bit}!signal.c@{signal.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-set\_\-wait\_\-bit ({\bf signal} $\ast$ {\em sig}, int {\em val})}\label{signal_8c_a7}
+
+
+Sets value of currently waiting bit of signal to specified value. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em sig}]Pointer to signal to set wait bit to. \item[{\em val}]Value to set wait bit to.\end{description}
+\end{Desc}
+Sets the wait bit in the specified signal to the specified value. \index{signal.c@{signal.c}!signal_vcd_assign@{signal\_\-vcd\_\-assign}}
 \index{signal_vcd_assign@{signal\_\-vcd\_\-assign}!signal.c@{signal.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-vcd\_\-assign ({\bf signal} $\ast$ {\em sig}, char $\ast$ {\em value}, int {\em msb}, int {\em lsb})}\label{signal_8c_a7}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-vcd\_\-assign ({\bf signal} $\ast$ {\em sig}, char $\ast$ {\em value}, int {\em msb}, int {\em lsb})}\label{signal_8c_a9}
 
 
 Assigns specified VCD value to specified signal. 
