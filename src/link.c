@@ -48,8 +48,8 @@ void str_link_add( char* str, str_link** head, str_link** tail ) {
  \param tail  Pointer to tail str_link element of list.
 
  Creates a new stmt_link element with the value specified for stmt.  Sets
- next pointer of element to NULL, sets the tail element to point to the
- new element and sets the tail value to the new element.
+ next pointer of element to head, sets the head element to point to the
+ new element and (possibly) sets the tail value to the new element.
 */
 void stmt_link_add( statement* stmt, stmt_link** head, stmt_link** tail ) {
 
@@ -63,8 +63,8 @@ void stmt_link_add( statement* stmt, stmt_link** head, stmt_link** tail ) {
   if( *head == NULL ) {
     *head = *tail = tmp;
   } else {
-    (*tail)->next = tmp;
-    *tail         = tmp;
+    tmp->next = *head;
+    *head     = tmp;
   }
 
 }
@@ -496,4 +496,10 @@ void mod_link_delete_list( mod_link* head ) {
 }
 
 
-/* $Log$ */
+/* $Log$
+/* Revision 1.3  2002/05/03 03:39:36  phase1geo
+/* Removing all syntax errors due to addition of statements.  Added more statement
+/* support code.  Still have a ways to go before we can try anything.  Removed lines
+/* from expressions though we may want to consider putting these back for reporting
+/* purposes.
+/* */

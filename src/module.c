@@ -169,21 +169,9 @@ bool module_db_write( module* mod, FILE* file ) {
     mod->filename
   );
 
-  // module_display_statements( mod );
-
-  /* Now print all statements in module */
-  curr_stmt = mod->stmt_head;
-  while( curr_stmt != NULL ) {
-
-    statement_db_write( curr_stmt->stmt, file, mod->scope );
-    curr_stmt = curr_stmt->next;
-
-  }
-
   // module_display_expressions( mod );
 
   /* Now print all expressions in module */
-/*
   curr_exp = mod->exp_head;
   while( curr_exp != NULL ) {
     
@@ -191,7 +179,6 @@ bool module_db_write( module* mod, FILE* file ) {
     curr_exp = curr_exp->next;
 
   }
-*/
 
   // module_display_signals( mod );
 
@@ -201,6 +188,17 @@ bool module_db_write( module* mod, FILE* file ) {
 
     signal_db_write( curr_sig->sig, file, mod->scope );
     curr_sig = curr_sig->next; 
+
+  }
+
+  // module_display_statements( mod );
+
+  /* Now print all statements in module */
+  curr_stmt = mod->stmt_head;
+  while( curr_stmt != NULL ) {
+
+    statement_db_write( curr_stmt->stmt, file, mod->scope );
+    curr_stmt = curr_stmt->next;
 
   }
 
@@ -356,6 +354,10 @@ void module_dealloc( module* mod ) {
 
 
 /* $Log$
+/* Revision 1.4  2002/06/24 04:54:48  phase1geo
+/* More fixes and code additions to make statements work properly.  Still not
+/* there at this point.
+/*
 /* Revision 1.3  2002/05/02 03:27:42  phase1geo
 /* Initial creation of statement structure and manipulation files.  Internals are
 /* still in a chaotic state.

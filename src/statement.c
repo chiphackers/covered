@@ -129,6 +129,7 @@ void statement_db_write( statement* stmt, FILE* ofile, char* scope ) {
 
   printf( "In statement_db_write, id: %d\n", stmt->exp->id );
 
+#ifdef EFFICIENCY_CODE
   /* Write succeeding statements first */
   if( SUPPL_IS_STMT_STOP( stmt->exp->suppl ) == 0 ) {
 
@@ -141,6 +142,7 @@ void statement_db_write( statement* stmt, FILE* ofile, char* scope ) {
 
   /* Write out expression tree second */
   expression_db_write( stmt->exp, ofile, scope );
+#endif
 
   /* Write out contents of this statement last */
   fprintf( ofile, "%d %d %s",
@@ -176,7 +178,7 @@ void statement_db_write( statement* stmt, FILE* ofile, char* scope ) {
 */
 bool statement_db_read( char** line, module* curr_mod ) {
 
-  bool       retval;         /* Return value of this function                                          */
+  bool       retval = TRUE;  /* Return value of this function                                          */
   int        id;             /* ID of root expression that is associated with this statement           */
   char       modname[4096];  /* Scope of module to which this statement belongs                        */
   int        true_id;        /* ID of root expression that is associated with the next_true statement  */
@@ -187,7 +189,7 @@ bool statement_db_read( char** line, module* curr_mod ) {
   stmt_link* stmtl;          /* Pointer to found statement link                                        */
   int        chars_read;     /* Number of characters read from line                                    */
 
-  if( sscanf( *line, "%d %s %d %d%n", &id, modname, &true_id, &false_id, &chars_read ) == 6 ) {
+  if( sscanf( *line, "%d %s %d %d%n", &id, modname, &true_id, &false_id, &chars_read ) == 4 ) {
 
     *line = *line + chars_read;
 
@@ -198,38 +200,29 @@ bool statement_db_read( char** line, module* curr_mod ) {
 
     } else {
 
+      printf( "Read statement %d\n", id );
+
       /* Find associated root expression */
       tmpexp.id = id;
       expl = exp_link_find( &tmpexp, curr_mod->exp_head );
 
       stmt = statement_create( expl->exp );
 
-      /* We should always have a legit next_false statement */
-      assert( false_id != 0 );
-
-      if( true_id != false_id ) {
-
-        /* Find next_false statement */
-        stmtl = stmt_link_find( false_id, curr_mod->stmt_head );
-
-        /* If stmtl NULL, indicates that FALSE statement written after current statement or not at all */
+      /* Find and link next_true */
+      if( true_id != 0 ) {
+        stmtl = stmt_link_find( true_id, curr_mod->stmt_head );
         assert( stmtl != NULL );
-
-        stmt->next_false = stmtl->stmt;
-
-        if( true_id != 0 ) {
-   
-          /* Find next_true statement */
-          stmtl = stmt_link_find( true_id, curr_mod->stmt_head );
-
-          /* If stmtl NULL, indicates that TRUE statement written after current statement or not at all */
-          assert( stmtl != NULL );
-
-          stmt->next_true = stmtl->stmt;
-
-        }
-
+        stmt->next_true = stmtl->stmt;
       }
+
+      /* Find and link next_false */
+      if( false_id != 0 ) {
+        stmtl = stmt_link_find( false_id, curr_mod->stmt_head );
+        assert( stmtl != NULL );
+        stmt->next_false = stmtl->stmt;
+      }
+
+      stmt_link_add( stmt, &(curr_mod->stmt_head), &(curr_mod->stmt_tail) );
 
     }
 
@@ -284,7 +277,7 @@ void statement_set_stop( statement* stmt ) {
 
   assert( stmt != NULL );
 
-  if( (stmt->next_true == NULL) && (stmt->next_false == NULL) ) {
+  if( (stmt->next_true == NULL) && (stmt->next_false == NULL) && (SUPPL_IS_STMT_STOP( stmt->exp->suppl ) == 0) ) {
     stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);
     printf( "Set STOP bit for stmt %d\n", stmt->exp->id );
   }
