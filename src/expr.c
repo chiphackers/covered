@@ -190,15 +190,13 @@ void expression_merge( expression* base, expression* in ) {
  \param expr  Pointer to expression to get ID from.
  \return Returns expression ID for this expression.
 
- Recursively gets IDs of parents to formulate the unique expression
- ID for this expression.
+ If specified expression is non-NULL, return expression ID of this
+ expression; otherwise, return a value of 0 to indicate that this
+ is a leaf node.
 */
 int expression_get_id( expression* expr ) {
 
-  assert( expr != NULL );
-
-  if( SUPPL_IS_ROOT( expr->suppl ) == 1 ) {
-    /* This is the root expression, it does not have a parent */
+  if( expr == NULL ) {
     return( 0 );
   } else {
     return( expr->id );
@@ -215,6 +213,8 @@ int expression_get_id( expression* expr ) {
  expression tree to the coverage database specified by file.
 */
 void expression_db_write( expression* expr, FILE* file, char* scope ) {
+
+  printf( "In expression_db_write, writing expression %d\n", expr->id );
 
   fprintf( file, "%d %d %s %d %x %d %d ",
     DB_TYPE_EXPRESSION,
@@ -708,6 +708,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.11  2002/06/23 21:18:21  phase1geo
+/* Added appropriate statement support in parser.  All parts should be in place
+/* and ready to start testing.
+/*
 /* Revision 1.10  2002/06/22 21:08:23  phase1geo
 /* Added simulation engine and tied it to the db.c file.  Simulation engine is
 /* currently untested and will remain so until the parser is updated correctly

@@ -1085,7 +1085,9 @@ statement
                     stmt = db_create_statement( expr );
                     db_connect_statement_true( stmt, c_stmt->stmt );
                     db_connect_statement_false( stmt, last_stmt );
-                    last_stmt = stmt;
+                    if( stmt != NULL ) {
+                      last_stmt = stmt;
+                    }
                     tc_stmt   = c_stmt;
                     c_stmt    = c_stmt->next;
                     free_safe( tc_stmt );
@@ -1105,7 +1107,9 @@ statement
                     stmt = db_create_statement( expr );
                     db_connect_statement_true( stmt, c_stmt->stmt );
                     db_connect_statement_false( stmt, last_stmt );
-                    last_stmt = stmt;
+                    if( stmt != NULL ) {
+                      last_stmt = stmt;
+                    }
                     tc_stmt   = c_stmt;
                     c_stmt    = c_stmt->next;
                     free_safe( tc_stmt );
@@ -1125,7 +1129,9 @@ statement
                     stmt = db_create_statement( expr );
                     db_connect_statement_true( stmt, c_stmt->stmt );
                     db_connect_statement_false( stmt, last_stmt );
-                    last_stmt = stmt;
+                    if( stmt != NULL ) {
+                      last_stmt = stmt;
+                    }
                     tc_stmt   = c_stmt;
                     c_stmt    = c_stmt->next;
                     free_safe( tc_stmt );
@@ -1323,13 +1329,13 @@ statement
 statement_list
 	: statement statement_list
                 {
-                  if( $2 != NULL ) {
-                    db_connect_statement_false( $1, $2 );
-                  }
-                  if( $1 == NULL ) {
-                    $$ = $2;
-                  } else {
+                  if( $1 != NULL ) {
+                    if( $2 != NULL ) {
+                      db_statement_connect( $1, $2 );
+                    }
                     $$ = $1;
+                  } else {
+                    $$ = $2;
                   }
                 }
 	| statement
@@ -1555,6 +1561,10 @@ assign
 	: lavalue '=' expression
 		{
                   statement* stmt = db_create_statement( $3 );
+
+                  /* Set STMT_HEAD bit */
+                  stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
+
                   /* Statement will be looped back to itself */
                   db_connect_statement_true( stmt, stmt );
                   db_connect_statement_false( stmt, stmt );

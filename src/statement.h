@@ -21,14 +21,19 @@ void statement_db_write( statement* stmt, FILE* ofile, char* scope );
 //! Reads in statement line from specified string and stores statement in specified module.
 bool statement_db_read( char** line, module* curr_mod );
 
-//! Connects statement sequence to form a loop.
-void statement_loopback( statement* stmt );
+//! Connects statement sequence to next statement.
+void statement_connect( statement* curr_stmt, statement* next_stmt );
 
 //! Deallocates statement memory and associated expression tree from the heap.
 void statement_dealloc( statement* stmt );
 
 
 /* $Log$
+/* Revision 1.3  2002/05/13 03:02:58  phase1geo
+/* Adding lines back to expressions and removing them from statements (since the line
+/* number range of an expression can be calculated by looking at the expression line
+/* numbers).
+/*
 /* Revision 1.2  2002/05/03 03:39:36  phase1geo
 /* Removing all syntax errors due to addition of statements.  Added more statement
 /* support code.  Still have a ways to go before we can try anything.  Removed lines

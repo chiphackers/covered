@@ -56,8 +56,8 @@
 
  \par
  To eliminate this redundancy, the STMT_STOP bit is set on statement 4.  The last
- statement of a FALSE path before merging always gets its STMT_STOP bit set.  The
- TRUE path should never get the STMT_STOP bit set.  Additionally, once a statement
+ statement of a TRUE path before merging always gets its STMT_STOP bit set.  The
+ FALSE path should never get the STMT_STOP bit set.  Additionally, once a statement
  gets its STMT_STOP bit set by the parser, this value must be maintained (never
  cleared).
 
@@ -126,18 +126,12 @@ statement* statement_create( expression* exp ) {
 void statement_db_write( statement* stmt, FILE* ofile, char* scope ) {
 
   assert( stmt != NULL );
-  assert( stmt->next_false != NULL );
 
   /* Write succeeding statements first */
-//  if( stmt->next_true != NULL ) {
+  if( SUPPL_IS_STMT_STOP( stmt->exp->suppl ) == 0 ) {
 
-  if( stmt->next_true != stmt->next_false ) {
-
-    if( stmt->next_true != NULL ) {
-      statement_db_write( stmt->next_true, ofile, scope );
-    } else {
-      statement_db_write( stmt->next_false, ofile, scope );
-    }
+    statement_db_write( stmt->next_true, ofile, scope );
+    statement_db_write( stmt->next_false, ofile, scope );
 
   }
 
@@ -153,18 +147,16 @@ void statement_db_write( statement* stmt, FILE* ofile, char* scope ) {
     scope
   );
 
-  if( stmt->next_true != NULL ) {
-    assert( stmt->next_true->exp != NULL );
-    fprintf( ofile, " %d", stmt->next_true->exp->id );
-  } else {
+  if( stmt->next_true == NULL ) {
     fprintf( ofile, " 0" );
+  } else {
+    fprintf( ofile, " %d", stmt->next_true->exp->id );
   }
 
-  if( stmt->next_false != NULL ) {
-    assert( stmt->next_false->exp != NULL );
-    fprintf( ofile, " %d", stmt->next_false->exp->id );
-  } else {
+  if( stmt->next_false == NULL ) {
     fprintf( ofile, " 0" );
+  } else {
+    fprintf( ofile, " %d", stmt->next_false->exp->id );
   }
 
   fprintf( ofile, "\n" );
@@ -251,29 +243,45 @@ bool statement_db_read( char** line, module* curr_mod ) {
 }
 
 /*!
- \param stmt  Pointer to statement sequence to connect ends for loopback.
+ \param curr_stmt  Pointer to statement sequence to traverse.
+ \param next_stmt  Pointer to statement to connect ends to.
 
- Traverses the specified stmt sequence (assumes that stmt is the statement at the
- top of the sequence).  When it reaches a statement that has both next_true and
- next_false set to NULL, sets next_true and next_false of that statement to point
- to the top of the sequence.  This will cause the statement to have a loopback
- effect.
+ Recursively traverses the specified stmt sequence.  When it reaches a statement 
+ that has either next_true or next_false set to NULL, sets next_true and/or 
+ next_false of that statement to point to the next_stmt statement.
 */
-void statement_loopback( statement* stmt ) {
+void statement_connect( statement* curr_stmt, statement* next_stmt ) {
 
-  statement* curr;     /* Pointer to current statement being evaluated */
+  assert( curr_stmt != NULL );
+  assert( next_stmt != NULL );
 
-  assert( stmt != NULL );
+  /* Traverse TRUE path */
+  if( curr_stmt->next_true == NULL ) {
 
-  curr = stmt;
-  while( curr->next_false != NULL ) {
-    curr = curr->next_false;
+    curr_stmt->next_true = next_stmt;
+
+  } else {
+
+    statement_connect( curr_stmt->next_true, next_stmt );
+
   }
 
-  assert( curr->next_true == NULL );
+  /* Traverse FALSE path */
+  if( curr_stmt->next_false == NULL ) {
 
-  curr->next_true  = stmt;
-  curr->next_false = stmt;
+    curr_stmt->next_false = next_stmt;
+
+    /* If next_true path was previously set before this function call, set STMT_STOP */
+    if( curr_stmt->next_true != next_stmt ) {
+      curr_stmt->exp->suppl = curr_stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);
+      printf( "Setting STOP bit\n" );
+    }
+
+  } else {
+
+    statement_connect( curr_stmt->next_false, next_stmt );
+
+  }
 
 }
 
@@ -317,6 +325,10 @@ void statement_dealloc( statement* stmt ) {
 
 
 /* $Log$
+/* Revision 1.6  2002/06/23 21:18:22  phase1geo
+/* Added appropriate statement support in parser.  All parts should be in place
+/* and ready to start testing.
+/*
 /* Revision 1.5  2002/06/22 05:27:30  phase1geo
 /* Additional supporting code for simulation engine and statement support in
 /* parser.

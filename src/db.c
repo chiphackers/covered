@@ -560,6 +560,36 @@ void db_connect_statement_true( statement* stmt, statement* next_true ) {
 }
 
 /*!
+ \param curr_stmt  Pointer to current statement to attach.
+ \param next_stmt  Pointer to next statement to attach to.
+
+ Calls the statement_connect function located in statement.c with the specified parameters.
+*/
+void db_statement_connect( statement* curr_stmt, statement* next_stmt ) {
+
+  char msg[4096];   /* Message to display to user */
+  int  curr_id;     /* Current statement ID       */
+  int  next_id;     /* Next statement ID          */
+
+  if( curr_stmt == NULL ) {    curr_id = 0;
+  } else {
+    curr_id = curr_stmt->exp->id;
+  }
+
+  if( next_stmt == NULL ) {
+    next_id = 0;
+  } else {
+    next_id = next_stmt->exp->id;
+  }
+
+  snprintf( msg, 4096, "In db_statement_connect, curr_stmt: %d, next_stmt: %d", curr_id, next_id );
+  print_output( msg, NORMAL );
+
+  statement_connect( curr_stmt, next_stmt );
+
+}
+
+/*!
  \param stmt        Pointer to statement to connect false path to.
  \param next_false  Pointer to statement to run if statement evaluates to FALSE.
 
@@ -827,6 +857,11 @@ int db_get_signal_size( char* symbol ) {
 
 
 /* $Log$
+/* Revision 1.12  2002/06/22 21:08:23  phase1geo
+/* Added simulation engine and tied it to the db.c file.  Simulation engine is
+/* currently untested and will remain so until the parser is updated correctly
+/* for statements.  This will be the next step.
+/*
 /* Revision 1.11  2002/06/22 05:27:30  phase1geo
 /* Additional supporting code for simulation engine and statement support in
 /* parser.
