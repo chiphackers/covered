@@ -56,7 +56,7 @@ regress:	$(COVERED) clean $(DIAGLIST)
 $(DIAGLIST):
 	$(VERILOG) $(VERILOG_FLAGS) $@.v
 	./$(VERILOG_EXEC)
-	$(COVERED) -D score -t main -vcd $@.vcd -o $@.cdd -v $@.v $(COVERED_FLAGS)
+	$(COVERED) -Q score -t main -vcd $@.vcd -o $@.cdd -v $@.v $(COVERED_FLAGS)
 	diff $@.cdd $(CDD_DIR)/$@.cdd
 	rm -rf a.out $@.vcd $@.cdd
 
