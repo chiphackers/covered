@@ -27,10 +27,11 @@
 
 extern YYLTYPE yylloc;
 
-extern char* reset_pplexer( char* filename );
+extern void reset_pplexer( char* filename );
 
 extern int  ignore_mode;
 extern char user_msg[USER_MSG_LENGTH];
+extern char ppfilename[10];
 
 
 /*!
@@ -431,7 +432,6 @@ static void line_directive2() {
 static int yywrap() {
 
   str_link* curr;
-  char*     temp;
   
   assert( unlink( yylloc.pptext ) == 0);
   
@@ -451,15 +451,15 @@ static int yywrap() {
     exit( 1 );
   }
   
-  temp = reset_pplexer( curr->str );
-  assert( temp != NULL );
+  reset_pplexer( curr->str );
+  assert( ppfilename != NULL );
   PPVLlex();
   
-  yyrestart( fopen( temp, "r" ) );
+  yyrestart( fopen( ppfilename, "r" ) );
   
   yylloc.first_line = 1;
   yylloc.text       = curr->str;
-  yylloc.pptext     = temp;
+  yylloc.pptext     = ppfilename;
   
   filelist_curr = curr->next;
   
@@ -475,7 +475,6 @@ static int yywrap() {
 void reset_lexer( FILE* out, str_link* file_list_head ) {
 
   str_link* curr = file_list_head;
-  char*     temp;
 
   if( (curr = get_next_vfile( curr, modlist_head->str )) == NULL ) {
     print_output( "No verilog files specified", FATAL );
@@ -485,14 +484,14 @@ void reset_lexer( FILE* out, str_link* file_list_head ) {
   assert( curr->str != NULL );
   
   /* Run the preprocessor on this file first */
-  temp = reset_pplexer( curr->str );
-  assert( temp != NULL );
+  reset_pplexer( curr->str );
+  assert( ppfilename != NULL );
   PPVLlex();
   
-  yyrestart( fopen( temp, "r" ) );
+  yyrestart( fopen( ppfilename, "r" ) );
 
   yylloc.text       = curr->str;
-  yylloc.pptext     = temp;
+  yylloc.pptext     = ppfilename;
   yylloc.first_line = 1;
   
   filelist_head = file_list_head;

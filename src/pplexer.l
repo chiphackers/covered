@@ -51,6 +51,8 @@ struct include_stack_t {
 static struct include_stack_t* istack  = 0;
 static struct include_stack_t* standby = 0;
 
+char ppfilename[10];
+
 %}
 
 %option stack
@@ -123,12 +125,6 @@ WSPACE [ \t\b\f]+
      yy_pop_state();
      do_include();
  }
-<INCLUDE><<EOF>>    {
-     istack->lineno += 1;
-     yy_pop_state();
-     do_include();
- }
-
 <INCLUDE>.          {
      snprintf( user_msg, USER_MSG_LENGTH, "malformed `include directive, line %d, \"%s\"", istack->lineno, istack->path );
      print_output( user_msg, FATAL );
@@ -151,11 +147,6 @@ WSPACE [ \t\b\f]+
      def_finish();
      istack->lineno += 1;
      fputc( '\n', yyout );
-     yy_pop_state();
- }
-<DEFINE><<EOF>> {
-     def_finish();
-     istack->lineno += 1;
      yy_pop_state();
  }
 
@@ -663,6 +654,18 @@ static int yywrap() {
   str_link*               curr;
 
   istack = isp->next;
+  
+  /* If we are at the EOF and have not finished a define, do so now. */
+  if( YY_START == DEFINE ) {
+    def_finish();
+    yy_pop_state();
+  }
+  
+  /* If we are at the EOF and have not finished an include, do so now. */
+  if( YY_START == INCLUDE ) {
+    yy_pop_state();
+    do_include();
+  }
 
   /* Delete the current input buffers, and free the cell. */
   yy_delete_buffer( YY_CURRENT_BUFFER );
@@ -702,10 +705,9 @@ static int yywrap() {
  * opened, and the lexor is initialized. The include stack is cleared
  * and ready to go.
  */
-char* reset_pplexer( char* filename ) {
+void reset_pplexer( char* filename ) {
 
-  struct include_stack_t* isp  = malloc( sizeof( struct include_stack_t ) );
-  char*                   temp = strdup( "tmpXXXXXX" );;
+  struct include_stack_t* isp = malloc( sizeof( struct include_stack_t ) );
 
   assert( filename != NULL );
 
@@ -719,16 +721,15 @@ char* reset_pplexer( char* filename ) {
     perror( isp->path );
     exit( 1 );
   }
-  
+
   /* Create temporary output filename */
-  assert( mkstemp( temp ) != 0 );
-  yyout = fopen( temp, "w" );
+  snprintf( ppfilename, 10, "tmpXXXXXX" );
+  assert( mkstemp( ppfilename ) != 0 );
+  yyout = fopen( ppfilename, "w" );
 
   yyrestart( isp->file );
 
   istack = isp;
-  
-  return( temp );
 
 }
 
