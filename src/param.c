@@ -408,11 +408,13 @@ void param_expr_eval( expression* expr, inst_parm* ihead ) {
          if we don't have some already.
         */
         assert( expr->value != NULL );
-        assert( expr->value->value == NULL );
         assert( (SUPPL_OP( expr->suppl ) != EXP_OP_SIG)      &&
                 (SUPPL_OP( expr->suppl ) != EXP_OP_SBIT_SEL) &&
                 (SUPPL_OP( expr->suppl ) != EXP_OP_MBIT_SEL) );
         expression_resize( expr, FALSE );
+        if( expr->value->value != NULL ) {
+          free_safe( expr->value->value );
+        }
         expression_create_value( expr, expr->value->width, expr->value->lsb, TRUE );
         break;
     }
@@ -687,6 +689,10 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.22  2002/11/05 00:20:07  phase1geo
+ Adding development documentation.  Fixing problem with combinational logic
+ output in report command and updating full regression.
+
  Revision 1.21  2002/11/02 16:16:20  phase1geo
  Cleaned up all compiler warnings in source and header files.
 

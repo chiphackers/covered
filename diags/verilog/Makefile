@@ -42,4 +42,4 @@ $(COVERED):
 clean:
 	@rm -f $(LOGFILE)
 	@rm -f $(IVERILOG_EXEC) $(VCS_EXEC) *.vcd *.cdd *.log
-	@rm -f core
+	@rm -f core *.o
