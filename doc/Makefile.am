@@ -5,4 +5,3 @@ devel_doc:
 
 devel_doc_clean:
 	rm -rf devel/html devel/latex
-
