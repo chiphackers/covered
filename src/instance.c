@@ -363,6 +363,8 @@ void instance_dealloc_tree( mod_inst* root ) {
       free_safe( root->stat );
     }
 
+    // printf( "Before instance parameter deallocation\n" );
+
     /* Deallocate memory for instance parameter list */
     inst_parm_dealloc( root->param_head, TRUE );
   
@@ -437,6 +439,11 @@ void instance_dealloc( mod_inst* root, char* scope ) {
 }
 
 /* $Log$
+/* Revision 1.16  2002/09/25 02:51:44  phase1geo
+/* Removing need of vector nibble array allocation and deallocation during
+/* expression resizing for efficiency and bug reduction.  Other enhancements
+/* for parameter support.  Parameter stuff still not quite complete.
+/*
 /* Revision 1.15  2002/09/23 01:37:45  phase1geo
 /* Need to make some changes to the inst_parm structure and some associated
 /* functionality for efficiency purposes.  This checkin contains most of the

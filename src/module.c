@@ -109,10 +109,14 @@ bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst ) {
       }
       /* If parameter value was found (it should be), adjust expression for new value */
       if( icurr != NULL ) {
+        printf( "NEED TO RESIZE EXPRESSION TREE\n" );
         expression_set_value_and_resize( curr_exp->exp, icurr->value );
       } else {
         assert( icurr != NULL );
       }
+      /* Finally, change the expression operation to STATIC */
+      curr_exp->exp->suppl = (curr_exp->exp->suppl & ~(0x7f << SUPPL_LSB_OP)) | 
+                             ((EXP_OP_STATIC & 0x7f) << SUPPL_LSB_OP);
     }
 
     expression_db_write( curr_exp->exp, file, scope );
@@ -328,21 +332,25 @@ void module_clean( module* mod ) {
     }
 
     /* Free expression list */
+    // printf( "In module_dealloc, deleting expression list\n" );
     exp_link_delete_list( mod->exp_head, TRUE );
     mod->exp_head = NULL;
     mod->exp_tail = NULL;
 
     /* Free signal list */
+    // printf( "In module_dealloc, deleting signal list\n" );
     sig_link_delete_list( mod->sig_head );
     mod->sig_head = NULL;
     mod->sig_tail = NULL;
 
     /* Free statement list */
+    // printf( "In module_dealloc, deleting statement list\n" );
     stmt_link_delete_list( mod->stmt_head );
     mod->stmt_head = NULL;
     mod->stmt_tail = NULL;
 
     /* Free parameter list */
+    // printf( "In module_dealloc, deleting mod_parm list\n" );
     mod_parm_dealloc( mod->param_head, TRUE );
     mod->param_head = NULL;
     mod->param_tail = NULL;
@@ -360,6 +368,8 @@ void module_clean( module* mod ) {
 void module_dealloc( module* mod ) {
 
   if( mod != NULL ) {
+
+    // printf( "In module_dealloc, name: %s\n", mod->name );
 
     //module_display_expressions( mod );
 

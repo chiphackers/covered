@@ -578,9 +578,11 @@ void mod_parm_dealloc( mod_parm* parm, bool recursive ) {
 
     free_safe( parm->name );
 
+/*
     if( parm->expr != NULL ) {
       expression_dealloc( parm->expr, TRUE );
     }
+*/
 
     exp_link_delete_list( parm->exp_head, FALSE );
     sig_link_delete_list( parm->sig_head );
@@ -609,11 +611,6 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
     }
 
     free_safe( parm->name );
-
-    if( parm->value != NULL ) {
-      vector_dealloc( parm->value );
-    }
-
     free_safe( parm );
 
   }
@@ -622,6 +619,11 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 
 /* $Log$
+/* Revision 1.10  2002/09/25 02:51:44  phase1geo
+/* Removing need of vector nibble array allocation and deallocation during
+/* expression resizing for efficiency and bug reduction.  Other enhancements
+/* for parameter support.  Parameter stuff still not quite complete.
+/*
 /* Revision 1.9  2002/09/23 01:37:45  phase1geo
 /* Need to make some changes to the inst_parm structure and some associated
 /* functionality for efficiency purposes.  This checkin contains most of the

@@ -467,6 +467,8 @@ void free_safe( void* ptr ) {
 
   curr_malloc_size -= sizeof( *ptr );
 
+  // printf( "Freeing memory, addr: 0x%lx\n", ptr );
+
   free( ptr );
 
 }
@@ -492,6 +494,11 @@ void gen_space( char* spaces, int num_spaces ) {
 }
 
 /* $Log$
+/* Revision 1.10  2002/07/20 22:22:52  phase1geo
+/* Added ability to create implicit signals for local signals.  Added implicit1.v
+/* diagnostic to test for correctness.  Full regression passes.  Other tweaks to
+/* output information.
+/*
 /* Revision 1.9  2002/07/20 20:48:09  phase1geo
 /* Fixing a bug that caused the same file to be added to the use_files list
 /* more than once.  A filename will only appear once in this list now.  Updates

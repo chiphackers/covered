@@ -234,7 +234,7 @@ void expression_resize_tree( expression* expr ) {
       case EXP_OP_CASEZ   :
       case EXP_OP_DEFAULT :
       case EXP_OP_LAST    :
-        assert( expr->value == NULL );
+        assert( expr->value->value == NULL );
         expression_create_value( expr, 1, 0, FALSE );
         break;
 
@@ -243,8 +243,8 @@ void expression_resize_tree( expression* expr ) {
        to be the width of its right child.
       */
       case EXP_OP_AEDGE :
-        assert( expr->left->value == NULL );
-        assert( expr->value == NULL );
+        assert( expr->left->value->value == NULL );
+        assert( expr->value->value == NULL );
         expression_create_value( expr->left, expr->right->value->width, expr->right->value->lsb, FALSE );
         expression_create_value( expr, 1, 0, FALSE );
         break;
@@ -254,7 +254,7 @@ void expression_resize_tree( expression* expr ) {
        the left child and the bit-width of the right child.
       */
       case EXP_OP_EXPAND :
-        assert( expr->value == NULL );
+        assert( expr->value->value == NULL );
         expression_create_value( expr, (vector_to_int( expr->left->value ) * expr->right->value->width), 0, FALSE );
         break;
 
@@ -265,12 +265,12 @@ void expression_resize_tree( expression* expr ) {
       */
       case EXP_OP_MULTIPLY :
       case EXP_OP_LIST :
-        assert( expr->value == NULL );
+        assert( expr->value->value == NULL );
         expression_create_value( expr, (expr->left->value->width + expr->right->value->width), 0, FALSE );
         break;
 
       default :
-        assert( expr->value == NULL );
+        assert( expr->value->value == NULL );
         if( (expr->left != NULL) && (expr->left->value->width > expr->right->value->width) ) {
           largest_width = expr->left->value->width;
         } else {
@@ -298,11 +298,11 @@ void expression_resize_tree( expression* expr ) {
 */
 void expression_resize( expression* expr ) {
 
-  if( SUPPL_IS_ROOT( expr->suppl ) == 1 ) {
+  // if( SUPPL_IS_ROOT( expr->suppl ) == 0 ) {
 
-    expression_resize( expr );
+    expression_resize_tree( expr );
 
-  }
+  // }
 
 }
 
@@ -351,6 +351,8 @@ int expression_get_id( expression* expr ) {
  expression tree to the coverage database specified by file.
 */
 void expression_db_write( expression* expr, FILE* file, char* scope ) {
+
+  bool write_data;       /* Specifies if actual vector value should be output */
 
   fprintf( file, "%d %d %s %d %x %d %d ",
     DB_TYPE_EXPRESSION,
@@ -407,7 +409,7 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
 
     *line = *line + chars_read;
 
-    printf( "Read in expression id: %d\n", id );
+    // printf( "Read in expression id: %d\n", id );
 
     /* Find module instance name */
     if( curr_mod == NULL ) {
@@ -1006,6 +1008,7 @@ void expression_dealloc( expression* expr, bool exp_only ) {
         (SUPPL_OP( expr->suppl ) != EXP_OP_MBIT_SEL) ) {
 
       /* Free up memory from vector value storage */
+      // printf( "Deallocating expr value, addr: 0x%lx\n", expr->value );
       vector_dealloc( expr->value );
       expr->value = NULL;
 
@@ -1040,6 +1043,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.49  2002/09/25 02:51:44  phase1geo
+/* Removing need of vector nibble array allocation and deallocation during
+/* expression resizing for efficiency and bug reduction.  Other enhancements
+/* for parameter support.  Parameter stuff still not quite complete.
+/*
 /* Revision 1.48  2002/09/23 01:37:44  phase1geo
 /* Need to make some changes to the inst_parm structure and some associated
 /* functionality for efficiency purposes.  This checkin contains most of the

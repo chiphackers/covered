@@ -4,7 +4,7 @@ wire    a;
 reg     b;
 
 parameter value0 = 1'b0;
-parameter value1 = 1'b0;
+parameter value1 = 1'b1;
 
 assign a = b ? value0 : value1;
 

@@ -6,6 +6,12 @@
 # Purpose:      Runs C regression suite.
 ######################################################
 
+CULIDIR  = /home/trevorw/include
+
+CULLDIR  = /home/trevorw/lib
+
+CULLIB   = TestHarness
+
 SRCDIR   = ../../src
 
 SRCLIBS  = $(SRCDIR)/vector.c \
@@ -13,7 +19,7 @@ SRCLIBS  = $(SRCDIR)/vector.c \
 	   $(SRCDIR)/expr.c \
 	   funcs.c
 
-DIAGLIST = xor \
+CDIAGLIST = xor \
 	   and \
 	   or \
 	   nand \
@@ -36,25 +42,33 @@ DIAGLIST = xor \
 	   unor \
 	   unxor
 
+CPPDIAGLIST = param
+
 LOGFILE  = regress.log
-CXX      = gcc
-CFLAGS   = -I$(SRCDIR) -g
+CXX      = g++
+CFLAGS   = -I$(SRCDIR) -I$(CULIDIR) -g -L$(CULLDIR) -l$(CULLIB)
 
 .SILENT:
 
-regress:	clean $(DIAGLIST)
+regress:	clean $(CDIAGLIST) $(CPPDIAGLIST)
 	grep PASS $(LOGFILE) | wc -l >> $(LOGFILE)
 	echo out of >> $(LOGFILE)
-	ls $(DIAGLIST) | wc -l >> $(LOGFILE)
+	ls $(CDIAGLIST) $(CPPDIAGLIST) | wc -l >> $(LOGFILE)
 	echo diagnostics passed >> $(LOGFILE)
 	tail -4 $(LOGFILE)
 
-$(DIAGLIST):	$(SRCLIBS)
+$(CDIAGLIST):	$(SRCLIBS)
 	echo Running diagnostic $@ >> $(LOGFILE)
 	$(CXX) $(CFLAGS) -o $@ $@.c $(SRCLIBS)
 #	./$@ | tee -a $(LOGFILE)
 	./$@ >> $(LOGFILE)
 
+$(CPPDIAGLIST):	$(SRCLIBS)
+	echo Running diagnostic $@ >> $(LOGFILE)
+	$(CXX) $(CFLAGS) -o $@ $@.cc $(SRCLIBS)
+#	./$@ | tee -a $(LOGFILE)
+	./$@ >> $(LOGFILE)
+
 clean:
-	rm -f $(DIAGLIST)
+	rm -f $(CDIAGLIST)
 	rm -f *.log core

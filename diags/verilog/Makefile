@@ -48,7 +48,7 @@ $(DIAGLIST):
 	@echo Running $@.v
 	@$(VERILOG) $(VERILOG_FLAGS) $@.v
 	@./$(VERILOG_EXEC)
-	@$(COVERED) -Q score -t main -vcd $@.vcd -o $@.cdd -v $@.v $(COVERED_FLAGS)
+	@$(COVERED) -D score -t main -vcd $@.vcd -o $@.cdd -v $@.v $(COVERED_FLAGS)
 	@diff $@.cdd $(CDD_DIR)/$@.cdd
 	@rm -rf a.out $@.vcd $@.cdd
 
