@@ -400,32 +400,43 @@ void report_gather_module_stats( mod_link* head ) {
 */
 void report_print_header( FILE* ofile ) {
 
+  char type[20];  /* Holds string to indicate module or instance-based report */
+
+  if( report_instance ) {
+    strcpy( type, "Instance-Based" );
+  } else {
+    strcpy( type, "Module-Based" );
+  }
+
   switch( report_comb_depth ) {
     case REPORT_SUMMARY  :
-      fprintf( ofile, "Covered -- Verilog Coverage Summarized Report\n" );
-      fprintf( ofile, "=============================================\n\n" );
+      fprintf( ofile, "Covered -- Verilog Coverage %s Summarized Report\n", type );
+      fprintf( ofile, "============================================================\n\n" );
       break;
     case REPORT_DETAILED :
-      fprintf( ofile, "Covered -- Verilog Coverage Detailed Report\n" );
-      fprintf( ofile, "===========================================\n\n" );
+      fprintf( ofile, "Covered -- Verilog Coverage %s Detailed Report\n", type );
+      fprintf( ofile, "==========================================================\n\n" );
       break;
     case REPORT_VERBOSE  :
-      fprintf( ofile, "Covered -- Verilog Coverage Verbose Report\n" );
-      fprintf( ofile, "==========================================\n\n" );
+      fprintf( ofile, "Covered -- Verilog Coverage %s Verbose Report\n", type );
+      fprintf( ofile, "=========================================================\n\n" );
       break;
     default:
       break;
   }
 
-  if( merged_code == INFO_ONE_MERGED ) {
-    fprintf( ofile, "* Report generated from CDD file that was merged from the following files:\n" );
-    fprintf( ofile, "    %s\n", input_db  );
-    fprintf( ofile, "    %s\n", merge_in0 ); 
-    fprintf( ofile, "=================================================================================\n\n" );
-  } else if( merged_code == INFO_TWO_MERGED ) {
-    fprintf( ofile, "* Report generated from CDD file that was merged from the following files:\n" );
-    fprintf( ofile, "    %s\n", merge_in0 );
-    fprintf( ofile, "    %s\n", merge_in1 );
+  if( merged_code != INFO_NOT_MERGED ) {
+    fprintf( ofile, "SPECIAL NOTES\n" );
+    fprintf( ofile, "---------------------------------------------------------------------------------\n" );
+    if( merged_code == INFO_ONE_MERGED ) {
+      fprintf( ofile, "* Report generated from CDD file that was merged from the following files:\n" );
+      fprintf( ofile, "    %s\n", input_db  );
+      fprintf( ofile, "    %s\n", merge_in0 ); 
+    } else if( merged_code == INFO_TWO_MERGED ) {
+      fprintf( ofile, "* Report generated from CDD file that was merged from the following files:\n" );
+      fprintf( ofile, "    %s\n", merge_in0 );
+      fprintf( ofile, "    %s\n", merge_in1 );
+    }
     fprintf( ofile, "=================================================================================\n\n" );
   }
 
@@ -583,6 +594,12 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.27  2004/01/21 22:26:56  phase1geo
+ Changed default CDD file name from "cov.db" to "cov.cdd".  Changed instance
+ statistic gathering from a child merging algorithm to just calculating
+ instance coverage for the individual instances.  Updated full regression for
+ this change and updated VCS regression for all past changes of this release.
+
  Revision 1.26  2004/01/04 04:52:03  phase1geo
  Updating ChangeLog and TODO files.  Adding merge information to INFO line
  of CDD files and outputting this information to the merged reports.  Adding

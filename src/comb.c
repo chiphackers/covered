@@ -1553,10 +1553,12 @@ void combination_report( FILE* ofile, bool verbose ) {
 
   bool missed_found;      /* If set to TRUE, indicates combinations were missed */
 
+  fprintf( ofile, "\n\n" );
+
   if( report_instance ) {
 
-    fprintf( ofile, "COMBINATIONAL LOGIC COVERAGE RESULTS BY INSTANCE\n" );
-    fprintf( ofile, "------------------------------------------------\n" );
+    fprintf( ofile, "COMBINATIONAL LOGIC COVERAGE RESULTS\n" );
+    fprintf( ofile, "------------------------------------\n" );
     fprintf( ofile, "Instance                                               Logic Combinations\n" );
     fprintf( ofile, "                                                  Hit/Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -1570,8 +1572,8 @@ void combination_report( FILE* ofile, bool verbose ) {
 
   } else {
 
-    fprintf( ofile, "COMBINATIONAL LOGIC COVERAGE RESULTS BY MODULE\n" );
-    fprintf( ofile, "----------------------------------------------\n" );
+    fprintf( ofile, "COMBINATIONAL LOGIC COVERAGE RESULTS\n" );
+    fprintf( ofile, "------------------------------------\n" );
     fprintf( ofile, "Module                    Filename                     Logical Combinations\n" );
     fprintf( ofile, "                                                  Hit/Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -1593,6 +1595,11 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.87  2004/01/30 06:04:42  phase1geo
+ More report output format tweaks.  Adjusted lines and spaces to make things
+ look more organized.  Still some more to go.  Regression will fail at this
+ point.
+
  Revision 1.86  2004/01/27 23:16:08  phase1geo
  Tweaks and bug fix to combination_is_multi_expr function.  Removed test.v
  and test1.v and renamed them to multi_exp2.v and multi_exp2.1.v, respectively.

@@ -426,10 +426,12 @@ void line_report( FILE* ofile, bool verbose ) {
 
   bool missed_found;      /* If set to TRUE, lines were found to be missed */
 
+  fprintf( ofile, "\n\n" );
+
   if( report_instance ) {
 
-    fprintf( ofile, "LINE COVERAGE RESULTS BY INSTANCE\n" );
-    fprintf( ofile, "---------------------------------\n" );
+    fprintf( ofile, "LINE COVERAGE RESULTS\n" );
+    fprintf( ofile, "---------------------\n" );
     fprintf( ofile, "Instance                                           Hit/ Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
@@ -442,8 +444,8 @@ void line_report( FILE* ofile, bool verbose ) {
 
   } else {
 
-    fprintf( ofile, "LINE COVERAGE RESULTS BY MODULE\n" );
-    fprintf( ofile, "-------------------------------\n" );
+    fprintf( ofile, "LINE COVERAGE RESULTS\n" );
+    fprintf( ofile, "---------------------\n" );
     fprintf( ofile, "Module                    Filename                 Hit/ Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
@@ -463,6 +465,11 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.39  2004/01/30 06:04:45  phase1geo
+ More report output format tweaks.  Adjusted lines and spaces to make things
+ look more organized.  Still some more to go.  Regression will fail at this
+ point.
+
  Revision 1.38  2004/01/23 14:37:09  phase1geo
  Fixing output of instance line, toggle, comb and fsm to only output module
  name if logic is detected missing in that instance.  Full regression fails
