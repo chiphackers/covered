@@ -1,5 +1,35 @@
 Covered-Related NEWS
 ====================
+
+    * 08/16/2003
+
+Stable release covered-0.2 finally made!  This release will be the springboard
+for adding FSM coverage code, code optimizations as well as a few new features
+that should make the score command run much faster.  Some important bug fixes
+were made in this release and code optimizations have been added to the score
+command.  If you are getting coverage for a larger design, you should definitely
+notice the speed increase.  In one of my designs, the speedup was a facter of
+a bit more than 3x.  The following are the list of changes made for this release.
+
+  - Added -ts option to score command to allow the user to see where in the
+    simulation process the score command is currently at.  Please see user
+    documentation for more details on this new option.
+  - Fixed bug with multiple wait event statements within same always block.
+    This means that the CDD files created with the last version of Covered
+    will be incompatible with the new CDD files.
+  - Fixed bug with posedge, negedge and anyedge expressions when more than
+    one of these is found in the same always block.
+  - Fixed bug in vector comparison function.  Vectors will now compare to a value
+    of true if the values of two vectors (whose bit size is different) are equal
+    up to the smallest MSB of the two vectors.  Before, if two vectors were not
+    of equal size, a compare would always evaluate to FALSE.
+  - Removed unnecessary global variables.
+  - Removed generated development documentation from release and opted to
+    generate these with a user 'make' in the doc directory (makes release size
+    smaller and is unnecessary for most users anyways).
+  - Development documentation updated.
+  - User documentation and man file updated.
+
     * 08/06/2003
 
 Release covered-0.2pre3 made.  It has been quite a while since a release has been made
