@@ -19,9 +19,9 @@
 char err_msg[1000];
 
 /* Uncomment these lines to turn debuggin on */
-//#define YYDEBUG 1
-//#define YYERROR_VERBOSE 1
-//int yydebug = 1;
+#define YYDEBUG 1
+#define YYERROR_VERBOSE 1
+int yydebug = 1;
 %}
 
 %union {
@@ -945,9 +945,13 @@ module_item
 		}
 	| K_always statement
 		{
+                  /* Line will be uncommented when statement support is complete */
+                  // db_add_expression( $2 );
 		}
 	| K_initial statement
 		{
+                  /* Line will be uncommented when statement support is complete */
+                  // db_add_expression( $2 );
 		}
 	| K_task IDENTIFIER ';'
 	    task_item_list_opt statement_opt

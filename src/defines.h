@@ -156,8 +156,10 @@
  - TOGGLE0->1
  - TOGGLE1->0
  - SET
+ - FALSE
+ - TRUE
 */
-#define VECTOR_MERGE_MASK    0xfff00
+#define VECTOR_MERGE_MASK    0xff0fff00
 
 /*! @} */
 
@@ -346,6 +348,7 @@
 #define EXP_OP_PEDGE	0x27	/*!< 39 posedge operator              */
 #define EXP_OP_NEDGE	0x28	/*!< 40 negedge operator              */
 #define EXP_OP_AEDGE	0x29	/*!< 41 anyedge operator              */
+#define EXP_OP_STMT     0x2a    /*!< 42 statement operator            */
 
 /*! @} */
 
@@ -420,6 +423,8 @@ typedef enum {
    Bits 15 - 12 = Toggle10 value for each of the four 4-state bits.
    Bits 19 - 16 = Indicates if this bit has been previously assigned.
    Bits 23 - 20 = Static value indicators for each of the four 4-state bits.
+   Bits 27 - 24 = Indicates if this bit was set to a value of 0 (FALSE).
+   Bits 31 - 28 = Indicates if this bit was set to a value of 1 (TRUE).
 */
 #if SIZEOF_INT == 4
 typedef unsigned int nibble;

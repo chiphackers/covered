@@ -61,6 +61,9 @@ vector* vector_from_string( char* str, bool sized, int type );
 //! Counts toggle01 and toggle10 information from specifed vector.
 void vector_toggle_count( vector* vec, int* tog01_cnt, int* tog10_cnt );
 
+//! Counts FALSE and TRUE information from the specified vector.
+void vector_logic_count( vector* vec, int* false_cnt, int* true_cnt );
+
 //! Performs bitwise operation on two source vectors from specified operation table.
 void vector_bitwise_op( vector* tgt, vector* src1, vector* src2, int* optab );
 

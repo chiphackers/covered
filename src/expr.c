@@ -656,6 +656,9 @@ void expression_operate( expression* expr ) {
         vector_set_value( expr->value, &bit, 1, 0, 0 );
         break;
 
+      case EXP_OP_STMT :
+        break;
+
       default :
         print_output( "Internal error:  Unidentified expression operation!", FATAL );
         exit( 1 );

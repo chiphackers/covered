@@ -273,6 +273,20 @@ void vector_display_nibble( nibble* nib, int width, int lsb ) {
     printf( "%d", ((nib[(i/4)] >> ((i%4)+16)) & 0x1) );
   }
 
+  /* Display bit FALSE information */
+  printf( ", FALSE: %d'b", width );
+
+  for( i=(width - 1); i>=0; i-- ) {
+    printf( "%d", ((nib[(i/4)] >> ((i%4)+24)) & 0x1) );
+  }
+
+  /* Display bit TRUE information */
+  printf( ", TRUE: %d'b", width );
+
+  for( i=(width - 1); i>=0; i-- ) {
+    printf( "%d", ((nib[(i/4)] >> ((i%4)+28)) & 0x1) );
+  }
+
 }
 
 /*!
@@ -372,6 +386,46 @@ void vector_set_toggle10( nibble* value, int pos ) {
 }
 
 /*!
+ \param value  Nibble array containing FALSE vector to set.
+ \param pos    Bit position in FALSE vector to set.
+
+ Sets the specified bit in the FALSE vector according to the pos index.
+ This function assumes that the specified bit position is within the
+ range of FALSE.
+*/
+void vector_set_false( nibble* value, int pos ) {
+
+  int bit_shift;      /* Bit position of bit in character     */
+  int nibble_to_set;  /* Nibble index where FALSE bit resides */
+
+  nibble_to_set = (pos / 4);
+  bit_shift     = (pos % 4) + 24;
+
+  value[nibble_to_set] = value[nibble_to_set] | (0x1 << bit_shift);
+
+}
+
+/*!
+ \param value  Nibble array containing TRUE vector to set.
+ \param pos    Bit position in TRUE vector to set.
+
+ Sets the specified bit in the TRUE vector according to the pos index.
+ This function assumes that the specified bit position is within the
+ range of TRUE.
+*/
+void vector_set_true( nibble* value, int pos ) {
+
+  int bit_shift;      /* Bit position of bit in character     */
+  int nibble_to_set;  /* Nibble index where TRUE bit resides */
+
+  nibble_to_set = (pos / 4);
+  bit_shift     = (pos % 4) + 28;
+
+  value[nibble_to_set] = value[nibble_to_set] | (0x1 << bit_shift);
+
+}
+
+/*!
  \param vec        Pointer to vector to parse.
  \param tog01_cnt  Number of bits in vector that toggled from 0 to 1.
  \param tog10_cnt  Number of bits in vector that toggled from 1 to 0.
@@ -391,6 +445,31 @@ void vector_toggle_count( vector* vec, int* tog01_cnt, int* tog10_cnt ) {
     for( j=0; j<4; j++ ) {
       *tog01_cnt = *tog01_cnt + ((curr >> (j +  8)) & 0x1);
       *tog10_cnt = *tog10_cnt + ((curr >> (j + 12)) & 0x1);
+    }
+  }
+
+}
+
+/*!
+ \param vec        Pointer to vector to parse.
+ \param false_cnt  Number of bits in vector that was set to a value of FALSE.
+ \param true_cnt   Number of bits in vector that was set to a value of TRUE.
+
+ Walks through specified vector counting the number of FALSE bits that
+ are set and the number of TRUE bits that are set.  Adds these values
+ to the contents of false_cnt and true_cnt.
+*/
+void vector_logic_count( vector* vec, int* false_cnt, int* true_cnt ) {
+
+  int    i;     /* Loop iterator                  */
+  int    j;     /* Loop iterator                  */
+  nibble curr;  /* Current nibble being evaluated */
+
+  for( i=0; i<VECTOR_SIZE( vec->width ); i++ ) {
+    curr = vec->value[i];
+    for( j=0; j<4; j++ ) {
+      *false_cnt = *false_cnt + ((curr >> (j + 24)) & 0x1);
+      *true_cnt  = *true_cnt  + ((curr >> (j + 28)) & 0x1);
     }
   }
 
@@ -425,11 +504,12 @@ bool vector_set_value( vector* vec, nibble* value, int width, int from_lsb, int 
 
     for( i=0; i<width; i++ ) {
 
+      from_val = vector_bit_val( value, (i + from_lsb) );
+
       if( ((vec->value[i/4] >> ((i%4)+16)) & 0x1) == 0x1 ) {
 
         /* Assign toggle values if necessary */
         to_val   = vector_bit_val( vec->value, (i + to_lsb) );
-        from_val = vector_bit_val( value,      (i + from_lsb) );
 
         if( (to_val == 0) && (from_val == 1) ) {
           vector_set_toggle01( vec->value, (i + to_lsb) );
@@ -437,6 +517,13 @@ bool vector_set_value( vector* vec, nibble* value, int width, int from_lsb, int 
           vector_set_toggle10( vec->value, (i + to_lsb) );
         }
 
+      }
+
+      /* Assign TRUE/FALSE values if necessary */
+      if( from_val == 0 ) {
+        vector_set_false( vec->value, (i + to_lsb) );
+      } else if( from_val == 1 ) {
+        vector_set_true( vec->value, (i + to_lsb) );
       }
 
     }
@@ -447,7 +534,7 @@ bool vector_set_value( vector* vec, nibble* value, int width, int from_lsb, int 
       nibble_to_set = ((i + to_lsb) / 4);
       bit_shift     = ((i + to_lsb) % 4) * 2;
 
-      vec->value[nibble_to_set] = (0x1 << (((i + to_lsb) % 4) +16)) |
+      vec->value[nibble_to_set] = (0x1 << (((i + to_lsb) % 4) + 16)) |
 				  (vec->value[nibble_to_set] & ~(0x3 << bit_shift)) |
                                   (vector_bit_val( value, (i + from_lsb) ) << bit_shift);
 
@@ -565,7 +652,7 @@ void vector_set_static( vector* vec, char* str, int bits_per_char ) {
 }  
 
 /*!
- \param vec    Pointer to vector to convert.
+ \param vec   Pointer to vector to convert.
  \param type  Specifies the type of string to create (DECIMAL, OCTAL, HEXIDECIMAL, BINARY)
 
  \return Returns pointer to the allocated/coverted string.
