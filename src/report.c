@@ -466,63 +466,69 @@ int command_report( int argc, int last_arg, char** argv ) {
 }
 
 
-/* $Log$
-/* Revision 1.15  2002/09/13 05:12:25  phase1geo
-/* Adding final touches to -d option to report.  Adding documentation and
-/* updating development documentation to stay in sync.
 /*
-/* Revision 1.14  2002/09/12 05:16:25  phase1geo
-/* Updating all CDD files in regression suite due to change in vector handling.
-/* Modified vectors to assign a default value of 0xaa to unassigned registers
-/* to eliminate bugs where values never assigned and VCD file doesn't contain
-/* information for these.  Added initial working version of depth feature in
-/* report generation.  Updates to man page and parameter documentation.
-/*
-/* Revision 1.13  2002/08/20 05:55:25  phase1geo
-/* Starting to add combination depth option to report command.  Currently, the
-/* option is not implemented.
-/*
-/* Revision 1.12  2002/08/20 04:48:18  phase1geo
-/* Adding option to report command that allows the user to display logic that is
-/* being covered (-c option).  This overrides the default behavior of displaying
-/* uncovered logic.  This is useful for debugging purposes and understanding what
-/* logic the tool is capable of handling.
-/*
-/* Revision 1.11  2002/08/19 04:34:07  phase1geo
-/* Fixing bug in database reading code that dealt with merging modules.  Module
-/* merging is now performed in a more optimal way.  Full regression passes and
-/* own examples pass as well.
-/*
-/* Revision 1.10  2002/07/20 18:46:38  phase1geo
-/* Causing fully covered modules to not be output in reports.  Adding
-/* instance3.v diagnostic to verify this works correctly.
-/*
-/* Revision 1.9  2002/07/09 04:46:26  phase1geo
-/* Adding -D and -Q options to covered for outputting debug information or
-/* suppressing normal output entirely.  Updated generated documentation and
-/* modified Verilog diagnostic Makefile to use these new options.
-/*
-/* Revision 1.8  2002/07/08 16:06:33  phase1geo
-/* Updating help information.
-/*
-/* Revision 1.7  2002/07/02 22:37:35  phase1geo
-/* Changing on-line help command calling.  Regenerated documentation.
-/*
-/* Revision 1.6  2002/06/28 03:04:59  phase1geo
-/* Fixing more errors found by diagnostics.  Things are running pretty well at
-/* this point with current diagnostics.  Still some report output problems.
-/*
-/* Revision 1.5  2002/06/25 21:46:10  phase1geo
-/* Fixes to simulator and reporting.  Still some bugs here.
-/*
-/* Revision 1.4  2002/05/13 03:02:58  phase1geo
-/* Adding lines back to expressions and removing them from statements (since the line
-/* number range of an expression can be calculated by looking at the expression line
-/* numbers).
-/*
-/* Revision 1.3  2002/05/03 03:39:36  phase1geo
-/* Removing all syntax errors due to addition of statements.  Added more statement
-/* support code.  Still have a ways to go before we can try anything.  Removed lines
-/* from expressions though we may want to consider putting these back for reporting
-/* purposes.
-/* */
+ $Log$
+ Revision 1.16  2002/10/11 05:23:21  phase1geo
+ Removing local user message allocation and replacing with global to help
+ with memory efficiency.
+
+ Revision 1.15  2002/09/13 05:12:25  phase1geo
+ Adding final touches to -d option to report.  Adding documentation and
+ updating development documentation to stay in sync.
+
+ Revision 1.14  2002/09/12 05:16:25  phase1geo
+ Updating all CDD files in regression suite due to change in vector handling.
+ Modified vectors to assign a default value of 0xaa to unassigned registers
+ to eliminate bugs where values never assigned and VCD file doesn't contain
+ information for these.  Added initial working version of depth feature in
+ report generation.  Updates to man page and parameter documentation.
+
+ Revision 1.13  2002/08/20 05:55:25  phase1geo
+ Starting to add combination depth option to report command.  Currently, the
+ option is not implemented.
+
+ Revision 1.12  2002/08/20 04:48:18  phase1geo
+ Adding option to report command that allows the user to display logic that is
+ being covered (-c option).  This overrides the default behavior of displaying
+ uncovered logic.  This is useful for debugging purposes and understanding what
+ logic the tool is capable of handling.
+
+ Revision 1.11  2002/08/19 04:34:07  phase1geo
+ Fixing bug in database reading code that dealt with merging modules.  Module
+ merging is now performed in a more optimal way.  Full regression passes and
+ own examples pass as well.
+
+ Revision 1.10  2002/07/20 18:46:38  phase1geo
+ Causing fully covered modules to not be output in reports.  Adding
+ instance3.v diagnostic to verify this works correctly.
+
+ Revision 1.9  2002/07/09 04:46:26  phase1geo
+ Adding -D and -Q options to covered for outputting debug information or
+ suppressing normal output entirely.  Updated generated documentation and
+ modified Verilog diagnostic Makefile to use these new options.
+
+ Revision 1.8  2002/07/08 16:06:33  phase1geo
+ Updating help information.
+
+ Revision 1.7  2002/07/02 22:37:35  phase1geo
+ Changing on-line help command calling.  Regenerated documentation.
+
+ Revision 1.6  2002/06/28 03:04:59  phase1geo
+ Fixing more errors found by diagnostics.  Things are running pretty well at
+ this point with current diagnostics.  Still some report output problems.
+
+ Revision 1.5  2002/06/25 21:46:10  phase1geo
+ Fixes to simulator and reporting.  Still some bugs here.
+
+ Revision 1.4  2002/05/13 03:02:58  phase1geo
+ Adding lines back to expressions and removing them from statements (since the line
+ number range of an expression can be calculated by looking at the expression line
+ numbers).
+
+ Revision 1.3  2002/05/03 03:39:36  phase1geo
+ Removing all syntax errors due to addition of statements.  Added more statement
+ support code.  Still have a ways to go before we can try anything.  Removed lines
+ from expressions though we may want to consider putting these back for reporting
+ purposes.
+*/
+

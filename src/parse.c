@@ -155,40 +155,46 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
 
 }
 
-/* $Log$
-/* Revision 1.11  2002/09/19 05:25:19  phase1geo
-/* Fixing incorrect simulation of static values and fixing reports generated
-/* from these static expressions.  Also includes some modifications for parameters
-/* though these changes are not useful at this point.
 /*
-/* Revision 1.10  2002/08/19 04:34:07  phase1geo
-/* Fixing bug in database reading code that dealt with merging modules.  Module
-/* merging is now performed in a more optimal way.  Full regression passes and
-/* own examples pass as well.
-/*
-/* Revision 1.9  2002/07/22 05:24:46  phase1geo
-/* Creating new VCD parser.  This should have performance benefits as well as
-/* have the ability to handle any problems that come up in parsing.
-/*
-/* Revision 1.8  2002/07/20 21:34:58  phase1geo
-/* Separating ability to parse design and score dumpfile.  Now both or either
-/* can be done (allowing one to parse once and score multiple times).
-/*
-/* Revision 1.7  2002/07/18 22:02:35  phase1geo
-/* In the middle of making improvements/fixes to the expression/signal
-/* binding phase.
-/*
-/* Revision 1.6  2002/07/13 04:09:18  phase1geo
-/* Adding support for correct implementation of `ifdef, `else, `endif
-/* directives.  Full regression passes.
-/*
-/* Revision 1.5  2002/07/09 04:46:26  phase1geo
-/* Adding -D and -Q options to covered for outputting debug information or
-/* suppressing normal output entirely.  Updated generated documentation and
-/* modified Verilog diagnostic Makefile to use these new options.
-/*
-/* Revision 1.4  2002/07/03 03:31:11  phase1geo
-/* Adding RCS Log strings in files that were missing them so that file version
-/* information is contained in every source and header file.  Reordering src
-/* Makefile to be alphabetical.  Adding mult1.v diagnostic to regression suite.
-/* */
+ $Log$
+ Revision 1.12  2002/10/11 05:23:21  phase1geo
+ Removing local user message allocation and replacing with global to help
+ with memory efficiency.
+
+ Revision 1.11  2002/09/19 05:25:19  phase1geo
+ Fixing incorrect simulation of static values and fixing reports generated
+ from these static expressions.  Also includes some modifications for parameters
+ though these changes are not useful at this point.
+
+ Revision 1.10  2002/08/19 04:34:07  phase1geo
+ Fixing bug in database reading code that dealt with merging modules.  Module
+ merging is now performed in a more optimal way.  Full regression passes and
+ own examples pass as well.
+
+ Revision 1.9  2002/07/22 05:24:46  phase1geo
+ Creating new VCD parser.  This should have performance benefits as well as
+ have the ability to handle any problems that come up in parsing.
+
+ Revision 1.8  2002/07/20 21:34:58  phase1geo
+ Separating ability to parse design and score dumpfile.  Now both or either
+ can be done (allowing one to parse once and score multiple times).
+
+ Revision 1.7  2002/07/18 22:02:35  phase1geo
+ In the middle of making improvements/fixes to the expression/signal
+ binding phase.
+
+ Revision 1.6  2002/07/13 04:09:18  phase1geo
+ Adding support for correct implementation of `ifdef, `else, `endif
+ directives.  Full regression passes.
+
+ Revision 1.5  2002/07/09 04:46:26  phase1geo
+ Adding -D and -Q options to covered for outputting debug information or
+ suppressing normal output entirely.  Updated generated documentation and
+ modified Verilog diagnostic Makefile to use these new options.
+
+ Revision 1.4  2002/07/03 03:31:11  phase1geo
+ Adding RCS Log strings in files that were missing them so that file version
+ information is contained in every source and header file.  Reordering src
+ Makefile to be alphabetical.  Adding mult1.v diagnostic to regression suite.
+*/
+

@@ -56,50 +56,60 @@ void mod_parm_dealloc( mod_parm* parm, bool recursive );
 void inst_parm_dealloc( inst_parm* parm, bool recursive );
 
 
-/* $Log$
-/* Revision 1.8  2002/10/01 13:21:25  phase1geo
-/* Fixing bug in report output for single and multi-bit selects.  Also modifying
-/* the way that parameters are dealt with to allow proper handling of run-time
-/* changing bit selects of parameter values.  Full regression passes again and
-/* all report generators have been updated for changes.
 /*
-/* Revision 1.7  2002/09/25 02:51:44  phase1geo
-/* Removing need of vector nibble array allocation and deallocation during
-/* expression resizing for efficiency and bug reduction.  Other enhancements
-/* for parameter support.  Parameter stuff still not quite complete.
-/*
-/* Revision 1.6  2002/09/23 01:37:45  phase1geo
-/* Need to make some changes to the inst_parm structure and some associated
-/* functionality for efficiency purposes.  This checkin contains most of the
-/* changes to the parser (with the exception of signal sizing).
-/*
-/* Revision 1.5  2002/09/21 07:03:28  phase1geo
-/* Attached all parameter functions into db.c.  Just need to finish getting
-/* parser to correctly add override parameters.  Once this is complete, phase 3
-/* can start and will include regenerating expressions and signals before
-/* getting output to CDD file.
-/*
-/* Revision 1.4  2002/09/21 04:11:32  phase1geo
-/* Completed phase 1 for adding in parameter support.  Main code is written
-/* that will create an instance parameter from a given module parameter in
-/* its entirety.  The next step will be to complete the module parameter
-/* creation code all the way to the parser.  Regression still passes and
-/* everything compiles at this point.
-/*
-/* Revision 1.3  2002/09/19 05:25:19  phase1geo
-/* Fixing incorrect simulation of static values and fixing reports generated
-/* from these static expressions.  Also includes some modifications for parameters
-/* though these changes are not useful at this point.
-/*
-/* Revision 1.2  2002/08/26 12:57:04  phase1geo
-/* In the middle of adding parameter support.  Intermediate checkin but does
-/* not break regressions at this point.
-/*
-/* Revision 1.1  2002/08/23 12:55:33  phase1geo
-/* Starting to make modifications for parameter support.  Added parameter source
-/* and header files, changed vector_from_string function to be more verbose
-/* and updated Makefiles for new param.h/.c files.
-/* */
+ $Log$
+ Revision 1.9  2002/10/11 04:24:02  phase1geo
+ This checkin represents some major code renovation in the score command to
+ fully accommodate parameter support.  All parameter support is in at this
+ point and the most commonly used parameter usages have been verified.  Some
+ bugs were fixed in handling default values of constants and expression tree
+ resizing has been optimized to its fullest.  Full regression has been
+ updated and passes.  Adding new diagnostics to test suite.  Fixed a few
+ problems in report outputting.
+
+ Revision 1.8  2002/10/01 13:21:25  phase1geo
+ Fixing bug in report output for single and multi-bit selects.  Also modifying
+ the way that parameters are dealt with to allow proper handling of run-time
+ changing bit selects of parameter values.  Full regression passes again and
+ all report generators have been updated for changes.
+
+ Revision 1.7  2002/09/25 02:51:44  phase1geo
+ Removing need of vector nibble array allocation and deallocation during
+ expression resizing for efficiency and bug reduction.  Other enhancements
+ for parameter support.  Parameter stuff still not quite complete.
+
+ Revision 1.6  2002/09/23 01:37:45  phase1geo
+ Need to make some changes to the inst_parm structure and some associated
+ functionality for efficiency purposes.  This checkin contains most of the
+ changes to the parser (with the exception of signal sizing).
+
+ Revision 1.5  2002/09/21 07:03:28  phase1geo
+ Attached all parameter functions into db.c.  Just need to finish getting
+ parser to correctly add override parameters.  Once this is complete, phase 3
+ can start and will include regenerating expressions and signals before
+ getting output to CDD file.
+
+ Revision 1.4  2002/09/21 04:11:32  phase1geo
+ Completed phase 1 for adding in parameter support.  Main code is written
+ that will create an instance parameter from a given module parameter in
+ its entirety.  The next step will be to complete the module parameter
+ creation code all the way to the parser.  Regression still passes and
+ everything compiles at this point.
+
+ Revision 1.3  2002/09/19 05:25:19  phase1geo
+ Fixing incorrect simulation of static values and fixing reports generated
+ from these static expressions.  Also includes some modifications for parameters
+ though these changes are not useful at this point.
+
+ Revision 1.2  2002/08/26 12:57:04  phase1geo
+ In the middle of adding parameter support.  Intermediate checkin but does
+ not break regressions at this point.
+
+ Revision 1.1  2002/08/23 12:55:33  phase1geo
+ Starting to make modifications for parameter support.  Added parameter source
+ and header files, changed vector_from_string function to be more verbose
+ and updated Makefiles for new param.h/.c files.
+*/
 
 #endif
 

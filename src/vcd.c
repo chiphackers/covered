@@ -266,20 +266,26 @@ void vcd_parse( char* vcd_file ) {
 
 }
 
-/* $Log$
-/* Revision 1.4  2002/10/12 22:21:35  phase1geo
-/* Making code fix for parameters when parameter is used in calculation of
-/* signal size.  Also adding parse ability for real numbers in a VCD file
-/* (though real number support is still avoided).
 /*
-/* Revision 1.3  2002/10/11 05:23:21  phase1geo
-/* Removing local user message allocation and replacing with global to help
-/* with memory efficiency.
-/*
-/* Revision 1.2  2002/09/18 22:19:25  phase1geo
-/* Adding handler for option bit select in $var line.
-/*
-/* Revision 1.1  2002/07/22 05:24:46  phase1geo
-/* Creating new VCD parser.  This should have performance benefits as well as
-/* have the ability to handle any problems that come up in parsing.
-/* */
+ $Log$
+ Revision 1.5  2002/10/29 13:33:21  phase1geo
+ Adding patches for 64-bit compatibility.  Reformatted parser.y for easier
+ viewing (removed tabs).  Full regression passes.
+
+ Revision 1.4  2002/10/12 22:21:35  phase1geo
+ Making code fix for parameters when parameter is used in calculation of
+ signal size.  Also adding parse ability for real numbers in a VCD file
+ (though real number support is still avoided).
+
+ Revision 1.3  2002/10/11 05:23:21  phase1geo
+ Removing local user message allocation and replacing with global to help
+ with memory efficiency.
+
+ Revision 1.2  2002/09/18 22:19:25  phase1geo
+ Adding handler for option bit select in $var line.
+
+ Revision 1.1  2002/07/22 05:24:46  phase1geo
+ Creating new VCD parser.  This should have performance benefits as well as
+ have the ability to handle any problems that come up in parsing.
+*/
+

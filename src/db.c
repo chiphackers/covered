@@ -1156,258 +1156,264 @@ void db_do_timestep( int time ) {
 
 }
 
-/* $Log$
-/* Revision 1.64  2002/10/13 13:55:52  phase1geo
-/* Fixing instance depth selection and updating all configuration files for
-/* regression.  Full regression now passes.
 /*
-/* Revision 1.63  2002/10/12 22:21:35  phase1geo
-/* Making code fix for parameters when parameter is used in calculation of
-/* signal size.  Also adding parse ability for real numbers in a VCD file
-/* (though real number support is still avoided).
-/*
-/* Revision 1.62  2002/10/11 05:23:21  phase1geo
-/* Removing local user message allocation and replacing with global to help
-/* with memory efficiency.
-/*
-/* Revision 1.61  2002/10/11 04:24:01  phase1geo
-/* This checkin represents some major code renovation in the score command to
-/* fully accommodate parameter support.  All parameter support is in at this
-/* point and the most commonly used parameter usages have been verified.  Some
-/* bugs were fixed in handling default values of constants and expression tree
-/* resizing has been optimized to its fullest.  Full regression has been
-/* updated and passes.  Adding new diagnostics to test suite.  Fixed a few
-/* problems in report outputting.
-/*
-/* Revision 1.60  2002/10/01 13:21:24  phase1geo
-/* Fixing bug in report output for single and multi-bit selects.  Also modifying
-/* the way that parameters are dealt with to allow proper handling of run-time
-/* changing bit selects of parameter values.  Full regression passes again and
-/* all report generators have been updated for changes.
-/*
-/* Revision 1.59  2002/09/29 02:16:51  phase1geo
-/* Updates to parameter CDD files for changes affecting these.  Added support
-/* for bit-selecting parameters.  param4.v diagnostic added to verify proper
-/* support for this bit-selecting.  Full regression still passes.
-/*
-/* Revision 1.58  2002/09/25 02:51:44  phase1geo
-/* Removing need of vector nibble array allocation and deallocation during
-/* expression resizing for efficiency and bug reduction.  Other enhancements
-/* for parameter support.  Parameter stuff still not quite complete.
-/*
-/* Revision 1.57  2002/09/23 01:37:44  phase1geo
-/* Need to make some changes to the inst_parm structure and some associated
-/* functionality for efficiency purposes.  This checkin contains most of the
-/* changes to the parser (with the exception of signal sizing).
-/*
-/* Revision 1.56  2002/09/21 07:03:28  phase1geo
-/* Attached all parameter functions into db.c.  Just need to finish getting
-/* parser to correctly add override parameters.  Once this is complete, phase 3
-/* can start and will include regenerating expressions and signals before
-/* getting output to CDD file.
-/*
-/* Revision 1.55  2002/09/19 05:25:19  phase1geo
-/* Fixing incorrect simulation of static values and fixing reports generated
-/* from these static expressions.  Also includes some modifications for parameters
-/* though these changes are not useful at this point.
-/*
-/* Revision 1.54  2002/09/06 03:05:27  phase1geo
-/* Some ideas about handling parameters have been added to these files.  Added
-/* "Special Thanks" section in User's Guide for acknowledgements to people
-/* helping in project.
-/*
-/* Revision 1.53  2002/08/26 12:57:03  phase1geo
-/* In the middle of adding parameter support.  Intermediate checkin but does
-/* not break regressions at this point.
-/*
-/* Revision 1.52  2002/08/23 12:55:32  phase1geo
-/* Starting to make modifications for parameter support.  Added parameter source
-/* and header files, changed vector_from_string function to be more verbose
-/* and updated Makefiles for new param.h/.c files.
-/*
-/* Revision 1.51  2002/08/19 04:34:06  phase1geo
-/* Fixing bug in database reading code that dealt with merging modules.  Module
-/* merging is now performed in a more optimal way.  Full regression passes and
-/* own examples pass as well.
-/*
-/* Revision 1.50  2002/08/14 04:52:48  phase1geo
-/* Removing unnecessary calls to signal_dealloc function and fixing bug
-/* with signal_dealloc function.
-/*
-/* Revision 1.49  2002/07/23 12:56:22  phase1geo
-/* Fixing some memory overflow issues.  Still getting core dumps in some areas.
-/*
-/* Revision 1.48  2002/07/22 05:24:46  phase1geo
-/* Creating new VCD parser.  This should have performance benefits as well as
-/* have the ability to handle any problems that come up in parsing.
-/*
-/* Revision 1.47  2002/07/20 22:22:52  phase1geo
-/* Added ability to create implicit signals for local signals.  Added implicit1.v
-/* diagnostic to test for correctness.  Full regression passes.  Other tweaks to
-/* output information.
-/*
-/* Revision 1.46  2002/07/18 22:02:35  phase1geo
-/* In the middle of making improvements/fixes to the expression/signal
-/* binding phase.
-/*
-/* Revision 1.45  2002/07/18 05:50:45  phase1geo
-/* Fixes should be just about complete for instance depth problems now.  Diagnostics
-/* to help verify instance handling are added to regression.  Full regression passes.
-/*
-/* Revision 1.44  2002/07/18 02:33:23  phase1geo
-/* Fixed instantiation addition.  Multiple hierarchy instantiation trees should
-/* now work.
-/*
-/* Revision 1.43  2002/07/17 21:45:56  phase1geo
-/* Fixing case where `define does not set to a value.  Looking into problem
-/* with embedded instances (at least 3 deep).
-/*
-/* Revision 1.42  2002/07/17 00:13:57  phase1geo
-/* Added support for -e option and informally tested.
-/*
-/* Revision 1.41  2002/07/14 05:10:42  phase1geo
-/* Added support for signal concatenation in score and report commands.  Fixed
-/* bugs in this code (and multiplication).
-/*
-/* Revision 1.39  2002/07/13 05:35:52  phase1geo
-/* Cause warning message to be displayed for a signal found in the VCD dumpfile
-/* that is in a covered scope but is not part of the design.  It could be that
-/* the design and VCD file do not match.
-/*
-/* Revision 1.37  2002/07/12 04:53:29  phase1geo
-/* Removing counter code that was used for debugging infinite loops in code
-/* previously.
-/*
-/* Revision 1.36  2002/07/09 04:46:26  phase1geo
-/* Adding -D and -Q options to covered for outputting debug information or
-/* suppressing normal output entirely.  Updated generated documentation and
-/* modified Verilog diagnostic Makefile to use these new options.
-/*
-/* Revision 1.35  2002/07/09 03:24:48  phase1geo
-/* Various fixes for module instantiantion handling.  This now works.  Also
-/* modified report output for toggle, line and combinational information.
-/* Regression passes.
-/*
-/* Revision 1.34  2002/07/09 02:04:25  phase1geo
-/* Fixing segmentation fault error due to deallocating a module before we
-/* have completed using it.
-/*
-/* Revision 1.33  2002/07/08 19:02:10  phase1geo
-/* Adding -i option to properly handle modules specified for coverage that
-/* are instantiated within a design without needing to parse parent modules.
-/*
-/* Revision 1.32  2002/07/08 12:35:31  phase1geo
-/* Added initial support for library searching.  Code seems to be broken at the
-/* moment.
-/*
-/* Revision 1.31  2002/07/05 16:49:47  phase1geo
-/* Modified a lot of code this go around.  Fixed VCD reader to handle changes in
-/* the reverse order (last changes are stored instead of first for timestamp).
-/* Fixed problem with AEDGE operator to handle vector value changes correctly.
-/* Added casez2.v diagnostic to verify proper handling of casez with '?' characters.
-/* Full regression passes; however, the recent changes seem to have impacted
-/* performance -- need to look into this.
-/*
-/* Revision 1.30  2002/07/05 00:10:18  phase1geo
-/* Adding report support for case statements.  Everything outputs fine; however,
-/* I want to remove CASE, CASEX and CASEZ expressions from being reported since
-/* it causes redundant and misleading information to be displayed in the verbose
-/* reports.  New diagnostics to check CASE expressions have been added and pass.
-/*
-/* Revision 1.29  2002/07/04 23:10:12  phase1geo
-/* Added proper support for case, casex, and casez statements in score command.
-/* Report command still incorrect for these statement types.
-/*
-/* Revision 1.28  2002/07/03 21:30:52  phase1geo
-/* Fixed remaining issues with always statements.  Full regression is running
-/* error free at this point.  Regenerated documentation.  Added EOR expression
-/* operation to handle the or expression in event lists.
-/*
-/* Revision 1.27  2002/07/03 19:54:36  phase1geo
-/* Adding/fixing code to properly handle always blocks with the event control
-/* structures attached.  Added several new diagnostics to test this ability.
-/* always1.v is still failing but the rest are passing.
-/*
-/* Revision 1.26  2002/07/02 19:52:50  phase1geo
-/* Removing unecessary diagnostics.  Cleaning up extraneous output and
-/* generating new documentation from source.  Regression passes at the
-/* current time.
-/*
-/* Revision 1.25  2002/07/02 18:42:18  phase1geo
-/* Various bug fixes.  Added support for multiple signals sharing the same VCD
-/* symbol.  Changed conditional support to allow proper simulation results.
-/* Updated VCD parser to allow for symbols containing only alphanumeric characters.
-/*
-/* Revision 1.24  2002/07/01 15:10:42  phase1geo
-/* Fixing always loopbacks and setting stop bits correctly.  All verilog diagnostics
-/* seem to be passing with these fixes.
-/*
-/* Revision 1.23  2002/06/30 22:23:20  phase1geo
-/* Working on fixing looping in parser.  Statement connector needs to be revamped.
-/*
-/* Revision 1.22  2002/06/28 03:04:59  phase1geo
-/* Fixing more errors found by diagnostics.  Things are running pretty well at
-/* this point with current diagnostics.  Still some report output problems.
-/*
-/* Revision 1.21  2002/06/28 00:40:37  phase1geo
-/* Cleaning up extraneous output from debugging.
-/*
-/* Revision 1.20  2002/06/27 20:39:43  phase1geo
-/* Fixing scoring bugs as well as report bugs.  Things are starting to work
-/* fairly well now.  Added rest of support for delays.
-/*
-/* Revision 1.19  2002/06/27 12:36:47  phase1geo
-/* Fixing bugs with scoring.  I think I got it this time.
-/*
-/* Revision 1.18  2002/06/26 04:59:50  phase1geo
-/* Adding initial support for delays.  Support is not yet complete and is
-/* currently untested.
-/*
-/* Revision 1.17  2002/06/26 03:45:48  phase1geo
-/* Fixing more bugs in simulator and report functions.  About to add support
-/* for delay statements.
-/*
-/* Revision 1.16  2002/06/25 21:46:10  phase1geo
-/* Fixes to simulator and reporting.  Still some bugs here.
-/*
-/* Revision 1.15  2002/06/25 03:39:03  phase1geo
-/* Fixed initial scoring bugs.  We now generate a legal CDD file for reporting.
-/* Fixed some report bugs though there are still some remaining.
-/*
-/* Revision 1.14  2002/06/24 12:34:56  phase1geo
-/* Fixing the set of the STMT_HEAD and STMT_STOP bits.  We are getting close.
-/*
-/* Revision 1.13  2002/06/24 04:54:48  phase1geo
-/* More fixes and code additions to make statements work properly.  Still not
-/* there at this point.
-/*
-/* Revision 1.12  2002/06/22 21:08:23  phase1geo
-/* Added simulation engine and tied it to the db.c file.  Simulation engine is
-/* currently untested and will remain so until the parser is updated correctly
-/* for statements.  This will be the next step.
-/*
-/* Revision 1.11  2002/06/22 05:27:30  phase1geo
-/* Additional supporting code for simulation engine and statement support in
-/* parser.
-/*
-/* Revision 1.10  2002/05/13 03:02:58  phase1geo
-/* Adding lines back to expressions and removing them from statements (since the line
-/* number range of an expression can be calculated by looking at the expression line
-/* numbers).
-/*
-/* Revision 1.9  2002/05/03 03:39:36  phase1geo
-/* Removing all syntax errors due to addition of statements.  Added more statement
-/* support code.  Still have a ways to go before we can try anything.  Removed lines
-/* from expressions though we may want to consider putting these back for reporting
-/* purposes.
-/*
-/* Revision 1.8  2002/05/02 03:27:42  phase1geo
-/* Initial creation of statement structure and manipulation files.  Internals are
-/* still in a chaotic state.
-/*
-/* Revision 1.7  2002/04/30 05:04:25  phase1geo
-/* Added initial go-round of adding statement handling to parser.  Added simple
-/* Verilog test to check correct statement handling.  At this point there is a
-/* bug in the expression write function (we need to display statement trees in
-/* the proper order since they are unlike normal expression trees.)
-/* */
+ $Log$
+ Revision 1.65  2002/10/23 03:39:06  phase1geo
+ Fixing bug in MBIT_SEL expressions to calculate the expression widths
+ correctly.  Updated diagnostic testsuite and added diagnostic that
+ found the original bug.  A few documentation updates.
+
+ Revision 1.64  2002/10/13 13:55:52  phase1geo
+ Fixing instance depth selection and updating all configuration files for
+ regression.  Full regression now passes.
+
+ Revision 1.63  2002/10/12 22:21:35  phase1geo
+ Making code fix for parameters when parameter is used in calculation of
+ signal size.  Also adding parse ability for real numbers in a VCD file
+ (though real number support is still avoided).
+
+ Revision 1.62  2002/10/11 05:23:21  phase1geo
+ Removing local user message allocation and replacing with global to help
+ with memory efficiency.
+
+ Revision 1.61  2002/10/11 04:24:01  phase1geo
+ This checkin represents some major code renovation in the score command to
+ fully accommodate parameter support.  All parameter support is in at this
+ point and the most commonly used parameter usages have been verified.  Some
+ bugs were fixed in handling default values of constants and expression tree
+ resizing has been optimized to its fullest.  Full regression has been
+ updated and passes.  Adding new diagnostics to test suite.  Fixed a few
+ problems in report outputting.
+
+ Revision 1.60  2002/10/01 13:21:24  phase1geo
+ Fixing bug in report output for single and multi-bit selects.  Also modifying
+ the way that parameters are dealt with to allow proper handling of run-time
+ changing bit selects of parameter values.  Full regression passes again and
+ all report generators have been updated for changes.
+
+ Revision 1.59  2002/09/29 02:16:51  phase1geo
+ Updates to parameter CDD files for changes affecting these.  Added support
+ for bit-selecting parameters.  param4.v diagnostic added to verify proper
+ support for this bit-selecting.  Full regression still passes.
+
+ Revision 1.58  2002/09/25 02:51:44  phase1geo
+ Removing need of vector nibble array allocation and deallocation during
+ expression resizing for efficiency and bug reduction.  Other enhancements
+ for parameter support.  Parameter stuff still not quite complete.
+
+ Revision 1.57  2002/09/23 01:37:44  phase1geo
+ Need to make some changes to the inst_parm structure and some associated
+ functionality for efficiency purposes.  This checkin contains most of the
+ changes to the parser (with the exception of signal sizing).
+
+ Revision 1.56  2002/09/21 07:03:28  phase1geo
+ Attached all parameter functions into db.c.  Just need to finish getting
+ parser to correctly add override parameters.  Once this is complete, phase 3
+ can start and will include regenerating expressions and signals before
+ getting output to CDD file.
+
+ Revision 1.55  2002/09/19 05:25:19  phase1geo
+ Fixing incorrect simulation of static values and fixing reports generated
+ from these static expressions.  Also includes some modifications for parameters
+ though these changes are not useful at this point.
+
+ Revision 1.54  2002/09/06 03:05:27  phase1geo
+ Some ideas about handling parameters have been added to these files.  Added
+ "Special Thanks" section in User's Guide for acknowledgements to people
+ helping in project.
+
+ Revision 1.53  2002/08/26 12:57:03  phase1geo
+ In the middle of adding parameter support.  Intermediate checkin but does
+ not break regressions at this point.
+
+ Revision 1.52  2002/08/23 12:55:32  phase1geo
+ Starting to make modifications for parameter support.  Added parameter source
+ and header files, changed vector_from_string function to be more verbose
+ and updated Makefiles for new param.h/.c files.
+
+ Revision 1.51  2002/08/19 04:34:06  phase1geo
+ Fixing bug in database reading code that dealt with merging modules.  Module
+ merging is now performed in a more optimal way.  Full regression passes and
+ own examples pass as well.
+
+ Revision 1.50  2002/08/14 04:52:48  phase1geo
+ Removing unnecessary calls to signal_dealloc function and fixing bug
+ with signal_dealloc function.
+
+ Revision 1.49  2002/07/23 12:56:22  phase1geo
+ Fixing some memory overflow issues.  Still getting core dumps in some areas.
+
+ Revision 1.48  2002/07/22 05:24:46  phase1geo
+ Creating new VCD parser.  This should have performance benefits as well as
+ have the ability to handle any problems that come up in parsing.
+
+ Revision 1.47  2002/07/20 22:22:52  phase1geo
+ Added ability to create implicit signals for local signals.  Added implicit1.v
+ diagnostic to test for correctness.  Full regression passes.  Other tweaks to
+ output information.
+
+ Revision 1.46  2002/07/18 22:02:35  phase1geo
+ In the middle of making improvements/fixes to the expression/signal
+ binding phase.
+
+ Revision 1.45  2002/07/18 05:50:45  phase1geo
+ Fixes should be just about complete for instance depth problems now.  Diagnostics
+ to help verify instance handling are added to regression.  Full regression passes.
+
+ Revision 1.44  2002/07/18 02:33:23  phase1geo
+ Fixed instantiation addition.  Multiple hierarchy instantiation trees should
+ now work.
+
+ Revision 1.43  2002/07/17 21:45:56  phase1geo
+ Fixing case where `define does not set to a value.  Looking into problem
+ with embedded instances (at least 3 deep).
+
+ Revision 1.42  2002/07/17 00:13:57  phase1geo
+ Added support for -e option and informally tested.
+
+ Revision 1.41  2002/07/14 05:10:42  phase1geo
+ Added support for signal concatenation in score and report commands.  Fixed
+ bugs in this code (and multiplication).
+
+ Revision 1.39  2002/07/13 05:35:52  phase1geo
+ Cause warning message to be displayed for a signal found in the VCD dumpfile
+ that is in a covered scope but is not part of the design.  It could be that
+ the design and VCD file do not match.
+
+ Revision 1.37  2002/07/12 04:53:29  phase1geo
+ Removing counter code that was used for debugging infinite loops in code
+ previously.
+
+ Revision 1.36  2002/07/09 04:46:26  phase1geo
+ Adding -D and -Q options to covered for outputting debug information or
+ suppressing normal output entirely.  Updated generated documentation and
+ modified Verilog diagnostic Makefile to use these new options.
+
+ Revision 1.35  2002/07/09 03:24:48  phase1geo
+ Various fixes for module instantiantion handling.  This now works.  Also
+ modified report output for toggle, line and combinational information.
+ Regression passes.
+
+ Revision 1.34  2002/07/09 02:04:25  phase1geo
+ Fixing segmentation fault error due to deallocating a module before we
+ have completed using it.
+
+ Revision 1.33  2002/07/08 19:02:10  phase1geo
+ Adding -i option to properly handle modules specified for coverage that
+ are instantiated within a design without needing to parse parent modules.
+
+ Revision 1.32  2002/07/08 12:35:31  phase1geo
+ Added initial support for library searching.  Code seems to be broken at the
+ moment.
+
+ Revision 1.31  2002/07/05 16:49:47  phase1geo
+ Modified a lot of code this go around.  Fixed VCD reader to handle changes in
+ the reverse order (last changes are stored instead of first for timestamp).
+ Fixed problem with AEDGE operator to handle vector value changes correctly.
+ Added casez2.v diagnostic to verify proper handling of casez with '?' characters.
+ Full regression passes; however, the recent changes seem to have impacted
+ performance -- need to look into this.
+
+ Revision 1.30  2002/07/05 00:10:18  phase1geo
+ Adding report support for case statements.  Everything outputs fine; however,
+ I want to remove CASE, CASEX and CASEZ expressions from being reported since
+ it causes redundant and misleading information to be displayed in the verbose
+ reports.  New diagnostics to check CASE expressions have been added and pass.
+
+ Revision 1.29  2002/07/04 23:10:12  phase1geo
+ Added proper support for case, casex, and casez statements in score command.
+ Report command still incorrect for these statement types.
+
+ Revision 1.28  2002/07/03 21:30:52  phase1geo
+ Fixed remaining issues with always statements.  Full regression is running
+ error free at this point.  Regenerated documentation.  Added EOR expression
+ operation to handle the or expression in event lists.
+
+ Revision 1.27  2002/07/03 19:54:36  phase1geo
+ Adding/fixing code to properly handle always blocks with the event control
+ structures attached.  Added several new diagnostics to test this ability.
+ always1.v is still failing but the rest are passing.
+
+ Revision 1.26  2002/07/02 19:52:50  phase1geo
+ Removing unecessary diagnostics.  Cleaning up extraneous output and
+ generating new documentation from source.  Regression passes at the
+ current time.
+
+ Revision 1.25  2002/07/02 18:42:18  phase1geo
+ Various bug fixes.  Added support for multiple signals sharing the same VCD
+ symbol.  Changed conditional support to allow proper simulation results.
+ Updated VCD parser to allow for symbols containing only alphanumeric characters.
+
+ Revision 1.24  2002/07/01 15:10:42  phase1geo
+ Fixing always loopbacks and setting stop bits correctly.  All verilog diagnostics
+ seem to be passing with these fixes.
+
+ Revision 1.23  2002/06/30 22:23:20  phase1geo
+ Working on fixing looping in parser.  Statement connector needs to be revamped.
+
+ Revision 1.22  2002/06/28 03:04:59  phase1geo
+ Fixing more errors found by diagnostics.  Things are running pretty well at
+ this point with current diagnostics.  Still some report output problems.
+
+ Revision 1.21  2002/06/28 00:40:37  phase1geo
+ Cleaning up extraneous output from debugging.
+
+ Revision 1.20  2002/06/27 20:39:43  phase1geo
+ Fixing scoring bugs as well as report bugs.  Things are starting to work
+ fairly well now.  Added rest of support for delays.
+
+ Revision 1.19  2002/06/27 12:36:47  phase1geo
+ Fixing bugs with scoring.  I think I got it this time.
+
+ Revision 1.18  2002/06/26 04:59:50  phase1geo
+ Adding initial support for delays.  Support is not yet complete and is
+ currently untested.
+
+ Revision 1.17  2002/06/26 03:45:48  phase1geo
+ Fixing more bugs in simulator and report functions.  About to add support
+ for delay statements.
+
+ Revision 1.16  2002/06/25 21:46:10  phase1geo
+ Fixes to simulator and reporting.  Still some bugs here.
+
+ Revision 1.15  2002/06/25 03:39:03  phase1geo
+ Fixed initial scoring bugs.  We now generate a legal CDD file for reporting.
+ Fixed some report bugs though there are still some remaining.
+
+ Revision 1.14  2002/06/24 12:34:56  phase1geo
+ Fixing the set of the STMT_HEAD and STMT_STOP bits.  We are getting close.
+
+ Revision 1.13  2002/06/24 04:54:48  phase1geo
+ More fixes and code additions to make statements work properly.  Still not
+ there at this point.
+
+ Revision 1.12  2002/06/22 21:08:23  phase1geo
+ Added simulation engine and tied it to the db.c file.  Simulation engine is
+ currently untested and will remain so until the parser is updated correctly
+ for statements.  This will be the next step.
+
+ Revision 1.11  2002/06/22 05:27:30  phase1geo
+ Additional supporting code for simulation engine and statement support in
+ parser.
+
+ Revision 1.10  2002/05/13 03:02:58  phase1geo
+ Adding lines back to expressions and removing them from statements (since the line
+ number range of an expression can be calculated by looking at the expression line
+ numbers).
+
+ Revision 1.9  2002/05/03 03:39:36  phase1geo
+ Removing all syntax errors due to addition of statements.  Added more statement
+ support code.  Still have a ways to go before we can try anything.  Removed lines
+ from expressions though we may want to consider putting these back for reporting
+ purposes.
+
+ Revision 1.8  2002/05/02 03:27:42  phase1geo
+ Initial creation of statement structure and manipulation files.  Internals are
+ still in a chaotic state.
+
+ Revision 1.7  2002/04/30 05:04:25  phase1geo
+ Added initial go-round of adding statement handling to parser.  Added simple
+ Verilog test to check correct statement handling.  At this point there is a
+ bug in the expression write function (we need to display statement trees in
+ the proper order since they are unlike normal expression trees.)
+*/

@@ -433,92 +433,99 @@ void module_dealloc( module* mod ) {
 }
 
 
-/* $Log$
-/* Revision 1.22  2002/10/23 03:39:07  phase1geo
-/* Fixing bug in MBIT_SEL expressions to calculate the expression widths
-/* correctly.  Updated diagnostic testsuite and added diagnostic that
-/* found the original bug.  A few documentation updates.
 /*
-/* Revision 1.21  2002/10/11 05:23:21  phase1geo
-/* Removing local user message allocation and replacing with global to help
-/* with memory efficiency.
-/*
-/* Revision 1.20  2002/10/11 04:24:02  phase1geo
-/* This checkin represents some major code renovation in the score command to
-/* fully accommodate parameter support.  All parameter support is in at this
-/* point and the most commonly used parameter usages have been verified.  Some
-/* bugs were fixed in handling default values of constants and expression tree
-/* resizing has been optimized to its fullest.  Full regression has been
-/* updated and passes.  Adding new diagnostics to test suite.  Fixed a few
-/* problems in report outputting.
-/*
-/* Revision 1.19  2002/10/01 13:21:25  phase1geo
-/* Fixing bug in report output for single and multi-bit selects.  Also modifying
-/* the way that parameters are dealt with to allow proper handling of run-time
-/* changing bit selects of parameter values.  Full regression passes again and
-/* all report generators have been updated for changes.
-/*
-/* Revision 1.18  2002/09/29 02:16:51  phase1geo
-/* Updates to parameter CDD files for changes affecting these.  Added support
-/* for bit-selecting parameters.  param4.v diagnostic added to verify proper
-/* support for this bit-selecting.  Full regression still passes.
-/*
-/* Revision 1.17  2002/09/26 13:43:45  phase1geo
-/* Making code adjustments to correctly support parameter overriding.  Added
-/* parameter tests to verify supported functionality.  Full regression passes.
-/*
-/* Revision 1.16  2002/09/25 05:38:11  phase1geo
-/* Cleaning things up a bit.
-/*
-/* Revision 1.15  2002/09/25 05:36:08  phase1geo
-/* Initial version of parameter support is now in place.  Parameters work on a
-/* basic level.  param1.v tests this basic functionality and param1.cdd contains
-/* the correct CDD output from handling parameters in this file.  Yeah!
-/*
-/* Revision 1.13  2002/08/26 12:57:04  phase1geo
-/* In the middle of adding parameter support.  Intermediate checkin but does
-/* not break regressions at this point.
-/*
-/* Revision 1.12  2002/08/19 04:34:07  phase1geo
-/* Fixing bug in database reading code that dealt with merging modules.  Module
-/* merging is now performed in a more optimal way.  Full regression passes and
-/* own examples pass as well.
-/*
-/* Revision 1.11  2002/07/23 12:56:22  phase1geo
-/* Fixing some memory overflow issues.  Still getting core dumps in some areas.
-/*
-/* Revision 1.10  2002/07/20 18:46:38  phase1geo
-/* Causing fully covered modules to not be output in reports.  Adding
-/* instance3.v diagnostic to verify this works correctly.
-/*
-/* Revision 1.9  2002/07/18 02:33:24  phase1geo
-/* Fixed instantiation addition.  Multiple hierarchy instantiation trees should
-/* now work.
-/*
-/* Revision 1.8  2002/07/14 05:10:42  phase1geo
-/* Added support for signal concatenation in score and report commands.  Fixed
-/* bugs in this code (and multiplication).
-/*
-/* Revision 1.7  2002/07/09 04:46:26  phase1geo
-/* Adding -D and -Q options to covered for outputting debug information or
-/* suppressing normal output entirely.  Updated generated documentation and
-/* modified Verilog diagnostic Makefile to use these new options.
-/*
-/* Revision 1.6  2002/06/26 03:45:48  phase1geo
-/* Fixing more bugs in simulator and report functions.  About to add support
-/* for delay statements.
-/*
-/* Revision 1.5  2002/06/25 02:02:04  phase1geo
-/* Fixing bugs with writing/reading statements and with parsing design with
-/* statements.  We now get to the scoring section.  Some problems here at
-/* the moment with the simulator.
-/*
-/* Revision 1.4  2002/06/24 04:54:48  phase1geo
-/* More fixes and code additions to make statements work properly.  Still not
-/* there at this point.
-/*
-/* Revision 1.3  2002/05/02 03:27:42  phase1geo
-/* Initial creation of statement structure and manipulation files.  Internals are
-/* still in a chaotic state.
-/* */
+ $Log$
+ Revision 1.23  2002/10/25 13:43:49  phase1geo
+ Adding statement iterators for moving in both directions in a list with a single
+ pointer (two-way).  This allows us to reverse statement lists without additional
+ memory and time (very efficient).  Full regression passes and TODO list items
+ 2 and 3 are completed.
+
+ Revision 1.22  2002/10/23 03:39:07  phase1geo
+ Fixing bug in MBIT_SEL expressions to calculate the expression widths
+ correctly.  Updated diagnostic testsuite and added diagnostic that
+ found the original bug.  A few documentation updates.
+
+ Revision 1.21  2002/10/11 05:23:21  phase1geo
+ Removing local user message allocation and replacing with global to help
+ with memory efficiency.
+
+ Revision 1.20  2002/10/11 04:24:02  phase1geo
+ This checkin represents some major code renovation in the score command to
+ fully accommodate parameter support.  All parameter support is in at this
+ point and the most commonly used parameter usages have been verified.  Some
+ bugs were fixed in handling default values of constants and expression tree
+ resizing has been optimized to its fullest.  Full regression has been
+ updated and passes.  Adding new diagnostics to test suite.  Fixed a few
+ problems in report outputting.
+
+ Revision 1.19  2002/10/01 13:21:25  phase1geo
+ Fixing bug in report output for single and multi-bit selects.  Also modifying
+ the way that parameters are dealt with to allow proper handling of run-time
+ changing bit selects of parameter values.  Full regression passes again and
+ all report generators have been updated for changes.
+
+ Revision 1.18  2002/09/29 02:16:51  phase1geo
+ Updates to parameter CDD files for changes affecting these.  Added support
+ for bit-selecting parameters.  param4.v diagnostic added to verify proper
+ support for this bit-selecting.  Full regression still passes.
+
+ Revision 1.17  2002/09/26 13:43:45  phase1geo
+ Making code adjustments to correctly support parameter overriding.  Added
+ parameter tests to verify supported functionality.  Full regression passes.
+
+ Revision 1.16  2002/09/25 05:38:11  phase1geo
+ Cleaning things up a bit.
+
+ Revision 1.15  2002/09/25 05:36:08  phase1geo
+ Initial version of parameter support is now in place.  Parameters work on a
+ basic level.  param1.v tests this basic functionality and param1.cdd contains
+ the correct CDD output from handling parameters in this file.  Yeah!
+
+ Revision 1.13  2002/08/26 12:57:04  phase1geo
+ In the middle of adding parameter support.  Intermediate checkin but does
+ not break regressions at this point.
+
+ Revision 1.12  2002/08/19 04:34:07  phase1geo
+ Fixing bug in database reading code that dealt with merging modules.  Module
+ merging is now performed in a more optimal way.  Full regression passes and
+ own examples pass as well.
+
+ Revision 1.11  2002/07/23 12:56:22  phase1geo
+ Fixing some memory overflow issues.  Still getting core dumps in some areas.
+
+ Revision 1.10  2002/07/20 18:46:38  phase1geo
+ Causing fully covered modules to not be output in reports.  Adding
+ instance3.v diagnostic to verify this works correctly.
+
+ Revision 1.9  2002/07/18 02:33:24  phase1geo
+ Fixed instantiation addition.  Multiple hierarchy instantiation trees should
+ now work.
+
+ Revision 1.8  2002/07/14 05:10:42  phase1geo
+ Added support for signal concatenation in score and report commands.  Fixed
+ bugs in this code (and multiplication).
+
+ Revision 1.7  2002/07/09 04:46:26  phase1geo
+ Adding -D and -Q options to covered for outputting debug information or
+ suppressing normal output entirely.  Updated generated documentation and
+ modified Verilog diagnostic Makefile to use these new options.
+
+ Revision 1.6  2002/06/26 03:45:48  phase1geo
+ Fixing more bugs in simulator and report functions.  About to add support
+ for delay statements.
+
+ Revision 1.5  2002/06/25 02:02:04  phase1geo
+ Fixing bugs with writing/reading statements and with parsing design with
+ statements.  We now get to the scoring section.  Some problems here at
+ the moment with the simulator.
+
+ Revision 1.4  2002/06/24 04:54:48  phase1geo
+ More fixes and code additions to make statements work properly.  Still not
+ there at this point.
+
+ Revision 1.3  2002/05/02 03:27:42  phase1geo
+ Initial creation of statement structure and manipulation files.  Internals are
+ still in a chaotic state.
+*/
 

@@ -984,178 +984,184 @@ void combination_report( FILE* ofile, bool verbose ) {
 }
 
 
-/* $Log$
-/* Revision 1.49  2002/10/25 13:43:49  phase1geo
-/* Adding statement iterators for moving in both directions in a list with a single
-/* pointer (two-way).  This allows us to reverse statement lists without additional
-/* memory and time (very efficient).  Full regression passes and TODO list items
-/* 2 and 3 are completed.
 /*
-/* Revision 1.48  2002/10/25 03:44:39  phase1geo
-/* Fixing bug in comb.c that caused statically allocated string to be exceeded
-/* which caused memory corruption problems.  Full regression now passes.
-/*
-/* Revision 1.47  2002/10/24 23:19:38  phase1geo
-/* Making some fixes to report output.  Fixing bugs.  Added long_exp1.v diagnostic
-/* to regression suite which finds a current bug in the report underlining
-/* functionality.  Need to look into this.
-/*
-/* Revision 1.46  2002/10/11 04:24:01  phase1geo
-/* This checkin represents some major code renovation in the score command to
-/* fully accommodate parameter support.  All parameter support is in at this
-/* point and the most commonly used parameter usages have been verified.  Some
-/* bugs were fixed in handling default values of constants and expression tree
-/* resizing has been optimized to its fullest.  Full regression has been
-/* updated and passes.  Adding new diagnostics to test suite.  Fixed a few
-/* problems in report outputting.
-/*
-/* Revision 1.45  2002/10/01 13:21:24  phase1geo
-/* Fixing bug in report output for single and multi-bit selects.  Also modifying
-/* the way that parameters are dealt with to allow proper handling of run-time
-/* changing bit selects of parameter values.  Full regression passes again and
-/* all report generators have been updated for changes.
-/*
-/* Revision 1.44  2002/09/25 22:41:29  phase1geo
-/* Adding diagnostics to check missing concatenation cases that uncovered bugs
-/* in testing other codes.  Also fixed case in report command for summary information.
-/* The combinational logic information was not being reported correctly for summary
-/* reports.
-/*
-/* Revision 1.43  2002/09/19 05:25:19  phase1geo
-/* Fixing incorrect simulation of static values and fixing reports generated
-/* from these static expressions.  Also includes some modifications for parameters
-/* though these changes are not useful at this point.
-/*
-/* Revision 1.42  2002/09/13 05:12:25  phase1geo
-/* Adding final touches to -d option to report.  Adding documentation and
-/* updating development documentation to stay in sync.
-/*
-/* Revision 1.41  2002/09/12 05:16:25  phase1geo
-/* Updating all CDD files in regression suite due to change in vector handling.
-/* Modified vectors to assign a default value of 0xaa to unassigned registers
-/* to eliminate bugs where values never assigned and VCD file doesn't contain
-/* information for these.  Added initial working version of depth feature in
-/* report generation.  Updates to man page and parameter documentation.
-/*
-/* Revision 1.40  2002/09/10 05:40:09  phase1geo
-/* Adding support for MULTIPLY, DIVIDE and MOD in expression verbose display.
-/* Fixing cases where -c option was not generating covered information in
-/* line and combination report output.  Updates to assign1.v diagnostic for
-/* logic that is now supported by both Covered and IVerilog.  Updated assign1.cdd
-/* to account for correct coverage file for the updated assign1.v diagnostic.
-/*
-/* Revision 1.39  2002/08/20 05:55:25  phase1geo
-/* Starting to add combination depth option to report command.  Currently, the
-/* option is not implemented.
-/*
-/* Revision 1.38  2002/08/20 04:48:18  phase1geo
-/* Adding option to report command that allows the user to display logic that is
-/* being covered (-c option).  This overrides the default behavior of displaying
-/* uncovered logic.  This is useful for debugging purposes and understanding what
-/* logic the tool is capable of handling.
-/*
-/* Revision 1.37  2002/08/19 04:59:49  phase1geo
-/* Adjusting summary format to allow for larger line, toggle and combination
-/* counts.
-/*
-/* Revision 1.36  2002/07/20 18:46:38  phase1geo
-/* Causing fully covered modules to not be output in reports.  Adding
-/* instance3.v diagnostic to verify this works correctly.
-/*
-/* Revision 1.35  2002/07/20 13:58:01  phase1geo
-/* Fixing bug in EXP_OP_LAST for changes in binding.  Adding correct line numbering
-/* to lexer (tested).  Added '+' to report outputting for signals larger than 1 bit.
-/* Added mbit_sel1.v diagnostic to verify some multi-bit functionality.  Full
-/* regression passes.
-/*
-/* Revision 1.34  2002/07/16 00:05:31  phase1geo
-/* Adding support for replication operator (EXPAND).  All expressional support
-/* should now be available.  Added diagnostics to test replication operator.
-/* Rewrote binding code to be more efficient with memory use.
-/*
-/* Revision 1.33  2002/07/14 05:27:34  phase1geo
-/* Fixing report outputting to allow multiple modules/instances to be
-/* output.
-/*
-/* Revision 1.32  2002/07/14 05:10:42  phase1geo
-/* Added support for signal concatenation in score and report commands.  Fixed
-/* bugs in this code (and multiplication).
-/*
-/* Revision 1.31  2002/07/10 16:27:17  phase1geo
-/* Fixing output for single/multi-bit select signals in reports.
-/*
-/* Revision 1.30  2002/07/10 04:57:07  phase1geo
-/* Adding bits to vector nibble to allow us to specify what type of input
-/* static value was read in so that the output value may be displayed in
-/* the same format (DECIMAL, BINARY, OCTAL, HEXIDECIMAL).  Full regression
-/* passes.
-/*
-/* Revision 1.29  2002/07/10 03:01:50  phase1geo
-/* Added define1.v and define2.v diagnostics to regression suite.  Both diagnostics
-/* now pass.  Fixed cases where constants were not causing proper TRUE/FALSE values
-/* to be calculated.
-/*
-/* Revision 1.28  2002/07/09 23:13:10  phase1geo
-/* Fixing report output bug for conditionals.  Also adjusting combinational logic
-/* report outputting.
-/*
-/* Revision 1.27  2002/07/09 17:27:25  phase1geo
-/* Fixing default case item handling and in the middle of making fixes for
-/* report outputting.
-/*
-/* Revision 1.26  2002/07/09 03:24:48  phase1geo
-/* Various fixes for module instantiantion handling.  This now works.  Also
-/* modified report output for toggle, line and combinational information.
-/* Regression passes.
-/*
-/* Revision 1.25  2002/07/05 05:01:51  phase1geo
-/* Removing unecessary debugging output.
-/*
-/* Revision 1.24  2002/07/05 05:00:13  phase1geo
-/* Removing CASE, CASEX, and CASEZ from line and combinational logic results.
-/*
-/* Revision 1.23  2002/07/05 00:10:18  phase1geo
-/* Adding report support for case statements.  Everything outputs fine; however,
-/* I want to remove CASE, CASEX and CASEZ expressions from being reported since
-/* it causes redundant and misleading information to be displayed in the verbose
-/* reports.  New diagnostics to check CASE expressions have been added and pass.
-/*
-/* Revision 1.22  2002/07/03 21:30:52  phase1geo
-/* Fixed remaining issues with always statements.  Full regression is running
-/* error free at this point.  Regenerated documentation.  Added EOR expression
-/* operation to handle the or expression in event lists.
-/*
-/* Revision 1.21  2002/07/03 19:54:36  phase1geo
-/* Adding/fixing code to properly handle always blocks with the event control
-/* structures attached.  Added several new diagnostics to test this ability.
-/* always1.v is still failing but the rest are passing.
-/*
-/* Revision 1.20  2002/07/03 00:59:14  phase1geo
-/* Fixing bug with conditional statements and other "deep" expression trees.
-/*
-/* Revision 1.19  2002/07/02 18:42:18  phase1geo
-/* Various bug fixes.  Added support for multiple signals sharing the same VCD
-/* symbol.  Changed conditional support to allow proper simulation results.
-/* Updated VCD parser to allow for symbols containing only alphanumeric characters.
-/*
-/* Revision 1.18  2002/06/27 21:18:48  phase1geo
-/* Fixing report Verilog output.  simple.v verilog diagnostic now passes.
-/*
-/* Revision 1.17  2002/06/27 20:39:43  phase1geo
-/* Fixing scoring bugs as well as report bugs.  Things are starting to work
-/* fairly well now.  Added rest of support for delays.
-/*
-/* Revision 1.16  2002/06/25 03:39:03  phase1geo
-/* Fixed initial scoring bugs.  We now generate a legal CDD file for reporting.
-/* Fixed some report bugs though there are still some remaining.
-/*
-/* Revision 1.15  2002/06/21 05:55:05  phase1geo
-/* Getting some codes ready for writing simulation engine.  We should be set
-/* now.
-/*
-/* Revision 1.14  2002/05/03 03:39:36  phase1geo
-/* Removing all syntax errors due to addition of statements.  Added more statement
-/* support code.  Still have a ways to go before we can try anything.  Removed lines
-/* from expressions though we may want to consider putting these back for reporting
-/* purposes.
-/* */
+ $Log$
+ Revision 1.50  2002/10/29 13:33:21  phase1geo
+ Adding patches for 64-bit compatibility.  Reformatted parser.y for easier
+ viewing (removed tabs).  Full regression passes.
+
+ Revision 1.49  2002/10/25 13:43:49  phase1geo
+ Adding statement iterators for moving in both directions in a list with a single
+ pointer (two-way).  This allows us to reverse statement lists without additional
+ memory and time (very efficient).  Full regression passes and TODO list items
+ 2 and 3 are completed.
+
+ Revision 1.48  2002/10/25 03:44:39  phase1geo
+ Fixing bug in comb.c that caused statically allocated string to be exceeded
+ which caused memory corruption problems.  Full regression now passes.
+
+ Revision 1.47  2002/10/24 23:19:38  phase1geo
+ Making some fixes to report output.  Fixing bugs.  Added long_exp1.v diagnostic
+ to regression suite which finds a current bug in the report underlining
+ functionality.  Need to look into this.
+
+ Revision 1.46  2002/10/11 04:24:01  phase1geo
+ This checkin represents some major code renovation in the score command to
+ fully accommodate parameter support.  All parameter support is in at this
+ point and the most commonly used parameter usages have been verified.  Some
+ bugs were fixed in handling default values of constants and expression tree
+ resizing has been optimized to its fullest.  Full regression has been
+ updated and passes.  Adding new diagnostics to test suite.  Fixed a few
+ problems in report outputting.
+
+ Revision 1.45  2002/10/01 13:21:24  phase1geo
+ Fixing bug in report output for single and multi-bit selects.  Also modifying
+ the way that parameters are dealt with to allow proper handling of run-time
+ changing bit selects of parameter values.  Full regression passes again and
+ all report generators have been updated for changes.
+
+ Revision 1.44  2002/09/25 22:41:29  phase1geo
+ Adding diagnostics to check missing concatenation cases that uncovered bugs
+ in testing other codes.  Also fixed case in report command for summary information.
+ The combinational logic information was not being reported correctly for summary
+ reports.
+
+ Revision 1.43  2002/09/19 05:25:19  phase1geo
+ Fixing incorrect simulation of static values and fixing reports generated
+ from these static expressions.  Also includes some modifications for parameters
+ though these changes are not useful at this point.
+
+ Revision 1.42  2002/09/13 05:12:25  phase1geo
+ Adding final touches to -d option to report.  Adding documentation and
+ updating development documentation to stay in sync.
+
+ Revision 1.41  2002/09/12 05:16:25  phase1geo
+ Updating all CDD files in regression suite due to change in vector handling.
+ Modified vectors to assign a default value of 0xaa to unassigned registers
+ to eliminate bugs where values never assigned and VCD file doesn't contain
+ information for these.  Added initial working version of depth feature in
+ report generation.  Updates to man page and parameter documentation.
+
+ Revision 1.40  2002/09/10 05:40:09  phase1geo
+ Adding support for MULTIPLY, DIVIDE and MOD in expression verbose display.
+ Fixing cases where -c option was not generating covered information in
+ line and combination report output.  Updates to assign1.v diagnostic for
+ logic that is now supported by both Covered and IVerilog.  Updated assign1.cdd
+ to account for correct coverage file for the updated assign1.v diagnostic.
+
+ Revision 1.39  2002/08/20 05:55:25  phase1geo
+ Starting to add combination depth option to report command.  Currently, the
+ option is not implemented.
+
+ Revision 1.38  2002/08/20 04:48:18  phase1geo
+ Adding option to report command that allows the user to display logic that is
+ being covered (-c option).  This overrides the default behavior of displaying
+ uncovered logic.  This is useful for debugging purposes and understanding what
+ logic the tool is capable of handling.
+
+ Revision 1.37  2002/08/19 04:59:49  phase1geo
+ Adjusting summary format to allow for larger line, toggle and combination
+ counts.
+
+ Revision 1.36  2002/07/20 18:46:38  phase1geo
+ Causing fully covered modules to not be output in reports.  Adding
+ instance3.v diagnostic to verify this works correctly.
+
+ Revision 1.35  2002/07/20 13:58:01  phase1geo
+ Fixing bug in EXP_OP_LAST for changes in binding.  Adding correct line numbering
+ to lexer (tested).  Added '+' to report outputting for signals larger than 1 bit.
+ Added mbit_sel1.v diagnostic to verify some multi-bit functionality.  Full
+ regression passes.
+
+ Revision 1.34  2002/07/16 00:05:31  phase1geo
+ Adding support for replication operator (EXPAND).  All expressional support
+ should now be available.  Added diagnostics to test replication operator.
+ Rewrote binding code to be more efficient with memory use.
+
+ Revision 1.33  2002/07/14 05:27:34  phase1geo
+ Fixing report outputting to allow multiple modules/instances to be
+ output.
+
+ Revision 1.32  2002/07/14 05:10:42  phase1geo
+ Added support for signal concatenation in score and report commands.  Fixed
+ bugs in this code (and multiplication).
+
+ Revision 1.31  2002/07/10 16:27:17  phase1geo
+ Fixing output for single/multi-bit select signals in reports.
+
+ Revision 1.30  2002/07/10 04:57:07  phase1geo
+ Adding bits to vector nibble to allow us to specify what type of input
+ static value was read in so that the output value may be displayed in
+ the same format (DECIMAL, BINARY, OCTAL, HEXIDECIMAL).  Full regression
+ passes.
+
+ Revision 1.29  2002/07/10 03:01:50  phase1geo
+ Added define1.v and define2.v diagnostics to regression suite.  Both diagnostics
+ now pass.  Fixed cases where constants were not causing proper TRUE/FALSE values
+ to be calculated.
+
+ Revision 1.28  2002/07/09 23:13:10  phase1geo
+ Fixing report output bug for conditionals.  Also adjusting combinational logic
+ report outputting.
+
+ Revision 1.27  2002/07/09 17:27:25  phase1geo
+ Fixing default case item handling and in the middle of making fixes for
+ report outputting.
+
+ Revision 1.26  2002/07/09 03:24:48  phase1geo
+ Various fixes for module instantiantion handling.  This now works.  Also
+ modified report output for toggle, line and combinational information.
+ Regression passes.
+
+ Revision 1.25  2002/07/05 05:01:51  phase1geo
+ Removing unecessary debugging output.
+
+ Revision 1.24  2002/07/05 05:00:13  phase1geo
+ Removing CASE, CASEX, and CASEZ from line and combinational logic results.
+
+ Revision 1.23  2002/07/05 00:10:18  phase1geo
+ Adding report support for case statements.  Everything outputs fine; however,
+ I want to remove CASE, CASEX and CASEZ expressions from being reported since
+ it causes redundant and misleading information to be displayed in the verbose
+ reports.  New diagnostics to check CASE expressions have been added and pass.
+
+ Revision 1.22  2002/07/03 21:30:52  phase1geo
+ Fixed remaining issues with always statements.  Full regression is running
+ error free at this point.  Regenerated documentation.  Added EOR expression
+ operation to handle the or expression in event lists.
+
+ Revision 1.21  2002/07/03 19:54:36  phase1geo
+ Adding/fixing code to properly handle always blocks with the event control
+ structures attached.  Added several new diagnostics to test this ability.
+ always1.v is still failing but the rest are passing.
+
+ Revision 1.20  2002/07/03 00:59:14  phase1geo
+ Fixing bug with conditional statements and other "deep" expression trees.
+
+ Revision 1.19  2002/07/02 18:42:18  phase1geo
+ Various bug fixes.  Added support for multiple signals sharing the same VCD
+ symbol.  Changed conditional support to allow proper simulation results.
+ Updated VCD parser to allow for symbols containing only alphanumeric characters.
+
+ Revision 1.18  2002/06/27 21:18:48  phase1geo
+ Fixing report Verilog output.  simple.v verilog diagnostic now passes.
+
+ Revision 1.17  2002/06/27 20:39:43  phase1geo
+ Fixing scoring bugs as well as report bugs.  Things are starting to work
+ fairly well now.  Added rest of support for delays.
+
+ Revision 1.16  2002/06/25 03:39:03  phase1geo
+ Fixed initial scoring bugs.  We now generate a legal CDD file for reporting.
+ Fixed some report bugs though there are still some remaining.
+
+ Revision 1.15  2002/06/21 05:55:05  phase1geo
+ Getting some codes ready for writing simulation engine.  We should be set
+ now.
+
+ Revision 1.14  2002/05/03 03:39:36  phase1geo
+ Removing all syntax errors due to addition of statements.  Added more statement
+ support code.  Still have a ways to go before we can try anything.  Removed lines
+ from expressions though we may want to consider putting these back for reporting
+ purposes.
+*/
+

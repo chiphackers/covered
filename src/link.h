@@ -82,17 +82,22 @@ void sig_link_delete_list( sig_link* head );
 void mod_link_delete_list( mod_link* head );
 
 
-/* $Log$
-/* Revision 1.3  2002/06/25 03:39:03  phase1geo
-/* Fixed initial scoring bugs.  We now generate a legal CDD file for reporting.
-/* Fixed some report bugs though there are still some remaining.
 /*
-/* Revision 1.2  2002/05/03 03:39:36  phase1geo
-/* Removing all syntax errors due to addition of statements.  Added more statement
-/* support code.  Still have a ways to go before we can try anything.  Removed lines
-/* from expressions though we may want to consider putting these back for reporting
-/* purposes.
-/* */
+ $Log$
+ Revision 1.4  2002/07/18 22:02:35  phase1geo
+ In the middle of making improvements/fixes to the expression/signal
+ binding phase.
+
+ Revision 1.3  2002/06/25 03:39:03  phase1geo
+ Fixed initial scoring bugs.  We now generate a legal CDD file for reporting.
+ Fixed some report bugs though there are still some remaining.
+
+ Revision 1.2  2002/05/03 03:39:36  phase1geo
+ Removing all syntax errors due to addition of statements.  Added more statement
+ support code.  Still have a ways to go before we can try anything.  Removed lines
+ from expressions though we may want to consider putting these back for reporting
+ purposes.
+*/
 
 #endif
 

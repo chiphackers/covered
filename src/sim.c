@@ -294,89 +294,95 @@ void sim_simulate() {
 }
 
 
-/* $Log$
-/* Revision 1.22  2002/10/25 13:43:49  phase1geo
-/* Adding statement iterators for moving in both directions in a list with a single
-/* pointer (two-way).  This allows us to reverse statement lists without additional
-/* memory and time (very efficient).  Full regression passes and TODO list items
-/* 2 and 3 are completed.
 /*
-/* Revision 1.21  2002/09/19 05:25:20  phase1geo
-/* Fixing incorrect simulation of static values and fixing reports generated
-/* from these static expressions.  Also includes some modifications for parameters
-/* though these changes are not useful at this point.
-/*
-/* Revision 1.20  2002/07/14 05:10:42  phase1geo
-/* Added support for signal concatenation in score and report commands.  Fixed
-/* bugs in this code (and multiplication).
-/*
-/* Revision 1.19  2002/07/10 03:01:50  phase1geo
-/* Added define1.v and define2.v diagnostics to regression suite.  Both diagnostics
-/* now pass.  Fixed cases where constants were not causing proper TRUE/FALSE values
-/* to be calculated.
-/*
-/* Revision 1.18  2002/07/05 00:37:37  phase1geo
-/* Small update to CASE handling in scope to avoid future errors.
-/*
-/* Revision 1.17  2002/07/03 21:30:53  phase1geo
-/* Fixed remaining issues with always statements.  Full regression is running
-/* error free at this point.  Regenerated documentation.  Added EOR expression
-/* operation to handle the or expression in event lists.
-/*
-/* Revision 1.16  2002/07/03 19:54:36  phase1geo
-/* Adding/fixing code to properly handle always blocks with the event control
-/* structures attached.  Added several new diagnostics to test this ability.
-/* always1.v is still failing but the rest are passing.
-/*
-/* Revision 1.15  2002/07/03 00:59:14  phase1geo
-/* Fixing bug with conditional statements and other "deep" expression trees.
-/*
-/* Revision 1.14  2002/07/02 19:52:50  phase1geo
-/* Removing unecessary diagnostics.  Cleaning up extraneous output and
-/* generating new documentation from source.  Regression passes at the
-/* current time.
-/*
-/* Revision 1.13  2002/07/02 18:42:18  phase1geo
-/* Various bug fixes.  Added support for multiple signals sharing the same VCD
-/* symbol.  Changed conditional support to allow proper simulation results.
-/* Updated VCD parser to allow for symbols containing only alphanumeric characters.
-/*
-/* Revision 1.12  2002/07/01 15:10:42  phase1geo
-/* Fixing always loopbacks and setting stop bits correctly.  All verilog diagnostics
-/* seem to be passing with these fixes.
-/*
-/* Revision 1.11  2002/06/28 03:04:59  phase1geo
-/* Fixing more errors found by diagnostics.  Things are running pretty well at
-/* this point with current diagnostics.  Still some report output problems.
-/*
-/* Revision 1.10  2002/06/28 00:40:37  phase1geo
-/* Cleaning up extraneous output from debugging.
-/*
-/* Revision 1.9  2002/06/27 20:39:43  phase1geo
-/* Fixing scoring bugs as well as report bugs.  Things are starting to work
-/* fairly well now.  Added rest of support for delays.
-/*
-/* Revision 1.8  2002/06/26 04:59:50  phase1geo
-/* Adding initial support for delays.  Support is not yet complete and is
-/* currently untested.
-/*
-/* Revision 1.7  2002/06/26 03:45:48  phase1geo
-/* Fixing more bugs in simulator and report functions.  About to add support
-/* for delay statements.
-/*
-/* Revision 1.6  2002/06/25 21:46:10  phase1geo
-/* Fixes to simulator and reporting.  Still some bugs here.
-/*
-/* Revision 1.5  2002/06/25 03:39:03  phase1geo
-/* Fixed initial scoring bugs.  We now generate a legal CDD file for reporting.
-/* Fixed some report bugs though there are still some remaining.
-/*
-/* Revision 1.4  2002/06/23 21:18:22  phase1geo
-/* Added appropriate statement support in parser.  All parts should be in place
-/* and ready to start testing.
-/*
-/* Revision 1.3  2002/06/22 21:08:23  phase1geo
-/* Added simulation engine and tied it to the db.c file.  Simulation engine is
-/* currently untested and will remain so until the parser is updated correctly
-/* for statements.  This will be the next step.
-/* */
+ $Log$
+ Revision 1.23  2002/10/29 13:33:21  phase1geo
+ Adding patches for 64-bit compatibility.  Reformatted parser.y for easier
+ viewing (removed tabs).  Full regression passes.
+
+ Revision 1.22  2002/10/25 13:43:49  phase1geo
+ Adding statement iterators for moving in both directions in a list with a single
+ pointer (two-way).  This allows us to reverse statement lists without additional
+ memory and time (very efficient).  Full regression passes and TODO list items
+ 2 and 3 are completed.
+
+ Revision 1.21  2002/09/19 05:25:20  phase1geo
+ Fixing incorrect simulation of static values and fixing reports generated
+ from these static expressions.  Also includes some modifications for parameters
+ though these changes are not useful at this point.
+
+ Revision 1.20  2002/07/14 05:10:42  phase1geo
+ Added support for signal concatenation in score and report commands.  Fixed
+ bugs in this code (and multiplication).
+
+ Revision 1.19  2002/07/10 03:01:50  phase1geo
+ Added define1.v and define2.v diagnostics to regression suite.  Both diagnostics
+ now pass.  Fixed cases where constants were not causing proper TRUE/FALSE values
+ to be calculated.
+
+ Revision 1.18  2002/07/05 00:37:37  phase1geo
+ Small update to CASE handling in scope to avoid future errors.
+
+ Revision 1.17  2002/07/03 21:30:53  phase1geo
+ Fixed remaining issues with always statements.  Full regression is running
+ error free at this point.  Regenerated documentation.  Added EOR expression
+ operation to handle the or expression in event lists.
+
+ Revision 1.16  2002/07/03 19:54:36  phase1geo
+ Adding/fixing code to properly handle always blocks with the event control
+ structures attached.  Added several new diagnostics to test this ability.
+ always1.v is still failing but the rest are passing.
+
+ Revision 1.15  2002/07/03 00:59:14  phase1geo
+ Fixing bug with conditional statements and other "deep" expression trees.
+
+ Revision 1.14  2002/07/02 19:52:50  phase1geo
+ Removing unecessary diagnostics.  Cleaning up extraneous output and
+ generating new documentation from source.  Regression passes at the
+ current time.
+
+ Revision 1.13  2002/07/02 18:42:18  phase1geo
+ Various bug fixes.  Added support for multiple signals sharing the same VCD
+ symbol.  Changed conditional support to allow proper simulation results.
+ Updated VCD parser to allow for symbols containing only alphanumeric characters.
+
+ Revision 1.12  2002/07/01 15:10:42  phase1geo
+ Fixing always loopbacks and setting stop bits correctly.  All verilog diagnostics
+ seem to be passing with these fixes.
+
+ Revision 1.11  2002/06/28 03:04:59  phase1geo
+ Fixing more errors found by diagnostics.  Things are running pretty well at
+ this point with current diagnostics.  Still some report output problems.
+
+ Revision 1.10  2002/06/28 00:40:37  phase1geo
+ Cleaning up extraneous output from debugging.
+
+ Revision 1.9  2002/06/27 20:39:43  phase1geo
+ Fixing scoring bugs as well as report bugs.  Things are starting to work
+ fairly well now.  Added rest of support for delays.
+
+ Revision 1.8  2002/06/26 04:59:50  phase1geo
+ Adding initial support for delays.  Support is not yet complete and is
+ currently untested.
+
+ Revision 1.7  2002/06/26 03:45:48  phase1geo
+ Fixing more bugs in simulator and report functions.  About to add support
+ for delay statements.
+
+ Revision 1.6  2002/06/25 21:46:10  phase1geo
+ Fixes to simulator and reporting.  Still some bugs here.
+
+ Revision 1.5  2002/06/25 03:39:03  phase1geo
+ Fixed initial scoring bugs.  We now generate a legal CDD file for reporting.
+ Fixed some report bugs though there are still some remaining.
+
+ Revision 1.4  2002/06/23 21:18:22  phase1geo
+ Added appropriate statement support in parser.  All parts should be in place
+ and ready to start testing.
+
+ Revision 1.3  2002/06/22 21:08:23  phase1geo
+ Added simulation engine and tied it to the db.c file.  Simulation engine is
+ currently untested and will remain so until the parser is updated correctly
+ for statements.  This will be the next step.
+*/
+

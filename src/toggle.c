@@ -352,40 +352,48 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 }
 
-/* $Log$
-/* Revision 1.12  2002/09/13 05:12:25  phase1geo
-/* Adding final touches to -d option to report.  Adding documentation and
-/* updating development documentation to stay in sync.
 /*
-/* Revision 1.11  2002/08/20 04:48:18  phase1geo
-/* Adding option to report command that allows the user to display logic that is
-/* being covered (-c option).  This overrides the default behavior of displaying
-/* uncovered logic.  This is useful for debugging purposes and understanding what
-/* logic the tool is capable of handling.
-/*
-/* Revision 1.10  2002/08/19 04:59:49  phase1geo
-/* Adjusting summary format to allow for larger line, toggle and combination
-/* counts.
-/*
-/* Revision 1.9  2002/07/20 18:46:38  phase1geo
-/* Causing fully covered modules to not be output in reports.  Adding
-/* instance3.v diagnostic to verify this works correctly.
-/*
-/* Revision 1.8  2002/07/17 06:27:18  phase1geo
-/* Added start for fixes to bit select code starting with single bit selection.
-/* Full regression passes with addition of sbit_sel1 diagnostic.
-/*
-/* Revision 1.7  2002/07/14 05:27:34  phase1geo
-/* Fixing report outputting to allow multiple modules/instances to be
-/* output.
-/*
-/* Revision 1.6  2002/07/09 03:24:48  phase1geo
-/* Various fixes for module instantiantion handling.  This now works.  Also
-/* modified report output for toggle, line and combinational information.
-/* Regression passes.
-/*
-/* Revision 1.5  2002/07/03 03:31:11  phase1geo
-/* Adding RCS Log strings in files that were missing them so that file version
-/* information is contained in every source and header file.  Reordering src
-/* Makefile to be alphabetical.  Adding mult1.v diagnostic to regression suite.
-/* */
+ $Log$
+ Revision 1.13  2002/10/01 13:21:25  phase1geo
+ Fixing bug in report output for single and multi-bit selects.  Also modifying
+ the way that parameters are dealt with to allow proper handling of run-time
+ changing bit selects of parameter values.  Full regression passes again and
+ all report generators have been updated for changes.
+
+ Revision 1.12  2002/09/13 05:12:25  phase1geo
+ Adding final touches to -d option to report.  Adding documentation and
+ updating development documentation to stay in sync.
+
+ Revision 1.11  2002/08/20 04:48:18  phase1geo
+ Adding option to report command that allows the user to display logic that is
+ being covered (-c option).  This overrides the default behavior of displaying
+ uncovered logic.  This is useful for debugging purposes and understanding what
+ logic the tool is capable of handling.
+
+ Revision 1.10  2002/08/19 04:59:49  phase1geo
+ Adjusting summary format to allow for larger line, toggle and combination
+ counts.
+
+ Revision 1.9  2002/07/20 18:46:38  phase1geo
+ Causing fully covered modules to not be output in reports.  Adding
+ instance3.v diagnostic to verify this works correctly.
+
+ Revision 1.8  2002/07/17 06:27:18  phase1geo
+ Added start for fixes to bit select code starting with single bit selection.
+ Full regression passes with addition of sbit_sel1 diagnostic.
+
+ Revision 1.7  2002/07/14 05:27:34  phase1geo
+ Fixing report outputting to allow multiple modules/instances to be
+ output.
+
+ Revision 1.6  2002/07/09 03:24:48  phase1geo
+ Various fixes for module instantiantion handling.  This now works.  Also
+ modified report output for toggle, line and combinational information.
+ Regression passes.
+
+ Revision 1.5  2002/07/03 03:31:11  phase1geo
+ Adding RCS Log strings in files that were missing them so that file version
+ information is contained in every source and header file.  Reordering src
+ Makefile to be alphabetical.  Adding mult1.v diagnostic to regression suite.
+*/
+

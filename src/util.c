@@ -508,55 +508,61 @@ void gen_space( char* spaces, int num_spaces ) {
   
 }
 
-/* $Log$
-/* Revision 1.14  2002/10/23 03:39:07  phase1geo
-/* Fixing bug in MBIT_SEL expressions to calculate the expression widths
-/* correctly.  Updated diagnostic testsuite and added diagnostic that
-/* found the original bug.  A few documentation updates.
 /*
-/* Revision 1.13  2002/10/11 05:23:21  phase1geo
-/* Removing local user message allocation and replacing with global to help
-/* with memory efficiency.
-/*
-/* Revision 1.12  2002/10/11 04:24:02  phase1geo
-/* This checkin represents some major code renovation in the score command to
-/* fully accommodate parameter support.  All parameter support is in at this
-/* point and the most commonly used parameter usages have been verified.  Some
-/* bugs were fixed in handling default values of constants and expression tree
-/* resizing has been optimized to its fullest.  Full regression has been
-/* updated and passes.  Adding new diagnostics to test suite.  Fixed a few
-/* problems in report outputting.
-/*
-/* Revision 1.11  2002/09/25 05:36:08  phase1geo
-/* Initial version of parameter support is now in place.  Parameters work on a
-/* basic level.  param1.v tests this basic functionality and param1.cdd contains
-/* the correct CDD output from handling parameters in this file.  Yeah!
-/*
-/* Revision 1.10  2002/07/20 22:22:52  phase1geo
-/* Added ability to create implicit signals for local signals.  Added implicit1.v
-/* diagnostic to test for correctness.  Full regression passes.  Other tweaks to
-/* output information.
-/*
-/* Revision 1.9  2002/07/20 20:48:09  phase1geo
-/* Fixing a bug that caused the same file to be added to the use_files list
-/* more than once.  A filename will only appear once in this list now.  Updates
-/* to the TODO list.
-/*
-/* Revision 1.8  2002/07/18 22:02:35  phase1geo
-/* In the middle of making improvements/fixes to the expression/signal
-/* binding phase.
-/*
-/* Revision 1.7  2002/07/09 04:46:26  phase1geo
-/* Adding -D and -Q options to covered for outputting debug information or
-/* suppressing normal output entirely.  Updated generated documentation and
-/* modified Verilog diagnostic Makefile to use these new options.
-/*
-/* Revision 1.6  2002/07/08 12:35:31  phase1geo
-/* Added initial support for library searching.  Code seems to be broken at the
-/* moment.
-/*
-/* Revision 1.5  2002/07/03 03:31:11  phase1geo
-/* Adding RCS Log strings in files that were missing them so that file version
-/* information is contained in every source and header file.  Reordering src
-/* Makefile to be alphabetical.  Adding mult1.v diagnostic to regression suite.
-/* */
+ $Log$
+ Revision 1.15  2002/10/29 13:33:21  phase1geo
+ Adding patches for 64-bit compatibility.  Reformatted parser.y for easier
+ viewing (removed tabs).  Full regression passes.
+
+ Revision 1.14  2002/10/23 03:39:07  phase1geo
+ Fixing bug in MBIT_SEL expressions to calculate the expression widths
+ correctly.  Updated diagnostic testsuite and added diagnostic that
+ found the original bug.  A few documentation updates.
+
+ Revision 1.13  2002/10/11 05:23:21  phase1geo
+ Removing local user message allocation and replacing with global to help
+ with memory efficiency.
+
+ Revision 1.12  2002/10/11 04:24:02  phase1geo
+ This checkin represents some major code renovation in the score command to
+ fully accommodate parameter support.  All parameter support is in at this
+ point and the most commonly used parameter usages have been verified.  Some
+ bugs were fixed in handling default values of constants and expression tree
+ resizing has been optimized to its fullest.  Full regression has been
+ updated and passes.  Adding new diagnostics to test suite.  Fixed a few
+ problems in report outputting.
+
+ Revision 1.11  2002/09/25 05:36:08  phase1geo
+ Initial version of parameter support is now in place.  Parameters work on a
+ basic level.  param1.v tests this basic functionality and param1.cdd contains
+ the correct CDD output from handling parameters in this file.  Yeah!
+
+ Revision 1.10  2002/07/20 22:22:52  phase1geo
+ Added ability to create implicit signals for local signals.  Added implicit1.v
+ diagnostic to test for correctness.  Full regression passes.  Other tweaks to
+ output information.
+
+ Revision 1.9  2002/07/20 20:48:09  phase1geo
+ Fixing a bug that caused the same file to be added to the use_files list
+ more than once.  A filename will only appear once in this list now.  Updates
+ to the TODO list.
+
+ Revision 1.8  2002/07/18 22:02:35  phase1geo
+ In the middle of making improvements/fixes to the expression/signal
+ binding phase.
+
+ Revision 1.7  2002/07/09 04:46:26  phase1geo
+ Adding -D and -Q options to covered for outputting debug information or
+ suppressing normal output entirely.  Updated generated documentation and
+ modified Verilog diagnostic Makefile to use these new options.
+
+ Revision 1.6  2002/07/08 12:35:31  phase1geo
+ Added initial support for library searching.  Code seems to be broken at the
+ moment.
+
+ Revision 1.5  2002/07/03 03:31:11  phase1geo
+ Adding RCS Log strings in files that were missing them so that file version
+ information is contained in every source and header file.  Reordering src
+ Makefile to be alphabetical.  Adding mult1.v diagnostic to regression suite.
+*/
+

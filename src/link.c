@@ -569,39 +569,45 @@ void mod_link_delete_list( mod_link* head ) {
 }
 
 
-/* $Log$
-/* Revision 1.10  2002/10/25 13:43:49  phase1geo
-/* Adding statement iterators for moving in both directions in a list with a single
-/* pointer (two-way).  This allows us to reverse statement lists without additional
-/* memory and time (very efficient).  Full regression passes and TODO list items
-/* 2 and 3 are completed.
 /*
-/* Revision 1.9  2002/07/23 12:56:22  phase1geo
-/* Fixing some memory overflow issues.  Still getting core dumps in some areas.
-/*
-/* Revision 1.8  2002/07/18 22:02:35  phase1geo
-/* In the middle of making improvements/fixes to the expression/signal
-/* binding phase.
-/*
-/* Revision 1.7  2002/06/26 22:09:17  phase1geo
-/* Removing unecessary output and updating regression Makefile.
-/*
-/* Revision 1.6  2002/06/26 03:45:48  phase1geo
-/* Fixing more bugs in simulator and report functions.  About to add support
-/* for delay statements.
-/*
-/* Revision 1.5  2002/06/25 03:39:03  phase1geo
-/* Fixed initial scoring bugs.  We now generate a legal CDD file for reporting.
-/* Fixed some report bugs though there are still some remaining.
-/*
-/* Revision 1.4  2002/06/25 02:02:04  phase1geo
-/* Fixing bugs with writing/reading statements and with parsing design with
-/* statements.  We now get to the scoring section.  Some problems here at
-/* the moment with the simulator.
-/*
-/* Revision 1.3  2002/05/03 03:39:36  phase1geo
-/* Removing all syntax errors due to addition of statements.  Added more statement
-/* support code.  Still have a ways to go before we can try anything.  Removed lines
-/* from expressions though we may want to consider putting these back for reporting
-/* purposes.
-/* */
+ $Log$
+ Revision 1.11  2002/10/29 13:33:21  phase1geo
+ Adding patches for 64-bit compatibility.  Reformatted parser.y for easier
+ viewing (removed tabs).  Full regression passes.
+
+ Revision 1.10  2002/10/25 13:43:49  phase1geo
+ Adding statement iterators for moving in both directions in a list with a single
+ pointer (two-way).  This allows us to reverse statement lists without additional
+ memory and time (very efficient).  Full regression passes and TODO list items
+ 2 and 3 are completed.
+
+ Revision 1.9  2002/07/23 12:56:22  phase1geo
+ Fixing some memory overflow issues.  Still getting core dumps in some areas.
+
+ Revision 1.8  2002/07/18 22:02:35  phase1geo
+ In the middle of making improvements/fixes to the expression/signal
+ binding phase.
+
+ Revision 1.7  2002/06/26 22:09:17  phase1geo
+ Removing unecessary output and updating regression Makefile.
+
+ Revision 1.6  2002/06/26 03:45:48  phase1geo
+ Fixing more bugs in simulator and report functions.  About to add support
+ for delay statements.
+
+ Revision 1.5  2002/06/25 03:39:03  phase1geo
+ Fixed initial scoring bugs.  We now generate a legal CDD file for reporting.
+ Fixed some report bugs though there are still some remaining.
+
+ Revision 1.4  2002/06/25 02:02:04  phase1geo
+ Fixing bugs with writing/reading statements and with parsing design with
+ statements.  We now get to the scoring section.  Some problems here at
+ the moment with the simulator.
+
+ Revision 1.3  2002/05/03 03:39:36  phase1geo
+ Removing all syntax errors due to addition of statements.  Added more statement
+ support code.  Still have a ways to go before we can try anything.  Removed lines
+ from expressions though we may want to consider putting these back for reporting
+ purposes.
+*/
+

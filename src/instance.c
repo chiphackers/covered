@@ -476,57 +476,63 @@ void instance_dealloc( mod_inst* root, char* scope ) {
 
 }
 
-/* $Log$
-/* Revision 1.18  2002/10/01 13:21:25  phase1geo
-/* Fixing bug in report output for single and multi-bit selects.  Also modifying
-/* the way that parameters are dealt with to allow proper handling of run-time
-/* changing bit selects of parameter values.  Full regression passes again and
-/* all report generators have been updated for changes.
 /*
-/* Revision 1.17  2002/09/25 05:36:08  phase1geo
-/* Initial version of parameter support is now in place.  Parameters work on a
-/* basic level.  param1.v tests this basic functionality and param1.cdd contains
-/* the correct CDD output from handling parameters in this file.  Yeah!
-/*
-/* Revision 1.16  2002/09/25 02:51:44  phase1geo
-/* Removing need of vector nibble array allocation and deallocation during
-/* expression resizing for efficiency and bug reduction.  Other enhancements
-/* for parameter support.  Parameter stuff still not quite complete.
-/*
-/* Revision 1.15  2002/09/23 01:37:45  phase1geo
-/* Need to make some changes to the inst_parm structure and some associated
-/* functionality for efficiency purposes.  This checkin contains most of the
-/* changes to the parser (with the exception of signal sizing).
-/*
-/* Revision 1.14  2002/09/21 07:03:28  phase1geo
-/* Attached all parameter functions into db.c.  Just need to finish getting
-/* parser to correctly add override parameters.  Once this is complete, phase 3
-/* can start and will include regenerating expressions and signals before
-/* getting output to CDD file.
-/*
-/* Revision 1.13  2002/09/21 04:11:32  phase1geo
-/* Completed phase 1 for adding in parameter support.  Main code is written
-/* that will create an instance parameter from a given module parameter in
-/* its entirety.  The next step will be to complete the module parameter
-/* creation code all the way to the parser.  Regression still passes and
-/* everything compiles at this point.
-/*
-/* Revision 1.12  2002/09/19 05:25:19  phase1geo
-/* Fixing incorrect simulation of static values and fixing reports generated
-/* from these static expressions.  Also includes some modifications for parameters
-/* though these changes are not useful at this point.
-/*
-/* Revision 1.11  2002/09/06 03:05:28  phase1geo
-/* Some ideas about handling parameters have been added to these files.  Added
-/* "Special Thanks" section in User's Guide for acknowledgements to people
-/* helping in project.
-/*
-/* Revision 1.10  2002/08/19 04:34:07  phase1geo
-/* Fixing bug in database reading code that dealt with merging modules.  Module
-/* merging is now performed in a more optimal way.  Full regression passes and
-/* own examples pass as well.
-/*
-/* Revision 1.9  2002/07/18 05:50:45  phase1geo
-/* Fixes should be just about complete for instance depth problems now.  Diagnostics
-/* to help verify instance handling are added to regression.  Full regression passes.
-/* */
+ $Log$
+ Revision 1.19  2002/10/13 13:55:52  phase1geo
+ Fixing instance depth selection and updating all configuration files for
+ regression.  Full regression now passes.
+
+ Revision 1.18  2002/10/01 13:21:25  phase1geo
+ Fixing bug in report output for single and multi-bit selects.  Also modifying
+ the way that parameters are dealt with to allow proper handling of run-time
+ changing bit selects of parameter values.  Full regression passes again and
+ all report generators have been updated for changes.
+
+ Revision 1.17  2002/09/25 05:36:08  phase1geo
+ Initial version of parameter support is now in place.  Parameters work on a
+ basic level.  param1.v tests this basic functionality and param1.cdd contains
+ the correct CDD output from handling parameters in this file.  Yeah!
+
+ Revision 1.16  2002/09/25 02:51:44  phase1geo
+ Removing need of vector nibble array allocation and deallocation during
+ expression resizing for efficiency and bug reduction.  Other enhancements
+ for parameter support.  Parameter stuff still not quite complete.
+
+ Revision 1.15  2002/09/23 01:37:45  phase1geo
+ Need to make some changes to the inst_parm structure and some associated
+ functionality for efficiency purposes.  This checkin contains most of the
+ changes to the parser (with the exception of signal sizing).
+
+ Revision 1.14  2002/09/21 07:03:28  phase1geo
+ Attached all parameter functions into db.c.  Just need to finish getting
+ parser to correctly add override parameters.  Once this is complete, phase 3
+ can start and will include regenerating expressions and signals before
+ getting output to CDD file.
+
+ Revision 1.13  2002/09/21 04:11:32  phase1geo
+ Completed phase 1 for adding in parameter support.  Main code is written
+ that will create an instance parameter from a given module parameter in
+ its entirety.  The next step will be to complete the module parameter
+ creation code all the way to the parser.  Regression still passes and
+ everything compiles at this point.
+
+ Revision 1.12  2002/09/19 05:25:19  phase1geo
+ Fixing incorrect simulation of static values and fixing reports generated
+ from these static expressions.  Also includes some modifications for parameters
+ though these changes are not useful at this point.
+
+ Revision 1.11  2002/09/06 03:05:28  phase1geo
+ Some ideas about handling parameters have been added to these files.  Added
+ "Special Thanks" section in User's Guide for acknowledgements to people
+ helping in project.
+
+ Revision 1.10  2002/08/19 04:34:07  phase1geo
+ Fixing bug in database reading code that dealt with merging modules.  Module
+ merging is now performed in a more optimal way.  Full regression passes and
+ own examples pass as well.
+
+ Revision 1.9  2002/07/18 05:50:45  phase1geo
+ Fixes should be just about complete for instance depth problems now.  Diagnostics
+ to help verify instance handling are added to regression.  Full regression passes.
+*/
+

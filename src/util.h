@@ -55,20 +55,26 @@ void free_safe( void* ptr );
 //! Creates a string containing space characters.
 void gen_space( char* spaces, int num_spaces );
 
-/* $Log$
-/* Revision 1.5  2002/07/18 22:02:35  phase1geo
-/* In the middle of making improvements/fixes to the expression/signal
-/* binding phase.
+
 /*
-/* Revision 1.4  2002/07/08 12:35:31  phase1geo
-/* Added initial support for library searching.  Code seems to be broken at the
-/* moment.
-/*
-/* Revision 1.3  2002/07/03 03:31:11  phase1geo
-/* Adding RCS Log strings in files that were missing them so that file version
-/* information is contained in every source and header file.  Reordering src
-/* Makefile to be alphabetical.  Adding mult1.v diagnostic to regression suite.
-/* */
+ $Log$
+ Revision 1.6  2002/10/29 13:33:21  phase1geo
+ Adding patches for 64-bit compatibility.  Reformatted parser.y for easier
+ viewing (removed tabs).  Full regression passes.
+
+ Revision 1.5  2002/07/18 22:02:35  phase1geo
+ In the middle of making improvements/fixes to the expression/signal
+ binding phase.
+
+ Revision 1.4  2002/07/08 12:35:31  phase1geo
+ Added initial support for library searching.  Code seems to be broken at the
+ moment.
+
+ Revision 1.3  2002/07/03 03:31:11  phase1geo
+ Adding RCS Log strings in files that were missing them so that file version
+ information is contained in every source and header file.  Reordering src
+ Makefile to be alphabetical.  Adding mult1.v diagnostic to regression suite.
+*/
 
 #endif
 

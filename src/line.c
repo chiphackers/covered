@@ -307,79 +307,84 @@ void line_report( FILE* ofile, bool verbose ) {
 
 }
 
-/* $Log$
-/* Revision 1.22  2002/10/25 13:43:49  phase1geo
-/* Adding statement iterators for moving in both directions in a list with a single
-/* pointer (two-way).  This allows us to reverse statement lists without additional
-/* memory and time (very efficient).  Full regression passes and TODO list items
-/* 2 and 3 are completed.
 /*
-/* Revision 1.21  2002/10/24 23:19:39  phase1geo
-/* Making some fixes to report output.  Fixing bugs.  Added long_exp1.v diagnostic
-/* to regression suite which finds a current bug in the report underlining
-/* functionality.  Need to look into this.
-/*
-/* Revision 1.20  2002/09/13 05:12:25  phase1geo
-/* Adding final touches to -d option to report.  Adding documentation and
-/* updating development documentation to stay in sync.
-/*
-/* Revision 1.19  2002/09/10 05:40:09  phase1geo
-/* Adding support for MULTIPLY, DIVIDE and MOD in expression verbose display.
-/* Fixing cases where -c option was not generating covered information in
-/* line and combination report output.  Updates to assign1.v diagnostic for
-/* logic that is now supported by both Covered and IVerilog.  Updated assign1.cdd
-/* to account for correct coverage file for the updated assign1.v diagnostic.
-/*
-/* Revision 1.18  2002/08/20 04:48:18  phase1geo
-/* Adding option to report command that allows the user to display logic that is
-/* being covered (-c option).  This overrides the default behavior of displaying
-/* uncovered logic.  This is useful for debugging purposes and understanding what
-/* logic the tool is capable of handling.
-/*
-/* Revision 1.17  2002/08/19 04:59:49  phase1geo
-/* Adjusting summary format to allow for larger line, toggle and combination
-/* counts.
-/*
-/* Revision 1.16  2002/07/20 18:46:38  phase1geo
-/* Causing fully covered modules to not be output in reports.  Adding
-/* instance3.v diagnostic to verify this works correctly.
-/*
-/* Revision 1.15  2002/07/14 05:27:34  phase1geo
-/* Fixing report outputting to allow multiple modules/instances to be
-/* output.
-/*
-/* Revision 1.14  2002/07/10 13:15:57  phase1geo
-/* Adding case1.1.v Verilog diagnostic to check default case statement.  There
-/* were reporting problems related to this.  Report problems have been fixed and
-/* full regression passes.
-/*
-/* Revision 1.13  2002/07/09 03:24:48  phase1geo
-/* Various fixes for module instantiantion handling.  This now works.  Also
-/* modified report output for toggle, line and combinational information.
-/* Regression passes.
-/*
-/* Revision 1.12  2002/07/05 05:00:14  phase1geo
-/* Removing CASE, CASEX, and CASEZ from line and combinational logic results.
-/*
-/* Revision 1.11  2002/07/02 19:52:50  phase1geo
-/* Removing unecessary diagnostics.  Cleaning up extraneous output and
-/* generating new documentation from source.  Regression passes at the
-/* current time.
-/*
-/* Revision 1.10  2002/06/27 20:39:43  phase1geo
-/* Fixing scoring bugs as well as report bugs.  Things are starting to work
-/* fairly well now.  Added rest of support for delays.
-/*
-/* Revision 1.9  2002/06/25 21:46:10  phase1geo
-/* Fixes to simulator and reporting.  Still some bugs here.
-/*
-/* Revision 1.8  2002/06/22 05:27:30  phase1geo
-/* Additional supporting code for simulation engine and statement support in
-/* parser.
-/*
-/* Revision 1.7  2002/05/13 03:02:58  phase1geo
-/* Adding lines back to expressions and removing them from statements (since the line
-/* number range of an expression can be calculated by looking at the expression line
-/* numbers).
-/* */
+ $Log$
+ Revision 1.23  2002/10/29 13:33:21  phase1geo
+ Adding patches for 64-bit compatibility.  Reformatted parser.y for easier
+ viewing (removed tabs).  Full regression passes.
+
+ Revision 1.22  2002/10/25 13:43:49  phase1geo
+ Adding statement iterators for moving in both directions in a list with a single
+ pointer (two-way).  This allows us to reverse statement lists without additional
+ memory and time (very efficient).  Full regression passes and TODO list items
+ 2 and 3 are completed.
+
+ Revision 1.21  2002/10/24 23:19:39  phase1geo
+ Making some fixes to report output.  Fixing bugs.  Added long_exp1.v diagnostic
+ to regression suite which finds a current bug in the report underlining
+ functionality.  Need to look into this.
+
+ Revision 1.20  2002/09/13 05:12:25  phase1geo
+ Adding final touches to -d option to report.  Adding documentation and
+ updating development documentation to stay in sync.
+
+ Revision 1.19  2002/09/10 05:40:09  phase1geo
+ Adding support for MULTIPLY, DIVIDE and MOD in expression verbose display.
+ Fixing cases where -c option was not generating covered information in
+ line and combination report output.  Updates to assign1.v diagnostic for
+ logic that is now supported by both Covered and IVerilog.  Updated assign1.cdd
+ to account for correct coverage file for the updated assign1.v diagnostic.
+
+ Revision 1.18  2002/08/20 04:48:18  phase1geo
+ Adding option to report command that allows the user to display logic that is
+ being covered (-c option).  This overrides the default behavior of displaying
+ uncovered logic.  This is useful for debugging purposes and understanding what
+ logic the tool is capable of handling.
+
+ Revision 1.17  2002/08/19 04:59:49  phase1geo
+ Adjusting summary format to allow for larger line, toggle and combination
+ counts.
+
+ Revision 1.16  2002/07/20 18:46:38  phase1geo
+ Causing fully covered modules to not be output in reports.  Adding
+ instance3.v diagnostic to verify this works correctly.
+
+ Revision 1.15  2002/07/14 05:27:34  phase1geo
+ Fixing report outputting to allow multiple modules/instances to be
+ output.
+
+ Revision 1.14  2002/07/10 13:15:57  phase1geo
+ Adding case1.1.v Verilog diagnostic to check default case statement.  There
+ were reporting problems related to this.  Report problems have been fixed and
+ full regression passes.
+
+ Revision 1.13  2002/07/09 03:24:48  phase1geo
+ Various fixes for module instantiantion handling.  This now works.  Also
+ modified report output for toggle, line and combinational information.
+ Regression passes.
+
+ Revision 1.12  2002/07/05 05:00:14  phase1geo
+ Removing CASE, CASEX, and CASEZ from line and combinational logic results.
+
+ Revision 1.11  2002/07/02 19:52:50  phase1geo
+ Removing unecessary diagnostics.  Cleaning up extraneous output and
+ generating new documentation from source.  Regression passes at the
+ current time.
+
+ Revision 1.10  2002/06/27 20:39:43  phase1geo
+ Fixing scoring bugs as well as report bugs.  Things are starting to work
+ fairly well now.  Added rest of support for delays.
+
+ Revision 1.9  2002/06/25 21:46:10  phase1geo
+ Fixes to simulator and reporting.  Still some bugs here.
+
+ Revision 1.8  2002/06/22 05:27:30  phase1geo
+ Additional supporting code for simulation engine and statement support in
+ parser.
+
+ Revision 1.7  2002/05/13 03:02:58  phase1geo
+ Adding lines back to expressions and removing them from statements (since the line
+ number range of an expression can be calculated by looking at the expression line
+ numbers).
+*/
 

@@ -23,20 +23,26 @@ void static_expr_calc_lsb_and_width( static_expr* left, static_expr* right, int*
 //! Deallocates static_expr memory from heap.
 void static_expr_dealloc( static_expr* stexp, bool rm_exp );
 
-/* $Log$
-/* Revision 1.2  2002/10/11 04:24:02  phase1geo
-/* This checkin represents some major code renovation in the score command to
-/* fully accommodate parameter support.  All parameter support is in at this
-/* point and the most commonly used parameter usages have been verified.  Some
-/* bugs were fixed in handling default values of constants and expression tree
-/* resizing has been optimized to its fullest.  Full regression has been
-/* updated and passes.  Adding new diagnostics to test suite.  Fixed a few
-/* problems in report outputting.
 /*
-/* Revision 1.1  2002/10/02 18:55:29  phase1geo
-/* Adding static.c and static.h files for handling static expressions found by
-/* the parser.  Initial versions which compile but have not been tested.
-/* */
+ $Log$
+ Revision 1.3  2002/10/23 03:39:07  phase1geo
+ Fixing bug in MBIT_SEL expressions to calculate the expression widths
+ correctly.  Updated diagnostic testsuite and added diagnostic that
+ found the original bug.  A few documentation updates.
+
+ Revision 1.2  2002/10/11 04:24:02  phase1geo
+ This checkin represents some major code renovation in the score command to
+ fully accommodate parameter support.  All parameter support is in at this
+ point and the most commonly used parameter usages have been verified.  Some
+ bugs were fixed in handling default values of constants and expression tree
+ resizing has been optimized to its fullest.  Full regression has been
+ updated and passes.  Adding new diagnostics to test suite.  Fixed a few
+ problems in report outputting.
+
+ Revision 1.1  2002/10/02 18:55:29  phase1geo
+ Adding static.c and static.h files for handling static expressions found by
+ the parser.  Initial versions which compile but have not been tested.
+*/
 
 #endif
 

@@ -31,39 +31,46 @@ void statement_set_stop( statement* stmt, statement* post, bool true_path, bool 
 void statement_dealloc( statement* stmt );
 
 
-/* $Log$
-/* Revision 1.8  2002/07/01 15:10:42  phase1geo
-/* Fixing always loopbacks and setting stop bits correctly.  All verilog diagnostics
-/* seem to be passing with these fixes.
 /*
-/* Revision 1.7  2002/06/30 22:23:20  phase1geo
-/* Working on fixing looping in parser.  Statement connector needs to be revamped.
-/*
-/* Revision 1.6  2002/06/28 03:04:59  phase1geo
-/* Fixing more errors found by diagnostics.  Things are running pretty well at
-/* this point with current diagnostics.  Still some report output problems.
-/*
-/* Revision 1.5  2002/06/27 12:36:47  phase1geo
-/* Fixing bugs with scoring.  I think I got it this time.
-/*
-/* Revision 1.4  2002/06/24 04:54:48  phase1geo
-/* More fixes and code additions to make statements work properly.  Still not
-/* there at this point.
-/*
-/* Revision 1.3  2002/05/13 03:02:58  phase1geo
-/* Adding lines back to expressions and removing them from statements (since the line
-/* number range of an expression can be calculated by looking at the expression line
-/* numbers).
-/*
-/* Revision 1.2  2002/05/03 03:39:36  phase1geo
-/* Removing all syntax errors due to addition of statements.  Added more statement
-/* support code.  Still have a ways to go before we can try anything.  Removed lines
-/* from expressions though we may want to consider putting these back for reporting
-/* purposes.
-/*
-/* Revision 1.1  2002/05/02 03:27:42  phase1geo
-/* Initial creation of statement structure and manipulation files.  Internals are
-/* still in a chaotic state.
-/* */
+ $Log$
+ Revision 1.9  2002/07/03 21:30:53  phase1geo
+ Fixed remaining issues with always statements.  Full regression is running
+ error free at this point.  Regenerated documentation.  Added EOR expression
+ operation to handle the or expression in event lists.
+
+ Revision 1.8  2002/07/01 15:10:42  phase1geo
+ Fixing always loopbacks and setting stop bits correctly.  All verilog diagnostics
+ seem to be passing with these fixes.
+
+ Revision 1.7  2002/06/30 22:23:20  phase1geo
+ Working on fixing looping in parser.  Statement connector needs to be revamped.
+
+ Revision 1.6  2002/06/28 03:04:59  phase1geo
+ Fixing more errors found by diagnostics.  Things are running pretty well at
+ this point with current diagnostics.  Still some report output problems.
+
+ Revision 1.5  2002/06/27 12:36:47  phase1geo
+ Fixing bugs with scoring.  I think I got it this time.
+
+ Revision 1.4  2002/06/24 04:54:48  phase1geo
+ More fixes and code additions to make statements work properly.  Still not
+ there at this point.
+
+ Revision 1.3  2002/05/13 03:02:58  phase1geo
+ Adding lines back to expressions and removing them from statements (since the line
+ number range of an expression can be calculated by looking at the expression line
+ numbers).
+
+ Revision 1.2  2002/05/03 03:39:36  phase1geo
+ Removing all syntax errors due to addition of statements.  Added more statement
+ support code.  Still have a ways to go before we can try anything.  Removed lines
+ from expressions though we may want to consider putting these back for reporting
+ purposes.
+
+ Revision 1.1  2002/05/02 03:27:42  phase1geo
+ Initial creation of statement structure and manipulation files.  Internals are
+ still in a chaotic state.
+*/
 
 #endif
+

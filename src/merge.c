@@ -141,7 +141,7 @@ int command_merge( int argc, int last_arg, char** argv ) {
     db_read( merge_in1, READ_MODE_MERGE_INST_MERGE );
 
     /* Write out new database to output file */
-    db_write( merged_file, 0 );
+    db_write( merged_file, FALSE );
 
     print_output( "\n***  Merging completed successfully!  ***", NORMAL );
 
@@ -151,21 +151,27 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
 }
 
-/* $Log$
-/* Revision 1.7  2002/10/11 05:23:21  phase1geo
-/* Removing local user message allocation and replacing with global to help
-/* with memory efficiency.
 /*
-/* Revision 1.6  2002/07/09 04:46:26  phase1geo
-/* Adding -D and -Q options to covered for outputting debug information or
-/* suppressing normal output entirely.  Updated generated documentation and
-/* modified Verilog diagnostic Makefile to use these new options.
-/*
-/* Revision 1.5  2002/07/08 16:06:33  phase1geo
-/* Updating help information.
-/*
-/* Revision 1.4  2002/07/03 03:31:11  phase1geo
-/* Adding RCS Log strings in files that were missing them so that file version
-/* information is contained in every source and header file.  Reordering src
-/* Makefile to be alphabetical.  Adding mult1.v diagnostic to regression suite.
-/* */
+ $Log$
+ Revision 1.8  2002/10/29 13:33:21  phase1geo
+ Adding patches for 64-bit compatibility.  Reformatted parser.y for easier
+ viewing (removed tabs).  Full regression passes.
+
+ Revision 1.7  2002/10/11 05:23:21  phase1geo
+ Removing local user message allocation and replacing with global to help
+ with memory efficiency.
+
+ Revision 1.6  2002/07/09 04:46:26  phase1geo
+ Adding -D and -Q options to covered for outputting debug information or
+ suppressing normal output entirely.  Updated generated documentation and
+ modified Verilog diagnostic Makefile to use these new options.
+
+ Revision 1.5  2002/07/08 16:06:33  phase1geo
+ Updating help information.
+
+ Revision 1.4  2002/07/03 03:31:11  phase1geo
+ Adding RCS Log strings in files that were missing them so that file version
+ information is contained in every source and header file.  Reordering src
+ Makefile to be alphabetical.  Adding mult1.v diagnostic to regression suite.
+*/
+

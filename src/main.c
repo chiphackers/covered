@@ -132,21 +132,27 @@ int main( int argc, char** argv ) {
 
 }
 
-/* $Log$
-/* Revision 1.7  2002/07/11 19:12:38  phase1geo
-/* Fixing version number.  Fixing bug with score command if -t option was not
-/* specified to avoid a segmentation fault.
 /*
-/* Revision 1.6  2002/07/09 05:02:42  phase1geo
-/* Updating user documentation to reflect new command-line options.
-/*
-/* Revision 1.5  2002/07/09 04:46:26  phase1geo
-/* Adding -D and -Q options to covered for outputting debug information or
-/* suppressing normal output entirely.  Updated generated documentation and
-/* modified Verilog diagnostic Makefile to use these new options.
-/*
-/* Revision 1.4  2002/07/03 03:31:11  phase1geo
-/* Adding RCS Log strings in files that were missing them so that file version
-/* information is contained in every source and header file.  Reordering src
-/* Makefile to be alphabetical.  Adding mult1.v diagnostic to regression suite.
-/* */
+ $Log$
+ Revision 1.8  2002/10/29 13:33:21  phase1geo
+ Adding patches for 64-bit compatibility.  Reformatted parser.y for easier
+ viewing (removed tabs).  Full regression passes.
+
+ Revision 1.7  2002/07/11 19:12:38  phase1geo
+ Fixing version number.  Fixing bug with score command if -t option was not
+ specified to avoid a segmentation fault.
+
+ Revision 1.6  2002/07/09 05:02:42  phase1geo
+ Updating user documentation to reflect new command-line options.
+
+ Revision 1.5  2002/07/09 04:46:26  phase1geo
+ Adding -D and -Q options to covered for outputting debug information or
+ suppressing normal output entirely.  Updated generated documentation and
+ modified Verilog diagnostic Makefile to use these new options.
+
+ Revision 1.4  2002/07/03 03:31:11  phase1geo
+ Adding RCS Log strings in files that were missing them so that file version
+ information is contained in every source and header file.  Reordering src
+ Makefile to be alphabetical.  Adding mult1.v diagnostic to regression suite.
+*/
+

@@ -1441,82 +1441,91 @@ void vector_dealloc( vector* vec ) {
 
 }
 
-/* $Log$
-/* Revision 1.21  2002/10/11 05:23:21  phase1geo
-/* Removing local user message allocation and replacing with global to help
-/* with memory efficiency.
 /*
-/* Revision 1.20  2002/10/11 04:24:02  phase1geo
-/* This checkin represents some major code renovation in the score command to
-/* fully accommodate parameter support.  All parameter support is in at this
-/* point and the most commonly used parameter usages have been verified.  Some
-/* bugs were fixed in handling default values of constants and expression tree
-/* resizing has been optimized to its fullest.  Full regression has been
-/* updated and passes.  Adding new diagnostics to test suite.  Fixed a few
-/* problems in report outputting.
-/*
-/* Revision 1.19  2002/09/25 02:51:44  phase1geo
-/* Removing need of vector nibble array allocation and deallocation during
-/* expression resizing for efficiency and bug reduction.  Other enhancements
-/* for parameter support.  Parameter stuff still not quite complete.
-/*
-/* Revision 1.18  2002/09/19 02:50:02  phase1geo
-/* Causing previously assigned bit to not get set when value does not change.
-/* This is necessary to support different Verilog compiler approaches to displaying
-/* initial values of undefined signals.
-/*
-/* Revision 1.17  2002/09/12 05:16:25  phase1geo
-/* Updating all CDD files in regression suite due to change in vector handling.
-/* Modified vectors to assign a default value of 0xaa to unassigned registers
-/* to eliminate bugs where values never assigned and VCD file doesn't contain
-/* information for these.  Added initial working version of depth feature in
-/* report generation.  Updates to man page and parameter documentation.
-/*
-/* Revision 1.16  2002/08/23 12:55:33  phase1geo
-/* Starting to make modifications for parameter support.  Added parameter source
-/* and header files, changed vector_from_string function to be more verbose
-/* and updated Makefiles for new param.h/.c files.
-/*
-/* Revision 1.15  2002/08/19 04:34:07  phase1geo
-/* Fixing bug in database reading code that dealt with merging modules.  Module
-/* merging is now performed in a more optimal way.  Full regression passes and
-/* own examples pass as well.
-/*
-/* Revision 1.14  2002/07/23 12:56:22  phase1geo
-/* Fixing some memory overflow issues.  Still getting core dumps in some areas.
-/*
-/* Revision 1.13  2002/07/17 06:27:18  phase1geo
-/* Added start for fixes to bit select code starting with single bit selection.
-/* Full regression passes with addition of sbit_sel1 diagnostic.
-/*
-/* Revision 1.12  2002/07/14 05:10:42  phase1geo
-/* Added support for signal concatenation in score and report commands.  Fixed
-/* bugs in this code (and multiplication).
-/*
-/* Revision 1.11  2002/07/10 04:57:07  phase1geo
-/* Adding bits to vector nibble to allow us to specify what type of input
-/* static value was read in so that the output value may be displayed in
-/* the same format (DECIMAL, BINARY, OCTAL, HEXIDECIMAL).  Full regression
-/* passes.
-/*
-/* Revision 1.10  2002/07/09 17:27:25  phase1geo
-/* Fixing default case item handling and in the middle of making fixes for
-/* report outputting.
-/*
-/* Revision 1.9  2002/07/05 16:49:47  phase1geo
-/* Modified a lot of code this go around.  Fixed VCD reader to handle changes in
-/* the reverse order (last changes are stored instead of first for timestamp).
-/* Fixed problem with AEDGE operator to handle vector value changes correctly.
-/* Added casez2.v diagnostic to verify proper handling of casez with '?' characters.
-/* Full regression passes; however, the recent changes seem to have impacted
-/* performance -- need to look into this.
-/*
-/* Revision 1.8  2002/07/05 04:35:53  phase1geo
-/* Adding fixes for casex and casez for proper equality calculations.  casex has
-/* now been tested and added to regression suite.  Full regression passes.
-/*
-/* Revision 1.6  2002/07/03 03:31:11  phase1geo
-/* Adding RCS Log strings in files that were missing them so that file version
-/* information is contained in every source and header file.  Reordering src
-/* Makefile to be alphabetical.  Adding mult1.v diagnostic to regression suite.
-/* */
+ $Log$
+ Revision 1.22  2002/10/24 05:48:58  phase1geo
+ Additional fixes for MBIT_SEL.  Changed some philosophical stuff around for
+ cleaner code and for correctness.  Added some development documentation for
+ expressions and vectors.  At this point, there is a bug in the way that
+ parameters are handled as far as scoring purposes are concerned but we no
+ longer segfault.
+
+ Revision 1.21  2002/10/11 05:23:21  phase1geo
+ Removing local user message allocation and replacing with global to help
+ with memory efficiency.
+
+ Revision 1.20  2002/10/11 04:24:02  phase1geo
+ This checkin represents some major code renovation in the score command to
+ fully accommodate parameter support.  All parameter support is in at this
+ point and the most commonly used parameter usages have been verified.  Some
+ bugs were fixed in handling default values of constants and expression tree
+ resizing has been optimized to its fullest.  Full regression has been
+ updated and passes.  Adding new diagnostics to test suite.  Fixed a few
+ problems in report outputting.
+
+ Revision 1.19  2002/09/25 02:51:44  phase1geo
+ Removing need of vector nibble array allocation and deallocation during
+ expression resizing for efficiency and bug reduction.  Other enhancements
+ for parameter support.  Parameter stuff still not quite complete.
+
+ Revision 1.18  2002/09/19 02:50:02  phase1geo
+ Causing previously assigned bit to not get set when value does not change.
+ This is necessary to support different Verilog compiler approaches to displaying
+ initial values of undefined signals.
+
+ Revision 1.17  2002/09/12 05:16:25  phase1geo
+ Updating all CDD files in regression suite due to change in vector handling.
+ Modified vectors to assign a default value of 0xaa to unassigned registers
+ to eliminate bugs where values never assigned and VCD file doesn't contain
+ information for these.  Added initial working version of depth feature in
+ report generation.  Updates to man page and parameter documentation.
+
+ Revision 1.16  2002/08/23 12:55:33  phase1geo
+ Starting to make modifications for parameter support.  Added parameter source
+ and header files, changed vector_from_string function to be more verbose
+ and updated Makefiles for new param.h/.c files.
+
+ Revision 1.15  2002/08/19 04:34:07  phase1geo
+ Fixing bug in database reading code that dealt with merging modules.  Module
+ merging is now performed in a more optimal way.  Full regression passes and
+ own examples pass as well.
+
+ Revision 1.14  2002/07/23 12:56:22  phase1geo
+ Fixing some memory overflow issues.  Still getting core dumps in some areas.
+
+ Revision 1.13  2002/07/17 06:27:18  phase1geo
+ Added start for fixes to bit select code starting with single bit selection.
+ Full regression passes with addition of sbit_sel1 diagnostic.
+
+ Revision 1.12  2002/07/14 05:10:42  phase1geo
+ Added support for signal concatenation in score and report commands.  Fixed
+ bugs in this code (and multiplication).
+
+ Revision 1.11  2002/07/10 04:57:07  phase1geo
+ Adding bits to vector nibble to allow us to specify what type of input
+ static value was read in so that the output value may be displayed in
+ the same format (DECIMAL, BINARY, OCTAL, HEXIDECIMAL).  Full regression
+ passes.
+
+ Revision 1.10  2002/07/09 17:27:25  phase1geo
+ Fixing default case item handling and in the middle of making fixes for
+ report outputting.
+
+ Revision 1.9  2002/07/05 16:49:47  phase1geo
+ Modified a lot of code this go around.  Fixed VCD reader to handle changes in
+ the reverse order (last changes are stored instead of first for timestamp).
+ Fixed problem with AEDGE operator to handle vector value changes correctly.
+ Added casez2.v diagnostic to verify proper handling of casez with '?' characters.
+ Full regression passes; however, the recent changes seem to have impacted
+ performance -- need to look into this.
+
+ Revision 1.8  2002/07/05 04:35:53  phase1geo
+ Adding fixes for casex and casez for proper equality calculations.  casex has
+ now been tested and added to regression suite.  Full regression passes.
+
+ Revision 1.6  2002/07/03 03:31:11  phase1geo
+ Adding RCS Log strings in files that were missing them so that file version
+ information is contained in every source and header file.  Reordering src
+ Makefile to be alphabetical.  Adding mult1.v diagnostic to regression suite.
+*/
+

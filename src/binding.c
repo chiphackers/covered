@@ -260,45 +260,50 @@ void bind() {
   
 }
 
-/* $Log$
-/* Revision 1.15  2002/10/11 04:24:01  phase1geo
-/* This checkin represents some major code renovation in the score command to
-/* fully accommodate parameter support.  All parameter support is in at this
-/* point and the most commonly used parameter usages have been verified.  Some
-/* bugs were fixed in handling default values of constants and expression tree
-/* resizing has been optimized to its fullest.  Full regression has been
-/* updated and passes.  Adding new diagnostics to test suite.  Fixed a few
-/* problems in report outputting.
-/*
-/* Revision 1.14  2002/09/29 02:16:51  phase1geo
-/* Updates to parameter CDD files for changes affecting these.  Added support
-/* for bit-selecting parameters.  param4.v diagnostic added to verify proper
-/* support for this bit-selecting.  Full regression still passes.
-/*
-/* Revision 1.13  2002/09/25 02:51:44  phase1geo
-/* Removing need of vector nibble array allocation and deallocation during
-/* expression resizing for efficiency and bug reduction.  Other enhancements
-/* for parameter support.  Parameter stuff still not quite complete.
-/*
-/* Revision 1.12  2002/07/20 22:22:52  phase1geo
-/* Added ability to create implicit signals for local signals.  Added implicit1.v
-/* diagnostic to test for correctness.  Full regression passes.  Other tweaks to
-/* output information.
-/*
-/* Revision 1.11  2002/07/18 22:02:35  phase1geo
-/* In the middle of making improvements/fixes to the expression/signal
-/* binding phase.
-/*
-/* Revision 1.10  2002/07/17 06:27:18  phase1geo
-/* Added start for fixes to bit select code starting with single bit selection.
-/* Full regression passes with addition of sbit_sel1 diagnostic.
-/*
-/* Revision 1.9  2002/07/16 00:05:31  phase1geo
-/* Adding support for replication operator (EXPAND).  All expressional support
-/* should now be available.  Added diagnostics to test replication operator.
-/* Rewrote binding code to be more efficient with memory use.
-/*
-/* Revision 1.8  2002/07/14 05:10:42  phase1geo
-/* Added support for signal concatenation in score and report commands.  Fixed
-/* bugs in this code (and multiplication).
-/* */
+/* 
+ $Log$
+ Revision 1.16  2002/10/11 05:23:21  phase1geo
+ Removing local user message allocation and replacing with global to help
+ with memory efficiency.
+
+ Revision 1.15  2002/10/11 04:24:01  phase1geo
+ This checkin represents some major code renovation in the score command to
+ fully accommodate parameter support.  All parameter support is in at this
+ point and the most commonly used parameter usages have been verified.  Some
+ bugs were fixed in handling default values of constants and expression tree
+ resizing has been optimized to its fullest.  Full regression has been
+ updated and passes.  Adding new diagnostics to test suite.  Fixed a few
+ problems in report outputting.
+
+ Revision 1.14  2002/09/29 02:16:51  phase1geo
+ Updates to parameter CDD files for changes affecting these.  Added support
+ for bit-selecting parameters.  param4.v diagnostic added to verify proper
+ support for this bit-selecting.  Full regression still passes.
+
+ Revision 1.13  2002/09/25 02:51:44  phase1geo
+ Removing need of vector nibble array allocation and deallocation during
+ expression resizing for efficiency and bug reduction.  Other enhancements
+ for parameter support.  Parameter stuff still not quite complete.
+
+ Revision 1.12  2002/07/20 22:22:52  phase1geo
+ Added ability to create implicit signals for local signals.  Added implicit1.v
+ diagnostic to test for correctness.  Full regression passes.  Other tweaks to
+ output information.
+
+ Revision 1.11  2002/07/18 22:02:35  phase1geo
+ In the middle of making improvements/fixes to the expression/signal
+ binding phase.
+
+ Revision 1.10  2002/07/17 06:27:18  phase1geo
+ Added start for fixes to bit select code starting with single bit selection.
+ Full regression passes with addition of sbit_sel1 diagnostic.
+
+ Revision 1.9  2002/07/16 00:05:31  phase1geo
+ Adding support for replication operator (EXPAND).  All expressional support
+ should now be available.  Added diagnostics to test replication operator.
+ Rewrote binding code to be more efficient with memory use.
+
+ Revision 1.8  2002/07/14 05:10:42  phase1geo
+ Added support for signal concatenation in score and report commands.  Fixed
+ bugs in this code (and multiplication).
+*/

@@ -11,7 +11,12 @@
 //! Parses score command-line and performs score.
 int command_score( int argc, int last_arg, char** argv );
 
-/* $Log$ */
+/*
+ $Log$
+ Revision 1.4  2002/07/20 21:34:58  phase1geo
+ Separating ability to parse design and score dumpfile.  Now both or either
+ can be done (allowing one to parse once and score multiple times).
+*/
 
 #endif
 

@@ -209,43 +209,49 @@ void search_free_lists() {
 
 }
 
-/* $Log$
-/* Revision 1.10  2002/10/11 05:23:21  phase1geo
-/* Removing local user message allocation and replacing with global to help
-/* with memory efficiency.
 /*
-/* Revision 1.9  2002/08/19 21:36:26  phase1geo
-/* Fixing memory corruption bug in score function for adding Verilog modules
-/* to use_files list.  This caused a core dump to occur when the -f option
-/* was used.
-/*
-/* Revision 1.8  2002/07/20 20:48:09  phase1geo
-/* Fixing a bug that caused the same file to be added to the use_files list
-/* more than once.  A filename will only appear once in this list now.  Updates
-/* to the TODO list.
-/*
-/* Revision 1.7  2002/07/18 05:50:45  phase1geo
-/* Fixes should be just about complete for instance depth problems now.  Diagnostics
-/* to help verify instance handling are added to regression.  Full regression passes.
-/*
-/* Revision 1.6  2002/07/18 02:33:24  phase1geo
-/* Fixed instantiation addition.  Multiple hierarchy instantiation trees should
-/* now work.
-/*
-/* Revision 1.5  2002/07/11 19:12:38  phase1geo
-/* Fixing version number.  Fixing bug with score command if -t option was not
-/* specified to avoid a segmentation fault.
-/*
-/* Revision 1.4  2002/07/08 19:02:12  phase1geo
-/* Adding -i option to properly handle modules specified for coverage that
-/* are instantiated within a design without needing to parse parent modules.
-/*
-/* Revision 1.3  2002/07/08 12:35:31  phase1geo
-/* Added initial support for library searching.  Code seems to be broken at the
-/* moment.
-/*
-/* Revision 1.2  2002/07/03 03:31:11  phase1geo
-/* Adding RCS Log strings in files that were missing them so that file version
-/* information is contained in every source and header file.  Reordering src
-/* Makefile to be alphabetical.  Adding mult1.v diagnostic to regression suite.
-/* */
+ $Log$
+ Revision 1.11  2002/10/13 13:55:53  phase1geo
+ Fixing instance depth selection and updating all configuration files for
+ regression.  Full regression now passes.
+
+ Revision 1.10  2002/10/11 05:23:21  phase1geo
+ Removing local user message allocation and replacing with global to help
+ with memory efficiency.
+
+ Revision 1.9  2002/08/19 21:36:26  phase1geo
+ Fixing memory corruption bug in score function for adding Verilog modules
+ to use_files list.  This caused a core dump to occur when the -f option
+ was used.
+
+ Revision 1.8  2002/07/20 20:48:09  phase1geo
+ Fixing a bug that caused the same file to be added to the use_files list
+ more than once.  A filename will only appear once in this list now.  Updates
+ to the TODO list.
+
+ Revision 1.7  2002/07/18 05:50:45  phase1geo
+ Fixes should be just about complete for instance depth problems now.  Diagnostics
+ to help verify instance handling are added to regression.  Full regression passes.
+
+ Revision 1.6  2002/07/18 02:33:24  phase1geo
+ Fixed instantiation addition.  Multiple hierarchy instantiation trees should
+ now work.
+
+ Revision 1.5  2002/07/11 19:12:38  phase1geo
+ Fixing version number.  Fixing bug with score command if -t option was not
+ specified to avoid a segmentation fault.
+
+ Revision 1.4  2002/07/08 19:02:12  phase1geo
+ Adding -i option to properly handle modules specified for coverage that
+ are instantiated within a design without needing to parse parent modules.
+
+ Revision 1.3  2002/07/08 12:35:31  phase1geo
+ Added initial support for library searching.  Code seems to be broken at the
+ moment.
+
+ Revision 1.2  2002/07/03 03:31:11  phase1geo
+ Adding RCS Log strings in files that were missing them so that file version
+ information is contained in every source and header file.  Reordering src
+ Makefile to be alphabetical.  Adding mult1.v diagnostic to regression suite.
+*/
+
