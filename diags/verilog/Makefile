@@ -9,18 +9,20 @@
 COVERED_SRC   = ../../src
 COVERED       = $(COVERED_SRC)/covered
 COVERED_FLAGS = -y ./lib -I ./include -D RUNTEST
-# COVERED_FLAGS = -y ./lib -I ./include
 
-VERILOG       = iverilog
-VERILOG_FLAGS = -y ./lib -I ./include -DRUNTEST
-VERILOG_EXEC  = a.out
+IVERILOG       = iverilog
+IVERILOG_FLAGS = -y ./lib -I ./include -DRUNTEST
+IVERILOG_EXEC  = a.out
+
+VCS       = vcs
+VCS_FLAGS = +libext+.v+ -y ./lib +incdir+./include +define+RUNTEST +define+VCS
+VCS_EXEC  = simv
 
 CDD_DIR       = ../cdd
 
 LOGFILE = regress.log
 
-
-DIAGLIST = assign3.2A    assign1       always1       always3.1.11A  cond1 \
+DIAGS    = assign3.2A    always1       always3.1.11A  cond1 \
 	   cond2         mult1         always2       always3        always4 \
            always5       case1         case1.1       case2          case3 \
            case3.1       case3.2       case3.3       case3.4        casex1 \
@@ -30,7 +32,14 @@ DIAGLIST = assign3.2A    assign1       always1       always3.1.11A  cond1 \
            static1       include1      include1.1    ifdef1         ifdef2.1 \
            ifdef2.2      concat1       concat2       expand1        expand2 \
            sbit_sel1     instance1     instance2     instance3      mbit_sel1 \
-           implicit1
+
+IVONLYDIAGS = assign1    implicit1
+
+iverilog:
+	@$(MAKE) VERILOG=$(IVERILOG) VERILOG_FLAGS="$(IVERILOG_FLAGS)" VERILOG_EXEC=$(IVERILOG_EXEC) DIAGLIST="$(DIAGS) $(IVONLYDIAGS)" regress
+
+vcs:
+	@$(MAKE) VERILOG=$(VCS) VERILOG_FLAGS="$(VCS_FLAGS)" VERILOG_EXEC=$(VCS_EXEC) DIAGLIST="$(DIAGS)" regress
 
 regress:	$(COVERED) clean $(DIAGLIST)
 	@echo REGRESSION PASSED!
@@ -48,5 +57,5 @@ $(COVERED):
 	
 clean:
 	@rm -f $(LOGFILE)
-	@rm -f a.out *.vcd *.cdd *.log
+	@rm -f $(IVERILOG_EXEC) $(VCS_EXEC) *.vcd *.cdd *.log
 	@rm -f core
