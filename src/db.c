@@ -22,9 +22,12 @@
 #include "sim.h"
 
 
-extern char*      top_module;
-
+extern char*     top_module;
 extern mod_inst* instance_root;
+extern str_link* no_score_head;
+extern mod_link* mod_head;
+extern mod_link* mod_tail;
+extern nibble or_optab[16];
 
 /*!
  Specifies the string Verilog scope that is currently specified in the VCD file.
@@ -37,9 +40,6 @@ char* curr_vcd_scope = NULL;
 */
 mod_inst* curr_instance  = NULL;
 
-extern mod_link* mod_head;
-extern mod_link* mod_tail;
-
 str_link* modlist_head      = NULL;
 str_link* modlist_tail      = NULL;
 
@@ -47,8 +47,6 @@ module*   curr_module       = NULL;
 
 symtable* vcd_symtab        = NULL;
 symtable* timestep_tab      = NULL;
-
-extern nibble or_optab[16];
 
 /*!
  This static value contains the current expression ID number to use for the next expression found, it
@@ -301,31 +299,36 @@ void db_add_instance( char* scope, char* modname ) {
   /* There should always be a parent so internal error if it does not exist. */
   assert( curr_module != NULL );
 
-  snprintf( msg, 4096, "In db_add_instance, instance: %s, module: %s", scope, modname );
-  print_output( msg, DEBUG );
+  /* If this module name is in our list of no_score modules, skip adding the instance */
+  if( str_link_find( modname, no_score_head ) == NULL ) {
 
-  /* Create new module node */
-  mod       = module_create();
-  mod->name = strdup( modname );
+    snprintf( msg, 4096, "In db_add_instance, instance: %s, module: %s", scope, modname );
+    print_output( msg, DEBUG );
 
-  if( (found_mod_link = mod_link_find( mod, mod_head )) != NULL ) {
+    /* Create new module node */
+    mod       = module_create();
+    mod->name = strdup( modname );
 
-    instance_add( &instance_root, curr_module->name, found_mod_link->mod, scope );
+    if( (found_mod_link = mod_link_find( mod, mod_head )) != NULL ) {
 
-    module_dealloc( mod );
+      instance_add( &instance_root, curr_module->name, found_mod_link->mod, scope );
 
-  } else {
+      module_dealloc( mod );
 
-    // Add new module to module list.
-    mod_link_add( mod, &mod_head, &mod_tail );
+    } else {
 
-    // Add instance.
-    instance_add( &instance_root, curr_module->name, mod, scope );
+      // Add new module to module list.
+      mod_link_add( mod, &mod_head, &mod_tail );
 
-  }
+      // Add instance.
+      instance_add( &instance_root, curr_module->name, mod, scope );
 
-  if( (mod_in_list = str_link_find( modname, modlist_head )) == NULL ) {
-    str_link_add( modname, &modlist_head, &modlist_tail );
+    }
+
+    if( (mod_in_list = str_link_find( modname, modlist_head )) == NULL ) {
+      str_link_add( modname, &modlist_head, &modlist_tail );
+    }
+
   }
 
 }
@@ -960,6 +963,10 @@ void db_do_timestep( int time ) {
 }
 
 /* $Log$
+/* Revision 1.41  2002/07/14 05:10:42  phase1geo
+/* Added support for signal concatenation in score and report commands.  Fixed
+/* bugs in this code (and multiplication).
+/*
 /* Revision 1.39  2002/07/13 05:35:52  phase1geo
 /* Cause warning message to be displayed for a signal found in the VCD dumpfile
 /* that is in a covered scope but is not part of the design.  It could be that

@@ -175,14 +175,16 @@ WSPACE [ \t\b\f]+
          }
        }
        if( last_keyword == K_module ) {
-         if( strcmp( modlist_head->str, yytext ) != 0 ) {
+         if( (modlist_head == NULL) || (strcmp( modlist_head->str, yytext ) != 0) ) {
            BEGIN( IGNORE_MODULE );
            rc = IGNORE;
          } else {
-           /* The module has been found, recirculate filelist */
-           snprintf( msg, 4096, "Parsing file %s", istack->path );
-           print_output( msg, NORMAL );
-           filelist_curr = filelist_head;
+           if( filelist_curr != filelist_head ) {
+             /* The module has been found, recirculate filelist */
+             snprintf( msg, 4096, "Parsing file %s", istack->path );
+             print_output( msg, NORMAL );
+             filelist_curr = filelist_head;
+           }
            last_keyword = 0;
          }
        }
