@@ -434,7 +434,7 @@ void statement_set_stop( statement* stmt, statement* post, bool true_path, bool 
   assert( stmt != NULL );
 
 /*
-  if( count > 70 ) {
+  if( count > 20 ) {
     assert( count == 0 );
   } else {
     count++;
@@ -470,14 +470,14 @@ void statement_set_stop( statement* stmt, statement* post, bool true_path, bool 
     }
   } else {
     if( stmt->next_true == stmt->next_false ) {
-      if( stmt->next_true != NULL ) { 
+      if( (stmt->next_true != NULL) && (stmt->next_true != post) ) { 
         statement_set_stop( stmt->next_true, post, TRUE, both );
       }
     } else {
-      if( stmt->next_true != NULL ) {
+      if( (stmt->next_true != NULL) && (stmt->next_true != post) ) {
         statement_set_stop( stmt->next_true, post, TRUE, both );
       }
-      if( stmt->next_false != NULL ) {
+      if( (stmt->next_false != NULL) && (stmt->next_false != post) ) {
         statement_set_stop( stmt->next_false, post, FALSE, both );
       }
     }
@@ -563,6 +563,10 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.36  2002/12/03 06:01:18  phase1geo
+ Fixing bug where delay statement is the last statement in a statement list.
+ Adding diagnostics to verify this functionality.
+
  Revision 1.35  2002/11/05 00:20:08  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.

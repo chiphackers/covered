@@ -435,13 +435,6 @@ expression
     {
       if( ignore_mode == 0 ) {
         $$ = $2;
-        if( $2 == NULL ) {
-          snprintf( user_msg, USER_MSG_LENGTH, "%s:%d: Expression signal not declared", 
-                    @1.text,
-                    @1.first_line );
-          print_output( user_msg, FATAL );
-          exit( 1 );
-        }
       } else {
         $$ = NULL;
       }
@@ -450,29 +443,17 @@ expression
     {
       if( ignore_mode == 0 ) {
         $$ = $2;
-        if( $2 == NULL ) {
-          snprintf( user_msg, USER_MSG_LENGTH, "%s:%d: Expression signal not declared", 
-                    @1.text,
-                    @1.first_line );
-          print_output( user_msg, FATAL );
-          exit( 1 );
-        }
       } else {
         $$ = NULL;
       }
     }
   | '~' expr_primary %prec UNARY_PREC
     {
-      expression* tmp;
+      expression* tmp = NULL;
       if( ignore_mode == 0 ) {
-        if( $2 == NULL ) {
-          snprintf( user_msg, USER_MSG_LENGTH, "%s:%d: Expression signal not declared", 
-                    @1.text,
-                    @1.first_line );
-          print_output( user_msg, FATAL );
-          exit( 1 );
+        if( $2 != NULL ) {
+          tmp = db_create_expression( $2, NULL, EXP_OP_UINV, @1.first_line, NULL );
         }
-        tmp = db_create_expression( $2, NULL, EXP_OP_UINV, @1.first_line, NULL );
         $$ = tmp;
       } else {
         $$ = NULL;
@@ -480,16 +461,11 @@ expression
     }
   | '&' expr_primary %prec UNARY_PREC
     {
-      expression* tmp;
+      expression* tmp = NULL;
       if( ignore_mode == 0 ) {
-        if( $2 == NULL ) {
-          snprintf( user_msg, USER_MSG_LENGTH, "%s:%d: Expression signal not declared", 
-                    @1.text,
-                    @1.first_line );
-          print_output( user_msg, FATAL );
-          exit( 1 );
+        if( $2 != NULL ) {
+          tmp = db_create_expression( $2, NULL, EXP_OP_UAND, @1.first_line, NULL );
         }
-        tmp = db_create_expression( $2, NULL, EXP_OP_UAND, @1.first_line, NULL );
         $$ = tmp;
       } else {
         $$ = NULL;
@@ -497,16 +473,11 @@ expression
     }
   | '!' expr_primary %prec UNARY_PREC
     {
-      expression* tmp;
+      expression* tmp = NULL;
       if( ignore_mode == 0 ) {
-        if( $2 == NULL ) {
-          snprintf( user_msg, USER_MSG_LENGTH, "%s:%d: Expression signal not declared", 
-                    @1.text,
-                    @1.first_line );
-          print_output( user_msg, FATAL );
-          exit( 1 );
+        if( $2 != NULL ) {
+          tmp = db_create_expression( $2, NULL, EXP_OP_UNOT, @1.first_line, NULL );
         }
-        tmp = db_create_expression( $2, NULL, EXP_OP_UNOT, @1.first_line, NULL );
         $$ = tmp;
       } else {
         $$ = NULL;
@@ -514,16 +485,11 @@ expression
     }
   | '|' expr_primary %prec UNARY_PREC
     {
-      expression* tmp;
+      expression* tmp = NULL;
       if( ignore_mode == 0 ) {
-        if( $2 == NULL ) {
-          snprintf( user_msg, USER_MSG_LENGTH, "%s:%d: Expression signal not declared", 
-                    @1.text,
-                    @1.first_line );
-          print_output( user_msg, FATAL );
-          exit( 1 );
+        if( $2 != NULL ) {
+          tmp = db_create_expression( $2, NULL, EXP_OP_UOR, @1.first_line, NULL );
         }
-        tmp = db_create_expression( $2, NULL, EXP_OP_UOR, @1.first_line, NULL );
         $$ = tmp;
       } else {
         $$ = NULL;
@@ -531,16 +497,11 @@ expression
     }
   | '^' expr_primary %prec UNARY_PREC
     {
-      expression* tmp;
+      expression* tmp = NULL;
       if( ignore_mode == 0 ) {
-        if( $2 == NULL ) {
-          snprintf( user_msg, USER_MSG_LENGTH, "%s:%d: Expression signal not declared", 
-                    @1.text,
-                    @1.first_line );
-          print_output( user_msg, FATAL );
-          exit( 1 );
+        if( $2 != NULL ) {
+          tmp = db_create_expression( $2, NULL, EXP_OP_UXOR, @1.first_line, NULL );
         }
-        tmp = db_create_expression( $2, NULL, EXP_OP_UXOR, @1.first_line, NULL );
         $$ = tmp;
       } else {
         $$ = NULL;
@@ -548,16 +509,11 @@ expression
     }
   | K_NAND expr_primary %prec UNARY_PREC
     {
-      expression* tmp;
+      expression* tmp = NULL;
       if( ignore_mode == 0 ) {
-        if( $2 == NULL ) {
-          snprintf( user_msg, USER_MSG_LENGTH, "%s:%d: Expression signal not declared", 
-                    @1.text,
-                    @1.first_line );
-          print_output( user_msg, FATAL );
-          exit( 1 );
+        if( $2 != NULL ) {
+          tmp = db_create_expression( $2, NULL, EXP_OP_UNAND, @1.first_line, NULL );
         }
-        tmp = db_create_expression( $2, NULL, EXP_OP_UNAND, @1.first_line, NULL );
         $$ = tmp;
       } else {
         $$ = NULL;
@@ -565,16 +521,11 @@ expression
     }
   | K_NOR expr_primary %prec UNARY_PREC
     {
-      expression* tmp;
+      expression* tmp = NULL;
       if( ignore_mode == 0 ) {
-        if( $2 == NULL ) {
-          snprintf( user_msg, USER_MSG_LENGTH, "%s:%d: Expression signal not declared", 
-                    @1.text,
-                    @1.first_line );
-          print_output( user_msg, FATAL );
-          exit( 1 );
+        if( $2 != NULL ) {
+          tmp = db_create_expression( $2, NULL, EXP_OP_UNOR, @1.first_line, NULL );
         }
-        tmp = db_create_expression( $2, NULL, EXP_OP_UNOR, @1.first_line, NULL );
         $$ = tmp;
       } else {
         $$ = NULL;
@@ -582,16 +533,11 @@ expression
     }
   | K_NXOR expr_primary %prec UNARY_PREC
     {
-      expression* tmp;
+      expression* tmp = NULL;
       if( ignore_mode == 0 ) {
-        if( $2 == NULL ) {
-          snprintf( user_msg, USER_MSG_LENGTH, "%s:%d: Expression signal not declared", 
-                    @1.text,
-                    @1.first_line );
-          print_output( user_msg, FATAL );
-          exit( 1 );
+        if( $2 != NULL ) {
+          tmp = db_create_expression( $2, NULL, EXP_OP_UNXOR, @1.first_line, NULL );
         }
-        tmp = db_create_expression( $2, NULL, EXP_OP_UNXOR, @1.first_line, NULL );
         $$ = tmp;
       } else {
         $$ = NULL;
@@ -1408,7 +1354,7 @@ module_item
       param_exp_tail = NULL;
     }
   | K_assign drive_strength_opt { ignore_mode++; } delay3_opt { ignore_mode--; } assign_list ';'
-	| K_always statement
+  | K_always statement
     {
       statement* stmt = $2;
       if( stmt != NULL ) {

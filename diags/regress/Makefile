@@ -25,7 +25,7 @@ CDD_DIR       = ../cdd
 LOGFILE = regress.log
 
 DIAGS1        = always1        always2        always3        always3.1.11A  always4 \
-                always5        always6        always7        assign2        assign2.1 \
+                always5        always6        always7        always8        assign2        assign2.1 \
                 assign2.2      assign2.3      assign2.9      assign3.2A     case1 \
                 case1.1        case1.2        case1.3        case2          case3 \
                 case3.1        case3.2        case3.3        case3.4        casex1 \
@@ -37,7 +37,7 @@ DIAGS1        = always1        always2        always3        always3.1.11A  alwa
                 ifdef1         ifdef1.2       ifdef2.1       ifdef2.2       ifdef2.3 \
                 ifelse1        include1       include1.1     include2       instance1 \
                 instance1.1    instance1.2    instance2      instance3      instance4 \
-                instance4.1    instance4.2    instance5      instance6      instance6.1     instance6.2 \
+                instance4.1    instance4.2    instance5      instance6      instance6.1    instance6.2 \
                 long_exp1      mbit_sel1      mbit_sel2      mbit_sel3      mbit_sel3.1 \
                 mult1          param1         param1.1       param1.2       param1.3 \
                 param3         param3.1       param3.2       param3.3       param3.4 \
