@@ -1,0 +1,66 @@
+5 1 *
+3 main main fsm4.v
+2 9 main 17 1025b2 0 0 
+2 16 main 20 102032 0 0 
+2 15 main 20 102032 0 0 
+2 17 main 20 18201a 16 15 16 0 f11aa,f11aa,f00aa,f00aa
+2 13 main 20 203001 0 0 
+2 12 main 20 203001 0 0 
+2 14 main 20 293008 13 12 1 0 111aa
+2 18 main 20 1a2599 17 14 16 0 f11aa,f11aa,f00aa,f00aa
+2 24 main 21 102032 0 0 
+2 23 main 21 102032 0 0 
+2 25 main 21 18201a 24 23 16 0 f00aa,f00aa,f10aa,f01aa
+2 21 main 21 103001 0 0 
+2 20 main 21 102001 0 0 
+2 22 main 21 1cf008 21 20 1 0 101aa
+2 26 main 21 1ae599 25 22 16 0 f00aa,f00aa,f10aa,f01aa
+2 32 main 22 102032 0 0 
+2 31 main 22 102032 0 0 
+2 33 main 22 18201a 32 31 16 0 f00aa,f00aa,f10aa,f01aa
+2 29 main 22 103001 0 0 
+2 28 main 22 102001 0 0 
+2 30 main 22 1cf008 29 28 1 0 101aa
+2 34 main 22 1ae599 33 30 16 0 f00aa,f00aa,f10aa,f01aa
+2 40 main 23 102032 0 0 
+2 39 main 23 102032 0 0 
+2 41 main 23 18201a 40 39 16 0 f01aa,f10aa,f00aa,f00aa
+2 37 main 23 203001 0 0 
+2 36 main 23 203001 0 0 
+2 38 main 23 293008 37 36 1 0 110aa
+2 42 main 23 1a2599 41 38 16 0 f01aa,f10aa,f00aa,f00aa
+2 35 main 23 102032 0 0 
+2 10 main 19 102081 0 0 
+2 43 main 23 1825ad 35 10 1 0 100aa
+2 27 main 22 102032 0 0 
+2 44 main 22 2831ad 27 10 1 0 110aa
+2 19 main 21 102032 0 0 
+2 45 main 21 2831ad 19 10 1 0 111aa
+2 11 main 20 102032 0 0 
+2 46 main 20 1831ad 11 10 1 0 111aa
+2 8 main 16 203181 0 0 
+2 5 main 15 203001 0 0 
+2 6 main 15 2a 0 0 2 0 333aa
+2 7 main 15 2033a7 5 6 1 0 111aa
+1 #STATE_IDLE main 16 0 300001,0,0,0 9 11 16 40
+1 #STATE_HEAD main 16 0 300000,1,0,0 15 19 39
+1 #STATE_DATA main 16 0 300000,0,1,0 24 27 32
+1 #STATE_TAIL main 16 0 300000,0,0,1 23 31 35
+1 clk main 1 0 111aa 5
+1 reset main 1 0 110aa 8
+1 head main 1 0 111aa 13 37
+1 tail main 1 0 111aa 21 29
+1 valid main 1 0 111aa 12 20 28 36
+1 state main 16 0 f11aa,f11aa,f11aa,f11aa 10
+4 42 main 7 7
+4 43 main 42 7
+4 34 main 7 7
+4 44 main 34 43
+4 26 main 7 7
+4 45 main 26 44
+4 18 main 7 7
+4 46 main 18 45
+4 9 main 7 7
+4 8 main 9 46
+4 7 main 8 0
+6 * state 10,10,06,,010220,,0120,02,01,0220,0102,,0201,0202,21,,,02

@@ -320,10 +320,15 @@ void signal_vcd_assign( signal* sig, char* value, int msb, int lsb ) {
   snprintf( user_msg, USER_MSG_LENGTH, "Assigning signal %s to value %s", sig->name, value );
   print_output( user_msg, DEBUG );
 
+  /* If the to and from signals are the same, copy the output signal vector to the dummy input signal vector */
+  if( (sig->table != NULL) && (sig->table->from_sig->name[0] == '*') ) {
+    vector_set_value( sig->table->from_sig->value, sig->value->value, sig->value->width, sig->value->lsb, sig->value->lsb );
+  }
+
   /* Set signal value to specified value */
   vector_vcd_assign( sig->value, value, msb, lsb );
 
-  /* Assign value to signal's vector value */
+  /* If this signal is part of an FSM, get FSM coverage now. */
   if( sig->table != NULL ) {
     fsm_table_set( sig->table );
   }
@@ -409,6 +414,10 @@ void signal_dealloc( signal* sig ) {
 
 /*
  $Log$
+ Revision 1.33  2003/09/12 04:47:00  phase1geo
+ More fixes for new FSM arc transition protocol.  Everything seems to work now
+ except that state hits are not being counted correctly.
+
  Revision 1.32  2003/08/25 13:02:04  phase1geo
  Initial stab at adding FSM support.  Contains summary reporting capability
  at this point and roughly works.  Updated regress suite as a result of these

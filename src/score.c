@@ -62,8 +62,9 @@ void score_usage() {
   printf( "      -o <database_filename>       Name of database to write coverage information to.\n" );
   printf( "      -I <directory>               Directory to find included Verilog files.\n" );
   printf( "      -f <filename>                Name of file containing additional arguments to parse.\n" );
-  printf( "      -F <module>=<var>,<var>      Module, input state variable and output state variable of\n" );
-  printf( "                                    an FSM state variable.\n" );
+  printf( "      -F <module>=(<ivar>,)<ovar>  Module, input state variable and output state variable of\n" );
+  printf( "                                    an FSM state variable.  If input variable (ivar) is not specified,\n" );
+  printf( "                                    the output variable (ovar) is also used as the input variable.\n" ); 
   printf( "      -y <directory>               Directory to find unspecified Verilog files.\n" );
   printf( "      -v <filename>                Name of specific Verilog file to score.\n" );
   printf( "      -e <module_name>             Name of module to not score.\n" );
@@ -228,7 +229,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
         ptr++;
       }
       if( *ptr == '\0' ) {
-        print_output( "Option -F must specify a module and two variables.  See \"covered score -h\" for more information.", FATAL );
+        print_output( "Option -F must specify a module and one or two variables.  See \"covered score -h\" for more information.", FATAL );
         exit( 1 );
       } else {
         *ptr = '\0';
@@ -238,8 +239,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
           ptr2++;
         }
         if( *ptr2 == '\0' ) {
-          print_output( "Option -F must specify a module and two variables.  See \"covered score -h\" for more information.", FATAL );
-          exit( 1 );
+          fsm_add_fsm_variable( argv[i], ptr, ptr );
         } else {
           *ptr2 = '\0';
           ptr2++;
@@ -393,6 +393,9 @@ int command_score( int argc, int last_arg, char** argv ) {
       print_output( "", NORMAL );
     }
 
+    /* If there are any unused FSM variables, let the user know now. */
+    fsm_check_for_unused_vars();
+
     /* Read dumpfile and score design */
     if( vcd_file != NULL ) {
       snprintf( user_msg, USER_MSG_LENGTH, "Scoring dumpfile %s...", vcd_file );
@@ -422,6 +425,10 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.37  2003/09/12 04:47:00  phase1geo
+ More fixes for new FSM arc transition protocol.  Everything seems to work now
+ except that state hits are not being counted correctly.
+
  Revision 1.36  2003/08/25 13:02:04  phase1geo
  Initial stab at adding FSM support.  Contains summary reporting capability
  at this point and roughly works.  Updated regress suite as a result of these

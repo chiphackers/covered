@@ -49,6 +49,7 @@
 #include "link.h"
 #include "vector.h"
 #include "arc.h"
+#include "signal.h"
 
 
 extern mod_inst*    instance_root;
@@ -150,6 +151,41 @@ fsm_var* fsm_is_fsm_out_variable( char* mod, char* var ) {
   }
 
   return( curr );
+
+}
+
+/*!
+ Checks the state of the FSM variable list.  If the list is not empty, output all
+ FSM state variables (and their associated modules) that have not been found as
+ a warning to the user.  This would indicate user error.  This function should be
+ called after parsing is complete.
+*/
+void fsm_check_for_unused_vars() {
+
+  fsm_var* curr;  /* Pointer to current FSM variable structure being evaluated */
+
+  if( fsm_var_head != NULL ) {
+
+    print_output( "The following FSM state variables were not found:", WARNING );
+    print_output( "  Module                     Variable", WARNING );
+    print_output( "  -------------------------  -------------------------", WARNING );
+
+    curr = fsm_var_head;
+    while( curr != NULL ) {
+      if( curr->isig == NULL ) {
+        snprintf( user_msg, USER_MSG_LENGTH, "  %-25.25s  %-25.25s", curr->mod, curr->ivar );
+        print_output( user_msg, WARNING );
+      }
+      if( curr->table == NULL ) {
+        snprintf( user_msg, USER_MSG_LENGTH, "  %-25.25s  %-25.25s", curr->mod, curr->ovar );
+        print_output( user_msg, WARNING );
+      }
+      curr = curr->next;
+    }
+
+    fprintf( stderr, "\n" );
+
+  }
 
 }
 
@@ -332,12 +368,22 @@ bool fsm_db_read( char** line, module* mod ) {
     /* Find specified signal */
     isig.name = isig_name;
     osig.name = osig_name;
-    if( ((isigl = sig_link_find( &isig, mod->sig_head )) != NULL) &&
-        ((osigl = sig_link_find( &osig, mod->sig_head )) != NULL) ) {
+    if( (((isigl = sig_link_find( &isig, mod->sig_head )) != NULL) || (isig.name[0] == '*')) &&
+         ((osigl = sig_link_find( &osig, mod->sig_head )) != NULL) ) {
 
       /* Create new FSM */
-      table             = fsm_create( osigl->sig );
-      table->from_sig   = isigl->sig;
+      table = fsm_create( osigl->sig );
+
+      /*
+       If the input state variable is the same as the output state variable (represented with the
+       signal name of "*"), create the new signal now.
+      */
+      if( isig.name[0] == '*' ) {
+        table->from_sig = signal_create( isig_name, osigl->sig->value->width, osigl->sig->value->lsb );
+      } else {
+        table->from_sig = isigl->sig;
+      }
+
       osigl->sig->table = table;
       fsm_create_tables( table );
 
@@ -684,7 +730,11 @@ void fsm_display_verbose( FILE* ofile, fsm_link* head ) {
 
   while( head != NULL ) {
 
-    fprintf( ofile, "FSM input state (%s), output state (%s)\n\n", head->table->from_sig->name, head->table->to_sig->name );
+    if( head->table->from_sig->name[0] == '*' ) {
+      fprintf( ofile, "FSM input/output state (%s)\n\n", head->table->to_sig->name );
+    } else {
+      fprintf( ofile, "FSM input state (%s), output state (%s)\n\n", head->table->from_sig->name, head->table->to_sig->name );
+    }
 
     fsm_display_state_verbose( ofile, head->table );
     fsm_display_arc_verbose( ofile, head->table );
@@ -853,6 +903,10 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.15  2003/09/19 18:04:28  phase1geo
+ Adding fsm3 diagnostic to check proper handling of wide state variables.
+ Code fixes to support new diagnostic.
+
  Revision 1.14  2003/09/19 13:25:28  phase1geo
  Adding new FSM diagnostics including diagnostics to verify FSM merging function.
  FSM merging code was modified to work correctly.  Full regression passes.
