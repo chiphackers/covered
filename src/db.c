@@ -38,6 +38,7 @@ extern mod_link* mod_head;
 extern mod_link* mod_tail;
 extern nibble    or_optab[16];
 extern char      user_msg[USER_MSG_LENGTH];
+extern bool      one_instance_found;
 
 /*!
  Specifies the string Verilog scope that is currently specified in the VCD file.
@@ -762,7 +763,7 @@ statement* db_create_statement( expression* exp ) {
   statement* stmt;       /* Pointer to newly created statement */
 
   snprintf( user_msg, USER_MSG_LENGTH, "In db_create_statement, id: %d, line: %d", exp->id, exp->line );
-  print_output( user_msg, NORMAL );
+  print_output( user_msg, DEBUG );
 
   stmt = statement_create( exp );
 
@@ -779,7 +780,7 @@ statement* db_create_statement( expression* exp ) {
 */
 void db_add_statement( statement* stmt, statement* start ) {
  
-  if( stmt != NULL ) {
+  if( (stmt != NULL) && ((stmt->exp->suppl & (0x1 << SUPPL_LSB_STMT_ADDED)) == 0) ) {
 
     snprintf( user_msg, USER_MSG_LENGTH, "In db_add_statement, id: %d, start id: %d", stmt->exp->id, start->exp->id );
     print_output( user_msg, DEBUG );
@@ -792,6 +793,9 @@ void db_add_statement( statement* stmt, statement* start ) {
     if( (stmt->next_true != stmt->next_false) && (stmt->next_true != start) ) {
       db_add_statement( stmt->next_true, start );
     }
+
+    /* Set ADDED bit of this statement */
+    stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_ADDED);
 
     /* Now add current statement */
     stmt_link_add_tail( stmt, &(curr_module->stmt_head), &(curr_module->stmt_tail) );
@@ -982,6 +986,11 @@ void db_set_vcd_scope( char* scope ) {
     
   curr_instance = instance_find_scope( instance_root, curr_inst_scope );
 
+  /* If we have found at least one matching instance, set the one_instance_found flag */
+  if( curr_instance != NULL ) {
+    one_instance_found = TRUE;
+  }
+
 }
 
 /*!
@@ -1132,6 +1141,11 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.83  2003/02/07 02:28:23  phase1geo
+ Fixing bug with statement removal.  Expressions were being deallocated but not properly
+ removed from module parameter expression lists and module expression lists.  Regression
+ now passes again.
+
  Revision 1.82  2003/02/05 22:50:56  phase1geo
  Some minor tweaks to debug output and some minor bug "fixes".  At this point
  regression isn't stable yet.

@@ -345,6 +345,14 @@
 #define SUPPL_LSB_STMT_CONNECTED    23
 
 /*!
+ Temporary bit value used by the score command but not displayed to the CDD file.  When
+ this bit is set to a one, it indicates to the db_add_statement function that this
+ statement and all children statements have already been added to the module statement
+ list and should not be added again.
+*/
+#define SUPPL_LSB_STMT_ADDED        24
+
+/*!
  Used for merging two supplemental fields from two expressions.  Both expression
  supplemental fields are ANDed with this mask and ORed together to perform the
  merge.  Fields that are merged are:
@@ -359,7 +367,7 @@
  - STMT_CONTINUOUS
  - EVAL 00, 01, 10, 11
 */
-#define SUPPL_MERGE_MASK            0xff7fffff
+#define SUPPL_MERGE_MASK            0xfe7fffff
 
 /*!
  Returns a value of 1 if the specified supplemental value has the SWAPPED
@@ -1148,6 +1156,12 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.64  2003/01/04 09:25:15  phase1geo
+ Fixing file search algorithm to fix bug where unexpected module that was
+ ignored cannot be found.  Added instance7.v diagnostic to verify appropriate
+ handling of this problem.  Added tree.c and tree.h and removed define_t
+ structure in lexer.
+
  Revision 1.63  2003/01/03 05:52:01  phase1geo
  Adding code to help safeguard from segmentation faults due to array overflow
  in VCD parser and symtable.  Reorganized code for symtable symbol lookup and

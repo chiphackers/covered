@@ -20,7 +20,17 @@
 #include "util.h"
 
 
-extern char user_msg[USER_MSG_LENGTH];
+extern char  user_msg[USER_MSG_LENGTH];
+extern char* top_instance;
+extern bool  instance_specified;
+
+/*!
+ This flag is used to indicate if Covered was successfull in finding at least one
+ matching instance from the VCD file.  If no instances were found for the entire
+ VCD file, the user has either not specified the -i option or has specified an
+ incorrect path to the top-level module instance so let them know about this.
+*/
+bool one_instance_found = FALSE;
 
 
 /*!
@@ -159,6 +169,23 @@ void vcd_parse_def( FILE* vcd ) {
 
   assert( enddef_found );
 
+  /* Check to see that at least one instance was found */
+  if( !one_instance_found ) {
+
+    print_output( "No instances were found in specified VCD file that matched design", FATAL );
+
+    /* If the -i option was not specified, let the user know */
+    if( instance_specified ) {
+      print_output( "  Please use -i option to specify correct hierarchy to top-level module to score", FATAL );
+    } else {
+      snprintf( user_msg, USER_MSG_LENGTH, "  Incorrect hierarchical path specified in -i option: %s", top_instance );
+      print_output( user_msg, FATAL );
+    }
+
+    exit( 1 );
+
+  }
+
 }
 
 /*!
@@ -292,6 +319,11 @@ void vcd_parse( char* vcd_file ) {
 
 /*
  $Log$
+ Revision 1.7  2003/01/03 05:52:00  phase1geo
+ Adding code to help safeguard from segmentation faults due to array overflow
+ in VCD parser and symtable.  Reorganized code for symtable symbol lookup and
+ value assignment.
+
  Revision 1.6  2002/10/29 19:57:51  phase1geo
  Fixing problems with beginning block comments within comments which are
  produced automatically by CVS.  Should fix warning messages from compiler.

@@ -24,12 +24,13 @@
 #include "vector.h"
 
 
-char* top_module      = NULL;                /*!< Name of top-level module to score                     */
-char* top_instance    = NULL;                /*!< Name of top-level instance name                       */
-char* output_db       = NULL;                /*!< Name of output score database file to generate        */
-char* vcd_file        = NULL;                /*!< Name of VCD output file to parse                      */
-int   delay_expr_type = DELAY_EXPR_DEFAULT;  /*!< Value to use when a delay expression with min:typ:max */
-char* ppfilename      = NULL;                /*!< Name of preprocessor filename to use                  */
+char* top_module         = NULL;                /*!< Name of top-level module to score                     */
+char* top_instance       = NULL;                /*!< Name of top-level instance name                       */
+char* output_db          = NULL;                /*!< Name of output score database file to generate        */
+char* vcd_file           = NULL;                /*!< Name of VCD output file to parse                      */
+int   delay_expr_type    = DELAY_EXPR_DEFAULT;  /*!< Value to use when a delay expression with min:typ:max */
+char* ppfilename         = NULL;                /*!< Name of preprocessor filename to use                  */
+bool  instance_specified = FALSE;               /*!< Specifies if -i option was specified                  */
 
 extern unsigned long largest_malloc_size;
 extern unsigned long curr_malloc_size;
@@ -171,7 +172,8 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
     } else if( strncmp( "-i", argv[i], 2 ) == 0 ) {
 
       i++;
-      top_instance = strdup( argv[i] );
+      top_instance       = strdup( argv[i] );
+      instance_specified = TRUE;
 
     } else if( strncmp( "-o", argv[i], 2 ) == 0 ) {
 
@@ -380,6 +382,10 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.32  2003/01/06 00:44:21  phase1geo
+ Updates to NEWS, ChangeLog, development documentation and user documentation
+ for new 0.2pre1_20030105 release.
+
  Revision 1.31  2002/11/27 06:03:35  phase1geo
  Adding diagnostics to verify selectable delay.  Removing selectable delay
  warning from being output constantly to only outputting when selectable delay
