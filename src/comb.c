@@ -700,7 +700,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
             case EXP_OP_CASE     :  *size = l_size + r_size + 11; strcpy( code_fmt, "      %s   %s  "  );  break;
             case EXP_OP_CASEX    :  *size = l_size + r_size + 12; strcpy( code_fmt, "       %s   %s  " );  break;
             case EXP_OP_CASEZ    :  *size = l_size + r_size + 12; strcpy( code_fmt, "       %s   %s  " );  break;
-            case EXP_OP_DELAY    :  *size = l_size + r_size + 3;  strcpy( code_fmt, "  %s " );  assert( 1 == 0 );          break;
+            case EXP_OP_DELAY    :  *size = l_size + r_size + 3;  strcpy( code_fmt, "  %s " );             break;
             case EXP_OP_ASSIGN   :  *size = l_size + r_size + 10; strcpy( code_fmt, "       %s   %s" );    break;
             case EXP_OP_BASSIGN  :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s   %s" );           break;
             case EXP_OP_NASSIGN  :  *size = l_size + r_size + 4;  strcpy( code_fmt, "%s    %s" );          break;
@@ -1572,6 +1572,12 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.96  2004/03/18 23:01:45  phase1geo
+ Fixing combination_output_expr function to correctly determine when an
+ expression should be output to the report.  Full regression now passes.
+ Also modified TCL scripts to not be dependent on the original widgets
+ package (we use straight TCL for now).
+
  Revision 1.95  2004/03/18 14:06:51  phase1geo
  Fixing combination_output_expr to work correctly for covered and uncovered
  modes.
