@@ -520,11 +520,12 @@ void vector_logic_count( vector* vec, int* false_cnt, int* true_cnt ) {
 */
 void vector_set_value( vector* vec, nibble* value, int width, int from_idx, int to_idx ) {
 
-  nibble from_val;      /* Current bit value of value being assigned */
-  nibble to_val;        /* Current bit value of previous value       */
-  int    nibble_to_set; /* Index to current nibble in value          */
-  int    bit_shift;     /* Number of bits to shift in current nibble */
-  int    i;             /* Loop iterator                             */
+  nibble from_val;      /* Current bit value of value being assigned  */
+  nibble to_val;        /* Current bit value of previous value        */
+  int    nibble_to_set; /* Index to current nibble in value           */
+  int    bit_shift;     /* Number of bits to shift in current nibble  */
+  int    i;             /* Loop iterator                              */
+  nibble value_changed; /* Indicates if current bit has changed value */
 
   assert( vec != NULL );
 
@@ -567,7 +568,14 @@ void vector_set_value( vector* vec, nibble* value, int width, int from_idx, int 
     nibble_to_set = ((i + to_idx) / 4);
     bit_shift     = ((i + to_idx) % 4) * 2;
 
-    vec->value[nibble_to_set] = (0x1 << (((i + to_idx) % 4) + 16)) |
+    /* If value has changed from previous, set previous assignment bit */
+    if( vector_bit_val( value, (i + from_idx) ) != vector_bit_val( vec->value, (i + to_idx )) ) {
+      value_changed = (0x1 << (((i + to_idx) % 4) + 16));
+    } else {
+      value_changed = 0;
+    }
+
+    vec->value[nibble_to_set] = value_changed |
                                 (vec->value[nibble_to_set] & ~(0x3 << bit_shift)) |
                                 (vector_bit_val( value, (i + from_idx) ) << bit_shift);
 
@@ -1399,6 +1407,13 @@ void vector_dealloc( vector* vec ) {
 }
 
 /* $Log$
+/* Revision 1.17  2002/09/12 05:16:25  phase1geo
+/* Updating all CDD files in regression suite due to change in vector handling.
+/* Modified vectors to assign a default value of 0xaa to unassigned registers
+/* to eliminate bugs where values never assigned and VCD file doesn't contain
+/* information for these.  Added initial working version of depth feature in
+/* report generation.  Updates to man page and parameter documentation.
+/*
 /* Revision 1.16  2002/08/23 12:55:33  phase1geo
 /* Starting to make modifications for parameter support.  Added parameter source
 /* and header files, changed vector_from_string function to be more verbose
