@@ -1,0 +1,245 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+  <TITLE>Covered - The score Command</TITLE>
+  <META name="GENERATOR" content="ManStyle">
+  <META name="AUTHOR" content="Trevor Williams">
+  <LINK rel=stylesheet type="text/css" href="styles.css">
+</HEAD>
+<BODY text="#000000"
+      link="#12568c" vlink="#023a64" alink="#000000" 
+      bgcolor="#ffffff" background="img/tile.jpeg">
+
+<TABLE width=615 border=0 cellpadding=0 cellspacing=0>
+  <TR>
+    <TD width=30>
+      <IMG src="img/space.gif" width=30 height=1 border=0>
+    </TD>
+    <TD width=105>
+      <IMG src="img/space.gif" width=105 height=1 border=0>
+    </TD>
+    <TD width=20>
+      <IMG src="img/space.gif" width=20 height=1 border=0>
+    </TD>
+    <TD width=460>
+      <IMG src="img/space.gif" width=460 height=1 border=0><BR>
+      <P class="pageNumber">&nbsp;11&nbsp;</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top></TD>
+    <TD></TD>
+    <TD align=center>
+      <TABLE width=460 border=0 cellpadding=0 cellspacing=0>
+        <TR>
+          <TD width=460 align=center valign=top class="navigator">
+            <P class="navigator"><IMG src="img/000000.gif" height=2 width=460><BR>
+            <IMG src="img/toolbar_left.png" border=0><A href="001.html" alt="Contents"><IMG src="img/toolbar_cont.png" border=0></A><A href="index.html" alt="First Page"><IMG src="img/toolbar_first.png" border=0></A><A href="010.html" alt="Previous Page"><IMG src="img/toolbar_prev.png" border=0></A><A href="$file_home" alt="Home"><IMG src="img/toolbar_home.png" border=0></A><A href="012.html" alt="Next Page"><IMG src="img/toolbar_next.png" border=0></A><A href="014.html" alt="Last Page"><IMG src="img/toolbar_last.png" border=0></A><IMG src="img/toolbar_right.png" border=0>
+            <BR><IMG src="img/000000.gif" height=2 width=460></P>
+          </TD>
+        </TR>
+        <TR>
+          <TD align=center valign=top>
+            <P class="pageHeader">User Manual - <B>&laquo;Covered&raquo;</B><BR><IMG src="img/000000.gif" height=1 width=460></P>
+          </TD>
+        </TR>
+        <TR>
+          <TD align=center valign=top>
+            &nbsp;
+          </TD>
+        </TR>
+      </TABLE>
+    </TD>
+  </TR>
+
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header1">6&nbsp;&nbsp; <A name="6"></A>The score Command<BR><IMG src="img/12568c.gif" height=2 width=460></P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header2">6.1&nbsp; <A name="6_1"></A>Usage</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">The score command is initiated with the following call:</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="code">covered score -t &lt;top_instance&gt; -vcd &lt;vcd_dumpfile&gt; [&lt;options&gt;]</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">The <i>top_instance</i> parameter is required for the scoring purposes and represents the top-most module instance in the module instance hierarchy that will be covered. Covered is limited to being able to gain coverage results for either a single module or a single module tree. The following figure shows a design in its hierachical form to illustrate how to get Covered to generate coverage results for a part of the design.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin">Figure</P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg"><img src="img/vhier.png"></P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">To get coverage for the entire design, the <i>top_instance</i> value would be "test".</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">To get coverage for the instance foo and all modules below it, the <i>top_instance</i> value would be "test.foo".</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">To get coverage for the instance foo and all modules below it, in addition to the instance bar, you would have to run Covered twice (once for each top instance).</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">The -vcd &lt;<i>vcd_dumpfile</i>&gt; parameter is simply the name of the VCD dumpfile that contains all of the module instances selected by the -t parameter (in combination with the -e option -- see below).</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header2">6.2&nbsp; <A name="6_2"></A>Options</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">The following table describes the additional options that can be passed to the score command. Note that it is optional in how you tell Covered where to find the Verilog design files; however, it is not optional to exclude the Verilog files. If no Verilog can be found that contains at least the top instance, Covered will generate an error message to the user specifying that it was unable to find the required Verilog modules.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      
+      <TABLE cellpadding=0 cellspacing=0 border=0 width=100%>
+        <TR>
+          <TD>
+            <P class="blockIndentLeft">&nbsp;</P>
+          </TD>
+          <TD width=100% align=center>
+<table cellspacing=2 cellpadding=4 border=1> <tr> <td colspan=2 class="tableHeader"> Options to score Command </td> </tr> <tr> <td> <strong>Option</strong> </td> <td> <strong>Description</strong> <td> </tr> <tr> <td> -o &lt;<i>filename</i>&gt; </td> <td> Name of CDD to write coverage information to </td> </tr> <tr> <td> -I &lt;<i>directory</i>&gt; </td> <td> Directory to find included Verilog files. You may use this option as many times as necessary on the command-line, one for each directory. </td> </tr> <tr> <td> -f &lt;<i>filename</i>&gt; </td> <td> Name of file containing additional arguments to parse. You may specify this option more than once on a command-line. </td> </tr> <tr> <td> -y &lt;<i>directory</i>&gt; </td> <td> Directory to find unspecified Verilog files. You may specify this option more than once on a command-line; one for each directory required. </td> </tr> <tr> <td> -v &lt;<i>filename</i>&gt; </td> <td> Name of specific Verilog file to score. You may specify this option more than once on a command-line; one for each filename to parse. </td> </tr> <tr> <td> -e &lt;<i>module</i>&gt; </td> <td> Name of module to not score. You may specify this option more than once on a command-line; one for each module to remove from coverage. </td> </tr> <tr> <td> -q </td> <td> Suppresses output to standard output </td> </tr> <tr> <td> -h </td> <td> Outputs usage information for the score command </td> </tr> </table>
+          </TD>
+          <TD>
+            <P class="blockIndentRight">&nbsp;</P>
+          </TD>
+        </TR>
+      </TABLE>
+
+    </TD>
+  </TR>
+
+
+  <TR>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD valign=top>
+       <P class="navigatorSmall"><IMG src="img/12568c.gif" height=1 width=460><BR>
+       [&nbsp;
+       <A href="001.html">Contents</A>&nbsp;&nbsp;|&nbsp;
+       <A href="index.html">First Page</A>&nbsp;&nbsp;|&nbsp;
+       <A href="010.html">Previous Page</A>&nbsp;&nbsp;|&nbsp;
+       <A href="$file_home">Home</A>&nbsp;
+       &nbsp;|&nbsp;<A href="012.html">Next Page</A>&nbsp;&nbsp;|&nbsp;
+       <A href="014.html">Last Page</A>&nbsp;
+       ]<BR>
+       [&nbsp; <A href="001.html">1</A>&nbsp;|&nbsp;<A href="002.html">2</A>&nbsp;|&nbsp;<A href="003.html">3</A>&nbsp;|&nbsp;<A href="004.html">4</A>&nbsp;|&nbsp;<A href="005.html">5</A>&nbsp;|&nbsp;<A href="006.html">6</A>&nbsp;|&nbsp;<A href="007.html">7</A>&nbsp;|&nbsp;<A href="008.html">8</A>&nbsp;|&nbsp;<A href="009.html">9</A>&nbsp;|&nbsp;<A href="010.html">10</A>&nbsp;|&nbsp;<A href="011.html">11</A>&nbsp;|&nbsp;<A href="012.html">12</A>&nbsp;|&nbsp;<A href="013.html">13</A>&nbsp;|&nbsp;<A href="014.html">14</A> &nbsp;]
+       <BR>
+       <B>License: GPL</B><BR>
+       This Manual was created with <A HREF="http://manstyle.sourceforge.net">ManStyle</A>.
+       </P>
+    </TD>
+  </TR>
+
+</TABLE>
+
+<P>
+  <BR><BR>
+</P>
+
+</BODY>
+</HTML>

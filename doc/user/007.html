@@ -1,0 +1,253 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+  <TITLE>Covered - FSM Coverage</TITLE>
+  <META name="GENERATOR" content="ManStyle">
+  <META name="AUTHOR" content="Trevor Williams">
+  <LINK rel=stylesheet type="text/css" href="styles.css">
+</HEAD>
+<BODY text="#000000"
+      link="#12568c" vlink="#023a64" alink="#000000" 
+      bgcolor="#ffffff" background="img/tile.jpeg">
+
+<TABLE width=615 border=0 cellpadding=0 cellspacing=0>
+  <TR>
+    <TD width=30>
+      <IMG src="img/space.gif" width=30 height=1 border=0>
+    </TD>
+    <TD width=105>
+      <IMG src="img/space.gif" width=105 height=1 border=0>
+    </TD>
+    <TD width=20>
+      <IMG src="img/space.gif" width=20 height=1 border=0>
+    </TD>
+    <TD width=460>
+      <IMG src="img/space.gif" width=460 height=1 border=0><BR>
+      <P class="pageNumber">&nbsp;7&nbsp;</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top></TD>
+    <TD></TD>
+    <TD align=center>
+      <TABLE width=460 border=0 cellpadding=0 cellspacing=0>
+        <TR>
+          <TD width=460 align=center valign=top class="navigator">
+            <P class="navigator"><IMG src="img/000000.gif" height=2 width=460><BR>
+            <IMG src="img/toolbar_left.png" border=0><A href="001.html" alt="Contents"><IMG src="img/toolbar_cont.png" border=0></A><A href="index.html" alt="First Page"><IMG src="img/toolbar_first.png" border=0></A><A href="006.html" alt="Previous Page"><IMG src="img/toolbar_prev.png" border=0></A><A href="$file_home" alt="Home"><IMG src="img/toolbar_home.png" border=0></A><A href="008.html" alt="Next Page"><IMG src="img/toolbar_next.png" border=0></A><A href="014.html" alt="Last Page"><IMG src="img/toolbar_last.png" border=0></A><IMG src="img/toolbar_right.png" border=0>
+            <BR><IMG src="img/000000.gif" height=2 width=460></P>
+          </TD>
+        </TR>
+        <TR>
+          <TD align=center valign=top>
+            <P class="pageHeader">User Manual - <B>&laquo;Covered&raquo;</B><BR><IMG src="img/000000.gif" height=1 width=460></P>
+          </TD>
+        </TR>
+        <TR>
+          <TD align=center valign=top>
+            &nbsp;
+          </TD>
+        </TR>
+      </TABLE>
+    </TD>
+  </TR>
+
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header2">2.4&nbsp; <A name="2_4"></A>Finite State Machine (FSM) Coverage</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">Finite state machine (FSM) coverage answers the question, "Did I reach all of the states and traverse all possible paths through a given state machine?"</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">There are two types of coverage detail for FSMs that Covered can handle:</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg"><OL> <LI>State coverage - answers the question "Were all states of an FSM hit during simulation?" <LI>State transition coverage - answers the question "Did the FSM transition between all states (that are achievable) in simulation?" </OL></P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header3">2.4.1 <A name="2_4_1"></A>Example</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin">Example</P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">Suppose the DUT comprised of the following finite state machine.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="code">module test( clock );<br> input clock;<br> <br> reg [1:0] state;<br> reg req, gnt;<br> <br> parameter IDLE 2'b00;<br> parameter REQ&nbsp; 2'b01;<br> parameter WAIT 2'b10;<br> parameter GNT&nbsp; 2'b11;<br> <br> initial<br> &nbsp; begin<br> &nbsp;&nbsp;&nbsp; req = 1'b0;<br> &nbsp;&nbsp;&nbsp; gnt = 1'b0;<br> &nbsp;&nbsp;&nbsp; repeat(4) @(posedge clock);<br> &nbsp;&nbsp;&nbsp; req <= 1'b1;<br> &nbsp;&nbsp;&nbsp; @(posedge clock);<br> &nbsp;&nbsp;&nbsp; req <= 1'b0;<br> &nbsp;&nbsp;&nbsp; gnt <= 1'b1;<br> &nbsp;&nbsp;&nbsp; @(posedge clock);<br> &nbsp;&nbsp;&nbsp; gnt <= 1'b0;<br> &nbsp;&nbsp;&nbsp; repeat(2) @(posedge clock);<br> &nbsp; end<br> <br> always @(posedge clock)<br> &nbsp; case( state )<br> &nbsp;&nbsp;&nbsp; IDLE : state <= req ? REQ : IDLE;<br> &nbsp;&nbsp;&nbsp; REQ&nbsp; : state <= gnt ? GNT : WAIT;<br> &nbsp;&nbsp;&nbsp; WAIT : state <= gnt ? GNT : WAIT;<br> &nbsp;&nbsp;&nbsp; GNT&nbsp; : state <= IDLE;<br> &nbsp;&nbsp;&nbsp; default : state <= 2'bx;<br> &nbsp; endcase<br> <br> endmodule </P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">To help visualize this state machine, let's also display it as a digraph.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg"><img src="img/fsm_example.png"><br><br></P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">This state machine has four states: IDLE, REQ, WAIT, GNT. During simulation, 75% of the states were hit (3 out of 4) including IDLE, REQ and GNT. You can see that the WAIT state was never hit during simulation since the gnt signal was asserted the clock period after the req signal asserted. </P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">Additionally, this state machine contains 7 state "arcs" which are represented in the digraph as arrowed lines. They are the following:</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg"><ol> <li>IDLE -> IDLE&nbsp; (HIT) <li>IDLE -> REQ&nbsp;&nbsp; (HIT) <li>REQ&nbsp; -> WAIT&nbsp; (MISSED) <li>REQ&nbsp; -> GNT&nbsp;&nbsp; (HIT) <li>WAIT -> WAIT&nbsp; (MISSED) <li>WAIT -> GNT&nbsp;&nbsp; (MISSED) <li>GNT&nbsp; -> IDLE&nbsp; (HIT) </ol></P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">Counting the number of traversed arcs during simulation, we can see that we have covered 4 out of 7 (or 57%) of the possible arcs in this state machine.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header3">2.4.2 <A name="2_4_2"></A>Recommendations</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin">Recommendations</P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">For a design to pass full coverage, it is recommended that the FSM coverage for all finite state machines in the design to receive 100% coverage for the state coverage and 100% for all achievable state transitions. Since Covered will not determine which state transitions are achievable, it is up to the verification engineer to examine the executed state transitions to determine if 100% of possible transitions occurred.</P>
+    </TD>
+  </TR>
+
+
+  <TR>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD valign=top>
+       <P class="navigatorSmall"><IMG src="img/12568c.gif" height=1 width=460><BR>
+       [&nbsp;
+       <A href="001.html">Contents</A>&nbsp;&nbsp;|&nbsp;
+       <A href="index.html">First Page</A>&nbsp;&nbsp;|&nbsp;
+       <A href="006.html">Previous Page</A>&nbsp;&nbsp;|&nbsp;
+       <A href="$file_home">Home</A>&nbsp;
+       &nbsp;|&nbsp;<A href="008.html">Next Page</A>&nbsp;&nbsp;|&nbsp;
+       <A href="014.html">Last Page</A>&nbsp;
+       ]<BR>
+       [&nbsp; <A href="001.html">1</A>&nbsp;|&nbsp;<A href="002.html">2</A>&nbsp;|&nbsp;<A href="003.html">3</A>&nbsp;|&nbsp;<A href="004.html">4</A>&nbsp;|&nbsp;<A href="005.html">5</A>&nbsp;|&nbsp;<A href="006.html">6</A>&nbsp;|&nbsp;<A href="007.html">7</A>&nbsp;|&nbsp;<A href="008.html">8</A>&nbsp;|&nbsp;<A href="009.html">9</A>&nbsp;|&nbsp;<A href="010.html">10</A>&nbsp;|&nbsp;<A href="011.html">11</A>&nbsp;|&nbsp;<A href="012.html">12</A>&nbsp;|&nbsp;<A href="013.html">13</A>&nbsp;|&nbsp;<A href="014.html">14</A> &nbsp;]
+       <BR>
+       <B>License: GPL</B><BR>
+       This Manual was created with <A HREF="http://manstyle.sourceforge.net">ManStyle</A>.
+       </P>
+    </TD>
+  </TR>
+
+</TABLE>
+
+<P>
+  <BR><BR>
+</P>
+
+</BODY>
+</HTML>

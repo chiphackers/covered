@@ -1,0 +1,340 @@
+/* Styles created by ManStyle */
+
+
+P {
+  font-family:"Arial","Helvetica","Geneva"; font-size:10pt;
+}
+
+P.pg {
+  text-indent:4mm;
+  text-align:justify;
+  margin-left:0.5cm;
+  margin-right:0.5cm;
+  margin-top:0.2cm;
+  margin-bottom:0.3cm;
+ }
+
+P.pgni {
+  text-align:justify;
+  margin-left:0.5cm;
+  margin-right:0.5cm;
+  margin-top:0.2cm;
+  margin-bottom:0.3cm;
+ }
+
+P.overview {
+  font-family:"Times",serif;
+  font-style:italic;
+  font-size:12pt;
+  margin-top:0.2cm;
+  margin-bottom:0.6cm;
+  margin-left:0.5cm;
+  margin-right:0.5cm;
+ }
+
+P.code {
+  font-family:"Courier New","Courier";
+  font-size:10pt;
+  margin-top:0.2cm;
+  margin-bottom:0.6cm;
+  margin-left:0.5cm;
+  margin-right:0.5cm;
+  text-align:left;
+ }
+
+P.blockIndentLeft {
+  margin-left:0.5cm;
+  margin-right:0cm;
+  margin-top:0cm;
+  margin-bottom:0cm;
+ }
+
+P.blockIndentRight {
+  margin-left:0cm;
+  margin-right:0.5cm;
+  margin-top:0cm;
+  margin-bottom:0cm;
+ }
+
+P.logo {
+  margin-top:2cm;
+  margin-bottom:0cm;
+  margin-left:0cm;
+  margin-right:0cm;
+  text-align:center;
+ }
+
+P.slogan {
+  margin-top:0cm;
+  margin-bottom:0cm;
+  margin-left:0cm;
+  font-family:"Times",serif;
+  font-style:italic;
+  text-align:center;
+ }
+
+P.organizationName {
+  margin-top:0.5cm;
+  margin-bottom:0cm;
+  margin-left:0cm;
+  font-size:16pt;
+  font-weight:bold;
+  text-align:center;
+ }
+
+P.manualDescription {
+  margin-top:2cm;
+  margin-bottom:0cm;
+  margin-left:0cm;
+  font-size:16pt;
+  font-weight:bold;
+  text-align:center;
+ }
+
+P.projectName {
+  margin-top:0cm;
+  margin-bottom:0cm;
+  margin-left:0cm;
+  font-size:26pt;
+  font-weight:bold;
+  text-align:center;
+ }
+
+P.projectVersion {
+  margin-top:0cm;
+  margin-bottom:2.5cm;
+  margin-left:0cm;
+  font-size:8pt;
+  text-align:center;
+ }
+
+P.docInfo {
+  margin-top:0cm;
+  margin-bottom:0cm;
+  margin-left:0cm;
+  text-align:center;
+ }
+
+P.header1 {
+  font-family:"ITC Avant Garde Gothic","Arial","Helvetica","Geneva";
+  color:#12568c;
+  margin-left:0mm;
+  margin-top:0.5cm;
+  margin-bottom:0.6cm;
+  font-size:30px;
+  font-weight:bold;
+  font-style:italic;
+  width:455;
+ }
+
+P.header2 {
+  font-family:"ITC Avant Garde Gothic","Arial","Helvetica","Geneva";
+  color:#777777;
+  margin-top:0.2cm;
+  margin-bottom:0cm;
+  margin-left:0.5cm;
+  font-size:20px;
+  font-weight:bold;
+ }
+
+P.header3 {
+  font-family:"ITC Avant Garde Gothic","Arial","Helvetica","Geneva";
+  color:#777777;
+  margin-top:0.2cm;
+  margin-bottom:0cm;
+  margin-left:0.5cm;
+  font-size:16px;
+  font-weight:bold;
+ }
+
+P.header4 {
+  font-family:"ITC Avant Garde Gothic","Arial","Helvetica","Geneva";
+  color:#777777;
+  margin-top:0.2cm;
+  margin-bottom:0cm;
+  margin-left:0.5cm;
+  font-size:13px;
+  font-weight:bold;
+ }
+
+P.header5 {
+  font-family:"ITC Avant Garde Gothic","Arial","Helvetica","Geneva";
+  color:#777777;
+  margin-top:0.2cm;
+  margin-bottom:0cm;
+  margin-left:0.5cm;
+  font-size:12px;
+  font-weight:bold;
+ }
+
+P.contentsHeader {
+  font-family:"ITC Avant Garde Gothic","Arial","Helvetica","Geneva";
+  color:#12568c;
+  margin-left:0mm;
+  margin-top:0.5cm;
+  margin-bottom:0.6cm;
+  font-size:30px;
+  font-weight:bold;
+  font-style:italic;
+  width:455;
+ }
+
+P.contents1 {
+  font-family:"ITC Avant Garde Gothic","Arial","Helvetica","Geneva";
+  color:#777777;
+  margin-top:0.5cm;
+  margin-bottom:0cm;
+  margin-left:0.5cm;
+  font-size:20px;
+  font-weight:bold;
+  text-decoration:none;
+ }
+
+P.contents2 {
+  font-family:"ITC Avant Garde Gothic","Arial","Helvetica","Geneva";
+  color:#777777;
+  margin-top:0.3cm;
+  margin-bottom:0cm;
+  margin-left:1cm;
+  font-size:16px;
+  font-weight:bold;
+  text-decoration:none;
+ }
+
+P.contents3 {
+  font-family:"ITC Avant Garde Gothic","Arial","Helvetica","Geneva";
+  color:#777777;
+  margin-top:0.3cm;
+  margin-bottom:0cm;
+  margin-left:1.5cm;
+  font-size:13px;
+  font-weight:bold;
+  text-decoration:none;
+ }
+
+P.contents4 {
+  font-family:"ITC Avant Garde Gothic","Arial","Helvetica","Geneva";
+  color:#777777;
+  margin-top:0.3cm;
+  margin-bottom:0cm;
+  margin-left:2.0cm;
+  font-size:12px;
+  font-weight:bold;
+  text-decoration:none;
+ }
+
+P.contents5 {
+  font-family:"ITC Avant Garde Gothic","Arial","Helvetica","Geneva";
+  color:#777777;
+  margin-top:0.3cm;
+  margin-bottom:0cm;
+  margin-left:2.5cm;
+  font-size:10px;
+  font-weight:bold;
+  text-decoration:none;
+ }
+
+P.marginBold {
+  font-style:italic;
+  font-weight:bold;
+  font-size:10pt;
+  margin-top:0.2cm;
+  margin-left:0cm;
+  margin-right:0cm;
+  text-align:right;
+ }
+
+P.margin {
+  font-style:italic;
+  font-size:10pt;
+  margin-top:0.2cm;
+  margin-left:0cm;
+  margin-right:0cm;
+  text-align:right;
+ }
+
+P.pageNumber {
+  margin-left:0cm;
+  margin-top:0cm;
+  margin-bottom:0cm;
+  text-align:center;
+ }
+
+P.pageHeader {
+  margin-left:0cm;
+  margin-top:0cm;
+  margin-bottom:0cm;
+  text-align:center;
+  width:455;
+ }
+
+P.pageHeaderWide {
+  margin-left:0cm;
+  margin-top:0cm;
+  margin-bottom:0cm;
+  text-align:center;
+  width:2000;
+ }
+
+P.navigator {
+  margin-left:0cm;
+  margin-right:0cm;
+  margin-top:0cm;
+  margin-bottom:0.0cm;
+  text-align:center;
+  width:455;
+ }
+
+P.navigatorWide {
+  margin-left:0cm;
+  margin-right:0cm;
+  margin-top:0cm;
+  margin-bottom:0cm;
+  text-align:center;
+  width:2000;
+ }
+
+P.navigatorSmall {
+  font-size:8pt;
+  margin-left:0cm;
+  margin-right:0cm;
+  margin-top:1cm;
+  margin-bottom:0.0cm;
+  text-align:center;
+  width:455;
+ }
+
+P.navigatorSmallWide {
+  font-size:8pt;
+  margin-left:0cm;
+  margin-right:0cm;
+  margin-top:1cm;
+  margin-bottom:0.0cm;
+  text-align:center;
+  width:2000;
+ }
+
+
+A:link {
+  text-decoration:none;
+}
+
+OL,UL,BLOCKQUOTE {
+  font-family:"Arial","Helvetica","Geneva";
+  font-size:10pt;
+  text-align:justify;
+  margin-right:0.5cm;
+  margin-top:0cm;
+}
+
+TD.navigator {
+  background-color:#000000;
+}
+
+TD.tableHeader {
+  background-color:#dae6ec;
+  font-family:"Arial","Helvetica","Geneva";
+  font-size:10pt;
+  font-weight:bold;
+  text-align:center;
+}

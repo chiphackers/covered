@@ -1,0 +1,476 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+  <TITLE>Covered - The report Command</TITLE>
+  <META name="GENERATOR" content="ManStyle">
+  <META name="AUTHOR" content="Trevor Williams">
+  <LINK rel=stylesheet type="text/css" href="styles.css">
+</HEAD>
+<BODY text="#000000"
+      link="#12568c" vlink="#023a64" alink="#000000" 
+      bgcolor="#ffffff" background="img/tile.jpeg">
+
+<TABLE width=615 border=0 cellpadding=0 cellspacing=0>
+  <TR>
+    <TD width=30>
+      <IMG src="img/space.gif" width=30 height=1 border=0>
+    </TD>
+    <TD width=105>
+      <IMG src="img/space.gif" width=105 height=1 border=0>
+    </TD>
+    <TD width=20>
+      <IMG src="img/space.gif" width=20 height=1 border=0>
+    </TD>
+    <TD width=460>
+      <IMG src="img/space.gif" width=460 height=1 border=0><BR>
+      <P class="pageNumber">&nbsp;13&nbsp;</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top></TD>
+    <TD></TD>
+    <TD align=center>
+      <TABLE width=460 border=0 cellpadding=0 cellspacing=0>
+        <TR>
+          <TD width=460 align=center valign=top class="navigator">
+            <P class="navigator"><IMG src="img/000000.gif" height=2 width=460><BR>
+            <IMG src="img/toolbar_left.png" border=0><A href="001.html" alt="Contents"><IMG src="img/toolbar_cont.png" border=0></A><A href="index.html" alt="First Page"><IMG src="img/toolbar_first.png" border=0></A><A href="012.html" alt="Previous Page"><IMG src="img/toolbar_prev.png" border=0></A><A href="$file_home" alt="Home"><IMG src="img/toolbar_home.png" border=0></A><A href="014.html" alt="Next Page"><IMG src="img/toolbar_next.png" border=0></A><A href="014.html" alt="Last Page"><IMG src="img/toolbar_last.png" border=0></A><IMG src="img/toolbar_right.png" border=0>
+            <BR><IMG src="img/000000.gif" height=2 width=460></P>
+          </TD>
+        </TR>
+        <TR>
+          <TD align=center valign=top>
+            <P class="pageHeader">User Manual - <B>&laquo;Covered&raquo;</B><BR><IMG src="img/000000.gif" height=1 width=460></P>
+          </TD>
+        </TR>
+        <TR>
+          <TD align=center valign=top>
+            &nbsp;
+          </TD>
+        </TR>
+      </TABLE>
+    </TD>
+  </TR>
+
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header1">8&nbsp;&nbsp; <A name="8"></A>The report Command<BR><IMG src="img/12568c.gif" height=2 width=460></P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg"></P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header2">8.1&nbsp; <A name="8_1"></A>Usage</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">The report command is initiated with the following call:</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="code">covered report [&lt;options&gt;] &lt;CDD_filename&gt;</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">The <i>CDD_filename</i> refers to the name of the CDD to generate the report for. This CDD may be either the result of a score or the result of merging CDDs.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header2">8.2&nbsp; <A name="8_2"></A>Options</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">The following table lists the options available for use with the report command.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      
+      <TABLE cellpadding=0 cellspacing=0 border=0 width=100%>
+        <TR>
+          <TD>
+            <P class="blockIndentLeft">&nbsp;</P>
+          </TD>
+          <TD width=100% align=center>
+<table cellspacing=2 cellpadding=4 border=1> <tr> <td colspan=2 class="tableHeader"> Options to report Command </td> </tr> <tr> <td> <strong>Option</strong> </td> <td> <strong>Description</strong> <td> </tr> <tr> <td> -m [l][t][c][f] </td> <td> Specifies type of coverage information to report (default is to generate report for line, toggle and combinational coverage). </td> </tr> <tr> <td> -v </td> <td> Specifies to generate verbose reporting information (default is to generate summary report only). </td> </tr> <tr> <td> -i </td> <td> Generates report information for each instance (default is to generate per module). </td> </tr> <tr> <td> -o &lt;<i>filename</i>&gt; </td> <td> Specifies output file to stream report to (default is standard output) </td> </tr> <tr> <td> -h </td> <td> Outputs usage information for the merge command </td> </tr> </table><br>
+          </TD>
+          <TD>
+            <P class="blockIndentRight">&nbsp;</P>
+          </TD>
+        </TR>
+      </TABLE>
+
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header2">8.3&nbsp; <A name="8_3"></A>Summary Vs. Verbose</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">There are two forms of reports that can be generated by the Covered report function: summary and verbose. The two forms are described below.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header3">8.3.1 <A name="8_3_1"></A>Summary Report</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">A summary report shows at a very high-level what the coverage for a specific module (or instance) is in terms of line, toggle, combinational and/or FSM coverage (depending on which types are selected on the command line). Each coverage metric for the module is given a percentage of items covered for that metric as well as the total number of items per metric, the number of items "hit" during simulation and the number of items "missed" during execution. Each metric summary result is output in the following format:</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin">Summary format</P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">&lt;<i>number_hit</i>&gt;/&lt;<i>number_missed</i>&gt;/&lt;<i>total_number</i>&gt; &nbsp;&nbsp;&nbsp;&lt;<i>percent_hit</i>&gt;%</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">The summary report is useful for understanding exactly which modules are missing coverage (and what type(s) of coverage are missing) as well as what modules are fully covered. This can help guide you more easily in understanding where you need to improve your code coverage without getting lost in all of the details that the verbose reporting provides.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header3">8.3.2 <A name="8_3_2"></A>Verbose Report</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">The verbose report contains all of the data that the summary report contains; however, in addition to the summary information for a module (or instance), a more in-depth look at the exact cases that were "missed" during simulation are provided. The format of the verbose information is specific to each coverage metric but is summarized below.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header4"><A name="8_3_2_1"></A>Verbose Line Coverage Format</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">The verbose output for line coverage is quite simple. Specifically, the line number of the module that was missed during simulation is output along with the Verilog code contained on that particular line. Only the missed cases are currently output in the verbose report. The following is the output format for line coverage:</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin">Line format</P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">&lt;<i>line_number</i>&gt;:&nbsp;&nbsp;&nbsp; &lt;<i>verilog_code</i>&gt;</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header4"><A name="8_3_2_2"></A>Verbose Toggle Coverage Format</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">The verbose output for toggle coverage is also simple. Specifically, the name of the signal that was not completely toggled along with the bits that were toggled from 0 to 1 and 1 to 0. The format below shows the format for toggle coverage output.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin">Toggle format</P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">&lt;<i>signal_name</i>&gt;:&nbsp;&nbsp;&nbsp; &lt;<i>toggle_0->1_vector</i>&gt;&nbsp;&nbsp;&nbsp; &lt;<i>toggle_1->0_vector</i>&gt;</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">It is important to remember that a 1 in a toggle vector indicates that this bit was toggled during simulation; therefore, any bits that are set to a value of 0 are bits that should be examined to see why they were not fully toggled during simulation.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header4"><A name="8_3_2_3"></A>Verbose Combinational Coverage Format</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">The verbose output for combinational coverage is a bit more sophisticated than the line or toggle. Basically, for each expression that was found to not be fully covered (some sub-expression in the tree was not fully covered), the expression is output with any sub-expressions that were not fully covered being underlined with a value assigned to that expression. The value that is assigned is used to reference one of the tables below the expression that show what cases were not covered during simulation. Each expression is also supplied with the line number that the expression started at in its module file.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">Below each expression, there will be one or more tables (one for each underlined subexpression). Each table will contain two or three columns. If the associated subexpression contained only one variable, the table will be a two-column table. The left column will contain the value(s) that were not assigned to the variable during simulation. The right column represents the value of performing the subexpression operation on the variable.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">If the associated subexpression contained two variables, the table will be a three-column table. The first two columns on the left show all of the combinations of these two variables that were not assigned to these variables during simulation. The right-most column indicates the resulting output of performing the subexpression operation on the two variables if these values would have been assigned.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header4"><A name="8_3_2_4"></A>Verbose FSM Coverage Format</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">At the current time, FSM coverage reporting is not available and the output for this coverage metric has not been determined.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header2">8.4&nbsp; <A name="8_4"></A>Module Vs. Instance</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">Any report can be calculated by module or by instance. Both reports are of interest for verification purposes and the differences are described as follows.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">Module reporting combines the results of all instances that come from the same module. That is, when a module is instantiated multiple times in a design, the coverage results from all covered instances are merged together and output as one combined module. This reporting format allows a test writer to see if any logic within a module has not been touched during simulation.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">Instance reporting displays each instance in the covered design separately (no combining occurs). This reporting format is useful for determining if certain instances within a design are being neglected. For instance, if a module is instantiated four times (i.e., four instances of the same buffer), it may be that the first buffer is used more often than the other three buffers. This could indicate controller errors or just an indication that there was not enough activity during simulation to fill the other buffers (need to bolster diagnostics or possibly some buffers could be removed?) This type of information would not be viewable if only module reporting were performed.</P>
+    </TD>
+  </TR>
+
+
+  <TR>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD valign=top>
+       <P class="navigatorSmall"><IMG src="img/12568c.gif" height=1 width=460><BR>
+       [&nbsp;
+       <A href="001.html">Contents</A>&nbsp;&nbsp;|&nbsp;
+       <A href="index.html">First Page</A>&nbsp;&nbsp;|&nbsp;
+       <A href="012.html">Previous Page</A>&nbsp;&nbsp;|&nbsp;
+       <A href="$file_home">Home</A>&nbsp;
+       &nbsp;|&nbsp;<A href="014.html">Next Page</A>&nbsp;&nbsp;|&nbsp;
+       <A href="014.html">Last Page</A>&nbsp;
+       ]<BR>
+       [&nbsp; <A href="001.html">1</A>&nbsp;|&nbsp;<A href="002.html">2</A>&nbsp;|&nbsp;<A href="003.html">3</A>&nbsp;|&nbsp;<A href="004.html">4</A>&nbsp;|&nbsp;<A href="005.html">5</A>&nbsp;|&nbsp;<A href="006.html">6</A>&nbsp;|&nbsp;<A href="007.html">7</A>&nbsp;|&nbsp;<A href="008.html">8</A>&nbsp;|&nbsp;<A href="009.html">9</A>&nbsp;|&nbsp;<A href="010.html">10</A>&nbsp;|&nbsp;<A href="011.html">11</A>&nbsp;|&nbsp;<A href="012.html">12</A>&nbsp;|&nbsp;<A href="013.html">13</A>&nbsp;|&nbsp;<A href="014.html">14</A> &nbsp;]
+       <BR>
+       <B>License: GPL</B><BR>
+       This Manual was created with <A HREF="http://manstyle.sourceforge.net">ManStyle</A>.
+       </P>
+    </TD>
+  </TR>
+
+</TABLE>
+
+<P>
+  <BR><BR>
+</P>
+
+</BODY>
+</HTML>
