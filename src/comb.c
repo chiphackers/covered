@@ -585,7 +585,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
       
       } else {
 
-        tmpstr = vector_to_string( exp->value, exp->value->suppl.part.base );
+        tmpstr = vector_to_string( exp->value );
         *size  = strlen( tmpstr );
         free_safe( tmpstr );
 
@@ -1928,6 +1928,9 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.104  2005/01/06 23:51:16  phase1geo
+ Intermediate checkin.  Files don't fully compile yet.
+
  Revision 1.103  2004/09/07 03:17:13  phase1geo
  Fixing bug that did not allow combinational logic to be revisited in GUI properly.
  Also removing comments from bgerror function in Tcl code.

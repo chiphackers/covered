@@ -123,8 +123,8 @@ expression* expression_create( expression* right, expression* left, int op, bool
   new_expr = (expression*)malloc_safe( sizeof( expression ), __FILE__, __LINE__ );
 
   new_expr->suppl.all      = 0;
-  new_expr->suppl.part.lhs = (int)lhs & 0x1;
-  new_expr->op             = op & 0x7f;
+  new_expr->suppl.part.lhs = (nibble)lhs & 0x1;
+  new_expr->op             = op;
   new_expr->id             = id;
   new_expr->ulid           = -1;
   new_expr->line           = line;
@@ -606,7 +606,7 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
   expression  texp;           /* Temporary expression link holder for searching   */
   exp_link*   expl;           /* Pointer to found expression in module            */
 
-  if( sscanf( *line, "%d %d %x %x %x %d %d%n", &id, &linenum, &column, &op, &(suppl.all), &right_id, &left_id, &chars_read ) == 6 ) {
+  if( sscanf( *line, "%d %d %x %x %x %d %d%n", &id, &linenum, &column, &op, &(suppl.all), &right_id, &left_id, &chars_read ) == 7 ) {
 
     *line = *line + chars_read;
 
@@ -762,7 +762,7 @@ bool expression_db_merge( expression* base, char** line, bool same ) {
 
   assert( base != NULL );
 
-  if( sscanf( *line, "%d %d %x %x %x %d %d%n", &id, &linenum, &column, &op, &(suppl.all), &right_id, &left_id, &chars_read ) == 6 ) {
+  if( sscanf( *line, "%d %d %x %x %x %d %d%n", &id, &linenum, &column, &op, &(suppl.all), &right_id, &left_id, &chars_read ) == 7 ) {
 
     *line = *line + chars_read;
 
@@ -833,7 +833,7 @@ bool expression_db_replace( expression* base, char** line ) {
 
   assert( base != NULL );
 
-  if( sscanf( *line, "%d %d %x %x %d %d%n", &id, &linenum, &column, &op, &(suppl.all), &right_id, &left_id, &chars_read ) == 6 ) {
+  if( sscanf( *line, "%d %d %x %x %x %d %d%n", &id, &linenum, &column, &op, &(suppl.all), &right_id, &left_id, &chars_read ) == 7 ) {
 
     *line = *line + chars_read;
 
@@ -1331,10 +1331,10 @@ bool expression_operate( expression* expr ) {
       rf = ESUPPL_IS_FALSE( expr->right->suppl );
       rt = ESUPPL_IS_TRUE(  expr->right->suppl );
       /* printf( "expr %d, lf: %d, lt: %d, rf: %d, rt: %d\n", expr->id, lf, lt, rf, rt ); */
-      expr->suppl.part.eval_00 = lf & rf;
-      expr->suppl.part.eval_01 = lf & rt;
-      expr->suppl.part.eval_10 = lt & rf;
-      expr->suppl.part.eval_11 = lt & rt;
+      expr->suppl.part.eval_00 |= lf & rf;
+      expr->suppl.part.eval_01 |= lf & rt;
+      expr->suppl.part.eval_10 |= lt & rf;
+      expr->suppl.part.eval_11 |= lt & rt;
     }
 
     /* If this expression is attached to an FSM, perform the FSM calculation now */
@@ -1506,6 +1506,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.107  2005/01/07 17:59:51  phase1geo
+ Finalized updates for supplemental field changes.  Everything compiles and links
+ correctly at this time; however, a regression run has not confirmed the changes.
+
  Revision 1.106  2005/01/06 23:51:16  phase1geo
  Intermediate checkin.  Files don't fully compile yet.
 

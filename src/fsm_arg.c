@@ -169,8 +169,8 @@ expression* fsm_arg_parse_state( char** arg, char* mod_name ) {
     stmt->exp->suppl.part.stmt_head = 1;
     stmt->exp->suppl.part.stmt_stop = 1;
     stmt->exp->suppl.part.stmt_cont = 1;
-    stmt->next_true  = stmt;
-    stmt->next_false = stmt;
+    stmt->next_true                 = stmt;
+    stmt->next_false                = stmt;
     fsm_var_stmt_add( stmt, mod_name );
   } else {
     expl = NULL;
@@ -361,11 +361,12 @@ void fsm_arg_parse_trans( expression* expr, fsm* table, module* mod ) {
   expression* from_state;  /* Pointer to from_state value of transition */
   expression* to_state;    /* Pointer to to_state value of transition   */
   char*       str;         /* String version of expression value        */
+  char*       tmp;         /* Temporary pointer to string               */
 
   assert( expr != NULL );
 
   /* Convert expression value to a string */
-  str = (char*)(expr->value->value);
+  tmp = str = vector_to_string( expr->value );
 
   if( (from_state = fsm_arg_parse_value( &str, mod )) == NULL ) {
     snprintf( user_msg, USER_MSG_LENGTH, "Left-hand side FSM transition value must be a constant value or parameter, line: %d, file: %s",
@@ -397,6 +398,9 @@ void fsm_arg_parse_trans( expression* expr, fsm* table, module* mod ) {
 
   }
 
+  /* Deallocate string */
+  free_safe( tmp );
+
 }
 
 /*!
@@ -416,6 +420,7 @@ void fsm_arg_parse_attr( attr_param* ap, module* mod ) {
   expression* in_state  = NULL;   /* Pointer to input state                         */
   expression* out_state = NULL;   /* Pointer to output state                        */
   char*       str;                /* Temporary holder for string value              */
+  char*       tmp;                /* Temporary holder for string value              */
 
   curr = ap;
   while( (curr != NULL) && !ignore ) {
@@ -430,12 +435,13 @@ void fsm_arg_parse_attr( attr_param* ap, module* mod ) {
       }
     } else if( (index == 2) && (strcmp( curr->name, "is" ) == 0) && (curr->expr != NULL) ) {
       if( fsml == NULL ) {
-        str = (char*)(curr->expr->value->value);
+        tmp = str = vector_to_string( curr->expr->value );
         if( (in_state = fsm_arg_parse_state( &str, mod->name )) == NULL ) {
           snprintf( user_msg, USER_MSG_LENGTH, "Illegal input state expression (%s), file: %s", str, mod->filename );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           exit( 1 );
         }
+        free_safe( tmp );
       } else {
         snprintf( user_msg, USER_MSG_LENGTH, "Input state specified after output state for this FSM has already been specified, file: %s",
                   mod->filename );
@@ -444,7 +450,7 @@ void fsm_arg_parse_attr( attr_param* ap, module* mod ) {
       }
     } else if( (index == 2) && (strcmp( curr->name, "os" ) == 0) && (curr->expr != NULL) ) {
       if( fsml == NULL ) {
-        str = (char*)(curr->expr->value->value);
+        tmp = str = vector_to_string( curr->expr->value );
         if( (out_state = fsm_arg_parse_state( &str, mod->name )) == NULL ) {
           snprintf( user_msg, USER_MSG_LENGTH, "Illegal output state expression (%s), file: %s", str, mod->filename );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -453,6 +459,7 @@ void fsm_arg_parse_attr( attr_param* ap, module* mod ) {
           fsm_var_add( mod->name, out_state, out_state, table.name );
           fsml = fsm_link_find( &table, mod->fsm_head );
         }
+        free_safe( tmp );
       } else {
         snprintf( user_msg, USER_MSG_LENGTH, "Output state specified after output state for this FSM has already been specified, file: %s",
                   mod->filename );
@@ -462,7 +469,7 @@ void fsm_arg_parse_attr( attr_param* ap, module* mod ) {
     } else if( (index == 3) && (strcmp( curr->name, "os" ) == 0) && (out_state == NULL) &&
                (in_state != NULL) && (curr->expr != NULL) ) {
       if( fsml == NULL ) {
-        str = (char*)(curr->expr->value->value);
+        tmp = str = vector_to_string( curr->expr->value );
         if( (out_state = fsm_arg_parse_state( &str, mod->name )) == NULL ) {
           snprintf( user_msg, USER_MSG_LENGTH, "Illegal output state expression (%s), file: %s", str, mod->filename );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -471,6 +478,7 @@ void fsm_arg_parse_attr( attr_param* ap, module* mod ) {
           fsm_var_add( mod->name, in_state, out_state, table.name );
           fsml = fsm_link_find( &table, mod->fsm_head );
         }
+        free_safe( tmp );
       } else {
         snprintf( user_msg, USER_MSG_LENGTH, "Output state specified after output state for this FSM has already been specified, file: %s",
                   mod->filename );
@@ -506,6 +514,10 @@ void fsm_arg_parse_attr( attr_param* ap, module* mod ) {
 
 /*
  $Log$
+ Revision 1.18  2005/01/07 17:59:51  phase1geo
+ Finalized updates for supplemental field changes.  Everything compiles and links
+ correctly at this time; however, a regression run has not confirmed the changes.
+
  Revision 1.17  2005/01/06 23:51:17  phase1geo
  Intermediate checkin.  Files don't fully compile yet.
 

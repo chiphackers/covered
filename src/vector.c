@@ -195,7 +195,7 @@ void vector_db_write( vector* vec, FILE* file, bool write_data ) {
   /* Output vector information to specified file */
   fprintf( file, "%d %d",
     vec->width,
-    vec->suppl
+    vec->suppl.all
   );
 
   assert( vec->width <= MAX_BIT_WIDTH );
@@ -903,7 +903,6 @@ void vector_set_static( vector* vec, char* str, int bits_per_char ) {
 
 /*!
  \param vec   Pointer to vector to convert.
- \param type  Specifies the type of string to create (DECIMAL, OCTAL, HEXIDECIMAL, BINARY)
 
  \return Returns pointer to the allocated/coverted string.
 
@@ -911,7 +910,7 @@ void vector_set_static( vector* vec, char* str, int bits_per_char ) {
  function and returning a pointer to that string.  The type specifies what type of
  value to change vector into.
 */
-char* vector_to_string( vector* vec, int type ) {
+char* vector_to_string( vector* vec ) {
 
   char*  str = NULL;     /* Pointer to allocated string                          */
   char*  tmp;            /* Pointer to temporary string value                    */
@@ -924,80 +923,108 @@ char* vector_to_string( vector* vec, int type ) {
   nibble value;          /* Current value of string character                    */
   char   width_str[20];  /* Holds value of width string to calculate string size */
 
-  switch( type ) {
-    case BINARY :  
-      vec_size  = (vec->width + 1);
-      group     = 1;
-      type_char = 'b';
-      break;
-    case OCTAL :  
-      vec_size  = ((vec->width % 3) == 0) ? ((vec->width / 3) + 1)
-                                          : ((vec->width / 3) + 2);
-      group     = 3;
-      type_char = 'o';
-      break;
-    case HEXIDECIMAL :  
-      vec_size  = ((vec->width % 4) == 0) ? ((vec->width / 4) + 1)
-                                          : ((vec->width / 4) + 2);
-      group     = 4;
-      type_char = 'h';
-      break;
-    default          :  
-      print_output( "Internal Error:  Unknown vector_to_string type\n", FATAL, __FILE__, __LINE__ );
-      exit( 1 );
-      break;
-  }
+  if( vec->suppl.part.base == QSTRING ) {
 
-  tmp   = (char*)malloc_safe( vec_size, __FILE__, __LINE__ );
-  value = 0;
-  pos   = 0;
+    vec_size  = ((vec->width % 8) == 0) ? ((vec->width / 8) + 1)
+                                        : ((vec->width / 8) + 2);
+    str   = (char*)malloc_safe( vec_size, __FILE__, __LINE__ );
+    value = 0;
+    pos   = 0;
 
-  for( i=(vec->width - 1); i>=0; i-- ) {
-    switch( vec->value[i].part.value ) {
-      case 0 :  value = value;                                              break;
-      case 1 :  value = (value < 16) ? ((1 << (i%group)) | value) : value;  break;
-      case 2 :  value = 16;                                                 break;
-      case 3 :  value = 17;                                                 break;
-      default:  break;
-    }
-    assert( pos < vec_size );
-    if( (i % group) == 0 ) {
-      switch( value ) {
-        case 0x0 :  if( (pos > 0) || (i == 0) ) { tmp[pos] = '0';  pos++; }  break;
-        case 0x1 :  tmp[pos] = '1';  pos++;  break;
-        case 0x2 :  tmp[pos] = '2';  pos++;  break;
-        case 0x3 :  tmp[pos] = '3';  pos++;  break;
-        case 0x4 :  tmp[pos] = '4';  pos++;  break;
-        case 0x5 :  tmp[pos] = '5';  pos++;  break;
-        case 0x6 :  tmp[pos] = '6';  pos++;  break;
-        case 0x7 :  tmp[pos] = '7';  pos++;  break;
-        case 0x8 :  tmp[pos] = '8';  pos++;  break;
-        case 0x9 :  tmp[pos] = '9';  pos++;  break;
-        case 0xa :  tmp[pos] = 'A';  pos++;  break;
-        case 0xb :  tmp[pos] = 'B';  pos++;  break;
-        case 0xc :  tmp[pos] = 'C';  pos++;  break;
-        case 0xd :  tmp[pos] = 'D';  pos++;  break;
-        case 0xe :  tmp[pos] = 'E';  pos++;  break;
-        case 0xf :  tmp[pos] = 'F';  pos++;  break;
-        case 16  :  tmp[pos] = 'X';  pos++;  break;
-        case 17  :  tmp[pos] = 'Z';  pos++;  break;
-        default  :  
-          print_output( "Internal Error:  Value in vector_to_string exceeds allowed limit\n", FATAL, __FILE__, __LINE__ );
-          exit( 1 );
-          break;
+    for( i=(vec->width - 1); i>=0; i-- ) {
+      switch( vec->value[i].part.value ) {
+        case 0 :  value  = value;           break;
+        case 1 :  value |= (1 << (i % 8));  break;
+        default:  break;
       }
-      value = 0;
+      assert( pos < vec_size );
+      if( (i % 8) == 0 ) {
+        str[pos] = value;
+        pos++; 
+        value    = 0;
+      }
     }
+
+    str[pos] = '\0';
+ 
+  } else {
+
+    switch( vec->suppl.part.base ) {
+      case BINARY :  
+        vec_size  = (vec->width + 1);
+        group     = 1;
+        type_char = 'b';
+        break;
+      case OCTAL :  
+        vec_size  = ((vec->width % 3) == 0) ? ((vec->width / 3) + 1)
+                                          : ((vec->width / 3) + 2);
+        group     = 3;
+        type_char = 'o';
+        break;
+      case HEXIDECIMAL :  
+        vec_size  = ((vec->width % 4) == 0) ? ((vec->width / 4) + 1)
+                                          : ((vec->width / 4) + 2);
+        group     = 4;
+        type_char = 'h';
+        break;
+      default          :  
+        print_output( "Internal Error:  Unknown vector_to_string type\n", FATAL, __FILE__, __LINE__ );
+        exit( 1 );
+        break;
+    }
+
+    tmp   = (char*)malloc_safe( vec_size, __FILE__, __LINE__ );
+    value = 0;
+    pos   = 0;
+
+    for( i=(vec->width - 1); i>=0; i-- ) {
+      switch( vec->value[i].part.value ) {
+        case 0 :  value = value;                                              break;
+        case 1 :  value = (value < 16) ? ((1 << (i%group)) | value) : value;  break;
+        case 2 :  value = 16;                                                 break;
+        case 3 :  value = 17;                                                 break;
+        default:  break;
+      }
+      assert( pos < vec_size );
+      if( (i % group) == 0 ) {
+        switch( value ) {
+          case 0x0 :  if( (pos > 0) || (i == 0) ) { tmp[pos] = '0';  pos++; }  break;
+          case 0x1 :  tmp[pos] = '1';  pos++;  break;
+          case 0x2 :  tmp[pos] = '2';  pos++;  break;
+          case 0x3 :  tmp[pos] = '3';  pos++;  break;
+          case 0x4 :  tmp[pos] = '4';  pos++;  break;
+          case 0x5 :  tmp[pos] = '5';  pos++;  break;
+          case 0x6 :  tmp[pos] = '6';  pos++;  break;
+          case 0x7 :  tmp[pos] = '7';  pos++;  break;
+          case 0x8 :  tmp[pos] = '8';  pos++;  break;
+          case 0x9 :  tmp[pos] = '9';  pos++;  break;
+          case 0xa :  tmp[pos] = 'A';  pos++;  break;
+          case 0xb :  tmp[pos] = 'B';  pos++;  break;
+          case 0xc :  tmp[pos] = 'C';  pos++;  break;
+          case 0xd :  tmp[pos] = 'D';  pos++;  break;
+          case 0xe :  tmp[pos] = 'E';  pos++;  break;
+          case 0xf :  tmp[pos] = 'F';  pos++;  break;
+          case 16  :  tmp[pos] = 'X';  pos++;  break;
+          case 17  :  tmp[pos] = 'Z';  pos++;  break;
+          default  :  
+            print_output( "Internal Error:  Value in vector_to_string exceeds allowed limit\n", FATAL, __FILE__, __LINE__ );
+            exit( 1 );
+            break;
+        }
+        value = 0;
+      }
+    }
+
+    tmp[pos] = '\0';
+
+    snprintf( width_str, 20, "%d", vec->width );
+    str_size = strlen( width_str ) + 2 + strlen( tmp ) + 1;
+    str      = (char*)malloc_safe( str_size, __FILE__, __LINE__ );
+    snprintf( str, str_size, "%d'%c%s", vec->width, type_char, tmp );
+
+    free_safe( tmp );
+
   }
-
-  tmp[pos] = '\0';
-
-  snprintf( width_str, 20, "%d", vec->width );
-  str_size = strlen( width_str ) + 2 + strlen( tmp ) + 1;
-  str      = (char*)malloc_safe( str_size, __FILE__, __LINE__ );
-  snprintf( str, str_size, "%d'%c%s", vec->width, type_char, tmp );
-
-  free_safe( tmp );
 
   return( str );
 
@@ -1023,6 +1050,7 @@ vector* vector_from_string( char** str, bool quoted ) {
   nibble  type;                  /* Type of string being parsed                                              */
   int     chars_read;            /* Number of characters read by a sscanf() function call                    */
   int     i, j;                  /* Loop iterators                                                           */
+  int     pos;                   /* Bit position                                                             */
 
   if( quoted ) {
 
@@ -1039,10 +1067,12 @@ vector* vector_from_string( char** str, bool quoted ) {
       vec = vector_create( size, TRUE );
 
       vec->suppl.part.base = QSTRING;
+      pos                  = 0;
 
-      for( i=0; i<strlen( *str ); i++ ) {
+      for( i=(strlen( *str ) - 1); i>=0; i-- ) {
         for( j=0; j<8; j++ ) {
-          vec->value[(i*8) + j].part.value = ((nibble)((*str)[i]) >> j) & 0x1;
+          vec->value[pos].part.value = ((nibble)((*str)[i]) >> j) & 0x1;
+          pos++;
         }
       }
 
@@ -1717,6 +1747,10 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.55  2005/01/07 17:59:52  phase1geo
+ Finalized updates for supplemental field changes.  Everything compiles and links
+ correctly at this time; however, a regression run has not confirmed the changes.
+
  Revision 1.54  2005/01/06 23:51:17  phase1geo
  Intermediate checkin.  Files don't fully compile yet.
 

@@ -35,7 +35,7 @@
  Contains the CDD version number of all CDD files that this version of Covered can write
  and read.
 */
-#define CDD_VERSION        3
+#define CDD_VERSION        4
 
 /*!
  This contains the header information specified when executing this tool.
@@ -833,53 +833,53 @@ typedef union esuppl_u esuppl;
 union esuppl_u {
   control   all;               /*!< Controls all bits within this union                                             */
   struct {
-    control swapped       :1;  /*!< Indicates that the children of this expression have been swapped.  The swapping
+    control swapped       :1;  /*!< Bit 0.  Indicates that the children of this expression have been swapped.  The swapping
                                     of the positions is performed by the score command (for multi-bit selects) and
                                     this bit indicates to the report code to swap them back when displaying them in
                                     a report.                                                                       */
-    control root          :1;  /*!< Indicates that this expression is a root expression.  Traversing to the parent
+    control root          :1;  /*!< Bit 1.  Indicates that this expression is a root expression.  Traversing to the parent
                                     pointer will take you to a statement type.                                      */
-    control executed      :1;  /*!< Indicates that this expression has been executed in the queue during the
+    control executed      :1;  /*!< Bit 2.  Indicates that this expression has been executed in the queue during the
                                     lifetime of the simulation.                                                     */
-    control stmt_head     :1;  /*!< Indicates the statement which this expression belongs is a head statement (only
+    control stmt_head     :1;  /*!< Bit 3.  Indicates the statement which this expression belongs is a head statement (only
                                     valid for root expressions -- parent expression == NULL).                       */
-    control stmt_stop     :1;  /*!< Indicates the statement which this expression belongs should write itself to
+    control stmt_stop     :1;  /*!< Bit 4.  Indicates the statement which this expression belongs should write itself to
                                     the CDD and not continue to traverse its next_true and next_false pointers.     */
-    control stmt_cont     :1;  /*!< Indicates the statement which this expression belongs is part of a continuous
+    control stmt_cont     :1;  /*!< Bit 5.  Indicates the statement which this expression belongs is part of a continuous
                                     assignment.  As such, stop simulating this statement tree after this expression
                                     tree is evaluated.                                                              */
-    control false         :1;  /*!< Indicates that this expression has evaluated to a value of FALSE during the
+    control false         :1;  /*!< Bit 6.  Indicates that this expression has evaluated to a value of FALSE during the
                                     lifetime of the simulation.                                                     */
-    control true          :1;  /*!< Indicates that this expression has evaluated to a value of TRUE during the
+    control true          :1;  /*!< Bit 7.  Indicates that this expression has evaluated to a value of TRUE during the
                                     lifetime of the simulation.                                                     */
-    control left_changed  :1;  /*!< Indicates that this expression has its left child expression in a changed
+    control left_changed  :1;  /*!< Bit 8.  Indicates that this expression has its left child expression in a changed
                                     state during this timestamp.                                                    */
-    control right_changed :1;  /*!< Indicates that this expression has its right child expression in a changed
+    control right_changed :1;  /*!< Bit 9.  Indicates that this expression has its right child expression in a changed
                                     state during this timestamp.                                                    */
-    control eval_00       :1;  /*!< Indicates that the value of the left child expression evaluated to FALSE
+    control eval_00       :1;  /*!< Bit 10.  Indicates that the value of the left child expression evaluated to FALSE
                                     and the right child expression evaluated to FALSE.                              */
-    control eval_01       :1;  /*!< Indicates that the value of the left child expression evaluated to FALSE and
+    control eval_01       :1;  /*!< Bit 11.  Indicates that the value of the left child expression evaluated to FALSE and
                                     the right child expression evaluated to TRUE.                                   */
-    control eval_10       :1;  /*!< Indicates that the value of the left child expression evaluated to TRUE and the
+    control eval_10       :1;  /*!< Bit 12.  Indicates that the value of the left child expression evaluated to TRUE and the
                                     right child expression evaluated to FALSE.                                      */
-    control eval_11       :1;  /*!< Indicates that the value of the left child expression evaluated to TRUE and the
+    control eval_11       :1;  /*!< Bit 13.  Indicates that the value of the left child expression evaluated to TRUE and the
                                     right child expression evaluated to TRUE.                                       */
-    control eval_t        :1;  /*!< Indicates that the value of the current expression is currently set to TRUE
+    control eval_t        :1;  /*!< Bit 14.  Indicates that the value of the current expression is currently set to TRUE
                                     (temporary value).                                                              */
-    control eval_f        :1;  /*!< Indicates that the value of the current expression is currently set to FALSE
+    control eval_f        :1;  /*!< Bit 15.  Indicates that the value of the current expression is currently set to FALSE
                                     (temporary value).                                                              */
-    control comb_cntd     :1;  /*!< Indicates that the current expression has been previously counted for
+    control comb_cntd     :1;  /*!< Bit 16.  Indicates that the current expression has been previously counted for
                                     combinational coverage.  Only set by report command (therefore this bit will
                                     always be a zero when written to CDD file.                                      */
-    control stmt_connected:1;  /*!< Temporary bit value used by the score command but not displayed to the CDD
-                                     file.  When this bit is set to a one, it indicates to the statement_connect
-                                     function that this statement and all children statements do not need to be
-                                     connected to another statement.                                                */
-    control stmt_added    :1;  /*!< Temporary bit value used by the score command but not displayed to the CDD
-                                     file.  When this bit is set to a one, it indicates to the db_add_statement
-                                     function that this statement and all children statements have already been
-                                     added to the module statement list and should not be added again.              */
-    control lhs           :1;  /*!< Indicates that this expression exists on the left-hand side of an assignment
+    control stmt_connected:1;  /*!< Bit 17.  Temporary bit value used by the score command but not displayed to the CDD
+                                    file.  When this bit is set to a one, it indicates to the statement_connect
+                                    function that this statement and all children statements do not need to be
+                                    connected to another statement.                                                */
+    control stmt_added    :1;  /*!< Bit 18.  Temporary bit value used by the score command but not displayed to the CDD
+                                    file.  When this bit is set to a one, it indicates to the db_add_statement
+                                    function that this statement and all children statements have already been
+                                    added to the module statement list and should not be added again.              */
+    control lhs           :1;  /*!< Bit 19.  Indicates that this expression exists on the left-hand side of an assignment
                                     operation.                                                                      */
   } part;
 };
@@ -915,7 +915,7 @@ struct vector_s {
   union {
     nibble   all;       /*!< Allows us to set all bits in the suppl field      */
     struct {
-      nibble base  :2;  /*!< Base-type of this data when originally parsed     */
+      nibble base  :3;  /*!< Base-type of this data when originally parsed     */
       nibble wait  :1;  /*!< Specifies that this signal should be waited for   */
       nibble inport:1;  /*!< Specifies if this vector is part of an input port */
     } part;
@@ -1499,6 +1499,10 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.114  2005/01/07 17:59:51  phase1geo
+ Finalized updates for supplemental field changes.  Everything compiles and links
+ correctly at this time; however, a regression run has not confirmed the changes.
+
  Revision 1.113  2005/01/06 23:51:16  phase1geo
  Intermediate checkin.  Files don't fully compile yet.
 
