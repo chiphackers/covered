@@ -645,15 +645,16 @@ void expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_DELAY :
-        /* If this expression is not the current head, set the start time of delay */
-        if( SUPPL_IS_STMT_HEAD( expr->suppl ) == 0 ) {
+        /* If this expression is not currently waiting, set the start time of delay */
+        if( vector_to_int( expr->left->value ) == 0xffffffff ) {
           vector_from_int( expr->left->value, curr_sim_time );
         }
         intval1 = vector_to_int( expr->left->value );           // Start time of delay
         intval2 = vector_to_int( expr->right->value );          // Number of clocks to delay
-        if( ((intval1 + intval2) <= curr_sim_time) || (curr_sim_time == -1) ) {
+        if( ((intval1 + intval2) <= curr_sim_time) || ((curr_sim_time == -1) && (vector_to_int( expr->left->value ) != 0xffffffff)) ) {
           bit = 1;
           vector_set_value( expr->value, &bit, 1, 0, 0 );
+          vector_from_int( expr->left->value, 0xffffffff );
         } else {
           bit = 0;
           vector_set_value( expr->value, &bit, 1, 0, 0 );
@@ -745,6 +746,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.19  2002/06/29 04:51:31  phase1geo
+/* Various fixes for bugs found in regression testing.
+/*
 /* Revision 1.18  2002/06/28 03:04:59  phase1geo
 /* Fixing more errors found by diagnostics.  Things are running pretty well at
 /* this point with current diagnostics.  Still some report output problems.

@@ -190,6 +190,7 @@ statement* sim_statement( statement* head_stmt ) {
 
   statement* stmt;              /* Pointer to current statement to evaluate */
   statement* last_stmt = NULL;  /* Pointer to the last statement evaluated  */
+  static int count = 0;
 
   /* Set the value of stmt with the head_stmt */
   stmt = head_stmt;
@@ -202,39 +203,25 @@ statement* sim_statement( statement* head_stmt ) {
     /* Indicate that this statement's expression has been executed */
     stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_EXECUTED);
 
+    if( count == 50 ) {
+      assert( count == 0 );
+    } else {
+      count++;
+    }
+
     // printf( "Executed statement %d\n", stmt->exp->id );
       
     last_stmt = stmt;
 
     if( SUPPL_IS_STMT_CONTINUOUS( stmt->exp->suppl ) == 1 ) {
-
-       /*
-        If this is a continuous assignment, don't traverse next pointers.
-       */
+       /* If this is a continuous assignment, don't traverse next pointers. */
        stmt = NULL;
-
     } else {
-
       if( expression_is_true( stmt->exp ) ) {
-
         stmt = stmt->next_true;
- 
       } else {
-
-        /* 
-         If statement's next_false value is NULL, we need to wait.  Set STMT_HEAD
-         bit in this statement.
-        */
-        if( stmt->next_false == NULL ) {
-         
-          stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
-
-        }
-
         stmt = stmt->next_false;
-
       }
-
     }
 
   }
@@ -298,6 +285,10 @@ void sim_simulate() {
 }
 
 /* $Log$
+/* Revision 1.11  2002/06/28 03:04:59  phase1geo
+/* Fixing more errors found by diagnostics.  Things are running pretty well at
+/* this point with current diagnostics.  Still some report output problems.
+/*
 /* Revision 1.10  2002/06/28 00:40:37  phase1geo
 /* Cleaning up extraneous output from debugging.
 /*

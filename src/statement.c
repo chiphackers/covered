@@ -162,7 +162,7 @@ void statement_stack_compare( statement* stmt ) {
 
   stmt_loop_link* sll;    /* Pointer to top of stack */
 
-  while( stmt->exp->id == stmt_loop_stack->id ) {
+  while( (stmt_loop_stack != NULL) && (stmt->exp->id == stmt_loop_stack->id) ) {
 
     /* Perform the link */
     stmt_loop_stack->stmt->next_true  = stmt;
@@ -326,76 +326,88 @@ bool statement_db_read( char** line, module* curr_mod, int read_mode ) {
 /*!
  \param curr_stmt  Pointer to statement sequence to traverse.
  \param next_stmt  Pointer to statement to connect ends to.
- \param set_stop   If TRUE and the next_true and next_false are NULL, set stop bit.
- \param at_top     Set to TRUE when this function is first called; otherwise, FALSE.
 
  Recursively traverses the specified stmt sequence.  When it reaches a statement 
  that has either next_true or next_false set to NULL, sets next_true and/or 
  next_false of that statement to point to the next_stmt statement.
 */
-void statement_connect( statement* curr_stmt, statement* next_stmt, bool set_stop, bool at_top ) {
-
-  bool allow_stop;      /* If TRUE, sets the set_stop value for TRUE paths */
-  static int count = 0;
+void statement_connect( statement* curr_stmt, statement* next_stmt ) {
 
   assert( curr_stmt != NULL );
   assert( next_stmt != NULL );
 
-  printf( "In statement_connect, curr_stmt: %d, next_stmt: %d, set_stop: %d, at_top: %d\n", 
-          curr_stmt->exp->id, 
-          next_stmt->exp->id, 
-          set_stop,
-          at_top );
+  // printf( "In statement_connect, curr_stmt: %d, next_stmt: %d\n", curr_stmt->exp->id, next_stmt->exp->id );
 
-/*
-  if( count == 100 ) {
-    assert( count == 0 );
+  /* If both paths go to the same destination, only parse one path */
+  if( curr_stmt->next_true == curr_stmt->next_false ) {
+
+    if( curr_stmt->next_true == NULL ) {
+      curr_stmt->next_true  = next_stmt;
+      /* If the current statement is a wait statement, don't connect next_false path */
+      if( (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_DELAY) &&
+          (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_NEDGE) &&
+          (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_PEDGE) &&
+          (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_AEDGE) ) {
+        curr_stmt->next_false = next_stmt;
+      }
+    } else if( curr_stmt->next_true != next_stmt ) {
+      statement_connect( curr_stmt->next_true, next_stmt );
+    }
+
   } else {
-    count++;
+
+    /* Traverse TRUE path */
+    if( curr_stmt->next_true == NULL ) {
+      curr_stmt->next_true = next_stmt;
+    } else if( curr_stmt->next_true != next_stmt ) {
+      statement_connect( curr_stmt->next_true, next_stmt );
+    }
+
+
+    /* Traverse FALSE path */
+    if( curr_stmt->next_false == NULL ) {
+      if( SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_DELAY ) {
+        curr_stmt->next_false = next_stmt;
+      }
+    } else if( curr_stmt->next_false != next_stmt ) {
+      statement_connect( curr_stmt->next_false, next_stmt );
+    }
+
   }
+
+}
+
+/*!
+ \param stmt       Pointer to top of statement tree to set stop bits for.
+ \param post       Pointer to statement that comes just after the stopped statement.
+ \param true_path  Set to TRUE if the current statement exists on the right of its parent.
+
+ Recursively traverses specified statement tree, setting the statement's stop bits
+ that have either their next_true or next_false pointers pointing to the statement
+ called post.
 */
+void statement_set_stop( statement* stmt, statement* post, bool true_path ) {
 
-  /* Set STOP bit if necessary */
-  if( ((curr_stmt->next_true == NULL) && (curr_stmt->next_false == NULL) && set_stop) ||
-      ((curr_stmt == next_stmt) && !at_top) ) {
+  assert( stmt != NULL );
 
-    curr_stmt->exp->suppl = curr_stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);
-
-  }
-
-  /* Traverse TRUE path */
-  if( curr_stmt->next_true == NULL ) {
-
-    curr_stmt->next_true = next_stmt;
-
+  if( ((stmt->next_true == post) && (stmt->next_false == post)) && true_path ) {
+    // printf( "Setting STOP bit for statement %d\n", stmt->exp->id );
+    stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);
   } else {
-
-    if( curr_stmt->next_true != next_stmt ) {
-      allow_stop = ((curr_stmt->next_true != curr_stmt->next_false) &&
-                    (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_DELAY) &&
-                    (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_NEDGE) &&
-                    (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_PEDGE) &&
-                    (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_AEDGE));
-      statement_connect( curr_stmt->next_true, next_stmt, allow_stop, FALSE );
+    if( stmt->next_true == stmt->next_false ) {
+      if( stmt->next_true != NULL ) { 
+        statement_set_stop( stmt->next_true, post, TRUE );
+      }
+    } else {
+      if( stmt->next_true != NULL ) {
+        statement_set_stop( stmt->next_true, post, TRUE );
+      }
+      if( stmt->next_false != NULL ) {
+        statement_set_stop( stmt->next_false, post, FALSE );
+      }
     }
-
   }
-
-  /* Traverse FALSE path */
-  if( curr_stmt->next_false == NULL ) {
-
-    if( SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_DELAY ) {
-      curr_stmt->next_false = next_stmt;
-    }
-
-  } else {
-
-    if( curr_stmt->next_false != next_stmt ) {
-      statement_connect( curr_stmt->next_false, next_stmt, FALSE, FALSE );
-    }
-
-  }
-
+  
 }
 
 /*!
@@ -440,6 +452,9 @@ void statement_dealloc( statement* stmt ) {
 
 
 /* $Log$
+/* Revision 1.20  2002/06/30 22:23:20  phase1geo
+/* Working on fixing looping in parser.  Statement connector needs to be revamped.
+/*
 /* Revision 1.18  2002/06/28 03:04:59  phase1geo
 /* Fixing more errors found by diagnostics.  Things are running pretty well at
 /* this point with current diagnostics.  Still some report output problems.

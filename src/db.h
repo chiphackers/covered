@@ -43,6 +43,9 @@ void db_add_statement( statement* stmt );
 //! Connects one statement block to another.
 void db_statement_connect( statement* curr_stmt, statement* next_stmt );
 
+//! Sets STMT_STOP bit in the appropriate statements.
+void db_statement_set_stop( statement* stmt, statement* post );
+
 //! Connects true statement to specified statement.
 void db_connect_statement_true( statement* stmt, statement* exp_true );
 
@@ -68,6 +71,9 @@ int db_get_signal_size( char* symbol );
 void db_do_timestep( int time ); 
 
 /* $Log$
+/* Revision 1.7  2002/06/27 12:36:47  phase1geo
+/* Fixing bugs with scoring.  I think I got it this time.
+/*
 /* Revision 1.6  2002/06/24 12:34:56  phase1geo
 /* Fixing the set of the STMT_HEAD and STMT_STOP bits.  We are getting close.
 /*

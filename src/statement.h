@@ -22,13 +22,19 @@ void statement_db_write( statement* stmt, FILE* ofile, char* scope );
 bool statement_db_read( char** line, module* curr_mod, int read_mode );
 
 //! Connects statement sequence to next statement.
-void statement_connect( statement* curr_stmt, statement* next_stmt, bool set_stop, bool at_top );
+void statement_connect( statement* curr_stmt, statement* next_stmt );
+
+//! Sets stop bits in specified statement tree.
+void statement_set_stop( statement* stmt, statement* post, bool true_path );
 
 //! Deallocates statement memory and associated expression tree from the heap.
 void statement_dealloc( statement* stmt );
 
 
 /* $Log$
+/* Revision 1.7  2002/06/30 22:23:20  phase1geo
+/* Working on fixing looping in parser.  Statement connector needs to be revamped.
+/*
 /* Revision 1.6  2002/06/28 03:04:59  phase1geo
 /* Fixing more errors found by diagnostics.  Things are running pretty well at
 /* this point with current diagnostics.  Still some report output problems.

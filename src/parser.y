@@ -1008,12 +1008,14 @@ module_item
 		{
                   statement* stmt = $2;
                   db_statement_connect( stmt, stmt );
+                  db_statement_set_stop( stmt, stmt );
                   stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
                   db_add_statement( stmt );
 		}
 	| K_initial statement
 		{
                   statement* stmt = $2;
+                  db_statement_set_stop( stmt, NULL );
                   stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
                   db_add_statement( stmt );
 		}
@@ -1290,6 +1292,7 @@ statement
                     stmt = db_create_statement( expr );
                     db_connect_statement_true( stmt, c_stmt->stmt );
                     db_connect_statement_false( stmt, last_stmt );
+                    db_statement_set_stop( c_stmt->stmt, NULL );
                     if( stmt != NULL ) {
                       last_stmt = stmt;
                     }
@@ -1312,6 +1315,7 @@ statement
                     stmt = db_create_statement( expr );
                     db_connect_statement_true( stmt, c_stmt->stmt );
                     db_connect_statement_false( stmt, last_stmt );
+                    db_statement_set_stop( c_stmt->stmt, NULL );
                     if( stmt != NULL ) {
                       last_stmt = stmt;
                     }
@@ -1334,6 +1338,7 @@ statement
                     stmt = db_create_statement( expr );
                     db_connect_statement_true( stmt, c_stmt->stmt );
                     db_connect_statement_false( stmt, last_stmt );
+                    db_statement_set_stop( c_stmt->stmt, NULL );
                     if( stmt != NULL ) {
                       last_stmt = stmt;
                     }
@@ -1360,6 +1365,7 @@ statement
                   statement* stmt = db_create_statement( $3 );
 		  db_add_expression( $3 );
                   db_connect_statement_true( stmt, $5 );
+                  db_statement_set_stop( $5, NULL );
                   $$ = stmt;
 		}
 	| K_if '(' expression ')' statement_opt K_else statement_opt
@@ -1368,6 +1374,7 @@ statement
 		  db_add_expression( $3 );
                   db_connect_statement_true( stmt, $5 );
                   db_connect_statement_false( stmt, $7 );
+                  db_statement_set_stop( $5, NULL );
                   $$ = stmt;
 		}
 	| K_if '(' error ')' unused_stmt_opt %prec less_than_K_else
@@ -1684,9 +1691,10 @@ case_items
 delay1
 	: '#' delay_value_simple
                 {
-                  vector*     vec = vector_create( 1, 0 );
+                  vector*     vec = vector_create( 32, 0 );
                   expression* exp; 
                   expression* tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
+                  vector_from_int( vec, 0xffffffff ); 
                   free_safe( tmp->value );
                   tmp->value = vec;
                   exp = db_create_expression( $2, tmp, EXP_OP_DELAY, @1.first_line, NULL );
@@ -1694,9 +1702,10 @@ delay1
                 }
 	| '#' '(' delay_value ')'
                 {
-                  vector*     vec = vector_create( 1, 0 );
+                  vector*     vec = vector_create( 32, 0 );
                   expression* exp;
                   expression* tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
+                  vector_from_int( vec, 0xffffffff );
                   free_safe( tmp->value );
                   tmp->value = vec;
                   exp = db_create_expression( $3, tmp, EXP_OP_DELAY, @1.first_line, NULL );
@@ -1707,9 +1716,10 @@ delay1
 delay3
 	: '#' delay_value_simple
                 {
-                  vector*     vec = vector_create( 1, 0 );
+                  vector*     vec = vector_create( 32, 0 );
                   expression* exp; 
                   expression* tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
+                  vector_from_int( vec, 0xffffffff );
                   free_safe( tmp->value );
                   tmp->value = vec;
                   exp = db_create_expression( $2, tmp, EXP_OP_DELAY, @1.first_line, NULL );
@@ -1717,9 +1727,10 @@ delay3
                 }
 	| '#' '(' delay_value ')'
                 {
-                  vector*     vec = vector_create( 1, 0 );
+                  vector*     vec = vector_create( 32, 0 );
                   expression* exp; 
                   expression* tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
+                  vector_from_int( vec, 0xffffffff );
                   free_safe( tmp->value );
                   tmp->value = vec;
                   exp = db_create_expression( $3, tmp, EXP_OP_DELAY, @1.first_line, NULL );
@@ -1727,9 +1738,10 @@ delay3
                 }
 	| '#' '(' delay_value ',' delay_value ')'
                 {
-                  vector*     vec = vector_create( 1, 0 );
+                  vector*     vec = vector_create( 32, 0 );
                   expression* exp; 
                   expression* tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
+                  vector_from_int( vec, 0xffffffff );
                   free_safe( tmp->value );
                   tmp->value = vec;
                   exp = db_create_expression( $3, tmp, EXP_OP_DELAY, @1.first_line, NULL );
@@ -1737,9 +1749,10 @@ delay3
                 }
 	| '#' '(' delay_value ',' delay_value ',' delay_value ')'
                 {
-                  vector*     vec = vector_create( 1, 0 );
+                  vector*     vec = vector_create( 32, 0 );
                   expression* exp; 
                   expression* tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
+                  vector_from_int( vec, 0xffffffff );
                   free_safe( tmp->value );
                   tmp->value = vec;
                   exp = db_create_expression( $3, tmp, EXP_OP_DELAY, @1.first_line, NULL );

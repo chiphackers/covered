@@ -654,7 +654,39 @@ void db_statement_connect( statement* curr_stmt, statement* next_stmt ) {
   snprintf( msg, 4096, "In db_statement_connect, curr_stmt: %d, next_stmt: %d", curr_id, next_id );
   print_output( msg, NORMAL );
 
-  statement_connect( curr_stmt, next_stmt, FALSE, TRUE );
+  statement_connect( curr_stmt, next_stmt );
+
+}
+
+/*!
+ \param stmt  Pointer to statement tree to traverse.
+ \param post  Pointer to statement which stopped statements will be connected to.
+
+ Calls the statement_set_stop function with the specified parameters.  This function is
+ called by the parser after the call to db_statement_connect.
+*/
+void db_statement_set_stop( statement* stmt, statement* post ) {
+
+  char msg[4096];    /* Message to display to user */
+  int  stmt_id;      /* Current statement ID       */
+  int  post_id;      /* Statement ID after stop    */
+
+  if( stmt != NULL ) {
+
+    stmt_id = stmt->exp->id;
+
+    if( post == NULL ) {
+      post_id = 0;
+    } else {
+      post_id = post->exp->id;
+    }
+
+    snprintf( msg, 4096, "In db_statement_set_stop, stmt: %d, next_stmt: %d", stmt_id, post_id );
+    print_output( msg, NORMAL );
+ 
+    statement_set_stop( stmt, post, TRUE );
+
+  }
 
 }
 
@@ -909,6 +941,9 @@ int db_get_signal_size( char* symbol ) {
 
 
 /* $Log$
+/* Revision 1.23  2002/06/30 22:23:20  phase1geo
+/* Working on fixing looping in parser.  Statement connector needs to be revamped.
+/*
 /* Revision 1.22  2002/06/28 03:04:59  phase1geo
 /* Fixing more errors found by diagnostics.  Things are running pretty well at
 /* this point with current diagnostics.  Still some report output problems.
