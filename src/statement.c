@@ -127,6 +127,8 @@ void statement_db_write( statement* stmt, FILE* ofile, char* scope ) {
 
   assert( stmt != NULL );
 
+  printf( "In statement_db_write, id: %d\n", stmt->exp->id );
+
   /* Write succeeding statements first */
   if( SUPPL_IS_STMT_STOP( stmt->exp->suppl ) == 0 ) {
 
@@ -257,30 +259,42 @@ void statement_connect( statement* curr_stmt, statement* next_stmt ) {
 
   /* Traverse TRUE path */
   if( curr_stmt->next_true == NULL ) {
-
     curr_stmt->next_true = next_stmt;
-
   } else {
-
     statement_connect( curr_stmt->next_true, next_stmt );
-
   }
 
   /* Traverse FALSE path */
   if( curr_stmt->next_false == NULL ) {
-
     curr_stmt->next_false = next_stmt;
-
-    /* If next_true path was previously set before this function call, set STMT_STOP */
-    if( curr_stmt->next_true != next_stmt ) {
-      curr_stmt->exp->suppl = curr_stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);
-      printf( "Setting STOP bit\n" );
-    }
-
   } else {
-
     statement_connect( curr_stmt->next_false, next_stmt );
+  }
 
+}
+
+/*!
+ \param stmt  Pointer to statement to traverse and set stop bits.
+
+ Recursively traverses specified statement, setting STMT_STOP bits on leaf
+ nodes.  This function is called for the last statement in a sequence.  It
+ is called before the statement_connect for the entire statement sequence.
+*/
+void statement_set_stop( statement* stmt ) {
+
+  assert( stmt != NULL );
+
+  if( (stmt->next_true == NULL) && (stmt->next_false == NULL) ) {
+    stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);
+    printf( "Set STOP bit for stmt %d\n", stmt->exp->id );
+  }
+
+  if( stmt->next_true != NULL ) {
+    statement_set_stop( stmt->next_true );
+  }
+
+  if( stmt->next_false != NULL ) {
+    statement_set_stop( stmt->next_false );
   }
 
 }
@@ -325,6 +339,10 @@ void statement_dealloc( statement* stmt ) {
 
 
 /* $Log$
+/* Revision 1.7  2002/06/24 04:54:48  phase1geo
+/* More fixes and code additions to make statements work properly.  Still not
+/* there at this point.
+/*
 /* Revision 1.6  2002/06/23 21:18:22  phase1geo
 /* Added appropriate statement support in parser.  All parts should be in place
 /* and ready to start testing.

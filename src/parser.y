@@ -948,11 +948,16 @@ module_item
 		}
 	| K_always statement
 		{
-                  // db_add_statement( $2 );
+                  statement* stmt = $2;
+                  db_statement_set_stop( stmt );
+                  db_statement_connect( stmt, stmt );
+                  stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
 		}
 	| K_initial statement
 		{
-                  // db_add_statement( $2 );
+                  statement* stmt = $2;
+                  db_statement_set_stop( stmt );
+                  stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
 		}
 	| K_task IDENTIFIER ';'
 	    task_item_list_opt statement_opt
@@ -1564,6 +1569,9 @@ assign
 
                   /* Set STMT_HEAD bit */
                   stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
+
+                  /* Set STMT_STOP bit */
+                  stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);
 
                   /* Statement will be looped back to itself */
                   db_connect_statement_true( stmt, stmt );

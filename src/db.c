@@ -560,6 +560,27 @@ void db_connect_statement_true( statement* stmt, statement* next_true ) {
 }
 
 /*!
+ \param stmt        Pointer to statement to connect false path to.
+ \param next_false  Pointer to statement to run if statement evaluates to FALSE.
+
+ Connects the specified statement's false statement.
+*/
+void db_connect_statement_false( statement* stmt, statement* next_false ) {
+
+  char msg[4096];   /* Message to display to user */
+
+  if( stmt != NULL ) {
+
+    snprintf( msg, 4096, "In db_connect_statement_false, id: %d, next: %d", stmt->exp->id, next_false->exp->id );
+    print_output( msg, NORMAL );
+
+    stmt->next_false = next_false;
+
+  }
+
+}
+
+/*!
  \param curr_stmt  Pointer to current statement to attach.
  \param next_stmt  Pointer to next statement to attach to.
 
@@ -590,23 +611,13 @@ void db_statement_connect( statement* curr_stmt, statement* next_stmt ) {
 }
 
 /*!
- \param stmt        Pointer to statement to connect false path to.
- \param next_false  Pointer to statement to run if statement evaluates to FALSE.
+ \param stmt  Pointer to current statement to set stop bits.
 
- Connects the specified statement's false statement.
+ Calls the statement_set_stop function located in statement.c with the specified parameter.
 */
-void db_connect_statement_false( statement* stmt, statement* next_false ) {
+void db_statement_set_stop( statement* stmt ) {
 
-  char msg[4096];   /* Message to display to user */
-
-  if( stmt != NULL ) {
-
-    snprintf( msg, 4096, "In db_connect_statement_false, id: %d, next: %d", stmt->exp->id, next_false->exp->id );
-    print_output( msg, NORMAL );
-
-    stmt->next_false = next_false;
-
-  }
+  statement_set_stop( stmt );
 
 }
 
@@ -857,6 +868,10 @@ int db_get_signal_size( char* symbol ) {
 
 
 /* $Log$
+/* Revision 1.13  2002/06/24 04:54:48  phase1geo
+/* More fixes and code additions to make statements work properly.  Still not
+/* there at this point.
+/*
 /* Revision 1.12  2002/06/22 21:08:23  phase1geo
 /* Added simulation engine and tied it to the db.c file.  Simulation engine is
 /* currently untested and will remain so until the parser is updated correctly

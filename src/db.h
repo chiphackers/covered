@@ -46,6 +46,9 @@ void db_connect_statement_true( statement* stmt, statement* exp_true );
 //! Connects false statement to specified statement.
 void db_connect_statement_false( statement* stmt, statement* exp_false );
 
+//! Sets stop bits on leaf nodes of specified statement.
+void db_statement_set_stop( statement* stmt );
+
 //! Sets current VCD scope to specified scope.
 void db_set_vcd_scope( char* scope );
 
@@ -65,6 +68,10 @@ int db_get_signal_size( char* symbol );
 void db_do_timestep( int time ); 
 
 /* $Log$
+/* Revision 1.5  2002/06/24 04:54:48  phase1geo
+/* More fixes and code additions to make statements work properly.  Still not
+/* there at this point.
+/*
 /* Revision 1.4  2002/05/13 03:02:58  phase1geo
 /* Adding lines back to expressions and removing them from statements (since the line
 /* number range of an expression can be calculated by looking at the expression line
