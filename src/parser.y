@@ -1911,13 +1911,13 @@ statement_list
     {
       if( ignore_mode == 0 ) {
         if( $1 == NULL ) {
-          $$ = $2;
+          db_remove_statement( $2 );
         } else {
           if( $2 != NULL ) {
             db_statement_connect( $1, $2 );
           }
-          $$ = $1;
         }
+        $$ = $1;
       }
     }
   | statement
