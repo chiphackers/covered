@@ -1,6 +1,6 @@
 Covered-Related NEWS
 ====================
-    * 01/28/2003
+    * 02/18/2003
 
 Release covered-0.2pre2 made.  Bug fixes and enhancements for allowing more Verilog
 code to be parsed without spewing parsing errors.  The list of open bugs is empty at
@@ -40,6 +40,19 @@ testing is necessary.  The following is a list of the changes for this release.
   - Fixed bug with merging constant/parameter vector values which caused assertion error
     in report command when reporting on a merged file.
   - Fixed user error message for merge command when CDD files are unable to be read.
+  - Added new type to CDD for general CDD file information.  This allows CDD files from
+    different testbenches with the same DUT instantiated to be properly merged.
+  - Fixed problem with generating report from CDD file that has not been scored.  Covered
+    detects that the CDD file has not been scored and outputs an error message to the user
+    not allowing them to generate these reports.
+  - Added support for reading bit selects from VCD files (this information was previously
+    ignored).  This was necessary as other simulators bit blast module ports in VCD files. 
+  - Updated look of instance reports to display full hierarchy of an instance instead of
+    the instance name and the instance name of the parent module.  Much easier to locate
+    the instance in the design now.
+  - Fixed bug with using -D/-Q option with merge command.
+  - Added merge regression testing capability to regression suite.
+  - Updated build environment for RedHat 8.0 requirements.
   - Updates to regression suite
   - Development documentation updates.
 
