@@ -118,6 +118,6 @@ FINITE STATE MACHINE COVERAGE RESULTS BY MODULE
                                                                State                             Arc
 Module                    Filename                Hit/Miss/Total    Percent Hit    Hit/Miss/Total    Percent hit
 ----------------------------------------------------------------------------------------------------------------
-  main                    fsm1.v                    3/   1/   4       75%            3/  13/  16       19%
+  main                    fsm1.v                    3/   1/   4       75%            4/  12/  16       25%
 =================================================================================
 
