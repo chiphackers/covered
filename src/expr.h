@@ -35,7 +35,7 @@ void expression_db_write( expression* expr, FILE* file, char* scope );
 bool expression_db_read( char** line, module* curr_mod, bool eval );
 
 /*! \brief Reads and merges two expressions and stores result in base expression. */
-bool expression_db_merge( expression* base, char** line );
+bool expression_db_merge( expression* base, char** line, bool same );
 
 /*! \brief Displays the specified expression information. */
 void expression_display( expression* expr );
@@ -58,6 +58,12 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.18  2002/11/27 03:49:20  phase1geo
+ Fixing bugs in score and report commands for regression.  Finally fixed
+ static expression calculation to yield proper coverage results for constant
+ expressions.  Updated regression suite and development documentation for
+ changes.
+
  Revision 1.17  2002/11/05 00:20:07  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.

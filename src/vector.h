@@ -26,7 +26,7 @@ void vector_db_write( vector* vec, FILE* file, bool write_data );
 bool vector_db_read( vector** vec, char** line );
 
 /*! \brief Reads and merges two vectors, placing the result into base vector. */
-bool vector_db_merge( vector* base, char** line );
+bool vector_db_merge( vector* base, char** line, bool same );
 
 /*! \brief Outputs the toggle01 information from the specified nibble to the specified output stream. */
 void vector_display_toggle01( nibble* nib, int width, int lsb, FILE* ofile );
@@ -112,6 +112,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.13  2002/11/05 00:20:08  phase1geo
+ Adding development documentation.  Fixing problem with combinational logic
+ output in report command and updating full regression.
+
  Revision 1.12  2002/11/02 16:16:20  phase1geo
  Cleaned up all compiler warnings in source and header files.
 

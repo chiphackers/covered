@@ -217,6 +217,7 @@ bool signal_db_read( char** line, module* curr_mod ) {
 /*!
  \param base  Signal to store result of merge into.
  \param line  Pointer to line of CDD file to parse.
+ \param same  Specifies if signal to merge needs to be exactly the same as the existing signal.
 
  \return Returns TRUE if parsing successful; otherwise, returns FALSE.
 
@@ -227,7 +228,7 @@ bool signal_db_read( char** line, module* curr_mod ) {
  If both signals are the same, perform the merge on the signal's 
  vectors.
 */
-bool signal_db_merge( signal* base, char** line ) {
+bool signal_db_merge( signal* base, char** line, bool same ) {
 
   bool retval;         /* Return value of this function       */
   char name[256];      /* Name of current signal              */
@@ -249,7 +250,7 @@ bool signal_db_merge( signal* base, char** line ) {
     } else {
 
       /* Read in vector information */
-      retval = vector_db_merge( base->value, line );
+      retval = vector_db_merge( base->value, line, same );
 
     }
 
@@ -361,6 +362,13 @@ void signal_dealloc( signal* sig ) {
 
 /*
  $Log$
+ Revision 1.26  2002/12/29 06:09:32  phase1geo
+ Fixing bug where output was not squelched in report command when -Q option
+ is specified.  Fixed bug in preprocessor where spaces where added in when newlines
+ found in C-style comment blocks.  Modified regression run to check CDD file and
+ generated module and instance reports.  Started to add code to handle signals that
+ are specified in design but unused in Covered.
+
  Revision 1.25  2002/11/05 00:20:08  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.

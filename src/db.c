@@ -224,10 +224,10 @@ bool db_read( char* file, int read_mode ) {
             
             if( (read_mode == READ_MODE_MERGE_INST_MERGE) && ((foundinst = instance_find_scope( instance_root, mod_scope )) != NULL) ) {
               merge_mode = TRUE;
-              module_db_merge( foundinst->mod, db_handle );
+              module_db_merge( foundinst->mod, db_handle, TRUE );
             } else if( (read_mode == READ_MODE_REPORT_MOD_MERGE) && ((foundmod = mod_link_find( &tmpmod, mod_head )) != NULL) ) {
               merge_mode = TRUE;
-              module_db_merge( foundmod->mod, db_handle );
+              module_db_merge( foundmod->mod, db_handle, FALSE );
             } else {
               curr_module           = module_create();
               curr_module->name     = strdup( mod_name );
@@ -1139,6 +1139,9 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.74  2002/12/11 14:51:57  phase1geo
+ Fixes compiler errors from last checkin.
+
  Revision 1.73  2002/12/11 14:49:24  phase1geo
  Minor tweaks to parameter handling; however, problem with instance6.2.v not
  fixed at this time.

@@ -26,7 +26,7 @@ bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst );
 bool module_db_read( module* mod, char* scope, char** line );
 
 /*! \brief Reads and merges two modules into base module. */
-bool module_db_merge( module* base, FILE* file );
+bool module_db_merge( module* base, FILE* file, bool same );
 
 /*! \brief Displays signals stored in this module. */
 void module_display_signals( module* mod );
@@ -43,6 +43,10 @@ void module_dealloc( module* mod );
 
 /*
  $Log$
+ Revision 1.8  2002/11/05 00:20:07  phase1geo
+ Adding development documentation.  Fixing problem with combinational logic
+ output in report command and updating full regression.
+
  Revision 1.7  2002/10/31 23:14:00  phase1geo
  Fixing C compatibility problems with cc and gcc.  Found a few possible problems
  with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that

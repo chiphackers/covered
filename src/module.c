@@ -236,6 +236,7 @@ bool module_db_read( module* mod, char* scope, char** line ) {
 /*!
  \param base  Module that will merge in that data from the in module
  \param file  Pointer to CDD file handle to read.
+ \param same  Specifies if module to be merged should match existing module exactly or not.
 
  \return Returns TRUE if parse and merge was successful; otherwise, returns FALSE.
 
@@ -244,7 +245,7 @@ bool module_db_read( module* mod, char* scope, char** line ) {
  If there are any differences between the two modules, a warning or error will be
  displayed to the user.
 */
-bool module_db_merge( module* base, FILE* file ) {
+bool module_db_merge( module* base, FILE* file, bool same ) {
 
   bool      retval = TRUE;   /* Return value of this function                                */
   exp_link* curr_base_exp;   /* Pointer to current expression in base module expression list */
@@ -265,8 +266,8 @@ bool module_db_merge( module* base, FILE* file ) {
       if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
         rest_line = curr_line + chars_read;
         if( type == DB_TYPE_EXPRESSION ) {
-       
-          retval = expression_db_merge( curr_base_exp->exp, &rest_line );
+
+          retval = expression_db_merge( curr_base_exp->exp, &rest_line, same );
 
         } else {
           retval = FALSE;
@@ -287,8 +288,8 @@ bool module_db_merge( module* base, FILE* file ) {
       if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
         rest_line = curr_line + chars_read;
         if( type == DB_TYPE_SIGNAL ) {
-       
-          retval = signal_db_merge( curr_base_sig->sig, &rest_line );
+
+          retval = signal_db_merge( curr_base_sig->sig, &rest_line, same );
 
         } else {
           retval = FALSE;
@@ -431,6 +432,10 @@ void module_dealloc( module* mod ) {
 
 /*
  $Log$
+ Revision 1.27  2002/11/05 00:20:07  phase1geo
+ Adding development documentation.  Fixing problem with combinational logic
+ output in report command and updating full regression.
+
  Revision 1.26  2002/11/02 16:16:20  phase1geo
  Cleaned up all compiler warnings in source and header files.
 

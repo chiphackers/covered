@@ -26,7 +26,7 @@ void signal_db_write( signal* sig, FILE* file, char* modname );
 bool signal_db_read( char** line, module* curr_mod );
 
 /*! \brief Reads and merges two signals, placing result into base signal. */
-bool signal_db_merge( signal* base, char** line );
+bool signal_db_merge( signal* base, char** line, bool same );
 
 /*! \brief Assigns specified VCD value to specified signal. */
 void signal_vcd_assign( signal* sig, char* value );
@@ -43,6 +43,10 @@ void signal_dealloc( signal* sig );
 
 /*
  $Log$
+ Revision 1.9  2002/11/05 00:20:08  phase1geo
+ Adding development documentation.  Fixing problem with combinational logic
+ output in report command and updating full regression.
+
  Revision 1.8  2002/11/02 16:16:20  phase1geo
  Cleaned up all compiler warnings in source and header files.
 
