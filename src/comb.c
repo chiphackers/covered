@@ -169,15 +169,16 @@ void combination_draw_line( char* line, int size, int exp_id ) {
 */
 void combination_underline_tree( expression* exp, char*** lines, int* depth, int* size, int* exp_id ) {
 
-  char** l_lines;       /* Pointer to left underline stack              */
-  char** r_lines;       /* Pointer to right underline stack             */
-  int    l_depth;       /* Index to top of left stack                   */
-  int    r_depth;       /* Index to top of right stack                  */
-  int    l_size;        /* Number of characters for left expression     */
-  int    r_size;        /* Number of characters for right expression    */
-  int    i;             /* Loop iterator                                */
-  char   exp_sp[256];   /* Space to take place of missing expression(s) */
-  char   code_fmt[12];  /* Contains format string for rest of stack     */
+  char** l_lines;       /* Pointer to left underline stack                          */
+  char** r_lines;       /* Pointer to right underline stack                         */
+  int    l_depth;       /* Index to top of left stack                               */
+  int    r_depth;       /* Index to top of right stack                              */
+  int    l_size;        /* Number of characters for left expression                 */
+  int    r_size;        /* Number of characters for right expression                */
+  int    i;             /* Loop iterator                                            */
+  char   exp_sp[256];   /* Space to take place of missing expression(s)             */
+  char   code_fmt[12];  /* Contains format string for rest of stack                 */
+  int    uline_this;    /* Specifies if the current expression should be underlined */
   
   *depth  = 0;
   *size   = 0;
@@ -246,12 +247,14 @@ void combination_underline_tree( expression* exp, char*** lines, int* depth, int
           break;
       }
 
+      uline_this = (  SUPPL_IS_MEASURABLE( exp->suppl ) 
+                    & (  ~SUPPL_WAS_TRUE( exp->suppl ) 
+                       | ~SUPPL_WAS_FALSE( exp->suppl )));
+
       if( l_depth > r_depth ) {
-        *depth = l_depth + (SUPPL_IS_MEASURABLE( exp->suppl ) &
-                            (~SUPPL_WAS_TRUE( exp->suppl ) | ~SUPPL_WAS_FALSE( exp->suppl )));
+        *depth = l_depth + uline_this;
       } else {
-        *depth = r_depth + (SUPPL_IS_MEASURABLE( exp->suppl ) &
-                            (~SUPPL_WAS_TRUE( exp->suppl ) | ~SUPPL_WAS_FALSE( exp->suppl )));
+        *depth = r_depth + uline_this;
       }
 
       if( *depth > 0 ) {
@@ -263,15 +266,13 @@ void combination_underline_tree( expression* exp, char*** lines, int* depth, int
         (*lines)[(*depth)-1] = (char*)malloc_safe( *size + 1 );
 
         /* Create underline or space */
-        if( ((SUPPL_WAS_TRUE( exp->suppl )  == 0) ||
-             (SUPPL_WAS_FALSE( exp->suppl ) == 0)) &&
-            (SUPPL_IS_MEASURABLE( exp->suppl ) == 1) ) {
+        if( uline_this == 1 ) {
           combination_draw_line( (*lines)[(*depth)-1], *size, *exp_id );
           *exp_id = *exp_id + 1;
         }
 
         /* Combine the left and right line stacks */
-        for( i=0; i<(*depth - 1); i++ ) {
+        for( i=0; i<(*depth - uline_this); i++ ) {
 
           (*lines)[i] = (char*)malloc_safe( *size + 1 );
 
@@ -288,8 +289,6 @@ void combination_underline_tree( expression* exp, char*** lines, int* depth, int
             /* Create spaces for right side */
             gen_space( exp_sp, r_size );
 
-            printf( "lspace:%s, r_size: %d, op: %d\n", exp_sp, r_size, exp->op );
-
             /* Merge left side only */
             snprintf( (*lines)[i], *size, code_fmt, l_lines[i], exp_sp );
 
@@ -299,8 +298,6 @@ void combination_underline_tree( expression* exp, char*** lines, int* depth, int
  
             /* Create spaces for left side */
             gen_space( exp_sp, l_size );
-
-            printf( "rspace:%s.\n", exp_sp );
 
             /* Merge left side only */
             snprintf( (*lines)[i], *size, code_fmt, exp_sp, r_lines[i] );
@@ -408,6 +405,8 @@ void combination_display_verbose( FILE* ofile, exp_link* expl ) {
       fprintf( ofile, "%7d:    %s\n", unexec_exp->line, code );
 
       combination_underline( ofile, unexec_exp, "            " );
+
+      fprintf( ofile, "\n" );
 
       free_safe( code );
       free_safe( underline );
