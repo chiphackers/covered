@@ -1,3 +1,109 @@
+2003-10-19 00:13  phase1geo
+
+	* diags/cdd/fsm5.3.cdd, diags/regress/Makefile,
+	diags/regress/fsm5.3.cfg, diags/rpt/fsm5.3.rptI,
+	diags/rpt/fsm5.3.rptM, diags/verilog/fsm5.3.v,
+	doc/manstyle/012.mas, doc/user/012.html, src/fsm_arg.c: Updating
+	user documentation for changes to FSM specification syntax.  Added
+	new fsm5.3 diagnostic to verify concatenation syntax.  Fixing bug
+	in concatenation syntax handling.
+
+2003-10-18 23:23  phase1geo
+
+	* ChangeLog, diags/cdd/always1.cdd, diags/cdd/always10.cdd,
+	diags/cdd/always11.1.cdd, diags/cdd/always11.2.cdd,
+	diags/cdd/always11.cdd, diags/cdd/always2.cdd,
+	diags/cdd/always3.1.11A.cdd, diags/cdd/always3.cdd,
+	diags/cdd/always4.cdd, diags/cdd/always5.1.cdd,
+	diags/cdd/always5.cdd, diags/cdd/always6.cdd,
+	diags/cdd/always8.cdd, diags/cdd/always9.cdd,
+	diags/cdd/assign1.cdd, diags/cdd/assign2.1.cdd,
+	diags/cdd/assign2.2.cdd, diags/cdd/assign2.3.cdd,
+	diags/cdd/assign2.8.cdd, diags/cdd/assign2.9.cdd,
+	diags/cdd/assign2.cdd, diags/cdd/assign3.2A.cdd,
+	diags/cdd/block1.cdd, diags/cdd/case1.1.cdd, diags/cdd/case1.2.cdd,
+	diags/cdd/case1.3.cdd, diags/cdd/case1.cdd, diags/cdd/case2.cdd,
+	diags/cdd/case3.1.cdd, diags/cdd/case3.2.cdd,
+	diags/cdd/case3.3.cdd, diags/cdd/case3.4.cdd, diags/cdd/case3.cdd,
+	diags/cdd/case4.1.cdd, diags/cdd/case4.cdd, diags/cdd/casex1.1.cdd,
+	diags/cdd/casex1.2.cdd, diags/cdd/casex1.3.cdd,
+	diags/cdd/casex1.4.cdd, diags/cdd/casex1.cdd,
+	diags/cdd/casez1.1.cdd, diags/cdd/casez1.2.cdd,
+	diags/cdd/casez1.3.cdd, diags/cdd/casez1.4.cdd,
+	diags/cdd/casez1.cdd, diags/cdd/casez2.cdd, diags/cdd/concat1.cdd,
+	diags/cdd/concat2.cdd, diags/cdd/concat3.cdd,
+	diags/cdd/concat4.1.cdd, diags/cdd/concat4.2.cdd,
+	diags/cdd/concat5.cdd, diags/cdd/concat6.cdd, diags/cdd/cond1.cdd,
+	diags/cdd/cond2.cdd, diags/cdd/define1.1.cdd,
+	diags/cdd/define1.2.cdd, diags/cdd/define1.cdd,
+	diags/cdd/define2.1.cdd, diags/cdd/define2.cdd,
+	diags/cdd/define3.cdd, diags/cdd/define4.cdd,
+	diags/cdd/delay1.1.cdd, diags/cdd/delay1.2.cdd,
+	diags/cdd/delay1.3.cdd, diags/cdd/delay1.cdd, diags/cdd/delay2.cdd,
+	diags/cdd/expand1.cdd, diags/cdd/expand2.cdd,
+	diags/cdd/expand3.cdd, diags/cdd/fsm1.1.cdd, diags/cdd/fsm1.2.cdd,
+	diags/cdd/fsm1.3.cdd, diags/cdd/fsm1.4.cdd, diags/cdd/fsm1.cdd,
+	diags/cdd/fsm2.cdd, diags/cdd/fsm2a.cdd, diags/cdd/fsm2b.cdd,
+	diags/cdd/fsm3.cdd, diags/cdd/fsm4.1.cdd, diags/cdd/fsm4.cdd,
+	diags/cdd/fsm5.1.cdd, diags/cdd/fsm5.2.cdd, diags/cdd/fsm5.cdd,
+	diags/cdd/gate1.cdd, diags/cdd/hier1.cdd, diags/cdd/ifdef1.1.cdd,
+	diags/cdd/ifdef1.2.cdd, diags/cdd/ifdef1.cdd,
+	diags/cdd/ifdef2.1.cdd, diags/cdd/ifdef2.2.cdd,
+	diags/cdd/ifdef2.3.cdd, diags/cdd/ifelse1.cdd,
+	diags/cdd/implicit1.cdd, diags/cdd/implicit2.cdd,
+	diags/cdd/include1.1.cdd, diags/cdd/include1.cdd,
+	diags/cdd/include2.cdd, diags/cdd/instance1.1.cdd,
+	diags/cdd/instance1.2.cdd, diags/cdd/instance1.cdd,
+	diags/cdd/instance2.cdd, diags/cdd/instance3.cdd,
+	diags/cdd/instance4.1.cdd, diags/cdd/instance4.2.cdd,
+	diags/cdd/instance4.cdd, diags/cdd/instance5.cdd,
+	diags/cdd/instance6.1.cdd, diags/cdd/instance6.2.cdd,
+	diags/cdd/instance6.cdd, diags/cdd/instance7.cdd,
+	diags/cdd/long_exp1.cdd, diags/cdd/mbit_sel1.cdd,
+	diags/cdd/mbit_sel2.cdd, diags/cdd/mbit_sel3.1.cdd,
+	diags/cdd/mbit_sel3.cdd, diags/cdd/mbit_sel4.1.cdd,
+	diags/cdd/mbit_sel4.2.cdd, diags/cdd/mbit_sel4.3.cdd,
+	diags/cdd/mbit_sel4.cdd, diags/cdd/merge1.cdd,
+	diags/cdd/merge1a.cdd, diags/cdd/merge1b.cdd, diags/cdd/mult1.cdd,
+	diags/cdd/param1.1.cdd, diags/cdd/param1.2.cdd,
+	diags/cdd/param1.3.cdd, diags/cdd/param1.cdd,
+	diags/cdd/param3.1.cdd, diags/cdd/param3.2.cdd,
+	diags/cdd/param3.3.cdd, diags/cdd/param3.4.cdd,
+	diags/cdd/param3.5.cdd, diags/cdd/param3.cdd,
+	diags/cdd/param4.1.cdd, diags/cdd/param4.cdd, diags/cdd/param5.cdd,
+	diags/cdd/param6.1.cdd, diags/cdd/param6.cdd, diags/cdd/param7.cdd,
+	diags/cdd/pulldown1.cdd, diags/cdd/pullup1.cdd,
+	diags/cdd/real1.1.cdd, diags/cdd/sbit_sel1.1.cdd,
+	diags/cdd/sbit_sel1.cdd, diags/cdd/static1.cdd,
+	diags/cdd/static2.1.cdd, diags/cdd/static2.2.cdd,
+	diags/cdd/static2.cdd, diags/cdd/supply0.cdd,
+	diags/cdd/supply1.cdd, diags/cdd/tri.cdd, diags/cdd/tri0.cdd,
+	diags/cdd/tri1.cdd, diags/regress/Makefile,
+	diags/regress/fsm5.2.cfg, diags/rpt/fsm5.1.rptI,
+	diags/rpt/fsm5.1.rptM, diags/rpt/fsm5.2.rptI,
+	diags/rpt/fsm5.2.rptM, diags/verilog/fsm5.2.v, src/expr.c,
+	src/signal.c, src/vcd.c: Fixing bug in VCD parser for new Icarus
+	Verilog VCD dumpfile formatting.  Fixing bug in signal.c for signal
+	merging.  Updates all CDD files to match new format.  Added new
+	diagnostics to test advanced FSM state variable features.
+
+2003-10-17 16:59  phase1geo
+
+	* src/signal.c: Fixing signal_vcd_assign function to properly
+	adjust msb and lsb based on the lsb of the signal that is being
+	assigned to.
+
+2003-10-17 16:55  phase1geo
+
+	* src/param.c: Fixing parameter db_write function to output signal
+	in new format.
+
+2003-10-17 07:55  phase1geo
+
+	* src/: arc.c, binding.c, db.c, defines.h, expr.c, expr.h, fsm.c,
+	fsm_arg.c, param.c, parser.y, signal.c, signal.h, static.c,
+	toggle.c, vector.c, vector.h: Intermediate checkin for LSB fixes.
+
 2003-10-16 21:12  phase1geo
 
 	* diags/cdd/always1.cdd, diags/cdd/always10.cdd,

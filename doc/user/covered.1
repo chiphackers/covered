@@ -1,4 +1,4 @@
-.TH "Covered" "1" "covered-20030925" "Trevor Williams" "Code Analysis"
+.TH "Covered" "1" "covered-20031019" "Trevor Williams" "Code Analysis"
 .SH "NAME"
 .LP 
 Covered \- Verilog Code Coverage Analyzer
@@ -51,8 +51,8 @@ Defines the specified name to the specified value.
 \fB\-e\fR \fImodule_name\fR
 Name of module to not score.  Causes all submodules in the Verilog tree under this module to also not be scored.
 .TP 
-\fB\-F\fR \fImodule_name=(in_var,)out_var\fR
-Indicates to the parser where to find the FSM located in module \fImodule_name\fR which has an input state variable called \fIin_var\fR and output state variable called \fIout_var\fR.  If \fIin_var\fR is not specified, \fIout_var\fR is used as both the input and output state variable.
+\fB\-F\fR \fImodule_name=(in_expr,)out_expr\fR
+Indicates to the parser where to find the FSM located in module \fImodule_name\fR which has an input state expression called \fIin_expr\fR and output state expression called \fIout_expr\fR.  If \fIin_expr\fR is not specified, \fIout_expr\fR is used as both the input and output state expression.
 .TP 
 \fB\-f\fR \fIfilename\fR
 Name of file containing additional arguments to parse.

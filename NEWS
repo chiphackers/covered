@@ -1,6 +1,39 @@
 Covered-Related NEWS
 ====================
 
+    * 10/19/2003
+
+Release covered-20031019 made.  Lots of modifications to existing structures and supporting
+code to increase scoring speed.  In my testbenches, I am seeing about a 3-4x improvement
+in speed.  Additionally, code enhancement for allowing bit selects and signal concatenations
+in command-line FSM variable descriptions are now allowed.  User documentation has been
+updated for these changes.  Some bug fixes are also included in this release.  The
+following list shows the changes from last development release.
+
+  - Added ability to parse more complex state "variables".  This includes the ability
+    to specify single and multi-bit signals and the ability to concatenate more than
+    one signal (or signal bit select) to make a state variable.  Please see user
+    documentation for more information on this.
+  - Minor tweaks to report format for displaying filenames (only basename of filename
+    is output instead of the entire path).
+  - Fixing bug in VCD parser to allow bit select parsing of a variable when the
+    variable name and bit-select information are not separated by spaces (this is something
+    that newer versions of Icarus Verilog now does in its VCD files).
+  - Changed structure for vectors from ints to chars.  Each vector element stores information
+    for one 4-state bit value and its coverage information (instead of storing 4 4-state
+    variables and coverage information).  This reduces memory needed and increases calculation
+    speed on vectors.
+  - Fixing bug in signal_from_string function.
+  - Fixing bug in arc.c related to non-zero LSBs of signals.
+  - Added new parameter to info line in CDD file that specifies the format of the CDD file.
+    This is used by Covered to keep CDD files with different formats from being merged, read,
+    etc.
+  - Removed LSB information from vector and storing this information in the signal
+    structure.  Reduces memory required, enhances speed, and fixes existing bugs with bit
+    selects.
+  - Added more diagnostics to regression suite to test new functionality.
+  - Updated user documentation for new changes.
+
     * 09/25/2003
 
 Release covered-20030925 made.  This release contains the first working FSM code
