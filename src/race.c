@@ -35,7 +35,7 @@
 stmt_sig* stmt_sig_head = NULL;
 stmt_sig* stmt_sig_tail = NULL;
 
-// extern bool race_flag = false;
+extern bool flag_race_check;
 
 
 /*!
@@ -59,16 +59,14 @@ bool race_does_matching_stmt_sig_exist( stmt_sig* ss, stmt_sig* curr ) {
  \param exp       Pointer to current expression to evaluate
  \param root      Pointer to root statement in statement tree
  \param blocking  Specifies if blocking expression was found in parent expression
- \param head      Pointer to head of stmt_sig list that was found for this statement
- \param tail      Pointer to tail of stmt_sig list that was found for this statement
 
  Recursively searches specified expression tree for LHS assigned signals.  When a
  signal is found that matches this criteria, it is added to the current stmt_sig list
  if a matching stmt_sig was not found already in this list.
 */
-void race_find_lhs_sigs( expression* exp, statement* root, bool blocking, stmt_sig** head, stmt_sig** tail ) {
+void race_find_lhs_sigs( expression* exp, statement* root, bool blocking ) {
 
-  stmt_sig* tmp_stmt_sig;  /* Pointer to temporary stmt_sig structure */
+  stmt_sig* tmpss;  /* Pointer to temporary stmt_sig structure */
 
   if( exp != NULL ) {
 
@@ -85,28 +83,29 @@ void race_find_lhs_sigs( expression* exp, statement* root, bool blocking, stmt_s
 
       if( SUPPL_IS_LHS( exp->suppl ) == 1 ) {
 
-        /* Create new stmt_sig structure */
-        tmp_stmt_sig           = (stmt_sig*)malloc( sizeof( stmt_sig ) );
-        tmp_stmt_sig->sig      = exp->sig;
-        tmp_stmt_sig->stmt     = root;
-  	tmp_stmt_sig->blocking = blocking;
-        tmp_stmt_sig->next     = NULL;
+        /* Check to see if any elements in stmt_sig list match this element */
+        tmpss = stmt_sig_head;
+        while( (tmpss != NULL) && (exp->sig != tmpss->sig) && (blocking != tmpss->blocking) && (root != tmpss->stmt) ) {
+          tmpss = tmpss->next;
+        }
+
+        /* If we don't have a match, go ahead and create the stmt_sig structure and add it to the list */
+        if( tmpss == NULL ) {
+        
+          /* Create new stmt_sig structure */
+          tmpss           = (stmt_sig*)malloc_safe( sizeof( stmt_sig ) );
+          tmpss->sig      = exp->sig;
+          tmpss->stmt     = root;
+  	  tmpss->blocking = blocking;
+          tmpss->next     = NULL;
       
-	/* If we did not find a match, go ahead and add it to the list */
-	if( !race_does_matching_stmt_sig_exist( tmp_stmt_sig, *head ) ) {
-
           /* Add new stmt_sig structure to list */
-          if( *head == NULL ) {
-            *head = *tail = tmp_stmt_sig;
+          if( stmt_sig_head == NULL ) {
+            stmt_sig_head = stmt_sig_tail = tmpss;
           } else {
-            (*tail)->next = tmp_stmt_sig;
-            *tail         = tmp_stmt_sig;
+            stmt_sig_tail->next = tmpss;
+            stmt_sig_tail       = tmpss;
           }
-
-        } else {
-
-	  /* Deallocate the malloc'ed structure */ 
-          race_stmt_sig_dealloc( tmp_stmt_sig );
 
         }
 
@@ -118,12 +117,43 @@ void race_find_lhs_sigs( expression* exp, statement* root, bool blocking, stmt_s
        TBD - We could make this code more efficient by first searching for an assignment operator and then
        searching for all LHS signals.
       */
-      race_find_lhs_sigs( exp->left,  root, blocking, head, tail );
-      race_find_lhs_sigs( exp->right, root, blocking, head, tail );
+      race_find_lhs_sigs( exp->left,  root, blocking );
+      race_find_lhs_sigs( exp->right, root, blocking );
 
     } 
 
   } 
+
+}
+
+/*!
+ \param sig  Pointer to input port signal.
+
+ Creates a new stmt_sig structure to hold the specified signal information and adds it to the stmt_sig
+ list for future processing.  This should be called by the parser whenever a new input port signal has
+ been found.
+*/
+void race_add_inport_sig( vsignal* sig ) {
+
+  stmt_sig* ss;  /* Pointer to newly created stmt_sig structure */
+
+  /* The specified signal should never be a NULL value */
+  assert( sig != NULL );
+
+  /* Create new stmt_sig for this port -- setting root stmt to NULL to indicate that this is a port */
+  ss = (stmt_sig*)malloc_safe( sizeof( stmt_sig ) );
+  ss->sig      = sig;
+  ss->stmt     = NULL;  /* Indicates that this is an input port */
+  ss->blocking = TRUE;  /* Assume that this port has been assigned in a blocking fashion */
+  ss->next     = NULL;
+
+  /* Add the new signal to the list -- we shouldn't have duplicates here so don't check */
+  if( stmt_sig_head == NULL ) {
+    stmt_sig_head = stmt_sig_tail = ss;
+  } else {
+    stmt_sig_tail->next = ss;
+    stmt_sig_tail       = ss;
+  }
 
 }
 
@@ -140,33 +170,13 @@ void race_find_lhs_sigs( expression* exp, statement* root, bool blocking, stmt_s
 */
 void race_find_and_add_stmt_sigs( statement* stmt, statement* root ) {
 
-  stmt_sig* tmp_head;  /* Pointer to head of temporary stmt_sig list        */
-  stmt_sig* tmp_tail;  /* Pointer to tail of temporary stmt_sig list        */
   stmt_sig* curr;      /* Pointer to current stmt_sig structure to evaluate */
   stmt_sig* last;      /* Pointer to last stmt_sig structure evaluated      */
 
-  if( stmt != NULL ) {
+  assert( stmt != NULL );
+  assert( root != NULL );
 
-    /* First, find all signals in the current statement that are labeled as LHS */
-    race_find_lhs_sigs( stmt->exp, root, FALSE, &tmp_head, &tmp_tail );
-
-    /* Next, remove all matching stmt_sig in temporary list */
-    curr = tmp_head;
-    last = NULL;
-    while( curr != NULL ) {
-      if( !race_does_matching_stmt_sig_exist( curr, stmt_sig_head ) ) {
-	if( stmt_sig_head == NULL ) {
-          stmt_sig_head = stmt_sig_tail = curr;
-        } else {
-          stmt_sig_tail->next = curr;
-	  stmt_sig_tail       = curr;
-        }
-      } else {
-        curr = curr->next;
-      } 
-    }
-
-  }
+  race_find_lhs_sigs( stmt->exp, root, FALSE );
 
 }
 
@@ -191,6 +201,10 @@ void race_stmt_sig_dealloc( stmt_sig* ss ) {
 
 /*
  $Log$
+ Revision 1.4  2004/12/17 14:27:46  phase1geo
+ More code added to race condition checker.  This is in an unusable state at
+ this time.
+
  Revision 1.3  2004/12/16 23:31:48  phase1geo
  More work done on race condition code.
 

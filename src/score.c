@@ -28,14 +28,15 @@
 #include "info.h"
 
 
-char* top_module         = NULL;                /*!< Name of top-level module to score                     */
-char* top_instance       = NULL;                /*!< Name of top-level instance name                       */
-char* output_db          = NULL;                /*!< Name of output score database file to generate        */
-char* vcd_file           = NULL;                /*!< Name of VCD output file to parse                      */
-int   delay_expr_type    = DELAY_EXPR_DEFAULT;  /*!< Value to use when a delay expression with min:typ:max */
-char* ppfilename         = NULL;                /*!< Name of preprocessor filename to use                  */
-bool  instance_specified = FALSE;               /*!< Specifies if -i option was specified                  */
-int   timestep_update    = 0;                   /*!< Specifies timestep increment to display current time  */
+char* top_module         = NULL;                /*!< Name of top-level module to score                          */
+char* top_instance       = NULL;                /*!< Name of top-level instance name                            */
+char* output_db          = NULL;                /*!< Name of output score database file to generate             */
+char* vcd_file           = NULL;                /*!< Name of VCD output file to parse                           */
+int   delay_expr_type    = DELAY_EXPR_DEFAULT;  /*!< Value to use when a delay expression with min:typ:max      */
+char* ppfilename         = NULL;                /*!< Name of preprocessor filename to use                       */
+bool  instance_specified = FALSE;               /*!< Specifies if -i option was specified                       */
+int   timestep_update    = 0;                   /*!< Specifies timestep increment to display current time       */
+bool  flag_race_check    = FALSE;               /*!< Specifies if race conditions should be treated as an error */
 
 extern unsigned long largest_malloc_size;
 extern unsigned long curr_malloc_size;
@@ -76,6 +77,7 @@ void score_usage() {
   printf( "      -T min|typ|max               Specifies value to use in delay expressions of the form min:typ:max.\n" );
   printf( "      -ts <number>                 If design is being scored, specifying this option will output\n" );
   printf( "                                    the current timestep (by increments of <number>) to standard output.\n" );
+  printf( "      -R                           Exits after the parsing stage when race conditions are found in design.\n" );
   printf( "      -h                           Displays this help information.\n" );
   printf( "\n" );
   printf( "      +libext+.<extension>(+.<extension>)+\n" );
@@ -326,6 +328,10 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( 1 );
       }
+
+    } else if( strncmp( "-R", argv[i], 2 ) == 0 ) {
+
+      flag_race_check = TRUE;
         
     } else {
 
@@ -404,6 +410,15 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.45  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.44  2004/03/15 21:38:17  phase1geo
  Updated source files after running lint on these files.  Full regression
  still passes at this point.
