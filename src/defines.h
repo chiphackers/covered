@@ -187,16 +187,18 @@
 #define SUPPL_LSB_EXECUTED          1
 
 /*!
- Least-significant bit position of expression supplemental field indicating this expression's
- value has changed in this timestamp.
+ Least-significant bit position of expression supplemental field indicating the
+ statement which this expression belongs is a head statement (only valid for root
+ expressions -- parent expression == NULL).
 */
-#define SUPPL_LSB_CHANGED           2
+#define SUPPL_LSB_STMT_HEAD         2
 
 /*!
- Least-significant bit position of expression supplemental field indicating that this
- expression evaluates to a value of 0 or 1 and is therefore measurable for coverage.
+ Least-significant bit position of expression supplemental field indicating the
+ statement which this expression belongs should write itself to the CDD and not
+ continue to traverse its next_true and next_false pointers.
 */
-#define SUPPL_LSB_MEASURABLE        3
+#define SUPPL_LSB_STMT_STOP         3
 
 /*!
  Least-significant bit position of expression supplemental field indicating that this
@@ -253,10 +255,16 @@
 #define SUPPL_WAS_EXECUTED(x)       ((x >> SUPPL_LSB_EXECUTED) & 0x1)
 
 /*!
- Returns a value of 1 if the specified supplemental value is considered
- to be measurable.
+ Returns a value of 1 if the specified supplemental belongs to an expression
+ whose associated statement is a head statement.
 */
-#define SUPPL_IS_MEASURABLE(x)      ((x >> SUPPL_LSB_MEASURABLE) & 0x1)
+#define SUPPL_IS_STMT_HEAD(x)       ((x >> SUPPL_LSB_STMT_HEAD) & 0x1)
+
+/*!
+ Returns a value of 1 if the specified supplemental belongs to an expression
+ whose associated statement is a stop (for writing purposes).
+*/
+#define SUPPL_IS_STMT_STOP(x)       ((x >> SUPPL_LSB_STMT_STOP) & 0x1)
 
 /*!
  Returns a value of 1 if the specified supplemental belongs to an expression
@@ -281,13 +289,6 @@
  timestamp.
 */
 #define SUPPL_IS_RIGHT_CHANGED(x)   ((x >> SUPPL_LSB_RIGHT_CHANGED) & 0x1)
-
-/*!
- Returns a value of 1 if the specified supplemental belongs to an expression
- that was measurable for combinational coverage but not fully covered during
- simulation.
-*/
-#define SUPPL_COMB_MISSED(x)        (SUPPL_IS_MEASURABLE(x) & (~SUPPL_WAS_TRUE(x) | ~SUPPL_WAS_FALSE(x)))
 
 /*!
  Returns the specified expression's operation.
@@ -380,6 +381,21 @@
 #define EXP_OP_STMT     0x2a    /*!< 42 statement operator            */
 
 /*! @} */
+
+/*!
+ Returns a value of 1 if the specified expression is considered to be measurable.
+*/
+#define EXPR_IS_MEASURABLE(x)      (((x->value->width == 1)                    && \
+                                     (SUPPL_OP( x->suppl ) != EXP_OP_NONE)     && \
+                                     (SUPPL_OP( x->suppl ) != EXP_OP_SIG)      && \
+                                     (SUPPL_OP( x->suppl ) != EXP_OP_SBIT_SEL) && \
+                                     (SUPPL_OP( x->suppl ) != EXP_OP_MBIT_SEL)) ? 1 : 0)
+
+/*!
+ Returns a value of 1 if the specified expression was measurable for combinational 
+ coverage but not fully covered during simulation.
+*/
+#define EXPR_COMB_MISSED(x)        (EXPR_IS_MEASURABLE(x) & (~SUPPL_WAS_TRUE(x->suppl) | ~SUPPL_WAS_FALSE(x->suppl)))
 
 /*!
  \addtogroup op_tables
@@ -703,6 +719,11 @@ struct mod_inst_s {
 
 
 /* $Log$
+/* Revision 1.11  2002/05/13 03:02:58  phase1geo
+/* Adding lines back to expressions and removing them from statements (since the line
+/* number range of an expression can be calculated by looking at the expression line
+/* numbers).
+/*
 /* Revision 1.10  2002/05/03 03:39:36  phase1geo
 /* Removing all syntax errors due to addition of statements.  Added more statement
 /* support code.  Still have a ways to go before we can try anything.  Removed lines

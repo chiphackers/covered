@@ -34,7 +34,7 @@ void combination_get_stats( exp_link* expl, float* total, int* hit ) {
   curr_exp = expl;
 
   while( curr_exp != NULL ) {
-    if( SUPPL_IS_MEASURABLE( curr_exp->exp->suppl ) == 1 ) {
+    if( EXPR_IS_MEASURABLE( curr_exp->exp ) == 1 ) {
       *total = *total + 2;
       *hit   = *hit + SUPPL_WAS_TRUE( curr_exp->exp->suppl ) + SUPPL_WAS_FALSE( curr_exp->exp->suppl );
     }
@@ -248,9 +248,9 @@ void combination_underline_tree( expression* exp, char*** lines, int* depth, int
       }
 
       if( l_depth > r_depth ) {
-        *depth = l_depth + SUPPL_COMB_MISSED( exp->suppl );
+        *depth = l_depth + EXPR_COMB_MISSED( exp );
       } else {
-        *depth = r_depth + SUPPL_COMB_MISSED( exp->suppl );
+        *depth = r_depth + EXPR_COMB_MISSED( exp );
       }
 
       if( *depth > 0 ) {
@@ -262,14 +262,14 @@ void combination_underline_tree( expression* exp, char*** lines, int* depth, int
         (*lines)[(*depth)-1] = (char*)malloc_safe( *size + 1 );
 
         /* Create underline or space */
-        if( SUPPL_COMB_MISSED( exp->suppl ) == 1 ) {
+        if( EXPR_COMB_MISSED( exp ) == 1 ) {
           combination_draw_line( (*lines)[(*depth)-1], *size, *exp_id );
           // printf( "Drawing line (%s), size: %d, depth: %d\n", (*lines)[(*depth)-1], *size, (*depth) );
           *exp_id = *exp_id + 1;
         }
 
         /* Combine the left and right line stacks */
-        for( i=0; i<(*depth - SUPPL_COMB_MISSED( exp->suppl )); i++ ) {
+        for( i=0; i<(*depth - EXPR_COMB_MISSED( exp )); i++ ) {
 
           (*lines)[i] = (char*)malloc_safe( *size + 1 );
 
@@ -410,11 +410,9 @@ void combination_two_vars( FILE* ofile, expression* exp, int val0, int val1, int
 
   /* Verify that left child expression is valid for this operation */
   assert( exp->left != NULL );
-  // assert( SUPPL_IS_MEASURABLE( exp->left->suppl ) == 1 );
 
   /* Verify that right child expression is valid for this operation */
   assert( exp->right != NULL );
-  // assert( SUPPL_IS_MEASURABLE( exp->left->suppl ) == 1 );
 
   fprintf( ofile, " L | R | Value\n" );
   fprintf( ofile, "---+---+------\n" );
@@ -456,7 +454,7 @@ void combination_list_missed( FILE* ofile, expression* exp, int* exp_id ) {
     combination_list_missed( ofile, exp->left,  exp_id );
     combination_list_missed( ofile, exp->right, exp_id );
 
-    if( SUPPL_COMB_MISSED( exp->suppl ) == 1 ) {
+    if( EXPR_COMB_MISSED( exp ) == 1 ) {
 
       fprintf( ofile, "Expression %d\n", *exp_id );
       fprintf( ofile, "^^^^^^^^^^^^^\n" );
@@ -538,7 +536,7 @@ void combination_display_verbose( FILE* ofile, exp_link* expl ) {
   /* Display current instance missed lines */
   while( expl != NULL ) {
 
-    if( SUPPL_COMB_MISSED( expl->exp->suppl ) == 1 ) {
+    if( EXPR_COMB_MISSED( expl->exp ) == 1 ) {
 
       unexec_exp = expl->exp;
       exp_id     = 1;
@@ -672,4 +670,10 @@ void combination_report( FILE* ofile, bool verbose, bool instance ) {
 }
 
 
-/* $Log$ */
+/* $Log$
+/* Revision 1.14  2002/05/03 03:39:36  phase1geo
+/* Removing all syntax errors due to addition of statements.  Added more statement
+/* support code.  Still have a ways to go before we can try anything.  Removed lines
+/* from expressions though we may want to consider putting these back for reporting
+/* purposes.
+/* */

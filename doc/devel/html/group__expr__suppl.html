@@ -10,8 +10,8 @@
 <tr><td colspan=2><br><h2>Defines</h2></td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a0">SUPPL_LSB_IN_QUEUE</a>&nbsp;&nbsp;&nbsp;0</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a1">SUPPL_LSB_EXECUTED</a>&nbsp;&nbsp;&nbsp;1</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a2">SUPPL_LSB_CHANGED</a>&nbsp;&nbsp;&nbsp;2</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a3">SUPPL_LSB_MEASURABLE</a>&nbsp;&nbsp;&nbsp;3</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a2">SUPPL_LSB_STMT_HEAD</a>&nbsp;&nbsp;&nbsp;2</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a3">SUPPL_LSB_STMT_STOP</a>&nbsp;&nbsp;&nbsp;3</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a4">SUPPL_LSB_FALSE</a>&nbsp;&nbsp;&nbsp;4</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a5">SUPPL_LSB_TRUE</a>&nbsp;&nbsp;&nbsp;5</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a6">SUPPL_LSB_LEFT_CHANGED</a>&nbsp;&nbsp;&nbsp;6</td></tr>
@@ -20,43 +20,16 @@
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a9">SUPPL_LSB_SIG_LSB</a>&nbsp;&nbsp;&nbsp;16</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a10">SUPPL_MERGE_MASK</a>&nbsp;&nbsp;&nbsp;0x302</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a11">SUPPL_WAS_EXECUTED</a>(x)&nbsp;&nbsp;&nbsp;((x &gt;&gt; SUPPL_LSB_EXECUTED) &amp; 0x1)</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a12">SUPPL_IS_MEASURABLE</a>(x)&nbsp;&nbsp;&nbsp;((x &gt;&gt; SUPPL_LSB_MEASURABLE) &amp; 0x1)</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a13">SUPPL_WAS_TRUE</a>(x)&nbsp;&nbsp;&nbsp;((x &gt;&gt; SUPPL_LSB_TRUE) &amp; 0x1)</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a14">SUPPL_WAS_FALSE</a>(x)&nbsp;&nbsp;&nbsp;((x &gt;&gt; SUPPL_LSB_FALSE) &amp; 0x1)</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a15">SUPPL_IS_LEFT_CHANGED</a>(x)&nbsp;&nbsp;&nbsp;((x &gt;&gt; SUPPL_LSB_LEFT_CHANGED) &amp; 0x1)</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a16">SUPPL_IS_RIGHT_CHANGED</a>(x)&nbsp;&nbsp;&nbsp;((x &gt;&gt; SUPPL_LSB_RIGHT_CHANGED) &amp; 0x1)</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a17">SUPPL_COMB_MISSED</a>(x)&nbsp;&nbsp;&nbsp;(SUPPL_IS_MEASURABLE(x) &amp; (~SUPPL_WAS_TRUE(x) | ~SUPPL_WAS_FALSE(x)))</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a12">SUPPL_IS_STMT_HEAD</a>(x)&nbsp;&nbsp;&nbsp;((x &gt;&gt; SUPPL_LSB_STMT_HEAD) &amp; 0x1)</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a13">SUPPL_IS_STMT_STOP</a>(x)&nbsp;&nbsp;&nbsp;((x &gt;&gt; SUPPL_LSB_STMT_STOP) &amp; 0x1)</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a14">SUPPL_WAS_TRUE</a>(x)&nbsp;&nbsp;&nbsp;((x &gt;&gt; SUPPL_LSB_TRUE) &amp; 0x1)</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a15">SUPPL_WAS_FALSE</a>(x)&nbsp;&nbsp;&nbsp;((x &gt;&gt; SUPPL_LSB_FALSE) &amp; 0x1)</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a16">SUPPL_IS_LEFT_CHANGED</a>(x)&nbsp;&nbsp;&nbsp;((x &gt;&gt; SUPPL_LSB_LEFT_CHANGED) &amp; 0x1)</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a17">SUPPL_IS_RIGHT_CHANGED</a>(x)&nbsp;&nbsp;&nbsp;((x &gt;&gt; SUPPL_LSB_RIGHT_CHANGED) &amp; 0x1)</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a18">SUPPL_OP</a>(x)&nbsp;&nbsp;&nbsp;((x &gt;&gt; SUPPL_LSB_OP) &amp; 0xff)</td></tr>
 </table>
 <hr><h2>Define Documentation</h2>
-<a name="a17" doxytag="defines.h::SUPPL_COMB_MISSED"></a><p>
-<table width="100%" cellpadding="2" cellspacing="0" border="0">
-  <tr>
-    <td class="md">
-      <table cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td class="md" nowrap valign="top"> #define SUPPL_COMB_MISSED</td>
-          <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top">x&nbsp;</td>
-          <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
-          <td class="md" valign="top">)&nbsp;</td>
-          <td class="md" nowrap>&nbsp;&nbsp;&nbsp;(SUPPL_IS_MEASURABLE(x) &amp; (~SUPPL_WAS_TRUE(x) | ~SUPPL_WAS_FALSE(x)))
-      </table>
-    </td>
-  </tr>
-</table>
-<table cellspacing=5 cellpadding=0 border=0>
-  <tr>
-    <td>
-      &nbsp;
-    </td>
-    <td>
-
-<p>
-Returns a value of 1 if the specified supplemental belongs to an expression that was measurable for combinational coverage but not fully covered during simulation.     </td>
-  </tr>
-</table>
-<a name="a15" doxytag="defines.h::SUPPL_IS_LEFT_CHANGED"></a><p>
+<a name="a16" doxytag="defines.h::SUPPL_IS_LEFT_CHANGED"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -83,34 +56,7 @@ Returns a value of 1 if the specified supplemental belongs to an expression that
 Returns a value of 1 if the left child expression was changed during this timestamp.     </td>
   </tr>
 </table>
-<a name="a12" doxytag="defines.h::SUPPL_IS_MEASURABLE"></a><p>
-<table width="100%" cellpadding="2" cellspacing="0" border="0">
-  <tr>
-    <td class="md">
-      <table cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td class="md" nowrap valign="top"> #define SUPPL_IS_MEASURABLE</td>
-          <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top">x&nbsp;</td>
-          <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
-          <td class="md" valign="top">)&nbsp;</td>
-          <td class="md" nowrap>&nbsp;&nbsp;&nbsp;((x &gt;&gt; SUPPL_LSB_MEASURABLE) &amp; 0x1)
-      </table>
-    </td>
-  </tr>
-</table>
-<table cellspacing=5 cellpadding=0 border=0>
-  <tr>
-    <td>
-      &nbsp;
-    </td>
-    <td>
-
-<p>
-Returns a value of 1 if the specified supplemental value is considered to be measurable.     </td>
-  </tr>
-</table>
-<a name="a16" doxytag="defines.h::SUPPL_IS_RIGHT_CHANGED"></a><p>
+<a name="a17" doxytag="defines.h::SUPPL_IS_RIGHT_CHANGED"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -137,13 +83,18 @@ Returns a value of 1 if the specified supplemental value is considered to be mea
 Returns a value of 1 if the right child expression was changed during this timestamp.     </td>
   </tr>
 </table>
-<a name="a2" doxytag="defines.h::SUPPL_LSB_CHANGED"></a><p>
+<a name="a12" doxytag="defines.h::SUPPL_IS_STMT_HEAD"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> #define SUPPL_LSB_CHANGED&nbsp;&nbsp;&nbsp;2
+          <td class="md" nowrap valign="top"> #define SUPPL_IS_STMT_HEAD</td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="md" nowrap valign="top">x&nbsp;</td>
+          <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
+          <td class="md" valign="top">)&nbsp;</td>
+          <td class="md" nowrap>&nbsp;&nbsp;&nbsp;((x &gt;&gt; SUPPL_LSB_STMT_HEAD) &amp; 0x1)
       </table>
     </td>
   </tr>
@@ -156,7 +107,34 @@ Returns a value of 1 if the right child expression was changed during this times
     <td>
 
 <p>
-Least-significant bit position of expression supplemental field indicating this expression's value has changed in this timestamp.     </td>
+Returns a value of 1 if the specified supplemental belongs to an expression whose associated statement is a head statement.     </td>
+  </tr>
+</table>
+<a name="a13" doxytag="defines.h::SUPPL_IS_STMT_STOP"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> #define SUPPL_IS_STMT_STOP</td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="md" nowrap valign="top">x&nbsp;</td>
+          <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
+          <td class="md" valign="top">)&nbsp;</td>
+          <td class="md" nowrap>&nbsp;&nbsp;&nbsp;((x &gt;&gt; SUPPL_LSB_STMT_STOP) &amp; 0x1)
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+Returns a value of 1 if the specified supplemental belongs to an expression whose associated statement is a stop (for writing purposes).     </td>
   </tr>
 </table>
 <a name="a1" doxytag="defines.h::SUPPL_LSB_EXECUTED"></a><p>
@@ -247,28 +225,6 @@ Least-significant bit position of expression supplemental field indicating that 
 Least-significant bit position of expression supplemental field indicating that this expression has its left child expression in a changed state during this timestamp.     </td>
   </tr>
 </table>
-<a name="a3" doxytag="defines.h::SUPPL_LSB_MEASURABLE"></a><p>
-<table width="100%" cellpadding="2" cellspacing="0" border="0">
-  <tr>
-    <td class="md">
-      <table cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td class="md" nowrap valign="top"> #define SUPPL_LSB_MEASURABLE&nbsp;&nbsp;&nbsp;3
-      </table>
-    </td>
-  </tr>
-</table>
-<table cellspacing=5 cellpadding=0 border=0>
-  <tr>
-    <td>
-      &nbsp;
-    </td>
-    <td>
-
-<p>
-Least-significant bit position of expression supplemental field indicating that this expression evaluates to a value of 0 or 1 and is therefore measurable for coverage.     </td>
-  </tr>
-</table>
 <a name="a8" doxytag="defines.h::SUPPL_LSB_OP"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
@@ -333,6 +289,50 @@ Least-significant bit position of expression supplemental field indicating that 
 
 <p>
 Least-significant bit position of expression supplemental field for the LSB of the signal that this expression is encompassing. Only valid if the expression operation type is SBIT_SEL or MBIT_SEL.     </td>
+  </tr>
+</table>
+<a name="a2" doxytag="defines.h::SUPPL_LSB_STMT_HEAD"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> #define SUPPL_LSB_STMT_HEAD&nbsp;&nbsp;&nbsp;2
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+Least-significant bit position of expression supplemental field indicating the statement which this expression belongs is a head statement (only valid for root expressions -- parent expression == NULL).     </td>
+  </tr>
+</table>
+<a name="a3" doxytag="defines.h::SUPPL_LSB_STMT_STOP"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> #define SUPPL_LSB_STMT_STOP&nbsp;&nbsp;&nbsp;3
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+Least-significant bit position of expression supplemental field indicating the statement which this expression belongs should write itself to the CDD and not continue to traverse its next_true and next_false pointers.     </td>
   </tr>
 </table>
 <a name="a5" doxytag="defines.h::SUPPL_LSB_TRUE"></a><p>
@@ -435,7 +435,7 @@ Returns the specified expression's operation.     </td>
 Returns a value of 1 if the specified supplemental value has the executed bit set; otherwise, returns a value of 0 to indicate whether the corresponding expression was executed during simulation or not.     </td>
   </tr>
 </table>
-<a name="a14" doxytag="defines.h::SUPPL_WAS_FALSE"></a><p>
+<a name="a15" doxytag="defines.h::SUPPL_WAS_FALSE"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -462,7 +462,7 @@ Returns a value of 1 if the specified supplemental value has the executed bit se
 Returns a value of 1 if the specified supplemental belongs to an expression that has evaluated to a value of FALSE (0) during simulation.     </td>
   </tr>
 </table>
-<a name="a13" doxytag="defines.h::SUPPL_WAS_TRUE"></a><p>
+<a name="a14" doxytag="defines.h::SUPPL_WAS_TRUE"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -489,7 +489,7 @@ Returns a value of 1 if the specified supplemental belongs to an expression that
 Returns a value of 1 if the specified supplemental belongs to an expression that has evaluated to a value of TRUE (1) during simulation.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Tue Jun 18 21:04:15 2002 for Covered by
+<hr><address align="right"><small>Generated on Fri Jun 21 00:53:47 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

@@ -13,7 +13,7 @@
 \begin{CompactItemize}
 \item 
 void {\bf expression\_\-create\_\-value} ({\bf expression} $\ast$exp, int width, int lsb)
-\begin{CompactList}\small\item\em Creates an expression value and sets MEASURABLE bit if necessary.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Creates an expression value and initializes it.\item\end{CompactList}\item 
 {\bf expression} $\ast$ {\bf expression\_\-create} ({\bf expression} $\ast$right, {\bf expression} $\ast$left, int op, int id, int line)
 \begin{CompactList}\small\item\em Creates new expression.\item\end{CompactList}\item 
 void {\bf expression\_\-merge} ({\bf expression} $\ast$base, {\bf expression} $\ast$in)
@@ -84,7 +84,7 @@ Creates a new expression from heap memory and initializes its values for usage. 
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-create\_\-value ({\bf expression} $\ast$ {\em exp}, int {\em width}, int {\em lsb})}\label{expr_8c_a6}
 
 
-Creates an expression value and sets MEASURABLE bit if necessary.
+Creates an expression value and initializes it.
 
 \begin{Desc}
 \item[Parameters: ]\par
@@ -94,7 +94,7 @@ exp}]Pointer to expression to add value to. \item[{\em
 width}]Width of value to create. \item[{\em 
 lsb}]Least significant value of value field.\end{description}
 \end{Desc}
-Creates a value vector that is large enough to store width number of bits in value and sets the specified expression value to this value. This function should be called by either the expression\_\-create function, the bind function, or the signal db\_\-read function. It also evaluates the width and expression operation to determine if the current expression is measurable. If it is deemed to be so, it sets the MEASURABLE bit in the specified expression's supplemental field. \index{expr.c@{expr.c}!expression_db_read@{expression\_\-db\_\-read}}
+Creates a value vector that is large enough to store width number of bits in value and sets the specified expression value to this value. This function should be called by either the expression\_\-create function, the bind function, or the signal db\_\-read function. \index{expr.c@{expr.c}!expression_db_read@{expression\_\-db\_\-read}}
 \index{expression_db_read@{expression\_\-db\_\-read}!expr.c@{expr.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} expression\_\-db\_\-read (char $\ast$$\ast$ {\em line}, {\bf module} $\ast$ {\em curr\_\-mod})}\label{expr_8c_a11}
 

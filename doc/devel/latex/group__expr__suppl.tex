@@ -7,9 +7,9 @@
 \item 
 \#define {\bf SUPPL\_\-LSB\_\-EXECUTED}\ 1
 \item 
-\#define {\bf SUPPL\_\-LSB\_\-CHANGED}\ 2
+\#define {\bf SUPPL\_\-LSB\_\-STMT\_\-HEAD}\ 2
 \item 
-\#define {\bf SUPPL\_\-LSB\_\-MEASURABLE}\ 3
+\#define {\bf SUPPL\_\-LSB\_\-STMT\_\-STOP}\ 3
 \item 
 \#define {\bf SUPPL\_\-LSB\_\-FALSE}\ 4
 \item 
@@ -27,7 +27,9 @@
 \item 
 \#define {\bf SUPPL\_\-WAS\_\-EXECUTED}(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-EXECUTED) \& 0x1)
 \item 
-\#define {\bf SUPPL\_\-IS\_\-MEASURABLE}(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-MEASURABLE) \& 0x1)
+\#define {\bf SUPPL\_\-IS\_\-STMT\_\-HEAD}(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-STMT\_\-HEAD) \& 0x1)
+\item 
+\#define {\bf SUPPL\_\-IS\_\-STMT\_\-STOP}(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-STMT\_\-STOP) \& 0x1)
 \item 
 \#define {\bf SUPPL\_\-WAS\_\-TRUE}(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-TRUE) \& 0x1)
 \item 
@@ -37,39 +39,32 @@
 \item 
 \#define {\bf SUPPL\_\-IS\_\-RIGHT\_\-CHANGED}(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-RIGHT\_\-CHANGED) \& 0x1)
 \item 
-\#define {\bf SUPPL\_\-COMB\_\-MISSED}(x)\ (SUPPL\_\-IS\_\-MEASURABLE(x) \& ($\sim$SUPPL\_\-WAS\_\-TRUE(x) $|$ $\sim$SUPPL\_\-WAS\_\-FALSE(x)))
-\item 
 \#define {\bf SUPPL\_\-OP}(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-OP) \& 0xff)
 \end{CompactItemize}
 
 
 \subsection{Define Documentation}
-\index{expr_suppl@{expr\_\-suppl}!SUPPL_COMB_MISSED@{SUPPL\_\-COMB\_\-MISSED}}
-\index{SUPPL_COMB_MISSED@{SUPPL\_\-COMB\_\-MISSED}!expr_suppl@{expr\_\-suppl}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-COMB\_\-MISSED(x)\ (SUPPL\_\-IS\_\-MEASURABLE(x) \& ($\sim$SUPPL\_\-WAS\_\-TRUE(x) $|$ $\sim$SUPPL\_\-WAS\_\-FALSE(x)))}\label{group__expr__suppl_a17}
-
-
-Returns a value of 1 if the specified supplemental belongs to an expression that was measurable for combinational coverage but not fully covered during simulation. \index{expr_suppl@{expr\_\-suppl}!SUPPL_IS_LEFT_CHANGED@{SUPPL\_\-IS\_\-LEFT\_\-CHANGED}}
+\index{expr_suppl@{expr\_\-suppl}!SUPPL_IS_LEFT_CHANGED@{SUPPL\_\-IS\_\-LEFT\_\-CHANGED}}
 \index{SUPPL_IS_LEFT_CHANGED@{SUPPL\_\-IS\_\-LEFT\_\-CHANGED}!expr_suppl@{expr\_\-suppl}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-IS\_\-LEFT\_\-CHANGED(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-LEFT\_\-CHANGED) \& 0x1)}\label{group__expr__suppl_a15}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-IS\_\-LEFT\_\-CHANGED(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-LEFT\_\-CHANGED) \& 0x1)}\label{group__expr__suppl_a16}
 
 
-Returns a value of 1 if the left child expression was changed during this timestamp. \index{expr_suppl@{expr\_\-suppl}!SUPPL_IS_MEASURABLE@{SUPPL\_\-IS\_\-MEASURABLE}}
-\index{SUPPL_IS_MEASURABLE@{SUPPL\_\-IS\_\-MEASURABLE}!expr_suppl@{expr\_\-suppl}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-IS\_\-MEASURABLE(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-MEASURABLE) \& 0x1)}\label{group__expr__suppl_a12}
-
-
-Returns a value of 1 if the specified supplemental value is considered to be measurable. \index{expr_suppl@{expr\_\-suppl}!SUPPL_IS_RIGHT_CHANGED@{SUPPL\_\-IS\_\-RIGHT\_\-CHANGED}}
+Returns a value of 1 if the left child expression was changed during this timestamp. \index{expr_suppl@{expr\_\-suppl}!SUPPL_IS_RIGHT_CHANGED@{SUPPL\_\-IS\_\-RIGHT\_\-CHANGED}}
 \index{SUPPL_IS_RIGHT_CHANGED@{SUPPL\_\-IS\_\-RIGHT\_\-CHANGED}!expr_suppl@{expr\_\-suppl}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-IS\_\-RIGHT\_\-CHANGED(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-RIGHT\_\-CHANGED) \& 0x1)}\label{group__expr__suppl_a16}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-IS\_\-RIGHT\_\-CHANGED(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-RIGHT\_\-CHANGED) \& 0x1)}\label{group__expr__suppl_a17}
 
 
-Returns a value of 1 if the right child expression was changed during this timestamp. \index{expr_suppl@{expr\_\-suppl}!SUPPL_LSB_CHANGED@{SUPPL\_\-LSB\_\-CHANGED}}
-\index{SUPPL_LSB_CHANGED@{SUPPL\_\-LSB\_\-CHANGED}!expr_suppl@{expr\_\-suppl}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-LSB\_\-CHANGED\ 2}\label{group__expr__suppl_a2}
+Returns a value of 1 if the right child expression was changed during this timestamp. \index{expr_suppl@{expr\_\-suppl}!SUPPL_IS_STMT_HEAD@{SUPPL\_\-IS\_\-STMT\_\-HEAD}}
+\index{SUPPL_IS_STMT_HEAD@{SUPPL\_\-IS\_\-STMT\_\-HEAD}!expr_suppl@{expr\_\-suppl}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-IS\_\-STMT\_\-HEAD(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-STMT\_\-HEAD) \& 0x1)}\label{group__expr__suppl_a12}
 
 
-Least-significant bit position of expression supplemental field indicating this expression's value has changed in this timestamp. \index{expr_suppl@{expr\_\-suppl}!SUPPL_LSB_EXECUTED@{SUPPL\_\-LSB\_\-EXECUTED}}
+Returns a value of 1 if the specified supplemental belongs to an expression whose associated statement is a head statement. \index{expr_suppl@{expr\_\-suppl}!SUPPL_IS_STMT_STOP@{SUPPL\_\-IS\_\-STMT\_\-STOP}}
+\index{SUPPL_IS_STMT_STOP@{SUPPL\_\-IS\_\-STMT\_\-STOP}!expr_suppl@{expr\_\-suppl}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-IS\_\-STMT\_\-STOP(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-STMT\_\-STOP) \& 0x1)}\label{group__expr__suppl_a13}
+
+
+Returns a value of 1 if the specified supplemental belongs to an expression whose associated statement is a stop (for writing purposes). \index{expr_suppl@{expr\_\-suppl}!SUPPL_LSB_EXECUTED@{SUPPL\_\-LSB\_\-EXECUTED}}
 \index{SUPPL_LSB_EXECUTED@{SUPPL\_\-LSB\_\-EXECUTED}!expr_suppl@{expr\_\-suppl}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-LSB\_\-EXECUTED\ 1}\label{group__expr__suppl_a1}
 
@@ -89,12 +84,7 @@ Least-significant bit position of expression supplemental field indicating that 
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-LSB\_\-LEFT\_\-CHANGED\ 6}\label{group__expr__suppl_a6}
 
 
-Least-significant bit position of expression supplemental field indicating that this expression has its left child expression in a changed state during this timestamp. \index{expr_suppl@{expr\_\-suppl}!SUPPL_LSB_MEASURABLE@{SUPPL\_\-LSB\_\-MEASURABLE}}
-\index{SUPPL_LSB_MEASURABLE@{SUPPL\_\-LSB\_\-MEASURABLE}!expr_suppl@{expr\_\-suppl}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-LSB\_\-MEASURABLE\ 3}\label{group__expr__suppl_a3}
-
-
-Least-significant bit position of expression supplemental field indicating that this expression evaluates to a value of 0 or 1 and is therefore measurable for coverage. \index{expr_suppl@{expr\_\-suppl}!SUPPL_LSB_OP@{SUPPL\_\-LSB\_\-OP}}
+Least-significant bit position of expression supplemental field indicating that this expression has its left child expression in a changed state during this timestamp. \index{expr_suppl@{expr\_\-suppl}!SUPPL_LSB_OP@{SUPPL\_\-LSB\_\-OP}}
 \index{SUPPL_LSB_OP@{SUPPL\_\-LSB\_\-OP}!expr_suppl@{expr\_\-suppl}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-LSB\_\-OP\ 8}\label{group__expr__suppl_a8}
 
@@ -109,7 +99,17 @@ Least-significant bit position of expression supplemental field indicating that 
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-LSB\_\-SIG\_\-LSB\ 16}\label{group__expr__suppl_a9}
 
 
-Least-significant bit position of expression supplemental field for the LSB of the signal that this expression is encompassing. Only valid if the expression operation type is SBIT\_\-SEL or MBIT\_\-SEL. \index{expr_suppl@{expr\_\-suppl}!SUPPL_LSB_TRUE@{SUPPL\_\-LSB\_\-TRUE}}
+Least-significant bit position of expression supplemental field for the LSB of the signal that this expression is encompassing. Only valid if the expression operation type is SBIT\_\-SEL or MBIT\_\-SEL. \index{expr_suppl@{expr\_\-suppl}!SUPPL_LSB_STMT_HEAD@{SUPPL\_\-LSB\_\-STMT\_\-HEAD}}
+\index{SUPPL_LSB_STMT_HEAD@{SUPPL\_\-LSB\_\-STMT\_\-HEAD}!expr_suppl@{expr\_\-suppl}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-LSB\_\-STMT\_\-HEAD\ 2}\label{group__expr__suppl_a2}
+
+
+Least-significant bit position of expression supplemental field indicating the statement which this expression belongs is a head statement (only valid for root expressions -- parent expression == NULL). \index{expr_suppl@{expr\_\-suppl}!SUPPL_LSB_STMT_STOP@{SUPPL\_\-LSB\_\-STMT\_\-STOP}}
+\index{SUPPL_LSB_STMT_STOP@{SUPPL\_\-LSB\_\-STMT\_\-STOP}!expr_suppl@{expr\_\-suppl}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-LSB\_\-STMT\_\-STOP\ 3}\label{group__expr__suppl_a3}
+
+
+Least-significant bit position of expression supplemental field indicating the statement which this expression belongs should write itself to the CDD and not continue to traverse its next\_\-true and next\_\-false pointers. \index{expr_suppl@{expr\_\-suppl}!SUPPL_LSB_TRUE@{SUPPL\_\-LSB\_\-TRUE}}
 \index{SUPPL_LSB_TRUE@{SUPPL\_\-LSB\_\-TRUE}!expr_suppl@{expr\_\-suppl}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-LSB\_\-TRUE\ 5}\label{group__expr__suppl_a5}
 
@@ -136,12 +136,12 @@ Returns the specified expression's operation. \index{expr_suppl@{expr\_\-suppl}!
 
 Returns a value of 1 if the specified supplemental value has the executed bit set; otherwise, returns a value of 0 to indicate whether the corresponding expression was executed during simulation or not. \index{expr_suppl@{expr\_\-suppl}!SUPPL_WAS_FALSE@{SUPPL\_\-WAS\_\-FALSE}}
 \index{SUPPL_WAS_FALSE@{SUPPL\_\-WAS\_\-FALSE}!expr_suppl@{expr\_\-suppl}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-WAS\_\-FALSE(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-FALSE) \& 0x1)}\label{group__expr__suppl_a14}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-WAS\_\-FALSE(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-FALSE) \& 0x1)}\label{group__expr__suppl_a15}
 
 
 Returns a value of 1 if the specified supplemental belongs to an expression that has evaluated to a value of FALSE (0) during simulation. \index{expr_suppl@{expr\_\-suppl}!SUPPL_WAS_TRUE@{SUPPL\_\-WAS\_\-TRUE}}
 \index{SUPPL_WAS_TRUE@{SUPPL\_\-WAS\_\-TRUE}!expr_suppl@{expr\_\-suppl}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-WAS\_\-TRUE(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-TRUE) \& 0x1)}\label{group__expr__suppl_a13}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-WAS\_\-TRUE(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-TRUE) \& 0x1)}\label{group__expr__suppl_a14}
 
 
 Returns a value of 1 if the specified supplemental belongs to an expression that has evaluated to a value of TRUE (1) during simulation. 

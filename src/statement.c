@@ -50,6 +50,8 @@ void statement_db_write( statement* stmt, FILE* ofile, char* scope ) {
   assert( stmt->next_false != NULL );
 
   /* Write succeeding statements first */
+//  if( stmt->next_true != NULL ) {
+
   if( stmt->next_true != stmt->next_false ) {
 
     if( stmt->next_true != NULL ) {
@@ -80,7 +82,7 @@ void statement_db_write( statement* stmt, FILE* ofile, char* scope ) {
   }
 
   if( stmt->next_false != NULL ) {
-    assert( stmt->next_true->exp != NULL );
+    assert( stmt->next_false->exp != NULL );
     fprintf( ofile, " %d", stmt->next_false->exp->id );
   } else {
     fprintf( ofile, " 0" );
@@ -236,6 +238,11 @@ void statement_dealloc( statement* stmt ) {
 
 
 /* $Log$
+/* Revision 1.3  2002/05/13 03:02:58  phase1geo
+/* Adding lines back to expressions and removing them from statements (since the line
+/* number range of an expression can be calculated by looking at the expression line
+/* numbers).
+/*
 /* Revision 1.2  2002/05/03 03:39:36  phase1geo
 /* Removing all syntax errors due to addition of statements.  Added more statement
 /* support code.  Still have a ways to go before we can try anything.  Removed lines

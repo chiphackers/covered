@@ -11,11 +11,11 @@
 <code>#include "<a class="el" href="util_8h-source.html">util.h</a>"</code><br>
 <table border=0 cellpadding=0 cellspacing=0>
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a119">statistic</a> *&nbsp;</td><td valign=bottom><a class="el" href="stat_8c.html#a0">statistic_create</a> ()</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a121">statistic</a> *&nbsp;</td><td valign=bottom><a class="el" href="stat_8c.html#a0">statistic_create</a> ()</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Creates and initializes a new statistic structure.</em> <a href="#a0"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="stat_8c.html#a1">statistic_merge</a> (<a class="el" href="defines_8h.html#a119">statistic</a> *stat_to, <a class="el" href="defines_8h.html#a119">statistic</a> *stat_from)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="stat_8c.html#a1">statistic_merge</a> (<a class="el" href="defines_8h.html#a121">statistic</a> *stat_to, <a class="el" href="defines_8h.html#a121">statistic</a> *stat_from)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Merges the results of the stat_from to the stat_to.</em> <a href="#a1"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="stat_8c.html#a2">statistic_dealloc</a> (<a class="el" href="defines_8h.html#a119">statistic</a> *stat)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="stat_8c.html#a2">statistic_dealloc</a> (<a class="el" href="defines_8h.html#a121">statistic</a> *stat)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Deallocates memory for a statistic structure.</em> <a href="#a2"></a><em></em></font><br><br></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
@@ -32,7 +32,7 @@ Date: </b><dd>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a119">statistic</a>* statistic_create </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a121">statistic</a>* statistic_create </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
           <td class="md" valign="top">)&nbsp;</td>
@@ -66,7 +66,7 @@ Pointer to newly created/initialized statistic structure.</dl>Allocates new memo
         <tr>
           <td class="md" nowrap valign="top"> void statistic_dealloc </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a119">statistic</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a121">statistic</a> *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>stat</em>          </td>
           <td class="md" valign="top">)&nbsp;</td>
           <td class="md" nowrap></td>
@@ -103,13 +103,13 @@ Pointer to statistic structure to deallocate from heap.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void statistic_merge </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a119">statistic</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a121">statistic</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>stat_to</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a119">statistic</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a121">statistic</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>stat_from</em></td>
         </tr>
         <tr>
@@ -143,7 +143,7 @@ Statistic structure to be merged.</td></tr>
 </dl>Adds the values of the stat_to structure to the contents of the stat_from structure. The stat_from structure will then contain accumulated results.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Tue Jun 18 21:04:13 2002 for Covered by
+<hr><address align="right"><small>Generated on Fri Jun 21 00:53:46 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

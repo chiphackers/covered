@@ -32,10 +32,7 @@ extern nibble nxor_optab[16];
  Creates a value vector that is large enough to store width number of
  bits in value and sets the specified expression value to this value.  This
  function should be called by either the expression_create function, the bind
- function, or the signal db_read function.  It also evaluates the width and
- expression operation to determine if the current expression is measurable.
- If it is deemed to be so, it sets the MEASURABLE bit in the specified
- expression's supplemental field.
+ function, or the signal db_read function.
 */
 void expression_create_value( expression* exp, int width, int lsb ) {
 
@@ -44,17 +41,6 @@ void expression_create_value( expression* exp, int width, int lsb ) {
                (nibble*)malloc_safe( sizeof( nibble ) * VECTOR_SIZE( width ) ),
                width, 
                lsb );
- 
-  /* If this expression is considered measurable, set the MEASURABLE supplemental bit. */
-  if( (width == 1) &&
-      (SUPPL_OP( exp->suppl ) != EXP_OP_NONE) &&
-      (SUPPL_OP( exp->suppl ) != EXP_OP_SIG) &&
-      (SUPPL_OP( exp->suppl ) != EXP_OP_SBIT_SEL) &&
-      (SUPPL_OP( exp->suppl ) != EXP_OP_MBIT_SEL) ) {
-
-    exp->suppl = exp->suppl | (0x1 << SUPPL_LSB_MEASURABLE);
-
-  }
 
 }
 
@@ -396,7 +382,6 @@ void expression_operate( expression* expr ) {
   nibble  bit;                           /* Bit holder for some ops               */
   int     intval1;                       /* Temporary integer value for *, /, %   */
   int     intval2;                       /* Temporary integer value for *, /, %   */
-  vector* oldval;                        /* Old vector value                      */
   vector  comp;                          /* Vector containing contents of compare */
   nibble  value1a;                       /* 1-bit nibble value                    */
   nibble  value1b;                       /* 1-bit nibble value                    */
@@ -409,10 +394,6 @@ void expression_operate( expression* expr ) {
     expression_operate( expr->left  );
 
     assert( expr->value != NULL );
-
-    /* Make copy of original expression value for comparison purposes later */
-    oldval = vector_create( expr->value->width, expr->value->lsb );
-    vector_set_value( oldval, expr->value->value, oldval->width, expr->value->lsb, oldval->lsb );
 
     switch( SUPPL_OP( expr->suppl ) ) {
 
@@ -667,19 +648,7 @@ void expression_operate( expression* expr ) {
         exit( 1 );
         break;
 
-    } 
-
-    /* 
-     Compare old expression value to new expression value and set changed bit
-     of supplemental field if the two values do not pass case equality. 
-    */
-    vector_init( &comp, &value1a, 1, 0 );
-    vector_op_compare( &comp, oldval, expr->value, COMP_CEQ );
-    if( (comp.value[0] & 0x3) == 0 ) { 
-      expr->suppl = expr->suppl | (0x1 << SUPPL_LSB_CHANGED);
     }
-
-    vector_dealloc( oldval );
 
     /* Set TRUE/FALSE bits to indicate value */
     switch( expr->value->value[0] & 0x3 ) {
@@ -735,6 +704,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.7  2002/05/13 03:02:58  phase1geo
+/* Adding lines back to expressions and removing them from statements (since the line
+/* number range of an expression can be calculated by looking at the expression line
+/* numbers).
+/*
 /* Revision 1.6  2002/05/03 03:39:36  phase1geo
 /* Removing all syntax errors due to addition of statements.  Added more statement
 /* support code.  Still have a ways to go before we can try anything.  Removed lines
