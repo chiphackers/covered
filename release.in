@@ -8,4 +8,4 @@
 rm -rf ./doc/htdocs
 rm -rf ./doc/manstyle
 rm -f ./covered.dox
-cd ./doc/devel/html; tar cvlf ../../../../devel.tar *; gzip -dc ../../../../devel.tar
+cd ./doc/devel/html; tar cvlf ../../../../devel.tar *; gzip ../../../../devel.tar
