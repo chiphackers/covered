@@ -16,6 +16,8 @@
   - bison (Version 1.28 or higher)
   - GNU make (Version 3.27.1 or higher)
   - GNU gperf (Version 2.7.2 or higher)
+  - TCL (Version 8.3 or higher)
+  - TK (Version 8.3 or higher)
   Additionally, the development documentation is built using the doxygen utility
   which can be found at http://www.doxygen.org
 
