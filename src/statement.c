@@ -165,8 +165,12 @@ void statement_stack_compare( statement* stmt ) {
   while( (stmt_loop_stack != NULL) && (stmt->exp->id == stmt_loop_stack->id) ) {
 
     /* Perform the link */
-    stmt_loop_stack->stmt->next_true  = stmt;
-    stmt_loop_stack->stmt->next_false = stmt;
+    if( stmt_loop_stack->stmt->next_true == NULL ) {
+      stmt_loop_stack->stmt->next_true  = stmt;
+    }
+    if( stmt_loop_stack->stmt->next_false == NULL ) {
+      stmt_loop_stack->stmt->next_false = stmt;
+    }
 
     /* Pop the top off of the stack */
     sll             = stmt_loop_stack;
@@ -292,8 +296,10 @@ bool statement_db_read( char** line, module* curr_mod, int read_mode ) {
         stmt->next_false = stmt;
       } else if( false_id != 0 ) {
         stmtl = stmt_link_find( false_id, curr_mod->stmt_head );
-        /* We took care of the stack stuff above, so we don't need to do it here */
-        if( stmtl != NULL ) {
+        if( stmtl == NULL ) {
+          statement_stack_push( stmt, false_id );
+        } else {
+          statement_stack_compare( stmt );
           stmt->next_false = stmtl->stmt;
         }
       }
@@ -331,10 +337,31 @@ bool statement_db_read( char** line, module* curr_mod, int read_mode ) {
 */
 void statement_connect( statement* curr_stmt, statement* next_stmt ) {
 
+  int true_id;
+  int false_id;
+
   assert( curr_stmt != NULL );
   assert( next_stmt != NULL );
 
-  // printf( "In statement_connect, curr_stmt: %d, next_stmt: %d\n", curr_stmt->exp->id, next_stmt->exp->id );
+  if( curr_stmt->next_true == NULL ) {
+    true_id = 0;
+  } else {
+    true_id = curr_stmt->next_true->exp->id;
+  }
+
+  if( curr_stmt->next_false == NULL ) {
+    false_id = 0;
+  } else {
+    false_id = curr_stmt->next_false->exp->id;
+  }
+
+/*  
+  printf( "In statement_connect, curr_stmt: %d, curr_true: %d, curr_false: %d, next_stmt: %d\n", 
+          curr_stmt->exp->id, 
+          true_id,
+          false_id,
+          next_stmt->exp->id );
+*/
 
   /* If both paths go to the same destination, only parse one path */
   if( curr_stmt->next_true == curr_stmt->next_false ) {
@@ -491,6 +518,10 @@ void statement_dealloc( statement* stmt ) {
 
 
 /* $Log$
+/* Revision 1.24  2002/07/04 23:10:12  phase1geo
+/* Added proper support for case, casex, and casez statements in score command.
+/* Report command still incorrect for these statement types.
+/*
 /* Revision 1.23  2002/07/03 21:30:53  phase1geo
 /* Fixed remaining issues with always statements.  Full regression is running
 /* error free at this point.  Regenerated documentation.  Added EOR expression

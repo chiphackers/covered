@@ -498,6 +498,8 @@ bool vector_set_value( vector* vec, nibble* value, int width, int from_lsb, int 
   int    bit_shift;     /* Number of bits to shift in current nibble */
   int    i;             /* Loop iterator                             */
 
+  assert( vec != NULL );
+
   retval = (from_lsb >= vec->lsb) && ((from_lsb + width) <= (vec->lsb + vec->width));
 
   if( retval ) {
@@ -623,11 +625,11 @@ void vector_set_static( vector* vec, char* str, int bits_per_char ) {
 
   while( ptr >= str ) {
     if( *ptr != '_' ) {
-      if( (*ptr == 'x') || (*ptr == 'X') || (*ptr == '?') ) {
+      if( (*ptr == 'x') || (*ptr == 'X') ) {
         for( i=0; i<bits_per_char; i++ ) {
           vector_set_bit( vec->value, 0x2, (i + pos) );
         }
-      } else if( (*ptr == 'z') || (*ptr == 'Z') ) {
+      } else if( (*ptr == 'z') || (*ptr == 'Z') || (*ptr == '?') ) {
         for( i=0; i<bits_per_char; i++ ) {
           vector_set_bit( vec->value, 0x3, (i + pos) );
         }
@@ -817,6 +819,61 @@ vector* vector_from_string( char* str, bool sized, int type ) {
   vector_set_static( vec, value, bits_per_char ); 
 
   return( vec );
+
+}
+
+/*!
+ \param vec    Pointer to vector to set value to.
+ \param value  String version of VCD value.
+
+ Iterates through specified value string, setting the specified vector value to
+ this value.  Performs a VCD-specific bit-fill if the value size is not the size
+ of the vector.  The specified value string is assumed to be in binary format.
+*/
+void vector_vcd_assign( vector* vec, char* value ) {
+
+  char*  ptr;        /* Pointer to current character under evaluation */
+  int    i;          /* Loop iterator                                 */
+  nibble vval;       /* Temporary vector value holder                 */
+  char   msg[4096];  /* Message to user indicating error              */
+
+  assert( vec != NULL );
+  assert( value != NULL );
+
+  /* Set pointer to LSB */
+  ptr = (value + strlen( value )) - 1;
+  i   = 0;
+    
+  while( ptr >= value ) {
+
+    switch( *ptr ) {
+      case '0':  vval = 0;  break;
+      case '1':  vval = 1;  break;
+      case 'x':  vval = 2;  break;
+      case 'z':  vval = 3;  break;
+      default :  
+        snprintf( msg, 4096, "VCD file contains value change character that is not four-state" );
+        print_output( msg, FATAL );
+        exit( 1 );
+        break;
+    }
+
+    vector_set_value( vec, &vval, 1, 0, i );
+
+    ptr--;
+    i++;
+
+  }
+
+  ptr++;
+
+  /* Perform VCD value bit-fill if specified value did not match width of vector value */
+  for( ; i<vec->width; i++ ) {
+    if( vval == 1 ) { vval = 0; }
+    vector_set_value( vec, &vval, 1, 0, i );
+  }
+
+  // vector_display( vec );
 
 }
 
@@ -1283,6 +1340,10 @@ void vector_dealloc( vector* vec ) {
 }
 
 /* $Log$
+/* Revision 1.8  2002/07/05 04:35:53  phase1geo
+/* Adding fixes for casex and casez for proper equality calculations.  casex has
+/* now been tested and added to regression suite.  Full regression passes.
+/*
 /* Revision 1.6  2002/07/03 03:31:11  phase1geo
 /* Adding RCS Log strings in files that were missing them so that file version
 /* information is contained in every source and header file.  Reordering src

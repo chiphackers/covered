@@ -6,10 +6,12 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 #include "defines.h"
 #include "symtable.h"
 #include "util.h"
+#include "signal.h"
 
 
 /*!
@@ -17,10 +19,12 @@
  \param sig     Pointer to signal corresponding to the specified symbol.
  \param symtab  Pointer to symtable to store the symtable entry to.
 
+ \return Returns pointer to newly created symtable entry.
+
  Using the symbol as a unique ID, creates a new symtable element for specified information
  and places it into the binary tree.
 */
-void symtable_add( char* sym, signal* sig, symtable** symtab ) {
+symtable* symtable_add( char* sym, signal* sig, symtable** symtab ) {
 
   symtable* entry;    /* Pointer to new symtable entry           */
   symtable* curr;     /* Pointer to current symtable entry       */
@@ -30,6 +34,7 @@ void symtable_add( char* sym, signal* sig, symtable** symtab ) {
   entry        = (symtable*)malloc_safe( sizeof( symtable ) );
   entry->sym   = strdup( sym );
   entry->sig   = sig;
+  entry->value = (char*)malloc_safe( sig->value->width + 1 );
   entry->right = NULL;
   entry->left  = NULL;
 
@@ -58,6 +63,10 @@ void symtable_add( char* sym, signal* sig, symtable** symtab ) {
     }
   }
 
+  assert( entry->sig->value != NULL );
+
+  return( entry );
+
 }
 
 /*!
@@ -72,7 +81,7 @@ void symtable_add( char* sym, signal* sig, symtable** symtab ) {
  a match is found, assigns sig parameter to the signal represented by the symbol and
  returns TRUE; otherwise, simply returns FALSE.
 */
-bool symtable_find( char* sym, symtable* symtab, signal** sig, int skip ) {
+symtable* symtable_find( char* sym, symtable* symtab, int skip ) {
 
   symtable* curr;         /* Pointer to current symtable            */
   bool      unmatched;    /* If TRUE, current symbol does not match */
@@ -88,13 +97,28 @@ bool symtable_find( char* sym, symtable* symtab, signal** sig, int skip ) {
     }
   }
 
-  if( curr == NULL ) {
-    *sig = NULL;
-  } else {
-    *sig = curr->sig;
-  }
+  return( curr );
 
-  return( curr != NULL );
+}
+
+/*!
+ \param symtab  Root of the symtable to assign values to.
+
+ Recursively traverses entire symtable tree, assigning stored string value to the
+ stored signal.
+*/
+void symtable_assign( symtable* symtab ) {
+
+  if( symtab != NULL ) {
+
+    /* Assign current symbol table entry */
+    signal_vcd_assign( symtab->sig, symtab->value );
+
+    /* Assign children */
+    symtable_assign( symtab->right );
+    symtable_assign( symtab->left );
+
+  }
 
 }
 
@@ -121,4 +145,9 @@ void symtable_dealloc( symtable* symtab ) {
 
 }
 
-/* $Log$ */
+/* $Log$
+/* Revision 1.3  2002/07/03 03:31:11  phase1geo
+/* Adding RCS Log strings in files that were missing them so that file version
+/* information is contained in every source and header file.  Reordering src
+/* Makefile to be alphabetical.  Adding mult1.v diagnostic to regression suite.
+/* */

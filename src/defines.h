@@ -734,6 +734,7 @@ typedef struct symtable_s symtable;
 struct symtable_s {
   char*     sym;          /*!< Name of VCD-specified signal                */
   signal*   sig;          /*!< Pointer to signal for this symbol           */
+  char*     value;        /*!< String representation of last current value */
   symtable* right;        /*!< Pointer to next symtable entry to the right */
   symtable* left;         /*!< Pointer to next symtable entry to the left  */
 };
@@ -825,6 +826,9 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.26  2002/07/05 05:00:13  phase1geo
+/* Removing CASE, CASEX, and CASEZ from line and combinational logic results.
+/*
 /* Revision 1.25  2002/07/05 04:12:46  phase1geo
 /* Correcting case, casex and casez equality calculation to conform to correct
 /* equality check for each case type.  Verified that case statements work correctly

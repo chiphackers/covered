@@ -118,7 +118,6 @@ expression* expression_create( expression* right, expression* left, int op, int 
              (op == EXP_OP_UNAND) ||
              (op == EXP_OP_UNOR ) ||
              (op == EXP_OP_UNXOR) ||
-             (op == EXP_OP_LAST)  ||
              (op == EXP_OP_EOR)   ||
              (op == EXP_OP_CASE)  ||
              (op == EXP_OP_CASEX) ||
@@ -401,7 +400,7 @@ void expression_operate( expression* expr ) {
 
   if( expr != NULL ) {
 
-    snprintf( msg, 4096, "In expression_operate, id: %d, op: %d", expr->id, SUPPL_OP( expr->suppl ) );
+    snprintf( msg, 4096, "In expression_operate, id: %d, op: %d, size: %d", expr->id, SUPPL_OP( expr->suppl ), expr->value->width );
     print_output( msg, NORMAL );
 
     assert( expr->value != NULL );
@@ -654,9 +653,9 @@ void expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_AEDGE :
-        value1a = vector_bit_val( expr->right->value->value, 0 );
-        value1b = vector_bit_val( expr->left->value->value,  0 );
-        if( value1a != value1b ) {
+        vector_init( &vec1, &value1a, 1, 0 );
+        vector_op_compare( &vec1, expr->left->value, expr->right->value, COMP_CEQ );
+        if( vector_to_int( &vec1 ) == 0 ) {
           bit = 1;
           vector_set_value( expr->value, &bit, 1, 0, 0 );
         } else {
@@ -664,7 +663,7 @@ void expression_operate( expression* expr ) {
           vector_set_value( expr->value, &bit, 1, 0, 0 );
         }
         /* Set left LAST value to current value of right */
-        vector_set_value( expr->left->value, &value1a, 1, 0, 0 );
+        vector_set_value( expr->left->value, expr->right->value->value, expr->right->value->width, expr->right->value->lsb, 0 );
         break;
 
       case EXP_OP_EOR :
@@ -793,6 +792,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.30  2002/07/05 04:12:46  phase1geo
+/* Correcting case, casex and casez equality calculation to conform to correct
+/* equality check for each case type.  Verified that case statements work correctly
+/* at this point.  Added diagnostics to verify case statements.
+/*
 /* Revision 1.28  2002/07/05 00:10:18  phase1geo
 /* Adding report support for case statements.  Everything outputs fine; however,
 /* I want to remove CASE, CASEX and CASEZ expressions from being reported since

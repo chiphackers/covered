@@ -186,8 +186,8 @@ changelist
 	;
 
 changes
-	: CHANGE
-	| CHANGE changes
+	: changes CHANGE
+	| CHANGE
 	;
 
 %%

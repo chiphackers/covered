@@ -806,10 +806,6 @@ void db_assign_symbol( char* name, char* symbol ) {
       /* Add this signal */
       symtable_add( symbol, slink->sig, &vcd_symtab );
 
-    } else {
-
-      symtable_add( symbol, NULL, &vcd_symtab );
-
     }
 
     signal_dealloc( tmpsig );
@@ -826,88 +822,98 @@ void db_assign_symbol( char* name, char* symbol ) {
 }
 
 /*!
- \param symbol
-
- \return Returns TRUE if the symbol is found; otherwise, returns FALSE.
-
- Searches the current timestep symbol table to see if the specified signal exists
- in this list.  If the signal is not found, returns FALSE; otherwise, returns a
- value of TRUE.  Note:  this function should be called before db_find_set_add_signal.
+ \param sym    Name of symbol to set character value to.
+ \param value  String version of value to set symbol table entry to.
+ 
+ Searches the timestep symtable followed by the VCD symbol table searching for
+ the symbol that matches the specified argument.  Once a symbol is found, its value
+ parameter is set to the specified character.  If the symbol was found in the VCD
+ symbol table, it is copied to the timestep symbol table.
 */
-bool db_symbol_found( char* symbol ) {
+void db_set_symbol_char( char* sym, char value ) {
 
-  signal* sig;    /* Pointer to found signal */
+  symtable* symtab;      /* Pointer to found symbol table entry                             */
+  symtable* new_symtab;  /* Pointer to newly create symbol table entry                      */
+  int       skip = 0;    /* Specifies number of symbols to skip in search that match symbol */
+  char      msg[4096];   /* Message to user                                                 */
 
-  return( symtable_find( symbol, timestep_tab, &sig, 0 ) );
-
-}
-
-/*!
- \param symbol  VCD signal symbol from VCD dumpfile.
- \param vec     Specified value to set found signal to.
-
- Searches symbol table for this timestep.  If this signal does not already exist in here,
- look in VCD symbol table for specified signal.  Assign specified vector value to signal
- value and store expression pointers into expression queue to work on this timestep.
-*/
-void db_find_set_add_signal( char* symbol, vector* vec ) {
-
-  signal*     sig;                       /* Pointer to found signal                                      */
-  exp_link*   curr_exp;                  /* Pointer to current expression link in signal expression list */
-  char        msg[4096];                 /* Display message string                                       */
-  expression* curr_parent;               /* Pointer to current parent expression to set.                 */
-  bool        changed_finished = FALSE;  /* Indicates that we should stop setting changed bits           */
-  int         skip             = 0;      /* Number of symbols to skip before returning if found          */
-  vector      vec1;                      /* One bit vector for attaining TRUE or FALSE value             */
-  nibble      value1;                    /* Nibble to hold temporary 1-bit vector value                  */
-
-  snprintf( msg, 4096, "In db_find_set_add_signal, addr: 0x%lx, symbol: %s", symbol, symbol );
+  snprintf( msg, 4096, "In db_set_symbol_char, sym: %s, value: %c", sym, value );
   print_output( msg, NORMAL );
 
-  if( !symtable_find( symbol, timestep_tab, &sig, 0 ) ) {
+  while( (symtab = symtable_find( sym, timestep_tab, skip )) != NULL ) {
 
-    while( symtable_find( symbol, vcd_symtab, &sig, skip ) ) {
+    /* Update value */
+    symtab->value[0] = value;
+    symtab->value[1] = '\0';
 
-      if( sig != NULL ) {
+    skip++;
+ 
+  }
 
-        signal_set_value( sig, vec->value, vec->width, 0, sig->value->lsb );
+  /* Only search VCD table if symbol has never been moved over */
+  if( skip == 0 ) {
 
-        vector_init( &vec1, &value1, 1, 0 );
-        vector_unary_op( &vec1, vec, or_optab );
+    while( (symtab = symtable_find( sym, vcd_symtab, skip )) != NULL ) {
 
-        // signal_display( sig );
+      assert( symtab->sig->value != NULL );
 
-        /* Add signal's expressions to expression queue */
-        curr_exp = sig->exp_head;
-        while( curr_exp != NULL ) {
+      /* Add to timestep table */
+      new_symtab = symtable_add( sym, symtab->sig, &(timestep_tab) );
 
-          /* Set signal expressions supplemental field TRUE/FALSE bits */
-          switch( vector_bit_val( vec1.value, 0 ) ) {
-            case 0 :  curr_exp->exp->suppl = curr_exp->exp->suppl | (0x1 << SUPPL_LSB_FALSE);  break;
-            case 1 :  curr_exp->exp->suppl = curr_exp->exp->suppl | (0x1 << SUPPL_LSB_TRUE);   break;
-            default:  break;
-          }
-
-          /* Add to simulation queue */
-          sim_expr_changed( curr_exp->exp );
-
-          curr_exp = curr_exp->next;
-
-        }
-
-        symtable_add( symbol, sig, &timestep_tab );
-
-      }
+      /* Update value */
+      new_symtab->value[0] = value;
+      new_symtab->value[1] = '\0';
 
       skip++;
 
     }
 
-    if( skip == 0 ) {
+  }
 
-      snprintf( msg, 4096, "VCD dumpfile symbol not found, symbol: %s", symbol );
-      print_output( msg, FATAL );
-      assert( skip == 0 );
+}
+
+/*!
+ \param sym    Name of symbol to set character value to.
+ \param value  String version of value to set symbol table entry to.
+ 
+ Searches the timestep symtable followed by the VCD symbol table searching for
+ the symbol that matches the specified argument.  Once a symbol is found, its value
+ parameter is set to the specified string.  If the symbol was found in the VCD
+ symbol table, it is copied to the timestep symbol table.
+*/
+void db_set_symbol_string( char* sym, char* value ) {
+
+  symtable* symtab;      /* Pointer to found symbol table entry                             */
+  symtable* new_symtab;  /* Pointer to newly create symbol table entry                      */
+  int       skip = 0;    /* Specifies number of symbols to skip in search that match symbol */
+  char      msg[4096];   /* Message to user                                                 */
+
+  snprintf( msg, 4096, "In db_set_symbol_string, sym: %s, value: %s", sym, value );
+  print_output( msg, NORMAL );
+
+  while( (symtab = symtable_find( sym, timestep_tab, skip )) != NULL ) {
+
+    /* Update value */
+    strcpy( symtab->value, value ); 
+
+    skip++;
+ 
+  }
+
+  /* Only search VCD table if symbol has never been moved over */
+  if( skip == 0 ) {
+
+    while( (symtab = symtable_find( sym, vcd_symtab, skip )) != NULL ) {
+
+      assert( symtab->sig->value != NULL );
+
+      /* Add to timestep table */
+      new_symtab = symtable_add( sym, symtab->sig, &(timestep_tab) );
+
+      /* Update value */
+      strcpy( new_symtab->value, value );
+
+      skip++;
 
     }
 
@@ -930,9 +936,11 @@ void db_do_timestep( int time ) {
 
   snprintf( msg, 4096, "Performing timestep #%d", time );
   print_output( msg, NORMAL );
-  // printf( "%s\n", msg );
 
   curr_sim_time = time;
+
+  /* Assign all stored values in current timestep to stored signals */
+  symtable_assign( timestep_tab );
 
   /* Simulate the current timestep */
   sim_simulate();
@@ -943,37 +951,13 @@ void db_do_timestep( int time ) {
 
 }
 
-/*!
- \param symbol  Symbol of signal to find.
-
- \return Returns signal width of specified symbol or 0 if signal is not found.
-
- Searches symbol table for specified symbol.  If the corresponding signal is valid,
- returns the width value of the signal to the calling function.
-*/
-int db_get_signal_size( char* symbol ) {
-
-  signal* sig;        /* Pointer to found signal      */
-  char    msg[4096];  /* Debug/error message for user */
-
-  snprintf( msg, 4096, "In db_get_signal_size, symbol:%s.", symbol );
-  print_output( msg, NORMAL );
-
-  if( symtable_find( symbol, vcd_symtab, &sig, 0 ) ) {
-    if( sig != NULL ) {
-      assert( sig->value != NULL );
-      return( sig->value->width );
-    } else {
-      return( 0 );
-    }
-  } else {
-    return( 0 );
-  }
-
-}
-
-
 /* $Log$
+/* Revision 1.30  2002/07/05 00:10:18  phase1geo
+/* Adding report support for case statements.  Everything outputs fine; however,
+/* I want to remove CASE, CASEX and CASEZ expressions from being reported since
+/* it causes redundant and misleading information to be displayed in the verbose
+/* reports.  New diagnostics to check CASE expressions have been added and pass.
+/*
 /* Revision 1.29  2002/07/04 23:10:12  phase1geo
 /* Added proper support for case, casex, and casez statements in score command.
 /* Report command still incorrect for these statement types.

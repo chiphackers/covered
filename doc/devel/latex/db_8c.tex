@@ -54,14 +54,12 @@ void {\bf db\_\-vcd\_\-upscope} ()
 \item 
 void {\bf db\_\-assign\_\-symbol} (char $\ast$name, char $\ast$symbol)
 \begin{CompactList}\small\item\em Adds symbol to signal specified by name.\item\end{CompactList}\item 
-{\bf bool} {\bf db\_\-symbol\_\-found} (char $\ast$symbol)
-\begin{CompactList}\small\item\em Finds specified signal and returns TRUE if found.\item\end{CompactList}\item 
-void {\bf db\_\-find\_\-set\_\-add\_\-signal} (char $\ast$symbol, {\bf vector} $\ast$vec)
-\begin{CompactList}\small\item\em Finds specified signal, sets the value and adds its expression to expression queue.\item\end{CompactList}\item 
+void {\bf db\_\-set\_\-symbol\_\-char} (char $\ast$sym, char value)
+\begin{CompactList}\small\item\em Sets the found symbol value to specified character value. Called by VCD lexer.\item\end{CompactList}\item 
+void {\bf db\_\-set\_\-symbol\_\-string} (char $\ast$sym, char $\ast$value)
+\begin{CompactList}\small\item\em Sets the found symbol value to specified string value. Called by VCD lexer.\item\end{CompactList}\item 
 void {\bf db\_\-do\_\-timestep} (int time)
-\begin{CompactList}\small\item\em Performs a timestep for all signal changes during this timestep.\item\end{CompactList}\item 
-int {\bf db\_\-get\_\-signal\_\-size} (char $\ast$symbol)
-\begin{CompactList}\small\item\em Returns width of signal for specified symbol.\item\end{CompactList}\end{CompactItemize}
+\begin{CompactList}\small\item\em Performs a timestep for all signal changes during this timestep.\item\end{CompactList}\end{CompactItemize}
 \subsection*{Variables}
 \begin{CompactItemize}
 \item 
@@ -271,21 +269,7 @@ Cycles through expression queue, performing expression evaluations as we go. If 
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-end\_\-module ()}\label{db_8c_a17}
 
 
-Updates the modlist for parsing purposes. \index{db.c@{db.c}!db_find_set_add_signal@{db\_\-find\_\-set\_\-add\_\-signal}}
-\index{db_find_set_add_signal@{db\_\-find\_\-set\_\-add\_\-signal}!db.c@{db.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-find\_\-set\_\-add\_\-signal (char $\ast$ {\em symbol}, {\bf vector} $\ast$ {\em vec})}\label{db_8c_a32}
-
-
-Finds specified signal, sets the value and adds its expression to expression queue.
-
-\begin{Desc}
-\item[Parameters: ]\par
-\begin{description}
-\item[{\em 
-symbol}]VCD signal symbol from VCD dumpfile. \item[{\em 
-vec}]Specified value to set found signal to.\end{description}
-\end{Desc}
-Searches symbol table for this timestep. If this signal does not already exist in here, look in VCD symbol table for specified signal. Assign specified vector value to signal value and store expression pointers into expression queue to work on this timestep. \index{db.c@{db.c}!db_find_signal@{db\_\-find\_\-signal}}
+Updates the modlist for parsing purposes. \index{db.c@{db.c}!db_find_signal@{db\_\-find\_\-signal}}
 \index{db_find_signal@{db\_\-find\_\-signal}!db.c@{db.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf signal}$\ast$ db\_\-find\_\-signal (char $\ast$ {\em name})}\label{db_8c_a19}
 
@@ -301,23 +285,7 @@ name}]String name of signal to find in current module.\end{description}
 \begin{Desc}
 \item[Returns: ]\par
 Returns pointer to the found signal. If signal is not found, internal error.\end{Desc}
-Searches current module for signal matching the specified name. If the signal is found, returns a pointer to the calling function for that signal. \index{db.c@{db.c}!db_get_signal_size@{db\_\-get\_\-signal\_\-size}}
-\index{db_get_signal_size@{db\_\-get\_\-signal\_\-size}!db.c@{db.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int db\_\-get\_\-signal\_\-size (char $\ast$ {\em symbol})}\label{db_8c_a34}
-
-
-Returns width of signal for specified symbol.
-
-\begin{Desc}
-\item[Parameters: ]\par
-\begin{description}
-\item[{\em 
-symbol}]Symbol of signal to find.\end{description}
-\end{Desc}
-\begin{Desc}
-\item[Returns: ]\par
-Returns signal width of specified symbol or 0 if signal is not found.\end{Desc}
-Searches symbol table for specified symbol. If the corresponding signal is valid, returns the width value of the signal to the calling function. \index{db.c@{db.c}!db_read@{db\_\-read}}
+Searches current module for signal matching the specified name. If the signal is found, returns a pointer to the calling function for that signal. \index{db.c@{db.c}!db_read@{db\_\-read}}
 \index{db_read@{db\_\-read}!db.c@{db.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} db\_\-read (char $\ast$ {\em file}, int {\em read\_\-mode})}\label{db_8c_a14}
 
@@ -340,7 +308,35 @@ read\_\-mode}]Specifies what to do with read data. Values are\begin{CompactItemi
 \begin{Desc}
 \item[Returns: ]\par
 Returns TRUE if database read was successful; otherwise, returns FALSE.\end{Desc}
-Opens specified database file for reading. Reads in each line from the file examining its contents and creating the appropriate type to store the specified information and stores it into the appropriate internal list. If there are any problems opening the file for reading or parsing errors, returns FALSE; otherwise, returns TRUE. \index{db.c@{db.c}!db_set_vcd_scope@{db\_\-set\_\-vcd\_\-scope}}
+Opens specified database file for reading. Reads in each line from the file examining its contents and creating the appropriate type to store the specified information and stores it into the appropriate internal list. If there are any problems opening the file for reading or parsing errors, returns FALSE; otherwise, returns TRUE. \index{db.c@{db.c}!db_set_symbol_char@{db\_\-set\_\-symbol\_\-char}}
+\index{db_set_symbol_char@{db\_\-set\_\-symbol\_\-char}!db.c@{db.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-set\_\-symbol\_\-char (char $\ast$ {\em sym}, char {\em value})}\label{db_8c_a31}
+
+
+Sets the found symbol value to specified character value. Called by VCD lexer.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+sym}]Name of symbol to set character value to. \item[{\em 
+value}]String version of value to set symbol table entry to.\end{description}
+\end{Desc}
+Searches the timestep symtable followed by the VCD symbol table searching for the symbol that matches the specified argument. Once a symbol is found, its value parameter is set to the specified character. If the symbol was found in the VCD symbol table, it is copied to the timestep symbol table. \index{db.c@{db.c}!db_set_symbol_string@{db\_\-set\_\-symbol\_\-string}}
+\index{db_set_symbol_string@{db\_\-set\_\-symbol\_\-string}!db.c@{db.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-set\_\-symbol\_\-string (char $\ast$ {\em sym}, char $\ast$ {\em value})}\label{db_8c_a32}
+
+
+Sets the found symbol value to specified string value. Called by VCD lexer.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+sym}]Name of symbol to set character value to. \item[{\em 
+value}]String version of value to set symbol table entry to.\end{description}
+\end{Desc}
+Searches the timestep symtable followed by the VCD symbol table searching for the symbol that matches the specified argument. Once a symbol is found, its value parameter is set to the specified string. If the symbol was found in the VCD symbol table, it is copied to the timestep symbol table. \index{db.c@{db.c}!db_set_vcd_scope@{db\_\-set\_\-vcd\_\-scope}}
 \index{db_set_vcd_scope@{db\_\-set\_\-vcd\_\-scope}!db.c@{db.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-set\_\-vcd\_\-scope (char $\ast$ {\em scope})}\label{db_8c_a28}
 
@@ -382,23 +378,7 @@ stmt}]Pointer to statement tree to traverse. \item[{\em
 post}]Pointer to statement which stopped statements will be connected to. \item[{\em 
 both}]If TRUE, causes both true and false paths to set stop bits if connected to post statement.\end{description}
 \end{Desc}
-Calls the statement\_\-set\_\-stop function with the specified parameters. This function is called by the parser after the call to db\_\-statement\_\-connect. \index{db.c@{db.c}!db_symbol_found@{db\_\-symbol\_\-found}}
-\index{db_symbol_found@{db\_\-symbol\_\-found}!db.c@{db.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} db\_\-symbol\_\-found (char $\ast$ {\em symbol})}\label{db_8c_a31}
-
-
-Finds specified signal and returns TRUE if found.
-
-\begin{Desc}
-\item[Parameters: ]\par
-\begin{description}
-\item[{\em 
-symbol}]\end{description}
-\end{Desc}
-\begin{Desc}
-\item[Returns: ]\par
-Returns TRUE if the symbol is found; otherwise, returns FALSE.\end{Desc}
-Searches the current timestep symbol table to see if the specified signal exists in this list. If the signal is not found, returns FALSE; otherwise, returns a value of TRUE. Note: this function should be called before db\_\-find\_\-set\_\-add\_\-signal. \index{db.c@{db.c}!db_vcd_upscope@{db\_\-vcd\_\-upscope}}
+Calls the statement\_\-set\_\-stop function with the specified parameters. This function is called by the parser after the call to db\_\-statement\_\-connect. \index{db.c@{db.c}!db_vcd_upscope@{db\_\-vcd\_\-upscope}}
 \index{db_vcd_upscope@{db\_\-vcd\_\-upscope}!db.c@{db.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-vcd\_\-upscope ()}\label{db_8c_a29}
 

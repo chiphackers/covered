@@ -150,31 +150,8 @@ WSPACE [ \t\b\f]+
 
  /* Change value */
 <SIMULATION>[01xXzZ][!-~0-9]+ {
-     vector     vec;
-     nibble     vec_val;
-
-     vector_init( &vec, &vec_val, 1, 0 );
-
-     if( !db_symbol_found( yytext + 1 ) ) { 
-
-       switch( yytext[0] ) {
-         case '0':  vec.value[0] = (vec.value[0] & ~0x3) | 0x0;  break;
-         case '1':  vec.value[0] = (vec.value[0] & ~0x3) | 0x1;  break;
-         case 'x':  vec.value[0] = (vec.value[0] & ~0x3) | 0x2;  break;
-         case 'z':  vec.value[0] = (vec.value[0] & ~0x3) | 0x3;  break;
-         default : 
-           perror( vcdfile );
-           exit( 1 );
-         break;
-       }
-
-       /* Add symbol to timestep table */
-       db_find_set_add_signal( (yytext + 1), &vec );
-       
-       return CHANGE;
-
-     }
-
+     db_set_symbol_char( yytext + 1, yytext[0] );
+     return CHANGE;
  }
 
 <SIMULATION>[bB]?[01xXzZ]+{WSPACE}[!-~0-9]+ {
@@ -198,64 +175,9 @@ WSPACE [ \t\b\f]+
      *ptr = '\0';
      ptr++;
 
-     if( !db_symbol_found( ptr ) ) {
+     db_set_symbol_string( ptr, (yytext + 1) );
 
-       /* Working on problem here */
-       if( (sig_size = db_get_signal_size( ptr )) > 0 ) {
-
-         sym = ptr;
-
-         /* Create appropriately sized vector */
-         vec = vector_create( sig_size, 0 );
-
-         ptr = ptr - 2;
-         i   = 0;
-    
-         while( ptr > yytext ) {
-           switch( *ptr ) {
-             case '0':  vec->value[i/4] = (vec->value[i/4] & ~(0x3 << ((i%4)*2))) | (0x0 << ((i%4)*2));  break;
-             case '1':  vec->value[i/4] = (vec->value[i/4] & ~(0x3 << ((i%4)*2))) | (0x1 << ((i%4)*2));  break;
-             case 'x':  vec->value[i/4] = (vec->value[i/4] & ~(0x3 << ((i%4)*2))) | (0x2 << ((i%4)*2));  break;
-             case 'z':  vec->value[i/4] = (vec->value[i/4] & ~(0x3 << ((i%4)*2))) | (0x3 << ((i%4)*2));  break;
-             default :  
-               perror( vcdfile );
-  	       exit( 1 );
-             break;
-	   }	
-           ptr--;
-           i++;
-         }
-
-         ptr++;
-
-         /* 
-	  If the last bit displayed is X or Z and we have not filled in the entire vector, 
-          fill it in with the same value 
-         */
-         if( (*ptr == 'x') || (*ptr == 'z') ) {
-           for( ; i<sig_size; i++ ) {
-             switch( *ptr ) {
-               case 'x':  vec->value[i/4] = (vec->value[i/4] & ~(0x3 << ((i%4)*2))) | (0x2 << ((i%4)*2));  break;
-               case 'z':  vec->value[i/4] = (vec->value[i/4] & ~(0x3 << ((i%4)*2))) | (0x3 << ((i%4)*2));  break;
-               default :
-                 perror( vcdfile );
-                 exit( 1 );
-               break;
- 	     }
-           }
-         }
-      
-         /* Add symbol to timestep symbol table */
-         db_find_set_add_signal( sym, vec );
-
-         vector_dealloc( vec );
-
-       }
-
-       return CHANGE;
-
-     }
-
+     return CHANGE;
  }
 
 <DEFINITION>\[[0-9]+\] {

@@ -55,14 +55,12 @@
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a29">db_vcd_upscope</a> ()</td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a30">db_assign_symbol</a> (char *name, char *symbol)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds symbol to signal specified by name.</em> <a href="#a30"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a139">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a31">db_symbol_found</a> (char *symbol)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Finds specified signal and returns TRUE if found.</em> <a href="#a31"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a32">db_find_set_add_signal</a> (char *symbol, <a class="el" href="defines_8h.html#a120">vector</a> *vec)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Finds specified signal, sets the value and adds its expression to expression queue.</em> <a href="#a32"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a31">db_set_symbol_char</a> (char *sym, char value)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Sets the found symbol value to specified character value. Called by VCD lexer.</em> <a href="#a31"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a32">db_set_symbol_string</a> (char *sym, char *value)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Sets the found symbol value to specified string value. Called by VCD lexer.</em> <a href="#a32"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a33">db_do_timestep</a> (int time)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Performs a timestep for all signal changes during this timestep.</em> <a href="#a33"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a34">db_get_signal_size</a> (char *symbol)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Returns width of signal for specified symbol.</em> <a href="#a34"></a><em></em></font><br><br></td></tr>
 <tr><td colspan=2><br><h2>Variables</h2></td></tr>
 <tr><td nowrap align=right valign=top>char *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a0">top_module</a></td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a136">mod_inst</a> *&nbsp;</td><td valign=bottom><a class="el" href="db_8c.html#a1">instance_root</a></td></tr>
@@ -642,54 +640,6 @@ Current time step value being performed.</td></tr>
 Updates the modlist for parsing purposes.     </td>
   </tr>
 </table>
-<a name="a32" doxytag="db.c::db_find_set_add_signal"></a><p>
-<table width="100%" cellpadding="2" cellspacing="0" border="0">
-  <tr>
-    <td class="md">
-      <table cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td class="md" nowrap valign="top"> void db_find_set_add_signal </td>
-          <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top">char *&nbsp;</td>
-          <td class="mdname" nowrap>&nbsp; <em>symbol</em>, </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a120">vector</a> *&nbsp;</td>
-          <td class="mdname" nowrap>&nbsp; <em>vec</em></td>
-        </tr>
-        <tr>
-          <td></td>
-          <td class="md">)&nbsp;</td>
-          <td class="md" colspan="2"></td>
-        </tr>
-
-      </table>
-    </td>
-  </tr>
-</table>
-<table cellspacing=5 cellpadding=0 border=0>
-  <tr>
-    <td>
-      &nbsp;
-    </td>
-    <td>
-
-<p>
-Finds specified signal, sets the value and adds its expression to expression queue.
-<p>
-<dl compact><dt><b>
-Parameters: </b><dd>
-<table border=0 cellspacing=2 cellpadding=0>
-<tr><td valign=top><em>symbol</em>&nbsp;</td><td>
-VCD signal symbol from VCD dumpfile. </td></tr>
-<tr><td valign=top><em>vec</em>&nbsp;</td><td>
-Specified value to set found signal to.</td></tr>
-</table>
-</dl>Searches symbol table for this timestep. If this signal does not already exist in here, look in VCD symbol table for specified signal. Assign specified vector value to signal value and store expression pointers into expression queue to work on this timestep.     </td>
-  </tr>
-</table>
 <a name="a19" doxytag="db.c::db_find_signal"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
@@ -727,45 +677,6 @@ String name of signal to find in current module.</td></tr>
 </dl><dl compact><dt><b>
 Returns: </b><dd>
 Returns pointer to the found signal. If signal is not found, internal error.</dl>Searches current module for signal matching the specified name. If the signal is found, returns a pointer to the calling function for that signal.     </td>
-  </tr>
-</table>
-<a name="a34" doxytag="db.c::db_get_signal_size"></a><p>
-<table width="100%" cellpadding="2" cellspacing="0" border="0">
-  <tr>
-    <td class="md">
-      <table cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td class="md" nowrap valign="top"> int db_get_signal_size </td>
-          <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top">char *&nbsp;</td>
-          <td class="mdname1" valign="top" nowrap>&nbsp; <em>symbol</em>          </td>
-          <td class="md" valign="top">)&nbsp;</td>
-          <td class="md" nowrap></td>
-        </tr>
-
-      </table>
-    </td>
-  </tr>
-</table>
-<table cellspacing=5 cellpadding=0 border=0>
-  <tr>
-    <td>
-      &nbsp;
-    </td>
-    <td>
-
-<p>
-Returns width of signal for specified symbol.
-<p>
-<dl compact><dt><b>
-Parameters: </b><dd>
-<table border=0 cellspacing=2 cellpadding=0>
-<tr><td valign=top><em>symbol</em>&nbsp;</td><td>
-Symbol of signal to find.</td></tr>
-</table>
-</dl><dl compact><dt><b>
-Returns: </b><dd>
-Returns signal width of specified symbol or 0 if signal is not found.</dl>Searches symbol table for specified symbol. If the corresponding signal is valid, returns the width value of the signal to the calling function.     </td>
   </tr>
 </table>
 <a name="a14" doxytag="db.c::db_read"></a><p>
@@ -818,6 +729,102 @@ Specifies what to do with read data. Values are<ul>
 </dl><dl compact><dt><b>
 Returns: </b><dd>
 Returns TRUE if database read was successful; otherwise, returns FALSE.</dl>Opens specified database file for reading. Reads in each line from the file examining its contents and creating the appropriate type to store the specified information and stores it into the appropriate internal list. If there are any problems opening the file for reading or parsing errors, returns FALSE; otherwise, returns TRUE.     </td>
+  </tr>
+</table>
+<a name="a31" doxytag="db.c::db_set_symbol_char"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> void db_set_symbol_char </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="md" nowrap valign="top">char *&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>sym</em>, </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td class="md" nowrap>char&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>value</em></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td class="md">)&nbsp;</td>
+          <td class="md" colspan="2"></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+Sets the found symbol value to specified character value. Called by VCD lexer.
+<p>
+<dl compact><dt><b>
+Parameters: </b><dd>
+<table border=0 cellspacing=2 cellpadding=0>
+<tr><td valign=top><em>sym</em>&nbsp;</td><td>
+Name of symbol to set character value to. </td></tr>
+<tr><td valign=top><em>value</em>&nbsp;</td><td>
+String version of value to set symbol table entry to.</td></tr>
+</table>
+</dl>Searches the timestep symtable followed by the VCD symbol table searching for the symbol that matches the specified argument. Once a symbol is found, its value parameter is set to the specified character. If the symbol was found in the VCD symbol table, it is copied to the timestep symbol table.     </td>
+  </tr>
+</table>
+<a name="a32" doxytag="db.c::db_set_symbol_string"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> void db_set_symbol_string </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="md" nowrap valign="top">char *&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>sym</em>, </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td class="md" nowrap>char *&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>value</em></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td class="md">)&nbsp;</td>
+          <td class="md" colspan="2"></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+Sets the found symbol value to specified string value. Called by VCD lexer.
+<p>
+<dl compact><dt><b>
+Parameters: </b><dd>
+<table border=0 cellspacing=2 cellpadding=0>
+<tr><td valign=top><em>sym</em>&nbsp;</td><td>
+Name of symbol to set character value to. </td></tr>
+<tr><td valign=top><em>value</em>&nbsp;</td><td>
+String version of value to set symbol table entry to.</td></tr>
+</table>
+</dl>Searches the timestep symtable followed by the VCD symbol table searching for the symbol that matches the specified argument. Once a symbol is found, its value parameter is set to the specified string. If the symbol was found in the VCD symbol table, it is copied to the timestep symbol table.     </td>
   </tr>
 </table>
 <a name="a28" doxytag="db.c::db_set_vcd_scope"></a><p>
@@ -959,45 +966,6 @@ Pointer to statement which stopped statements will be connected to. </td></tr>
 If TRUE, causes both true and false paths to set stop bits if connected to post statement.</td></tr>
 </table>
 </dl>Calls the statement_set_stop function with the specified parameters. This function is called by the parser after the call to db_statement_connect.     </td>
-  </tr>
-</table>
-<a name="a31" doxytag="db.c::db_symbol_found"></a><p>
-<table width="100%" cellpadding="2" cellspacing="0" border="0">
-  <tr>
-    <td class="md">
-      <table cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a139">bool</a> db_symbol_found </td>
-          <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top">char *&nbsp;</td>
-          <td class="mdname1" valign="top" nowrap>&nbsp; <em>symbol</em>          </td>
-          <td class="md" valign="top">)&nbsp;</td>
-          <td class="md" nowrap></td>
-        </tr>
-
-      </table>
-    </td>
-  </tr>
-</table>
-<table cellspacing=5 cellpadding=0 border=0>
-  <tr>
-    <td>
-      &nbsp;
-    </td>
-    <td>
-
-<p>
-Finds specified signal and returns TRUE if found.
-<p>
-<dl compact><dt><b>
-Parameters: </b><dd>
-<table border=0 cellspacing=2 cellpadding=0>
-<tr><td valign=top><em>symbol</em>&nbsp;</td><td>
-</td></tr>
-</table>
-</dl><dl compact><dt><b>
-Returns: </b><dd>
-Returns TRUE if the symbol is found; otherwise, returns FALSE.</dl>Searches the current timestep symbol table to see if the specified signal exists in this list. If the signal is not found, returns FALSE; otherwise, returns a value of TRUE. Note: this function should be called before db_find_set_add_signal.     </td>
   </tr>
 </table>
 <a name="a29" doxytag="db.c::db_vcd_upscope"></a><p>
@@ -1360,7 +1328,7 @@ Pointer to tail element of module list     </td>
     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Thu Jul 4 23:10:37 2002 for Covered by
+<hr><address align="right"><small>Generated on Fri Jul 5 11:45:41 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

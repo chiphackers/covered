@@ -376,6 +376,9 @@ Returns a value of 1 if the specified expression was measurable for combinationa
 \footnotesize\begin{verbatim}(((SUPPL_OP( x->suppl ) != EXP_OP_NONE) && \
                                      (SUPPL_OP( x->suppl ) != EXP_OP_LAST) && \
                                      (SUPPL_OP( x->suppl ) != EXP_OP_COND_SEL) && \
+                                     (SUPPL_OP( x->suppl ) != EXP_OP_CASE) && \
+                                     (SUPPL_OP( x->suppl ) != EXP_OP_CASEX) && \
+                                     (SUPPL_OP( x->suppl ) != EXP_OP_CASEZ) && \
                                      !((SUPPL_IS_ROOT( x->suppl ) == 0) && \
                                        ((SUPPL_OP( x->suppl ) == EXP_OP_SIG) || \
                                         (SUPPL_OP( x->suppl ) == EXP_OP_SBIT_SEL) || \

@@ -58,19 +58,21 @@ void db_set_vcd_scope( char* scope );
 //! Adds symbol to signal specified by name.
 void db_assign_symbol( char* name, char* symbol );
 
-//! Finds specified signal and returns TRUE if found.
-bool db_symbol_found( char* symbol );
+//! Sets the found symbol value to specified character value.  Called by VCD lexer.
+void db_set_symbol_char( char* sym, char value );
 
-//! Finds specified signal, sets the value and adds its expression to expression queue. 
-void db_find_set_add_signal( char* symbol, vector* vec );
-
-//! Returns width of signal for specified symbol.
-int db_get_signal_size( char* symbol );
+//! Sets the found symbol value to specified string value.  Called by VCD lexer.
+void db_set_symbol_string( char* sym, char* value );
 
 //! Performs a timestep for all signal changes during this timestep.
 void db_do_timestep( int time ); 
 
 /* $Log$
+/* Revision 1.9  2002/07/03 21:30:52  phase1geo
+/* Fixed remaining issues with always statements.  Full regression is running
+/* error free at this point.  Regenerated documentation.  Added EOR expression
+/* operation to handle the or expression in event lists.
+/*
 /* Revision 1.8  2002/07/01 15:10:42  phase1geo
 /* Fixing always loopbacks and setting stop bits correctly.  All verilog diagnostics
 /* seem to be passing with these fixes.

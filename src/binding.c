@@ -15,6 +15,7 @@
 #include "instance.h"
 #include "link.h"
 #include "util.h"
+#include "vector.h"
 
 
 sig_exp_bind* seb_head;
@@ -129,6 +130,8 @@ void bind( int mode ) {
   char          msg[4096];     /* Error message to display to user                         */
   expression*   curr_parent;   /* Pointer to current parent expression                     */
   int           tmp_width;     /* Temporary storage of old vector width for multiplication */
+  int           i;             /* Loop iterator                                            */
+  nibble        value1;        /* Temporary holder of vector nibble data for AEDGE expr's  */
 
   while( seb_head != NULL ) {
 
@@ -206,7 +209,22 @@ void bind( int mode ) {
       curr_parent = seb_head->exp->parent->expr;
       while( (curr_parent != NULL) && (curr_parent->value->width == 0) ) {
         if( curr_parent->value->width == 0 ) {
-          expression_create_value( curr_parent, seb_head->exp->value->width, seb_head->exp->value->lsb );
+          if( SUPPL_OP( curr_parent->suppl ) == EXP_OP_AEDGE ) {
+            /*
+             In the case of an AEDGE expression, it needs to have the size of its LAST child expression
+             to be the width of its right child.
+            */
+            expression_create_value( curr_parent, 1, 0 );
+
+            expression_create_value( curr_parent->left, seb_head->exp->value->width, seb_head->exp->value->lsb );
+
+            value1 = 0x2;
+            for( i=0; i<seb_head->exp->value->width; i++ ) {
+              vector_set_value( curr_parent->left->value, &value1, 1, 0, i );
+            }
+          } else {
+            expression_create_value( curr_parent, seb_head->exp->value->width, seb_head->exp->value->lsb );
+          }
         } else if( SUPPL_OP( curr_parent->suppl ) == EXP_OP_MULTIPLY ) {
           /* 
            In the case of a MULTIPLY operation, its expression width must be the sum of its

@@ -11,6 +11,7 @@
 {\tt \#include \char`\"{}vector.h\char`\"{}}\par
 {\tt \#include \char`\"{}module.h\char`\"{}}\par
 {\tt \#include \char`\"{}util.h\char`\"{}}\par
+{\tt \#include \char`\"{}sim.h\char`\"{}}\par
 \subsection*{Functions}
 \begin{CompactItemize}
 \item 
@@ -26,12 +27,19 @@ void {\bf signal\_\-db\_\-write} ({\bf signal} $\ast$sig, FILE $\ast${\bf file},
 \begin{CompactList}\small\item\em Reads signal information from specified file.\item\end{CompactList}\item 
 {\bf bool} {\bf signal\_\-set\_\-value} ({\bf signal} $\ast$sig, {\bf nibble} $\ast$value, int num\_\-bits, int from\_\-lsb, int to\_\-lsb)
 \begin{CompactList}\small\item\em Sets value of signal to specified value.\item\end{CompactList}\item 
+void {\bf signal\_\-vcd\_\-assign} ({\bf signal} $\ast$sig, char $\ast$value)
+\item 
 void {\bf signal\_\-add\_\-expression} ({\bf signal} $\ast$sig, {\bf expression} $\ast$expr)
 \begin{CompactList}\small\item\em Adds an expression to the signal list.\item\end{CompactList}\item 
 void {\bf signal\_\-display} ({\bf signal} $\ast$sig)
 \begin{CompactList}\small\item\em Displays signal contents to standard output.\item\end{CompactList}\item 
 void {\bf signal\_\-dealloc} ({\bf signal} $\ast$sig)
 \begin{CompactList}\small\item\em Deallocates the memory used for this signal.\item\end{CompactList}\end{CompactItemize}
+\subsection*{Variables}
+\begin{CompactItemize}
+\item 
+{\bf nibble} {\bf or\_\-optab} [16]
+\end{CompactItemize}
 
 
 \subsection{Detailed Description}
@@ -48,7 +56,7 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsection{Function Documentation}
 \index{signal.c@{signal.c}!signal_add_expression@{signal\_\-add\_\-expression}}
 \index{signal_add_expression@{signal\_\-add\_\-expression}!signal.c@{signal.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-add\_\-expression ({\bf signal} $\ast$ {\em sig}, {\bf expression} $\ast$ {\em expr})}\label{signal_8c_a6}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-add\_\-expression ({\bf signal} $\ast$ {\em sig}, {\bf expression} $\ast$ {\em expr})}\label{signal_8c_a8}
 
 
 Adds an expression to the signal list.
@@ -62,7 +70,7 @@ expr}]Expression to add to list.\end{description}
 \end{Desc}
 Adds the specified expression to the end of this signal's expression list. \index{signal.c@{signal.c}!signal_create@{signal\_\-create}}
 \index{signal_create@{signal\_\-create}!signal.c@{signal.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf signal}$\ast$ signal\_\-create (char $\ast$ {\em name}, int {\em width}, int {\em lsb}, int {\em is\_\-static})}\label{signal_8c_a1}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf signal}$\ast$ signal\_\-create (char $\ast$ {\em name}, int {\em width}, int {\em lsb}, int {\em is\_\-static})}\label{signal_8c_a2}
 
 
 Creates a new signal based on the information passed to this function.
@@ -81,7 +89,7 @@ is\_\-static}]Specifies if this signal is a static value.\end{description}
 Pointer to newly created signal.\end{Desc}
 This function should be called by the Verilog parser or the database reading function. It initializes all of the necessary values for a signal and returns a pointer to this newly created signal. \index{signal.c@{signal.c}!signal_db_read@{signal\_\-db\_\-read}}
 \index{signal_db_read@{signal\_\-db\_\-read}!signal.c@{signal.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} signal\_\-db\_\-read (char $\ast$$\ast$ {\em line}, {\bf module} $\ast$ {\em curr\_\-mod})}\label{signal_8c_a4}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} signal\_\-db\_\-read (char $\ast$$\ast$ {\em line}, {\bf module} $\ast$ {\em curr\_\-mod})}\label{signal_8c_a5}
 
 
 Reads signal information from specified file.
@@ -105,7 +113,7 @@ A signal will only look in the current module for a matching expression. In the 
 
 Creates a new signal structure, parses current file line for signal information and stores it to the specified signal. If there are any problems in reading in the current line, returns FALSE; otherwise, returns TRUE. \index{signal.c@{signal.c}!signal_db_write@{signal\_\-db\_\-write}}
 \index{signal_db_write@{signal\_\-db\_\-write}!signal.c@{signal.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-db\_\-write ({\bf signal} $\ast$ {\em sig}, FILE $\ast$ {\em file}, char $\ast$ {\em modname})}\label{signal_8c_a3}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-db\_\-write ({\bf signal} $\ast$ {\em sig}, FILE $\ast$ {\em file}, char $\ast$ {\em modname})}\label{signal_8c_a4}
 
 
 Outputs this signal information to specified file.
@@ -120,7 +128,7 @@ modname}]Name of module that this signal belongs to.\end{description}
 \end{Desc}
 Prints the signal information for the specified signal to the specified file. This file will be the database coverage file for this design. \index{signal.c@{signal.c}!signal_dealloc@{signal\_\-dealloc}}
 \index{signal_dealloc@{signal\_\-dealloc}!signal.c@{signal.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-dealloc ({\bf signal} $\ast$ {\em sig})}\label{signal_8c_a8}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-dealloc ({\bf signal} $\ast$ {\em sig})}\label{signal_8c_a10}
 
 
 Deallocates the memory used for this signal.
@@ -133,7 +141,7 @@ sig}]Pointer to signal to deallocate.\end{description}
 \end{Desc}
 Deallocates all malloc'ed memory back to the heap for the specified signal. \index{signal.c@{signal.c}!signal_display@{signal\_\-display}}
 \index{signal_display@{signal\_\-display}!signal.c@{signal.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-display ({\bf signal} $\ast$ {\em sig})}\label{signal_8c_a7}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-display ({\bf signal} $\ast$ {\em sig})}\label{signal_8c_a9}
 
 
 Displays signal contents to standard output.
@@ -146,7 +154,7 @@ sig}]Pointer to signal to display to standard output.\end{description}
 \end{Desc}
 Displays signal's name, width, lsb and value vector to the standard output. \index{signal.c@{signal.c}!signal_init@{signal\_\-init}}
 \index{signal_init@{signal\_\-init}!signal.c@{signal.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-init ({\bf signal} $\ast$ {\em sig}, char $\ast$ {\em name}, {\bf vector} $\ast$ {\em value})}\label{signal_8c_a0}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-init ({\bf signal} $\ast$ {\em sig}, char $\ast$ {\em name}, {\bf vector} $\ast$ {\em value})}\label{signal_8c_a1}
 
 
 Initializes specified signal with specified values.
@@ -161,7 +169,7 @@ value}]Pointer to signal value.\end{description}
 \end{Desc}
 Initializes the specified signal with the values of name and value. This function is called by the signal\_\-create routine and is also useful for creating temporary signals (reduces the need for dynamic memory allocation). for performance enhancing purposes. \index{signal.c@{signal.c}!signal_merge@{signal\_\-merge}}
 \index{signal_merge@{signal\_\-merge}!signal.c@{signal.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-merge ({\bf signal} $\ast$ {\em base}, {\bf signal} $\ast$ {\em in})}\label{signal_8c_a2}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-merge ({\bf signal} $\ast$ {\em base}, {\bf signal} $\ast$ {\em in})}\label{signal_8c_a3}
 
 
 Merges two signals, placing result into base signal.
@@ -175,7 +183,7 @@ in}]Signal to be merged into base signal.\end{description}
 \end{Desc}
 Performs merge of the base and in signals, placing the resulting merged signal into the base signal. If the signals are found to be unalike (names are different), an error message is displayed to the user. If both signals are the same, perform the merge on the signal's vectors. \index{signal.c@{signal.c}!signal_set_value@{signal\_\-set\_\-value}}
 \index{signal_set_value@{signal\_\-set\_\-value}!signal.c@{signal.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} signal\_\-set\_\-value ({\bf signal} $\ast$ {\em sig}, {\bf nibble} $\ast$ {\em value}, int {\em num\_\-bits}, int {\em from\_\-lsb}, int {\em to\_\-lsb})}\label{signal_8c_a5}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} signal\_\-set\_\-value ({\bf signal} $\ast$ {\em sig}, {\bf nibble} $\ast$ {\em value}, int {\em num\_\-bits}, int {\em from\_\-lsb}, int {\em to\_\-lsb})}\label{signal_8c_a6}
 
 
 Sets value of signal to specified value.
@@ -193,4 +201,23 @@ to\_\-lsb}]Least significant bit of signal being assigned. \end{description}
 \begin{Desc}
 \item[Returns: ]\par
 Returns TRUE if value assignment is successful; otherwise, returns FALSE.\end{Desc}
-This function is called by the VCD reading function when the matching signal is found. If the signal has never been set to a value before (value is NULL), copy the contents of the value verbatim. If the signal value has been set previously, compare the old value to the new value bit for bit, setting the toggle bits accordingly. After this is achieved, copy the new value to the signal value. If the specified value width, does not match this signal's width, we have an internal error (VCD file does not match the design read in), so we return FALSE. Otherwise, return with a value of TRUE. 
+This function is called by the VCD reading function when the matching signal is found. If the signal has never been set to a value before (value is NULL), copy the contents of the value verbatim. If the signal value has been set previously, compare the old value to the new value bit for bit, setting the toggle bits accordingly. After this is achieved, copy the new value to the signal value. If the specified value width, does not match this signal's width, we have an internal error (VCD file does not match the design read in), so we return FALSE. Otherwise, return with a value of TRUE. \index{signal.c@{signal.c}!signal_vcd_assign@{signal\_\-vcd\_\-assign}}
+\index{signal_vcd_assign@{signal\_\-vcd\_\-assign}!signal.c@{signal.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-vcd\_\-assign ({\bf signal} $\ast$ {\em sig}, char $\ast$ {\em value})}\label{signal_8c_a7}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+sig}]Pointer to signal to assign VCD value to. \item[{\em 
+value}]String version of VCD value.\end{description}
+\end{Desc}
+Assigns the associated value to the specified signal's vector. After this, it iterates through its expression list, setting the TRUE and FALSE bits accordingly. Finally, calls the simulator expr\_\-changed function for each expression. 
+
+\subsection{Variable Documentation}
+\index{signal.c@{signal.c}!or_optab@{or\_\-optab}}
+\index{or_optab@{or\_\-optab}!signal.c@{signal.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf nibble} or\_\-optab[16]}\label{signal_8c_a0}
+
+

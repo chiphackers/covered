@@ -16,6 +16,10 @@
 #include "vector.h"
 #include "module.h"
 #include "util.h"
+#include "sim.h"
+
+
+extern nibble or_optab[16];
 
 
 /*!
@@ -273,6 +277,49 @@ bool signal_set_value( signal* sig, nibble* value, int num_bits, int from_lsb, i
 }
 
 /*!
+ \param sig    Pointer to signal to assign VCD value to.
+ \param value  String version of VCD value.
+
+ Assigns the associated value to the specified signal's vector.  After this, it
+ iterates through its expression list, setting the TRUE and FALSE bits accordingly.
+ Finally, calls the simulator expr_changed function for each expression.
+*/
+void signal_vcd_assign( signal* sig, char* value ) {
+
+  exp_link* curr_expr;   /* Pointer to current expression link under evaluation */
+  vector vec1;           /* Temporary 1-bit vector                              */
+  nibble value1;         /* Temporary 1-bit nibble value                        */
+
+  assert( sig->value != NULL );
+
+  /* Assign value to signal's vector value */
+  vector_vcd_assign( sig->value, value );
+
+  /* Determine if vector is TRUE or FALSE */
+  vector_init( &vec1, &value1, 1, 0 );
+  vector_unary_op( &vec1, sig->value, or_optab );
+
+  /* Iterate through signal's expression list */
+  curr_expr = sig->exp_head;
+  while( curr_expr != NULL ) {
+
+    /* Set signal expressions supplemental field TRUE/FALSE bits */
+    switch( vector_bit_val( vec1.value, 0 ) ) {
+      case 0 :  curr_expr->exp->suppl = curr_expr->exp->suppl | (0x1 << SUPPL_LSB_FALSE);  break;
+      case 1 :  curr_expr->exp->suppl = curr_expr->exp->suppl | (0x1 << SUPPL_LSB_TRUE);   break;
+      default:  break;
+    }
+
+    /* Add to simulation queue */
+    sim_expr_changed( curr_expr->exp );
+
+    curr_expr = curr_expr->next;
+
+  }
+
+}
+
+/*!
  \param sig   Pointer to signal to add expression to.
  \param expr  Expression to add to list.
 
@@ -330,4 +377,9 @@ void signal_dealloc( signal* sig ) {
 
 }
 
-/* $Log$ */
+/* $Log$
+/* Revision 1.6  2002/07/03 03:31:11  phase1geo
+/* Adding RCS Log strings in files that were missing them so that file version
+/* information is contained in every source and header file.  Reordering src
+/* Makefile to be alphabetical.  Adding mult1.v diagnostic to regression suite.
+/* */

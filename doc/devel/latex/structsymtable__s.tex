@@ -9,6 +9,8 @@ char $\ast$ {\bf sym}
 \item 
 {\bf signal} $\ast$ {\bf sig}
 \item 
+char $\ast$ {\bf value}
+\item 
 {\bf symtable} $\ast$ {\bf right}
 \item 
 {\bf symtable} $\ast$ {\bf left}
@@ -18,12 +20,12 @@ char $\ast$ {\bf sym}
 \subsection{Member Data Documentation}
 \index{symtable_s@{symtable\_\-s}!left@{left}}
 \index{left@{left}!symtable_s@{symtable\_\-s}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf symtable}$\ast$ symtable\_\-s::left}\label{structsymtable__s_m3}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf symtable}$\ast$ symtable\_\-s::left}\label{structsymtable__s_m4}
 
 
 Pointer to next symtable entry to the left \index{symtable_s@{symtable\_\-s}!right@{right}}
 \index{right@{right}!symtable_s@{symtable\_\-s}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf symtable}$\ast$ symtable\_\-s::right}\label{structsymtable__s_m2}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf symtable}$\ast$ symtable\_\-s::right}\label{structsymtable__s_m3}
 
 
 Pointer to next symtable entry to the right \index{symtable_s@{symtable\_\-s}!sig@{sig}}
@@ -36,7 +38,12 @@ Pointer to signal for this symbol \index{symtable_s@{symtable\_\-s}!sym@{sym}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ symtable\_\-s::sym}\label{structsymtable__s_m0}
 
 
-Name of VCD-specified signal 
+Name of VCD-specified signal \index{symtable_s@{symtable\_\-s}!value@{value}}
+\index{value@{value}!symtable_s@{symtable\_\-s}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ symtable\_\-s::value}\label{structsymtable__s_m2}
+
+
+String representation of last current value 
 
 The documentation for this struct was generated from the following file:\begin{CompactItemize}
 \item 
