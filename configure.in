@@ -18,6 +18,10 @@ then
 	exit 1
 fi
 
+dnl Checks for libraries.
+AC_CHECK_LIB(tcl, Tcl_Init)
+AC_CHECK_LIB(tk, Tk_SafeInit)
+
 dnl AC_CHECK_HEADERS(getopt.h)
 AC_CHECK_HEADERS(string.h)
 AC_CHECK_HEADERS(sys/times.h)

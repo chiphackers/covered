@@ -29,7 +29,7 @@ RPT_DIR       = ../rpt
 
 LOGFILE = regress.log
 
-regress:	$(COVERED) $(DIAGLIST) $(MERGELIST)
+regress:	$(COVERED) $(DIAGLIST) $(MERGELIST) $(ERRSCORELIST) $(ERRMERGELIST)
 
 $(DIAGLIST):
 	@echo Running $@
@@ -67,11 +67,35 @@ $(MERGELIST):
 	-@$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $@.rptWI $@.cdd
 	@./check_test $@ 1
 
+$(ERRSCORELIST):
+	@echo Running $@
+	@$(VERILOG) $(VERILOG_FLAGS) $@.v
+	@$(VERILOG_CMD)
+	@$(COVERED) -D score -f ../regress/$@.cfg | tee $@.err
+
+$(ERRMERGELIST):
+	@echo Running $@
+	@$(VERILOG) $(VERILOG_FLAGS) $@a.v
+	@$(VERILOG_CMD)
+	@$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@a.cfg
+	@$(VERILOG) $(VERILOG_FLAGS) $@b.v
+	@$(VERILOG_CMD)
+	@$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@b.cfg
+	@$(COVERED) -D merge -o $@.cdd $@a.cdd $@b.cdd | tee $@.err
+	@./check_err $@
+
+$(ERRREPORTLIST):
+	@echo Running $@
+	@$(VERILOG) $(VERILOG_FLAGS) $@.v
+	@$(VERILOG_CMD)
+	@$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@.cfg
+	@$(COVERED) -D report -d v $@.cdd | tee $@.err
+
 $(COVERED):
 	cd $(COVERED_SRC); make
 	
 clobber:  clean
-	@rm -f *.rpt* *.cdd
+	@rm -f *.rpt* *.cdd *.err
 
 clean:
 	@rm -f $(LOGFILE)

@@ -134,14 +134,14 @@ WSPACE [ \t\b\f]+
 <CSTRING>\\\" { yymore();         }
 <CSTRING>\n   { BEGIN( 0 );
                 if( (ignore_mode == 0) && (attr_mode > 0) ) {
-                  yylval.text = strdup( yytext );
+                  yylval.text = strdup_safe( yytext, __FILE__, __LINE__ );
                 }
                 /* VLerror( yylloc, "Missing close quote of string." ); */
                 yylloc.first_line += 1;
                 return 0; }
 <CSTRING>\"   { BEGIN( 0 );
                 if( (ignore_mode == 0) && (attr_mode > 0) ) {
-                  yylval.text = strdup( yytext );
+                  yylval.text = strdup_safe( yytext, __FILE__, __LINE__ );
                   yylval.text[ strlen( yytext ) - 1 ] = '\0';
                   return STRING;
                 } else {
@@ -189,7 +189,7 @@ WSPACE [ \t\b\f]+
      int rc = lexer_keyword_code( yytext, yyleng );
      if( rc == IDENTIFIER ) {
        if( ignore_mode == 0 ) {
-         yylval.text  = strdup( yytext );
+         yylval.text  = strdup_safe( yytext, __FILE__, __LINE__ );
          if( strncmp( yylval.text, "PATHPULSE$", 10) == 0 ) {
            rc = PATHPULSE_IDENTIFIER;
          }
@@ -209,7 +209,7 @@ WSPACE [ \t\b\f]+
            if( filelist_curr != filelist_head ) {
              /* The module has been found, recirculate filelist */
              snprintf( user_msg, USER_MSG_LENGTH, "Parsing file '%s'", yylloc.text );
-             print_output( user_msg, NORMAL );
+             print_output( user_msg, NORMAL, __FILE__, __LINE__ );
              filelist_curr = filelist_head;
            }
            last_keyword = 0;
@@ -225,7 +225,7 @@ WSPACE [ \t\b\f]+
   /* Signal names starting with a '\' character */
 \\[^ \t\b\f\r\n]+  { 
      if( ignore_mode == 0 ) {
-       yylval.text = strdup( yytext );
+       yylval.text = strdup_safe( yytext, __FILE__, __LINE__ );
        return IDENTIFIER; 
      } else {
        return UNUSED_IDENTIFIER;
@@ -444,7 +444,7 @@ static void line_directive() {
   qt2 = strchr( qt1, '"' );
   assert( qt2 );
   
-  buf = (char*)malloc_safe( qt2 - qt1 + 1 );
+  buf = (char*)malloc_safe( (qt2 - qt1 + 1), __FILE__, __LINE__ );
   strncpy( buf, qt1, qt2-qt1 );
   buf[qt2-qt1] = '\0';
   
@@ -478,7 +478,7 @@ static void line_directive2() {
   qt2 = strchr( qt1, '"' );
   assert( qt2 );
   
-  buf = (char*)malloc_safe( qt2 - qt1 + 1 );
+  buf = (char*)malloc_safe( (qt2 - qt1 + 1), __FILE__, __LINE__ );
   strncpy( buf, qt1, qt2 - qt1 );
   buf[qt2-qt1] = '\0';
   
@@ -533,7 +533,7 @@ static int yywrap() {
 
   /* If the rest of the modules could not be found, display them to the user */
   if( (modlist_head != NULL) && (tmpm == NULL) ) {
-    print_output( "Unable to find the following modules:", FATAL );
+    print_output( "Unable to find the following modules:", FATAL, __FILE__, __LINE__ );
     curr = modlist_head;
     while( curr != NULL ) {
       fprintf( stderr, "      %s\n", curr->str );
@@ -575,7 +575,7 @@ void reset_lexer( str_link* file_list_head ) {
   str_link* curr = file_list_head;
 
   if( (curr = get_next_vfile( curr, modlist_head->str )) == NULL ) {
-    print_output( "No verilog files specified", FATAL );
+    print_output( "No verilog files specified", FATAL, __FILE__, __LINE__ );
     exit( 1 );
   }
 
@@ -583,14 +583,14 @@ void reset_lexer( str_link* file_list_head ) {
   
   /* Create temporary output filename */
   if( ppfilename == NULL ) {
-    ppfilename = (char*)malloc_safe( 10 );
+    ppfilename = (char*)malloc_safe( 10, __FILE__, __LINE__ );
     snprintf( ppfilename, 10, "tmpXXXXXX" );
     assert( mkstemp( ppfilename ) != 0 );
   }
   out = fopen( ppfilename, "w" );
   if( out == NULL ) {
     snprintf( user_msg, USER_MSG_LENGTH, "Unable to open temporary file %s for writing", ppfilename );
-    print_output( user_msg, FATAL );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
     exit( 1 );
   }
   

@@ -66,9 +66,9 @@ signal* signal_create( char* name, int width, int lsb ) {
 
   signal* new_sig;       /* Pointer to newly created signal */
 
-  new_sig = (signal*)malloc_safe( sizeof( signal ) );
+  new_sig = (signal*)malloc_safe( sizeof( signal ), __FILE__, __LINE__ );
 
-  signal_init( new_sig, strdup( name ), vector_create( width, TRUE ), lsb );
+  signal_init( new_sig, strdup_safe( name, __FILE__, __LINE__ ), vector_create( width, TRUE ), lsb );
 
   return( new_sig );
 
@@ -150,7 +150,7 @@ bool signal_db_read( char** line, module* curr_mod ) {
 
       /* Add signal to signal list */
       if( curr_mod == NULL ) {
-        print_output( "Internal error:  signal in database written before its module", FATAL );
+        print_output( "Internal error:  signal in database written before its module", FATAL, __FILE__, __LINE__ );
         retval = FALSE;
       } else {
         sig_link_add( sig, &(curr_mod->sig_head), &(curr_mod->sig_tail) );
@@ -187,7 +187,7 @@ bool signal_db_read( char** line, module* curr_mod ) {
 
           if( name[0] != '#' ) {
             snprintf( user_msg, USER_MSG_LENGTH, "Expression %d not found for signal %s", texp.id, sig->name );
-            print_output( user_msg, FATAL );
+            print_output( user_msg, FATAL, __FILE__, __LINE__ );
             retval = FALSE;
             exit( 1 );
           }
@@ -242,7 +242,8 @@ bool signal_db_merge( signal* base, char** line, bool same ) {
 
     if( (strcmp( base->name, name ) != 0) || (base->lsb != lsb) ) {
 
-      print_output( "Attempting to merge two databases derived from different designs.  Unable to merge", FATAL );
+      print_output( "Attempting to merge two databases derived from different designs.  Unable to merge",
+                    FATAL, __FILE__, __LINE__ );
       exit( 1 );
 
     } else {
@@ -312,7 +313,7 @@ void signal_vcd_assign( signal* sig, char* value, int msb, int lsb ) {
   assert( sig->value != NULL );
 
   snprintf( user_msg, USER_MSG_LENGTH, "Assigning signal %s[%d:%d] (lsb=%d) to value %s", sig->name, msb, lsb, sig->lsb, value );
-  print_output( user_msg, DEBUG );
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
   /* Set signal value to specified value */
   if( lsb > 0 ) {
@@ -441,6 +442,11 @@ void signal_dealloc( signal* sig ) {
 
 /*
  $Log$
+ Revision 1.47  2004/01/08 23:24:41  phase1geo
+ Removing unnecessary scope information from signals, expressions and
+ statements to reduce file sizes of CDDs and slightly speeds up fscanf
+ function calls.  Updated regression for this fix.
+
  Revision 1.46  2003/11/29 06:55:49  phase1geo
  Fixing leftover bugs in better report output changes.  Fixed bug in param.c
  where parameters found in RHS expressions that were part of statements that

@@ -60,6 +60,7 @@
 #include <string.h>
 #endif
 #include <stdlib.h>
+#include <stdio.h>
 #include <assert.h>
 
 #include "defines.h"
@@ -96,13 +97,13 @@ sig_exp_bind* seb_tail;
  This bindings list will be handled after all input Verilog has been
  parsed.
 */
-void bind_add( char* sig_name, expression* exp, module* mod ) {
+void bind_add( const char* sig_name, expression* exp, module* mod ) {
   
   sig_exp_bind* seb;   /* Temporary pointer to signal/expressing binding */
   
   /* Create new signal/expression binding */
-  seb           = (sig_exp_bind *)malloc_safe( sizeof( sig_exp_bind ) );
-  seb->sig_name = strdup( sig_name );
+  seb           = (sig_exp_bind *)malloc_safe( sizeof( sig_exp_bind ), __FILE__, __LINE__ );
+  seb->sig_name = strdup_safe( sig_name, __FILE__, __LINE__ );
   seb->mod      = mod;
   seb->exp      = exp;
   seb->next     = NULL;
@@ -197,7 +198,7 @@ bool bind_perform( char* sig_name, expression* exp, module* mod_sig, module* mod
 
   /* If standard signal is not found, check to see if it is an unused signal */
   if( sigl == NULL ) {
-    tmpname = (char*)malloc_safe( strlen( sig_name ) + 2 );
+    tmpname = (char*)malloc_safe( (strlen( sig_name ) + 2), __FILE__, __LINE__ );
     snprintf( tmpname, (strlen( sig_name ) + 2), "!%s", sig_name );
     signal_init( &tsig, tmpname, NULL, 0 );
     sigl = sig_link_find( &tsig, mod_sig->sig_head );
@@ -213,19 +214,19 @@ bool bind_perform( char* sig_name, expression* exp, module* mod_sig, module* mod
                 sig_name,
                 mod_exp->name,
                 mod_exp->filename );
-      print_output( user_msg, FATAL );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
       retval = FALSE;
     } else if( !implicit_allowed ) {
-      /* Bad hierarchical reference -- user error */
+      /* Bad hierarchical reference -- user error  -- unachievable code due to unsuppported use of hierarchical referencing */
       snprintf( user_msg, USER_MSG_LENGTH, "Hierarchical reference to undefined signal \"%s\" in %s, line %d", 
                 sig_name,
                 mod_exp->filename,
                 exp->line );
-      print_output( user_msg, FATAL );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
       exit( 1 );
     } else {
       snprintf( user_msg, USER_MSG_LENGTH, "Implicit declaration of signal \"%s\", creating 1-bit version of signal", sig_name );
-      print_output( user_msg, WARNING );
+      print_output( user_msg, WARNING, __FILE__, __LINE__ );
       sig_link_add( signal_create( sig_name, 1, 0 ), &(mod_sig->sig_head), &(mod_sig->sig_tail) );
       sigl = mod_sig->sig_tail;
     }
@@ -285,12 +286,12 @@ void bind() {
     modi = instance_find_scope( instance_root, scope );
 
     if( modi == NULL ) {
-      /* Bad hierarchical reference */
+      /* Bad hierarchical reference -- we should never get to this line of code due to unsupported hierarchical referencing */
       snprintf( user_msg, USER_MSG_LENGTH, "Undefined hierarchical reference: %s, file: %s, line: %d", 
                 curr_seb->sig_name,
                 curr_seb->mod->filename,
                 curr_seb->exp->line );
-      print_output( user_msg, FATAL );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
       exit( 1 );
     }
 
@@ -352,6 +353,9 @@ void bind() {
 
 /* 
  $Log$
+ Revision 1.26  2003/10/17 12:55:36  phase1geo
+ Intermediate checkin for LSB fixes.
+
  Revision 1.25  2003/10/16 04:26:01  phase1geo
  Adding new fsm5 diagnostic to testsuite and regression.  Added proper support
  for FSM variables that are not able to be bound correctly.  Fixing bug in

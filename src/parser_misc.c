@@ -32,7 +32,7 @@ void VLerror( char* msg ) {
   error_count += 1;
   
   snprintf( user_msg, USER_MSG_LENGTH, "%s,   file: %s, line: %d", msg, yylloc.text, yylloc.first_line );
-  print_output( user_msg, FATAL );
+  print_output( user_msg, FATAL, __FILE__, __LINE__ );
 
 }
 
@@ -47,7 +47,7 @@ void VLwarn( char* msg ) {
   warn_count += 1;
   
   snprintf( user_msg, USER_MSG_LENGTH, "%s,   file: %s, line: %d", msg, yylloc.text, yylloc.first_line );
-  print_output( user_msg, WARNING );
+  print_output( user_msg, WARNING, __FILE__, __LINE__ );
 
 }
 
@@ -62,6 +62,11 @@ int VLwrap() {
 
 /*
  $Log$
+ Revision 1.3  2003/08/10 03:50:10  phase1geo
+ More development documentation updates.  All global variables are now
+ documented correctly.  Also fixed some generated documentation warnings.
+ Removed some unnecessary global variables.
+
  Revision 1.2  2002/12/01 06:37:52  phase1geo
  Adding appropriate error output and causing score command to proper exit
  if parser errors are found.

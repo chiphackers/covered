@@ -39,7 +39,7 @@ void str_link_add( char* str, str_link** head, str_link** tail ) {
 
   str_link* tmp;    /* Temporary pointer to newly created str_link element */
 
-  tmp = (str_link*)malloc_safe( sizeof( str_link ) );
+  tmp = (str_link*)malloc_safe( sizeof( str_link ), __FILE__, __LINE__ );
 
   tmp->str   = str;
   tmp->suppl = 0x0;
@@ -67,7 +67,7 @@ void stmt_link_add_head( statement* stmt, stmt_link** head, stmt_link** tail ) {
 
   stmt_link* tmp;    /* Temporary pointer to newly created stmt_link element */
 
-  tmp = (stmt_link*)malloc_safe( sizeof( stmt_link ) );
+  tmp = (stmt_link*)malloc_safe( sizeof( stmt_link ), __FILE__, __LINE__ );
 
   tmp->stmt = stmt;
 
@@ -94,7 +94,7 @@ void stmt_link_add_tail( statement* stmt, stmt_link** head, stmt_link** tail ) {
 
   stmt_link* tmp;    /* Temporary pointer to newly created stmt_link element */
 
-  tmp = (stmt_link*)malloc_safe( sizeof( stmt_link ) );
+  tmp = (stmt_link*)malloc_safe( sizeof( stmt_link ), __FILE__, __LINE__ );
 
   tmp->stmt = stmt;
 
@@ -122,7 +122,7 @@ void exp_link_add( expression* expr, exp_link** head, exp_link** tail ) {
 
   exp_link* tmp;   /* Temporary pointer to newly created exp_link element */
 
-  tmp = (exp_link*)malloc_safe( sizeof( exp_link ) );
+  tmp = (exp_link*)malloc_safe( sizeof( exp_link ), __FILE__, __LINE__ );
 
   tmp->exp  = expr;
   tmp->next = NULL;
@@ -149,7 +149,7 @@ void sig_link_add( signal* sig, sig_link** head, sig_link** tail ) {
 
   sig_link* tmp;   /* Temporary pointer to newly created sig_link element */
 
-  tmp = (sig_link*)malloc_safe( sizeof( sig_link ) );
+  tmp = (sig_link*)malloc_safe( sizeof( sig_link ), __FILE__, __LINE__ );
 
   tmp->sig  = sig;
   tmp->next = NULL;
@@ -176,7 +176,7 @@ void fsm_link_add( fsm* table, fsm_link** head, fsm_link** tail ) {
 
   fsm_link* tmp;  /* Temporary pointer to newly created fsm_link element */
 
-  tmp = (fsm_link*)malloc_safe( sizeof( fsm_link ) );
+  tmp = (fsm_link*)malloc_safe( sizeof( fsm_link ), __FILE__, __LINE__ );
 
   tmp->table = table;
   tmp->next  = NULL;
@@ -203,7 +203,7 @@ void mod_link_add( module* mod, mod_link** head, mod_link** tail ) {
 	
   mod_link* tmp;   /* Temporary pointer to newly created mod_link element */
 	
-  tmp = (mod_link*)malloc_safe( sizeof( mod_link ) );
+  tmp = (mod_link*)malloc_safe( sizeof( mod_link ), __FILE__, __LINE__ );
 	
   tmp->mod  = mod;
   tmp->next = NULL;
@@ -718,6 +718,10 @@ void mod_link_delete_list( mod_link* head ) {
 
 /*
  $Log$
+ Revision 1.25  2004/03/15 21:38:17  phase1geo
+ Updated source files after running lint on these files.  Full regression
+ still passes at this point.
+
  Revision 1.24  2003/10/28 00:18:06  phase1geo
  Adding initial support for inline attributes to specify FSMs.  Still more
  work to go but full regression still passes at this point.

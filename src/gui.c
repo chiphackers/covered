@@ -44,16 +44,21 @@ bool module_get_list( char*** mod_list, int* mod_size ) {
     curr = curr->next;
   }
 
-  /* Allocate array to store module names */
-  *mod_list = (char**)malloc_safe( sizeof( char* ) * (*mod_size) );
+  /* If we have any modules in the currently loaded design, create the list now */
+  if( *mod_size > 0 ) {
 
-  /* Now let's populate the module list */
-  i    = 0;
-  curr = mod_head;
-  while( curr != NULL ) {
-    (*mod_list)[i] = strdup( curr->mod->name );
-    i++;
-    curr = curr->next;
+    /* Allocate array to store module names */
+    *mod_list = (char**)malloc_safe( (sizeof( char* ) * (*mod_size)), __FILE__, __LINE__ );
+
+    /* Now let's populate the module list */
+    i    = 0;
+    curr = mod_head;
+    while( curr != NULL ) {
+      (*mod_list)[i] = strdup_safe( curr->mod->name, __FILE__, __LINE__ );
+      i++;
+      curr = curr->next;
+    }
+
   }
 
   return( retval );
@@ -70,19 +75,21 @@ bool module_get_list( char*** mod_list, int* mod_size ) {
  module is returned to the calling function.  If the module was not found, a value of NULL
  is returned to the calling function indicating an error occurred.
 */
-char* module_get_filename( char* mod_name ) {
+char* module_get_filename( const char* mod_name ) {
 
   module    mod;           /* Temporary module container used for searching    */
   mod_link* modl;          /* Pointer to module link containing matched module */
   char*     fname = NULL;  /* Name of filename containing specified module     */
 
-  mod.name = mod_name;
+  mod.name = strdup_safe( mod_name, __FILE__, __LINE__ );
 
   if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
      
-    fname = strdup( modl->mod->filename );
+    fname = strdup_safe( modl->mod->filename, __FILE__, __LINE__ );
 
   }
+
+  free_safe( mod.name );
 
   return( fname );
 
@@ -99,13 +106,13 @@ char* module_get_filename( char* mod_name ) {
  the found module, returning a value of TRUE to the calling function.  If the module was
  not found in the design, a value of FALSE is returned.
 */
-bool module_get_start_and_end_lines( char* mod_name, int* start_line, int* end_line ) {
+bool module_get_start_and_end_lines( const char* mod_name, int* start_line, int* end_line ) {
 
   bool      retval = TRUE;  /* Return value of this function                    */
   module    mod;            /* Temporary module container used for searching    */
   mod_link* modl;           /* Pointer to module line containing matched module */
   
-  mod.name = mod_name;
+  mod.name = strdup_safe( mod_name, __FILE__, __LINE__ );
 
   if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
 
@@ -118,12 +125,20 @@ bool module_get_start_and_end_lines( char* mod_name, int* start_line, int* end_l
 
   }
 
+  free_safe( mod.name );
+
   return( retval );
 
 }
 
 /*
  $Log$
+ Revision 1.3  2004/01/04 04:52:03  phase1geo
+ Updating ChangeLog and TODO files.  Adding merge information to INFO line
+ of CDD files and outputting this information to the merged reports.  Adding
+ starting and ending line information to modules and added function for GUI
+ to retrieve this information.  Updating full regression.
+
  Revision 1.2  2003/11/29 06:55:48  phase1geo
  Fixing leftover bugs in better report output changes.  Fixed bug in param.c
  where parameters found in RHS expressions that were part of statements that

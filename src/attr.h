@@ -12,7 +12,7 @@
 
 
 /*! \brief Creates new attribute parameter based on specified values. */
-attr_param* attribute_create( char* name, expression* expr );
+attr_param* attribute_create( const char* name, expression* expr );
 
 /*! \brief Parses and handles specified attribute parameter list. */
 void attribute_parse( attr_param* ap, module* mod );
@@ -23,6 +23,10 @@ void attribute_dealloc( attr_param* ap );
 
 /*
  $Log$
+ Revision 1.3  2004/03/15 21:38:17  phase1geo
+ Updated source files after running lint on these files.  Full regression
+ still passes at this point.
+
  Revision 1.2  2003/11/15 04:21:57  phase1geo
  Fixing syntax errors found in Doxygen and GCC compiler.
 

@@ -45,7 +45,8 @@ extern char         second_hierarchy[4096];
 */
 void line_get_stats( stmt_link* stmtl, float* total, int* hit ) {
 
-  stmt_iter curr;  /* Statement list iterator */
+  stmt_iter curr;          /* Statement list iterator               */
+  int       last_hit = 0;  /* Tracks the last line number evaluated */
 
   stmt_iter_reset( &curr, stmtl );
   
@@ -60,9 +61,10 @@ void line_get_stats( stmt_link* stmtl, float* total, int* hit ) {
       *total = *total + 1;
       if( SUPPL_WAS_EXECUTED( curr.curr->stmt->exp->suppl ) == 1 ) {
         (*hit)++;
+        last_hit = curr.curr->stmt->exp->line;
       }
     }
-        
+
     stmt_iter_next( &curr );
 
   }
@@ -71,6 +73,7 @@ void line_get_stats( stmt_link* stmtl, float* total, int* hit ) {
 
 /*!
  \param mod_name  Name of module to get missed line number array from.
+ \param cov       If set to 1, gets covered lines; otherwise, retrieves uncovered lines
  \param lines     Pointer to array of integers that will contain the missed lines.
  \param line_cnt  Pointer to size of lines array.
 
@@ -81,7 +84,7 @@ void line_get_stats( stmt_link* stmtl, float* total, int* hit ) {
  not hit during simulation and a value of TRUE is returned.  If the module name was
  not found, a value of FALSE is returned.
 */
-bool line_collect_uncovered( char* mod_name, int** lines, int* line_cnt ) {
+bool line_collect( const char* mod_name, int cov, int** lines, int* line_cnt ) {
 
   bool      retval = TRUE;  /* Return value for this function                     */
   stmt_iter stmti;          /* Statement list iterator                            */
@@ -92,13 +95,13 @@ bool line_collect_uncovered( char* mod_name, int** lines, int* line_cnt ) {
   int       line_size;      /* Indicates the number of entries in the lines array */
 
   /* First, find module in module array */
-  mod.name = mod_name;
+  mod.name = strdup_safe( mod_name, __FILE__, __LINE__ );
   if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
 
     /* Create an array that will hold the number of uncovered lines */
     line_size = 20;
     *line_cnt = 0;
-    *lines    = (int*)malloc_safe( sizeof( int ) * line_size );
+    *lines    = (int*)malloc_safe( (sizeof( int ) * line_size), __FILE__, __LINE__ );
 
     stmt_iter_reset( &stmti, modl->mod->stmt_tail );
     stmt_iter_find_head( &stmti, FALSE );
@@ -112,7 +115,7 @@ bool line_collect_uncovered( char* mod_name, int** lines, int* line_cnt ) {
           (SUPPL_OP( stmti.curr->stmt->exp->suppl ) != EXP_OP_DEFAULT) &&
           (stmti.curr->stmt->exp->line != 0) ) {
 
-        if( !SUPPL_WAS_EXECUTED( stmti.curr->stmt->exp->suppl ) ) {
+        if( SUPPL_WAS_EXECUTED( stmti.curr->stmt->exp->suppl ) == cov ) {
 
           last_line = expression_get_last_line( stmti.curr->stmt->exp );
           for( i=stmti.curr->stmt->exp->line; i<=last_line; i++ ) {
@@ -134,9 +137,12 @@ bool line_collect_uncovered( char* mod_name, int** lines, int* line_cnt ) {
 
   } else {
 
+    printf( "Unable to find module: %s\n", mod_name );
     retval = FALSE;
 
   }
+
+  free_safe( mod.name );
 
   return( retval );
 
@@ -471,6 +477,10 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.42  2004/03/15 21:38:17  phase1geo
+ Updated source files after running lint on these files.  Full regression
+ still passes at this point.
+
  Revision 1.41  2004/01/31 18:58:43  phase1geo
  Finished reformatting of reports.  Fixed bug where merged reports with
  different leading hierarchies were outputting the leading hierarchy of one

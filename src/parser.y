@@ -441,7 +441,7 @@ static_expr_primary
     {
       static_expr* tmp;
       if( ignore_mode == 0 ) {
-        tmp = (static_expr*)malloc_safe( sizeof( static_expr ) );
+        tmp = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
         tmp->num = vector_to_int( $1 );
         tmp->exp = NULL;
         vector_dealloc( $1 );
@@ -466,7 +466,7 @@ static_expr_primary
     {
       static_expr* tmp;
       if( ignore_mode == 0 ) {
-        tmp = (static_expr*)malloc_safe( sizeof( static_expr ) );
+        tmp = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
         tmp->num = -1;
         tmp->exp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, $1 );
         free_safe( $1 );
@@ -923,7 +923,7 @@ expression
       expression* csel;
       expression* cond;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) && ($5 != NULL) ) {
-        csel = db_create_expression( $5,   $3, EXP_OP_COND_SEL, lhs_mode, @1.first_line, NULL );
+        csel = db_create_expression( $5,   $3, EXP_OP_COND_SEL, lhs_mode, $3->line, NULL );
         cond = db_create_expression( csel, $1, EXP_OP_COND,     lhs_mode, @1.first_line, NULL );
         $$ = cond;
       } else {
@@ -961,7 +961,7 @@ expr_primary
       vector*     vec = vector_create( (strlen( $1 ) + 1), FALSE );
       vector_dealloc( tmp->value );
       tmp->value        = vec;
-      tmp->value->value = (nibble*)strdup( $1 );
+      tmp->value->value = (nibble*)strdup_safe( $1, __FILE__, __LINE__ );
       free_safe( $1 );
       $$ = tmp;
     }
@@ -1022,7 +1022,7 @@ expr_primary
   | identifier '[' expression K_PO_POS static_expr ']'
     {
       snprintf( user_msg, USER_MSG_LENGTH, "K_PO_POS expressions not supported at this time, line: %d", @1.first_line );
-      print_output( user_msg, WARNING );
+      print_output( user_msg, WARNING, __FILE__, __LINE__ );
       expression_dealloc( $3, FALSE );
       static_expr_dealloc( $5, TRUE );
       free_safe( $1 );
@@ -1031,7 +1031,7 @@ expr_primary
   | identifier '[' expression K_PO_NEG static_expr ']'
     {
       snprintf( user_msg, USER_MSG_LENGTH, "K_PO_POS expressions not supported at this time, line: %d", @1.first_line );
-      print_output( user_msg, WARNING );
+      print_output( user_msg, WARNING, __FILE__, __LINE__ );
       expression_dealloc( $3, FALSE );
       static_expr_dealloc( $5, TRUE );
       free_safe( $1 );
@@ -1496,7 +1496,7 @@ module_item
     {
       snprintf( user_msg, USER_MSG_LENGTH, "Defparam found but not used, file: %s, line: %d.  Please use -P option to specify",
                 @1.text, @1.first_line );
-      print_output( user_msg, FATAL );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
     }
   | K_event list_of_variables ';'
     {
@@ -1677,7 +1677,8 @@ statement
         expression_dealloc( $3, FALSE );
         while( c_stmt != NULL ) {
           expression_dealloc( c_stmt->expr, FALSE );
-          statement_dealloc_recursive( c_stmt->stmt );
+          db_remove_statement( c_stmt->stmt );
+          /* statement_dealloc_recursive( c_stmt->stmt ); */
           tc_stmt = c_stmt;
           c_stmt  = c_stmt->prev;
           free_safe( tc_stmt );
@@ -1718,7 +1719,8 @@ statement
         expression_dealloc( $3, FALSE );
         while( c_stmt != NULL ) {
           expression_dealloc( c_stmt->expr, FALSE );
-          statement_dealloc_recursive( c_stmt->stmt );
+          db_remove_statement( c_stmt->stmt );
+          /* statement_dealloc_recursive( c_stmt->stmt ); */
           tc_stmt = c_stmt;
           c_stmt  = c_stmt->prev;
           free_safe( tc_stmt );
@@ -1759,7 +1761,8 @@ statement
         expression_dealloc( $3, FALSE );
         while( c_stmt != NULL ) {
           expression_dealloc( c_stmt->expr, FALSE );
-          statement_dealloc_recursive( c_stmt->stmt );
+          db_remove_statement( c_stmt->stmt );
+          /* statement_dealloc_recursive( c_stmt->stmt ); */
           tc_stmt = c_stmt;
           c_stmt  = c_stmt->prev;
           free_safe( tc_stmt );
@@ -2420,7 +2423,7 @@ case_item
     {
       case_statement* cstmt;
       if( ignore_mode == 0 ) {
-        cstmt = (case_statement*)malloc_safe( sizeof( case_statement ) );
+        cstmt = (case_statement*)malloc_safe( sizeof( case_statement ), __FILE__, __LINE__ );
         cstmt->prev = NULL;
         cstmt->expr = $1;
         cstmt->stmt = $3;
@@ -2434,7 +2437,7 @@ case_item
     {
       case_statement* cstmt;
       if( ignore_mode == 0 ) {
-        cstmt = (case_statement*)malloc_safe( sizeof( case_statement ) );
+        cstmt = (case_statement*)malloc_safe( sizeof( case_statement ), __FILE__, __LINE__ );
         cstmt->prev = NULL;
         cstmt->expr = NULL;
         cstmt->stmt = $3;
@@ -2448,7 +2451,7 @@ case_item
     {
       case_statement* cstmt;
       if( ignore_mode == 0 ) {
-        cstmt = (case_statement*)malloc_safe( sizeof( case_statement ) );
+        cstmt = (case_statement*)malloc_safe( sizeof( case_statement ), __FILE__, __LINE__ );
         cstmt->prev = NULL;
         cstmt->expr = NULL;
         cstmt->stmt = $2;
@@ -2618,7 +2621,7 @@ delay_value
       if( (ignore_mode == 0) && (se != NULL) ) {
         if( se->exp == NULL ) {
           tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, NULL );
-          vector_init( tmp->value, (nibble*)malloc_safe( sizeof( nibble ) * 32 ), 32 );  
+          vector_init( tmp->value, (nibble*)malloc_safe( (sizeof( nibble ) * 32), __FILE__, __LINE__ ), 32 );  
           vector_from_int( tmp->value, se->num );
         } else {
           tmp = se->exp;
@@ -2640,7 +2643,7 @@ delay_value
                     "Delay expression type for min:typ:max not specified, using default of 'typ', file %s, line %d",
                     @1.text,
                     @1.first_line );
-          print_output( user_msg, WARNING );
+          print_output( user_msg, WARNING, __FILE__, __LINE__ );
         }
         switch( delay_expr_type ) {
           case DELAY_EXPR_MIN :
@@ -2668,7 +2671,7 @@ delay_value
         if( se != NULL ) {
           if( se->exp == NULL ) {
             tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, NULL );
-            vector_init( tmp->value, (nibble*)malloc_safe( sizeof( nibble ) * 32 ), 32 );
+            vector_init( tmp->value, (nibble*)malloc_safe( (sizeof( nibble ) * 32), __FILE__, __LINE__ ), 32 );
             vector_from_int( tmp->value, se->num );
           } else {
             tmp = se->exp;
@@ -2758,13 +2761,13 @@ range_opt
       static_expr*  left;
       static_expr*  right;
       if( ignore_mode == 0 ) {
-        left = (static_expr*)malloc_safe( sizeof( static_expr ) );
+        left = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
         left->exp = NULL;
         left->num = 0;
-        right = (static_expr*)malloc_safe( sizeof( static_expr ) );
+        right = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
         right->exp = NULL;
         right->num = 0;
-        tmp = (vector_width*)malloc_safe( sizeof( vector_width ) );
+        tmp = (vector_width*)malloc_safe( sizeof( vector_width ), __FILE__, __LINE__ );
         tmp->left  = left;
         tmp->right = right;
         $$ = tmp;
@@ -2779,7 +2782,7 @@ range
     {
       vector_width* tmp;
       if( ignore_mode == 0 ) {
-        tmp = (vector_width*)malloc_safe( sizeof( vector_width ) );
+        tmp = (vector_width*)malloc_safe( sizeof( vector_width ), __FILE__, __LINE__ );
         tmp->left  = $2;
         tmp->right = $4;
         $$ = tmp;
@@ -2838,7 +2841,7 @@ register_variable
       /* We don't support memory coverage */
       char* name;
       if( $1 != NULL ) {
-        name = (char*)malloc_safe( strlen( $1 ) + 2 );
+        name = (char*)malloc_safe( (strlen( $1 ) + 2), __FILE__, __LINE__ );
         snprintf( name, (strlen( $1 ) + 2), "!%s", $1 );
         free_safe( $1 );
         $$ = name;
@@ -2963,7 +2966,7 @@ net_decl_assign
     {
       sig_exp_bind* seb;
       if( ignore_mode == 0 ) {
-        seb = (sig_exp_bind*)malloc_safe( sizeof( sig_exp_bind ) );
+        seb = (sig_exp_bind*)malloc_safe( sizeof( sig_exp_bind ), __FILE__, __LINE__ );
         seb->sig_name = $1;
         seb->exp      = $3;
         seb->next     = NULL;
@@ -2980,7 +2983,7 @@ net_decl_assign
     {
       sig_exp_bind* seb;
       if( ignore_mode == 0 ) {
-        seb = (sig_exp_bind*)malloc_safe( sizeof( sig_exp_bind ) );
+        seb = (sig_exp_bind*)malloc_safe( sizeof( sig_exp_bind ), __FILE__, __LINE__ );
         seb->sig_name = $2;
         seb->exp      = $4;
         seb->next     = NULL;

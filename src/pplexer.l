@@ -126,7 +126,7 @@ WSPACE [ \t\b\f]+
  }
 <INCLUDE>.          {
      snprintf( user_msg, USER_MSG_LENGTH, "malformed `include directive, line %d, \"%s\"", istack->lineno, istack->path );
-     print_output( user_msg, FATAL );
+     print_output( user_msg, FATAL, __FILE__, __LINE__ );
      BEGIN( ERROR_LINE );
  }
 
@@ -298,7 +298,7 @@ static void def_match() {
   } else {
 
     snprintf( user_msg, USER_MSG_LENGTH, "macro %s undefined (and assumed null) at this point, line %d, \"%s\"", yytext, istack->lineno, istack->path );
-    print_output( user_msg, WARNING );
+    print_output( user_msg, WARNING, __FILE__, __LINE__ );
 
   }
 
@@ -408,8 +408,8 @@ static void include_filename() {
 
   assert( standby == 0 );
 
-  standby         = malloc(sizeof(struct include_stack_t));
-  standby->path   = strdup(yytext+1);
+  standby         = malloc_safe( sizeof(struct include_stack_t), __FILE__, __LINE__ );
+  standby->path   = strdup_safe( (yytext+1), __FILE__, __LINE__ );
   standby->path[strlen(standby->path)-1] = 0;
   standby->lineno = 0;
 
@@ -430,7 +430,7 @@ static void do_include() {
 
     if( standby->file == 0 ) {
       snprintf( user_msg, USER_MSG_LENGTH, "Unable to open `include file \"%s\"", standby->path );
-      print_output( user_msg, FATAL );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
     }
 
   } else {
@@ -448,7 +448,7 @@ static void do_include() {
 
     if( (curr == NULL) && (standby->file == 0) ) {
       snprintf( user_msg, USER_MSG_LENGTH, "Unable to find `include file \"%s\" in include path", standby->path );
-      print_output( user_msg, FATAL );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
       exit( 1 );
     }
 
@@ -463,7 +463,7 @@ static void do_include() {
   standby           = 0;
 
   snprintf( user_msg, USER_MSG_LENGTH, "Parsing include file '%s'", path );
-  print_output( user_msg, NORMAL );
+  print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
   yy_switch_to_buffer( yy_new_buffer( istack->file, YY_BUF_SIZE ) );
 
@@ -511,7 +511,7 @@ static int yywrap() {
 
     /* Otherwise, resume the input buffer that is the new stack top. */
     snprintf( user_msg, USER_MSG_LENGTH, "Resume parsing '%s'", istack->path );
-    print_output( user_msg, NORMAL );
+    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
     yy_switch_to_buffer( istack->yybs );
 
     fprintf( yyout, "`line %u \"%s\" 2\n", istack->lineno + 1, istack->path );
@@ -531,11 +531,11 @@ static int yywrap() {
  */
 void reset_pplexer( char* filename, FILE* out ) {
 
-  struct include_stack_t* isp = malloc( sizeof( struct include_stack_t ) );
+  struct include_stack_t* isp = malloc_safe( sizeof( struct include_stack_t ), __FILE__, __LINE__ );
 
   assert( filename != NULL );
 
-  isp->path   = strdup( filename );
+  isp->path   = strdup_safe( filename, __FILE__, __LINE__ );
   isp->file   = fopen( isp->path, "r" );
   isp->lineno = 0;
   isp->str    = 0;

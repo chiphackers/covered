@@ -67,7 +67,7 @@ module* module_create() {
   module* mod;   /* Pointer to newly created module element */
 
   /* Create and initialize module */
-  mod = (module*)malloc_safe( sizeof( module ) );
+  mod = (module*)malloc_safe( sizeof( module ), __FILE__, __LINE__ );
 
   module_init( mod );
 
@@ -169,7 +169,7 @@ bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst ) {
   fsm_link*  curr_fsm;        /* Pointer to current module fsm_link element */
 
   snprintf( user_msg, USER_MSG_LENGTH, "Writing module %s", mod->name );
-  print_output( user_msg, DEBUG );
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
   fprintf( file, "%d %s %s %s %d %d\n",
     DB_TYPE_MODULE,
@@ -476,6 +476,11 @@ void module_dealloc( module* mod ) {
 
 /*
  $Log$
+ Revision 1.32  2004/01/08 23:24:41  phase1geo
+ Removing unnecessary scope information from signals, expressions and
+ statements to reduce file sizes of CDDs and slightly speeds up fscanf
+ function calls.  Updated regression for this fix.
+
  Revision 1.31  2004/01/04 04:52:03  phase1geo
  Updating ChangeLog and TODO files.  Adding merge information to INFO line
  of CDD files and outputting this information to the merged reports.  Adding

@@ -97,10 +97,10 @@ vector* vector_create( int width, bool data ) {
 
   assert( width > 0 );
 
-  new_vec = (vector*)malloc_safe( sizeof( vector ) );
+  new_vec = (vector*)malloc_safe( sizeof( vector ), __FILE__, __LINE__ );
 
   if( data == TRUE ) {
-    value = (nibble*)malloc_safe( sizeof( nibble ) * width );
+    value = (nibble*)malloc_safe( (sizeof( nibble ) * width), __FILE__, __LINE__ );
   }
 
   vector_init( new_vec, value, width );
@@ -345,7 +345,8 @@ bool vector_db_merge( vector* base, char** line, bool same ) {
     if( base->width != width ) {
 
       if( same ) {
-        print_output( "Attempting to merge databases derived from different designs.  Unable to merge", FATAL );
+        print_output( "Attempting to merge databases derived from different designs.  Unable to merge",
+                      FATAL, __FILE__, __LINE__ );
         exit( 1 );
       }
 
@@ -691,7 +692,7 @@ int vector_to_int( vector* vec ) {
       case 0 :  retval = (retval << 1) | 0;  break;
       case 1 :  retval = (retval << 1) | 1;  break;
       default:
-        print_output( "Vector converting to integer contains X or Z values", FATAL );
+        print_output( "Vector converting to integer contains X or Z values", FATAL, __FILE__, __LINE__ );
         assert( VECTOR_VAL( vec->value[i] ) < 2 );
         break;
     }
@@ -748,11 +749,15 @@ void vector_set_static( vector* vec, char* str, int bits_per_char ) {
     if( *ptr != '_' ) {
       if( (*ptr == 'x') || (*ptr == 'X') ) {
         for( i=0; i<bits_per_char; i++ ) {
-          VECTOR_SET_VAL( vec->value[i + pos], 0x2 );
+          if( (i + pos) < vec->width ) { 
+            VECTOR_SET_VAL( vec->value[i + pos], 0x2 );
+          }
         }
       } else if( (*ptr == 'z') || (*ptr == 'Z') || (*ptr == '?') ) {
         for( i=0; i<bits_per_char; i++ ) {
-          VECTOR_SET_VAL( vec->value[i + pos], 0x3 );
+          if( (i + pos) < vec->width ) { 
+            VECTOR_SET_VAL( vec->value[i + pos], 0x3 );
+          }
         }
       } else {
         if( (*ptr >= 'a') && (*ptr <= 'f') ) {
@@ -764,7 +769,9 @@ void vector_set_static( vector* vec, char* str, int bits_per_char ) {
 	  val = *ptr - '0';
         }
         for( i=0; i<bits_per_char; i++ ) {
-  	  VECTOR_SET_VAL( vec->value[i + pos], ((val >> i) & 0x1) );
+          if( (i + pos) < vec->width ) {
+            VECTOR_SET_VAL( vec->value[i + pos], ((val >> i) & 0x1) );
+          } 
         }
       }
       pos = pos + bits_per_char;
@@ -816,12 +823,12 @@ char* vector_to_string( vector* vec, int type ) {
       type_char = 'h';
       break;
     default          :  
-      print_output( "Internal Error:  Unknown vector_to_string type\n", FATAL );
+      print_output( "Internal Error:  Unknown vector_to_string type\n", FATAL, __FILE__, __LINE__ );
       exit( 1 );
       break;
   }
 
-  tmp   = (char*)malloc_safe( vec_size );
+  tmp   = (char*)malloc_safe( vec_size, __FILE__, __LINE__ );
   value = 0;
   pos   = 0;
 
@@ -855,7 +862,7 @@ char* vector_to_string( vector* vec, int type ) {
         case 16  :  tmp[pos] = 'X';  pos++;  break;
         case 17  :  tmp[pos] = 'Z';  pos++;  break;
         default  :  
-          print_output( "Internal Error:  Value in vector_to_string exceeds allowed limit\n", FATAL );
+          print_output( "Internal Error:  Value in vector_to_string exceeds allowed limit\n", FATAL, __FILE__, __LINE__ );
           exit( 1 );
           break;
       }
@@ -867,7 +874,7 @@ char* vector_to_string( vector* vec, int type ) {
 
   snprintf( width_str, 20, "%d", vec->width );
   str_size = strlen( width_str ) + 2 + strlen( tmp ) + 1;
-  str      = (char*)malloc_safe( str_size );
+  str      = (char*)malloc_safe( str_size, __FILE__, __LINE__ );
   snprintf( str, str_size, "%d'%c%s", vec->width, type_char, tmp );
 
   free_safe( tmp );
@@ -999,7 +1006,7 @@ void vector_vcd_assign( vector* vec, char* value, int msb, int lsb ) {
       case 'z':  vval = 3;  break;
       default :  
         snprintf( user_msg, USER_MSG_LENGTH, "VCD file contains value change character that is not four-state" );
-        print_output( user_msg, FATAL );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( 1 );
         break;
     }
@@ -1146,7 +1153,7 @@ void vector_op_compare( vector* tgt, vector* left, vector* right, int comp_type 
       case COMP_CNE  :  value = (lbit == rbit)                                 ? 0 : 1;  break;
       default        :
         snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  Unidentified comparison type %d", comp_type );
-        print_output( user_msg, FATAL );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( 1 );
         break;
     }
@@ -1499,6 +1506,10 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.47  2004/03/15 21:38:17  phase1geo
+ Updated source files after running lint on these files.  Full regression
+ still passes at this point.
+
  Revision 1.46  2004/01/28 17:05:17  phase1geo
  Changing toggle report information from binary output format to hexidecimal
  output format for ease in readability for large signal widths.  Updated regression

@@ -39,9 +39,9 @@ tnode* tree_add( const char* key, const char* value, bool override, tnode** root
   int    comp;            /* Specifies compare value for string comparison */
 
   /* Allocate memory for tree node and populate */
-  node        = (tnode*)malloc_safe( sizeof( tnode ) );
-  node->name  = strdup( key );
-  node->value = strdup( value );
+  node        = (tnode*)malloc_safe( sizeof( tnode ), __FILE__, __LINE__ );
+  node->name  = strdup_safe( key, __FILE__, __LINE__ );
+  node->value = strdup_safe( value, __FILE__, __LINE__ );
   node->left  = NULL;
   node->right = NULL;
   node->up    = NULL;
@@ -270,5 +270,11 @@ void tree_dealloc( tnode* root ) {
 
 /*
  $Log$
+ Revision 1.1  2003/01/04 09:25:15  phase1geo
+ Fixing file search algorithm to fix bug where unexpected module that was
+ ignored cannot be found.  Added instance7.v diagnostic to verify appropriate
+ handling of this problem.  Added tree.c and tree.h and removed define_t
+ structure in lexer.
+
 */
 

@@ -158,7 +158,7 @@ void arc_set_width( char* arcs, int width ) {
  Retrieves the previously stored value of the state transition arc
  width.
 */
-int arc_get_width( char* arcs ) {
+int arc_get_width( const char* arcs ) {
 
   int width = (((int)arcs[1] & 0xff) << 8) | ((int)arcs[0] & 0xff);
   return( width );
@@ -190,7 +190,7 @@ void arc_set_max_size( char* arcs, int size ) {
  array size that is encoded into the arcs array.  This value is the number
  of bidirectional state transition arc entries allocated in this arc array.
 */
-int arc_get_max_size( char* arcs ) {
+int arc_get_max_size( const char* arcs ) {
 
   int size = (((int)arcs[3] & 0xff) << 8) | ((int)arcs[2] & 0xff);
   return( size );
@@ -222,7 +222,7 @@ void arc_set_curr_size( char* arcs, int size ) {
  Retrieves the previously stored value of the number of currently used
  bidirectional state transition arc entries in the specified arcs array.
 */
-int arc_get_curr_size( char* arcs ) {
+int arc_get_curr_size( const char* arcs ) {
 
   int size = (((int)(arcs[5]) & 0xff) << 8) | ((int)(arcs[4]) & 0xff);
   return( size );
@@ -252,7 +252,7 @@ void arc_set_suppl( char* arcs, int suppl ) {
  Retrieves the value of the supplemental field in the specified arc
  array.
 */
-int arc_get_suppl( char* arcs, int type ) {
+int arc_get_suppl( const char* arcs, int type ) {
 
   return( ((int)arcs[6] >> type) & 0x1 );
 
@@ -342,6 +342,7 @@ void arc_set_entry_suppl( char* arcs, int curr, int type, char val ) {
 
   int entry_size = arc_get_entry_width( arc_get_width( arcs ) );
 
+  /* Make sure that we don't access outside the range of the arc array */
   arcs[(curr * entry_size) + ARC_STATUS_SIZE] = arcs[(curr * entry_size) + ARC_STATUS_SIZE] | ((val & 0x1) << type);
 
 }
@@ -357,7 +358,7 @@ void arc_set_entry_suppl( char* arcs, int curr, int type, char val ) {
  Retrieves the arc entry supplemental field bit specified by the function
  parameters.
 */
-int arc_get_entry_suppl( char* arcs, int curr, int type ) {
+int arc_get_entry_suppl( const char* arcs, int curr, int type ) {
 
   int entry_size = arc_get_entry_width( arc_get_width( arcs ) );
 
@@ -381,7 +382,7 @@ int arc_get_entry_suppl( char* arcs, int curr, int type ) {
  will either modify the supplemental data that is associated with this function's return
  value or it will check to see if another arc entry is required to be added.
 */
-int arc_find( char* arcs, vector* from_st, vector* to_st, int* ptr ) {
+int arc_find( const char* arcs, vector* from_st, vector* to_st, int* ptr ) {
 
   char  tmp[264];    /* Temporary arc array entry for comparison purposes              */
   int   curr_size;   /* Current number of entries in this arc array                    */
@@ -466,7 +467,7 @@ char* arc_create( int width ) {
   int   i;     /* Loop iterator                                  */
 
   /* The arcs char array is not allocated, allocate the default space here */
-  arcs = (char*)malloc_safe( (arc_get_entry_width( width ) * width) + ARC_STATUS_SIZE );
+  arcs = (char*)malloc_safe( ((arc_get_entry_width( width ) * width) + ARC_STATUS_SIZE + 1), __FILE__, __LINE__ );
 
   /* Initialize */
   arc_set_width( arcs, width );     /* Signal width                                   */
@@ -522,7 +523,7 @@ void arc_add( char** arcs, vector* fr_st, vector* to_st, int hit ) {
       entry_width = arc_get_entry_width( arc_get_width( tmp ) );
 
       /* Allocate new memory */
-      *arcs = (char*)malloc_safe( (entry_width * (arc_get_max_size( tmp ) + arc_get_width( tmp ))) + ARC_STATUS_SIZE );
+      *arcs = (char*)malloc_safe( ((entry_width * (arc_get_max_size( tmp ) + arc_get_width( tmp ))) + ARC_STATUS_SIZE), __FILE__, __LINE__ );
 
       arc_set_width( *arcs, arc_get_width( tmp ) );
       arc_set_max_size( *arcs, arc_get_max_size( tmp ) + arc_get_width( tmp ) );
@@ -587,7 +588,7 @@ void arc_add( char** arcs, vector* fr_st, vector* to_st, int hit ) {
  Performs a bitwise comparison of the two states indicated by their index and pos
  values.  If both states compare, return TRUE; otherwise, return FALSE.
 */
-bool arc_compare_states( char* arcs, int index1, int pos1, int index2, int pos2 ) {
+bool arc_compare_states( const char* arcs, int index1, int pos1, int index2, int pos2 ) {
 
   int i;  /* Loop iterator */
 
@@ -692,7 +693,7 @@ void arc_compare_all_states( char* arcs, int start, bool left ) {
  array.  This function should only be called if the ARC_TRANS_KNOWN bit
  is set; otherwise, an incorrect value will be reported.
 */
-float arc_state_total( char* arcs ) {
+float arc_state_total( const char* arcs ) {
 
   float total = 0;  /* Total number of states hit during simulation */
   int   i;          /* Loop iterator                                */
@@ -770,7 +771,7 @@ int arc_state_hits( char* arcs ) {
  For consistency, this function should be called after calling
  arc_transition_hits().
 */
-float arc_transition_total( char* arcs ) {
+float arc_transition_total( const char* arcs ) {
 
   float total;  /* Number of total state transitions in arc array */
   int   i;      /* Loop iterator                                  */
@@ -798,7 +799,7 @@ float arc_transition_total( char* arcs ) {
  Iterates through arc array, accumulating the number of state
  transitions that were hit in simulation.
 */
-int arc_transition_hits( char* arcs ) {
+int arc_transition_hits( const char* arcs ) {
 
   int hit = 0;     /* Number of arcs hit        */
   int i;           /* Loop iterator             */
@@ -858,7 +859,7 @@ void arc_get_stats( char* arcs, float* state_total, int* state_hits, float* arc_
  is output in a special format that is described in the above documentation for
  this file.
 */
-bool arc_db_write( char* arcs, FILE* file ) {
+bool arc_db_write( const char* arcs, FILE* file ) {
 
   bool retval = TRUE;  /* Return value for this function */
   int  i;              /* Loop iterator                  */
@@ -944,7 +945,7 @@ bool arc_db_read( char** arcs, char** line ) {
   suppl     =  (arc_read_get_next_value( line ) & 0xff);
 
   /* Allocate memory */
-  *arcs = (char*)malloc_safe( (arc_get_entry_width( width ) * curr_size) + ARC_STATUS_SIZE );
+  *arcs = (char*)malloc_safe( ((arc_get_entry_width( width ) * curr_size) + ARC_STATUS_SIZE), __FILE__, __LINE__ );
 
   /* Initialize */
   arc_set_width( *arcs, width );
@@ -976,7 +977,7 @@ bool arc_db_read( char** arcs, char** line ) {
  Converts the state specified by index and left parameters from its compacted bit format
  to a hexidecimal string format.
 */
-void arc_state_to_string( char* arcs, int index, bool left, char* str ) {
+void arc_state_to_string( const char* arcs, int index, bool left, char* str ) {
 
   char tmp[2];       /* Temporary string holder                       */
   int  val;          /* Temporary storage for integer value of 4-bits */
@@ -999,6 +1000,7 @@ void arc_state_to_string( char* arcs, int index, bool left, char* str ) {
   }
 
   /* Store the NULL character to the string */
+  assert( str_index > 0 );
   str[str_index] = '\0';
   str_index--;
 
@@ -1008,6 +1010,7 @@ void arc_state_to_string( char* arcs, int index, bool left, char* str ) {
     val  |= ((int)(arcs[index] >> pos) & 0x1) << 3;  
     if( (i % 4) == 3 ) {
       snprintf( tmp, 2, "%x", val );
+      assert( str_index >= 0 );
       str[str_index] = tmp[0];
       str_index--;
       val = 0;
@@ -1019,6 +1022,7 @@ void arc_state_to_string( char* arcs, int index, bool left, char* str ) {
   if( (i % 4) != 0 ) {
     val >>= (4 - i);
     snprintf( tmp, 2, "%x", val );
+    assert( str_index >= 0 );
     str[str_index] = tmp[0];
   }
 
@@ -1049,7 +1053,13 @@ bool arc_db_merge( char** base, char** line, bool same ) {
 
     /* Check to make sure that arc arrays are compatible */
     if( same && (arc_get_width( *base ) != arc_get_width( arcs )) ) {
-      print_output( "Attempting to merge two databases derived from different designs.  Unable to merge", FATAL );
+      /*
+       This case has been proven to be unreachable; however, we will keep it here
+       in case future code changes make it valid.  There is no diagnostic in error
+       regression that hits this failure.
+      */
+      print_output( "Attempting to merge two databases derived from different designs.  Unable to merge",
+                    FATAL, __FILE__, __LINE__ );
       exit( 1 );
     }
 
@@ -1057,8 +1067,8 @@ bool arc_db_merge( char** base, char** line, bool same ) {
     snprintf( str_width, 20, "%d", arc_get_width( arcs ) );
 
     /* Allocate string to hold value string */
-    strl = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 4 + strlen( str_width ) );
-    strr = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 4 + strlen( str_width ) );
+    strl = (char*)malloc_safe( ((arc_get_width( arcs ) / 4) + 4 + strlen( str_width )), __FILE__, __LINE__ );
+    strr = (char*)malloc_safe( ((arc_get_width( arcs ) / 4) + 4 + strlen( str_width )), __FILE__, __LINE__ );
 
     /* Get prefix of left and right state value strings ready */
     snprintf( strl, ((arc_get_width( arcs ) / 4) + 4 + strlen( str_width )), "%s'h", str_width );
@@ -1116,13 +1126,13 @@ bool arc_db_merge( char** base, char** line, bool same ) {
  (if hit parameter is false).  All output is sent to the file ofile using
  the formatting string specified by fstr.
 */
-void arc_display_states( FILE* ofile, char* fstr, char* arcs, bool hit ) {
+void arc_display_states( FILE* ofile, const char* fstr, const char* arcs, bool hit ) {
 
   char* str;  /* Holder for string value of current state */
   int   i;    /* Loop iterator                            */
   int   j;    /* Loop iterator                            */
 
-  str = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 2 );
+  str = (char*)malloc_safe( ((arc_get_width( arcs ) / 4) + 2), __FILE__, __LINE__ );
 
   for( i=0; i<arc_get_curr_size( arcs ); i++ ) {
     for( j=0; j<2; j++ ) {
@@ -1162,14 +1172,14 @@ void arc_display_states( FILE* ofile, char* fstr, char* arcs, bool hit ) {
  (if hit parameter is false).  All output is sent to the file ofile using
  the formatting string specified by fstr.
 */
-void arc_display_transitions( FILE* ofile, char* fstr, char* arcs, bool hit ) {
+void arc_display_transitions( FILE* ofile, const char* fstr, const char* arcs, bool hit ) {
 
   char* strl;
   char* strr;
   int   i;     /* Loop iterator */
 
-  strl = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 2 );
-  strr = (char*)malloc_safe( (arc_get_width( arcs ) / 4) + 2 );
+  strl = (char*)malloc_safe( ((arc_get_width( arcs ) / 4) + 2), __FILE__, __LINE__ );
+  strr = (char*)malloc_safe( ((arc_get_width( arcs ) / 4) + 2), __FILE__, __LINE__ );
 
   for( i=0; i<arc_get_curr_size( arcs ); i++ ) {
 
@@ -1207,6 +1217,10 @@ void arc_dealloc( char* arcs ) {
 
 /*
  $Log$
+ Revision 1.22  2004/03/15 21:38:17  phase1geo
+ Updated source files after running lint on these files.  Full regression
+ still passes at this point.
+
  Revision 1.21  2003/11/16 04:03:38  phase1geo
  Updating development documentation for FSMs.
 

@@ -122,7 +122,7 @@ bool db_write( char* file, bool parse_mode ) {
   } else {
 
     snprintf( user_msg, USER_MSG_LENGTH, "Could not open %s for writing", file );
-    print_output( user_msg, FATAL );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = FALSE;
 
   }
@@ -175,7 +175,7 @@ bool db_read( char* file, int read_mode ) {
   bool         merge_mode = FALSE;   /* If TRUE, we should currently be merging data   */
 
   snprintf( user_msg, USER_MSG_LENGTH, "In db_read, file: %s, mode: %d", file, read_mode );
-  print_output( user_msg, DEBUG );
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
   /* Setup temporary module for storage */
   tmpmod.name     = mod_name;
@@ -200,7 +200,7 @@ bool db_read( char* file, int read_mode ) {
           if( !flag_scored && 
               ((read_mode == READ_MODE_REPORT_NO_MERGE) ||
                (read_mode == READ_MODE_REPORT_MOD_MERGE)) ) {
-            print_output( "Attempting to generate report on non-scored design.  Not supported.", FATAL );
+            print_output( "Attempting to generate report on non-scored design.  Not supported.", FATAL, __FILE__, __LINE__ );
             retval = FALSE;
           }
           
@@ -278,8 +278,8 @@ bool db_read( char* file, int read_mode ) {
               module_db_merge( foundmod->mod, db_handle, FALSE );
             } else {
               curr_module             = module_create();
-              curr_module->name       = strdup( mod_name );
-              curr_module->filename   = strdup( mod_file );
+              curr_module->name       = strdup_safe( mod_name, __FILE__, __LINE__ );
+              curr_module->filename   = strdup_safe( mod_file, __FILE__, __LINE__ );
               curr_module->start_line = tmpmod.start_line;
               curr_module->end_line   = tmpmod.end_line;
             }
@@ -289,7 +289,7 @@ bool db_read( char* file, int read_mode ) {
         } else {
 
           snprintf( user_msg, USER_MSG_LENGTH, "Unexpected type %d when parsing database file %s", type, file );
-          print_output( user_msg, FATAL );
+          print_output( user_msg, FATAL, __FILE__, __LINE__ );
           retval = FALSE;
 
         }
@@ -297,7 +297,7 @@ bool db_read( char* file, int read_mode ) {
       } else {
 
         snprintf( user_msg, USER_MSG_LENGTH, "Unexpected line in database file %s", file );
-        print_output( user_msg, FATAL );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
         retval = FALSE;
 
       }
@@ -311,7 +311,7 @@ bool db_read( char* file, int read_mode ) {
   } else {
 
     snprintf( user_msg, USER_MSG_LENGTH, "Could not open %s for reading", file );
-    print_output( user_msg, FATAL );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = FALSE;
 
   }
@@ -365,11 +365,11 @@ void db_add_instance( char* scope, char* modname ) {
   if( str_link_find( modname, no_score_head ) == NULL ) {
 
     snprintf( user_msg, USER_MSG_LENGTH, "In db_add_instance, instance: %s, module: %s", scope, modname );
-    print_output( user_msg, DEBUG );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
     /* Create new module node */
     mod       = module_create();
-    mod->name = strdup( modname );
+    mod->name = strdup_safe( modname, __FILE__, __LINE__ );
 
     if( (found_mod_link = mod_link_find( mod, mod_head )) != NULL ) {
 
@@ -411,7 +411,7 @@ void db_add_module( char* name, char* file, int start_line ) {
   mod_link* modl;  /* Pointer to found tree node      */
 
   snprintf( user_msg, USER_MSG_LENGTH, "In db_add_module, module: %s, file: %s, start_line: %d", name, file, start_line );
-  print_output( user_msg, DEBUG );
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
   /* Set current module to this module */
   mod.name = name;
@@ -421,7 +421,7 @@ void db_add_module( char* name, char* file, int start_line ) {
   assert( modl != NULL );
 
   curr_module             = modl->mod;
-  curr_module->filename   = strdup( file );
+  curr_module->filename   = strdup_safe( file, __FILE__, __LINE__ );
   curr_module->start_line = start_line;
   
 }
@@ -434,7 +434,7 @@ void db_add_module( char* name, char* file, int start_line ) {
 void db_end_module( int end_line ) {
 
   snprintf( user_msg, USER_MSG_LENGTH, "In db_end_module, end_line: %d", end_line );
-  print_output( user_msg, DEBUG );
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
   curr_module->end_line = end_line;
 
@@ -466,7 +466,7 @@ void db_add_declared_param( char* name, expression* expr ) {
   if( expr != NULL ) {
 
     snprintf( user_msg, USER_MSG_LENGTH, "In db_add_declared_param, param: %s, expr: %d", name, expr->id );
-    print_output( user_msg, DEBUG );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
     if( mod_parm_find( name, curr_module->param_head ) == NULL ) {
 
@@ -516,7 +516,7 @@ void db_add_override_param( char* inst_name, expression* expr ) {
   int       i;       /* Loop iterator                                       */
 
   snprintf( user_msg, USER_MSG_LENGTH, "In db_add_override_param, instance: %s", inst_name );
-  print_output( user_msg, DEBUG );
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
   /* Add override parameter to module parameter list */
   mparm = mod_parm_add( inst_name, expr, PARAM_TYPE_OVERRIDE, &(curr_module->param_head), &(curr_module->param_tail) );
@@ -554,7 +554,7 @@ void db_add_vector_param( signal* sig, expression* parm_exp, int type ) {
   assert( (type == PARAM_TYPE_SIG_LSB) || (type == PARAM_TYPE_SIG_MSB) );
 
   snprintf( user_msg, USER_MSG_LENGTH, "In db_add_vector_param, signal: %s, type: %d", sig->name, type );
-  print_output( user_msg, DEBUG );
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
   /* Add signal vector parameter to module parameter list */
   mparm = mod_parm_add( NULL, parm_exp, type, &(curr_module->param_head), &(curr_module->param_tail) );
@@ -585,10 +585,10 @@ void db_add_vector_param( signal* sig, expression* parm_exp, int type ) {
 void db_add_defparam( char* name, expression* expr ) {
 
   snprintf( user_msg, USER_MSG_LENGTH, "In db_add_defparam, defparam: %s", name );
-  print_output( user_msg, DEBUG );
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
   snprintf( user_msg, USER_MSG_LENGTH, "defparam construct is not supported, line: %d.  Use -P option to score instead", expr->line );
-  print_output( user_msg, WARNING );
+  print_output( user_msg, WARNING, __FILE__, __LINE__ );
 
   expression_dealloc( expr, FALSE );
 
@@ -613,7 +613,7 @@ void db_add_signal( char* name, static_expr* left, static_expr* right ) {
   int      width;   /* Signal width                          */
 
   snprintf( user_msg, USER_MSG_LENGTH, "In db_add_signal, signal: %s", name );
-  print_output( user_msg, DEBUG );
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
   tmpsig.name = name;
 
@@ -625,7 +625,7 @@ void db_add_signal( char* name, static_expr* left, static_expr* right ) {
     /* Check to make sure that signal width does not exceed maximum size */
     if( width > MAX_BIT_WIDTH ) {
       snprintf( user_msg, USER_MSG_LENGTH, "Signal (%s) width (%d) exceeds maximum allowed by Covered (%d).  Ignoring...", name, width, MAX_BIT_WIDTH );
-      print_output( user_msg, WARNING );
+      print_output( user_msg, WARNING, __FILE__, __LINE__ );
       width = -1;
       left  = NULL;
       right = NULL;
@@ -634,8 +634,8 @@ void db_add_signal( char* name, static_expr* left, static_expr* right ) {
     if( (lsb != -1) && (width != -1) ) { 
       sig = signal_create( name, width, lsb );
     } else {
-      sig = (signal*)malloc_safe( sizeof( signal ) );
-      signal_init( sig, strdup( name ), (vector*)malloc_safe( sizeof( vector ) ), lsb );
+      sig = (signal*)malloc_safe( sizeof( signal ), __FILE__, __LINE__ );
+      signal_init( sig, strdup_safe( name, __FILE__, __LINE__ ), (vector*)malloc_safe( sizeof( vector ), __FILE__, __LINE__ ), lsb );
       sig->value->width = width;      
       sig->value->value = NULL;
       if( (left != NULL) && (left->exp != NULL) ) {
@@ -667,7 +667,7 @@ signal* db_find_signal( char* name ) {
   sig_link* sigl;  /* Temporary pointer to signal link element */
 
   snprintf( user_msg, USER_MSG_LENGTH, "In db_find_signal, searching for signal %s", name );
-  print_output( user_msg, DEBUG );
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
   /* Create signal to find */
   sig.name = name;
@@ -721,7 +721,7 @@ expression* db_create_expression( expression* right, expression* left, int op, b
                        op,
                        lhs,
                        line );
-  print_output( user_msg, DEBUG );
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
   /* Check to see if signal is a parameter in this module */
   if( sig_name != NULL ) {
@@ -736,7 +736,7 @@ expression* db_create_expression( expression* right, expression* left, int op, b
           break;
       }
       snprintf( user_msg, USER_MSG_LENGTH, "  Switching to parameter operation: %d", op );
-      print_output( user_msg, DEBUG );
+      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
     }
   }
 
@@ -800,7 +800,7 @@ void db_add_expression( expression* root ) {
     
       snprintf( user_msg, USER_MSG_LENGTH, "In db_add_expression, id: %d, op: %d, line: %d", 
                 root->id, SUPPL_OP( root->suppl ), root->line );
-      print_output( user_msg, DEBUG );
+      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
       /* Add expression's children first. */
       db_add_expression( root->right );
@@ -830,7 +830,7 @@ statement* db_create_statement( expression* exp ) {
   statement* stmt;  /* Pointer to newly created statement */
 
   snprintf( user_msg, USER_MSG_LENGTH, "In db_create_statement, id: %d, line: %d", exp->id, exp->line );
-  print_output( user_msg, DEBUG );
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
   stmt = statement_create( exp );
 
@@ -850,7 +850,7 @@ void db_add_statement( statement* stmt, statement* start ) {
   if( (stmt != NULL) && ((stmt->exp->suppl & (0x1 << SUPPL_LSB_STMT_ADDED)) == 0) ) {
 
     snprintf( user_msg, USER_MSG_LENGTH, "In db_add_statement, id: %d, start id: %d", stmt->exp->id, start->exp->id );
-    print_output( user_msg, DEBUG );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
     /* Add TRUE and FALSE statement paths to list */
     if( (SUPPL_IS_STMT_STOP( stmt->exp->suppl ) == 0) && (stmt->next_false != start) ) {
@@ -874,6 +874,29 @@ void db_add_statement( statement* stmt, statement* start ) {
 /*!
  \param stmt  Pointer to statement to remove from memory.
 
+ Removes specified statement expression from the current module.  Called by statement_dealloc_recursive in
+ statement.c in its deallocation algorithm.
+*/
+void db_remove_statement_from_current_module( statement* stmt ) {
+
+  if( (stmt != NULL) && (stmt->exp != NULL) ) {
+
+    snprintf( user_msg, USER_MSG_LENGTH, "In db_remove_statement_from_current_module, stmt id: %d", stmt->exp->id );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+
+    /* Remove expression from any module parameter expression lists */
+    mod_parm_find_expr_and_remove( stmt->exp, curr_module->param_head );
+
+    /* Remove expression from current module expression list and delete expressions */
+    exp_link_remove( stmt->exp, &(curr_module->exp_head), &(curr_module->exp_tail), TRUE );
+
+  }
+
+}
+
+/*!
+ \param stmt  Pointer to statement to remove from memory.
+
  Removes specified statement expression and its tree from current module expression list and deallocates
  both the expression and statement from heap memory.  Called when a statement structure is
  found to contain a statement that is not supported by Covered.
@@ -884,22 +907,10 @@ void db_remove_statement( statement* stmt ) {
 
     snprintf( user_msg, USER_MSG_LENGTH, "In db_remove_statement, stmt id: %d, line: %d", 
               stmt->exp->id, stmt->exp->line );
-    print_output( user_msg, DEBUG );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
-    /* Remove true/false paths */
-    if( stmt->next_true != stmt->next_false ) {
-      db_remove_statement( stmt->next_true  );
-    }
-    db_remove_statement( stmt->next_false );
-
-    /* Remove expression from any module parameter expression lists */
-    mod_parm_find_expr_and_remove( stmt->exp, curr_module->param_head );
-
-    /* Remove expression from current module expression list and delete expressions */
-    exp_link_remove( stmt->exp, &(curr_module->exp_head), &(curr_module->exp_tail), TRUE );
-
-    /* Deallocate statement itself */
-    statement_dealloc( stmt );
+    /* Call the recursive statement deallocation function */
+    statement_dealloc_recursive( stmt );
 
   }
 
@@ -924,7 +935,7 @@ void db_connect_statement_true( statement* stmt, statement* next_true ) {
     }
 
     snprintf( user_msg, USER_MSG_LENGTH, "In db_connect_statement_true, id: %d, next: %d", stmt->exp->id, next_id );
-    print_output( user_msg, DEBUG );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
     stmt->next_true = next_true;
 
@@ -951,7 +962,7 @@ void db_connect_statement_false( statement* stmt, statement* next_false ) {
     }
 
     snprintf( user_msg, USER_MSG_LENGTH, "In db_connect_statement_false, id: %d, next: %d", stmt->exp->id, next_id );
-    print_output( user_msg, DEBUG );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
     stmt->next_false = next_false;
 
@@ -983,7 +994,7 @@ void db_statement_connect( statement* curr_stmt, statement* next_stmt ) {
   }
 
   snprintf( user_msg, USER_MSG_LENGTH, "In db_statement_connect, curr_stmt: %d, next_stmt: %d", curr_id, next_id );
-  print_output( user_msg, DEBUG );
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
   statement_connect( curr_stmt, next_stmt );
 
@@ -1014,7 +1025,7 @@ void db_statement_set_stop( statement* stmt, statement* post, bool both ) {
     }
 
     snprintf( user_msg, USER_MSG_LENGTH, "In db_statement_set_stop, stmt: %d, next_stmt: %d", stmt_id, post_id );
-    print_output( user_msg, DEBUG );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
  
     statement_set_stop( stmt, post, TRUE, both );
 
@@ -1039,7 +1050,7 @@ attr_param* db_create_attr_param( char* name, expression* expr ) {
   } else {
     snprintf( user_msg, USER_MSG_LENGTH, "In db_create_attr_param, name: %s", name );
   }
-  print_output( user_msg, DEBUG );
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
   attr = attribute_create( name, expr );
 
@@ -1054,7 +1065,7 @@ attr_param* db_create_attr_param( char* name, expression* expr ) {
 */
 void db_parse_attribute( attr_param* ap ) {
 
-  print_output( "In db_parse_attribute", DEBUG );
+  print_output( "In db_parse_attribute", DEBUG, __FILE__, __LINE__ );
 
   /* First, parse the entire attribute */
   attribute_parse( ap, curr_module );
@@ -1074,13 +1085,13 @@ void db_set_vcd_scope( char* scope ) {
   char stripped_scope[4096];  /* Temporary stripped scope */
 
   snprintf( user_msg, USER_MSG_LENGTH, "In db_set_vcd_scope, scope: %s", scope );
-  print_output( user_msg, DEBUG );
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
   assert( scope != NULL );
 
   if( curr_inst_scope == NULL ) {
     
-    curr_inst_scope = (char*)malloc_safe( 4096 );
+    curr_inst_scope = (char*)malloc_safe( 4096, __FILE__, __LINE__ );
     strcpy( curr_inst_scope, scope );
 
   } else {
@@ -1119,7 +1130,7 @@ void db_vcd_upscope() {
   char rest[4096];   /* Hierarchy up one level    */
 
   snprintf( user_msg, USER_MSG_LENGTH, "In db_vcd_upscope, curr_inst_scope: %s", curr_inst_scope );
-  print_output( user_msg, DEBUG );  
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );  
 
   if( curr_inst_scope != NULL ) {
 
@@ -1151,7 +1162,7 @@ void db_assign_symbol( char* name, char* symbol, int msb, int lsb ) {
 
   snprintf( user_msg, USER_MSG_LENGTH, "In db_assign_symbol, name: %s, symbol: %s, curr_inst_scope: %s, msb: %d, lsb: %d",
             name, symbol, curr_inst_scope, msb, lsb );
-  print_output( user_msg, DEBUG );
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
   assert( name != NULL );
 
@@ -1163,12 +1174,12 @@ void db_assign_symbol( char* name, char* symbol, int msb, int lsb ) {
     if( (slink = sig_link_find( &tmpsig, curr_instance->mod->sig_head )) != NULL ) {
 
       /* Add this signal */
-      symtable_add( strdup( symbol ), slink->sig, msb, lsb );
+      symtable_add( strdup_safe( symbol, __FILE__, __LINE__ ), slink->sig, msb, lsb );
 
     } else {
 
       snprintf( user_msg, USER_MSG_LENGTH, "VCD signal \"%s.%s\" found that is not part of design", curr_inst_scope, name );
-      print_output( user_msg, WARNING );
+      print_output( user_msg, WARNING, __FILE__, __LINE__ );
 
     }
 
@@ -1190,7 +1201,7 @@ void db_set_symbol_char( char* sym, char value ) {
   char val[2];  /* Value to store */
 
   snprintf( user_msg, USER_MSG_LENGTH, "In db_set_symbol_char, sym: %s, value: %c", sym, value );
-  print_output( user_msg, DEBUG );
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
   /* Put together value string */
   val[0] = value;
@@ -1213,7 +1224,7 @@ void db_set_symbol_char( char* sym, char value ) {
 void db_set_symbol_string( char* sym, char* value ) {
 
   snprintf( user_msg, USER_MSG_LENGTH, "In db_set_symbol_string, sym: %s, value: %s", sym, value );
-  print_output( user_msg, DEBUG );
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
   /* Set value of all matching occurrences in current timestep. */
   symtable_set_value( sym, value );
@@ -1231,7 +1242,7 @@ void db_set_symbol_string( char* sym, char* value ) {
 void db_do_timestep( int time ) {
 
   snprintf( user_msg, USER_MSG_LENGTH, "Performing timestep #%d", time );
-  print_output( user_msg, DEBUG );
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
   curr_sim_time = time;
 
@@ -1242,20 +1253,39 @@ void db_do_timestep( int time ) {
   }
 
   /* Assign all stored values in current pre-timestep to stored signals */
-  print_output( "Assigning presimulation signals...", DEBUG );
+  print_output( "Assigning presimulation signals...", DEBUG, __FILE__, __LINE__ );
   symtable_assign( TRUE );
 
   /* Simulate the current timestep */
   sim_simulate();
 
   /* Assign all stored values in current post-timestep to stored signals */
-  print_output( "Assigning postsimulation signals...", DEBUG );
+  print_output( "Assigning postsimulation signals...", DEBUG, __FILE__, __LINE__ );
   symtable_assign( FALSE );
+
+}
+
+/*!
+ Handles the freeing of all allocated memory associated with the currently loaded design.
+ This function is used when a design needs to be closed and a new one opened in the same
+ process.
+*/
+void db_dealloc_global_vars() {
+
+  if( curr_inst_scope != NULL ) {
+    free_safe( curr_inst_scope );
+  }
+
+  // instance_dealloc( curr_instance );
 
 }
 
 /*
  $Log$
+ Revision 1.110  2004/03/15 21:38:17  phase1geo
+ Updated source files after running lint on these files.  Full regression
+ still passes at this point.
+
  Revision 1.109  2004/01/04 04:52:03  phase1geo
  Updating ChangeLog and TODO files.  Adding merge information to INFO line
  of CDD files and outputting this information to the merged reports.  Adding

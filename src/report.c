@@ -14,6 +14,8 @@
 #endif
 #include <assert.h>
 #include <stdlib.h>
+#include <tcl.h>
+#include <tk.h>
 
 #include "defines.h"
 #include "report.h"
@@ -26,6 +28,7 @@
 #include "stat.h"
 #include "db.h"
 #include "fsm.h"
+#include "tcl_funcs.h"
 #include "info.h"
 
 
@@ -171,7 +174,7 @@ void report_parse_metrics( char* metrics ) {
       case 'F' :  report_fsm         = TRUE;  break;
       default  :
         snprintf( user_msg, USER_MSG_LENGTH, "Unknown metric specified '%c'...  Ignoring.", *ptr );
-        print_output( user_msg, WARNING );
+        print_output( user_msg, WARNING, __FILE__, __LINE__ );
         break;
     }
 
@@ -235,7 +238,7 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
         report_comb_depth = REPORT_VERBOSE;
       } else {
         snprintf( user_msg, USER_MSG_LENGTH, "Unrecognized detail type: -d %s\n", argv[i] );
-        print_output( user_msg, FATAL );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
         retval = FALSE;
       }
 
@@ -243,10 +246,10 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
 
       i++;
       if( is_directory( argv[i] ) ) {
-        output_file = strdup( argv[i] );
+        output_file = strdup_safe( argv[i], __FILE__, __LINE__ );
       } else {
   	snprintf( user_msg, USER_MSG_LENGTH, "Illegal output directory specified \"%s\"", argv[i] );
-        print_output( user_msg, FATAL );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
         retval = FALSE;
       }
 
@@ -269,12 +272,12 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
 
       if( file_exists( argv[i] ) ) {
      
-        input_db = strdup( argv[i] );
+        input_db = strdup_safe( argv[i], __FILE__, __LINE__ );
  
       } else {
 
         snprintf( user_msg, USER_MSG_LENGTH, "Cannot find %s database file for opening", argv[i] );
-        print_output( user_msg, FATAL );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( 1 );
 
       }
@@ -282,7 +285,7 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
     } else {
 
       snprintf( user_msg, USER_MSG_LENGTH, "Unknown report command option \"%s\".  See \"covered -h\" for more information.", argv[i] );
-      print_output( user_msg, FATAL );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
       retval = FALSE;
 
     }
@@ -527,6 +530,8 @@ bool report_read_cdd_and_ready( char* ifile ) {
 
     if( retval = db_read( ifile, READ_MODE_REPORT_MOD_MERGE ) ) {
       report_gather_module_stats( mod_head );
+    } else {
+      exit( 1 );
     }
 
   }
@@ -546,14 +551,17 @@ bool report_read_cdd_and_ready( char* ifile ) {
 */
 int command_report( int argc, int last_arg, char** argv ) {
 
-  int   retval = 0;  /* Return value of this function */
-  FILE* ofile;       /* Pointer to output stream      */
+  int         retval = 0;    /* Return value of this function                     */
+  FILE*       ofile;         /* Pointer to output stream                          */
+  char*       covered_home;  /* Pathname to Covered's home installation directory */
+  char*       main_file;     /* Name of main TCL file to interpret                */ 
+  Tcl_Interp* interp;        /* Pointer to TCL interpreter                        */
 
   /* Parse score command-line */
   if( report_parse_args( argc, last_arg, argv ) ) {
 
     snprintf( user_msg, USER_MSG_LENGTH, COVERED_HEADER );
-    print_output( user_msg, NORMAL );
+    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
     /* Initialize all global variables */
     info_initialize();
@@ -566,7 +574,7 @@ int command_report( int argc, int last_arg, char** argv ) {
         if( (ofile = fopen( output_file, "w" )) == NULL ) {
 
           snprintf( user_msg, USER_MSG_LENGTH, "Unable to open %s for writing", output_file );
-          print_output( user_msg, FATAL );
+          print_output( user_msg, FATAL, __FILE__, __LINE__ );
           exit( 1 );
 
         } else {
@@ -586,7 +594,7 @@ int command_report( int argc, int last_arg, char** argv ) {
       if( input_db == NULL ) {
 
         snprintf( user_msg, USER_MSG_LENGTH, "Database file not specified in command line" );
-        print_output( user_msg, FATAL );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( 1 );
 
       } else {
@@ -611,8 +619,42 @@ int command_report( int argc, int last_arg, char** argv ) {
         report_read_cdd_and_ready( input_db );
       }
 
-      /* Call GUI here */
-      print_output( "The -view option is currently not available\n", FATAL );
+      /* Initialize the Tcl/Tk interpreter */
+      interp = Tcl_CreateInterp();
+      assert( interp );
+
+      if( Tcl_Init( interp ) == TCL_ERROR ) {
+        snprintf( user_msg, USER_MSG_LENGTH, "%s", interp->result );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        exit( 1 );
+      }
+
+      if( Tk_SafeInit( interp ) == TCL_ERROR ) {
+        snprintf( user_msg, USER_MSG_LENGTH, "%s", interp->result );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        exit( 1 );
+      }
+
+      /* Get the COVERED_HOME environment variable */
+      if( (covered_home = getenv( "COVERED_HOME" )) == NULL ) {
+        print_output( "COVERED_HOME not initialized.  Exiting...", FATAL, __FILE__, __LINE__ );
+        exit( 1 );
+      }
+
+      /* Initialize TCL */
+      tcl_func_initialize( interp );
+
+      /* Call the top-level Tcl file */
+      main_file = (char*)malloc( strlen( covered_home ) + 30 );
+      snprintf( main_file, (strlen( covered_home ) + 30), "%s/scripts/main_view.tcl", covered_home );
+      Tcl_EvalFile( interp, main_file );
+
+      /* Call the main-loop */
+      Tk_MainLoop ();
+
+      /* Clean Up */
+      free( covered_home );
+      free( main_file );
 
     }
 
@@ -625,6 +667,10 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.30  2004/03/15 21:38:17  phase1geo
+ Updated source files after running lint on these files.  Full regression
+ still passes at this point.
+
  Revision 1.29  2004/01/31 18:58:43  phase1geo
  Finished reformatting of reports.  Fixed bug where merged reports with
  different leading hierarchies were outputting the leading hierarchy of one

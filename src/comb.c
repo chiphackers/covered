@@ -705,7 +705,8 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
             case EXP_OP_NASSIGN  :  *size = l_size + r_size + 4;  strcpy( code_fmt, "%s    %s" );          break;
             case EXP_OP_IF       :  *size = r_size + 6;           strcpy( code_fmt, "    %s  " );          break;
             default              :
-              print_output( "Internal error:  Unknown expression type in combination_underline_tree", FATAL );
+              print_output( "Internal error:  Unknown expression type in combination_underline_tree",
+                            FATAL, __FILE__, __LINE__ );
               exit( 1 );
               break;
           }
@@ -726,10 +727,10 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
       if( *depth > 0 ) {
                 
         /* Allocate all memory for the stack */
-        *lines = (char**)malloc_safe( sizeof( char* ) * (*depth) );
+        *lines = (char**)malloc_safe( (sizeof( char* ) * (*depth)), __FILE__, __LINE__ );
 
         /* Allocate memory for this underline */
-        (*lines)[(*depth)-1] = (char*)malloc_safe( *size + 1 );
+        (*lines)[(*depth)-1] = (char*)malloc_safe( (*size + 1), __FILE__, __LINE__ );
 
         /* Create underline or space */
         if( comb_missed == 1 ) {
@@ -744,7 +745,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
         /* Combine the left and right line stacks */
         for( i=0; i<(*depth - comb_missed); i++ ) {
 
-          (*lines)[i] = (char*)malloc_safe( *size + 1 );
+          (*lines)[i] = (char*)malloc_safe( (*size + 1), __FILE__, __LINE__ );
 
           if( (i < l_depth) && (i < r_depth) ) {
             
@@ -757,7 +758,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
           } else if( i < l_depth ) {
             
             /* Create spaces for right side */
-            exp_sp = (char*)malloc_safe( r_size + 1 );
+            exp_sp = (char*)malloc_safe( (r_size + 1), __FILE__, __LINE__ );
             gen_space( exp_sp, r_size );
 
             /* Merge left side only */
@@ -775,7 +776,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
             } else {
 
               /* Create spaces for left side */
-              exp_sp = (char*)malloc_safe( l_size + 1 );
+              exp_sp = (char*)malloc_safe( (l_size + 1), __FILE__, __LINE__ );
               gen_space( exp_sp, l_size );
 
               /* Merge right side only */
@@ -789,7 +790,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
    
           } else {
 
-            print_output( "Internal error:  Reached entry without a left or right underline", FATAL );
+            print_output( "Internal error:  Reached entry without a left or right underline", FATAL, __FILE__, __LINE__ );
             exit( 1 );
 
           }
@@ -836,7 +837,7 @@ char* combination_prep_line( char* line, int start, int len ) {
   int   start_ul;           /* Index of starting underline                       */
 
   /* Allocate memory for string to return */
-  str = (char*)malloc_safe( len + 2 );
+  str = (char*)malloc_safe( (len + 2), __FILE__, __LINE__ );
 
   i          = 0;
   curr_index = 0;
@@ -924,12 +925,15 @@ void combination_underline( FILE* ofile, char** code, int code_depth, expression
   int    j;        /* Loop iterator                   */
   char*  tmpstr;   /* Temporary string variable       */
   int    start;    /* Starting index                  */
+  int    k;
 
   start = 0;
 
   combination_underline_tree( exp, 0, &lines, &depth, &size, SUPPL_OP( exp->suppl ), (code_depth == 1) );
 
   for( j=0; j<code_depth; j++ ) {
+
+    assert( code[j] != NULL );
 
     if( j == 0 ) {
       fprintf( ofile, "        %7d:    %s\n", exp->line, code[j] );
@@ -1066,9 +1070,9 @@ void combination_multi_var_exprs( char** line1, char** line2, char** line3, expr
       assert( exp->left->ulid != -1 );
       snprintf( curr_id_str, 20, "%d", exp->left->ulid );
       curr_id_str_len = strlen( curr_id_str );
-      left_line1 = (char*)malloc_safe( curr_id_str_len + 4 );
-      left_line2 = (char*)malloc_safe( curr_id_str_len + 4 );
-      left_line3 = (char*)malloc_safe( curr_id_str_len + 4 );
+      left_line1 = (char*)malloc_safe( (curr_id_str_len + 4), __FILE__, __LINE__ );
+      left_line2 = (char*)malloc_safe( (curr_id_str_len + 4), __FILE__, __LINE__ );
+      left_line3 = (char*)malloc_safe( (curr_id_str_len + 4), __FILE__, __LINE__ );
       snprintf( left_line1, (curr_id_str_len + 4), " %s |", curr_id_str );
       for( i=0; i<(curr_id_str_len-1); i++ ) {
         curr_id_str[i] = '=';
@@ -1100,9 +1104,9 @@ void combination_multi_var_exprs( char** line1, char** line2, char** line3, expr
     assert( exp->right->ulid != -1 );
     snprintf( curr_id_str, 20, "%d", exp->right->ulid );
     curr_id_str_len = strlen( curr_id_str );
-    *line1 = (char*)malloc_safe( strlen( left_line1 ) + curr_id_str_len + 4 );
-    *line2 = (char*)malloc_safe( strlen( left_line2 ) + curr_id_str_len + 4 );
-    *line3 = (char*)malloc_safe( strlen( left_line3 ) + curr_id_str_len + 4 );
+    *line1 = (char*)malloc_safe( (strlen( left_line1 ) + curr_id_str_len + 4), __FILE__, __LINE__ );
+    *line2 = (char*)malloc_safe( (strlen( left_line2 ) + curr_id_str_len + 4), __FILE__, __LINE__ );
+    *line3 = (char*)malloc_safe( (strlen( left_line3 ) + curr_id_str_len + 4), __FILE__, __LINE__ );
     snprintf( *line1, (strlen( left_line1 ) + curr_id_str_len + 4), "%s %s |", left_line1, curr_id_str );
     for( i=0; i<(curr_id_str_len-1); i++ ) {
       curr_id_str[i] = '=';
@@ -1133,9 +1137,9 @@ void combination_multi_var_exprs( char** line1, char** line2, char** line3, expr
       left_line1 = *line1;
       left_line2 = *line2;
       left_line3 = *line3;
-      *line1     = (char*)malloc_safe( strlen( left_line1 ) + 7 );
-      *line2     = (char*)malloc_safe( strlen( left_line2 ) + 7 );
-      *line3     = (char*)malloc_safe( strlen( left_line3 ) + 7 );
+      *line1     = (char*)malloc_safe( (strlen( left_line1 ) + 7), __FILE__, __LINE__ );
+      *line2     = (char*)malloc_safe( (strlen( left_line2 ) + 7), __FILE__, __LINE__ );
+      *line3     = (char*)malloc_safe( (strlen( left_line3 ) + 7), __FILE__, __LINE__ );
       if( and_op ) {
         snprintf( *line1, (strlen( left_line1 ) + 7), "%s All",   left_line1 );
         snprintf( *line2, (strlen( left_line2 ) + 7), "%s==1==",  left_line2 );
@@ -1562,6 +1566,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.90  2004/03/15 21:38:17  phase1geo
+ Updated source files after running lint on these files.  Full regression
+ still passes at this point.
+
  Revision 1.89  2004/01/31 18:58:35  phase1geo
  Finished reformatting of reports.  Fixed bug where merged reports with
  different leading hierarchies were outputting the leading hierarchy of one

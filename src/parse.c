@@ -54,7 +54,7 @@ int parse_readline( FILE* file, char* line, int size ) {
 
   if( i == size ) {
     snprintf( user_msg, USER_MSG_LENGTH, "Line too long.  Must be less than %d characters.", size );
-    print_output( user_msg, FATAL );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
   }
 
   return( !feof( file ) );
@@ -84,11 +84,11 @@ bool parse_design( char* top, char* output_db ) {
 
     /* Starting parser */
     if( (VLparse() != 0) || (error_count > 0) ) {
-      print_output( "Error in parsing design", FATAL );
+      print_output( "Error in parsing design", FATAL, __FILE__, __LINE__ );
       exit( 1 );
     }
 
-    print_output( "========  Completed design parsing  ========\n", DEBUG );
+    print_output( "========  Completed design parsing  ========\n", DEBUG, __FILE__, __LINE__ );
 
     /* Perform all signal/expression binding */
     bind();
@@ -96,19 +96,19 @@ bool parse_design( char* top, char* output_db ) {
   
   } else {
 
-    print_output( "No Verilog input files specified", FATAL );
+    print_output( "No Verilog input files specified", FATAL, __FILE__, __LINE__ );
     retval = FALSE;
 
   }
 
   /* Write contents to baseline database file. */
   if( !db_write( output_db, TRUE ) ) {
-    print_output( "Unable to write database file", FATAL );
+    print_output( "Unable to write database file", FATAL, __FILE__, __LINE__ );
     exit( 1 );
   }
 
   snprintf( user_msg, USER_MSG_LENGTH, "========  Design written to database %s successfully  ========\n\n", output_db );
-  print_output( user_msg, DEBUG );
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
   return( retval );
 
@@ -126,14 +126,14 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
   bool retval = TRUE;  /* Return value of this function */
 
   snprintf( user_msg, USER_MSG_LENGTH, "========  Reading in database %s  ========\n", db );
-  print_output( user_msg, DEBUG );
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
   /* Initialize all global information variables */
   info_initialize();
 
   /* Read in contents of specified database file */
   if( !db_read( db, READ_MODE_MERGE_NO_MERGE ) ) {
-    print_output( "Unable to read database file", FATAL );
+    print_output( "Unable to read database file", FATAL, __FILE__, __LINE__ );
     exit( 1 );
   }
   
@@ -141,12 +141,12 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
 
   /* Read in contents of VCD file */
   if( vcd == NULL ) {
-    print_output( "VCD file not specified on command line", FATAL );
+    print_output( "VCD file not specified on command line", FATAL, __FILE__, __LINE__ );
     exit( 1 );
   }
 
   snprintf( user_msg, USER_MSG_LENGTH, "========  Reading in VCD dumpfile %s  ========\n", vcd );
-  print_output( user_msg, DEBUG );
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
   
   /* Perform initialization simulation timestep */
   db_do_timestep( 0 );
@@ -158,14 +158,14 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
   db_do_timestep( -1 );
 
   snprintf( user_msg, USER_MSG_LENGTH, "========  Writing database %s  ========\n", db );
-  print_output( user_msg, DEBUG );
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
   /* Indicate that this CDD contains scored information */
   flag_scored = TRUE;
 
   /* Write contents to database file */
   if( !db_write( db, FALSE ) ) {
-    print_output( "Unable to write database file", FATAL );
+    print_output( "Unable to write database file", FATAL, __FILE__, __LINE__ );
     exit( 1 );
   }
 
@@ -175,6 +175,10 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
 
 /*
  $Log$
+ Revision 1.24  2004/03/15 21:38:17  phase1geo
+ Updated source files after running lint on these files.  Full regression
+ still passes at this point.
+
  Revision 1.23  2004/01/31 18:58:43  phase1geo
  Finished reformatting of reports.  Fixed bug where merged reports with
  different leading hierarchies were outputting the leading hierarchy of one

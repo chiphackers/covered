@@ -100,6 +100,7 @@ covered_SOURCES = arc.c \
                   static.c \
 		  statement.c \
 		  symtable.c \
+		  tcl_funcs.c \
 		  toggle.c \
                   tree.c \
                   util.c \
@@ -122,8 +123,8 @@ covered_OBJECTS =  arc.o attr.o parser.o binding.o codegen.o comb.o db.o \
 expr.o fsm.o fsm_arg.o fsm_var.o gui.o info.o instance.o iter.o \
 keywords.o pplexer.o lexer.o line.o link.o main.o merge.o module.o \
 param.o parse.o parser_misc.o report.o score.o search.o signal.o sim.o \
-stat.o static.o statement.o symtable.o toggle.o tree.o util.o vcd.o \
-vector.o
+stat.o static.o statement.o symtable.o tcl_funcs.o toggle.o tree.o \
+util.o vcd.o vector.o
 covered_LDADD = $(LDADD)
 covered_DEPENDENCIES = 
 covered_LDFLAGS = 
@@ -145,8 +146,8 @@ DEP_FILES =  .deps/arc.P .deps/attr.P .deps/binding.P .deps/codegen.P \
 .deps/merge.P .deps/module.P .deps/param.P .deps/parse.P .deps/parser.P \
 .deps/parser_misc.P .deps/pplexer.P .deps/report.P .deps/score.P \
 .deps/search.P .deps/signal.P .deps/sim.P .deps/stat.P \
-.deps/statement.P .deps/static.P .deps/symtable.P .deps/toggle.P \
-.deps/tree.P .deps/util.P .deps/vcd.P .deps/vector.P
+.deps/statement.P .deps/static.P .deps/symtable.P .deps/tcl_funcs.P \
+.deps/toggle.P .deps/tree.P .deps/util.P .deps/vcd.P .deps/vector.P
 SOURCES = $(covered_SOURCES)
 OBJECTS = $(covered_OBJECTS)
 

@@ -16,7 +16,7 @@
 void line_get_stats( stmt_link* stmtl, float* total, int* hit );
 
 /*! \brief Gathers line numbers from specified module that were not hit during simulation. */
-bool line_collect_uncovered( char* mod_name, int** lines, int* line_cnt );
+bool line_collect( const char* mod_name, int cov, int** lines, int* line_cnt );
 
 /*! \brief Generates report output for line coverage. */
 void line_report( FILE* ofile, bool verbose );
@@ -24,6 +24,10 @@ void line_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.9  2003/11/22 20:44:58  phase1geo
+ Adding function to get array of missed line numbers for GUI purposes.  Updates
+ to report command for getting information ready when running the GUI.
+
  Revision 1.8  2002/11/05 00:20:07  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.

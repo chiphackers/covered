@@ -19,7 +19,7 @@ statistic* statistic_create() {
 
   statistic* stat;   /* New statistic structure */
 
-  stat = (statistic*)malloc_safe( sizeof( statistic ) );
+  stat = (statistic*)malloc_safe( sizeof( statistic ), __FILE__, __LINE__ );
 
   stat->line_total  = 0;
   stat->line_hit    = 0;
@@ -87,6 +87,11 @@ void statistic_dealloc( statistic* stat ) {
 
 /*
  $Log$
+ Revision 1.5  2003/11/10 04:25:50  phase1geo
+ Adding more FSM diagnostics to regression suite.  All major testing for
+ current FSM code should be complete at this time.  A few bug fixes to files
+ that were found during this regression testing.
+
  Revision 1.4  2003/08/25 13:02:04  phase1geo
  Initial stab at adding FSM support.  Contains summary reporting capability
  at this point and roughly works.  Updated regress suite as a result of these

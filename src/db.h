@@ -56,6 +56,9 @@ statement* db_create_statement( expression* exp );
 /*! \brief Adds specified statement to current module's statement list.  Called by parser. */
 void db_add_statement( statement* stmt, statement* start );
 
+/*! \brief Removes specified statement from current module. */
+void db_remove_statement_from_current_module( statement* stmt );
+
 /*! \brief Removes specified statement and associated expression from list and memory. */
 void db_remove_statement( statement* stmt );
 
@@ -95,9 +98,17 @@ void db_set_symbol_string( char* sym, char* value );
 /*! \brief Performs a timestep for all signal changes during this timestep. */
 void db_do_timestep( int time ); 
 
+/*! \brief Deallocates all memory associated with a particular design. */
+void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.33  2004/01/04 04:52:03  phase1geo
+ Updating ChangeLog and TODO files.  Adding merge information to INFO line
+ of CDD files and outputting this information to the merged reports.  Adding
+ starting and ending line information to modules and added function for GUI
+ to retrieve this information.  Updating full regression.
+
  Revision 1.32  2003/11/26 23:14:41  phase1geo
  Adding code to include left-hand-side expressions of statements for report
  outputting purposes.  Full regression does not yet pass.

@@ -91,10 +91,10 @@ bool merge_parse_args( int argc, int last_arg, char** argv ) {
     
       i++;
       if( is_directory( argv[i] ) ) {
-        merged_file = strdup( argv[i] );
+        merged_file = strdup_safe( argv[i], __FILE__, __LINE__ );
       } else {
         snprintf( user_msg, USER_MSG_LENGTH, "Illegal output file specified \"%s\"", argv[i] );
-        print_output( user_msg, FATAL );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
         retval = FALSE;
       }
 
@@ -103,15 +103,15 @@ bool merge_parse_args( int argc, int last_arg, char** argv ) {
       /* Second to last argument.  This must be filename */
       if( file_exists( argv[i] ) ) {
         if( merged_file == NULL ) {
-          merged_file = strdup( argv[i] );
+          merged_file = strdup_safe( argv[i], __FILE__, __LINE__ );
           merged_code = INFO_ONE_MERGED;
         } else {
           merged_code = INFO_TWO_MERGED;
         }
-        merge_in0 = strdup( argv[i] );
+        merge_in0 = strdup_safe( argv[i], __FILE__, __LINE__ );
       } else {
         snprintf( user_msg, USER_MSG_LENGTH, "First CDD (%s) file does not exist", argv[i] );
-        print_output( user_msg, FATAL );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
         retval = FALSE;
       }
 
@@ -119,17 +119,17 @@ bool merge_parse_args( int argc, int last_arg, char** argv ) {
 
       /* Last argument.  This must be filename */
       if( file_exists( argv[i] ) ) {
-        merge_in1 = strdup( argv[i] );
+        merge_in1 = strdup_safe( argv[i], __FILE__, __LINE__ );
       } else {
         snprintf( user_msg, USER_MSG_LENGTH, "Second CDD (%s) file does not exist", argv[i] );
-        print_output( user_msg, FATAL );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
         retval = FALSE;
       }
 
     } else {
 
        snprintf( user_msg, USER_MSG_LENGTH, "Unknown merge command option \"%s\".  See \"covered -h\" for more information.", argv[i] );
-       print_output( user_msg, FATAL );
+       print_output( user_msg, FATAL, __FILE__, __LINE__ );
        retval = FALSE;
 
     }
@@ -159,9 +159,9 @@ int command_merge( int argc, int last_arg, char** argv ) {
   if( merge_parse_args( argc, last_arg, argv ) ) {
 
     snprintf( user_msg, USER_MSG_LENGTH, COVERED_HEADER );
-    print_output( user_msg, NORMAL );
+    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
-    print_output( "Merging databases...", NORMAL );
+    print_output( "Merging databases...", NORMAL, __FILE__, __LINE__ );
 
     /* Initialize all global information */
     info_initialize();
@@ -175,7 +175,7 @@ int command_merge( int argc, int last_arg, char** argv ) {
     /* Write out new database to output file */
     db_write( merged_file, FALSE );
 
-    print_output( "\n***  Merging completed successfully!  ***", NORMAL );
+    print_output( "\n***  Merging completed successfully!  ***", NORMAL, __FILE__, __LINE__ );
 
   }
 
@@ -185,6 +185,13 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.16  2004/01/31 18:58:43  phase1geo
+ Finished reformatting of reports.  Fixed bug where merged reports with
+ different leading hierarchies were outputting the leading hierarchy of one
+ which lead to confusion when interpreting reports.  Also made modification
+ to information line in CDD file for these cases.  Full regression runs clean
+ with Icarus Verilog at this point.
+
  Revision 1.15  2004/01/04 04:52:03  phase1geo
  Updating ChangeLog and TODO files.  Adding merge information to INFO line
  of CDD files and outputting this information to the merged reports.  Adding

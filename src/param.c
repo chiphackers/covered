@@ -185,9 +185,9 @@ mod_parm* mod_parm_add( char* scope, expression* expr, int type, mod_parm** head
   }
 
   /* Create new signal/expression binding */
-  parm           = (mod_parm*)malloc_safe( sizeof( mod_parm ) );
+  parm           = (mod_parm*)malloc_safe( sizeof( mod_parm ), __FILE__, __LINE__ );
   if( scope != NULL ) {
-    parm->name = strdup( scope );
+    parm->name = strdup_safe( scope, __FILE__, __LINE__ );
   } else {
     parm->name = NULL;
   }
@@ -277,9 +277,9 @@ inst_parm* inst_parm_add( char* scope, vector* value, mod_parm* mparm, inst_parm
   assert( value != NULL );
 
   /* Create new signal/expression binding */
-  parm        = (inst_parm*)malloc_safe( sizeof( inst_parm ) );
+  parm        = (inst_parm*)malloc_safe( sizeof( inst_parm ), __FILE__, __LINE__ );
   if( scope != NULL ) {
-    parm->name = strdup( scope );
+    parm->name = strdup_safe( scope, __FILE__, __LINE__ );
   } else {
     parm->name = NULL;
   }
@@ -323,7 +323,7 @@ void defparam_add( char* scope, vector* value ) {
   } else {
 
     snprintf( user_msg, USER_MSG_LENGTH, "Parameter (%s) value is assigned more than once", scope );
-    print_output( user_msg, FATAL );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
     exit( 1 );
 
   }
@@ -352,7 +352,7 @@ void param_find_and_set_expr_value( expression* expr, inst_parm* icurr ) {
   
   if( icurr == NULL ) {
     snprintf( user_msg, USER_MSG_LENGTH, "Parameter used in expression but not defined in current module, line %d", expr->line );
-    print_output( user_msg, FATAL );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
     exit( 1 );
   }
   
@@ -569,8 +569,8 @@ void param_resolve_declared( char* mscope, mod_parm* mparm, inst_parm* ip_head,
   assert( mparm != NULL );
 
   /* Extract the current module parameter name from its full scope */
-  mname = strdup( mscope );
-  rest  = strdup( mscope );
+  mname = strdup_safe( mscope, __FILE__, __LINE__ );
+  rest  = strdup_safe( mscope, __FILE__, __LINE__ );
   scope_extract_back( mscope, mname, rest );
 
   if( param_has_override( mname, mparm, ip_head, ihead, itail ) != NULL ) {
@@ -722,6 +722,11 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.32  2004/01/08 23:24:41  phase1geo
+ Removing unnecessary scope information from signals, expressions and
+ statements to reduce file sizes of CDDs and slightly speeds up fscanf
+ function calls.  Updated regression for this fix.
+
  Revision 1.31  2003/11/29 06:55:48  phase1geo
  Fixing leftover bugs in better report output changes.  Fixed bug in param.c
  where parameters found in RHS expressions that were part of statements that

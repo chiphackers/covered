@@ -20,7 +20,7 @@ void set_output_suppression( bool value );
 void set_debug( bool value );
 
 /*! \brief Displays error message to standard output. */
-void print_output( char* msg, int type );
+void print_output( char* msg, int type, char* file, int line );
 
 /*! \brief Returns TRUE if the specified string is a legal variable name. */
 bool is_variable( char* token );
@@ -59,13 +59,16 @@ bool scope_local( char* scope );
 str_link* get_next_vfile( str_link* curr, char* mod );
 
 /*! \brief Performs safe malloc call. */
-void* malloc_safe(size_t size );
+void* malloc_safe( size_t size, char* file, int line );
 
 /*! \brief Performs safe malloc call without upper bound on byte allocation. */
-void* malloc_safe_nolimit(size_t size );
+void* malloc_safe_nolimit( size_t size, char* file, int line );
 
 /*! \brief Performs safe deallocation of heap memory. */
 void free_safe( void* ptr );
+
+/*! \brief Safely allocates heap memory by performing a call to strdup */
+char* strdup_safe( const char* str, char* file, int line );
 
 /*! \brief Creates a string containing space characters. */
 void gen_space( char* spaces, int num_spaces );
@@ -84,6 +87,10 @@ void timer_stop( timer** tm );
 
 /*
  $Log$
+ Revision 1.15  2003/10/03 03:08:44  phase1geo
+ Modifying filename in summary output to only specify basename of file instead
+ of entire path.  The verbose report contains the full pathname still, however.
+
  Revision 1.14  2003/08/15 20:02:08  phase1geo
  Added check for sys/times.h file for new code additions.
 

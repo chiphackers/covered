@@ -27,6 +27,7 @@
 #ifdef HAVE_STRING_H
 #include <string.h>
 #endif
+#include <stdio.h>
 #include <assert.h>
 
 #include "defines.h"
@@ -86,20 +87,20 @@ void codegen_create_expr_helper( char** code,
       code_size += strlen( middle );
     }
   }
-  code[code_index]    = (char*)malloc_safe( code_size + 1 );
+  code[code_index]    = (char*)malloc_safe( (code_size + 1), __FILE__, __LINE__ );
   code[code_index][0] = '\0';
 
   if( first != NULL ) {
     snprintf( code[code_index], (code_size + 1), "%s", first );
   }
   if( first_same_line ) {
-    tmpstr = strdup( code[code_index] );
+    tmpstr = strdup_safe( code[code_index], __FILE__, __LINE__ );
     snprintf( code[code_index], (code_size + 1), "%s%s", tmpstr, left[0] );
     free_safe( tmpstr );
     free_safe( left[0] );
     if( (left_depth == 1) && (middle != NULL) ) {
       code_size = strlen( code[code_index] ) + strlen( middle );
-      tmpstr    = (char*)malloc_safe( code_size + 1 );
+      tmpstr    = (char*)malloc_safe( (code_size + 1), __FILE__, __LINE__ );
       snprintf( tmpstr, (code_size + 1), "%s%s", code[code_index], middle );
       if( right_depth > 0 ) {
         codegen_create_expr_helper( code, code_index, tmpstr, right, right_depth, last_same_line, last, NULL, 0, FALSE, NULL );
@@ -113,7 +114,7 @@ void codegen_create_expr_helper( char** code,
           code[code_index+i] = left[i];
         }
         code_size = strlen( left[i] ) + strlen( middle );
-        tmpstr    = (char*)malloc_safe( code_size + 1 );
+        tmpstr    = (char*)malloc_safe( (code_size + 1), __FILE__, __LINE__ );
         snprintf( tmpstr, (code_size + 1), "%s%s", left[i], middle );
         free_safe( left[i] );
         if( right_depth > 0 ) {
@@ -133,7 +134,7 @@ void codegen_create_expr_helper( char** code,
         code[code_index+1+i] = left[i];
       }
       code_size = strlen( left[i] ) + strlen( middle );
-      tmpstr    = (char*)malloc_safe( code_size + 1 );
+      tmpstr    = (char*)malloc_safe( (code_size + 1), __FILE__, __LINE__ );
       snprintf( tmpstr, (code_size + 1), "%s%s", left[i], middle );
       free_safe( left[i] );
       if( right_depth > 0 ) {
@@ -182,6 +183,7 @@ void codegen_create_expr( char*** code,
                           char*   last ) {
 
   int total_len = 0;  /* Total length of first, left, middle, right, and last strings */
+  int i;              /* Loop iterator                                                */ 
 
   *code_depth = 0;
 
@@ -221,7 +223,10 @@ void codegen_create_expr( char*** code,
 
     }
 
-    *code = (char**)malloc_safe( sizeof( char* ) * (*code_depth) );
+    *code = (char**)malloc_safe( (sizeof( char* ) * (*code_depth)), __FILE__, __LINE__ );
+    for( i=0; i<(*code_depth); i++ ) {
+      (*code)[i] = NULL;
+    }
 
     /* Now generate expression string array */
     if( flag_use_line_width ) {
@@ -273,25 +278,25 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
         case DECIMAL :
           snprintf( code_format, 20, "%d", vector_to_int( expr->value ) );
-          *code       = (char**)malloc_safe( sizeof( char* ) );
-          (*code)[0]  = strdup( code_format );
+          *code       = (char**)malloc_safe( sizeof( char* ), __FILE__, __LINE__ );
+          (*code)[0]  = strdup_safe( code_format, __FILE__, __LINE__ );
           *code_depth = 1;
           break;
 
         case BINARY :
-          *code       = (char**)malloc_safe( sizeof( char* ) );
+          *code       = (char**)malloc_safe( sizeof( char* ), __FILE__, __LINE__ );
           (*code)[0]  = vector_to_string( expr->value, BINARY );
           *code_depth = 1;
           break;
 
         case OCTAL :
-          *code       = (char**)malloc_safe( sizeof( char* ) );
+          *code       = (char**)malloc_safe( sizeof( char* ), __FILE__, __LINE__ );
           (*code)[0]  = vector_to_string( expr->value, OCTAL );
           *code_depth = 1;
           break;
 
         case HEXIDECIMAL :
-          *code       = (char**)malloc_safe( sizeof( char* ) );
+          *code       = (char**)malloc_safe( sizeof( char* ), __FILE__, __LINE__ );
           (*code)[0]  = vector_to_string( expr->value, HEXIDECIMAL );
           *code_depth = 1;
           break;
@@ -314,20 +319,20 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
       switch( strlen( tmpstr ) ) {
         case 0 :  assert( strlen( tmpstr ) > 0 );  break;
         case 1 :
-          *code       = (char**)malloc_safe( sizeof( char* ) );
-          (*code)[0]  = (char*)malloc_safe( 4 );
+          *code       = (char**)malloc_safe( sizeof( char* ), __FILE__, __LINE__ );
+          (*code)[0]  = (char*)malloc_safe( 4, __FILE__, __LINE__ );
           *code_depth = 1;
           snprintf( (*code)[0], 4, " %s ", tmpstr );
           break;
         case 2 :
-          *code       = (char**)malloc_safe( sizeof( char* ) );
-          (*code)[0]  = (char*)malloc_safe( 4 );
+          *code       = (char**)malloc_safe( sizeof( char* ), __FILE__, __LINE__ );
+          (*code)[0]  = (char*)malloc_safe( 4, __FILE__, __LINE__ );
           *code_depth = 1;
           snprintf( (*code)[0], 4, " %s", tmpstr );
           break;
         default :
-          *code       = (char**)malloc_safe( sizeof( char* ) );
-          (*code)[0]  = strdup( tmpstr );
+          *code       = (char**)malloc_safe( sizeof( char* ), __FILE__, __LINE__ );
+          (*code)[0]  = strdup_safe( tmpstr, __FILE__, __LINE__ );
           *code_depth = 1;
           break;
       }
@@ -338,10 +343,10 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
       assert( expr->sig != NULL );
 
       if( expr->sig->name[0] == '#' ) {
-        tmpstr = (char*)malloc_safe( strlen( expr->sig->name ) + 1 );
+        tmpstr = (char*)malloc_safe( (strlen( expr->sig->name ) + 1), __FILE__, __LINE__ );
         snprintf( tmpstr, (strlen( expr->sig->name ) + 1), "%s[", (expr->sig->name + 1) );
       } else {
-        tmpstr = (char*)malloc_safe( strlen( expr->sig->name ) + 2 );
+        tmpstr = (char*)malloc_safe( (strlen( expr->sig->name ) + 2), __FILE__, __LINE__ );
         snprintf( tmpstr, (strlen( expr->sig->name ) + 2), "%s[", expr->sig->name );
       }
 
@@ -355,10 +360,10 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
       assert( expr->sig != NULL );
 
       if( expr->sig->name[0] == '#' ) {
-        tmpstr = (char*)malloc_safe( strlen( expr->sig->name ) + 1 );
+        tmpstr = (char*)malloc_safe( (strlen( expr->sig->name ) + 1), __FILE__, __LINE__ );
         snprintf( tmpstr, (strlen( expr->sig->name ) + 1), "%s[", (expr->sig->name + 1) );
       } else {
-        tmpstr = (char*)malloc_safe( strlen( expr->sig->name ) + 2 );
+        tmpstr = (char*)malloc_safe( (strlen( expr->sig->name ) + 2), __FILE__, __LINE__ );
         snprintf( tmpstr, (strlen( expr->sig->name ) + 2), "%s[", expr->sig->name );
       }
 
@@ -372,8 +377,8 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
     } else if( SUPPL_OP( expr->suppl ) == EXP_OP_DEFAULT ) {
 
-      *code       = (char**)malloc_safe( sizeof( char* ) );
-      (*code)[0]  = strdup( "default :" );
+      *code       = (char**)malloc_safe( sizeof( char* ), __FILE__, __LINE__ );
+      (*code)[0]  = strdup_safe( "default :", __FILE__, __LINE__ );
       *code_depth = 1;
 
     } else {
@@ -382,8 +387,8 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
         before = NULL;
         after  = NULL;
       } else {
-        before = strdup( "(" );
-        after  = strdup( ")" );
+        before = strdup_safe( "(", __FILE__, __LINE__ );
+        after  = strdup_safe( ")", __FILE__, __LINE__ );
       }
 
       switch( SUPPL_OP( expr->suppl ) ) {
@@ -620,6 +625,10 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.35  2004/03/15 21:38:17  phase1geo
+ Updated source files after running lint on these files.  Full regression
+ still passes at this point.
+
  Revision 1.34  2003/12/18 15:21:18  phase1geo
  Fixing bug in code generator that caused incorrect data to be output and
  also segfaulted.  Full regression runs clean and line width support should

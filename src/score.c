@@ -111,20 +111,20 @@ bool read_command_file( char* cmd_file, char*** arg_list, int* arg_num ) {
     if( (cmd_handle = fopen( cmd_file, "r" )) != NULL ) {
 
       while( fscanf( cmd_handle, "%s", tmp_str ) == 1 ) {
-        str_link_add( strdup( tmp_str ), &head, &tail );
+        str_link_add( strdup_safe( tmp_str, __FILE__, __LINE__ ), &head, &tail );
         tmp_num++;
       }
 
       fclose( cmd_handle );
 
       /* Create argument list */
-      *arg_list = (char**)malloc_safe( sizeof( char* ) * tmp_num );
+      *arg_list = (char**)malloc_safe( (sizeof( char* ) * tmp_num), __FILE__, __LINE__ );
       *arg_num  = tmp_num;
       tmp_num   = 0;
 
       curr = head;
       while( curr != NULL ) {
-        (*arg_list)[tmp_num] = strdup( curr->str );
+        (*arg_list)[tmp_num] = strdup_safe( curr->str, __FILE__, __LINE__ );
         tmp_num++;
         curr = curr->next;
       }
@@ -135,7 +135,7 @@ bool read_command_file( char* cmd_file, char*** arg_list, int* arg_num ) {
     } else {
 
       snprintf( user_msg, USER_MSG_LENGTH, "Unable to open command file %s for reading", cmd_file );
-      print_output( user_msg, FATAL );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
       retval = FALSE;
 
     }
@@ -143,7 +143,7 @@ bool read_command_file( char* cmd_file, char*** arg_list, int* arg_num ) {
   } else {
 
     snprintf( user_msg, USER_MSG_LENGTH, "Command file %s does not exist", cmd_file );
-    print_output( user_msg, FATAL );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = FALSE;
 
   }
@@ -182,17 +182,17 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
     } else if( strncmp( "-i", argv[i], 2 ) == 0 ) {
 
       i++;
-      top_instance       = strdup( argv[i] );
+      top_instance       = strdup_safe( argv[i], __FILE__, __LINE__ );
       instance_specified = TRUE;
 
     } else if( strncmp( "-o", argv[i], 2 ) == 0 ) {
 
       i++;
       if( is_directory( argv[i] ) ) {
-        output_db = strdup( argv[i] );
+        output_db = strdup_safe( argv[i], __FILE__, __LINE__ );
       } else {
         snprintf( user_msg, USER_MSG_LENGTH, "Illegal output directory specified \"%s\"", argv[i] );
-        print_output( user_msg, FATAL );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
         retval = FALSE;
       }
 
@@ -205,10 +205,10 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
       i++;
       if( is_variable( argv[i] ) ) {
-        top_module = strdup( argv[i] );
+        top_module = strdup_safe( argv[i], __FILE__, __LINE__ );
       } else {
         snprintf( user_msg, USER_MSG_LENGTH, "Illegal top-level module name specified \"%s\"", argv[i] );
-        print_output( user_msg, FATAL );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
         retval = FALSE;
       }
 
@@ -239,7 +239,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
         free_safe( arg_list );
       } else {
         snprintf( user_msg, USER_MSG_LENGTH, "Cannot find argument file %s specified with -f option", argv[i] );
-        print_output( user_msg, FATAL );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
         retval = FALSE;
       }
 
@@ -252,10 +252,10 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
       i++;
       if( file_exists( argv[i] ) ) {
-        vcd_file = strdup( argv[i] );
+        vcd_file = strdup_safe( argv[i], __FILE__, __LINE__ );
       } else {
         snprintf( user_msg, USER_MSG_LENGTH, "VCD dumpfile not found \"%s\"", argv[i] );
-        print_output( user_msg, FATAL );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
         retval = FALSE;
       }
 
@@ -287,10 +287,10 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
       
       i++;
       if( is_variable( argv[i] ) ) {
-        ppfilename = strdup( argv[i] );
+        ppfilename = strdup_safe( argv[i], __FILE__, __LINE__ );
       } else {
         snprintf( user_msg, USER_MSG_LENGTH, "Unrecognizable filename %s specified for -p option.", argv[i] );
-        print_output( user_msg, FATAL );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( 1 );
       }
         
@@ -302,7 +302,8 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
         ptr++;
       }
       if( *ptr == '\0' ) {
-        print_output( "Option -P must specify a value to assign.  See \"covered score -h\" for more information.", FATAL );
+        print_output( "Option -P must specify a value to assign.  See \"covered score -h\" for more information.",
+                      FATAL, __FILE__, __LINE__ );
         exit( 1 );
       } else {
         *ptr = '\0';
@@ -322,14 +323,14 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
         delay_expr_type = DELAY_EXPR_TYP;
       } else {
         snprintf( user_msg, USER_MSG_LENGTH, "Unknown -T value (%s).  Please specify min, max or typ.", argv[i] );
-        print_output( user_msg, FATAL );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( 1 );
       }
         
     } else {
 
       snprintf( user_msg, USER_MSG_LENGTH, "Unknown score command option \"%s\".  See \"covered score -h\" for more information.", argv[i] );
-      print_output( user_msg, FATAL );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
       retval = FALSE;
 
     }
@@ -359,27 +360,27 @@ int command_score( int argc, int last_arg, char** argv ) {
   if( score_parse_args( argc, last_arg, argv ) ) {
 
     snprintf( user_msg, USER_MSG_LENGTH, COVERED_HEADER );
-    print_output( user_msg, NORMAL );
+    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
     if( output_db == NULL ) {
-      output_db = strdup( DFLT_OUTPUT_CDD );
+      output_db = strdup_safe( DFLT_OUTPUT_CDD, __FILE__, __LINE__ );
     }
 
     /* Parse design */
     if( use_files_head != NULL ) {
-      print_output( "Reading design...", NORMAL );
+      print_output( "Reading design...", NORMAL, __FILE__, __LINE__ );
       info_initialize();
       search_init();
       parse_design( top_module, output_db );
-      print_output( "", NORMAL );
+      print_output( "", NORMAL, __FILE__, __LINE__ );
     }
 
     /* Read dumpfile and score design */
     if( vcd_file != NULL ) {
       snprintf( user_msg, USER_MSG_LENGTH, "Scoring dumpfile %s...", vcd_file );
-      print_output( user_msg, NORMAL );
+      print_output( user_msg, NORMAL, __FILE__, __LINE__ );
       parse_and_score_dumpfile( output_db, vcd_file );
-      print_output( "", NORMAL );
+      print_output( "", NORMAL, __FILE__, __LINE__ );
     }
 
     /* Deallocate memory for search engine */
@@ -388,12 +389,12 @@ int command_score( int argc, int last_arg, char** argv ) {
     free_safe( output_db );
     free_safe( vcd_file );
 
-    print_output( "***  Scoring completed successfully!  ***\n", NORMAL );
+    print_output( "***  Scoring completed successfully!  ***\n", NORMAL, __FILE__, __LINE__ );
     snprintf( user_msg, USER_MSG_LENGTH, "Dynamic memory allocated:   %ld bytes", largest_malloc_size );
-    print_output( user_msg, NORMAL );
+    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
     snprintf( user_msg, USER_MSG_LENGTH, "Allocated memory remaining: %ld bytes", curr_malloc_size );
-    print_output( user_msg, DEBUG );
-    print_output( "", NORMAL );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+    print_output( "", NORMAL, __FILE__, __LINE__ );
 
   }
 
@@ -403,6 +404,10 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.44  2004/03/15 21:38:17  phase1geo
+ Updated source files after running lint on these files.  Full regression
+ still passes at this point.
+
  Revision 1.43  2004/01/31 18:58:43  phase1geo
  Finished reformatting of reports.  Fixed bug where merged reports with
  different leading hierarchies were outputting the leading hierarchy of one

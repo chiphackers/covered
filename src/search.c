@@ -57,9 +57,10 @@ void search_init() {
   mod = module_create();
 
   if( top_module != NULL ) {
-    mod->name  = strdup( top_module );
+    mod->name  = strdup_safe( top_module, __FILE__, __LINE__ );
   } else {
-    print_output( "No top_module was specified with the -t option.  Please see \"covered -h\" for usage.", FATAL );
+    print_output( "No top_module was specified with the -t option.  Please see \"covered -h\" for usage.",
+                  FATAL, __FILE__, __LINE__ );
     exit( 1 );
   }
 
@@ -68,13 +69,13 @@ void search_init() {
 
   /* Initialize instance tree */
   if( top_instance == NULL ) {
-    top_instance = strdup( top_module );
-    instance_parse_add( &instance_root, NULL, mod, strdup( top_instance ) );
+    top_instance = strdup_safe( top_module, __FILE__, __LINE__ );
+    instance_parse_add( &instance_root, NULL, mod, strdup_safe( top_instance, __FILE__, __LINE__ ) );
     leading_hierarchy[0] = '*';
     leading_hierarchy[1] = '\0';
   } else {
     scope_extract_back( top_instance, dutname, leading_hierarchy );
-    instance_parse_add( &instance_root, NULL, mod, strdup( dutname ) );
+    instance_parse_add( &instance_root, NULL, mod, strdup_safe( dutname, __FILE__, __LINE__ ) );
     if( leading_hierarchy[0] == '\0' ) {
       leading_hierarchy[0] = '*';
       leading_hierarchy[1] = '\0';
@@ -95,7 +96,7 @@ bool search_add_include_path( char* path ) {
   char* tmp;             /* Temporary directory name       */
 
   if( is_directory( path ) ) {
-    tmp = strdup( path );
+    tmp = strdup_safe( path, __FILE__, __LINE__ );
     str_link_add( tmp, &inc_paths_head, &inc_paths_tail );
   } else {
     retval = FALSE;
@@ -118,12 +119,12 @@ bool search_add_directory_path( char* path ) {
   if( is_directory( path ) && directory_exists( path ) ) {
     /* If no library extensions have been specified, assume *.v */
     if( extensions_head == NULL ) {
-      str_link_add( strdup( "v" ), &(extensions_head), &(extensions_tail) );
+      str_link_add( strdup_safe( "v", __FILE__, __LINE__ ), &(extensions_head), &(extensions_tail) );
     }
     directory_load( path, extensions_head, &(use_files_head), &(use_files_tail) );
   } else {
     snprintf( user_msg, USER_MSG_LENGTH, "Library directory %s does not exist", path );
-    print_output( user_msg, WARNING );
+    print_output( user_msg, WARNING, __FILE__, __LINE__ );
     retval = FALSE;
   }
 
@@ -142,11 +143,11 @@ bool search_add_file( char* file ) {
   char* tmp;            /* Temporary filename             */
 
   if( file_exists( file ) && (str_link_find( file, use_files_head ) == NULL) ) {
-    tmp = strdup( file );
+    tmp = strdup_safe( file, __FILE__, __LINE__ );
     str_link_add( tmp, &use_files_head, &use_files_tail );
   } else {
     snprintf( user_msg, USER_MSG_LENGTH, "File %s does not exist", file );
-    print_output( user_msg, FATAL );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = FALSE;
   }
 
@@ -166,7 +167,7 @@ bool search_add_no_score_module( char* module ) {
   char* tmp;             /* Temporary module name          */
 
   if( is_variable( module ) ) {
-    tmp = strdup( module );
+    tmp = strdup_safe( module, __FILE__, __LINE__ );
     str_link_add( tmp, &no_score_head, &no_score_tail );
   } else {
     retval = FALSE;
@@ -191,7 +192,7 @@ bool search_add_extensions( char* ext_list ) {
   if( ext_list != NULL ) {
 
     while( sscanf( ext_list, ".%s+", ext ) == 1 ) {
-      tmp = strdup( ext );
+      tmp = strdup_safe( ext, __FILE__, __LINE__ );
       str_link_add( tmp, &extensions_head, &extensions_tail );
       ext_list = ext_list + strlen( ext ) + 2;
     }
@@ -226,6 +227,10 @@ void search_free_lists() {
 
 /*
  $Log$
+ Revision 1.15  2004/03/15 21:38:17  phase1geo
+ Updated source files after running lint on these files.  Full regression
+ still passes at this point.
+
  Revision 1.14  2003/02/17 22:47:20  phase1geo
  Fixing bug with merging same DUTs from different testbenches.  Updated reports
  to display full path instead of instance name and parent instance name.  Added

@@ -91,7 +91,7 @@ void vcd_parse_def_var( FILE* vcd ) {
       if( sscanf( tmp, "\[%d:%d]", &msb, &lsb ) != 2 ) {
         
         if( sscanf( tmp, "\[%d]", &lsb ) != 1 ) {
-          print_output( "Unrecognized $var format", FATAL );
+          print_output( "Unrecognized $var format", FATAL, __FILE__, __LINE__ );
           exit( 1 );
         } else {
           msb = lsb;
@@ -100,7 +100,7 @@ void vcd_parse_def_var( FILE* vcd ) {
       }
 
       if( (fscanf( vcd, "%s", tmp ) != 1) || (strncmp( "$end", tmp, 4 ) != 0) ) {
-        print_output( "Unrecognized $var format", FATAL );
+        print_output( "Unrecognized $var format", FATAL, __FILE__, __LINE__ );
         exit( 1 );
       }
 
@@ -110,7 +110,7 @@ void vcd_parse_def_var( FILE* vcd ) {
 
       if( sscanf( tmp, "%d:%d", &msb, &lsb ) != 2 ) {
         if( sscanf( tmp, "%d", &lsb ) != 1 ) {
-          print_output( "Unrecognized $var format", FATAL );
+          print_output( "Unrecognized $var format", FATAL, __FILE__, __LINE__ );
           exit( 1 );
         } else {
           msb = lsb;
@@ -129,7 +129,7 @@ void vcd_parse_def_var( FILE* vcd ) {
     
   } else {
 
-    print_output( "Unrecognized $var format", FATAL );
+    print_output( "Unrecognized $var format", FATAL, __FILE__, __LINE__ );
     exit( 1 );
   
   }
@@ -157,7 +157,7 @@ void vcd_parse_def_scope( FILE* vcd ) {
 
   } else {
 
-    print_output( "Unrecognized $scope format", FATAL );
+    print_output( "Unrecognized $scope format", FATAL, __FILE__, __LINE__ );
     exit( 1 );
 
   }
@@ -198,7 +198,7 @@ void vcd_parse_def( FILE* vcd ) {
     } else {
 
       snprintf( user_msg, USER_MSG_LENGTH, "Non-keyword located where one should have been \"%s\"", keyword );
-      print_output( user_msg, FATAL );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
       exit( 1 );
 
     }
@@ -210,14 +210,15 @@ void vcd_parse_def( FILE* vcd ) {
   /* Check to see that at least one instance was found */
   if( !one_instance_found ) {
 
-    print_output( "No instances were found in specified VCD file that matched design", FATAL );
+    print_output( "No instances were found in specified VCD file that matched design", FATAL, __FILE__, __LINE__ );
 
     /* If the -i option was not specified, let the user know */
     if( instance_specified ) {
-      print_output( "  Please use -i option to specify correct hierarchy to top-level module to score", FATAL );
+      print_output( "  Please use -i option to specify correct hierarchy to top-level module to score",
+                    FATAL, __FILE__, __LINE__ );
     } else {
       snprintf( user_msg, USER_MSG_LENGTH, "  Incorrect hierarchical path specified in -i option: %s", top_instance );
-      print_output( user_msg, FATAL );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
     }
 
     exit( 1 );
@@ -246,7 +247,7 @@ void vcd_parse_sim_vector( FILE* vcd, char* value ) {
 
   } else {
 
-    print_output( "Bad file format", FATAL );
+    print_output( "Bad file format", FATAL, __FILE__, __LINE__ );
     exit( 1 );
 
   }
@@ -266,7 +267,7 @@ void vcd_parse_sim_ignore( FILE* vcd ) {
 
   if( fscanf( vcd, "%s%n", sym, &chars_read ) != 1 ) {
 
-    print_output( "Bad file format", FATAL );
+    print_output( "Bad file format", FATAL, __FILE__, __LINE__ );
     exit( 1 );
 
   }
@@ -323,7 +324,7 @@ void vcd_parse_sim( FILE* vcd ) {
       } else {
 
         snprintf( user_msg, USER_MSG_LENGTH, "Badly placed token \"%s\"", token );
-        print_output( user_msg, FATAL );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( 1 );
 
       }
@@ -363,7 +364,7 @@ void vcd_parse( char* vcd_file ) {
 
     /* Create timestep symbol table array */
     if( vcd_symtab_size > 0 ) {
-      timestep_tab = malloc_safe_nolimit( sizeof( symtable*) * vcd_symtab_size );
+      timestep_tab = malloc_safe_nolimit( (sizeof( symtable*) * vcd_symtab_size), __FILE__, __LINE__ );
     }
     
     vcd_parse_sim( vcd_handle );
@@ -379,7 +380,7 @@ void vcd_parse( char* vcd_file ) {
 
   } else {
 
-    print_output( "Unable to open specified VCD file", FATAL );
+    print_output( "Unable to open specified VCD file", FATAL, __FILE__, __LINE__ );
     exit( 1 );
 
   }
@@ -388,6 +389,10 @@ void vcd_parse( char* vcd_file ) {
 
 /*
  $Log$
+ Revision 1.17  2004/03/15 21:38:17  phase1geo
+ Updated source files after running lint on these files.  Full regression
+ still passes at this point.
+
  Revision 1.16  2003/11/11 22:41:54  phase1geo
  Fixing bug with reading VCD signals that are too long for Covered to support.
  We were getting an assertion error when we should have simply read in and ignored

@@ -26,7 +26,7 @@ LOGFILE = regress.log
 
 DIAGS1        = always1        always2        always3        always3.1.11A  always4 \
                 always5        always6        always7        always8        always9 \
-                always10       always11       always11.1     always11.2     assign2 \
+                always10       always11       always11.1     always11.2     always12       assign2 \
                 assign2.1      assign2.2      assign2.3      assign2.9      assign3.2A \
                 block1         case1          case1.1        case1.2        case1.3 \
                 case2          case3          case3.1        case3.2        case3.3 \
@@ -40,12 +40,12 @@ DIAGS1        = always1        always2        always3        always3.1.11A  alwa
                 expand4        expand4.1      expand4.2      expand4.3      expand4.4 \
                 fsm1           fsm1.1         fsm1.2         fsm1.3         fsm1.4 \
                 fsm3           fsm4           fsm4.1         fsm5           fsm5.1 \
-                fsm5.2         fsm5.3         fsm10          gate1 \
-                hier1          ifdef1         ifdef1.2       ifdef2.1       ifdef2.2 \
-                ifdef2.3       ifelse1        include1       include1.1     include2 \
-                instance1      instance1.1    instance1.2    instance2      instance3 \
-                instance4      instance4.1    instance4.2    instance5      instance6 \
-                instance6.1    instance6.2    instance7      long_exp1      long_exp2 \
+                fsm5.2         fsm5.3         fsm10          gate1          hier1 \
+                ifdef1         ifdef1.2       ifdef2.1       ifdef2.2       ifdef2.3 \
+                ifelse1        include1       include1.1     include2       instance1 \
+                instance1.1    instance1.2    instance2      instance3      instance4 \
+                instance4.1    instance4.2    instance5      instance6      instance6.1 \
+                instance6.2    instance7      long_exp1      long_exp2      long_exp3 \
                 long_sig       mbit_sel1      mbit_sel2      mbit_sel3      mbit_sel3.1 \
                 mbit_sel4      mbit_sel4.1    mbit_sel4.2    mbit_sel4.3    mem1 \
                 mult1          multi_exp1     multi_exp1.1   multi_exp1.2   multi_exp1.3 \
@@ -63,6 +63,10 @@ DIAGS3        = delay1.2
 DIAGS4        = delay1.3
 
 MERGE1        = merge1         fsm2
+
+ERRSCORE      = err1.0         err2.0
+ERRMERGE      =
+ERRREPORT     = err2.1
            
 IVONLYDIAGS1  = always5.1      assign1        assign2.8      example        fsm6 \
                 fsm7           fsm7.1         fsm7.2         fsm7.3         fsm7.4 \
@@ -83,7 +87,7 @@ VCSONLYDIAGS4 =
 
 iverilog:    clean
 	@cd ../verilog; \
-	$(MAKE) VERILOG=$(IVERILOG) VERILOG_FLAGS="$(IVERILOG_FLAGS1)" VERILOG_CMD="vvp $(IVERILOG_EXEC)" VERILOG_EXEC=$(IVERILOG_EXEC) DIAGLIST="$(DIAGS1) $(IVONLYDIAGS1)" MERGELIST="$(MERGE1)" regress
+	$(MAKE) VERILOG=$(IVERILOG) VERILOG_FLAGS="$(IVERILOG_FLAGS1)" VERILOG_CMD="vvp $(IVERILOG_EXEC)" VERILOG_EXEC=$(IVERILOG_EXEC) DIAGLIST="$(DIAGS1) $(IVONLYDIAGS1)" MERGELIST="$(MERGE1)" ERRSCORELIST="$(ERRSCORE)" ERRMERGELIST="$(ERRMERGE)" ERRREPORTLIST="$(ERRREPORT)" regress
 	@cd ../verilog; \
 	$(MAKE) VERILOG=$(IVERILOG) VERILOG_FLAGS="$(IVERILOG_FLAGS2)" VERILOG_CMD="vvp $(IVERILOG_EXEC)" VERILOG_EXEC=$(IVERILOG_EXEC) DIAGLIST="$(DIAGS2) $(IVONLYDIAGS2)" regress
 	@cd ../verilog; \

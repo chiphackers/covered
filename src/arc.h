@@ -20,13 +20,13 @@ char* arc_create( int width );
 void arc_add( char** arcs, vector* fr_st, vector* to_st, int hit );
 
 /*! \brief Gets supplemental field value from specified arc entry table. */
-int arc_get_suppl( char* arcs, int type );
+int arc_get_suppl( const char* arcs, int type );
 
 /*! \brief Calculates all state and state transition values for reporting purposes. */
 void arc_get_stats( char* arcs, float* state_total, int* state_hits, float* arc_total, int* arc_hits );
 
 /*! \brief Writes specified arc array to specified CDD file. */
-bool arc_db_write( char* arcs, FILE* file );
+bool arc_db_write( const char* arcs, FILE* file );
 
 /*! \brief Reads in arc array from CDD database string. */
 bool arc_db_read( char** arcs, char** line );
@@ -35,16 +35,20 @@ bool arc_db_read( char** arcs, char** line );
 bool arc_db_merge( char** arcs, char** line, bool same );
 
 /*! \brief Outputs arc array state values to specified output stream. */
-void arc_display_states( FILE* ofile, char* fstr, char* arcs, bool hit );
+void arc_display_states( FILE* ofile, const char* fstr, const char* arcs, bool hit );
 
 /*! \brief Outputs arc array state transition values to specified output stream. */
-void arc_display_transitions( FILE* ofile, char* fstr, char* arcs, bool hit );
+void arc_display_transitions( FILE* ofile, const char* fstr, const char* arcs, bool hit );
 
 /*! \brief Deallocates memory for specified arcs array. */
 void arc_dealloc( char* arcs );
 
 /*
  $Log$
+ Revision 1.8  2004/03/15 21:38:17  phase1geo
+ Updated source files after running lint on these files.  Full regression
+ still passes at this point.
+
  Revision 1.7  2003/09/19 13:25:28  phase1geo
  Adding new FSM diagnostics including diagnostics to verify FSM merging function.
  FSM merging code was modified to work correctly.  Full regression passes.

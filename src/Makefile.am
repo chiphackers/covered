@@ -34,6 +34,7 @@ covered_SOURCES = arc.c \
                   static.c \
 		  statement.c \
 		  symtable.c \
+		  tcl_funcs.c \
 		  toggle.c \
                   tree.c \
                   util.c \

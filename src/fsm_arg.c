@@ -202,7 +202,8 @@ bool fsm_arg_parse( char* arg ) {
 
   if( *ptr == '\0' ) {
 
-    print_output( "Option -F must specify a module and one or two variables.  See \"covered score -h\" for more information.", FATAL );
+    print_output( "Option -F must specify a module and one or two variables.  See \"covered score -h\" for more information.",
+                  FATAL, __FILE__, __LINE__ );
     retval = FALSE;
 
   } else {
@@ -369,14 +370,14 @@ void fsm_arg_parse_trans( expression* expr, fsm* table, module* mod ) {
   if( (from_state = fsm_arg_parse_value( &str, mod )) == NULL ) {
     snprintf( user_msg, USER_MSG_LENGTH, "Left-hand side FSM transition value must be a constant value or parameter, line: %d, file: %s",
               expr->line, mod->filename );
-    print_output( user_msg, FATAL );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
     exit( 1 );
   } else {
 
     if( (str[0] != '-') || (str[1] != '>') ) {
       snprintf( user_msg, USER_MSG_LENGTH, "FSM transition values must contain the string '->' between them, line: %d, file: %s",
                 expr->line, mod->filename );
-      print_output( user_msg, FATAL );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
       exit( 1 );
     } else {
       str += 2;
@@ -385,7 +386,7 @@ void fsm_arg_parse_trans( expression* expr, fsm* table, module* mod ) {
     if( (to_state = fsm_arg_parse_value( &str, mod )) == NULL ) {
       snprintf( user_msg, USER_MSG_LENGTH, "Right-hand side FSM transition value must be a constant value or parameter, line: %d, file: %s",
                 expr->line, mod->filename );
-      print_output( user_msg, FATAL );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
       exit( 1 );
     } else {
 
@@ -432,13 +433,13 @@ void fsm_arg_parse_attr( attr_param* ap, module* mod ) {
         str = (char*)(curr->expr->value->value);
         if( (in_state = fsm_arg_parse_state( &str, mod->name )) == NULL ) {
           snprintf( user_msg, USER_MSG_LENGTH, "Illegal input state expression (%s), file: %s", str, mod->filename );
-          print_output( user_msg, FATAL );
+          print_output( user_msg, FATAL, __FILE__, __LINE__ );
           exit( 1 );
         }
       } else {
         snprintf( user_msg, USER_MSG_LENGTH, "Input state specified after output state for this FSM has already been specified, file: %s",
                   mod->filename );
-        print_output( user_msg, FATAL );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( 1 );
       }
     } else if( (index == 2) && (strcmp( curr->name, "os" ) == 0) && (curr->expr != NULL) ) {
@@ -446,7 +447,7 @@ void fsm_arg_parse_attr( attr_param* ap, module* mod ) {
         str = (char*)(curr->expr->value->value);
         if( (out_state = fsm_arg_parse_state( &str, mod->name )) == NULL ) {
           snprintf( user_msg, USER_MSG_LENGTH, "Illegal output state expression (%s), file: %s", str, mod->filename );
-          print_output( user_msg, FATAL );
+          print_output( user_msg, FATAL, __FILE__, __LINE__ );
           exit( 1 );
         } else {
           fsm_var_add( mod->name, out_state, out_state, table.name );
@@ -455,7 +456,7 @@ void fsm_arg_parse_attr( attr_param* ap, module* mod ) {
       } else {
         snprintf( user_msg, USER_MSG_LENGTH, "Output state specified after output state for this FSM has already been specified, file: %s",
                   mod->filename );
-        print_output( user_msg, FATAL );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( 1 );
       }
     } else if( (index == 3) && (strcmp( curr->name, "os" ) == 0) && (out_state == NULL) &&
@@ -464,7 +465,7 @@ void fsm_arg_parse_attr( attr_param* ap, module* mod ) {
         str = (char*)(curr->expr->value->value);
         if( (out_state = fsm_arg_parse_state( &str, mod->name )) == NULL ) {
           snprintf( user_msg, USER_MSG_LENGTH, "Illegal output state expression (%s), file: %s", str, mod->filename );
-          print_output( user_msg, FATAL );
+          print_output( user_msg, FATAL, __FILE__, __LINE__ );
           exit( 1 );
         } else {
           fsm_var_add( mod->name, in_state, out_state, table.name );
@@ -473,14 +474,14 @@ void fsm_arg_parse_attr( attr_param* ap, module* mod ) {
       } else {
         snprintf( user_msg, USER_MSG_LENGTH, "Output state specified after output state for this FSM has already been specified, file: %s",
                   mod->filename );
-        print_output( user_msg, FATAL );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( 1 );
       }
     } else if( (index > 1) && (strcmp( curr->name, "trans" ) == 0) && (curr->expr != NULL) ) {
       if( fsml == NULL ) {
         snprintf( user_msg, USER_MSG_LENGTH, "Attribute FSM name (%s) has not been previously created, file: %s", table.name,
                   mod->filename );
-        print_output( user_msg, FATAL );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( 1 );
       } else {
         fsm_arg_parse_trans( curr->expr, fsml->table, mod );
@@ -490,7 +491,7 @@ void fsm_arg_parse_attr( attr_param* ap, module* mod ) {
                 curr->name,
                 curr->expr->value->value,
                 mod->filename );
-      print_output( user_msg, FATAL );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
       exit( 1 );
     }
 
@@ -505,6 +506,10 @@ void fsm_arg_parse_attr( attr_param* ap, module* mod ) {
 
 /*
  $Log$
+ Revision 1.13  2004/03/15 21:38:17  phase1geo
+ Updated source files after running lint on these files.  Full regression
+ still passes at this point.
+
  Revision 1.12  2003/11/26 23:14:41  phase1geo
  Adding code to include left-hand-side expressions of statements for report
  outputting purposes.  Full regression does not yet pass.

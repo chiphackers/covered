@@ -85,7 +85,9 @@ void set_debug( bool value ) {
  Displays the specified message to standard output based on the type of message
  being output.
 */
-void print_output( char* msg, int type ) {
+void print_output( char* msg, int type, char* file, int line ) {
+
+  FILE* outf = debug_mode ? stdout : stderr;
 
   switch( type ) {
     case DEBUG:
@@ -95,16 +97,26 @@ void print_output( char* msg, int type ) {
       if( !output_suppressed || debug_mode ) { printf( "%s\n", msg ); }
       break;
     case WARNING:
-      if( !output_suppressed || debug_mode ) { fprintf( stderr, "    WARNING!  %s\n", msg ); }
+      if( !output_suppressed ) {
+        fprintf( outf, "    WARNING!  %s\n", msg );
+      } else if( debug_mode ) {
+        fprintf( outf, "    WARNING!  %s (file: %s, line: %d)\n", msg, file, line );
+      }
       break;
     case WARNING_WRAP:
-      if( !output_suppressed || debug_mode ) { fprintf( stderr, "              %s\n", msg ); }
+      if( !output_suppressed || debug_mode ) {
+        fprintf( outf, "              %s\n", msg );
+      }
       break; 
     case FATAL:
-      fprintf( stderr, "ERROR!  %s\n", msg );
+      if( debug_mode ) {
+        fprintf( outf, "ERROR!  %s (file: %s, line: %d)\n", msg, file, line );
+      } else {
+        fprintf( outf, "ERROR!  %s\n", msg );
+      }
       break;
     case FATAL_WRAP:
-      fprintf( stderr, "        %s\n", msg );
+      fprintf( outf, "        %s\n", msg );
       break;
     default:  break;
   }
@@ -274,7 +286,7 @@ void directory_load( char* dir, str_link* ext_head, str_link** file_head, str_li
   if( (dir_handle = opendir( dir )) == NULL ) {
 
     snprintf( user_msg, USER_MSG_LENGTH, "Unable to read directory %s", dir );
-    print_output( user_msg, FATAL );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
     exit( 1 );
 
   } else {
@@ -294,7 +306,7 @@ void directory_load( char* dir, str_link* ext_head, str_link** file_head, str_li
         if( curr_ext != NULL ) {
           /* Found valid extension, add to list */
           tmpchars = strlen( dirp->d_name ) + strlen( dir ) + 2;
-          tmpfile  = (char*)malloc_safe( tmpchars );
+          tmpfile  = (char*)malloc_safe( tmpchars, __FILE__, __LINE__ );
           snprintf( tmpfile, tmpchars, "%s/%s", dir, dirp->d_name );
           if( str_link_find( tmpfile, *file_head ) == NULL ) {
             str_link_add( tmpfile, file_head, file_tail );
@@ -349,7 +361,7 @@ bool readline( FILE* file, char** line ) {
   int   i         = 0;     /* Current index of line             */
   int   line_size = 128;   /* Size of current line              */
 
-  *line = (char*)malloc_safe( line_size );
+  *line = (char*)malloc_safe( line_size, __FILE__, __LINE__ );
 
   while( !feof( file ) && ((c = (char)fgetc( file )) != '\n') ) {
 
@@ -575,22 +587,23 @@ str_link* get_next_vfile( str_link* curr, char* mod ) {
 
 /*!
  \param size  Number of bytes to allocate.
+ \param file  File that called this function.
+ \param line  Line number of file that called this function.
 
  \return Pointer to allocated memory.
 
  Allocated memory like a malloc() call but performs some pre-allocation and
  post-allocation checks to be sure that the malloc call works properly.
 */
-void* malloc_safe( size_t size ) {
+void* malloc_safe( size_t size, char* file, int line ) {
 
   void* obj;      /* Object getting malloc address */
 
   if( size > 10000 ) {
-    print_output( "Allocating memory chunk larger than 10000 bytes.  Possible error.", WARNING );
-    /* printf( "  Memory block size request: %ld bytes\n", (long) size ); */
+    print_output( "Allocating memory chunk larger than 10000 bytes.  Possible error.", WARNING, file, line );
     assert( size <= 10000 );
   } else if( size <= 0 ) {
-    print_output( "Internal:  Attempting to allocate memory of size <= 0", FATAL );
+    print_output( "Internal:  Attempting to allocate memory of size <= 0", FATAL, file, line );
     assert( size > 0 );
   }
 
@@ -601,9 +614,9 @@ void* malloc_safe( size_t size ) {
   }
 
   obj = malloc( size );
-  
+
   if( obj == NULL ) {
-    print_output( "Out of heap memory", FATAL );
+    print_output( "Out of heap memory", FATAL, file, line );
     exit( 1 );
   }
 
@@ -613,6 +626,8 @@ void* malloc_safe( size_t size ) {
 
 /*!
  \param size  Number of bytes to allocate.
+ \param file  Name of file that called this function.
+ \param line  Line number of file that called this function.
 
  \return Pointer to allocated memory.
 
@@ -620,12 +635,12 @@ void* malloc_safe( size_t size ) {
  post-allocation checks to be sure that the malloc call works properly.  Unlike
  malloc_safe, there is no upper bound on the amount of memory to allocate.
 */
-void* malloc_safe_nolimit( size_t size ) {
+void* malloc_safe_nolimit( size_t size, char* file, int line ) {
 
   void* obj;  /* Object getting malloc address */
 
   if( size <= 0 ) {
-    print_output( "Internal:  Attempting to allocate memory of size <= 0", FATAL );
+    print_output( "Internal:  Attempting to allocate memory of size <= 0", FATAL, file, line );
     assert( size > 0 );
   }
 
@@ -638,7 +653,7 @@ void* malloc_safe_nolimit( size_t size ) {
   obj = malloc( size );
 
   if( obj == NULL ) {
-    print_output( "Out of heap memory", FATAL );
+    print_output( "Out of heap memory", FATAL, file, line );
     exit( 1 );
   }
 
@@ -660,6 +675,29 @@ void free_safe( void* ptr ) {
   /* printf( "Freeing memory, addr: 0x%lx\n", ptr ); */
 
   free( ptr );
+
+}
+
+/*!
+ \param str   String to duplicate.
+ \param file  Name of file that called this function.
+ \param line  Line number of file that called this function.
+
+ Calls the strdup() function for the specified string, making sure that the string to
+ allocate is a healthy string (contains NULL character).
+*/
+char* strdup_safe( const char* str, char* file, int line ) {
+
+  char* new_str;
+
+  if( strlen( str ) > 10000 ) {
+    print_output( "Attempting to call strdup for a string exceeding 10000 chars", FATAL, file, line );
+    exit( 1 );
+  }
+
+  new_str = strdup( str );
+
+  return( strdup( str ) );
 
 }
 
@@ -692,7 +730,7 @@ void gen_space( char* spaces, int num_spaces ) {
 void timer_clear( timer** tm ) {
 
   if( *tm == NULL ) {
-    *tm = (timer*)malloc_safe( sizeof( timer ) ); 
+    *tm = (timer*)malloc_safe( sizeof( timer ), __FILE__, __LINE__ ); 
   }
 
   (*tm)->total = 0;
@@ -707,7 +745,7 @@ void timer_clear( timer** tm ) {
 void timer_start( timer** tm ) {
 
   if( *tm == NULL ) {
-    *tm = (timer*)malloc_safe( sizeof( timer ) );
+    *tm = (timer*)malloc_safe( sizeof( timer ), __FILE__, __LINE__ );
     timer_clear( tm );
   }
 
@@ -735,6 +773,10 @@ void timer_stop( timer** tm ) {
 
 /*
  $Log$
+ Revision 1.26  2004/03/15 21:38:17  phase1geo
+ Updated source files after running lint on these files.  Full regression
+ still passes at this point.
+
  Revision 1.25  2003/10/03 03:08:44  phase1geo
  Modifying filename in summary output to only specify basename of file instead
  of entire path.  The verbose report contains the full pathname still, however.

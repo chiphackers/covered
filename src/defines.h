@@ -18,6 +18,14 @@
 #include <sys/times.h>
 #endif
 
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
+
 /*!
  Specifies current version of the Covered utility.
 */
@@ -923,6 +931,8 @@
 
 /*! @} */
 
+#define snprintf(x,y,...)	{ int svar = snprintf( x, y, __VA_ARGS__ ); assert( svar < (y) ); }
+
 /*!
  Defines boolean variables used in most functions.
 */
@@ -1568,6 +1578,10 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.103  2004/03/15 21:38:17  phase1geo
+ Updated source files after running lint on these files.  Full regression
+ still passes at this point.
+
  Revision 1.102  2004/01/30 06:04:43  phase1geo
  More report output format tweaks.  Adjusted lines and spaces to make things
  look more organized.  Still some more to go.  Regression will fail at this

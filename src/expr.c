@@ -90,7 +90,7 @@ void expression_create_value( expression* exp, int width, bool data ) {
   nibble* value = NULL;    /* Temporary storage of vector nibble array */
 
   if( data == TRUE ) {
-    value = (nibble*)malloc_safe( sizeof( nibble ) * width );
+    value = (nibble*)malloc_safe( (sizeof( nibble ) * width), __FILE__, __LINE__ );
   }
 
   /* Create value */
@@ -118,18 +118,18 @@ expression* expression_create( expression* right, expression* left, int op, bool
   int         rwidth = 0;  /* Bit width of expression on right    */
   int         lwidth = 0;  /* Bit width of expression on left     */
 
-  new_expr = (expression*)malloc_safe( sizeof( expression ) );
+  new_expr = (expression*)malloc_safe( sizeof( expression ), __FILE__, __LINE__ );
 
   new_expr->suppl        = (((int)lhs & 0x1) << SUPPL_LSB_LHS) | ((op & 0x7f) << SUPPL_LSB_OP);
   new_expr->id           = id;
   new_expr->ulid         = -1;
   new_expr->line         = line;
   new_expr->sig          = NULL;
-  new_expr->parent       = (expr_stmt*)malloc_safe( sizeof( expr_stmt ) );
+  new_expr->parent       = (expr_stmt*)malloc_safe( sizeof( expr_stmt ), __FILE__, __LINE__ );
   new_expr->parent->expr = NULL;
   new_expr->right        = right;
   new_expr->left         = left;
-  new_expr->value        = (vector*)malloc_safe( sizeof( vector ) );
+  new_expr->value        = (vector*)malloc_safe( sizeof( vector ), __FILE__, __LINE__ );
   new_expr->table        = NULL;
 
   if( right != NULL ) {
@@ -600,7 +600,7 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
     if( curr_mod == NULL ) {
 
       snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  expression (%d) in database written before its module", id );
-      print_output( user_msg, FATAL );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
       retval = FALSE;
 
     } else {
@@ -611,7 +611,7 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
         right = NULL;
       } else if( (expl = exp_link_find( &texp, curr_mod->exp_head )) == NULL ) {
         snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  root expression (%d) found before leaf expression (%d) in database file", id, right_id );
-  	    print_output( user_msg, FATAL );
+  	    print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( 1 );
       } else {
         right = expl->exp;
@@ -623,7 +623,7 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
         left = NULL;
       } else if( (expl = exp_link_find( &texp, curr_mod->exp_head )) == NULL ) {
         snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  root expression (%d) found before leaf expression (%d) in database file", id, left_id );
-        print_output( user_msg, FATAL );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( 1 );
       } else {
         left = expl->exp;
@@ -677,7 +677,7 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
 
         } else {
 
-          print_output( "Unable to read vector value for expression", FATAL );
+          print_output( "Unable to read vector value for expression", FATAL, __FILE__, __LINE__ );
           retval = FALSE;
  
         }
@@ -709,7 +709,7 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
 
   } else {
 
-    print_output( "Unable to read expression value", FATAL );
+    print_output( "Unable to read expression value", FATAL, __FILE__, __LINE__ );
     retval = FALSE;
 
   }
@@ -748,9 +748,10 @@ bool expression_db_merge( expression* base, char** line, bool same ) {
 
     *line = *line + chars_read;
 
-    if( (base->id != id) || (SUPPL_OP( base->suppl ) != SUPPL_OP( suppl )) || (base->line != linenum) ) {
+    if( (base->id != id) || (SUPPL_OP( base->suppl ) != SUPPL_OP( suppl )) ) {
 
-      print_output( "Attempting to merge databases derived from different designs.  Unable to merge", FATAL );
+      print_output( "Attempting to merge databases derived from different designs.  Unable to merge",
+                    FATAL, __FILE__, __LINE__ );
       exit( 1 );
 
     } else {
@@ -848,7 +849,7 @@ void expression_operate( expression* expr ) {
   if( expr != NULL ) {
 
     snprintf( user_msg, USER_MSG_LENGTH, "In expression_operate, id: %d, op: %d, line: %d", expr->id, SUPPL_OP( expr->suppl ), expr->line );
-    print_output( user_msg, DEBUG );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
     assert( expr->value != NULL );
     assert( SUPPL_IS_LHS( expr->suppl ) == 0 );
@@ -874,7 +875,7 @@ void expression_operate( expression* expr ) {
           intval1 = vector_to_int( expr->left->value );
           intval2 = vector_to_int( expr->right->value );
           if( intval2 == 0 ) {
-            print_output( "1 Division by 0 error", FATAL );
+            print_output( "Division by 0 error", FATAL, __FILE__, __LINE__ );
             exit( 1 );
           }
           intval1 = intval1 / intval2;
@@ -894,7 +895,7 @@ void expression_operate( expression* expr ) {
           intval1 = vector_to_int( expr->left->value );
           intval2 = vector_to_int( expr->right->value );
           if( intval2 == 0 ) {
-            print_output( "2 Division by 0 error", FATAL );
+            print_output( "Division by 0 error", FATAL, __FILE__, __LINE__ );
             exit( 1 );
           }
           intval1 = intval1 % intval2;
@@ -1199,7 +1200,7 @@ void expression_operate( expression* expr ) {
         break;
 
       default :
-        print_output( "Internal error:  Unidentified expression operation!", FATAL );
+        print_output( "Internal error:  Unidentified expression operation!", FATAL, __FILE__, __LINE__ );
         exit( 1 );
         break;
 
@@ -1401,6 +1402,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.94  2004/03/15 21:38:17  phase1geo
+ Updated source files after running lint on these files.  Full regression
+ still passes at this point.
+
  Revision 1.93  2004/01/25 03:41:48  phase1geo
  Fixes bugs in summary information not matching verbose information.  Also fixes
  bugs where instances were output when no logic was missing, where instance

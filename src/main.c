@@ -69,7 +69,7 @@ int main( int argc, char** argv ) {
 
   if( argc == 1 ) {
 
-    print_output( "Must specify a command (score, merge, report, -v, or -h)", FATAL );
+    print_output( "Must specify a command (score, merge, report, -v, or -h)", FATAL, __FILE__, __LINE__ );
     retval = -1;
 
   } else {
@@ -77,7 +77,7 @@ int main( int argc, char** argv ) {
     if( strncmp( "-v", argv[1], 2 ) == 0 ) {
 
       /* Display version of Covered */
-      print_output( COVERED_VERSION, NORMAL );
+      print_output( COVERED_VERSION, NORMAL, __FILE__, __LINE__ );
 
     } else if( strncmp( "-h", argv[1], 2 ) == 0 ) {
 
@@ -112,7 +112,7 @@ int main( int argc, char** argv ) {
 
         } else {
 
-          print_output( "Unknown command.  Please see \"covered -h\" for usage.", FATAL );
+          print_output( "Unknown command.  Please see \"covered -h\" for usage.", FATAL, __FILE__, __LINE__ );
           retval = -1;
 
         }
@@ -123,7 +123,7 @@ int main( int argc, char** argv ) {
 
       if( !cmd_found ) {
  
-        print_output( "Must specify a command (score, merge, report, -v, or -h)", FATAL );
+        print_output( "Must specify a command (score, merge, report, -v, or -h)", FATAL, __FILE__, __LINE__ );
         retval = -1;
 
       }
@@ -138,6 +138,10 @@ int main( int argc, char** argv ) {
 
 /*
  $Log$
+ Revision 1.11  2002/11/27 15:53:50  phase1geo
+ Checkins for next release (20021127).  Updates to documentation, configuration
+ files and NEWS.
+
  Revision 1.10  2002/11/02 16:16:20  phase1geo
  Cleaned up all compiler warnings in source and header files.
 

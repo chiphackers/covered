@@ -93,8 +93,8 @@ fsm_var* fsm_var_add( char* mod_name, expression* in_state, expression* out_stat
   /* If we have not parsed, design add new FSM variable to list */
   if( mod_head == NULL ) {
 
-    new_var        = (fsm_var*)malloc_safe( sizeof( fsm_var ) );
-    new_var->mod   = strdup( mod_name );
+    new_var        = (fsm_var*)malloc_safe( sizeof( fsm_var ), __FILE__, __LINE__ );
+    new_var->mod   = strdup_safe( mod_name, __FILE__, __LINE__ );
     new_var->name  = NULL;
     new_var->ivar  = in_state;
     new_var->ovar  = out_state;
@@ -117,7 +117,7 @@ fsm_var* fsm_var_add( char* mod_name, expression* in_state, expression* out_stat
     if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
       table = fsm_create( in_state, out_state );
       if( name != NULL ) {
-        table->name = strdup( name );
+        table->name = strdup_safe( name, __FILE__, __LINE__ );
       }
       in_state->table  = table;
       out_state->table = table;
@@ -182,12 +182,12 @@ bool fsm_var_bind_expr( char* sig_name, expression* expr, char* mod_name ) {
     if( !bind_perform( sig_name, expr, modl->mod, modl->mod, FALSE, TRUE ) ) {
       snprintf( user_msg, USER_MSG_LENGTH, "Unable to bind FSM-specified signal (%s) to expression (%d) in module (%s)",
                 sig_name, expr->id, mod_name );
-      print_output( user_msg, FATAL );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
       retval = FALSE;
     }
   } else {
     snprintf( user_msg, USER_MSG_LENGTH, "Unable to find FSM-specified module (%s) in design", mod_name ); 
-    print_output( user_msg, FATAL );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = FALSE;
   }
 
@@ -292,10 +292,10 @@ void fsm_var_bind_add( char* sig_name, expression* expr, char* mod_name ) {
   if( mod_head == NULL ) {
 
     /* Allocate and initialize FSM variable bind structure */
-    fvb           = (fv_bind*)malloc_safe( sizeof( fv_bind ) );
-    fvb->sig_name = strdup( sig_name );
+    fvb           = (fv_bind*)malloc_safe( sizeof( fv_bind ), __FILE__, __LINE__ );
+    fvb->sig_name = strdup_safe( sig_name, __FILE__, __LINE__ );
     fvb->expr     = expr;
-    fvb->mod_name = strdup( mod_name );
+    fvb->mod_name = strdup_safe( mod_name, __FILE__, __LINE__ );
     fvb->next     = NULL;
 
     /* Add new structure to the global list */
@@ -308,7 +308,9 @@ void fsm_var_bind_add( char* sig_name, expression* expr, char* mod_name ) {
 
   } else {
 
-    fsm_var_bind_expr( sig_name, expr, mod_name );
+    if( !fsm_var_bind_expr( sig_name, expr, mod_name ) ) {
+      exit( 1 );
+    }
 
   }
 
@@ -325,9 +327,9 @@ void fsm_var_stmt_add( statement* stmt, char* mod_name ) {
 
   fv_bind* fvb;  /* Pointer to new FSM variable binding structure */
 
-  fvb           = (fv_bind*)malloc_safe( sizeof( fv_bind ) );
+  fvb           = (fv_bind*)malloc_safe( sizeof( fv_bind ), __FILE__, __LINE__ );
   fvb->stmt     = stmt;
-  fvb->mod_name = strdup( mod_name );
+  fvb->mod_name = strdup_safe( mod_name, __FILE__, __LINE__ );
   fvb->next     = NULL;
 
   /* Add new structure to the head of the global list */
@@ -463,6 +465,10 @@ void fsm_var_remove( fsm_var* fv ) {
 
 /*
  $Log$
+ Revision 1.14  2004/03/15 21:38:17  phase1geo
+ Updated source files after running lint on these files.  Full regression
+ still passes at this point.
+
  Revision 1.13  2003/11/15 04:21:57  phase1geo
  Fixing syntax errors found in Doxygen and GCC compiler.
 

@@ -53,7 +53,7 @@ fsm* fsm_create( expression* from_state, expression* to_state ) {
 
   fsm* table;  /* Pointer to newly created FSM */
 
-  table             = (fsm*)malloc_safe( sizeof( fsm ) );
+  table             = (fsm*)malloc_safe( sizeof( fsm ), __FILE__, __LINE__ );
   table->name       = NULL;
   table->from_state = from_state;
   table->to_state   = to_state;
@@ -77,7 +77,7 @@ void fsm_add_arc( fsm* table, expression* from_state, expression* to_state ) {
   fsm_arc* arc;  /* Pointer to newly created FSM arc structure */
 
   /* Create an initialize specified arc */
-  arc             = (fsm_arc*)malloc_safe( sizeof( fsm_arc ) );
+  arc             = (fsm_arc*)malloc_safe( sizeof( fsm_arc ), __FILE__, __LINE__ );
   arc->from_state = from_state;
   arc->to_state   = to_state;
   arc->next       = NULL;
@@ -221,7 +221,7 @@ bool fsm_db_read( char** line, module* mod ) {
  
         } else {
 
-          print_output( "Unable to read FSM state transition arc array", FATAL );
+          print_output( "Unable to read FSM state transition arc array", FATAL, __FILE__, __LINE__ );
           retval = FALSE;
 
         }
@@ -236,7 +236,7 @@ bool fsm_db_read( char** line, module* mod ) {
     } else {
 
       snprintf( user_msg, USER_MSG_LENGTH, "Unable to find state variable expressions (%d, %d) for current FSM", iexp.id, oexp.id );
-      print_output( user_msg, FATAL );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
       retval = FALSE;
 
     }
@@ -282,7 +282,8 @@ bool fsm_db_merge( fsm* base, char** line, bool same ) {
 
     if( (base->from_state->id != iid) || (base->to_state->id != oid) ) {
 
-      print_output( "Attempting to merge two databases derived from different designs.  Unable to merge", FATAL );
+      print_output( "Attempting to merge two databases derived from different designs.  Unable to merge",
+                    FATAL, __FILE__, __LINE__ );
       exit( 1 );
 
     } else if( is_table == 1 ) {
@@ -764,6 +765,10 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.38  2004/03/15 21:38:17  phase1geo
+ Updated source files after running lint on these files.  Full regression
+ still passes at this point.
+
  Revision 1.37  2004/01/31 18:58:43  phase1geo
  Finished reformatting of reports.  Fixed bug where merged reports with
  different leading hierarchies were outputting the leading hierarchy of one

@@ -181,7 +181,7 @@ static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int
       } else {
 
         right->exp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, 0, line, FALSE );
-        vector_init( right->exp->value, (nibble*)malloc_safe( sizeof( nibble ) * 32 ), 32 );  
+        vector_init( right->exp->value, (nibble*)malloc_safe( (sizeof( nibble ) * 32), __FILE__, __LINE__ ), 32 );  
         vector_from_int( right->exp->value, right->num );
 
         tmpexp = expression_create( right->exp, left->exp, op, FALSE, 0, line, FALSE );
@@ -196,7 +196,7 @@ static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int
       if( left->exp == NULL ) {
 
         left->exp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, 0, line, FALSE );
-        vector_init( left->exp->value, (nibble*)malloc_safe( sizeof( nibble ) * 32 ), 32 );
+        vector_init( left->exp->value, (nibble*)malloc_safe( (sizeof( nibble ) * 32), __FILE__, __LINE__ ), 32 );
         vector_from_int( left->exp->value, left->num );
 
         tmpexp = expression_create( right->exp, left->exp, op, FALSE, 0, line, FALSE );
@@ -286,6 +286,10 @@ void static_expr_dealloc( static_expr* stexp, bool rm_exp ) {
 
 /*
  $Log$
+ Revision 1.10  2003/11/26 23:14:41  phase1geo
+ Adding code to include left-hand-side expressions of statements for report
+ outputting purposes.  Full regression does not yet pass.
+
  Revision 1.9  2003/10/17 12:55:36  phase1geo
  Intermediate checkin for LSB fixes.
 

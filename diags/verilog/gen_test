@@ -1,0 +1,44 @@
+#!/usr/bin/perl
+
+#	Name:		gen_test
+#
+#	Created by:	Trevor Williams  <trevorw(sgi.com)>
+#
+#	Date:		3/14/2004
+#
+#	Purpose:	Generates templated diagnostic and configuration file for new diagnostic.
+#
+#	Usage:		gen_test <diagnostic_name>
+
+$diag = $ARGV[0];
+
+if( $diag eq "" ) {
+  print "Usage:  gen_test <diagnostic_name>\n";
+  exit( 1 );
+}
+
+if( -e "${diag}.v" ) {
+  print "Diagnostic ${diag}.v already exists in this directory.  Not generating...\n";
+  exit( 1 );
+}
+
+print "Generating test ${diag}...\n";
+
+# Generate template Verilog diagnostic
+open( DIAG, ">${diag}.v" ) || die "Can't open ${diag}: $!\n";
+print DIAG "module main;\n";
+print DIAG "\n";
+print DIAG "initial begin\n";
+print DIAG "        \$dumpfile( \"${diag}.vcd\" );\n";
+print DIAG "        \$dumpvars( 0, main );\n";
+print DIAG "        #10;\n";
+print DIAG "        \$finish;\n";
+print DIAG "end\n";
+print DIAG "\n";
+print DIAG "endmodule\n";
+close( DIAG );
+
+# Generate configuration file
+open( CONF, ">../regress/${diag}.cfg" ) || die "Can't open ${diag}.cfg: $!\n";
+print CONF "-t main -vcd ${diag}.vcd -o ${diag}.cdd -v ${diag}.v\n";
+close( CONF );
