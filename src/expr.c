@@ -234,6 +234,8 @@ void expression_set_value( expression* exp, vector* vec ) {
   assert( exp->value != NULL );
   assert( vec != NULL );
   
+  // printf( "In expression_set_value, expr: %d, op: %d, line: %d\n", exp->id, SUPPL_OP( exp->suppl ), exp->line );
+  
   switch( SUPPL_OP( exp->suppl ) ) {
     case EXP_OP_SIG   :
     case EXP_OP_PARAM :
@@ -268,7 +270,7 @@ void expression_set_value( expression* exp, vector* vec ) {
         }
       }
       assert( exp->value->width <= vec->width );
-      assert( exp->value->value == NULL );
+      // assert( exp->value->value == NULL );
       assert( vec->value != NULL );
       exp->value->value = vec->value;
       break;
@@ -1209,6 +1211,12 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.67  2002/11/27 03:49:20  phase1geo
+ Fixing bugs in score and report commands for regression.  Finally fixed
+ static expression calculation to yield proper coverage results for constant
+ expressions.  Updated regression suite and development documentation for
+ changes.
+
  Revision 1.66  2002/11/24 14:38:12  phase1geo
  Updating more regression CDD files for bug fixes.  Fixing bugs where combinational
  expressions were counted more than once.  Adding new diagnostics to regression

@@ -34,7 +34,7 @@ DIAGS1       = always1        always2        always3        always3.1.11A  alway
                ifdef1.1       ifdef1.2       ifdef2.1       ifdef2.2       ifdef2.3 \
                ifelse1        include1       include1.1     include2       instance1 \
                instance1.1    instance1.2    instance2      instance3      instance4 \
-               instance4.1    instance4.2    long_exp1      mbit_sel1      mbit_sel2 \
+               instance4.1    instance4.2    instance5      long_exp1      mbit_sel1      mbit_sel2 \
                mbit_sel3      mbit_sel3.1    mult1          param1         param1.1 \
                param1.2       param1.3       param3         param3.1       param3.2 \
                param3.3       param4         param5         param6         real1.1 \
