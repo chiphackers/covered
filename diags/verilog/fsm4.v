@@ -14,7 +14,7 @@ reg [15:0]  state;
 
 always @(posedge clk)
   if( reset )
-    state = STATE_IDLE;
+    state <= STATE_IDLE;
   else
    case( state )
      STATE_IDLE:  state <= (valid & head) ? STATE_HEAD : STATE_IDLE;

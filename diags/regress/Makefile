@@ -57,7 +57,8 @@ DIAGS1        = always1        always2        always3        always3.1.11A  alwa
                 param3.1       param3.2       param3.3       param3.4       param3.5 \
                 param4         param4.1       param5         param6         param6.1 \
                 param7         pulldown1      pullup1        race1          race1.1 \
-                race1.2        race2.1        sbit_sel1 \
+                race1.2        race2.1        race2.2        race2.3        race2.4 \
+                sbit_sel1 \
                 sbit_sel1.1    static1        string1        supply0        supply1 \
                 toggle         tri            tri0           tri1
 DIAGS2        = delay1.1

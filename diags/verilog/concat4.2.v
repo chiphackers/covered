@@ -5,7 +5,7 @@ reg          b;
 reg          c;
 reg  [3:0]   d;
 
-always @(d) {a, b, c} <= d;
+always @(d) {a, b, c} = d;
 
 initial begin
 	$dumpfile( "concat4.2.vcd" );

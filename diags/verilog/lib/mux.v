@@ -11,11 +11,11 @@ reg		z;
 
 always @(posedge clock)
   if( reset )
-    z = 1'b0;
+    z <= 1'b0;
   else
     if( sel )
-      z = a;
+      z <= a;
     else
-      z = b;
+      z <= b;
 
 endmodule

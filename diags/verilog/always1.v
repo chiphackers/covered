@@ -13,13 +13,13 @@ always @(posedge c) d <= ~d;
 
 always @(negedge d) e <= ~e;
 
-always @(e or f) g <= e & f;
+always @(e or f) g = e & f;
 
 always @(posedge c)
   if( e & d )
-    h = 1'b0;
+    h <= 1'b0;
   else
-    h = 1'b1;
+    h <= 1'b1;
 
 initial begin
 	$dumpfile( "always1.vcd" );

@@ -2,7 +2,7 @@ module main;
 
 reg	c, d;
 
-always @(c) d <= ~d;
+always @(posedge c or negedge c) d <= ~d;
 
 initial begin
 	$dumpfile( "always4.vcd" );

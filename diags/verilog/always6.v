@@ -3,7 +3,7 @@ module main;
 reg [2:1] a;
 reg       b;
 
-always @(a) b <= a[1];
+always @(a) b = a[1];
 
 initial begin
 	$dumpfile( "always6.vcd" );

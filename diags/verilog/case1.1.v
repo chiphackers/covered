@@ -5,9 +5,9 @@ reg	a, b;
 
 always @(posedge clock)
   case( a )
-    1'b0    :  b = 1'b1;
-    1'b1    :  b = 1'b0;
-    default :  b = 1'bx;
+    1'b0    :  b <= 1'b1;
+    1'b1    :  b <= 1'b0;
+    default :  b <= 1'bx;
   endcase
 
 initial begin
