@@ -16,6 +16,7 @@ downloaded covered-0.2.
   - Added fclose() after the VCD parsing was complete.
   - Fixed a memory problem with the symtable structure that caused other data structure
     values to be corrupted.
+  - Fixed assertion error problem with VCD symbol aliasing.
 
     * 08/16/2003
 
