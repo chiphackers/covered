@@ -70,7 +70,7 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY INSTANCE
 Instance                                               Logic Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                                             10/  46/  56       18%
+  main                                             10/  50/  60       17%
 
 Module: main, File: always9.v, Instance: main
 --------------------------------------------------------

@@ -42,7 +42,7 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY INSTANCE
 Instance                                               Logic Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                                             76/   0/  76      100%
+  main                                             96/   0/  96      100%
 =================================================================================
 
 FINITE STATE MACHINE COVERAGE RESULTS BY INSTANCE

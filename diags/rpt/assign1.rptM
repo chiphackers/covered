@@ -42,7 +42,7 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY MODULE
 Module                    Filename                     Logical Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    assign1.v                76/   0/  76      100%
+  main                    assign1.v                96/   0/  96      100%
 =================================================================================
 
 FINITE STATE MACHINE COVERAGE RESULTS BY MODULE

@@ -32,7 +32,7 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY INSTANCE
 Instance                                               Logic Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                                              3/   3/   6       50%
+  main                                              3/   5/   8       38%
 
 Module: main, File: expand4.4.v, Instance: main
 --------------------------------------------------------

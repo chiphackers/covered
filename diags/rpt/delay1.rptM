@@ -34,7 +34,7 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY MODULE
 Module                    Filename                     Logical Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    delay1.v                  3/   1/   4       75%
+  main                    delay1.v                  3/   3/   6       50%
 
 Module: main, File: delay1.v
 --------------------------------------------------------

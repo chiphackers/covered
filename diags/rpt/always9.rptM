@@ -70,7 +70,7 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY MODULE
 Module                    Filename                     Logical Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    always9.v                10/  46/  56       18%
+  main                    always9.v                10/  50/  60       17%
 
 Module: main, File: always9.v
 --------------------------------------------------------

@@ -32,7 +32,25 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY INSTANCE
 Instance                                               Logic Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                                              2/   0/   2      100%
+  main                                              2/   2/   4       50%
+
+Module: main, File: define4.v, Instance: main
+--------------------------------------------------------
+Missed Combinations
+====================================================
+ Line #     Expression
+====================================================
+     13:     a  = ( b  & 1)
+                  |---1---|
+
+
+Expression 1   (2/4)
+^^^^^^^^^^^^^ - &
+ LR | LR | LR | LR 
+=00=|=01=|=10=|=11=
+ *         *     
+
+
 =================================================================================
 
 FINITE STATE MACHINE COVERAGE RESULTS BY INSTANCE
