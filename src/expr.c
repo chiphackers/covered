@@ -519,28 +519,27 @@ void expression_operate( expression* expr ) {
         vector_bitwise_op( expr->value, &vec1, &vec2, and_optab );
         break;
 
-      case EXP_OP_COND_T :
+      case EXP_OP_COND :
+        /* Simple vector copy from right side */
+        vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, expr->right->value->lsb, expr->value->lsb );
+        break;
+
+      case EXP_OP_COND_SEL :
         vector_init( &vec1, &value1a, 1, 0 );
-        vector_unary_op( &vec1, expr->left->value, or_optab );
-        if( vector_bit_val( vec1.value, 0 ) == 1 ) {
-          vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 
+        vector_unary_op( &vec1, expr->parent->expr->left->value, or_optab );
+        if( vector_bit_val( vec1.value, 0 ) == 0 ) {
+          vector_set_value( expr->value, expr->right->value->value, expr->right->value->width,
                             expr->right->value->lsb, expr->value->lsb );
-        } else if( vector_bit_val( vec1.value, 0 ) >= 2 ) {
+        } else if( vector_bit_val( vec1.value, 0 ) == 1 ) {
+          vector_set_value( expr->value, expr->left->value->value, expr->left->value->width,
+                            expr->left->value->lsb, expr->value->lsb );
+        } else {
           vec = vector_create( expr->value->width, 0 );
           for( i=0; i<vec->width; i++ ) {
             vector_set_bit( vec->value, 2, i );
           }
           vector_set_value( expr->value, vec->value, vec->width, vec->lsb, expr->value->lsb );
           vector_dealloc( vec );
-        }
-        break;
-
-      case EXP_OP_COND_F :
-        vector_init( &vec1, &value1a, 1, 0 );
-        vector_unary_op( &vec1, expr->left->value, or_optab );
-        if( vector_bit_val( vec1.value, 0 ) == 0 ) {
-          vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 
-                            expr->right->value->lsb, expr->value->lsb );
         }
         break;
 
@@ -746,6 +745,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.20  2002/07/01 15:10:42  phase1geo
+/* Fixing always loopbacks and setting stop bits correctly.  All verilog diagnostics
+/* seem to be passing with these fixes.
+/*
 /* Revision 1.19  2002/06/29 04:51:31  phase1geo
 /* Various fixes for bugs found in regression testing.
 /*

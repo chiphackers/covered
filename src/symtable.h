@@ -15,7 +15,7 @@
 void symtable_add( char* sym, signal* sig, symtable** symtab );
 
 //! Finds specified symbol in specified symbol table and returns pointer to signal.
-bool symtable_find( char* sym, symtable* symtab, signal** sig );
+bool symtable_find( char* sym, symtable* symtab, signal** sig, int skip );
 
 //! Deallocates all symtable entries for specified symbol table.
 void symtable_dealloc( symtable* symtab );

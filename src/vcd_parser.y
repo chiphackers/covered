@@ -77,15 +77,23 @@ definition
 	| V_var supported_vartype VALUE VALUE signame V_end
 		{
 		  db_assign_symbol( $5, $4 );
-
 		  free_safe( $4 );
 		  free_safe( $5 );
 		}
-		    
+        | V_var supported_vartype VALUE IDENTIFIER signame V_end
+                {
+                  db_assign_symbol( $5, $4 );
+                  free_safe( $4 );
+                  free_safe( $5 );
+                }
 	| V_var unsupported_vartype VALUE VALUE signame V_end
 		{
 		  free_safe( $4 );
 		}
+        | V_var unsupported_vartype VALUE IDENTIFIER signame V_end
+                {
+                  free_safe( $4 );
+                }
 	| V_unknown
 		{
 		  fprintf( stderr, "Error:  Unknown VCD keyword, line %d\n", @1.first_line );

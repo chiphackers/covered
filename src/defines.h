@@ -400,8 +400,8 @@
 #define EXP_OP_CNE	0x16	/*!< 22 '!==' operator */
 #define EXP_OP_LOR	0x17	/*!< 23 '||'  operator */
 #define EXP_OP_LAND	0x18	/*!< 24 '&&'  operator */
-#define EXP_OP_COND_T	0x19	/*!< 25 '?:' true condition operator  */
-#define EXP_OP_COND_F   0x1a    /*!< 26 '?:' false condition operator */
+#define EXP_OP_COND  	0x19	/*!< 25 '?:' conditional operator     */
+#define EXP_OP_COND_SEL 0x1a    /*!< 26 '?:' conditional select       */
 #define EXP_OP_UINV	0x1b	/*!< 27 unary '~'  operator           */
 #define EXP_OP_UAND	0x1c	/*!< 28 unary '&'  operator           */
 #define EXP_OP_UNOT	0x1d	/*!< 29 unary '!'  operator           */
@@ -811,6 +811,9 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.19  2002/06/30 22:23:20  phase1geo
+/* Working on fixing looping in parser.  Statement connector needs to be revamped.
+/*
 /* Revision 1.18  2002/06/28 03:04:59  phase1geo
 /* Fixing more errors found by diagnostics.  Things are running pretty well at
 /* this point with current diagnostics.  Still some report output problems.

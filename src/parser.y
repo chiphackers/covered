@@ -681,10 +681,9 @@ expression
 		}
 	| expression '?' expression ':' expression
 		{
-		  expression* tmp1 = db_create_expression( $3, $1, EXP_OP_COND_T, @1.first_line, NULL );
-		  expression* tmp2 = db_create_expression( $5, $1, EXP_OP_COND_F, @1.first_line, NULL );
-		  expression* tmp  = db_create_expression( tmp2, tmp1, EXP_OP_OR, @1.first_line, NULL );
-		  $$ = tmp;
+                  expression* csel = db_create_expression( $5,   $3, EXP_OP_COND_SEL, @1.first_line, NULL );
+                  expression* cond = db_create_expression( csel, $1, EXP_OP_COND,     @1.first_line, NULL );
+		  $$ = cond;
 		}
 	;
 
@@ -1012,12 +1011,14 @@ module_item
                   stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
                   db_add_statement( stmt );
 		}
-	| K_initial statement
+	| K_initial unused_stmt
 		{
+                  /*
                   statement* stmt = $2;
                   db_statement_set_stop( stmt, NULL );
                   stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
                   db_add_statement( stmt );
+                  */
 		}
 	| K_task IDENTIFIER ';'
 	    task_item_list_opt statement_opt

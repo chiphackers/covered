@@ -233,8 +233,8 @@ void combination_underline_tree( expression* exp, char*** lines, int* depth, int
         case EXP_OP_CNE      :  *size = l_size + r_size + 7;  strcpy( code_fmt, " %s     %s " );  break;
         case EXP_OP_LOR      :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "  );  break;
         case EXP_OP_LAND     :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "  );  break;
-        case EXP_OP_COND_T   :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s   %s"     );  break;
-        case EXP_OP_COND_F   :  *size = l_size + r_size + 0;  strcpy( code_fmt, "%s"          );  break;
+        case EXP_OP_COND     :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s   "       );  break;
+        case EXP_OP_COND_SEL :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s   %s"     );  break;
         case EXP_OP_UINV     :  *size = l_size + r_size + 2;  strcpy( code_fmt, " %s "        );  break;
         case EXP_OP_UAND     :  *size = l_size + r_size + 2;  strcpy( code_fmt, " %s "        );  break;
         case EXP_OP_UNOT     :  *size = l_size + r_size + 2;  strcpy( code_fmt, " %s "        );  break;
@@ -302,7 +302,7 @@ void combination_underline_tree( expression* exp, char*** lines, int* depth, int
 
           } else if( i < r_depth ) {
 
-            if( (SUPPL_OP( exp->suppl ) == EXP_OP_COND_F) || (l_size == 0) ) { 
+            if( l_size == 0 ) { 
  
               snprintf( (*lines)[i], (*size + 1), code_fmt, r_lines[i] );
 
@@ -491,12 +491,6 @@ void combination_list_missed( FILE* ofile, expression* exp, int* exp_id ) {
         case EXP_OP_CNE      :  combination_unary( ofile, exp );                 break;
         case EXP_OP_LOR      :  combination_two_vars( ofile, exp, 0, 1, 1, 1 );  break;
         case EXP_OP_LAND     :  combination_two_vars( ofile, exp, 0, 0, 0, 1 );  break;
-        case EXP_OP_COND_T   :  
-          fprintf( ofile, "  Conditional expression never evaluated to TRUE\n\n" );
-          break;
-        case EXP_OP_COND_F   :  
-          fprintf( ofile, "  Conditional expression never evaluated to FALSE\n\n" );
-          break;
         case EXP_OP_UINV     :  combination_unary( ofile, exp );                 break;
         case EXP_OP_UAND     :  combination_unary( ofile, exp );                 break;
         case EXP_OP_UNOT     :  combination_unary( ofile, exp );                 break;
@@ -681,6 +675,9 @@ void combination_report( FILE* ofile, bool verbose, bool instance ) {
 
 
 /* $Log$
+/* Revision 1.18  2002/06/27 21:18:48  phase1geo
+/* Fixing report Verilog output.  simple.v verilog diagnostic now passes.
+/*
 /* Revision 1.17  2002/06/27 20:39:43  phase1geo
 /* Fixing scoring bugs as well as report bugs.  Things are starting to work
 /* fairly well now.  Added rest of support for delays.

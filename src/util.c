@@ -9,6 +9,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <assert.h>
 
 #ifdef HAVE_MPATROL
 #include <mpdebug.h>
@@ -327,10 +328,10 @@ void* malloc_safe( int size ) {
   if( size > 10000 ) {
     print_output( "Allocating memory chunk larger than 10000 bytes.  Possible error.", WARNING );
     // printf( "  Memory block size request: %d bytes\n", size );
-    exit( 1 );
+    assert( size > 10000 );
   } else if( size <= 0 ) {
     print_output( "Internal:  Attempting to allocate memory of size <= 0", FATAL );
-    exit( 1 );
+    assert( size <= 0 );
   }
 
   curr_malloc_size += size;

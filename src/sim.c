@@ -203,11 +203,13 @@ statement* sim_statement( statement* head_stmt ) {
     /* Indicate that this statement's expression has been executed */
     stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_EXECUTED);
 
+/*
     if( count == 50 ) {
       assert( count == 0 );
     } else {
       count++;
     }
+*/
 
     // printf( "Executed statement %d\n", stmt->exp->id );
       
@@ -285,6 +287,10 @@ void sim_simulate() {
 }
 
 /* $Log$
+/* Revision 1.12  2002/07/01 15:10:42  phase1geo
+/* Fixing always loopbacks and setting stop bits correctly.  All verilog diagnostics
+/* seem to be passing with these fixes.
+/*
 /* Revision 1.11  2002/06/28 03:04:59  phase1geo
 /* Fixing more errors found by diagnostics.  Things are running pretty well at
 /* this point with current diagnostics.  Still some report output problems.

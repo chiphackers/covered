@@ -64,6 +64,7 @@ void symtable_add( char* sym, signal* sig, symtable** symtab ) {
  \param sym     Name of symbol to find in the table.
  \param symtab  Root of the symtable to search in.
  \param sig     Pointer to found signal.
+ \param skip    Number of matching symbol values to skip.
 
  \return Returns TRUE if symbol was found; otherwise, returns FALSE.
 
@@ -71,12 +72,15 @@ void symtable_add( char* sym, signal* sig, symtable** symtab ) {
  a match is found, assigns sig parameter to the signal represented by the symbol and
  returns TRUE; otherwise, simply returns FALSE.
 */
-bool symtable_find( char* sym, symtable* symtab, signal** sig ) {
+bool symtable_find( char* sym, symtable* symtab, signal** sig, int skip ) {
 
-  symtable* curr;     /* Pointer to current symtable */
+  symtable* curr;         /* Pointer to current symtable            */
+  bool      unmatched;    /* If TRUE, current symbol does not match */
+  int       skipped = 0;  /* Number of matching symbols skipped     */
 
   curr = symtab;
-  while( (curr != NULL) && (strcmp( sym, curr->sym ) != 0) ) {
+  while( (curr != NULL) && ((unmatched = (strcmp( sym, curr->sym ) != 0)) || (skipped < skip)) ) {
+    if( !unmatched ) { skipped++; }
     if( strcmp( sym, curr->sym ) > 0 ) {
       curr = curr->right;
     } else {
