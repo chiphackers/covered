@@ -1,17 +1,17 @@
-`define ST_STOP     0
-`define ST_GO       1
-`define ST_SLOW     2
+`define ST_STOP     3'b001
+`define ST_GO       3'b010
+`define ST_SLOW     3'b100
 
 module main;
 
 reg        clk;
 reg        go;
-wire [1:0] state;
+wire [2:0] state;
 
 fsma fsm1( clk, go, state );
 fsmb fsm2( clk, go );
 
-wire error = (state == `ST_STOP) && (state == `ST_GO) && (state == `ST_SLOW);
+wire error = (state[0] & state[1]) || (state[0] & state[2]) || (state[1] & state[2]) || (state == 3'b000);
 
 initial begin
 	$dumpfile( "example.vcd" );
@@ -34,17 +34,18 @@ module fsma( clk, go, state );
 
 input        clk;
 input        go;
-output [1:0] state;
+output [2:0] state;
 
-reg [1:0] next_state;
-reg [1:0] state;
+reg [2:0] next_state;
+reg [2:0] state;
 
 initial begin
-	state = `ST_STOP;
+	state = `ST_SLOW;
 end
 
 always @(posedge clk) state <= next_state;
 
+(* covered_fsm, lights, is="state", os="next_state" *)
 always @(state or go)
   case( state )
     `ST_STOP :  next_state = go ? `ST_GO : `ST_STOP;
@@ -59,8 +60,8 @@ module fsmb( clk, go );
 input     clk;
 input     go;
      
-reg [1:0] next_state;
-reg [1:0] state;  
+reg [2:0] next_state;
+reg [2:0] state;  
      
 initial begin
         state = `ST_STOP;
@@ -69,9 +70,9 @@ end
 always @(posedge clk) state <= next_state;
         
 (* covered_fsm, lights, is="state", os="next_state",
-                        trans="0->1",
-                        trans="1->2",
-                        trans="2->0" *)
+                        trans="3'b001->3'b010",
+                        trans="3'b010->3'b100",
+                        trans="3'b100->3'b001" *)
 always @(state or go)
   case( state )
     `ST_STOP :  next_state = go ? `ST_GO : `ST_STOP;
