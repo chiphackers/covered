@@ -146,7 +146,7 @@
             <P class="blockIndentLeft">&nbsp;</P>
           </TD>
           <TD width=100% align=center>
-<table cellspacing=2 cellpadding=4 border=1> <tr> <td colspan=2 class="tableHeader"> Options to score Command </td> </tr> <tr> <td> <strong>Option</strong> </td> <td> <strong>Description</strong> <td> </tr> <tr> <td> -vcd &lt;dumpfile&gt; </td> <td> Name of dumpfile to score design with. If this option is not used, Covered will only create an initial CDD file from the design and will not attempt to score the design. </td> </tr> <tr> <td> -i &lt;instance&gt; </td> <td> Instance name of top-level module. Necessary if module to verify coverage is not the top-level module in the design. If not specified, -t value is used. </td> </tr> <tr> <td> -o &lt;<i>filename</i>&gt; </td> <td> Name of CDD to write coverage information to </td> </tr> <tr> <td> -I &lt;<i>directory</i>&gt; </td> <td> Directory to find included Verilog files. You may use this option as many times as necessary on the command-line, one for each directory. </td> </tr> <tr> <td> -f &lt;<i>filename</i>&gt; </td> <td> Name of file containing additional arguments to parse. You may specify this option more than once on a command-line. </td> </tr> <tr> <td> -y &lt;<i>directory</i>&gt; </td> <td> Directory to find unspecified Verilog files. You may specify this option more than once on a command-line; one for each directory required. </td> </tr> <tr> <td> -v &lt;<i>filename</i>&gt; </td> <td> Name of specific Verilog file to score. You may specify this option more than once on a command-line; one for each filename to parse. </td> </tr> <tr> <td> -e &lt;<i>module</i>&gt; </td> <td> Name of module to not score. You may specify this option more than once on a command-line; one for each module to remove from coverage. </td> </tr> <tr> <td> -D &lt;name&gt;(=&lt;value&gt;) </td> <td> Defines the specified name to 1 or the specified value. </td> </tr> <tr> <td> -p &lt;filename&gt; </td> <td> Overrides filename used for outputting intermediate preprocessor output. See "Other Notes" section below for more information. </td> </tr> <tr> <td> -P &lt;parameter_scope&gt;=&lt;value&gt; </td> <td> Performs a defparam on the specified parameter with value. </td> </tr> <tr> <td> -T min|typ|max </td> <td> Specifies which value to use in min:typ:max delay expressions. Default is typ. </td> </tr> <tr> <td> -ts &lt;number&gt; </td> <td> When scoring occurs, this option allows the user to see how far the simulator has progressed by outputting the current timestep to standard output. The value of &lt;number&gt; specifies how many timesteps are allowed to be simulated before outputting the current timestep (results in less calls to output stream). </td> <tr> <td> -h </td> <td> Outputs usage information for the score command </td> </tr> </table><br>
+<table cellspacing=2 cellpadding=4 border=1> <tr> <td colspan=2 class="tableHeader"> Options to score Command </td> </tr> <tr> <td> <strong>Option</strong> </td> <td> <strong>Description</strong> <td> </tr> <tr> <td> -vcd &lt;dumpfile&gt; </td> <td> Name of dumpfile to score design with. If this option is not used, Covered will only create an initial CDD file from the design and will not attempt to score the design. </td> </tr> <tr> <td> -i &lt;instance&gt; </td> <td> Instance name of top-level module. Necessary if module to verify coverage is not the top-level module in the design. If not specified, -t value is used. </td> </tr> <tr> <td> -o &lt;<i>filename</i>&gt; </td> <td> Name of CDD to write coverage information to </td> </tr> <tr> <td> -I &lt;<i>directory</i>&gt; </td> <td> Directory to find included Verilog files. You may use this option as many times as necessary on the command-line, one for each directory. </td> </tr> <tr> <td> -f &lt;<i>filename</i>&gt; </td> <td> Name of file containing additional arguments to parse. You may specify this option more than once on a command-line. </td> </tr> <tr> <td> -y &lt;<i>directory</i>&gt; </td> <td> Directory to find unspecified Verilog files. You may specify this option more than once on a command-line; one for each directory required. </td> </tr> <tr> <td> -v &lt;<i>filename</i>&gt; </td> <td> Name of specific Verilog file to score. You may specify this option more than once on a command-line; one for each filename to parse. </td> </tr> <tr> <td> -e &lt;<i>module</i>&gt; </td> <td> Name of module to not score. You may specify this option more than once on a command-line; one for each module to remove from coverage. </td> </tr> <tr> <td> -D &lt;name&gt;(=&lt;value&gt;) </td> <td> Defines the specified name to 1 or the specified value. </td> </tr> <tr> <td> -p &lt;filename&gt; </td> <td> Overrides filename used for outputting intermediate preprocessor output. See "Other Notes" section below for more information. </td> </tr> <tr> <td> -P &lt;parameter_scope&gt;=&lt;value&gt; </td> <td> Performs a defparam on the specified parameter with value. </td> </tr> <tr> <td> -T min|typ|max </td> <td> Specifies which value to use in min:typ:max delay expressions. Default is typ. </td> </tr> <tr> <td> -ts &lt;number&gt; </td> <td> When scoring occurs, this option allows the user to see how far the simulator has progressed by outputting the current timestep to standard output. The value of &lt;number&gt; specifies how many timesteps are allowed to be simulated before outputting the current timestep (results in less calls to output stream). </td> </tr> <tr> <td> -F &lt;module&gt;=(&lt;ivar&gt;,)&lt;ovar&gt; </td> <td> Specifies the location to find an FSM to score where <i>module</i> is the Verilog module containing the FSM, <i>ivar</i> is the input state variable and <i>ovar</i> is the output state variable. If <i>ivar</i> is not specified, <i>ovar</i> is used as both the input and output state variable. </td> </tr> <tr> <td> -h </td> <td> Outputs usage information for the score command </td> </tr> </table><br>
           </TD>
           <TD>
             <P class="blockIndentRight">&nbsp;</P>
@@ -494,7 +494,117 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="header2">7.5&nbsp; <A name="7_5"></A>Other Notes</P>
+      <P class="header2">7.5&nbsp; <A name="7_5"></A>Scoring FSMs</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">At this time Covered does not have the ability to automatically extract FSM information from the design. As a result, it is up to the user to specify FSM information for Covered to use in scoring FSMs. The ability to automatically extract FSM information is planned to be supported in the future; however, it is always a good idea to allow the user to specify and potentially override Covered's automatic extraction in the case where Covered either misses an FSM or incorrectly determines logic to be an FSM in cases where none exists. The information specified in this section describes how to tell Covered where an FSM exists within the design as of the current development version of Covered.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">First, we need to make a few assumptions about the type of FSMs that Covered will be able to handle and, in the future, identify.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg"><ol> <li>All state registers/variables must be associated with only one variable.</li> <li>The FSM is a synchronous design with edge-triggered flip-flops.</li> <li>There are no FSMs embedded in another FSM.</li> <li>The FSM is not a pipe-lined system.</li> <li>The entire FSM must exist within the same module.</li> <li>All state registers/variables must be less than 2^16 bits in width. </ol></P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">There is currently only one way, via the command-line, to specify to Covered where to find FSMs within the design. In the future, the inline Verilog-2001 "$attribute" function will be used to also allow the user to specify to Covered where an FSM is located. Using the command-line method, no changes need to be to source Verilog code for Covered's purposes.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">To specify where an FSM exists within the design, the -F option must be specified to Covered's score command. Each -F option specifies one FSM within the design. Multiple -F options to the score command is allowed, allowing more than one FSM to be scored simultaneously. The -F option takes one argument that is subdivided into two or three parts:</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin">FSM score option</P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">-F &lt;module&gt;=(&lt;input_state_variable&gt;,)&lt;output_state_variable&gt;</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">The &lt;module&gt; specifies the Verilog module where the FSM state variables exist. The &lt;input_state_variable&gt; specifies the name of the variable that represents the input state of the state machine. The &lt;output_state_variable&gt; specifies the name of the variable that represents the output state of the state machine. Most FSMs have one variable as the input state (in most cases a registered version of the output state) such that the input variable is different than the output variable of the state machine. Specifying both variables in the -F option provides the user to more accurately specify to Covered the FSM. In the case that an FSM has the same variable for the input and output state, the user may specify both names or the user may specify only the output state variable (omitting the &lt;input_state_variable&gt; and comma character in the argument.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">If the user specifies an FSM that Covered is not able to find (either the module was not included in the design that Covered is scoring or the FSM uses Verilog code that Covered is not able to handle), a warning message is displayed to the user. It is then up to the user to determine if the FSM was incorrectly specified to Covered or otherwise. This warning is not considered to be a bug in Covered (unless of course, it can be proven that the FSM should have been found).</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">At the current time, Covered does not have the ability to extract the states and state transitions of the specified FSM from the design. Currently, it also doesn't have the ability to specify this information in other ways. To provide meaningful coverage information for the FSM, Covered outputs all hit states and state transitions in the report when all achievable states and state transitions are not known. This information will be able to be specified by the user in future versions of Covered, with the ability to automatically extract this information also in the works.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header2">7.6&nbsp; <A name="7_6"></A>Other Notes</P>
     </TD>
   </TR>
 

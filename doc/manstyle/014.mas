@@ -267,8 +267,38 @@ Verbose FSM Coverage Format
 </_header4>
 
 <_pg>
-At the current time, FSM coverage reporting is not available
-and the output for this coverage metric has not been determined.
+The verbose output for FSM coverage is split into the state coverage information
+and the state transition coverage information.  When an FSM is found to be not
+fully covered (i.e., the number of hit states/state transitions is not equal to
+the number of attainable states/state transitions), the missed states are output
+to the report as a list of state values in hexidecimal format as follows:
+</_pg>
+
+<_margin>FSM state format</_margin>
+
+<_pg>
+&lt;<i>hexidecimal value</i>&gt;
+</_pg>
+
+<_pg>
+When an FSM is found to be not fully covered, the missed state transitions are
+output to the report as a list of state transitions in the format below:
+</_pg>
+
+<_margin>FSM state transition format</_margin>
+
+<_pg>
+&lt;<i>hexidecimal input state value</i>&gt; -&gt; &lt;<i>hexidecimal output state value</i>&gt;
+</_pg>
+
+<_pg>
+If the -c option is used or the number of attainable state/state transitions are
+unknown for the specified FSM, Covered outputs this information in the same way
+as the missed cases except that the title of the output is "Hit cases".  If the
+number of attainable states/state transitions is unknown, providing the cases that
+were hit during simulation is useful in aiding the user in determining coverage.
+In this case, the summary report will output question marks in the missed and total
+categories, showing the user that this information was not known by Covered.
 </_pg>
 
 <_header2>
