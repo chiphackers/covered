@@ -166,6 +166,25 @@ void vcd_parse_sim_vector( FILE* vcd, char* value ) {
 /*!
  \param vcd  File handle of opened VCD file.
 
+ Reads in symbol from simulation vector line that is to be ignored 
+ (unused).  Signals an error message if the line is improperly formatted.
+*/
+void vcd_parse_sim_ignore( FILE* vcd ) {
+
+  char sym[256];      /* String value of signal symbol */
+
+  if( fscanf( vcd, "%s", sym ) != 1 ) {
+
+    print_output( "Bad file format", FATAL );
+    exit( 1 );
+
+  }
+
+}
+
+/*!
+ \param vcd  File handle of opened VCD file.
+
  Parses all lines that occur in the simulation portion of the VCD file.
 */
 void vcd_parse_sim( FILE* vcd ) {
@@ -182,6 +201,10 @@ void vcd_parse_sim( FILE* vcd ) {
     } else if( (token[0] == 'b') || (token[0] == 'B') ) {
 
       vcd_parse_sim_vector( vcd, (token + 1) );
+
+    } else if( (token[0] == 'r') || (token[0] == 'B') ) {
+
+      vcd_parse_sim_ignore( vcd );
 
     } else if( token[0] == '#' ) {
 
@@ -237,6 +260,10 @@ void vcd_parse( char* vcd_file ) {
 }
 
 /* $Log$
+/* Revision 1.3  2002/10/11 05:23:21  phase1geo
+/* Removing local user message allocation and replacing with global to help
+/* with memory efficiency.
+/*
 /* Revision 1.2  2002/09/18 22:19:25  phase1geo
 /* Adding handler for option bit select in $var line.
 /*
