@@ -61,12 +61,26 @@ int yydebug = 1;
    YYLLOC_DEFAULT macro that makes up a yylloc value from existing
    values. I need to supply an explicit version to account for the
    text field, that otherwise won't be copied. */
-# define YYLLOC_DEFAULT(Current, Rhs, N)         \
-  Current.first_line   = Rhs[1].first_line;      \
-  Current.first_column = Rhs[1].first_column;    \
-  Current.last_line    = Rhs[N].last_line;       \
-  Current.last_column  = Rhs[N].last_column;     \
-  Current.text         = Rhs[1].text;
+
+# define YYLLOC_DEFAULT(Current, Rhs, N)                                \
+    do                                                                  \
+      if (N)                                                            \
+        {                                                               \
+          (Current).first_line   = YYRHSLOC(Rhs, 1).first_line;         \
+          (Current).first_column = YYRHSLOC(Rhs, 1).first_column;       \
+          (Current).last_line    = YYRHSLOC(Rhs, N).last_line;          \
+          (Current).last_column  = YYRHSLOC(Rhs, N).last_column;        \
+          (Current).text         = YYRHSLOC(Rhs, 1).text;               \
+        }                                                               \
+      else                                                              \
+        {                                                               \
+          (Current).first_line   = (Current).last_line   =              \
+            YYRHSLOC(Rhs, 0).last_line;                                 \
+          (Current).first_column = (Current).last_column =              \
+            YYRHSLOC(Rhs, 0).last_column;                               \
+          (Current).text         = YYRHSLOC(Rhs, 0).text;               \
+        }                                                               \
+    while (0)
 
 %}
 
