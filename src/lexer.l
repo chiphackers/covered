@@ -27,12 +27,10 @@
 
 extern YYLTYPE yylloc;
 
-extern void reset_pplexer( char* filename );
+extern void reset_pplexer( char* filename, FILE* out );
 
 extern int  ignore_mode;
 extern char user_msg[USER_MSG_LENGTH];
-extern char ppfilename[10];
-
 
 /*!
  Contains state before entering comment block.
@@ -45,6 +43,7 @@ static int  yywrap();
 static str_link* filelist_head = 0;
 static str_link* filelist_curr = 0;
 static int last_keyword        = 0;
+static char ppfilename[10];
 
 extern str_link* modlist_head;
 extern str_link* modlist_tail;
@@ -433,14 +432,15 @@ static void line_directive2() {
 static int yywrap() {
 
   str_link* curr;
+  FILE*     out;
   
+  /* Close input file */
   if( yyin != 0 ) {
     fclose( yyin );
   }
-
-  assert( unlink( yylloc.pptext ) == 0 );
   
   if( modlist_head == NULL ) {
+    assert( unlink( ppfilename ) == 0 );
     return( 1 );
   }
     
@@ -456,15 +456,20 @@ static int yywrap() {
     exit( 1 );
   }
   
-  reset_pplexer( curr->str );
-  assert( ppfilename != NULL );
+  /* Create temporary output filename */
+  out = fopen( ppfilename, "w" );
+  assert( out != NULL );
+  
+  /* Now the preprocessor on this file first */
+  reset_pplexer( curr->str, out );
   PPVLlex();
+  
+  fclose( out );
   
   yyrestart( fopen( ppfilename, "r" ) );
   
   yylloc.first_line = 1;
   yylloc.text       = curr->str;
-  yylloc.pptext     = ppfilename;
   
   filelist_curr = curr->next;
   
@@ -477,8 +482,9 @@ static int yywrap() {
  * opened, and the lexor is initialized. The include stack is cleared
  * and ready to go.
  */
-void reset_lexer( FILE* out, str_link* file_list_head ) {
+void reset_lexer( str_link* file_list_head ) {
 
+  FILE*     out;
   str_link* curr = file_list_head;
 
   if( (curr = get_next_vfile( curr, modlist_head->str )) == NULL ) {
@@ -488,15 +494,21 @@ void reset_lexer( FILE* out, str_link* file_list_head ) {
 
   assert( curr->str != NULL );
   
-  /* Run the preprocessor on this file first */
-  reset_pplexer( curr->str );
-  assert( ppfilename != NULL );
+  /* Create temporary output filename */
+  snprintf( ppfilename, 10, "tmpXXXXXX" );
+  assert( mkstemp( ppfilename ) != 0 );
+  out = fopen( ppfilename, "w" );
+  assert( out != NULL );
+  
+  /* Now the preprocessor on this file first */
+  reset_pplexer( curr->str, out );
   PPVLlex();
+  
+  fclose( out );
   
   yyrestart( fopen( ppfilename, "r" ) );
 
   yylloc.text       = curr->str;
-  yylloc.pptext     = ppfilename;
   yylloc.first_line = 1;
   
   filelist_head = file_list_head;

@@ -15,7 +15,7 @@
 #include "binding.h"
 #include "vcd.h"
 
-extern void reset_lexer( FILE* out, str_link* file_list_head );
+extern void reset_lexer( str_link* file_list_head );
 extern int VLparse();
 extern int VLdebug;
 
@@ -77,7 +77,7 @@ bool parse_design( char* top, char* output_db ) {
   if( use_files_head != NULL ) {
 
     /* Initialize lexer with first file */
-    reset_lexer( stdout, use_files_head );
+    reset_lexer( use_files_head );
 
     /* Starting parser */
     if( (VLparse() != 0) || (error_count > 0) ) {
@@ -161,6 +161,10 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
 
 /*
  $Log$
+ Revision 1.16  2002/12/01 06:37:52  phase1geo
+ Adding appropriate error output and causing score command to proper exit
+ if parser errors are found.
+
  Revision 1.15  2002/11/27 03:49:20  phase1geo
  Fixing bugs in score and report commands for regression.  Finally fixed
  static expression calculation to yield proper coverage results for constant

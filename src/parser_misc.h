@@ -19,7 +19,6 @@ struct vlltype {
   unsigned last_line;
   unsigned last_column;
   char*    text;
-  char*    pptext;
 };
 
 #define YYLTYPE struct vlltype

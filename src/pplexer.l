@@ -681,13 +681,13 @@ static int yywrap() {
   str_link*               curr;
 
   istack = isp->next;
-  
+
   /* If we are at the EOF and have not finished a define, do so now. */
   if( YY_START == DEFINE ) {
     def_finish();
     yy_pop_state();
   }
-  
+
   /* If we are at the EOF and have not finished an include, do so now. */
   if( YY_START == INCLUDE ) {
     yy_pop_state();
@@ -713,17 +713,14 @@ static int yywrap() {
     snprintf( user_msg, USER_MSG_LENGTH, "Resume parsing %s", istack->path );
     print_output( user_msg, NORMAL );
     yy_switch_to_buffer( istack->yybs );
-    
+
     fprintf( yyout, "`line %u \"%s\" 2\n", istack->lineno + 1, istack->path );
 
     return 0;
-    
-  } else {
-  
-    fclose( yyout );
-    return 1;
-    
+
   }
+
+  return 1;
 
 }
 
@@ -732,7 +729,7 @@ static int yywrap() {
  * opened, and the lexor is initialized. The include stack is cleared
  * and ready to go.
  */
-void reset_pplexer( char* filename ) {
+void reset_pplexer( char* filename, FILE* out ) {
 
   struct include_stack_t* isp = malloc( sizeof( struct include_stack_t ) );
 
@@ -749,11 +746,7 @@ void reset_pplexer( char* filename ) {
     exit( 1 );
   }
 
-  /* Create temporary output filename */
-  snprintf( ppfilename, 10, "tmpXXXXXX" );
-  assert( mkstemp( ppfilename ) != 0 );
-  yyout = fopen( ppfilename, "w" );
-  assert( yyout != NULL );
+  yyout = out;
 
   yyrestart( isp->file );
 
