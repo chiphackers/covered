@@ -28,15 +28,13 @@
 <tr><td>&nbsp;</td><td><font size=-1><em>Outputs this signal information to specified file.</em> <a href="#a4"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a142">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="signal_8c.html#a5">signal_db_read</a> (char **line, <a class="el" href="defines_8h.html#a132">module</a> *curr_mod)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Reads signal information from specified file.</em> <a href="#a5"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a142">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="signal_8c.html#a6">signal_set_value</a> (<a class="el" href="defines_8h.html#a126">signal</a> *sig, <a class="el" href="defines_8h.html#a121">nibble</a> *value, int num_bits, int from_lsb, int to_lsb)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Sets value of signal to specified value.</em> <a href="#a6"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="signal_8c.html#a7">signal_vcd_assign</a> (<a class="el" href="defines_8h.html#a126">signal</a> *sig, char *value)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="signal_8c.html#a8">signal_add_expression</a> (<a class="el" href="defines_8h.html#a126">signal</a> *sig, <a class="el" href="defines_8h.html#a125">expression</a> *expr)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Adds an expression to the signal list.</em> <a href="#a8"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="signal_8c.html#a9">signal_display</a> (<a class="el" href="defines_8h.html#a126">signal</a> *sig)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Displays signal contents to standard output.</em> <a href="#a9"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="signal_8c.html#a10">signal_dealloc</a> (<a class="el" href="defines_8h.html#a126">signal</a> *sig)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Deallocates the memory used for this signal.</em> <a href="#a10"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="signal_8c.html#a6">signal_vcd_assign</a> (<a class="el" href="defines_8h.html#a126">signal</a> *sig, char *value)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="signal_8c.html#a7">signal_add_expression</a> (<a class="el" href="defines_8h.html#a126">signal</a> *sig, <a class="el" href="defines_8h.html#a125">expression</a> *expr)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Adds an expression to the signal list.</em> <a href="#a7"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="signal_8c.html#a8">signal_display</a> (<a class="el" href="defines_8h.html#a126">signal</a> *sig)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Displays signal contents to standard output.</em> <a href="#a8"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="signal_8c.html#a9">signal_dealloc</a> (<a class="el" href="defines_8h.html#a126">signal</a> *sig)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Deallocates the memory used for this signal.</em> <a href="#a9"></a><em></em></font><br><br></td></tr>
 <tr><td colspan=2><br><h2>Variables</h2></td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a121">nibble</a>&nbsp;</td><td valign=bottom><a class="el" href="signal_8c.html#a0">or_optab</a> [16]</td></tr>
 </table>
@@ -48,7 +46,7 @@ Author: </b><dd>
 Trevor Williams (<a href="mailto:trevorw@charter.net">trevorw@charter.net</a>) </dl><dl compact><dt><b>
 Date: </b><dd>
 12/1/2001</dl><hr><h2>Function Documentation</h2>
-<a name="a8" doxytag="signal.c::signal_add_expression"></a><p>
+<a name="a7" doxytag="signal.c::signal_add_expression"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -274,7 +272,7 @@ Name of module that this signal belongs to.</td></tr>
 </dl>Prints the signal information for the specified signal to the specified file. This file will be the database coverage file for this design.     </td>
   </tr>
 </table>
-<a name="a10" doxytag="signal.c::signal_dealloc"></a><p>
+<a name="a9" doxytag="signal.c::signal_dealloc"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -311,7 +309,7 @@ Pointer to signal to deallocate.</td></tr>
 </dl>Deallocates all malloc'ed memory back to the heap for the specified signal.     </td>
   </tr>
 </table>
-<a name="a9" doxytag="signal.c::signal_display"></a><p>
+<a name="a8" doxytag="signal.c::signal_display"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -452,81 +450,7 @@ Signal to be merged into base signal.</td></tr>
 </dl>Performs merge of the base and in signals, placing the resulting merged signal into the base signal. If the signals are found to be unalike (names are different), an error message is displayed to the user. If both signals are the same, perform the merge on the signal's vectors.     </td>
   </tr>
 </table>
-<a name="a6" doxytag="signal.c::signal_set_value"></a><p>
-<table width="100%" cellpadding="2" cellspacing="0" border="0">
-  <tr>
-    <td class="md">
-      <table cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a142">bool</a> signal_set_value </td>
-          <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a126">signal</a> *&nbsp;</td>
-          <td class="mdname" nowrap>&nbsp; <em>sig</em>, </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a121">nibble</a> *&nbsp;</td>
-          <td class="mdname" nowrap>&nbsp; <em>value</em>, </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td class="md" nowrap>int&nbsp;</td>
-          <td class="mdname" nowrap>&nbsp; <em>num_bits</em>, </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td class="md" nowrap>int&nbsp;</td>
-          <td class="mdname" nowrap>&nbsp; <em>from_lsb</em>, </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td class="md" nowrap>int&nbsp;</td>
-          <td class="mdname" nowrap>&nbsp; <em>to_lsb</em></td>
-        </tr>
-        <tr>
-          <td></td>
-          <td class="md">)&nbsp;</td>
-          <td class="md" colspan="2"></td>
-        </tr>
-
-      </table>
-    </td>
-  </tr>
-</table>
-<table cellspacing=5 cellpadding=0 border=0>
-  <tr>
-    <td>
-      &nbsp;
-    </td>
-    <td>
-
-<p>
-Sets value of signal to specified value.
-<p>
-<dl compact><dt><b>
-Parameters: </b><dd>
-<table border=0 cellspacing=2 cellpadding=0>
-<tr><td valign=top><em>sig</em>&nbsp;</td><td>
-Pointer to signal to set value to. </td></tr>
-<tr><td valign=top><em>value</em>&nbsp;</td><td>
-Value to set signal value to. </td></tr>
-<tr><td valign=top><em>num_bits</em>&nbsp;</td><td>
-Number of bits wide that value is. </td></tr>
-<tr><td valign=top><em>from_lsb</em>&nbsp;</td><td>
-Least significant bit of assign value. </td></tr>
-<tr><td valign=top><em>to_lsb</em>&nbsp;</td><td>
-Least significant bit of signal being assigned. </td></tr>
-</table>
-</dl><dl compact><dt><b>
-Returns: </b><dd>
-Returns TRUE if value assignment is successful; otherwise, returns FALSE.</dl>This function is called by the VCD reading function when the matching signal is found. If the signal has never been set to a value before (value is NULL), copy the contents of the value verbatim. If the signal value has been set previously, compare the old value to the new value bit for bit, setting the toggle bits accordingly. After this is achieved, copy the new value to the signal value. If the specified value width, does not match this signal's width, we have an internal error (VCD file does not match the design read in), so we return FALSE. Otherwise, return with a value of TRUE.     </td>
-  </tr>
-</table>
-<a name="a7" doxytag="signal.c::signal_vcd_assign"></a><p>
+<a name="a6" doxytag="signal.c::signal_vcd_assign"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -595,7 +519,7 @@ String version of VCD value.</td></tr>
     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Mon Jul 15 19:03:00 2002 for Covered by
+<hr><address align="right"><small>Generated on Wed Jul 17 21:32:37 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

@@ -710,7 +710,6 @@ struct sig_link_s {
 struct module_s {
   char*      name;       /*!< Module name                                        */
   char*      filename;   /*!< File name where module exists                      */
-  char*      scope;      /*!< Verilog hierarchical scope of this module          */
   sig_link*  sig_head;   /*!< Head pointer to list of signals in this module     */
   sig_link*  sig_tail;   /*!< Tail pointer to list of signals in this module     */
   exp_link*  exp_head;   /*!< Head pointer to list of expressions in this module */
@@ -837,6 +836,10 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.33  2002/07/14 05:10:42  phase1geo
+/* Added support for signal concatenation in score and report commands.  Fixed
+/* bugs in this code (and multiplication).
+/*
 /* Revision 1.32  2002/07/11 16:59:10  phase1geo
 /* Added release information to NEWS for upcoming release.
 /*

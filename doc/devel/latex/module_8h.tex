@@ -14,9 +14,9 @@ void {\bf module\_\-init} ({\bf module} $\ast$mod)
 \begin{CompactList}\small\item\em Creates new module from heap and initializes structure.\item\end{CompactList}\item 
 void {\bf module\_\-merge} ({\bf module} $\ast$base, {\bf module} $\ast$in)
 \begin{CompactList}\small\item\em Merges two modules into base module.\item\end{CompactList}\item 
-{\bf bool} {\bf module\_\-db\_\-write} ({\bf module} $\ast$mod, FILE $\ast${\bf file})
+{\bf bool} {\bf module\_\-db\_\-write} ({\bf module} $\ast$mod, char $\ast$scope, FILE $\ast${\bf file})
 \begin{CompactList}\small\item\em Writes contents of provided module to specified output.\item\end{CompactList}\item 
-{\bf bool} {\bf module\_\-db\_\-read} ({\bf module} $\ast$$\ast$mod, char $\ast$$\ast$line)
+{\bf bool} {\bf module\_\-db\_\-read} ({\bf module} $\ast$$\ast$mod, char $\ast$$\ast$scope, char $\ast$$\ast$line)
 \begin{CompactList}\small\item\em Read contents of current line from specified file, creates module and adds to module list.\item\end{CompactList}\item 
 void {\bf module\_\-display\_\-signals} ({\bf module} $\ast$mod)
 \begin{CompactList}\small\item\em Displays signals stored in this module.\item\end{CompactList}\item 
@@ -67,7 +67,7 @@ Creates new module from heap and initializes structure.
 Returns pointer to newly created module element that has been properly initialized.\end{Desc}
 Allocates memory from the heap for a module element and initializes all contents to NULL. Returns a pointer to the newly created module. \index{module.h@{module.h}!module_db_read@{module\_\-db\_\-read}}
 \index{module_db_read@{module\_\-db\_\-read}!module.h@{module.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} module\_\-db\_\-read ({\bf module} $\ast$$\ast$ {\em mod}, char $\ast$$\ast$ {\em line})}\label{module_8h_a4}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} module\_\-db\_\-read ({\bf module} $\ast$$\ast$ {\em mod}, char $\ast$$\ast$ {\em scope}, char $\ast$$\ast$ {\em line})}\label{module_8h_a4}
 
 
 Read contents of current line from specified file, creates module and adds to module list.
@@ -77,6 +77,7 @@ Read contents of current line from specified file, creates module and adds to mo
 \begin{description}
 \item[{\em 
 mod}]Pointer to module to read input from. \item[{\em 
+scope}]Pointer to string to store module instance scope. \item[{\em 
 line}]Pointer to current line to parse. \end{description}
 \end{Desc}
 \begin{Desc}
@@ -84,7 +85,7 @@ line}]Pointer to current line to parse. \end{description}
 Returns TRUE if read was successful; otherwise, returns FALSE.\end{Desc}
 Reads the current line of the specified file and parses it for a module. Creates a new module and assigns the new module to the address specified by the mod pointer. If all is successful, returns TRUE; otherwise, returns FALSE. \index{module.h@{module.h}!module_db_write@{module\_\-db\_\-write}}
 \index{module_db_write@{module\_\-db\_\-write}!module.h@{module.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} module\_\-db\_\-write ({\bf module} $\ast$ {\em mod}, FILE $\ast$ {\em file})}\label{module_8h_a3}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} module\_\-db\_\-write ({\bf module} $\ast$ {\em mod}, char $\ast$ {\em scope}, FILE $\ast$ {\em file})}\label{module_8h_a3}
 
 
 Writes contents of provided module to specified output.
@@ -94,6 +95,7 @@ Writes contents of provided module to specified output.
 \begin{description}
 \item[{\em 
 mod}]Pointer to module to write to output. \item[{\em 
+scope}]String version of module scope in hierarchy. \item[{\em 
 file}]Pointer to specified output file to write contents. \end{description}
 \end{Desc}
 \begin{Desc}

@@ -18,9 +18,9 @@ void {\bf vector\_\-db\_\-write} ({\bf vector} $\ast$vec, FILE $\ast${\bf file},
 \begin{CompactList}\small\item\em Displays vector information to specified database file.\item\end{CompactList}\item 
 {\bf bool} {\bf vector\_\-db\_\-read} ({\bf vector} $\ast$$\ast$vec, char $\ast$$\ast$line)
 \begin{CompactList}\small\item\em Creates and parses current file line for vector information $\ast$/.\item\end{CompactList}\item 
-void {\bf vector\_\-display\_\-toggle01} ({\bf nibble} $\ast$nib, int width, FILE $\ast$ofile)
+void {\bf vector\_\-display\_\-toggle01} ({\bf nibble} $\ast$nib, int width, int lsb, FILE $\ast$ofile)
 \begin{CompactList}\small\item\em Outputs the toggle01 information from the specified nibble to the specified output stream.\item\end{CompactList}\item 
-void {\bf vector\_\-display\_\-toggle10} ({\bf nibble} $\ast$nib, int width, FILE $\ast$ofile)
+void {\bf vector\_\-display\_\-toggle10} ({\bf nibble} $\ast$nib, int width, int lsb, FILE $\ast$ofile)
 \begin{CompactList}\small\item\em Outputs the toggle10 information from the specified nibble to the specified output stream.\item\end{CompactList}\item 
 void {\bf vector\_\-display\_\-nibble} ({\bf nibble} $\ast$nib, int width, int lsb)
 \begin{CompactList}\small\item\em Outputs nibble to standard output.\item\end{CompactList}\item 
@@ -28,7 +28,7 @@ void {\bf vector\_\-display} ({\bf vector} $\ast$vec)
 \begin{CompactList}\small\item\em Outputs vector contents to standard output.\item\end{CompactList}\item 
 void {\bf vector\_\-set\_\-bit} ({\bf nibble} $\ast$nib, {\bf nibble} value, int pos)
 \begin{CompactList}\small\item\em Sets specified bit to specified value in given nibble.\item\end{CompactList}\item 
-{\bf bool} {\bf vector\_\-set\_\-value} ({\bf vector} $\ast$vec, {\bf nibble} $\ast$value, int width, int from\_\-lsb, int to\_\-lsb)
+void {\bf vector\_\-set\_\-value} ({\bf vector} $\ast$vec, {\bf nibble} $\ast$value, int width, int from\_\-idx, int to\_\-idx)
 \begin{CompactList}\small\item\em Sets specified vector value to new value and maintains coverage history.\item\end{CompactList}\item 
 void {\bf vector\_\-set\_\-type} ({\bf vector} $\ast$vec, int type)
 \begin{CompactList}\small\item\em Sets vector output type (DECIMAL, BINARY, OCTAL or HEXIDECIMAL) in first nibble.\item\end{CompactList}\item 
@@ -188,11 +188,11 @@ Outputs nibble to standard output.
 \item[{\em 
 nib}]Nibble to display. \item[{\em 
 width}]Number of bits in nibble to display. \item[{\em 
-lsb}]Least significant bit of nibble to start outputting.\end{description}
+lsb}]Least significant bit of specified vector.\end{description}
 \end{Desc}
 Outputs the specified nibble array to standard output as described by the width and lsb parameters. \index{vector.h@{vector.h}!vector_display_toggle01@{vector\_\-display\_\-toggle01}}
 \index{vector_display_toggle01@{vector\_\-display\_\-toggle01}!vector.h@{vector.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vector\_\-display\_\-toggle01 ({\bf nibble} $\ast$ {\em nib}, int {\em width}, FILE $\ast$ {\em ofile})}\label{vector_8h_a5}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vector\_\-display\_\-toggle01 ({\bf nibble} $\ast$ {\em nib}, int {\em width}, int {\em lsb}, FILE $\ast$ {\em ofile})}\label{vector_8h_a5}
 
 
 Outputs the toggle01 information from the specified nibble to the specified output stream.
@@ -203,11 +203,12 @@ Outputs the toggle01 information from the specified nibble to the specified outp
 \item[{\em 
 nib}]Nibble to display toggle information \item[{\em 
 width}]Number of bits of nibble to display \item[{\em 
+lsb}]Least significant bit of vector to display \item[{\em 
 ofile}]Stream to output information to.\end{description}
 \end{Desc}
 Displays the toggle01 information from the specified vector to the output stream specified in ofile. \index{vector.h@{vector.h}!vector_display_toggle10@{vector\_\-display\_\-toggle10}}
 \index{vector_display_toggle10@{vector\_\-display\_\-toggle10}!vector.h@{vector.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vector\_\-display\_\-toggle10 ({\bf nibble} $\ast$ {\em nib}, int {\em width}, FILE $\ast$ {\em ofile})}\label{vector_8h_a6}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vector\_\-display\_\-toggle10 ({\bf nibble} $\ast$ {\em nib}, int {\em width}, int {\em lsb}, FILE $\ast$ {\em ofile})}\label{vector_8h_a6}
 
 
 Outputs the toggle10 information from the specified nibble to the specified output stream.
@@ -218,6 +219,7 @@ Outputs the toggle10 information from the specified nibble to the specified outp
 \item[{\em 
 nib}]Nibble to display toggle information \item[{\em 
 width}]Number of bits of nibble to display \item[{\em 
+lsb}]Least significant bit of vector to display \item[{\em 
 ofile}]Stream to output information to.\end{description}
 \end{Desc}
 Displays the toggle10 information from the specified vector to the output stream specified in ofile. \index{vector.h@{vector.h}!vector_from_int@{vector\_\-from\_\-int}}
@@ -435,7 +437,7 @@ type}]2-bit value containing output type for this vector (DECIMAL, BINARY, OCTAL
 \end{Desc}
 Uses the first nibble in the specified vector and stores specified 2-bit type value to bits 21-20 of this nibble. \index{vector.h@{vector.h}!vector_set_value@{vector\_\-set\_\-value}}
 \index{vector_set_value@{vector\_\-set\_\-value}!vector.h@{vector.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} vector\_\-set\_\-value ({\bf vector} $\ast$ {\em vec}, {\bf nibble} $\ast$ {\em value}, int {\em width}, int {\em from\_\-lsb}, int {\em to\_\-lsb})}\label{vector_8h_a10}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vector\_\-set\_\-value ({\bf vector} $\ast$ {\em vec}, {\bf nibble} $\ast$ {\em value}, int {\em width}, int {\em from\_\-idx}, int {\em to\_\-idx})}\label{vector_8h_a10}
 
 
 Sets specified vector value to new value and maintains coverage history.
@@ -447,8 +449,8 @@ Sets specified vector value to new value and maintains coverage history.
 vec}]Pointer to vector to set value to. \item[{\em 
 value}]New value to set vector value to. \item[{\em 
 width}]Width of new value. \item[{\em 
-from\_\-lsb}]Least significant bit of new value. \item[{\em 
-to\_\-lsb}]Least significant bit of value to set. \end{description}
+from\_\-idx}]Starting bit index of value to start copying. \item[{\em 
+to\_\-idx}]Starting bit index of vec value to copy to. \end{description}
 \end{Desc}
 \begin{Desc}
 \item[Returns: ]\par

@@ -16,7 +16,7 @@
 mod_inst* instance_find_scope( mod_inst* root, char* scope );
 
 //! Adds new instance to specified instance tree.
-void instance_add( mod_inst** root, char* parent, module* child, char* inst_name );
+void instance_add( mod_inst** root, module* parent, module* child, char* inst_name );
 
 //! Displays contents of module instance tree to specified file.
 void instance_db_write( mod_inst* root, FILE* file, char* scope );
@@ -24,7 +24,7 @@ void instance_db_write( mod_inst* root, FILE* file, char* scope );
 //! Removes specified instance from tree.
 void instance_dealloc( mod_inst* root, char* scope );
 
-/* $Log */
+/* $Log$ */
 
 #endif
 

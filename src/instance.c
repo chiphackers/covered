@@ -15,6 +15,31 @@
 
 
 /*!
+ \param mod        Pointer to module to store in this instance.
+ \param inst_name  Instantiated name of this instance.
+
+ \return Returns pointer to newly created module instance.
+
+ Creates a new module instance from heap, initializes its data and
+ returns a pointer to it.
+*/
+mod_inst* instance_create( module* mod, char* inst_name ) {
+
+  mod_inst* new_inst;   /* Pointer to new module instance */
+
+  new_inst             = (mod_inst*)malloc_safe( sizeof( mod_inst ) );
+  new_inst->mod        = mod;
+  new_inst->name       = strdup( inst_name );
+  new_inst->stat       = NULL;
+  new_inst->child_head = NULL;
+  new_inst->child_tail = NULL;
+  new_inst->next       = NULL;
+
+  return( new_inst );
+
+}
+
+/*!
  \param root    Root of mod_inst tree to parse for scope.
  \param scope   Scope to search for.
  
@@ -65,8 +90,52 @@ mod_inst* instance_find_scope( mod_inst* root, char* scope ) {
 }
 
 /*!
+ \param root    Pointer to root module instance of tree.
+ \param mod     Pointer to module to find in tree.
+ \param ignore  Pointer to number of matches to ignore.
+
+ \return Returns pointer to module instance found by scope.
+ 
+ Searches the specified module instance tree for the specified
+ module.  When a module instance is found that points to the specified
+ module and the ignore value is 0, a pointer to that module instance is 
+ passed back to the calling function; otherwise, the ignore count is
+ decremented and the searching continues.
+*/
+mod_inst* instance_find_by_module( mod_inst* root, module* mod, int* ignore ) {
+
+  mod_inst* match_inst = NULL;   /* Pointer to module instance that found a match      */
+  mod_inst* curr_child;          /* Pointer to current instances child module instance */
+
+  if( root != NULL ) {
+
+    if( root->mod == mod ) {
+
+      if( *ignore == 0 ) {
+        match_inst = root;
+      } else {
+        (*ignore)--;
+      }
+
+    } else {
+
+      curr_child = root->child_head;
+      while( (curr_child != NULL) && (match_inst == NULL) ) {
+        match_inst = instance_find_by_module( curr_child, mod, ignore );
+        curr_child = curr_child->next;
+      }
+
+    }
+    
+  }
+
+  return( match_inst );
+
+}
+
+/*!
  \param root       Root mod_inst pointer of module instance tree.
- \param parent     Scope of parent module.
+ \param parent     Pointer to parent module of specified child.
  \param child      Pointer to child module to add.
  \param inst_name  Name of new module instance.
  
@@ -74,38 +143,46 @@ mod_inst* instance_find_scope( mod_inst* root, char* scope ) {
  the module specified by the scope of parent in the module instance
  tree pointed to by root.
 */
-void instance_add( mod_inst** root, char* parent, module* child, char* inst_name ) {
+void instance_add( mod_inst** root, module* parent, module* child, char* inst_name ) {
   
   mod_inst* inst;      /* Temporary pointer to module instance to add to */
   mod_inst* new_inst;  /* Pointer to new module instance to add          */
-  
-  printf( "In instance_add, parent scope: %s, child instance: %s\n", parent, inst_name );
+  int       i;         /* Loop iterator                                  */
+  int       ignore;    /* Number of matched instances to ignore          */
 
-  new_inst             = (mod_inst*)malloc_safe( sizeof( mod_inst ) );
-  new_inst->mod        = child;
-  new_inst->name       = strdup( inst_name );
-  new_inst->stat       = NULL;
-  new_inst->child_head = NULL;
-  new_inst->child_tail = NULL;
-  new_inst->next       = NULL;
-  
   if( *root == NULL ) {
 
-    *root = new_inst;
+    // printf( "In instance_add, top instance name: %s\n", inst_name );
+    *root = instance_create( child, inst_name );
 
   } else {
 
-    inst = instance_find_scope( *root, parent );
+    assert( parent != NULL );
   
-    assert( inst != NULL );
+    // printf( "In instance_add, parent name: %s, child instance: %s\n", parent->name, inst_name );
 
-    if( inst->child_head == NULL ) {
-      inst->child_head = new_inst;
-      inst->child_tail = new_inst;
-    } else {
-      inst->child_tail->next = new_inst;
-      inst->child_tail       = new_inst;
+    i      = 0;
+    ignore = 0;
+
+    while( (inst = instance_find_by_module( *root, parent, &ignore )) != NULL ) {
+
+      new_inst = instance_create( child, inst_name );
+
+      if( inst->child_head == NULL ) {
+        inst->child_head = new_inst;
+        inst->child_tail = new_inst;
+      } else {
+        inst->child_tail->next = new_inst;
+        inst->child_tail       = new_inst;
+      }
+
+      i++;
+      ignore = i;
+
     }
+
+    /* We should have found at least one parent instance */
+    assert( i > 0 );
  
   }
   
@@ -126,19 +203,15 @@ void instance_db_write( mod_inst* root, FILE* file, char* scope ) {
   char      full_scope[4096];  /* Full scope of module to write            */
   mod_inst* curr;              /* Pointer to current child module instance */
 
-  if( root->mod->scope != NULL ) {
-    free_safe( root->mod->scope );
-  }
-
   assert( scope != NULL );
 
   /* Display root module */
-  root->mod->scope = strdup( scope ); 
-  module_db_write( root->mod, file );
+  module_db_write( root->mod, scope, file );
 
   /* Display children */
   curr = root->child_head;
   while( curr != NULL ) {
+    assert( (strlen( scope ) + strlen( curr->name ) + 1) <= 4096 );
     snprintf( full_scope, 4096, "%s.%s", scope, curr->name );
     instance_db_write( curr, file, full_scope );
     curr = curr->next;

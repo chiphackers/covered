@@ -25,7 +25,6 @@
 void module_init( module* mod ) {
     
   mod->name      = NULL;
-  mod->scope     = NULL;
   mod->filename  = NULL;
   mod->sig_head  = NULL;
   mod->sig_tail  = NULL;
@@ -74,25 +73,15 @@ void module_merge( module* base, module* in ) {
 
   assert( base != NULL );
   assert( base->name != NULL );
-  assert( base->scope != NULL );
 
   assert( in != NULL );
   assert( in->name != NULL );
-  assert( in->scope != NULL );
 
   if( strcmp( base->name, in->name ) != 0 ) {
 
     snprintf( msg, 4096, "Modules with different names being merged (%s, %s)\n",
               base->name,
               in->name );
-    print_output( msg, FATAL );
-    exit( 1 );
-
-  } else if( strcmp( base->scope, in->scope ) != 0 ) {
- 
-    snprintf( msg, 4096, "Modules with different scopes being merged (%s, %s)\n",
-              base->scope,
-              in->scope );
     print_output( msg, FATAL );
     exit( 1 );
 
@@ -143,15 +132,16 @@ void module_merge( module* base, module* in ) {
 }
 
 /*!
- \param mod   Pointer to module to write to output.
- \param file  Pointer to specified output file to write contents.
+ \param mod    Pointer to module to write to output.
+ \param scope  String version of module scope in hierarchy.
+ \param file   Pointer to specified output file to write contents.
  \return Returns TRUE if file output was successful; otherwise, returns FALSE.
 
  Prints the database line for the specified module to the specified database
  file.  If there are any problems with the write, returns FALSE; otherwise,
  returns TRUE.
 */
-bool module_db_write( module* mod, FILE* file ) {
+bool module_db_write( module* mod, char* scope, FILE* file ) {
 
   bool       retval = TRUE;    /* Return value for this function              */
   sig_link*  curr_sig;         /* Pointer to current module sig_link element  */
@@ -165,7 +155,7 @@ bool module_db_write( module* mod, FILE* file ) {
   fprintf( file, "%d %s %s %s\n",
     DB_TYPE_MODULE,
     mod->name,
-    mod->scope,
+    scope,
     mod->filename
   );
 
@@ -175,7 +165,7 @@ bool module_db_write( module* mod, FILE* file ) {
   curr_exp = mod->exp_head;
   while( curr_exp != NULL ) {
     
-    expression_db_write( curr_exp->exp, file, mod->scope );
+    expression_db_write( curr_exp->exp, file, scope );
     curr_exp = curr_exp->next;
 
   }
@@ -186,7 +176,7 @@ bool module_db_write( module* mod, FILE* file ) {
   curr_sig = mod->sig_head;
   while( curr_sig != NULL ) {
 
-    signal_db_write( curr_sig->sig, file, mod->scope );
+    signal_db_write( curr_sig->sig, file, scope );
     curr_sig = curr_sig->next; 
 
   }
@@ -197,7 +187,7 @@ bool module_db_write( module* mod, FILE* file ) {
   curr_stmt = mod->stmt_head;
   while( curr_stmt != NULL ) {
 
-    statement_db_write( curr_stmt->stmt, file, mod->scope );
+    statement_db_write( curr_stmt->stmt, file, scope );
     curr_stmt = curr_stmt->next;
 
   }
@@ -207,8 +197,9 @@ bool module_db_write( module* mod, FILE* file ) {
 }
 
 /*!
- \param mod   Pointer to module to read input from.
- \param line  Pointer to current line to parse.
+ \param mod    Pointer to module to read input from.
+ \param scope  Pointer to string to store module instance scope.
+ \param line   Pointer to current line to parse.
  \return Returns TRUE if read was successful; otherwise, returns FALSE.
 
  Reads the current line of the specified file and parses it for a module.
@@ -216,28 +207,22 @@ bool module_db_write( module* mod, FILE* file ) {
  by the mod pointer.  If all is successful, returns TRUE; otherwise, returns
  FALSE.
 */
-bool module_db_read( module** mod, char** line ) {
+bool module_db_read( module** mod, char** scope, char** line ) {
 
   bool    retval = TRUE;    /* Return value for this function             */
-  char    instance[256];    /* Holder for module instance name            */
   char    name[256];        /* Holder for module name                     */
-  char    scope[4096];      /* Verilog hierarchical scope for this module */
+  char    curr_scope[4096]; /* Verilog hierarchical scope for this module */
   char    filename[256];    /* Holder for module filename                 */
-  char    signame[256];     /* Holder for signal name                     */
-  char    parent[256];      /* Holder for parent name                     */
-  char    next[256];        /* Holder for next name                       */
-  signal* sig;              /* Pointer to signal                          */
   int     chars_read;       /* Number of characters currently read        */
-  int     t;
 
   *mod = module_create();
 
-  if( (t = sscanf( *line, "%s %s %s%n", name, scope, filename, &chars_read )) == 3 ) {
+  if( sscanf( *line, "%s %s %s%n", name, curr_scope, filename, &chars_read ) == 3 ) {
 
     *line = *line + chars_read;
 
     (*mod)->name     = strdup( name );
-    (*mod)->scope    = strdup( scope );
+    *scope           = strdup( curr_scope );
     (*mod)->filename = strdup( filename );
 
   } else {
@@ -305,12 +290,6 @@ void module_clean( module* mod ) {
       mod->name = NULL;
     }
 
-    /* Free scope name */
-    if( mod->scope != NULL ) {
-      free_safe( mod->scope );
-      mod->scope = NULL;
-    }
-
     /* Free module filename */
     if( mod->filename != NULL ) {
       free_safe( mod->filename );
@@ -358,6 +337,10 @@ void module_dealloc( module* mod ) {
 
 
 /* $Log$
+/* Revision 1.8  2002/07/14 05:10:42  phase1geo
+/* Added support for signal concatenation in score and report commands.  Fixed
+/* bugs in this code (and multiplication).
+/*
 /* Revision 1.7  2002/07/09 04:46:26  phase1geo
 /* Adding -D and -Q options to covered for outputting debug information or
 /* suppressing normal output entirely.  Updated generated documentation and

@@ -23,10 +23,10 @@ module* module_create();
 void module_merge( module* base, module* in );
 
 //! Writes contents of provided module to specified output.
-bool module_db_write( module* mod, FILE* file );
+bool module_db_write( module* mod, char* scope, FILE* file );
 
 //! Read contents of current line from specified file, creates module and adds to module list.
-bool module_db_read( module** mod, char** line );
+bool module_db_read( module** mod, char**scope, char** line );
 
 //! Displays signals stored in this module.
 void module_display_signals( module* mod );
@@ -40,7 +40,12 @@ void module_clean( module* mod );
 //! Deallocates module element from heap.
 void module_dealloc( module* mod );
 
-/* $Log$ */
+/* $Log$
+/* Revision 1.2  2002/07/03 03:31:11  phase1geo
+/* Adding RCS Log strings in files that were missing them so that file version
+/* information is contained in every source and header file.  Reordering src
+/* Makefile to be alphabetical.  Adding mult1.v diagnostic to regression suite.
+/* */
 
 #endif
 

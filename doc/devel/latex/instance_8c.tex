@@ -10,9 +10,13 @@
 \subsection*{Functions}
 \begin{CompactItemize}
 \item 
+{\bf mod\_\-inst} $\ast$ {\bf instance\_\-create} ({\bf module} $\ast$mod, char $\ast$inst\_\-name)
+\item 
 {\bf mod\_\-inst} $\ast$ {\bf instance\_\-find\_\-scope} ({\bf mod\_\-inst} $\ast$root, char $\ast$scope)
 \begin{CompactList}\small\item\em Finds specified scope in module instance tree.\item\end{CompactList}\item 
-void {\bf instance\_\-add} ({\bf mod\_\-inst} $\ast$$\ast$root, char $\ast$parent, {\bf module} $\ast$child, char $\ast$inst\_\-name)
+{\bf mod\_\-inst} $\ast$ {\bf instance\_\-find\_\-by\_\-module} ({\bf mod\_\-inst} $\ast$root, {\bf module} $\ast$mod, int $\ast$ignore)
+\item 
+void {\bf instance\_\-add} ({\bf mod\_\-inst} $\ast$$\ast$root, {\bf module} $\ast$parent, {\bf module} $\ast$child, char $\ast$inst\_\-name)
 \begin{CompactList}\small\item\em Adds new instance to specified instance tree.\item\end{CompactList}\item 
 void {\bf instance\_\-db\_\-write} ({\bf mod\_\-inst} $\ast$root, FILE $\ast${\bf file}, char $\ast$scope)
 \begin{CompactList}\small\item\em Displays contents of module instance tree to specified file.\item\end{CompactList}\item 
@@ -36,7 +40,7 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsection{Function Documentation}
 \index{instance.c@{instance.c}!instance_add@{instance\_\-add}}
 \index{instance_add@{instance\_\-add}!instance.c@{instance.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void instance\_\-add ({\bf mod\_\-inst} $\ast$$\ast$ {\em root}, char $\ast$ {\em parent}, {\bf module} $\ast$ {\em child}, char $\ast$ {\em inst\_\-name})}\label{instance_8c_a1}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void instance\_\-add ({\bf mod\_\-inst} $\ast$$\ast$ {\em root}, {\bf module} $\ast$ {\em parent}, {\bf module} $\ast$ {\em child}, char $\ast$ {\em inst\_\-name})}\label{instance_8c_a3}
 
 
 Adds new instance to specified instance tree.
@@ -46,13 +50,28 @@ Adds new instance to specified instance tree.
 \begin{description}
 \item[{\em 
 root}]Root mod\_\-inst pointer of module instance tree. \item[{\em 
-parent}]Scope of parent module. \item[{\em 
+parent}]Pointer to parent module of specified child. \item[{\em 
 child}]Pointer to child module to add. \item[{\em 
 inst\_\-name}]Name of new module instance.\end{description}
 \end{Desc}
-Adds the child module to the child module pointer list located in the module specified by the scope of parent in the module instance tree pointed to by root. \index{instance.c@{instance.c}!instance_db_write@{instance\_\-db\_\-write}}
+Adds the child module to the child module pointer list located in the module specified by the scope of parent in the module instance tree pointed to by root. \index{instance.c@{instance.c}!instance_create@{instance\_\-create}}
+\index{instance_create@{instance\_\-create}!instance.c@{instance.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-inst}$\ast$ instance\_\-create ({\bf module} $\ast$ {\em mod}, char $\ast$ {\em inst\_\-name})}\label{instance_8c_a0}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+mod}]Pointer to module to store in this instance. \item[{\em 
+inst\_\-name}]Instantiated name of this instance.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns pointer to newly created module instance.\end{Desc}
+Creates a new module instance from heap, initializes its data and returns a pointer to it. \index{instance.c@{instance.c}!instance_db_write@{instance\_\-db\_\-write}}
 \index{instance_db_write@{instance\_\-db\_\-write}!instance.c@{instance.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void instance\_\-db\_\-write ({\bf mod\_\-inst} $\ast$ {\em root}, FILE $\ast$ {\em file}, char $\ast$ {\em scope})}\label{instance_8c_a2}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void instance\_\-db\_\-write ({\bf mod\_\-inst} $\ast$ {\em root}, FILE $\ast$ {\em file}, char $\ast$ {\em scope})}\label{instance_8c_a4}
 
 
 Displays contents of module instance tree to specified file.
@@ -67,7 +86,7 @@ scope}]Scope of this module.\end{description}
 \end{Desc}
 Calls each module display function in instance tree, starting with the root module and ending when all of the leaf modules are output. Note: the function that calls this function originally should set the value of scope to NULL. \index{instance.c@{instance.c}!instance_dealloc@{instance\_\-dealloc}}
 \index{instance_dealloc@{instance\_\-dealloc}!instance.c@{instance.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void instance\_\-dealloc ({\bf mod\_\-inst} $\ast$ {\em root}, char $\ast$ {\em scope})}\label{instance_8c_a4}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void instance\_\-dealloc ({\bf mod\_\-inst} $\ast$ {\em root}, char $\ast$ {\em scope})}\label{instance_8c_a6}
 
 
 Removes specified instance from tree.
@@ -81,7 +100,7 @@ scope}]Scope of module to remove from tree.\end{description}
 \end{Desc}
 Searches tree for specified module. If the module instance is found, the module instance is removed from the tree along with all of its child module instances. \index{instance.c@{instance.c}!instance_dealloc_tree@{instance\_\-dealloc\_\-tree}}
 \index{instance_dealloc_tree@{instance\_\-dealloc\_\-tree}!instance.c@{instance.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void instance\_\-dealloc\_\-tree ({\bf mod\_\-inst} $\ast$ {\em root})}\label{instance_8c_a3}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void instance\_\-dealloc\_\-tree ({\bf mod\_\-inst} $\ast$ {\em root})}\label{instance_8c_a5}
 
 
 \begin{Desc}
@@ -90,9 +109,25 @@ Searches tree for specified module. If the module instance is found, the module 
 \item[{\em 
 root}]Pointer to root instance of module instance tree to remove.\end{description}
 \end{Desc}
-Recursively traverses instance tree, deallocating heap memory used to store the the tree. \index{instance.c@{instance.c}!instance_find_scope@{instance\_\-find\_\-scope}}
+Recursively traverses instance tree, deallocating heap memory used to store the the tree. \index{instance.c@{instance.c}!instance_find_by_module@{instance\_\-find\_\-by\_\-module}}
+\index{instance_find_by_module@{instance\_\-find\_\-by\_\-module}!instance.c@{instance.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-inst}$\ast$ instance\_\-find\_\-by\_\-module ({\bf mod\_\-inst} $\ast$ {\em root}, {\bf module} $\ast$ {\em mod}, int $\ast$ {\em ignore})}\label{instance_8c_a2}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+root}]Pointer to root module instance of tree. \item[{\em 
+mod}]Pointer to module to find in tree. \item[{\em 
+ignore}]Pointer to number of matches to ignore.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns pointer to module instance found by scope.\end{Desc}
+Searches the specified module instance tree for the specified module. When a module instance is found that points to the specified module and the ignore value is 0, a pointer to that module instance is  passed back to the calling function; otherwise, the ignore count is decremented and the searching continues. \index{instance.c@{instance.c}!instance_find_scope@{instance\_\-find\_\-scope}}
 \index{instance_find_scope@{instance\_\-find\_\-scope}!instance.c@{instance.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-inst}$\ast$ instance\_\-find\_\-scope ({\bf mod\_\-inst} $\ast$ {\em root}, char $\ast$ {\em scope})}\label{instance_8c_a0}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-inst}$\ast$ instance\_\-find\_\-scope ({\bf mod\_\-inst} $\ast$ {\em root}, char $\ast$ {\em scope})}\label{instance_8c_a1}
 
 
 Finds specified scope in module instance tree.

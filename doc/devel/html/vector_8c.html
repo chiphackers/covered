@@ -23,9 +23,9 @@
 <tr><td>&nbsp;</td><td><font size=-1><em>Displays vector information to specified database file.</em> <a href="#a10"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a142">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a11">vector_db_read</a> (<a class="el" href="defines_8h.html#a123">vector</a> **vec, char **line)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Creates and parses current file line for vector information */.</em> <a href="#a11"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a12">vector_display_toggle01</a> (<a class="el" href="defines_8h.html#a121">nibble</a> *nib, int width, FILE *ofile)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a12">vector_display_toggle01</a> (<a class="el" href="defines_8h.html#a121">nibble</a> *nib, int width, int lsb, FILE *ofile)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Outputs the toggle01 information from the specified nibble to the specified output stream.</em> <a href="#a12"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a13">vector_display_toggle10</a> (<a class="el" href="defines_8h.html#a121">nibble</a> *nib, int width, FILE *ofile)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a13">vector_display_toggle10</a> (<a class="el" href="defines_8h.html#a121">nibble</a> *nib, int width, int lsb, FILE *ofile)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Outputs the toggle10 information from the specified nibble to the specified output stream.</em> <a href="#a13"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a14">vector_display_nibble</a> (<a class="el" href="defines_8h.html#a121">nibble</a> *nib, int width, int lsb)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Outputs nibble to standard output.</em> <a href="#a14"></a><em></em></font><br><br></td></tr>
@@ -42,7 +42,7 @@
 <tr><td>&nbsp;</td><td><font size=-1><em>Counts toggle01 and toggle10 information from specifed vector.</em> <a href="#a22"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a23">vector_logic_count</a> (<a class="el" href="defines_8h.html#a123">vector</a> *vec, int *false_cnt, int *true_cnt)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Counts FALSE and TRUE information from the specified vector.</em> <a href="#a23"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a142">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a24">vector_set_value</a> (<a class="el" href="defines_8h.html#a123">vector</a> *vec, <a class="el" href="defines_8h.html#a121">nibble</a> *value, int width, int from_lsb, int to_lsb)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a24">vector_set_value</a> (<a class="el" href="defines_8h.html#a123">vector</a> *vec, <a class="el" href="defines_8h.html#a121">nibble</a> *value, int width, int from_idx, int to_idx)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Sets specified vector value to new value and maintains coverage history.</em> <a href="#a24"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a25">vector_set_type</a> (<a class="el" href="defines_8h.html#a123">vector</a> *vec, int type)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Sets vector output type (DECIMAL, BINARY, OCTAL or HEXIDECIMAL) in first nibble.</em> <a href="#a25"></a><em></em></font><br><br></td></tr>
@@ -490,7 +490,7 @@ Nibble to display. </td></tr>
 <tr><td valign=top><em>width</em>&nbsp;</td><td>
 Number of bits in nibble to display. </td></tr>
 <tr><td valign=top><em>lsb</em>&nbsp;</td><td>
-Least significant bit of nibble to start outputting.</td></tr>
+Least significant bit of specified vector.</td></tr>
 </table>
 </dl>Outputs the specified nibble array to standard output as described by the width and lsb parameters.     </td>
   </tr>
@@ -511,6 +511,12 @@ Least significant bit of nibble to start outputting.</td></tr>
           <td></td>
           <td class="md" nowrap>int&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>width</em>, </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td class="md" nowrap>int&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>lsb</em>, </td>
         </tr>
         <tr>
           <td></td>
@@ -545,6 +551,8 @@ Parameters: </b><dd>
 Nibble to display toggle information </td></tr>
 <tr><td valign=top><em>width</em>&nbsp;</td><td>
 Number of bits of nibble to display </td></tr>
+<tr><td valign=top><em>lsb</em>&nbsp;</td><td>
+Least significant bit of vector to display </td></tr>
 <tr><td valign=top><em>ofile</em>&nbsp;</td><td>
 Stream to output information to.</td></tr>
 </table>
@@ -567,6 +575,12 @@ Stream to output information to.</td></tr>
           <td></td>
           <td class="md" nowrap>int&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>width</em>, </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td class="md" nowrap>int&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>lsb</em>, </td>
         </tr>
         <tr>
           <td></td>
@@ -601,6 +615,8 @@ Parameters: </b><dd>
 Nibble to display toggle information </td></tr>
 <tr><td valign=top><em>width</em>&nbsp;</td><td>
 Number of bits of nibble to display </td></tr>
+<tr><td valign=top><em>lsb</em>&nbsp;</td><td>
+Least significant bit of vector to display </td></tr>
 <tr><td valign=top><em>ofile</em>&nbsp;</td><td>
 Stream to output information to.</td></tr>
 </table>
@@ -1612,7 +1628,7 @@ Pointer to vector to set type. </td></tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a142">bool</a> vector_set_value </td>
+          <td class="md" nowrap valign="top"> void vector_set_value </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a123">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>vec</em>, </td>
@@ -1633,13 +1649,13 @@ Pointer to vector to set type. </td></tr>
           <td></td>
           <td></td>
           <td class="md" nowrap>int&nbsp;</td>
-          <td class="mdname" nowrap>&nbsp; <em>from_lsb</em>, </td>
+          <td class="mdname" nowrap>&nbsp; <em>from_idx</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
           <td class="md" nowrap>int&nbsp;</td>
-          <td class="mdname" nowrap>&nbsp; <em>to_lsb</em></td>
+          <td class="mdname" nowrap>&nbsp; <em>to_idx</em></td>
         </tr>
         <tr>
           <td></td>
@@ -1670,10 +1686,10 @@ Pointer to vector to set value to. </td></tr>
 New value to set vector value to. </td></tr>
 <tr><td valign=top><em>width</em>&nbsp;</td><td>
 Width of new value. </td></tr>
-<tr><td valign=top><em>from_lsb</em>&nbsp;</td><td>
-Least significant bit of new value. </td></tr>
-<tr><td valign=top><em>to_lsb</em>&nbsp;</td><td>
-Least significant bit of value to set. </td></tr>
+<tr><td valign=top><em>from_idx</em>&nbsp;</td><td>
+Starting bit index of value to start copying. </td></tr>
+<tr><td valign=top><em>to_idx</em>&nbsp;</td><td>
+Starting bit index of vec value to copy to. </td></tr>
 </table>
 </dl><dl compact><dt><b>
 Returns: </b><dd>
@@ -2178,7 +2194,7 @@ OR operation table     </td>
 XOR operation table     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Mon Jul 15 19:03:01 2002 for Covered by
+<hr><address align="right"><small>Generated on Wed Jul 17 21:32:39 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

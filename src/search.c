@@ -43,7 +43,7 @@ void search_init() {
 
   module* mod;       /* Pointer to newly created module node from top module */
 
-  mod        = module_create();
+  mod = module_create();
 
   if( top_module != NULL ) {
     mod->name  = strdup( top_module );
@@ -52,17 +52,15 @@ void search_init() {
     exit( 1 );
   }
 
-  if( top_instance == NULL ) {
-    mod->scope = strdup( top_module );
-  } else {
-    mod->scope = strdup( top_instance );
-  }
-
   /* Initialize module linked list */
   mod_link_add( mod, &mod_head, &mod_tail );
 
   /* Initialize instance tree */
-  instance_add( &instance_root, NULL, mod, mod->scope );
+  if( top_instance == NULL ) {
+    instance_add( &instance_root, NULL, mod, strdup( top_module ) );
+  } else {
+    instance_add( &instance_root, NULL, mod, strdup( top_instance ) );
+  }
 
 }
  
@@ -212,6 +210,10 @@ void search_free_lists() {
 }
 
 /* $Log$
+/* Revision 1.5  2002/07/11 19:12:38  phase1geo
+/* Fixing version number.  Fixing bug with score command if -t option was not
+/* specified to avoid a segmentation fault.
+/*
 /* Revision 1.4  2002/07/08 19:02:12  phase1geo
 /* Adding -i option to properly handle modules specified for coverage that
 /* are instantiated within a design without needing to parse parent modules.

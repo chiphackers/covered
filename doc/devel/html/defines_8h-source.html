@@ -319,228 +319,227 @@
 <a name="l00710"></a><a class="code" href="structmodule__s.html">00710</a> <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structmodule__s.html">module_s</a> {
 <a name="l00711"></a><a class="code" href="structmodule__s.html#m0">00711</a>   <font class="keywordtype">char</font>*      <a class="code" href="structmodule__s.html#m0">name</a>;       
 <a name="l00712"></a><a class="code" href="structmodule__s.html#m1">00712</a>   <font class="keywordtype">char</font>*      <a class="code" href="structmodule__s.html#m1">filename</a>;   
-<a name="l00713"></a><a class="code" href="structmodule__s.html#m2">00713</a>   <font class="keywordtype">char</font>*      <a class="code" href="structmodule__s.html#m2">scope</a>;      
-<a name="l00714"></a><a class="code" href="structmodule__s.html#m3">00714</a>   sig_link*  <a class="code" href="structmodule__s.html#m3">sig_head</a>;   
-<a name="l00715"></a><a class="code" href="structmodule__s.html#m4">00715</a>   sig_link*  <a class="code" href="structmodule__s.html#m4">sig_tail</a>;   
-<a name="l00716"></a><a class="code" href="structmodule__s.html#m5">00716</a>   exp_link*  <a class="code" href="structmodule__s.html#m5">exp_head</a>;   
-<a name="l00717"></a><a class="code" href="structmodule__s.html#m6">00717</a>   exp_link*  <a class="code" href="structmodule__s.html#m6">exp_tail</a>;   
-<a name="l00718"></a><a class="code" href="structmodule__s.html#m7">00718</a>   stmt_link* <a class="code" href="structmodule__s.html#m7">stmt_head</a>;  
-<a name="l00719"></a><a class="code" href="structmodule__s.html#m8">00719</a>   stmt_link* <a class="code" href="structmodule__s.html#m8">stmt_tail</a>;  
-00720 };
-00721 
-<a name="l00722"></a><a class="code" href="defines_8h.html#a132">00722</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structmodule__s.html">module_s</a> module;
-00723 
-00724 <font class="comment">//------------------------------------------------------------------------------</font>
-00728 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structmod__link__s.html">mod_link_s</a>;
-00729         
-<a name="l00730"></a><a class="code" href="defines_8h.html#a133">00730</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structmod__link__s.html">mod_link_s</a> mod_link;
-00731         
-<a name="l00732"></a><a class="code" href="structmod__link__s.html">00732</a> <font class="keyword">struct </font><a class="code" href="structmod__link__s.html">mod_link_s</a> {
-<a name="l00733"></a><a class="code" href="structmod__link__s.html#m0">00733</a>   module*    <a class="code" href="structmod__link__s.html#m0">mod</a>;   
-<a name="l00734"></a><a class="code" href="structmod__link__s.html#m1">00734</a>   mod_link* <a class="code" href="structmod__link__s.html#m1">next</a>;   
-00735 };
-00736 
-00737 <font class="comment">//------------------------------------------------------------------------------</font>
-00741 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structsymtable__s.html">symtable_s</a>;
-00742 
-<a name="l00743"></a><a class="code" href="defines_8h.html#a134">00743</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structsymtable__s.html">symtable_s</a> symtable;
-00744 
-<a name="l00745"></a><a class="code" href="structsymtable__s.html">00745</a> <font class="keyword">struct </font><a class="code" href="structsymtable__s.html">symtable_s</a> {
-<a name="l00746"></a><a class="code" href="structsymtable__s.html#m0">00746</a>   <font class="keywordtype">char</font>*     <a class="code" href="structsymtable__s.html#m0">sym</a>;          
-<a name="l00747"></a><a class="code" href="structsymtable__s.html#m1">00747</a>   signal*   <a class="code" href="structsymtable__s.html#m1">sig</a>;          
-<a name="l00748"></a><a class="code" href="structsymtable__s.html#m2">00748</a>   <font class="keywordtype">char</font>*     <a class="code" href="structsymtable__s.html#m2">value</a>;        
-<a name="l00749"></a><a class="code" href="structsymtable__s.html#m3">00749</a>   symtable* <a class="code" href="structsymtable__s.html#m3">right</a>;        
-<a name="l00750"></a><a class="code" href="structsymtable__s.html#m4">00750</a>   symtable* <a class="code" href="structsymtable__s.html#m4">left</a>;         
-00751 };
-00752 
-00753 <font class="comment">//------------------------------------------------------------------------------</font>
-<a name="l00757"></a><a class="code" href="structsignal__width__s.html">00757</a> <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structsignal__width__s.html">signal_width_s</a> {
-<a name="l00758"></a><a class="code" href="structsignal__width__s.html#m0">00758</a>   <font class="keywordtype">int</font> <a class="code" href="structsignal__width__s.html#m0">width</a>;
-<a name="l00759"></a><a class="code" href="structsignal__width__s.html#m1">00759</a>   <font class="keywordtype">int</font> <a class="code" href="structsignal__width__s.html#m1">lsb</a>;
-00760 };
-00761 
-<a name="l00762"></a><a class="code" href="defines_8h.html#a135">00762</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structsignal__width__s.html">signal_width_s</a> signal_width;
-00763 
-00764 <font class="comment">//------------------------------------------------------------------------------</font>
-00768 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structsig__exp__bind__s.html">sig_exp_bind_s</a>;
-00769 
-<a name="l00770"></a><a class="code" href="defines_8h.html#a136">00770</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structsig__exp__bind__s.html">sig_exp_bind_s</a> sig_exp_bind;
-00771 
-<a name="l00772"></a><a class="code" href="structsig__exp__bind__s.html">00772</a> <font class="keyword">struct </font><a class="code" href="structsig__exp__bind__s.html">sig_exp_bind_s</a> {
-<a name="l00773"></a><a class="code" href="structsig__exp__bind__s.html#m0">00773</a>   <font class="keywordtype">char</font>*         <a class="code" href="structsig__exp__bind__s.html#m0">sig_name</a>;  
-<a name="l00774"></a><a class="code" href="structsig__exp__bind__s.html#m1">00774</a>   expression*   <a class="code" href="structsig__exp__bind__s.html#m1">exp</a>;       
-<a name="l00775"></a><a class="code" href="structsig__exp__bind__s.html#m2">00775</a>   <font class="keywordtype">char</font>*         <a class="code" href="structsig__exp__bind__s.html#m2">mod_name</a>;  
-<a name="l00776"></a><a class="code" href="structsig__exp__bind__s.html#m3">00776</a>   sig_exp_bind* <a class="code" href="structsig__exp__bind__s.html#m3">next</a>;      
-00777 };
-00778 
-00779 <font class="comment">//------------------------------------------------------------------------------</font>
-00784 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structcase__stmt__s.html">case_stmt_s</a>;
-00785 
-<a name="l00786"></a><a class="code" href="defines_8h.html#a137">00786</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structcase__stmt__s.html">case_stmt_s</a> case_statement;
-00787 
-<a name="l00788"></a><a class="code" href="structcase__stmt__s.html">00788</a> <font class="keyword">struct </font><a class="code" href="structcase__stmt__s.html">case_stmt_s</a> {
-<a name="l00789"></a><a class="code" href="structcase__stmt__s.html#m0">00789</a>   expression*     <a class="code" href="structcase__stmt__s.html#m0">expr</a>;    
-<a name="l00790"></a><a class="code" href="structcase__stmt__s.html#m1">00790</a>   statement*      <a class="code" href="structcase__stmt__s.html#m1">stmt</a>;    
-<a name="l00791"></a><a class="code" href="structcase__stmt__s.html#m2">00791</a>   <font class="keywordtype">int</font>             <a class="code" href="structcase__stmt__s.html#m2">line</a>;    
-<a name="l00792"></a><a class="code" href="structcase__stmt__s.html#m3">00792</a>   case_statement* <a class="code" href="structcase__stmt__s.html#m3">prev</a>;    
-00793 };
-00794 
-00795 <font class="comment">//------------------------------------------------------------------------------</font>
-00800 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structstatistic__s.html">statistic_s</a>;
-00801 
-<a name="l00802"></a><a class="code" href="defines_8h.html#a138">00802</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structstatistic__s.html">statistic_s</a> statistic;
-00803 
-<a name="l00804"></a><a class="code" href="structstatistic__s.html">00804</a> <font class="keyword">struct </font><a class="code" href="structstatistic__s.html">statistic_s</a> {
-<a name="l00805"></a><a class="code" href="structstatistic__s.html#m0">00805</a>   <font class="keywordtype">float</font> <a class="code" href="structstatistic__s.html#m0">line_total</a>;    
-<a name="l00806"></a><a class="code" href="structstatistic__s.html#m1">00806</a>   <font class="keywordtype">int</font>   <a class="code" href="structstatistic__s.html#m1">line_hit</a>;      
-<a name="l00807"></a><a class="code" href="structstatistic__s.html#m2">00807</a>   <font class="keywordtype">float</font> <a class="code" href="structstatistic__s.html#m2">tog_total</a>;     
-<a name="l00808"></a><a class="code" href="structstatistic__s.html#m3">00808</a>   <font class="keywordtype">int</font>   <a class="code" href="structstatistic__s.html#m3">tog01_hit</a>;     
-<a name="l00809"></a><a class="code" href="structstatistic__s.html#m4">00809</a>   <font class="keywordtype">int</font>   <a class="code" href="structstatistic__s.html#m4">tog10_hit</a>;     
-<a name="l00810"></a><a class="code" href="structstatistic__s.html#m5">00810</a>   <font class="keywordtype">float</font> <a class="code" href="structstatistic__s.html#m5">comb_total</a>;    
-<a name="l00811"></a><a class="code" href="structstatistic__s.html#m6">00811</a>   <font class="keywordtype">int</font>   <a class="code" href="structstatistic__s.html#m6">comb_hit</a>;      
-00812 };
-00813 
-00814 <font class="comment">//------------------------------------------------------------------------------</font>
-00818 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structmod__inst__s.html">mod_inst_s</a>;
-00819 
-<a name="l00820"></a><a class="code" href="defines_8h.html#a139">00820</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structmod__inst__s.html">mod_inst_s</a> mod_inst;
-00821 
-<a name="l00822"></a><a class="code" href="structmod__inst__s.html">00822</a> <font class="keyword">struct </font><a class="code" href="structmod__inst__s.html">mod_inst_s</a> {
-<a name="l00823"></a><a class="code" href="structmod__inst__s.html#m0">00823</a>   <font class="keywordtype">char</font>*      <a class="code" href="structmod__inst__s.html#m0">name</a>;          
-<a name="l00824"></a><a class="code" href="structmod__inst__s.html#m1">00824</a>   module*    <a class="code" href="structmod__inst__s.html#m1">mod</a>;           
-<a name="l00825"></a><a class="code" href="structmod__inst__s.html#m2">00825</a>   statistic* <a class="code" href="structmod__inst__s.html#m2">stat</a>;          
-<a name="l00826"></a><a class="code" href="structmod__inst__s.html#m3">00826</a>   mod_inst*  <a class="code" href="structmod__inst__s.html#m3">child_head</a>;    
-<a name="l00827"></a><a class="code" href="structmod__inst__s.html#m4">00827</a>   mod_inst*  <a class="code" href="structmod__inst__s.html#m4">child_tail</a>;    
-<a name="l00828"></a><a class="code" href="structmod__inst__s.html#m5">00828</a>   mod_inst*  <a class="code" href="structmod__inst__s.html#m5">next</a>;          
-00829 };
-00830 
-00831 <font class="comment">//-------------------------------------------------------------------------------</font>
-00832 
-<a name="l00833"></a><a class="code" href="unionexpr__stmt__u.html">00833</a> <font class="keyword">union </font><a class="code" href="unionexpr__stmt__u.html">expr_stmt_u</a> {
-<a name="l00834"></a><a class="code" href="unionexpr__stmt__u.html#m0">00834</a>   expression* <a class="code" href="unionexpr__stmt__u.html#m0">expr</a>;         
-<a name="l00835"></a><a class="code" href="unionexpr__stmt__u.html#m1">00835</a>   statement*  <a class="code" href="unionexpr__stmt__u.html#m1">stmt</a>;         
-00836 };
+<a name="l00713"></a><a class="code" href="structmodule__s.html#m2">00713</a>   sig_link*  <a class="code" href="structmodule__s.html#m2">sig_head</a>;   
+<a name="l00714"></a><a class="code" href="structmodule__s.html#m3">00714</a>   sig_link*  <a class="code" href="structmodule__s.html#m3">sig_tail</a>;   
+<a name="l00715"></a><a class="code" href="structmodule__s.html#m4">00715</a>   exp_link*  <a class="code" href="structmodule__s.html#m4">exp_head</a>;   
+<a name="l00716"></a><a class="code" href="structmodule__s.html#m5">00716</a>   exp_link*  <a class="code" href="structmodule__s.html#m5">exp_tail</a>;   
+<a name="l00717"></a><a class="code" href="structmodule__s.html#m6">00717</a>   stmt_link* <a class="code" href="structmodule__s.html#m6">stmt_head</a>;  
+<a name="l00718"></a><a class="code" href="structmodule__s.html#m7">00718</a>   stmt_link* <a class="code" href="structmodule__s.html#m7">stmt_tail</a>;  
+00719 };
+00720 
+<a name="l00721"></a><a class="code" href="defines_8h.html#a132">00721</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structmodule__s.html">module_s</a> module;
+00722 
+00723 <font class="comment">//------------------------------------------------------------------------------</font>
+00727 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structmod__link__s.html">mod_link_s</a>;
+00728         
+<a name="l00729"></a><a class="code" href="defines_8h.html#a133">00729</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structmod__link__s.html">mod_link_s</a> mod_link;
+00730         
+<a name="l00731"></a><a class="code" href="structmod__link__s.html">00731</a> <font class="keyword">struct </font><a class="code" href="structmod__link__s.html">mod_link_s</a> {
+<a name="l00732"></a><a class="code" href="structmod__link__s.html#m0">00732</a>   module*    <a class="code" href="structmod__link__s.html#m0">mod</a>;   
+<a name="l00733"></a><a class="code" href="structmod__link__s.html#m1">00733</a>   mod_link* <a class="code" href="structmod__link__s.html#m1">next</a>;   
+00734 };
+00735 
+00736 <font class="comment">//------------------------------------------------------------------------------</font>
+00740 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structsymtable__s.html">symtable_s</a>;
+00741 
+<a name="l00742"></a><a class="code" href="defines_8h.html#a134">00742</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structsymtable__s.html">symtable_s</a> symtable;
+00743 
+<a name="l00744"></a><a class="code" href="structsymtable__s.html">00744</a> <font class="keyword">struct </font><a class="code" href="structsymtable__s.html">symtable_s</a> {
+<a name="l00745"></a><a class="code" href="structsymtable__s.html#m0">00745</a>   <font class="keywordtype">char</font>*     <a class="code" href="structsymtable__s.html#m0">sym</a>;          
+<a name="l00746"></a><a class="code" href="structsymtable__s.html#m1">00746</a>   signal*   <a class="code" href="structsymtable__s.html#m1">sig</a>;          
+<a name="l00747"></a><a class="code" href="structsymtable__s.html#m2">00747</a>   <font class="keywordtype">char</font>*     <a class="code" href="structsymtable__s.html#m2">value</a>;        
+<a name="l00748"></a><a class="code" href="structsymtable__s.html#m3">00748</a>   symtable* <a class="code" href="structsymtable__s.html#m3">right</a>;        
+<a name="l00749"></a><a class="code" href="structsymtable__s.html#m4">00749</a>   symtable* <a class="code" href="structsymtable__s.html#m4">left</a>;         
+00750 };
+00751 
+00752 <font class="comment">//------------------------------------------------------------------------------</font>
+<a name="l00756"></a><a class="code" href="structsignal__width__s.html">00756</a> <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structsignal__width__s.html">signal_width_s</a> {
+<a name="l00757"></a><a class="code" href="structsignal__width__s.html#m0">00757</a>   <font class="keywordtype">int</font> <a class="code" href="structsignal__width__s.html#m0">width</a>;
+<a name="l00758"></a><a class="code" href="structsignal__width__s.html#m1">00758</a>   <font class="keywordtype">int</font> <a class="code" href="structsignal__width__s.html#m1">lsb</a>;
+00759 };
+00760 
+<a name="l00761"></a><a class="code" href="defines_8h.html#a135">00761</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structsignal__width__s.html">signal_width_s</a> signal_width;
+00762 
+00763 <font class="comment">//------------------------------------------------------------------------------</font>
+00767 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structsig__exp__bind__s.html">sig_exp_bind_s</a>;
+00768 
+<a name="l00769"></a><a class="code" href="defines_8h.html#a136">00769</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structsig__exp__bind__s.html">sig_exp_bind_s</a> sig_exp_bind;
+00770 
+<a name="l00771"></a><a class="code" href="structsig__exp__bind__s.html">00771</a> <font class="keyword">struct </font><a class="code" href="structsig__exp__bind__s.html">sig_exp_bind_s</a> {
+<a name="l00772"></a><a class="code" href="structsig__exp__bind__s.html#m0">00772</a>   <font class="keywordtype">char</font>*         <a class="code" href="structsig__exp__bind__s.html#m0">sig_name</a>;  
+<a name="l00773"></a><a class="code" href="structsig__exp__bind__s.html#m1">00773</a>   expression*   <a class="code" href="structsig__exp__bind__s.html#m1">exp</a>;       
+<a name="l00774"></a><a class="code" href="structsig__exp__bind__s.html#m2">00774</a>   <font class="keywordtype">char</font>*         <a class="code" href="structsig__exp__bind__s.html#m2">mod_name</a>;  
+<a name="l00775"></a><a class="code" href="structsig__exp__bind__s.html#m3">00775</a>   sig_exp_bind* <a class="code" href="structsig__exp__bind__s.html#m3">next</a>;      
+00776 };
+00777 
+00778 <font class="comment">//------------------------------------------------------------------------------</font>
+00783 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structcase__stmt__s.html">case_stmt_s</a>;
+00784 
+<a name="l00785"></a><a class="code" href="defines_8h.html#a137">00785</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structcase__stmt__s.html">case_stmt_s</a> case_statement;
+00786 
+<a name="l00787"></a><a class="code" href="structcase__stmt__s.html">00787</a> <font class="keyword">struct </font><a class="code" href="structcase__stmt__s.html">case_stmt_s</a> {
+<a name="l00788"></a><a class="code" href="structcase__stmt__s.html#m0">00788</a>   expression*     <a class="code" href="structcase__stmt__s.html#m0">expr</a>;    
+<a name="l00789"></a><a class="code" href="structcase__stmt__s.html#m1">00789</a>   statement*      <a class="code" href="structcase__stmt__s.html#m1">stmt</a>;    
+<a name="l00790"></a><a class="code" href="structcase__stmt__s.html#m2">00790</a>   <font class="keywordtype">int</font>             <a class="code" href="structcase__stmt__s.html#m2">line</a>;    
+<a name="l00791"></a><a class="code" href="structcase__stmt__s.html#m3">00791</a>   case_statement* <a class="code" href="structcase__stmt__s.html#m3">prev</a>;    
+00792 };
+00793 
+00794 <font class="comment">//------------------------------------------------------------------------------</font>
+00799 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structstatistic__s.html">statistic_s</a>;
+00800 
+<a name="l00801"></a><a class="code" href="defines_8h.html#a138">00801</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structstatistic__s.html">statistic_s</a> statistic;
+00802 
+<a name="l00803"></a><a class="code" href="structstatistic__s.html">00803</a> <font class="keyword">struct </font><a class="code" href="structstatistic__s.html">statistic_s</a> {
+<a name="l00804"></a><a class="code" href="structstatistic__s.html#m0">00804</a>   <font class="keywordtype">float</font> <a class="code" href="structstatistic__s.html#m0">line_total</a>;    
+<a name="l00805"></a><a class="code" href="structstatistic__s.html#m1">00805</a>   <font class="keywordtype">int</font>   <a class="code" href="structstatistic__s.html#m1">line_hit</a>;      
+<a name="l00806"></a><a class="code" href="structstatistic__s.html#m2">00806</a>   <font class="keywordtype">float</font> <a class="code" href="structstatistic__s.html#m2">tog_total</a>;     
+<a name="l00807"></a><a class="code" href="structstatistic__s.html#m3">00807</a>   <font class="keywordtype">int</font>   <a class="code" href="structstatistic__s.html#m3">tog01_hit</a>;     
+<a name="l00808"></a><a class="code" href="structstatistic__s.html#m4">00808</a>   <font class="keywordtype">int</font>   <a class="code" href="structstatistic__s.html#m4">tog10_hit</a>;     
+<a name="l00809"></a><a class="code" href="structstatistic__s.html#m5">00809</a>   <font class="keywordtype">float</font> <a class="code" href="structstatistic__s.html#m5">comb_total</a>;    
+<a name="l00810"></a><a class="code" href="structstatistic__s.html#m6">00810</a>   <font class="keywordtype">int</font>   <a class="code" href="structstatistic__s.html#m6">comb_hit</a>;      
+00811 };
+00812 
+00813 <font class="comment">//------------------------------------------------------------------------------</font>
+00817 <font class="comment"></font><font class="keyword">struct </font><a class="code" href="structmod__inst__s.html">mod_inst_s</a>;
+00818 
+<a name="l00819"></a><a class="code" href="defines_8h.html#a139">00819</a> <font class="keyword">typedef</font> <font class="keyword">struct </font><a class="code" href="structmod__inst__s.html">mod_inst_s</a> mod_inst;
+00820 
+<a name="l00821"></a><a class="code" href="structmod__inst__s.html">00821</a> <font class="keyword">struct </font><a class="code" href="structmod__inst__s.html">mod_inst_s</a> {
+<a name="l00822"></a><a class="code" href="structmod__inst__s.html#m0">00822</a>   <font class="keywordtype">char</font>*      <a class="code" href="structmod__inst__s.html#m0">name</a>;          
+<a name="l00823"></a><a class="code" href="structmod__inst__s.html#m1">00823</a>   module*    <a class="code" href="structmod__inst__s.html#m1">mod</a>;           
+<a name="l00824"></a><a class="code" href="structmod__inst__s.html#m2">00824</a>   statistic* <a class="code" href="structmod__inst__s.html#m2">stat</a>;          
+<a name="l00825"></a><a class="code" href="structmod__inst__s.html#m3">00825</a>   mod_inst*  <a class="code" href="structmod__inst__s.html#m3">child_head</a>;    
+<a name="l00826"></a><a class="code" href="structmod__inst__s.html#m4">00826</a>   mod_inst*  <a class="code" href="structmod__inst__s.html#m4">child_tail</a>;    
+<a name="l00827"></a><a class="code" href="structmod__inst__s.html#m5">00827</a>   mod_inst*  <a class="code" href="structmod__inst__s.html#m5">next</a>;          
+00828 };
+00829 
+00830 <font class="comment">//-------------------------------------------------------------------------------</font>
+00831 
+<a name="l00832"></a><a class="code" href="unionexpr__stmt__u.html">00832</a> <font class="keyword">union </font><a class="code" href="unionexpr__stmt__u.html">expr_stmt_u</a> {
+<a name="l00833"></a><a class="code" href="unionexpr__stmt__u.html#m0">00833</a>   expression* <a class="code" href="unionexpr__stmt__u.html#m0">expr</a>;         
+<a name="l00834"></a><a class="code" href="unionexpr__stmt__u.html#m1">00834</a>   statement*  <a class="code" href="unionexpr__stmt__u.html#m1">stmt</a>;         
+00835 };
+00836 
 00837 
-00838 
-00839 <font class="comment">/* $Log$</font>
-00840 <font class="comment">/* Revision 1.33  2002/07/14 05:10:42  phase1geo</font>
-00841 <font class="comment">/* Added support for signal concatenation in score and report commands.  Fixed</font>
-00842 <font class="comment">/* bugs in this code (and multiplication).</font>
-00843 <font class="comment">/*</font>
-00844 <font class="comment">/* Revision 1.32  2002/07/11 16:59:10  phase1geo</font>
-00845 <font class="comment">/* Added release information to NEWS for upcoming release.</font>
-00846 <font class="comment">/*</font>
-00847 <font class="comment">/* Revision 1.31  2002/07/10 13:15:57  phase1geo</font>
-00848 <font class="comment">/* Adding case1.1.v Verilog diagnostic to check default case statement.  There</font>
-00849 <font class="comment">/* were reporting problems related to this.  Report problems have been fixed and</font>
-00850 <font class="comment">/* full regression passes.</font>
-00851 <font class="comment">/*</font>
-00852 <font class="comment">/* Revision 1.30  2002/07/10 04:57:07  phase1geo</font>
-00853 <font class="comment">/* Adding bits to vector nibble to allow us to specify what type of input</font>
-00854 <font class="comment">/* static value was read in so that the output value may be displayed in</font>
-00855 <font class="comment">/* the same format (DECIMAL, BINARY, OCTAL, HEXIDECIMAL).  Full regression</font>
-00856 <font class="comment">/* passes.</font>
-00857 <font class="comment">/*</font>
-00858 <font class="comment">/* Revision 1.29  2002/07/09 17:27:25  phase1geo</font>
-00859 <font class="comment">/* Fixing default case item handling and in the middle of making fixes for</font>
-00860 <font class="comment">/* report outputting.</font>
-00861 <font class="comment">/*</font>
-00862 <font class="comment">/* Revision 1.28  2002/07/09 04:46:26  phase1geo</font>
-00863 <font class="comment">/* Adding -D and -Q options to covered for outputting debug information or</font>
-00864 <font class="comment">/* suppressing normal output entirely.  Updated generated documentation and</font>
-00865 <font class="comment">/* modified Verilog diagnostic Makefile to use these new options.</font>
-00866 <font class="comment">/*</font>
-00867 <font class="comment">/* Revision 1.27  2002/07/05 16:49:47  phase1geo</font>
-00868 <font class="comment">/* Modified a lot of code this go around.  Fixed VCD reader to handle changes in</font>
-00869 <font class="comment">/* the reverse order (last changes are stored instead of first for timestamp).</font>
-00870 <font class="comment">/* Fixed problem with AEDGE operator to handle vector value changes correctly.</font>
-00871 <font class="comment">/* Added casez2.v diagnostic to verify proper handling of casez with '?' characters.</font>
-00872 <font class="comment">/* Full regression passes; however, the recent changes seem to have impacted</font>
-00873 <font class="comment">/* performance -- need to look into this.</font>
-00874 <font class="comment">/*</font>
-00875 <font class="comment">/* Revision 1.26  2002/07/05 05:00:13  phase1geo</font>
-00876 <font class="comment">/* Removing CASE, CASEX, and CASEZ from line and combinational logic results.</font>
-00877 <font class="comment">/*</font>
-00878 <font class="comment">/* Revision 1.25  2002/07/05 04:12:46  phase1geo</font>
-00879 <font class="comment">/* Correcting case, casex and casez equality calculation to conform to correct</font>
-00880 <font class="comment">/* equality check for each case type.  Verified that case statements work correctly</font>
-00881 <font class="comment">/* at this point.  Added diagnostics to verify case statements.</font>
-00882 <font class="comment">/*</font>
-00883 <font class="comment">/* Revision 1.24  2002/07/04 23:10:12  phase1geo</font>
-00884 <font class="comment">/* Added proper support for case, casex, and casez statements in score command.</font>
-00885 <font class="comment">/* Report command still incorrect for these statement types.</font>
-00886 <font class="comment">/*</font>
-00887 <font class="comment">/* Revision 1.23  2002/07/03 21:30:52  phase1geo</font>
-00888 <font class="comment">/* Fixed remaining issues with always statements.  Full regression is running</font>
-00889 <font class="comment">/* error free at this point.  Regenerated documentation.  Added EOR expression</font>
-00890 <font class="comment">/* operation to handle the or expression in event lists.</font>
-00891 <font class="comment">/*</font>
-00892 <font class="comment">/* Revision 1.22  2002/07/03 19:54:36  phase1geo</font>
-00893 <font class="comment">/* Adding/fixing code to properly handle always blocks with the event control</font>
-00894 <font class="comment">/* structures attached.  Added several new diagnostics to test this ability.</font>
-00895 <font class="comment">/* always1.v is still failing but the rest are passing.</font>
-00896 <font class="comment">/*</font>
-00897 <font class="comment">/* Revision 1.21  2002/07/02 19:52:50  phase1geo</font>
-00898 <font class="comment">/* Removing unecessary diagnostics.  Cleaning up extraneous output and</font>
-00899 <font class="comment">/* generating new documentation from source.  Regression passes at the</font>
-00900 <font class="comment">/* current time.</font>
-00901 <font class="comment">/*</font>
-00902 <font class="comment">/* Revision 1.20  2002/07/02 18:42:18  phase1geo</font>
-00903 <font class="comment">/* Various bug fixes.  Added support for multiple signals sharing the same VCD</font>
-00904 <font class="comment">/* symbol.  Changed conditional support to allow proper simulation results.</font>
-00905 <font class="comment">/* Updated VCD parser to allow for symbols containing only alphanumeric characters.</font>
-00906 <font class="comment">/*</font>
-00907 <font class="comment">/* Revision 1.19  2002/06/30 22:23:20  phase1geo</font>
-00908 <font class="comment">/* Working on fixing looping in parser.  Statement connector needs to be revamped.</font>
-00909 <font class="comment">/*</font>
-00910 <font class="comment">/* Revision 1.18  2002/06/28 03:04:59  phase1geo</font>
-00911 <font class="comment">/* Fixing more errors found by diagnostics.  Things are running pretty well at</font>
-00912 <font class="comment">/* this point with current diagnostics.  Still some report output problems.</font>
-00913 <font class="comment">/*</font>
-00914 <font class="comment">/* Revision 1.17  2002/06/27 21:18:48  phase1geo</font>
-00915 <font class="comment">/* Fixing report Verilog output.  simple.v verilog diagnostic now passes.</font>
-00916 <font class="comment">/*</font>
-00917 <font class="comment">/* Revision 1.16  2002/06/27 20:39:43  phase1geo</font>
-00918 <font class="comment">/* Fixing scoring bugs as well as report bugs.  Things are starting to work</font>
-00919 <font class="comment">/* fairly well now.  Added rest of support for delays.</font>
-00920 <font class="comment">/*</font>
-00921 <font class="comment">/* Revision 1.15  2002/06/26 04:59:50  phase1geo</font>
-00922 <font class="comment">/* Adding initial support for delays.  Support is not yet complete and is</font>
-00923 <font class="comment">/* currently untested.</font>
-00924 <font class="comment">/*</font>
-00925 <font class="comment">/* Revision 1.14  2002/06/23 21:18:21  phase1geo</font>
-00926 <font class="comment">/* Added appropriate statement support in parser.  All parts should be in place</font>
-00927 <font class="comment">/* and ready to start testing.</font>
-00928 <font class="comment">/*</font>
-00929 <font class="comment">/* Revision 1.13  2002/06/22 05:27:30  phase1geo</font>
-00930 <font class="comment">/* Additional supporting code for simulation engine and statement support in</font>
-00931 <font class="comment">/* parser.</font>
-00932 <font class="comment">/*</font>
-00933 <font class="comment">/* Revision 1.11  2002/05/13 03:02:58  phase1geo</font>
-00934 <font class="comment">/* Adding lines back to expressions and removing them from statements (since the line</font>
-00935 <font class="comment">/* number range of an expression can be calculated by looking at the expression line</font>
-00936 <font class="comment">/* numbers).</font>
-00937 <font class="comment">/*</font>
-00938 <font class="comment">/* Revision 1.10  2002/05/03 03:39:36  phase1geo</font>
-00939 <font class="comment">/* Removing all syntax errors due to addition of statements.  Added more statement</font>
-00940 <font class="comment">/* support code.  Still have a ways to go before we can try anything.  Removed lines</font>
-00941 <font class="comment">/* from expressions though we may want to consider putting these back for reporting</font>
-00942 <font class="comment">/* purposes.</font>
-00943 <font class="comment">/*</font>
-00944 <font class="comment">/* Revision 1.9  2002/05/02 03:27:42  phase1geo</font>
-00945 <font class="comment">/* Initial creation of statement structure and manipulation files.  Internals are</font>
-00946 <font class="comment">/* still in a chaotic state.</font>
-00947 <font class="comment">/*</font>
-00948 <font class="comment">/* Revision 1.8  2002/04/30 05:04:25  phase1geo</font>
-00949 <font class="comment">/* Added initial go-round of adding statement handling to parser.  Added simple</font>
-00950 <font class="comment">/* Verilog test to check correct statement handling.  At this point there is a</font>
-00951 <font class="comment">/* bug in the expression write function (we need to display statement trees in</font>
-00952 <font class="comment">/* the proper order since they are unlike normal expression trees.)</font>
-00953 <font class="comment">/* */</font>
-00954 
-00955 <font class="preprocessor">#endif</font>
-00956 <font class="preprocessor"></font>
-</pre></div><hr><address align="right"><small>Generated on Mon Jul 15 19:02:58 2002 for Covered by
+00838 <font class="comment">/* $Log$</font>
+00839 <font class="comment">/* Revision 1.33  2002/07/14 05:10:42  phase1geo</font>
+00840 <font class="comment">/* Added support for signal concatenation in score and report commands.  Fixed</font>
+00841 <font class="comment">/* bugs in this code (and multiplication).</font>
+00842 <font class="comment">/*</font>
+00843 <font class="comment">/* Revision 1.32  2002/07/11 16:59:10  phase1geo</font>
+00844 <font class="comment">/* Added release information to NEWS for upcoming release.</font>
+00845 <font class="comment">/*</font>
+00846 <font class="comment">/* Revision 1.31  2002/07/10 13:15:57  phase1geo</font>
+00847 <font class="comment">/* Adding case1.1.v Verilog diagnostic to check default case statement.  There</font>
+00848 <font class="comment">/* were reporting problems related to this.  Report problems have been fixed and</font>
+00849 <font class="comment">/* full regression passes.</font>
+00850 <font class="comment">/*</font>
+00851 <font class="comment">/* Revision 1.30  2002/07/10 04:57:07  phase1geo</font>
+00852 <font class="comment">/* Adding bits to vector nibble to allow us to specify what type of input</font>
+00853 <font class="comment">/* static value was read in so that the output value may be displayed in</font>
+00854 <font class="comment">/* the same format (DECIMAL, BINARY, OCTAL, HEXIDECIMAL).  Full regression</font>
+00855 <font class="comment">/* passes.</font>
+00856 <font class="comment">/*</font>
+00857 <font class="comment">/* Revision 1.29  2002/07/09 17:27:25  phase1geo</font>
+00858 <font class="comment">/* Fixing default case item handling and in the middle of making fixes for</font>
+00859 <font class="comment">/* report outputting.</font>
+00860 <font class="comment">/*</font>
+00861 <font class="comment">/* Revision 1.28  2002/07/09 04:46:26  phase1geo</font>
+00862 <font class="comment">/* Adding -D and -Q options to covered for outputting debug information or</font>
+00863 <font class="comment">/* suppressing normal output entirely.  Updated generated documentation and</font>
+00864 <font class="comment">/* modified Verilog diagnostic Makefile to use these new options.</font>
+00865 <font class="comment">/*</font>
+00866 <font class="comment">/* Revision 1.27  2002/07/05 16:49:47  phase1geo</font>
+00867 <font class="comment">/* Modified a lot of code this go around.  Fixed VCD reader to handle changes in</font>
+00868 <font class="comment">/* the reverse order (last changes are stored instead of first for timestamp).</font>
+00869 <font class="comment">/* Fixed problem with AEDGE operator to handle vector value changes correctly.</font>
+00870 <font class="comment">/* Added casez2.v diagnostic to verify proper handling of casez with '?' characters.</font>
+00871 <font class="comment">/* Full regression passes; however, the recent changes seem to have impacted</font>
+00872 <font class="comment">/* performance -- need to look into this.</font>
+00873 <font class="comment">/*</font>
+00874 <font class="comment">/* Revision 1.26  2002/07/05 05:00:13  phase1geo</font>
+00875 <font class="comment">/* Removing CASE, CASEX, and CASEZ from line and combinational logic results.</font>
+00876 <font class="comment">/*</font>
+00877 <font class="comment">/* Revision 1.25  2002/07/05 04:12:46  phase1geo</font>
+00878 <font class="comment">/* Correcting case, casex and casez equality calculation to conform to correct</font>
+00879 <font class="comment">/* equality check for each case type.  Verified that case statements work correctly</font>
+00880 <font class="comment">/* at this point.  Added diagnostics to verify case statements.</font>
+00881 <font class="comment">/*</font>
+00882 <font class="comment">/* Revision 1.24  2002/07/04 23:10:12  phase1geo</font>
+00883 <font class="comment">/* Added proper support for case, casex, and casez statements in score command.</font>
+00884 <font class="comment">/* Report command still incorrect for these statement types.</font>
+00885 <font class="comment">/*</font>
+00886 <font class="comment">/* Revision 1.23  2002/07/03 21:30:52  phase1geo</font>
+00887 <font class="comment">/* Fixed remaining issues with always statements.  Full regression is running</font>
+00888 <font class="comment">/* error free at this point.  Regenerated documentation.  Added EOR expression</font>
+00889 <font class="comment">/* operation to handle the or expression in event lists.</font>
+00890 <font class="comment">/*</font>
+00891 <font class="comment">/* Revision 1.22  2002/07/03 19:54:36  phase1geo</font>
+00892 <font class="comment">/* Adding/fixing code to properly handle always blocks with the event control</font>
+00893 <font class="comment">/* structures attached.  Added several new diagnostics to test this ability.</font>
+00894 <font class="comment">/* always1.v is still failing but the rest are passing.</font>
+00895 <font class="comment">/*</font>
+00896 <font class="comment">/* Revision 1.21  2002/07/02 19:52:50  phase1geo</font>
+00897 <font class="comment">/* Removing unecessary diagnostics.  Cleaning up extraneous output and</font>
+00898 <font class="comment">/* generating new documentation from source.  Regression passes at the</font>
+00899 <font class="comment">/* current time.</font>
+00900 <font class="comment">/*</font>
+00901 <font class="comment">/* Revision 1.20  2002/07/02 18:42:18  phase1geo</font>
+00902 <font class="comment">/* Various bug fixes.  Added support for multiple signals sharing the same VCD</font>
+00903 <font class="comment">/* symbol.  Changed conditional support to allow proper simulation results.</font>
+00904 <font class="comment">/* Updated VCD parser to allow for symbols containing only alphanumeric characters.</font>
+00905 <font class="comment">/*</font>
+00906 <font class="comment">/* Revision 1.19  2002/06/30 22:23:20  phase1geo</font>
+00907 <font class="comment">/* Working on fixing looping in parser.  Statement connector needs to be revamped.</font>
+00908 <font class="comment">/*</font>
+00909 <font class="comment">/* Revision 1.18  2002/06/28 03:04:59  phase1geo</font>
+00910 <font class="comment">/* Fixing more errors found by diagnostics.  Things are running pretty well at</font>
+00911 <font class="comment">/* this point with current diagnostics.  Still some report output problems.</font>
+00912 <font class="comment">/*</font>
+00913 <font class="comment">/* Revision 1.17  2002/06/27 21:18:48  phase1geo</font>
+00914 <font class="comment">/* Fixing report Verilog output.  simple.v verilog diagnostic now passes.</font>
+00915 <font class="comment">/*</font>
+00916 <font class="comment">/* Revision 1.16  2002/06/27 20:39:43  phase1geo</font>
+00917 <font class="comment">/* Fixing scoring bugs as well as report bugs.  Things are starting to work</font>
+00918 <font class="comment">/* fairly well now.  Added rest of support for delays.</font>
+00919 <font class="comment">/*</font>
+00920 <font class="comment">/* Revision 1.15  2002/06/26 04:59:50  phase1geo</font>
+00921 <font class="comment">/* Adding initial support for delays.  Support is not yet complete and is</font>
+00922 <font class="comment">/* currently untested.</font>
+00923 <font class="comment">/*</font>
+00924 <font class="comment">/* Revision 1.14  2002/06/23 21:18:21  phase1geo</font>
+00925 <font class="comment">/* Added appropriate statement support in parser.  All parts should be in place</font>
+00926 <font class="comment">/* and ready to start testing.</font>
+00927 <font class="comment">/*</font>
+00928 <font class="comment">/* Revision 1.13  2002/06/22 05:27:30  phase1geo</font>
+00929 <font class="comment">/* Additional supporting code for simulation engine and statement support in</font>
+00930 <font class="comment">/* parser.</font>
+00931 <font class="comment">/*</font>
+00932 <font class="comment">/* Revision 1.11  2002/05/13 03:02:58  phase1geo</font>
+00933 <font class="comment">/* Adding lines back to expressions and removing them from statements (since the line</font>
+00934 <font class="comment">/* number range of an expression can be calculated by looking at the expression line</font>
+00935 <font class="comment">/* numbers).</font>
+00936 <font class="comment">/*</font>
+00937 <font class="comment">/* Revision 1.10  2002/05/03 03:39:36  phase1geo</font>
+00938 <font class="comment">/* Removing all syntax errors due to addition of statements.  Added more statement</font>
+00939 <font class="comment">/* support code.  Still have a ways to go before we can try anything.  Removed lines</font>
+00940 <font class="comment">/* from expressions though we may want to consider putting these back for reporting</font>
+00941 <font class="comment">/* purposes.</font>
+00942 <font class="comment">/*</font>
+00943 <font class="comment">/* Revision 1.9  2002/05/02 03:27:42  phase1geo</font>
+00944 <font class="comment">/* Initial creation of statement structure and manipulation files.  Internals are</font>
+00945 <font class="comment">/* still in a chaotic state.</font>
+00946 <font class="comment">/*</font>
+00947 <font class="comment">/* Revision 1.8  2002/04/30 05:04:25  phase1geo</font>
+00948 <font class="comment">/* Added initial go-round of adding statement handling to parser.  Added simple</font>
+00949 <font class="comment">/* Verilog test to check correct statement handling.  At this point there is a</font>
+00950 <font class="comment">/* bug in the expression write function (we need to display statement trees in</font>
+00951 <font class="comment">/* the proper order since they are unlike normal expression trees.)</font>
+00952 <font class="comment">/* */</font>
+00953 
+00954 <font class="preprocessor">#endif</font>
+00955 <font class="preprocessor"></font>
+</pre></div><hr><address align="right"><small>Generated on Wed Jul 17 21:32:35 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

@@ -19,9 +19,9 @@
 <tr><td>&nbsp;</td><td><font size=-1><em>Creates new module from heap and initializes structure.</em> <a href="#a1"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="module_8h.html#a2">module_merge</a> (<a class="el" href="defines_8h.html#a132">module</a> *base, <a class="el" href="defines_8h.html#a132">module</a> *in)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Merges two modules into base module.</em> <a href="#a2"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a142">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="module_8h.html#a3">module_db_write</a> (<a class="el" href="defines_8h.html#a132">module</a> *mod, FILE *<a class="el" href="vcd__lexer_8c.html#a106">file</a>)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a142">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="module_8h.html#a3">module_db_write</a> (<a class="el" href="defines_8h.html#a132">module</a> *mod, char *scope, FILE *<a class="el" href="vcd__lexer_8c.html#a106">file</a>)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Writes contents of provided module to specified output.</em> <a href="#a3"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a142">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="module_8h.html#a4">module_db_read</a> (<a class="el" href="defines_8h.html#a132">module</a> **mod, char **line)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a142">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="module_8h.html#a4">module_db_read</a> (<a class="el" href="defines_8h.html#a132">module</a> **mod, char **scope, char **line)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Read contents of current line from specified file, creates module and adds to module list.</em> <a href="#a4"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="module_8h.html#a5">module_display_signals</a> (<a class="el" href="defines_8h.html#a132">module</a> *mod)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Displays signals stored in this module.</em> <a href="#a5"></a><em></em></font><br><br></td></tr>
@@ -126,6 +126,12 @@ Returns pointer to newly created module element that has been properly initializ
           <td></td>
           <td></td>
           <td class="md" nowrap>char **&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>scope</em>, </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td class="md" nowrap>char **&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>line</em></td>
         </tr>
         <tr>
@@ -153,6 +159,8 @@ Parameters: </b><dd>
 <table border=0 cellspacing=2 cellpadding=0>
 <tr><td valign=top><em>mod</em>&nbsp;</td><td>
 Pointer to module to read input from. </td></tr>
+<tr><td valign=top><em>scope</em>&nbsp;</td><td>
+Pointer to string to store module instance scope. </td></tr>
 <tr><td valign=top><em>line</em>&nbsp;</td><td>
 Pointer to current line to parse. </td></tr>
 </table>
@@ -171,6 +179,12 @@ Returns TRUE if read was successful; otherwise, returns FALSE.</dl>Reads the cur
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a132">module</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>mod</em>, </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td class="md" nowrap>char *&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>scope</em>, </td>
         </tr>
         <tr>
           <td></td>
@@ -203,6 +217,8 @@ Parameters: </b><dd>
 <table border=0 cellspacing=2 cellpadding=0>
 <tr><td valign=top><em>mod</em>&nbsp;</td><td>
 Pointer to module to write to output. </td></tr>
+<tr><td valign=top><em>scope</em>&nbsp;</td><td>
+String version of module scope in hierarchy. </td></tr>
 <tr><td valign=top><em>file</em>&nbsp;</td><td>
 Pointer to specified output file to write contents. </td></tr>
 </table>
@@ -407,7 +423,7 @@ Module that will be merged into the base module.</td></tr>
 </dl>Performs a merge of the two specified modules, placing the resulting merge module into the module named base. If there are any differences between the two modules, a warning or error will be displayed to the user.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Mon Jul 15 19:03:00 2002 for Covered by
+<hr><address align="right"><small>Generated on Wed Jul 17 21:32:37 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

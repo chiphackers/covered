@@ -32,7 +32,7 @@ extern nibble or_optab[16];
 /*!
  Specifies the string Verilog scope that is currently specified in the VCD file.
 */
-char* curr_vcd_scope = NULL;
+char* curr_inst_scope = NULL;
 
 /*!
  Pointer to the current instance selected by the VCD parser.  If this value is
@@ -96,7 +96,7 @@ bool db_write( char* file ) {
 
   /* Remove memory allocated for instance_root and mod_head */
   assert( instance_root->mod != NULL );
-  instance_dealloc( instance_root, instance_root->mod->scope );
+  instance_dealloc( instance_root, instance_root->name );
   mod_link_delete_list( mod_head );
 
   instance_root = NULL;
@@ -135,6 +135,7 @@ bool db_read( char* file, int read_mode ) {
   int          chars_read;           /* Number of characters currently read on line    */
   char         parent_scope[4096];   /* Scope of parent module to the current instance */
   char         back[4096];           /* Current module instance name                   */
+  char*        curr_scope;           /* Current scope of module instance               */
   mod_link*    foundmod;             /* Found module link                              */
   mod_inst*    foundinst;            /* Found module instance                          */
 
@@ -166,10 +167,9 @@ bool db_read( char* file, int read_mode ) {
         } else if( type == DB_TYPE_MODULE ) {
 
           /* Parse rest of line for module info */
-          if( retval = module_db_read( &tmpmod, &rest_line ) ) {
+          if( retval = module_db_read( &tmpmod, &curr_scope, &rest_line ) ) {
 
             assert( tmpmod != NULL );
-            assert( tmpmod->scope != NULL );
             assert( tmpmod->name != NULL );
 
             if( curr_module != NULL ) {
@@ -177,7 +177,7 @@ bool db_read( char* file, int read_mode ) {
               if( read_mode == READ_MODE_MERGE_INST_MERGE ) {
               
                 /* Find module in instance tree and do a module merge */
-                if( (foundinst = instance_find_scope( instance_root, tmpmod->scope )) == NULL ) {
+                if( (foundinst = instance_find_scope( instance_root, curr_scope )) == NULL ) {
                   print_output( "Attempting to merge two databases derived from different designs.  Unable to merge", FATAL );
                   retval = FALSE;
                 } else {
@@ -200,12 +200,10 @@ bool db_read( char* file, int read_mode ) {
 
             }
 
-            curr_module = tmpmod;
-
             if( (read_mode == READ_MODE_MERGE_NO_MERGE) || (read_mode == READ_MODE_REPORT_NO_MERGE) ) {
 
 	      /* Add module to instance tree and module list */
-              scope_extract_back( tmpmod->scope, back, parent_scope );
+              scope_extract_back( curr_scope, back, parent_scope );
 
               if( (parent_scope[0] != '\0') && ((foundinst = instance_find_scope( instance_root, parent_scope )) == NULL) ) {
 
@@ -215,12 +213,14 @@ bool db_read( char* file, int read_mode ) {
               } else {
 
                 /* Add module to instance tree and module list */
-                instance_add( &instance_root, parent_scope, curr_module, back );
-                mod_link_add( curr_module, &mod_head, &mod_tail );
+                instance_add( &instance_root, curr_module, tmpmod, back );
+                mod_link_add( tmpmod, &mod_head, &mod_tail );
               
               }
 
             }
+
+            curr_module = tmpmod;
 
 	  }
 
@@ -247,7 +247,7 @@ bool db_read( char* file, int read_mode ) {
     if( read_mode == READ_MODE_MERGE_INST_MERGE ) {
               
       /* Find module in instance tree and do a module merge */
-      if( (foundinst = instance_find_scope( instance_root, tmpmod->scope )) == NULL ) {
+      if( (foundinst = instance_find_scope( instance_root, curr_scope )) == NULL ) {
         print_output( "Attempting to merge two databases derived from different designs.  Unable to merge", FATAL );
         retval = FALSE;
       } else {
@@ -304,7 +304,6 @@ void db_add_instance( char* scope, char* modname ) {
 
     snprintf( msg, 4096, "In db_add_instance, instance: %s, module: %s", scope, modname );
     print_output( msg, DEBUG );
-    printf( "%s\n", msg );
 
     /* Create new module node */
     mod       = module_create();
@@ -312,7 +311,7 @@ void db_add_instance( char* scope, char* modname ) {
 
     if( (found_mod_link = mod_link_find( mod, mod_head )) != NULL ) {
 
-      instance_add( &instance_root, curr_module->name, found_mod_link->mod, scope );
+      instance_add( &instance_root, curr_module, found_mod_link->mod, scope );
 
       module_dealloc( mod );
 
@@ -322,7 +321,7 @@ void db_add_instance( char* scope, char* modname ) {
       mod_link_add( mod, &mod_head, &mod_tail );
 
       // Add instance.
-      instance_add( &instance_root, curr_module->name, mod, scope );
+      instance_add( &instance_root, curr_module, mod, scope );
 
     }
 
@@ -345,9 +344,9 @@ void db_add_instance( char* scope, char* modname ) {
 */
 void db_add_module( char* name, char* file ) {
 
-  module*   mod;            /* Pointer to newly created module */
-  mod_link* modl;          /* Pointer to found tree node      */
-  char      msg[4096];      /* Display message string          */
+  module    mod;         /* Temporary module for comparison */
+  mod_link* modl;        /* Pointer to found tree node      */
+  char      msg[4096];   /* Display message string          */
 
   snprintf( msg, 4096, "In db_add_module, module: %s, file: %s", name, file );
   print_output( msg, DEBUG );
@@ -356,18 +355,15 @@ void db_add_module( char* name, char* file ) {
   assert( strcmp( name, modlist_head->str ) == 0 );
 
   /* Set current module to this module */
-  mod               = module_create();
-  mod->name         = strdup( name );
+  mod.name = name;
 
-  modl = mod_link_find( mod, mod_head );
+  modl = mod_link_find( &mod, mod_head );
 
   assert( modl != NULL );
 
   curr_module           = modl->mod;
   curr_module->filename = strdup( file );
   
-  module_dealloc( mod );
-
 }
 
 /*!
@@ -722,7 +718,7 @@ void db_statement_set_stop( statement* stmt, statement* post, bool both ) {
 /*!
  \param scope  Current VCD scope.
 
- Sets the curr_vcd_scope global variable to the specified scope.
+ Sets the curr_inst_scope global variable to the specified scope.
 */
 void db_set_vcd_scope( char* scope ) {
 
@@ -735,14 +731,14 @@ void db_set_vcd_scope( char* scope ) {
 
   assert( scope != NULL );
 
-  if( curr_vcd_scope != NULL ) {
+  if( curr_inst_scope != NULL ) {
 
-    scope_len = strlen( curr_vcd_scope ) + strlen( scope ) + 2; 
+    scope_len = strlen( curr_inst_scope ) + strlen( scope ) + 2; 
     tmpscope  = (char*)malloc_safe( scope_len );
-    snprintf( tmpscope, scope_len, "%s.%s", curr_vcd_scope, scope );
+    snprintf( tmpscope, scope_len, "%s.%s", curr_inst_scope, scope );
 
-    free_safe( curr_vcd_scope );
-    curr_vcd_scope = tmpscope;
+    free_safe( curr_inst_scope );
+    curr_inst_scope = tmpscope;
 
     curr_instance = instance_find_scope( instance_root, tmpscope );
 
@@ -752,8 +748,8 @@ void db_set_vcd_scope( char* scope ) {
 
     if( (curr_instance = instance_find_scope( instance_root, tmpscope )) != NULL ) {
 
-      free_safe( curr_vcd_scope );
-      curr_vcd_scope = tmpscope;
+      free_safe( curr_inst_scope );
+      curr_inst_scope = tmpscope;
 
     }
 
@@ -762,7 +758,7 @@ void db_set_vcd_scope( char* scope ) {
 }
 
 /*!
- Moves the curr_vcd_scope up one level of hierarchy.  This function is called
+ Moves the curr_inst_scope up one level of hierarchy.  This function is called
  when the $upscope keyword is seen in a VCD file.
 */
 void db_vcd_upscope() {
@@ -771,18 +767,18 @@ void db_vcd_upscope() {
   char back[4096];   /* Lowest level of hierarchy */
   char rest[4096];   /* Hierarchy up one level    */
 
-  snprintf( msg, 4096, "In db_vcd_upscope, curr_vcd_scope: %s", curr_vcd_scope );
+  snprintf( msg, 4096, "In db_vcd_upscope, curr_inst_scope: %s", curr_inst_scope );
   print_output( msg, DEBUG );  
 
-  if( curr_vcd_scope != NULL ) {
+  if( curr_inst_scope != NULL ) {
 
-    scope_extract_back( curr_vcd_scope, back, rest );
+    scope_extract_back( curr_inst_scope, back, rest );
 
     if( rest[0] != '\0' ) {
-      strcpy( curr_vcd_scope, rest );
+      strcpy( curr_inst_scope, rest );
     } else {
-      free_safe( curr_vcd_scope );
-      curr_vcd_scope = NULL;
+      free_safe( curr_inst_scope );
+      curr_inst_scope = NULL;
     }
 
   }
@@ -803,7 +799,7 @@ void db_assign_symbol( char* name, char* symbol ) {
   char          msg[4096];  /* Display message string                    */
   mod_inst*     inst;       /* Found instance                            */
 
-  snprintf( msg, 4096, "In db_assign_symbol, name: %s, symbol: %s, curr_vcd_scope: %s", name, symbol, curr_vcd_scope );
+  snprintf( msg, 4096, "In db_assign_symbol, name: %s, symbol: %s, curr_inst_scope: %s", name, symbol, curr_inst_scope );
   print_output( msg, DEBUG );
 
   assert( name != NULL );
@@ -821,7 +817,7 @@ void db_assign_symbol( char* name, char* symbol ) {
 
     } else {
 
-      snprintf( msg, 4096, "VCD signal \"%s.%s\" found that is not part of design", curr_vcd_scope, name );
+      snprintf( msg, 4096, "VCD signal \"%s.%s\" found that is not part of design", curr_inst_scope, name );
       print_output( msg, WARNING );
 
     }
@@ -964,6 +960,10 @@ void db_do_timestep( int time ) {
 }
 
 /* $Log$
+/* Revision 1.43  2002/07/17 21:45:56  phase1geo
+/* Fixing case where `define does not set to a value.  Looking into problem
+/* with embedded instances (at least 3 deep).
+/*
 /* Revision 1.42  2002/07/17 00:13:57  phase1geo
 /* Added support for -e option and informally tested.
 /*
