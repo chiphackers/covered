@@ -131,21 +131,6 @@ fsm_var* fsm_var_add( char* mod_name, expression* in_state, expression* out_stat
 
 }
 
-fsm_var* fsm_var_find_by_name( char* name ) {
-
-  fsm_var* curr;  /* Pointer to current FSM variable structure */
-
-  assert( name != NULL );
-
-  curr = fsm_var_head;
-  while( (curr != NULL) && (curr->name != NULL) && (strcmp( curr->name, name ) != 0) ) {
-    curr = curr->next;
-  }
-
-  return( curr );
-
-}
-
 /*!
  \param expr  Pointer to expression to evaluate.
 
@@ -169,6 +154,21 @@ fsm_var* fsm_var_is_output_state( expression* expr ) {
 
 }
 
+/*!
+ \param sig_name  String name of signal to bind to specified expression.
+ \param expr      Pointer to expression to bind to signal called sig_name.
+ \param mod_name  String name of module that contains the expression pointed to by expr.
+
+ \return Returns TRUE if the signal and expression are able to be bound (specified signal
+         name and module name exist in design); otherwise, returns a value of FALSE.
+
+ Searches the module list for the module called mod_name.  If the module is found in the
+ design, searches this module for the signal called sig_name.  If the signal is found,
+ the signal and specified expression expr are bound to each other and this function returns
+ a value of TRUE.  If the signal name could not be found or the module name could not be found
+ in the design, no binding occurs and the function displays an error message and returns a
+ value of FALSE to the calling function.
+*/
 bool fsm_var_bind_expr( char* sig_name, expression* expr, char* mod_name ) {
 
   bool      retval = TRUE;  /* Return value for this function       */
@@ -220,6 +220,21 @@ void fsm_var_add_expr( expression* expr, module* mod ) {
 
 }
 
+/*!
+ \param stmt      Pointer to statement to bind.
+ \param mod_name  String name of module which will contain stmt.
+
+ \return Returns a value of TRUE if the statement was successfully bound to
+         the specified module name; otherwise, returns a value of FALSE.
+
+ Searches the design module list for a module called mod_name.  If the module
+ is found in the design, adds the statement's expression tree to the design,
+ sets the STMT_ADDED bit in the statement's supplemental field, adds this
+ statement to the found module structure, and finally creates an FSM table if
+ the statement contains an output state FSM expression tree and returns a value
+ of TRUE to the calling function.  If the module could not be found, this
+ function, returns a value of FALSE to the calling function.
+*/
 bool fsm_var_bind_stmt( statement* stmt, char* mod_name ) {
 
   bool      retval = FALSE;  /* Return value for this function       */
@@ -280,6 +295,7 @@ void fsm_var_bind_add( char* sig_name, expression* expr, char* mod_name ) {
     fvb->sig_name = strdup( sig_name );
     fvb->expr     = expr;
     fvb->mod_name = strdup( mod_name );
+    fvb->next     = NULL;
 
     /* Add new structure to the global list */
     if( fsm_var_bind_head == NULL ) {
@@ -311,6 +327,7 @@ void fsm_var_stmt_add( statement* stmt, char* mod_name ) {
   fvb           = (fv_bind*)malloc_safe( sizeof( fv_bind ) );
   fvb->stmt     = stmt;
   fvb->mod_name = strdup( mod_name );
+  fvb->next     = NULL;
 
   /* Add new structure to the head of the global list */
   if( fsm_var_stmt_head == NULL ) {
@@ -447,6 +464,11 @@ void fsm_var_remove( fsm_var* fv ) {
 
 /*
  $Log$
+ Revision 1.11  2003/11/11 13:38:00  phase1geo
+ Fixing bug in fsm_var that bound FSM statements early.  This caused an
+ incorrect ordering of statements that results in incorrect FSM coverage.
+ Updated regression suite for changes.  Full regression now passes.
+
  Revision 1.10  2003/11/07 05:18:40  phase1geo
  Adding working code for inline FSM attribute handling.  Full regression fails
  at this point but the code seems to be working correctly.
