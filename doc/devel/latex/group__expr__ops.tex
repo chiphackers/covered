@@ -3,7 +3,7 @@
 \subsection*{Defines}
 \begin{CompactItemize}
 \item 
-\#define {\bf EXP\_\-OP\_\-NONE}\ 0x0
+\#define {\bf EXP\_\-OP\_\-STATIC}\ 0x0
 \item 
 \#define {\bf EXP\_\-OP\_\-SIG}\ 0x1
 \item 
@@ -262,12 +262,7 @@ The following defines are used for identifying expression operations.
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define EXP\_\-OP\_\-NEDGE\ 0x28}\label{group__expr__ops_a40}
 
 
-40 negedge operator \index{expr_ops@{expr\_\-ops}!EXP_OP_NONE@{EXP\_\-OP\_\-NONE}}
-\index{EXP_OP_NONE@{EXP\_\-OP\_\-NONE}!expr_ops@{expr\_\-ops}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define EXP\_\-OP\_\-NONE\ 0x0}\label{group__expr__ops_a0}
-
-
-0 Specifies no expression (leaf node in expression tree) \index{expr_ops@{expr\_\-ops}!EXP_OP_NOR@{EXP\_\-OP\_\-NOR}}
+40 negedge operator \index{expr_ops@{expr\_\-ops}!EXP_OP_NOR@{EXP\_\-OP\_\-NOR}}
 \index{EXP_OP_NOR@{EXP\_\-OP\_\-NOR}!expr_ops@{expr\_\-ops}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define EXP\_\-OP\_\-NOR\ 0xb}\label{group__expr__ops_a11}
 
@@ -302,7 +297,12 @@ The following defines are used for identifying expression operations.
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define EXP\_\-OP\_\-SIG\ 0x1}\label{group__expr__ops_a1}
 
 
-1 Specifes that this expression contains signal value \index{expr_ops@{expr\_\-ops}!EXP_OP_SUBTRACT@{EXP\_\-OP\_\-SUBTRACT}}
+1 Specifes that this expression contains signal value \index{expr_ops@{expr\_\-ops}!EXP_OP_STATIC@{EXP\_\-OP\_\-STATIC}}
+\index{EXP_OP_STATIC@{EXP\_\-OP\_\-STATIC}!expr_ops@{expr\_\-ops}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define EXP\_\-OP\_\-STATIC\ 0x0}\label{group__expr__ops_a0}
+
+
+0 Specifies constant value \index{expr_ops@{expr\_\-ops}!EXP_OP_SUBTRACT@{EXP\_\-OP\_\-SUBTRACT}}
 \index{EXP_OP_SUBTRACT@{EXP\_\-OP\_\-SUBTRACT}!expr_ops@{expr\_\-ops}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define EXP\_\-OP\_\-SUBTRACT\ 0x7}\label{group__expr__ops_a7}
 

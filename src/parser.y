@@ -807,7 +807,7 @@ expression
 expr_primary
 	: NUMBER
 		{
-		  expression* tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
+		  expression* tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
                   vector_dealloc( tmp->value );
 		  tmp->value = $1;
 
@@ -1920,7 +1920,7 @@ delay1
                   expression* tmp;
                   if( ignore_mode == 0 ) {
                     vec = vector_create( 32, 0 );
-                    tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
+                    tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
                     vector_from_int( vec, 0xffffffff ); 
                     free_safe( tmp->value );
                     tmp->value = vec;
@@ -1937,7 +1937,7 @@ delay1
                   expression* tmp;
                   if( ignore_mode == 0 ) {
                     vec = vector_create( 32, 0 );
-                    tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
+                    tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
                     vector_from_int( vec, 0xffffffff );
                     free_safe( tmp->value );
                     tmp->value = vec;
@@ -1957,7 +1957,7 @@ delay3
                   expression* tmp;
                   if( ignore_mode == 0 ) {
                     vec = vector_create( 32, 0 );
-                    tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
+                    tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
                     vector_from_int( vec, 0xffffffff );
                     free_safe( tmp->value );
                     tmp->value = vec;
@@ -1974,7 +1974,7 @@ delay3
                   expression* tmp;
                   if( ignore_mode == 0 ) {
                     vec = vector_create( 32, 0 );
-                    tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
+                    tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
                     vector_from_int( vec, 0xffffffff );
                     free_safe( tmp->value );
                     tmp->value = vec;
@@ -1991,7 +1991,7 @@ delay3
                   expression* tmp;
                   if( ignore_mode == 0 ) {
                     vec = vector_create( 32, 0 );
-                    tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
+                    tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
                     vector_from_int( vec, 0xffffffff );
                     free_safe( tmp->value );
                     tmp->value = vec;
@@ -2008,7 +2008,7 @@ delay3
                   expression* tmp;
                   if( ignore_mode == 0 ) {
                     vec = vector_create( 32, 0 );
-                    tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
+                    tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
                     vector_from_int( vec, 0xffffffff );
                     free_safe( tmp->value );
                     tmp->value = vec;
@@ -2038,7 +2038,7 @@ delay_value
                   expression* tmp;
                   if( ignore_mode == 0 ) {
                     vec = vector_create( 32, 0 );
-                    tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
+                    tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
                     vector_from_int( vec, $1 );
                     free_safe( tmp->value );
                     tmp->value = vec;
@@ -2053,7 +2053,7 @@ delay_value
                   expression* tmp;
                   if( ignore_mode == 0 ) {
                     vec = vector_create( 32, 0 );
-                    tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
+                    tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
                     vector_from_int( vec, $1 );
                     free_safe( tmp->value );
                     tmp->value = vec;
@@ -2067,7 +2067,7 @@ delay_value
 delay_value_simple
 	: NUMBER
 		{
-		  expression* tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
+		  expression* tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
                   free_safe( tmp->value );
 		  tmp->value = $1;
 		  $$ = tmp;

@@ -86,7 +86,7 @@ struct {\bf vector\_\-s}
 \item 
 \#define {\bf VECTOR\_\-SIZE}(x)\ (((x \% 4) == 0) ? (x / 4) : ((x / 4) + 1))
 \item 
-\#define {\bf VECTOR\_\-MERGE\_\-MASK}\ 0xff0fff00
+\#define {\bf VECTOR\_\-MERGE\_\-MASK}\ 0xff3fff00
 \item 
 \#define {\bf SUPPL\_\-LSB\_\-OP}\ 0
 \item 
@@ -140,7 +140,7 @@ struct {\bf vector\_\-s}
 \item 
 \#define {\bf READ\_\-MODE\_\-REPORT\_\-MOD\_\-MERGE}\ 3
 \item 
-\#define {\bf EXP\_\-OP\_\-NONE}\ 0x0
+\#define {\bf EXP\_\-OP\_\-STATIC}\ 0x0
 \item 
 \#define {\bf EXP\_\-OP\_\-SIG}\ 0x1
 \item 
@@ -377,7 +377,7 @@ Returns a value of 1 if the specified expression was measurable for combinationa
 
 {\bf Value:}
 
-\footnotesize\begin{verbatim}(((SUPPL_OP( x->suppl ) != EXP_OP_NONE) && \
+\footnotesize\begin{verbatim}(((SUPPL_OP( x->suppl ) != EXP_OP_STATIC) && \
                                      (SUPPL_OP( x->suppl ) != EXP_OP_LAST) && \
                                      (SUPPL_OP( x->suppl ) != EXP_OP_COND_SEL) && \
                                      (SUPPL_OP( x->suppl ) != EXP_OP_CASE) && \

@@ -210,24 +210,20 @@ void combination_underline_tree( expression* exp, char*** lines, int* depth, int
 
       *size = 0;
 
-    } else if( SUPPL_OP( exp->suppl ) == EXP_OP_NONE ) {
-      
-      if( (SUPPL_IS_ROOT( exp->suppl ) == 0) &&
-          (exp->parent->expr != NULL) &&
-          ((SUPPL_OP( exp->parent->expr->suppl ) == EXP_OP_SBIT_SEL) ||
-           (SUPPL_OP( exp->parent->expr->suppl ) == EXP_OP_MBIT_SEL)) ) {
-        snprintf( code_fmt, 20, "%d", vector_to_int( exp->value ) );
-        *size = strlen( code_fmt ) + strlen( exp->parent->expr->sig->name );
-      } else {
-        tmpstr = vector_to_string( exp->value, HEXIDECIMAL );
-        *size = strlen( tmpstr );
-        free_safe( tmpstr );
-      }
+    } else if( SUPPL_OP( exp->suppl ) == EXP_OP_STATIC ) {
 
-/*
-      snprintf( code_fmt, 20, "%d", exp->value->width );
-      *size = strlen( code_fmt ) + VECTOR_SIZE( exp->value->width ) + 2;
-*/
+      if( vector_get_type( exp->value ) == DECIMAL ) {
+
+        snprintf( code_fmt, 20, "%d", vector_to_int( exp->value ) );
+        *size = strlen( code_fmt );
+      
+      } else {
+
+        tmpstr = vector_to_string( exp->value, vector_get_type( exp->value ) );
+        *size  = strlen( tmpstr );
+        free_safe( tmpstr );
+
+      }
 
     } else {
 
@@ -750,6 +746,11 @@ void combination_report( FILE* ofile, bool verbose, bool instance ) {
 
 
 /* $Log$
+/* Revision 1.29  2002/07/10 03:01:50  phase1geo
+/* Added define1.v and define2.v diagnostics to regression suite.  Both diagnostics
+/* now pass.  Fixed cases where constants were not causing proper TRUE/FALSE values
+/* to be calculated.
+/*
 /* Revision 1.28  2002/07/09 23:13:10  phase1geo
 /* Fixing report output bug for conditionals.  Also adjusting combinational logic
 /* report outputting.

@@ -11,7 +11,7 @@
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__vector__defs.html#a2">IS_VECTOR_SET</a>(x)&nbsp;&nbsp;&nbsp;(x &amp; VECTOR_SET_BIT)</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__vector__defs.html#a3">IS_VECTOR_STATIC</a>(x)&nbsp;&nbsp;&nbsp;(x &amp; VECTOR_STATIC_BIT)</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__vector__defs.html#a4">VECTOR_SIZE</a>(x)&nbsp;&nbsp;&nbsp;(((x % 4) == 0) ? (x / 4) : ((x / 4) + 1))</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__vector__defs.html#a5">VECTOR_MERGE_MASK</a>&nbsp;&nbsp;&nbsp;0xff0fff00</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__vector__defs.html#a5">VECTOR_MERGE_MASK</a>&nbsp;&nbsp;&nbsp;0xff3fff00</td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 The following defines are used for vector-based operations. <hr><h2>Define Documentation</h2>
@@ -75,7 +75,7 @@ Macro for determining if VECTOR_STATIC_BIT is set.     </td>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> #define VECTOR_MERGE_MASK&nbsp;&nbsp;&nbsp;0xff0fff00
+          <td class="md" nowrap valign="top"> #define VECTOR_MERGE_MASK&nbsp;&nbsp;&nbsp;0xff3fff00
       </table>
     </td>
   </tr>
@@ -89,7 +89,7 @@ Macro for determining if VECTOR_STATIC_BIT is set.     </td>
 
 <p>
 Used for merging two vector nibbles from two vectors. Both vector nibble fields are ANDed with this mask and ORed together to perform the merge.  Fields that are merged are:<ul>
-<li>TOGGLE0-&gt;1<li>TOGGLE1-&gt;0<li>SET<li>FALSE<li>TRUE </ul>
+<li>TOGGLE0-&gt;1<li>TOGGLE1-&gt;0<li>SET<li>TYPE<li>FALSE<li>TRUE </ul>
     </td>
   </tr>
 </table>
@@ -164,7 +164,7 @@ Macro for getting the current nibble size of the specified vector. x is the widt
 Command bit for knowing if vector is a static value.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Tue Jul 9 21:59:26 2002 for Covered by
+<hr><address align="right"><small>Generated on Tue Jul 9 23:54:25 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

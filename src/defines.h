@@ -167,10 +167,11 @@
  - TOGGLE0->1
  - TOGGLE1->0
  - SET
+ - TYPE
  - FALSE
  - TRUE
 */
-#define VECTOR_MERGE_MASK    0xff0fff00
+#define VECTOR_MERGE_MASK    0xff3fff00
 
 /*! @} */
 
@@ -381,7 +382,7 @@
  @{
 */
 
-#define EXP_OP_NONE	0x0	/*!<  0 Specifies no expression (leaf node in expression tree) */
+#define EXP_OP_STATIC   0x0     /*!<  0 Specifies constant value */
 #define EXP_OP_SIG	0x1	/*!<  1 Specifes that this expression contains signal value    */
 #define EXP_OP_XOR	0x2	/*!<  2 '^'   operator */
 #define EXP_OP_MULTIPLY	0x3    	/*!<  3 '*'   operator */
@@ -436,7 +437,7 @@
 /*!
  Returns a value of 1 if the specified expression is considered to be measurable.
 */
-#define EXPR_IS_MEASURABLE(x)      (((SUPPL_OP( x->suppl ) != EXP_OP_NONE) && \
+#define EXPR_IS_MEASURABLE(x)      (((SUPPL_OP( x->suppl ) != EXP_OP_STATIC) && \
                                      (SUPPL_OP( x->suppl ) != EXP_OP_LAST) && \
                                      (SUPPL_OP( x->suppl ) != EXP_OP_COND_SEL) && \
                                      (SUPPL_OP( x->suppl ) != EXP_OP_CASE) && \
@@ -833,6 +834,10 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.29  2002/07/09 17:27:25  phase1geo
+/* Fixing default case item handling and in the middle of making fixes for
+/* report outputting.
+/*
 /* Revision 1.28  2002/07/09 04:46:26  phase1geo
 /* Adding -D and -Q options to covered for outputting debug information or
 /* suppressing normal output entirely.  Updated generated documentation and

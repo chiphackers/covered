@@ -51,7 +51,7 @@
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__vector__defs.html#a2">IS_VECTOR_SET</a>(x)&nbsp;&nbsp;&nbsp;(x &amp; VECTOR_SET_BIT)</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__vector__defs.html#a3">IS_VECTOR_STATIC</a>(x)&nbsp;&nbsp;&nbsp;(x &amp; VECTOR_STATIC_BIT)</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__vector__defs.html#a4">VECTOR_SIZE</a>(x)&nbsp;&nbsp;&nbsp;(((x % 4) == 0) ? (x / 4) : ((x / 4) + 1))</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__vector__defs.html#a5">VECTOR_MERGE_MASK</a>&nbsp;&nbsp;&nbsp;0xff0fff00</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__vector__defs.html#a5">VECTOR_MERGE_MASK</a>&nbsp;&nbsp;&nbsp;0xff3fff00</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a0">SUPPL_LSB_OP</a>&nbsp;&nbsp;&nbsp;0</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a1">SUPPL_LSB_ROOT</a>&nbsp;&nbsp;&nbsp;7</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__suppl.html#a2">SUPPL_LSB_EXECUTED</a>&nbsp;&nbsp;&nbsp;8</td></tr>
@@ -78,7 +78,7 @@
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__read__modes.html#a1">READ_MODE_REPORT_NO_MERGE</a>&nbsp;&nbsp;&nbsp;1</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__read__modes.html#a2">READ_MODE_MERGE_INST_MERGE</a>&nbsp;&nbsp;&nbsp;2</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__read__modes.html#a3">READ_MODE_REPORT_MOD_MERGE</a>&nbsp;&nbsp;&nbsp;3</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a0">EXP_OP_NONE</a>&nbsp;&nbsp;&nbsp;0x0</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a0">EXP_OP_STATIC</a>&nbsp;&nbsp;&nbsp;0x0</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a1">EXP_OP_SIG</a>&nbsp;&nbsp;&nbsp;0x1</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a2">EXP_OP_XOR</a>&nbsp;&nbsp;&nbsp;0x2</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a3">EXP_OP_MULTIPLY</a>&nbsp;&nbsp;&nbsp;0x3</td></tr>
@@ -303,7 +303,7 @@ Returns a value of 1 if the specified expression was measurable for combinationa
     <td>
 
 <p>
-<b>Value:</b><div class="fragment"><pre>(((<a class="code" href="defines_8h.html#a21">SUPPL_OP</a>( x-&gt;suppl ) != <a class="code" href="defines_8h.html#a0">EXP_OP_NONE</a>) &amp;&amp; \
+<b>Value:</b><div class="fragment"><pre>(((<a class="code" href="defines_8h.html#a21">SUPPL_OP</a>( x-&gt;suppl ) != <a class="code" href="defines_8h.html#a0">EXP_OP_STATIC</a>) &amp;&amp; \
                                      (<a class="code" href="defines_8h.html#a21">SUPPL_OP</a>( x-&gt;suppl ) != <a class="code" href="defines_8h.html#a42">EXP_OP_LAST</a>) &amp;&amp; \
                                      (<a class="code" href="defines_8h.html#a21">SUPPL_OP</a>( x-&gt;suppl ) != <a class="code" href="defines_8h.html#a26">EXP_OP_COND_SEL</a>) &amp;&amp; \
                                      (<a class="code" href="defines_8h.html#a21">SUPPL_OP</a>( x-&gt;suppl ) != <a class="code" href="defines_8h.html#a45">EXP_OP_CASE</a>) &amp;&amp; \
@@ -790,7 +790,7 @@ Boolean true value </td></tr>
     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Tue Jul 9 21:59:23 2002 for Covered by
+<hr><address align="right"><small>Generated on Tue Jul 9 23:54:22 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

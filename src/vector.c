@@ -125,7 +125,7 @@ void vector_db_write( vector* vec, FILE* file, bool write_data ) {
   int    i;      /* Loop iterator                       */
   nibble mask;   /* Mask value for vector value nibbles */
 
-  mask = write_data ? 0xfffff : 0xfff00;
+  mask = write_data ? 0x3fffff : 0x3fff00;
 
   /* Output vector information to specified file */
   fprintf( file, "%d %d",
@@ -549,6 +549,37 @@ bool vector_set_value( vector* vec, nibble* value, int width, int from_lsb, int 
 }
 
 /*!
+ \param vec   Pointer to vector to set type.
+ \param type  2-bit value containing output type for this vector (DECIMAL, BINARY, OCTAL, HEXIDECIMAL).
+
+ Uses the first nibble in the specified vector and stores specified 2-bit type value to bits 21-20
+ of this nibble.
+*/
+void vector_set_type( vector* vec, int type ) {
+
+  assert( vec->value != NULL );
+
+  vec->value[0] = vec->value[0] | ((type & 0x3) << 20);
+
+}
+
+/*!
+ \param vec  Pointer to vector to retrieve type from.
+
+ \return Returns the 2-bit output type value from the specified vector.
+
+ Returns the 2-bit output type value from the specified vector's first
+ nibble bits 21-20.
+*/
+int vector_get_type( vector* vec ) {
+
+  assert( vec->value != NULL );
+
+  return( (vec->value[0] >> 20) & 0x3 );
+
+}
+
+/*!
  \param vec  Pointer to vector to convert into integer.
 
  \return Returns integer value of specified vector.
@@ -813,6 +844,7 @@ vector* vector_from_string( char* str, bool sized, int type ) {
   /* Create vector */
   vec = vector_create( size, 0 );
 
+  vector_set_type( vec, type );
   vector_set_static( vec, value, bits_per_char ); 
 
   return( vec );
@@ -1337,6 +1369,10 @@ void vector_dealloc( vector* vec ) {
 }
 
 /* $Log$
+/* Revision 1.10  2002/07/09 17:27:25  phase1geo
+/* Fixing default case item handling and in the middle of making fixes for
+/* report outputting.
+/*
 /* Revision 1.9  2002/07/05 16:49:47  phase1geo
 /* Modified a lot of code this go around.  Fixed VCD reader to handle changes in
 /* the reverse order (last changes are stored instead of first for timestamp).

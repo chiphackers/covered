@@ -320,6 +320,7 @@ WSPACE [ \t\b\f]+
        }
        assert( INTEGER_WIDTH <= (8 * sizeof( value )) );
        vec = vector_create( INTEGER_WIDTH, 0 );
+       vector_set_type( vec, DECIMAL );
        for( i=0; i<INTEGER_WIDTH; i += 1, value >>= 1 ) {
          vector_set_bit( vec->value, (value & 0x1), i );
        }

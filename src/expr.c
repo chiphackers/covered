@@ -234,7 +234,7 @@ void expression_db_write( expression* expr, FILE* file, char* scope ) {
   if( (SUPPL_OP( expr->suppl ) != EXP_OP_SIG) && 
       (SUPPL_OP( expr->suppl ) != EXP_OP_SBIT_SEL) && 
       (SUPPL_OP( expr->suppl ) != EXP_OP_MBIT_SEL) ) {
-    vector_db_write( expr->value, file, (SUPPL_OP( expr->suppl ) == EXP_OP_NONE) );
+    vector_db_write( expr->value, file, (SUPPL_OP( expr->suppl ) == EXP_OP_STATIC) );
   }
 
   fprintf( file, "\n" );
@@ -583,9 +583,9 @@ void expression_operate( expression* expr ) {
         vector_unary_op( expr->value, expr->right->value, nxor_optab );
         break;
 
-      case EXP_OP_SIG :
-      case EXP_OP_NONE :
-      case EXP_OP_LAST :
+      case EXP_OP_STATIC :
+      case EXP_OP_SIG    :
+      case EXP_OP_LAST   :
         break;
 
       case EXP_OP_SBIT_SEL :
@@ -806,6 +806,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.37  2002/07/10 03:01:50  phase1geo
+/* Added define1.v and define2.v diagnostics to regression suite.  Both diagnostics
+/* now pass.  Fixed cases where constants were not causing proper TRUE/FALSE values
+/* to be calculated.
+/*
 /* Revision 1.36  2002/07/09 17:27:25  phase1geo
 /* Fixing default case item handling and in the middle of making fixes for
 /* report outputting.

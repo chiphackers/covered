@@ -44,38 +44,42 @@
 <tr><td>&nbsp;</td><td><font size=-1><em>Counts FALSE and TRUE information from the specified vector.</em> <a href="#a23"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a141">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a24">vector_set_value</a> (<a class="el" href="defines_8h.html#a122">vector</a> *vec, <a class="el" href="defines_8h.html#a120">nibble</a> *value, int width, int from_lsb, int to_lsb)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Sets specified vector value to new value and maintains coverage history.</em> <a href="#a24"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a25">vector_to_int</a> (<a class="el" href="defines_8h.html#a122">vector</a> *vec)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Converts vector into integer value.</em> <a href="#a25"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a26">vector_from_int</a> (<a class="el" href="defines_8h.html#a122">vector</a> *vec, int value)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Converts integer into vector value.</em> <a href="#a26"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a27">vector_set_static</a> (<a class="el" href="defines_8h.html#a122">vector</a> *vec, char *str, int bits_per_char)</td></tr>
-<tr><td nowrap align=right valign=top>char *&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a28">vector_to_string</a> (<a class="el" href="defines_8h.html#a122">vector</a> *vec, int type)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Converts vector into a string value in specified format.</em> <a href="#a28"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a122">vector</a> *&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a29">vector_from_string</a> (char *str, <a class="el" href="defines_8h.html#a141">bool</a> sized, int type)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Converts character string value into vector.</em> <a href="#a29"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a30">vector_vcd_assign</a> (<a class="el" href="defines_8h.html#a122">vector</a> *vec, char *value)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a31">vector_bitwise_op</a> (<a class="el" href="defines_8h.html#a122">vector</a> *tgt, <a class="el" href="defines_8h.html#a122">vector</a> *src1, <a class="el" href="defines_8h.html#a122">vector</a> *src2, int *optab)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Performs bitwise operation on two source vectors from specified operation table.</em> <a href="#a31"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a32">vector_op_compare</a> (<a class="el" href="defines_8h.html#a122">vector</a> *tgt, <a class="el" href="defines_8h.html#a122">vector</a> *left, <a class="el" href="defines_8h.html#a122">vector</a> *right, int comp_type)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Performs bitwise comparison of two vectors.</em> <a href="#a32"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a33">vector_op_lshift</a> (<a class="el" href="defines_8h.html#a122">vector</a> *tgt, <a class="el" href="defines_8h.html#a122">vector</a> *left, <a class="el" href="defines_8h.html#a122">vector</a> *right)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Performs left shift operation on left expression by right expression bits.</em> <a href="#a33"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a34">vector_op_rshift</a> (<a class="el" href="defines_8h.html#a122">vector</a> *tgt, <a class="el" href="defines_8h.html#a122">vector</a> *left, <a class="el" href="defines_8h.html#a122">vector</a> *right)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Performs right shift operation on left expression by right expression bits.</em> <a href="#a34"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a35">vector_op_add</a> (<a class="el" href="defines_8h.html#a122">vector</a> *tgt, <a class="el" href="defines_8h.html#a122">vector</a> *left, <a class="el" href="defines_8h.html#a122">vector</a> *right)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Performs addition operation on left and right expression values.</em> <a href="#a35"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a36">vector_op_subtract</a> (<a class="el" href="defines_8h.html#a122">vector</a> *tgt, <a class="el" href="defines_8h.html#a122">vector</a> *left, <a class="el" href="defines_8h.html#a122">vector</a> *right)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Performs subtraction operation on left and right expression values.</em> <a href="#a36"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a37">vector_op_multiply</a> (<a class="el" href="defines_8h.html#a122">vector</a> *tgt, <a class="el" href="defines_8h.html#a122">vector</a> *left, <a class="el" href="defines_8h.html#a122">vector</a> *right)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Performs multiplication operation on left and right expression values.</em> <a href="#a37"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a38">vector_unary_inv</a> (<a class="el" href="defines_8h.html#a122">vector</a> *tgt, <a class="el" href="defines_8h.html#a122">vector</a> *src)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Performs unary bitwise inversion operation on specified vector value.</em> <a href="#a38"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a39">vector_unary_op</a> (<a class="el" href="defines_8h.html#a122">vector</a> *tgt, <a class="el" href="defines_8h.html#a122">vector</a> *src, <a class="el" href="defines_8h.html#a120">nibble</a> *optab)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Performs unary operation on specified vector value.</em> <a href="#a39"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a40">vector_unary_not</a> (<a class="el" href="defines_8h.html#a122">vector</a> *tgt, <a class="el" href="defines_8h.html#a122">vector</a> *src)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Performs unary logical NOT operation on specified vector value.</em> <a href="#a40"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a41">vector_dealloc</a> (<a class="el" href="defines_8h.html#a122">vector</a> *vec)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Deallocates all memory allocated for vector.</em> <a href="#a41"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a25">vector_set_type</a> (<a class="el" href="defines_8h.html#a122">vector</a> *vec, int type)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Sets vector output type (DECIMAL, BINARY, OCTAL or HEXIDECIMAL) in first nibble.</em> <a href="#a25"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a26">vector_get_type</a> (<a class="el" href="defines_8h.html#a122">vector</a> *vec)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Returns value of vector output type.</em> <a href="#a26"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a27">vector_to_int</a> (<a class="el" href="defines_8h.html#a122">vector</a> *vec)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Converts vector into integer value.</em> <a href="#a27"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a28">vector_from_int</a> (<a class="el" href="defines_8h.html#a122">vector</a> *vec, int value)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Converts integer into vector value.</em> <a href="#a28"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a29">vector_set_static</a> (<a class="el" href="defines_8h.html#a122">vector</a> *vec, char *str, int bits_per_char)</td></tr>
+<tr><td nowrap align=right valign=top>char *&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a30">vector_to_string</a> (<a class="el" href="defines_8h.html#a122">vector</a> *vec, int type)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Converts vector into a string value in specified format.</em> <a href="#a30"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a122">vector</a> *&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a31">vector_from_string</a> (char *str, <a class="el" href="defines_8h.html#a141">bool</a> sized, int type)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Converts character string value into vector.</em> <a href="#a31"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a32">vector_vcd_assign</a> (<a class="el" href="defines_8h.html#a122">vector</a> *vec, char *value)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a33">vector_bitwise_op</a> (<a class="el" href="defines_8h.html#a122">vector</a> *tgt, <a class="el" href="defines_8h.html#a122">vector</a> *src1, <a class="el" href="defines_8h.html#a122">vector</a> *src2, int *optab)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Performs bitwise operation on two source vectors from specified operation table.</em> <a href="#a33"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a34">vector_op_compare</a> (<a class="el" href="defines_8h.html#a122">vector</a> *tgt, <a class="el" href="defines_8h.html#a122">vector</a> *left, <a class="el" href="defines_8h.html#a122">vector</a> *right, int comp_type)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Performs bitwise comparison of two vectors.</em> <a href="#a34"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a35">vector_op_lshift</a> (<a class="el" href="defines_8h.html#a122">vector</a> *tgt, <a class="el" href="defines_8h.html#a122">vector</a> *left, <a class="el" href="defines_8h.html#a122">vector</a> *right)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Performs left shift operation on left expression by right expression bits.</em> <a href="#a35"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a36">vector_op_rshift</a> (<a class="el" href="defines_8h.html#a122">vector</a> *tgt, <a class="el" href="defines_8h.html#a122">vector</a> *left, <a class="el" href="defines_8h.html#a122">vector</a> *right)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Performs right shift operation on left expression by right expression bits.</em> <a href="#a36"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a37">vector_op_add</a> (<a class="el" href="defines_8h.html#a122">vector</a> *tgt, <a class="el" href="defines_8h.html#a122">vector</a> *left, <a class="el" href="defines_8h.html#a122">vector</a> *right)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Performs addition operation on left and right expression values.</em> <a href="#a37"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a38">vector_op_subtract</a> (<a class="el" href="defines_8h.html#a122">vector</a> *tgt, <a class="el" href="defines_8h.html#a122">vector</a> *left, <a class="el" href="defines_8h.html#a122">vector</a> *right)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Performs subtraction operation on left and right expression values.</em> <a href="#a38"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a39">vector_op_multiply</a> (<a class="el" href="defines_8h.html#a122">vector</a> *tgt, <a class="el" href="defines_8h.html#a122">vector</a> *left, <a class="el" href="defines_8h.html#a122">vector</a> *right)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Performs multiplication operation on left and right expression values.</em> <a href="#a39"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a40">vector_unary_inv</a> (<a class="el" href="defines_8h.html#a122">vector</a> *tgt, <a class="el" href="defines_8h.html#a122">vector</a> *src)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Performs unary bitwise inversion operation on specified vector value.</em> <a href="#a40"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a41">vector_unary_op</a> (<a class="el" href="defines_8h.html#a122">vector</a> *tgt, <a class="el" href="defines_8h.html#a122">vector</a> *src, <a class="el" href="defines_8h.html#a120">nibble</a> *optab)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Performs unary operation on specified vector value.</em> <a href="#a41"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a42">vector_unary_not</a> (<a class="el" href="defines_8h.html#a122">vector</a> *tgt, <a class="el" href="defines_8h.html#a122">vector</a> *src)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Performs unary logical NOT operation on specified vector value.</em> <a href="#a42"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a43">vector_dealloc</a> (<a class="el" href="defines_8h.html#a122">vector</a> *vec)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Deallocates all memory allocated for vector.</em> <a href="#a43"></a><em></em></font><br><br></td></tr>
 <tr><td colspan=2><br><h2>Variables</h2></td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a120">nibble</a>&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a0">xor_optab</a> [16] = { XOR_OP_TABLE }</td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a120">nibble</a>&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a1">and_optab</a> [16] = { AND_OP_TABLE }</td></tr>
@@ -141,7 +145,7 @@ Returns: </b><dd>
 2-bit (4-state) value of specified bit from specified vector.</dl>Assumes that pos is within the range of value. Retrieves bit value specified from pos index from the specified value, byte-aligns the value and returns this 2-bit value to the calling function. Used to extract bit values from a vector.     </td>
   </tr>
 </table>
-<a name="a31" doxytag="vector.c::vector_bitwise_op"></a><p>
+<a name="a33" doxytag="vector.c::vector_bitwise_op"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -361,7 +365,7 @@ If set to TRUE, causes 4-state data bytes to be included.</td></tr>
 </dl>Writes the specified vector to the specified coverage database file.     </td>
   </tr>
 </table>
-<a name="a41" doxytag="vector.c::vector_dealloc"></a><p>
+<a name="a43" doxytag="vector.c::vector_dealloc"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -603,7 +607,7 @@ Stream to output information to.</td></tr>
 </dl>Displays the toggle10 information from the specified vector to the output stream specified in ofile.     </td>
   </tr>
 </table>
-<a name="a26" doxytag="vector.c::vector_from_int"></a><p>
+<a name="a28" doxytag="vector.c::vector_from_int"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -651,7 +655,7 @@ Integer value to convert into vector.</td></tr>
 </dl>Converts an integer value into a vector, creating a vector value to store the new vector into. This function is used along with the vector_to_int for mathematical vector operations. We will first convert vectors into integers, perform the mathematical operation, and then revert the integers back into the vectors.     </td>
   </tr>
 </table>
-<a name="a29" doxytag="vector.c::vector_from_string"></a><p>
+<a name="a31" doxytag="vector.c::vector_from_string"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -707,6 +711,45 @@ Type of string value.</td></tr>
 </dl><dl compact><dt><b>
 Returns: </b><dd>
 Returns pointer to newly create vector holding string value.</dl>Converts a string value from the lexer into a vector structure appropriately sized.     </td>
+  </tr>
+</table>
+<a name="a26" doxytag="vector.c::vector_get_type"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> int vector_get_type </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a122">vector</a> *&nbsp;</td>
+          <td class="mdname1" valign="top" nowrap>&nbsp; <em>vec</em>          </td>
+          <td class="md" valign="top">)&nbsp;</td>
+          <td class="md" nowrap></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+Returns value of vector output type.
+<p>
+<dl compact><dt><b>
+Parameters: </b><dd>
+<table border=0 cellspacing=2 cellpadding=0>
+<tr><td valign=top><em>vec</em>&nbsp;</td><td>
+Pointer to vector to retrieve type from.</td></tr>
+</table>
+</dl><dl compact><dt><b>
+Returns: </b><dd>
+Returns the 2-bit output type value from the specified vector.</dl>Returns the 2-bit output type value from the specified vector's first nibble bits 21-20.     </td>
   </tr>
 </table>
 <a name="a7" doxytag="vector.c::vector_init"></a><p>
@@ -877,7 +920,7 @@ Vector that will be merged with base vector.</td></tr>
 </dl>Performs vector merge of two vectors. If the vectors are found to be different (width or lsb are not equal), an error message is sent to the user and the program is halted. If the vectors are found to be equivalents, the merge is performed on the vector nibbles.     </td>
   </tr>
 </table>
-<a name="a35" doxytag="vector.c::vector_op_add"></a><p>
+<a name="a37" doxytag="vector.c::vector_op_add"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -933,7 +976,7 @@ Expression value on right side of + sign.</td></tr>
 </dl>Performs 4-state bitwise addition on left and right expression values. Carry bit is discarded (value is wrapped around).     </td>
   </tr>
 </table>
-<a name="a32" doxytag="vector.c::vector_op_compare"></a><p>
+<a name="a34" doxytag="vector.c::vector_op_compare"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -997,7 +1040,7 @@ Comparison type (0=LT, 1=GT, 2=EQ, 3=CEQ)</td></tr>
 </dl>Performs a bitwise comparison (starting at most significant bit) of the left and right expressions.     </td>
   </tr>
 </table>
-<a name="a33" doxytag="vector.c::vector_op_lshift"></a><p>
+<a name="a35" doxytag="vector.c::vector_op_lshift"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -1053,7 +1096,7 @@ Expression containing number of bit positions to shift.</td></tr>
 </dl>Converts right expression into an integer value and left shifts the left expression the specified number of bit locations, zero-filling the LSB.     </td>
   </tr>
 </table>
-<a name="a37" doxytag="vector.c::vector_op_multiply"></a><p>
+<a name="a39" doxytag="vector.c::vector_op_multiply"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -1109,7 +1152,7 @@ Expression value on right side of * sign.</td></tr>
 </dl>Performs 4-state conversion multiplication. If both values are known (non-X, non-Z), vectors are converted to integers, multiplication occurs and values are converted back into vectors. If one of the values is equal to zero, the value is 0. If one of the values is equal to one, the value is that of the other vector.     </td>
   </tr>
 </table>
-<a name="a34" doxytag="vector.c::vector_op_rshift"></a><p>
+<a name="a36" doxytag="vector.c::vector_op_rshift"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -1165,7 +1208,7 @@ Expression containing number of bit positions to shift.</td></tr>
 </dl>Converts right expression into an integer value and right shifts the left expression the specified number of bit locations, zero-filling the MSB.     </td>
   </tr>
 </table>
-<a name="a36" doxytag="vector.c::vector_op_subtract"></a><p>
+<a name="a38" doxytag="vector.c::vector_op_subtract"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -1323,7 +1366,7 @@ Bit position in FALSE vector to set.</td></tr>
 </dl>Sets the specified bit in the FALSE vector according to the pos index. This function assumes that the specified bit position is within the range of FALSE.     </td>
   </tr>
 </table>
-<a name="a27" doxytag="vector.c::vector_set_static"></a><p>
+<a name="a29" doxytag="vector.c::vector_set_static"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -1515,6 +1558,54 @@ Bit position in TRUE vector to set.</td></tr>
 </dl>Sets the specified bit in the TRUE vector according to the pos index. This function assumes that the specified bit position is within the range of TRUE.     </td>
   </tr>
 </table>
+<a name="a25" doxytag="vector.c::vector_set_type"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> void vector_set_type </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a122">vector</a> *&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>vec</em>, </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td class="md" nowrap>int&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>type</em></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td class="md">)&nbsp;</td>
+          <td class="md" colspan="2"></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+Sets vector output type (DECIMAL, BINARY, OCTAL or HEXIDECIMAL) in first nibble.
+<p>
+<dl compact><dt><b>
+Parameters: </b><dd>
+<table border=0 cellspacing=2 cellpadding=0>
+<tr><td valign=top><em>vec</em>&nbsp;</td><td>
+Pointer to vector to set type. </td></tr>
+<tr><td valign=top><em>type</em>&nbsp;</td><td>
+2-bit value containing output type for this vector (DECIMAL, BINARY, OCTAL, HEXIDECIMAL).</td></tr>
+</table>
+</dl>Uses the first nibble in the specified vector and stores specified 2-bit type value to bits 21-20 of this nibble.     </td>
+  </tr>
+</table>
 <a name="a24" doxytag="vector.c::vector_set_value"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
@@ -1589,7 +1680,7 @@ Returns: </b><dd>
 Returns TRUE if assignment was successful; otherwise, returns FALSE.</dl>Allows the calling function to set any bit vector within the vector range. If the vector value has never been set, sets the value to the new value and returns. If the vector value has previously been set, checks to see if new vector bits have toggled, sets appropriate toggle values, sets the new value to this value and returns.     </td>
   </tr>
 </table>
-<a name="a25" doxytag="vector.c::vector_to_int"></a><p>
+<a name="a27" doxytag="vector.c::vector_to_int"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -1628,7 +1719,7 @@ Returns: </b><dd>
 Returns integer value of specified vector.</dl>Converts a vector structure into an integer value. If the number of bits for the vector exceeds the number of bits in an integer, the upper bits of the vector are unused.     </td>
   </tr>
 </table>
-<a name="a28" doxytag="vector.c::vector_to_string"></a><p>
+<a name="a30" doxytag="vector.c::vector_to_string"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -1734,7 +1825,7 @@ Number of bits in vector that toggled from 1 to 0.</td></tr>
 </dl>Walks through specified vector counting the number of toggle01 bits that are set and the number of toggle10 bits that are set. Adds these values to the contents of tog01_cnt and tog10_cnt.     </td>
   </tr>
 </table>
-<a name="a38" doxytag="vector.c::vector_unary_inv"></a><p>
+<a name="a40" doxytag="vector.c::vector_unary_inv"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -1782,7 +1873,7 @@ Source vector to perform operation on.</td></tr>
 </dl>Performs a bitwise inversion on the specified vector.     </td>
   </tr>
 </table>
-<a name="a40" doxytag="vector.c::vector_unary_not"></a><p>
+<a name="a42" doxytag="vector.c::vector_unary_not"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -1830,7 +1921,7 @@ Source vector to be operated on.</td></tr>
 </dl>Performs unary logical NOT operation on specified vector value.     </td>
   </tr>
 </table>
-<a name="a39" doxytag="vector.c::vector_unary_op"></a><p>
+<a name="a41" doxytag="vector.c::vector_unary_op"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -1886,7 +1977,7 @@ Operation table.</td></tr>
 </dl>Performs unary operation on specified vector value from specifed operation table.     </td>
   </tr>
 </table>
-<a name="a30" doxytag="vector.c::vector_vcd_assign"></a><p>
+<a name="a32" doxytag="vector.c::vector_vcd_assign"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2087,7 +2178,7 @@ OR operation table     </td>
 XOR operation table     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Tue Jul 9 21:59:26 2002 for Covered by
+<hr><address align="right"><small>Generated on Tue Jul 9 23:54:24 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

@@ -53,16 +53,29 @@ char* codegen_gen_expr( expression* expr, int line ) {
 
       my_code = NULL;
 
-    } else if( SUPPL_OP( expr->suppl ) == EXP_OP_NONE ) {
+    } else if( SUPPL_OP( expr->suppl ) == EXP_OP_STATIC ) {
 
-      if( (SUPPL_IS_ROOT( expr->suppl ) == 0) && 
-          (expr->parent->expr != NULL) && 
-          ((SUPPL_OP( expr->parent->expr->suppl ) == EXP_OP_SBIT_SEL) ||
-           (SUPPL_OP( expr->parent->expr->suppl ) == EXP_OP_MBIT_SEL)) ) {
-        snprintf( code_format, 20, "%d", vector_to_int( expr->value ) );
-        my_code = strdup( code_format );
-      } else {
-        my_code = vector_to_string( expr->value, HEXIDECIMAL );
+      switch( vector_get_type( expr->value ) ) {
+
+        case DECIMAL :
+          snprintf( code_format, 20, "%d", vector_to_int( expr->value ) );
+          my_code = strdup( code_format );
+          break;
+
+        case BINARY :
+          my_code = vector_to_string( expr->value, BINARY );
+          break;
+
+        case OCTAL :
+          my_code = vector_to_string( expr->value, OCTAL );
+          break;
+
+        case HEXIDECIMAL :
+          my_code = vector_to_string( expr->value, HEXIDECIMAL );
+          break;
+
+        default :  break;
+
       }
 
     } else if( SUPPL_OP( expr->suppl ) == EXP_OP_SIG ) {
@@ -204,6 +217,10 @@ char* codegen_gen_expr( expression* expr, int line ) {
 
 
 /* $Log$
+/* Revision 1.13  2002/07/09 17:27:25  phase1geo
+/* Fixing default case item handling and in the middle of making fixes for
+/* report outputting.
+/*
 /* Revision 1.12  2002/07/05 00:37:37  phase1geo
 /* Small update to CASE handling in scope to avoid future errors.
 /*
