@@ -8,7 +8,9 @@ covered_SOURCES = arc.c \
 		  expr.c \
 		  fsm.c \
                   fsm_arg.c \
-                  info.c \
+		  fsm_sig.c \
+		  fsm_var.c \
+		  info.c \
 		  instance.c \
  		  iter.c \
 		  keywords.c \

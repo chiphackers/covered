@@ -31,6 +31,7 @@
 #include "static.h"
 #include "fsm.h"
 #include "info.h"
+#include "fsm_var.h"
 
 
 extern char*     top_module;
@@ -639,7 +640,7 @@ void db_add_signal( char* name, static_expr* left, static_expr* right ) {
     sig_link_add( sig, &(curr_module->sig_head), &(curr_module->sig_tail) );
 
     /* Create new FSM structure if this signal is an FSM state variable */
-    if( (fv = fsm_is_fsm_out_variable( curr_module->name, name )) != NULL ) {
+    if( (fv = fsm_var_find_out_var( curr_module->name, name )) != NULL ) {
       // printf( "FSM found in module (%s) with output state variable (%s)\n", curr_module->name, name );
       sig->table = fsm_create( sig );
       /* If input variable was already found, setup FSM */
@@ -651,7 +652,7 @@ void db_add_signal( char* name, static_expr* left, static_expr* right ) {
       }
       fsm_link_add( sig->table, &(curr_module->fsm_head), &(curr_module->fsm_tail) );
     }
-    if( (fv = fsm_is_fsm_in_variable( curr_module->name, name )) != NULL ) {
+    if( (fv = fsm_var_find_in_var( curr_module->name, name )) != NULL ) {
       // printf( "FSM found in module (%s) with input state variable (%s)\n", curr_module->name, name );
       if( fv->table != NULL ) {
         /* If the input and output states are the same, create a dummy signal */
@@ -1229,6 +1230,10 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.100  2003/09/22 03:46:24  phase1geo
+ Adding support for single state variable FSMs.  Allow two different ways to
+ specify FSMs on command-line.  Added diagnostics to verify new functionality.
+
  Revision 1.99  2003/09/12 04:47:00  phase1geo
  More fixes for new FSM arc transition protocol.  Everything seems to work now
  except that state hits are not being counted correctly.

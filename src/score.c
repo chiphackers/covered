@@ -23,7 +23,8 @@
 #include "parse.h"
 #include "param.h"
 #include "vector.h"
-#include "fsm.h"
+#include "fsm_arg.h"
+#include "fsm_var.h"
 
 
 char* top_module         = NULL;                /*!< Name of top-level module to score                     */
@@ -224,28 +225,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
     } else if( strncmp( "-F", argv[i], 2 ) == 0 ) {
 
       i++;
-      ptr = argv[i];
-      while( (*ptr != '\0') && (*ptr != '=') ) {
-        ptr++;
-      }
-      if( *ptr == '\0' ) {
-        print_output( "Option -F must specify a module and one or two variables.  See \"covered score -h\" for more information.", FATAL );
-        exit( 1 );
-      } else {
-        *ptr = '\0';
-        ptr++;
-        ptr2 = ptr;
-        while( (*ptr2 != '\0') && (*ptr2 != ',') ) {
-          ptr2++;
-        }
-        if( *ptr2 == '\0' ) {
-          fsm_add_fsm_variable( argv[i], ptr, ptr );
-        } else {
-          *ptr2 = '\0';
-          ptr2++;
-          fsm_add_fsm_variable( argv[i], ptr, ptr2 );
-        }
-      }
+      retval = fsm_arg_parse( argv[i] );
       
     } else if( strncmp( "-f", argv[i], 2 ) == 0 ) {
 
@@ -394,7 +374,7 @@ int command_score( int argc, int last_arg, char** argv ) {
     }
 
     /* If there are any unused FSM variables, let the user know now. */
-    fsm_check_for_unused_vars();
+    fsm_var_check_for_unused();
 
     /* Read dumpfile and score design */
     if( vcd_file != NULL ) {
@@ -425,6 +405,10 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.38  2003/09/22 03:46:24  phase1geo
+ Adding support for single state variable FSMs.  Allow two different ways to
+ specify FSMs on command-line.  Added diagnostics to verify new functionality.
+
  Revision 1.37  2003/09/12 04:47:00  phase1geo
  More fixes for new FSM arc transition protocol.  Everything seems to work now
  except that state hits are not being counted correctly.

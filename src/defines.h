@@ -1419,17 +1419,31 @@ struct timer_s {
 #endif
 
 /*-------------------------------------------------------------------------------*/
-struct fms_var_s;
+struct fsm_sig_s;
+
+typedef struct fsm_sig_s fsm_sig;
+
+struct fsm_sig_s {
+  char*    name;   /*!< Name of signal used in FSM                            */
+  int      width;  /*!< Bit select width of signal used for FSM               */
+  int      lsb;    /*!< Least significant bit position of signal used for FSM */
+  fsm_sig* next;   /*!< Pointer to next FSM signal in list                    */
+};
+
+/*-------------------------------------------------------------------------------*/
+struct fsm_var_s;
 
 typedef struct fsm_var_s fsm_var;
 
 struct fsm_var_s {
-  char*    mod;    /*!< Name of module to containing FSM variable                  */
-  char*    ivar;   /*!< Name of FSM input variable within module specified by mod  */
-  char*    ovar;   /*!< Name of FSM output variable within module specified by mod */
-  signal*  isig;   /*!< Pointer to input signal matching ovar name                 */
-  fsm*     table;  /*!< Pointer to FSM containing signal from ovar                 */
-  fsm_var* next;   /*!< Pointer to next fsm_var element in list                    */
+  char*    mod;        /*!< Name of module to containing FSM variable                    */
+  fsm_sig* ivar_head;  /*!< Pointer to head of input variable signal list within module  */
+  fsm_sig* ivar_tail;  /*!< Pointer to tail of input variable signal list within module  */
+  fsm_sig* ovar_head;  /*!< Pointer to head of output variable signal list within module */
+  fsm_sig* ovar_tail;  /*!< Pointer to tail of output variable signal list within module */
+  signal*  isig;       /*!< Pointer to input signal matching ovar name                   */
+  fsm*     table;      /*!< Pointer to FSM containing signal from ovar                   */
+  fsm_var* next;       /*!< Pointer to next fsm_var element in list                      */
 };
 
 /*-------------------------------------------------------------------------------*/
@@ -1442,6 +1456,10 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.80  2003/09/22 19:42:31  phase1geo
+ Adding print_output WARNING_WRAP and FATAL_WRAP lines to allow multi-line
+ error output to be properly formatted to the output stream.
+
  Revision 1.79  2003/09/13 19:53:59  phase1geo
  Adding correct way of calculating state and state transition totals.  Modifying
  FSM summary reporting to reflect these changes.  Also added function documentation
