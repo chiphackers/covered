@@ -22,9 +22,9 @@ initial begin
 	b     = 1'b0;
 	#10;
 	reset = 1'b0;
-	#5;
+	#7;
 	sel   = 1'b1;
-	#5;
+	#21;
 	$finish;
 end
 
