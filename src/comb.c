@@ -221,47 +221,50 @@ void combination_underline_tree( expression* exp, char*** lines, int* depth, int
         combination_underline_tree( exp->right, &r_lines, &r_depth, &r_size, exp_id );
 
         switch( SUPPL_OP( exp->suppl ) ) {
-          case EXP_OP_XOR      :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "   );  break;
-          case EXP_OP_MULTIPLY :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "   );  break;
-          case EXP_OP_DIVIDE   :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "   );  break;
-          case EXP_OP_MOD      :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "   );  break;
-          case EXP_OP_ADD      :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "   );  break;
-          case EXP_OP_SUBTRACT :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "   );  break;
-          case EXP_OP_AND      :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "   );  break;
-          case EXP_OP_OR       :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "   );  break;
-          case EXP_OP_NAND     :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "  );  break;
-          case EXP_OP_NOR      :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "  );  break;
-          case EXP_OP_NXOR     :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "  );  break;
-          case EXP_OP_LT       :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "   );  break;
-          case EXP_OP_GT       :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "   );  break;
-          case EXP_OP_LSHIFT   :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "  );  break;
-          case EXP_OP_RSHIFT   :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "  );  break;
-          case EXP_OP_EQ       :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "  );  break;
-          case EXP_OP_CEQ      :  *size = l_size + r_size + 7;  strcpy( code_fmt, " %s     %s " );  break;
-          case EXP_OP_LE       :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "  );  break;
-          case EXP_OP_GE       :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "  );  break;
-          case EXP_OP_NE       :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "  );  break;
-          case EXP_OP_CNE      :  *size = l_size + r_size + 7;  strcpy( code_fmt, " %s     %s " );  break;
-          case EXP_OP_LOR      :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "  );  break;
-          case EXP_OP_LAND     :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "  );  break;
-          case EXP_OP_COND     :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s   "       );  break;
-          case EXP_OP_COND_SEL :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s   %s"     );  break;
-          case EXP_OP_UINV     :  *size = l_size + r_size + 2;  strcpy( code_fmt, " %s "        );  break;
-          case EXP_OP_UAND     :  *size = l_size + r_size + 2;  strcpy( code_fmt, " %s "        );  break;
-          case EXP_OP_UNOT     :  *size = l_size + r_size + 2;  strcpy( code_fmt, " %s "        );  break;
-          case EXP_OP_UOR      :  *size = l_size + r_size + 2;  strcpy( code_fmt, " %s "        );  break;
-          case EXP_OP_UXOR     :  *size = l_size + r_size + 2;  strcpy( code_fmt, " %s "        );  break;
-          case EXP_OP_UNAND    :  *size = l_size + r_size + 2;  strcpy( code_fmt, "  %s"        );  break;
-          case EXP_OP_UNOR     :  *size = l_size + r_size + 2;  strcpy( code_fmt, "  %s"        );  break;
-          case EXP_OP_UNXOR    :  *size = l_size + r_size + 2;  strcpy( code_fmt, "  %s"        );  break;
-          case EXP_OP_SBIT_SEL :  *size = l_size + r_size + 2;  strcpy( code_fmt, "%s"          );  break;
-          case EXP_OP_MBIT_SEL :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s"          );  break;
-          case EXP_OP_EXPAND   :  *size = l_size + r_size + 0;  strcpy( code_fmt, "%s"          );  break;  // ???
-          case EXP_OP_CONCAT   :  *size = l_size + r_size + 0;  strcpy( code_fmt, "%s"          );  break;  // ???
-          case EXP_OP_PEDGE    :  *size = l_size + r_size + 0;  strcpy( code_fmt, "%s"          );  break;  // ???
-          case EXP_OP_NEDGE    :  *size = l_size + r_size + 0;  strcpy( code_fmt, "%s"          );  break;  // ???
-          case EXP_OP_AEDGE    :  *size = l_size + r_size + 0;  strcpy( code_fmt, "%s"          );  break;  // ???
-          case EXP_OP_EOR      :  *size = l_size + r_size + 4;  strcpy( code_fmt, "%s    %s"    );  break;
+          case EXP_OP_XOR      :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "        );  break;
+          case EXP_OP_MULTIPLY :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "        );  break;
+          case EXP_OP_DIVIDE   :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "        );  break;
+          case EXP_OP_MOD      :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "        );  break;
+          case EXP_OP_ADD      :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "        );  break;
+          case EXP_OP_SUBTRACT :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "        );  break;
+          case EXP_OP_AND      :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "        );  break;
+          case EXP_OP_OR       :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "        );  break;
+          case EXP_OP_NAND     :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "       );  break;
+          case EXP_OP_NOR      :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "       );  break;
+          case EXP_OP_NXOR     :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "       );  break;
+          case EXP_OP_LT       :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "        );  break;
+          case EXP_OP_GT       :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "        );  break;
+          case EXP_OP_LSHIFT   :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "       );  break;
+          case EXP_OP_RSHIFT   :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "       );  break;
+          case EXP_OP_EQ       :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "       );  break;
+          case EXP_OP_CEQ      :  *size = l_size + r_size + 7;  strcpy( code_fmt, " %s     %s "      );  break;
+          case EXP_OP_LE       :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "       );  break;
+          case EXP_OP_GE       :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "       );  break;
+          case EXP_OP_NE       :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "       );  break;
+          case EXP_OP_CNE      :  *size = l_size + r_size + 7;  strcpy( code_fmt, " %s     %s "      );  break;
+          case EXP_OP_LOR      :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "       );  break;
+          case EXP_OP_LAND     :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "       );  break;
+          case EXP_OP_COND     :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s   "            );  break;
+          case EXP_OP_COND_SEL :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s   %s"          );  break;
+          case EXP_OP_UINV     :  *size = l_size + r_size + 2;  strcpy( code_fmt, " %s "             );  break;
+          case EXP_OP_UAND     :  *size = l_size + r_size + 2;  strcpy( code_fmt, " %s "             );  break;
+          case EXP_OP_UNOT     :  *size = l_size + r_size + 2;  strcpy( code_fmt, " %s "             );  break;
+          case EXP_OP_UOR      :  *size = l_size + r_size + 2;  strcpy( code_fmt, " %s "             );  break;
+          case EXP_OP_UXOR     :  *size = l_size + r_size + 2;  strcpy( code_fmt, " %s "             );  break;
+          case EXP_OP_UNAND    :  *size = l_size + r_size + 2;  strcpy( code_fmt, "  %s"             );  break;
+          case EXP_OP_UNOR     :  *size = l_size + r_size + 2;  strcpy( code_fmt, "  %s"             );  break;
+          case EXP_OP_UNXOR    :  *size = l_size + r_size + 2;  strcpy( code_fmt, "  %s"             );  break;
+          case EXP_OP_SBIT_SEL :  *size = l_size + r_size + 2;  strcpy( code_fmt, "%s"               );  break;
+          case EXP_OP_MBIT_SEL :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s"               );  break;
+          case EXP_OP_EXPAND   :  *size = l_size + r_size + 0;  strcpy( code_fmt, "%s"               );  break;  // ???
+          case EXP_OP_CONCAT   :  *size = l_size + r_size + 0;  strcpy( code_fmt, "%s"               );  break;  // ???
+          case EXP_OP_PEDGE    :  *size = l_size + r_size + 0;  strcpy( code_fmt, "%s"               );  break;  // ???
+          case EXP_OP_NEDGE    :  *size = l_size + r_size + 0;  strcpy( code_fmt, "%s"               );  break;  // ???
+          case EXP_OP_AEDGE    :  *size = l_size + r_size + 0;  strcpy( code_fmt, "%s"               );  break;  // ???
+          case EXP_OP_EOR      :  *size = l_size + r_size + 4;  strcpy( code_fmt, "%s    %s"         );  break;
+          case EXP_OP_CASE     :  *size = l_size + r_size + 11; strcpy( code_fmt, "      %s   %s  "  );  break;
+          case EXP_OP_CASEX    :  *size = l_size + r_size + 12; strcpy( code_fmt, "       %s   %s  " );  break;
+          case EXP_OP_CASEZ    :  *size = l_size + r_size + 12; strcpy( code_fmt, "       %s   %s  " );  break;
           default              :  
             print_output( "Internal error:  Unknown expression type in combination_underline_tree", FATAL );
             exit( 1 );
@@ -522,6 +525,9 @@ void combination_list_missed( FILE* ofile, expression* exp, int* exp_id ) {
         case EXP_OP_NEDGE    :  /* ??? */  break;
         case EXP_OP_AEDGE    :  /* ??? */  break;
         case EXP_OP_EOR      :  combination_two_vars( ofile, exp, 0, 1, 1, 1 );  break;
+        case EXP_OP_CASE     :  combination_unary( ofile, exp );                 break;
+        case EXP_OP_CASEX    :  combination_unary( ofile, exp );                 break;
+        case EXP_OP_CASEZ    :  combination_unary( ofile, exp );                 break;        
         default              :  break;
       }
       
@@ -691,6 +697,11 @@ void combination_report( FILE* ofile, bool verbose, bool instance ) {
 
 
 /* $Log$
+/* Revision 1.22  2002/07/03 21:30:52  phase1geo
+/* Fixed remaining issues with always statements.  Full regression is running
+/* error free at this point.  Regenerated documentation.  Added EOR expression
+/* operation to handle the or expression in event lists.
+/*
 /* Revision 1.21  2002/07/03 19:54:36  phase1geo
 /* Adding/fixing code to properly handle always blocks with the event control
 /* structures attached.  Added several new diagnostics to test this ability.

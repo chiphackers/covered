@@ -480,14 +480,15 @@ expression* db_create_expression( expression* right, expression* left, int op, i
   curr_expr_id++;
 
   /* Set right and left side expression's (if they exist) parent pointer to this expression */
-  if( (right != NULL) &&
-      (SUPPL_OP( expr->suppl ) != EXP_OP_CASE) &&      (SUPPL_OP( expr->suppl ) != EXP_OP_CASEX) &&
-      (SUPPL_OP( expr->suppl ) != EXP_OP_CASEZ) ) {
+  if( right != NULL ) {
     assert( right->parent->expr == NULL );
     right->parent->expr = expr;
   }
 
-  if( left != NULL ) {
+  if( (left != NULL) &&
+      (SUPPL_OP( expr->suppl ) != EXP_OP_CASE) &&
+      (SUPPL_OP( expr->suppl ) != EXP_OP_CASEX) &&
+      (SUPPL_OP( expr->suppl ) != EXP_OP_CASEZ) ) {
     assert( left->parent->expr == NULL );
     left->parent->expr = expr;
   }
@@ -973,6 +974,10 @@ int db_get_signal_size( char* symbol ) {
 
 
 /* $Log$
+/* Revision 1.29  2002/07/04 23:10:12  phase1geo
+/* Added proper support for case, casex, and casez statements in score command.
+/* Report command still incorrect for these statement types.
+/*
 /* Revision 1.28  2002/07/03 21:30:52  phase1geo
 /* Fixed remaining issues with always statements.  Full regression is running
 /* error free at this point.  Regenerated documentation.  Added EOR expression

@@ -312,13 +312,13 @@ bool expression_db_read( char** line, module* curr_mod ) {
       expr->suppl = suppl;
 
       /* Don't set right child's parent if the parent is a CASE, CASEX, or CASEX type expression */
-      if( (right != NULL) && 
-          (SUPPL_OP( suppl ) != EXP_OP_CASE) &&
-          (SUPPL_OP( suppl ) != EXP_OP_CASEX) &&          (SUPPL_OP( suppl ) != EXP_OP_CASEZ) ) {
+      if( right != NULL ) {
         right->parent->expr = expr;
       }
 
-      if( left != NULL ) {
+      if( (left != NULL) && 
+          (SUPPL_OP( suppl ) != EXP_OP_CASE) &&
+          (SUPPL_OP( suppl ) != EXP_OP_CASEX) &&          (SUPPL_OP( suppl ) != EXP_OP_CASEZ) ) {
         left->parent->expr = expr;
       }
 
@@ -693,13 +693,13 @@ void expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_CASE :
-        expression_operate( expr->right );
+        expression_operate( expr->left );
         vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_EQ );
         break;
 
       case EXP_OP_CASEX :
       case EXP_OP_CASEZ :
-        expression_operate( expr->right );
+        expression_operate( expr->left );
         vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CEQ );
         break;
 
@@ -790,6 +790,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.27  2002/07/04 23:10:12  phase1geo
+/* Added proper support for case, casex, and casez statements in score command.
+/* Report command still incorrect for these statement types.
+/*
 /* Revision 1.26  2002/07/03 21:30:53  phase1geo
 /* Fixed remaining issues with always statements.  Full regression is running
 /* error free at this point.  Regenerated documentation.  Added EOR expression
