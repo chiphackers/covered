@@ -1,7 +1,7 @@
 Covered-Related NEWS
 ====================
 
-    * 04/10/2004
+    * 04/11/2004
 
 Release covered-20040210 made.  A lot of work has gone into this release to make the report
 output more readable and concise.  Several bug fixes have been made as well.  A GUI is on
@@ -17,7 +17,67 @@ release.  Below are some of the highlights of this release.
     statements being removed were not being properly removed.
   - Fixed bug in sim.c where expressions in tree above conditional operator were not being
     evaluated if conditional expression was not at the top of tree.
-  - 
+  - Changed output of logic in combinational logic verbose coverage reporting to (by default)
+    use the same format (in terms of endline characters) as the logic was found in the source
+    code.
+  - Added '-w [<line_width>]' option to report command that causes combinational logic to be
+    output to report as much logic as will fit in the value of <line_width> in the report.  A
+    default value of line width is specified internally in Covered to be 105 characters;
+    however, the user may make this value larger or smaller to suit.  This value reverses the
+    effect of the above bulletin.  Added this option to Covered's regression suite to test.
+  - Completely modified output format of missing combinational logic coverage.  Removed a lot
+    of coverage information that was extraneous.  When three or more subexpressions are ANDed,
+    ORed, logical ANDed, or logical ORed, coverage information is output in a special way to
+    increase readability/understandability for this coverage.
+  - Added "GENERAL INFORMATION" section to all reports which specifies general information
+    about this report (this eliminates a lot of redundant information in the report to improve
+    readability).
+  - Added the name of the CDD file from which a report has been generated from in the
+    GENERAL INFORMATION section of the report.
+  - When a CDD file is created due to merging CDD files, the names of the original CDD files
+    are now stored in the merged CDD file.  This information is output in the GENERAL
+    INFORMATION section of the report (created from this merged CDD file) to indicate to the
+    user this information.
+  - If a CDD file is created due to merging CDD files and the leading hierarchies in each of
+    those CDD files are different, a bullet in the GENERAL INFORMATION specifies this and
+    reminds the user that the leading hierarchy information will not be output in the rest of
+    the report (instead the string "<NA>" replaces the leading hierarchy information).  This
+    will help to eliminate confusion when viewing the reports and fixes an outstanding bug
+    in Covered.
+  - Added starting and ending line information to module structure for GUI purposes.
+  - Removed scope information in CDD file for expressions, signals and statements.  This
+    information was not used, caused CDD files to become excessive in size and mildly speeds
+    up reading in CDD files.
+  - Fixed bugs in combinational logic report section where summary coverage numbers and verbose
+    coverage numbers did not agree.
+  - Removed 'c' directory in 'diags' directory and cleaned up Makefile to run regressions.
+  - Masked off the value of the SET bit in expressions output to CDD files.  This information
+    is not needed and sometimes caused regression failures due to CDD file mismatches on
+    different platforms or using different simulators.
+  - Modified regression Makefile to specify the 'vvp' command prior to the compiled VVP
+    executable when running Icarus Verilog regressions (due to recent change to IV).
+  - Changed instance-based reports to not merge child instance coverage information into parent
+    instance coverage information.  This is not done in module-based reports, makes reading
+    this information confusing and doesn't provide us any extra information.
+  - Fixed bug where modules were being reported in verbose reports when coverage numbers were
+    100% covered.
+  - Changed toggle coverage report output to output toggle information in hexidecimal format
+    versus binary format.  This keeps the toggle coverage information more succinct/readable.
+    Added underlines between every 4th hexidecimal value to help user's to discern the bit
+    position of a toggle bit.
+  - Changed the format of the report entirely to enhance readability (many changes here that
+    the user will immediately see).
+  - Updated user documentation for new changes and added new section called "Reading the
+    Report" which will walk the user through several reports and how to interpret the report
+    information.  This section is still in progress at this time.
+  - Updates to development documentation.
+  - Lots of new diagnostics added to regression suite.  We now have over 200 diagnostics in this
+    regression.
+
+Special note:  Please note that the CDD file format for this release has changed from previous
+CDD files and is therefore incompatible with older versions.  If you try to read a CDD file
+generated from an older version of Covered with the newer version, Covered will tell you that
+this cannot be done due to incompatible CDD versions.
 
     * 11/16/2003
 
