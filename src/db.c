@@ -1027,9 +1027,6 @@ attr_param* db_create_attr_param( char* name, expression* expr ) {
   }
   print_output( user_msg, DEBUG );
 
-  if( expr != NULL ) {
-    printf( "db_create_ap: %s\n", (char*)(expr->value->value) );
-  }
   ap = attribute_create( name, expr );
 
   return( ap );
@@ -1245,6 +1242,10 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.105  2003/10/28 00:18:05  phase1geo
+ Adding initial support for inline attributes to specify FSMs.  Still more
+ work to go but full regression still passes at this point.
+
  Revision 1.104  2003/10/17 12:55:36  phase1geo
  Intermediate checkin for LSB fixes.
 

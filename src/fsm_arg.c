@@ -261,14 +261,6 @@ void fsm_arg_parse_attr( attr_param* ap, module* mod ) {
   curr = ap;
   while( (curr != NULL) && !ignore ) {
 
-    printf( "Here 1, name: %s\n", curr->name );
-
-    if( curr->expr == NULL ) {
-      printf( "Parsing attribute parameter: %s\n", curr->name );
-    } else {
-      printf( "Parsing attribute parameter: %s, expr: %s\n", curr->name, (char*)(curr->expr->value->value) );
-    }
-
     /* This name is the name of the FSM structure to update */
     if( index == 1 ) {
       if( curr->expr != NULL ) {
@@ -355,6 +347,10 @@ void fsm_arg_parse_attr( attr_param* ap, module* mod ) {
 
 /*
  $Log$
+ Revision 1.7  2003/10/28 00:18:06  phase1geo
+ Adding initial support for inline attributes to specify FSMs.  Still more
+ work to go but full regression still passes at this point.
+
  Revision 1.6  2003/10/19 05:13:26  phase1geo
  Updating user documentation for changes to FSM specification syntax.  Added
  new fsm5.3 diagnostic to verify concatenation syntax.  Fixing bug in concatenation

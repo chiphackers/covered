@@ -242,7 +242,6 @@ bool fsm_var_bind_stmt( statement* stmt, char* mod_name ) {
 
     /* Finally, create the new FSM if we are the output state */
     if( (fv = fsm_var_is_output_state( stmt->exp )) != NULL ) {
-      printf( "Creating FSM\n" );
       fv->table       = fsm_create( fv->ivar, fv->ovar, FALSE );
       fv->ivar->table = fv->table;
       fv->ovar->table = fv->table;
@@ -292,7 +291,6 @@ void fsm_var_bind_add( char* sig_name, expression* expr, char* mod_name ) {
 
   } else {
 
-    printf( "Binding expression early\n" );
     fsm_var_bind_expr( sig_name, expr, mod_name );
 
   }
@@ -327,7 +325,6 @@ void fsm_var_stmt_add( statement* stmt, char* mod_name ) {
 
   } else {
 
-    printf( "Binding statement early\n" );
     fsm_var_bind_stmt( stmt, mod_name );
 
   }
@@ -392,7 +389,6 @@ void fsm_var_bind() {
 
   } else {
 
-    printf( "Exiting\n" );
     exit( 1 );
 
   }
@@ -460,6 +456,10 @@ void fsm_var_remove( fsm_var* fv ) {
 
 /*
  $Log$
+ Revision 1.8  2003/10/28 00:18:06  phase1geo
+ Adding initial support for inline attributes to specify FSMs.  Still more
+ work to go but full regression still passes at this point.
+
  Revision 1.7  2003/10/20 21:38:49  phase1geo
  Adding function documentation to functions that were missing it.
 

@@ -185,7 +185,6 @@ attribute_list
   : attribute_list ',' attribute
     {
       $3->next  = $1;
-      printf( "Attaching previous of (%s) to (%s)\n", $1->name, $3->name );
       $1->prev  = $3;
       $3->index = $1->index + 1;
       $$ = $3;
@@ -206,7 +205,6 @@ attribute
   | IDENTIFIER '=' {attr_mode++;} expression {attr_mode--;}
     {
       attr_param* ap = db_create_attr_param( $1, $4 );
-      printf( "attribute expression: %s\n", (char*)($4->value->value) );
       free_safe( $1 );
       $$ = ap;
     }
@@ -967,7 +965,6 @@ expr_primary
       vector_dealloc( tmp->value );
       tmp->value        = vec;
       tmp->value->value = (nibble*)strdup( $1 );
-      printf( "String: %s\n", (char*)(tmp->value->value) );
       free_safe( $1 );
       $$ = tmp;
     }
