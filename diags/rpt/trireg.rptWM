@@ -56,7 +56,7 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY MODULE
 Module                    Filename                     Logical Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    trireg.v                 16/  16/  32       50%
+  main                    trireg.v                 20/  28/  48       42%
 
 Module: main, File: trireg.v
 --------------------------------------------------------

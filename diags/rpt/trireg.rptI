@@ -56,7 +56,7 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY INSTANCE
 Instance                                               Logic Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                                             16/  16/  32       50%
+  main                                             20/  28/  48       42%
 
 Module: main, File: trireg.v, Instance: main
 --------------------------------------------------------

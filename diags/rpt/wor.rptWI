@@ -38,7 +38,7 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY INSTANCE
 Instance                                               Logic Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                                              4/   4/   8       50%
+  main                                              5/   7/  12       42%
 
 Module: main, File: wor.v, Instance: main
 --------------------------------------------------------
