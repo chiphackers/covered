@@ -470,22 +470,27 @@ inst_parm* param_has_override( char* mname, mod_parm* mparm, inst_parm* ip_head,
  instance parameter is created with the value of the found defparam.  If a match
  is not found, return NULL and do nothing else.
 */
-inst_parm* param_has_defparam( char* scope, char* name, inst_parm** ihead, inst_parm** itail ) {
+inst_parm* param_has_defparam( char* scope, mod_parm* mparm, inst_parm** ihead, inst_parm** itail ) {
 
-  inst_parm* parm = NULL; /* Pointer newly created instance parameter (if one is created) */
-  inst_parm* icurr;       /* Pointer to current defparam                                  */
+  inst_parm* parm      = NULL;   /* Pointer newly created instance parameter (if one is created) */
+  inst_parm* icurr;              /* Pointer to current defparam                                  */
+  bool       def_found = FALSE;  /* Specifies if defparam has been found that matches            */
+  char       parm_scope[4096];   /* Specifes full scope to parameter to find                     */
 
   assert( scope != NULL );
+  assert( mparm != NULL );
+
+  snprintf( parm_scope, 4096, "%s.%s", scope, mparm->name );
 
   icurr = defparam_head;
-  while( (icurr != NULL) && (strcmp( icurr->name, scope ) != 0) ) {
+  while( (icurr != NULL) && (strcmp( icurr->name, parm_scope ) != 0) ) {
     icurr = icurr->next;
   }
 
   if( icurr != NULL ) {
 
     /* Defparam found, use its value to create new instance parameter */
-    parm = inst_parm_add( name, icurr->value, NULL, ihead, itail );
+    parm = inst_parm_add( mparm->name, icurr->value, mparm, ihead, itail );
 
   }
 
@@ -528,7 +533,7 @@ void param_resolve_declared( char* mscope, mod_parm* mparm, inst_parm* ip_head,
 
     /* Parameter override was found in parent module, do nothing more */
 
-  } else if( param_has_defparam( mscope, mparm->name, ihead, itail ) != NULL ) {
+  } else if( param_has_defparam( mscope, mparm, ihead, itail ) != NULL ) {
 
     /* Parameter defparam override was found, do nothing more */
 
@@ -630,6 +635,10 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 
 /* $Log$
+/* Revision 1.13  2002/09/26 13:43:45  phase1geo
+/* Making code adjustments to correctly support parameter overriding.  Added
+/* parameter tests to verify supported functionality.  Full regression passes.
+/*
 /* Revision 1.12  2002/09/26 04:17:11  phase1geo
 /* Adding support for expressions in parameter definitions.  param1.1.v added to
 /* test simple functionality of this and it passes regression.

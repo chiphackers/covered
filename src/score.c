@@ -214,6 +214,8 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
         }
         free_safe( arg_list );
       } else {
+        snprintf( err_msg, 4096, "Cannot find argument file %s specified with -f option", argv[i] );
+        print_output( err_msg, FATAL );
         retval = FALSE;
       }
 
@@ -349,6 +351,11 @@ int command_score( int argc, int last_arg, char** argv ) {
 }
 
 /* $Log$
+/* Revision 1.23  2002/09/25 02:51:44  phase1geo
+/* Removing need of vector nibble array allocation and deallocation during
+/* expression resizing for efficiency and bug reduction.  Other enhancements
+/* for parameter support.  Parameter stuff still not quite complete.
+/*
 /* Revision 1.22  2002/09/21 04:11:32  phase1geo
 /* Completed phase 1 for adding in parameter support.  Main code is written
 /* that will create an instance parameter from a given module parameter in

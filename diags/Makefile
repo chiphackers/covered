@@ -8,7 +8,7 @@
 ####################################################################
 
 CDIR = ./c
-VDIR = ./verilog
+VDIR = ./regress
 
 regress:	regress-c regress-v
 
@@ -17,7 +17,7 @@ regress-c:
 	cp $(CDIR)/regress.log c-regress.log
 
 regress-v:
-	cd $(VDIR);  make regress
+	cd $(VDIR);  make
 	cp $(VDIR)/regress.log v-regress.log
 
 distclean:  clean
