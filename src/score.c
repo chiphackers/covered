@@ -37,7 +37,7 @@ void define_macro( const char* name, const char* value );
 void score_usage() {
 
   printf( "\n" );
-  printf( "Usage:  covered score -t <top-level_module_name> -vcd <dumpfile> [<options>]\n" );
+  printf( "Usage:  covered score -t <top-level_module_name> [<options>]\n" );
   printf( "\n" );
   printf( "   Options:\n" );
   printf( "      -vcd <dumpfile>              Name of dumpfile to score design with.  If this option\n" );
@@ -350,6 +350,11 @@ int command_score( int argc, int last_arg, char** argv ) {
 }
 
 /* $Log$
+/* Revision 1.19  2002/08/23 12:55:33  phase1geo
+/* Starting to make modifications for parameter support.  Added parameter source
+/* and header files, changed vector_from_string function to be more verbose
+/* and updated Makefiles for new param.h/.c files.
+/*
 /* Revision 1.18  2002/08/19 21:36:25  phase1geo
 /* Fixing memory corruption bug in score function for adding Verilog modules
 /* to use_files list.  This caused a core dump to occur when the -f option
