@@ -441,24 +441,39 @@ void str_link_remove( char* str, str_link** head, str_link** tail ) {
 }
 
 /*!
- \param exp   Pointer to expression to find and remove.
- \param head  Pointer to head of expression list.
- \param tail  Pointer to tail of expression list.
+ \param exp        Pointer to expression to find and remove.
+ \param head       Pointer to head of expression list.
+ \param tail       Pointer to tail of expression list.
+ \param recursive  If TRUE, recursively removes expression tree.
 
  Searches specified list for expression that matches the specified expression.  If
  a match is found, remove it from the list and deallocate the link memory.
 */
-void exp_link_remove( expression* exp, exp_link** head, exp_link** tail ) {
+void exp_link_remove( expression* exp, exp_link** head, exp_link** tail, bool recursive ) {
 
   exp_link* curr;  /* Pointer to current expression link */
   exp_link* last;  /* Pointer to last expression link    */
+
+  assert( exp != NULL );
+
+  /* If recursive mode is set, remove children first */
+  if( recursive ) {
+    if( exp->left != NULL ) {
+      exp_link_remove( exp->left, head, tail, recursive );
+    }
+    if( exp->right != NULL ) {
+      exp_link_remove( exp->right, head, tail, recursive );
+    }
+  }
 
   curr = *head;
   last = NULL;
   while( (curr != NULL) && (curr->exp->id != exp->id) ) {
     last = curr;
     curr = curr->next;
-    assert( curr->exp != NULL );
+    if( curr != NULL ) {
+      assert( curr->exp != NULL );
+    }
   }
 
   if( curr != NULL ) {
@@ -617,6 +632,10 @@ void mod_link_delete_list( mod_link* head ) {
 
 /*
  $Log$
+ Revision 1.18  2003/02/05 22:50:56  phase1geo
+ Some minor tweaks to debug output and some minor bug "fixes".  At this point
+ regression isn't stable yet.
+
  Revision 1.17  2003/01/04 09:33:28  phase1geo
  Updating documentation to match recent code fixes/changes.
 

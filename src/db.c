@@ -732,7 +732,7 @@ void db_add_expression( expression* root ) {
     
       snprintf( user_msg, USER_MSG_LENGTH, "In db_add_expression, id: %d, op: %d, line: %d", 
                 root->id, SUPPL_OP( root->suppl ), root->line );
-      print_output( user_msg, NORMAL );
+      print_output( user_msg, DEBUG );
 
       /* Add expression's children first. */
       db_add_expression( root->right );
@@ -817,14 +817,17 @@ void db_remove_statement( statement* stmt ) {
     } else {
       snprintf( user_msg, USER_MSG_LENGTH, "In db_remove_statement, stmt id: ???, line: ???" );
     }
-    print_output( user_msg, NORMAL );
+    print_output( user_msg, DEBUG );
 
     /* Remove true/false paths */
     db_remove_statement( stmt->next_true  );
     db_remove_statement( stmt->next_false );
 
     /* Remove expression from current module expression list */
-    exp_link_remove( stmt->exp, &(curr_module->exp_head), &(curr_module->exp_tail) );
+    exp_link_remove( stmt->exp, &(curr_module->exp_head), &(curr_module->exp_tail), TRUE );
+
+    /* Remove expression from any module parameter expression lists */
+    mod_parm_find_expr_and_remove( stmt->exp, curr_module->param_head );
 
     /* Deallocate expression tree for this statement */
     expression_dealloc( stmt->exp, FALSE );
@@ -1129,6 +1132,10 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.82  2003/02/05 22:50:56  phase1geo
+ Some minor tweaks to debug output and some minor bug "fixes".  At this point
+ regression isn't stable yet.
+
  Revision 1.81  2003/02/03 17:17:38  phase1geo
  Fixing bug with statement deallocation for NULL statements.
 

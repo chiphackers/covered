@@ -111,6 +111,22 @@ mod_parm* mod_parm_find_sig_dependent( char* name, mod_parm* parm ) {
 }
 
 /*!
+ \param exp   Pointer to expression to find and remove from lists.
+ \param parm  Pointer to module parameter list to search.
+
+ Searches list of module parameter expression lists for specified expression.  If
+ the expression is found in one of the lists, remove the expression link.
+*/
+void mod_parm_find_expr_and_remove( expression* exp, mod_parm* parm ) {
+
+  while( parm != NULL ) {
+    exp_link_remove( exp, &(parm->exp_head), &(parm->exp_tail), FALSE );
+    parm = parm->next;
+  }
+
+}
+
+/*!
  \param scope  Full hierarchical name of parameter value.
  \param expr   Expression tree for current module parameter.
  \param type   Specifies type of module parameter (declared/override).
@@ -694,6 +710,11 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.26  2003/01/14 05:52:17  phase1geo
+ Fixing bug related to copying instance trees in modules that were previously
+ parsed.  Added diagnostic param7.v to testsuite and regression.  Full
+ regression passes.
+
  Revision 1.25  2003/01/04 03:56:28  phase1geo
  Fixing bug with parameterized modules.  Updated regression suite for changes.
 

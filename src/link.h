@@ -66,7 +66,7 @@ mod_link* mod_link_find( module* mod, mod_link* head );
 void str_link_remove( char* str, str_link** head, str_link** tail );
 
 /*! \brief Searches for and removes specified expression link from list. */
-void exp_link_remove( expression* exp, exp_link** head, exp_link** tail );
+void exp_link_remove( expression* exp, exp_link** head, exp_link** tail, bool recursive );
 
 
 /*! \brief Deletes entire list specified by head pointer. */
@@ -87,6 +87,11 @@ void mod_link_delete_list( mod_link* head );
 
 /*
  $Log$
+ Revision 1.8  2003/01/03 02:07:43  phase1geo
+ Fixing segmentation fault in lexer caused by not closing the temporary
+ input file before unlinking it.  Fixed case where module was parsed but not
+ at the head of the module list.
+
  Revision 1.7  2002/11/05 00:20:07  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.

@@ -1187,7 +1187,7 @@ void expression_dealloc( expression* expr, bool exp_only ) {
       if( expr->sig == NULL ) {
         bind_remove( expr->id );
       } else {
-        exp_link_remove( expr, &(expr->sig->exp_head), &(expr->sig->exp_tail) );
+        exp_link_remove( expr, &(expr->sig->exp_head), &(expr->sig->exp_tail), FALSE );
       }  
  
     }
@@ -1214,6 +1214,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.72  2002/12/30 05:31:33  phase1geo
+ Fixing bug in module merge for reports when parameterized modules are merged.
+ These modules should not output an error to the user when mismatching modules
+ are found.
+
  Revision 1.71  2002/12/07 17:46:53  phase1geo
  Fixing bug with handling memory declarations.  Added diagnostic to verify
  that memory declarations are handled properly.  Fixed bug with infinite
