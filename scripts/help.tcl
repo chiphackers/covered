@@ -32,7 +32,7 @@ proc help_show_manual {section} {
 
   global HOME BROWSER
 
-  set fpath [file join $HOME doc $section].html
+  set fpath [file join $HOME doc gui $section].html
 
   if {[catch {exec $BROWSER -remote "openFile( $fpath )"}]} {
 

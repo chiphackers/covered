@@ -71,7 +71,7 @@ XGPERF = @XGPERF@
 use_tcltk = @use_tcltk@
 
 EXTRA_DIST = ChangeLog.bak depcomp release.in ChangeLog AUTHORS COPYING INSTALL NEWS README TODO
-SUBDIRS = scripts src
+SUBDIRS = scripts src doc
 AUTOMAKE_OPTIONS = foreign
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs

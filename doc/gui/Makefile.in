@@ -70,45 +70,46 @@ VERSION = @VERSION@
 XGPERF = @XGPERF@
 use_tcltk = @use_tcltk@
 
-man_MANS = covered.1
-docdir = $(datadir)/covered/doc/user
-doc_DATA = 001.html \
-           002.html \
-           003.html \
-           004.html \
-           005.html \
-           006.html \
-           007.html \
-           008.html \
-           009.html \
-           010.html \
-           011.html \
-           012.html \
-           013.html \
-           014.html \
-           015.html \
-           016.html \
-           017.html \
-           018.html \
-           019.html \
-           020.html \
-           021.html \
-           022.html \
-           banner.gif \
-           example.rptI.html \
-           example.rptM.html \
-           example.v.html \
-           index.html \
-           styles.css
+docdir = $(datadir)/covered/doc/gui
+doc_DATA = comb.html \
+           cov_bar.html \
+           cov_view.html \
+           file_menu.html \
+           help_menu.html \
+           info_bar.html \
+           intro.html \
+           line.html \
+           main.html \
+           main_menu.html \
+           mod_inst_lb.html \
+           pref_menu.html \
+           report_menu.html \
+           summary_bar.html \
+           toggle.html \
+           welcome.html
+
+
+imagedir = $(datadir)/covered/doc/gui/images
+image_DATA = images/banner.gif \
+             images/file_view.jpg \
+             images/main_info.jpg \
+             images/main_summary.jpg \
+             images/open_cdd.jpg \
+             images/report_view.jpg \
+             images/color.jpg \
+             images/help_view.jpg \
+             images/main_lb.jpg \
+             images/main_viewer.jpg \
+             images/populated_lb.jpg \
+             images/main_cov.jpg \
+             images/main_menu.jpg \
+             images/main_window.jpg \
+             images/pref_view.jpg
 
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../../config.h
 CONFIG_CLEAN_FILES = 
-man1dir = $(mandir)/man1
-MANS = $(man_MANS)
-
-NROFF = nroff
-DATA =  $(doc_DATA)
+DATA =  $(doc_DATA) $(image_DATA)
 
 DIST_COMMON =  Makefile.am Makefile.in
 
@@ -120,51 +121,12 @@ GZIP_ENV = --best
 all: all-redirect
 .SUFFIXES:
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
-	cd $(top_srcdir) && $(AUTOMAKE) --gnu doc/user/Makefile
+	cd $(top_srcdir) && $(AUTOMAKE) --gnu doc/gui/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
 	  && CONFIG_FILES=$(subdir)/$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
-
-install-man1:
-	$(mkinstalldirs) $(DESTDIR)$(man1dir)
-	@list='$(man1_MANS)'; \
-	l2='$(man_MANS)'; for i in $$l2; do \
-	  case "$$i" in \
-	    *.1*) list="$$list $$i" ;; \
-	  esac; \
-	done; \
-	for i in $$list; do \
-	  if test -f $(srcdir)/$$i; then file=$(srcdir)/$$i; \
-	  else file=$$i; fi; \
-	  ext=`echo $$i | sed -e 's/^.*\\.//'`; \
-	  inst=`echo $$i | sed -e 's/\\.[0-9a-z]*$$//'`; \
-	  inst=`echo $$inst | sed '$(transform)'`.$$ext; \
-	  echo " $(INSTALL_DATA) $$file $(DESTDIR)$(man1dir)/$$inst"; \
-	  $(INSTALL_DATA) $$file $(DESTDIR)$(man1dir)/$$inst; \
-	done
-
-uninstall-man1:
-	@list='$(man1_MANS)'; \
-	l2='$(man_MANS)'; for i in $$l2; do \
-	  case "$$i" in \
-	    *.1*) list="$$list $$i" ;; \
-	  esac; \
-	done; \
-	for i in $$list; do \
-	  ext=`echo $$i | sed -e 's/^.*\\.//'`; \
-	  inst=`echo $$i | sed -e 's/\\.[0-9a-z]*$$//'`; \
-	  inst=`echo $$inst | sed '$(transform)'`.$$ext; \
-	  echo " rm -f $(DESTDIR)$(man1dir)/$$inst"; \
-	  rm -f $(DESTDIR)$(man1dir)/$$inst; \
-	done
-install-man: $(MANS)
-	@$(NORMAL_INSTALL)
-	$(MAKE) $(AM_MAKEFLAGS) install-man1
-uninstall-man:
-	@$(NORMAL_UNINSTALL)
-	$(MAKE) $(AM_MAKEFLAGS) uninstall-man1
 
 install-docDATA: $(doc_DATA)
 	@$(NORMAL_INSTALL)
@@ -184,20 +146,39 @@ uninstall-docDATA:
 	list='$(doc_DATA)'; for p in $$list; do \
 	  rm -f $(DESTDIR)$(docdir)/$$p; \
 	done
+
+install-imageDATA: $(image_DATA)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(imagedir)
+	@list='$(image_DATA)'; for p in $$list; do \
+	  if test -f $(srcdir)/$$p; then \
+	    echo " $(INSTALL_DATA) $(srcdir)/$$p $(DESTDIR)$(imagedir)/$$p"; \
+	    $(INSTALL_DATA) $(srcdir)/$$p $(DESTDIR)$(imagedir)/$$p; \
+	  else if test -f $$p; then \
+	    echo " $(INSTALL_DATA) $$p $(DESTDIR)$(imagedir)/$$p"; \
+	    $(INSTALL_DATA) $$p $(DESTDIR)$(imagedir)/$$p; \
+	  fi; fi; \
+	done
+
+uninstall-imageDATA:
+	@$(NORMAL_UNINSTALL)
+	list='$(image_DATA)'; for p in $$list; do \
+	  rm -f $(DESTDIR)$(imagedir)/$$p; \
+	done
 tags: TAGS
 TAGS:
 
 
 distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
 
-subdir = doc/user
+subdir = doc/gui
 
 distdir: $(DISTFILES)
 	here=`cd $(top_builddir) && pwd`; \
 	top_distdir=`cd $(top_distdir) && pwd`; \
 	distdir=`cd $(distdir) && pwd`; \
 	cd $(top_srcdir) \
-	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu doc/user/Makefile
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu doc/gui/Makefile
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
@@ -219,20 +200,20 @@ installcheck: installcheck-am
 install-exec-am:
 install-exec: install-exec-am
 
-install-data-am: install-man install-docDATA
+install-data-am: install-docDATA install-imageDATA
 install-data: install-data-am
 
 install-am: all-am
 	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
 install: install-am
-uninstall-am: uninstall-man uninstall-docDATA
+uninstall-am: uninstall-docDATA uninstall-imageDATA
 uninstall: uninstall-am
-all-am: Makefile $(MANS) $(DATA)
+all-am: Makefile $(DATA)
 all-redirect: all-am
 install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) AM_INSTALL_PROGRAM_FLAGS=-s install
 installdirs:
-	$(mkinstalldirs)  $(DESTDIR)$(mandir)/man1 $(DESTDIR)$(docdir)
+	$(mkinstalldirs)  $(DESTDIR)$(docdir) $(DESTDIR)$(imagedir)
 
 
 mostlyclean-generic:
@@ -262,13 +243,13 @@ maintainer-clean-am:  maintainer-clean-generic distclean-am
 
 maintainer-clean: maintainer-clean-am
 
-.PHONY: install-man1 uninstall-man1 install-man uninstall-man \
-uninstall-docDATA install-docDATA tags distdir info-am info dvi-am dvi \
-check check-am installcheck-am installcheck install-exec-am \
-install-exec install-data-am install-data install-am install \
-uninstall-am uninstall all-redirect all-am all installdirs \
-mostlyclean-generic distclean-generic clean-generic \
-maintainer-clean-generic clean mostlyclean distclean maintainer-clean
+.PHONY: uninstall-docDATA install-docDATA uninstall-imageDATA \
+install-imageDATA tags distdir info-am info dvi-am dvi check check-am \
+installcheck-am installcheck install-exec-am install-exec \
+install-data-am install-data install-am install uninstall-am uninstall \
+all-redirect all-am all installdirs mostlyclean-generic \
+distclean-generic clean-generic maintainer-clean-generic clean \
+mostlyclean distclean maintainer-clean
 
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
