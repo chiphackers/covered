@@ -33,7 +33,7 @@ DIAGS1        = always1        always2        always3        always3.1.11A  alwa
                 casez1.1       casez1.2       casez1.3       casez1.4       casez2 \
                 concat1        concat2        concat3        concat4.1      concat4.2      concat5 \
                 cond1          cond2          delay1         define1        define1.1 \
-                define2        define2.1      expand1        expand2        expand3 \
+                define2        define2.1      define3        expand1        expand2        expand3 \
                 ifdef1         ifdef1.2       ifdef2.1       ifdef2.2       ifdef2.3 \
                 ifelse1        include1       include1.1     include2       instance1 \
                 instance1.1    instance1.2    instance2      instance3      instance4 \
