@@ -228,8 +228,7 @@ bool fsm_db_read( char** line, module* mod ) {
         table->from_state = iexpl->exp;
       }
 
-      /* Set input/output expression tables to point to this FSM */
-      table->from_state->table = table;
+      /* Set output expression tables to point to this FSM */
       table->to_state->table   = table;
 
       // oexpl->exp->table = table;
@@ -770,6 +769,9 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.22  2003/10/13 12:27:25  phase1geo
+ More fixes to FSM stuff.
+
  Revision 1.21  2003/10/10 20:52:07  phase1geo
  Initial submission of FSM expression allowance code.  We are still not quite
  there yet, but we are getting close.

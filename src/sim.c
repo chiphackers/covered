@@ -208,6 +208,9 @@ void sim_add_statics() {
 */
 void sim_expression( expression* expr ) {
 
+  bool left_changed  = FALSE;  /* Signifies if left expression tree has changed value  */
+  bool right_changed = FALSE;  /* Signifies if right expression tree has changed value */
+
   assert( expr != NULL );
 
   /* Traverse left child expression if it has changed */
@@ -225,7 +228,8 @@ void sim_expression( expression* expr ) {
     }
 
     /* Clear LEFT CHANGED bit */
-    expr->suppl = expr->suppl & ~(0x1 << SUPPL_LSB_LEFT_CHANGED);
+    expr->suppl  = expr->suppl & ~(0x1 << SUPPL_LSB_LEFT_CHANGED);
+    left_changed = TRUE;
 
   }
 
@@ -238,12 +242,18 @@ void sim_expression( expression* expr ) {
     }
 
     /* Clear RIGHT CHANGED bit */
-    expr->suppl = expr->suppl & ~(0x1 << SUPPL_LSB_RIGHT_CHANGED);
+    expr->suppl   = expr->suppl & ~(0x1 << SUPPL_LSB_RIGHT_CHANGED);
+    right_changed = TRUE;
 
   }
 
-  /* Now perform expression operation for this expression */
-  expression_operate( expr );
+  /*
+   Now perform expression operation for this expression if left or right
+   expressions trees have changed.
+  */
+  if( (SUPPL_IS_STMT_CONTINUOUS( expr->suppl ) == 0) || left_changed || right_changed ) {
+    expression_operate( expr );
+  }
 
 }
 
@@ -367,6 +377,9 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.31  2003/08/15 03:52:22  phase1geo
+ More checkins of last checkin and adding some missing files.
+
  Revision 1.30  2003/08/10 03:50:10  phase1geo
  More development documentation updates.  All global variables are now
  documented correctly.  Also fixed some generated documentation warnings.
