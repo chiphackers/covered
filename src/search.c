@@ -18,9 +18,6 @@
 str_link* inc_paths_head = NULL;    /*!< Pointer to head element of include paths list          */
 str_link* inc_paths_tail = NULL;    /*!< Pointer to tail element of include paths list          */
 
-str_link* dir_paths_head = NULL;    /*!< Pointer to head element of directory paths list        */
-str_link* dir_paths_tail = NULL;    /*!< Pointer to tail element of directory paths list        */
-
 str_link* use_files_head = NULL;    /*!< Pointer to head element of used files list             */
 str_link* use_files_tail = NULL;    /*!< Pointer to tail element of used files list             */
 
@@ -89,11 +86,18 @@ bool search_add_directory_path( char* path ) {
 
   bool  retval = TRUE;   /* Return value for this function */
   char* tmp;             /* Temporary directory name       */
+  char  msg[4096];       /* Warning message to user        */
 
   if( is_directory( path ) && directory_exists( path ) ) {
     tmp = strdup( path );
-    str_link_add( tmp, &dir_paths_head, &dir_paths_tail );
+    /* If no library extensions have been specified, assume *.v */
+    if( extensions_head == NULL ) {
+      str_link_add( strdup( "v" ), &(extensions_head), &(extensions_tail) );
+    }
+    directory_load( path, extensions_head, &(use_files_head), &(use_files_tail) );
   } else {
+    snprintf( msg, 4096, "Library directory %s does not exist", path );
+    print_output( msg, WARNING );
     retval = FALSE;
   }
 
@@ -189,11 +193,15 @@ bool search_add_extensions( char* ext_list ) {
 void search_free_lists() {
 
   str_link_delete_list( inc_paths_head  );
-  str_link_delete_list( dir_paths_head  );
   str_link_delete_list( use_files_head  );
   str_link_delete_list( no_score_head   );
   str_link_delete_list( extensions_head );
 
 }
 
-/* $Log$ */
+/* $Log$
+/* Revision 1.2  2002/07/03 03:31:11  phase1geo
+/* Adding RCS Log strings in files that were missing them so that file version
+/* information is contained in every source and header file.  Reordering src
+/* Makefile to be alphabetical.  Adding mult1.v diagnostic to regression suite.
+/* */

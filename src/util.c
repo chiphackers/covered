@@ -10,6 +10,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <assert.h>
+#include <dirent.h>
 
 #ifdef HAVE_MPATROL
 #include <mpdebug.h>
@@ -185,6 +186,62 @@ bool directory_exists( char* dir ) {
 }
 
 /*!
+ \param dir        Name of directory to read files from.
+ \param ext_head   Pointer to extension list.
+ \param file_head  Pointer to head element of filename string list.
+ \param file_tail  Pointer to tail element of filename string list.
+
+ \bug Need to order files according to extension first instead of filename.
+
+ Opens the specified directory for reading and loads (in order) all files that
+ contain the specified extensions (if ext_head is NULL, load only *.v files).
+ Stores all string filenames to the specified string list.
+*/
+void directory_load( char* dir, str_link* ext_head, str_link** file_head, str_link** file_tail ) {
+
+  DIR*           dir_handle;  /* Pointer to opened directory                                 */
+  struct dirent* dirp;        /* Pointer to current directory entry                          */
+  str_link*      curr_ext;    /* Pointer to current extension string                         */
+  char*          ptr;         /* Pointer to current character in filename                    */
+  char           msg[4096];   /* Error message to user                                       */
+  int            tmpchars;    /* Number of characters needed to store full pathname for file */
+  char*          tmpfile;     /* Temporary string holder for full pathname of file           */
+
+  if( (dir_handle = opendir( dir )) == NULL ) {
+
+    snprintf( msg, 4096, "Unable to read directory %s", dir );
+    print_output( msg, FATAL );
+    exit( 1 );
+
+  } else {
+
+    while( (dirp = readdir( dir_handle )) != NULL ) {
+      ptr = dirp->d_name + strlen( dirp->d_name ) - 1;
+      /* Work backwards until a dot is encountered */
+      while( (ptr >= dirp->d_name) && (*ptr != '.') ) {
+        ptr--;
+      }
+      if( *ptr == '.' ) {
+        ptr++;
+        curr_ext = ext_head;
+        while( (curr_ext != NULL) && (strcmp( ptr, curr_ext->str ) != 0) ) {
+          curr_ext = curr_ext->next;
+        }
+        if( curr_ext != NULL ) {
+          /* Found valid extension, add to list */
+          tmpchars = strlen( dirp->d_name ) + strlen( dir ) + 2;
+          tmpfile  = (char*)malloc_safe( tmpchars );
+          snprintf( tmpfile, tmpchars, "%s/%s", dir, dirp->d_name );
+          str_link_add( tmpfile, file_head, file_tail );
+        }
+      }
+    }
+
+  }
+
+}
+
+/*!
  \param file Name of file to check for existence.
  \return Returns TRUE if the specified file exists; otherwise, returns FALSE.
 
@@ -274,8 +331,8 @@ void scope_extract_front( char* scope, char* front, char* rest ) {
   
   if( *ptr == '.' ) {
     ptr++;
-    strncpy( rest, ptr, (strlen( scope ) - (ptr - scope) - 1) );
-    rest[ (strlen( scope ) - (ptr - scope) - 1) ] = '\0';
+    strncpy( rest, ptr, (strlen( scope ) - (ptr - scope)) );
+    rest[ (strlen( scope ) - (ptr - scope)) ] = '\0';
   } else {
     rest[0] = '\0';
   }
@@ -388,4 +445,9 @@ void gen_space( char* spaces, int num_spaces ) {
   
 }
 
-/* $Log$ */
+/* $Log$
+/* Revision 1.5  2002/07/03 03:31:11  phase1geo
+/* Adding RCS Log strings in files that were missing them so that file version
+/* information is contained in every source and header file.  Reordering src
+/* Makefile to be alphabetical.  Adding mult1.v diagnostic to regression suite.
+/* */

@@ -227,7 +227,8 @@ bool score_parse_args( int argc, char** argv ) {
 */
 int command_score( int argc, char** argv ) {
 
-  int retval = 0;    /* Return value for this function */
+  int  retval = 0;   /* Return value for this function */
+  char msg[4096];    /* Message to user                */
 
   /* Initialize error suppression value */
   set_output_suppression( FALSE );
@@ -262,7 +263,8 @@ int command_score( int argc, char** argv ) {
     printf( "\n***  Scoring completed successfully!  ***\n" );
     printf( "\n" );
     printf( "Dynamic memory allocated:   %ld bytes\n", largest_malloc_size );
-    // printf( "Allocated memory remaining: %ld bytes\n", curr_malloc_size );
+    snprintf( msg, 4096, "Allocated memory remaining: %ld bytes\n", curr_malloc_size );
+    print_output( msg, NORMAL );
     printf( "\n" );
 
   }
@@ -272,6 +274,11 @@ int command_score( int argc, char** argv ) {
 }
 
 /* $Log$
+/* Revision 1.6  2002/07/03 21:30:53  phase1geo
+/* Fixed remaining issues with always statements.  Full regression is running
+/* error free at this point.  Regenerated documentation.  Added EOR expression
+/* operation to handle the or expression in event lists.
+/*
 /* Revision 1.5  2002/07/02 22:37:35  phase1geo
 /* Changing on-line help command calling.  Regenerated documentation.
 /* */

@@ -930,7 +930,7 @@ static int yywrap() {
   free_safe(isp);
 
   /* 
-   If I am out of include stack, the main input is done.  If we are still searching
+   If I am out of include stack, the main input is done.  If we are still searching,
    process in the modlist structure.  If no more modules are needed, stop.  Otherwise,
    reset the filelist_curr pointer to the head of the filelist, search for the file containing
    this needed module and parse that module.

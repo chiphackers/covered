@@ -28,6 +28,9 @@ bool is_directory( char* token );
 //! Returns TRUE if the specified directory exists.
 bool directory_exists( char* dir );
 
+//! Loads contents of specified directory to file list if extension is part of list.
+void directory_load( char* dir, str_link* ext_head, str_link** file_head, str_link** file_tail );
+
 //! Returns TRUE if the specified file exists.
 bool file_exists( char* file );
 
@@ -49,7 +52,12 @@ void free_safe( void* ptr );
 //! Creates a string containing space characters.
 void gen_space( char* spaces, int num_spaces );
 
-/* $Log$ */
+/* $Log$
+/* Revision 1.3  2002/07/03 03:31:11  phase1geo
+/* Adding RCS Log strings in files that were missing them so that file version
+/* information is contained in every source and header file.  Reordering src
+/* Makefile to be alphabetical.  Adding mult1.v diagnostic to regression suite.
+/* */
 
 #endif
 

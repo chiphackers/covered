@@ -136,30 +136,31 @@ description
 	;
 
 module
-	: module_start IDENTIFIER list_of_ports_opt ';'
-		{ 
-		  db_add_module( $2, @1.text );
-		}
+	: module_start
 	  module_item_list
 	  K_endmodule
 		{
 		  db_end_module();
 		}
-	| module_start IDENTIFIER list_of_ports_opt ';'
-		{
-		  db_add_module( $2, @1.text );
-		}
+	| module_start
 	  K_endmodule
 		{
 		  db_end_module();
 		}
-	| module_start IGNORE I_endmodule
+	| K_module IGNORE I_endmodule
+        | K_macromodule IGNORE I_endmodule
 	;
 
 module_start
-	: K_module
-	| K_macromodule
-	;
+        : K_module IDENTIFIER { ignore_mode++; } list_of_ports_opt { ignore_mode--; } ';'
+                {
+                  db_add_module( $2, @1.text );
+                }
+        | K_macromodule IDENTIFIER { ignore_mode++; } list_of_ports_opt { ignore_mode--; } ';'
+                {
+                  db_add_module( $2, @1.text );
+                }
+        ;
 
 list_of_ports_opt
 	: '(' list_of_ports ')'
@@ -173,8 +174,8 @@ list_of_ports_opt
 	;
 
 list_of_ports
-	: port_opt
-	| list_of_ports ',' port_opt
+        : list_of_ports ',' port_opt
+	| port_opt
 	;
 
 port_opt

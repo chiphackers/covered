@@ -71,6 +71,8 @@ bool db_write( char* file ) {
   sig_link*    scur;           /* Pointer to current signal link         */
   char         msg[256];       /* Error message to display               */
 
+  printf( "In db_write, module instance name: %s, instance name: %s\n", instance_root->mod->name, instance_root->name );
+
   if( (db_handle = fopen( file, "w" )) != NULL ) {
 
     /* Iterate through instance tree */
@@ -87,7 +89,7 @@ bool db_write( char* file ) {
   }
 
   /* Remove memory allocated for instance_root and mod_head */
-  instance_dealloc( instance_root, instance_root->mod->name );
+  instance_dealloc( instance_root, instance_root->mod->scope );
   mod_link_delete_list( mod_head );
 
   instance_root = NULL;
@@ -298,6 +300,7 @@ void db_add_instance( char* scope, char* modname ) {
 
   if( (found_mod_link = mod_link_find( mod, mod_head )) != NULL ) {
 
+    printf( "In db_add_instance 1, curr_module->name: %s\n", curr_module->name );
     instance_add( &instance_root, curr_module->name, found_mod_link->mod, scope );
 
     module_dealloc( mod );
@@ -719,8 +722,9 @@ void db_statement_set_stop( statement* stmt, statement* post, bool both ) {
 */
 void db_set_vcd_scope( char* scope ) {
 
-  char msg[4096];    /* Error/debug message               */
-  int  scope_len;    /* Character length of current scope */
+  char  msg[4096];    /* Error/debug message                           */
+  int   scope_len;    /* Character length of current scope             */
+  char* tmpscope;     /* Temporary string holder for current VCD scope */
 
   snprintf( msg, 4096, "In db_set_vcd_scope, scope: %s", scope );
   print_output( msg, NORMAL );
@@ -728,11 +732,14 @@ void db_set_vcd_scope( char* scope ) {
   assert( scope != NULL );
 
   if( curr_vcd_scope != NULL ) {
-    snprintf( curr_vcd_scope, strlen( curr_vcd_scope ), "%s.%s", curr_vcd_scope, scope );
+    tmpscope       = curr_vcd_scope;
+    scope_len      = strlen( curr_vcd_scope ) + strlen( scope ) + 2; 
+    curr_vcd_scope = (char*)malloc_safe( scope_len );
+    snprintf( curr_vcd_scope, scope_len, "%s.%s", tmpscope, scope );
+    free_safe( tmpscope );
   } else {
     if( instance_find_scope( instance_root, scope ) != NULL ) {
-      curr_vcd_scope = (char*)malloc_safe( 4096 );
-      strcpy( curr_vcd_scope, scope );
+      curr_vcd_scope = strdup( scope );
     }
   }
 
@@ -813,6 +820,7 @@ void db_assign_symbol( char* name, char* symbol ) {
   } else {
 
     print_output( "VCD dumpfile does not match design file", FATAL );
+    exit( 1 );
 
   }
 
@@ -952,6 +960,14 @@ void db_do_timestep( int time ) {
 }
 
 /* $Log$
+/* Revision 1.31  2002/07/05 16:49:47  phase1geo
+/* Modified a lot of code this go around.  Fixed VCD reader to handle changes in
+/* the reverse order (last changes are stored instead of first for timestamp).
+/* Fixed problem with AEDGE operator to handle vector value changes correctly.
+/* Added casez2.v diagnostic to verify proper handling of casez with '?' characters.
+/* Full regression passes; however, the recent changes seem to have impacted
+/* performance -- need to look into this.
+/*
 /* Revision 1.30  2002/07/05 00:10:18  phase1geo
 /* Adding report support for case statements.  Everything outputs fine; however,
 /* I want to remove CASE, CASEX and CASEZ expressions from being reported since

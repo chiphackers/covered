@@ -275,9 +275,10 @@ bool expression_db_read( char** line, module* curr_mod ) {
     *line = *line + chars_read;
 
     /* Find module instance name */
-    if( (curr_mod == NULL) || (strcmp( curr_mod->name, modname ) != 0) ) {
+    if( (curr_mod == NULL) || (strcmp( curr_mod->scope, modname ) != 0) ) {
 
-      print_output( "Internal error:  expression in database written before its module", FATAL );
+      snprintf( msg, 4096, "Internal error:  expression (%d) in database written before its module", id );
+      print_output( msg, FATAL );
       retval = FALSE;
 
     } else {
@@ -792,6 +793,14 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.31  2002/07/05 16:49:47  phase1geo
+/* Modified a lot of code this go around.  Fixed VCD reader to handle changes in
+/* the reverse order (last changes are stored instead of first for timestamp).
+/* Fixed problem with AEDGE operator to handle vector value changes correctly.
+/* Added casez2.v diagnostic to verify proper handling of casez with '?' characters.
+/* Full regression passes; however, the recent changes seem to have impacted
+/* performance -- need to look into this.
+/*
 /* Revision 1.30  2002/07/05 04:12:46  phase1geo
 /* Correcting case, casex and casez equality calculation to conform to correct
 /* equality check for each case type.  Verified that case statements work correctly

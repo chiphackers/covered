@@ -157,11 +157,13 @@ void instance_dealloc( mod_inst* root, char* scope ) {
   mod_inst* inst;  /* Pointer to instance to remove               */
   mod_inst* curr;  /* Pointer to current child instance to remove */
   
+  printf( "In instance_dealloc, scope: %s\n", scope );
   inst = instance_find_scope( root, scope );
   
   /* Remove all children first */
   curr = inst->child_head;
   while( curr != NULL ) {
+    assert( curr->name != NULL );
     instance_dealloc( curr, curr->name );
     curr = curr->next;
   }

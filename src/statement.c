@@ -262,7 +262,7 @@ bool statement_db_read( char** line, module* curr_mod, int read_mode ) {
 
     *line = *line + chars_read;
 
-    if( (curr_mod == NULL) || (strcmp( curr_mod->name, modname ) != 0) ) {
+    if( (curr_mod == NULL) || (strcmp( curr_mod->scope, modname ) != 0) ) {
 
       print_output( "Internal error:  statement in database written before its module", FATAL );
       retval = FALSE;
@@ -518,6 +518,14 @@ void statement_dealloc( statement* stmt ) {
 
 
 /* $Log$
+/* Revision 1.25  2002/07/05 16:49:47  phase1geo
+/* Modified a lot of code this go around.  Fixed VCD reader to handle changes in
+/* the reverse order (last changes are stored instead of first for timestamp).
+/* Fixed problem with AEDGE operator to handle vector value changes correctly.
+/* Added casez2.v diagnostic to verify proper handling of casez with '?' characters.
+/* Full regression passes; however, the recent changes seem to have impacted
+/* performance -- need to look into this.
+/*
 /* Revision 1.24  2002/07/04 23:10:12  phase1geo
 /* Added proper support for case, casex, and casez statements in score command.
 /* Report command still incorrect for these statement types.

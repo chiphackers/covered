@@ -180,7 +180,7 @@ bool signal_db_read( char** line, module* curr_mod ) {
       }
 
       /* Add signal to signal list */
-      if( (curr_mod == NULL) || (strcmp( curr_mod->name, modname ) != 0) ) {
+      if( (curr_mod == NULL) || (strcmp( curr_mod->scope, modname ) != 0) ) {
         print_output( "Internal error:  signal in database written before its module", FATAL );
         retval = FALSE;
       } else {
@@ -378,6 +378,14 @@ void signal_dealloc( signal* sig ) {
 }
 
 /* $Log$
+/* Revision 1.7  2002/07/05 16:49:47  phase1geo
+/* Modified a lot of code this go around.  Fixed VCD reader to handle changes in
+/* the reverse order (last changes are stored instead of first for timestamp).
+/* Fixed problem with AEDGE operator to handle vector value changes correctly.
+/* Added casez2.v diagnostic to verify proper handling of casez with '?' characters.
+/* Full regression passes; however, the recent changes seem to have impacted
+/* performance -- need to look into this.
+/*
 /* Revision 1.6  2002/07/03 03:31:11  phase1geo
 /* Adding RCS Log strings in files that were missing them so that file version
 /* information is contained in every source and header file.  Reordering src
