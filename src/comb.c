@@ -253,15 +253,15 @@ void combination_underline_tree( expression* exp, char*** lines, int* depth, int
       }
 
       /* Allocate all memory for the stack */
-      printf( "lines allocation: %d\n", (*depth) );
       *lines = (char**)malloc_safe( sizeof( char* ) * (*depth) );
 
       /* Allocate memory for this underline */
-      printf( "lines[%d] allocation: %d\n", ((*depth)-1), *size );
       (*lines)[(*depth)-1] = (char*)malloc_safe( *size + 1 );
 
       /* Create underline or space */
-      if( SUPPL_IS_MEASURABLE( exp->suppl ) == 1 ) {
+      if( ((SUPPL_WAS_TRUE( exp->suppl )  == 0) ||
+           (SUPPL_WAS_FALSE( exp->suppl ) == 0)) &&
+          (SUPPL_IS_MEASURABLE( exp->suppl ) == 1) ) {
         combination_draw_line( (*lines)[(*depth)-1], *size, *exp_id );
         *exp_id = *exp_id + 1;
       }
@@ -269,7 +269,6 @@ void combination_underline_tree( expression* exp, char*** lines, int* depth, int
       /* Combine the left and right line stacks */
       for( i=0; i<(*depth - 1); i++ ) {
 
-        printf( "lines[%d] allocation: %d\n", i, *size );
         (*lines)[i] = (char*)malloc_safe( *size + 1 );
 
         if( (i < l_depth) && (i < r_depth) ) {
