@@ -36,7 +36,7 @@ int   delay_expr_type    = DELAY_EXPR_DEFAULT;  /*!< Value to use when a delay e
 char* ppfilename         = NULL;                /*!< Name of preprocessor filename to use                       */
 bool  instance_specified = FALSE;               /*!< Specifies if -i option was specified                       */
 int   timestep_update    = 0;                   /*!< Specifies timestep increment to display current time       */
-bool  flag_race_check    = FALSE;               /*!< Specifies if race conditions should be treated as an error */
+int   flag_race_check    = WARNING;             /*!< Specifies how race conditions should be handled            */
 
 extern unsigned long largest_malloc_size;
 extern unsigned long curr_malloc_size;
@@ -77,7 +77,10 @@ void score_usage() {
   printf( "      -T min|typ|max               Specifies value to use in delay expressions of the form min:typ:max.\n" );
   printf( "      -ts <number>                 If design is being scored, specifying this option will output\n" );
   printf( "                                    the current timestep (by increments of <number>) to standard output.\n" );
-  printf( "      -R                           Exits after the parsing stage when race conditions are found in design.\n" );
+  printf( "      -r(S|W|E)                    Specifies action to take when race condition checking finds problems in design.\n" );
+  printf( "                                    (-rS = Silent.  Do not report condition was found, just handle it.\n" );
+  printf( "                                     -rW = Warning.  Report race condition information, but just handle it.  Default.\n" );
+  printf( "                                     -rE = Error.  Report race condition information and stop scoring.)\n" );
   printf( "      -h                           Displays this help information.\n" );
   printf( "\n" );
   printf( "      +libext+.<extension>(+.<extension>)+\n" );
@@ -329,9 +332,19 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
         exit( 1 );
       }
 
-    } else if( strncmp( "-R", argv[i], 2 ) == 0 ) {
+    } else if( strncmp( "-r", argv[i], 2 ) == 0 ) {
 
-      flag_race_check = TRUE;
+      switch( argv[i][2] ) {
+        case 'E'  :  flag_race_check = FATAL;    break;
+        case 'W'  :  flag_race_check = WARNING;  break;
+        case 'S'  :
+        case '\0' :  flag_race_check = NORMAL;   break;
+        default   :
+          snprintf( user_msg, USER_MSG_LENGTH, "Unknown race condition value %c (available types are E, W or S)", argv[i][2] );
+          print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          retval = FALSE;
+          break;
+      }
         
     } else {
 
@@ -410,6 +423,10 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.48  2005/01/07 17:59:52  phase1geo
+ Finalized updates for supplemental field changes.  Everything compiles and links
+ correctly at this time; however, a regression run has not confirmed the changes.
+
  Revision 1.47  2005/01/03 23:00:35  phase1geo
  Fixing library extension parser.
 

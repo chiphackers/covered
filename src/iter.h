@@ -26,9 +26,19 @@ void stmt_iter_find_head( stmt_iter* si, bool skip );
 /*! \brief Sets current iterator to next statement in order. */
 void stmt_iter_get_next_in_order( stmt_iter* si );
 
+/*! \brief Unlinks the stmt_link pointed to by curr. */
+void stmt_iter_unlink( stmt_iter* si );
 
 /*
  $Log$
+ Revision 1.5  2002/12/07 17:46:53  phase1geo
+ Fixing bug with handling memory declarations.  Added diagnostic to verify
+ that memory declarations are handled properly.  Fixed bug with infinite
+ looping in statement_connect function and optimized this part of the score
+ command.  Added diagnostic to verify this fix (always9.v).  Fixed bug in
+ report command with ordering of lines and combinational logic verbose output.
+ This is now fixed correctly.
+
  Revision 1.4  2002/11/05 00:20:07  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.

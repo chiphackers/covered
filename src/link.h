@@ -78,6 +78,9 @@ void exp_link_remove( expression* exp, exp_link** head, exp_link** tail, bool re
 /*! \brief Deletes entire list specified by head pointer. */
 void str_link_delete_list( str_link* head );
 
+/*! \brief Unlinks the stmt_link specified by the specified statement */
+void stmt_link_unlink( statement* stmt, stmt_link** head, stmt_link** tail );
+
 /*! \brief Deletes entire list specified by head pointer. */
 void stmt_link_delete_list( stmt_link* head );
 
@@ -96,6 +99,10 @@ void mod_link_delete_list( mod_link* head );
 
 /*
  $Log$
+ Revision 1.13  2004/03/30 15:42:14  phase1geo
+ Renaming signal type to vsignal type to eliminate compilation problems on systems
+ that contain a signal type in the OS.
+
  Revision 1.12  2003/10/28 00:18:06  phase1geo
  Adding initial support for inline attributes to specify FSMs.  Still more
  work to go but full regression still passes at this point.

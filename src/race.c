@@ -28,6 +28,8 @@
 */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
 
 #include "defines.h"
 #include "race.h"
@@ -36,15 +38,30 @@
 #include "vsignal.h"
 
 
-stmt_blk* stmt_blk_head = NULL;
-stmt_blk* stmt_blk_tail = NULL;
-int       races_found   = 0;
+stmt_blk* sb = NULL;
+int       sb_size;
 
-extern bool      flag_race_check;
+/*!
+ Tracks the number of race conditions that were detected during the race-condition checking portion of the
+ scoring command.
+*/
+int races_found = 0;
+
+extern int       flag_race_check;
 extern char      user_msg[USER_MSG_LENGTH];
 extern mod_link* mod_head;
+extern module*   curr_module;
 
 
+/*!
+ \param mod   Pointer to module containing statement list to parse.
+ \param expr  Pointer to root expression to find in statement list.
+
+ \return Returns pointer to head statement of statement block containing the specified expression
+
+ Finds the head statement of the statement block containing the expression specified in the parameter list.
+ Verifies that the return value is never NULL (this would be an internal error if it existed).
+*/
 statement* race_get_head_statement( module* mod, expression* expr ) {
 
   stmt_iter  si;         /* Statement iterator                                     */
@@ -74,12 +91,76 @@ statement* race_get_head_statement( module* mod, expression* expr ) {
 
 }
 
-void race_handle_race_condition( statement* stmt, statement* base ) {
+/*!
+ \param expr    Pointer to expression containing signal that was found to be in a race condition.
+ \param mod     Pointer to module containing detected race condition
+ \param stmt    Pointer to expr's head statement
+ \param base    Pointer to head statement block that was found to be in conflict with stmt
 
-  /* First, output the information, if specified */
-  printf( "Found race condition problem with stmt %d\n", stmt->exp->id );
+ Outputs necessary information to user regarding the race condition that was detected and performs any
+ necessary memory cleanup to remove the statement block involved in the race condition.
+*/
+void race_handle_race_condition( expression* expr, module* mod, statement* stmt, statement* base, int reason ) {
 
-  exit( 1 );
+  int i;  /* Loop iterator */
+
+  /* If the base pointer is NULL, the stmt refers to a statement block that conflicts with an input port */
+  if( base == NULL ) {
+
+    if( flag_race_check != NORMAL ) {
+
+      print_output( "", (flag_race_check + 1), __FILE__, __LINE__ );
+      print_output( "Possible race condition detected - signal assigned both in statement block and via input/inout port", flag_race_check, __FILE__, __LINE__ );
+      snprintf( user_msg, USER_MSG_LENGTH, "  Signal assigned in file: %s, line: %d", mod->filename, expr->line );
+      print_output( user_msg, (flag_race_check + 1), __FILE__, __LINE__ );
+
+      if( flag_race_check == WARNING ) {
+        print_output( "Safely removing statement block from coverage consideration", WARNING_WRAP, __FILE__, __LINE__ );
+        snprintf( user_msg, USER_MSG_LENGTH, "  Statement block starting at file: %s, line: %d", mod->filename, stmt->exp->line );
+        print_output( user_msg, WARNING_WRAP, __FILE__, __LINE__ );
+      }
+              
+    }
+
+  /* If the stmt and base pointers are pointing to different statements, we will output conflict for stmt */
+  } else if( stmt != base ) { 
+
+    if( flag_race_check != NORMAL ) {
+
+      print_output( "", (flag_race_check + 1), __FILE__, __LINE__ );
+      print_output( "Possible race condition detected - signal assigned in two different statement blocks", flag_race_check, __FILE__, __LINE__ );
+      snprintf( user_msg, USER_MSG_LENGTH, "  Signal assigned in file: %s, line: %d", mod->filename, expr->line );
+      print_output( user_msg, flag_race_check, __FILE__, __LINE__ );
+      snprintf( user_msg, USER_MSG_LENGTH, "  Signal also assigned in statement starting at file: %s, line: %d", mod->filename, base->exp->line );
+      print_output( user_msg, flag_race_check, __FILE__, __LINE__ );
+
+      if( flag_race_check == WARNING ) {
+        print_output( "Safely removing statement block from coverage consideration", WARNING_WRAP, __FILE__, __LINE__ );
+        snprintf( user_msg, USER_MSG_LENGTH, "  Statement block starting at file: %s, line: %d", mod->filename, stmt->exp->line );
+        print_output( user_msg, WARNING_WRAP, __FILE__, __LINE__ );
+      }
+
+    }
+
+  /* If stmt and base are pointing to the same statement, just report that we are removing the base statement */
+  } else {
+
+    if( flag_race_check == WARNING ) {
+      print_output( "", WARNING_WRAP, __FILE__, __LINE__ );
+      print_output( "Safely removing statement block from coverage consideration", WARNING, __FILE__, __LINE__ );
+      snprintf( user_msg, USER_MSG_LENGTH, "  Statement block starting at file: %s, line: %d", mod->filename, stmt->exp->line );
+      print_output( user_msg, WARNING, __FILE__, __LINE__ );
+    }
+
+  }
+
+  /* Set remove flag in stmt_blk array to remove this module from memory */
+  i = 0;
+  while( (i < sb_size) && (sb[i].stmt != stmt) ) {
+    i++;
+  }
+  assert( i != sb_size );
+  sb[i].remove = TRUE;
 
   /* Increment races found flag */
   races_found++;
@@ -145,13 +226,12 @@ void race_check_one_block_assignment( module* mod ) {
 
           /* Check to see if current signal is also an input port */ 
           if( (sigl->sig->value->suppl.part.inport == 1) || curr_race ) {
-            race_handle_race_condition( curr_stmt, NULL );
-  	    race_found = TRUE; 
+            race_handle_race_condition( expl->exp, mod, curr_stmt, NULL, 6 );
           }
 
         } else if( (sig_stmt != curr_stmt) && curr_race ) {
 
-          race_handle_race_condition( curr_stmt, sig_stmt );
+          race_handle_race_condition( expl->exp, mod, curr_stmt, sig_stmt, 6 );
 	  race_found = TRUE;
 
         }
@@ -168,22 +248,44 @@ void race_check_one_block_assignment( module* mod ) {
 
   /* Finally, if we found a race condition and sig_stmt is not NULL, we need to handle this statement */
   if( race_found && (sig_stmt != NULL) ) {
-    race_handle_race_condition( sig_stmt, sig_stmt );
+    race_handle_race_condition( NULL, mod, sig_stmt, sig_stmt, 6 );
   } 
 
 }
 
 /*!
+ \return Returns TRUE if no race conditions were found or the user specified that we should continue
+         to score the design.
+*/
+void race_check_race_count() {
+
+  /*
+   If we were able to find race conditions and the user specified to check for race conditions
+   and quit, display the number of race conditions found and return FALSE to cause everything to
+   halt.
+  */
+  if( (races_found > 0) && (flag_race_check == FATAL) ) {
+
+    snprintf( user_msg, USER_MSG_LENGTH, "%d race conditions were detected.  Exiting score command.", races_found );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    exit( 1 );
+
+  }
+
+}
+
+/*!
+ \param Returns TRUE if calling function should continue with scoring.
+
  Performs race checking for the currently loaded module.  This function should be called when
  the endmodule keyword is detected in the current module.
 */
 void race_check_modules() {
 
-  stmt_blk*  sb;        /* Pointer to statement block array            */
-  int        sb_size;   /* Number of elements in statement block array */
   int        sb_index;  /* Index to statement block array              */
   stmt_iter  si;        /* Statement iterator                          */
   mod_link*  modl;      /* Pointer to current module link              */
+  int        i;         /* Loop iterators                              */
 
   modl = mod_head;
 
@@ -211,7 +313,8 @@ void race_check_modules() {
       stmt_iter_reset( &si, modl->mod->stmt_head );
       while( si.curr != NULL ) {
         if( si.curr->stmt->exp->suppl.part.stmt_head == 1 ) {
-          sb[sb_index].stmt = si.curr->stmt;
+          sb[sb_index].stmt   = si.curr->stmt;
+          sb[sb_index].remove = FALSE;
           sb_index++; 
         }
         stmt_iter_next( &si );
@@ -219,47 +322,37 @@ void race_check_modules() {
 
       /* Perform other checks here - TBD */
 
+      /* Perform check #6 */
+      race_check_one_block_assignment( modl->mod );
+
+      /* Cleanup statements to be removed */
+      curr_module = modl->mod;
+      for( i=0; i<sb_size; i++ ) {
+        if( sb[i].remove ) {
+          db_remove_statement( sb[i].stmt );
+        }
+      }
+
       /* Deallocate stmt_blk list */
       free_safe( sb );
 
     }
 
-    /* Perform check #6 */
-    race_check_one_block_assignment( modl->mod );
-
     modl = modl->next;
 
   }
 
-}
-
-/*!
- \return Returns TRUE if no race conditions were found or the user specified that we should continue
-         to score the design.
-*/
-bool race_check_race_count() {
-
-  bool retval = TRUE;  /* Return value for this function */
-
-  /*
-   If we were able to find race conditions and the user specified to check for race conditions
-   and quit, display the number of race conditions found and return FALSE to cause everything to
-   halt.
-  */
-  if( (races_found > 0) && flag_race_check ) {
-
-    snprintf( user_msg, USER_MSG_LENGTH, "%d race conditions were detected.  Exiting score command.", races_found );
-    print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    retval = FALSE;
-
-  }
-
-  return( retval );
+  /* Handle output if any race conditions were found */
+  race_check_race_count();
 
 }
 
 /*
  $Log$
+ Revision 1.11  2005/01/10 13:44:58  phase1geo
+ Fixing case where signal selects are being assigned by different statements that
+ do not overlap.  We do not have race conditions in this case.
+
  Revision 1.10  2005/01/10 02:59:30  phase1geo
  Code added for race condition checking that checks for signals being assigned
  in multiple statements.  Working on handling bit selects -- this is in progress.

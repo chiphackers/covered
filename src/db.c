@@ -931,6 +931,8 @@ void db_remove_statement_from_current_module( statement* stmt ) {
     /* Remove expression from current module expression list and delete expressions */
     exp_link_remove( stmt->exp, &(curr_module->exp_head), &(curr_module->exp_tail), TRUE );
 
+    stmt_link_unlink( stmt, &(curr_module->stmt_head), &(curr_module->stmt_tail) );
+
   }
 
 }
@@ -1323,6 +1325,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.120  2005/01/10 02:59:24  phase1geo
+ Code added for race condition checking that checks for signals being assigned
+ in multiple statements.  Working on handling bit selects -- this is in progress.
+
  Revision 1.119  2005/01/07 17:59:50  phase1geo
  Finalized updates for supplemental field changes.  Everything compiles and links
  correctly at this time; however, a regression run has not confirmed the changes.

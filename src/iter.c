@@ -102,9 +102,31 @@ void stmt_iter_get_next_in_order( stmt_iter* si ) {
 
 }
 
+/*!
+ \param si  Pointer to statement iterator to transform.
+
+ Unlinks the stmt_iter link that is pointed to by curr and fixes the statement link to 
+ retain order.
+*/
+void stmt_iter_unlink( stmt_iter* si ) {
+
+  stmt_link* tmp;  /* Temporary pointer to statement link */
+
+  tmp = (stmt_link*)((long int)si->curr->ptr ^ (long int)si->last);
+
+  if( tmp != NULL ) {
+    tmp->ptr = (stmt_link*)(((long int)tmp->ptr ^ (long int)si->curr) ^ (long int)si->last);
+  }
+
+}
+
 
 /*
  $Log$
+ Revision 1.7  2005/01/07 17:59:51  phase1geo
+ Finalized updates for supplemental field changes.  Everything compiles and links
+ correctly at this time; however, a regression run has not confirmed the changes.
+
  Revision 1.6  2003/10/13 03:56:29  phase1geo
  Fixing some problems with new FSM code.  Not quite there yet.
 
