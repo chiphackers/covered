@@ -39,9 +39,9 @@ void {\bf scope\_\-extract\_\-back} (char $\ast$scope, char $\ast$back, char $\a
 \begin{CompactList}\small\item\em Returns TRUE if specified scope is local (contains no periods).\item\end{CompactList}\item 
 void {\bf convert\_\-file\_\-to\_\-module} (char $\ast$mname, int {\bf len}, char $\ast$fname)
 \item 
-{\bf str\_\-link} $\ast$ {\bf get\_\-next\_\-vfile} ({\bf str\_\-link} $\ast$curr, char $\ast$mod)
+{\bf str\_\-link}$\ast$ {\bf get\_\-next\_\-vfile} ({\bf str\_\-link} $\ast$curr, char $\ast$mod)
 \begin{CompactList}\small\item\em Returns next Verilog file to parse.\item\end{CompactList}\item 
-void $\ast$ {\bf malloc\_\-safe} (size\_\-t {\bf size})
+void$\ast$ {\bf malloc\_\-safe} (size\_\-t {\bf size})
 \begin{CompactList}\small\item\em Performs safe malloc call.\item\end{CompactList}\item 
 void {\bf free\_\-safe} (void $\ast$ptr)
 \begin{CompactList}\small\item\em Performs safe deallocation of heap memory.\item\end{CompactList}\item 
@@ -63,10 +63,16 @@ char {\bf user\_\-msg} [USER\_\-MSG\_\-LENGTH]
 
 
 \subsection{Detailed Description}
+
+
 \begin{Desc}
-\item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\item[{\bf Author: }]\par
+Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
-\item[Date:]11/27/2001\end{Desc}
+\item[{\bf Date: }]\par
+11/27/2001
+
+\end{Desc}
 
 
 \subsection{Function Documentation}
@@ -76,11 +82,16 @@ char {\bf user\_\-msg} [USER\_\-MSG\_\-LENGTH]
 
 
 \begin{Desc}
-\item[Parameters:]
+\item[{\bf Parameters: }]\par
 \begin{description}
-\item[{\em mname}]Name of module extracted. \item[{\em len}]Length of mname string (we cannot exceed this value). \item[{\em fname}]Name of filename to extract module name from.\end{description}
+\item[
+{\em mname}]Name of module extracted. \item[
+{\em len}]Length of mname string (we cannot exceed this value). \item[
+{\em fname}]Name of filename to extract module name from.
+
+\end{description}
 \end{Desc}
-Takes in a filename (with possible directory information and/or possible extension) and transforms it into a filename with the directory and extension information stripped off. Much like the the functionality of the unix command \char`\"{}basename\char`\"{}. Returns the stripped filename in the mname parameter. \index{util.c@{util.c}!directory_exists@{directory\_\-exists}}
+Takes in a filename (with possible directory information and/or possible extension) and transforms it into a filename with the directory and extension information stripped off. Much like the the functionality of the unix command \char`\"{}basename\char`\"{}. Returns the  stripped filename in the mname parameter. \index{util.c@{util.c}!directory_exists@{directory\_\-exists}}
 \index{directory_exists@{directory\_\-exists}!util.c@{util.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} directory\_\-exists (char $\ast$ {\em dir})}\label{util_8c_a10}
 
@@ -88,12 +99,16 @@ Takes in a filename (with possible directory information and/or possible extensi
 Returns TRUE if the specified directory exists.
 
 \begin{Desc}
-\item[Parameters:]
+\item[{\bf Parameters: }]\par
 \begin{description}
-\item[{\em dir}]Name of directory to check for existence. \end{description}
+\item[
+{\em dir}]Name of directory to check for existence. \end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns:]Returns TRUE if the specified directory exists; otherwise, returns FALSE.\end{Desc}
+\item[{\bf Returns: }]\par
+Returns TRUE if the specified directory exists; otherwise, returns FALSE.
+
+\end{Desc}
 Checks to see if the specified directory actually exists in the file structure. If the directory is found to exist, returns TRUE; otherwise, returns FALSE. \index{util.c@{util.c}!directory_load@{directory\_\-load}}
 \index{directory_load@{directory\_\-load}!util.c@{util.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void directory\_\-load (char $\ast$ {\em dir}, {\bf str\_\-link} $\ast$ {\em ext\_\-head}, {\bf str\_\-link} $\ast$$\ast$ {\em file\_\-head}, {\bf str\_\-link} $\ast$$\ast$ {\em file\_\-tail})}\label{util_8c_a11}
@@ -102,14 +117,23 @@ Checks to see if the specified directory actually exists in the file structure. 
 Loads contents of specified directory to file list if extension is part of list.
 
 \begin{Desc}
-\item[Parameters:]
+\item[{\bf Parameters: }]\par
 \begin{description}
-\item[{\em dir}]Name of directory to read files from. \item[{\em ext\_\-head}]Pointer to extension list. \item[{\em file\_\-head}]Pointer to head element of filename string list. \item[{\em file\_\-tail}]Pointer to tail element of filename string list.\end{description}
+\item[
+{\em dir}]Name of directory to read files from. \item[
+{\em ext\_\-head}]Pointer to extension list. \item[
+{\em file\_\-head}]Pointer to head element of filename string list. \item[
+{\em file\_\-tail}]Pointer to tail element of filename string list.
+
+\end{description}
 \end{Desc}
 
 
 \begin{Desc}
-\item[{\bf Bug}]Need to order files according to extension first instead of filename.\end{Desc}
+\item[{\bf {\bf Bug: }}]\par
+Need to order files according to extension first instead of filename.\end{Desc}
+
+
 Opens the specified directory for reading and loads (in order) all files that contain the specified extensions (if ext\_\-head is NULL, load only $\ast$.v files). Stores all string filenames to the specified string list. \index{util.c@{util.c}!file_exists@{file\_\-exists}}
 \index{file_exists@{file\_\-exists}!util.c@{util.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} file\_\-exists (char $\ast$ {\em file})}\label{util_8c_a12}
@@ -118,12 +142,16 @@ Opens the specified directory for reading and loads (in order) all files that co
 Returns TRUE if the specified file exists.
 
 \begin{Desc}
-\item[Parameters:]
+\item[{\bf Parameters: }]\par
 \begin{description}
-\item[{\em file}]Name of file to check for existence. \end{description}
+\item[
+{\em file}]Name of file to check for existence. \end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns:]Returns TRUE if the specified file exists; otherwise, returns FALSE.\end{Desc}
+\item[{\bf Returns: }]\par
+Returns TRUE if the specified file exists; otherwise, returns FALSE.
+
+\end{Desc}
 Checks to see if the specified file actually exists in the file structure. If the file is found to exist, returns TRUE; otherwise, returns FALSE. \index{util.c@{util.c}!free_safe@{free\_\-safe}}
 \index{free_safe@{free\_\-safe}!util.c@{util.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void free\_\-safe (void $\ast$ {\em ptr})}\label{util_8c_a20}
@@ -132,9 +160,12 @@ Checks to see if the specified file actually exists in the file structure. If th
 Performs safe deallocation of heap memory.
 
 \begin{Desc}
-\item[Parameters:]
+\item[{\bf Parameters: }]\par
 \begin{description}
-\item[{\em ptr}]Pointer to object to deallocate.\end{description}
+\item[
+{\em ptr}]Pointer to object to deallocate.
+
+\end{description}
 \end{Desc}
 Safely performs a free function of heap memory. Also keeps track of current memory usage for output information at end of program life. \index{util.c@{util.c}!gen_space@{gen\_\-space}}
 \index{gen_space@{gen\_\-space}!util.c@{util.c}}
@@ -144,24 +175,35 @@ Safely performs a free function of heap memory. Also keeps track of current memo
 Creates a string containing space characters.
 
 \begin{Desc}
-\item[Parameters:]
+\item[{\bf Parameters: }]\par
 \begin{description}
-\item[{\em spaces}]Pointer to string to places spaces into. \item[{\em num\_\-spaces}]Number of spaces to place in string.\end{description}
+\item[
+{\em spaces}]Pointer to string to places spaces into. \item[
+{\em num\_\-spaces}]Number of spaces to place in string.
+
+\end{description}
 \end{Desc}
 Creates a string that contains num\_\-spaces number of space characters, adding a NULL character at the end of the string to allow for correct usage by the strlen and other string functions. \index{util.c@{util.c}!get_next_vfile@{get\_\-next\_\-vfile}}
 \index{get_next_vfile@{get\_\-next\_\-vfile}!util.c@{util.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ get\_\-next\_\-vfile ({\bf str\_\-link} $\ast$ {\em curr}, char $\ast$ {\em mod})}\label{util_8c_a18}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link} $\ast$ get\_\-next\_\-vfile ({\bf str\_\-link} $\ast$ {\em curr}, char $\ast$ {\em mod})}\label{util_8c_a18}
 
 
 Returns next Verilog file to parse.
 
 \begin{Desc}
-\item[Parameters:]
+\item[{\bf Parameters: }]\par
 \begin{description}
-\item[{\em curr}]Pointer to current file in list. \item[{\em mod}]Name of module searching for.\end{description}
+\item[
+{\em curr}]Pointer to current file in list. \item[
+{\em mod}]Name of module searching for.
+
+\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns:]Returns pointer to next Verilog file to parse or NULL if no files were found.\end{Desc}
+\item[{\bf Returns: }]\par
+Returns pointer to next Verilog file to parse or NULL if no files were found.
+
+\end{Desc}
 Iterates through specified file list, searching for next Verilog file to parse. If a file is a library file (suppl field is 'D'), the name of the module to search for is compared with the name of the file. \index{util.c@{util.c}!is_directory@{is\_\-directory}}
 \index{is_directory@{is\_\-directory}!util.c@{util.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} is\_\-directory (char $\ast$ {\em token})}\label{util_8c_a9}
@@ -170,12 +212,16 @@ Iterates through specified file list, searching for next Verilog file to parse. 
 Returns TRUE if the specified string is a legal directory string.
 
 \begin{Desc}
-\item[Parameters:]
+\item[{\bf Parameters: }]\par
 \begin{description}
-\item[{\em token}]String to check for valid pathname-ness \end{description}
+\item[
+{\em token}]String to check for valid pathname-ness \end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns:]Returns TRUE if the specified string is a legal UNIX directory; otherwise, returns FALSE.\end{Desc}
+\item[{\bf Returns: }]\par
+Returns TRUE if the specified string is a legal UNIX directory; otherwise, returns FALSE.
+
+\end{Desc}
 Returns TRUE if the specified string is either a legal UNIX relative pathname or static pathname. If the specified string does not correlate to a legal UNIX pathname, a value of FALSE is returned. \index{util.c@{util.c}!is_variable@{is\_\-variable}}
 \index{is_variable@{is\_\-variable}!util.c@{util.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} is\_\-variable (char $\ast$ {\em token})}\label{util_8c_a8}
@@ -184,26 +230,36 @@ Returns TRUE if the specified string is either a legal UNIX relative pathname or
 Returns TRUE if the specified string is a legal variable name.
 
 \begin{Desc}
-\item[Parameters:]
+\item[{\bf Parameters: }]\par
 \begin{description}
-\item[{\em token}]String to check for valid variable name. \end{description}
+\item[
+{\em token}]String to check for valid variable name. \end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns:]Returns TRUE if the specified string is a legal variable name; otherwise, returns FALSE.\end{Desc}
+\item[{\bf Returns: }]\par
+Returns TRUE if the specified string is a legal variable name; otherwise, returns FALSE.
+
+\end{Desc}
 If the specified string follows all of the rules for a legal program variable (doesn't start with a number, contains only a-z\-A-Z0-9\_\- characters), returns a value of TRUE; otherwise, returns a value of FALSE. \index{util.c@{util.c}!malloc_safe@{malloc\_\-safe}}
 \index{malloc_safe@{malloc\_\-safe}!util.c@{util.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ malloc\_\-safe (size\_\-t {\em size})}\label{util_8c_a19}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void $\ast$ malloc\_\-safe (size\_\-t {\em size})}\label{util_8c_a19}
 
 
 Performs safe malloc call.
 
 \begin{Desc}
-\item[Parameters:]
+\item[{\bf Parameters: }]\par
 \begin{description}
-\item[{\em size}]Number of bytes to allocate.\end{description}
+\item[
+{\em size}]Number of bytes to allocate.
+
+\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns:]Pointer to allocated memory.\end{Desc}
+\item[{\bf Returns: }]\par
+Pointer to allocated memory.
+
+\end{Desc}
 Allocated memory like a malloc() call but performs some pre-allocation and post-allocation checks to be sure that the malloc call works properly. \index{util.c@{util.c}!print_output@{print\_\-output}}
 \index{print_output@{print\_\-output}!util.c@{util.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void print\_\-output (char $\ast$ {\em msg}, int {\em type})}\label{util_8c_a7}
@@ -212,9 +268,13 @@ Allocated memory like a malloc() call but performs some pre-allocation and post-
 Displays error message to standard output.
 
 \begin{Desc}
-\item[Parameters:]
+\item[{\bf Parameters: }]\par
 \begin{description}
-\item[{\em msg}]Message to display. \item[{\em type}]Type of message to output\end{description}
+\item[
+{\em msg}]Message to display. \item[
+{\em type}]Type of message to output
+
+\end{description}
 \end{Desc}
 Displays the specified message to standard output based on the type of message being output. \index{util.c@{util.c}!readline@{readline}}
 \index{readline@{readline}!util.c@{util.c}}
@@ -224,12 +284,19 @@ Displays the specified message to standard output based on the type of message b
 Reads line from file and returns it in string form.
 
 \begin{Desc}
-\item[Parameters:]
+\item[{\bf Parameters: }]\par
 \begin{description}
-\item[{\em file}]File to read next line from. \item[{\em line}]Pointer to string which will contain read line minus newline character.\end{description}
+\item[
+{\em file}]File to read next line from. \item[
+{\em line}]Pointer to string which will contain read line minus newline character.
+
+\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns:]Returns FALSE if feof is encountered; otherwise, returns TRUE.\end{Desc}
+\item[{\bf Returns: }]\par
+Returns FALSE if feof is encountered; otherwise, returns TRUE.
+
+\end{Desc}
 Reads in a single line of information from the specified file and returns a string containing the read line to the calling function. \index{util.c@{util.c}!scope_extract_back@{scope\_\-extract\_\-back}}
 \index{scope_extract_back@{scope\_\-extract\_\-back}!util.c@{util.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void scope\_\-extract\_\-back (char $\ast$ {\em scope}, char $\ast$ {\em back}, char $\ast$ {\em rest})}\label{util_8c_a15}
@@ -238,9 +305,14 @@ Reads in a single line of information from the specified file and returns a stri
 Extracts lowest level of hierarchy from specified scope.
 
 \begin{Desc}
-\item[Parameters:]
+\item[{\bf Parameters: }]\par
 \begin{description}
-\item[{\em scope}]Full scope to extract from. \item[{\em back}]Lowest level of hierarchy extracted. \item[{\em rest}]Hierarchy left after extraction.\end{description}
+\item[
+{\em scope}]Full scope to extract from. \item[
+{\em back}]Lowest level of hierarchy extracted. \item[
+{\em rest}]Hierarchy left after extraction.
+
+\end{description}
 \end{Desc}
 Extracts the lowest level of hierarchy from the specified scope, returning that instance name to the value of back and the the rest of the hierarchy in the value of rest. \index{util.c@{util.c}!scope_extract_front@{scope\_\-extract\_\-front}}
 \index{scope_extract_front@{scope\_\-extract\_\-front}!util.c@{util.c}}
@@ -250,9 +322,14 @@ Extracts the lowest level of hierarchy from the specified scope, returning that 
 Extracts highest level of hierarchy from specified scope.
 
 \begin{Desc}
-\item[Parameters:]
+\item[{\bf Parameters: }]\par
 \begin{description}
-\item[{\em scope}]Full scope to extract from. \item[{\em front}]Highest level of hierarchy extracted. \item[{\em rest}]Hierarchy left after extraction.\end{description}
+\item[
+{\em scope}]Full scope to extract from. \item[
+{\em front}]Highest level of hierarchy extracted. \item[
+{\em rest}]Hierarchy left after extraction.
+
+\end{description}
 \end{Desc}
 Extracts the highest level of hierarchy from the specified scope, returning that instance name to the value of front and the the rest of the hierarchy in the value of rest. \index{util.c@{util.c}!scope_local@{scope\_\-local}}
 \index{scope_local@{scope\_\-local}!util.c@{util.c}}
@@ -269,9 +346,12 @@ Returns TRUE if specified scope is local (contains no periods).
 Sets global debug flag to specified value.
 
 \begin{Desc}
-\item[Parameters:]
+\item[{\bf Parameters: }]\par
 \begin{description}
-\item[{\em value}]Boolean value of debug mode.\end{description}
+\item[
+{\em value}]Boolean value of debug mode.
+
+\end{description}
 \end{Desc}
 Sets the global debug mode to the specified value. \index{util.c@{util.c}!set_output_suppression@{set\_\-output\_\-suppression}}
 \index{set_output_suppression@{set\_\-output\_\-suppression}!util.c@{util.c}}
@@ -281,9 +361,12 @@ Sets the global debug mode to the specified value. \index{util.c@{util.c}!set_ou
 Sets error suppression to specified value.
 
 \begin{Desc}
-\item[Parameters:]
+\item[{\bf Parameters: }]\par
 \begin{description}
-\item[{\em value}]Boolean value of suppression.\end{description}
+\item[
+{\em value}]Boolean value of suppression.
+
+\end{description}
 \end{Desc}
 Sets the global variable output\_\-suppressed to the specified value. 
 

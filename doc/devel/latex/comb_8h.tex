@@ -17,10 +17,16 @@ void {\bf combination\_\-report} (FILE $\ast$ofile, {\bf bool} verbose)
 \subsection{Detailed Description}
 Contains functions for determining/reporting combinational logic coverage.
 
+
+
 \begin{Desc}
-\item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\item[{\bf Author: }]\par
+Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
-\item[Date:]3/31/2002 \end{Desc}
+\item[{\bf Date: }]\par
+3/31/2002
+
+\end{Desc}
 
 
 \subsection{Function Documentation}
@@ -32,9 +38,14 @@ Contains functions for determining/reporting combinational logic coverage.
 Calculates combination logic statistics for summary output.
 
 \begin{Desc}
-\item[Parameters:]
+\item[{\bf Parameters: }]\par
 \begin{description}
-\item[{\em expl}]Pointer to current expression link to evaluate. \item[{\em total}]Pointer to total number of logical combinations. \item[{\em hit}]Pointer to number of logical combinations hit during simulation.\end{description}
+\item[
+{\em expl}]Pointer to current expression link to evaluate. \item[
+{\em total}]Pointer to total number of logical combinations. \item[
+{\em hit}]Pointer to number of logical combinations hit during simulation.
+
+\end{description}
 \end{Desc}
 Iterates through specified expression list and finds all root expressions. For each root expression, the combination\_\-get\_\-tree\_\-stats function is called to generate the coverage numbers for the specified expression tree. Called by report function. \index{comb.h@{comb.h}!combination_report@{combination\_\-report}}
 \index{combination_report@{combination\_\-report}!comb.h@{comb.h}}
@@ -44,8 +55,12 @@ Iterates through specified expression list and finds all root expressions. For e
 Generates report output for combinational logic coverage.
 
 \begin{Desc}
-\item[Parameters:]
+\item[{\bf Parameters: }]\par
 \begin{description}
-\item[{\em ofile}]Pointer to file to output results to. \item[{\em verbose}]Specifies whether or not to provide verbose information\end{description}
+\item[
+{\em ofile}]Pointer to file to output results to. \item[
+{\em verbose}]Specifies whether or not to provide verbose information
+
+\end{description}
 \end{Desc}
-After the design is read into the module hierarchy, parses the hierarchy by module, reporting the combinational logic coverage for each module encountered. The parent module will specify its own combinational logic coverage along with a total combinational logic coverage including its children. 
+After the design is read into the module hierarchy, parses the hierarchy by module, reporting the combinational logic coverage for each module encountered. The parent  module will specify its own combinational logic coverage along with a total combinational logic coverage including its children. 

@@ -8,34 +8,48 @@
 \subsection*{Functions}
 \begin{CompactItemize}
 \item 
-char $\ast$ {\bf codegen\_\-gen\_\-expr} ({\bf expression} $\ast$expr, int line, int parent\_\-op)
+char$\ast$ {\bf codegen\_\-gen\_\-expr} ({\bf expression} $\ast$expr, int line, int parent\_\-op)
 \begin{CompactList}\small\item\em Creates Verilog code string from specified expression tree.\item\end{CompactList}\end{CompactItemize}
 
 
 \subsection{Detailed Description}
+
+
 \begin{Desc}
-\item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\item[{\bf Author: }]\par
+Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
-\item[Date:]4/11/2002\end{Desc}
-\begin{Desc}
-\item[]This file and its functions are used solely by the Covered report command. When the user specifies that Covered should report detailed or verbose reports, it is necessary to output the Verilog code associated with line and combinational logic coverage. However, the actual Verilog code read from the file is not stored internally anywhere inside of the Covered. By doing this, Covered can do two things: (1) save on memory that otherwise need to be stored or save on processing (have to reparse the code for reports) and (2) allows Covered to \char`\"{}clean up the source code making it easier to read (hopefully) and easier to underline missed combinational logic cases.\end{Desc}
-\begin{Desc}
-\item[]What the code generator does then is to recreate the source Verilog from the internally stored expression tree. This allows associated Verilog code with uncovered logic to quickly and efficiently be display to the user. The code generator is used in combination with the underlining facility (located in the {\bf comb.c} file).\end{Desc}
+\item[{\bf Date: }]\par
+4/11/2002
+
+ This file and its functions are used solely by the Covered report command. When the user specifies that Covered should report detailed or verbose reports, it is necessary to output the Verilog code associated with line and combinational logic coverage. However, the actual Verilog code read from the file is not stored internally anywhere inside of the Covered. By doing this, Covered can do two things: (1) save on memory that otherwise need to be stored or save on processing (have to reparse the code for reports) and (2) allows Covered to \char`\"{}clean up the source code making it easier to read (hopefully) and easier to underline missed combinational logic cases.
+
+ What the code generator does then is to recreate the source Verilog from the internally stored expression tree. This allows associated Verilog code with uncovered logic to quickly and efficiently be display to the user. The code generator is used in combination with the underlining facility (located in the {\bf comb.c} file).
+
+\end{Desc}
 
 
 \subsection{Function Documentation}
 \index{codegen.c@{codegen.c}!codegen_gen_expr@{codegen\_\-gen\_\-expr}}
 \index{codegen_gen_expr@{codegen\_\-gen\_\-expr}!codegen.c@{codegen.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ codegen\_\-gen\_\-expr ({\bf expression} $\ast$ {\em expr}, int {\em line}, int {\em parent\_\-op})}\label{codegen_8c_a0}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char $\ast$ codegen\_\-gen\_\-expr ({\bf expression} $\ast$ {\em expr}, int {\em line}, int {\em parent\_\-op})}\label{codegen_8c_a0}
 
 
 Creates Verilog code string from specified expression tree.
 
 \begin{Desc}
-\item[Parameters:]
+\item[{\bf Parameters: }]\par
 \begin{description}
-\item[{\em expr}]Pointer to root of expression tree to generate. \item[{\em line}]Specifies last line number to generate. \item[{\em parent\_\-op}]Operation of parent. If our op is the same, no surrounding parenthesis is needed.\end{description}
+\item[
+{\em expr}]Pointer to root of expression tree to generate. \item[
+{\em line}]Specifies last line number to generate. \item[
+{\em parent\_\-op}]Operation of parent. If our op is the same, no surrounding parenthesis is needed.
+
+\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns:]Returns a pointer to the generated Verilog string.\end{Desc}
+\item[{\bf Returns: }]\par
+Returns a pointer to the generated Verilog string.
+
+\end{Desc}
 Generates Verilog code from specified expression tree. This Verilog snippet is used by the verbose coverage reporting functions for showing Verilog examples that were missed during simulation. The line parameter specifies the last line number to generate for this expression tree. If the value of line is -1, the entire expression tree is generated. 

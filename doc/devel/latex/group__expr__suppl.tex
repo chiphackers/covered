@@ -41,7 +41,9 @@
 \item 
 \#define {\bf SUPPL\_\-LSB\_\-STMT\_\-CONNECTED}\ 23
 \item 
-\#define {\bf SUPPL\_\-MERGE\_\-MASK}\ 0xff7fffff
+\#define {\bf SUPPL\_\-LSB\_\-STMT\_\-ADDED}\ 24
+\item 
+\#define {\bf SUPPL\_\-MERGE\_\-MASK}\ 0xfe7fffff
 \item 
 \#define {\bf SUPPL\_\-WAS\_\-SWAPPED}(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-SWAPPED) \& 0x1)
 \item 
@@ -76,42 +78,42 @@
 \subsection{Define Documentation}
 \index{expr_suppl@{expr\_\-suppl}!SUPPL_IS_FALSE@{SUPPL\_\-IS\_\-FALSE}}
 \index{SUPPL_IS_FALSE@{SUPPL\_\-IS\_\-FALSE}!expr_suppl@{expr\_\-suppl}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-IS\_\-FALSE(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-EVAL\_\-F) \& 0x1)}\label{group__expr__suppl_a27}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-IS\_\-FALSE(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-EVAL\_\-F) \& 0x1)}\label{group__expr__suppl_a28}
 
 
 Returns a value of 1 if the specified supplemental belongs to an expression who was just evaluated to FALSE. \index{expr_suppl@{expr\_\-suppl}!SUPPL_IS_LEFT_CHANGED@{SUPPL\_\-IS\_\-LEFT\_\-CHANGED}}
 \index{SUPPL_IS_LEFT_CHANGED@{SUPPL\_\-IS\_\-LEFT\_\-CHANGED}!expr_suppl@{expr\_\-suppl}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-IS\_\-LEFT\_\-CHANGED(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-LEFT\_\-CHANGED) \& 0x1)}\label{group__expr__suppl_a30}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-IS\_\-LEFT\_\-CHANGED(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-LEFT\_\-CHANGED) \& 0x1)}\label{group__expr__suppl_a31}
 
 
 Returns a value of 1 if the left child expression was changed during this timestamp. \index{expr_suppl@{expr\_\-suppl}!SUPPL_IS_RIGHT_CHANGED@{SUPPL\_\-IS\_\-RIGHT\_\-CHANGED}}
 \index{SUPPL_IS_RIGHT_CHANGED@{SUPPL\_\-IS\_\-RIGHT\_\-CHANGED}!expr_suppl@{expr\_\-suppl}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-IS\_\-RIGHT\_\-CHANGED(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-RIGHT\_\-CHANGED) \& 0x1)}\label{group__expr__suppl_a31}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-IS\_\-RIGHT\_\-CHANGED(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-RIGHT\_\-CHANGED) \& 0x1)}\label{group__expr__suppl_a32}
 
 
 Returns a value of 1 if the right child expression was changed during this timestamp. \index{expr_suppl@{expr\_\-suppl}!SUPPL_IS_ROOT@{SUPPL\_\-IS\_\-ROOT}}
 \index{SUPPL_IS_ROOT@{SUPPL\_\-IS\_\-ROOT}!expr_suppl@{expr\_\-suppl}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-IS\_\-ROOT(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-ROOT) \& 0x1)}\label{group__expr__suppl_a21}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-IS\_\-ROOT(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-ROOT) \& 0x1)}\label{group__expr__suppl_a22}
 
 
 Returns a value of 1 if the specified supplemental value has the ROOT bit set indicating that the current expression is the root expression of its expression tree. \index{expr_suppl@{expr\_\-suppl}!SUPPL_IS_STMT_CONTINUOUS@{SUPPL\_\-IS\_\-STMT\_\-CONTINUOUS}}
 \index{SUPPL_IS_STMT_CONTINUOUS@{SUPPL\_\-IS\_\-STMT\_\-CONTINUOUS}!expr_suppl@{expr\_\-suppl}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-IS\_\-STMT\_\-CONTINUOUS(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-STMT\_\-CONTINUOUS) \& 0x1)}\label{group__expr__suppl_a25}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-IS\_\-STMT\_\-CONTINUOUS(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-STMT\_\-CONTINUOUS) \& 0x1)}\label{group__expr__suppl_a26}
 
 
 Returns a value of 1 if the specified supplemental belongs to an expression whose associated statement is a continous assignment. \index{expr_suppl@{expr\_\-suppl}!SUPPL_IS_STMT_HEAD@{SUPPL\_\-IS\_\-STMT\_\-HEAD}}
 \index{SUPPL_IS_STMT_HEAD@{SUPPL\_\-IS\_\-STMT\_\-HEAD}!expr_suppl@{expr\_\-suppl}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-IS\_\-STMT\_\-HEAD(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-STMT\_\-HEAD) \& 0x1)}\label{group__expr__suppl_a23}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-IS\_\-STMT\_\-HEAD(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-STMT\_\-HEAD) \& 0x1)}\label{group__expr__suppl_a24}
 
 
 Returns a value of 1 if the specified supplemental belongs to an expression whose associated statement is a head statement. \index{expr_suppl@{expr\_\-suppl}!SUPPL_IS_STMT_STOP@{SUPPL\_\-IS\_\-STMT\_\-STOP}}
 \index{SUPPL_IS_STMT_STOP@{SUPPL\_\-IS\_\-STMT\_\-STOP}!expr_suppl@{expr\_\-suppl}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-IS\_\-STMT\_\-STOP(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-STMT\_\-STOP) \& 0x1)}\label{group__expr__suppl_a24}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-IS\_\-STMT\_\-STOP(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-STMT\_\-STOP) \& 0x1)}\label{group__expr__suppl_a25}
 
 
 Returns a value of 1 if the specified supplemental belongs to an expression whose associated statement is a stop (for writing purposes). \index{expr_suppl@{expr\_\-suppl}!SUPPL_IS_TRUE@{SUPPL\_\-IS\_\-TRUE}}
 \index{SUPPL_IS_TRUE@{SUPPL\_\-IS\_\-TRUE}!expr_suppl@{expr\_\-suppl}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-IS\_\-TRUE(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-EVAL\_\-T) \& 0x1)}\label{group__expr__suppl_a26}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-IS\_\-TRUE(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-EVAL\_\-T) \& 0x1)}\label{group__expr__suppl_a27}
 
 
 Returns a value of 1 if the specified supplemental belongs to an expression who was just evaluated to TRUE. \index{expr_suppl@{expr\_\-suppl}!SUPPL_LSB_COMB_CNTD@{SUPPL\_\-LSB\_\-COMB\_\-CNTD}}
@@ -179,7 +181,12 @@ Least-significant bit position of expression supplemental field indicating that 
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-LSB\_\-ROOT\ 7}\label{group__expr__suppl_a2}
 
 
-Least-significant bit position of expression supplemental field indicating that this expression is a root expression. Traversing to the parent pointer will take you to a statement type. \index{expr_suppl@{expr\_\-suppl}!SUPPL_LSB_STMT_CONNECTED@{SUPPL\_\-LSB\_\-STMT\_\-CONNECTED}}
+Least-significant bit position of expression supplemental field indicating that this expression is a root expression. Traversing to the parent pointer will take you to a statement type. \index{expr_suppl@{expr\_\-suppl}!SUPPL_LSB_STMT_ADDED@{SUPPL\_\-LSB\_\-STMT\_\-ADDED}}
+\index{SUPPL_LSB_STMT_ADDED@{SUPPL\_\-LSB\_\-STMT\_\-ADDED}!expr_suppl@{expr\_\-suppl}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-LSB\_\-STMT\_\-ADDED\ 24}\label{group__expr__suppl_a19}
+
+
+Temporary bit value used by the score command but not displayed to the CDD file. When this bit is set to a one, it indicates to the db\_\-add\_\-statement function that this statement and all children statements have already been added to the module statement list and should not be added again. \index{expr_suppl@{expr\_\-suppl}!SUPPL_LSB_STMT_CONNECTED@{SUPPL\_\-LSB\_\-STMT\_\-CONNECTED}}
 \index{SUPPL_LSB_STMT_CONNECTED@{SUPPL\_\-LSB\_\-STMT\_\-CONNECTED}!expr_suppl@{expr\_\-suppl}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-LSB\_\-STMT\_\-CONNECTED\ 23}\label{group__expr__suppl_a18}
 
@@ -211,39 +218,49 @@ Least-significant bit position of expression supplemental field indicating that 
 
 Least-significant bit position of expression supplemental field indicating that this expression has evaluated to a value of TRUE during the lifetime of the simulation. \index{expr_suppl@{expr\_\-suppl}!SUPPL_MERGE_MASK@{SUPPL\_\-MERGE\_\-MASK}}
 \index{SUPPL_MERGE_MASK@{SUPPL\_\-MERGE\_\-MASK}!expr_suppl@{expr\_\-suppl}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-MERGE\_\-MASK\ 0xff7fffff}\label{group__expr__suppl_a19}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-MERGE\_\-MASK\ 0xfe7fffff}\label{group__expr__suppl_a20}
 
 
-Used for merging two supplemental fields from two expressions. Both expression supplemental fields are ANDed with this mask and ORed together to perform the merge. Fields that are merged are:\begin{itemize}
-\item OPERATION\item SWAPPED\item ROOT\item EXECUTED\item TRUE\item FALSE\item STMT\_\-STOP\item STMT\_\-HEAD\item STMT\_\-CONTINUOUS\item EVAL 00, 01, 10, 11 \end{itemize}
+Used for merging two supplemental fields from two expressions. Both expression supplemental fields are ANDed with this mask and ORed together to perform the merge. Fields that are merged are:\begin{CompactItemize}
+\item 
+OPERATION\item 
+SWAPPED\item 
+ROOT\item 
+EXECUTED\item 
+TRUE\item 
+FALSE\item 
+STMT\_\-STOP\item 
+STMT\_\-HEAD\item 
+STMT\_\-CONTINUOUS\item 
+EVAL 00, 01, 10, 11 \end{CompactItemize}
 \index{expr_suppl@{expr\_\-suppl}!SUPPL_OP@{SUPPL\_\-OP}}
 \index{SUPPL_OP@{SUPPL\_\-OP}!expr_suppl@{expr\_\-suppl}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-OP(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-OP) \& 0x3f)}\label{group__expr__suppl_a33}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-OP(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-OP) \& 0x3f)}\label{group__expr__suppl_a34}
 
 
 Returns the specified expression's operation. \index{expr_suppl@{expr\_\-suppl}!SUPPL_WAS_COMB_COUNTED@{SUPPL\_\-WAS\_\-COMB\_\-COUNTED}}
 \index{SUPPL_WAS_COMB_COUNTED@{SUPPL\_\-WAS\_\-COMB\_\-COUNTED}!expr_suppl@{expr\_\-suppl}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-WAS\_\-COMB\_\-COUNTED(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-COMB\_\-CNTD) \& 0x1)}\label{group__expr__suppl_a32}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-WAS\_\-COMB\_\-COUNTED(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-COMB\_\-CNTD) \& 0x1)}\label{group__expr__suppl_a33}
 
 
 Returns a value of 1 if the specified expression has already been counted for combinational coverage. \index{expr_suppl@{expr\_\-suppl}!SUPPL_WAS_EXECUTED@{SUPPL\_\-WAS\_\-EXECUTED}}
 \index{SUPPL_WAS_EXECUTED@{SUPPL\_\-WAS\_\-EXECUTED}!expr_suppl@{expr\_\-suppl}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-WAS\_\-EXECUTED(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-EXECUTED) \& 0x1)}\label{group__expr__suppl_a22}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-WAS\_\-EXECUTED(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-EXECUTED) \& 0x1)}\label{group__expr__suppl_a23}
 
 
 Returns a value of 1 if the specified supplemental value has the executed bit set; otherwise, returns a value of 0 to indicate whether the corresponding expression was executed during simulation or not. \index{expr_suppl@{expr\_\-suppl}!SUPPL_WAS_FALSE@{SUPPL\_\-WAS\_\-FALSE}}
 \index{SUPPL_WAS_FALSE@{SUPPL\_\-WAS\_\-FALSE}!expr_suppl@{expr\_\-suppl}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-WAS\_\-FALSE(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-FALSE) \& 0x1)}\label{group__expr__suppl_a29}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-WAS\_\-FALSE(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-FALSE) \& 0x1)}\label{group__expr__suppl_a30}
 
 
 Returns a value of 1 if the specified supplemental belongs to an expression that has evaluated to a value of FALSE (0) during simulation. \index{expr_suppl@{expr\_\-suppl}!SUPPL_WAS_SWAPPED@{SUPPL\_\-WAS\_\-SWAPPED}}
 \index{SUPPL_WAS_SWAPPED@{SUPPL\_\-WAS\_\-SWAPPED}!expr_suppl@{expr\_\-suppl}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-WAS\_\-SWAPPED(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-SWAPPED) \& 0x1)}\label{group__expr__suppl_a20}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-WAS\_\-SWAPPED(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-SWAPPED) \& 0x1)}\label{group__expr__suppl_a21}
 
 
 Returns a value of 1 if the specified supplemental value has the SWAPPED bit set indicating that the children of the current expression were swapped positions during the scoring phase. \index{expr_suppl@{expr\_\-suppl}!SUPPL_WAS_TRUE@{SUPPL\_\-WAS\_\-TRUE}}
 \index{SUPPL_WAS_TRUE@{SUPPL\_\-WAS\_\-TRUE}!expr_suppl@{expr\_\-suppl}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-WAS\_\-TRUE(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-TRUE) \& 0x1)}\label{group__expr__suppl_a28}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-WAS\_\-TRUE(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-TRUE) \& 0x1)}\label{group__expr__suppl_a29}
 
 
 Returns a value of 1 if the specified supplemental belongs to an expression that has evaluated to a value of TRUE (1) during simulation. 

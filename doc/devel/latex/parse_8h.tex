@@ -16,10 +16,16 @@ Contains functions for parsing Verilog modules.
 \subsection{Detailed Description}
 Contains functions for parsing Verilog modules.
 
+
+
 \begin{Desc}
-\item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\item[{\bf Author: }]\par
+Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
-\item[Date:]11/27/2001 \end{Desc}
+\item[{\bf Date: }]\par
+11/27/2001
+
+\end{Desc}
 
 
 \subsection{Function Documentation}
@@ -31,12 +37,15 @@ Contains functions for parsing Verilog modules.
 Parses VCD dumpfile and scores design.
 
 \begin{Desc}
-\item[Parameters:]
+\item[{\bf Parameters: }]\par
 \begin{description}
-\item[{\em db}]Name of output database file to generate. \item[{\em vcd}]Name of VCD file to parse for scoring. \end{description}
+\item[
+{\em db}]Name of output database file to generate. \item[
+{\em vcd}]Name of VCD file to parse for scoring. \end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns:]Returns TRUE if VCD parsing and scoring is successful; otherwise, returns FALSE. \end{Desc}
+\item[{\bf Returns: }]\par
+Returns TRUE if VCD parsing and scoring is successful; otherwise, returns FALSE. \end{Desc}
 \index{parse.h@{parse.h}!parse_design@{parse\_\-design}}
 \index{parse_design@{parse\_\-design}!parse.h@{parse.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} parse\_\-design (char $\ast$ {\em top}, char $\ast$ {\em output\_\-db})}\label{parse_8h_a0}
@@ -45,10 +54,17 @@ Parses VCD dumpfile and scores design.
 Parses the specified design and generates scoring modules.
 
 \begin{Desc}
-\item[Parameters:]
+\item[{\bf Parameters: }]\par
 \begin{description}
-\item[{\em top}]Name of top-level module to score \item[{\em output\_\-db}]Name of output directory for generated scored files.\end{description}
+\item[
+{\em top}]Name of top-level module to score \item[
+{\em output\_\-db}]Name of output directory for generated scored files.
+
+\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns:]Returns TRUE if parsing is successful; otherwise, returns FALSE.\end{Desc}
+\item[{\bf Returns: }]\par
+Returns TRUE if parsing is successful; otherwise, returns FALSE.
+
+\end{Desc}
 Resets the lexer and parses all Verilog files specified in use\_\-files list. After all design files are parsed, their information will be appropriately stored in the associated lists. 

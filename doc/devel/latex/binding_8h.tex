@@ -20,10 +20,16 @@ void {\bf bind} ()
 \subsection{Detailed Description}
 Contains all functions for signal/expression binding.
 
+
+
 \begin{Desc}
-\item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\item[{\bf Author: }]\par
+Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
-\item[Date:]3/4/2002 \end{Desc}
+\item[{\bf Date: }]\par
+3/4/2002
+
+\end{Desc}
 
 
 \subsection{Function Documentation}
@@ -42,9 +48,14 @@ Binding is the process of setting pointers in signals and expressions to point t
 Adds signal and expression to binding list.
 
 \begin{Desc}
-\item[Parameters:]
+\item[{\bf Parameters: }]\par
 \begin{description}
-\item[{\em sig\_\-name}]Signal scope to bind. \item[{\em exp}]Expression ID to bind. \item[{\em mod}]Pointer to module containing specified expression.\end{description}
+\item[
+{\em sig\_\-name}]Signal scope to bind. \item[
+{\em exp}]Expression ID to bind. \item[
+{\em mod}]Pointer to module containing specified expression.
+
+\end{description}
 \end{Desc}
 Adds the specified signal and expression to the bindings linked list. This bindings list will be handled after all input Verilog has been parsed. \index{binding.h@{binding.h}!bind_perform@{bind\_\-perform}}
 \index{bind_perform@{bind\_\-perform}!binding.h@{binding.h}}
@@ -54,12 +65,22 @@ Adds the specified signal and expression to the bindings linked list. This bindi
 Finds signal in module and bind the expression to this signal.
 
 \begin{Desc}
-\item[Parameters:]
+\item[{\bf Parameters: }]\par
 \begin{description}
-\item[{\em sig\_\-name}]String name of signal to bind to specified expression. \item[{\em exp}]Pointer to expression to bind. \item[{\em mod\_\-sig}]Pointer to module containing signal. \item[{\em mod\_\-exp}]Pointer to module containing expression. \item[{\em implicit\_\-allowed}]If set to TRUE, creates any signals that are implicitly defined.\end{description}
+\item[
+{\em sig\_\-name}]String name of signal to bind to specified expression. \item[
+{\em exp}]Pointer to expression to bind. \item[
+{\em mod\_\-sig}]Pointer to module containing signal. \item[
+{\em mod\_\-exp}]Pointer to module containing expression. \item[
+{\em implicit\_\-allowed}]If set to TRUE, creates any signals that are implicitly defined.
+
+\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns:]Returns TRUE if bind occurred successfully; otherwise, returns FALSE.\end{Desc}
+\item[{\bf Returns: }]\par
+Returns TRUE if bind occurred successfully; otherwise, returns FALSE.
+
+\end{Desc}
 Performs a binding of an expression and signal based on the name of the signal. Looks up signal name in the specified module and sets the expression and signal to point to each other. If the signal name is not found, it is checked to see if the signal is an unused type (name preceded by the '!' character). If the signal is unused, the bind does not occur and the function returns a value of FALSE. If the signal neither exists or is an unused signal, it is considered to be an implicit signal and a 1-bit signal is created. \index{binding.h@{binding.h}!bind_remove@{bind\_\-remove}}
 \index{bind_remove@{bind\_\-remove}!binding.h@{binding.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void bind\_\-remove (int {\em id})}\label{binding_8h_a1}
@@ -68,8 +89,11 @@ Performs a binding of an expression and signal based on the name of the signal. 
 Removes the expression with ID of id from binding list.
 
 \begin{Desc}
-\item[Parameters:]
+\item[{\bf Parameters: }]\par
 \begin{description}
-\item[{\em id}]Expression ID of binding to remove.\end{description}
+\item[
+{\em id}]Expression ID of binding to remove.
+
+\end{description}
 \end{Desc}
 Removes the binding containing the expression ID of id. This needs to be called before an expression is removed. 

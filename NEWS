@@ -25,13 +25,29 @@ testing is necessary.  The following is a list of the changes for this release.
     complete at this time.
   - Fixing bug with line ordering where case statement lines were not being output
     to reports.
+  - Fixing bug with statement deallocation for NULL statements within statement trees.
+  - Updates to parser for new bison version 1.875
+  - Added support for named blocks
+  - Fixing bug with handling of preprocessor directives with leading whitespace.
+  - Fixes/optimizations to db_add_statement function which avoids stack overflow errors.
+  - Added check in regard to -i option to score command.  Bad -i values would cause no
+    coverage information to be generated but would not tell user explicitly.  Error
+    message now provided with -i option is not specified but is needed and/or -i option
+    is incorrect.
+  - Lots of parser updates to be able to parse UDPs, escaped identifiers, specify blocks,
+    and some other various Verilog code that was causing parse errors or assertion errors.
+  - Fixed proper handling of the event type.
+  - Fixed bug with merging constant/parameter vector values which caused assertion error
+    in report command when reporting on a merged file.
+  - Fixed user error message for merge command when CDD files are unable to be read.
   - Updates to regression suite
   - Development documentation updates.
 
 The way that Covered looks and feels for 0.2 stable release is set in stone now.  Please
 make sure that you test this version as much as possible to get any leftover bugs out of
-the code.  I only plan on updating documentation and code comments now so stable release
-is planned for the next release.
+the code.  I only plan on updating documentation, adding code comments, and fixing bugs.
+If any bugs are sent in, a 0.2pre3 release will be created, otherwise, I will make
+the 0.2 stable release available.
 
 I've got some exciting things in Covered's future in plan after 0.2 stable release,
 including FSM support, new text report look, code optimizations, support to be fully

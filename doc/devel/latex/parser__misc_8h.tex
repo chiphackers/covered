@@ -13,6 +13,8 @@ struct {\bf vlltype}
 \item 
 \#define {\bf YYLTYPE}\ struct {\bf vlltype}
 \item 
+\#define {\bf yylloc}\ VLlloc
+\item 
 \#define {\bf yywarn}\ VLwarn
 \end{CompactItemize}
 \subsection*{Functions}
@@ -27,8 +29,6 @@ void {\bf VLwarn} (char $\ast$msg)
 \subsection*{Variables}
 \begin{CompactItemize}
 \item 
-YYLTYPE {\bf yylloc}
-\item 
 unsigned {\bf error\_\-count}
 \item 
 unsigned {\bf warn\_\-count}
@@ -38,10 +38,16 @@ unsigned {\bf warn\_\-count}
 \subsection{Detailed Description}
 Contains miscellaneous functions declarations and defines used by parser.
 
+
+
 \begin{Desc}
-\item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\item[{\bf Author: }]\par
+Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
-\item[Date:]12/19/2001 \end{Desc}
+\item[{\bf Date: }]\par
+12/19/2001
+
+\end{Desc}
 
 
 \subsection{Define Documentation}
@@ -50,9 +56,14 @@ Contains miscellaneous functions declarations and defines used by parser.
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYLTYPE\ struct {\bf vlltype}}\label{parser__misc_8h_a0}
 
 
+\index{parser_misc.h@{parser\_\-misc.h}!yylloc@{yylloc}}
+\index{yylloc@{yylloc}!parser_misc.h@{parser\_\-misc.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}YYLTYPE yylloc\ VLlloc}\label{parser__misc_8h_a1}
+
+
 \index{parser_misc.h@{parser\_\-misc.h}!yywarn@{yywarn}}
 \index{yywarn@{yywarn}!parser_misc.h@{parser\_\-misc.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yywarn\ VLwarn}\label{parser__misc_8h_a1}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yywarn\ VLwarn}\label{parser__misc_8h_a2}
 
 
 
@@ -84,10 +95,5 @@ Contains miscellaneous functions declarations and defines used by parser.
 \index{parser_misc.h@{parser\_\-misc.h}!warn_count@{warn\_\-count}}
 \index{warn_count@{warn\_\-count}!parser_misc.h@{parser\_\-misc.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}unsigned warn\_\-count}\label{parser__misc_8h_a4}
-
-
-\index{parser_misc.h@{parser\_\-misc.h}!yylloc@{yylloc}}
-\index{yylloc@{yylloc}!parser_misc.h@{parser\_\-misc.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}YYLTYPE yylloc}\label{parser__misc_8h_a2}
 
 
