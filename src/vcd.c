@@ -45,8 +45,18 @@ void vcd_parse_def_var( FILE* vcd ) {
   int  size;             /* Bit width of specified variable */
   char id_code[256];     /* Unique variable identifier_code */
   char ref[256];         /* Name of variable in design      */
+  char tmp[15];          /* Temporary string holder         */
 
-  if( fscanf( vcd, "%s %d %s %s $end", type, &size, id_code, ref ) == 4 ) {
+  if( fscanf( vcd, "%s %d %s %s %s", type, &size, id_code, ref, tmp ) == 5 ) {
+
+    if( strncmp( "$end", tmp, 4 ) != 0 ) {
+
+      if( (fscanf( vcd, "%s", tmp ) != 1) || (strncmp( "$end", tmp, 4 ) != 0) ) {
+        print_output( "Unrecognized $var format", FATAL );
+        exit( 1 );
+      }
+
+    }
 
     /* For now we will let any type and size slide */
     db_assign_symbol( ref, id_code );
@@ -225,4 +235,8 @@ void vcd_parse( char* vcd_file ) {
 
 }
 
-/* $Log$ */
+/* $Log$
+/* Revision 1.1  2002/07/22 05:24:46  phase1geo
+/* Creating new VCD parser.  This should have performance benefits as well as
+/* have the ability to handle any problems that come up in parsing.
+/* */
