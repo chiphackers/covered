@@ -18,7 +18,8 @@
 extern mod_inst* instance_root;
 extern mod_link* mod_head;
 
-extern bool      report_covered;
+extern bool         report_covered;
+extern unsigned int report_comb_depth;
 
 /*!
  \param expl   Pointer to current expression link to evaluate.
@@ -788,6 +789,12 @@ void combination_report( FILE* ofile, bool verbose, bool instance ) {
 
 
 /* $Log$
+/* Revision 1.38  2002/08/20 04:48:18  phase1geo
+/* Adding option to report command that allows the user to display logic that is
+/* being covered (-c option).  This overrides the default behavior of displaying
+/* uncovered logic.  This is useful for debugging purposes and understanding what
+/* logic the tool is capable of handling.
+/*
 /* Revision 1.37  2002/08/19 04:59:49  phase1geo
 /* Adjusting summary format to allow for larger line, toggle and combination
 /* counts.

@@ -65,6 +65,14 @@ bool report_instance   = FALSE;
 */
 bool report_covered    = FALSE;
 
+/*!
+ If set to a non-zero value, causes Covered to only generate combinational logic
+ report information for depths up to the number specified.  If set to 0, all
+ combinational logic is evaluated.
+*/
+unsigned int report_comb_depth  = 0;
+
+
 char* output_file      = NULL;
 char* input_db         = NULL;
 
@@ -86,6 +94,8 @@ void report_usage() {
   printf( "      -i                      Provides coverage information for instances instead of module.\n" );
   printf( "      -c                      If -v is specified, displays covered line, toggle and combinational cases.\n" );
   printf( "                              Default is to display uncovered information.\n" );
+  printf( "      -d <depth>              Depth of combinational expressions to provide coverage for.  Default is\n" );
+  printf( "                              infinity.\n" );
   printf( "      -o <filename>           File to output report information to.  Default is standard output.\n" );
   printf( "      -h                      Displays this help information.\n" );
   printf( "\n" );
@@ -176,6 +186,12 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
 
       report_covered = TRUE;
 
+    } else if( strncmp( "-d", argv[i], 2 ) == 0 ) {
+
+      i++;
+      report_comb_depth = atol( argv[i] );
+      print_output( "Report option -d is not implemented at this time.  Skipping this option...", WARNING );
+ 
     } else if( strncmp( "-o", argv[i], 2 ) == 0 ) {
 
       i++;
@@ -440,6 +456,12 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 
 /* $Log$
+/* Revision 1.12  2002/08/20 04:48:18  phase1geo
+/* Adding option to report command that allows the user to display logic that is
+/* being covered (-c option).  This overrides the default behavior of displaying
+/* uncovered logic.  This is useful for debugging purposes and understanding what
+/* logic the tool is capable of handling.
+/*
 /* Revision 1.11  2002/08/19 04:34:07  phase1geo
 /* Fixing bug in database reading code that dealt with merging modules.  Module
 /* merging is now performed in a more optimal way.  Full regression passes and
