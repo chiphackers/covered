@@ -320,7 +320,8 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
 
   if( exp != NULL ) {
     
-    if( SUPPL_OP( exp->suppl ) == EXP_OP_LAST ) {
+    if( (SUPPL_OP( exp->suppl ) == EXP_OP_LAST) ||
+        (SUPPL_OP( exp->suppl ) == EXP_OP_DELAY) ) {
 
       *size = 0;
 
@@ -474,7 +475,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
             case EXP_OP_CASE     :  *size = l_size + r_size + 11; strcpy( code_fmt, "      %s   %s  "  );  break;
             case EXP_OP_CASEX    :  *size = l_size + r_size + 12; strcpy( code_fmt, "       %s   %s  " );  break;
             case EXP_OP_CASEZ    :  *size = l_size + r_size + 12; strcpy( code_fmt, "       %s   %s  " );  break;
-            default              :  
+            default              :
               print_output( "Internal error:  Unknown expression type in combination_underline_tree", FATAL );
               exit( 1 );
               break;
@@ -856,7 +857,8 @@ void combination_display_verbose( FILE* ofile, stmt_link* stmtl ) {
   stmt_iter_reset( &stmti, stmtl );
   while( stmti.curr != NULL ) {
 
-    if( combination_missed_expr( stmti.curr->stmt->exp, 0 ) == !report_covered ) {
+    if( (combination_missed_expr( stmti.curr->stmt->exp, 0 ) == !report_covered) &&
+        (EXPR_IS_MEASURABLE( stmti.curr->stmt->exp ) == 1) ) {
 
       unexec_exp = stmti.curr->stmt->exp;
       exp_id     = 1;
@@ -1003,6 +1005,12 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.55  2002/11/23 16:10:46  phase1geo
+ Updating changelog and development documentation to include FSM description
+ (this is a brainstorm on how to handle FSMs when we get to this point).  Fixed
+ bug with code underlining function in handling parameter in reports.  Fixing bugs
+ with MBIT/SBIT handling (this is not verified to be completely correct yet).
+
  Revision 1.54  2002/11/05 00:20:06  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.
