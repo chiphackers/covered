@@ -58,13 +58,11 @@ proc display_comb_info {} {
   .combwin.f.top.t tag delete comb_bp1
   .combwin.f.top.t tag delete comb_bp3
 
-  # Allow us to clear out text boxes and repopulate
+  # Allow us to clear out textbox and repopulate
   .combwin.f.top.t configure -state normal
-  .combwin.f.bot.t configure -state normal
 
-  # Clear the text-box before any insertion is being made
+  # Clear the textbox before any insertion is being made
   .combwin.f.top.t delete 1.0 end
-  .combwin.f.bot.t delete 1.0 end
 
   # Get length of comb_code list
   set code_len [llength $comb_code]
@@ -86,9 +84,8 @@ proc display_comb_info {} {
     incr curr_line
   }
 
-  # Keep user from writing in text boxes
+  # Keep user from writing in text box
   .combwin.f.top.t configure -state disabled
-  .combwin.f.bot.t configure -state disabled
 
   # Add expression tags and bindings
   if {[llength $comb_uline_indexes] > 0} {
@@ -152,7 +149,6 @@ proc display_comb_coverage {ulid} {
     .combwin.f.bot.t insert end "$line\n"
   }
 
-  # Keep user from writing in text boxes
   .combwin.f.bot.t configure -state disabled
 
 }
@@ -520,6 +516,13 @@ proc create_comb_window {mod_name expr_id} {
 
     pack .combwin.f    -fill both -expand yes
     pack .combwin.info -fill both
+
+  } else {
+
+    # Clear out bottom text box
+    .combwin.f.bot.t configure -state normal
+    .combwin.f.bot.t delete 1.0 end
+    .combwin.f.bot.t configure -state disabled
 
   }
 
