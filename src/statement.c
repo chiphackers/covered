@@ -249,53 +249,51 @@ bool statement_db_read( char** line, module* curr_mod ) {
 /*!
  \param curr_stmt  Pointer to statement sequence to traverse.
  \param next_stmt  Pointer to statement to connect ends to.
+ \param set_stop   If TRUE and the next_true and next_false are NULL, set stop bit.
 
  Recursively traverses the specified stmt sequence.  When it reaches a statement 
  that has either next_true or next_false set to NULL, sets next_true and/or 
  next_false of that statement to point to the next_stmt statement.
 */
-void statement_connect( statement* curr_stmt, statement* next_stmt ) {
+void statement_connect( statement* curr_stmt, statement* next_stmt, bool set_stop ) {
+
+  static int count = 0;
 
   assert( curr_stmt != NULL );
   assert( next_stmt != NULL );
 
+  if( count == 100 ) {
+    assert( count == 0 );
+  } else {
+    count++;
+  }
+
+  /* Set STOP bit if necessary */
+  if( (curr_stmt->next_true == NULL) && (curr_stmt->next_false == NULL) && set_stop ) {
+    printf( "Setting STOP bit for statement %d\n", curr_stmt->exp->id );
+    curr_stmt->exp->suppl = curr_stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);
+  }
+
   /* Traverse TRUE path */
   if( curr_stmt->next_true == NULL ) {
+    printf( "curr: %d, next: %d, Setting TRUE\n", curr_stmt->exp->id, next_stmt->exp->id );
     curr_stmt->next_true = next_stmt;
   } else {
-    statement_connect( curr_stmt->next_true, next_stmt );
+    if( curr_stmt->next_true != next_stmt ) {
+      printf( "curr: %d, next: %d, Traversing TRUE path\n", curr_stmt->exp->id, next_stmt->exp->id );
+      statement_connect( curr_stmt->next_true, next_stmt, TRUE );
+    }
   }
 
   /* Traverse FALSE path */
   if( curr_stmt->next_false == NULL ) {
+    printf( "curr: %d, next: %d, Setting FALSE\n", curr_stmt->exp->id, next_stmt->exp->id );
     curr_stmt->next_false = next_stmt;
   } else {
-    statement_connect( curr_stmt->next_false, next_stmt );
-  }
-
-}
-
-/*!
- \param stmt  Pointer to statement to traverse and set stop bits.
-
- Recursively traverses specified statement, setting STMT_STOP bits on leaf
- nodes.  This function is called for the last statement in a sequence.  It
- is called before the statement_connect for the entire statement sequence.
-*/
-void statement_set_stop( statement* stmt ) {
-
-  assert( stmt != NULL );
-
-  if( (stmt->next_true == NULL) && (stmt->next_false == NULL) && (SUPPL_IS_STMT_STOP( stmt->exp->suppl ) == 0) ) {
-    stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);
-  }
-
-  if( stmt->next_true != NULL ) {
-    statement_set_stop( stmt->next_true );
-  }
-
-  if( stmt->next_false != NULL ) {
-    statement_set_stop( stmt->next_false );
+    if( curr_stmt->next_false != next_stmt ) {
+      printf( "curr: %d, next: %d, Traversing FALSE path\n", curr_stmt->exp->id, next_stmt->exp->id );
+      statement_connect( curr_stmt->next_false, next_stmt, FALSE );
+    }
   }
 
 }
@@ -342,6 +340,9 @@ void statement_dealloc( statement* stmt ) {
 
 
 /* $Log$
+/* Revision 1.14  2002/06/26 22:09:17  phase1geo
+/* Removing unecessary output and updating regression Makefile.
+/*
 /* Revision 1.13  2002/06/26 03:45:48  phase1geo
 /* Fixing more bugs in simulator and report functions.  About to add support
 /* for delay statements.

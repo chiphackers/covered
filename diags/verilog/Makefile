@@ -25,7 +25,7 @@ regress:	$(COVERED) clean $(DIAGLIST)
 $(DIAGLIST):	
 	$(IVERILOG) $(IVERILOG_FLAGS) $@.v
 	./$(IVERILOG_EXEC)
-	$(COVERED) score -t main -vcd $@.vcd $(COVERED_FLAGS) -v $@.v
+	$(COVERED) score -t main -vcd $@.vcd $(COVERED_FLAGS) -o $@.db -v $@.v
 
 $(COVERED):
 	cd $(COVERED_SRC); make

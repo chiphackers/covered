@@ -518,7 +518,7 @@ void db_add_expression( expression* root ) {
 }
 
 /*!
- \param exp   Pointer to associated "root" expression.
+ \param exp      Pointer to associated "root" expression.
 
  \return Returns pointer to created statement.
 
@@ -535,9 +535,40 @@ statement* db_create_statement( expression* exp ) {
 
   stmt = statement_create( exp );
 
-  stmt_link_add_head( stmt, &(curr_module->stmt_head), &(curr_module->stmt_tail) );
-
   return( stmt );
+
+}
+
+/*!
+ \param stmt  Pointer to statement add to current module's statement list.
+
+ Adds the specified statement tree to the tail of the current module's statement list.
+*/
+void db_add_statement( statement* stmt ) {
+
+  char msg[4096];    /* Message to display to user */
+ 
+  if( stmt != NULL ) {
+
+    snprintf( msg, 4096, "In db_add_statement, id: %d", stmt->exp->id );
+    print_output( msg, NORMAL );
+
+    /* Add TRUE and FALSE statement paths to list */
+    if( SUPPL_IS_STMT_STOP( stmt->exp->suppl ) == 0 ) {
+
+      db_add_statement( stmt->next_false );
+
+      if( stmt->next_true != stmt->next_false ) {
+        db_add_statement( stmt->next_true );
+      }
+
+    }
+
+    /* Now add current statement */
+    printf( "Adding to statement tail: %d\n", stmt->exp->id );
+    stmt_link_add_tail( stmt, &(curr_module->stmt_head), &(curr_module->stmt_tail) );
+
+  }
 
 }
 
@@ -609,18 +640,7 @@ void db_statement_connect( statement* curr_stmt, statement* next_stmt ) {
   snprintf( msg, 4096, "In db_statement_connect, curr_stmt: %d, next_stmt: %d", curr_id, next_id );
   print_output( msg, NORMAL );
 
-  statement_connect( curr_stmt, next_stmt );
-
-}
-
-/*!
- \param stmt  Pointer to current statement to set stop bits.
-
- Calls the statement_set_stop function located in statement.c with the specified parameter.
-*/
-void db_statement_set_stop( statement* stmt ) {
-
-  statement_set_stop( stmt );
+  statement_connect( curr_stmt, next_stmt, FALSE );
 
 }
 
@@ -873,6 +893,10 @@ int db_get_signal_size( char* symbol ) {
 
 
 /* $Log$
+/* Revision 1.18  2002/06/26 04:59:50  phase1geo
+/* Adding initial support for delays.  Support is not yet complete and is
+/* currently untested.
+/*
 /* Revision 1.17  2002/06/26 03:45:48  phase1geo
 /* Fixing more bugs in simulator and report functions.  About to add support
 /* for delay statements.

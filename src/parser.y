@@ -1027,15 +1027,15 @@ module_item
 	| K_always statement
 		{
                   statement* stmt = $2;
-                  db_statement_set_stop( stmt );
                   db_statement_connect( stmt, stmt );
                   stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
+                  db_add_statement( stmt );
 		}
 	| K_initial statement
 		{
                   statement* stmt = $2;
-                  db_statement_set_stop( stmt );
                   stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
+                  db_add_statement( stmt );
 		}
 	| K_task IDENTIFIER ';'
 	    task_item_list_opt statement_opt
@@ -1511,15 +1511,15 @@ statement
 	;
 
 statement_list
-	: statement statement_list
+	: statement_list statement
                 {
-                  if( $1 != NULL ) {
+                  if( $1 == NULL ) {
+                    $$ = $2;
+                  } else {
                     if( $2 != NULL ) {
                       db_statement_connect( $1, $2 );
                     }
                     $$ = $1;
-                  } else {
-                    $$ = $2;
                   }
                 }
 	| statement
@@ -1880,6 +1880,9 @@ assign
                   db_connect_statement_true( stmt, stmt );
                   db_connect_statement_false( stmt, stmt );
 		  db_add_expression( $3 );
+            
+                  /* Now add statement to current module */
+                  db_add_statement( stmt );
 		}
 	;
 
