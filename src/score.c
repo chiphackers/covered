@@ -209,6 +209,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
       i++;
       retval = search_add_no_score_module( argv[i] );
+      print_output( "-e <module> option is not supported at this time and will have no effect", WARNING );
 
     } else if( strncmp( "-vcd", argv[i], 4 ) == 0 ) {
 
@@ -302,6 +303,10 @@ int command_score( int argc, int last_arg, char** argv ) {
 }
 
 /* $Log$
+/* Revision 1.11  2002/07/11 15:10:00  phase1geo
+/* Fixing -f option to score command.  This function was causing infinite loops
+/* and massive memory consumption as a result of this.  Fixes bug 579946.
+/*
 /* Revision 1.10  2002/07/09 04:46:26  phase1geo
 /* Adding -D and -Q options to covered for outputting debug information or
 /* suppressing normal output entirely.  Updated generated documentation and

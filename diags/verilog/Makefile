@@ -19,51 +19,15 @@ CDD_DIR       = ../cdd
 LOGFILE = regress.log
 
 
-DIAGLIST = assign3.2A \
-           assign1 \
-           always1 \
-	   always3.1.11A \
-           cond1 \
-	   cond2 \
-           mult1 \
-           always2 \
-           always3 \
-           always4 \
-           always5 \
-           case1 \
-           case1.1 \
-           case2 \
-           case3 \
-           case3.1 \
-           case3.2 \
-           case3.3 \
-           case3.4 \
-	   casex1 \
-	   casex1.1 \
-	   casex1.2 \
-	   casex1.3 \
-	   casex1.4 \
-	   casez1 \
-	   casez1.1 \
-	   casez1.2 \
-	   casez1.3 \
-	   casez1.4 \
-	   casez2 \
-           ifelse1 \
-           define1 \
-           define1.1 \
-	   define2 \
-	   define2.1 \
-           static1 \
-           include1 \
-           include1.1 \
-           ifdef1 \
-           ifdef2.1 \
-           ifdef2.2 \
-           concat1 \
-           concat2 \
-           expand1 \
-           expand2
+DIAGLIST = assign3.2A    assign1       always1       always3.1.11A  cond1 \
+	   cond2         mult1         always2       always3        always4 \
+           always5       case1         case1.1       case2          case3 \
+           case3.1       case3.2       case3.3       case3.4        casex1 \
+	   casex1.1      casex1.2      casex1.3      casex1.4       casez1 \
+	   casez1.1      casez1.2      casez1.3      casez1.4       casez2 \
+           ifelse1       define1       define1.1     define2        define2.1 \
+           static1       include1      include1.1    ifdef1         ifdef2.1 \
+           ifdef2.2      concat1       concat2       expand1        expand2
 
 regress:	$(COVERED) clean $(DIAGLIST)
 

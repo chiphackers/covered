@@ -1,5 +1,19 @@
 Covered-Related NEWS
 ====================
+    * 7/15/2002
+
+Release covered-20020715 made.  Several bug fixes for problems found in previous release
+and additional Verilog constructs are now supported.  The `ifdef, `else, and `endif
+directives are now supported.  VCD scoping problems have been dealt with.  It should be
+possible now to get coverage results on an entire tree of Verilog instances.  It should
+also be possible to provide a dumpfile that contains more information than is necessary
+for getting coverage.  Some performance improvements have been made that will be noticeable
+for larger designs.  Fixed bugs for always statements that did not contain any coverage-able
+code.  Support is now in place for concatenation and replication in operations.  The
+binding phase has been revamped to provide better performance, easier maintenance and
+less memory consumption.  New diagnostics have been added to start testing new code support.
+Full regression passes.
+
     * 7/11/2002
 
 Release covered-20020711 made.  This release contains a lot of fixes to the score and report

@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(src/main.c)
 dnl AC_CONFIG_HEADER(config.h)
-AM_INIT_AUTOMAKE(covered,0.1-20020711)
+AM_INIT_AUTOMAKE(covered,0.1-20020715)
 
 dnl Checks for programs.
 AC_PROG_MAKE_SET
@@ -21,7 +21,7 @@ fi
 dnl AC_CHECK_HEADERS(getopt.h)
 
 dnl Checks for libraries.
-AM_WITH_MPATROL(no)
+dnl AM_WITH_MPATROL(no)
 
 dnl Checks for header files.
 AC_HEADER_STDC
