@@ -72,6 +72,7 @@ initial
     if(error == 0)
          $display("PASSED");
 
+    #10;
     $finish ;
   end
 

@@ -1,9 +1,9 @@
 3 main main ifdef2.2.v
-2 3 main 14 1000 0 0 1 0 100000
-2 2 main 14 2000 0 0 1 0 100001
-2 4 main 14 301a 3 2 1 0 10100
+2 3 main 14 1000 0 0 1 0 1000a8
+2 2 main 14 2000 0 0 1 0 1000a9
+2 4 main 14 301a 3 2 1 0 101aa
 2 1 main 14 3001 0 0 
-2 5 main 14 3f99 4 1 1 0 10100
-1 a main 1 0 10100
-1 b main 1 0 10100 1
+2 5 main 14 3f99 4 1 1 0 101aa
+1 a main 1 0 101aa
+1 b main 1 0 101aa 1
 4 5 main 5 5

@@ -67,10 +67,9 @@ bool report_covered    = FALSE;
 
 /*!
  If set to a non-zero value, causes Covered to only generate combinational logic
- report information for depths up to the number specified.  If set to 0, all
- combinational logic is evaluated.
+ report information for depths up to the number specified.
 */
-unsigned int report_comb_depth  = 0;
+unsigned int report_comb_depth  = 0xffffffff;
 
 
 char* output_file      = NULL;
@@ -190,7 +189,7 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
 
       i++;
       report_comb_depth = atol( argv[i] );
-      print_output( "Report option -d is not implemented at this time.  Skipping this option...", WARNING );
+      // print_output( "Report option -d is not implemented at this time.  Skipping this option...", WARNING );
  
     } else if( strncmp( "-o", argv[i], 2 ) == 0 ) {
 
@@ -456,6 +455,10 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 
 /* $Log$
+/* Revision 1.13  2002/08/20 05:55:25  phase1geo
+/* Starting to add combination depth option to report command.  Currently, the
+/* option is not implemented.
+/*
 /* Revision 1.12  2002/08/20 04:48:18  phase1geo
 /* Adding option to report command that allows the user to display logic that is
 /* being covered (-c option).  This overrides the default behavior of displaying

@@ -19,14 +19,14 @@ These options are placed immediately after the keyword \fIcovered\fR in the comm
 \fB\-D\fR
 Debug.  Display information helpful for debugging tool problems.
 .TP 
+\fB\-h\fR
+Help.  Display this usage information.
+.TP 
 \fB\-Q\fR
 Quiet mode.  Causes all output to be suppressed.
 .TP 
 \fB\-v\fR
-Version.  Display current Covered version.  
-.TP 
-\fB\-h\fR
-Help.  Display this usage information.
+Version.  Display current Covered version.
 .SH "COMMANDS"
 .LP 
 .TP 
@@ -42,11 +42,23 @@ Generates human\-readable coverage reports from database file.
 .LP 
 The following options are valid for the score command:
 .TP 
-\fB\-t\fR \fItop\-level module\fR
-Specifies the module name of the top\-most module that will be measured.  Note that this module does not need to be the top\-most module in the simulator.  This field is required for all calls to the score command.
+\fB\-D\fR \fIdefine_name\fR
+Defines the specified name to 1.
 .TP 
-\fB\-vcd\fR \fIdumpfile\fR
-Name of dumpfile to score design with.  If this option is not used, Covered will only create an initial CDD file from the design and will not attempt to score the design.
+\fB\-D\fR \fIdefine_name=value\fR
+Defines the specified name to the specified value.
+.TP 
+\fB\-e\fR \fImodule_name\fR
+Name of module to not score.  Causes all submodules in the Verilog tree under this module to also not be scored.
+.TP 
+\fB\-f\fR \fIfilename\fR
+Name of file containing additional arguments to parse.
+.TP 
+\fB\-h\fR
+Displays this help information.
+.TP 
+\fB\-I\fR \fIdirectory\fR
+Directory to find included Verilog files.
 .TP 
 \fB\-i\fR \fIinstance_name\fR
 Instance name of top\-level module.  Necessary if module to verify coverage is not the top\-level module in the design.  If not specified, \fI\-t\fR value is used.
@@ -54,29 +66,17 @@ Instance name of top\-level module.  Necessary if module to verify coverage is n
 \fB\-o\fR \fIdatabase\fR
 Name of database to write coverage information to.  If not specified, the output database filename will be "cov.db".
 .TP 
-\fB\-I\fR \fIdirectory\fR
-Directory to find included Verilog files.
-.TP 
-\fB\-f\fR \fIfilename\fR
-Name of file containing additional arguments to parse.
-.TP 
-\fB\-y\fR \fIdirectory\fR
-Directory to find unspecified Verilog files
+\fB\-t\fR \fItop\-level module\fR
+Specifies the module name of the top\-most module that will be measured.  Note that this module does not need to be the top\-most module in the simulator.  This field is required for all calls to the score command.
 .TP 
 \fB\-v\fR \fIfilename\fR
 Name of specific Verilog file to score.
 .TP 
-\fB\-e\fR \fImodule_name\fR
-Name of module to not score.  Causes all submodules in the Verilog tree under this module to also not be scored.
+\fB\-vcd\fR \fIdumpfile\fR
+Name of dumpfile to score design with.  If this option is not used, Covered will only create an initial CDD file from the design and will not attempt to score the design.
 .TP 
-\fB\-D\fR \fIdefine_name\fR
-Defines the specified name to 1.
-.TP 
-\fB\-D\fR \fIdefine_name=value\fR
-Defines the specified name to the specified value.
-.TP 
-\fB\-h\fR
-Displays this help information.
+\fB\-y\fR \fIdirectory\fR
+Directory to find unspecified Verilog files.
 .TP 
 \fB+libext+\fR\fI.extension\fR(\fB+\fR\fI.extension\fR)*\fB+\fR\fR
 Extensions of Verilog files to allow in scoring.
@@ -84,23 +84,14 @@ Extensions of Verilog files to allow in scoring.
 .LP 
 The following options are valid for the merge command:
 .TP 
-\fB\-o\fR \fIfilename\fR
-File to output new database to.  If this argument is not specified, the \fIexisting_database\fR is used as the output database name.
-.TP 
 \fB\-h\fR
 Displays this help information.
+.TP 
+\fB\-o\fR \fIfilename\fR
+File to output new database to.  If this argument is not specified, the \fIexisting_database\fR is used as the output database name.
 .SH "REPORT COMMAND"
 .LP 
 The following options are valid with the report command:
-.TP 
-\fB\-m\fR \fI[l][t][c][f]\fR
-Type(s) of metrics to report.  Default is \fIltc\fR.
-.TP 
-\fB\-v\fR
-Provide verbose information in report.  Default is summarize.
-.TP 
-\fB\-i\fR
-Provides coverage information for instances instead of module.
 .TP 
 \fB\-c\fR
 If \fI\-v\fR is specified, displays covered line, toggle and combinational cases.  Default is to display uncovered information.
@@ -108,11 +99,20 @@ If \fI\-v\fR is specified, displays covered line, toggle and combinational cases
 \fB\-d\fR \fIdepth\fR
 Depth of combinational expressions to provide coverage for.  Default is infinity.  \fICurrently, this option is unsupported.\fR
 .TP 
+\fB\-h\fR
+Displays this help information.
+.TP 
+\fB\-i\fR
+Provides coverage information for instances instead of module.
+.TP 
+\fB\-m\fR \fI[l][t][c][f]\fR
+Type(s) of metrics to report.  Default is \fIltc\fR.
+.TP 
 \fB\-o\fR \fIfilename\fR
 File to output report information to.  Default is standard output.
 .TP 
-\fB\-h\fR
-Displays this help information.
+\fB\-v\fR
+Provide verbose information in report.  Default is summarize.
 .SH "AUTHORS"
 .LP 
 Trevor Williams <trevorw@charter.net>

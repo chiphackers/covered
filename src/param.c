@@ -57,6 +57,8 @@
 
  -#  Defparam overrides should be applied before default values to eliminate unnecessary default
      parameter expression evaluation.
+
+ -#  Expression trees need to be stored in module parameter lists for parameter expressions.
 */
 
 #include <stdio.h>
@@ -243,6 +245,11 @@ void param_add_defparam( char* scope, vector* value ) {
 }
 
 /* $Log$
+/* Revision 1.4  2002/09/06 03:05:28  phase1geo
+/* Some ideas about handling parameters have been added to these files.  Added
+/* "Special Thanks" section in User's Guide for acknowledgements to people
+/* helping in project.
+/*
 /* Revision 1.3  2002/08/27 11:53:16  phase1geo
 /* Adding more code for parameter support.  Moving parameters from being a
 /* part of modules to being a part of instances and calling the expression

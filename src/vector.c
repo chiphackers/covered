@@ -49,7 +49,8 @@ void vector_init( vector* vec, nibble* value, int width, int lsb ) {
   vec->value = value;
 
   for( i=0; i<VECTOR_SIZE( width ); i++ ) {
-    vec->value[i] = 0x0;
+    //vec->value[i] = 0x0;
+    vec->value[i] = 0xaa;
   }
 
 }
@@ -103,9 +104,9 @@ void vector_db_write( vector* vec, FILE* file, bool write_data ) {
 
   for( i=0; i<VECTOR_SIZE( vec->width ); i++ ) {
     if( i == 0 ) {
-      fprintf( file, " %x", (vec->value[i] & mask) );
+      fprintf( file, " %x", ((vec->value[i] & mask) | (write_data ? 0 : 0xaa)) );
     } else {
-      fprintf( file, ",%x", (vec->value[i] & mask) );
+      fprintf( file, ",%x", ((vec->value[i] & mask) | (write_data ? 0 : 0xaa)) );
     }
   }
 
@@ -1398,6 +1399,11 @@ void vector_dealloc( vector* vec ) {
 }
 
 /* $Log$
+/* Revision 1.16  2002/08/23 12:55:33  phase1geo
+/* Starting to make modifications for parameter support.  Added parameter source
+/* and header files, changed vector_from_string function to be more verbose
+/* and updated Makefiles for new param.h/.c files.
+/*
 /* Revision 1.15  2002/08/19 04:34:07  phase1geo
 /* Fixing bug in database reading code that dealt with merging modules.  Module
 /* merging is now performed in a more optimal way.  Full regression passes and
