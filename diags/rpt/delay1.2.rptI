@@ -3,17 +3,17 @@ Covered -- Verilog Coverage Verbose Report
 
 LINE COVERAGE RESULTS BY INSTANCE
 ---------------------------------
-Instance                  Parent                  Hit/Miss/Total    Percent hit
+Instance                                          Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    <root>                     2/   0/   2      100%
+  main                                              2/   0/   2      100%
 =================================================================================
 
 TOGGLE COVERAGE RESULTS BY INSTANCE
 -----------------------------------
-Instance                  Parent                           Toggle 0 -> 1                    Toggle 1 -> 0
+Instance                                                   Toggle 0 -> 1                    Toggle 1 -> 0
                                                   Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
 ----------------------------------------------------------------------------------------------------------------
-  main                    <root>                     3/   2/   5       60%            1/   4/   5       20%
+  main                                              3/   2/   5       60%            1/   4/   5       20%
 
 Module: main, File: delay1.2.v, Instance: main
 --------------------------------------------------------
@@ -31,10 +31,10 @@ a                         0->1: 2'b00
 
 COMBINATIONAL LOGIC COVERAGE RESULTS BY INSTANCE
 ------------------------------------------------
-Instance                  Parent                       Logic Combinations
+Instance                                               Logic Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    <root>                     3/   1/   4       75%
+  main                                              3/   1/   4       75%
 
 Module: main, File: delay1.2.v, Instance: main
 --------------------------------------------------------

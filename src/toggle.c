@@ -17,6 +17,7 @@ extern mod_link* mod_head;
 
 extern bool report_covered;
 extern bool report_instance;
+extern char leading_hierarchy[4096];
 
 /*!
  \param expl   Pointer to expression list to search.
@@ -75,11 +76,12 @@ void toggle_get_stats( exp_link* expl, sig_link* sigl, float* total, int* hit01,
 */
 bool toggle_instance_summary( FILE* ofile, mod_inst* root, char* parent_inst ) {
 
-  mod_inst* curr;        /* Pointer to current child module instance of this node */
-  float     percent01;   /* Percentage of bits toggling from 0 -> 1               */
-  float     percent10;   /* Percentage of bits toggling from 1 -> 0               */
-  float     miss01;      /* Number of bits that did not toggle from 0 -> 1        */
-  float     miss10;      /* Number of bits that did not toggle from 1 -> 0        */
+  mod_inst* curr;           /* Pointer to current child module instance of this node */
+  float     percent01;      /* Percentage of bits toggling from 0 -> 1               */
+  float     percent10;      /* Percentage of bits toggling from 1 -> 0               */
+  float     miss01;         /* Number of bits that did not toggle from 0 -> 1        */
+  float     miss10;         /* Number of bits that did not toggle from 1 -> 0        */
+  char      tmpname[4096];  /* Temporary name holder for instance                    */
 
   assert( root != NULL );
   assert( root->stat != NULL );
@@ -100,9 +102,14 @@ bool toggle_instance_summary( FILE* ofile, mod_inst* root, char* parent_inst ) {
   }
   miss10    = (root->stat->tog_total - root->stat->tog10_hit);
 
-  fprintf( ofile, "  %-20.20s    %-20.20s    %4d/%4.0f/%4.0f      %3.0f%%         %4d/%4.0f/%4.0f      %3.0f%%\n",
-           root->name,
-           parent_inst,
+  if( strcmp( parent_inst, "*" ) == 0 ) {
+    strcpy( tmpname, root->name );
+  } else {
+    snprintf( tmpname, 4096, "%s.%s", parent_inst, root->name );
+  }
+
+  fprintf( ofile, "  %-43.43s    %4d/%4.0f/%4.0f      %3.0f%%         %4d/%4.0f/%4.0f      %3.0f%%\n",
+           tmpname,
            root->stat->tog01_hit,
            miss01,
            root->stat->tog_total,
@@ -114,7 +121,7 @@ bool toggle_instance_summary( FILE* ofile, mod_inst* root, char* parent_inst ) {
 
   curr = root->child_head;
   while( curr != NULL ) {
-    miss01 = miss01 + toggle_instance_summary( ofile, curr, root->name );
+    miss01 = miss01 + toggle_instance_summary( ofile, curr, tmpname );
     curr = curr->next;
   }
 
@@ -243,31 +250,39 @@ void toggle_display_verbose( FILE* ofile, sig_link* sigl ) {
 }
 
 /*!
- \param ofile  Pointer to file to display coverage results to.
- \param root   Pointer to root of instance module tree to parse.
+ \param ofile        Pointer to file to display coverage results to.
+ \param root         Pointer to root of instance module tree to parse.
+ \param parent_inst  Name of parent instance.
 
  Displays the verbose toggle coverage results to the specified output stream on
  an instance basis.  The verbose toggle coverage includes the signal names
  and their bits that did not receive 100% toggle coverage during simulation. 
 */
-void toggle_instance_verbose( FILE* ofile, mod_inst* root ) {
+void toggle_instance_verbose( FILE* ofile, mod_inst* root, char* parent_inst ) {
 
-  mod_inst* curr_inst;   /* Pointer to current instance being evaluated */
+  mod_inst* curr_inst;      /* Pointer to current instance being evaluated */
+  char      tmpname[4096];  /* Temporary name holder of instance           */
 
   assert( root != NULL );
+
+  if( strcmp( parent_inst, "*" ) == 0 ) {
+    strcpy( tmpname, root->name );
+  } else {
+    snprintf( tmpname, 4096, "%s.%s", parent_inst, root->name );
+  }
 
   fprintf( ofile, "\n" );
   fprintf( ofile, "Module: %s, File: %s, Instance: %s\n",
            root->mod->name,
            root->mod->filename,
-           root->name );
+           tmpname );
   fprintf( ofile, "--------------------------------------------------------\n" );
 
   toggle_display_verbose( ofile, root->mod->sig_head );
 
   curr_inst = root->child_head;
   while( curr_inst != NULL ) {
-    toggle_instance_verbose( ofile, curr_inst );
+    toggle_instance_verbose( ofile, curr_inst, tmpname );
     curr_inst = curr_inst->next;
   }
 
@@ -322,14 +337,14 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
     fprintf( ofile, "TOGGLE COVERAGE RESULTS BY INSTANCE\n" );
     fprintf( ofile, "-----------------------------------\n" );
-    fprintf( ofile, "Instance                  Parent                           Toggle 0 -> 1                    Toggle 1 -> 0\n" );
+    fprintf( ofile, "Instance                                                   Toggle 0 -> 1                    Toggle 1 -> 0\n" );
     fprintf( ofile, "                                                  Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit\n" );
     fprintf( ofile, "----------------------------------------------------------------------------------------------------------------\n" );
 
-    missed_found = toggle_instance_summary( ofile, instance_root, "<root>" );
+    missed_found = toggle_instance_summary( ofile, instance_root, leading_hierarchy );
     
     if( verbose && missed_found ) {
-      toggle_instance_verbose( ofile, instance_root );
+      toggle_instance_verbose( ofile, instance_root, leading_hierarchy );
     }
 
   } else {
@@ -355,6 +370,9 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.15  2002/11/02 16:16:20  phase1geo
+ Cleaned up all compiler warnings in source and header files.
+
  Revision 1.14  2002/10/29 19:57:51  phase1geo
  Fixing problems with beginning block comments within comments which are
  produced automatically by CVS.  Should fix warning messages from compiler.

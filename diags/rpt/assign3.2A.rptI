@@ -3,17 +3,17 @@ Covered -- Verilog Coverage Verbose Report
 
 LINE COVERAGE RESULTS BY INSTANCE
 ---------------------------------
-Instance                  Parent                  Hit/Miss/Total    Percent hit
+Instance                                          Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    <root>                     3/   0/   3      100%
+  main                                              3/   0/   3      100%
 =================================================================================
 
 TOGGLE COVERAGE RESULTS BY INSTANCE
 -----------------------------------
-Instance                  Parent                           Toggle 0 -> 1                    Toggle 1 -> 0
+Instance                                                   Toggle 0 -> 1                    Toggle 1 -> 0
                                                   Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
 ----------------------------------------------------------------------------------------------------------------
-  main                    <root>                     0/  82/  82        0%            0/  82/  82        0%
+  main                                              0/  82/  82        0%            0/  82/  82        0%
 
 Module: main, File: assign3.2A.v, Instance: main
 --------------------------------------------------------
@@ -35,10 +35,10 @@ error                     0->1: 1'b0
 
 COMBINATIONAL LOGIC COVERAGE RESULTS BY INSTANCE
 ------------------------------------------------
-Instance                  Parent                       Logic Combinations
+Instance                                               Logic Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    <root>                     3/   3/   6       50%
+  main                                              3/   3/   6       50%
 
 Module: main, File: assign3.2A.v, Instance: main
 --------------------------------------------------------

@@ -406,6 +406,20 @@ void scope_extract_back( char* scope, char* back, char* rest ) {
   
 }
 
+void scope_extract_scope( char* scope, char* front, char* back ) {
+
+  char* last_ptr = '\0';   /* Pointer to last dot seen */
+  char* ptr1     = scope;  /* Pointer to scope         */
+  char* ptr2     = front;  /* Pointer to front         */
+
+  back[0]  = '\0';
+
+  if( strncmp( scope, front, strlen( front ) ) == 0 ) {
+    strcpy( back, (scope + strlen( front ) + 1) );
+  }
+
+}
+
 /*
  \param scope  Scope of some signal.
 
@@ -603,6 +617,12 @@ void gen_space( char* spaces, int num_spaces ) {
 
 /*
  $Log$
+ Revision 1.20  2003/02/10 06:08:56  phase1geo
+ Lots of parser updates to properly handle UDPs, escaped identifiers, specify blocks,
+ and other various Verilog structures that Covered was not handling correctly.  Fixes
+ for proper event type handling.  Covered can now handle most of the IV test suite from
+ a parsing perspective.
+
  Revision 1.19  2003/01/04 09:25:15  phase1geo
  Fixing file search algorithm to fix bug where unexpected module that was
  ignored cannot be found.  Added instance7.v diagnostic to verify appropriate

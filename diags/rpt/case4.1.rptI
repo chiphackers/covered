@@ -3,17 +3,17 @@ Covered -- Verilog Coverage Verbose Report
 
 LINE COVERAGE RESULTS BY INSTANCE
 ---------------------------------
-Instance                  Parent                  Hit/Miss/Total    Percent hit
+Instance                                          Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    <root>                     4/   0/   4      100%
+  main                                              4/   0/   4      100%
 =================================================================================
 
 TOGGLE COVERAGE RESULTS BY INSTANCE
 -----------------------------------
-Instance                  Parent                           Toggle 0 -> 1                    Toggle 1 -> 0
+Instance                                                   Toggle 0 -> 1                    Toggle 1 -> 0
                                                   Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
 ----------------------------------------------------------------------------------------------------------------
-  main                    <root>                     1/ 102/ 103        1%            1/ 102/ 103        1%
+  main                                              1/ 102/ 103        1%            1/ 102/ 103        1%
 
 Module: main, File: case4.1.v, Instance: main
 --------------------------------------------------------
@@ -41,10 +41,10 @@ ascii_display_tagto_state  0->1: 80'b0000000000000000000000000000000000000000000
 
 COMBINATIONAL LOGIC COVERAGE RESULTS BY INSTANCE
 ------------------------------------------------
-Instance                  Parent                       Logic Combinations
+Instance                                               Logic Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    <root>                    20/   8/  28       71%
+  main                                             20/   8/  28       71%
 
 Module: main, File: case4.1.v, Instance: main
 --------------------------------------------------------

@@ -3,17 +3,17 @@ Covered -- Verilog Coverage Verbose Report
 
 LINE COVERAGE RESULTS BY INSTANCE
 ---------------------------------
-Instance                  Parent                  Hit/Miss/Total    Percent hit
+Instance                                          Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    <root>                    38/   0/  38      100%
+  main                                             38/   0/  38      100%
 =================================================================================
 
 TOGGLE COVERAGE RESULTS BY INSTANCE
 -----------------------------------
-Instance                  Parent                           Toggle 0 -> 1                    Toggle 1 -> 0
+Instance                                                   Toggle 0 -> 1                    Toggle 1 -> 0
                                                   Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
 ----------------------------------------------------------------------------------------------------------------
-  main                    <root>                    79/ 185/ 264       30%           79/ 185/ 264       30%
+  main                                             79/ 185/ 264       30%           79/ 185/ 264       30%
 
 Module: main, File: assign1.v, Instance: main
 --------------------------------------------------------
@@ -39,7 +39,7 @@ x3                        0->1: 32'b00000000000000000000000000000011
 
 COMBINATIONAL LOGIC COVERAGE RESULTS BY INSTANCE
 ------------------------------------------------
-Instance                  Parent                       Logic Combinations
+Instance                                               Logic Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    <root>                    76/   0/  76      100%
+  main                                             76/   0/  76      100%

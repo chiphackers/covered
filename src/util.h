@@ -46,6 +46,9 @@ void scope_extract_front( char* scope, char* front, char* rest );
 /*! \brief Extracts lowest level of hierarchy from specified scope. */
 void scope_extract_back( char* scope, char* back, char* rest );
 
+/*! \brief Extracts rest of scope not included in front. */
+void scope_extract_scope( char* scope, char* front, char* back );
+
 /*! \brief Returns TRUE if specified scope is local (contains no periods). */
 bool scope_local( char* scope );
 
@@ -64,6 +67,13 @@ void gen_space( char* spaces, int num_spaces );
 
 /*
  $Log$
+ Revision 1.11  2002/12/06 02:18:59  phase1geo
+ Fixing bug with calculating list and concatenation lengths when MBIT_SEL
+ expressions were included.  Also modified file parsing algorithm to be
+ smarter when searching files for modules.  This change makes the parsing
+ algorithm much more optimized and fixes the bug specified in our bug list.
+ Added diagnostic to verify fix for first bug.
+
  Revision 1.10  2002/11/05 00:20:08  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.

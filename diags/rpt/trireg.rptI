@@ -3,17 +3,17 @@ Covered -- Verilog Coverage Verbose Report
 
 LINE COVERAGE RESULTS BY INSTANCE
 ---------------------------------
-Instance                  Parent                  Hit/Miss/Total    Percent hit
+Instance                                          Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    <root>                    12/   0/  12      100%
+  main                                             12/   0/  12      100%
 =================================================================================
 
 TOGGLE COVERAGE RESULTS BY INSTANCE
 -----------------------------------
-Instance                  Parent                           Toggle 0 -> 1                    Toggle 1 -> 0
+Instance                                                   Toggle 0 -> 1                    Toggle 1 -> 0
                                                   Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
 ----------------------------------------------------------------------------------------------------------------
-  main                    <root>                     9/  13/  22       41%            9/  13/  22       41%
+  main                                              9/  13/  22       41%            9/  13/  22       41%
 
 Module: main, File: trireg.v, Instance: main
 --------------------------------------------------------
@@ -53,10 +53,10 @@ d                         0->1: 1'b1
 
 COMBINATIONAL LOGIC COVERAGE RESULTS BY INSTANCE
 ------------------------------------------------
-Instance                  Parent                       Logic Combinations
+Instance                                               Logic Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    <root>                    16/  16/  32       50%
+  main                                             16/  16/  32       50%
 
 Module: main, File: trireg.v, Instance: main
 --------------------------------------------------------

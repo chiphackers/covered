@@ -39,6 +39,7 @@ extern mod_link* mod_tail;
 extern nibble    or_optab[16];
 extern char      user_msg[USER_MSG_LENGTH];
 extern bool      one_instance_found;
+extern char      leading_hierarchy[4096];
 
 /*!
  Specifies the string Verilog scope that is currently specified in the VCD file.
@@ -92,7 +93,7 @@ bool db_write( char* file, bool parse_mode ) {
 
     /* Iterate through instance tree */
     assert( instance_root != NULL );
-    // info_db_write( db_handle );
+    info_db_write( db_handle );
     instance_db_write( instance_root, db_handle, instance_root->name, parse_mode );
     fclose( db_handle );
 
@@ -150,6 +151,9 @@ bool db_read( char* file, int read_mode ) {
   mod_link*    foundmod;             /* Found module link                              */
   mod_inst*    foundinst;            /* Found module instance                          */
   bool         merge_mode = FALSE;   /* If TRUE, we should currently be merging data   */
+
+  snprintf( user_msg, USER_MSG_LENGTH, "In db_read, file: %s, mode: %d", file, read_mode );
+  print_output( user_msg, DEBUG );
 
   /* Setup temporary module for storage */
   tmpmod.name     = mod_name;
@@ -976,6 +980,8 @@ void db_statement_set_stop( statement* stmt, statement* post, bool both ) {
 */
 void db_set_vcd_scope( char* scope ) {
 
+  char stripped_scope[4096];  /* Temporary stripped scope */
+
   snprintf( user_msg, USER_MSG_LENGTH, "In db_set_vcd_scope, scope: %s", scope );
   print_output( user_msg, DEBUG );
 
@@ -993,11 +999,21 @@ void db_set_vcd_scope( char* scope ) {
 
   }
     
-  curr_instance = instance_find_scope( instance_root, curr_inst_scope );
+  if( strcmp( leading_hierarchy, "*" ) != 0 ) {
+    scope_extract_scope( curr_inst_scope, leading_hierarchy, stripped_scope );
+  } else {
+    strcpy( stripped_scope, curr_inst_scope );
+  }
 
-  /* If we have found at least one matching instance, set the one_instance_found flag */
-  if( curr_instance != NULL ) {
-    one_instance_found = TRUE;
+  if( stripped_scope[0] != '\0' ) {
+
+    curr_instance = instance_find_scope( instance_root, stripped_scope );
+
+    /* If we have found at least one matching instance, set the one_instance_found flag */
+    if( curr_instance != NULL ) {
+      one_instance_found = TRUE;
+    }
+
   }
 
 }
@@ -1153,6 +1169,10 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.88  2003/02/13 23:44:08  phase1geo
+ Tentative fix for VCD file reading.  Not sure if it works correctly when
+ original signal LSB is != 0.  Icarus Verilog testsuite passes.
+
  Revision 1.87  2003/02/12 14:56:22  phase1geo
  Adding info.c and info.h files to handle new general information line in
  CDD file.  Support for this new feature is not complete at this time.

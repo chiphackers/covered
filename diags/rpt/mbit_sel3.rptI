@@ -3,17 +3,17 @@ Covered -- Verilog Coverage Verbose Report
 
 LINE COVERAGE RESULTS BY INSTANCE
 ---------------------------------
-Instance                  Parent                  Hit/Miss/Total    Percent hit
+Instance                                          Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    <root>                     1/   0/   1      100%
+  main                                              1/   0/   1      100%
 =================================================================================
 
 TOGGLE COVERAGE RESULTS BY INSTANCE
 -----------------------------------
-Instance                  Parent                           Toggle 0 -> 1                    Toggle 1 -> 0
+Instance                                                   Toggle 0 -> 1                    Toggle 1 -> 0
                                                   Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
 ----------------------------------------------------------------------------------------------------------------
-  main                    <root>                     0/ 263/ 263        0%            0/ 263/ 263        0%
+  main                                              0/ 263/ 263        0%            0/ 263/ 263        0%
 
 Module: main, File: mbit_sel3.v, Instance: main
 --------------------------------------------------------
@@ -39,10 +39,10 @@ f                         0->1: 1'b0
 
 COMBINATIONAL LOGIC COVERAGE RESULTS BY INSTANCE
 ------------------------------------------------
-Instance                  Parent                       Logic Combinations
+Instance                                               Logic Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    <root>                    10/  10/  20       50%
+  main                                             10/  10/  20       50%
 
 Module: main, File: mbit_sel3.v, Instance: main
 --------------------------------------------------------

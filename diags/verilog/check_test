@@ -5,7 +5,8 @@
 # Date:    12/28/2002
 # Purpose: Verifies that specified diagnostic successfully passed all phases of testing.
 
-$test = $ARGV[0];
+$test   = $ARGV[0];
+$rm_cdd = $ARGV[1];
 
 # Defines
 $CDD_DIR    = "../cdd";
@@ -39,7 +40,7 @@ system( "rm -f *.vcd" ) && die;
 
 # Check CDD file
 $check1 = system( "diff ${test}.cdd ${CDD_DIR}/${test}.cdd" );
-if( $check1 == 0 ) {
+if( ($check1 == 0) && ($rm_cdd == 1) ) {
   system( "rm ${test}.cdd" ) && die;
 }
 

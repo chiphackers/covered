@@ -47,6 +47,7 @@ extern mod_link* mod_head;
 extern bool         report_covered;
 extern unsigned int report_comb_depth;
 extern bool         report_instance;
+extern char         leading_hierarchy[4096];
 
 
 /*!
@@ -173,9 +174,10 @@ void combination_get_stats( exp_link* expl, float* total, int* hit ) {
 */
 bool combination_instance_summary( FILE* ofile, mod_inst* root, char* parent ) {
 
-  mod_inst* curr;          /* Pointer to current child module instance of this node */
-  float     percent;       /* Percentage of lines hit                               */
-  float     miss;          /* Number of lines missed                                */
+  mod_inst* curr;           /* Pointer to current child module instance of this node */
+  float     percent;        /* Percentage of lines hit                               */
+  float     miss;           /* Number of lines missed                                */
+  char      tmpname[4096];  /* Temporary name holder of instance                     */
 
   assert( root != NULL );
   assert( root->stat != NULL );
@@ -187,9 +189,14 @@ bool combination_instance_summary( FILE* ofile, mod_inst* root, char* parent ) {
   }
   miss    = (root->stat->comb_total - root->stat->comb_hit);
 
-  fprintf( ofile, "  %-20.20s    %-20.20s    %4d/%4.0f/%4.0f      %3.0f%%\n",
-           root->name,
-           parent,
+  if( strcmp( parent, "*" ) == 0 ) {
+    strcpy( tmpname, root->name );
+  } else {
+    snprintf( tmpname, 4096, "%s.%s", parent, root->name );
+  }
+
+  fprintf( ofile, "  %-43.43s    %4d/%4.0f/%4.0f      %3.0f%%\n",
+           tmpname,
            root->stat->comb_hit,
            miss,
            root->stat->comb_total,
@@ -197,7 +204,7 @@ bool combination_instance_summary( FILE* ofile, mod_inst* root, char* parent ) {
 
   curr = root->child_head;
   while( curr != NULL ) {
-    miss = miss + combination_instance_summary( ofile, curr, root->name );
+    miss = miss + combination_instance_summary( ofile, curr, tmpname );
     curr = curr->next;
   }
 
@@ -923,33 +930,41 @@ void combination_display_verbose( FILE* ofile, stmt_link* stmtl ) {
 }
 
 /*!
- \param ofile  Pointer to file to output results to.
- \param root   Pointer to current module instance to evaluate.
+ \param ofile   Pointer to file to output results to.
+ \param root    Pointer to current module instance to evaluate.
+ \param parent  Name of parent instance.
 
  Outputs the verbose coverage report for the specified module instance
  to the specified output stream.
 */
-void combination_instance_verbose( FILE* ofile, mod_inst* root ) {
+void combination_instance_verbose( FILE* ofile, mod_inst* root, char* parent ) {
 
-  mod_inst*   curr_inst;   /* Pointer to current instance being evaluated */
+  mod_inst* curr_inst;      /* Pointer to current instance being evaluated */
+  char      tmpname[4096];  /* Temporary name holder of instance           */
 
   assert( root != NULL );
 
   if( ((root->stat->comb_hit < root->stat->comb_total) && !report_covered) ||
       ((root->stat->comb_hit > 0) && report_covered) ) {
 
+    if( strcmp( parent, "*" ) == 0 ) {
+      strcpy( tmpname, root->name );
+    } else {
+      snprintf( tmpname, 4096, "%s.%s", parent, root->name );
+    }
+
     fprintf( ofile, "\n" );
     fprintf( ofile, "Module: %s, File: %s, Instance: %s\n", 
              root->mod->name, 
              root->mod->filename,
-             root->name );
+             tmpname );
     fprintf( ofile, "--------------------------------------------------------\n" );
 
     combination_display_verbose( ofile, root->mod->stmt_tail );
 
     curr_inst = root->child_head;
     while( curr_inst != NULL ) {
-      combination_instance_verbose( ofile, curr_inst );
+      combination_instance_verbose( ofile, curr_inst, tmpname );
       curr_inst = curr_inst->next;
     }
 
@@ -1004,14 +1019,14 @@ void combination_report( FILE* ofile, bool verbose ) {
 
     fprintf( ofile, "COMBINATIONAL LOGIC COVERAGE RESULTS BY INSTANCE\n" );
     fprintf( ofile, "------------------------------------------------\n" );
-    fprintf( ofile, "Instance                  Parent                       Logic Combinations\n" );
+    fprintf( ofile, "Instance                                               Logic Combinations\n" );
     fprintf( ofile, "                                                  Hit/Miss/Total    Percent hit\n" );
     fprintf( ofile, "-------------------------------------------------------------------------------\n" );
 
-    missed_found = combination_instance_summary( ofile, instance_root, "<root>" );
+    missed_found = combination_instance_summary( ofile, instance_root, leading_hierarchy );
     
     if( verbose && (missed_found || report_covered) ) {
-      combination_instance_verbose( ofile, instance_root );
+      combination_instance_verbose( ofile, instance_root, leading_hierarchy );
     }
 
   } else {
@@ -1035,6 +1050,14 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.61  2002/12/07 17:46:52  phase1geo
+ Fixing bug with handling memory declarations.  Added diagnostic to verify
+ that memory declarations are handled properly.  Fixed bug with infinite
+ looping in statement_connect function and optimized this part of the score
+ command.  Added diagnostic to verify this fix (always9.v).  Fixed bug in
+ report command with ordering of lines and combinational logic verbose output.
+ This is now fixed correctly.
+
  Revision 1.60  2002/12/05 14:45:17  phase1geo
  Removing assertion error from instance6.1 failure; however, this case does not
  work correctly according to instance6.2.v diagnostic.  Added @(...) output in

@@ -135,9 +135,6 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
   int retval = 0;  /* Return value of this function */
 
-  /* Initialize error suppression value */
-  set_output_suppression( FALSE );
-
   /* Parse score command-line */
   if( merge_parse_args( argc, last_arg, argv ) ) {
 
@@ -165,6 +162,10 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.12  2003/02/11 05:20:52  phase1geo
+ Fixing problems with merging constant/parameter vector values.  Also fixing
+ bad output from merge command when the CDD files cannot be opened for reading.
+
  Revision 1.11  2002/11/05 00:20:07  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.

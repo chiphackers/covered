@@ -3,19 +3,19 @@ Covered -- Verilog Coverage Verbose Report
 
 LINE COVERAGE RESULTS BY INSTANCE
 ---------------------------------
-Instance                  Parent                  Hit/Miss/Total    Percent hit
+Instance                                          Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    <root>                     6/   0/   6      100%
-  switch                  main                       6/   0/   6      100%
+  main                                              6/   0/   6      100%
+  main.switch                                       6/   0/   6      100%
 =================================================================================
 
 TOGGLE COVERAGE RESULTS BY INSTANCE
 -----------------------------------
-Instance                  Parent                           Toggle 0 -> 1                    Toggle 1 -> 0
+Instance                                                   Toggle 0 -> 1                    Toggle 1 -> 0
                                                   Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
 ----------------------------------------------------------------------------------------------------------------
-  main                    <root>                     8/   4/  12       67%            6/   6/  12       50%
-  switch                  main                       4/   2/   6       67%            3/   3/   6       50%
+  main                                              8/   4/  12       67%            6/   6/  12       50%
+  main.switch                                       4/   2/   6       67%            3/   3/   6       50%
 
 Module: main, File: ifelse1.v, Instance: main
 --------------------------------------------------------
@@ -34,7 +34,7 @@ reset                     0->1: 1'b0
 z                         0->1: 1'b1
 ......................... 1->0: 1'b0 ...
 
-Module: mux, File: ./lib/mux.v, Instance: switch
+Module: mux, File: ./lib/mux.v, Instance: main.switch
 --------------------------------------------------------
 Signals not getting 100% toggle coverage
 
@@ -54,18 +54,18 @@ z                         0->1: 1'b1
 
 COMBINATIONAL LOGIC COVERAGE RESULTS BY INSTANCE
 ------------------------------------------------
-Instance                  Parent                       Logic Combinations
+Instance                                               Logic Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    <root>                     8/   2/  10       80%
-  switch                  main                       8/   2/  10       80%
+  main                                              8/   2/  10       80%
+  main.switch                                       8/   2/  10       80%
 
 Module: main, File: ifelse1.v, Instance: main
 --------------------------------------------------------
 Missed Combinations
 
 
-Module: mux, File: ./lib/mux.v, Instance: switch
+Module: mux, File: ./lib/mux.v, Instance: main.switch
 --------------------------------------------------------
 Missed Combinations
 ====================================================

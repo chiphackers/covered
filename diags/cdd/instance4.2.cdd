@@ -1,8 +1,9 @@
-3 fooman main.foo.foo instance4.v
-2 2 main.foo.foo 42 103001 0 0 
-2 1 main.foo.foo 42 203001 0 0 
-2 3 main.foo.foo 42 271f88 2 1 1 0 100aa
-1 b main.foo.foo 1 0 111aa 1
-1 c main.foo.foo 1 0 101aa 2
-1 a main.foo.foo 1 0 100aa
-4 3 main.foo.foo 3 3
+5 0 main.foo
+3 fooman foo instance4.v
+2 2 foo 42 103001 0 0 
+2 1 foo 42 203001 0 0 
+2 3 foo 42 271f88 2 1 1 0 100aa
+1 b foo 1 0 111aa 1
+1 c foo 1 0 101aa 2
+1 a foo 1 0 100aa
+4 3 foo 3 3

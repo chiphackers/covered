@@ -43,6 +43,7 @@ mod_inst* instance_root = NULL;     /*!< Pointer to root of module instance tree
 extern char* top_module;
 extern char* top_instance;
 extern char  user_msg[USER_MSG_LENGTH];
+extern char  leading_hierarchy[4096];
 
 /*!
  Creates root module for module_node tree.  If a module_node points to this node as its parent,
@@ -50,7 +51,8 @@ extern char  user_msg[USER_MSG_LENGTH];
 */
 void search_init() {
 
-  module* mod;       /* Pointer to newly created module node from top module */
+  module* mod;            /* Pointer to newly created module node from top module */
+  char    dutname[4096];  /* Instance name of top-level DUT module                */
 
   mod = module_create();
 
@@ -67,9 +69,17 @@ void search_init() {
   /* Initialize instance tree */
   if( top_instance == NULL ) {
     top_instance = strdup( top_module );
+    instance_parse_add( &instance_root, NULL, mod, strdup( top_instance ) );
+    leading_hierarchy[0] = '*';
+    leading_hierarchy[1] = '\0';
+  } else {
+    scope_extract_back( top_instance, dutname, leading_hierarchy );
+    instance_parse_add( &instance_root, NULL, mod, strdup( dutname ) );
+    if( leading_hierarchy[0] == '\0' ) {
+      leading_hierarchy[0] = '*';
+      leading_hierarchy[1] = '\0';
+    }
   }
-  
-  instance_parse_add( &instance_root, NULL, mod, strdup( top_instance ) );
 
 }
  
@@ -218,6 +228,9 @@ void search_free_lists() {
 
 /*
  $Log$
+ Revision 1.13  2002/11/02 16:16:20  phase1geo
+ Cleaned up all compiler warnings in source and header files.
+
  Revision 1.12  2002/10/29 19:57:51  phase1geo
  Fixing problems with beginning block comments within comments which are
  produced automatically by CVS.  Should fix warning messages from compiler.

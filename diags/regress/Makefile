@@ -44,13 +44,15 @@ DIAGS1        = always1        always2        always3        always3.1.11A  alwa
                 mbit_sel2      mbit_sel3      mbit_sel3.1    mbit_sel4      mbit_sel4.1 \
                 mbit_sel4.2    mbit_sel4.3    mem1           mult1          param1 \
                 param1.1       param1.2       param1.3       param3         param3.1 \
-                param3.2       param3.3       param3.4       param4         param4.1 \
-                param5         param6         param6.1       param7         pulldown1 \
-                pullup1        sbit_sel1      static1        supply0        supply1 \
-                tri            tri0           tri1
+                param3.2       param3.3       param3.4       param3.5       param4 \
+                param4.1       param5         param6         param6.1       param7 \
+                pulldown1      pullup1        sbit_sel1      static1        supply0 \
+                supply1        tri            tri0           tri1
 DIAGS2        = delay1.1
 DIAGS3        = delay1.2
 DIAGS4        = delay1.3
+
+MERGE1        = merge1
            
 IVONLYDIAGS1  = always5.1      assign1        assign2.8      ifdef1.1       implicit1 \
                 implicit2      real1.1        static2        static2.1      static2.2
@@ -67,7 +69,7 @@ VCSONLYDIAGS4 =
 
 iverilog:    clean
 	@cd ../verilog; \
-	$(MAKE) VERILOG=$(IVERILOG) VERILOG_FLAGS="$(IVERILOG_FLAGS1)" VERILOG_EXEC=$(IVERILOG_EXEC) DIAGLIST="$(DIAGS1) $(IVONLYDIAGS1)" regress
+	$(MAKE) VERILOG=$(IVERILOG) VERILOG_FLAGS="$(IVERILOG_FLAGS1)" VERILOG_EXEC=$(IVERILOG_EXEC) DIAGLIST="$(DIAGS1) $(IVONLYDIAGS1)" MERGELIST="$(MERGE1)" regress
 	@cd ../verilog; \
 	$(MAKE) VERILOG=$(IVERILOG) VERILOG_FLAGS="$(IVERILOG_FLAGS2)" VERILOG_EXEC=$(IVERILOG_EXEC) DIAGLIST="$(DIAGS2) $(IVONLYDIAGS2)" regress
 	@cd ../verilog; \
@@ -81,7 +83,7 @@ iverilog:    clean
 
 vcs:         clean
 	@cd ../verilog; \
-	$(MAKE) VERILOG=$(VCS) VERILOG_FLAGS="$(VCS_FLAGS1)" VERILOG_EXEC=$(VCS_EXEC) DIAGLIST="$(DIAGS1) $(VCSONLYDIAGS1)" regress
+	$(MAKE) VERILOG=$(VCS) VERILOG_FLAGS="$(VCS_FLAGS1)" VERILOG_EXEC=$(VCS_EXEC) DIAGLIST="$(DIAGS1) $(VCSONLYDIAGS1)" MERGELIST="$(MERGE1)" regress
 	@cd ../verilog; \
 	$(MAKE) VERILOG=$(VCS) VERILOG_FLAGS="$(VCS_FLAGS2)" VERILOG_EXEC=$(VCS_EXEC) DIAGLIST="$(DIAGS2) $(VCSONLYDIAGS2)" regress
 	@cd ../verilog; \

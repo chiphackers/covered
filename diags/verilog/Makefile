@@ -27,16 +27,35 @@ RPT_DIR       = ../rpt
 
 LOGFILE = regress.log
 
-regress:	$(COVERED) $(DIAGLIST)
+regress:	$(COVERED) $(DIAGLIST) $(MERGELIST)
 
 $(DIAGLIST):
 	@echo Running $@
 	@$(VERILOG) $(VERILOG_FLAGS) $@.v
 	@./$(VERILOG_EXEC)
-	@$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@.cfg -p dude
+	@$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@.cfg
 	-@$(COVERED) $(COVERED_GFLAG) report -d v -o $@.rptM $@.cdd
 	-@$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@.rptI $@.cdd
-	@./check_test $@
+	@./check_test $@ 1
+
+$(MERGELIST):
+	@echo Running $@
+	@$(VERILOG) $(VERILOG_FLAGS) $@a.v
+	@./$(VERILOG_EXEC)
+	@$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@a.cfg
+	-@$(COVERED) $(COVERED_GFLAG) report -d v -o $@a.rptM $@a.cdd
+	-@$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@a.rptI $@a.cdd
+	@./check_test $@a 0
+	@$(VERILOG) $(VERILOG_FLAGS) $@b.v
+	@./$(VERILOG_EXEC)
+	@$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@b.cfg
+	-@$(COVERED) $(COVERED_GFLAG) report -d v -o $@b.rptM $@b.cdd
+	-@$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@b.rptI $@b.cdd
+	@./check_test $@b 0
+	@$(COVERED) $(COVERED_GFLAG) merge -o $@.cdd $@a.cdd $@b.cdd
+	-@$(COVERED) $(COVERED_GFLAG) report -d v -o $@.rptM $@.cdd
+	-@$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@.rptI $@.cdd
+	@./check_test $@ 1
 
 $(COVERED):
 	cd $(COVERED_SRC); make
