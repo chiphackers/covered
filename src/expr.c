@@ -944,7 +944,7 @@ bool expression_operate( expression* expr ) {
     switch( SUPPL_OP( expr->suppl ) ) {
 
       case EXP_OP_XOR :
-        vector_bitwise_op( expr->value, expr->left->value, expr->right->value, xor_optab );
+        retval = vector_bitwise_op( expr->value, expr->left->value, expr->right->value, xor_optab );
         break;
 
       case EXP_OP_MULTIPLY :
@@ -1000,31 +1000,31 @@ bool expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_AND :
-        vector_bitwise_op( expr->value, expr->left->value, expr->right->value, and_optab );
+        retval = vector_bitwise_op( expr->value, expr->left->value, expr->right->value, and_optab );
         break;
 
       case EXP_OP_OR :
-        vector_bitwise_op( expr->value, expr->left->value, expr->right->value, or_optab );
+        retval = vector_bitwise_op( expr->value, expr->left->value, expr->right->value, or_optab );
         break;
 
       case EXP_OP_NAND :
-        vector_bitwise_op( expr->value, expr->left->value, expr->right->value, nand_optab );
+        retval = vector_bitwise_op( expr->value, expr->left->value, expr->right->value, nand_optab );
         break;
 
       case EXP_OP_NOR :
-        vector_bitwise_op( expr->value, expr->left->value, expr->right->value, nor_optab );
+        retval = vector_bitwise_op( expr->value, expr->left->value, expr->right->value, nor_optab );
         break;
 
       case EXP_OP_NXOR :
-        vector_bitwise_op( expr->value, expr->left->value, expr->right->value, nxor_optab );
+        retval = vector_bitwise_op( expr->value, expr->left->value, expr->right->value, nxor_optab );
         break;
 
       case EXP_OP_LT :
-        vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_LT );
+        retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_LT );
         break;
 
       case EXP_OP_GT :
-        vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_GT );
+        retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_GT );
         break;
 
       case EXP_OP_LSHIFT :
@@ -1036,27 +1036,27 @@ bool expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_EQ :
-        vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_EQ );
+        retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_EQ );
         break;
 
       case EXP_OP_CEQ :
-        vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CEQ );
+        retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CEQ );
         break;
 
       case EXP_OP_LE :
-        vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_LE );
+        retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_LE );
         break;
 
       case EXP_OP_GE :
-        vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_GE );
+        retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_GE );
         break;
  
       case EXP_OP_NE :
-        vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_NE );
+        retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_NE );
         break;
 
       case EXP_OP_CNE :
-        vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CNE );
+        retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CNE );
         break;
 
       case EXP_OP_LOR :
@@ -1064,7 +1064,7 @@ bool expression_operate( expression* expr ) {
         vector_init( &vec2, &value1b, 1 );
         vector_unary_op( &vec1, expr->left->value,  or_optab );
         vector_unary_op( &vec2, expr->right->value, or_optab );
-        vector_bitwise_op( expr->value, &vec1, &vec2, or_optab );
+        retval = vector_bitwise_op( expr->value, &vec1, &vec2, or_optab );
         break;
 
       case EXP_OP_LAND :
@@ -1072,7 +1072,7 @@ bool expression_operate( expression* expr ) {
         vector_init( &vec2, &value1b, 1 );
         vector_unary_op( &vec1, expr->left->value,  or_optab );
         vector_unary_op( &vec2, expr->right->value, or_optab );
-        vector_bitwise_op( expr->value, &vec1, &vec2, and_optab );
+        retval = vector_bitwise_op( expr->value, &vec1, &vec2, and_optab );
         break;
 
       case EXP_OP_COND :
@@ -1237,7 +1237,7 @@ bool expression_operate( expression* expr ) {
         expression_operate( expr->right );
         vector_unary_op( &vec1, expr->left->value,  or_optab );
         vector_unary_op( &vec2, expr->right->value, or_optab );
-        vector_bitwise_op( expr->value, &vec1, &vec2, or_optab );
+        retval = vector_bitwise_op( expr->value, &vec1, &vec2, or_optab );
         break;
 
       case EXP_OP_DELAY :
@@ -1260,19 +1260,19 @@ bool expression_operate( expression* expr ) {
       case EXP_OP_CASE :
         assert( expr->left != NULL );
         assert( expr->right != NULL );
-        vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CEQ );
+        retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CEQ );
         break;
 
       case EXP_OP_CASEX :
         assert( expr->left != NULL );
         assert( expr->right != NULL );
-        vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CXEQ );
+        retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CXEQ );
         break;
 
       case EXP_OP_CASEZ :
         assert( expr->left != NULL );
         assert( expr->right != NULL );
-        vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CZEQ );
+        retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CZEQ );
         break;
 
       case EXP_OP_DEFAULT :
@@ -1333,6 +1333,8 @@ bool expression_operate( expression* expr ) {
     }
 
   }
+
+  return( retval );
 
 }
 
@@ -1489,6 +1491,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.102  2004/10/22 21:40:30  phase1geo
+ More incremental updates to improve efficiency in score command (though this
+ change should not, in and of itself, improve efficiency).
+
  Revision 1.101  2004/08/11 22:11:39  phase1geo
  Initial beginnings of combinational logic verbose reporting to GUI.
 

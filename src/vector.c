@@ -1153,6 +1153,9 @@ void vector_vcd_assign( vector* vec, char* value, int msb, int lsb ) {
  \param src2   Source vector 2 to perform operation on.
  \param optab  16-entry operation table.
 
+ \return Returns TRUE if assigned value differs from original vector value; otherwise,
+         returns FALSE.
+
  Generic function that takes in two vectors and performs a bitwise
  operation by using the specified operation table.  The operation
  table consists of an array of 16 integers where the integer values
@@ -1162,13 +1165,14 @@ void vector_vcd_assign( vector* vec, char* value, int msb, int lsb ) {
  corresponding bit location of the target vector.  Vector sizes will
  be properly compensated by placing zeroes.
 */
-void vector_bitwise_op( vector* tgt, vector* src1, vector* src2, nibble* optab ) {
+bool vector_bitwise_op( vector* tgt, vector* src1, vector* src2, nibble* optab ) {
 
-  vector  vec;    /* Temporary vector value            */
-  nibble  vecval; /* Temporary nibble value for vector */
-  int     i;      /* Loop iterator                     */
-  nibble  bit1;   /* Current bit value for src1        */
-  nibble  bit2;   /* Current bit value for src2        */
+  bool    retval = FALSE;  /* Return value for this function    */
+  vector  vec;             /* Temporary vector value            */
+  nibble  vecval;          /* Temporary nibble value for vector */
+  int     i;               /* Loop iterator                     */
+  nibble  bit1;            /* Current bit value for src1        */
+  nibble  bit2;            /* Current bit value for src2        */
 
   vector_init( &vec, &vecval, 1 );
 
@@ -1187,9 +1191,11 @@ void vector_bitwise_op( vector* tgt, vector* src1, vector* src2, nibble* optab )
     }
 
     VECTOR_SET_VAL( vec.value[0], optab[ ((bit1 << 2) | bit2) ] );
-    vector_set_value( tgt, vec.value, 1, 0, i );
+    retval |= vector_set_value( tgt, vec.value, 1, 0, i );
     
   }
+
+  return( retval );
 
 }
 
@@ -1199,16 +1205,19 @@ void vector_bitwise_op( vector* tgt, vector* src1, vector* src2, nibble* optab )
  \param right  Expression on right of less than sign.
  \param comp_type  Comparison type (0=LT, 1=GT, 2=EQ, 3=CEQ)
 
+ \return Returns TRUE if the assigned value differs from the original value; otherwise, returns FALSE.
+
  Performs a bitwise comparison (starting at most significant bit) of the
  left and right expressions.
 */
-void vector_op_compare( vector* tgt, vector* left, vector* right, int comp_type ) {
+bool vector_op_compare( vector* tgt, vector* left, vector* right, int comp_type ) {
 
-  int    pos;           /* Loop iterator                        */
-  nibble lbit = 0;      /* Current left expression bit value    */
-  nibble rbit = 0;      /* Current right expression bit value   */
-  bool   done = FALSE;  /* Specifies continuation of comparison */
-  nibble value;         /* Result to be stored in tgt           */
+  bool   retval = FALSE;  /* Return value for this function       */
+  int    pos;             /* Loop iterator                        */
+  nibble lbit   = 0;      /* Current left expression bit value    */
+  nibble rbit   = 0;      /* Current right expression bit value   */
+  bool   done   = FALSE;  /* Specifies continuation of comparison */
+  nibble value;           /* Result to be stored in tgt           */
 
   /* Determine at which bit position to begin comparing, start at MSB of smallest vector */
   if( left->width > right->width ) {
@@ -1279,7 +1288,9 @@ void vector_op_compare( vector* tgt, vector* left, vector* right, int comp_type 
 
   }
 
-  vector_set_value( tgt, &value, 1, 0, 0 );
+  retval = vector_set_value( tgt, &value, 1, 0, 0 );
+
+  return( retval );
 
 }
 
@@ -1625,6 +1636,10 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.51  2004/10/22 20:31:07  phase1geo
+ Returning assignment status in vector_set_value and speeding up assignment procedure.
+ This is an incremental change to help speed up design scoring.
+
  Revision 1.50  2004/08/08 12:50:27  phase1geo
  Snapshot of addition of toggle coverage in GUI.  This is not working exactly as
  it will be, but it is getting close.
