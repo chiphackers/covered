@@ -4,6 +4,10 @@
  \date     11/27/2001
 */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/types.h>
@@ -11,6 +15,9 @@
 #include <unistd.h>
 #include <assert.h>
 #include <dirent.h>
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
 
 #ifdef HAVE_MPATROL
 #include <mpdebug.h>
@@ -430,13 +437,13 @@ bool scope_local( char* scope ) {
  Allocated memory like a malloc() call but performs some pre-allocation and
  post-allocation checks to be sure that the malloc call works properly.
 */
-void* malloc_safe( int size ) {
+void* malloc_safe( size_t size ) {
 
   void* obj;      /* Object getting malloc address */
 
   if( size > 10000 ) {
     print_output( "Allocating memory chunk larger than 10000 bytes.  Possible error.", WARNING );
-    // printf( "  Memory block size request: %d bytes\n", size );
+    // printf( "  Memory block size request: %ld bytes\n", (long) size );
     assert( size <= 10000 );
   } else if( size <= 0 ) {
     print_output( "Internal:  Attempting to allocate memory of size <= 0", FATAL );
@@ -449,7 +456,7 @@ void* malloc_safe( int size ) {
     largest_malloc_size = curr_malloc_size;
   }
 
-  // printf( "Malloc size: %d, curr: %ld, largest: %ld\n", size, curr_malloc_size, largest_malloc_size );
+  // printf( "Malloc size: %ld, curr: %ld, largest: %ld\n", (long) size, curr_malloc_size, largest_malloc_size );
 
   obj = malloc( size );
   
@@ -502,6 +509,11 @@ void gen_space( char* spaces, int num_spaces ) {
 }
 
 /* $Log$
+/* Revision 1.14  2002/10/23 03:39:07  phase1geo
+/* Fixing bug in MBIT_SEL expressions to calculate the expression widths
+/* correctly.  Updated diagnostic testsuite and added diagnostic that
+/* found the original bug.  A few documentation updates.
+/*
 /* Revision 1.13  2002/10/11 05:23:21  phase1geo
 /* Removing local user message allocation and replacing with global to help
 /* with memory efficiency.

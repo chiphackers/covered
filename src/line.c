@@ -13,7 +13,7 @@
 #include "instance.h"
 #include "codegen.h"
 #include "iter.h"
-
+#include "util.h"
 
 extern mod_inst* instance_root;
 extern mod_link* mod_head;
@@ -308,6 +308,12 @@ void line_report( FILE* ofile, bool verbose ) {
 }
 
 /* $Log$
+/* Revision 1.22  2002/10/25 13:43:49  phase1geo
+/* Adding statement iterators for moving in both directions in a list with a single
+/* pointer (two-way).  This allows us to reverse statement lists without additional
+/* memory and time (very efficient).  Full regression passes and TODO list items
+/* 2 and 3 are completed.
+/*
 /* Revision 1.21  2002/10/24 23:19:39  phase1geo
 /* Making some fixes to report output.  Fixing bugs.  Added long_exp1.v diagnostic
 /* to regression suite which finds a current bug in the report underlining

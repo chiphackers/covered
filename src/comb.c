@@ -4,8 +4,15 @@
  \date     3/31/2002
 */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdio.h>
 #include <assert.h>
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
 
 #include "defines.h"
 #include "comb.h"
@@ -978,6 +985,12 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 
 /* $Log$
+/* Revision 1.49  2002/10/25 13:43:49  phase1geo
+/* Adding statement iterators for moving in both directions in a list with a single
+/* pointer (two-way).  This allows us to reverse statement lists without additional
+/* memory and time (very efficient).  Full regression passes and TODO list items
+/* 2 and 3 are completed.
+/*
 /* Revision 1.48  2002/10/25 03:44:39  phase1geo
 /* Fixing bug in comb.c that caused statically allocated string to be exceeded
 /* which caused memory corruption problems.  Full regression now passes.

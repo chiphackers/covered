@@ -28,7 +28,7 @@ done
 ac_given_srcdir=.
 ac_given_INSTALL="/usr/bin/install -c"
 
-trap 'rm -fr Makefile src/Makefile doc/Makefile doc/user/Makefile conftest*; exit 1' 1 2 15
+trap 'rm -fr Makefile src/Makefile doc/Makefile doc/user/Makefile config.h conftest*; exit 1' 1 2 15
 
 # Protect against being on the right side of a sed subst in config.status.
 sed 's/%@/@@/; s/@%/@@/; s/%g$/@g/; /@g$/s/[\\&%]/\\&/g;
@@ -40,7 +40,7 @@ s%@CFLAGS@%-g -O2%g
 s%@CPPFLAGS@%%g
 s%@CXXFLAGS@%%g
 s%@FFLAGS@%%g
-s%@DEFS@% -DPACKAGE=\"covered\" -DVERSION=\"0.1-20021026\" -DSTDC_HEADERS=1 -DSIZEOF_SHORT=2 -DSIZEOF_INT=4 -DSIZEOF_LONG=4 -DRETSIGTYPE=void %g
+s%@DEFS@%-DHAVE_CONFIG_H%g
 s%@LDFLAGS@%%g
 s%@LIBS@%%g
 s%@exec_prefix@%${prefix}%g
@@ -165,6 +165,106 @@ s%@INSTALL@%$INSTALL%g
 fi; done
 rm -f conftest.s*
 
+# These sed commands are passed to sed as "A NAME B NAME C VALUE D", where
+# NAME is the cpp macro being defined and VALUE is the value it is being given.
+#
+# ac_d sets the value in "#define NAME VALUE" lines.
+ac_dA='s%^\([ 	]*\)#\([ 	]*define[ 	][ 	]*\)'
+ac_dB='\([ 	][ 	]*\)[^ 	]*%\1#\2'
+ac_dC='\3'
+ac_dD='%g'
+# ac_u turns "#undef NAME" with trailing blanks into "#define NAME VALUE".
+ac_uA='s%^\([ 	]*\)#\([ 	]*\)undef\([ 	][ 	]*\)'
+ac_uB='\([ 	]\)%\1#\2define\3'
+ac_uC=' '
+ac_uD='\4%g'
+# ac_e turns "#undef NAME" without trailing blanks into "#define NAME VALUE".
+ac_eA='s%^\([ 	]*\)#\([ 	]*\)undef\([ 	][ 	]*\)'
+ac_eB='$%\1#\2define\3'
+ac_eC=' '
+ac_eD='%g'
 
+if test "${CONFIG_HEADERS+set}" != set; then
+  CONFIG_HEADERS="config.h"
+fi
+for ac_file in .. $CONFIG_HEADERS; do if test "x$ac_file" != x..; then
+  # Support "outfile[:infile[:infile...]]", defaulting infile="outfile.in".
+  case "$ac_file" in
+  *:*) ac_file_in=`echo "$ac_file"|sed 's%[^:]*:%%'`
+       ac_file=`echo "$ac_file"|sed 's%:.*%%'` ;;
+  *) ac_file_in="${ac_file}.in" ;;
+  esac
+
+  echo creating $ac_file
+
+  rm -f conftest.frag conftest.in conftest.out
+  ac_file_inputs=`echo $ac_file_in|sed -e "s%^%$ac_given_srcdir/%" -e "s%:% $ac_given_srcdir/%g"`
+  cat $ac_file_inputs > conftest.in
+
+  cat > conftest.frag <<CEOF
+${ac_dA}PACKAGE${ac_dB}PACKAGE${ac_dC}"covered"${ac_dD}
+${ac_uA}PACKAGE${ac_uB}PACKAGE${ac_uC}"covered"${ac_uD}
+${ac_eA}PACKAGE${ac_eB}PACKAGE${ac_eC}"covered"${ac_eD}
+${ac_dA}VERSION${ac_dB}VERSION${ac_dC}"0.1-20021026"${ac_dD}
+${ac_uA}VERSION${ac_uB}VERSION${ac_uC}"0.1-20021026"${ac_uD}
+${ac_eA}VERSION${ac_eB}VERSION${ac_eC}"0.1-20021026"${ac_eD}
+${ac_dA}HAVE_STRING_H${ac_dB}HAVE_STRING_H${ac_dC}1${ac_dD}
+${ac_uA}HAVE_STRING_H${ac_uB}HAVE_STRING_H${ac_uC}1${ac_uD}
+${ac_eA}HAVE_STRING_H${ac_eB}HAVE_STRING_H${ac_eC}1${ac_eD}
+${ac_dA}STDC_HEADERS${ac_dB}STDC_HEADERS${ac_dC}1${ac_dD}
+${ac_uA}STDC_HEADERS${ac_uB}STDC_HEADERS${ac_uC}1${ac_uD}
+${ac_eA}STDC_HEADERS${ac_eB}STDC_HEADERS${ac_eC}1${ac_eD}
+CEOF
+  sed -f conftest.frag conftest.in > conftest.out
+  rm -f conftest.in
+  mv conftest.out conftest.in
+
+  cat > conftest.frag <<CEOF
+${ac_dA}SIZEOF_SHORT${ac_dB}SIZEOF_SHORT${ac_dC}2${ac_dD}
+${ac_uA}SIZEOF_SHORT${ac_uB}SIZEOF_SHORT${ac_uC}2${ac_uD}
+${ac_eA}SIZEOF_SHORT${ac_eB}SIZEOF_SHORT${ac_eC}2${ac_eD}
+${ac_dA}SIZEOF_INT${ac_dB}SIZEOF_INT${ac_dC}4${ac_dD}
+${ac_uA}SIZEOF_INT${ac_uB}SIZEOF_INT${ac_uC}4${ac_uD}
+${ac_eA}SIZEOF_INT${ac_eB}SIZEOF_INT${ac_eC}4${ac_eD}
+${ac_dA}SIZEOF_LONG${ac_dB}SIZEOF_LONG${ac_dC}4${ac_dD}
+${ac_uA}SIZEOF_LONG${ac_uB}SIZEOF_LONG${ac_uC}4${ac_uD}
+${ac_eA}SIZEOF_LONG${ac_eB}SIZEOF_LONG${ac_eC}4${ac_eD}
+${ac_dA}RETSIGTYPE${ac_dB}RETSIGTYPE${ac_dC}void${ac_dD}
+${ac_uA}RETSIGTYPE${ac_uB}RETSIGTYPE${ac_uC}void${ac_uD}
+${ac_eA}RETSIGTYPE${ac_eB}RETSIGTYPE${ac_eC}void${ac_eD}
+CEOF
+  sed -f conftest.frag conftest.in > conftest.out
+  rm -f conftest.in
+  mv conftest.out conftest.in
+
+  cat > conftest.frag <<CEOF
+s%^[ 	]*#[ 	]*undef[ 	][ 	]*[a-zA-Z_][a-zA-Z_0-9]*%/* & */%
+CEOF
+  sed -f conftest.frag conftest.in > conftest.out
+  rm -f conftest.in
+  mv conftest.out conftest.in
+
+  rm -f conftest.frag conftest.h
+  echo "/* $ac_file.  Generated automatically by configure.  */" > conftest.h
+  cat conftest.in >> conftest.h
+  rm -f conftest.in
+  if cmp -s $ac_file conftest.h 2>/dev/null; then
+    echo "$ac_file is unchanged"
+    rm -f conftest.h
+  else
+    # Remove last slash and all that follows it.  Not all systems have dirname.
+      ac_dir=`echo $ac_file|sed 's%/[^/][^/]*$%%'`
+      if test "$ac_dir" != "$ac_file" && test "$ac_dir" != .; then
+      # The file is in a subdirectory.
+      test ! -d "$ac_dir" && mkdir "$ac_dir"
+    fi
+    rm -f $ac_file
+    mv conftest.h $ac_file
+  fi
+fi; done
+
+
+
+test -z "$CONFIG_HEADERS" || echo timestamp > stamp-h
 
 exit 0

@@ -38,6 +38,8 @@ void db_add_defparam( char* name, expression* expr );
 //! Adds specified signal to signal list.  Called by parser.
 void db_add_signal( char* name, static_expr* left, static_expr* right );
 
+void db_end_module(void);
+
 //! Finds specified signal in module and returns pointer to the signal structure.  Called by parser.
 signal* db_find_signal( char* name );
 
@@ -82,6 +84,11 @@ void db_do_timestep( int time );
 
 
 /* $Log$
+/* Revision 1.19  2002/10/23 03:39:06  phase1geo
+/* Fixing bug in MBIT_SEL expressions to calculate the expression widths
+/* correctly.  Updated diagnostic testsuite and added diagnostic that
+/* found the original bug.  A few documentation updates.
+/*
 
 /* Revision 1.18  2002/10/11 04:24:01  phase1geo
 

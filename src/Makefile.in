@@ -98,12 +98,15 @@ covered_SOURCES = parser.c \
                   vcd.c \
 		  vector.c
 
+
+INCLUDES = -I..
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
+CONFIG_HEADER = ../config.h
 CONFIG_CLEAN_FILES = 
 PROGRAMS =  $(bin_PROGRAMS)
 
 
-DEFS = @DEFS@ -I. -I$(srcdir) 
+DEFS = @DEFS@ -I. -I$(srcdir) -I..
 CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
@@ -345,7 +348,6 @@ install-exec install-data-am install-data install-am install \
 uninstall-am uninstall all-redirect all-am all installdirs \
 mostlyclean-generic distclean-generic clean-generic \
 maintainer-clean-generic clean mostlyclean distclean maintainer-clean
-
 
 parser.h parser.c: $(srcdir)/parser.y
 	bison --verbose -t -p VL -d -o parser.c $(srcdir)/parser.y

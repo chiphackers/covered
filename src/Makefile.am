@@ -32,6 +32,7 @@ covered_SOURCES = parser.c \
                   vcd.c \
 		  vector.c
 
+INCLUDES=	-I..
 parser.h parser.c: $(srcdir)/parser.y
 	bison --verbose -t -p VL -d -o parser.c $(srcdir)/parser.y
 	

@@ -1,17 +1,33 @@
 /* config.h.  Generated automatically by configure.  */
-#ifndef __CONFIG_H__
-#define __CONFIG_H__
+/* config.h.in.  Generated automatically from configure.in by autoheader.  */
 
-/*!
- \file    config.h.in
- \author   Trevor Williams  (trevorw@charter.net)
- \date     1/5/2002
- \brief    Contains defines setup by configure utility.
-*/
+/* Define to empty if the keyword does not work.  */
+/* #undef const */
 
-#define SIZEOF_SHORT 2
+/* Define as the return type of signal handlers (int or void).  */
+#define RETSIGTYPE void
+
+/* Define to `unsigned' if <sys/types.h> doesn't define.  */
+/* #undef size_t */
+
+/* Define if you have the ANSI C header files.  */
+#define STDC_HEADERS 1
+
+/* The number of bytes in a int.  */
 #define SIZEOF_INT 4
+
+/* The number of bytes in a long.  */
 #define SIZEOF_LONG 4
 
-#endif
+/* The number of bytes in a short.  */
+#define SIZEOF_SHORT 2
+
+/* Define if you have the <string.h> header file.  */
+#define HAVE_STRING_H 1
+
+/* Name of package */
+#define PACKAGE "covered"
+
+/* Version number of package */
+#define VERSION "0.1-20021026"
 

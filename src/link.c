@@ -66,8 +66,8 @@ void stmt_link_add_head( statement* stmt, stmt_link** head, stmt_link** tail ) {
     *head = *tail = tmp;
     tmp->ptr = NULL;
   } else {
-    tmp->ptr     = (stmt_link*)((int)(*head) ^ (int)NULL);
-    (*head)->ptr = (stmt_link*)((int)((*head)->ptr) ^ (int)tmp);
+    tmp->ptr     = (stmt_link*)((long int)(*head) ^ (long int)NULL);
+    (*head)->ptr = (stmt_link*)((long int)((*head)->ptr) ^ (long int)tmp);
     *head        = tmp;
   }
 
@@ -93,8 +93,8 @@ void stmt_link_add_tail( statement* stmt, stmt_link** head, stmt_link** tail ) {
     *head = *tail = tmp;
     tmp->ptr = NULL;
   } else {
-    tmp->ptr     = (stmt_link*)((int)(*tail) ^ (int)NULL);
-    (*tail)->ptr = (stmt_link*)((int)((*tail)->ptr) ^ (int)tmp);
+    tmp->ptr     = (stmt_link*)((long int)(*tail) ^ (long int)NULL);
+    (*tail)->ptr = (stmt_link*)((long int)((*tail)->ptr) ^ (long int)tmp);
     *tail        = tmp;
   }
 
@@ -476,9 +476,9 @@ void stmt_link_delete_list( stmt_link* head ) {
     statement_dealloc( curr.curr->stmt );
     curr.curr->stmt = NULL;
 
-    head      = (stmt_link*)((int)(curr.curr->ptr) ^ (int)(curr.last));
+    head      = (stmt_link*)((long int)(curr.curr->ptr) ^ (long int)(curr.last));
     if( head != NULL ) {
-      head->ptr = (stmt_link*)((int)(curr.curr) ^ (int)(head->ptr));
+      head->ptr = (stmt_link*)((long int)(curr.curr) ^ (long int)(head->ptr));
     }
 
     /* Deallocate stmt_link element itself */
@@ -570,6 +570,12 @@ void mod_link_delete_list( mod_link* head ) {
 
 
 /* $Log$
+/* Revision 1.10  2002/10/25 13:43:49  phase1geo
+/* Adding statement iterators for moving in both directions in a list with a single
+/* pointer (two-way).  This allows us to reverse statement lists without additional
+/* memory and time (very efficient).  Full regression passes and TODO list items
+/* 2 and 3 are completed.
+/*
 /* Revision 1.9  2002/07/23 12:56:22  phase1geo
 /* Fixing some memory overflow issues.  Still getting core dumps in some areas.
 /*

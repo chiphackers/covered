@@ -4,9 +4,16 @@
  \date     7/21/2002
 */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
 
 #include "vcd.h"
 #include "db.h"
@@ -260,6 +267,11 @@ void vcd_parse( char* vcd_file ) {
 }
 
 /* $Log$
+/* Revision 1.4  2002/10/12 22:21:35  phase1geo
+/* Making code fix for parameters when parameter is used in calculation of
+/* signal size.  Also adding parse ability for real numbers in a VCD file
+/* (though real number support is still avoided).
+/*
 /* Revision 1.3  2002/10/11 05:23:21  phase1geo
 /* Removing local user message allocation and replacing with global to help
 /* with memory efficiency.

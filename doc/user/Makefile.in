@@ -66,6 +66,7 @@ XGPERF = @XGPERF@
 
 man_MANS = covered.1
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
+CONFIG_HEADER = ../../config.h
 CONFIG_CLEAN_FILES = 
 man1dir = $(mandir)/man1
 MANS = $(man_MANS)

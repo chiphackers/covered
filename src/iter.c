@@ -37,11 +37,17 @@ void stmt_iter_next( stmt_iter* si ) {
   stmt_link* tmp;    /* Temporary holder for current statement link */
   
   tmp      = si->curr;
-  si->curr = (stmt_link*)((int)si->curr->ptr ^ (int)si->last);
+  si->curr = (stmt_link*)((long int)si->curr->ptr ^ (long int)si->last);
   si->last = tmp;
   
 }
 
 
-/* $Log$ */
+/* $Log$
+/* Revision 1.1  2002/10/25 13:43:49  phase1geo
+/* Adding statement iterators for moving in both directions in a list with a single
+/* pointer (two-way).  This allows us to reverse statement lists without additional
+/* memory and time (very efficient).  Full regression passes and TODO list items
+/* 2 and 3 are completed.
+/* */
 

@@ -8,6 +8,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "db.h"
 #include "defines.h"
 #include "merge.h"
 #include "util.h"
@@ -140,7 +141,7 @@ int command_merge( int argc, int last_arg, char** argv ) {
     db_read( merge_in1, READ_MODE_MERGE_INST_MERGE );
 
     /* Write out new database to output file */
-    db_write( merged_file );
+    db_write( merged_file, 0 );
 
     print_output( "\n***  Merging completed successfully!  ***", NORMAL );
 
@@ -151,6 +152,10 @@ int command_merge( int argc, int last_arg, char** argv ) {
 }
 
 /* $Log$
+/* Revision 1.7  2002/10/11 05:23:21  phase1geo
+/* Removing local user message allocation and replacing with global to help
+/* with memory efficiency.
+/*
 /* Revision 1.6  2002/07/09 04:46:26  phase1geo
 /* Adding -D and -Q options to covered for outputting debug information or
 /* suppressing normal output entirely.  Updated generated documentation and
