@@ -29,5 +29,5 @@
 #define PACKAGE "covered"
 
 /* Version number of package */
-#define VERSION "0.2pre1-20030105"
+#define VERSION "0.2pre2-20030128"
 

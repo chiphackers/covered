@@ -1,5 +1,43 @@
 Covered-Related NEWS
 ====================
+    * 01/28/2003
+
+Release covered-0.2pre2 made.  Bug fixes and enhancements for allowing more Verilog
+code to be parsed without spewing parsing errors.  The list of open bugs is empty at
+the moment.  I will be working on enhancing the user documents and development
+documents in preparation for the stable release.  The stable release will be made
+next unless there are new bugs found for which the bug fixes convince me that additional
+testing is necessary.  The following is a list of the changes for this release.
+
+  - Fixed bug with copying instance trees for instances of modules that were previously
+    parsed and built into the main instance tree.
+  - Fixing bug in file finder so that only missing modules are displayed after the
+    parsing phase is completed.
+  - Updated output of filenames as they are parsed to give more consistent look.
+  - Fixing bug with leftover tmp* file when missing module error is reported.
+  - Adding parsing support for pullup, pulldown and gate types though these are not
+    supported for coverage at the current time (probably will be supported after stable
+    release).
+  - Adding parsing support for real numbers in statement delays.
+  - Fixing case where statement is found to be unsupported in middle of statement tree.
+    The entire statement tree is removed from consideration for simulation.
+  - Added preliminary support for parsing attributes though the parsing support is not
+    complete at this time.
+  - Fixing bug with line ordering where case statement lines were not being output
+    to reports.
+  - Updates to regression suite
+  - Development documentation updates.
+
+The way that Covered looks and feels for 0.2 stable release is set in stone now.  Please
+make sure that you test this version as much as possible to get any leftover bugs out of
+the code.  I only plan on updating documentation and code comments now so stable release
+is planned for the next release.
+
+I've got some exciting things in Covered's future in plan after 0.2 stable release,
+including FSM support, new text report look, code optimizations, support to be fully
+Verilog-2001 compliant, a parallel scoring algorithm, and a new GTK+ interface.
+Happy testing!
+
     * 01/05/2003
 
 Happy New Year!  Release covered-0.2pre1_20030105 made.  This release is primarily a
