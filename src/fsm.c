@@ -456,19 +456,8 @@ void fsm_get_stats( fsm_link* table, float* state_total, int* state_hit, float* 
 
   curr = table;
   while( curr != NULL ) {
-
-    /* Calculate state totals */
-    *state_total += (0x1 << curr->table->to_sig->value->width);
-
-    /* Calculate arc totals -- this is not the correct way yet */
-    *arc_total   += *state_total * *state_total;
-
-    /* Calculate state and arc hits */
-    (*state_hit) = arc_state_hits( curr->table->table );
-    (*arc_hit)   = arc_transition_hits( curr->table->table );
-
+    arc_get_stats( curr->table->table, state_total, state_hit, arc_total, arc_hit );
     curr = curr->next;
-
   }
 
 }
@@ -514,7 +503,13 @@ bool fsm_instance_summary( FILE* ofile, mod_inst* root, char* parent_inst ) {
     snprintf( tmpname, 4096, "%s.%s", parent_inst, root->name ); 
   }
 
-  fprintf( ofile, "  %-43.43s    %4d/%4.0f/%4.0f      %3.0f%%         %4d/%4.0f/%4.0f      %3.0f%%\n",
+  if( (root->stat->state_total == -1) || (root->stat->arc_total == -1) ) {
+    fprintf( ofile, "  %-43.43s    %4d/ ???/ ???      ???%%         %4d/ ???/ ???      ???%%\n",
+           tmpname,
+           root->stat->state_hit,
+           root->stat->arc_hit );
+  } else {
+    fprintf( ofile, "  %-43.43s    %4d/%4.0f/%4.0f      %3.0f%%         %4d/%4.0f/%4.0f      %3.0f%%\n",
            tmpname,
            root->stat->state_hit,
            state_miss,
@@ -524,6 +519,7 @@ bool fsm_instance_summary( FILE* ofile, mod_inst* root, char* parent_inst ) {
            arc_miss,
            root->stat->arc_total,
            arc_percent );
+  }
 
   curr = root->child_head;
   while( curr != NULL ) {
@@ -569,7 +565,14 @@ bool fsm_module_summary( FILE* ofile, mod_link* head ) {
     arc_miss   = (head->mod->stat->arc_total   - head->mod->stat->arc_hit);
     miss_found = ((state_miss > 0) || (arc_miss > 0)) ? TRUE : miss_found;
 
-    fprintf( ofile, "  %-20.20s    %-20.20s   %4d/%4.0f/%4.0f      %3.0f%%         %4d/%4.0f/%4.0f      %3.0f%%\n",
+    if( (head->mod->stat->state_total == -1) || (head->mod->stat->arc_total == -1) ) {
+      fprintf( ofile, "  %-20.20s    %-20.20s   %4d/ ???/ ???      ???%%         %4d/ ???/ ???      ???%%\n",
+           head->mod->name,
+           head->mod->filename,
+           head->mod->stat->state_hit,
+           head->mod->stat->arc_hit );
+    } else {
+      fprintf( ofile, "  %-20.20s    %-20.20s   %4d/%4.0f/%4.0f      %3.0f%%         %4d/%4.0f/%4.0f      %3.0f%%\n",
              head->mod->name,
              head->mod->filename,
              head->mod->stat->state_hit,
@@ -580,6 +583,7 @@ bool fsm_module_summary( FILE* ofile, mod_link* head ) {
              arc_miss,
              head->mod->stat->arc_total,
              arc_percent );
+    }
 
     head = head->next;
 
@@ -690,6 +694,10 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.9  2003/09/13 02:59:34  phase1geo
+ Fixing bugs in arc.c created by extending entry supplemental field to 5 bits
+ from 3 bits.  Additional two bits added for calculating unique states.
+
  Revision 1.8  2003/09/12 04:47:00  phase1geo
  More fixes for new FSM arc transition protocol.  Everything seems to work now
  except that state hits are not being counted correctly.

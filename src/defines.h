@@ -813,6 +813,8 @@
 
 #define ARC_STATUS_SIZE         7       /*!< Number of characters comprising arc status         */
 
+#define ARC_TRANS_KNOWN         0       /*!< Bit position of transitions known field in suppl   */
+
 /*! @} */
 
 /*!
@@ -1426,6 +1428,10 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.78  2003/09/13 02:59:34  phase1geo
+ Fixing bugs in arc.c created by extending entry supplemental field to 5 bits
+ from 3 bits.  Additional two bits added for calculating unique states.
+
  Revision 1.77  2003/09/12 04:47:00  phase1geo
  More fixes for new FSM arc transition protocol.  Everything seems to work now
  except that state hits are not being counted correctly.

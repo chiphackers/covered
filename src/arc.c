@@ -142,6 +142,7 @@ void arc_set_suppl( char* arcs, int suppl ) {
 
 /*!
  \param arcs  Pointer to state transition arc array.
+ \param type  Specifies bit to retrieve.
 
  \return Returns the value of the supplemental field of the specified
          arc array.
@@ -149,9 +150,9 @@ void arc_set_suppl( char* arcs, int suppl ) {
  Retrieves the value of the supplemental field in the specified arc
  array.
 */
-int arc_get_suppl( char* arcs ) {
+int arc_get_suppl( char* arcs, int type ) {
 
-  return( (int)arcs[6] );
+  return( ((int)arcs[6] >> type) & 0x1 );
 
 }
 
@@ -445,34 +446,19 @@ void arc_add( char** arcs, int width, vector* fr_st, vector* to_st, int hit ) {
 
 }
 
-void arc_lshift( char* fr_arc, int start, char* to_arc, int width, int shift ) {
+/*!
+ \param arcs    Pointer to state transition arc array.
+ \param index1  Index of first state to compare.
+ \param pos1    Starting bit position to compare of the first state.
+ \param index2  Index of second state to compare.
+ \param pos2    Starting bit position to compare of the second state.
 
-  int to_pos;  /* Index of character in to_arc to write */
-  int fr_pos;  /* Index of character in fr_arc to read  */
-  int ptr;     /* Current bit pointer                   */
-  int i;       /* Loop iterator                         */
+ \return Returns a value of TRUE if the two state values are equal; otherwise,
+         returns a value of FALSE.
 
-  to_pos = 0;
-  fr_pos = start;
-  ptr    = shift;
-
-  for( i=0; i<width; i++ ) {
-    if( ptr >= shift ) {
-      to_arc[to_pos] = to_arc[to_pos] | ((fr_arc[fr_pos] & (0x1 << ptr)) >> shift);
-    } else {
-      to_arc[to_pos] = to_arc[to_pos] | ((fr_arc[fr_pos] & (0x1 << ptr)) << ((8 + (ptr - shift)) - ptr));
-    }
-    ptr = (ptr + 1) % 8;
-    if( ptr == 0 ) {
-      fr_pos++;
-    }
-    if( i == 7 ) {
-      to_pos++;
-    }
-  }
-    
-}
-
+ Performs a bitwise comparison of the two states indicated by their index and pos
+ values.  If both states compare, return TRUE; otherwise, return FALSE.
+*/
 bool arc_compare_states( char* arcs, int index1, int pos1, int index2, int pos2 ) {
 
   int i;  /* Loop iterator */
@@ -490,6 +476,21 @@ bool arc_compare_states( char* arcs, int index1, int pos1, int index2, int pos2 
 
 }
 
+/*!
+ \param arcs   Pointer to state transition arc array.
+ \param start  Specifies entry index to being comparing from.
+ \param left   Specifies to use the left state as the state to compare against.
+
+ Walks through the entire arc table starting at the index specified by the
+ start parameter.  If the left state is chosen to be compared against, take
+ the right state of the same entry and initially compare this state.  If the
+ state is the same, set the right state ARC_NOT_UNIQUE_R bit to a value of one
+ to indicate that this state is known to not be unique.  Perform the same comparison
+ process to all of the rest of the states in all entries after this entry.
+ If the right state is chosen to be used as the initial comparison state value,
+ start comparing the left state at the next index of the table and continue for
+ the rest of the table.
+*/
 void arc_compare_all_states( char* arcs, int start, bool left ) {
 
   int state1_pos;    /* Bit position of current state        */
@@ -544,6 +545,45 @@ void arc_compare_all_states( char* arcs, int start, bool left ) {
 
 }
 
+/*!
+ \param arcs  Pointer to state transition arc array.
+
+ \return Returns total number of states in specified arc array.
+
+ Accumulates the total number of unique states in the specified arc
+ array.  This function should only be called if the ARC_TRANS_KNOWN bit
+ is set; otherwise, an incorrect value will be reported.
+*/
+float arc_state_total( char* arcs ) {
+
+  float total = 0;  /* Total number of states hit during simulation */
+  int   i;          /* Loop iterator                                */
+
+  for( i=0; i<arc_get_curr_size( arcs ); i++ ) {
+    if( arc_get_entry_suppl( arcs, i, ARC_NOT_UNIQUE_L ) == 0 ) {
+      total++;
+    }
+    if( arc_get_entry_suppl( arcs, i, ARC_NOT_UNIQUE_R ) == 0 ) {
+      total++;
+    }
+  }
+
+  return( total );
+
+}
+
+/*!
+ \param arcs  Pointer to state transition arc array.
+
+ \return Returns number of unique states hit during simulation.
+
+ Traverses through specified state transition table, figuring out what
+ states in the table are unique.  This is done by traversing through
+ the entire arc array, comparing states that have their ARC_NOT_UNIQUE_x
+ bits set to a value 0.  If both states contain the same value, the
+ second state has its ARC_NOT_UNIQUE_x set to indicate that this state
+ is not unique to the table.
+*/
 int arc_state_hits( char* arcs ) {
 
   int hit = 0;     /* Number of states hit */
@@ -557,7 +597,9 @@ int arc_state_hits( char* arcs ) {
       if( j == 0 ) {
         if( arc_get_entry_suppl( arcs, i, ARC_NOT_UNIQUE_L ) == 0 ) {
           arc_compare_all_states( arcs, i, TRUE );
-          hit++;
+          if( arc_get_entry_suppl( arcs, i, ARC_HIT_F ) == 1 ) {
+            hit++;
+          }
           // printf( "1 Hit: %d\n", hit );
         }
       } else {
@@ -565,7 +607,9 @@ int arc_state_hits( char* arcs ) {
           if( (i + 1) < arc_get_curr_size( arcs ) ) {
             arc_compare_all_states( arcs, i, FALSE );
           }
-          hit++;
+          if( arc_get_entry_suppl( arcs, i, ARC_HIT_F ) == 1 ) {
+            hit++;
+          }
           // printf( "2 Hit: %d\n", hit );
         }
       }
@@ -577,6 +621,47 @@ int arc_state_hits( char* arcs ) {
 
 }
 
+/*!
+ \param arcs  Pointer to state transition arc array.
+
+ \return Returns the total number of state transitions found in
+         the specified arc array.
+
+ Accumulates the total number of state transitions specified in
+ the given state transition arc array.  This function should only
+ be called if the ARC_TRANS_KNOWN bit is set in the supplemental
+ field of the arc array; otherwise, its value will be incorrect.
+ For consistency, this function should be called after calling
+ arc_transition_hits().
+*/
+float arc_transition_total( char* arcs ) {
+
+  float total;  /* Number of total state transitions in arc array */
+  int   i;      /* Loop iterator                                  */
+
+  /* To start, get the current number of entries in the arc */
+  total = arc_get_curr_size( arcs );
+
+  /* Now just add to it the number of bidirectional entries */
+  for( i=0; i<arc_get_curr_size( arcs ); i++ ) {
+    if( arc_get_entry_suppl( arcs, i, ARC_BIDIR ) == 1 ) {
+      total++;
+    }
+  }
+
+  return( total );
+
+}
+
+/*!
+ \param arcs  Pointer to state transition arc array.
+
+ \return Returns the number of hit state transitions in the specified
+         arc array.
+
+ Iterates through arc array, accumulating the number of state
+ transitions that were hit in simulation.
+*/
 int arc_transition_hits( char* arcs ) {
 
   int hit = 0;     /* Number of arcs hit                          */
@@ -595,6 +680,37 @@ int arc_transition_hits( char* arcs ) {
   }
 
   return( hit );
+
+}
+
+/*!
+ \param arcs  Pointer to state transition arc array.
+ \param state_total  Pointer to total number of states in table.
+ \param state_hits   Pointer to total number of states hit during simulation.
+ \param arc_total    Pointer to total number of state transitions in table.
+ \param arc_hits     Pointer to total number of state transitions hit during simulation.
+
+ Calculates values for all specified totals from given state transition arc array.
+ If the state and state transition totals are not known (i.e., user specified state
+ variables without specifying legal states and state transitions and/or the user
+ specified state variables and state table was not able to be automatically extracted),
+ return a value of -1 for total values to indicate to the calling function that a
+ different report output is required.
+*/
+void arc_get_stats( char* arcs, float* state_total, int* state_hits, float* arc_total, int* arc_hits ) {
+
+  /* First get hits */
+  *state_hits = arc_state_hits( arcs );
+  *arc_hits   = arc_transition_hits( arcs );
+  
+  /* If the state transitions are known, calculate them; otherwise, return -1 for totals */
+  if( arc_get_suppl( arcs, ARC_TRANS_KNOWN ) == 0 ) {
+    *state_total = -1;
+    *arc_total   = -1;
+  } else {
+    *state_total = arc_state_total( arcs );
+    *arc_total   = arc_transition_total( arcs );
+  }
 
 }
 
@@ -790,6 +906,9 @@ void arc_dealloc( char* arcs ) {
 
 /*
  $Log$
+ Revision 1.6  2003/09/13 06:05:12  phase1geo
+ Adding code to properly count unique hit states.
+
  Revision 1.5  2003/09/13 02:59:34  phase1geo
  Fixing bugs in arc.c created by extending entry supplemental field to 5 bits
  from 3 bits.  Additional two bits added for calculating unique states.
