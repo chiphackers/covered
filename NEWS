@@ -9,6 +9,14 @@ the way for report viewing that will be available in alpha version in the next d
 release.  Below are some of the highlights of this release.
 
   - Added GUI interfacing functions in preparation of upcoming GUI report viewing utility.
+  - Added more information about expressions to line and combinational logic coverage verbose
+    information.  Rather than just outputting the RHS of the expression, the LHS and assignment
+    operator (blocking or non-blocking) or IF statement are output to give the user a better
+    context of the missed logic.
+  - Fixed bug in param.c where parameters found in the RHS of expressions that were part of
+    statements being removed were not being properly removed.
+  - Fixed bug in sim.c where expressions in tree above conditional operator were not being
+    evaluated if conditional expression was not at the top of tree.
   - 
 
     * 11/16/2003
