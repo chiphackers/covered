@@ -11,17 +11,6 @@
  during the parsing stage can be found \ref race_condition_types.
 
  \par
- -# All sequential logic uses non-blocking assignments.
- -# All latches use non-blocking assignments.
- -# All combinational logic in an always block uses blocking assignments.
- -# All mixed sequential and combinational logic in the same always block uses non-blocking assignments.
- -# Blocking and non-blocking assignments should not be used in the same always block.
- -# Assignments made to a variable should only be done within one always block.
- -# The $strobe system call should only be used to display variables that were assigned using non-blocking
-    assignments.
- -# No #0 procedural assignments should exist.
-
- \par
  The failure of any one of these rules will cause Covered to either display warning type messages to the user when
  the race condition checking flag has not been set or error messages when the race condition checking flag has
  been set by the user.
@@ -39,6 +28,7 @@
 #include "statement.h"
 #include "iter.h"
 #include "vector.h"
+#include "link.h"
 
 
 stmt_blk* sb = NULL;
@@ -640,6 +630,58 @@ void race_report( FILE* ofile, bool verbose ) {
 }
 
 /*!
+ \param modname   Name of module to search for
+ \param lines     Pointer to an array of lines that contain line numbers of race condition statements
+ \param line_cnt  Pointer to number of elements that exist in lines array
+
+ \return Returns TRUE if the specified module name was found in the design; otherwise, returns FALSE.
+
+ Collects all of the line numbers in the specified module that were ignored from coverage due to
+ detecting a race condition.  This function is primarily used by the GUI for outputting purposes.
+*/
+bool race_collect_lines( char* modname, int** lines, int* line_cnt ) {
+
+  bool      retval    = TRUE;  /* Return value for this function                           */
+  module    mod;               /* Temporary module used to search for module name          */
+  mod_link* modl;              /* Pointer to found module link containing specified module */
+  race_blk* curr_race = NULL;  /* Pointer to current race condition block                  */
+  int       i;                 /* Loop iterator                                            */
+  int       line_size = 20;    /* Current number of lines allocated in lines array         */
+
+  mod.name = strdup_safe( modname, __FILE__, __LINE__ );
+
+  if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
+
+    /* Begin by allocating some memory for the lines */
+    *lines    = (int*)malloc_safe( (sizeof( int ) * line_size), __FILE__, __LINE__ );
+    *line_cnt = 0;
+
+    curr_race = modl->mod->race_head;
+    while( curr_race != NULL ) {
+      for( i=curr_race->start_line; i<=curr_race->end_line; i++ ) {
+	if( *line_cnt == line_size ) {
+          line_size += 20;
+	  *lines = (int*)realloc( *lines, (sizeof( int ) * line_size) );
+	}
+        (*lines)[*line_cnt] = i;
+	(*line_cnt)++;
+      }
+      curr_race = curr_race->next;
+    }
+
+  } else { 
+
+    retval = FALSE;
+
+  }
+
+  free_safe( mod.name );
+
+  return( retval );
+
+}
+
+/*!
  \param rb  Pointer to race condition block to deallocate.
 
  Recursively deallocates the specified race condition block list.
@@ -660,6 +702,12 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.20  2005/02/05 04:13:30  phase1geo
+ Started to add reporting capabilities for race condition information.  Modified
+ race condition reason calculation and handling.  Ran -Wall on all code and cleaned
+ things up.  Cleaned up regression as a result of these changes.  Full regression
+ now passes.
+
  Revision 1.19  2005/02/04 23:55:53  phase1geo
  Adding code to support race condition information in CDD files.  All code is
  now in place for writing/reading this data to/from the CDD file (although

@@ -62,8 +62,8 @@ proc process_module_line_cov {} {
 
 proc calc_and_display_line_cov {} {
 
-  global cov_type uncov_type mod_inst_type mod_list
-  global uncovered_lines covered_lines
+  global cov_type uncov_type race_type mod_inst_type mod_list
+  global uncovered_lines covered_lines race_lines
   global curr_mod_name
 
   if {$curr_mod_name != 0} {
@@ -71,8 +71,10 @@ proc calc_and_display_line_cov {} {
     # Get list of uncovered/covered lines
     set uncovered_lines 0
     set covered_lines   0
+    set race_lines      0
     tcl_func_collect_uncovered_lines $curr_mod_name
     tcl_func_collect_covered_lines   $curr_mod_name
+    tcl_func_collect_race_lines      $curr_mod_name
 
     display_line_cov
 
@@ -83,53 +85,64 @@ proc calc_and_display_line_cov {} {
 proc display_line_cov {} {
 
   global fileContent file_name
-  global uncov_fgColor uncov_bgColor cov_fgColor cov_bgColor
-  global uncovered_lines covered_lines uncov_type cov_type
+  global uncov_fgColor uncov_bgColor
+  global cov_fgColor cov_bgColor
+  global race_fgColor race_bgColor
+  global uncovered_lines covered_lines race_lines
+  global uncov_type cov_type race_type
   global start_line end_line
   global line_summary_total line_summary_hit
+  global curr_mod_name
 
-  # Populate information bar
-  if {$file_name != 0} {
-    .info configure -text "Filename: $file_name"
-  }
+  if {$curr_mod_name != 0} {
 
-  .bot.right.txt tag configure uncov_colorMap -foreground $uncov_fgColor -background $uncov_bgColor
-  .bot.right.txt tag configure cov_colorMap   -foreground $cov_fgColor   -background $cov_bgColor
-
-  # Allow us to write to the text box
-  .bot.right.txt configure -state normal
-
-  # Clear the text-box before any insertion is being made
-  .bot.right.txt delete 1.0 end
-
-  set contents [split $fileContent($file_name) \n]
-  set linecount 1
-
-  if {$end_line != 0} {
-
-    # First, populate the summary information
-    .covbox.ht configure -text "$line_summary_hit"
-    .covbox.tt configure -text "$line_summary_total"
-
-    # Next, populate text box with file contents including highlights for covered/uncovered lines
-    foreach phrase $contents {
-      if [expr [expr $start_line <= $linecount] && [expr $end_line >= $linecount]] {
-        set line [format {%7d  %s} $linecount [append phrase "\n"]]
-        if {[expr $uncov_type == 1] && [expr [lsearch $uncovered_lines $linecount] != -1]} {
-          .bot.right.txt insert end $line uncov_colorMap
-        } elseif {[expr $cov_type == 1] && [expr [lsearch $covered_lines $linecount] != -1]} {
-          .bot.right.txt insert end $line cov_colorMap
-        } else {
-          .bot.right.txt insert end $line
-        }
-      }
-      incr linecount
+    # Populate information bar
+    if {$file_name != 0} {
+      .info configure -text "Filename: $file_name"
     }
 
-  }
+    .bot.right.txt tag configure uncov_colorMap -foreground $uncov_fgColor -background $uncov_bgColor
+    .bot.right.txt tag configure cov_colorMap   -foreground $cov_fgColor   -background $cov_bgColor
+    .bot.right.txt tag configure race_colorMap  -foreground $race_fgColor  -background $race_bgColor
 
-  # Now cause the text box to be read-only again
-  .bot.right.txt configure -state disabled
+    # Allow us to write to the text box
+    .bot.right.txt configure -state normal
+
+    # Clear the text-box before any insertion is being made
+    .bot.right.txt delete 1.0 end
+
+    set contents [split $fileContent($file_name) \n]
+    set linecount 1
+
+    if {$end_line != 0} {
+
+      # First, populate the summary information
+      .covbox.ht configure -text "$line_summary_hit"
+      .covbox.tt configure -text "$line_summary_total"
+
+      # Next, populate text box with file contents including highlights for covered/uncovered lines
+      foreach phrase $contents {
+        if [expr [expr $start_line <= $linecount] && [expr $end_line >= $linecount]] {
+          set line [format {%7d  %s} $linecount [append phrase "\n"]]
+          if {[expr $uncov_type == 1] && [expr [lsearch $uncovered_lines $linecount] != -1]} {
+            .bot.right.txt insert end $line uncov_colorMap
+          } elseif {[expr $cov_type == 1] && [expr [lsearch $covered_lines $linecount] != -1]} {
+            .bot.right.txt insert end $line cov_colorMap
+          } elseif {[expr $race_type == 1] && [expr [lsearch $race_lines $linecount] != -1]} {
+            .bot.right.txt insert end $line race_colorMap
+          } else {
+            .bot.right.txt insert end $line
+          }
+        }
+        incr linecount
+      }
+
+    }
+
+    # Now cause the text box to be read-only again
+    .bot.right.txt configure -state disabled
+
+  }
 
   return
 
@@ -172,7 +185,7 @@ proc process_module_toggle_cov {} {
 proc calc_and_display_toggle_cov {} {
 
   global cov_type uncov_type mod_inst_type mod_list
-  global uncovered_toggles covered_toggles
+  global uncovered_toggles covered_toggles race_toggles
   global curr_mod_name start_line
   global toggle_summary_hit toggle_summary_total
 
@@ -206,7 +219,8 @@ proc calc_and_display_toggle_cov {} {
 proc display_toggle_cov {} {
 
   global fileContent file_name
-  global uncov_fgColor uncov_bgColor cov_fgColor cov_bgColor
+  global uncov_fgColor uncov_bgColor
+  global cov_fgColor cov_bgColor
   global uncovered_toggles covered_toggles
   global uncov_type cov_type
   global start_line end_line
@@ -285,10 +299,10 @@ proc display_toggle_cov {} {
 
     }
 
-  }
+    # Now cause the text box to be read-only again
+    .bot.right.txt configure -state disabled
 
-  # Now cause the text box to be read-only again
-  .bot.right.txt configure -state disabled
+  }
 
   return
 
@@ -330,8 +344,8 @@ proc process_module_comb_cov {} {
 
 proc calc_and_display_comb_cov {} {
 
-  global cov_type uncov_type mod_inst_type mod_list
-  global uncovered_combs covered_combs
+  global cov_type uncov_type race_type mod_inst_type mod_list
+  global uncovered_combs covered_combs race_lines
   global curr_mod_name start_line
   global comb_summary_hit comb_summary_total
 
@@ -340,7 +354,9 @@ proc calc_and_display_comb_cov {} {
     # Get list of uncovered/covered combinational logic 
     set uncovered_combs ""
     set covered_combs   ""
+    set race_lines      ""
     tcl_func_collect_combs $curr_mod_name $start_line
+    tcl_func_collect_race_lines $curr_mod_name
 
     # Calculate combinational logic hit and total values
     if {[llength $covered_combs] == 0} {
@@ -364,9 +380,11 @@ proc calc_and_display_comb_cov {} {
 proc display_comb_cov {} {
  
   global fileContent file_name
-  global uncov_fgColor uncov_bgColor cov_fgColor cov_bgColor
-  global uncovered_combs covered_combs
-  global uncov_type cov_type
+  global uncov_fgColor uncov_bgColor
+  global cov_fgColor cov_bgColor
+  global race_fgColor race_bgColor
+  global uncovered_combs covered_combs race_lines
+  global uncov_type cov_type race_type
   global start_line end_line
   global comb_summary_total comb_summary_hit
   global cov_rb mod_inst_type mod_list
@@ -379,6 +397,7 @@ proc display_comb_cov {} {
 
     .bot.right.txt tag configure uncov_colorMap -foreground $uncov_fgColor -background $uncov_bgColor
     .bot.right.txt tag configure cov_colorMap   -foreground $cov_fgColor   -background $cov_bgColor
+    .bot.right.txt tag configure race_colorMap  -foreground $race_fgColor  -background $race_bgColor
 
     # Allow us to write to the text box
     .bot.right.txt configure -state normal
@@ -399,7 +418,11 @@ proc display_comb_cov {} {
       foreach phrase $contents {
         if [expr [expr $start_line <= $linecount] && [expr $end_line >= $linecount]] {
           set line [format {%7d  %s} $linecount [append phrase "\n"]]
-          .bot.right.txt insert end $line
+          if {[expr $race_type == 1] && [expr [lsearch $race_lines $linecount] != -1]} {
+            .bot.right.txt insert end $line race_colorMap
+          } else {
+            .bot.right.txt insert end $line
+          }
         }
         incr linecount
       }
@@ -470,10 +493,10 @@ proc display_comb_cov {} {
 
     }
 
-  }
+    # Now cause the text box to be read-only again
+    .bot.right.txt configure -state disabled
 
-  # Now cause the text box to be read-only again
-  .bot.right.txt configure -state disabled
+  }
 
   return
 

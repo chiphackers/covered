@@ -21,6 +21,7 @@
 #include "expr.h"
 #include "instance.h"
 #include "report.h"
+#include "race.h"
 
 
 extern mod_link* mod_head;
@@ -190,6 +191,45 @@ int tcl_func_collect_covered_lines( ClientData d, Tcl_Interp* tcl, int argc, con
   } else {
 
     snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find module %s in design", argv[1] );
+    Tcl_AddErrorInfo( tcl, user_msg );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    retval = TCL_ERROR;
+
+  }
+
+  free_safe( modname );
+
+  return( retval );
+
+}
+
+int tcl_func_collect_race_lines( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+
+  int   retval  = TCL_OK;
+  char* modname;
+  int*  lines;
+  int   line_cnt;
+  int   i       = 0;
+  char  line[20]; 
+
+  modname = strdup_safe( argv[1], __FILE__, __LINE__ );
+
+  if( race_collect_lines( modname, &lines, &line_cnt ) ) {
+
+    for( i=0; i<line_cnt; i++ ) {
+      snprintf( line, 20, "%d", lines[i] );
+      if( i == 0 ) {
+	Tcl_SetVar( tcl, "race_lines", line, (TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT) );
+      } else {
+	Tcl_SetVar( tcl, "race_lines", line, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      }
+    }
+
+    free_safe( lines );
+
+  } else {
+
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find module %s in design", argv[i] );
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = TCL_ERROR;
@@ -666,6 +706,7 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* home, char* version, char* brow
   Tcl_CreateCommand( tcl, "tcl_func_get_filename",              (Tcl_CmdProc*)(tcl_func_get_filename),              0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_collect_uncovered_lines",   (Tcl_CmdProc*)(tcl_func_collect_uncovered_lines),   0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_collect_covered_lines",     (Tcl_CmdProc*)(tcl_func_collect_covered_lines),     0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_collect_race_lines",        (Tcl_CmdProc*)(tcl_func_collect_race_lines),        0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_collect_uncovered_toggles", (Tcl_CmdProc*)(tcl_func_collect_uncovered_toggles), 0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_collect_covered_toggles",   (Tcl_CmdProc*)(tcl_func_collect_covered_toggles),   0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_collect_combs",             (Tcl_CmdProc*)(tcl_func_collect_combs),             0, 0 );
@@ -695,6 +736,12 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* home, char* version, char* brow
 
 /*
  $Log$
+ Revision 1.15  2005/02/05 04:13:30  phase1geo
+ Started to add reporting capabilities for race condition information.  Modified
+ race condition reason calculation and handling.  Ran -Wall on all code and cleaned
+ things up.  Cleaned up regression as a result of these changes.  Full regression
+ now passes.
+
  Revision 1.14  2004/09/14 19:26:28  phase1geo
  Fixing browser and version injection to Tcl scripts.
 

@@ -4,8 +4,11 @@ set uncov_fgColor blue
 set uncov_bgColor yellow
 set cov_fgColor   black
 set cov_bgColor   white
+set race_fgColor  white
+set race_bgColor  blue
 set uncov_type    1
 set cov_type      0
+set race_type     0
 set mod_inst_type "module"
 
 set file_types {
@@ -125,6 +128,21 @@ proc menu_create {.menubar} {
     .bot.right.txt xview moveto [lindex $text_x 0]
     .bot.right.txt yview moveto [lindex $text_y 0]
   }
+  $report add checkbutton -label "Show Race Conditions" -variable race_type -onvalue 1 -offvalue 0 -command {
+    set text_x [.bot.right.txt xview]
+    set text_y [.bot.right.txt yview]
+    if {$cov_rb == "line"} {
+      display_line_cov
+    } elseif {$cov_rb == "toggle"} {
+      display_toggle_cov
+    } elseif {$cov_rb == "comb"} {
+      display_comb_cov
+    } else {
+      # Error
+    }
+    .bot.right.txt xview moveto [lindex $text_x 0]
+    .bot.right.txt yview moveto [lindex $text_y 0]
+  }
   set mod_inst_type  "module"
 
   # Configure the color options
@@ -208,6 +226,48 @@ proc menu_create {.menubar} {
       display_line_cov
     } elseif {$cov_rb == "toggle"} {
       display_toggle_cov
+    } elseif {$cov_rb == "comb"} {
+      display_comb_cov
+    } else {
+      # Error
+    }
+    .bot.right.txt xview moveto [lindex $text_x 0]
+    .bot.right.txt yview moveto [lindex $text_y 0]
+  }
+
+  $m add separator
+
+  # Choose foreground color of race condition lines
+  global race_fgColor
+  $m add command -label "Choose Race Condition Foreground ..." -command {
+    set race_fgColor [tk_chooseColor -initialcolor $race_fgColor -title \
+                      "Choose Foreground Color for Race Condition Lines"]
+    # Redisplay coverage
+    set text_x [.bot.right.txt xview]
+    set text_y [.bot.right.txt yview]
+    if {$cov_rb == "line"} {
+      display_line_cov
+    } elseif {$cov_rb == "toggle"} {
+    } elseif {$cov_rb == "comb"} {
+      display_comb_cov
+    } else {
+      # Error
+    }
+    .bot.right.txt xview moveto [lindex $text_x 0]
+    .bot.right.txt yview moveto [lindex $text_y 0]
+  }
+
+  # Choose foreground color of race condition lines
+  global race_bgColor
+  $m add command -label "Choose Race Condition Background ..." -command {
+    set race_bgColor [tk_chooseColor -initialcolor $race_bgColor -title \
+                      "Choose Background Color for Race Condition Lines"]
+    # Redisplay coverage
+    set text_x [.bot.right.txt xview]
+    set text_y [.bot.right.txt yview]
+    if {$cov_rb == "line"} {
+      display_line_cov
+    } elseif {$cov_rb == "toggle"} {
     } elseif {$cov_rb == "comb"} {
       display_comb_cov
     } else {

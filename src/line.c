@@ -137,7 +137,6 @@ bool line_collect( const char* mod_name, int cov, int** lines, int* line_cnt ) {
 
   } else {
 
-    printf( "Unable to find module: %s\n", mod_name );
     retval = FALSE;
 
   }
@@ -477,6 +476,10 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.47  2005/01/07 17:59:51  phase1geo
+ Finalized updates for supplemental field changes.  Everything compiles and links
+ correctly at this time; however, a regression run has not confirmed the changes.
+
  Revision 1.46  2004/08/11 22:11:39  phase1geo
  Initial beginnings of combinational logic verbose reporting to GUI.
 
