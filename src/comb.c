@@ -291,6 +291,22 @@ void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_d
 }
 
 /*!
+ \param expl  Pointer to expression list of current module to reset.
+
+ Iterates through specified expression list, setting the combination counted bit
+ in the supplemental field of each expression.  This function needs to get called
+ whenever a new module is picked by the GUI.
+*/
+void combination_reset_counted_exprs( exp_link* expl ) {
+
+  while( expl != NULL ) {
+    expl->exp->suppl = expl->exp->suppl | (0x1 << SUPPL_LSB_COMB_CNTD);
+    expl             = expl->next;
+  }
+
+}
+
+/*!
  \param expl   Pointer to current expression link to evaluate.
  \param total  Pointer to total number of logical combinations.
  \param hit    Pointer to number of logical combinations hit during simulation.
@@ -1675,6 +1691,9 @@ bool combination_collect( const char* mod_name, expression*** covs, int* cov_cnt
   mod.name = strdup_safe( mod_name, __FILE__, __LINE__ );
   if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
 
+    /* Reset combination counted bits */
+    combination_reset_counted_exprs( modl->mod->exp_head );
+
     /* Create an array that will hold the number of uncovered combinations */
     cov_size   = 20;
     uncov_size = 20;
@@ -1910,6 +1929,12 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.102  2004/08/17 15:23:37  phase1geo
+ Added combinational logic coverage output to GUI.  Modified comb.c code to get this
+ to work that impacts ASCII coverage output; however, regression is fully passing with
+ these changes.  Combinational coverage for GUI is mostly complete regarding information
+ and usability.  Possibly some cleanup in output and in code is needed.
+
  Revision 1.101  2004/08/17 04:43:57  phase1geo
  Updating unary and binary combinational expression output functions to create
  string arrays instead of immediately sending the information to standard output
