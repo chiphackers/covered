@@ -1688,7 +1688,7 @@ statement
                 {
                   $$ = NULL;
                 }
-	| identifier { ignore_mode++; } '(' expression_list ')' ';' { ignore_mode--; }
+	| identifier '(' { ignore_mode++; } expression_list { ignore_mode--; } ')' ';'
 		{
                   if( ignore_mode == 0 ) {
 		    free_safe( $1 );
@@ -1813,7 +1813,7 @@ statement_opt
 lpvalue
 	: identifier
 	| identifier '[' { ignore_mode++; } static_expr { ignore_mode--; } ']'
-	| identifier '[' { ignore_mode++; } static_expr ':' static_expr { ignore_mode--; } ']'
+	| identifier { ignore_mode++; } range { ignore_mode--; }
 	| '{' { ignore_mode++; } expression_list { ignore_mode--; } '}'
 		{
 		  $$ = 0;
