@@ -334,7 +334,7 @@ vector* param_find_value_for_expr( expression* expr, inst_parm* icurr ) {
 */
 void param_expr_eval( expression* expr, inst_parm* ihead ) {
 
-  bool param_op;  /* If TRUE, current expression operation is a parameter operation */
+  vector* tmpval;      /* Temporary holder of found parameter value */
 
   if( expr != NULL ) {
 
@@ -346,68 +346,44 @@ void param_expr_eval( expression* expr, inst_parm* ihead ) {
       param_expr_eval( expr->right, ihead );
     }
 
-
-
-    param_op = ( (SUPPL_OP( expr->suppl ) == EXP_OP_PARAM)      ||
-                 (SUPPL_OP( expr->suppl ) == EXP_OP_PARAM_SBIT) ||
-                 (SUPPL_OP( expr->suppl ) == EXP_OP_PARAM_MBIT) );
-
-    if( param_op ) {
-
-      /* Get the parameter value */
-      expr->value = param_find_value_for_expr( expr, ihead );
-
-      /* Temporarily swap the operations */
-      switch( SUPPL_OP( expr->suppl ) ) {
-        case EXP_OP_PARAM :  
-          expr->suppl = (expr->suppl & ~(0x7f << SUPPL_LSB_OP)) | (EXP_OP_SIG << SUPPL_LSB_OP);
-          break;
-        case EXP_OP_PARAM_SBIT :
-          expr->suppl = (expr->suppl & ~(0x7f << SUPPL_LSB_OP)) | (EXP_OP_SBIT_SEL << SUPPL_LSB_OP);
-          break;
-        case EXP_OP_PARAM_MBIT :
-          expr->suppl = (expr->suppl & ~(0x7f << SUPPL_LSB_OP)) | (EXP_OP_MBIT_SEL << SUPPL_LSB_OP);
-          break;
-        default :  break;
-      }
-
-    } else {
-
-      /*
-       Since we are not a parameter identifier, let's allocate some data for us 
-       if we don't have some already.
-      */
-      assert( expr->value != NULL );
-      if( expr->value->value == NULL ) {
-        expression_create_value( expr, expr->value->width, expr->value->lsb, TRUE );
-      }
-
+    switch( SUPPL_OP( expr->suppl ) ) {
+      case EXP_OP_PARAM :
+        tmpval = param_find_value_for_expr( expr, ihead );
+        assert( expr->value != NULL );
+        expr->value->value = tmpval->value;
+        expr->value->width = tmpval->width;
+        expr->value->lsb   = 0;
+        break;
+      case EXP_OP_PARAM_SBIT :
+        tmpval = param_find_value_for_expr( expr, ihead );
+        assert( expr->value != NULL );
+        expr->value->value = tmpval->value;
+        expr->value->width = 1;
+        expr->suppl        = expr->suppl | ((tmpval->lsb & 0xffff) << SUPPL_LSB_SIG_LSB);
+        break;
+      case EXP_OP_PARAM_MBIT :
+        tmpval = param_find_value_for_expr( expr, ihead );
+        assert( expr->value != NULL );
+        expr->value->value = tmpval->value;
+        expr->suppl        = expr->suppl | ((tmpval->lsb & 0xffff) << SUPPL_LSB_SIG_LSB);
+        break;
+      default :
+        /*
+         Since we are not a parameter identifier, let's allocate some data for us 
+         if we don't have some already.
+        */
+        assert( expr->value != NULL );
+        assert( (SUPPL_OP( expr->suppl ) != EXP_OP_SIG)      &&
+                (SUPPL_OP( expr->suppl ) != EXP_OP_SBIT_SEL) &&
+                (SUPPL_OP( expr->suppl ) != EXP_OP_MBIT_SEL) );
+        if( expr->value->value == NULL ) {
+          expression_create_value( expr, expr->value->width, expr->value->lsb, TRUE );
+        }
+        break;
     }
 
     /* Perform the operation */
     expression_operate( expr );
-
-    if( param_op ) {
-
-      /* Switch the new values back to the old values */
-      switch( SUPPL_OP( expr->suppl ) ) {
-        case EXP_OP_SIG :
-          expr->suppl = (expr->suppl & ~(0x7f << SUPPL_LSB_OP)) | (EXP_OP_PARAM << SUPPL_LSB_OP);
-          break;
-        case EXP_OP_SBIT_SEL :
-          expr->suppl = (expr->suppl & ~(0x7f << SUPPL_LSB_OP)) | (EXP_OP_PARAM_SBIT << SUPPL_LSB_OP);
-          break;
-        case EXP_OP_MBIT_SEL :
-          expr->suppl = (expr->suppl & ~(0x7f << SUPPL_LSB_OP)) | (EXP_OP_PARAM_MBIT << SUPPL_LSB_OP);
-          break;
-        default :  
-          assert( (SUPPL_OP( expr->suppl ) == EXP_OP_SIG)      ||
-                  (SUPPL_OP( expr->suppl ) == EXP_OP_SBIT_SEL) ||
-                  (SUPPL_OP( expr->suppl ) == EXP_OP_MBIT_SEL) );
-          break;
-      }
-
-    }
 
   }
   
@@ -635,6 +611,12 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 
 /* $Log$
+/* Revision 1.14  2002/09/27 01:19:38  phase1geo
+/* Fixed problems with parameter overriding from command-line.  This now works
+/* and param1.2.v has been added to test this functionality.  Totally reworked
+/* regression running to allow each diagnostic to specify unique command-line
+/* arguments to Covered.  Full regression passes.
+/*
 /* Revision 1.13  2002/09/26 13:43:45  phase1geo
 /* Making code adjustments to correctly support parameter overriding.  Added
 /* parameter tests to verify supported functionality.  Full regression passes.

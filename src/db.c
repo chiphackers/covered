@@ -676,9 +676,14 @@ void db_add_expression( expression* root ) {
       snprintf( msg, 4096, "In db_add_expression, id: %d, op: %d", root->id, SUPPL_OP( root->suppl ) );
       print_output( msg, DEBUG );
    
-      // Add expression's children first.
-      db_add_expression( root->right );
-      db_add_expression( root->left ); 
+      if( (SUPPL_OP( root->suppl ) != EXP_OP_PARAM) &&          (SUPPL_OP( root->suppl ) != EXP_OP_PARAM_SBIT) &&
+          (SUPPL_OP( root->suppl ) != EXP_OP_PARAM_MBIT) ) {
+
+        // Add expression's children first.
+        db_add_expression( root->right );
+        db_add_expression( root->left );
+
+      }
 
       // Now add this expression to the list.
       exp_link_add( root, &(curr_module->exp_head), &(curr_module->exp_tail) );
@@ -1100,6 +1105,11 @@ void db_do_timestep( int time ) {
 }
 
 /* $Log$
+/* Revision 1.58  2002/09/25 02:51:44  phase1geo
+/* Removing need of vector nibble array allocation and deallocation during
+/* expression resizing for efficiency and bug reduction.  Other enhancements
+/* for parameter support.  Parameter stuff still not quite complete.
+/*
 /* Revision 1.57  2002/09/23 01:37:44  phase1geo
 /* Need to make some changes to the inst_parm structure and some associated
 /* functionality for efficiency purposes.  This checkin contains most of the

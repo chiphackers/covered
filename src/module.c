@@ -79,8 +79,6 @@ bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst ) {
   exp_link*  curr_exp;        /* Pointer to current module exp_link element     */
   stmt_link* curr_stmt;       /* Pointer to current module stmt_link element    */
   char       msg[4096];       /* Display message string                         */
-  inst_parm* icurr;           /* Current instance parameter being evaluated     */
-  expression tmpexp;          /* Temporary expression                           */
   int        old_suppl;       /* Contains supplemental value of parameter expr  */
   bool       param_op;        /* Specifies if current expression is a parameter */
 
@@ -106,17 +104,12 @@ bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst ) {
 
     /* If this expression is a parameter, find the associated instance parameter */
     if( param_op ) {
-      tmpexp.id = curr_exp->exp->id;
-      icurr     = inst->param_head;
-      while( (icurr != NULL) && (exp_link_find( &tmpexp, icurr->mparm->exp_head ) == NULL) ) {
-        icurr = icurr->next;
-      }
-      /* If parameter value was found (it should be), adjust expression for new value */
-      if( icurr != NULL ) {
-        expression_set_value_and_resize( curr_exp->exp, icurr->value );
-      } else {
-        assert( icurr != NULL );
-      }
+
+      param_expr_eval( curr_exp->exp, inst->param_head );
+
+      /* Resize the current expression tree */
+      expression_resize( curr_exp->exp );
+
       /* Finally, change the expression operation to STATIC */
       old_suppl = curr_exp->exp->suppl;
       curr_exp->exp->suppl = (curr_exp->exp->suppl & ~(0x7f << SUPPL_LSB_OP)) | 
@@ -394,6 +387,10 @@ void module_dealloc( module* mod ) {
 
 
 /* $Log$
+/* Revision 1.17  2002/09/26 13:43:45  phase1geo
+/* Making code adjustments to correctly support parameter overriding.  Added
+/* parameter tests to verify supported functionality.  Full regression passes.
+/*
 /* Revision 1.16  2002/09/25 05:38:11  phase1geo
 /* Cleaning things up a bit.
 /*

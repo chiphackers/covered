@@ -117,81 +117,6 @@ void bind_set_tree( expression* expr ) {
   nibble value1;     /* Value to initialize LAST element of AEDGE operation */
   int    i;          /* Loop iterator                                       */
 
-#ifdef DEPRECATED
-  if( expr != NULL ) {
-
-    /* Set children before I set myself */
-    if( SUPPL_OP( expr->suppl ) != EXP_OP_AEDGE ) {
-      bind_set_tree( expr->left );
-    }
-    bind_set_tree( expr->right );
-
-    if( expr->value->width == 0 ) {
-
-      /* Set my size */
-      switch( SUPPL_OP( expr->suppl ) ) {
-
-        /*
-         In the case of an AEDGE expression, it needs to have the size of its LAST child expression
-         to be the width of its right child.
-        */
-        case EXP_OP_AEDGE :
-          expression_create_value( expr->left, expr->right->value->width, expr->right->value->lsb );
-          value1 = 0x2;
-          for( i=0; i<expr->left->value->width; i++ ) {
-            vector_set_value( expr->left->value, &value1, 1, 0, i );
-          }
-          expression_create_value( expr, 1, 0 );
-          break;
-
-        /*
-         In the case of an EXPAND, we need to set the width to be the product of the value of
-         the left child and the bit-width of the right child.
-        */
-        case EXP_OP_EXPAND :
-          expression_create_value( expr, (vector_to_int( expr->left->value ) * expr->right->value->width), 0 );
-          break;
-
-        /* 
-         In the case of a MULTIPLY or LIST (for concatenation) operation, its expression width must be the sum of its
-         children's width.  Remove the current vector and replace it with the appropriately
-         sized vector.
-        */
-        case EXP_OP_MULTIPLY :
-        case EXP_OP_LIST :
-          expression_create_value( expr, (expr->left->value->width + expr->right->value->width), 0 );
-          break;
-
-        default :
-          if( (expr->left != NULL) && (expr->left->value->width > expr->right->value->width) ) {
-            expression_create_value( expr, expr->left->value->width, 0 );
-          } else {
-            expression_create_value( expr, expr->right->value->width, 0 );
-          }
-          break;
-
-      }
-
-      if( SUPPL_IS_ROOT( expr->suppl ) == 0 ) {
-        bind_set_tree( expr->parent->expr );
-      }
-
-    } else {
-  
-      switch( SUPPL_OP( expr->suppl ) ) {
-        case EXP_OP_SIG :
-        case EXP_OP_SBIT_SEL :
-        case EXP_OP_MBIT_SEL :
-          bind_remove( expr->id );
-          break;
-        default : break;
-      }
-
-    }
-
-  }
-#endif
-
   expression_resize( expr );
 
   switch( SUPPL_OP( expr->suppl ) ) {
@@ -248,8 +173,9 @@ void bind_perform( char* sig_name, expression* exp, module* mod, bool implicit_a
   /* Make expression vector be signal vector*/
   switch( SUPPL_OP( exp->suppl ) ) {
     case EXP_OP_SIG :
-      vector_dealloc( exp->value );
-      exp->value = sigl->sig->value;
+      exp->value->value = sigl->sig->value->value;
+      exp->value->width = sigl->sig->value->width;
+      exp->value->lsb   = 0;
       break;
     case EXP_OP_SBIT_SEL :
       exp->value->value = sigl->sig->value->value;
@@ -349,6 +275,11 @@ void bind() {
 }
 
 /* $Log$
+/* Revision 1.13  2002/09/25 02:51:44  phase1geo
+/* Removing need of vector nibble array allocation and deallocation during
+/* expression resizing for efficiency and bug reduction.  Other enhancements
+/* for parameter support.  Parameter stuff still not quite complete.
+/*
 /* Revision 1.12  2002/07/20 22:22:52  phase1geo
 /* Added ability to create implicit signals for local signals.  Added implicit1.v
 /* diagnostic to test for correctness.  Full regression passes.  Other tweaks to

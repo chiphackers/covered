@@ -186,10 +186,9 @@ expression* expression_create( expression* right, expression* left, int op, int 
  Recursively evaluates current expression tree to determine if the size of 
  the expression's vector value is currently correct.  It is expected that
  the first expression to call this function is the root expression of the
- expression tree.  This function is called by the expression_resize_tree
- function.
+ expression tree.
 */
-void expression_resize_tree( expression* expr ) {
+void expression_resize( expression* expr ) {
 
   int  largest_width;  /* Holds larger width of left and right children */
 
@@ -290,41 +289,6 @@ void expression_resize_tree( expression* expr ) {
 }
 
 /*!
- \param expr  Pointer to expression to evaluate.
- 
- If the current expression is the root expression of an
- expression tree, the expression_resize function is called on
- that entire tree.
-*/
-void expression_resize( expression* expr ) {
-
-  // if( SUPPL_IS_ROOT( expr->suppl ) == 0 ) {
-
-    expression_resize_tree( expr );
-
-  // }
-
-}
-
-/*!
- \param exp    Pointer to expression to set value to.
- \param value  Vector value to set specified expression to.
-
- Replaces specified expression's vector value with the specified vector value.
- After setting the value, the expression tree containing this expression is 
- resized appropriately.
-*/
-void expression_set_value_and_resize( expression* exp, vector* value ) {
-
-  /* Set the specified expression vector value to new value */
-  exp->value = value;
-
-  /* Resize the current expression tree */
-  expression_resize( exp );
-
-}
-
-/*!
  \param expr  Pointer to expression to get ID from.
  \return Returns expression ID for this expression.
 
@@ -360,13 +324,14 @@ void expression_db_write( expression* expr, FILE* file, char* scope ) {
     scope,
     expr->line,
     (expr->suppl & 0xffff),
-    expression_get_id( expr->right ),
-    expression_get_id( expr->left )
+    (SUPPL_OP( expr->suppl ) == EXP_OP_STATIC) ? 0 : expression_get_id( expr->right ),
+    (SUPPL_OP( expr->suppl ) == EXP_OP_STATIC) ? 0 : expression_get_id( expr->left )
   );
 
   if( (SUPPL_OP( expr->suppl ) != EXP_OP_SIG) && 
       (SUPPL_OP( expr->suppl ) != EXP_OP_SBIT_SEL) && 
       (SUPPL_OP( expr->suppl ) != EXP_OP_MBIT_SEL) ) {
+//    printf( "Expression value to write: " );  vector_display( expr->value );
     vector_db_write( expr->value, file, (SUPPL_OP( expr->suppl ) == EXP_OP_STATIC) );
   }
 
@@ -1001,14 +966,20 @@ int expression_bit_value( expression* expr ) {
 */
 void expression_dealloc( expression* expr, bool exp_only ) {
 
+  int op;     /* Temporary operation holder */
+
   if( expr != NULL ) {
 
-    if( (SUPPL_OP( expr->suppl ) != EXP_OP_SIG) && 
-        (SUPPL_OP( expr->suppl ) != EXP_OP_SBIT_SEL) && 
-        (SUPPL_OP( expr->suppl ) != EXP_OP_MBIT_SEL) ) {
+    op = SUPPL_OP( expr->suppl );
+
+    if( (op != EXP_OP_SIG)        && 
+        (op != EXP_OP_SBIT_SEL)   && 
+        (op != EXP_OP_MBIT_SEL)   &&
+        (op != EXP_OP_PARAM)      &&
+        (op != EXP_OP_PARAM_SBIT) &&
+        (op != EXP_OP_PARAM_MBIT) ) {
 
       /* Free up memory from vector value storage */
-      // printf( "Deallocating expr value, addr: 0x%lx\n", expr->value );
       vector_dealloc( expr->value );
       expr->value = NULL;
 
@@ -1043,6 +1014,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.50  2002/09/25 05:36:08  phase1geo
+/* Initial version of parameter support is now in place.  Parameters work on a
+/* basic level.  param1.v tests this basic functionality and param1.cdd contains
+/* the correct CDD output from handling parameters in this file.  Yeah!
+/*
 /* Revision 1.49  2002/09/25 02:51:44  phase1geo
 /* Removing need of vector nibble array allocation and deallocation during
 /* expression resizing for efficiency and bug reduction.  Other enhancements
