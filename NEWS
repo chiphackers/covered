@@ -1,6 +1,22 @@
 Covered-Related NEWS
 ====================
 
+    * 08/20/2003
+
+Some bugs were found in the covered-0.2 release that needed to be fixed to consider
+Covered to be completely stable.  This release (covered-0.2.1) contains these fixes
+which are outlined below.  Please get a hold of this stable release if you have already
+downloaded covered-0.2.
+
+  - Fixing bug with the initialization of the new symtable structure.  Only 255 of the
+    256 children of each node were being initialized correctly.  Fixes a segfault problem with
+    the symtable_dealloc routine.
+  - Fixed memory leak problem with file list in parser.  This was a long outstanding problem
+    that has now been understood and fixed.
+  - Added fclose() after the VCD parsing was complete.
+  - Fixed a memory problem with the symtable structure that caused other data structure
+    values to be corrupted.
+
     * 08/16/2003
 
 Stable release covered-0.2 finally made!  This release will be the springboard
