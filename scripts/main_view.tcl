@@ -64,6 +64,8 @@ proc main_view {} {
 proc populate_listbox {listbox_w} {
 
   global mod_inst_type mod_list inst_list
+  global line_summary_total line_summary_hit
+  global uncov_fgColor uncov_bgColor
  
   # Remove contents currently in listbox
   set lb_size [$listbox_w size]
@@ -75,12 +77,20 @@ proc populate_listbox {listbox_w} {
     tcl_func_get_module_list 
     foreach mod_name $mod_list {
       $listbox_w insert end $mod_name
+      tcl_func_get_line_summary $mod_name
+      if {$line_summary_total != $line_summary_hit} {
+        $listbox_w itemconfigure [expr [$listbox_w size] - 1] -foreground $uncov_fgColor -background $uncov_bgColor
+      }
     }
   } else {
     set inst_list ""
     tcl_func_get_instance_list
     foreach inst_name $inst_list {
       $listbox_w insert end $inst_name
+      tcl_func_get_line_summary [lindex $mod_list [expr [$listbox_w size] - 1]]
+      if {$line_summary_total != $line_summary_hit} {
+        $listbox_w itemconfigure [expr [$listbox_w size] - 1] -foreground $uncov_fgColor -background $uncov_bgColor
+      }
     }
   }
 
