@@ -223,14 +223,17 @@ void instance_resolve_params( mod_parm* mparm, mod_inst* inst ) {
   instance_gen_scope( scope, inst );
 
   while( mparm != NULL ) {
-    if( PARAM_TYPE( mparm ) == PARAM_TYPE_DECLARED ) {
+    
+    if( (PARAM_TYPE( mparm ) == PARAM_TYPE_DECLARED) ||
+        (PARAM_TYPE( mparm ) == PARAM_TYPE_SIG_LSB)  ||
+        (PARAM_TYPE( mparm ) == PARAM_TYPE_SIG_MSB) ) {
       param_resolve_declared( scope, mparm, inst->parent->param_head, &(inst->param_head), &(inst->param_tail) );
     } else {
-      assert( PARAM_TYPE( mparm ) == PARAM_TYPE_OVERRIDE );
       param_resolve_override( mparm, &(inst->param_head), &(inst->param_tail) );
     }
     
     mparm = mparm->next;
+    
   }
 
 }
@@ -482,6 +485,10 @@ void instance_dealloc( mod_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.23  2002/11/05 00:20:07  phase1geo
+ Adding development documentation.  Fixing problem with combinational logic
+ output in report command and updating full regression.
+
  Revision 1.22  2002/11/02 16:16:20  phase1geo
  Cleaned up all compiler warnings in source and header files.
 

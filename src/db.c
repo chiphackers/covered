@@ -336,10 +336,10 @@ void db_add_instance( char* scope, char* modname ) {
       /* Add instance. */
       instance_parse_add( &instance_root, curr_module, mod, scope );
 
-    }
-
-    if( (mod_in_list = str_link_find( modname, modlist_head )) == NULL ) {
-      str_link_add( modname, &modlist_head, &modlist_tail );
+      if( (mod_in_list = str_link_find( modname, modlist_head )) == NULL ) {
+        str_link_add( modname, &modlist_head, &modlist_tail );
+      }
+      
     }
 
   }
@@ -1154,6 +1154,10 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.71  2002/12/03 14:25:24  phase1geo
+ Fixing bug in db_add_statement function.  Not parsing FALSE path if the next_false
+ is the starting statement.
+
  Revision 1.70  2002/12/03 06:01:15  phase1geo
  Fixing bug where delay statement is the last statement in a statement list.
  Adding diagnostics to verify this functionality.

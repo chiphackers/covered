@@ -245,10 +245,34 @@ char* codegen_gen_expr( expression* expr, int line, int parent_op ) {
           case EXP_OP_EXPAND   :  code_size = 5;  strcpy( code_format, "{%s{%s}}" );          both = TRUE;   break;
           case EXP_OP_LIST     :  code_size = 3;  strcpy( code_format, "%s, %s" );            both = TRUE;   break;
           case EXP_OP_CONCAT   :  code_size = 3;  strcpy( code_format, "{%s}" );              both = FALSE;  break;
-          case EXP_OP_PEDGE    :  code_size = 9;  strcpy( code_format, "posedge %s" );        both = FALSE;  break;
-          case EXP_OP_NEDGE    :  code_size = 9;  strcpy( code_format, "negedge %s" );        both = FALSE;  break;
-          case EXP_OP_AEDGE    :  code_size = 1;  strcpy( code_format, "%s" );                both = FALSE;  break;
-          case EXP_OP_EOR      :  code_size = 5;  strcpy( code_format, "%s or %s" );          both = TRUE;   break;
+          case EXP_OP_PEDGE    :
+            if( SUPPL_IS_ROOT( expr->suppl ) == 1 ) {
+              code_size = 12;  strcpy( code_format, "@(posedge %s)" );  both = FALSE;
+            } else {
+              code_size = 9;   strcpy( code_format, "posedge %s" );     both = FALSE;
+            }
+            break;
+          case EXP_OP_NEDGE    :
+            if( SUPPL_IS_ROOT( expr->suppl ) == 1 ) {
+              code_size = 12;  strcpy( code_format, "@(negedge %s)" );  both = FALSE;
+            } else {
+              code_size = 9;   strcpy( code_format, "negedge %s" );     both = FALSE;
+            }
+            break;
+          case EXP_OP_AEDGE    :
+            if( SUPPL_IS_ROOT( expr->suppl ) == 1 ) {
+              code_size = 4;  strcpy( code_format, "@(%s)" );  both = FALSE;
+            } else {
+              code_size = 1;  strcpy( code_format, "%s" );     both = FALSE;
+            }
+            break;
+          case EXP_OP_EOR      :
+            if( SUPPL_IS_ROOT( expr->suppl ) == 1 ) {
+              code_size = 8;  strcpy( code_format, "@(%s or %s)" );  both = TRUE;
+            } else {
+              code_size = 5;  strcpy( code_format, "%s or %s" );     both = TRUE;
+            }
+            break;
           case EXP_OP_CASE     :  code_size = 13; strcpy( code_format, "case( %s ) %s :" );   both = TRUE;   break;
           case EXP_OP_CASEX    :  code_size = 14; strcpy( code_format, "casex( %s ) %s :" );  both = TRUE;   break;
           case EXP_OP_CASEZ    :  code_size = 15; strcpy( code_format, "casez( %s ) %s :" );  both = TRUE;   break;
@@ -304,6 +328,10 @@ char* codegen_gen_expr( expression* expr, int line, int parent_op ) {
 
 /*
  $Log$
+ Revision 1.25  2002/11/05 00:20:06  phase1geo
+ Adding development documentation.  Fixing problem with combinational logic
+ output in report command and updating full regression.
+
  Revision 1.24  2002/11/02 16:16:20  phase1geo
  Cleaned up all compiler warnings in source and header files.
 

@@ -471,10 +471,34 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
             case EXP_OP_EXPAND   :  *size = l_size + r_size + 4;  strcpy( code_fmt, " %s %s  "         );  break;
             case EXP_OP_CONCAT   :  *size = l_size + r_size + 2;  strcpy( code_fmt, " %s "             );  break;
             case EXP_OP_LIST     :  *size = l_size + r_size + 2;  strcpy( code_fmt, "%s  %s"           );  break;
-            case EXP_OP_PEDGE    :  *size = l_size + r_size + 8;  strcpy( code_fmt, "        %s"       );  break;
-            case EXP_OP_NEDGE    :  *size = l_size + r_size + 8;  strcpy( code_fmt, "        %s"       );  break;
-            case EXP_OP_AEDGE    :  *size = l_size + r_size + 0;  strcpy( code_fmt, "%s"               );  break;
-            case EXP_OP_EOR      :  *size = l_size + r_size + 4;  strcpy( code_fmt, "%s    %s"         );  break;
+            case EXP_OP_PEDGE    :
+              if( SUPPL_IS_ROOT( exp->suppl ) == 1 ) {
+                *size = l_size + r_size + 11;  strcpy( code_fmt, "          %s " );
+              } else {
+                *size = l_size + r_size + 8;   strcpy( code_fmt, "        %s" );
+              }
+              break;
+            case EXP_OP_NEDGE    :
+              if( SUPPL_IS_ROOT( exp->suppl ) == 1 ) {
+                *size = l_size + r_size + 11;  strcpy( code_fmt, "          %s " );
+              } else {
+                *size = l_size + r_size + 8;   strcpy( code_fmt, "        %s" );
+              }
+              break;
+            case EXP_OP_AEDGE    :
+              if( SUPPL_IS_ROOT( exp->suppl ) == 1 ) {
+                *size = l_size + r_size + 3;  strcpy( code_fmt, "  %s " );
+              } else {
+                *size = l_size + r_size + 0;  strcpy( code_fmt, "%s" );
+              }
+              break;
+            case EXP_OP_EOR      :
+              if( SUPPL_IS_ROOT( exp->suppl ) == 1 ) {
+                *size = l_size + r_size + 7;  strcpy( code_fmt, "  %s    %s " );
+              } else {
+                *size = l_size + r_size + 4;  strcpy( code_fmt, "%s    %s" );
+              }
+              break;
             case EXP_OP_CASE     :  *size = l_size + r_size + 11; strcpy( code_fmt, "      %s   %s  "  );  break;
             case EXP_OP_CASEX    :  *size = l_size + r_size + 12; strcpy( code_fmt, "       %s   %s  " );  break;
             case EXP_OP_CASEZ    :  *size = l_size + r_size + 12; strcpy( code_fmt, "       %s   %s  " );  break;
@@ -1008,6 +1032,12 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.59  2002/11/30 05:06:21  phase1geo
+ Fixing bug in report output for covered results.  Allowing any nettype to
+ be parsable and usable by Covered (even though some of these are unsupported
+ by Icarus Verilog at the current moment).  Added diagnostics to test all
+ net types and their proper handling.  Full regression passes at this point.
+
  Revision 1.58  2002/11/27 03:49:20  phase1geo
  Fixing bugs in score and report commands for regression.  Finally fixed
  static expression calculation to yield proper coverage results for constant

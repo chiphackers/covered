@@ -1,3 +1,257 @@
+2002-12-03 13:13  phase1geo
+
+	* diags/: cdd/always7.1.cdd, cdd/event1.cdd, regress/Makefile:
+	Updates to regression suite and Makefile for VCS runs.
+
+2002-12-03 08:25  phase1geo
+
+	* src/db.c: Fixing bug in db_add_statement function.  Not parsing
+	FALSE path if the next_false is the starting statement.
+
+2002-12-03 00:01  phase1geo
+
+	* diags/cdd/always7.cdd, diags/regress/Makefile,
+	diags/regress/always7.1.cfg, diags/regress/always7.cfg,
+	diags/regress/event1.cfg, diags/verilog/always7.1.v,
+	diags/verilog/always7.v, diags/verilog/event1.v, src/db.c,
+	src/db.h, src/parser.y, src/statement.c: Fixing bug where delay
+	statement is the last statement in a statement list.  Adding
+	diagnostics to verify this functionality.
+
+2002-12-02 18:04  phase1geo
+
+	* diags/cdd/param4.cdd, diags/cdd/param6.1.cdd, src/expr.c: Fixing
+	bug uncovered by param6.1.v diagnostic.  Full regression now
+	passes.
+
+2002-12-02 16:53  phase1geo
+
+	* diags/: regress/Makefile, regress/param6.1.cfg,
+	verilog/param6.1.v: Adding diagnostic to regression suite that hits
+	bug in handling of parameters and multi-bit selects.
+
+2002-12-02 15:46  phase1geo
+
+	* diags/cdd/param3.4.cdd, diags/cdd/param4.cdd,
+	diags/verilog/Makefile, src/Makefile.in, src/param.c: Fixing bug in
+	parameter file that handles parameters used in instances which are
+	instantiated multiple times in the design.
+
+2002-12-02 11:14  phase1geo
+
+	* diags/: cdd/assign2.4.cdd, cdd/assign2.5.cdd, cdd/assign2.6.cdd,
+	cdd/assign2.7.cdd, cdd/real1.cdd, cdd/triand.cdd, cdd/trior.cdd,
+	cdd/trireg.cdd, cdd/wand.cdd, cdd/wor.cdd, regress/Makefile,
+	regress/param3.4.cfg, verilog/param3.4.v: Updates to regression
+	suite for VCS runs.  Added diagnostic param3.4.v that hits a bug in
+	Covered parameter handling.
+
+2002-12-02 00:14  phase1geo
+
+	* diags/cdd/instance5.cdd, diags/regress/Makefile,
+	diags/regress/instance5.cfg, diags/verilog/instance5.v, src/expr.c:
+	Fixing bug when an MBIT_SEL expression is used in a module that is
+	instantiated more than once (assertion error was firing).  Added
+	diagnostic to test suite to test that this case passes.
+
+2002-12-01 00:37  phase1geo
+
+	* TODO, src/parse.c, src/parser.y, src/parser_misc.c: Adding
+	appropriate error output and causing score command to proper exit
+	if parser errors are found.
+
+2002-11-30 12:28  phase1geo
+
+	* diags/cdd/assign2.1.cdd, diags/cdd/assign2.2.cdd,
+	diags/cdd/assign2.3.cdd, diags/cdd/assign2.8.cdd,
+	diags/cdd/assign2.9.cdd, diags/cdd/assign2.cdd,
+	diags/regress/Makefile, diags/regress/assign2.1.cfg,
+	diags/regress/assign2.2.cfg, diags/regress/assign2.3.cfg,
+	diags/regress/assign2.4.cfg, diags/regress/assign2.5.cfg,
+	diags/regress/assign2.6.cfg, diags/regress/assign2.7.cfg,
+	diags/regress/assign2.8.cfg, diags/regress/assign2.9.cfg,
+	diags/regress/assign2.cfg, diags/verilog/Makefile,
+	diags/verilog/assign2.1.v, diags/verilog/assign2.2.v,
+	diags/verilog/assign2.3.v, diags/verilog/assign2.4.v,
+	diags/verilog/assign2.5.v, diags/verilog/assign2.6.v,
+	diags/verilog/assign2.7.v, diags/verilog/assign2.8.v,
+	diags/verilog/assign2.9.v, diags/verilog/assign2.v, src/parser.y:
+	Adding diagnostics to verify net declaration assignments.  Added
+	this ability to parser as well (act like the equivalent assign). 
+	Full diagnostic suite passes.
+
+2002-11-29 23:06  phase1geo
+
+	* diags/cdd/param1.3.cdd, diags/cdd/supply0.cdd,
+	diags/cdd/supply1.cdd, diags/cdd/tri.cdd, diags/cdd/tri0.cdd,
+	diags/cdd/tri1.cdd, diags/regress/Makefile,
+	diags/regress/param1.3.cfg, diags/regress/supply0.cfg,
+	diags/regress/supply1.cfg, diags/regress/tri.cfg,
+	diags/regress/tri0.cfg, diags/regress/tri1.cfg,
+	diags/regress/triand.cfg, diags/regress/trior.cfg,
+	diags/regress/trireg.cfg, diags/regress/wand.cfg,
+	diags/regress/wor.cfg, diags/verilog/Makefile,
+	diags/verilog/param1.3.v, diags/verilog/supply0.v,
+	diags/verilog/supply1.v, diags/verilog/tri.v, diags/verilog/tri0.v,
+	diags/verilog/tri1.v, diags/verilog/triand.v,
+	diags/verilog/trior.v, diags/verilog/trireg.v,
+	diags/verilog/wand.v, diags/verilog/wor.v, src/comb.c,
+	src/parser.y: Fixing bug in report output for covered results. 
+	Allowing any nettype to be parsable and usable by Covered (even
+	though some of these are unsupported by Icarus Verilog at the
+	current moment).  Added diagnostics to test all net types and their
+	proper handling.  Full regression passes at this point.
+
+2002-11-27 09:53  phase1geo
+
+	* ChangeLog, NEWS, config.h, config.status, configure,
+	configure.in, diags/cdd/include3.cdd, diags/regress/include3.cfg,
+	diags/verilog/Makefile, diags/verilog/include3.v,
+	diags/verilog/include/multi.h, doc/Makefile.in,
+	doc/devel/html/annotated.html, doc/devel/html/binding_8c.html,
+	doc/devel/html/binding_8h-source.html,
+	doc/devel/html/binding_8h.html, doc/devel/html/bug.html,
+	doc/devel/html/codegen_8c.html,
+	doc/devel/html/codegen_8h-source.html,
+	doc/devel/html/codegen_8h.html, doc/devel/html/comb_8c.html,
+	doc/devel/html/comb_8h-source.html, doc/devel/html/comb_8h.html,
+	doc/devel/html/db_8c.html, doc/devel/html/db_8h-source.html,
+	doc/devel/html/db_8h.html, doc/devel/html/defines_8h-source.html,
+	doc/devel/html/defines_8h.html,
+	doc/devel/html/devel__doc_8h-source.html,
+	doc/devel/html/devel__doc_8h.html, doc/devel/html/expr_8c.html,
+	doc/devel/html/expr_8h-source.html, doc/devel/html/expr_8h.html,
+	doc/devel/html/files.html, doc/devel/html/fsm_8c.html,
+	doc/devel/html/fsm_8h-source.html, doc/devel/html/fsm_8h.html,
+	doc/devel/html/functions.html, doc/devel/html/globals.html,
+	doc/devel/html/group__comparison__types.html,
+	doc/devel/html/group__db__types.html,
+	doc/devel/html/group__delay__expr__types.html,
+	doc/devel/html/group__expr__ops.html,
+	doc/devel/html/group__expr__suppl.html,
+	doc/devel/html/group__lexer__val__types.html,
+	doc/devel/html/group__op__tables.html,
+	doc/devel/html/group__output__type.html,
+	doc/devel/html/group__param__suppl.html,
+	doc/devel/html/group__read__modes.html,
+	doc/devel/html/group__report__detail.html,
+	doc/devel/html/group__tree__fname__comps.html,
+	doc/devel/html/group__vector__defs.html, doc/devel/html/index.html,
+	doc/devel/html/instance_8c.html,
+	doc/devel/html/instance_8h-source.html,
+	doc/devel/html/instance_8h.html, doc/devel/html/iter_8c.html,
+	doc/devel/html/iter_8h-source.html, doc/devel/html/iter_8h.html,
+	doc/devel/html/keywords_8c.html,
+	doc/devel/html/keywords_8h-source.html,
+	doc/devel/html/keywords_8h.html, doc/devel/html/lexer_8c.html,
+	doc/devel/html/line_8c.html, doc/devel/html/line_8h-source.html,
+	doc/devel/html/line_8h.html, doc/devel/html/link_8c.html,
+	doc/devel/html/link_8h-source.html, doc/devel/html/link_8h.html,
+	doc/devel/html/main_8c.html, doc/devel/html/merge_8c.html,
+	doc/devel/html/merge_8h-source.html, doc/devel/html/merge_8h.html,
+	doc/devel/html/module_8c.html,
+	doc/devel/html/module_8h-source.html,
+	doc/devel/html/module_8h.html, doc/devel/html/modules.html,
+	doc/devel/html/page_big_picture.html,
+	doc/devel/html/page_code_details.html,
+	doc/devel/html/page_code_style.html,
+	doc/devel/html/page_intro.html, doc/devel/html/page_misc.html,
+	doc/devel/html/page_project_plan.html,
+	doc/devel/html/page_testing.html, doc/devel/html/page_tools.html,
+	doc/devel/html/pages.html, doc/devel/html/param_8c.html,
+	doc/devel/html/param_8h-source.html, doc/devel/html/param_8h.html,
+	doc/devel/html/parse_8c.html, doc/devel/html/parse_8h-source.html,
+	doc/devel/html/parse_8h.html, doc/devel/html/parser_8c.html,
+	doc/devel/html/parser_8h-source.html,
+	doc/devel/html/parser_8h.html, doc/devel/html/parser__misc_8c.html,
+	doc/devel/html/parser__misc_8h-source.html,
+	doc/devel/html/parser__misc_8h.html, doc/devel/html/report_8c.html,
+	doc/devel/html/report_8h-source.html,
+	doc/devel/html/report_8h.html, doc/devel/html/score_8c.html,
+	doc/devel/html/score_8h-source.html, doc/devel/html/score_8h.html,
+	doc/devel/html/search_8c.html,
+	doc/devel/html/search_8h-source.html,
+	doc/devel/html/search_8h.html, doc/devel/html/signal_8c.html,
+	doc/devel/html/signal_8h-source.html,
+	doc/devel/html/signal_8h.html, doc/devel/html/sim_8c.html,
+	doc/devel/html/sim_8h-source.html, doc/devel/html/sim_8h.html,
+	doc/devel/html/stat_8c.html, doc/devel/html/stat_8h-source.html,
+	doc/devel/html/stat_8h.html, doc/devel/html/statement_8c.html,
+	doc/devel/html/statement_8h-source.html,
+	doc/devel/html/statement_8h.html, doc/devel/html/static_8c.html,
+	doc/devel/html/static_8h-source.html,
+	doc/devel/html/static_8h.html,
+	doc/devel/html/structcase__stmt__s-members.html,
+	doc/devel/html/structcase__stmt__s.html,
+	doc/devel/html/structexp__link__s-members.html,
+	doc/devel/html/structexp__link__s.html,
+	doc/devel/html/structexpression__s-members.html,
+	doc/devel/html/structexpression__s.html,
+	doc/devel/html/structinclude__stack__t-members.html,
+	doc/devel/html/structinclude__stack__t.html,
+	doc/devel/html/structinst__parm__s-members.html,
+	doc/devel/html/structinst__parm__s.html,
+	doc/devel/html/structkeyword-members.html,
+	doc/devel/html/structkeyword.html,
+	doc/devel/html/structmod__inst__s-members.html,
+	doc/devel/html/structmod__inst__s.html,
+	doc/devel/html/structmod__link__s-members.html,
+	doc/devel/html/structmod__link__s.html,
+	doc/devel/html/structmod__parm__s-members.html,
+	doc/devel/html/structmod__parm__s.html,
+	doc/devel/html/structmodule__s-members.html,
+	doc/devel/html/structmodule__s.html,
+	doc/devel/html/structsig__exp__bind__s-members.html,
+	doc/devel/html/structsig__exp__bind__s.html,
+	doc/devel/html/structsig__link__s-members.html,
+	doc/devel/html/structsig__link__s.html,
+	doc/devel/html/structsignal__s-members.html,
+	doc/devel/html/structsignal__s.html,
+	doc/devel/html/structstatement__s-members.html,
+	doc/devel/html/structstatement__s.html,
+	doc/devel/html/structstatic__expr__s-members.html,
+	doc/devel/html/structstatic__expr__s.html,
+	doc/devel/html/structstatistic__s-members.html,
+	doc/devel/html/structstatistic__s.html,
+	doc/devel/html/structstmt__iter__s-members.html,
+	doc/devel/html/structstmt__iter__s.html,
+	doc/devel/html/structstmt__link__s-members.html,
+	doc/devel/html/structstmt__link__s.html,
+	doc/devel/html/structstmt__loop__link__s-members.html,
+	doc/devel/html/structstmt__loop__link__s.html,
+	doc/devel/html/structstr__link__s-members.html,
+	doc/devel/html/structstr__link__s.html,
+	doc/devel/html/structsymtable__s-members.html,
+	doc/devel/html/structsymtable__s.html,
+	doc/devel/html/structvector__s-members.html,
+	doc/devel/html/structvector__s.html,
+	doc/devel/html/structvector__width__s-members.html,
+	doc/devel/html/structvector__width__s.html,
+	doc/devel/html/structvlltype-members.html,
+	doc/devel/html/structvlltype.html,
+	doc/devel/html/structyy__buffer__state-members.html,
+	doc/devel/html/structyy__buffer__state.html,
+	doc/devel/html/structyyltype-members.html,
+	doc/devel/html/structyyltype.html, doc/devel/html/symtable_8c.html,
+	doc/devel/html/symtable_8h-source.html,
+	doc/devel/html/symtable_8h.html, doc/devel/html/toggle_8c.html,
+	doc/devel/html/toggle_8h-source.html,
+	doc/devel/html/toggle_8h.html,
+	doc/devel/html/unionexpr__stmt__u-members.html,
+	doc/devel/html/unionexpr__stmt__u.html,
+	doc/devel/html/unionyyalloc-members.html,
+	doc/devel/html/unionyyalloc.html,
+	doc/devel/html/unionyystype-members.html,
+	doc/devel/html/unionyystype.html, doc/devel/html/util_8c.html,
+	doc/devel/html/util_8h-source.html, doc/devel/html/util_8h.html,
+	doc/devel/html/vcd_8c.html, doc/devel/html/vcd_8h-source.html,
+	doc/devel/html/vcd_8h.html, doc/devel/html/vector_8c.html,
+	doc/devel/html/vector_8h-source.html,
+	doc/devel/html/vector_8h.html, doc/devel/latex/doxygen.sty,
+	doc/devel/latex/refman.tex, doc/user/Makefile.in, src/Makefile.in,
+	src/main.c: Checkins for next release (20021127).  Updates to
+	documentation, configuration files and NEWS.
+
 2002-11-27 00:03  phase1geo
 
 	* diags/cdd/delay1.1.cdd, diags/cdd/delay1.2.cdd,

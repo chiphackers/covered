@@ -11,7 +11,7 @@ foobar foo( a );
 barfoo bar( b );
 
 initial begin
-	$dumpfile( "instance6.vcd" );
+	$dumpfile( "instance6.2.vcd" );
 	$dumpvars( 0, main );
 	a = 3'b000;
         b = 3'b111;
@@ -28,11 +28,13 @@ endmodule
 
 module foobar( b );
 
-input [2:0]  b;
+parameter bsize = 3;
+
+input [bsize-1:0]  b;
 
 wire [1:0] a;
 
-assign a = b[2:1];
+assign a = b[1:0];
 
 endmodule
 
@@ -41,6 +43,7 @@ module barfoo( b );
 
 input [2:0]  b;
 
-foobar dude( b );
+foobar #(2) dude( b );
 
 endmodule
+
