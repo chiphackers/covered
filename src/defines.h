@@ -1073,6 +1073,7 @@ struct expression_s {
   vector*     value;       /*!< Current value and toggle information of this expression        */
   control     suppl;       /*!< Vector containing supplemental information for this expression */
   int         id;          /*!< Specifies unique ID for this expression in the parent          */
+  int         ulid;        /*!< Specifies underline ID for reporting purposes                  */
   int         line;        /*!< Specified line in file that this expression is found on        */
   signal*     sig;         /*!< Pointer to signal.  If NULL then no signal is attached         */
   expr_stmt*  parent;      /*!< Parent expression/statement                                    */
@@ -1578,6 +1579,12 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.100  2004/01/21 22:26:56  phase1geo
+ Changed default CDD file name from "cov.db" to "cov.cdd".  Changed instance
+ statistic gathering from a child merging algorithm to just calculating
+ instance coverage for the individual instances.  Updated full regression for
+ this change and updated VCS regression for all past changes of this release.
+
  Revision 1.99  2004/01/16 23:05:00  phase1geo
  Removing SET bit from being written to CDD files.  This value is meaningless
  after scoring has completed and sometimes causes miscompares when simulators

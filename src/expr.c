@@ -122,6 +122,7 @@ expression* expression_create( expression* right, expression* left, int op, bool
 
   new_expr->suppl        = (((int)lhs & 0x1) << SUPPL_LSB_LHS) | ((op & 0x7f) << SUPPL_LSB_OP);
   new_expr->id           = id;
+  new_expr->ulid         = -1;
   new_expr->line         = line;
   new_expr->sig          = NULL;
   new_expr->parent       = (expr_stmt*)malloc_safe( sizeof( expr_stmt ) );
@@ -1400,6 +1401,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.92  2004/01/08 23:24:41  phase1geo
+ Removing unnecessary scope information from signals, expressions and
+ statements to reduce file sizes of CDDs and slightly speeds up fscanf
+ function calls.  Updated regression for this fix.
+
  Revision 1.91  2003/11/30 21:50:45  phase1geo
  Modifying line_collect_uncovered function to create array containing all physical
  lines (rather than just uncovered statement starting line values) for more

@@ -42,7 +42,7 @@ Module                    Filename                     Logical Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
   main                    fsm1.3.v                  0/   0/   0      100%
-  fsm                     fsm.v                    27/   5/  32       84%
+  fsm                     fsm.v                    27/  13/  40       68%
 
 Module: fsm, File: lib/fsm.v
 --------------------------------------------------------

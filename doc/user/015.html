@@ -36,7 +36,7 @@
         <TR>
           <TD width=460 align=center valign=top class="navigator">
             <P class="navigator"><IMG src="img/000000.gif" height=2 width=460><BR>
-            <IMG src="img/toolbar_left.png" border=0><A href="001.html" alt="Contents"><IMG src="img/toolbar_cont.png" border=0></A><A href="index.html" alt="First Page"><IMG src="img/toolbar_first.png" border=0></A><A href="014.html" alt="Previous Page"><IMG src="img/toolbar_prev.png" border=0></A><A href="index.html" alt="Home"><IMG src="img/toolbar_home.png" border=0></A><A href="016.html" alt="Next Page"><IMG src="img/toolbar_next.png" border=0></A><A href="017.html" alt="Last Page"><IMG src="img/toolbar_last.png" border=0></A><IMG src="img/toolbar_right.png" border=0>
+            <IMG src="img/toolbar_left.png" border=0><A href="001.html" alt="Contents"><IMG src="img/toolbar_cont.png" border=0></A><A href="index.html" alt="First Page"><IMG src="img/toolbar_first.png" border=0></A><A href="014.html" alt="Previous Page"><IMG src="img/toolbar_prev.png" border=0></A><A href="index.html" alt="Home"><IMG src="img/toolbar_home.png" border=0></A><A href="016.html" alt="Next Page"><IMG src="img/toolbar_next.png" border=0></A><A href="018.html" alt="Last Page"><IMG src="img/toolbar_last.png" border=0></A><IMG src="img/toolbar_right.png" border=0>
             <BR><IMG src="img/000000.gif" height=2 width=460></P>
           </TD>
         </TR>
@@ -157,7 +157,7 @@
             <P class="blockIndentLeft">&nbsp;</P>
           </TD>
           <TD width=100% align=center>
-<table cellspacing=2 cellpadding=4 border=1> <tr> <td colspan=2 class="tableHeader"> Options to report Command </td> </tr> <tr> <td> <strong>Option</strong> </td> <td> <strong>Description</strong> <td> </tr> <tr> <td> -m [l][t][c][f] </td> <td> Specifies type of coverage information to report (default is to generate report for line, toggle and combinational coverage). </td> </tr> <tr> <td> -d (s|d|v) </td> <td> Level of report detail (s=summary, d=detailed, v=verbose). Default is to display summary coverage information. </td> </tr> <tr> <td> -i </td> <td> Generates report information for each instance (default is to generate per module). </td> </tr> <tr> <td> -c </td> <td> Used in conjunction with the '-d d' or '-d v' option. If set, causes covered logic to be reported instead of default behavior of reporting uncovered logic. <tr> <td> -o &lt;<i>filename</i>&gt; </td> <td> Specifies output file to stream report to (default is standard output) </td> </tr> <tr> <td> -h </td> <td> Outputs usage information for the merge command </td> </tr> </table><br>
+<table cellspacing=2 cellpadding=4 border=1> <tr> <td colspan=2 class="tableHeader"> Options to report Command </td> </tr> <tr> <td> <strong>Option</strong> </td> <td> <strong>Description</strong> <td> </tr> <tr> <td> -m [l][t][c][f] </td> <td> Specifies type of coverage information to report (default is to generate report for line, toggle and combinational coverage). </td> </tr> <tr> <td> -d (s|d|v) </td> <td> Level of report detail (s=summary, d=detailed, v=verbose). Default is to display summary coverage information. </td> </tr> <tr> <td> -i </td> <td> Generates report information for each instance (default is to generate per module). </td> </tr> <tr> <td> -c </td> <td> Used in conjunction with the '-d d' or '-d v' option. If set, causes covered logic to be reported instead of default behavior of reporting uncovered logic. <tr> <td> -o &lt;<i>filename</i>&gt; </td> <td> Specifies output file to stream report to (default is standard output) </td> </tr> <tr> <td> -w (&lt;number&gt;) </td> <td> Specifies the maximum line width (in characters) that can be used to output Verilog information. If this option is not specified, all Verilog code in the report will retain the same formatting as was specified in the original Verilog code. If this option is specified, Verilog code will be formatted to use as much of the current line as possible, wrapping text when the line reaches the maximum line width. The default maximum line width is 115 characters (this value is used if no number is specified with the -w option). If a number is specified with the -w option, this value is used for the maximum line width. </td> </tr> <tr> <td> -h </td> <td> Outputs usage information for the merge command </td> </tr> </table><br>
           </TD>
           <TD>
             <P class="blockIndentRight">&nbsp;</P>
@@ -208,18 +208,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">A summary report shows at a very high-level what the coverage for a specific module (or instance) is in terms of line, toggle, combinational and/or FSM coverage (depending on which types are selected on the command line). Each coverage metric for the module is given a percentage of items covered for that metric as well as the total number of items per metric, the number of items "hit" during simulation and the number of items "missed" during execution. Each metric summary result is output in the following format:</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin">Summary format</P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">&lt;<i>number_hit</i>&gt;/&lt;<i>number_missed</i>&gt;/&lt;<i>total_number</i>&gt; &nbsp;&nbsp;&nbsp;&lt;<i>percent_hit</i>&gt;%</P>
+      <P class="pg">A summary report shows at a very high-level what the coverage for a specific module (or instance) is in terms of line, toggle, combinational and/or FSM coverage (depending on which types are selected on the command line). Each coverage metric for the module is given a percentage of items covered for that metric as well as the total number of items per metric, the number of items "hit" during simulation and the number of items "missed" during execution. See the chapter on "Reading the Report" for more information on understanding the formats of line, toggle, combinational logic, and FSM summary information.</P>
     </TD>
   </TR>
 
@@ -274,194 +263,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">The verbose report contains all of the data that the summary report contains; however, in addition to the summary information for a module (or instance), a more in-depth look at the exact cases that were "missed" during simulation are provided. The format of the verbose information is specific to each coverage metric but is summarized below.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="header4"><A name="10_3_3_1"></A>Verbose Line Coverage Format</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">The verbose output for line coverage is quite simple. Specifically, the line number of the module that was missed during simulation is output along with the Verilog code contained on that particular line. Only the missed cases are currently output in the verbose report. The following is the output format for line coverage:</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin">Line format</P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">&lt;<i>line_number</i>&gt;:&nbsp;&nbsp;&nbsp; &lt;<i>verilog_code</i>&gt;</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="header4"><A name="10_3_3_2"></A>Verbose Toggle Coverage Format</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">The verbose output for toggle coverage is also simple. Specifically, the name of the signal that was not completely toggled along with the bits that were toggled from 0 to 1 and 1 to 0. The format below shows the format for toggle coverage output.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin">Toggle format</P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">&lt;<i>signal_name</i>&gt;:&nbsp;&nbsp;&nbsp; &lt;<i>toggle_0->1_vector</i>&gt;&nbsp;&nbsp;&nbsp; &lt;<i>toggle_1->0_vector</i>&gt;</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">It is important to remember that a 1 in a toggle vector indicates that this bit was toggled during simulation; therefore, any bits that are set to a value of 0 are bits that should be examined to see why they were not fully toggled during simulation.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="header4"><A name="10_3_3_3"></A>Verbose Combinational Coverage Format</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">The verbose output for combinational coverage is a bit more sophisticated than the line or toggle. Basically, for each expression that was found to not be fully covered (some sub-expression in the tree was not fully covered), the expression is output with any sub-expressions that were not fully covered being underlined with a value assigned to that expression. The value that is assigned is used to reference one of the tables below the expression that show what cases were not covered during simulation. Each expression is also supplied with the line number that the expression started at in its module file.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">Below each expression, there will be one or more tables (one for each underlined subexpression). Each table will contain two or three columns. If the associated subexpression contained only one variable, the table will be a two-column table. The left column will contain the value(s) that were not assigned to the variable during simulation. The right column represents the value of performing the subexpression operation on the variable.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">If the associated subexpression contained two variables, the table will be a three-column table. The first two columns on the left show all of the combinations of these two variables that were not assigned to these variables during simulation. The right-most column indicates the resulting output of performing the subexpression operation on the two variables if these values would have been assigned.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="header4"><A name="10_3_3_4"></A>Verbose FSM Coverage Format</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">The verbose output for FSM coverage is split into the state coverage information and the state transition coverage information. When an FSM is found to be not fully covered (i.e., the number of hit states/state transitions is not equal to the number of attainable states/state transitions), the missed states are output to the report as a list of state values in hexidecimal format as follows:</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin">FSM state format</P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">&lt;<i>hexidecimal value</i>&gt;</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">When an FSM is found to be not fully covered, the missed state transitions are output to the report as a list of state transitions in the format below:</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin">FSM state transition format</P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">&lt;<i>hexidecimal input state value</i>&gt; -&gt; &lt;<i>hexidecimal output state value</i>&gt;</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">If the -c option is used or the number of attainable state/state transitions are unknown for the specified FSM, Covered outputs this information in the same way as the missed cases except that the title of the output is "Hit cases". If the number of attainable states/state transitions is unknown, providing the cases that were hit during simulation is useful in aiding the user in determining coverage. In this case, the summary report will output question marks in the missed and total categories, showing the user that this information was not known by Covered.</P>
+      <P class="pg">The verbose report contains all of the data that the summary report contains; however, in addition to the summary information for a module (or instance), a more in-depth look at the exact cases that were "missed" during simulation are provided. This report outputting option is useful for combinational logic report information when a more in-depth look at why certain expressions did not reach full coverage is needed. This option allows the user to look at all subexpressions of an expression that were not fully covered.</P>
     </TD>
   </TR>
 
@@ -566,9 +368,9 @@
        <A href="014.html">Previous Page</A>&nbsp;&nbsp;|&nbsp;
        <A href="index.html">Home</A>&nbsp;
        &nbsp;|&nbsp;<A href="016.html">Next Page</A>&nbsp;&nbsp;|&nbsp;
-       <A href="017.html">Last Page</A>&nbsp;
+       <A href="018.html">Last Page</A>&nbsp;
        ]<BR>
-       [&nbsp; <A href="001.html">1</A>&nbsp;|&nbsp;<A href="002.html">2</A>&nbsp;|&nbsp;<A href="003.html">3</A>&nbsp;|&nbsp;<A href="004.html">4</A>&nbsp;|&nbsp;<A href="005.html">5</A>&nbsp;|&nbsp;<A href="006.html">6</A>&nbsp;|&nbsp;<A href="007.html">7</A>&nbsp;|&nbsp;<A href="008.html">8</A>&nbsp;|&nbsp;<A href="009.html">9</A>&nbsp;|&nbsp;<A href="010.html">10</A>&nbsp;|&nbsp;<A href="011.html">11</A>&nbsp;|&nbsp;<A href="012.html">12</A>&nbsp;|&nbsp;<A href="013.html">13</A>&nbsp;|&nbsp;<A href="014.html">14</A>&nbsp;|&nbsp;<A href="015.html">15</A>&nbsp;|&nbsp;<A href="016.html">16</A>&nbsp;|&nbsp;<A href="017.html">17</A> &nbsp;]
+       [&nbsp; <A href="001.html">1</A>&nbsp;|&nbsp;<A href="002.html">2</A>&nbsp;|&nbsp;<A href="003.html">3</A>&nbsp;|&nbsp;<A href="004.html">4</A>&nbsp;|&nbsp;<A href="005.html">5</A>&nbsp;|&nbsp;<A href="006.html">6</A>&nbsp;|&nbsp;<A href="007.html">7</A>&nbsp;|&nbsp;<A href="008.html">8</A>&nbsp;|&nbsp;<A href="009.html">9</A>&nbsp;|&nbsp;<A href="010.html">10</A>&nbsp;|&nbsp;<A href="011.html">11</A>&nbsp;|&nbsp;<A href="012.html">12</A>&nbsp;|&nbsp;<A href="013.html">13</A>&nbsp;|&nbsp;<A href="014.html">14</A>&nbsp;|&nbsp;<A href="015.html">15</A>&nbsp;|&nbsp;<A href="016.html">16</A>&nbsp;|&nbsp;<A href="017.html">17</A>&nbsp;|&nbsp;<A href="018.html">18</A> &nbsp;]
        <BR>
        <B>License: GPL</B><BR>
        This Manual was created with <A HREF="http://manstyle.sourceforge.net">ManStyle</A>.

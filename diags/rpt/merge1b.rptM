@@ -34,7 +34,7 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY MODULE
 Module                    Filename                     Logical Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  dut_and                 dut_and.v                 1/   1/   2       50%
+  dut_and                 dut_and.v                 1/   3/   4       25%
 
 Module: dut_and, File: ./lib/dut_and.v
 --------------------------------------------------------

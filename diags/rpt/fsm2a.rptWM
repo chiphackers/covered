@@ -30,7 +30,7 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY MODULE
 Module                    Filename                     Logical Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  fsm                     fsm.v                    27/   5/  32       84%
+  fsm                     fsm.v                    27/  13/  40       68%
 
 Module: fsm, File: lib/fsm.v
 --------------------------------------------------------

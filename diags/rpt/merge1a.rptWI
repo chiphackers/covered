@@ -34,7 +34,7 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY INSTANCE
 Instance                                               Logic Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main1.dut                                         1/   1/   2       50%
+  main1.dut                                         1/   3/   4       25%
 
 Module: dut_and, File: ./lib/dut_and.v, Instance: main1.dut
 --------------------------------------------------------

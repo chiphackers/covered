@@ -25,20 +25,6 @@ Instance                                                   Toggle 0 -> 1        
   main.b.d                                           0/    0/    0      100%             0/    0/    0      100%
   main.b.d.c                                         0/    3/    3        0%             0/    3/    3        0%
 
-Module: main, File: param7.v, Instance: main
---------------------------------------------------------
-Signals not getting 100% toggle coverage
-
-Signal                    Toggle
-----------------------------------------------------------------------------------
-
-Module: foo, File: param7.v, Instance: main.a
---------------------------------------------------------
-Signals not getting 100% toggle coverage
-
-Signal                    Toggle
-----------------------------------------------------------------------------------
-
 Module: bar, File: param7.v, Instance: main.a.c
 --------------------------------------------------------
 Signals not getting 100% toggle coverage
@@ -47,20 +33,6 @@ Signal                    Toggle
 ----------------------------------------------------------------------------------
 a                         0->1: 2'b00
 ......................... 1->0: 2'b00 ...
-
-Module: goo, File: param7.v, Instance: main.b
---------------------------------------------------------
-Signals not getting 100% toggle coverage
-
-Signal                    Toggle
-----------------------------------------------------------------------------------
-
-Module: foo, File: param7.v, Instance: main.b.d
---------------------------------------------------------
-Signals not getting 100% toggle coverage
-
-Signal                    Toggle
-----------------------------------------------------------------------------------
 
 Module: bar, File: param7.v, Instance: main.b.d.c
 --------------------------------------------------------

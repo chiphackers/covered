@@ -32,7 +32,25 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY MODULE
 Module                    Filename                     Logical Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    ifdef1.2.v                2/   0/   2      100%
+  main                    ifdef1.2.v                2/   2/   4       50%
+
+Module: main, File: ifdef1.2.v
+--------------------------------------------------------
+Missed Combinations
+====================================================
+ Line #     Expression
+====================================================
+     14:    assign  a  = ( b  & 1'b1)
+                         |----1-----|
+
+
+Expression 1   (2/4)
+^^^^^^^^^^^^^ - &
+ LR | LR | LR | LR 
+=00=|=01=|=10=|=11=
+ *         *     
+
+
 =================================================================================
 
 FINITE STATE MACHINE COVERAGE RESULTS BY MODULE

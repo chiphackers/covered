@@ -68,7 +68,25 @@ Instance                                               Logic Combinations
   main                                              0/   0/   0      100%
   main.f                                            0/   0/   0      100%
   main.f.b                                          0/   0/   0      100%
-  main.f.b.d                                        1/   1/   2       50%
+  main.f.b.d                                        2/   2/   4       50%
+
+Module: dude, File: ./lib/foo.v, Instance: main.f.b.d
+--------------------------------------------------------
+Missed Combinations
+====================================================
+ Line #     Expression
+====================================================
+     14:    assign  b  = ( a  & 1'b0)
+                         |----1-----|
+
+
+Expression 1   (2/4)
+^^^^^^^^^^^^^ - &
+ LR | LR | LR | LR 
+=00=|=01=|=10=|=11=
+      *         *
+
+
 =================================================================================
 
 FINITE STATE MACHINE COVERAGE RESULTS BY INSTANCE

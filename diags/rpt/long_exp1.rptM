@@ -38,7 +38,7 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY MODULE
 Module                    Filename                     Logical Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    long_exp1.v             169/ 330/ 499       34%
+  main                    long_exp1.v             169/ 338/ 507       33%
 
 Module: main, File: long_exp1.v
 --------------------------------------------------------

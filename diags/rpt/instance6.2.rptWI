@@ -73,6 +73,24 @@ Instance                                               Logic Combinations
   main.foo                                          2/   0/   2      100%
   main.bar                                          0/   0/   0      100%
   main.bar.dude                                     1/   1/   2       50%
+
+Module: foobar, File: instance6.2.v, Instance: main.bar.dude
+--------------------------------------------------------
+Missed Combinations
+====================================================
+ Line #     Expression
+====================================================
+     37:    assign  a  = b[1:0]
+                         |-1--|
+
+
+Expression 1   (1/2)
+^^^^^^^^^^^^^ - [:]
+ E | E
+=0=|=1=
+ *    
+
+
 =================================================================================
 
 FINITE STATE MACHINE COVERAGE RESULTS BY INSTANCE

@@ -42,7 +42,7 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY INSTANCE
 Instance                                               Logic Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                                             10/  10/  20       50%
+  main                                             10/  20/  30       33%
 
 Module: main, File: mbit_sel3.v, Instance: main
 --------------------------------------------------------

@@ -44,7 +44,25 @@ Module                    Filename                     Logical Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
   main                    param3.3.v                0/   0/   0      100%
-  foo                     param3.3.v                2/   0/   2      100%
+  foo                     param3.3.v                2/   2/   4       50%
+
+Module: foo, File: param3.3.v
+--------------------------------------------------------
+Missed Combinations
+====================================================
+ Line #     Expression
+====================================================
+     33:    assign  a  = ( b  ^ 2'b0)
+                         |----1-----|
+
+
+Expression 1   (2/4)
+^^^^^^^^^^^^^ - ^
+ LR | LR | LR | LR 
+=00=|=01=|=10=|=11=
+      *         *
+
+
 =================================================================================
 
 FINITE STATE MACHINE COVERAGE RESULTS BY MODULE

@@ -38,7 +38,7 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY MODULE
 Module                    Filename                     Logical Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    supply1.v                 4/   4/   8       50%
+  main                    supply1.v                 5/   7/  12       42%
 
 Module: main, File: supply1.v
 --------------------------------------------------------

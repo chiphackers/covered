@@ -36,7 +36,7 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY MODULE
 Module                    Filename                     Logical Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    implicit1.v               2/   2/   4       50%
+  main                    implicit1.v               3/   3/   6       50%
 
 Module: main, File: implicit1.v
 --------------------------------------------------------

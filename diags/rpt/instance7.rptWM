@@ -68,7 +68,7 @@ Module                    Filename                     Logical Combinations
   main                    instance7.v               0/   0/   0      100%
   foo                     foo.v                     0/   0/   0      100%
   bar                     foo.v                     0/   0/   0      100%
-  dude                    foo.v                     1/   1/   2       50%
+  dude                    foo.v                     2/   2/   4       50%
 
 Module: dude, File: ./lib/foo.v
 --------------------------------------------------------

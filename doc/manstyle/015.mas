@@ -152,14 +152,9 @@ are selected on the command line).  Each coverage metric for
 the module is given a percentage of items covered for that 
 metric as well as the total number of items per metric, the
 number of items "hit" during simulation and the number of
-items "missed" during execution.  Each metric summary result
-is output in the following format:
-</_pg>
-
-<_margin>Summary format</_margin>
-
-<_pg>
-&lt;<i>number_hit</i>&gt;/&lt;<i>number_missed</i>&gt;/&lt;<i>total_number</i>&gt; $sp$sp$sp&lt;<i>percent_hit</i>&gt;%
+items "missed" during execution.  See the chapter on "Reading the Report"
+for more information on understanding the formats of line, toggle, combinational logic,
+and FSM summary information.
 </_pg>
 
 <_pg>
@@ -193,127 +188,11 @@ Verbose Report
 The verbose report contains all of the data that the summary
 report contains; however, in addition to the summary information
 for a module (or instance), a more in-depth look at the exact
-cases that were "missed" during simulation are provided.  The
-format of the verbose information is specific to each coverage
-metric but is summarized below.
-</_pg>
-
-<_header4>
-Verbose Line Coverage Format
-</_header4>
-
-<_pg>
-The verbose output for line coverage is quite simple.  Specifically,
-the line number of the module that was missed during simulation
-is output along with the Verilog code contained on that particular
-line.  Only the missed cases are currently output in the verbose
-report.  The following is the output format for line coverage:
-</_pg>
-
-<_margin>Line format</_margin>
-
-<_pg>
-&lt;<i>line_number</i>&gt;:$sp$sp$sp &lt;<i>verilog_code</i>&gt;
-</_pg>
-
-<_header4>
-Verbose Toggle Coverage Format
-</_header4>
-
-<_pg>
-The verbose output for toggle coverage is also simple.  Specifically,
-the name of the signal that was not completely toggled along with
-the bits that were toggled from 0 to 1 and 1 to 0.  The
-format below shows the format for toggle coverage output.
-</_pg>
-
-<_margin>Toggle format</_margin>
-
-<_pg>
-&lt;<i>signal_name</i>&gt;:$sp$sp$sp &lt;<i>toggle_0->1_vector</i>&gt;$sp$sp$sp &lt;<i>toggle_1->0_vector</i>&gt;
-</_pg>
-
-<_pg>
-It is important to remember that a 1 in a toggle vector indicates
-that this bit was toggled during simulation; therefore, any bits
-that are set to a value of 0 are bits that should be examined
-to see why they were not fully toggled during simulation.
-</_pg>
-
-<_header4>
-Verbose Combinational Coverage Format
-</_header4>
-
-<_pg>
-The verbose output for combinational coverage is a bit more
-sophisticated than the line or toggle.  Basically, for each
-expression that was found to not be fully covered (some
-sub-expression in the tree was not fully covered), the expression
-is output with any sub-expressions that were not fully covered
-being underlined with a value assigned to that expression.  The
-value that is assigned is used to reference one of the tables
-below the expression that show what cases were not covered
-during simulation.  Each expression is also supplied with the
-line number that the expression started at in its module file.
-</_pg>
-
-<_pg>
-Below each expression, there will be one or more tables (one
-for each underlined subexpression).  Each table will contain
-two or three columns.  If the associated subexpression contained
-only one variable, the table will be a two-column table.  The left
-column will contain the value(s) that were not assigned to the
-variable during simulation.  The right column represents the value
-of performing the subexpression operation on the variable.
-</_pg>
-
-<_pg>
-If the associated subexpression contained two variables, the 
-table will be a three-column table.  The first two columns on
-the left show all of the combinations of these two variables
-that were not assigned to these variables during simulation.
-The right-most column indicates the resulting output of
-performing the subexpression operation on the two variables if
-these values would have been assigned.
-</_pg>
-
-<_header4>
-Verbose FSM Coverage Format
-</_header4>
-
-<_pg>
-The verbose output for FSM coverage is split into the state coverage information
-and the state transition coverage information.  When an FSM is found to be not
-fully covered (i.e., the number of hit states/state transitions is not equal to
-the number of attainable states/state transitions), the missed states are output
-to the report as a list of state values in hexidecimal format as follows:
-</_pg>
-
-<_margin>FSM state format</_margin>
-
-<_pg>
-&lt;<i>hexidecimal value</i>&gt;
-</_pg>
-
-<_pg>
-When an FSM is found to be not fully covered, the missed state transitions are
-output to the report as a list of state transitions in the format below:
-</_pg>
-
-<_margin>FSM state transition format</_margin>
-
-<_pg>
-&lt;<i>hexidecimal input state value</i>&gt; -&gt; &lt;<i>hexidecimal output state value</i>&gt;
-</_pg>
-
-<_pg>
-If the -c option is used or the number of attainable state/state transitions are
-unknown for the specified FSM, Covered outputs this information in the same way
-as the missed cases except that the title of the output is "Hit cases".  If the
-number of attainable states/state transitions is unknown, providing the cases that
-were hit during simulation is useful in aiding the user in determining coverage.
-In this case, the summary report will output question marks in the missed and total
-categories, showing the user that this information was not known by Covered.
+cases that were "missed" during simulation are provided.  This report
+outputting option is useful for combinational logic report information
+when a more in-depth look at why certain expressions did not reach full
+coverage is needed.  This option allows the user to look at all subexpressions
+of an expression that were not fully covered.
 </_pg>
 
 <_header2>

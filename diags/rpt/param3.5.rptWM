@@ -21,7 +21,25 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY MODULE
 Module                    Filename                     Logical Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  foo                     param3.5.v                2/   0/   2      100%
+  foo                     param3.5.v                2/   2/   4       50%
+
+Module: foo, File: param3.5.v
+--------------------------------------------------------
+Missed Combinations
+====================================================
+ Line #     Expression
+====================================================
+     28:    assign  a  = ( b  ^ alpha)
+                         |-----1-----|
+
+
+Expression 1   (2/4)
+^^^^^^^^^^^^^ - ^
+ LR | LR | LR | LR 
+=00=|=01=|=10=|=11=
+ *         *     
+
+
 =================================================================================
 
 FINITE STATE MACHINE COVERAGE RESULTS BY MODULE

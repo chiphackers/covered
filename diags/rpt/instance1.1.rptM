@@ -41,8 +41,8 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY MODULE
 Module                    Filename                     Logical Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  depth1                  instance1.v               2/   0/   2      100%
-  depth2                  instance1.v               2/   0/   2      100%
+  depth1                  instance1.v               4/   0/   4      100%
+  depth2                  instance1.v               4/   0/   4      100%
 =================================================================================
 
 FINITE STATE MACHINE COVERAGE RESULTS BY MODULE

@@ -34,7 +34,7 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY MODULE
 Module                    Filename                     Logical Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    fsm5.3.v                 28/  10/  38       74%
+  main                    fsm5.3.v                 28/  12/  40       70%
 
 Module: main, File: fsm5.3.v
 --------------------------------------------------------

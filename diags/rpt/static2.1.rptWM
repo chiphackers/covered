@@ -34,7 +34,7 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY MODULE
 Module                    Filename                     Logical Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    static2.1.v               1/   3/   4       25%
+  main                    static2.1.v               0/   8/   8        0%
 
 Module: main, File: static2.1.v
 --------------------------------------------------------

@@ -76,7 +76,7 @@ Module                    Filename                     Logical Combinations
 -------------------------------------------------------------------------------
   main                    instance2.v               1/   1/   2       50%
   adder4                  adder4.v                  0/   0/   0      100%
-  adder1                  adder1.v                  4/   0/   4      100%
+  adder1                  adder1.v                  8/   0/   8      100%
 
 Module: main, File: instance2.v
 --------------------------------------------------------

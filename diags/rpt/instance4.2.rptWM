@@ -32,7 +32,7 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY MODULE
 Module                    Filename                     Logical Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  fooman                  instance4.v               1/   1/   2       50%
+  fooman                  instance4.v               3/   1/   4       75%
 
 Module: fooman, File: instance4.v
 --------------------------------------------------------

@@ -38,7 +38,7 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY INSTANCE
 Instance                                               Logic Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                                            169/ 330/ 499       34%
+  main                                            169/ 338/ 507       33%
 
 Module: main, File: long_exp1.v, Instance: main
 --------------------------------------------------------

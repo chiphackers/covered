@@ -30,7 +30,7 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY INSTANCE
 Instance                                               Logic Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                                             25/   7/  32       78%
+  main                                             25/   9/  34       74%
 
 Module: main, File: fsm8.2.v, Instance: main
 --------------------------------------------------------
