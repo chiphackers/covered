@@ -23,7 +23,7 @@ Section 5.2.1.  Verilog Parser</b><dd>
 <p>
  <a href="http://ivtest.sourceforge.net">http://ivtest.sourceforge.net</a>
 <p>
- Using the Verilog directory and file pathnames specified on the command-line, Covered generates a list of files to search for Verilog module names. The first module name that Covered attempts to find is the top-level module targetted for coverage. This module name is also specified on the command-line with the <code>-t</code> option. The lexer reads in the file and finds the name specified after the Verilog keyword <code><a class="el" href="defines_8h.html#a121">module</a></code>. If this module matches the top-level module name, the contents of the module are parsed. If the module name does not match the top-level module name, the lexer skips the body of the module until it  encounters the <code>endmodule</code> keyword. If there are any more modules specified in the given file, these are parsed in the same fashion. If the end of the file has been reached and no module has been found that is needed, the Verilog file is placed at the end of the file  queue and the next file at the head of the queue is read in by the lexer.
+ Using the Verilog directory and file pathnames specified on the command-line, Covered generates a list of files to search for Verilog module names. The first module name that Covered attempts to find is the top-level module targetted for coverage. This module name is also specified on the command-line with the <code>-t</code> option. The lexer reads in the file and finds the name specified after the Verilog keyword <code><a class="el" href="defines_8h.html#a122">module</a></code>. If this module matches the top-level module name, the contents of the module are parsed. If the module name does not match the top-level module name, the lexer skips the body of the module until it  encounters the <code>endmodule</code> keyword. If there are any more modules specified in the given file, these are parsed in the same fashion. If the end of the file has been reached and no module has been found that is needed, the Verilog file is placed at the end of the file  queue and the next file at the head of the queue is read in by the lexer.
 <p>
  If the top-level module contains module instantiations that also need to be tested for coverage, these module names are placed at the tail of the needed module queue. When the needed module queue is empty, all modules have been found and parsed, and the parsing phase of the procedure is considered complete and successful.
 <p>
@@ -83,7 +83,7 @@ Section 5.3.3.  Report Command</b><dd>
 Go To Section...</b><dd>
 <ul>
 <li><a href="page_intro.html#page_intro">Section 1.  Introduction</a><li><a href="page_project_plan.html#page_project_plan">Section 2.  Project Plan</a><li><a href="page_code_style.html#page_code_style">Section 3.  Coding Style Guidelines</a><li><a href="page_tools.html#page_tools">Section 4.  Development Tools</a><li><a href="page_code_details.html#page_code_details">Section 6.  Coverage Development Reference</a><li><a href="page_testing.html#page_testing">Section 7.  Test and Checkout Procedure</a><li><a href="page_misc.html#page_misc">Section 8.  Odds and Ends Information</a></ul>
-</dl><hr><address align="right"><small>Generated on Thu Jun 27 22:07:07 2002 for Covered by
+</dl><hr><address align="right"><small>Generated on Tue Jul 2 14:52:01 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

@@ -581,7 +581,7 @@ void expression_operate( expression* expr ) {
 
       case EXP_OP_SBIT_SEL :
         vector_init( &vec1, &value1a, 1, 0 );
-        vector_unary_op( &vec1, expr->right->value, xor_optab );
+        vector_unary_op( &vec1, expr->right->value, or_optab );
         if( (vec1.value[0] & 0x3) != 2 ) {  
           expr->value->lsb = vector_to_int( expr->right->value ) - ((expr->suppl >> SUPPL_LSB_SIG_LSB) & 0xffff);
         } else {
@@ -593,8 +593,8 @@ void expression_operate( expression* expr ) {
       case EXP_OP_MBIT_SEL :
         vector_init( &vec1, &value1a, 1, 0 );
         vector_init( &vec2, &value1b, 1, 0 );
-        vector_unary_op( &vec1, expr->right->value, xor_optab );
-        vector_unary_op( &vec2, expr->left->value,  xor_optab );
+        vector_unary_op( &vec1, expr->right->value, or_optab );
+        vector_unary_op( &vec2, expr->left->value,  or_optab );
         if( ((vec1.value[0] & 0x3) != 2) && ((vec2.value[0] & 0x3) != 2) ) {
           expr->value->lsb   = vector_to_int( expr->right->value ) - ((expr->suppl >> SUPPL_LSB_SIG_LSB) & 0xffff);
           expr->value->width = vector_to_int( expr->left->value ) - vector_to_int( expr->right->value ) + 1;
@@ -668,7 +668,9 @@ void expression_operate( expression* expr ) {
     }
 
     /* Set TRUE/FALSE bits to indicate value */
-    switch( expr->value->value[0] & 0x3 ) {
+    vector_init( &vec1, &value1a, 1, 0 );
+    vector_unary_op( &vec1, expr->value, or_optab );
+    switch( vector_bit_val( vec1.value, 0 ) ) {
       case 0 :  expr->suppl = expr->suppl | (0x1 << SUPPL_LSB_FALSE);  break;
       case 1 :  expr->suppl = expr->suppl | (0x1 << SUPPL_LSB_TRUE);   break;
       default:  break;
@@ -745,6 +747,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.21  2002/07/02 18:42:18  phase1geo
+/* Various bug fixes.  Added support for multiple signals sharing the same VCD
+/* symbol.  Changed conditional support to allow proper simulation results.
+/* Updated VCD parser to allow for symbols containing only alphanumeric characters.
+/*
 /* Revision 1.20  2002/07/01 15:10:42  phase1geo
 /* Fixing always loopbacks and setting stop bits correctly.  All verilog diagnostics
 /* seem to be passing with these fixes.

@@ -19,10 +19,9 @@ CDD_DIR       = ../cdd
 
 LOGFILE = regress.log
 
-DIAGLIST = addsr \
-	   assign3.2A \
-	   simple \
-	   always3.1.11A
+DIAGLIST = assign3.2A \
+	   always3.1.11A \
+           assign1
 
 regress:	$(COVERED) clean $(DIAGLIST)
 

@@ -425,6 +425,7 @@
  Returns a value of 1 if the specified expression is considered to be measurable.
 */
 #define EXPR_IS_MEASURABLE(x)      (((SUPPL_OP( x->suppl ) != EXP_OP_NONE) && \
+                                     (SUPPL_OP( x->suppl ) != EXP_OP_COND_SEL) && \
                                      !(((SUPPL_OP( x->suppl ) == EXP_OP_SIG) || \
 				        (SUPPL_OP( x->suppl ) == EXP_OP_SBIT_SEL) || \
                                         (SUPPL_OP( x->suppl ) == EXP_OP_MBIT_SEL)) && \
@@ -811,6 +812,11 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.20  2002/07/02 18:42:18  phase1geo
+/* Various bug fixes.  Added support for multiple signals sharing the same VCD
+/* symbol.  Changed conditional support to allow proper simulation results.
+/* Updated VCD parser to allow for symbols containing only alphanumeric characters.
+/*
 /* Revision 1.19  2002/06/30 22:23:20  phase1geo
 /* Working on fixing looping in parser.  Statement connector needs to be revamped.
 /*

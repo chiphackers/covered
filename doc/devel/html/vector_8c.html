@@ -19,9 +19,9 @@
 <tr><td>&nbsp;</td><td><font size=-1><em>Creates and initializes new vector.</em> <a href="#a8"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a9">vector_merge</a> (<a class="el" href="defines_8h.html#a113">vector</a> *base, <a class="el" href="defines_8h.html#a113">vector</a> *in)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Merges two vectors and places result into base vector.</em> <a href="#a9"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a10">vector_db_write</a> (<a class="el" href="defines_8h.html#a113">vector</a> *vec, FILE *<a class="el" href="vcd__lexer_8c.html#a106">file</a>, <a class="el" href="defines_8h.html#a131">bool</a> write_data)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a10">vector_db_write</a> (<a class="el" href="defines_8h.html#a113">vector</a> *vec, FILE *<a class="el" href="vcd__lexer_8c.html#a106">file</a>, <a class="el" href="defines_8h.html#a132">bool</a> write_data)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Displays vector information to specified database file.</em> <a href="#a10"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a131">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a11">vector_db_read</a> (<a class="el" href="defines_8h.html#a113">vector</a> **vec, char **line)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a132">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a11">vector_db_read</a> (<a class="el" href="defines_8h.html#a113">vector</a> **vec, char **line)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Creates and parses current file line for vector information */.</em> <a href="#a11"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a12">vector_display_toggle01</a> (<a class="el" href="defines_8h.html#a111">nibble</a> *nib, int width, FILE *ofile)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Outputs the toggle01 information from the specified nibble to the specified output stream.</em> <a href="#a12"></a><em></em></font><br><br></td></tr>
@@ -42,7 +42,7 @@
 <tr><td>&nbsp;</td><td><font size=-1><em>Counts toggle01 and toggle10 information from specifed vector.</em> <a href="#a22"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a23">vector_logic_count</a> (<a class="el" href="defines_8h.html#a113">vector</a> *vec, int *false_cnt, int *true_cnt)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Counts FALSE and TRUE information from the specified vector.</em> <a href="#a23"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a131">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a24">vector_set_value</a> (<a class="el" href="defines_8h.html#a113">vector</a> *vec, <a class="el" href="defines_8h.html#a111">nibble</a> *value, int width, int from_lsb, int to_lsb)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a132">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a24">vector_set_value</a> (<a class="el" href="defines_8h.html#a113">vector</a> *vec, <a class="el" href="defines_8h.html#a111">nibble</a> *value, int width, int from_lsb, int to_lsb)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Sets specified vector value to new value and maintains coverage history.</em> <a href="#a24"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a25">vector_to_int</a> (<a class="el" href="defines_8h.html#a113">vector</a> *vec)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Converts vector into integer value.</em> <a href="#a25"></a><em></em></font><br><br></td></tr>
@@ -51,7 +51,7 @@
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a27">vector_set_static</a> (<a class="el" href="defines_8h.html#a113">vector</a> *vec, char *str, int bits_per_char)</td></tr>
 <tr><td nowrap align=right valign=top>char *&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a28">vector_to_string</a> (<a class="el" href="defines_8h.html#a113">vector</a> *vec, int type)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Converts vector into a string value in specified format.</em> <a href="#a28"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a29">vector_from_string</a> (char *str, <a class="el" href="defines_8h.html#a131">bool</a> sized, int type)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a29">vector_from_string</a> (char *str, <a class="el" href="defines_8h.html#a132">bool</a> sized, int type)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Converts character string value into vector.</em> <a href="#a29"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a30">vector_bitwise_op</a> (<a class="el" href="defines_8h.html#a113">vector</a> *tgt, <a class="el" href="defines_8h.html#a113">vector</a> *src1, <a class="el" href="defines_8h.html#a113">vector</a> *src2, int *optab)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Performs bitwise operation on two source vectors from specified operation table.</em> <a href="#a30"></a><em></em></font><br><br></td></tr>
@@ -260,7 +260,7 @@ Pointer to newly created vector.</dl>Creates new vector from heap memory and ini
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a131">bool</a> vector_db_read </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a132">bool</a> vector_db_read </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a113">vector</a> **&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>vec</em>, </td>
@@ -324,7 +324,7 @@ Returns TRUE if parsing successful; otherwise, returns FALSE.</dl>Creates a new 
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a131">bool</a>&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a132">bool</a>&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>write_data</em></td>
         </tr>
         <tr>
@@ -664,7 +664,7 @@ Integer value to convert into vector.</td></tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a131">bool</a>&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a132">bool</a>&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>sized</em>, </td>
         </tr>
         <tr>
@@ -1520,7 +1520,7 @@ Bit position in TRUE vector to set.</td></tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a131">bool</a> vector_set_value </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a132">bool</a> vector_set_value </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>vec</em>, </td>
@@ -2040,7 +2040,7 @@ OR operation table     </td>
 XOR operation table     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Thu Jun 27 22:07:06 2002 for Covered by
+<hr><address align="right"><small>Generated on Tue Jul 2 14:52:01 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

@@ -86,7 +86,7 @@ char* codegen_gen_expr( expression* expr, int line ) {
         case EXP_OP_CNE      :  code_size = 8;  strcpy( code_format, "(%s !== %s)" ); left = TRUE;   right = TRUE;   break;
         case EXP_OP_LOR      :  code_size = 7;  strcpy( code_format, "(%s || %s)" );  left = TRUE;   right = TRUE;   break;
         case EXP_OP_LAND     :  code_size = 7;  strcpy( code_format, "(%s && %s)" );  left = TRUE;   right = TRUE;   break;
-        case EXP_OP_COND     :  code_size = 4;  strcpy( code_format, "%s ? " );       left = TRUE;   right = FALSE;  break;
+        case EXP_OP_COND     :  code_size = 4;  strcpy( code_format, "%s ? %s" );     left = TRUE;   right = TRUE ;  break;
         case EXP_OP_COND_SEL :  code_size = 4;  strcpy( code_format, "%s : %s" );     left = TRUE;   right = TRUE;   break;
         case EXP_OP_UINV     :  code_size = 3;  strcpy( code_format, "~%s " );        left = FALSE;  right = TRUE;   break;
         case EXP_OP_UAND     :  code_size = 3;  strcpy( code_format, "&%s " );        left = FALSE;  right = TRUE;   break;
@@ -142,6 +142,11 @@ char* codegen_gen_expr( expression* expr, int line ) {
 
 
 /* $Log$
+/* Revision 1.7  2002/07/02 18:42:18  phase1geo
+/* Various bug fixes.  Added support for multiple signals sharing the same VCD
+/* symbol.  Changed conditional support to allow proper simulation results.
+/* Updated VCD parser to allow for symbols containing only alphanumeric characters.
+/*
 /* Revision 1.6  2002/06/27 21:18:48  phase1geo
 /* Fixing report Verilog output.  simple.v verilog diagnostic now passes.
 /*

@@ -102,6 +102,14 @@ void sim_expr_changed( expression* expr ) {
 
         expr->parent->expr->suppl = expr->parent->expr->suppl | (0x1 << SUPPL_LSB_LEFT_CHANGED);
 
+        /* If the parent of this expression is a CONDITIONAL, set the RIGHT_CHANGED bit of the parent too */
+        if( SUPPL_OP( expr->parent->expr->suppl ) == EXP_OP_COND ) {
+
+          expr->parent->expr->suppl = expr->parent->expr->suppl | (0x1 << SUPPL_LSB_RIGHT_CHANGED);
+
+        }
+
+
       } else if( (expr->parent->expr->right != NULL) && (expr->parent->expr->right->id == expr->id) ) {
         
         expr->parent->expr->suppl = expr->parent->expr->suppl | (0x1 << SUPPL_LSB_RIGHT_CHANGED);
@@ -287,6 +295,11 @@ void sim_simulate() {
 }
 
 /* $Log$
+/* Revision 1.13  2002/07/02 18:42:18  phase1geo
+/* Various bug fixes.  Added support for multiple signals sharing the same VCD
+/* symbol.  Changed conditional support to allow proper simulation results.
+/* Updated VCD parser to allow for symbols containing only alphanumeric characters.
+/*
 /* Revision 1.12  2002/07/01 15:10:42  phase1geo
 /* Fixing always loopbacks and setting stop bits correctly.  All verilog diagnostics
 /* seem to be passing with these fixes.

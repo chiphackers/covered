@@ -65,7 +65,11 @@ void line_instance_summary( FILE* ofile, mod_inst* root, char* parent_inst ) {
   assert( root != NULL );
   assert( root->stat != NULL );
 
-  percent = ((root->stat->line_hit / root->stat->line_total) * 100);
+  if( root->stat->line_total == 0 ) {
+    percent = 0.0;
+  } else {
+    percent = ((root->stat->line_hit / root->stat->line_total) * 100);
+  }
   miss    = (root->stat->line_total - root->stat->line_hit);
 
   fprintf( ofile, "  %-20.20s    %-20.20s    %3d/%3.0f/%3.0f      %3.0f%%\n",
@@ -101,7 +105,11 @@ void line_module_summary( FILE* ofile, mod_link* head ) {
 
   line_get_stats( head->mod->stmt_head, &total_lines, &hit_lines );
 
-  percent = ((hit_lines / total_lines) * 100);
+  if( total_lines == 0 ) {
+    percent = 0.0;
+  } else {
+    percent = ((hit_lines / total_lines) * 100);
+  }
   miss    = (total_lines - hit_lines);
 
   fprintf( ofile, "  %-20.20s    %-20.20s    %3d/%3.0f/%3.0f      %3.0f%%\n", 
@@ -263,6 +271,10 @@ void line_report( FILE* ofile, bool verbose, bool instance ) {
 }
 
 /* $Log$
+/* Revision 1.10  2002/06/27 20:39:43  phase1geo
+/* Fixing scoring bugs as well as report bugs.  Things are starting to work
+/* fairly well now.  Added rest of support for delays.
+/*
 /* Revision 1.9  2002/06/25 21:46:10  phase1geo
 /* Fixes to simulator and reporting.  Still some bugs here.
 /*

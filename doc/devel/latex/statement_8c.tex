@@ -14,14 +14,25 @@
 \item 
 {\bf statement} $\ast$ {\bf statement\_\-create} ({\bf expression} $\ast$exp)
 \begin{CompactList}\small\item\em Creates new statement structure.\item\end{CompactList}\item 
+void {\bf statement\_\-stack\_\-push} ({\bf statement} $\ast$stmt, int id)
+\item 
+void {\bf statement\_\-stack\_\-compare} ({\bf statement} $\ast$stmt)
+\item 
 void {\bf statement\_\-db\_\-write} ({\bf statement} $\ast$stmt, FILE $\ast$ofile, char $\ast$scope)
 \begin{CompactList}\small\item\em Writes specified statement to the specified output file.\item\end{CompactList}\item 
 {\bf bool} {\bf statement\_\-db\_\-read} (char $\ast$$\ast$line, {\bf module} $\ast$curr\_\-mod, int read\_\-mode)
 \begin{CompactList}\small\item\em Reads in statement line from specified string and stores statement in specified module.\item\end{CompactList}\item 
-void {\bf statement\_\-connect} ({\bf statement} $\ast$curr\_\-stmt, {\bf statement} $\ast$next\_\-stmt, {\bf bool} set\_\-stop)
+void {\bf statement\_\-connect} ({\bf statement} $\ast$curr\_\-stmt, {\bf statement} $\ast$next\_\-stmt)
 \begin{CompactList}\small\item\em Connects statement sequence to next statement.\item\end{CompactList}\item 
+void {\bf statement\_\-set\_\-stop} ({\bf statement} $\ast$stmt, {\bf statement} $\ast$post, {\bf bool} true\_\-path)
+\begin{CompactList}\small\item\em Sets stop bits in specified statement tree.\item\end{CompactList}\item 
 void {\bf statement\_\-dealloc} ({\bf statement} $\ast$stmt)
 \begin{CompactList}\small\item\em Deallocates statement memory and associated expression tree from the heap.\item\end{CompactList}\end{CompactItemize}
+\subsection*{Variables}
+\begin{CompactItemize}
+\item 
+{\bf stmt\_\-loop\_\-link} $\ast$ {\bf stmt\_\-loop\_\-stack} = NULL
+\end{CompactItemize}
 
 
 \subsection{Detailed Description}
@@ -96,7 +107,7 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsection{Function Documentation}
 \index{statement.c@{statement.c}!statement_connect@{statement\_\-connect}}
 \index{statement_connect@{statement\_\-connect}!statement.c@{statement.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void statement\_\-connect ({\bf statement} $\ast$ {\em curr\_\-stmt}, {\bf statement} $\ast$ {\em next\_\-stmt}, {\bf bool} {\em set\_\-stop})}\label{statement_8c_a3}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void statement\_\-connect ({\bf statement} $\ast$ {\em curr\_\-stmt}, {\bf statement} $\ast$ {\em next\_\-stmt})}\label{statement_8c_a6}
 
 
 Connects statement sequence to next statement.
@@ -106,12 +117,11 @@ Connects statement sequence to next statement.
 \begin{description}
 \item[{\em 
 curr\_\-stmt}]Pointer to statement sequence to traverse. \item[{\em 
-next\_\-stmt}]Pointer to statement to connect ends to. \item[{\em 
-set\_\-stop}]If TRUE and the next\_\-true and next\_\-false are NULL, set stop bit.\end{description}
+next\_\-stmt}]Pointer to statement to connect ends to.\end{description}
 \end{Desc}
 Recursively traverses the specified stmt sequence. When it reaches a statement  that has either next\_\-true or next\_\-false set to NULL, sets next\_\-true and/or  next\_\-false of that statement to point to the next\_\-stmt statement. \index{statement.c@{statement.c}!statement_create@{statement\_\-create}}
 \index{statement_create@{statement\_\-create}!statement.c@{statement.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf statement}$\ast$ statement\_\-create ({\bf expression} $\ast$ {\em exp})}\label{statement_8c_a0}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf statement}$\ast$ statement\_\-create ({\bf expression} $\ast$ {\em exp})}\label{statement_8c_a1}
 
 
 Creates new statement structure.
@@ -127,7 +137,7 @@ exp}]Pointer to root expression of expression tree for this statement.\end{descr
 Returns pointer to the newly created statement.\end{Desc}
 Creates a new statement structure from heap memory and initializes it with the specified parameter information. \index{statement.c@{statement.c}!statement_db_read@{statement\_\-db\_\-read}}
 \index{statement_db_read@{statement\_\-db\_\-read}!statement.c@{statement.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} statement\_\-db\_\-read (char $\ast$$\ast$ {\em line}, {\bf module} $\ast$ {\em curr\_\-mod}, int {\em read\_\-mode})}\label{statement_8c_a2}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} statement\_\-db\_\-read (char $\ast$$\ast$ {\em line}, {\bf module} $\ast$ {\em curr\_\-mod}, int {\em read\_\-mode})}\label{statement_8c_a5}
 
 
 Reads in statement line from specified string and stores statement in specified module.
@@ -145,7 +155,7 @@ read\_\-mode}]If set to REPORT, adds statement to head of list; otherwise, adds 
 Returns TRUE if the line is read without error; otherwise, returns FALSE.\end{Desc}
 Reads in the contents of the statement from the specified line, creates a statement structure to hold the contents. \index{statement.c@{statement.c}!statement_db_write@{statement\_\-db\_\-write}}
 \index{statement_db_write@{statement\_\-db\_\-write}!statement.c@{statement.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void statement\_\-db\_\-write ({\bf statement} $\ast$ {\em stmt}, FILE $\ast$ {\em ofile}, char $\ast$ {\em scope})}\label{statement_8c_a1}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void statement\_\-db\_\-write ({\bf statement} $\ast$ {\em stmt}, FILE $\ast$ {\em ofile}, char $\ast$ {\em scope})}\label{statement_8c_a4}
 
 
 Writes specified statement to the specified output file.
@@ -160,7 +170,7 @@ scope}]Scope of parent module which contains the specified statement.\end{descri
 \end{Desc}
 Recursively writes the contents of the specified statement tree (and its associated expression trees to the specified output stream. \index{statement.c@{statement.c}!statement_dealloc@{statement\_\-dealloc}}
 \index{statement_dealloc@{statement\_\-dealloc}!statement.c@{statement.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void statement\_\-dealloc ({\bf statement} $\ast$ {\em stmt})}\label{statement_8c_a4}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void statement\_\-dealloc ({\bf statement} $\ast$ {\em stmt})}\label{statement_8c_a8}
 
 
 Deallocates statement memory and associated expression tree from the heap.
@@ -171,4 +181,49 @@ Deallocates statement memory and associated expression tree from the heap.
 \item[{\em 
 stmt}]Pointer to statement to deallocate.\end{description}
 \end{Desc}
-Deallocates specified statement from heap memory. First remove expression tree of this statement. Second, remove all statements following this statement. Finally, remove the specified statement itself. Since statements can be circular in nature, we will not remove a statement that has its expression tree already deallocated. This will prevent this function from getting into an infinite loop (or stack overflow since this function is recursive). 
+Deallocates specified statement from heap memory. First remove expression tree of this statement. Second, remove all statements following this statement. Finally, remove the specified statement itself. Since statements can be circular in nature, we will not remove a statement that has its expression tree already deallocated. This will prevent this function from getting into an infinite loop (or stack overflow since this function is recursive). \index{statement.c@{statement.c}!statement_set_stop@{statement\_\-set\_\-stop}}
+\index{statement_set_stop@{statement\_\-set\_\-stop}!statement.c@{statement.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void statement\_\-set\_\-stop ({\bf statement} $\ast$ {\em stmt}, {\bf statement} $\ast$ {\em post}, {\bf bool} {\em true\_\-path})}\label{statement_8c_a7}
+
+
+Sets stop bits in specified statement tree.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+stmt}]Pointer to top of statement tree to set stop bits for. \item[{\em 
+post}]Pointer to statement that comes just after the stopped statement. \item[{\em 
+true\_\-path}]Set to TRUE if the current statement exists on the right of its parent.\end{description}
+\end{Desc}
+Recursively traverses specified statement tree, setting the statement's stop bits that have either their next\_\-true or next\_\-false pointers pointing to the statement called post. \index{statement.c@{statement.c}!statement_stack_compare@{statement\_\-stack\_\-compare}}
+\index{statement_stack_compare@{statement\_\-stack\_\-compare}!statement.c@{statement.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void statement\_\-stack\_\-compare ({\bf statement} $\ast$ {\em stmt})}\label{statement_8c_a3}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+stmt}]Pointer to statement being read out of the CDD.\end{description}
+\end{Desc}
+Compares the specified statement against the top of the statement loop stack. If the ID at the top of the stack matches this statement's ID, the top of the stack is popped and the next\_\-true and next\_\-false pointers of the stored statement are pointed to the specified statement. The next head is also compared against this statement and the process is repeated until a match is not found. Once an ID at the top of the stack does not match, no further action is taken. \index{statement.c@{statement.c}!statement_stack_push@{statement\_\-stack\_\-push}}
+\index{statement_stack_push@{statement\_\-stack\_\-push}!statement.c@{statement.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void statement\_\-stack\_\-push ({\bf statement} $\ast$ {\em stmt}, int {\em id})}\label{statement_8c_a2}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+stmt}]Pointer of statement waiting to be linked. \item[{\em 
+id}]ID of statement to be read out later.\end{description}
+\end{Desc}
+Creates a new statement loop link for the specified parameters and adds this element to the top of the statement loop stack. 
+
+\subsection{Variable Documentation}
+\index{statement.c@{statement.c}!stmt_loop_stack@{stmt\_\-loop\_\-stack}}
+\index{stmt_loop_stack@{stmt\_\-loop\_\-stack}!statement.c@{statement.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf stmt\_\-loop\_\-link}$\ast$ stmt\_\-loop\_\-stack = NULL}\label{statement_8c_a0}
+
+

@@ -38,6 +38,8 @@ module*   curr_module       = NULL;
 symtable* vcd_symtab        = NULL;
 symtable* timestep_tab      = NULL;
 
+extern nibble or_optab[16];
+
 /*!
  This static value contains the current expression ID number to use for the next expression found, it
  is incremented by one when an expression is found.  This allows us to have a unique expression ID
@@ -450,10 +452,24 @@ expression* db_create_expression( expression* right, expression* left, int op, i
 
   expression* expr;             /* Temporary pointer to newly created expression */
   char        msg[4096];        /* Display message string                        */
+  int         right_id;         /* ID of right expression                        */
+  int         left_id;          /* ID of left expression                         */
 
-  snprintf( msg, 4096, "In db_create_expression, right: 0x%lx, left: 0x%lx, id: %d, op: %d, line: %d", 
-                       right,
-                       left,
+  if( right == NULL ) {
+    right_id = 0;
+  } else {
+    right_id = right->id;
+  }
+
+  if( left == NULL ) {
+    left_id = 0;
+  } else {
+    left_id = left->id;
+  }
+
+  snprintf( msg, 4096, "In db_create_expression, right: %d, left: %d, id: %d, op: %d, line: %d", 
+                       right_id,
+                       left_id,
                        curr_expr_id, 
                        op,
                        line );
@@ -832,6 +848,8 @@ void db_find_set_add_signal( char* symbol, vector* vec ) {
   expression* curr_parent;               /* Pointer to current parent expression to set.                 */
   bool        changed_finished = FALSE;  /* Indicates that we should stop setting changed bits           */
   int         skip             = 0;      /* Number of symbols to skip before returning if found          */
+  vector      vec1;                      /* One bit vector for attaining TRUE or FALSE value             */
+  nibble      value1;                    /* Nibble to hold temporary 1-bit vector value                  */
 
   snprintf( msg, 4096, "In db_find_set_add_signal, addr: 0x%lx, symbol: %s", symbol, symbol );
   print_output( msg, NORMAL );
@@ -844,6 +862,9 @@ void db_find_set_add_signal( char* symbol, vector* vec ) {
 
         signal_set_value( sig, vec->value, vec->width, 0, sig->value->lsb );
 
+        vector_init( &vec1, &value1, 1, 0 );
+        vector_unary_op( &vec1, vec, or_optab );
+
         // signal_display( sig );
 
         /* Add signal's expressions to expression queue */
@@ -851,10 +872,10 @@ void db_find_set_add_signal( char* symbol, vector* vec ) {
         while( curr_exp != NULL ) {
 
           /* Set signal expressions supplemental field TRUE/FALSE bits */
-          if( (vec->value[0] & 0x3) == 0 ) {
-            curr_exp->exp->suppl = curr_exp->exp->suppl | (0x1 << SUPPL_LSB_FALSE);
-          } else if( (vec->value[0] & 0x3) == 1 ) {
-            curr_exp->exp->suppl = curr_exp->exp->suppl | (0x1 << SUPPL_LSB_TRUE);
+          switch( vector_bit_val( vec1.value, 0 ) ) {
+            case 0 :  curr_exp->exp->suppl = curr_exp->exp->suppl | (0x1 << SUPPL_LSB_FALSE);  break;
+            case 1 :  curr_exp->exp->suppl = curr_exp->exp->suppl | (0x1 << SUPPL_LSB_TRUE);   break;
+            default:  break;
           }
 
           /* Add to simulation queue */
@@ -942,6 +963,11 @@ int db_get_signal_size( char* symbol ) {
 
 
 /* $Log$
+/* Revision 1.25  2002/07/02 18:42:18  phase1geo
+/* Various bug fixes.  Added support for multiple signals sharing the same VCD
+/* symbol.  Changed conditional support to allow proper simulation results.
+/* Updated VCD parser to allow for symbols containing only alphanumeric characters.
+/*
 /* Revision 1.24  2002/07/01 15:10:42  phase1geo
 /* Fixing always loopbacks and setting stop bits correctly.  All verilog diagnostics
 /* seem to be passing with these fixes.

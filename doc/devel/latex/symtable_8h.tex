@@ -9,7 +9,7 @@ Contains functions for manipulating a symtable structure.
 \item 
 void {\bf symtable\_\-add} (char $\ast$sym, {\bf signal} $\ast$sig, {\bf symtable} $\ast$$\ast$symtab)
 \begin{CompactList}\small\item\em Creates a new symtable entry and adds it to the specified symbol table.\item\end{CompactList}\item 
-{\bf bool} {\bf symtable\_\-find} (char $\ast$sym, {\bf symtable} $\ast$symtab, {\bf signal} $\ast$$\ast$sig)
+{\bf bool} {\bf symtable\_\-find} (char $\ast$sym, {\bf symtable} $\ast$symtab, {\bf signal} $\ast$$\ast$sig, int skip)
 \begin{CompactList}\small\item\em Finds specified symbol in specified symbol table and returns pointer to signal.\item\end{CompactList}\item 
 void {\bf symtable\_\-dealloc} ({\bf symtable} $\ast$symtab)
 \begin{CompactList}\small\item\em Deallocates all symtable entries for specified symbol table.\item\end{CompactList}\end{CompactItemize}
@@ -59,7 +59,7 @@ symtab}]Pointer to root of symtable to clear.\end{description}
 \end{Desc}
 Recursively deallocates all elements of specifies symbol table. \index{symtable.h@{symtable.h}!symtable_find@{symtable\_\-find}}
 \index{symtable_find@{symtable\_\-find}!symtable.h@{symtable.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} symtable\_\-find (char $\ast$ {\em sym}, {\bf symtable} $\ast$ {\em symtab}, {\bf signal} $\ast$$\ast$ {\em sig})}\label{symtable_8h_a1}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} symtable\_\-find (char $\ast$ {\em sym}, {\bf symtable} $\ast$ {\em symtab}, {\bf signal} $\ast$$\ast$ {\em sig}, int {\em skip})}\label{symtable_8h_a1}
 
 
 Finds specified symbol in specified symbol table and returns pointer to signal.
@@ -70,7 +70,8 @@ Finds specified symbol in specified symbol table and returns pointer to signal.
 \item[{\em 
 sym}]Name of symbol to find in the table. \item[{\em 
 symtab}]Root of the symtable to search in. \item[{\em 
-sig}]Pointer to found signal.\end{description}
+sig}]Pointer to found signal. \item[{\em 
+skip}]Number of matching symbol values to skip.\end{description}
 \end{Desc}
 \begin{Desc}
 \item[Returns: ]\par

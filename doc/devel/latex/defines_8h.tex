@@ -35,6 +35,8 @@ struct {\bf statistic\_\-s}
 \item 
 struct {\bf stmt\_\-link\_\-s}
 \item 
+struct {\bf stmt\_\-loop\_\-link\_\-s}
+\item 
 struct {\bf str\_\-link\_\-s}
 \item 
 struct {\bf symtable\_\-s}
@@ -186,9 +188,9 @@ struct {\bf vector\_\-s}
 \item 
 \#define {\bf EXP\_\-OP\_\-LAND}\ 0x18
 \item 
-\#define {\bf EXP\_\-OP\_\-COND\_\-T}\ 0x19
+\#define {\bf EXP\_\-OP\_\-COND}\ 0x19
 \item 
-\#define {\bf EXP\_\-OP\_\-COND\_\-F}\ 0x1a
+\#define {\bf EXP\_\-OP\_\-COND\_\-SEL}\ 0x1a
 \item 
 \#define {\bf EXP\_\-OP\_\-UINV}\ 0x1b
 \item 
@@ -287,6 +289,8 @@ typedef {\bf exp\_\-link\_\-s} {\bf exp\_\-link}
 \item 
 typedef {\bf stmt\_\-link\_\-s} {\bf stmt\_\-link}
 \item 
+typedef {\bf stmt\_\-loop\_\-link\_\-s} {\bf stmt\_\-loop\_\-link}
+\item 
 typedef {\bf sig\_\-link\_\-s} {\bf sig\_\-link}
 \item 
 typedef {\bf module\_\-s} {\bf module}
@@ -356,6 +360,7 @@ Returns a value of 1 if the specified expression was measurable for combinationa
 {\bf Value:}
 
 \footnotesize\begin{verbatim}(((SUPPL_OP( x->suppl ) != EXP_OP_NONE) && \
+                                     (SUPPL_OP( x->suppl ) != EXP_OP_COND_SEL) && \
                                      !(((SUPPL_OP( x->suppl ) == EXP_OP_SIG) || \
                                         (SUPPL_OP( x->suppl ) == EXP_OP_SBIT_SEL) || \
                                         (SUPPL_OP( x->suppl ) == EXP_OP_MBIT_SEL)) && \
@@ -371,7 +376,7 @@ Determine size of integer in bits.
 \subsection{Typedef Documentation}
 \index{defines.h@{defines.h}!case_statement@{case\_\-statement}}
 \index{case_statement@{case\_\-statement}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf case\_\-stmt\_\-s} case\_\-statement}\label{defines_8h_a126}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf case\_\-stmt\_\-s} case\_\-statement}\label{defines_8h_a127}
 
 
 \index{defines.h@{defines.h}!exp_link@{exp\_\-link}}
@@ -391,17 +396,17 @@ Determine size of integer in bits.
 
 \index{defines.h@{defines.h}!mod_inst@{mod\_\-inst}}
 \index{mod_inst@{mod\_\-inst}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf mod\_\-inst\_\-s} mod\_\-inst}\label{defines_8h_a128}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf mod\_\-inst\_\-s} mod\_\-inst}\label{defines_8h_a129}
 
 
 \index{defines.h@{defines.h}!mod_link@{mod\_\-link}}
 \index{mod_link@{mod\_\-link}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf mod\_\-link\_\-s} mod\_\-link}\label{defines_8h_a122}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf mod\_\-link\_\-s} mod\_\-link}\label{defines_8h_a123}
 
 
 \index{defines.h@{defines.h}!module@{module}}
 \index{module@{module}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf module\_\-s} module}\label{defines_8h_a121}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf module\_\-s} module}\label{defines_8h_a122}
 
 
 \index{defines.h@{defines.h}!nibble@{nibble}}
@@ -411,12 +416,12 @@ Determine size of integer in bits.
 
 A nibble is a 32-bit value that is subdivided into three parts: Bits 7 - 0 = 4 bits of 4-state value. Bits 11 - 8 = Toggle01 value for each of the four 4-state bits. Bits 15 - 12 = Toggle10 value for each of the four 4-state bits. Bits 19 - 16 = Indicates if this bit has been previously assigned. Bits 23 - 20 = Static value indicators for each of the four 4-state bits. Bits 27 - 24 = Indicates if this bit was set to a value of 0 (FALSE). Bits 31 - 28 = Indicates if this bit was set to a value of 1 (TRUE). \index{defines.h@{defines.h}!sig_exp_bind@{sig\_\-exp\_\-bind}}
 \index{sig_exp_bind@{sig\_\-exp\_\-bind}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf sig\_\-exp\_\-bind\_\-s} sig\_\-exp\_\-bind}\label{defines_8h_a125}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf sig\_\-exp\_\-bind\_\-s} sig\_\-exp\_\-bind}\label{defines_8h_a126}
 
 
 \index{defines.h@{defines.h}!sig_link@{sig\_\-link}}
 \index{sig_link@{sig\_\-link}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf sig\_\-link\_\-s} sig\_\-link}\label{defines_8h_a120}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf sig\_\-link\_\-s} sig\_\-link}\label{defines_8h_a121}
 
 
 \index{defines.h@{defines.h}!signal@{signal}}
@@ -426,7 +431,7 @@ A nibble is a 32-bit value that is subdivided into three parts: Bits 7 - 0 = 4 b
 
 \index{defines.h@{defines.h}!signal_width@{signal\_\-width}}
 \index{signal_width@{signal\_\-width}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf signal\_\-width\_\-s} signal\_\-width}\label{defines_8h_a124}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf signal\_\-width\_\-s} signal\_\-width}\label{defines_8h_a125}
 
 
 \index{defines.h@{defines.h}!statement@{statement}}
@@ -436,12 +441,17 @@ A nibble is a 32-bit value that is subdivided into three parts: Bits 7 - 0 = 4 b
 
 \index{defines.h@{defines.h}!statistic@{statistic}}
 \index{statistic@{statistic}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf statistic\_\-s} statistic}\label{defines_8h_a127}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf statistic\_\-s} statistic}\label{defines_8h_a128}
 
 
 \index{defines.h@{defines.h}!stmt_link@{stmt\_\-link}}
 \index{stmt_link@{stmt\_\-link}!defines.h@{defines.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf stmt\_\-link\_\-s} stmt\_\-link}\label{defines_8h_a119}
+
+
+\index{defines.h@{defines.h}!stmt_loop_link@{stmt\_\-loop\_\-link}}
+\index{stmt_loop_link@{stmt\_\-loop\_\-link}!defines.h@{defines.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf stmt\_\-loop\_\-link\_\-s} stmt\_\-loop\_\-link}\label{defines_8h_a120}
 
 
 \index{defines.h@{defines.h}!str_link@{str\_\-link}}
@@ -451,7 +461,7 @@ A nibble is a 32-bit value that is subdivided into three parts: Bits 7 - 0 = 4 b
 
 \index{defines.h@{defines.h}!symtable@{symtable}}
 \index{symtable@{symtable}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf symtable\_\-s} symtable}\label{defines_8h_a123}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf symtable\_\-s} symtable}\label{defines_8h_a124}
 
 
 \index{defines.h@{defines.h}!vector@{vector}}
@@ -464,16 +474,16 @@ A nibble is a 32-bit value that is subdivided into three parts: Bits 7 - 0 = 4 b
 \subsection{Enumeration Type Documentation}
 \index{defines.h@{defines.h}!bool@{bool}}
 \index{bool@{bool}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}enum bool}\label{defines_8h_a131}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}enum bool}\label{defines_8h_a132}
 
 
 Defines boolean variables used in most functions. \begin{Desc}
 \item[Enumeration values:]\par
 \begin{description}
 \index{FALSE@{FALSE}!defines.h@{defines.h}}\index{defines.h@{defines.h}!FALSE@{FALSE}}\item[{\em 
-{\em FALSE}\label{defines_8h_a131a129}
+{\em FALSE}\label{defines_8h_a132a130}
 }]Boolean false value \index{TRUE@{TRUE}!defines.h@{defines.h}}\index{defines.h@{defines.h}!TRUE@{TRUE}}\item[{\em 
-{\em TRUE}\label{defines_8h_a131a130}
+{\em TRUE}\label{defines_8h_a132a131}
 }]Boolean true value \end{description}
 \end{Desc}
 
