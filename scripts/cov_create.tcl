@@ -7,6 +7,8 @@ proc cov_create {.covbox} {
 
   radiobutton .covbox.line -variable cov_rb -value line   -text "Line" -command { 
     if {$file_name != 0} {
+      set text_x [.bot.txt xview]
+      set text_y [.bot.txt yview]
       if {$last_cov_rb != $cov_rb} {
         set last_cov_rb $cov_rb
         highlight_listbox
@@ -14,10 +16,14 @@ proc cov_create {.covbox} {
       } else {
         display_line_cov
       }
+      .bot.txt xview moveto [lindex $text_x 0]
+      .bot.txt yview moveto [lindex $text_y 0]
     } 
   }
   radiobutton .covbox.tog  -variable cov_rb -value toggle -text "Toggle" -command {
     if {$file_name != 0} {
+      set text_x [.bot.txt xview]
+      set text_y [.bot.txt yview]
       if {$last_cov_rb != $cov_rb} {
         set last_cov_rb $cov_rb
         highlight_listbox
@@ -25,10 +31,14 @@ proc cov_create {.covbox} {
       } else {
         display_toggle_cov
       }
+      .bot.txt xview moveto [lindex $text_x 0]
+      .bot.txt yview moveto [lindex $text_y 0]
     }
   }
   radiobutton .covbox.comb -variable cov_rb -value comb   -text "Logic" -command {
     if {$file_name != 0} {
+      set text_x [.bot.txt xview]
+      set text_y [.bot.txt yview]
       if {$last_cov_rb != $cov_rb} {
         set last_cov_rb $cov_rb
         highlight_listbox
@@ -36,10 +46,14 @@ proc cov_create {.covbox} {
       } else {
         display_comb_cov
       }
+      .bot.txt xview moveto [lindex $text_x 0]
+      .bot.txt yview moveto [lindex $text_y 0]
     }
   } -state disabled
   radiobutton .covbox.fsm  -variable cov_rb -value fsm    -text "FSM" -command {
     if {$file_name != 0} {
+      set text_x [.bot.txt xview]
+      set text_y [.bot.txt yview]
       if {$last_cov_rb != $cov_rb} {
         set last_cov_rb $cov_rb
         highlight_listbox
@@ -47,6 +61,8 @@ proc cov_create {.covbox} {
       } else {
         display_fsm_cov
       }
+      .bot.txt xview moveto [lindex $text_x 0]
+      .bot.txt yview moveto [lindex $text_y 0]
     }
   } -state disabled
 
