@@ -372,7 +372,7 @@ void vsignal_vcd_assign( vsignal* sig, char* value, int msb, int lsb ) {
   }
 
   /* Don't go through the hassle of updating expressions if value hasn't changed */
-  // if( vec_changed ) {
+  if( vec_changed ) {
 
     /* Iterate through vsignal's expression list */
     curr_expr = sig->exp_head;
@@ -387,7 +387,7 @@ void vsignal_vcd_assign( vsignal* sig, char* value, int msb, int lsb ) {
 
     }
 
-  // }
+  } 
 
 }
 
@@ -496,6 +496,10 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.3  2004/11/06 13:22:48  phase1geo
+ Updating CDD files for change where EVAL_T and EVAL_F bits are now being masked out
+ of the CDD files.
+
  Revision 1.2  2004/04/05 12:30:52  phase1geo
  Adding *db_replace functions to allow a design to be opened with new CDD
  results (for GUI purposes only).
