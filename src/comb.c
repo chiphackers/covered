@@ -316,8 +316,6 @@ void combination_get_stats( exp_link* expl, float* total, int* hit ) {
 
 }
 
-// bool toggle_get_coverage( char* mod_name, char* sig_name, int* msb, int* lsb, char** tog01, char** tog10 );
-
 bool combination_get_module_summary( char* mod_name, int* total, int* hit ) {
 
   bool      retval = TRUE;  /* Return value of this function */
@@ -1621,6 +1619,93 @@ bool combination_collect( const char* mod_name, expression*** covs, int* cov_cnt
 
 }
 
+bool combination_get_coverage( char* mod_name, int expr_id, char*** code, int** uline_groups, int* code_size, char*** ulines, int* uline_size ) {
+
+  bool       retval    = TRUE;  /* Return value for this function */
+  module     mod;               /* Module used for searching      */
+  mod_link*  modl;              /* Pointer to found module link   */
+  expression exp;               /* Expression used for searching  */
+  exp_link*  expl;              /* Pointer to found signal link   */
+  int        tmp;               /* Temporary integer (unused)     */
+  int        i, j;
+  char**     tmp_ulines;
+  int        tmp_uline_size;
+  int        start     = 0;
+  int        uline_max = 20;
+
+  mod.name = mod_name;
+
+  if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
+
+    exp.id = expr_id;
+
+    if( (expl = exp_link_find( &exp, modl->mod->exp_head )) != NULL ) {
+
+      /* Generate line of code that missed combinational coverage */
+      codegen_gen_expr( expl->exp, SUPPL_OP( expl->exp->suppl ), code, code_size );
+      *uline_groups = (int*)malloc_safe( sizeof( int ) * (*code_size), __FILE__, __LINE__ );
+
+      /* Output underlining feature for missed expressions */
+      combination_underline_tree( expl->exp, 0, &tmp_ulines, &tmp_uline_size, &tmp, SUPPL_OP( expl->exp->suppl ), (*code_size == 1) );
+
+      *ulines     = (char**)malloc_safe( sizeof( char* ) * uline_max, __FILE__, __LINE__ );
+      *uline_size = 0;
+
+      for( i=0; i<*code_size; i++ ) {
+
+        assert( (*code)[i] != NULL );
+
+        (*uline_groups)[i] = 0;
+
+        if( *code_size == 1 ) {
+          *ulines            = tmp_ulines;
+          *uline_size        = tmp_uline_size;
+          (*uline_groups)[0] = tmp_uline_size;
+          tmp_uline_size     = 0;
+        } else {
+          for( j=0; j<tmp_uline_size; j++ ) {
+            if( ((*ulines)[*uline_size] = combination_prep_line( tmp_ulines[j], start, strlen( (*code)[i] ) )) != NULL ) {
+              ((*uline_groups)[i])++;
+              (*uline_size)++;
+              if( *uline_size == uline_max ) {
+                uline_max += 20;
+                *ulines    = (char**)realloc( *ulines, (sizeof( char* ) * uline_max) );
+              }
+            }
+          }
+        }
+
+        start += strlen( (*code)[i] );
+
+      }
+
+      for( i=0; i<tmp_uline_size; i++ ) {
+        free_safe( tmp_ulines[i] );
+      }
+
+      if( tmp_uline_size > 0 ) {
+        free_safe( tmp_ulines );
+      }
+
+      /* Output logical combinations that missed complete coverage */
+      // combination_list_missed( ofile, unexec_exp, 0 );
+
+    } else {
+
+      retval = FALSE;
+
+    }
+
+  } else {
+
+    retval = FALSE;
+
+  }
+
+  return( retval );
+
+}
+
 /*!
  \param ofile     Pointer to file to output results to.
  \param verbose   Specifies whether or not to provide verbose information
@@ -1680,6 +1765,9 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.99  2004/08/11 22:11:38  phase1geo
+ Initial beginnings of combinational logic verbose reporting to GUI.
+
  Revision 1.98  2004/03/20 15:26:50  phase1geo
  Fixing assertion error in report command for multi-value expression display.
  Added multi_exp3 report information to regression suite and fixed regression

@@ -19,9 +19,9 @@ void combination_get_stats( exp_link* expl, float* total, int* hit );
 /*! \brief Collects all toggle expressions that match the specified coverage indication. */
 bool combination_collect( const char* mod_name, expression*** covs, int* cov_cnt, expression*** uncovs, int* uncov_cnt );
 
-// bool toggle_get_coverage( char* mod_name, char* sig_name, int* msb, int* lsb, char** tog01, char** tog10 );
-
 bool combination_get_module_summary( char* mod_name, int* total, int* hit );
+
+bool combination_get_coverage( char* mod_name, int expr_id, char*** code, int** uline_groups, int* code_size, char*** ulines, int* uline_size );
 
 /*! \brief Generates report output for combinational logic coverage. */
 void combination_report( FILE* ofile, bool verbose );
@@ -29,6 +29,9 @@ void combination_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.8  2004/08/11 22:11:39  phase1geo
+ Initial beginnings of combinational logic verbose reporting to GUI.
+
  Revision 1.7  2002/11/05 00:20:06  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.

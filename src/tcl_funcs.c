@@ -391,30 +391,53 @@ int tcl_func_collect_combs( ClientData d, Tcl_Interp* tcl, int argc, const char*
 
 int tcl_func_get_comb_coverage( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
-  int   retval = TCL_OK;
-  char* modname;
-  char* signame;
-  int   msb;
-  int   lsb;
-  char* tog01;
-  char* tog10;
-  char  tmp[20];
+  int    retval = TCL_OK;
+  char*  modname;
+  int    expr_id;
+  char** code;
+  int*   uline_groups;
+  int    code_size;
+  char** ulines;
+  int    uline_size;
+  int    i;
+  char   tmp[20];
 
-#ifdef SKIP
   modname = strdup_safe( argv[1], __FILE__, __LINE__ );
+  expr_id = atol( argv[2] );
 
-  if( combination_get_coverage( modname, signame, &msb, &lsb, &tog01, &tog10 ) ) {
+  if( combination_get_coverage( modname, expr_id, &code, &uline_groups, &code_size, &ulines, &uline_size ) ) {
 
-    snprintf( tmp, 20, "%d", msb );
-    Tcl_SetVar( tcl, "toggle_msb", tmp, TCL_GLOBAL_ONLY );
-    snprintf( tmp, 20, "%d", lsb );
-    Tcl_SetVar( tcl, "toggle_lsb", tmp, TCL_GLOBAL_ONLY );
-    Tcl_SetVar( tcl, "toggle01_verbose", tog01, TCL_GLOBAL_ONLY );
-    Tcl_SetVar( tcl, "toggle10_verbose", tog10, TCL_GLOBAL_ONLY );
+    for( i=0; i<code_size; i++ ) {
+      if( i == 0 ) {
+        Tcl_SetVar( tcl, "comb_code",         code[i], (TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT) );
+        snprintf( tmp, 20, "%d", uline_groups[i] );
+        Tcl_SetVar( tcl, "comb_uline_groups", tmp,     (TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT) );
+      } else {
+        Tcl_SetVar( tcl, "comb_code",         code[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+        snprintf( tmp, 20, "%d", uline_groups[i] );
+        Tcl_SetVar( tcl, "comb_uline_groups", tmp,     (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      }
+      free_safe( code[i] );
+    }
+
+    for( i=0; i<uline_size; i++ ) {
+      if( i == 0 ) {
+        Tcl_SetVar( tcl, "comb_ulines", ulines[i], (TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT) );
+      } else {
+        Tcl_SetVar( tcl, "comb_ulines", ulines[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      }
+      free_safe( ulines[i] );
+    }
 
     /* Free up allocated memory */
-    free_safe( tog01 );
-    free_safe( tog10 );
+    if( code_size > 0 ) {
+      free_safe( code );
+      free_safe( uline_groups );
+    }
+
+    if( uline_size > 0 ) {
+      free_safe( ulines );
+    }
 
   } else {
     snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find module %s in design", argv[1] );
@@ -425,10 +448,6 @@ int tcl_func_get_comb_coverage( ClientData d, Tcl_Interp* tcl, int argc, const c
 
   /* Free up allocated memory */
   free_safe( modname );
-  free_safe( signame );
-#else
-  printf( "In tcl_func_get_comb_coverage\n" );
-#endif
 
   return( retval );
 
@@ -608,6 +627,7 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* home ) {
   Tcl_CreateCommand( tcl, "tcl_func_collect_combs",             (Tcl_CmdProc*)(tcl_func_collect_combs),             0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_module_start_and_end",  (Tcl_CmdProc*)(tcl_func_get_module_start_and_end),  0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_toggle_coverage",       (Tcl_CmdProc*)(tcl_func_get_toggle_coverage),       0, 0 ); 
+  Tcl_CreateCommand( tcl, "tcl_func_get_comb_coverage",         (Tcl_CmdProc*)(tcl_func_get_comb_coverage),         0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_open_cdd",                  (Tcl_CmdProc*)(tcl_func_open_cdd),                  0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_replace_cdd",               (Tcl_CmdProc*)(tcl_func_replace_cdd),               0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_merge_cdd",                 (Tcl_CmdProc*)(tcl_func_merge_cdd),                 0, 0 );
@@ -622,6 +642,9 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* home ) {
 
 /*
  $Log$
+ Revision 1.10  2004/08/12 12:56:32  phase1geo
+ Fixing error in combinational logic collection function for covered logic.
+
  Revision 1.9  2004/08/11 22:11:39  phase1geo
  Initial beginnings of combinational logic verbose reporting to GUI.
 
