@@ -279,6 +279,41 @@ void combination_draw_line( char* line, int size, int exp_id ) {
   exp_id_size = strlen( str_exp_id );
 
   line[0] = '|';
+  line[1] = '\0';
+  strcat( line, str_exp_id );
+
+  for( i=(exp_id_size + 1); i<(size - 1); i++ ) {
+    line[i] = '-';
+  }
+
+  line[i]   = '|';
+  line[i+1] = '\0';
+
+}
+
+/*!
+ \param line    Pointer to line to create line onto.
+ \param size    Number of characters long line is.
+ \param exp_id  ID to place in underline.
+
+ Draws an underline containing the specified expression ID to the specified
+ line.
+*/
+void combination_draw_centered_line( char* line, int size, int exp_id, bool left_bar, bool right_bar ) {
+
+  char str_exp_id[12];   /* String containing value of exp_id        */
+  int  exp_id_size;      /* Number of characters exp_id is in length */
+  int  i;                /* Loop iterator                            */
+
+  /* Calculate size of expression ID */
+  snprintf( str_exp_id, 12, "%d", exp_id );
+  exp_id_size = strlen( str_exp_id );
+
+  if( left_bar ) {
+    line[0] = '|';
+  } else {
+    line[0] = '-';
+  }
 
   for( i=1; i<((size - exp_id_size) / 2); i++ ) {
     line[i] = '-';
@@ -291,7 +326,11 @@ void combination_draw_line( char* line, int size, int exp_id ) {
     line[i] = '-';
   }
 
-  line[i]   = '|';
+  if( right_bar ) {
+    line[i] = '|';
+  } else {
+    line[i] = '-';
+  }
   line[i+1] = '\0';
 
 }
@@ -620,35 +659,144 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
     
 }
 
+char* combination_prep_line( char* line, int start, int len ) {
+
+  char* str;                /* Prepared line to return                           */
+  int   exp_id;             /* Expression ID of current line                     */
+  int   chars_read;         /* Number of characters read from sscanf function    */
+  int   i;                  /* Loop iterator                                     */
+  int   curr_index;         /* Index current character in str to set             */
+  bool  line_ip   = FALSE;  /* Specifies if a line is currently in progress      */
+  bool  line_seen = FALSE;  /* Specifies that a line has been seen for this line */
+  int   start_ul;           /* Index of starting underline                       */
+
+  /* Allocate memory for string to return */
+  str = (char*)malloc_safe( len + 1 );
+
+  i          = 0;
+  curr_index = 0;
+
+  while( i < (start + len) ) {
+   
+    if( *(line + i) == '|' ) {
+      if( i >= start ) {
+        line_seen = TRUE;
+      }
+      if( !line_ip ) {
+        line_ip  = TRUE;
+        start_ul = i;
+        if( sscanf( (line + i + 1), "%d%n", &exp_id, &chars_read ) != 1 ) {
+          assert( 0 == 1 );
+        } else {
+          i += chars_read;
+        }
+      } else {
+        line_ip = FALSE;
+        if( i >= start ) {
+          if( start_ul >= start ) {
+            combination_draw_centered_line( (str + curr_index), ((i - start_ul) + 1), exp_id, TRUE,  TRUE );
+            curr_index += (i - start_ul) + 1;
+          } else {
+            combination_draw_centered_line( (str + curr_index), ((i - start) + 1), exp_id, FALSE, TRUE );
+            curr_index += (i - start) + 1;
+          }
+        }
+      }
+    } else {
+      if( i >= start ) {
+        if( *(line + i) == '-' ) {
+          line_seen = TRUE;
+        } else {
+          str[curr_index] = *(line + i);
+          curr_index++;
+        }
+      }
+    }
+
+    i++;
+
+  }
+
+  if( line_ip ) {
+    if( start_ul >= start ) {
+      combination_draw_centered_line( (str + curr_index), ((i - start_ul) + 1), exp_id, TRUE,  FALSE );
+      curr_index += (i - start_ul) + 1;
+    } else {
+      combination_draw_centered_line( (str + curr_index), ((i - start) + 1), exp_id, FALSE, FALSE );
+      curr_index += (i - start) + 1;
+    }
+  }
+
+  /* If we didn't see any underlines here, return NULL */
+  if( !line_seen ) {
+    free_safe( str );
+    str = NULL;
+  } else {
+    str[curr_index] = '\0';
+  }
+
+  return( str );
+
+}
+
 /*!
- \param ofile     Pointer output stream to display underlines to.
- \param exp       Pointer to parent expression to create underline for.
- \param begin_sp  Spacing that is placed at the beginning of the generated line.
+ \param ofile       Pointer output stream to display underlines to.
+ \param code        Array of strings containing code to output.
+ \param code_depth  Number of entries in code array.
+ \param exp         Pointer to parent expression to create underline for.
 
  Traverses through the expression tree that is on the same line as the parent,
  creating underline strings.  An underline is created for each expression that
  does not have complete combination logic coverage.  Each underline (children to
  parent creates an inverted tree) and contains a number for the specified expression.
 */
-void combination_underline( FILE* ofile, expression* exp, char* begin_sp ) {
+void combination_underline( FILE* ofile, char** code, int code_depth, expression* exp ) {
 
   char** lines;    /* Pointer to a stack of lines     */
   int    depth;    /* Depth of underline stack        */
   int    size;     /* Width of stack in characters    */
   int    exp_id;   /* Expression ID to place in label */
   int    i;        /* Loop iterator                   */
+  int    j;        /* Loop iterator                   */
+  char*  tmpstr;   /* Temporary string variable       */
+  int    start;    /* Starting index                  */
 
   exp_id = 1;
+  start  = 0;
 
   combination_underline_tree( exp, 0, &lines, &depth, &size, &exp_id, SUPPL_OP( exp->suppl ) );
 
+  for( j=0; j<code_depth; j++ ) {
+
+    if( j == 0 ) {
+      fprintf( ofile, "%7d:    %s\n", exp->line, code[j] );
+    } else {
+      fprintf( ofile, "            %s\n", code[j] );
+    }
+
+    for( i=0; i<depth; i++ ) {
+      if( (tmpstr = combination_prep_line( lines[i], start, strlen( code[j] ) )) != NULL ) {
+        fprintf( ofile, "            %s\n", tmpstr );
+        free_safe( tmpstr );
+      }
+    }
+
+    start += strlen( code[j] );
+
+    free_safe( code[j] );
+
+  }
+
   for( i=0; i<depth; i++ ) {
-    fprintf( ofile, "%s%s\n", begin_sp, lines[i] );
     free_safe( lines[i] );
   }
 
   if( depth > 0 ) {
     free_safe( lines );
+  }
+
+  if( code_depth > 0 ) {
+    free_safe( code );
   }
 
 }
@@ -914,18 +1062,10 @@ void combination_display_verbose( FILE* ofile, stmt_link* stmtl ) {
 
       /* Generate line of code that missed combinational coverage */
       codegen_gen_expr( unexec_exp, SUPPL_OP( unexec_exp->suppl ), &code, &code_depth );
-      fprintf( ofile, "%7d:    %s\n", unexec_exp->line, code[0] );
-      free_safe( code[0] );
-      for( i=1; i<code_depth; i++ ) {
-        fprintf( ofile, "            %s\n", code[i] );
-        free_safe( code[i] );
-      }
 
       /* Output underlining feature for missed expressions */
-      combination_underline( ofile, unexec_exp, "            " );
+      combination_underline( ofile, code, code_depth, unexec_exp );
       fprintf( ofile, "\n\n" );
-
-      free_safe( code );
 
       /* Output logical combinations that missed complete coverage */
       combination_list_missed( ofile, unexec_exp, 0, &exp_id );
@@ -1064,6 +1204,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.68  2003/12/12 17:16:25  phase1geo
+ Changing code generator to output logic based on user supplied format.  Full
+ regression fails at this point due to mismatching report files.
+
  Revision 1.67  2003/11/30 05:46:45  phase1geo
  Adding IF report outputting capability.  Updated always9 diagnostic for these
  changes and updated rest of regression CDD files accordingly.

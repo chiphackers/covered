@@ -191,8 +191,9 @@ Expression 1
 ====================================================
  Line #     Expression
 ====================================================
-     37:    case( state ) STATE_IDLE :
-                  |-1-|               
+     37:    case( state ) 
+                  |-1-|   
+            STATE_IDLE :
 
 
 Expression 1

@@ -52,9 +52,17 @@ Missed Combinations
 ====================================================
  Line #     Expression
 ====================================================
-     24:    @(display_tagto_current_state or pcix_pio_timeout_recorder or split_resp_active or split_resp_tag or tag_timeout or clr_tag_toed)
-              |------------1------------|    |-----------2-----------|                                           |----4----|                 
-              |--------------------------3---------------------------|                                                                       
+     24:    @(display_tagto_current_state or 
+              |------------1------------|    
+              |--------------3----------------
+            pcix_pio_timeout_recorder or 
+            |-----------2-----------|    
+            ------------3-----------|    
+            split_resp_active or 
+            split_resp_tag or 
+            tag_timeout or 
+            |----4----|    
+            clr_tag_toed)
 
 
 Expression 3
