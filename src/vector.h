@@ -59,7 +59,7 @@ nibble vector_bit_val( nibble* value, int pos );
 void vector_set_bit( nibble* nib, nibble value, int pos );
 
 /*! \brief Sets specified vector value to new value and maintains coverage history. */
-void vector_set_value( vector* vec, nibble* value, int width, int from_idx, int to_idx );
+bool vector_set_value( vector* vec, nibble* value, int width, int from_idx, int to_idx );
 
 /*! \brief Sets vector output type (DECIMAL, BINARY, OCTAL or HEXIDECIMAL) in first nibble */
 void vector_set_type( vector* vec, int type );
@@ -127,6 +127,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.21  2004/08/08 12:50:27  phase1geo
+ Snapshot of addition of toggle coverage in GUI.  This is not working exactly as
+ it will be, but it is getting close.
+
  Revision 1.20  2004/04/05 12:30:52  phase1geo
  Adding *db_replace functions to allow a design to be opened with new CDD
  results (for GUI purposes only).

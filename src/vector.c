@@ -696,7 +696,7 @@ void vector_logic_count( vector* vec, int* false_cnt, int* true_cnt ) {
  \param from_idx  Starting bit index of value to start copying.
  \param to_idx    Starting bit index of value to copy to.
 
- \return Returns TRUE if assignment was successful; otherwise, returns FALSE.
+ \return Returns TRUE if assignment was performed; otherwise, returns FALSE.
 
  Allows the calling function to set any bit vector within the vector
  range.  If the vector value has never been set, sets
@@ -704,12 +704,13 @@ void vector_logic_count( vector* vec, int* false_cnt, int* true_cnt ) {
  been set, checks to see if new vector bits have toggled, sets appropriate
  toggle values, sets the new value to this value and returns.
 */
-void vector_set_value( vector* vec, nibble* value, int width, int from_idx, int to_idx ) {
+bool vector_set_value( vector* vec, nibble* value, int width, int from_idx, int to_idx ) {
 
-  nibble from_val;  /* Current bit value of value being assigned */
-  nibble to_val;    /* Current bit value of previous value       */
-  int    i;         /* Loop iterator                             */
-  nibble set_val;   /* Value to set current vec value to         */
+  bool   retval = FALSE;  /* Return value for this function            */
+  nibble from_val;        /* Current bit value of value being assigned */
+  nibble to_val;          /* Current bit value of previous value       */
+  int    i;               /* Loop iterator                             */
+  nibble set_val;         /* Value to set current vec value to         */
 
   assert( vec != NULL );
 
@@ -727,35 +728,39 @@ void vector_set_value( vector* vec, nibble* value, int width, int from_idx, int 
     from_val = VECTOR_VAL( value[i + from_idx] );
     to_val   = VECTOR_VAL( set_val );
 
-    if( VECTOR_SET( set_val ) == 0x1 ) {
+    if( from_val != to_val ) {
 
-      /* Assign toggle values if necessary */
+      if( VECTOR_SET( set_val ) == 0x1 ) {
 
-      if( (to_val == 0) && (from_val == 1) ) {
-        set_val |= (0x1 << VECTOR_LSB_TOG01);
-      } else if( (to_val == 1) && (from_val == 0) ) {
-        set_val |= (0x1 << VECTOR_LSB_TOG10);
+        /* Assign toggle values if necessary */
+  
+        if( (to_val == 0) && (from_val == 1) ) {
+          set_val |= (0x1 << VECTOR_LSB_TOG01);
+        } else if( (to_val == 1) && (from_val == 0) ) {
+          set_val |= (0x1 << VECTOR_LSB_TOG10);
+        }
+
       }
 
-    }
+      /* Assign TRUE/FALSE values if necessary */
+      if( from_val == 0 ) {
+        set_val |= (0x1 << VECTOR_LSB_FALSE);
+      } else if( from_val == 1 ) {
+        set_val |= (0x1 << VECTOR_LSB_TRUE);
+      }
 
-    /* Assign TRUE/FALSE values if necessary */
-    if( from_val == 0 ) {
-      set_val |= (0x1 << VECTOR_LSB_FALSE);
-    } else if( from_val == 1 ) {
-      set_val |= (0x1 << VECTOR_LSB_TRUE);
-    }
-
-    /* Perform value assignment */
-    if( from_val != to_val ) {
+      /* Perform value assignment */
       set_val |= (0x1 << VECTOR_LSB_SET);
+      VECTOR_SET_VAL( set_val, from_val );
+      vec->value[i + to_idx] = set_val;
+
+      retval = TRUE;
+
     }
-
-    VECTOR_SET_VAL( set_val, from_val );
-
-    vec->value[i + to_idx] = set_val;
 
   }
+
+  return( retval );
 
 }
 
@@ -1620,6 +1625,10 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.50  2004/08/08 12:50:27  phase1geo
+ Snapshot of addition of toggle coverage in GUI.  This is not working exactly as
+ it will be, but it is getting close.
+
  Revision 1.49  2004/04/05 12:30:52  phase1geo
  Adding *db_replace functions to allow a design to be opened with new CDD
  results (for GUI purposes only).
