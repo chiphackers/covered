@@ -36,7 +36,6 @@ void combination_get_stats( exp_link* expl, float* total, int* hit ) {
 
   while( curr_exp != NULL ) {
     if( EXPR_IS_MEASURABLE( curr_exp->exp ) == 1 ) {
-      // printf( "Expression %d is measurable\n", curr_exp->exp->id );
       *total = *total + 2;
       *hit   = *hit + SUPPL_WAS_TRUE( curr_exp->exp->suppl ) + SUPPL_WAS_FALSE( curr_exp->exp->suppl );
     }
@@ -271,7 +270,7 @@ void combination_underline_tree( expression* exp, char*** lines, int* depth, int
           case EXP_OP_CNE      :  *size = l_size + r_size + 7;  strcpy( code_fmt, " %s     %s "      );  break;
           case EXP_OP_LOR      :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "       );  break;
           case EXP_OP_LAND     :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "       );  break;
-          case EXP_OP_COND     :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s   "            );  break;
+          case EXP_OP_COND     :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s   %s"          );  break;
           case EXP_OP_COND_SEL :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s   %s"          );  break;
           case EXP_OP_UINV     :  *size = l_size + r_size + 2;  strcpy( code_fmt, " %s "             );  break;
           case EXP_OP_UAND     :  *size = l_size + r_size + 2;  strcpy( code_fmt, " %s "             );  break;
@@ -330,7 +329,7 @@ void combination_underline_tree( expression* exp, char*** lines, int* depth, int
          
             /* Merge left and right lines */
             snprintf( (*lines)[i], (*size + 1), code_fmt, l_lines[i], r_lines[i] );
-            
+
             free_safe( l_lines[i] );
             free_safe( r_lines[i] );
 
@@ -355,7 +354,7 @@ void combination_underline_tree( expression* exp, char*** lines, int* depth, int
               /* Create spaces for left side */
               gen_space( exp_sp, l_size );
 
-              /* Merge left side only */
+              /* Merge right side only */
               snprintf( (*lines)[i], (*size + 1), code_fmt, exp_sp, r_lines[i] );
           
             }
@@ -567,8 +566,31 @@ void combination_list_missed( FILE* ofile, expression* exp, int* exp_id ) {
 }
 
 /*!
+ \param expr  Pointer to root of expression tree to search.
+
+ Recursively traverses specified expression tree, returning TRUE
+ if an expression is found that has not received 100% coverage for
+ combinational logic.
+*/
+bool combination_missed_expr( expression* expr ) {
+  
+  if( expr != NULL ) {
+
+    return( (EXPR_COMB_MISSED( expr ) == 1)       || 
+            combination_missed_expr( expr->left ) || 
+            combination_missed_expr( expr->right ) );
+  
+  } else {
+
+    return( FALSE );
+
+  }
+
+}
+
+/*!
  \param ofile  Pointer to file to output results to.
- \param expl   Pointer to expression list head.
+ \param stmtl  Pointer to statement list head.
 
  Displays the expressions (and groups of expressions) that were considered 
  to be measurable (evaluates to a value of TRUE (1) or FALSE (0) but were 
@@ -578,7 +600,7 @@ void combination_list_missed( FILE* ofile, expression* exp, int* exp_id ) {
  the Verilog code, showing those logical combinations that were not hit
  during simulation.
 */
-void combination_display_verbose( FILE* ofile, exp_link* expl ) {
+void combination_display_verbose( FILE* ofile, stmt_link* stmtl ) {
 
   expression* unexec_exp;      /* Pointer to current unexecuted expression    */
   char*       code;            /* Code string from code generator             */
@@ -587,11 +609,11 @@ void combination_display_verbose( FILE* ofile, exp_link* expl ) {
   fprintf( ofile, "Missed Combinations\n" );
 
   /* Display current instance missed lines */
-  while( expl != NULL ) {
+  while( stmtl != NULL ) {
 
-    if( EXPR_COMB_MISSED( expl->exp ) == 1 ) {
+    if( combination_missed_expr( stmtl->stmt->exp ) ) {
 
-      unexec_exp = expl->exp;
+      unexec_exp = stmtl->stmt->exp;
       exp_id     = 1;
 
       fprintf( ofile, "====================================================\n" );
@@ -615,7 +637,7 @@ void combination_display_verbose( FILE* ofile, exp_link* expl ) {
 
     }
 
-    expl = expl->next;
+    stmtl = stmtl->next;
 
   }
 
@@ -643,7 +665,7 @@ void combination_instance_verbose( FILE* ofile, mod_inst* root ) {
            root->name );
   fprintf( ofile, "--------------------------------------------------------\n" );
 
-  combination_display_verbose( ofile, root->mod->exp_head );
+  combination_display_verbose( ofile, root->mod->stmt_head );
 
   curr_inst = root->child_head;
   while( curr_inst != NULL ) {
@@ -670,7 +692,7 @@ void combination_module_verbose( FILE* ofile, mod_link* head ) {
            head->mod->filename );
   fprintf( ofile, "--------------------------------------------------------\n" );
 
-  combination_display_verbose( ofile, head->mod->exp_head );
+  combination_display_verbose( ofile, head->mod->stmt_head );
   
   if( head->next != NULL ) {
     combination_module_verbose( ofile, head->next );
@@ -726,6 +748,10 @@ void combination_report( FILE* ofile, bool verbose, bool instance ) {
 
 
 /* $Log$
+/* Revision 1.27  2002/07/09 17:27:25  phase1geo
+/* Fixing default case item handling and in the middle of making fixes for
+/* report outputting.
+/*
 /* Revision 1.26  2002/07/09 03:24:48  phase1geo
 /* Various fixes for module instantiantion handling.  This now works.  Also
 /* modified report output for toggle, line and combinational information.
