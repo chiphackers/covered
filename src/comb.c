@@ -122,8 +122,8 @@ void combination_module_summary( FILE* ofile, mod_link* head ) {
 }
 
 /*!
- \param line  Pointer to line to create line onto.
- \param size  Number of characters long line is.
+ \param line    Pointer to line to create line onto.
+ \param size    Number of characters long line is.
  \param exp_id  ID to place in underline.
 
  Draws an underline containing the specified expression ID to the specified
@@ -226,11 +226,11 @@ void combination_underline_tree( expression* exp, char*** lines, int* depth, int
         case EXP_OP_LAND     :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "  );  break;
         case EXP_OP_COND_T   :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s   %s"     );  break;
         case EXP_OP_COND_F   :  *size = l_size + r_size + 0;  strcpy( code_fmt, "%s"          );  break;
-        case EXP_OP_UINV     :  *size = l_size + r_size + 1;  strcpy( code_fmt, " %s"         );  break;
-        case EXP_OP_UAND     :  *size = l_size + r_size + 1;  strcpy( code_fmt, " %s"         );  break;
-        case EXP_OP_UNOT     :  *size = l_size + r_size + 1;  strcpy( code_fmt, " %s"         );  break;
-        case EXP_OP_UOR      :  *size = l_size + r_size + 1;  strcpy( code_fmt, " %s"         );  break;
-        case EXP_OP_UXOR     :  *size = l_size + r_size + 1;  strcpy( code_fmt, " %s"         );  break;
+        case EXP_OP_UINV     :  *size = l_size + r_size + 2;  strcpy( code_fmt, " %s "        );  break;
+        case EXP_OP_UAND     :  *size = l_size + r_size + 2;  strcpy( code_fmt, " %s "        );  break;
+        case EXP_OP_UNOT     :  *size = l_size + r_size + 2;  strcpy( code_fmt, " %s "        );  break;
+        case EXP_OP_UOR      :  *size = l_size + r_size + 2;  strcpy( code_fmt, " %s "        );  break;
+        case EXP_OP_UXOR     :  *size = l_size + r_size + 2;  strcpy( code_fmt, " %s "        );  break;
         case EXP_OP_UNAND    :  *size = l_size + r_size + 2;  strcpy( code_fmt, "  %s"        );  break;
         case EXP_OP_UNOR     :  *size = l_size + r_size + 2;  strcpy( code_fmt, "  %s"        );  break;
         case EXP_OP_UNXOR    :  *size = l_size + r_size + 2;  strcpy( code_fmt, "  %s"        );  break;
@@ -264,6 +264,7 @@ void combination_underline_tree( expression* exp, char*** lines, int* depth, int
         /* Create underline or space */
         if( SUPPL_COMB_MISSED( exp->suppl ) == 1 ) {
           combination_draw_line( (*lines)[(*depth)-1], *size, *exp_id );
+          // printf( "Drawing line (%s), size: %d, depth: %d\n", (*lines)[(*depth)-1], *size, (*depth) );
           *exp_id = *exp_id + 1;
         }
 
@@ -291,13 +292,21 @@ void combination_underline_tree( expression* exp, char*** lines, int* depth, int
             free_safe( l_lines[i] );
 
           } else if( i < r_depth ) {
- 
-            /* Create spaces for left side */
-            gen_space( exp_sp, l_size );
 
-            /* Merge left side only */
-            snprintf( (*lines)[i], (*size + 1), code_fmt, exp_sp, r_lines[i] );
-            
+            if( (SUPPL_OP( exp->suppl ) == EXP_OP_COND_F) || (l_size == 0) ) { 
+ 
+              snprintf( (*lines)[i], (*size + 1), code_fmt, r_lines[i] );
+
+            } else {
+
+              /* Create spaces for left side */
+              gen_space( exp_sp, l_size );
+
+              /* Merge left side only */
+              snprintf( (*lines)[i], (*size + 1), code_fmt, exp_sp, r_lines[i] );
+          
+            }
+  
             free_safe( r_lines[i] );
    
           } else {
@@ -357,6 +366,32 @@ void combination_underline( FILE* ofile, expression* exp, char* begin_sp ) {
   if( depth > 0 ) {
     free_safe( lines );
   }
+
+}
+
+/*!
+ \param ofile  Pointer to file to output results to.
+ \param exp    Pointer to expression to evaluate.
+
+ Displays the missed unary combination(s) that keep the combination coverage for
+ the specified expression from achieving 100% coverage.
+*/
+void combination_unary( FILE* ofile, expression* exp ) {
+
+  assert( exp != NULL );
+
+  fprintf( ofile, " Value\n" );
+  fprintf( ofile, "-------\n" );
+  
+  if( SUPPL_WAS_FALSE( exp->suppl ) == 0 ) {
+    fprintf( ofile, "   0\n" );
+  }
+
+  if( SUPPL_WAS_TRUE( exp->suppl ) == 0 ) {
+    fprintf( ofile, "   1\n" );
+  }
+
+  fprintf( ofile, "\n" );
 
 }
 
@@ -424,7 +459,7 @@ void combination_list_missed( FILE* ofile, expression* exp, int* exp_id ) {
     if( SUPPL_COMB_MISSED( exp->suppl ) == 1 ) {
 
       fprintf( ofile, "Expression %d\n", *exp_id );
-      fprintf( ofile, "--------------\n" );
+      fprintf( ofile, "^^^^^^^^^^^^^\n" );
 
       /* Create combination table */
       switch( SUPPL_OP( exp->suppl ) ) {
@@ -436,28 +471,32 @@ void combination_list_missed( FILE* ofile, expression* exp, int* exp_id ) {
         case EXP_OP_NAND     :  combination_two_vars( ofile, exp, 1, 1, 1, 0 );  break;
         case EXP_OP_NOR      :  combination_two_vars( ofile, exp, 1, 0, 0, 0 );  break;
         case EXP_OP_NXOR     :  combination_two_vars( ofile, exp, 1, 0, 0, 1 );  break;
-        case EXP_OP_LT       :  /* ??? */  break;
-        case EXP_OP_GT       :  /* ??? */  break;
-        case EXP_OP_LSHIFT   :  /* ??? */  break;
-        case EXP_OP_RSHIFT   :  /* ??? */  break;
-        case EXP_OP_EQ       :  /* ??? */  break;
-        case EXP_OP_CEQ      :  /* ??? */  break;
-        case EXP_OP_LE       :  /* ??? */  break;
-        case EXP_OP_GE       :  /* ??? */  break;
-        case EXP_OP_NE       :  /* ??? */  break;
-        case EXP_OP_CNE      :  /* ??? */  break;
+        case EXP_OP_LT       :  combination_unary( ofile, exp );                 break;
+        case EXP_OP_GT       :  combination_unary( ofile, exp );                 break;
+        case EXP_OP_LSHIFT   :  combination_unary( ofile, exp );                 break;
+        case EXP_OP_RSHIFT   :  combination_unary( ofile, exp );                 break;
+        case EXP_OP_EQ       :  combination_unary( ofile, exp );                 break;
+        case EXP_OP_CEQ      :  combination_unary( ofile, exp );                 break;
+        case EXP_OP_LE       :  combination_unary( ofile, exp );                 break;
+        case EXP_OP_GE       :  combination_unary( ofile, exp );                 break;
+        case EXP_OP_NE       :  combination_unary( ofile, exp );                 break;
+        case EXP_OP_CNE      :  combination_unary( ofile, exp );                 break;
         case EXP_OP_LOR      :  combination_two_vars( ofile, exp, 0, 1, 1, 1 );  break;
         case EXP_OP_LAND     :  combination_two_vars( ofile, exp, 0, 0, 0, 1 );  break;
-        case EXP_OP_COND_T   :  /* ??? */  break;
-        case EXP_OP_COND_F   :  /* ??? */  break;
-        case EXP_OP_UINV     :  /* ??? */  break;
-        case EXP_OP_UAND     :  /* ??? */  break;
-        case EXP_OP_UNOT     :  /* ??? */  break;
-        case EXP_OP_UOR      :  /* ??? */  break;
-        case EXP_OP_UXOR     :  /* ??? */  break;
-        case EXP_OP_UNAND    :  /* ??? */  break;
-        case EXP_OP_UNOR     :  /* ??? */  break;
-        case EXP_OP_UNXOR    :  /* ??? */  break;
+        case EXP_OP_COND_T   :  
+          fprintf( ofile, "  Conditional expression never evaluated to TRUE\n\n" );
+          break;
+        case EXP_OP_COND_F   :  
+          fprintf( ofile, "  Conditional expression never evaluated to FALSE\n\n" );
+          break;
+        case EXP_OP_UINV     :  combination_unary( ofile, exp );                 break;
+        case EXP_OP_UAND     :  combination_unary( ofile, exp );                 break;
+        case EXP_OP_UNOT     :  combination_unary( ofile, exp );                 break;
+        case EXP_OP_UOR      :  combination_unary( ofile, exp );                 break;
+        case EXP_OP_UXOR     :  combination_unary( ofile, exp );                 break;
+        case EXP_OP_UNAND    :  combination_unary( ofile, exp );                 break;
+        case EXP_OP_UNOR     :  combination_unary( ofile, exp );                 break;
+        case EXP_OP_UNXOR    :  combination_unary( ofile, exp );                 break;
         case EXP_OP_SBIT_SEL :  /* ??? */  break;
         case EXP_OP_MBIT_SEL :  /* ??? */  break;
         case EXP_OP_EXPAND   :  /* ??? */  break;
@@ -495,7 +534,7 @@ void combination_display_verbose( FILE* ofile, exp_link* expl ) {
   int         last_line = -1;  /* Line number of last line found to be missed */
   int         exp_id;          /* Current expression ID of missed expression  */
 
-  fprintf( ofile, "Missed Combinations\n\n" );
+  fprintf( ofile, "Missed Combinations\n" );
 
   /* Display current instance missed lines */
   while( expl != NULL ) {
@@ -509,6 +548,10 @@ void combination_display_verbose( FILE* ofile, exp_link* expl ) {
       while( (unexec_exp->parent != NULL) && (unexec_exp->parent->line == unexec_exp->line) ) {
         unexec_exp = unexec_exp->parent;
       }
+
+      fprintf( ofile, "====================================================\n" );
+      fprintf( ofile, " Line #     Expression\n" );
+      fprintf( ofile, "====================================================\n" );
 
       /* Generate line of code that missed combinational coverage */
       code = codegen_gen_expr( unexec_exp, unexec_exp->line );

@@ -8,6 +8,8 @@ wire	d;
 wire 	e;
 wire	f;
 reg 	g;
+wire	h;
+reg	i;
 
 initial begin
 	$dumpfile( "assign.vcd" );
@@ -22,5 +24,6 @@ assign a = b & c;
 assign d = (e & f) | g;
 assign e = (a ^ b) && (d || c);
 assign f = ~(a !== b) ? (g <= d) == 4'o17 : ^b;
+assign h = ~(g & i);
 
 endmodule

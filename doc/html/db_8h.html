@@ -13,13 +13,13 @@
 <p>
 <a href="db_8h-source.html">Go to the source code of this file.</a><table border=0 cellpadding=0 cellspacing=0>
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a115">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a0">db_write</a> (char *file)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a115">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a0">db_write</a> (char *<a class="el" href="vcd__lexer_8c.html#a106">file</a>)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Writes contents of expressions, modules and signals to database file.</em> <a href="#a0">More...</a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a115">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a1">db_read</a> (char *file, int read_mode)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a115">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a1">db_read</a> (char *<a class="el" href="vcd__lexer_8c.html#a106">file</a>, int read_mode)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Reads contents of database file and stores into internal lists.</em> <a href="#a1">More...</a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a2">db_add_instance</a> (char *scope, char *modname)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds specified module node to module tree. Called by parser.</em> <a href="#a2">More...</a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a3">db_add_module</a> (char *name, char *file)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a3">db_add_module</a> (char *name, char *<a class="el" href="vcd__lexer_8c.html#a106">file</a>)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds specified module to module list. Called by parser.</em> <a href="#a3">More...</a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="db_8h.html#a4">db_add_signal</a> (char *name, int width, int lsb, int is_static)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds specified signal to signal list. Called by parser.</em> <a href="#a4">More...</a><em></em></font><br><br></td></tr>
@@ -701,7 +701,7 @@ Returns: </b><dd>
 Returns TRUE if database write was successful; otherwise, returns FALSE.</dl>Opens specified database for writing. If database open successful, iterates through module, expression and signal lists, displaying each to the database file. If database write successful, returns TRUE; otherwise, returns FALSE to the calling function.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Wed Apr 24 22:34:14 2002 for Covered by
+<hr><address align="right"><small>Generated on Fri Apr 26 22:56:10 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.15 </small></address>

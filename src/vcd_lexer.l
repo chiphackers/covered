@@ -32,6 +32,7 @@ char* vcdfile;
 %x VERSION
 
 %s SIMULATION
+%s DEFINITION
 
 WSPACE [ \t\b\f]+
 
@@ -67,18 +68,28 @@ WSPACE [ \t\b\f]+
 <VERSION>\n    { yylloc.first_line += 1; }
 <VERSION>.     { yymore();               }
 
-  /* Indicates end of header section and beginning of simulation section */
-\$enddefinitions { 
-     BEGIN( SIMULATION ); 
-     return( V_enddefinitions );
+<DEFINITION>\$end {
+     BEGIN( 0 );
+     return( V_end );
  }
 
   /* VCD Keywords */
 \$[a-zA-Z]*   {
-     if(      strcmp( yytext, "$var"            ) == 0 ) { return( V_var );            }
-     else if( strcmp( yytext, "$end"            ) == 0 ) { return( V_end );            }
-     else if( strcmp( yytext, "$scope"          ) == 0 ) { return( V_scope );          }
-     else if( strcmp( yytext, "$upscope"        ) == 0 ) { return( V_upscope );        }
+     if(        strcmp( yytext, "$var"            ) == 0 ) { 
+       BEGIN( DEFINITION );
+       return( V_var );
+     } else if( strcmp( yytext, "$end"            ) == 0 ) { 
+       return( V_end );
+     } else if( strcmp( yytext, "$scope"          ) == 0 ) { 
+       BEGIN( DEFINITION );
+       return( V_scope );
+     } else if( strcmp( yytext, "$upscope"        ) == 0 ) { 
+       BEGIN( DEFINITION );
+       return( V_upscope );
+     } else if( strcmp( yytext, "$enddefinitions" ) == 0 ) {
+       BEGIN( SIMULATION );
+       return( V_enddefinitions );
+     }
      else if( strcmp( yytext, "$dumpall"        ) == 0 ) { return( V_dumpall );        }
      else if( strcmp( yytext, "$dumpoff"        ) == 0 ) { return( V_dumpoff );        }
      else if( strcmp( yytext, "$dumpon"         ) == 0 ) { return( V_dumpon );         }
@@ -95,7 +106,7 @@ WSPACE [ \t\b\f]+
  }
 
   /* Identifiers */
-[a-zA-Z_][a-zA-Z0-9_]* {
+<DEFINITION>[a-zA-Z_][a-zA-Z0-9_]* {
      if(      strcmp( yytext, "event"     ) == 0 ) { return( V_event );     }
      else if( strcmp( yytext, "parameter" ) == 0 ) { return( V_parameter ); }
      else if( strcmp( yytext, "integer"   ) == 0 ) { return( V_integer );   }
@@ -126,13 +137,13 @@ WSPACE [ \t\b\f]+
  }
 
   /* Hierarchical signal identifiers */
-[a-zA-Z_][a-zA-Z0-9$_]*(\.[a-zA-Z_][a-zA-Z0-9$_]*)+ {
+<DEFINITION>[a-zA-Z_][a-zA-Z0-9$_]*(\.[a-zA-Z_][a-zA-Z0-9$_]*)+ {
      yylval.text = strdup( yytext );
      return HIDENTIFIER;
  }
   
   /* Signal names starting with a '\' character */
-\\[^ \t\b\f\r]+  { 
+<DEFINITION>\\[^ \t\b\f\r]+  { 
      yylval.text = strdup( yytext + 1 );
      return IDENTIFIER; 
  }
@@ -247,7 +258,7 @@ WSPACE [ \t\b\f]+
 
  }
 
-\[[0-9]+\] {
+<DEFINITION>\[[0-9]+\] {
      char* pos = (char*)malloc_safe( strlen( yytext ) - 1 );
      int   i;
      for( i=1; i<(strlen( yytext ) - 1); i++ ) {
@@ -260,17 +271,17 @@ WSPACE [ \t\b\f]+
      return SIGWIDTH;
  }
 
-\[[0-9]+:[0-9]+\] {
+<DEFINITION>\[[0-9]+\:[0-9]+\] {
      char* pos1 = (char*)malloc_safe( strlen( yytext ) - 3 );
      char* pos2 = (char*)malloc_safe( strlen( yytext ) - 3 );
      int   i    = 1;
      int   j;
-     while( (i < (strlen( yytext ) - 1)) && (i != ':') ) {
+     while( (i < (strlen( yytext ) - 1)) && (yytext[i] != ':') ) {
        pos1[i-1] = yytext[i];
        i++;
      }
      if( i == (strlen( yytext ) - 1) ) {
-       perror( vcdfile );
+       fprintf( stderr, "Incorrectly formatted multi-bit select\n" );
        exit( 1 );
      } else {
        pos1[i-1] = '\0';
@@ -294,12 +305,12 @@ WSPACE [ \t\b\f]+
  }
 
   /* Lex out timestamps as these will otherwise be confused with strings. */
-\#[0-9]+  {
+<SIMULATION>\#[0-9]+  {
      yylval.number = atol( yytext + 1 );
      return TIMESTAMP;
  }
 
-[^ \n\t\b\f\r]*   { 
+<DEFINITION>[^ \n\t\b\f\r]*   { 
      yylval.text = strdup( yytext );
      return( VALUE );
  }

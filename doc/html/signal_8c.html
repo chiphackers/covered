@@ -25,7 +25,7 @@
 <tr><td>&nbsp;</td><td><font size=-1><em>Creates a new signal based on the information passed to this function.</em> <a href="#a1">More...</a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="signal_8c.html#a2">signal_merge</a> (<a class="el" href="defines_8h.html#a103">signal</a> *base, <a class="el" href="defines_8h.html#a103">signal</a> *in)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Merges two signals, placing result into base signal.</em> <a href="#a2">More...</a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="signal_8c.html#a3">signal_db_write</a> (<a class="el" href="defines_8h.html#a103">signal</a> *sig, FILE *file, char *modname)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="signal_8c.html#a3">signal_db_write</a> (<a class="el" href="defines_8h.html#a103">signal</a> *sig, FILE *<a class="el" href="vcd__lexer_8c.html#a106">file</a>, char *modname)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Outputs this signal information to specified file.</em> <a href="#a3">More...</a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a115">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="signal_8c.html#a4">signal_db_read</a> (char **line, <a class="el" href="defines_8h.html#a106">module</a> *curr_mod)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Reads signal information from specified file.</em> <a href="#a4">More...</a><em></em></font><br><br></td></tr>
@@ -210,7 +210,7 @@ Returns: </b><dd>
 Returns TRUE if signal information read successfully; otherwise, returns FALSE.</dl>
 <p>
 <dl compact><dt><b>
-<a class="el" href="bug.html#_bug000001">Bug: </a></b><dd>
+<a class="el" href="bug.html#_bug000002">Bug: </a></b><dd>
 A signal will only look in the current module for a matching expression. In the case of a hierarchical reference, it is possible that an expression outside the current module is referencing this signal. We need to check for this case (hierarchical expression) and find the expression elsewhere.</dl>
 <p>
 Creates a new signal structure, parses current file line for signal information and stores it to the specified signal. If there are any problems in reading in the current line, returns FALSE; otherwise, returns TRUE.     </td>
@@ -524,7 +524,7 @@ Returns: </b><dd>
 Returns TRUE if value assignment is successful; otherwise, returns FALSE.</dl>This function is called by the VCD reading function when the matching signal is found. If the signal has never been set to a value before (value is NULL), copy the contents of the value verbatim. If the signal value has been set previously, compare the old value to the new value bit for bit, setting the toggle bits accordingly. After this is achieved, copy the new value to the signal value. If the specified value width, does not match this signal's width, we have an internal error (VCD file does not match the design read in), so we return FALSE. Otherwise, return with a value of TRUE.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Wed Apr 24 22:34:15 2002 for Covered by
+<hr><address align="right"><small>Generated on Fri Apr 26 22:56:12 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.15 </small></address>

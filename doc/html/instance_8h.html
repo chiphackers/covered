@@ -19,7 +19,7 @@
 <tr><td>&nbsp;</td><td><font size=-1><em>Finds specified scope in module instance tree.</em> <a href="#a0">More...</a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="instance_8h.html#a1">instance_add</a> (<a class="el" href="defines_8h.html#a112">mod_inst</a> **root, char *parent, <a class="el" href="defines_8h.html#a106">module</a> *child, char *inst_name)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds new instance to specified instance tree.</em> <a href="#a1">More...</a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="instance_8h.html#a2">instance_db_write</a> (<a class="el" href="defines_8h.html#a112">mod_inst</a> *root, FILE *file, char *scope)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="instance_8h.html#a2">instance_db_write</a> (<a class="el" href="defines_8h.html#a112">mod_inst</a> *root, FILE *<a class="el" href="vcd__lexer_8c.html#a106">file</a>, char *scope)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Displays contents of module instance tree to specified file.</em> <a href="#a2">More...</a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="instance_8h.html#a3">instance_dealloc</a> (<a class="el" href="defines_8h.html#a112">mod_inst</a> *root, char *scope)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Removes specified instance from tree.</em> <a href="#a3">More...</a><em></em></font><br><br></td></tr>
@@ -252,7 +252,7 @@ Returns: </b><dd>
 Returns pointer to module instance found by scope.</dl>Searches the specified module instance tree for the specified scope. When the module instance is found, a pointer to that module instance is passed back to the calling function.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Wed Apr 24 22:34:14 2002 for Covered by
+<hr><address align="right"><small>Generated on Fri Apr 26 22:56:11 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.15 </small></address>

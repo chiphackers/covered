@@ -39,7 +39,7 @@
 %token V_trireg V_tri0 V_tri1 V_wand V_wire V_wor V_port
 %token V_module V_task V_function V_begin V_fork
 
-%type <text> signame reference
+%type <text> signame 
 
 %%
 
@@ -74,18 +74,17 @@ definition
 		{
 		  db_vcd_upscope();
 		}
-	| V_var supported_vartype VALUE VALUE reference V_end
+	| V_var supported_vartype VALUE VALUE signame V_end
 		{
 		  db_assign_symbol( $5, $4 );
-                  free_safe( $3 );
+
 		  free_safe( $4 );
 		  free_safe( $5 );
 		}
-	| V_var unsupported_vartype VALUE VALUE reference V_end
+		    
+	| V_var unsupported_vartype VALUE VALUE signame V_end
 		{
-                  free_safe( $3 );
 		  free_safe( $4 );
-                  free_safe( $5 );
 		}
 	| V_unknown
 		{
@@ -93,24 +92,6 @@ definition
 		  exit( 1 );
 		}
 	;
-
-reference
-        : signame
-                {
-                  $$ = $1;
-                }
-        | signame '[' VALUE ']'
-                {
-                  free_safe( $3 );
-                  $$ = $1;
-                }
-        | signame '[' VALUE ':' VALUE ']'
-                {
-                  free_safe( $3 );
-                  free_safe( $5 );
-                  $$ = $1;
-                }
-        ;
 
 scope_type
 	: V_module

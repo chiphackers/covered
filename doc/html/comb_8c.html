@@ -17,16 +17,17 @@
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a2">combination_get_stats</a> (<a class="el" href="defines_8h.html#a104">exp_link</a> *expl, float *total, int *hit)</td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a3">combination_instance_summary</a> (FILE *ofile, <a class="el" href="defines_8h.html#a112">mod_inst</a> *root, char *parent)</td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a4">combination_module_summary</a> (FILE *ofile, <a class="el" href="defines_8h.html#a107">mod_link</a> *head)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a5">combination_draw_line</a> (char *line, int size, int exp_id)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a6">combination_underline_tree</a> (<a class="el" href="defines_8h.html#a102">expression</a> *exp, char ***lines, int *depth, int *size, int *exp_id)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a5">combination_draw_line</a> (char *line, int <a class="el" href="vcd__lexer_8c.html#a105">size</a>, int exp_id)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a6">combination_underline_tree</a> (<a class="el" href="defines_8h.html#a102">expression</a> *exp, char ***lines, int *depth, int *<a class="el" href="vcd__lexer_8c.html#a105">size</a>, int *exp_id)</td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a7">combination_underline</a> (FILE *ofile, <a class="el" href="defines_8h.html#a102">expression</a> *exp, char *begin_sp)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a8">combination_two_vars</a> (FILE *ofile, <a class="el" href="defines_8h.html#a102">expression</a> *exp, int val0, int val1, int val2, int val3)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a9">combination_list_missed</a> (FILE *ofile, <a class="el" href="defines_8h.html#a102">expression</a> *exp, int *exp_id)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a10">combination_display_verbose</a> (FILE *ofile, <a class="el" href="defines_8h.html#a104">exp_link</a> *expl)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a11">combination_instance_verbose</a> (FILE *ofile, <a class="el" href="defines_8h.html#a112">mod_inst</a> *root)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a12">combination_module_verbose</a> (FILE *ofile, <a class="el" href="defines_8h.html#a107">mod_link</a> *head)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a13">combination_report</a> (FILE *ofile, <a class="el" href="defines_8h.html#a115">bool</a> verbose, <a class="el" href="defines_8h.html#a115">bool</a> instance)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Generates report output for combinational logic coverage.</em> <a href="#a13">More...</a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a8">combination_unary</a> (FILE *ofile, <a class="el" href="defines_8h.html#a102">expression</a> *exp)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a9">combination_two_vars</a> (FILE *ofile, <a class="el" href="defines_8h.html#a102">expression</a> *exp, int val0, int val1, int val2, int val3)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a10">combination_list_missed</a> (FILE *ofile, <a class="el" href="defines_8h.html#a102">expression</a> *exp, int *exp_id)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a11">combination_display_verbose</a> (FILE *ofile, <a class="el" href="defines_8h.html#a104">exp_link</a> *expl)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a12">combination_instance_verbose</a> (FILE *ofile, <a class="el" href="defines_8h.html#a112">mod_inst</a> *root)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a13">combination_module_verbose</a> (FILE *ofile, <a class="el" href="defines_8h.html#a107">mod_link</a> *head)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a14">combination_report</a> (FILE *ofile, <a class="el" href="defines_8h.html#a115">bool</a> verbose, <a class="el" href="defines_8h.html#a115">bool</a> instance)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Generates report output for combinational logic coverage.</em> <a href="#a14">More...</a><em></em></font><br><br></td></tr>
 <tr><td colspan=2><br><h2>Variables</h2></td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a112">mod_inst</a> *&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a0">instance_root</a></td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a107">mod_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="comb_8c.html#a1">mod_head</a></td></tr>
@@ -39,7 +40,7 @@ Author: </b><dd>
 Trevor Williams (<a href="mailto:trevorw@charter.net">trevorw@charter.net</a>) </dl><dl compact><dt><b>
 Date: </b><dd>
 3/31/2002</dl><hr><h2>Function Documentation</h2>
-<a name="a10" doxytag="comb.c::combination_display_verbose"></a><p>
+<a name="a11" doxytag="comb.c::combination_display_verbose"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -247,7 +248,7 @@ Name of parent instance name.</td></tr>
 </dl>Outputs summarized results of the combinational logic coverage per module instance to the specified output stream. Summarized results are printed  as percentages based on the number of combinations hit during simulation  divided by the total number of expression combinations possible in the  design. An expression is said to be measurable for combinational coverage  if it evaluates to a value of 0 or 1.     </td>
   </tr>
 </table>
-<a name="a11" doxytag="comb.c::combination_instance_verbose"></a><p>
+<a name="a12" doxytag="comb.c::combination_instance_verbose"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -293,7 +294,7 @@ Pointer to current module instance to evaluate.</td></tr>
 </dl>Outputs the verbose coverage report for the specified module instance to the specified output stream.     </td>
   </tr>
 </table>
-<a name="a9" doxytag="comb.c::combination_list_missed"></a><p>
+<a name="a10" doxytag="comb.c::combination_list_missed"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -393,7 +394,7 @@ Pointer to link in current module list to evaluate.</td></tr>
 </dl>Outputs summarized results of the combinational logic coverage per module to the specified output stream. Summarized results are printed as  percentages based on the number of combinations hit during simulation  divided by the total number of expression combinations possible in the  design. An expression is said to be measurable for combinational coverage  if it evaluates to a value of 0 or 1.     </td>
   </tr>
 </table>
-<a name="a12" doxytag="comb.c::combination_module_verbose"></a><p>
+<a name="a13" doxytag="comb.c::combination_module_verbose"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -439,7 +440,7 @@ Pointer to current module to evaluate.</td></tr>
 </dl>Outputs the verbose coverage report for the specified module to the specified output stream.     </td>
   </tr>
 </table>
-<a name="a13" doxytag="comb.c::combination_report"></a><p>
+<a name="a14" doxytag="comb.c::combination_report"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -495,7 +496,7 @@ Specifies to report by instance or module.</td></tr>
 </dl>After the design is read into the module hierarchy, parses the hierarchy by module, reporting the combinational logic coverage for each module encountered. The parent  module will specify its own combinational logic coverage along with a total combinational logic coverage including its children.     </td>
   </tr>
 </table>
-<a name="a8" doxytag="comb.c::combination_two_vars"></a><p>
+<a name="a9" doxytag="comb.c::combination_two_vars"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -571,6 +572,52 @@ When operation is evaluated, contains result when left == 1 and right == 0 </td>
 When operation is evaluated, contains result when left == 1 and right == 1</td></tr>
 </table>
 </dl>Displays the missed combinational sequences for the specified expression to the specified output stream in tabular form.     </td>
+  </tr>
+</table>
+<a name="a8" doxytag="comb.c::combination_unary"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> void combination_unary </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="md" nowrap valign="top">FILE *&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>ofile</em>, </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a102">expression</a> *&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>exp</em></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td class="md">)&nbsp;</td>
+          <td class="md" colspan="2"></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+<dl compact><dt><b>
+Parameters: </b><dd>
+<table border=0 cellspacing=2 cellpadding=0>
+<tr><td valign=top><em>ofile</em>&nbsp;</td><td>
+Pointer to file to output results to. </td></tr>
+<tr><td valign=top><em>exp</em>&nbsp;</td><td>
+Pointer to expression to evaluate.</td></tr>
+</table>
+</dl>Displays the missed unary combination(s) that keep the combination coverage for the specified expression from achieving 100% coverage.     </td>
   </tr>
 </table>
 <a name="a7" doxytag="comb.c::combination_underline"></a><p>
@@ -742,7 +789,7 @@ Pointer to current expression ID to use in labeling.</td></tr>
     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Wed Apr 24 22:34:14 2002 for Covered by
+<hr><address align="right"><small>Generated on Fri Apr 26 22:56:10 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.15 </small></address>

@@ -12,13 +12,15 @@
 \subsection*{Functions}
 \begin{CompactItemize}
 \item 
+void {\bf expression\_\-create\_\-value} ({\bf expression} $\ast$exp, int width, int lsb)
+\begin{CompactList}\small\item\em Creates an expression value and sets MEASURABLE bit if necessary.\item\end{CompactList}\item 
 {\bf expression} $\ast$ {\bf expression\_\-create} ({\bf expression} $\ast$right, {\bf expression} $\ast$left, int op, int id, int line)
 \begin{CompactList}\small\item\em Creates new expression.\item\end{CompactList}\item 
 void {\bf expression\_\-merge} ({\bf expression} $\ast$base, {\bf expression} $\ast$in)
 \begin{CompactList}\small\item\em Merges two expressions and stores result in base expression.\item\end{CompactList}\item 
 int {\bf expression\_\-get\_\-id} ({\bf expression} $\ast$expr)
 \begin{CompactList}\small\item\em Returns expression ID of this expression.\item\end{CompactList}\item 
-void {\bf expression\_\-db\_\-write} ({\bf expression} $\ast$expr, FILE $\ast$file, char $\ast$scope)
+void {\bf expression\_\-db\_\-write} ({\bf expression} $\ast$expr, FILE $\ast${\bf file}, char $\ast$scope)
 \begin{CompactList}\small\item\em Writes this expression to the specified database file.\item\end{CompactList}\item 
 {\bf bool} {\bf expression\_\-db\_\-read} (char $\ast$$\ast$line, {\bf module} $\ast$curr\_\-mod)
 \begin{CompactList}\small\item\em Reads current line of specified file and parses for expression information.\item\end{CompactList}\item 
@@ -59,7 +61,7 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsection{Function Documentation}
 \index{expr.c@{expr.c}!expression_create@{expression\_\-create}}
 \index{expression_create@{expression\_\-create}!expr.c@{expr.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf expression}$\ast$ expression\_\-create ({\bf expression} $\ast$ {\em right}, {\bf expression} $\ast$ {\em left}, int {\em op}, int {\em id}, int {\em line})}\label{expr_8c_a6}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf expression}$\ast$ expression\_\-create ({\bf expression} $\ast$ {\em right}, {\bf expression} $\ast$ {\em left}, int {\em op}, int {\em id}, int {\em line})}\label{expr_8c_a7}
 
 
 Creates new expression.
@@ -77,9 +79,24 @@ line}]Starting line for this expression (only valid for root)\end{description}
 \begin{Desc}
 \item[Returns: ]\par
 Returns pointer to newly created expression.\end{Desc}
-Creates a new expression from heap memory and initializes its values for usage. Right and left expressions need to be created before this function is called. \index{expr.c@{expr.c}!expression_db_read@{expression\_\-db\_\-read}}
+Creates a new expression from heap memory and initializes its values for usage. Right and left expressions need to be created before this function is called. \index{expr.c@{expr.c}!expression_create_value@{expression\_\-create\_\-value}}
+\index{expression_create_value@{expression\_\-create\_\-value}!expr.c@{expr.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-create\_\-value ({\bf expression} $\ast$ {\em exp}, int {\em width}, int {\em lsb})}\label{expr_8c_a6}
+
+
+Creates an expression value and sets MEASURABLE bit if necessary.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+exp}]Pointer to expression to add value to. \item[{\em 
+width}]Width of value to create. \item[{\em 
+lsb}]Least significant value of value field.\end{description}
+\end{Desc}
+Creates a value vector that is large enough to store width number of bits in value and sets the specified expression value to this value. This function should be called by either the expression\_\-create function, the bind function, or the signal db\_\-read function. It also evaluates the width and expression operation to determine if the current expression is measurable. If it is deemed to be so, it sets the MEASURABLE bit in the specified expression's supplemental field. \index{expr.c@{expr.c}!expression_db_read@{expression\_\-db\_\-read}}
 \index{expression_db_read@{expression\_\-db\_\-read}!expr.c@{expr.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} expression\_\-db\_\-read (char $\ast$$\ast$ {\em line}, {\bf module} $\ast$ {\em curr\_\-mod})}\label{expr_8c_a10}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} expression\_\-db\_\-read (char $\ast$$\ast$ {\em line}, {\bf module} $\ast$ {\em curr\_\-mod})}\label{expr_8c_a11}
 
 
 Reads current line of specified file and parses for expression information.
@@ -96,7 +113,7 @@ curr\_\-mod}]Pointer to current module that instantiates this expression.\end{de
 Returns TRUE if parsing successful; otherwise, returns FALSE.\end{Desc}
 Reads in the specified expression information, creates new expression from heap, populates the expression with specified information from file and  returns that value in the specified expression pointer. If all is  successful, returns TRUE; otherwise, returns FALSE. \index{expr.c@{expr.c}!expression_db_write@{expression\_\-db\_\-write}}
 \index{expression_db_write@{expression\_\-db\_\-write}!expr.c@{expr.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-db\_\-write ({\bf expression} $\ast$ {\em expr}, FILE $\ast$ {\em file}, char $\ast$ {\em scope})}\label{expr_8c_a9}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-db\_\-write ({\bf expression} $\ast$ {\em expr}, FILE $\ast$ {\em file}, char $\ast$ {\em scope})}\label{expr_8c_a10}
 
 
 Writes this expression to the specified database file.
@@ -111,7 +128,7 @@ scope}]Name of Verilog hierarchical scope for this expression.\end{description}
 \end{Desc}
 This function recursively displays the expression information for the specified expression tree to the coverage database specified by file. \index{expr.c@{expr.c}!expression_dealloc@{expression\_\-dealloc}}
 \index{expression_dealloc@{expression\_\-dealloc}!expr.c@{expr.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-dealloc ({\bf expression} $\ast$ {\em expr}, {\bf bool} {\em exp\_\-only})}\label{expr_8c_a13}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-dealloc ({\bf expression} $\ast$ {\em expr}, {\bf bool} {\em exp\_\-only})}\label{expr_8c_a14}
 
 
 Deallocates memory used for expression.
@@ -125,7 +142,7 @@ exp\_\-only}]Removes only the specified expression and not its children.\end{des
 \end{Desc}
 Deallocates all heap memory allocated with the malloc routine. \index{expr.c@{expr.c}!expression_display@{expression\_\-display}}
 \index{expression_display@{expression\_\-display}!expr.c@{expr.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-display ({\bf expression} $\ast$ {\em expr})}\label{expr_8c_a11}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-display ({\bf expression} $\ast$ {\em expr})}\label{expr_8c_a12}
 
 
 Displays the specified expression information.
@@ -138,7 +155,7 @@ expr}]Pointer to expression to display.\end{description}
 \end{Desc}
 Displays contents of the specified expression to standard output. This function is called by the module\_\-display function. \index{expr.c@{expr.c}!expression_get_id@{expression\_\-get\_\-id}}
 \index{expression_get_id@{expression\_\-get\_\-id}!expr.c@{expr.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int expression\_\-get\_\-id ({\bf expression} $\ast$ {\em expr})}\label{expr_8c_a8}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int expression\_\-get\_\-id ({\bf expression} $\ast$ {\em expr})}\label{expr_8c_a9}
 
 
 Returns expression ID of this expression.
@@ -154,7 +171,7 @@ expr}]Pointer to expression to get ID from. \end{description}
 Returns expression ID for this expression.\end{Desc}
 Recursively gets IDs of parents to formulate the unique expression ID for this expression. \index{expr.c@{expr.c}!expression_merge@{expression\_\-merge}}
 \index{expression_merge@{expression\_\-merge}!expr.c@{expr.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-merge ({\bf expression} $\ast$ {\em base}, {\bf expression} $\ast$ {\em in})}\label{expr_8c_a7}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-merge ({\bf expression} $\ast$ {\em base}, {\bf expression} $\ast$ {\em in})}\label{expr_8c_a8}
 
 
 Merges two expressions and stores result in base expression.
@@ -168,7 +185,7 @@ in}]Expression to get merged into base expression.\end{description}
 \end{Desc}
 Merges contents of the base and in expressions and places the result into the base expression. If the two expressions given are not the same (IDs, op, and/or line position differ) we know that the database files being merged  were not created from the same design; therefore, display an error message  to the user in this case. If both expressions are the same, perform the  merge. \index{expr.c@{expr.c}!expression_operate@{expression\_\-operate}}
 \index{expression_operate@{expression\_\-operate}!expr.c@{expr.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-operate ({\bf expression} $\ast$ {\em expr})}\label{expr_8c_a12}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-operate ({\bf expression} $\ast$ {\em expr})}\label{expr_8c_a13}
 
 
 Performs operation specified by parameter expression.

@@ -15,11 +15,13 @@ void {\bf combination\_\-instance\_\-summary} (FILE $\ast$ofile, {\bf mod\_\-ins
 \item 
 void {\bf combination\_\-module\_\-summary} (FILE $\ast$ofile, {\bf mod\_\-link} $\ast$head)
 \item 
-void {\bf combination\_\-draw\_\-line} (char $\ast$line, int size, int exp\_\-id)
+void {\bf combination\_\-draw\_\-line} (char $\ast$line, int {\bf size}, int exp\_\-id)
 \item 
-void {\bf combination\_\-underline\_\-tree} ({\bf expression} $\ast$exp, char $\ast$$\ast$$\ast$lines, int $\ast$depth, int $\ast$size, int $\ast$exp\_\-id)
+void {\bf combination\_\-underline\_\-tree} ({\bf expression} $\ast$exp, char $\ast$$\ast$$\ast$lines, int $\ast$depth, int $\ast${\bf size}, int $\ast$exp\_\-id)
 \item 
 void {\bf combination\_\-underline} (FILE $\ast$ofile, {\bf expression} $\ast$exp, char $\ast$begin\_\-sp)
+\item 
+void {\bf combination\_\-unary} (FILE $\ast$ofile, {\bf expression} $\ast$exp)
 \item 
 void {\bf combination\_\-two\_\-vars} (FILE $\ast$ofile, {\bf expression} $\ast$exp, int val0, int val1, int val2, int val3)
 \item 
@@ -56,7 +58,7 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsection{Function Documentation}
 \index{comb.c@{comb.c}!combination_display_verbose@{combination\_\-display\_\-verbose}}
 \index{combination_display_verbose@{combination\_\-display\_\-verbose}!comb.c@{comb.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-display\_\-verbose (FILE $\ast$ {\em ofile}, {\bf exp\_\-link} $\ast$ {\em expl})}\label{comb_8c_a10}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-display\_\-verbose (FILE $\ast$ {\em ofile}, {\bf exp\_\-link} $\ast$ {\em expl})}\label{comb_8c_a11}
 
 
 \begin{Desc}
@@ -107,7 +109,7 @@ parent}]Name of parent instance name.\end{description}
 \end{Desc}
 Outputs summarized results of the combinational logic coverage per module instance to the specified output stream. Summarized results are printed  as percentages based on the number of combinations hit during simulation  divided by the total number of expression combinations possible in the  design. An expression is said to be measurable for combinational coverage  if it evaluates to a value of 0 or 1. \index{comb.c@{comb.c}!combination_instance_verbose@{combination\_\-instance\_\-verbose}}
 \index{combination_instance_verbose@{combination\_\-instance\_\-verbose}!comb.c@{comb.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-instance\_\-verbose (FILE $\ast$ {\em ofile}, {\bf mod\_\-inst} $\ast$ {\em root})}\label{comb_8c_a11}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-instance\_\-verbose (FILE $\ast$ {\em ofile}, {\bf mod\_\-inst} $\ast$ {\em root})}\label{comb_8c_a12}
 
 
 \begin{Desc}
@@ -119,7 +121,7 @@ root}]Pointer to current module instance to evaluate.\end{description}
 \end{Desc}
 Outputs the verbose coverage report for the specified module instance to the specified output stream. \index{comb.c@{comb.c}!combination_list_missed@{combination\_\-list\_\-missed}}
 \index{combination_list_missed@{combination\_\-list\_\-missed}!comb.c@{comb.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-list\_\-missed (FILE $\ast$ {\em ofile}, {\bf expression} $\ast$ {\em exp}, int $\ast$ {\em exp\_\-id})}\label{comb_8c_a9}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-list\_\-missed (FILE $\ast$ {\em ofile}, {\bf expression} $\ast$ {\em exp}, int $\ast$ {\em exp\_\-id})}\label{comb_8c_a10}
 
 
 \begin{Desc}
@@ -144,7 +146,7 @@ head}]Pointer to link in current module list to evaluate.\end{description}
 \end{Desc}
 Outputs summarized results of the combinational logic coverage per module to the specified output stream. Summarized results are printed as  percentages based on the number of combinations hit during simulation  divided by the total number of expression combinations possible in the  design. An expression is said to be measurable for combinational coverage  if it evaluates to a value of 0 or 1. \index{comb.c@{comb.c}!combination_module_verbose@{combination\_\-module\_\-verbose}}
 \index{combination_module_verbose@{combination\_\-module\_\-verbose}!comb.c@{comb.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-module\_\-verbose (FILE $\ast$ {\em ofile}, {\bf mod\_\-link} $\ast$ {\em head})}\label{comb_8c_a12}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-module\_\-verbose (FILE $\ast$ {\em ofile}, {\bf mod\_\-link} $\ast$ {\em head})}\label{comb_8c_a13}
 
 
 \begin{Desc}
@@ -156,7 +158,7 @@ head}]Pointer to current module to evaluate.\end{description}
 \end{Desc}
 Outputs the verbose coverage report for the specified module to the specified output stream. \index{comb.c@{comb.c}!combination_report@{combination\_\-report}}
 \index{combination_report@{combination\_\-report}!comb.c@{comb.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-report (FILE $\ast$ {\em ofile}, {\bf bool} {\em verbose}, {\bf bool} {\em instance})}\label{comb_8c_a13}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-report (FILE $\ast$ {\em ofile}, {\bf bool} {\em verbose}, {\bf bool} {\em instance})}\label{comb_8c_a14}
 
 
 Generates report output for combinational logic coverage.
@@ -171,7 +173,7 @@ instance}]Specifies to report by instance or module.\end{description}
 \end{Desc}
 After the design is read into the module hierarchy, parses the hierarchy by module, reporting the combinational logic coverage for each module encountered. The parent  module will specify its own combinational logic coverage along with a total combinational logic coverage including its children. \index{comb.c@{comb.c}!combination_two_vars@{combination\_\-two\_\-vars}}
 \index{combination_two_vars@{combination\_\-two\_\-vars}!comb.c@{comb.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-two\_\-vars (FILE $\ast$ {\em ofile}, {\bf expression} $\ast$ {\em exp}, int {\em val0}, int {\em val1}, int {\em val2}, int {\em val3})}\label{comb_8c_a8}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-two\_\-vars (FILE $\ast$ {\em ofile}, {\bf expression} $\ast$ {\em exp}, int {\em val0}, int {\em val1}, int {\em val2}, int {\em val3})}\label{comb_8c_a9}
 
 
 \begin{Desc}
@@ -185,7 +187,19 @@ val1}]When operation is evaluated, contains result when left == 0 and right == 1
 val2}]When operation is evaluated, contains result when left == 1 and right == 0 \item[{\em 
 val3}]When operation is evaluated, contains result when left == 1 and right == 1\end{description}
 \end{Desc}
-Displays the missed combinational sequences for the specified expression to the specified output stream in tabular form. \index{comb.c@{comb.c}!combination_underline@{combination\_\-underline}}
+Displays the missed combinational sequences for the specified expression to the specified output stream in tabular form. \index{comb.c@{comb.c}!combination_unary@{combination\_\-unary}}
+\index{combination_unary@{combination\_\-unary}!comb.c@{comb.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-unary (FILE $\ast$ {\em ofile}, {\bf expression} $\ast$ {\em exp})}\label{comb_8c_a8}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+ofile}]Pointer to file to output results to. \item[{\em 
+exp}]Pointer to expression to evaluate.\end{description}
+\end{Desc}
+Displays the missed unary combination(s) that keep the combination coverage for the specified expression from achieving 100\% coverage. \index{comb.c@{comb.c}!combination_underline@{combination\_\-underline}}
 \index{combination_underline@{combination\_\-underline}!comb.c@{comb.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-underline (FILE $\ast$ {\em ofile}, {\bf expression} $\ast$ {\em exp}, char $\ast$ {\em begin\_\-sp})}\label{comb_8c_a7}
 
