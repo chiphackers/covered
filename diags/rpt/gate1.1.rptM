@@ -5,7 +5,7 @@ LINE COVERAGE RESULTS BY MODULE
 -------------------------------
 Module                    Filename                Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    gate1.1.v                  0/   0/   0      100%
+  main                    gate1.1.v                 0/   0/   0      100%
 =================================================================================
 
 TOGGLE COVERAGE RESULTS BY MODULE
@@ -13,7 +13,7 @@ TOGGLE COVERAGE RESULTS BY MODULE
 Module                    Filename                         Toggle 0 -> 1                    Toggle 1 -> 0
                                                   Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
 ----------------------------------------------------------------------------------------------------------------
-  main                    gate1.1.v                  6/  18/  24       25%            0/  24/  24        0%
+  main                    gate1.1.v                 6/  18/  24       25%            0/  24/  24        0%
 
 Module: main, File: gate1.1.v
 --------------------------------------------------------
@@ -76,4 +76,14 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY MODULE
 Module                    Filename                     Logical Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                    gate1.1.v                  0/   0/   0      100%
+  main                    gate1.1.v                 0/   0/   0      100%
+=================================================================================
+
+FINITE STATE MACHINE COVERAGE RESULTS BY MODULE
+-----------------------------------------------
+                                                               State                             Arc
+Module                    Filename                Hit/Miss/Total    Percent Hit    Hit/Miss/Total    Percent hit
+----------------------------------------------------------------------------------------------------------------
+  main                    gate1.1.v                 0/   0/   0      100%            0/   0/   0      100%
+=================================================================================
+
