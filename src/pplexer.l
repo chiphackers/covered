@@ -131,11 +131,11 @@ WSPACE [ \t\b\f]+
  }
 
   /* Define directive */
-^{WSPACE}?`define{WSPACE}[a-zA-Z_][a-zA-Z0-9_]*{WSPACE} {
+`define{WSPACE}[a-zA-Z_][a-zA-Z0-9_]*{WSPACE} {
      yy_push_state( DEFINE );
      def_start();
  }
-^{WSPACE}?`define{WSPACE}[a-zA-Z_][a-zA-Z0-9_]* {
+`define{WSPACE}[a-zA-Z_][a-zA-Z0-9_]* {
      yy_push_state( DEFINE );
      def_start();
  }
@@ -150,12 +150,12 @@ WSPACE [ \t\b\f]+
  }
 
   /* Undefine directive */
-^{WSPACE}?`undef{WSPACE}[a-zA-Z_][a-zA-Z0-9_]*{WSPACE}?.* { 
+`undef{WSPACE}[a-zA-Z_][a-zA-Z0-9_]*{WSPACE}?.* { 
      def_undefine();
  }
 
   /* ifdef directive */
-^{WSPACE}?`ifdef{WSPACE}[a-zA-Z_][a-zA-Z0-9_]*.* {
+`ifdef{WSPACE}[a-zA-Z_][a-zA-Z0-9_]*.* {
      char* name = strchr( yytext, '`' );
      assert( name );
      name += 6;
@@ -169,7 +169,7 @@ WSPACE [ \t\b\f]+
  }
 
   /* ifndef directive */
-^{WSPACE}?`ifndef{WSPACE}[a-zA-Z_][a-zA-Z0-9_]*.* {
+`ifndef{WSPACE}[a-zA-Z_][a-zA-Z0-9_]*.* {
      char* name = strchr( yytext, '`' );
      assert( name );
      name += 7;
@@ -206,7 +206,7 @@ WSPACE [ \t\b\f]+
 <IFDEF_FALSE,IFDEF_TRUE,IFDEF_SUPR>^{WSPACE}?`endif.* { yy_pop_state(); }
 
   /* Timescale directive -- we ignore this information */
-^{WSPACE}?`timescale { comment_enter = YY_START;  BEGIN( PPTIMESCALE );  ECHO; }
+`timescale { comment_enter = YY_START;  BEGIN( PPTIMESCALE );  ECHO; }
 <PPTIMESCALE>.       {                                                   ECHO; }
 <PPTIMESCALE>\n      {
      istack->lineno += 1;
@@ -215,22 +215,22 @@ WSPACE [ \t\b\f]+
  }
 
   /* Miscellaneous directives -- we ignore this information */
-^{WSPACE}?`celldefine{WSPACE}?.*             { ECHO; }
-^{WSPACE}?`default_nettype{WSPACE}?.*        { ECHO; }
-^{WSPACE}?`delay_mode_distributed{WSPACE}?.* { ECHO; }
-^{WSPACE}?`delay_mode_unit{WSPACE}?.*        { ECHO; }
-^{WSPACE}?`delay_mode_path{WSPACE}?.*        { ECHO; }
-^{WSPACE}?`disable_portfaults{WSPACE}?.*     { ECHO; }
-^{WSPACE}?`enable_portfaults{WSPACE}?.*      { ECHO; }
-^{WSPACE}?`endcelldefine{WSPACE}?.*          { ECHO; }
-^{WSPACE}?`endprotect{WSPACE}?.*             { ECHO; }
-^{WSPACE}?`nosuppress_faults{WSPACE}?.*      { ECHO; }
-^{WSPACE}?`nounconnected_drive{WSPACE}?.*    { ECHO; }
-^{WSPACE}?`protect{WSPACE}?.*                { ECHO; }
-^{WSPACE}?`resetall{WSPACE}?.*               { ECHO; }
-^{WSPACE}?`suppress_faults{WSPACE}?.*        { ECHO; }
-^{WSPACE}?`unconnected_drive{WSPACE}?.*      { ECHO; }
-^{WSPACE}?`uselib{WSPACE}?.*                 { ECHO; }
+`celldefine{WSPACE}?.*             { ECHO; }
+`default_nettype{WSPACE}?.*        { ECHO; }
+`delay_mode_distributed{WSPACE}?.* { ECHO; }
+`delay_mode_unit{WSPACE}?.*        { ECHO; }
+`delay_mode_path{WSPACE}?.*        { ECHO; }
+`disable_portfaults{WSPACE}?.*     { ECHO; }
+`enable_portfaults{WSPACE}?.*      { ECHO; }
+`endcelldefine{WSPACE}?.*          { ECHO; }
+`endprotect{WSPACE}?.*             { ECHO; }
+`nosuppress_faults{WSPACE}?.*      { ECHO; }
+`nounconnected_drive{WSPACE}?.*    { ECHO; }
+`protect{WSPACE}?.*                { ECHO; }
+`resetall{WSPACE}?.*               { ECHO; }
+`suppress_faults{WSPACE}?.*        { ECHO; }
+`unconnected_drive{WSPACE}?.*      { ECHO; }
+`uselib{WSPACE}?.*                 { ECHO; }
 
   /* Macro identifier */
 `[a-zA-Z_][a-zA-Z0-9_]* { def_match(); }

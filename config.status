@@ -2,7 +2,7 @@
 # Generated automatically by configure.
 # Run this file to recreate the current configuration.
 # This directory was configured as follows,
-# on host localhost.localdomain:
+# on host brule:
 #
 # ./configure 
 #
@@ -26,7 +26,7 @@ do
 done
 
 ac_given_srcdir=.
-ac_given_INSTALL="/usr/bin/install -c"
+ac_given_INSTALL="/sw/dvtools/gnu/bin/install -c"
 
 trap 'rm -fr Makefile src/Makefile doc/Makefile doc/user/Makefile config.h conftest*; exit 1' 1 2 15
 
