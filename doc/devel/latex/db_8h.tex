@@ -26,7 +26,7 @@ void {\bf db\_\-add\_\-defparam} (char $\ast$name, {\bf expression} $\ast$expr)
 void {\bf db\_\-add\_\-signal} (char $\ast$name, {\bf static\_\-expr} $\ast$left, {\bf static\_\-expr} $\ast$right)
 \begin{CompactList}\small\item\em Adds specified signal to signal list. Called by parser.\item\end{CompactList}\item 
 void {\bf db\_\-end\_\-module} ()
-\begin{CompactList}\small\item\em Called when the endmodule keyword is parsed.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Called when the endmodule {\bf keyword} {\rm (p.\,\pageref{structkeyword})} is parsed.\item\end{CompactList}\item 
 {\bf signal} $\ast$ {\bf db\_\-find\_\-signal} (char $\ast$name)
 \begin{CompactList}\small\item\em Finds specified signal in module and returns pointer to the signal structure. Called by parser.\item\end{CompactList}\item 
 {\bf expression} $\ast$ {\bf db\_\-create\_\-expression} ({\bf expression} $\ast$right, {\bf expression} $\ast$left, int op, int line, char $\ast$sig\_\-name)
@@ -64,10 +64,14 @@ void {\bf db\_\-do\_\-timestep} (int time)
 \subsection{Detailed Description}
 Contains functions for writing and reading contents of covered database file.
 
+
+
 \begin{Desc}
-\item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\item[Author: ]\par
+Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
-\item[Date:]12/7/2001 \end{Desc}
+\item[Date: ]\par
+12/7/2001\end{Desc}
 
 
 \subsection{Function Documentation}
@@ -79,9 +83,11 @@ Contains functions for writing and reading contents of covered database file.
 Adds specified declared parameter to parameter list. Called by parser.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em name}]Name of declared parameter to add. \item[{\em expr}]Expression containing value of this parameter.\end{description}
+\item[{\em 
+name}]Name of declared parameter to add. \item[{\em 
+expr}]Expression containing value of this parameter.\end{description}
 \end{Desc}
 Searches current module to verify that specified parameter name has not been previously used in the module. If the parameter name has not been found, it is created added to the current module's parameter list. \index{db.h@{db.h}!db_add_defparam@{db\_\-add\_\-defparam}}
 \index{db_add_defparam@{db\_\-add\_\-defparam}!db.h@{db.h}}
@@ -91,9 +97,11 @@ Searches current module to verify that specified parameter name has not been pre
 Adds specified defparam to parameter override list. Called by parser.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em name}]Name of parameter value to override. \item[{\em expr}]Expression value of parameter override.\end{description}
+\item[{\em 
+name}]Name of parameter value to override. \item[{\em 
+expr}]Expression value of parameter override.\end{description}
 \end{Desc}
 Adds specified parameter to the defparam list. \index{db.h@{db.h}!db_add_expression@{db\_\-add\_\-expression}}
 \index{db_add_expression@{db\_\-add\_\-expression}!db.h@{db.h}}
@@ -103,9 +111,10 @@ Adds specified parameter to the defparam list. \index{db.h@{db.h}!db_add_express
 Adds specified expression to expression list. Called by parser.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em root}]Pointer to root expression to add to module expression list.\end{description}
+\item[{\em 
+root}]Pointer to root expression to add to module expression list.\end{description}
 \end{Desc}
 Adds the specified expression to the current module's expression list. \index{db.h@{db.h}!db_add_instance@{db\_\-add\_\-instance}}
 \index{db_add_instance@{db\_\-add\_\-instance}!db.h@{db.h}}
@@ -115,9 +124,11 @@ Adds the specified expression to the current module's expression list. \index{db
 Adds specified module node to module tree. Called by parser.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em scope}]Name of module node instance being added. \item[{\em modname}]Name of module being instantiated.\end{description}
+\item[{\em 
+scope}]Name of module node instance being added. \item[{\em 
+modname}]Name of module being instantiated.\end{description}
 \end{Desc}
 Creates a new module\_\-node with the instantiation name, search for matching module. If module hasn't been created previously, create it now without a filename associated (NULL). Add module\_\-node to tree if there are no problems in doing so. \index{db.h@{db.h}!db_add_module@{db\_\-add\_\-module}}
 \index{db_add_module@{db\_\-add\_\-module}!db.h@{db.h}}
@@ -127,9 +138,11 @@ Creates a new module\_\-node with the instantiation name, search for matching mo
 Adds specified module to module list. Called by parser.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em name}]Name of module being added to tree. \item[{\em file}]Filename that module is a part of.\end{description}
+\item[{\em 
+name}]Name of module being added to tree. \item[{\em 
+file}]Filename that module is a part of.\end{description}
 \end{Desc}
 Creates a new module element with the contents specified by the parameters given and inserts this module into the module list. This function can only be called when we are actually parsing a module which implies that we must have the name of the module at the head of the modlist linked-list structure. \index{db.h@{db.h}!db_add_override_param@{db\_\-add\_\-override\_\-param}}
 \index{db_add_override_param@{db\_\-add\_\-override\_\-param}!db.h@{db.h}}
@@ -139,9 +152,11 @@ Creates a new module element with the contents specified by the parameters given
 Adds specified override parameter to parameter list. Called by parser.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em inst\_\-name}]Name of instance being overriddent. \item[{\em expr}]Expression containing value of override parameter.\end{description}
+\item[{\em 
+inst\_\-name}]Name of instance being overriddent. \item[{\em 
+expr}]Expression containing value of override parameter.\end{description}
 \end{Desc}
 Creates override parameter and stores this in the current module as well as all associated instances. \index{db.h@{db.h}!db_add_signal@{db\_\-add\_\-signal}}
 \index{db_add_signal@{db\_\-add\_\-signal}!db.h@{db.h}}
@@ -151,9 +166,12 @@ Creates override parameter and stores this in the current module as well as all 
 Adds specified signal to signal list. Called by parser.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em name}]Name of signal being added. \item[{\em left}]Specifies constant value for calculation of left-hand vector value. \item[{\em right}]Specifies constant value for calculation of right-hand vector value.\end{description}
+\item[{\em 
+name}]Name of signal being added. \item[{\em 
+left}]Specifies constant value for calculation of left-hand vector value. \item[{\em 
+right}]Specifies constant value for calculation of right-hand vector value.\end{description}
 \end{Desc}
 Creates a new signal with the specified parameter information and adds this to the signal list if it does not already exist. If width == 0, the sig\_\-msb and sig\_\-lsb values are interrogated. If sig\_\-msb and/or is non-NULL, its value is add to the current module's parameter list and all associated instances are updated to contain new value. \index{db.h@{db.h}!db_add_statement@{db\_\-add\_\-statement}}
 \index{db_add_statement@{db\_\-add\_\-statement}!db.h@{db.h}}
@@ -163,9 +181,11 @@ Creates a new signal with the specified parameter information and adds this to t
 Adds specified statement to current module's statement list. Called by parser.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em stmt}]Pointer to statement add to current module's statement list. \item[{\em start}]Pointer to starting statement of statement tree.\end{description}
+\item[{\em 
+stmt}]Pointer to statement add to current module's statement list. \item[{\em 
+start}]Pointer to starting statement of statement tree.\end{description}
 \end{Desc}
 Adds the specified statement tree to the tail of the current module's statement list. The start statement is specified to avoid infinite looping. \index{db.h@{db.h}!db_add_vector_param@{db\_\-add\_\-vector\_\-param}}
 \index{db_add_vector_param@{db\_\-add\_\-vector\_\-param}!db.h@{db.h}}
@@ -175,9 +195,12 @@ Adds the specified statement tree to the tail of the current module's statement 
 Adds signal/expression vector parameter to parameter list.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em sig}]Pointer to signal to attach parameter to. \item[{\em parm\_\-exp}]Expression containing value of vector parameter. \item[{\em type}]Type of signal vector parameter to create (LSB or MSB).\end{description}
+\item[{\em 
+sig}]Pointer to signal to attach parameter to. \item[{\em 
+parm\_\-exp}]Expression containing value of vector parameter. \item[{\em 
+type}]Type of signal vector parameter to create (LSB or MSB).\end{description}
 \end{Desc}
 Creates a vector parameter for the specified signal or expression with the specified parameter expression. This function is called by the parser. \index{db.h@{db.h}!db_assign_symbol@{db\_\-assign\_\-symbol}}
 \index{db_assign_symbol@{db\_\-assign\_\-symbol}!db.h@{db.h}}
@@ -187,9 +210,13 @@ Creates a vector parameter for the specified signal or expression with the speci
 Adds symbol to signal specified by name.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em name}]Name of signal to set value to. \item[{\em symbol}]Symbol value of signal used in VCD dumpfile. \item[{\em msb}]Most significant bit of symbol to set. \item[{\em lsb}]Least significant bit of symbol to set.\end{description}
+\item[{\em 
+name}]Name of signal to set value to. \item[{\em 
+symbol}]Symbol value of signal used in VCD dumpfile. \item[{\em 
+msb}]Most significant bit of symbol to set. \item[{\em 
+lsb}]Least significant bit of symbol to set.\end{description}
 \end{Desc}
 Creates a new entry in the symbol table for the specified signal and symbol. \index{db.h@{db.h}!db_connect_statement_false@{db\_\-connect\_\-statement\_\-false}}
 \index{db_connect_statement_false@{db\_\-connect\_\-statement\_\-false}!db.h@{db.h}}
@@ -199,9 +226,11 @@ Creates a new entry in the symbol table for the specified signal and symbol. \in
 Connects false statement to specified statement.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em stmt}]Pointer to statement to connect false path to. \item[{\em next\_\-false}]Pointer to statement to run if statement evaluates to FALSE.\end{description}
+\item[{\em 
+stmt}]Pointer to statement to connect false path to. \item[{\em 
+next\_\-false}]Pointer to statement to run if statement evaluates to FALSE.\end{description}
 \end{Desc}
 Connects the specified statement's false statement. \index{db.h@{db.h}!db_connect_statement_true@{db\_\-connect\_\-statement\_\-true}}
 \index{db_connect_statement_true@{db\_\-connect\_\-statement\_\-true}!db.h@{db.h}}
@@ -211,9 +240,11 @@ Connects the specified statement's false statement. \index{db.h@{db.h}!db_connec
 Connects true statement to specified statement.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em stmt}]Pointer to statement to connect true path to. \item[{\em next\_\-true}]Pointer to statement to run if statement evaluates to TRUE.\end{description}
+\item[{\em 
+stmt}]Pointer to statement to connect true path to. \item[{\em 
+next\_\-true}]Pointer to statement to run if statement evaluates to TRUE.\end{description}
 \end{Desc}
 Connects the specified statement's true statement. \index{db.h@{db.h}!db_create_expression@{db\_\-create\_\-expression}}
 \index{db_create_expression@{db\_\-create\_\-expression}!db.h@{db.h}}
@@ -223,12 +254,18 @@ Connects the specified statement's true statement. \index{db.h@{db.h}!db_create_
 Creates new expression from specified information. Called by parser and db\_\-add\_\-expression.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em right}]Pointer to expression on right side of expression. \item[{\em left}]Pointer to expression on left side of expression. \item[{\em op}]Operation to perform on expression. \item[{\em line}]Line number of current expression. \item[{\em sig\_\-name}]Name of signal that expression is attached to (if valid).\end{description}
+\item[{\em 
+right}]Pointer to expression on right side of expression. \item[{\em 
+left}]Pointer to expression on left side of expression. \item[{\em 
+op}]Operation to perform on expression. \item[{\em 
+line}]Line number of current expression. \item[{\em 
+sig\_\-name}]Name of signal that expression is attached to (if valid).\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns:]Returns pointer to newly created expression.\end{Desc}
+\item[Returns: ]\par
+Returns pointer to newly created expression.\end{Desc}
 Creates a new expression with the specified parameter information and returns a pointer to the newly created expression. \index{db.h@{db.h}!db_create_statement@{db\_\-create\_\-statement}}
 \index{db_create_statement@{db\_\-create\_\-statement}!db.h@{db.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf statement}$\ast$ db\_\-create\_\-statement ({\bf expression} $\ast$ {\em exp})}\label{db_8h_a13}
@@ -237,12 +274,14 @@ Creates a new expression with the specified parameter information and returns a 
 Creates new statement expression from specified information. Called by parser.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em exp}]Pointer to associated \char`\"{}root\char`\"{} expression.\end{description}
+\item[{\em 
+exp}]Pointer to associated \char`\"{}root\char`\"{} expression.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns:]Returns pointer to created statement.\end{Desc}
+\item[Returns: ]\par
+Returns pointer to created statement.\end{Desc}
 Creates an statement structure and adds created statement to current module's statement list. \index{db.h@{db.h}!db_do_timestep@{db\_\-do\_\-timestep}}
 \index{db_do_timestep@{db\_\-do\_\-timestep}!db.h@{db.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-do\_\-timestep (int {\em time})}\label{db_8h_a25}
@@ -251,16 +290,17 @@ Creates an statement structure and adds created statement to current module's st
 Performs a timestep for all signal changes during this timestep.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em time}]Current time step value being performed.\end{description}
+\item[{\em 
+time}]Current time step value being performed.\end{description}
 \end{Desc}
 Cycles through expression queue, performing expression evaluations as we go. If an expression has a parent expression, that parent expression is placed in the expression queue after that expression has completed its evaluation. When the expression queue is empty, we are finished for this clock period. \index{db.h@{db.h}!db_end_module@{db\_\-end\_\-module}}
 \index{db_end_module@{db\_\-end\_\-module}!db.h@{db.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-end\_\-module ()}\label{db_8h_a9}
 
 
-Called when the endmodule keyword is parsed.
+Called when the endmodule {\bf keyword} {\rm (p.\,\pageref{structkeyword})} is parsed.
 
 Updates the modlist for parsing purposes. \index{db.h@{db.h}!db_find_signal@{db\_\-find\_\-signal}}
 \index{db_find_signal@{db\_\-find\_\-signal}!db.h@{db.h}}
@@ -270,12 +310,14 @@ Updates the modlist for parsing purposes. \index{db.h@{db.h}!db_find_signal@{db\
 Finds specified signal in module and returns pointer to the signal structure. Called by parser.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em name}]String name of signal to find in current module.\end{description}
+\item[{\em 
+name}]String name of signal to find in current module.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns:]Returns pointer to the found signal. If signal is not found, internal error.\end{Desc}
+\item[Returns: ]\par
+Returns pointer to the found signal. If signal is not found, internal error.\end{Desc}
 Searches current module for signal matching the specified name. If the signal is found, returns a pointer to the calling function for that signal. \index{db.h@{db.h}!db_read@{db\_\-read}}
 \index{db_read@{db\_\-read}!db.h@{db.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} db\_\-read (char $\ast$ {\em file}, int {\em read\_\-mode})}\label{db_8h_a1}
@@ -284,14 +326,21 @@ Searches current module for signal matching the specified name. If the signal is
 Reads contents of database file and stores into internal lists.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em file}]Name of database file to read contents from. \item[{\em read\_\-mode}]Specifies what to do with read data. Values are\begin{itemize}
-\item 0 = Instance, no merge, merge command\item 1 = Instance, no merge, report command\item 2 = Instance, merge, merge command\item 3 = Module, merge, report command\end{itemize}
+\item[{\em 
+file}]Name of database file to read contents from. \item[{\em 
+read\_\-mode}]Specifies what to do with read data. Values are\begin{CompactItemize}
+\item 
+0 = Instance, no merge, merge command\item 
+1 = Instance, no merge, report command\item 
+2 = Instance, merge, merge command\item 
+3 = Module, merge, report command\end{CompactItemize}
 \end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns:]Returns TRUE if database read was successful; otherwise, returns FALSE.\end{Desc}
+\item[Returns: ]\par
+Returns TRUE if database read was successful; otherwise, returns FALSE.\end{Desc}
 Opens specified database file for reading. Reads in each line from the file examining its contents and creating the appropriate type to store the specified information and stores it into the appropriate internal list. If there are any problems opening the file for reading or parsing errors, returns FALSE; otherwise, returns TRUE. \index{db.h@{db.h}!db_remove_statement@{db\_\-remove\_\-statement}}
 \index{db_remove_statement@{db\_\-remove\_\-statement}!db.h@{db.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-remove\_\-statement ({\bf statement} $\ast$ {\em stmt})}\label{db_8h_a15}
@@ -300,9 +349,10 @@ Opens specified database file for reading. Reads in each line from the file exam
 Removes specified statement and associated expression from list and memory.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em stmt}]Pointer to statement to remove from memory.\end{description}
+\item[{\em 
+stmt}]Pointer to statement to remove from memory.\end{description}
 \end{Desc}
 Removes specified statement expression and its tree from current module expression list and deallocates both the expression and statement from heap memory. Called when a statement structure is found to contain a statement that is not supported by Covered. \index{db.h@{db.h}!db_set_symbol_char@{db\_\-set\_\-symbol\_\-char}}
 \index{db_set_symbol_char@{db\_\-set\_\-symbol\_\-char}!db.h@{db.h}}
@@ -312,9 +362,11 @@ Removes specified statement expression and its tree from current module expressi
 Sets the found symbol value to specified character value. Called by VCD lexer.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em sym}]Name of symbol to set character value to. \item[{\em value}]String version of value to set symbol table entry to.\end{description}
+\item[{\em 
+sym}]Name of symbol to set character value to. \item[{\em 
+value}]String version of value to set symbol table entry to.\end{description}
 \end{Desc}
 Searches the timestep symtable followed by the VCD symbol table searching for the symbol that matches the specified argument. Once a symbol is found, its value parameter is set to the specified character. If the symbol was found in the VCD symbol table, it is copied to the timestep symbol table. \index{db.h@{db.h}!db_set_symbol_string@{db\_\-set\_\-symbol\_\-string}}
 \index{db_set_symbol_string@{db\_\-set\_\-symbol\_\-string}!db.h@{db.h}}
@@ -324,9 +376,11 @@ Searches the timestep symtable followed by the VCD symbol table searching for th
 Sets the found symbol value to specified string value. Called by VCD lexer.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em sym}]Name of symbol to set character value to. \item[{\em value}]String version of value to set symbol table entry to.\end{description}
+\item[{\em 
+sym}]Name of symbol to set character value to. \item[{\em 
+value}]String version of value to set symbol table entry to.\end{description}
 \end{Desc}
 Searches the timestep symtable followed by the VCD symbol table searching for the symbol that matches the specified argument. Once a symbol is found, its value parameter is set to the specified string. If the symbol was found in the VCD symbol table, it is copied to the timestep symbol table. \index{db.h@{db.h}!db_set_vcd_scope@{db\_\-set\_\-vcd\_\-scope}}
 \index{db_set_vcd_scope@{db\_\-set\_\-vcd\_\-scope}!db.h@{db.h}}
@@ -336,9 +390,10 @@ Searches the timestep symtable followed by the VCD symbol table searching for th
 Sets current VCD scope to specified scope.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em scope}]Current VCD scope.\end{description}
+\item[{\em 
+scope}]Current VCD scope.\end{description}
 \end{Desc}
 Sets the curr\_\-inst\_\-scope global variable to the specified scope. \index{db.h@{db.h}!db_statement_connect@{db\_\-statement\_\-connect}}
 \index{db_statement_connect@{db\_\-statement\_\-connect}!db.h@{db.h}}
@@ -348,9 +403,11 @@ Sets the curr\_\-inst\_\-scope global variable to the specified scope. \index{db
 Connects one statement block to another.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em curr\_\-stmt}]Pointer to current statement to attach. \item[{\em next\_\-stmt}]Pointer to next statement to attach to.\end{description}
+\item[{\em 
+curr\_\-stmt}]Pointer to current statement to attach. \item[{\em 
+next\_\-stmt}]Pointer to next statement to attach to.\end{description}
 \end{Desc}
 Calls the statement\_\-connect function located in {\bf statement.c} with the specified parameters. \index{db.h@{db.h}!db_statement_set_stop@{db\_\-statement\_\-set\_\-stop}}
 \index{db_statement_set_stop@{db\_\-statement\_\-set\_\-stop}!db.h@{db.h}}
@@ -360,9 +417,12 @@ Calls the statement\_\-connect function located in {\bf statement.c} with the sp
 Sets STMT\_\-STOP bit in the appropriate statements.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em stmt}]Pointer to statement tree to traverse. \item[{\em post}]Pointer to statement which stopped statements will be connected to. \item[{\em both}]If TRUE, causes both true and false paths to set stop bits if connected to post statement.\end{description}
+\item[{\em 
+stmt}]Pointer to statement tree to traverse. \item[{\em 
+post}]Pointer to statement which stopped statements will be connected to. \item[{\em 
+both}]If TRUE, causes both true and false paths to set stop bits if connected to post statement.\end{description}
 \end{Desc}
 Calls the statement\_\-set\_\-stop function with the specified parameters. This function is called by the parser after the call to db\_\-statement\_\-connect. \index{db.h@{db.h}!db_vcd_upscope@{db\_\-vcd\_\-upscope}}
 \index{db_vcd_upscope@{db\_\-vcd\_\-upscope}!db.h@{db.h}}
@@ -371,7 +431,7 @@ Calls the statement\_\-set\_\-stop function with the specified parameters. This 
 
 Moves current VCD hierarchy up one level.
 
-Moves the curr\_\-inst\_\-scope up one level of hierarchy. This function is called when the \$upscope keyword is seen in a VCD file. \index{db.h@{db.h}!db_write@{db\_\-write}}
+Moves the curr\_\-inst\_\-scope up one level of hierarchy. This function is called when the \$upscope {\bf keyword} {\rm (p.\,\pageref{structkeyword})} is seen in a VCD file. \index{db.h@{db.h}!db_write@{db\_\-write}}
 \index{db_write@{db\_\-write}!db.h@{db.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} db\_\-write (char $\ast$ {\em file}, {\bf bool} {\em parse\_\-mode})}\label{db_8h_a0}
 
@@ -379,10 +439,13 @@ Moves the curr\_\-inst\_\-scope up one level of hierarchy. This function is call
 Writes contents of expressions, modules and signals to database file.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em file}]Name of database file to output contents to. \item[{\em parse\_\-mode}]Specifies if we are outputting parse data or score data.\end{description}
+\item[{\em 
+file}]Name of database file to output contents to. \item[{\em 
+parse\_\-mode}]Specifies if we are outputting parse data or score data.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns:]Returns TRUE if database write was successful; otherwise, returns FALSE.\end{Desc}
+\item[Returns: ]\par
+Returns TRUE if database write was successful; otherwise, returns FALSE.\end{Desc}
 Opens specified database for writing. If database open successful, iterates through module, expression and signal lists, displaying each to the database file. If database write successful, returns TRUE; otherwise, returns FALSE to the calling function. 

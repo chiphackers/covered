@@ -20,10 +20,14 @@ void {\bf static\_\-expr\_\-dealloc} ({\bf static\_\-expr} $\ast$stexp, {\bf boo
 \subsection{Detailed Description}
 Contains functions for handling creation of static expressions.
 
+
+
 \begin{Desc}
-\item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\item[Author: ]\par
+Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
-\item[Date:]10/02/2002 \end{Desc}
+\item[Date: ]\par
+10/02/2002\end{Desc}
 
 
 \subsection{Function Documentation}
@@ -35,9 +39,13 @@ Contains functions for handling creation of static expressions.
 Calculates LSB and width for specified left/right pair for vector.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em left}]Pointer to static expression on left of vector. \item[{\em right}]Pointer to static expression on right of vector. \item[{\em width}]Calculated width of combined right/left static expressions. \item[{\em lsb}]Calculated lsb of combined right/left static expressions.\end{description}
+\item[{\em 
+left}]Pointer to static expression on left of vector. \item[{\em 
+right}]Pointer to static expression on right of vector. \item[{\em 
+width}]Calculated width of combined right/left static expressions. \item[{\em 
+lsb}]Calculated lsb of combined right/left static expressions.\end{description}
 \end{Desc}
 Calculates the LSB and width of a vector defined by the specified left and right static expressions. If the width cannot be obtained immediately (parameter in static expression), set width to -1. If the LSB cannot be obtained immediately (parameter in static expression), set LSB to -1. The returned width and lsb parameters can be used to size a vector instantiation. \index{static.h@{static.h}!static_expr_dealloc@{static\_\-expr\_\-dealloc}}
 \index{static_expr_dealloc@{static\_\-expr\_\-dealloc}!static.h@{static.h}}
@@ -47,9 +55,11 @@ Calculates the LSB and width of a vector defined by the specified left and right
 Deallocates static\_\-expr memory from heap.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em stexp}]Pointer to static expression to deallocate. \item[{\em rm\_\-exp}]Specifies that expression tree should be deallocated.\end{description}
+\item[{\em 
+stexp}]Pointer to static expression to deallocate. \item[{\em 
+rm\_\-exp}]Specifies that expression tree should be deallocated.\end{description}
 \end{Desc}
 Deallocates all allocated memory from the heap for the specified static\_\-expr structure. \index{static.h@{static.h}!static_expr_gen@{static\_\-expr\_\-gen}}
 \index{static_expr_gen@{static\_\-expr\_\-gen}!static.h@{static.h}}
@@ -59,12 +69,17 @@ Deallocates all allocated memory from the heap for the specified static\_\-expr 
 Calculates new values for static expression and returns the new static expression.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em right}]Pointer to right static expression. \item[{\em left}]Pointer to left static expression. \item[{\em op}]Static expression operation. \item[{\em line}]Line number that static expression operation found on.\end{description}
+\item[{\em 
+right}]Pointer to right static expression. \item[{\em 
+left}]Pointer to left static expression. \item[{\em 
+op}]Static expression operation. \item[{\em 
+line}]Line number that static expression operation found on.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns:]Returns pointer to new static\_\-expr structure.\end{Desc}
+\item[Returns: ]\par
+Returns pointer to new static\_\-expr structure.\end{Desc}
 Used by the parser to calculate a new static\_\-expr structure based on the operation encountered while parsing. Based on the operation type specified in the argument list, performs unary operation (if both operands are static numbers, storing result into original static\_\-expr number field and returns If only one of the operands is an expression, create a EXP\_\-OP\_\-STATIC expression for the other operand and create an expression consisting of these two expressions and the specified operation. If both operands are expressions, simply create a new expression consisting of those two expressions and specified operator. Store the newly create expression in the original right static\_\-expr and deallocate the left static\_\-expr. \index{static.h@{static.h}!static_expr_gen_unary@{static\_\-expr\_\-gen\_\-unary}}
 \index{static_expr_gen_unary@{static\_\-expr\_\-gen\_\-unary}!static.h@{static.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf static\_\-expr}$\ast$ static\_\-expr\_\-gen\_\-unary ({\bf static\_\-expr} $\ast$ {\em stexp}, int {\em op}, int {\em line})}\label{static_8h_a0}
@@ -73,10 +88,14 @@ Used by the parser to calculate a new static\_\-expr structure based on the oper
 Calculates new values for unary static expressions and returns the new static expression.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em stexp}]Pointer to static expression. \item[{\em op}]Unary static expression operation. \item[{\em line}]Line number that this expression was found on in file.\end{description}
+\item[{\em 
+stexp}]Pointer to static expression. \item[{\em 
+op}]Unary static expression operation. \item[{\em 
+line}]Line number that this expression was found on in file.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns:]Returns pointer to new static\_\-expr structure.\end{Desc}
+\item[Returns: ]\par
+Returns pointer to new static\_\-expr structure.\end{Desc}
 Used by the parser to calculate a new static\_\-expr structure based on the unary operation encountered while parsing. Based on the operation type specified in the argument list, performs unary operation (if operand is a static number and not an expression -- parameter in operand expression tree), storing result into original static\_\-expr number field and returns the original structure back to the calling function. If the operand is an expression, create an expression for the specified operation type and store this expression in the original expression pointer field. 

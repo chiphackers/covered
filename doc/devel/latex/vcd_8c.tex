@@ -39,10 +39,14 @@ char $\ast$ {\bf top\_\-instance}
 
 
 \subsection{Detailed Description}
+
+
 \begin{Desc}
-\item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\item[Author: ]\par
+Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
-\item[Date:]7/21/2002\end{Desc}
+\item[Date: ]\par
+7/21/2002\end{Desc}
 
 
 \subsection{Function Documentation}
@@ -54,9 +58,10 @@ char $\ast$ {\bf top\_\-instance}
 Parses specified VCD file, storing information into database.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em vcd\_\-file}]Name of VCD file to parse.\end{description}
+\item[{\em 
+vcd\_\-file}]Name of VCD file to parse.\end{description}
 \end{Desc}
 Reads specified VCD file for relevant information and calls the database functions when appropriate to store this information. This replaces the need for a lexer and parser which should increase performance. \index{vcd.c@{vcd.c}!vcd_parse_def@{vcd\_\-parse\_\-def}}
 \index{vcd_parse_def@{vcd\_\-parse\_\-def}!vcd.c@{vcd.c}}
@@ -64,9 +69,10 @@ Reads specified VCD file for relevant information and calls the database functio
 
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em vcd}]File handle pointer to opened VCD file.\end{description}
+\item[{\em 
+vcd}]File handle pointer to opened VCD file.\end{description}
 \end{Desc}
 Parses all definition information from specified file. \index{vcd.c@{vcd.c}!vcd_parse_def_ignore@{vcd\_\-parse\_\-def\_\-ignore}}
 \index{vcd_parse_def_ignore@{vcd\_\-parse\_\-def\_\-ignore}!vcd.c@{vcd.c}}
@@ -74,39 +80,43 @@ Parses all definition information from specified file. \index{vcd.c@{vcd.c}!vcd_
 
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em vcd}]File handle pointer to opened VCD file.\end{description}
+\item[{\em 
+vcd}]File handle pointer to opened VCD file.\end{description}
 \end{Desc}
-Parses specified file until \$end keyword is seen, ignoring all text inbetween. \index{vcd.c@{vcd.c}!vcd_parse_def_scope@{vcd\_\-parse\_\-def\_\-scope}}
+Parses specified file until \$end {\bf keyword} {\rm (p.\,\pageref{structkeyword})} is seen, ignoring all text inbetween. \index{vcd.c@{vcd.c}!vcd_parse_def_scope@{vcd\_\-parse\_\-def\_\-scope}}
 \index{vcd_parse_def_scope@{vcd\_\-parse\_\-def\_\-scope}!vcd.c@{vcd.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vcd\_\-parse\_\-def\_\-scope (FILE $\ast$ {\em vcd})}\label{vcd_8c_a6}
 
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em vcd}]File handle pointer to opened VCD file.\end{description}
+\item[{\em 
+vcd}]File handle pointer to opened VCD file.\end{description}
 \end{Desc}
-Parses definition \$scope keyword line until \$end keyword is seen. \index{vcd.c@{vcd.c}!vcd_parse_def_var@{vcd\_\-parse\_\-def\_\-var}}
+Parses definition \$scope {\bf keyword} {\rm (p.\,\pageref{structkeyword})} line until \$end {\bf keyword} {\rm (p.\,\pageref{structkeyword})} is seen. \index{vcd.c@{vcd.c}!vcd_parse_def_var@{vcd\_\-parse\_\-def\_\-var}}
 \index{vcd_parse_def_var@{vcd\_\-parse\_\-def\_\-var}!vcd.c@{vcd.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vcd\_\-parse\_\-def\_\-var (FILE $\ast$ {\em vcd})}\label{vcd_8c_a5}
 
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em vcd}]File handle pointer to opened VCD file.\end{description}
+\item[{\em 
+vcd}]File handle pointer to opened VCD file.\end{description}
 \end{Desc}
-Parses definition \$var keyword line until \$end keyword is seen. \index{vcd.c@{vcd.c}!vcd_parse_sim@{vcd\_\-parse\_\-sim}}
+Parses definition \$var {\bf keyword} {\rm (p.\,\pageref{structkeyword})} line until \$end {\bf keyword} {\rm (p.\,\pageref{structkeyword})} is seen. \index{vcd.c@{vcd.c}!vcd_parse_sim@{vcd\_\-parse\_\-sim}}
 \index{vcd_parse_sim@{vcd\_\-parse\_\-sim}!vcd.c@{vcd.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vcd\_\-parse\_\-sim (FILE $\ast$ {\em vcd})}\label{vcd_8c_a10}
 
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em vcd}]File handle of opened VCD file.\end{description}
+\item[{\em 
+vcd}]File handle of opened VCD file.\end{description}
 \end{Desc}
 Parses all lines that occur in the simulation portion of the VCD file. \index{vcd.c@{vcd.c}!vcd_parse_sim_ignore@{vcd\_\-parse\_\-sim\_\-ignore}}
 \index{vcd_parse_sim_ignore@{vcd\_\-parse\_\-sim\_\-ignore}!vcd.c@{vcd.c}}
@@ -114,19 +124,22 @@ Parses all lines that occur in the simulation portion of the VCD file. \index{vc
 
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em vcd}]File handle of opened VCD file.\end{description}
+\item[{\em 
+vcd}]File handle of opened VCD file.\end{description}
 \end{Desc}
-Reads in symbol from simulation vector line that is to be ignored (unused). Signals an error message if the line is improperly formatted. \index{vcd.c@{vcd.c}!vcd_parse_sim_vector@{vcd\_\-parse\_\-sim\_\-vector}}
+Reads in symbol from simulation vector line that is to be ignored  (unused). Signals an error message if the line is improperly formatted. \index{vcd.c@{vcd.c}!vcd_parse_sim_vector@{vcd\_\-parse\_\-sim\_\-vector}}
 \index{vcd_parse_sim_vector@{vcd\_\-parse\_\-sim\_\-vector}!vcd.c@{vcd.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vcd\_\-parse\_\-sim\_\-vector (FILE $\ast$ {\em vcd}, char $\ast$ {\em value})}\label{vcd_8c_a8}
 
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em vcd}]File handle of opened VCD file. \item[{\em value}]String containing value of current signal.\end{description}
+\item[{\em 
+vcd}]File handle of opened VCD file. \item[{\em 
+value}]String containing value of current signal.\end{description}
 \end{Desc}
 Reads the next token from the file and calls the appropriate database storage function for this signal change. 
 
@@ -148,7 +161,6 @@ This flag is used to indicate if Covered was successfull in finding at least one
 
 Name of top-level instance name \index{vcd.c@{vcd.c}!user_msg@{user\_\-msg}}
 \index{user_msg@{user\_\-msg}!vcd.c@{vcd.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char user\_\-msg[USER\_\-MSG\_\-LENGTH] ()}\label{vcd_8c_a0}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char user\_\-msg[USER\_\-MSG\_\-LENGTH]}\label{vcd_8c_a0}
 
 
-Holds some output that will be displayed via the print\_\-output command. This is created globally so that memory does not need to be reallocated for each function that wishes to use it. 

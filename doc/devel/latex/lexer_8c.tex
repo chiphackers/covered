@@ -1,6 +1,7 @@
 \section{lexer.c File Reference}
 \label{lexer_8c}\index{lexer.c@{lexer.c}}
 {\tt \#include $<$stdio.h$>$}\par
+{\tt \#include $<$unistd.h$>$}\par
 {\tt \#include $<$string.h$>$}\par
 {\tt \#include $<$stdlib.h$>$}\par
 {\tt \#include $<$assert.h$>$}\par
@@ -78,7 +79,7 @@ struct {\bf yy\_\-buffer\_\-state}
 \item 
 \#define {\bf YY\_\-STATE\_\-EOF}(state)\ (YY\_\-END\_\-OF\_\-BUFFER + state + 1)
 \item 
-\#define {\bf YY\_\-NEW\_\-FILE}\ yyrestart( yyin )
+\#define {\bf YY\_\-NEW\_\-FILE}\ yyrestart( {\bf yyin} )
 \item 
 \#define {\bf YY\_\-END\_\-OF\_\-BUFFER\_\-CHAR}\ 0
 \item 
@@ -112,7 +113,7 @@ struct {\bf yy\_\-buffer\_\-state}
 \item 
 \#define {\bf YY\_\-AT\_\-BOL}()\ ({\bf yy\_\-current\_\-buffer} $\rightarrow$ yy\_\-at\_\-bol)
 \item 
-\#define {\bf yytext\_\-ptr}\ yytext
+\#define {\bf yytext\_\-ptr}\ {\bf yytext}
 \item 
 \#define {\bf YY\_\-DO\_\-BEFORE\_\-ACTION}
 \item 
@@ -166,7 +167,7 @@ struct {\bf yy\_\-buffer\_\-state}
 \item 
 \#define {\bf YY\_\-READ\_\-BUF\_\-SIZE}\ 8192
 \item 
-\#define {\bf ECHO}\ (void) fwrite( yytext, yyleng, 1, yyout )
+\#define {\bf ECHO}\ (void) fwrite( {\bf yytext}, {\bf yyleng}, 1, {\bf yyout} )
 \item 
 \#define {\bf YY\_\-INPUT}(buf, result, max\_\-size)
 \item 
@@ -239,8 +240,6 @@ int {\bf yywrap} ()
 void yyunput {\bf YY\_\-PROTO} ((int c, char $\ast$buf\_\-ptr))
 \item 
 void yy\_\-push\_\-state {\bf YY\_\-PROTO} ((int new\_\-state))
-\item 
-void {\bf yy\_\-init\_\-buffer} (b, {\bf file}) {\bf YY\_\-BUFFER\_\-STATE} b
 \end{CompactItemize}
 \subsection*{Variables}
 \begin{CompactItemize}
@@ -289,7 +288,7 @@ int {\bf yy\_\-more\_\-flag} = 0
 \item 
 int {\bf yy\_\-more\_\-len} = 0
 \item 
-YYLTYPE {\bf yylloc}
+{\bf YYLTYPE} {\bf yylloc}
 \item 
 int {\bf ignore\_\-mode}
 \item 
@@ -350,7 +349,7 @@ int {\bf len}
 
 \index{lexer.c@{lexer.c}!ECHO@{ECHO}}
 \index{ECHO@{ECHO}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define ECHO\ (void) fwrite( yytext, yyleng, 1, yyout )}\label{lexer_8c_a72}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define ECHO\ (void) fwrite( {\bf yytext}, {\bf yyleng}, 1, {\bf yyout} )}\label{lexer_8c_a72}
 
 
 \index{lexer.c@{lexer.c}!EOB_ACT_CONTINUE_SCAN@{EOB\_\-ACT\_\-CONTINUE\_\-SCAN}}
@@ -500,8 +499,7 @@ int {\bf len}
         yyleng = (int) (yy_cp - yytext_ptr); \
         yy_hold_char = *yy_cp; \
         *yy_cp = '\0'; \
-        yy_c_buf_p = yy_cp;
-\end{verbatim}\normalsize 
+        yy_c_buf_p = yy_cp;\end{verbatim}\normalsize 
 \index{lexer.c@{lexer.c}!YY_END_OF_BUFFER@{YY\_\-END\_\-OF\_\-BUFFER}}
 \index{YY_END_OF_BUFFER@{YY\_\-END\_\-OF\_\-BUFFER}!lexer.c@{lexer.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-END\_\-OF\_\-BUFFER\ 106}\label{lexer_8c_a48}
@@ -573,8 +571,7 @@ int {\bf len}
                 } \
         else if ( ((result = fread( buf, 1, max_size, yyin )) == 0) \
                   && ferror( yyin ) ) \
-                YY_FATAL_ERROR( "input in flex scanner failed" );
-\end{verbatim}\normalsize 
+                YY_FATAL_ERROR( "input in flex scanner failed" );\end{verbatim}\normalsize 
 \index{lexer.c@{lexer.c}!yy_load_buffer_state@{yy\_\-load\_\-buffer\_\-state}}
 \index{yy_load_buffer_state@{yy\_\-load\_\-buffer\_\-state}!lexer.c@{lexer.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yy\_\-load\_\-buffer\_\-state\ VL\_\-load\_\-buffer\_\-state}\label{lexer_8c_a8}
@@ -592,7 +589,7 @@ int {\bf len}
 
 \index{lexer.c@{lexer.c}!YY_NEW_FILE@{YY\_\-NEW\_\-FILE}}
 \index{YY_NEW_FILE@{YY\_\-NEW\_\-FILE}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-NEW\_\-FILE\ yyrestart( yyin )}\label{lexer_8c_a28}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-NEW\_\-FILE\ yyrestart( {\bf yyin} )}\label{lexer_8c_a28}
 
 
 \index{lexer.c@{lexer.c}!YY_NULL@{YY\_\-NULL}}
@@ -630,8 +627,7 @@ int {\bf len}
 \footnotesize\begin{verbatim}if ( yyleng > 0 ) \
                 yy_current_buffer->yy_at_bol = \
                                 (yytext[yyleng - 1] == '\n'); \
-        YY_USER_ACTION
-\end{verbatim}\normalsize 
+        YY_USER_ACTION\end{verbatim}\normalsize 
 \index{lexer.c@{lexer.c}!YY_SC_TO_UI@{YY\_\-SC\_\-TO\_\-UI}}
 \index{YY_SC_TO_UI@{YY\_\-SC\_\-TO\_\-UI}!lexer.c@{lexer.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-SC\_\-TO\_\-UI(c)\ ((unsigned int) (unsigned char) c)}\label{lexer_8c_a23}
@@ -663,8 +659,7 @@ int {\bf len}
         if ( ! yy_current_buffer ) \
                 yy_current_buffer = yy_create_buffer( yyin, YY_BUF_SIZE ); \
         yy_current_buffer->yy_at_bol = at_bol; \
-        }
-\end{verbatim}\normalsize 
+        }\end{verbatim}\normalsize 
 \index{lexer.c@{lexer.c}!yy_set_interactive@{yy\_\-set\_\-interactive}}
 \index{yy_set_interactive@{yy\_\-set\_\-interactive}!lexer.c@{lexer.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yy\_\-set\_\-interactive(is\_\-interactive)}\label{lexer_8c_a42}
@@ -676,8 +671,7 @@ int {\bf len}
         if ( ! yy_current_buffer ) \
                 yy_current_buffer = yy_create_buffer( yyin, YY_BUF_SIZE ); \
         yy_current_buffer->yy_is_interactive = is_interactive; \
-        }
-\end{verbatim}\normalsize 
+        }\end{verbatim}\normalsize 
 \index{lexer.c@{lexer.c}!YY_STACK_USED@{YY\_\-STACK\_\-USED}}
 \index{YY_STACK_USED@{YY\_\-STACK\_\-USED}!lexer.c@{lexer.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-STACK\_\-USED\ 1}\label{lexer_8c_a57}
@@ -744,8 +738,7 @@ int {\bf len}
                 *yy_c_buf_p = '\0'; \
                 yyleng = n; \
                 } \
-        while ( 0 )
-\end{verbatim}\normalsize 
+        while ( 0 )\end{verbatim}\normalsize 
 \index{lexer.c@{lexer.c}!yyless@{yyless}}
 \index{yyless@{yyless}!lexer.c@{lexer.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yyless(n)}\label{lexer_8c_a34}
@@ -761,8 +754,7 @@ int {\bf len}
                 yy_c_buf_p = yy_cp = yy_bp + n - YY_MORE_ADJ; \
                 YY_DO_BEFORE_ACTION;   \
                 } \
-        while ( 0 )
-\end{verbatim}\normalsize 
+        while ( 0 )\end{verbatim}\normalsize 
 \index{lexer.c@{lexer.c}!yylex@{yylex}}
 \index{yylex@{yylex}!lexer.c@{lexer.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yylex\ VLlex}\label{lexer_8c_a12}
@@ -805,7 +797,7 @@ int {\bf len}
 
 \index{lexer.c@{lexer.c}!yytext_ptr@{yytext\_\-ptr}}
 \index{yytext_ptr@{yytext\_\-ptr}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yytext\_\-ptr\ yytext}\label{lexer_8c_a45}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yytext\_\-ptr\ {\bf yytext}}\label{lexer_8c_a45}
 
 
 \index{lexer.c@{lexer.c}!yywrap@{yywrap}}
@@ -852,11 +844,6 @@ int {\bf len}
 \index{lexer.c@{lexer.c}!reset_pplexer@{reset\_\-pplexer}}
 \index{reset_pplexer@{reset\_\-pplexer}!lexer.c@{lexer.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void reset\_\-pplexer (char $\ast$ {\em filename}, FILE $\ast$ {\em out})}\label{lexer_8c_a140}
-
-
-\index{lexer.c@{lexer.c}!yy_init_buffer@{yy\_\-init\_\-buffer}}
-\index{yy_init_buffer@{yy\_\-init\_\-buffer}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void yy\_\-init\_\-buffer (b, {\bf file})}\label{lexer_8c_a146}
 
 
 \index{lexer.c@{lexer.c}!YY_PROTO@{YY\_\-PROTO}}
@@ -1009,10 +996,10 @@ Name of preprocessor filename to use \index{lexer.c@{lexer.c}!size@{size}}
 
 \index{lexer.c@{lexer.c}!user_msg@{user\_\-msg}}
 \index{user_msg@{user\_\-msg}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char user\_\-msg[USER\_\-MSG\_\-LENGTH] ()}\label{lexer_8c_a110}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char user\_\-msg[USER\_\-MSG\_\-LENGTH]}\label{lexer_8c_a110}
 
 
-Holds some output that will be displayed via the print\_\-output command. This is created globally so that memory does not need to be reallocated for each function that wishes to use it. \index{lexer.c@{lexer.c}!yy_accept@{yy\_\-accept}}
+\index{lexer.c@{lexer.c}!yy_accept@{yy\_\-accept}}
 \index{yy_accept@{yy\_\-accept}!lexer.c@{lexer.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst short int yy\_\-accept[467]\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a97}
 
@@ -1093,8 +1080,7 @@ Holds some output that will be displayed via the print\_\-output command. This i
         5,    5,    6,    6,    1,    1,    6,    1,    6,    6,
         6,    6,    6,    6,    5,    5,    5,    5,    5,    5,
         5,    5,    5,    5,    5,    5,    5,    1,    1
-    }
-\end{verbatim}\normalsize 
+    }\end{verbatim}\normalsize 
 \index{lexer.c@{lexer.c}!yy_more_flag@{yy\_\-more\_\-flag}}
 \index{yy_more_flag@{yy\_\-more\_\-flag}!lexer.c@{lexer.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-more\_\-flag = 0\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a106}
@@ -1147,7 +1133,7 @@ Holds some output that will be displayed via the print\_\-output command. This i
 
 \index{lexer.c@{lexer.c}!yylloc@{yylloc}}
 \index{yylloc@{yylloc}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}YYLTYPE yylloc}\label{lexer_8c_a108}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf YYLTYPE} yylloc}\label{lexer_8c_a108}
 
 
 \index{lexer.c@{lexer.c}!yyout@{yyout}}

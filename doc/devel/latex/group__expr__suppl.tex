@@ -221,8 +221,18 @@ Least-significant bit position of expression supplemental field indicating that 
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-MERGE\_\-MASK\ 0xfe7fffff}\label{group__expr__suppl_a20}
 
 
-Used for merging two supplemental fields from two expressions. Both expression supplemental fields are ANDed with this mask and ORed together to perform the merge. Fields that are merged are:\begin{itemize}
-\item OPERATION\item SWAPPED\item ROOT\item EXECUTED\item TRUE\item FALSE\item STMT\_\-STOP\item STMT\_\-HEAD\item STMT\_\-CONTINUOUS\item EVAL 00, 01, 10, 11 \end{itemize}
+Used for merging two supplemental fields from two expressions. Both expression supplemental fields are ANDed with this mask and ORed together to perform the merge. Fields that are merged are:\begin{CompactItemize}
+\item 
+OPERATION\item 
+SWAPPED\item 
+ROOT\item 
+EXECUTED\item 
+TRUE\item 
+FALSE\item 
+STMT\_\-STOP\item 
+STMT\_\-HEAD\item 
+STMT\_\-CONTINUOUS\item 
+EVAL 00, 01, 10, 11 \end{CompactItemize}
 \index{expr_suppl@{expr\_\-suppl}!SUPPL_OP@{SUPPL\_\-OP}}
 \index{SUPPL_OP@{SUPPL\_\-OP}!expr_suppl@{expr\_\-suppl}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-OP(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-OP) \& 0x3f)}\label{group__expr__suppl_a34}

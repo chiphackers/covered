@@ -41,10 +41,14 @@ void {\bf expression\_\-dealloc} ({\bf expression} $\ast$expr, {\bf bool} exp\_\
 \subsection{Detailed Description}
 Contains functions for handling expressions.
 
+
+
 \begin{Desc}
-\item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\item[Author: ]\par
+Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
-\item[Date:]12/1/2001 \end{Desc}
+\item[Date: ]\par
+12/1/2001\end{Desc}
 
 
 \subsection{Function Documentation}
@@ -56,13 +60,15 @@ Contains functions for handling expressions.
 Returns a compressed, 1-bit representation of the value after a unary OR.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em expr}]Pointer to expression to evaluate.\end{description}
+\item[{\em 
+expr}]Pointer to expression to evaluate.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns:]Returns the value of the expression after being compressed to 1 bit via a unary OR.\end{Desc}
-Returns a value of 1 if the specified expression contains at least one 1 value and no X or Z values in its bits. It accomplishes this by performing a unary OR operation on the specified expression value and testing bit 0 of the result. \index{expr.h@{expr.h}!expression_create@{expression\_\-create}}
+\item[Returns: ]\par
+Returns the value of the expression after being compressed to 1 bit via a unary OR.\end{Desc}
+Returns a value of 1 if the specified expression contains at least one 1 value and no X or Z values in its bits. It accomplishes this by performing a unary  OR operation on the specified expression value and testing bit 0 of the result. \index{expr.h@{expr.h}!expression_create@{expression\_\-create}}
 \index{expression_create@{expression\_\-create}!expr.h@{expr.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf expression}$\ast$ expression\_\-create ({\bf expression} $\ast$ {\em right}, {\bf expression} $\ast$ {\em left}, int {\em op}, int {\em id}, int {\em line}, {\bf bool} {\em data})}\label{expr_8h_a1}
 
@@ -70,12 +76,19 @@ Returns a value of 1 if the specified expression contains at least one 1 value a
 Creates new expression.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em right}]Pointer to expression on right. \item[{\em left}]Pointer to expression on left. \item[{\em op}]Operation to perform for this expression. \item[{\em id}]ID for this expression as determined by the parent. \item[{\em line}]Line number this expression is on. \item[{\em data}]Specifies if we should create a nibble array for the vector value.\end{description}
+\item[{\em 
+right}]Pointer to expression on right. \item[{\em 
+left}]Pointer to expression on left. \item[{\em 
+op}]Operation to perform for this expression. \item[{\em 
+id}]ID for this expression as determined by the parent. \item[{\em 
+line}]Line number this expression is on. \item[{\em 
+data}]Specifies if we should create a nibble array for the vector value.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns:]Returns pointer to newly created expression.\end{Desc}
+\item[Returns: ]\par
+Returns pointer to newly created expression.\end{Desc}
 Creates a new expression from heap memory and initializes its values for usage. Right and left expressions need to be created before this function is called. \index{expr.h@{expr.h}!expression_create_value@{expression\_\-create\_\-value}}
 \index{expression_create_value@{expression\_\-create\_\-value}!expr.h@{expr.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-create\_\-value ({\bf expression} $\ast$ {\em exp}, int {\em width}, int {\em lsb}, {\bf bool} {\em data})}\label{expr_8h_a0}
@@ -84,9 +97,13 @@ Creates a new expression from heap memory and initializes its values for usage. 
 Creates an expression value and initializes it.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em exp}]Pointer to expression to add value to. \item[{\em width}]Width of value to create. \item[{\em lsb}]Least significant value of value field. \item[{\em data}]Specifies if nibble array should be allocated for vector.\end{description}
+\item[{\em 
+exp}]Pointer to expression to add value to. \item[{\em 
+width}]Width of value to create. \item[{\em 
+lsb}]Least significant value of value field. \item[{\em 
+data}]Specifies if nibble array should be allocated for vector.\end{description}
 \end{Desc}
 Creates a value vector that is large enough to store width number of bits in value and sets the specified expression value to this value. This function should be called by either the expression\_\-create function, the bind function, or the signal db\_\-read function. \index{expr.h@{expr.h}!expression_db_merge@{expression\_\-db\_\-merge}}
 \index{expression_db_merge@{expression\_\-db\_\-merge}!expr.h@{expr.h}}
@@ -96,13 +113,17 @@ Creates a value vector that is large enough to store width number of bits in val
 Reads and merges two expressions and stores result in base expression.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em base}]Expression to merge data into. \item[{\em line}]Pointer to CDD line to parse. \item[{\em same}]Specifies if expression to be merged needs to be exactly the same as the existing expression.\end{description}
+\item[{\em 
+base}]Expression to merge data into. \item[{\em 
+line}]Pointer to CDD line to parse. \item[{\em 
+same}]Specifies if expression to be merged needs to be exactly the same as the existing expression.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns:]Returns TRUE if parse and merge was sucessful; otherwise, returns FALSE.\end{Desc}
-Parses specified line for expression information and merges contents into the base expression. If the two expressions given are not the same (IDs, op, and/or line position differ) we know that the database files being merged were not created from the same design; therefore, display an error message to the user in this case. If both expressions are the same, perform the merge. \index{expr.h@{expr.h}!expression_db_read@{expression\_\-db\_\-read}}
+\item[Returns: ]\par
+Returns TRUE if parse and merge was sucessful; otherwise, returns FALSE.\end{Desc}
+Parses specified line for expression information and merges contents into the base expression. If the two expressions given are not the same (IDs, op, and/or line position differ) we know that the database files being merged  were not created from the same design; therefore, display an error message  to the user in this case. If both expressions are the same, perform the  merge. \index{expr.h@{expr.h}!expression_db_read@{expression\_\-db\_\-read}}
 \index{expression_db_read@{expression\_\-db\_\-read}!expr.h@{expr.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} expression\_\-db\_\-read (char $\ast$$\ast$ {\em line}, {\bf module} $\ast$ {\em curr\_\-mod}, {\bf bool} {\em eval})}\label{expr_8h_a6}
 
@@ -110,13 +131,17 @@ Parses specified line for expression information and merges contents into the ba
 Reads current line of specified file and parses for expression information.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em line}]String containing database line to read information from. \item[{\em curr\_\-mod}]Pointer to current module that instantiates this expression. \item[{\em eval}]If TRUE, evaluate expression if children are static.\end{description}
+\item[{\em 
+line}]String containing database line to read information from. \item[{\em 
+curr\_\-mod}]Pointer to current module that instantiates this expression. \item[{\em 
+eval}]If TRUE, evaluate expression if children are static.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns:]Returns TRUE if parsing successful; otherwise, returns FALSE.\end{Desc}
-Reads in the specified expression information, creates new expression from heap, populates the expression with specified information from file and returns that value in the specified expression pointer. If all is successful, returns TRUE; otherwise, returns FALSE. \index{expr.h@{expr.h}!expression_db_write@{expression\_\-db\_\-write}}
+\item[Returns: ]\par
+Returns TRUE if parsing successful; otherwise, returns FALSE.\end{Desc}
+Reads in the specified expression information, creates new expression from heap, populates the expression with specified information from file and  returns that value in the specified expression pointer. If all is  successful, returns TRUE; otherwise, returns FALSE. \index{expr.h@{expr.h}!expression_db_write@{expression\_\-db\_\-write}}
 \index{expression_db_write@{expression\_\-db\_\-write}!expr.h@{expr.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-db\_\-write ({\bf expression} $\ast$ {\em expr}, FILE $\ast$ {\em file}, char $\ast$ {\em scope})}\label{expr_8h_a5}
 
@@ -124,9 +149,12 @@ Reads in the specified expression information, creates new expression from heap,
 Writes this expression to the specified database file.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em expr}]Pointer to expression to write to database file. \item[{\em file}]Pointer to database file to write to. \item[{\em scope}]Name of Verilog hierarchical scope for this expression.\end{description}
+\item[{\em 
+expr}]Pointer to expression to write to database file. \item[{\em 
+file}]Pointer to database file to write to. \item[{\em 
+scope}]Name of Verilog hierarchical scope for this expression.\end{description}
 \end{Desc}
 This function recursively displays the expression information for the specified expression tree to the coverage database specified by file. \index{expr.h@{expr.h}!expression_dealloc@{expression\_\-dealloc}}
 \index{expression_dealloc@{expression\_\-dealloc}!expr.h@{expr.h}}
@@ -136,9 +164,11 @@ This function recursively displays the expression information for the specified 
 Deallocates memory used for expression.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em expr}]Pointer to root expression to deallocate. \item[{\em exp\_\-only}]Removes only the specified expression and not its children.\end{description}
+\item[{\em 
+expr}]Pointer to root expression to deallocate. \item[{\em 
+exp\_\-only}]Removes only the specified expression and not its children.\end{description}
 \end{Desc}
 Deallocates all heap memory allocated with the malloc routine. \index{expr.h@{expr.h}!expression_display@{expression\_\-display}}
 \index{expression_display@{expression\_\-display}!expr.h@{expr.h}}
@@ -148,9 +178,10 @@ Deallocates all heap memory allocated with the malloc routine. \index{expr.h@{ex
 Displays the specified expression information.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em expr}]Pointer to expression to display.\end{description}
+\item[{\em 
+expr}]Pointer to expression to display.\end{description}
 \end{Desc}
 Displays contents of the specified expression to standard output. This function is called by the module\_\-display function. \index{expr.h@{expr.h}!expression_get_id@{expression\_\-get\_\-id}}
 \index{expression_get_id@{expression\_\-get\_\-id}!expr.h@{expr.h}}
@@ -160,12 +191,14 @@ Displays contents of the specified expression to standard output. This function 
 Returns expression ID of this expression.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em expr}]Pointer to expression to get ID from. \end{description}
+\item[{\em 
+expr}]Pointer to expression to get ID from. \end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns:]Returns expression ID for this expression.\end{Desc}
+\item[Returns: ]\par
+Returns expression ID for this expression.\end{Desc}
 If specified expression is non-NULL, return expression ID of this expression; otherwise, return a value of 0 to indicate that this is a leaf node. \index{expr.h@{expr.h}!expression_is_static_only@{expression\_\-is\_\-static\_\-only}}
 \index{expression_is_static_only@{expression\_\-is\_\-static\_\-only}!expr.h@{expr.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} expression\_\-is\_\-static\_\-only ({\bf expression} $\ast$ {\em expr})}\label{expr_8h_a12}
@@ -174,12 +207,14 @@ If specified expression is non-NULL, return expression ID of this expression; ot
 Returns TRUE if specified expression is found to contain all static leaf expressions.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em expr}]Pointer to expression to evaluate.\end{description}
+\item[{\em 
+expr}]Pointer to expression to evaluate.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns:]Returns TRUE if expression contains only static expressions; otherwise, returns FALSE.\end{Desc}
+\item[Returns: ]\par
+Returns TRUE if expression contains only static expressions; otherwise, returns FALSE.\end{Desc}
 Recursively iterates through specified expression tree and returns TRUE if all of the children expressions are static expressions (STATIC or parameters). \index{expr.h@{expr.h}!expression_operate@{expression\_\-operate}}
 \index{expression_operate@{expression\_\-operate}!expr.h@{expr.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-operate ({\bf expression} $\ast$ {\em expr})}\label{expr_8h_a9}
@@ -188,9 +223,10 @@ Recursively iterates through specified expression tree and returns TRUE if all o
 Performs operation specified by parameter expression.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em expr}]Pointer to expression to set value to.\end{description}
+\item[{\em 
+expr}]Pointer to expression to set value to.\end{description}
 \end{Desc}
 Performs expression operation. This function must only be run after its left and right expressions have been calculated during this clock period. Sets the value of the operation in its own vector value and updates the suppl nibble as necessary. \index{expr.h@{expr.h}!expression_operate_recursively@{expression\_\-operate\_\-recursively}}
 \index{expression_operate_recursively@{expression\_\-operate\_\-recursively}!expr.h@{expr.h}}
@@ -200,11 +236,12 @@ Performs expression operation. This function must only be run after its left and
 Performs recursive expression operation (parse mode only).
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em expr}]Pointer to top of expression tree to perform recursive operations.\end{description}
+\item[{\em 
+expr}]Pointer to top of expression tree to perform recursive operations.\end{description}
 \end{Desc}
-Recursively performs the proper operations to cause the top-level expression to be set to a value. This function is called during the parse stage to derive pre-CDD widths of multi-bit expressions. Each MSB/LSB is an expression tree that needs to be evaluated to set the width properly on the MBIT\_\-SEL expression. \index{expr.h@{expr.h}!expression_resize@{expression\_\-resize}}
+Recursively performs the proper operations to cause the top-level expression to be set to a value. This function is called during the parse stage to derive  pre-CDD widths of multi-bit expressions. Each MSB/LSB is an expression tree that  needs to be evaluated to set the width properly on the MBIT\_\-SEL expression. \index{expr.h@{expr.h}!expression_resize@{expression\_\-resize}}
 \index{expression_resize@{expression\_\-resize}!expr.h@{expr.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-resize ({\bf expression} $\ast$ {\em expr}, {\bf bool} {\em recursive})}\label{expr_8h_a3}
 
@@ -212,9 +249,11 @@ Recursively performs the proper operations to cause the top-level expression to 
 Recursively resizes specified expression tree leaf node.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em expr}]Pointer to expression to potentially resize. \item[{\em recursive}]Specifies if we should perform a recursive depth-first resize\end{description}
+\item[{\em 
+expr}]Pointer to expression to potentially resize. \item[{\em 
+recursive}]Specifies if we should perform a recursive depth-first resize\end{description}
 \end{Desc}
 Resizes the given expression depending on the expression operation and its children's sizes. If recursive is TRUE, performs the resize in a depth-first fashion, resizing the children before resizing the current expression. If recursive is FALSE, only the given expression is evaluated and resized. \index{expr.h@{expr.h}!expression_set_value@{expression\_\-set\_\-value}}
 \index{expression_set_value@{expression\_\-set\_\-value}!expr.h@{expr.h}}
@@ -224,8 +263,10 @@ Resizes the given expression depending on the expression operation and its child
 Sets the specified expression value to the specified vector value.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em exp}]Pointer to expression to set value to. \item[{\em vec}]Pointer to vector value to set expression to.\end{description}
+\item[{\em 
+exp}]Pointer to expression to set value to. \item[{\em 
+vec}]Pointer to vector value to set expression to.\end{description}
 \end{Desc}
 Sets the specified expression (if necessary) to the value of the specified vector value. 

@@ -29,10 +29,14 @@ char {\bf user\_\-msg} [USER\_\-MSG\_\-LENGTH]
 
 
 \subsection{Detailed Description}
+
+
 \begin{Desc}
-\item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\item[Author: ]\par
+Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
-\item[Date:]11/29/2001\end{Desc}
+\item[Date: ]\par
+11/29/2001\end{Desc}
 
 
 \subsection{Function Documentation}
@@ -44,24 +48,32 @@ char {\bf user\_\-msg} [USER\_\-MSG\_\-LENGTH]
 Parses command-line for merge options and performs merge command.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em argc}]Number of arguments in command-line to parse. \item[{\em last\_\-arg}]Index of last parsed argument from list. \item[{\em argv}]List of arguments from command-line to parse.\end{description}
+\item[{\em 
+argc}]Number of arguments in command-line to parse. \item[{\em 
+last\_\-arg}]Index of last parsed argument from list. \item[{\em 
+argv}]List of arguments from command-line to parse.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns:]Returns 0 if merge is successful; otherwise, returns -1.\end{Desc}
+\item[Returns: ]\par
+Returns 0 if merge is successful; otherwise, returns -1.\end{Desc}
 Performs merge command functionality. \index{merge.c@{merge.c}!merge_parse_args@{merge\_\-parse\_\-args}}
 \index{merge_parse_args@{merge\_\-parse\_\-args}!merge.c@{merge.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} merge\_\-parse\_\-args (int {\em argc}, int {\em last\_\-arg}, char $\ast$$\ast$ {\em argv})}\label{merge_8c_a5}
 
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em argc}]Number of arguments in argument list argv. \item[{\em last\_\-arg}]Index of last parsed argument from list. \item[{\em argv}]Argument list passed to this program.\end{description}
+\item[{\em 
+argc}]Number of arguments in argument list argv. \item[{\em 
+last\_\-arg}]Index of last parsed argument from list. \item[{\em 
+argv}]Argument list passed to this program.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns:]Returns TRUE if argument parsing was successful; otherwise, returns FALSE.\end{Desc}
+\item[Returns: ]\par
+Returns TRUE if argument parsing was successful; otherwise, returns FALSE.\end{Desc}
 Parses the merge argument list, placing all parsed values into global variables. If an argument is found that is not valid for the merge operation, an error message is displayed to the user. \index{merge.c@{merge.c}!merge_usage@{merge\_\-usage}}
 \index{merge_usage@{merge\_\-usage}!merge.c@{merge.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void merge\_\-usage ()}\label{merge_8c_a4}
@@ -87,7 +99,6 @@ Outputs usage informaiton to standard output for merge command.
 
 \index{merge.c@{merge.c}!user_msg@{user\_\-msg}}
 \index{user_msg@{user\_\-msg}!merge.c@{merge.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char user\_\-msg[USER\_\-MSG\_\-LENGTH] ()}\label{merge_8c_a3}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char user\_\-msg[USER\_\-MSG\_\-LENGTH]}\label{merge_8c_a3}
 
 
-Holds some output that will be displayed via the print\_\-output command. This is created globally so that memory does not need to be reallocated for each function that wishes to use it. 

@@ -20,10 +20,14 @@ void {\bf stmt\_\-iter\_\-get\_\-next\_\-in\_\-order} ({\bf stmt\_\-iter} $\ast$
 
 
 \subsection{Detailed Description}
+
+
 \begin{Desc}
-\item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\item[Author: ]\par
+Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
-\item[Date:]10/24/2002\end{Desc}
+\item[Date: ]\par
+10/24/2002\end{Desc}
 
 
 \subsection{Function Documentation}
@@ -35,9 +39,11 @@ void {\bf stmt\_\-iter\_\-get\_\-next\_\-in\_\-order} ({\bf stmt\_\-iter} $\ast$
 Sets specified iterator to start with statement head for ordering.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em si}]Pointer to statement iterator to transform. \item[{\em skip}]Specifies if we should skip to the next statement header.\end{description}
+\item[{\em 
+si}]Pointer to statement iterator to transform. \item[{\em 
+skip}]Specifies if we should skip to the next statement header.\end{description}
 \end{Desc}
 Iterates down statement list until a statement head is reached. If a statement head is found, the iterator is reversed (with curr pointing to statement head). Used for displaying statements in line order for reports. \index{iter.c@{iter.c}!stmt_iter_get_next_in_order@{stmt\_\-iter\_\-get\_\-next\_\-in\_\-order}}
 \index{stmt_iter_get_next_in_order@{stmt\_\-iter\_\-get\_\-next\_\-in\_\-order}!iter.c@{iter.c}}
@@ -47,9 +53,10 @@ Iterates down statement list until a statement head is reached. If a statement h
 Sets current iterator to next statement in order.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em si}]Pointer to statement iterator to transform.\end{description}
+\item[{\em 
+si}]Pointer to statement iterator to transform.\end{description}
 \end{Desc}
 Iterates to next statement in list and compares this statement ID with the previous statement ID. If the new statement ID is less than the previous statement ID, we need to reverse the iterator, find the second statement head and reverse the iterator again. This function is used to order statements by line number in verbose reports. \index{iter.c@{iter.c}!stmt_iter_next@{stmt\_\-iter\_\-next}}
 \index{stmt_iter_next@{stmt\_\-iter\_\-next}!iter.c@{iter.c}}
@@ -59,12 +66,14 @@ Iterates to next statement in list and compares this statement ID with the previ
 Moves to the next statement link.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em si}]Pointer to statement iterator to advance.\end{description}
+\item[{\em 
+si}]Pointer to statement iterator to advance.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns:]Returns pointer to next statement link.\end{Desc}
+\item[Returns: ]\par
+Returns pointer to next statement link.\end{Desc}
 Advances specified statement iterator to next statement link in statement list. \index{iter.c@{iter.c}!stmt_iter_reset@{stmt\_\-iter\_\-reset}}
 \index{stmt_iter_reset@{stmt\_\-iter\_\-reset}!iter.c@{iter.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void stmt\_\-iter\_\-reset ({\bf stmt\_\-iter} $\ast$ {\em si}, {\bf stmt\_\-link} $\ast$ {\em start})}\label{iter_8c_a0}
@@ -73,9 +82,11 @@ Advances specified statement iterator to next statement link in statement list. 
 Resets the specified statement iterator at start point.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em si}]Pointer to statement iterator to reset. \item[{\em start}]Specifies link to start iterating through (can be head or tail).\end{description}
+\item[{\em 
+si}]Pointer to statement iterator to reset. \item[{\em 
+start}]Specifies link to start iterating through (can be head or tail).\end{description}
 \end{Desc}
 Initializes the specified statement iterator to begin advancing. \index{iter.c@{iter.c}!stmt_iter_reverse@{stmt\_\-iter\_\-reverse}}
 \index{stmt_iter_reverse@{stmt\_\-iter\_\-reverse}!iter.c@{iter.c}}
@@ -85,8 +96,9 @@ Initializes the specified statement iterator to begin advancing. \index{iter.c@{
 Reverses iterator flow and advances to next statement link.
 
 \begin{Desc}
-\item[Parameters:]
+\item[Parameters: ]\par
 \begin{description}
-\item[{\em si}]Pointer to statement iterator to reverse.\end{description}
+\item[{\em 
+si}]Pointer to statement iterator to reverse.\end{description}
 \end{Desc}
 Reverses the direction of the iterator and changes the current pointer to point to the last statement before the reverse. 
