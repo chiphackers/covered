@@ -373,9 +373,6 @@ int command_score( int argc, int last_arg, char** argv ) {
       print_output( "", NORMAL );
     }
 
-    /* If there are any unused FSM variables, let the user know now. */
-    fsm_var_check_for_unused();
-
     /* Read dumpfile and score design */
     if( vcd_file != NULL ) {
       snprintf( user_msg, USER_MSG_LENGTH, "Scoring dumpfile %s...", vcd_file );
@@ -405,6 +402,11 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.39  2003/10/03 21:28:43  phase1geo
+ Restructuring FSM handling to be better suited to handle new FSM input/output
+ state variable allowances.  Regression should still pass but new FSM support
+ is not supported.
+
  Revision 1.38  2003/09/22 03:46:24  phase1geo
  Adding support for single state variable FSMs.  Allow two different ways to
  specify FSMs on command-line.  Added diagnostics to verify new functionality.

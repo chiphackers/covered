@@ -31,7 +31,6 @@
 #include "static.h"
 #include "fsm.h"
 #include "info.h"
-#include "fsm_var.h"
 
 
 extern char*     top_module;
@@ -604,11 +603,10 @@ void db_add_defparam( char* name, expression* expr ) {
 */
 void db_add_signal( char* name, static_expr* left, static_expr* right ) {
 
-  signal   tmpsig;  /* Temporary signal for signal searching   */
-  signal*  sig;     /* Container for newly created signal      */
-  int      lsb;     /* Signal LSB                              */
-  int      width;   /* Signal width                            */
-  fsm_var* fv;      /* Pointer to found FSM variable structure */
+  signal   tmpsig;  /* Temporary signal for signal searching */
+  signal*  sig;     /* Container for newly created signal    */
+  int      lsb;     /* Signal LSB                            */
+  int      width;   /* Signal width                          */
 
   snprintf( user_msg, USER_MSG_LENGTH, "In db_add_signal, signal: %s", name );
   print_output( user_msg, DEBUG );
@@ -638,34 +636,6 @@ void db_add_signal( char* name, static_expr* left, static_expr* right ) {
 
     /* Add signal to current module's signal list */
     sig_link_add( sig, &(curr_module->sig_head), &(curr_module->sig_tail) );
-
-    /* Create new FSM structure if this signal is an FSM state variable */
-    if( (fv = fsm_var_find_out_var( curr_module->name, name )) != NULL ) {
-      // printf( "FSM found in module (%s) with output state variable (%s)\n", curr_module->name, name );
-      sig->table = fsm_create( sig );
-      /* If input variable was already found, setup FSM */
-      if( fv->isig != NULL ) {
-        sig->table->from_sig = fv->isig;
-        fsm_var_remove( fv );
-      } else {
-        fv->table = sig->table;
-      }
-      fsm_link_add( sig->table, &(curr_module->fsm_head), &(curr_module->fsm_tail) );
-    }
-    if( (fv = fsm_var_find_in_var( curr_module->name, name )) != NULL ) {
-      // printf( "FSM found in module (%s) with input state variable (%s)\n", curr_module->name, name );
-      if( fv->table != NULL ) {
-        /* If the input and output states are the same, create a dummy signal */
-        if( fv->table->to_sig == sig ) {
-          fv->table->from_sig = signal_create( "*", sig->value->width, sig->value->lsb );
-        } else {
-          fv->table->from_sig = sig;
-        }
-        fsm_var_remove( fv );
-      } else {
-        fv->isig = sig;
-      }
-    }
 
   }
   
@@ -1230,6 +1200,11 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.101  2003/10/03 21:28:43  phase1geo
+ Restructuring FSM handling to be better suited to handle new FSM input/output
+ state variable allowances.  Regression should still pass but new FSM support
+ is not supported.
+
  Revision 1.100  2003/09/22 03:46:24  phase1geo
  Adding support for single state variable FSMs.  Allow two different ways to
  specify FSMs on command-line.  Added diagnostics to verify new functionality.

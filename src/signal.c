@@ -45,7 +45,6 @@ void signal_init( signal* sig, char* name, vector* value ) {
   sig->value    = value;
   sig->exp_head = NULL;
   sig->exp_tail = NULL;
-  sig->table    = NULL;
 
 }
 
@@ -320,18 +319,15 @@ void signal_vcd_assign( signal* sig, char* value, int msb, int lsb ) {
   snprintf( user_msg, USER_MSG_LENGTH, "Assigning signal %s to value %s", sig->name, value );
   print_output( user_msg, DEBUG );
 
-  /* If the to and from signals are the same, copy the output signal vector to the dummy input signal vector */
-  if( (sig->table != NULL) && (sig->table->from_sig->name[0] == '*') ) {
-    vector_set_value( sig->table->from_sig->value, sig->value->value, sig->value->width, sig->value->lsb, sig->value->lsb );
-  }
-
   /* Set signal value to specified value */
   vector_vcd_assign( sig->value, value, msb, lsb );
 
+#ifdef SKIP
   /* If this signal is part of an FSM, get FSM coverage now. */
   if( sig->table != NULL ) {
     fsm_table_set( sig->table );
   }
+#endif
 
   /* Iterate through signal's expression list */
   curr_expr = sig->exp_head;
@@ -384,19 +380,25 @@ void signal_display( signal* sig ) {
  signal may be a standard signal name, a single bit select signal or a
  multi-bit select signal.
 */
-signal* signal_from_string( char* str ) {
+signal* signal_from_string( char** str ) {
 
-  signal* sig;
-  char    name[4096];
-  int     msb;
-  int     lsb;
+  signal* sig;         /* Pointer to newly created signal       */
+  char    name[4096];  /* Signal name                           */
+  int     msb;         /* MSB of signal                         */
+  int     lsb;         /* LSB of signal                         */
+  int     chars_read;  /* Number of characters read from string */
 
-  if( sscanf( str, "%s[%d:%d]", name, &msb, &lsb ) == 3 ) {
+  if( sscanf( *str, "%s[%d:%d]%n", name, &msb, &lsb, &chars_read ) == 3 ) {
     sig = signal_create( name, ((msb - lsb) + 1), lsb );
-  } else if( sscanf( str, "%s[%d]", name, &lsb ) == 2 ) {
+    *str += chars_read;
+  } else if( sscanf( *str, "%s[%d]%n", name, &lsb, &chars_read ) == 2 ) {
     sig = signal_create( name, 1, lsb );
-  } else if( sscanf( str, "%[a-zA-Z0-9_]", name ) == 1 ) {
+    *str += chars_read;
+  } else if( sscanf( *str, "%[a-zA-Z0-9_]%n", name, &chars_read ) == 1 ) {
     sig = signal_create( name, 1, 0 );
+    /* Specify that this width is unknown */
+    sig->value->width = 0;
+    *str += chars_read;
   } else {
     sig = NULL;
   }
@@ -445,6 +447,9 @@ void signal_dealloc( signal* sig ) {
 
 /*
  $Log$
+ Revision 1.35  2003/10/02 12:30:56  phase1geo
+ Initial code modifications to handle more robust FSM cases.
+
  Revision 1.34  2003/09/22 03:46:24  phase1geo
  Adding support for single state variable FSMs.  Allow two different ways to
  specify FSMs on command-line.  Added diagnostics to verify new functionality.

@@ -52,6 +52,7 @@
 #include "binding.h"
 #include "util.h"
 #include "sim.h"
+#include "fsm.h"
 
 
 extern nibble xor_optab[16];
@@ -122,6 +123,7 @@ expression* expression_create( expression* right, expression* left, int op, int 
   new_expr->right        = right;
   new_expr->left         = left;
   new_expr->value        = (vector*)malloc_safe( sizeof( vector ) );
+  new_expr->table        = NULL;
 
   if( right != NULL ) {
 
@@ -1167,6 +1169,11 @@ void expression_operate( expression* expr ) {
                     ((lt & rt) << SUPPL_LSB_EVAL_11);
     }
 
+    /* If this expression is attached to an FSM, perform the FSM calculation now */
+    if( expr->table != NULL ) {
+      fsm_table_set( expr->table );
+    }
+
   }
 
 }
@@ -1319,6 +1326,12 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.78  2003/08/10 00:05:16  phase1geo
+ Fixing bug with posedge, negedge and anyedge expressions such that these expressions
+ must be armed before they are able to be evaluated.  Fixing bug in vector compare function
+ to cause compare to occur on smallest vector size (rather than on largest).  Updated regression
+ files and added new diagnostics to test event fix.
+
  Revision 1.77  2003/08/09 22:16:37  phase1geo
  Updates to development documentation for newly added functions from previous
  checkin.

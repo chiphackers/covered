@@ -49,7 +49,8 @@
 #include "link.h"
 #include "vector.h"
 #include "arc.h"
-#include "signal.h"
+#include "expr.h"
+#include "codegen.h"
 
 
 extern mod_inst*    instance_root;
@@ -62,22 +63,23 @@ extern char         user_msg[USER_MSG_LENGTH];
 
 
 /*!
- \param sig  Pointer to signal that is output state variable for this FSM.
+ \param from_state  Pointer to expression that is input state variable for this FSM.
+ \param to_state    Pointer to expression that is output state variable for this FSM.
 
  \return Returns a pointer to the newly allocated FSM structure.
 
  Allocates and initializes an FSM structure.
 */
-fsm* fsm_create( signal* sig ) {
+fsm* fsm_create( expression* from_state, expression* to_state ) {
 
   fsm* table;  /* Pointer to newly created FSM */
 
-  table           = (fsm*)malloc_safe( sizeof( fsm ) );
-  table->from_sig = NULL;
-  table->to_sig   = sig;
-  table->arc_head = NULL;
-  table->arc_tail = NULL;
-  table->table    = arc_create( sig->value->width );
+  table             = (fsm*)malloc_safe( sizeof( fsm ) );
+  table->from_state = from_state;
+  table->to_state   = to_state;
+  table->arc_head   = NULL;
+  table->arc_tail   = NULL;
+  table->table      = arc_create( to_state->value->width );
 
   return( table );
 
@@ -136,7 +138,7 @@ void fsm_create_tables( fsm* table ) {
     expression_operate( curr_arc->to_state   );
 
     /* Set table entry in table, if possible */
-    arc_add( &(table->table), table->to_sig->value->width, curr_arc->from_state->value, curr_arc->to_state->value, 0 );
+    arc_add( &(table->table), table->to_state->value->width, curr_arc->from_state->value, curr_arc->to_state->value, 0 );
 
     curr_arc = curr_arc->next;
 
@@ -157,10 +159,10 @@ bool fsm_db_write( fsm* table, FILE* file ) {
   bool retval = TRUE;  /* Return value for this function */
   int  i;              /* Loop iterator                  */
 
-  fprintf( file, "%d %s %s ",
+  fprintf( file, "%d %d %d ",
     DB_TYPE_FSM,
-    table->from_sig->name,
-    table->to_sig->name
+    table->from_state->id,
+    table->to_state->id
   );
 
   /* Print set table */
@@ -183,41 +185,42 @@ bool fsm_db_write( fsm* table, FILE* file ) {
 */
 bool fsm_db_read( char** line, module* mod ) {
 
-  bool      retval = TRUE;    /* Return value for this function                     */
-  signal    isig;             /* Temporary signal used for finding state variable   */
-  signal    osig;             /* Temporary signal used for finding state variable   */
-  sig_link* isigl;            /* Pointer to found state variable                    */
-  sig_link* osigl;            /* Pointer to found state variable                    */
-  char      isig_name[4096];  /* Temporary string used to find FSM's state variable */
-  char      osig_name[4096];  /* Temporary string used to find FSM's state variable */
-  int       i;                /* Loop iterator                                      */
-  int       chars_read;       /* Number of characters read from sscanf              */
-  fsm*      table;            /* Pointer to newly created FSM structure from CDD    */
+  bool       retval = TRUE;    /* Return value for this function                     */
+  expression iexp;             /* Temporary signal used for finding state variable   */
+  expression oexp;             /* Temporary signal used for finding state variable   */
+  exp_link*  iexpl;            /* Pointer to found state variable                    */
+  exp_link*  oexpl;            /* Pointer to found state variable                    */
+  int        i;                /* Loop iterator                                      */
+  int        chars_read;       /* Number of characters read from sscanf              */
+  fsm*       table;            /* Pointer to newly created FSM structure from CDD    */
  
-  if( sscanf( *line, "%s %s%n", isig_name, osig_name, &chars_read ) == 2 ) {
+  if( sscanf( *line, "%d %d%n", &(iexp.id), &(oexp.id), &chars_read ) == 2 ) {
 
     *line = *line + chars_read + 1;
 
     /* Find specified signal */
-    isig.name = isig_name;
-    osig.name = osig_name;
-    if( (((isigl = sig_link_find( &isig, mod->sig_head )) != NULL) || (isig.name[0] == '*')) &&
-         ((osigl = sig_link_find( &osig, mod->sig_head )) != NULL) ) {
+    if( ((iexpl = exp_link_find( &iexp, mod->exp_head )) != NULL) &&
+        ((oexpl = exp_link_find( &oexp, mod->exp_head )) != NULL) ) {
 
       /* Create new FSM */
-      table = fsm_create( osigl->sig );
+      table = fsm_create( iexpl->exp, oexpl->exp );
 
       /*
-       If the input state variable is the same as the output state variable (represented with the
-       signal name of "*"), create the new signal now.
+       If the input state variable is the same as the output state variable, create the new expression now.
       */
-      if( isig.name[0] == '*' ) {
-        table->from_sig = signal_create( isig_name, osigl->sig->value->width, osigl->sig->value->lsb );
+      if( iexp.id == oexp.id ) {
+        table->from_state = expression_create( NULL, NULL, EXP_OP_STATIC, 0, 0, FALSE );
+        vector_dealloc( table->from_state->value );
+        table->from_state->value = vector_create( iexpl->exp->value->width, iexpl->exp->value->lsb, TRUE );
       } else {
-        table->from_sig = isigl->sig;
+        table->from_state = iexpl->exp;
       }
 
-      osigl->sig->table = table;
+      /* Set input/output expression tables to point to this FSM */
+      table->from_state->table = table;
+      table->to_state->table   = table;
+
+      // oexpl->exp->table = table;
       fsm_create_tables( table );
 
       /* Now read in set table */
@@ -235,7 +238,7 @@ bool fsm_db_read( char** line, module* mod ) {
 
     } else {
 
-      snprintf( user_msg, USER_MSG_LENGTH, "Unable to find state variables (%s, %s) for current FSM", isig_name, osig_name );
+      snprintf( user_msg, USER_MSG_LENGTH, "Unable to find state variable expressions (%d, %d) for current FSM", iexp.id, oexp.id );
       print_output( user_msg, FATAL );
       retval = FALSE;
 
@@ -267,21 +270,21 @@ bool fsm_db_read( char** line, module* mod ) {
 bool fsm_db_merge( fsm* base, char** line, bool same ) {
 
   bool   retval = TRUE;  /* Return value of this function       */
-  char   iname[256];      /* Name of current signal              */
-  char   oname[256];      /* Name of current signal              */
+  int    iid;            /* Input state variable expression ID  */
+  int    oid;            /* Output state variable expression ID */
   int    chars_read;     /* Number of characters read from line */
   int    i;              /* Loop iterator                       */
   nibble nib;            /* Temporary nibble storage            */
 
   assert( base != NULL );
-  assert( base->from_sig != NULL );
-  assert( base->to_sig != NULL );
+  assert( base->from_state != NULL );
+  assert( base->to_state != NULL );
 
-  if( sscanf( *line, "%s %s%n", iname, oname, &chars_read ) == 2 ) {
+  if( sscanf( *line, "%d %d%n", &iid, &oid, &chars_read ) == 2 ) {
 
     *line = *line + chars_read + 1;
 
-    if( (strcmp( base->from_sig->name, iname ) != 0) || (strcmp( base->to_sig->name, oname ) != 0) ) {
+    if( (base->from_state->id != iid) || (base->to_state->id != oid) ) {
 
       print_output( "Attempting to merge two databases derived from different designs.  Unable to merge", FATAL );
       exit( 1 );
@@ -311,7 +314,7 @@ bool fsm_db_merge( fsm* base, char** line, bool same ) {
 */
 void fsm_table_set( fsm* table ) {
 
-  arc_add( &(table->table), table->to_sig->value->width, table->from_sig->value, table->to_sig->value, 1 );
+  arc_add( &(table->table), table->to_state->value->width, table->from_state->value, table->to_state->value, 1 );
 
 }
 
@@ -527,7 +530,7 @@ void fsm_display_arc_verbose( FILE* ofile, fsm* table ) {
     fprintf( ofile, "  Missed State Transitions\n\n" );
   }
 
-  val_width = table->to_sig->value->width;
+  val_width = table->to_state->value->width;
 
   /* Calculate width of length string */
   snprintf( tmp, 20, "%d", val_width );
@@ -561,12 +564,21 @@ void fsm_display_arc_verbose( FILE* ofile, fsm* table ) {
 */
 void fsm_display_verbose( FILE* ofile, fsm_link* head ) {
 
+  char* icode;  /* Verilog output of input state variable expression  */
+  char* ocode;  /* Verilog output of output state variable expression */
+
   while( head != NULL ) {
 
-    if( head->table->from_sig->name[0] == '*' ) {
-      fprintf( ofile, "FSM input/output state (%s)\n\n", head->table->to_sig->name );
+    if( head->table->from_state->id == head->table->to_state->id ) {
+      ocode = codegen_gen_expr( head->table->to_state, -1, SUPPL_OP( head->table->to_state->suppl ) );
+      fprintf( ofile, "FSM input/output state (%s)\n\n", ocode );
+      free_safe( ocode );
     } else {
-      fprintf( ofile, "FSM input state (%s), output state (%s)\n\n", head->table->from_sig->name, head->table->to_sig->name );
+      icode = codegen_gen_expr( head->table->from_state, -1, SUPPL_OP( head->table->from_state->suppl ) );
+      ocode = codegen_gen_expr( head->table->to_state,   -1, SUPPL_OP( head->table->to_state->suppl   ) );
+      fprintf( ofile, "FSM input state (%s), output state (%s)\n\n", icode, ocode );
+      free_safe( icode );
+      free_safe( ocode );
     }
 
     fsm_display_state_verbose( ofile, head->table );
@@ -736,6 +748,11 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.20  2003/10/03 21:28:43  phase1geo
+ Restructuring FSM handling to be better suited to handle new FSM input/output
+ state variable allowances.  Regression should still pass but new FSM support
+ is not supported.
+
  Revision 1.19  2003/10/03 03:08:44  phase1geo
  Modifying filename in summary output to only specify basename of file instead
  of entire path.  The verbose report contains the full pathname still, however.

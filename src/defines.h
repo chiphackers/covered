@@ -950,6 +950,7 @@ typedef union expr_stmt_u expr_stmt;
 */
 struct expression_s;
 struct signal_s;
+struct fsm_s;
 
 /*!
  Renaming expression structure for convenience.
@@ -961,6 +962,11 @@ typedef struct expression_s expression;
 */
 typedef struct signal_s     signal;
 
+/*!
+ Renaming FSM structure for convenience.
+*/
+typedef struct fsm_s fsm;
+
 struct expression_s {
   vector*     value;       /*!< Current value and toggle information of this expression        */
   control     suppl;       /*!< Vector containing supplemental information for this expression */
@@ -970,6 +976,7 @@ struct expression_s {
   expr_stmt*  parent;      /*!< Parent expression/statement                                    */
   expression* right;       /*!< Pointer to expression on right                                 */
   expression* left;        /*!< Pointer to expression on left                                  */
+  fsm*        table;       /*!< Pointer to FSM table associated with this expression           */
 };
 
 /*------------------------------------------------------------------------------*/
@@ -1082,10 +1089,6 @@ struct stmt_loop_link_s {
 };
 
 /*------------------------------------------------------------------------------*/
-struct fsm_s;
-
-typedef struct fsm_s fsm;
-
 /*!
  Stores all information needed to represent a signal.  If value of value element is non-zero at the
  end of the run, this signal has been simulated.
@@ -1095,7 +1098,6 @@ struct signal_s {
   vector*    value;     /*!< Pointer to vector value of this signal           */
   exp_link*  exp_head;  /*!< Head pointer to list of expressions              */
   exp_link*  exp_tail;  /*!< Tail pointer to list of expressions              */
-  fsm*       table;     /*!< Pointer to FSM table associated with this signal */
 };
 
 /*------------------------------------------------------------------------------*/
@@ -1182,11 +1184,11 @@ struct fsm_arc_s {
 
 /*-------------------------------------------------------------------------------*/
 struct fsm_s {
-  signal*  from_sig;  /*!< Pointer to from_state signal                                                 */
-  signal*  to_sig;    /*!< Pointer to to_state signal                                                   */
-  fsm_arc* arc_head;  /*!< Pointer to head of list of expression pairs that describe the valid FSM arcs */
-  fsm_arc* arc_tail;  /*!< Pointer to tail of list of expression pairs that describe the valid FSM arcs */
-  char*    table;     /*!< FSM arc traversal table                                                      */
+  expression* from_state;  /*!< Pointer to from_state expression                                             */
+  expression* to_state;    /*!< Pointer to to_state expression                                               */
+  fsm_arc*    arc_head;    /*!< Pointer to head of list of expression pairs that describe the valid FSM arcs */
+  fsm_arc*    arc_tail;    /*!< Pointer to tail of list of expression pairs that describe the valid FSM arcs */
+  char*       table;       /*!< FSM arc traversal table                                                      */
 };
 
 /*-------------------------------------------------------------------------------*/
@@ -1419,31 +1421,30 @@ struct timer_s {
 #endif
 
 /*-------------------------------------------------------------------------------*/
-struct fsm_sig_s;
-
-typedef struct fsm_sig_s fsm_sig;
-
-struct fsm_sig_s {
-  char*    name;   /*!< Name of signal used in FSM                            */
-  int      width;  /*!< Bit select width of signal used for FSM               */
-  int      lsb;    /*!< Least significant bit position of signal used for FSM */
-  fsm_sig* next;   /*!< Pointer to next FSM signal in list                    */
-};
-
-/*-------------------------------------------------------------------------------*/
 struct fsm_var_s;
 
 typedef struct fsm_var_s fsm_var;
 
 struct fsm_var_s {
-  char*    mod;        /*!< Name of module to containing FSM variable                    */
-  fsm_sig* ivar_head;  /*!< Pointer to head of input variable signal list within module  */
-  fsm_sig* ivar_tail;  /*!< Pointer to tail of input variable signal list within module  */
-  fsm_sig* ovar_head;  /*!< Pointer to head of output variable signal list within module */
-  fsm_sig* ovar_tail;  /*!< Pointer to tail of output variable signal list within module */
-  signal*  isig;       /*!< Pointer to input signal matching ovar name                   */
-  fsm*     table;      /*!< Pointer to FSM containing signal from ovar                   */
-  fsm_var* next;       /*!< Pointer to next fsm_var element in list                      */
+  char*       mod;    /*!< Name of module to containing FSM variable  */
+  expression* ivar;   /*!< Pointer to input state expression          */
+  expression* ovar;   /*!< Pointer to output state expression         */
+  signal*     iexp;   /*!< Pointer to input signal matching ovar name */
+  fsm*        table;  /*!< Pointer to FSM containing signal from ovar */
+  fsm_var*    next;   /*!< Pointer to next fsm_var element in list    */
+};
+
+/*-------------------------------------------------------------------------------*/
+struct fv_bind_s;
+
+typedef struct fv_bind_s fv_bind;
+
+struct fv_bind_s {
+  char*       sig_name;  /*!< Name of signal to bind to expression              */
+  expression* expr;      /*!< Pointer to expression to bind to signal           */
+  char*       mod_name;  /*!< Name of module to find sig_name and expression    */
+  statement*  stmt;      /*!< Pointer to statement which contains root of expr  */
+  fv_bind*    next;      /*!< Pointer to next FSM variable bind element in list */
 };
 
 /*-------------------------------------------------------------------------------*/
@@ -1456,6 +1457,11 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.81  2003/10/03 21:28:43  phase1geo
+ Restructuring FSM handling to be better suited to handle new FSM input/output
+ state variable allowances.  Regression should still pass but new FSM support
+ is not supported.
+
  Revision 1.80  2003/09/22 19:42:31  phase1geo
  Adding print_output WARNING_WRAP and FATAL_WRAP lines to allow multi-line
  error output to be properly formatted to the output stream.

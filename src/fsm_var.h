@@ -12,22 +12,16 @@
 
 
 /*! \brief Allocates, initializes and adds FSM variable to global list. */
-fsm_var* fsm_var_add( char* mod );
+fsm_var* fsm_var_add( char* mod, expression* in_state, expression* out_state );
 
-/*! \brief Adds specified signal information to FSM variable input list. */
-void fsm_var_add_in_sig( fsm_var* fv, char* name, int width, int lsb );
+/*! \brief Adds specified signal and expression to binding list. */
+void fsm_var_bind_add( char* sig_name, expression* expr, char* mod_name );
 
-/*! \brief Adds specified signal information to FSM variable output list. */
-void fsm_var_add_out_sig( fsm_var* fv, char* name, int width, int lsb );
+/*! \brief Add specified module and statement to binding list. */
+void fsm_var_stmt_add( statement* stmt, char* mod_name );
 
-/*! \brief Finds specified variable in input FSM signal list. */
-fsm_var* fsm_var_find_in_var( char* mod, char* var );
-
-/*! \brief Finds specified variable in output FSM signal list. */
-fsm_var* fsm_var_find_out_var( char* mod, char* var );
-
-/*! \brief Outputs all FSM variables that were unused during parsing. */
-void fsm_var_check_for_unused();
+/*! \brief Performs FSM signal/expression binding process. */
+void fsm_var_bind( mod_link* mod_head );
 
 /*! \brief Removes specified FSM variable from global FSM variable list. */
 void fsm_var_remove( fsm_var* fv );
@@ -35,6 +29,11 @@ void fsm_var_remove( fsm_var* fv );
 
 /*
  $Log$
+ Revision 1.1  2003/10/03 21:28:43  phase1geo
+ Restructuring FSM handling to be better suited to handle new FSM input/output
+ state variable allowances.  Regression should still pass but new FSM support
+ is not supported.
+
 */
 
 #endif

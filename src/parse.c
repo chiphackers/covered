@@ -14,6 +14,7 @@
 #include "db.h"
 #include "binding.h"
 #include "vcd.h"
+#include "fsm_var.h"
 
 extern void reset_lexer( str_link* file_list_head );
 extern int VLparse();
@@ -22,7 +23,7 @@ extern str_link* use_files_head;
 
 extern str_link* modlist_head;
 extern str_link* modlist_tail;
-
+extern mod_link* mod_head;
 extern char user_msg[USER_MSG_LENGTH];
 extern int  error_count;
 extern bool flag_scored;
@@ -87,7 +88,9 @@ bool parse_design( char* top, char* output_db ) {
 
     print_output( "========  Completed design parsing  ========\n", DEBUG );
 
+    /* Perform all signal/expression binding */
     bind();
+    fsm_var_bind( mod_head );
   
   } else {
 
@@ -167,6 +170,11 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
 
 /*
  $Log$
+ Revision 1.20  2003/08/10 03:50:10  phase1geo
+ More development documentation updates.  All global variables are now
+ documented correctly.  Also fixed some generated documentation warnings.
+ Removed some unnecessary global variables.
+
  Revision 1.19  2003/08/10 00:05:16  phase1geo
  Fixing bug with posedge, negedge and anyedge expressions such that these expressions
  must be armed before they are able to be evaluated.  Fixing bug in vector compare function

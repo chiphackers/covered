@@ -44,7 +44,7 @@ void signal_add_expression( signal* sig, expression* expr );
 void signal_display( signal* sig );
 
 /*! \brief Converts a string to a signal. */
-signal* signal_from_string( char* str );
+signal* signal_from_string( char** str );
 
 /*! \brief Deallocates the memory used for this signal. */
 void signal_dealloc( signal* sig );
@@ -52,6 +52,9 @@ void signal_dealloc( signal* sig );
 
 /*
  $Log$
+ Revision 1.13  2003/10/02 12:30:56  phase1geo
+ Initial code modifications to handle more robust FSM cases.
+
  Revision 1.12  2003/08/15 03:52:22  phase1geo
  More checkins of last checkin and adding some missing files.
 

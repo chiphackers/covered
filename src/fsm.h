@@ -12,23 +12,8 @@
 
 #include "defines.h"
 
-/*! \brief Adds specified module and variable to the FSM variable list. */
-void fsm_add_fsm_variable( char* mod, char* var1, char* var2 );
-
-/*! \brief Returns TRUE if specified module and variable are a user-specified FSM input variable. */
-fsm_var* fsm_is_fsm_in_variable( char* mod, char* var );
-
-/*! \brief Returns TRUE if specified module and variable are a user-specified FSM output variable. */
-fsm_var* fsm_is_fsm_out_variable( char* mod, char* var );
-
-/*! \brief Outputs as a warning all FSM variables not found during the parsing phase. */
-void fsm_check_for_unused_vars();
-
-/*! \brief Removes matching FSM variable structure from global list. */
-void fsm_var_remove( fsm_var* fv );
-
 /*! \brief Creates and initializes new FSM structure. */
-fsm* fsm_create( signal* sig );
+fsm* fsm_create( expression* from_state, expression* to_state );
 
 /*! \brief Adds new FSM arc structure to specified FSMs arc list. */
 void fsm_add_arc( fsm* table, expression* from_state, expression* to_state );
@@ -59,6 +44,10 @@ void fsm_dealloc( fsm* table );
 
 /*
  $Log$
+ Revision 1.9  2003/09/22 03:46:24  phase1geo
+ Adding support for single state variable FSMs.  Allow two different ways to
+ specify FSMs on command-line.  Added diagnostics to verify new functionality.
+
  Revision 1.8  2003/09/12 04:47:00  phase1geo
  More fixes for new FSM arc transition protocol.  Everything seems to work now
  except that state hits are not being counted correctly.
