@@ -2,6 +2,9 @@
  \file     vector.c
  \author   Trevor Williams  (trevorw@charter.net)
  \date     12/1/2001
+ 
+ \par
+ A vector comprised of three components
 */
 
 #include <stdio.h>
@@ -557,6 +560,7 @@ void vector_set_value( vector* vec, nibble* value, int width, int from_idx, int 
   assert( vec != NULL );
 
   /* Verify that index is within range */
+  // printf( "to_idx: %d, vec->width: %d, vec->lsb: %d\n", to_idx, vec->width, vec->lsb );
   assert( to_idx < (vec->width + vec->lsb) );
   assert( to_idx >= 0 );
 
@@ -1438,6 +1442,10 @@ void vector_dealloc( vector* vec ) {
 }
 
 /* $Log$
+/* Revision 1.21  2002/10/11 05:23:21  phase1geo
+/* Removing local user message allocation and replacing with global to help
+/* with memory efficiency.
+/*
 /* Revision 1.20  2002/10/11 04:24:02  phase1geo
 /* This checkin represents some major code renovation in the score command to
 /* fully accommodate parameter support.  All parameter support is in at this

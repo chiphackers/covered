@@ -2,6 +2,43 @@
  \file     expr.c
  \author   Trevor Williams  (trevorw@charter.net)
  \date     12/1/2001
+ 
+ \par Expressions
+ The following are special expressions that are handled differently than standard
+ unary (i.e., ~a) and dual operators (i.e., a & b).  These expressions are documented
+ to help remove confusion (my own) about how they are implemented by Covered and
+ handled during the parsing and scoring phases of the tool.
+ 
+ \par \sub EXP_OP_SIG
+ A signal expression has no left or right child (they are both NULL).  Its vector
+ value is a pointer to the signal vector value to which is belongs.  This allows
+ the signal expression value to change automatically when the signal value is
+ updated.  No further expression operation is necessary to calculate its value.
+ 
+ \par \sub EXP_OP_SBIT_SEL
+ A single-bit signal expression has its left child pointed to the expression tree
+ that is required to select the bit from the specified signal value.  The left
+ child is allowed to change values during simulation.  To verify that the current
+ bit select has not exceeded the ranges of the signal, the signal pointer value
+ in the expression structure is used to reference the signal.  The LSB and width
+ values from the actual signal can then be used to verify that we are still
+ within range.  If we are found to be out of range, a value of X must be assigned
+ the the SBIT_SEL expression.  The width of an SBIT_SEL is always constant (1).  The
+ LSB of the SBIT_SEL is manipulated by the left expression value.
+ 
+ \par \sub EXP_OP_MBIT_SEL
+ A multi-bit signal expression has its left child set to the expression tree on the
+ left side of the ':' in the vector and the right child set to the expression tree on
+ the right side of the ':' in the vector.  The width of the MBIT_SEL must be constant
+ but is related to the difference between the left and right child values; therefore,
+ it is required that the left and right child values be constant expressions (consisting
+ of only expressions, parameters, and static values).  The width of the MBIT_SEL
+ expression is calculated after reading in the MBIT_SEL expression from the CDD file.
+ If the left or right child expressions are found to not be constant, an error is
+ signaled to the user immediately.  The LSB is also calculated to be the lesser of the
+ two child values.  The width and lsb are assigned to the MBIT_SEL expression vector
+ immediately.  In the case of MBIT_SEL, the LSB is also constant.  Vector direction
+ is currently not considered at this point.
 */
 
 #include <stdio.h>
@@ -186,13 +223,14 @@ expression* expression_create( expression* right, expression* left, int op, int 
 */
 void expression_set_value( expression* exp, vector* vec ) {
   
-  int lwidth;           /* Width of left child                                */
-  int rwidth;           /* Width of right child                               */
-  expression* tmp_exp;  /* Temporary expression pointer for swapping children */
+  int lbit;  /* Bit boundary specified by left child  */
+  int rbit;  /* Bit boundary specified by right child */
   
   assert( exp != NULL );
   assert( exp->value != NULL );
   assert( vec != NULL );
+  
+  // printf( "In expression_set_value, exp_id: %d\n", exp->id );
   
   switch( SUPPL_OP( exp->suppl ) ) {
     case EXP_OP_SIG   :
@@ -205,32 +243,32 @@ void expression_set_value( expression* exp, vector* vec ) {
     case EXP_OP_PARAM_SBIT :
       exp->value->value = vec->value;
       exp->value->width = 1;
-      exp->suppl        = exp->suppl | ((vec->lsb & 0xffff) << SUPPL_LSB_SIG_LSB);
       break;
     case EXP_OP_MBIT_SEL   :
     case EXP_OP_PARAM_MBIT :
       expression_operate_recursively( exp->left  );
       expression_operate_recursively( exp->right );
-      lwidth = vector_to_int( exp->left->value  );
-      rwidth = vector_to_int( exp->right->value );
-      if( lwidth <= rwidth ) {
-        exp->value->width = ((rwidth - lwidth) + 1);
-        // printf( "Setting width of expr %d, lwidth: %d, rwidth: %d\n", exp->id, lwidth, rwidth );
+      lbit = vector_to_int( exp->left->value  );
+      rbit = vector_to_int( exp->right->value );
+      if( lbit <= rbit ) {
+        exp->value->width = ((rbit - lbit) + 1);
+        if( SUPPL_OP( exp->suppl ) == EXP_OP_PARAM_MBIT ) {
+          exp->value->lsb = lbit;
+        } else {
+          exp->value->lsb = lbit - exp->sig->value->lsb;
+        }
       } else {
-        exp->value->width = ((lwidth - rwidth) + 1);
-        // printf( "Swapping children in expr %d, lwidth: %d, rwidth: %d\n", exp->id, lwidth, rwidth );
-        /* Need to swap left and right children for proper operation */
-        tmp_exp = exp->left;
-        exp->left = exp->right;
-        exp->right = tmp_exp;
-        /* Indicate that value has been swapped in supplemental field */
-        exp->suppl = exp->suppl | (0x1 << SUPPL_LSB_SWAPPED);
+        exp->value->width = ((lbit - rbit) + 1);
+        if( SUPPL_OP( exp->suppl ) == EXP_OP_PARAM_MBIT ) {
+          exp->value->lsb = rbit;
+        } else {
+          exp->value->lsb = rbit - exp->sig->value->lsb;
+        }
       }
       assert( exp->value->width <= vec->width );
       assert( exp->value->value == NULL );
       assert( vec->value != NULL );
       exp->value->value = vec->value;
-      exp->suppl        = exp->suppl | ((vec->lsb & 0xffff) << SUPPL_LSB_SIG_LSB);
       break;
     default :  break;
   }
@@ -468,7 +506,13 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
       }
 
       /* Create new expression */
-      expr        = expression_create( right, left, SUPPL_OP( suppl ), id, linenum, TRUE );
+      expr = expression_create( right, left, SUPPL_OP( suppl ), id, linenum,
+                                ((SUPPL_OP( suppl ) != EXP_OP_SIG)        && 
+                                 (SUPPL_OP( suppl ) != EXP_OP_PARAM)      &&
+                                 (SUPPL_OP( suppl ) != EXP_OP_SBIT_SEL)   &&
+                                 (SUPPL_OP( suppl ) != EXP_OP_PARAM_SBIT) &&
+                                 (SUPPL_OP( suppl ) != EXP_OP_MBIT_SEL)   &&
+                                 (SUPPL_OP( suppl ) != EXP_OP_PARAM_MBIT)) );
       expr->suppl = suppl;
 
       if( right != NULL ) {
@@ -837,36 +881,21 @@ void expression_operate( expression* expr ) {
 
       case EXP_OP_SBIT_SEL   :
       case EXP_OP_PARAM_SBIT :
-      case EXP_OP_MBIT_SEL   :
-      case EXP_OP_PARAM_MBIT :
         vector_init( &vec1, &value1a, 1, 0 );
         vector_unary_op( &vec1, expr->left->value, or_optab );
         if( (vec1.value[0] & 0x3) != 2 ) {
-          expr->value->lsb = vector_to_int( expr->left->value ) - ((expr->suppl >> SUPPL_LSB_SIG_LSB) & 0xffff);
-          // vector_set_value( expr->value, expr->right->value->value, 1, vector_to_int( expr->left->value ) - expr->right->value->lsb, 0 );
+          expr->value->lsb = vector_to_int( expr->left->value ) - expr->sig->value->lsb;
+          if( expr->value->lsb >= expr->sig->value->width ) {
+            expr->value->lsb = -1;
+          }
         } else {
-          /* Indicate that the value of the LSB could not be calculated -- unknowns exist */
-          // What to do???
+          expr->value->lsb = -1;
         }
         break;
 
-#ifdef DEPRECATED
       case EXP_OP_MBIT_SEL   :
       case EXP_OP_PARAM_MBIT :
-        vector_init( &vec1, &value1a, 1, 0 );
-        vector_init( &vec2, &value1b, 1, 0 );
-        vector_unary_op( &vec1, expr->right->value, or_optab );
-        vector_unary_op( &vec2, expr->left->value,  or_optab );
-        if( ((vec1.value[0] & 0x3) != 2) && ((vec2.value[0] & 0x3) != 2) ) {
-          expr->value->lsb   = vector_to_int( expr->right->value ) - ((expr->suppl >> SUPPL_LSB_SIG_LSB) & 0xffff);
-          expr->value->width = vector_to_int( expr->left->value ) - vector_to_int( expr->right->value ) + 1;
-        } else {
-          /* Indicate that the value of the LSB and width could not be calculated */
-          expr->value->lsb   = -1;
-          expr->value->width = -1;
-        }
-        break;
-#endif
+          break;
 
       case EXP_OP_EXPAND :
         for( j=0; j<expr->right->value->width; j++ ) {
@@ -1117,6 +1146,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.54  2002/10/23 03:39:07  phase1geo
+/* Fixing bug in MBIT_SEL expressions to calculate the expression widths
+/* correctly.  Updated diagnostic testsuite and added diagnostic that
+/* found the original bug.  A few documentation updates.
+/*
 /* Revision 1.53  2002/10/11 05:23:21  phase1geo
 /* Removing local user message allocation and replacing with global to help
 /* with memory efficiency.

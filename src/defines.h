@@ -291,13 +291,6 @@
 #define SUPPL_LSB_RIGHT_CHANGED     15
 
 /*!
- Least-significant bit position of expression supplemental field for the LSB of the
- signal that this expression is encompassing.  Only valid if the expression operation
- type is SBIT_SEL or MBIT_SEL.
-*/
-#define SUPPL_LSB_SIG_LSB           16
-
-/*!
  Used for merging two supplemental fields from two expressions.  Both expression
  supplemental fields are ANDed with this mask and ORed together to perform the
  merge.  Fields that are merged are:
@@ -619,13 +612,16 @@
                                    (((x->right != NULL) && (SUPPL_OP( x->right->suppl ) == EXP_OP_STATIC))          || \
                                     ((x->right != NULL) && (SUPPL_WAS_EXECUTED( x->right->suppl ) == 1)) || \
                                     (x->right == NULL))                                                               && \
-                                   (SUPPL_OP( x->suppl ) != EXP_OP_COND_SEL) && \
-                                   (SUPPL_OP( x->suppl ) != EXP_OP_SBIT_SEL) && \
-                                   (SUPPL_OP( x->suppl ) != EXP_OP_MBIT_SEL) && \
-                                   (SUPPL_OP( x->suppl ) != EXP_OP_STATIC)   && \
-                                   (SUPPL_OP( x->suppl ) != EXP_OP_SIG)      && \
-                                   (SUPPL_OP( x->suppl ) != EXP_OP_LAST)     && \
-                                   (SUPPL_OP( x->suppl ) != EXP_OP_DEFAULT)  && \
+                                   (SUPPL_OP( x->suppl ) != EXP_OP_COND_SEL)   && \
+                                   (SUPPL_OP( x->suppl ) != EXP_OP_SBIT_SEL)   && \
+                                   (SUPPL_OP( x->suppl ) != EXP_OP_MBIT_SEL)   && \
+                                   (SUPPL_OP( x->suppl ) != EXP_OP_PARAM)      && \
+                                   (SUPPL_OP( x->suppl ) != EXP_OP_PARAM_SBIT) && \
+                                   (SUPPL_OP( x->suppl ) != EXP_OP_PARAM_MBIT) && \
+                                   (SUPPL_OP( x->suppl ) != EXP_OP_STATIC)     && \
+                                   (SUPPL_OP( x->suppl ) != EXP_OP_SIG)        && \
+                                   (SUPPL_OP( x->suppl ) != EXP_OP_LAST)       && \
+                                   (SUPPL_OP( x->suppl ) != EXP_OP_DEFAULT)    && \
                                    (SUPPL_OP( x->suppl ) != EXP_OP_DELAY)) ? 1 : 0)
 
 /*!
@@ -720,6 +716,10 @@ typedef unsigned long nibble;
 #endif
 #endif
 
+#if SIZEOF_SHORT == 2
+typedef unsigned short control;
+#endif
+
 //------------------------------------------------------------------------------
 /*!
  Specifies an element in a linked list containing string values.  This data
@@ -774,7 +774,7 @@ typedef struct signal_s     signal;
 
 struct expression_s {
   vector*     value;       /*!< Current value and toggle information of this expression        */
-  nibble      suppl;       /*!< Vector containing supplemental information for this expression */
+  control     suppl;       /*!< Vector containing supplemental information for this expression */
   int         id;          /*!< Specifies unique ID for this expression in the parent          */
   int         line;        /*!< Specified line in file that this expression is found on        */
   signal*     sig;         /*!< Pointer to signal.  If NULL then no signal is attached         */
@@ -1063,6 +1063,11 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.51  2002/10/23 03:39:06  phase1geo
+/* Fixing bug in MBIT_SEL expressions to calculate the expression widths
+/* correctly.  Updated diagnostic testsuite and added diagnostic that
+/* found the original bug.  A few documentation updates.
+/*
 /* Revision 1.50  2002/10/13 19:20:42  phase1geo
 /* Added -T option to score command for properly handling min:typ:max delay expressions.
 /* Updated documentation for -i and -T options to score command and added additional

@@ -922,57 +922,19 @@ expr_primary
     }
   | identifier '[' expression K_PO_POS static_expr ']'
     {
-      expression* tmp1;
-      expression* tmp2;
-      vector*     vec;
-      if( ignore_mode == 0 ) {
-        vec  = vector_create( 32, 0, TRUE );
-        tmp1 = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
-        vector_from_int( vec, 1 );
-        assert( tmp1->value->value == NULL ); 
-        free_safe( tmp1->value );
-        tmp1->value = vec;
-        tmp2 = db_create_expression( tmp1, $3, EXP_OP_MBIT_SEL, @1.first_line, $1 );
-        assert( $5 != NULL );
-        tmp2->value->lsb = 0;
-        if( $5->exp == NULL ) {
-          tmp2->value->width = $5->num;
-          tmp2->value->value = NULL;
-        } else {
-          db_add_vector_param( NULL, tmp2, $5->exp, PARAM_TYPE_EXP_MSB );
-        }
-        static_expr_dealloc( $5, FALSE );
-        $$ = tmp2;
-      } else {
-        $$ = NULL;
-      }
+      snprintf( user_msg, USER_MSG_LENGTH, "K_PO_POS expressions not supported at this time, line: %d", @1.first_line );
+      print_output( user_msg, WARNING );
+      expression_dealloc( $3, FALSE );
+      static_expr_dealloc( $5, TRUE );
+      free_safe( $1 );
     }
   | identifier '[' expression K_PO_NEG static_expr ']'
     {
-      expression* tmp1;
-      expression* tmp2;
-      vector*     vec;
-      if( ignore_mode == 0 ) {
-        vec  = vector_create( 32, 0, TRUE );
-        tmp1 = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
-        vector_from_int( vec, 1 );
-        assert( tmp1->value->value == NULL ); 
-        free_safe( tmp1->value );
-        tmp1->value = vec;
-        tmp2 = db_create_expression( tmp1, $3, EXP_OP_MBIT_SEL, @1.first_line, $1 );
-        assert( $5 != NULL );
-        tmp2->value->lsb = 0;
-        if( $5->exp == NULL ) {
-          tmp2->value->width = $5->num;
-          tmp2->value->value = NULL;
-        } else {
-          db_add_vector_param( NULL, tmp2, $5->exp, PARAM_TYPE_EXP_MSB );
-        }
-        static_expr_dealloc( $5, FALSE );
-        $$ = tmp2;
-      } else {
-        $$ = NULL;
-      }
+      snprintf( user_msg, USER_MSG_LENGTH, "K_PO_POS expressions not supported at this time, line: %d", @1.first_line );
+      print_output( user_msg, WARNING );
+      expression_dealloc( $3, FALSE );
+      static_expr_dealloc( $5, TRUE );
+      free_safe( $1 );
     }
   | identifier '(' expression_list ')'
     {

@@ -161,43 +161,22 @@ bool signal_db_read( char** line, module* curr_mod ) {
         *line = *line + chars_read;
 
         /* Find expression in current module and add it to signal list */
-	texp.id = exp_id;
+        texp.id = exp_id;
 
         if( (expl = exp_link_find( &texp, curr_mod->exp_head )) != NULL ) {
 
-	  exp_link_add( expl->exp, &(sig->exp_head), &(sig->exp_tail) );
-
-	  /* 
-	   If expression is a signal holder, we need to set the expression's vector to point
-	   to our vector and set its signal pointer to point to us.
-	  */
-          switch( SUPPL_OP( expl->exp->suppl ) ) {
-
-            case EXP_OP_SIG   :
-            case EXP_OP_PARAM :
-              expl->exp->value->value = sig->value->value;
-              expl->exp->value->width = sig->value->width;
-              expl->exp->value->lsb   = 0;
-              expl->exp->sig          = sig;
-              break;
-
-            case EXP_OP_SBIT_SEL   :
-            case EXP_OP_PARAM_SBIT :
-              expl->exp->value->value = sig->value->value;
-              expl->exp->value->width = 1;
-              expl->exp->suppl        = expl->exp->suppl | ((sig->value->lsb & 0xffff) << SUPPL_LSB_SIG_LSB);
-              expl->exp->sig          = sig;
-              break;
-
-            case EXP_OP_MBIT_SEL   :
-            case EXP_OP_PARAM_MBIT :
-              expl->exp->value->value = sig->value->value;
-              expl->exp->suppl        = expl->exp->suppl | ((sig->value->lsb & 0xffff) << SUPPL_LSB_SIG_LSB);
-              expl->exp->sig          = sig;
-              break;
-
-            default :  break;
-
+          exp_link_add( expl->exp, &(sig->exp_head), &(sig->exp_tail) );
+          
+          expl->exp->sig = sig;
+          
+          /*
+           If expression is a signal holder, we need to set the expression's vector to point
+           to our vector and set its signal pointer to point to us.
+          */
+          if( (SUPPL_OP( expl->exp->suppl ) == EXP_OP_SIG) ||
+              (SUPPL_OP( expl->exp->suppl ) == EXP_OP_SBIT_SEL) ||
+              (SUPPL_OP( expl->exp->suppl ) == EXP_OP_MBIT_SEL) ) {
+            expression_set_value( expl->exp, sig->value );
           }
 
         } else {
@@ -375,6 +354,10 @@ void signal_dealloc( signal* sig ) {
 }
 
 /* $Log$
+/* Revision 1.20  2002/10/11 05:23:21  phase1geo
+/* Removing local user message allocation and replacing with global to help
+/* with memory efficiency.
+/*
 /* Revision 1.19  2002/10/11 04:24:02  phase1geo
 /* This checkin represents some major code renovation in the score command to
 /* fully accommodate parameter support.  All parameter support is in at this
