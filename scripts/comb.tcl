@@ -55,7 +55,7 @@ proc display_comb_info {} {
   .combwin.f.t tag delete comb_enter
   .combwin.f.t tag delete comb_leave
   .combwin.f.t tag delete comb_bp1
-  .combwin.f.t tag delete comb_bp2
+  .combwin.f.t tag delete comb_bp3
 
   # Allow us to clear out text box and repopulate
   .combwin.f.t configure -state normal
@@ -91,7 +91,7 @@ proc display_comb_info {} {
     eval ".combwin.f.t tag add comb_enter $comb_uline_indexes"
     eval ".combwin.f.t tag add comb_leave $comb_uline_indexes"
     eval ".combwin.f.t tag add comb_bp1 $comb_uline_indexes"
-    eval ".combwin.f.t tag add comb_bp2 $comb_uline_indexes"
+    eval ".combwin.f.t tag add comb_bp3 $comb_uline_indexes"
     .combwin.f.t tag configure comb_bp1 -foreground $uncov_fgColor
     .combwin.f.t tag bind comb_enter <Enter> {
       set comb_curr_cursor [.combwin.f.t cget -cursor]
@@ -103,7 +103,7 @@ proc display_comb_info {} {
     .combwin.f.t tag bind comb_bp1 <ButtonPress-1> {
       .combwin.f.t configure -cursor $comb_curr_cursor
       set selected_range [.combwin.f.t tag prevrange comb_bp1 {current + 1 chars}]
-      set redraw [move_display_down [get_expr_index_from_range $selected_range]]
+      set redraw [move_display_down [get_expr_index_from_range $selected_range 1]]
       if {$redraw == 1} {
         set text_x [.combwin.f.t xview]
         set text_y [.combwin.f.t yview]
@@ -112,10 +112,10 @@ proc display_comb_info {} {
         .combwin.f.t yview moveto [lindex $text_y 0]
       } 
     }
-    .combwin.f.t tag bind comb_bp2 <ButtonPress-2> {
+    .combwin.f.t tag bind comb_bp3 <ButtonPress-3> {
       .combwin.f.t configure -cursor $comb_curr_cursor
-      set selected_range [.combwin.f.t tag prevrange comb_bp2 {current + 1 chars}]
-      set redraw [move_display_up [get_expr_index_from_range $selected_range]]
+      set selected_range [.combwin.f.t tag prevrange comb_bp3 {current + 1 chars}]
+      set redraw [move_display_up [get_expr_index_from_range $selected_range 0]]
       if {$redraw == 1} {
         set text_x [.combwin.f.t xview]
         set text_y [.combwin.f.t yview]
@@ -153,7 +153,7 @@ proc display_comb_coverage {ulid} {
 
 }
 
-proc get_expr_index_from_range {selected_range} {
+proc get_expr_index_from_range {selected_range get_uline_id} {
 
   global comb_uline_exprs comb_curr_uline_id
   global curr_mod_name
@@ -196,17 +196,21 @@ proc get_expr_index_from_range {selected_range} {
 
   if {$found == 1} {
 
-    # Get current expression underline ID for lookup purposes
-    set comb_curr_uline_id [lindex $curr_expr 2]
+    if {$get_uline_id == 1} {
 
-    # Output current expression in information bar
-    if {$comb_curr_uline_id != 0} {
+      # Get current expression underline ID for lookup purposes
+      set comb_curr_uline_id [lindex $curr_expr 2]
 
-      # Display information in textbox
-      display_comb_coverage $comb_curr_uline_id
+      # Output current expression in information bar
+      if {$comb_curr_uline_id != 0} {
 
-      # Place information into infobar
-      .combwin.f.info configure -text "Current Expression: $comb_curr_uline_id"
+        # Display information in textbox
+        display_comb_coverage $comb_curr_uline_id
+
+        # Place information into infobar
+        .combwin.f.info configure -text "Current Expression: $comb_curr_uline_id"
+
+      }
 
     }
 
@@ -470,7 +474,7 @@ proc create_comb_window {mod_name expr_id} {
 
     # Add expression coverage information
     label .combwin.f.l1 -anchor w -text "Coverage Information:  ('*' represents a case that was not hit)"
-    text  .combwin.f.tc -height 20 -width 100 -xscrollcommand ".combwin.f.chb set" -yscrollcommand ".combwin.f.cvb set" -wrap none -state disabled
+    text  .combwin.f.tc -height 10 -width 100 -xscrollcommand ".combwin.f.chb set" -yscrollcommand ".combwin.f.cvb set" -wrap none -state disabled
     scrollbar .combwin.f.chb -orient horizontal -command ".combwin.f.tc xview"
     scrollbar .combwin.f.cvb -orient vertical   -command ".combwin.f.tc yview"
 

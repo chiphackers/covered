@@ -404,18 +404,43 @@ proc display_comb_cov {} {
 
       # Finally, set combinational logic information
       if {[expr $uncov_type == 1] && [expr [llength $uncovered_combs] > 0]} {
-        set cmd_enter  ".bot.txt tag add uncov_enter"
-        set cmd_button ".bot.txt tag add uncov_button"
-        set cmd_leave  ".bot.txt tag add uncov_leave"
+        set cmd_enter     ".bot.txt tag add uncov_enter"
+        set cmd_button    ".bot.txt tag add uncov_button"
+        set cmd_leave     ".bot.txt tag add uncov_leave"
+        set cmd_highlight ".bot.txt tag add uncov_highlight"
         foreach entry $uncovered_combs {
-          set cmd_enter  [concat $cmd_enter  [lindex $entry 0] [lindex $entry 1]]
-          set cmd_button [concat $cmd_button [lindex $entry 0] [lindex $entry 1]]
-          set cmd_leave  [concat $cmd_leave  [lindex $entry 0] [lindex $entry 1]]
+          set cmd_highlight [concat $cmd_highlight [lindex $entry 0] [lindex $entry 1]]
+          set start_line    [lindex [split [lindex $entry 0] .] 0]
+          set end_line      [lindex [split [lindex $entry 1] .] 0]
+          if {$start_line != $end_line} {
+            set cmd_enter  [concat $cmd_enter  [lindex $entry 0] "$start_line.end"]
+            set cmd_button [concat $cmd_button [lindex $entry 0] "$start_line.end"]
+            set cmd_leave  [concat $cmd_leave  [lindex $entry 0] "$start_line.end"]
+            for {set i [expr $start_line + 1]} {$i <= $end_line} {incr i} {
+              set line       [.bot.txt get "$i.7" end]
+              set line_diff  [expr [expr [string length $line] - [string length [string trimleft $line]]] + 7]
+              if {$i == $end_line} {
+                set cmd_enter  [concat $cmd_enter  "$i.$line_diff" [lindex $entry 1]]
+                set cmd_button [concat $cmd_button "$i.$line_diff" [lindex $entry 1]]
+                set cmd_leave  [concat $cmd_leave  "$i.$line_diff" [lindex $entry 1]]
+              } else {
+                set cmd_enter  [concat $cmd_enter  "$i.$line_diff" "$i.end"]
+                set cmd_button [concat $cmd_button "$i.$line_diff" "$i.end"]
+                set cmd_leave  [concat $cmd_leave  "$i.$line_diff" "$i.end"]
+              }
+            }
+          } else {
+            set_cmd_enter  [concat $cmd_enter  [lindex $entry 0] [lindex $entry 1]]
+            set_cmd_button [concat $cmd_button [lindex $entry 0] [lindex $entry 1]]
+            set_cmd_leave  [concat $cmd_leave  [lindex $entry 0] [lindex $entry 1]]
+          }
         }
         eval $cmd_enter
         eval $cmd_button
         eval $cmd_leave
-        .bot.txt tag configure uncov_button -underline true -foreground $uncov_fgColor -background $uncov_bgColor
+        eval $cmd_highlight
+        .bot.txt tag configure uncov_highlight -foreground $uncov_fgColor -background $uncov_bgColor
+        .bot.txt tag configure uncov_button -underline true
         .bot.txt tag bind uncov_enter <Enter> {
           set curr_cursor [.bot.txt cget -cursor]
           .bot.txt configure -cursor hand2
@@ -424,8 +449,8 @@ proc display_comb_cov {} {
           .bot.txt configure -cursor $curr_cursor
         }
         .bot.txt tag bind uncov_button <ButtonPress-1> {
-          set all_ranges [.bot.txt tag ranges uncov_button]
-          set my_range   [.bot.txt tag prevrange uncov_button {current + 1 chars}]
+          set all_ranges [.bot.txt tag ranges uncov_highlight]
+          set my_range   [.bot.txt tag prevrange uncov_highlight {current + 1 chars}]
           set index [expr [lsearch -exact $all_ranges [lindex $my_range 0]] / 2]
           set expr_id [lindex [lindex $uncovered_combs $index] 2]
           create_comb_window $curr_mod_name $expr_id
