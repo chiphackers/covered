@@ -26,12 +26,9 @@ extern YYLTYPE yylloc;
 
 extern str_link* inc_paths_head;
 
-extern int ignore_mode;
+extern int  ignore_mode;
+extern char user_msg[USER_MSG_LENGTH];
 
-/*!
- Contains error message if something wrong is found.
-*/
-static char error_msg[500];
 
 /*!
  Contains state before entering comment block.
@@ -176,8 +173,8 @@ WSPACE [ \t\b\f]+
          } else {
            if( filelist_curr != filelist_head ) {
              /* The module has been found, recirculate filelist */
-             snprintf( msg, 4096, "Parsing file %s", istack->path );
-             print_output( msg, NORMAL );
+             snprintf( user_msg, USER_MSG_LENGTH, "Parsing file %s", istack->path );
+             print_output( user_msg, NORMAL );
              filelist_curr = filelist_head;
            }
            last_keyword = 0;
@@ -398,8 +395,8 @@ WSPACE [ \t\b\f]+
  }
 
 <INCLUDE>.          {
-     snprintf( error_msg, 1000, "malformed `include directive, line %d, \"%s\"", yylloc.first_line, istack->path );
-     print_output( error_msg, FATAL );
+     snprintf( user_msg, USER_MSG_LENGTH, "malformed `include directive, line %d, \"%s\"", yylloc.first_line, istack->path );
+     print_output( user_msg, FATAL );
      BEGIN( ERROR_LINE );
  }
 
@@ -578,8 +575,8 @@ static void def_match() {
 
   } else {
 
-    snprintf( error_msg, 1000, "macro %s undefined (and assumed null) at this point, line %d, \"%s\"", yytext, yylloc.first_line, istack->path );
-    print_output( error_msg, WARNING );
+    snprintf( user_msg, USER_MSG_LENGTH, "macro %s undefined (and assumed null) at this point, line %d, \"%s\"", yytext, yylloc.first_line, istack->path );
+    print_output( user_msg, WARNING );
 
   }
 
@@ -872,15 +869,14 @@ static void do_include() {
 
   char      path[4096];  /* Full pathname to include file           */
   str_link* curr;        /* Pointer to current include file element */
-  char      msg[4096];   /* Error message to user                   */
 
   if( standby->path[0] == '/') {
 
     standby->file = fopen(standby->path, "r");
 
     if( standby->file == 0 ) {
-      snprintf( msg, 4096, "Unable to open `include file \"%s\"", standby->path );
-      print_output( msg, FATAL );
+      snprintf( user_msg, USER_MSG_LENGTH, "Unable to open `include file \"%s\"", standby->path );
+      print_output( user_msg, FATAL );
     }
 
   } else {
@@ -897,8 +893,8 @@ static void do_include() {
     }
 
     if( (curr == NULL) && (standby->file == 0) ) {
-      snprintf( msg, 4096, "Unable to find `include file \"%s\" in include path", standby->path );
-      print_output( msg, FATAL );
+      snprintf( user_msg, USER_MSG_LENGTH, "Unable to find `include file \"%s\" in include path", standby->path );
+      print_output( user_msg, FATAL );
       exit( 1 );
     }
 
@@ -913,8 +909,8 @@ static void do_include() {
   standby           = 0;
   yylloc.first_line = 1;
 
-  snprintf( msg, 4096, "Parsing include file \"%s\"", path );
-  print_output( msg, NORMAL );
+  snprintf( user_msg, USER_MSG_LENGTH, "Parsing include file \"%s\"", path );
+  print_output( user_msg, NORMAL );
 
   yy_switch_to_buffer( yy_new_buffer( istack->file, YY_BUF_SIZE ) );
 
@@ -929,7 +925,6 @@ static int yywrap() {
 
   struct include_stack_t* isp = istack;
   str_link*               curr;
-  char                    msg[4096];       /* Message to user */
 
   istack = isp->next;
 
@@ -990,8 +985,8 @@ static int yywrap() {
   }
 
   /* Otherwise, resume the input buffer that is the new stack top. */
-  snprintf( msg, 4096, "Resume parsing %s", istack->path );
-  print_output( msg, NORMAL );
+  snprintf( user_msg, USER_MSG_LENGTH, "Resume parsing %s", istack->path );
+  print_output( user_msg, NORMAL );
   yy_switch_to_buffer( istack->yybs );
   yylloc.first_line = istack->lineno;
 

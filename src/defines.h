@@ -31,6 +31,11 @@
 #define INTEGER_WIDTH	   (SIZEOF_INT * 8)
 
 /*!
+ Length of user_msg global string (used for inputs to snprintf calls).
+*/
+#define USER_MSG_LENGTH  4096
+
+/*!
  \addtogroup output_type Output type
 
  The following defines are used by the print_output function to
@@ -1008,6 +1013,15 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.48  2002/10/11 04:24:01  phase1geo
+/* This checkin represents some major code renovation in the score command to
+/* fully accommodate parameter support.  All parameter support is in at this
+/* point and the most commonly used parameter usages have been verified.  Some
+/* bugs were fixed in handling default values of constants and expression tree
+/* resizing has been optimized to its fullest.  Full regression has been
+/* updated and passes.  Adding new diagnostics to test suite.  Fixed a few
+/* problems in report outputting.
+/*
 /* Revision 1.47  2002/09/26 22:58:46  phase1geo
 /* Fixing syntax error.
 /*

@@ -24,6 +24,7 @@ sig_exp_bind* seb_tail;
 
 extern mod_inst* instance_root;
 extern mod_link* mod_head;
+extern char      user_msg[USER_MSG_LENGTH];
 
 /*!
  \param sig_name  Signal scope to bind.
@@ -117,9 +118,8 @@ void bind_remove( int id ) {
 */
 void bind_perform( char* sig_name, expression* exp, module* mod_sig, module* mod_exp, bool implicit_allowed ) {
 
-  signal    tsig;       /* Temporary signal for comparison purposes    */
-  sig_link* sigl;       /* Pointer to found signal in specified module */
-  char      msg[4096];  /* Error message to user                       */
+  signal    tsig;  /* Temporary signal for comparison purposes    */
+  sig_link* sigl;  /* Pointer to found signal in specified module */
 
   // printf( "Performing bind for signal %s to expression %d\n", sig_name, exp->id );
   
@@ -130,15 +130,15 @@ void bind_perform( char* sig_name, expression* exp, module* mod_sig, module* mod
   if( sigl == NULL ) {
     if( !implicit_allowed ) {
       /* Bad hierarchical reference -- user error */
-      snprintf( msg, 4096, "Hierarchical reference to undefined signal \"%s\" in %s, line %d", 
+      snprintf( user_msg, USER_MSG_LENGTH, "Hierarchical reference to undefined signal \"%s\" in %s, line %d", 
                 sig_name,
                 mod_exp->filename,
                 exp->line );
-      print_output( msg, FATAL );
+      print_output( user_msg, FATAL );
       exit( 1 );
     } else {
-      snprintf( msg, 4096, "Implicit declaration of signal \"%s\", creating 1-bit version of signal", sig_name );
-      print_output( msg, WARNING );
+      snprintf( user_msg, USER_MSG_LENGTH, "Implicit declaration of signal \"%s\", creating 1-bit version of signal", sig_name );
+      print_output( user_msg, WARNING );
       sig_link_add( signal_create( sig_name, 1, 0 ), &(mod_sig->sig_head), &(mod_sig->sig_tail) );
       sigl = mod_sig->sig_tail;
     }
@@ -169,7 +169,6 @@ void bind() {
   mod_inst*     modi;          /* Pointer to found module instance             */
   char          scope[4096];   /* Scope of signal's parent module              */
   char          sig_name[256]; /* Name of signal in module                     */
-  char          msg[4096];     /* Error message to display to user             */
   sig_exp_bind* curr_seb;      /* Pointer to current signal/expression binding */
   int           id;            /* Current expression id -- used for removal    */
   
@@ -200,8 +199,8 @@ void bind() {
 
     if( modi == NULL ) {
       /* Bad hierarchical reference */
-      snprintf( msg, 4096, "Undefined hierarchical reference: %s", curr_seb->sig_name );
-      print_output( msg, FATAL );
+      snprintf( user_msg, USER_MSG_LENGTH, "Undefined hierarchical reference: %s", curr_seb->sig_name );
+      print_output( user_msg, FATAL );
       exit( 1 );
     }
 
@@ -262,6 +261,15 @@ void bind() {
 }
 
 /* $Log$
+/* Revision 1.15  2002/10/11 04:24:01  phase1geo
+/* This checkin represents some major code renovation in the score command to
+/* fully accommodate parameter support.  All parameter support is in at this
+/* point and the most commonly used parameter usages have been verified.  Some
+/* bugs were fixed in handling default values of constants and expression tree
+/* resizing has been optimized to its fullest.  Full regression has been
+/* updated and passes.  Adding new diagnostics to test suite.  Fixed a few
+/* problems in report outputting.
+/*
 /* Revision 1.14  2002/09/29 02:16:51  phase1geo
 /* Updates to parameter CDD files for changes affecting these.  Added support
 /* for bit-selecting parameters.  param4.v diagnostic added to verify proper

@@ -10,12 +10,14 @@
 
 #include "defines.h"
 #include "merge.h"
+#include "util.h"
 
 
 char* merged_file = NULL;
 char* merge_in0   = NULL;
 char* merge_in1   = NULL;
 
+extern char user_msg[USER_MSG_LENGTH];
 
 /*!
  Outputs usage informaiton to standard output for merge command.
@@ -49,9 +51,8 @@ void merge_usage() {
 */
 bool merge_parse_args( int argc, int last_arg, char** argv ) {
 
-  bool retval = TRUE;    /* Return value for this function */
-  int  i;                /* Loop iterator                  */
-  char err_msg[4096];    /* Error message for user         */
+  bool retval = TRUE;  /* Return value for this function */
+  int  i;              /* Loop iterator                  */
 
   i = last_arg + 1;
 
@@ -68,8 +69,8 @@ bool merge_parse_args( int argc, int last_arg, char** argv ) {
       if( is_directory( argv[i] ) ) {
         merged_file = strdup( argv[i] );
       } else {
-  	snprintf( err_msg, 4096, "Illegal output file specified \"%s\"", argv[i] );
-        print_output( err_msg, FATAL );
+        snprintf( user_msg, USER_MSG_LENGTH, "Illegal output file specified \"%s\"", argv[i] );
+        print_output( user_msg, FATAL );
         retval = FALSE;
       }
 
@@ -92,8 +93,8 @@ bool merge_parse_args( int argc, int last_arg, char** argv ) {
 
     } else {
 
-       snprintf( err_msg, 4096, "Unknown merge command option \"%s\".  See \"covered -h\" for more information.", argv[i] );
-       print_output( err_msg, FATAL );
+       snprintf( user_msg, USER_MSG_LENGTH, "Unknown merge command option \"%s\".  See \"covered -h\" for more information.", argv[i] );
+       print_output( user_msg, FATAL );
        retval = FALSE;
 
     }
@@ -117,10 +118,9 @@ bool merge_parse_args( int argc, int last_arg, char** argv ) {
 */
 int command_merge( int argc, int last_arg, char** argv ) {
 
-  int   retval = 0;    /* Return value of this function         */
-  FILE* ofile;         /* Pointer to output stream              */
-  FILE* dbfile;        /* Pointer to database file to read from */
-  char  msg[4096];     /* Error message for user                */
+  int   retval = 0;  /* Return value of this function         */
+  FILE* ofile;       /* Pointer to output stream              */
+  FILE* dbfile;      /* Pointer to database file to read from */
 
   /* Initialize error suppression value */
   set_output_suppression( FALSE );
@@ -128,8 +128,8 @@ int command_merge( int argc, int last_arg, char** argv ) {
   /* Parse score command-line */
   if( merge_parse_args( argc, last_arg, argv ) ) {
 
-    snprintf( msg, 4096, COVERED_HEADER );
-    print_output( msg, NORMAL );
+    snprintf( user_msg, USER_MSG_LENGTH, COVERED_HEADER );
+    print_output( user_msg, NORMAL );
 
     print_output( "Merging databases...", NORMAL );
 
@@ -151,6 +151,11 @@ int command_merge( int argc, int last_arg, char** argv ) {
 }
 
 /* $Log$
+/* Revision 1.6  2002/07/09 04:46:26  phase1geo
+/* Adding -D and -Q options to covered for outputting debug information or
+/* suppressing normal output entirely.  Updated generated documentation and
+/* modified Verilog diagnostic Makefile to use these new options.
+/*
 /* Revision 1.5  2002/07/08 16:06:33  phase1geo
 /* Updating help information.
 /*

@@ -13,6 +13,7 @@
 #include "search.h"
 #include "link.h"
 #include "module.h"
+#include "util.h"
 
 
 str_link* inc_paths_head = NULL;    /*!< Pointer to head element of include paths list          */
@@ -34,6 +35,7 @@ mod_inst* instance_root = NULL;     /*!< Pointer to root of module instance tree
 
 extern char* top_module;
 extern char* top_instance;
+extern char  user_msg[USER_MSG_LENGTH];
 
 /*!
  Creates root module for module_node tree.  If a module_node points to this node as its parent,
@@ -96,7 +98,6 @@ bool search_add_directory_path( char* path ) {
 
   bool  retval = TRUE;   /* Return value for this function */
   char* tmp;             /* Temporary directory name       */
-  char  msg[4096];       /* Warning message to user        */
 
   if( is_directory( path ) && directory_exists( path ) ) {
     tmp = strdup( path );
@@ -106,8 +107,8 @@ bool search_add_directory_path( char* path ) {
     }
     directory_load( path, extensions_head, &(use_files_head), &(use_files_tail) );
   } else {
-    snprintf( msg, 4096, "Library directory %s does not exist", path );
-    print_output( msg, WARNING );
+    snprintf( user_msg, USER_MSG_LENGTH, "Library directory %s does not exist", path );
+    print_output( user_msg, WARNING );
     retval = FALSE;
   }
 
@@ -122,16 +123,15 @@ bool search_add_directory_path( char* path ) {
 */
 bool search_add_file( char* file ) {
 
-  bool  retval = TRUE;   /* Return value for this function */
-  char* tmp;             /* Temporary filename             */
-  char  msg[4096];       /* Display message string         */
+  bool  retval = TRUE;  /* Return value for this function */
+  char* tmp;            /* Temporary filename             */
 
   if( file_exists( file ) && (str_link_find( file, use_files_head ) == NULL) ) {
     tmp = strdup( file );
     str_link_add( tmp, &use_files_head, &use_files_tail );
   } else {
-    snprintf( msg, 4096, "File %s does not exist", file );
-    print_output( msg, FATAL );
+    snprintf( user_msg, USER_MSG_LENGTH, "File %s does not exist", file );
+    print_output( user_msg, FATAL );
     retval = FALSE;
   }
 
@@ -210,6 +210,11 @@ void search_free_lists() {
 }
 
 /* $Log$
+/* Revision 1.9  2002/08/19 21:36:26  phase1geo
+/* Fixing memory corruption bug in score function for adding Verilog modules
+/* to use_files list.  This caused a core dump to occur when the -f option
+/* was used.
+/*
 /* Revision 1.8  2002/07/20 20:48:09  phase1geo
 /* Fixing a bug that caused the same file to be added to the use_files list
 /* more than once.  A filename will only appear once in this list now.  Updates

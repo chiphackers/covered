@@ -26,6 +26,8 @@ nibble nor_optab[16]  = { NOR_OP_TABLE  };  /*!< NOR operation table  */
 nibble nxor_optab[16] = { NXOR_OP_TABLE };  /*!< NXOR operation table */
 nibble add_optab[16]  = { ADD_OP_TABLE  };  /*!< ADD operation table  */
 
+extern char user_msg[USER_MSG_LENGTH];
+
 
 /*!
  \param vec    Pointer to vector to initialize.
@@ -662,8 +664,8 @@ int vector_to_int( vector* vec ) {
       case 1 :  retval = (retval << 1) | 1;  break;
       default:
         print_output( "Vector converting to integer contains X or Z values", FATAL );
-	exit( 1 );
-	break;
+        exit( 1 );
+        break;
     }
   }
 
@@ -926,10 +928,9 @@ vector* vector_from_string( char* str ) {
 */
 void vector_vcd_assign( vector* vec, char* value ) {
 
-  char*  ptr;        /* Pointer to current character under evaluation */
-  int    i;          /* Loop iterator                                 */
-  nibble vval;       /* Temporary vector value holder                 */
-  char   msg[4096];  /* Message to user indicating error              */
+  char*  ptr;   /* Pointer to current character under evaluation */
+  int    i;     /* Loop iterator                                 */
+  nibble vval;  /* Temporary vector value holder                 */
 
   assert( vec != NULL );
   assert( value != NULL );
@@ -946,8 +947,8 @@ void vector_vcd_assign( vector* vec, char* value ) {
       case 'x':  vval = 2;  break;
       case 'z':  vval = 3;  break;
       default :  
-        snprintf( msg, 4096, "VCD file contains value change character that is not four-state" );
-        print_output( msg, FATAL );
+        snprintf( user_msg, USER_MSG_LENGTH, "VCD file contains value change character that is not four-state" );
+        print_output( user_msg, FATAL );
         exit( 1 );
         break;
     }
@@ -1035,7 +1036,6 @@ void vector_op_compare( vector* tgt, vector* left, vector* right, int comp_type 
   nibble rbit;          /* Current right expression bit value   */
   bool   done = FALSE;  /* Specifies continuation of comparison */
   nibble value;         /* Result to be stored in tgt           */
-  char   msg[4096];     /* Error message to be displayed        */
 
   /* Determine at which bit position to begin comparing */
   if( left->width > right->width ) {
@@ -1098,8 +1098,8 @@ void vector_op_compare( vector* tgt, vector* left, vector* right, int comp_type 
       case COMP_NE   :
       case COMP_CNE  :  value = (lbit == rbit)                                 ? 0 : 1;  break;
       default        :
-        snprintf( msg, 4096, "Internal error:  Unidentified comparison type %d", comp_type );
-        print_output( msg, FATAL );
+        snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  Unidentified comparison type %d", comp_type );
+        print_output( user_msg, FATAL );
         exit( 1 );
         break;
     }
@@ -1438,6 +1438,15 @@ void vector_dealloc( vector* vec ) {
 }
 
 /* $Log$
+/* Revision 1.20  2002/10/11 04:24:02  phase1geo
+/* This checkin represents some major code renovation in the score command to
+/* fully accommodate parameter support.  All parameter support is in at this
+/* point and the most commonly used parameter usages have been verified.  Some
+/* bugs were fixed in handling default values of constants and expression tree
+/* resizing has been optimized to its fullest.  Full regression has been
+/* updated and passes.  Adding new diagnostics to test suite.  Fixed a few
+/* problems in report outputting.
+/*
 /* Revision 1.19  2002/09/25 02:51:44  phase1geo
 /* Removing need of vector nibble array allocation and deallocation during
 /* expression resizing for efficiency and bug reduction.  Other enhancements

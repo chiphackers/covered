@@ -20,6 +20,7 @@
 
 
 extern nibble or_optab[16];
+extern char   user_msg[USER_MSG_LENGTH];
 
 
 /*!
@@ -202,9 +203,9 @@ bool signal_db_read( char** line, module* curr_mod ) {
         } else {
 
           if( name[0] != '#' ) {
-            snprintf( msg, 4096, "Expression %d not found for signal %s", texp.id, sig->name );
-	    print_output( msg, FATAL );
-	    retval = FALSE;
+            snprintf( user_msg, USER_MSG_LENGTH, "Expression %d not found for signal %s", texp.id, sig->name );
+            print_output( user_msg, FATAL );
+            retval = FALSE;
             exit( 1 );
           }
 
@@ -374,6 +375,15 @@ void signal_dealloc( signal* sig ) {
 }
 
 /* $Log$
+/* Revision 1.19  2002/10/11 04:24:02  phase1geo
+/* This checkin represents some major code renovation in the score command to
+/* fully accommodate parameter support.  All parameter support is in at this
+/* point and the most commonly used parameter usages have been verified.  Some
+/* bugs were fixed in handling default values of constants and expression tree
+/* resizing has been optimized to its fullest.  Full regression has been
+/* updated and passes.  Adding new diagnostics to test suite.  Fixed a few
+/* problems in report outputting.
+/*
 /* Revision 1.18  2002/10/01 13:21:25  phase1geo
 /* Fixing bug in report output for single and multi-bit selects.  Also modifying
 /* the way that parameters are dealt with to allow proper handling of run-time

@@ -41,6 +41,13 @@ unsigned long curr_malloc_size = 0;
 */
 unsigned long largest_malloc_size = 0;
 
+/*!
+ Holds some output that will be displayed via the print_output command.  This is
+ created globally so that memory does not need to be reallocated for each function
+ that wishes to use it.
+*/
+char user_msg[USER_MSG_LENGTH];
+
 
 /*!
  \param value Boolean value of suppression.
@@ -223,14 +230,13 @@ void directory_load( char* dir, str_link* ext_head, str_link** file_head, str_li
   struct dirent* dirp;        /* Pointer to current directory entry                          */
   str_link*      curr_ext;    /* Pointer to current extension string                         */
   char*          ptr;         /* Pointer to current character in filename                    */
-  char           msg[4096];   /* Error message to user                                       */
   int            tmpchars;    /* Number of characters needed to store full pathname for file */
   char*          tmpfile;     /* Temporary string holder for full pathname of file           */
 
   if( (dir_handle = opendir( dir )) == NULL ) {
 
-    snprintf( msg, 4096, "Unable to read directory %s", dir );
-    print_output( msg, FATAL );
+    snprintf( user_msg, USER_MSG_LENGTH, "Unable to read directory %s", dir );
+    print_output( user_msg, FATAL );
     exit( 1 );
 
   } else {
@@ -494,6 +500,15 @@ void gen_space( char* spaces, int num_spaces ) {
 }
 
 /* $Log$
+/* Revision 1.12  2002/10/11 04:24:02  phase1geo
+/* This checkin represents some major code renovation in the score command to
+/* fully accommodate parameter support.  All parameter support is in at this
+/* point and the most commonly used parameter usages have been verified.  Some
+/* bugs were fixed in handling default values of constants and expression tree
+/* resizing has been optimized to its fullest.  Full regression has been
+/* updated and passes.  Adding new diagnostics to test suite.  Fixed a few
+/* problems in report outputting.
+/*
 /* Revision 1.11  2002/09/25 05:36:08  phase1geo
 /* Initial version of parameter support is now in place.  Parameters work on a
 /* basic level.  param1.v tests this basic functionality and param1.cdd contains

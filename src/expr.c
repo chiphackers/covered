@@ -23,7 +23,8 @@ extern nibble nand_optab[16];
 extern nibble nor_optab[16];
 extern nibble nxor_optab[16];
 
-extern int curr_sim_time;
+extern int  curr_sim_time;
+extern char user_msg[USER_MSG_LENGTH];
 
 
 /*!
@@ -404,7 +405,6 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
   char        modname[4096];    /* Name of this expression's module instance           */
   expression  texp;             /* Temporary expression link holder for searching      */
   exp_link*   expl;             /* Pointer to found expression in module               */
-  char        msg[4096];        /* Error message string                                */
 
   if( sscanf( *line, "%d %s %d %x %d %d%n", &id, modname, &linenum, &suppl, &right_id, &left_id, &chars_read ) == 6 ) {
 
@@ -413,8 +413,8 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
     /* Find module instance name */
     if( curr_mod == NULL ) {
 
-      snprintf( msg, 4096, "Internal error:  expression (%d) in database written before its module", id );
-      print_output( msg, FATAL );
+      snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  expression (%d) in database written before its module", id );
+      print_output( user_msg, FATAL );
       retval = FALSE;
 
     } else {
@@ -424,9 +424,9 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
       if( right_id == 0 ) {
         right = NULL;
       } else if( (expl = exp_link_find( &texp, curr_mod->exp_head )) == NULL ) {
-        snprintf( msg, 4096, "Internal error:  root expression (%d) found before leaf expression (%d) in database file", id, right_id );
-  	print_output( msg, FATAL );
-	exit( 1 );
+        snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  root expression (%d) found before leaf expression (%d) in database file", id, right_id );
+  	    print_output( user_msg, FATAL );
+        exit( 1 );
       } else {
         right = expl->exp;
       }
@@ -436,8 +436,8 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
       if( left_id == 0 ) {
         left = NULL;
       } else if( (expl = exp_link_find( &texp, curr_mod->exp_head )) == NULL ) {
-        snprintf( msg, 4096, "Internal error:  root expression (%d) found before leaf expression (%d) in database file", id, left_id );
-  	print_output( msg, FATAL );
+        snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  root expression (%d) found before leaf expression (%d) in database file", id, left_id );
+        print_output( user_msg, FATAL );
         exit( 1 );
       } else {
         left = expl->exp;
@@ -610,23 +610,22 @@ void expression_display( expression* expr ) {
 */
 void expression_operate( expression* expr ) {
 
-  vector  vec1;                          /* Used for logical reduction            */ 
-  vector  vec2;                          /* Used for logical reduction            */
-  vector* vec;                           /* Pointer to vector of unknown size     */
-  int     i;                             /* Loop iterator                         */
-  int     j;                             /* Loop iterator                         */
-  nibble  bit;                           /* Bit holder for some ops               */
-  int     intval1;                       /* Temporary integer value for *, /, %   */
-  int     intval2;                       /* Temporary integer value for *, /, %   */
-  nibble  value1a;                       /* 1-bit nibble value                    */
-  nibble  value1b;                       /* 1-bit nibble value                    */
-  nibble  value32[ VECTOR_SIZE( 32 ) ];  /* 32-bit nibble value                   */
-  char    msg[4096];                     /* Message to user                       */
+  vector  vec1;                          /* Used for logical reduction          */ 
+  vector  vec2;                          /* Used for logical reduction          */
+  vector* vec;                           /* Pointer to vector of unknown size   */
+  int     i;                             /* Loop iterator                       */
+  int     j;                             /* Loop iterator                       */
+  nibble  bit;                           /* Bit holder for some ops             */
+  int     intval1;                       /* Temporary integer value for *, /, % */
+  int     intval2;                       /* Temporary integer value for *, /, % */
+  nibble  value1a;                       /* 1-bit nibble value                  */
+  nibble  value1b;                       /* 1-bit nibble value                  */
+  nibble  value32[ VECTOR_SIZE( 32 ) ];  /* 32-bit nibble value                 */
 
   if( expr != NULL ) {
 
-    snprintf( msg, 4096, "In expression_operate, id: %d, op: %d, line: %d", expr->id, SUPPL_OP( expr->suppl ), expr->line );
-    print_output( msg, DEBUG );
+    snprintf( user_msg, USER_MSG_LENGTH, "In expression_operate, id: %d, op: %d, line: %d", expr->id, SUPPL_OP( expr->suppl ), expr->line );
+    print_output( user_msg, DEBUG );
 
     assert( expr->value != NULL );
 
@@ -1049,6 +1048,15 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.52  2002/10/11 04:24:01  phase1geo
+/* This checkin represents some major code renovation in the score command to
+/* fully accommodate parameter support.  All parameter support is in at this
+/* point and the most commonly used parameter usages have been verified.  Some
+/* bugs were fixed in handling default values of constants and expression tree
+/* resizing has been optimized to its fullest.  Full regression has been
+/* updated and passes.  Adding new diagnostics to test suite.  Fixed a few
+/* problems in report outputting.
+/*
 /* Revision 1.51  2002/09/29 02:16:51  phase1geo
 /* Updates to parameter CDD files for changes affecting these.  Added support
 /* for bit-selecting parameters.  param4.v diagnostic added to verify proper

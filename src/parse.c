@@ -23,6 +23,8 @@ extern str_link* use_files_head;
 extern str_link* modlist_head;
 extern str_link* modlist_tail;
 
+extern char user_msg[USER_MSG_LENGTH];
+
 /*!
  \param file  Pointer to file to read
  \param line  Read line from specified file.
@@ -35,8 +37,7 @@ extern str_link* modlist_tail;
 */
 int parse_readline( FILE* file, char* line, int size ) {
 
-  int  i;             /* Loop iterator */
-  char error[1024];   /* Error line    */
+  int i;  /* Loop iterator */
 
   while( (i < (size - 1)) && !feof( file ) && ((line[i] = fgetc( file )) != '\n') ) {
     i++;
@@ -47,8 +48,8 @@ int parse_readline( FILE* file, char* line, int size ) {
   }
 
   if( i == size ) {
-    snprintf( error, 1024, "Line too long.  Must be less than %d characters.", size );
-    print_output( error, FATAL );
+    snprintf( user_msg, USER_MSG_LENGTH, "Line too long.  Must be less than %d characters.", size );
+    print_output( user_msg, FATAL );
   }
 
   return( !feof( file ) );
@@ -67,8 +68,7 @@ int parse_readline( FILE* file, char* line, int size ) {
 */
 bool parse_design( char* top, char* output_db ) {
 
-  bool retval = TRUE;   /* Return value of this function */
-  char msg[4096];       /* Output message                */
+  bool retval = TRUE;  /* Return value of this function */
 
   str_link_add( top, &modlist_head, &modlist_tail );
 
@@ -100,8 +100,8 @@ bool parse_design( char* top, char* output_db ) {
     exit( 1 );
   }
 
-  snprintf( msg, 4096, "========  Design written to database %s successfully  ========\n\n", output_db );
-  print_output( msg, DEBUG );
+  snprintf( user_msg, USER_MSG_LENGTH, "========  Design written to database %s successfully  ========\n\n", output_db );
+  print_output( user_msg, DEBUG );
 
   return( retval );
 
@@ -116,11 +116,10 @@ bool parse_design( char* top, char* output_db ) {
 */
 bool parse_and_score_dumpfile( char* db, char* vcd ) {
 
-  bool retval = TRUE;   /* Return value of this function */
-  char msg[4096];       /* Output message                */
+  bool retval = TRUE;  /* Return value of this function */
 
-  snprintf( msg, 4096, "========  Reading in database %s  ========\n", db );
-  print_output( msg, DEBUG );
+  snprintf( user_msg, USER_MSG_LENGTH, "========  Reading in database %s  ========\n", db );
+  print_output( user_msg, DEBUG );
 
   /* Read in contents of specified database file */
   if( !db_read( db, READ_MODE_MERGE_NO_MERGE ) ) {
@@ -134,8 +133,8 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
     exit( 1 );
   }
 
-  snprintf( msg, 4096, "========  Reading in VCD dumpfile %s  ========\n", vcd );
-  print_output( msg, DEBUG );
+  snprintf( user_msg, USER_MSG_LENGTH, "========  Reading in VCD dumpfile %s  ========\n", vcd );
+  print_output( user_msg, DEBUG );
   
   /* Perform the parse */
   vcd_parse( vcd );
@@ -143,8 +142,8 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
   /* Flush any pending statement trees that are waiting for delay */
   db_do_timestep( -1 );
 
-  snprintf( msg, 4096, "========  Writing database %s  ========\n", db );
-  print_output( msg, DEBUG );
+  snprintf( user_msg, USER_MSG_LENGTH, "========  Writing database %s  ========\n", db );
+  print_output( user_msg, DEBUG );
 
   /* Write contents to database file */
   if( !db_write( db, FALSE ) ) {
@@ -157,6 +156,11 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
 }
 
 /* $Log$
+/* Revision 1.11  2002/09/19 05:25:19  phase1geo
+/* Fixing incorrect simulation of static values and fixing reports generated
+/* from these static expressions.  Also includes some modifications for parameters
+/* though these changes are not useful at this point.
+/*
 /* Revision 1.10  2002/08/19 04:34:07  phase1geo
 /* Fixing bug in database reading code that dealt with merging modules.  Module
 /* merging is now performed in a more optimal way.  Full regression passes and

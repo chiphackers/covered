@@ -19,7 +19,7 @@
 #include "parser_misc.h"
 #include "static.h"
 
-char err_msg[4096];
+extern char user_msg[USER_MSG_LENGTH];
 
 int ignore_mode = 0;
 int param_mode  = 0;
@@ -429,10 +429,10 @@ expression
                   if( ignore_mode == 0 ) {
 		    $$ = $2;
 		    if( $2 == NULL ) {
-		      snprintf( err_msg, 1000, "%s:%d: Expression signal not declared", 
+		      snprintf( user_msg, USER_MSG_LENGTH, "%s:%d: Expression signal not declared", 
 				@1.text,
 				@1.first_line );
-		      print_output( err_msg, FATAL );
+		      print_output( user_msg, FATAL );
 		      exit( 1 );
 		    }
                   } else {
@@ -444,10 +444,10 @@ expression
                   if( ignore_mode == 0 ) {
 		    $$ = $2;
 		    if( $2 == NULL ) {
-		      snprintf( err_msg, 1000, "%s:%d: Expression signal not declared", 
+		      snprintf( user_msg, USER_MSG_LENGTH, "%s:%d: Expression signal not declared", 
 				@1.text,
 				@1.first_line );
-		      print_output( err_msg, FATAL );
+		      print_output( user_msg, FATAL );
 		      exit( 1 );
 		    }
                   } else {
@@ -459,10 +459,10 @@ expression
 		  expression* tmp;
                   if( ignore_mode == 0 ) {
 		    if( $2 == NULL ) {
-		      snprintf( err_msg, 1000, "%s:%d: Expression signal not declared", 
+		      snprintf( user_msg, USER_MSG_LENGTH, "%s:%d: Expression signal not declared", 
 				@1.text,
 				@1.first_line );
-		      print_output( err_msg, FATAL );
+		      print_output( user_msg, FATAL );
 		      exit( 1 );
 		    }
 		    tmp = db_create_expression( $2, NULL, EXP_OP_UINV, @1.first_line, NULL );
@@ -476,10 +476,10 @@ expression
 		  expression* tmp;
                   if( ignore_mode == 0 ) {
 		    if( $2 == NULL ) {
-		      snprintf( err_msg, 1000, "%s:%d: Expression signal not declared", 
+		      snprintf( user_msg, USER_MSG_LENGTH, "%s:%d: Expression signal not declared", 
 				@1.text,
 				@1.first_line );
-		      print_output( err_msg, FATAL );
+		      print_output( user_msg, FATAL );
 		      exit( 1 );
 		    }
 		    tmp = db_create_expression( $2, NULL, EXP_OP_UAND, @1.first_line, NULL );
@@ -493,10 +493,10 @@ expression
 		  expression* tmp;
                   if( ignore_mode == 0 ) {
 		    if( $2 == NULL ) {
-		      snprintf( err_msg, 1000, "%s:%d: Expression signal not declared", 
+		      snprintf( user_msg, USER_MSG_LENGTH, "%s:%d: Expression signal not declared", 
 			 	@1.text,
 				@1.first_line );
-		      print_output( err_msg, FATAL );
+		      print_output( user_msg, FATAL );
 		      exit( 1 );
 		    }
 		    tmp = db_create_expression( $2, NULL, EXP_OP_UNOT, @1.first_line, NULL );
@@ -510,10 +510,10 @@ expression
 		  expression* tmp;
                   if( ignore_mode == 0 ) {
 		    if( $2 == NULL ) {
-		      snprintf( err_msg, 1000, "%s:%d: Expression signal not declared", 
+		      snprintf( user_msg, USER_MSG_LENGTH, "%s:%d: Expression signal not declared", 
 				@1.text,
 				@1.first_line );
-		      print_output( err_msg, FATAL );
+		      print_output( user_msg, FATAL );
 		      exit( 1 );
 		    }
 		    tmp = db_create_expression( $2, NULL, EXP_OP_UOR, @1.first_line, NULL );
@@ -527,10 +527,10 @@ expression
 		  expression* tmp;
                   if( ignore_mode == 0 ) {
 		    if( $2 == NULL ) {
-		      snprintf( err_msg, 1000, "%s:%d: Expression signal not declared", 
+		      snprintf( user_msg, USER_MSG_LENGTH, "%s:%d: Expression signal not declared", 
 				@1.text,
 				@1.first_line );
-		      print_output( err_msg, FATAL );
+		      print_output( user_msg, FATAL );
 		      exit( 1 );
 		    }
 		    tmp = db_create_expression( $2, NULL, EXP_OP_UXOR, @1.first_line, NULL );
@@ -544,10 +544,10 @@ expression
 		  expression* tmp;
                   if( ignore_mode == 0 ) {
 		    if( $2 == NULL ) {
-		      snprintf( err_msg, 1000, "%s:%d: Expression signal not declared", 
+		      snprintf( user_msg, USER_MSG_LENGTH, "%s:%d: Expression signal not declared", 
 				@1.text,
 				@1.first_line );
-		      print_output( err_msg, FATAL );
+		      print_output( user_msg, FATAL );
 		      exit( 1 );
 		    }
 		    tmp = db_create_expression( $2, NULL, EXP_OP_UNAND, @1.first_line, NULL );
@@ -561,10 +561,10 @@ expression
 		  expression* tmp;
                   if( ignore_mode == 0 ) {
 		    if( $2 == NULL ) {
-		      snprintf( err_msg, 1000, "%s:%d: Expression signal not declared", 
+		      snprintf( user_msg, USER_MSG_LENGTH, "%s:%d: Expression signal not declared", 
 				@1.text,
 				@1.first_line );
-		      print_output( err_msg, FATAL );
+		      print_output( user_msg, FATAL );
 		      exit( 1 );
 		    }
 		    tmp = db_create_expression( $2, NULL, EXP_OP_UNOR, @1.first_line, NULL );
@@ -578,10 +578,10 @@ expression
 		  expression* tmp;
                   if( ignore_mode == 0 ) {
 		    if( $2 == NULL ) {
-		      snprintf( err_msg, 1000, "%s:%d: Expression signal not declared", 
+		      snprintf( user_msg, USER_MSG_LENGTH, "%s:%d: Expression signal not declared", 
 				@1.text,
 				@1.first_line );
-		      print_output( err_msg, FATAL );
+		      print_output( user_msg, FATAL );
 		      exit( 1 );
 		    }
 		    tmp = db_create_expression( $2, NULL, EXP_OP_UNXOR, @1.first_line, NULL );
@@ -1250,9 +1250,9 @@ module_item
 	| block_item_decl
 	| K_defparam defparam_assign_list ';'
                 {
-                  snprintf( err_msg, 4096, "Defparam found but not used, file: %s, line: %d.  Please use -P option to specify",
+                  snprintf( user_msg, USER_MSG_LENGTH, "Defparam found but not used, file: %s, line: %d.  Please use -P option to specify",
                             @1.text, @1.first_line );
-                  print_output( err_msg, FATAL );
+                  print_output( user_msg, FATAL );
                 }
 	| K_event list_of_variables ';'
 		{

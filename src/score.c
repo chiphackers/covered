@@ -26,6 +26,7 @@ char* vcd_file     = NULL;    /*!< Name of VCD output file to parse             
 extern unsigned long largest_malloc_size;
 extern unsigned long curr_malloc_size;
 extern str_link*     use_files_head;
+extern char          user_msg[USER_MSG_LENGTH];
 
 
 void define_macro( const char* name, const char* value );
@@ -113,16 +114,16 @@ bool read_command_file( char* cmd_file, char*** arg_list, int* arg_num ) {
 
     } else {
 
-      snprintf( tmp_str, 1024, "Unable to open command file %s for reading", cmd_file );
-      print_output( tmp_str, FATAL );
+      snprintf( user_msg, USER_MSG_LENGTH, "Unable to open command file %s for reading", cmd_file );
+      print_output( user_msg, FATAL );
       retval = FALSE;
 
     }
 
   } else {
 
-    snprintf( tmp_str, 1024, "Command file %s does not exist", cmd_file );
-    print_output( tmp_str, FATAL );
+    snprintf( user_msg, USER_MSG_LENGTH, "Command file %s does not exist", cmd_file );
+    print_output( user_msg, FATAL );
     retval = FALSE;
 
   }
@@ -148,7 +149,6 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
   int    i       = last_arg + 1;  /* Loop iterator                                 */
   char** arg_list;                /* List of command_line arguments                */
   int    arg_num;                 /* Number of arguments in arg_list               */
-  char   err_msg[4096];           /* Error message to display                      */
   int    j;                       /* Loop iterator 2                               */
   char*  ptr;                     /* Pointer to current character in defined value */
 
@@ -166,8 +166,8 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
       if( is_variable( argv[i] ) ) {
         top_instance = strdup( argv[i] );
       } else {
-        snprintf( err_msg, 4096, "Illegal top-level instance name specified \"%s\"", argv[i] );
-        print_output( err_msg, FATAL );
+        snprintf( user_msg, USER_MSG_LENGTH, "Illegal top-level instance name specified \"%s\"", argv[i] );
+        print_output( user_msg, FATAL );
         retval = FALSE;
       }
 
@@ -177,8 +177,8 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
       if( is_directory( argv[i] ) ) {
         output_db = strdup( argv[i] );
       } else {
-  	snprintf( err_msg, 4096, "Illegal output directory specified \"%s\"", argv[i] );
-        print_output( err_msg, FATAL );
+        snprintf( user_msg, USER_MSG_LENGTH, "Illegal output directory specified \"%s\"", argv[i] );
+        print_output( user_msg, FATAL );
         retval = FALSE;
       }
 
@@ -188,9 +188,9 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
       if( is_variable( argv[i] ) ) {
         top_module = strdup( argv[i] );
       } else {
-	snprintf( err_msg, 4096, "Illegal top-level module name specified \"%s\"", argv[i] );
-        print_output( err_msg, FATAL );
-	retval = FALSE;
+        snprintf( user_msg, USER_MSG_LENGTH, "Illegal top-level module name specified \"%s\"", argv[i] );
+        print_output( user_msg, FATAL );
+        retval = FALSE;
       }
 
     } else if( strncmp( "-I", argv[i], 2 ) == 0 ) {
@@ -214,8 +214,8 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
         }
         free_safe( arg_list );
       } else {
-        snprintf( err_msg, 4096, "Cannot find argument file %s specified with -f option", argv[i] );
-        print_output( err_msg, FATAL );
+        snprintf( user_msg, USER_MSG_LENGTH, "Cannot find argument file %s specified with -f option", argv[i] );
+        print_output( user_msg, FATAL );
         retval = FALSE;
       }
 
@@ -228,11 +228,11 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
       i++;
       if( file_exists( argv[i] ) ) {
-	vcd_file = strdup( argv[i] );
+        vcd_file = strdup( argv[i] );
       } else {
-	snprintf( err_msg, 4096, "VCD dumpfile not found \"%s\"", argv[i] );
-	print_output( err_msg, FATAL );
- 	retval = FALSE;
+        snprintf( user_msg, USER_MSG_LENGTH, "VCD dumpfile not found \"%s\"", argv[i] );
+        print_output( user_msg, FATAL );
+        retval = FALSE;
       }
 
     } else if( strncmp( "-v", argv[i], 2 ) == 0 ) {
@@ -277,8 +277,8 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
         
     } else {
 
-      snprintf( err_msg, 4096, "Unknown score command option \"%s\".  See \"covered score -h\" for more information.", argv[i] );
-      print_output( err_msg, FATAL );
+      snprintf( user_msg, USER_MSG_LENGTH, "Unknown score command option \"%s\".  See \"covered score -h\" for more information.", argv[i] );
+      print_output( user_msg, FATAL );
       retval = FALSE;
 
     }
@@ -302,14 +302,13 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 */
 int command_score( int argc, int last_arg, char** argv ) {
 
-  int  retval = 0;   /* Return value for this function */
-  char msg[4096];    /* Message to user                */
+  int  retval = 0;  /* Return value for this function */
 
   /* Parse score command-line */
   if( score_parse_args( argc, last_arg, argv ) ) {
 
-    snprintf( msg, 4096, COVERED_HEADER );
-    print_output( msg, NORMAL );
+    snprintf( user_msg, USER_MSG_LENGTH, COVERED_HEADER );
+    print_output( user_msg, NORMAL );
 
     if( output_db == NULL ) {
       output_db = strdup( DFLT_OUTPUT_DB );
@@ -325,8 +324,8 @@ int command_score( int argc, int last_arg, char** argv ) {
 
     /* Read dumpfile and score design */
     if( vcd_file != NULL ) {
-      snprintf( msg, 4096, "Scoring dumpfile %s...", vcd_file );
-      print_output( msg, NORMAL );
+      snprintf( user_msg, USER_MSG_LENGTH, "Scoring dumpfile %s...", vcd_file );
+      print_output( user_msg, NORMAL );
       parse_and_score_dumpfile( output_db, vcd_file );
       print_output( "", NORMAL );
     }
@@ -338,10 +337,10 @@ int command_score( int argc, int last_arg, char** argv ) {
     free_safe( vcd_file );
 
     print_output( "***  Scoring completed successfully!  ***\n", NORMAL );
-    snprintf( msg, 4096, "Dynamic memory allocated:   %ld bytes", largest_malloc_size );
-    print_output( msg, NORMAL );
-    snprintf( msg, 4096, "Allocated memory remaining: %ld bytes", curr_malloc_size );
-    print_output( msg, DEBUG );
+    snprintf( user_msg, USER_MSG_LENGTH, "Dynamic memory allocated:   %ld bytes", largest_malloc_size );
+    print_output( user_msg, NORMAL );
+    snprintf( user_msg, USER_MSG_LENGTH, "Allocated memory remaining: %ld bytes", curr_malloc_size );
+    print_output( user_msg, DEBUG );
     print_output( "", NORMAL );
 
   }
@@ -351,6 +350,12 @@ int command_score( int argc, int last_arg, char** argv ) {
 }
 
 /* $Log$
+/* Revision 1.24  2002/09/27 01:19:38  phase1geo
+/* Fixed problems with parameter overriding from command-line.  This now works
+/* and param1.2.v has been added to test this functionality.  Totally reworked
+/* regression running to allow each diagnostic to specify unique command-line
+/* arguments to Covered.  Full regression passes.
+/*
 /* Revision 1.23  2002/09/25 02:51:44  phase1geo
 /* Removing need of vector nibble array allocation and deallocation during
 /* expression resizing for efficiency and bug reduction.  Other enhancements

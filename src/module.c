@@ -19,6 +19,9 @@
 #include "link.h"
 
 
+extern char user_msg[USER_MSG_LENGTH];
+
+
 /*!
  \param mod  Pointer to module to initialize.
 
@@ -139,12 +142,11 @@ bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst ) {
   exp_link*  curr_exp;        /* Pointer to current module exp_link element     */
   stmt_link* curr_stmt;       /* Pointer to current module stmt_link element    */
   inst_parm* curr_parm;       /* Pointer to current instance parameter          */
-  char       msg[4096];       /* Display message string                         */
   int        old_suppl;       /* Contains supplemental value of parameter expr  */
   bool       param_op;        /* Specifies if current expression is a parameter */
 
-  snprintf( msg, 4096, "Writing module %s", mod->name );
-  print_output( msg, DEBUG );
+  snprintf( user_msg, USER_MSG_LENGTH, "Writing module %s", mod->name );
+  print_output( user_msg, DEBUG );
 
   fprintf( file, "%d %s %s %s\n",
     DB_TYPE_MODULE,
@@ -432,6 +434,15 @@ void module_dealloc( module* mod ) {
 
 
 /* $Log$
+/* Revision 1.20  2002/10/11 04:24:02  phase1geo
+/* This checkin represents some major code renovation in the score command to
+/* fully accommodate parameter support.  All parameter support is in at this
+/* point and the most commonly used parameter usages have been verified.  Some
+/* bugs were fixed in handling default values of constants and expression tree
+/* resizing has been optimized to its fullest.  Full regression has been
+/* updated and passes.  Adding new diagnostics to test suite.  Fixed a few
+/* problems in report outputting.
+/*
 /* Revision 1.19  2002/10/01 13:21:25  phase1geo
 /* Fixing bug in report output for single and multi-bit selects.  Also modifying
 /* the way that parameters are dealt with to allow proper handling of run-time

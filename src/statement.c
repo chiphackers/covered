@@ -95,6 +95,8 @@
 
 stmt_loop_link* stmt_loop_stack = NULL;
 
+extern char user_msg[USER_MSG_LENGTH];
+
 
 /*!
  \param exp   Pointer to root expression of expression tree for this statement.
@@ -521,6 +523,10 @@ void statement_dealloc( statement* stmt ) {
 
 
 /* $Log$
+/* Revision 1.30  2002/07/18 02:33:24  phase1geo
+/* Fixed instantiation addition.  Multiple hierarchy instantiation trees should
+/* now work.
+/*
 /* Revision 1.29  2002/07/14 05:10:42  phase1geo
 /* Added support for signal concatenation in score and report commands.  Fixed
 /* bugs in this code (and multiplication).

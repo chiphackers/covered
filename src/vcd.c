@@ -13,6 +13,9 @@
 #include "util.h"
 
 
+extern char user_msg[USER_MSG_LENGTH];
+
+
 /*!
  \param vcd  File handle pointer to opened VCD file.
 
@@ -101,9 +104,8 @@ void vcd_parse_def_scope( FILE* vcd ) {
 */
 void vcd_parse_def( FILE* vcd ) {
 
-  bool enddef_found = FALSE;     /* If set to true, definition section is finished */
-  char keyword[256];             /* Holds keyword value                            */
-  char msg[4096];                /* Error message to user                          */
+  bool enddef_found = FALSE;  /* If set to true, definition section is finished */
+  char keyword[256];          /* Holds keyword value                            */
 
   while( !enddef_found && (fscanf( vcd, "%s", keyword ) == 1) ) {
 
@@ -125,8 +127,8 @@ void vcd_parse_def( FILE* vcd ) {
 
     } else {
 
-      snprintf( msg, 4096, "Non-keyword located where one should have been \"%s\"", keyword );
-      print_output( msg, FATAL );
+      snprintf( user_msg, USER_MSG_LENGTH, "Non-keyword located where one should have been \"%s\"", keyword );
+      print_output( user_msg, FATAL );
       exit( 1 );
 
     }
@@ -170,8 +172,7 @@ void vcd_parse_sim( FILE* vcd ) {
 
   char token[4100];         /* Current token from VCD file       */
   int  last_timestep = -1;  /* Value of last timestamp from file */
-  char msg[4096];           /* Error message to user             */
-  
+ 
   while( !feof( vcd ) && (fscanf( vcd, "%s", token ) == 1) ) {
 
     if( token[0] == '$' ) {
@@ -200,8 +201,8 @@ void vcd_parse_sim( FILE* vcd ) {
 
     } else {
 
-      snprintf( msg, 4096, "Badly placed token \"%s\"", token );
-      print_output( msg, FATAL );
+      snprintf( user_msg, USER_MSG_LENGTH, "Badly placed token \"%s\"", token );
+      print_output( user_msg, FATAL );
       exit( 1 );
 
     }
@@ -236,6 +237,9 @@ void vcd_parse( char* vcd_file ) {
 }
 
 /* $Log$
+/* Revision 1.2  2002/09/18 22:19:25  phase1geo
+/* Adding handler for option bit select in $var line.
+/*
 /* Revision 1.1  2002/07/22 05:24:46  phase1geo
 /* Creating new VCD parser.  This should have performance benefits as well as
 /* have the ability to handle any problems that come up in parsing.

@@ -19,6 +19,9 @@
 #include "stat.h"
 
 
+extern char user_msg[USER_MSG_LENGTH];
+
+
 /*!
  If set to a boolean value of TRUE, reports the line coverage for the specified database
  file; otherwise, omits line coverage from the report output.
@@ -103,8 +106,7 @@ void report_usage() {
 */
 void report_parse_metrics( char* metrics ) {
 
-  char* ptr;          /* Pointer to current character being evaluated */
-  char  msg[4096];    /* Warning message to specify to user           */
+  char* ptr;  /* Pointer to current character being evaluated */
 
   /* Set all flags to FALSE */
   report_line        = FALSE;
@@ -124,8 +126,8 @@ void report_parse_metrics( char* metrics ) {
       case 'f' :
       case 'F' :  report_fsm         = TRUE;  break;
       default  :
-        snprintf( msg, 4096, "Unknown metric specified '%c'...  Ignoring.", *ptr );
-        print_output( msg, WARNING );
+        snprintf( user_msg, USER_MSG_LENGTH, "Unknown metric specified '%c'...  Ignoring.", *ptr );
+        print_output( user_msg, WARNING );
         break;
     }
 
@@ -147,9 +149,8 @@ void report_parse_metrics( char* metrics ) {
 */
 bool report_parse_args( int argc, int last_arg, char** argv ) {
 
-  bool retval = TRUE;    /* Return value for this function */
-  int  i;                /* Loop iterator                  */
-  char err_msg[4096];    /* Error message for user         */
+  bool retval = TRUE;  /* Return value for this function */
+  int  i;              /* Loop iterator                  */
 
   i = last_arg + 1;
 
@@ -189,8 +190,8 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
       } else if( argv[i][0] == 'v' ) {
         report_comb_depth = REPORT_VERBOSE;
       } else {
-        snprintf( err_msg, 4096, "Unrecognized detail type: -d %s\n", argv[i] );
-        print_output( err_msg, FATAL );
+        snprintf( user_msg, USER_MSG_LENGTH, "Unrecognized detail type: -d %s\n", argv[i] );
+        print_output( user_msg, FATAL );
         retval = FALSE;
       }
 
@@ -200,8 +201,8 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
       if( is_directory( argv[i] ) ) {
         output_file = strdup( argv[i] );
       } else {
-  	snprintf( err_msg, 4096, "Illegal output directory specified \"%s\"", argv[i] );
-        print_output( err_msg, FATAL );
+  	snprintf( user_msg, USER_MSG_LENGTH, "Illegal output directory specified \"%s\"", argv[i] );
+        print_output( user_msg, FATAL );
         retval = FALSE;
       }
 
@@ -213,16 +214,16 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
  
       } else {
 
-        snprintf( err_msg, 4096, "Cannot find %s database file for opening", argv[i] );
-        print_output( err_msg, FATAL );
+        snprintf( user_msg, USER_MSG_LENGTH, "Cannot find %s database file for opening", argv[i] );
+        print_output( user_msg, FATAL );
         exit( 1 );
 
       }
 
     } else {
 
-      snprintf( err_msg, 4096, "Unknown report command option \"%s\".  See \"covered -h\" for more information.", argv[i] );
-      print_output( err_msg, FATAL );
+      snprintf( user_msg, USER_MSG_LENGTH, "Unknown report command option \"%s\".  See \"covered -h\" for more information.", argv[i] );
+      print_output( user_msg, FATAL );
       retval = FALSE;
 
     }
@@ -403,10 +404,9 @@ void report_generate( FILE* ofile ) {
 */
 int command_report( int argc, int last_arg, char** argv ) {
 
-  int   retval = 0;    /* Return value of this function         */
-  FILE* ofile;         /* Pointer to output stream              */
-  FILE* dbfile;        /* Pointer to database file to read from */
-  char  msg[4096];     /* Error message for user                */
+  int   retval = 0;  /* Return value of this function         */
+  FILE* ofile;       /* Pointer to output stream              */
+  FILE* dbfile;      /* Pointer to database file to read from */
 
   /* Initialize error suppression value */
   set_output_suppression( FALSE );
@@ -421,8 +421,8 @@ int command_report( int argc, int last_arg, char** argv ) {
 
       if( (ofile = fopen( output_file, "w" )) == NULL ) {
 
-        snprintf( msg, 4096, "Unable to open %s for writing", output_file );
-        print_output( msg, FATAL );
+        snprintf( user_msg, USER_MSG_LENGTH, "Unable to open %s for writing", output_file );
+        print_output( user_msg, FATAL );
         exit( 1 );
 
       } else {
@@ -441,8 +441,8 @@ int command_report( int argc, int last_arg, char** argv ) {
     /* Open database file for reading */
     if( input_db == NULL ) {
 
-      snprintf( msg, 4096, "Database file not specified in command line" );
-      print_output( msg, FATAL );
+      snprintf( user_msg, USER_MSG_LENGTH, "Database file not specified in command line" );
+      print_output( user_msg, FATAL );
       exit( 1 );
 
     } else {
@@ -467,6 +467,10 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 
 /* $Log$
+/* Revision 1.15  2002/09/13 05:12:25  phase1geo
+/* Adding final touches to -d option to report.  Adding documentation and
+/* updating development documentation to stay in sync.
+/*
 /* Revision 1.14  2002/09/12 05:16:25  phase1geo
 /* Updating all CDD files in regression suite due to change in vector handling.
 /* Modified vectors to assign a default value of 0xaa to unassigned registers
