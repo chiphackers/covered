@@ -145,7 +145,7 @@ void instance_db_write( mod_inst* root, FILE* file, char* scope ) {
 }
 
 /*!
- \param inst  Pointer to root instance of module instance tree to remove.
+ \param root  Pointer to root instance of module instance tree to remove.
 
  Recursively traverses instance tree, deallocating heap memory used to store the
  the tree.

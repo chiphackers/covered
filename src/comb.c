@@ -508,6 +508,8 @@ void combination_list_missed( FILE* ofile, expression* exp, int* exp_id ) {
 
     if( EXPR_COMB_MISSED( exp ) == 1 ) {
 
+      // printf( "missed expression, op: %d, id: %d\n", SUPPL_OP( exp->suppl ), exp->id );
+
       fprintf( ofile, "Expression %d\n", *exp_id );
       fprintf( ofile, "^^^^^^^^^^^^^\n" );
 
@@ -748,6 +750,10 @@ void combination_report( FILE* ofile, bool verbose, bool instance ) {
 
 
 /* $Log$
+/* Revision 1.28  2002/07/09 23:13:10  phase1geo
+/* Fixing report output bug for conditionals.  Also adjusting combinational logic
+/* report outputting.
+/*
 /* Revision 1.27  2002/07/09 17:27:25  phase1geo
 /* Fixing default case item handling and in the middle of making fixes for
 /* report outputting.

@@ -12,9 +12,9 @@
 <p>
 <a href="sim_8h-source.html">Go to the source code of this file.</a><table border=0 cellpadding=0 cellspacing=0>
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="sim_8h.html#a0">sim_expr_changed</a> (<a class="el" href="defines_8h.html#a123">expression</a> *expr)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="sim_8h.html#a0">sim_expr_changed</a> (<a class="el" href="defines_8h.html#a124">expression</a> *expr)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds specified expression's statement to pre-simulation statement queue.</em> <a href="#a0"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="sim_8h.html#a1">sim_add_stmt_to_queue</a> (<a class="el" href="defines_8h.html#a125">statement</a> *stmt)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="sim_8h.html#a1">sim_add_stmt_to_queue</a> (<a class="el" href="defines_8h.html#a126">statement</a> *stmt)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds specified statement to pre-simulation statement queue.</em> <a href="#a1"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="sim_8h.html#a2">sim_simulate</a> ()</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Simulates current timestep.</em> <a href="#a2"></a><em></em></font><br><br></td></tr>
@@ -37,7 +37,7 @@ Date: </b><dd>
         <tr>
           <td class="md" nowrap valign="top"> void sim_add_stmt_to_queue </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a125">statement</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a126">statement</a> *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>stmt</em>          </td>
           <td class="md" valign="top">)&nbsp;</td>
           <td class="md" nowrap></td>
@@ -74,7 +74,7 @@ Pointer to statement to add to queue.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void sim_expr_changed </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a123">expression</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a124">expression</a> *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>expr</em>          </td>
           <td class="md" valign="top">)&nbsp;</td>
           <td class="md" nowrap></td>
@@ -133,7 +133,7 @@ Simulates current timestep.
 This function is the heart of the simulation engine. It is called by the <a class="el" href="db_8c.html#a33">db_do_timestep</a>() function in <a class="el" href="db_8c.html">db.c</a> and moves the statements and expressions into the appropriate simulation functions. See above explanation on this procedure.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Mon Jul 8 23:41:50 2002 for Covered by
+<hr><address align="right"><small>Generated on Tue Jul 9 21:59:25 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

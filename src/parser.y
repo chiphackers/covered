@@ -808,8 +808,16 @@ expr_primary
 	: NUMBER
 		{
 		  expression* tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
-                  free_safe( tmp->value );
+                  vector_dealloc( tmp->value );
 		  tmp->value = $1;
+
+                  /* Calculate TRUE/FALSE-ness of NUMBER now */
+                  switch( expression_bit_value( tmp ) ) {
+                    case 0 :  tmp->suppl = tmp->suppl | (0x1 << SUPPL_LSB_FALSE);  break;
+                    case 1 :  tmp->suppl = tmp->suppl | (0x1 << SUPPL_LSB_TRUE);   break;
+                    default:  break;
+                  }
+
 		  $$ = tmp;
 		}
         | UNUSED_NUMBER

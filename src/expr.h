@@ -37,14 +37,18 @@ void expression_display( expression* expr );
 //! Performs operation specified by parameter expression.
 void expression_operate( expression* expr );
 
-//! Returns a value of 1, if the specified expression evaluates to a non-zero, non-X/Z value.
-bool expression_is_true( expression* expr );
+//! Returns a compressed, 1-bit representation of the value after a unary OR.
+int expression_bit_value( expression* expr );
 
 //! Deallocates memory used for expression.
 void expression_dealloc( expression* expr, bool exp_only );
 
 
 /* $Log$
+/* Revision 1.7  2002/06/28 03:04:59  phase1geo
+/* Fixing more errors found by diagnostics.  Things are running pretty well at
+/* this point with current diagnostics.  Still some report output problems.
+/*
 /* Revision 1.6  2002/06/25 03:39:03  phase1geo
 /* Fixed initial scoring bugs.  We now generate a legal CDD file for reporting.
 /* Fixed some report bugs though there are still some remaining.

@@ -89,10 +89,9 @@ Finds specified symbol in specified symbol table and returns pointer to signal.
 \item[{\em 
 sym}]Name of symbol to find in the table. \item[{\em 
 symtab}]Root of the symtable to search in. \item[{\em 
-sig}]Pointer to found signal. \item[{\em 
 skip}]Number of matching symbol values to skip.\end{description}
 \end{Desc}
 \begin{Desc}
 \item[Returns: ]\par
-Returns TRUE if symbol was found; otherwise, returns FALSE.\end{Desc}
-Performs a binary search of the specified tree to find matching symtable entry. If a match is found, assigns sig parameter to the signal represented by the symbol and returns TRUE; otherwise, simply returns FALSE. 
+Returns pointer to found symtable entry or NULL if unable to find.\end{Desc}
+Performs a binary search of the specified tree to find matching symtable entry. If a match is found,returns a pointer to the found symtable entry; otherwise, returns a value of NULL to indicate that the symtable entry was not found. 

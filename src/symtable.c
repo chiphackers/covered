@@ -72,14 +72,13 @@ symtable* symtable_add( char* sym, signal* sig, symtable** symtab ) {
 /*!
  \param sym     Name of symbol to find in the table.
  \param symtab  Root of the symtable to search in.
- \param sig     Pointer to found signal.
  \param skip    Number of matching symbol values to skip.
 
- \return Returns TRUE if symbol was found; otherwise, returns FALSE.
+ \return Returns pointer to found symtable entry or NULL if unable to find.
 
  Performs a binary search of the specified tree to find matching symtable entry.  If
- a match is found, assigns sig parameter to the signal represented by the symbol and
- returns TRUE; otherwise, simply returns FALSE.
+ a match is found,returns a pointer to the found symtable entry; otherwise, returns
+ a value of NULL to indicate that the symtable entry was not found.
 */
 symtable* symtable_find( char* sym, symtable* symtab, int skip ) {
 
@@ -146,6 +145,14 @@ void symtable_dealloc( symtable* symtab ) {
 }
 
 /* $Log$
+/* Revision 1.4  2002/07/05 16:49:47  phase1geo
+/* Modified a lot of code this go around.  Fixed VCD reader to handle changes in
+/* the reverse order (last changes are stored instead of first for timestamp).
+/* Fixed problem with AEDGE operator to handle vector value changes correctly.
+/* Added casez2.v diagnostic to verify proper handling of casez with '?' characters.
+/* Full regression passes; however, the recent changes seem to have impacted
+/* performance -- need to look into this.
+/*
 /* Revision 1.3  2002/07/03 03:31:11  phase1geo
 /* Adding RCS Log strings in files that were missing them so that file version
 /* information is contained in every source and header file.  Reordering src

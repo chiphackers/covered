@@ -48,6 +48,7 @@ DIAGLIST = assign3.2A \
 	   casez1.4 \
 	   casez2 \
            ifelse1 \
+           define1 \
 	   define2
 
 regress:	$(COVERED) clean $(DIAGLIST)
@@ -55,7 +56,7 @@ regress:	$(COVERED) clean $(DIAGLIST)
 $(DIAGLIST):
 	$(VERILOG) $(VERILOG_FLAGS) $@.v
 	./$(VERILOG_EXEC)
-	$(COVERED) -Q score -t main -vcd $@.vcd -o $@.cdd -v $@.v $(COVERED_FLAGS)
+	$(COVERED) -D score -t main -vcd $@.vcd -o $@.cdd -v $@.v $(COVERED_FLAGS)
 	diff $@.cdd $(CDD_DIR)/$@.cdd
 	rm -rf a.out $@.vcd $@.cdd
 

@@ -97,6 +97,17 @@ that it was unable to find the required Verilog modules.
   </tr>
   <tr>
     <td>
+      -i &lt;instance&gt;
+    </td>
+    <td>
+      Instance name of top-level module.  Necessary if 
+      module to verify coverage is not the top-level 
+      module in the design.  If not specified, -t value 
+      is used.
+    </td>
+  </tr>
+  <tr>
+    <td>
       -o &lt;<i>filename</i>&gt;
     </td>
     <td>

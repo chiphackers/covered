@@ -230,7 +230,7 @@ statement* sim_statement( statement* head_stmt ) {
        /* If this is a continuous assignment, don't traverse next pointers. */
        stmt = NULL;
     } else {
-      if( expression_is_true( stmt->exp ) ) {
+      if( expression_bit_value( stmt->exp ) == 1 ) {
         stmt = stmt->next_true;
       } else {
         stmt = stmt->next_false;
@@ -298,6 +298,9 @@ void sim_simulate() {
 }
 
 /* $Log$
+/* Revision 1.18  2002/07/05 00:37:37  phase1geo
+/* Small update to CASE handling in scope to avoid future errors.
+/*
 /* Revision 1.17  2002/07/03 21:30:53  phase1geo
 /* Fixed remaining issues with always statements.  Full regression is running
 /* error free at this point.  Regenerated documentation.  Added EOR expression

@@ -312,11 +312,11 @@ bool expression_db_read( char** line, module* curr_mod ) {
       expr        = expression_create( right, left, SUPPL_OP( suppl ), id, linenum );
       expr->suppl = suppl;
 
-      /* Don't set right child's parent if the parent is a CASE, CASEX, or CASEX type expression */
       if( right != NULL ) {
         right->parent->expr = expr;
       }
 
+      /* Don't set left child's parent if the parent is a CASE, CASEX, or CASEZ type expression */
       if( (left != NULL) && 
           (SUPPL_OP( suppl ) != EXP_OP_CASE) &&
           (SUPPL_OP( suppl ) != EXP_OP_CASEX) &&          (SUPPL_OP( suppl ) != EXP_OP_CASEZ) ) {
@@ -741,13 +741,14 @@ void expression_operate( expression* expr ) {
 /*!
  \param expr  Pointer to expression to evaluate.
 
- \return Returns 1 if the specified expression evaluates to a unary 1.
+ \return Returns the value of the expression after being compressed to 1 bit via
+         a unary OR.
 
  Returns a value of 1 if the specified expression contains at least one 1 value
  and no X or Z values in its bits.  It accomplishes this by performing a unary 
  OR operation on the specified expression value and testing bit 0 of the result.
 */
-bool expression_is_true( expression* expr ) {
+int expression_bit_value( expression* expr ) {
 
   vector result;        /* Vector containing result of expression tree */
   nibble data;          /* Data for result vector                      */
@@ -756,7 +757,7 @@ bool expression_is_true( expression* expr ) {
   vector_init( &result, &data, 1, 0 );
   vector_unary_op( &result, expr->value, or_optab );
 
-  return( (data & 0x3) == 1 );
+  return( data & 0x3 );
 
 }
 
@@ -805,6 +806,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.36  2002/07/09 17:27:25  phase1geo
+/* Fixing default case item handling and in the middle of making fixes for
+/* report outputting.
+/*
 /* Revision 1.35  2002/07/09 04:46:26  phase1geo
 /* Adding -D and -Q options to covered for outputting debug information or
 /* suppressing normal output entirely.  Updated generated documentation and

@@ -126,8 +126,9 @@
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a45">EXP_OP_CASE</a>&nbsp;&nbsp;&nbsp;0x2d</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a46">EXP_OP_CASEX</a>&nbsp;&nbsp;&nbsp;0x2e</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a47">EXP_OP_CASEZ</a>&nbsp;&nbsp;&nbsp;0x2f</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a95">EXPR_IS_MEASURABLE</a>(x)</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a96">EXPR_COMB_MISSED</a>(x)&nbsp;&nbsp;&nbsp;(EXPR_IS_MEASURABLE(x) &amp; (~SUPPL_WAS_TRUE(x-&gt;suppl) | ~SUPPL_WAS_FALSE(x-&gt;suppl)))</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a48">EXP_OP_DEFAULT</a>&nbsp;&nbsp;&nbsp;0x30</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a96">EXPR_IS_MEASURABLE</a>(x)</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a97">EXPR_COMB_MISSED</a>(x)&nbsp;&nbsp;&nbsp;(EXPR_IS_MEASURABLE(x) &amp; (~SUPPL_WAS_TRUE(x-&gt;suppl) | ~SUPPL_WAS_FALSE(x-&gt;suppl)))</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__op__tables.html#a0">AND_OP_TABLE</a>&nbsp;&nbsp;&nbsp;0,  0,  0,  0,  0,  1,  2,  2,  0,  2,  2,  2,  0,  2,  2,  2</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__op__tables.html#a1">OR_OP_TABLE</a>&nbsp;&nbsp;&nbsp;0,  1,  2,  2,  1,  1,  1,  1,  2,  1,  2,  2,  2,  1,  2,  2</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__op__tables.html#a2">XOR_OP_TABLE</a>&nbsp;&nbsp;&nbsp;0,  1,  2,  2,  1,  0,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2</td></tr>
@@ -151,28 +152,28 @@
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__lexer__val__types.html#a3">OCTAL</a>&nbsp;&nbsp;&nbsp;2</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__lexer__val__types.html#a4">HEXIDECIMAL</a>&nbsp;&nbsp;&nbsp;3</td></tr>
 <tr><td colspan=2><br><h2>Typedefs</h2></td></tr>
-<tr><td nowrap align=right valign=top>typedef unsigned int&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a119">nibble</a></td></tr>
-<tr><td nowrap align=right valign=top>typedef <a class="el" href="structstr__link__s.html">str_link_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a120">str_link</a></td></tr>
-<tr><td nowrap align=right valign=top>typedef <a class="el" href="structvector__s.html">vector_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a121">vector</a></td></tr>
-<tr><td nowrap align=right valign=top>typedef <a class="el" href="unionexpr__stmt__u.html">expr_stmt_u</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a122">expr_stmt</a></td></tr>
-<tr><td nowrap align=right valign=top>typedef <a class="el" href="structexpression__s.html">expression_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a123">expression</a></td></tr>
-<tr><td nowrap align=right valign=top>typedef <a class="el" href="structsignal__s.html">signal_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a124">signal</a></td></tr>
-<tr><td nowrap align=right valign=top>typedef <a class="el" href="structstatement__s.html">statement_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a125">statement</a></td></tr>
-<tr><td nowrap align=right valign=top>typedef <a class="el" href="structexp__link__s.html">exp_link_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a126">exp_link</a></td></tr>
-<tr><td nowrap align=right valign=top>typedef <a class="el" href="structstmt__link__s.html">stmt_link_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a127">stmt_link</a></td></tr>
-<tr><td nowrap align=right valign=top>typedef <a class="el" href="structstmt__loop__link__s.html">stmt_loop_link_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a128">stmt_loop_link</a></td></tr>
-<tr><td nowrap align=right valign=top>typedef <a class="el" href="structsig__link__s.html">sig_link_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a129">sig_link</a></td></tr>
-<tr><td nowrap align=right valign=top>typedef <a class="el" href="structmodule__s.html">module_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a130">module</a></td></tr>
-<tr><td nowrap align=right valign=top>typedef <a class="el" href="structmod__link__s.html">mod_link_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a131">mod_link</a></td></tr>
-<tr><td nowrap align=right valign=top>typedef <a class="el" href="structsymtable__s.html">symtable_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a132">symtable</a></td></tr>
-<tr><td nowrap align=right valign=top>typedef <a class="el" href="structsignal__width__s.html">signal_width_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a133">signal_width</a></td></tr>
-<tr><td nowrap align=right valign=top>typedef <a class="el" href="structsig__exp__bind__s.html">sig_exp_bind_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a134">sig_exp_bind</a></td></tr>
-<tr><td nowrap align=right valign=top>typedef <a class="el" href="structcase__stmt__s.html">case_stmt_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a135">case_statement</a></td></tr>
-<tr><td nowrap align=right valign=top>typedef <a class="el" href="structstatistic__s.html">statistic_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a136">statistic</a></td></tr>
-<tr><td nowrap align=right valign=top>typedef <a class="el" href="structmod__inst__s.html">mod_inst_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a137">mod_inst</a></td></tr>
+<tr><td nowrap align=right valign=top>typedef unsigned int&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a120">nibble</a></td></tr>
+<tr><td nowrap align=right valign=top>typedef <a class="el" href="structstr__link__s.html">str_link_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a121">str_link</a></td></tr>
+<tr><td nowrap align=right valign=top>typedef <a class="el" href="structvector__s.html">vector_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a122">vector</a></td></tr>
+<tr><td nowrap align=right valign=top>typedef <a class="el" href="unionexpr__stmt__u.html">expr_stmt_u</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a123">expr_stmt</a></td></tr>
+<tr><td nowrap align=right valign=top>typedef <a class="el" href="structexpression__s.html">expression_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a124">expression</a></td></tr>
+<tr><td nowrap align=right valign=top>typedef <a class="el" href="structsignal__s.html">signal_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a125">signal</a></td></tr>
+<tr><td nowrap align=right valign=top>typedef <a class="el" href="structstatement__s.html">statement_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a126">statement</a></td></tr>
+<tr><td nowrap align=right valign=top>typedef <a class="el" href="structexp__link__s.html">exp_link_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a127">exp_link</a></td></tr>
+<tr><td nowrap align=right valign=top>typedef <a class="el" href="structstmt__link__s.html">stmt_link_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a128">stmt_link</a></td></tr>
+<tr><td nowrap align=right valign=top>typedef <a class="el" href="structstmt__loop__link__s.html">stmt_loop_link_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a129">stmt_loop_link</a></td></tr>
+<tr><td nowrap align=right valign=top>typedef <a class="el" href="structsig__link__s.html">sig_link_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a130">sig_link</a></td></tr>
+<tr><td nowrap align=right valign=top>typedef <a class="el" href="structmodule__s.html">module_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a131">module</a></td></tr>
+<tr><td nowrap align=right valign=top>typedef <a class="el" href="structmod__link__s.html">mod_link_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a132">mod_link</a></td></tr>
+<tr><td nowrap align=right valign=top>typedef <a class="el" href="structsymtable__s.html">symtable_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a133">symtable</a></td></tr>
+<tr><td nowrap align=right valign=top>typedef <a class="el" href="structsignal__width__s.html">signal_width_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a134">signal_width</a></td></tr>
+<tr><td nowrap align=right valign=top>typedef <a class="el" href="structsig__exp__bind__s.html">sig_exp_bind_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a135">sig_exp_bind</a></td></tr>
+<tr><td nowrap align=right valign=top>typedef <a class="el" href="structcase__stmt__s.html">case_stmt_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a136">case_statement</a></td></tr>
+<tr><td nowrap align=right valign=top>typedef <a class="el" href="structstatistic__s.html">statistic_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a137">statistic</a></td></tr>
+<tr><td nowrap align=right valign=top>typedef <a class="el" href="structmod__inst__s.html">mod_inst_s</a>&nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a138">mod_inst</a></td></tr>
 <tr><td colspan=2><br><h2>Enumerations</h2></td></tr>
-<tr><td nowrap align=right valign=top>enum &nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a140">bool</a> { <a class="el" href="defines_8h.html#a140a138">FALSE</a>, 
-<a class="el" href="defines_8h.html#a140a139">TRUE</a>
+<tr><td nowrap align=right valign=top>enum &nbsp;</td><td valign=bottom><a class="el" href="defines_8h.html#a141">bool</a> { <a class="el" href="defines_8h.html#a141a139">FALSE</a>, 
+<a class="el" href="defines_8h.html#a141a140">TRUE</a>
  }</td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
@@ -251,7 +252,7 @@ Specifies current version of the Covered utility.     </td>
 Default database filename if not specified on command-line.     </td>
   </tr>
 </table>
-<a name="a96" doxytag="defines.h::EXPR_COMB_MISSED"></a><p>
+<a name="a97" doxytag="defines.h::EXPR_COMB_MISSED"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -278,7 +279,7 @@ Default database filename if not specified on command-line.     </td>
 Returns a value of 1 if the specified expression was measurable for combinational  coverage but not fully covered during simulation.     </td>
   </tr>
 </table>
-<a name="a95" doxytag="defines.h::EXPR_IS_MEASURABLE"></a><p>
+<a name="a96" doxytag="defines.h::EXPR_IS_MEASURABLE"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -339,7 +340,7 @@ Determine size of integer in bits.     </td>
   </tr>
 </table>
 <hr><h2>Typedef Documentation</h2>
-<a name="a135" doxytag="defines.h::case_statement"></a><p>
+<a name="a136" doxytag="defines.h::case_statement"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -361,7 +362,7 @@ Determine size of integer in bits.     </td>
     </td>
   </tr>
 </table>
-<a name="a126" doxytag="defines.h::exp_link"></a><p>
+<a name="a127" doxytag="defines.h::exp_link"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -383,7 +384,7 @@ Determine size of integer in bits.     </td>
     </td>
   </tr>
 </table>
-<a name="a122" doxytag="defines.h::expr_stmt"></a><p>
+<a name="a123" doxytag="defines.h::expr_stmt"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -405,7 +406,7 @@ Determine size of integer in bits.     </td>
     </td>
   </tr>
 </table>
-<a name="a123" doxytag="defines.h::expression"></a><p>
+<a name="a124" doxytag="defines.h::expression"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -427,7 +428,7 @@ Determine size of integer in bits.     </td>
     </td>
   </tr>
 </table>
-<a name="a137" doxytag="defines.h::mod_inst"></a><p>
+<a name="a138" doxytag="defines.h::mod_inst"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -449,7 +450,7 @@ Determine size of integer in bits.     </td>
     </td>
   </tr>
 </table>
-<a name="a131" doxytag="defines.h::mod_link"></a><p>
+<a name="a132" doxytag="defines.h::mod_link"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -471,7 +472,7 @@ Determine size of integer in bits.     </td>
     </td>
   </tr>
 </table>
-<a name="a130" doxytag="defines.h::module"></a><p>
+<a name="a131" doxytag="defines.h::module"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -493,7 +494,7 @@ Determine size of integer in bits.     </td>
     </td>
   </tr>
 </table>
-<a name="a119" doxytag="defines.h::nibble"></a><p>
+<a name="a120" doxytag="defines.h::nibble"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -515,7 +516,7 @@ Determine size of integer in bits.     </td>
 A nibble is a 32-bit value that is subdivided into three parts: Bits 7 - 0 = 4 bits of 4-state value. Bits 11 - 8 = Toggle01 value for each of the four 4-state bits. Bits 15 - 12 = Toggle10 value for each of the four 4-state bits. Bits 19 - 16 = Indicates if this bit has been previously assigned. Bits 23 - 20 = Static value indicators for each of the four 4-state bits. Bits 27 - 24 = Indicates if this bit was set to a value of 0 (FALSE). Bits 31 - 28 = Indicates if this bit was set to a value of 1 (TRUE).     </td>
   </tr>
 </table>
-<a name="a134" doxytag="defines.h::sig_exp_bind"></a><p>
+<a name="a135" doxytag="defines.h::sig_exp_bind"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -537,7 +538,7 @@ A nibble is a 32-bit value that is subdivided into three parts: Bits 7 - 0 = 4 b
     </td>
   </tr>
 </table>
-<a name="a129" doxytag="defines.h::sig_link"></a><p>
+<a name="a130" doxytag="defines.h::sig_link"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -559,7 +560,7 @@ A nibble is a 32-bit value that is subdivided into three parts: Bits 7 - 0 = 4 b
     </td>
   </tr>
 </table>
-<a name="a124" doxytag="defines.h::signal"></a><p>
+<a name="a125" doxytag="defines.h::signal"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -581,7 +582,7 @@ A nibble is a 32-bit value that is subdivided into three parts: Bits 7 - 0 = 4 b
     </td>
   </tr>
 </table>
-<a name="a133" doxytag="defines.h::signal_width"></a><p>
+<a name="a134" doxytag="defines.h::signal_width"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -603,7 +604,7 @@ A nibble is a 32-bit value that is subdivided into three parts: Bits 7 - 0 = 4 b
     </td>
   </tr>
 </table>
-<a name="a125" doxytag="defines.h::statement"></a><p>
+<a name="a126" doxytag="defines.h::statement"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -625,7 +626,7 @@ A nibble is a 32-bit value that is subdivided into three parts: Bits 7 - 0 = 4 b
     </td>
   </tr>
 </table>
-<a name="a136" doxytag="defines.h::statistic"></a><p>
+<a name="a137" doxytag="defines.h::statistic"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -647,7 +648,7 @@ A nibble is a 32-bit value that is subdivided into three parts: Bits 7 - 0 = 4 b
     </td>
   </tr>
 </table>
-<a name="a127" doxytag="defines.h::stmt_link"></a><p>
+<a name="a128" doxytag="defines.h::stmt_link"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -669,7 +670,7 @@ A nibble is a 32-bit value that is subdivided into three parts: Bits 7 - 0 = 4 b
     </td>
   </tr>
 </table>
-<a name="a128" doxytag="defines.h::stmt_loop_link"></a><p>
+<a name="a129" doxytag="defines.h::stmt_loop_link"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -691,7 +692,7 @@ A nibble is a 32-bit value that is subdivided into three parts: Bits 7 - 0 = 4 b
     </td>
   </tr>
 </table>
-<a name="a120" doxytag="defines.h::str_link"></a><p>
+<a name="a121" doxytag="defines.h::str_link"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -713,7 +714,7 @@ A nibble is a 32-bit value that is subdivided into three parts: Bits 7 - 0 = 4 b
     </td>
   </tr>
 </table>
-<a name="a132" doxytag="defines.h::symtable"></a><p>
+<a name="a133" doxytag="defines.h::symtable"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -735,7 +736,7 @@ A nibble is a 32-bit value that is subdivided into three parts: Bits 7 - 0 = 4 b
     </td>
   </tr>
 </table>
-<a name="a121" doxytag="defines.h::vector"></a><p>
+<a name="a122" doxytag="defines.h::vector"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -758,7 +759,7 @@ A nibble is a 32-bit value that is subdivided into three parts: Bits 7 - 0 = 4 b
   </tr>
 </table>
 <hr><h2>Enumeration Type Documentation</h2>
-<a name="a140" doxytag="defines.h::bool"></a><p>
+<a name="a141" doxytag="defines.h::bool"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -780,16 +781,16 @@ A nibble is a 32-bit value that is subdivided into three parts: Bits 7 - 0 = 4 b
 Defines boolean variables used in most functions. <dl compact><dt><b>
 Enumeration values:</b><dd>
 <table border=0 cellspacing=2 cellpadding=0>
-<tr><td valign=top><em><a name="a140a138" doxytag="FALSE"></a><em>FALSE</em></em>&nbsp;</td><td>
+<tr><td valign=top><em><a name="a141a139" doxytag="FALSE"></a><em>FALSE</em></em>&nbsp;</td><td>
 Boolean false value </td></tr>
-<tr><td valign=top><em><a name="a140a139" doxytag="TRUE"></a><em>TRUE</em></em>&nbsp;</td><td>
+<tr><td valign=top><em><a name="a141a140" doxytag="TRUE"></a><em>TRUE</em></em>&nbsp;</td><td>
 Boolean true value </td></tr>
 </table>
 </dl>
     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Mon Jul 8 23:41:48 2002 for Covered by
+<hr><address align="right"><small>Generated on Tue Jul 9 21:59:23 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>
