@@ -54,7 +54,7 @@ Report command
 
    4.  Make sure that combinational table output is correct for all cases.
 
-   5.  Add '+' to combinational logic output for values equal to or greater than one.
+X  5.  Add '+' to combinational logic output for values equal to or greater than one.
 
    6.  Make sure that all unnecessary output is removed from verbose output (sometimes
        modules/instances that have received 100% coverage still get some message).
