@@ -985,7 +985,8 @@ void vector_vcd_assign( vector* vec, char* value, int msb, int lsb ) {
 
   /* Set pointer to LSB */
   ptr = (value + strlen( value )) - 1;
-  i   = lsb;
+  i   = (lsb > 0) ? (lsb - vec->lsb) : 0;
+  msb = (lsb > 0) ? (msb - vec->lsb) : msb;
     
   while( ptr >= value ) {
 
@@ -1473,6 +1474,10 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.33  2003/02/13 23:44:08  phase1geo
+ Tentative fix for VCD file reading.  Not sure if it works correctly when
+ original signal LSB is != 0.  Icarus Verilog testsuite passes.
+
  Revision 1.32  2003/02/11 05:20:52  phase1geo
  Fixing problems with merging constant/parameter vector values.  Also fixing
  bad output from merge command when the CDD files cannot be opened for reading.
