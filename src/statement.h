@@ -12,7 +12,7 @@
 
 
 /*! \brief Creates new statement structure. */
-statement* statement_create( expression* exp );
+statement* statement_create( expression* exp, sig_link* head, sig_link* tail );
 
 /*! \brief Writes specified statement to the specified output file. */
 void statement_db_write( statement* stmt, FILE* ofile, char* scope );
@@ -35,6 +35,10 @@ void statement_dealloc( statement* stmt );
 
 /*
  $Log$
+ Revision 1.13  2002/11/05 00:20:08  phase1geo
+ Adding development documentation.  Fixing problem with combinational logic
+ output in report command and updating full regression.
+
  Revision 1.12  2002/10/31 23:14:27  phase1geo
  Fixing C compatibility problems with cc and gcc.  Found a few possible problems
  with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that

@@ -43,12 +43,12 @@
 4 4 main 3 3
 4 3 main 4 0
 4 9 main 7 7
-4 7 main 9 0
+4 7 main 9 0 c
 4 14 main 12 12
-4 12 main 14 0
+4 12 main 14 0 d
 4 24 main 21 21
-4 21 main 24 0
+4 21 main 24 0 e f
 4 32 main 27 27
 4 31 main 27 27
 4 30 main 31 32
-4 27 main 30 0
+4 27 main 30 0 c

@@ -805,7 +805,8 @@ typedef enum {
    <tr> <td> 11:8  </td> <td> Indicator if associated bit was toggled from 0->1 </td> </tr>
    <tr> <td> 15:12 </td> <td> Indicator if associated bit was toggled from 1->0 </td></tr>
    <tr> <td> 19:16 </td> <td> Indicator if associated bit has been previously assigned this timestep </td> </tr>
-   <tr> <td> 23:20 </td> <td> Static value indicators for each of the four 4-state bits </td> </tr>
+   <tr> <td> 21:20 </td> <td> Indicates original value type (HEXIDECIMAL, OCTAL, BINARY, DECIMAL) </td> </tr>
+   <tr> <td> 23:22 </td> <td> General purpose bits </td> </tr>
    <tr> <td> 27:24 </td> <td> Indicator if associated bit was set to a value of 0 (FALSE) </td> </tr>
    <tr> <td> 31:28 </td> <td> Indicator if associated bit was set to a value of 1 (TRUE) </td> </tr>
  </table>
@@ -929,6 +930,16 @@ struct expression_s {
 
 /*------------------------------------------------------------------------------*/
 /*!
+ Linked list element that stores a signal.
+*/
+struct sig_link_s;
+
+/*!
+ Renaming signal link structure for convenience.
+*/
+typedef struct sig_link_s sig_link;
+
+/*!
  A statement is defined to be the structure connected to the root of an expression tree.
  Statements are sequentially run in the run-time engine, starting at the root statement.
  After a statements expression tree has been checked for changes and possibly placed into
@@ -948,9 +959,11 @@ struct statement_s;
 typedef struct statement_s statement;
 
 struct statement_s {
-  expression* exp;         /*!< Pointer to associated expression tree                        */
-  statement*  next_true;   /*!< Pointer to next statement to run if expression tree non-zero */
-  statement*  next_false;  /*!< Pointer to next statement to run if next_true not picked     */
+  expression* exp;            /*!< Pointer to associated expression tree                        */
+  sig_link*   wait_sig_head;  /*!< Pointer to head of wait event signal list                    */
+  sig_link*   wait_sig_tail;  /*!< Pointer to tail of wait event signal list                    */
+  statement*  next_true;      /*!< Pointer to next statement to run if expression tree non-zero */
+  statement*  next_false;     /*!< Pointer to next statement to run if next_true not picked     */
 };
 
 /*!
@@ -1037,16 +1050,6 @@ struct signal_s {
 };
 
 /*------------------------------------------------------------------------------*/
-/*!
- Linked list element that stores a signal.
-*/
-struct sig_link_s;
-
-/*!
- Renaming signal link structure for convenience.
-*/
-typedef struct sig_link_s sig_link;
-
 struct sig_link_s {
   signal*   sig;   /*!< Pointer to signal in list                   */
   sig_link* next;  /*!< Pointer to next signal link element in list */
@@ -1293,6 +1296,9 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.68  2003/02/27 03:41:56  phase1geo
+ More development documentation updates.
+
  Revision 1.67  2003/02/13 23:44:08  phase1geo
  Tentative fix for VCD file reading.  Not sure if it works correctly when
  original signal LSB is != 0.  Icarus Verilog testsuite passes.

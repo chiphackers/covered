@@ -14,6 +14,9 @@
 /*! \brief Creates a new symtable entry and adds it to the specified symbol table. */
 symtable* symtable_add( char* sym, signal* sig, int msb, int lsb, symtable** symtab );
 
+/*! \brief Searches symbol table for specified symbol and returns pointer to signal. */
+signal* symtable_find_signal( char* sym, symtable* symtab );
+
 /*! \brief Sets all matching symtable entries to specified value */
 int symtable_find_and_set( char* sym, symtable* symtab, char* value );
 
@@ -29,6 +32,10 @@ void symtable_dealloc( symtable* symtab );
 
 /*
  $Log$
+ Revision 1.9  2003/02/13 23:44:08  phase1geo
+ Tentative fix for VCD file reading.  Not sure if it works correctly when
+ original signal LSB is != 0.  Icarus Verilog testsuite passes.
+
  Revision 1.8  2003/01/03 05:52:01  phase1geo
  Adding code to help safeguard from segmentation faults due to array overflow
  in VCD parser and symtable.  Reorganized code for symtable symbol lookup and

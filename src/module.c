@@ -392,7 +392,7 @@ void module_clean( module* mod ) {
     mod->exp_tail = NULL;
 
     /* Free signal list */
-    sig_link_delete_list( mod->sig_head );
+    sig_link_delete_list( mod->sig_head, TRUE );
     mod->sig_head = NULL;
     mod->sig_tail = NULL;
 
@@ -432,6 +432,11 @@ void module_dealloc( module* mod ) {
 
 /*
  $Log$
+ Revision 1.28  2002/12/30 05:31:33  phase1geo
+ Fixing bug in module merge for reports when parameterized modules are merged.
+ These modules should not output an error to the user when mismatching modules
+ are found.
+
  Revision 1.27  2002/11/05 00:20:07  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.

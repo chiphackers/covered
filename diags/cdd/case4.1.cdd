@@ -57,6 +57,6 @@
 4 57 main 35 56
 4 58 main 35 57
 4 36 main 58 58
-4 35 main 36 0
+4 35 main 36 0 display_tagto_current_state pcix_pio_timeout_recorder split_resp_active split_resp_tag tag_timeout clr_tag_toed
 4 62 main 61 61
-4 61 main 62 0
+4 61 main 62 0 clock

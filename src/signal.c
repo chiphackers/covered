@@ -283,6 +283,9 @@ void signal_vcd_assign( signal* sig, char* value, int msb, int lsb ) {
 
   assert( sig->value != NULL );
 
+  snprintf( user_msg, USER_MSG_LENGTH, "Assigning signal %s to value %s", sig->name, value );
+  print_output( user_msg, DEBUG );
+
   /* Assign value to signal's vector value */
   vector_vcd_assign( sig->value, value, msb, lsb );
 
@@ -367,6 +370,11 @@ void signal_dealloc( signal* sig ) {
 
 /*
  $Log$
+ Revision 1.29  2003/02/26 23:00:50  phase1geo
+ Fixing bug with single-bit parameter handling (param4.v diagnostic miscompare
+ between Linux and Irix OS's).  Updates to testsuite and new diagnostic added
+ for additional testing in this area.
+
  Revision 1.28  2003/02/13 23:44:08  phase1geo
  Tentative fix for VCD file reading.  Not sure if it works correctly when
  original signal LSB is != 0.  Icarus Verilog testsuite passes.

@@ -70,6 +70,7 @@
 #include "vector.h"
 #include "iter.h"
 #include "link.h"
+#include "signal.h"
 
 
 extern nibble or_optab[16];
@@ -145,6 +146,39 @@ void sim_add_stmt_to_queue( statement* stmt ) {
     stmt_link_add_tail( stmt, &(presim_stmt_head), &(presim_stmt_tail) );
 
   }
+
+}
+
+/*!
+ \param sig  Pointer to signal to lookup.
+
+ \return Returns TRUE if signal name was found in pre-simulation queue; otherwise, returns FALSE.
+
+ Searches through all statements in pre-simulation queue, searching for one that
+ contains the signal name specified in the parameter list.  If the signal name was found,
+ return a value of TRUE; otherwise, returns a value of FALSE.
+*/
+bool sim_is_curr_wait_signal( signal* sig ) {
+
+  stmt_iter curr_stmt;      /* Statement list iterator     */
+  bool      found = FALSE;  /* Set to TRUE if signal found */
+
+  if( sig != NULL ) {
+
+    stmt_iter_reset( &curr_stmt, presim_stmt_head );
+
+    while( (curr_stmt.curr != NULL) && !found ) {
+      if( sig_link_find( sig, curr_stmt.curr->stmt->wait_sig_head ) != NULL ) {
+        found = TRUE;
+      }
+      stmt_iter_next( &curr_stmt );
+    }
+
+  }
+
+  /* printf( "is_curr_wait_signal (%s) found to be (%d)\n", sig->name, found ); */
+
+  return( found );
 
 }
 
@@ -317,6 +351,11 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.28  2002/11/27 06:03:35  phase1geo
+ Adding diagnostics to verify selectable delay.  Removing selectable delay
+ warning from being output constantly to only outputting when selectable delay
+ found in design and -T option not specified.  Full regression passes.
+
  Revision 1.27  2002/11/27 03:49:20  phase1geo
  Fixing bugs in score and report commands for regression.  Finally fixed
  static expression calculation to yield proper coverage results for constant

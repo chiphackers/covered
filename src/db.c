@@ -58,8 +58,9 @@ str_link* modlist_tail  = NULL;
 
 module*   curr_module   = NULL;
 
-symtable* vcd_symtab    = NULL;
-symtable* timestep_tab  = NULL;
+symtable* vcd_symtab           = NULL;
+symtable* presim_timestep_tab  = NULL;
+symtable* postsim_timestep_tab = NULL;
 
 /*!
  This static value contains the current expression ID number to use for the next expression found, it
@@ -777,21 +778,27 @@ void db_add_expression( expression* root ) {
 }
 
 /*!
- \param exp      Pointer to associated "root" expression.
+ \param exp   Pointer to associated "root" expression.
+ \param head  Pointer to head of wait event signal list.
+ \param tail  Pointer to tail of wait event signal list.
 
  \return Returns pointer to created statement.
 
  Creates an statement structure and adds created statement to current
  module's statement list.
 */
-statement* db_create_statement( expression* exp ) {
+statement* db_create_statement( expression* exp, sig_link** head, sig_link** tail ) {
 
-  statement* stmt;       /* Pointer to newly created statement */
+  statement* stmt;  /* Pointer to newly created statement */
 
   snprintf( user_msg, USER_MSG_LENGTH, "In db_create_statement, id: %d, line: %d", exp->id, exp->line );
   print_output( user_msg, DEBUG );
 
-  stmt = statement_create( exp );
+  stmt = statement_create( exp, *head, *tail );
+
+  /* Clear head and tail pointers for next statement */
+  *head = NULL;
+  *tail = NULL;
 
   return( stmt );
 
@@ -1117,9 +1124,17 @@ void db_set_symbol_char( char* sym, char value ) {
    Set value of all matching occurrences in current timestep.  If no occurrences
    were found, add it to the current timestep.
   */
-  if( symtable_find_and_set( sym, timestep_tab, val ) == 0 ) {
+  if( sim_is_curr_wait_signal( symtable_find_signal( sym, vcd_symtab ) ) ) {
 
-    symtable_move_and_set( sym, vcd_symtab, val, &(timestep_tab) );
+    if( symtable_find_and_set( sym, presim_timestep_tab, val ) == 0 ) {
+      symtable_move_and_set( sym, vcd_symtab, val, &(presim_timestep_tab) );
+    }
+
+  } else {
+
+    if( symtable_find_and_set( sym, postsim_timestep_tab, val ) == 0 ) {
+      symtable_move_and_set( sym, vcd_symtab, val, &(postsim_timestep_tab) );
+    }
 
   }
 
@@ -1140,9 +1155,17 @@ void db_set_symbol_string( char* sym, char* value ) {
   print_output( user_msg, DEBUG );
 
   /* Only search VCD table if symbol has never been moved over */
-  if( symtable_find_and_set( sym, timestep_tab, value ) == 0 ) {
+  if( sim_is_curr_wait_signal( symtable_find_signal( sym, vcd_symtab ) ) ) {
 
-    symtable_move_and_set( sym, vcd_symtab, value, &(timestep_tab) );
+    if( symtable_find_and_set( sym, presim_timestep_tab, value ) == 0 ) {
+      symtable_move_and_set( sym, vcd_symtab, value, &(presim_timestep_tab) );
+    }
+
+  } else {
+
+    if( symtable_find_and_set( sym, postsim_timestep_tab, value ) == 0 ) {
+      symtable_move_and_set( sym, vcd_symtab, value, &(postsim_timestep_tab) );
+    }
 
   }
 
@@ -1163,20 +1186,32 @@ void db_do_timestep( int time ) {
 
   curr_sim_time = time;
 
-  /* Assign all stored values in current timestep to stored signals */
-  symtable_assign( timestep_tab );
+  /* Assign all stored values in current pre-timestep to stored signals */
+  print_output( "Assigning presimulation signals...", DEBUG );
+  symtable_assign( presim_timestep_tab );
 
   /* Simulate the current timestep */
   sim_simulate();
 
-  /* Finally, clear timestep_tab */
-  symtable_dealloc( timestep_tab );
-  timestep_tab = NULL;
+  /* Assign all stored values in current post-timestep to stored signals */
+  print_output( "Assigning postsimulation signals...", DEBUG );
+  symtable_assign( postsim_timestep_tab );
+
+  /* Finally, clear presim_timestep_tab and postsim_timestep_tab */
+  symtable_dealloc( presim_timestep_tab );
+  presim_timestep_tab = NULL;
+
+  symtable_dealloc( postsim_timestep_tab );
+  postsim_timestep_tab = NULL;
 
 }
 
 /*
  $Log$
+ Revision 1.91  2003/02/19 00:47:08  phase1geo
+ Getting things ready for next prelease.  Fixing bug with db_remove_statement
+ function.
+
  Revision 1.90  2003/02/18 20:17:01  phase1geo
  Making use of scored flag in CDD file.  Causing report command to exit early
  if it is working on a CDD file which has not been scored.  Updated testsuite

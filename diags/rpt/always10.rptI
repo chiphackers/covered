@@ -5,7 +5,7 @@ LINE COVERAGE RESULTS BY INSTANCE
 ---------------------------------
 Instance                                          Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                                              1/   0/   1      100%
+  main                                              3/   0/   3      100%
 =================================================================================
 
 TOGGLE COVERAGE RESULTS BY INSTANCE
@@ -13,17 +13,17 @@ TOGGLE COVERAGE RESULTS BY INSTANCE
 Instance                                                   Toggle 0 -> 1                    Toggle 1 -> 0
                                                   Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
 ----------------------------------------------------------------------------------------------------------------
-  main                                              1/   1/   2       50%            0/   2/   2        0%
+  main                                              2/   2/   4       50%            2/   2/   4       50%
 
-Module: main, File: real1.1.v, Instance: main
+Module: main, File: always10.v, Instance: main
 --------------------------------------------------------
 Signals not getting 100% toggle coverage
 
 Signal                    Toggle
 ----------------------------------------------------------------------------------
-b                         0->1: 1'b1
+c                         0->1: 1'b0
 ......................... 1->0: 1'b0 ...
-a                         0->1: 1'b0
+b                         0->1: 1'b0
 ......................... 1->0: 1'b0 ...
 ===============================================================================================================
 
@@ -32,4 +32,22 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY INSTANCE
 Instance                                               Logic Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                                              2/   0/   2      100%
+  main                                              5/   1/   6       83%
+
+Module: main, File: always10.v, Instance: main
+--------------------------------------------------------
+Missed Combinations
+====================================================
+ Line #     Expression
+====================================================
+      8:     c 
+            |1|
+
+
+Expression 1
+^^^^^^^^^^^^^ - 
+ Value
+-------
+   1
+
+

@@ -81,6 +81,38 @@ symtable* symtable_add( char* sym, signal* sig, int msb, int lsb, symtable** sym
 }
 
 /*!
+ \param sym  Symbol to be searched for.
+ \param symtab  Symbol table to search for specified symbol.
+
+ \return Returns pointer to found signal or NULL if symbol not found in table.
+
+ Searches specified symbol table for an entry that matches the specified symbol.
+ If the symbol is found, the signal pointer from this entry is returned; otherwise,
+ if the symbol is not found, a value of NULL is returned.
+*/
+signal* symtable_find_signal( char* sym, symtable* symtab ) {
+
+  symtable* curr;        /* Pointer to current symtable       */
+  int       comp;        /* Specifies symbol comparison value */
+  signal*   sig = NULL;  /* Pointer to found signal           */
+
+  curr = symtab;
+  while( (curr != NULL) && (sig == NULL) ) {
+    comp = strcmp( sym, curr->sym );
+    if( comp == 0 ) {
+      sig = curr->sig;
+    } else if( comp > 0 ) {
+      curr = curr->right;
+    } else {
+      curr = curr->left;
+    }
+  }
+
+  return( sig ); 
+
+}
+
+/*!
  \param sym     Name of symbol to find in the table.
  \param symtab  Root of the symtable to search in.
  \param value   Value to set symtable entry to when match found.
@@ -194,6 +226,10 @@ void symtable_dealloc( symtable* symtab ) {
 
 /*
  $Log$
+ Revision 1.10  2003/02/13 23:44:08  phase1geo
+ Tentative fix for VCD file reading.  Not sure if it works correctly when
+ original signal LSB is != 0.  Icarus Verilog testsuite passes.
+
  Revision 1.9  2003/01/03 05:52:00  phase1geo
  Adding code to help safeguard from segmentation faults due to array overflow
  in VCD parser and symtable.  Reorganized code for symtable symbol lookup and

@@ -18,6 +18,9 @@ void sim_expr_changed( expression* expr );
 /*! \brief Adds specified statement to pre-simulation statement queue. */
 void sim_add_stmt_to_queue( statement* stmt );
 
+/*! \brief Searches pre-simulation queue for specified signal name. */
+bool sim_is_curr_wait_signal( signal* sig );
+
 /*! \brief Adds static expression values to initial simulator */
 void sim_add_statics();
 
@@ -27,6 +30,12 @@ void sim_simulate();
 
 /*
  $Log$
+ Revision 1.7  2002/11/27 03:49:20  phase1geo
+ Fixing bugs in score and report commands for regression.  Finally fixed
+ static expression calculation to yield proper coverage results for constant
+ expressions.  Updated regression suite and development documentation for
+ changes.
+
  Revision 1.6  2002/11/05 00:20:08  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.

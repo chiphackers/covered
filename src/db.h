@@ -51,7 +51,7 @@ expression* db_create_expression( expression* right, expression* left, int op, i
 void db_add_expression( expression* root );
 
 /*! \brief Creates new statement expression from specified information.  Called by parser. */
-statement* db_create_statement( expression* exp );
+statement* db_create_statement( expression* exp, sig_link** head, sig_link** tail );
 
 /*! \brief Adds specified statement to current module's statement list.  Called by parser. */
 void db_add_statement( statement* stmt, statement* start );
@@ -92,6 +92,10 @@ void db_do_timestep( int time );
 
 /*
  $Log$
+ Revision 1.28  2003/02/13 23:44:08  phase1geo
+ Tentative fix for VCD file reading.  Not sure if it works correctly when
+ original signal LSB is != 0.  Icarus Verilog testsuite passes.
+
  Revision 1.27  2003/01/25 22:39:02  phase1geo
  Fixing case where statement is found to be unsupported in middle of statement
  tree.  The entire statement tree is removed from consideration for simulation.

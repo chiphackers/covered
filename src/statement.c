@@ -117,13 +117,15 @@ extern char user_msg[USER_MSG_LENGTH];
 
 /*!
  \param exp   Pointer to root expression of expression tree for this statement.
+ \param head  Pointer to head of wait event signal list.
+ \param tail  Pointer to tail of wait event signal list.
   
  \return Returns pointer to the newly created statement.
 
  Creates a new statement structure from heap memory and initializes it with the
  specified parameter information.
 */
-statement* statement_create( expression* exp ) {
+statement* statement_create( expression* exp, sig_link* head, sig_link* tail ) {
 
   statement* stmt;   /* Pointer to newly created statement */
 
@@ -131,6 +133,8 @@ statement* statement_create( expression* exp ) {
   stmt->exp               = exp;
   stmt->exp->parent->stmt = stmt;
   stmt->exp->suppl        = stmt->exp->suppl | (0x1 << SUPPL_LSB_ROOT);
+  stmt->wait_sig_head     = head;
+  stmt->wait_sig_tail     = tail;
   stmt->next_true         = NULL;
   stmt->next_false        = NULL;
 
@@ -212,6 +216,8 @@ void statement_stack_compare( statement* stmt ) {
 */
 void statement_db_write( statement* stmt, FILE* ofile, char* scope ) {
 
+  sig_link* curr_sig;  /* Pointer to current signal link */
+
   assert( stmt != NULL );
 
 #ifdef EFFICIENCY_CODE
@@ -248,6 +254,13 @@ void statement_db_write( statement* stmt, FILE* ofile, char* scope ) {
     fprintf( ofile, " %d", stmt->next_false->exp->id );
   }
 
+  /* Print out all wait event signal names */
+  curr_sig = stmt->wait_sig_head;
+  while( curr_sig != NULL ) {
+    fprintf( ofile, " %s", curr_sig->sig->name );
+    curr_sig = curr_sig->next;
+  }
+
   fprintf( ofile, "\n" );
 
 }
@@ -266,7 +279,7 @@ bool statement_db_read( char** line, module* curr_mod, int read_mode ) {
 
   bool       retval = TRUE;  /* Return value of this function                                          */
   int        id;             /* ID of root expression that is associated with this statement           */
-  char       modname[4096];  /* Scope of module to which this statement belongs                        */
+  char       name[4096];     /* Temporary name string                                                  */
   int        true_id;        /* ID of root expression that is associated with the next_true statement  */
   int        false_id;       /* ID of root expression that is associated with the next_false statement */
   expression tmpexp;         /* Temporary expression used for expression search                        */
@@ -274,8 +287,10 @@ bool statement_db_read( char** line, module* curr_mod, int read_mode ) {
   exp_link*  expl;           /* Pointer to found expression link                                       */
   stmt_link* stmtl;          /* Pointer to found statement link                                        */
   int        chars_read;     /* Number of characters read from line                                    */
+  sig_link*  sigl;           /* Pointer to found signal link                                           */     
+  signal     sig;            /* Temporary signal for searching purposes                                */
 
-  if( sscanf( *line, "%d %s %d %d%n", &id, modname, &true_id, &false_id, &chars_read ) == 4 ) {
+  if( sscanf( *line, "%d %s %d %d%n", &id, name, &true_id, &false_id, &chars_read ) == 4 ) {
 
     *line = *line + chars_read;
 
@@ -290,7 +305,7 @@ bool statement_db_read( char** line, module* curr_mod, int read_mode ) {
       tmpexp.id = id;
       expl = exp_link_find( &tmpexp, curr_mod->exp_head );
 
-      stmt = statement_create( expl->exp );
+      stmt = statement_create( expl->exp, NULL, NULL );
 
       /* Find and link next_true */
       if( true_id == id ) {
@@ -330,6 +345,18 @@ bool statement_db_read( char** line, module* curr_mod, int read_mode ) {
 
       /* Possibly add statement to presimulation queue */
       sim_add_stmt_to_queue( stmt );
+
+      /* Finally, read in all wait event signals */
+      sig.name = name;
+      while( (sscanf( *line, "%s%n", sig.name, &chars_read ) == 1) && retval ) {
+        *line = *line + chars_read;
+        if( (sigl = sig_link_find( &sig, curr_mod->sig_head )) == NULL ) {
+          print_output( "Internal error:  statement in database written before its module", FATAL );
+          retval = FALSE;
+        } else {
+          sig_link_add( sigl->sig, &(stmt->wait_sig_head), &(stmt->wait_sig_tail) ); 
+        }
+      }
 
     }
 
@@ -549,6 +576,9 @@ void statement_dealloc_recursive( statement* stmt ) {
     /* Deallocate entire expression tree */
     expression_dealloc( stmt->exp, FALSE );
   
+    /* Remove wait event signal list */
+    sig_link_delete_list( stmt->wait_sig_head, FALSE );
+
     /* Remove TRUE path */
     statement_dealloc_recursive_helper( stmt->next_true, stmt );
     stmt->next_true = NULL;
@@ -574,6 +604,9 @@ void statement_dealloc( statement* stmt ) {
 
   if( stmt != NULL ) {
  
+    /* Remove wait event signal list */
+    sig_link_delete_list( stmt->wait_sig_head, FALSE );
+
     /* Finally, deallocate this statement */
     free_safe( stmt );
 
@@ -584,6 +617,11 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.40  2003/02/08 21:54:07  phase1geo
+ Fixing memory problems with db_remove_statement function.  Updating comments
+ in statement.c to explain some of the changes necessary to properly remove
+ a statement tree.
+
  Revision 1.39  2002/12/13 16:49:56  phase1geo
  Fixing infinite loop bug with statement set_stop function.  Removing
  hierarchical references from scoring (same problem as defparam statement).

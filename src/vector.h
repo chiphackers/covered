@@ -58,6 +58,9 @@ void vector_set_type( vector* vec, int type );
 /*! \brief Returns value of vector output type. */
 int vector_get_type( vector* vec );
 
+/*! \brief Specifies if vector contains unknown values (X or Z) */
+bool vector_is_unknown( vector* vec );
+
 /*! \brief Converts vector into integer value. */
 int vector_to_int( vector* vec );
 
@@ -115,6 +118,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.16  2003/02/13 23:44:08  phase1geo
+ Tentative fix for VCD file reading.  Not sure if it works correctly when
+ original signal LSB is != 0.  Icarus Verilog testsuite passes.
+
  Revision 1.15  2003/01/04 03:56:28  phase1geo
  Fixing bug with parameterized modules.  Updated regression suite for changes.
 

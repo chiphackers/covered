@@ -308,6 +308,11 @@ void vcd_parse_sim( FILE* vcd ) {
 
   }
 
+  /* Simulate the last timestep now */
+  if( last_timestep >= 0 ) {
+    db_do_timestep( last_timestep );
+  }
+
 }
 
 /*!
@@ -337,6 +342,10 @@ void vcd_parse( char* vcd_file ) {
 
 /*
  $Log$
+ Revision 1.9  2003/02/13 23:44:08  phase1geo
+ Tentative fix for VCD file reading.  Not sure if it works correctly when
+ original signal LSB is != 0.  Icarus Verilog testsuite passes.
+
  Revision 1.8  2003/02/07 23:12:30  phase1geo
  Optimizing db_add_statement function to avoid memory errors.  Adding check
  for -i option to avoid user error.

@@ -36,11 +36,17 @@ extern int  delay_expr_type;
 extern void lex_start_udp_table();
 extern void lex_end_udp_table();
 
-int ignore_mode = 0;
-int param_mode  = 0;
+int ignore_mode     = 0;
+int param_mode      = 0;
+int wait_event_mode = 0;
 
 exp_link* param_exp_head = NULL;
 exp_link* param_exp_tail = NULL;
+
+sig_link* wait_sig_head = NULL;
+sig_link* wait_sig_tail = NULL;
+sig_link* dummy_head    = NULL;
+sig_link* dummy_tail    = NULL;
 
 #define YYERROR_VERBOSE 1
 
@@ -945,6 +951,9 @@ expr_primary
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) ) {
         tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, @1.first_line, $1 );
+        if( (wait_event_mode > 0) && (tmp != NULL) ) {
+          sig_link_add( tmp->sig, &(wait_sig_head), &(wait_sig_tail) );
+        }
         $$  = tmp;
         free_safe( $1 );
       } else {
@@ -964,6 +973,9 @@ expr_primary
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         tmp = db_create_expression( NULL, $3, EXP_OP_SBIT_SEL, @1.first_line, $1 );
+        if( (wait_event_mode > 0) && (tmp != NULL) ) {
+          sig_link_add( tmp->sig, &(wait_sig_head), &(wait_sig_tail) );
+        }
         $$  = tmp;
         free_safe( $1 );
       } else {
@@ -979,6 +991,9 @@ expr_primary
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) && ($5 != NULL) ) {
         tmp = db_create_expression( $5, $3, EXP_OP_MBIT_SEL, @1.first_line, $1 );
+        if( (wait_event_mode > 0) && (tmp != NULL) ) {
+          sig_link_add( tmp->sig, &(wait_sig_head), &(wait_sig_tail) );
+        }
         $$  = tmp;
         free_safe( $1 );
       } else {
@@ -1570,7 +1585,7 @@ statement
             expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, c_stmt->line, NULL );
           }
           db_add_expression( expr );
-          stmt = db_create_statement( expr );
+          stmt = db_create_statement( expr, &(dummy_head), &(dummy_tail) );
           db_connect_statement_true( stmt, c_stmt->stmt );
           db_connect_statement_false( stmt, last_stmt );
           db_statement_set_stop( c_stmt->stmt, NULL, FALSE );
@@ -1611,7 +1626,7 @@ statement
             expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, c_stmt->line, NULL );
           }
           db_add_expression( expr );
-          stmt = db_create_statement( expr );
+          stmt = db_create_statement( expr, &(dummy_head), &(dummy_tail) );
           db_connect_statement_true( stmt, c_stmt->stmt );
           db_connect_statement_false( stmt, last_stmt );
           db_statement_set_stop( c_stmt->stmt, NULL, FALSE );
@@ -1652,7 +1667,7 @@ statement
             expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, c_stmt->line, NULL );
           }
           db_add_expression( expr );
-          stmt = db_create_statement( expr );
+          stmt = db_create_statement( expr, &(dummy_head), &(dummy_tail) );
           db_connect_statement_true( stmt, c_stmt->stmt );
           db_connect_statement_false( stmt, last_stmt );
           db_statement_set_stop( c_stmt->stmt, NULL, FALSE );
@@ -1704,7 +1719,7 @@ statement
     {
       statement* stmt;
       if( (ignore_mode == 0) && ($3 != NULL) ) {
-        stmt = db_create_statement( $3 );
+        stmt = db_create_statement( $3, &(dummy_head), &(dummy_tail) );
         db_add_expression( $3 );
         db_connect_statement_true( stmt, $5 );
         db_statement_set_stop( $5, NULL, FALSE );
@@ -1718,7 +1733,7 @@ statement
     {
       statement* stmt;
       if( (ignore_mode == 0) && ($3 != NULL) ) {
-        stmt = db_create_statement( $3 );
+        stmt = db_create_statement( $3, &(dummy_head), &(dummy_tail) );
         db_add_expression( $3 );
         db_connect_statement_true( stmt, $5 );
         db_connect_statement_false( stmt, $7 );
@@ -1747,7 +1762,7 @@ statement
     {
       statement* stmt;
       if( (ignore_mode == 0) && ($1 != NULL) ) {
-        stmt = db_create_statement( $1 );
+        stmt = db_create_statement( $1, &(dummy_head), &(dummy_tail) );
         db_add_expression( $1 );
         if( $2 != NULL ) {
           db_statement_connect( stmt, $2 );
@@ -1762,7 +1777,7 @@ statement
     {
       statement* stmt;
       if( (ignore_mode == 0) && ($1 != NULL) ) {
-        stmt = db_create_statement( $1 );
+        stmt = db_create_statement( $1, &(wait_sig_head), &(wait_sig_tail) );
         db_add_expression( $1 );
         if( $2 != NULL ) {
           db_statement_connect( stmt, $2 );
@@ -1777,7 +1792,7 @@ statement
     {
       statement* stmt;
       if( (ignore_mode == 0) && ($3 != NULL) ) {
-        stmt = db_create_statement( $3 );
+        stmt = db_create_statement( $3, &(dummy_head), &(dummy_tail) );
         db_add_expression( $3 );
         $$ = stmt;
       } else {
@@ -1788,7 +1803,7 @@ statement
     {
       statement* stmt;
       if( (ignore_mode == 0) && ($3 != NULL) ) {
-        stmt = db_create_statement( $3 );
+        stmt = db_create_statement( $3, &(dummy_head), &(dummy_tail) );
         db_add_expression( $3 );
         $$ = stmt;
       } else {
@@ -1800,7 +1815,7 @@ statement
       statement* stmt;
       expression_dealloc( $3, FALSE );
       if( (ignore_mode == 0) && ($4 != NULL) ) {
-        stmt = db_create_statement( $4 );
+        stmt = db_create_statement( $4, &(dummy_head), &(dummy_tail) );
         db_add_expression( $4 );
         $$ = stmt;
       } else {
@@ -1812,7 +1827,7 @@ statement
       statement* stmt;
       expression_dealloc( $3, FALSE );
       if( (ignore_mode == 0) && ($4 != NULL) ) {
-        stmt = db_create_statement( $4 );
+        stmt = db_create_statement( $4, &(dummy_head), &(dummy_tail) );
         db_add_expression( $4 );
         $$ = stmt;
       } else {
@@ -1824,7 +1839,7 @@ statement
       statement* stmt;
       expression_dealloc( $3, FALSE );
       if( (ignore_mode == 0) && ($4 != NULL) ) {
-        stmt = db_create_statement( $4 );
+        stmt = db_create_statement( $4, &(dummy_head), &(dummy_tail) );
         db_add_expression( $4 );
         $$ = stmt;
       } else {
@@ -1836,7 +1851,7 @@ statement
       statement* stmt;
       expression_dealloc( $3, FALSE );
       if( (ignore_mode == 0) && ($4 != NULL) ) {
-        stmt = db_create_statement( $4 );
+        stmt = db_create_statement( $4, &(dummy_head), &(dummy_tail) );
         db_add_expression( $4 );
         $$ = stmt;
       } else {
@@ -1855,7 +1870,7 @@ statement
     {
       statement* stmt;
       if( (ignore_mode == 0) && ($3 != NULL) ) {
-        stmt = db_create_statement( $3 );
+        stmt = db_create_statement( $3, &(dummy_head), &(dummy_tail) );
         db_add_expression( $3 );
         db_connect_statement_true( stmt, $5 );
         $$ = stmt;
@@ -2531,7 +2546,7 @@ assign
     {
       statement* stmt;
       if( $3 != NULL ) {
-        stmt = db_create_statement( $3 );
+        stmt = db_create_statement( $3, &(dummy_head), &(dummy_tail) );
         stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
         stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);
         stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_CONTINUOUS);
@@ -2767,7 +2782,7 @@ net_decl_assign
       statement* stmt;
       if( ignore_mode == 0 ) {
         if( $3 != NULL ) {
-          stmt = db_create_statement( $3 );
+          stmt = db_create_statement( $3, &(dummy_head), &(dummy_tail) );
           stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
           stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);
           stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_CONTINUOUS);
@@ -2791,7 +2806,7 @@ net_decl_assign
       statement* stmt;
       if( ignore_mode == 0 ) {
         if( $4 != NULL ) {
-          stmt = db_create_statement( $4 );
+          stmt = db_create_statement( $4, &(dummy_head), &(dummy_tail) );
           stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
           stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);
           stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_CONTINUOUS);
@@ -2845,6 +2860,9 @@ event_control
         sig = db_find_signal( $2 );
         if( sig != NULL ) {
           tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, @1.first_line, NULL );
+          if( (wait_event_mode > 0) && (tmp != NULL) ) {
+            sig_link_add( tmp->sig, &(wait_sig_head), &(wait_sig_tail) );
+          }
           vector_dealloc( tmp->value );
           tmp->value = sig->value;
           $$ = tmp;
@@ -2860,9 +2878,9 @@ event_control
     {
       $$ = NULL;
     }
-  | '@' '(' event_expression_list ')'
+  | '@' '(' { wait_event_mode++; } event_expression_list { wait_event_mode--; } ')'
     {
-      $$ = $3;
+      $$ = $4;
     }
   | '@' '(' error ')'
     {
