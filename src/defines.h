@@ -797,6 +797,20 @@
 /*! @} */
 
 /*!
+ \addtogroup arc_fields
+
+ The following defines specify the bit fields in a state transition arc entry.
+
+ @{
+*/
+
+#define ARC_HIT_F               0       /*!< From state -> to state hit - forward */
+#define ARC_HIT_R               1       /*!< To state -> from state hit - reverse */
+#define ARC_BIDIR               2       /*!< Entry is bidirectional               */
+
+/*! @} */
+
+/*!
  Defines boolean variables used in most functions.
 */
 typedef enum {
@@ -1147,7 +1161,8 @@ struct fsm_arc_s {
 
 /*-------------------------------------------------------------------------------*/
 struct fsm_s {
-  signal*  sig;       /*!< Pointer to state signal                                                      */
+  signal*  from_sig;  /*!< Pointer to from_state signal                                                 */
+  signal*  to_sig;    /*!< Pointer to to_state signal                                                   */
   fsm_arc* arc_head;  /*!< Pointer to head of list of expression pairs that describe the valid FSM arcs */
   fsm_arc* arc_tail;  /*!< Pointer to tail of list of expression pairs that describe the valid FSM arcs */
   char*    table;     /*!< FSM arc traversal table                                                      */
@@ -1388,9 +1403,12 @@ struct fms_var_s;
 typedef struct fsm_var_s fsm_var;
 
 struct fsm_var_s {
-  char*    mod;   /*!< Name of module to containing FSM variable           */
-  char*    var;   /*!< Name of FSM variable within module specified by mod */
-  fsm_var* next;  /*!< Pointer to next fsm_var element in list             */
+  char*    mod;    /*!< Name of module to containing FSM variable                  */
+  char*    ivar;   /*!< Name of FSM input variable within module specified by mod  */
+  char*    ovar;   /*!< Name of FSM output variable within module specified by mod */
+  signal*  isig;   /*!< Pointer to input signal matching ovar name                 */
+  fsm*     table;  /*!< Pointer to FSM containing signal from ovar                 */
+  fsm_var* next;   /*!< Pointer to next fsm_var element in list                    */
 };
 
 /*-------------------------------------------------------------------------------*/
@@ -1403,6 +1421,9 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.76  2003/08/26 21:53:23  phase1geo
+ Added database read/write functions and fixed problems with other arc functions.
+
  Revision 1.75  2003/08/25 13:02:03  phase1geo
  Initial stab at adding FSM support.  Contains summary reporting capability
  at this point and roughly works.  Updated regress suite as a result of these

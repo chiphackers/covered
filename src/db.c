@@ -603,11 +603,11 @@ void db_add_defparam( char* name, expression* expr ) {
 */
 void db_add_signal( char* name, static_expr* left, static_expr* right ) {
 
-  signal  tmpsig;   /* Temporary signal for signal searching  */
-  signal* sig;      /* Container for newly created signal     */
-  int     lsb;      /* Signal LSB                             */
-  int     width;    /* Signal width                           */
-  fsm*    new_fsm;  /* Pointer to newly created FSM structure */
+  signal   tmpsig;  /* Temporary signal for signal searching   */
+  signal*  sig;     /* Container for newly created signal      */
+  int      lsb;     /* Signal LSB                              */
+  int      width;   /* Signal width                            */
+  fsm_var* fv;      /* Pointer to found FSM variable structure */
 
   snprintf( user_msg, USER_MSG_LENGTH, "In db_add_signal, signal: %s", name );
   print_output( user_msg, DEBUG );
@@ -639,11 +639,25 @@ void db_add_signal( char* name, static_expr* left, static_expr* right ) {
     sig_link_add( sig, &(curr_module->sig_head), &(curr_module->sig_tail) );
 
     /* Create new FSM structure if this signal is an FSM state variable */
-    if( fsm_is_fsm_variable( curr_module->name, name ) ) {
-      printf( "FSM found in module (%s) with state variable (%s)\n", curr_module->name, name );
-      new_fsm    = fsm_create( sig );
-      sig->table = new_fsm;
-      fsm_link_add( new_fsm, &(curr_module->fsm_head), &(curr_module->fsm_tail) );
+    if( (fv = fsm_is_fsm_out_variable( curr_module->name, name )) != NULL ) {
+      printf( "FSM found in module (%s) with output state variable (%s)\n", curr_module->name, name );
+      sig->table = fsm_create( sig );
+      /* If input variable was already found, setup FSM */
+      if( fv->isig != NULL ) {
+        sig->table->from_sig = fv->isig;
+        fsm_var_remove( fv );
+      } else {
+        fv->table = sig->table;
+      }
+      fsm_link_add( sig->table, &(curr_module->fsm_head), &(curr_module->fsm_tail) );
+    } else if( (fv = fsm_is_fsm_in_variable( curr_module->name, name )) != NULL ) {
+      printf( "FSM found in module (%s) with input state variable (%s)\n", curr_module->name, name );
+      if( fv->table != NULL ) {
+        fv->table->from_sig = sig;
+        fsm_var_remove( fv );
+      } else {
+        fv->isig = sig;
+      }
     }
 
   }
@@ -1209,6 +1223,11 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.98  2003/08/25 13:02:03  phase1geo
+ Initial stab at adding FSM support.  Contains summary reporting capability
+ at this point and roughly works.  Updated regress suite as a result of these
+ changes.
+
  Revision 1.97  2003/08/20 22:08:39  phase1geo
  Fixing problem with not closing VCD file after VCD parsing is completed.
  Also fixed memory problem with symtable.c to cause timestep_tab entries

@@ -48,6 +48,7 @@
 #include "util.h"
 #include "link.h"
 #include "vector.h"
+#include "arc.h"
 
 
 extern mod_inst*    instance_root;
@@ -74,20 +75,24 @@ fsm_var* fsm_var_tail = NULL;
 
 
 /*!
- \param mod  String containing module containing FSM state variable.
- \param var  String containing name of FSM state variable in mod.
+ \param mod   String containing module containing FSM state variable.
+ \param var1  String containing name of FSM input state variable in mod.
+ \param var2  String containing name of FSM output state variable in mod.
 
  Adds the specified Verilog hierarchical scope to a list of FSM scopes to
  find during the parsing phase.
 */
-void fsm_add_fsm_variable( char* mod, char* var ) {
+void fsm_add_fsm_variable( char* mod, char* var1, char* var2 ) {
 
   fsm_var* new_var;  /* Pointer to newly created FSM variable */
 
-  new_var       = (fsm_var*)malloc_safe( sizeof( fsm_var ) );
-  new_var->mod  = strdup( mod );
-  new_var->var  = strdup( var );
-  new_var->next = NULL;
+  new_var        = (fsm_var*)malloc_safe( sizeof( fsm_var ) );
+  new_var->mod   = strdup( mod );
+  new_var->ivar  = strdup( var1 );
+  new_var->ovar  = strdup( var2 );
+  new_var->isig  = NULL;
+  new_var->table = NULL;
+  new_var->next  = NULL;
 
   if( fsm_var_head == NULL ) {
     fsm_var_head = fsm_var_tail = new_var;
@@ -102,52 +107,93 @@ void fsm_add_fsm_variable( char* mod, char* var ) {
  \param mod  Name of current module being parsed.
  \param var  Name of current signal being created.
 
- \return Returns TRUE if specified mod and var name a user-specified
-         FSM variable.
+ \return Returns pointer to found fsm_var structure containing matching signal;
+         otherwise, returns NULL.
 
  Checks FSM variable list to see if any entries in this list match the
  specified mod and var values.  If an entry is found to match, return a
- value of TRUE to indicate to the calling function that the specified signal
- needs to have an FSM structure associated with it.
+ pointer to the found structure to indicate to the calling function that
+ the specified signal needs to have an FSM structure associated with it.
 */
-bool fsm_is_fsm_variable( char* mod, char* var ) {
+fsm_var* fsm_is_fsm_in_variable( char* mod, char* var ) {
 
   fsm_var* curr;  /* Pointer to current FSM variable element in list */
 
   curr = fsm_var_head;
-  while( (curr != NULL) && ((strcmp( mod, curr->mod ) != 0) || (strcmp( var, curr->var ) != 0)) ) {
+  while( (curr != NULL) && ((strcmp( mod, curr->mod ) != 0) || (strcmp( var, curr->ivar ) != 0)) ) {
     curr = curr->next;
   }
 
-  return( curr != NULL );
+  return( curr );
 
 }
 
 /*!
- \param table  Pointer to FSM to calculate width from.
+ \param mod  Name of current module being parsed.
+ \param var  Name of current signal being created.
 
- \return Returns width of specified FSM.
+ \return Returns pointer to found fsm_var structure containing matching
+         signal; otherwise, returns NULL.
 
- Calculates and returns the width of the FSM which is the width of the FSM state
- variable signal squared (split into groups of 32 bits apiece).
+ Checks FSM variable list to see if any entries in this list match the
+ specified mod and var values.  If an entry is found to match, return a
+ pointer to the found structure to indicate to the calling function that
+ the specified signal needs to have an FSM structure associated with it.
 */
-int fsm_get_width( fsm* table ) {
+fsm_var* fsm_is_fsm_out_variable( char* mod, char* var ) {
 
-  int width;
+  fsm_var* curr;  /* Pointer to current FSM variable element in list */
 
-  assert( table != NULL );
-  assert( table->sig != NULL );
-  assert( table->sig->value != NULL );
+  curr = fsm_var_head;
+  while( (curr != NULL) && ((strcmp( mod, curr->mod ) != 0) || (strcmp( var, curr->ovar ) != 0)) ) { 
+    curr = curr->next;
+  }
 
-  width = table->sig->value->width;
-  assert( width > 0 );
-
-  return( (((0x1 << (width * 2)) % 32) == 0) ? ((0x1 << (width * 2)) / 32) : (((0x1 << (width * 2)) / 32) + 1) );
+  return( curr );
 
 }
 
 /*!
- \param sig  Pointer to signal that is state variable for this FSM.
+ \param fv  Pointer to FSM variable structure to remove from global list.
+
+ Searches global FSM variable list for matching FSM variable structure.
+ When match is found, remove the structure and deallocate it from memory
+ being sure to keep the global list intact.
+*/
+void fsm_var_remove( fsm_var* fv ) {
+
+  fsm_var* curr;  /* Pointer to current FSM variable structure in list */
+  fsm_var* last;  /* Pointer to last FSM variable structure evaluated  */
+
+  /* Find matching FSM variable structure */
+  curr = fsm_var_head;
+  last = NULL;
+  while( (curr != NULL) && (curr != fv) ) {
+    last = curr;
+    curr = curr->next;
+  }
+
+  /* If a matching FSM variable structure was found, remove it from the global list. */
+  if( curr != NULL ) {
+    if( (curr == fsm_var_head) && (curr == fsm_var_tail) ) {
+      fsm_var_head = fsm_var_tail = NULL;
+    } else if( curr == fsm_var_head ) {
+      fsm_var_head = curr->next;
+    } else if( curr == fsm_var_tail ) {
+      fsm_var_tail = last;
+    } else {
+      last->next = curr->next;
+    }
+    free_safe( curr );
+  }
+
+}
+
+/**************************************************************************************/
+
+/*!
+ \param isig  Pointer to signal that is input state variable for this FSM.
+ \param osig  Pointer to signal that is output state variable for this FSM.
 
  \return Returns a pointer to the newly allocated FSM structure.
 
@@ -158,10 +204,11 @@ fsm* fsm_create( signal* sig ) {
   fsm* table;  /* Pointer to newly created FSM */
 
   table           = (fsm*)malloc_safe( sizeof( fsm ) );
-  table->sig      = sig;
+  table->from_sig = NULL;
+  table->to_sig   = sig;
   table->arc_head = NULL;
   table->arc_tail = NULL;
-  table->table    = NULL;
+  table->table    = arc_create( sig->value->width );
 
   return( table );
 
@@ -195,45 +242,6 @@ void fsm_add_arc( fsm* table, expression* from_state, expression* to_state ) {
 }
 
 /*!
- \param table     Pointer to nibble table to set.
- \param sig_size  Size of state variable for this FSM.
- \param last      Pointer to vector containing previous value.
- \param curr      Pointer to vector containing new value.
-
- \return Returns TRUE if bit was set (last and curr were not unknown); otherwise, returns FALSE.
-
- Sets the bit of the specified nibble table to a value of 1 based on the values of
- the last value and the current value.
-*/
-bool fsm_set_table_bit( nibble* table, int sig_size, vector* last, vector* curr ) {
-
-  int    from_state;  /* Integer form of from_state value */
-  int    to_state;    /* Integer form of to_state value   */
-  int    index;       /* Index of table to set            */
-  nibble value;       /* Nibble containing bit to set     */
-  bool   retval;      /* Return value for this function   */
-
-  if( !vector_is_unknown( last ) && !vector_is_unknown( curr ) ) {
-
-    from_state    = vector_to_int( last );
-    to_state      = vector_to_int( curr );
-    index         = ((from_state * (0x1 << sig_size)) + to_state) / 32;
-    value         = (0x1 << (((from_state * (0x1 << sig_size)) + to_state) % 32));
-    table[index] |= value;
-    /* printf( "from: %d, to: %d, index: %d, value: %lx\n", from_state, to_state, index, table[index] ); */
-    retval        = TRUE;
-
-  } else {
- 
-    retval        = FALSE;
- 
-  }
-
-  return( retval );
-
-}
-
-/*!
  \param table  Pointer to FSM structure to set table sizes to.
 
  After the FSM signals are sized, this function is called to size
@@ -250,39 +258,20 @@ void fsm_create_tables( fsm* table ) {
   nibble   value;       /* Bit within index to set in table entry     */
   int      i;           /* Loop iterator                              */
 
-  if( table->sig->value->width <= 6 ) {
+  /* Set valid table */
+  curr_arc = table->arc_head;
+  while( (curr_arc != NULL) && set ) {
 
-    table->table    = (nibble*)malloc_safe( fsm_get_width( table ) * 8 );
-  
-    /* Initialize table */
-    for( i=0; i<fsm_get_width( table ); i++ ) {
-      table->table[i] = 0;
-    }
+    /* Evaluate from and to state expressions */
+    expression_operate( curr_arc->from_state );
+    expression_operate( curr_arc->to_state   );
 
-    /* Set valid table */
-    curr_arc = table->arc_head;
-    while( (curr_arc != NULL) && set ) {
+    /* Set table entry in table, if possible */
+    arc_add( &(table->table), table->to_sig->value->width, curr_arc->from_state->value, curr_arc->to_state->value, 0 );
 
-      /* Evaluate from and to state expressions */
-      expression_operate( curr_arc->from_state );
-      expression_operate( curr_arc->to_state   );
+    curr_arc = curr_arc->next;
 
-      /* Set valid bit in table, if possible */
-      // set = fsm_set_table_bit( table->valid, table->sig->value->width, curr_arc->from_state->value, curr_arc->to_state->value );
-
-      curr_arc = curr_arc->next;
-
-    } 
-
-  } else {
-
-    snprintf( user_msg, USER_MSG_LENGTH, "FSM state variable (%s) is greater than 6-bits.  Too large to handle.", table->sig->name );
-    print_output( user_msg, WARNING );
-
-    table->sig->table = NULL;
-    fsm_dealloc( table );
-
-  }
+  } 
 
 }
 
@@ -299,15 +288,14 @@ bool fsm_db_write( fsm* table, FILE* file ) {
   bool retval = TRUE;  /* Return value for this function */
   int  i;              /* Loop iterator                  */
 
-  fprintf( file, "%d %s",
+  fprintf( file, "%d %s %s ",
     DB_TYPE_FSM,
-    table->sig->name
+    table->from_sig->name,
+    table->to_sig->name
   );
 
   /* Print set table */
-  for( i=0; i<fsm_get_width( table ); i++ ) {
-    fprintf( file, " %x", table->table[i] );
-  }
+  arc_db_write( table->table, file );
 
   fprintf( file, "\n" );
 
@@ -326,40 +314,49 @@ bool fsm_db_write( fsm* table, FILE* file ) {
 */
 bool fsm_db_read( char** line, module* mod ) {
 
-  bool      retval = TRUE;   /* Return value for this function                     */
-  signal    sig;             /* Temporary signal used for finding state variable   */
-  sig_link* sigl;            /* Pointer to found state variable                    */
-  char      sig_name[4096];  /* Temporary string used to find FSM's state variable */
-  int       i;               /* Loop iterator                                      */
-  int       chars_read;      /* Number of characters read from sscanf              */
-  fsm*      table;           /* Pointer to newly created FSM structure from CDD    */
+  bool      retval = TRUE;    /* Return value for this function                     */
+  signal    isig;             /* Temporary signal used for finding state variable   */
+  signal    osig;             /* Temporary signal used for finding state variable   */
+  sig_link* isigl;            /* Pointer to found state variable                    */
+  sig_link* osigl;            /* Pointer to found state variable                    */
+  char      isig_name[4096];  /* Temporary string used to find FSM's state variable */
+  char      osig_name[4096];  /* Temporary string used to find FSM's state variable */
+  int       i;                /* Loop iterator                                      */
+  int       chars_read;       /* Number of characters read from sscanf              */
+  fsm*      table;            /* Pointer to newly created FSM structure from CDD    */
  
-  if( sscanf( *line, "%s%n", sig_name, &chars_read ) == 1 ) {
+  if( sscanf( *line, "%s %s%n", isig_name, osig_name, &chars_read ) == 2 ) {
 
-    *line = *line + chars_read;
+    *line = *line + chars_read + 1;
 
     /* Find specified signal */
-    sig.name = sig_name;
-    if( (sigl = sig_link_find( &sig, mod->sig_head )) != NULL ) {
+    isig.name = isig_name;
+    osig.name = osig_name;
+    if( ((isigl = sig_link_find( &isig, mod->sig_head )) != NULL) &&
+        ((osigl = sig_link_find( &osig, mod->sig_head )) != NULL) ) {
 
       /* Create new FSM */
-      table            = fsm_create( sigl->sig );
-      sigl->sig->table = table;
+      table             = fsm_create( osigl->sig );
+      table->from_sig   = isigl->sig;
+      osigl->sig->table = table;
       fsm_create_tables( table );
 
       /* Now read in set table */
-      for( i=0; i<fsm_get_width( table ); i++ ) {
-        if( sscanf( *line, "%x%n", &(table->table[i]), &chars_read ) == 1 ) {
-          *line = *line + chars_read;
-        }
-      }
+      if( arc_db_read( &(table->table), line ) ) {
 
-      /* Add fsm to current module */
-      fsm_link_add( table, &(mod->fsm_head), &(mod->fsm_tail) );
+        /* Add fsm to current module */
+        fsm_link_add( table, &(mod->fsm_head), &(mod->fsm_tail) );
+ 
+      } else {
+
+        print_output( "Unable to read FSM state transition arc array", FATAL );
+        retval = FALSE;
+
+      }
 
     } else {
 
-      snprintf( user_msg, USER_MSG_LENGTH, "Unable to find state variable (%s) for current FSM", sig_name );
+      snprintf( user_msg, USER_MSG_LENGTH, "Unable to find state variables (%s, %s) for current FSM", isig_name, osig_name );
       print_output( user_msg, FATAL );
       retval = FALSE;
 
@@ -391,35 +388,28 @@ bool fsm_db_read( char** line, module* mod ) {
 bool fsm_db_merge( fsm* base, char** line, bool same ) {
 
   bool   retval = TRUE;  /* Return value of this function       */
-  char   name[256];      /* Name of current signal              */
+  char   iname[256];      /* Name of current signal              */
+  char   oname[256];      /* Name of current signal              */
   int    chars_read;     /* Number of characters read from line */
   int    i;              /* Loop iterator                       */
   nibble nib;            /* Temporary nibble storage            */
 
   assert( base != NULL );
-  assert( base->sig != NULL );
+  assert( base->from_sig != NULL );
+  assert( base->to_sig != NULL );
 
-  if( sscanf( *line, "%s%n", name, &chars_read ) == 1 ) {
+  if( sscanf( *line, "%s %s%n", iname, oname, &chars_read ) == 1 ) {
 
     *line = *line + chars_read;
 
-    if( strcmp( base->sig->name, name ) != 0 ) {
+    if( (strcmp( base->from_sig->name, iname ) != 0) || (strcmp( base->to_sig->name, oname ) != 0) ) {
 
       print_output( "Attempting to merge two databases derived from different designs.  Unable to merge", FATAL );
       exit( 1 );
 
     } else {
 
-      /* Read in set table information and merge */
-      for( i=0; i<fsm_get_width( base ); i++ ) {
-        if( sscanf( *line, "%x%n", &nib, &chars_read ) == 1 ) {
-          *line = *line + chars_read;
-          base->table[i] = base->table[i] | nib;
-        } else {
-          print_output( "Attempting to merge two databases derived from different designs.  Unable to merge", FATAL );
-          exit( 1 );
-        }
-      }
+      arc_db_merge( base->table, line, same );
           
     }
 
@@ -434,16 +424,15 @@ bool fsm_db_merge( fsm* base, char** line, bool same ) {
 }
 
 /*!
- \param table  Pointer to FSM to set table bit in.
- \param last   Pointer to vector containing the last value of the state variable.
- \param curr   Pointer to vector containing the current value of the state variable.
+ \param table  Pointer to FSM structure to set a state in.
 
- Sets the bit in the table nibble array of the specified FSM structure based on
- the values of last and curr.
+ Taking the from and to state signal values, a new table entry is added
+ to the specified FSM structure arc array (if an entry does not already
+ exist in the array).
 */
-void fsm_table_set( fsm* table, vector* last, vector* curr ) {
+void fsm_table_set( fsm* table ) {
 
-  fsm_set_table_bit( table->table, table->sig->value->width, last, curr );
+  arc_add( &(table->table), table->to_sig->value->width, table->from_sig->value, table->to_sig->value, 1 );
 
 }
 
@@ -469,26 +458,14 @@ void fsm_get_stats( fsm_link* table, float* state_total, int* state_hit, float* 
   while( curr != NULL ) {
 
     /* Calculate state totals */
-    *state_total += (0x1 << curr->table->sig->value->width);
+    *state_total += (0x1 << curr->table->to_sig->value->width);
 
     /* Calculate arc totals -- this is not the correct way yet */
     *arc_total   += *state_total * *state_total;
 
     /* Calculate state and arc hits */
-    for( i=0; i<(0x1 << curr->table->sig->value->width); i++ ) {
-      hit = FALSE;
-      for( j=0; j<(0x1 << curr->table->sig->value->width); j++ ) {
-        index = ((i * (0x1 << curr->table->sig->value->width)) + j) / 32;
-        value = (0x1 << (((i * (0x1 << curr->table->sig->value->width)) + j) % 32));
-        if( (curr->table->table[index] & value) != 0 ) { 
-          if( !hit ) {
-            (*state_hit)++;
-          }
-          (*arc_hit)++;
-          hit = TRUE;
-        }
-      }
-    }
+    (*state_hit) = arc_state_hit_total( curr->table->table );
+    (*arc_hit)   = arc_transition_hit_total( curr->table->table );
 
     curr = curr->next;
 
@@ -713,6 +690,9 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.7  2003/08/26 21:53:23  phase1geo
+ Added database read/write functions and fixed problems with other arc functions.
+
  Revision 1.6  2003/08/25 13:02:03  phase1geo
  Initial stab at adding FSM support.  Contains summary reporting capability
  at this point and roughly works.  Updated regress suite as a result of these

@@ -54,15 +54,16 @@ void score_usage() {
   printf( "\n" );
   printf( "   Options:\n" );
   printf( "      -vcd <dumpfile>              Name of dumpfile to score design with.  If this option\n" );
-  printf( "                                   is not used, Covered will only create an initial CDD file\n" );
-  printf( "                                   from the design and will not attempt to score the design.\n" );
+  printf( "                                    is not used, Covered will only create an initial CDD file\n" );
+  printf( "                                    from the design and will not attempt to score the design.\n" );
   printf( "      -i <instance_name>           Verilog hierarchical scope of top-level module to score.\n" );
-  printf( "                                   Necessary if module to verify coverage is not the top-level\n" );
-  printf( "                                   module in the design.  If not specified, -t value is used.\n" );
+  printf( "                                    Necessary if module to verify coverage is not the top-level\n" );
+  printf( "                                    module in the design.  If not specified, -t value is used.\n" );
   printf( "      -o <database_filename>       Name of database to write coverage information to.\n" );
   printf( "      -I <directory>               Directory to find included Verilog files.\n" );
   printf( "      -f <filename>                Name of file containing additional arguments to parse.\n" );
-  printf( "      -F <module>=<variable>       Module and variable of an FSM state variable.\n" );
+  printf( "      -F <module>=<var>,<var>      Module, input state variable and output state variable of\n" );
+  printf( "                                    an FSM state variable.\n" );
   printf( "      -y <directory>               Directory to find unspecified Verilog files.\n" );
   printf( "      -v <filename>                Name of specific Verilog file to score.\n" );
   printf( "      -e <module_name>             Name of module to not score.\n" );
@@ -71,11 +72,11 @@ void score_usage() {
   printf( "      -P <parameter_scope>=<value> Performs a defparam on the specified parameter with value.\n" );
   printf( "      -T min|typ|max               Specifies value to use in delay expressions of the form min:typ:max.\n" );
   printf( "      -ts <number>                 If design is being scored, specifying this option will output\n" );
-  printf( "                                   the current timestep (by increments of <number>) to standard output.\n" );
+  printf( "                                    the current timestep (by increments of <number>) to standard output.\n" );
   printf( "      -h                           Displays this help information.\n" );
   printf( "\n" );
   printf( "      +libext+.<extension>(+.<extension>)+\n" );
-  printf( "                                  Extensions of Verilog files to allow in scoring\n" );
+  printf( "                                   Extensions of Verilog files to allow in scoring\n" );
   printf( "\n" );
   printf( "    Note:\n" );
   printf( "      The top-level module specifies the module to begin scoring.  All\n" );
@@ -167,6 +168,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
   int    arg_num;                 /* Number of arguments in arg_list               */
   int    j;                       /* Loop iterator 2                               */
   char*  ptr;                     /* Pointer to current character in defined value */
+  char*  ptr2;                    /* Another pointer to current character          */
 
   while( (i < argc) && retval ) {
 
@@ -226,14 +228,24 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
         ptr++;
       }
       if( *ptr == '\0' ) {
-        print_output( "Option -F must specify both a module and a variable.  See \"covered score -h\" for more information.", FATAL );
+        print_output( "Option -F must specify a module and two variables.  See \"covered score -h\" for more information.", FATAL );
         exit( 1 );
       } else {
         *ptr = '\0';
         ptr++;
-        fsm_add_fsm_variable( argv[i], ptr );
+        ptr2 = ptr;
+        while( (*ptr2 != '\0') && (*ptr2 != ',') ) {
+          ptr2++;
+        }
+        if( *ptr2 == '\0' ) {
+          print_output( "Option -F must specify a module and two variables.  See \"covered score -h\" for more information.", FATAL );
+          exit( 1 );
+        } else {
+          *ptr2 = '\0';
+          ptr2++;
+          fsm_add_fsm_variable( argv[i], ptr, ptr2 );
+        }
       }
-
       
     } else if( strncmp( "-f", argv[i], 2 ) == 0 ) {
 
@@ -410,6 +422,11 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.36  2003/08/25 13:02:04  phase1geo
+ Initial stab at adding FSM support.  Contains summary reporting capability
+ at this point and roughly works.  Updated regress suite as a result of these
+ changes.
+
  Revision 1.35  2003/08/15 03:52:22  phase1geo
  More checkins of last checkin and adding some missing files.
 

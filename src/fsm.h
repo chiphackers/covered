@@ -13,10 +13,16 @@
 #include "defines.h"
 
 /*! \brief Adds specified module and variable to the FSM variable list. */
-void fsm_add_fsm_variable( char* mod, char* var );
+void fsm_add_fsm_variable( char* mod, char* var1, char* var2 );
 
-/*! \brief Returns TRUE if specified module and variable are a user-specified FSM */
-bool fsm_is_fsm_variable( char* mod, char* var );
+/*! \brief Returns TRUE if specified module and variable are a user-specified FSM input variable. */
+fsm_var* fsm_is_fsm_in_variable( char* mod, char* var );
+
+/*! \brief Returns TRUE if specified module and variable are a user-specified FSM output variable. */
+fsm_var* fsm_is_fsm_out_variable( char* mod, char* var );
+
+/*! \brief Removes matching FSM variable structure from global list. */
+void fsm_var_remove( fsm_var* fv );
 
 /*! \brief Creates and initializes new FSM structure. */
 fsm* fsm_create( signal* sig );
@@ -37,7 +43,7 @@ bool fsm_db_read( char** line, module* mod );
 bool fsm_db_merge( fsm* base, char** line, bool same );
 
 /*! \brief Sets the bit in set table based on the values of last and curr. */
-void fsm_table_set( fsm* table, vector* last, vector* curr );
+void fsm_table_set( fsm* table );
 
 /*! \brief Gathers statistics about the current FSM */
 void fsm_get_stats( fsm_link* table, float* state_total, int* state_hit, float* arc_total, int* arc_hit );
@@ -50,6 +56,11 @@ void fsm_dealloc( fsm* table );
 
 /*
  $Log$
+ Revision 1.7  2003/08/25 13:02:03  phase1geo
+ Initial stab at adding FSM support.  Contains summary reporting capability
+ at this point and roughly works.  Updated regress suite as a result of these
+ changes.
+
  Revision 1.6  2002/11/05 00:20:07  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.
