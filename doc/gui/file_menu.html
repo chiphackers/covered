@@ -1,0 +1,47 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>Covered Report Viewer User Manual - File Menu</title>
+</head>
+<body bgcolor="#ffffff">
+<div align="center"><img src="images/banner.gif" width="258" height="105" alt="Covered - The Verilog Code Coverage Analyzer"></div>
+<hr>
+<h1><a href="main_menu.html">Main Menu</a> - The File Menu</h1>
+<hr>
+
+<p>The file menu is used to open a new CDD file, open a related CDD file (derived from the same design as the currently opened CDD file, or merge a related CDD file with the contents of the currently opened CDD file.  Additionally, the user selects this menu bar to exit the Covered report viewer GUI.  Figure 1 shows the file menu contents within the main window.</p>
+
+<div align="center">
+<p><strong>Figure 1.  The File Menu</strong></p>
+<img src="images/file_view.jpg" width="601" height="394" alt="Covered - File Menu">
+</div>
+
+<ul>
+	<li>
+	<p><h3>Open Initial CDD...</h3></p>
+	<p>This menu option is only available when the GUI is first invoked and a CDD file has not been previously loaded.  Use this option to load an initial CDD file into the GUI for analyzing a design.  When this option is selected, a standard file window is displayed allowing the user to select a CDD file to open (see Figure 2).  At this point, any CDD file from any design can be opened.</p>
+	</li>
+	
+	<li>
+	<p><h3>Open Related CDD...</h3></p>
+	<p>This menu option is only available after a previous CDD file has been opened by the GUI using the "Open Initial CDD..." file menu option.  By selecting this menu option, the user is able to open a different CDD file that was generated from the same design as the CDD file originally opened by the tool.  Since Covered's GUI does not currently have a close CDD file option, it is important to make sure that the CDD file selected with this option is from the exact same design as the previously opened CDD file.  Failing to do so will currently cause undetermined errors to occur.  The CDD file selected by this option will replace the currently opened CDD file information (i.e., the results from the previously opened CDD file will not be merged with the results from the new CDD file -- to do this see the "Merge Related CDD..." option).  Figure 2. shows the open CDD file viewer that is invoked when this option is selected.</p>
+	</li>
+	
+	<li>
+	<p><h3>Merge Related CDD...</h3></p>
+	<p>This menu option is only available after a previous CDD file has been opened by the GUI using the "Open Initial CDD..." file menu option.  By selecting this menu option, the user is able to merge the results of the currently opened CDD file with the CDD file selected (from the design) and view these merged results in the rest of the viewer.  The merged results are NOT written to any new files (unlike the behavior of Covered's "merge" command) so when the GUI exits, the merged results are thrown away.</p>
+	<p>Note that it is possible to merge several CDD files, generated from the same design, together by using this menu option more than once.  The results of the previously opened/merged CDD files will be merged with the results from the CDD file that is selected by this option.</p>
+	</li>
+	
+	<li>
+        <p><h3>Exit</h3></p>
+	This menu option will exit the entire GUI application, closing all opened windows created by this application.  Use this option to exit the application.
+	</li>
+</ul>
+
+<div align="center">
+<p><strong>Figure 2.  The Open/Merge CDD Selection Window</strong></p>
+<img src="images/open_cdd.jpg" width="476" height="287" alt="Open CDD Window">
+</div>
+</body>
+</html>
