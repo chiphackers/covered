@@ -1,11 +1,11 @@
-5 1 * 1
-3 main main instance7.v
+5 1 * 2 0
+3 main main instance7.v 1 17
 1 a main 0 1 0 10102
-3 foo main.f ./lib/foo.v
+3 foo main.f ./lib/foo.v 1 7
 1 a main.f 0 1 0 10102
-3 bar main.f.b ./lib/foo.v
+3 bar main.f.b ./lib/foo.v 18 24
 1 a main.f.b 0 1 0 10102
-3 dude main.f.b.d ./lib/foo.v
+3 dude main.f.b.d ./lib/foo.v 9 16
 2 3 main.f.b.d 14 201000 0 0 1 1 0
 2 2 main.f.b.d 14 103001 0 0 
 2 4 main.f.b.d 14 251008 3 2 1 0 10002

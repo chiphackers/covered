@@ -277,9 +277,11 @@ bool db_read( char* file, int read_mode ) {
               merge_mode = TRUE;
               module_db_merge( foundmod->mod, db_handle, FALSE );
             } else {
-              curr_module           = module_create();
-              curr_module->name     = strdup( mod_name );
-              curr_module->filename = strdup( mod_file );
+              curr_module             = module_create();
+              curr_module->name       = strdup( mod_name );
+              curr_module->filename   = strdup( mod_file );
+              curr_module->start_line = tmpmod.start_line;
+              curr_module->end_line   = tmpmod.end_line;
             }
 
           }
@@ -395,20 +397,21 @@ void db_add_instance( char* scope, char* modname ) {
 }
 
 /*!
- \param name   Name of module being added to tree.
- \param file   Filename that module is a part of.
+ \param name        Name of module being added to tree.
+ \param file        Filename that module is a part of.
+ \param start_line  Starting line number of this module in the file.
 
  Creates a new module element with the contents specified by the parameters given
  and inserts this module into the module list.  This function can only be called when we
  are actually parsing a module which implies that we must have the name of the module
  at the head of the modlist linked-list structure.
 */
-void db_add_module( char* name, char* file ) {
+void db_add_module( char* name, char* file, int start_line ) {
 
   module    mod;   /* Temporary module for comparison */
   mod_link* modl;  /* Pointer to found tree node      */
 
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_module, module: %s, file: %s", name, file );
+  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_module, module: %s, file: %s, start_line: %d", name, file, start_line );
   print_output( user_msg, DEBUG );
 
   /* Make sure that modlist_head name is the same as the specified name */
@@ -421,19 +424,25 @@ void db_add_module( char* name, char* file ) {
 
   assert( modl != NULL );
 
-  curr_module           = modl->mod;
-  curr_module->filename = strdup( file );
+  curr_module             = modl->mod;
+  curr_module->filename   = strdup( file );
+  curr_module->start_line = start_line;
   
 }
 
 /*!
+ \param end_line  Ending line number of specified module in file.
+
  Updates the modlist for parsing purposes.
 */
-void db_end_module() {
+void db_end_module( int end_line ) {
 
   str_link* str;    /* Temporary pointer to current modlist entry at head */
 
-  print_output( "In db_end_module", DEBUG );
+  snprintf( user_msg, USER_MSG_LENGTH, "In db_end_module, end_line: %d", end_line );
+  print_output( user_msg, DEBUG );
+
+  curr_module->end_line = end_line;
 
   str_link_remove( curr_module->name, &modlist_head, &modlist_tail );
 
@@ -1253,6 +1262,10 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.108  2003/11/26 23:14:41  phase1geo
+ Adding code to include left-hand-side expressions of statements for report
+ outputting purposes.  Full regression does not yet pass.
+
  Revision 1.107  2003/11/12 17:34:03  phase1geo
  Fixing bug where signals are longer than allowable bit width.
 

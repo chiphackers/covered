@@ -1,5 +1,5 @@
-5 1 * 1
-3 main main define2.v
+5 1 * 2 0
+3 main main define2.v 1 24
 2 4 main 11 102000 0 0 1 1 1
 2 3 main 11 201000 0 0 1 1 0
 2 5 main 11 22301a 4 3 1 0 11002

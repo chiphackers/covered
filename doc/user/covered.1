@@ -128,9 +128,14 @@ File to output report information to.  Default is standard output.
 .TP 
 \fB\-v\fR
 Deprecated.  Replaced by '\-d d' or '\-d v'.
+.TP 
+\fB\-w (\fR\fInumber\fR\fB)\fR
+Specifies the maximum line width (in characters) that can be used to output Verilog information.  If this option is not specified, all Verilog code in the report will retain the same formatting as was specified in the original Verilog code.  If this option is specified, Verilog code will be formatted to use as much of the current line as possible, wrapping text when the line reaches the maximum line width.  The default maximum line width is 115 characters (this value is used if no number is specified with the \-w option).  If a number is specified with the \-w option, this value is used for the maximum line width.
 .SH "AUTHORS"
 .LP 
 Trevor Williams <trevorw@charter.net>
+.LP 
+Arpan Sen <arpan_sen@yahoo.com>
 .SH "SEE ALSO"
 .LP 
 For more information on how to use the Covered code coverage tool, please consult the on\-line User's Guide at http://covered.sourceforge.net/user/index.html.

@@ -88,8 +88,49 @@ char* module_get_filename( char* mod_name ) {
 
 }
 
+/*!
+ \param mod_name    Name of module to get start and end line numbers for.
+ \param start_line  Pointer to value that will contain starting line number of this module.
+ \param end_line    Pointer to value that will contain ending line number of this module.
+
+ \return Returns a value of TRUE if module was found; otherwise, returns a value of FALSE.
+
+ Finds specified module name in design and returns the starting and ending line numbers of
+ the found module, returning a value of TRUE to the calling function.  If the module was
+ not found in the design, a value of FALSE is returned.
+*/
+bool module_get_start_and_end_lines( char* mod_name, int* start_line, int* end_line ) {
+
+  bool      retval = TRUE;  /* Return value of this function                    */
+  module    mod;            /* Temporary module container used for searching    */
+  mod_link* modl;           /* Pointer to module line containing matched module */
+  
+  mod.name = mod_name;
+
+  if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
+
+    *start_line = modl->mod->start_line;
+    *end_line   = modl->mod->end_line;
+
+  } else {
+
+    retval = FALSE;
+
+  }
+
+  return( retval );
+
+}
+
 /*
  $Log$
+ Revision 1.2  2003/11/29 06:55:48  phase1geo
+ Fixing leftover bugs in better report output changes.  Fixed bug in param.c
+ where parameters found in RHS expressions that were part of statements that
+ were being removed were not being properly removed.  Fixed bug in sim.c where
+ expressions in tree above conditional operator were not being evaluated if
+ conditional expression was not at the top of tree.
+
  Revision 1.1  2003/11/24 17:48:56  phase1geo
  Adding gui.c/.h files for functions related to the GUI interface.  Updated
  Makefile.am for the inclusion of these files.

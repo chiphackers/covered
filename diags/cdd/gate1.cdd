@@ -1,5 +1,5 @@
-5 1 * 1
-3 main main gate1.v
+5 1 * 2 0
+3 main main gate1.v 1 101
 1 po main 0 1 0 10102
 1 oo main 0 1 0 10002
 1 no main 0 1 0 10102

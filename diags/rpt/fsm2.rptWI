@@ -1,6 +1,11 @@
 Covered -- Verilog Coverage Verbose Report
 ==========================================
 
+* Report generated from CDD file that was merged from the following files:
+    fsm2a.cdd
+    fsm2b.cdd
+=================================================================================
+
 LINE COVERAGE RESULTS BY INSTANCE
 ---------------------------------
 Instance                                           Hit/ Miss/Total    Percent hit

@@ -227,11 +227,11 @@ description
 module
   : module_start module_item_list K_endmodule
     {
-      db_end_module();
+      db_end_module( @3.first_line );
     }
   | module_start K_endmodule
     {
-      db_end_module();
+      db_end_module( @2.first_line );
     }
   | attribute_list_opt K_module IGNORE I_endmodule
   | attribute_list_opt K_macromodule IGNORE I_endmodule
@@ -241,12 +241,12 @@ module_start
   : attribute_list_opt
     K_module IDENTIFIER { ignore_mode++; } list_of_ports_opt { ignore_mode--; } ';'
     {
-      db_add_module( $3, @2.text );
+      db_add_module( $3, @2.text, @2.first_line );
     }
   | attribute_list_opt
     K_macromodule IDENTIFIER { ignore_mode++; } list_of_ports_opt { ignore_mode--; } ';'
     {
-      db_add_module( $3, @2.text );
+      db_add_module( $3, @2.text, @2.first_line );
     }
   ;
 
@@ -1208,8 +1208,8 @@ udp_primitive
     K_endprimitive
     {
       /* We will treat primitives like regular modules */
-      db_add_module( $2, @1.text );
-      db_end_module();
+      db_add_module( $2, @1.text, @1.first_line );
+      db_end_module( @10.first_line );
     }
   | K_primitive IGNORE K_endprimitive
   ;

@@ -16,7 +16,7 @@ $page_title
 
 <_pg>
 To properly evaluate the effectiveness of any coverage tool, it is necessary to understand
-what kinds of logic are able to analyzed and which kinds of logic are unable to be analyzed
+what kinds of logic are able to be analyzed and which kinds of logic are unable to be analyzed
 (along with a reason for why the logic cannot be adequately covered).  Understanding the
 limitations of tools up front can often guide the user of those tools to make better
 decisions in their usage.  In the case of Covered and the open source community, it may also

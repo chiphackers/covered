@@ -4,14 +4,23 @@
  \date     2/12/2003
 */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
 
 #include "defines.h"
 #include "info.h"
 
+
+extern char* merge_in0;
+extern char* merge_in1;
 
 /*!
  If this flag is set to a value of 1, it indicates that the current CDD file has
@@ -33,17 +42,41 @@ char leading_hierarchy[4096];
 int  cdd_version = CDD_VERSION;
 
 /*!
+ If this value is set to INFO_ONE_MERGED or INFO_TWO_MERGED, specifies that this CDD file
+ was generated from a merge command (not from a score command).
+*/
+int merged_code = INFO_NOT_MERGED;
+
+
+/*!
  \param file  Pointer to file to write information to.
  
  Writes information line to specified file.
 */
 void info_db_write( FILE* file ) {
 
-  fprintf( file, "%d %d %s %d\n",
+  fprintf( file, "%d %d %s %d %d",
            DB_TYPE_INFO,
            flag_scored,
            leading_hierarchy,
-           CDD_VERSION );
+           CDD_VERSION,
+           merged_code );
+
+  switch( merged_code ) {
+    case INFO_NOT_MERGED :
+      fprintf( file, "\n" );
+      break;
+    case INFO_ONE_MERGED :
+      assert( merge_in0 != NULL );
+      fprintf( file, " %s\n", merge_in0 );
+      break;
+    case INFO_TWO_MERGED :
+      assert( merge_in0 != NULL );
+      assert( merge_in1 != NULL );
+      fprintf( file, " %s %s\n", merge_in0, merge_in1 );
+      break;
+    default :  break;
+  }
 
 }
 
@@ -58,17 +91,43 @@ bool info_db_read( char** line ) {
   int  chars_read;     /* Number of characters scanned in from this line */
   bool scored;         /* Indicates if this file contains scored data    */
   int  version;        /* Contains CDD version from file                 */
+  int  mcode;          /* Temporary merge code                           */
+  char tmp[4096];      /* Temporary string                               */
 
-  if( sscanf( *line, "%d %s %d%n", &scored, leading_hierarchy, &version, &chars_read ) == 3 ) {
+  if( sscanf( *line, "%d %s %d %d%n", &scored, leading_hierarchy, &version, &mcode, &chars_read ) == 4 ) {
 
     *line = *line + chars_read;
-
-    flag_scored = scored ? TRUE : flag_scored;
 
     if( version != CDD_VERSION ) {
       print_output( "CDD file being read is incompatible with this version of Covered", FATAL );
       retval = FALSE;
     }
+
+    if( mcode != INFO_NOT_MERGED ) {
+      if( sscanf( *line, "%s%n", tmp, &chars_read ) == 1 ) {
+        if( merge_in0 == NULL ) {
+          merge_in0 = strdup( tmp );
+        }
+        *line = *line + chars_read;
+        if( mcode == INFO_TWO_MERGED ) {
+          if( sscanf( *line, "%s%n", tmp, &chars_read ) == 1 ) {
+            if( merge_in1 == NULL ) {
+              merge_in1 = strdup( tmp );
+            }
+            *line = *line + chars_read;
+          } else {
+            print_output( "CDD file being read is incompatible with this version of Covered", FATAL );
+            retval = FALSE;
+          }
+        }
+      } else {
+        print_output( "CDD file being read is incompatible with this version of Covered", FATAL );
+        retval = FALSE;
+      }
+    }
+
+    flag_scored = scored ? TRUE : flag_scored;
+    merged_code = (merged_code == INFO_NOT_MERGED) ? mcode : merged_code;
 
   } else {
 
@@ -84,6 +143,10 @@ bool info_db_read( char** line ) {
 
 /*
  $Log$
+ Revision 1.3  2003/10/17 02:12:38  phase1geo
+ Adding CDD version information to info line of CDD file.  Updating regression
+ for this change.
+
  Revision 1.2  2003/02/18 20:17:02  phase1geo
  Making use of scored flag in CDD file.  Causing report command to exit early
  if it is working on a CDD file which has not been scored.  Updated testsuite

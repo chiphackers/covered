@@ -27,7 +27,7 @@
  Contains the CDD version number of all CDD files that this version of Covered can write
  and read.
 */
-#define CDD_VERSION        1
+#define CDD_VERSION        2
 
 /*!
  This contains the header information specified when executing this tool.
@@ -104,6 +104,22 @@
  only be displayed to the screen when the -D flag is specified.
 */
 #define DEBUG        6
+
+/*! @} */
+
+/*!
+ \addtogroup info_merged_types Merge codes on INFO line.
+
+ The following defines specify various merge types for CDD files.
+
+ @{
+*/
+
+#define INFO_NOT_MERGED      0
+
+#define INFO_ONE_MERGED      1
+
+#define INFO_TWO_MERGED      2
 
 /*! @} */
 
@@ -1276,19 +1292,21 @@ struct fsm_link_s {
  module.
 */
 struct module_s {
-  char*      name;       /*!< Module name                                        */
-  char*      filename;   /*!< File name where module exists                      */
-  statistic* stat;       /*!< Pointer to module coverage statistics structure    */
-  sig_link*  sig_head;   /*!< Head pointer to list of signals in this module     */
-  sig_link*  sig_tail;   /*!< Tail pointer to list of signals in this module     */
-  exp_link*  exp_head;   /*!< Head pointer to list of expressions in this module */
-  exp_link*  exp_tail;   /*!< Tail pointer to list of expressions in this module */
-  stmt_link* stmt_head;  /*!< Head pointer to list of statements in this module  */
-  stmt_link* stmt_tail;  /*!< Tail pointer to list of statements in this module  */
-  fsm_link*  fsm_head;   /*!< Head pointer to list of FSMs in this module        */
-  fsm_link*  fsm_tail;   /*!< Tail pointer to list of FSMs in this module        */
-  mod_parm*  param_head; /*!< Head pointer to list of parameters in this module  */
-  mod_parm*  param_tail; /*!< Tail pointer to list of parameters in this module  */
+  char*      name;        /*!< Module name                                        */
+  char*      filename;    /*!< File name where module exists                      */
+  int        start_line;  /*!< Starting line number of module in its file         */
+  int        end_line;    /*!< Ending line number of module in its file           */
+  statistic* stat;        /*!< Pointer to module coverage statistics structure    */
+  sig_link*  sig_head;    /*!< Head pointer to list of signals in this module     */
+  sig_link*  sig_tail;    /*!< Tail pointer to list of signals in this module     */
+  exp_link*  exp_head;    /*!< Head pointer to list of expressions in this module */
+  exp_link*  exp_tail;    /*!< Tail pointer to list of expressions in this module */
+  stmt_link* stmt_head;   /*!< Head pointer to list of statements in this module  */
+  stmt_link* stmt_tail;   /*!< Tail pointer to list of statements in this module  */
+  fsm_link*  fsm_head;    /*!< Head pointer to list of FSMs in this module        */
+  fsm_link*  fsm_tail;    /*!< Tail pointer to list of FSMs in this module        */
+  mod_parm*  param_head;  /*!< Head pointer to list of parameters in this module  */
+  mod_parm*  param_tail;  /*!< Tail pointer to list of parameters in this module  */
 };
 
 /*!
@@ -1535,6 +1553,10 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.96  2004/01/02 22:11:03  phase1geo
+ Updating regression for latest batch of changes.  Full regression now passes.
+ Fixed bug with event or operation in report command.
+
  Revision 1.95  2003/12/30 23:02:28  phase1geo
  Contains rest of fixes for multi-expression combinational logic report output.
  Full regression fails currently.

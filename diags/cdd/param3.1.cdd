@@ -1,10 +1,10 @@
-5 1 * 1
-3 main main param3.1.v
+5 1 * 2 0
+3 main main param3.1.v 1 21
 1 #bar1 main 0 32 0 0 0 0 0 0 0 0 0
 1 #bar2 main 0 32 0 1 0 0 0 0 0 0 0
 1 y main 0 1 0 10002
 1 x main 0 1 0 11102
-3 foo main.bar1 param3.1.v
+3 foo main.bar1 param3.1.v 23 30
 2 6 main.bar1 28 201032 0 0 
 2 5 main.bar1 28 203001 0 0 
 2 7 main.bar1 28 253002 6 5 32 0 f11aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa
@@ -14,7 +14,7 @@
 1 b main.bar1 0 1 0 11102 5
 1 a main.bar1 0 1 0 11102 4
 4 8 main.bar1 8 8
-3 foo main.bar2 param3.1.v
+3 foo main.bar2 param3.1.v 23 30
 2 6 main.bar2 28 102032 0 0 
 2 5 main.bar2 28 201001 0 0 
 2 7 main.bar2 28 122002 6 5 32 0 f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa

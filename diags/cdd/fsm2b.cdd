@@ -1,5 +1,5 @@
-5 1 main 1
-3 fsm fsm lib/fsm.v
+5 1 main 2 0
+3 fsm fsm lib/fsm.v 1 35
 2 13 fsm 23 203001 0 0 
 2 12 fsm 23 201032 0 0 
 2 14 fsm 23 23301a 13 12 2 0 3330a

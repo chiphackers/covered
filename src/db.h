@@ -21,7 +21,7 @@ bool db_read( char* file, int read_mode );
 void db_add_instance( char* scope, char* modname );
 
 /*! \brief Adds specified module to module list.  Called by parser. */
-void db_add_module( char* name, char* file );
+void db_add_module( char* name, char* file, int start_line );
 
 /*! \brief Adds specified declared parameter to parameter list.  Called by parser. */
 void db_add_declared_param( char* name, expression* expr );
@@ -39,7 +39,7 @@ void db_add_defparam( char* name, expression* expr );
 void db_add_signal( char* name, static_expr* left, static_expr* right );
 
 /*! \brief Called when the endmodule keyword is parsed. */
-void db_end_module();
+void db_end_module( int end_line );
 
 /*! \brief Finds specified signal in module and returns pointer to the signal structure.  Called by parser. */
 signal* db_find_signal( char* name );
@@ -98,6 +98,10 @@ void db_do_timestep( int time );
 
 /*
  $Log$
+ Revision 1.32  2003/11/26 23:14:41  phase1geo
+ Adding code to include left-hand-side expressions of statements for report
+ outputting purposes.  Full regression does not yet pass.
+
  Revision 1.31  2003/10/28 00:18:05  phase1geo
  Adding initial support for inline attributes to specify FSMs.  Still more
  work to go but full regression still passes at this point.

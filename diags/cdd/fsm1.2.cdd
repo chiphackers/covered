@@ -1,11 +1,11 @@
-5 1 * 1
-3 main main fsm1.2.v
+5 1 * 2 0
+3 main main fsm1.2.v 1 39
 1 clk main 0 1 0 11102
 1 reset main 0 1 0 11002
 1 head main 0 1 0 10102
 1 tail main 0 1 0 10002
 1 valid main 0 1 0 10102
-3 fsm main.fsm lib/fsm.v
+3 fsm main.fsm lib/fsm.v 1 35
 2 13 main.fsm 23 103001 0 0 
 2 12 main.fsm 23 201032 0 0 
 2 14 main.fsm 23 13301a 13 12 2 0 3130a

@@ -20,6 +20,8 @@
 #include "util.h"
 
 
+extern int merged_code;
+
 /*!
  Specifies the output filename of the CDD file that contains the merged data.
 */
@@ -101,6 +103,9 @@ bool merge_parse_args( int argc, int last_arg, char** argv ) {
       if( file_exists( argv[i] ) ) {
         if( merged_file == NULL ) {
           merged_file = strdup( argv[i] );
+          merged_code = INFO_ONE_MERGED;
+        } else {
+          merged_code = INFO_TWO_MERGED;
         }
         merge_in0 = strdup( argv[i] );
       } else {
@@ -176,6 +181,11 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.14  2003/08/10 03:50:10  phase1geo
+ More development documentation updates.  All global variables are now
+ documented correctly.  Also fixed some generated documentation warnings.
+ Removed some unnecessary global variables.
+
  Revision 1.13  2003/02/17 22:47:20  phase1geo
  Fixing bug with merging same DUTs from different testbenches.  Updated reports
  to display full path instead of instance name and parent instance name.  Added

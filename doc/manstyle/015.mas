@@ -106,6 +106,21 @@ standard output)
   </tr>
   <tr>
     <td>
+      -w (&lt;number&gt;)
+    </td>
+    <td>
+      Specifies the maximum line width (in characters) that can be used to output Verilog
+      information.  If this option is not specified, all Verilog code in the report will
+      retain the same formatting as was specified in the original Verilog code.  If this
+      option is specified, Verilog code will be formatted to use as much of the current
+      line as possible, wrapping text when the line reaches the maximum line width.  The
+      default maximum line width is 115 characters (this value is used if no number is
+      specified with the -w option).  If a number is specified with the -w option, this
+      value is used for the maximum line width.
+    </td>
+  </tr>
+  <tr>
+    <td>
       -h
     </td>
     <td>

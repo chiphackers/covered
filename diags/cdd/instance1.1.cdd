@@ -1,5 +1,5 @@
-5 1 main 1
-3 depth1 inst0 instance1.v
+5 1 main 2 0
+3 depth1 inst0 instance1.v 24 35
 2 3 inst0 31 103001 0 0 
 2 2 inst0 31 203001 0 0 
 2 4 inst0 31 2f3008 3 2 1 0 11102
@@ -9,7 +9,7 @@
 1 b1 inst0 0 1 0 10102 3
 1 c1 inst0 0 1 0 11102 1
 4 5 inst0 5 5
-3 depth2 inst0.inst1 instance1.v
+3 depth2 inst0.inst1 instance1.v 37 46
 2 8 inst0.inst1 44 103001 0 0 
 2 7 inst0.inst1 44 203001 0 0 
 2 9 inst0.inst1 44 1f3002 8 7 1 0 11102

@@ -1,5 +1,5 @@
-5 1 * 1
-3 main main fsm10.1.v
+5 1 * 2 0
+3 main main fsm10.1.v 1 56
 1 clk main 0 1 0 11102
 1 reset main 0 1 0 11002
 1 head2 main 0 1 0 10002
@@ -8,7 +8,7 @@
 1 tail1 main 0 1 0 11102
 1 valid2 main 0 1 0 10002
 1 valid1 main 0 1 0 11102
-3 fsma main.fsm1 lib/fsma.v
+3 fsma main.fsm1 lib/fsma.v 1 44
 2 11 main.fsm1 23 203001 0 0 
 2 10 main.fsm1 23 201032 0 0 
 2 12 main.fsm1 23 23301a 11 10 2 0 3330a
@@ -106,7 +106,7 @@
 4 102 main.fsm1 68 101
 4 57 main.fsm1 102 0
 6 25 26 1 02,08,08,0121,01,e1,c0,60014001a0018101
-3 fsma main.fsm2 lib/fsma.v
+3 fsma main.fsm2 lib/fsma.v 1 44
 2 11 main.fsm2 23 201001 0 0 
 2 10 main.fsm2 23 201032 0 0 
 2 12 main.fsm2 23 21101a 11 10 2 0 3000a

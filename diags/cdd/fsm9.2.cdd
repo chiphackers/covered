@@ -1,5 +1,5 @@
-5 1 * 1
-3 main main fsm9.2.v
+5 1 * 2 0
+3 main main fsm9.2.v 1 65
 2 13 main 16 203001 0 0 
 2 12 main 16 201032 0 0 
 2 14 main 16 23301a 13 12 2 0 3330a
@@ -97,7 +97,7 @@
 4 80 main 46 79
 4 35 main 80 0
 6 19 20 1 02,04,04,,01,21,e1,8101
-3 fsm main.fsm1 ./lib/fsm.v
+3 fsm main.fsm1 ./lib/fsm.v 1 35
 2 91 main.fsm1 23 203001 0 0 
 2 90 main.fsm1 23 201032 0 0 
 2 92 main.fsm1 23 23301a 91 90 2 0 3330a

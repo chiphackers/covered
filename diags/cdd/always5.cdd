@@ -1,5 +1,5 @@
-5 1 * 1
-3 main main always5.v
+5 1 * 2 0
+3 main main always5.v 1 32
 2 13 main 6 203001 0 0 
 2 14 main 6 10b01b 13 0 1 0 11102
 2 12 main 6 2000001 0 0 

@@ -21,7 +21,7 @@ X  2.  Add ability for user to specify FSM location and all possible states/stat
 4.  Add ability to automatically locate and extract an FSM from the design
     without user intervention.
 
-IP 5.  Work on increasing performance of score command.
+X  5.  Work on increasing performance of score command.
 
 6.  Add more Verilog-2001 constructs to parser.
 
@@ -37,7 +37,7 @@ Merge command
 Report command
 --------------
 
-1.  Update look of text reports to make them more robust and comprehensible.
+IP 1.  Update look of text reports to make them more robust and comprehensible.
 
 2.  Work on GUI interface for report function.
 

@@ -22,8 +22,15 @@ bool module_get_list( char*** mod_list, int* mod_size );
 /*! \brief Retrieves filename of given module. */
 char* module_get_filename( char* mod_name );
 
+/*! \brief Retrieves starting and ending line numbers of the specified module. */
+bool module_get_start_and_end_lines( char* mod_name, int* start_line, int* end_line );
+
 /*
  $Log$
+ Revision 1.2  2003/12/01 23:27:16  phase1geo
+ Adding code for retrieving line summary module coverage information for
+ GUI.
+
  Revision 1.1  2003/11/24 17:48:56  phase1geo
  Adding gui.c/.h files for functions related to the GUI interface.  Updated
  Makefile.am for the inclusion of these files.

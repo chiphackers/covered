@@ -1,5 +1,5 @@
-5 1 * 1
-3 main main fsm7.1.v
+5 1 * 2 0
+3 main main fsm7.1.v 1 57
 2 11 main 16 203001 0 0 
 2 10 main 16 201032 0 0 
 2 12 main 16 23301a 11 10 2 0 3330a

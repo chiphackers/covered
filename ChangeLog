@@ -1,3 +1,357 @@
+2003-12-12 23:52  phase1geo
+
+	* src/: codegen.c, comb.c: Removed verbose output and updated
+	development documentation for new code.
+
+2003-12-12 21:26  phase1geo
+
+	* src/comb.c: Adding code to optimize cases where output code is
+	only on one line (no need to reformat the line in this case).
+
+2003-12-12 21:18  phase1geo
+
+	* src/codegen.c: Fixing bug found in difference between Linux and
+	Irix snprintf() algorithm.  Full regression now passes.
+
+2003-12-12 16:39  phase1geo
+
+	* src/comb.c, diags/rpt/always8.rptI, diags/rpt/always8.rptM,
+	diags/rpt/case1.2.rptI, diags/rpt/case1.2.rptM,
+	diags/rpt/case1.3.rptI, diags/rpt/case1.3.rptM,
+	diags/rpt/case2.rptI, diags/rpt/case2.rptM, diags/rpt/case3.1.rptI,
+	diags/rpt/case3.1.rptM, diags/rpt/case3.2.rptI,
+	diags/rpt/case3.2.rptM, diags/rpt/case4.1.rptI,
+	diags/rpt/case4.1.rptM, diags/rpt/casex1.1.rptI,
+	diags/rpt/casex1.1.rptM, diags/rpt/casex1.2.rptI,
+	diags/rpt/casex1.2.rptM, diags/rpt/casez1.1.rptI,
+	diags/rpt/casez1.1.rptM, diags/rpt/casez1.2.rptI,
+	diags/rpt/casez1.2.rptM, diags/rpt/fsm1.1.rptI,
+	diags/rpt/fsm1.1.rptM, diags/rpt/fsm10.1.rptI,
+	diags/rpt/fsm10.2.rptI, diags/rpt/fsm10.2.rptM,
+	diags/rpt/fsm10.rptI, diags/rpt/fsm3.rptI, diags/rpt/fsm3.rptM,
+	diags/rpt/fsm4.1.rptI, diags/rpt/fsm4.1.rptM, diags/rpt/fsm4.rptI,
+	diags/rpt/fsm4.rptM, diags/rpt/fsm5.3.rptI, diags/rpt/fsm5.3.rptM,
+	diags/rpt/fsm8.3.rptI, diags/rpt/fsm8.3.rptM,
+	diags/rpt/long_exp1.rptI, diags/rpt/long_exp1.rptM,
+	diags/rpt/long_exp2.rptI, diags/rpt/long_exp2.rptM: Adding rest of
+	line wrap code.  Full regression should now pass.
+
+2003-12-12 11:16  phase1geo
+
+	* src/: codegen.c, codegen.h, comb.c, fsm.c, line.c: Changing code
+	generator to output logic based on user supplied format.  Full
+	regression fails at this point due to mismatching report files.
+
+2003-12-10 14:46  phase1geo
+
+	* src/parser.y, diags/cdd/assign2.1.cdd, diags/cdd/assign2.2.cdd,
+	diags/cdd/assign2.3.cdd, diags/cdd/assign2.8.cdd,
+	diags/cdd/assign2.9.cdd, diags/cdd/assign2.cdd,
+	diags/cdd/concat6.cdd, diags/cdd/define4.cdd, diags/cdd/param7.cdd,
+	diags/cdd/pulldown1.cdd, diags/cdd/pullup1.cdd,
+	diags/cdd/unary1.cdd, diags/rpt/assign2.1.rptI,
+	diags/rpt/assign2.1.rptM, diags/rpt/assign2.2.rptI,
+	diags/rpt/assign2.2.rptM, diags/rpt/assign2.3.rptI,
+	diags/rpt/assign2.3.rptM, diags/rpt/assign2.8.rptI,
+	diags/rpt/assign2.8.rptM, diags/rpt/assign2.9.rptI,
+	diags/rpt/assign2.9.rptM, diags/rpt/assign2.rptI,
+	diags/rpt/assign2.rptM, diags/rpt/concat6.rptI,
+	diags/rpt/concat6.rptM, diags/rpt/pulldown1.rptI,
+	diags/rpt/pulldown1.rptM, diags/rpt/pullup1.rptI,
+	diags/rpt/pullup1.rptM, diags/rpt/unary1.rptI,
+	diags/rpt/unary1.rptM: Correcting output for nettypes that are
+	assigned expression values to output the signal and the assignment
+	operator to report files.  Updating full regression accordingly.
+
+2003-12-02 16:38  phase1geo
+
+	* src/line.c: Removing unnecessary verbosity.
+
+2003-12-01 17:27  phase1geo
+
+	* src/: defines.h, gui.h, line.c: Adding code for retrieving line
+	summary module coverage information for GUI.
+
+2003-11-30 15:50  phase1geo
+
+	* diags/cdd/long_exp2.cdd, diags/regress/Makefile,
+	diags/regress/long_exp2.cfg, diags/rpt/long_exp2.rptI,
+	diags/rpt/long_exp2.rptM, diags/verilog/long_exp2.v, src/expr.c,
+	src/expr.h, src/line.c: Modifying line_collect_uncovered function
+	to create array containing all physical lines (rather than just
+	uncovered statement starting line values) for more accurate line
+	coverage results for the GUI.  Added new long_exp2 diagnostic that
+	is used to test this functionality.
+
+2003-11-29 23:46  phase1geo
+
+	* diags/cdd/always1.cdd, diags/cdd/always10.cdd,
+	diags/cdd/always9.cdd, diags/cdd/case4.1.cdd, diags/cdd/case4.cdd,
+	diags/cdd/fsm4.1.cdd, diags/cdd/fsm4.cdd, diags/cdd/ifelse1.cdd,
+	diags/rpt/always9.rptI, diags/rpt/always9.rptM, src/codegen.c,
+	src/comb.c, src/defines.h, src/expr.c, src/parser.y: Adding IF
+	report outputting capability.  Updated always9 diagnostic for these
+	changes and updated rest of regression CDD files accordingly.
+
+2003-11-29 00:55  phase1geo
+
+	* Makefile.in, aclocal.m4, configure, diags/cdd/always1.cdd,
+	diags/cdd/always10.cdd, diags/cdd/always11.1.cdd,
+	diags/cdd/always11.2.cdd, diags/cdd/always11.cdd,
+	diags/cdd/always2.cdd, diags/cdd/always3.1.11A.cdd,
+	diags/cdd/always3.cdd, diags/cdd/always4.cdd,
+	diags/cdd/always5.1.cdd, diags/cdd/always5.cdd,
+	diags/cdd/always6.cdd, diags/cdd/always9.cdd,
+	diags/cdd/assign1.cdd, diags/cdd/assign3.2A.cdd,
+	diags/cdd/block1.cdd, diags/cdd/case1.1.cdd, diags/cdd/case1.2.cdd,
+	diags/cdd/case1.3.cdd, diags/cdd/case1.cdd, diags/cdd/case2.cdd,
+	diags/cdd/case3.1.cdd, diags/cdd/case3.2.cdd,
+	diags/cdd/case3.3.cdd, diags/cdd/case3.4.cdd, diags/cdd/case3.cdd,
+	diags/cdd/case4.1.cdd, diags/cdd/case4.cdd, diags/cdd/casex1.1.cdd,
+	diags/cdd/casex1.2.cdd, diags/cdd/casex1.3.cdd,
+	diags/cdd/casex1.4.cdd, diags/cdd/casex1.cdd,
+	diags/cdd/casez1.1.cdd, diags/cdd/casez1.2.cdd,
+	diags/cdd/casez1.3.cdd, diags/cdd/casez1.4.cdd,
+	diags/cdd/casez1.cdd, diags/cdd/casez2.cdd, diags/cdd/concat1.cdd,
+	diags/cdd/concat2.cdd, diags/cdd/concat3.cdd,
+	diags/cdd/concat4.1.cdd, diags/cdd/concat4.2.cdd,
+	diags/cdd/concat5.cdd, diags/cdd/cond1.cdd, diags/cdd/cond2.cdd,
+	diags/cdd/define1.1.cdd, diags/cdd/define1.2.cdd,
+	diags/cdd/define1.cdd, diags/cdd/define2.1.cdd,
+	diags/cdd/define2.cdd, diags/cdd/define3.cdd,
+	diags/cdd/delay1.1.cdd, diags/cdd/delay1.2.cdd,
+	diags/cdd/delay1.3.cdd, diags/cdd/delay1.cdd,
+	diags/cdd/expand1.cdd, diags/cdd/expand2.cdd,
+	diags/cdd/expand3.cdd, diags/cdd/expand4.1.cdd,
+	diags/cdd/expand4.2.cdd, diags/cdd/expand4.3.cdd,
+	diags/cdd/expand4.4.cdd, diags/cdd/expand4.cdd,
+	diags/cdd/fsm1.1.cdd, diags/cdd/fsm1.2.cdd, diags/cdd/fsm1.3.cdd,
+	diags/cdd/fsm1.4.cdd, diags/cdd/fsm1.cdd, diags/cdd/fsm10.1.cdd,
+	diags/cdd/fsm10.2.cdd, diags/cdd/fsm10.cdd, diags/cdd/fsm2.cdd,
+	diags/cdd/fsm2a.cdd, diags/cdd/fsm2b.cdd, diags/cdd/fsm3.cdd,
+	diags/cdd/fsm4.1.cdd, diags/cdd/fsm4.cdd, diags/cdd/fsm5.1.cdd,
+	diags/cdd/fsm5.2.cdd, diags/cdd/fsm5.3.cdd, diags/cdd/fsm5.cdd,
+	diags/cdd/fsm6.cdd, diags/cdd/fsm7.1.cdd, diags/cdd/fsm7.2.cdd,
+	diags/cdd/fsm7.3.cdd, diags/cdd/fsm7.4.cdd, diags/cdd/fsm7.5.cdd,
+	diags/cdd/fsm7.cdd, diags/cdd/fsm8.1.cdd, diags/cdd/fsm8.2.cdd,
+	diags/cdd/fsm8.3.cdd, diags/cdd/fsm8.cdd, diags/cdd/fsm9.1.cdd,
+	diags/cdd/fsm9.2.cdd, diags/cdd/fsm9.cdd, diags/cdd/ifdef1.1.cdd,
+	diags/cdd/ifdef1.2.cdd, diags/cdd/ifdef1.cdd,
+	diags/cdd/ifdef2.1.cdd, diags/cdd/ifdef2.2.cdd,
+	diags/cdd/ifdef2.3.cdd, diags/cdd/ifelse1.cdd,
+	diags/cdd/implicit1.cdd, diags/cdd/include1.1.cdd,
+	diags/cdd/include1.cdd, diags/cdd/include2.cdd,
+	diags/cdd/instance1.1.cdd, diags/cdd/instance1.2.cdd,
+	diags/cdd/instance1.cdd, diags/cdd/instance2.cdd,
+	diags/cdd/instance3.cdd, diags/cdd/instance4.1.cdd,
+	diags/cdd/instance4.2.cdd, diags/cdd/instance4.cdd,
+	diags/cdd/instance5.cdd, diags/cdd/instance6.1.cdd,
+	diags/cdd/instance6.2.cdd, diags/cdd/instance6.cdd,
+	diags/cdd/instance7.cdd, diags/cdd/long_exp1.cdd,
+	diags/cdd/long_sig.cdd, diags/cdd/mbit_sel1.cdd,
+	diags/cdd/mbit_sel2.cdd, diags/cdd/mbit_sel3.1.cdd,
+	diags/cdd/mbit_sel3.cdd, diags/cdd/merge1.cdd,
+	diags/cdd/merge1a.cdd, diags/cdd/merge1b.cdd, diags/cdd/mult1.cdd,
+	diags/cdd/param1.1.cdd, diags/cdd/param1.2.cdd,
+	diags/cdd/param1.3.cdd, diags/cdd/param1.cdd,
+	diags/cdd/param3.1.cdd, diags/cdd/param3.2.cdd,
+	diags/cdd/param3.3.cdd, diags/cdd/param3.4.cdd,
+	diags/cdd/param3.5.cdd, diags/cdd/param3.cdd,
+	diags/cdd/param4.1.cdd, diags/cdd/param4.cdd, diags/cdd/param5.cdd,
+	diags/cdd/param6.1.cdd, diags/cdd/param6.cdd,
+	diags/cdd/sbit_sel1.1.cdd, diags/cdd/sbit_sel1.cdd,
+	diags/cdd/static1.cdd, diags/cdd/static2.1.cdd,
+	diags/cdd/static2.2.cdd, diags/cdd/static2.cdd,
+	diags/cdd/supply0.cdd, diags/cdd/supply1.cdd, diags/cdd/tri.cdd,
+	diags/cdd/tri0.cdd, diags/cdd/tri1.cdd, diags/rpt/fsm1.1.rptI,
+	diags/rpt/fsm1.1.rptM, diags/rpt/fsm1.2.rptI,
+	diags/rpt/fsm1.2.rptM, diags/rpt/fsm1.3.rptI,
+	diags/rpt/fsm1.3.rptM, diags/rpt/fsm1.4.rptI,
+	diags/rpt/fsm1.4.rptM, diags/rpt/fsm1.rptI, diags/rpt/fsm1.rptM,
+	diags/rpt/fsm10.1.rptI, diags/rpt/fsm10.1.rptM,
+	diags/rpt/fsm10.2.rptI, diags/rpt/fsm10.2.rptM,
+	diags/rpt/fsm10.rptI, diags/rpt/fsm10.rptM, diags/rpt/fsm2.rptI,
+	diags/rpt/fsm2.rptM, diags/rpt/fsm2a.rptI, diags/rpt/fsm2a.rptM,
+	diags/rpt/fsm2b.rptI, diags/rpt/fsm2b.rptM, diags/rpt/fsm3.rptI,
+	diags/rpt/fsm3.rptM, diags/rpt/fsm4.1.rptI, diags/rpt/fsm4.1.rptM,
+	diags/rpt/fsm4.rptI, diags/rpt/fsm4.rptM, diags/rpt/fsm5.1.rptI,
+	diags/rpt/fsm5.1.rptM, diags/rpt/fsm5.2.rptI,
+	diags/rpt/fsm5.2.rptM, diags/rpt/fsm5.3.rptI,
+	diags/rpt/fsm5.3.rptM, diags/rpt/fsm5.rptI, diags/rpt/fsm5.rptM,
+	diags/rpt/fsm6.rptI, diags/rpt/fsm6.rptM, diags/rpt/fsm7.1.rptI,
+	diags/rpt/fsm7.1.rptM, diags/rpt/fsm7.2.rptI,
+	diags/rpt/fsm7.2.rptM, diags/rpt/fsm7.3.rptI,
+	diags/rpt/fsm7.3.rptM, diags/rpt/fsm7.4.rptI,
+	diags/rpt/fsm7.4.rptM, diags/rpt/fsm7.5.rptI,
+	diags/rpt/fsm7.5.rptM, diags/rpt/fsm7.rptI, diags/rpt/fsm7.rptM,
+	diags/rpt/fsm8.1.rptI, diags/rpt/fsm8.1.rptM,
+	diags/rpt/fsm8.2.rptI, diags/rpt/fsm8.2.rptM,
+	diags/rpt/fsm8.3.rptI, diags/rpt/fsm8.3.rptM, diags/rpt/fsm8.rptI,
+	diags/rpt/fsm8.rptM, diags/rpt/fsm9.1.rptI, diags/rpt/fsm9.1.rptM,
+	diags/rpt/fsm9.2.rptI, diags/rpt/fsm9.2.rptM, diags/rpt/fsm9.rptI,
+	diags/rpt/fsm9.rptM, diags/rpt/instance3.rptI,
+	diags/rpt/instance3.rptM, diags/rpt/param1.2.rptI,
+	diags/rpt/param1.2.rptM, doc/user/Makefile.in, src/Makefile.in,
+	src/defines.h, src/expr.c, src/gui.c, src/param.c, src/parser.y,
+	src/signal.c, src/sim.c: Fixing leftover bugs in better report
+	output changes.  Fixed bug in param.c where parameters found in RHS
+	expressions that were part of statements that were being removed
+	were not being properly removed.  Fixed bug in sim.c where
+	expressions in tree above conditional operator were not being
+	evaluated if conditional expression was not at the top of tree.
+
+2003-11-26 17:14  phase1geo
+
+	* Makefile.in, aclocal.m4, configure, diags/cdd/always1.cdd,
+	diags/cdd/always10.cdd, diags/cdd/always11.1.cdd,
+	diags/cdd/always11.2.cdd, diags/cdd/always11.cdd,
+	diags/cdd/always2.cdd, diags/cdd/always3.1.11A.cdd,
+	diags/cdd/always3.cdd, diags/cdd/always4.cdd,
+	diags/cdd/always5.1.cdd, diags/cdd/always5.cdd,
+	diags/cdd/always6.cdd, diags/cdd/always8.cdd,
+	diags/cdd/always9.cdd, diags/cdd/assign3.2A.cdd,
+	diags/cdd/block1.cdd, diags/cdd/case1.1.cdd, diags/cdd/case1.2.cdd,
+	diags/cdd/case1.3.cdd, diags/cdd/case1.cdd, diags/cdd/case2.cdd,
+	diags/cdd/case3.1.cdd, diags/cdd/case3.2.cdd,
+	diags/cdd/case3.3.cdd, diags/cdd/case3.4.cdd, diags/cdd/case3.cdd,
+	diags/cdd/case4.1.cdd, diags/cdd/case4.cdd, diags/cdd/casex1.1.cdd,
+	diags/cdd/casex1.2.cdd, diags/cdd/casex1.3.cdd,
+	diags/cdd/casex1.4.cdd, diags/cdd/casex1.cdd,
+	diags/cdd/casez1.1.cdd, diags/cdd/casez1.2.cdd,
+	diags/cdd/casez1.3.cdd, diags/cdd/casez1.4.cdd,
+	diags/cdd/casez1.cdd, diags/cdd/casez2.cdd, diags/cdd/concat1.cdd,
+	diags/cdd/concat2.cdd, diags/cdd/concat3.cdd,
+	diags/cdd/concat4.1.cdd, diags/cdd/concat4.2.cdd,
+	diags/cdd/concat5.cdd, diags/cdd/cond2.cdd,
+	diags/cdd/define1.1.cdd, diags/cdd/define1.2.cdd,
+	diags/cdd/define1.cdd, diags/cdd/define3.cdd,
+	diags/cdd/delay1.1.cdd, diags/cdd/delay1.2.cdd,
+	diags/cdd/delay1.3.cdd, diags/cdd/delay1.cdd,
+	diags/cdd/expand1.cdd, diags/cdd/expand2.cdd,
+	diags/cdd/expand3.cdd, diags/cdd/expand4.1.cdd,
+	diags/cdd/expand4.2.cdd, diags/cdd/expand4.3.cdd,
+	diags/cdd/expand4.4.cdd, diags/cdd/expand4.cdd,
+	diags/cdd/ifdef1.1.cdd, diags/cdd/ifdef1.2.cdd,
+	diags/cdd/ifelse1.cdd, diags/cdd/implicit1.cdd,
+	diags/cdd/include2.cdd, diags/cdd/instance1.1.cdd,
+	diags/cdd/instance1.2.cdd, diags/cdd/instance1.cdd,
+	diags/cdd/instance2.cdd, diags/cdd/instance4.1.cdd,
+	diags/cdd/instance4.2.cdd, diags/cdd/instance4.cdd,
+	diags/cdd/instance5.cdd, diags/cdd/instance6.1.cdd,
+	diags/cdd/instance6.2.cdd, diags/cdd/instance6.cdd,
+	diags/cdd/instance7.cdd, diags/cdd/long_exp1.cdd,
+	diags/cdd/long_sig.cdd, diags/cdd/mbit_sel1.cdd,
+	diags/cdd/mbit_sel2.cdd, diags/cdd/mbit_sel3.1.cdd,
+	diags/cdd/mbit_sel3.cdd, diags/cdd/merge1.cdd,
+	diags/cdd/merge1a.cdd, diags/cdd/merge1b.cdd, diags/cdd/mult1.cdd,
+	diags/cdd/param3.1.cdd, diags/cdd/param3.2.cdd,
+	diags/cdd/param3.3.cdd, diags/cdd/param3.4.cdd,
+	diags/cdd/param3.5.cdd, diags/cdd/param3.cdd,
+	diags/cdd/param4.1.cdd, diags/cdd/param4.cdd, diags/cdd/param5.cdd,
+	diags/cdd/param6.1.cdd, diags/cdd/param6.cdd,
+	diags/cdd/sbit_sel1.1.cdd, diags/cdd/sbit_sel1.cdd,
+	diags/cdd/static1.cdd, diags/cdd/static2.1.cdd,
+	diags/cdd/static2.2.cdd, diags/cdd/static2.cdd,
+	diags/cdd/supply0.cdd, diags/cdd/supply1.cdd, diags/cdd/tri.cdd,
+	diags/cdd/tri0.cdd, diags/cdd/tri1.cdd, diags/rpt/always10.rptI,
+	diags/rpt/always10.rptM, diags/rpt/always11.1.rptI,
+	diags/rpt/always11.1.rptM, diags/rpt/always11.2.rptI,
+	diags/rpt/always11.2.rptM, diags/rpt/always11.rptI,
+	diags/rpt/always11.rptM, diags/rpt/always9.rptI,
+	diags/rpt/always9.rptM, diags/rpt/assign3.2A.rptI,
+	diags/rpt/assign3.2A.rptM, diags/rpt/case1.1.rptI,
+	diags/rpt/case1.1.rptM, diags/rpt/case1.2.rptI,
+	diags/rpt/case1.2.rptM, diags/rpt/case1.3.rptI,
+	diags/rpt/case1.3.rptM, diags/rpt/case2.rptI, diags/rpt/case2.rptM,
+	diags/rpt/case3.1.rptI, diags/rpt/case3.1.rptM,
+	diags/rpt/case3.2.rptI, diags/rpt/case3.2.rptM,
+	diags/rpt/case3.3.rptI, diags/rpt/case3.3.rptM,
+	diags/rpt/case3.4.rptI, diags/rpt/case3.4.rptM,
+	diags/rpt/case4.1.rptI, diags/rpt/case4.1.rptM,
+	diags/rpt/case4.rptI, diags/rpt/case4.rptM,
+	diags/rpt/casex1.1.rptI, diags/rpt/casex1.1.rptM,
+	diags/rpt/casex1.2.rptI, diags/rpt/casex1.2.rptM,
+	diags/rpt/casex1.3.rptI, diags/rpt/casex1.3.rptM,
+	diags/rpt/casex1.4.rptI, diags/rpt/casex1.4.rptM,
+	diags/rpt/casex1.rptI, diags/rpt/casex1.rptM,
+	diags/rpt/casez1.1.rptI, diags/rpt/casez1.1.rptM,
+	diags/rpt/casez1.2.rptI, diags/rpt/casez1.2.rptM,
+	diags/rpt/casez1.3.rptI, diags/rpt/casez1.3.rptM,
+	diags/rpt/casez1.4.rptI, diags/rpt/casez1.4.rptM,
+	diags/rpt/casez1.rptI, diags/rpt/casez1.rptM,
+	diags/rpt/casez2.rptI, diags/rpt/casez2.rptM,
+	diags/rpt/concat1.rptI, diags/rpt/concat1.rptM,
+	diags/rpt/concat2.rptI, diags/rpt/concat2.rptM,
+	diags/rpt/cond2.rptI, diags/rpt/cond2.rptM, diags/rpt/define3.rptI,
+	diags/rpt/define3.rptM, diags/rpt/delay1.1.rptI,
+	diags/rpt/delay1.1.rptM, diags/rpt/delay1.2.rptI,
+	diags/rpt/delay1.2.rptM, diags/rpt/delay1.3.rptI,
+	diags/rpt/delay1.3.rptM, diags/rpt/delay1.rptI,
+	diags/rpt/delay1.rptM, diags/rpt/expand1.rptI,
+	diags/rpt/expand1.rptM, diags/rpt/expand2.rptI,
+	diags/rpt/expand2.rptM, diags/rpt/expand3.rptI,
+	diags/rpt/expand3.rptM, diags/rpt/expand4.4.rptI,
+	diags/rpt/expand4.4.rptM, diags/rpt/ifdef1.1.rptI,
+	diags/rpt/ifdef1.1.rptM, diags/rpt/ifelse1.rptI,
+	diags/rpt/ifelse1.rptM, diags/rpt/implicit1.rptI,
+	diags/rpt/implicit1.rptM, diags/rpt/instance2.rptI,
+	diags/rpt/instance2.rptM, diags/rpt/instance4.1.rptI,
+	diags/rpt/instance4.1.rptM, diags/rpt/instance4.2.rptI,
+	diags/rpt/instance4.2.rptM, diags/rpt/instance4.rptI,
+	diags/rpt/instance4.rptM, diags/rpt/instance5.rptI,
+	diags/rpt/instance6.1.rptI, diags/rpt/instance6.2.rptI,
+	diags/rpt/instance6.rptI, diags/rpt/instance7.rptI,
+	diags/rpt/instance7.rptM, diags/rpt/long_exp1.rptI,
+	diags/rpt/long_exp1.rptM, diags/rpt/mbit_sel1.rptI,
+	diags/rpt/mbit_sel1.rptM, diags/rpt/mbit_sel3.1.rptI,
+	diags/rpt/mbit_sel3.1.rptM, diags/rpt/mbit_sel3.rptI,
+	diags/rpt/mbit_sel3.rptM, diags/rpt/merge1.rptI,
+	diags/rpt/merge1.rptM, diags/rpt/merge1a.rptI,
+	diags/rpt/merge1a.rptM, diags/rpt/merge1b.rptI,
+	diags/rpt/merge1b.rptM, diags/rpt/param3.1.rptI,
+	diags/rpt/param3.2.rptI, diags/rpt/param3.4.rptI,
+	diags/rpt/param3.rptI, diags/rpt/param5.rptI,
+	diags/rpt/param5.rptM, diags/rpt/param6.1.rptI,
+	diags/rpt/param6.1.rptM, diags/rpt/param6.rptI,
+	diags/rpt/param6.rptM, diags/rpt/sbit_sel1.1.rptI,
+	diags/rpt/sbit_sel1.1.rptM, diags/rpt/sbit_sel1.rptI,
+	diags/rpt/sbit_sel1.rptM, diags/rpt/static2.1.rptI,
+	diags/rpt/static2.1.rptM, diags/rpt/supply0.rptI,
+	diags/rpt/supply0.rptM, diags/rpt/supply1.rptI,
+	diags/rpt/supply1.rptM, diags/rpt/tri.rptI, diags/rpt/tri.rptM,
+	diags/rpt/tri0.rptI, diags/rpt/tri0.rptM, diags/rpt/tri1.rptI,
+	diags/rpt/tri1.rptM, doc/user/Makefile.in, src/Makefile.in,
+	src/codegen.c, src/comb.c, src/db.c, src/db.h, src/expr.c,
+	src/expr.h, src/fsm.c, src/fsm_arg.c, src/parser.y, src/static.c:
+	Adding code to include left-hand-side expressions of statements for
+	report outputting purposes.  Full regression does not yet pass.
+
+2003-11-24 19:19  phase1geo
+
+	* src/Makefile.in: Updating Makefile.in for changes to Makefile.am
+	in the src directory.
+
+2003-11-24 11:48  phase1geo
+
+	* src/: Makefile.am, gui.c, gui.h: Adding gui.c/.h files for
+	functions related to the GUI interface.  Updated Makefile.am for
+	the inclusion of these files.
+
+2003-11-22 14:44  phase1geo
+
+	* src/: line.c, line.h, report.c: Adding function to get array of
+	missed line numbers for GUI purposes.  Updates to report command
+	for getting information ready when running the GUI.
+
+2003-11-15 22:03  phase1geo
+
+	* src/: arc.c, fsm.c: Updating development documentation for FSMs.
+
+2003-11-14 22:28  phase1geo
+
+	* ChangeLog, NEWS, TODO, config.h, configure, configure.in: Updates
+	for new covered-20031115 development release.
+
 2003-11-14 22:25  phase1geo
 
 	* src/fsm_arg.c: Fixing syntax error found in Doxygen.

@@ -1,5 +1,5 @@
-5 1 * 1
-3 main main mbit_sel3.v
+5 1 * 2 0
+3 main main mbit_sel3.v 1 25
 2 30 main 10 201000 0 0 32 0 0 0 0 0 0 0 0 0
 2 29 main 10 102000 0 0 32 0 55 15 0 0 0 0 0 0
 2 31 main 10 142024 30 29 
