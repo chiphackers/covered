@@ -129,7 +129,7 @@ FSM input state (state), output state (next_state)
     States
     ======
     2'h0
-    2'h2
+    2'h1
     2'h3
 
   Hit State Transitions
@@ -137,9 +137,9 @@ FSM input state (state), output state (next_state)
     From State    To State  
     ==========    ==========
     2'h0       -> 2'h0      
-    2'h0       -> 2'h2      
-    2'h2       -> 2'h3      
-    2'h2       -> 2'h0      
+    2'h0       -> 2'h1      
+    2'h1       -> 2'h3      
+    2'h3       -> 2'h0      
 
 =================================================================================
 
