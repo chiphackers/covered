@@ -556,10 +556,11 @@ bool report_read_cdd_and_ready( char* ifile, int read_mode ) {
 */
 int command_report( int argc, int last_arg, char** argv ) {
 
-  int   retval = 0;    /* Return value of this function                     */
-  FILE* ofile;         /* Pointer to output stream                          */
-  char* covered_home;  /* Pathname to Covered's home installation directory */
-  char* main_file;     /* Name of main TCL file to interpret                */ 
+  int   retval = 0;       /* Return value of this function                     */
+  FILE* ofile;            /* Pointer to output stream                          */
+  char* covered_home;     /* Pathname to Covered's home installation directory */
+  char* covered_browser;  /* Name of browser to use for GUI help pages         */
+  char* main_file;        /* Name of main TCL file to interpret                */ 
 
   /* Parse score command-line */
   if( report_parse_args( argc, last_arg, argv ) ) {
@@ -649,8 +650,15 @@ int command_report( int argc, int last_arg, char** argv ) {
       covered_home = strdup( INSTALL_DIR );
 #endif
 
+      /* Get the COVERED_BROWSER environment variable */
+#ifndef COVERED_BROWSER
+      covered_browser = getenv( "COVERED_BROWSER" );
+#else
+      covered_browser = strdup( COVERED_BROWSER );
+#endif
+
       /* Initialize TCL */
-      tcl_func_initialize( interp, covered_home );
+      tcl_func_initialize( interp, covered_home, covered_browser );
 
       /* Call the top-level Tcl file */
       main_file = (char*)malloc( strlen( covered_home ) + 30 );
@@ -675,6 +683,11 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.38  2004/08/13 20:45:05  phase1geo
+ More added for combinational logic verbose reporting.  At this point, the
+ code is being output with underlines that can move up and down the expression
+ tree.  No expression reporting is being done at this time, however.
+
  Revision 1.37  2004/08/11 22:11:39  phase1geo
  Initial beginnings of combinational logic verbose reporting to GUI.
 

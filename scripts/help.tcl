@@ -1,6 +1,7 @@
 # Contains procs for handling help menu windows
 
 set covered_version "20040820"
+set BROWSER         ""
 
 proc help_show_about {} {
 

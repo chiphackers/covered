@@ -58,6 +58,7 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 CC = @CC@
+COVERED_BROWSER = @COVERED_BROWSER@
 MAKEINFO = @MAKEINFO@
 PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
@@ -116,7 +117,7 @@ covered_SOURCES = arc.c \
 covered_LDADD = $(TCLTK_LIBS)
 
 INCLUDES = -I..
-AM_CPPFLAGS = -DINSTALL_DIR=\"@datadir@/covered\"
+AM_CPPFLAGS = -DINSTALL_DIR=\"@datadir@/covered\" $(TCLTK_CPPFLAGS)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
 CONFIG_CLEAN_FILES = 

@@ -368,3 +368,19 @@ AC_SUBST(TCLTK_CPPFLAGS)
 AC_SUBST(TCLTK_LIBS)
 AC_SUBST(use_tcltk)
 ])# COVERED_TCLTK
+
+## COVERED_PROG_BROWSER
+## --------------
+AC_DEFUN([COVERED_PROG_BROWSER],
+[if test -z "${COVERED_BROWSER}"; then
+  AC_PATH_PROGS(COVERED_BROWSER, [netscape mozilla galeon kfmclient opera gnome-moz-remote open])
+fi
+if test -z "${COVERED_BROWSER}"; then
+  warn_browser="I could not determine a browser"
+  AC_MSG_WARN([${warn_browser}])
+else
+  AC_MSG_RESULT([using default browser ... ${COVERED_BROWSER}])
+fi
+AC_DEFINE_UNQUOTED(COVERED_BROWSER, "$COVERED_BROWSER", [Browser to view help pages with])
+])# COVERED_BROWSER
+
