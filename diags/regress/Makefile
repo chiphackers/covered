@@ -64,12 +64,12 @@ DIAGS4        = delay1.3
 
 MERGE1        = merge1         fsm2
            
-IVONLYDIAGS1  = always5.1      assign1        assign2.8      fsm6           fsm7 \
-                fsm7.1         fsm7.2         fsm7.3         fsm7.4         fsm7.5 \
-                fsm8           fsm8.1         fsm8.2         fsm8.3         fsm9 \
-                fsm9.1         fsm9.2         fsm10.1        fsm10.2        ifdef1.1 \
-                implicit1      implicit2      real1.1        static2        static2.1 \
-                static2.2      unary1
+IVONLYDIAGS1  = always5.1      assign1        assign2.8      example        fsm6 \
+                fsm7           fsm7.1         fsm7.2         fsm7.3         fsm7.4 \
+                fsm7.5         fsm8           fsm8.1         fsm8.2         fsm8.3 \
+                fsm9           fsm9.1         fsm9.2         fsm10.1        fsm10.2 \
+                ifdef1.1       implicit1      implicit2      real1.1        static2 \
+                static2.1      static2.2      unary1
 IVONLYDIAGS2  = 
 IVONLYDIAGS3  = 
 IVONLYDIAGS4  = 
