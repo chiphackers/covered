@@ -540,7 +540,8 @@
                                     ((x->right != NULL) && (SUPPL_WAS_EXECUTED( x->right->suppl ) == 1)) || \
                                     (x->right == NULL))                                                               && \
                                    (SUPPL_OP( x->suppl ) != EXP_OP_COND_SEL) && \
-                                   (SUPPL_OP( x->suppl ) != EXP_OP_SBIT_SEL) && \                                   (SUPPL_OP( x->suppl ) != EXP_OP_MBIT_SEL) && \
+                                   (SUPPL_OP( x->suppl ) != EXP_OP_SBIT_SEL) && \
+                                   (SUPPL_OP( x->suppl ) != EXP_OP_MBIT_SEL) && \
                                    (SUPPL_OP( x->suppl ) != EXP_OP_STATIC)   && \
                                    (SUPPL_OP( x->suppl ) != EXP_OP_SIG)      && \
                                    (SUPPL_OP( x->suppl ) != EXP_OP_LAST)     && \
@@ -972,6 +973,11 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.46  2002/09/25 02:51:44  phase1geo
+/* Removing need of vector nibble array allocation and deallocation during
+/* expression resizing for efficiency and bug reduction.  Other enhancements
+/* for parameter support.  Parameter stuff still not quite complete.
+/*
 /* Revision 1.45  2002/09/21 07:03:28  phase1geo
 /* Attached all parameter functions into db.c.  Just need to finish getting
 /* parser to correctly add override parameters.  Once this is complete, phase 3
