@@ -719,14 +719,21 @@ void fsm_instance_verbose( FILE* ofile, mod_inst* root, char* parent_inst ) {
     snprintf( tmpname, 4096, "%s.%s", parent_inst, root->name );
   }
 
-  fprintf( ofile, "\n" );
-  fprintf( ofile, "Module: %s, File: %s, Instance: %s\n",
-           root->mod->name,
-           root->mod->filename,
-           tmpname );
-  fprintf( ofile, "--------------------------------------------------------\n" );
+  if( (((root->stat->state_hit < root->stat->state_total) || (root->stat->arc_hit < root->stat->arc_total)) && !report_covered) ||
+        (root->stat->state_total == -1) ||
+        (root->stat->arc_total   == -1) ||
+      (((root->stat->state_hit > 0) || (root->stat->arc_hit > 0)) && report_covered) ) {
 
-  fsm_display_verbose( ofile, root->mod->fsm_head );
+    fprintf( ofile, "\n" );
+    fprintf( ofile, "Module: %s, File: %s, Instance: %s\n",
+             root->mod->name,
+             root->mod->filename,
+             tmpname );
+    fprintf( ofile, "--------------------------------------------------------\n" );
+
+    fsm_display_verbose( ofile, root->mod->fsm_head );
+
+  }
 
   curr_inst = root->child_head;
   while( curr_inst != NULL ) {
@@ -746,8 +753,11 @@ void fsm_module_verbose( FILE* ofile, mod_link* head ) {
 
   while( head != NULL ) {
 
-    if( ((head->mod->stat->line_hit < head->mod->stat->line_total) && !report_covered) ||
-        ((head->mod->stat->line_hit > 0) && report_covered) ) {
+    if( (((head->mod->stat->state_hit < head->mod->stat->state_total) || 
+          (head->mod->stat->arc_hit < head->mod->stat->arc_total)) && !report_covered) ||
+          (head->mod->stat->state_total == -1) ||
+          (head->mod->stat->arc_total   == -1) ||
+        (((head->mod->stat->state_hit > 0) || (head->mod->stat->arc_hit > 0)) && report_covered) ) {
 
       fprintf( ofile, "\n" );
       fprintf( ofile, "Module: %s, File: %s\n",
@@ -845,6 +855,9 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.12  2003/09/15 02:37:03  phase1geo
+ Adding development documentation for functions that needed them.
+
  Revision 1.11  2003/09/14 01:09:20  phase1geo
  Added verbose output for FSMs.
 

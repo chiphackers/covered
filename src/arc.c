@@ -407,13 +407,13 @@ void arc_add( char** arcs, int width, vector* fr_st, vector* to_st, int hit ) {
     entry_width = arc_get_entry_width( arc_get_width( tmp ) );
 
     /* Allocate new memory */
-    *arcs = (char*)malloc_safe( (entry_width * arc_get_width( tmp )) + arc_get_width( tmp ) + ARC_STATUS_SIZE );
+    *arcs = (char*)malloc_safe( (entry_width * (arc_get_max_size( tmp ) + arc_get_width( tmp ))) + ARC_STATUS_SIZE );
 
     arc_set_width( *arcs, arc_get_width( tmp ) );
     arc_set_max_size( *arcs, arc_get_max_size( tmp ) + arc_get_width( tmp ) );
     arc_set_curr_size( *arcs, arc_get_curr_size( tmp ) );
-    arc_set_suppl( *arcs, 0 );
-    for( i=0; i<((entry_width * arc_get_width( tmp )) + arc_get_width( tmp )); i++ ) {
+    arc_set_suppl( *arcs, ((int)tmp[6] & 0xff) );
+    for( i=0; i<(entry_width * (arc_get_max_size( tmp ) + arc_get_width( tmp ))); i++ ) {
       if( i < ((arc_get_max_size( tmp ) * entry_width)) ) {
         (*arcs)[i+ARC_STATUS_SIZE] = tmp[i+ARC_STATUS_SIZE];
       } else {
@@ -429,7 +429,7 @@ void arc_add( char** arcs, int width, vector* fr_st, vector* to_st, int hit ) {
   if( side == 2 ) {
 
     /* Initialize arc entry */
-    // printf( "Actually setting state now\n" );
+    // printf( "Actually setting state now, hit: %d, %d\n", hit, arc_get_curr_size( *arcs ) );
     if( arc_set_states( *arcs, arc_get_curr_size( *arcs ), fr_st, to_st ) ) {
       arc_set_entry_suppl( *arcs, arc_get_curr_size( *arcs ), ARC_HIT_F, hit );
       arc_set_entry_suppl( *arcs, arc_get_curr_size( *arcs ), ARC_HIT_R, 0 );
@@ -1051,6 +1051,9 @@ void arc_dealloc( char* arcs ) {
 
 /*
  $Log$
+ Revision 1.10  2003/09/15 02:37:03  phase1geo
+ Adding development documentation for functions that needed them.
+
  Revision 1.9  2003/09/15 01:13:57  phase1geo
  Fixing bug in vector_to_int() function when LSB is not 0.  Fixing
  bug in arc_state_to_string() function in creating string version of state.
