@@ -20,6 +20,7 @@
 char err_msg[4096];
 
 int ignore_mode = 0;
+int param_mode  = 0;
 
 /* Uncomment these lines to turn debugging on */
 //#define YYDEBUG 1
@@ -844,7 +845,11 @@ expr_primary
 		{
                   expression* tmp;
                   if( ignore_mode == 0 ) {
-                    tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, @1.first_line, $1 );
+                    if( param_mode == 1 ) {
+                      tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, @1.first_line, NULL );
+                    } else {
+                      tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, @1.first_line, $1 );
+                    }
                     $$ = tmp;
 		    free_safe( $1 );
                   } else {
@@ -863,7 +868,11 @@ expr_primary
 		{
 		  expression* tmp;
                   if( ignore_mode == 0 ) {
-                    tmp = db_create_expression( $3, NULL, EXP_OP_SBIT_SEL, @1.first_line, $1 );
+                    if( param_mode == 1 ) {
+                      tmp = db_create_expression( $3, NULL, EXP_OP_SBIT_SEL, @1.first_line, NULL );
+                    } else {
+                      tmp = db_create_expression( $3, NULL, EXP_OP_SBIT_SEL, @1.first_line, $1 );
+                    }
 		    $$ = tmp;
 		    free_safe( $1 );
                   } else {
@@ -874,7 +883,11 @@ expr_primary
 		{		  
                   expression* tmp;
                   if( ignore_mode == 0 ) {
-                    tmp = db_create_expression( $5, $3, EXP_OP_MBIT_SEL, @1.first_line, $1 );
+                    if( param_mode == 1 ) {
+                      tmp = db_create_expression( $5, $3, EXP_OP_MBIT_SEL, @1.first_line, NULL );
+                    } else {
+                      tmp = db_create_expression( $5, $3, EXP_OP_MBIT_SEL, @1.first_line, $1 );
+                    }
                     $$ = tmp;
                     free_safe( $1 );
                   } else {
@@ -1192,21 +1205,26 @@ module_item
 		}
 	| block_item_decl
 	| K_defparam defparam_assign_list ';'
+                {
+                  snprintf( err_msg, 4096, "Defparam found but not used, file: %s, line: %d.  Please use -P option to specify",
+                            @1.text, @1.first_line );
+                  print_output( err_msg, FATAL );
+                }
 	| K_event list_of_variables ';'
 		{
 		  str_link_delete_list( $2 );
 		}
 
   /* Handles instantiations of modules and user-defined primitives. */
-	| IDENTIFIER parameter_value_opt gate_instance_list ';'
+	| IDENTIFIER { param_mode = 1; } parameter_value_opt { param_mode = 0; } gate_instance_list ';'
 		{
-		  str_link* tmp = $3;
+		  str_link* tmp = $5;
 		  str_link* curr = tmp;
 		  while( curr != NULL ) {
 		    db_add_instance( curr->str, $1 );
 		    curr = curr->next;
 		  }
-		  str_link_delete_list( $3 );
+		  str_link_delete_list( $5 );
 		}
 
 	| K_assign drive_strength_opt { ignore_mode++; } delay3_opt { ignore_mode--; } assign_list ';'
@@ -2551,6 +2569,7 @@ defparam_assign
 		{
                   if( ignore_mode == 0 ) {
 		    expression_dealloc( $3, FALSE );
+                    free_safe( $1 );
                   }
 		}
 	;
@@ -2560,6 +2579,9 @@ parameter_value_opt
 		{
                   if( ignore_mode == 0 ) {
 		    expression_dealloc( $3, FALSE );
+                  } else {
+                    // We need to handle parameter overriding here
+                    
                   }
 		}
 	| '#' '(' parameter_value_byname_list ')'
@@ -2676,11 +2698,11 @@ parameter_assign_list
 	| parameter_assign_list ',' parameter_assign
 
 parameter_assign
-	: IDENTIFIER '=' static_expr
+	: IDENTIFIER '=' { param_mode = 1; } expression { param_mode = 0; }
 		{
-                  db_add_parameter( $1, $3 );
+                  db_add_parameter( $1, $4 );
 		}
-        | UNUSED_IDENTIFIER '=' static_expr
+        | UNUSED_IDENTIFIER '=' expression
 	;
 
 localparam_assign_list

@@ -21,6 +21,7 @@
 #include "statement.h"
 #include "sim.h"
 #include "binding.h"
+#include "param.h"
 
 
 extern char*     top_module;
@@ -416,29 +417,38 @@ void db_add_signal( char* name, int width, int lsb, int is_static ) {
 }
 
 /*!
- \param name   Name of parameter to add.
- \param value  Static default value to assign to this parameter value.
+ \param name  Name of parameter to add.
+ \param expr  Expression containing value of this parameter.
 
  Searches current module to verify that specified parameter name has not been previously
  used in the module.  If the parameter name has not been found, it is created added to
  the current module's parameter list.
 */
-void db_add_parameter( char* name, int value ) {
+void db_add_parameter( char* name, expression* expr ) {
 
-  signal  tmpparm;    /* Temporary parameter for parameter searching */
-  signal* parm;       /* Pointer to newly created parameter          */
   char    msg[4096];  /* Display message string                      */
 
-  snprintf( msg, 4096, "In db_add_parameter, param: %s, value: %d\n", name, value );
+  snprintf( msg, 4096, "In db_add_parameter, param: %s\n", name );
   print_output( msg, DEBUG );
 
-  tmpparm.name = name;
-
-  if( sig_link_find( &tmpparm, curr_module->parm_head ) == NULL ) {
-    parm = signal_create( name, 32, 0, TRUE );
-    vector_from_int( parm->value, value );
-    sig_link_add( parm, &(curr_module->parm_head), &(curr_module->parm_tail) );
+  if( param_find( name, curr_module->param_head ) == NULL ) {
+    param_add( name, expr, curr_module );
   }
+
+}
+
+/*!
+ \param name  Name of parameter value to override.
+ \param expr  Expression value of parameter override.
+
+ Adds specified parameter to the defparam list.
+*/
+void db_add_defparam( char* name, expression* expr ) {
+
+  char msg[4096];  /* Display message string */
+
+  snprintf( msg, 4096, "In db_add_defparam, defparam: %s\n", name );
+  print_output( msg, DEBUG );
 
 }
 
@@ -537,6 +547,7 @@ expression* db_create_expression( expression* right, expression* left, int op, i
     } else {
       bind_add( sig_name, expr, curr_module->name );
     }
+
   }
 
   return( expr );
@@ -983,6 +994,11 @@ void db_do_timestep( int time ) {
 }
 
 /* $Log$
+/* Revision 1.52  2002/08/23 12:55:32  phase1geo
+/* Starting to make modifications for parameter support.  Added parameter source
+/* and header files, changed vector_from_string function to be more verbose
+/* and updated Makefiles for new param.h/.c files.
+/*
 /* Revision 1.51  2002/08/19 04:34:06  phase1geo
 /* Fixing bug in database reading code that dealt with merging modules.  Module
 /* merging is now performed in a more optimal way.  Full regression passes and

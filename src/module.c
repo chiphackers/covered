@@ -24,15 +24,17 @@
 */  
 void module_init( module* mod ) {
     
-  mod->name      = NULL;
-  mod->filename  = NULL;
-  mod->stat      = NULL;
-  mod->sig_head  = NULL;
-  mod->sig_tail  = NULL;
-  mod->exp_head  = NULL;
-  mod->exp_tail  = NULL;
-  mod->stmt_head = NULL;
-  mod->stmt_tail = NULL;
+  mod->name       = NULL;
+  mod->filename   = NULL;
+  mod->stat       = NULL;
+  mod->sig_head   = NULL;
+  mod->sig_tail   = NULL;
+  mod->exp_head   = NULL;
+  mod->exp_tail   = NULL;
+  mod->stmt_head  = NULL;
+  mod->stmt_tail  = NULL;
+  mod->param_head = NULL;
+  mod->param_tail = NULL;
 
 }
 
@@ -341,6 +343,11 @@ void module_dealloc( module* mod ) {
 
 
 /* $Log$
+/* Revision 1.12  2002/08/19 04:34:07  phase1geo
+/* Fixing bug in database reading code that dealt with merging modules.  Module
+/* merging is now performed in a more optimal way.  Full regression passes and
+/* own examples pass as well.
+/*
 /* Revision 1.11  2002/07/23 12:56:22  phase1geo
 /* Fixing some memory overflow issues.  Still getting core dumps in some areas.
 /*

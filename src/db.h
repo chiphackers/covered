@@ -27,7 +27,10 @@ void db_add_module( char* name, char* file );
 void db_add_signal( char* name, int width, int lsb, int is_static );
 
 //! Adds specified parameter to parameter list.  Called by parser.
-void db_add_parameter( char* name, int value );
+void db_add_parameter( char* name, expression* expr );
+
+//! Adds specified defparam to parameter override list.  Called by parser.
+void db_add_defparam( char* name, expression* expr );
 
 //! Finds specified signal in module and returns pointer to the signal structure.  Called by parser.
 signal* db_find_signal( char* name );
@@ -72,6 +75,11 @@ void db_set_symbol_string( char* sym, char* value );
 void db_do_timestep( int time ); 
 
 /* $Log$
+/* Revision 1.12  2002/08/23 12:55:33  phase1geo
+/* Starting to make modifications for parameter support.  Added parameter source
+/* and header files, changed vector_from_string function to be more verbose
+/* and updated Makefiles for new param.h/.c files.
+/*
 /* Revision 1.11  2002/07/22 05:24:46  phase1geo
 /* Creating new VCD parser.  This should have performance benefits as well as
 /* have the ability to handle any problems that come up in parsing.

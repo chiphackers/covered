@@ -724,6 +724,20 @@ struct statistic_s {
 
 //------------------------------------------------------------------------------
 /*!
+ Structure containing parts for parameter definition.
+*/
+struct parameter_s;
+
+typedef struct parameter_s parameter;
+
+struct parameter_s {
+  char*       name;  /*! Full hierarchical name of associated parameter */
+  expression* expr;  /*! Expression tree containing value of parameter  */
+  parameter*  next;  /*! Pointer to next parameter in list              */
+};
+
+//------------------------------------------------------------------------------
+/*!
  Contains information for a Verilog module.  A module contains a list of signals within the
  module.
 */
@@ -737,8 +751,8 @@ struct module_s {
   exp_link*  exp_tail;   /*!< Tail pointer to list of expressions in this module */
   stmt_link* stmt_head;  /*!< Head pointer to list of statements in this module  */
   stmt_link* stmt_tail;  /*!< Tail pointer to list of statements in this module  */
-  sig_link*  parm_head;  /*!< Head pointer to list of parameters in this module  */
-  sig_link*  parm_tail;  /*!< Tail pointer to list of parameters in this module  */
+  parameter* param_head; /*!< Head pointer to list of parameters in this module  */
+  parameter* param_tail; /*!< Tail pointer to list of parameters in this module  */
 };
 
 typedef struct module_s module;
@@ -840,6 +854,11 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.38  2002/08/23 12:55:33  phase1geo
+/* Starting to make modifications for parameter support.  Added parameter source
+/* and header files, changed vector_from_string function to be more verbose
+/* and updated Makefiles for new param.h/.c files.
+/*
 /* Revision 1.37  2002/07/23 12:56:22  phase1geo
 /* Fixing some memory overflow issues.  Still getting core dumps in some areas.
 /*
