@@ -127,9 +127,21 @@ unsupported_vartype
 
 signame
 	: IDENTIFIER
+		{
+		  $$ = $1;
+		}
 	| IDENTIFIER SIGWIDTH
+		{
+		  $$ = $1;
+		}
 	| HIDENTIFIER
+		{
+		  $$ = $1;
+		}
 	| HIDENTIFIER SIGWIDTH
+		{
+		  $$ = $1;
+		}
 	;
 
 changelists

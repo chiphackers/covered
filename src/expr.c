@@ -647,7 +647,8 @@ void expression_operate( expression* expr ) {
       case EXP_OP_DELAY :
         intval1 = vector_to_int( expr->left->value );           // Start time of delay
         intval2 = vector_to_int( expr->right->value );          // Number of clocks to delay
-        if( (intval1 + intval2) >= curr_sim_time ) {
+        printf( "EXP_OP_DELAY: start time: %d, delay: %d, sim_time: %d\n", intval1, intval2, curr_sim_time );
+        if( (intval1 + intval2) <= curr_sim_time ) {
           bit = 1;
           vector_set_value( expr->value, &bit, 1, 0, 0 );
         } else {
@@ -741,6 +742,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.15  2002/06/26 22:09:17  phase1geo
+/* Removing unecessary output and updating regression Makefile.
+/*
 /* Revision 1.14  2002/06/26 04:59:50  phase1geo
 /* Adding initial support for delays.  Support is not yet complete and is
 /* currently untested.

@@ -555,7 +555,7 @@ void combination_display_verbose( FILE* ofile, exp_link* expl ) {
 
       /* Generate line of code that missed combinational coverage */
       code = codegen_gen_expr( unexec_exp, -1 );
-      fprintf( ofile, "%7d:    %s\n", 0, code );
+      fprintf( ofile, "%7d:    %s\n", unexec_exp->line, code );
 
       /* Output underlining feature for missed expressions */
       combination_underline( ofile, unexec_exp, "            " );
@@ -679,6 +679,10 @@ void combination_report( FILE* ofile, bool verbose, bool instance ) {
 
 
 /* $Log$
+/* Revision 1.16  2002/06/25 03:39:03  phase1geo
+/* Fixed initial scoring bugs.  We now generate a legal CDD file for reporting.
+/* Fixed some report bugs though there are still some remaining.
+/*
 /* Revision 1.15  2002/06/21 05:55:05  phase1geo
 /* Getting some codes ready for writing simulation engine.  We should be set
 /* now.

@@ -30,28 +30,16 @@ void line_get_stats( stmt_link* stmtl, float* total, int* hit ) {
 
   stmt_link* curr      = stmtl;  /* Pointer to current statement link in list       */
   int        last_line = -1;     /* Last line number found                          */
-  bool       line_hit  = TRUE;   /* Specifies that the current line was hit already */
 
   while( curr != NULL ) {
 
-    if( curr->stmt->exp->line != last_line ) {
-      line_hit = FALSE;
+    if( SUPPL_OP( curr->stmt->exp->suppl ) != EXP_OP_DELAY ) {
       *total = *total + 1;
-      if(    (SUPPL_WAS_EXECUTED( curr->stmt->exp->suppl ) == 1) 
-          || (   (SUPPL_OP( curr->stmt->exp->suppl ) == EXP_OP_NONE) 
-              && (   (curr->next == NULL) 
-                  || (curr->next->stmt->exp->line != curr->stmt->exp->line))) ) {
+      if( SUPPL_WAS_EXECUTED( curr->stmt->exp->suppl ) == 1 ) {
         (*hit)++;
-        line_hit = TRUE;
-      }
-    } else {
-      if( (SUPPL_WAS_EXECUTED( curr->stmt->exp->suppl ) == 1) && !line_hit ) {
-        (*hit)++;
-        line_hit = TRUE;
       }
     }
         
-    last_line = curr->stmt->exp->line;
     curr      = curr->next;
 
   }
@@ -141,18 +129,14 @@ void line_display_verbose( FILE* ofile, stmt_link* stmtl ) {
 
   expression* unexec_exp;      /* Pointer to current unexecuted expression    */
   char*       code;            /* Pointer to code string from code generator  */
-  int         last_line = -1;  /* Line number of last line found to be missed */
 
   fprintf( ofile, "Missed Lines\n\n" );
 
   /* Display current instance missed lines */
   while( stmtl != NULL ) {
 
-    if(   (SUPPL_WAS_EXECUTED( stmtl->stmt->exp->suppl ) == 0)
-       && (SUPPL_OP( stmtl->stmt->exp->suppl ) != EXP_OP_NONE)
-       && (stmtl->stmt->exp->line != last_line) ) {
+    if( SUPPL_WAS_EXECUTED( stmtl->stmt->exp->suppl ) == 0 ) {
 
-      last_line  = stmtl->stmt->exp->line;
       unexec_exp = stmtl->stmt->exp;
 /*
       while( (unexec_exp->parent->expr != NULL) && (unexec_exp->parent->expr->line == unexec_exp->line) ) {
@@ -279,6 +263,9 @@ void line_report( FILE* ofile, bool verbose, bool instance ) {
 }
 
 /* $Log$
+/* Revision 1.9  2002/06/25 21:46:10  phase1geo
+/* Fixes to simulator and reporting.  Still some bugs here.
+/*
 /* Revision 1.8  2002/06/22 05:27:30  phase1geo
 /* Additional supporting code for simulation engine and statement support in
 /* parser.

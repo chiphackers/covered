@@ -257,6 +257,7 @@ bool statement_db_read( char** line, module* curr_mod ) {
 */
 void statement_connect( statement* curr_stmt, statement* next_stmt, bool set_stop ) {
 
+  bool allow_stop;      /* If TRUE, sets the set_stop value for TRUE paths */
   static int count = 0;
 
   assert( curr_stmt != NULL );
@@ -270,30 +271,44 @@ void statement_connect( statement* curr_stmt, statement* next_stmt, bool set_sto
 
   /* Set STOP bit if necessary */
   if( (curr_stmt->next_true == NULL) && (curr_stmt->next_false == NULL) && set_stop ) {
+
     printf( "Setting STOP bit for statement %d\n", curr_stmt->exp->id );
     curr_stmt->exp->suppl = curr_stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);
+
   }
 
   /* Traverse TRUE path */
   if( curr_stmt->next_true == NULL ) {
+
     printf( "curr: %d, next: %d, Setting TRUE\n", curr_stmt->exp->id, next_stmt->exp->id );
     curr_stmt->next_true = next_stmt;
+
   } else {
+
     if( curr_stmt->next_true != next_stmt ) {
       printf( "curr: %d, next: %d, Traversing TRUE path\n", curr_stmt->exp->id, next_stmt->exp->id );
-      statement_connect( curr_stmt->next_true, next_stmt, TRUE );
+      allow_stop = ((curr_stmt->next_true != curr_stmt->next_false) &&
+                    (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_DELAY));
+      statement_connect( curr_stmt->next_true, next_stmt, allow_stop );
     }
+
   }
 
   /* Traverse FALSE path */
   if( curr_stmt->next_false == NULL ) {
-    printf( "curr: %d, next: %d, Setting FALSE\n", curr_stmt->exp->id, next_stmt->exp->id );
-    curr_stmt->next_false = next_stmt;
+
+    if( SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_DELAY ) {
+      printf( "curr: %d, next: %d, Setting FALSE\n", curr_stmt->exp->id, next_stmt->exp->id );
+      curr_stmt->next_false = next_stmt;
+    }
+
   } else {
+
     if( curr_stmt->next_false != next_stmt ) {
       printf( "curr: %d, next: %d, Traversing FALSE path\n", curr_stmt->exp->id, next_stmt->exp->id );
       statement_connect( curr_stmt->next_false, next_stmt, FALSE );
     }
+
   }
 
 }
@@ -340,6 +355,9 @@ void statement_dealloc( statement* stmt ) {
 
 
 /* $Log$
+/* Revision 1.15  2002/06/27 12:36:47  phase1geo
+/* Fixing bugs with scoring.  I think I got it this time.
+/*
 /* Revision 1.14  2002/06/26 22:09:17  phase1geo
 /* Removing unecessary output and updating regression Makefile.
 /*

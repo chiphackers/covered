@@ -208,6 +208,8 @@ statement* sim_statement( statement* head_stmt ) {
 
     if( expression_is_zero( stmt->exp ) ) {
 
+      printf( "Value is FALSE\n" );
+
       /* 
        If statement's next_false value is NULL, we need to wait.  Set STMT_HEAD
        bit in this statement.
@@ -289,6 +291,10 @@ void sim_simulate() {
 }
 
 /* $Log$
+/* Revision 1.8  2002/06/26 04:59:50  phase1geo
+/* Adding initial support for delays.  Support is not yet complete and is
+/* currently untested.
+/*
 /* Revision 1.7  2002/06/26 03:45:48  phase1geo
 /* Fixing more bugs in simulator and report functions.  About to add support
 /* for delay statements.
