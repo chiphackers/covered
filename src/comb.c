@@ -247,70 +247,85 @@ void combination_underline_tree( expression* exp, char*** lines, int* depth, int
       }
 
       if( l_depth > r_depth ) {
-        *depth = l_depth + SUPPL_IS_MEASURABLE( exp->suppl );
+        *depth = l_depth + (SUPPL_IS_MEASURABLE( exp->suppl ) &
+                            (~SUPPL_WAS_TRUE( exp->suppl ) | ~SUPPL_WAS_FALSE( exp->suppl )));
       } else {
-        *depth = r_depth + SUPPL_IS_MEASURABLE( exp->suppl );
+        *depth = r_depth + (SUPPL_IS_MEASURABLE( exp->suppl ) &
+                            (~SUPPL_WAS_TRUE( exp->suppl ) | ~SUPPL_WAS_FALSE( exp->suppl )));
       }
 
-      /* Allocate all memory for the stack */
-      *lines = (char**)malloc_safe( sizeof( char* ) * (*depth) );
+      if( *depth > 0 ) {
 
-      /* Allocate memory for this underline */
-      (*lines)[(*depth)-1] = (char*)malloc_safe( *size + 1 );
+        /* Allocate all memory for the stack */
+        *lines = (char**)malloc_safe( sizeof( char* ) * (*depth) );
 
-      /* Create underline or space */
-      if( ((SUPPL_WAS_TRUE( exp->suppl )  == 0) ||
-           (SUPPL_WAS_FALSE( exp->suppl ) == 0)) &&
-          (SUPPL_IS_MEASURABLE( exp->suppl ) == 1) ) {
-        combination_draw_line( (*lines)[(*depth)-1], *size, *exp_id );
-        *exp_id = *exp_id + 1;
-      }
+        /* Allocate memory for this underline */
+        (*lines)[(*depth)-1] = (char*)malloc_safe( *size + 1 );
 
-      /* Combine the left and right line stacks */
-      for( i=0; i<(*depth - 1); i++ ) {
-
-        (*lines)[i] = (char*)malloc_safe( *size + 1 );
-
-        if( (i < l_depth) && (i < r_depth) ) {
-         
-          /* Merge left and right lines */
-          snprintf( (*lines)[i], *size, code_fmt, l_lines[i], r_lines[i] );
-
-          free_safe( l_lines[i] );
-          free_safe( r_lines[i] );
-
-        } else if( i < l_depth ) {
-
-          /* Create spaces for right side */
-          gen_space( exp_sp, r_size );
-
-          /* Merge left side only */
-          snprintf( (*lines)[i], *size, code_fmt, l_lines[i], exp_sp );
-
-          free_safe( l_lines[i] );
-
-        } else if( i < r_depth ) {
- 
-          /* Create spaces for left side */
-          gen_space( exp_sp, l_size );
-
-          /* Merge left side only */
-          snprintf( (*lines)[i], *size, code_fmt, exp_sp, r_lines[i] );
-
-          free_safe( r_lines[i] );
- 
+        /* Create underline or space */
+        if( ((SUPPL_WAS_TRUE( exp->suppl )  == 0) ||
+             (SUPPL_WAS_FALSE( exp->suppl ) == 0)) &&
+            (SUPPL_IS_MEASURABLE( exp->suppl ) == 1) ) {
+          combination_draw_line( (*lines)[(*depth)-1], *size, *exp_id );
+          *exp_id = *exp_id + 1;
         }
 
-      }
+        /* Combine the left and right line stacks */
+        for( i=0; i<(*depth - 1); i++ ) {
 
-      /* Free left child stack */
-      if( l_depth > 0 ) {
-        free_safe( l_lines );
-      }
+          (*lines)[i] = (char*)malloc_safe( *size + 1 );
 
-      /* Free right child stack */
-      if( r_depth > 0 ) {
-        free_safe( r_lines );
+          if( (i < l_depth) && (i < r_depth) ) {
+         
+            /* Merge left and right lines */
+            snprintf( (*lines)[i], *size, code_fmt, l_lines[i], r_lines[i] );
+
+            free_safe( l_lines[i] );
+            free_safe( r_lines[i] );
+
+          } else if( i < l_depth ) {
+
+            /* Create spaces for right side */
+            gen_space( exp_sp, r_size );
+
+            printf( "lspace:%s, r_size: %d, op: %d\n", exp_sp, r_size, exp->op );
+
+            /* Merge left side only */
+            snprintf( (*lines)[i], *size, code_fmt, l_lines[i], exp_sp );
+
+            free_safe( l_lines[i] );
+
+          } else if( i < r_depth ) {
+ 
+            /* Create spaces for left side */
+            gen_space( exp_sp, l_size );
+
+            printf( "rspace:%s.\n", exp_sp );
+
+            /* Merge left side only */
+            snprintf( (*lines)[i], *size, code_fmt, exp_sp, r_lines[i] );
+
+            free_safe( r_lines[i] );
+   
+          } else {
+
+            print_output( "Internal error:  Reached entry without a left or right underline", FATAL );
+            exit( 1 );
+
+          }
+
+        }
+
+        /* Free left child stack */
+        if( l_depth > 0 ) {
+          free_safe( l_lines );
+        }
+
+        /* Free right child stack */
+        if( r_depth > 0 ) {
+          free_safe( r_lines );
+        }
+
       }
 
     }
