@@ -216,7 +216,7 @@ int expression_get_id( expression* expr ) {
 */
 void expression_db_write( expression* expr, FILE* file, char* scope ) {
 
-  printf( "In expression_db_write, writing expression %d\n", expr->id );
+  // printf( "In expression_db_write, writing expression %d\n", expr->id );
 
   fprintf( file, "%d %d %s %d %x %d %d ",
     DB_TYPE_EXPRESSION,
@@ -741,6 +741,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.14  2002/06/26 04:59:50  phase1geo
+/* Adding initial support for delays.  Support is not yet complete and is
+/* currently untested.
+/*
 /* Revision 1.13  2002/06/25 03:39:03  phase1geo
 /* Fixed initial scoring bugs.  We now generate a legal CDD file for reporting.
 /* Fixed some report bugs though there are still some remaining.

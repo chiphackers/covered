@@ -201,8 +201,6 @@ bool statement_db_read( char** line, module* curr_mod ) {
 
     } else {
 
-      printf( "Read statement %d\n", id );
-
       /* Find associated root expression */
       tmpexp.id = id;
       expl = exp_link_find( &tmpexp, curr_mod->exp_head );
@@ -344,6 +342,10 @@ void statement_dealloc( statement* stmt ) {
 
 
 /* $Log$
+/* Revision 1.13  2002/06/26 03:45:48  phase1geo
+/* Fixing more bugs in simulator and report functions.  About to add support
+/* for delay statements.
+/*
 /* Revision 1.12  2002/06/25 21:46:10  phase1geo
 /* Fixes to simulator and reporting.  Still some bugs here.
 /*

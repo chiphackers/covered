@@ -1,17 +1,17 @@
 module main;
 
-reg      a;
-reg      b;
-reg      c;
+reg       a;
+reg [1:0] b;
 
 initial begin
         $dumpfile( "simple.vcd" );
         $dumpvars( 0, main );
         a = 1'b0;
-        b = ~a;
+	if( a )
+          b = 2'b10;
+        else
+          b = 2'b01;
         #5;
-        b = a;
-	#10;
 end
 
 endmodule
