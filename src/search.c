@@ -142,9 +142,11 @@ bool search_add_file( char* file ) {
   bool  retval = TRUE;  /* Return value for this function */
   char* tmp;            /* Temporary filename             */
 
-  if( file_exists( file ) && (str_link_find( file, use_files_head ) == NULL) ) {
-    tmp = strdup_safe( file, __FILE__, __LINE__ );
-    str_link_add( tmp, &use_files_head, &use_files_tail );
+  if( file_exists( file ) ) {
+    if( str_link_find( file, use_files_head ) == NULL ) {
+      tmp = strdup_safe( file, __FILE__, __LINE__ );
+      str_link_add( tmp, &use_files_head, &use_files_tail );
+    }
   } else {
     snprintf( user_msg, USER_MSG_LENGTH, "File %s does not exist", file );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -227,6 +229,15 @@ void search_free_lists() {
 
 /*
  $Log$
+ Revision 1.16  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.15  2004/03/15 21:38:17  phase1geo
  Updated source files after running lint on these files.  Full regression
  still passes at this point.
