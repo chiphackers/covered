@@ -461,7 +461,6 @@ void statement_remove_paths_helper( statement* curr, statement* start, statement
     /* Handle TRUE path */
     if( curr->next_true == stmt ) {
       curr->next_true = NULL;
-      printf( "Removed statement %d from true statement %d\n", stmt->exp->id, curr->exp->id );
     } else {
       statement_remove_paths_helper( curr->next_true,  start, stmt );
     }
@@ -469,7 +468,6 @@ void statement_remove_paths_helper( statement* curr, statement* start, statement
     /* Handle FALSE path */
     if( curr->next_false == stmt ) {
       curr->next_false = NULL;
-      printf( "Removed statement %d from false statement %d\n", stmt->exp->id, curr->exp->id );
     } else {
       statement_remove_paths_helper( curr->next_false, start, stmt );
     }
@@ -482,12 +480,9 @@ void statement_remove_paths( statement* start, statement* stmt ) {
 
   if( start != NULL ) {
 
-    printf( "Attempting to remove statement %d paths\n", stmt->exp->id );
-
     /* Handle TRUE path */
     if( start->next_true == stmt ) {
       start->next_true = NULL;
-      printf( "Removed statement %d from true statement %d\n", stmt->exp->id, start->exp->id );
     } else {
       statement_remove_paths_helper( start->next_true,  start, stmt );
     }
@@ -495,7 +490,6 @@ void statement_remove_paths( statement* start, statement* stmt ) {
     /* Handle FALSE path */
     if( start->next_false == stmt ) {
       start->next_false = NULL;
-      printf( "Removed statement %d from false statement %d\n", stmt->exp->id, start->exp->id );
     } else {
       statement_remove_paths_helper( start->next_false, start, stmt );
     }
@@ -589,6 +583,9 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.47  2004/03/16 13:56:05  phase1geo
+ Fixing bug with statement removal to make it less prone to segmentation faulting.
+
  Revision 1.46  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,
