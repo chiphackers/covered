@@ -13,6 +13,7 @@ COVERED_GFLAG = -Q
 IVERILOG       = iverilog
 IVERILOG_FLAGS = -y ./lib -I ./include -DRUNTEST
 IVERILOG_EXEC  = a.out
+IVERILOG_INTER = vvp
 
 VCS       = vcs
 VCS_FLAGS = +libext+.v+ -y ./lib +incdir+./include +define+RUNTEST +define+VCS
@@ -21,6 +22,7 @@ VCS_EXEC  = simv
 VERILOG       = $(IVERILOG)
 VERILOG_FLAGS = $(IVERILOG_FLAGS)
 VERILOG_EXEC  = $(IVERILOG_EXEC)
+VERILOG_CMD   = $(IVERILOG_INTER) $(IVERILOG_EXEC)
 
 CDD_DIR       = ../cdd
 RPT_DIR       = ../rpt
@@ -32,7 +34,7 @@ regress:	$(COVERED) $(DIAGLIST) $(MERGELIST)
 $(DIAGLIST):
 	@echo Running $@
 	@$(VERILOG) $(VERILOG_FLAGS) $@.v
-	@./$(VERILOG_EXEC)
+	@$(VERILOG_CMD)
 	@$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@.cfg
 	-@$(COVERED) $(COVERED_GFLAG) report -d v -o $@.rptM $@.cdd
 	-@$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@.rptI $@.cdd
@@ -43,7 +45,7 @@ $(DIAGLIST):
 $(MERGELIST):
 	@echo Running $@
 	@$(VERILOG) $(VERILOG_FLAGS) $@a.v
-	@./$(VERILOG_EXEC)
+	@$(VERILOG_CMD)
 	@$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@a.cfg
 	-@$(COVERED) $(COVERED_GFLAG) report -d v -o $@a.rptM $@a.cdd
 	-@$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@a.rptI $@a.cdd
@@ -51,7 +53,7 @@ $(MERGELIST):
 	-@$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $@a.rptWI $@a.cdd
 	@./check_test $@a 0
 	@$(VERILOG) $(VERILOG_FLAGS) $@b.v
-	@./$(VERILOG_EXEC)
+	@$(VERILOG_CMD)
 	@$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@b.cfg
 	-@$(COVERED) $(COVERED_GFLAG) report -d v -o $@b.rptM $@b.cdd
 	-@$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@b.rptI $@b.cdd
