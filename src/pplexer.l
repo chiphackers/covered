@@ -101,7 +101,7 @@ WSPACE [ \t\b\f]+
   /* C-style strings */
 \"            { comment_enter = YY_START;  BEGIN( CSTRING );  ECHO; }
 <CSTRING>\\\" {                                               ECHO; }
-<CSTRING>\n   {                                               ECHO; }
+<CSTRING>\n   { istack->lineno += 1;                          ECHO; }
 <CSTRING>\"   { BEGIN( comment_enter );                       ECHO; }
 <CSTRING>.    {                                               ECHO; }
 
@@ -205,6 +205,33 @@ WSPACE [ \t\b\f]+
 
   /* endif directive */
 <IFDEF_FALSE,IFDEF_TRUE,IFDEF_SUPR>^{WSPACE}?`endif.* { yy_pop_state(); }
+
+  /* Timescale directive -- we ignore this information */
+^{WSPACE}?`timescale { comment_enter = YY_START;  BEGIN( PPTIMESCALE );  ECHO; }
+<PPTIMESCALE>.       {                                                   ECHO; }
+<PPTIMESCALE>\n      {
+     istack->lineno += 1;
+     BEGIN( comment_enter );
+     fputc( '\n', yyout );
+ }
+
+  /* Miscellaneous directives -- we ignore this information */
+^{WSPACE}?`celldefine{WSPACE}?.*             { ECHO; }
+^{WSPACE}?`default_nettype{WSPACE}?.*        { ECHO; }
+^{WSPACE}?`delay_mode_distributed{WSPACE}?.* { ECHO; }
+^{WSPACE}?`delay_mode_unit{WSPACE}?.*        { ECHO; }
+^{WSPACE}?`delay_mode_path{WSPACE}?.*        { ECHO; }
+^{WSPACE}?`disable_portfaults{WSPACE}?.*     { ECHO; }
+^{WSPACE}?`enable_portfaults{WSPACE}?.*      { ECHO; }
+^{WSPACE}?`endcelldefine{WSPACE}?.*          { ECHO; }
+^{WSPACE}?`endprotect{WSPACE}?.*             { ECHO; }
+^{WSPACE}?`nosuppress_faults{WSPACE}?.*      { ECHO; }
+^{WSPACE}?`nounconnected_drive{WSPACE}?.*    { ECHO; }
+^{WSPACE}?`protect{WSPACE}?.*                { ECHO; }
+^{WSPACE}?`resetall{WSPACE}?.*               { ECHO; }
+^{WSPACE}?`suppress_faults{WSPACE}?.*        { ECHO; }
+^{WSPACE}?`unconnected_drive{WSPACE}?.*      { ECHO; }
+^{WSPACE}?`uselib{WSPACE}?.*                 { ECHO; }
 
   /* Macro identifier */
 `[a-zA-Z_][a-zA-Z0-9_]* { def_match(); }
@@ -726,6 +753,7 @@ void reset_pplexer( char* filename ) {
   snprintf( ppfilename, 10, "tmpXXXXXX" );
   assert( mkstemp( ppfilename ) != 0 );
   yyout = fopen( ppfilename, "w" );
+  assert( yyout != NULL );
 
   yyrestart( isp->file );
 

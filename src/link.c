@@ -403,6 +403,44 @@ mod_link* mod_link_find( module* mod, mod_link* head ) {
 }
 
 /*!
+ \param exp   Pointer to string to find and remove.
+ \param head  Pointer to head of string list.
+ \param tail  Pointer to tail of string list.
+
+ Searches specified list for string that matches the specified string.  If
+ a match is found, remove it from the list and deallocate the link memory.
+*/
+void str_link_remove( char* str, str_link** head, str_link** tail ) {
+
+  str_link* curr;  /* Pointer to current string link */
+  str_link* last;  /* Pointer to last string link    */
+
+  curr = *head;
+  last = NULL;
+  while( (curr != NULL) && (strcmp( str, curr->str ) != 0) ) {
+    last = curr;
+    curr = curr->next;
+    assert( curr->str != NULL );
+  }
+
+  if( curr != NULL ) {
+
+    if( curr == *head ) {
+      *head = curr->next;
+    } else if( curr == *tail ) {
+      last->next = NULL;
+      *tail      = last;
+    } else {
+      last->next = curr->next;
+    }
+
+    free_safe( curr );
+
+  }
+
+}
+
+/*!
  \param exp   Pointer to expression to find and remove.
  \param head  Pointer to head of expression list.
  \param tail  Pointer to tail of expression list.
@@ -579,6 +617,13 @@ void mod_link_delete_list( mod_link* head ) {
 
 /*
  $Log$
+ Revision 1.14  2002/12/06 02:18:59  phase1geo
+ Fixing bug with calculating list and concatenation lengths when MBIT_SEL
+ expressions were included.  Also modified file parsing algorithm to be
+ smarter when searching files for modules.  This change makes the parsing
+ algorithm much more optimized and fixes the bug specified in our bug list.
+ Added diagnostic to verify fix for first bug.
+
  Revision 1.13  2002/11/02 16:16:20  phase1geo
  Cleaned up all compiler warnings in source and header files.
 

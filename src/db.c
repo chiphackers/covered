@@ -364,7 +364,7 @@ void db_add_module( char* name, char* file ) {
   print_output( user_msg, DEBUG );
 
   /* Make sure that modlist_head name is the same as the specified name */
-  assert( strcmp( name, modlist_head->str ) == 0 );
+  // assert( strcmp( name, modlist_head->str ) == 0 );
 
   /* Set current module to this module */
   mod.name = name;
@@ -387,14 +387,7 @@ void db_end_module() {
 
   print_output( "In db_end_module", DEBUG );
 
-  str = modlist_head;
-
-  /* Update modlist head */
-  modlist_head = modlist_head->next;
-
-  /* Remove old head */
-  free_safe( str->str );
-  free_safe( str );
+  str_link_remove( curr_module->name, &modlist_head, &modlist_tail );
 
   /* mod_parm_display( curr_module->param_head ); */
   
@@ -1139,6 +1132,11 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.75  2002/12/30 05:31:33  phase1geo
+ Fixing bug in module merge for reports when parameterized modules are merged.
+ These modules should not output an error to the user when mismatching modules
+ are found.
+
  Revision 1.74  2002/12/11 14:51:57  phase1geo
  Fixes compiler errors from last checkin.
 

@@ -145,6 +145,7 @@ WSPACE [ \t\b\f]+
 
   /* Keyword and signal identifiers */
 [a-zA-Z_][a-zA-Z0-9$_]* {
+     str_link* foundmod;
      int rc = lexer_keyword_code( yytext, yyleng );
      if( rc == IDENTIFIER ) {
        if( ignore_mode == 0 ) {
@@ -160,7 +161,7 @@ WSPACE [ \t\b\f]+
          }
        }
        if( last_keyword == K_module ) {
-         if( (modlist_head == NULL) || (strcmp( modlist_head->str, yytext ) != 0) ) {
+         if( (foundmod = str_link_find( yytext, modlist_head )) == NULL ) {
            BEGIN( IGNORE_MODULE );
            rc = IGNORE;
          } else {
@@ -433,7 +434,11 @@ static int yywrap() {
 
   str_link* curr;
   
-  assert( unlink( yylloc.pptext ) == 0);
+  if( yyin != 0 ) {
+    fclose( yyin );
+  }
+
+  assert( unlink( yylloc.pptext ) == 0 );
   
   if( modlist_head == NULL ) {
     return( 1 );
