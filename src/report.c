@@ -216,7 +216,9 @@ void report_gather_stats( mod_inst* root ) {
   }
 
   if( report_combination ) {
-    /* TBD */
+    combination_get_stats( root->mod->exp_head,
+                           &(root->stat->comb_total),
+                           &(root->stat->comb_hit) );
   }
 
   if( report_fsm ) {

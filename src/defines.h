@@ -220,12 +220,30 @@
 */
 #define SUPPL_MERGE_MASK            0x302
 
-/*
+/*!
  Returns a value of 1 if the specified supplemental value has the executed
  bit set; otherwise, returns a value of 0 to indicate whether the
  corresponding expression was executed during simulation or not.
 */
 #define SUPPL_WAS_EXECUTED(x)       ((x >> SUPPL_LSB_EXECUTED) & 0x1)
+
+/*!
+ Returns a value of 1 if the specified supplemental value is considered
+ to be measurable.
+*/
+#define SUPPL_IS_MEASURABLE(x)      ((x >> SUPPL_LSB_MEASURABLE) & 0x1)
+
+/*!
+ Returns a value of 1 if the specified supplemental belongs to an expression
+ that has evaluated to a value of TRUE (1) during simulation.
+*/
+#define SUPPL_WAS_TRUE(x)           ((x >> SUPPL_LSB_TRUE) & 0x1)
+
+/*!
+ Returns a value of 1 if the specified supplemental belongs to an expression
+ that has evaluated to a value of FALSE (0) during simulation.
+*/
+#define SUPPL_WAS_FALSE(x)          ((x >> SUPPL_LSB_FALSE) & 0x1)
 
 /*! @} */
      
