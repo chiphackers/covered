@@ -127,7 +127,7 @@ proc display_line_cov {} {
 
   }
 
-  # Now cause the text box to be read-only
+  # Now cause the text box to be read-only again
   .bot.txt configure -state disabled
 
   return

@@ -37,13 +37,19 @@ proc menu_create {.menubar} {
   # Now add open and close options
   $tfm add command -label "Open CDD..." -command {
     set file_name [tk_getOpenFile -filetypes $file_types]
-    message .status -text "Opening $file_name" -width 300 -relief raised
+    message .status -text "Opening $file_name.  Please wait..." -width 500 -relief raised
     place .status -in . -relx 0.33 -rely 0.5
-    tcl_func_open_cdd $file_name
-    .status configure -text "Populating module/instance information"
-    populate_listbox .bot.l
-    ;# destroy .status
+    after 100 {
+      tcl_func_open_cdd $file_name
+      .status configure -text "Populating module/instance information"
+      populate_listbox .bot.l
+      destroy .status
+      .bot.info configure -text "Select a module/instance at left for coverage details"
+    }
+    ;# This line of code is only needed until we have the ability to open several files at once.
+    .menubar.file.menu entryconfigure 0 -state disabled
   }
+  $tfm add command -label "Reopen CDD" -state disabled
   $tfm add command -label "Close CDD" -state disabled
   $tfm add separator
   $tfm add command -label Exit -command exit
