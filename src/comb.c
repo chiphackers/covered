@@ -964,7 +964,7 @@ void combination_two_vars( FILE* ofile, expression* exp, int val0, int val1, int
 
 }
 
-void combination_multi_var_exprs( char** line1, char** line2, char** line3, expression* exp, int* curr_id ) {
+void combination_multi_var_exprs( char** line1, char** line2, char** line3, int* hit, int* total, expression* exp, int* curr_id ) {
 
   char* left_line1;
   char* left_line2;
@@ -988,14 +988,17 @@ void combination_multi_var_exprs( char** line1, char** line2, char** line3, expr
       snprintf( left_line2, 5, "---+",  *curr_id );
       if( and_op ) {
         snprintf( left_line3, 5, " %d  ", SUPPL_WAS_FALSE( exp->left->suppl ) );
+        *hit += SUPPL_WAS_FALSE( exp->left->suppl );
       } else {
         snprintf( left_line3, 5, " %d  ", SUPPL_WAS_TRUE( exp->left->suppl ) );
+        *hit += SUPPL_WAS_TRUE( exp->left->suppl );
       }
+      (*total)++;
       (*curr_id)++;
 
     } else {
 
-      combination_multi_var_exprs( &left_line1, &left_line2, &left_line3, exp->left, curr_id );
+      combination_multi_var_exprs( &left_line1, &left_line2, &left_line3, hit, total, exp->left, curr_id );
 
     }
 
@@ -1012,9 +1015,12 @@ void combination_multi_var_exprs( char** line1, char** line2, char** line3, expr
     snprintf( *line2, (strlen( left_line2 ) + strlen( curr_id_str ) + 4), "%s-%s-+", left_line2, curr_id_str );
     if( and_op ) {
       snprintf( *line3, (strlen( left_line3 ) + strlen( curr_id_str ) + 4), "%s %d  ", left_line3, SUPPL_WAS_FALSE( exp->right->suppl ) );
+      *hit += SUPPL_WAS_FALSE( exp->right->suppl );
     } else {
       snprintf( *line3, (strlen( left_line3 ) + strlen( curr_id_str ) + 4), "%s %d  ", left_line3, SUPPL_WAS_TRUE( exp->right->suppl ) );
+      *hit += SUPPL_WAS_TRUE( exp->right->suppl );
     }
+    (*total)++;
     free_safe( left_line1 );
     free_safe( left_line2 );
     free_safe( left_line3 );
@@ -1031,11 +1037,14 @@ void combination_multi_var_exprs( char** line1, char** line2, char** line3, expr
         snprintf( *line1, (strlen( left_line1 ) + 7), "%s All 1", left_line1 );
         snprintf( *line2, (strlen( left_line2 ) + 7), "%s------",  left_line2 );
         snprintf( *line3, (strlen( left_line3 ) + 7), "%s  %d  ",  left_line3, ((exp->suppl >> SUPPL_LSB_EVAL_11) & 0x1) );
+        *hit += ((exp->suppl >> SUPPL_LSB_EVAL_11) & 0x1);
       } else {
         snprintf( *line1, (strlen( left_line1 ) + 7), "%s All 1", left_line1 );
         snprintf( *line2, (strlen( left_line2 ) + 7), "%s------",  left_line2 );
         snprintf( *line3, (strlen( left_line3 ) + 7), "%s  %d  ",  left_line3, ((exp->suppl >> SUPPL_LSB_EVAL_00) & 0x1) );
+        *hit += ((exp->suppl >> SUPPL_LSB_EVAL_00) & 0x1);
       }
+      (*total)++;
       free_safe( left_line1 );
       free_safe( left_line2 );
       free_safe( left_line3 );
@@ -1062,73 +1071,33 @@ void combination_multi_vars( FILE* ofile, expression* exp, int id ) {
   int         uniq_shift;
   int         eval_shift;
   int         eval_val;
-  int         total;
-  int         hit;
+  int         total   = 0;
+  int         hit     = 0;
   char*       line1   = NULL;
   char*       line2   = NULL;
   char*       line3   = NULL;
   int         curr_id = 1;
 
-  /* Get hit and total counts */
-  total    = 1;
-  hit      = 0;
-  curr_exp = exp;
-  while( (curr_exp->left != NULL) && (SUPPL_OP( curr_exp->suppl ) == SUPPL_OP( curr_exp->left->suppl )) ) {
-    assert( curr_exp->right != NULL );
-    if( (SUPPL_OP( exp->suppl ) == EXP_OP_AND) || (SUPPL_OP( exp->suppl ) == EXP_OP_LAND) ) {
-      hit += SUPPL_WAS_FALSE( curr_exp->right->suppl );
-    } else {
-      hit += SUPPL_WAS_TRUE( curr_exp->right->suppl );
-    }
-    total++;
-    curr_exp = curr_exp->left;
-  }
-  if( (SUPPL_OP( exp->suppl ) == EXP_OP_AND) || (SUPPL_OP( exp->suppl ) == EXP_OP_LAND) ) {
-    hit += SUPPL_WAS_FALSE( curr_exp->right->suppl ) + ((exp->suppl >> SUPPL_LSB_EVAL_11) & 0x1);
-  } else {
-    hit += SUPPL_WAS_TRUE( curr_exp->right->suppl )  + ((exp->suppl >> SUPPL_LSB_EVAL_00) & 0x1);
-  }
-  total += 2;
+  /* Gather report output for this expression */
+  combination_multi_var_exprs( &line1, &line2, &line3, &hit, &total, exp, &curr_id );
 
   fprintf( ofile, "Expression %d   (%d/%d)\n", id, hit, total );
 
   switch( SUPPL_OP( exp->suppl ) ) {
-    case EXP_OP_AND  :
-      fprintf( ofile, "^^^^^^^^^^^^^ - &\n" );   eval_val = 1;  uniq_shift = SUPPL_LSB_FALSE;  eval_shift = SUPPL_LSB_EVAL_11;  break;
-    case EXP_OP_OR   :
-      fprintf( ofile, "^^^^^^^^^^^^^ - |\n" );   eval_val = 0;  uniq_shift = SUPPL_LSB_TRUE;   eval_shift = SUPPL_LSB_EVAL_00;  break;
-    case EXP_OP_LAND :
-      fprintf( ofile, "^^^^^^^^^^^^^ - &&\n" );  eval_val = 1;  uniq_shift = SUPPL_LSB_FALSE;  eval_shift = SUPPL_LSB_EVAL_11;  break;
-    case EXP_OP_LOR  :
-      fprintf( ofile, "^^^^^^^^^^^^^ - ||\n" );  eval_val = 0;  uniq_shift = SUPPL_LSB_TRUE;   eval_shift = SUPPL_LSB_EVAL_00;  break;
+    case EXP_OP_AND  :  fprintf( ofile, "^^^^^^^^^^^^^ - &\n" );   break;
+    case EXP_OP_OR   :  fprintf( ofile, "^^^^^^^^^^^^^ - |\n" );   break;
+    case EXP_OP_LAND :  fprintf( ofile, "^^^^^^^^^^^^^ - &&\n" );  break;
+    case EXP_OP_LOR  :  fprintf( ofile, "^^^^^^^^^^^^^ - ||\n" );  break;
     default          :  break;
   }
 
   /* Output the lines paying attention to the current line width */
-  combination_multi_var_exprs( &line1, &line2, &line3, exp, &curr_id );
   fprintf( ofile, "%s\n", line1 );
   fprintf( ofile, "%s\n", line2 );
   fprintf( ofile, "%s\n", line3 );
   free_safe( line1 );
   free_safe( line2 );
   free_safe( line3 );
-
-/*
-  for( i=0; i<exp_cnt; i++ ) {
-    fprintf( ofile, "----+" );
-  }
-  fprintf( ofile, "----+-------\n" );
-
-  curr_exp = exp;
-  while( (curr_exp->left != NULL) && (SUPPL_OP( curr_exp->suppl ) == SUPPL_OP( curr_exp->left->suppl )) ) {
-    fprintf( ofile, "  %d  ", ((curr_exp->suppl >> uniq_shift) & 0x1) );
-    curr_exp = curr_exp->left;
-  }
-  if( ((exp->suppl >> eval_shift) & 0x1) == 0 ) {
-    fprintf( ofile, "  %d\n", ((exp->suppl >> eval_shift) & 0x1) );
-  }
-  fprintf( ofile, "\n" );
-*/
 
 }
 
@@ -1456,6 +1425,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.74  2003/12/22 23:18:09  phase1geo
+ More work on combinational logic report output.  Still not quite there in the
+ look and feel and full regression should still fail.
+
  Revision 1.73  2003/12/19 23:08:48  phase1geo
  Adding initial version of expression report concatenation for more easily
  viewable/understandable reporting for combinational logic coverage.  This
