@@ -126,7 +126,7 @@ bool search_add_file( char* file ) {
   char* tmp;             /* Temporary filename             */
   char  msg[4096];       /* Display message string         */
 
-  if( file_exists( file ) ) {
+  if( file_exists( file ) && (str_link_find( tmp, use_files_head ) == NULL) ) {
     tmp = strdup( file );
     str_link_add( tmp, &use_files_head, &use_files_tail );
   } else {
@@ -210,6 +210,10 @@ void search_free_lists() {
 }
 
 /* $Log$
+/* Revision 1.7  2002/07/18 05:50:45  phase1geo
+/* Fixes should be just about complete for instance depth problems now.  Diagnostics
+/* to help verify instance handling are added to regression.  Full regression passes.
+/*
 /* Revision 1.6  2002/07/18 02:33:24  phase1geo
 /* Fixed instantiation addition.  Multiple hierarchy instantiation trees should
 /* now work.

@@ -10,7 +10,7 @@ IP  = In Progress
 Score command
 -------------
 
-   1.  Verify that single and multi-bit selectors work in all cases.
+IP 1.  Verify that single and multi-bit selectors work in all cases.
 
 X  2.  When `include is encountered, store current line number in stack for retrieval
        when file parsing is resumed for that file.
@@ -27,7 +27,7 @@ X  6.  Verify that -D option works when a value is specified.
    7.  Make sure that expression widths are correct (may have to look at left-hand-side bit
        width to calculate this correctly).
 
-   8.  Make sure that parser only parses a file once (when it is in both in a library (-y) and
+X  8.  Make sure that parser only parses a file once (when it is in both in a library (-y) and
        and a -v option).
 
    9.  Allow ability to only parse a design and only score a dumpfile (rather than having to
@@ -35,6 +35,8 @@ X  6.  Verify that -D option works when a value is specified.
 
    10. Possibly allow undeclared signals to be automatically created if not found (1-bit signal
        values -- simulators will probably do this).
+
+   11. Make sure that extension order is maintained for a given library path.
 
 
 Merge command
