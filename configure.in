@@ -35,4 +35,4 @@ AC_CHECK_SIZEOF(long,4)
 dnl Checks for library functions.
 AC_TYPE_SIGNAL
 
-AC_OUTPUT(Makefile src/Makefile)
+AC_OUTPUT(Makefile src/Makefile doc/Makefile doc/user/Makefile)

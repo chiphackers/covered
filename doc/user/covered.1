@@ -1,0 +1,121 @@
+.TH "Covered" "1" "0.1-20020822" "Trevor Williams" "Code Analysis"
+.SH "NAME"
+.LP 
+Covered \- Verilog Code Coverage Analyzer
+.SH "SYNTAX"
+.LP 
+\fBcovered\fR [<options>] score [<options>]
+.br 
+\fBcovered\fR [<options>] merge [<options>] <existing_database> <database_to_merge>
+.br 
+\fBcovered\fR [<options>] report [<options>] <database_file>
+.SH "DESCRIPTION"
+.LP 
+\fICovered\fR is a Verilog code coverage analysis tool that can be useful for determining how well a diagnostic test suite is covering the design under test. Typically in the design verification work flow, a design verification engineer will develop a self\-checking test suite to verify design elements/functions specified by a design's specification document. When the test suite contains all of the tests required by the design specification, the test writer may be asking him/herself, "How much logic in the design is actually being exercised?", "Does my test suite cover all of the logic under test?", and "Am I done writing tests for the logic?". When the design verification gets to this point, it is often useful to get some metrics for determining logic coverage. This is where a code coverage utility, such as \fICovered\fR, is very useful.
+.SH "GLOBAL OPTIONS"
+.LP 
+These options are placed immediately after the keyword \fIcovered\fR in the command\-line.  They can be used for any command (with the exception of \fI\-v\fR and \fI\-h\fR) and have the same effect in each case.
+.TP 
+\fB\-D\fR
+Debug.  Display information helpful for debugging tool problems.
+.TP 
+\fB\-Q\fR
+Quiet mode.  Causes all output to be suppressed.
+.TP 
+\fB\-v\fR
+Version.  Display current Covered version.  
+.TP 
+\fB\-h\fR
+Help.  Display this usage information.
+.SH "COMMANDS"
+.LP 
+.TP 
+\fBscore\fR
+Parses Verilog files and VCD dumpfiles to create database file used for merging and reporting.
+.TP 
+\fBmerge\fR
+Merges two database files into one.
+.TP 
+\fBreport\fR
+Generates human\-readable coverage reports from database file.
+.SH "SCORE COMMAND"
+.LP 
+The following options are valid for the score command:
+.TP 
+\fB\-t\fR \fItop\-level module\fR
+Specifies the module name of the top\-most module that will be measured.  Note that this module does not need to be the top\-most module in the simulator.  This field is required for all calls to the score command.
+.TP 
+\fB\-vcd\fR \fIdumpfile\fR
+Name of dumpfile to score design with.  If this option is not used, Covered will only create an initial CDD file from the design and will not attempt to score the design.
+.TP 
+\fB\-i\fR \fIinstance_name\fR
+Instance name of top\-level module.  Necessary if module to verify coverage is not the top\-level module in the design.  If not specified, \fI\-t\fR value is used.
+.TP 
+\fB\-o\fR \fIdatabase\fR
+Name of database to write coverage information to.  If not specified, the output database filename will be "cov.db".
+.TP 
+\fB\-I\fR \fIdirectory\fR
+Directory to find included Verilog files.
+.TP 
+\fB\-f\fR \fIfilename\fR
+Name of file containing additional arguments to parse.
+.TP 
+\fB\-y\fR \fIdirectory\fR
+Directory to find unspecified Verilog files
+.TP 
+\fB\-v\fR \fIfilename\fR
+Name of specific Verilog file to score.
+.TP 
+\fB\-e\fR \fImodule_name\fR
+Name of module to not score.  Causes all submodules in the Verilog tree under this module to also not be scored.
+.TP 
+\fB\-D\fR \fIdefine_name\fR
+Defines the specified name to 1.
+.TP 
+\fB\-D\fR \fIdefine_name=value\fR
+Defines the specified name to the specified value.
+.TP 
+\fB\-h\fR
+Displays this help information.
+.TP 
+\fB+libext+\fR\fI.extension\fR(\fB+\fR\fI.extension\fR)*\fB+\fR\fR
+Extensions of Verilog files to allow in scoring.
+.SH "MERGE COMMAND"
+.LP 
+The following options are valid for the merge command:
+.TP 
+\fB\-o\fR \fIfilename\fR
+File to output new database to.  If this argument is not specified, the \fIexisting_database\fR is used as the output database name.
+.TP 
+\fB\-h\fR
+Displays this help information.
+.SH "REPORT COMMAND"
+.LP 
+The following options are valid with the report command:
+.TP 
+\fB\-m\fR \fI[l][t][c][f]\fR
+Type(s) of metrics to report.  Default is \fIltc\fR.
+.TP 
+\fB\-v\fR
+Provide verbose information in report.  Default is summarize.
+.TP 
+\fB\-i\fR
+Provides coverage information for instances instead of module.
+.TP 
+\fB\-c\fR
+If \fI\-v\fR is specified, displays covered line, toggle and combinational cases.  Default is to display uncovered information.
+.TP 
+\fB\-d\fR \fIdepth\fR
+Depth of combinational expressions to provide coverage for.  Default is infinity.  \fICurrently, this option is unsupported.\fR
+.TP 
+\fB\-o\fR \fIfilename\fR
+File to output report information to.  Default is standard output.
+.TP 
+\fB\-h\fR
+Displays this help information.
+.SH "AUTHORS"
+.LP 
+Trevor Williams <trevorw@charter.net>
+.SH "SEE ALSO"
+.LP 
+For more information on how to use the Covered code coverage tool, please consult the on\-line User's Guide at http://covered.sourceforge.net/user/index.html.
