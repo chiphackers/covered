@@ -101,7 +101,7 @@ bool line_instance_summary( FILE* ofile, mod_inst* root, char* parent_inst ) {
     snprintf( tmpname, 4096, "%s.%s", parent_inst, root->name );
   }
 
-  fprintf( ofile, "  %-43.43s    %4d/%4.0f/%4.0f      %3.0f%%\n",
+  fprintf( ofile, "  %-43.43s    %5d/%5.0f/%5.0f      %3.0f%%\n",
            tmpname,
            root->stat->line_hit,
            miss,
@@ -145,7 +145,7 @@ bool line_module_summary( FILE* ofile, mod_link* head ) {
     miss       = (head->mod->stat->line_total - head->mod->stat->line_hit);
     miss_found = (miss > 0) ? TRUE : miss_found;
 
-    fprintf( ofile, "  %-20.20s    %-20.20s   %4d/%4.0f/%4.0f      %3.0f%%\n", 
+    fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5.0f/%5.0f      %3.0f%%\n", 
              head->mod->name,
              get_basename( head->mod->filename ),
              head->mod->stat->line_hit,
@@ -301,8 +301,8 @@ void line_report( FILE* ofile, bool verbose ) {
 
     fprintf( ofile, "LINE COVERAGE RESULTS BY INSTANCE\n" );
     fprintf( ofile, "---------------------------------\n" );
-    fprintf( ofile, "Instance                                          Hit/Miss/Total    Percent hit\n" );
-    fprintf( ofile, "-------------------------------------------------------------------------------\n" );
+    fprintf( ofile, "Instance                                           Hit/ Miss/Total    Percent hit\n" );
+    fprintf( ofile, "---------------------------------------------------------------------------------\n" );
 
     missed_found = line_instance_summary( ofile, instance_root, leading_hierarchy );
     
@@ -314,8 +314,8 @@ void line_report( FILE* ofile, bool verbose ) {
 
     fprintf( ofile, "LINE COVERAGE RESULTS BY MODULE\n" );
     fprintf( ofile, "-------------------------------\n" );
-    fprintf( ofile, "Module                    Filename                Hit/Miss/Total    Percent hit\n" );
-    fprintf( ofile, "-------------------------------------------------------------------------------\n" );
+    fprintf( ofile, "Module                    Filename                 Hit/ Miss/Total    Percent hit\n" );
+    fprintf( ofile, "---------------------------------------------------------------------------------\n" );
 
     missed_found = line_module_summary( ofile, mod_head );
 
@@ -332,6 +332,10 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.30  2003/10/03 03:08:44  phase1geo
+ Modifying filename in summary output to only specify basename of file instead
+ of entire path.  The verbose report contains the full pathname still, however.
+
  Revision 1.29  2003/08/25 13:02:03  phase1geo
  Initial stab at adding FSM support.  Contains summary reporting capability
  at this point and roughly works.  Updated regress suite as a result of these
