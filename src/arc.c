@@ -737,16 +737,16 @@ int arc_transition_hits( char* arcs ) {
 void arc_get_stats( char* arcs, float* state_total, int* state_hits, float* arc_total, int* arc_hits ) {
 
   /* First get hits */
-  *state_hits = arc_state_hits( arcs );
-  *arc_hits   = arc_transition_hits( arcs );
+  *state_hits += arc_state_hits( arcs );
+  *arc_hits   += arc_transition_hits( arcs );
   
   /* If the state transitions are known, calculate them; otherwise, return -1 for totals */
   if( arc_get_suppl( arcs, ARC_TRANS_KNOWN ) == 0 ) {
     *state_total = -1;
     *arc_total   = -1;
   } else {
-    *state_total = arc_state_total( arcs );
-    *arc_total   = arc_transition_total( arcs );
+    *state_total += arc_state_total( arcs );
+    *arc_total   += arc_transition_total( arcs );
   }
 
 }
@@ -1108,6 +1108,11 @@ void arc_dealloc( char* arcs ) {
 
 /*
  $Log$
+ Revision 1.19  2003/11/08 04:21:26  phase1geo
+ Adding several new FSM diagnostics to regression suite to verify inline
+ attributes.  Fixed bug in arc.c where states were not being identified
+ correctly as unique or not.
+
  Revision 1.18  2003/11/08 03:38:50  phase1geo
  Adding new FSM diagnostics to regression suite and fixing problem that was causing
  regressions to fail.

@@ -54,9 +54,17 @@ void statistic_merge( statistic* stat_to, statistic* stat_from ) {
   stat_to->tog10_hit   += stat_from->tog10_hit;
   stat_to->comb_total  += stat_from->comb_total;
   stat_to->comb_hit    += stat_from->comb_hit;
-  stat_to->state_total += stat_from->state_total;
+  if( (stat_to->state_total != -1) && (stat_from->state_total != -1) ) {
+    stat_to->state_total += stat_from->state_total;
+  } else {
+    stat_to->state_total = -1;
+  }
   stat_to->state_hit   += stat_from->state_hit;
-  stat_to->arc_total   += stat_from->arc_total;
+  if( (stat_to->arc_total != -1) && (stat_from->arc_total != -1) ) {
+    stat_to->arc_total += stat_from->arc_total;
+  } else {
+    stat_to->arc_total = -1;
+  }
   stat_to->arc_hit     += stat_from->arc_hit;
 
 }
@@ -79,6 +87,11 @@ void statistic_dealloc( statistic* stat ) {
 
 /*
  $Log$
+ Revision 1.4  2003/08/25 13:02:04  phase1geo
+ Initial stab at adding FSM support.  Contains summary reporting capability
+ at this point and roughly works.  Updated regress suite as a result of these
+ changes.
+
  Revision 1.3  2002/10/29 19:57:51  phase1geo
  Fixing problems with beginning block comments within comments which are
  produced automatically by CVS.  Should fix warning messages from compiler.

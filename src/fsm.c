@@ -177,6 +177,12 @@ bool fsm_db_write( fsm* table, FILE* file ) {
   if( table->table != NULL ) {
     fprintf( file, "1 " );
     arc_db_write( table->table, file );
+
+    /* Deallocate the given table after writing it */
+    if( table->table != NULL ) {
+      arc_dealloc( table->table );
+      table->table = NULL;
+    }
   } else {
     fprintf( file, "0" );
   }
@@ -773,6 +779,10 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.30  2003/11/07 05:18:40  phase1geo
+ Adding working code for inline FSM attribute handling.  Full regression fails
+ at this point but the code seems to be working correctly.
+
  Revision 1.29  2003/10/28 13:28:00  phase1geo
  Updates for more FSM attribute handling.  Not quite there yet but full regression
  still passes.
