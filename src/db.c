@@ -486,45 +486,30 @@ void db_add_override_param( char* inst_name, expression* expr ) {
 
 /*!
  \param sig       Pointer to signal to attach parameter to.
- \param exp       Pointer to expression to attach parameter to.
  \param parm_exp  Expression containing value of vector parameter.
  \param type      Type of signal vector parameter to create (LSB or MSB).
 
  Creates a vector parameter for the specified signal or expression with the specified
  parameter expression.  This function is called by the parser.
 */
-void db_add_vector_param( signal* sig, expression* exp, expression* parm_exp, int type ) {
+void db_add_vector_param( signal* sig, expression* parm_exp, int type ) {
 
   mod_parm* mparm;   /* Holds newly created module parameter                        */
   mod_inst* inst;    /* Pointer to instance that is found to contain current module */
   int       i;       /* Loop iterator                                               */
   int       ignore;  /* Number of matching instances to ignore before selecting     */
 
-  assert( ((sig != NULL) || (exp != NULL)) && ((sig == NULL) || (exp == NULL)) );
-  assert( (type == PARAM_TYPE_SIG_LSB) || (type == PARAM_TYPE_SIG_MSB) ||
-          (type == PARAM_TYPE_EXP_LSB) || (type == PARAM_TYPE_EXP_MSB) );
+  assert( sig != NULL );
+  assert( (type == PARAM_TYPE_SIG_LSB) || (type == PARAM_TYPE_SIG_MSB) );
 
-  if( sig != NULL ) {
-    snprintf( user_msg, USER_MSG_LENGTH, "In db_add_vector_param, signal: %s, type: %d", sig->name, type );
-  } else {
-    snprintf( user_msg, USER_MSG_LENGTH, "In db_add_vector_param, expr: %d, type: %d", exp->id, type );
-  }
+  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_vector_param, signal: %s, type: %d", sig->name, type );
   print_output( user_msg, DEBUG );
 
   /* Add signal vector parameter to module parameter list */
   mparm = mod_parm_add( NULL, parm_exp, type, &(curr_module->param_head), &(curr_module->param_tail) );
 
-  if( sig != NULL ) {
-    
-    /* Add signal to module parameter list */
-    mparm->sig = sig;
-    
-  } else {
-    
-    /* Add expression to module parameter list */
-    exp_link_add( exp, &(mparm->exp_head), &(mparm->exp_tail) );
-    
-  }
+  /* Add signal to module parameter list */
+  mparm->sig = sig;
 
   /* Also add this to all associated instance parameter lists */
   i      = 0;
@@ -1154,6 +1139,13 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.72  2002/12/05 14:45:17  phase1geo
+ Removing assertion error from instance6.1 failure; however, this case does not
+ work correctly according to instance6.2.v diagnostic.  Added @(...) output in
+ report command for edge-triggered events.  Also fixed bug where a module could be
+ parsed more than once.  Full regression does not pass at this point due to
+ new instance6.2.v diagnostic.
+
  Revision 1.71  2002/12/03 14:25:24  phase1geo
  Fixing bug in db_add_statement function.  Not parsing FALSE path if the next_false
  is the starting statement.

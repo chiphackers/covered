@@ -1343,12 +1343,12 @@ module_item
       str_link* curr = tmp;
       exp_link* ecurr;
       while( curr != NULL ) {
-        db_add_instance( curr->str, $1 );
         ecurr = param_exp_head;
         while( ecurr != NULL ){
           db_add_override_param( curr->str, ecurr->exp );
           ecurr = ecurr->next;
         }
+        db_add_instance( curr->str, $1 );
         curr = curr->next;
       }
       str_link_delete_list( tmp );
