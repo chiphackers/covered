@@ -673,7 +673,7 @@ int vector_to_int( vector* vec ) {
       case 1 :  retval = (retval << 1) | 1;  break;
       default:
         print_output( "Vector converting to integer contains X or Z values", FATAL );
-        exit( 1 );
+        assert( ((vec->value[i/4] >> ((i%4)*2)) & 0x3) < 2 );
         break;
     }
   }
@@ -1433,6 +1433,10 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.26  2002/11/05 00:20:08  phase1geo
+ Adding development documentation.  Fixing problem with combinational logic
+ output in report command and updating full regression.
+
  Revision 1.25  2002/11/02 16:16:20  phase1geo
  Cleaned up all compiler warnings in source and header files.
 
