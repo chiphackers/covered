@@ -35,6 +35,7 @@ void combination_get_stats( exp_link* expl, float* total, int* hit ) {
 
   while( curr_exp != NULL ) {
     if( EXPR_IS_MEASURABLE( curr_exp->exp ) == 1 ) {
+      printf( "Expression %d is measurable\n", curr_exp->exp->id );
       *total = *total + 2;
       *hit   = *hit + SUPPL_WAS_TRUE( curr_exp->exp->suppl ) + SUPPL_WAS_FALSE( curr_exp->exp->suppl );
     }
@@ -697,6 +698,12 @@ void combination_report( FILE* ofile, bool verbose, bool instance ) {
 
 
 /* $Log$
+/* Revision 1.23  2002/07/05 00:10:18  phase1geo
+/* Adding report support for case statements.  Everything outputs fine; however,
+/* I want to remove CASE, CASEX and CASEZ expressions from being reported since
+/* it causes redundant and misleading information to be displayed in the verbose
+/* reports.  New diagnostics to check CASE expressions have been added and pass.
+/*
 /* Revision 1.22  2002/07/03 21:30:52  phase1geo
 /* Fixed remaining issues with always statements.  Full regression is running
 /* error free at this point.  Regenerated documentation.  Added EOR expression

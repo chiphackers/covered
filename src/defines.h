@@ -432,6 +432,9 @@
 #define EXPR_IS_MEASURABLE(x)      (((SUPPL_OP( x->suppl ) != EXP_OP_NONE) && \
                                      (SUPPL_OP( x->suppl ) != EXP_OP_LAST) && \
                                      (SUPPL_OP( x->suppl ) != EXP_OP_COND_SEL) && \
+                                     (SUPPL_OP( x->suppl ) != EXP_OP_CASE) && \
+                                     (SUPPL_OP( x->suppl ) != EXP_OP_CASEX) && \
+                                     (SUPPL_OP( x->suppl ) != EXP_OP_CASEZ) && \
                                      !((SUPPL_IS_ROOT( x->suppl ) == 0) && \
                                        ((SUPPL_OP( x->suppl ) == EXP_OP_SIG) || \
 				        (SUPPL_OP( x->suppl ) == EXP_OP_SBIT_SEL) || \
@@ -822,6 +825,11 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.25  2002/07/05 04:12:46  phase1geo
+/* Correcting case, casex and casez equality calculation to conform to correct
+/* equality check for each case type.  Verified that case statements work correctly
+/* at this point.  Added diagnostics to verify case statements.
+/*
 /* Revision 1.24  2002/07/04 23:10:12  phase1geo
 /* Added proper support for case, casex, and casez statements in score command.
 /* Report command still incorrect for these statement types.
