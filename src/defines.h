@@ -1486,6 +1486,8 @@ typedef struct stmt_blk_s stmt_blk;
 struct stmt_blk_s {
   statement* stmt;      /*!< Pointer to top-level statement in statement tree that this signal is first found in */
   bool       remove;    /*!< Specifies if this statement block should be removed after checking is complete      */
+  bool       seq;       /*!< If true, this statement block is considered to include sequential logic             */
+  bool       cmb;       /*!< If true, this statement block is considered to include combinational logic          */
 };
 
 /*-------------------------------------------------------------------------------*/
@@ -1498,6 +1500,10 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.117  2005/01/10 23:03:39  phase1geo
+ Added code to properly report race conditions.  Added code to remove statement blocks
+ from module when race conditions are found.
+
  Revision 1.116  2005/01/10 02:59:29  phase1geo
  Code added for race condition checking that checks for signals being assigned
  in multiple statements.  Working on handling bit selects -- this is in progress.

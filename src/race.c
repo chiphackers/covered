@@ -111,6 +111,26 @@ int race_find_head_statement( statement* stmt ) {
 
 }
 
+void race_calc_stmt_blk_type( expression* expr, int sb_index ) {
+
+  if( expr != NULL ) {
+
+    /* Go to children to calculate further */
+    race_calc_stmt_blk_type( expr->left,  sb_index );
+    race_calc_stmt_blk_type( expr->right, sb_index );
+
+    if( (expr->op == EXP_OP_PEDGE) || (expr->op == EXP_OP_NEDGE) ) {
+      sb[sb_index].seq = TRUE;
+    }
+
+    if( expr->op == EXP_OP_AEDGE ) {
+      sb[sb_index].cmb = TRUE;
+    }
+
+  }
+
+}
+
 /*!
  \param expr    Pointer to expression containing signal that was found to be in a race condition.
  \param mod     Pointer to module containing detected race condition
@@ -331,6 +351,9 @@ void race_check_modules() {
         if( si.curr->stmt->exp->suppl.part.stmt_head == 1 ) {
           sb[sb_index].stmt   = si.curr->stmt;
           sb[sb_index].remove = FALSE;
+	  sb[sb_index].seq    = FALSE;
+	  sb[sb_index].cmb    = FALSE;
+	  race_calc_stmt_blk_type( sb[sb_index].stmt->exp, sb_index );
           sb_index++; 
         }
         stmt_iter_next( &si );
@@ -366,6 +389,11 @@ void race_check_modules() {
 
 /*
  $Log$
+ Revision 1.14  2005/01/25 13:42:27  phase1geo
+ Fixing segmentation fault problem with race condition checking.  Added race1.1
+ to regression.  Removed unnecessary output statements from previous debugging
+ checkins.
+
  Revision 1.13  2005/01/11 14:24:16  phase1geo
  Intermediate checkin.
 
