@@ -25,7 +25,17 @@
 extern char*      top_module;
 
 extern mod_inst* instance_root;
-char*            curr_vcd_scope = NULL;
+
+/*!
+ Specifies the string Verilog scope that is currently specified in the VCD file.
+*/
+char* curr_vcd_scope = NULL;
+
+/*!
+ Pointer to the current instance selected by the VCD parser.  If this value is
+ NULL, the current instance does not reside in the design specified for coverage.
+*/
+mod_inst* curr_instance  = NULL;
 
 extern mod_link* mod_head;
 extern mod_link* mod_tail;
@@ -737,16 +747,21 @@ void db_set_vcd_scope( char* scope ) {
     tmpscope  = (char*)malloc_safe( scope_len );
     snprintf( tmpscope, scope_len, "%s.%s", curr_vcd_scope, scope );
 
+    free_safe( curr_vcd_scope );
+    curr_vcd_scope = tmpscope;
+
+    curr_instance = instance_find_scope( instance_root, tmpscope );
+
   } else {
 
     tmpscope = strdup( scope );
- 
-  }
 
-  if( instance_find_scope( instance_root, tmpscope ) != NULL ) {
+    if( (curr_instance = instance_find_scope( instance_root, tmpscope )) != NULL ) {
 
-    free_safe( curr_vcd_scope );
-    curr_vcd_scope = tmpscope;
+      free_safe( curr_vcd_scope );
+      curr_vcd_scope = tmpscope;
+
+    }
 
   }
 
@@ -763,14 +778,19 @@ void db_vcd_upscope() {
   char rest[4096];   /* Hierarchy up one level    */
 
   snprintf( msg, 4096, "In db_vcd_upscope, curr_vcd_scope: %s", curr_vcd_scope );
-  print_output( msg, DEBUG );
+  print_output( msg, DEBUG );  
 
-  assert( curr_vcd_scope != NULL );
-  
-  scope_extract_back( curr_vcd_scope, back, rest );
+  if( curr_vcd_scope != NULL ) {
 
-  if( rest[0] != '\0' ) {
-    strcpy( curr_vcd_scope, rest );
+    scope_extract_back( curr_vcd_scope, back, rest );
+
+    if( rest[0] != '\0' ) {
+      strcpy( curr_vcd_scope, rest );
+    } else {
+      free_safe( curr_vcd_scope );
+      curr_vcd_scope = NULL;
+    }
+
   }
 
 }
@@ -785,7 +805,6 @@ void db_assign_symbol( char* name, char* symbol ) {
 
   sig_link*     slink;      /* Pointer to signal containing this symbol  */
   signal*       tmpsig;     /* Temporary pointer to signal to search for */
-  char*         scope;      /* Scope of module containing signal         */
   char*         signame;    /* Name of signal to find in module          */
   char          msg[4096];  /* Display message string                    */
   mod_inst*     inst;       /* Found instance                            */
@@ -795,27 +814,13 @@ void db_assign_symbol( char* name, char* symbol ) {
 
   assert( name != NULL );
 
-  if( curr_vcd_scope != NULL ) {
-
-    scope   = strdup( curr_vcd_scope );
+  if( curr_instance != NULL ) {
+    
     signame = strdup( name );
-
-  } else {
-
-    scope   = (char*)malloc_safe( strlen( name ) );
-    signame = (char*)malloc_safe( strlen( name ) );
-
-    scope_extract_back( name, signame, scope );
-
-  }
-
-  /* Find module with specified scope of this signal */
-  if( (inst = instance_find_scope( instance_root, scope )) != NULL ) {
-
-    tmpsig = signal_create( signame, 1, 0, FALSE );
+    tmpsig  = signal_create( signame, 1, 0, FALSE );
 
     /* Find the signal that matches the specified signal name */
-    if( (slink = sig_link_find( tmpsig, inst->mod->sig_head )) != NULL ) {
+    if( (slink = sig_link_find( tmpsig, curr_instance->mod->sig_head )) != NULL ) {
 
       /* Add this signal */
       symtable_add( symbol, slink->sig, &vcd_symtab );
@@ -823,16 +828,9 @@ void db_assign_symbol( char* name, char* symbol ) {
     }
 
     signal_dealloc( tmpsig );
-
-  } else {
-
-    print_output( "VCD dumpfile does not match design file", FATAL );
-    exit( 1 );
+    free_safe( signame );
 
   }
-
-  free_safe( scope );
-  free_safe( signame );
 
 }
 
@@ -967,6 +965,10 @@ void db_do_timestep( int time ) {
 }
 
 /* $Log$
+/* Revision 1.37  2002/07/12 04:53:29  phase1geo
+/* Removing counter code that was used for debugging infinite loops in code
+/* previously.
+/*
 /* Revision 1.36  2002/07/09 04:46:26  phase1geo
 /* Adding -D and -Q options to covered for outputting debug information or
 /* suppressing normal output entirely.  Updated generated documentation and
