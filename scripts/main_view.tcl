@@ -33,7 +33,7 @@ proc main_view {} {
   populate_listbox .bot.l
 
   # Create the text widget to display the modules/instances
-  text .bot.txt -yscrollcommand ".bot.vb set" -xscrollcommand ".bot.hb set" -wrap none
+  text .bot.txt -yscrollcommand ".bot.vb set" -xscrollcommand ".bot.hb set" -wrap none -state disabled
   scrollbar .bot.vb -command ".bot.txt yview"
   scrollbar .bot.hb -orient horizontal -command ".bot.txt xview"
 

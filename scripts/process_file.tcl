@@ -93,6 +93,9 @@ proc display_line_cov {} {
   .bot.txt tag configure uncov_colorMap -foreground $uncov_fgColor -background $uncov_bgColor
   .bot.txt tag configure cov_colorMap   -foreground $cov_fgColor   -background $cov_bgColor
 
+  # Allow us to write to the text box
+  .bot.txt configure -state normal
+
   # Clear the text-box before any insertion is being made
   .bot.txt delete 1.0 end
 
@@ -123,6 +126,9 @@ proc display_line_cov {} {
     }
 
   }
+
+  # Now cause the text box to be read-only
+  .bot.txt configure -state disabled
 
   return
 
