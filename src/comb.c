@@ -131,6 +131,7 @@ bool combination_multi_expr_calc( expression* exp, int* ulid, bool ul, int* hit,
         *hit += SUPPL_WAS_TRUE( exp->left->suppl );
       }
       if( (exp->left->ulid == -1) && ul ) { 
+        printf( "Setting exp->left->ulid to %d for expression %d\n", *ulid, exp->left->id );
         exp->left->ulid = *ulid;
         (*ulid)++;
       }
@@ -145,6 +146,7 @@ bool combination_multi_expr_calc( expression* exp, int* ulid, bool ul, int* hit,
       *hit += SUPPL_WAS_TRUE( exp->right->suppl );
     }
     if( (exp->right->ulid == -1) && ul ) {
+      printf( "Setting exp->right->ulid to %d for expression %d\n", *ulid, exp->right->id );
       exp->right->ulid = *ulid;
       (*ulid)++;
     }
@@ -157,6 +159,7 @@ bool combination_multi_expr_calc( expression* exp, int* ulid, bool ul, int* hit,
         *hit += ((exp->suppl >> SUPPL_LSB_EVAL_00) & 0x1);
       }
       if( (exp->ulid == -1) && ul ) {
+        printf( "Setting exp->ulid to %d for (1) expression %d\n", *ulid, exp->id );
         exp->ulid = *ulid;
         (*ulid)++;
       }
@@ -254,6 +257,7 @@ void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_d
                         ((exp->suppl >> SUPPL_LSB_EVAL_11) & 0x1);
               *hit    = *hit + num_hit;
               if( (num_hit != 4) && (exp->ulid == -1) && !combination_is_expr_multi_node( exp ) ) {
+                printf( "Setting exp->ulid to %d for (2) expression %d\n", *ulid, exp->id );
                 exp->ulid = *ulid;
                 (*ulid)++;
               }
@@ -262,6 +266,7 @@ void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_d
               num_hit = SUPPL_WAS_TRUE( exp->suppl ) + SUPPL_WAS_FALSE( exp->suppl );
               *hit    = *hit + num_hit;
               if( (num_hit != 2) && (exp->ulid == -1) && !combination_is_expr_multi_node( exp ) ) {
+                printf( "Setting exp->ulid to %d for (3) expression %d\n", *ulid, exp->id );
                 exp->ulid = *ulid;
                 (*ulid)++;
               }
@@ -700,7 +705,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
             case EXP_OP_CASE     :  *size = l_size + r_size + 11; strcpy( code_fmt, "      %s   %s  "  );  break;
             case EXP_OP_CASEX    :  *size = l_size + r_size + 12; strcpy( code_fmt, "       %s   %s  " );  break;
             case EXP_OP_CASEZ    :  *size = l_size + r_size + 12; strcpy( code_fmt, "       %s   %s  " );  break;
-            case EXP_OP_DELAY    :  *size = l_size + r_size + 3;  strcpy( code_fmt, "  %s " );             break;
+            case EXP_OP_DELAY    :  *size = l_size + r_size + 3;  strcpy( code_fmt, "  %s " );  assert( 1 == 0 );          break;
             case EXP_OP_ASSIGN   :  *size = l_size + r_size + 10; strcpy( code_fmt, "       %s   %s" );    break;
             case EXP_OP_BASSIGN  :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s   %s" );           break;
             case EXP_OP_NASSIGN  :  *size = l_size + r_size + 4;  strcpy( code_fmt, "%s    %s" );          break;
@@ -1347,26 +1352,34 @@ void combination_list_missed( FILE* ofile, expression* exp, unsigned int curr_de
  if an expression is found that has not received 100% coverage for
  combinational logic.
 */
-bool combination_missed_expr( expression* expr, unsigned int curr_depth ) {
+bool combination_output_expr( expression* expr, unsigned int curr_depth ) {
 
-  bool missed_right;  /* Set to TRUE if missed expression found on right */
-  bool missed_left;   /* Set to TRUE if missed expression found on left  */
+  bool output_right;  /* Set to TRUE if right expression should be output */
+  bool output_left;   /* Set to TRUE if left expression should be output  */
 
   if( (expr != NULL) && (SUPPL_WAS_COMB_COUNTED( expr->suppl ) == 1) ) {
 
     expr->suppl  = expr->suppl & ~(0x1 << SUPPL_LSB_COMB_CNTD);
 
-    missed_right = combination_missed_expr( expr->right, combination_calc_depth( expr, curr_depth, FALSE ) );
-    missed_left  = combination_missed_expr( expr->left,  combination_calc_depth( expr, curr_depth, TRUE ) );
+    output_right = combination_output_expr( expr->right, combination_calc_depth( expr, curr_depth, FALSE ) );
+    output_left  = combination_output_expr( expr->left,  combination_calc_depth( expr, curr_depth, TRUE ) );
 
     if( ((report_comb_depth == REPORT_DETAILED) && (curr_depth <= report_comb_depth)) ||
          (report_comb_depth == REPORT_VERBOSE) ) {
 
-      return( (expr->ulid != -1) || missed_right || missed_left );
+      if( report_covered ) {
+        return( (EXPR_IS_MEASURABLE( expr ) == 1) && output_right && output_left );
+      } else {
+        return( (expr->ulid != -1) || output_right || output_left );
+      }
 
     } else {
 
-      return( missed_right || missed_left );
+      if( report_covered ) {
+        return( output_right && output_left );
+      } else {
+        return( output_right || output_left );
+      }
 
     }
 
@@ -1409,7 +1422,7 @@ void combination_display_verbose( FILE* ofile, stmt_link* stmtl ) {
 
   while( stmti.curr != NULL ) {
 
-    if( combination_missed_expr( stmti.curr->stmt->exp, 0 ) != report_covered ) {
+    if( combination_output_expr( stmti.curr->stmt->exp, 0 ) ) {
 
       stmti.curr->stmt->exp->suppl = stmti.curr->stmt->exp->suppl & ~(0x1 << SUPPL_LSB_COMB_CNTD);
       unexec_exp = stmti.curr->stmt->exp;
@@ -1568,6 +1581,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.92  2004/03/17 13:25:00  phase1geo
+ Fixing some more report-related bugs.  Added new diagnostics to regression
+ suite to test for these.
+
  Revision 1.91  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,
