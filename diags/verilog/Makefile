@@ -21,7 +21,8 @@ LOGFILE = regress.log
 
 DIAGLIST = assign3.2A \
 	   always3.1.11A \
-           assign1
+           assign1 \
+           cond1
 
 regress:	$(COVERED) clean $(DIAGLIST)
 
