@@ -1,5 +1,23 @@
 Covered-Related NEWS
 ====================
+    * 8/22/2002
+
+Release covered-20020822 finally made.  Took some time off away from the project to get
+some other chores done and get refreshed.  This release contains mostly bug fixes that I
+have found while testing the tool on some "real" logic.  The CDD database merging (used
+in the merge and report commands) was rewritten for optimization purposes and to remove
+a hard-to-pin-down segmentation fault.  As a result, merging CDD files and generating
+reports should be a bit faster and the bizarre bug should be eliminated.  Fixed some
+bugs in Verilog parser to generate user error/warning messages instead of core dumping.
+Also added -c option to report command that allows the user (and maintainer) to generate
+a report that shows what code is covered (instead of the default behavior to show what is
+uncovered).  This is useful for debugging and understanding exactly what the tool is
+capable of measuring.  Removed Bison generated VCD parser and replaced it with an optimized,
+hand-written VCD parser.  This should make reading in the VCD file much faster and should
+totally eliminate any problems in reading in these files.  Added manpage as an additional 
+documentation source and updated Makefiles to install this manpage.  Updated user
+documentation and development documentation.
+
     * 7/21/2002
 
 Release covered-20020721 made.  Lots of bug fixes and feature enhancements.  Fixed output
