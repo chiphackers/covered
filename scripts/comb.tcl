@@ -146,7 +146,7 @@ proc get_expr_index_from_range {selected_range} {
     if {[lindex $curr_expr 0] == 1} {
 
       set j         0
-      set lines     [lindex $curr_expr 2]
+      set lines     [lindex $curr_expr 3]
       set line_num  [llength $lines]
       set curr_line [lindex $lines 0]
    
@@ -184,12 +184,13 @@ proc get_underline_expressions {parent} {
   # Get information from parent expression
   set parent_expr  [lindex $comb_uline_exprs $parent]
   set parent_level [lindex $parent_expr 1]
+  set parent_ulid  [lindex $parent_expr 2]
 
   # Calculate the current level by adding one to the parent expression
   set child_level [expr $parent_level + 1]
 
   # Iterate through list of lines that parent consumes getting children
-  set parent_lines    [lindex $parent_expr 2]
+  set parent_lines    [lindex $parent_expr 3]
   set parent_line_num [llength $parent_lines]
   set uline_ip        0
   set child_ids       [list]
@@ -205,10 +206,10 @@ proc get_underline_expressions {parent} {
     set end_char   [lindex $line 2]
     set code_index [lindex $line 3]
 
-    if {$child_level < [lindex $comb_uline_groups $i]} {
+    if {$child_level < [lindex $comb_uline_groups $code_index]} {
 
       # Extract children from this line
-      set curr_uline  [lindex $comb_ulines [expr $index - 1]]
+      set curr_uline [lindex $comb_ulines [expr $index - 1]]
       set curr_char  0
 
       if {$uline_ip == 1} {
@@ -218,22 +219,24 @@ proc get_underline_expressions {parent} {
         set curr_char [string first "|" $curr_uline $curr_char] 
       }
 
-      while {[expr $curr_char != -1] && [expr $curr_char < $end_char]} {
+      while {[expr $curr_char != -1] && [expr $curr_char <= $end_char]} {
         if {$uline_ip == 0} {
           set uline_ip 1
           set start_char $curr_char
+          set child_ulid [regexp -inline -start $curr_char -- {\d+} $curr_uline]
         } else {
           set uline_ip 0
           set child_line [list [expr $index - 1] $start_char [expr $curr_char + 1] $code_index]
           lappend child_lines $child_line
 
           # This child is done so add it to the expression list now
-          lappend comb_uline_exprs [list 0 $child_level $child_lines $parent]
+          lappend comb_uline_exprs [list 0 $child_level $child_ulid $child_lines $parent]
           set child_lines [list]
           lappend child_ids [expr [llength $comb_uline_exprs] - 1]
 
         }
         set curr_char [string first "|" $curr_uline [expr $curr_char + 1]]
+        set child_ulid [regexp -inline -start [expr $curr_char + 1] -- {\d+} $curr_uline]
       }
 
       if {$uline_ip == 1} { 
@@ -259,7 +262,7 @@ proc move_display_down {parent_index} {
 
   # Get children list from parent expression
   set parent_expr [lindex $comb_uline_exprs $parent_index]
-  set children    [lindex $parent_expr 4]
+  set children    [lindex $parent_expr 5]
 
   # Iterate through all children, setting the display variable to 1
   foreach child $children {
@@ -287,7 +290,7 @@ proc zero_display_children {parent_index} {
 
   set parent_expr [lindex $comb_uline_exprs $parent_index]
 
-  foreach child [lindex $parent_expr 4] {
+  foreach child [lindex $parent_expr 5] {
 
     # Clear child
     set child_expr       [lindex $comb_uline_exprs $child]
@@ -309,7 +312,7 @@ proc move_display_up {child_index} {
 
   # Get parent expression from child
   set child_expr [lindex $comb_uline_exprs $child_index]
-  set parent     [lindex $child_expr 3]
+  set parent     [lindex $child_expr 4]
 
   if {$parent != -1} {
 
@@ -331,7 +334,7 @@ proc move_display_up {child_index} {
  
 # Create a list containing locations of underlined expressions in the comb_ulines list
 # Each entry in the list will be organized as follows:
-#   displayed level {{index start_char end_char code_linenum}*} parent_id {children_ids...}*
+#   displayed level uline_id {{index start_char end_char code_linenum}*} parent_id {children_ids...}
 # parent_id == -1 means that this doesn't have a parent
 # id is based on index in list
 proc organize_underlines {} {
@@ -342,12 +345,12 @@ proc organize_underlines {} {
   set curr_line 0
 
   for {set i 0} {$i < $code_len} {incr i} {
-    set index [expr [lindex $comb_uline_groups $i] + $curr_line - 1]
-    lappend line_info [list $index 0 [string length [lindex $comb_ulines $index]] $i]
+    set index [expr [lindex $comb_uline_groups $i] + $curr_line]
+    lappend line_info [list $index 0 [string length [lindex $comb_ulines [expr $index - 1]]] $i]
     set curr_line [expr $curr_line + [lindex $comb_uline_groups $i]]
   }
 
-  lappend comb_uline_exprs [list 0 -1 $line_info -1]
+  lappend comb_uline_exprs [list 0 -1 -1 $line_info -1]
 
   # Get all child expressions
   set i 0
@@ -381,7 +384,7 @@ proc generate_underlines {} {
     # If this expression is to be displayed, generate the output now
     if {[lindex $curr_expr 0] == 1} {
 
-      set lines [lindex $curr_expr 2]
+      set lines [lindex $curr_expr 3]
 
       foreach line $lines {
 
