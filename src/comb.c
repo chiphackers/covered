@@ -167,20 +167,35 @@ bool combination_multi_expr_calc( expression* exp, int* ulid, bool ul, int* hit,
 
 }
 
+/*!
+ \param exp  Pointer to expression to evaluate.
+
+ \return Returns TRUE if the specified expression is part of a multi-value expression tree;
+         otherwise, returns FALSE.
+
+ Checks the specified expression to see if it is a part of a multi-value expression
+ tree.  If the expression is part of a tree, returns a value of TRUE; otherwise, returns
+ a value of FALSE.  This function is used when determining if a non-multi-value expression
+ should be assigned an underline ID (it should if the expression is not part of a multi-value
+ expression tree) or be assigned one later (if the expression is part of a multi-value
+ expression tree -- the ID will be assigned to it when the multi-value expression tree is
+ assigned underline IDs.
+*/
 bool combination_is_expr_multi_node( expression* exp ) {
 
   return( (exp != NULL) &&
           (SUPPL_IS_ROOT( exp->suppl ) == 0) && 
+          (exp->parent->expr->left  != NULL) &&
+          (exp->parent->expr->right != NULL) &&
+          (exp->parent->expr->right->id == exp->id) &&
+          (exp->parent->expr->left->ulid == -1) &&
+          ( (SUPPL_OP( exp->parent->expr->suppl ) == EXP_OP_AND)  ||
+            (SUPPL_OP( exp->parent->expr->suppl ) == EXP_OP_LAND) ||
+            (SUPPL_OP( exp->parent->expr->suppl ) == EXP_OP_OR)   ||
+            (SUPPL_OP( exp->parent->expr->suppl ) == EXP_OP_LOR) ) &&
           ( ( (SUPPL_IS_ROOT( exp->parent->expr->suppl ) == 0) &&
-              (SUPPL_OP( exp->parent->expr->suppl ) == SUPPL_OP( exp->parent->expr->parent->expr->suppl )) &&
-              (exp->parent->expr->right->id == exp->id) &&
-              (exp->parent->expr->left != NULL) &&
-              (exp->parent->expr->left->ulid == -1) ) ||
-            ( (exp->parent->expr->right->id == exp->id) &&
-              (exp->parent->expr->left != NULL) &&
-              (SUPPL_OP( exp->parent->expr->left->suppl ) == SUPPL_OP( exp->parent->expr->suppl )) &&
-              (exp->parent->expr->left->ulid == -1) ) ) &&
-         (exp->parent->expr->left->id != exp->id) );
+              (SUPPL_OP( exp->parent->expr->suppl ) == SUPPL_OP( exp->parent->expr->parent->expr->suppl )) ) ||
+            (SUPPL_OP( exp->parent->expr->left->suppl ) == SUPPL_OP( exp->parent->expr->suppl )) ) );
 
 }
 
@@ -1576,6 +1591,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.85  2004/01/27 13:34:30  phase1geo
+ Working version of combinational logic report output but I still want to clean
+ this code up.
+
  Revision 1.84  2004/01/26 19:09:46  phase1geo
  Fixes to comb.c for last checkin.  We are not quite there yet with the output
  quality for comb.c but we are close.  Next round of changes for comb.c should
