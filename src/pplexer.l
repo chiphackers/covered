@@ -63,6 +63,7 @@ static struct include_stack_t* standby = 0;
 %x DEFINE
 %x INCLUDE
 %x ERROR_LINE
+%x PROTECTED
 
 %x IFDEF_FALSE
 %s IFDEF_TRUE
@@ -214,6 +215,12 @@ WSPACE [ \t\b\f]+
      fputc( '\n', yyout );
  }
 
+  /* For protected code, we need to completely ignore this information until a endprotected is seen */
+`protected.*               { yy_push_state( PROTECTED );  ECHO; }
+<PROTECTED>.               { ECHO;                              }
+<PROTECTED>\n              { istack->lineno += 1;               }
+<PROTECTED>`endprotected.* { yy_pop_state();                    }
+
   /* Miscellaneous directives -- we ignore this information */
 `celldefine{WSPACE}?.*             { ECHO; }
 `default_nettype{WSPACE}?.*        { ECHO; }
@@ -223,10 +230,8 @@ WSPACE [ \t\b\f]+
 `disable_portfaults{WSPACE}?.*     { ECHO; }
 `enable_portfaults{WSPACE}?.*      { ECHO; }
 `endcelldefine{WSPACE}?.*          { ECHO; }
-`endprotect{WSPACE}?.*             { ECHO; }
 `nosuppress_faults{WSPACE}?.*      { ECHO; }
 `nounconnected_drive{WSPACE}?.*    { ECHO; }
-`protect{WSPACE}?.*                { ECHO; }
 `resetall{WSPACE}?.*               { ECHO; }
 `suppress_faults{WSPACE}?.*        { ECHO; }
 `unconnected_drive{WSPACE}?.*      { ECHO; }
