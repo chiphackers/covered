@@ -3,9 +3,9 @@ Covered -- Verilog Coverage Verbose Report
 
 LINE COVERAGE RESULTS BY INSTANCE
 ---------------------------------
-Instance                                          Hit/Miss/Total    Percent hit
--------------------------------------------------------------------------------
-  main                                              4/   1/   5       80%
+Instance                                           Hit/ Miss/Total    Percent hit
+---------------------------------------------------------------------------------
+  main                                               4/    1/    5       80%
 
 Module: main, File: case3.2.v, Instance: main
 --------------------------------------------------------
@@ -17,10 +17,10 @@ Missed Lines
 
 TOGGLE COVERAGE RESULTS BY INSTANCE
 -----------------------------------
-Instance                                                   Toggle 0 -> 1                    Toggle 1 -> 0
-                                                  Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
-----------------------------------------------------------------------------------------------------------------
-  main                                              0/   2/   2        0%            1/   1/   2       50%
+Instance                                                   Toggle 0 -> 1                       Toggle 1 -> 0
+                                                   Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
+---------------------------------------------------------------------------------------------------------------------
+  main                                               0/    2/    2        0%             1/    1/    2       50%
 
 Module: main, File: case3.2.v, Instance: main
 --------------------------------------------------------

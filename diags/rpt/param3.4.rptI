@@ -3,21 +3,21 @@ Covered -- Verilog Coverage Verbose Report
 
 LINE COVERAGE RESULTS BY INSTANCE
 ---------------------------------
-Instance                                          Hit/Miss/Total    Percent hit
--------------------------------------------------------------------------------
-  main                                              2/   0/   2      100%
-  main.bar1                                         1/   0/   1      100%
-  main.bar2                                         1/   0/   1      100%
+Instance                                           Hit/ Miss/Total    Percent hit
+---------------------------------------------------------------------------------
+  main                                               2/    0/    2      100%
+  main.bar1                                          1/    0/    1      100%
+  main.bar2                                          1/    0/    1      100%
 =================================================================================
 
 TOGGLE COVERAGE RESULTS BY INSTANCE
 -----------------------------------
-Instance                                                   Toggle 0 -> 1                    Toggle 1 -> 0
-                                                  Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
-----------------------------------------------------------------------------------------------------------------
-  main                                              6/   9/  15       40%            3/  12/  15       20%
-  main.bar1                                         4/   0/   4      100%            2/   2/   4       50%
-  main.bar2                                         0/   6/   6        0%            0/   6/   6        0%
+Instance                                                   Toggle 0 -> 1                       Toggle 1 -> 0
+                                                   Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
+---------------------------------------------------------------------------------------------------------------------
+  main                                               6/    9/   15       40%             3/   12/   15       20%
+  main.bar1                                          4/    0/    4      100%             2/    2/    4       50%
+  main.bar2                                          0/    6/    6        0%             0/    6/    6        0%
 
 Module: main, File: param3.4.v, Instance: main
 --------------------------------------------------------

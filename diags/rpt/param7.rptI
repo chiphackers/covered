@@ -3,27 +3,27 @@ Covered -- Verilog Coverage Verbose Report
 
 LINE COVERAGE RESULTS BY INSTANCE
 ---------------------------------
-Instance                                          Hit/Miss/Total    Percent hit
--------------------------------------------------------------------------------
-  main                                              2/   0/   2      100%
-  main.a                                            1/   0/   1      100%
-  main.a.c                                          1/   0/   1      100%
-  main.b                                            1/   0/   1      100%
-  main.b.d                                          1/   0/   1      100%
-  main.b.d.c                                        1/   0/   1      100%
+Instance                                           Hit/ Miss/Total    Percent hit
+---------------------------------------------------------------------------------
+  main                                               2/    0/    2      100%
+  main.a                                             1/    0/    1      100%
+  main.a.c                                           1/    0/    1      100%
+  main.b                                             1/    0/    1      100%
+  main.b.d                                           1/    0/    1      100%
+  main.b.d.c                                         1/    0/    1      100%
 =================================================================================
 
 TOGGLE COVERAGE RESULTS BY INSTANCE
 -----------------------------------
-Instance                                                   Toggle 0 -> 1                    Toggle 1 -> 0
-                                                  Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
-----------------------------------------------------------------------------------------------------------------
-  main                                              0/   5/   5        0%            0/   5/   5        0%
-  main.a                                            0/   2/   2        0%            0/   2/   2        0%
-  main.a.c                                          0/   2/   2        0%            0/   2/   2        0%
-  main.b                                            0/   3/   3        0%            0/   3/   3        0%
-  main.b.d                                          0/   3/   3        0%            0/   3/   3        0%
-  main.b.d.c                                        0/   3/   3        0%            0/   3/   3        0%
+Instance                                                   Toggle 0 -> 1                       Toggle 1 -> 0
+                                                   Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
+---------------------------------------------------------------------------------------------------------------------
+  main                                               0/    5/    5        0%             0/    5/    5        0%
+  main.a                                             0/    2/    2        0%             0/    2/    2        0%
+  main.a.c                                           0/    2/    2        0%             0/    2/    2        0%
+  main.b                                             0/    3/    3        0%             0/    3/    3        0%
+  main.b.d                                           0/    3/    3        0%             0/    3/    3        0%
+  main.b.d.c                                         0/    3/    3        0%             0/    3/    3        0%
 
 Module: main, File: param7.v, Instance: main
 --------------------------------------------------------

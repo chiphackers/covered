@@ -3,10 +3,10 @@ Covered -- Verilog Coverage Verbose Report
 
 LINE COVERAGE RESULTS BY MODULE
 -------------------------------
-Module                    Filename                Hit/Miss/Total    Percent hit
--------------------------------------------------------------------------------
-  main                    fsm1.1.v                  0/   0/   0      100%
-  fsm                     lib/fsm.v                 4/   3/   7       57%
+Module                    Filename                 Hit/ Miss/Total    Percent hit
+---------------------------------------------------------------------------------
+  main                    fsm1.1.v                   0/    0/    0      100%
+  fsm                     fsm.v                      4/    3/    7       57%
 
 Module: fsm, File: lib/fsm.v
 --------------------------------------------------------
@@ -20,11 +20,11 @@ Missed Lines
 
 TOGGLE COVERAGE RESULTS BY MODULE
 ---------------------------------
-Module                    Filename                         Toggle 0 -> 1                    Toggle 1 -> 0
-                                                  Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
-----------------------------------------------------------------------------------------------------------------
-  main                    fsm1.1.v                  1/   4/   5       20%            2/   3/   5       40%
-  fsm                     lib/fsm.v                 1/   8/   9       11%            2/   7/   9       22%
+Module                    Filename                         Toggle 0 -> 1                       Toggle 1 -> 0
+                                                   Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
+---------------------------------------------------------------------------------------------------------------------
+  main                    fsm1.1.v                   1/    4/    5       20%             2/    3/    5       40%
+  fsm                     fsm.v                      1/    8/    9       11%             2/    7/    9       22%
 
 Module: main, File: fsm1.1.v
 --------------------------------------------------------
@@ -67,7 +67,7 @@ Module                    Filename                     Logical Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
   main                    fsm1.1.v                  0/   0/   0      100%
-  fsm                     lib/fsm.v                22/  16/  38       58%
+  fsm                     fsm.v                    22/  16/  38       58%
 
 Module: fsm, File: lib/fsm.v
 --------------------------------------------------------
@@ -201,7 +201,7 @@ FINITE STATE MACHINE COVERAGE RESULTS BY MODULE
 Module                    Filename                Hit/Miss/Total    Percent Hit    Hit/Miss/Total    Percent hit
 ----------------------------------------------------------------------------------------------------------------
   main                    fsm1.1.v                  0/   0/   0      100%            0/   0/   0      100%
-  fsm                     lib/fsm.v                 1/  ? /  ?        ? %            1/  ? /  ?        ? %
+  fsm                     fsm.v                     1/  ? /  ?        ? %            1/  ? /  ?        ? %
 
 Module: fsm, File: lib/fsm.v
 --------------------------------------------------------

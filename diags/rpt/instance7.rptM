@@ -3,23 +3,23 @@ Covered -- Verilog Coverage Verbose Report
 
 LINE COVERAGE RESULTS BY MODULE
 -------------------------------
-Module                    Filename                Hit/Miss/Total    Percent hit
--------------------------------------------------------------------------------
-  main                    instance7.v               0/   0/   0      100%
-  foo                     ./lib/foo.v               0/   0/   0      100%
-  bar                     ./lib/foo.v               0/   0/   0      100%
-  dude                    ./lib/foo.v               1/   0/   1      100%
+Module                    Filename                 Hit/ Miss/Total    Percent hit
+---------------------------------------------------------------------------------
+  main                    instance7.v                0/    0/    0      100%
+  foo                     foo.v                      0/    0/    0      100%
+  bar                     foo.v                      0/    0/    0      100%
+  dude                    foo.v                      1/    0/    1      100%
 =================================================================================
 
 TOGGLE COVERAGE RESULTS BY MODULE
 ---------------------------------
-Module                    Filename                         Toggle 0 -> 1                    Toggle 1 -> 0
-                                                  Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
-----------------------------------------------------------------------------------------------------------------
-  main                    instance7.v               1/   0/   1      100%            0/   1/   1        0%
-  foo                     ./lib/foo.v               1/   0/   1      100%            0/   1/   1        0%
-  bar                     ./lib/foo.v               1/   0/   1      100%            0/   1/   1        0%
-  dude                    ./lib/foo.v               1/   1/   2       50%            0/   2/   2        0%
+Module                    Filename                         Toggle 0 -> 1                       Toggle 1 -> 0
+                                                   Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
+---------------------------------------------------------------------------------------------------------------------
+  main                    instance7.v                1/    0/    1      100%             0/    1/    1        0%
+  foo                     foo.v                      1/    0/    1      100%             0/    1/    1        0%
+  bar                     foo.v                      1/    0/    1      100%             0/    1/    1        0%
+  dude                    foo.v                      1/    1/    2       50%             0/    2/    2        0%
 
 Module: main, File: instance7.v
 --------------------------------------------------------
@@ -66,9 +66,9 @@ Module                    Filename                     Logical Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
   main                    instance7.v               0/   0/   0      100%
-  foo                     ./lib/foo.v               0/   0/   0      100%
-  bar                     ./lib/foo.v               0/   0/   0      100%
-  dude                    ./lib/foo.v               1/   1/   2       50%
+  foo                     foo.v                     0/   0/   0      100%
+  bar                     foo.v                     0/   0/   0      100%
+  dude                    foo.v                     1/   1/   2       50%
 
 Module: dude, File: ./lib/foo.v
 --------------------------------------------------------
@@ -96,8 +96,8 @@ FINITE STATE MACHINE COVERAGE RESULTS BY MODULE
 Module                    Filename                Hit/Miss/Total    Percent Hit    Hit/Miss/Total    Percent hit
 ----------------------------------------------------------------------------------------------------------------
   main                    instance7.v               0/   0/   0      100%            0/   0/   0      100%
-  foo                     ./lib/foo.v               0/   0/   0      100%            0/   0/   0      100%
-  bar                     ./lib/foo.v               0/   0/   0      100%            0/   0/   0      100%
-  dude                    ./lib/foo.v               0/   0/   0      100%            0/   0/   0      100%
+  foo                     foo.v                     0/   0/   0      100%            0/   0/   0      100%
+  bar                     foo.v                     0/   0/   0      100%            0/   0/   0      100%
+  dude                    foo.v                     0/   0/   0      100%            0/   0/   0      100%
 =================================================================================
 

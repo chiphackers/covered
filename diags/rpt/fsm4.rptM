@@ -3,17 +3,17 @@ Covered -- Verilog Coverage Verbose Report
 
 LINE COVERAGE RESULTS BY MODULE
 -------------------------------
-Module                    Filename                Hit/Miss/Total    Percent hit
--------------------------------------------------------------------------------
-  main                    fsm4.v                    7/   0/   7      100%
+Module                    Filename                 Hit/ Miss/Total    Percent hit
+---------------------------------------------------------------------------------
+  main                    fsm4.v                     7/    0/    7      100%
 =================================================================================
 
 TOGGLE COVERAGE RESULTS BY MODULE
 ---------------------------------
-Module                    Filename                         Toggle 0 -> 1                    Toggle 1 -> 0
-                                                  Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
-----------------------------------------------------------------------------------------------------------------
-  main                    fsm4.v                    8/  13/  21       38%            9/  12/  21       43%
+Module                    Filename                         Toggle 0 -> 1                       Toggle 1 -> 0
+                                                   Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
+---------------------------------------------------------------------------------------------------------------------
+  main                    fsm4.v                     8/   13/   21       38%             9/   12/   21       43%
 
 Module: main, File: fsm4.v
 --------------------------------------------------------

@@ -3,17 +3,17 @@ Covered -- Verilog Coverage Verbose Report
 
 LINE COVERAGE RESULTS BY INSTANCE
 ---------------------------------
-Instance                                          Hit/Miss/Total    Percent hit
--------------------------------------------------------------------------------
-  main.fsm                                          7/   0/   7      100%
+Instance                                           Hit/ Miss/Total    Percent hit
+---------------------------------------------------------------------------------
+  main.fsm                                           7/    0/    7      100%
 =================================================================================
 
 TOGGLE COVERAGE RESULTS BY INSTANCE
 -----------------------------------
-Instance                                                   Toggle 0 -> 1                    Toggle 1 -> 0
-                                                  Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
-----------------------------------------------------------------------------------------------------------------
-  main.fsm                                          8/   1/   9       89%            9/   0/   9      100%
+Instance                                                   Toggle 0 -> 1                       Toggle 1 -> 0
+                                                   Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
+---------------------------------------------------------------------------------------------------------------------
+  main.fsm                                           8/    1/    9       89%             9/    0/    9      100%
 
 Module: fsm, File: lib/fsm.v, Instance: main.fsm
 --------------------------------------------------------

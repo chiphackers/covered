@@ -3,19 +3,19 @@ Covered -- Verilog Coverage Verbose Report
 
 LINE COVERAGE RESULTS BY MODULE
 -------------------------------
-Module                    Filename                Hit/Miss/Total    Percent hit
--------------------------------------------------------------------------------
-  main                    param3.4.v                0/   0/   0      100%
-  foo                     param3.4.v                1/   0/   1      100%
+Module                    Filename                 Hit/ Miss/Total    Percent hit
+---------------------------------------------------------------------------------
+  main                    param3.4.v                 0/    0/    0      100%
+  foo                     param3.4.v                 1/    0/    1      100%
 =================================================================================
 
 TOGGLE COVERAGE RESULTS BY MODULE
 ---------------------------------
-Module                    Filename                         Toggle 0 -> 1                    Toggle 1 -> 0
-                                                  Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
-----------------------------------------------------------------------------------------------------------------
-  main                    param3.4.v                2/   3/   5       40%            1/   4/   5       20%
-  foo                     param3.4.v                4/   0/   4      100%            2/   2/   4       50%
+Module                    Filename                         Toggle 0 -> 1                       Toggle 1 -> 0
+                                                   Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
+---------------------------------------------------------------------------------------------------------------------
+  main                    param3.4.v                 2/    3/    5       40%             1/    4/    5       20%
+  foo                     param3.4.v                 4/    0/    4      100%             2/    2/    4       50%
 
 Module: main, File: param3.4.v
 --------------------------------------------------------

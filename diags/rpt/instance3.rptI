@@ -3,10 +3,10 @@ Covered -- Verilog Coverage Verbose Report
 
 LINE COVERAGE RESULTS BY INSTANCE
 ---------------------------------
-Instance                                          Hit/Miss/Total    Percent hit
--------------------------------------------------------------------------------
-  main                                              2/   1/   3       67%
-  main.bar                                          2/   1/   3       67%
+Instance                                           Hit/ Miss/Total    Percent hit
+---------------------------------------------------------------------------------
+  main                                               2/    1/    3       67%
+  main.bar                                           2/    1/    3       67%
 
 Module: main, File: instance3.v, Instance: main
 --------------------------------------------------------
@@ -24,11 +24,11 @@ Missed Lines
 
 TOGGLE COVERAGE RESULTS BY INSTANCE
 -----------------------------------
-Instance                                                   Toggle 0 -> 1                    Toggle 1 -> 0
-                                                  Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
-----------------------------------------------------------------------------------------------------------------
-  main                                              1/   3/   4       25%            1/   3/   4       25%
-  main.bar                                          1/   3/   4       25%            1/   3/   4       25%
+Instance                                                   Toggle 0 -> 1                       Toggle 1 -> 0
+                                                   Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
+---------------------------------------------------------------------------------------------------------------------
+  main                                               1/    3/    4       25%             1/    3/    4       25%
+  main.bar                                           1/    3/    4       25%             1/    3/    4       25%
 
 Module: main, File: instance3.v, Instance: main
 --------------------------------------------------------

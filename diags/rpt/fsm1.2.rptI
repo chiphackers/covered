@@ -3,10 +3,10 @@ Covered -- Verilog Coverage Verbose Report
 
 LINE COVERAGE RESULTS BY INSTANCE
 ---------------------------------
-Instance                                          Hit/Miss/Total    Percent hit
--------------------------------------------------------------------------------
-  main                                              6/   1/   7       86%
-  main.fsm                                          6/   1/   7       86%
+Instance                                           Hit/ Miss/Total    Percent hit
+---------------------------------------------------------------------------------
+  main                                               6/    1/    7       86%
+  main.fsm                                           6/    1/    7       86%
 
 Module: main, File: fsm1.2.v, Instance: main
 --------------------------------------------------------
@@ -24,11 +24,11 @@ Missed Lines
 
 TOGGLE COVERAGE RESULTS BY INSTANCE
 -----------------------------------
-Instance                                                   Toggle 0 -> 1                    Toggle 1 -> 0
-                                                  Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
-----------------------------------------------------------------------------------------------------------------
-  main                                             10/   4/  14       71%            6/   8/  14       43%
-  main.fsm                                          7/   2/   9       78%            4/   5/   9       44%
+Instance                                                   Toggle 0 -> 1                       Toggle 1 -> 0
+                                                   Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
+---------------------------------------------------------------------------------------------------------------------
+  main                                              10/    4/   14       71%             6/    8/   14       43%
+  main.fsm                                           7/    2/    9       78%             4/    5/    9       44%
 
 Module: main, File: fsm1.2.v, Instance: main
 --------------------------------------------------------

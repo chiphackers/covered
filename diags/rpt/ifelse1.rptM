@@ -3,19 +3,19 @@ Covered -- Verilog Coverage Verbose Report
 
 LINE COVERAGE RESULTS BY MODULE
 -------------------------------
-Module                    Filename                Hit/Miss/Total    Percent hit
--------------------------------------------------------------------------------
-  main                    ifelse1.v                 0/   0/   0      100%
-  mux                     ./lib/mux.v               6/   0/   6      100%
+Module                    Filename                 Hit/ Miss/Total    Percent hit
+---------------------------------------------------------------------------------
+  main                    ifelse1.v                  0/    0/    0      100%
+  mux                     mux.v                      6/    0/    6      100%
 =================================================================================
 
 TOGGLE COVERAGE RESULTS BY MODULE
 ---------------------------------
-Module                    Filename                         Toggle 0 -> 1                    Toggle 1 -> 0
-                                                  Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
-----------------------------------------------------------------------------------------------------------------
-  main                    ifelse1.v                 4/   2/   6       67%            3/   3/   6       50%
-  mux                     ./lib/mux.v               4/   2/   6       67%            3/   3/   6       50%
+Module                    Filename                         Toggle 0 -> 1                       Toggle 1 -> 0
+                                                   Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
+---------------------------------------------------------------------------------------------------------------------
+  main                    ifelse1.v                  4/    2/    6       67%             3/    3/    6       50%
+  mux                     mux.v                      4/    2/    6       67%             3/    3/    6       50%
 
 Module: main, File: ifelse1.v
 --------------------------------------------------------
@@ -58,7 +58,7 @@ Module                    Filename                     Logical Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
   main                    ifelse1.v                 0/   0/   0      100%
-  mux                     ./lib/mux.v               8/   2/  10       80%
+  mux                     mux.v                     8/   2/  10       80%
 
 Module: mux, File: ./lib/mux.v
 --------------------------------------------------------
@@ -98,6 +98,6 @@ FINITE STATE MACHINE COVERAGE RESULTS BY MODULE
 Module                    Filename                Hit/Miss/Total    Percent Hit    Hit/Miss/Total    Percent hit
 ----------------------------------------------------------------------------------------------------------------
   main                    ifelse1.v                 0/   0/   0      100%            0/   0/   0      100%
-  mux                     ./lib/mux.v               0/   0/   0      100%            0/   0/   0      100%
+  mux                     mux.v                     0/   0/   0      100%            0/   0/   0      100%
 =================================================================================
 

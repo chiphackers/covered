@@ -3,9 +3,9 @@ Covered -- Verilog Coverage Verbose Report
 
 LINE COVERAGE RESULTS BY MODULE
 -------------------------------
-Module                    Filename                Hit/Miss/Total    Percent hit
--------------------------------------------------------------------------------
-  main                    case3.4.v                 4/   1/   5       80%
+Module                    Filename                 Hit/ Miss/Total    Percent hit
+---------------------------------------------------------------------------------
+  main                    case3.4.v                  4/    1/    5       80%
 
 Module: main, File: case3.4.v
 --------------------------------------------------------
@@ -17,10 +17,10 @@ Missed Lines
 
 TOGGLE COVERAGE RESULTS BY MODULE
 ---------------------------------
-Module                    Filename                         Toggle 0 -> 1                    Toggle 1 -> 0
-                                                  Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
-----------------------------------------------------------------------------------------------------------------
-  main                    case3.4.v                 2/   0/   2      100%            1/   1/   2       50%
+Module                    Filename                         Toggle 0 -> 1                       Toggle 1 -> 0
+                                                   Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
+---------------------------------------------------------------------------------------------------------------------
+  main                    case3.4.v                  2/    0/    2      100%             1/    1/    2       50%
 
 Module: main, File: case3.4.v
 --------------------------------------------------------
