@@ -172,6 +172,7 @@ void bind_remove( int id ) {
  \param mod_sig           Pointer to module containing signal.
  \param mod_exp           Pointer to module containing expression.
  \param implicit_allowed  If set to TRUE, creates any signals that are implicitly defined.
+ \param fsm_bind          If set to TRUE, handling binding for FSM binding.
 
  \return Returns TRUE if bind occurred successfully; otherwise, returns FALSE.
  
@@ -183,7 +184,7 @@ void bind_remove( int id ) {
  signal neither exists or is an unused signal, it is considered to be an implicit signal
  and a 1-bit signal is created.
 */
-bool bind_perform( char* sig_name, expression* exp, module* mod_sig, module* mod_exp, bool implicit_allowed ) {
+bool bind_perform( char* sig_name, expression* exp, module* mod_sig, module* mod_exp, bool implicit_allowed, bool fsm_bind ) {
 
   signal    tsig;           /* Temporary signal for comparison purposes          */
   sig_link* sigl;           /* Pointer to found signal in specified module       */
@@ -207,7 +208,14 @@ bool bind_perform( char* sig_name, expression* exp, module* mod_sig, module* mod
   }
 
   if( sigl == NULL ) {
-    if( !implicit_allowed ) {
+    if( fsm_bind ) {
+      snprintf( user_msg, USER_MSG_LENGTH, "Unable to find specified FSM signal \"%s\" in module \"%s\" in file %s",
+                sig_name,
+                mod_exp->name,
+                mod_exp->filename );
+      print_output( user_msg, FATAL );
+      retval = FALSE;
+    } else if( !implicit_allowed ) {
       /* Bad hierarchical reference -- user error */
       snprintf( user_msg, USER_MSG_LENGTH, "Hierarchical reference to undefined signal \"%s\" in %s, line %d", 
                 sig_name,
@@ -287,7 +295,7 @@ void bind() {
     }
 
     /* Now bind the signal to the expression */
-    bind_perform( curr_seb->sig_name, curr_seb->exp, modi->mod, curr_seb->mod, FALSE );
+    bind_perform( curr_seb->sig_name, curr_seb->exp, modi->mod, curr_seb->mod, FALSE, FALSE );
 
     /************************************************************************************
      *  THIS CODE COULD PROBABLY BE PUT SOMEWHERE ELSE BUT WE WILL KEEP IT HERE FOR NOW *
@@ -344,6 +352,11 @@ void bind() {
 
 /* 
  $Log$
+ Revision 1.24  2003/08/10 03:50:10  phase1geo
+ More development documentation updates.  All global variables are now
+ documented correctly.  Also fixed some generated documentation warnings.
+ Removed some unnecessary global variables.
+
  Revision 1.23  2003/08/09 22:10:41  phase1geo
  Removing wait event signals from CDD file generation in support of another method
  that fixes a bug when multiple wait event statements exist within the same

@@ -116,46 +116,6 @@ fsm_var* fsm_var_is_output_state( expression* expr ) {
 
 }
 
-/*!
- Checks the state of the FSM variable list.  If the list is not empty, output all
- FSM state variables (and their associated modules) that have not been found as
- a warning to the user.  This would indicate user error.  This function should be
- called after parsing is complete.
-*/
-void fsm_var_check_for_unused() {
-
-  fsm_var* curr;  /* Pointer to current FSM variable structure being evaluated */
-  char*    code;  /* String containing expression output                       */
-
-  if( fsm_var_head != NULL ) {
-
-    print_output( "The following FSM state variables were not found:", WARNING );
-    print_output( "Module                     Variable/Expression", WARNING_WRAP );
-    print_output( "-------------------------  -------------------------", WARNING_WRAP );
-
-    curr = fsm_var_head;
-    while( curr != NULL ) {
-      if( curr->iexp == NULL ) {
-        code = codegen_gen_expr( curr->ivar, -1, SUPPL_OP( curr->ivar->suppl ) );
-        snprintf( user_msg, USER_MSG_LENGTH, "%-25.25s  %s", curr->mod, code );
-        print_output( user_msg, WARNING_WRAP );
-        free_safe( code );
-      }
-      if( curr->table == NULL ) {
-        code = codegen_gen_expr( curr->ovar, -1, SUPPL_OP( curr->ovar->suppl ) );
-        snprintf( user_msg, USER_MSG_LENGTH, "%-25.25s  %s", curr->mod, code );
-        print_output( user_msg, WARNING_WRAP );
-        free_safe( code );
-      }
-      curr = curr->next;
-    }
-
-    print_output( "", WARNING_WRAP );
-
-  }
-
-}
-
 void fsm_var_bind_add( char* sig_name, expression* expr, char* mod_name ) {
 
   fv_bind* fvb;  /* Pointer to new FSM variable binding structure */
@@ -229,7 +189,7 @@ void fsm_var_bind( mod_link* mod_head ) {
 
     /* Perform binding */
     if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
-      error = bind_perform( curr->sig_name, curr->expr, modl->mod, modl->mod, FALSE ) || error;
+      error = !bind_perform( curr->sig_name, curr->expr, modl->mod, modl->mod, FALSE, TRUE ) || error;
     } else {
       error = TRUE;
     }
@@ -245,50 +205,54 @@ void fsm_var_bind( mod_link* mod_head ) {
 
   }
 
-  curr = fsm_var_stmt_head;
-  while( curr != NULL ) {
+  if( !error ) {
 
-    mod.name = curr->mod_name;
+    curr = fsm_var_stmt_head;
+    while( curr != NULL ) {
 
-    if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
+      mod.name = curr->mod_name;
 
-      /* First, add expression tree to found module expression list */
-      fsm_var_add_expr( curr->stmt->exp, modl->mod );
+      if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
 
-      /* Set ADDED bit of this statement */
-      curr->stmt->exp->suppl = curr->stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_ADDED);
+        /* First, add expression tree to found module expression list */
+        fsm_var_add_expr( curr->stmt->exp, modl->mod );
 
-      /* Second, add our statement to this module's statement list */
-      stmt_link_add_head( curr->stmt, &(modl->mod->stmt_head), &(modl->mod->stmt_tail) );
+        /* Set ADDED bit of this statement */
+        curr->stmt->exp->suppl = curr->stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_ADDED);
 
-      /* Finally, create the new FSM if we are the output state */
-      if( (fv = fsm_var_is_output_state( curr->stmt->exp )) != NULL ) {
-        fv->table       = fsm_create( fv->ivar, fv->ovar, FALSE );
-        fv->ivar->table = fv->table;
-        fv->ovar->table = fv->table;
-        fsm_link_add( fv->table, &(modl->mod->fsm_head), &(modl->mod->fsm_tail) );
-        fsm_var_remove( fv );
+        /* Second, add our statement to this module's statement list */
+        stmt_link_add_head( curr->stmt, &(modl->mod->stmt_head), &(modl->mod->stmt_tail) );
+
+        /* Finally, create the new FSM if we are the output state */
+        if( (fv = fsm_var_is_output_state( curr->stmt->exp )) != NULL ) {
+          fv->table       = fsm_create( fv->ivar, fv->ovar, FALSE );
+          fv->ivar->table = fv->table;
+          fv->ovar->table = fv->table;
+          fsm_link_add( fv->table, &(modl->mod->fsm_head), &(modl->mod->fsm_tail) );
+          fsm_var_remove( fv );
+        }
+
+      } else if( !error ) {
+
+        /* If we found the module before, we should be able to find it again */
+        assert( modl != NULL );
+
       }
 
-    } else if( !error ) {
+      tmp = curr->next;
 
-      /* If we found the module before, we should be able to find it again */
-      assert( modl != NULL );
+      /* Deallocate memory for this bind structure */
+      free_safe( curr->mod_name );
+      free_safe( curr );
+
+      curr = tmp;
 
     }
 
-    tmp = curr->next;
+  } else {
 
-    /* Deallocate memory for this bind structure */
-    free_safe( curr->mod_name );
-    free_safe( curr );
+    exit( 1 );
 
-    curr = tmp;
-
-  }
-
-  if( error ) {
-    fsm_var_check_for_unused();
   }
 
 }
@@ -354,6 +318,11 @@ void fsm_var_remove( fsm_var* fv ) {
 
 /*
  $Log$
+ Revision 1.5  2003/10/14 04:02:44  phase1geo
+ Final fixes for new FSM support.  Full regression now passes.  Need to
+ add new diagnostics to verify new functionality, but at least all existing
+ cases are supported again.
+
  Revision 1.4  2003/10/13 12:27:25  phase1geo
  More fixes to FSM stuff.
 

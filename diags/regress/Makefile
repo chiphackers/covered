@@ -38,7 +38,7 @@ DIAGS1        = always1        always2        always3        always3.1.11A  alwa
                 delay2         define1        define1.1      define1.2      define2 \
                 define2.1      define3        define4        expand1        expand2 \
                 expand3        fsm1           fsm1.1         fsm1.2         fsm1.3 \
-                fsm1.4         fsm3           fsm4           fsm4.1         gate1 \
+                fsm1.4         fsm3           fsm4           fsm4.1         fsm5         gate1 \
                 hier1          ifdef1         ifdef1.2       ifdef2.1       ifdef2.2 \
                 ifdef2.3       ifelse1        include1       include1.1     include2 \
                 instance1      instance1.1    instance1.2    instance2      instance3 \

@@ -757,7 +757,7 @@ expression* db_create_expression( expression* right, expression* left, int op, i
 
       /* If signal is located in this current module, bind now; else, bind later */
       if( scope_local( sig_name ) ) {
-        if( !bind_perform( sig_name, expr, curr_module, curr_module, TRUE ) ) {
+        if( !bind_perform( sig_name, expr, curr_module, curr_module, TRUE, FALSE ) ) {
           expression_dealloc( expr, FALSE );
           expr = NULL;
         }
@@ -1200,6 +1200,10 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.102  2003/10/10 20:52:07  phase1geo
+ Initial submission of FSM expression allowance code.  We are still not quite
+ there yet, but we are getting close.
+
  Revision 1.101  2003/10/03 21:28:43  phase1geo
  Restructuring FSM handling to be better suited to handle new FSM input/output
  state variable allowances.  Regression should still pass but new FSM support

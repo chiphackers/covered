@@ -335,6 +335,10 @@ bool fsm_db_merge( fsm* base, char** line, bool same ) {
 */
 void fsm_table_set( fsm* table ) {
 
+  printf( "In fsm_table_set\n" );
+  vector_display( table->from_state->value );
+  vector_display( table->to_state->value );
+
   arc_add( &(table->table), table->to_state->value->width, table->from_state->value, table->to_state->value, 1 );
 
 }
@@ -769,6 +773,11 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.24  2003/10/14 04:02:44  phase1geo
+ Final fixes for new FSM support.  Full regression now passes.  Need to
+ add new diagnostics to verify new functionality, but at least all existing
+ cases are supported again.
+
  Revision 1.23  2003/10/13 22:10:07  phase1geo
  More changes for FSM support.  Still not quite there.
 

@@ -18,7 +18,7 @@ void bind_add( char* sig_name, expression* exp, module* mod );
 void bind_remove( int id );
 
 /*! \brief Finds signal in module and bind the expression to this signal. */
-bool bind_perform( char* sig_name, expression* exp, module* mod_sig, module* mod_exp, bool implicit_allowed );
+bool bind_perform( char* sig_name, expression* exp, module* mod_sig, module* mod_exp, bool implicit_allowed, bool fsm_bind );
 
 /*! \brief Performs signal/expression bind (performed after parse completed). */
 void bind();
@@ -26,6 +26,11 @@ void bind();
 
 /* 
  $Log$
+ Revision 1.9  2003/01/05 22:25:23  phase1geo
+ Fixing bug with declared integers, time, real, realtime and memory types where
+ they are confused with implicitly declared signals and given 1-bit value types.
+ Updating regression for changes.
+
  Revision 1.8  2002/11/05 00:20:06  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.
