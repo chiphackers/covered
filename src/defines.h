@@ -60,24 +60,38 @@
 #define FATAL        1
 
 /*!
+ Indicates that the specified error is fatal but that the ERROR prefix
+ to the error message should not be output.  Used for an error that needs
+ multiple lines of output.
+*/
+#define FATAL_WRAP   2
+
+/*!
  Indicate that the specified error is only a warning that something
  may be wrong but will not cause the program to immediately terminate.
  Suppressed if output_suppressed boolean variable in util.c is set to TRUE.
 */
-#define WARNING      2
+#define WARNING      3
+
+/*!
+ Indicates that the specified error is only a warning but that the
+ WARNING prefix should not be output.  Used for warning messages that
+ need multiple lines of output.
+*/
+#define WARNING_WRAP 4
 
 /*!
  Indicate that the specified message is not an error but some type of
  necessary output.  Suppressed if output_suppressed boolean variable in
  util.c is set to TRUE.
 */
-#define NORMAL       3
+#define NORMAL       5
 
 /*!
  Indicates that the specified message is debug information that should
  only be displayed to the screen when the -D flag is specified.
 */
-#define DEBUG        4
+#define DEBUG        6
 
 /*! @} */
 
@@ -1428,6 +1442,11 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.79  2003/09/13 19:53:59  phase1geo
+ Adding correct way of calculating state and state transition totals.  Modifying
+ FSM summary reporting to reflect these changes.  Also added function documentation
+ that was missing from last submission.
+
  Revision 1.78  2003/09/13 02:59:34  phase1geo
  Fixing bugs in arc.c created by extending entry supplemental field to 5 bits
  from 3 bits.  Additional two bits added for calculating unique states.

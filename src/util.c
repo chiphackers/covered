@@ -97,8 +97,14 @@ void print_output( char* msg, int type ) {
     case WARNING:
       if( !output_suppressed || debug_mode ) { fprintf( stderr, "    WARNING!  %s\n", msg ); }
       break;
+    case WARNING_WRAP:
+      if( !output_suppressed || debug_mode ) { fprintf( stderr, "              %s\n", msg ); }
+      break; 
     case FATAL:
       fprintf( stderr, "ERROR!  %s\n", msg );
+      break;
+    case FATAL_WRAP:
+      fprintf( stderr, "        %s\n", msg );
       break;
     default:  break;
   }
@@ -702,6 +708,9 @@ void timer_stop( timer** tm ) {
 
 /*
  $Log$
+ Revision 1.23  2003/08/15 20:02:08  phase1geo
+ Added check for sys/times.h file for new code additions.
+
  Revision 1.22  2003/08/15 03:52:22  phase1geo
  More checkins of last checkin and adding some missing files.
 
