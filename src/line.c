@@ -175,7 +175,7 @@ void line_display_verbose( FILE* ofile, stmt_link* stmtl ) {
 
         unexec_exp = stmtl->stmt->exp;
 
-        code = codegen_gen_expr( unexec_exp, unexec_exp->line );
+        code = codegen_gen_expr( unexec_exp, unexec_exp->line, SUPPL_OP( unexec_exp->suppl ) );
         fprintf( ofile, "%7d:    %s\n", unexec_exp->line, code );
         free_safe( code );
 
@@ -302,6 +302,10 @@ void line_report( FILE* ofile, bool verbose ) {
 }
 
 /* $Log$
+/* Revision 1.20  2002/09/13 05:12:25  phase1geo
+/* Adding final touches to -d option to report.  Adding documentation and
+/* updating development documentation to stay in sync.
+/*
 /* Revision 1.19  2002/09/10 05:40:09  phase1geo
 /* Adding support for MULTIPLY, DIVIDE and MOD in expression verbose display.
 /* Fixing cases where -c option was not generating covered information in
