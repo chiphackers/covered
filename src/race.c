@@ -33,8 +33,8 @@
 #include "race.h"
 
 
-stmt_sig* stmt_sig_head = NULL;
-stmt_sig* stmt_sig_tail = NULL;
+stmt_blk* stmt_blk_head = NULL;
+stmt_blk* stmt_blk_tail = NULL;
 int       races_found   = 0;
 
 extern bool flag_race_check;
@@ -42,15 +42,15 @@ extern char user_msg[USER_MSG_LENGTH];
 
 
 /*!
- \param ss    Pointer to current stmt_sig structure to search for in specified list
- \param curr  Pointer to head of stmt_sig list to search
+ \param sb    Pointer to current stmt_blk structure to search for in specified list
+ \param curr  Pointer to head of stmt_blk list to search
 
- \return Returns TRUE if a matching stmt_sig structure exists in the specified list to
-         the specified stmt_sig structure
+ \return Returns TRUE if a matching stmt_blk structure exists in the specified list to
+         the specified stmt_blk structure
 */
-bool race_does_matching_stmt_sig_exist( stmt_sig* ss, stmt_sig* curr ) {
+bool race_does_matching_stmt_blk_exist( stmt_blk* sb, stmt_blk* curr ) {
 
-  while( (curr != NULL) && (curr->sig != ss->sig) && (curr->blocking != ss->blocking) ) {
+  while( (curr != NULL) && (curr->sig != ss->sig) ) {
     curr = curr->next;
   }
 
@@ -61,15 +61,14 @@ bool race_does_matching_stmt_sig_exist( stmt_sig* ss, stmt_sig* curr ) {
 /*!
  \param exp       Pointer to current expression to evaluate
  \param root      Pointer to root statement in statement tree
- \param blocking  Specifies if blocking expression was found in parent expression
 
  Recursively searches specified expression tree for LHS assigned signals.  When a
- signal is found that matches this criteria, it is added to the current stmt_sig list
- if a matching stmt_sig was not found already in this list.
+ signal is found that matches this criteria, it is added to the current stmt_blk list
+ if a matching stmt_blk was not found already in this list.
 */
 void race_find_lhs_sigs( expression* exp, statement* root, bool blocking ) {
 
-  stmt_sig* tmpss;  /* Pointer to temporary stmt_sig structure */
+  stmt_blk* tmpss;  /* Pointer to temporary stmt_blk structure */
 
   if( exp != NULL ) {
 
@@ -79,35 +78,34 @@ void race_find_lhs_sigs( expression* exp, statement* root, bool blocking ) {
 
       blocking = TRUE;
 
-    /* If the current expression is a signal that is on the LHS, add it to the stmt_sig array */
+    /* If the current expression is a signal that is on the LHS, add it to the stmt_blk array */
     } else if( (SUPPL_OP( exp->suppl ) == EXP_OP_SIG     ) ||
                (SUPPL_OP( exp->suppl ) == EXP_OP_SBIT_SEL) ||
                (SUPPL_OP( exp->suppl ) == EXP_OP_MBIT_SEL) ) {
 
       if( SUPPL_IS_LHS( exp->suppl ) == 1 ) {
 
-        /* Check to see if any elements in stmt_sig list match this element */
-        tmpss = stmt_sig_head;
-        while( (tmpss != NULL) && (exp->sig != tmpss->sig) && (blocking != tmpss->blocking) && (root != tmpss->stmt) ) {
+        /* Check to see if any elements in stmt_blk list match this element */
+        tmpss = stmt_blk_head;
+        while( (tmpss != NULL) && (exp->sig != tmpss->sig) && (root != tmpss->stmt) ) {
           tmpss = tmpss->next;
         }
 
-        /* If we don't have a match, go ahead and create the stmt_sig structure and add it to the list */
+        /* If we don't have a match, go ahead and create the stmt_blk structure and add it to the list */
         if( tmpss == NULL ) {
         
-          /* Create new stmt_sig structure */
-          tmpss           = (stmt_sig*)malloc_safe( sizeof( stmt_sig ) );
+          /* Create new stmt_blk structure */
+          tmpss           = (stmt_blk*)malloc_safe( sizeof( stmt_blk ) );
           tmpss->sig      = exp->sig;
           tmpss->stmt     = root;
-  	  tmpss->blocking = blocking;
           tmpss->next     = NULL;
       
-          /* Add new stmt_sig structure to list */
-          if( stmt_sig_head == NULL ) {
-            stmt_sig_head = stmt_sig_tail = tmpss;
+          /* Add new stmt_blk structure to list */
+          if( stmt_blk_head == NULL ) {
+            stmt_blk_head = stmt_blk_tail = tmpss;
           } else {
-            stmt_sig_tail->next = tmpss;
-            stmt_sig_tail       = tmpss;
+            stmt_blk_tail->next = tmpss;
+            stmt_blk_tail       = tmpss;
           }
 
         }
@@ -132,34 +130,33 @@ void race_find_lhs_sigs( expression* exp, statement* root, bool blocking ) {
 /*!
  \param sig  Pointer to input port signal.
 
- Creates a new stmt_sig structure to hold the specified signal information and adds it to the stmt_sig
+ Creates a new stmt_blk structure to hold the specified signal information and adds it to the stmt_blk
  list for future processing.  This should be called by the parser whenever a new input port signal has
  been found.
 */
 void race_add_inport_sig( vsignal* sig ) {
 
-  stmt_sig* ss;  /* Pointer to newly created stmt_sig structure */
+  stmt_blk* ss;  /* Pointer to newly created stmt_blk structure */
 
   /* The specified signal should never be a NULL value */
   assert( sig != NULL );
 
-  /* Create new stmt_sig for this port -- setting root stmt to NULL to indicate that this is a port */
-  ss = (stmt_sig*)malloc_safe( sizeof( stmt_sig ) );
+  /* Create new stmt_blk for this port -- setting root stmt to NULL to indicate that this is a port */
+  ss = (stmt_blk*)malloc_safe( sizeof( stmt_blk ) );
   ss->sig      = sig;
   ss->stmt     = NULL;  /* Indicates that this is an input port */
-  ss->blocking = TRUE;  /* Assume that this port has been assigned in a blocking fashion */
   ss->next     = NULL;
 
   /* Add the new signal to the list -- we shouldn't have duplicates here so don't check */
-  if( stmt_sig_head == NULL ) {
-    stmt_sig_head = stmt_sig_tail = ss;
+  if( stmt_blk_head == NULL ) {
+    stmt_blk_head = stmt_blk_tail = ss;
   } else {
-    stmt_sig_tail->next = ss;
-    stmt_sig_tail       = ss;
+    stmt_blk_tail->next = ss;
+    stmt_blk_tail       = ss;
   }
 
   printf( "Added input port\n" );
-  race_stmt_sig_display();
+  race_stmt_blk_display();
 
 }
 
@@ -168,16 +165,16 @@ void race_add_inport_sig( vsignal* sig ) {
  \param root  Pointer to root statement in statement tree.
 
  Finds all signals within the given statement tree that are assigned within this tree.
- When this list of signals is found, new stmt_sig links are added to the stmt_sig linked
+ When this list of signals is found, new stmt_blk links are added to the stmt_blk linked
  list, setting the signal and top-level statement values into these links.  If a signal
- is found within this statement tree that is also in the current stmt_sig list and the
+ is found within this statement tree that is also in the current stmt_blk list and the
  top-level statements are found to be different, an error message is displayed to the user
  (depending on the race condition flag set in the score command).
 */
-void race_find_and_add_stmt_sigs( statement* stmt, statement* root ) {
+void race_find_and_add_stmt_blks( statement* stmt, statement* root ) {
 
-  stmt_sig* curr;      /* Pointer to current stmt_sig structure to evaluate */
-  stmt_sig* last;      /* Pointer to last stmt_sig structure evaluated      */
+  stmt_blk* curr;      /* Pointer to current stmt_blk structure to evaluate */
+  stmt_blk* last;      /* Pointer to last stmt_blk structure evaluated      */
 
   assert( stmt != NULL );
   assert( root != NULL );
@@ -191,36 +188,36 @@ void race_find_and_add_stmt_sigs( statement* stmt, statement* root ) {
     if( (SUPPL_IS_STMT_STOP( stmt->exp->suppl ) == 0) &&
         (SUPPL_IS_STMT_CONTINUOUS( stmt->exp->suppl ) == 0) ) {
 
-      race_find_and_add_stmt_sigs( stmt->next_true,  root );
+      race_find_and_add_stmt_blks( stmt->next_true,  root );
 
       /* Traverse FALSE path if it differs from TRUE path */
       if( stmt->next_true != stmt->next_false ) {
-        race_find_and_add_stmt_sigs( stmt->next_false, root );
+        race_find_and_add_stmt_blks( stmt->next_false, root );
       }
 
     }
 
-    race_stmt_sig_display();
+    race_stmt_blk_display();
 
   }
 
 }
 
 /*!
- Displays contents of stmt_sig structure array to standard output.  For debugging purposes only.
+ Displays contents of stmt_blk structure array to standard output.  For debugging purposes only.
 */
-void race_stmt_sig_display() {
+void race_stmt_blk_display() {
 
-  stmt_sig* curr;  /* Pointer to current stmt_sig structure in list */
+  stmt_blk* curr;  /* Pointer to current stmt_blk structure in list */
 
   printf( "Statement-signal array:\n" );
 
-  curr = stmt_sig_head;
+  curr = stmt_blk_head;
   while( curr != NULL ) {
     if( curr->stmt == NULL ) {
-      printf( "  sig_name: %s, input, blocking: %d\n", curr->sig->name, curr->blocking );
+      printf( "  sig_name: %s, input\n", curr->sig->name );
     } else {
-      printf( "  sig_name: %s, stmt_id: %d, blocking: %d\n", curr->sig->name, curr->stmt->exp->id, curr->blocking );
+      printf( "  sig_name: %s, stmt_id: %d\n", curr->sig->name, curr->stmt->exp->id );
     } 
     curr = curr->next;
   }
@@ -228,16 +225,16 @@ void race_stmt_sig_display() {
 }
 
 /*!
- Performs race checking for the currently loaded module.  At this point, the stmt_sig array will be fully
- populated.  After race checking has been completed, the stmt_sig array will be completely deallocated.  This
+ Performs race checking for the currently loaded module.  At this point, the stmt_blk array will be fully
+ populated.  After race checking has been completed, the stmt_blk array will be completely deallocated.  This
  function should be called when the endmodule keyword is detected in the current module.
 */
 void race_check_module() {
 
-  stmt_sig* comp;  /* Pointer to stmt_sig to compare to    */
-  stmt_sig* curr;  /* Pointer to current stmt_sig to check */
+  stmt_blk* comp;  /* Pointer to stmt_blk to compare to    */
+  stmt_blk* curr;  /* Pointer to current stmt_blk to check */
 
-  comp = stmt_sig_head;
+  comp = stmt_blk_head;
 
   while( comp != NULL ) {
 
@@ -251,11 +248,6 @@ void race_check_module() {
 	/* If the signal was assigned in the same statement, checking blocking value */
 	if( comp->stmt == curr->stmt ) {
 
-          /* If we have mixed assignment types in the same statement */
-          if( comp->blocking != curr->blocking ) {
-            if( flag_race_check ) {
-	    }
-	  }
 	}
 
       }
@@ -268,8 +260,8 @@ void race_check_module() {
 
   }
 
-  /* Deallocate stmt_sig list */
-  race_stmt_sig_dealloc();
+  /* Deallocate stmt_blk list */
+  race_stmt_blk_dealloc();
 
 }
 
@@ -299,17 +291,17 @@ bool race_check_race_count() {
 }
 
 /*!
- \param ss  Pointer to stmt_sig structure to deallocate
+ \param ss  Pointer to stmt_blk structure to deallocate
 
- Deallocates stmt_sig structure list from memory.
+ Deallocates stmt_blk structure list from memory.
 */
-void race_stmt_sig_dealloc() {
+void race_stmt_blk_dealloc() {
 
-  stmt_sig* curr;  /* Pointer to current stmt_sig element to deallocate   */
-  stmt_sig* tmp;   /* Temporary pointer to stmt_sig element to deallocate */
+  stmt_blk* curr;  /* Pointer to current stmt_blk element to deallocate   */
+  stmt_blk* tmp;   /* Temporary pointer to stmt_blk element to deallocate */
 
-  /* Deallocate all elements in stmt_sig list */
-  curr = stmt_sig_head;
+  /* Deallocate all elements in stmt_blk list */
+  curr = stmt_blk_head;
   while( curr != NULL ) {
     tmp  = curr;
     curr = curr->next;
@@ -317,13 +309,16 @@ void race_stmt_sig_dealloc() {
   }
 
   /* Set head and tail to NULL */
-  stmt_sig_head = NULL;
-  stmt_sig_tail = NULL;
+  stmt_blk_head = NULL;
+  stmt_blk_tail = NULL;
 
 }
 
 /*
  $Log$
+ Revision 1.7  2004/12/20 04:12:00  phase1geo
+ A bit more race condition checking code added.  Still not there yet.
+
  Revision 1.6  2004/12/18 16:23:18  phase1geo
  More race condition checking updates.
 

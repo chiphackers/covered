@@ -1579,23 +1579,22 @@ struct attr_param_s {
 /*-------------------------------------------------------------------------------*/
 
 /*!
- The stmt_sig structure contains extra information for a given signal that is only used during
+ The stmt_blk structure contains extra information for a given signal that is only used during
  the parsing stage (therefore, the information does not need to be specified in the vsignal
  structure itself) and is used to keep track of information about that signal's use in the current
  module.  It is used for race condition checking.
 */
-struct stmt_sig_s;
+struct stmt_blk_s;
 
 /*!
  Renaming statement-signal structure for convenience.
 */
-typedef struct stmt_sig_s stmt_sig;
+typedef struct stmt_blk_s stmt_blk;
 
-struct stmt_sig_s {
-  vsignal*   sig;   /*!< Pointer to signal which this structure represents                                   */
-  statement* stmt;  /*!< Pointer to top-level statement in statement tree that this signal is first found in */
-  bool       blocking;  /*!< Specifies if the signal was assigned as blocking (TRUE) or non-blocking (FALSE) */
-  stmt_sig*  next;  /*!< Pointer to next statement signal structure in the linked list                       */
+struct stmt_blk_s {
+  statement* stmt;      /*!< Pointer to top-level statement in statement tree that this signal is first found in */
+  vsignal*   sig;       /*!< If not NULL, indicates the signal that is an input to this module                   */
+  stmt_blk*  next;      /*!< Pointer to next statement signal structure in the linked list                       */
 };
 
 /*-------------------------------------------------------------------------------*/
@@ -1608,6 +1607,10 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.110  2004/12/17 14:27:46  phase1geo
+ More code added to race condition checker.  This is in an unusable state at
+ this time.
+
  Revision 1.109  2004/12/16 13:52:58  phase1geo
  Starting to add support for race-condition detection and handling.
 
