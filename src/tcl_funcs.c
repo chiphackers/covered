@@ -361,9 +361,8 @@ int tcl_func_collect_combs( ClientData d, Tcl_Interp* tcl, int argc, const char*
     /* Load covered statements into Tcl */
     for( i=0; i<cov_cnt; i++ ) {
       last = expression_get_last_line_expr( covs[i] );
-      snprintf( str, 85, "%d.%d %d.%d %d", (covs[i]->line - (startline - 1)), (((covs[i]->col >> 16) & 0xffff) + 9),
-                                           (last->line    - (startline - 1)), ((last->col            & 0xffff) + 10),
-                                           covs[i]->id );
+      snprintf( str, 85, "%d.%d %d.%d", (covs[i]->line - (startline - 1)), (((covs[i]->col >> 16) & 0xffff) + 9),
+                                           (last->line    - (startline - 1)), ((last->col            & 0xffff) + 10) );
       if( i == 0 ) {
         Tcl_SetVar( tcl, "covered_combs", str, (TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT) );
       } else {
@@ -623,6 +622,9 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* home ) {
 
 /*
  $Log$
+ Revision 1.9  2004/08/11 22:11:39  phase1geo
+ Initial beginnings of combinational logic verbose reporting to GUI.
+
  Revision 1.8  2004/08/10 17:23:58  phase1geo
  Fixing various user-related problems with interface.  Things are working pretty
  well at this point, I believe.
