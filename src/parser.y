@@ -19,7 +19,9 @@
 
 char err_msg[1000];
 
-/* Uncomment these lines to turn debuggin on */
+int ignore_mode = 0;
+
+/* Uncomment these lines to turn debugging on */
 //#define YYDEBUG 1
 //#define YYERROR_VERBOSE 1
 //int yydebug = 1;
@@ -43,6 +45,11 @@ char err_msg[1000];
 %token <number> NUMBER
 %token <realtime> REALTIME
 %token STRING PORTNAME SYSTEM_IDENTIFIER IGNORE
+%token UNUSED_HIDENTIFIER UNUSED_IDENTIFIER
+%token UNUSED_PATHPULSE_IDENTIFIER
+%token UNUSED_NUMBER
+%token UNUSED_REALTIME
+%token UNUSED_STRING UNUSED_PORTNAME UNUSED_SYSTEM_IDENTIFIER
 %token K_LE K_GE K_EG K_EQ K_NE K_CEQ K_CNE K_LS K_RS K_SG
 %token K_PO_POS K_PO_NEG
 %token K_LOR K_LAND K_NAND K_NOR K_NXOR K_TRIGGER
@@ -86,7 +93,8 @@ char err_msg[1000];
 %type <strlink>   register_variable_list list_of_variables
 %type <strlink>   net_decl_assigns gate_instance_list
 %type <text>      register_variable net_decl_assign
-%type <state>     statement statement_list statement_opt
+%type <state>     statement statement_list statement_opt 
+%type <state>     for_statement fork_statement while_statement named_begin_end_block if_statement_error
 %type <case_stmt> case_items case_item
 %type <expr>      delay1 delay3 delay3_opt
 
@@ -124,7 +132,7 @@ source_file
 description
 	: module
 	| udp_primitive
-	| KK_attribute '(' IDENTIFIER ',' STRING ',' STRING ')'
+	| KK_attribute { ignore_mode++; } '(' UNUSED_IDENTIFIER ',' UNUSED_STRING ',' UNUSED_STRING ')' { ignore_mode--; }
 	;
 
 module
@@ -182,25 +190,37 @@ port_opt
 
 port
 	: port_reference
-	| PORTNAME '(' port_reference ')'
+	| PORTNAME '(' { ignore_mode++; } port_reference { ignore_mode--; } ')'
 		{
 		  $$ = 0;
 		}
-	| '{' port_reference_list '}'
+	| '{' { ignore_mode++; } port_reference_list { ignore_mode--; } '}'
 		{
 		  $$ = 0;
 		}
-	| PORTNAME '(' '{' port_reference_list '}' ')'
+	| PORTNAME '(' '{' { ignore_mode--; } port_reference_list { ignore_mode++; } '}' ')'
 		{
 		  $$ = 0;
 		}
 	;
 
 port_reference
-	: IDENTIFIER
-	| IDENTIFIER '[' static_expr ':' static_expr ']'
-	| IDENTIFIER '[' static_expr ']'
-	| IDENTIFIER '[' error ']'
+        : UNUSED_IDENTIFIER
+                {
+                  $$ = NULL;
+                }
+        | UNUSED_IDENTIFIER '[' static_expr ':' static_expr ']'
+                {
+                  $$ = NULL;
+                }
+        | UNUSED_IDENTIFIER '[' static_expr ']'
+                {
+                  $$ = NULL;
+                }
+        | UNUSED_IDENTIFIER '[' error ']'
+                { 
+                  $$ = NULL;
+                }
 	;
 
 port_reference_list
@@ -300,11 +320,19 @@ static_expr
 		}
         | static_expr '/' static_expr
 		{
-		  $$ = $1 / $3;
+                  if( ignore_mode == 0 ) {
+		    $$ = $1 / $3;
+                  } else {
+                    $$ = 0;
+                  }
 		}
         | static_expr '%' static_expr
 		{
-		  $$ = $1 % $3;
+                  if( ignore_mode == 0 ) {
+		    $$ = $1 % $3;
+                  } else {
+                    $$ = 0;
+                  }
 		}
         | static_expr '+' static_expr
 		{
@@ -342,87 +370,14 @@ static_expr_primary
 		  $$ = vector_to_int( $1 );
 		  vector_dealloc( $1 );
 		}
+        | UNUSED_NUMBER
+                {
+                  $$ = 0;
+                }
 	| '(' static_expr ')'
 		{
 		  $$ = $2;
 		}
-
-	;
-
-unused_expr
-        : unused_expr_primary
-        | '+' unused_expr_primary %prec UNARY_PREC
-        | '-' unused_expr_primary %prec UNARY_PREC
-        | '~' unused_expr_primary %prec UNARY_PREC
-	| '&' unused_expr_primary %prec UNARY_PREC
-	| '!' unused_expr_primary %prec UNARY_PREC
-	| '|' unused_expr_primary %prec UNARY_PREC
-	| '^' unused_expr_primary %prec UNARY_PREC
-	| K_NAND unused_expr_primary %prec UNARY_PREC
-	| K_NOR unused_expr_primary %prec UNARY_PREC
-	| K_NXOR unused_expr_primary %prec UNARY_PREC
-	| '!' error %prec UNARY_PREC
-	| '^' error %prec UNARY_PREC
-	| unused_expr '^' unused_expr
-	| unused_expr '*' unused_expr
-	| unused_expr '/' unused_expr
-	| unused_expr '%' unused_expr
-	| unused_expr '+' unused_expr
-	| unused_expr '-' unused_expr
-	| unused_expr '&' unused_expr
-	| unused_expr '|' unused_expr
-        | unused_expr K_NAND unused_expr
-	| unused_expr K_NOR unused_expr
-	| unused_expr K_NXOR unused_expr
-	| unused_expr '<' unused_expr
-	| unused_expr '>' unused_expr
-	| unused_expr K_LS unused_expr
-	| unused_expr K_RS unused_expr
-	| unused_expr K_EQ unused_expr
-	| unused_expr K_CEQ unused_expr
-	| unused_expr K_LE unused_expr
-	| unused_expr K_GE unused_expr
-	| unused_expr K_NE unused_expr
-	| unused_expr K_CNE unused_expr
-	| unused_expr K_LOR unused_expr
-	| unused_expr K_LAND unused_expr
-	| unused_expr '?' unused_expr ':' unused_expr
-        ;
-
-unused_expr_primary
-	: NUMBER
-                 {
-                   free_safe( $1 );
-                 }
-	| STRING
-	| identifier
-                 {
-                   free_safe( $1 );
-                 }
-	| SYSTEM_IDENTIFIER
-	| identifier '[' unused_expr ']'
-                 {
-                   free_safe( $1 );
-                 }
-	| identifier '[' unused_expr ':' unused_expr ']'
-                 {
-                   free_safe( $1 );
-                 }
-	| identifier '(' unused_expr_list ')'
-                 {
-                   free_safe( $1 );
-                 }
-	| SYSTEM_IDENTIFIER '(' unused_expr_list ')'
-	| '(' unused_expr ')'
-	| '{' unused_expr_list '}'
-	| '{' unused_expr '{' unused_expr_list '}' '}'
-	;
-
-unused_expr_list
-	: unused_expr_list ',' unused_expr
-	| unused_expr
-	|
-	| unused_expr_list ','
 	;
 
 expression
@@ -432,129 +387,169 @@ expression
 		}
 	| '+' expr_primary %prec UNARY_PREC
 		{
-		  $$ = $2;
-		  if( $2 == NULL ) {
-		    snprintf( err_msg, 1000, "%s:%d: Expression signal not declared", 
+                  if( ignore_mode == 0 ) {
+		    $$ = $2;
+		    if( $2 == NULL ) {
+		      snprintf( err_msg, 1000, "%s:%d: Expression signal not declared", 
 				@1.text,
 				@1.first_line );
-		    print_output( err_msg, FATAL );
-		    exit( 1 );
-		  }
+		      print_output( err_msg, FATAL );
+		      exit( 1 );
+		    }
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| '-' expr_primary %prec UNARY_PREC
 		{
-		  $$ = $2;
-		  if( $2 == NULL ) {
-		    snprintf( err_msg, 1000, "%s:%d: Expression signal not declared", 
+                  if( ignore_mode == 0 ) {
+		    $$ = $2;
+		    if( $2 == NULL ) {
+		      snprintf( err_msg, 1000, "%s:%d: Expression signal not declared", 
 				@1.text,
 				@1.first_line );
-		    print_output( err_msg, FATAL );
-		    exit( 1 );
-		  }
+		      print_output( err_msg, FATAL );
+		      exit( 1 );
+		    }
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| '~' expr_primary %prec UNARY_PREC
 		{
 		  expression* tmp;
-		  if( $2 == NULL ) {
-		    snprintf( err_msg, 1000, "%s:%d: Expression signal not declared", 
+                  if( ignore_mode == 0 ) {
+		    if( $2 == NULL ) {
+		      snprintf( err_msg, 1000, "%s:%d: Expression signal not declared", 
 				@1.text,
 				@1.first_line );
-		    print_output( err_msg, FATAL );
-		    exit( 1 );
-		  }
-		  tmp = db_create_expression( $2, NULL, EXP_OP_UINV, @1.first_line, NULL );
-		  $$ = tmp;
+		      print_output( err_msg, FATAL );
+		      exit( 1 );
+		    }
+		    tmp = db_create_expression( $2, NULL, EXP_OP_UINV, @1.first_line, NULL );
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| '&' expr_primary %prec UNARY_PREC
 		{
 		  expression* tmp;
-		  if( $2 == NULL ) {
-		    snprintf( err_msg, 1000, "%s:%d: Expression signal not declared", 
+                  if( ignore_mode == 0 ) {
+		    if( $2 == NULL ) {
+		      snprintf( err_msg, 1000, "%s:%d: Expression signal not declared", 
 				@1.text,
 				@1.first_line );
-		    print_output( err_msg, FATAL );
-		    exit( 1 );
-		  }
-		  tmp = db_create_expression( $2, NULL, EXP_OP_UAND, @1.first_line, NULL );
-		  $$ = tmp;
+		      print_output( err_msg, FATAL );
+		      exit( 1 );
+		    }
+		    tmp = db_create_expression( $2, NULL, EXP_OP_UAND, @1.first_line, NULL );
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| '!' expr_primary %prec UNARY_PREC
 		{
 		  expression* tmp;
-		  if( $2 == NULL ) {
-		    snprintf( err_msg, 1000, "%s:%d: Expression signal not declared", 
-				@1.text,
+                  if( ignore_mode == 0 ) {
+		    if( $2 == NULL ) {
+		      snprintf( err_msg, 1000, "%s:%d: Expression signal not declared", 
+			 	@1.text,
 				@1.first_line );
-		    print_output( err_msg, FATAL );
-		    exit( 1 );
-		  }
-		  tmp = db_create_expression( $2, NULL, EXP_OP_UNOT, @1.first_line, NULL );
-		  $$ = tmp;
+		      print_output( err_msg, FATAL );
+		      exit( 1 );
+		    }
+		    tmp = db_create_expression( $2, NULL, EXP_OP_UNOT, @1.first_line, NULL );
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| '|' expr_primary %prec UNARY_PREC
 		{
 		  expression* tmp;
-		  if( $2 == NULL ) {
-		    snprintf( err_msg, 1000, "%s:%d: Expression signal not declared", 
+                  if( ignore_mode == 0 ) {
+		    if( $2 == NULL ) {
+		      snprintf( err_msg, 1000, "%s:%d: Expression signal not declared", 
 				@1.text,
 				@1.first_line );
-		    print_output( err_msg, FATAL );
-		    exit( 1 );
-		  }
-		  tmp = db_create_expression( $2, NULL, EXP_OP_UOR, @1.first_line, NULL );
-		  $$ = tmp;
+		      print_output( err_msg, FATAL );
+		      exit( 1 );
+		    }
+		    tmp = db_create_expression( $2, NULL, EXP_OP_UOR, @1.first_line, NULL );
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| '^' expr_primary %prec UNARY_PREC
 		{
 		  expression* tmp;
-		  if( $2 == NULL ) {
-		    snprintf( err_msg, 1000, "%s:%d: Expression signal not declared", 
+                  if( ignore_mode == 0 ) {
+		    if( $2 == NULL ) {
+		      snprintf( err_msg, 1000, "%s:%d: Expression signal not declared", 
 				@1.text,
 				@1.first_line );
-		    print_output( err_msg, FATAL );
-		    exit( 1 );
-		  }
-		  tmp = db_create_expression( $2, NULL, EXP_OP_UXOR, @1.first_line, NULL );
-		  $$ = tmp;
+		      print_output( err_msg, FATAL );
+		      exit( 1 );
+		    }
+		    tmp = db_create_expression( $2, NULL, EXP_OP_UXOR, @1.first_line, NULL );
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| K_NAND expr_primary %prec UNARY_PREC
 		{
 		  expression* tmp;
-		  if( $2 == NULL ) {
-		    snprintf( err_msg, 1000, "%s:%d: Expression signal not declared", 
+                  if( ignore_mode == 0 ) {
+		    if( $2 == NULL ) {
+		      snprintf( err_msg, 1000, "%s:%d: Expression signal not declared", 
 				@1.text,
 				@1.first_line );
-		    print_output( err_msg, FATAL );
-		    exit( 1 );
-		  }
-		  tmp = db_create_expression( $2, NULL, EXP_OP_UNAND, @1.first_line, NULL );
-		  $$ = tmp;
+		      print_output( err_msg, FATAL );
+		      exit( 1 );
+		    }
+		    tmp = db_create_expression( $2, NULL, EXP_OP_UNAND, @1.first_line, NULL );
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| K_NOR expr_primary %prec UNARY_PREC
 		{
 		  expression* tmp;
-		  if( $2 == NULL ) {
-		    snprintf( err_msg, 1000, "%s:%d: Expression signal not declared", 
+                  if( ignore_mode == 0 ) {
+		    if( $2 == NULL ) {
+		      snprintf( err_msg, 1000, "%s:%d: Expression signal not declared", 
 				@1.text,
 				@1.first_line );
-		    print_output( err_msg, FATAL );
-		    exit( 1 );
-		  }
-		  tmp = db_create_expression( $2, NULL, EXP_OP_UNOR, @1.first_line, NULL );
-		  $$ = tmp;
+		      print_output( err_msg, FATAL );
+		      exit( 1 );
+		    }
+		    tmp = db_create_expression( $2, NULL, EXP_OP_UNOR, @1.first_line, NULL );
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| K_NXOR expr_primary %prec UNARY_PREC
 		{
 		  expression* tmp;
-		  if( $2 == NULL ) {
-		    snprintf( err_msg, 1000, "%s:%d: Expression signal not declared", 
+                  if( ignore_mode == 0 ) {
+		    if( $2 == NULL ) {
+		      snprintf( err_msg, 1000, "%s:%d: Expression signal not declared", 
 				@1.text,
 				@1.first_line );
-		    print_output( err_msg, FATAL );
-		    exit( 1 );
-		  }
-		  tmp = db_create_expression( $2, NULL, EXP_OP_UNXOR, @1.first_line, NULL );
-		  $$ = tmp;
+		      print_output( err_msg, FATAL );
+		      exit( 1 );
+		    }
+		    tmp = db_create_expression( $2, NULL, EXP_OP_UNXOR, @1.first_line, NULL );
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| '!' error %prec UNARY_PREC
 		{
@@ -566,124 +561,245 @@ expression
 		}
 	| expression '^' expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_XOR, @1.first_line, NULL );
-		  $$ = tmp;
+		  expression* tmp;
+                  if( ignore_mode == 0 ) {
+                    tmp = db_create_expression( $3, $1, EXP_OP_XOR, @1.first_line, NULL );
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| expression '*' expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_MULTIPLY, @1.first_line, NULL );
-		  $$ = tmp;
+		  expression* tmp;
+                  if( ignore_mode == 0 ) {
+                    tmp = db_create_expression( $3, $1, EXP_OP_MULTIPLY, @1.first_line, NULL );
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| expression '/' expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_DIVIDE, @1.first_line, NULL );
-		  $$ = tmp;
+		  expression* tmp;
+                  if( ignore_mode == 0 ) {
+                    tmp = db_create_expression( $3, $1, EXP_OP_DIVIDE, @1.first_line, NULL );
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| expression '%' expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_MOD, @1.first_line, NULL );
-		  $$ = tmp;
+		  expression* tmp;
+                  if( ignore_mode == 0 ) {
+                    tmp = db_create_expression( $3, $1, EXP_OP_MOD, @1.first_line, NULL );
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| expression '+' expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_ADD, @1.first_line, NULL );
-		  $$ = tmp;
+		  expression* tmp;
+                  if( ignore_mode == 0 ) {
+                    tmp = db_create_expression( $3, $1, EXP_OP_ADD, @1.first_line, NULL );
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| expression '-' expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_SUBTRACT, @1.first_line, NULL );
-		  $$ = tmp;
+		  expression* tmp;
+                  if( ignore_mode == 0 ) {
+                    tmp = db_create_expression( $3, $1, EXP_OP_SUBTRACT, @1.first_line, NULL );
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| expression '&' expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_AND, @1.first_line, NULL );
-		  $$ = tmp;
+		  expression* tmp;
+                  if( ignore_mode == 0 ) {
+                    tmp = db_create_expression( $3, $1, EXP_OP_AND, @1.first_line, NULL );
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| expression '|' expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_OR, @1.first_line, NULL );
-		  $$ = tmp;
+		  expression* tmp;
+                  if( ignore_mode == 0 ) {
+                    tmp = db_create_expression( $3, $1, EXP_OP_OR, @1.first_line, NULL );
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
         | expression K_NAND expression
                 {
-                  expression* tmp = db_create_expression( $3, $1, EXP_OP_NAND, @1.first_line, NULL );
-                  $$ = tmp;
+                  expression* tmp;
+                  if( ignore_mode == 0 ) {
+                    tmp = db_create_expression( $3, $1, EXP_OP_NAND, @1.first_line, NULL );
+                    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
                 }
 	| expression K_NOR expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_NOR, @1.first_line, NULL );
-		  $$ = tmp;
+		  expression* tmp;
+                  if( ignore_mode == 0 ) {
+                    tmp = db_create_expression( $3, $1, EXP_OP_NOR, @1.first_line, NULL );
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| expression K_NXOR expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_NXOR, @1.first_line, NULL );
-		  $$ = tmp;
+		  expression* tmp;
+                  if( ignore_mode == 0 ) {
+                    tmp = db_create_expression( $3, $1, EXP_OP_NXOR, @1.first_line, NULL );
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| expression '<' expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_LT, @1.first_line, NULL );
-		  $$ = tmp;
+		  expression* tmp;
+                  if( ignore_mode == 0 ) {
+                    tmp = db_create_expression( $3, $1, EXP_OP_LT, @1.first_line, NULL );
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| expression '>' expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_GT, @1.first_line, NULL );
-		  $$ = tmp;
+		  expression* tmp;
+                  if( ignore_mode == 0 ) {
+                    tmp = db_create_expression( $3, $1, EXP_OP_GT, @1.first_line, NULL );
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| expression K_LS expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_LSHIFT, @1.first_line, NULL );
-		  $$ = tmp;
+		  expression* tmp;
+                  if( ignore_mode == 0 ) {
+                    tmp = db_create_expression( $3, $1, EXP_OP_LSHIFT, @1.first_line, NULL );
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| expression K_RS expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_RSHIFT, @1.first_line, NULL );
-		  $$ = tmp;
+		  expression* tmp;
+                  if( ignore_mode == 0 ) {
+                    tmp = db_create_expression( $3, $1, EXP_OP_RSHIFT, @1.first_line, NULL );
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| expression K_EQ expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_EQ, @1.first_line, NULL );
-		  $$ = tmp;
+		  expression* tmp;
+                  if( ignore_mode == 0 ) {
+                    tmp = db_create_expression( $3, $1, EXP_OP_EQ, @1.first_line, NULL );
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| expression K_CEQ expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_CEQ, @1.first_line, NULL );
-		  $$ = tmp;
+		  expression* tmp;
+                  if( ignore_mode == 0 ) {
+                    tmp = db_create_expression( $3, $1, EXP_OP_CEQ, @1.first_line, NULL );
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| expression K_LE expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_LE, @1.first_line, NULL );
-		  $$ = tmp;
+		  expression* tmp;
+                  if( ignore_mode == 0 ) {
+                    tmp = db_create_expression( $3, $1, EXP_OP_LE, @1.first_line, NULL );
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| expression K_GE expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_GE, @1.first_line, NULL );
-		  $$ = tmp;
+		  expression* tmp;
+                  if( ignore_mode == 0 ) {
+                    tmp = db_create_expression( $3, $1, EXP_OP_GE, @1.first_line, NULL );
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| expression K_NE expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_NE, @1.first_line, NULL );
-		  $$ = tmp;
+		  expression* tmp;
+                  if( ignore_mode == 0 ) {
+                    tmp = db_create_expression( $3, $1, EXP_OP_NE, @1.first_line, NULL );
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| expression K_CNE expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_CNE, @1.first_line, NULL );
-		  $$ = tmp;
+		  expression* tmp;
+                  if( ignore_mode == 0 ) {
+                    tmp = db_create_expression( $3, $1, EXP_OP_CNE, @1.first_line, NULL );
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| expression K_LOR expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_LOR, @1.first_line, NULL );
-		  $$ = tmp;
+		  expression* tmp;
+                  if( ignore_mode == 0 ) {
+                    tmp = db_create_expression( $3, $1, EXP_OP_LOR, @1.first_line, NULL );
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| expression K_LAND expression
 		{
-		  expression* tmp = db_create_expression( $3, $1, EXP_OP_LAND, @1.first_line, NULL );
-		  $$ = tmp;
+		  expression* tmp;
+                  if( ignore_mode == 0 ) {
+                    tmp = db_create_expression( $3, $1, EXP_OP_LAND, @1.first_line, NULL );
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| expression '?' expression ':' expression
 		{
-                  expression* csel = db_create_expression( $5,   $3, EXP_OP_COND_SEL, @1.first_line, NULL );
-                  expression* cond = db_create_expression( csel, $1, EXP_OP_COND,     @1.first_line, NULL );
-		  $$ = cond;
+                  expression* csel;
+                  expression* cond;
+                  if( ignore_mode == 0 ) {
+                    csel = db_create_expression( $5,   $3, EXP_OP_COND_SEL, @1.first_line, NULL );
+                    cond = db_create_expression( csel, $1, EXP_OP_COND,     @1.first_line, NULL );
+		    $$ = cond;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	;
 
@@ -695,53 +811,101 @@ expr_primary
 		  tmp->value = $1;
 		  $$ = tmp;
 		}
+        | UNUSED_NUMBER
+                {
+                  $$ = NULL;
+                }
 	| STRING
 		{
-		  $$ = 0;
+		  $$ = NULL;
 		}
+        | UNUSED_STRING
+                {
+                  $$ = NULL;
+                }
 	| identifier
 		{
-                  expression* tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, @1.first_line, $1 );
-                  $$ = tmp;
-		  free_safe( $1 );
+                  expression* tmp;
+                  if( ignore_mode == 0 ) {
+                    tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, @1.first_line, $1 );
+                    $$ = tmp;
+		    free_safe( $1 );
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| SYSTEM_IDENTIFIER
 		{
-		  $$ = 0;
+		  $$ = NULL;
 		}
+        | UNUSED_SYSTEM_IDENTIFIER
+                {
+                  $$ = NULL;
+                }
 	| identifier '[' expression ']'
 		{
-		  expression* tmp = db_create_expression( $3, NULL, EXP_OP_SBIT_SEL, @1.first_line, $1 );
-		  $$ = tmp;
-		  free_safe( $1 );
+		  expression* tmp;
+                  if( ignore_mode == 0 ) {
+                    tmp = db_create_expression( $3, NULL, EXP_OP_SBIT_SEL, @1.first_line, $1 );
+		    $$ = tmp;
+		    free_safe( $1 );
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| identifier '[' expression ':' expression ']'
 		{		  
-                  expression* tmp = db_create_expression( $5, $3, EXP_OP_MBIT_SEL, @1.first_line, $1 );
-                  $$ = tmp;
-                  free_safe( $1 );
+                  expression* tmp;
+                  if( ignore_mode == 0 ) {
+                    tmp = db_create_expression( $5, $3, EXP_OP_MBIT_SEL, @1.first_line, $1 );
+                    $$ = tmp;
+                    free_safe( $1 );
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| identifier '(' expression_list ')'
 		{
-		  $$ = 0;
+                  if( ignore_mode == 0 ) {
+                    expression_dealloc( $3, FALSE );
+                    free_safe( $1 );
+                  }
+		  $$ = NULL;
 		}
 	| SYSTEM_IDENTIFIER '(' expression_list ')'
 		{
-		  $$ = 0;
+                  expression_dealloc( $3, FALSE );
+		  $$ = NULL;
 		}
+        | UNUSED_SYSTEM_IDENTIFIER '(' expression_list ')'
+                {
+                  $$ = NULL;
+                }
 	| '(' expression ')'
 		{
-		  $$ = $2;
+                  if( ignore_mode == 0 ) {
+		    $$ = $2;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| '{' expression_list '}'
 		{
-		  $$ = $2;
+                  if( ignore_mode == 0 ) {
+		    $$ = $2;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| '{' expression '{' expression_list '}' '}'
 		{
 		  expression* tmp;
-		  tmp = db_create_expression( $4, $2, EXP_OP_EXPAND, @1.first_line, NULL );
-		  $$ = tmp;
+                  if( ignore_mode == 0 ) {
+		    tmp = db_create_expression( $4, $2, EXP_OP_EXPAND, @1.first_line, NULL );
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	;
 
@@ -750,16 +914,24 @@ expression_list
 	: expression_list ',' expression
 		{
 		  expression* tmp;
-		  if( $3 != NULL ) {
-		    tmp = db_create_expression( $3, $1, EXP_OP_CONCAT, @1.first_line, NULL );
-		    $$ = tmp;
-		  } else {
-		    $$ = $1;
-		  }
+                  if( ignore_mode == 0 ) {
+		    if( $3 != NULL ) {
+		      tmp = db_create_expression( $3, $1, EXP_OP_CONCAT, @1.first_line, NULL );
+		      $$ = tmp;
+		    } else {
+		      $$ = $1;
+		    }
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| expression
 		{
-		  $$ = $1;
+                  if( ignore_mode == 0 ) {
+		    $$ = $1;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	|
 		{
@@ -767,7 +939,11 @@ expression_list
 		}
 	| expression_list ','
 		{
-		  $$ = $1;
+                  if( ignore_mode == 0 ) {
+		    $$ = $1;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	;
 
@@ -776,10 +952,18 @@ identifier
 		{
 		  $$ = $1;
 		}
+        | UNUSED_IDENTIFIER
+                {
+                  $$ = NULL;
+                }
 	| HIDENTIFIER
 		{
 		  $$ = $1;
 		}
+        | UNUSED_HIDENTIFIER
+                {
+                  $$ = NULL;
+                }
 	;
 
 list_of_variables
@@ -956,11 +1140,9 @@ module_item
 		  }
 		  str_link_delete_list( $3 );
 		}
-	| K_trireg charge_strength_opt range_opt unused_delay3_opt list_of_variables ';'
+	| K_trireg { ignore_mode++; } charge_strength_opt range_opt delay3_opt list_of_variables ';' { ignore_mode--; }
 		{
 		  /* Tri-state signals are not currently supported by covered */
-		  str_link_delete_list( $5 );
-		  free_safe( $3 );
 		}
 	| port_type range_opt list_of_variables ';'
 		{
@@ -1000,7 +1182,7 @@ module_item
 		  str_link_delete_list( $3 );
 		}
 
-	| K_assign drive_strength_opt unused_delay3_opt assign_list ';'
+	| K_assign drive_strength_opt { ignore_mode++; } delay3_opt { ignore_mode--; } assign_list ';'
 		{
 		}
 	| K_always statement
@@ -1011,7 +1193,7 @@ module_item
                   stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
                   db_add_statement( stmt );
 		}
-	| K_initial unused_stmt
+	| K_initial { ignore_mode++; } statement { ignore_mode--; }
 		{
                   /*
                   statement* stmt = $2;
@@ -1020,12 +1202,12 @@ module_item
                   db_add_statement( stmt );
                   */
 		}
-	| K_task IDENTIFIER ';'
-	    task_item_list_opt unused_stmt_opt
-	  K_endtask
-	| K_function range_or_type_opt IDENTIFIER ';'
-	    function_item_list unused_stmt
-	  K_endfunction
+	| K_task { ignore_mode++; } UNUSED_IDENTIFIER ';'
+	    task_item_list_opt statement_opt
+	  K_endtask { ignore_mode--; }
+	| K_function { ignore_mode++; } range_or_type_opt UNUSED_IDENTIFIER ';'
+	    function_item_list statement
+	  K_endfunction { ignore_mode--; }
 	| K_specify K_endspecify
 	| K_specify error K_endspecify
 	| error ';'
@@ -1033,7 +1215,7 @@ module_item
 		  // yyerror( @1, "error: invalid module item.  Did you forget an initial or always?" );
 		  // yyerrok;
 		}
-	| K_assign error '=' unused_expr ';'
+	| K_assign error '=' { ignore_mode++; } expression { ignore_mode--; } ';'
 		{
 		  // yyerror( @1, "error: syntax error in left side of continuous assignment." );
 		  // yyerrok;
@@ -1048,176 +1230,27 @@ module_item
 		  // yyerrok( @1, "error: I give up on this function definition" );
 		  // yyerrok;
 		}
-	| KK_attribute '(' IDENTIFIER ',' STRING ',' STRING ')' ';'
+	| KK_attribute '(' { ignore_mode++; } UNUSED_IDENTIFIER ',' UNUSED_STRING ',' UNUSED_STRING { ignore_mode--; }')' ';'
 	| KK_attribute '(' error ')' ';'
 		{
 		  // yyerror( @1, "error: Misformed $attribute parameter list.");
 		}
 	;
 
-unused_stmt
-	: K_assign lavalue '=' unused_expr ';'
-	| K_deassign lavalue ';'
-	| K_force lavalue '=' unused_expr ';'
-	| K_release lavalue ';'
-	| K_begin unused_stmt_list K_end
-	| K_begin ':' IDENTIFIER
-	    unused_block_item_decls_opt
-	    unused_stmt_list
-	  K_end
-                {
-                  free_safe( $3 );
-                }
-	| K_begin K_end
-	| K_begin ':' IDENTIFIER K_end
-                {
-                  free_safe( $3 );
-                }
-	| K_begin error K_end
-	| K_fork ':' IDENTIFIER
-	    unused_block_item_decls_opt
-	    unused_stmt_list
-	  K_join
-                {
-                  free_safe( $3 );
-                }
-	| K_fork K_join
-	| K_fork ':' IDENTIFIER K_join
-                {
-                  free_safe( $3 );
-                }
-	| K_disable identifier ';'
-		{
-                  free_safe( $2 );
-		}
-	| K_TRIGGER IDENTIFIER ';'
-		{
-                  free_safe( $2 );
-		}
-	| K_forever unused_stmt
-	| K_fork unused_stmt_list K_join
-	| K_repeat '(' unused_expr ')' unused_stmt
-	| K_case '(' unused_expr ')' unused_case_items K_endcase
-	| K_casex '(' unused_expr ')' unused_case_items K_endcase
-	| K_casez '(' unused_expr ')' unused_case_items K_endcase
-	| K_case '(' unused_expr ')' error K_endcase
-	| K_casex '(' unused_expr ')' error K_endcase
-	| K_casez '(' unused_expr ')' error K_endcase
-	| K_if '(' unused_expr ')' unused_stmt_opt %prec less_than_K_else
-	| K_if '(' unused_expr ')' unused_stmt_opt K_else unused_stmt_opt
-	| K_if '(' error ')' unused_stmt_opt %prec less_than_K_else
-	| K_if '(' error ')' unused_stmt_opt K_else unused_stmt_opt 
-	| K_for '(' lpvalue '=' unused_expr ';' unused_expr ';' lpvalue '=' unused_expr ')' unused_stmt
-	| K_for '(' lpvalue '=' unused_expr ';' unused_expr ';' error ')' unused_stmt
-	| K_for '(' lpvalue '=' unused_expr ';' error ';' lpvalue '=' unused_expr ')' unused_stmt
-	| K_for '(' error ')' unused_stmt
-	| K_while '(' unused_expr ')' unused_stmt
-	| K_while '(' error ')' unused_stmt
-	| unused_delay1 unused_stmt_opt
-	| unused_event_control unused_stmt_opt
-	| lpvalue '=' unused_expr ';'
-                {
-                  free_safe( $1 );
-                }
-	| lpvalue K_LE unused_expr ';'
-                {
-                  free_safe( $1 );
-                }
-	| lpvalue '=' unused_delay1 unused_expr ';'
-                {
-                  free_safe( $1 );
-                }
-	| lpvalue K_LE unused_delay1 unused_expr ';'
-                {
-                  free_safe( $1 );
-                }
-	| lpvalue '=' unused_event_control unused_expr ';'
-                {
-                  free_safe( $1 );
-                }
-	| lpvalue '=' K_repeat '(' unused_expr ')' unused_event_control unused_expr ';'
-                {
-                  free_safe( $1 );
-                }
-	| lpvalue K_LE unused_event_control unused_expr ';'
-                {
-                  free_safe( $1 );
-                }
-	| lpvalue K_LE K_repeat '(' unused_expr ')' unused_event_control unused_expr ';'
-                {
-                  free_safe( $1 );
-                }
-	| K_wait '(' unused_expr ')' unused_stmt_opt
-	| SYSTEM_IDENTIFIER '(' unused_expr_list ')' ';'
-	| SYSTEM_IDENTIFIER ';'
-	| identifier '(' unused_expr_list ')' ';'
-		{
-		  free_safe( $1 );
-		}
-	| identifier ';'
-		{
-		  free_safe( $1 );
-		}
-	| error ';'
-	;
-
-unused_stmt_list
-	: unused_stmt unused_stmt_list
-	| unused_stmt
-	;
-
-unused_stmt_opt
-	: unused_stmt
-	| ';'
-	;
-
-unused_case_item
-	: unused_expr_list ':' unused_stmt_opt
-	| K_default ':' unused_stmt_opt
-	| K_default unused_stmt_opt
-	| error ':' unused_stmt_opt
-	;
-
-unused_case_items
-	: unused_case_item unused_case_items
-	| unused_case_item
-	;
-
-unused_event_control
-	: '@' IDENTIFIER
-		{
-		  free_safe( $2 );
-		}
-	| '@' '(' unused_event_expr_list ')'
-	| '@' '(' error ')'
-	;
-
-unused_event_expr_list
-	: unused_event_expr
-	| unused_event_expr_list K_or unused_event_expr
-	| unused_event_expr_list ',' unused_event_expr
-	;
-
-unused_event_expr
-	: K_posedge unused_expr
-	| K_negedge unused_expr
-	| unused_expr
-	;
-
 statement
-	: K_assign lavalue '=' unused_expr ';'
+	: K_assign { ignore_mode++; } lavalue '=' expression ';' { ignore_mode--; }
 		{
                   $$ = NULL;
 		}
-	| K_deassign lavalue ';'
+	| K_deassign { ignore_mode++; } lavalue ';' { ignore_mode--; }
 		{
                   $$ = NULL;
 		}
-	| K_force lavalue '=' unused_expr ';'
+	| K_force { ignore_mode++; } lavalue '=' expression ';' { ignore_mode--; }
 		{
                   $$ = NULL;
 		}
-	| K_release lavalue ';'
+	| K_release { ignore_mode++; } lavalue ';' { ignore_mode--; }
 		{
                   $$ = NULL;
 		}
@@ -1225,18 +1258,11 @@ statement
 		{
                   $$ = $2;
 		}
-	| K_begin ':' IDENTIFIER
-	    unused_block_item_decls_opt
-	    unused_stmt_list
-	  K_end
+	| K_begin ':' { ignore_mode++; } named_begin_end_block { ignore_mode--; } K_end
 		{
                   $$ = NULL;
 		}
 	| K_begin K_end
-		{
-                  $$ = NULL;
-		}
-	| K_begin ':' IDENTIFIER K_end
 		{
                   $$ = NULL;
 		}
@@ -1245,38 +1271,27 @@ statement
 		  yyerrok;
                   $$ = NULL;
 		}
-	| K_fork ':' IDENTIFIER
-	    unused_block_item_decls_opt
-	    unused_stmt_list
-	  K_join
+	| K_fork { ignore_mode++; } fork_statement { ignore_mode--; } K_join
 		{
                   $$ = NULL;
 		}
-	| K_fork K_join
+	| K_disable { ignore_mode++; } identifier ';' { ignore_mode--; }
 		{
                   $$ = NULL;
 		}
-	| K_fork ':' IDENTIFIER K_join
+	| K_TRIGGER { ignore_mode++; } UNUSED_IDENTIFIER ';' { ignore_mode--; }
 		{
                   $$ = NULL;
 		}
-	| K_disable identifier ';'
+	| K_forever { ignore_mode++; } statement { ignore_mode--; }
 		{
                   $$ = NULL;
 		}
-	| K_TRIGGER IDENTIFIER ';'
+	| K_fork { ignore_mode++; } statement_list K_join { ignore_mode--; }
 		{
                   $$ = NULL;
 		}
-	| K_forever unused_stmt
-		{
-                  $$ = NULL;
-		}
-	| K_fork unused_stmt_list K_join
-		{
-                  $$ = NULL;
-		}
-	| K_repeat '(' unused_expr ')' unused_stmt
+	| K_repeat { ignore_mode++; } '(' expression ')' statement { ignore_mode--; }
 		{
                   $$ = NULL;
 		}
@@ -1287,21 +1302,25 @@ statement
                   statement*      last_stmt = NULL;
                   case_statement* c_stmt    = $5;
                   case_statement* tc_stmt;
-                  while( c_stmt != NULL ) {
-                    expr = db_create_expression( $3, c_stmt->expr, EXP_OP_EQ, @1.first_line, NULL );
-                    db_add_expression( expr );
-                    stmt = db_create_statement( expr );
-                    db_connect_statement_true( stmt, c_stmt->stmt );
-                    db_connect_statement_false( stmt, last_stmt );
-                    db_statement_set_stop( c_stmt->stmt, NULL, FALSE );
-                    if( stmt != NULL ) {
-                      last_stmt = stmt;
+                  if( ignore_mode == 0 ) {
+                    while( c_stmt != NULL ) {
+                      expr = db_create_expression( $3, c_stmt->expr, EXP_OP_EQ, @1.first_line, NULL );
+                      db_add_expression( expr );
+                      stmt = db_create_statement( expr );
+                      db_connect_statement_true( stmt, c_stmt->stmt );
+                      db_connect_statement_false( stmt, last_stmt );
+                      db_statement_set_stop( c_stmt->stmt, NULL, FALSE );
+                      if( stmt != NULL ) {
+                        last_stmt = stmt;
+                      }
+                      tc_stmt   = c_stmt;
+                      c_stmt    = c_stmt->next;
+                      free_safe( tc_stmt );
                     }
-                    tc_stmt   = c_stmt;
-                    c_stmt    = c_stmt->next;
-                    free_safe( tc_stmt );
+                    $$ = stmt;
+                  } else {
+                    $$ = NULL;
                   }
-                  $$ = stmt;
 		}
 	| K_casex '(' expression ')' case_items K_endcase
 		{
@@ -1310,21 +1329,25 @@ statement
                   statement*      last_stmt = NULL;
                   case_statement* c_stmt    = $5;
                   case_statement* tc_stmt;
-                  while( c_stmt != NULL ) {
-                    expr = db_create_expression( $3, c_stmt->expr, EXP_OP_CEQ, @1.first_line, NULL );
-                    db_add_expression( expr );
-                    stmt = db_create_statement( expr );
-                    db_connect_statement_true( stmt, c_stmt->stmt );
-                    db_connect_statement_false( stmt, last_stmt );
-                    db_statement_set_stop( c_stmt->stmt, NULL, FALSE );
-                    if( stmt != NULL ) {
-                      last_stmt = stmt;
+                  if( ignore_mode == 0 ) {
+                    while( c_stmt != NULL ) {
+                      expr = db_create_expression( $3, c_stmt->expr, EXP_OP_CEQ, @1.first_line, NULL );
+                      db_add_expression( expr );
+                      stmt = db_create_statement( expr );
+                      db_connect_statement_true( stmt, c_stmt->stmt );
+                      db_connect_statement_false( stmt, last_stmt );
+                      db_statement_set_stop( c_stmt->stmt, NULL, FALSE );
+                      if( stmt != NULL ) {
+                        last_stmt = stmt;
+                      }
+                      tc_stmt   = c_stmt;
+                      c_stmt    = c_stmt->next;
+                      free_safe( tc_stmt );
                     }
-                    tc_stmt   = c_stmt;
-                    c_stmt    = c_stmt->next;
-                    free_safe( tc_stmt );
+                    $$ = stmt;
+                  } else {
+                    $$ = NULL;
                   }
-                  $$ = stmt;
 		}
 	| K_casez '(' expression ')' case_items K_endcase
 		{
@@ -1333,164 +1356,223 @@ statement
                   statement*      last_stmt = NULL;
                   case_statement* c_stmt    = $5;
                   case_statement* tc_stmt;
-                  while( c_stmt != NULL ) {
-                    expr = db_create_expression( $3, c_stmt->expr, EXP_OP_CEQ, @1.first_line, NULL );
-                    db_add_expression( expr );
-                    stmt = db_create_statement( expr );
-                    db_connect_statement_true( stmt, c_stmt->stmt );
-                    db_connect_statement_false( stmt, last_stmt );
-                    db_statement_set_stop( c_stmt->stmt, NULL, FALSE );
-                    if( stmt != NULL ) {
-                      last_stmt = stmt;
+                  if( ignore_mode == 0 ) {
+                    while( c_stmt != NULL ) {
+                      expr = db_create_expression( $3, c_stmt->expr, EXP_OP_CEQ, @1.first_line, NULL );
+                      db_add_expression( expr );
+                      stmt = db_create_statement( expr );
+                      db_connect_statement_true( stmt, c_stmt->stmt );
+                      db_connect_statement_false( stmt, last_stmt );
+                      db_statement_set_stop( c_stmt->stmt, NULL, FALSE );
+                      if( stmt != NULL ) {
+                        last_stmt = stmt;
+                      }
+                      tc_stmt   = c_stmt;
+                      c_stmt    = c_stmt->next;
+                      free_safe( tc_stmt );
                     }
-                    tc_stmt   = c_stmt;
-                    c_stmt    = c_stmt->next;
-                    free_safe( tc_stmt );
+                    $$ = stmt;
+                  } else {
+                    $$ = NULL;
                   }
-                  $$ = stmt;
 		}
-	| K_case '(' unused_expr ')' error K_endcase
+	| K_case '(' expression ')' error K_endcase
 		{
+                  if( ignore_mode == 0 ) {
+                    expression_dealloc( $3, FALSE );
+                  }
                   $$ = NULL;
 		}
-	| K_casex '(' unused_expr ')' error K_endcase
+	| K_casex '(' expression ')' error K_endcase
 		{
+                  if( ignore_mode == 0 ) {
+                    expression_dealloc( $3, FALSE );
+                  }
                   $$ = NULL;
 		}
-	| K_casez '(' unused_expr ')' error K_endcase
+	| K_casez '(' expression ')' error K_endcase
 		{
+                  if( ignore_mode == 0 ) {
+                    expression_dealloc( $3, FALSE );
+                  }
                   $$ = NULL;
 		}
 	| K_if '(' expression ')' statement_opt %prec less_than_K_else
 		{
-                  statement* stmt = db_create_statement( $3 );
-		  db_add_expression( $3 );
-                  db_connect_statement_true( stmt, $5 );
-                  db_statement_set_stop( $5, NULL, FALSE );
-                  $$ = stmt;
+                  statement* stmt;
+                  if( ignore_mode == 0 ) {
+                    stmt = db_create_statement( $3 );
+		    db_add_expression( $3 );
+                    db_connect_statement_true( stmt, $5 );
+                    db_statement_set_stop( $5, NULL, FALSE );
+                    $$ = stmt;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| K_if '(' expression ')' statement_opt K_else statement_opt
 		{
-                  statement* stmt = db_create_statement( $3 );
-		  db_add_expression( $3 );
-                  db_connect_statement_true( stmt, $5 );
-                  db_connect_statement_false( stmt, $7 );
-                  db_statement_set_stop( $5, NULL, FALSE );
-                  $$ = stmt;
+                  statement* stmt;
+                  if( ignore_mode == 0 ) {
+                    stmt = db_create_statement( $3 );
+		    db_add_expression( $3 );
+                    db_connect_statement_true( stmt, $5 );
+                    db_connect_statement_false( stmt, $7 );
+                    db_statement_set_stop( $5, NULL, FALSE );
+                    $$ = stmt;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
-	| K_if '(' error ')' unused_stmt_opt %prec less_than_K_else
+	| K_if '(' error ')' { ignore_mode++; } if_statement_error { ignore_mode--; }
 		{
                   $$ = NULL;
 		}
-	| K_if '(' error ')' unused_stmt_opt K_else unused_stmt_opt 
+	| K_for { ignore_mode++; } for_statement { ignore_mode--; }
 		{
                   $$ = NULL;
 		}
-	| K_for '(' lpvalue '=' unused_expr ';' unused_expr ';' lpvalue '=' unused_expr ')' unused_stmt
-		{
-                  $$ = NULL;
-		}
-	| K_for '(' lpvalue '=' unused_expr ';' unused_expr ';' error ')' unused_stmt
-		{
-                  $$ = NULL;
-		}
-	| K_for '(' lpvalue '=' unused_expr ';' error ';' lpvalue '=' unused_expr ')' unused_stmt
-		{
-                  $$ = NULL;
-		}
-	| K_for '(' error ')' unused_stmt
-		{
-                  $$ = NULL;
-		}
-	| K_while '(' unused_expr ')' unused_stmt
-		{
-                  $$ = NULL;
-		}
-	| K_while '(' error ')' unused_stmt
+	| K_while { ignore_mode++; } while_statement { ignore_mode--; }
 		{
                   $$ = NULL;
 		}
 	| delay1 statement_opt
 		{
-                  statement* stmt = db_create_statement( $1 );
-                  db_add_expression( $1 );
-                  $$ = stmt;
+                  statement* stmt;
+                  if( ignore_mode == 0 ) {
+                    stmt = db_create_statement( $1 );
+                    db_add_expression( $1 );
+                    $$ = stmt;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| event_control statement_opt
 		{
-                  statement* stmt = db_create_statement( $1 );
-                  db_add_expression( $1 );
-                  db_statement_connect( stmt, $2 );
-                  $$ = stmt;
+                  statement* stmt;
+                  if( ignore_mode == 0 ) {
+                    stmt = db_create_statement( $1 );
+                    db_add_expression( $1 );
+                    db_statement_connect( stmt, $2 );
+                    $$ = stmt;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| lpvalue '=' expression ';'
 		{
-                  statement* stmt = db_create_statement( $3 );
-		  db_add_expression( $3 );
-                  $$ = stmt;
+                  statement* stmt;
+                  if( ignore_mode == 0 ) {
+                    stmt = db_create_statement( $3 );
+		    db_add_expression( $3 );
+                    $$ = stmt;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| lpvalue K_LE expression ';'
 		{
-		  /* Add root expression (non-blocking) */
-                  statement* stmt = db_create_statement( $3 );
-		  db_add_expression( $3 );
-                  $$ = stmt;
+                  statement* stmt;
+                  if( ignore_mode == 0 ) {
+                    stmt = db_create_statement( $3 );
+		    db_add_expression( $3 );
+                    $$ = stmt;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
-	| lpvalue '=' unused_delay1 expression ';'
+	| lpvalue '=' { ignore_mode++; } delay1 { ignore_mode--; } expression ';'
 		{
-		  statement* stmt = db_create_statement( $4 );
-		  db_add_expression( $4 );
-                  $$ = stmt;
+		  statement* stmt;
+                  if( ignore_mode == 0 ) {
+                    stmt = db_create_statement( $4 );
+		    db_add_expression( $4 );
+                    $$ = stmt;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
-	| lpvalue K_LE unused_delay1 expression ';'
+	| lpvalue K_LE { ignore_mode++; } delay1 { ignore_mode--; } expression ';'
 		{
-		  statement* stmt = db_create_statement( $4 );
-		  db_add_expression( $4 );
-                  $$ = stmt;
+		  statement* stmt;
+                  if( ignore_mode == 0 ) {
+                    stmt = db_create_statement( $4 );
+		    db_add_expression( $4 );
+                    $$ = stmt;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
-	| lpvalue '=' unused_event_control expression ';'
+	| lpvalue '=' { ignore_mode++; } event_control { ignore_mode--; } expression ';'
 		{
-		  statement* stmt = db_create_statement( $4 );
-		  db_add_expression( $4 );
-                  $$ = stmt;
+		  statement* stmt;
+                  if( ignore_mode == 0 ) {
+                    stmt = db_create_statement( $4 );
+		    db_add_expression( $4 );
+                    $$ = stmt;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
-	| lpvalue '=' K_repeat '(' unused_expr ')' unused_event_control unused_expr ';'
+	| lpvalue '=' K_repeat { ignore_mode++; } '(' expression ')' event_control expression ';' { ignore_mode--; }
 		{
                   $$ = NULL;
 		}
-	| lpvalue K_LE unused_event_control expression ';'
+	| lpvalue K_LE { ignore_mode++; } event_control { ignore_mode--; } expression ';'
 		{
-                  statement* stmt = db_create_statement( $4 );
-		  db_add_expression( $4 );
-                  $$ = stmt;
+                  statement* stmt;
+                  if( ignore_mode == 0 ) {
+                    stmt = db_create_statement( $4 );
+		    db_add_expression( $4 );
+                    $$ = stmt;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
-	| lpvalue K_LE K_repeat '(' unused_expr ')' unused_event_control unused_expr ';'
+	| lpvalue K_LE K_repeat { ignore_mode++; } '(' expression ')' event_control expression ';' { ignore_mode--; }
 		{
                   $$ = NULL;
 		}
 	| K_wait '(' expression ')' statement_opt
 		{
-                  statement* stmt = db_create_statement( $3 );
-                  db_add_expression( $3 );
-                  db_connect_statement_true( stmt, $5 );
-		  $$ = stmt;
+                  statement* stmt;
+                  if( ignore_mode == 0 ) {
+                    stmt = db_create_statement( $3 );
+                    db_add_expression( $3 );
+                    db_connect_statement_true( stmt, $5 );
+		    $$ = stmt;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
-	| SYSTEM_IDENTIFIER '(' unused_expr_list ')' ';'
+	| SYSTEM_IDENTIFIER { ignore_mode++; } '(' expression_list ')' ';' { ignore_mode--; }
 		{
                   $$ = NULL;
 		}
+        | UNUSED_SYSTEM_IDENTIFIER '(' expression_list ')' ';'
+                {
+                  $$ = NULL;
+                }
 	| SYSTEM_IDENTIFIER ';'
 		{
                   $$ = NULL;
 		}
-	| identifier '(' unused_expr_list ')' ';'
+        | UNUSED_SYSTEM_IDENTIFIER ';'
+                {
+                  $$ = NULL;
+                }
+	| identifier { ignore_mode++; } '(' expression_list ')' ';' { ignore_mode--; }
 		{
-		  free_safe( $1 );
+                  if( ignore_mode == 0 ) {
+		    free_safe( $1 );
+                  }
                   $$ = NULL;
 		}
 	| identifier ';'
 		{
-		  free_safe( $1 );
+                  if( ignore_mode == 0 ) {
+		    free_safe( $1 );
+                  }
                   $$ = NULL;
 		}
 	| error ';'
@@ -1501,16 +1583,85 @@ statement
 		}
 	;
 
+for_statement
+	: '(' lpvalue '=' expression ';' expression ';' lpvalue '=' expression ')' statement
+		{
+                  $$ = NULL;
+		}
+	| '(' lpvalue '=' expression ';' expression ';' error ')' statement
+		{
+                  $$ = NULL;
+		}
+	| '(' lpvalue '=' expression ';' error ';' lpvalue '=' expression ')' statement
+		{
+                  $$ = NULL;
+		}
+	| '(' error ')' statement
+		{
+                  $$ = NULL;
+		}
+        ;
+
+fork_statement
+	: ':' UNUSED_IDENTIFIER block_item_decls_opt statement_list
+		{
+                  $$ = NULL;
+		}
+	| ':' UNUSED_IDENTIFIER
+		{
+                  $$ = NULL;
+		}
+	|
+		{
+                  $$ = NULL;
+		}
+        ;
+
+while_statement
+	: '(' expression ')' statement
+		{
+                  $$ = NULL;
+		}
+	| '(' error ')' statement
+		{
+                  $$ = NULL;
+		}
+        ;
+
+named_begin_end_block
+        : UNUSED_IDENTIFIER block_item_decls_opt statement_list
+		{
+                  $$ = NULL;
+		}
+	| UNUSED_IDENTIFIER K_end 
+		{
+                  $$ = NULL;
+		}
+        ;
+
+if_statement_error
+	: statement_opt %prec less_than_K_else
+		{
+                  $$ = NULL;
+		}
+	| statement_opt K_else statement_opt
+		{
+                  $$ = NULL;
+		}
+        ;
+
 statement_list
 	: statement_list statement
                 {
-                  if( $1 == NULL ) {
-                    $$ = $2;
-                  } else {
-                    if( $2 != NULL ) {
-                      db_statement_connect( $1, $2 );
+                  if( ignore_mode == 0 ) {
+                    if( $1 == NULL ) {
+                      $$ = $2;
+                    } else {
+                      if( $2 != NULL ) {
+                        db_statement_connect( $1, $2 );
+                      }
+                      $$ = $1;
                     }
-                    $$ = $1;
                   }
                 }
 	| statement
@@ -1558,29 +1709,6 @@ lavalue
 		}
 	;
 
-unused_block_item_decls_opt
-        : unused_block_item_decls
-        | 
-        ;
-
-unused_block_item_decls
-        : block_item_decl
-        | block_item_decls block_item_decl
-        ;
-
-unused_block_item_decl
-        : K_reg range register_variable_list ';'
-        | K_reg register_variable_list ';'
-        | K_reg K_signed range register_variable_list ';'
-        | K_reg K_signed register_variable_list ';'
-        | K_integer register_variable_list ';'
-	| K_time register_variable_list ';'
-	| K_real list_of_variables ';'
-	| K_realtime list_of_variables ';'
-	| K_parameter parameter_assign_list ';'
-	| K_localparam localparam_assign_list ';'
-	| K_reg error ';'
-
 block_item_decls_opt
 	: block_item_decls
 	|
@@ -1602,62 +1730,78 @@ block_item_decl
 		  /* Create new signal */
 		  str_link* tmp  = $3;
 		  str_link* curr = tmp;
-		  while( curr != NULL ) {
-		    db_add_signal( curr->str, $2->width, $2->lsb, 0 );
-		    curr = curr->next;
-		  }
-		  str_link_delete_list( tmp );
-		  free_safe( $2 );
+                  if( ignore_mode == 0 ) {
+		    while( curr != NULL ) {
+		      db_add_signal( curr->str, $2->width, $2->lsb, 0 );
+		      curr = curr->next;
+		    }
+		    str_link_delete_list( tmp );
+		    free_safe( $2 );
+                  }
 		}
 	| K_reg register_variable_list ';'
 		{
 		  /* Create new signal */
 		  str_link* tmp  = $2;
 		  str_link* curr = tmp;
-		  while( curr != NULL ) {
-		    db_add_signal( curr->str, 1, 0, 0 );
-		    curr = curr->next;
-		  }
-		  str_link_delete_list( tmp );
+                  if( ignore_mode == 0 ) {
+		    while( curr != NULL ) {
+		      db_add_signal( curr->str, 1, 0, 0 );
+		      curr = curr->next;
+		    }
+		    str_link_delete_list( tmp );
+                  }
 		}
 	| K_reg K_signed range register_variable_list ';'
 		{
 		  /* Create new signal */
 		  str_link* tmp  = $4;
                   str_link* curr = tmp;
-                  while( curr != NULL ) {
-                    db_add_signal( curr->str, $3->width, $3->lsb, 0 );
-                    curr = curr->next;
+                  if( ignore_mode == 0 ) {
+                    while( curr != NULL ) {
+                      db_add_signal( curr->str, $3->width, $3->lsb, 0 );
+                      curr = curr->next;
+                    }
+                    str_link_delete_list( tmp );
+		    free_safe( $3 );
                   }
-                  str_link_delete_list( tmp );
-		  free_safe( $3 );
 		}
 	| K_reg K_signed register_variable_list ';'
 		{
 		  /* Create new signal */
                   str_link* tmp  = $3;
                   str_link* curr = tmp;
-                  while( curr != NULL ) {
-                    db_add_signal( curr->str, 1, 0, 0 );
-                    curr = curr->next;
+                  if( ignore_mode == 0 ) {
+                    while( curr != NULL ) {
+                      db_add_signal( curr->str, 1, 0, 0 );
+                      curr = curr->next;
+                    }
+                    str_link_delete_list( tmp );
                   }
-                  str_link_delete_list( tmp );
 		}
 	| K_integer register_variable_list ';'
 		{
-		  str_link_delete_list( $2 );
+                  if( ignore_mode == 0 ) {
+		    str_link_delete_list( $2 );
+                  }
 		}
 	| K_time register_variable_list ';'
 		{
-		  str_link_delete_list( $2 );
+                  if( ignore_mode == 0 ) {
+		    str_link_delete_list( $2 );
+                  }
 		}
 	| K_real list_of_variables ';'
 		{
-		  str_link_delete_list( $2 );
+                  if( ignore_mode == 0 ) {
+		    str_link_delete_list( $2 );
+                  }
 		}
 	| K_realtime list_of_variables ';'
 		{
-		  str_link_delete_list( $2 );
+                  if( ignore_mode == 0 ) {
+		    str_link_delete_list( $2 );
+                  }
 		}
 	| K_parameter parameter_assign_list ';'
 	| K_localparam localparam_assign_list ';'
@@ -1671,28 +1815,44 @@ block_item_decl
 case_item
 	: expression_list ':' statement_opt
 		{
-                  case_statement* cstmt = (case_statement*)malloc_safe( sizeof( case_statement ) );
-                  cstmt->next = NULL;
-                  cstmt->expr = $1;
-                  cstmt->stmt = $3;
-		  $$ = cstmt;
+                  case_statement* cstmt;
+                  if( ignore_mode == 0 ) {
+                    cstmt = (case_statement*)malloc_safe( sizeof( case_statement ) );
+                    cstmt->next = NULL;
+                    cstmt->expr = $1;
+                    cstmt->stmt = $3;
+		    $$ = cstmt;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| K_default ':' statement_opt
 		{
-                  case_statement* cstmt = (case_statement*)malloc_safe( sizeof( case_statement ) );
-                  cstmt->next = NULL;
-                  cstmt->expr = NULL;
-                  cstmt->stmt = $3;
+                  case_statement* cstmt;
+                  if( ignore_mode == 0 ) {
+                    cstmt = (case_statement*)malloc_safe( sizeof( case_statement ) );
+                    cstmt->next = NULL;
+                    cstmt->expr = NULL;
+                    cstmt->stmt = $3;
+                    $$ = cstmt;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| K_default statement_opt
 		{
-                  case_statement* cstmt = (case_statement*)malloc_safe( sizeof( case_statement ) );
-                  cstmt->next = NULL;
-                  cstmt->expr = NULL;
-                  cstmt->stmt = $2;
-		  /* Create conditional */
+                  case_statement* cstmt;
+                  if( ignore_mode == 0 ) {
+                    cstmt = (case_statement*)malloc_safe( sizeof( case_statement ) );
+                    cstmt->next = NULL;
+                    cstmt->expr = NULL;
+                    cstmt->stmt = $2;
+                    $$ = cstmt;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
-	| error ':' statement_opt
+	| error { ignore_mode++; } ':' statement_opt { ignore_mode--; }
 		{
 		  // yyerror( @1, "error: Incomprehensible case expression." );
 		  // yyerrok;
@@ -1702,9 +1862,14 @@ case_item
 case_items
 	: case_item case_items
                 {
-                  case_statement* list;
-                  case_statement* curr;
-                  curr->next = list;
+                  case_statement* list = $2;
+                  case_statement* curr = $1;
+                  if( ignore_mode == 0 ) {
+                    curr->next = list;
+                    $$ = curr;
+                  } else {
+                    $$ = NULL;
+                  }
                 }
 	| case_item
                 {
@@ -1716,72 +1881,108 @@ case_items
 delay1
 	: '#' delay_value_simple
                 {
-                  vector*     vec = vector_create( 32, 0 );
+                  vector*     vec;
                   expression* exp; 
-                  expression* tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
-                  vector_from_int( vec, 0xffffffff ); 
-                  free_safe( tmp->value );
-                  tmp->value = vec;
-                  exp = db_create_expression( $2, tmp, EXP_OP_DELAY, @1.first_line, NULL );
-                  $$  = exp;
+                  expression* tmp;
+                  if( ignore_mode == 0 ) {
+                    vec = vector_create( 32, 0 );
+                    tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
+                    vector_from_int( vec, 0xffffffff ); 
+                    free_safe( tmp->value );
+                    tmp->value = vec;
+                    exp = db_create_expression( $2, tmp, EXP_OP_DELAY, @1.first_line, NULL );
+                    $$  = exp;
+                  } else {
+                    $$ = NULL;
+                  }
                 }
 	| '#' '(' delay_value ')'
                 {
-                  vector*     vec = vector_create( 32, 0 );
+                  vector*     vec;
                   expression* exp;
-                  expression* tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
-                  vector_from_int( vec, 0xffffffff );
-                  free_safe( tmp->value );
-                  tmp->value = vec;
-                  exp = db_create_expression( $3, tmp, EXP_OP_DELAY, @1.first_line, NULL );
-                  $$  = exp;
+                  expression* tmp;
+                  if( ignore_mode == 0 ) {
+                    vec = vector_create( 32, 0 );
+                    tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
+                    vector_from_int( vec, 0xffffffff );
+                    free_safe( tmp->value );
+                    tmp->value = vec;
+                    exp = db_create_expression( $3, tmp, EXP_OP_DELAY, @1.first_line, NULL );
+                    $$  = exp;
+                  } else {
+                    $$ = NULL;
+                  }
                 }
 	;
 
 delay3
 	: '#' delay_value_simple
                 {
-                  vector*     vec = vector_create( 32, 0 );
+                  vector*     vec;
                   expression* exp; 
-                  expression* tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
-                  vector_from_int( vec, 0xffffffff );
-                  free_safe( tmp->value );
-                  tmp->value = vec;
-                  exp = db_create_expression( $2, tmp, EXP_OP_DELAY, @1.first_line, NULL );
-                  $$  = exp;
+                  expression* tmp;
+                  if( ignore_mode == 0 ) {
+                    vec = vector_create( 32, 0 );
+                    tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
+                    vector_from_int( vec, 0xffffffff );
+                    free_safe( tmp->value );
+                    tmp->value = vec;
+                    exp = db_create_expression( $2, tmp, EXP_OP_DELAY, @1.first_line, NULL );
+                    $$  = exp;
+                  } else {
+                    $$ = NULL;
+                  }
                 }
 	| '#' '(' delay_value ')'
                 {
-                  vector*     vec = vector_create( 32, 0 );
+                  vector*     vec;
                   expression* exp; 
-                  expression* tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
-                  vector_from_int( vec, 0xffffffff );
-                  free_safe( tmp->value );
-                  tmp->value = vec;
-                  exp = db_create_expression( $3, tmp, EXP_OP_DELAY, @1.first_line, NULL );
-                  $$  = exp;
+                  expression* tmp;
+                  if( ignore_mode == 0 ) {
+                    vec = vector_create( 32, 0 );
+                    tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
+                    vector_from_int( vec, 0xffffffff );
+                    free_safe( tmp->value );
+                    tmp->value = vec;
+                    exp = db_create_expression( $3, tmp, EXP_OP_DELAY, @1.first_line, NULL );
+                    $$  = exp;
+                  } else {
+                    $$ = NULL;
+                  }
                 }
 	| '#' '(' delay_value ',' delay_value ')'
                 {
-                  vector*     vec = vector_create( 32, 0 );
+                  vector*     vec;
                   expression* exp; 
-                  expression* tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
-                  vector_from_int( vec, 0xffffffff );
-                  free_safe( tmp->value );
-                  tmp->value = vec;
-                  exp = db_create_expression( $3, tmp, EXP_OP_DELAY, @1.first_line, NULL );
-                  $$  = exp;
+                  expression* tmp;
+                  if( ignore_mode == 0 ) {
+                    vec = vector_create( 32, 0 );
+                    tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
+                    vector_from_int( vec, 0xffffffff );
+                    free_safe( tmp->value );
+                    tmp->value = vec;
+                    exp = db_create_expression( $3, tmp, EXP_OP_DELAY, @1.first_line, NULL );
+                    $$  = exp;
+                  } else {
+                    $$ = NULL;
+                  }
                 }
 	| '#' '(' delay_value ',' delay_value ',' delay_value ')'
                 {
-                  vector*     vec = vector_create( 32, 0 );
+                  vector*     vec;
                   expression* exp; 
-                  expression* tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
-                  vector_from_int( vec, 0xffffffff );
-                  free_safe( tmp->value );
-                  tmp->value = vec;
-                  exp = db_create_expression( $3, tmp, EXP_OP_DELAY, @1.first_line, NULL );
-                  $$  = exp;
+                  expression* tmp;
+                  if( ignore_mode == 0 ) {
+                    vec = vector_create( 32, 0 );
+                    tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
+                    vector_from_int( vec, 0xffffffff );
+                    free_safe( tmp->value );
+                    tmp->value = vec;
+                    exp = db_create_expression( $3, tmp, EXP_OP_DELAY, @1.first_line, NULL );
+                    $$  = exp;
+                  } else {
+                    $$ = NULL;
+                  }
                 }
 	;
 
@@ -1799,21 +2000,33 @@ delay3_opt
 delay_value
 	: static_expr
                 {
-                  vector*     vec = vector_create( 32, 0 );
-                  expression* tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
-                  vector_from_int( vec, $1 );
-                  free_safe( tmp->value );
-                  tmp->value = vec;
-                  $$ = tmp;
+                  vector*     vec;
+                  expression* tmp;
+                  if( ignore_mode == 0 ) {
+                    vec = vector_create( 32, 0 );
+                    tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
+                    vector_from_int( vec, $1 );
+                    free_safe( tmp->value );
+                    tmp->value = vec;
+                    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
                 }
 	| static_expr ':' static_expr ':' static_expr
                 {
-                  vector*     vec = vector_create( 32, 0 );
-                  expression* tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
-                  vector_from_int( vec, $1 );
-                  free_safe( tmp->value );
-                  tmp->value = vec;
-                  $$ = tmp;
+                  vector*     vec;
+                  expression* tmp;
+                  if( ignore_mode == 0 ) {
+                    vec = vector_create( 32, 0 );
+                    tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
+                    vector_from_int( vec, $1 );
+                    free_safe( tmp->value );
+                    tmp->value = vec;
+                    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
                 }                  
 	;
 
@@ -1825,59 +2038,28 @@ delay_value_simple
 		  tmp->value = $1;
 		  $$ = tmp;
 		}
+        | UNUSED_NUMBER
+                {
+                  $$ = NULL;
+                }
 	| REALTIME
 		{
 		  $$ = NULL;
 		}
+        | UNUSED_REALTIME
+                {
+                  $$ = NULL;
+                }
 	| IDENTIFIER
 		{
                   expression* tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, @1.first_line, $1 );
                   $$ = tmp;
 		  free_safe( $1 );
 		}
-	;
-
-unused_delay1
-	: '#' unused_delay_value_simple
-	| '#' '(' unused_delay_value ')'
-	;
-
-unused_delay3
-	: '#' unused_delay_value_simple
-	| '#' '(' unused_delay_value ')'
-	| '#' '(' unused_delay_value ',' unused_delay_value ')'
-	| '#' '(' unused_delay_value ',' unused_delay_value ',' unused_delay_value ')'
-	;
-
-unused_delay3_opt
-	: unused_delay3
-	|
-	;
-
-unused_delay_value
-	: static_expr
+        | UNUSED_IDENTIFIER
                 {
-                  int a = $1;
+                  $$ = NULL;
                 }
-	| static_expr ':' static_expr ':' static_expr
-                {
-                  int a = $1;
-                }
-	;
-
-unused_delay_value_simple
-	: NUMBER
-		{
-                  vector_dealloc( $1 );
-		}
-	| REALTIME
-                {
-                  double a = $1;
-                }
-	| IDENTIFIER
-		{
-                  free_safe( $1 );
-		}
 	;
 
 assign_list
@@ -1916,35 +2098,51 @@ range_opt
 		}
 	|
 		{
-		  signal_width* tmp = (signal_width*)malloc( sizeof( signal_width ) );
-		  tmp->width = 1;
-		  tmp->lsb   = 0;
-		  $$ = tmp;
+		  signal_width* tmp;
+                  if( ignore_mode == 0 ) {
+                    tmp = (signal_width*)malloc( sizeof( signal_width ) );
+		    tmp->width = 1;
+		    tmp->lsb   = 0;
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 ;
 
 range
 	: '[' static_expr ':' static_expr ']'
 		{
-		  signal_width* tmp = (signal_width*)malloc( sizeof( signal_width ) );
-		  if( $2 >= $4 ) {
-		    tmp->width = ($2 - $4) + 1;
-		    tmp->lsb   = $4;
-		  } else {
-		    tmp->width = $4 - $2;
-		    tmp->lsb   = $2;
-		  }
-		  $$ = tmp;
+		  signal_width* tmp;
+                  if( ignore_mode == 0 ) {
+                    tmp = (signal_width*)malloc( sizeof( signal_width ) );
+		    if( $2 >= $4 ) {
+		      tmp->width = ($2 - $4) + 1;
+		      tmp->lsb   = $4;
+		    } else {
+		      tmp->width = $4 - $2;
+		      tmp->lsb   = $2;
+		    }
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	;
 
 range_or_type_opt
-	: range      { $$ = 0;  free_safe( $1 ); }
-	| K_integer  { $$ = 0; }
-	| K_real     { $$ = 0; }
-	| K_realtime { $$ = 0; }
-	| K_time     { $$ = 0; }
-	|            { $$ = 0; }
+	: range      
+                { 
+                  if( ignore_mode == 0 ) {
+                    free_safe( $1 );
+                  }
+                  $$ = NULL;
+                }
+	| K_integer  { $$ = NULL; }
+	| K_real     { $$ = NULL; }
+	| K_realtime { $$ = NULL; }
+	| K_time     { $$ = NULL; }
+	|            { $$ = NULL; }
 	;
 
   /* The register_variable rule is matched only when I am parsing
@@ -1957,31 +2155,53 @@ register_variable
 		{
 		  $$ = $1;
 		}
+        | UNUSED_IDENTIFIER
+                {
+                  $$ = NULL;
+                }
 	| IDENTIFIER '=' expression
 		{
 		  $$ = $1;
 		}
+        | UNUSED_IDENTIFIER '=' expression
+                {
+                  $$ = NULL;
+                }
 	| IDENTIFIER '[' static_expr ':' static_expr ']'
 		{
 		  /* We don't support memory coverage */
-		  $$ = 0;
+		  $$ = NULL;
 		}
+        | UNUSED_IDENTIFIER '[' static_expr ':' static_expr ']'
+                {
+                  $$ = NULL;
+                }
 	;
 
 register_variable_list
 	: register_variable
 		{
-		  str_link* tmp = (str_link*)malloc( sizeof( str_link ) );
-		  tmp->str  = $1;
-		  tmp->next = NULL;
-		  $$ = tmp;
+		  str_link* tmp;
+                  if( ignore_mode == 0 ) {
+                    tmp = (str_link*)malloc( sizeof( str_link ) );
+		    tmp->str  = $1;
+		    tmp->next = NULL;
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| register_variable_list ',' register_variable
 		{
-		  str_link* tmp = (str_link*)malloc( sizeof( str_link ) );
-		  tmp->str  = $3;
-		  tmp->next = $1;
-		  $$ = tmp;
+		  str_link* tmp;
+                  if( ignore_mode == 0 ) {
+                    tmp = (str_link*)malloc( sizeof( str_link ) );
+		    tmp->str  = $3;
+		    tmp->next = $1;
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	;
 
@@ -1996,21 +2216,27 @@ task_item_list
 	;
 
 task_item
-	: unused_block_item_decl
-	| K_input range_opt list_of_variables ';'
+	: block_item_decl
+	| K_input { ignore_mode++; } range_opt list_of_variables ';' { ignore_mode--; }
 		{
-		  str_link_delete_list( $3 );
-		  free_safe( $2 );
+                  if( ignore_mode == 0 ) {
+		    str_link_delete_list( $4 );
+                    free_safe( $3 );
+                  }
 		}
-	| K_output range_opt list_of_variables ';'
+	| K_output { ignore_mode++; } range_opt list_of_variables ';' { ignore_mode--; }
 		{
-		  str_link_delete_list( $3 );
-		  free_safe( $2 );
+                  if( ignore_mode == 0 ) {
+		    str_link_delete_list( $4 );
+                    free_safe( $3 );
+                  }
 		}
-	| K_inout range_opt list_of_variables ';'
+	| K_inout { ignore_mode++; } range_opt list_of_variables ';' { ignore_mode--; }
 		{
-		  str_link_delete_list( $3 );
-		  free_safe( $2 );
+                  if( ignore_mode == 0 ) {
+		    str_link_delete_list( $4 );
+                    free_safe( $3 );
+                  }
 		}
 	;
 
@@ -2030,30 +2256,51 @@ net_type
 net_decl_assigns
 	: net_decl_assigns ',' net_decl_assign
 		{
-		  str_link* tmp = (str_link*)malloc( sizeof( str_link ) );
-		  tmp->str  = $3;
-		  tmp->next = $1;
-		  $$ = tmp;
+		  str_link* tmp;
+                  if( ignore_mode == 0 ) {
+                    tmp = (str_link*)malloc( sizeof( str_link ) );
+		    tmp->str  = $3;
+		    tmp->next = $1;
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| net_decl_assign
 		{
-		  str_link* tmp = (str_link*)malloc( sizeof( str_link) );
-		  tmp->str  = $1;
-		  tmp->next = NULL;
-		  $$ = tmp;
+		  str_link* tmp;
+                  if( ignore_mode == 0 ) {
+                    tmp = (str_link*)malloc( sizeof( str_link) );
+		    tmp->str  = $1;
+		    tmp->next = NULL;
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	;
 
 net_decl_assign
-	: IDENTIFIER '=' unused_expr
+	: IDENTIFIER '=' { ignore_mode++; } expression { ignore_mode--; }
 		{
-		  /* Create root expression */
-		  $$ = $1;
+                  if( ignore_mode == 0 ) {
+		    $$ = $1;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
-	| unused_delay1 IDENTIFIER '=' unused_expr
+        | UNUSED_IDENTIFIER '=' expression
+                {
+                  $$ = NULL;
+                } 
+	| delay1 IDENTIFIER '=' { ignore_mode++; } expression { ignore_mode--; }
 		{
-		  /* Create root expression */
-		  $$ = $2;
+		  if( ignore_mode == 0 ) {
+                    statement_dealloc( $1 );
+		    $$ = $2;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	;
 
@@ -2088,18 +2335,27 @@ dr_strength1
 event_control
 	: '@' IDENTIFIER
 		{
-		  signal*     sig = db_find_signal( $2 );
+		  signal*     sig;
 		  expression* tmp;
-		  if( sig != NULL ) {
-		    tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, @1.first_line, NULL );
-		    vector_dealloc( tmp->value );
-		    tmp->value = sig->value;
-		    $$ = tmp;
-		  } else {
-		    $$ = NULL;
-		  }
-		  free_safe( $2 );
+                  if( ignore_mode == 0 ) {
+                    sig = db_find_signal( $2 );
+		    if( sig != NULL ) {
+		      tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, @1.first_line, NULL );
+		      vector_dealloc( tmp->value );
+		      tmp->value = sig->value;
+		      $$ = tmp;
+		    } else {
+		      $$ = NULL;
+		    }
+		    free_safe( $2 );
+                  } else {
+                    $$ = NULL;
+                  }
 		}
+        | '@' UNUSED_IDENTIFIER
+                {
+                  $$ = NULL;
+                }
 	| '@' '(' event_expression_list ')'
 		{
 		  $$ = $3;
@@ -2118,13 +2374,20 @@ event_expression_list
 	| event_expression_list K_or event_expression
 		{
 		  expression* tmp;
-		  tmp = db_create_expression( $3, $1, EXP_OP_EOR, @1.first_line, NULL );
-		  $$ = tmp;
+                  if( ignore_mode == 0 ) {
+		    tmp = db_create_expression( $3, $1, EXP_OP_EOR, @1.first_line, NULL );
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| event_expression_list ',' event_expression
 		{
-		  expression_dealloc( $1, FALSE );
-		  expression_dealloc( $3, FALSE );
+                  if( ignore_mode == 0 ) {
+		    expression_dealloc( $1, FALSE );
+		    expression_dealloc( $3, FALSE );
+                  }
+                  $$ = NULL;
 		}
 	;
 
@@ -2134,31 +2397,43 @@ event_expression
                   expression* tmp1;
 		  expression* tmp2;
                   nibble      val = 0x2;
-                  /* Create 1-bit expression to hold last value of right expression */
-                  tmp1 = db_create_expression( NULL, NULL, EXP_OP_LAST, @1.first_line, NULL );
-                  vector_set_value( tmp1->value, &val, 1, 0, 0 );
-		  tmp2 = db_create_expression( $2, tmp1, EXP_OP_PEDGE, @1.first_line, NULL );
-		  $$ = tmp2;
+                  if( ignore_mode == 0 ) {
+                    /* Create 1-bit expression to hold last value of right expression */
+                    tmp1 = db_create_expression( NULL, NULL, EXP_OP_LAST, @1.first_line, NULL );
+                    vector_set_value( tmp1->value, &val, 1, 0, 0 );
+		    tmp2 = db_create_expression( $2, tmp1, EXP_OP_PEDGE, @1.first_line, NULL );
+		    $$ = tmp2;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| K_negedge expression
 		{
 		  expression* tmp1;
                   expression* tmp2;
                   nibble      val = 0x2;
-                  tmp1 = db_create_expression( NULL, NULL, EXP_OP_LAST, @1.first_line, NULL );
-                  vector_set_value( tmp1->value, &val, 1, 0, 0 );
-		  tmp2 = db_create_expression( $2, tmp1, EXP_OP_NEDGE, @1.first_line, NULL );
-		  $$ = tmp2;
+                  if( ignore_mode == 0 ) {
+                    tmp1 = db_create_expression( NULL, NULL, EXP_OP_LAST, @1.first_line, NULL );
+                    vector_set_value( tmp1->value, &val, 1, 0, 0 );
+		    tmp2 = db_create_expression( $2, tmp1, EXP_OP_NEDGE, @1.first_line, NULL );
+		    $$ = tmp2;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| expression
 		{
 		  expression* tmp1;
                   expression* tmp2;
                   nibble      val = 0x2;
-                  tmp1 = db_create_expression( NULL, NULL, EXP_OP_LAST, @1.first_line, NULL );
-                  vector_set_value( tmp1->value, &val, 1, 0, 0 );
-		  tmp2 = db_create_expression( $1, tmp1, EXP_OP_AEDGE, @1.first_line, NULL );
-		  $$ = tmp2;
+                  if( ignore_mode == 0 ) {
+                    tmp1 = db_create_expression( NULL, NULL, EXP_OP_LAST, @1.first_line, NULL );
+                    vector_set_value( tmp1->value, &val, 1, 0, 0 );
+		    tmp2 = db_create_expression( $1, tmp1, EXP_OP_AEDGE, @1.first_line, NULL );
+		    $$ = tmp2;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	;
 		
@@ -2194,17 +2469,25 @@ defparam_assign_list
 defparam_assign
 	: identifier '=' expression
 		{
-		  expression_dealloc( $3, FALSE );
+                  if( ignore_mode == 0 ) {
+		    expression_dealloc( $3, FALSE );
+                  }
 		}
 	;
 
 parameter_value_opt
 	: '#' '(' expression_list ')'
 		{
-		  expression_dealloc( $3, FALSE );
+                  if( ignore_mode == 0 ) {
+		    expression_dealloc( $3, FALSE );
+                  }
 		}
 	| '#' '(' parameter_value_byname_list ')'
 	| '#' NUMBER
+                {
+                  vector_dealloc( $2 );
+                }
+        | '#' UNUSED_NUMBER
 	| '#' error
 	|
 	;
@@ -2217,50 +2500,77 @@ parameter_value_byname_list
 parameter_value_byname
 	: PORTNAME '(' expression ')'
 		{
-		  expression_dealloc( $3, FALSE );
+                  if( ignore_mode == 0 ) {
+		    expression_dealloc( $3, FALSE );
+                  }
 		}
+        | UNUSED_PORTNAME '(' expression ')'
 	| PORTNAME '(' ')'
+        | UNUSED_PORTNAME '(' ')'
 	;
 
 gate_instance_list
 	: gate_instance_list ',' gate_instance
 		{
-		  str_link* tmp = (str_link*)malloc( sizeof( str_link ) );
-		  tmp->str  = $3;
-		  tmp->next = $1;
-		  $$ = tmp;
+		  str_link* tmp;
+                  if( ignore_mode == 0 ) {
+                    tmp = (str_link*)malloc( sizeof( str_link ) );
+		    tmp->str  = $3;
+		    tmp->next = $1;
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	| gate_instance
 		{
-		  str_link* tmp = (str_link*)malloc( sizeof( str_link ) );
-		  tmp->str  = $1;
-		  tmp->next = NULL;
-		  $$ = tmp;
+		  str_link* tmp;
+                  if( ignore_mode == 0 ) {
+                    tmp = (str_link*)malloc( sizeof( str_link ) );
+		    tmp->str  = $1;
+		    tmp->next = NULL;
+		    $$ = tmp;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
 	;
 
   /* A gate_instance is a module instantiation or a built in part
      type. In any case, the gate has a set of connections to ports. */
 gate_instance
-	: IDENTIFIER '(' expression_list ')'
+	: IDENTIFIER '(' { ignore_mode++; } expression_list { ignore_mode--; } ')'
 		{
-		  expression_dealloc( $3, FALSE );
-		  $$ = $1;
+                  if( ignore_mode == 0 ) {
+		    $$ = $1;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
-	| IDENTIFIER range '(' expression_list ')'
+        | UNUSED_IDENTIFIER '(' expression_list ')'
+                {
+                  $$ = NULL;
+                }
+	| IDENTIFIER { ignore_mode++; } range '(' expression_list { ignore_mode--; } ')'
 		{
-		  expression_dealloc( $4, FALSE );
-		  free_safe( $2 );
-		  $$ = $1;
+                  if( ignore_mode == 0 ) {
+		    $$ = $1;
+                  } else {
+                    $$ = NULL;
+                  }
 		}
-	| '(' expression_list ')'
+	| '(' { ignore_mode++; } expression_list { ignore_mode--; } ')'
 		{
-		  expression_dealloc( $2, FALSE );
+		  $$ = NULL;
 		}
 	| IDENTIFIER '(' port_name_list ')'
 		{
 		  $$ = $1;
 		}
+        | UNUSED_IDENTIFIER '(' port_name_list ')'
+                {
+                  $$ = NULL;
+                }
 	;
 
   /* A function_item_list only lists the input/output/inout
@@ -2273,12 +2583,8 @@ function_item_list
 	;
 
 function_item
-	: K_input range_opt list_of_variables ';'
-		{
-		  str_link_delete_list( $3 );
-		  free_safe( $2 );
-		}
-	| unused_block_item_decl
+	: K_input { ignore_mode++; } range_opt list_of_variables ';' { ignore_mode--; }
+	| block_item_decl
 	;
 
 parameter_assign_list
@@ -2290,26 +2596,43 @@ parameter_assign_list
 	| parameter_assign_list ',' parameter_assign
 
 parameter_assign
-	: IDENTIFIER '=' expression
+	: IDENTIFIER '=' { ignore_mode++; } expression { ignore_mode--; }
 		{
-		  expression_dealloc( $3, FALSE );
+		  $$ = $1;
 		}
+        | UNUSED_IDENTIFIER '=' expression
+                {
+                  $$ = NULL;
+                }
 	;
 
 localparam_assign_list
 	: localparam_assign
+                {
+                  $$ = NULL;
+                }
 	| range localparam_assign
 		{
-		  $$ = 0;
+                  if( ignore_mode == 0 ) {
+                    free_safe( $1 );
+                  }
+		  $$ = NULL;
 		}
 	| localparam_assign_list ',' localparam_assign
+                {
+                  $$ = NULL;
+                }
 	;
 
 localparam_assign
-	: IDENTIFIER '=' expression
+	: IDENTIFIER '=' { ignore_mode++; } expression { ignore_mode--; }
 		{
-		  expression_dealloc( $3, FALSE );
+		  $$ = $1;
 		}
+        | UNUSED_IDENTIFIER '=' expression
+                {
+                  $$ = NULL;
+                }
 	;
 
 port_name_list
@@ -2318,11 +2641,11 @@ port_name_list
 	;
 
 port_name
-	: PORTNAME '(' expression ')'
-		{
-		  expression_dealloc( $3, FALSE );
-		}
+	: PORTNAME '(' { ignore_mode++; } expression { ignore_mode--; } ')'
+        | UNUSED_PORTNAME '(' expression ')'
 	| PORTNAME '(' error ')'
+        | UNUSED_PORTNAME '(' error ')'
 	| PORTNAME '(' ')'
+        | UNUSED_PORTNAME '(' ')'
 	;
 

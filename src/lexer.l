@@ -26,6 +26,8 @@ extern YYLTYPE yylloc;
 
 extern str_link* inc_paths_head;
 
+extern int ignore_mode;
+
 /*!
  Contains error message if something wrong is found.
 */
@@ -157,19 +159,27 @@ WSPACE [ \t\b\f]+
 [a-zA-Z_][a-zA-Z0-9$_]* {
      int rc = lexer_keyword_code( yytext, yyleng );
      if( rc == IDENTIFIER ) {
-       yylval.text  = strdup( yytext );
-       if( strncmp( yylval.text, "PATHPULSE$", 10) == 0 ) {
-         rc = PATHPULSE_IDENTIFIER;
+       if( ignore_mode == 0 ) {
+         yylval.text  = strdup( yytext );
+         if( strncmp( yylval.text, "PATHPULSE$", 10) == 0 ) {
+           rc = PATHPULSE_IDENTIFIER;
+         }
+       } else {
+         if( strncmp( yytext, "PATHPULSE$", 10) == 0 ) {
+           rc = UNUSED_PATHPULSE_IDENTIFIER;
+         } else {
+           rc = UNUSED_IDENTIFIER;
+         }
        }
        if( last_keyword == K_module ) {
          if( strcmp( modlist_head->str, yytext ) != 0 ) {
            BEGIN( IGNORE_MODULE );
-	   rc = IGNORE;
+           rc = IGNORE;
          } else {
            /* The module has been found, recirculate filelist */
            printf( "Parsing file %s\n", istack->path );
            filelist_curr = filelist_head;
-	   last_keyword = 0;
+           last_keyword = 0;
          }
        }
      } else {
@@ -181,66 +191,120 @@ WSPACE [ \t\b\f]+
 
   /* Hierarchical signal identifiers */
 [a-zA-Z_][a-zA-Z0-9$_]*(\.[a-zA-Z_][a-zA-Z0-9$_]*)+ {
-     yylval.text = strdup( yytext );
-     return HIDENTIFIER;
+     if( ignore_mode == 0 ) {
+       yylval.text = strdup( yytext );
+       return HIDENTIFIER;
+     } else {
+       return UNUSED_HIDENTIFIER;
+     }
  }
 
   /* Signal names starting with a '\' character */
-\\[^ \t\b\f\r]+  { yylval.text = strdup( yytext + 1 );
-                   return IDENTIFIER; }
+\\[^ \t\b\f\r]+  { 
+     if( ignore_mode == 0 ) {
+       yylval.text = strdup( yytext + 1 );
+       return IDENTIFIER; 
+     } else {
+       return UNUSED_IDENTIFIER;
+     }
+ }
 
   /* System call lines -- we ignore this information */
-\$([a-zA-Z0-9$_]+)   { return SYSTEM_IDENTIFIER; }
+\$([a-zA-Z0-9$_]+)   { 
+     if( ignore_mode == 0 ) {
+       return SYSTEM_IDENTIFIER; 
+     } else {
+       return UNUSED_SYSTEM_IDENTIFIER;
+     }
+ }
 
   /* Port name match -- we ignore this information */
-\.{WSPACE}?(([a-zA-Z_][a-zA-Z0-9$_]*)|(\\[^ \t\b\f\r]+)) { return PORTNAME; }
+\.{WSPACE}?(([a-zA-Z_][a-zA-Z0-9$_]*)|(\\[^ \t\b\f\r]+)) { 
+     if( ignore_mode == 0 ) {
+       return PORTNAME; 
+     } else {
+       return UNUSED_PORTNAME;
+     }
+ }
 
   /* Decimal number - Size indicated */
 [0-9][0-9_]*[ \t]*\'[sS]?[dD][ \t]*[0-9][0-9_]* {
-     yylval.number = vector_from_string( yytext, TRUE, DECIMAL );
-     return NUMBER;
+     if( ignore_mode == 0 ) {
+       yylval.number = vector_from_string( yytext, TRUE, DECIMAL );
+       return NUMBER;
+     } else {
+       return UNUSED_NUMBER;
+     }
  }
 
   /* Binary number - Size indicated */
 [0-9][0-9_]*[ \t]*\'[sS]?[bB][ \t]*[0-1xzXZ_\?]+ {
-     yylval.number = vector_from_string( yytext, TRUE, BINARY );
-     return NUMBER;
+     if( ignore_mode == 0 ) {
+       yylval.number = vector_from_string( yytext, TRUE, BINARY );
+       return NUMBER;
+     } else {
+       return UNUSED_NUMBER;
+     }
  }
 
   /* Octal number - Size indicated */
 [0-9][0-9_]*[ \t]*\'[sS]?[oO][ \t]*[0-7xzXZ_\?]+ {
-     yylval.number = vector_from_string( yytext, TRUE, OCTAL );
-     return NUMBER;
+     if( ignore_mode == 0 ) {
+       yylval.number = vector_from_string( yytext, TRUE, OCTAL );
+       return NUMBER;
+     } else {
+       return UNUSED_NUMBER;
+     }
  }
 
   /* Hexidecimal number - Size indicated */
 [0-9][0-9_]*[ \t]*\'[sS]?[hH][ \t]*[0-9a-fA-FxzXZ_\?]+ {
-     yylval.number = vector_from_string( yytext, TRUE, HEXIDECIMAL );
-     return NUMBER;
+     if( ignore_mode == 0 ) {
+       yylval.number = vector_from_string( yytext, TRUE, HEXIDECIMAL );
+       return NUMBER;
+     } else {
+       return UNUSED_NUMBER;
+     }
  }
 
   /* Decimal number - unsized */
 \'[sS]?[dD][ \t]*[0-9][0-9_]* {
-     yylval.number = vector_from_string( yytext, FALSE, DECIMAL );
-     return NUMBER;
+     if( ignore_mode == 0 ) {
+       yylval.number = vector_from_string( yytext, FALSE, DECIMAL );
+       return NUMBER;
+     } else {
+       return UNUSED_NUMBER;
+     }
  }
 
   /* Binary number - unsized */
 \'[sS]?[bB][ \t]*[0-1xzXZ_\?]+ {
-     yylval.number = vector_from_string( yytext, FALSE, BINARY );
-     return NUMBER;
+     if( ignore_mode == 0 ) {
+       yylval.number = vector_from_string( yytext, FALSE, BINARY );
+       return NUMBER;
+     } else {
+       return UNUSED_NUMBER;
+     }
  }
 
   /* Octal number - unsized */
 \'[sS]?[oO][ \t]*[0-7xzXZ_\?]+ {
-     yylval.number = vector_from_string( yytext, FALSE, OCTAL );
-     return NUMBER;
+     if( ignore_mode == 0 ) {
+       yylval.number = vector_from_string( yytext, FALSE, OCTAL );
+       return NUMBER;
+     } else {
+       return UNUSED_NUMBER;
+     }
  }
 
   /* Hexidecimal number - unsized */
 \'[sS]?[hH][ \t]*[0-9a-fA-FxzXZ_\?]+ {
-     yylval.number = vector_from_string( yytext, FALSE, HEXIDECIMAL );
-     return NUMBER;
+     if( ignore_mode == 0 ) {
+       yylval.number = vector_from_string( yytext, FALSE, HEXIDECIMAL );
+       return NUMBER;
+     } else {
+       return NUMBER;
+     }
  }
 
   /* Unsized decimal number */
@@ -249,25 +313,41 @@ WSPACE [ \t\b\f]+
      int           i;
      char*         cp;
      vector*       vec;
-     for( cp = yytext; *cp ; cp += 1 ) {
-       if( *cp != '_' ) {
-         value = 10 * value + (*cp - '0');
+     if( ignore_mode == 0 ) {
+       for( cp = yytext; *cp ; cp += 1 ) {
+         if( *cp != '_' ) {
+           value = 10 * value + (*cp - '0');
+         }
        }
+       assert( INTEGER_WIDTH <= (8 * sizeof( value )) );
+       vec = vector_create( INTEGER_WIDTH, 0 );
+       for( i=0; i<INTEGER_WIDTH; i += 1, value >>= 1 ) {
+         vector_set_bit( vec->value, (value & 0x1), i );
+       }
+       yylval.number = vec;
+       return NUMBER;
+     } else {
+       return UNUSED_NUMBER;
      }
-     assert( INTEGER_WIDTH <= (8 * sizeof( value )) );
-     vec = vector_create( INTEGER_WIDTH, 0 );
-     for( i=0; i<INTEGER_WIDTH; i += 1, value >>= 1 ) {
-       vector_set_bit( vec->value, (value & 0x1), i );
-     }
-     yylval.number = vec;
-     return NUMBER;
  }
 
   /* Real numbers -- we ignore this information */
-[0-9][0-9_]*\.[0-9][0-9_]*([Ee][+-]?[0-9][0-9_]*)? { return REALTIME; }
+[0-9][0-9_]*\.[0-9][0-9_]*([Ee][+-]?[0-9][0-9_]*)? { 
+     if( ignore_mode == 0 ) {
+       return REALTIME;
+     } else {
+       return UNUSED_REALTIME;
+     }
+ }
 
   /* Real numbers -- we ignore this information */
-[0-9][0-9_]*[Ee][+-]?[0-9][0-9_]* { return REALTIME; }
+[0-9][0-9_]*[Ee][+-]?[0-9][0-9_]* { 
+     if( ignore_mode == 0 ) {
+       return REALTIME;
+     } else {
+       return UNUSED_REALTIME;
+     }
+ }
 
   /* Timescale directive -- we ignore this information */
 ^{WSPACE}?`timescale { BEGIN( PPTIMESCALE ); }
