@@ -84,6 +84,7 @@ int yydebug = 1;
   exp_link*       explink;
   case_statement* case_stmt;
   attr_param*     attr_parm;
+  sig_exp_bind*   sigexp;
 };
 
 %token <text>   IDENTIFIER
@@ -136,8 +137,9 @@ int yydebug = 1;
 %type <text>      gate_instance
 %type <text>      localparam_assign_list localparam_assign
 %type <strlink>   register_variable_list list_of_variables
-%type <strlink>   net_decl_assigns gate_instance_list
-%type <text>      register_variable net_decl_assign
+%type <strlink>   gate_instance_list
+%type <sigexp>    net_decl_assigns net_decl_assign
+%type <text>      register_variable
 %type <state>     statement statement_list statement_opt 
 %type <state>     for_statement fork_statement while_statement named_begin_end_block if_statement_error
 %type <case_stmt> case_items case_item
@@ -1338,16 +1340,37 @@ module_item
   | attribute_list_opt
     net_type range_opt net_decl_assigns ';'
     {
-      str_link* tmp  = $4;
-      str_link* curr = tmp;
+      expression*   tmp;
+      sig_exp_bind* curr = $4;
+      sig_exp_bind* seb;
+      statement*    stmt;
       if( ($2 == 1) && ($3 != NULL) ) {
         /* Create signal(s) */
         while( curr != NULL ) {
-          db_add_signal( curr->str, $3->left, $3->right );
+          db_add_signal( curr->sig_name, $3->left, $3->right );
+          if( curr->exp != NULL ) {
+            tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, curr->exp->line, curr->sig_name );
+            tmp  = db_create_expression( curr->exp, tmp, EXP_OP_BASSIGN, FALSE, curr->exp->line, NULL );
+            stmt = db_create_statement( tmp );
+            stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
+            stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);
+            stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_CONTINUOUS);
+            /* Statement will be looped back to itself */
+            db_connect_statement_true( stmt, stmt );
+            db_connect_statement_false( stmt, stmt );
+            db_add_expression( tmp );
+            db_add_statement( stmt, stmt );
+          }
           curr = curr->next;
         }
       }
-      str_link_delete_list( $4 );
+      curr = $4;
+      while( curr != NULL ) {
+        seb  = curr->next;
+        free_safe( curr->sig_name );
+        free_safe( curr );
+        curr = seb;
+      }
       if( $3 != NULL ) {
         static_expr_dealloc( $3->left, FALSE );
         static_expr_dealloc( $3->right, FALSE );
@@ -1357,20 +1380,41 @@ module_item
   | attribute_list_opt
     net_type drive_strength net_decl_assigns ';'
     {
-      str_link*   tmp  = $4;
-      str_link*   curr = tmp;
-      static_expr left;
-      static_expr right;
+      expression*   tmp;
+      sig_exp_bind* curr = $4;
+      sig_exp_bind* seb;
+      statement*    stmt;
+      static_expr   left;
+      static_expr   right;
       if( $2 == 1 ) {
         /* Create signal(s) */
         left.num  = 1;
         right.num = 0;
         while( curr != NULL ) {
-          db_add_signal( curr->str, &left, &right );
+          db_add_signal( curr->sig_name, &left, &right );
+          if( curr->exp != NULL ) {
+            tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, curr->exp->line, curr->sig_name );
+            tmp  = db_create_expression( curr->exp, tmp, EXP_OP_BASSIGN, FALSE, curr->exp->line, NULL );
+            stmt = db_create_statement( tmp );
+            stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
+            stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);
+            stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_CONTINUOUS);
+            /* Statement will be looped back to itself */
+            db_connect_statement_true( stmt, stmt );
+            db_connect_statement_false( stmt, stmt );
+            db_add_expression( tmp );
+            db_add_statement( stmt, stmt );
+          }
           curr = curr->next;
         }
       }
-      str_link_delete_list( $4 );
+      curr = $4;
+      while( curr != NULL ) {
+        seb  = curr->next;
+        free_safe( curr->sig_name );
+        free_safe( curr );
+        curr = seb;
+      }
     }
   | K_trireg charge_strength_opt range_opt delay3_opt list_of_variables ';'
     {
@@ -2902,24 +2946,18 @@ net_type
 net_decl_assigns
   : net_decl_assigns ',' net_decl_assign
     {
-      str_link* tmp;
       if( ignore_mode == 0 ) {
-        tmp = (str_link*)malloc( sizeof( str_link ) );
-        tmp->str  = $3;
-        tmp->next = $1;
-        $$ = tmp;
+        $3->next = $1;
+        $$ = $3;
       } else {
         $$ = NULL;
       }
     }
   | net_decl_assign
     {
-      str_link* tmp;
       if( ignore_mode == 0 ) {
-        tmp = (str_link*)malloc( sizeof( str_link) );
-        tmp->str  = $1;
-        tmp->next = NULL;
-        $$ = tmp;
+        $1->next = NULL;
+        $$ = $1;
       } else {
         $$ = NULL;
       }
@@ -2929,20 +2967,13 @@ net_decl_assigns
 net_decl_assign
   : IDENTIFIER '=' expression
     {
-      statement* stmt;
+      sig_exp_bind* seb;
       if( ignore_mode == 0 ) {
-        if( $3 != NULL ) {
-          stmt = db_create_statement( $3 );
-          stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
-          stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);
-          stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_CONTINUOUS);
-          /* Statement will be looped back to itself */
-          db_connect_statement_true( stmt, stmt );
-          db_connect_statement_false( stmt, stmt );
-          db_add_expression( $3 );
-          db_add_statement( stmt, stmt );
-        }
-        $$ = $1;
+        seb = (sig_exp_bind*)malloc_safe( sizeof( sig_exp_bind ) );
+        seb->sig_name = $1;
+        seb->exp      = $3;
+        seb->next     = NULL;
+        $$ = seb;
       } else {
         $$ = NULL;
       }
@@ -2953,20 +2984,13 @@ net_decl_assign
     } 
   | delay1 IDENTIFIER '=' expression
     {
-      statement* stmt;
+      sig_exp_bind* seb;
       if( ignore_mode == 0 ) {
-        if( $4 != NULL ) {
-          stmt = db_create_statement( $4 );
-          stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
-          stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);
-          stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_CONTINUOUS);
-          /* Statement will be looped back to itself */
-          db_connect_statement_true( stmt, stmt );
-          db_connect_statement_false( stmt, stmt );
-          db_add_expression( $4 );
-          db_add_statement( stmt, stmt );
-        }
-        $$ = $2;
+        seb = (sig_exp_bind*)malloc_safe( sizeof( sig_exp_bind ) );
+        seb->sig_name = $2;
+        seb->exp      = $4;
+        seb->next     = NULL;
+        $$ = seb;
       } else {
         $$ = NULL;
       }

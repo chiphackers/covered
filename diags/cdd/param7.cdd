@@ -5,17 +5,21 @@
 1 #temp main.a 0 32 0 1 0 0 0 0 0 0 0
 1 #c main.a 0 32 0 20004 0 0 0 0 0 0 0
 3 bar main.a.c param7.v
-2 8 main.a.c 35 201f80 0 0 32 0 0 0 0 0 0 0 0 0
+2 8 main.a.c 35 201000 0 0 32 0 0 0 0 0 0 0 0 0
+2 9 main.a.c 35 2000001 0 0 
+2 10 main.a.c 35 201fb6 8 9 
 1 #temp main.a.c 0 32 0 20004 0 0 0 0 0 0 0
-1 a main.a.c 0 2 0 3000a
-4 8 main.a.c 8 8
+1 a main.a.c 0 2 0 3000a 9
+4 10 main.a.c 10 10
 3 goo main.b param7.v
 1 #d main.b 0 32 0 4 0 0 0 0 0 0 0
 3 foo main.b.d param7.v
 1 #temp main.b.d 0 32 0 4 0 0 0 0 0 0 0
 1 #c main.b.d 0 32 0 30005 0 0 0 0 0 0 0
 3 bar main.b.d.c param7.v
-2 8 main.b.d.c 35 201f80 0 0 32 0 0 0 0 0 0 0 0 0
+2 8 main.b.d.c 35 201000 0 0 32 0 0 0 0 0 0 0 0 0
+2 9 main.b.d.c 35 2000001 0 0 
+2 10 main.b.d.c 35 201fb6 8 9 
 1 #temp main.b.d.c 0 32 0 30005 0 0 0 0 0 0 0
-1 a main.b.d.c 0 3 0 2a
-4 8 main.b.d.c 8 8
+1 a main.b.d.c 0 3 0 2a 9
+4 10 main.b.d.c 10 10
