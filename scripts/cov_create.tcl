@@ -1,27 +1,48 @@
-set cov_rb line
+set cov_rb      line
+set last_cov_rb line
 
 proc cov_create {.covbox} {
 
-  global cov_rb file_name start_line end_line
+  global cov_rb file_name start_line end_line last_cov_rb
 
   radiobutton .covbox.line -variable cov_rb -value line   -text "Line" -command { 
     if {$file_name != 0} {
-      display_line_cov .bot.txt $start_line $end_line
+      if {$last_cov_rb != $cov_rb} {
+        set last_cov_rb $cov_rb
+        process_module_line_cov
+      } else {
+        display_line_cov
+      }
     } 
   }
   radiobutton .covbox.tog  -variable cov_rb -value toggle -text "Toggle" -command {
     if {$file_name != 0} {
-      display_toggle_cov .bot.txt $start_line $end_line
+      if {$last_cov_rb != $cov_rb} {
+        set last_cov_rb $cov_rb
+        process_module_toggle_cov
+      } else {
+        display_toggle_cov
+      }
     }
-  } -state disabled
+  }
   radiobutton .covbox.comb -variable cov_rb -value comb   -text "Logic" -command {
     if {$file_name != 0} {
-      display_comb_cov .bot.txt $start_line $end_line
+      if {$last_cov_rb != $cov_rb} {
+        set last_cov_rb $cov_rb
+        process_module_comb_cov
+      } else {
+        display_comb_cov
+      }
     }
   } -state disabled
   radiobutton .covbox.fsm  -variable cov_rb -value fsm    -text "FSM" -command {
     if {$file_name != 0} {
-      display_fsm_cov .bot.txt $start_line $end_line
+      if {$last_cov_rb != $cov_rb} {
+        set last_cov_rb $cov_rb
+        process_module_fsm_cov
+      } else {
+        display_fsm_cov
+      }
     }
   } -state disabled
 

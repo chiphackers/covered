@@ -65,7 +65,7 @@ VERSION = @VERSION@
 XGPERF = @XGPERF@
 
 tcldir = $(datadir)/covered/scripts
-tcl_SCRIPTS = cov_create.tcl main_view.tcl menu_create.tcl process_file.tcl
+tcl_SCRIPTS = cov_create.tcl main_view.tcl menu_create.tcl process_file.tcl toggle.tcl
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
 CONFIG_CLEAN_FILES = 

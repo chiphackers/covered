@@ -18,6 +18,7 @@
 #include "defines.h"
 #include "vector.h"
 #include "util.h"
+#include "link.h"
 
 
 extern mod_inst* instance_root;
@@ -52,6 +53,147 @@ void toggle_get_stats( sig_link* sigl, float* total, int* hit01, int* hit10 ) {
     }
     curr_sig = curr_sig->next;
   }
+
+}
+
+bool toggle_collect( const char* mod_name, int cov, expression*** sigs, int* sig_cnt ) {
+
+  bool      retval = TRUE;  /* Return value for this function                 */
+  module    mod;            /* Module used for searching                      */
+  mod_link* modl;           /* Pointer to found module link                   */
+  sig_link* curr_sig;       /* Pointer to current signal link being evaluated */
+  int       hit01;          /* Number of bits that toggled from 0 to 1        */
+  int       hit10;          /* Number of bits that toggled from 1 to 0        */
+  int       sig_size; 
+  exp_link* expl;           /* Pointer to expression linked list              */
+     
+  /* First, find module in module array */
+  mod.name = strdup_safe( mod_name, __FILE__, __LINE__ );
+  if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
+
+    /* Create an array that will hold the number of uncovered lines */
+    sig_size = 20;
+    *sig_cnt = 0;
+    *sigs    = (expression**)malloc_safe( (sizeof( expression* ) * sig_size), __FILE__, __LINE__ );
+
+    curr_sig = modl->mod->sig_head;
+
+    while( curr_sig != NULL ) {
+
+      hit01 = 0;
+      hit10 = 0;
+
+      if( curr_sig->sig->name[0] != '#' ) {
+
+        vector_toggle_count( curr_sig->sig->value, &hit01, &hit10 );
+
+        if( ((cov == 1) && (hit01 == curr_sig->sig->value->width) && (hit10 == curr_sig->sig->value->width)) ||
+	    ((cov == 0) && ((hit01 < curr_sig->sig->value->width) || (hit10 < curr_sig->sig->value->width))) ) {
+
+          expl = curr_sig->sig->exp_head;
+	  while( expl != NULL ) {
+            if( expl->exp->line != 0 ) {	
+              if( *sig_cnt == sig_size ) {
+                sig_size += 20;
+  	        *sigs    = (expression**)realloc( *sigs, (sizeof( expression* ) * sig_size) );
+              }
+              (*sigs)[(*sig_cnt)] = expl->exp;
+              (*sig_cnt)++;
+	    } 
+	    expl = expl->next; 
+	  } 
+          
+        }
+
+      }
+
+      curr_sig = curr_sig->next;
+
+    }
+
+  } else {
+ 
+    retval = FALSE;
+
+  }
+
+  free_safe( mod.name );
+
+  return( retval );
+
+}
+
+bool toggle_get_coverage( char* mod_name, char* sig_name, int* msb, int* lsb, char** tog01, char** tog10 ) {
+
+  bool      retval = TRUE;  /* Return value for this function */
+  module    mod;            /* Module used for searching      */
+  mod_link* modl;           /* Pointer to found module link   */
+  vsignal   sig;            /* Signal used for searching      */
+  sig_link* sigl;           /* Pointer to found signal link   */
+
+  mod.name = mod_name;
+
+  if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
+
+    sig.name = sig_name;
+
+    if( (sigl = sig_link_find( &sig, modl->mod->sig_head )) != NULL ) {
+      *msb = sigl->sig->lsb + (sigl->sig->value->width - 1);
+      *lsb = sigl->sig->lsb; 
+      *tog01 = vector_get_toggle01( sigl->sig->value->value, sigl->sig->value->width );
+      *tog10 = vector_get_toggle10( sigl->sig->value->value, sigl->sig->value->width );
+    } else {
+      retval = FALSE;
+    }
+
+  } else {
+
+    retval = FALSE;
+
+  }
+
+  return( retval );
+
+}
+
+/*!
+ \param mod_name  Name of module to retrieve summary information from.
+ \param total     Pointer to total number of toggles in this module.
+ \param hit01     Pointer to number of toggles hit going 0 -> 1 in this module.
+ \param hit10     Pointer to number of toggles hit going 1 -> 0 in this module.
+
+ \return Returns TRUE if specified module was found in design; otherwise,
+         returns FALSE.
+
+ Looks up summary information for specified module.  If the module was found,
+ the hit and total values for this module are returned to the calling function.
+ If the module was not found, a value of FALSE is returned to the calling
+ function, indicating that the module was not found in the design and the values
+ of total and hit should not be used.
+*/
+bool toggle_get_module_summary( char* mod_name, int* total, int* hit01, int* hit10 ) {
+
+  bool      retval = TRUE;  /* Return value for this function */
+  module    mod;            /* Module used for searching      */
+  mod_link* modl;           /* Pointer to found module link   */
+  char      tmp[21];        /* Temporary string for total     */
+
+  mod.name = mod_name;
+
+  if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
+
+    snprintf( tmp, 21, "%20.0f", modl->mod->stat->tog_total );
+    assert( sscanf( tmp, "%d", total ) == 1 );
+    *hit01 = modl->mod->stat->tog01_hit;
+    *hit10 = modl->mod->stat->tog10_hit;
+
+  } else {
+
+    retval = FALSE;
+
+  }
+
+  return( retval );
 
 }
 
@@ -375,6 +517,10 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.26  2004/03/15 21:38:17  phase1geo
+ Updated source files after running lint on these files.  Full regression
+ still passes at this point.
+
  Revision 1.25  2004/01/31 18:58:43  phase1geo
  Finished reformatting of reports.  Fixed bug where merged reports with
  different leading hierarchies were outputting the leading hierarchy of one

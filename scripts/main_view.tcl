@@ -4,6 +4,9 @@
 source $HOME/scripts/menu_create.tcl
 source $HOME/scripts/cov_create.tcl
 source $HOME/scripts/process_file.tcl
+source $HOME/scripts/toggle.tcl
+
+set last_lb_index ""
 
 proc main_view {} {
 
@@ -112,27 +115,34 @@ proc populate_listbox {listbox_w} {
 proc populate_text {} {
 
   global cov_rb mod_inst_type mod_list
+  global curr_mod_name last_lb_index
 
   set index [.bot.l curselection]
 
   if {$index != ""} {
 
-    if {$mod_inst_type == "instance"} {
-      set mod_name [lindex $mod_list $index]
-    } else {
-      set mod_name [.bot.l get $index]
-    }
+    if {$last_lb_index != $index} {
 
-    if {$cov_rb == "line"} {
-      process_module_line_cov $mod_name .bot.txt
-    } elseif {$cov_rb == "toggle"} {
-      process_module_toggle_cov $mod_name .bot.txt
-    } elseif {$cov_rb == "comb"} {
-      process_module_comb_cov $mod_name .bot.txt
-    } elseif {$cov_rb == "fsm"} {
-      process_module_fsm_cov $mod_name .bot.txt
-    } else {
-      # ERROR
+      set last_lb_index $index
+
+      if {$mod_inst_type == "instance"} {
+        set curr_mod_name [lindex $mod_list $index]
+      } else {
+        set curr_mod_name [.bot.l get $index]
+      }
+
+      if {$cov_rb == "line"} {
+        process_module_line_cov
+      } elseif {$cov_rb == "toggle"} {
+        process_module_toggle_cov
+      } elseif {$cov_rb == "comb"} {
+        process_module_comb_cov
+      } elseif {$cov_rb == "fsm"} {
+        process_module_fsm_cov
+      } else {
+        # ERROR
+      }
+
     }
 
   }

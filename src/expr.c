@@ -455,6 +455,11 @@ int expression_get_id( expression* expr ) {
 
 }
 
+/*!
+ \param expr  Pointer to root expression to extract last line from
+
+ \return Returns the line number of the last line in this expression. 
+*/
 int expression_get_last_line( expression* expr ) {
 
   int line = -1;
@@ -1480,6 +1485,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.99  2004/07/22 04:43:04  phase1geo
+ Finishing code to calculate start and end columns of expressions.  Regression
+ has been updated for these changes.  Other various minor changes as well.
+
  Revision 1.98  2004/04/19 13:42:31  phase1geo
  Forgot to modify replace function for column information.
 

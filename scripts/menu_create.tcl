@@ -79,7 +79,7 @@ proc menu_create {.menubar} {
   .menubar.report config -menu .menubar.report.menu
   set report [menu .menubar.report.menu -tearoff false]
 
-  global mod_inst_type cov_uncov_type
+  global mod_inst_type cov_uncov_type cov_rb
 
   $report add radiobutton -label "Module-based"   -variable mod_inst_type -value "module" -command {
     populate_listbox .bot.l
@@ -91,16 +91,26 @@ proc menu_create {.menubar} {
   $report add checkbutton -label "Show Uncovered" -variable uncov_type -onvalue 1 -offvalue 0 -command {
     set text_x [.bot.txt xview]
     set text_y [.bot.txt yview]
-    calc_and_display_line_cov
+    if {$cov_rb == "line"} {
+      calc_and_display_line_cov
+    } elseif {$cov_rb == "toggle"} {
+      calc_and_display_toggle_cov
+    } else {
+      # Error
+    }
     .bot.txt xview moveto [lindex $text_x 0]
     .bot.txt yview moveto [lindex $text_y 0]
   }
   $report add checkbutton -label "Show Covered" -variable cov_type -onvalue 1 -offvalue 0 -command {
     set text_x [.bot.txt xview]
     set text_y [.bot.txt yview]
-    puts $text_x
-    puts $text_y
-    calc_and_display_line_cov
+    if {$cov_rb == "line"} {
+      calc_and_display_line_cov
+    } elseif {$cov_rb == "toggle"} {
+      calc_and_display_toggle_cov
+    } else {
+      # Error
+    }
     .bot.txt xview moveto [lindex $text_x 0]
     .bot.txt yview moveto [lindex $text_y 0]
   }
@@ -118,7 +128,13 @@ proc menu_create {.menubar} {
     # Redisplay coverage
     set text_x [.bot.txt xview]
     set text_y [.bot.txt yview]
-    display_line_cov
+    if {$cov_rb == "line"} {
+      display_line_cov
+    } elseif {$cov_rb == "toggle"} {
+      display_toggle_cov
+    } else {
+      # Error
+    }
     .bot.txt xview moveto [lindex $text_x 0]
     .bot.txt yview moveto [lindex $text_y 0]
   }
@@ -131,7 +147,13 @@ proc menu_create {.menubar} {
     # Redisplay coverage
     set text_x [.bot.txt xview]
     set text_y [.bot.txt yview]
-    display_line_cov
+    if {$cov_rb == "line"} {
+      display_line_cov
+    } elseif {$cov_rb == "toggle"} {
+      display_toggle_cov
+    } else {
+      # Error
+    }
     .bot.txt xview moveto [lindex $text_x 0]
     .bot.txt yview moveto [lindex $text_y 0]
   }
@@ -146,7 +168,13 @@ proc menu_create {.menubar} {
     # Redisplay coverage
     set text_x [.bot.txt xview]
     set text_y [.bot.txt yview]
-    display_line_cov
+    if {$cov_rb == "line"} {
+      display_line_cov
+    } elseif {$cov_rb == "toggle"} {
+      display_toggle_cov
+    } else {
+      # Error
+    }
     .bot.txt xview moveto [lindex $text_x 0]
     .bot.txt yview moveto [lindex $text_y 0]
   }
@@ -159,7 +187,13 @@ proc menu_create {.menubar} {
     # Redisplay coverage
     set text_x [.bot.txt xview]
     set text_y [.bot.txt yview]
-    display_line_cov
+    if {$cov_rb == "line"} {
+      display_line_cov
+    } elseif {$cov_rb == "toggle"} {
+      display_toggle_cov
+    } else {
+      # Error
+    }
     .bot.txt xview moveto [lindex $text_x 0]
     .bot.txt yview moveto [lindex $text_y 0]
   }

@@ -476,6 +476,40 @@ bool vector_db_replace( vector* base, char** line ) {
 
 }
 
+char* vector_get_toggle01( nibble* nib, int width ) {
+
+  char* bits = (char*)malloc_safe( (width + 1), __FILE__, __LINE__ );
+  int   i;
+  char  tmp[2];
+
+  for( i=(width - 1); i>=0; i-- ) {
+    snprintf( tmp, 2, "%x", VECTOR_TOG01( nib[i] ) );
+    bits[((width - 1) - i)] = tmp[0];
+  }
+
+  bits[width] = '\0';
+
+  return( bits );
+
+}
+
+char* vector_get_toggle10( nibble* nib, int width ) {
+
+  char* bits = (char*)malloc_safe( (width + 1), __FILE__, __LINE__ );
+  int   i; 
+  char  tmp[2];
+
+  for( i=(width - 1); i>=0; i-- ) {
+    snprintf( tmp, 2, "%x", VECTOR_TOG10( nib[i] ) );
+    bits[((width - 1) - i)] = tmp[0];
+  }
+
+  bits[width] = '\0';
+
+  return( bits );
+
+}
+
 /*!
  \param nib    Nibble to display toggle information
  \param width  Number of bits of nibble to display
@@ -1586,6 +1620,10 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.49  2004/04/05 12:30:52  phase1geo
+ Adding *db_replace functions to allow a design to be opened with new CDD
+ results (for GUI purposes only).
+
  Revision 1.48  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,

@@ -169,6 +169,117 @@ int tcl_func_collect_covered_lines( ClientData d, Tcl_Interp* tcl, int argc, con
 
 }
 
+int tcl_func_collect_uncovered_toggles( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+
+  int          retval = TCL_OK;
+  char*        modname;
+  expression** sigs;
+  int          sig_cnt;
+  int          i;
+  char         str[85];
+
+  modname = strdup_safe( argv[1], __FILE__, __LINE__ );
+
+  if( toggle_collect( modname, 0, &sigs, &sig_cnt ) ) {
+
+    for( i=0; i<sig_cnt; i++ ) {
+      snprintf( str, 85, "%d.%d %d.%d", sigs[i]->line, (((sigs[i]->col >> 16) & 0xffff) + 9), sigs[i]->line, ((sigs[i]->col & 0xffff) + 10) );
+      if( i == 0 ) { 
+        Tcl_SetVar( tcl, "uncovered_toggles", str, (TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT) );
+      } else {
+        Tcl_SetVar( tcl, "uncovered_toggles", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      }
+    }
+
+    free_safe( sigs );
+
+  } else {
+
+    retval = TCL_ERROR;
+
+  }
+
+  free_safe( modname );
+
+  return( retval );
+
+}
+
+int tcl_func_collect_covered_toggles( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+
+  int          retval = TCL_OK;
+  char*        modname;
+  expression** sigs;
+  int          sig_cnt;
+  int          i;
+  char         str[85];
+
+  modname = strdup_safe( argv[1], __FILE__, __LINE__ );
+
+  if( toggle_collect( modname, 1, &sigs, &sig_cnt ) ) {
+
+    for( i=0; i<sig_cnt; i++ ) {
+      snprintf( str, 85, "%d.%d %d.%d", sigs[i]->line, (((sigs[i]->col >> 16) & 0xffff) + 9), sigs[i]->line, ((sigs[i]->col & 0xffff) + 10) );
+      if( i == 0 ) {
+        Tcl_SetVar( tcl, "covered_toggles", str, (TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT) );
+      } else {
+        Tcl_SetVar( tcl, "covered_toggles", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      }
+    }
+
+    free_safe( sigs );
+
+  } else {
+
+    retval = TCL_ERROR;
+
+  }
+
+  free_safe( modname );
+
+  return( retval );
+
+}
+
+int tcl_func_get_toggle_coverage( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+
+  int   retval = TCL_OK;
+  char* modname;
+  char* signame;
+  int   msb;
+  int   lsb; 
+  char* tog01;
+  char* tog10;
+  char  tmp[20];
+
+  modname = strdup_safe( argv[1], __FILE__, __LINE__ );
+  signame = strdup_safe( argv[2], __FILE__, __LINE__ );
+
+  if( toggle_get_coverage( modname, signame, &msb, &lsb, &tog01, &tog10 ) ) {
+
+    snprintf( tmp, 20, "%d", msb );
+    Tcl_SetVar( tcl, "toggle_msb", tmp, TCL_GLOBAL_ONLY );
+    snprintf( tmp, 20, "%d", lsb );
+    Tcl_SetVar( tcl, "toggle_lsb", tmp, TCL_GLOBAL_ONLY );
+    Tcl_SetVar( tcl, "toggle01_verbose", tog01, TCL_GLOBAL_ONLY );
+    Tcl_SetVar( tcl, "toggle10_verbose", tog10, TCL_GLOBAL_ONLY );
+
+    /* Free up allocated memory */
+    free_safe( tog01 );
+    free_safe( tog10 );
+
+  } else {
+    retval = TCL_ERROR;
+  }
+
+  /* Free up allocated memory */
+  free_safe( modname );
+  free_safe( signame );
+
+  return( retval );
+
+}
+
 int tcl_func_open_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
   int   retval = TCL_OK;
@@ -266,18 +377,50 @@ int tcl_func_get_line_summary( ClientData d, Tcl_Interp* tcl, int argc, const ch
 
 }
 
+int tcl_func_get_toggle_summary( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+
+  int   retval = TCL_OK;  /* Return value for this function             */
+  char* mod_name;         /* Name of module to lookup                   */
+  int   total;            /* Contains total number of toggles evaluated */
+  int   hit01;            /* Contains total number of toggle 0->1 hit   */
+  int   hit10;            /* Contains total number of toggle 1->0 hit   */
+  char  value[20];        /* String version of a value                  */
+
+  mod_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+		     
+  if( toggle_get_module_summary( mod_name, &total, &hit01, &hit10 ) ) {
+    snprintf( value, 20, "%d", total );
+    Tcl_SetVar( tcl, "toggle_summary_total", value, TCL_GLOBAL_ONLY );
+    snprintf( value, 20, "%d", hit01 );
+    Tcl_SetVar( tcl, "toggle_summary_hit01", value, TCL_GLOBAL_ONLY );
+    snprintf( value, 20, "%d", hit10 );
+    Tcl_SetVar( tcl, "toggle_summary_hit10", value, TCL_GLOBAL_ONLY );
+  } else {
+    retval = TCL_ERROR;
+  }
+
+  free_safe( mod_name );
+
+  return( retval );
+
+}
+
 void tcl_func_initialize( Tcl_Interp* tcl, char* home ) {
 
-  Tcl_CreateCommand( tcl, "tcl_func_get_module_list",          (Tcl_CmdProc*)(tcl_func_get_module_list),          0, 0 );
-  Tcl_CreateCommand( tcl, "tcl_func_get_instance_list",        (Tcl_CmdProc*)(tcl_func_get_instance_list),        0, 0 );
-  Tcl_CreateCommand( tcl, "tcl_func_get_filename",             (Tcl_CmdProc*)(tcl_func_get_filename),             0, 0 );
-  Tcl_CreateCommand( tcl, "tcl_func_collect_uncovered_lines",  (Tcl_CmdProc*)(tcl_func_collect_uncovered_lines),  0, 0 );
-  Tcl_CreateCommand( tcl, "tcl_func_collect_covered_lines",    (Tcl_CmdProc*)(tcl_func_collect_covered_lines),    0, 0 );
-  Tcl_CreateCommand( tcl, "tcl_func_get_module_start_and_end", (Tcl_CmdProc*)(tcl_func_get_module_start_and_end), 0, 0 );
-  Tcl_CreateCommand( tcl, "tcl_func_open_cdd",                 (Tcl_CmdProc*)(tcl_func_open_cdd),                 0, 0 );
-  Tcl_CreateCommand( tcl, "tcl_func_replace_cdd",              (Tcl_CmdProc*)(tcl_func_replace_cdd),              0, 0 );
-  Tcl_CreateCommand( tcl, "tcl_func_merge_cdd",                (Tcl_CmdProc*)(tcl_func_merge_cdd),                0, 0 );
-  Tcl_CreateCommand( tcl, "tcl_func_get_line_summary",         (Tcl_CmdProc*)(tcl_func_get_line_summary),         0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_get_module_list",           (Tcl_CmdProc*)(tcl_func_get_module_list),           0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_get_instance_list",         (Tcl_CmdProc*)(tcl_func_get_instance_list),         0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_get_filename",              (Tcl_CmdProc*)(tcl_func_get_filename),              0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_collect_uncovered_lines",   (Tcl_CmdProc*)(tcl_func_collect_uncovered_lines),   0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_collect_covered_lines",     (Tcl_CmdProc*)(tcl_func_collect_covered_lines),     0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_collect_uncovered_toggles", (Tcl_CmdProc*)(tcl_func_collect_uncovered_toggles), 0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_collect_covered_toggles",   (Tcl_CmdProc*)(tcl_func_collect_covered_toggles),   0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_get_module_start_and_end",  (Tcl_CmdProc*)(tcl_func_get_module_start_and_end),  0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_get_toggle_coverage",       (Tcl_CmdProc*)(tcl_func_get_toggle_coverage),       0, 0 ); 
+  Tcl_CreateCommand( tcl, "tcl_func_open_cdd",                  (Tcl_CmdProc*)(tcl_func_open_cdd),                  0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_replace_cdd",               (Tcl_CmdProc*)(tcl_func_replace_cdd),               0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_merge_cdd",                 (Tcl_CmdProc*)(tcl_func_merge_cdd),                 0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_get_line_summary",          (Tcl_CmdProc*)(tcl_func_get_line_summary),          0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_get_toggle_summary",        (Tcl_CmdProc*)(tcl_func_get_toggle_summary),        0, 0 );
 
   /* Set HOME variable to location of scripts */
   Tcl_SetVar( tcl, "HOME", home, TCL_GLOBAL_ONLY );
@@ -286,6 +429,10 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* home ) {
 
 /*
  $Log$
+ Revision 1.5  2004/04/21 05:14:03  phase1geo
+ Adding report_gui checking to print_output and adding error handler to TCL
+ scripts.  Any errors occurring within the code will be propagated to the user.
+
  Revision 1.4  2004/04/17 14:07:55  phase1geo
  Adding replace and merge options to file menu.
 

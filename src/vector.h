@@ -34,6 +34,12 @@ bool vector_db_merge( vector* base, char** line, bool same );
 /*! \brief Reads and replaces original vector with newly read vector. */
 bool vector_db_replace( vector* base, char** line );
 
+/*! \brief Returns string containing toggle 0 -> 1 information in binary format */
+char* vector_get_toggle01( nibble* nib, int width );
+
+/*! \brief Returns string containing toggle 1 -> 0 information in binary format */
+char* vector_get_toggle10( nibble* nib, int width );
+
 /*! \brief Outputs the toggle01 information from the specified nibble to the specified output stream. */
 void vector_display_toggle01( nibble* nib, int width, FILE* ofile );
 
@@ -121,6 +127,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.20  2004/04/05 12:30:52  phase1geo
+ Adding *db_replace functions to allow a design to be opened with new CDD
+ results (for GUI purposes only).
+
  Revision 1.19  2003/10/28 13:28:00  phase1geo
  Updates for more FSM attribute handling.  Not quite there yet but full regression
  still passes.

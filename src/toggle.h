@@ -16,12 +16,23 @@
 /*! \brief Calculates the toggle coverage for the specifed expression and signal lists. */
 void toggle_get_stats( sig_link* sigl, float* total, int* hit01, int* hit10 );
 
+/*! \brief Collects all toggle expressions that match the specified coverage indication. */
+bool toggle_collect( const char* mod_name, int cov, expression*** sigs, int* sig_cnt );
+
+bool toggle_get_coverage( char* mod_name, char* sig_name, int* msb, int* lsb, char** tog01, char** tog10 );
+
+bool toggle_get_module_summary( char* mod_name, int* total, int* hit01, int* hit10 );
+
 /*! \brief Generates report output for toggle coverage. */
 void toggle_report( FILE* ofile, bool verbose );
 
 
 /*
  $Log$
+ Revision 1.7  2004/03/15 21:38:17  phase1geo
+ Updated source files after running lint on these files.  Full regression
+ still passes at this point.
+
  Revision 1.6  2002/11/05 00:20:08  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.
