@@ -1094,7 +1094,7 @@ void combination_two_vars( char*** info, int* info_size, expression* exp, char* 
   (*info)[0] = (char*)malloc_safe( length, __FILE__, __LINE__ );
   snprintf( (*info)[0], length, "        Expression %d   (%d/4)", exp->ulid, hit );
 
-  length = 24 + strlen( op );
+  length = 25 + strlen( op );
   (*info)[1] = (char*)malloc_safe( length, __FILE__, __LINE__ );
   snprintf( (*info)[1], length, "        ^^^^^^^^^^^^^ - %s", op );
 
@@ -1226,35 +1226,67 @@ void combination_multi_var_exprs( char** line1, char** line2, char** line3, expr
 
 }
 
+int combination_multi_expr_output_length( char* line1, char* line2, char* line3 ) {
+
+  int start  = 0;
+  int i;
+  int len    = strlen( line1 );
+  int length = 0;
+
+  for( i=0; i<len; i++ ) {
+    if( (i + 1) == len ) {
+      length += 3;
+    } else if( (line1[i] == '|') && ((i - start) >= line_width) ) {
+      length += 3;
+      start   = i + 1;
+    }
+  }
+
+  return( length );
+
+}
+
 /*!
  \param ofile  Pointer to file to output report contents to.
  \param line1  First line of multi-variable expression output.
  \param line2  Second line of multi-variable expression output.
  \param line3  Third line of multi-variable expression output.
 */
-void combination_multi_expr_output( FILE* ofile, char* line1, char* line2, char* line3 ) {
+void combination_multi_expr_output( char** info, char* line1, char* line2, char* line3 ) {
 
-  int start = 0;
+  int start      = 0;
   int i;
-  int len   = strlen( line1 );
+  int len        = strlen( line1 );
+  int info_index = 2;
 
   for( i=0; i<len; i++ ) {
 
     if( (i + 1) == len ) {
 
-      fprintf( ofile, "        %s\n",   (line1 + start) );
-      fprintf( ofile, "        %s\n",   (line2 + start) );
-      fprintf( ofile, "        %s\n\n", (line3 + start) );
+      info[info_index+0] = (char*)malloc_safe( strlen( line1 + start ) + 9, __FILE__, __LINE__ );
+      info[info_index+1] = (char*)malloc_safe( strlen( line2 + start ) + 9, __FILE__, __LINE__ );
+      info[info_index+2] = (char*)malloc_safe( strlen( line3 + start ) + 9, __FILE__, __LINE__ );
+
+      snprintf( info[info_index+0], (strlen( line1 + start ) + 9), "        %s", (line1 + start) );
+      snprintf( info[info_index+1], (strlen( line2 + start ) + 9), "        %s", (line2 + start) );
+      snprintf( info[info_index+2], (strlen( line3 + start ) + 9), "        %s", (line3 + start) );
 
     } else if( (line1[i] == '|') && ((i - start) >= line_width) ) {
 
       line1[i] = '\0';
       line2[i] = '\0';
       line3[i] = '\0';
-      fprintf( ofile, "        %s|\n",   (line1 + start) );
-      fprintf( ofile, "        %s|\n",   (line2 + start) );
-      fprintf( ofile, "        %s \n\n", (line3 + start) );
-      start = i + 1;
+
+      info[info_index+0] = (char*)malloc_safe( strlen( line1 + start ) + 10, __FILE__, __LINE__ );
+      info[info_index+1] = (char*)malloc_safe( strlen( line2 + start ) + 10, __FILE__, __LINE__ );
+      info[info_index+2] = (char*)malloc_safe( strlen( line3 + start ) + 11, __FILE__, __LINE__ );
+
+      snprintf( info[info_index+0], (strlen( line1 + start ) + 10), "        %s|",   (line1 + start) );
+      snprintf( info[info_index+1], (strlen( line2 + start ) + 10), "        %s|",   (line2 + start) );
+      snprintf( info[info_index+2], (strlen( line3 + start ) + 11), "        %s \n", (line3 + start) );
+
+      start       = i + 1;
+      info_index += 3;
 
     }
 
@@ -1263,20 +1295,24 @@ void combination_multi_expr_output( FILE* ofile, char* line1, char* line2, char*
 }
 
 /*!
- \param ofile  Pointer to file to output results to.
- \param exp    Pointer to top-level AND/OR expression to evaluate.
+ \param info       Pointer to character array containing coverage information to output
+ \param info_size  Pointer to integer containing number of valid array entries in info
+ \param exp        Pointer to top-level AND/OR expression to evaluate.
 
  Displays the missed combinational sequences for the specified expression to the
  specified output stream in tabular form.
 */
-void combination_multi_vars( FILE* ofile, expression* exp ) {
+void combination_multi_vars( char*** info, int* info_size, expression* exp ) {
 
-  int         ulid    = 1;
-  float       total   = 0;
-  int         hit     = 0;
-  char*       line1   = NULL;
-  char*       line2   = NULL;
-  char*       line3   = NULL;
+  int   ulid    = 1;
+  float total   = 0;
+  int   hit     = 0;
+  char* line1   = NULL;
+  char* line2   = NULL;
+  char* line3   = NULL;
+  char  tmp[20];
+  int   line_size = 1;
+  char* curr_line;
 
   /* Only output this expression if we are missing coverage. */
   if( exp->ulid != -1 ) {
@@ -1284,25 +1320,123 @@ void combination_multi_vars( FILE* ofile, expression* exp ) {
     /* Gather report output for this expression */
     combination_multi_var_exprs( &line1, &line2, &line3, exp );
 
+    /* Calculate the array needed to store the output information and allocate this memory */
+    *info_size = combination_multi_expr_output_length( line1, line2, line3 ) + 2;
+    *info      = (char**)malloc_safe( sizeof( char* ) * (*info_size), __FILE__, __LINE__ );
+
     /* Calculate hit and total values for this sub-expression */
     combination_multi_expr_calc( exp, &ulid, FALSE, &hit, &total );
 
-    fprintf( ofile, "        Expression %d   (%d/%.0f)\n", exp->ulid, hit, total );
-
+    /* Calculate needed line length */
+    snprintf( tmp, 20, "%d", exp->ulid );
+    line_size += strlen( tmp );
+    snprintf( tmp, 20, "%d", hit );
+    line_size += strlen( tmp );
+    snprintf( tmp, 20, "%.0f", total );
+    line_size += strlen( tmp );
+    line_size += 27;                   /* Number of additional characters in line below */
+    (*info)[0] = (char*)malloc_safe( line_size, __FILE__, __LINE__ );
+    
+    snprintf( (*info)[0], line_size, "        Expression %d   (%d/%.0f)", exp->ulid, hit, total );
+    
     switch( SUPPL_OP( exp->suppl ) ) {
-      case EXP_OP_AND  :  fprintf( ofile, "        ^^^^^^^^^^^^^ - &\n" );   break;
-      case EXP_OP_OR   :  fprintf( ofile, "        ^^^^^^^^^^^^^ - |\n" );   break;
-      case EXP_OP_LAND :  fprintf( ofile, "        ^^^^^^^^^^^^^ - &&\n" );  break;
-      case EXP_OP_LOR  :  fprintf( ofile, "        ^^^^^^^^^^^^^ - ||\n" );  break;
+      case EXP_OP_AND  :  (*info)[1] = strdup( "        ^^^^^^^^^^^^^ - &" );   break;
+      case EXP_OP_OR   :  (*info)[1] = strdup( "        ^^^^^^^^^^^^^ - |" );   break;
+      case EXP_OP_LAND :  (*info)[1] = strdup( "        ^^^^^^^^^^^^^ - &&" );  break;
+      case EXP_OP_LOR  :  (*info)[1] = strdup( "        ^^^^^^^^^^^^^ - ||" );  break;
       default          :  break;
     }
 
     /* Output the lines paying attention to the current line width */
-    combination_multi_expr_output( ofile, line1, line2, line3 );
+    combination_multi_expr_output( *info, line1, line2, line3 );
 
     free_safe( line1 );
     free_safe( line2 );
     free_safe( line3 );
+
+  }
+
+}
+
+void combination_get_missed_expr( char*** info, int* info_size, expression* exp, unsigned int curr_depth ) {
+
+  assert( exp != NULL );
+
+  *info_size = 0;
+
+  if( (EXPR_COMB_MISSED( exp ) == 1) &&
+      (((report_comb_depth == REPORT_DETAILED) && (curr_depth <= report_comb_depth)) ||
+        (report_comb_depth == REPORT_VERBOSE)) ) {
+
+    if( (SUPPL_IS_ROOT( exp->suppl ) == 1) || (SUPPL_OP( exp->suppl ) != SUPPL_OP( exp->parent->expr->suppl )) ||
+        ((SUPPL_OP( exp->suppl ) != EXP_OP_AND)  &&
+         (SUPPL_OP( exp->suppl ) != EXP_OP_LAND) &&
+         (SUPPL_OP( exp->suppl ) != EXP_OP_OR)   &&
+         (SUPPL_OP( exp->suppl ) != EXP_OP_LOR)) ) {
+
+      if( (exp->left != NULL) && (SUPPL_OP( exp->suppl ) == SUPPL_OP( exp->left->suppl )) &&
+          ((SUPPL_OP( exp->suppl ) == EXP_OP_AND)  ||
+           (SUPPL_OP( exp->suppl ) == EXP_OP_OR)   ||
+           (SUPPL_OP( exp->suppl ) == EXP_OP_LAND) ||
+           (SUPPL_OP( exp->suppl ) == EXP_OP_LOR)) ) {
+
+        combination_multi_vars( info, info_size, exp );
+
+      } else {
+
+        /* Create combination table */
+        switch( SUPPL_OP( exp->suppl ) ) {
+          case EXP_OP_SIG        :  combination_unary( info, info_size, exp, "" );         break;
+          case EXP_OP_XOR        :  combination_two_vars( info, info_size, exp, "^" );     break;
+          case EXP_OP_ADD        :  combination_two_vars( info, info_size, exp, "+" );     break;
+          case EXP_OP_SUBTRACT   :  combination_two_vars( info, info_size, exp, "-" );     break;
+          case EXP_OP_MULTIPLY   :  combination_unary( info, info_size, exp, "*" );        break;
+          case EXP_OP_DIVIDE     :  combination_unary( info, info_size, exp, "/" );        break;
+          case EXP_OP_MOD        :  combination_unary( info, info_size, exp, "%%" );       break;
+          case EXP_OP_AND        :  combination_two_vars( info, info_size, exp, "&" );     break;
+          case EXP_OP_OR         :  combination_two_vars( info, info_size, exp, "|" );     break;
+          case EXP_OP_NAND       :  combination_two_vars( info, info_size, exp, "~&" );    break;
+          case EXP_OP_NOR        :  combination_two_vars( info, info_size, exp, "~|" );    break;
+          case EXP_OP_NXOR       :  combination_two_vars( info, info_size, exp, "~^" );    break;
+          case EXP_OP_LT         :  combination_unary( info, info_size, exp, "<" );        break;
+          case EXP_OP_GT         :  combination_unary( info, info_size, exp, ">" );        break;
+          case EXP_OP_LSHIFT     :  combination_unary( info, info_size, exp, "<<" );       break;
+          case EXP_OP_RSHIFT     :  combination_unary( info, info_size, exp, ">>" );       break;
+          case EXP_OP_EQ         :  combination_unary( info, info_size, exp, "==" );       break;
+          case EXP_OP_CEQ        :  combination_unary( info, info_size, exp, "===" );      break;
+          case EXP_OP_LE         :  combination_unary( info, info_size, exp, "<=" );       break;
+          case EXP_OP_GE         :  combination_unary( info, info_size, exp, ">=" );       break;
+          case EXP_OP_NE         :  combination_unary( info, info_size, exp, "!=" );       break;
+          case EXP_OP_CNE        :  combination_unary( info, info_size, exp, "!==" );      break;
+          case EXP_OP_COND       :  combination_unary( info, info_size, exp, "?:" );       break;
+          case EXP_OP_LOR        :  combination_two_vars( info, info_size, exp, "||" );    break;
+          case EXP_OP_LAND       :  combination_two_vars( info, info_size, exp, "&&" );    break;
+          case EXP_OP_UINV       :  combination_unary( info, info_size, exp, "~" );        break;
+          case EXP_OP_UAND       :  combination_unary( info, info_size, exp, "&" );        break;
+          case EXP_OP_UNOT       :  combination_unary( info, info_size, exp, "!" );        break;
+          case EXP_OP_UOR        :  combination_unary( info, info_size, exp, "|" );        break;
+          case EXP_OP_UXOR       :  combination_unary( info, info_size, exp, "^" );        break;
+          case EXP_OP_UNAND      :  combination_unary( info, info_size, exp, "~&" );       break;
+          case EXP_OP_UNOR       :  combination_unary( info, info_size, exp, "~|" );       break;
+          case EXP_OP_UNXOR      :  combination_unary( info, info_size, exp, "~^" );       break;
+          case EXP_OP_PARAM_SBIT :
+          case EXP_OP_SBIT_SEL   :  combination_unary( info, info_size, exp, "[]" );       break;
+          case EXP_OP_PARAM_MBIT :
+          case EXP_OP_MBIT_SEL   :  combination_unary( info, info_size, exp, "[:]" );      break;
+          case EXP_OP_EXPAND     :  combination_unary( info, info_size, exp, "{{}}" );     break;
+          case EXP_OP_CONCAT     :  combination_unary( info, info_size, exp, "{}" );       break;
+          case EXP_OP_CASE       :  combination_unary( info, info_size, exp, "" );         break;
+          case EXP_OP_CASEX      :  combination_unary( info, info_size, exp, "" );         break;
+          case EXP_OP_CASEZ      :  combination_unary( info, info_size, exp, "" );         break;
+          case EXP_OP_PEDGE      :  combination_unary( info, info_size, exp, "posedge" );  break;
+          case EXP_OP_NEDGE      :  combination_unary( info, info_size, exp, "negedge" );  break;
+          case EXP_OP_AEDGE      :  combination_unary( info, info_size, exp, "" );         break;
+          default                :  break;
+        }
+
+      }
+
+    }
 
   }
 
@@ -1320,84 +1454,31 @@ void combination_multi_vars( FILE* ofile, expression* exp ) {
 */
 void combination_list_missed( FILE* ofile, expression* exp, unsigned int curr_depth ) {
 
+  char** info;       /* String array containing combination coverage information for this expression */
+  int    info_size;  /* Specifies the number of valid entries in the info array                      */
+  int    i;          /* Loop iterator                                                                */
+  
   if( exp != NULL ) {
     
     combination_list_missed( ofile, exp->left,  combination_calc_depth( exp, curr_depth, TRUE ) );
     combination_list_missed( ofile, exp->right, combination_calc_depth( exp, curr_depth, FALSE ) );
 
-    if( (EXPR_COMB_MISSED( exp ) == 1) && 
-        (((report_comb_depth == REPORT_DETAILED) && (curr_depth <= report_comb_depth)) ||
-          (report_comb_depth == REPORT_VERBOSE)) ) {
+    /* Get coverage information for this expression */
+    combination_get_missed_expr( &info, &info_size, exp, curr_depth );
 
-      if( (SUPPL_IS_ROOT( exp->suppl ) == 1) || (SUPPL_OP( exp->suppl ) != SUPPL_OP( exp->parent->expr->suppl )) ||
-          ((SUPPL_OP( exp->suppl ) != EXP_OP_AND)  &&
-           (SUPPL_OP( exp->suppl ) != EXP_OP_LAND) &&
-           (SUPPL_OP( exp->suppl ) != EXP_OP_OR)   &&
-           (SUPPL_OP( exp->suppl ) != EXP_OP_LOR)) ) {
+    /* If there was any coverage information for this expression, output it to the specified output stream */
+    if( info_size > 0 ) {
 
-        if( (exp->left != NULL) && (SUPPL_OP( exp->suppl ) == SUPPL_OP( exp->left->suppl )) &&
-            ((SUPPL_OP( exp->suppl ) == EXP_OP_AND)  ||
-             (SUPPL_OP( exp->suppl ) == EXP_OP_OR)   ||
-             (SUPPL_OP( exp->suppl ) == EXP_OP_LAND) ||
-             (SUPPL_OP( exp->suppl ) == EXP_OP_LOR)) ) {
+      for( i=0; i<info_size; i++ ) {
 
-          combination_multi_vars( ofile, exp );
-
-        } else {
-
-          /* Create combination table */
-          switch( SUPPL_OP( exp->suppl ) ) {
-            case EXP_OP_SIG        :  combination_unary( ofile, exp, "" );         break;
-            case EXP_OP_XOR        :  combination_two_vars( ofile, exp, "^" );     break;
-            case EXP_OP_ADD        :  combination_two_vars( ofile, exp, "+" );     break;
-            case EXP_OP_SUBTRACT   :  combination_two_vars( ofile, exp, "-" );     break;
-            case EXP_OP_MULTIPLY   :  combination_unary( ofile, exp, "*" );        break;
-            case EXP_OP_DIVIDE     :  combination_unary( ofile, exp, "/" );        break;
-            case EXP_OP_MOD        :  combination_unary( ofile, exp, "%%" );       break;
-            case EXP_OP_AND        :  combination_two_vars( ofile, exp, "&" );     break;
-            case EXP_OP_OR         :  combination_two_vars( ofile, exp, "|" );     break;
-            case EXP_OP_NAND       :  combination_two_vars( ofile, exp, "~&" );    break;
-            case EXP_OP_NOR        :  combination_two_vars( ofile, exp, "~|" );    break;
-            case EXP_OP_NXOR       :  combination_two_vars( ofile, exp, "~^" );    break;
-            case EXP_OP_LT         :  combination_unary( ofile, exp, "<" );        break;
-            case EXP_OP_GT         :  combination_unary( ofile, exp, ">" );        break;
-            case EXP_OP_LSHIFT     :  combination_unary( ofile, exp, "<<" );       break;
-            case EXP_OP_RSHIFT     :  combination_unary( ofile, exp, ">>" );       break;
-            case EXP_OP_EQ         :  combination_unary( ofile, exp, "==" );       break;
-            case EXP_OP_CEQ        :  combination_unary( ofile, exp, "===" );      break;
-            case EXP_OP_LE         :  combination_unary( ofile, exp, "<=" );       break;
-            case EXP_OP_GE         :  combination_unary( ofile, exp, ">=" );       break;
-            case EXP_OP_NE         :  combination_unary( ofile, exp, "!=" );       break;
-            case EXP_OP_CNE        :  combination_unary( ofile, exp, "!==" );      break;
-            case EXP_OP_COND       :  combination_unary( ofile, exp, "?:" );       break;
-            case EXP_OP_LOR        :  combination_two_vars( ofile, exp, "||" );    break;
-            case EXP_OP_LAND       :  combination_two_vars( ofile, exp, "&&" );    break;
-            case EXP_OP_UINV       :  combination_unary( ofile, exp, "~" );        break;
-            case EXP_OP_UAND       :  combination_unary( ofile, exp, "&" );        break;
-            case EXP_OP_UNOT       :  combination_unary( ofile, exp, "!" );        break;
-            case EXP_OP_UOR        :  combination_unary( ofile, exp, "|" );        break;
-            case EXP_OP_UXOR       :  combination_unary( ofile, exp, "^" );        break;
-            case EXP_OP_UNAND      :  combination_unary( ofile, exp, "~&" );       break;
-            case EXP_OP_UNOR       :  combination_unary( ofile, exp, "~|" );       break;
-            case EXP_OP_UNXOR      :  combination_unary( ofile, exp, "~^" );       break;
-            case EXP_OP_PARAM_SBIT :
-            case EXP_OP_SBIT_SEL   :  combination_unary( ofile, exp, "[]" );       break;
-            case EXP_OP_PARAM_MBIT :
-            case EXP_OP_MBIT_SEL   :  combination_unary( ofile, exp, "[:]" );      break;
-            case EXP_OP_EXPAND     :  combination_unary( ofile, exp, "{{}}" );     break;
-            case EXP_OP_CONCAT     :  combination_unary( ofile, exp, "{}" );       break;
-            case EXP_OP_CASE       :  combination_unary( ofile, exp, "" );         break;
-            case EXP_OP_CASEX      :  combination_unary( ofile, exp, "" );         break;
-            case EXP_OP_CASEZ      :  combination_unary( ofile, exp, "" );         break;        
-            case EXP_OP_PEDGE      :  combination_unary( ofile, exp, "posedge" );  break;
-            case EXP_OP_NEDGE      :  combination_unary( ofile, exp, "negedge" );  break;
-            case EXP_OP_AEDGE      :  combination_unary( ofile, exp, "" );         break;
-            default                :  break;
-          }
-      
-        }
+        fprintf( ofile, "%s\n", info[i] );
+        free_safe( info[i] );
 
       }
+
+      fprintf( ofile, "\n" );
+
+      free_safe( info );
 
     }
 
@@ -1651,7 +1732,7 @@ bool combination_collect( const char* mod_name, expression*** covs, int* cov_cnt
 
 }
 
-bool combination_get_coverage( char* mod_name, int expr_id, char*** code, int** uline_groups, int* code_size, char*** ulines, int* uline_size ) {
+bool combination_get_expression( char* mod_name, int expr_id, char*** code, int** uline_groups, int* code_size, char*** ulines, int* uline_size ) {
 
   bool       retval    = TRUE;  /* Return value for this function */
   module     mod;               /* Module used for searching      */
@@ -1738,6 +1819,38 @@ bool combination_get_coverage( char* mod_name, int expr_id, char*** code, int** 
 
 }
 
+bool combination_get_coverage( char* mod_name, int uline_id, char*** info, int* info_size ) {
+
+  bool      retval = TRUE;  /* Return value for this function       */
+  module    mod;            /* Module used to find specified module */
+  mod_link* modl;           /* Pointer to found module link         */
+  exp_link* expl;           /* Pointer to current expression link   */
+
+  mod.name = mod_name;
+
+  if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
+
+    expl = modl->mod->exp_head;
+    while( (expl != NULL) && (expl->exp->ulid != uline_id) ) {
+      expl = expl->next;
+    }
+
+    if( expl != NULL ) {
+      combination_get_missed_expr( info, info_size, expl->exp, 0 );
+    } else {
+      retval = FALSE;
+    }
+
+  } else {
+
+    retval = FALSE;
+
+  }
+
+  return( retval );
+
+}
+
 /*!
  \param ofile     Pointer to file to output results to.
  \param verbose   Specifies whether or not to provide verbose information
@@ -1797,6 +1910,11 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.101  2004/08/17 04:43:57  phase1geo
+ Updating unary and binary combinational expression output functions to create
+ string arrays instead of immediately sending the information to standard output
+ to support GUI interface as well as ASCII interface.
+
  Revision 1.100  2004/08/13 20:45:05  phase1geo
  More added for combinational logic verbose reporting.  At this point, the
  code is being output with underlines that can move up and down the expression

@@ -128,9 +128,35 @@ proc display_comb_info {} {
 
 }
 
+proc display_comb_coverage {ulid} {
+
+  global curr_mod_name comb_expr_cov
+
+  # Allow us to clear out text box and repopulate
+  .combwin.f.tc configure -state normal
+
+  # Clear the text-box before any insertion is being made
+  .combwin.f.tc delete 1.0 end
+
+  # Get combinational coverage information
+  set comb_expr_cov ""
+  tcl_func_get_comb_coverage $curr_mod_name $ulid
+
+  # Display coverage information
+  .combwin.f.tc insert end "\n\n"
+  foreach line $comb_expr_cov {
+    .combwin.f.tc insert end "$line\n"
+  }
+
+  # Keep user from writing in text boxes
+  .combwin.f.tc configure -state disabled
+
+}
+
 proc get_expr_index_from_range {selected_range} {
 
   global comb_uline_exprs comb_curr_uline_id
+  global curr_mod_name
 
   # Get range information
   set start_info [split [lindex $selected_range 0] .]
@@ -175,7 +201,13 @@ proc get_expr_index_from_range {selected_range} {
 
     # Output current expression in information bar
     if {$comb_curr_uline_id != 0} {
+
+      # Display information in textbox
+      display_comb_coverage $comb_curr_uline_id
+
+      # Place information into infobar
       .combwin.f.info configure -text "Current Expression: $comb_curr_uline_id"
+
     }
 
     return $i
@@ -437,8 +469,8 @@ proc create_comb_window {mod_name expr_id} {
     scrollbar .combwin.f.tvb -orient vertical   -command ".combwin.f.t yview"
 
     # Add expression coverage information
-    label .combwin.f.l1 -anchor w -text "Coverage Information:"
-    text  .combwin.f.tc -height 20 -width 100 -xscrollcommand ".combwin.f.chb set" -yscrollcommand ".combwin.f.cvb set" -wrap none
+    label .combwin.f.l1 -anchor w -text "Coverage Information:  ('*' represents a case that was not hit)"
+    text  .combwin.f.tc -height 20 -width 100 -xscrollcommand ".combwin.f.chb set" -yscrollcommand ".combwin.f.cvb set" -wrap none -state disabled
     scrollbar .combwin.f.chb -orient horizontal -command ".combwin.f.tc xview"
     scrollbar .combwin.f.cvb -orient vertical   -command ".combwin.f.tc yview"
 
@@ -467,7 +499,7 @@ proc create_comb_window {mod_name expr_id} {
   set comb_code         "" 
   set comb_uline_groups "" 
   set comb_ulines       ""
-  tcl_func_get_comb_coverage $mod_name $expr_id
+  tcl_func_get_comb_expression $mod_name $expr_id
 
   organize_underlines
 

@@ -389,7 +389,7 @@ int tcl_func_collect_combs( ClientData d, Tcl_Interp* tcl, int argc, const char*
 
 }
 
-int tcl_func_get_comb_coverage( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_get_comb_expression( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
   int    retval = TCL_OK;
   char*  modname;
@@ -405,7 +405,7 @@ int tcl_func_get_comb_coverage( ClientData d, Tcl_Interp* tcl, int argc, const c
   modname = strdup_safe( argv[1], __FILE__, __LINE__ );
   expr_id = atol( argv[2] );
 
-  if( combination_get_coverage( modname, expr_id, &code, &uline_groups, &code_size, &ulines, &uline_size ) ) {
+  if( combination_get_expression( modname, expr_id, &code, &uline_groups, &code_size, &ulines, &uline_size ) ) {
 
     for( i=0; i<code_size; i++ ) {
       if( i == 0 ) {
@@ -443,6 +443,49 @@ int tcl_func_get_comb_coverage( ClientData d, Tcl_Interp* tcl, int argc, const c
     snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find module %s in design", argv[1] );
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    retval = TCL_ERROR;
+  }
+
+  /* Free up allocated memory */
+  free_safe( modname );
+
+  return( retval );
+
+}
+
+int tcl_func_get_comb_coverage( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+
+  int    retval = TCL_OK;  /* Return value for this function                      */
+  char*  modname;          /* Name of module containing expression to lookup      */
+  int    ulid;             /* Underline ID of expression to find                  */
+  char** info;             /* Array containing lines of coverage information text */
+  int    info_size;        /* Specifies number of elements in info array          */
+  int    i;                /* Loop iterator                                       */
+
+  modname = strdup_safe( argv[1], __FILE__, __LINE__ );
+  ulid    = atol( argv[2] );
+
+  if( combination_get_coverage( modname, ulid, &info, &info_size ) ) {
+
+    if( info_size > 0 ) {
+
+      for( i=0; i<info_size; i++ ) {
+        if( i == 0 ) {
+          Tcl_SetVar( tcl, "comb_expr_cov", info[i], (TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT) );
+        } else {
+          Tcl_SetVar( tcl, "comb_expr_cov", info[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+        }
+        free_safe( info[i] );
+      }
+
+      free_safe( info );
+
+    }
+
+  } else {
+
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find module %s and/or expression ID %d in design", argv[1], ulid );
+    Tcl_AddErrorInfo( tcl, user_msg );
     retval = TCL_ERROR;
   }
 
@@ -627,6 +670,7 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* home ) {
   Tcl_CreateCommand( tcl, "tcl_func_collect_combs",             (Tcl_CmdProc*)(tcl_func_collect_combs),             0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_module_start_and_end",  (Tcl_CmdProc*)(tcl_func_get_module_start_and_end),  0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_toggle_coverage",       (Tcl_CmdProc*)(tcl_func_get_toggle_coverage),       0, 0 ); 
+  Tcl_CreateCommand( tcl, "tcl_func_get_comb_expression",       (Tcl_CmdProc*)(tcl_func_get_comb_expression),       0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_comb_coverage",         (Tcl_CmdProc*)(tcl_func_get_comb_coverage),         0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_open_cdd",                  (Tcl_CmdProc*)(tcl_func_open_cdd),                  0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_replace_cdd",               (Tcl_CmdProc*)(tcl_func_replace_cdd),               0, 0 );
@@ -642,6 +686,11 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* home ) {
 
 /*
  $Log$
+ Revision 1.11  2004/08/13 20:45:05  phase1geo
+ More added for combinational logic verbose reporting.  At this point, the
+ code is being output with underlines that can move up and down the expression
+ tree.  No expression reporting is being done at this time, however.
+
  Revision 1.10  2004/08/12 12:56:32  phase1geo
  Fixing error in combinational logic collection function for covered logic.
 
