@@ -2,6 +2,108 @@
  \file     arc.c
  \author   Trevor Williams  (trevorw@sgi.com)
  \date     8/25/2003
+
+ \par What is an arc?
+ This group of functions handles the allocation, initialization, deallocation, and manipulation
+ of an arc array.  An arc array is a specialized, variable sized, compact byte array that contains
+ all of the information necessary for storing state and state transition information for a single
+ FSM within a design.  To store this information into as compact a representation as possible, the
+ data is bit-packed into the array.
+
+ \par
+ The first 7 bytes of the array  are known as the "arc header".  Every arc array is required to have
+ this information.  The layout of the header is shown below:
+
+ \par
+ <table>
+   <tr> <td><strong>Byte</strong></td> <td><strong>Description</strong></td> </tr>
+   <tr> <td> 0 </td> <td> Bits [ 7:0] of output state variable width </td> </tr>
+   <tr> <td> 1 </td> <td> Bits [15:8] of output state variable width </td> </tr>
+   <tr> <td> 2 </td> <td> Bits [ 7:0] of number of state transition entries currently allocated </td> </tr>
+   <tr> <td> 3 </td> <td> Bits [15:8] of number of state transition entries currently allocated </td> </tr>
+   <tr> <td> 4 </td> <td> Bits [ 7:0] of number of state transition entries currently occupied </td> </tr>
+   <tr> <td> 5 </td> <td> Bits [15:8] of number of state transition entries currently occupied </td> </tr>
+   <tr> <td> 6 </td> <td> Bits [ 7:0] of arc array supplemental field </td> </tr>
+ </table>
+
+ \par
+ Note:  The arc array supplemental field contains miscellaneous information about this arc array.
+ Currently, only bit 0 is used to indicate if the user has specified state transitions manually (using
+ the Verilog-2001 inline attribute mechanism) or whether no state transitions are known prior to simulation.
+
+ \par
+ The rest of the bytes in the arc array represent a list of state transition <strong>entries</strong>.
+ An entry contains enough information to describe a bidirectional state transition with coverage
+ information.  The bit-width of an entry is determined by taking bytes 0 & 1 of the header (the output
+ state variable width, multiplying this value by 2, and adding the number of entry supplemental bits
+ for an entry (currently this value is 5).  Each entry is byte-aligned in the arc array.  The fields that
+ comprise an entry are described below.
+
+ \par
+ <table>
+   <tr> <th>Bits</th> <th>Description</th> </tr>
+   <tr> <td> 0 </td> <td> Set to 1 if the forward bidirectional state transition was hit; otherwise, set to 0. </td> </tr>
+   <tr> <td> 1 </td> <td> Set to 1 if the reverse bidirectional state transition was hit; otherwise, set to 0. </td> </tr>
+   <tr> <td> 2 </td> <td> Set to 1 if this entry is bidirectional (reverse is a transition); otherwise, only forward is valid. </td> </tr>
+   <tr> <td> 3 </td> <td> Set to 1 if the output state of the forward transition is a new state in the arc array. </td> </tr>
+   <tr> <td> 4 </td> <td> Set to 1 if the input state of the forward transition is a new state in the arc array. </td> </tr>
+   <tr> <td> (width + 5):5 </td> <td> Bit value of output state of the forward transition. </td> </tr>
+   <tr> <td> ((width * 2) + 5):(width + 5) </td> <td> Bit value of input state of the forward transition. </td> </tr>
+ </table>
+
+ \par Adding State Transitions
+ When an state transition occurs during simulation, the arc array is searched to see if an entry already exists that
+ contains the same state transition.  If no matching entry is found, a new entry is added to the existing arc array.
+ If the arc array allocated is currently full (current allocated size in header equals the current number of used
+ entries), the array is grown.  The number of entries that the array grows is equal to the bit width of the output
+ state variable.  When the new state is added, the entry is stored as a "forward" entry.  A forward entry is an entry
+ that contains the input state value in the upper bits of the entry and the output state value in the lower bits of
+ the entry.  If the state is added prior to simulation, bit 0 (hit forward) of the entry is set to 0; otherwise, it
+ is set to a value of 1, indicating that the forward version of the state transition was hit.  If a state transition
+ is found in the array but the order of the input and output values are reversed from the stored entry, the entry
+ is stored into the same entry, setting bit 2 (bidirectional entry bit) to a value of 1.  This indicates that the
+ current entry contains a forward entry and a reverse entry (input state value is stored in lower order bits and
+ output state value is stored in upper order bits of the entry).  If this type of entry is stored prior to simulation,
+ bit 1 (reverse hit bit) is set to 0; otherwise, the bit is set to a value of 1.  The following example shows an arc
+ array as state transitions are added to it during simulation.
+
+ \par
+ <table>
+   <caption align=bottom>HF: Forward direction hit, HR: Reverse direction hit, BD: Entry is bidirectional</caption>
+   <tr> <th>Event</th> <th colspan=3>Entry</th> <th>Action</th> </tr>
+   <tr> <td></td> <td>0</td> <td>1</td> <td>2</td> </tr>
+   <tr> <td>Add 0-&gt;1</td> <td>0-&gt;1,HF=1,HR=0,BD=0</td> <td></td> <td></td> <td>0-&gt;1 not found in table, add as forward in entry 0</td> </tr>
+   <tr> <td>Add 1-&gt;2</td> <td>0-&gt;1,HF=1,HR=0,BD=0</tr> <td>1-&gt;2,HF=1,HR=0,BD=0</td> <td></td> <td>1-&gt;2 not found in table, add as forward in entry 1</td> </tr>
+   <tr> <td>Add 1-&gt;0</td> <td>0-&gt;1,HF=1,HR=1,BD=1</tr> <td>1-&gt;2,HF=1,HR=0,BD=0</td> <td></td> <td>1-&gt;0 found in entry 0, add as reverse and set bidirectional entry bit</td></tr>
+ </table>
+
+ \par Calculating FSM State Coverage Metrics
+ To calculate the number of FSM states that are in an arc array, we first need to figure out what state values
+ are unique in the arc array.  Since state transitions contain two state values (input and output), we need to
+ compare each state whether it is an input or an output state to every other state value in the arc array.  To
+ do this, we start with the input state (in the forward direction -- value in upper bits of entry) in entry 0
+ and compare it to each and every state in the arc array.  If the current state value matches the first entry
+ and the current state value is in the upper bits of the entry, bit 4 is set in the entry's supplemental field
+ to indicate that its state is not unique.  If the current state value matches the first entry and the current
+ state value is in the lower bits of the entry, bit 5 is set in the entry's supplemental field to indicate that
+ its state is not unique.  If the current value does not match the first state value, nothing happens.  After
+ all states have been compared, the right value (if bit 5 in its entry supplemental field is not set) is
+ compared to all of the rest of the state values (if their bit 4 or bit 5 in their supplemental field is not
+ already set) are compared.  This continues for all state values.  After the state comparing phase has occurred,
+ we can simply walk through the arc array counting all of the states that do not have their corresponding bit 4
+ or bit 5 set.
+
+ \par Calculating FSM State Transition Coverage Metrics
+ To calculate state transition coverage for the arc array is simple.  Just count the number of entries that have
+ bit 0 set to 1 and bits 1 and 2 set to 1.  This will give you the number of state transitions that were hit
+ during simulation.
+
+ \par Outputting an Arc to a File
+ Writing and reading an arc to and from a file is accomplished by writing each byte in the arc array to the file
+ in hexidecimal format (zero-filling the output) with no spaces between the bytes.  Additionally, if a byte
+ contains the hexidecimal value of 0x0, simply output a comma character (this saves one character in the file for
+ each byte that contains a value of 0x0).  Keeping the output of an arc array to as small as possible in the file
+ is necessary due to the large memory footprint that just one FSM can take.
 */
 
 #include <stdlib.h>
@@ -1108,6 +1210,11 @@ void arc_dealloc( char* arcs ) {
 
 /*
  $Log$
+ Revision 1.20  2003/11/10 04:25:50  phase1geo
+ Adding more FSM diagnostics to regression suite.  All major testing for
+ current FSM code should be complete at this time.  A few bug fixes to files
+ that were found during this regression testing.
+
  Revision 1.19  2003/11/08 04:21:26  phase1geo
  Adding several new FSM diagnostics to regression suite to verify inline
  attributes.  Fixed bug in arc.c where states were not being identified
