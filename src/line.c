@@ -88,7 +88,7 @@ bool line_instance_summary( FILE* ofile, mod_inst* root, char* parent_inst ) {
 
   curr = root->child_head;
   while( curr != NULL ) {
-    line_instance_summary( ofile, curr, root->name );
+    miss = miss + line_instance_summary( ofile, curr, root->name );
     curr = curr->next;
   }
 
@@ -132,7 +132,7 @@ bool line_module_summary( FILE* ofile, mod_link* head ) {
            percent );
 
   if( head->next != NULL ) {
-    line_module_summary( ofile, head->next );
+    miss = miss + line_module_summary( ofile, head->next );
   }
 
   return( miss > 0 );
@@ -164,11 +164,6 @@ void line_display_verbose( FILE* ofile, stmt_link* stmtl ) {
         (SUPPL_OP( stmtl->stmt->exp->suppl ) != EXP_OP_DEFAULT) ) {
 
       unexec_exp = stmtl->stmt->exp;
-/*
-      while( (unexec_exp->parent->expr != NULL) && (unexec_exp->parent->expr->line == unexec_exp->line) ) {
-        unexec_exp = unexec_exp->parent->expr;
-      }
-*/
 
       code = codegen_gen_expr( unexec_exp, unexec_exp->line );
       fprintf( ofile, "%7d:    %s\n", unexec_exp->line, code );
@@ -291,6 +286,11 @@ void line_report( FILE* ofile, bool verbose, bool instance ) {
 }
 
 /* $Log$
+/* Revision 1.14  2002/07/10 13:15:57  phase1geo
+/* Adding case1.1.v Verilog diagnostic to check default case statement.  There
+/* were reporting problems related to this.  Report problems have been fixed and
+/* full regression passes.
+/*
 /* Revision 1.13  2002/07/09 03:24:48  phase1geo
 /* Various fixes for module instantiantion handling.  This now works.  Also
 /* modified report output for toggle, line and combinational information.

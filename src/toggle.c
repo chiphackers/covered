@@ -107,7 +107,7 @@ bool toggle_instance_summary( FILE* ofile, mod_inst* root, char* parent_inst ) {
 
   curr = root->child_head;
   while( curr != NULL ) {
-    toggle_instance_summary( ofile, curr, root->name );
+    miss01 = miss01 + toggle_instance_summary( ofile, curr, root->name );
     curr = curr->next;
   }
 
@@ -166,7 +166,7 @@ bool toggle_module_summary( FILE* ofile, mod_link* head ) {
            percent10 );
 
   if( head->next != NULL ) {
-    toggle_module_summary( ofile, head->next );
+    miss01 = miss01 + toggle_module_summary( ofile, head->next );
   }
 
   return( (miss01 > 0) || (miss10 > 0) );
@@ -323,6 +323,11 @@ void toggle_report( FILE* ofile, bool verbose, bool instance ) {
 }
 
 /* $Log$
+/* Revision 1.6  2002/07/09 03:24:48  phase1geo
+/* Various fixes for module instantiantion handling.  This now works.  Also
+/* modified report output for toggle, line and combinational information.
+/* Regression passes.
+/*
 /* Revision 1.5  2002/07/03 03:31:11  phase1geo
 /* Adding RCS Log strings in files that were missing them so that file version
 /* information is contained in every source and header file.  Reordering src

@@ -61,9 +61,9 @@ void combination_get_stats( exp_link* expl, float* total, int* hit ) {
 */
 bool combination_instance_summary( FILE* ofile, mod_inst* root, char* parent ) {
 
-  mod_inst* curr;       /* Pointer to current child module instance of this node */
-  float     percent;    /* Percentage of lines hit                               */
-  float     miss;       /* Number of lines missed                                */
+  mod_inst* curr;          /* Pointer to current child module instance of this node               */
+  float     percent;       /* Percentage of lines hit                                             */
+  float     miss;          /* Number of lines missed                                              */
 
   assert( root != NULL );
   assert( root->stat != NULL );
@@ -85,7 +85,7 @@ bool combination_instance_summary( FILE* ofile, mod_inst* root, char* parent ) {
 
   curr = root->child_head;
   while( curr != NULL ) {
-    combination_instance_summary( ofile, curr, root->name );
+    miss = miss + combination_instance_summary( ofile, curr, root->name );
     curr = curr->next;
   }
 
@@ -133,7 +133,7 @@ bool combination_module_summary( FILE* ofile, mod_link* head ) {
            percent );
 
   if( head->next != NULL ) {
-    combination_module_summary( ofile, head->next );
+    miss = miss + combination_module_summary( ofile, head->next );
   }
 
   return( miss > 0 );
@@ -756,6 +756,10 @@ void combination_report( FILE* ofile, bool verbose, bool instance ) {
 
 
 /* $Log$
+/* Revision 1.32  2002/07/14 05:10:42  phase1geo
+/* Added support for signal concatenation in score and report commands.  Fixed
+/* bugs in this code (and multiplication).
+/*
 /* Revision 1.31  2002/07/10 16:27:17  phase1geo
 /* Fixing output for single/multi-bit select signals in reports.
 /*
