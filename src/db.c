@@ -931,6 +931,7 @@ void db_remove_statement_from_current_module( statement* stmt ) {
     /* Remove expression from current module expression list and delete expressions */
     exp_link_remove( stmt->exp, &(curr_module->exp_head), &(curr_module->exp_tail), TRUE );
 
+    /* Remove this statement link from the current module's stmt_link list */
     stmt_link_unlink( stmt, &(curr_module->stmt_head), &(curr_module->stmt_tail) );
 
   }
@@ -1325,6 +1326,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.121  2005/01/10 23:03:37  phase1geo
+ Added code to properly report race conditions.  Added code to remove statement blocks
+ from module when race conditions are found.
+
  Revision 1.120  2005/01/10 02:59:24  phase1geo
  Code added for race condition checking that checks for signals being assigned
  in multiple statements.  Working on handling bit selects -- this is in progress.

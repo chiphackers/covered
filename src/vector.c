@@ -704,6 +704,9 @@ bool vector_set_assigned( vector* vec, int msb, int lsb ) {
   bool prev_assigned = FALSE;  /* Specifies if any set bit was previously set */
   int  i;                      /* Loop iterator                               */
 
+  assert( vec != NULL );
+  assert( (msb - lsb) < vec->width );
+
   for( i=lsb; i<=msb; i++ ) {
     if( vec->value[i].part.misc == 1 ) {
       prev_assigned = TRUE;
@@ -1773,6 +1776,9 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.58  2005/01/11 14:24:16  phase1geo
+ Intermediate checkin.
+
  Revision 1.57  2005/01/10 02:59:30  phase1geo
  Code added for race condition checking that checks for signals being assigned
  in multiple statements.  Working on handling bit selects -- this is in progress.

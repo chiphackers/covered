@@ -580,14 +580,10 @@ void str_link_delete_list( str_link* head ) {
 
 void stmt_link_unlink( statement* stmt, stmt_link** head, stmt_link** tail ) {
 
-  stmt_iter  curr;  /* Statement list iterator             */
-  stmt_link* tmp;   /* Temporary pointer to statement link */
-  stmt_link* next;
-  stmt_link* next2;
-  stmt_link* last2;
-
-  printf( "Removing statement %d\n", stmt->exp->id );
-  stmt_link_display( *head );
+  stmt_iter  curr;   /* Statement list iterator                       */
+  stmt_link* next;   /* Pointer to next stmt_link in list             */
+  stmt_link* next2;  /* Pointer to next after next stmt_link in list  */
+  stmt_link* last2;  /* Pointer to last before last stmt_link in list */
 
   stmt_iter_reset( &curr, *head );
 
@@ -596,9 +592,6 @@ void stmt_link_unlink( statement* stmt, stmt_link** head, stmt_link** tail ) {
   }
 
   if( curr.curr != NULL ) {
-
-    printf( "Statement to be removed was found\n" );
-    tmp = curr.curr;
 
     if( (curr.curr == *head) && (curr.curr == *tail) ) {
       *head = *tail = NULL;
@@ -620,10 +613,7 @@ void stmt_link_unlink( statement* stmt, stmt_link** head, stmt_link** tail ) {
     }
 
     /* Deallocate the stmt_link */
-    free_safe( tmp );
-
-    printf( "Statement list after statement is removed\n" );
-    stmt_link_display( *head );
+    free_safe( curr.curr );
 
   }
 
@@ -769,6 +759,10 @@ void mod_link_delete_list( mod_link* head ) {
 
 /*
  $Log$
+ Revision 1.32  2005/01/24 13:21:45  phase1geo
+ Modifying unlinking algorithm for statement links.  Still getting
+ segmentation fault at this time.
+
  Revision 1.31  2005/01/11 14:24:16  phase1geo
  Intermediate checkin.
 

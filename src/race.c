@@ -83,6 +83,8 @@ statement* race_get_head_statement( module* mod, expression* expr ) {
   assert( si.curr != NULL );
 
   /* Back up to the head statement once we have found the matching statement */
+  stmt_iter_next( &si );
+  stmt_iter_reverse( &si );
   stmt_iter_find_head( &si, FALSE );
 
   assert( si.curr != NULL );
@@ -237,15 +239,15 @@ void race_check_one_block_assignment( module* mod ) {
         /* Check to see if the current signal is already being assigned in another statement */
         if( sig_stmt == -1 ) {
 
+	  /* Get index of base signal statement in sb array */
+          sig_stmt = race_find_head_statement( curr_stmt );
+	  assert( sig_stmt != -1 );
+
           /* Check to see if current signal is also an input port */ 
           if( (sigl->sig->value->suppl.part.inport == 1) || curr_race ) {
             race_handle_race_condition( expl->exp, mod, curr_stmt, NULL, 6 );
 	    sb[sig_stmt].remove = TRUE;
           }
-
-	  /* Get index of base signal statement in sb array */
-          sig_stmt = race_find_head_statement( curr_stmt );
-	  assert( sig_stmt != -1 );
 
         } else if( (sb[sig_stmt].stmt != curr_stmt) && curr_race ) {
 
@@ -364,6 +366,9 @@ void race_check_modules() {
 
 /*
  $Log$
+ Revision 1.13  2005/01/11 14:24:16  phase1geo
+ Intermediate checkin.
+
  Revision 1.12  2005/01/10 23:03:39  phase1geo
  Added code to properly report race conditions.  Added code to remove statement blocks
  from module when race conditions are found.
