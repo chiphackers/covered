@@ -489,6 +489,7 @@ void combination_list_missed( FILE* ofile, expression* exp, int* exp_id ) {
         case EXP_OP_GE       :  combination_unary( ofile, exp );                 break;
         case EXP_OP_NE       :  combination_unary( ofile, exp );                 break;
         case EXP_OP_CNE      :  combination_unary( ofile, exp );                 break;
+        case EXP_OP_COND     :  combination_unary( ofile, exp );                 break;
         case EXP_OP_LOR      :  combination_two_vars( ofile, exp, 0, 1, 1, 1 );  break;
         case EXP_OP_LAND     :  combination_two_vars( ofile, exp, 0, 0, 0, 1 );  break;
         case EXP_OP_UINV     :  combination_unary( ofile, exp );                 break;
@@ -675,6 +676,11 @@ void combination_report( FILE* ofile, bool verbose, bool instance ) {
 
 
 /* $Log$
+/* Revision 1.19  2002/07/02 18:42:18  phase1geo
+/* Various bug fixes.  Added support for multiple signals sharing the same VCD
+/* symbol.  Changed conditional support to allow proper simulation results.
+/* Updated VCD parser to allow for symbols containing only alphanumeric characters.
+/*
 /* Revision 1.18  2002/06/27 21:18:48  phase1geo
 /* Fixing report Verilog output.  simple.v verilog diagnostic now passes.
 /*

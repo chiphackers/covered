@@ -361,9 +361,10 @@ void expression_display( expression* expr ) {
 
   assert( expr != NULL );
 
-  printf( "  Expression =>  id: %d, line: %d, addr: 0x%lx, right: 0x%lx, left: 0x%lx\n", 
+  printf( "  Expression =>  id: %d, line: %d, suppl: %x, addr: 0x%lx, right: 0x%lx, left: 0x%lx\n", 
           expr->id,
           expr->line,
+          expr->suppl,
           expr,
           expr->right, 
           expr->left );
@@ -392,10 +393,6 @@ void expression_operate( expression* expr ) {
   nibble  value32[ VECTOR_SIZE( 32 ) ];  /* 32-bit nibble value                   */            
 
   if( expr != NULL ) {
-
-    /* Evaluate left and right expressions before evaluating this expression */
-//    expression_operate( expr->right );
-//    expression_operate( expr->left  );
 
     assert( expr->value != NULL );
 
@@ -747,6 +744,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.22  2002/07/02 19:52:50  phase1geo
+/* Removing unecessary diagnostics.  Cleaning up extraneous output and
+/* generating new documentation from source.  Regression passes at the
+/* current time.
+/*
 /* Revision 1.21  2002/07/02 18:42:18  phase1geo
 /* Various bug fixes.  Added support for multiple signals sharing the same VCD
 /* symbol.  Changed conditional support to allow proper simulation results.

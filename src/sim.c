@@ -90,8 +90,8 @@ void sim_expr_changed( expression* expr ) {
 
   expression* parent;    /* Pointer to parent expression of the current expression */
 
-  /* If any of the changed bits are set, stop traversing now */
-  if( (SUPPL_IS_LEFT_CHANGED( expr->suppl )  == 0) &&
+  /* No need to continue to traverse up tree if both CHANGED bits are set */
+  if( (SUPPL_IS_LEFT_CHANGED( expr->suppl ) == 0) ||
       (SUPPL_IS_RIGHT_CHANGED( expr->suppl ) == 0) ) {
 
     /* If we are not the root expression, do the following */
@@ -198,7 +198,6 @@ statement* sim_statement( statement* head_stmt ) {
 
   statement* stmt;              /* Pointer to current statement to evaluate */
   statement* last_stmt = NULL;  /* Pointer to the last statement evaluated  */
-  static int count = 0;
 
   /* Set the value of stmt with the head_stmt */
   stmt = head_stmt;
@@ -210,14 +209,6 @@ statement* sim_statement( statement* head_stmt ) {
 
     /* Indicate that this statement's expression has been executed */
     stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_EXECUTED);
-
-/*
-    if( count == 50 ) {
-      assert( count == 0 );
-    } else {
-      count++;
-    }
-*/
 
     // printf( "Executed statement %d\n", stmt->exp->id );
       
@@ -295,6 +286,11 @@ void sim_simulate() {
 }
 
 /* $Log$
+/* Revision 1.14  2002/07/02 19:52:50  phase1geo
+/* Removing unecessary diagnostics.  Cleaning up extraneous output and
+/* generating new documentation from source.  Regression passes at the
+/* current time.
+/*
 /* Revision 1.13  2002/07/02 18:42:18  phase1geo
 /* Various bug fixes.  Added support for multiple signals sharing the same VCD
 /* symbol.  Changed conditional support to allow proper simulation results.
