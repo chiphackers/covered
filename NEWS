@@ -1,5 +1,51 @@
 Covered-Related NEWS
 ====================
+    * 11/27/2002
+
+Release covered-20021127 made.  This release contains mostly bug fixes to get closer
+to first stable release.  In addition, it should be noted that bug fixes to allow
+Covered to work on 64-bit architectures have been added.  The various bug fixes
+have been listed below.  User documentation, development documentation and regress
+suite has been added to and enhanced.
+
+  - Reformatted parser.y code to make it more readable.
+  - Fixed bug in parser.y that existed in 20021026 which caused the bison parser
+    to either spew an error or warning
+  - Fixed bug in expression resizer that caused a segmentation fault for expressions
+    with NULL values in right side child expressions
+  - Fixed CVS automatic log commenting.  This was causing /* to show up within
+    the Log comments.  Resulted in the C compiler spewing warning messages.
+  - Fixed code that handles Verilog constructs that are not supported by Covered.
+    These caused segmentation faults previously.  Any code not handled by Covered
+    should be ignored and cause the statement block to not be examined that contains
+    the ignored code.
+  - Fixed expression CDD file reader to read short numbers correctly.
+  - Fixed compatibility problems between cc and gcc compilers.
+  - Fixed problem that resulted in bus errors from the parser.
+  - Removing compiler warnings from source and header files.  Code should now compile
+    clean when the -Wall option is provided to the compiler.
+  - Fixed problem where EXPAND expressions were failing when the multiplier of the
+    expander was an expression itself.
+  - Fixed problem with combinational logic output in the report command.
+  - Fixed bug when parameters are used in expression resizing.
+  - Verified that `ifdef cases work appropriately when parts of the `ifdef/`else/`endif
+    are commented out (bug found in Icarus Verilog)
+  - Added start of FAQ to user manual.
+  - Fixed bug in report command for underlining parameters in the reports.
+  - Fixed bugs with multi-bit and single-bit handling.
+  - Fixed bug with combinational logic being output when it is unmeasurable.
+  - Fixed bug in report command when an expression can be counted more than once.  All
+    expressions are now only able to be counted and displayed once (removal of redundant
+    information).
+  - Fixed static expression calculation to yield proper coverage results for expressions
+    containing constant values.
+  - Verified -T option works correctly for min, typ, and max values.
+  - Changed delay specifier to only report a warning if min/typ/max is not specified and
+    we have parsed a delay with these specifiers.  Still default to typ.
+
+Keep the bug reports coming.  I really want to get to first stable release as I have figured
+out how to handle FSMs and want to start working on a GUI front-end for the report command.
+
     * 10/26/2002
 
 Release covered-20021026 finally made.  This release is an enormous step toward

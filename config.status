@@ -2,7 +2,7 @@
 # Generated automatically by configure.
 # Run this file to recreate the current configuration.
 # This directory was configured as follows,
-# on host leech:
+# on host c66:
 #
 # ./configure 
 #
@@ -26,7 +26,7 @@ do
 done
 
 ac_given_srcdir=.
-ac_given_INSTALL="/sw/dvtools/gnu/bin/install -c"
+ac_given_INSTALL="/usr/bin/install -c"
 
 trap 'rm -fr Makefile src/Makefile doc/Makefile doc/user/Makefile config.h conftest*; exit 1' 1 2 15
 
@@ -62,7 +62,7 @@ s%@INSTALL_PROGRAM@%${INSTALL}%g
 s%@INSTALL_SCRIPT@%${INSTALL_PROGRAM}%g
 s%@INSTALL_DATA@%${INSTALL} -m 644%g
 s%@PACKAGE@%covered%g
-s%@VERSION@%0.1-20021026%g
+s%@VERSION@%0.1-20021127%g
 s%@ACLOCAL@%aclocal%g
 s%@AUTOCONF@%autoconf%g
 s%@AUTOMAKE@%automake%g
@@ -205,9 +205,9 @@ for ac_file in .. $CONFIG_HEADERS; do if test "x$ac_file" != x..; then
 ${ac_dA}PACKAGE${ac_dB}PACKAGE${ac_dC}"covered"${ac_dD}
 ${ac_uA}PACKAGE${ac_uB}PACKAGE${ac_uC}"covered"${ac_uD}
 ${ac_eA}PACKAGE${ac_eB}PACKAGE${ac_eC}"covered"${ac_eD}
-${ac_dA}VERSION${ac_dB}VERSION${ac_dC}"0.1-20021026"${ac_dD}
-${ac_uA}VERSION${ac_uB}VERSION${ac_uC}"0.1-20021026"${ac_uD}
-${ac_eA}VERSION${ac_eB}VERSION${ac_eC}"0.1-20021026"${ac_eD}
+${ac_dA}VERSION${ac_dB}VERSION${ac_dC}"0.1-20021127"${ac_dD}
+${ac_uA}VERSION${ac_uB}VERSION${ac_uC}"0.1-20021127"${ac_uD}
+${ac_eA}VERSION${ac_eB}VERSION${ac_eC}"0.1-20021127"${ac_eD}
 ${ac_dA}HAVE_STRING_H${ac_dB}HAVE_STRING_H${ac_dC}1${ac_dD}
 ${ac_uA}HAVE_STRING_H${ac_uB}HAVE_STRING_H${ac_uC}1${ac_uD}
 ${ac_eA}HAVE_STRING_H${ac_eB}HAVE_STRING_H${ac_eC}1${ac_eD}

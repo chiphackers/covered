@@ -29,7 +29,7 @@
 void usage() {
 
   printf( "\n" );
-  printf( "Usage:  covered (-h | -v | (-D) (-Q) <command> <command_options>))\n" );
+  printf( "Usage:  covered (-h | -v | (-D | -Q) <command> <command_options>))\n" );
   printf( "\n" );
   printf( "   Options:\n" );
   printf( "      -D                      Debug.  Display information helpful for debugging tool problems\n" );
@@ -138,6 +138,9 @@ int main( int argc, char** argv ) {
 
 /*
  $Log$
+ Revision 1.10  2002/11/02 16:16:20  phase1geo
+ Cleaned up all compiler warnings in source and header files.
+
  Revision 1.9  2002/10/29 19:57:50  phase1geo
  Fixing problems with beginning block comments within comments which are
  produced automatically by CVS.  Should fix warning messages from compiler.
