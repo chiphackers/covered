@@ -80,40 +80,6 @@ vector* vector_create( int width, int lsb ) {
 }
 
 /*!
- \param base  Base vector to merge data into.
- \param in    Vector that will be merged with base vector.
-
- Performs vector merge of two vectors.  If the vectors are found to be different
- (width or lsb are not equal), an error message is sent to the user and the
- program is halted.  If the vectors are found to be equivalents, the merge is
- performed on the vector nibbles.
-*/
-void vector_merge( vector* base, vector* in ) {
-
-  int i;     /* Loop iterator */
-
-  assert( base != NULL );
-  assert( in != NULL );
-
-  if( (base->width != in->width) || (base->lsb != in->lsb) ) {
-
-    print_output( "Attempting to merge databases derived from different designs.  Unable to merge", FATAL );
-    exit( 1 );
-
-  } else {
-
-    assert( base->value != NULL );
-    assert( in->value != NULL );
-
-    for( i=0; i<VECTOR_SIZE( base->width ); i++ ) {
-      base->value[i] = (base->value[i] & VECTOR_MERGE_MASK) | (in->value[i] & VECTOR_MERGE_MASK);
-    }
-
-  }
-
-}
-
-/*!
  \param vec         Pointer to vector to display to database file.
  \param file        Pointer to coverage database file to display to.
  \param write_data  If set to TRUE, causes 4-state data bytes to be included.
@@ -146,8 +112,9 @@ void vector_db_write( vector* vec, FILE* file, bool write_data ) {
 }
 
 /*!
- \param vec   Pointer to vector to create.
- \param line  Pointer to line to parse for vector information.
+ \param vec    Pointer to vector to create.
+ \param line   Pointer to line to parse for vector information.
+
  \return Returns TRUE if parsing successful; otherwise, returns FALSE.
 
  Creates a new vector structure, parses current file line for vector information
@@ -176,6 +143,63 @@ bool vector_db_read( vector** vec, char** line ) {
     while( sscanf( *line, ",%x%n", &((*vec)->value[i]), &chars_read ) == 1 ) {
       *line = *line + chars_read;
       i++;
+    }
+
+  } else {
+
+    retval = FALSE;
+
+  }
+
+  return( retval );
+
+}
+
+/*!
+ \param base  Base vector to merge data into.
+ \param line  Pointer to line to parse for vector information.
+
+ \return Returns TRUE if parsing successful; otherwise, returns FALSE.
+
+ Parses current file line for vector information and performs vector merge of 
+ base vector and read vector information.  If the vectors are found to be different
+ (width or lsb are not equal), an error message is sent to the user and the
+ program is halted.  If the vectors are found to be equivalents, the merge is
+ performed on the vector nibbles.
+*/
+bool vector_db_merge( vector* base, char** line ) {
+
+  bool   retval = TRUE;   /* Return value of this function */
+  int    width;           /* Width of read vector          */
+  int    lsb;             /* LSB of read vector            */
+  nibble data;            /* Read in data nibble           */
+  int    chars_read;      /* Number of characters read     */
+  int    i;               /* Loop iterator                 */
+
+  assert( base != NULL );
+
+  if( sscanf( *line, "%d %d%n", &width, &lsb, &chars_read ) == 2 ) {
+
+    *line = *line + chars_read;
+
+    if( (base->width != width) || (base->lsb != lsb) ) {
+
+      print_output( "Attempting to merge databases derived from different designs.  Unable to merge", FATAL );
+      exit( 1 );
+
+    } else {
+
+      sscanf( *line, "%x%n", &data, &chars_read );
+      *line = *line + chars_read;
+      base->value[0] = (base->value[0] & VECTOR_MERGE_MASK) | (data & VECTOR_MERGE_MASK);
+
+      i = 1;
+      while( sscanf( *line, ",%x%n", &data, &chars_read ) == 1 ) {
+        *line = *line + chars_read;
+        base->value[i] = (base->value[i] & VECTOR_MERGE_MASK) | (data & VECTOR_MERGE_MASK);
+        i++;
+      }
+
     }
 
   } else {
@@ -1369,6 +1393,9 @@ void vector_dealloc( vector* vec ) {
 }
 
 /* $Log$
+/* Revision 1.14  2002/07/23 12:56:22  phase1geo
+/* Fixing some memory overflow issues.  Still getting core dumps in some areas.
+/*
 /* Revision 1.13  2002/07/17 06:27:18  phase1geo
 /* Added start for fixes to bit select code starting with single bit selection.
 /* Full regression passes with addition of sbit_sel1 diagnostic.

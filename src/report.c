@@ -388,7 +388,7 @@ int command_report( int argc, int last_arg, char** argv ) {
       } else {
 
         /* Free up memory for holding output_file */
-        free( output_file );
+        free_safe( output_file );
 
       }
     
@@ -427,6 +427,10 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 
 /* $Log$
+/* Revision 1.10  2002/07/20 18:46:38  phase1geo
+/* Causing fully covered modules to not be output in reports.  Adding
+/* instance3.v diagnostic to verify this works correctly.
+/*
 /* Revision 1.9  2002/07/09 04:46:26  phase1geo
 /* Adding -D and -Q options to covered for outputting debug information or
 /* suppressing normal output entirely.  Updated generated documentation and

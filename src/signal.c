@@ -67,38 +67,6 @@ signal* signal_create( char* name, int width, int lsb, int is_static ) {
 }
 
 /*!
- \param base  Signal to store result of merge into.
- \param in    Signal to be merged into base signal.
-
- Performs merge of the base and in signals, placing the resulting
- merged signal into the base signal.  If the signals are found to
- be unalike (names are different), an error message is displayed
- to the user.  If both signals are the same, perform the merge on
- the signal's vectors.
-*/
-void signal_merge( signal* base, signal* in ) {
-
-  assert( base != NULL );
-  assert( base->name != NULL );
-
-  assert( in != NULL );
-  assert( in->name != NULL );
-
-  if( strcmp( base->name, in->name ) != 0 ) {
-
-    print_output( "Attempting to merge two databases derived from different designs.  Unable to merge", FATAL );
-    exit( 1 );
-
-  } else {
-
-    /* Perform merge on vectors */
-    vector_merge( base->value, in->value );
-
-  }
-
-}
-
-/*!
  \param sig      Signal to write to file.
  \param file     Name of file to display signal contents to.
  \param modname  Name of module that this signal belongs to.
@@ -260,6 +228,55 @@ bool signal_db_read( char** line, module* curr_mod ) {
 }
 
 /*!
+ \param base  Signal to store result of merge into.
+ \param line  Pointer to line of CDD file to parse.
+
+ \return Returns TRUE if parsing successful; otherwise, returns FALSE.
+
+ Parses specified line for signal information and performs merge 
+ of the base and in signals, placing the resulting merged signal 
+ into the base signal.  If the signals are found to be unalike 
+ (names are different), an error message is displayed to the user.  
+ If both signals are the same, perform the merge on the signal's 
+ vectors.
+*/
+bool signal_db_merge( signal* base, char** line ) {
+
+  bool retval;         /* Return value of this function       */
+  char name[256];      /* Name of current signal              */
+  char modname[4096];  /* Name of current signal's module     */
+  int  chars_read;     /* Number of characters read from line */
+
+  assert( base != NULL );
+  assert( base->name != NULL );
+
+  if( sscanf( *line, "%s %s %n", name, modname, &chars_read ) == 2 ) {
+
+    *line = *line + chars_read;
+
+    if( strcmp( base->name, name ) != 0 ) {
+
+      print_output( "Attempting to merge two databases derived from different designs.  Unable to merge", FATAL );
+      exit( 1 );
+
+    } else {
+
+      /* Read in vector information */
+      retval = vector_db_merge( base->value, line );
+
+    }
+
+  } else {
+
+    retval = FALSE;
+
+  }
+
+  return( retval );
+
+}
+
+/*!
  \param sig    Pointer to signal to assign VCD value to.
  \param value  String version of VCD value.
 
@@ -356,6 +373,10 @@ void signal_dealloc( signal* sig ) {
 }
 
 /* $Log$
+/* Revision 1.14  2002/08/14 04:52:48  phase1geo
+/* Removing unnecessary calls to signal_dealloc function and fixing bug
+/* with signal_dealloc function.
+/*
 /* Revision 1.13  2002/07/23 12:56:22  phase1geo
 /* Fixing some memory overflow issues.  Still getting core dumps in some areas.
 /*

@@ -171,43 +171,6 @@ expression* expression_create( expression* right, expression* left, int op, int 
 }
 
 /*!
- \param base  Expression to merge data into.
- \param in    Expression to get merged into base expression.
-
- Merges contents of the base and in expressions and places the result into
- the base expression.  If the two expressions given are not the same (IDs, op,
- and/or line position differ) we know that the database files being merged 
- were not created from the same design; therefore, display an error message 
- to the user in this case.  If both expressions are the same, perform the 
- merge.
-*/
-void expression_merge( expression* base, expression* in ) {
-
-  char msg[4096];    /* Error message to display to user */
-
-  assert( base != NULL );
-  assert( in != NULL );
-
-  if( (base->id != in->id) || 
-      (SUPPL_OP( base->suppl ) != SUPPL_OP( in->suppl )) ||
-      (base->line != in->line) ) {
-
-    print_output( "Attempting to merge databases derived from different designs.  Unable to merge", FATAL );
-    exit( 1 );
-
-  } else {
-
-    /* Merge expression vectors */
-    vector_merge( base->value, in->value );
-
-    /* Merge expression supplemental fields */
-    base->suppl = (base->suppl & SUPPL_MERGE_MASK) | (in->suppl & SUPPL_MERGE_MASK);
-
-  }
-
-}
-
-/*!
  \param expr  Pointer to expression to get ID from.
  \return Returns expression ID for this expression.
 
@@ -364,6 +327,67 @@ bool expression_db_read( char** line, module* curr_mod ) {
   } else {
 
     print_output( "Unable to read expression value", FATAL );
+    retval = FALSE;
+
+  }
+
+  return( retval );
+
+}
+
+/*!
+ \param base  Expression to merge data into.
+ \param line  Pointer to CDD line to parse.
+
+ \return Returns TRUE if parse and merge was sucessful; otherwise, returns FALSE.
+
+ Parses specified line for expression information and merges contents into the
+ base expression.  If the two expressions given are not the same (IDs, op,
+ and/or line position differ) we know that the database files being merged 
+ were not created from the same design; therefore, display an error message 
+ to the user in this case.  If both expressions are the same, perform the 
+ merge.
+*/
+bool expression_db_merge( expression* base, char** line ) {
+
+  bool retval = TRUE;  /* Return value for this function */
+  int  id;             /* Expression ID field            */
+  char modname[4096];  /* Module name of this expression */
+  int  linenum;        /* Expression line number         */
+  int  suppl;          /* Supplemental field             */
+  int  right_id;       /* ID of right child              */
+  int  left_id;        /* ID of left child               */
+  int  chars_read;     /* Number of characters read      */
+
+  assert( base != NULL );
+
+  if( sscanf( *line, "%d %s %d %x %d %d%n", &id, modname, &linenum, &suppl, &right_id, &left_id, &chars_read ) == 6 ) {
+
+    *line = *line + chars_read;
+
+    if( (base->id != id) || (SUPPL_OP( base->suppl ) != SUPPL_OP( suppl )) || (base->line != linenum) ) {
+
+      print_output( "Attempting to merge databases derived from different designs.  Unable to merge", FATAL );
+      exit( 1 );
+
+    } else {
+
+      /* Merge expression supplemental fields */
+      base->suppl = (base->suppl & SUPPL_MERGE_MASK) | (suppl & SUPPL_MERGE_MASK);
+
+      if( (SUPPL_OP( suppl ) != EXP_OP_SIG) &&
+          (SUPPL_OP( suppl ) != EXP_OP_SBIT_SEL) &&
+          (SUPPL_OP( suppl ) != EXP_OP_MBIT_SEL) ) {
+
+        /* Merge expression vectors */
+        retval = vector_db_merge( base->value, line );
+
+      }
+
+    }
+
+  } else {
+
     retval = FALSE;
 
   }
@@ -846,6 +870,12 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.45  2002/07/20 13:58:01  phase1geo
+/* Fixing bug in EXP_OP_LAST for changes in binding.  Adding correct line numbering
+/* to lexer (tested).  Added '+' to report outputting for signals larger than 1 bit.
+/* Added mbit_sel1.v diagnostic to verify some multi-bit functionality.  Full
+/* regression passes.
+/*
 /* Revision 1.43  2002/07/18 22:02:35  phase1geo
 /* In the middle of making improvements/fixes to the expression/signal
 /* binding phase.

@@ -57,87 +57,6 @@ module* module_create() {
 }
 
 /*!
- \param base  Module that will merge in that data from the in module
- \param in    Module that will be merged into the base module.
-
- Performs a merge of the two specified modules, placing the resulting
- merge module into the module named base.  If there are any differences between
- the two modules, a warning or error will be displayed to the user.
-*/
-void module_merge( module* base, module* in ) {
-
-  char msg[4096];            /* Warning/error message to display to user                     */
-  exp_link* curr_base_exp;   /* Pointer to current expression in base module expression list */
-  exp_link* curr_in_exp;     /* Pointer to current expression in in module expression list   */
-  sig_link* curr_base_sig;   /* Pointer to current signal in base module signal list         */
-  sig_link* curr_in_sig;     /* Pointer to current signal in in module signal list           */
-
-  assert( base != NULL );
-  assert( base->name != NULL );
-
-  assert( in != NULL );
-  assert( in->name != NULL );
-
-  printf( "In module_merge, merging module: %s\n", base->name );
-
-  if( strcmp( base->name, in->name ) != 0 ) {
-
-    snprintf( msg, 4096, "Modules with different names being merged (%s, %s)\n",
-              base->name,
-              in->name );
-    print_output( msg, FATAL );
-    exit( 1 );
-
-  } else {
-
-    /* Merge module expressions */
-    curr_base_exp = base->exp_head;
-    curr_in_exp   = in->exp_head;
-    
-    while( (curr_base_exp != NULL) && (curr_in_exp != NULL) ) {
-      expression_merge( curr_base_exp->exp, curr_in_exp->exp );
-      curr_base_exp = curr_base_exp->next;
-      curr_in_exp   = curr_in_exp->next;
-    }
-
-    if( ((curr_base_exp == NULL) && (curr_in_exp != NULL)) ||
-        ((curr_base_exp != NULL) && (curr_in_exp == NULL)) ) {
-   
-      snprintf( msg, 4096, "Expression lists for module %s are not equivalent.  Unable to merge.",
-                base->name );
-      print_output( msg, FATAL );
-      exit( 1 );
-    
-    }
-
-    /* Merge module signals */
-    curr_base_sig = base->sig_head;
-    curr_in_sig   = in->sig_head;
-
-    printf( "base:\n" );  sig_link_display( curr_base_sig );
-    printf( "in:\n" );    sig_link_display( curr_in_sig );
-
-    while( (curr_base_sig != NULL) && (curr_in_sig != NULL) ) {
-      signal_merge( curr_base_sig->sig, curr_in_sig->sig );
-      curr_base_sig = curr_base_sig->next;
-      curr_in_sig   = curr_in_sig->next;
-    }
-
-    if( ((curr_base_sig == NULL) && (curr_in_sig != NULL)) ||
-        ((curr_base_sig != NULL) && (curr_in_sig == NULL)) ) {
-   
-      snprintf( msg, 4096, "Signal lists for module %s are not equivalent.  Unable to merge.",
-                base->name );
-      print_output( msg, FATAL );
-      exit( 1 );
-    
-    }
-
-  }
-
-}
-
-/*!
  \param mod    Pointer to module to write to output.
  \param scope  String version of module scope in hierarchy.
  \param file   Pointer to specified output file to write contents.
@@ -203,38 +122,119 @@ bool module_db_write( module* mod, char* scope, FILE* file ) {
 }
 
 /*!
- \param mod    Pointer to module to read input from.
- \param scope  Pointer to string to store module instance scope.
+ \param mod    Pointer to module to read contents into.
+ \param scope  Pointer to name of read module scope.
  \param line   Pointer to current line to parse.
+
  \return Returns TRUE if read was successful; otherwise, returns FALSE.
 
  Reads the current line of the specified file and parses it for a module.
- Creates a new module and assigns the new module to the address specified
- by the mod pointer.  If all is successful, returns TRUE; otherwise, returns
- FALSE.
+ If all is successful, returns TRUE; otherwise, returns FALSE.
 */
-bool module_db_read( module** mod, char** scope, char** line ) {
+bool module_db_read( module* mod, char* scope, char** line ) {
 
-  bool    retval = TRUE;    /* Return value for this function             */
-  char    name[256];        /* Holder for module name                     */
-  char    curr_scope[4096]; /* Verilog hierarchical scope for this module */
-  char    filename[256];    /* Holder for module filename                 */
-  int     chars_read;       /* Number of characters currently read        */
+  bool    retval = TRUE;    /* Return value for this function      */
+  int     chars_read;       /* Number of characters currently read */
 
-  *mod = module_create();
-
-  if( sscanf( *line, "%s %s %s%n", name, curr_scope, filename, &chars_read ) == 3 ) {
+  if( sscanf( *line, "%s %s %s%n", mod->name, scope, mod->filename, &chars_read ) == 3 ) {
 
     *line = *line + chars_read;
-
-    (*mod)->name     = strdup( name );
-    *scope           = strdup( curr_scope );
-    (*mod)->filename = strdup( filename );
 
   } else {
 
     retval = FALSE;
 
+  }
+
+  return( retval );
+
+}
+
+/*!
+ \param base  Module that will merge in that data from the in module
+ \param file  Pointer to CDD file handle to read.
+
+ \return Returns TRUE if parse and merge was successful; otherwise, returns FALSE.
+
+ Parses specified line for module information and performs a merge of the two 
+ specified modules, placing the resulting merge module into the module named base.
+ If there are any differences between the two modules, a warning or error will be
+ displayed to the user.
+*/
+bool module_db_merge( module* base, FILE* file ) {
+
+  bool       retval = TRUE;   /* Return value of this function                                */
+  exp_link*  curr_base_exp;   /* Pointer to current expression in base module expression list */
+  sig_link*  curr_base_sig;   /* Pointer to current signal in base module signal list         */
+  stmt_link* curr_base_stmt;  /* Pointer to current statement in base module statement list   */
+  char*      curr_line;       /* Pointer to current line being read from CDD                  */
+  char*      rest_line;       /* Pointer to rest of read line                                 */
+  int        type;            /* Specifies currently read CDD type                            */
+  int        chars_read;      /* Number of characters read from current CDD line              */
+
+  assert( base != NULL );
+  assert( base->name != NULL );
+
+  /* Handle all module expressions */
+  curr_base_exp = base->exp_head;
+  while( (curr_base_exp != NULL) && retval ) {
+    if( readline( file, &curr_line ) ) {
+      if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
+        rest_line = curr_line + chars_read;
+        if( type == DB_TYPE_EXPRESSION ) {
+       
+          retval = expression_db_merge( curr_base_exp->exp, &rest_line );
+
+        } else {
+          retval = FALSE;
+        }
+      } else {
+        retval = FALSE;
+      }
+    } else {
+      retval = FALSE;
+    }
+    curr_base_exp = curr_base_exp->next;
+  }
+
+  /* Handle all module signals */
+  curr_base_sig = base->sig_head;
+  while( (curr_base_sig != NULL) && retval ) {
+    if( readline( file, &curr_line ) ) {
+      if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
+        rest_line = curr_line + chars_read;
+        if( type == DB_TYPE_SIGNAL ) {
+       
+          retval = signal_db_merge( curr_base_sig->sig, &rest_line );
+
+        } else {
+          retval = FALSE;
+        }
+      } else {
+        retval = FALSE;
+      }
+    } else {
+      retval = FALSE;
+    }
+    curr_base_sig = curr_base_sig->next;
+  }
+
+  /* Since statements don't get merged, we will just read these lines in */
+  curr_base_stmt = base->stmt_head;
+  while( (curr_base_stmt != NULL) && retval ) {
+    if( readline( file, &curr_line ) ) {
+      if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
+        rest_line = curr_line + chars_read;
+        if( type != DB_TYPE_STATEMENT ) {
+          retval = FALSE;
+        }
+      } else {
+        retval = FALSE;
+      }
+    } else {
+      retval = FALSE;
+    }
+    curr_base_stmt = curr_base_stmt->next;
   }
 
   return( retval );
@@ -341,6 +341,9 @@ void module_dealloc( module* mod ) {
 
 
 /* $Log$
+/* Revision 1.11  2002/07/23 12:56:22  phase1geo
+/* Fixing some memory overflow issues.  Still getting core dumps in some areas.
+/*
 /* Revision 1.10  2002/07/20 18:46:38  phase1geo
 /* Causing fully covered modules to not be output in reports.  Adding
 /* instance3.v diagnostic to verify this works correctly.

@@ -130,17 +130,24 @@ bool db_read( char* file, int read_mode ) {
   FILE*        db_handle;            /* Pointer to database file being read            */
   int          type;                 /* Specifies object type                          */
   char         msg[4096];            /* Error message string                           */
-  module*      tmpmod;               /* Temporary module pointer                       */
+  module       tmpmod;               /* Temporary module pointer                       */
   char*        curr_line;            /* Pointer to current line being read from db     */
   char*        rest_line;            /* Pointer to rest of the current line            */
   int          chars_read;           /* Number of characters currently read on line    */
   char         parent_scope[4096];   /* Scope of parent module to the current instance */
   char         back[4096];           /* Current module instance name                   */
-  char*        curr_scope;           /* Current scope of module instance               */
+  char         mod_scope[4096];      /* Current scope of module instance               */
+  char         mod_name[256];        /* Current name of module instance                */
+  char         mod_file[4096];       /* Current filename of module instance            */
   mod_link*    foundmod;             /* Found module link                              */
   mod_inst*    foundinst;            /* Found module instance                          */
+  bool         merge_mode = FALSE;   /* If TRUE, we should currently be merging data   */
 
-  curr_module = NULL;
+  /* Setup temporary module for storage */
+  tmpmod.name     = mod_name;
+  tmpmod.filename = mod_file;
+
+  curr_module     = NULL;
 
   if( (db_handle = fopen( file, "r" )) != NULL ) {
 
@@ -152,61 +159,34 @@ bool db_read( char* file, int read_mode ) {
 
         if( type == DB_TYPE_SIGNAL ) {
 
+          assert( !merge_mode );
+
           /* Parse rest of line for signal info */
           retval = signal_db_read( &rest_line, curr_module );
 	    
         } else if( type == DB_TYPE_EXPRESSION ) {
+
+          assert( !merge_mode );
 
           /* Parse rest of line for expression info */
           retval = expression_db_read( &rest_line, curr_module );
 
         } else if( type == DB_TYPE_STATEMENT ) {
 
+          assert( !merge_mode );
+
           /* Parse rest of line for statement info */
           retval = statement_db_read( &rest_line, curr_module, read_mode );
 
         } else if( type == DB_TYPE_MODULE ) {
 
-          /* Parse rest of line for module info */
-          if( retval = module_db_read( &tmpmod, &curr_scope, &rest_line ) ) {
+          if( !merge_mode ) {
 
-            assert( tmpmod != NULL );
-            assert( tmpmod->name != NULL );
-
+            /* Finish handling last module read from CDD file */
             if( curr_module != NULL ) {
-
-              if( read_mode == READ_MODE_MERGE_INST_MERGE ) {
-              
-                /* Find module in instance tree and do a module merge */
-                if( (foundinst = instance_find_scope( instance_root, curr_scope )) == NULL ) {
-                  print_output( "Attempting to merge two databases derived from different designs.  Unable to merge.", FATAL );
-                  retval = FALSE;
-                } else {
-                  /* Perform module merge */
-                  module_merge( foundinst->mod, curr_module );
-                }
-
-              } else if( read_mode == READ_MODE_REPORT_MOD_MERGE ) {
-
-                if( (foundmod = mod_link_find( curr_module, mod_head )) == NULL ) {
-                  mod_link_add( curr_module, &mod_head, &mod_tail );
-                } else {
-                  module_merge( foundmod->mod, curr_module );
-                }
-
-              }
-
-              // Temporarily commenting out to correct no-merge cases.
-              // module_dealloc( curr_module );
-
-            }
-
-            curr_module = tmpmod;
-
-            if( (read_mode == READ_MODE_MERGE_NO_MERGE) || (read_mode == READ_MODE_REPORT_NO_MERGE) ) {
-
-	      /* Add module to instance tree and module list */
-              scope_extract_back( curr_scope, back, parent_scope );
+  
+              /* Add module to instance tree and module list */
+              scope_extract_back( mod_scope, back, parent_scope );
 
               if( (parent_scope[0] != '\0') && ((foundinst = instance_find_scope( instance_root, parent_scope )) == NULL) ) {
 
@@ -217,15 +197,36 @@ bool db_read( char* file, int read_mode ) {
 
                 /* Add module to instance tree and module list */
                 instance_read_add( &instance_root, parent_scope, curr_module, back );
-                mod_link_add( tmpmod, &mod_head, &mod_tail );
-              
+                mod_link_add( curr_module, &mod_head, &mod_tail );
+
               }
+
+              curr_module = NULL;
 
             }
 
-            curr_module = tmpmod;
+          } else {
 
-	  }
+            merge_mode = FALSE;
+
+          }
+
+          /* Now finish reading module line */
+          if( retval = module_db_read( &tmpmod, mod_scope, &rest_line ) ) {
+
+            if( (read_mode == READ_MODE_MERGE_INST_MERGE) && ((foundinst = instance_find_scope( instance_root, mod_scope )) != NULL) ) {
+              merge_mode = TRUE;
+              module_db_merge( foundinst->mod, db_handle );
+            } else if( (read_mode == READ_MODE_REPORT_MOD_MERGE) && ((foundmod = mod_link_find( &tmpmod, mod_head )) != NULL) ) {
+              merge_mode = TRUE;
+              module_db_merge( foundmod->mod, db_handle );
+            } else {
+              curr_module           = module_create();
+              curr_module->name     = strdup( mod_name );
+              curr_module->filename = strdup( mod_file );
+            }
+
+          }
 
         } else {
 
@@ -247,29 +248,6 @@ bool db_read( char* file, int read_mode ) {
 
     }
 
-    if( read_mode == READ_MODE_MERGE_INST_MERGE ) {
-              
-      /* Find module in instance tree and do a module merge */
-      if( (foundinst = instance_find_scope( instance_root, curr_scope )) == NULL ) {
-        print_output( "1 Attempting to merge two databases derived from different designs.  Unable to merge", FATAL );
-        retval = FALSE;
-      } else {
-        /* Perform module merge */
-        module_merge( foundinst->mod, curr_module );
-      }
-
-    } else if( read_mode == READ_MODE_REPORT_MOD_MERGE ) {
-
-      if( (foundmod = mod_link_find( curr_module, mod_head )) == NULL ) {
-        mod_link_add( curr_module, &mod_head, &mod_tail );
-      } else {
-        module_merge( foundmod->mod, curr_module );
-      }
-
-    }
-
-    curr_module = NULL;
-
     fclose( db_handle );
 
   } else {
@@ -277,6 +255,29 @@ bool db_read( char* file, int read_mode ) {
     snprintf( msg, 4096, "Could not open %s for reading", file );
     print_output( msg, FATAL );
     retval = FALSE;
+
+  }
+
+  /* If the last module was being read and not merged, add it now */
+  if( !merge_mode && (curr_module != NULL) ) {
+
+    /* Add module to instance tree and module list */
+    scope_extract_back( mod_scope, back, parent_scope );
+
+    if( (parent_scope[0] != '\0') && ((foundinst = instance_find_scope( instance_root, parent_scope )) == NULL) ) {
+
+      print_output( "Internal error:  module in database written before its parent module", FATAL );
+      retval = FALSE;
+
+    } else {
+
+      /* Add module to instance tree and module list */
+      instance_read_add( &instance_root, parent_scope, curr_module, back );
+      mod_link_add( curr_module, &mod_head, &mod_tail );
+
+    }
+
+    curr_module = NULL;
 
   }
 
@@ -750,10 +751,7 @@ void db_set_vcd_scope( char* scope ) {
     tmpscope = strdup( scope );
 
     if( (curr_instance = instance_find_scope( instance_root, tmpscope )) != NULL ) {
-
-      free_safe( curr_inst_scope );
       curr_inst_scope = tmpscope;
-
     }
 
   }
@@ -958,6 +956,10 @@ void db_do_timestep( int time ) {
 }
 
 /* $Log$
+/* Revision 1.50  2002/08/14 04:52:48  phase1geo
+/* Removing unnecessary calls to signal_dealloc function and fixing bug
+/* with signal_dealloc function.
+/*
 /* Revision 1.49  2002/07/23 12:56:22  phase1geo
 /* Fixing some memory overflow issues.  Still getting core dumps in some areas.
 /*

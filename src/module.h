@@ -19,14 +19,14 @@ void module_init( module* mod );
 //! Creates new module from heap and initializes structure.
 module* module_create();
 
-//! Merges two modules into base module.
-void module_merge( module* base, module* in );
-
 //! Writes contents of provided module to specified output.
 bool module_db_write( module* mod, char* scope, FILE* file );
 
 //! Read contents of current line from specified file, creates module and adds to module list.
-bool module_db_read( module** mod, char**scope, char** line );
+bool module_db_read( module* mod, char* scope, char** line );
+
+//! Reads and merges two modules into base module.
+bool module_db_merge( module* base, FILE* file );
 
 //! Displays signals stored in this module.
 void module_display_signals( module* mod );
@@ -41,6 +41,10 @@ void module_clean( module* mod );
 void module_dealloc( module* mod );
 
 /* $Log$
+/* Revision 1.3  2002/07/18 02:33:24  phase1geo
+/* Fixed instantiation addition.  Multiple hierarchy instantiation trees should
+/* now work.
+/*
 /* Revision 1.2  2002/07/03 03:31:11  phase1geo
 /* Adding RCS Log strings in files that were missing them so that file version
 /* information is contained in every source and header file.  Reordering src

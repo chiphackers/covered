@@ -102,7 +102,7 @@ bool parse_design( char* top, char* output_db ) {
 
   snprintf( msg, 4096, "========  Design written to database %s successfully  ========\n\n", output_db );
   print_output( msg, DEBUG );
- 
+
   return( retval );
 
 }
@@ -157,6 +157,10 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
 }
 
 /* $Log$
+/* Revision 1.9  2002/07/22 05:24:46  phase1geo
+/* Creating new VCD parser.  This should have performance benefits as well as
+/* have the ability to handle any problems that come up in parsing.
+/*
 /* Revision 1.8  2002/07/20 21:34:58  phase1geo
 /* Separating ability to parse design and score dumpfile.  Now both or either
 /* can be done (allowing one to parse once and score multiple times).

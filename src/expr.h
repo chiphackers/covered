@@ -19,9 +19,6 @@ void expression_create_value( expression* exp, int width, int lsb );
 //! Creates new expression.
 expression* expression_create( expression* right, expression* left, int op, int id, int line );
 
-//! Merges two expressions and stores result in base expression.
-void expression_merge( expression* base, expression* in );
-
 //! Returns expression ID of this expression.
 int expression_get_id( expression* expr );
 
@@ -29,7 +26,10 @@ int expression_get_id( expression* expr );
 void expression_db_write( expression* expr, FILE* file, char* scope );
 
 //! Reads current line of specified file and parses for expression information.
-bool expression_db_read( char** file, module* curr_mod );
+bool expression_db_read( char** line, module* curr_mod );
+
+//! Reads and merges two expressions and stores result in base expression.
+bool expression_db_merge( expression* base, char** line );
 
 //! Displays the specified expression information.
 void expression_display( expression* expr );
@@ -45,6 +45,11 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 
 /* $Log$
+/* Revision 1.8  2002/07/10 03:01:50  phase1geo
+/* Added define1.v and define2.v diagnostics to regression suite.  Both diagnostics
+/* now pass.  Fixed cases where constants were not causing proper TRUE/FALSE values
+/* to be calculated.
+/*
 /* Revision 1.7  2002/06/28 03:04:59  phase1geo
 /* Fixing more errors found by diagnostics.  Things are running pretty well at
 /* this point with current diagnostics.  Still some report output problems.

@@ -209,15 +209,12 @@ void instance_read_add( mod_inst** root, char* parent, module* child, char* inst
 
   if( *root == NULL ) {
 
-    // printf( "In instance_read_add, top instance name: %s\n", inst_name );
     *root = new_inst;
 
   } else {
 
     assert( parent != NULL );
   
-    // printf( "In instance_read_add, parent scope: %s, child instance: %s\n", parent, inst_name );
-
     if( (inst = instance_find_scope( *root, parent )) != NULL ) {
 
       if( inst->child_head == NULL ) {
@@ -369,4 +366,8 @@ void instance_dealloc( mod_inst* root, char* scope ) {
 
 }
 
-/* $Log$ */
+/* $Log$
+/* Revision 1.9  2002/07/18 05:50:45  phase1geo
+/* Fixes should be just about complete for instance depth problems now.  Diagnostics
+/* to help verify instance handling are added to regression.  Full regression passes.
+/* */
