@@ -75,6 +75,9 @@ Overrides default filename used to store intermediate preprocessor output.
 \fB\-P\fR \fIparameter_scope=value\fR
 Performs a defparam on the specified parameter with value.
 .TP 
+\fB\-r(S|W|E)\fR
+Specifies action to take when race condition checking finds problems in design (\-rS = Silent, \-rW = Warning, \-rE = Error).
+.TP 
 \fB\-t\fR \fItop\-level module\fR
 Specifies the module name of the top\-most module that will be measured.  Note that this module does not need to be the top\-most module in the simulator.  This field is required for all calls to the score command.
 .TP 
