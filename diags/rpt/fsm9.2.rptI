@@ -5,7 +5,7 @@ LINE COVERAGE RESULTS BY INSTANCE
 ---------------------------------
 Instance                                           Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------
-  main                                              12/    2/   14       86%
+  main                                               6/    1/    7       86%
   main.fsm1                                          6/    1/    7       86%
 
 Module: main, File: fsm9.2.v, Instance: main
@@ -28,7 +28,7 @@ TOGGLE COVERAGE RESULTS BY INSTANCE
 Instance                                                   Toggle 0 -> 1                       Toggle 1 -> 0
                                                    Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  main                                              16/    2/   18       89%            18/    0/   18      100%
+  main                                               8/    1/    9       89%             9/    0/    9      100%
   main.fsm1                                          8/    1/    9       89%             9/    0/    9      100%
 
 Module: main, File: fsm9.2.v, Instance: main
@@ -55,7 +55,7 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY INSTANCE
 Instance                                               Logic Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                                             48/  16/  64       75%
+  main                                             24/   8/  32       75%
   main.fsm1                                        24/   8/  32       75%
 
 Module: main, File: fsm9.2.v, Instance: main
@@ -220,7 +220,7 @@ FINITE STATE MACHINE COVERAGE RESULTS BY INSTANCE
                                                                State                             Arc
 Instance                                          Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit
 ----------------------------------------------------------------------------------------------------------------
-  main                                              6/  ? /  ?        ? %            8/  ? /  ?        ? %
+  main                                              3/  ? /  ?        ? %            4/  ? /  ?        ? %
   main.fsm1                                         3/  ? /  ?        ? %            4/  ? /  ?        ? %
 
 Module: main, File: fsm9.2.v, Instance: main

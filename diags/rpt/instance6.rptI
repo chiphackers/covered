@@ -5,9 +5,9 @@ LINE COVERAGE RESULTS BY INSTANCE
 ---------------------------------
 Instance                                           Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------
-  main                                               2/    0/    2      100%
+  main                                               0/    0/    0      100%
   main.foo                                           1/    0/    1      100%
-  main.bar                                           1/    0/    1      100%
+  main.bar                                           0/    0/    0      100%
   main.bar.dude                                      1/    0/    1      100%
 =================================================================================
 
@@ -16,9 +16,9 @@ TOGGLE COVERAGE RESULTS BY INSTANCE
 Instance                                                   Toggle 0 -> 1                       Toggle 1 -> 0
                                                    Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  main                                               5/   14/   19       26%             2/   17/   19       11%
+  main                                               2/    4/    6       33%             1/    5/    6       17%
   main.foo                                           3/    2/    5       60%             1/    4/    5       20%
-  main.bar                                           0/    8/    8        0%             0/    8/    8        0%
+  main.bar                                           0/    3/    3        0%             0/    3/    3        0%
   main.bar.dude                                      0/    5/    5        0%             0/    5/    5        0%
 
 Module: main, File: instance6.v, Instance: main
@@ -69,38 +69,10 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY INSTANCE
 Instance                                               Logic Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                                              3/   1/   4       75%
+  main                                              0/   0/   0      100%
   main.foo                                          2/   0/   2      100%
-  main.bar                                          1/   1/   2       50%
+  main.bar                                          0/   0/   0      100%
   main.bar.dude                                     1/   1/   2       50%
-
-Module: main, File: instance6.v, Instance: main
---------------------------------------------------------
-Missed Combinations
-
-
-Module: barfoo, File: instance6.v, Instance: main.bar
---------------------------------------------------------
-Missed Combinations
-
-
-Module: foobar, File: instance6.v, Instance: main.bar.dude
---------------------------------------------------------
-Missed Combinations
-====================================================
- Line #     Expression
-====================================================
-     35:    assign  a  = b[2:1]
-                         |-1--|
-
-
-Expression 1   (1/2)
-^^^^^^^^^^^^^ - [:]
- E | E
-=0=|=1=
- *    
-
-
 =================================================================================
 
 FINITE STATE MACHINE COVERAGE RESULTS BY INSTANCE

@@ -5,7 +5,7 @@ LINE COVERAGE RESULTS BY INSTANCE
 ---------------------------------
 Instance                                           Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------
-  main                                               2/    1/    3       67%
+  main                                               0/    0/    0      100%
   main.bar                                           2/    1/    3       67%
 
 Module: main, File: instance3.v, Instance: main
@@ -27,7 +27,7 @@ TOGGLE COVERAGE RESULTS BY INSTANCE
 Instance                                                   Toggle 0 -> 1                       Toggle 1 -> 0
                                                    Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  main                                               1/    3/    4       25%             1/    3/    4       25%
+  main                                               0/    0/    0      100%             0/    0/    0      100%
   main.bar                                           1/    3/    4       25%             1/    3/    4       25%
 
 Module: main, File: instance3.v, Instance: main
@@ -58,44 +58,8 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY INSTANCE
 Instance                                               Logic Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                                              5/   3/   8       62%
+  main                                              0/   0/   0      100%
   main.bar                                          5/   3/   8       62%
-
-Module: main, File: instance3.v, Instance: main
---------------------------------------------------------
-Missed Combinations
-
-
-Module: foo, File: instance3.v, Instance: main.bar
---------------------------------------------------------
-Missed Combinations
-====================================================
- Line #     Expression
-====================================================
-     19:    @(posedge  c )
-            |-----1------|
-
-
-Expression 1   (1/2)
-^^^^^^^^^^^^^ - posedge
- E | E
-=0=|=1=
-     *
-
-====================================================
- Line #     Expression
-====================================================
-     19:     d  <= ~ d 
-                   |1-|
-
-
-Expression 1   (0/2)
-^^^^^^^^^^^^^ - ~
- E | E
-=0=|=1=
- *   *
-
-
 =================================================================================
 
 FINITE STATE MACHINE COVERAGE RESULTS BY INSTANCE

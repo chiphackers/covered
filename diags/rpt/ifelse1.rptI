@@ -5,7 +5,7 @@ LINE COVERAGE RESULTS BY INSTANCE
 ---------------------------------
 Instance                                           Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------
-  main                                               6/    0/    6      100%
+  main                                               0/    0/    0      100%
   main.switch                                        6/    0/    6      100%
 =================================================================================
 
@@ -14,7 +14,7 @@ TOGGLE COVERAGE RESULTS BY INSTANCE
 Instance                                                   Toggle 0 -> 1                       Toggle 1 -> 0
                                                    Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  main                                               8/    4/   12       67%             6/    6/   12       50%
+  main                                               4/    2/    6       67%             3/    3/    6       50%
   main.switch                                        4/    2/    6       67%             3/    3/    6       50%
 
 Module: main, File: ifelse1.v, Instance: main
@@ -57,44 +57,8 @@ COMBINATIONAL LOGIC COVERAGE RESULTS BY INSTANCE
 Instance                                               Logic Combinations
                                                   Hit/Miss/Total    Percent hit
 -------------------------------------------------------------------------------
-  main                                              8/   2/  10       80%
+  main                                              0/   0/   0      100%
   main.switch                                       8/   2/  10       80%
-
-Module: main, File: ifelse1.v, Instance: main
---------------------------------------------------------
-Missed Combinations
-
-
-Module: mux, File: ./lib/mux.v, Instance: main.switch
---------------------------------------------------------
-Missed Combinations
-====================================================
- Line #     Expression
-====================================================
-     17:     z  =  a 
-                  |1|
-
-
-Expression 1   (1/2)
-^^^^^^^^^^^^^ - 
- E | E
-=0=|=1=
- *    
-
-====================================================
- Line #     Expression
-====================================================
-     19:     z  =  b 
-                  |1|
-
-
-Expression 1   (1/2)
-^^^^^^^^^^^^^ - 
- E | E
-=0=|=1=
-     *
-
-
 =================================================================================
 
 FINITE STATE MACHINE COVERAGE RESULTS BY INSTANCE
