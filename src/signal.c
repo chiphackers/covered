@@ -158,7 +158,6 @@ bool signal_db_read( char** line, module* curr_mod ) {
   int         exp_id;          /* Expression ID                                    */
   char        tmp[2];          /* Temporary holder for semicolon                   */
   int         chars_read;      /* Number of characters read from line              */
-  int         i;               /* Loop iterator                                    */
   char        modname[4096];   /* Name of signal's module                          */
   expression  texp;            /* Temporary expression link for searching purposes */
   exp_link*   expl;            /* Temporary expression link for storage            */
@@ -177,9 +176,8 @@ bool signal_db_read( char** line, module* curr_mod ) {
       sig = signal_create( name, vec->width, vec->lsb, 0 );
 
       /* Copy over vector value */
-      for( i=0; i<vec->width; i++ ) {
-	sig->value->value = vec->value;
-      }
+      vector_dealloc( sig->value );
+      sig->value = vec;
 
       /* Add signal to signal list */
       if( curr_mod == NULL ) {
@@ -327,6 +325,9 @@ void signal_display( signal* sig ) {
 */
 void signal_dealloc( signal* sig ) {
 
+  exp_link* curr_exp;    /* Pointer to current expression link in signal expression list */
+  exp_link* tmp_exp;     /* Temporary pointer to expression link                         */
+
   if( sig != NULL ) {
 
     if( sig->name != NULL ) {
@@ -339,8 +340,15 @@ void signal_dealloc( signal* sig ) {
     sig->value = NULL;
 
     /* Free up memory for expression list */
-    exp_link_delete_list( sig->exp_head, FALSE );
-    sig->exp_head = NULL;
+    curr_exp = sig->exp_head;
+    while( curr_exp != NULL ) {
+      curr_exp->exp->sig = NULL;
+      tmp_exp            = curr_exp;
+      curr_exp           = curr_exp->next;
+      free_safe( tmp_exp );
+    }
+
+    sig->exp_head = sig->exp_tail = NULL;
 
     /* Finally free up the memory for this signal */
     free_safe( sig );
@@ -350,6 +358,9 @@ void signal_dealloc( signal* sig ) {
 }
 
 /* $Log$
+/* Revision 1.12  2002/07/19 13:10:07  phase1geo
+/* Various fixes to binding scheme.
+/*
 /* Revision 1.11  2002/07/18 22:02:35  phase1geo
 /* In the middle of making improvements/fixes to the expression/signal
 /* binding phase.

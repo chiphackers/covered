@@ -6,6 +6,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #include "link.h"
 #include "defines.h"
@@ -409,6 +410,7 @@ void exp_link_remove( expression* exp, exp_link** head, exp_link** tail ) {
   while( (curr != NULL) && (curr->exp->id != exp->id) ) {
     last = curr;
     curr = curr->next;
+    assert( curr->exp != NULL );
   }
 
   if( curr != NULL ) {
@@ -560,6 +562,10 @@ void mod_link_delete_list( mod_link* head ) {
 
 
 /* $Log$
+/* Revision 1.8  2002/07/18 22:02:35  phase1geo
+/* In the middle of making improvements/fixes to the expression/signal
+/* binding phase.
+/*
 /* Revision 1.7  2002/06/26 22:09:17  phase1geo
 /* Removing unecessary output and updating regression Makefile.
 /*

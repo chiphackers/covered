@@ -361,7 +361,7 @@
  When module is completely read in (including module, signals, expressions), the
  module is looked up in the current instance tree.  If the instance exists, the
  module is merged with the instance's module; otherwise, we are attempting to
- merge two databases that were created from differe9nt designs.
+ merge two databases that were created from different designs.
 */
 #define READ_MODE_MERGE_INST_MERGE        2
 
@@ -838,6 +838,10 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.36  2002/07/22 05:24:46  phase1geo
+/* Creating new VCD parser.  This should have performance benefits as well as
+/* have the ability to handle any problems that come up in parsing.
+/*
 /* Revision 1.35  2002/07/20 18:46:38  phase1geo
 /* Causing fully covered modules to not be output in reports.  Adding
 /* instance3.v diagnostic to verify this works correctly.

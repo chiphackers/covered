@@ -105,7 +105,7 @@ void vector_merge( vector* base, vector* in ) {
     assert( base->value != NULL );
     assert( in->value != NULL );
 
-    for( i=0; i<base->width; i++ ) {
+    for( i=0; i<VECTOR_SIZE( base->width ); i++ ) {
       base->value[i] = (base->value[i] & VECTOR_MERGE_MASK) | (in->value[i] & VECTOR_MERGE_MASK);
     }
 
@@ -1369,6 +1369,10 @@ void vector_dealloc( vector* vec ) {
 }
 
 /* $Log$
+/* Revision 1.13  2002/07/17 06:27:18  phase1geo
+/* Added start for fixes to bit select code starting with single bit selection.
+/* Full regression passes with addition of sbit_sel1 diagnostic.
+/*
 /* Revision 1.12  2002/07/14 05:10:42  phase1geo
 /* Added support for signal concatenation in score and report commands.  Fixed
 /* bugs in this code (and multiplication).

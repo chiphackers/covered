@@ -179,7 +179,7 @@ bool db_read( char* file, int read_mode ) {
               
                 /* Find module in instance tree and do a module merge */
                 if( (foundinst = instance_find_scope( instance_root, curr_scope )) == NULL ) {
-                  print_output( "Attempting to merge two databases derived from different designs.  Unable to merge", FATAL );
+                  print_output( "Attempting to merge two databases derived from different designs.  Unable to merge.", FATAL );
                   retval = FALSE;
                 } else {
                   /* Perform module merge */
@@ -251,7 +251,7 @@ bool db_read( char* file, int read_mode ) {
               
       /* Find module in instance tree and do a module merge */
       if( (foundinst = instance_find_scope( instance_root, curr_scope )) == NULL ) {
-        print_output( "Attempting to merge two databases derived from different designs.  Unable to merge", FATAL );
+        print_output( "1 Attempting to merge two databases derived from different designs.  Unable to merge", FATAL );
         retval = FALSE;
       } else {
         /* Perform module merge */
@@ -960,6 +960,10 @@ void db_do_timestep( int time ) {
 }
 
 /* $Log$
+/* Revision 1.48  2002/07/22 05:24:46  phase1geo
+/* Creating new VCD parser.  This should have performance benefits as well as
+/* have the ability to handle any problems that come up in parsing.
+/*
 /* Revision 1.47  2002/07/20 22:22:52  phase1geo
 /* Added ability to create implicit signals for local signals.  Added implicit1.v
 /* diagnostic to test for correctness.  Full regression passes.  Other tweaks to
