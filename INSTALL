@@ -27,6 +27,14 @@
 
     ./configure
 
+  If you are debugging a memory allocation failure and would like to use the mpatrol
+  library to accomplish this (please see development documentation for more information),
+  use the following configure command instead.  Once this step has been completed and
+  the source code is compiled and run, an mpatrol.log file will be generated in the run
+  directory.  This log file is used to understand memory usage for the program.
+
+    ./configure --with-mpatrol
+
   After the configuration process has completed, a Makefile will be created in the
   Covered directory.  To build and compile all source code for the tool, simply type:
 
