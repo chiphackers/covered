@@ -191,7 +191,6 @@ void sim_expression( expression* expr ) {
   }
 
   /* Now perform expression operation for this expression */
-  // printf( "Performing expression operation: %d, id: %d\n", SUPPL_OP( expr->suppl ), expr->id );
   expression_operate( expr );
 
 }
@@ -298,6 +297,11 @@ void sim_simulate() {
 }
 
 /* $Log$
+/* Revision 1.19  2002/07/10 03:01:50  phase1geo
+/* Added define1.v and define2.v diagnostics to regression suite.  Both diagnostics
+/* now pass.  Fixed cases where constants were not causing proper TRUE/FALSE values
+/* to be calculated.
+/*
 /* Revision 1.18  2002/07/05 00:37:37  phase1geo
 /* Small update to CASE handling in scope to avoid future errors.
 /*

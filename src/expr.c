@@ -93,12 +93,17 @@ expression* expression_create( expression* right, expression* left, int op, int 
   }
 
   /* Create value vector */
-  if( (op == EXP_OP_MULTIPLY) && (rwidth > 0) && (lwidth > 0) ) {
+  if( ((op == EXP_OP_MULTIPLY) || (op == EXP_OP_LIST)) && (rwidth > 0) && (lwidth > 0) ) {
 
     /* For multiplication, we need a width the sum of the left and right expressions */
     assert( rwidth < 1024 );
     assert( lwidth < 1024 );
     expression_create_value( new_expr, (lwidth + rwidth), 0 );
+
+  } else if( (op == EXP_OP_CONCAT) && (rwidth > 0) ) {
+
+    assert( rwidth < 1024 );
+    expression_create_value( new_expr, rwidth, 0 );
 
   } else if( (op == EXP_OP_LT   ) ||
              (op == EXP_OP_GT   ) ||
@@ -366,15 +371,31 @@ bool expression_db_read( char** line, module* curr_mod ) {
 */
 void expression_display( expression* expr ) {
 
+  int right_id;        /* Value of right expression ID */
+  int left_id;         /* Value of left expression ID  */
+
   assert( expr != NULL );
 
-  printf( "  Expression =>  id: %d, line: %d, suppl: %x, addr: 0x%lx, right: 0x%lx, left: 0x%lx\n", 
+  if( expr->left == NULL ) {
+    left_id = 0;
+  } else {
+    left_id = expr->left->id;
+  }
+
+  if( expr->right == NULL ) {
+    right_id = 0;
+  } else {
+    right_id = expr->right->id;
+  }
+
+  printf( "  Expression =>  id: %d, line: %d, suppl: %x, width: %d, addr: %d, left: %d, right: %d\n", 
           expr->id,
           expr->line,
           expr->suppl,
-          expr,
-          expr->right, 
-          expr->left );
+          expr->value->width,
+          expr->id,
+          left_id, 
+          right_id );
 
 }
 
@@ -621,9 +642,13 @@ void expression_operate( expression* expr ) {
         }
         break;
 
-      case EXP_OP_CONCAT :
+      case EXP_OP_LIST :
         vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
         vector_set_value( expr->value, expr->left->value->value, expr->left->value->width, 0, expr->right->value->width );
+        break;
+
+      case EXP_OP_CONCAT :
+        vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
         break;
 
       case EXP_OP_PEDGE :
@@ -806,6 +831,12 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.38  2002/07/10 04:57:07  phase1geo
+/* Adding bits to vector nibble to allow us to specify what type of input
+/* static value was read in so that the output value may be displayed in
+/* the same format (DECIMAL, BINARY, OCTAL, HEXIDECIMAL).  Full regression
+/* passes.
+/*
 /* Revision 1.37  2002/07/10 03:01:50  phase1geo
 /* Added define1.v and define2.v diagnostics to regression suite.  Both diagnostics
 /* now pass.  Fixed cases where constants were not causing proper TRUE/FALSE values

@@ -162,8 +162,6 @@ bool module_db_write( module* mod, FILE* file ) {
   snprintf( msg, 4096, "Writing module %s", mod->name );
   print_output( msg, DEBUG );
 
-  // module_display_signals( mod );
-
   fprintf( file, "%d %s %s %s\n",
     DB_TYPE_MODULE,
     mod->name,
@@ -360,6 +358,11 @@ void module_dealloc( module* mod ) {
 
 
 /* $Log$
+/* Revision 1.7  2002/07/09 04:46:26  phase1geo
+/* Adding -D and -Q options to covered for outputting debug information or
+/* suppressing normal output entirely.  Updated generated documentation and
+/* modified Verilog diagnostic Makefile to use these new options.
+/*
 /* Revision 1.6  2002/06/26 03:45:48  phase1geo
 /* Fixing more bugs in simulator and report functions.  About to add support
 /* for delay statements.

@@ -275,8 +275,6 @@ bool statement_db_read( char** line, module* curr_mod, int read_mode ) {
 
       stmt = statement_create( expl->exp );
 
-      printf( "Just read statement: %d, true_id: %d, false_id: %d\n", id, true_id, false_id );
-
       /* Find and link next_true */
       if( true_id == id ) {
         stmt->next_true = stmt;

@@ -206,8 +206,12 @@ void bind( int mode ) {
        Traverse parent link, if parent found to have width == 0, set it to the
        size of this signal.
       */
-      curr_parent = seb_head->exp->parent->expr;
-      while( (curr_parent != NULL) && (curr_parent->value->width == 0) ) {
+      if( SUPPL_IS_ROOT( seb_head->exp->suppl ) == 1 ) {
+        curr_parent = NULL;
+      } else {
+        curr_parent = seb_head->exp->parent->expr;
+      }
+      while( curr_parent != NULL ) {
         if( curr_parent->value->width == 0 ) {
           if( SUPPL_OP( curr_parent->suppl ) == EXP_OP_AEDGE ) {
             /*
@@ -215,9 +219,7 @@ void bind( int mode ) {
              to be the width of its right child.
             */
             expression_create_value( curr_parent, 1, 0 );
-
             expression_create_value( curr_parent->left, seb_head->exp->value->width, seb_head->exp->value->lsb );
-
             value1 = 0x2;
             for( i=0; i<seb_head->exp->value->width; i++ ) {
               vector_set_value( curr_parent->left->value, &value1, 1, 0, i );
@@ -225,17 +227,25 @@ void bind( int mode ) {
           } else {
             expression_create_value( curr_parent, seb_head->exp->value->width, seb_head->exp->value->lsb );
           }
-        } else if( SUPPL_OP( curr_parent->suppl ) == EXP_OP_MULTIPLY ) {
+        } else if( (SUPPL_OP( curr_parent->suppl ) == EXP_OP_MULTIPLY) ||
+                   (SUPPL_OP( curr_parent->suppl ) == EXP_OP_LIST)     ||
+                   (SUPPL_OP( curr_parent->suppl ) == EXP_OP_CONCAT) ) {
           /* 
-           In the case of a MULTIPLY operation, its expression width must be the sum of its
+           In the case of a MULTIPLY or LIST (for concatenation) operation, its expression width must be the sum of its
            children's width.  Remove the current vector and replace it with the appropriately
            sized vector.
           */
           tmp_width = curr_parent->value->width;
           vector_dealloc( curr_parent->value );
-          expression_create_value( curr_parent, (seb_head->exp->value->width + tmp_width), seb_head->exp->value->lsb );
+          curr_parent->value = vector_create( (seb_head->exp->value->width + tmp_width), seb_head->exp->value->lsb );
         }
-        curr_parent = curr_parent->parent->expr;
+
+        /* Don't traverse past the root expression */
+        if( SUPPL_IS_ROOT( curr_parent->suppl ) == 1 ) {
+          curr_parent = NULL;
+        } else {
+          curr_parent = curr_parent->parent->expr;
+        }
       }
 
     }
@@ -246,4 +256,4 @@ void bind( int mode ) {
   
 }
 
-/* $Log */
+/* $Log$ */

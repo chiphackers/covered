@@ -152,7 +152,8 @@ char* codegen_gen_expr( expression* expr, int line ) {
         case EXP_OP_UNOR     :  code_size = 3;  strcpy( code_format, "~|%s" );              both = FALSE;  break;
         case EXP_OP_UNXOR    :  code_size = 3;  strcpy( code_format, "~^%s" );              both = FALSE;  break;
         case EXP_OP_EXPAND   :  break;   // Not sure how to handle
-        case EXP_OP_CONCAT   :  break;   // Not sure how to handle
+        case EXP_OP_LIST     :  code_size = 3;  strcpy( code_format, "%s, %s" );            both = TRUE;   break;
+        case EXP_OP_CONCAT   :  code_size = 3;  strcpy( code_format, "{%s}" );              both = FALSE;  break;
         case EXP_OP_PEDGE    :  code_size = 9;  strcpy( code_format, "posedge %s" );        both = FALSE;  break;
         case EXP_OP_NEDGE    :  code_size = 9;  strcpy( code_format, "negedge %s" );        both = FALSE;  break;
         case EXP_OP_AEDGE    :  code_size = 1;  strcpy( code_format, "%s" );                both = FALSE;  break;
@@ -217,6 +218,9 @@ char* codegen_gen_expr( expression* expr, int line ) {
 
 
 /* $Log$
+/* Revision 1.15  2002/07/10 16:27:17  phase1geo
+/* Fixing output for single/multi-bit select signals in reports.
+/*
 /* Revision 1.14  2002/07/10 04:57:07  phase1geo
 /* Adding bits to vector nibble to allow us to specify what type of input
 /* static value was read in so that the output value may be displayed in

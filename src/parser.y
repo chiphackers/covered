@@ -900,8 +900,10 @@ expr_primary
 		}
 	| '{' expression_list '}'
 		{
+                  expression* tmp;
                   if( ignore_mode == 0 ) {
-		    $$ = $2;
+                    tmp = db_create_expression( $2, NULL, EXP_OP_CONCAT, @1.first_line, NULL );
+		    $$ = tmp;
                   } else {
                     $$ = NULL;
                   }
@@ -925,7 +927,7 @@ expression_list
 		  expression* tmp;
                   if( ignore_mode == 0 ) {
 		    if( $3 != NULL ) {
-		      tmp = db_create_expression( $3, $1, EXP_OP_CONCAT, @1.first_line, NULL );
+		      tmp = db_create_expression( $3, $1, EXP_OP_LIST, @1.first_line, NULL );
 		      $$ = tmp;
 		    } else {
 		      $$ = $1;

@@ -285,10 +285,11 @@ void combination_underline_tree( expression* exp, char*** lines, int* depth, int
             strcpy( code_fmt, "%s" );  
             break;
           case EXP_OP_EXPAND   :  *size = l_size + r_size + 0;  strcpy( code_fmt, "%s"               );  break;  // ???
-          case EXP_OP_CONCAT   :  *size = l_size + r_size + 0;  strcpy( code_fmt, "%s"               );  break;  // ???
+          case EXP_OP_CONCAT   :  *size = l_size + r_size + 2;  strcpy( code_fmt, " %s "             );  break;
+          case EXP_OP_LIST     :  *size = l_size + r_size + 2;  strcpy( code_fmt, "%s  %s"           );  break;
           case EXP_OP_PEDGE    :  *size = l_size + r_size + 8;  strcpy( code_fmt, "        %s"       );  break;
           case EXP_OP_NEDGE    :  *size = l_size + r_size + 8;  strcpy( code_fmt, "        %s"       );  break;
-          case EXP_OP_AEDGE    :  *size = l_size + r_size + 0;  strcpy( code_fmt, "%s"               );  break;  // ???
+          case EXP_OP_AEDGE    :  *size = l_size + r_size + 0;  strcpy( code_fmt, "%s"               );  break;
           case EXP_OP_EOR      :  *size = l_size + r_size + 4;  strcpy( code_fmt, "%s    %s"         );  break;
           case EXP_OP_CASE     :  *size = l_size + r_size + 11; strcpy( code_fmt, "      %s   %s  "  );  break;
           case EXP_OP_CASEX    :  *size = l_size + r_size + 12; strcpy( code_fmt, "       %s   %s  " );  break;
@@ -471,19 +472,25 @@ void combination_two_vars( FILE* ofile, expression* exp, int val0, int val1, int
   fprintf( ofile, " L | R | Value\n" );
   fprintf( ofile, "---+---+------\n" );
 
-  if( !((SUPPL_WAS_FALSE( exp->left->suppl ) == 1) && (SUPPL_WAS_FALSE( exp->right->suppl ) == 1)) ) {
+  if( !((SUPPL_WAS_FALSE( exp->left->suppl ) == 1) && (SUPPL_WAS_FALSE( exp->right->suppl ) == 1)) ||
+      !((val0 == 1) ? (SUPPL_WAS_TRUE( exp->suppl ) == 1) : (SUPPL_WAS_FALSE( exp->suppl ) == 1)) ) {
     fprintf( ofile, " 0 | 0 |    %d\n", val0 );
   }
 
-  if( !((SUPPL_WAS_FALSE( exp->left->suppl ) == 1) && (SUPPL_WAS_TRUE( exp->right->suppl ) == 1)) ) {
+  if( !((SUPPL_WAS_FALSE( exp->left->suppl ) == 1) && (SUPPL_WAS_TRUE( exp->right->suppl ) == 1)) ||
+      !((val1 == 1) ? (SUPPL_WAS_TRUE( exp->suppl ) == 1) : (SUPPL_WAS_FALSE( exp->suppl ) == 1)) ) {
+
     fprintf( ofile, " 0 | 1 |    %d\n", val1 );
   }
 
-  if( !((SUPPL_WAS_TRUE( exp->left->suppl ) == 1) && (SUPPL_WAS_FALSE( exp->right->suppl ) == 1)) ) {
+  if( !((SUPPL_WAS_TRUE( exp->left->suppl ) == 1) && (SUPPL_WAS_FALSE( exp->right->suppl ) == 1)) ||
+      !((val2 == 1) ? (SUPPL_WAS_TRUE( exp->suppl ) == 1) : (SUPPL_WAS_FALSE( exp->suppl ) == 1)) ) {
+
     fprintf( ofile, " 1 | 0 |    %d\n", val2 );
   }
 
-  if( !((SUPPL_WAS_TRUE( exp->left->suppl ) == 1) && (SUPPL_WAS_TRUE( exp->right->suppl ) == 1)) ) {
+  if( !((SUPPL_WAS_TRUE( exp->left->suppl ) == 1) && (SUPPL_WAS_TRUE( exp->right->suppl ) == 1)) ||
+      !((val3 == 1) ? (SUPPL_WAS_TRUE( exp->suppl ) == 1) : (SUPPL_WAS_FALSE( exp->suppl ) == 1)) ) {
     fprintf( ofile, " 1 | 1 |    %d\n", val3 );
   }
 
@@ -550,10 +557,7 @@ void combination_list_missed( FILE* ofile, expression* exp, int* exp_id ) {
         case EXP_OP_SBIT_SEL :  combination_unary( ofile, exp );                 break;
         case EXP_OP_MBIT_SEL :  combination_unary( ofile, exp );                 break;
         case EXP_OP_EXPAND   :  /* ??? */  break;
-        case EXP_OP_CONCAT   :  /* ??? */  break;
-        case EXP_OP_PEDGE    :  /* ??? */  break;
-        case EXP_OP_NEDGE    :  /* ??? */  break;
-        case EXP_OP_AEDGE    :  /* ??? */  break;
+        case EXP_OP_CONCAT   :  combination_unary( ofile, exp );                 break;
         case EXP_OP_EOR      :  combination_two_vars( ofile, exp, 0, 1, 1, 1 );  break;
         case EXP_OP_CASE     :  combination_unary( ofile, exp );                 break;
         case EXP_OP_CASEX    :  combination_unary( ofile, exp );                 break;
@@ -752,6 +756,9 @@ void combination_report( FILE* ofile, bool verbose, bool instance ) {
 
 
 /* $Log$
+/* Revision 1.31  2002/07/10 16:27:17  phase1geo
+/* Fixing output for single/multi-bit select signals in reports.
+/*
 /* Revision 1.30  2002/07/10 04:57:07  phase1geo
 /* Adding bits to vector nibble to allow us to specify what type of input
 /* static value was read in so that the output value may be displayed in
