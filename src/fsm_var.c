@@ -103,6 +103,16 @@ fsm_var* fsm_var_add( char* mod, expression* in_state, expression* out_state ) {
 
 }
 
+/*!
+ \param expr  Pointer to expression to evaluate.
+
+ \return Returns pointer to found FSM variable that contains this expression as an
+         output expression.
+
+ Searches the FSM variable list for the FSM variable that contains the specified
+ expression as its output state expression.  If no FSM variable was found, returns
+ a value of NULL to the calling function.
+*/
 fsm_var* fsm_var_is_output_state( expression* expr ) {
 
   fsm_var* curr;  /* Pointer to current FSM variable structure */
@@ -116,6 +126,15 @@ fsm_var* fsm_var_is_output_state( expression* expr ) {
 
 }
 
+/*!
+ \param sig_name  Name of signal to bind.
+ \param expr      Pointer to expression to bind.
+ \param mod_name  Name of module that will contain the expression and signal being bound.
+
+ Creates a new FSM binding structure and initializes it with the specified information.
+ The FSM binding structure is then added to the global list of FSM binding structures to
+ be bound after parsing is complete.
+*/
 void fsm_var_bind_add( char* sig_name, expression* expr, char* mod_name ) {
 
   fv_bind* fvb;  /* Pointer to new FSM variable binding structure */
@@ -136,6 +155,13 @@ void fsm_var_bind_add( char* sig_name, expression* expr, char* mod_name ) {
 
 }
 
+/*!
+ \param stmt      Pointer to statement containing FSM state expression
+ \param mod_name  Name of module that will contain stmt.
+
+ Allocates and initializes an FSM variable binding entry and adds it to the
+ fsm_var_stmt list for later processing.
+*/
 void fsm_var_stmt_add( statement* stmt, char* mod_name ) {
 
   fv_bind* fvb;  /* Pointer to new FSM variable binding structure */
@@ -154,6 +180,13 @@ void fsm_var_stmt_add( statement* stmt, char* mod_name ) {
 
 }
 
+/*!
+ \param expr  Pointer to expression to add to the specified module.
+ \param mod   Pointer to module structure to add expression to.
+
+ Iterates through specified expression tree, adding each expression to the
+ specified module if the expression does not already exist in the module.
+*/
 void fsm_var_add_expr( expression* expr, module* mod ) {
 
   if( expr != NULL ) {
@@ -173,6 +206,21 @@ void fsm_var_add_expr( expression* expr, module* mod ) {
 
 }
 
+/*!
+ \param mod_head  Pointer to head of module linked list.
+
+ After Verilog parsing has completed, this function should be called to bind all signals
+ to their associated FSM state expressions and modules.  For each entry in the FSM binding list
+ the signal name is looked in the module specified in the binding entry.  If the signal is found,
+ the associated expression pointer is added to the signal's expression list and the expression's
+ signal pointer is set to point at the found signal structure.  If the signal was not found,
+ an error message is reported to the user, specifying the signal did not exist in the design.
+
+ After the signals and expressions have been bound, the FSM statement binding list is iterated
+ through binding all statements containing FSM state expressions to the module that it is a part of.
+ If the statement contains an FSM state expression that is an output state expression, create the
+ FSM structure for this FSM and add it to the design.
+*/
 void fsm_var_bind( mod_link* mod_head ) {
 
   fv_bind*  curr;           /* Pointer to current FSM variable                               */
@@ -318,6 +366,11 @@ void fsm_var_remove( fsm_var* fv ) {
 
 /*
  $Log$
+ Revision 1.6  2003/10/16 04:26:01  phase1geo
+ Adding new fsm5 diagnostic to testsuite and regression.  Added proper support
+ for FSM variables that are not able to be bound correctly.  Fixing bug in
+ signal_from_string function.
+
  Revision 1.5  2003/10/14 04:02:44  phase1geo
  Final fixes for new FSM support.  Full regression now passes.  Need to
  add new diagnostics to verify new functionality, but at least all existing
