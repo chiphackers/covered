@@ -63,15 +63,16 @@ void score_usage() {
  \return Returns TRUE if read of command file was successful; otherwise,
          returns FALSE.
 */
-bool read_command_file( char* cmd_file, char** arg_list, int* arg_num ) {
+bool read_command_file( char* cmd_file, char*** arg_list, int* arg_num ) {
 
-  bool      retval = TRUE;   /* Return value for this function       */
-  str_link* head   = NULL;   /* Pointer to head element of arg list  */
-  str_link* tail   = NULL;   /* Pointer to tail element of arg list  */
+  bool      retval  = TRUE;  /* Return value for this function       */
+  str_link* head    = NULL;  /* Pointer to head element of arg list  */
+  str_link* tail    = NULL;  /* Pointer to tail element of arg list  */
   FILE*     cmd_handle;      /* Pointer to command file              */
   char      tmp_str[1024];   /* Temporary holder for read argument   */
   char*     arg;             /* Temporary holder of current argument */
   str_link* curr;            /* Pointer to current str_link element  */
+  int       tmp_num = 0;     /* Temporary argument number holder     */
 
   if( file_exists( cmd_file ) ) {
 
@@ -79,17 +80,21 @@ bool read_command_file( char* cmd_file, char** arg_list, int* arg_num ) {
 
       while( fscanf( cmd_handle, "%s", tmp_str ) == 1 ) {
         str_link_add( strdup( tmp_str ), &head, &tail );
+        tmp_num++;
       }
 
       fclose( cmd_handle );
 
       /* Create argument list */
-      arg_list = (char**)malloc_safe( sizeof( char* ) * *arg_num );
-      *arg_num = 0;
+      *arg_list = (char**)malloc_safe( sizeof( char* ) * tmp_num );
+      *arg_num  = tmp_num;
+      tmp_num   = 0;
 
       curr = head;
       while( curr != NULL ) {
-        arg_list[(*arg_num)] = strdup( curr->str );
+        (*arg_list)[tmp_num] = strdup( curr->str );
+        tmp_num++;
+        curr = curr->next;
       }
 
       /* Delete list */
@@ -131,8 +136,9 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
   bool   retval  = TRUE;          /* Return value for this function  */
   int    i       = last_arg + 1;  /* Loop iterator                   */
   char** arg_list;                /* List of command_line arguments  */
-  int    arg_num = 0;             /* Number of arguments in arg_list */
+  int    arg_num;                 /* Number of arguments in arg_list */
   char   err_msg[4096];           /* Error message to display        */
+  int    j;                       /* Loop iterator 2                 */
 
   while( (i < argc) && retval ) {
 
@@ -189,8 +195,12 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
       i++;
       if( file_exists( argv[i] ) ) {
-        read_command_file( argv[i], arg_list, &arg_num );
-        score_parse_args( arg_num, -1, arg_list );
+        read_command_file( argv[i], &arg_list, &arg_num );
+        retval = score_parse_args( arg_num, -1, arg_list );
+        for( j=0; j<arg_num; j++ ) {
+          free_safe( arg_list[i] );
+        }
+        free_safe( arg_list );
       } else {
         retval = FALSE;
       }
@@ -292,6 +302,11 @@ int command_score( int argc, int last_arg, char** argv ) {
 }
 
 /* $Log$
+/* Revision 1.10  2002/07/09 04:46:26  phase1geo
+/* Adding -D and -Q options to covered for outputting debug information or
+/* suppressing normal output entirely.  Updated generated documentation and
+/* modified Verilog diagnostic Makefile to use these new options.
+/*
 /* Revision 1.9  2002/07/08 19:02:12  phase1geo
 /* Adding -i option to properly handle modules specified for coverage that
 /* are instantiated within a design without needing to parse parent modules.
