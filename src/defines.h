@@ -24,6 +24,12 @@
 #define COVERED_VERSION    VERSION
 
 /*!
+ Contains the CDD version number of all CDD files that this version of Covered can write
+ and read.
+*/
+#define CDD_VERSION        1
+
+/*!
  This contains the header information specified when executing this tool.
 */
 #define COVERED_HEADER     "\nCovered %s -- Verilog Code Coverage Utility\nWritten by Trevor Williams  (trevorw@charter.net)\nFreely distributable under the GPL license\n", COVERED_VERSION
@@ -1469,6 +1475,9 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.84  2003/10/13 03:56:29  phase1geo
+ Fixing some problems with new FSM code.  Not quite there yet.
+
  Revision 1.83  2003/10/11 05:15:07  phase1geo
  Updates for code optimizations for vector value data type (integers to chars).
  Updated regression for changes.

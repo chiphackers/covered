@@ -1,4 +1,4 @@
-5 1 *
+5 1 * 1
 3 main main fsm1.3.v
 1 clk main 1 0 0 11102
 1 reset main 1 0 0 11002

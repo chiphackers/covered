@@ -26,6 +26,11 @@ bool flag_scored = FALSE;
 */
 char leading_hierarchy[4096];
 
+/*!
+ Contains the CDD version number of all CDD files that this version of Covered can write
+ and read.
+*/
+int  cdd_version = CDD_VERSION;
 
 /*!
  \param file  Pointer to file to write information to.
@@ -34,10 +39,11 @@ char leading_hierarchy[4096];
 */
 void info_db_write( FILE* file ) {
 
-  fprintf( file, "%d %d %s\n",
+  fprintf( file, "%d %d %s %d\n",
            DB_TYPE_INFO,
            flag_scored,
-           leading_hierarchy );
+           leading_hierarchy,
+           CDD_VERSION );
 
 }
 
@@ -51,15 +57,22 @@ bool info_db_read( char** line ) {
   bool retval = TRUE;  /* Return value for this function                 */
   int  chars_read;     /* Number of characters scanned in from this line */
   bool scored;         /* Indicates if this file contains scored data    */
+  int  version;        /* Contains CDD version from file                 */
 
-  if( sscanf( *line, "%d %s%n", &scored, leading_hierarchy, &chars_read ) == 2 ) {
+  if( sscanf( *line, "%d %s %d%n", &scored, leading_hierarchy, &version, &chars_read ) == 3 ) {
 
     *line = *line + chars_read;
 
     flag_scored = scored ? TRUE : flag_scored;
 
+    if( version != CDD_VERSION ) {
+      print_output( "CDD file being read is incompatible with this version of Covered", FATAL );
+      retval = FALSE;
+    }
+
   } else {
 
+    print_output( "CDD file being read is incompatible with this version of Covered", FATAL );
     retval = FALSE;
 
   }
@@ -71,6 +84,11 @@ bool info_db_read( char** line ) {
 
 /*
  $Log$
+ Revision 1.2  2003/02/18 20:17:02  phase1geo
+ Making use of scored flag in CDD file.  Causing report command to exit early
+ if it is working on a CDD file which has not been scored.  Updated testsuite
+ for these changes.
+
  Revision 1.1  2003/02/12 14:56:26  phase1geo
  Adding info.c and info.h files to handle new general information line in
  CDD file.  Support for this new feature is not complete at this time.
