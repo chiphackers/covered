@@ -167,6 +167,23 @@ bool combination_multi_expr_calc( expression* exp, int* ulid, bool ul, int* hit,
 
 }
 
+bool combination_is_expr_multi_node( expression* exp ) {
+
+  return( (exp != NULL) &&
+          (SUPPL_IS_ROOT( exp->suppl ) == 0) && 
+          ( ( (SUPPL_IS_ROOT( exp->parent->expr->suppl ) == 0) &&
+              (SUPPL_OP( exp->parent->expr->suppl ) == SUPPL_OP( exp->parent->expr->parent->expr->suppl )) &&
+              (exp->parent->expr->right->id == exp->id) &&
+              (exp->parent->expr->left != NULL) &&
+              (exp->parent->expr->left->ulid == -1) ) ||
+            ( (exp->parent->expr->right->id == exp->id) &&
+              (exp->parent->expr->left != NULL) &&
+              (SUPPL_OP( exp->parent->expr->left->suppl ) == SUPPL_OP( exp->parent->expr->suppl )) &&
+              (exp->parent->expr->left->ulid == -1) ) ) &&
+         (exp->parent->expr->left->id != exp->id) );
+
+}
+
 /*!
  \param exp         Pointer to expression tree to traverse.
  \param ulid        Pointer to current underline ID.
@@ -219,7 +236,7 @@ void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_d
                         ((exp->suppl >> SUPPL_LSB_EVAL_10) & 0x1) +
                         ((exp->suppl >> SUPPL_LSB_EVAL_11) & 0x1);
               *hit    = *hit + num_hit;
-              if( (num_hit != 4) && (exp->ulid == -1) ) {
+              if( (num_hit != 4) && (exp->ulid == -1) && !combination_is_expr_multi_node( exp ) ) {
                 exp->ulid = *ulid;
                 (*ulid)++;
               }
@@ -227,7 +244,7 @@ void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_d
               *total  = *total + 2;
               num_hit = SUPPL_WAS_TRUE( exp->suppl ) + SUPPL_WAS_FALSE( exp->suppl );
               *hit    = *hit + num_hit;
-              if( (num_hit != 2) && (exp->ulid == -1) ) {
+              if( (num_hit != 2) && (exp->ulid == -1) && !combination_is_expr_multi_node( exp ) ) {
                 exp->ulid = *ulid;
                 (*ulid)++;
               }
@@ -1559,6 +1576,11 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.84  2004/01/26 19:09:46  phase1geo
+ Fixes to comb.c for last checkin.  We are not quite there yet with the output
+ quality for comb.c but we are close.  Next round of changes for comb.c should
+ do the trick.
+
  Revision 1.83  2004/01/26 05:39:36  phase1geo
  Initial swag at new underline ID algorithm.  This not quite working correctly
  at this time.  Added two generic diagnostics to regression suite that will
