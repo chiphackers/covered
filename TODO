@@ -1,5 +1,5 @@
 The following items are known to be problems in the current code that need to be fixed
-or features that are unimplemented/not complete that need to be done before 0.1 stable
+or features that are unimplemented/not complete that need to be done before 0.2 stable
 release can be made.
 
 Legend
@@ -10,62 +10,10 @@ IP  = In Progress
 Score command
 -------------
 
-X  1.  Verify that single and multi-bit selectors work in all cases.
-
-X  2.  When `include is encountered, store current line number in stack for retrieval
-       when file parsing is resumed for that file.
-
-X  3.  When parser error occurs, output something more meaningful (for debugging purposes)
-       and cause tool to exit rather than continue on.
-
-X  4.  Handle parameters
-
-X  5.  Verify that -D option works when a value is specified.
-
-IP 6.  Make sure that expression widths are correct (may have to look at left-hand-side bit
-       width to calculate this correctly).
-
-X  7.  Make sure that parser only parses a file once (when it is in both in a library (-y) and
-       and a -v option).
-
-X  8.  Allow ability to only parse a design and only score a dumpfile (rather than having to
-       do both everytime -- could save a lot of time in not having to reparse).
-
-X  9.  Possibly allow undeclared signals to be automatically created if not found (1-bit signal
-       values -- simulators will probably do this).
-
-X  10. Make sure that extension order is maintained for a given library path.
-
-X  11. Remove all local creations of err_msg string and just create one global version of this
-       for efficiency sake.
-
-X  12. Make -v option to score command work like Verilog simulators and allow Verilog files
-       to be specified without the -v option.  Also force rule that filename must match
-       needed module in -y options.
-
 
 Merge command
 -------------
 
-   1.  Set up some type of merge testsuite and verify that everything works correctly here.
-
 
 Report command
 --------------
-
-   1.  Handle combination logic outputting for expression trees that have line-wrap.
-
-X  2.  Make sure that verbose line outputting is ordered for each file.
-
-X  3.  Make sure that combinational logic outputting is ordered for each file.
-
-X  4.  Make sure that combinational table output is correct for all cases.
-
-X  5.  Add '+' to combinational logic output for values equal to or greater than one.
-
-X  6.  Make sure that all unnecessary output is removed from verbose output (sometimes
-       modules/instances that have received 100% coverage still get some message).
-
-X  7.  Add depth option for combination logic analyzer.
-
-X  8.  Add option to output what has been covered (instead of what has not been covered)

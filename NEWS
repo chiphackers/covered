@@ -1,5 +1,29 @@
 Covered-Related NEWS
 ====================
+    * 08/06/2003
+
+Release covered-0.2pre3 made.  It has been quite a while since a release has been made
+which has been due to a particularly tricky bug that was found with non-blocking
+assignments.  This bug generated bad coverage information (this is considered very bad!)
+This release contains bug fixes and development documentation updates.  If no more problems
+are found with this release, I will get the 0.2 release made very soon.  The following
+is a list of the changes for this release.
+
+  - Fixes to line.c and toggle.c to provide better cross-platform support.
+  - Lots of updates to the development documentation.
+  - Fixed bug with properly handling hierarchical references in expressions.
+  - Fixing bug with single-bit parameter handling (caused a diagnostic miscompare
+    between Linux and Irix OS's).
+  - Fixed non-blocking assignment bug.  This bug affected the order of execution in
+    Covered's simulator which resulted in bad coverage information being generated.
+  - Fixed bugs in divide, mod, left shift, right shift and some other expression types
+    to avoid converting variables that have unknown values to integers (which results
+    in Covered errors at run-time).
+
+The list of changes is short, but the changes made are very necessary to getting reliable
+coverage numbers from Covered.  Please get a copy of this version and test it out so that
+we can get the stable 0.2 release made ASAP.
+
     * 02/18/2003
 
 Release covered-0.2pre2 made.  Bug fixes and enhancements for allowing more Verilog
