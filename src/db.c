@@ -729,21 +729,22 @@ void db_set_vcd_scope( char* scope ) {
 
   assert( scope != NULL );
 
-  if( instance_find_scope( instance_root, scope ) != NULL ) {
+  if( curr_vcd_scope != NULL ) {
 
-    if( curr_vcd_scope != NULL ) {
+    scope_len = strlen( curr_vcd_scope ) + strlen( scope ) + 2; 
+    tmpscope  = (char*)malloc_safe( scope_len );
+    snprintf( tmpscope, scope_len, "%s.%s", curr_vcd_scope, scope );
 
-      tmpscope       = curr_vcd_scope;
-      scope_len      = strlen( curr_vcd_scope ) + strlen( scope ) + 2; 
-      curr_vcd_scope = (char*)malloc_safe( scope_len );
-      snprintf( curr_vcd_scope, scope_len, "%s.%s", tmpscope, scope );
-      free_safe( tmpscope );
+  } else {
 
-    } else {
-
-      curr_vcd_scope = strdup( scope );
+    tmpscope = strdup( scope );
  
-    }
+  }
+
+  if( instance_find_scope( instance_root, tmpscope ) != NULL ) {
+
+    free_safe( curr_vcd_scope );
+    curr_vcd_scope = tmpscope;
 
   }
 
@@ -787,7 +788,7 @@ void db_assign_symbol( char* name, char* symbol ) {
   char          msg[4096];  /* Display message string                    */
   mod_inst*     inst;       /* Found instance                            */
 
-  snprintf( msg, 4096, "In db_assign_symbol, name: %s, symbol: %s", name, symbol );
+  snprintf( msg, 4096, "In db_assign_symbol, name: %s, symbol: %s, curr_vcd_scope: %s", name, symbol, curr_vcd_scope );
   print_output( msg, NORMAL );
 
   assert( name != NULL );
@@ -964,6 +965,10 @@ void db_do_timestep( int time ) {
 }
 
 /* $Log$
+/* Revision 1.34  2002/07/09 02:04:25  phase1geo
+/* Fixing segmentation fault error due to deallocating a module before we
+/* have completed using it.
+/*
 /* Revision 1.33  2002/07/08 19:02:10  phase1geo
 /* Adding -i option to properly handle modules specified for coverage that
 /* are instantiated within a design without needing to parse parent modules.

@@ -401,7 +401,7 @@ void expression_operate( expression* expr ) {
 
   if( expr != NULL ) {
 
-    snprintf( msg, 4096, "In expression_operate, id: %d, op: %d, size: %d", expr->id, SUPPL_OP( expr->suppl ), expr->value->width );
+    snprintf( msg, 4096, "In expression_operate, id: %d, op: %d, line: %d", expr->id, SUPPL_OP( expr->suppl ), expr->line );
     print_output( msg, NORMAL );
 
     assert( expr->value != NULL );
@@ -799,6 +799,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.33  2002/07/08 19:02:11  phase1geo
+/* Adding -i option to properly handle modules specified for coverage that
+/* are instantiated within a design without needing to parse parent modules.
+/*
 /* Revision 1.32  2002/07/08 12:35:31  phase1geo
 /* Added initial support for library searching.  Code seems to be broken at the
 /* moment.

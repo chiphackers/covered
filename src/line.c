@@ -53,13 +53,15 @@ void line_get_stats( stmt_link* stmtl, float* total, int* hit ) {
  \param ofile        Pointer to file to output results to.
  \param root         Current node in instance tree.
  \param parent_inst  Name of parent instance.
+
+ \return Returns TRUE if lines were found to be missed; otherwise, returns FALSE.
  
  Recursively iterates through the instance tree gathering the
  total number of lines parsed vs. the total number of lines
  executed during the course of simulation.  The parent node will
  display its information before calling its children.
 */
-void line_instance_summary( FILE* ofile, mod_inst* root, char* parent_inst ) {
+bool line_instance_summary( FILE* ofile, mod_inst* root, char* parent_inst ) {
 
   mod_inst* curr;       /* Pointer to current child module instance of this node */
   float     percent;    /* Percentage of lines hit                               */
@@ -69,7 +71,7 @@ void line_instance_summary( FILE* ofile, mod_inst* root, char* parent_inst ) {
   assert( root->stat != NULL );
 
   if( root->stat->line_total == 0 ) {
-    percent = 0.0;
+    percent = 100.0;
   } else {
     percent = ((root->stat->line_hit / root->stat->line_total) * 100);
   }
@@ -88,6 +90,8 @@ void line_instance_summary( FILE* ofile, mod_inst* root, char* parent_inst ) {
     line_instance_summary( ofile, curr, root->name );
     curr = curr->next;
   }
+
+  return( miss > 0 );
            
 }
 
@@ -95,10 +99,13 @@ void line_instance_summary( FILE* ofile, mod_inst* root, char* parent_inst ) {
  \param ofile  Pointer to file to output results to.
  \param head   Pointer to head of module list to explore.
 
+ \return Returns TRUE if there where lines that were found to be missed; otherwise,
+         returns FALSE.
+
  Iterates through the module list, displaying the line coverage results (summary
  format) for each module.
 */
-void line_module_summary( FILE* ofile, mod_link* head ) {
+bool line_module_summary( FILE* ofile, mod_link* head ) {
 
   float     total_lines = 0;  /* Total number of lines parsed                         */
   int       hit_lines   = 0;  /* Number of lines executed during simulation           */
@@ -109,7 +116,7 @@ void line_module_summary( FILE* ofile, mod_link* head ) {
   line_get_stats( head->mod->stmt_head, &total_lines, &hit_lines );
 
   if( total_lines == 0 ) {
-    percent = 0.0;
+    percent = 100.0;
   } else {
     percent = ((hit_lines / total_lines) * 100);
   }
@@ -126,6 +133,8 @@ void line_module_summary( FILE* ofile, mod_link* head ) {
   if( head->next != NULL ) {
     line_module_summary( ofile, head->next );
   }
+
+  return( miss > 0 );
 
 }
 
@@ -244,6 +253,8 @@ void line_module_verbose( FILE* ofile, mod_link* head ) {
 */
 void line_report( FILE* ofile, bool verbose, bool instance ) {
 
+  bool missed_found;      /* If set to TRUE, lines were found to be missed */
+
   if( instance ) {
 
     fprintf( ofile, "LINE COVERAGE RESULTS BY INSTANCE\n" );
@@ -251,9 +262,9 @@ void line_report( FILE* ofile, bool verbose, bool instance ) {
     fprintf( ofile, "Instance                  Parent                 Hit/Miss/Total    Percent hit\n" );
     fprintf( ofile, "------------------------------------------------------------------------------\n" );
 
-    line_instance_summary( ofile, instance_root, "<root>" );
+    missed_found = line_instance_summary( ofile, instance_root, "<root>" );
     
-    if( verbose ) {
+    if( verbose && missed_found ) {
       line_instance_verbose( ofile, instance_root );
     }
 
@@ -264,9 +275,9 @@ void line_report( FILE* ofile, bool verbose, bool instance ) {
     fprintf( ofile, "Module                    Filename               Hit/Miss/Total    Percent hit\n" );
     fprintf( ofile, "------------------------------------------------------------------------------\n" );
 
-    line_module_summary( ofile, mod_head );
+    missed_found = line_module_summary( ofile, mod_head );
 
-    if( verbose ) {
+    if( verbose && missed_found ) {
       line_module_verbose( ofile, mod_head );
     }
 
@@ -278,6 +289,9 @@ void line_report( FILE* ofile, bool verbose, bool instance ) {
 }
 
 /* $Log$
+/* Revision 1.12  2002/07/05 05:00:14  phase1geo
+/* Removing CASE, CASEX, and CASEZ from line and combinational logic results.
+/*
 /* Revision 1.11  2002/07/02 19:52:50  phase1geo
 /* Removing unecessary diagnostics.  Cleaning up extraneous output and
 /* generating new documentation from source.  Regression passes at the

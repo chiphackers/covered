@@ -60,11 +60,13 @@ void toggle_get_stats( exp_link* expl, sig_link* sigl, float* total, int* hit01,
  \param root         Instance node in the module instance tree being evaluated.
  \param parent_inst  Name of parent instance.
 
+ \return Returns TRUE if any bits were found to be not toggled; otherwise, returns FALSE.
+
  Displays the toggle instance summarization to the specified file.  Recursively
  iterates through module instance tree, outputting the toggle information that
  is found at that instance.
 */
-void toggle_instance_summary( FILE* ofile, mod_inst* root, char* parent_inst ) {
+bool toggle_instance_summary( FILE* ofile, mod_inst* root, char* parent_inst ) {
 
   mod_inst* curr;        /* Pointer to current child module instance of this node */
   float     percent01;   /* Percentage of bits toggling from 0 -> 1               */
@@ -76,11 +78,19 @@ void toggle_instance_summary( FILE* ofile, mod_inst* root, char* parent_inst ) {
   assert( root->stat != NULL );
 
   /* Calculate for toggle01 information */
-  percent01 = ((root->stat->tog01_hit / root->stat->tog_total) * 100);
+  if( root->stat->tog_total == 0 ) {
+    percent01 = 100;
+  } else {
+    percent01 = ((root->stat->tog01_hit / root->stat->tog_total) * 100);
+  }
   miss01    = (root->stat->tog_total - root->stat->tog01_hit);
 
   /* Calculate for toggle10 information */
-  percent10 = ((root->stat->tog10_hit / root->stat->tog_total) * 100);
+  if( root->stat->tog_total == 0 ) {
+    percent10 = 100;
+  } else {
+    percent10 = ((root->stat->tog10_hit / root->stat->tog_total) * 100);
+  }
   miss10    = (root->stat->tog_total - root->stat->tog10_hit);
 
   fprintf( ofile, "  %-20.20s    %-20.20s    %3d/%3.0f/%3.0f      %3.0f%%            %3d/%3.0f/%3.0f      %3.0f\%\n",
@@ -101,16 +111,20 @@ void toggle_instance_summary( FILE* ofile, mod_inst* root, char* parent_inst ) {
     curr = curr->next;
   }
 
+  return( (miss01 > 0) || (miss10 > 0) );
+
 }
 
 /*!
  \param ofile  Pointer to file to display coverage results to.
  \param head   Pointer to head of module list to parse.
 
+ \return Returns TRUE if any bits were found to be untoggled; otherwise, returns FALSE.
+
  Iterates through the module list displaying the toggle coverage for
  each module.
 */
-void toggle_module_summary( FILE* ofile, mod_link* head ) {
+bool toggle_module_summary( FILE* ofile, mod_link* head ) {
 
   float     total_tog = 0;  /* Total number of bits in module                        */
   int       tog01_hit = 0;  /* Number of bits that toggled from 0 to 1               */
@@ -124,11 +138,19 @@ void toggle_module_summary( FILE* ofile, mod_link* head ) {
   toggle_get_stats( head->mod->exp_head, head->mod->sig_head, &total_tog, &tog01_hit, &tog10_hit );
 
   /* Calculate for toggle01 */
-  percent01 = ((tog01_hit / total_tog) * 100);
+  if( total_tog == 0 ) {
+    percent01 = 100;
+  } else {
+    percent01 = ((tog01_hit / total_tog) * 100);
+  }
   miss01    = (total_tog - tog01_hit);
 
   /* Calculate for toggle10 */
-  percent10 = ((tog10_hit / total_tog) * 100);
+  if( total_tog == 0 ) {
+    percent10 = 100;
+  } else {
+    percent10 = ((tog10_hit / total_tog) * 100);
+  }
   miss10    = (total_tog - tog10_hit);
 
   fprintf( ofile, "  %-20.20s    %-20.20s    %3d/%3.0f/%3.0f      %3.0f%%            %3d/%3.0f/%3.0f      %3.0f%%\n", 
@@ -147,6 +169,8 @@ void toggle_module_summary( FILE* ofile, mod_link* head ) {
     toggle_module_summary( ofile, head->next );
   }
 
+  return( (miss01 > 0) || (miss10 > 0) );
+
 }
 
 /*!
@@ -163,6 +187,8 @@ void toggle_display_verbose( FILE* ofile, sig_link* sigl ) {
   int       hit10;      /* Number of bits that toggled from 1 to 0        */
 
   fprintf( ofile, "Signals not getting 100%% toggle coverage\n\n" );
+  fprintf( ofile, "Signal                    Toggle\n" );
+  fprintf( ofile, "----------------------------------------------------------------------------------\n" );
 
   curr_sig = sigl;
 
@@ -175,11 +201,11 @@ void toggle_display_verbose( FILE* ofile, sig_link* sigl ) {
 
     if( (hit01 < curr_sig->sig->value->width) || (hit10 < curr_sig->sig->value->width) ) {
 
-      fprintf( ofile, "Signal:  %s     Toggle 0->1: ", curr_sig->sig->name );
+      fprintf( ofile, "%-24s  0->1: ", curr_sig->sig->name );
       vector_display_toggle01( curr_sig->sig->value->value, curr_sig->sig->value->width, ofile );      
-      fprintf( ofile, "     Toggle 1->0: " );
+      fprintf( ofile, "\n......................... 1->0: " );
       vector_display_toggle10( curr_sig->sig->value->value, curr_sig->sig->value->width, ofile );      
-      fprintf( ofile, "\n" );
+      fprintf( ofile, " ...\n" );
 
     }
 
@@ -259,6 +285,8 @@ void toggle_module_verbose( FILE* ofile, mod_link* head ) {
 */
 void toggle_report( FILE* ofile, bool verbose, bool instance ) {
 
+  bool missed_found;      /* If set to TRUE, indicates that untoggled bits were found */
+
   if( instance ) {
 
     fprintf( ofile, "TOGGLE COVERAGE RESULTS BY INSTANCE\n" );
@@ -267,9 +295,9 @@ void toggle_report( FILE* ofile, bool verbose, bool instance ) {
     fprintf( ofile, "                                                 Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------\n" );
 
-    toggle_instance_summary( ofile, instance_root, "<root>" );
+    missed_found = toggle_instance_summary( ofile, instance_root, "<root>" );
     
-    if( verbose ) {
+    if( verbose && missed_found ) {
       toggle_instance_verbose( ofile, instance_root );
     }
 
@@ -281,9 +309,9 @@ void toggle_report( FILE* ofile, bool verbose, bool instance ) {
     fprintf( ofile, "                                                 Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------\n" );
 
-    toggle_module_summary( ofile, mod_head );
+    missed_found = toggle_module_summary( ofile, mod_head );
 
-    if( verbose ) {
+    if( verbose && missed_found ) {
       toggle_module_verbose( ofile, mod_head );
     }
 
@@ -294,4 +322,9 @@ void toggle_report( FILE* ofile, bool verbose, bool instance ) {
 
 }
 
-/* $Log$ */
+/* $Log$
+/* Revision 1.5  2002/07/03 03:31:11  phase1geo
+/* Adding RCS Log strings in files that were missing them so that file version
+/* information is contained in every source and header file.  Reordering src
+/* Makefile to be alphabetical.  Adding mult1.v diagnostic to regression suite.
+/* */

@@ -49,6 +49,9 @@ void combination_get_stats( exp_link* expl, float* total, int* hit ) {
  \param root    Pointer to node in instance tree to evaluate.
  \param parent  Name of parent instance name.
 
+ \return Returns TRUE if combinations were found to be missed; otherwise,
+         returns FALSE.
+
  Outputs summarized results of the combinational logic coverage per module
  instance to the specified output stream.  Summarized results are printed 
  as percentages based on the number of combinations hit during simulation 
@@ -56,7 +59,7 @@ void combination_get_stats( exp_link* expl, float* total, int* hit ) {
  design.  An expression is said to be measurable for combinational coverage 
  if it evaluates to a value of 0 or 1.
 */
-void combination_instance_summary( FILE* ofile, mod_inst* root, char* parent ) {
+bool combination_instance_summary( FILE* ofile, mod_inst* root, char* parent ) {
 
   mod_inst* curr;       /* Pointer to current child module instance of this node */
   float     percent;    /* Percentage of lines hit                               */
@@ -66,7 +69,7 @@ void combination_instance_summary( FILE* ofile, mod_inst* root, char* parent ) {
   assert( root->stat != NULL );
 
   if( root->stat->comb_total == 0 ) {
-    percent = 0;
+    percent = 100;
   } else {
     percent = ((root->stat->comb_hit / root->stat->comb_total) * 100);
   }
@@ -86,11 +89,16 @@ void combination_instance_summary( FILE* ofile, mod_inst* root, char* parent ) {
     curr = curr->next;
   }
 
+  return( miss > 0 );
+
 }
 
 /*!
  \param ofile   Pointer to file to output results to.
  \param head    Pointer to link in current module list to evaluate.
+
+ \return Returns TRUE if combinations were found to be missed; otherwise,
+         returns FALSE.
 
  Outputs summarized results of the combinational logic coverage per module
  to the specified output stream.  Summarized results are printed as 
@@ -99,7 +107,7 @@ void combination_instance_summary( FILE* ofile, mod_inst* root, char* parent ) {
  design.  An expression is said to be measurable for combinational coverage 
  if it evaluates to a value of 0 or 1.
 */
-void combination_module_summary( FILE* ofile, mod_link* head ) {
+bool combination_module_summary( FILE* ofile, mod_link* head ) {
 
   float     total_lines = 0;  /* Total number of lines parsed                         */
   int       hit_lines   = 0;  /* Number of lines executed during simulation           */
@@ -110,7 +118,7 @@ void combination_module_summary( FILE* ofile, mod_link* head ) {
   combination_get_stats( head->mod->exp_head, &total_lines, &hit_lines );
 
   if( total_lines == 0 ) {
-    percent = 0;
+    percent = 100;
   } else {
     percent = ((hit_lines / total_lines) * 100);
   }
@@ -127,6 +135,8 @@ void combination_module_summary( FILE* ofile, mod_link* head ) {
   if( head->next != NULL ) {
     combination_module_summary( ofile, head->next );
   }
+
+  return( miss > 0 );
 
 }
 
@@ -259,8 +269,8 @@ void combination_underline_tree( expression* exp, char*** lines, int* depth, int
           case EXP_OP_MBIT_SEL :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s"               );  break;
           case EXP_OP_EXPAND   :  *size = l_size + r_size + 0;  strcpy( code_fmt, "%s"               );  break;  // ???
           case EXP_OP_CONCAT   :  *size = l_size + r_size + 0;  strcpy( code_fmt, "%s"               );  break;  // ???
-          case EXP_OP_PEDGE    :  *size = l_size + r_size + 0;  strcpy( code_fmt, "%s"               );  break;  // ???
-          case EXP_OP_NEDGE    :  *size = l_size + r_size + 0;  strcpy( code_fmt, "%s"               );  break;  // ???
+          case EXP_OP_PEDGE    :  *size = l_size + r_size + 8;  strcpy( code_fmt, "        %s"       );  break;
+          case EXP_OP_NEDGE    :  *size = l_size + r_size + 8;  strcpy( code_fmt, "        %s"       );  break;
           case EXP_OP_AEDGE    :  *size = l_size + r_size + 0;  strcpy( code_fmt, "%s"               );  break;  // ???
           case EXP_OP_EOR      :  *size = l_size + r_size + 4;  strcpy( code_fmt, "%s    %s"         );  break;
           case EXP_OP_CASE     :  *size = l_size + r_size + 11; strcpy( code_fmt, "      %s   %s  "  );  break;
@@ -664,6 +674,8 @@ void combination_module_verbose( FILE* ofile, mod_link* head ) {
 */
 void combination_report( FILE* ofile, bool verbose, bool instance ) {
 
+  bool missed_found;      /* If set to TRUE, indicates combinations were missed */
+
   if( instance ) {
 
     fprintf( ofile, "COMBINATIONAL LOGIC COVERAGE RESULTS BY INSTANCE\n" );
@@ -672,9 +684,9 @@ void combination_report( FILE* ofile, bool verbose, bool instance ) {
     fprintf( ofile, "                                                 Hit/Miss/Total    Percent hit\n" );
     fprintf( ofile, "------------------------------------------------------------------------------\n" );
 
-    combination_instance_summary( ofile, instance_root, "<root>" );
+    missed_found = combination_instance_summary( ofile, instance_root, "<root>" );
     
-    if( verbose ) {
+    if( verbose && missed_found ) {
       combination_instance_verbose( ofile, instance_root );
     }
 
@@ -686,9 +698,9 @@ void combination_report( FILE* ofile, bool verbose, bool instance ) {
     fprintf( ofile, "                                                 Hit/Miss/Total    Percent hit\n" );
     fprintf( ofile, "------------------------------------------------------------------------------\n" );
 
-    combination_module_summary( ofile, mod_head );
+    missed_found = combination_module_summary( ofile, mod_head );
 
-    if( verbose ) {
+    if( verbose && missed_found ) {
       combination_module_verbose( ofile, mod_head );
     }
 
@@ -698,6 +710,9 @@ void combination_report( FILE* ofile, bool verbose, bool instance ) {
 
 
 /* $Log$
+/* Revision 1.25  2002/07/05 05:01:51  phase1geo
+/* Removing unecessary debugging output.
+/*
 /* Revision 1.24  2002/07/05 05:00:13  phase1geo
 /* Removing CASE, CASEX, and CASEZ from line and combinational logic results.
 /*
