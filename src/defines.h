@@ -6,6 +6,10 @@
  \author   Trevor Williams  (trevorw@charter.net)
  \date     11/27/2001
  \brief    Contains definitions/structures used in the Covered utility.
+ 
+ \par
+ This file is included by all files within Covered.  All defines, macros, structures, enums,
+ and typedefs in the tool are specified in this file.
 */
 
 #include "../config.h"
@@ -106,33 +110,6 @@
  Specifies that the current coverage database line describes general information.
 */
 #define DB_TYPE_INFO         5
-
-/*! @} */
-
-
-/*!
- \addtogroup tree_fname_comps Compare types for tree matches.
-
- The following three defines specify to the tree_find_module function how it should
- deal with the presence/absence of the filename attribute of the module structure.
-
- @{
-*/
-
-/*!
- Specifies that the tree_find_module function should only match if filename is set.
-*/
-#define FNAME_SET            1
-
-/*!
- Specifies that the tree_find_module function should only match if filename is not set.
-*/
-#define FNAME_NOTSET         2
-
-/*!
- Specifies that the tree_find_module function should not care about the value of filename.
-*/
-#define FNAME_DONTCARE       3
 
 /*! @} */
 
@@ -605,60 +582,112 @@
 
  @{
 */
-
-#define EXP_OP_STATIC     0x00  /*!<  0 Specifies constant value      */
-#define EXP_OP_SIG        0x01  /*!<  1 Specifes signal value         */
-#define EXP_OP_XOR        0x02  /*!<  2 '^'   operator                */
-#define EXP_OP_MULTIPLY   0x03  /*!<  3 '*'   operator                */
-#define EXP_OP_DIVIDE     0x04  /*!<  4 '/'   operator                */
-#define EXP_OP_MOD        0x05  /*!<  5 '%'   operator                */
-#define EXP_OP_ADD        0x06  /*!<  6 '+'   operator                */
-#define EXP_OP_SUBTRACT   0x07  /*!<  7 '-'   operator                */
-#define EXP_OP_AND        0x08  /*!<  8 '&'   operator                */
-#define EXP_OP_OR         0x09  /*!<  9 '|'   operator                */
-#define EXP_OP_NAND       0x0a  /*!< 10 '~&'  operator                */
-#define EXP_OP_NOR        0x0b  /*!< 11 '~|'  operator                */
-#define EXP_OP_NXOR       0x0c  /*!< 12 '~^'  operator                */
-#define EXP_OP_LT         0x0d  /*!< 13 '<'   operator                */
-#define EXP_OP_GT         0x0e  /*!< 14 '>'   operator                */
-#define EXP_OP_LSHIFT     0x0f  /*!< 15 '<<'  operator                */
-#define EXP_OP_RSHIFT     0x10  /*!< 16 '>>'  operator                */
-#define EXP_OP_EQ         0x11  /*!< 17 '=='  operator                */
-#define EXP_OP_CEQ        0x12  /*!< 18 '===' operator                */
-#define EXP_OP_LE         0x13  /*!< 19 '<='  operator                */
-#define EXP_OP_GE         0x14  /*!< 20 '>='  operator                */
-#define EXP_OP_NE         0x15  /*!< 21 '!='  operator                */
-#define EXP_OP_CNE        0x16  /*!< 22 '!==' operator                */
-#define EXP_OP_LOR        0x17  /*!< 23 '||'  operator                */
-#define EXP_OP_LAND       0x18  /*!< 24 '&&'  operator                */
-#define EXP_OP_COND       0x19  /*!< 25 '?:' conditional operator     */
-#define EXP_OP_COND_SEL   0x1a  /*!< 26 '?:' conditional select       */
-#define EXP_OP_UINV       0x1b  /*!< 27 unary '~'  operator           */
-#define EXP_OP_UAND       0x1c  /*!< 28 unary '&'  operator           */
-#define EXP_OP_UNOT       0x1d  /*!< 29 unary '!'  operator           */
-#define EXP_OP_UOR        0x1e  /*!< 30 unary '|'  operator           */
-#define EXP_OP_UXOR       0x1f  /*!< 31 unary '^'  operator           */
-#define EXP_OP_UNAND      0x20  /*!< 32 unary '~&' operator           */
-#define EXP_OP_UNOR       0x21  /*!< 33 unary '~|' operator           */
-#define EXP_OP_UNXOR      0x22  /*!< 34 unary '~^' operator           */
-#define EXP_OP_SBIT_SEL   0x23  /*!< 35 single-bit signal select      */
-#define EXP_OP_MBIT_SEL   0x24  /*!< 36 multi-bit signal select       */
-#define EXP_OP_EXPAND     0x25  /*!< 37 bit expansion operator        */
-#define EXP_OP_CONCAT     0x26  /*!< 38 signal concatenation operator */
-#define EXP_OP_PEDGE      0x27  /*!< 39 posedge operator              */
-#define EXP_OP_NEDGE      0x28  /*!< 40 negedge operator              */
-#define EXP_OP_AEDGE      0x29  /*!< 41 anyedge operator              */
-#define EXP_OP_LAST       0x2a  /*!< 42 1-bit value holder for parent */
-#define EXP_OP_EOR        0x2b  /*!< 43 event OR operator             */
-#define EXP_OP_DELAY      0x2c  /*!< 44 delay operator                */
-#define EXP_OP_CASE       0x2d  /*!< 45 case equality expression      */
-#define EXP_OP_CASEX      0x2e  /*!< 46 casex equality expression     */
-#define EXP_OP_CASEZ      0x2f  /*!< 47 casez equality expression     */
-#define EXP_OP_DEFAULT    0x30  /*!< 48 case default expression       */
-#define EXP_OP_LIST       0x31  /*!< 49 comma separated expr list     */
-#define EXP_OP_PARAM      0x32  /*!< 50 full parameter                */
-#define EXP_OP_PARAM_SBIT 0x33  /*!< 51 single bit select parameter   */
-#define EXP_OP_PARAM_MBIT 0x34  /*!< 52 multi-bit select parameter    */
+/*! Decimal value = 0.  Specifies constant value. */
+#define EXP_OP_STATIC     0x00
+/*! Decimal value = 1.  Specifies signal value. */
+#define EXP_OP_SIG        0x01
+/*! Decimal value = 2.  Specifies '^' operator. */
+#define EXP_OP_XOR        0x02
+/*! Decimal value = 3.  Specifies '*' operator. */
+#define EXP_OP_MULTIPLY   0x03
+/*! Decimal value = 4.  Specifies '/' operator. */
+#define EXP_OP_DIVIDE     0x04
+/*! Decimal value = 5.  Specifies '%' operator. */
+#define EXP_OP_MOD        0x05
+/*! Decimal value = 6.  Specifies '+' operator. */
+#define EXP_OP_ADD        0x06
+/*! Decimal value = 7.  Specifies '-' operator. */
+#define EXP_OP_SUBTRACT   0x07
+/*! Decimal value = 8.  Specifies '&' operator. */
+#define EXP_OP_AND        0x08
+/*! Decimal value = 9.  Specifies '|' operator. */
+#define EXP_OP_OR         0x09
+/*! Decimal value = 10.  Specifies '~&' operator. */
+#define EXP_OP_NAND       0x0a
+/*! Decimal value = 11.  Specifies '~|' operator. */
+#define EXP_OP_NOR        0x0b
+/*! Decimal value = 12.  Specifies '~^' operator. */
+#define EXP_OP_NXOR       0x0c
+/*! Decimal value = 13.  Specifies '<' operator. */
+#define EXP_OP_LT         0x0d
+/*! Decimal value = 14.  Specifies '>' operator. */
+#define EXP_OP_GT         0x0e
+/*! Decimal value = 15.  Specifies '<<' operator. */
+#define EXP_OP_LSHIFT     0x0f
+/*! Decimal value = 16.  Specifies '>>' operator. */
+#define EXP_OP_RSHIFT     0x10
+/*! Decimal value = 17.  Specifies '==' operator. */
+#define EXP_OP_EQ         0x11
+/*! Decimal value = 18.  Specifies '===' operator. */
+#define EXP_OP_CEQ        0x12
+/*! Decimal value = 19.  Specifies '<=' operator. */
+#define EXP_OP_LE         0x13
+/*! Decimal value = 20.  Specifies '>=' operator. */
+#define EXP_OP_GE         0x14
+/*! Decimal value = 21.  Specifies '!=' operator. */
+#define EXP_OP_NE         0x15
+/*! Decimal value = 22.  Specifies '!==' operator. */
+#define EXP_OP_CNE        0x16
+/*! Decimal value = 23.  Specifies '||' operator. */
+#define EXP_OP_LOR        0x17
+/*! Decimal value = 24.  Specifies '&&' operator. */
+#define EXP_OP_LAND       0x18
+/*! Decimal value = 25.  Specifies '?:' conditional operator. */
+#define EXP_OP_COND       0x19
+/*! Decimal value = 26.  Specifies '?:' conditional select. */
+#define EXP_OP_COND_SEL   0x1a
+/*! Decimal value = 27.  Specifies '~' unary operator. */
+#define EXP_OP_UINV       0x1b
+/*! Decimal value = 28.  Specifies '&' unary operator. */
+#define EXP_OP_UAND       0x1c
+/*! Decimal value = 29.  Specifies '!' unary operator. */
+#define EXP_OP_UNOT       0x1d
+/*! Decimal value = 30.  Specifies '|' unary operator. */
+#define EXP_OP_UOR        0x1e
+/*! Decimal value = 31.  Specifies '^' unary operator. */
+#define EXP_OP_UXOR       0x1f
+/*! Decimal value = 32.  Specifies '~&' unary operator. */
+#define EXP_OP_UNAND      0x20
+/*! Decimal value = 33.  Specifies '~|' unary operator. */
+#define EXP_OP_UNOR       0x21
+/*! Decimal value = 34.  Specifies '~^' unary operator. */
+#define EXP_OP_UNXOR      0x22
+/*! Decimal value = 35.  Specifies single-bit signal select (i.e., [x]). */
+#define EXP_OP_SBIT_SEL   0x23
+/*! Decimal value = 36.  Specifies multi-bit signal select (i.e., [x:y]). */
+#define EXP_OP_MBIT_SEL   0x24
+/*! Decimal value = 37.  Specifies bit expansion operator (i.e., {x{y}}). */
+#define EXP_OP_EXPAND     0x25
+/*! Decimal value = 38.  Specifies signal concatenation operator (i.e., {x,y}). */
+#define EXP_OP_CONCAT     0x26
+/*! Decimal value = 39.  Specifies posedge operator (i.e., @posedge x). */
+#define EXP_OP_PEDGE      0x27
+/*! Decimal value = 40.  Specifies negedge operator (i.e., @negedge x). */
+#define EXP_OP_NEDGE      0x28
+/*! Decimal value = 41.  Specifies anyedge operator (i.e., @x). */
+#define EXP_OP_AEDGE      0x29
+/*! Decimal value = 42.  Specifies 1-bit holder for parent. */
+#define EXP_OP_LAST       0x2a
+/*! Decimal value = 43.  Specifies 'or' event operator. */
+#define EXP_OP_EOR        0x2b
+/*! Decimal value = 44.  Specifies delay operator (i.e., #(x)). */
+#define EXP_OP_DELAY      0x2c
+/*! Decimal value = 45.  Specifies case equality expression. */
+#define EXP_OP_CASE       0x2d
+/*! Decimal value = 46.  Specifies casex equality expression. */
+#define EXP_OP_CASEX      0x2e
+/*! Decimal value = 47.  Specifies casez equality expression. */
+#define EXP_OP_CASEZ      0x2f
+/*! Decimal value = 48.  Specifies case/casex/casez default expression. */
+#define EXP_OP_DEFAULT    0x30
+/*! Decimal value = 49.  Specifies comma separated expression list. */
+#define EXP_OP_LIST       0x31
+/*! Decimal value = 50.  Specifies full parameter. */
+#define EXP_OP_PARAM      0x32
+/*! Decimal value = 51.  Specifies single-bit select parameter. */
+#define EXP_OP_PARAM_SBIT 0x33
+/*! Decimal value = 52.  Specifies multi-bit select parameter. */
+#define EXP_OP_PARAM_MBIT 0x34
 
 /*! @} */
 
@@ -766,18 +795,50 @@ typedef enum {
   TRUE     /*!< Boolean true value  */
 } bool;
 
-/*!
- A nibble is a 32-bit value that is subdivided into three parts:
-   Bits  7 -  0 = 4 bits of 4-state value.
-   Bits 11 -  8 = Toggle01 value for each of the four 4-state bits.
-   Bits 15 - 12 = Toggle10 value for each of the four 4-state bits.
-   Bits 19 - 16 = Indicates if this bit has been previously assigned.
-   Bits 23 - 20 = Static value indicators for each of the four 4-state bits.
-   Bits 27 - 24 = Indicates if this bit was set to a value of 0 (FALSE).
-   Bits 31 - 28 = Indicates if this bit was set to a value of 1 (TRUE).
-*/
 #if SIZEOF_INT == 4
+
+/*!
+ A nibble is a 32-bit value that is subdivided into the following parts:
+ <table>
+   <tr> <td> <strong> Bits </strong> </td> <td> <strong> Field Description </strong> </td> </tr>
+   <tr> <td> 7:0   </td> <td> Current 4-state value for bits 3-0 </td> </tr>
+   <tr> <td> 11:8  </td> <td> Indicator if associated bit was toggled from 0->1 </td> </tr>
+   <tr> <td> 15:12 </td> <td> Indicator if associated bit was toggled from 1->0 </td></tr>
+   <tr> <td> 19:16 </td> <td> Indicator if associated bit has been previously assigned this timestep </td> </tr>
+   <tr> <td> 23:20 </td> <td> Static value indicators for each of the four 4-state bits </td> </tr>
+   <tr> <td> 27:24 </td> <td> Indicator if associated bit was set to a value of 0 (FALSE) </td> </tr>
+   <tr> <td> 31:28 </td> <td> Indicator if associated bit was set to a value of 1 (TRUE) </td> </tr>
+ </table>
+*/
 typedef unsigned int nibble;
+
+/*!
+ A control is a 32-bit value that is subdivided into the following parts:
+ <table>
+   <tr> <td> <strong> Bits </strong> </td> <td> <strong> Field Description </strong> </td> </tr>
+   <tr> <td> 5:0   </td> <td> See \ref SUPPL_LSB_OP </td> </tr>
+   <tr> <td> 6     </td> <td> See \ref SUPPL_LSB_SWAPPED </td> </tr>
+   <tr> <td> 7     </td> <td> See \ref SUPPL_LSB_ROOT </td> </tr>
+   <tr> <td> 8     </td> <td> See \ref SUPPL_LSB_EXECUTED </td> </tr>
+   <tr> <td> 9     </td> <td> See \ref SUPPL_LSB_STMT_HEAD </td> </tr>
+   <tr> <td> 10    </td> <td> See \ref SUPPL_LSB_STMT_STOP </td> </tr>
+   <tr> <td> 11    </td> <td> See \ref SUPPL_LSB_STMT_CONTINUOUS </td> </tr>
+   <tr> <td> 12    </td> <td> See \ref SUPPL_LSB_FALSE </td> </tr>
+   <tr> <td> 13    </td> <td> See \ref SUPPL_LSB_TRUE </td> </tr>
+   <tr> <td> 14    </td> <td> See \ref SUPPL_LSB_LEFT_CHANGED </td> </tr>
+   <tr> <td> 15    </td> <td> See \ref SUPPL_LSB_RIGHT_CHANGED </td> </tr>
+   <tr> <td> 16    </td> <td> See \ref SUPPL_LSB_EVAL_00 </td> </tr>
+   <tr> <td> 17    </td> <td> See \ref SUPPL_LSB_EVAL_01 </td> </tr>
+   <tr> <td> 18    </td> <td> See \ref SUPPL_LSB_EVAL_10 </td> </tr>
+   <tr> <td> 19    </td> <td> See \ref SUPPL_LSB_EVAL_11 </td> </tr>
+   <tr> <td> 20    </td> <td> See \ref SUPPL_LSB_EVAL_T </td> </tr>
+   <tr> <td> 21    </td> <td> See \ref SUPPL_LSB_EVAL_F </td> </tr>
+   <tr> <td> 22    </td> <td> See \ref SUPPL_LSB_COMB_CNTD </td> </tr>
+   <tr> <td> 23    </td> <td> See \ref SUPPL_LSB_STMT_CONNECTED </td> </tr>
+   <tr> <td> 24    </td> <td> See \ref SUPPL_LSB_STMT_ADDED </td> </tr>
+   <tr> <td> 31:25 </td> <td> Reserved </td> </tr>
+ </table>
+*/
 typedef unsigned int control;
 #else
 #if SIZEOF_LONG == 4
@@ -795,6 +856,9 @@ typedef unsigned long control;
 */
 struct str_link_s;
 
+/*!
+ Renaming string link structure for convenience.
+*/
 typedef struct str_link_s str_link;
 
 struct str_link_s {
@@ -815,6 +879,9 @@ struct vector_s {
   nibble* value;     /*!< 4-state current value and toggle history */
 };
 
+/*!
+ Renaming vector structure for convenience.
+*/
 typedef struct vector_s vector;
 
 /*------------------------------------------------------------------------------*/
@@ -824,6 +891,9 @@ typedef struct vector_s vector;
 */
 union expr_stmt_u;
 
+/*!
+ Renaming expression statement union for convenience.
+*/
 typedef union expr_stmt_u expr_stmt;
 
 /*!
@@ -836,7 +906,14 @@ typedef union expr_stmt_u expr_stmt;
 struct expression_s;
 struct signal_s;
 
+/*!
+ Renaming expression structure for convenience.
+*/
 typedef struct expression_s expression;
+
+/*!
+ Renaming signal structure for convenience.
+*/
 typedef struct signal_s     signal;
 
 struct expression_s {
@@ -865,6 +942,9 @@ struct expression_s {
 */
 struct statement_s;
 
+/*!
+ Renaming statement structure for convenience.
+*/
 typedef struct statement_s statement;
 
 struct statement_s {
@@ -873,7 +953,9 @@ struct statement_s {
   statement*  next_false;  /*!< Pointer to next statement to run if next_true not picked     */
 };
 
-
+/*!
+ Renaming statement iterator structure for convenience.
+*/
 typedef struct stmt_iter_s stmt_iter;
 
 /*------------------------------------------------------------------------------*/
@@ -882,6 +964,9 @@ typedef struct stmt_iter_s stmt_iter;
 */
 struct exp_link_s;
 
+/*!
+ Renaming expression link structure for convenience.
+*/
 typedef struct exp_link_s exp_link;
 
 struct exp_link_s {
@@ -895,6 +980,9 @@ struct exp_link_s {
 */
 struct stmt_link_s;
 
+/*!
+ Renaming statement link structure for convenience.
+*/
 typedef struct stmt_link_s stmt_link;
 
 struct stmt_link_s {
@@ -925,6 +1013,9 @@ struct stmt_iter_s {
 */
 struct stmt_loop_link_s;
 
+/*!
+ Renaming statement loop link structure for convenience.
+*/
 typedef struct stmt_loop_link_s stmt_loop_link;
 
 struct stmt_loop_link_s {
@@ -951,6 +1042,9 @@ struct signal_s {
 */
 struct sig_link_s;
 
+/*!
+ Renaming signal link structure for convenience.
+*/
 typedef struct sig_link_s sig_link;
 
 struct sig_link_s {
@@ -965,6 +1059,9 @@ struct sig_link_s {
 */
 struct statistic_s;
 
+/*!
+ Renaming statistic structure for convenience.
+*/
 typedef struct statistic_s statistic;
 
 struct statistic_s {
@@ -983,6 +1080,9 @@ struct statistic_s {
 */
 struct mod_parm_s;
 
+/*!
+ Renaming module parameter structure for convenience.
+*/
 typedef struct mod_parm_s mod_parm;
 
 struct mod_parm_s {
@@ -1001,6 +1101,9 @@ struct mod_parm_s {
 */
 struct inst_parm_s;
 
+/*!
+ Renaming instance parameter structure for convenience.
+*/
 typedef struct inst_parm_s inst_parm;
 
 struct inst_parm_s {
@@ -1029,6 +1132,9 @@ struct module_s {
   mod_parm*  param_tail; /*!< Tail pointer to list of parameters in this module  */
 };
 
+/*!
+ Renaming module structure for convenience.
+*/
 typedef struct module_s module;
 
 /*------------------------------------------------------------------------------*/
@@ -1036,7 +1142,10 @@ typedef struct module_s module;
  Linked list element that stores a module (no scope).
 */
 struct mod_link_s;
-	
+
+/*!
+ Renaming module link structure for convenience.
+*/
 typedef struct mod_link_s mod_link;
 	
 struct mod_link_s {
@@ -1050,6 +1159,9 @@ struct mod_link_s {
 */
 struct symtable_s;
 
+/*!
+ Renaming symbol table structure for convenience.
+*/
 typedef struct symtable_s symtable;
 
 struct symtable_s {
@@ -1072,6 +1184,9 @@ struct static_expr_s {
   int         num;        /*!< Specifies if static value is a numeric value */
 };
 
+/*!
+ Renaming static expression structure for convenience.
+*/
 typedef struct static_expr_s static_expr;
 
 /*------------------------------------------------------------------------------*/
@@ -1083,6 +1198,9 @@ struct vector_width_s {
   static_expr* right;     /*!< Specifies right bit value of bit range */
 };
 
+/*!
+ Renaming vector width structure for convenience.
+*/
 typedef struct vector_width_s vector_width;
 
 /*------------------------------------------------------------------------------*/
@@ -1091,6 +1209,9 @@ typedef struct vector_width_s vector_width;
 */
 struct sig_exp_bind_s;
 
+/*!
+ Renaming signal/expression binding structure for convenience.
+*/
 typedef struct sig_exp_bind_s sig_exp_bind;
 
 struct sig_exp_bind_s {
@@ -1107,6 +1228,9 @@ struct sig_exp_bind_s {
 */
 struct case_stmt_s;
 
+/*!
+ Renaming case statement structure for convenience.
+*/
 typedef struct case_stmt_s case_statement;
 
 struct case_stmt_s {
@@ -1122,6 +1246,9 @@ struct case_stmt_s {
 */
 struct mod_inst_s;
 
+/*!
+ Renaming module instance structure for convenience.
+*/
 typedef struct mod_inst_s mod_inst;
 
 struct mod_inst_s {
@@ -1143,6 +1270,9 @@ struct mod_inst_s {
 */
 struct tnode_s;
 
+/*!
+ Renaming tree node structure for convenience.
+*/
 typedef struct tnode_s tnode;
 
 struct tnode_s {
@@ -1163,6 +1293,10 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.67  2003/02/13 23:44:08  phase1geo
+ Tentative fix for VCD file reading.  Not sure if it works correctly when
+ original signal LSB is != 0.  Icarus Verilog testsuite passes.
+
  Revision 1.66  2003/02/12 14:56:22  phase1geo
  Adding info.c and info.h files to handle new general information line in
  CDD file.  Support for this new feature is not complete at this time.

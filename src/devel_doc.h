@@ -25,6 +25,7 @@
  - \ref page_big_picture
  - \ref page_code_details
  - \ref page_testing
+ - \ref page_debugging
  - \ref page_misc
 */
 /*!
@@ -80,6 +81,7 @@
  - \ref page_big_picture
  - \ref page_code_details
  - \ref page_testing
+ - \ref page_debugging
  - \ref page_misc 
 */
 
@@ -168,6 +170,7 @@
  - \ref page_big_picture
  - \ref page_code_details
  - \ref page_testing
+ - \ref page_debugging
  - \ref page_misc 
 */
 
@@ -272,6 +275,7 @@
  - \ref page_big_picture
  - \ref page_code_details
  - \ref page_testing
+ - \ref page_debugging
  - \ref page_misc 
 */
 
@@ -391,6 +395,7 @@
  - \ref page_big_picture
  - \ref page_code_details
  - \ref page_testing
+ - \ref page_debugging
  - \ref page_misc 
 */
 
@@ -430,44 +435,9 @@
  </ul>
  
  \par
- Each nibble in the value array is split up into several fields.  The following table represents
- the field breakout within a nibble.
- 
- \par
- <table>
-   <tr>
-     <td> <strong> Bits </strong> </td>
-     <td> <strong> Field Description </strong> </td>
-   </tr>
-   <tr>
-     <td> 7:0 </td>
-     <td> Current 4-state value for bits 3-0 </td>
-   </tr>
-   <tr>
-     <td> 11:8 </td>
-     <td> Indicator if associated bit was toggled from 0->1 </td>
-   </tr>
-   <tr>
-     <td> 15:12 </td>
-     <td> Indicator if associated bit was toggled from 1->0 </td>
-   </tr>
-   <tr>
-     <td> 19:16 </td>
-     <td> Indicator if associated bit has been previously assigned this timestep </td>
-   </tr>
-   <tr>
-     <td> 23:20 </td>
-     <td> Static value indicators for each of the four 4-state bits </td>
-   </tr>
-   <tr>
-     <td> 27:24 </td>
-     <td> Indicator if associated bit was set to a value of 0 (FALSE) </td>
-   </tr>
-   <tr>
-     <td> 31:28 </td>
-     <td> Indicator if associated bit was set to a value of 1 (TRUE) </td>
-   </tr>
- </table>
+ Each nibble in the value array is split up into several fields.  Please refer to the description
+ of a \ref nibble for more information on the bit breakout of this element.  For more information
+ on the vector structure and their usage, please refer to vector.c.
  
  \par Section 5.1.2.  Signals
  
@@ -482,17 +452,59 @@
  \par
  The list of signals in a given module instance is passed to the toggle report generator
  since all toggle coverage information is contained in the signals (i.e., toggle information is
- not contained in the expression or statement structures).
+ not contained in the expression or statement structures).  For more information on the
+ signal structure, please refer to signal.c.
  
  \par Section 5.1.3.  Expressions
  
  \par
- TBD.
+ Expressions represent unary or binary expressions within the verilog code.  Expressions are
+ organized in a binary tree structure with a pointer to the parent expression and two pointers
+ to the expression's child expressions.  An expression also contains a pointer to a vector
+ (which stores the expression's coverage information and current value), a pointer to a signal
+ (if the expression is a signal type), and a 32-bit control element called the supplemental
+ field (see \ref control for bit-breakout of the supplemental field).  The expression's operation
+ type and state/descriptor bits are stored in the supplemental field (for more information on
+ the supplemental field bit breakout, please refer to expr.c).  Expressions are used to calculate
+ line, combinational logic and FSM coverage.
  
  \par Section 5.1.4.  Statements
+ Statements are used by Covered for simulation only.  They do not contain any coverage information
+ but instead are used to organize the order that expression trees are simulated.  A statement
+ contains three main pieces of information, a pointer to the root of an expression tree (the
+ parent pointer of the expression tree points to the statement structure), a pointer to the
+ statement that should be executed if the statement's root expression evaluates to true (non-zero
+ value), and a pointer to the statement that should be executed if the statement's root expression
+ evalutes to false (zero value).  For more information regarding statements, please refer to
+ statement.c.
+ 
+ \par Section 5.1.5.  Parameters
  
  \par
- TBD.
+ Though the parameter is a VCD dumpable value (indeed there is a parameter type for $var identifier),
+ some simulators do not dump this information to the VCD.  Therefore, Covered manages the calculation
+ of parameter values and handles parameter overriding properly.  The handling of parameters is probably
+ the most complicated code implemented in Covered.  As such, more detail can be found in the param.c
+ source file regarding parameters.
+ 
+ \par Section 5.1.6.  Modules
+ 
+ \par
+ Modules are the glue that holds all of the information for a particular Verilog module, including
+ the module's filename, module name, list of signals, list of parameters, list of expressions, list
+ of statements, and Coverage summary statistic structures.  A module and all structures within it
+ are autonomous from all other modules in that coverage metrics can be gathered for a module
+ independently from all other modules.  Modules are organized into a globally accessible list but
+ a module in the list has no relation to other modules in the list.  Modules are handled in module.c.
+ 
+ \par Section 5.1.7.  Instances
+ 
+ \par
+ Instances of modules are structures that contain the instance name of the module instance and a
+ pointer to the module that represents that instance.  Instances are organized into a tree structure
+ that resembles the Verilog hierarchy of the DUT.  The root of this globally accessible instance
+ tree is called instance_root.  Instances are described in more detail below and are handled in
+ the instance.c source file.
  
  <HR>
  
@@ -649,7 +661,11 @@
  
  \par
  After all five phases of the score command have been completed, the resulting CDD file is ready for
- merging or reporting.  It is important to note that after the first two phases have been completed,
+ merging or reporting.  All phases of the score command can be found in the score.c and parse.c
+ source files.
+ 
+ \par
+ It is important to note that after the first two phases have been completed,
  the resulting CDD file, though it doesn't contain any coverage information, contains all of the
  design information necessary for simulation.  Therefore, if multiple VCD files are needed to be scored,
  phases 1 and 2 can be performed once, the unpopulated files can be manually copied by the user and
@@ -683,7 +699,7 @@
  \par
  After all three phases have been completed, the resulting CDD file is a union of the two
  input CDD files but remains in the exact same format as the CDD file read in by phase 1 of
- the merge.
+ the merge.  All phases of the merge command can be found in the merge.c source file.
  
  \par Section 5.2.2.3.  Report Command Phases
  
@@ -711,7 +727,8 @@
  
  \par
  The report command is the only command whose output is not a CDD file.  The report command
- treats the input CDD file as read-only and does not alter the files contents.
+ treats the input CDD file as read-only and does not alter the files contents.  All phases
+ of the report command can be found in the report.c source file.
 
 <HR>
 
@@ -753,11 +770,11 @@
 
  \par
  <ul>
-   <li> signal (1)
-   <li> expression (2)
-   <li> module (3)
-   <li> statement (4)
-   <li> info (5)
+   <li> signal (1; signal.c)
+   <li> expression (2; expr.c)
+   <li> module (3; module.c)
+   <li> statement (4; statement.c)
+   <li> info (5; info.c)
  </ul>
 
  \par
@@ -804,7 +821,8 @@
  The VCD parser is written using the fscanf and sscanf utilities.  Due to the ambiguity of
  the VCD file format, it was decided to write the parser using these utilities instead of
  the standard flex and bison.  In addition to ease of code writing, the fscanf and sscanf
- readers are more efficient than the alternative.
+ readers are more efficient than the alternative.  All VCD file parsing is contained in
+ the vcd.c source file.
 
 <HR>
 
@@ -864,23 +882,24 @@
  
  \par
  The report generator is rooted in the file report.c; however, the actual job of generating a report
- is distributed among four source files:
+ is distributed among five source files:
  
  \par
  <ol>
    <li> line.c    (Line coverage output)
    <li> toggle.c  (Toggle coverage output)
    <li> comb.c    (Combinational logic coverage output)
+   <li> codegen.c (Reconstructs Verilog code from expression tree information)
    <li> fsm.c     (Finite State Machine coverage output)
  </ol>
  
  \par
  Once the CDD has been loaded into the instance_root module instance tree, the report generator
- calls each metrics statistical generator.  Each statistical generator traverses through the various
+ calls each metric's statistical generator.  Each statistical generator traverses through the various
  signal/expression/statement lists gaining summary coverage information for each module/instance.
  This information is stored in the statistic structure associated with each module instance in
  the design.  When outputting occurs, the statistic structure is used to generate the summary
- coverage data.
+ coverage data.  The source file for handling statistical structures can be found in stat.c.
  
  \par
  The second phase of the report generator is the output of information.  In all cases, summary
@@ -900,6 +919,7 @@
  - \ref page_tools
  - \ref page_code_details
  - \ref page_testing
+ - \ref page_debugging
  - \ref page_misc 
 */
 
@@ -929,6 +949,7 @@
  - \ref page_tools
  - \ref page_big_picture
  - \ref page_testing
+ - \ref page_debugging
  - \ref page_misc
 */
 
@@ -1056,13 +1077,130 @@
  - \ref page_tools
  - \ref page_big_picture
  - \ref page_code_details
+ - \ref page_debugging
  - \ref page_misc
 */
 
 /*!
- \page page_misc Section 8.  Odds and Ends Information
+ \page page_debugging Section 8.  Debugging
+ 
+ \par Section 8.1.  Debugging Utilities
+ 
+ \par
+ When a bug is found using Covered, it is often useful for a developer to understand
+ what utilities are available for debugging the problem at hand.  Besides using some
+ standard debugger, Covered comes with two built-in debugging facilities useful for
+ narrowing in on the code that is causing the problem.  They are the following:
+ 
+ \par
+ <ol>
+   <li> Global Covered option -D
+   <li> Internal code assertions
+ </ol>
+ 
+ \par
+ The following subsections will describe what these facilities are and how they can
+ be used or added to.
+ 
+ \par Section 8.1.  Built-in Command Debugging Utility (-D option)
+ 
+ \par
+ Covered comes with a global command option (a global command is a command that can be used
+ with any command) called '-D'.  When this option is specified for any command, interal
+ information is output to standard output during the command run.  The information output is
+ meant to help find the area of code which is causing the problem (in the case of a segfault
+ or some other error which causes Covered to exit immediately) and to help understand the values
+ that are being provided to the functions that are output the debug functionality.
+ 
+ \par
+ The merge and report commands currently do not emit much debugging information; however, the
+ score command contains a great deal of debugging information.  Most of the debugging information
+ comes from the database manager functions.  Each function in the db.c source file contains a
+ single debug output statement, specifying the name of the function being executed as the values
+ of the parameters passed to that function.  If any new functions are added to db.c, it is recommended
+ that these functions output debug information.  Additionally, the expression_operate function in
+ expr.c contains a debug output statement that is useful for tracking what Covered is doing during
+ the simulation phase of the score command.  If key information is missing in any other functions,
+ it is recommended that that information be displayed in debug output.
+ 
+ \par
+ To display debug information, the file that you are working with should contain the following
+ code.
+ 
+ \par
+ \code
+ #include <stdio.h>
+ #include "util.h"
+ 
+ extern char user_msg[USER_MSG_LENGTH];
+ \endcode
+ 
+ \par
+ Once this code has been added to source file, add the debugging information using the snprintf
+ function along with the \ref print_output function specified in util.c.  The following example
+ specifies how to output some debug information:
+ 
+ \par
+ \code
+ void foobar( char* name ) {
+   
+   snprintf( user_msg, USER_MSG_LENGTH, "In function foobar, name: %s", name );
+   print_output( user_msg, DEBUG );
+   
+   // ...
+   
+ }
+ \endcode
+ 
+ \par
+ Note that it is not necessary (or recommended) to specify a newline character after the user_msg
+ string as the print_output function will take care of adding this character.
+ 
+ \par Section 8.2.  Internal Assertions
+ 
+ \par
+ The second debugging facility that is used by Covered are C assertions provided by the assert.h
+ library.  Assertions are placed in the code to make sure that Covered never attempts to access
+ memory that it should not be accessing (to avoid segmentation fault messages whenever possible)
+ and to verify that things are in the proper state when performing some type of function.  The
+ benefit of creating an assertion is that a problem can be detected at the source (speeding up
+ debugging time) and a core dumpfile can be created when Covered is about to do something bad.
+ The core file can be used by a debugger to see where in the code was executing when the problem
+ occurred.
+ 
+ \par
+ To use an internal assertion, make sure that the file you want to add the assertion to contains
+ the following include.
+ 
+ \par
+ \code
+ #include <assert.h>
+ \endcode
+ 
+ \par
+ Once this header file has been included, simply use its assert function to verify a condition
+ that evaluates to TRUE or FALSE.  The overhead for assertions is minimal so please don't be
+ shy about putting them in wherever and whenver appropriate.
+ 
+ <HR>
+ 
+ \par Go To Section...
+ - \ref page_intro
+ - \ref page_project_plan
+ - \ref page_code_style
+ - \ref page_tools
+ - \ref page_big_picture
+ - \ref page_code_details
+ - \ref page_testing
+ - \ref page_misc
+*/
 
- \par Section 8.1.  Development Team
+/*!
+ \page page_misc Section 9.  Odds and Ends Information
+
+ \par Section 9.1.  Development Team
+ 
+ \par
  - Trevor Williams  (trevorw@charter.net)
 
 <HR>
@@ -1075,10 +1213,14 @@
  - \ref page_big_picture
  - \ref page_code_details
  - \ref page_testing
+ - \ref page_debugging
 */
 
 /*
  $Log$
+ Revision 1.5  2003/02/24 13:52:57  phase1geo
+ Updates to development documentation.
+
  Revision 1.4  2003/01/28 22:34:18  phase1geo
  Updating development documentation, installation files, ChangeLog and
  NEWS for 0.2pre2 release.
