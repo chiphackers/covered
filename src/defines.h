@@ -443,6 +443,7 @@
                                      (SUPPL_OP( x->suppl ) != EXP_OP_CASE) && \
                                      (SUPPL_OP( x->suppl ) != EXP_OP_CASEX) && \
                                      (SUPPL_OP( x->suppl ) != EXP_OP_CASEZ) && \
+                                     (SUPPL_OP( x->suppl ) != EXP_OP_DEFAULT) && \
                                      !((SUPPL_IS_ROOT( x->suppl ) == 0) && \
                                        ((SUPPL_OP( x->suppl ) == EXP_OP_SIG) || \
 				        (SUPPL_OP( x->suppl ) == EXP_OP_SBIT_SEL) || \
@@ -834,6 +835,12 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.30  2002/07/10 04:57:07  phase1geo
+/* Adding bits to vector nibble to allow us to specify what type of input
+/* static value was read in so that the output value may be displayed in
+/* the same format (DECIMAL, BINARY, OCTAL, HEXIDECIMAL).  Full regression
+/* passes.
+/*
 /* Revision 1.29  2002/07/09 17:27:25  phase1geo
 /* Fixing default case item handling and in the middle of making fixes for
 /* report outputting.

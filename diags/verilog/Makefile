@@ -30,6 +30,7 @@ DIAGLIST = assign3.2A \
            always4 \
            always5 \
            case1 \
+           case1.1 \
            case2 \
            case3 \
            case3.1 \
