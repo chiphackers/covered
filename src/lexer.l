@@ -29,6 +29,11 @@ extern str_link* inc_paths_head;
 extern int ignore_mode;
 
 /*!
+ Set to a non-zero value when we are in the true section of an `ifdef or `ifndef
+*/
+int true_mode = 0;
+
+/*!
  Contains error message if something wrong is found.
 */
 static char error_msg[500];
@@ -81,7 +86,7 @@ static struct include_stack_t* standby = 0;
 %x ERROR_LINE
 %x IGNORE_MODULE
 
-%x IFDEF_FALSE
+%s IFDEF_FALSE
 %s IFDEF_TRUE
 %x IFDEF_SUPR
 
@@ -408,21 +413,28 @@ WSPACE [ \t\b\f]+
  }
 
   /* Define directive */
-^{WSPACE}?`define{WSPACE}[a-zA-Z_][a-zA-Z0-9_]*{WSPACE} { yy_push_state( DEFINE ); def_start(); }
-<DEFINE>.*                                              { do_define();                          }
-<DEFINE>(\n|"\r\n"|"\n\r")                              {
+^{WSPACE}?`define{WSPACE}[a-zA-Z_][a-zA-Z0-9_]*{WSPACE} {
+     yy_push_state( DEFINE );
+     def_start();
+ }
+<DEFINE>.* { 
+     do_define();
+ }
+<DEFINE>(\n|"\r\n"|"\n\r") {
      def_finish();
      yylloc.first_line += 1;
      yy_pop_state();
  }
-<DEFINE><<EOF>>                                         {
+<DEFINE><<EOF>> {
      def_finish();
      yylloc.first_line += 1;
      yy_pop_state();
  }
 
   /* Undefine directive */
-^{WSPACE}?`undef{WSPACE}[a-zA-Z_][a-zA-Z0-9_]*{WSPACE}?.* { def_undefine(); }
+^{WSPACE}?`undef{WSPACE}[a-zA-Z_][a-zA-Z0-9_]*{WSPACE}?.* { 
+     def_undefine();
+ }
 
   /* ifdef directive */
 ^{WSPACE}?`ifdef{WSPACE}[a-zA-Z_][a-zA-Z0-9_]*.* {

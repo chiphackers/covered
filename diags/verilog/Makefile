@@ -55,7 +55,10 @@ DIAGLIST = assign3.2A \
 	   define2.1 \
            static1 \
            include1 \
-           include1.1
+           include1.1 \
+           ifdef1 \
+           ifdef2.1 \
+           ifdef2.2
 
 regress:	$(COVERED) clean $(DIAGLIST)
 

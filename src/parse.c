@@ -78,7 +78,7 @@ bool parse_design( char* top, char* output_db ) {
 
     /* Starting parser */
     if( VLparse() != 0 ) {
-      print_output( "Error in parsing design file", FATAL );
+      print_output( "Error in parsing design", FATAL );
       exit( 1 );
     }
 
@@ -163,6 +163,11 @@ bool parse_and_score_dumpfile( char* top, char* db, char* vcd ) {
 }
 
 /* $Log$
+/* Revision 1.5  2002/07/09 04:46:26  phase1geo
+/* Adding -D and -Q options to covered for outputting debug information or
+/* suppressing normal output entirely.  Updated generated documentation and
+/* modified Verilog diagnostic Makefile to use these new options.
+/*
 /* Revision 1.4  2002/07/03 03:31:11  phase1geo
 /* Adding RCS Log strings in files that were missing them so that file version
 /* information is contained in every source and header file.  Reordering src
