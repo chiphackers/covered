@@ -11,80 +11,84 @@
 
 #include "defines.h"
 
-//! Writes contents of expressions, modules and signals to database file.
+/*! Writes contents of expressions, modules and signals to database file. */
 bool db_write( char* file, bool parse_mode );
 
-//! Reads contents of database file and stores into internal lists.
+/*! Reads contents of database file and stores into internal lists. */
 bool db_read( char* file, int read_mode );
 
-//! Adds specified module node to module tree.  Called by parser.
+/*! Adds specified module node to module tree.  Called by parser. */
 void db_add_instance( char* scope, char* modname );
 
-//! Adds specified module to module list.  Called by parser.
+/*! Adds specified module to module list.  Called by parser. */
 void db_add_module( char* name, char* file );
 
-//! Adds specified declared parameter to parameter list.  Called by parser.
+/*! Adds specified declared parameter to parameter list.  Called by parser. */
 void db_add_declared_param( char* name, expression* expr );
 
-//! Adds specified override parameter to parameter list.  Called by parser.
+/*! Adds specified override parameter to parameter list.  Called by parser. */
 void db_add_override_param( char* inst_name, expression* expr );
 
-//! Adds signal/expression vector parameter to parameter list.
+/*! Adds signal/expression vector parameter to parameter list. */
 void db_add_vector_param( signal* sig, expression* exp, expression* parm_exp, int type );
 
-//! Adds specified defparam to parameter override list.  Called by parser.
+/*! Adds specified defparam to parameter override list.  Called by parser. */
 void db_add_defparam( char* name, expression* expr );
 
-//! Adds specified signal to signal list.  Called by parser.
+/*! Adds specified signal to signal list.  Called by parser. */
 void db_add_signal( char* name, static_expr* left, static_expr* right );
 
 void db_end_module(void);
 
-//! Finds specified signal in module and returns pointer to the signal structure.  Called by parser.
+/*! Finds specified signal in module and returns pointer to the signal structure.  Called by parser. */
 signal* db_find_signal( char* name );
 
-//! Creates new expression from specified information.  Called by parser and db_add_expression.
+/*! Creates new expression from specified information.  Called by parser and db_add_expression. */
 expression* db_create_expression( expression* right, expression* left, int op, int line, char* sig_name );
 
-//! Adds specified expression to expression list.  Called by parser.
+/*! Adds specified expression to expression list.  Called by parser. */
 void db_add_expression( expression* root );
 
-//! Creates new statement expression from specified information.  Called by parser.
+/*! Creates new statement expression from specified information.  Called by parser. */
 statement* db_create_statement( expression* exp );
 
-//! Adds specified statement to current module's statement list.  Called by parser.
+/*! Adds specified statement to current module's statement list.  Called by parser. */
 void db_add_statement( statement* stmt );
 
-//! Connects one statement block to another.
+/*! Connects one statement block to another. */
 void db_statement_connect( statement* curr_stmt, statement* next_stmt );
 
-//! Sets STMT_STOP bit in the appropriate statements.
+/*! Sets STMT_STOP bit in the appropriate statements. */
 void db_statement_set_stop( statement* stmt, statement* post, bool both );
 
-//! Connects true statement to specified statement.
+/*! Connects true statement to specified statement. */
 void db_connect_statement_true( statement* stmt, statement* exp_true );
 
-//! Connects false statement to specified statement.
+/*! Connects false statement to specified statement. */
 void db_connect_statement_false( statement* stmt, statement* exp_false );
 
-//! Sets current VCD scope to specified scope.
+/*! Sets current VCD scope to specified scope. */
 void db_set_vcd_scope( char* scope );
 
-//! Adds symbol to signal specified by name.
+/*! Adds symbol to signal specified by name. */
 void db_assign_symbol( char* name, char* symbol );
 
-//! Sets the found symbol value to specified character value.  Called by VCD lexer.
+/*! Sets the found symbol value to specified character value.  Called by VCD lexer. */
 void db_set_symbol_char( char* sym, char value );
 
-//! Sets the found symbol value to specified string value.  Called by VCD lexer.
+/*! Sets the found symbol value to specified string value.  Called by VCD lexer. */
 void db_set_symbol_string( char* sym, char* value );
 
-//! Performs a timestep for all signal changes during this timestep.
+/*! Performs a timestep for all signal changes during this timestep. */
 void db_do_timestep( int time ); 
 
 
 /*
  $Log$
+ Revision 1.21  2002/10/29 19:57:50  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
  Revision 1.20  2002/10/29 13:33:21  phase1geo
  Adding patches for 64-bit compatibility.  Reformatted parser.y for easier
  viewing (removed tabs).  Full regression passes.

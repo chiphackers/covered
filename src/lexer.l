@@ -133,7 +133,7 @@ WSPACE [ \t\b\f]+
 <CSTRING>\\\" { yymore();         }
 <CSTRING>\n   { BEGIN( 0 );
                 yylval.text = strdup( yytext );
-                // VLerror( yylloc, "Missing close quote of string." );
+                /* VLerror( yylloc, "Missing close quote of string." ); */
                 yylloc.first_line += 1;
                 return 0; }
 <CSTRING>\"   { BEGIN( 0 );

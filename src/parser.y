@@ -36,9 +36,9 @@ exp_link* param_exp_head = NULL;
 exp_link* param_exp_tail = NULL;
 
 /* Uncomment these lines to turn debugging on */
-// #define YYDEBUG 1
+/* #define YYDEBUG 1 */
 #define YYERROR_VERBOSE 1
-// int yydebug = 1;
+/* int yydebug = 1; */
 %}
 
 %union {
@@ -596,11 +596,11 @@ expression
     }
   | '!' error %prec UNARY_PREC
     {
-      // yyerror( @1, "error: Operand of unary ! is not a primary expression." );
+      /* yyerror( @1, "error: Operand of unary ! is not a primary expression." ); */
     }
   | '^' error %prec UNARY_PREC
     {
-      // yyerror( @1, "error: Operand of reduction ^ is not a primary expression." );
+      /* yyerror( @1, "error: Operand of reduction ^ is not a primary expression." ); */
     }
   | expression '^' expression
     {
@@ -1257,22 +1257,25 @@ module_item
     {
       str_link*     tmp  = $3;
       str_link*     curr = tmp;
-      vector_width* vw   = $2;
-      if( $1 == 1 ) {
+      if( ($1 == 1) && ($2 != NULL) ) {
         /* Creating signal(s) */
         while( curr != NULL ) {
-          db_add_signal( curr->str, vw->left, vw->right );
+          db_add_signal( curr->str, $2->left, $2->right );
           curr = curr->next;
         }
       }
       str_link_delete_list( $3 );
-      free_safe( vw );
+      if( $2 != NULL ) {
+        static_expr_dealloc( $2->left,  FALSE );
+        static_expr_dealloc( $2->right, FALSE );
+        free_safe( $2 );
+      }
     }
   | net_type range_opt net_decl_assigns ';'
     {
       str_link* tmp  = $3;
       str_link* curr = tmp;
-      if( $1 == 1 ) {
+      if( ($1 == 1) && ($2 != NULL) ) {
         /* Create signal(s) */
         while( curr != NULL ) {
           db_add_signal( curr->str, $2->left, $2->right );
@@ -1281,9 +1284,11 @@ module_item
         /* What to do about assignments? */
       }
       str_link_delete_list( $3 );
-      static_expr_dealloc( $2->left, FALSE );
-      static_expr_dealloc( $2->right, FALSE );
-      free_safe( $2 );
+      if( $2 != NULL ) {
+        static_expr_dealloc( $2->left, FALSE );
+        static_expr_dealloc( $2->right, FALSE );
+        free_safe( $2 );
+      }
     }
   | net_type drive_strength net_decl_assigns ';'
     {
@@ -1323,10 +1328,12 @@ module_item
     }
   | port_type range_opt error ';'
     {
-      free_safe( $2 );
-      // yyerror( @3, "error: Invalid variable list in port declaration.");
-      // if( $2 ) delete $2;
-      // yyerrok;
+      if( $2 != NULL ) {
+        free_safe( $2 );
+      }
+      /* yyerror( @3, "error: Invalid variable list in port declaration.");
+         if( $2 ) delete $2;
+         yyerrok; */
     }
   | block_item_decl
   | K_defparam defparam_assign_list ';'
@@ -1389,28 +1396,28 @@ module_item
   | K_specify error K_endspecify
   | error ';'
     {
-      // yyerror( @1, "error: invalid module item.  Did you forget an initial or always?" );
-      // yyerrok;
+      /* yyerror( @1, "error: invalid module item.  Did you forget an initial or always?" );
+         yyerrok; */
     }
   | K_assign error '=' { ignore_mode++; } expression { ignore_mode--; } ';'
     {
-      // yyerror( @1, "error: syntax error in left side of continuous assignment." );
-      // yyerrok;
+      /* yyerror( @1, "error: syntax error in left side of continuous assignment." );
+         yyerrok; */
     }
   | K_assign error ';'
     {
-      // yyerror( @1, "error: syntax error in continuous assignment." );
-      // yyerrok;
+      /* yyerror( @1, "error: syntax error in continuous assignment." );
+         yyerrok; */
     }
   | K_function error K_endfunction
     {
-      // yyerrok( @1, "error: I give up on this function definition" );
-      // yyerrok;
+      /* yyerrok( @1, "error: I give up on this function definition" );
+         yyerrok; */
     }
   | KK_attribute '(' { ignore_mode++; } UNUSED_IDENTIFIER ',' UNUSED_STRING ',' UNUSED_STRING { ignore_mode--; }')' ';'
   | KK_attribute '(' error ')' ';'
     {
-      // yyerror( @1, "error: Misformed $attribute parameter list.");
+      /* yyerror( @1, "error: Misformed $attribute parameter list."); */
     }
   ;
 
@@ -1811,8 +1818,8 @@ statement
     }
   | error ';'
     {
-      // yyerror( @1, "error: Malformed statement." );
-      // yyerrok;
+      /* yyerror( @1, "error: Malformed statement." );
+         yyerrok; */
       $$ = NULL;
     }
   ;
@@ -1982,6 +1989,8 @@ block_item_decl
       if( ignore_mode == 0 ) {
         left.num  = 0;
         right.num = 0;
+        left.exp  = NULL;
+        right.exp = NULL;
         while( curr != NULL ) {
           db_add_signal( curr->str, &left, &right );
           curr = curr->next;
@@ -2015,6 +2024,8 @@ block_item_decl
       if( ignore_mode == 0 ) {
         left.num  = 1;
         right.num = 0;
+        left.exp  = NULL;
+        right.exp = NULL;
         while( curr != NULL ) {
           db_add_signal( curr->str, &left, &right );
           curr = curr->next;
@@ -2050,8 +2061,8 @@ block_item_decl
   | K_localparam localparam_assign_list ';'
   | K_reg error ';'
     {
-      // yyerror( @1, "error: syntax error in reg variable list." );
-      // yyerrok;
+      /* yyerror( @1, "error: syntax error in reg variable list." );
+         yyerrok; */
     }
   ;	
 
@@ -2100,8 +2111,8 @@ case_item
     }
   | error { ignore_mode++; } ':' statement_opt { ignore_mode--; }
     {
-      // yyerror( @1, "error: Incomprehensible case expression." );
-      // yyerrok;
+      /* yyerror( @1, "error: Incomprehensible case expression." );
+         yyerrok; */
     }
   ;
 
@@ -2514,21 +2525,27 @@ task_item
     {
       if( ignore_mode == 0 ) {
         str_link_delete_list( $4 );
-        free_safe( $3 );
+        if( $3 != NULL ) {
+          free_safe( $3 );
+        }
       }
     }
   | K_output { ignore_mode++; } range_opt list_of_variables ';' { ignore_mode--; }
     {
       if( ignore_mode == 0 ) {
         str_link_delete_list( $4 );
-        free_safe( $3 );
+        if( $3 != NULL ) {
+          free_safe( $3 );
+        }
       }
     }
   | K_inout { ignore_mode++; } range_opt list_of_variables ';' { ignore_mode--; }
     {
       if( ignore_mode == 0 ) {
         str_link_delete_list( $4 );
-        free_safe( $3 );
+        if( $3 != NULL ) {
+          free_safe( $3 );
+        }
       }
     }
   ;

@@ -11,17 +11,21 @@
 
 #include "defines.h"
 
-//! Adds specified expression's statement to pre-simulation statement queue.
+/*! Adds specified expression's statement to pre-simulation statement queue. */
 void sim_expr_changed( expression* expr );
 
-//! Adds specified statement to pre-simulation statement queue.
+/*! Adds specified statement to pre-simulation statement queue. */
 void sim_add_stmt_to_queue( statement* stmt );
 
-//! Simulates current timestep.
+/*! Simulates current timestep. */
 void sim_simulate();
 
 /*
  $Log$
+ Revision 1.4  2002/10/29 19:57:51  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
  Revision 1.3  2002/06/25 21:46:10  phase1geo
  Fixes to simulator and reporting.  Still some bugs here.
 

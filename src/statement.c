@@ -197,8 +197,6 @@ void statement_db_write( statement* stmt, FILE* ofile, char* scope ) {
 
   assert( stmt != NULL );
 
-  // printf( "In statement_db_write, id: %d\n", stmt->exp->id );
-
 #ifdef EFFICIENCY_CODE
   /* Write succeeding statements first */
   if( SUPPL_IS_STMT_STOP( stmt->exp->suppl ) == 0 ) {
@@ -422,7 +420,7 @@ void statement_connect( statement* curr_stmt, statement* next_stmt ) {
 */
 void statement_set_stop( statement* stmt, statement* post, bool true_path, bool both ) {
 
-  // static int count = 0;
+  /* static int count = 0; */
   int        true_id;
   int        false_id;
   int        post_id;
@@ -455,13 +453,13 @@ void statement_set_stop( statement* stmt, statement* post, bool true_path, bool 
     false_id = stmt->next_false->exp->id;
   }
 
-  // printf( "In statement_set_stop, stmt: %d, post: %d, next_true: %d, next_false: %d\n", stmt->exp->id, post_id, true_id, false_id );
+  /* printf( "In statement_set_stop, stmt: %d, post: %d, next_true: %d, next_false: %d\n", stmt->exp->id, post_id, true_id, false_id ); */
 
   if( ((stmt->next_true == post) && (stmt->next_false == post)) ||
       ((stmt->next_true == post) && (stmt->next_false == NULL)) ||
       (stmt->next_false == post) ) {
     if( true_path || both) {
-      // printf( "Setting STOP bit for statement %d\n", stmt->exp->id );
+      /* printf( "Setting STOP bit for statement %d\n", stmt->exp->id ); */
       stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);
     }
   } else {
@@ -559,6 +557,12 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.33  2002/10/30 06:07:11  phase1geo
+ First attempt to handle expression trees/statement trees that contain
+ unsupported code.  These are removed completely and not evaluated (because
+ we can't guarantee that our results will match the simulator).  Added real1.1.v
+ diagnostic that verifies one case of this scenario.  Full regression passes.
+
  Revision 1.32  2002/10/29 19:57:51  phase1geo
  Fixing problems with beginning block comments within comments which are
  produced automatically by CVS.  Should fix warning messages from compiler.

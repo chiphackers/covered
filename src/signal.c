@@ -86,8 +86,6 @@ void signal_db_write( signal* sig, FILE* file, char* modname ) {
     modname
   );
 
-  // printf( "Writing signal:  %d %s %s ", DB_TYPE_SIGNAL, sig->name, modname );
-
   vector_db_write( sig->value, file, (sig->name[0] == '#') );
 
   curr = sig->exp_head;
@@ -355,6 +353,10 @@ void signal_dealloc( signal* sig ) {
 
 /*
  $Log$
+ Revision 1.22  2002/10/29 19:57:51  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
  Revision 1.21  2002/10/24 05:48:58  phase1geo
  Additional fixes for MBIT_SEL.  Changed some philosophical stuff around for
  cleaner code and for correctness.  Added some development documentation for

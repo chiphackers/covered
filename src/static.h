@@ -11,20 +11,24 @@
 #include "defines.h"
 
 
-//! Calculates new values for unary static expressions and returns the new static expression.
+/*! Calculates new values for unary static expressions and returns the new static expression. */
 static_expr* static_expr_gen_unary( static_expr* stexp, int op, int line );
 
-//! Calculates new values for static expression and returns the new static expression.
+/*! Calculates new values for static expression and returns the new static expression. */
 static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int line );
 
-//! Calculates LSB and width for specified left/right pair for vector.
+/*! Calculates LSB and width for specified left/right pair for vector. */
 void static_expr_calc_lsb_and_width( static_expr* left, static_expr* right, int* width, int* lsb );
 
-//! Deallocates static_expr memory from heap.
+/*! Deallocates static_expr memory from heap. */
 void static_expr_dealloc( static_expr* stexp, bool rm_exp );
 
 /*
  $Log$
+ Revision 1.4  2002/10/29 19:57:51  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
  Revision 1.3  2002/10/23 03:39:07  phase1geo
  Fixing bug in MBIT_SEL expressions to calculate the expression widths
  correctly.  Updated diagnostic testsuite and added diagnostic that

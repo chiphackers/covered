@@ -12,30 +12,36 @@
 #include "expr.h"
 
 
-//! Creates new statement structure.
+/*! Creates new statement structure. */
 statement* statement_create( expression* exp );
 
-//! Writes specified statement to the specified output file.
+/*! Writes specified statement to the specified output file. */
 void statement_db_write( statement* stmt, FILE* ofile, char* scope );
 
-//! Reads in statement line from specified string and stores statement in specified module.
+/*! Reads in statement line from specified string and stores statement in specified module. */
 bool statement_db_read( char** line, module* curr_mod, int read_mode );
 
-//! Connects statement sequence to next statement.
+/*! Connects statement sequence to next statement. */
 void statement_connect( statement* curr_stmt, statement* next_stmt );
 
-//! Sets stop bits in specified statement tree.
+/*! Sets stop bits in specified statement tree. */
 void statement_set_stop( statement* stmt, statement* post, bool true_path, bool both );
 
-//! Recursively deallocates specified statement tree.
+/*! Recursively deallocates specified statement tree. */
 void statement_dealloc_recursive( statement* stmt );
 
-//! Deallocates statement memory and associated expression tree from the heap.
+/*! Deallocates statement memory and associated expression tree from the heap. */
 void statement_dealloc( statement* stmt );
 
 
 /*
  $Log$
+ Revision 1.11  2002/10/30 06:07:11  phase1geo
+ First attempt to handle expression trees/statement trees that contain
+ unsupported code.  These are removed completely and not evaluated (because
+ we can't guarantee that our results will match the simulator).  Added real1.1.v
+ diagnostic that verifies one case of this scenario.  Full regression passes.
+
  Revision 1.10  2002/10/29 19:57:51  phase1geo
  Fixing problems with beginning block comments within comments which are
  produced automatically by CVS.  Should fix warning messages from compiler.

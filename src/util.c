@@ -443,7 +443,7 @@ void* malloc_safe( size_t size ) {
 
   if( size > 10000 ) {
     print_output( "Allocating memory chunk larger than 10000 bytes.  Possible error.", WARNING );
-    // printf( "  Memory block size request: %ld bytes\n", (long) size );
+    /* printf( "  Memory block size request: %ld bytes\n", (long) size ); */
     assert( size <= 10000 );
   } else if( size <= 0 ) {
     print_output( "Internal:  Attempting to allocate memory of size <= 0", FATAL );
@@ -456,12 +456,8 @@ void* malloc_safe( size_t size ) {
     largest_malloc_size = curr_malloc_size;
   }
 
-  // printf( "Malloc size: %ld, curr: %ld, largest: %ld\n", (long) size, curr_malloc_size, largest_malloc_size );
-
   obj = malloc( size );
   
-  // printf( "Allocated memory 0x%lx\n", obj );
-
   if( obj == NULL ) {
     print_output( "Out of heap memory", FATAL );
     exit( 1 );
@@ -480,9 +476,9 @@ void* malloc_safe( size_t size ) {
 */
 void free_safe( void* ptr ) {
 
-  curr_malloc_size -= sizeof( *ptr );
+  /* curr_malloc_size -= sizeof( *ptr ); */
 
-  // printf( "Freeing memory, addr: 0x%lx\n", ptr );
+  /* printf( "Freeing memory, addr: 0x%lx\n", ptr ); */
 
   free( ptr );
 
@@ -510,6 +506,10 @@ void gen_space( char* spaces, int num_spaces ) {
 
 /*
  $Log$
+ Revision 1.16  2002/10/29 19:57:51  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
  Revision 1.15  2002/10/29 13:33:21  phase1geo
  Adding patches for 64-bit compatibility.  Reformatted parser.y for easier
  viewing (removed tabs).  Full regression passes.

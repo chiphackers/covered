@@ -13,51 +13,55 @@
 #include "defines.h"
 
 
-//! Sets error suppression to specified value
+/*! Sets error suppression to specified value */
 void set_output_suppression( bool value );
 
-//! Displays error message to standard output.
+/*! Displays error message to standard output. */
 void print_output( char* msg, int type );
 
-//! Returns TRUE if the specified string is a legal variable name.
+/*! Returns TRUE if the specified string is a legal variable name. */
 bool is_variable( char* token );
 
-//! Returns TRUE if the specified string is a legal directory string.
+/*! Returns TRUE if the specified string is a legal directory string. */
 bool is_directory( char* token );
 
-//! Returns TRUE if the specified directory exists.
+/*! Returns TRUE if the specified directory exists. */
 bool directory_exists( char* dir );
 
-//! Loads contents of specified directory to file list if extension is part of list.
+/*! Loads contents of specified directory to file list if extension is part of list. */
 void directory_load( char* dir, str_link* ext_head, str_link** file_head, str_link** file_tail );
 
-//! Returns TRUE if the specified file exists.
+/*! Returns TRUE if the specified file exists. */
 bool file_exists( char* file );
 
-//! Reads line from file and returns it in string form.
+/*! Reads line from file and returns it in string form. */
 bool readline( FILE* file, char** line );
 
-//! Extracts highest level of hierarchy from specified scope.
+/*! Extracts highest level of hierarchy from specified scope. */
 void scope_extract_front( char* scope, char* front, char* rest );
 
-//! Extracts lowest level of hierarchy from specified scope.
+/*! Extracts lowest level of hierarchy from specified scope. */
 void scope_extract_back( char* scope, char* back, char* rest );
 
-//! Returns TRUE if specified scope is local (contains no periods).
+/*! Returns TRUE if specified scope is local (contains no periods). */
 bool scope_local( char* scope );
 
-//! Performs safe malloc call.
+/*! Performs safe malloc call. */
 void* malloc_safe(size_t size );
 
-//! Performs safe deallocation of heap memory.
+/*! Performs safe deallocation of heap memory. */
 void free_safe( void* ptr );
 
-//! Creates a string containing space characters.
+/*! Creates a string containing space characters. */
 void gen_space( char* spaces, int num_spaces );
 
 
 /*
  $Log$
+ Revision 1.7  2002/10/29 19:57:51  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
  Revision 1.6  2002/10/29 13:33:21  phase1geo
  Adding patches for 64-bit compatibility.  Reformatted parser.y for easier
  viewing (removed tabs).  Full regression passes.

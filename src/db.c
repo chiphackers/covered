@@ -326,10 +326,10 @@ void db_add_instance( char* scope, char* modname ) {
 
     } else {
 
-      // Add new module to module list.
+      /* Add new module to module list. */
       mod_link_add( mod, &mod_head, &mod_tail );
 
-      // Add instance.
+      /* Add instance. */
       instance_parse_add( &instance_root, curr_module, mod, scope );
 
     }
@@ -392,7 +392,7 @@ void db_end_module() {
   free_safe( str->str );
   free_safe( str );
 
-  // mod_parm_display( curr_module->param_head );
+  /* mod_parm_display( curr_module->param_head ); */
   
 }
 
@@ -752,18 +752,18 @@ void db_add_expression( expression* root ) {
       snprintf( user_msg, USER_MSG_LENGTH, "In db_add_expression, id: %d, op: %d", root->id, SUPPL_OP( root->suppl ) );
       print_output( user_msg, DEBUG );
 
-      // Add expression's children first.
+      /* Add expression's children first. */
       db_add_expression( root->right );
       db_add_expression( root->left );
 
-      // Now add this expression to the list.
+      /* Now add this expression to the list. */
       exp_link_add( root, &(curr_module->exp_head), &(curr_module->exp_tail) );
 
     }
 
   }
 
-  // module_display_expressions( curr_module );
+  /* module_display_expressions( curr_module ); */
 
 }
 
@@ -1158,6 +1158,10 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.66  2002/10/29 19:57:50  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
  Revision 1.65  2002/10/23 03:39:06  phase1geo
  Fixing bug in MBIT_SEL expressions to calculate the expression widths
  correctly.  Updated diagnostic testsuite and added diagnostic that

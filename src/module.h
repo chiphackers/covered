@@ -13,35 +13,39 @@
 #include "defines.h"
 
 
-//! Initializes all values of module.
+/*! Initializes all values of module. */
 void module_init( module* mod );
 
-//! Creates new module from heap and initializes structure.
+/*! Creates new module from heap and initializes structure. */
 module* module_create();
 
-//! Writes contents of provided module to specified output.
+/*! Writes contents of provided module to specified output. */
 bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst );
 
-//! Read contents of current line from specified file, creates module and adds to module list.
+/*! Read contents of current line from specified file, creates module and adds to module list. */
 bool module_db_read( module* mod, char* scope, char** line );
 
-//! Reads and merges two modules into base module.
+/*! Reads and merges two modules into base module. */
 bool module_db_merge( module* base, FILE* file );
 
-//! Displays signals stored in this module.
+/*! Displays signals stored in this module. */
 void module_display_signals( module* mod );
 
-//! Displays expressions stored in this module.
+/*! Displays expressions stored in this module. */
 void module_display_expressions( module* mod );
 
-//! Deallocates module element contents only from heap.
+/*! Deallocates module element contents only from heap. */
 void module_clean( module* mod );
 
-//! Deallocates module element from heap.
+/*! Deallocates module element from heap. */
 void module_dealloc( module* mod );
 
 /*
  $Log$
+ Revision 1.6  2002/10/29 19:57:51  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
  Revision 1.5  2002/09/25 02:51:44  phase1geo
  Removing need of vector nibble array allocation and deallocation during
  expression resizing for efficiency and bug reduction.  Other enhancements

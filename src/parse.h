@@ -12,14 +12,18 @@
 #include "link.h"
 
 
-//! Parses the specified design and generates scoring modules.
+/*! Parses the specified design and generates scoring modules. */
 bool parse_design( char* top, char* output_db );
 
-//! Parses VCD dumpfile and scores design.
+/*! Parses VCD dumpfile and scores design. */
 bool parse_and_score_dumpfile( char* db, char* vcd );
 
 /*
  $Log$
+ Revision 1.4  2002/10/29 19:57:51  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
  Revision 1.3  2002/07/20 21:34:58  phase1geo
  Separating ability to parse design and score dumpfile.  Now both or either
  can be done (allowing one to parse once and score multiple times).

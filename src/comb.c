@@ -485,7 +485,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
         /* Create underline or space */
         if( comb_missed == 1 ) {
           combination_draw_line( (*lines)[(*depth)-1], *size, *exp_id );
-          // printf( "Drawing line (%s), size: %d, depth: %d\n", (*lines)[(*depth)-1], *size, (*depth) );
+          /* printf( "Drawing line (%s), size: %d, depth: %d\n", (*lines)[(*depth)-1], *size, (*depth) ); */
           *exp_id = *exp_id + 1;
         }
 
@@ -986,6 +986,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.51  2002/10/29 19:57:50  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
  Revision 1.50  2002/10/29 13:33:21  phase1geo
  Adding patches for 64-bit compatibility.  Reformatted parser.y for easier
  viewing (removed tabs).  Full regression passes.

@@ -13,51 +13,55 @@
 #include "defines.h"
 
 
-//! Searches specified module parameter list for matching parameter.
+/*! Searches specified module parameter list for matching parameter. */
 mod_parm* mod_parm_find( char* name, mod_parm* parm );
 
-//! Searches specified module parameter list for matching signal dependency.
+/*! Searches specified module parameter list for matching signal dependency. */
 mod_parm* mod_parm_find_sig_dependent( char* name, mod_parm* parm );
 
-//! Creates new module parameter and adds it to the specified list.
+/*! Creates new module parameter and adds it to the specified list. */
 mod_parm* mod_parm_add( char* scope, expression* expr, int type, mod_parm** head, mod_parm** tail );
 
-//! Outputs contents of module parameter list to standard output.
+/*! Outputs contents of module parameter list to standard output. */
 void mod_parm_display( mod_parm* mparm );
 
-//! Searches specified instance parameter list for matching parameter.
+/*! Searches specified instance parameter list for matching parameter. */
 inst_parm* inst_parm_find( char* name, inst_parm* parm );
 
-//! Creates and adds new instance parameter to specified instance parameter list.
+/*! Creates and adds new instance parameter to specified instance parameter list. */
 inst_parm* inst_parm_add( char* scope, vector* value, mod_parm* mparm, inst_parm** head, inst_parm** tail );
 
-//! Adds parameter override to defparam list.
+/*! Adds parameter override to defparam list. */
 void defparam_add( char* scope, vector* expr );
 
-//! Sets the specified expression value to the instance parameter value.
+/*! Sets the specified expression value to the instance parameter value. */
 void param_set_expr_size( expression* expr, inst_parm* icurr );
 
-//! Sets the specified signal size according to the specified instance parameter and resizes attached expressions.
+/*! Sets the specified signal size according to the specified instance parameter and resizes attached expressions. */
 bool param_set_sig_size( signal* sig, inst_parm* icurr );
 
-//! Transforms a declared module parameter into an instance parameter.
+/*! Transforms a declared module parameter into an instance parameter. */
 void param_resolve_declared( char* mscope, mod_parm* mparm, inst_parm* ip_head, inst_parm** ihead, inst_parm** itail );
 
-//! Transforms an override module parameter into an instance parameter.
+/*! Transforms an override module parameter into an instance parameter. */
 void param_resolve_override( mod_parm* oparm, inst_parm** ihead, inst_parm** itail );
 
-//! Outputs specified instance parameter to specified output stream.
+/*! Outputs specified instance parameter to specified output stream. */
 void param_db_write( inst_parm* iparm, FILE* file, char* scope );
 
-//! Deallocates specified module parameter and possibly entire module parameter list.
+/*! Deallocates specified module parameter and possibly entire module parameter list. */
 void mod_parm_dealloc( mod_parm* parm, bool recursive );
 
-//! Deallocates specified instance parameter and possibly entire instance parameter list.
+/*! Deallocates specified instance parameter and possibly entire instance parameter list. */
 void inst_parm_dealloc( inst_parm* parm, bool recursive );
 
 
 /*
  $Log$
+ Revision 1.10  2002/10/29 19:57:51  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
  Revision 1.9  2002/10/11 04:24:02  phase1geo
  This checkin represents some major code renovation in the score command to
  fully accommodate parameter support.  All parameter support is in at this

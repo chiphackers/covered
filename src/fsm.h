@@ -12,11 +12,15 @@
 
 #include "defines.h"
 
-//! Generates report output for FSM coverage.
+/*! Generates report output for FSM coverage. */
 void fsm_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.4  2002/10/29 19:57:50  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
  Revision 1.3  2002/09/13 05:12:25  phase1geo
  Adding final touches to -d option to report.  Adding documentation and
  updating development documentation to stay in sync.

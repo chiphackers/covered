@@ -11,20 +11,24 @@
 #include "defines.h"
 
 
-//! Adds signal and expression to binding list.
+/*! Adds signal and expression to binding list. */
 void bind_add( char* sig_name, expression* exp, module* mod );
 
-//! Removes the expression with ID of id from binding list.
+/*! Removes the expression with ID of id from binding list. */
 void bind_remove( int id );
 
-//! Finds signal in module and bind the expression to this signal.
+/*! Finds signal in module and bind the expression to this signal. */
 void bind_perform( char* sig_name, expression* exp, module* mod_sig, module* mod_exp, bool implicit_allowed );
 
-//! Performs signal/expression bind (performed after parse completed).
+/*! Performs signal/expression bind (performed after parse completed). */
 void bind();
 
 /* 
  $Log$
+ Revision 1.6  2002/10/29 19:57:50  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
  Revision 1.5  2002/10/11 04:24:01  phase1geo
  This checkin represents some major code renovation in the score command to
  fully accommodate parameter support.  All parameter support is in at this

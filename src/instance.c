@@ -401,8 +401,6 @@ void instance_dealloc_tree( mod_inst* root ) {
       free_safe( root->stat );
     }
 
-    // printf( "Before instance parameter deallocation\n" );
-
     /* Deallocate memory for instance parameter list */
     inst_parm_dealloc( root->param_head, TRUE );
   
@@ -478,6 +476,10 @@ void instance_dealloc( mod_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.20  2002/10/29 19:57:50  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
  Revision 1.19  2002/10/13 13:55:52  phase1geo
  Fixing instance depth selection and updating all configuration files for
  regression.  Full regression now passes.

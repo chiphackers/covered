@@ -11,15 +11,19 @@
 #include "defines.h"
 
 
-//! Resets the specified statement iterator at start point.
+/*! Resets the specified statement iterator at start point. */
 void stmt_iter_reset( stmt_iter* si, stmt_link* start );
 
-//! Moves to the next statement link.
+/*! Moves to the next statement link. */
 void stmt_iter_next( stmt_iter* si );
 
 
 /*
  $Log$
+ Revision 1.2  2002/10/29 19:57:50  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
  Revision 1.1  2002/10/25 13:43:49  phase1geo
  Adding statement iterators for moving in both directions in a list with a single
  pointer (two-way).  This allows us to reverse statement lists without additional

@@ -641,7 +641,7 @@
  @{
 */
  
-//                        00  01  02  03  10  11  12  13  20  21  22  23  30  31  32  33
+/*                        00  01  02  03  10  11  12  13  20  21  22  23  30  31  32  33 */
 #define AND_OP_TABLE      0,  0,  0,  0,  0,  1,  2,  2,  0,  2,  2,  2,  0,  2,  2,  2
 #define OR_OP_TABLE       0,  1,  2,  2,  1,  1,  1,  1,  2,  1,  2,  2,  2,  1,  2,  2
 #define XOR_OP_TABLE      0,  1,  2,  2,  1,  0,  2,  2,  2,  2,  2,  2,  2,  2,  2,  2
@@ -720,7 +720,7 @@ typedef unsigned long nibble;
 typedef unsigned short control;
 #endif
 
-//------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------*/
 /*!
  Specifies an element in a linked list containing string values.  This data
  structure allows us to add new elements to the list without resizing, this
@@ -736,7 +736,7 @@ struct str_link_s {
   str_link* next;    /*!< Pointer to next str_link element */
 };
 
-//------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------*/
 /*!
  Contains information for signal value.  This value is represented as
  a generic vector.  The vector.h/.c files contain the functions that
@@ -750,7 +750,7 @@ struct vector_s {
 
 typedef struct vector_s vector;
 
-//------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------*/
 /*!
  Allows the parent pointer of an expression to point to either another expression
  or a statement.
@@ -783,7 +783,7 @@ struct expression_s {
   expression* left;        /*!< Pointer to expression on left                                  */
 };
 
-//------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------*/
 /*!
  A statement is defined to be the structure connected to the root of an expression tree.
  Statements are sequentially run in the run-time engine, starting at the root statement.
@@ -809,7 +809,7 @@ struct statement_s {
 
 typedef struct stmt_iter_s stmt_iter;
 
-//------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------*/
 /*!
  Expression link element.  Stores pointer to an expression.
 */
@@ -822,7 +822,7 @@ struct exp_link_s {
   exp_link*   next;  /*!< Pointer to next expression element in list */
 };
 
-//------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------*/
 /*!
  Statement link element.  Stores pointer to a statement.
 */
@@ -835,7 +835,7 @@ struct stmt_link_s {
   stmt_link* ptr;   /*!< Pointer to next statement element in list  */
 };
 
-//------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------*/
 /*!
  Statement link iterator.
 */
@@ -844,7 +844,7 @@ struct stmt_iter_s {
   stmt_link* last;   /*!< Two-way pointer to next/previous statement link */
 };
 
-//------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------*/
 /*!
  Special statement link that stores the ID of the statement that the specified
  statement pointer needs to traverse when it has completed.  These structure types
@@ -866,7 +866,7 @@ struct stmt_loop_link_s {
   stmt_loop_link* next;     /* Pointer to next statement in stack */
 };
 
-//------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------*/
 /*!
  Stores all information needed to represent a signal.  If value of value element is non-zero at the
  end of the run, this signal has been simulated.
@@ -878,7 +878,7 @@ struct signal_s {
   exp_link*  exp_tail;  /*!< Tail pointer to list of expressions        */
 };
 
-//------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------*/
 /*!
  Linked list element that stores a signal.
 */
@@ -891,7 +891,7 @@ struct sig_link_s {
   sig_link* next;  /*!< Pointer to next signal link element in list */
 };
 
-//------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------*/
 /*!
  Contains statistics for coverage results which is stored in a module instance.
  NOTE:  FSM WILL BE HANDLED AT A LATER TIME.
@@ -910,7 +910,7 @@ struct statistic_s {
   int   comb_hit;      /*!< Number of logic combinations hit           */
 };
 
-//------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------*/
 /*!
  Structure containing parts for a module parameter definition.
 */
@@ -928,7 +928,7 @@ struct mod_parm_s {
   mod_parm*    next;     /*!< Pointer to next module parameter in list            */
 };
 
-//------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------*/
 /*!
  Structure containing parts for an instance parameter.
 */
@@ -943,7 +943,7 @@ struct inst_parm_s {
   inst_parm*   next;     /*!< Pointer to next instance parameter in list          */
 };
 
-//------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------*/
 /*!
  Contains information for a Verilog module.  A module contains a list of signals within the
  module.
@@ -964,7 +964,7 @@ struct module_s {
 
 typedef struct module_s module;
 
-//------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------*/
 /*!
  Linked list element that stores a module (no scope).
 */
@@ -977,7 +977,7 @@ struct mod_link_s {
   mod_link* next;   /*!< Next module in list       */
 };
 
-//------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------*/
 /*!
  Stores symbol name of signal along with pointer to signal itself into a lookup table
 */
@@ -993,7 +993,7 @@ struct symtable_s {
   symtable* left;         /*!< Pointer to next symtable entry to the left  */
 };
 
-//------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------*/
 /*!
  Specifies possible values for a static expression (constant value).
 */
@@ -1004,7 +1004,7 @@ struct static_expr_s {
 
 typedef struct static_expr_s static_expr;
 
-//------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------*/
 /*!
  Specifies bit range of a signal or expression.
 */
@@ -1015,7 +1015,7 @@ struct vector_width_s {
 
 typedef struct vector_width_s vector_width;
 
-//------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------*/
 /*!
  Binds a signal to an expression.
 */
@@ -1030,7 +1030,7 @@ struct sig_exp_bind_s {
   sig_exp_bind* next;      /*!< Pointer to next binding in list         */
 };
 
-//------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------*/
 /*!
  Binds an expression to a statement.  This is used when constructing a case
  structure.
@@ -1046,7 +1046,7 @@ struct case_stmt_s {
   case_statement* prev;    /*!< Pointer to previous case statement in list   */
 };
 
-//------------------------------------------------------------------------------
+/*------------------------------------------------------------------------------*/
 /*!
  A module instance element in the module instance tree.
 */
@@ -1066,7 +1066,7 @@ struct mod_inst_s {
   mod_inst*  next;          /*!< Pointer to next child in parents list                      */
 };
 
-//-------------------------------------------------------------------------------
+/*-------------------------------------------------------------------------------*/
 
 union expr_stmt_u {
   expression* expr;         /*!< Pointer to expression */
@@ -1076,6 +1076,10 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.54  2002/10/29 19:57:50  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
  Revision 1.53  2002/10/25 13:43:49  phase1geo
  Adding statement iterators for moving in both directions in a list with a single
  pointer (two-way).  This allows us to reverse statement lists without additional

@@ -121,7 +121,6 @@ void symtable_assign( symtable* symtab ) {
 
 }
 
-//! Deallocates all symtable entries for specified symbol table.
 /*!
  \param symtab  Pointer to root of symtable to clear.
 
@@ -146,6 +145,10 @@ void symtable_dealloc( symtable* symtab ) {
 
 /*
  $Log$
+ Revision 1.6  2002/10/29 19:57:51  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
  Revision 1.5  2002/07/10 03:01:50  phase1geo
  Added define1.v and define2.v diagnostics to regression suite.  Both diagnostics
  now pass.  Fixed cases where constants were not causing proper TRUE/FALSE values

@@ -222,7 +222,7 @@ statement* sim_statement( statement* head_stmt ) {
     /* Indicate that this statement's expression has been executed */
     stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_EXECUTED);
 
-    // printf( "Executed statement %d\n", stmt->exp->id );
+    /* printf( "Executed statement %d\n", stmt->exp->id ); */
       
     last_stmt = stmt;
 
@@ -296,6 +296,10 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.24  2002/10/29 19:57:51  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
  Revision 1.23  2002/10/29 13:33:21  phase1geo
  Adding patches for 64-bit compatibility.  Reformatted parser.y for easier
  viewing (removed tabs).  Full regression passes.

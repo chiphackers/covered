@@ -160,7 +160,7 @@ bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst ) {
     module_size_elements( mod, inst );
   }
   
-  // module_display_expressions( mod );
+  /* module_display_expressions( mod ); */
 
   /* Now print all expressions in module */
   curr_exp = mod->exp_head;
@@ -178,7 +178,7 @@ bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst ) {
     }
   }
 
-  // module_display_signals( mod );
+  /* module_display_signals( mod ); */
 
   /* Now print all signals in module */
   curr_sig = mod->sig_head;
@@ -187,7 +187,7 @@ bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst ) {
     curr_sig = curr_sig->next; 
   }
 
-  // module_display_statements( mod );
+  /* module_display_statements( mod ); */
 
   /* Now print all statements in module */
   stmt_iter_reset( &curr_stmt, mod->stmt_head );
@@ -382,25 +382,21 @@ void module_clean( module* mod ) {
     }
 
     /* Free expression list */
-    // printf( "In module_dealloc, deleting expression list\n" );
     exp_link_delete_list( mod->exp_head, TRUE );
     mod->exp_head = NULL;
     mod->exp_tail = NULL;
 
     /* Free signal list */
-    // printf( "In module_dealloc, deleting signal list\n" );
     sig_link_delete_list( mod->sig_head );
     mod->sig_head = NULL;
     mod->sig_tail = NULL;
 
     /* Free statement list */
-    // printf( "In module_dealloc, deleting statement list\n" );
     stmt_link_delete_list( mod->stmt_head );
     mod->stmt_head = NULL;
     mod->stmt_tail = NULL;
 
     /* Free parameter list */
-    // printf( "In module_dealloc, deleting mod_parm list\n" );
     mod_parm_dealloc( mod->param_head, TRUE );
     mod->param_head = NULL;
     mod->param_tail = NULL;
@@ -419,10 +415,6 @@ void module_dealloc( module* mod ) {
 
   if( mod != NULL ) {
 
-    // printf( "In module_dealloc, name: %s\n", mod->name );
-
-    //module_display_expressions( mod );
-
     module_clean( mod );
 
     /* Deallocate module element itself */
@@ -435,6 +427,10 @@ void module_dealloc( module* mod ) {
 
 /*
  $Log$
+ Revision 1.24  2002/10/29 19:57:50  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
  Revision 1.23  2002/10/25 13:43:49  phase1geo
  Adding statement iterators for moving in both directions in a list with a single
  pointer (two-way).  This allows us to reverse statement lists without additional

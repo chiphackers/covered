@@ -13,98 +13,102 @@
 #include "defines.h"
 
 
-//! Initializes specified vector.
+/*! Initializes specified vector. */
 void vector_init( vector* vec, nibble* value, int width, int lsb );
 
-//! Creates and initializes new vector
+/*! Creates and initializes new vector */
 vector* vector_create( int width, int lsb, bool data );
 
-//! Displays vector information to specified database file.
+/*! Displays vector information to specified database file. */
 void vector_db_write( vector* vec, FILE* file, bool write_data );
 
-//! Creates and parses current file line for vector information */
+/*! Creates and parses current file line for vector information */
 bool vector_db_read( vector** vec, char** line );
 
-//! Reads and merges two vectors, placing the result into base vector.
+/*! Reads and merges two vectors, placing the result into base vector. */
 bool vector_db_merge( vector* base, char** line );
 
-//! Outputs the toggle01 information from the specified nibble to the specified output stream.
+/*! Outputs the toggle01 information from the specified nibble to the specified output stream. */
 void vector_display_toggle01( nibble* nib, int width, int lsb, FILE* ofile );
 
-//! Outputs the toggle10 information from the specified nibble to the specified output stream.
+/*! Outputs the toggle10 information from the specified nibble to the specified output stream. */
 void vector_display_toggle10( nibble* nib, int width, int lsb, FILE* ofile );
 
-//! Outputs nibble to standard output.
+/*! Outputs nibble to standard output. */
 void vector_display_nibble( nibble* nib, int width, int lsb );
 
-//! Outputs vector contents to standard output.
+/*! Outputs vector contents to standard output. */
 void vector_display( vector* vec );
 
-//! Sets specified bit to specified value in given nibble.
+/*! Sets specified bit to specified value in given nibble. */
 void vector_set_bit( nibble* nib, nibble value, int pos );
 
-//! Sets specified vector value to new value and maintains coverage history.
+/*! Sets specified vector value to new value and maintains coverage history. */
 void vector_set_value( vector* vec, nibble* value, int width, int from_idx, int to_idx );
 
-//! Sets vector output type (DECIMAL, BINARY, OCTAL or HEXIDECIMAL) in first nibble
+/*! Sets vector output type (DECIMAL, BINARY, OCTAL or HEXIDECIMAL) in first nibble */
 void vector_set_type( vector* vec, int type );
 
-//! Returns value of vector output type.
+/*! Returns value of vector output type. */
 int vector_get_type( vector* vec );
 
-//! Converts vector into integer value.
+/*! Converts vector into integer value. */
 int vector_to_int( vector* vec );
 
-//! Converts integer into vector value.
+/*! Converts integer into vector value. */
 void vector_from_int( vector* vec, int value );
 
-//! Converts vector into a string value in specified format.
+/*! Converts vector into a string value in specified format. */
 char* vector_to_string( vector* vec, int type );
 
-//! Converts character string value into vector.
+/*! Converts character string value into vector. */
 vector* vector_from_string( char* str );
 
-//! Counts toggle01 and toggle10 information from specifed vector.
+/*! Counts toggle01 and toggle10 information from specifed vector. */
 void vector_toggle_count( vector* vec, int* tog01_cnt, int* tog10_cnt );
 
-//! Counts FALSE and TRUE information from the specified vector.
+/*! Counts FALSE and TRUE information from the specified vector. */
 void vector_logic_count( vector* vec, int* false_cnt, int* true_cnt );
 
-//! Performs bitwise operation on two source vectors from specified operation table.
-void vector_bitwise_op( vector* tgt, vector* src1, vector* src2, int* optab );
+/*! Performs bitwise operation on two source vectors from specified operation table. */
+void vector_bitwise_op( vector* tgt, vector* src1, vector* src2, nibble* optab );
 
-//! Performs bitwise comparison of two vectors.
+/*! Performs bitwise comparison of two vectors. */
 void vector_op_compare( vector* tgt, vector* left, vector* right, int comp_type );
 
-//! Performs left shift operation on left expression by right expression bits.
+/*! Performs left shift operation on left expression by right expression bits. */
 void vector_op_lshift( vector* tgt, vector* left, vector* right );
  
-//! Performs right shift operation on left expression by right expression bits.
+/*! Performs right shift operation on left expression by right expression bits. */
 void vector_op_rshift( vector* tgt, vector* left, vector* right );
 
-//! Performs addition operation on left and right expression values.
+/*! Performs addition operation on left and right expression values. */
 void vector_op_add( vector* tgt, vector* left, vector* right );
 
-//! Performs subtraction operation on left and right expression values.
+/*! Performs subtraction operation on left and right expression values. */
 void vector_op_subtract( vector* tgt, vector* left, vector* right );
 
-//! Performs multiplication operation on left and right expression values.
+/*! Performs multiplication operation on left and right expression values. */
 void vector_op_multiply( vector* tgt, vector* left, vector* right );
 
-//! Performs unary bitwise inversion operation on specified vector value.
+/*! Performs unary bitwise inversion operation on specified vector value. */
 void vector_unary_inv( vector* tgt, vector* src );
 
-//! Performs unary operation on specified vector value.
+/*! Performs unary operation on specified vector value. */
 void vector_unary_op( vector* tgt, vector* src, nibble* optab );
 
-//! Performs unary logical NOT operation on specified vector value.
+/*! Performs unary logical NOT operation on specified vector value. */
 void vector_unary_not( vector* tgt, vector* src );
 
-//! Deallocates all memory allocated for vector
+/*! Deallocates all memory allocated for vector */
 void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.10  2002/10/29 19:57:51  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
  Revision 1.9  2002/09/25 02:51:44  phase1geo
  Removing need of vector nibble array allocation and deallocation during
  expression resizing for efficiency and bug reduction.  Other enhancements

@@ -179,7 +179,7 @@ static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int
 
       } else {
 
-        right->exp = expression_create( NULL, NULL, EXP_OP_STATIC, 0, line, FALSE );        // right->exp = db_create_expression( NULL, NULL, EXP_OP_STATIC, line, NULL );
+        right->exp = expression_create( NULL, NULL, EXP_OP_STATIC, 0, line, FALSE );
         vector_init( right->exp->value, (nibble*)malloc_safe( sizeof( nibble ) * VECTOR_SIZE( 32 ) ), 32, 0, FALSE );  
         vector_from_int( right->exp->value, right->num );
 
@@ -285,6 +285,10 @@ void static_expr_dealloc( static_expr* stexp, bool rm_exp ) {
 
 /*
  $Log$
+ Revision 1.5  2002/10/29 19:57:51  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
  Revision 1.4  2002/10/23 03:39:07  phase1geo
  Fixing bug in MBIT_SEL expressions to calculate the expression widths
  correctly.  Updated diagnostic testsuite and added diagnostic that

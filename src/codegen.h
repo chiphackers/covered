@@ -11,12 +11,16 @@
 #include "defines.h"
 
 
-//! Creates Verilog code string from specified expression tree.
+/*! Creates Verilog code string from specified expression tree. */
 char* codegen_gen_expr( expression* expr, int line, int parent_op );
 
 
 /*
  $Log$
+ Revision 1.4  2002/10/29 19:57:50  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
  Revision 1.3  2002/10/24 23:19:38  phase1geo
  Making some fixes to report output.  Fixing bugs.  Added long_exp1.v diagnostic
  to regression suite which finds a current bug in the report underlining

@@ -560,7 +560,7 @@ void vector_set_value( vector* vec, nibble* value, int width, int from_idx, int 
   assert( vec != NULL );
 
   /* Verify that index is within range */
-  // printf( "to_idx: %d, vec->width: %d, vec->lsb: %d\n", to_idx, vec->width, vec->lsb );
+  /* printf( "to_idx: %d, vec->width: %d, vec->lsb: %d\n", to_idx, vec->width, vec->lsb ); */
   assert( to_idx < (vec->width + vec->lsb) );
   assert( to_idx >= 0 );
 
@@ -989,7 +989,7 @@ void vector_vcd_assign( vector* vec, char* value ) {
  corresponding bit location of the target vector.  Vector sizes will
  be properly compensated by placing zeroes.
 */
-void vector_bitwise_op( vector* tgt, vector* src1, vector* src2, int* optab ) {
+void vector_bitwise_op( vector* tgt, vector* src1, vector* src2, nibble* optab ) {
 
   vector  vec;    /* Temporary vector value            */
   nibble  vecval; /* Temporary nibble value for vector */
@@ -1013,14 +1013,10 @@ void vector_bitwise_op( vector* tgt, vector* src1, vector* src2, int* optab ) {
       bit2 = 0;
     }
 
-    // printf( "Bit value 1: %d, bit value 2: %d\n", bit1, bit2 );
-
     vector_set_bit( vec.value, optab[ ((bit1 << 2) | bit2) ], 0 );
     vector_set_value( tgt, vec.value, 1, 0, i );
     
   }
-
-  // vector_display( tgt );
 
 }
 
@@ -1210,21 +1206,15 @@ void vector_op_add( vector* tgt, vector* left, vector* right ) {
       rbit = 0;
     }
 
-    // printf( "lbit: %d, rbit: %d\n", lbit, rbit );
-
     value =  add_optab[ (((add_optab[((carry << 2) | lbit)] & 0x3) << 2) | rbit) ] & 0x3;
     carry = (((add_optab[ ((carry << 2) | lbit) ] >> 2) & 0x3) |
              ((add_optab[ ((carry << 2) | rbit) ] >> 2) & 0x3) |
              ((add_optab[ ((lbit  << 2) | rbit) ] >> 2) & 0x3));
     
 
-    // printf( "carry: %d, value: %d\n", carry, value );
-
     vector_set_value( tgt, &value, 1, 0, i );
 
   }
-
-  // vector_display( tgt );
 
 }
 
@@ -1250,19 +1240,15 @@ void vector_op_subtract( vector* tgt, vector* left, vector* right ) {
 
   /* Create vector with a value of 1 */
   vector_set_bit( vec1->value, 1, 0 );
-  // printf( "vec1:\n" );  vector_display( vec1 );
 
   /* Perform twos complement inversion on right expression */
   vector_unary_inv( vec2, right );
-  // vector_display( vec2 );
 
   /* Add one to the inverted value */
   vector_op_add( vec3, vec2, vec1 );  
-  // vector_display( vec3 );
 
   /* Add new value to left value */
   vector_op_add( tgt, left, vec3 );
-  // vector_display( tgt );
 
   vector_dealloc( vec1 );
   vector_dealloc( vec2 );
@@ -1443,6 +1429,10 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.23  2002/10/29 19:57:51  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
  Revision 1.22  2002/10/24 05:48:58  phase1geo
  Additional fixes for MBIT_SEL.  Changed some philosophical stuff around for
  cleaner code and for correctness.  Added some development documentation for

@@ -13,48 +13,52 @@
 #include "defines.h"
 
 
-//! Creates an expression value and initializes it.
+/*! Creates an expression value and initializes it. */
 void expression_create_value( expression* exp, int width, int lsb, bool data );
 
-//! Creates new expression.
+/*! Creates new expression. */
 expression* expression_create( expression* right, expression* left, int op, int id, int line, bool data );
 
-//! Sets the specified expression value to the specified vector value.
+/*! Sets the specified expression value to the specified vector value. */
 void expression_set_value( expression* exp, vector* vec );
 
-//! Recursively resizes specified expression tree leaf node.
+/*! Recursively resizes specified expression tree leaf node. */
 void expression_resize( expression* expr, bool recursive );
 
-//! Returns expression ID of this expression.
+/*! Returns expression ID of this expression. */
 int expression_get_id( expression* expr );
 
-//! Writes this expression to the specified database file.
+/*! Writes this expression to the specified database file. */
 void expression_db_write( expression* expr, FILE* file, char* scope );
 
-//! Reads current line of specified file and parses for expression information.
+/*! Reads current line of specified file and parses for expression information. */
 bool expression_db_read( char** line, module* curr_mod, bool eval );
 
-//! Reads and merges two expressions and stores result in base expression.
+/*! Reads and merges two expressions and stores result in base expression. */
 bool expression_db_merge( expression* base, char** line );
 
-//! Displays the specified expression information.
+/*! Displays the specified expression information. */
 void expression_display( expression* expr );
 
-//! Performs operation specified by parameter expression.
+/*! Performs operation specified by parameter expression. */
 void expression_operate( expression* expr );
 
-//! Performs recursive expression operation (parse mode only).
+/*! Performs recursive expression operation (parse mode only). */
 void expression_operate_recursively( expression* expr );
 
-//! Returns a compressed, 1-bit representation of the value after a unary OR.
+/*! Returns a compressed, 1-bit representation of the value after a unary OR. */
 int expression_bit_value( expression* expr );
 
-//! Deallocates memory used for expression.
+/*! Deallocates memory used for expression. */
 void expression_dealloc( expression* expr, bool exp_only );
 
 
 /*
  $Log$
+ Revision 1.15  2002/10/29 19:57:50  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
  Revision 1.14  2002/10/23 03:39:07  phase1geo
  Fixing bug in MBIT_SEL expressions to calculate the expression widths
  correctly.  Updated diagnostic testsuite and added diagnostic that

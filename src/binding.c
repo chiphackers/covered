@@ -121,7 +121,7 @@ void bind_perform( char* sig_name, expression* exp, module* mod_sig, module* mod
   signal    tsig;  /* Temporary signal for comparison purposes    */
   sig_link* sigl;  /* Pointer to found signal in specified module */
 
-  // printf( "Performing bind for signal %s to expression %d\n", sig_name, exp->id );
+  /* printf( "Performing bind for signal %s to expression %d\n", sig_name, exp->id ); */
   
   /* Search for specified signal in current module */
   signal_init( &tsig, sig_name, NULL );
@@ -262,6 +262,10 @@ void bind() {
 
 /* 
  $Log$
+ Revision 1.17  2002/10/29 19:57:50  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
  Revision 1.16  2002/10/11 05:23:21  phase1geo
  Removing local user message allocation and replacing with global to help
  with memory efficiency.
