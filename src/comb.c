@@ -549,6 +549,9 @@ void combination_list_missed( FILE* ofile, expression* exp, int* exp_id ) {
         case EXP_OP_XOR      :  combination_two_vars( ofile, exp, 0, 1, 1, 0 );  break;
         case EXP_OP_ADD      :  combination_two_vars( ofile, exp, 0, 1, 1, 0 );  break;
         case EXP_OP_SUBTRACT :  combination_two_vars( ofile, exp, 0, 1, 1, 0 );  break;
+        case EXP_OP_MULTIPLY :  combination_unary( ofile, exp );                 break;
+        case EXP_OP_DIVIDE   :  combination_unary( ofile, exp );                 break;
+        case EXP_OP_MOD      :  combination_unary( ofile, exp );                 break;
         case EXP_OP_AND      :  combination_two_vars( ofile, exp, 0, 0, 0, 1 );  break;
         case EXP_OP_OR       :  combination_two_vars( ofile, exp, 0, 1, 1, 1 );  break;
         case EXP_OP_NAND     :  combination_two_vars( ofile, exp, 1, 1, 1, 0 );  break;
@@ -691,7 +694,8 @@ void combination_instance_verbose( FILE* ofile, mod_inst* root ) {
 
   assert( root != NULL );
 
-  if( root->stat->comb_hit < root->stat->comb_total ) {
+  if( ((root->stat->comb_hit < root->stat->comb_total) && !report_covered) ||
+      ((root->stat->comb_hit > 0) && report_covered) ) {
 
     fprintf( ofile, "\n" );
     fprintf( ofile, "Module: %s, File: %s, Instance: %s\n", 
@@ -723,7 +727,8 @@ void combination_module_verbose( FILE* ofile, mod_link* head ) {
 
   while( head != NULL ) {
 
-    if( head->mod->stat->comb_hit < head->mod->stat->comb_total ) {
+    if( ((head->mod->stat->comb_hit < head->mod->stat->comb_total) && !report_covered) ||
+        ((head->mod->stat->comb_hit > 0) && report_covered) ) {
 
       fprintf( ofile, "\n" );
       fprintf( ofile, "Module: %s, File: %s\n", 
@@ -765,7 +770,7 @@ void combination_report( FILE* ofile, bool verbose, bool instance ) {
 
     missed_found = combination_instance_summary( ofile, instance_root, "<root>" );
     
-    if( verbose && missed_found ) {
+    if( verbose && (missed_found || report_covered) ) {
       combination_instance_verbose( ofile, instance_root );
     }
 
@@ -779,7 +784,7 @@ void combination_report( FILE* ofile, bool verbose, bool instance ) {
 
     missed_found = combination_module_summary( ofile, mod_head );
 
-    if( verbose && missed_found ) {
+    if( verbose && (missed_found || report_covered) ) {
       combination_module_verbose( ofile, mod_head );
     }
 
@@ -789,6 +794,10 @@ void combination_report( FILE* ofile, bool verbose, bool instance ) {
 
 
 /* $Log$
+/* Revision 1.39  2002/08/20 05:55:25  phase1geo
+/* Starting to add combination depth option to report command.  Currently, the
+/* option is not implemented.
+/*
 /* Revision 1.38  2002/08/20 04:48:18  phase1geo
 /* Adding option to report command that allows the user to display logic that is
 /* being covered (-c option).  This overrides the default behavior of displaying
