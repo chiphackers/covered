@@ -1,5 +1,62 @@
 Covered-Related NEWS
 ====================
+    * 12/14/2002
+
+Release covered-20021214 made.  This release is a bug fix release.  See list below
+for details.  Bugs that lead to infinite looping in the score command and segmentation
+faults should now be cleared up.  Please let me know if there are any other bugs that
+need to be addressed before first stable release.  Development documentation updated
+to match changes in files.  Regression suite has been updated quite a bit from last
+time.  There are now over 125 diagnostics in the regression suite (my goal was to
+write about 100 before first stable release).
+
+  - Segmentation fault fixes in report command
+  - Parser can now handle all net types (not just wire).  Diagnostics added to regression
+    suite to verify their proper handling.
+  - Parser updated to handle net declaration assignments (e.g., wire a = b & c;).
+    Diagnostics added to verify proper handling.
+  - Added human-understandable error messages in parser to help identify file and
+    line number along with a quasi-helpful error message description.
+  - When parser error is found, Covered exits after parsing phase without continuing
+    to write CDD file.
+  - Fixed bug where a multi-bit select expression existed in a module that was
+    instantiated more than once.  Assertion error fired in this case.
+  - Updated regression suite for VCS testing.
+  - Fixed bug where parameters were used in modules that were instantiated more than
+    once.
+  - Fixed bug that dealt with parameters (see param6.1.v for test case).
+  - Fixed bug where a delay statement was the last statement in a statement block used
+    by Covered.  Added diagnostics to verify correct behavior.
+  - Fixed infinite loop problem with db_add_statement function.
+  - Fixed infinite loop problem with statement_set_stop function.
+  - Fixed bug with parsing order.  When an instance is found for a module that has
+    already been parsed, the instance was incorrectly being handled.  Bug replicated
+    with instance6.v diagnostic.
+  - Fixed output of edge-triggered events to add @(...) around the expression (they
+    were easily confused with other code that could exist on the same line).
+  - Fixed bug in parser to not allow module to be parsed more than once.
+  - Fixed bug that lead to an assertion error (see instance6.1.v for test case).
+  - Fixing bug with calculating list and concatenation lengths when MBIT_SEL 
+    expressions were included.
+  - Changed Covered's handling of -y directories.  Before, all files in these directories
+    were fed into the parser to look for missing modules.  Now, when a module is needed,
+    the module name is used to find the matching filename in the -y list (basically,
+    the -y option works like the -y option in Icarus Verilog and VCS).  This fix really
+    streamlined the parsing phase and fixed several bugs.
+  - Memory declarations are now properly ignored (produced segmentation fault previously).
+  - Fixed report command to display all lines and expressions in order according to
+    their line number (the problem is REALLY fixed now).
+  - Removed hierarchical references from being scored.
+
+All in all, you should notice a huge improvement in the parsing speed, syntax errors are
+reported better, more Verilog syntax should be handled properly, the score command will
+run a bit faster than before, and the reports should be a bit easier to read.  Segmentation
+faults and assertion errors should become lesser in number (if not gone altogether?).
+I am feeling pretty confident that we are getting close to a stable release as I have
+been able to generate a CDD file for a chip that is millions of gates in size (CDD file
+was created in the range of 30 - 45 seconds!)  Keep the bug reports coming.  I have some
+things to work on for next release already.
+
     * 11/27/2002
 
 Release covered-20021127 made.  This release contains mostly bug fixes to get closer

@@ -694,7 +694,7 @@ fi
 
 PACKAGE=covered
 
-VERSION=0.1-20021127
+VERSION=0.1-20021214
 
 if test "`cd $srcdir && pwd`" != "`pwd`" && test -f $srcdir/config.status; then
   { echo "configure: error: source directory already configured; run "make distclean" there first" 1>&2; exit 1; }
