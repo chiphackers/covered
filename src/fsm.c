@@ -567,20 +567,32 @@ void fsm_display_arc_verbose( FILE* ofile, fsm* table ) {
 */
 void fsm_display_verbose( FILE* ofile, fsm_link* head ) {
 
-  char* icode;  /* Verilog output of input state variable expression  */
-  char* ocode;  /* Verilog output of output state variable expression */
+  char** icode;        /* Verilog output of input state variable expression  */
+  int    icode_depth;  
+  char** ocode;        /* Verilog output of output state variable expression */
+  int    ocode_depth;
+  int    i;            /* Loop iterator                                      */
 
   while( head != NULL ) {
 
     if( head->table->from_state->id == head->table->to_state->id ) {
-      ocode = codegen_gen_expr( head->table->to_state, -1, SUPPL_OP( head->table->to_state->suppl ) );
-      fprintf( ofile, "FSM input/output state (%s)\n\n", ocode );
+      codegen_gen_expr( head->table->to_state, SUPPL_OP( head->table->to_state->suppl ), &ocode, &ocode_depth );
+      fprintf( ofile, "FSM input/output state (%s)\n\n", ocode[0] );
+      for( i=0; i<ocode_depth; i++ ) {
+        free_safe( ocode[i] );
+      }
       free_safe( ocode );
     } else {
-      icode = codegen_gen_expr( head->table->from_state, -1, SUPPL_OP( head->table->from_state->suppl ) );
-      ocode = codegen_gen_expr( head->table->to_state,   -1, SUPPL_OP( head->table->to_state->suppl   ) );
-      fprintf( ofile, "FSM input state (%s), output state (%s)\n\n", icode, ocode );
+      codegen_gen_expr( head->table->from_state, SUPPL_OP( head->table->from_state->suppl ), &icode, &icode_depth );
+      codegen_gen_expr( head->table->to_state,   SUPPL_OP( head->table->to_state->suppl   ), &ocode, &ocode_depth );
+      fprintf( ofile, "FSM input state (%s), output state (%s)\n\n", icode[0], ocode[0] );
+      for( i=0; i<icode_depth; i++ ) {
+        free_safe( icode[i] );
+      }
       free_safe( icode );
+      for( i=0; i<ocode_depth; i++ ) {
+        free_safe( ocode[i] );
+      }
       free_safe( ocode );
     }
 
@@ -756,6 +768,10 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.33  2003/11/26 23:14:41  phase1geo
+ Adding code to include left-hand-side expressions of statements for report
+ outputting purposes.  Full regression does not yet pass.
+
  Revision 1.32  2003/11/16 04:03:39  phase1geo
  Updating development documentation for FSMs.
 

@@ -272,7 +272,9 @@ void line_display_verbose( FILE* ofile, stmt_link* stmtl ) {
 
   stmt_iter   stmti;       /* Statement list iterator                    */
   expression* unexec_exp;  /* Pointer to current unexecuted expression   */
-  char*       code;        /* Pointer to code string from code generator */
+  char**      code;        /* Pointer to code string from code generator */
+  int         code_depth;  /* Depth of code array                        */
+  int         i;           /* Loop iterator                              */
 
   if( report_covered ) {
     fprintf( ofile, "Hit Lines\n\n" );
@@ -297,8 +299,15 @@ void line_display_verbose( FILE* ofile, stmt_link* stmtl ) {
 
         unexec_exp = stmti.curr->stmt->exp;
 
-        code = codegen_gen_expr( unexec_exp, unexec_exp->line, SUPPL_OP( unexec_exp->suppl ) );
-        fprintf( ofile, "%7d:    %s\n", unexec_exp->line, code );
+        codegen_gen_expr( unexec_exp, SUPPL_OP( unexec_exp->suppl ), &code, &code_depth );
+        if( code_depth == 1 ) {
+          fprintf( ofile, "%7d:    %s\n", unexec_exp->line, code[0] );
+        } else {
+          fprintf( ofile, "%7d:    %s...\n", unexec_exp->line, code[0] );
+        }
+        for( i=0; i<code_depth; i++ ) {
+          free_safe( code[i] );
+        }
         free_safe( code );
 
       }
@@ -433,6 +442,9 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.36  2003/12/02 22:38:06  phase1geo
+ Removing unnecessary verbosity.
+
  Revision 1.35  2003/12/01 23:27:16  phase1geo
  Adding code for retrieving line summary module coverage information for
  GUI.

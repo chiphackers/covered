@@ -885,8 +885,10 @@ void combination_display_verbose( FILE* ofile, stmt_link* stmtl ) {
   stmt_iter   stmti;         /* Statement list iterator                            */
   stmt_link*  stmtt = NULL;  /* Temporary statement link pointer used for ordering */
   expression* unexec_exp;    /* Pointer to current unexecuted expression           */
-  char*       code;          /* Code string from code generator                    */
+  char**      code;          /* Code string from code generator                    */
+  int         code_depth;    /* Depth of code array                                */
   int         exp_id;        /* Current expression ID of missed expression         */
+  int         i;             /* Loop iterator                                      */
 
   if( report_covered ) {
     fprintf( ofile, "Hit Combinations\n" );
@@ -911,8 +913,13 @@ void combination_display_verbose( FILE* ofile, stmt_link* stmtl ) {
       fprintf( ofile, "====================================================\n" );
 
       /* Generate line of code that missed combinational coverage */
-      code = codegen_gen_expr( unexec_exp, -1, SUPPL_OP( unexec_exp->suppl ) );
-      fprintf( ofile, "%7d:    %s\n", unexec_exp->line, code );
+      codegen_gen_expr( unexec_exp, SUPPL_OP( unexec_exp->suppl ), &code, &code_depth );
+      fprintf( ofile, "%7d:    %s\n", unexec_exp->line, code[0] );
+      free_safe( code[0] );
+      for( i=1; i<code_depth; i++ ) {
+        fprintf( ofile, "            %s\n", code[i] );
+        free_safe( code[i] );
+      }
 
       /* Output underlining feature for missed expressions */
       combination_underline( ofile, unexec_exp, "            " );
@@ -1057,6 +1064,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.67  2003/11/30 05:46:45  phase1geo
+ Adding IF report outputting capability.  Updated always9 diagnostic for these
+ changes and updated rest of regression CDD files accordingly.
+
  Revision 1.66  2003/11/26 23:14:41  phase1geo
  Adding code to include left-hand-side expressions of statements for report
  outputting purposes.  Full regression does not yet pass.
