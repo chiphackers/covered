@@ -91,6 +91,9 @@ void vector_toggle_count( vector* vec, int* tog01_cnt, int* tog10_cnt );
 /*! \brief Counts FALSE and TRUE information from the specified vector. */
 void vector_logic_count( vector* vec, int* false_cnt, int* true_cnt );
 
+/*! \brief Sets all assigned bits in vector bit value array within specified range. */
+bool vector_set_assigned( vector* vec, int msb, int lsb );
+
 /*! \brief Performs bitwise operation on two source vectors from specified operation table. */
 bool vector_bitwise_op( vector* tgt, vector* src1, vector* src2, nibble* optab );
 
@@ -127,6 +130,11 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.27  2005/01/07 23:00:10  phase1geo
+ Regression now passes for previous changes.  Also added ability to properly
+ convert quoted strings to vectors and vectors to quoted strings.  This will
+ allow us to support strings in expressions.  This is a known good.
+
  Revision 1.26  2005/01/07 17:59:52  phase1geo
  Finalized updates for supplemental field changes.  Everything compiles and links
  correctly at this time; however, a regression run has not confirmed the changes.

@@ -815,7 +815,7 @@ union vec_data_u {
     nibble set  :1;  /*!< Indicator if bit has been previously assigned this timestep */
     nibble false:1;  /*!< Indicator if bit was set to a value of 0 (FALSE)            */
     nibble true :1;  /*!< Indicator if bit was set to a value of 1 (TRUE)             */
-    nibble armed:1;  /*!< Indicator if bit was armed                                  */
+    nibble misc :1;  /*!< Miscellaneous indicator bit                                 */
   } part;
 };
 
@@ -1052,7 +1052,7 @@ struct stmt_link_s;
 typedef struct stmt_link_s stmt_link;
 
 struct stmt_link_s {
-  statement* stmt;   /*!< Pointer to statement                       */
+  statement* stmt;  /*!< Pointer to statement                       */
   stmt_link* ptr;   /*!< Pointer to next statement element in list  */
 };
 
@@ -1499,6 +1499,11 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.115  2005/01/07 23:00:09  phase1geo
+ Regression now passes for previous changes.  Also added ability to properly
+ convert quoted strings to vectors and vectors to quoted strings.  This will
+ allow us to support strings in expressions.  This is a known good.
+
  Revision 1.114  2005/01/07 17:59:51  phase1geo
  Finalized updates for supplemental field changes.  Everything compiles and links
  correctly at this time; however, a regression run has not confirmed the changes.

@@ -690,6 +690,32 @@ void vector_logic_count( vector* vec, int* false_cnt, int* true_cnt ) {
 }
 
 /*!
+ \param vec  Pointer to vector value to set
+ \param msb  Most-significant bit to set in vector value
+ \param lsb  Least-significant bit to set in vector value
+
+ \return Returns TRUE if assigned bit that is being set to 1 in this function was
+         found to be previously set; otherwise, returns FALSE.
+
+ This function is called by the \rel vsignal_set_assigned function.
+*/
+bool vector_set_assigned( vector* vec, int msb, int lsb ) {
+
+  bool prev_assigned = FALSE;  /* Specifies if any set bit was previously set */
+  int  i;                      /* Loop iterator                               */
+
+  for( i=lsb; i<msb; i++ ) {
+    if( vec->value[i].part.misc == 1 ) {
+      prev_assigned = TRUE;
+    }
+    vec->value[i].part.misc = 1;
+  }
+
+  return( prev_assigned );
+
+}
+
+/*!
  \param vec       Pointer to vector to set value to.
  \param value     New value to set vector value to.
  \param width     Width of new value.
@@ -1747,6 +1773,11 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.56  2005/01/07 23:00:10  phase1geo
+ Regression now passes for previous changes.  Also added ability to properly
+ convert quoted strings to vectors and vectors to quoted strings.  This will
+ allow us to support strings in expressions.  This is a known good.
+
  Revision 1.55  2005/01/07 17:59:52  phase1geo
  Finalized updates for supplemental field changes.  Everything compiles and links
  correctly at this time; however, a regression run has not confirmed the changes.

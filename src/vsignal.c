@@ -345,6 +345,24 @@ int vsignal_get_wait_bit( vsignal* sig ) {
 }
 
 /*!
+ \param sig  Pointer to signal to set assigned bits to
+ \param msb  Most-significant bit to set in signal vector
+ \param lsb  Least-significant bit to set in signal vector
+
+ \return Returns TRUE if any of the set bits were previously set by earlier calls to this 
+         function for this signal.
+
+ Sets all assigned bits in the signal vector value bit array for the range specified.  If
+ any of these set bits were previously set, return TRUE to the calling function to indicate
+ that this occurred.  This function is used by the race condition checker.
+*/
+bool vsignal_set_assigned( vsignal* sig, int msb, int lsb ) {
+
+  return( vector_set_assigned( sig->value, (msb - sig->lsb), (lsb - sig->lsb) ) );
+
+}
+
+/*!
  \param sig    Pointer to vsignal to assign VCD value to.
  \param value  String version of VCD value.
  \param msb    Most significant bit to assign to.
@@ -496,6 +514,10 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.5  2005/01/07 17:59:52  phase1geo
+ Finalized updates for supplemental field changes.  Everything compiles and links
+ correctly at this time; however, a regression run has not confirmed the changes.
+
  Revision 1.4  2004/11/07 05:51:24  phase1geo
  If assigned signal value did not change, do not cause associated expression tree(s)
  to be re-evaluated.

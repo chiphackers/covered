@@ -465,9 +465,6 @@ void db_end_module( int end_line ) {
 
   str_link_remove( curr_module->name, &modlist_head, &modlist_tail );
 
-  /* Check the current module for race conditions */
-  race_check_module();
-
   /* mod_parm_display( curr_module->param_head ); */
   
 }
@@ -678,10 +675,8 @@ void db_add_signal( char* name, static_expr* left, static_expr* right, int inpor
     /* Add signal to current module's signal list */
     sig_link_add( sig, &(curr_module->sig_head), &(curr_module->sig_tail) );
 
-    /* Add signal to stmt_sig list for race condition checking if it is an input port */
-    if( inport == 1 ) {
-      race_add_inport_sig( sig );
-    } 
+    /* Indicate if signal is an input port or not */
+    sig->value->suppl.part.inport = inport;
 
   }
   
@@ -712,6 +707,21 @@ vsignal* db_find_signal( char* name ) {
   } else {
     return( sigl->sig );
   }
+
+}
+
+int db_curr_signal_count() {
+
+  int       sig_cnt = 0;  /* Holds number of signals in the current module */
+  sig_link* sigl;         /* Pointer to current signal link                */
+
+  sigl = curr_module->sig_head;
+  while( sigl != NULL ) {
+    sig_cnt++;
+    sigl = sigl->next;
+  }
+
+  return( sig_cnt );
 
 }
 
@@ -1313,6 +1323,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.119  2005/01/07 17:59:50  phase1geo
+ Finalized updates for supplemental field changes.  Everything compiles and links
+ correctly at this time; however, a regression run has not confirmed the changes.
+
  Revision 1.118  2004/12/20 04:12:00  phase1geo
  A bit more race condition checking code added.  Still not there yet.
 
