@@ -52,8 +52,6 @@ struct include_stack_t {
 static struct include_stack_t* istack  = 0;
 static struct include_stack_t* standby = 0;
 
-char ppfilename[10];
-
 %}
 
 %option stack

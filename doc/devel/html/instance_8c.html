@@ -27,7 +27,7 @@
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds new instance to specified instance tree during parse.</em> <a href="#a6"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="instance_8c.html#a7">instance_read_add</a> (<a class="el" href="defines_8h.html#a178">mod_inst</a> **root, char *parent, <a class="el" href="defines_8h.html#a171">module</a> *child, char *inst_name)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds new instance to specified instance tree during CDD read.</em> <a href="#a7"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="instance_8c.html#a8">instance_db_write</a> (<a class="el" href="defines_8h.html#a178">mod_inst</a> *root, FILE *<a class="el" href="pplexer_8c.html#a114">file</a>, char *scope, <a class="el" href="defines_8h.html#a182">bool</a> parse_mode)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="instance_8c.html#a8">instance_db_write</a> (<a class="el" href="defines_8h.html#a178">mod_inst</a> *root, FILE *<a class="el" href="pplexer_8c.html#a113">file</a>, char *scope, <a class="el" href="defines_8h.html#a182">bool</a> parse_mode)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Displays contents of module instance tree to specified file.</em> <a href="#a8"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="instance_8c.html#a9">instance_dealloc_tree</a> (<a class="el" href="defines_8h.html#a178">mod_inst</a> *root)</td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="instance_8c.html#a10">instance_dealloc</a> (<a class="el" href="defines_8h.html#a178">mod_inst</a> *root, char *scope)</td></tr>
@@ -622,7 +622,7 @@ Pointer to current instance to resolve parameters into.</td></tr>
 </dl>Performs parameter resolution for all module parameters in mparm list and places them into the instance parameter list located in the inst structure. Note: This function MUST be called after the specified instance is attached to the instance tree.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Sat Jan 4 03:27:32 2003 for Covered by
+<hr><address align="right"><small>Generated on Sun Jan 5 18:18:10 2003 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
 <HTML>
 <HEAD>
-  <TITLE>Covered - Using Covered</TITLE>
+  <TITLE>Covered - Getting Started</TITLE>
   <META name="GENERATOR" content="ManStyle">
   <META name="AUTHOR" content="Trevor Williams">
   <LINK rel=stylesheet type="text/css" href="styles.css">
@@ -36,7 +36,7 @@
         <TR>
           <TD width=460 align=center valign=top class="navigator">
             <P class="navigator"><IMG src="img/000000.gif" height=2 width=460><BR>
-            <IMG src="img/toolbar_left.png" border=0><A href="001.html" alt="Contents"><IMG src="img/toolbar_cont.png" border=0></A><A href="index.html" alt="First Page"><IMG src="img/toolbar_first.png" border=0></A><A href="009.html" alt="Previous Page"><IMG src="img/toolbar_prev.png" border=0></A><A href="index.html" alt="Home"><IMG src="img/toolbar_home.png" border=0></A><A href="011.html" alt="Next Page"><IMG src="img/toolbar_next.png" border=0></A><A href="015.html" alt="Last Page"><IMG src="img/toolbar_last.png" border=0></A><IMG src="img/toolbar_right.png" border=0>
+            <IMG src="img/toolbar_left.png" border=0><A href="001.html" alt="Contents"><IMG src="img/toolbar_cont.png" border=0></A><A href="index.html" alt="First Page"><IMG src="img/toolbar_first.png" border=0></A><A href="009.html" alt="Previous Page"><IMG src="img/toolbar_prev.png" border=0></A><A href="index.html" alt="Home"><IMG src="img/toolbar_home.png" border=0></A><A href="011.html" alt="Next Page"><IMG src="img/toolbar_next.png" border=0></A><A href="016.html" alt="Last Page"><IMG src="img/toolbar_last.png" border=0></A><IMG src="img/toolbar_right.png" border=0>
             <BR><IMG src="img/000000.gif" height=2 width=460></P>
           </TD>
         </TR>
@@ -62,7 +62,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="header1">5&nbsp;&nbsp; <A name="5"></A>Using Covered<BR><IMG src="img/12568c.gif" height=2 width=460></P>
+      <P class="header1">5&nbsp;&nbsp; <A name="5"></A>Getting Started<BR><IMG src="img/12568c.gif" height=2 width=460></P>
     </TD>
   </TR>
 
@@ -73,7 +73,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="header2">5.1&nbsp; <A name="5_1"></A>Work Flow</P>
+      <P class="header2">5.1&nbsp; <A name="5_1"></A>What do you need?</P>
     </TD>
   </TR>
 
@@ -84,7 +84,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">Covered has three basic commands that it uses for gaining coverage information about a design and displaying that information to the user.</P>
+      <P class="pg">Before Covered can be invoked, you must have a simulatable Verilog design and a VCD dumpfile containing information from a simulation run of the design that dumps the module(s) that you want to check for coverage. The VCD dumpfile style was chosen due to its universal support by Verilog simulators. That is, most, if not all, Verilog simulators have a mechanism for generating VCD dumpfiles. Once you have these two parts, you are ready to begin generating coverage results.</P>
     </TD>
   </TR>
 
@@ -95,7 +95,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg"><UL> <LI> score <LI> merge <LI> report </UL></P>
+      <P class="header2">5.2&nbsp; <A name="5_2"></A>Creating a VCD dumpfile</P>
     </TD>
   </TR>
 
@@ -106,7 +106,40 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="header3">5.1.1 <A name="5_1_1"></A>Scoring the Design</P>
+      <P class="pg">In Verilog, the way that you create the VCD dumpfile is by using two types of Verilog system calls (1) $dumpfile and (2) $dumpvars. The following example shows how to create and generate a dumpfile called "test.vcd" that will dump the submodule called "foo".</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin">Example</P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="code">module test;<br> <br> initial<br> &nbsp; begin<br> &nbsp;&nbsp;&nbsp; $dumpfile( "test.vcd" );<br> &nbsp;&nbsp;&nbsp; $dumpvars( 1, test.foo );<br> &nbsp; end<br> <br> foo_mod foo();<br> <br> endmodule<br> <br> module foo_mod;<br> <br> ...<br> <br> endmodule</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin">$dumpfile</P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">The $dumpfile system call takes in one parameter that is a string of the name of the dumpfile to create, in this case the dumpfile we want to create is called "test.foo". The purpose of this function to create the file (open it for writing) and outputs some initialization information to the file.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin">$dumpvars</P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">The $dumpvars system call takes in two parameters. The first is the number of levels of hierarchy that you want to dump. In the example, we want to only dump the module instance called "foo" which is why the dump level was set to 1. To dump foo and the level of submodules just beneath it, you would set the dump level to 2 and so on. To dump a module and all submodules beneath it, set the dump level value to 0 (this means the level specified and all levels below it). The second parameter is a Verilog hierarchical reference to the top-level module instance that you want to dump.</P>
     </TD>
   </TR>
 
@@ -117,7 +150,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">To begin using Covered, you will need to create a special database file called a coverage description database (CDD). Covered uses this file to store coverage-specific information about the DUT. This file is a text-based file that is written in a specific format (the format of this file is not discussed in this document but can be found in the developer's document) that Covered understands.</P>
+      <P class="pg">The $dumpfile system call may only be called once within a Verilog design. Typically, it is called in the top-most level of the design (or testbench as it is commonly referred to as); however, the language allows you to call it from anywhere in your design as long as it precedes any calls to $dumpvars.</P>
     </TD>
   </TR>
 
@@ -128,7 +161,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">To create the CDD and populate it with the simulation dumpfile results, you must use the score (see <A href="011.html">The score Command</A> for details) command. This command parses in the DUT files and generates an initial CDD for the design. This CDD does not contain any coverage details but only the design elements that Covered needs to gain coverage results.</P>
+      <P class="pg">The $dumpvars system call may be called as many times as necessary to dump the Verilog that you need. For example, if you want to get coverage results for several modules scattered around the design, you may make several $dumpvars calls to dump exactly those modules that you want to see coverage for.</P>
     </TD>
   </TR>
 
@@ -139,197 +172,7 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">Once the initial CDD has been created, the score command reads in the specified VCD dumpfile from the given DUT. If Covered recognizes that the VCD dumpfile does not correspond to the DUT that it parses (dumpfile was not generated from the DUT specified), an error message is supplied to the user telling them this. Once the dumpfile has been parsed, Covered generates a new version of the CDD containing a populated database. This CDD may be merged with another CDD from the same DUT and/or reports may be generated from this CDD.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="header3">5.1.2 <A name="5_1_2"></A>Merging CDDs</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">When two or more CDDs have been generated from the same DUT. It is often desirable to merge their contents to see what the total coverage is for both simulation runs. The reasons why merging is desirable is that often several tests are written to exercise the entire design (not just one). This makes tests easier to write and maintain. Since, typically, only one test is run per simulation run and that test does not fully test the DUT, it is necessary to combine the results of the multiple simulations to the see the combined effect of the tests on the design. This is where merging comes into play.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">Merging multiple CDDs from the same design is easy with Covered, and is accomplished with the merge (see <A href="012.html">The merge Command</A> for details) command. This command reads in two CDDs, merges their results and outputs the merged CDD to a different file or replaces one of the two CDDs with the results of the merge.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="header3">5.1.3 <A name="5_1_3"></A>Creating Coverage Reports</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">After a CDD is created or merged, the contents of the CDD can be extracted and transformed into human readable coverage reports with the report (see <A href="013.html">The report Command</A> for details) command. A summary report containing the percentage of metrics covered is generated for each module. Additionally, to aid in understanding what and why something was not covered, a verbose reporting mechanism exists. Verbose reporting will explicitly point to and describe why something was not fully covered for a specific metric.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">Reports are text-based output that by default are directed toward standard output but may, with the use of an option flag, be output to a specific file for storage purposes.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="header2">5.2&nbsp; <A name="5_2"></A>Covered usage</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">Covered is initiated with the following command:</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="code">covered (-h | -v | (-D) (-Q) &lt;command&gt; (&lt;command_options&gt;))</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">The -v command (described below) is mutually exclusive from the rest of the commands and has the highest priority. If Covered is called with this option and any other options, the version will only be displayed.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">The -h command (described below) is mutually exclusive from the rest of the commands and has the second highest priority. If Covered is called with this option and the -v option is not specified, the usage information will be displayed to the screen.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">The -Q option suppresses all normal user output from standard output. The only output that will not be suppressed are messages to standard error. This option may be used with any of the Covered commands to achieve this effect. By default, normal user output is sent to standard output.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">The -D option outputs debug information to standard output. Its effect overrides the -Q option. This option may be used in conjunction with any other Covered command for the purposes of debugging tool failures. By default, debug mode is turned off. This command should only be used for debugging as it generates an immense amount of output which may hinder performance.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="header2">5.3&nbsp; <A name="5_3"></A>Covered options</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      <P class="pg">The following table describes options that Covered will accept apart from its normal commands which are described in the next several chapters.</P>
-    </TD>
-  </TR>
-
-  <TR>
-    <TD></TD>
-    <TD valign=top>
-      <P class="margin"></P>
-    </TD>
-    <TD></TD>
-    <TD valign=top>
-      
-      <TABLE cellpadding=0 cellspacing=0 border=0 width=100%>
-        <TR>
-          <TD>
-            <P class="blockIndentLeft">&nbsp;</P>
-          </TD>
-          <TD width=100% align=center>
-<table cellspacing=2 cellpadding=4 border=1> <tr> <td colspan=2 class="tableHeader"> Options to Covered </td> </tr> <tr> <td> <strong>Option</strong> </td> <td> <strong>Description</strong> <td> </tr> <tr> <td> -Q </td> <td> Quite mode. Suppresses user output to screen. Use in conjunction with a command. </td> </tr> <tr> <td> -D </td> <td> Debug mode. Outputs code debug information to screen. Use in conjunction with commands. </td> </tr> <tr> <td> -h </td> <td> Generates usage output to standard output </td> </tr> <tr> <td> -v </td> <td> Outputs current version of Covered </td> </tr> </table>
-          </TD>
-          <TD>
-            <P class="blockIndentRight">&nbsp;</P>
-          </TD>
-        </TR>
-      </TABLE>
-
+      <P class="pg">For the most part, that is about all there is to creating VCD dumpfiles for the design. All you need to do is run a simulation with these system calls in it and a dumpfile will be generated for that run. Once you have this file, you are ready to see if your design is Covered!</P>
     </TD>
   </TR>
 
@@ -346,9 +189,9 @@
        <A href="009.html">Previous Page</A>&nbsp;&nbsp;|&nbsp;
        <A href="index.html">Home</A>&nbsp;
        &nbsp;|&nbsp;<A href="011.html">Next Page</A>&nbsp;&nbsp;|&nbsp;
-       <A href="015.html">Last Page</A>&nbsp;
+       <A href="016.html">Last Page</A>&nbsp;
        ]<BR>
-       [&nbsp; <A href="001.html">1</A>&nbsp;|&nbsp;<A href="002.html">2</A>&nbsp;|&nbsp;<A href="003.html">3</A>&nbsp;|&nbsp;<A href="004.html">4</A>&nbsp;|&nbsp;<A href="005.html">5</A>&nbsp;|&nbsp;<A href="006.html">6</A>&nbsp;|&nbsp;<A href="007.html">7</A>&nbsp;|&nbsp;<A href="008.html">8</A>&nbsp;|&nbsp;<A href="009.html">9</A>&nbsp;|&nbsp;<A href="010.html">10</A>&nbsp;|&nbsp;<A href="011.html">11</A>&nbsp;|&nbsp;<A href="012.html">12</A>&nbsp;|&nbsp;<A href="013.html">13</A>&nbsp;|&nbsp;<A href="014.html">14</A>&nbsp;|&nbsp;<A href="015.html">15</A> &nbsp;]
+       [&nbsp; <A href="001.html">1</A>&nbsp;|&nbsp;<A href="002.html">2</A>&nbsp;|&nbsp;<A href="003.html">3</A>&nbsp;|&nbsp;<A href="004.html">4</A>&nbsp;|&nbsp;<A href="005.html">5</A>&nbsp;|&nbsp;<A href="006.html">6</A>&nbsp;|&nbsp;<A href="007.html">7</A>&nbsp;|&nbsp;<A href="008.html">8</A>&nbsp;|&nbsp;<A href="009.html">9</A>&nbsp;|&nbsp;<A href="010.html">10</A>&nbsp;|&nbsp;<A href="011.html">11</A>&nbsp;|&nbsp;<A href="012.html">12</A>&nbsp;|&nbsp;<A href="013.html">13</A>&nbsp;|&nbsp;<A href="014.html">14</A>&nbsp;|&nbsp;<A href="015.html">15</A>&nbsp;|&nbsp;<A href="016.html">16</A> &nbsp;]
        <BR>
        <B>License: GPL</B><BR>
        This Manual was created with <A HREF="http://manstyle.sourceforge.net">ManStyle</A>.

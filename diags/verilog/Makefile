@@ -33,7 +33,7 @@ $(DIAGLIST):
 	@echo Running $@
 	@$(VERILOG) $(VERILOG_FLAGS) $@.v
 	@./$(VERILOG_EXEC)
-	@$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@.cfg
+	@$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@.cfg -p dude
 	-@$(COVERED) $(COVERED_GFLAG) report -d v -o $@.rptM $@.cdd
 	-@$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@.rptI $@.cdd
 	@./check_test $@

@@ -10,7 +10,7 @@ $document_release          = "5/25/2002"
 $manual_description        = "User Manual"
 $project_name              = "Covered"
 $project_name_lower        = "covered"
-$project_version           = "0.1-20021026"
+$project_version           = "0.2pre1-20030105"
 $author                    = "Trevor Williams"
 $creation_date             = "20020525"
 $organization_logo_big     = "banner.gif"
@@ -44,3 +44,4 @@ $theme                     = "/usr/local/src/manstyle/themes/tec"
 <_process file="013" subject="page">
 <_process file="014" subject="page">
 <_process file="015" subject="page">
+<_process file="016" subject="page">

@@ -30,8 +30,9 @@ extern YYLTYPE yylloc;
 
 extern void reset_pplexer( char* filename, FILE* out );
 
-extern int  ignore_mode;
-extern char user_msg[USER_MSG_LENGTH];
+extern int   ignore_mode;
+extern char  user_msg[USER_MSG_LENGTH];
+extern char* ppfilename;
 
 /*!
  Contains state before entering comment block.
@@ -45,7 +46,6 @@ static str_link* filelist_head = 0;
 static str_link* filelist_curr = 0;
 static int       last_keyword  = 0;
 static tnode*    found_modules = NULL;
-static char      ppfilename[10];
 
 extern str_link* modlist_head;
 extern str_link* modlist_tail;
@@ -527,8 +527,11 @@ void reset_lexer( str_link* file_list_head ) {
   assert( curr->str != NULL );
   
   /* Create temporary output filename */
-  snprintf( ppfilename, 10, "tmpXXXXXX" );
-  assert( mkstemp( ppfilename ) != 0 );
+  if( ppfilename == NULL ) {
+    ppfilename = (char*)malloc_safe( 10 );
+    snprintf( ppfilename, 10, "tmpXXXXXX" );
+    assert( mkstemp( ppfilename ) != 0 );
+  }
   out = fopen( ppfilename, "w" );
   assert( out != NULL );
   

@@ -27,9 +27,9 @@
 <tr><td>&nbsp;</td><td><font size=-1><em>Returns TRUE if the specified directory exists.</em> <a href="#a5"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a6">directory_load</a> (char *dir, <a class="el" href="defines_8h.html#a157">str_link</a> *ext_head, <a class="el" href="defines_8h.html#a157">str_link</a> **file_head, <a class="el" href="defines_8h.html#a157">str_link</a> **file_tail)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Loads contents of specified directory to file list if extension is part of list.</em> <a href="#a6"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a7">file_exists</a> (char *<a class="el" href="pplexer_8c.html#a114">file</a>)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a7">file_exists</a> (char *<a class="el" href="pplexer_8c.html#a113">file</a>)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Returns TRUE if the specified file exists.</em> <a href="#a7"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a8">readline</a> (FILE *<a class="el" href="pplexer_8c.html#a114">file</a>, char **line)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a8">readline</a> (FILE *<a class="el" href="pplexer_8c.html#a113">file</a>, char **line)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Reads line from file and returns it in string form.</em> <a href="#a8"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a9">scope_extract_front</a> (char *scope, char *front, char *rest)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Extracts highest level of hierarchy from specified scope.</em> <a href="#a9"></a><em></em></font><br><br></td></tr>
@@ -39,7 +39,7 @@
 <tr><td>&nbsp;</td><td><font size=-1><em>Returns TRUE if specified scope is local (contains no periods).</em> <a href="#a11"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a157">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a12">get_next_vfile</a> (<a class="el" href="defines_8h.html#a157">str_link</a> *curr, char *mod)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Returns next Verilog file to parse.</em> <a href="#a12"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void *&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a13">malloc_safe</a> (size_t <a class="el" href="pplexer_8c.html#a113">size</a>)</td></tr>
+<tr><td nowrap align=right valign=top>void *&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a13">malloc_safe</a> (size_t <a class="el" href="pplexer_8c.html#a112">size</a>)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Performs safe malloc call.</em> <a href="#a13"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a14">free_safe</a> (void *ptr)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Performs safe deallocation of heap memory.</em> <a href="#a14"></a><em></em></font><br><br></td></tr>
@@ -771,7 +771,7 @@ Boolean value of suppression.</td></tr>
 </dl>Sets the global variable output_suppressed to the specified value.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Sat Jan 4 03:27:34 2003 for Covered by
+<hr><address align="right"><small>Generated on Sun Jan 5 18:18:12 2003 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

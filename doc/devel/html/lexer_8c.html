@@ -156,12 +156,12 @@
 <tr><td nowrap align=right valign=top>YYLTYPE&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a107">yylloc</a></td></tr>
 <tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a108">ignore_mode</a></td></tr>
 <tr><td nowrap align=right valign=top>char&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a109">user_msg</a> [USER_MSG_LENGTH]</td></tr>
-<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a110">comment_enter</a></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a157">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a111">filelist_head</a> = 0</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a157">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a112">filelist_curr</a> = 0</td></tr>
-<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a113">last_keyword</a> = 0</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a179">tnode</a> *&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a114">found_modules</a> = NULL</td></tr>
-<tr><td nowrap align=right valign=top>char&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a115">ppfilename</a> [10]</td></tr>
+<tr><td nowrap align=right valign=top>char *&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a110">ppfilename</a></td></tr>
+<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a111">comment_enter</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a157">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a112">filelist_head</a> = 0</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a157">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a113">filelist_curr</a> = 0</td></tr>
+<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a114">last_keyword</a> = 0</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a179">tnode</a> *&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a115">found_modules</a> = NULL</td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a157">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a116">modlist_head</a></td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a157">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a117">modlist_tail</a></td></tr>
 <tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="lexer_8c.html#a118">yy_start_stack_ptr</a> = 0</td></tr>
@@ -2750,7 +2750,7 @@
   </tr>
 </table>
 <hr><h2>Variable Documentation</h2>
-<a name="a110" doxytag="lexer.c::comment_enter"></a><p>
+<a name="a111" doxytag="lexer.c::comment_enter"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2794,7 +2794,7 @@ Contains state before entering comment block.     </td>
     </td>
   </tr>
 </table>
-<a name="a112" doxytag="lexer.c::filelist_curr"></a><p>
+<a name="a113" doxytag="lexer.c::filelist_curr"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2816,7 +2816,7 @@ Contains state before entering comment block.     </td>
     </td>
   </tr>
 </table>
-<a name="a111" doxytag="lexer.c::filelist_head"></a><p>
+<a name="a112" doxytag="lexer.c::filelist_head"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2838,7 +2838,7 @@ Contains state before entering comment block.     </td>
     </td>
   </tr>
 </table>
-<a name="a114" doxytag="lexer.c::found_modules"></a><p>
+<a name="a115" doxytag="lexer.c::found_modules"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2882,7 +2882,7 @@ Contains state before entering comment block.     </td>
     </td>
   </tr>
 </table>
-<a name="a113" doxytag="lexer.c::last_keyword"></a><p>
+<a name="a114" doxytag="lexer.c::last_keyword"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -2970,13 +2970,19 @@ Contains state before entering comment block.     </td>
     </td>
   </tr>
 </table>
-<a name="a115" doxytag="lexer.c::ppfilename"></a><p>
+<a name="a110" doxytag="lexer.c::ppfilename"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> char ppfilename[10]<code> [static]</code>
+          <td class="md" nowrap valign="top"> char* ppfilename </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
+          <td class="md" valign="top">)&nbsp;</td>
+          <td class="md" nowrap></td>
+        </tr>
+
       </table>
     </td>
   </tr>
@@ -2989,7 +2995,7 @@ Contains state before entering comment block.     </td>
     <td>
 
 <p>
-    </td>
+Name of preprocessor filename to use     </td>
   </tr>
 </table>
 <a name="a122" doxytag="lexer.c::size"></a><p>
@@ -3639,7 +3645,7 @@ Contains state before entering comment block.     </td>
     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Sat Jan 4 03:27:32 2003 for Covered by
+<hr><address align="right"><small>Generated on Sun Jan 5 18:18:10 2003 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

@@ -1,8 +1,8 @@
 <!--
 [variables]
 {
-  $page_title = "Installation"
-  $page_title_english = "Installation"
+  $page_title = "Coverage Boundaries"
+  $page_title_english = "Coverage Boundaries"
   $file_prev = "007.html"
   $file_next = "009.html"
   $real_page_number = "8"
@@ -14,82 +14,66 @@
 $page_title
 </_header1>
 
-<_header2>
-Downloading source
-</_header2>
-
 <_pg>
-To download the source files in .tar.gz format, go to the
-following URL:
+To properly evaluate the effectiveness of any coverage tool, it is necessary to understand
+what kinds of logic are able to analyzed and which kinds of logic are unable to be analyzed
+(along with a reason for why the logic cannot be adequately covered).  Understanding the
+limitations of tools up front can often guide the user of those tools to make better
+decisions in their usage.  In the case of Covered and the open source community, it may also
+help drive ideas to how to correct or get around these limitations.
 </_pg>
 
 <_pg>
-<a href="http://covered.sourceforge.net/downloads">http://covered.sourceforge.net/downloads</a>
-</_pg>
-
-<_pg>
-Double-click on the .tar.gz version that you wish to install.
-The browser should immediately bring up a window asking if
-you would like to save to disk or open immediately.  Choose the
-"Save to Disk" option.  Another window will pop up, allowing
-you to choose the directory to store the tarball in.  After
-selecting a directory, click the "Save" button.  The download
-utility will begin downloading the tarball to the selected
-directory.
+For these reasons, a list of what type of logic can be analyzed and what type of logic cannot
+be currently analyzed is listed below.  Note that both of these lists may not be exhaustive
+and are subject to change between releases of the tool.
 </_pg>
 
 <_header2>
-Installing from source
+What logic can be analyzed?
 </_header2>
 
 <_pg>
-Once you have downloaded a tarball, enter the following to
-unzip and untar the package:
+<ol>
+  <li>All expressional logic which is comprised of the following data types and operators
+      which exist in an assign block or an always block:
+    <ul>
+      <li>Nets: wire, tri, tri0, tri1, wor, wand, trior, triand, supply0, suppl1</li>
+      <li>Triregs: trireg</li>
+      <li>Registers: reg</li>
+      <li>Parameter values</li>
+      <li>Unary operators: +, -, ~, &, |, ^, ~&, ~|, ~^</li>
+      <li>Arithmetic operators: +, -, *, /, %</li>
+      <li>Logical operators: &&, ||, !</li>
+      <li>Relational operators: &gt; &lt; &gt;= &lt;=</li>
+      <li>Equality operators: ==, ===, !=, !==</li>
+      <li>Bitwise operators: &, |, ^, ~&, ~|, ~^</li>
+      <li>Shift operators: &lt;&lt; &gt;&gt;</li>
+      <li>Concatentation/replication operators: {}, {{}}</li>
+      <li>Bit select operators: [], [:]</li>
+      <li>Conditional operator: ?:</li>
+    </ul>
+  </li>
+  <li>case, casex, casez statements</li>
+  <li>if, if/else statements</li>
+  <li>Delays when delay value is integer</li>
+  <li>Event waits:  wait, @(posedge), @(negedge), @()</li>
+</ol>
 </_pg>
 
-<_code>
->  gzip -dc <i>tarball_filename</i> | tar xvf -
-</_code>
+<_header2>
+What logic cannot be currently analyzed?
+</_header2>
 
 <_pg>
-This will create a directory called <tt>covered-<i>version</i></tt>.
-Change your current directory to this directory and enter the
-following command:
-</_pg>
-
-<_code>
->  ./configure
-</_code>
-
-<_pg>
-This command will create the Makefiles necessary for your
-machine to compile the source code correctly.  If any errors
-are generated during this command run, it is usually an
-indication that some program or library is missing from your
-computer that is necessary for Covered to compile/run.  Please
-install any missing programs/libraries and type this command
-again.  If the configure script completes successfully, you may
-compile the source with the following command:
-</_pg>
-
-<_code>
->  make
-</_code>
-
-<_pg>
-This will begin the process of compiling/linking the source
-code for Covered.  This stage may take a while.  When the source
-files have been compiled, the <tt>covered</tt> executable file
-will have been created.  To install this executable in your
-<tt>/usr/local/bin</tt> directory, enter the following command:
-</_pg>
-
-<_code>
->  make install
-</_code>
-
-<_pg>
-This will install the covered executable and manpage help files.
-Once covered is installed, make sure that <tt>/usr/local/bin</tt>
-is in your environment path.  You are now ready to run Covered.
+<ol>
+  <li>All code within initial blocks, tasks, and functions.</li>
+  <li>All code within repetition blocks:  FOR, WHILE, REPEAT</li>
+  <li>All code within fork/join blocks</li>
+  <li>All gate types (i.e., buf, not, or, and, etc.)</li>
+  <li>All user defined primitives (UDPs)</li>
+  <li>Memories</li>
+  <li>All expressions containing types: integer, time, real, realtime, string</li>
+  <li>System task calls (or any $... call)</li>
+</ol>
 </_pg>

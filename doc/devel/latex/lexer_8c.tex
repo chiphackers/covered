@@ -292,6 +292,8 @@ int {\bf ignore\_\-mode}
 \item 
 char {\bf user\_\-msg} [USER\_\-MSG\_\-LENGTH]
 \item 
+char $\ast$ {\bf ppfilename}
+\item 
 int {\bf comment\_\-enter}
 \item 
 {\bf str\_\-link} $\ast$ {\bf filelist\_\-head} = 0
@@ -301,8 +303,6 @@ int {\bf comment\_\-enter}
 int {\bf last\_\-keyword} = 0
 \item 
 {\bf tnode} $\ast$ {\bf found\_\-modules} = NULL
-\item 
-char {\bf ppfilename} [10]
 \item 
 {\bf str\_\-link} $\ast$ {\bf modlist\_\-head}
 \item 
@@ -929,7 +929,7 @@ int {\bf len}
 \subsection{Variable Documentation}
 \index{lexer.c@{lexer.c}!comment_enter@{comment\_\-enter}}
 \index{comment_enter@{comment\_\-enter}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int comment\_\-enter\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a110}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int comment\_\-enter\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a111}
 
 
 Contains state before entering comment block. \index{lexer.c@{lexer.c}!file@{file}}
@@ -939,17 +939,17 @@ Contains state before entering comment block. \index{lexer.c@{lexer.c}!file@{fil
 
 \index{lexer.c@{lexer.c}!filelist_curr@{filelist\_\-curr}}
 \index{filelist_curr@{filelist\_\-curr}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ filelist\_\-curr = 0\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a112}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ filelist\_\-curr = 0\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a113}
 
 
 \index{lexer.c@{lexer.c}!filelist_head@{filelist\_\-head}}
 \index{filelist_head@{filelist\_\-head}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ filelist\_\-head = 0\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a111}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ filelist\_\-head = 0\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a112}
 
 
 \index{lexer.c@{lexer.c}!found_modules@{found\_\-modules}}
 \index{found_modules@{found\_\-modules}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf tnode}$\ast$ found\_\-modules = NULL\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a114}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf tnode}$\ast$ found\_\-modules = NULL\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a115}
 
 
 \index{lexer.c@{lexer.c}!ignore_mode@{ignore\_\-mode}}
@@ -959,7 +959,7 @@ Contains state before entering comment block. \index{lexer.c@{lexer.c}!file@{fil
 
 \index{lexer.c@{lexer.c}!last_keyword@{last\_\-keyword}}
 \index{last_keyword@{last\_\-keyword}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int last\_\-keyword = 0\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a113}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int last\_\-keyword = 0\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a114}
 
 
 \index{lexer.c@{lexer.c}!len@{len}}
@@ -979,10 +979,10 @@ Contains state before entering comment block. \index{lexer.c@{lexer.c}!file@{fil
 
 \index{lexer.c@{lexer.c}!ppfilename@{ppfilename}}
 \index{ppfilename@{ppfilename}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char ppfilename[10]\hspace{0.3cm}{\tt  [static]}}\label{lexer_8c_a115}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ ppfilename ()}\label{lexer_8c_a110}
 
 
-\index{lexer.c@{lexer.c}!size@{size}}
+Name of preprocessor filename to use \index{lexer.c@{lexer.c}!size@{size}}
 \index{size@{size}!lexer.c@{lexer.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf yy\_\-size\_\-t} size}\label{lexer_8c_a122}
 

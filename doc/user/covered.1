@@ -1,4 +1,4 @@
-.TH "Covered" "1" "0.1-20021214" "Trevor Williams" "Code Analysis"
+.TH "Covered" "1" "0.2pre-20030105" "Trevor Williams" "Code Analysis"
 .SH "NAME"
 .LP 
 Covered \- Verilog Code Coverage Analyzer
@@ -65,6 +65,9 @@ Verilog hierarchical reference to the module that is at the top of the tree to b
 .TP 
 \fB\-o\fR \fIdatabase\fR
 Name of database to write coverage information to.  If not specified, the output database filename will be "cov.db".
+.TP 
+\fB\-p\fR \fIfilename\fR
+Overrides default filename used to store intermediate preprocessor output.
 .TP 
 \fB\-P\fR \fIparameter_scope=value\fR
 Performs a defparam on the specified parameter with value.

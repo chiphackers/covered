@@ -1,5 +1,49 @@
 Covered-Related NEWS
 ====================
+    * 01/05/2003
+
+Happy New Year!  Release covered-0.2pre1_20030105 made.  This release is primarily a
+bug fix release; however, many of the bugs required larger changes than would be
+expected before a stable release.  The most significant change being to the lexer which
+is now split into a preprocessor and a normal lexer (before these two functions were
+combined into one).  As such, this is the first prelease with a second release most
+likely expected before stable release.  The following is a list of changes included in
+this release.
+
+  - Preprocessor split out from lexer to allow proper handling of defined values within
+    code.
+  - Added -p option to score command to allow user override of preprocessor intermediate
+    output file.
+  - Fixed bug where report output was not squelched when -Q global option specified on
+    report command line.
+  - Modified regression suite to verify CDD file generation (was being performed before),
+    module report generation (new) and instance report generation (new) to make sure that
+    report output was consistent.
+  - Fixed bug where integer, time, real, realtime and memory data types used in expressions
+    where considered to be implicitly defined and given 1-bit values.  When these types
+    are seen in expressions now, they are ignored by Covered (caused nasty segfault).
+  - Fixed bug when a parameterized module is instantiated more than once in a design
+    (sent error message to user when this occurred).
+  - Fixed bug where a parsed module that was required but not at the head of the module
+    list was not being found by the parser.
+  - Added internal assertions and code to verify that we never try to overrun arrays
+    in the VCD parsing/running stage (caused nasty segmentation fault).
+  - Reorganized code for symtable symbol lookup and value assignment.
+  - Fixing bug where a parameterized module that was instantiated in a design more than
+    once was not getting the correct parameter value(s).
+  - Fixed module search algorithm to reparse a Verilog file that contains a module
+    that was previously ignored (not needed at the time) but is later found to be
+    needed.
+  - Created tree.c and tree.h to handle new module search algorithm and to replace
+    preprocessor define tree structure.
+  - Updated development documentation.
+  - Updates to user manual and manpage for new -p option, notes from this release
+    and a new section that starts to describe what logic is analyzed by Covered and
+    which code is not analyzed.
+
+I've got some fairly large designs being run with this version of Covered and the regression
+suite has grown to over 130 diagnostics with more on the way.  Keep the bug reports coming!
+
     * 12/14/2002
 
 Release covered-20021214 made.  This release is a bug fix release.  See list below

@@ -21,7 +21,7 @@
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds signal and expression to binding list.</em> <a href="#a5"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a6">bind_remove</a> (int id)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Removes the expression with ID of id from binding list.</em> <a href="#a6"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a7">bind_perform</a> (char *sig_name, <a class="el" href="defines_8h.html#a160">expression</a> *exp, <a class="el" href="defines_8h.html#a171">module</a> *mod_sig, <a class="el" href="defines_8h.html#a171">module</a> *mod_exp, <a class="el" href="defines_8h.html#a182">bool</a> implicit_allowed)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a7">bind_perform</a> (char *sig_name, <a class="el" href="defines_8h.html#a160">expression</a> *exp, <a class="el" href="defines_8h.html#a171">module</a> *mod_sig, <a class="el" href="defines_8h.html#a171">module</a> *mod_exp, <a class="el" href="defines_8h.html#a182">bool</a> implicit_allowed)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Finds signal in module and bind the expression to this signal.</em> <a href="#a7"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a8">bind</a> ()</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Performs signal/expression bind (performed after parse completed).</em> <a href="#a8"></a><em></em></font><br><br></td></tr>
@@ -132,7 +132,7 @@ Pointer to module containing specified expression.</td></tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> void bind_perform </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a182">bool</a> bind_perform </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top">char *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>sig_name</em>, </td>
@@ -195,7 +195,9 @@ Pointer to module containing expression. </td></tr>
 <tr><td valign=top><em>implicit_allowed</em>&nbsp;</td><td>
 If set to TRUE, creates any signals that are implicitly defined.</td></tr>
 </table>
-</dl>Performs a binding of an expression and signal based on the name of the signal. Looks up signal name in the specified module and sets the expression and signal to point to each other.     </td>
+</dl><dl compact><dt><b>
+Returns: </b><dd>
+Returns TRUE if bind occurred successfully; otherwise, returns FALSE.</dl>Performs a binding of an expression and signal based on the name of the signal. Looks up signal name in the specified module and sets the expression and signal to point to each other. If the signal name is not found, it is checked to see if the signal is an unused type (name preceded by the '!' character). If the signal is unused, the bind does not occur and the function returns a value of FALSE. If the signal neither exists or is an unused signal, it is considered to be an implicit signal and a 1-bit signal is created.     </td>
   </tr>
 </table>
 <a name="a6" doxytag="binding.c::bind_remove"></a><p>
@@ -346,7 +348,7 @@ Expression ID of binding to remove.</td></tr>
     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Sat Jan 4 03:27:31 2003 for Covered by
+<hr><address align="right"><small>Generated on Sun Jan 5 18:18:09 2003 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

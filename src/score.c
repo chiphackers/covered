@@ -29,6 +29,7 @@ char* top_instance    = NULL;                /*!< Name of top-level instance nam
 char* output_db       = NULL;                /*!< Name of output score database file to generate        */
 char* vcd_file        = NULL;                /*!< Name of VCD output file to parse                      */
 int   delay_expr_type = DELAY_EXPR_DEFAULT;  /*!< Value to use when a delay expression with min:typ:max */
+char* ppfilename      = NULL;                /*!< Name of preprocessor filename to use                  */
 
 extern unsigned long largest_malloc_size;
 extern unsigned long curr_malloc_size;
@@ -61,6 +62,7 @@ void score_usage() {
   printf( "      -v <filename>                Name of specific Verilog file to score.\n" );
   printf( "      -e <module_name>             Name of module to not score.\n" );
   printf( "      -D <define_name>(=<value>)   Defines the specified name to 1 or the specified value.\n" );
+  printf( "      -p <filename>                Specifies name of file to use for preprocessor output.\n" );
   printf( "      -P <parameter_scope>=<value> Performs a defparam on the specified parameter with value.\n" );
   printf( "      -T min|typ|max               Specifies value to use in delay expressions of the form min:typ:max.\n" );
   printf( "      -h                           Displays this help information.\n" );
@@ -259,6 +261,17 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
         define_macro( argv[i], "1" );
       }
 
+    } else if( strncmp( "-p", argv[i], 2 ) == 0 ) {
+      
+      i++;
+      if( is_variable( argv[i] ) ) {
+        ppfilename = strdup( argv[i] );
+      } else {
+        snprintf( user_msg, USER_MSG_LENGTH, "Unrecognizable filename %s specified for -p option.", argv[i] );
+        print_output( user_msg, FATAL );
+        exit( 1 );
+      }
+        
     } else if( strncmp( "-P", argv[i], 2 ) == 0 ) {
 
       i++;
@@ -367,6 +380,11 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.31  2002/11/27 06:03:35  phase1geo
+ Adding diagnostics to verify selectable delay.  Removing selectable delay
+ warning from being output constantly to only outputting when selectable delay
+ found in design and -T option not specified.  Full regression passes.
+
  Revision 1.30  2002/11/05 00:20:08  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.
