@@ -8,8 +8,8 @@
 2 6 main.bar1 28 201032 0 0 
 2 5 main.bar1 28 203001 0 0 
 2 7 main.bar1 28 253002 6 5 32 0 f11aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa
-2 4 main.bar1 28 2203001 0 0 
-2 8 main.bar1 28 2293fb7 7 4 32 0 f11aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa
+2 4 main.bar1 28 2000001 0 0 
+2 8 main.bar1 28 203fb5 7 4 
 1 #alpha main.bar1 0 32 0 0 0 0 0 0 0 0 0 6
 1 b main.bar1 0 1 0 11102 5
 1 a main.bar1 0 1 0 11102 4
@@ -18,8 +18,8 @@
 2 6 main.bar2 28 102032 0 0 
 2 5 main.bar2 28 201001 0 0 
 2 7 main.bar2 28 122002 6 5 32 0 f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa
-2 4 main.bar2 28 2102001 0 0 
-2 8 main.bar2 28 2182fb7 7 4 32 0 f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa
+2 4 main.bar2 28 2000001 0 0 
+2 8 main.bar2 28 102fb5 7 4 
 1 #alpha main.bar2 0 32 0 1 0 0 0 0 0 0 0 6
 1 b main.bar2 0 1 0 10002 5
 1 a main.bar2 0 1 0 10002 4

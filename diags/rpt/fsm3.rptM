@@ -42,8 +42,8 @@ Missed Combinations
 ====================================================
  Line #     Expression
 ====================================================
-     16:    reset ? STATE_IDLE : next_state
-            |--------------1--------------|
+     16:    state <= reset ? STATE_IDLE : next_state
+                     |--------------1--------------|
 
 
 Expression 1
@@ -68,8 +68,8 @@ Expression 1
 ====================================================
  Line #     Expression
 ====================================================
-     21:    (valid & head) ? STATE_HEAD : STATE_IDLE
-            |------------------1-------------------|
+     21:    next_state = (valid & head) ? STATE_HEAD : STATE_IDLE
+                         |------------------1-------------------|
 
 
 Expression 1
@@ -81,8 +81,8 @@ Expression 1
 ====================================================
  Line #     Expression
 ====================================================
-     22:    (valid & tail) ? STATE_TAIL : STATE_DATA
-            |------------------1-------------------|
+     22:    next_state = (valid & tail) ? STATE_TAIL : STATE_DATA
+                         |------------------1-------------------|
 
 
 Expression 1
@@ -94,8 +94,8 @@ Expression 1
 ====================================================
  Line #     Expression
 ====================================================
-     23:    (valid & tail) ? STATE_TAIL : STATE_DATA
-            |------------------1-------------------|
+     23:    next_state = (valid & tail) ? STATE_TAIL : STATE_DATA
+                         |------------------1-------------------|
 
 
 Expression 1
@@ -107,8 +107,8 @@ Expression 1
 ====================================================
  Line #     Expression
 ====================================================
-     24:    (valid & head) ? STATE_HEAD : STATE_IDLE
-            |------------------1-------------------|
+     24:    next_state = (valid & head) ? STATE_HEAD : STATE_IDLE
+                         |------------------1-------------------|
 
 
 Expression 1

@@ -6,8 +6,8 @@
 2 5 main.foo 37 102000 0 0 32 0 1 0 0 0 0 0 0 0
 2 4 main.foo 37 102000 0 0 32 0 4 0 0 0 0 0 0 0
 2 6 main.foo 37 183024 5 4 
-2 3 main.foo 37 2103001 0 0 
-2 7 main.foo 37 2193fb7 6 3 2 0 3020a
+2 3 main.foo 37 2000001 0 0 
+2 7 main.foo 37 103fb5 6 3 
 1 #bsize main.foo 0 32 0 5 0 0 0 0 0 0 0
 1 b main.foo 0 3 0 7152a 6
 1 a main.foo 0 2 0 3020a 3
@@ -18,8 +18,8 @@
 2 5 main.bar.dude 37 102000 0 0 32 0 1 0 0 0 0 0 0 0
 2 4 main.bar.dude 37 102000 0 0 32 0 4 0 0 0 0 0 0 0
 2 6 main.bar.dude 37 182024 5 4 
-2 3 main.bar.dude 37 2102001 0 0 
-2 7 main.bar.dude 37 2182fb7 6 3 2 0 3000a
+2 3 main.bar.dude 37 2000001 0 0 
+2 7 main.bar.dude 37 102fb5 6 3 
 1 #bsize main.bar.dude 0 32 0 5 0 0 0 0 0 0 0
 1 b main.bar.dude 0 3 0 7002a 6
 1 a main.bar.dude 0 2 0 3000a 3

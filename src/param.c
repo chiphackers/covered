@@ -121,9 +121,17 @@ mod_parm* mod_parm_find_sig_dependent( char* name, mod_parm* parm ) {
 */
 void mod_parm_find_expr_and_remove( expression* exp, mod_parm* parm ) {
 
-  while( parm != NULL ) {
-    exp_link_remove( exp, &(parm->exp_head), &(parm->exp_tail), FALSE );
-    parm = parm->next;
+  if( exp != NULL ) {
+
+    /* Remove left and right expressions as well */
+    mod_parm_find_expr_and_remove( exp->left, parm );
+    mod_parm_find_expr_and_remove( exp->right, parm );
+
+    while( parm != NULL ) {
+      exp_link_remove( exp, &(parm->exp_head), &(parm->exp_tail), FALSE );
+      parm = parm->next;
+    }
+
   }
 
 }
@@ -716,6 +724,9 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.30  2003/10/17 21:55:25  phase1geo
+ Fixing parameter db_write function to output signal in new format.
+
  Revision 1.29  2003/10/17 12:55:36  phase1geo
  Intermediate checkin for LSB fixes.
 

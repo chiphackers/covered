@@ -4,6 +4,14 @@
  \date     11/24/2003
 */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#ifdef HAVE_STRING_H
+#include "string.h"
+#endif
+
 #include "gui.h"
 #include "util.h"
 #include "link.h"
@@ -82,5 +90,9 @@ char* module_get_filename( char* mod_name ) {
 
 /*
  $Log$
+ Revision 1.1  2003/11/24 17:48:56  phase1geo
+ Adding gui.c/.h files for functions related to the GUI interface.  Updated
+ Makefile.am for the inclusion of these files.
+
 */
 

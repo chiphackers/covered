@@ -50,8 +50,8 @@ Missed Combinations
 ====================================================
  Line #     Expression
 ====================================================
-     29:    (valid & tail) ? STATE_TAIL : STATE_DATA
-            |------------------1-------------------|
+     29:    next_state = (valid & tail) ? STATE_TAIL : STATE_DATA
+                         |------------------1-------------------|
 
 
 Expression 1
@@ -63,8 +63,8 @@ Expression 1
 ====================================================
  Line #     Expression
 ====================================================
-     30:    (valid & tail) ? STATE_TAIL : STATE_DATA
-            |------------------1-------------------|
+     30:    next_state = (valid & tail) ? STATE_TAIL : STATE_DATA
+                         |------------------1-------------------|
 
 
 Expression 1

@@ -12,14 +12,14 @@ Module: main, File: fsm9.2.v, Instance: main
 --------------------------------------------------------
 Missed Lines
 
-     24:    (valid & tail) ? STATE_TAIL : STATE_DATA
+     24:    next_state = (valid & tail) ? STATE_TAIL : STATE_DATA
 
 
 Module: fsm, File: ./lib/fsm.v, Instance: main.fsm1
 --------------------------------------------------------
 Missed Lines
 
-     30:    (valid & tail) ? STATE_TAIL : STATE_DATA
+     30:    next_state = (valid & tail) ? STATE_TAIL : STATE_DATA
 
 =================================================================================
 
@@ -64,9 +64,9 @@ Missed Combinations
 ====================================================
  Line #     Expression
 ====================================================
-     23:    (valid & tail) ? STATE_TAIL : STATE_DATA
-            |-----1------|                          
-            |------------------2-------------------|
+     23:    next_state = (valid & tail) ? STATE_TAIL : STATE_DATA
+                         |-----1------|                          
+                         |------------------2-------------------|
 
 
 Expression 1
@@ -86,9 +86,9 @@ Expression 2
 ====================================================
  Line #     Expression
 ====================================================
-     24:    (valid & tail) ? STATE_TAIL : STATE_DATA
-            |-----1------|                          
-            |------------------2-------------------|
+     24:    next_state = (valid & tail) ? STATE_TAIL : STATE_DATA
+                         |-----1------|                          
+                         |------------------2-------------------|
 
 
 Expression 1
@@ -110,9 +110,9 @@ Expression 2
 ====================================================
  Line #     Expression
 ====================================================
-     25:    (valid & head) ? STATE_HEAD : STATE_IDLE
-            |-----1------|                          
-            |------------------2-------------------|
+     25:    next_state = (valid & head) ? STATE_HEAD : STATE_IDLE
+                         |-----1------|                          
+                         |------------------2-------------------|
 
 
 Expression 1
@@ -137,9 +137,9 @@ Missed Combinations
 ====================================================
  Line #     Expression
 ====================================================
-     29:    (valid & tail) ? STATE_TAIL : STATE_DATA
-            |-----1------|                          
-            |------------------2-------------------|
+     29:    next_state = (valid & tail) ? STATE_TAIL : STATE_DATA
+                         |-----1------|                          
+                         |------------------2-------------------|
 
 
 Expression 1
@@ -159,9 +159,9 @@ Expression 2
 ====================================================
  Line #     Expression
 ====================================================
-     30:    (valid & tail) ? STATE_TAIL : STATE_DATA
-            |-----1------|                          
-            |------------------2-------------------|
+     30:    next_state = (valid & tail) ? STATE_TAIL : STATE_DATA
+                         |-----1------|                          
+                         |------------------2-------------------|
 
 
 Expression 1
@@ -183,9 +183,9 @@ Expression 2
 ====================================================
  Line #     Expression
 ====================================================
-     31:    (valid & head) ? STATE_HEAD : STATE_IDLE
-            |-----1------|                          
-            |------------------2-------------------|
+     31:    next_state = (valid & head) ? STATE_HEAD : STATE_IDLE
+                         |-----1------|                          
+                         |------------------2-------------------|
 
 
 Expression 1

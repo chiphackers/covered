@@ -4,8 +4,8 @@
 2 2 main 9 103001 0 0 
 2 4 main 9 162031 3 2 5 0 fdcaa 10102
 2 5 main 9 102026 4 0 5 0 fdcaa 10102
-2 1 main 9 2102001 0 0 
-2 6 main 9 2182fb7 5 1 5 0 fdcaa 10102
+2 1 main 9 2000001 0 0 
+2 6 main 9 102fb5 5 1 
 1 a main 0 4 0 f08aa
 1 b main 0 4 0 f5caa
 1 z main 0 4 0 fdcaa 3
@@ -24,13 +24,13 @@
 2 9 main.add.bit0 15 203001 0 0 
 2 8 main.add.bit0 15 201001 0 0 
 2 10 main.add.bit0 15 233002 9 8 1 0 11002
-2 7 main.add.bit0 15 2203001 0 0 
-2 11 main.add.bit0 15 2293fb7 10 7 1 0 11002
+2 7 main.add.bit0 15 2000001 0 0 
+2 11 main.add.bit0 15 203fb5 10 7 
 2 14 main.add.bit0 16 203001 0 0 
 2 13 main.add.bit0 16 201001 0 0 
 2 15 main.add.bit0 16 231008 14 13 1 0 10002
-2 12 main.add.bit0 16 2201001 0 0 
-2 16 main.add.bit0 16 2211fb7 15 12 1 0 10002
+2 12 main.add.bit0 16 2000001 0 0 
+2 16 main.add.bit0 16 201fb5 15 12 
 1 a main.add.bit0 0 1 0 10002 8 13
 1 b main.add.bit0 0 1 0 11002 9 14
 1 c main.add.bit0 0 1 0 10002 12
@@ -41,13 +41,13 @@
 2 9 main.add.bit1 15 201001 0 0 
 2 8 main.add.bit1 15 201001 0 0 
 2 10 main.add.bit1 15 211002 9 8 1 0 10002
-2 7 main.add.bit1 15 2201001 0 0 
-2 11 main.add.bit1 15 2211fb7 10 7 1 0 10002
+2 7 main.add.bit1 15 2000001 0 0 
+2 11 main.add.bit1 15 201fb5 10 7 
 2 14 main.add.bit1 16 201001 0 0 
 2 13 main.add.bit1 16 201001 0 0 
 2 15 main.add.bit1 16 211008 14 13 1 0 10002
-2 12 main.add.bit1 16 2201001 0 0 
-2 16 main.add.bit1 16 2211fb7 15 12 1 0 10002
+2 12 main.add.bit1 16 2000001 0 0 
+2 16 main.add.bit1 16 201fb5 15 12 
 1 a main.add.bit1 0 1 0 10002 8 13
 1 b main.add.bit1 0 1 0 10002 9 14
 1 c main.add.bit1 0 1 0 10002 12
@@ -58,13 +58,13 @@
 2 9 main.add.bit2 15 203001 0 0 
 2 8 main.add.bit2 15 201001 0 0 
 2 10 main.add.bit2 15 233002 9 8 1 0 11102
-2 7 main.add.bit2 15 2203001 0 0 
-2 11 main.add.bit2 15 2293fb7 10 7 1 0 11102
+2 7 main.add.bit2 15 2000001 0 0 
+2 11 main.add.bit2 15 203fb5 10 7 
 2 14 main.add.bit2 16 203001 0 0 
 2 13 main.add.bit2 16 201001 0 0 
 2 15 main.add.bit2 16 231008 14 13 1 0 10002
-2 12 main.add.bit2 16 2201001 0 0 
-2 16 main.add.bit2 16 2211fb7 15 12 1 0 10002
+2 12 main.add.bit2 16 2000001 0 0 
+2 16 main.add.bit2 16 201fb5 15 12 
 1 a main.add.bit2 0 1 0 10002 8 13
 1 b main.add.bit2 0 1 0 11102 9 14
 1 c main.add.bit2 0 1 0 10002 12
@@ -75,13 +75,13 @@
 2 9 main.add.bit3 15 103001 0 0 
 2 8 main.add.bit3 15 103001 0 0 
 2 10 main.add.bit3 15 2d3002 9 8 1 0 11102
-2 7 main.add.bit3 15 2203001 0 0 
-2 11 main.add.bit3 15 2293fb7 10 7 1 0 11102
+2 7 main.add.bit3 15 2000001 0 0 
+2 11 main.add.bit3 15 203fb5 10 7 
 2 14 main.add.bit3 16 103001 0 0 
 2 13 main.add.bit3 16 103001 0 0 
 2 15 main.add.bit3 16 1d3008 14 13 1 0 10102
-2 12 main.add.bit3 16 2103001 0 0 
-2 16 main.add.bit3 16 2193fb7 15 12 1 0 10102
+2 12 main.add.bit3 16 2000001 0 0 
+2 16 main.add.bit3 16 103fb5 15 12 
 1 a main.add.bit3 0 1 0 10102 8 13
 1 b main.add.bit3 0 1 0 10102 9 14
 1 c main.add.bit3 0 1 0 10102 12

@@ -117,7 +117,8 @@ void sim_expr_changed( expression* expr ) {
 
   /* No need to continue to traverse up tree if both CHANGED bits are set */
   if( (SUPPL_IS_LEFT_CHANGED( expr->suppl ) == 0) ||
-      (SUPPL_IS_RIGHT_CHANGED( expr->suppl ) == 0) ) {
+      (SUPPL_IS_RIGHT_CHANGED( expr->suppl ) == 0) ||
+      (SUPPL_OP( expr->suppl ) == EXP_OP_COND) ) {
 
     /* If we are not the root expression, do the following */
     if( SUPPL_IS_ROOT( expr->suppl ) == 0 ) {
@@ -151,7 +152,7 @@ void sim_expr_changed( expression* expr ) {
        know that it needs to evaluate the expression.
       */
       if( (SUPPL_IS_LEFT_CHANGED( expr->suppl ) == 0) && (SUPPL_IS_RIGHT_CHANGED( expr->suppl ) == 0) ) {
-        expr->suppl = expr->suppl | (0x1 << SUPPL_LSB_LEFT_CHANGED);
+        expr->suppl = expr->suppl | (0x1 << SUPPL_LSB_RIGHT_CHANGED);
       }
 
     }
@@ -387,6 +388,9 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.34  2003/11/05 05:22:56  phase1geo
+ Final fix for bug 835366.  Full regression passes once again.
+
  Revision 1.33  2003/10/14 04:02:44  phase1geo
  Final fixes for new FSM support.  Full regression now passes.  Need to
  add new diagnostics to verify new functionality, but at least all existing

@@ -8,14 +8,14 @@
 1 z main 0 1 0 10102
 3 mux main.switch ./lib/mux.v
 2 6 main.switch 14 201000 0 0 1 1 0
-2 5 main.switch 14 2201001 0 0 
-2 7 main.switch 14 22155b5 6 5 1 0 10002
+2 5 main.switch 14 2000001 0 0 
+2 7 main.switch 14 2015b6 6 5 
 2 10 main.switch 17 102001 0 0 
-2 9 main.switch 17 2103001 0 0 
-2 11 main.switch 17 21a25b5 10 9 1 0 10002
+2 9 main.switch 17 2000001 0 0 
+2 11 main.switch 17 1025b6 10 9 
 2 13 main.switch 19 201001 0 0 
-2 12 main.switch 19 2201001 0 0 
-2 14 main.switch 19 22155b5 13 12 1 0 10002
+2 12 main.switch 19 2000001 0 0 
+2 14 main.switch 19 2015b6 13 12 
 2 8 main.switch 16 103181 0 0 
 2 4 main.switch 13 203181 0 0 
 2 1 main.switch 12 103001 0 0 

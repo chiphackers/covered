@@ -2,7 +2,7 @@
 3 main main case4.1.v
 2 37 main 31 1 0 0 
 2 36 main 31 2000001 0 0 
-2 38 main 31 20041b5 37 36 3 0 2a
+2 38 main 31 1b6 37 36 
 2 54 main 65 102032 0 0 
 2 55 main 65 23 0 54 
 2 39 main 33 102080 0 0 1 1 1
@@ -38,16 +38,16 @@
 2 35 main 24 2933ab 34 31 1 0 11102
 2 74 main 78 1 0 0 
 2 73 main 78 2000001 0 0 
-2 75 main 78 20005b6 74 73 3 0 2a
+2 75 main 78 5b7 74 73 
 2 70 main 78 103001 0 0 
 2 71 main 78 2a 0 0 2 0 a
 2 72 main 78 2033a7 70 71 1 0 11102
 1 #A main 0 32 0 0 0 0 0 0 0 0 0 40
-1 #STATE_A main 0 32 0 10001 0 0 0 0 0 0 0 75
+1 #STATE_A main 0 32 0 10001 0 0 0 0 0 0 0
 1 #B main 0 32 0 1 0 0 0 0 0 0 0 48
-1 #STATE_B main 0 32 0 20004 0 0 0 0 0 0 0 55
+1 #STATE_B main 0 32 0 20004 0 0 0 0 0 0 0
 1 #C main 0 32 0 4 0 0 0 0 0 0 0 54
-1 #STATE_C main 0 32 0 40010 0 0 0 0 0 0 0 55
+1 #STATE_C main 0 32 0 40010 0 0 0 0 0 0 0
 1 clock main 0 1 4 11102 70
 1 display_tagto_current_state main 0 3 4 2a 13 37 41 49 55 73
 1 next_st main 0 3 0 2a 36 74

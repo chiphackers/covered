@@ -362,6 +362,7 @@
  list and should not be added again.
 */
 #define SUPPL_LSB_STMT_ADDED        24
+#define SUPPL_LSB_LHS               25
 
 /*!
  Used for merging two supplemental fields from two expressions.  Both expression
@@ -465,6 +466,7 @@
  Returns the specified expression's operation.
 */
 #define SUPPL_OP(x)                 ((x >> SUPPL_LSB_OP) & 0x3f)
+#define SUPPL_IS_LHS(x)             ((x >> SUPPL_LSB_LHS) & 0x1)
 
 /*! @} */
      
@@ -717,6 +719,9 @@
 #define EXP_OP_PARAM_SBIT 0x33
 /*! Decimal value = 52.  Specifies multi-bit select parameter. */
 #define EXP_OP_PARAM_MBIT 0x34
+#define EXP_OP_ASSIGN     0x35
+#define EXP_OP_BASSIGN    0x36
+#define EXP_OP_NASSIGN    0x37
 
 /*! @} */
 
@@ -735,10 +740,17 @@
                                      (SUPPL_OP( x->suppl ) != EXP_OP_PARAM_SBIT) && \
                                      (SUPPL_OP( x->suppl ) != EXP_OP_PARAM_MBIT) && \
                                      (SUPPL_OP( x->suppl ) != EXP_OP_DELAY) && \
+                                     (SUPPL_OP( x->suppl ) != EXP_OP_ASSIGN) && \
+                                     (SUPPL_OP( x->suppl ) != EXP_OP_BASSIGN) && \
+                                     (SUPPL_OP( x->suppl ) != EXP_OP_NASSIGN) && \
+                                     (SUPPL_IS_LHS( x->suppl ) == 0) && \
                                      !((SUPPL_IS_ROOT( x->suppl ) == 0) && \
                                        ((SUPPL_OP( x->suppl ) == EXP_OP_SIG) || \
                                         (SUPPL_OP( x->suppl ) == EXP_OP_SBIT_SEL) || \
                                         (SUPPL_OP( x->suppl ) == EXP_OP_MBIT_SEL)) && \
+                                       (SUPPL_OP( x->parent->expr->suppl ) != EXP_OP_ASSIGN) && \
+                                       (SUPPL_OP( x->parent->expr->suppl ) != EXP_OP_BASSIGN) && \
+                                       (SUPPL_OP( x->parent->expr->suppl ) != EXP_OP_NASSIGN) && \
                                        (SUPPL_OP( x->parent->expr->suppl ) != EXP_OP_COND)) && \
                                      (x->line != 0)) ? 1 : 0)
 
@@ -1509,6 +1521,9 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.89  2003/11/15 04:21:57  phase1geo
+ Fixing syntax errors found in Doxygen and GCC compiler.
+
  Revision 1.88  2003/11/05 05:22:56  phase1geo
  Final fix for bug 835366.  Full regression passes once again.
 

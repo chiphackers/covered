@@ -1831,7 +1831,9 @@ statement
       expression* tmp;
       statement*  stmt;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp  = db_create_expression( $3, $1, EXP_OP_BASSIGN, TRUE, @1.first_line, NULL );
+        tmp  = db_create_expression( $3, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, NULL );
+        vector_dealloc( tmp->value );
+        tmp->value = $3->value;
         stmt = db_create_statement( tmp );
         db_add_expression( tmp );
         $$ = stmt;
@@ -1846,7 +1848,9 @@ statement
       expression* tmp;
       statement*  stmt;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp  = db_create_expression( $3, $1, EXP_OP_NASSIGN, TRUE, @1.first_line, NULL );
+        tmp  = db_create_expression( $3, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, NULL );
+        vector_dealloc( tmp->value );
+        tmp->value = $3->value;
         stmt = db_create_statement( tmp );
         db_add_expression( tmp );
         $$ = stmt;
@@ -1862,7 +1866,9 @@ statement
       statement*  stmt;
       expression_dealloc( $3, FALSE );
       if( (ignore_mode == 0) && ($1 != NULL) && ($4 != NULL) ) {
-        tmp  = db_create_expression( $4, $1, EXP_OP_BASSIGN, TRUE, @1.first_line, NULL );
+        tmp  = db_create_expression( $4, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, NULL );
+        vector_dealloc( tmp->value );
+        tmp->value = $4->value;
         stmt = db_create_statement( tmp );
         db_add_expression( tmp );
         $$ = stmt;
@@ -1878,7 +1884,9 @@ statement
       statement*  stmt;
       expression_dealloc( $3, FALSE );
       if( (ignore_mode == 0) && ($1 != NULL) && ($4 != NULL) ) {
-        tmp  = db_create_expression( $4, $1, EXP_OP_NASSIGN, TRUE, @1.first_line, NULL );
+        tmp  = db_create_expression( $4, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, NULL );
+        vector_dealloc( tmp->value );
+        tmp->value = $4->value;
         stmt = db_create_statement( tmp );
         db_add_expression( tmp );
         $$ = stmt;
@@ -1894,7 +1902,9 @@ statement
       statement*  stmt;
       expression_dealloc( $3, FALSE );
       if( (ignore_mode == 0) && ($1 != NULL) && ($4 != NULL) ) {
-        tmp  = db_create_expression( $4, $1, EXP_OP_BASSIGN, TRUE, @1.first_line, NULL );
+        tmp  = db_create_expression( $4, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, NULL );
+        vector_dealloc( tmp->value );
+        tmp->value = $4->value;
         stmt = db_create_statement( tmp );
         db_add_expression( tmp );
         $$ = stmt;
@@ -1910,7 +1920,9 @@ statement
       statement*  stmt;
       expression_dealloc( $3, FALSE );
       if( (ignore_mode == 0) && ($1 != NULL) && ($4 != NULL) ) {
-        tmp  = db_create_expression( $4, $1, EXP_OP_NASSIGN, TRUE, @1.first_line, NULL );
+        tmp  = db_create_expression( $4, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, NULL );
+        vector_dealloc( tmp->value );
+        tmp->value = $4->value;
         stmt = db_create_statement( tmp );
         db_add_expression( tmp );
         $$ = stmt;
@@ -2670,7 +2682,9 @@ assign
       expression* tmp;
       statement*  stmt;
       if( ($1 != NULL) && ($3 != NULL) ) {
-        tmp  = db_create_expression( $3, $1, EXP_OP_ASSIGN, TRUE, @1.first_line, NULL );
+        tmp  = db_create_expression( $3, $1, EXP_OP_ASSIGN, FALSE, @1.first_line, NULL );
+        vector_dealloc( tmp->value );
+        tmp->value = $3->value;
         stmt = db_create_statement( tmp );
         stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
         stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);

@@ -11,7 +11,7 @@ Module: main, File: fsm8.1.v
 --------------------------------------------------------
 Missed Lines
 
-     25:    (valid & tail) ? STATE_TAIL : STATE_DATA
+     25:    next_state = (valid & tail) ? STATE_TAIL : STATE_DATA
 
 =================================================================================
 
@@ -45,8 +45,8 @@ Missed Combinations
 ====================================================
  Line #     Expression
 ====================================================
-     17:    reset ? {STATE_IDLE, 1'b0} : {next_state, (next_state != STATE_IDLE)}
-                    |-------1--------|                                           
+     17:    state <= reset ? {STATE_IDLE, 1'b0} : {next_state, (next_state != STATE_IDLE)}
+                             |-------1--------|                                           
 
 
 Expression 1
@@ -58,9 +58,9 @@ Expression 1
 ====================================================
  Line #     Expression
 ====================================================
-     24:    (valid & tail) ? STATE_TAIL : STATE_DATA
-            |-----1------|                          
-            |------------------2-------------------|
+     24:    next_state = (valid & tail) ? STATE_TAIL : STATE_DATA
+                         |-----1------|                          
+                         |------------------2-------------------|
 
 
 Expression 1
@@ -80,9 +80,9 @@ Expression 2
 ====================================================
  Line #     Expression
 ====================================================
-     25:    (valid & tail) ? STATE_TAIL : STATE_DATA
-            |-----1------|                          
-            |------------------2-------------------|
+     25:    next_state = (valid & tail) ? STATE_TAIL : STATE_DATA
+                         |-----1------|                          
+                         |------------------2-------------------|
 
 
 Expression 1
@@ -104,9 +104,9 @@ Expression 2
 ====================================================
  Line #     Expression
 ====================================================
-     26:    (valid & head) ? STATE_HEAD : STATE_IDLE
-            |-----1------|                          
-            |------------------2-------------------|
+     26:    next_state = (valid & head) ? STATE_HEAD : STATE_IDLE
+                         |-----1------|                          
+                         |------------------2-------------------|
 
 
 Expression 1

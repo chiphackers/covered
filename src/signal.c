@@ -329,8 +329,10 @@ void signal_vcd_assign( signal* sig, char* value, int msb, int lsb ) {
   curr_expr = sig->exp_head;
   while( curr_expr != NULL ) {
 
-    /* Add to simulation queue */
-    sim_expr_changed( curr_expr->exp );
+    /* Add to simulation queue if expression is a RHS */
+    if( SUPPL_IS_LHS( curr_expr->exp->suppl ) == 0 ) {
+      sim_expr_changed( curr_expr->exp );
+    }
 
     curr_expr = curr_expr->next;
 
@@ -443,6 +445,9 @@ void signal_dealloc( signal* sig ) {
 
 /*
  $Log$
+ Revision 1.45  2003/11/12 17:34:03  phase1geo
+ Fixing bug where signals are longer than allowable bit width.
+
  Revision 1.44  2003/11/05 05:22:56  phase1geo
  Final fix for bug 835366.  Full regression passes once again.
 
