@@ -470,7 +470,7 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
   expression  texp;             /* Temporary expression link holder for searching      */
   exp_link*   expl;             /* Pointer to found expression in module               */
 
-  if( sscanf( *line, "%d %s %d %x %d %d%n", &id, modname, &linenum, &suppl, &right_id, &left_id, &chars_read ) == 6 ) {
+  if( sscanf( *line, "%d %s %d %hx %d %d%n", &id, modname, &linenum, &suppl, &right_id, &left_id, &chars_read ) == 6 ) {
 
     *line = *line + chars_read;
 
@@ -1149,6 +1149,12 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.57  2002/10/30 06:07:10  phase1geo
+ First attempt to handle expression trees/statement trees that contain
+ unsupported code.  These are removed completely and not evaluated (because
+ we can't guarantee that our results will match the simulator).  Added real1.1.v
+ diagnostic that verifies one case of this scenario.  Full regression passes.
+
  Revision 1.56  2002/10/29 17:25:56  phase1geo
  Fixing segmentation fault in expression resizer for expressions with NULL
  values in right side child expressions.  Also trying fix for log comments.

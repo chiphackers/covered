@@ -36,13 +36,15 @@ DIAGS    = assign3.2A    always1       always3.1.11A  cond1 \
 
 IVONLYDIAGS = assign1    implicit1
 
+VCSONLYDIAGS = real1
+
 iverilog:
 	@cd ../verilog; \
 	$(MAKE) VERILOG=$(IVERILOG) VERILOG_FLAGS="$(IVERILOG_FLAGS)" VERILOG_EXEC=$(IVERILOG_EXEC) DIAGLIST="$(DIAGS) $(IVONLYDIAGS)" regress
 
 vcs:
 	@cd ../verilog; \
-	$(MAKE) VERILOG=$(VCS) VERILOG_FLAGS="$(VCS_FLAGS)" VERILOG_EXEC=$(VCS_EXEC) DIAGLIST="$(DIAGS)" regress
+	$(MAKE) VERILOG=$(VCS) VERILOG_FLAGS="$(VCS_FLAGS)" VERILOG_EXEC=$(VCS_EXEC) DIAGLIST="$(DIAGS) $(VCSONLYDIAGS)" regress
 
 clean:
 	cd ../verilog;  $(MAKE) clean
