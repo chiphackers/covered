@@ -181,7 +181,10 @@ bool signal_db_read( char** line, module* curr_mod ) {
           */
           if( (SUPPL_OP( expl->exp->suppl ) == EXP_OP_SIG) ||
               (SUPPL_OP( expl->exp->suppl ) == EXP_OP_SBIT_SEL) ||
-              (SUPPL_OP( expl->exp->suppl ) == EXP_OP_MBIT_SEL) ) {
+              (SUPPL_OP( expl->exp->suppl ) == EXP_OP_MBIT_SEL) ||
+              (SUPPL_OP( expl->exp->suppl ) == EXP_OP_PARAM)    ||
+              (SUPPL_OP( expl->exp->suppl ) == EXP_OP_PARAM_SBIT) ||
+              (SUPPL_OP( expl->exp->suppl ) == EXP_OP_PARAM_MBIT) ) {
             expression_set_value( expl->exp, sig->value );
           }
 
@@ -364,6 +367,10 @@ void signal_dealloc( signal* sig ) {
 
 /*
  $Log$
+ Revision 1.28  2003/02/13 23:44:08  phase1geo
+ Tentative fix for VCD file reading.  Not sure if it works correctly when
+ original signal LSB is != 0.  Icarus Verilog testsuite passes.
+
  Revision 1.27  2002/12/30 05:31:33  phase1geo
  Fixing bug in module merge for reports when parameterized modules are merged.
  These modules should not output an error to the user when mismatching modules

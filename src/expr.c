@@ -445,13 +445,13 @@ void expression_db_write( expression* expr, FILE* file, char* scope ) {
     (SUPPL_OP( expr->suppl ) == EXP_OP_STATIC) ? 0 : expression_get_id( expr->left )
   );
 
-  if( (SUPPL_OP( expr->suppl ) != EXP_OP_SIG) && 
-      (SUPPL_OP( expr->suppl ) != EXP_OP_SBIT_SEL) && 
-      (SUPPL_OP( expr->suppl ) != EXP_OP_MBIT_SEL) ) {
-    vector_db_write( expr->value, file, ((SUPPL_OP( expr->suppl ) == EXP_OP_STATIC)     ||
-                                         (SUPPL_OP( expr->suppl ) == EXP_OP_PARAM)      ||
-                                         (SUPPL_OP( expr->suppl ) == EXP_OP_PARAM_SBIT) ||
-                                         (SUPPL_OP( expr->suppl ) == EXP_OP_PARAM_MBIT)) );
+  if( (SUPPL_OP( expr->suppl ) != EXP_OP_SIG) &&
+      (SUPPL_OP( expr->suppl ) != EXP_OP_SBIT_SEL) &&
+      (SUPPL_OP( expr->suppl ) != EXP_OP_MBIT_SEL) &&
+      (SUPPL_OP( expr->suppl ) != EXP_OP_PARAM)    &&
+      (SUPPL_OP( expr->suppl ) != EXP_OP_PARAM_SBIT) &&
+      (SUPPL_OP( expr->suppl ) != EXP_OP_PARAM_MBIT) ) {
+    vector_db_write( expr->value, file, (SUPPL_OP( expr->suppl ) == EXP_OP_STATIC) );
   }
 
   fprintf( file, "\n" );
@@ -548,7 +548,10 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
 
       if( (SUPPL_OP( suppl ) != EXP_OP_SIG) && 
           (SUPPL_OP( suppl ) != EXP_OP_SBIT_SEL) && 
-          (SUPPL_OP( suppl ) != EXP_OP_MBIT_SEL) ) {
+          (SUPPL_OP( suppl ) != EXP_OP_MBIT_SEL) &&
+          (SUPPL_OP( suppl ) != EXP_OP_PARAM)    &&
+          (SUPPL_OP( suppl ) != EXP_OP_PARAM_SBIT) &&
+          (SUPPL_OP( suppl ) != EXP_OP_PARAM_MBIT) ) {
 
         /* Read in vector information */
         if( vector_db_read( &vec, line ) ) {
@@ -632,7 +635,10 @@ bool expression_db_merge( expression* base, char** line, bool same ) {
 
       if( (SUPPL_OP( suppl ) != EXP_OP_SIG) &&
           (SUPPL_OP( suppl ) != EXP_OP_SBIT_SEL) &&
-          (SUPPL_OP( suppl ) != EXP_OP_MBIT_SEL) ) {
+          (SUPPL_OP( suppl ) != EXP_OP_MBIT_SEL) &&
+          (SUPPL_OP( suppl ) != EXP_OP_PARAM)    &&
+          (SUPPL_OP( suppl ) != EXP_OP_PARAM_SBIT) &&
+          (SUPPL_OP( suppl ) != EXP_OP_PARAM_MBIT) ) {
 
         /* Merge expression vectors */
         retval = vector_db_merge( base->value, line, same );
@@ -1214,6 +1220,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.73  2003/02/07 02:28:23  phase1geo
+ Fixing bug with statement removal.  Expressions were being deallocated but not properly
+ removed from module parameter expression lists and module expression lists.  Regression
+ now passes again.
+
  Revision 1.72  2002/12/30 05:31:33  phase1geo
  Fixing bug in module merge for reports when parameterized modules are merged.
  These modules should not output an error to the user when mismatching modules
