@@ -154,8 +154,8 @@ void line_display_verbose( FILE* ofile, exp_link* expl ) {
 
       last_line  = expl->exp->line;
       unexec_exp = expl->exp;
-      while( (unexec_exp->parent != NULL) && (unexec_exp->parent->line == unexec_exp->line) ) {
-        unexec_exp = unexec_exp->parent;
+      while( (unexec_exp->parent->expr != NULL) && (unexec_exp->parent->expr->line == unexec_exp->line) ) {
+        unexec_exp = unexec_exp->parent->expr;
       }
 
       code = codegen_gen_expr( unexec_exp, unexec_exp->line );
@@ -276,5 +276,10 @@ void line_report( FILE* ofile, bool verbose, bool instance ) {
 
 }
 
-/* $Log$ */
+/* $Log$
+/* Revision 1.7  2002/05/13 03:02:58  phase1geo
+/* Adding lines back to expressions and removing them from statements (since the line
+/* number range of an expression can be calculated by looking at the expression line
+/* numbers).
+/* */
 

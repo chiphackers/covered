@@ -175,60 +175,67 @@
 */
 
 /*!
+ Least-significant bit position of expression supplemental field indicating the
+ expression's operation type.  The type is 7-bits wide.
+*/
+#define SUPPL_LSB_OP                0
+
+/*!
+ Least-significant bit position of expression supplemental field indicating that this
+ expression is a root expression.  Traversing to the parent pointer will take you to
+ a statement type.
+*/
+#define SUPPL_LSB_ROOT              7
+
+/*!
  Least-significant bit position of expression supplemental field indicating that this
  expression is currently in the run-time queue.
 */
-#define SUPPL_LSB_IN_QUEUE          0
+#define SUPPL_LSB_IN_QUEUE          8
 
 /*!
  Least-significant bit position of expression supplemental field indicating that this
  expression has been executed in the queue during the lifetime of the simulation.
 */
-#define SUPPL_LSB_EXECUTED          1
+#define SUPPL_LSB_EXECUTED          9
 
 /*!
  Least-significant bit position of expression supplemental field indicating the
  statement which this expression belongs is a head statement (only valid for root
  expressions -- parent expression == NULL).
 */
-#define SUPPL_LSB_STMT_HEAD         2
+#define SUPPL_LSB_STMT_HEAD         10
 
 /*!
  Least-significant bit position of expression supplemental field indicating the
  statement which this expression belongs should write itself to the CDD and not
  continue to traverse its next_true and next_false pointers.
 */
-#define SUPPL_LSB_STMT_STOP         3
+#define SUPPL_LSB_STMT_STOP         11
 
 /*!
  Least-significant bit position of expression supplemental field indicating that this
  expression has evaluated to a value of FALSE during the lifetime of the simulation.
 */
-#define SUPPL_LSB_FALSE             4
+#define SUPPL_LSB_FALSE             12
 
 /*!
  Least-significant bit position of expression supplemental field indicating that this
  expression has evaluated to a value of TRUE during the lifetime of the simulation.
 */
-#define SUPPL_LSB_TRUE              5
+#define SUPPL_LSB_TRUE              13
 
 /*!
  Least-significant bit position of expression supplemental field indicating that this
  expression has its left child expression in a changed state during this timestamp.
 */
-#define SUPPL_LSB_LEFT_CHANGED      6
+#define SUPPL_LSB_LEFT_CHANGED      14
 
 /*!
  Least-significant bit position of expression supplemental field indicating that this
  expression has its right child expression in a changed state during this timestamp.
 */
-#define SUPPL_LSB_RIGHT_CHANGED     7
-
-/*!
- Least-significant bit position of expression supplemental field indicating the
- expression's operation type.
-*/
-#define SUPPL_LSB_OP                8
+#define SUPPL_LSB_RIGHT_CHANGED     15
 
 /*!
  Least-significant bit position of expression supplemental field for the LSB of the
@@ -244,8 +251,16 @@
  - EXECUTED
  - TRUE
  - FALSE
+ - STMT_STOP
 */
-#define SUPPL_MERGE_MASK            0x302
+#define SUPPL_MERGE_MASK            0x3a00
+
+/*!
+ Returns a value of 1 if the specified supplemental value has the ROOT bit
+ set indicating that the current expression is the root expression of its
+ expression tree.
+*/
+#define SUPPL_IS_ROOT(x)            ((x >> SUPPL_LSB_ROOT) & 0x1)
 
 /*!
  Returns a value of 1 if the specified supplemental value has the executed
@@ -511,6 +526,14 @@ typedef struct vector_s vector;
 
 //------------------------------------------------------------------------------
 /*!
+ Allows the parent pointer of an expression to point to either another expression
+ or a statement.
+*/
+union expr_stmt_u;
+
+typedef union expr_stmt_u expr_stmt;
+
+/*!
  An expression is defined to be a logical combination of signals/values.  Expressions may 
  contain subexpressions (which are expressions in and of themselves).  An measurable expression 
  may only evaluate to TRUE (1) or FALSE (0).  If the parent expression of this expression is 
@@ -529,7 +552,7 @@ struct expression_s {
   int         id;          /*!< Specifies unique ID for this expression in the parent          */
   int         line;        /*!< Specified line in file that this expression is found on        */
   signal*     sig;         /*!< Pointer to signal.  If NULL then no signal is attached         */
-  expression* parent;      /*!< Parent expression.  If NULL then this is the root expression   */
+  expr_stmt*  parent;      /*!< Parent expression/statement                                    */
   expression* right;       /*!< Pointer to expression on right                                 */
   expression* left;        /*!< Pointer to expression on left                                  */
 };
@@ -715,6 +738,13 @@ struct mod_inst_s {
   mod_inst*  child_head;    /*!< Pointer to head of child list              */
   mod_inst*  child_tail;    /*!< Pointer to tail of child list              */
   mod_inst*  next;          /*!< Pointer to next child in parents list      */
+};
+
+//-------------------------------------------------------------------------------
+
+union expr_stmt_u {
+  expression* expr;         /*!< Pointer to expression */
+  statement*  stmt;         /*!< Pointer to statement  */
 };
 
 

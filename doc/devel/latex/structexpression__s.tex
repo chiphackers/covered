@@ -15,7 +15,7 @@ int {\bf line}
 \item 
 {\bf signal} $\ast$ {\bf sig}
 \item 
-{\bf expression} $\ast$ {\bf parent}
+{\bf expr\_\-stmt} $\ast$ {\bf parent}
 \item 
 {\bf expression} $\ast$ {\bf right}
 \item 
@@ -41,10 +41,10 @@ Pointer to expression on left \index{expression_s@{expression\_\-s}!line@{line}}
 
 Specified line in file that this expression is found on \index{expression_s@{expression\_\-s}!parent@{parent}}
 \index{parent@{parent}!expression_s@{expression\_\-s}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf expression}$\ast$ expression\_\-s::parent}\label{structexpression__s_m5}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf expr\_\-stmt}$\ast$ expression\_\-s::parent}\label{structexpression__s_m5}
 
 
-Parent expression. If NULL then this is the root expression \index{expression_s@{expression\_\-s}!right@{right}}
+Parent expression/statement \index{expression_s@{expression\_\-s}!right@{right}}
 \index{right@{right}!expression_s@{expression\_\-s}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf expression}$\ast$ expression\_\-s::right}\label{structexpression__s_m6}
 

@@ -943,8 +943,7 @@ module_item
 
 	| K_assign drive_strength_opt delay3_opt assign_list ';'
 		{
-                  /* expression* exp = db_create_statement( */
-		  /* Create root expression */
+                  /* statement* stmt = db_create_statement( ??? ); */
 		}
 	| K_always statement
 		{

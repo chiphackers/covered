@@ -16,8 +16,8 @@
 
 
 /*!
- \param exp         Pointer to root expression of expression tree for this statement.
- 
+ \param exp   Pointer to root expression of expression tree for this statement.
+  
  \return Returns pointer to the newly created statement.
 
  Creates a new statement structure from heap memory and initializes it with the
@@ -27,10 +27,12 @@ statement* statement_create( expression* exp ) {
 
   statement* stmt;   /* Pointer to newly created statement */
 
-  stmt             = (statement*)malloc_safe( sizeof( statement ) );
-  stmt->exp        = exp;
-  stmt->next_true  = NULL;
-  stmt->next_false = NULL;
+  stmt                    = (statement*)malloc_safe( sizeof( statement ) );
+  stmt->exp               = exp;
+  stmt->exp->parent->stmt = stmt;
+  stmt->exp->suppl        = stmt->exp->suppl | (0x1 << SUPPL_LSB_ROOT);
+  stmt->next_true         = NULL;
+  stmt->next_false        = NULL;
 
   return( stmt );
 
@@ -238,6 +240,10 @@ void statement_dealloc( statement* stmt ) {
 
 
 /* $Log$
+/* Revision 1.4  2002/06/21 05:55:05  phase1geo
+/* Getting some codes ready for writing simulation engine.  We should be set
+/* now.
+/*
 /* Revision 1.3  2002/05/13 03:02:58  phase1geo
 /* Adding lines back to expressions and removing them from statements (since the line
 /* number range of an expression can be calculated by looking at the expression line

@@ -51,8 +51,6 @@ void {\bf db\_\-assign\_\-symbol} (char $\ast$name, char $\ast$symbol)
 \begin{CompactList}\small\item\em Finds specified signal and returns TRUE if found.\item\end{CompactList}\item 
 void {\bf db\_\-find\_\-set\_\-add\_\-signal} (char $\ast$symbol, {\bf vector} $\ast$vec)
 \begin{CompactList}\small\item\em Finds specified signal, sets the value and adds its expression to expression queue.\item\end{CompactList}\item 
-void {\bf db\_\-handle\_\-statement} ({\bf expression} $\ast$exp)
-\item 
 void {\bf db\_\-do\_\-timestep} (int time)
 \begin{CompactList}\small\item\em Performs a timestep for all signal changes during this timestep.\item\end{CompactList}\item 
 int {\bf db\_\-get\_\-signal\_\-size} (char $\ast$symbol)
@@ -237,7 +235,7 @@ exp}]Pointer to associated \char`\"{}root\char`\"{} expression.\end{description}
 Returns pointer to created statement.\end{Desc}
 Creates an statement structure and adds created statement to current module's statement list. \index{db.c@{db.c}!db_do_timestep@{db\_\-do\_\-timestep}}
 \index{db_do_timestep@{db\_\-do\_\-timestep}!db.c@{db.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-do\_\-timestep (int {\em time})}\label{db_8c_a31}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-do\_\-timestep (int {\em time})}\label{db_8c_a30}
 
 
 Performs a timestep for all signal changes during this timestep.
@@ -285,7 +283,7 @@ name}]String name of signal to find in current module.\end{description}
 Returns pointer to the found signal. If signal is not found, internal error.\end{Desc}
 Searches current module for signal matching the specified name. If the signal is found, returns a pointer to the calling function for that signal. \index{db.c@{db.c}!db_get_signal_size@{db\_\-get\_\-signal\_\-size}}
 \index{db_get_signal_size@{db\_\-get\_\-signal\_\-size}!db.c@{db.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int db\_\-get\_\-signal\_\-size (char $\ast$ {\em symbol})}\label{db_8c_a32}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int db\_\-get\_\-signal\_\-size (char $\ast$ {\em symbol})}\label{db_8c_a31}
 
 
 Returns width of signal for specified symbol.
@@ -299,18 +297,7 @@ symbol}]Symbol of signal to find.\end{description}
 \begin{Desc}
 \item[Returns: ]\par
 Returns signal width of specified symbol or 0 if signal is not found.\end{Desc}
-Searches symbol table for specified symbol. If the corresponding signal is valid, returns the width value of the signal to the calling function. \index{db.c@{db.c}!db_handle_statement@{db\_\-handle\_\-statement}}
-\index{db_handle_statement@{db\_\-handle\_\-statement}!db.c@{db.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-handle\_\-statement ({\bf expression} $\ast$ {\em exp})}\label{db_8c_a30}
-
-
-\begin{Desc}
-\item[Parameters: ]\par
-\begin{description}
-\item[{\em 
-exp}]Pointer to current expression to evaluate and traverse.\end{description}
-\end{Desc}
-Recursively searches through specified tree, following the path to changed expressions as specified by the LEFT\_\-CHANGED and RIGHT\_\-CHANGED bits. When an expression is found that does not have its LEFT\_\-CHANGED and RIGHT\_\-CHANGED bits set, we have found a leaf expression, so place this expression at the end of the expression queue. If the specified expression is a statement and no CHANGED bits are set, evaluate the value and add the next statement to the tail of the expression queue. This function is called by the db\_\-do\_\-timestep function. \index{db.c@{db.c}!db_read@{db\_\-read}}
+Searches symbol table for specified symbol. If the corresponding signal is valid, returns the width value of the signal to the calling function. \index{db.c@{db.c}!db_read@{db\_\-read}}
 \index{db_read@{db\_\-read}!db.c@{db.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} db\_\-read (char $\ast$ {\em file}, int {\em read\_\-mode})}\label{db_8c_a14}
 

@@ -202,10 +202,10 @@ void bind( int mode ) {
        Traverse parent link, if parent found to have width == 0, set it to the
        size of this signal.
       */
-      curr_parent = seb_head->exp->parent;
+      curr_parent = seb_head->exp->parent->expr;
       while( (curr_parent != NULL) && (curr_parent->value->width == 0) ) {
         expression_create_value( curr_parent, seb_head->exp->value->width, seb_head->exp->value->lsb );
-        curr_parent = curr_parent->parent;
+        curr_parent = curr_parent->parent->expr;
       }
 
     }

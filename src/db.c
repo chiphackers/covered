@@ -461,15 +461,15 @@ expression* db_create_expression( expression* right, expression* left, int op, i
   /* Set right and left side expression's (if they exist) parent pointer to this expression */
   if( right != NULL ) {
     if( (op != EXP_OP_COND_T) && (op != EXP_OP_COND_F) ) {
-      assert( right->parent == NULL );
-      right->parent = expr;
+      assert( right->parent->expr == NULL );
+      right->parent->expr = expr;
     }
   }
 
   if( left != NULL ) {
     if( (op != EXP_OP_COND_T) && (op != EXP_OP_COND_F) ) {
-      assert( left->parent == NULL );
-      left->parent = expr;
+      assert( left->parent->expr == NULL );
+      left->parent->expr = expr;
     }
   }
 
@@ -514,7 +514,7 @@ void db_add_expression( expression* root ) {
 }
 
 /*!
- \param exp         Pointer to associated "root" expression.
+ \param exp   Pointer to associated "root" expression.
 
  \return Returns pointer to created statement.
 
@@ -761,7 +761,7 @@ void db_find_set_add_signal( char* symbol, vector* vec ) {
            bits of parent expressions accordingly until we reach a root expression
            or statement expression.
           */
-	  curr_parent = curr_exp->exp->parent;
+	  curr_parent = curr_exp->exp->parent->expr;
           while( (curr_parent != NULL) && !changed_finished ) {
             if( (curr_parent->left != NULL) && (curr_parent->left->id == curr_exp->exp->id) ) {
               if( SUPPL_IS_LEFT_CHANGED( curr_parent->suppl ) ) {
@@ -779,7 +779,7 @@ void db_find_set_add_signal( char* symbol, vector* vec ) {
             if( SUPPL_OP( curr_parent->suppl ) == EXP_OP_STMT ) {
               changed_finished = TRUE;
             }
-            curr_parent = curr_parent->parent;
+            curr_parent = curr_parent->parent->expr;
           }
 
           /* 
@@ -800,59 +800,6 @@ void db_find_set_add_signal( char* symbol, vector* vec ) {
       }
 
     }
-
-  }
-
-}
-
-/*!
- \param exp  Pointer to current expression to evaluate and traverse.
-
- Recursively searches through specified tree, following the path to changed
- expressions as specified by the LEFT_CHANGED and RIGHT_CHANGED bits.  When
- an expression is found that does not have its LEFT_CHANGED and RIGHT_CHANGED
- bits set, we have found a leaf expression, so place this expression at the
- end of the expression queue.  If the specified expression is a statement
- and no CHANGED bits are set, evaluate the value and add the next statement
- to the tail of the expression queue. This function is called by the
- db_do_timestep function.
-*/
-void db_handle_statement( expression* exp ) {
-
-  bool changed = FALSE;   /* Specifies if this expression has changed */
-
-  if( SUPPL_OP( exp->suppl ) == EXP_OP_STMT ) {
-    
-    /* Check to see if associated expression has changed */
-    assert( exp->parent != NULL );
-
-    if( (SUPPL_IS_LEFT_CHANGED( exp->parent->suppl )  == 1) ||
-        (SUPPL_IS_RIGHT_CHANGED( exp->parent->suppl ) == 1) ) {
-      db_handle_statement( exp->parent );
-    }
-
-    /* Place next statement into the expression queue. */
-    if( exp->parent->value->value[0] == 1 ) {
-      exp_link_add( exp->right, &exp_queue_head, &exp_queue_tail );
-    } else {
-      exp_link_add( exp->left, &exp_queue_head, &exp_queue_tail );
-    }
-
-  } else {
-
-    /* If left expression has changed, handle it. */
-    if( SUPPL_IS_LEFT_CHANGED( exp->suppl ) == 1 ) {
-      db_handle_statement( exp->left );
-    }
-
-    /* If right expression has changed, handle it. */
-    if( SUPPL_IS_RIGHT_CHANGED( exp->suppl ) == 1 ) {
-      db_handle_statement( exp->right );
-    }
-
-    /* Now place this expression in the queue */
-    exp->suppl = exp->suppl | (0x1 << SUPPL_LSB_IN_QUEUE);
-    exp_link_add( exp, &exp_queue_head, &exp_queue_tail );
 
   }
 
@@ -880,9 +827,11 @@ void db_do_timestep( int time ) {
 
     assert( exp_queue_head->exp != NULL );
 
+/*
     if( SUPPL_OP( exp_queue_head->exp->suppl ) == EXP_OP_STMT ) {
       db_handle_statement( exp_queue_head->exp );
     }
+*/
  
     /* Perform expression operation */
     printf( "Expression address: 0x%lx\n", exp_queue_head->exp );
@@ -896,10 +845,10 @@ void db_do_timestep( int time ) {
     exp_queue_head->exp->suppl = exp_queue_head->exp->suppl | (0x1 << SUPPL_LSB_EXECUTED);
 
     /* If there is a parent, place parent expression in expression queue. */
-    if( (exp_queue_head->exp->parent != NULL) && 
-        ((exp_queue_head->exp->parent->suppl & (0x1 << SUPPL_LSB_IN_QUEUE)) == 0) ) {
-      exp_queue_head->exp->parent->suppl = exp_queue_head->exp->parent->suppl | (0x1 << SUPPL_LSB_IN_QUEUE);
-      exp_link_add( exp_queue_head->exp->parent, &(exp_queue_head), &(exp_queue_tail) );
+    if( (exp_queue_head->exp->parent->expr != NULL) && 
+        ((exp_queue_head->exp->parent->expr->suppl & (0x1 << SUPPL_LSB_IN_QUEUE)) == 0) ) {
+      exp_queue_head->exp->parent->expr->suppl = exp_queue_head->exp->parent->expr->suppl | (0x1 << SUPPL_LSB_IN_QUEUE);
+      exp_link_add( exp_queue_head->exp->parent->expr, &(exp_queue_head), &(exp_queue_tail) );
     }
 
     /* Move head pointer in expression queue. */
@@ -946,6 +895,11 @@ int db_get_signal_size( char* symbol ) {
 
 
 /* $Log$
+/* Revision 1.10  2002/05/13 03:02:58  phase1geo
+/* Adding lines back to expressions and removing them from statements (since the line
+/* number range of an expression can be calculated by looking at the expression line
+/* numbers).
+/*
 /* Revision 1.9  2002/05/03 03:39:36  phase1geo
 /* Removing all syntax errors due to addition of statements.  Added more statement
 /* support code.  Still have a ways to go before we can try anything.  Removed lines

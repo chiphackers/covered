@@ -21,7 +21,9 @@
  in the VCD file, the expressions to which it is a part of the RHS are looked up
  in the design tree.  The expression tree is then parsed from the expression to
  the root, setting the LEFT_SIDE_CHANGED or RIGHT_SIDE_CHANGED as it makes its
- way to the root.
+ way to the root.  When at the root expression, the STMT_HEAD bit is interrogated.
+ If this bit is a 1, the expression's statement is loaded into the pre-simulation
+ statement queue.  If the bit is a 0, no further action is taken.
 
  \par
  Once the timestep marker has been set, the simulate function is called.  All

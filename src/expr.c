@@ -64,14 +64,15 @@ expression* expression_create( expression* right, expression* left, int op, int 
 
   new_expr = (expression*)malloc_safe( sizeof( expression ) );
 
-  new_expr->suppl  = ((op & 0xff) << SUPPL_LSB_OP);
-  new_expr->id     = id;
-  new_expr->line   = line;
-  new_expr->sig    = NULL;
-  new_expr->parent = NULL;
-  new_expr->right  = right;
-  new_expr->left   = left;
-  new_expr->value  = (vector*)malloc_safe( sizeof( vector ) );
+  new_expr->suppl        = ((op & 0xff) << SUPPL_LSB_OP);
+  new_expr->id           = id;
+  new_expr->line         = line;
+  new_expr->sig          = NULL;
+  new_expr->parent       = (expr_stmt*)malloc_safe( sizeof( expr_stmt ) );
+  new_expr->parent->expr = NULL;
+  new_expr->right        = right;
+  new_expr->left         = left;
+  new_expr->value        = (vector*)malloc_safe( sizeof( vector ) );
 
   if( right != NULL ) {
 
@@ -304,11 +305,11 @@ bool expression_db_read( char** line, module* curr_mod ) {
       expr->suppl = suppl;
 
       if( right != NULL ) {
-        right->parent = expr;
+        right->parent->expr = expr;
       }
 
       if( left != NULL ) {
-        left->parent = expr;
+        left->parent->expr = expr;
       }
 
       if( (SUPPL_OP( suppl ) != EXP_OP_SIG) && 
@@ -685,6 +686,8 @@ void expression_dealloc( expression* expr, bool exp_only ) {
  
     }
 
+    free_safe( expr->parent );
+
     if( !exp_only ) {
 
       expression_dealloc( expr->right, FALSE );
@@ -704,6 +707,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.8  2002/06/21 05:55:05  phase1geo
+/* Getting some codes ready for writing simulation engine.  We should be set
+/* now.
+/*
 /* Revision 1.7  2002/05/13 03:02:58  phase1geo
 /* Adding lines back to expressions and removing them from statements (since the line
 /* number range of an expression can be calculated by looking at the expression line

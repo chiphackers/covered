@@ -212,10 +212,10 @@ bool signal_db_read( char** line, module* curr_mod ) {
             }
 
             /* Traverse parent links, setting its width if it is set to 0. */
-            curr_parent = expl->exp->parent;
+            curr_parent = expl->exp->parent->expr;
             while( (curr_parent != NULL) && (curr_parent->value->width == 0) ) {
               expression_create_value( curr_parent, sig->value->width, sig->value->lsb );
-              curr_parent = curr_parent->parent;
+              curr_parent = curr_parent->parent->expr;
             }
 
           }
