@@ -26,7 +26,7 @@ int expression_get_id( expression* expr );
 void expression_db_write( expression* expr, FILE* file, char* scope );
 
 //! Reads current line of specified file and parses for expression information.
-bool expression_db_read( char** line, module* curr_mod );
+bool expression_db_read( char** line, module* curr_mod, bool eval );
 
 //! Reads and merges two expressions and stores result in base expression.
 bool expression_db_merge( expression* base, char** line );
@@ -45,6 +45,11 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 
 /* $Log$
+/* Revision 1.9  2002/08/19 04:34:07  phase1geo
+/* Fixing bug in database reading code that dealt with merging modules.  Module
+/* merging is now performed in a more optimal way.  Full regression passes and
+/* own examples pass as well.
+/*
 /* Revision 1.8  2002/07/10 03:01:50  phase1geo
 /* Added define1.v and define2.v diagnostics to regression suite.  Both diagnostics
 /* now pass.  Fixed cases where constants were not causing proper TRUE/FALSE values

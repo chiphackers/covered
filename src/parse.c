@@ -95,7 +95,7 @@ bool parse_design( char* top, char* output_db ) {
   }
 
   /* Write contents to baseline database file. */
-  if( !db_write( output_db ) ) {
+  if( !db_write( output_db, TRUE ) ) {
     print_output( "Unable to write database file", FATAL );
     exit( 1 );
   }
@@ -147,7 +147,7 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
   print_output( msg, DEBUG );
 
   /* Write contents to database file */
-  if( !db_write( db ) ) {
+  if( !db_write( db, FALSE ) ) {
     print_output( "Unable to write database file", FATAL );
     exit( 1 );
   }
@@ -157,6 +157,11 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
 }
 
 /* $Log$
+/* Revision 1.10  2002/08/19 04:34:07  phase1geo
+/* Fixing bug in database reading code that dealt with merging modules.  Module
+/* merging is now performed in a more optimal way.  Full regression passes and
+/* own examples pass as well.
+/*
 /* Revision 1.9  2002/07/22 05:24:46  phase1geo
 /* Creating new VCD parser.  This should have performance benefits as well as
 /* have the ability to handle any problems that come up in parsing.

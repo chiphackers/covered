@@ -288,7 +288,7 @@ void sim_simulate() {
 
     } else {
 
-      curr_stmt       = curr_stmt->next;
+      curr_stmt = curr_stmt->next;
 
     }
 
@@ -297,6 +297,10 @@ void sim_simulate() {
 }
 
 /* $Log$
+/* Revision 1.20  2002/07/14 05:10:42  phase1geo
+/* Added support for signal concatenation in score and report commands.  Fixed
+/* bugs in this code (and multiplication).
+/*
 /* Revision 1.19  2002/07/10 03:01:50  phase1geo
 /* Added define1.v and define2.v diagnostics to regression suite.  Both diagnostics
 /* now pass.  Fixed cases where constants were not causing proper TRUE/FALSE values

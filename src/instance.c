@@ -12,6 +12,7 @@
 #include "instance.h"
 #include "module.h"
 #include "util.h"
+#include "param.h"
 
 
 /*!
@@ -33,6 +34,10 @@ mod_inst* instance_create( module* mod, char* inst_name ) {
   new_inst->stat       = NULL;
   new_inst->param_head = NULL;
   new_inst->param_tail = NULL;
+  new_inst->psig_head  = NULL;
+  new_inst->psig_tail  = NULL;
+  new_inst->pexp_head  = NULL;
+  new_inst->pexp_tail  = NULL;
   new_inst->child_head = NULL;
   new_inst->child_tail = NULL;
   new_inst->next       = NULL;
@@ -238,32 +243,91 @@ void instance_read_add( mod_inst** root, char* parent, module* child, char* inst
 
 }
 
+void instance_calc_params( mod_inst* inst ) {
+
+    
+
+}
+
 /*!
- \param root   Root of module instance tree to write.
- \param file   Output file to display contents to.
- \param scope  Scope of this module.
+ \param inst  Pointer to instance to generate parameters for.
+
+ Iterates through entire instance parameter list, calling the param_generate
+ routine for each parameter in this list.
+*/
+void instance_param_generate( mod_inst* inst ) {
+
+  parameter* parm;    /* Pointer to current parameter in list */
+
+  assert( inst != NULL );
+
+  parm = inst->param_head;
+
+  while( parm != NULL ) {
+    param_generate( parm );
+    parm = parm->next;
+  }
+
+}
+
+/*!
+ \param inst  Pointer to instance to destroy parameters for.
+
+ Iterates through entire instance parameter list, calling the param_destroy
+ routine for each parameter in this list.
+*/
+void instance_param_destroy( mod_inst* inst ) {
+
+  parameter* parm;    /* Pointer to current parameter in list */
+
+  assert( inst != NULL );
+
+  parm = inst->param_head;
+
+  while( parm != NULL ) {
+    param_destroy( parm );
+    parm = parm->next;
+  }
+
+}
+
+/*!
+ \param root        Root of module instance tree to write.
+ \param file        Output file to display contents to.
+ \param scope       Scope of this module.
+ \param parse_mode  Specifies if we are parsing or scoring.
 
  Calls each module display function in instance tree, starting with
  the root module and ending when all of the leaf modules are output.
  Note:  the function that calls this function originally should set
  the value of scope to NULL.
 */
-void instance_db_write( mod_inst* root, FILE* file, char* scope ) {
+void instance_db_write( mod_inst* root, FILE* file, char* scope, bool parse_mode ) {
 
   char      full_scope[4096];  /* Full scope of module to write            */
   mod_inst* curr;              /* Pointer to current child module instance */
 
   assert( scope != NULL );
 
+  /* Handle parameters at this time */
+  if( parse_mode ) {
+    instance_calc_params( root );
+    instance_param_generate( root );
+  }
+
   /* Display root module */
   module_db_write( root->mod, scope, file );
+
+  if( parse_mode ) {
+    instance_param_destroy( root );
+  }
 
   /* Display children */
   curr = root->child_head;
   while( curr != NULL ) {
     assert( (strlen( scope ) + strlen( curr->name ) + 1) <= 4096 );
     snprintf( full_scope, 4096, "%s.%s", scope, curr->name );
-    instance_db_write( curr, file, full_scope );
+    instance_db_write( curr, file, full_scope, parse_mode );
     curr = curr->next;
   }
 
@@ -369,6 +433,11 @@ void instance_dealloc( mod_inst* root, char* scope ) {
 }
 
 /* $Log$
+/* Revision 1.11  2002/09/06 03:05:28  phase1geo
+/* Some ideas about handling parameters have been added to these files.  Added
+/* "Special Thanks" section in User's Guide for acknowledgements to people
+/* helping in project.
+/*
 /* Revision 1.10  2002/08/19 04:34:07  phase1geo
 /* Fixing bug in database reading code that dealt with merging modules.  Module
 /* merging is now performed in a more optimal way.  Full regression passes and

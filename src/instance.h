@@ -22,12 +22,16 @@ void instance_parse_add( mod_inst** root, module* parent, module* child, char* i
 void instance_read_add( mod_inst** root, char* parent, module* child, char* inst_name );
 
 //! Displays contents of module instance tree to specified file.
-void instance_db_write( mod_inst* root, FILE* file, char* scope );
+void instance_db_write( mod_inst* root, FILE* file, char* scope, bool parse_mode );
 
 //! Removes specified instance from tree.
 void instance_dealloc( mod_inst* root, char* scope );
 
 /* $Log$
+/* Revision 1.4  2002/07/18 05:50:45  phase1geo
+/* Fixes should be just about complete for instance depth problems now.  Diagnostics
+/* to help verify instance handling are added to regression.  Full regression passes.
+/*
 /* Revision 1.3  2002/07/18 02:33:24  phase1geo
 /* Fixed instantiation addition.  Multiple hierarchy instantiation trees should
 /* now work.

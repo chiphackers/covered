@@ -64,7 +64,8 @@ int       curr_expr_id  = 1;
 int       curr_sim_time = 0;
 
 /*!
- \param file  Name of database file to output contents to.
+ \param file        Name of database file to output contents to.
+ \param parse_mode  Specifies if we are outputting parse data or score data.
 
  \return Returns TRUE if database write was successful; otherwise, returns FALSE.
 
@@ -73,7 +74,7 @@ int       curr_sim_time = 0;
  to the database file.  If database write successful, returns TRUE; otherwise,
  returns FALSE to the calling function.
 */
-bool db_write( char* file ) {
+bool db_write( char* file, bool parse_mode ) {
 
   bool         retval = TRUE;  /* Return value for this function         */
   FILE*        db_handle;      /* Pointer to database file being written */
@@ -85,7 +86,7 @@ bool db_write( char* file ) {
 
     /* Iterate through instance tree */
     assert( instance_root != NULL );
-    instance_db_write( instance_root, db_handle, instance_root->name );
+    instance_db_write( instance_root, db_handle, instance_root->name, parse_mode );
     fclose( db_handle );
 
   } else {
@@ -170,7 +171,7 @@ bool db_read( char* file, int read_mode ) {
           assert( !merge_mode );
 
           /* Parse rest of line for expression info */
-          retval = expression_db_read( &rest_line, curr_module );
+          retval = expression_db_read( &rest_line, curr_module, (read_mode == READ_MODE_MERGE_NO_MERGE) );
 
         } else if( type == DB_TYPE_STATEMENT ) {
 
@@ -431,9 +432,11 @@ void db_add_parameter( char* name, expression* expr ) {
   snprintf( msg, 4096, "In db_add_parameter, param: %s\n", name );
   print_output( msg, DEBUG );
 
+/*
   if( param_find( name, curr_module->param_head ) == NULL ) {
     param_add( name, expr, curr_module );
   }
+*/
 
 }
 
@@ -546,10 +549,10 @@ expression* db_create_expression( expression* right, expression* left, int op, i
 
     /* If signal is located in this current module, bind now; else, bind later. */
     if( scope_local( sig_name ) ) {
-      if( param_find( sig_name, curr_module->param_head ) == NULL ) {
+//      if( param_find( sig_name, curr_module->param_head ) == NULL ) {
         /* Name is not a parameter so set it up to bind */
         bind_perform( sig_name, expr, curr_module, TRUE );
-      }
+//      }
     } else {
       bind_add( sig_name, expr, curr_module->name );
     }
@@ -1000,6 +1003,11 @@ void db_do_timestep( int time ) {
 }
 
 /* $Log$
+/* Revision 1.54  2002/09/06 03:05:27  phase1geo
+/* Some ideas about handling parameters have been added to these files.  Added
+/* "Special Thanks" section in User's Guide for acknowledgements to people
+/* helping in project.
+/*
 /* Revision 1.53  2002/08/26 12:57:03  phase1geo
 /* In the middle of adding parameter support.  Intermediate checkin but does
 /* not break regressions at this point.

@@ -23,8 +23,17 @@ void param_add( char* name, expression* expr, module* mod );
 //! Adds parameter override to defparam list.
 void param_add_defparam( char* scope, vector* expr );
 
+//! Generates all instance parameters for specified instance/module.
+void param_generate( parameter* parm );
+
+//! Undos the steps performed in the param_generate routine to restore module.
+void param_destroy( parameter* parm );
 
 /* $Log$
+/* Revision 1.2  2002/08/26 12:57:04  phase1geo
+/* In the middle of adding parameter support.  Intermediate checkin but does
+/* not break regressions at this point.
+/*
 /* Revision 1.1  2002/08/23 12:55:33  phase1geo
 /* Starting to make modifications for parameter support.  Added parameter source
 /* and header files, changed vector_from_string function to be more verbose

@@ -270,7 +270,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
       } else {
         *ptr = '\0';
         ptr++;
-        param_add_defparam( argv[i], vector_from_string( ptr ) );
+        // param_add_defparam( argv[i], vector_from_string( ptr ) );
       }
         
     } else {
@@ -350,6 +350,9 @@ int command_score( int argc, int last_arg, char** argv ) {
 }
 
 /* $Log$
+/* Revision 1.20  2002/08/26 21:31:22  phase1geo
+/* Updating score help output to reflect previous changes to score command.
+/*
 /* Revision 1.19  2002/08/23 12:55:33  phase1geo
 /* Starting to make modifications for parameter support.  Added parameter source
 /* and header files, changed vector_from_string function to be more verbose

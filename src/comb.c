@@ -85,7 +85,11 @@ void combination_get_tree_stats( expression* exp, unsigned int curr_depth, float
       /* Calculate current expression combination coverage */
       if( EXPR_IS_MEASURABLE( exp ) == 1 ) {
         *total = *total + 2;
-        *hit   = *hit + SUPPL_WAS_TRUE( exp->suppl ) + SUPPL_WAS_FALSE( exp->suppl );
+        if( EXPR_EVAL_STATIC( exp ) == 1 ) {
+          *hit = *hit + 2;
+        } else {
+          *hit   = *hit + SUPPL_WAS_TRUE( exp->suppl ) + SUPPL_WAS_FALSE( exp->suppl );
+        }
       }
 
     }
@@ -895,6 +899,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 
 /* $Log$
+/* Revision 1.42  2002/09/13 05:12:25  phase1geo
+/* Adding final touches to -d option to report.  Adding documentation and
+/* updating development documentation to stay in sync.
+/*
 /* Revision 1.41  2002/09/12 05:16:25  phase1geo
 /* Updating all CDD files in regression suite due to change in vector handling.
 /* Modified vectors to assign a default value of 0xaa to unassigned registers

@@ -244,7 +244,59 @@ void param_add_defparam( char* scope, vector* value ) {
 
 }
 
+void param_generate_sig( parameter* parm ) {
+
+  sig_sig* curr_sig;     /* Pointer to current sig_sig to process */
+
+#ifdef SKIP
+  curr_sig = parm->sig_head;
+
+  while( sig_sig != NULL ) {
+
+    /* Create new signal based on     
+    /*
+     Iterate through current original signal's expression list, changing
+     expression signal pointers to point to this signal.
+    */
+
+    /* Create copy of original signal */
+    curr_sig->new_sig = signal_copy( curr_sig->orig_sig );
+
+    curr_sig = curr_sig->next;
+
+  }
+#endif
+
+}
+
+/*!
+ \param parm  Pointer to current parameter to handle.
+
+*/
+void param_generate( parameter* parm ) {
+
+  signal*     curr_sig;   /* Pointer to current signal in parameter     */
+  expression* curr_exp;   /* Pointer to current expression in parameter */
+
+  
+}
+
+/*!
+ \param parm  Pointer to current parameter to destroy.
+
+*/
+void param_destroy( parameter* parm ) {
+
+}
+
 /* $Log$
+/* Revision 1.5  2002/09/12 05:16:25  phase1geo
+/* Updating all CDD files in regression suite due to change in vector handling.
+/* Modified vectors to assign a default value of 0xaa to unassigned registers
+/* to eliminate bugs where values never assigned and VCD file doesn't contain
+/* information for these.  Added initial working version of depth feature in
+/* report generation.  Updates to man page and parameter documentation.
+/*
 /* Revision 1.4  2002/09/06 03:05:28  phase1geo
 /* Some ideas about handling parameters have been added to these files.  Added
 /* "Special Thanks" section in User's Guide for acknowledgements to people

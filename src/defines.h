@@ -487,10 +487,30 @@
                                      (SUPPL_OP( x->suppl ) != EXP_OP_DELAY)) ? 1 : 0)
 
 /*!
+ Returns a value of TRUE if the specified expression should be immediately evaluated after
+ being read from the CDD file due to containing only static values.
+*/
+#define EXPR_EVAL_STATIC(x)      (((((x->left != NULL) && (SUPPL_OP( x->left->suppl ) == EXP_OP_STATIC))            || \
+                                    ((x->left != NULL) && (SUPPL_WAS_EXECUTED( x->left->suppl ) == 1))  || \
+                                    (x->left == NULL))                                                                && \
+                                   (((x->right != NULL) && (SUPPL_OP( x->right->suppl ) == EXP_OP_STATIC))          || \
+                                    ((x->right != NULL) && (SUPPL_WAS_EXECUTED( x->right->suppl ) == 1)) || \
+                                    (x->right == NULL))                                                               && \
+                                   (SUPPL_OP( x->suppl ) != EXP_OP_COND_SEL) && \
+                                   (SUPPL_OP( x->suppl ) != EXP_OP_SBIT_SEL) && \                                   (SUPPL_OP( x->suppl ) != EXP_OP_MBIT_SEL) && \
+                                   (SUPPL_OP( x->suppl ) != EXP_OP_STATIC)   && \
+                                   (SUPPL_OP( x->suppl ) != EXP_OP_SIG)      && \
+                                   (SUPPL_OP( x->suppl ) != EXP_OP_LAST)     && \
+                                   (SUPPL_OP( x->suppl ) != EXP_OP_DEFAULT)  && \
+                                   (SUPPL_OP( x->suppl ) != EXP_OP_DELAY)) ? 1 : 0)
+
+/*!
  Returns a value of 1 if the specified expression was measurable for combinational 
  coverage but not fully covered during simulation.
 */
-#define EXPR_COMB_MISSED(x)        (EXPR_IS_MEASURABLE(x) & (~SUPPL_WAS_TRUE(x->suppl) | ~SUPPL_WAS_FALSE(x->suppl)))
+#define EXPR_COMB_MISSED(x)        (EXPR_IS_MEASURABLE( x ) & \
+                                    ~EXPR_EVAL_STATIC( x ) & \
+                                    (~SUPPL_WAS_TRUE( x->suppl ) | ~SUPPL_WAS_FALSE( x->suppl )))
 
 /*!
  \addtogroup op_tables
@@ -756,6 +776,34 @@ struct statistic_s {
 
 //------------------------------------------------------------------------------
 /*!
+ Structure containing two signal pointers used by parameters.
+*/
+struct sig_sig_s;
+
+typedef struct sig_sig_s sig_sig;
+
+struct sig_sig_s {
+  signal*  new_sig;   /*!< Pointer to newly created signal */
+  signal*  old_sig;   /*!< Pointer to original signal      */
+  sig_sig* next;      /*!< Pointer to next sig_sig in list */
+};
+
+//------------------------------------------------------------------------------
+/*!
+ Structure containing two expression pointers used by parameters.
+*/
+struct exp_exp_s;
+
+typedef struct exp_exp_s exp_exp;
+
+struct exp_exp_s {
+  expression* new_exp;  /*!< Pointer to newly created expression */
+  expression* old_exp;  /*!< Pointer to original expression      */
+  exp_exp*    next;     /*!< Pointer to next exp_exp in list     */
+};
+
+//------------------------------------------------------------------------------
+/*!
  Structure containing parts for parameter definition.
 */
 struct parameter_s;
@@ -763,9 +811,9 @@ struct parameter_s;
 typedef struct parameter_s parameter;
 
 struct parameter_s {
-  char*       name;  /*! Full hierarchical name of associated parameter */
-  expression* expr;  /*! Expression tree containing value of parameter  */
-  parameter*  next;  /*! Pointer to next parameter in list              */
+  char*       name;      /*!< Full hierarchical name of associated parameter */
+  expression* expr;      /*!< Expression tree containing value of parameter  */
+  parameter*  next;      /*!< Pointer to next parameter in list              */
 };
 
 //------------------------------------------------------------------------------
@@ -874,6 +922,10 @@ struct mod_inst_s {
   statistic* stat;          /*!< Pointer to statistic holder                                */
   parameter* param_head;    /*!< Head pointer to list of parameter overrides in this module */
   parameter* param_tail;    /*!< Tail pointer to list of parameter overrides in this module */
+  sig_sig*   psig_head;     /*!< Head pointer to parameter signal list                      */
+  sig_sig*   psig_tail;     /*!< Tail pointer to parameter signal list                      */
+  exp_exp*   pexp_head;     /*!< Head pointer to parameter expression list                  */
+  exp_exp*   pexp_tail;     /*!< Tail pointer to parameter expression list                  */
   mod_inst*  child_head;    /*!< Pointer to head of child list                              */
   mod_inst*  child_tail;    /*!< Pointer to tail of child list                              */
   mod_inst*  next;          /*!< Pointer to next child in parents list                      */
@@ -888,6 +940,10 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.42  2002/09/13 05:12:25  phase1geo
+/* Adding final touches to -d option to report.  Adding documentation and
+/* updating development documentation to stay in sync.
+/*
 /* Revision 1.41  2002/09/06 03:05:28  phase1geo
 /* Some ideas about handling parameters have been added to these files.  Added
 /* "Special Thanks" section in User's Guide for acknowledgements to people
