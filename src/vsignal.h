@@ -40,6 +40,9 @@ int vsignal_get_wait_bit( vsignal* sig );
 /*! \brief Sets vector value assigned bits and returns overlapping indicator. */
 bool vsignal_set_assigned( vsignal* sig, int msb, int lsb );
 
+/*! \brief Propagates specified signal information to rest of design. */
+void vsignal_propagate( vsignal* sig );
+
 /*! \brief Assigns specified VCD value to specified vsignal. */
 void vsignal_vcd_assign( vsignal* sig, char* value, int msb, int lsb );
 
@@ -58,6 +61,10 @@ void vsignal_dealloc( vsignal* sig );
 
 /*
  $Log$
+ Revision 1.3  2005/01/10 02:59:30  phase1geo
+ Code added for race condition checking that checks for signals being assigned
+ in multiple statements.  Working on handling bit selects -- this is in progress.
+
  Revision 1.2  2004/04/05 12:30:52  phase1geo
  Adding *db_replace functions to allow a design to be opened with new CDD
  results (for GUI purposes only).

@@ -40,11 +40,17 @@
  immediately.  In the case of MBIT_SEL, the LSB is also constant.  Vector direction
  is currently not considered at this point.
 
- \par EXP_OP_ASSIGN, EXP_OP_BASSIGN, EXP_OP_NASSIGN, EXP_OP_IF
+ \par EXP_OP_ASSIGN, EXP_OP_NASSIGN, EXP_OP_IF
  All of these expressions are assignment operators that are in assign statements,
- behavioral blocking assignments, and behavioral non-blocking assignments, respectively.
+ behavioral non-blocking assignments, and if expressions, respectively.
  These expressions do not have an operation to perform because their vector value pointers
  point to the vector value on the right-hand side of the assignment operator.
+
+ \par EXP_OP_BASSIGN
+ The blocking assignment operator differs from the assignment operators mentioned above in that
+ Covered will perform the assignment for a blocking assignment expression.  This allows us to
+ expand the amount of code that can be covered by allowing several "zero-time" assignments to
+ occur while maintaining accurate coverage information.
 */
 
 #include <stdio.h>
@@ -1495,8 +1501,7 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
     switch( lhs->op ) {
       case EXP_OP_SIG      :
         vector_set_value( lhs->value, rhs->value->value, lhs->value->width, *lsb, 0 );
-        vector_display( rhs->value );
-	vector_display( lhs->value );
+	vsignal_propagate( lhs );
         *lsb = *lsb + lhs->value->width;
         break;
       case EXP_OP_SBIT_SEL :
@@ -1507,10 +1512,12 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
           lhs->value->value = lhs->sig->value->value + intval1;
         }
         vector_set_value( lhs->value, rhs->value->value, 1, *lsb, 0 );
+	vsignal_propagate( lhs );
         *lsb = *lsb + lhs->value->width;
         break;
       case EXP_OP_MBIT_SEL :
         vector_set_value( lhs->value, rhs->value->value, lhs->value->width, *lsb, 0 );
+	vsignal_propagate( lhs );
         *lsb = *lsb + lhs->value->width;
         break;
       case EXP_OP_CONCAT   :
@@ -1596,6 +1603,13 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.113  2005/02/11 22:50:33  phase1geo
+ Fixing bug with removing statement blocks that contain statements that cannot
+ currently be handled by Covered correctly.  There was a problem when the bad statement
+ was the last statement in the statement block.  Updated regression accordingly.
+ Added race condition diagnostics that currently are not in regression due to lack
+ of code support for them.  Ifdef'ed out the BASSIGN stuff for this checkin.
+
  Revision 1.112  2005/02/09 14:12:22  phase1geo
  More code for supporting expression assignments.
 

@@ -363,6 +363,32 @@ bool vsignal_set_assigned( vsignal* sig, int msb, int lsb ) {
 }
 
 /*!
+ \param sig  Pointer to signal to propagate change information from.
+
+  When the specified signal in the parameter list has changed values, this function
+  is called to propagate the value change to the simulator to cause any statements
+  waiting on this value change to be resimulated.
+*/
+void vsignal_propagate( vsignal* sig ) {
+
+  exp_link* curr_expr;  /* Pointer to current expression in signal list */
+
+  /* Iterate through vsignal's expression list */
+  curr_expr = sig->exp_head;
+  while( curr_expr != NULL ) {
+
+    /* Add to simulation queue if expression is a RHS */
+    if( ESUPPL_IS_LHS( curr_expr->exp->suppl ) == 0 ) {
+      sim_expr_changed( curr_expr->exp );
+    }
+
+    curr_expr = curr_expr->next;
+
+  }
+
+}
+
+/*!
  \param sig    Pointer to vsignal to assign VCD value to.
  \param value  String version of VCD value.
  \param msb    Most significant bit to assign to.
@@ -392,18 +418,8 @@ void vsignal_vcd_assign( vsignal* sig, char* value, int msb, int lsb ) {
   /* Don't go through the hassle of updating expressions if value hasn't changed */
   if( vec_changed ) {
 
-    /* Iterate through vsignal's expression list */
-    curr_expr = sig->exp_head;
-    while( curr_expr != NULL ) {
-
-      /* Add to simulation queue if expression is a RHS */
-      if( ESUPPL_IS_LHS( curr_expr->exp->suppl ) == 0 ) {
-        sim_expr_changed( curr_expr->exp );
-      }
-
-      curr_expr = curr_expr->next;
-
-    }
+    /* Propagate signal changes to rest of design */
+    vsignal_propagate( sig );
 
   } 
 
@@ -514,6 +530,10 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.6  2005/01/10 02:59:30  phase1geo
+ Code added for race condition checking that checks for signals being assigned
+ in multiple statements.  Working on handling bit selects -- this is in progress.
+
  Revision 1.5  2005/01/07 17:59:52  phase1geo
  Finalized updates for supplemental field changes.  Everything compiles and links
  correctly at this time; however, a regression run has not confirmed the changes.
