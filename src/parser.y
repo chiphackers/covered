@@ -17,13 +17,13 @@
 #include "link.h"
 #include "parser_misc.h"
 
-char err_msg[1000];
+char err_msg[4096];
 
 int ignore_mode = 0;
 
 /* Uncomment these lines to turn debugging on */
 //#define YYDEBUG 1
-//#define YYERROR_VERBOSE 1
+#define YYERROR_VERBOSE 1
 //int yydebug = 1;
 %}
 
@@ -372,6 +372,14 @@ static_expr_primary
 		  vector_dealloc( $1 );
 		}
         | UNUSED_NUMBER
+                {
+                  $$ = 0;
+                }
+        | IDENTIFIER
+                {
+                  $$ = 0;
+                }
+        | UNUSED_IDENTIFIER
                 {
                   $$ = 0;
                 }
@@ -2121,24 +2129,31 @@ assign_list
 assign
 	: lavalue '=' expression
 		{
-                  statement* stmt = db_create_statement( $3 );
+                  statement* stmt;
 
-                  /* Set STMT_HEAD bit */
-                  stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
+                  if( $3 != NULL ) {
 
-                  /* Set STMT_STOP bit */
-                  stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);
+                    stmt = db_create_statement( $3 );
 
-                  /* Set STMT_CONTINUOUS bit */
-                  stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_CONTINUOUS);
+                    /* Set STMT_HEAD bit */
+                    stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
 
-                  /* Statement will be looped back to itself */
-                  db_connect_statement_true( stmt, stmt );
-                  db_connect_statement_false( stmt, stmt );
-		  db_add_expression( $3 );
+                    /* Set STMT_STOP bit */
+                    stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);
+
+                    /* Set STMT_CONTINUOUS bit */
+                    stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_CONTINUOUS);
+
+                    /* Statement will be looped back to itself */
+                    db_connect_statement_true( stmt, stmt );
+                    db_connect_statement_false( stmt, stmt );
+		    db_add_expression( $3 );
             
-                  /* Now add statement to current module */
-                  db_add_statement( stmt );
+                    /* Now add statement to current module */
+                    db_add_statement( stmt );
+
+                  }
+
 		}
 	;
 
@@ -2174,6 +2189,16 @@ range
 		      tmp->width = $4 - $2;
 		      tmp->lsb   = $2;
 		    }
+                    if( tmp->lsb < 0 ) {
+                      snprintf( err_msg, 4096, "Range LSB is less than 0, file: %s, line: %d", @1.text, @1.first_line );
+                      print_output( err_msg, FATAL );
+                      exit( 1 );
+                    }
+                    if( tmp->width < 0 ) {
+                      snprintf( err_msg, 4096, "Range width is less than 0, file: %s, line: %d", @1.text, @1.first_line );
+                      print_output( err_msg, FATAL );
+                      exit( 1 );
+                    }
 		    $$ = tmp;
                   } else {
                     $$ = NULL;
