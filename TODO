@@ -61,6 +61,6 @@ X  5.  Add '+' to combinational logic output for values equal to or greater than
 X  6.  Make sure that all unnecessary output is removed from verbose output (sometimes
        modules/instances that have received 100% coverage still get some message).
 
-   7.  Add depth option for combination logic analyzer.
+X  7.  Add depth option for combination logic analyzer.
 
 X  8.  Add option to output what has been covered (instead of what has not been covered)
