@@ -8,7 +8,9 @@
 #include <tk.h>
 #include <stdio.h>
 #include <assert.h>
+#include <string.h>
 
+#include "defines.h"
 #include "tcl_funcs.h"
 #include "gui.h"
 #include "link.h"
@@ -17,6 +19,7 @@
 
 extern mod_link* mod_head;
 extern mod_inst* instance_root;
+extern char      user_msg[USER_MSG_LENGTH];
 
 
 int tcl_func_get_module_list( ClientData d, Tcl_Interp* tcl, int argc, const char *argv[] ) {
@@ -177,6 +180,8 @@ int tcl_func_open_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv
     ifile = strdup_safe( argv[1], __FILE__, __LINE__ );
 
     if( !report_read_cdd_and_ready( ifile, READ_MODE_REPORT_MOD_MERGE ) ) {
+      snprintf( user_msg, USER_MSG_LENGTH, "Unable to open CDD \"%s\"", ifile );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
       retval = TCL_ERROR;
     }
 
@@ -199,6 +204,8 @@ int tcl_func_replace_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* a
     ifile = strdup_safe( argv[1], __FILE__, __LINE__ );
 
     if( !report_read_cdd_and_ready( ifile, READ_MODE_REPORT_MOD_REPLACE ) ) {
+      snprintf( user_msg, USER_MSG_LENGTH, "Unable to replace current CDD with \"%s\"", ifile );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
       retval = TCL_ERROR;
     }
 
@@ -221,6 +228,8 @@ int tcl_func_merge_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* arg
     ifile = strdup_safe( argv[1], __FILE__, __LINE__ );
 
     if( !report_read_cdd_and_ready( ifile, READ_MODE_REPORT_MOD_MERGE ) ) {
+      snprintf( user_msg, USER_MSG_LENGTH, "Unable to merge current CDD with \"%s\"", ifile );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
       retval = TCL_ERROR;
     }
 
@@ -277,6 +286,9 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* home ) {
 
 /*
  $Log$
+ Revision 1.4  2004/04/17 14:07:55  phase1geo
+ Adding replace and merge options to file menu.
+
  Revision 1.3  2004/03/26 13:20:33  phase1geo
  Fixing case where user hits cancel button in open window so that we don't
  exit the GUI when this occurs.

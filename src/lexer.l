@@ -79,7 +79,7 @@ WSPACE [ \t\b\f]+
 [ \t\b\f\r]   { ; }
 
   /* Newline character - blank line -- we ignore these */
-\n            { yylloc.first_line += 1; }
+\n            { yylloc.first_line += 1; yylloc.last_column = 1; }
 
   /* Handle line directives */
 ^"#line"[ ]+\"[^\"]*\"[ ]+[0-9]+.* { line_directive(); }
@@ -555,8 +555,9 @@ static int yywrap() {
   
   yyrestart( fopen( ppfilename, "r" ) );
   
-  yylloc.first_line = 1;
-  yylloc.text       = fname;
+  yylloc.first_line   = 1;
+  yylloc.first_column = 1;
+  yylloc.text         = fname;
   
   filelist_curr = curr->next;
   
@@ -602,8 +603,9 @@ void reset_lexer( str_link* file_list_head ) {
   
   yyrestart( fopen( ppfilename, "r" ) );
 
-  yylloc.text       = curr->str;
-  yylloc.first_line = 1;
+  yylloc.text         = curr->str;
+  yylloc.first_line   = 1;
+  yylloc.first_column = 1;
   
   filelist_head = file_list_head;
   filelist_curr = file_list_head->next;

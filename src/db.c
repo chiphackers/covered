@@ -288,7 +288,6 @@ bool db_read( char* file, int read_mode ) {
                   module_db_merge( foundmod->mod, db_handle, FALSE );
                 }
               } else {
-                printf( "HERE\n" );
                 retval = FALSE;
               }
             } else if( (read_mode == READ_MODE_REPORT_MOD_MERGE) && ((foundmod = mod_link_find( &tmpmod, mod_head )) != NULL) ) {
@@ -347,10 +346,17 @@ bool db_read( char* file, int read_mode ) {
       scope_extract_back( mod_scope, back, parent_scope );
     
       /* Make sure that module in database not written before its parent module */
-      assert( instance_find_scope( instance_root, parent_scope ) != NULL );
+      if( instance_find_scope( instance_root, parent_scope ) != NULL ) {
 
-      /* Add module to instance tree and module list */
-      instance_read_add( &instance_root, parent_scope, curr_module, back );
+        /* Add module to instance tree and module list */
+        instance_read_add( &instance_root, parent_scope, curr_module, back );
+
+      } else {
+
+        print_output( "CDD file is not related to currently opened CDD file", FATAL, __FILE__, __LINE__ );
+        retval = FALSE;
+ 
+      }
       
     }
     
@@ -1297,6 +1303,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.115  2004/04/19 04:54:55  phase1geo
+ Adding first and last column information to expression and related code.  This is
+ not working correctly yet.
+
  Revision 1.114  2004/04/17 14:07:54  phase1geo
  Adding replace and merge options to file menu.
 

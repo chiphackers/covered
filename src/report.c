@@ -112,6 +112,10 @@ char* output_file      = NULL;
 */
 char* input_db         = NULL;
 
+/*!
+ TCL interpreter for this application.
+*/
+Tcl_Interp* interp;
 
 /*!
  Displays usage information about the report command.
@@ -550,11 +554,10 @@ bool report_read_cdd_and_ready( char* ifile, int read_mode ) {
 */
 int command_report( int argc, int last_arg, char** argv ) {
 
-  int         retval = 0;    /* Return value of this function                     */
-  FILE*       ofile;         /* Pointer to output stream                          */
-  char*       covered_home;  /* Pathname to Covered's home installation directory */
-  char*       main_file;     /* Name of main TCL file to interpret                */ 
-  Tcl_Interp* interp;        /* Pointer to TCL interpreter                        */
+  int   retval = 0;    /* Return value of this function                     */
+  FILE* ofile;         /* Pointer to output stream                          */
+  char* covered_home;  /* Pathname to Covered's home installation directory */
+  char* main_file;     /* Name of main TCL file to interpret                */ 
 
   /* Parse score command-line */
   if( report_parse_args( argc, last_arg, argv ) ) {
@@ -670,6 +673,9 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.35  2004/04/17 14:07:55  phase1geo
+ Adding replace and merge options to file menu.
+
  Revision 1.34  2004/03/26 13:20:33  phase1geo
  Fixing case where user hits cancel button in open window so that we don't
  exit the GUI when this occurs.

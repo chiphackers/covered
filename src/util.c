@@ -18,6 +18,8 @@
 #ifdef HAVE_STRING_H
 #include <string.h>
 #endif
+#include <tcl.h>
+#include <tk.h> 
 
 #ifdef HAVE_MPATROL
 #include <mpdebug.h>
@@ -26,6 +28,9 @@
 #include "defines.h"
 #include "util.h"
 #include "link.h"
+
+extern bool        report_gui;
+extern Tcl_Interp* interp;
 
 /*!
  If set to TRUE, suppresses all non-fatal error messages from being displayed.
@@ -90,6 +95,7 @@ void set_debug( bool value ) {
 void print_output( char* msg, int type, char* file, int line ) {
 
   FILE* outf = debug_mode ? stdout : stderr;
+  char  tmpmsg[USER_MSG_LENGTH];
 
   switch( type ) {
     case DEBUG:
@@ -100,25 +106,55 @@ void print_output( char* msg, int type, char* file, int line ) {
       break;
     case WARNING:
       if( !output_suppressed ) {
-        fprintf( outf, "    WARNING!  %s\n", msg );
+        if( report_gui ) {
+          snprintf( tmpmsg, USER_MSG_LENGTH, "WARNING!  %s\n", msg );
+          Tcl_SetResult( interp, tmpmsg, TCL_VOLATILE );
+        } else {
+          fprintf( outf, "    WARNING!  %s\n", msg );
+        }
       } else if( debug_mode ) {
-        fprintf( outf, "    WARNING!  %s (file: %s, line: %d)\n", msg, file, line );
+        if( report_gui ) {
+          snprintf( tmpmsg, USER_MSG_LENGTH, "WARNING!  %s (file: %s, line: %d)\n", msg, file, line );
+          Tcl_SetResult( interp, tmpmsg, TCL_VOLATILE );
+        } else {
+          fprintf( outf, "    WARNING!  %s (file: %s, line: %d)\n", msg, file, line );
+        }
       }
       break;
     case WARNING_WRAP:
       if( !output_suppressed || debug_mode ) {
-        fprintf( outf, "              %s\n", msg );
+        if( report_gui ) {
+          snprintf( tmpmsg, USER_MSG_LENGTH, "              %s\n", msg );
+          Tcl_AppendElement( interp, tmpmsg );
+        } else {
+          fprintf( outf, "              %s\n", msg );
+        }
       }
       break; 
     case FATAL:
       if( debug_mode ) {
-        fprintf( outf, "ERROR!  %s (file: %s, line: %d)\n", msg, file, line );
+        if( report_gui ) {
+          snprintf( tmpmsg, USER_MSG_LENGTH, "%s (file: %s, line: %d)\n", msg, file, line );
+          Tcl_SetResult( interp, tmpmsg, TCL_VOLATILE );
+        } else {
+          fprintf( outf, "ERROR!  %s (file: %s, line: %d)\n", msg, file, line );
+        }
       } else {
-        fprintf( outf, "ERROR!  %s\n", msg );
+        if( report_gui ) {
+          snprintf( tmpmsg, USER_MSG_LENGTH, "%s\n", msg );
+          Tcl_SetResult( interp, tmpmsg, TCL_VOLATILE );
+        } else {
+          fprintf( outf, "ERROR!  %s\n", msg );
+        }
       }
       break;
     case FATAL_WRAP:
-      fprintf( outf, "        %s\n", msg );
+      if( report_gui ) {
+        snprintf( tmpmsg, USER_MSG_LENGTH, "%s\n", msg );
+        Tcl_AppendElement( interp, tmpmsg );
+      } else { 
+        fprintf( outf, "        %s\n", msg );
+      }
       break;
     default:  break;
   }
@@ -775,6 +811,9 @@ void timer_stop( timer** tm ) {
 
 /*
  $Log$
+ Revision 1.28  2004/03/22 13:26:52  phase1geo
+ Updates for upcoming release.  We are not quite ready to release at this point.
+
  Revision 1.27  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,

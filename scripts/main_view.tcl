@@ -139,4 +139,14 @@ proc populate_text {} {
 
 }
 
+proc bgerror {msg} {
+
+  ;# Remove the status window if it exists
+  destroy .status
+
+  ;# Display error message
+  set retval [tk_messageBox -message $msg -title "Error" -type ok]
+
+}
+
 main_view
