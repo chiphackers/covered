@@ -173,6 +173,7 @@ void race_calc_assignments( int sb_index ) {
  \param mod     Pointer to module containing detected race condition
  \param stmt    Pointer to expr's head statement
  \param base    Pointer to head statement block that was found to be in conflict with stmt
+ \param reason  Specifies what type of race condition was being checked that failed
 
  Outputs necessary information to user regarding the race condition that was detected and performs any
  necessary memory cleanup to remove the statement block involved in the race condition.
@@ -192,8 +193,8 @@ void race_handle_race_condition( expression* expr, module* mod, statement* stmt,
       print_output( user_msg, (flag_race_check + 1), __FILE__, __LINE__ );
 
       if( flag_race_check == WARNING ) {
-        print_output( "Safely removing statement block from coverage consideration", WARNING_WRAP, __FILE__, __LINE__ );
-        snprintf( user_msg, USER_MSG_LENGTH, "  Statement block starting at file: %s, line: %d", mod->filename, stmt->exp->line );
+        print_output( "  * Safely removing statement block from coverage consideration", WARNING_WRAP, __FILE__, __LINE__ );
+        snprintf( user_msg, USER_MSG_LENGTH, "    Statement block starting at file: %s, line: %d", mod->filename, stmt->exp->line );
         print_output( user_msg, WARNING_WRAP, __FILE__, __LINE__ );
       }
               
@@ -212,8 +213,8 @@ void race_handle_race_condition( expression* expr, module* mod, statement* stmt,
       print_output( user_msg, (flag_race_check + 1), __FILE__, __LINE__ );
 
       if( flag_race_check == WARNING ) {
-        print_output( "Safely removing statement block from coverage consideration", WARNING_WRAP, __FILE__, __LINE__ );
-        snprintf( user_msg, USER_MSG_LENGTH, "  Statement block starting at file: %s, line: %d", mod->filename, stmt->exp->line );
+        print_output( "  * Safely removing statement block from coverage consideration", WARNING_WRAP, __FILE__, __LINE__ );
+        snprintf( user_msg, USER_MSG_LENGTH, "    Statement block starting at file: %s, line: %d", mod->filename, stmt->exp->line );
         print_output( user_msg, WARNING_WRAP, __FILE__, __LINE__ );
       }
 
@@ -222,11 +223,35 @@ void race_handle_race_condition( expression* expr, module* mod, statement* stmt,
   /* If stmt and base are pointing to the same statement, just report that we are removing the base statement */
   } else {
 
-    if( flag_race_check == WARNING ) {
-      print_output( "", WARNING_WRAP, __FILE__, __LINE__ );
-      print_output( "Safely removing statement block from coverage consideration", WARNING, __FILE__, __LINE__ );
-      snprintf( user_msg, USER_MSG_LENGTH, "  Statement block starting at file: %s, line: %d", mod->filename, stmt->exp->line );
-      print_output( user_msg, WARNING, __FILE__, __LINE__ );
+    if( flag_race_check != NORMAL ) {
+
+      if( reason != 6 ) {
+	
+        print_output( "", (flag_race_check + 1), __FILE__, __LINE__ );
+        switch( reason ) {
+          case 1 :   print_output( "Possible race condition detected - sequential statement block contains blocking assignment(s)", flag_race_check, __FILE__, __LINE__ );  break;
+          case 3 :   print_output( "Possible race condition detected - combinational statement block contains non-blocking assignment(s)", flag_race_check, __FILE__, __LINE__ );  break;
+          case 4 :   print_output( "Possible race condition detected - mixed statement block contains blocking assignment(s)", flag_race_check, __FILE__, __LINE__ );  break;
+          case 5 :   print_output( "Possible race condition detected - statement block contains both blocking and non-blocking assignment(s)", flag_race_check, __FILE__, __LINE__ );  break;
+  	  default:   break;
+        }
+        snprintf( user_msg, USER_MSG_LENGTH, "  Statement block starting in file: %s, line: %d", mod->filename, stmt->exp->line );
+        print_output( user_msg, (flag_race_check + 1), __FILE__, __LINE__ );
+	if( flag_race_check == WARNING ) {
+	  print_output( "  * Safely removing statement block from coverage consideration", WARNING_WRAP, __FILE__, __LINE__ );
+	}
+
+      } else {
+
+	if( flag_race_check == WARNING ) {
+          print_output( "", WARNING_WRAP, __FILE__, __LINE__ );
+	  print_output( "* Safely removing statement block from coverage consideration", WARNING, __FILE__, __LINE__ );
+          snprintf( user_msg, USER_MSG_LENGTH, "  Statement block starting at file: %s, line: %d", mod->filename, stmt->exp->line );
+          print_output( user_msg, WARNING_WRAP, __FILE__, __LINE__ );
+	}
+
+      }
+
     }
 
   }
@@ -238,6 +263,38 @@ void race_handle_race_condition( expression* expr, module* mod, statement* stmt,
 
   /* Increment races found flag */
   races_found++;
+
+}
+
+void race_check_assignment_types( module* mod ) {
+
+  int i;  /* Loop iterator */
+
+  for( i=0; i<sb_size; i++ ) {
+
+    /* Check that a sequential logic block contains only non-blocking assignments */
+    if( sb[i].seq && !sb[i].cmb && sb[i].bassign ) {
+
+      race_handle_race_condition( sb[i].stmt->exp, mod, sb[i].stmt, sb[i].stmt, 1 );
+
+    /* Check that a combinational logic block contains only blocking assignments */
+    } else if( !sb[i].seq && sb[i].cmb && sb[i].nassign ) {
+
+      race_handle_race_condition( sb[i].stmt->exp, mod, sb[i].stmt, sb[i].stmt, 3 );
+
+    /* Check that mixed logic block contains only non-blocking assignments */
+    } else if( sb[i].seq && sb[i].cmb && sb[i].bassign ) {
+
+      race_handle_race_condition( sb[i].stmt->exp, mod, sb[i].stmt, sb[i].stmt, 4 );
+
+    /* Check that a statement block doesn't contain both blocking and non-blocking assignments */
+    } else if( sb[i].bassign && sb[i].nassign ) {
+
+      race_handle_race_condition( sb[i].stmt->exp, mod, sb[i].stmt, sb[i].stmt, 5 );
+
+    }
+
+  }
 
 }
 
@@ -399,7 +456,8 @@ void race_check_modules() {
         stmt_iter_next( &si );
       }
 
-      /* Perform other checks here - TBD */
+      /* Perform checks #1 - #5 */
+      race_check_assignment_types( modl->mod );
 
       /* Perform check #6 */
       race_check_one_block_assignment( modl->mod );
@@ -429,6 +487,10 @@ void race_check_modules() {
 
 /*
  $Log$
+ Revision 1.16  2005/02/01 05:11:18  phase1geo
+ Updates to race condition checker to find blocking/non-blocking assignments in
+ statement block.  Regression still runs clean.
+
  Revision 1.15  2005/01/27 13:33:50  phase1geo
  Added code to calculate if statement block is sequential, combinational, both
  or none.

@@ -5,8 +5,8 @@ reg  b, c;
 
 always @(a)
   begin : foo
-   b <=  a;
-   c <= ~a;
+   b =  a;
+   c = ~a;
   end
 
 initial begin
