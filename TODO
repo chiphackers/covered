@@ -25,6 +25,9 @@ Score command
 8.  Make sure that parser only parses a file once (when it is in both in a library (-y) and
     and a -v option).
 
+9.  Allow ability to only parse a design and only score a dumpfile (rather than having to
+    do both everytime -- could save a lot of time in not having to reparse).
+
 
 Merge command
 -------------
