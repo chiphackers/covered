@@ -72,7 +72,7 @@ iverilog:
 	@echo REGRESSION PASSED!
 
 vcs:
-#	@cd ../verilog; \
+	@cd ../verilog; \
 	$(MAKE) VERILOG=$(VCS) VERILOG_FLAGS="$(VCS_FLAGS1)" VERILOG_EXEC=$(VCS_EXEC) DIAGLIST="$(DIAGS1) $(VCSONLYDIAGS1)" regress
 	@cd ../verilog; \
 	$(MAKE) VERILOG=$(VCS) VERILOG_FLAGS="$(VCS_FLAGS2)" VERILOG_EXEC=$(VCS_EXEC) DIAGLIST="$(DIAGS2) $(VCSONLYDIAGS2)" regress
