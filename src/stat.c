@@ -21,13 +21,17 @@ statistic* statistic_create() {
 
   stat = (statistic*)malloc_safe( sizeof( statistic ) );
 
-  stat->line_total = 0;
-  stat->line_hit   = 0;
-  stat->tog_total  = 0;
-  stat->tog01_hit  = 0;
-  stat->tog10_hit  = 0;
-  stat->comb_total = 0;
-  stat->comb_hit   = 0;
+  stat->line_total  = 0;
+  stat->line_hit    = 0;
+  stat->tog_total   = 0;
+  stat->tog01_hit   = 0;
+  stat->tog10_hit   = 0;
+  stat->comb_total  = 0;
+  stat->comb_hit    = 0;
+  stat->state_total = 0;
+  stat->state_hit   = 0;
+  stat->arc_total   = 0;
+  stat->arc_hit     = 0;
 
   return( stat );
 
@@ -43,13 +47,17 @@ statistic* statistic_create() {
 */
 void statistic_merge( statistic* stat_to, statistic* stat_from ) {
 
-  stat_to->line_total += stat_from->line_total;
-  stat_to->line_hit   += stat_from->line_hit;
-  stat_to->tog_total  += stat_from->tog_total;
-  stat_to->tog01_hit  += stat_from->tog01_hit;
-  stat_to->tog10_hit  += stat_from->tog10_hit;
-  stat_to->comb_total += stat_from->comb_total;
-  stat_to->comb_hit   += stat_from->comb_hit;
+  stat_to->line_total  += stat_from->line_total;
+  stat_to->line_hit    += stat_from->line_hit;
+  stat_to->tog_total   += stat_from->tog_total;
+  stat_to->tog01_hit   += stat_from->tog01_hit;
+  stat_to->tog10_hit   += stat_from->tog10_hit;
+  stat_to->comb_total  += stat_from->comb_total;
+  stat_to->comb_hit    += stat_from->comb_hit;
+  stat_to->state_total += stat_from->state_total;
+  stat_to->state_hit   += stat_from->state_hit;
+  stat_to->arc_total   += stat_from->arc_total;
+  stat_to->arc_hit     += stat_from->arc_hit;
 
 }
 
@@ -71,6 +79,10 @@ void statistic_dealloc( statistic* stat ) {
 
 /*
  $Log$
+ Revision 1.3  2002/10/29 19:57:51  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
  Revision 1.2  2002/07/03 03:31:11  phase1geo
  Adding RCS Log strings in files that were missing them so that file version
  information is contained in every source and header file.  Reordering src

@@ -163,6 +163,33 @@ void sig_link_add( signal* sig, sig_link** head, sig_link** tail ) {
 }
 
 /*!
+ \param table  Pointer to FSM structure to store.
+ \param head   Pointer to head of FSM list.
+ \param tail   Pointer to tail of FSM list.
+
+ Creates a new fsm_link element with the value specified for table.
+ Sets next pointer of element to NULL, sets the tail element to point
+ to the new element and sets the tail value to the new element.
+*/
+void fsm_link_add( fsm* table, fsm_link** head, fsm_link** tail ) {
+
+  fsm_link* tmp;  /* Temporary pointer to newly created fsm_link element */
+
+  tmp = (fsm_link*)malloc_safe( sizeof( fsm_link ) );
+
+  tmp->table = table;
+  tmp->next  = NULL;
+
+  if( *head == NULL ) {
+    *head = *tail = tmp;
+  } else {
+    (*tail)->next = tmp;
+    *tail         = tmp;
+  }
+
+}
+
+/*!
  \param mod   Module to add to specified module list.
  \param head  Pointer to head mod_link element of list.
  \param tail  Pointer to tail mod_link element of list.
@@ -613,6 +640,31 @@ void sig_link_delete_list( sig_link* head, bool del_sig ) {
 }
 
 /*!
+ \param head  Pointer to head fsm_link element of list.
+
+ Deletes each element of the specified list.
+*/
+void fsm_link_delete_list( fsm_link* head ) {
+
+  fsm_link* tmp;  /* Temporary pointer to current link in list */
+
+  while( head != NULL ) {
+
+    tmp  = head;
+    head = tmp->next;
+
+    /* Deallocate FSM structure */
+    fsm_dealloc( tmp->table );
+    tmp->table = NULL;
+
+    /* Deallocate fsm_link element itself */
+    free_safe( tmp );
+
+  }
+
+}
+
+/*!
  \param head  Pointer to head mod_link element of list.
 
  Deletes each element of the specified list.
@@ -630,7 +682,7 @@ void mod_link_delete_list( mod_link* head ) {
     module_dealloc( tmp->mod );
     tmp->mod = NULL;
 
-    /* Deallocate sig_link element itself */
+    /* Deallocate mod_link element itself */
     free_safe( tmp );
 
   }
@@ -640,6 +692,13 @@ void mod_link_delete_list( mod_link* head ) {
 
 /*
  $Log$
+ Revision 1.21  2003/08/05 20:25:05  phase1geo
+ Fixing non-blocking bug and updating regression files according to the fix.
+ Also added function vector_is_unknown() which can be called before making
+ a call to vector_to_int() which will eleviate any X/Z-values causing problems
+ with this conversion.  Additionally, the real1.1 regression report files were
+ updated.
+
  Revision 1.20  2003/02/08 21:54:06  phase1geo
  Fixing memory problems with db_remove_statement function.  Updating comments
  in statement.c to explain some of the changes necessary to properly remove

@@ -26,6 +26,9 @@ void exp_link_add( expression* expr, exp_link** head, exp_link** tail );
 /*! \brief Adds specified signal to sig_link element at the end of the list. */
 void sig_link_add( signal* sig, sig_link** head, sig_link** tail );
 
+/*! \brief Adds specified FSM to fsm_link element at the end of the list. */
+void fsm_link_add( fsm* table, fsm_link** head, fsm_link** tail );
+
 /*! \brief Adds specified module to mod_link element at the end of the list. */
 void mod_link_add( module* mod, mod_link** head, mod_link** tail );
 
@@ -82,11 +85,21 @@ void exp_link_delete_list( exp_link* head, bool del_exp );
 void sig_link_delete_list( sig_link* head, bool del_sig );
 
 /*! \brief Deletes entire list specified by head pointer. */
+void fsm_link_delete_list( fsm_link* head );
+
+/*! \brief Deletes entire list specified by head pointer. */
 void mod_link_delete_list( mod_link* head );
 
 
 /*
  $Log$
+ Revision 1.10  2003/08/05 20:25:05  phase1geo
+ Fixing non-blocking bug and updating regression files according to the fix.
+ Also added function vector_is_unknown() which can be called before making
+ a call to vector_to_int() which will eleviate any X/Z-values causing problems
+ with this conversion.  Additionally, the real1.1 regression report files were
+ updated.
+
  Revision 1.9  2003/02/07 02:28:23  phase1geo
  Fixing bug with statement removal.  Expressions were being deallocated but not properly
  removed from module parameter expression lists and module expression lists.  Regression

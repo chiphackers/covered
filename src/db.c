@@ -29,6 +29,7 @@
 #include "binding.h"
 #include "param.h"
 #include "static.h"
+#include "fsm.h"
 #include "info.h"
 
 
@@ -222,6 +223,13 @@ bool db_read( char* file, int read_mode ) {
 
           /* Parse rest of line for statement info */
           retval = statement_db_read( &rest_line, curr_module, read_mode );
+
+        } else if( type == DB_TYPE_FSM ) {
+
+          assert( !merge_mode );
+
+          /* Parse rest of line for FSM info */
+          retval = fsm_db_read( &rest_line, curr_module );
 
         } else if( type == DB_TYPE_MODULE ) {
 
@@ -595,10 +603,11 @@ void db_add_defparam( char* name, expression* expr ) {
 */
 void db_add_signal( char* name, static_expr* left, static_expr* right ) {
 
-  signal  tmpsig;  /* Temporary signal for signal searching */
-  signal* sig;     /* Container for newly created signal    */
-  int     lsb;     /* Signal LSB                            */
-  int     width;   /* Signal width                          */
+  signal  tmpsig;   /* Temporary signal for signal searching  */
+  signal* sig;      /* Container for newly created signal     */
+  int     lsb;      /* Signal LSB                             */
+  int     width;    /* Signal width                           */
+  fsm*    new_fsm;  /* Pointer to newly created FSM structure */
 
   snprintf( user_msg, USER_MSG_LENGTH, "In db_add_signal, signal: %s", name );
   print_output( user_msg, DEBUG );
@@ -628,6 +637,14 @@ void db_add_signal( char* name, static_expr* left, static_expr* right ) {
 
     /* Add signal to current module's signal list */
     sig_link_add( sig, &(curr_module->sig_head), &(curr_module->sig_tail) );
+
+    /* Create new FSM structure if this signal is an FSM state variable */
+    if( fsm_is_fsm_variable( curr_module->name, name ) ) {
+      printf( "FSM found in module (%s) with state variable (%s)\n", curr_module->name, name );
+      new_fsm    = fsm_create( sig );
+      sig->table = new_fsm;
+      fsm_link_add( new_fsm, &(curr_module->fsm_head), &(curr_module->fsm_tail) );
+    }
 
   }
   
@@ -1192,6 +1209,12 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.97  2003/08/20 22:08:39  phase1geo
+ Fixing problem with not closing VCD file after VCD parsing is completed.
+ Also fixed memory problem with symtable.c to cause timestep_tab entries
+ to only be loaded if they have not already been loaded during this timestep.
+ Also added info.h to include list of db.c.
+
  Revision 1.96  2003/08/15 03:52:22  phase1geo
  More checkins of last checkin and adding some missing files.
 

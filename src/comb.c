@@ -244,7 +244,7 @@ bool combination_module_summary( FILE* ofile, mod_link* head ) {
       miss_found = TRUE;
     }
 
-    fprintf( ofile, "  %-20.20s    %-20.20s    %4d/%4.0f/%4.0f      %3.0f%%\n", 
+    fprintf( ofile, "  %-20.20s    %-20.20s   %4d/%4.0f/%4.0f      %3.0f%%\n", 
              head->mod->name,
              head->mod->filename,
              head->mod->stat->comb_hit,
@@ -1045,11 +1045,20 @@ void combination_report( FILE* ofile, bool verbose ) {
 
   }
 
+  fprintf( ofile, "=================================================================================\n" );
+  fprintf( ofile, "\n" );
+
 }
 
 
 /*
  $Log$
+ Revision 1.62  2003/02/17 22:47:20  phase1geo
+ Fixing bug with merging same DUTs from different testbenches.  Updated reports
+ to display full path instead of instance name and parent instance name.  Added
+ merge tests and added merge testing into regression test suite.  Fixing bug with
+ -D/-Q option specified with merge command.  Full regression passing.
+
  Revision 1.61  2002/12/07 17:46:52  phase1geo
  Fixing bug with handling memory declarations.  Added diagnostic to verify
  that memory declarations are handled properly.  Fixed bug with infinite

@@ -24,6 +24,7 @@
 #include "param.h"
 #include "link.h"
 #include "iter.h"
+#include "fsm.h"
 
 
 extern char user_msg[USER_MSG_LENGTH];
@@ -45,6 +46,8 @@ void module_init( module* mod ) {
   mod->exp_tail   = NULL;
   mod->stmt_head  = NULL;
   mod->stmt_tail  = NULL;
+  mod->fsm_head   = NULL;
+  mod->fsm_tail   = NULL;
   mod->param_head = NULL;
   mod->param_tail = NULL;
 
@@ -83,6 +86,7 @@ void module_size_elements( module* mod, mod_inst* inst ) {
   
   inst_parm* curr_iparm;   /* Pointer to current instance parameter to evaluate */
   exp_link*  curr_exp;     /* Pointer to current expression link to evaluate    */
+  fsm_link*  curr_fsm;     /* Pointer to current FSM structure to evaluate      */
   
   assert( mod  != NULL );
   assert( inst != NULL );
@@ -126,6 +130,18 @@ void module_size_elements( module* mod, mod_inst* inst ) {
     }
     curr_exp = curr_exp->next;
   }
+
+  /*
+   Third, size all FSMs.  Since the FSM structure is reliant on the size
+   of the state variable signal to which it is attached, its tables
+   cannot be created until the state variable size can be calculated.
+   Since this has been done now, size the FSMs.
+  */
+  curr_fsm = mod->fsm_head;
+  while( curr_fsm != NULL ) {
+    fsm_create_tables( curr_fsm->table );
+    curr_fsm = curr_fsm->next;
+  }
     
 }
 
@@ -148,6 +164,7 @@ bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst ) {
   exp_link*  curr_exp;        /* Pointer to current module exp_link element */
   stmt_iter  curr_stmt;       /* Statement list iterator                    */
   inst_parm* curr_parm;       /* Pointer to current instance parameter      */
+  fsm_link*  curr_fsm;        /* Pointer to current module fsm_link element */
 
   snprintf( user_msg, USER_MSG_LENGTH, "Writing module %s", mod->name );
   print_output( user_msg, DEBUG );
@@ -164,8 +181,6 @@ bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst ) {
     module_size_elements( mod, inst );
   }
   
-  /* module_display_expressions( mod ); */
-
   /* Now print all expressions in module */
   curr_exp = mod->exp_head;
   while( curr_exp != NULL ) {
@@ -182,8 +197,6 @@ bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst ) {
     }
   }
 
-  /* module_display_signals( mod ); */
-
   /* Now print all signals in module */
   curr_sig = mod->sig_head;
   while( curr_sig != NULL ) {
@@ -191,13 +204,18 @@ bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst ) {
     curr_sig = curr_sig->next; 
   }
 
-  /* module_display_statements( mod ); */
-
   /* Now print all statements in module */
   stmt_iter_reset( &curr_stmt, mod->stmt_head );
   while( curr_stmt.curr != NULL ) {
     statement_db_write( curr_stmt.curr->stmt, file, scope );
     stmt_iter_next( &curr_stmt );
+  }
+
+  /* Now print all FSM structures in module */
+  curr_fsm = mod->fsm_head;
+  while( curr_fsm != NULL ) {
+    fsm_db_write( curr_fsm->table, file );
+    curr_fsm = curr_fsm->next;
   }
 
   return( retval );
@@ -251,6 +269,7 @@ bool module_db_merge( module* base, FILE* file, bool same ) {
   exp_link* curr_base_exp;   /* Pointer to current expression in base module expression list */
   sig_link* curr_base_sig;   /* Pointer to current signal in base module signal list         */
   stmt_iter curr_base_stmt;  /* Statement list iterator                                      */
+  fsm_link* curr_base_fsm;   /* Pointer to current FSM in base module FSM list               */
   char*     curr_line;       /* Pointer to current line being read from CDD                  */
   char*     rest_line;       /* Pointer to rest of read line                                 */
   int       type;            /* Specifies currently read CDD type                            */
@@ -266,9 +285,7 @@ bool module_db_merge( module* base, FILE* file, bool same ) {
       if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
         rest_line = curr_line + chars_read;
         if( type == DB_TYPE_EXPRESSION ) {
-
           retval = expression_db_merge( curr_base_exp->exp, &rest_line, same );
-
         } else {
           retval = FALSE;
         }
@@ -288,9 +305,7 @@ bool module_db_merge( module* base, FILE* file, bool same ) {
       if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
         rest_line = curr_line + chars_read;
         if( type == DB_TYPE_SIGNAL ) {
-
           retval = signal_db_merge( curr_base_sig->sig, &rest_line, same );
-
         } else {
           retval = FALSE;
         }
@@ -319,6 +334,26 @@ bool module_db_merge( module* base, FILE* file, bool same ) {
       retval = FALSE;
     }
     stmt_iter_next( &curr_base_stmt );
+  }
+
+  /* Handle all module FSMs */
+  curr_base_fsm = base->fsm_head;
+  while( (curr_base_fsm != NULL) && retval ) {
+    if( readline( file, &curr_line ) ) {
+      if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
+        rest_line = curr_line + chars_read;
+        if( type == DB_TYPE_FSM ) {
+          retval = fsm_db_merge( curr_base_fsm->table, &rest_line, same );
+        } else {
+          retval = FALSE;
+        }
+      } else {
+        retval = FALSE;
+      }
+    } else {
+      retval = FALSE;
+    }
+    curr_base_fsm = curr_base_fsm->next;
   }
 
   return( retval );
@@ -406,6 +441,11 @@ void module_clean( module* mod ) {
     mod->param_head = NULL;
     mod->param_tail = NULL;
 
+    /* Free FSM list */
+    fsm_link_delete_list( mod->fsm_head );
+    mod->fsm_head = NULL;
+    mod->fsm_tail = NULL;
+
   }
 
 }
@@ -432,6 +472,13 @@ void module_dealloc( module* mod ) {
 
 /*
  $Log$
+ Revision 1.29  2003/08/05 20:25:05  phase1geo
+ Fixing non-blocking bug and updating regression files according to the fix.
+ Also added function vector_is_unknown() which can be called before making
+ a call to vector_to_int() which will eleviate any X/Z-values causing problems
+ with this conversion.  Additionally, the real1.1 regression report files were
+ updated.
+
  Revision 1.28  2002/12/30 05:31:33  phase1geo
  Fixing bug in module merge for reports when parameterized modules are merged.
  These modules should not output an error to the user when mismatching modules

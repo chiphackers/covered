@@ -23,6 +23,7 @@
 #include "parse.h"
 #include "param.h"
 #include "vector.h"
+#include "fsm.h"
 
 
 char* top_module         = NULL;                /*!< Name of top-level module to score                     */
@@ -61,6 +62,7 @@ void score_usage() {
   printf( "      -o <database_filename>       Name of database to write coverage information to.\n" );
   printf( "      -I <directory>               Directory to find included Verilog files.\n" );
   printf( "      -f <filename>                Name of file containing additional arguments to parse.\n" );
+  printf( "      -F <module>=<variable>       Module and variable of an FSM state variable.\n" );
   printf( "      -y <directory>               Directory to find unspecified Verilog files.\n" );
   printf( "      -v <filename>                Name of specific Verilog file to score.\n" );
   printf( "      -e <module_name>             Name of module to not score.\n" );
@@ -216,6 +218,23 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
       i++;
       retval = search_add_directory_path( argv[i] );
 
+    } else if( strncmp( "-F", argv[i], 2 ) == 0 ) {
+
+      i++;
+      ptr = argv[i];
+      while( (*ptr != '\0') && (*ptr != '=') ) {
+        ptr++;
+      }
+      if( *ptr == '\0' ) {
+        print_output( "Option -F must specify both a module and a variable.  See \"covered score -h\" for more information.", FATAL );
+        exit( 1 );
+      } else {
+        *ptr = '\0';
+        ptr++;
+        fsm_add_fsm_variable( argv[i], ptr );
+      }
+
+      
     } else if( strncmp( "-f", argv[i], 2 ) == 0 ) {
 
       i++;
@@ -391,6 +410,9 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.35  2003/08/15 03:52:22  phase1geo
+ More checkins of last checkin and adding some missing files.
+
  Revision 1.34  2003/08/07 15:41:43  phase1geo
  Adding -ts option to score command to allow the current timestep to be
  output during the simulation phase.

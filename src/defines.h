@@ -115,6 +115,11 @@
 */
 #define DB_TYPE_INFO         5
 
+/*!
+ Specifies that the current coverage database line describes a finite state machine.
+*/
+#define DB_TYPE_FSM          6
+
 /*! @} */
 
 /*!
@@ -1042,15 +1047,20 @@ struct stmt_loop_link_s {
 };
 
 /*------------------------------------------------------------------------------*/
+struct fsm_s;
+
+typedef struct fsm_s fsm;
+
 /*!
  Stores all information needed to represent a signal.  If value of value element is non-zero at the
  end of the run, this signal has been simulated.
 */
 struct signal_s {
-  char*      name;      /*!< Full hierarchical name of signal in design */
-  vector*    value;     /*!< Pointer to vector value of this signal     */
-  exp_link*  exp_head;  /*!< Head pointer to list of expressions        */
-  exp_link*  exp_tail;  /*!< Tail pointer to list of expressions        */
+  char*      name;      /*!< Full hierarchical name of signal in design       */
+  vector*    value;     /*!< Pointer to vector value of this signal           */
+  exp_link*  exp_head;  /*!< Head pointer to list of expressions              */
+  exp_link*  exp_tail;  /*!< Tail pointer to list of expressions              */
+  fsm*       table;     /*!< Pointer to FSM table associated with this signal */
 };
 
 /*------------------------------------------------------------------------------*/
@@ -1079,6 +1089,10 @@ struct statistic_s {
   int   tog10_hit;     /*!< Number of bits toggling from 1 to 0        */
   float comb_total;    /*!< Total number of expression combinations    */
   int   comb_hit;      /*!< Number of logic combinations hit           */
+  float state_total;   /*!< Total number of FSM states                 */
+  int   state_hit;     /*!< Number of FSM states reached               */
+  float arc_total;     /*!< Total number of FSM arcs                   */
+  int   arc_hit;       /*!< Number of FSM arcs traversed               */
 };
 
 /*------------------------------------------------------------------------------*/
@@ -1120,6 +1134,42 @@ struct inst_parm_s {
   inst_parm*   next;     /*!< Pointer to next instance parameter in list          */
 };
 
+/*-------------------------------------------------------------------------------*/
+struct fsm_arc_s;
+
+typedef struct fsm_arc_s fsm_arc;
+
+struct fsm_arc_s {
+  expression* from_state;  /*!< Pointer to expression that represents the state we are transferring from */
+  expression* to_state;    /*!< Pointer to expression that represents the state we are transferring to   */
+  fsm_arc*    next;        /*!< Pointer to next fsm_arc in this list                                     */
+};
+
+/*-------------------------------------------------------------------------------*/
+struct fsm_s {
+  signal*  sig;       /*!< Pointer to state signal                                                      */
+  fsm_arc* arc_head;  /*!< Pointer to head of list of expression pairs that describe the valid FSM arcs */
+  fsm_arc* arc_tail;  /*!< Pointer to tail of list of expression pairs that describe the valid FSM arcs */
+  nibble*  table;     /*!< FSM arc traversal table                                                      */
+  nibble*  valid;     /*!< Table of valid states                                                        */
+};
+
+/*-------------------------------------------------------------------------------*/
+/*!
+ Linked list element that stores an FSM structure.
+*/
+struct fsm_link_s;
+
+/*!
+ Renaming fsm_link structure for convenience.
+*/
+typedef struct fsm_link_s fsm_link;
+
+struct fsm_link_s {
+  fsm*      table;  /*!< Pointer to FSM structure to store        */
+  fsm_link* next;   /*!< Pointer to next element in fsm_link list */
+};
+
 /*------------------------------------------------------------------------------*/
 /*!
  Contains information for a Verilog module.  A module contains a list of signals within the
@@ -1135,6 +1185,8 @@ struct module_s {
   exp_link*  exp_tail;   /*!< Tail pointer to list of expressions in this module */
   stmt_link* stmt_head;  /*!< Head pointer to list of statements in this module  */
   stmt_link* stmt_tail;  /*!< Tail pointer to list of statements in this module  */
+  fsm_link*  fsm_head;   /*!< Head pointer to list of FSMs in this module        */
+  fsm_link*  fsm_tail;   /*!< Tail pointer to list of FSMs in this module        */
   mod_parm*  param_head; /*!< Head pointer to list of parameters in this module  */
   mod_parm*  param_tail; /*!< Tail pointer to list of parameters in this module  */
 };
@@ -1332,6 +1384,17 @@ struct timer_s {
 #endif
 
 /*-------------------------------------------------------------------------------*/
+struct fms_var_s;
+
+typedef struct fsm_var_s fsm_var;
+
+struct fsm_var_s {
+  char*    mod;   /*!< Name of module to containing FSM variable           */
+  char*    var;   /*!< Name of FSM variable within module specified by mod */
+  fsm_var* next;  /*!< Pointer to next fsm_var element in list             */
+};
+
+/*-------------------------------------------------------------------------------*/
 
 union expr_stmt_u {
   expression* expr;         /*!< Pointer to expression */
@@ -1341,6 +1404,9 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.74  2003/08/22 00:23:59  phase1geo
+ Adding development documentation comment to defines.h for new sym_sig structure.
+
  Revision 1.73  2003/08/21 21:57:30  phase1geo
  Fixing bug with certain flavors of VCD files that alias signals that have differing
  MSBs and LSBs.  This takes care of the rest of the bugs for the 0.2 stable release.
