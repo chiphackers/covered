@@ -25,9 +25,12 @@
 /* Define if you have the <string.h> header file.  */
 #define HAVE_STRING_H 1
 
+/* Define if you have the <sys/times.h> header file.  */
+#define HAVE_SYS_TIMES_H 1
+
 /* Name of package */
 #define PACKAGE "covered"
 
 /* Version number of package */
-#define VERSION "0.2pre3-20030806"
+#define VERSION "0.2"
 

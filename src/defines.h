@@ -13,7 +13,10 @@
 */
 
 #include "../config.h"
+
+#ifdef HAVE_SYS_TIMES_H
 #include <sys/times.h>
+#endif
 
 /*!
  Specifies current version of the Covered utility.
@@ -1287,6 +1290,7 @@ struct tnode_s {
 };
 
 /*-------------------------------------------------------------------------------*/
+#ifdef HAVE_SYS_TIMES_H
 /*!
  Structure for holding code timing data.  This information can be useful for optimizing
  code segments.  To use a timer, create a pointer to a timer structure in global
@@ -1306,6 +1310,7 @@ struct timer_s {
   struct tms start;  /*!< Contains start time of a particular timer                     */
   clock_t    total;  /*!< Contains the total amount of user time accrued for this timer */
 };
+#endif
 
 /*-------------------------------------------------------------------------------*/
 
@@ -1317,6 +1322,9 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.71  2003/08/15 03:52:22  phase1geo
+ More checkins of last checkin and adding some missing files.
+
  Revision 1.70  2003/08/10 03:50:10  phase1geo
  More development documentation updates.  All global variables are now
  documented correctly.  Also fixed some generated documentation warnings.

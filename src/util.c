@@ -650,6 +650,7 @@ void gen_space( char* spaces, int num_spaces ) {
   
 }
 
+#ifdef HAVE_SYS_TIMES_H
 /*!
  \param tm  Pointer to timer structure to clear.
 
@@ -697,9 +698,13 @@ void timer_stop( timer** tm ) {
   (*tm)->total += tmp.tms_utime - (*tm)->start.tms_utime;
 
 }
+#endif
 
 /*
  $Log$
+ Revision 1.22  2003/08/15 03:52:22  phase1geo
+ More checkins of last checkin and adding some missing files.
+
  Revision 1.21  2003/02/17 22:47:20  phase1geo
  Fixing bug with merging same DUTs from different testbenches.  Updated reports
  to display full path instead of instance name and parent instance name.  Added
