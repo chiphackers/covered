@@ -12,10 +12,10 @@
 2 11 11 102001 0 0 
 2 10 11 2000001 0 0 
 2 12 11 102fb5 11 10 
-1 a 0 16 0 f00aa f00aa f00aa f00aa 1
-1 b 0 1 0 10002 6
-1 c 0 32 0 f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa 10
-1 vec 0 32 0 f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa 4 8 11
+1 a 0 16 0 aa aa aa aa 1
+1 b 0 1 0 2 6
+1 c 0 32 0 aa aa aa aa aa aa aa aa 10
+1 vec 0 32 0 aa aa aa aa aa aa aa aa 4 8 11
 4 5 5 5
 4 9 9 9
 4 12 12 12

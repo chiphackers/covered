@@ -13,9 +13,9 @@
 2 11 11 2000001 0 0 
 2 13 11 102fb5 12 11 
 1 #vec 0 32 0 15 14 11 10 5 4 1 0 5 9 12
-1 a 0 16 0 f00aa f00aa f00aa f00aa 2
-1 b 0 1 0 10002 7
-1 c 0 32 0 f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa 11
+1 a 0 16 0 aa aa aa aa 2
+1 b 0 1 0 2 7
+1 c 0 32 0 aa aa aa aa aa aa aa aa 11
 4 6 6 6
 4 10 10 10
 4 13 13 13

@@ -2,13 +2,13 @@
 3 main main param1.v 1 21
 2 6 9 102032 0 0 
 2 5 9 102032 0 0 
-2 7 9 18201a 6 5 32 0 f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa
+2 7 9 18201a 6 5 32 0 aa aa aa aa aa aa aa aa
 2 4 9 103001 0 0 
-2 8 9 1a2019 7 4 32 0 f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa
+2 8 9 1a2019 7 4 32 0 aa aa aa aa aa aa aa aa
 2 3 9 2000001 0 0 
 2 9 9 102fb5 8 3 
 1 #value0 0 32 0 1 0 0 0 0 0 0 0 5
 1 #value1 0 1 0 1 6
-1 a 0 1 0 11002 3
-1 b 0 1 0 10102 4
+1 a 0 1 0 1002 3
+1 b 0 1 0 102 4
 4 9 9 9

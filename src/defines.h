@@ -236,12 +236,10 @@
  Fields that are merged are:
  - TOGGLE0->1
  - TOGGLE1->0
- - SET
- - TYPE
  - FALSE
  - TRUE
 */
-#define VECTOR_MERGE_MASK    0x7c
+#define VECTOR_MERGE_MASK    0x6c
 
 /*! @} */
 
@@ -1580,6 +1578,13 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.98  2004/01/09 21:57:55  phase1geo
+ Fixing bug in combinational logic report generator where partially covered
+ expressions were being logged in summary report but not displayed when verbose
+ output was needed.  Updated regression for this change.  Also added new multi_exp
+ diagnostics to verify multiple expression combination logic expressions in report
+ output.  Full regression passes at this point.
+
  Revision 1.97  2004/01/04 04:52:03  phase1geo
  Updating ChangeLog and TODO files.  Adding merge information to INFO line
  of CDD files and outputting this information to the merged reports.  Adding

@@ -190,7 +190,7 @@ void vector_db_write( vector* vec, FILE* file, bool write_data ) {
   int    i;      /* Loop iterator                       */
   nibble mask;   /* Mask value for vector value nibbles */
 
-  mask = write_data ? 0x1f : 0x1c;
+  mask = write_data ? 0xf : 0xc;
 
   /* Output vector information to specified file */
   fprintf( file, "%d %d",
@@ -1483,6 +1483,9 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.44  2003/11/12 17:34:03  phase1geo
+ Fixing bug where signals are longer than allowable bit width.
+
  Revision 1.43  2003/11/05 05:22:56  phase1geo
  Final fix for bug 835366.  Full regression passes once again.
 

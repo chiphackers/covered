@@ -35,9 +35,6 @@ if( open( RPT_RESULTS, "${RPT_OUTPUT}" ) > 0 ) {
 
 }
 
-# Remove VCD file
-system( "rm -f *.vcd" ) && die;
-
 # Check CDD file
 $check1 = system( "diff ${test}.cdd ${CDD_DIR}/${test}.cdd" );
 if( ($check1 == 0) && ($rm_cdd == 1) ) {
@@ -76,6 +73,9 @@ if( ($check1 > 0) || ($check2 > 0) || ($check3 > 0) || ($check4 > 0) || ($check5
 } else {
   print "  Checking output results         -- PASSED\n";
   $passed++;
+
+  # Remove VCD file
+  system( "rm -f *.vcd" ) && die;
 }
 
 print RPT_RESULTS "DIAGNOSTICS PASSED: ${passed}, FAILED: ${failed}\n";
