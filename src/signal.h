@@ -43,12 +43,18 @@ void signal_add_expression( signal* sig, expression* expr );
 /*! \brief Displays signal contents to standard output. */
 void signal_display( signal* sig );
 
+/*! \brief Converts a string to a signal. */
+signal* signal_from_string( char* str );
+
 /*! \brief Deallocates the memory used for this signal. */
 void signal_dealloc( signal* sig );
 
 
 /*
  $Log$
+ Revision 1.12  2003/08/15 03:52:22  phase1geo
+ More checkins of last checkin and adding some missing files.
+
  Revision 1.11  2003/02/13 23:44:08  phase1geo
  Tentative fix for VCD file reading.  Not sure if it works correctly when
  original signal LSB is != 0.  Icarus Verilog testsuite passes.

@@ -7,6 +7,7 @@ covered_SOURCES = arc.c \
 		  db.c \
 		  expr.c \
 		  fsm.c \
+                  fsm_arg.c \
                   info.c \
 		  instance.c \
  		  iter.c \

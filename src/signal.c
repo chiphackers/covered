@@ -375,6 +375,37 @@ void signal_display( signal* sig ) {
 }
 
 /*!
+ \param str  String version of signal.
+
+ \return Returns pointer to newly created signal structure, or returns
+         NULL is specified string does not properly describe a signal.
+
+ Converts the specified string describing a Verilog design signal.  The
+ signal may be a standard signal name, a single bit select signal or a
+ multi-bit select signal.
+*/
+signal* signal_from_string( char* str ) {
+
+  signal* sig;
+  char    name[4096];
+  int     msb;
+  int     lsb;
+
+  if( sscanf( str, "%s[%d:%d]", name, &msb, &lsb ) == 3 ) {
+    sig = signal_create( name, ((msb - lsb) + 1), lsb );
+  } else if( sscanf( str, "%s[%d]", name, &lsb ) == 2 ) {
+    sig = signal_create( name, 1, lsb );
+  } else if( sscanf( str, "%[a-zA-Z0-9_]", name ) == 1 ) {
+    sig = signal_create( name, 1, 0 );
+  } else {
+    sig = NULL;
+  }
+
+  return( sig );
+
+}
+
+/*!
  \param sig  Pointer to signal to deallocate.
 
  Deallocates all malloc'ed memory back to the heap for the specified
@@ -414,6 +445,10 @@ void signal_dealloc( signal* sig ) {
 
 /*
  $Log$
+ Revision 1.34  2003/09/22 03:46:24  phase1geo
+ Adding support for single state variable FSMs.  Allow two different ways to
+ specify FSMs on command-line.  Added diagnostics to verify new functionality.
+
  Revision 1.33  2003/09/12 04:47:00  phase1geo
  More fixes for new FSM arc transition protocol.  Everything seems to work now
  except that state hits are not being counted correctly.
