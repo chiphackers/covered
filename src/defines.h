@@ -1488,6 +1488,8 @@ struct stmt_blk_s {
   bool       remove;    /*!< Specifies if this statement block should be removed after checking is complete      */
   bool       seq;       /*!< If true, this statement block is considered to include sequential logic             */
   bool       cmb;       /*!< If true, this statement block is considered to include combinational logic          */
+  bool       bassign;   /*!< If true, at least one expression in statement block is a blocking assignment        */
+  bool       nassign;   /*!< If true, at least one expression in statement block is a non-blocking assignment    */
 };
 
 /*-------------------------------------------------------------------------------*/
@@ -1500,6 +1502,10 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.118  2005/01/27 13:33:49  phase1geo
+ Added code to calculate if statement block is sequential, combinational, both
+ or none.
+
  Revision 1.117  2005/01/10 23:03:39  phase1geo
  Added code to properly report race conditions.  Added code to remove statement blocks
  from module when race conditions are found.

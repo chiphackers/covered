@@ -131,6 +131,43 @@ void race_calc_stmt_blk_type( expression* expr, int sb_index ) {
 
 }
 
+void race_calc_expr_assignment( expression* exp, int sb_index ) {
+
+  switch( exp->op ) {
+    case EXP_OP_ASSIGN  :
+    case EXP_OP_BASSIGN :  sb[sb_index].bassign = TRUE;  break;
+    case EXP_OP_NASSIGN :  sb[sb_index].nassign = TRUE;  break;
+    default             :  break;
+  }
+
+}
+
+void race_calc_assignments_helper( statement* stmt, statement* head, int sb_index ) {
+
+  if( (stmt != NULL) && (stmt != head) && (ESUPPL_IS_STMT_STOP( stmt->exp->suppl ) == 0) ) {
+
+    /* Calculate children statements */
+    race_calc_assignments_helper( stmt->next_true, head, sb_index );
+    race_calc_assignments_helper( stmt->next_false, head, sb_index );
+
+    /* Calculate assignment operator type */
+    race_calc_expr_assignment( stmt->exp, sb_index );
+
+  }
+
+}
+
+void race_calc_assignments( int sb_index ) {
+
+  /* Calculate head statement assignment type */
+  race_calc_expr_assignment( sb[sb_index].stmt->exp, sb_index );
+
+  /* Calculate children statements */
+  race_calc_assignments_helper( sb[sb_index].stmt->next_true,  sb[sb_index].stmt, sb_index );
+  race_calc_assignments_helper( sb[sb_index].stmt->next_false, sb[sb_index].stmt, sb_index );
+
+}
+
 /*!
  \param expr    Pointer to expression containing signal that was found to be in a race condition.
  \param mod     Pointer to module containing detected race condition
@@ -349,11 +386,14 @@ void race_check_modules() {
       stmt_iter_reset( &si, modl->mod->stmt_tail );
       while( si.curr != NULL ) {
         if( si.curr->stmt->exp->suppl.part.stmt_head == 1 ) {
-          sb[sb_index].stmt   = si.curr->stmt;
-          sb[sb_index].remove = FALSE;
-	  sb[sb_index].seq    = FALSE;
-	  sb[sb_index].cmb    = FALSE;
+          sb[sb_index].stmt    = si.curr->stmt;
+          sb[sb_index].remove  = FALSE;
+	  sb[sb_index].seq     = FALSE;
+	  sb[sb_index].cmb     = FALSE;
+	  sb[sb_index].bassign = FALSE;
+	  sb[sb_index].nassign = FALSE;
 	  race_calc_stmt_blk_type( sb[sb_index].stmt->exp, sb_index );
+	  race_calc_assignments( sb_index );
           sb_index++; 
         }
         stmt_iter_next( &si );
@@ -389,6 +429,10 @@ void race_check_modules() {
 
 /*
  $Log$
+ Revision 1.15  2005/01/27 13:33:50  phase1geo
+ Added code to calculate if statement block is sequential, combinational, both
+ or none.
+
  Revision 1.14  2005/01/25 13:42:27  phase1geo
  Fixing segmentation fault problem with race condition checking.  Added race1.1
  to regression.  Removed unnecessary output statements from previous debugging
