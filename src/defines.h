@@ -102,6 +102,11 @@
 */
 #define DB_TYPE_STATEMENT    4
 
+/*!
+ Specifies that the current coverage database line describes general information.
+*/
+#define DB_TYPE_INFO         5
+
 /*! @} */
 
 
@@ -1156,6 +1161,10 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.65  2003/02/07 23:12:30  phase1geo
+ Optimizing db_add_statement function to avoid memory errors.  Adding check
+ for -i option to avoid user error.
+
  Revision 1.64  2003/01/04 09:25:15  phase1geo
  Fixing file search algorithm to fix bug where unexpected module that was
  ignored cannot be found.  Added instance7.v diagnostic to verify appropriate
