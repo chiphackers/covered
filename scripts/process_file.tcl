@@ -90,17 +90,17 @@ proc display_line_cov {} {
 
   # Populate information bar
   if {$file_name != 0} {
-    .bot.info configure -text "Filename: $file_name"
+    .info configure -text "Filename: $file_name"
   }
 
-  .bot.txt tag configure uncov_colorMap -foreground $uncov_fgColor -background $uncov_bgColor
-  .bot.txt tag configure cov_colorMap   -foreground $cov_fgColor   -background $cov_bgColor
+  .bot.right.txt tag configure uncov_colorMap -foreground $uncov_fgColor -background $uncov_bgColor
+  .bot.right.txt tag configure cov_colorMap   -foreground $cov_fgColor   -background $cov_bgColor
 
   # Allow us to write to the text box
-  .bot.txt configure -state normal
+  .bot.right.txt configure -state normal
 
   # Clear the text-box before any insertion is being made
-  .bot.txt delete 1.0 end
+  .bot.right.txt delete 1.0 end
 
   set contents [split $fileContent($file_name) \n]
   set linecount 1
@@ -116,11 +116,11 @@ proc display_line_cov {} {
       if [expr [expr $start_line <= $linecount] && [expr $end_line >= $linecount]] {
         set line [format {%7d  %s} $linecount [append phrase "\n"]]
         if {[expr $uncov_type == 1] && [expr [lsearch $uncovered_lines $linecount] != -1]} {
-          .bot.txt insert end $line uncov_colorMap
+          .bot.right.txt insert end $line uncov_colorMap
         } elseif {[expr $cov_type == 1] && [expr [lsearch $covered_lines $linecount] != -1]} {
-          .bot.txt insert end $line cov_colorMap
+          .bot.right.txt insert end $line cov_colorMap
         } else {
-          .bot.txt insert end $line
+          .bot.right.txt insert end $line
         }
       }
       incr linecount
@@ -129,7 +129,7 @@ proc display_line_cov {} {
   }
 
   # Now cause the text box to be read-only again
-  .bot.txt configure -state disabled
+  .bot.right.txt configure -state disabled
 
   return
 
@@ -218,16 +218,16 @@ proc display_toggle_cov {} {
   if {$curr_mod_name != 0} {
 
     # Populate information bar
-    .bot.info configure -text "Filename: $file_name"
+    .info configure -text "Filename: $file_name"
 
-    .bot.txt tag configure uncov_colorMap -foreground $uncov_fgColor -background $uncov_bgColor
-    .bot.txt tag configure cov_colorMap   -foreground $cov_fgColor   -background $cov_bgColor
+    .bot.right.txt tag configure uncov_colorMap -foreground $uncov_fgColor -background $uncov_bgColor
+    .bot.right.txt tag configure cov_colorMap   -foreground $cov_fgColor   -background $cov_bgColor
 
     # Allow us to write to the text box
-    .bot.txt configure -state normal
+    .bot.right.txt configure -state normal
 
     # Clear the text-box before any insertion is being made
-    .bot.txt delete 1.0 end
+    .bot.right.txt delete 1.0 end
 
     set contents [split $fileContent($file_name) \n]
     set linecount 1
@@ -242,16 +242,16 @@ proc display_toggle_cov {} {
       foreach phrase $contents {
         if [expr [expr $start_line <= $linecount] && [expr $end_line >= $linecount]] {
           set line [format {%7d  %s} $linecount [append phrase "\n"]]
-          .bot.txt insert end $line
+          .bot.right.txt insert end $line
         }
         incr linecount
       }
 
       # Finally, set toggle information
       if {[expr $uncov_type == 1] && [expr [llength $uncovered_toggles] > 0]} {
-        set cmd_enter  ".bot.txt tag add uncov_enter"
-        set cmd_button ".bot.txt tag add uncov_button"
-        set cmd_leave  ".bot.txt tag add uncov_leave"
+        set cmd_enter  ".bot.right.txt tag add uncov_enter"
+        set cmd_button ".bot.right.txt tag add uncov_button"
+        set cmd_leave  ".bot.right.txt tag add uncov_leave"
         foreach entry $uncovered_toggles {
           set cmd_enter  [concat $cmd_enter  $entry]
           set cmd_button [concat $cmd_button $entry]
@@ -260,27 +260,27 @@ proc display_toggle_cov {} {
         eval $cmd_enter
         eval $cmd_button
         eval $cmd_leave
-        .bot.txt tag configure uncov_button -underline true -foreground $uncov_fgColor -background $uncov_bgColor
-        .bot.txt tag bind uncov_enter <Enter> {
-          set curr_cursor [.bot.txt cget -cursor]
-          .bot.txt configure -cursor hand2
+        .bot.right.txt tag configure uncov_button -underline true -foreground $uncov_fgColor -background $uncov_bgColor
+        .bot.right.txt tag bind uncov_enter <Enter> {
+          set curr_cursor [.bot.right.txt cget -cursor]
+          .bot.right.txt configure -cursor hand2
         }
-        .bot.txt tag bind uncov_leave <Leave> {
-          .bot.txt configure -cursor $curr_cursor
+        .bot.right.txt tag bind uncov_leave <Leave> {
+          .bot.right.txt configure -cursor $curr_cursor
         }
-        .bot.txt tag bind uncov_button <ButtonPress-1> {
-          set range [.bot.txt tag prevrange uncov_button {current + 1 chars}]
-          create_toggle_window $curr_mod_name [string trim [lindex [split [.bot.txt get [lindex $range 0] [lindex $range 1]] "\["] 0]]
+        .bot.right.txt tag bind uncov_button <ButtonPress-1> {
+          set range [.bot.right.txt tag prevrange uncov_button {current + 1 chars}]
+          create_toggle_window $curr_mod_name [string trim [lindex [split [.bot.right.txt get [lindex $range 0] [lindex $range 1]] "\["] 0]]
         }
       } 
 
       if {[expr $cov_type == 1] && [expr [llength $covered_toggles] > 0]} {
-        set cmd_cov ".bot.txt tag add cov_highlight"
+        set cmd_cov ".bot.right.txt tag add cov_highlight"
         foreach entry $covered_toggles {
           set cmd_cov [concat $cmd_cov $entry]
         }
         eval $cmd_cov
-        .bot.txt tag configure cov_highlight -foreground $cov_fgColor -background $cov_bgColor
+        .bot.right.txt tag configure cov_highlight -foreground $cov_fgColor -background $cov_bgColor
       }
 
     }
@@ -288,7 +288,7 @@ proc display_toggle_cov {} {
   }
 
   # Now cause the text box to be read-only again
-  .bot.txt configure -state disabled
+  .bot.right.txt configure -state disabled
 
   return
 
@@ -375,16 +375,16 @@ proc display_comb_cov {} {
   if {$curr_mod_name != 0} {
 
     # Populate information bar
-    .bot.info configure -text "Filename: $file_name"
+    .info configure -text "Filename: $file_name"
 
-    .bot.txt tag configure uncov_colorMap -foreground $uncov_fgColor -background $uncov_bgColor
-    .bot.txt tag configure cov_colorMap   -foreground $cov_fgColor   -background $cov_bgColor
+    .bot.right.txt tag configure uncov_colorMap -foreground $uncov_fgColor -background $uncov_bgColor
+    .bot.right.txt tag configure cov_colorMap   -foreground $cov_fgColor   -background $cov_bgColor
 
     # Allow us to write to the text box
-    .bot.txt configure -state normal
+    .bot.right.txt configure -state normal
 
     # Clear the text-box before any insertion is being made
-    .bot.txt delete 1.0 end
+    .bot.right.txt delete 1.0 end
 
     set contents [split $fileContent($file_name) \n]
     set linecount 1
@@ -399,17 +399,17 @@ proc display_comb_cov {} {
       foreach phrase $contents {
         if [expr [expr $start_line <= $linecount] && [expr $end_line >= $linecount]] {
           set line [format {%7d  %s} $linecount [append phrase "\n"]]
-          .bot.txt insert end $line
+          .bot.right.txt insert end $line
         }
         incr linecount
       }
 
       # Finally, set combinational logic information
       if {[expr $uncov_type == 1] && [expr [llength $uncovered_combs] > 0]} {
-        set cmd_enter     ".bot.txt tag add uncov_enter"
-        set cmd_button    ".bot.txt tag add uncov_button"
-        set cmd_leave     ".bot.txt tag add uncov_leave"
-        set cmd_highlight ".bot.txt tag add uncov_highlight"
+        set cmd_enter     ".bot.right.txt tag add uncov_enter"
+        set cmd_button    ".bot.right.txt tag add uncov_button"
+        set cmd_leave     ".bot.right.txt tag add uncov_leave"
+        set cmd_highlight ".bot.right.txt tag add uncov_highlight"
         foreach entry $uncovered_combs {
           set cmd_highlight [concat $cmd_highlight [lindex $entry 0] [lindex $entry 1]]
           set start_line    [lindex [split [lindex $entry 0] .] 0]
@@ -419,7 +419,7 @@ proc display_comb_cov {} {
             set cmd_button [concat $cmd_button [lindex $entry 0] "$start_line.end"]
             set cmd_leave  [concat $cmd_leave  [lindex $entry 0] "$start_line.end"]
             for {set i [expr $start_line + 1]} {$i <= $end_line} {incr i} {
-              set line       [.bot.txt get "$i.7" end]
+              set line       [.bot.right.txt get "$i.7" end]
               set line_diff  [expr [expr [string length $line] - [string length [string trimleft $line]]] + 7]
               if {$i == $end_line} {
                 set cmd_enter  [concat $cmd_enter  "$i.$line_diff" [lindex $entry 1]]
@@ -441,18 +441,18 @@ proc display_comb_cov {} {
         eval $cmd_button
         eval $cmd_leave
         eval $cmd_highlight
-        .bot.txt tag configure uncov_highlight -foreground $uncov_fgColor -background $uncov_bgColor
-        .bot.txt tag configure uncov_button -underline true
-        .bot.txt tag bind uncov_enter <Enter> {
-          set curr_cursor [.bot.txt cget -cursor]
-          .bot.txt configure -cursor hand2
+        .bot.right.txt tag configure uncov_highlight -foreground $uncov_fgColor -background $uncov_bgColor
+        .bot.right.txt tag configure uncov_button -underline true
+        .bot.right.txt tag bind uncov_enter <Enter> {
+          set curr_cursor [.bot.right.txt cget -cursor]
+          .bot.right.txt configure -cursor hand2
         }
-        .bot.txt tag bind uncov_leave <Leave> {
-          .bot.txt configure -cursor $curr_cursor
+        .bot.right.txt tag bind uncov_leave <Leave> {
+          .bot.right.txt configure -cursor $curr_cursor
         }
-        .bot.txt tag bind uncov_button <ButtonPress-1> {
-          set all_ranges [.bot.txt tag ranges uncov_highlight]
-          set my_range   [.bot.txt tag prevrange uncov_highlight {current + 1 chars}]
+        .bot.right.txt tag bind uncov_button <ButtonPress-1> {
+          set all_ranges [.bot.right.txt tag ranges uncov_highlight]
+          set my_range   [.bot.right.txt tag prevrange uncov_highlight {current + 1 chars}]
           set index [expr [lsearch -exact $all_ranges [lindex $my_range 0]] / 2]
           set expr_id [lindex [lindex $uncovered_combs $index] 2]
           create_comb_window $curr_mod_name $expr_id
@@ -460,12 +460,12 @@ proc display_comb_cov {} {
       }
 
       if {[expr $cov_type == 1] && [expr [llength $covered_combs] > 0]} {
-        set cmd_cov ".bot.txt tag add cov_highlight"
+        set cmd_cov ".bot.right.txt tag add cov_highlight"
         foreach entry $covered_combs {
           set cmd_cov [concat $cmd_cov $entry]
         }
         eval $cmd_cov
-        .bot.txt tag configure cov_highlight -foreground $cov_fgColor -background $cov_bgColor
+        .bot.right.txt tag configure cov_highlight -foreground $cov_fgColor -background $cov_bgColor
       }
 
     }
@@ -473,7 +473,7 @@ proc display_comb_cov {} {
   }
 
   # Now cause the text box to be read-only again
-  .bot.txt configure -state disabled
+  .bot.right.txt configure -state disabled
 
   return
 
@@ -492,9 +492,9 @@ proc display_fsm_cov {} {
   global fgColor bgColor
 
   # Configure text area
-  .bot.txt tag configure colorMap -foreground $fgColor -background $bgColor
+  .bot.right.txt tag configure colorMap -foreground $fgColor -background $bgColor
 
   # Clear the text-box before any insertion is being made
-  .bot.txt delete 1.0 end
+  .bot.right.txt delete 1.0 end
 
 }

@@ -7,7 +7,7 @@ source $HOME/scripts/process_file.tcl
 source $HOME/scripts/toggle.tcl
 source $HOME/scripts/comb.tcl
 source $HOME/scripts/help.tcl
-source $HOME/scripts/misc.tcl
+# source $HOME/scripts/misc.tcl
 
 set last_lb_index ""
 
@@ -26,44 +26,64 @@ proc main_view {} {
   # Create the bottom frame
   frame .bot -width 120 -height 300
 
+  # Create frames for pane handle
+  frame .bot.left
+  frame .bot.right
+  frame .bot.handle -borderwidth 2 -relief raised -cursor sb_h_double_arrow
+
+  place .bot.left  -relheight 1 -width -1
+  place .bot.right -relheight 1 -relx 1 -anchor ne -width -1
+  place .bot.handle -rely 0.5 -anchor s -width 8 -height 8
+
+  bind .bot <Configure> {
+    set W  [winfo width .bot]
+    set X0 [winfo rootx .bot]
+  }
+
+  bind .bot.handle <B1-Motion> {
+    main_place [expr {(%X-$X0)/double($W)}]
+  }
+
+  main_place .35
+
   # Create the listbox label
-  label .bot.ll -text "Modules/Instances" -anchor w
+  label .bot.left.ll -text "Modules/Instances" -anchor w
 
   # Create the textbox label
-  label .bot.tl -text "Line #       Verilog Source" -anchor w
+  label .bot.right.tl -text "Line #       Verilog Source" -anchor w
 
   # Create the listbox widget to display file names
-  listbox .bot.l -yscrollcommand ".bot.lvb set" -xscrollcommand ".bot.lhb set" -width 30
-  bind .bot.l <<ListboxSelect>> populate_text
-  scrollbar .bot.lvb -command ".bot.l yview"
-  scrollbar .bot.lhb -orient horizontal -command ".bot.l xview"
-
-  # populate_listbox .bot.l
+  listbox .bot.left.l -yscrollcommand ".bot.left.lvb set" -xscrollcommand ".bot.left.lhb set" -width 30
+  bind .bot.left.l <<ListboxSelect>> populate_text
+  scrollbar .bot.left.lvb -command ".bot.left.l yview"
+  scrollbar .bot.left.lhb -orient horizontal -command ".bot.left.l xview"
 
   # Create the text widget to display the modules/instances
-  text .bot.txt -yscrollcommand ".bot.vb set" -xscrollcommand ".bot.hb set" -wrap none -state disabled
-  scrollbar .bot.vb -command ".bot.txt yview"
-  scrollbar .bot.hb -orient horizontal -command ".bot.txt xview"
+  text .bot.right.txt -yscrollcommand ".bot.right.vb set" -xscrollcommand ".bot.right.hb set" -wrap none -state disabled
+  scrollbar .bot.right.vb -command ".bot.right.txt yview"
+  scrollbar .bot.right.hb -orient horizontal -command ".bot.right.txt xview"
 
   # Create bottom information bar
-  label .bot.info -anchor w
+  label .info -anchor w
 
-  # Pack the widgets into the bottom frame
-  grid rowconfigure    .bot 1 -weight 1
-  grid columnconfigure .bot 0 -weight 0
-  grid columnconfigure .bot 2 -weight 1
-  grid .bot.ll   -row 0 -column 0 -sticky nsew
-  grid .bot.tl   -row 0 -column 2 -sticky nsew
-  grid .bot.l    -row 1 -column 0 -sticky nsew
-  grid .bot.lvb  -row 1 -column 1 -sticky ns
-  grid .bot.lhb  -row 2 -column 0 -sticky ew
-  grid .bot.txt  -row 1 -column 2 -sticky nsew
-  grid .bot.vb   -row 1 -column 3 -sticky ns
-  grid .bot.hb   -row 2 -column 2 -sticky ew
-  grid .bot.info -row 3 -column 0 -columnspan 4 -sticky ew
+  # Pack the widgets into the bottom left and right frames
+  grid rowconfigure    .bot.left 1 -weight 1
+  grid columnconfigure .bot.left 0 -weight 1
+  grid .bot.left.ll  -row 0 -column 0 -sticky nsew
+  grid .bot.left.l   -row 1 -column 0 -sticky nsew
+  grid .bot.left.lvb -row 1 -column 1 -sticky ns
+  grid .bot.left.lhb -row 2 -column 0 -sticky ew
+
+  grid rowconfigure    .bot.right 1 -weight 1
+  grid columnconfigure .bot.right 0 -weight 1
+  grid .bot.right.tl  -row 0 -column 0 -sticky nsew
+  grid .bot.right.txt -row 1 -column 0 -sticky nsew
+  grid .bot.right.vb  -row 1 -column 1 -sticky ns
+  grid .bot.right.hb  -row 2 -column 0 -sticky ew
 
   # Pack the widgets
-  pack .bot -fill both -expand yes -side bottom
+  pack .bot  -fill both -expand yes
+  pack .info -fill both
 
   # Set the window icon
   global HOME
@@ -75,6 +95,14 @@ proc main_view {} {
 
 }
 
+proc main_place {fract} {
+
+  place .bot.left -relwidth $fract
+  place .bot.handle -relx $fract
+  place .bot.right -relwidth [expr {1.0 - $fract}]
+
+}
+ 
 proc populate_listbox {listbox_w} {
 
   global mod_inst_type mod_list inst_list cov_rb file_name
@@ -105,8 +133,8 @@ proc populate_listbox {listbox_w} {
     }
 
     # Get default colors of listbox
-    set lb_fgColor [.bot.l itemcget 0 -foreground]
-    set lb_bgColor [.bot.l itemcget 0 -background]
+    set lb_fgColor [.bot.left.l itemcget 0 -foreground]
+    set lb_bgColor [.bot.left.l itemcget 0 -background]
 
     highlight_listbox
 
@@ -141,9 +169,9 @@ proc highlight_listbox {} {
         # ERROR
       }
       if {$fully_covered == 0} {
-        .bot.l itemconfigure $curr_line -foreground $uncov_fgColor -background $uncov_bgColor
+        .bot.left.l itemconfigure $curr_line -foreground $uncov_fgColor -background $uncov_bgColor
       } else {
-        .bot.l itemconfigure $curr_line -foreground $lb_fgColor -background $lb_bgColor
+        .bot.left.l itemconfigure $curr_line -foreground $lb_fgColor -background $lb_bgColor
       }
       incr curr_line
     }
@@ -157,7 +185,7 @@ proc populate_text {} {
   global cov_rb mod_inst_type mod_list
   global curr_mod_name last_lb_index
 
-  set index [.bot.l curselection]
+  set index [.bot.left.l curselection]
 
   if {$index != ""} {
 
@@ -168,7 +196,7 @@ proc populate_text {} {
       if {$mod_inst_type == "instance"} {
         set curr_mod_name [lindex $mod_list $index]
       } else {
-        set curr_mod_name [.bot.l get $index]
+        set curr_mod_name [.bot.left.l get $index]
       }
 
       if {$cov_rb == "line"} {

@@ -42,9 +42,9 @@ proc menu_create {.menubar} {
       place .status -in . -relx 0.33 -rely 0.5
       after 100 {
         tcl_func_open_cdd $file_name
-        populate_listbox .bot.l
+        populate_listbox .bot.left.l
         destroy .status
-        .bot.info configure -text "Select a module/instance at left for coverage details"
+        .info configure -text "Select a module/instance at left for coverage details"
       }
       ;# Disable ourselves and allow user to replace or merge new CDD
       .menubar.file.menu entryconfigure 0 -state disabled
@@ -59,9 +59,9 @@ proc menu_create {.menubar} {
       place .status -in . -relx 0.33 -rely 0.5
       after 100 {
         tcl_func_replace_cdd $file_name
-        populate_listbox .bot.l
+        populate_listbox .bot.left.l
         destroy .status
-        .bot.info configure -text "Select a module/instance at left for coverage details"
+        .info configure -text "Select a module/instance at left for coverage details"
       }
     }
   }
@@ -72,9 +72,9 @@ proc menu_create {.menubar} {
       place .status -in . -relx 0.33 -rely 0.5
       after 100 {
         tcl_func_merge_cdd $file_name
-        populate_listbox .bot.l
+        populate_listbox .bot.left.l
         destroy .status
-        .bot.info configure -text "Select a module/instance at left for coverage details"
+        .info configure -text "Select a module/instance at left for coverage details"
       }
     }
   }
@@ -88,15 +88,15 @@ proc menu_create {.menubar} {
   global mod_inst_type cov_uncov_type cov_rb
 
   $report add radiobutton -label "Module-based"   -variable mod_inst_type -value "module" -command {
-    populate_listbox .bot.l
+    populate_listbox .bot.left.l
   }
   $report add radiobutton -label "Instance-based" -variable mod_inst_type -value "instance" -command {
-    populate_listbox .bot.l
+    populate_listbox .bot.left.l
   }
   $report add separator
   $report add checkbutton -label "Show Uncovered" -variable uncov_type -onvalue 1 -offvalue 0 -command {
-    set text_x [.bot.txt xview]
-    set text_y [.bot.txt yview]
+    set text_x [.bot.right.txt xview]
+    set text_y [.bot.right.txt yview]
     if {$cov_rb == "line"} {
       display_line_cov
     } elseif {$cov_rb == "toggle"} {
@@ -106,12 +106,12 @@ proc menu_create {.menubar} {
     } else {
       # Error
     }
-    .bot.txt xview moveto [lindex $text_x 0]
-    .bot.txt yview moveto [lindex $text_y 0]
+    .bot.right.txt xview moveto [lindex $text_x 0]
+    .bot.right.txt yview moveto [lindex $text_y 0]
   }
   $report add checkbutton -label "Show Covered" -variable cov_type -onvalue 1 -offvalue 0 -command {
-    set text_x [.bot.txt xview]
-    set text_y [.bot.txt yview]
+    set text_x [.bot.right.txt xview]
+    set text_y [.bot.right.txt yview]
     if {$cov_rb == "line"} {
       display_line_cov
     } elseif {$cov_rb == "toggle"} {
@@ -121,8 +121,8 @@ proc menu_create {.menubar} {
     } else {
       # Error
     }
-    .bot.txt xview moveto [lindex $text_x 0]
-    .bot.txt yview moveto [lindex $text_y 0]
+    .bot.right.txt xview moveto [lindex $text_x 0]
+    .bot.right.txt yview moveto [lindex $text_y 0]
   }
   set mod_inst_type  "module"
 
@@ -136,8 +136,8 @@ proc menu_create {.menubar} {
     set uncov_fgColor [tk_chooseColor -initialcolor $uncov_fgColor -title \
                        "Choose Foreground Color for Uncovered Lines"]
     # Redisplay coverage
-    set text_x [.bot.txt xview]
-    set text_y [.bot.txt yview]
+    set text_x [.bot.right.txt xview]
+    set text_y [.bot.right.txt yview]
     if {$cov_rb == "line"} {
       display_line_cov
     } elseif {$cov_rb == "toggle"} {
@@ -147,8 +147,8 @@ proc menu_create {.menubar} {
     } else {
       # Error
     }
-    .bot.txt xview moveto [lindex $text_x 0]
-    .bot.txt yview moveto [lindex $text_y 0]
+    .bot.right.txt xview moveto [lindex $text_x 0]
+    .bot.right.txt yview moveto [lindex $text_y 0]
   }
 
   # Choose background color of uncovered lines
@@ -157,8 +157,8 @@ proc menu_create {.menubar} {
     set uncov_bgColor [tk_chooseColor -initialcolor $uncov_bgColor -title \
                        "Choose Background Color for Uncovered Lines"]
     # Redisplay coverage
-    set text_x [.bot.txt xview]
-    set text_y [.bot.txt yview]
+    set text_x [.bot.right.txt xview]
+    set text_y [.bot.right.txt yview]
     if {$cov_rb == "line"} {
       display_line_cov
     } elseif {$cov_rb == "toggle"} {
@@ -168,8 +168,8 @@ proc menu_create {.menubar} {
     } else {
       # Error
     }
-    .bot.txt xview moveto [lindex $text_x 0]
-    .bot.txt yview moveto [lindex $text_y 0]
+    .bot.right.txt xview moveto [lindex $text_x 0]
+    .bot.right.txt yview moveto [lindex $text_y 0]
   }
 
   $m add separator
@@ -180,8 +180,8 @@ proc menu_create {.menubar} {
     set cov_fgColor [tk_chooseColor -initialcolor $cov_fgColor -title \
                      "Choose Foreground Color for Covered Lines"]
     # Redisplay coverage
-    set text_x [.bot.txt xview]
-    set text_y [.bot.txt yview]
+    set text_x [.bot.right.txt xview]
+    set text_y [.bot.right.txt yview]
     if {$cov_rb == "line"} {
       display_line_cov
     } elseif {$cov_rb == "toggle"} {
@@ -191,8 +191,8 @@ proc menu_create {.menubar} {
     } else {
       # Error
     }
-    .bot.txt xview moveto [lindex $text_x 0]
-    .bot.txt yview moveto [lindex $text_y 0]
+    .bot.right.txt xview moveto [lindex $text_x 0]
+    .bot.right.txt yview moveto [lindex $text_y 0]
   }
 
   # Choose background color of covered lines
@@ -201,8 +201,8 @@ proc menu_create {.menubar} {
     set cov_bgColor [tk_chooseColor -initialcolor $cov_bgColor -title \
                      "Choose Background Color for Covered Lines"]
     # Redisplay coverage
-    set text_x [.bot.txt xview]
-    set text_y [.bot.txt yview]
+    set text_x [.bot.right.txt xview]
+    set text_y [.bot.right.txt yview]
     if {$cov_rb == "line"} {
       display_line_cov
     } elseif {$cov_rb == "toggle"} {
@@ -212,8 +212,8 @@ proc menu_create {.menubar} {
     } else {
       # Error
     }
-    .bot.txt xview moveto [lindex $text_x 0]
-    .bot.txt yview moveto [lindex $text_y 0]
+    .bot.right.txt xview moveto [lindex $text_x 0]
+    .bot.right.txt yview moveto [lindex $text_y 0]
   }
 
   # Configure the help option
