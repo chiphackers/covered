@@ -13,6 +13,9 @@
 #include "defines.h"
 
 
+//! Creates an expression value and sets MEASURABLE bit if necessary.
+void expression_create_value( expression* exp, int width, int lsb );
+
 //! Creates new expression.
 expression* expression_create( expression* right, expression* left, int op, int id, int line );
 

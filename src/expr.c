@@ -23,6 +23,41 @@ extern nibble nand_optab[16];
 extern nibble nor_optab[16];
 extern nibble nxor_optab[16];
 
+
+/*!
+ \param exp    Pointer to expression to add value to.
+ \param width  Width of value to create.
+ \param lsb    Least significant value of value field.
+
+ Creates a value vector that is large enough to store width number of
+ bits in value and sets the specified expression value to this value.  This
+ function should be called by either the expression_create function, the bind
+ function, or the signal db_read function.  It also evaluates the width and
+ expression operation to determine if the current expression is measurable.
+ If it is deemed to be so, it sets the MEASURABLE bit in the specified
+ expression's supplemental field.
+*/
+void expression_create_value( expression* exp, int width, int lsb ) {
+
+  /* Create value */
+  vector_init( exp->value, 
+               (nibble*)malloc_safe( sizeof( nibble ) * VECTOR_SIZE( width ) ),
+               width, 
+               lsb );
+ 
+  /* If this expression is considered measurable, set the MEASURABLE supplemental bit. */
+  if( (width == 1) &&
+      (SUPPL_OP( exp->suppl ) != EXP_OP_NONE) &&
+      (SUPPL_OP( exp->suppl ) != EXP_OP_SIG) &&
+      (SUPPL_OP( exp->suppl ) != EXP_OP_SBIT_SEL) &&
+      (SUPPL_OP( exp->suppl ) != EXP_OP_MBIT_SEL) ) {
+
+    exp->suppl = exp->suppl | (0x1 << SUPPL_LSB_MEASURABLE);
+
+  }
+
+}
+
 /*!
  \param right  Pointer to expression on right.
  \param left   Pointer to expression on left.
@@ -38,8 +73,8 @@ extern nibble nxor_optab[16];
 expression* expression_create( expression* right, expression* left, int op, int id, int line ) {
 
   expression* new_expr;    /* Pointer to newly created expression */
-  int         rwidth = 1;  /* Bit width of expression on right    */
-  int         lwidth = 1;  /* Bit width of expression on left     */
+  int         rwidth = 0;  /* Bit width of expression on right    */
+  int         lwidth = 0;  /* Bit width of expression on left     */
 
   new_expr = (expression*)malloc_safe( sizeof( expression ) );
 
@@ -50,6 +85,7 @@ expression* expression_create( expression* right, expression* left, int op, int 
   new_expr->parent = NULL;
   new_expr->right  = right;
   new_expr->left   = left;
+  new_expr->value  = (vector*)malloc_safe( sizeof( vector ) );
 
   if( right != NULL ) {
 
@@ -69,26 +105,57 @@ expression* expression_create( expression* right, expression* left, int op, int 
 
   /* Create value vector */
   if( op == EXP_OP_MULTIPLY ) {
+
     /* For multiplication, we need a width the sum of the left and right expressions */
     assert( rwidth < 1024 );
     assert( lwidth < 1024 );
-    new_expr->value = vector_create( (lwidth + rwidth), 0 );
-  } else if( rwidth >= lwidth ) {
-    /* Check to make sure that nothing has gone drastically wrong */
-    assert( rwidth < 1024 );
-    new_expr->value = vector_create( rwidth, 0 );
-    if( (rwidth == 1) && 
-        (op != EXP_OP_SIG) && (op != EXP_OP_SBIT_SEL) && (op != EXP_OP_MBIT_SEL) && (op != EXP_OP_NONE) ) {
-      new_expr->suppl = new_expr->suppl | (0x1 << SUPPL_LSB_MEASURABLE);
-    }
+    expression_create_value( new_expr, (lwidth + rwidth), 0 );
+
+  } else if( (op == EXP_OP_LT   ) ||
+             (op == EXP_OP_GT   ) ||
+             (op == EXP_OP_EQ   ) ||
+             (op == EXP_OP_CEQ  ) ||
+             (op == EXP_OP_LE   ) ||
+             (op == EXP_OP_GE   ) ||
+             (op == EXP_OP_NE   ) ||
+             (op == EXP_OP_CNE  ) ||
+             (op == EXP_OP_LOR  ) ||
+             (op == EXP_OP_LAND ) ||
+             (op == EXP_OP_UINV ) ||
+             (op == EXP_OP_UAND ) ||
+             (op == EXP_OP_UNOT ) ||
+             (op == EXP_OP_UOR  ) ||
+             (op == EXP_OP_UXOR ) ||
+             (op == EXP_OP_UNAND) ||
+             (op == EXP_OP_UNOR ) ||
+             (op == EXP_OP_UNXOR) ) {
+
+    /* If this expression will evaluate to a single bit, create vector now */
+    expression_create_value( new_expr, 1, 0 );
+
   } else {
-    /* Check to make sure that nothing has gone drastically wrong */
-    assert( lwidth < 1024 );
-    new_expr->value = vector_create( lwidth, 0 );
-    if( (lwidth == 1) && 
-        (op != EXP_OP_SIG) && (op != EXP_OP_SBIT_SEL) && (op != EXP_OP_MBIT_SEL) && (op != EXP_OP_NONE) ) {
-      new_expr->suppl = new_expr->suppl | (0x1 << SUPPL_LSB_MEASURABLE);
+
+    /* If both right and left values have their width values set. */
+    if( (rwidth > 0) && (lwidth > 0) ) {
+
+      if( rwidth >= lwidth ) {
+        /* Check to make sure that nothing has gone drastically wrong */
+        assert( rwidth < 1024 );
+        expression_create_value( new_expr, rwidth, 0 );
+      } else {
+        /* Check to make sure that nothing has gone drastically wrong */
+        assert( lwidth < 1024 );
+        expression_create_value( new_expr, lwidth, 0 );
+      }
+
+    } else {
+ 
+      new_expr->value->value = NULL;
+      new_expr->value->width = 0;
+      new_expr->value->lsb   = 0;
+  
     }
+
   }
 
   return( new_expr );

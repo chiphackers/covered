@@ -304,48 +304,48 @@
  @{
 */
 
-#define EXP_OP_NONE	0x0	/*!< Specifies no expression (leaf node in expression tree) */
-#define EXP_OP_SIG	0x1	/*!< Specifes that this expression contains signal value    */
-#define EXP_OP_XOR	0x2	/*!< '^'   operator */
-#define EXP_OP_MULTIPLY	0x3    	/*!< '*'   operator */
-#define EXP_OP_DIVIDE	0x4	/*!< '/'   operator */
-#define EXP_OP_MOD	0x5	/*!< '%'   operator */
-#define EXP_OP_ADD	0x6	/*!< '+'   operator */
-#define EXP_OP_SUBTRACT	0x7	/*!< '-'   operator */
-#define EXP_OP_AND	0x8	/*!< '&'   operator */
-#define EXP_OP_OR	0x9	/*!< '|'   operator */
-#define EXP_OP_NAND     0xa     /*!< '~&'  operator */
-#define EXP_OP_NOR	0xb	/*!< '~|'  operator */
-#define EXP_OP_NXOR	0xc	/*!< '~^'  operator */
-#define EXP_OP_LT	0xd	/*!< '<'   operator */
-#define EXP_OP_GT	0xe	/*!< '>'   operator */
-#define EXP_OP_LSHIFT	0xf	/*!< '<<'  operator */
-#define EXP_OP_RSHIFT	0x10	/*!< '>>'  operator */
-#define EXP_OP_EQ	0x11	/*!< '=='  operator */
-#define EXP_OP_CEQ	0x12	/*!< '===' operator */
-#define EXP_OP_LE	0x13	/*!< '<='  operator */
-#define EXP_OP_GE	0x14	/*!< '>='  operator */
-#define EXP_OP_NE	0x15	/*!< '!='  operator */
-#define EXP_OP_CNE	0x16	/*!< '!==' operator */
-#define EXP_OP_LOR	0x17	/*!< '||'  operator */
-#define EXP_OP_LAND	0x18	/*!< '&&'  operator */
-#define EXP_OP_COND_T	0x19	/*!< '?:' true condition operator  */
-#define EXP_OP_COND_F   0x1a    /*!< '?:' false condition operator */
-#define EXP_OP_UINV	0x1b	/*!< unary '~'  operator           */
-#define EXP_OP_UAND	0x1c	/*!< unary '&'  operator           */
-#define EXP_OP_UNOT	0x1d	/*!< unary '!'  operator           */
-#define EXP_OP_UOR	0x1e	/*!< unary '|'  operator           */
-#define EXP_OP_UXOR	0x1f 	/*!< unary '^'  operator           */
-#define EXP_OP_UNAND	0x20	/*!< unary '~&' operator           */
-#define EXP_OP_UNOR	0x21	/*!< unary '~|' operator           */
-#define EXP_OP_UNXOR	0x22	/*!< unary '~^' operator           */
-#define EXP_OP_SBIT_SEL	0x23	/*!< single-bit signal select      */
-#define EXP_OP_MBIT_SEL	0x24	/*!< multi-bit signal select       */
-#define EXP_OP_EXPAND	0x25	/*!< bit expansion operator        */
-#define EXP_OP_CONCAT	0x26	/*!< signal concatenation operator */
-#define EXP_OP_PEDGE	0x27	/*!< posedge operator              */
-#define EXP_OP_NEDGE	0x28	/*!< negedge operator              */
-#define EXP_OP_AEDGE	0x29	/*!< anyedge operator              */
+#define EXP_OP_NONE	0x0	/*!<  0 Specifies no expression (leaf node in expression tree) */
+#define EXP_OP_SIG	0x1	/*!<  1 Specifes that this expression contains signal value    */
+#define EXP_OP_XOR	0x2	/*!<  2 '^'   operator */
+#define EXP_OP_MULTIPLY	0x3    	/*!<  3 '*'   operator */
+#define EXP_OP_DIVIDE	0x4	/*!<  4 '/'   operator */
+#define EXP_OP_MOD	0x5	/*!<  5 '%'   operator */
+#define EXP_OP_ADD	0x6	/*!<  6 '+'   operator */
+#define EXP_OP_SUBTRACT	0x7	/*!<  7 '-'   operator */
+#define EXP_OP_AND	0x8	/*!<  8 '&'   operator */
+#define EXP_OP_OR	0x9	/*!<  9 '|'   operator */
+#define EXP_OP_NAND     0xa     /*!< 10 '~&'  operator */
+#define EXP_OP_NOR	0xb	/*!< 11 '~|'  operator */
+#define EXP_OP_NXOR	0xc	/*!< 12 '~^'  operator */
+#define EXP_OP_LT	0xd	/*!< 13 '<'   operator */
+#define EXP_OP_GT	0xe	/*!< 14 '>'   operator */
+#define EXP_OP_LSHIFT	0xf	/*!< 15 '<<'  operator */
+#define EXP_OP_RSHIFT	0x10	/*!< 16 '>>'  operator */
+#define EXP_OP_EQ	0x11	/*!< 17 '=='  operator */
+#define EXP_OP_CEQ	0x12	/*!< 18 '===' operator */
+#define EXP_OP_LE	0x13	/*!< 19 '<='  operator */
+#define EXP_OP_GE	0x14	/*!< 20 '>='  operator */
+#define EXP_OP_NE	0x15	/*!< 21 '!='  operator */
+#define EXP_OP_CNE	0x16	/*!< 22 '!==' operator */
+#define EXP_OP_LOR	0x17	/*!< 23 '||'  operator */
+#define EXP_OP_LAND	0x18	/*!< 24 '&&'  operator */
+#define EXP_OP_COND_T	0x19	/*!< 25 '?:' true condition operator  */
+#define EXP_OP_COND_F   0x1a    /*!< 26 '?:' false condition operator */
+#define EXP_OP_UINV	0x1b	/*!< 27 unary '~'  operator           */
+#define EXP_OP_UAND	0x1c	/*!< 28 unary '&'  operator           */
+#define EXP_OP_UNOT	0x1d	/*!< 29 unary '!'  operator           */
+#define EXP_OP_UOR	0x1e	/*!< 30 unary '|'  operator           */
+#define EXP_OP_UXOR	0x1f 	/*!< 31 unary '^'  operator           */
+#define EXP_OP_UNAND	0x20	/*!< 32 unary '~&' operator           */
+#define EXP_OP_UNOR	0x21	/*!< 33 unary '~|' operator           */
+#define EXP_OP_UNXOR	0x22	/*!< 34 unary '~^' operator           */
+#define EXP_OP_SBIT_SEL	0x23	/*!< 35 single-bit signal select      */
+#define EXP_OP_MBIT_SEL	0x24	/*!< 36 multi-bit signal select       */
+#define EXP_OP_EXPAND	0x25	/*!< 37 bit expansion operator        */
+#define EXP_OP_CONCAT	0x26	/*!< 38 signal concatenation operator */
+#define EXP_OP_PEDGE	0x27	/*!< 39 posedge operator              */
+#define EXP_OP_NEDGE	0x28	/*!< 40 negedge operator              */
+#define EXP_OP_AEDGE	0x29	/*!< 41 anyedge operator              */
 
 /*! @} */
 

@@ -188,7 +188,8 @@ void combination_underline_tree( expression* exp, char*** lines, int* depth, int
 
     if( SUPPL_OP( exp->suppl ) == EXP_OP_NONE ) {
       
-      *size = exp->value->width + 12;
+      snprintf( code_fmt, 12, "%d", exp->value->width );
+      *size = strlen( code_fmt ) + VECTOR_SIZE( exp->value->width ) + 2;
 
     } else if( SUPPL_OP( exp->suppl ) == EXP_OP_SIG ) {
 

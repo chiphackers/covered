@@ -119,14 +119,15 @@ void bind_remove( int id ) {
 */
 void bind( int mode ) {
   
-  mod_inst*     modi;          /* Pointer to found module instance   */
-  module*       mod;           /* Pointer to found module            */
-  mod_link*     modl;          /* Pointer to found module link       */
-  signal        sig;           /* Temporary signal used for matching */
-  sig_link*     sigl;          /* Found signal in module             */
-  char          scope[4096];   /* Scope of signal's parent module    */
-  char          sig_name[256]; /* Name of signal in module           */
-  char          msg[4096];     /* Error message to display to user   */
+  mod_inst*     modi;          /* Pointer to found module instance     */
+  module*       mod;           /* Pointer to found module              */
+  mod_link*     modl;          /* Pointer to found module link         */
+  signal        sig;           /* Temporary signal used for matching   */
+  sig_link*     sigl;          /* Found signal in module               */
+  char          scope[4096];   /* Scope of signal's parent module      */
+  char          sig_name[256]; /* Name of signal in module             */
+  char          msg[4096];     /* Error message to display to user     */
+  expression*   curr_parent;   /* Pointer to current parent expression */
 
   while( seb_head != NULL ) {
 
@@ -183,12 +184,11 @@ void bind( int mode ) {
           seb_head->exp->value = sigl->sig->value;
           break;
         case EXP_OP_SBIT_SEL :
-          free_safe( seb_head->exp->value->value );
+          // free_safe( seb_head->exp->value->value );
           seb_head->exp->value->value = sigl->sig->value->value;
           seb_head->exp->value->width = 1;
           break;
         case EXP_OP_MBIT_SEL :
-          free_safe( seb_head->exp->value->value );
           seb_head->exp->value->value = sigl->sig->value->value;
           break;
         default :
@@ -196,6 +196,16 @@ void bind( int mode ) {
           print_output( msg, FATAL );
           exit( 1 );
           break;
+      }
+
+      /* 
+       Traverse parent link, if parent found to have width == 0, set it to the
+       size of this signal.
+      */
+      curr_parent = seb_head->exp->parent;
+      while( (curr_parent != NULL) && (curr_parent->value->width == 0) ) {
+        expression_create_value( curr_parent, seb_head->exp->value->width, seb_head->exp->value->lsb );
+        curr_parent = curr_parent->parent;
       }
 
     }

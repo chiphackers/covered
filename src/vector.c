@@ -66,6 +66,8 @@ vector* vector_create( int width, int lsb ) {
   vector* new_vec;   /* Pointer to newly created vector */
   int     i;         /* Loop iterator                   */
 
+  assert( width > 0 );
+
   new_vec = (vector*)malloc_safe( sizeof( vector ) );
 
   vector_init( new_vec,

@@ -630,7 +630,7 @@ expr_primary
 	: NUMBER
 		{
 		  expression* tmp = db_create_expression( NULL, NULL, EXP_OP_NONE, @1.first_line, NULL );
-		  vector_dealloc( tmp->value );
+                  free_safe( tmp->value );
 		  tmp->value = $1;
 		  $$ = tmp;
 		}

@@ -145,18 +145,19 @@ void signal_db_write( signal* sig, FILE* file, char* modname ) {
 */
 bool signal_db_read( char** line, module* curr_mod ) {
 
-  bool       retval = TRUE;   /* Return value for this function                             */
-  char       name[256];       /* Name of current signal                                     */
-  signal*    sig;             /* Pointer to the newly created signal                        */
-  vector*    vec;             /* Vector value for this signal                               */
-  int        exp_id;          /* Expression ID                                              */
-  char       tmp[2];          /* Temporary holder for semicolon                             */
-  int        chars_read;      /* Number of characters read from line                        */
-  int        i;               /* Loop iterator                                              */
-  char       modname[4096];   /* Name of signal's module                                    */
-  expression texp;            /* Temporary expression link for searching purposes           */
-  exp_link*  expl;            /* Temporary expression link for storage                      */
-  char       msg[4096];       /* Error message string                                       */
+  bool        retval = TRUE;   /* Return value for this function                   */
+  char        name[256];       /* Name of current signal                           */
+  signal*     sig;             /* Pointer to the newly created signal              */
+  vector*     vec;             /* Vector value for this signal                     */
+  int         exp_id;          /* Expression ID                                    */
+  char        tmp[2];          /* Temporary holder for semicolon                   */
+  int         chars_read;      /* Number of characters read from line              */
+  int         i;               /* Loop iterator                                    */
+  char        modname[4096];   /* Name of signal's module                          */
+  expression  texp;            /* Temporary expression link for searching purposes */
+  exp_link*   expl;            /* Temporary expression link for storage            */
+  char        msg[4096];       /* Error message string                             */
+  expression* curr_parent;     /* Pointer to current parent being traversed        */
 
   /* Get name values. */
   if( sscanf( *line, "%s %s %n", name, modname, &chars_read ) == 2 ) {
@@ -198,15 +199,26 @@ bool signal_db_read( char** line, module* curr_mod ) {
 	   If expression is a signal holder, we need to set the expression's vector to point
 	   to our vector and set its signal pointer to point to us.
 	  */
-          if( SUPPL_OP( expl->exp->suppl ) == EXP_OP_SIG ) {
-            vector_dealloc( expl->exp->value );
-            printf( "Binding signal with width: %d\n", sig->value->width );
-            expl->exp->value = sig->value;
-            expl->exp->sig   = sig;
-          } else if( (SUPPL_OP( expl->exp->suppl ) == EXP_OP_SBIT_SEL) || (SUPPL_OP( expl->exp->suppl ) == EXP_OP_MBIT_SEL) ) {
-            free_safe( expl->exp->value->value );
-            expl->exp->value->value = sig->value->value;
-            expl->exp->sig          = sig;
+          if( (SUPPL_OP( expl->exp->suppl ) == EXP_OP_SIG      ) ||
+              (SUPPL_OP( expl->exp->suppl ) == EXP_OP_SBIT_SEL ) ||
+              (SUPPL_OP( expl->exp->suppl ) == EXP_OP_MBIT_SEL ) ) {
+
+            if( SUPPL_OP( expl->exp->suppl ) == EXP_OP_SIG ) {
+              printf( "Binding signal with width: %d\n", sig->value->width );
+              expl->exp->value = sig->value;
+              expl->exp->sig   = sig;
+            } else if( (SUPPL_OP( expl->exp->suppl ) == EXP_OP_SBIT_SEL) || (SUPPL_OP( expl->exp->suppl ) == EXP_OP_MBIT_SEL) ) {
+              expl->exp->value->value = sig->value->value;
+              expl->exp->sig          = sig;
+            }
+
+            /* Traverse parent links, setting its width if it is set to 0. */
+            curr_parent = expl->exp->parent;
+            while( (curr_parent != NULL) && (curr_parent->value->width == 0) ) {
+              expression_create_value( curr_parent, sig->value->width, sig->value->lsb );
+              curr_parent = curr_parent->parent;
+            }
+
           }
 
         } else {
