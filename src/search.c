@@ -44,7 +44,13 @@ void search_init() {
   module* mod;       /* Pointer to newly created module node from top module */
 
   mod        = module_create();
-  mod->name  = strdup( top_module );
+
+  if( top_module != NULL ) {
+    mod->name  = strdup( top_module );
+  } else {
+    print_output( "No top_module was specified with the -t option.  Please see \"covered -h\" for usage.", FATAL );
+    exit( 1 );
+  }
 
   if( top_instance == NULL ) {
     mod->scope = strdup( top_module );
@@ -206,6 +212,10 @@ void search_free_lists() {
 }
 
 /* $Log$
+/* Revision 1.4  2002/07/08 19:02:12  phase1geo
+/* Adding -i option to properly handle modules specified for coverage that
+/* are instantiated within a design without needing to parse parent modules.
+/*
 /* Revision 1.3  2002/07/08 12:35:31  phase1geo
 /* Added initial support for library searching.  Code seems to be broken at the
 /* moment.
