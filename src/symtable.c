@@ -118,7 +118,6 @@
 #include "link.h"
 #include "sim.h"
 
-
 /*!
  Pointer to the VCD symbol table.  Please see the file description for how this
  structure is used.
@@ -164,10 +163,11 @@ void symtable_init( symtable* symtab, signal* sig, int msb, int lsb ) {
 
   sig_link_add( sig, &(symtab->sig_head), &(symtab->sig_tail) );
 
-  symtab->msb   = msb;
-  symtab->lsb   = lsb;
-  symtab->value = (char*)malloc_safe( sig->value->width + 1 );
-  symtab->size  = (sig->value->width + 1);
+  symtab->msb      = msb;
+  symtab->lsb      = lsb;
+  symtab->value    = (char*)malloc_safe( sig->value->width + 1 );
+  symtab->value[0] = '\0';
+  symtab->size     = (sig->value->width + 1);
 
 }
 
@@ -218,8 +218,8 @@ void symtable_add( char* sym, signal* sig, int msb, int lsb ) {
   char*     ptr;   /* Pointer to current character in sym */
 
   assert( vcd_symtab != NULL );
-  assert( sym[0]      != '\0' );
-  assert( sig->value  != NULL );
+  assert( sym[0]     != '\0' );
+  assert( sig->value != NULL );
 
   curr = vcd_symtab;
   ptr  = sym;
@@ -254,9 +254,10 @@ void symtable_add( char* sym, signal* sig, int msb, int lsb ) {
 */
 void symtable_set_value( char* sym, char* value ) {
 
-  symtable* curr;  /* Pointer to current symtable              */
-  sig_link* sigl;  /* Pointer to current signal in signal list */
-  char*     ptr;   /* Pointer to current character in symbol   */
+  symtable* curr;         /* Pointer to current symtable                                     */
+  sig_link* sigl;         /* Pointer to current signal in signal list                        */
+  char*     ptr;          /* Pointer to current character in symbol                          */
+  bool      set = FALSE;  /* Specifies if this symtable entry has been set this timestep yet */
 
   assert( vcd_symtab != NULL );
   assert( sym[0] != '\0' );
@@ -271,26 +272,34 @@ void symtable_set_value( char* sym, char* value ) {
 
   if( (curr != NULL) && (curr->value != NULL) ) {
 
+    if( curr->value[0] != '\0' ) {
+      set = TRUE;
+    }
+
     /* printf( "strlen( value ): %d, curr->size: %d\n", strlen( value ), curr->size ); */
     assert( strlen( value ) < curr->size );     // Useful for debugging but not necessary
     strcpy( curr->value, value );
 
-    /*
-     See if current signal is to be placed in presim queue or postsim queue and
-     put it there.
-    */
-    sigl = curr->sig_head;
-    while( (sigl != NULL) && (signal_get_wait_bit( sigl->sig ) == 0) ) {
-      sigl = sigl->next;
-    }
+    if( !set ) {
 
-    /* None of the signals are wait signals, place in postsim queue */
-    if( sigl == NULL ) {
-      timestep_tab[((vcd_symtab_size - 1) - postsim_size)] = curr;
-      postsim_size++;
-    } else {
-      timestep_tab[presim_size] = curr;
-      presim_size++;
+      /*
+       See if current signal is to be placed in presim queue or postsim queue and
+       put it there.
+      */
+      sigl = curr->sig_head;
+      while( (sigl != NULL) && (signal_get_wait_bit( sigl->sig ) == 0) ) {
+        sigl = sigl->next;
+      }
+
+      /* None of the signals are wait signals, place in postsim queue */
+      if( sigl == NULL ) {
+        timestep_tab[((vcd_symtab_size - 1) - postsim_size)] = curr;
+        postsim_size++;
+      } else {
+        timestep_tab[presim_size] = curr;
+        presim_size++;
+      }
+   
     }
 
   }
@@ -318,6 +327,7 @@ void symtable_assign( bool presim ) {
         signal_vcd_assign( sigl->sig, curr->value, curr->msb, curr->lsb );
         sigl = sigl->next;
       }
+      curr->value[0] = '\0';
     }
     presim_size = 0;
   } else {
@@ -328,6 +338,7 @@ void symtable_assign( bool presim ) {
         signal_vcd_assign( sigl->sig, curr->value, curr->msb, curr->lsb );
         sigl = sigl->next;
       }
+      curr->value[0] = '\0';
     }
     postsim_size = 0;
   }
@@ -363,6 +374,10 @@ void symtable_dealloc( symtable* symtab ) {
 
 /*
  $Log$
+ Revision 1.13  2003/08/18 23:52:54  phase1geo
+ Fixing bug in initialization function for a symtable to initialize all 256
+ elements of the table array (instead of 255).
+
  Revision 1.12  2003/08/15 03:52:22  phase1geo
  More checkins of last checkin and adding some missing files.
 

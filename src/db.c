@@ -29,6 +29,7 @@
 #include "binding.h"
 #include "param.h"
 #include "static.h"
+#include "info.h"
 
 
 extern char*     top_module;
@@ -1191,6 +1192,9 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.96  2003/08/15 03:52:22  phase1geo
+ More checkins of last checkin and adding some missing files.
+
  Revision 1.95  2003/08/10 03:50:10  phase1geo
  More development documentation updates.  All global variables are now
  documented correctly.  Also fixed some generated documentation warnings.

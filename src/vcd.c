@@ -29,6 +29,7 @@ extern symtable*  vcd_symtab;
 extern int        vcd_symtab_size;
 extern symtable** timestep_tab;
 
+
 /*!
  This flag is used to indicate if Covered was successfull in finding at least one
  matching instance from the VCD file.  If no instances were found for the entire
@@ -351,6 +352,9 @@ void vcd_parse( char* vcd_file ) {
       free_safe( timestep_tab );
     }
 
+    /* Close VCD file */
+    fclose( vcd_handle );
+
   } else {
 
     print_output( "Unable to open specified VCD file", FATAL );
@@ -362,6 +366,9 @@ void vcd_parse( char* vcd_file ) {
 
 /*
  $Log$
+ Revision 1.11  2003/08/15 03:52:22  phase1geo
+ More checkins of last checkin and adding some missing files.
+
  Revision 1.10  2003/08/05 20:25:05  phase1geo
  Fixing non-blocking bug and updating regression files according to the fix.
  Also added function vector_is_unknown() which can be called before making
