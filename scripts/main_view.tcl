@@ -2,8 +2,8 @@
 
 # Include BWidget package
 set HOME $env(COVERED_HOME)
-lappend auto_path $HOME/packages
-package require BWidget
+# lappend auto_path $HOME/packages
+# package require BWidget
 
 # Include the necessary auxiliary files 
 source $HOME/scripts/menu_create.tcl

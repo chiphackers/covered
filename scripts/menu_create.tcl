@@ -126,8 +126,8 @@ proc menu_create {.menubar} {
   pack .menubar.help   -side right
 
   # Create a 3D Seperator 
-  Separator .seperator 
-  pack .seperator -fill x
+  # Separator .seperator 
+  # pack .seperator -fill x
 
   # Do key bindings for the Top Level Menus
   do_keybind .menubar

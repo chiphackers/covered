@@ -1340,8 +1340,10 @@ void combination_list_missed( FILE* ofile, expression* exp, unsigned int curr_de
 }
 
 /*!
- \param expr        Pointer to root of expression tree to search.
- \param curr_depth  Specifies current depth of expression tree.
+ \param expr            Pointer to root of expression tree to search.
+ \param curr_depth      Specifies current depth of expression tree.
+ \param any_missed      Pointer to indicate if any subexpressions were missed in the specified expression.
+ \param any_measurable  Pointer to indicate if any subexpressions were measurable in the specified expression.
 
  Recursively traverses specified expression tree, returning TRUE
  if an expression is found that has not received 100% coverage for
@@ -1351,7 +1353,7 @@ bool combination_output_expr( expression* expr, unsigned int curr_depth, int* an
 
   if( (expr != NULL) && (SUPPL_WAS_COMB_COUNTED( expr->suppl ) == 1) ) {
 
-    expr->suppl  = expr->suppl & ~(0x1 << SUPPL_LSB_COMB_CNTD);
+    expr->suppl = expr->suppl & ~(0x1 << SUPPL_LSB_COMB_CNTD);
 
     combination_output_expr( expr->right, combination_calc_depth( expr, curr_depth, FALSE ), any_missed, any_measurable );
     combination_output_expr( expr->left,  combination_calc_depth( expr, curr_depth, TRUE ),  any_missed, any_measurable );
@@ -1386,12 +1388,12 @@ bool combination_output_expr( expression* expr, unsigned int curr_depth, int* an
 */
 void combination_display_verbose( FILE* ofile, stmt_link* stmtl ) {
 
-  stmt_iter   stmti;         /* Statement list iterator                  */
-  expression* unexec_exp;    /* Pointer to current unexecuted expression */
-  char**      code;          /* Code string from code generator          */
-  int         code_depth;    /* Depth of code array                      */
-  int         any_missed     = 0;
-  int         any_measurable = 0;
+  stmt_iter   stmti;           /* Statement list iterator                                                   */
+  expression* unexec_exp;      /* Pointer to current unexecuted expression                                  */
+  char**      code;            /* Code string from code generator                                           */
+  int         code_depth;      /* Depth of code array                                                       */
+  int         any_missed;      /* Specifies if any of the subexpressions were missed in this expression     */
+  int         any_measurable;  /* Specifies if any of the subexpressions were measurable in this expression */
 
   if( report_covered ) {
     fprintf( ofile, "    Hit Combinations\n\n" );
@@ -1404,6 +1406,9 @@ void combination_display_verbose( FILE* ofile, stmt_link* stmtl ) {
   stmt_iter_find_head( &stmti, FALSE );
 
   while( stmti.curr != NULL ) {
+
+    any_missed     = 0;
+    any_measurable = 0;
 
     combination_output_expr( stmti.curr->stmt->exp, 0, &any_missed, &any_measurable );
 
@@ -1567,6 +1572,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.95  2004/03/18 14:06:51  phase1geo
+ Fixing combination_output_expr to work correctly for covered and uncovered
+ modes.
+
  Revision 1.94  2004/03/18 04:43:23  phase1geo
  Cleaning up verbose output.  The last modification still isn't working
  exactly as hoped; more work to do here.
