@@ -79,6 +79,17 @@
  This NULL assignment indicates to the statement simulation engine that this statement
  will receive the STMT_HEAD bit and the current statement tree is finished for this
  timestep.
+
+ \par Other Notes
+ A statement must always be connected to an expression tree (this is were it gets its
+ unique identifier and some control bits from in the first place).  When a statement
+ is deallocated, the pointer to its expression is set to a value of NULL to indicate
+ to all other functions that this statement no longer exists.  This is necessary for
+ deallocating statement trees because a statement cannot tell other statements pointing
+ to it that it no longer exists.  When the statements connected to it are deallocated
+ they will look at the next_true and next_false pointers, check to see if the expressions
+ are NULL and do the appropriate action.  This algorithm will only work as long as there
+ are no malloc calls during the statement deallocation process.
 */
 
 #ifdef HAVE_CONFIG_H
@@ -573,6 +584,12 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.39  2002/12/13 16:49:56  phase1geo
+ Fixing infinite loop bug with statement set_stop function.  Removing
+ hierarchical references from scoring (same problem as defparam statement).
+ Fixing problem with checked in version of param.c and fixing error output
+ in bind() function to be more meaningful to user.
+
  Revision 1.38  2002/12/07 17:46:53  phase1geo
  Fixing bug with handling memory declarations.  Added diagnostic to verify
  that memory declarations are handled properly.  Fixed bug with infinite

@@ -813,28 +813,24 @@ void db_add_statement( statement* stmt, statement* start ) {
 */
 void db_remove_statement( statement* stmt ) {
 
-  if( stmt != NULL ) {
+  if( (stmt != NULL) && (stmt->exp != NULL) ) {
 
-    if( stmt->exp != NULL ) {
-      snprintf( user_msg, USER_MSG_LENGTH, "In db_remove_statement, stmt id: %d, line: %d", 
-                stmt->exp->id, stmt->exp->line );
-    } else {
-      snprintf( user_msg, USER_MSG_LENGTH, "In db_remove_statement, stmt id: ???, line: ???" );
-    }
+    snprintf( user_msg, USER_MSG_LENGTH, "In db_remove_statement, stmt id: %d, line: %d", 
+              stmt->exp->id, stmt->exp->line );
     print_output( user_msg, DEBUG );
 
     /* Remove true/false paths */
     db_remove_statement( stmt->next_true  );
     db_remove_statement( stmt->next_false );
 
-    /* Remove expression from current module expression list */
-    exp_link_remove( stmt->exp, &(curr_module->exp_head), &(curr_module->exp_tail), TRUE );
-
     /* Remove expression from any module parameter expression lists */
     mod_parm_find_expr_and_remove( stmt->exp, curr_module->param_head );
 
-    /* Deallocate expression tree for this statement */
-    expression_dealloc( stmt->exp, FALSE );
+    /* Remove expression from current module expression list and delete expressions */
+    exp_link_remove( stmt->exp, &(curr_module->exp_head), &(curr_module->exp_tail), TRUE );
+
+    /* Indicate that this statement no longer exists */
+    stmt->exp = NULL;
 
     /* Deallocate statement itself */
     statement_dealloc( stmt );
@@ -1141,6 +1137,10 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.84  2003/02/07 23:12:29  phase1geo
+ Optimizing db_add_statement function to avoid memory errors.  Adding check
+ for -i option to avoid user error.
+
  Revision 1.83  2003/02/07 02:28:23  phase1geo
  Fixing bug with statement removal.  Expressions were being deallocated but not properly
  removed from module parameter expression lists and module expression lists.  Regression
