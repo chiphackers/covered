@@ -35,8 +35,10 @@
 
 stmt_sig* stmt_sig_head = NULL;
 stmt_sig* stmt_sig_tail = NULL;
+int       races_found   = 0;
 
 extern bool flag_race_check;
+extern char user_msg[USER_MSG_LENGTH];
 
 
 /*!
@@ -226,6 +228,77 @@ void race_stmt_sig_display() {
 }
 
 /*!
+ Performs race checking for the currently loaded module.  At this point, the stmt_sig array will be fully
+ populated.  After race checking has been completed, the stmt_sig array will be completely deallocated.  This
+ function should be called when the endmodule keyword is detected in the current module.
+*/
+void race_check_module() {
+
+  stmt_sig* comp;  /* Pointer to stmt_sig to compare to    */
+  stmt_sig* curr;  /* Pointer to current stmt_sig to check */
+
+  comp = stmt_sig_head;
+
+  while( comp != NULL ) {
+
+    curr = comp->next;
+
+    while( curr != NULL ) {
+
+      /* If the signal to compare was assigned in more than one place, keep checking that signal */
+      if( comp->sig == curr->sig ) {
+
+	/* If the signal was assigned in the same statement, checking blocking value */
+	if( comp->stmt == curr->stmt ) {
+
+          /* If we have mixed assignment types in the same statement */
+          if( comp->blocking != curr->blocking ) {
+            if( flag_race_check ) {
+	    }
+	  }
+	}
+
+      }
+
+      curr = curr->next;
+
+    }
+
+    comp = comp->next;
+
+  }
+
+  /* Deallocate stmt_sig list */
+  race_stmt_sig_dealloc();
+
+}
+
+/*!
+ \return Returns TRUE if no race conditions were found or the user specified that we should continue
+         to score the design.
+*/
+bool race_check_race_count() {
+
+  bool retval = TRUE;  /* Return value for this function */
+
+  /*
+   If we were able to find race conditions and the user specified to check for race conditions
+   and quit, display the number of race conditions found and return FALSE to cause everything to
+   halt.
+  */
+  if( (races_found > 0) && flag_race_check ) {
+
+    snprintf( user_msg, USER_MSG_LENGTH, "%d race conditions were detected.  Exiting score command.", races_found );
+    print_output( user_msg, FATAL );
+    retval = FALSE;
+
+  }
+
+  return( retval );
+
+}
+
+/*!
  \param ss  Pointer to stmt_sig structure to deallocate
 
  Deallocates stmt_sig structure list from memory.
@@ -251,6 +324,9 @@ void race_stmt_sig_dealloc() {
 
 /*
  $Log$
+ Revision 1.6  2004/12/18 16:23:18  phase1geo
+ More race condition checking updates.
+
  Revision 1.5  2004/12/17 22:29:35  phase1geo
  More code added to race condition feature.  Still not usable.
 
