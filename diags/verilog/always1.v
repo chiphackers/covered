@@ -29,19 +29,18 @@ initial begin
 	d = 1'b0;
 	e = 1'b0;
 	f = 1'b0;
-	fork
-	  forever #(4)
-	    begin
-	     b = ~b;
-	     c = ~c;
-	    end 
+	forever #(4)
 	  begin
-	   #20;
-	   f = 1'b1;
-	   #100;
-	   $finish;
-	  end
-	join
+	   b = ~b;
+	   c = ~c;
+	  end 
+end
+
+initial begin
+	#20;
+	f = 1'b1;
+	#100;
+	$finish;
 end
 
 endmodule
