@@ -1,6 +1,6 @@
 Covered-Related NEWS
 ====================
-    * 7/7/2002
+    * 7/11/2002
 
 Release covered-20020711 made.  This release contains a lot of fixes to the score and report
 commands.  Proper support for `include and `define preprocessor now available.  Fixes to the
