@@ -154,6 +154,7 @@ WSPACE [ \t\b\f]+
 
   /* Keyword and signal identifiers */
 [a-zA-Z_][a-zA-Z0-9$_]* {
+     char msg[4096];
      int rc = lexer_keyword_code( yytext, yyleng );
      if( rc == IDENTIFIER ) {
        if( ignore_mode == 0 ) {
@@ -174,7 +175,8 @@ WSPACE [ \t\b\f]+
            rc = IGNORE;
          } else {
            /* The module has been found, recirculate filelist */
-           printf( "Parsing file %s\n", istack->path );
+           snprintf( msg, 4096, "Parsing file %s", istack->path );
+           print_output( msg, NORMAL );
            filelist_curr = filelist_head;
            last_keyword = 0;
          }
@@ -913,7 +915,8 @@ static void do_include() {
 static int yywrap() {
 
   struct include_stack_t* isp = istack;
-  str_link* curr;
+  str_link*               curr;
+  char                    msg[4096];       /* Message to user */
 
   istack = isp->next;
 
@@ -969,7 +972,8 @@ static int yywrap() {
   }
 
   /* Otherwise, resume the input buffer that is the new stack top. */
-  printf( "Resume parsing %s\n", istack->path );
+  snprintf( msg, 4096, "Resume parsing %s", istack->path );
+  print_output( msg, NORMAL );
   yy_switch_to_buffer( istack->yybs );
 
   return 0;

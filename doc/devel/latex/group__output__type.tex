@@ -8,6 +8,8 @@
 \#define {\bf WARNING}\ 2
 \item 
 \#define {\bf NORMAL}\ 3
+\item 
+\#define {\bf DEBUG}\ 4
 \end{CompactItemize}
 
 
@@ -15,7 +17,12 @@
 The following defines are used by the print\_\-output function to determine what type of output to generate and whether the output should or should not be suppressed. 
 
 \subsection{Define Documentation}
-\index{output_type@{output\_\-type}!FATAL@{FATAL}}
+\index{output_type@{output\_\-type}!DEBUG@{DEBUG}}
+\index{DEBUG@{DEBUG}!output_type@{output\_\-type}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define DEBUG\ 4}\label{group__output__type_a3}
+
+
+Indicates that the specified message is debug information that should only be displayed to the screen when the -D flag is specified. \index{output_type@{output\_\-type}!FATAL@{FATAL}}
 \index{FATAL@{FATAL}!output_type@{output\_\-type}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define FATAL\ 1}\label{group__output__type_a0}
 

@@ -11,7 +11,7 @@
 <p>
 <a href="score_8h-source.html">Go to the source code of this file.</a><table border=0 cellpadding=0 cellspacing=0>
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
-<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="score_8h.html#a0">command_score</a> (int argc, char **argv)</td></tr>
+<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="score_8h.html#a0">command_score</a> (int argc, int last_arg, char **argv)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Parses score command-line and performs score.</em> <a href="#a0"></a><em></em></font><br><br></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
@@ -34,6 +34,12 @@ Date: </b><dd>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top">int&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>argc</em>, </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td class="md" nowrap>int&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>last_arg</em>, </td>
         </tr>
         <tr>
           <td></td>
@@ -66,15 +72,17 @@ Parameters: </b><dd>
 <table border=0 cellspacing=2 cellpadding=0>
 <tr><td valign=top><em>argc</em>&nbsp;</td><td>
 Number of arguments in score command-line. </td></tr>
+<tr><td valign=top><em>last_arg</em>&nbsp;</td><td>
+Index of last parsed argument in list. </td></tr>
 <tr><td valign=top><em>argv</em>&nbsp;</td><td>
-Arguments from command-line to parse. </td></tr>
+Arguments from command-line to parse.</td></tr>
 </table>
 </dl><dl compact><dt><b>
 Returns: </b><dd>
-Returns 0 if scoring is successful; otherwise, returns -1. </dl>    </td>
+Returns 0 if scoring is successful; otherwise, returns -1.</dl>Performs score command functionality.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Fri Jul 5 11:45:42 2002 for Covered by
+<hr><address align="right"><small>Generated on Mon Jul 8 23:41:50 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

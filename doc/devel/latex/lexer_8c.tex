@@ -246,7 +246,7 @@ void yy\_\-push\_\-state {\bf YY\_\-PROTO} ((int new\_\-state))
 \item 
 define\_\-t $\ast$ {\bf def\_\-lookup} (const char $\ast$name)
 \item 
-void {\bf define\_\-macro} (const char $\ast$name, const char $\ast$value, int {\bf keyword})
+void {\bf define\_\-macro} (const char $\ast$name, const char $\ast$value)
 \item 
 void {\bf reset\_\-lexer} (FILE $\ast$out, {\bf str\_\-link} $\ast$file\_\-list\_\-head)
 \end{CompactItemize}
@@ -867,7 +867,7 @@ Extracts define identifier string from define directive match. \index{lexer.c@{l
 
 Performs an undefine of an undef indentifier by searching for the matching define node and removing it from the tree. \index{lexer.c@{lexer.c}!define_macro@{define\_\-macro}}
 \index{define_macro@{define\_\-macro}!lexer.c@{lexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void define\_\-macro (const char $\ast$ {\em name}, const char $\ast$ {\em value}, int {\em keyword})}\label{lexer_8c_a152}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void define\_\-macro (const char $\ast$ {\em name}, const char $\ast$ {\em value})}\label{lexer_8c_a152}
 
 
 \begin{Desc}
@@ -875,8 +875,7 @@ Performs an undefine of an undef indentifier by searching for the matching defin
 \begin{description}
 \item[{\em 
 name}]String value of define identifier \item[{\em 
-value}]String value associated with define identifier \item[{\em 
-keyword}]If set to 1, specifies that a keyword is in the value\end{description}
+value}]String value associated with define identifier\end{description}
 \end{Desc}
 Stores define identifer with its value in a define node and placed in the binary search tree for quick lookup later on. \index{lexer.c@{lexer.c}!do_define@{do\_\-define}}
 \index{do_define@{do\_\-define}!lexer.c@{lexer.c}}

@@ -160,7 +160,7 @@ bool module_db_write( module* mod, FILE* file ) {
   char       msg[4096];        /* Display message string                      */
 
   snprintf( msg, 4096, "Writing module %s", mod->name );
-  print_output( msg, NORMAL );
+  print_output( msg, DEBUG );
 
   // module_display_signals( mod );
 
@@ -360,6 +360,10 @@ void module_dealloc( module* mod ) {
 
 
 /* $Log$
+/* Revision 1.6  2002/06/26 03:45:48  phase1geo
+/* Fixing more bugs in simulator and report functions.  About to add support
+/* for delay statements.
+/*
 /* Revision 1.5  2002/06/25 02:02:04  phase1geo
 /* Fixing bugs with writing/reading statements and with parsing design with
 /* statements.  We now get to the scoring section.  Some problems here at

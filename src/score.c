@@ -43,7 +43,6 @@ void score_usage() {
   printf( "      -y <directory>          Directory to find unspecified Verilog files\n" );
   printf( "      -v <filename>           Name of specific Verilog file to score\n" );
   printf( "      -e <module_name>        Name of module to not score\n" );
-  printf( "      -q                      Suppresses output to standard output\n" );
   printf( "      -h                      Displays this help information\n" );
   printf( "\n" );
   printf( "      +libext+.<extension>(+.<extension>)+\n" );
@@ -117,18 +116,23 @@ bool read_command_file( char* cmd_file, char** arg_list, int* arg_num ) {
 }
 
 /*!
- \param argc Number of arguments specified in argv parameter list.
- \param argv List of arguments to parse.
+ \param argc      Number of arguments specified in argv parameter list.
+ \param last_arg  Index of last parsed argument in list.
+ \param argv      List of arguments to parse.
+
  \return Returns TRUE if successful in dealing with arguments; otherwise,
          returns FALSE.
-*/
-bool score_parse_args( int argc, char** argv ) {
 
-  bool   retval  = TRUE;  /* Return value for this function  */
-  int    i       = 2;     /* Loop iterator                   */
-  char** arg_list;        /* List of command_line arguments  */
-  int    arg_num = 0;     /* Number of arguments in arg_list */
-  char   err_msg[4096];   /* Error message to display        */
+ Parses score command argument list and performs specified functions based
+ on these arguments.
+*/
+bool score_parse_args( int argc, int last_arg, char** argv ) {
+
+  bool   retval  = TRUE;          /* Return value for this function  */
+  int    i       = last_arg + 1;  /* Loop iterator                   */
+  char** arg_list;                /* List of command_line arguments  */
+  int    arg_num = 0;             /* Number of arguments in arg_list */
+  char   err_msg[4096];           /* Error message to display        */
 
   while( (i < argc) && retval ) {
 
@@ -136,10 +140,6 @@ bool score_parse_args( int argc, char** argv ) {
 
       score_usage();
       retval = FALSE;
-
-    } else if( strncmp( "-q", argv[i], 2 ) == 0 ) {
-
-      set_output_suppression( TRUE );
 
     } else if( strncmp( "-i", argv[i], 2 ) == 0 ) {
 
@@ -190,7 +190,7 @@ bool score_parse_args( int argc, char** argv ) {
       i++;
       if( file_exists( argv[i] ) ) {
         read_command_file( argv[i], arg_list, &arg_num );
-        score_parse_args( arg_num, arg_list );
+        score_parse_args( arg_num, -1, arg_list );
       } else {
         retval = FALSE;
       }
@@ -237,29 +237,30 @@ bool score_parse_args( int argc, char** argv ) {
 }
 
 /*!
- \param argc  Number of arguments in score command-line.
- \param argv  Arguments from command-line to parse.
+ \param argc      Number of arguments in score command-line.
+ \param last_arg  Index of last parsed argument in list.
+ \param argv      Arguments from command-line to parse.
+
  \return Returns 0 if scoring is successful; otherwise, returns -1.
 
+ Performs score command functionality.
 */
-int command_score( int argc, char** argv ) {
+int command_score( int argc, int last_arg, char** argv ) {
 
   int  retval = 0;   /* Return value for this function */
   char msg[4096];    /* Message to user                */
 
-  /* Initialize error suppression value */
-  set_output_suppression( FALSE );
-
   /* Parse score command-line */
-  if( score_parse_args( argc, argv ) ) {
+  if( score_parse_args( argc, last_arg, argv ) ) {
 
-    printf( COVERED_HEADER );
+    snprintf( msg, 4096, COVERED_HEADER );
+    print_output( msg, NORMAL );
 
     if( output_db == NULL ) {
       output_db = strdup( DFLT_OUTPUT_DB );
     }
 
-    printf( "Scoring design...\n" );
+    print_output( "Scoring design...", NORMAL );
 
     /* Initialize search engine */
     search_init();
@@ -277,12 +278,12 @@ int command_score( int argc, char** argv ) {
     free_safe( output_db );
     free_safe( vcd_file );
 
-    printf( "\n***  Scoring completed successfully!  ***\n" );
-    printf( "\n" );
-    printf( "Dynamic memory allocated:   %ld bytes\n", largest_malloc_size );
-    snprintf( msg, 4096, "Allocated memory remaining: %ld bytes\n", curr_malloc_size );
+    print_output( "\n***  Scoring completed successfully!  ***\n", NORMAL );
+    snprintf( msg, 4096, "Dynamic memory allocated:   %ld bytes", largest_malloc_size );
     print_output( msg, NORMAL );
-    printf( "\n" );
+    snprintf( msg, 4096, "Allocated memory remaining: %ld bytes", curr_malloc_size );
+    print_output( msg, DEBUG );
+    print_output( "", NORMAL );
 
   }
 
@@ -291,6 +292,10 @@ int command_score( int argc, char** argv ) {
 }
 
 /* $Log$
+/* Revision 1.9  2002/07/08 19:02:12  phase1geo
+/* Adding -i option to properly handle modules specified for coverage that
+/* are instantiated within a design without needing to parse parent modules.
+/*
 /* Revision 1.8  2002/07/08 16:06:33  phase1geo
 /* Updating help information.
 /*

@@ -16,6 +16,8 @@ void {\bf instance\_\-add} ({\bf mod\_\-inst} $\ast$$\ast$root, char $\ast$paren
 \begin{CompactList}\small\item\em Adds new instance to specified instance tree.\item\end{CompactList}\item 
 void {\bf instance\_\-db\_\-write} ({\bf mod\_\-inst} $\ast$root, FILE $\ast${\bf file}, char $\ast$scope)
 \begin{CompactList}\small\item\em Displays contents of module instance tree to specified file.\item\end{CompactList}\item 
+void {\bf instance\_\-dealloc\_\-tree} ({\bf mod\_\-inst} $\ast$root)
+\item 
 void {\bf instance\_\-dealloc} ({\bf mod\_\-inst} $\ast$root, char $\ast$scope)
 \begin{CompactList}\small\item\em Removes specified instance from tree.\item\end{CompactList}\end{CompactItemize}
 
@@ -65,7 +67,7 @@ scope}]Scope of this module.\end{description}
 \end{Desc}
 Calls each module display function in instance tree, starting with the root module and ending when all of the leaf modules are output. Note: the function that calls this function originally should set the value of scope to NULL. \index{instance.c@{instance.c}!instance_dealloc@{instance\_\-dealloc}}
 \index{instance_dealloc@{instance\_\-dealloc}!instance.c@{instance.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void instance\_\-dealloc ({\bf mod\_\-inst} $\ast$ {\em root}, char $\ast$ {\em scope})}\label{instance_8c_a3}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void instance\_\-dealloc ({\bf mod\_\-inst} $\ast$ {\em root}, char $\ast$ {\em scope})}\label{instance_8c_a4}
 
 
 Removes specified instance from tree.
@@ -77,7 +79,18 @@ Removes specified instance from tree.
 root}]Root of module instance tree. \item[{\em 
 scope}]Scope of module to remove from tree.\end{description}
 \end{Desc}
-Searches tree for specified module. If the module instance is found, the module instance is removed from the tree along with all of its child module instances. \index{instance.c@{instance.c}!instance_find_scope@{instance\_\-find\_\-scope}}
+Searches tree for specified module. If the module instance is found, the module instance is removed from the tree along with all of its child module instances. \index{instance.c@{instance.c}!instance_dealloc_tree@{instance\_\-dealloc\_\-tree}}
+\index{instance_dealloc_tree@{instance\_\-dealloc\_\-tree}!instance.c@{instance.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void instance\_\-dealloc\_\-tree ({\bf mod\_\-inst} $\ast$ {\em root})}\label{instance_8c_a3}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+inst}]Pointer to root instance of module instance tree to remove.\end{description}
+\end{Desc}
+Recursively traverses instance tree, deallocating heap memory used to store the the tree. \index{instance.c@{instance.c}!instance_find_scope@{instance\_\-find\_\-scope}}
 \index{instance_find_scope@{instance\_\-find\_\-scope}!instance.c@{instance.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-inst}$\ast$ instance\_\-find\_\-scope ({\bf mod\_\-inst} $\ast$ {\em root}, char $\ast$ {\em scope})}\label{instance_8c_a0}
 

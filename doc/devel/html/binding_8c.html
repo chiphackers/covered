@@ -17,17 +17,17 @@
 <code>#include "<a class="el" href="vector_8h-source.html">vector.h</a>"</code><br>
 <table border=0 cellpadding=0 cellspacing=0>
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a4">bind_add</a> (char *sig_name, <a class="el" href="defines_8h.html#a122">expression</a> *exp, char *mod_name)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a4">bind_add</a> (char *sig_name, <a class="el" href="defines_8h.html#a123">expression</a> *exp, char *mod_name)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds signal and expression to binding list.</em> <a href="#a4"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a5">bind_remove</a> (int id)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Removes the expression with ID of id from binding list.</em> <a href="#a5"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a6">bind</a> (int mode)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Performs signal/expression bind (performed after parse completed).</em> <a href="#a6"></a><em></em></font><br><br></td></tr>
 <tr><td colspan=2><br><h2>Variables</h2></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a133">sig_exp_bind</a> *&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a0">seb_head</a></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a133">sig_exp_bind</a> *&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a1">seb_tail</a></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a136">mod_inst</a> *&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a2">instance_root</a></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a130">mod_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a3">mod_head</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a134">sig_exp_bind</a> *&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a0">seb_head</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a134">sig_exp_bind</a> *&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a1">seb_tail</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a137">mod_inst</a> *&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a2">instance_root</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a131">mod_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="binding_8c.html#a3">mod_head</a></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 
@@ -88,7 +88,7 @@ If set to 0, searches instance tree; otherwise, searches tree.</td></tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a122">expression</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a123">expression</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>exp</em>, </td>
         </tr>
         <tr>
@@ -174,7 +174,7 @@ Expression ID of binding to remove.</td></tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a136">mod_inst</a>* instance_root
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a137">mod_inst</a>* instance_root
       </table>
     </td>
   </tr>
@@ -196,7 +196,7 @@ Expression ID of binding to remove.</td></tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a130">mod_link</a>* mod_head
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a131">mod_link</a>* mod_head
       </table>
     </td>
   </tr>
@@ -218,7 +218,7 @@ Expression ID of binding to remove.</td></tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a133">sig_exp_bind</a>* seb_head
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a134">sig_exp_bind</a>* seb_head
       </table>
     </td>
   </tr>
@@ -240,7 +240,7 @@ Expression ID of binding to remove.</td></tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a133">sig_exp_bind</a>* seb_tail
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a134">sig_exp_bind</a>* seb_tail
       </table>
     </td>
   </tr>
@@ -256,7 +256,7 @@ Expression ID of binding to remove.</td></tr>
     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Fri Jul 5 11:45:41 2002 for Covered by
+<hr><address align="right"><small>Generated on Mon Jul 8 23:41:48 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

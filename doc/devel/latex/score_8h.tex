@@ -6,7 +6,7 @@ Contains functions for score command.
 \subsection*{Functions}
 \begin{CompactItemize}
 \item 
-int {\bf command\_\-score} (int argc, char $\ast$$\ast$argv)
+int {\bf command\_\-score} (int argc, int last\_\-arg, char $\ast$$\ast$argv)
 \begin{CompactList}\small\item\em Parses score command-line and performs score.\item\end{CompactList}\end{CompactItemize}
 
 
@@ -26,7 +26,7 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsection{Function Documentation}
 \index{score.h@{score.h}!command_score@{command\_\-score}}
 \index{command_score@{command\_\-score}!score.h@{score.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int command\_\-score (int {\em argc}, char $\ast$$\ast$ {\em argv})}\label{score_8h_a0}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int command\_\-score (int {\em argc}, int {\em last\_\-arg}, char $\ast$$\ast$ {\em argv})}\label{score_8h_a0}
 
 
 Parses score command-line and performs score.
@@ -36,8 +36,10 @@ Parses score command-line and performs score.
 \begin{description}
 \item[{\em 
 argc}]Number of arguments in score command-line. \item[{\em 
-argv}]Arguments from command-line to parse. \end{description}
+last\_\-arg}]Index of last parsed argument in list. \item[{\em 
+argv}]Arguments from command-line to parse.\end{description}
 \end{Desc}
 \begin{Desc}
 \item[Returns: ]\par
-Returns 0 if scoring is successful; otherwise, returns -1. \end{Desc}
+Returns 0 if scoring is successful; otherwise, returns -1.\end{Desc}
+Performs score command functionality. 

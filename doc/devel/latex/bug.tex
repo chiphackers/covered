@@ -9,4 +9,10 @@ This strips trailing line comments out of the definition. It's not adequate as t
 \item[\label{_bug000002}
 Member {\bf signal\_\-db\_\-read}(char $\ast$$\ast$line, module $\ast$curr\_\-mod) ]
 A signal will only look in the current module for a matching expression. In the case of a hierarchical reference, it is possible that an expression outside the current module is referencing this signal. We need to check for this case (hierarchical expression) and find the expression elsewhere.\end{description}
+
+
+\begin{description}
+\item[\label{_bug000003}
+Member {\bf directory\_\-load}(char $\ast$dir, str\_\-link $\ast$ext\_\-head, str\_\-link $\ast$$\ast$file\_\-head, str\_\-link $\ast$$\ast$file\_\-tail) ]
+Need to order files according to extension first instead of filename.\end{description}
  

@@ -82,7 +82,7 @@ bool parse_design( char* top, char* output_db ) {
       exit( 1 );
     }
 
-    print_output( "========  Completed design parsing  ========\n", NORMAL );
+    print_output( "========  Completed design parsing  ========\n", DEBUG );
 
     bind( 0 );
   
@@ -100,7 +100,7 @@ bool parse_design( char* top, char* output_db ) {
   }
 
   snprintf( msg, 4096, "========  Design written to database %s successfully  ========\n\n", output_db );
-  print_output( msg, NORMAL );
+  print_output( msg, DEBUG );
  
   return( retval );
 
@@ -120,7 +120,7 @@ bool parse_and_score_dumpfile( char* top, char* db, char* vcd ) {
   char msg[4096];       /* Output message                */
 
   snprintf( msg, 4096, "========  Reading in database %s  ========\n", db );
-  print_output( msg, NORMAL );
+  print_output( msg, DEBUG );
 
   /* Read in contents of specified database file */
   if( !db_read( db, READ_MODE_MERGE_NO_MERGE ) ) {
@@ -135,9 +135,10 @@ bool parse_and_score_dumpfile( char* top, char* db, char* vcd ) {
   }
 
   snprintf( msg, 4096, "========  Reading in VCD dumpfile %s  ========\n", vcd );
-  print_output( msg, NORMAL );
+  print_output( msg, DEBUG );
 
-  printf( "\nScoring dumpfile %s\n", vcd );
+  snprintf( msg, 4096, "\nScoring dumpfile %s", vcd );
+  print_output( msg, NORMAL );
   reset_vcd_lexer( vcd );
   
   if( VCDparse() != 0 ) {
@@ -149,7 +150,7 @@ bool parse_and_score_dumpfile( char* top, char* db, char* vcd ) {
   }
 
   snprintf( msg, 4096, "========  Writing database %s  ========\n", db );
-  print_output( msg, NORMAL );
+  print_output( msg, DEBUG );
 
   /* Write contents to database file */
   if( !db_write( db ) ) {
@@ -161,4 +162,9 @@ bool parse_and_score_dumpfile( char* top, char* db, char* vcd ) {
 
 }
 
-/* $Log$ */
+/* $Log$
+/* Revision 1.4  2002/07/03 03:31:11  phase1geo
+/* Adding RCS Log strings in files that were missing them so that file version
+/* information is contained in every source and header file.  Reordering src
+/* Makefile to be alphabetical.  Adding mult1.v diagnostic to regression suite.
+/* */

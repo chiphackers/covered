@@ -19,7 +19,7 @@ void {\bf report\_\-usage} ()
 \item 
 void {\bf report\_\-parse\_\-metrics} (char $\ast$metrics)
 \item 
-{\bf bool} {\bf report\_\-parse\_\-args} (int argc, char $\ast$$\ast$argv)
+{\bf bool} {\bf report\_\-parse\_\-args} (int argc, int last\_\-arg, char $\ast$$\ast$argv)
 \item 
 void {\bf report\_\-gather\_\-stats} ({\bf mod\_\-inst} $\ast$root)
 \item 
@@ -27,7 +27,7 @@ void {\bf report\_\-print\_\-header} (FILE $\ast$ofile)
 \item 
 void {\bf report\_\-generate} (FILE $\ast$ofile)
 \item 
-int {\bf command\_\-report} (int argc, char $\ast$$\ast$argv)
+int {\bf command\_\-report} (int argc, int last\_\-arg, char $\ast$$\ast$argv)
 \begin{CompactList}\small\item\em Parses command-line for report command and performs report functionality.\item\end{CompactList}\end{CompactItemize}
 \subsection*{Variables}
 \begin{CompactItemize}
@@ -66,7 +66,7 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsection{Function Documentation}
 \index{report.c@{report.c}!command_report@{command\_\-report}}
 \index{command_report@{command\_\-report}!report.c@{report.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int command\_\-report (int {\em argc}, char $\ast$$\ast$ {\em argv})}\label{report_8c_a15}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int command\_\-report (int {\em argc}, int {\em last\_\-arg}, char $\ast$$\ast$ {\em argv})}\label{report_8c_a15}
 
 
 Parses command-line for report command and performs report functionality.
@@ -76,12 +76,13 @@ Parses command-line for report command and performs report functionality.
 \begin{description}
 \item[{\em 
 argc}]Number of arguments in report command-line. \item[{\em 
-argv}]Arguments passed to report command to parse. \end{description}
+last\_\-arg}]Index of last parsed argument from list. \item[{\em 
+argv}]Arguments passed to report command to parse.\end{description}
 \end{Desc}
 \begin{Desc}
 \item[Returns: ]\par
-Returns 0 is report is successful; otherwise, returns -1. \end{Desc}
-\index{report.c@{report.c}!report_gather_stats@{report\_\-gather\_\-stats}}
+Returns 0 is report is successful; otherwise, returns -1.\end{Desc}
+Performs report command functionality. \index{report.c@{report.c}!report_gather_stats@{report\_\-gather\_\-stats}}
 \index{report_gather_stats@{report\_\-gather\_\-stats}!report.c@{report.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void report\_\-gather\_\-stats ({\bf mod\_\-inst} $\ast$ {\em root})}\label{report_8c_a12}
 
@@ -105,7 +106,7 @@ ofile}]Pointer to output stream to display report information to.\end{descriptio
 \end{Desc}
 Generates a coverage report based on the options specified on the command line to the specified output stream. \index{report.c@{report.c}!report_parse_args@{report\_\-parse\_\-args}}
 \index{report_parse_args@{report\_\-parse\_\-args}!report.c@{report.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} report\_\-parse\_\-args (int {\em argc}, char $\ast$$\ast$ {\em argv})}\label{report_8c_a11}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} report\_\-parse\_\-args (int {\em argc}, int {\em last\_\-arg}, char $\ast$$\ast$ {\em argv})}\label{report_8c_a11}
 
 
 \begin{Desc}
@@ -113,8 +114,12 @@ Generates a coverage report based on the options specified on the command line t
 \begin{description}
 \item[{\em 
 argc}]Number of arguments in argument list argv. \item[{\em 
+last\_\-arg}]Index of last parsed argument from list. \item[{\em 
 argv}]Argument list passed to this program.\end{description}
 \end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns TRUE if parsing was successful; otherwise, returns FALSE.\end{Desc}
 Parses the argument list for options. If a legal option is found for the report command, the appropriate action is taken for that option. If an option is found that is not allowed, an error message is reported to the user and the program terminates immediately. \index{report.c@{report.c}!report_parse_metrics@{report\_\-parse\_\-metrics}}
 \index{report_parse_metrics@{report\_\-parse\_\-metrics}!report.c@{report.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void report\_\-parse\_\-metrics (char $\ast$ {\em metrics})}\label{report_8c_a10}

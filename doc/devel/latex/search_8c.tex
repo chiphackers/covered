@@ -32,10 +32,6 @@ void {\bf search\_\-free\_\-lists} ()
 \item 
 {\bf str\_\-link} $\ast$ {\bf inc\_\-paths\_\-tail} = NULL
 \item 
-{\bf str\_\-link} $\ast$ {\bf dir\_\-paths\_\-head} = NULL
-\item 
-{\bf str\_\-link} $\ast$ {\bf dir\_\-paths\_\-tail} = NULL
-\item 
 {\bf str\_\-link} $\ast$ {\bf use\_\-files\_\-head} = NULL
 \item 
 {\bf str\_\-link} $\ast$ {\bf use\_\-files\_\-tail} = NULL
@@ -55,6 +51,8 @@ void {\bf search\_\-free\_\-lists} ()
 {\bf mod\_\-inst} $\ast$ {\bf instance\_\-root} = NULL
 \item 
 char $\ast$ {\bf top\_\-module}
+\item 
+char $\ast$ {\bf top\_\-instance}
 \end{CompactItemize}
 
 
@@ -72,7 +70,7 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsection{Function Documentation}
 \index{search.c@{search.c}!search_add_directory_path@{search\_\-add\_\-directory\_\-path}}
 \index{search_add_directory_path@{search\_\-add\_\-directory\_\-path}!search.c@{search.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} search\_\-add\_\-directory\_\-path (char $\ast$ {\em path})}\label{search_8c_a16}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} search\_\-add\_\-directory\_\-path (char $\ast$ {\em path})}\label{search_8c_a15}
 
 
 Adds a directory to the list of directories to find unspecified Verilog modules.
@@ -88,7 +86,7 @@ path}]Name of directory to find unspecified Verilog files \end{description}
 Returns TRUE if the specified string is a legal directory string and specifies an existing directory; otherwise, returns FALSE. \end{Desc}
 \index{search.c@{search.c}!search_add_extensions@{search\_\-add\_\-extensions}}
 \index{search_add_extensions@{search\_\-add\_\-extensions}!search.c@{search.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} search\_\-add\_\-extensions (char $\ast$ {\em ext\_\-list})}\label{search_8c_a19}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} search\_\-add\_\-extensions (char $\ast$ {\em ext\_\-list})}\label{search_8c_a18}
 
 
 Adds specified extensions to allowed file extension list.
@@ -104,7 +102,7 @@ ext\_\-list}]String containing extensions to allow in search. \end{description}
 Returns TRUE if the specified string is in the correct format; otherwise, returns FALSE. \end{Desc}
 \index{search.c@{search.c}!search_add_file@{search\_\-add\_\-file}}
 \index{search_add_file@{search\_\-add\_\-file}!search.c@{search.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} search\_\-add\_\-file (char $\ast$ {\em file})}\label{search_8c_a17}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} search\_\-add\_\-file (char $\ast$ {\em file})}\label{search_8c_a16}
 
 
 Adds a specific Verilog module to the list of modules to score.
@@ -120,7 +118,7 @@ file}]Name of Verilog file to add to scoring list. \end{description}
 Returns TRUE if the specified file exists; otherwise, returns FALSE. \end{Desc}
 \index{search.c@{search.c}!search_add_include_path@{search\_\-add\_\-include\_\-path}}
 \index{search_add_include_path@{search\_\-add\_\-include\_\-path}!search.c@{search.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} search\_\-add\_\-include\_\-path (char $\ast$ {\em path})}\label{search_8c_a15}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} search\_\-add\_\-include\_\-path (char $\ast$ {\em path})}\label{search_8c_a14}
 
 
 Adds an include directory to the list of directories to search for `include directives.
@@ -136,7 +134,7 @@ path}]Name of include path to search for `include directives. \end{description}
 Returns TRUE if the specified path is a legal directory string and specifies an existing directory; otherwise, returns FALSE. \end{Desc}
 \index{search.c@{search.c}!search_add_no_score_module@{search\_\-add\_\-no\_\-score\_\-module}}
 \index{search_add_no_score_module@{search\_\-add\_\-no\_\-score\_\-module}!search.c@{search.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} search\_\-add\_\-no\_\-score\_\-module (char $\ast$ {\em module})}\label{search_8c_a18}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} search\_\-add\_\-no\_\-score\_\-module (char $\ast$ {\em module})}\label{search_8c_a17}
 
 
 Adds specified module to list of modules not to score.
@@ -152,14 +150,14 @@ module}]Name of module to specifically not score \end{description}
 Returns TRUE if the specified string is a legal module name; otherwise, returns FALSE. \end{Desc}
 \index{search.c@{search.c}!search_free_lists@{search\_\-free\_\-lists}}
 \index{search_free_lists@{search\_\-free\_\-lists}!search.c@{search.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void search\_\-free\_\-lists ()}\label{search_8c_a20}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void search\_\-free\_\-lists ()}\label{search_8c_a19}
 
 
 Deallocates all used memory for search lists.
 
 This function should be called after all parsing is completed.  Deletes all initialized lists. \index{search.c@{search.c}!search_init@{search\_\-init}}
 \index{search_init@{search\_\-init}!search.c@{search.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void search\_\-init ()}\label{search_8c_a14}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void search\_\-init ()}\label{search_8c_a13}
 
 
 Initializes search maintained pointers.
@@ -167,24 +165,14 @@ Initializes search maintained pointers.
 Creates root module for module\_\-node tree. If a module\_\-node points to this node as its parent, that node is considered the root node of the tree. 
 
 \subsection{Variable Documentation}
-\index{search.c@{search.c}!dir_paths_head@{dir\_\-paths\_\-head}}
-\index{dir_paths_head@{dir\_\-paths\_\-head}!search.c@{search.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ dir\_\-paths\_\-head = NULL}\label{search_8c_a2}
-
-
-Pointer to head element of directory paths list \index{search.c@{search.c}!dir_paths_tail@{dir\_\-paths\_\-tail}}
-\index{dir_paths_tail@{dir\_\-paths\_\-tail}!search.c@{search.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ dir\_\-paths\_\-tail = NULL}\label{search_8c_a3}
-
-
-Pointer to tail element of directory paths list \index{search.c@{search.c}!extensions_head@{extensions\_\-head}}
+\index{search.c@{search.c}!extensions_head@{extensions\_\-head}}
 \index{extensions_head@{extensions\_\-head}!search.c@{search.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ extensions\_\-head = NULL}\label{search_8c_a8}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ extensions\_\-head = NULL}\label{search_8c_a6}
 
 
 Pointer to head element of extensions list \index{search.c@{search.c}!extensions_tail@{extensions\_\-tail}}
 \index{extensions_tail@{extensions\_\-tail}!search.c@{search.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ extensions\_\-tail = NULL}\label{search_8c_a9}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ extensions\_\-tail = NULL}\label{search_8c_a7}
 
 
 Pointer to tail element of extensions list \index{search.c@{search.c}!inc_paths_head@{inc\_\-paths\_\-head}}
@@ -199,42 +187,47 @@ Pointer to head element of include paths list \index{search.c@{search.c}!inc_pat
 
 Pointer to tail element of include paths list \index{search.c@{search.c}!instance_root@{instance\_\-root}}
 \index{instance_root@{instance\_\-root}!search.c@{search.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-inst}$\ast$ instance\_\-root = NULL}\label{search_8c_a12}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-inst}$\ast$ instance\_\-root = NULL}\label{search_8c_a10}
 
 
 Pointer to root of module instance tree \index{search.c@{search.c}!mod_head@{mod\_\-head}}
 \index{mod_head@{mod\_\-head}!search.c@{search.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-link}$\ast$ mod\_\-head = NULL}\label{search_8c_a10}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-link}$\ast$ mod\_\-head = NULL}\label{search_8c_a8}
 
 
 Pointer to head element of module list \index{search.c@{search.c}!mod_tail@{mod\_\-tail}}
 \index{mod_tail@{mod\_\-tail}!search.c@{search.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-link}$\ast$ mod\_\-tail = NULL}\label{search_8c_a11}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-link}$\ast$ mod\_\-tail = NULL}\label{search_8c_a9}
 
 
 Pointer to tail element of module list \index{search.c@{search.c}!no_score_head@{no\_\-score\_\-head}}
 \index{no_score_head@{no\_\-score\_\-head}!search.c@{search.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ no\_\-score\_\-head = NULL}\label{search_8c_a6}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ no\_\-score\_\-head = NULL}\label{search_8c_a4}
 
 
 Pointer to head element of modules not-to-score list \index{search.c@{search.c}!no_score_tail@{no\_\-score\_\-tail}}
 \index{no_score_tail@{no\_\-score\_\-tail}!search.c@{search.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ no\_\-score\_\-tail = NULL}\label{search_8c_a7}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ no\_\-score\_\-tail = NULL}\label{search_8c_a5}
 
 
-Pointer to tail element of modules not-to-score list \index{search.c@{search.c}!top_module@{top\_\-module}}
+Pointer to tail element of modules not-to-score list \index{search.c@{search.c}!top_instance@{top\_\-instance}}
+\index{top_instance@{top\_\-instance}!search.c@{search.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ top\_\-instance ()}\label{search_8c_a12}
+
+
+Name of top-level instance name \index{search.c@{search.c}!top_module@{top\_\-module}}
 \index{top_module@{top\_\-module}!search.c@{search.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ top\_\-module ()}\label{search_8c_a13}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ top\_\-module ()}\label{search_8c_a11}
 
 
 Name of top-level module to score \index{search.c@{search.c}!use_files_head@{use\_\-files\_\-head}}
 \index{use_files_head@{use\_\-files\_\-head}!search.c@{search.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ use\_\-files\_\-head = NULL}\label{search_8c_a4}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ use\_\-files\_\-head = NULL}\label{search_8c_a2}
 
 
 Pointer to head element of used files list \index{search.c@{search.c}!use_files_tail@{use\_\-files\_\-tail}}
 \index{use_files_tail@{use\_\-files\_\-tail}!search.c@{search.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ use\_\-files\_\-tail = NULL}\label{search_8c_a5}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ use\_\-files\_\-tail = NULL}\label{search_8c_a3}
 
 
 Pointer to tail element of used files list 

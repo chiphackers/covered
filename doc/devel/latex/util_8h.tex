@@ -18,6 +18,8 @@ void {\bf print\_\-output} (char $\ast$msg, int type)
 \begin{CompactList}\small\item\em Returns TRUE if the specified string is a legal directory string.\item\end{CompactList}\item 
 {\bf bool} {\bf directory\_\-exists} (char $\ast$dir)
 \begin{CompactList}\small\item\em Returns TRUE if the specified directory exists.\item\end{CompactList}\item 
+void {\bf directory\_\-load} (char $\ast$dir, {\bf str\_\-link} $\ast$ext\_\-head, {\bf str\_\-link} $\ast$$\ast$file\_\-head, {\bf str\_\-link} $\ast$$\ast$file\_\-tail)
+\begin{CompactList}\small\item\em Loads contents of specified directory to file list if extension is part of list.\item\end{CompactList}\item 
 {\bf bool} {\bf file\_\-exists} (char $\ast${\bf file})
 \begin{CompactList}\small\item\em Returns TRUE if the specified file exists.\item\end{CompactList}\item 
 {\bf bool} {\bf readline} (FILE $\ast${\bf file}, char $\ast$$\ast$line)
@@ -64,9 +66,32 @@ dir}]Name of directory to check for existence. \end{description}
 \begin{Desc}
 \item[Returns: ]\par
 Returns TRUE if the specified directory exists; otherwise, returns FALSE.\end{Desc}
-Checks to see if the specified directory actually exists in the file structure. If the directory is found to exist, returns TRUE; otherwise, returns FALSE. \index{util.h@{util.h}!file_exists@{file\_\-exists}}
+Checks to see if the specified directory actually exists in the file structure. If the directory is found to exist, returns TRUE; otherwise, returns FALSE. \index{util.h@{util.h}!directory_load@{directory\_\-load}}
+\index{directory_load@{directory\_\-load}!util.h@{util.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void directory\_\-load (char $\ast$ {\em dir}, {\bf str\_\-link} $\ast$ {\em ext\_\-head}, {\bf str\_\-link} $\ast$$\ast$ {\em file\_\-head}, {\bf str\_\-link} $\ast$$\ast$ {\em file\_\-tail})}\label{util_8h_a5}
+
+
+Loads contents of specified directory to file list if extension is part of list.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+dir}]Name of directory to read files from. \item[{\em 
+ext\_\-head}]Pointer to extension list. \item[{\em 
+file\_\-head}]Pointer to head element of filename string list. \item[{\em 
+file\_\-tail}]Pointer to tail element of filename string list.\end{description}
+\end{Desc}
+
+
+\begin{Desc}
+\item[{\bf Bug: }]\par
+Need to order files according to extension first instead of filename.\end{Desc}
+
+
+Opens the specified directory for reading and loads (in order) all files that contain the specified extensions (if ext\_\-head is NULL, load only $\ast$.v files). Stores all string filenames to the specified string list. \index{util.h@{util.h}!file_exists@{file\_\-exists}}
 \index{file_exists@{file\_\-exists}!util.h@{util.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} file\_\-exists (char $\ast$ {\em file})}\label{util_8h_a5}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} file\_\-exists (char $\ast$ {\em file})}\label{util_8h_a6}
 
 
 Returns TRUE if the specified file exists.
@@ -82,7 +107,7 @@ file}]Name of file to check for existence. \end{description}
 Returns TRUE if the specified file exists; otherwise, returns FALSE.\end{Desc}
 Checks to see if the specified file actually exists in the file structure. If the file is found to exist, returns TRUE; otherwise, returns FALSE. \index{util.h@{util.h}!free_safe@{free\_\-safe}}
 \index{free_safe@{free\_\-safe}!util.h@{util.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void free\_\-safe (void $\ast$ {\em ptr})}\label{util_8h_a10}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void free\_\-safe (void $\ast$ {\em ptr})}\label{util_8h_a11}
 
 
 Performs safe deallocation of heap memory.
@@ -95,7 +120,7 @@ ptr}]Pointer to object to deallocate.\end{description}
 \end{Desc}
 Safely performs a free function of heap memory. Also keeps track of current memory usage for output information at end of program life. \index{util.h@{util.h}!gen_space@{gen\_\-space}}
 \index{gen_space@{gen\_\-space}!util.h@{util.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void gen\_\-space (char $\ast$ {\em spaces}, int {\em num\_\-spaces})}\label{util_8h_a11}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void gen\_\-space (char $\ast$ {\em spaces}, int {\em num\_\-spaces})}\label{util_8h_a12}
 
 
 Creates a string containing space characters.
@@ -141,7 +166,7 @@ token}]String to check for valid variable name. \end{description}
 Returns TRUE if the specified string is a legal variable name; otherwise, returns FALSE.\end{Desc}
 If the specified string follows all of the rules for a legal program variable (doesn't start with a number, contains only a-z\-A-Z0-9\_\- characters), returns a value of TRUE; otherwise, returns a value of FALSE. \index{util.h@{util.h}!malloc_safe@{malloc\_\-safe}}
 \index{malloc_safe@{malloc\_\-safe}!util.h@{util.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ malloc\_\-safe (int {\em size})}\label{util_8h_a9}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void$\ast$ malloc\_\-safe (int {\em size})}\label{util_8h_a10}
 
 
 Performs safe malloc call.
@@ -171,7 +196,7 @@ type}]Type of message to output\end{description}
 \end{Desc}
 Displays the specified message to standard output based on the type of message being output. \index{util.h@{util.h}!readline@{readline}}
 \index{readline@{readline}!util.h@{util.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} readline (FILE $\ast$ {\em file}, char $\ast$$\ast$ {\em line})}\label{util_8h_a6}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} readline (FILE $\ast$ {\em file}, char $\ast$$\ast$ {\em line})}\label{util_8h_a7}
 
 
 Reads line from file and returns it in string form.
@@ -188,7 +213,7 @@ line}]Pointer to string which will contain read line minus newline character.\en
 Returns FALSE if feof is encountered; otherwise, returns TRUE.\end{Desc}
 Reads in a single line of information from the specified file and returns a string containing the read line to the calling function. \index{util.h@{util.h}!scope_extract_back@{scope\_\-extract\_\-back}}
 \index{scope_extract_back@{scope\_\-extract\_\-back}!util.h@{util.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void scope\_\-extract\_\-back (char $\ast$ {\em scope}, char $\ast$ {\em back}, char $\ast$ {\em rest})}\label{util_8h_a8}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void scope\_\-extract\_\-back (char $\ast$ {\em scope}, char $\ast$ {\em back}, char $\ast$ {\em rest})}\label{util_8h_a9}
 
 
 Extracts lowest level of hierarchy from specified scope.
@@ -203,7 +228,7 @@ rest}]Hierarchy left after extraction.\end{description}
 \end{Desc}
 Extracts the lowest level of hierarchy from the specified scope, returning that instance name to the value of back and the the rest of the hierarchy in the value of rest. \index{util.h@{util.h}!scope_extract_front@{scope\_\-extract\_\-front}}
 \index{scope_extract_front@{scope\_\-extract\_\-front}!util.h@{util.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void scope\_\-extract\_\-front (char $\ast$ {\em scope}, char $\ast$ {\em front}, char $\ast$ {\em rest})}\label{util_8h_a7}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void scope\_\-extract\_\-front (char $\ast$ {\em scope}, char $\ast$ {\em front}, char $\ast$ {\em rest})}\label{util_8h_a8}
 
 
 Extracts highest level of hierarchy from specified scope.

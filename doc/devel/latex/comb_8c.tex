@@ -11,9 +11,9 @@
 \item 
 void {\bf combination\_\-get\_\-stats} ({\bf exp\_\-link} $\ast$expl, float $\ast$total, int $\ast$hit)
 \item 
-void {\bf combination\_\-instance\_\-summary} (FILE $\ast$ofile, {\bf mod\_\-inst} $\ast$root, char $\ast$parent)
+{\bf bool} {\bf combination\_\-instance\_\-summary} (FILE $\ast$ofile, {\bf mod\_\-inst} $\ast$root, char $\ast$parent)
 \item 
-void {\bf combination\_\-module\_\-summary} (FILE $\ast$ofile, {\bf mod\_\-link} $\ast$head)
+{\bf bool} {\bf combination\_\-module\_\-summary} (FILE $\ast$ofile, {\bf mod\_\-link} $\ast$head)
 \item 
 void {\bf combination\_\-draw\_\-line} (char $\ast$line, int {\bf size}, int exp\_\-id)
 \item 
@@ -96,7 +96,7 @@ hit}]Pointer to number of logical combinations hit during simulation.\end{descri
 \end{Desc}
 Recursively traverses the specified expression list, recording the total number of logical combinations in the expression list and the number of combinations hit during the course of simulation. An expression can be considered for combinational coverage if the \char`\"{}measured\char`\"{} bit is set in the expression. \index{comb.c@{comb.c}!combination_instance_summary@{combination\_\-instance\_\-summary}}
 \index{combination_instance_summary@{combination\_\-instance\_\-summary}!comb.c@{comb.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-instance\_\-summary (FILE $\ast$ {\em ofile}, {\bf mod\_\-inst} $\ast$ {\em root}, char $\ast$ {\em parent})}\label{comb_8c_a3}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} combination\_\-instance\_\-summary (FILE $\ast$ {\em ofile}, {\bf mod\_\-inst} $\ast$ {\em root}, char $\ast$ {\em parent})}\label{comb_8c_a3}
 
 
 \begin{Desc}
@@ -107,6 +107,9 @@ ofile}]Pointer to file to output results to. \item[{\em
 root}]Pointer to node in instance tree to evaluate. \item[{\em 
 parent}]Name of parent instance name.\end{description}
 \end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns TRUE if combinations were found to be missed; otherwise, returns FALSE.\end{Desc}
 Outputs summarized results of the combinational logic coverage per module instance to the specified output stream. Summarized results are printed  as percentages based on the number of combinations hit during simulation  divided by the total number of expression combinations possible in the  design. An expression is said to be measurable for combinational coverage  if it evaluates to a value of 0 or 1. \index{comb.c@{comb.c}!combination_instance_verbose@{combination\_\-instance\_\-verbose}}
 \index{combination_instance_verbose@{combination\_\-instance\_\-verbose}!comb.c@{comb.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-instance\_\-verbose (FILE $\ast$ {\em ofile}, {\bf mod\_\-inst} $\ast$ {\em root})}\label{comb_8c_a12}
@@ -134,7 +137,7 @@ exp\_\-id}]Pointer to current expression ID to use.\end{description}
 \end{Desc}
 Describe which combinations were not hit for all subexpressions in the specified expression tree. We display the value of missed combinations by displaying the combinations of the children expressions that were not run during simulation. \index{comb.c@{comb.c}!combination_module_summary@{combination\_\-module\_\-summary}}
 \index{combination_module_summary@{combination\_\-module\_\-summary}!comb.c@{comb.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-module\_\-summary (FILE $\ast$ {\em ofile}, {\bf mod\_\-link} $\ast$ {\em head})}\label{comb_8c_a4}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} combination\_\-module\_\-summary (FILE $\ast$ {\em ofile}, {\bf mod\_\-link} $\ast$ {\em head})}\label{comb_8c_a4}
 
 
 \begin{Desc}
@@ -144,6 +147,9 @@ Describe which combinations were not hit for all subexpressions in the specified
 ofile}]Pointer to file to output results to. \item[{\em 
 head}]Pointer to link in current module list to evaluate.\end{description}
 \end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns TRUE if combinations were found to be missed; otherwise, returns FALSE.\end{Desc}
 Outputs summarized results of the combinational logic coverage per module to the specified output stream. Summarized results are printed as  percentages based on the number of combinations hit during simulation  divided by the total number of expression combinations possible in the  design. An expression is said to be measurable for combinational coverage  if it evaluates to a value of 0 or 1. \index{comb.c@{comb.c}!combination_module_verbose@{combination\_\-module\_\-verbose}}
 \index{combination_module_verbose@{combination\_\-module\_\-verbose}!comb.c@{comb.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-module\_\-verbose (FILE $\ast$ {\em ofile}, {\bf mod\_\-link} $\ast$ {\em head})}\label{comb_8c_a13}

@@ -402,7 +402,7 @@ void expression_operate( expression* expr ) {
   if( expr != NULL ) {
 
     snprintf( msg, 4096, "In expression_operate, id: %d, op: %d, line: %d", expr->id, SUPPL_OP( expr->suppl ), expr->line );
-    print_output( msg, NORMAL );
+    print_output( msg, DEBUG );
 
     assert( expr->value != NULL );
 
@@ -799,6 +799,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.34  2002/07/09 03:24:48  phase1geo
+/* Various fixes for module instantiantion handling.  This now works.  Also
+/* modified report output for toggle, line and combinational information.
+/* Regression passes.
+/*
 /* Revision 1.33  2002/07/08 19:02:11  phase1geo
 /* Adding -i option to properly handle modules specified for coverage that
 /* are instantiated within a design without needing to parse parent modules.

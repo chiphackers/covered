@@ -35,8 +35,9 @@ void merge_usage() {
 }
 
 /*!
- \param argc  Number of arguments in argument list argv.
- \param argv  Argument list passed to this program.
+ \param argc      Number of arguments in argument list argv.
+ \param last_arg  Index of last parsed argument from list.
+ \param argv      Argument list passed to this program.
 
  \return Returns TRUE if argument parsing was successful; otherwise,
          returns FALSE.
@@ -46,13 +47,13 @@ void merge_usage() {
  for the merge operation, an error message is displayed to the
  user.
 */
-bool merge_parse_args( int argc, char** argv ) {
+bool merge_parse_args( int argc, int last_arg, char** argv ) {
 
   bool retval = TRUE;    /* Return value for this function */
   int  i;                /* Loop iterator                  */
   char err_msg[4096];    /* Error message for user         */
 
-  i = 2;
+  i = last_arg + 1;
 
   while( (i < argc) && retval ) {
 
@@ -106,12 +107,15 @@ bool merge_parse_args( int argc, char** argv ) {
 }
 
 /*!
- \param argc  Number of arguments in command-line to parse.
- \param argv  List of arguments from command-line to parse.
+ \param argc      Number of arguments in command-line to parse.
+ \param last_arg  Index of last parsed argument from list.
+ \param argv      List of arguments from command-line to parse.
+
  \return Returns 0 if merge is successful; otherwise, returns -1.
 
+ Performs merge command functionality.
 */
-int command_merge( int argc, char** argv ) {
+int command_merge( int argc, int last_arg, char** argv ) {
 
   int   retval = 0;    /* Return value of this function         */
   FILE* ofile;         /* Pointer to output stream              */
@@ -122,9 +126,10 @@ int command_merge( int argc, char** argv ) {
   set_output_suppression( FALSE );
 
   /* Parse score command-line */
-  if( merge_parse_args( argc, argv ) ) {
+  if( merge_parse_args( argc, last_arg, argv ) ) {
 
-    printf( COVERED_HEADER );
+    snprintf( msg, 4096, COVERED_HEADER );
+    print_output( msg, NORMAL );
 
     print_output( "Merging databases...", NORMAL );
 
@@ -137,7 +142,7 @@ int command_merge( int argc, char** argv ) {
     /* Write out new database to output file */
     db_write( merged_file );
 
-    printf( "\n***  Merging completed successfully!  ***\n" );
+    print_output( "\n***  Merging completed successfully!  ***", NORMAL );
 
   }
 
@@ -146,6 +151,9 @@ int command_merge( int argc, char** argv ) {
 }
 
 /* $Log$
+/* Revision 1.5  2002/07/08 16:06:33  phase1geo
+/* Updating help information.
+/*
 /* Revision 1.4  2002/07/03 03:31:11  phase1geo
 /* Adding RCS Log strings in files that were missing them so that file version
 /* information is contained in every source and header file.  Reordering src

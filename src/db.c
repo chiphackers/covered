@@ -292,7 +292,7 @@ void db_add_instance( char* scope, char* modname ) {
   assert( curr_module != NULL );
 
   snprintf( msg, 4096, "In db_add_instance, instance: %s, module: %s", scope, modname );
-  print_output( msg, NORMAL );
+  print_output( msg, DEBUG );
 
   /* Create new module node */
   mod       = module_create();
@@ -337,7 +337,7 @@ void db_add_module( char* name, char* file ) {
   char      msg[4096];      /* Display message string          */
 
   snprintf( msg, 4096, "In db_add_module, module: %s, file: %s", name, file );
-  print_output( msg, NORMAL );
+  print_output( msg, DEBUG );
 
   /* Make sure that modlist_head name is the same as the specified name */
   assert( strcmp( name, modlist_head->str ) == 0 );
@@ -364,7 +364,7 @@ void db_end_module() {
 
   str_link* str;    /* Temporary pointer to current modlist entry at head */
 
-  print_output( "In db_end_module", NORMAL );
+  print_output( "In db_end_module", DEBUG );
 
   str = modlist_head;
 
@@ -392,7 +392,7 @@ void db_add_signal( char* name, int width, int lsb, int is_static ) {
   char    msg[4096];  /* Display message string                    */
 
   snprintf( msg, 4096, "In db_add_signal, signal: %s, width: %d, lsb: %d", name, width, lsb );
-  print_output( msg, NORMAL );
+  print_output( msg, DEBUG );
 
   sig = signal_create( name, width, lsb, is_static );
 
@@ -419,7 +419,7 @@ signal* db_find_signal( char* name ) {
   char      msg[4096];   /* Display message string                   */
 
   snprintf( msg, 4096, "In db_find_signal, searching for signal %s", name );
-  print_output( msg, NORMAL );
+  print_output( msg, DEBUG );
 
   /* Create signal to find */
   sig = signal_create( name, 1, 0, TRUE );
@@ -474,7 +474,7 @@ expression* db_create_expression( expression* right, expression* left, int op, i
                        curr_expr_id, 
                        op,
                        line );
-  print_output( msg, NORMAL );
+  print_output( msg, DEBUG );
 
   /* Create expression with next expression ID */
   expr = expression_create( right, left, op, curr_expr_id, line );
@@ -517,7 +517,7 @@ void db_add_expression( expression* root ) {
     if( exp_link_find( root, curr_module->exp_head ) == NULL ) {
     
       snprintf( msg, 4096, "In db_add_expression, id: %d, op: %d", root->id, SUPPL_OP( root->suppl ) );
-      print_output( msg, NORMAL );
+      print_output( msg, DEBUG );
    
       // Add expression's children first.
       db_add_expression( root->right );
@@ -548,7 +548,7 @@ statement* db_create_statement( expression* exp ) {
   char       msg[4096];  /* Message to display to user         */
 
   snprintf( msg, 4096, "In db_create_statement, id: %d", exp->id );
-  print_output( msg, NORMAL );
+  print_output( msg, DEBUG );
 
   stmt = statement_create( exp );
 
@@ -575,7 +575,7 @@ void db_add_statement( statement* stmt ) {
   if( stmt != NULL ) {
 
     snprintf( msg, 4096, "In db_add_statement, id: %d", stmt->exp->id );
-    print_output( msg, NORMAL );
+    print_output( msg, DEBUG );
 
     /* Add TRUE and FALSE statement paths to list */
     if( SUPPL_IS_STMT_STOP( stmt->exp->suppl ) == 0 ) {
@@ -613,7 +613,7 @@ void db_connect_statement_true( statement* stmt, statement* next_true ) {
     }
 
     snprintf( msg, 4096, "In db_connect_statement_true, id: %d, next: %d", stmt->exp->id, next_id );
-    print_output( msg, NORMAL );
+    print_output( msg, DEBUG );
 
     stmt->next_true = next_true;
 
@@ -641,7 +641,7 @@ void db_connect_statement_false( statement* stmt, statement* next_false ) {
     }
 
     snprintf( msg, 4096, "In db_connect_statement_false, id: %d, next: %d", stmt->exp->id, next_id );
-    print_output( msg, NORMAL );
+    print_output( msg, DEBUG );
 
     stmt->next_false = next_false;
 
@@ -673,7 +673,7 @@ void db_statement_connect( statement* curr_stmt, statement* next_stmt ) {
   }
 
   snprintf( msg, 4096, "In db_statement_connect, curr_stmt: %d, next_stmt: %d", curr_id, next_id );
-  print_output( msg, NORMAL );
+  print_output( msg, DEBUG );
 
   statement_connect( curr_stmt, next_stmt );
 
@@ -705,7 +705,7 @@ void db_statement_set_stop( statement* stmt, statement* post, bool both ) {
     }
 
     snprintf( msg, 4096, "In db_statement_set_stop, stmt: %d, next_stmt: %d", stmt_id, post_id );
-    print_output( msg, NORMAL );
+    print_output( msg, DEBUG );
  
     statement_set_stop( stmt, post, TRUE, both );
 
@@ -725,7 +725,7 @@ void db_set_vcd_scope( char* scope ) {
   char* tmpscope;     /* Temporary string holder for current VCD scope */
 
   snprintf( msg, 4096, "In db_set_vcd_scope, scope: %s", scope );
-  print_output( msg, NORMAL );
+  print_output( msg, DEBUG );
 
   assert( scope != NULL );
 
@@ -761,7 +761,7 @@ void db_vcd_upscope() {
   char rest[4096];   /* Hierarchy up one level    */
 
   snprintf( msg, 4096, "In db_vcd_upscope, curr_vcd_scope: %s", curr_vcd_scope );
-  print_output( msg, NORMAL );
+  print_output( msg, DEBUG );
 
   assert( curr_vcd_scope != NULL );
   
@@ -789,7 +789,7 @@ void db_assign_symbol( char* name, char* symbol ) {
   mod_inst*     inst;       /* Found instance                            */
 
   snprintf( msg, 4096, "In db_assign_symbol, name: %s, symbol: %s, curr_vcd_scope: %s", name, symbol, curr_vcd_scope );
-  print_output( msg, NORMAL );
+  print_output( msg, DEBUG );
 
   assert( name != NULL );
 
@@ -851,7 +851,7 @@ void db_set_symbol_char( char* sym, char value ) {
   char      msg[4096];   /* Message to user                                                 */
 
   snprintf( msg, 4096, "In db_set_symbol_char, sym: %s, value: %c", sym, value );
-  print_output( msg, NORMAL );
+  print_output( msg, DEBUG );
 
   while( (symtab = symtable_find( sym, timestep_tab, skip )) != NULL ) {
 
@@ -902,7 +902,7 @@ void db_set_symbol_string( char* sym, char* value ) {
   char      msg[4096];   /* Message to user                                                 */
 
   snprintf( msg, 4096, "In db_set_symbol_string, sym: %s, value: %s", sym, value );
-  print_output( msg, NORMAL );
+  print_output( msg, DEBUG );
 
   while( (symtab = symtable_find( sym, timestep_tab, skip )) != NULL ) {
 
@@ -948,7 +948,7 @@ void db_do_timestep( int time ) {
   exp_link* head;       /* Current expression at head of expression queue */
 
   snprintf( msg, 4096, "Performing timestep #%d", time );
-  print_output( msg, NORMAL );
+  print_output( msg, DEBUG );
 
   curr_sim_time = time;
 
@@ -965,6 +965,11 @@ void db_do_timestep( int time ) {
 }
 
 /* $Log$
+/* Revision 1.35  2002/07/09 03:24:48  phase1geo
+/* Various fixes for module instantiantion handling.  This now works.  Also
+/* modified report output for toggle, line and combinational information.
+/* Regression passes.
+/*
 /* Revision 1.34  2002/07/09 02:04:25  phase1geo
 /* Fixing segmentation fault error due to deallocating a module before we
 /* have completed using it.

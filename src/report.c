@@ -123,21 +123,24 @@ void report_parse_metrics( char* metrics ) {
 }
 
 /*!
- \param argc  Number of arguments in argument list argv.
- \param argv  Argument list passed to this program.
+ \param argc      Number of arguments in argument list argv.
+ \param last_arg  Index of last parsed argument from list.
+ \param argv      Argument list passed to this program.
+
+ \return Returns TRUE if parsing was successful; otherwise, returns FALSE.
 
  Parses the argument list for options.  If a legal option is
  found for the report command, the appropriate action is taken for
  that option.  If an option is found that is not allowed, an error
  message is reported to the user and the program terminates immediately.
 */
-bool report_parse_args( int argc, char** argv ) {
+bool report_parse_args( int argc, int last_arg, char** argv ) {
 
   bool retval = TRUE;    /* Return value for this function */
   int  i;                /* Loop iterator                  */
   char err_msg[4096];    /* Error message for user         */
 
-  i = 2;
+  i = last_arg + 1;
 
   while( (i < argc) && retval ) {
 
@@ -306,12 +309,15 @@ void report_generate( FILE* ofile ) {
 }
 
 /*!
- \param argc  Number of arguments in report command-line.
- \param argv  Arguments passed to report command to parse.
+ \param argc      Number of arguments in report command-line.
+ \param last_arg  Index of last parsed argument from list.
+ \param argv      Arguments passed to report command to parse.
+
  \return Returns 0 is report is successful; otherwise, returns -1.
 
+ Performs report command functionality.
 */
-int command_report( int argc, char** argv ) {
+int command_report( int argc, int last_arg, char** argv ) {
 
   int   retval = 0;    /* Return value of this function         */
   FILE* ofile;         /* Pointer to output stream              */
@@ -322,7 +328,7 @@ int command_report( int argc, char** argv ) {
   set_output_suppression( FALSE );
 
   /* Parse score command-line */
-  if( report_parse_args( argc, argv ) ) {
+  if( report_parse_args( argc, last_arg, argv ) ) {
 
     printf( COVERED_HEADER );
 
@@ -377,6 +383,9 @@ int command_report( int argc, char** argv ) {
 
 
 /* $Log$
+/* Revision 1.8  2002/07/08 16:06:33  phase1geo
+/* Updating help information.
+/*
 /* Revision 1.7  2002/07/02 22:37:35  phase1geo
 /* Changing on-line help command calling.  Regenerated documentation.
 /*

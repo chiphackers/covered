@@ -48,7 +48,7 @@ struct {\bf vector\_\-s}
 \item 
 \#define {\bf COVERED\_\-VERSION}\ VERSION
 \item 
-\#define {\bf COVERED\_\-HEADER}\ \char`\"{}$\backslash$n\-Covered \%s -- Verilog Code Coverage Utility$\backslash$n\-Written by Trevor Williams  (trevorw@charter.net)$\backslash$n\-Freely distributable under the GPL license$\backslash$n$\backslash$n\char`\"{}, COVERED\_\-VERSION
+\#define {\bf COVERED\_\-HEADER}\ \char`\"{}$\backslash$n\-Covered \%s -- Verilog Code Coverage Utility$\backslash$n\-Written by Trevor Williams  (trevorw@charter.net)$\backslash$n\-Freely distributable under the GPL license$\backslash$n\char`\"{}, COVERED\_\-VERSION
 \item 
 \#define {\bf DFLT\_\-OUTPUT\_\-DB}\ \char`\"{}cov.db\char`\"{}
 \item 
@@ -59,6 +59,8 @@ struct {\bf vector\_\-s}
 \#define {\bf WARNING}\ 2
 \item 
 \#define {\bf NORMAL}\ 3
+\item 
+\#define {\bf DEBUG}\ 4
 \item 
 \#define {\bf DB\_\-TYPE\_\-SIGNAL}\ 1
 \item 
@@ -348,7 +350,7 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsection{Define Documentation}
 \index{defines.h@{defines.h}!COVERED_HEADER@{COVERED\_\-HEADER}}
 \index{COVERED_HEADER@{COVERED\_\-HEADER}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define COVERED\_\-HEADER\ \char`\"{}$\backslash$n\-Covered \%s -- Verilog Code Coverage Utility$\backslash$n\-Written by Trevor Williams  (trevorw@charter.net)$\backslash$n\-Freely distributable under the GPL license$\backslash$n$\backslash$n\char`\"{}, COVERED\_\-VERSION}\label{defines_8h_a1}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define COVERED\_\-HEADER\ \char`\"{}$\backslash$n\-Covered \%s -- Verilog Code Coverage Utility$\backslash$n\-Written by Trevor Williams  (trevorw@charter.net)$\backslash$n\-Freely distributable under the GPL license$\backslash$n\char`\"{}, COVERED\_\-VERSION}\label{defines_8h_a1}
 
 
 This contains the header information specified when executing this tool. \index{defines.h@{defines.h}!COVERED_VERSION@{COVERED\_\-VERSION}}
@@ -363,12 +365,12 @@ Specifies current version of the Covered utility. \index{defines.h@{defines.h}!D
 
 Default database filename if not specified on command-line. \index{defines.h@{defines.h}!EXPR_COMB_MISSED@{EXPR\_\-COMB\_\-MISSED}}
 \index{EXPR_COMB_MISSED@{EXPR\_\-COMB\_\-MISSED}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define EXPR\_\-COMB\_\-MISSED(x)\ (EXPR\_\-IS\_\-MEASURABLE(x) \& ($\sim$SUPPL\_\-WAS\_\-TRUE(x $\rightarrow$ suppl) $|$ $\sim$SUPPL\_\-WAS\_\-FALSE(x $\rightarrow$ suppl)))}\label{defines_8h_a95}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define EXPR\_\-COMB\_\-MISSED(x)\ (EXPR\_\-IS\_\-MEASURABLE(x) \& ($\sim$SUPPL\_\-WAS\_\-TRUE(x $\rightarrow$ suppl) $|$ $\sim$SUPPL\_\-WAS\_\-FALSE(x $\rightarrow$ suppl)))}\label{defines_8h_a96}
 
 
 Returns a value of 1 if the specified expression was measurable for combinational  coverage but not fully covered during simulation. \index{defines.h@{defines.h}!EXPR_IS_MEASURABLE@{EXPR\_\-IS\_\-MEASURABLE}}
 \index{EXPR_IS_MEASURABLE@{EXPR\_\-IS\_\-MEASURABLE}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define EXPR\_\-IS\_\-MEASURABLE(x)}\label{defines_8h_a94}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define EXPR\_\-IS\_\-MEASURABLE(x)}\label{defines_8h_a95}
 
 
 {\bf Value:}
@@ -395,97 +397,97 @@ Determine size of integer in bits.
 \subsection{Typedef Documentation}
 \index{defines.h@{defines.h}!case_statement@{case\_\-statement}}
 \index{case_statement@{case\_\-statement}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf case\_\-stmt\_\-s} case\_\-statement}\label{defines_8h_a134}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf case\_\-stmt\_\-s} case\_\-statement}\label{defines_8h_a135}
 
 
 \index{defines.h@{defines.h}!exp_link@{exp\_\-link}}
 \index{exp_link@{exp\_\-link}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf exp\_\-link\_\-s} exp\_\-link}\label{defines_8h_a125}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf exp\_\-link\_\-s} exp\_\-link}\label{defines_8h_a126}
 
 
 \index{defines.h@{defines.h}!expr_stmt@{expr\_\-stmt}}
 \index{expr_stmt@{expr\_\-stmt}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef union {\bf expr\_\-stmt\_\-u} expr\_\-stmt}\label{defines_8h_a121}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef union {\bf expr\_\-stmt\_\-u} expr\_\-stmt}\label{defines_8h_a122}
 
 
 \index{defines.h@{defines.h}!expression@{expression}}
 \index{expression@{expression}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf expression\_\-s} expression}\label{defines_8h_a122}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf expression\_\-s} expression}\label{defines_8h_a123}
 
 
 \index{defines.h@{defines.h}!mod_inst@{mod\_\-inst}}
 \index{mod_inst@{mod\_\-inst}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf mod\_\-inst\_\-s} mod\_\-inst}\label{defines_8h_a136}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf mod\_\-inst\_\-s} mod\_\-inst}\label{defines_8h_a137}
 
 
 \index{defines.h@{defines.h}!mod_link@{mod\_\-link}}
 \index{mod_link@{mod\_\-link}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf mod\_\-link\_\-s} mod\_\-link}\label{defines_8h_a130}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf mod\_\-link\_\-s} mod\_\-link}\label{defines_8h_a131}
 
 
 \index{defines.h@{defines.h}!module@{module}}
 \index{module@{module}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf module\_\-s} module}\label{defines_8h_a129}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf module\_\-s} module}\label{defines_8h_a130}
 
 
 \index{defines.h@{defines.h}!nibble@{nibble}}
 \index{nibble@{nibble}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef unsigned int nibble}\label{defines_8h_a118}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef unsigned int nibble}\label{defines_8h_a119}
 
 
 A nibble is a 32-bit value that is subdivided into three parts: Bits 7 - 0 = 4 bits of 4-state value. Bits 11 - 8 = Toggle01 value for each of the four 4-state bits. Bits 15 - 12 = Toggle10 value for each of the four 4-state bits. Bits 19 - 16 = Indicates if this bit has been previously assigned. Bits 23 - 20 = Static value indicators for each of the four 4-state bits. Bits 27 - 24 = Indicates if this bit was set to a value of 0 (FALSE). Bits 31 - 28 = Indicates if this bit was set to a value of 1 (TRUE). \index{defines.h@{defines.h}!sig_exp_bind@{sig\_\-exp\_\-bind}}
 \index{sig_exp_bind@{sig\_\-exp\_\-bind}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf sig\_\-exp\_\-bind\_\-s} sig\_\-exp\_\-bind}\label{defines_8h_a133}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf sig\_\-exp\_\-bind\_\-s} sig\_\-exp\_\-bind}\label{defines_8h_a134}
 
 
 \index{defines.h@{defines.h}!sig_link@{sig\_\-link}}
 \index{sig_link@{sig\_\-link}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf sig\_\-link\_\-s} sig\_\-link}\label{defines_8h_a128}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf sig\_\-link\_\-s} sig\_\-link}\label{defines_8h_a129}
 
 
 \index{defines.h@{defines.h}!signal@{signal}}
 \index{signal@{signal}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf signal\_\-s} signal}\label{defines_8h_a123}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf signal\_\-s} signal}\label{defines_8h_a124}
 
 
 \index{defines.h@{defines.h}!signal_width@{signal\_\-width}}
 \index{signal_width@{signal\_\-width}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf signal\_\-width\_\-s} signal\_\-width}\label{defines_8h_a132}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf signal\_\-width\_\-s} signal\_\-width}\label{defines_8h_a133}
 
 
 \index{defines.h@{defines.h}!statement@{statement}}
 \index{statement@{statement}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf statement\_\-s} statement}\label{defines_8h_a124}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf statement\_\-s} statement}\label{defines_8h_a125}
 
 
 \index{defines.h@{defines.h}!statistic@{statistic}}
 \index{statistic@{statistic}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf statistic\_\-s} statistic}\label{defines_8h_a135}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf statistic\_\-s} statistic}\label{defines_8h_a136}
 
 
 \index{defines.h@{defines.h}!stmt_link@{stmt\_\-link}}
 \index{stmt_link@{stmt\_\-link}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf stmt\_\-link\_\-s} stmt\_\-link}\label{defines_8h_a126}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf stmt\_\-link\_\-s} stmt\_\-link}\label{defines_8h_a127}
 
 
 \index{defines.h@{defines.h}!stmt_loop_link@{stmt\_\-loop\_\-link}}
 \index{stmt_loop_link@{stmt\_\-loop\_\-link}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf stmt\_\-loop\_\-link\_\-s} stmt\_\-loop\_\-link}\label{defines_8h_a127}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf stmt\_\-loop\_\-link\_\-s} stmt\_\-loop\_\-link}\label{defines_8h_a128}
 
 
 \index{defines.h@{defines.h}!str_link@{str\_\-link}}
 \index{str_link@{str\_\-link}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf str\_\-link\_\-s} str\_\-link}\label{defines_8h_a119}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf str\_\-link\_\-s} str\_\-link}\label{defines_8h_a120}
 
 
 \index{defines.h@{defines.h}!symtable@{symtable}}
 \index{symtable@{symtable}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf symtable\_\-s} symtable}\label{defines_8h_a131}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf symtable\_\-s} symtable}\label{defines_8h_a132}
 
 
 \index{defines.h@{defines.h}!vector@{vector}}
 \index{vector@{vector}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf vector\_\-s} vector}\label{defines_8h_a120}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf vector\_\-s} vector}\label{defines_8h_a121}
 
 
 
@@ -493,16 +495,16 @@ A nibble is a 32-bit value that is subdivided into three parts: Bits 7 - 0 = 4 b
 \subsection{Enumeration Type Documentation}
 \index{defines.h@{defines.h}!bool@{bool}}
 \index{bool@{bool}!defines.h@{defines.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}enum bool}\label{defines_8h_a139}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}enum bool}\label{defines_8h_a140}
 
 
 Defines boolean variables used in most functions. \begin{Desc}
 \item[Enumeration values:]\par
 \begin{description}
 \index{FALSE@{FALSE}!defines.h@{defines.h}}\index{defines.h@{defines.h}!FALSE@{FALSE}}\item[{\em 
-{\em FALSE}\label{defines_8h_a139a137}
+{\em FALSE}\label{defines_8h_a140a138}
 }]Boolean false value \index{TRUE@{TRUE}!defines.h@{defines.h}}\index{defines.h@{defines.h}!TRUE@{TRUE}}\item[{\em 
-{\em TRUE}\label{defines_8h_a139a138}
+{\em TRUE}\label{defines_8h_a140a139}
 }]Boolean true value \end{description}
 \end{Desc}
 

@@ -141,6 +141,23 @@ several chapters.
   </tr>
   <tr>
     <td>
+      -Q
+    <\td>
+    <td>
+      Quite mode.  Suppresses user output to screen.  Use in conjunction with a command.
+    </td>
+  </tr>
+  <tr>
+    <td>
+      -D
+    </td>
+    <td>
+      Debug mode.  Outputs code debug information to screen.  Use in conjunction with 
+      commands.
+    </td>
+  </tr>
+  <tr>
+    <td>
       -h
     </td>
     <td>
