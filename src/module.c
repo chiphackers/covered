@@ -50,6 +50,8 @@ void module_init( module* mod ) {
   mod->stmt_tail  = NULL;
   mod->fsm_head   = NULL;
   mod->fsm_tail   = NULL;
+  mod->race_head  = NULL;
+  mod->race_tail  = NULL;
   mod->param_head = NULL;
   mod->param_tail = NULL;
 
@@ -167,6 +169,7 @@ bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst ) {
   stmt_iter  curr_stmt;       /* Statement list iterator                    */
   inst_parm* curr_parm;       /* Pointer to current instance parameter      */
   fsm_link*  curr_fsm;        /* Pointer to current module fsm_link element */
+  race_blk*  curr_race;       /* Pointer to current race condition block    */
 
   snprintf( user_msg, USER_MSG_LENGTH, "Writing module %s", mod->name );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -222,6 +225,13 @@ bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst ) {
     curr_fsm = curr_fsm->next;
   }
 
+  /* Now print all race condition block structures in module */
+  curr_race = mod->race_head;
+  while( curr_race != NULL ) {
+    race_db_write( curr_race, file );
+    curr_race = curr_race->next;
+  }
+
   return( retval );
 
 }
@@ -274,6 +284,7 @@ bool module_db_merge( module* base, FILE* file, bool same ) {
   sig_link* curr_base_sig;   /* Pointer to current signal in base module signal list         */
   stmt_iter curr_base_stmt;  /* Statement list iterator                                      */
   fsm_link* curr_base_fsm;   /* Pointer to current FSM in base module FSM list               */
+  race_blk* curr_base_race;  /* Pointer to current race condition block in base module list  */
   char*     curr_line;       /* Pointer to current line being read from CDD                  */
   char*     rest_line;       /* Pointer to rest of read line                                 */
   int       type;            /* Specifies currently read CDD type                            */
@@ -360,6 +371,24 @@ bool module_db_merge( module* base, FILE* file, bool same ) {
     curr_base_fsm = curr_base_fsm->next;
   }
 
+  /* Since race condition blocks don't get merged, we will just read these lines in */
+  curr_base_race = base->race_head;
+  while( (curr_base_race != NULL) && retval ) {
+    if( readline( file, &curr_line ) ) {
+      if( sscanf( file, "%d%n", &type, &chars_read ) == 1 ) {
+        rest_line = curr_line + chars_read;
+        if( type != DB_TYPE_RACE ) {
+          retval = FALSE;
+        }
+      } else {
+        retval = FALSE;
+      }
+    } else {
+      retval = FALSE;
+    }
+    curr_base_race = curr_base_race->next;
+  } 
+
   return( retval );
 
 }
@@ -381,6 +410,7 @@ bool module_db_replace( module* base, FILE* file ) {
   sig_link* curr_base_sig;   /* Pointer to current signal in base module signal list         */
   stmt_iter curr_base_stmt;  /* Statement list iterator                                      */
   fsm_link* curr_base_fsm;   /* Pointer to current FSM in base module FSM list               */
+  race_blk* curr_base_race;  /* Pointer to current race condition block in base module list  */
   char*     curr_line;       /* Pointer to current line being read from CDD                  */
   char*     rest_line;       /* Pointer to rest of read line                                 */
   int       type;            /* Specifies currently read CDD type                            */
@@ -465,6 +495,24 @@ bool module_db_replace( module* base, FILE* file ) {
       retval = FALSE;
     }
     curr_base_fsm = curr_base_fsm->next;
+  }
+
+  /* Since race condition blocks don't get replaced, we will just read these lines in */
+  curr_base_race = base->race_head;
+  while( (curr_base_race != NULL) && retval ) {
+    if( readline( file, &curr_line ) ) {
+      if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
+        rest_line = curr_line + chars_read;
+        if( type != DB_TYPE_RACE ) {
+          retval = FALSE;
+        }
+      } else {
+        retval = FALSE;
+      }
+    } else {
+      retval = FALSE;
+    }
+    curr_base_race = curr_base_race->next;
   }
 
   return( retval );
@@ -557,6 +605,11 @@ void module_clean( module* mod ) {
     mod->fsm_head = NULL;
     mod->fsm_tail = NULL;
 
+    /* Free race condition block list */
+    race_blk_delete_list( mod->race_head );
+    mod->race_head = NULL;
+    mod->race_tail = NULL;
+
   }
 
 }
@@ -583,6 +636,10 @@ void module_dealloc( module* mod ) {
 
 /*
  $Log$
+ Revision 1.36  2005/01/07 17:59:52  phase1geo
+ Finalized updates for supplemental field changes.  Everything compiles and links
+ correctly at this time; however, a regression run has not confirmed the changes.
+
  Revision 1.35  2004/04/05 12:30:52  phase1geo
  Adding *db_replace functions to allow a design to be opened with new CDD
  results (for GUI purposes only).

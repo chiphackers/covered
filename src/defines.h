@@ -170,6 +170,11 @@
 */
 #define DB_TYPE_FSM          6
 
+/*!
+ Specifies that the current coverage database line describes a race condition block.
+*/
+#define DB_TYPE_RACE         7
+
 /*! @} */
 
 /*!
@@ -1213,25 +1218,45 @@ struct fsm_link_s {
 
 /*------------------------------------------------------------------------------*/
 /*!
+ Contains information for storing race condition information
+*/
+struct race_blk_s;
+
+/*!
+ Renaming race_blk structure for convenience.
+*/
+typedef struct race_blk_s race_blk;
+
+struct race_blk_s {
+  int       start_line;  /*!< Starting line number of statement block that was found to be a race condition  */
+  int       end_line;    /*!< Ending line number of statement block that was found to be a race condition    */
+  int       reason;      /*!< Numerical reason for why this statement block was found to be a race condition */
+  race_blk* next;        /*!< Pointer to next race block in list                                             */
+};
+
+/*------------------------------------------------------------------------------*/
+/*!
  Contains information for a Verilog module.  A module contains a list of signals within the
  module.
 */
 struct module_s {
-  char*      name;        /*!< Module name                                        */
-  char*      filename;    /*!< File name where module exists                      */
-  int        start_line;  /*!< Starting line number of module in its file         */
-  int        end_line;    /*!< Ending line number of module in its file           */
-  statistic* stat;        /*!< Pointer to module coverage statistics structure    */
-  sig_link*  sig_head;    /*!< Head pointer to list of signals in this module     */
-  sig_link*  sig_tail;    /*!< Tail pointer to list of signals in this module     */
-  exp_link*  exp_head;    /*!< Head pointer to list of expressions in this module */
-  exp_link*  exp_tail;    /*!< Tail pointer to list of expressions in this module */
-  stmt_link* stmt_head;   /*!< Head pointer to list of statements in this module  */
-  stmt_link* stmt_tail;   /*!< Tail pointer to list of statements in this module  */
-  fsm_link*  fsm_head;    /*!< Head pointer to list of FSMs in this module        */
-  fsm_link*  fsm_tail;    /*!< Tail pointer to list of FSMs in this module        */
-  mod_parm*  param_head;  /*!< Head pointer to list of parameters in this module  */
-  mod_parm*  param_tail;  /*!< Tail pointer to list of parameters in this module  */
+  char*      name;        /*!< Module name                                                  */
+  char*      filename;    /*!< File name where module exists                                */
+  int        start_line;  /*!< Starting line number of module in its file                   */
+  int        end_line;    /*!< Ending line number of module in its file                     */
+  statistic* stat;        /*!< Pointer to module coverage statistics structure              */
+  sig_link*  sig_head;    /*!< Head pointer to list of signals in this module               */
+  sig_link*  sig_tail;    /*!< Tail pointer to list of signals in this module               */
+  exp_link*  exp_head;    /*!< Head pointer to list of expressions in this module           */
+  exp_link*  exp_tail;    /*!< Tail pointer to list of expressions in this module           */
+  stmt_link* stmt_head;   /*!< Head pointer to list of statements in this module            */
+  stmt_link* stmt_tail;   /*!< Tail pointer to list of statements in this module            */
+  fsm_link*  fsm_head;    /*!< Head pointer to list of FSMs in this module                  */
+  fsm_link*  fsm_tail;    /*!< Tail pointer to list of FSMs in this module                  */
+  race_blk*  race_head;   /*!< Head pointer to list of race condition blocks in this module */
+  race_blk*  race_tail;   /*!< Tail pointer to list of race condition blocks in this module */
+  mod_parm*  param_head;  /*!< Head pointer to list of parameters in this module            */
+  mod_parm*  param_tail;  /*!< Tail pointer to list of parameters in this module            */
 };
 
 /*!
@@ -1502,6 +1527,10 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.119  2005/02/01 05:11:18  phase1geo
+ Updates to race condition checker to find blocking/non-blocking assignments in
+ statement block.  Regression still runs clean.
+
  Revision 1.118  2005/01/27 13:33:49  phase1geo
  Added code to calculate if statement block is sequential, combinational, both
  or none.

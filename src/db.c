@@ -233,6 +233,13 @@ bool db_read( char* file, int read_mode ) {
           /* Parse rest of line for FSM info */
           retval = fsm_db_read( &rest_line, curr_module );
 
+        } else if( type == DB_TYPE_RACE ) {
+
+          assert( !merge_mode );
+
+          /* Parse rest of line for race condition block info */
+          retval = race_db_read( &rest_line, curr_module );
+
         } else if( type == DB_TYPE_MODULE ) {
 
           if( !merge_mode ) {
@@ -1326,6 +1333,11 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.122  2005/01/25 13:42:27  phase1geo
+ Fixing segmentation fault problem with race condition checking.  Added race1.1
+ to regression.  Removed unnecessary output statements from previous debugging
+ checkins.
+
  Revision 1.121  2005/01/10 23:03:37  phase1geo
  Added code to properly report race conditions.  Added code to remove statement blocks
  from module when race conditions are found.

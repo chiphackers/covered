@@ -36,6 +36,7 @@
 #include "db.h"
 #include "util.h"
 #include "vsignal.h"
+#include "statement.h"
 
 
 stmt_blk* sb = NULL;
@@ -52,6 +53,27 @@ extern char      user_msg[USER_MSG_LENGTH];
 extern mod_link* mod_head;
 extern module*   curr_module;
 
+
+/*!
+ \param reason      Numerical reason for why race condition was detected.
+ \param start_line  Starting line of race condition block.
+ \param end_line    Ending line of race condition block.
+
+ \return Returns a pointer to the newly allocated race condition block.
+
+ Allocates and initializes memory for a race condition block.
+*/
+race_blk* race_blk_create( int reason, int start_line, int end_line ) {
+
+  race_blk* rb;  /* Pointer to newly allocated race condition block */
+
+  rb             = (race_blk*)malloc_safe( sizeof( race_blk ), __FILE__, __LINE__ );
+  rb->reason     = reason;
+  rb->start_line = start_line;
+  rb->end_line   = end_line;
+  rb->next       = NULL;
+
+}
 
 /*!
  \param mod   Pointer to module containing statement list to parse.
@@ -257,6 +279,9 @@ void race_handle_race_condition( expression* expr, module* mod, statement* stmt,
     }
 
   }
+
+  /* Create a race condition block and add it to current module */
+  race_blk_create( reason, stmt->exp->line, statement_get_last_line( stmt ) );
 
   /* Set remove flag in stmt_blk array to remove this module from memory */
   i = race_find_head_statement( stmt );
@@ -487,8 +512,97 @@ void race_check_modules() {
 
 }
 
+/*!
+ \param rb    Pointer to race condition block to write to specified output file
+ \param file  File handle of output stream to write.
+
+ \return Returns TRUE if write occurred sucessfully; otherwise, returns FALSE.
+
+ Writes contents of specified race condition block to the specified output stream.
+*/
+bool race_db_write( race_blk* rb, FILE* file ) {
+
+  bool retval = TRUE;  /* Return value for this function */
+
+  fprintf( file, "%d %d %d %d\n",
+    DB_TYPE_RACE,
+    rb->reason,
+    rb->start_line,
+    rb->end_line
+  );
+
+  return( retval );
+
+}
+
+/*!
+ \param line      Pointer to line containing information for a race condition block.
+ \param curr_mod  Pointer to current module to store race condition block to.
+
+ \return Returns TRUE if line was read successfully; otherwise, returns FALSE.
+
+ Reads the specified line from the CDD file and parses it for race condition block
+ information.
+*/
+bool race_db_read( char** line, module* curr_mod ) {
+
+  bool      retval = TRUE;  /* Return value for this function                 */
+  int       start_line;     /* Starting line for race condition block         */
+  int       end_line;       /* Ending line for race condition block           */
+  int       reason;         /* Reason for why the race condition block exists */
+  int       chars_read;     /* Number of characters read via sscanf           */
+  race_blk* rb;             /* Pointer to newly created race condition block  */
+
+  if( sscanf( *line, "%d %d %d%n", &reason, &start_line, &end_line, &chars_read ) == 3 ) {
+
+    *line = *line + chars_read;
+
+    /* Create the new race condition block */
+    rb = race_blk_create( reason, start_line, end_line );
+
+    /* Add the new race condition block to the current module */
+    if( curr_mod->race_head == NULL ) {
+      curr_mod->race_head = curr_mod->race_tail = rb;
+    } else {
+      curr_mod->race_tail->next = rb;
+      curr_mod->race_tail       = rb;
+    }
+
+  } else {
+
+    retval = FALSE;
+
+  }
+
+  return( retval );
+
+}
+
+/*!
+ \param rb  Pointer to race condition block to deallocate.
+
+ Recursively deallocates the specified race condition block list.
+*/
+void race_blk_delete_list( race_blk* rb ) {
+
+  if( rb != NULL ) {
+
+    /* Delete the next race condition block first */
+    race_blk_delete_list( rb->next );
+
+    /* Deallocate the memory for this race condition block */
+    free_safe( rb );
+
+  }
+
+}
+
 /*
  $Log$
+ Revision 1.18  2005/02/03 05:48:33  phase1geo
+ Fixing bugs in race condition checker.  Adding race2.1 diagnostic.  Regression
+ currently has some failures due to these changes.
+
  Revision 1.17  2005/02/03 04:59:13  phase1geo
  Fixing bugs in race condition checker.  Updated regression.
 

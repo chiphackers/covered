@@ -443,6 +443,55 @@ void statement_set_stop( statement* stmt, statement* post, bool true_path, bool 
 
 }
 
+/*!
+ \param stmt  Pointer to current statement to look at.
+ \param base  Pointer to root statement in statement tree.
+
+ \return Returns the last line number of the specified statement tree.
+
+ Recursively iterates through the specified statement tree searching for the last
+ statement in each false/true path (the one whose next pointer points to the head
+ statement).  Once it is found, its expression is parsed for its last line and this
+ value is returned.  If both the false and tru paths have been parsed, the highest
+ numbered line is returned.
+*/
+int statement_get_last_line_helper( statement* stmt, statement* base ) {
+
+  expression* last_exp;         /* Pointer to last expression in the statement tree */
+  int         last_false = -1;  /* Last false path line number                      */ 
+  int         last_true  = -1;  /* Last true path line number                       */
+
+  if( stmt != NULL ) {
+
+    /* Check out/traverse false path */
+    if( (stmt->next_false == NULL) || (stmt->next_false == base) ) {
+      last_exp   = expression_get_last_line_expr( stmt->exp );
+      last_false = last_exp->line;
+    } else if( ESUPPL_IS_STMT_STOP( stmt->exp->suppl ) != 0 ) {
+      last_false = statement_get_last_line_helper( stmt->next_false, base );
+    }
+
+    /* Check out/traverse true path */
+    if( (stmt->next_true == NULL) || (stmt->next_true == base) ) {
+      last_exp  = expression_get_last_line_expr( stmt->exp );
+      last_true = last_exp->line;
+    } else if( ESUPPL_IS_STMT_STOP( stmt->exp->suppl ) != 0 ) {
+      last_true = statement_get_last_line_helper( stmt->next_true, base );
+    }
+
+  }
+
+  /* Return the greater of the two path last lines */
+  return( (last_false > last_true) ? last_false : last_true );
+
+}
+
+int statement_get_last_line( statement* stmt ) {
+
+  return( statement_get_last_line_helper( stmt, stmt ) );
+
+}
+
 void statement_remove_paths_helper( statement* curr, statement* start, statement* stmt ) {
 
   if( (curr != NULL) && (curr != start) ) {
@@ -572,6 +621,10 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.50  2005/01/07 17:59:52  phase1geo
+ Finalized updates for supplemental field changes.  Everything compiles and links
+ correctly at this time; however, a regression run has not confirmed the changes.
+
  Revision 1.49  2004/07/22 04:43:06  phase1geo
  Finishing code to calculate start and end columns of expressions.  Regression
  has been updated for these changes.  Other various minor changes as well.

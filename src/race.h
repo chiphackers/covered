@@ -9,15 +9,30 @@
            within the specified design.
 */
 
+#include <stdio.h>
+
 #include "defines.h"
 
 
 /*! \brief Checks the current module for race conditions */
 void race_check_modules();
 
+/*! \brief Writes contents of specified race condition block to specified file output */
+bool race_db_write( race_blk* head, FILE* file );
+
+/*! \brief Reads contents from specified line for a race condition block and assigns the new block to the curr_mod */
+bool race_db_read( char** line, module* curr_mod );
+
+/*! \brief Deallocates the specified race condition block from memory */
+void race_blk_delete_list( race_blk* rb );
+
 
 /*
  $Log$
+ Revision 1.8  2005/01/10 23:03:39  phase1geo
+ Added code to properly report race conditions.  Added code to remove statement blocks
+ from module when race conditions are found.
+
  Revision 1.7  2005/01/10 02:59:30  phase1geo
  Code added for race condition checking that checks for signals being assigned
  in multiple statements.  Working on handling bit selects -- this is in progress.
