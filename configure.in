@@ -21,7 +21,7 @@ fi
 dnl AC_CHECK_HEADERS(getopt.h)
 
 dnl Checks for libraries.
-dnl AM_WITH_MPATROL(yes)
+AM_WITH_MPATROL(no)
 
 dnl Checks for header files.
 AC_HEADER_STDC
