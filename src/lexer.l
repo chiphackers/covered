@@ -165,7 +165,7 @@ WSPACE [ \t\b\f]+
          } else {
            if( filelist_curr != filelist_head ) {
              /* The module has been found, recirculate filelist */
-             snprintf( user_msg, USER_MSG_LENGTH, "Parsing file %s", filelist_curr->str );
+             snprintf( user_msg, USER_MSG_LENGTH, "Parsing file %s", yylloc.text );
              print_output( user_msg, NORMAL );
              filelist_curr = filelist_head;
            }
