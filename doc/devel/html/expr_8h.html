@@ -14,16 +14,16 @@
 <a href="expr_8h-source.html">Go to the source code of this file.</a><table border=0 cellpadding=0 cellspacing=0>
 <tr><td></td></tr>
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="expr_8h.html#a0">expression_create_value</a> (<a class="el" href="structexpression__s.html">expression</a> *exp, int width, int lsb, <a class="el" href="defines_8h.html#a181">bool</a> data)</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="expr_8h.html#a0">expression_create_value</a> (<a class="el" href="structexpression__s.html">expression</a> *exp, int width, int lsb, <a class="el" href="defines_8h.html#a182">bool</a> data)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Creates an expression value and initializes it. </em> <a href="#a0"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="structexpression__s.html">expression</a> *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="expr_8h.html#a1">expression_create</a> (<a class="el" href="structexpression__s.html">expression</a> *right, <a class="el" href="structexpression__s.html">expression</a> *left, int op, int id, int line, <a class="el" href="defines_8h.html#a181">bool</a> data)</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="structexpression__s.html">expression</a> *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="expr_8h.html#a1">expression_create</a> (<a class="el" href="structexpression__s.html">expression</a> *right, <a class="el" href="structexpression__s.html">expression</a> *left, int op, int id, int line, <a class="el" href="defines_8h.html#a182">bool</a> data)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Creates new expression. </em> <a href="#a1"></a><em><br><br></td></tr>
 <tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="expr_8h.html#a2">expression_set_value</a> (<a class="el" href="structexpression__s.html">expression</a> *exp, <a class="el" href="structvector__s.html">vector</a> *vec)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Sets the specified expression value to the specified vector value. </em> <a href="#a2"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="expr_8h.html#a3">expression_resize</a> (<a class="el" href="structexpression__s.html">expression</a> *expr, <a class="el" href="defines_8h.html#a181">bool</a> recursive)</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="expr_8h.html#a3">expression_resize</a> (<a class="el" href="structexpression__s.html">expression</a> *expr, <a class="el" href="defines_8h.html#a182">bool</a> recursive)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Recursively resizes specified expression tree leaf node. </em> <a href="#a3"></a><em><br><br></td></tr>
 <tr><td class="memItemLeft" nowrap align=right valign=top>int&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="expr_8h.html#a4">expression_get_id</a> (<a class="el" href="structexpression__s.html">expression</a> *expr)</td></tr>
@@ -35,10 +35,10 @@
 <tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="expr_8h.html#a6">expression_db_write</a> (<a class="el" href="structexpression__s.html">expression</a> *expr, FILE *<a class="el" href="pplexer_8c.html#a113">file</a>, char *scope)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Writes this expression to the specified database file. </em> <a href="#a6"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="expr_8h.html#a7">expression_db_read</a> (char **line, <a class="el" href="structmodule__s.html">module</a> *curr_mod, <a class="el" href="defines_8h.html#a181">bool</a> eval)</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="expr_8h.html#a7">expression_db_read</a> (char **line, <a class="el" href="structmodule__s.html">module</a> *curr_mod, <a class="el" href="defines_8h.html#a182">bool</a> eval)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Reads current line of specified file and parses for expression information. </em> <a href="#a7"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="expr_8h.html#a8">expression_db_merge</a> (<a class="el" href="structexpression__s.html">expression</a> *base, char **line, <a class="el" href="defines_8h.html#a181">bool</a> same)</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="expr_8h.html#a8">expression_db_merge</a> (<a class="el" href="structexpression__s.html">expression</a> *base, char **line, <a class="el" href="defines_8h.html#a182">bool</a> same)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Reads and merges two expressions and stores result in base expression. </em> <a href="#a8"></a><em><br><br></td></tr>
 <tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="expr_8h.html#a9">expression_display</a> (<a class="el" href="structexpression__s.html">expression</a> *expr)</td></tr>
@@ -53,10 +53,10 @@
 <tr><td class="memItemLeft" nowrap align=right valign=top>int&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="expr_8h.html#a12">expression_bit_value</a> (<a class="el" href="structexpression__s.html">expression</a> *expr)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Returns a compressed, 1-bit representation of the value after a unary OR. </em> <a href="#a12"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="expr_8h.html#a13">expression_is_static_only</a> (<a class="el" href="structexpression__s.html">expression</a> *expr)</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="expr_8h.html#a13">expression_is_static_only</a> (<a class="el" href="structexpression__s.html">expression</a> *expr)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Returns TRUE if specified expression is found to contain all static leaf expressions. </em> <a href="#a13"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="expr_8h.html#a14">expression_dealloc</a> (<a class="el" href="structexpression__s.html">expression</a> *expr, <a class="el" href="defines_8h.html#a181">bool</a> exp_only)</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="expr_8h.html#a14">expression_dealloc</a> (<a class="el" href="structexpression__s.html">expression</a> *expr, <a class="el" href="defines_8h.html#a182">bool</a> exp_only)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Deallocates memory used for expression. </em> <a href="#a14"></a><em><br><br></td></tr>
 </table>
@@ -141,7 +141,7 @@ Returns a value of 1 if the specified expression contains at least one 1 value a
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td>
           <td class="mdname" nowrap> <em>data</em></td>
         </tr>
         <tr>
@@ -204,7 +204,7 @@ Creates a new expression from heap memory and initializes its values for usage. 
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td>
           <td class="mdname" nowrap> <em>data</em></td>
         </tr>
         <tr>
@@ -244,7 +244,7 @@ Creates a value vector that is large enough to store width number of bits in val
     <td class="mdRow">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a181">bool</a> expression_db_merge </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a182">bool</a> expression_db_merge </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top"><a class="el" href="structexpression__s.html">expression</a> *&nbsp;</td>
           <td class="mdname" nowrap> <em>base</em>, </td>
@@ -258,7 +258,7 @@ Creates a value vector that is large enough to store width number of bits in val
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td>
           <td class="mdname" nowrap> <em>same</em></td>
         </tr>
         <tr>
@@ -298,7 +298,7 @@ Parses specified line for expression information and merges contents into the ba
     <td class="mdRow">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a181">bool</a> expression_db_read </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a182">bool</a> expression_db_read </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top">char **&nbsp;</td>
           <td class="mdname" nowrap> <em>line</em>, </td>
@@ -312,7 +312,7 @@ Parses specified line for expression information and merges contents into the ba
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td>
           <td class="mdname" nowrap> <em>eval</em></td>
         </tr>
         <tr>
@@ -413,7 +413,7 @@ This function recursively displays the expression information for the specified 
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td>
           <td class="mdname" nowrap> <em>exp_only</em></td>
         </tr>
         <tr>
@@ -577,7 +577,7 @@ If the specified expression tree has an event operation at the root of the expre
     <td class="mdRow">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a181">bool</a> expression_is_static_only </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a182">bool</a> expression_is_static_only </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top"><a class="el" href="structexpression__s.html">expression</a> *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap> <em>expr</em>          </td>
@@ -694,7 +694,7 @@ Recursively performs the proper operations to cause the top-level expression to 
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td>
           <td class="mdname" nowrap> <em>recursive</em></td>
         </tr>
         <tr>
@@ -772,7 +772,7 @@ Sets the specified expression value to the specified vector value.
 Sets the specified expression (if necessary) to the value of the specified vector value.     </td>
   </tr>
 </table>
-<hr size="1"><address style="align: right;"><small>Generated on Sat Aug 9 22:46:40 2003 for Covered by
+<hr size="1"><address style="align: right;"><small>Generated on Thu Aug 14 22:50:09 2003 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 > 
 </a>1.3.3 </small></address>

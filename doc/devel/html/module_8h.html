@@ -20,13 +20,13 @@
 <tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="structmodule__s.html">module</a> *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="module_8h.html#a1">module_create</a> ()</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Creates new module from heap and initializes structure. </em> <a href="#a1"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="module_8h.html#a2">module_db_write</a> (<a class="el" href="structmodule__s.html">module</a> *mod, char *scope, FILE *<a class="el" href="pplexer_8c.html#a113">file</a>, <a class="el" href="structmod__inst__s.html">mod_inst</a> *inst)</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="module_8h.html#a2">module_db_write</a> (<a class="el" href="structmodule__s.html">module</a> *mod, char *scope, FILE *<a class="el" href="pplexer_8c.html#a113">file</a>, <a class="el" href="structmod__inst__s.html">mod_inst</a> *inst)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Writes contents of provided module to specified output. </em> <a href="#a2"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="module_8h.html#a3">module_db_read</a> (<a class="el" href="structmodule__s.html">module</a> *mod, char *scope, char **line)</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="module_8h.html#a3">module_db_read</a> (<a class="el" href="structmodule__s.html">module</a> *mod, char *scope, char **line)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Read contents of current line from specified file, creates module and adds to module list. </em> <a href="#a3"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="module_8h.html#a4">module_db_merge</a> (<a class="el" href="structmodule__s.html">module</a> *base, FILE *<a class="el" href="pplexer_8c.html#a113">file</a>, <a class="el" href="defines_8h.html#a181">bool</a> same)</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="module_8h.html#a4">module_db_merge</a> (<a class="el" href="structmodule__s.html">module</a> *base, FILE *<a class="el" href="pplexer_8c.html#a113">file</a>, <a class="el" href="defines_8h.html#a182">bool</a> same)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Reads and merges two modules into base module. </em> <a href="#a4"></a><em><br><br></td></tr>
 <tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="module_8h.html#a5">module_display_signals</a> (<a class="el" href="structmodule__s.html">module</a> *mod)</td></tr>
@@ -121,7 +121,7 @@ Allocates memory from the heap for a module element and initializes all contents
     <td class="mdRow">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a181">bool</a> module_db_merge </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a182">bool</a> module_db_merge </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top"><a class="el" href="structmodule__s.html">module</a> *&nbsp;</td>
           <td class="mdname" nowrap> <em>base</em>, </td>
@@ -135,7 +135,7 @@ Allocates memory from the heap for a module element and initializes all contents
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td>
           <td class="mdname" nowrap> <em>same</em></td>
         </tr>
         <tr>
@@ -175,7 +175,7 @@ Parses specified line for module information and performs a merge of the two spe
     <td class="mdRow">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a181">bool</a> module_db_read </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a182">bool</a> module_db_read </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top"><a class="el" href="structmodule__s.html">module</a> *&nbsp;</td>
           <td class="mdname" nowrap> <em>mod</em>, </td>
@@ -229,7 +229,7 @@ Reads the current line of the specified file and parses it for a module. If all 
     <td class="mdRow">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a181">bool</a> module_db_write </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a182">bool</a> module_db_write </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top"><a class="el" href="structmodule__s.html">module</a> *&nbsp;</td>
           <td class="mdname" nowrap> <em>mod</em>, </td>
@@ -428,7 +428,7 @@ Initializes all values of module.
 Initializes all contents to NULL.     </td>
   </tr>
 </table>
-<hr size="1"><address style="align: right;"><small>Generated on Sat Aug 9 22:46:42 2003 for Covered by
+<hr size="1"><address style="align: right;"><small>Generated on Thu Aug 14 22:50:10 2003 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 > 
 </a>1.3.3 </small></address>

@@ -27,24 +27,30 @@
 <tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="signal_8c.html#a4">signal_db_write</a> (<a class="el" href="structsignal__s.html">signal</a> *sig, FILE *<a class="el" href="pplexer_8c.html#a113">file</a>, char *modname)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Outputs this signal information to specified file. </em> <a href="#a4"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="signal_8c.html#a5">signal_db_read</a> (char **line, <a class="el" href="structmodule__s.html">module</a> *curr_mod)</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="signal_8c.html#a5">signal_db_read</a> (char **line, <a class="el" href="structmodule__s.html">module</a> *curr_mod)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Reads signal information from specified file. </em> <a href="#a5"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="signal_8c.html#a6">signal_db_merge</a> (<a class="el" href="structsignal__s.html">signal</a> *base, char **line, <a class="el" href="defines_8h.html#a181">bool</a> same)</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="signal_8c.html#a6">signal_db_merge</a> (<a class="el" href="structsignal__s.html">signal</a> *base, char **line, <a class="el" href="defines_8h.html#a182">bool</a> same)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Reads and merges two signals, placing result into base signal. </em> <a href="#a6"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="signal_8c.html#a7">signal_vcd_assign</a> (<a class="el" href="structsignal__s.html">signal</a> *sig, char *value, int msb, int lsb)</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="signal_8c.html#a7">signal_set_wait_bit</a> (<a class="el" href="structsignal__s.html">signal</a> *sig, int val)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Assigns specified VCD value to specified signal. </em> <a href="#a7"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="signal_8c.html#a8">signal_add_expression</a> (<a class="el" href="structsignal__s.html">signal</a> *sig, <a class="el" href="structexpression__s.html">expression</a> *expr)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Sets value of currently waiting bit of signal to specified value. </em> <a href="#a7"></a><em><br><br></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>int&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="signal_8c.html#a8">signal_get_wait_bit</a> (<a class="el" href="structsignal__s.html">signal</a> *sig)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Adds an expression to the signal list. </em> <a href="#a8"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="signal_8c.html#a9">signal_display</a> (<a class="el" href="structsignal__s.html">signal</a> *sig)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Gets value of currently waiting bit of signal. </em> <a href="#a8"></a><em><br><br></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="signal_8c.html#a9">signal_vcd_assign</a> (<a class="el" href="structsignal__s.html">signal</a> *sig, char *value, int msb, int lsb)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Displays signal contents to standard output. </em> <a href="#a9"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="signal_8c.html#a10">signal_dealloc</a> (<a class="el" href="structsignal__s.html">signal</a> *sig)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Assigns specified VCD value to specified signal. </em> <a href="#a9"></a><em><br><br></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="signal_8c.html#a10">signal_add_expression</a> (<a class="el" href="structsignal__s.html">signal</a> *sig, <a class="el" href="structexpression__s.html">expression</a> *expr)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Deallocates the memory used for this signal. </em> <a href="#a10"></a><em><br><br></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Adds an expression to the signal list. </em> <a href="#a10"></a><em><br><br></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="signal_8c.html#a11">signal_display</a> (<a class="el" href="structsignal__s.html">signal</a> *sig)</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Displays signal contents to standard output. </em> <a href="#a11"></a><em><br><br></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="signal_8c.html#a12">signal_dealloc</a> (<a class="el" href="structsignal__s.html">signal</a> *sig)</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Deallocates the memory used for this signal. </em> <a href="#a12"></a><em><br><br></td></tr>
 <tr><td colspan=2><br><h2>Variables</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a154">nibble</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="signal_8c.html#a0">or_optab</a> [16]</td></tr>
 
@@ -55,7 +61,7 @@
 <dl compact><dt><b>Author:</b></dt><dd>Trevor Williams (<a href="mailto:trevorw@charter.net">trevorw@charter.net</a>) </dd></dl>
 <dl compact><dt><b>Date:</b></dt><dd>12/1/2001</dd></dl>
 <hr><h2>Function Documentation</h2>
-<a name="a8" doxytag="signal.c::signal_add_expression"></a><p>
+<a name="a10" doxytag="signal.c::signal_add_expression"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -161,7 +167,7 @@ This function should be called by the Verilog parser or the database reading fun
     <td class="mdRow">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a181">bool</a> signal_db_merge </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a182">bool</a> signal_db_merge </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top"><a class="el" href="structsignal__s.html">signal</a> *&nbsp;</td>
           <td class="mdname" nowrap> <em>base</em>, </td>
@@ -175,7 +181,7 @@ This function should be called by the Verilog parser or the database reading fun
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td>
           <td class="mdname" nowrap> <em>same</em></td>
         </tr>
         <tr>
@@ -215,7 +221,7 @@ Parses specified line for signal information and performs merge of the base and 
     <td class="mdRow">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a181">bool</a> signal_db_read </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a182">bool</a> signal_db_read </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top">char **&nbsp;</td>
           <td class="mdname" nowrap> <em>line</em>, </td>
@@ -311,7 +317,7 @@ Outputs this signal information to specified file.
 Prints the signal information for the specified signal to the specified file. This file will be the database coverage file for this design.     </td>
   </tr>
 </table>
-<a name="a10" doxytag="signal.c::signal_dealloc"></a><p>
+<a name="a12" doxytag="signal.c::signal_dealloc"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -347,7 +353,7 @@ Deallocates the memory used for this signal.
 Deallocates all malloc'ed memory back to the heap for the specified signal.     </td>
   </tr>
 </table>
-<a name="a9" doxytag="signal.c::signal_display"></a><p>
+<a name="a11" doxytag="signal.c::signal_display"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -381,6 +387,43 @@ Displays signal contents to standard output.
   </table>
 </dl>
 Displays signal's name, width, lsb and value vector to the standard output.     </td>
+  </tr>
+</table>
+<a name="a8" doxytag="signal.c::signal_get_wait_bit"></a><p>
+<table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
+  <tr>
+    <td class="mdRow">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> int signal_get_wait_bit </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="structsignal__s.html">signal</a> *&nbsp;</td>
+          <td class="mdname1" valign="top" nowrap> <em>sig</em>          </td>
+          <td class="md" valign="top">&nbsp;)&nbsp;</td>
+          <td class="md" nowrap></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+Gets value of currently waiting bit of signal. 
+<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign=top><em>sig</em>&nbsp;</td><td>Pointer to signal to retrieve wait bit value from.</td></tr>
+  </table>
+</dl>
+<dl compact><dt><b>Returns:</b></dt><dd>Returns value of wait bit in specified signal.</dd></dl>
+Gets the value of the wait bit from the specified signal.     </td>
   </tr>
 </table>
 <a name="a2" doxytag="signal.c::signal_init"></a><p>
@@ -436,7 +479,53 @@ Initializes specified signal with specified values.
 Initializes the specified signal with the values of name and value. This function is called by the signal_create routine and is also useful for creating temporary signals (reduces the need for dynamic memory allocation). for performance enhancing purposes.     </td>
   </tr>
 </table>
-<a name="a7" doxytag="signal.c::signal_vcd_assign"></a><p>
+<a name="a7" doxytag="signal.c::signal_set_wait_bit"></a><p>
+<table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
+  <tr>
+    <td class="mdRow">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> void signal_set_wait_bit </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="structsignal__s.html">signal</a> *&nbsp;</td>
+          <td class="mdname" nowrap> <em>sig</em>, </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td class="md" nowrap>int&nbsp;</td>
+          <td class="mdname" nowrap> <em>val</em></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td class="md">)&nbsp;</td>
+          <td class="md" colspan="2"></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+Sets value of currently waiting bit of signal to specified value. 
+<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign=top><em>sig</em>&nbsp;</td><td>Pointer to signal to set wait bit to. </td></tr>
+    <tr><td valign=top><em>val</em>&nbsp;</td><td>Value to set wait bit to.</td></tr>
+  </table>
+</dl>
+Sets the wait bit in the specified signal to the specified value.     </td>
+  </tr>
+</table>
+<a name="a9" doxytag="signal.c::signal_vcd_assign"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -553,7 +642,7 @@ OR operation table     </td>
 Holds some output that will be displayed via the print_output command. This is created globally so that memory does not need to be reallocated for each function that wishes to use it.     </td>
   </tr>
 </table>
-<hr size="1"><address style="align: right;"><small>Generated on Sat Aug 9 22:46:43 2003 for Covered by
+<hr size="1"><address style="align: right;"><small>Generated on Thu Aug 14 22:50:12 2003 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 > 
 </a>1.3.3 </small></address>

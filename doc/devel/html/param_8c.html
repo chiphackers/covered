@@ -43,7 +43,7 @@
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Adds parameter override to defparam list. </em> <a href="#a11"></a><em><br><br></td></tr>
 <tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="param_8c.html#a12">param_find_and_set_expr_value</a> (<a class="el" href="structexpression__s.html">expression</a> *expr, <a class="el" href="structinst__parm__s.html">inst_parm</a> *icurr)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="param_8c.html#a13">param_set_sig_size</a> (<a class="el" href="structsignal__s.html">signal</a> *sig, <a class="el" href="structinst__parm__s.html">inst_parm</a> *icurr)</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="param_8c.html#a13">param_set_sig_size</a> (<a class="el" href="structsignal__s.html">signal</a> *sig, <a class="el" href="structinst__parm__s.html">inst_parm</a> *icurr)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Sets the specified signal size according to the specified instance parameter and resizes attached expressions. </em> <a href="#a13"></a><em><br><br></td></tr>
 <tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="param_8c.html#a14">param_expr_eval</a> (<a class="el" href="structexpression__s.html">expression</a> *expr, <a class="el" href="structinst__parm__s.html">inst_parm</a> *ihead)</td></tr>
@@ -61,10 +61,10 @@
 <tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="param_8c.html#a19">param_db_write</a> (<a class="el" href="structinst__parm__s.html">inst_parm</a> *iparm, FILE *<a class="el" href="pplexer_8c.html#a113">file</a>, char *scope)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Outputs specified instance parameter to specified output stream. </em> <a href="#a19"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="param_8c.html#a20">mod_parm_dealloc</a> (<a class="el" href="structmod__parm__s.html">mod_parm</a> *parm, <a class="el" href="defines_8h.html#a181">bool</a> recursive)</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="param_8c.html#a20">mod_parm_dealloc</a> (<a class="el" href="structmod__parm__s.html">mod_parm</a> *parm, <a class="el" href="defines_8h.html#a182">bool</a> recursive)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Deallocates specified module parameter and possibly entire module parameter list. </em> <a href="#a20"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="param_8c.html#a21">inst_parm_dealloc</a> (<a class="el" href="structinst__parm__s.html">inst_parm</a> *parm, <a class="el" href="defines_8h.html#a181">bool</a> recursive)</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="param_8c.html#a21">inst_parm_dealloc</a> (<a class="el" href="structinst__parm__s.html">inst_parm</a> *parm, <a class="el" href="defines_8h.html#a182">bool</a> recursive)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Deallocates specified instance parameter and possibly entire instance parameter list. </em> <a href="#a21"></a><em><br><br></td></tr>
 <tr><td colspan=2><br><h2>Variables</h2></td></tr>
@@ -212,7 +212,7 @@ Creates a new instance parameter with the specified information and adds it to t
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td>
           <td class="mdname" nowrap> <em>recursive</em></td>
         </tr>
         <tr>
@@ -373,7 +373,7 @@ Creates a new module parameter with the specified information and adds it to the
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td>
           <td class="mdname" nowrap> <em>recursive</em></td>
         </tr>
         <tr>
@@ -976,7 +976,7 @@ Evaluates the current module parameter expression tree and adds a new instance p
     <td class="mdRow">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a181">bool</a> param_set_sig_size </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a182">bool</a> param_set_sig_size </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top"><a class="el" href="structsignal__s.html">signal</a> *&nbsp;</td>
           <td class="mdname" nowrap> <em>sig</em>, </td>
@@ -1118,7 +1118,7 @@ This string specifies the Verilog hierarchy leading up to the DUT. This value is
 Holds some output that will be displayed via the print_output command. This is created globally so that memory does not need to be reallocated for each function that wishes to use it.     </td>
   </tr>
 </table>
-<hr size="1"><address style="align: right;"><small>Generated on Sat Aug 9 22:46:42 2003 for Covered by
+<hr size="1"><address style="align: right;"><small>Generated on Thu Aug 14 22:50:11 2003 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 > 
 </a>1.3.3 </small></address>

@@ -19,15 +19,19 @@
 <tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="sim_8h.html#a1">sim_add_stmt_to_queue</a> (<a class="el" href="structstatement__s.html">statement</a> *stmt)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Adds specified statement to pre-simulation statement queue. </em> <a href="#a1"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="sim_8h.html#a2">sim_is_curr_wait_signal</a> (<a class="el" href="structsignal__s.html">signal</a> *sig)</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="sim_8h.html#a2">sim_set_curr_wait_signals</a> ()</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Searches pre-simulation queue for specified signal name. </em> <a href="#a2"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="sim_8h.html#a3">sim_add_statics</a> ()</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="sim_8h.html#a3">sim_clear_curr_wait_signals</a> ()</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Adds static expression values to initial simulator. </em> <a href="#a3"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="sim_8h.html#a4">sim_simulate</a> ()</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="sim_8h.html#a4">sim_is_curr_wait_signal</a> (<a class="el" href="structsignal__s.html">signal</a> *sig)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Simulates current timestep. </em> <a href="#a4"></a><em><br><br></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Searches pre-simulation queue for specified signal name. </em> <a href="#a4"></a><em><br><br></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="sim_8h.html#a5">sim_add_statics</a> ()</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Adds static expression values to initial simulator. </em> <a href="#a5"></a><em><br><br></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="sim_8h.html#a6">sim_simulate</a> ()</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Simulates current timestep. </em> <a href="#a6"></a><em><br><br></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 Contains functions for simulation engine. 
@@ -35,7 +39,7 @@ Contains functions for simulation engine.
 <dl compact><dt><b>Author:</b></dt><dd>Trevor Williams (<a href="mailto:trevorw@charter.net">trevorw@charter.net</a>) </dd></dl>
 <dl compact><dt><b>Date:</b></dt><dd>6/20/2002 </dd></dl>
 <hr><h2>Function Documentation</h2>
-<a name="a3" doxytag="sim.h::sim_add_statics"></a><p>
+<a name="a5" doxytag="sim.h::sim_add_statics"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -101,6 +105,34 @@ Adds specified statement to pre-simulation statement queue.
 Checks STMT_HEAD bit of specified statement. If this is set to 1, adds this statement to the presimulation statement queue; otherwise, it does nothing with the statement     </td>
   </tr>
 </table>
+<a name="a3" doxytag="sim.h::sim_clear_curr_wait_signals"></a><p>
+<table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
+  <tr>
+    <td class="mdRow">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> void sim_clear_curr_wait_signals </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="mdname1" valign="top" nowrap>          </td>
+          <td class="md" valign="top">&nbsp;)&nbsp;</td>
+          <td class="md" nowrap></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+    </td>
+  </tr>
+</table>
 <a name="a0" doxytag="sim.h::sim_expr_changed"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
@@ -137,13 +169,13 @@ Adds specified expression's statement to pre-simulation statement queue.
 Traverses up expression tree pointed to by leaf node expr, setting the CHANGED bits as it reaches the root expression. When the root expression is found, the statement pointed to by the root's parent pointer is added to the pre-simulation statement queue for simulation at the end of the timestep. If, upon traversing the tree, an expression is found to already be have a CHANGED bit set, we know that the statement has already been added, so stop here and do not add the statement again.     </td>
   </tr>
 </table>
-<a name="a2" doxytag="sim.h::sim_is_curr_wait_signal"></a><p>
+<a name="a4" doxytag="sim.h::sim_is_curr_wait_signal"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a181">bool</a> sim_is_curr_wait_signal </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a182">bool</a> sim_is_curr_wait_signal </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top"><a class="el" href="structsignal__s.html">signal</a> *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap> <em>sig</em>          </td>
@@ -165,16 +197,38 @@ Traverses up expression tree pointed to by leaf node expr, setting the CHANGED b
 <p>
 Searches pre-simulation queue for specified signal name. 
 <p>
-<dl compact><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign=top><em>sig</em>&nbsp;</td><td>Pointer to signal to lookup.</td></tr>
-  </table>
-</dl>
-<dl compact><dt><b>Returns:</b></dt><dd>Returns TRUE if signal name was found in pre-simulation queue; otherwise, returns FALSE.</dd></dl>
-Searches through all statements in pre-simulation queue, searching for one that contains the signal name specified in the parameter list. If the signal name was found, return a value of TRUE; otherwise, returns a value of FALSE.     </td>
+    </td>
   </tr>
 </table>
-<a name="a4" doxytag="sim.h::sim_simulate"></a><p>
+<a name="a2" doxytag="sim.h::sim_set_curr_wait_signals"></a><p>
+<table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
+  <tr>
+    <td class="mdRow">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> void sim_set_curr_wait_signals </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="mdname1" valign="top" nowrap>          </td>
+          <td class="md" valign="top">&nbsp;)&nbsp;</td>
+          <td class="md" nowrap></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+    </td>
+  </tr>
+</table>
+<a name="a6" doxytag="sim.h::sim_simulate"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
@@ -201,10 +255,10 @@ Searches through all statements in pre-simulation queue, searching for one that 
 <p>
 Simulates current timestep. 
 <p>
-This function is the heart of the simulation engine. It is called by the <a class="el" href="db_8c.html#a48">db_do_timestep()</a> function in <a class="el" href="db_8c.html">db.c</a> and moves the statements and expressions into the appropriate simulation functions. See above explanation on this procedure.     </td>
+This function is the heart of the simulation engine. It is called by the <a class="el" href="db_8c.html#a45">db_do_timestep()</a> function in <a class="el" href="db_8c.html">db.c</a> and moves the statements and expressions into the appropriate simulation functions. See above explanation on this procedure.     </td>
   </tr>
 </table>
-<hr size="1"><address style="align: right;"><small>Generated on Sat Aug 9 22:46:44 2003 for Covered by
+<hr size="1"><address style="align: right;"><small>Generated on Thu Aug 14 22:50:12 2003 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 > 
 </a>1.3.3 </small></address>

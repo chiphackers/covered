@@ -9,9 +9,9 @@
 <a href="structsymtable__s-members.html">List of all members.</a><table border=0 cellpadding=0 cellspacing=0>
 <tr><td></td></tr>
 <tr><td colspan=2><br><h2>Public Attributes</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top>char *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="structsymtable__s.html#o0">sym</a></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="structsig__link__s.html">sig_link</a> *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="structsymtable__s.html#o0">sig_head</a></td></tr>
 
-<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="structsignal__s.html">signal</a> *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="structsymtable__s.html#o1">sig</a></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="structsig__link__s.html">sig_link</a> *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="structsymtable__s.html#o1">sig_tail</a></td></tr>
 
 <tr><td class="memItemLeft" nowrap align=right valign=top>int&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="structsymtable__s.html#o2">msb</a></td></tr>
 
@@ -21,34 +21,10 @@
 
 <tr><td class="memItemLeft" nowrap align=right valign=top>int&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="structsymtable__s.html#o5">size</a></td></tr>
 
-<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="structsymtable__s.html">symtable</a> *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="structsymtable__s.html#o6">right</a></td></tr>
-
-<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="structsymtable__s.html">symtable</a> *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="structsymtable__s.html#o7">left</a></td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="structsymtable__s.html">symtable</a> *&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="structsymtable__s.html#o6">table</a> [256]</td></tr>
 
 </table>
 <hr><h2>Member Data Documentation</h2>
-<a name="o7" doxytag="symtable_s::left"></a><p>
-<table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
-  <tr>
-    <td class="mdRow">
-      <table cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="structsymtable__s.html">symtable</a>* <a class="el" href="structsymtable__s.html#o7">symtable_s::left</a>
-      </table>
-    </td>
-  </tr>
-</table>
-<table cellspacing=5 cellpadding=0 border=0>
-  <tr>
-    <td>
-      &nbsp;
-    </td>
-    <td>
-
-<p>
-Pointer to next symtable entry to the left     </td>
-  </tr>
-</table>
 <a name="o3" doxytag="symtable_s::lsb"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
@@ -93,13 +69,13 @@ Least significant bit of value to set     </td>
 Most significant bit of value to set     </td>
   </tr>
 </table>
-<a name="o6" doxytag="symtable_s::right"></a><p>
+<a name="o0" doxytag="symtable_s::sig_head"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="structsymtable__s.html">symtable</a>* <a class="el" href="structsymtable__s.html#o6">symtable_s::right</a>
+          <td class="md" nowrap valign="top"> <a class="el" href="structsig__link__s.html">sig_link</a>* <a class="el" href="structsymtable__s.html#o0">symtable_s::sig_head</a>
       </table>
     </td>
   </tr>
@@ -112,16 +88,16 @@ Most significant bit of value to set     </td>
     <td>
 
 <p>
-Pointer to next symtable entry to the right     </td>
+Pointer to signal for this symbol     </td>
   </tr>
 </table>
-<a name="o1" doxytag="symtable_s::sig"></a><p>
+<a name="o1" doxytag="symtable_s::sig_tail"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="structsignal__s.html">signal</a>* <a class="el" href="structsymtable__s.html#o1">symtable_s::sig</a>
+          <td class="md" nowrap valign="top"> <a class="el" href="structsig__link__s.html">sig_link</a>* <a class="el" href="structsymtable__s.html#o1">symtable_s::sig_tail</a>
       </table>
     </td>
   </tr>
@@ -159,13 +135,13 @@ Pointer to signal for this symbol     </td>
 Number of bytes allowed storage for value     </td>
   </tr>
 </table>
-<a name="o0" doxytag="symtable_s::sym"></a><p>
+<a name="o6" doxytag="symtable_s::table"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> char* <a class="el" href="structsymtable__s.html#o0">symtable_s::sym</a>
+          <td class="md" nowrap valign="top"> <a class="el" href="structsymtable__s.html">symtable</a>* <a class="el" href="structsymtable__s.html#o6">symtable_s::table</a>[256]
       </table>
     </td>
   </tr>
@@ -178,7 +154,7 @@ Number of bytes allowed storage for value     </td>
     <td>
 
 <p>
-Name of VCD-specified signal     </td>
+Array of symbol tables for next level     </td>
   </tr>
 </table>
 <a name="o4" doxytag="symtable_s::value"></a><p>
@@ -205,7 +181,7 @@ String representation of last current value     </td>
 </table>
 <hr>The documentation for this struct was generated from the following file:<ul>
 <li><a class="el" href="defines_8h-source.html">defines.h</a></ul>
-<hr size="1"><address style="align: right;"><small>Generated on Sat Aug 9 22:46:47 2003 for Covered by
+<hr size="1"><address style="align: right;"><small>Generated on Thu Aug 14 22:50:15 2003 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 > 
 </a>1.3.3 </small></address>

@@ -8,6 +8,7 @@
 <a href="#_details">More...</a>
 <p>
 <code>#include "../config.h"</code><br>
+<code>#include &lt;sys/times.h&gt;</code><br>
 
 <p>
 <a href="defines_8h-source.html">Go to the source code of this file.</a><table border=0 cellpadding=0 cellspacing=0>
@@ -52,6 +53,8 @@
 <tr><td class="memItemLeft" nowrap align=right valign=top>struct &nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="structstr__link__s.html">str_link_s</a></td></tr>
 
 <tr><td class="memItemLeft" nowrap align=right valign=top>struct &nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="structsymtable__s.html">symtable_s</a></td></tr>
+
+<tr><td class="memItemLeft" nowrap align=right valign=top>struct &nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="structtimer__s.html">timer_s</a></td></tr>
 
 <tr><td class="memItemLeft" nowrap align=right valign=top>struct &nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="structtnode__s.html">tnode_s</a></td></tr>
 
@@ -419,9 +422,11 @@
 
 <tr><td class="memItemLeft" nowrap align=right valign=top>typedef <a class="el" href="structtnode__s.html">tnode_s</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="defines_8h.html#a178">tnode</a></td></tr>
 
+<tr><td class="memItemLeft" nowrap align=right valign=top>typedef <a class="el" href="structtimer__s.html">timer_s</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="defines_8h.html#a179">timer</a></td></tr>
+
 <tr><td colspan=2><br><h2>Enumerations</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top>enum &nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="defines_8h.html#a181">bool</a> { <a class="el" href="defines_8h.html#a181a179">FALSE</a>, 
-<a class="el" href="defines_8h.html#a181a180">TRUE</a>
+<tr><td class="memItemLeft" nowrap align=right valign=top>enum &nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="defines_8h.html#a182">bool</a> { <a class="el" href="defines_8h.html#a182a180">FALSE</a>, 
+<a class="el" href="defines_8h.html#a182a181">TRUE</a>
  }</td></tr>
 
 </table>
@@ -1198,6 +1203,28 @@ Renaming string link structure for convenience.     </td>
 Renaming symbol table structure for convenience.     </td>
   </tr>
 </table>
+<a name="a179" doxytag="defines.h::timer"></a><p>
+<table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
+  <tr>
+    <td class="mdRow">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> typedef struct <a class="el" href="structtimer__s.html">timer_s</a> <a class="el" href="structtimer__s.html">timer</a>
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+Renaming timer structure for convenience.     </td>
+  </tr>
+</table>
 <a name="a178" doxytag="defines.h::tnode"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
@@ -1265,13 +1292,13 @@ Renaming vector width structure for convenience.     </td>
   </tr>
 </table>
 <hr><h2>Enumeration Type Documentation</h2>
-<a name="a181" doxytag="defines.h::bool"></a><p>
+<a name="a182" doxytag="defines.h::bool"></a><p>
 <table class="mdTable" width="100%" cellpadding="2" cellspacing="0">
   <tr>
     <td class="mdRow">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> enum <a class="el" href="defines_8h.html#a181">bool</a>
+          <td class="md" nowrap valign="top"> enum <a class="el" href="defines_8h.html#a182">bool</a>
       </table>
     </td>
   </tr>
@@ -1286,16 +1313,16 @@ Renaming vector width structure for convenience.     </td>
 <p>
 Defines boolean variables used in most functions. <dl compact><dt><b>Enumeration values: </b></dt><dd>
 <table border=0 cellspacing=2 cellpadding=0>
-<tr><td valign=top><em><a name="a181a179" doxytag="FALSE"></a><em>FALSE</em></em>&nbsp;</td><td>
+<tr><td valign=top><em><a name="a182a180" doxytag="FALSE"></a><em>FALSE</em></em>&nbsp;</td><td>
 Boolean false value </td></tr>
-<tr><td valign=top><em><a name="a181a180" doxytag="TRUE"></a><em>TRUE</em></em>&nbsp;</td><td>
+<tr><td valign=top><em><a name="a182a181" doxytag="TRUE"></a><em>TRUE</em></em>&nbsp;</td><td>
 Boolean true value </td></tr>
 </table>
 </dl>
     </td>
   </tr>
 </table>
-<hr size="1"><address style="align: right;"><small>Generated on Sat Aug 9 22:46:40 2003 for Covered by
+<hr size="1"><address style="align: right;"><small>Generated on Thu Aug 14 22:50:09 2003 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 > 
 </a>1.3.3 </small></address>

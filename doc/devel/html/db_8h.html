@@ -13,10 +13,10 @@
 <a href="db_8h-source.html">Go to the source code of this file.</a><table border=0 cellpadding=0 cellspacing=0>
 <tr><td></td></tr>
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8h.html#a0">db_write</a> (char *<a class="el" href="pplexer_8c.html#a113">file</a>, <a class="el" href="defines_8h.html#a181">bool</a> parse_mode)</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8h.html#a0">db_write</a> (char *<a class="el" href="pplexer_8c.html#a113">file</a>, <a class="el" href="defines_8h.html#a182">bool</a> parse_mode)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Writes contents of expressions, modules and signals to database file. </em> <a href="#a0"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8h.html#a1">db_read</a> (char *<a class="el" href="pplexer_8c.html#a113">file</a>, int read_mode)</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8h.html#a1">db_read</a> (char *<a class="el" href="pplexer_8c.html#a113">file</a>, int read_mode)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Reads contents of database file and stores into internal lists. </em> <a href="#a1"></a><em><br><br></td></tr>
 <tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8h.html#a2">db_add_instance</a> (char *scope, char *modname)</td></tr>
@@ -64,7 +64,7 @@
 <tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8h.html#a16">db_statement_connect</a> (<a class="el" href="structstatement__s.html">statement</a> *curr_stmt, <a class="el" href="structstatement__s.html">statement</a> *next_stmt)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Connects one statement block to another. </em> <a href="#a16"></a><em><br><br></td></tr>
-<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8h.html#a17">db_statement_set_stop</a> (<a class="el" href="structstatement__s.html">statement</a> *stmt, <a class="el" href="structstatement__s.html">statement</a> *post, <a class="el" href="defines_8h.html#a181">bool</a> both)</td></tr>
+<tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8h.html#a17">db_statement_set_stop</a> (<a class="el" href="structstatement__s.html">statement</a> *stmt, <a class="el" href="structstatement__s.html">statement</a> *post, <a class="el" href="defines_8h.html#a182">bool</a> both)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Sets STMT_STOP bit in the appropriate statements. </em> <a href="#a17"></a><em><br><br></td></tr>
 <tr><td class="memItemLeft" nowrap align=right valign=top>void&nbsp;</td><td class="memItemRight" valign=bottom><a class="el" href="db_8h.html#a18">db_connect_statement_true</a> (<a class="el" href="structstatement__s.html">statement</a> *stmt, <a class="el" href="structstatement__s.html">statement</a> *exp_true)</td></tr>
@@ -882,7 +882,7 @@ Searches current module for signal matching the specified name. If the signal is
     <td class="mdRow">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a181">bool</a> db_read </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a182">bool</a> db_read </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top">char *&nbsp;</td>
           <td class="mdname" nowrap> <em>file</em>, </td>
@@ -1155,7 +1155,7 @@ Calls the statement_connect function located in <a class="el" href="statement_8c
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td>
           <td class="mdname" nowrap> <em>both</em></td>
         </tr>
         <tr>
@@ -1224,7 +1224,7 @@ Moves the curr_inst_scope up one level of hierarchy. This function is called whe
     <td class="mdRow">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a181">bool</a> db_write </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a182">bool</a> db_write </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top">char *&nbsp;</td>
           <td class="mdname" nowrap> <em>file</em>, </td>
@@ -1232,7 +1232,7 @@ Moves the curr_inst_scope up one level of hierarchy. This function is called whe
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a181">bool</a>&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a182">bool</a>&nbsp;</td>
           <td class="mdname" nowrap> <em>parse_mode</em></td>
         </tr>
         <tr>
@@ -1265,7 +1265,7 @@ Writes contents of expressions, modules and signals to database file.
 Opens specified database for writing. If database open successful, iterates through module, expression and signal lists, displaying each to the database file. If database write successful, returns TRUE; otherwise, returns FALSE to the calling function.     </td>
   </tr>
 </table>
-<hr size="1"><address style="align: right;"><small>Generated on Sat Aug 9 22:46:40 2003 for Covered by
+<hr size="1"><address style="align: right;"><small>Generated on Thu Aug 14 22:50:08 2003 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 > 
 </a>1.3.3 </small></address>

@@ -9,57 +9,57 @@
 00003 <span class="preprocessor"></span>
 00012 <span class="preprocessor">#include "<a class="code" href="defines_8h.html">defines.h</a>"</span>
 00013 
-00015 <span class="keywordtype">bool</span> <a class="code" href="db_8c.html#a23">db_write</a>( <span class="keywordtype">char</span>* file, <span class="keywordtype">bool</span> parse_mode );
+00015 <span class="keywordtype">bool</span> <a class="code" href="db_8c.html#a20">db_write</a>( <span class="keywordtype">char</span>* file, <span class="keywordtype">bool</span> parse_mode );
 00016 
-00018 <span class="keywordtype">bool</span> <a class="code" href="db_8c.html#a24">db_read</a>( <span class="keywordtype">char</span>* file, <span class="keywordtype">int</span> read_mode );
+00018 <span class="keywordtype">bool</span> <a class="code" href="db_8c.html#a21">db_read</a>( <span class="keywordtype">char</span>* file, <span class="keywordtype">int</span> read_mode );
 00019 
-00021 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a25">db_add_instance</a>( <span class="keywordtype">char</span>* scope, <span class="keywordtype">char</span>* modname );
+00021 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a22">db_add_instance</a>( <span class="keywordtype">char</span>* scope, <span class="keywordtype">char</span>* modname );
 00022 
-00024 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a26">db_add_module</a>( <span class="keywordtype">char</span>* name, <span class="keywordtype">char</span>* file );
+00024 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a23">db_add_module</a>( <span class="keywordtype">char</span>* name, <span class="keywordtype">char</span>* file );
 00025 
-00027 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a28">db_add_declared_param</a>( <span class="keywordtype">char</span>* name, <a class="code" href="structexpression__s.html">expression</a>* expr );
+00027 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a25">db_add_declared_param</a>( <span class="keywordtype">char</span>* name, <a class="code" href="structexpression__s.html">expression</a>* expr );
 00028 
-00030 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a29">db_add_override_param</a>( <span class="keywordtype">char</span>* inst_name, <a class="code" href="structexpression__s.html">expression</a>* expr );
+00030 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a26">db_add_override_param</a>( <span class="keywordtype">char</span>* inst_name, <a class="code" href="structexpression__s.html">expression</a>* expr );
 00031 
-00033 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a30">db_add_vector_param</a>( <a class="code" href="structsignal__s.html">signal</a>* sig, <a class="code" href="structexpression__s.html">expression</a>* parm_exp, <span class="keywordtype">int</span> type );
+00033 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a27">db_add_vector_param</a>( <a class="code" href="structsignal__s.html">signal</a>* sig, <a class="code" href="structexpression__s.html">expression</a>* parm_exp, <span class="keywordtype">int</span> type );
 00034 
-00036 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a31">db_add_defparam</a>( <span class="keywordtype">char</span>* name, <a class="code" href="structexpression__s.html">expression</a>* expr );
+00036 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a28">db_add_defparam</a>( <span class="keywordtype">char</span>* name, <a class="code" href="structexpression__s.html">expression</a>* expr );
 00037 
-00039 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a32">db_add_signal</a>( <span class="keywordtype">char</span>* name, <a class="code" href="structstatic__expr__s.html">static_expr</a>* left, <a class="code" href="structstatic__expr__s.html">static_expr</a>* right );
+00039 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a29">db_add_signal</a>( <span class="keywordtype">char</span>* name, <a class="code" href="structstatic__expr__s.html">static_expr</a>* left, <a class="code" href="structstatic__expr__s.html">static_expr</a>* right );
 00040 
-00042 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a27">db_end_module</a>();
+00042 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a24">db_end_module</a>();
 00043 
-00045 <a class="code" href="structsignal__s.html">signal</a>* <a class="code" href="db_8c.html#a33">db_find_signal</a>( <span class="keywordtype">char</span>* name );
+00045 <a class="code" href="structsignal__s.html">signal</a>* <a class="code" href="db_8c.html#a30">db_find_signal</a>( <span class="keywordtype">char</span>* name );
 00046 
-00048 <a class="code" href="structexpression__s.html">expression</a>* <a class="code" href="db_8c.html#a34">db_create_expression</a>( <a class="code" href="structexpression__s.html">expression</a>* right, <a class="code" href="structexpression__s.html">expression</a>* left, <span class="keywordtype">int</span> op, <span class="keywordtype">int</span> line, <span class="keywordtype">char</span>* sig_name );
+00048 <a class="code" href="structexpression__s.html">expression</a>* <a class="code" href="db_8c.html#a31">db_create_expression</a>( <a class="code" href="structexpression__s.html">expression</a>* right, <a class="code" href="structexpression__s.html">expression</a>* left, <span class="keywordtype">int</span> op, <span class="keywordtype">int</span> line, <span class="keywordtype">char</span>* sig_name );
 00049 
-00051 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a35">db_add_expression</a>( <a class="code" href="structexpression__s.html">expression</a>* root );
+00051 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a32">db_add_expression</a>( <a class="code" href="structexpression__s.html">expression</a>* root );
 00052 
-00054 <a class="code" href="structstatement__s.html">statement</a>* <a class="code" href="db_8c.html#a36">db_create_statement</a>( <a class="code" href="structexpression__s.html">expression</a>* exp );
+00054 <a class="code" href="structstatement__s.html">statement</a>* <a class="code" href="db_8c.html#a33">db_create_statement</a>( <a class="code" href="structexpression__s.html">expression</a>* exp );
 00055 
-00057 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a37">db_add_statement</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt, <a class="code" href="structstatement__s.html">statement</a>* start );
+00057 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a34">db_add_statement</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt, <a class="code" href="structstatement__s.html">statement</a>* start );
 00058 
-00060 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a38">db_remove_statement</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt );
+00060 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a35">db_remove_statement</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt );
 00061 
-00063 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a41">db_statement_connect</a>( <a class="code" href="structstatement__s.html">statement</a>* curr_stmt, <a class="code" href="structstatement__s.html">statement</a>* next_stmt );
+00063 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a38">db_statement_connect</a>( <a class="code" href="structstatement__s.html">statement</a>* curr_stmt, <a class="code" href="structstatement__s.html">statement</a>* next_stmt );
 00064 
-00066 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a42">db_statement_set_stop</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt, <a class="code" href="structstatement__s.html">statement</a>* post, <span class="keywordtype">bool</span> both );
+00066 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a39">db_statement_set_stop</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt, <a class="code" href="structstatement__s.html">statement</a>* post, <span class="keywordtype">bool</span> both );
 00067 
-00069 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a39">db_connect_statement_true</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt, <a class="code" href="structstatement__s.html">statement</a>* exp_true );
+00069 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a36">db_connect_statement_true</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt, <a class="code" href="structstatement__s.html">statement</a>* exp_true );
 00070 
-00072 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a40">db_connect_statement_false</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt, <a class="code" href="structstatement__s.html">statement</a>* exp_false );
+00072 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a37">db_connect_statement_false</a>( <a class="code" href="structstatement__s.html">statement</a>* stmt, <a class="code" href="structstatement__s.html">statement</a>* exp_false );
 00073 
-00075 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a43">db_set_vcd_scope</a>( <span class="keywordtype">char</span>* scope );
+00075 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a40">db_set_vcd_scope</a>( <span class="keywordtype">char</span>* scope );
 00076 
-00078 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a44">db_vcd_upscope</a>();
+00078 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a41">db_vcd_upscope</a>();
 00079 
-00081 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a45">db_assign_symbol</a>( <span class="keywordtype">char</span>* name, <span class="keywordtype">char</span>* symbol, <span class="keywordtype">int</span> msb, <span class="keywordtype">int</span> lsb );
+00081 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a42">db_assign_symbol</a>( <span class="keywordtype">char</span>* name, <span class="keywordtype">char</span>* symbol, <span class="keywordtype">int</span> msb, <span class="keywordtype">int</span> lsb );
 00082 
-00084 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a46">db_set_symbol_char</a>( <span class="keywordtype">char</span>* sym, <span class="keywordtype">char</span> value );
+00084 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a43">db_set_symbol_char</a>( <span class="keywordtype">char</span>* sym, <span class="keywordtype">char</span> value );
 00085 
-00087 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a47">db_set_symbol_string</a>( <span class="keywordtype">char</span>* sym, <span class="keywordtype">char</span>* value );
+00087 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a44">db_set_symbol_string</a>( <span class="keywordtype">char</span>* sym, <span class="keywordtype">char</span>* value );
 00088 
-00090 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a48">db_do_timestep</a>( <span class="keywordtype">int</span> time ); 
+00090 <span class="keywordtype">void</span> <a class="code" href="db_8c.html#a45">db_do_timestep</a>( <span class="keywordtype">int</span> time ); 
 00091 
 00092 
 00093 <span class="comment">/*</span>
@@ -205,7 +205,7 @@
 00233 
 00234 <span class="preprocessor">#endif</span>
 00235 <span class="preprocessor"></span>
-</pre></div><hr size="1"><address style="align: right;"><small>Generated on Sat Aug 9 22:46:37 2003 for Covered by
+</pre></div><hr size="1"><address style="align: right;"><small>Generated on Thu Aug 14 22:50:07 2003 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 > 
 </a>1.3.3 </small></address>
