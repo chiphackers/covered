@@ -552,7 +552,11 @@ void reset_lexer( str_link* file_list_head ) {
     assert( mkstemp( ppfilename ) != 0 );
   }
   out = fopen( ppfilename, "w" );
-  assert( out != NULL );
+  if( out == NULL ) {
+    snprintf( user_msg, USER_MSG_LENGTH, "Unable to open temporary file %s for writing", ppfilename );
+    print_output( user_msg, FATAL );
+    exit( 1 );
+  }
   
   /* Now the preprocessor on this file first */
   reset_pplexer( curr->str, out );

@@ -839,14 +839,16 @@ void db_add_statement( statement* stmt, statement* start ) {
 */
 void db_remove_statement( statement* stmt ) {
 
-  if( (stmt != NULL) && (stmt->exp != NULL) ) {
+  if( stmt != NULL ) {
 
     snprintf( user_msg, USER_MSG_LENGTH, "In db_remove_statement, stmt id: %d, line: %d", 
               stmt->exp->id, stmt->exp->line );
     print_output( user_msg, DEBUG );
 
     /* Remove true/false paths */
-    db_remove_statement( stmt->next_true  );
+    if( stmt->next_true != stmt->next_false ) {
+      db_remove_statement( stmt->next_true  );
+    }
     db_remove_statement( stmt->next_false );
 
     /* Remove expression from any module parameter expression lists */
@@ -854,9 +856,6 @@ void db_remove_statement( statement* stmt ) {
 
     /* Remove expression from current module expression list and delete expressions */
     exp_link_remove( stmt->exp, &(curr_module->exp_head), &(curr_module->exp_tail), TRUE );
-
-    /* Indicate that this statement no longer exists */
-    stmt->exp = NULL;
 
     /* Deallocate statement itself */
     statement_dealloc( stmt );
@@ -1178,6 +1177,11 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.90  2003/02/18 20:17:01  phase1geo
+ Making use of scored flag in CDD file.  Causing report command to exit early
+ if it is working on a CDD file which has not been scored.  Updated testsuite
+ for these changes.
+
  Revision 1.89  2003/02/17 22:47:20  phase1geo
  Fixing bug with merging same DUTs from different testbenches.  Updated reports
  to display full path instead of instance name and parent instance name.  Added
