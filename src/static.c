@@ -50,6 +50,8 @@
  \param stexp  Pointer to static expression.
  \param op     Unary static expression operation.
  \param line   Line number that this expression was found on in file.
+ \param first  Column index of first character in this expression.
+ \param last   Column index of last character in this expression.
 
  \return Returns pointer to new static_expr structure.
 
@@ -62,7 +64,7 @@
  expression, create an expression for the specified operation type and store
  this expression in the original expression pointer field.
 */
-static_expr* static_expr_gen_unary( static_expr* stexp, int op, int line ) {
+static_expr* static_expr_gen_unary( static_expr* stexp, int op, int line, int first, int last ) {
 
   expression* tmpexp;  /* Container for newly created expression */
   int uop;             /* Temporary bit holder                   */
@@ -119,7 +121,7 @@ static_expr* static_expr_gen_unary( static_expr* stexp, int op, int line ) {
 
     } else {
 
-      tmpexp = expression_create( stexp->exp, NULL, op, FALSE, 0, line, FALSE );
+      tmpexp = expression_create( stexp->exp, NULL, op, FALSE, 0, line, first, last, FALSE );
       stexp->exp->parent->expr = tmpexp;
       stexp->exp = tmpexp;
 
@@ -136,6 +138,8 @@ static_expr* static_expr_gen_unary( static_expr* stexp, int op, int line ) {
  \param left   Pointer to left static expression.
  \param op     Static expression operation.
  \param line   Line number that static expression operation found on.
+ \param first  Column index of first character in expression.
+ \param last   Column index of last character in expression.
 
  \return Returns pointer to new static_expr structure.
 
@@ -149,7 +153,7 @@ static_expr* static_expr_gen_unary( static_expr* stexp, int op, int line ) {
  consisting of those two expressions and specified operator.  Store the newly create
  expression in the original right static_expr and deallocate the left static_expr.
 */
-static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int line ) {
+static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int line, int first, int last ) {
 
   expression* tmpexp;    /* Temporary expression for holding newly created parent expression */
   
@@ -180,11 +184,11 @@ static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int
 
       } else {
 
-        right->exp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, 0, line, FALSE );
+        right->exp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, 0, line, first, last, FALSE );
         vector_init( right->exp->value, (nibble*)malloc_safe( (sizeof( nibble ) * 32), __FILE__, __LINE__ ), 32 );  
         vector_from_int( right->exp->value, right->num );
 
-        tmpexp = expression_create( right->exp, left->exp, op, FALSE, 0, line, FALSE );
+        tmpexp = expression_create( right->exp, left->exp, op, FALSE, 0, line, first, last, FALSE );
         right->exp->parent->expr = tmpexp;
         left->exp->parent->expr  = tmpexp;
         right->exp = tmpexp;
@@ -195,17 +199,17 @@ static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int
 
       if( left->exp == NULL ) {
 
-        left->exp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, 0, line, FALSE );
+        left->exp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, 0, line, first, last, FALSE );
         vector_init( left->exp->value, (nibble*)malloc_safe( (sizeof( nibble ) * 32), __FILE__, __LINE__ ), 32 );
         vector_from_int( left->exp->value, left->num );
 
-        tmpexp = expression_create( right->exp, left->exp, op, FALSE, 0, line, FALSE );
+        tmpexp = expression_create( right->exp, left->exp, op, FALSE, 0, line, first, last, FALSE );
         right->exp->parent->expr = tmpexp;
         right->exp = tmpexp;
 
       } else {
 
-        tmpexp = expression_create( right->exp, left->exp, op, FALSE, 0, line, FALSE );
+        tmpexp = expression_create( right->exp, left->exp, op, FALSE, 0, line, first, last, FALSE );
         right->exp->parent->expr = tmpexp;
         left->exp->parent->expr  = tmpexp;
         right->exp = tmpexp;
@@ -286,6 +290,15 @@ void static_expr_dealloc( static_expr* stexp, bool rm_exp ) {
 
 /*
  $Log$
+ Revision 1.11  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.10  2003/11/26 23:14:41  phase1geo
  Adding code to include left-hand-side expressions of statements for report
  outputting purposes.  Full regression does not yet pass.

@@ -705,6 +705,8 @@ vsignal* db_find_signal( char* name ) {
  \param op        Operation to perform on expression.
  \param lhs       Specifies this expression is a left-hand-side assignment expression.
  \param line      Line number of current expression.
+ \param first     Column index of first character in this expression
+ \param last      Column index of last character in this expression
  \param sig_name  Name of signal that expression is attached to (if valid).
 
  \return Returns pointer to newly created expression.
@@ -712,7 +714,7 @@ vsignal* db_find_signal( char* name ) {
  Creates a new expression with the specified parameter information and returns a
  pointer to the newly created expression.
 */
-expression* db_create_expression( expression* right, expression* left, int op, bool lhs, int line, char* sig_name ) {
+expression* db_create_expression( expression* right, expression* left, int op, bool lhs, int line, int first, int last, char* sig_name ) {
 
   expression* expr;                 /* Temporary pointer to newly created expression      */
   int         right_id;             /* ID of right expression                             */
@@ -732,13 +734,8 @@ expression* db_create_expression( expression* right, expression* left, int op, b
     left_id = left->id;
   }
 
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_create_expression, right: %d, left: %d, id: %d, op: %d, lhs: %d, line: %d", 
-                       right_id,
-                       left_id,
-                       curr_expr_id, 
-                       op,
-                       lhs,
-                       line );
+  snprintf( user_msg, USER_MSG_LENGTH, "In db_create_expression, right: %d, left: %d, id: %d, op: %d, lhs: %d, line: %d, first: %d, last: %d", 
+                       right_id, left_id, curr_expr_id, op, lhs, line, first, last );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
   /* Check to see if signal is a parameter in this module */
@@ -759,7 +756,7 @@ expression* db_create_expression( expression* right, expression* left, int op, b
   }
 
   /* Create expression with next expression ID */
-  expr = expression_create( right, left, op, lhs, curr_expr_id, line, FALSE );
+  expr = expression_create( right, left, op, lhs, curr_expr_id, line, first, last, FALSE );
   curr_expr_id++;
 
   /* Set right and left side expression's (if they exist) parent pointer to this expression */
@@ -1300,6 +1297,9 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.114  2004/04/17 14:07:54  phase1geo
+ Adding replace and merge options to file menu.
+
  Revision 1.113  2004/04/07 11:36:03  phase1geo
  Changes made to allow opening multiple CDD files without needing to deallocate
  all memory for one before reallocating memory for another.  Things are not

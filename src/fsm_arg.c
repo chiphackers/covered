@@ -58,44 +58,44 @@ expression* fsm_arg_parse_state( char** arg, char* mod_name ) {
 
         if( sig->value->width == 0 ) {
 
-          expr = expression_create( NULL, NULL, EXP_OP_SIG, FALSE, curr_expr_id, 0, FALSE );
+          expr = expression_create( NULL, NULL, EXP_OP_SIG, FALSE, curr_expr_id, 0, 0, 0, FALSE );
           curr_expr_id++;
           fsm_var_bind_add( sig->name, expr, mod_name );
 
         } else if( sig->value->width == 1 ) {
 
-          expr = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, FALSE );
+          expr = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
           curr_expr_id++;
           vector_dealloc( expr->value );
           expr->value = vector_create( 32, TRUE );
           vector_from_int( expr->value, sig->lsb );
 
-          expr = expression_create( NULL, expr, EXP_OP_SBIT_SEL, FALSE, curr_expr_id, 0, FALSE );
+          expr = expression_create( NULL, expr, EXP_OP_SBIT_SEL, FALSE, curr_expr_id, 0, 0, 0, FALSE );
           curr_expr_id++;
           fsm_var_bind_add( sig->name, expr, mod_name );
 
         } else {
 
-          expt = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, FALSE );
+          expt = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
           curr_expr_id++;
           vector_dealloc( expt->value );
           expt->value = vector_create( 32, TRUE );
           vector_from_int( expt->value, sig->lsb );
 
-          expr = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, FALSE );
+          expr = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
           curr_expr_id++;
           vector_dealloc( expr->value );
           expr->value = vector_create( 32, TRUE );
           vector_from_int( expr->value, ((sig->value->width - 1) + sig->lsb) );
 
-          expr = expression_create( expt, expr, EXP_OP_MBIT_SEL, FALSE, curr_expr_id, 0, FALSE );
+          expr = expression_create( expt, expr, EXP_OP_MBIT_SEL, FALSE, curr_expr_id, 0, 0, 0, FALSE );
           curr_expr_id++;
           fsm_var_bind_add( sig->name, expr, mod_name );
 
         }
 
         if( expl != NULL ) {
-          expl = expression_create( expr, expl, EXP_OP_LIST, FALSE, curr_expr_id, 0, FALSE );
+          expl = expression_create( expr, expl, EXP_OP_LIST, FALSE, curr_expr_id, 0, 0, 0, FALSE );
           curr_expr_id++;
         } else {
           expl = expr;
@@ -111,7 +111,7 @@ expression* fsm_arg_parse_state( char** arg, char* mod_name ) {
     }
     if( !error ) {
       (*arg)++;
-      expl = expression_create( expl, NULL, EXP_OP_CONCAT, FALSE, curr_expr_id, 0, FALSE );
+      expl = expression_create( expl, NULL, EXP_OP_CONCAT, FALSE, curr_expr_id, 0, 0, 0, FALSE );
       curr_expr_id++;
     }
 
@@ -121,35 +121,35 @@ expression* fsm_arg_parse_state( char** arg, char* mod_name ) {
 
       if( sig->value->width == 0 ) {
 
-        expl = expression_create( NULL, NULL, EXP_OP_SIG, FALSE, curr_expr_id, 0, FALSE );
+        expl = expression_create( NULL, NULL, EXP_OP_SIG, FALSE, curr_expr_id, 0, 0, 0, FALSE );
         curr_expr_id++;
 
       } else if( sig->value->width == 1 ) {
 
-        expr = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, FALSE );
+        expr = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
         curr_expr_id++;
         vector_dealloc( expr->value );
         expr->value = vector_create( 32, TRUE );
         vector_from_int( expr->value, sig->lsb );
 
-        expl = expression_create( NULL, expr, EXP_OP_SBIT_SEL, FALSE, curr_expr_id, 0, FALSE );
+        expl = expression_create( NULL, expr, EXP_OP_SBIT_SEL, FALSE, curr_expr_id, 0, 0, 0, FALSE );
         curr_expr_id++;
 
       } else {
 
-        expt = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, FALSE );
+        expt = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
         curr_expr_id++;
         vector_dealloc( expt->value );
         expt->value = vector_create( 32, TRUE );
         vector_from_int( expt->value, sig->lsb );
 
-        expr = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, FALSE );
+        expr = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
         curr_expr_id++;
         vector_dealloc( expr->value );
         expr->value = vector_create( 32, TRUE );
         vector_from_int( expr->value, ((sig->value->width - 1) + sig->lsb) );
 
-        expl = expression_create( expt, expr, EXP_OP_MBIT_SEL, FALSE, curr_expr_id, 0, FALSE );
+        expl = expression_create( expt, expr, EXP_OP_MBIT_SEL, FALSE, curr_expr_id, 0, 0, 0, FALSE );
         curr_expr_id++;
 
       }
@@ -270,7 +270,7 @@ expression* fsm_arg_parse_value( char** str, module* mod ) {
   if( (vec = vector_from_string( str )) != NULL ) {
 
     /* This value represents a static value, handle as such */
-    expr = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, FALSE );
+    expr = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
     curr_expr_id++;
 
     vector_dealloc( expr->value );
@@ -284,21 +284,21 @@ expression* fsm_arg_parse_value( char** str, module* mod ) {
       if( (mparm = mod_parm_find( str_val, mod->param_head )) != NULL ) {
 
         /* Generate left child expression */
-        left = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, FALSE );
+        left = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
         curr_expr_id++;
         vector_dealloc( left->value );
         left->value = vector_create( 32, TRUE );
         vector_from_int( left->value, msb );
 
         /* Generate right child expression */
-        right = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, FALSE );
+        right = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
         curr_expr_id++;
         vector_dealloc( right->value );
         right->value = vector_create( 32, TRUE );
         vector_from_int( right->value, lsb );
 
         /* Generate multi-bit parameter expression */
-        expr = expression_create( right, left, EXP_OP_PARAM_MBIT, FALSE, curr_expr_id, 0, FALSE ); 
+        expr = expression_create( right, left, EXP_OP_PARAM_MBIT, FALSE, curr_expr_id, 0, 0, 0, FALSE ); 
         curr_expr_id++;
         exp_link_add( expr, &(mparm->exp_head), &(mparm->exp_tail) );
 
@@ -308,14 +308,14 @@ expression* fsm_arg_parse_value( char** str, module* mod ) {
       if( (mparm = mod_parm_find( str_val, mod->param_head )) != NULL ) {
 
         /* Generate left child expression */
-        left = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, FALSE );
+        left = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
         curr_expr_id++;
         vector_dealloc( left->value );
         left->value = vector_create( 32, TRUE );
         vector_from_int( left->value, lsb );
 
         /* Generate single-bit parameter expression */
-        expr = expression_create( NULL, left, EXP_OP_PARAM_SBIT, FALSE, curr_expr_id, 0, FALSE );
+        expr = expression_create( NULL, left, EXP_OP_PARAM_SBIT, FALSE, curr_expr_id, 0, 0, 0, FALSE );
         curr_expr_id++;
         exp_link_add( expr, &(mparm->exp_head), &(mparm->exp_tail) );
 
@@ -325,7 +325,7 @@ expression* fsm_arg_parse_value( char** str, module* mod ) {
       if( (mparm = mod_parm_find( str_val, mod->param_head )) != NULL ) {
 
         /* Generate parameter expression */
-        expr = expression_create( NULL, NULL, EXP_OP_PARAM, FALSE, curr_expr_id, 0, FALSE );
+        expr = expression_create( NULL, NULL, EXP_OP_PARAM, FALSE, curr_expr_id, 0, 0, 0, FALSE );
         curr_expr_id++;
         exp_link_add( expr, &(mparm->exp_head), &(mparm->exp_tail) );
 
@@ -506,6 +506,10 @@ void fsm_arg_parse_attr( attr_param* ap, module* mod ) {
 
 /*
  $Log$
+ Revision 1.15  2004/03/30 15:42:14  phase1geo
+ Renaming signal type to vsignal type to eliminate compilation problems on systems
+ that contain a signal type in the OS.
+
  Revision 1.14  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,

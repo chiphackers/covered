@@ -323,115 +323,115 @@ static_expr
   | '~' static_expr_primary %prec UNARY_PREC
     {
       static_expr* tmp;
-      tmp = static_expr_gen_unary( $2, EXP_OP_UINV, @1.first_line );
+      tmp = static_expr_gen_unary( $2, EXP_OP_UINV, @1.first_line, @1.first_column, @1.last_column );
       $$ = tmp;
     }
   | '&' static_expr_primary %prec UNARY_PREC
     {
       static_expr* tmp;
-      tmp = static_expr_gen_unary( $2, EXP_OP_UAND, @1.first_line );
+      tmp = static_expr_gen_unary( $2, EXP_OP_UAND, @1.first_line, @1.first_column, @1.last_column );
       $$ = tmp;
     }
   | '!' static_expr_primary %prec UNARY_PREC
     {
       static_expr* tmp;
-      tmp = static_expr_gen_unary( $2, EXP_OP_UNOT, @1.first_line );
+      tmp = static_expr_gen_unary( $2, EXP_OP_UNOT, @1.first_line, @1.first_column, @1.last_column );
       $$ = tmp;
     }
   | '|' static_expr_primary %prec UNARY_PREC
     {
       static_expr* tmp;
-      tmp = static_expr_gen_unary( $2, EXP_OP_UOR, @1.first_line );
+      tmp = static_expr_gen_unary( $2, EXP_OP_UOR, @1.first_line, @1.first_column, @1.last_column );
       $$ = tmp;
     }
   | '^' static_expr_primary %prec UNARY_PREC
     {
       static_expr* tmp;
-      tmp = static_expr_gen_unary( $2, EXP_OP_UXOR, @1.first_line );
+      tmp = static_expr_gen_unary( $2, EXP_OP_UXOR, @1.first_line, @1.first_column, @1.last_column );
       $$ = tmp;
     }
   | K_NAND static_expr_primary %prec UNARY_PREC
     {
       static_expr* tmp;
-      tmp = static_expr_gen_unary( $2, EXP_OP_UNAND, @1.first_line );
+      tmp = static_expr_gen_unary( $2, EXP_OP_UNAND, @1.first_line, @1.first_column, @1.last_column );
       $$ = tmp;
     }
   | K_NOR static_expr_primary %prec UNARY_PREC
     {
       static_expr* tmp;
-      tmp = static_expr_gen_unary( $2, EXP_OP_UNOR, @1.first_line );
+      tmp = static_expr_gen_unary( $2, EXP_OP_UNOR, @1.first_line, @1.first_column, @1.last_column );
       $$ = tmp;
     }
   | K_NXOR static_expr_primary %prec UNARY_PREC
     {
       static_expr* tmp;
-      tmp = static_expr_gen_unary( $2, EXP_OP_UNXOR, @1.first_line );
+      tmp = static_expr_gen_unary( $2, EXP_OP_UNXOR, @1.first_line, @1.first_column, @1.last_column );
       $$ = tmp;
     }
   | static_expr '^' static_expr
     {
       static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_XOR, @1.first_line );
+      tmp = static_expr_gen( $3, $1, EXP_OP_XOR, @1.first_line, @1.first_column, @3.last_column );
       $$ = tmp;
     }
   | static_expr '*' static_expr
     {
       static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_MULTIPLY, @1.first_line );
+      tmp = static_expr_gen( $3, $1, EXP_OP_MULTIPLY, @1.first_line, @1.first_column, @3.last_column );
       $$ = tmp;
     }
   | static_expr '/' static_expr
     {
       static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_DIVIDE, @1.first_line );
+      tmp = static_expr_gen( $3, $1, EXP_OP_DIVIDE, @1.first_line, @1.first_column, @3.last_column );
       $$ = tmp;
     }
   | static_expr '%' static_expr
     {
       static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_MOD, @1.first_line );
+      tmp = static_expr_gen( $3, $1, EXP_OP_MOD, @1.first_line, @1.first_column, @3.last_column );
       $$ = tmp;
     }
   | static_expr '+' static_expr
     {
       static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_ADD, @1.first_line );
+      tmp = static_expr_gen( $3, $1, EXP_OP_ADD, @1.first_line, @1.first_column, @3.last_column );
       $$ = tmp;
     }
   | static_expr '-' static_expr
     {
       static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_SUBTRACT, @1.first_line );
+      tmp = static_expr_gen( $3, $1, EXP_OP_SUBTRACT, @1.first_line, @1.first_column, @3.last_column );
       $$ = tmp;
     }
   | static_expr '&' static_expr
     {
       static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_AND, @1.first_line );
+      tmp = static_expr_gen( $3, $1, EXP_OP_AND, @1.first_line, @1.first_column, @3.last_column );
       $$ = tmp;
     }
   | static_expr '|' static_expr
     {
       static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_OR, @1.first_line );
+      tmp = static_expr_gen( $3, $1, EXP_OP_OR, @1.first_line, @1.first_column, @3.last_column );
       $$ = tmp;
     }
   | static_expr K_NOR static_expr
     {
       static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_NOR, @1.first_line );
+      tmp = static_expr_gen( $3, $1, EXP_OP_NOR, @1.first_line, @1.first_column, @3.last_column );
       $$ = tmp;
     }
   | static_expr K_NAND static_expr
     {
       static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_NAND, @1.first_line );
+      tmp = static_expr_gen( $3, $1, EXP_OP_NAND, @1.first_line, @1.first_column, @3.last_column );
       $$ = tmp;
     }
   | static_expr K_NXOR static_expr
     {
       static_expr* tmp;
-      tmp = static_expr_gen( $3, $1, EXP_OP_NXOR, @1.first_line );
+      tmp = static_expr_gen( $3, $1, EXP_OP_NXOR, @1.first_line, @1.first_column, @3.last_column );
       $$ = tmp;
     }
   ;
@@ -468,7 +468,7 @@ static_expr_primary
       if( ignore_mode == 0 ) {
         tmp = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
         tmp->num = -1;
-        tmp->exp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, $1 );
+        tmp->exp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, @1.first_column, @1.last_column, $1 );
         free_safe( $1 );
         $$ = tmp;
       } else {
@@ -511,7 +511,7 @@ expression
       expression* tmp = NULL;
       if( ignore_mode == 0 ) {
         if( $2 != NULL ) {
-          tmp = db_create_expression( $2, NULL, EXP_OP_UINV, lhs_mode, @1.first_line, NULL );
+          tmp = db_create_expression( $2, NULL, EXP_OP_UINV, lhs_mode, @1.first_line, @1.first_column, @1.last_column, NULL );
         }
         $$ = tmp;
       } else {
@@ -523,7 +523,7 @@ expression
       expression* tmp = NULL;
       if( ignore_mode == 0 ) {
         if( $2 != NULL ) {
-          tmp = db_create_expression( $2, NULL, EXP_OP_UAND, lhs_mode, @1.first_line, NULL );
+          tmp = db_create_expression( $2, NULL, EXP_OP_UAND, lhs_mode, @1.first_line, @1.first_column, @1.last_column, NULL );
         }
         $$ = tmp;
       } else {
@@ -535,7 +535,7 @@ expression
       expression* tmp = NULL;
       if( ignore_mode == 0 ) {
         if( $2 != NULL ) {
-          tmp = db_create_expression( $2, NULL, EXP_OP_UNOT, lhs_mode, @1.first_line, NULL );
+          tmp = db_create_expression( $2, NULL, EXP_OP_UNOT, lhs_mode, @1.first_line, @1.first_column, @1.last_column, NULL );
         }
         $$ = tmp;
       } else {
@@ -547,7 +547,7 @@ expression
       expression* tmp = NULL;
       if( ignore_mode == 0 ) {
         if( $2 != NULL ) {
-          tmp = db_create_expression( $2, NULL, EXP_OP_UOR, lhs_mode, @1.first_line, NULL );
+          tmp = db_create_expression( $2, NULL, EXP_OP_UOR, lhs_mode, @1.first_line, @1.first_column, @1.last_column, NULL );
         }
         $$ = tmp;
       } else {
@@ -559,7 +559,7 @@ expression
       expression* tmp = NULL;
       if( ignore_mode == 0 ) {
         if( $2 != NULL ) {
-          tmp = db_create_expression( $2, NULL, EXP_OP_UXOR, lhs_mode, @1.first_line, NULL );
+          tmp = db_create_expression( $2, NULL, EXP_OP_UXOR, lhs_mode, @1.first_line, @1.first_column, @1.last_column, NULL );
         }
         $$ = tmp;
       } else {
@@ -571,7 +571,7 @@ expression
       expression* tmp = NULL;
       if( ignore_mode == 0 ) {
         if( $2 != NULL ) {
-          tmp = db_create_expression( $2, NULL, EXP_OP_UNAND, lhs_mode, @1.first_line, NULL );
+          tmp = db_create_expression( $2, NULL, EXP_OP_UNAND, lhs_mode, @1.first_line, @1.first_column, @1.last_column, NULL );
         }
         $$ = tmp;
       } else {
@@ -583,7 +583,7 @@ expression
       expression* tmp = NULL;
       if( ignore_mode == 0 ) {
         if( $2 != NULL ) {
-          tmp = db_create_expression( $2, NULL, EXP_OP_UNOR, lhs_mode, @1.first_line, NULL );
+          tmp = db_create_expression( $2, NULL, EXP_OP_UNOR, lhs_mode, @1.first_line, @1.first_column, @1.last_column, NULL );
         }
         $$ = tmp;
       } else {
@@ -595,7 +595,7 @@ expression
       expression* tmp = NULL;
       if( ignore_mode == 0 ) {
         if( $2 != NULL ) {
-          tmp = db_create_expression( $2, NULL, EXP_OP_UNXOR, lhs_mode, @1.first_line, NULL );
+          tmp = db_create_expression( $2, NULL, EXP_OP_UNXOR, lhs_mode, @1.first_line, @1.first_column, @1.last_column, NULL );
         }
         $$ = tmp;
       } else {
@@ -646,7 +646,7 @@ expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_XOR, lhs_mode, @1.first_line, NULL );
+        tmp = db_create_expression( $3, $1, EXP_OP_XOR, lhs_mode, @1.first_line, @1.first_column, @3.last_column, NULL );
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -658,7 +658,7 @@ expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_MULTIPLY, lhs_mode, @1.first_line, NULL );
+        tmp = db_create_expression( $3, $1, EXP_OP_MULTIPLY, lhs_mode, @1.first_line, @1.first_column, @3.last_column, NULL );
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -670,7 +670,7 @@ expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_DIVIDE, lhs_mode, @1.first_line, NULL );
+        tmp = db_create_expression( $3, $1, EXP_OP_DIVIDE, lhs_mode, @1.first_line, @1.first_column, @3.last_column, NULL );
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -682,7 +682,7 @@ expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_MOD, lhs_mode, @1.first_line, NULL );
+        tmp = db_create_expression( $3, $1, EXP_OP_MOD, lhs_mode, @1.first_line, @1.first_column, @3.last_column, NULL );
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -694,7 +694,7 @@ expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_ADD, lhs_mode, @1.first_line, NULL );
+        tmp = db_create_expression( $3, $1, EXP_OP_ADD, lhs_mode, @1.first_line, @1.first_column, @3.last_column, NULL );
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -706,7 +706,7 @@ expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_SUBTRACT, lhs_mode, @1.first_line, NULL );
+        tmp = db_create_expression( $3, $1, EXP_OP_SUBTRACT, lhs_mode, @1.first_line, @1.first_column, @3.last_column, NULL );
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -718,7 +718,7 @@ expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_AND, lhs_mode, @1.first_line, NULL );
+        tmp = db_create_expression( $3, $1, EXP_OP_AND, lhs_mode, @1.first_line, @1.first_column, @3.last_column, NULL );
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -730,7 +730,7 @@ expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_OR, lhs_mode, @1.first_line, NULL );
+        tmp = db_create_expression( $3, $1, EXP_OP_OR, lhs_mode, @1.first_line, @1.first_column, @3.last_column, NULL );
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -742,7 +742,7 @@ expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_NAND, lhs_mode, @1.first_line, NULL );
+        tmp = db_create_expression( $3, $1, EXP_OP_NAND, lhs_mode, @1.first_line, @1.first_column, @3.last_column, NULL );
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -754,7 +754,7 @@ expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_NOR, lhs_mode, @1.first_line, NULL );
+        tmp = db_create_expression( $3, $1, EXP_OP_NOR, lhs_mode, @1.first_line, @1.first_column, @3.last_column, NULL );
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -766,7 +766,7 @@ expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_NXOR, lhs_mode, @1.first_line, NULL );
+        tmp = db_create_expression( $3, $1, EXP_OP_NXOR, lhs_mode, @1.first_line, @1.first_column, @3.last_column, NULL );
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -778,7 +778,7 @@ expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_LT, lhs_mode, @1.first_line, NULL );
+        tmp = db_create_expression( $3, $1, EXP_OP_LT, lhs_mode, @1.first_line, @1.first_column, @3.last_column, NULL );
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -790,7 +790,7 @@ expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_GT, lhs_mode, @1.first_line, NULL );
+        tmp = db_create_expression( $3, $1, EXP_OP_GT, lhs_mode, @1.first_line, @1.first_column, @3.last_column, NULL );
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -802,7 +802,7 @@ expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_LSHIFT, lhs_mode, @1.first_line, NULL );
+        tmp = db_create_expression( $3, $1, EXP_OP_LSHIFT, lhs_mode, @1.first_line, @1.first_column, @3.last_column, NULL );
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -814,7 +814,7 @@ expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_RSHIFT, lhs_mode, @1.first_line, NULL );
+        tmp = db_create_expression( $3, $1, EXP_OP_RSHIFT, lhs_mode, @1.first_line, @1.first_column, @3.last_column, NULL );
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -826,7 +826,7 @@ expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_EQ, lhs_mode, @1.first_line, NULL );
+        tmp = db_create_expression( $3, $1, EXP_OP_EQ, lhs_mode, @1.first_line, @1.first_column, @3.last_column, NULL );
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -838,7 +838,7 @@ expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_CEQ, lhs_mode, @1.first_line, NULL );
+        tmp = db_create_expression( $3, $1, EXP_OP_CEQ, lhs_mode, @1.first_line, @1.first_column, @3.last_column, NULL );
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -850,7 +850,7 @@ expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_LE, lhs_mode, @1.first_line, NULL );
+        tmp = db_create_expression( $3, $1, EXP_OP_LE, lhs_mode, @1.first_line, @1.first_column, @3.last_column, NULL );
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -862,7 +862,7 @@ expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_GE, lhs_mode, @1.first_line, NULL );
+        tmp = db_create_expression( $3, $1, EXP_OP_GE, lhs_mode, @1.first_line, @1.first_column, @3.last_column, NULL );
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -874,7 +874,7 @@ expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_NE, lhs_mode, @1.first_line, NULL );
+        tmp = db_create_expression( $3, $1, EXP_OP_NE, lhs_mode, @1.first_line, @1.first_column, @3.last_column, NULL );
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -886,7 +886,7 @@ expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_CNE, lhs_mode, @1.first_line, NULL );
+        tmp = db_create_expression( $3, $1, EXP_OP_CNE, lhs_mode, @1.first_line, @1.first_column, @3.last_column, NULL );
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -898,7 +898,7 @@ expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_LOR, lhs_mode, @1.first_line, NULL );
+        tmp = db_create_expression( $3, $1, EXP_OP_LOR, lhs_mode, @1.first_line, @1.first_column, @3.last_column, NULL );
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -910,7 +910,7 @@ expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_LAND, lhs_mode, @1.first_line, NULL );
+        tmp = db_create_expression( $3, $1, EXP_OP_LAND, lhs_mode, @1.first_line, @1.first_column, @3.last_column, NULL );
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -923,8 +923,8 @@ expression
       expression* csel;
       expression* cond;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) && ($5 != NULL) ) {
-        csel = db_create_expression( $5,   $3, EXP_OP_COND_SEL, lhs_mode, $3->line, NULL );
-        cond = db_create_expression( csel, $1, EXP_OP_COND,     lhs_mode, @1.first_line, NULL );
+        csel = db_create_expression( $5,   $3, EXP_OP_COND_SEL, lhs_mode, $3->line, @1.first_column, @3.last_column, NULL );
+        cond = db_create_expression( csel, $1, EXP_OP_COND,     lhs_mode, @1.first_line, @1.first_column, @5.last_column, NULL );
         $$ = cond;
       } else {
         expression_dealloc( $1, FALSE );
@@ -938,7 +938,7 @@ expression
 expr_primary
   : NUMBER
     {
-      expression* tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, NULL );
+      expression* tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, @1.last_column, NULL );
       vector_dealloc( tmp->value );
       tmp->value = $1;
       $$ = tmp;
@@ -957,7 +957,7 @@ expr_primary
     }
   | STRING
     {
-      expression* tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, NULL );
+      expression* tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, @1.last_column, NULL );
       vector*     vec = vector_create( (strlen( $1 ) + 1), FALSE );
       vector_dealloc( tmp->value );
       tmp->value        = vec;
@@ -973,7 +973,7 @@ expr_primary
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) ) {
-        tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, $1 );
+        tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, @1.first_column, @1.last_column, $1 );
         $$  = tmp;
         free_safe( $1 );
       } else {
@@ -992,7 +992,7 @@ expr_primary
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( NULL, $3, EXP_OP_SBIT_SEL, lhs_mode, @1.first_line, $1 );
+        tmp = db_create_expression( NULL, $3, EXP_OP_SBIT_SEL, lhs_mode, @1.first_line, @1.first_column, @4.last_column, $1 );
         $$  = tmp;
         free_safe( $1 );
       } else {
@@ -1007,7 +1007,7 @@ expr_primary
     {		  
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) && ($5 != NULL) ) {
-        tmp = db_create_expression( $5, $3, EXP_OP_MBIT_SEL, lhs_mode, @1.first_line, $1 );
+        tmp = db_create_expression( $5, $3, EXP_OP_MBIT_SEL, lhs_mode, @1.first_line, @1.first_column, @6.last_column, $1 );
         $$  = tmp;
         free_safe( $1 );
       } else {
@@ -1066,7 +1066,7 @@ expr_primary
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($2 != NULL) ) {
-        tmp = db_create_expression( $2, NULL, EXP_OP_CONCAT, lhs_mode, @1.first_line, NULL );
+        tmp = db_create_expression( $2, NULL, EXP_OP_CONCAT, lhs_mode, @1.first_line, @1.first_column, @3.last_column, NULL );
         $$ = tmp;
       } else {
         expression_dealloc( $2, FALSE );
@@ -1077,7 +1077,7 @@ expr_primary
     {
       expression*  tmp;
       if( (ignore_mode == 0) && ($2 != NULL) && ($4 != NULL) ) {
-        tmp = db_create_expression( $4, $2, EXP_OP_EXPAND, lhs_mode, @1.first_line, NULL );
+        tmp = db_create_expression( $4, $2, EXP_OP_EXPAND, lhs_mode, @1.first_line, @1.first_column, @6.last_column, NULL );
         $$ = tmp;
       } else {
         expression_dealloc( $2, FALSE );
@@ -1095,7 +1095,7 @@ expression_list
       if( ignore_mode == 0 ) {
         if( param_mode == 0 ) {
           if( $3 != NULL ) {
-            tmp = db_create_expression( $3, $1, EXP_OP_LIST, lhs_mode, @1.first_line, NULL );
+            tmp = db_create_expression( $3, $1, EXP_OP_LIST, lhs_mode, @1.first_line, @1.first_column, @3.last_column, NULL );
             $$ = tmp;
           } else {
             $$ = $1;
@@ -1343,8 +1343,8 @@ module_item
         while( curr != NULL ) {
           db_add_signal( curr->sig_name, $3->left, $3->right );
           if( curr->exp != NULL ) {
-            tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, curr->exp->line, curr->sig_name );
-            tmp  = db_create_expression( curr->exp, tmp, EXP_OP_BASSIGN, FALSE, curr->exp->line, NULL );
+            tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, curr->exp->line, 0, 0, curr->sig_name );
+            tmp  = db_create_expression( curr->exp, tmp, EXP_OP_BASSIGN, FALSE, curr->exp->line, 0, 0, NULL );
             stmt = db_create_statement( tmp );
             stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
             stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);
@@ -1387,8 +1387,8 @@ module_item
         while( curr != NULL ) {
           db_add_signal( curr->sig_name, &left, &right );
           if( curr->exp != NULL ) {
-            tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, curr->exp->line, curr->sig_name );
-            tmp  = db_create_expression( curr->exp, tmp, EXP_OP_BASSIGN, FALSE, curr->exp->line, NULL );
+            tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, curr->exp->line, 0, 0, curr->sig_name );
+            tmp  = db_create_expression( curr->exp, tmp, EXP_OP_BASSIGN, FALSE, curr->exp->line, 0, 0, NULL );
             stmt = db_create_statement( tmp );
             stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
             stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);
@@ -1656,9 +1656,9 @@ statement
         c_expr->suppl = c_expr->suppl | (0x1 << SUPPL_LSB_ROOT);
         while( c_stmt != NULL ) {
           if( c_stmt->expr != NULL ) {
-            expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASE, lhs_mode, c_stmt->line, NULL );
+            expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASE, lhs_mode, c_stmt->line, 0, 0, NULL );
           } else {
-            expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, NULL );
+            expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, 0, 0, NULL );
           }
           db_add_expression( expr );
           stmt = db_create_statement( expr );
@@ -1698,9 +1698,9 @@ statement
         c_expr->suppl = c_expr->suppl | (0x1 << SUPPL_LSB_ROOT);
         while( c_stmt != NULL ) {
           if( c_stmt->expr != NULL ) {
-            expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASEX, lhs_mode, c_stmt->line, NULL );
+            expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASEX, lhs_mode, c_stmt->line, 0, 0, NULL );
           } else {
-            expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, NULL );
+            expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, 0, 0, NULL );
           }
           db_add_expression( expr );
           stmt = db_create_statement( expr );
@@ -1740,9 +1740,9 @@ statement
         c_expr->suppl = c_expr->suppl | (0x1 << SUPPL_LSB_ROOT);
         while( c_stmt != NULL ) {
           if( c_stmt->expr != NULL ) {
-            expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASEZ, lhs_mode, c_stmt->line, NULL );
+            expr = db_create_expression( c_stmt->expr, c_expr, EXP_OP_CASEZ, lhs_mode, c_stmt->line, 0, 0, NULL );
           } else {
-            expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, NULL );
+            expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, 0, 0, NULL );
           }
           db_add_expression( expr );
           stmt = db_create_statement( expr );
@@ -1799,7 +1799,7 @@ statement
       expression* tmp;
       statement*  stmt;
       if( (ignore_mode == 0) && ($3 != NULL) ) {
-        tmp  = db_create_expression( $3, NULL, EXP_OP_IF, FALSE, @1.first_line, NULL );
+        tmp  = db_create_expression( $3, NULL, EXP_OP_IF, FALSE, @1.first_line, @1.first_column, @4.last_column, NULL );
         vector_dealloc( tmp->value );
         tmp->value = $3->value;
         stmt = db_create_statement( tmp );
@@ -1817,7 +1817,7 @@ statement
       expression* tmp;
       statement*  stmt;
       if( (ignore_mode == 0) && ($3 != NULL) ) {
-        tmp  = db_create_expression( $3, NULL, EXP_OP_IF, FALSE, @1.first_line, NULL );
+        tmp  = db_create_expression( $3, NULL, EXP_OP_IF, FALSE, @1.first_line, @1.first_column, @4.last_column, NULL );
         vector_dealloc( tmp->value );
         tmp->value = $3->value;
         stmt = db_create_statement( tmp );
@@ -1880,7 +1880,7 @@ statement
       expression* tmp;
       statement*  stmt;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp  = db_create_expression( $3, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, NULL );
+        tmp  = db_create_expression( $3, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, @3.last_column, NULL );
         vector_dealloc( tmp->value );
         tmp->value = $3->value;
         stmt = db_create_statement( tmp );
@@ -1897,7 +1897,7 @@ statement
       expression* tmp;
       statement*  stmt;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp  = db_create_expression( $3, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, NULL );
+        tmp  = db_create_expression( $3, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.first_column, @3.last_column, NULL );
         vector_dealloc( tmp->value );
         tmp->value = $3->value;
         stmt = db_create_statement( tmp );
@@ -1915,7 +1915,7 @@ statement
       statement*  stmt;
       expression_dealloc( $3, FALSE );
       if( (ignore_mode == 0) && ($1 != NULL) && ($4 != NULL) ) {
-        tmp  = db_create_expression( $4, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, NULL );
+        tmp  = db_create_expression( $4, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, @4.last_column, NULL );
         vector_dealloc( tmp->value );
         tmp->value = $4->value;
         stmt = db_create_statement( tmp );
@@ -1933,7 +1933,7 @@ statement
       statement*  stmt;
       expression_dealloc( $3, FALSE );
       if( (ignore_mode == 0) && ($1 != NULL) && ($4 != NULL) ) {
-        tmp  = db_create_expression( $4, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, NULL );
+        tmp  = db_create_expression( $4, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.first_column, @4.last_column, NULL );
         vector_dealloc( tmp->value );
         tmp->value = $4->value;
         stmt = db_create_statement( tmp );
@@ -1951,7 +1951,7 @@ statement
       statement*  stmt;
       expression_dealloc( $3, FALSE );
       if( (ignore_mode == 0) && ($1 != NULL) && ($4 != NULL) ) {
-        tmp  = db_create_expression( $4, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, NULL );
+        tmp  = db_create_expression( $4, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, @4.last_column, NULL );
         vector_dealloc( tmp->value );
         tmp->value = $4->value;
         stmt = db_create_statement( tmp );
@@ -1969,7 +1969,7 @@ statement
       statement*  stmt;
       expression_dealloc( $3, FALSE );
       if( (ignore_mode == 0) && ($1 != NULL) && ($4 != NULL) ) {
-        tmp  = db_create_expression( $4, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, NULL );
+        tmp  = db_create_expression( $4, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.first_column, @4.last_column, NULL );
         vector_dealloc( tmp->value );
         tmp->value = $4->value;
         stmt = db_create_statement( tmp );
@@ -2160,7 +2160,7 @@ lpvalue
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) ) {
-        tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, $1 );
+        tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, @1.last_column, $1 );
         free_safe( $1 );
         $$  = tmp;
       } else {
@@ -2172,7 +2172,7 @@ lpvalue
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($4 != NULL) ) {
-        tmp = db_create_expression( NULL, $4, EXP_OP_SBIT_SEL, TRUE, @1.first_line, $1 );
+        tmp = db_create_expression( NULL, $4, EXP_OP_SBIT_SEL, TRUE, @1.first_line, @1.first_column, @5.last_column, $1 );
         free_safe( $1 );
         $$  = tmp;
       } else {
@@ -2185,7 +2185,7 @@ lpvalue
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($4 != NULL) && ($6 != NULL) ) {
-        tmp = db_create_expression( $6, $4, EXP_OP_MBIT_SEL, TRUE, @1.first_line, $1 );
+        tmp = db_create_expression( $6, $4, EXP_OP_MBIT_SEL, TRUE, @1.first_line, @1.first_column, @7.last_column, $1 );
         free_safe( $1 );
         $$  = tmp;
       } else {
@@ -2199,7 +2199,7 @@ lpvalue
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, NULL, EXP_OP_CONCAT, TRUE, @1.first_line, NULL );
+        tmp = db_create_expression( $3, NULL, EXP_OP_CONCAT, TRUE, @1.first_line, @1.first_column, @5.last_column, NULL );
         $$  = tmp;
       } else {
         expression_dealloc( $3, FALSE );
@@ -2216,7 +2216,7 @@ lavalue
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) ) {
-        tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, $1 );
+        tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, @1.last_column, $1 );
         free_safe( $1 );
         $$  = tmp;
       } else {
@@ -2228,7 +2228,7 @@ lavalue
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($4 != NULL) ) {
-        tmp = db_create_expression( NULL, $4, EXP_OP_SBIT_SEL, TRUE, @1.first_line, $1 );
+        tmp = db_create_expression( NULL, $4, EXP_OP_SBIT_SEL, TRUE, @1.first_line, @1.first_column, @5.last_column, $1 );
         free_safe( $1 );
         $$  = tmp;
       } else {
@@ -2241,7 +2241,7 @@ lavalue
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($4 != NULL) && ($6 != NULL) ) {
-        tmp = db_create_expression( $6, $4, EXP_OP_MBIT_SEL, TRUE, @1.first_line, $1 );
+        tmp = db_create_expression( $6, $4, EXP_OP_MBIT_SEL, TRUE, @1.first_line, @1.first_column, @7.last_column, $1 );
         free_safe( $1 );
         $$  = tmp;
       } else {
@@ -2255,7 +2255,7 @@ lavalue
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, NULL, EXP_OP_CONCAT, TRUE, @1.first_line, NULL );
+        tmp = db_create_expression( $3, NULL, EXP_OP_CONCAT, TRUE, @1.first_line, @1.first_column, @5.last_column, NULL );
         $$  = tmp;
       } else {
         expression_dealloc( $3, FALSE );
@@ -2493,12 +2493,12 @@ delay1
       expression* tmp;
       if( (ignore_mode == 0) && ($2 != NULL) ) {
         vec = vector_create( 32, TRUE );
-        tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, NULL );
+        tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @2.first_column, @2.last_column, NULL );
         vector_from_int( vec, 0xffffffff );
         assert( tmp->value->value == NULL ); 
         free_safe( tmp->value );
         tmp->value = vec;
-        exp = db_create_expression( $2, tmp, EXP_OP_DELAY, lhs_mode, @1.first_line, NULL );
+        exp = db_create_expression( $2, tmp, EXP_OP_DELAY, lhs_mode, @1.first_line, @1.first_column, @2.last_column, NULL );
         $$  = exp;
       } else {
         $$ = NULL;
@@ -2511,12 +2511,12 @@ delay1
       expression* tmp;
       if( (ignore_mode == 0) && ($3 != NULL) ) {
         vec = vector_create( 32, TRUE );
-        tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, NULL );
+        tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @3.first_column, @3.last_column, NULL );
         vector_from_int( vec, 0xffffffff );
         assert( tmp->value->value == NULL );
         free_safe( tmp->value );
         tmp->value = vec;
-        exp = db_create_expression( $3, tmp, EXP_OP_DELAY, lhs_mode, @1.first_line, NULL );
+        exp = db_create_expression( $3, tmp, EXP_OP_DELAY, lhs_mode, @1.first_line, @1.first_column, @4.last_column, NULL );
         $$  = exp;
       } else {
         $$ = NULL;
@@ -2532,12 +2532,12 @@ delay3
       expression* tmp;
       if( (ignore_mode == 0) && ($2 != NULL) ) {
         vec = vector_create( 32, TRUE );
-        tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, NULL );
+        tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @2.first_column, @2.last_column, NULL );
         vector_from_int( vec, 0xffffffff );
         assert( tmp->value->value == NULL );
         free_safe( tmp->value );
         tmp->value = vec;
-        exp = db_create_expression( $2, tmp, EXP_OP_DELAY, lhs_mode, @1.first_line, NULL );
+        exp = db_create_expression( $2, tmp, EXP_OP_DELAY, lhs_mode, @1.first_line, @1.first_column, @2.last_column, NULL );
         $$  = exp;
       } else {
         $$ = NULL;
@@ -2550,12 +2550,12 @@ delay3
       expression* tmp;
       if( (ignore_mode == 0) && ($3 != NULL) ) {
         vec = vector_create( 32, TRUE );
-        tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, NULL );
+        tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @3.first_column, @3.last_column, NULL );
         vector_from_int( vec, 0xffffffff );
         assert( tmp->value->value == NULL );
         free_safe( tmp->value );
         tmp->value = vec;
-        exp = db_create_expression( $3, tmp, EXP_OP_DELAY, lhs_mode, @1.first_line, NULL );
+        exp = db_create_expression( $3, tmp, EXP_OP_DELAY, lhs_mode, @1.first_line, @1.first_column, @4.last_column, NULL );
         $$  = exp;
       } else {
         $$ = NULL;
@@ -2569,12 +2569,12 @@ delay3
       expression_dealloc( $5, FALSE );
       if( (ignore_mode == 0) && ($3 != NULL) ) {
         vec = vector_create( 32, TRUE );
-        tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, NULL );
+        tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @3.first_column, @5.last_column, NULL );
         vector_from_int( vec, 0xffffffff );
         assert( tmp->value->value == NULL );
         free_safe( tmp->value );
         tmp->value = vec;
-        exp = db_create_expression( $3, tmp, EXP_OP_DELAY, lhs_mode, @1.first_line, NULL );
+        exp = db_create_expression( $3, tmp, EXP_OP_DELAY, lhs_mode, @1.first_line, @1.first_column, @6.last_column, NULL );
         $$  = exp;
       } else {
         $$ = NULL;
@@ -2589,12 +2589,12 @@ delay3
       expression_dealloc( $7, FALSE );
       if( ignore_mode == 0 ) {
         vec = vector_create( 32, TRUE );
-        tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, NULL );
+        tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @3.first_column, @7.last_column, NULL );
         vector_from_int( vec, 0xffffffff );
         assert( tmp->value->value == NULL );
         free_safe( tmp->value );
         tmp->value = vec;
-        exp = db_create_expression( $5, tmp, EXP_OP_DELAY, lhs_mode, @1.first_line, NULL );
+        exp = db_create_expression( $5, tmp, EXP_OP_DELAY, lhs_mode, @1.first_line, @1.first_column, @8.last_column, NULL );
         $$  = exp;
       } else {
         $$ = NULL;
@@ -2620,7 +2620,7 @@ delay_value
       static_expr* se = $1;
       if( (ignore_mode == 0) && (se != NULL) ) {
         if( se->exp == NULL ) {
-          tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, NULL );
+          tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, @1.last_column, NULL );
           vector_init( tmp->value, (nibble*)malloc_safe( (sizeof( nibble ) * 32), __FILE__, __LINE__ ), 32 );  
           vector_from_int( tmp->value, se->num );
         } else {
@@ -2670,7 +2670,7 @@ delay_value
         }
         if( se != NULL ) {
           if( se->exp == NULL ) {
-            tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, NULL );
+            tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, @1.last_column, NULL );
             vector_init( tmp->value, (nibble*)malloc_safe( (sizeof( nibble ) * 32), __FILE__, __LINE__ ), 32 );
             vector_from_int( tmp->value, se->num );
           } else {
@@ -2690,7 +2690,7 @@ delay_value
 delay_value_simple
   : NUMBER
     {
-      expression* tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, NULL );
+      expression* tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, @1.last_column, NULL );
       assert( tmp->value->value == NULL );
       free_safe( tmp->value );
       tmp->value = $1;
@@ -2710,7 +2710,7 @@ delay_value_simple
     }
   | IDENTIFIER
     {
-      expression* tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, $1 );
+      expression* tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, @1.first_column, @1.last_column, $1 );
       $$ = tmp;
       free_safe( $1 );
     }
@@ -2731,7 +2731,7 @@ assign
       expression* tmp;
       statement*  stmt;
       if( ($1 != NULL) && ($3 != NULL) ) {
-        tmp  = db_create_expression( $3, $1, EXP_OP_ASSIGN, FALSE, @1.first_line, NULL );
+        tmp  = db_create_expression( $3, $1, EXP_OP_ASSIGN, FALSE, @1.first_line, @1.first_column, @3.last_column, NULL );
         vector_dealloc( tmp->value );
         tmp->value = $3->value;
         stmt = db_create_statement( tmp );
@@ -3030,7 +3030,7 @@ event_control
       if( ignore_mode == 0 ) {
         sig = db_find_signal( $2 );
         if( sig != NULL ) {
-          tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, NULL );
+          tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, @1.first_column, @2.last_column, NULL );
           vector_dealloc( tmp->value );
           tmp->value = sig->value;
           $$ = tmp;
@@ -3066,7 +3066,7 @@ event_expression_list
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_EOR, lhs_mode, @1.first_line, NULL );
+        tmp = db_create_expression( $3, $1, EXP_OP_EOR, lhs_mode, @1.first_line, @1.first_column, @3.last_column, NULL );
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -3078,7 +3078,7 @@ event_expression_list
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        tmp = db_create_expression( $3, $1, EXP_OP_EOR, lhs_mode, @1.first_line, NULL );
+        tmp = db_create_expression( $3, $1, EXP_OP_EOR, lhs_mode, @1.first_line, @1.first_column, @3.last_column, NULL );
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );
@@ -3095,9 +3095,9 @@ event_expression
       expression* tmp2;
       if( (ignore_mode == 0) && ($2 != NULL) ) {
         /* Create 1-bit expression to hold last value of right expression */
-        tmp1 = db_create_expression( NULL, NULL, EXP_OP_LAST, lhs_mode, @1.first_line, NULL );
+        tmp1 = db_create_expression( NULL, NULL, EXP_OP_LAST, lhs_mode, @1.first_line, @1.first_column, @3.last_column, NULL );
         expression_create_value( tmp1, 1, FALSE );
-        tmp2 = db_create_expression( $2, tmp1, EXP_OP_PEDGE, lhs_mode, @1.first_line, NULL );
+        tmp2 = db_create_expression( $2, tmp1, EXP_OP_PEDGE, lhs_mode, @1.first_line, @1.first_column, @2.last_column, NULL );
         $$ = tmp2;
       } else {
         $$ = NULL;
@@ -3108,9 +3108,9 @@ event_expression
       expression* tmp1;
       expression* tmp2;
       if( (ignore_mode == 0) && ($2 != NULL) ) {
-        tmp1 = db_create_expression( NULL, NULL, EXP_OP_LAST, lhs_mode, @1.first_line, NULL );
+        tmp1 = db_create_expression( NULL, NULL, EXP_OP_LAST, lhs_mode, @1.first_line, @1.first_column, @1.last_column, NULL );
         expression_create_value( tmp1, 1, FALSE );
-        tmp2 = db_create_expression( $2, tmp1, EXP_OP_NEDGE, lhs_mode, @1.first_line, NULL );
+        tmp2 = db_create_expression( $2, tmp1, EXP_OP_NEDGE, lhs_mode, @1.first_line, @1.first_column, @2.last_column, NULL );
         $$ = tmp2;
       } else {
         $$ = NULL;
@@ -3122,8 +3122,8 @@ event_expression
       expression* tmp2;
       expression* expr = $1;
       if( (ignore_mode == 0) && ($1 != NULL ) ) {
-        tmp1 = db_create_expression( NULL, NULL, EXP_OP_LAST, lhs_mode, @1.first_line, NULL );
-        tmp2 = db_create_expression( expr, tmp1, EXP_OP_AEDGE, lhs_mode, @1.first_line, NULL );
+        tmp1 = db_create_expression( NULL, NULL, EXP_OP_LAST, lhs_mode, @1.first_line, @1.first_column, @1.last_column, NULL );
+        tmp2 = db_create_expression( expr, tmp1, EXP_OP_AEDGE, lhs_mode, @1.first_line, @1.first_column, @1.last_column, NULL );
         expression_create_value( tmp1, expr->value->width, FALSE );
         $$ = tmp2;
       } else {

@@ -201,7 +201,7 @@ bool fsm_db_read( char** line, module* mod ) {
        If the input state variable is the same as the output state variable, create the new expression now.
       */
       if( iexp.id == oexp.id ) {
-        table->from_state = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, iexp.id, 0, FALSE );
+        table->from_state = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, iexp.id, 0, 0, 0, FALSE );
         vector_dealloc( table->from_state->value );
         table->from_state->value = vector_create( iexpl->exp->value->width, TRUE );
       } else {
@@ -813,6 +813,10 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.40  2004/04/05 12:30:52  phase1geo
+ Adding *db_replace functions to allow a design to be opened with new CDD
+ results (for GUI purposes only).
+
  Revision 1.39  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,

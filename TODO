@@ -49,16 +49,14 @@ Miscellaneous
 
 IP 1.  Add regression that produces known, achievable error conditions in the code.
 
-   2.  Change name of signal to vsignal in stable release version.
+X  2.  Change name of signal to vsignal in stable release version.
 
 GUI
 ---
 
-   1.  Add overwrite functions to signal, expression, and FSM types to allow for quicker
+X  1.  Add overwrite functions to signal, expression, and FSM types to allow for quicker
        closing of files and reopening.
 
-   2.  Add ability to close entire design so that a new one can be reopened.
+   2.  Add toggle, combinational logic and FSM coverage output
 
-   3.  Add toggle, combinational logic and FSM coverage output
-
-   4.  Make TCL and TK libraries build better in configure scripts
+   3.  Make TCL and TK libraries build better in configure scripts

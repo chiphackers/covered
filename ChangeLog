@@ -1,3 +1,122 @@
+2004-04-17 09:07  phase1geo
+
+	* scripts/menu_create.tcl, src/db.c, src/defines.h, src/report.c,
+	src/tcl_funcs.c: Adding replace and merge options to file menu.
+
+2004-04-07 06:36  phase1geo
+
+	* scripts/menu_create.tcl, src/db.c: Changes made to allow opening
+	multiple CDD files without needing to deallocate all memory for one
+	before reallocating memory for another.  Things are not entirely
+	working at this point.
+
+2004-04-05 07:30  phase1geo
+
+	* src/: arc.c, arc.h, expr.c, expr.h, fsm.c, fsm.h, module.c,
+	module.h, vector.c, vector.h, vsignal.c, vsignal.h: Adding
+	*db_replace functions to allow a design to be opened with new CDD
+	results (for GUI purposes only).
+
+2004-04-03 19:35  phase1geo
+
+	* scripts/: main_view.tcl, menu_create.tcl, process_file.tcl:
+	Adding ability to hold place in textbox when switching
+	background/foreground colors and coverage types.  Added labels
+	above module/instance listbox and text box (removing "Line #" and
+	"Verilog Source" from text window).  Making information label
+	normal (not sunken) because the sunken affords user interaction.
+
+2004-04-02 13:37  phase1geo
+
+	* NEWS, config.h, configure, configure.in, diags/cdd/always7.1.cdd,
+	diags/cdd/assign1.cdd, diags/cdd/assign2.4.cdd,
+	diags/cdd/assign2.5.cdd, diags/cdd/assign2.6.cdd,
+	diags/cdd/assign2.7.cdd, diags/cdd/assign2.8.cdd,
+	diags/cdd/event1.cdd, diags/cdd/gate1.1.cdd,
+	diags/cdd/ifdef1.1.cdd, diags/cdd/implicit2.1.cdd,
+	diags/cdd/instance7.cdd, diags/cdd/param7.cdd, diags/cdd/real1.cdd,
+	diags/cdd/static2.1.cdd, diags/cdd/static2.2.cdd,
+	diags/cdd/static2.cdd, diags/cdd/triand.cdd, diags/cdd/trior.cdd,
+	diags/cdd/trireg.cdd, diags/cdd/wand.cdd, diags/cdd/wor.cdd,
+	diags/regress/Makefile, diags/verilog/Makefile, src/Makefile.am,
+	src/Makefile.in, src/binding.c, src/db.c, src/db.h, src/defines.h,
+	src/devel_doc.h, src/expr.c, src/keywords.gperf, src/lexer.l,
+	src/link.c, src/link.h, src/module.c, src/param.c, src/param.h,
+	src/parser.y, src/signal.h, src/sim.c, src/sim.h, src/symtable.c,
+	src/symtable.h, src/vcd.c, src/vector.c, src/vsignal.c,
+	src/vsignal.h: Updating CVS 0_2_2 branch with changes since 0.2
+	release.  Also renaming signal to vsignal in release to fix bug
+	where some OS's have a signal.h in the /usr/include directory that
+	get compiled in with the unistd.h included by util.c.  This is the
+	prelude to the 0.2.3 stable release.  Updated NEWS.
+
+2004-04-01 22:46  phase1geo
+
+	* scripts/: menu_create.tcl, process_file.tcl: Fixing message box
+	for file opening.  This is now working correctly.  Added "Reopen
+	CDD" command to File menu for future use.  Disabling "Open CDD..."
+	command after file has been opened (since we cannot have more than
+	one CDD file open currently).  Add message to info bar to tell user
+	to select a module/instance name to see coverage results.
+
+2004-04-01 16:54  phase1geo
+
+	* scripts/main_view.tcl, scripts/menu_create.tcl,
+	scripts/process_file.tcl, src/line.c: Making text field read-only. 
+	Adding message when reading in new CDD files (as status information
+	-- this is not working correctly yet).	Fixing bug in line.c when
+	getting total lines summary information.
+
+2004-04-01 06:44  phase1geo
+
+	* INSTALL: Updated INSTALL file for TCL/TK version.
+
+2004-04-01 06:41  phase1geo
+
+	* TODO: Updating TODO list so that I don't miss anything that needs
+	to be done.
+
+2004-03-30 09:42  phase1geo
+
+	* src/: Makefile.am, Makefile.in, binding.c, binding.h, db.c, db.h,
+	defines.h, devel_doc.h, fsm_arg.c, keywords.gperf, lexer.l, link.c,
+	link.h, module.c, param.c, param.h, parser.y, signal.c, signal.h,
+	sim.c, sim.h, symtable.c, symtable.h, vsignal.c, vsignal.h:
+	Renaming signal type to vsignal type to eliminate compilation
+	problems on systems that contain a signal type in the OS.
+
+2004-03-29 16:47  phase1geo
+
+	* scripts/main_view.tcl: Causing module/instance listbox to not
+	resize when window size is increased.  At some point we will want
+	to figure out how to make this window resizable.
+
+2004-03-28 23:01  phase1geo
+
+	* scripts/: main_view.tcl, process_file.tcl: Adding information bar
+	to bottom of window.  Populating it with filename of selected
+	module/instance when display coverage information.
+
+2004-03-28 07:50  phase1geo
+
+	* scripts/main_view.tcl: Adding module/instance highlighting in
+	listbox for uncovered modules/instances.
+
+2004-03-26 07:20  phase1geo
+
+	* src/: report.c, tcl_funcs.c: Fixing case where user hits cancel
+	button in open window so that we don't exit the GUI when this
+	occurs.
+
+2004-03-25 16:59  phase1geo
+
+	* scripts/: Makefile.am, Makefile.in: Missing from last checkin.
+
+2004-03-25 08:40  phase1geo
+
+	* ChangeLog, config.h, configure, configure.in: Last group of
+	changes prior to development release.
+
 2004-03-25 08:37  phase1geo
 
 	* Makefile.am, Makefile.in, configure, configure.in, mkinstalldirs,

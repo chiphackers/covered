@@ -105,6 +105,8 @@ void expression_create_value( expression* exp, int width, bool data ) {
  \param lhs    Specifies this expression is a left-hand-side assignment expression.
  \param id     ID for this expression as determined by the parent.
  \param line   Line number this expression is on.
+ \param first  First column index of expression.
+ \param last   Last column index of expression.
  \param data   Specifies if we should create a nibble array for the vector value.
 
  \return Returns pointer to newly created expression.
@@ -112,7 +114,7 @@ void expression_create_value( expression* exp, int width, bool data ) {
  Creates a new expression from heap memory and initializes its values for
  usage.  Right and left expressions need to be created before this function is called.
 */
-expression* expression_create( expression* right, expression* left, int op, bool lhs, int id, int line, bool data ) {
+expression* expression_create( expression* right, expression* left, int op, bool lhs, int id, int line, int first, int last, bool data ) {
 
   expression* new_expr;    /* Pointer to newly created expression */
   int         rwidth = 0;  /* Bit width of expression on right    */
@@ -124,6 +126,7 @@ expression* expression_create( expression* right, expression* left, int op, bool
   new_expr->id           = id;
   new_expr->ulid         = -1;
   new_expr->line         = line;
+  new_expr->col          = ((first & 0xffff) << 16) | (last & 0xffff);
   new_expr->sig          = NULL;
   new_expr->parent       = (expr_stmt*)malloc_safe( sizeof( expr_stmt ), __FILE__, __LINE__ );
   new_expr->parent->expr = NULL;
@@ -537,10 +540,11 @@ void expression_get_wait_sig_list( expression* expr, sig_link** head, sig_link**
 */
 void expression_db_write( expression* expr, FILE* file ) {
 
-  fprintf( file, "%d %d %d %x %d %d ",
+  fprintf( file, "%d %d %d %d %x %d %d ",
     DB_TYPE_EXPRESSION,
     expr->id,
     expr->line,
+    expr->col,
     (expr->suppl & SUPPL_MERGE_MASK),
     (SUPPL_OP( expr->suppl ) == EXP_OP_STATIC) ? 0 : expression_get_id( expr->right ),
     (SUPPL_OP( expr->suppl ) == EXP_OP_STATIC) ? 0 : expression_get_id( expr->left )
@@ -582,6 +586,7 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
   int         id;             /* Holder of expression ID                          */
   expression* expr;           /* Pointer to newly created expression              */
   int         linenum;        /* Holder of current line for this expression       */
+  int         column;         /* Holder of column alignment information           */
   control     suppl;          /* Holder of supplemental value of this expression  */
   int         right_id;       /* Holder of expression ID to the right             */
   int         left_id;        /* Holder of expression ID to the left              */
@@ -592,7 +597,7 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
   expression  texp;           /* Temporary expression link holder for searching   */
   exp_link*   expl;           /* Pointer to found expression in module            */
 
-  if( sscanf( *line, "%d %d %x %d %d%n", &id, &linenum, &suppl, &right_id, &left_id, &chars_read ) == 5 ) {
+  if( sscanf( *line, "%d %d %d %x %d %d%n", &id, &linenum, &column, &suppl, &right_id, &left_id, &chars_read ) == 6 ) {
 
     *line = *line + chars_read;
 
@@ -631,6 +636,7 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
 
       /* Create new expression */
       expr = expression_create( right, left, SUPPL_OP( suppl ), SUPPL_IS_LHS( suppl ), id, linenum,
+                                ((column >> 16) & 0xffff), (column & 0xffff),
                                 ((SUPPL_OP( suppl ) != EXP_OP_SIG)        && 
                                  (SUPPL_OP( suppl ) != EXP_OP_PARAM)      &&
                                  (SUPPL_OP( suppl ) != EXP_OP_SBIT_SEL)   &&
@@ -737,6 +743,7 @@ bool expression_db_merge( expression* base, char** line, bool same ) {
   bool retval = TRUE;  /* Return value for this function */
   int  id;             /* Expression ID field            */
   int  linenum;        /* Expression line number         */
+  int  column;         /* Column information             */
   int  suppl;          /* Supplemental field             */
   int  right_id;       /* ID of right child              */
   int  left_id;        /* ID of left child               */
@@ -744,7 +751,7 @@ bool expression_db_merge( expression* base, char** line, bool same ) {
 
   assert( base != NULL );
 
-  if( sscanf( *line, "%d %d %x %d %d%n", &id, &linenum, &suppl, &right_id, &left_id, &chars_read ) == 5 ) {
+  if( sscanf( *line, "%d %d %d %x %d %d%n", &id, &linenum, &column, &suppl, &right_id, &left_id, &chars_read ) == 6 ) {
 
     *line = *line + chars_read;
 
@@ -1471,6 +1478,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.96  2004/04/05 12:30:52  phase1geo
+ Adding *db_replace functions to allow a design to be opened with new CDD
+ results (for GUI purposes only).
+
  Revision 1.95  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,

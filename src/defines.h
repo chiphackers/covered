@@ -35,7 +35,7 @@
  Contains the CDD version number of all CDD files that this version of Covered can write
  and read.
 */
-#define CDD_VERSION        2
+#define CDD_VERSION        3
 
 /*!
  This contains the header information specified when executing this tool.
@@ -1081,6 +1081,7 @@ struct expression_s {
   int         id;          /*!< Specifies unique ID for this expression in the parent          */
   int         ulid;        /*!< Specifies underline ID for reporting purposes                  */
   int         line;        /*!< Specified line in file that this expression is found on        */
+  control     col;         /*!< Specifies column location of beginning/ending of expression    */
   vsignal*    sig;         /*!< Pointer to signal.  If NULL then no signal is attached         */
   expr_stmt*  parent;      /*!< Parent expression/statement                                    */
   expression* right;       /*!< Pointer to expression on right                                 */
@@ -1585,6 +1586,9 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.106  2004/04/17 14:07:55  phase1geo
+ Adding replace and merge options to file menu.
+
  Revision 1.105  2004/03/30 15:42:14  phase1geo
  Renaming signal type to vsignal type to eliminate compilation problems on systems
  that contain a signal type in the OS.

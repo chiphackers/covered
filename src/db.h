@@ -45,7 +45,7 @@ void db_end_module( int end_line );
 vsignal* db_find_signal( char* name );
 
 /*! \brief Creates new expression from specified information.  Called by parser and db_add_expression. */
-expression* db_create_expression( expression* right, expression* left, int op, bool lhs, int line, char* sig_name );
+expression* db_create_expression( expression* right, expression* left, int op, bool lhs, int line, int first, int last, char* sig_name );
 
 /*! \brief Adds specified expression to expression list.  Called by parser. */
 void db_add_expression( expression* root );
@@ -103,6 +103,10 @@ void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.35  2004/03/30 15:42:14  phase1geo
+ Renaming signal type to vsignal type to eliminate compilation problems on systems
+ that contain a signal type in the OS.
+
  Revision 1.34  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,
