@@ -583,6 +583,9 @@ void stmt_link_unlink( statement* stmt, stmt_link** head, stmt_link** tail ) {
   stmt_iter  curr;  /* Statement list iterator             */
   stmt_link* tmp;   /* Temporary pointer to statement link */
 
+  printf( "Removing statement %d\n", stmt->exp->id );
+  stmt_link_display( *head );
+
   stmt_iter_reset( &curr, *head );
 
   while( (curr.curr != NULL) && (curr.curr->stmt != stmt) ) {
@@ -591,11 +594,15 @@ void stmt_link_unlink( statement* stmt, stmt_link** head, stmt_link** tail ) {
 
   if( curr.curr != NULL ) {
 
+    printf( "Statement to be removed was found\n" );
     tmp = curr.curr;
 
     /* Adjust head and tail pointers if necessary */
     if( curr.curr == *tail ) {
       *tail = curr.last;
+      if( *tail == NULL ) {
+	*head = NULL;
+      }
     }
 
     if( curr.curr == *head ) {
@@ -752,6 +759,10 @@ void mod_link_delete_list( mod_link* head ) {
 
 /*
  $Log$
+ Revision 1.30  2005/01/10 23:03:39  phase1geo
+ Added code to properly report race conditions.  Added code to remove statement blocks
+ from module when race conditions are found.
+
  Revision 1.29  2005/01/07 17:59:52  phase1geo
  Finalized updates for supplemental field changes.  Everything compiles and links
  correctly at this time; however, a regression run has not confirmed the changes.

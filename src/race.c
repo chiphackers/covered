@@ -74,7 +74,7 @@ statement* race_get_head_statement( module* mod, expression* expr ) {
   curr_stmt = expr->parent->stmt;
 
   /* Second, find the head statement that contains the expression's statement */
-  stmt_iter_reset( &si, mod->stmt_head );
+  stmt_iter_reset( &si, mod->stmt_tail );
 
   while( (si.curr != NULL) && (si.curr->stmt != curr_stmt) ) {
     stmt_iter_next( &si );
@@ -88,6 +88,24 @@ statement* race_get_head_statement( module* mod, expression* expr ) {
   assert( si.curr != NULL );
 
   return( si.curr->stmt );
+
+}
+
+/*!
+ \param stmt  Pointer to statement to search for in statement block array
+
+ \return Returns index of found head statement in statement block array if found; otherwise,
+         returns a value of -1 to indicate that no such statement block exists.
+*/
+int race_find_head_statement( statement* stmt ) {
+
+  int i = 0;   /* Loop iterator                  */
+
+  while( (i < sb_size) && (sb[i].stmt != stmt) ) {
+    i++;
+  }
+
+  return( (i == sb_size) ? -1 : i );
 
 }
 
@@ -130,9 +148,9 @@ void race_handle_race_condition( expression* expr, module* mod, statement* stmt,
       print_output( "", (flag_race_check + 1), __FILE__, __LINE__ );
       print_output( "Possible race condition detected - signal assigned in two different statement blocks", flag_race_check, __FILE__, __LINE__ );
       snprintf( user_msg, USER_MSG_LENGTH, "  Signal assigned in file: %s, line: %d", mod->filename, expr->line );
-      print_output( user_msg, flag_race_check, __FILE__, __LINE__ );
+      print_output( user_msg, (flag_race_check + 1), __FILE__, __LINE__ );
       snprintf( user_msg, USER_MSG_LENGTH, "  Signal also assigned in statement starting at file: %s, line: %d", mod->filename, base->exp->line );
-      print_output( user_msg, flag_race_check, __FILE__, __LINE__ );
+      print_output( user_msg, (flag_race_check + 1), __FILE__, __LINE__ );
 
       if( flag_race_check == WARNING ) {
         print_output( "Safely removing statement block from coverage consideration", WARNING_WRAP, __FILE__, __LINE__ );
@@ -155,11 +173,8 @@ void race_handle_race_condition( expression* expr, module* mod, statement* stmt,
   }
 
   /* Set remove flag in stmt_blk array to remove this module from memory */
-  i = 0;
-  while( (i < sb_size) && (sb[i].stmt != stmt) ) {
-    i++;
-  }
-  assert( i != sb_size );
+  i = race_find_head_statement( stmt );
+  assert( i != -1 );
   sb[i].remove = TRUE;
 
   /* Increment races found flag */
@@ -172,7 +187,7 @@ void race_check_one_block_assignment( module* mod ) {
   sig_link*  sigl;                /* Pointer to current signal                                          */
   exp_link*  expl;                /* Pointer to current expression                                      */
   statement* curr_stmt;           /* Pointer to current statement                                       */
-  statement* sig_stmt;            /* Pointer to base signal statement                                   */
+  int        sig_stmt;            /* Index of base signal statement in statement block array            */
   bool       race_found = FALSE;  /* Specifies if at least one race condition was found for this signal */
   bool       prev_assigned;       /* Set to TRUE if signal was previously assigned                      */
   bool       curr_race;           /* Set to TRUE if race condition was found in current iteration       */
@@ -180,7 +195,7 @@ void race_check_one_block_assignment( module* mod ) {
   sigl = mod->sig_head;
   while( sigl != NULL ) {
 
-    sig_stmt = NULL;
+    sig_stmt = -1;
 
     /* Iterate through expressions */
     expl = sigl->sig->exp_head;
@@ -205,7 +220,7 @@ void race_check_one_block_assignment( module* mod ) {
             }
 	    break;
           case EXP_OP_MBIT_SEL :
-            if( (expl->exp->left->op == EXP_OP_STATIC) && (expl->exp->right->op == EXP_OP_STATIC) ) {
+	    if( (expl->exp->left->op == EXP_OP_STATIC) && (expl->exp->right->op == EXP_OP_STATIC) ) {
               curr_race = vsignal_set_assigned( sigl->sig, vector_to_int( expl->exp->left->value ), vector_to_int( expl->exp->right->value ) );
             } else {
               curr_race = vsignal_set_assigned( sigl->sig, ((sigl->sig->value->width - 1) + sigl->sig->lsb), sigl->sig->lsb );
@@ -220,18 +235,22 @@ void race_check_one_block_assignment( module* mod ) {
         curr_stmt = race_get_head_statement( mod, expl->exp );
 
         /* Check to see if the current signal is already being assigned in another statement */
-        if( sig_stmt == NULL ) {
-
-          sig_stmt = curr_stmt;
+        if( sig_stmt == -1 ) {
 
           /* Check to see if current signal is also an input port */ 
           if( (sigl->sig->value->suppl.part.inport == 1) || curr_race ) {
             race_handle_race_condition( expl->exp, mod, curr_stmt, NULL, 6 );
+	    sb[sig_stmt].remove = TRUE;
           }
 
-        } else if( (sig_stmt != curr_stmt) && curr_race ) {
+	  /* Get index of base signal statement in sb array */
+          sig_stmt = race_find_head_statement( curr_stmt );
+	  assert( sig_stmt != -1 );
 
-          race_handle_race_condition( expl->exp, mod, curr_stmt, sig_stmt, 6 );
+        } else if( (sb[sig_stmt].stmt != curr_stmt) && curr_race ) {
+
+          race_handle_race_condition( expl->exp, mod, curr_stmt, sb[sig_stmt].stmt, 6 );
+	  sb[sig_stmt].remove = TRUE;
 	  race_found = TRUE;
 
         }
@@ -245,11 +264,6 @@ void race_check_one_block_assignment( module* mod ) {
     sigl = sigl->next;
 
   }
-
-  /* Finally, if we found a race condition and sig_stmt is not NULL, we need to handle this statement */
-  if( race_found && (sig_stmt != NULL) ) {
-    race_handle_race_condition( NULL, mod, sig_stmt, sig_stmt, 6 );
-  } 
 
 }
 
@@ -295,7 +309,7 @@ void race_check_modules() {
     sb_size = 0;
 
     /* First, get the size of the statement block array */
-    stmt_iter_reset( &si, modl->mod->stmt_head );
+    stmt_iter_reset( &si, modl->mod->stmt_tail );
     while( si.curr != NULL ) {
       if( si.curr->stmt->exp->suppl.part.stmt_head == 1 ) {
         sb_size++;
@@ -310,7 +324,7 @@ void race_check_modules() {
       sb_index = 0;
 
       /* Second, populate the statement block array with pointers to the head statements */
-      stmt_iter_reset( &si, modl->mod->stmt_head );
+      stmt_iter_reset( &si, modl->mod->stmt_tail );
       while( si.curr != NULL ) {
         if( si.curr->stmt->exp->suppl.part.stmt_head == 1 ) {
           sb[sb_index].stmt   = si.curr->stmt;
@@ -326,6 +340,7 @@ void race_check_modules() {
       race_check_one_block_assignment( modl->mod );
 
       /* Cleanup statements to be removed */
+      stmt_iter_reverse( &si );
       curr_module = modl->mod;
       for( i=0; i<sb_size; i++ ) {
         if( sb[i].remove ) {
@@ -349,6 +364,10 @@ void race_check_modules() {
 
 /*
  $Log$
+ Revision 1.12  2005/01/10 23:03:39  phase1geo
+ Added code to properly report race conditions.  Added code to remove statement blocks
+ from module when race conditions are found.
+
  Revision 1.11  2005/01/10 13:44:58  phase1geo
  Fixing case where signal selects are being assigned by different statements that
  do not overlap.  We do not have race conditions in this case.

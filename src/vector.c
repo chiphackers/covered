@@ -704,7 +704,7 @@ bool vector_set_assigned( vector* vec, int msb, int lsb ) {
   bool prev_assigned = FALSE;  /* Specifies if any set bit was previously set */
   int  i;                      /* Loop iterator                               */
 
-  for( i=lsb; i<msb; i++ ) {
+  for( i=lsb; i<=msb; i++ ) {
     if( vec->value[i].part.misc == 1 ) {
       prev_assigned = TRUE;
     }
@@ -1773,6 +1773,10 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.57  2005/01/10 02:59:30  phase1geo
+ Code added for race condition checking that checks for signals being assigned
+ in multiple statements.  Working on handling bit selects -- this is in progress.
+
  Revision 1.56  2005/01/07 23:00:10  phase1geo
  Regression now passes for previous changes.  Also added ability to properly
  convert quoted strings to vectors and vectors to quoted strings.  This will

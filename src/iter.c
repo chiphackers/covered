@@ -112,10 +112,19 @@ void stmt_iter_unlink( stmt_iter* si ) {
 
   stmt_link* tmp;  /* Temporary pointer to statement link */
 
+  /* Set ptr of link beyond curr */
   tmp = (stmt_link*)((long int)si->curr->ptr ^ (long int)si->last);
+  printf( "last: %p, curr: %p, tmp: %p\n", si->last, si->curr->ptr, tmp );
 
   if( tmp != NULL ) {
+    printf( "Here tmp was not NULL \n" );
     tmp->ptr = (stmt_link*)(((long int)tmp->ptr ^ (long int)si->curr) ^ (long int)si->last);
+    printf( "last: %p, tmp->ptr: %p, past tmp: %p\n", si->last, tmp->ptr, (stmt_link*)((long int)tmp->ptr ^ (long int)si->curr) );
+  }
+
+  /* Set ptr of last */
+  if( si->last != NULL ) {
+    si->last->ptr = (stmt_link*)(((long int)si->curr ^ (long int)si->last->ptr) ^ (long int)tmp);
   }
 
 }
@@ -123,6 +132,10 @@ void stmt_iter_unlink( stmt_iter* si ) {
 
 /*
  $Log$
+ Revision 1.8  2005/01/10 23:03:39  phase1geo
+ Added code to properly report race conditions.  Added code to remove statement blocks
+ from module when race conditions are found.
+
  Revision 1.7  2005/01/07 17:59:51  phase1geo
  Finalized updates for supplemental field changes.  Everything compiles and links
  correctly at this time; however, a regression run has not confirmed the changes.
