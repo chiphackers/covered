@@ -41,7 +41,7 @@ void defparam_add( char* scope, vector* expr );
 void param_set_expr_size( expression* expr, inst_parm* icurr );
 
 /*! \brief Sets the specified signal size according to the specified instance parameter and resizes attached expressions. */
-bool param_set_sig_size( signal* sig, inst_parm* icurr );
+bool param_set_sig_size( vsignal* sig, inst_parm* icurr );
 
 /*! \brief Transforms a declared module parameter into an instance parameter. */
 void param_resolve_declared( char* mscope, mod_parm* mparm, inst_parm* ip_head, inst_parm** ihead, inst_parm** itail );
@@ -61,6 +61,11 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive );
 
 /*
  $Log$
+ Revision 1.14  2004/01/08 23:24:41  phase1geo
+ Removing unnecessary scope information from signals, expressions and
+ statements to reduce file sizes of CDDs and slightly speeds up fscanf
+ function calls.  Updated regression for this fix.
+
  Revision 1.13  2003/02/07 02:28:24  phase1geo
  Fixing bug with statement removal.  Expressions were being deallocated but not properly
  removed from module parameter expression lists and module expression lists.  Regression

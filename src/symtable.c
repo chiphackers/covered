@@ -114,7 +114,7 @@
 #include "defines.h"
 #include "symtable.h"
 #include "util.h"
-#include "signal.h"
+#include "vsignal.h"
 #include "link.h"
 #include "sim.h"
 
@@ -158,7 +158,7 @@ int        postsim_size    = 0;
  Creates and adds the specified symtable signal structure to the sym_sig
  list for the specified symtab.
 */
-void symtable_add_sym_sig( symtable* symtab, signal* sig, int msb, int lsb ) {
+void symtable_add_sym_sig( symtable* symtab, vsignal* sig, int msb, int lsb ) {
 
   sym_sig* new_ss;  /* Pointer to newly created sym_sig structure */
 
@@ -226,7 +226,7 @@ symtable* symtable_create() {
  Using the symbol as a unique ID, creates a new symtable element for specified information
  and places it into the binary tree.
 */
-void symtable_add( char* sym, signal* sig, int msb, int lsb ) {
+void symtable_add( char* sym, vsignal* sig, int msb, int lsb ) {
 
   symtable* curr;  /* Pointer to current symtable entry   */
   char*     ptr;   /* Pointer to current character in sym */
@@ -301,7 +301,7 @@ void symtable_set_value( char* sym, char* value ) {
        put it there.
       */
       sig = curr->sig_head;
-      while( (sig != NULL) && (signal_get_wait_bit( sig->sig ) == 0) ) {
+      while( (sig != NULL) && (vsignal_get_wait_bit( sig->sig ) == 0) ) {
         sig = sig->next;
       }
 
@@ -338,7 +338,7 @@ void symtable_assign( bool presim ) {
       curr = timestep_tab[i];
       sig = curr->sig_head;
       while( sig != NULL ) {
-        signal_vcd_assign( sig->sig, curr->value, sig->msb, sig->lsb );
+        vsignal_vcd_assign( sig->sig, curr->value, sig->msb, sig->lsb );
         sig = sig->next;
       }
       curr->value[0] = '\0';
@@ -349,7 +349,7 @@ void symtable_assign( bool presim ) {
       curr = timestep_tab[i];
       sig = curr->sig_head;
       while( sig != NULL ) {
-        signal_vcd_assign( sig->sig, curr->value, sig->msb, sig->lsb );
+        vsignal_vcd_assign( sig->sig, curr->value, sig->msb, sig->lsb );
         sig = sig->next;
       }
       curr->value[0] = '\0';
@@ -396,6 +396,15 @@ void symtable_dealloc( symtable* symtab ) {
 
 /*
  $Log$
+ Revision 1.17  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.16  2004/03/15 21:38:17  phase1geo
  Updated source files after running lint on these files.  Full regression
  still passes at this point.

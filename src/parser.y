@@ -18,7 +18,7 @@
 #endif
 
 #include "defines.h"
-#include "signal.h"
+#include "vsignal.h"
 #include "expr.h"
 #include "vector.h"
 #include "module.h"
@@ -75,7 +75,7 @@ int yydebug = 1;
   int	          integer;
   vector*         number;
   double          realtime;
-  signal*         sig;
+  vsignal*        sig;
   expression*     expr;
   statement*      state;
   static_expr*    statexp;
@@ -3025,7 +3025,7 @@ dr_strength1
 event_control
   : '@' IDENTIFIER
     {
-      signal*     sig;
+      vsignal*    sig;
       expression* tmp;
       if( ignore_mode == 0 ) {
         sig = db_find_signal( $2 );

@@ -1050,7 +1050,7 @@ typedef union expr_stmt_u expr_stmt;
  run-time information for its expression.
 */
 struct expression_s;
-struct signal_s;
+struct vsignal_s;
 struct fsm_s;
 
 /*!
@@ -1061,7 +1061,7 @@ typedef struct expression_s expression;
 /*!
  Renaming signal structure for convenience.
 */
-typedef struct signal_s     signal;
+typedef struct vsignal_s     vsignal;
 
 /*!
  Renaming FSM structure for convenience.
@@ -1074,7 +1074,7 @@ struct expression_s {
   int         id;          /*!< Specifies unique ID for this expression in the parent          */
   int         ulid;        /*!< Specifies underline ID for reporting purposes                  */
   int         line;        /*!< Specified line in file that this expression is found on        */
-  signal*     sig;         /*!< Pointer to signal.  If NULL then no signal is attached         */
+  vsignal*    sig;         /*!< Pointer to signal.  If NULL then no signal is attached         */
   expr_stmt*  parent;      /*!< Parent expression/statement                                    */
   expression* right;       /*!< Pointer to expression on right                                 */
   expression* left;        /*!< Pointer to expression on left                                  */
@@ -1195,17 +1195,17 @@ struct stmt_loop_link_s {
  Stores all information needed to represent a signal.  If value of value element is non-zero at the
  end of the run, this signal has been simulated.
 */
-struct signal_s {
-  char*      name;      /*!< Full hierarchical name of signal in design       */
-  vector*    value;     /*!< Pointer to vector value of this signal           */
-  int        lsb;       /*!< Least-significant bit position of this signal    */
-  exp_link*  exp_head;  /*!< Head pointer to list of expressions              */
-  exp_link*  exp_tail;  /*!< Tail pointer to list of expressions              */
+struct vsignal_s {
+  char*      name;      /*!< Full hierarchical name of signal in design    */
+  vector*    value;     /*!< Pointer to vector value of this signal        */
+  int        lsb;       /*!< Least-significant bit position of this signal */
+  exp_link*  exp_head;  /*!< Head pointer to list of expressions           */
+  exp_link*  exp_tail;  /*!< Tail pointer to list of expressions           */
 };
 
 /*------------------------------------------------------------------------------*/
 struct sig_link_s {
-  signal*   sig;   /*!< Pointer to signal in list                   */
+  vsignal*  sig;   /*!< Pointer to signal in list                   */
   sig_link* next;  /*!< Pointer to next signal link element in list */
 };
 
@@ -1252,7 +1252,7 @@ struct mod_parm_s {
   unsigned int suppl;    /*!< Supplemental field containing type and order number */
   exp_link*    exp_head; /*!< Pointer to head of expression list for dependents   */
   exp_link*    exp_tail; /*!< Pointer to tail of expression list for dependents   */
-  signal*      sig;      /*!< Pointer to associated signal (if one is available)  */
+  vsignal*     sig;      /*!< Pointer to associated signal (if one is available)  */
   mod_parm*    next;     /*!< Pointer to next module parameter in list            */
 };
 
@@ -1370,7 +1370,7 @@ struct sym_sig_s;
 typedef struct sym_sig_s sym_sig;
 
 struct sym_sig_s {
-  signal*  sig;   /*!< Pointer to signal that this symtable entry refers to */
+  vsignal* sig;   /*!< Pointer to signal that this symtable entry refers to */
   int      msb;   /*!< Most significant bit of value to set                 */
   int      lsb;   /*!< Least significant bit of value to set                */
   sym_sig* next;  /*!< Pointer to next sym_sig link in list                 */
@@ -1536,7 +1536,7 @@ struct fsm_var_s {
   char*       name;   /*!< Name associated with this FSM variable     */
   expression* ivar;   /*!< Pointer to input state expression          */
   expression* ovar;   /*!< Pointer to output state expression         */
-  signal*     iexp;   /*!< Pointer to input signal matching ovar name */
+  vsignal*    iexp;   /*!< Pointer to input signal matching ovar name */
   fsm*        table;  /*!< Pointer to FSM containing signal from ovar */
   fsm_var*    next;   /*!< Pointer to next fsm_var element in list    */
 };
@@ -1578,6 +1578,15 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.104  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.103  2004/03/15 21:38:17  phase1geo
  Updated source files after running lint on these files.  Full regression
  still passes at this point.

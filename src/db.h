@@ -11,7 +11,7 @@
 
 #include "defines.h"
 
-/*! \brief Writes contents of expressions, modules and signals to database file. */
+/*! \brief Writes contents of expressions, modules and vsignals to database file. */
 bool db_write( char* file, bool parse_mode );
 
 /*! \brief Reads contents of database file and stores into internal lists. */
@@ -29,20 +29,20 @@ void db_add_declared_param( char* name, expression* expr );
 /*! \brief Adds specified override parameter to parameter list.  Called by parser. */
 void db_add_override_param( char* inst_name, expression* expr );
 
-/*! \brief Adds signal/expression vector parameter to parameter list. */
-void db_add_vector_param( signal* sig, expression* parm_exp, int type );
+/*! \brief Adds vsignal/expression vector parameter to parameter list. */
+void db_add_vector_param( vsignal* sig, expression* parm_exp, int type );
 
 /*! \brief Adds specified defparam to parameter override list.  Called by parser. */
 void db_add_defparam( char* name, expression* expr );
 
-/*! \brief Adds specified signal to signal list.  Called by parser. */
+/*! \brief Adds specified vsignal to vsignal list.  Called by parser. */
 void db_add_signal( char* name, static_expr* left, static_expr* right );
 
 /*! \brief Called when the endmodule keyword is parsed. */
 void db_end_module( int end_line );
 
 /*! \brief Finds specified signal in module and returns pointer to the signal structure.  Called by parser. */
-signal* db_find_signal( char* name );
+vsignal* db_find_signal( char* name );
 
 /*! \brief Creates new expression from specified information.  Called by parser and db_add_expression. */
 expression* db_create_expression( expression* right, expression* left, int op, bool lhs, int line, char* sig_name );
@@ -103,6 +103,15 @@ void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.34  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.33  2004/01/04 04:52:03  phase1geo
  Updating ChangeLog and TODO files.  Adding merge information to INFO line
  of CDD files and outputting this information to the merged reports.  Adding

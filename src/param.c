@@ -55,7 +55,7 @@
 #include "expr.h"
 #include "vector.h"
 #include "link.h"
-#include "signal.h"
+#include "vsignal.h"
 
 
 inst_parm* defparam_head = NULL;   /*!< Pointer to head of parameter list for global defparams */
@@ -185,7 +185,7 @@ mod_parm* mod_parm_add( char* scope, expression* expr, int type, mod_parm** head
   }
 
   /* Create new signal/expression binding */
-  parm           = (mod_parm*)malloc_safe( sizeof( mod_parm ), __FILE__, __LINE__ );
+  parm = (mod_parm*)malloc_safe( sizeof( mod_parm ), __FILE__, __LINE__ );
   if( scope != NULL ) {
     parm->name = strdup_safe( scope, __FILE__, __LINE__ );
   } else {
@@ -225,7 +225,7 @@ void mod_parm_display( mod_parm* mparm ) {
     } else {
       printf( "  mparam =>  name: %s, suppl: %d, exp_id: %d\n", mparm->name, mparm->suppl, mparm->expr->id );
     }
-    printf( "    " );  signal_display( mparm->sig );
+    printf( "    " );  vsignal_display( mparm->sig );
     printf( "    " );  exp_link_display( mparm->exp_head );
     mparm = mparm->next;
   }
@@ -369,7 +369,7 @@ void param_find_and_set_expr_value( expression* expr, inst_parm* icurr ) {
  Sizes the specified signal according to the value of the specified
  instance parameter value.
 */
-bool param_set_sig_size( signal* sig, inst_parm* icurr ) {
+bool param_set_sig_size( vsignal* sig, inst_parm* icurr ) {
 
   bool established = FALSE;  /* Specifies if current signal size is fully established */
   int  bit_sel;              /* MSB/LSB bit select value from instance parameter      */
@@ -722,6 +722,15 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.33  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.32  2004/01/08 23:24:41  phase1geo
  Removing unnecessary scope information from signals, expressions and
  statements to reduce file sizes of CDDs and slightly speeds up fscanf

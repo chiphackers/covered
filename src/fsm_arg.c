@@ -13,7 +13,7 @@
 #include "util.h"
 #include "fsm.h"
 #include "fsm_var.h"
-#include "signal.h"
+#include "vsignal.h"
 #include "expr.h"
 #include "vector.h"
 #include "statement.h"
@@ -37,7 +37,7 @@ extern char user_msg[USER_MSG_LENGTH];
 expression* fsm_arg_parse_state( char** arg, char* mod_name ) {
 
   bool        error = FALSE;  /* Specifies if a parsing error has beenf found   */
-  signal*     sig;            /* Pointer to read-in signal                      */
+  vsignal*    sig;            /* Pointer to read-in signal                      */
   expression* expl  = NULL;   /* Pointer to left expression                     */
   expression* expr  = NULL;   /* Pointer to right expression                    */
   expression* expt  = NULL;   /* Pointer to temporary expression                */
@@ -54,7 +54,7 @@ expression* fsm_arg_parse_state( char** arg, char* mod_name ) {
       if( ((expl != NULL) && (**arg == ',')) || (**arg == '{') ) {
         (*arg)++;
       }
-      if( (sig = signal_from_string( arg )) != NULL ) {
+      if( (sig = vsignal_from_string( arg )) != NULL ) {
 
         if( sig->value->width == 0 ) {
 
@@ -117,7 +117,7 @@ expression* fsm_arg_parse_state( char** arg, char* mod_name ) {
 
   } else {
 
-    if( (sig = signal_from_string( arg )) != NULL ) {
+    if( (sig = vsignal_from_string( arg )) != NULL ) {
 
       if( sig->value->width == 0 ) {
 
@@ -506,6 +506,15 @@ void fsm_arg_parse_attr( attr_param* ap, module* mod ) {
 
 /*
  $Log$
+ Revision 1.14  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.13  2004/03/15 21:38:17  phase1geo
  Updated source files after running lint on these files.  Full regression
  still passes at this point.

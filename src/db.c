@@ -20,7 +20,7 @@
 #include "util.h"
 #include "module.h"
 #include "expr.h"
-#include "signal.h"
+#include "vsignal.h"
 #include "link.h"
 #include "symtable.h"
 #include "instance.h"
@@ -209,7 +209,7 @@ bool db_read( char* file, int read_mode ) {
           assert( !merge_mode );
 
           /* Parse rest of line for signal info */
-          retval = signal_db_read( &rest_line, curr_module );
+          retval = vsignal_db_read( &rest_line, curr_module );
 	    
         } else if( type == DB_TYPE_EXPRESSION ) {
 
@@ -543,7 +543,7 @@ void db_add_override_param( char* inst_name, expression* expr ) {
  Creates a vector parameter for the specified signal or expression with the specified
  parameter expression.  This function is called by the parser.
 */
-void db_add_vector_param( signal* sig, expression* parm_exp, int type ) {
+void db_add_vector_param( vsignal* sig, expression* parm_exp, int type ) {
 
   mod_parm* mparm;   /* Holds newly created module parameter                        */
   mod_inst* inst;    /* Pointer to instance that is found to contain current module */
@@ -607,8 +607,8 @@ void db_add_defparam( char* name, expression* expr ) {
 */
 void db_add_signal( char* name, static_expr* left, static_expr* right ) {
 
-  signal   tmpsig;  /* Temporary signal for signal searching */
-  signal*  sig;     /* Container for newly created signal    */
+  vsignal  tmpsig;  /* Temporary signal for signal searching */
+  vsignal* sig;     /* Container for newly created signal    */
   int      lsb;     /* Signal LSB                            */
   int      width;   /* Signal width                          */
 
@@ -632,10 +632,10 @@ void db_add_signal( char* name, static_expr* left, static_expr* right ) {
     }  
 
     if( (lsb != -1) && (width != -1) ) { 
-      sig = signal_create( name, width, lsb );
+      sig = vsignal_create( name, width, lsb );
     } else {
-      sig = (signal*)malloc_safe( sizeof( signal ), __FILE__, __LINE__ );
-      signal_init( sig, strdup_safe( name, __FILE__, __LINE__ ), (vector*)malloc_safe( sizeof( vector ), __FILE__, __LINE__ ), lsb );
+      sig = (vsignal*)malloc_safe( sizeof( vsignal ), __FILE__, __LINE__ );
+      vsignal_init( sig, strdup_safe( name, __FILE__, __LINE__ ), (vector*)malloc_safe( sizeof( vector ), __FILE__, __LINE__ ), lsb );
       sig->value->width = width;      
       sig->value->value = NULL;
       if( (left != NULL) && (left->exp != NULL) ) {
@@ -661,9 +661,9 @@ void db_add_signal( char* name, static_expr* left, static_expr* right ) {
  Searches current module for signal matching the specified name.  If the signal is
  found, returns a pointer to the calling function for that signal.
 */
-signal* db_find_signal( char* name ) {
+vsignal* db_find_signal( char* name ) {
 
-  signal    sig;   /* Temporary signal for comparison purposes */
+  vsignal   sig;   /* Temporary signal for comparison purposes */
   sig_link* sigl;  /* Temporary pointer to signal link element */
 
   snprintf( user_msg, USER_MSG_LENGTH, "In db_find_signal, searching for signal %s", name );
@@ -1158,7 +1158,7 @@ void db_vcd_upscope() {
 void db_assign_symbol( char* name, char* symbol, int msb, int lsb ) {
 
   sig_link* slink;   /* Pointer to signal containing this symbol */
-  signal    tmpsig;  /* Temporary signal to search for           */
+  vsignal   tmpsig;  /* Temporary signal to search for           */
 
   snprintf( user_msg, USER_MSG_LENGTH, "In db_assign_symbol, name: %s, symbol: %s, curr_inst_scope: %s, msb: %d, lsb: %d",
             name, symbol, curr_inst_scope, msb, lsb );
@@ -1282,6 +1282,15 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.111  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.110  2004/03/15 21:38:17  phase1geo
  Updated source files after running lint on these files.  Full regression
  still passes at this point.

@@ -13,7 +13,7 @@
 #include <ctype.h>
 
 #include "defines.h"
-#include "signal.h"
+#include "vsignal.h"
 #include "parser_misc.h"
 #include "parser.h"
 #include "util.h"

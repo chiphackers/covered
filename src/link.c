@@ -17,7 +17,7 @@
 
 #include "link.h"
 #include "defines.h"
-#include "signal.h"
+#include "vsignal.h"
 #include "expr.h"
 #include "module.h"
 #include "util.h"
@@ -145,7 +145,7 @@ void exp_link_add( expression* expr, exp_link** head, exp_link** tail ) {
  Sets next pointer of element to NULL, sets the tail element to point
  to the new element and sets the tail value to the new element.
 */
-void sig_link_add( signal* sig, sig_link** head, sig_link** tail ) {
+void sig_link_add( vsignal* sig, sig_link** head, sig_link** tail ) {
 
   sig_link* tmp;   /* Temporary pointer to newly created sig_link element */
 
@@ -396,7 +396,7 @@ exp_link* exp_link_find( expression* exp, exp_link* head ) {
  a matching signal is found, the pointer to this element is returned.  If the specified
  signal could not be matched, the value of NULL is returned.
 */
-sig_link* sig_link_find( signal* sig, sig_link* head ) {
+sig_link* sig_link_find( vsignal* sig, sig_link* head ) {
 
   sig_link* curr;    /* Pointer to current sig_link link */
 
@@ -654,7 +654,7 @@ void sig_link_delete_list( sig_link* head, bool del_sig ) {
 
     /* Deallocate signal */
     if( del_sig ) {
-      signal_dealloc( tmp->sig );
+      vsignal_dealloc( tmp->sig );
       tmp->sig = NULL;
     }
 
@@ -718,6 +718,15 @@ void mod_link_delete_list( mod_link* head ) {
 
 /*
  $Log$
+ Revision 1.26  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.25  2004/03/15 21:38:17  phase1geo
  Updated source files after running lint on these files.  Full regression
  still passes at this point.

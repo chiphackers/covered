@@ -212,9 +212,9 @@
  \par
  <ol>
    <li> All header files must begin with a Doxygen-style header.  For an example of what these 
-     headers look like, please see the file signal.h
+     headers look like, please see the file vsignal.h
    <li> All source files must begin with a Doxygen-style source header.  For an example of what
-     these headers look like, please see the file signal.c
+     these headers look like, please see the file vsignal.c
    <li> All files should contain the RCS file revision history information at the bottom
      of the file by using the Log keyword.
    <li> All defines, structures, and global variables should contain a Doxygen-style comment 
@@ -443,17 +443,17 @@
  
  \par
  Vectors are nameless data holders; therefore, to properly represent a Verilog data type
- the signal structure was created.  A signal contains a name, a pointer to a vector, and a
+ the vsignal structure was created.  A vsignal contains a name, a pointer to a vector, and a
  list of expression pointers.  The list of expression pointers is used to quickly find all
- expressions in which the signal is a part of.  When the value of a signal changes, all
- expressions in which the signal is a part of needs to be re-evaluated during the simulation
+ expressions in which the vsignal is a part of.  When the value of a vsignal changes, all
+ expressions in which the vsignal is a part of needs to be re-evaluated during the simulation
  phase.
  
  \par
- The list of signals in a given module instance is passed to the toggle report generator
- since all toggle coverage information is contained in the signals (i.e., toggle information is
+ The list of vsignals in a given module instance is passed to the toggle report generator
+ since all toggle coverage information is contained in the vsignals (i.e., toggle information is
  not contained in the expression or statement structures).  For more information on the
- signal structure, please refer to signal.c.
+ vsignal structure, please refer to vsignal.c.
  
  \par Section 5.1.3.  Expressions
  
@@ -461,7 +461,7 @@
  Expressions represent unary or binary expressions within the verilog code.  Expressions are
  organized in a binary tree structure with a pointer to the parent expression and two pointers
  to the expression's child expressions.  An expression also contains a pointer to a vector
- (which stores the expression's coverage information and current value), a pointer to a signal
+ (which stores the expression's coverage information and current value), a pointer to a vsignal
  (if the expression is a signal type), and a 32-bit control element called the supplemental
  field (see \ref control for bit-breakout of the supplemental field).  The expression's operation
  type and state/descriptor bits are stored in the supplemental field (for more information on
@@ -491,7 +491,7 @@
  
  \par
  Modules are the glue that holds all of the information for a particular Verilog module, including
- the module's filename, module name, list of signals, list of parameters, list of expressions, list
+ the module's filename, module name, list of vsignals, list of parameters, list of expressions, list
  of statements, and Coverage summary statistic structures.  A module and all structures within it
  are autonomous from all other modules in that coverage metrics can be gathered for a module
  independently from all other modules.  Modules are organized into a globally accessible list but
@@ -612,7 +612,7 @@
  taken from, and a set of lists containing all of the module's signals, expressions, statements,
  and parameters.  All of the coverage information is stored in the signal and expression lists.
  For more detailed information on each of these types, see their corresponding code file in
- the detailed information section (signal = signal.c; expression = expr.c; statement = statement.c;
+ the detailed information section (vsignal = vsignal.c; expression = expr.c; statement = statement.c;
  parameter = param.c).  The module list is not necessary as far as keeping track of this module
  information (since the module instances point to these structures).  Rather the list is maintained
  because information retrieval is sometimes much quicker than searching the module instance tree.
@@ -651,7 +651,7 @@
    <li> VCD Load and Simulation Phase
      <ul>
        <li> VCD file read and coverage design resimulated based on VCD contents.  During simulation
-            coverage information is compiled and stored into proper signal and expression structures.
+            coverage information is compiled and stored into proper vsignal and expression structures.
      </ul>
    <li> CDD Final Output Phase
      <ul>
@@ -770,7 +770,7 @@
 
  \par
  <ul>
-   <li> signal (1; signal.c)
+   <li> vsignal (1; vsignal.c)
    <li> expression (2; expr.c)
    <li> module (3; module.c)
    <li> statement (4; statement.c)
@@ -836,7 +836,7 @@
  simulation because many details that the actual Verilog simulator needs to handle and account
  for can be ignored by Covered.  Intermediate calculations are not performed in a given timestep,
  since such "glitches" can generate bad/misleading coverage information, only the last value of
- a given signal is used in calculations.  These optimizations/shortcuts can make resimulation
+ a given vsignal is used in calculations.  These optimizations/shortcuts can make resimulation
  quick but cannot be entirely eliminated.  Though it is possible to calculate toggle coverage
  using only the VCD file and no simulation, metrics like line, combinational logic and FSM
  coverage require simulation data.
@@ -1216,6 +1216,9 @@
 
 /*
  $Log$
+ Revision 1.7  2003/08/06 13:23:53  phase1geo
+ Updating Doxygen-generated documentation.  Doxygen updated to version 1.3.3.
+
  Revision 1.6  2003/02/27 03:41:58  phase1geo
  More development documentation updates.
 

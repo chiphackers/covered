@@ -19,7 +19,7 @@
 #include "module.h"
 #include "util.h"
 #include "expr.h"
-#include "signal.h"
+#include "vsignal.h"
 #include "statement.h"
 #include "param.h"
 #include "link.h"
@@ -204,7 +204,7 @@ bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst ) {
   /* Now print all signals in module */
   curr_sig = mod->sig_head;
   while( curr_sig != NULL ) {
-    signal_db_write( curr_sig->sig, file );
+    vsignal_db_write( curr_sig->sig, file );
     curr_sig = curr_sig->next; 
   }
 
@@ -309,7 +309,7 @@ bool module_db_merge( module* base, FILE* file, bool same ) {
       if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
         rest_line = curr_line + chars_read;
         if( type == DB_TYPE_SIGNAL ) {
-          retval = signal_db_merge( curr_base_sig->sig, &rest_line, same );
+          retval = vsignal_db_merge( curr_base_sig->sig, &rest_line, same );
         } else {
           retval = FALSE;
         }
@@ -372,13 +372,13 @@ bool module_db_merge( module* base, FILE* file, bool same ) {
 */
 void module_display_signals( module* mod ) {
 
-  sig_link* sigl;    /* Pointer to current signal link element */
+  sig_link* sigl;  /* Pointer to current signal link element */
 
   printf( "Module => %s\n", mod->name );
 
   sigl = mod->sig_head;
   while( sigl != NULL ) {
-    signal_display( sigl->sig );
+    vsignal_display( sigl->sig );
     sigl = sigl->next;
   }
 
@@ -476,6 +476,15 @@ void module_dealloc( module* mod ) {
 
 /*
  $Log$
+ Revision 1.33  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.32  2004/01/08 23:24:41  phase1geo
  Removing unnecessary scope information from signals, expressions and
  statements to reduce file sizes of CDDs and slightly speeds up fscanf

@@ -6,7 +6,7 @@
 #include <string.h>
 #include "keywords.h"
 #include "defines.h"
-#include "signal.h"
+#include "vsignal.h"
 #include "parser.h"
 
 %}

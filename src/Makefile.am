@@ -28,7 +28,6 @@ covered_SOURCES = arc.c \
 		  report.c \
 		  score.c \
 		  search.c \
-		  signal.c \
 		  sim.c \
 		  stat.c \
                   static.c \
@@ -39,7 +38,8 @@ covered_SOURCES = arc.c \
                   tree.c \
                   util.c \
                   vcd.c \
-		  vector.c
+		  vector.c \
+		  vsignal.c
 
 INCLUDES=	-I..
 AM_CPPFLAGS=-DINSTALL_DIR=\"@datadir@/covered\"

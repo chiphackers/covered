@@ -1,11 +1,11 @@
-#ifndef __SIGNAL_H__
-#define __SIGNAL_H__
+#ifndef __VSIGNAL_H__
+#define __VSIGNAL_H__
 
 /*!
- \file     signal.h
+ \file     vsignal.h
  \author   Trevor Williams  (trevorw@charter.net)
  \date     12/1/2001
- \brief    Contains functions for handling signals.
+ \brief    Contains functions for handling Verilog signals.
 */
 
 #include <stdio.h>
@@ -13,45 +13,50 @@
 #include "defines.h"
 
 
-/*! \brief Initializes specified signal with specified values. */
-void signal_init( signal* sig, char* name, vector* value, int lsb );
+/*! \brief Initializes specified vsignal with specified values. */
+void vsignal_init( vsignal* sig, char* name, vector* value, int lsb );
 
-/*! \brief Creates a new signal based on the information passed to this function. */
-signal* signal_create( char* name, int width, int lsb );
+/*! \brief Creates a new vsignal based on the information passed to this function. */
+vsignal* vsignal_create( char* name, int width, int lsb );
 
-/*! \brief Outputs this signal information to specified file. */
-void signal_db_write( signal* sig, FILE* file );
+/*! \brief Outputs this vsignal information to specified file. */
+void vsignal_db_write( vsignal* sig, FILE* file );
 
-/*! \brief Reads signal information from specified file. */
-bool signal_db_read( char** line, module* curr_mod );
+/*! \brief Reads vsignal information from specified file. */
+bool vsignal_db_read( char** line, module* curr_mod );
 
-/*! \brief Reads and merges two signals, placing result into base signal. */
-bool signal_db_merge( signal* base, char** line, bool same );
+/*! \brief Reads and merges two vsignals, placing result into base vsignal. */
+bool vsignal_db_merge( vsignal* base, char** line, bool same );
 
-/*! \brief Sets value of currently waiting bit of signal to specified value. */
-void signal_set_wait_bit( signal* sig, int val );
+/*! \brief Sets value of currently waiting bit of vsignal to specified value. */
+void vsignal_set_wait_bit( vsignal* sig, int val );
 
-/*! \brief Gets value of currently waiting bit of signal. */
-int signal_get_wait_bit( signal* sig );
+/*! \brief Gets value of currently waiting bit of vsignal. */
+int vsignal_get_wait_bit( vsignal* sig );
 
-/*! \brief Assigns specified VCD value to specified signal. */
-void signal_vcd_assign( signal* sig, char* value, int msb, int lsb );
+/*! \brief Assigns specified VCD value to specified vsignal. */
+void vsignal_vcd_assign( vsignal* sig, char* value, int msb, int lsb );
 
-/*! \brief Adds an expression to the signal list. */
-void signal_add_expression( signal* sig, expression* expr );
+/*! \brief Adds an expression to the vsignal list. */
+void vsignal_add_expression( vsignal* sig, expression* expr );
 
-/*! \brief Displays signal contents to standard output. */
-void signal_display( signal* sig );
+/*! \brief Displays vsignal contents to standard output. */
+void vsignal_display( vsignal* sig );
 
-/*! \brief Converts a string to a signal. */
-signal* signal_from_string( char** str );
+/*! \brief Converts a string to a vsignal. */
+vsignal* vsignal_from_string( char** str );
 
-/*! \brief Deallocates the memory used for this signal. */
-void signal_dealloc( signal* sig );
+/*! \brief Deallocates the memory used for this vsignal. */
+void vsignal_dealloc( vsignal* sig );
 
 
 /*
  $Log$
+ Revision 1.16  2004/01/08 23:24:41  phase1geo
+ Removing unnecessary scope information from signals, expressions and
+ statements to reduce file sizes of CDDs and slightly speeds up fscanf
+ function calls.  Updated regression for this fix.
+
  Revision 1.15  2003/10/17 12:55:36  phase1geo
  Intermediate checkin for LSB fixes.
 

@@ -1,5 +1,5 @@
 /*!
- \file     signal.c
+ \file     vsignal.c
  \author   Trevor Williams  (trevorw@charter.net)
  \date     12/1/2001
 */
@@ -16,7 +16,7 @@
 #include <assert.h>
 
 #include "defines.h"
-#include "signal.h"
+#include "vsignal.h"
 #include "expr.h"
 #include "link.h"
 #include "vector.h"
@@ -30,17 +30,17 @@ extern char   user_msg[USER_MSG_LENGTH];
 
 
 /*!
- \param sig    Pointer to signal to initialize.
- \param name   Pointer to signal name string.
- \param value  Pointer to signal value.
+ \param sig    Pointer to vsignal to initialize.
+ \param name   Pointer to vsignal name string.
+ \param value  Pointer to vsignal value.
  \param lsb    Least-significant bit position in this string.
  
- Initializes the specified signal with the values of name, value and lsb.  This
- function is called by the signal_create routine and is also useful for
- creating temporary signals (reduces the need for dynamic memory allocation).
+ Initializes the specified vsignal with the values of name, value and lsb.  This
+ function is called by the vsignal_create routine and is also useful for
+ creating temporary vsignals (reduces the need for dynamic memory allocation).
  for performance enhancing purposes.
 */
-void signal_init( signal* sig, char* name, vector* value, int lsb ) {
+void vsignal_init( vsignal* sig, char* name, vector* value, int lsb ) {
 
   sig->name     = name;
   sig->value    = value;
@@ -51,24 +51,24 @@ void signal_init( signal* sig, char* name, vector* value, int lsb ) {
 }
 
 /*!
- \param name   Full hierarchical name of this signal.
- \param width  Bit width of this signal.
+ \param name   Full hierarchical name of this vsignal.
+ \param width  Bit width of this vsignal.
  \param lsb    Bit position of least significant bit.
 
- \returns Pointer to newly created signal.
+ \returns Pointer to newly created vsignal.
 
  This function should be called by the Verilog parser or the
  database reading function.  It initializes all of the necessary
- values for a signal and returns a pointer to this newly created
- signal.
+ values for a vsignal and returns a pointer to this newly created
+ vsignal.
 */
-signal* signal_create( char* name, int width, int lsb ) {
+vsignal* vsignal_create( char* name, int width, int lsb ) {
 
-  signal* new_sig;       /* Pointer to newly created signal */
+  vsignal* new_sig;  /* Pointer to newly created vsignal */
 
-  new_sig = (signal*)malloc_safe( sizeof( signal ), __FILE__, __LINE__ );
+  new_sig = (vsignal*)malloc_safe( sizeof( vsignal ), __FILE__, __LINE__ );
 
-  signal_init( new_sig, strdup_safe( name, __FILE__, __LINE__ ), vector_create( width, TRUE ), lsb );
+  vsignal_init( new_sig, strdup_safe( name, __FILE__, __LINE__ ), vector_create( width, TRUE ), lsb );
 
   return( new_sig );
 
@@ -76,17 +76,17 @@ signal* signal_create( char* name, int width, int lsb ) {
 
 /*!
  \param sig      Signal to write to file.
- \param file     Name of file to display signal contents to.
+ \param file     Name of file to display vsignal contents to.
 
- Prints the signal information for the specified signal to the
+ Prints the vsignal information for the specified vsignal to the
  specified file.  This file will be the database coverage file
  for this design.
 */
-void signal_db_write( signal* sig, FILE* file ) {
+void vsignal_db_write( vsignal* sig, FILE* file ) {
 
-  exp_link* curr;      /* Pointer to current expression link element */
+  exp_link* curr;  /* Pointer to current expression link element */
 
-  /* Don't write this signal if it isn't usable by Covered */
+  /* Don't write this vsignal if it isn't usable by Covered */
   if( (sig->name[0] != '!') && (sig->value->width != -1) ) {
 
     /* Display identification and value information first */
@@ -112,22 +112,22 @@ void signal_db_write( signal* sig, FILE* file ) {
 
 /*!
  \param line      Pointer to current line from database file to parse.
- \param curr_mod  Pointer to current module instantiating this signal.
+ \param curr_mod  Pointer to current module instantiating this vsignal.
 
- \return Returns TRUE if signal information read successfully; otherwise,
+ \return Returns TRUE if vsignal information read successfully; otherwise,
          returns FALSE.
 
- Creates a new signal structure, parses current file line for signal
- information and stores it to the specified signal.  If there are any problems
+ Creates a new vsignal structure, parses current file line for vsignal
+ information and stores it to the specified vsignal.  If there are any problems
  in reading in the current line, returns FALSE; otherwise, returns TRUE.
 */
-bool signal_db_read( char** line, module* curr_mod ) {
+bool vsignal_db_read( char** line, module* curr_mod ) {
 
   bool       retval = TRUE;  /* Return value for this function                   */
-  char       name[256];      /* Name of current signal                           */
-  signal*    sig;            /* Pointer to the newly created signal              */
-  vector*    vec;            /* Vector value for this signal                     */
-  int        lsb;            /* Least-significant bit of this signal             */
+  char       name[256];      /* Name of current vsignal                          */
+  vsignal*    sig;           /* Pointer to the newly created vsignal             */
+  vector*    vec;            /* Vector value for this vsignal                    */
+  int        lsb;            /* Least-significant bit of this vsignal            */
   int        exp_id;         /* Expression ID                                    */
   int        chars_read;     /* Number of characters read from line              */
   expression texp;           /* Temporary expression link for searching purposes */
@@ -141,16 +141,16 @@ bool signal_db_read( char** line, module* curr_mod ) {
     /* Read in vector information */
     if( vector_db_read( &vec, line ) ) {
 
-      /* Create new signal */
-      sig = signal_create( name, vec->width, lsb );
+      /* Create new vsignal */
+      sig = vsignal_create( name, vec->width, lsb );
 
       /* Copy over vector value */
       vector_dealloc( sig->value );
       sig->value = vec;
 
-      /* Add signal to signal list */
+      /* Add vsignal to vsignal list */
       if( curr_mod == NULL ) {
-        print_output( "Internal error:  signal in database written before its module", FATAL, __FILE__, __LINE__ );
+        print_output( "Internal error:  vsignal in database written before its module", FATAL, __FILE__, __LINE__ );
         retval = FALSE;
       } else {
         sig_link_add( sig, &(curr_mod->sig_head), &(curr_mod->sig_tail) );
@@ -161,7 +161,7 @@ bool signal_db_read( char** line, module* curr_mod ) {
 
         *line = *line + chars_read;
 
-        /* Find expression in current module and add it to signal list */
+        /* Find expression in current module and add it to vsignal list */
         texp.id = exp_id;
 
         if( (expl = exp_link_find( &texp, curr_mod->exp_head )) != NULL ) {
@@ -171,8 +171,8 @@ bool signal_db_read( char** line, module* curr_mod ) {
           expl->exp->sig = sig;
           
           /*
-           If expression is a signal holder, we need to set the expression's vector to point
-           to our vector and set its signal pointer to point to us.
+           If expression is a vsignal holder, we need to set the expression's vector to point
+           to our vector and set its vsignal pointer to point to us.
           */
           if( (SUPPL_OP( expl->exp->suppl ) == EXP_OP_SIG) ||
               (SUPPL_OP( expl->exp->suppl ) == EXP_OP_SBIT_SEL) ||
@@ -186,7 +186,7 @@ bool signal_db_read( char** line, module* curr_mod ) {
         } else {
 
           if( name[0] != '#' ) {
-            snprintf( user_msg, USER_MSG_LENGTH, "Expression %d not found for signal %s", texp.id, sig->name );
+            snprintf( user_msg, USER_MSG_LENGTH, "Expression %d not found for vsignal %s", texp.id, sig->name );
             print_output( user_msg, FATAL, __FILE__, __LINE__ );
             retval = FALSE;
             exit( 1 );
@@ -215,23 +215,23 @@ bool signal_db_read( char** line, module* curr_mod ) {
 /*!
  \param base  Signal to store result of merge into.
  \param line  Pointer to line of CDD file to parse.
- \param same  Specifies if signal to merge needs to be exactly the same as the existing signal.
+ \param same  Specifies if vsignal to merge needs to be exactly the same as the existing vsignal.
 
  \return Returns TRUE if parsing successful; otherwise, returns FALSE.
 
- Parses specified line for signal information and performs merge 
- of the base and in signals, placing the resulting merged signal 
- into the base signal.  If the signals are found to be unalike 
+ Parses specified line for vsignal information and performs merge 
+ of the base and in vsignals, placing the resulting merged vsignal 
+ into the base vsignal.  If the vsignals are found to be unalike 
  (names are different), an error message is displayed to the user.  
- If both signals are the same, perform the merge on the signal's 
+ If both vsignals are the same, perform the merge on the vsignal's 
  vectors.
 */
-bool signal_db_merge( signal* base, char** line, bool same ) {
+bool vsignal_db_merge( vsignal* base, char** line, bool same ) {
  
-  bool retval;         /* Return value of this function        */
-  char name[256];      /* Name of current signal               */
-  int  lsb;            /* Least-significant bit of this signal */
-  int  chars_read;     /* Number of characters read from line  */
+  bool retval;      /* Return value of this function         */
+  char name[256];   /* Name of current vsignal               */
+  int  lsb;         /* Least-significant bit of this vsignal */
+  int  chars_read;  /* Number of characters read from line   */
 
   assert( base != NULL );
   assert( base->name != NULL );
@@ -264,12 +264,12 @@ bool signal_db_merge( signal* base, char** line, bool same ) {
 }
 
 /*!
- \param sig  Pointer to signal to set wait bit to.
+ \param sig  Pointer to vsignal to set wait bit to.
  \param val  Value to set wait bit to.
 
- Sets the wait bit in the specified signal to the specified value.
+ Sets the wait bit in the specified vsignal to the specified value.
 */
-void signal_set_wait_bit( signal* sig, int val ) {
+void vsignal_set_wait_bit( vsignal* sig, int val ) {
 
   assert( sig != NULL );
   assert( sig->value != NULL );
@@ -280,13 +280,13 @@ void signal_set_wait_bit( signal* sig, int val ) {
 }
 
 /*!
- \param sig  Pointer to signal to retrieve wait bit value from.
+ \param sig  Pointer to vsignal to retrieve wait bit value from.
 
- \return Returns value of wait bit in specified signal.
+ \return Returns value of wait bit in specified vsignal.
 
- Gets the value of the wait bit from the specified signal.
+ Gets the value of the wait bit from the specified vsignal.
 */
-int signal_get_wait_bit( signal* sig ) {
+int vsignal_get_wait_bit( vsignal* sig ) {
 
   assert( sig != NULL );
   assert( sig->value != NULL );
@@ -297,32 +297,32 @@ int signal_get_wait_bit( signal* sig ) {
 }
 
 /*!
- \param sig    Pointer to signal to assign VCD value to.
+ \param sig    Pointer to vsignal to assign VCD value to.
  \param value  String version of VCD value.
  \param msb    Most significant bit to assign to.
  \param lsb    Least significant bit to assign to.
 
- Assigns the associated value to the specified signal's vector.  After this, it
+ Assigns the associated value to the specified vsignal's vector.  After this, it
  iterates through its expression list, setting the TRUE and FALSE bits accordingly.
  Finally, calls the simulator expr_changed function for each expression.
 */
-void signal_vcd_assign( signal* sig, char* value, int msb, int lsb ) {
+void vsignal_vcd_assign( vsignal* sig, char* value, int msb, int lsb ) {
 
-  exp_link* curr_expr;  /* Pointer to current expression link under evaluation      */
+  exp_link* curr_expr;  /* Pointer to current expression link under evaluation */
 
   assert( sig->value != NULL );
 
-  snprintf( user_msg, USER_MSG_LENGTH, "Assigning signal %s[%d:%d] (lsb=%d) to value %s", sig->name, msb, lsb, sig->lsb, value );
+  snprintf( user_msg, USER_MSG_LENGTH, "Assigning vsignal %s[%d:%d] (lsb=%d) to value %s", sig->name, msb, lsb, sig->lsb, value );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
-  /* Set signal value to specified value */
+  /* Set vsignal value to specified value */
   if( lsb > 0 ) {
     vector_vcd_assign( sig->value, value, (msb - sig->lsb), (lsb - sig->lsb) );
   } else {
     vector_vcd_assign( sig->value, value, msb, lsb );
   }
 
-  /* Iterate through signal's expression list */
+  /* Iterate through vsignal's expression list */
   curr_expr = sig->exp_head;
   while( curr_expr != NULL ) {
 
@@ -338,24 +338,24 @@ void signal_vcd_assign( signal* sig, char* value, int msb, int lsb ) {
 }
 
 /*!
- \param sig   Pointer to signal to add expression to.
+ \param sig   Pointer to vsignal to add expression to.
  \param expr  Expression to add to list.
 
- Adds the specified expression to the end of this signal's expression
+ Adds the specified expression to the end of this vsignal's expression
  list.
 */
-void signal_add_expression( signal* sig, expression* expr ) {
+void vsignal_add_expression( vsignal* sig, expression* expr ) {
 
   exp_link_add( expr, &(sig->exp_head), &(sig->exp_tail) );
 
 }
 
 /*!
- \param sig  Pointer to signal to display to standard output.
+ \param sig  Pointer to vsignal to display to standard output.
 
- Displays signal's name, width, lsb and value vector to the standard output.
+ Displays vsignal's name, width, lsb and value vector to the standard output.
 */
-void signal_display( signal* sig ) {
+void vsignal_display( vsignal* sig ) {
 
   assert( sig != NULL );
 
@@ -366,31 +366,31 @@ void signal_display( signal* sig ) {
 }
 
 /*!
- \param str  String version of signal.
+ \param str  String version of vsignal.
 
- \return Returns pointer to newly created signal structure, or returns
-         NULL is specified string does not properly describe a signal.
+ \return Returns pointer to newly created vsignal structure, or returns
+         NULL is specified string does not properly describe a vsignal.
 
- Converts the specified string describing a Verilog design signal.  The
- signal may be a standard signal name, a single bit select signal or a
- multi-bit select signal.
+ Converts the specified string describing a Verilog design vsignal.  The
+ vsignal may be a standard vsignal name, a single bit select vsignal or a
+ multi-bit select vsignal.
 */
-signal* signal_from_string( char** str ) {
+vsignal* vsignal_from_string( char** str ) {
 
-  signal* sig;         /* Pointer to newly created signal       */
+  vsignal* sig;        /* Pointer to newly created vsignal      */
   char    name[4096];  /* Signal name                           */
-  int     msb;         /* MSB of signal                         */
-  int     lsb;         /* LSB of signal                         */
+  int     msb;         /* MSB of vsignal                        */
+  int     lsb;         /* LSB of vsignal                        */
   int     chars_read;  /* Number of characters read from string */
 
   if( sscanf( *str, "%[a-zA-Z0-9_]\[%d:%d]%n", name, &msb, &lsb, &chars_read ) == 3 ) {
-    sig = signal_create( name, ((msb - lsb) + 1), lsb );
+    sig = vsignal_create( name, ((msb - lsb) + 1), lsb );
     *str += chars_read;
   } else if( sscanf( *str, "%[a-zA-Z0-9_]\[%d]%n", name, &lsb, &chars_read ) == 2 ) {
-    sig = signal_create( name, 1, lsb );
+    sig = vsignal_create( name, 1, lsb );
     *str += chars_read;
   } else if( sscanf( *str, "%[a-zA-Z0-9_]%n", name, &chars_read ) == 1 ) {
-    sig = signal_create( name, 1, 0 );
+    sig = vsignal_create( name, 1, 0 );
     /* Specify that this width is unknown */
     sig->value->width = 0;
     *str += chars_read;
@@ -403,14 +403,14 @@ signal* signal_from_string( char** str ) {
 }
 
 /*!
- \param sig  Pointer to signal to deallocate.
+ \param sig  Pointer to vsignal to deallocate.
 
  Deallocates all malloc'ed memory back to the heap for the specified
- signal.
+ vsignal.
 */
-void signal_dealloc( signal* sig ) {
+void vsignal_dealloc( vsignal* sig ) {
 
-  exp_link* curr_expl;   /* Pointer to current expression link to set to NULL */
+  exp_link* curr_expl;  /* Pointer to current expression link to set to NULL */
 
   if( sig != NULL ) {
 
@@ -433,7 +433,7 @@ void signal_dealloc( signal* sig ) {
     exp_link_delete_list( sig->exp_head, FALSE );
     sig->exp_head = NULL;
 
-    /* Finally free up the memory for this signal */
+    /* Finally free up the memory for this vsignal */
     free_safe( sig );
 
   }
@@ -442,6 +442,15 @@ void signal_dealloc( signal* sig ) {
 
 /*
  $Log$
+ Revision 1.48  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.47  2004/01/08 23:24:41  phase1geo
  Removing unnecessary scope information from signals, expressions and
  statements to reduce file sizes of CDDs and slightly speeds up fscanf

@@ -65,7 +65,7 @@
 
 #include "defines.h"
 #include "binding.h"
-#include "signal.h"
+#include "vsignal.h"
 #include "expr.h"
 #include "instance.h"
 #include "link.h"
@@ -187,20 +187,20 @@ void bind_remove( int id ) {
 */
 bool bind_perform( char* sig_name, expression* exp, module* mod_sig, module* mod_exp, bool implicit_allowed, bool fsm_bind ) {
 
-  signal    tsig;           /* Temporary signal for comparison purposes          */
+  vsignal   tsig;           /* Temporary signal for comparison purposes          */
   sig_link* sigl;           /* Pointer to found signal in specified module       */
   char*     tmpname;        /* Temporary name containing unused signal character */
   bool      retval = TRUE;  /* Return value for this function                    */
 
   /* Search for specified signal in current module */
-  signal_init( &tsig, sig_name, NULL, 0 );
+  vsignal_init( &tsig, sig_name, NULL, 0 );
   sigl = sig_link_find( &tsig, mod_sig->sig_head );
 
   /* If standard signal is not found, check to see if it is an unused signal */
   if( sigl == NULL ) {
     tmpname = (char*)malloc_safe( (strlen( sig_name ) + 2), __FILE__, __LINE__ );
     snprintf( tmpname, (strlen( sig_name ) + 2), "!%s", sig_name );
-    signal_init( &tsig, tmpname, NULL, 0 );
+    vsignal_init( &tsig, tmpname, NULL, 0 );
     sigl = sig_link_find( &tsig, mod_sig->sig_head );
     if( sigl != NULL ) {
       retval = FALSE;
@@ -227,7 +227,7 @@ bool bind_perform( char* sig_name, expression* exp, module* mod_sig, module* mod
     } else {
       snprintf( user_msg, USER_MSG_LENGTH, "Implicit declaration of signal \"%s\", creating 1-bit version of signal", sig_name );
       print_output( user_msg, WARNING, __FILE__, __LINE__ );
-      sig_link_add( signal_create( sig_name, 1, 0 ), &(mod_sig->sig_head), &(mod_sig->sig_tail) );
+      sig_link_add( vsignal_create( sig_name, 1, 0 ), &(mod_sig->sig_head), &(mod_sig->sig_tail) );
       sigl = mod_sig->sig_tail;
     }
   }
@@ -353,6 +353,15 @@ void bind() {
 
 /* 
  $Log$
+ Revision 1.27  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.26  2003/10/17 12:55:36  phase1geo
  Intermediate checkin for LSB fixes.
 
