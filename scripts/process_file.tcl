@@ -87,6 +87,9 @@ proc display_line_cov {} {
   global start_line end_line
   global line_summary_total line_summary_hit
 
+  # Populate information bar
+  .bot.info configure -text "Filename: $file_name"
+
   .bot.txt tag configure uncov_colorMap -foreground $uncov_fgColor -background $uncov_bgColor
   .bot.txt tag configure cov_colorMap   -foreground $cov_fgColor   -background $cov_bgColor
 

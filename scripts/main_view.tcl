@@ -25,7 +25,7 @@ proc main_view {} {
   frame .bot -width 120 -height 300
 
   # Create the tree widget to display file names
-  listbox .bot.l -yscrollcommand ".bot.lvb set" -xscrollcommand ".bot.lhb set"
+  listbox .bot.l -yscrollcommand ".bot.lvb set" -xscrollcommand ".bot.lhb set" -width 20
   bind .bot.l <<ListboxSelect>> populate_text
   scrollbar .bot.lvb -command ".bot.l yview"
   scrollbar .bot.lhb -orient horizontal -command ".bot.l xview"
@@ -37,15 +37,18 @@ proc main_view {} {
   scrollbar .bot.vb -command ".bot.txt yview"
   scrollbar .bot.hb -orient horizontal -command ".bot.txt xview"
 
+  label .bot.info -relief sunken -anchor w
+
   # Pack the widgets into the bottom frame
   grid rowconfigure .bot 0 -weight 1
-  grid columnconfigure .bot 0 -weight 1
-  grid .bot.l   -row 0 -column 0 -sticky nsew
-  grid .bot.lvb -row 0 -column 1 -sticky ns
-  grid .bot.lhb -row 1 -column 0 -sticky ew
-  grid .bot.txt -row 0 -column 2 -sticky nsew
-  grid .bot.vb  -row 0 -column 3 -sticky ns
-  grid .bot.hb  -row 1 -column 2 -sticky ew
+  grid columnconfigure .bot 0 -weight 0
+  grid .bot.l    -row 0 -column 0 -sticky nsew
+  grid .bot.lvb  -row 0 -column 1 -sticky ns
+  grid .bot.lhb  -row 1 -column 0 -sticky ew
+  grid .bot.txt  -row 0 -column 2 -sticky nsew
+  grid .bot.vb   -row 0 -column 3 -sticky ns
+  grid .bot.hb   -row 1 -column 2 -sticky ew
+  grid .bot.info -row 2 -column 0 -columnspan 4 -sticky ew
 
   # Pack the widgets
   # pack .covbar -fill both -side top
@@ -53,7 +56,7 @@ proc main_view {} {
 
   # Set the window icon
   global HOME
-  wm iconbitmap . @$HOME/images/myfile.xbm
+  # wm iconbitmap . @$HOME/images/myfile.xbm
   wm title . "Covered - Verilog Code Coverage Tool"
 
   # Set focus on the new window
