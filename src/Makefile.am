@@ -1,5 +1,6 @@
 bin_PROGRAMS = covered
 covered_SOURCES = arc.c \
+                  attr.c \
                   parser.c \
 		  binding.c \
 		  codegen.c \

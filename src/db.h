@@ -71,6 +71,12 @@ void db_connect_statement_true( statement* stmt, statement* exp_true );
 /*! \brief Connects false statement to specified statement. */
 void db_connect_statement_false( statement* stmt, statement* exp_false );
 
+/*! \brief Allocates and initializes an attribute parameter. */
+attr_param* db_create_attr_param( char* name, expression* expr );
+
+/*! \brief Parses the specified attribute parameter list for Covered attributes */
+void db_parse_attribute( attr_param* ap );
+
 /*! \brief Sets current VCD scope to specified scope. */
 void db_set_vcd_scope( char* scope );
 
@@ -92,6 +98,11 @@ void db_do_timestep( int time );
 
 /*
  $Log$
+ Revision 1.30  2003/08/09 22:10:41  phase1geo
+ Removing wait event signals from CDD file generation in support of another method
+ that fixes a bug when multiple wait event statements exist within the same
+ statement tree.
+
  Revision 1.29  2003/08/05 20:25:05  phase1geo
  Fixing non-blocking bug and updating regression files according to the fix.
  Also added function vector_is_unknown() which can be called before making

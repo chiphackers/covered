@@ -5,6 +5,7 @@
 */
 
 #include <stdio.h>
+#include <assert.h>
 
 #include "defines.h"
 #include "fsm_arg.h"
@@ -15,11 +16,22 @@
 #include "expr.h"
 #include "vector.h"
 #include "statement.h"
+#include "link.h"
 
 
-extern int curr_expr_id;
+extern int  curr_expr_id;
+extern char user_msg[USER_MSG_LENGTH];
 
 
+/*!
+ \param arg       Pointer to argument to parse.
+ \param mod_name  Name of module that this expression belongs to.
+
+ \return Returns pointer to expression tree containing parsed state variable expression.
+
+ Parses the specified argument value for all information regarding a state variable
+ expression.  This function places all 
+*/
 expression* fsm_arg_parse_state( char** arg, char* mod_name ) {
 
   bool        error = FALSE;  /* Specifies if a parsing error has beenf found   */
@@ -178,7 +190,7 @@ expression* fsm_arg_parse_state( char** arg, char* mod_name ) {
 bool fsm_arg_parse( char* arg ) {
 
   bool        retval = TRUE;  /* Return value for this function        */
-  char*       ptr   = arg;    /* Pointer to current character in arg   */
+  char*       ptr    = arg;   /* Pointer to current character in arg   */
   fsm_var*    fv;             /* Pointer to newly created FSM variable */
   expression* in_state;       /* Pointer to input state expression     */
   expression* out_state;      /* Pointer to output state expression    */
@@ -204,7 +216,7 @@ bool fsm_arg_parse( char* arg ) {
         ptr++;
 
         if( (out_state = fsm_arg_parse_state( &ptr, arg )) != NULL ) {
-          fsm_var_add( arg, in_state, out_state );
+          fsm_var_add( arg, in_state, out_state, NULL );
         } else {
           retval = TRUE;
         }
@@ -212,7 +224,7 @@ bool fsm_arg_parse( char* arg ) {
       } else {
 
         /* Copy the current expression */
-        fsm_var_add( arg, in_state, in_state );
+        fsm_var_add( arg, in_state, in_state, NULL );
 
       }
 
@@ -228,8 +240,126 @@ bool fsm_arg_parse( char* arg ) {
 
 }
 
+/*!
+ \param ap   Pointer to attribute parameter list.
+ \param mod  Pointer to module containing this attribute.
+
+ Parses the specified attribute parameter for validity and updates FSM structure
+ accordingly.
+*/
+void fsm_arg_parse_attr( attr_param* ap, module* mod ) {
+
+  attr_param* curr;               /* Pointer to current attribute parameter in list */
+  fsm_link*   fsml;               /* Pointer to found FSM structure                 */
+  fsm         table;              /* Temporary FSM used for searching purposes      */
+  int         index     = 1;      /* Current index number in list                   */
+  bool        ignore    = FALSE;  /* Set to TRUE if we should ignore this attribute */
+  expression* in_state  = NULL;   /* Pointer to input state                         */
+  expression* out_state = NULL;   /* Pointer to output state                        */
+  char*       str;                /* Temporary holder for string value              */
+
+  curr = ap;
+  while( (curr != NULL) && !ignore ) {
+
+    printf( "Here 1, name: %s\n", curr->name );
+
+    if( curr->expr == NULL ) {
+      printf( "Parsing attribute parameter: %s\n", curr->name );
+    } else {
+      printf( "Parsing attribute parameter: %s, expr: %s\n", curr->name, (char*)(curr->expr->value->value) );
+    }
+
+    /* This name is the name of the FSM structure to update */
+    if( index == 1 ) {
+      if( curr->expr != NULL ) {
+        ignore = TRUE;
+      } else {
+        table.name = curr->name;
+        fsml       = fsm_link_find( &table, mod->fsm_head );
+      }
+    } else if( (index == 2) && (strcmp( curr->name, "is" ) == 0) && (curr->expr != NULL) ) {
+      if( fsml == NULL ) {
+        str = (char*)(curr->expr->value->value);
+        if( (in_state = fsm_arg_parse_state( &str, mod->name )) == NULL ) {
+          snprintf( user_msg, USER_MSG_LENGTH, "Illegal input state expression (%s), file: %s", str, mod->filename );
+          print_output( user_msg, FATAL );
+          exit( 1 );
+        }
+      } else {
+        snprintf( user_msg, USER_MSG_LENGTH, "Input state specified after output state for this FSM has already been specified, file: %s",
+                  mod->filename );
+        print_output( user_msg, FATAL );
+        exit( 1 );
+      }
+    } else if( (index == 2) && (strcmp( curr->name, "os" ) == 0) && (curr->expr != NULL) ) {
+      if( fsml == NULL ) {
+        str = (char*)(curr->expr->value->value);
+        if( (out_state = fsm_arg_parse_state( &str, mod->name )) == NULL ) {
+          snprintf( user_msg, USER_MSG_LENGTH, "Illegal output state expression (%s), file: %s", str, mod->filename );
+          print_output( user_msg, FATAL );
+          exit( 1 );
+        } else {
+          fsm_var_add( mod->name, out_state, out_state, table.name );
+          fsml = fsm_link_find( &table, mod->fsm_head );
+        }
+      } else {
+        snprintf( user_msg, USER_MSG_LENGTH, "Output state specified after output state for this FSM has already been specified, file: %s",
+                  mod->filename );
+        print_output( user_msg, FATAL );
+        exit( 1 );
+      }
+    } else if( (index == 3) && (strcmp( curr->name, "os" ) == 0) && (out_state == NULL) &&
+               (in_state != NULL) && (curr->expr != NULL) ) {
+      if( fsml == NULL ) {
+        str = (char*)(curr->expr->value->value);
+        if( (out_state = fsm_arg_parse_state( &str, mod->name )) == NULL ) {
+          snprintf( user_msg, USER_MSG_LENGTH, "Illegal output state expression (%s), file: %s", str, mod->filename );
+          print_output( user_msg, FATAL );
+          exit( 1 );
+        } else {
+          fsm_var_add( mod->name, in_state, out_state, table.name );
+          fsml = fsm_link_find( &table, mod->fsm_head );
+        }
+      } else {
+        snprintf( user_msg, USER_MSG_LENGTH, "Output state specified after output state for this FSM has already been specified, file: %s",
+                  mod->filename );
+        print_output( user_msg, FATAL );
+        exit( 1 );
+      }
+    } else if( (index > 1) && (strcmp( curr->name, "trans" ) == 0) && (curr->expr != NULL) ) {
+      if( fsml == NULL ) {
+        snprintf( user_msg, USER_MSG_LENGTH, "Attribute FSM name (%s) has not been previously created, file: %s", table.name,
+                  mod->filename );
+        print_output( user_msg, FATAL );
+        exit( 1 );
+      } else {
+        /* Handle state transition information here */
+      }
+    } else {
+      snprintf( user_msg, USER_MSG_LENGTH, "Invalid covered_fsm attribute parameter (%s=%s), file: %s",
+                curr->name,
+                curr->expr->value->value,
+                mod->filename );
+      print_output( user_msg, FATAL );
+      exit( 1 );
+    }
+
+    /* We need to work backwards in attribute parameter lists */
+    curr = curr->prev;
+    index++;
+    
+  }
+
+}
+
+
 /*
  $Log$
+ Revision 1.6  2003/10/19 05:13:26  phase1geo
+ Updating user documentation for changes to FSM specification syntax.  Added
+ new fsm5.3 diagnostic to verify concatenation syntax.  Fixing bug in concatenation
+ syntax handling.
+
  Revision 1.5  2003/10/17 12:55:36  phase1geo
  Intermediate checkin for LSB fixes.
 

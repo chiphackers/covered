@@ -66,6 +66,7 @@ XGPERF = @XGPERF@
 
 bin_PROGRAMS = covered
 covered_SOURCES = arc.c \
+                  attr.c \
                   parser.c \
 		  binding.c \
 		  codegen.c \
@@ -116,9 +117,9 @@ DEFS = @DEFS@ -I. -I$(srcdir) -I..
 CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
-covered_OBJECTS =  arc.o parser.o binding.o codegen.o comb.o db.o expr.o \
-fsm.o fsm_arg.o fsm_var.o info.o instance.o iter.o keywords.o pplexer.o \
-lexer.o line.o link.o main.o merge.o module.o param.o parse.o \
+covered_OBJECTS =  arc.o attr.o parser.o binding.o codegen.o comb.o db.o \
+expr.o fsm.o fsm_arg.o fsm_var.o info.o instance.o iter.o keywords.o \
+pplexer.o lexer.o line.o link.o main.o merge.o module.o param.o parse.o \
 parser_misc.o report.o score.o search.o signal.o sim.o stat.o static.o \
 statement.o symtable.o toggle.o tree.o util.o vcd.o vector.o
 covered_LDADD = $(LDADD)
@@ -135,11 +136,11 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = gtar
 GZIP_ENV = --best
-DEP_FILES =  .deps/arc.P .deps/binding.P .deps/codegen.P .deps/comb.P \
-.deps/db.P .deps/expr.P .deps/fsm.P .deps/fsm_arg.P .deps/fsm_var.P \
-.deps/info.P .deps/instance.P .deps/iter.P .deps/keywords.P \
-.deps/lexer.P .deps/line.P .deps/link.P .deps/main.P .deps/merge.P \
-.deps/module.P .deps/param.P .deps/parse.P .deps/parser.P \
+DEP_FILES =  .deps/arc.P .deps/attr.P .deps/binding.P .deps/codegen.P \
+.deps/comb.P .deps/db.P .deps/expr.P .deps/fsm.P .deps/fsm_arg.P \
+.deps/fsm_var.P .deps/info.P .deps/instance.P .deps/iter.P \
+.deps/keywords.P .deps/lexer.P .deps/line.P .deps/link.P .deps/main.P \
+.deps/merge.P .deps/module.P .deps/param.P .deps/parse.P .deps/parser.P \
 .deps/parser_misc.P .deps/pplexer.P .deps/report.P .deps/score.P \
 .deps/search.P .deps/signal.P .deps/sim.P .deps/stat.P \
 .deps/statement.P .deps/static.P .deps/symtable.P .deps/toggle.P \

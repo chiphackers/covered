@@ -31,6 +31,7 @@ extern YYLTYPE yylloc;
 extern void reset_pplexer( char* filename, FILE* out );
 
 extern int   ignore_mode;
+extern int   attr_mode;
 extern char  user_msg[USER_MSG_LENGTH];
 extern char* ppfilename;
 
@@ -96,10 +97,10 @@ WSPACE [ \t\b\f]+
 <CCOMMENT>"*/" { BEGIN( comment_enter );                       }
 
   /* Pragma comment */
-"(*"           { comment_enter = YY_START;  BEGIN( PCOMMENT ); }
-<PCOMMENT>.    { yymore();                                     }
-<PCOMMENT>\n   { yylloc.first_line += 1;  yymore();            }
-<PCOMMENT>"*)" { BEGIN( comment_enter );                       }
+  /*"(*"           { comment_enter = YY_START;  BEGIN( PCOMMENT ); }
+  /*<PCOMMENT>.    { yymore();                                     }
+  /*<PCOMMENT>\n   { yylloc.first_line += 1;  yymore();            }
+  /*<PCOMMENT>"*)" { BEGIN( comment_enter );                       }
 
   /* Multi-character symbols */
 "(*"  { return K_PSTAR;   }
@@ -132,14 +133,21 @@ WSPACE [ \t\b\f]+
 \"            { BEGIN( CSTRING ); }
 <CSTRING>\\\" { yymore();         }
 <CSTRING>\n   { BEGIN( 0 );
-                yylval.text = strdup( yytext );
+                if( (ignore_mode == 0) && (attr_mode > 0) ) {
+                  yylval.text = strdup( yytext );
+                }
                 /* VLerror( yylloc, "Missing close quote of string." ); */
                 yylloc.first_line += 1;
                 return 0; }
 <CSTRING>\"   { BEGIN( 0 );
-                yylval.text = strdup( yytext );
-                yylval.text[ strlen( yytext ) - 1 ] = '\0';
-                return STRING; }
+                if( (ignore_mode == 0) && (attr_mode > 0) ) {
+                  yylval.text = strdup( yytext );
+                  yylval.text[ strlen( yytext ) - 1 ] = '\0';
+                  return STRING;
+                } else {
+                  return UNUSED_STRING;
+                }
+              }
 <CSTRING>.    { yymore();      }
 
   /* Ignore modules that are not needed by the parser. */

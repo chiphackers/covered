@@ -38,6 +38,7 @@ extern void lex_end_udp_table();
 
 int ignore_mode = 0;
 int param_mode  = 0;
+int attr_mode   = 0;
 
 exp_link* param_exp_head = NULL;
 exp_link* param_exp_tail = NULL;
@@ -81,13 +82,15 @@ int yydebug = 1;
   str_link*       strlink;
   exp_link*       explink;
   case_statement* case_stmt;
+  attr_param*     attr_parm;
 };
 
 %token <text>   IDENTIFIER
 %token <text>   PATHPULSE_IDENTIFIER
 %token <number> NUMBER
 %token <realtime> REALTIME
-%token STRING SYSTEM_IDENTIFIER IGNORE
+%token <text>     STRING
+%token SYSTEM_IDENTIFIER IGNORE
 %token UNUSED_IDENTIFIER
 %token UNUSED_PATHPULSE_IDENTIFIER
 %token UNUSED_NUMBER
@@ -138,6 +141,7 @@ int yydebug = 1;
 %type <state>     for_statement fork_statement while_statement named_begin_end_block if_statement_error
 %type <case_stmt> case_items case_item
 %type <expr>      delay1 delay3 delay3_opt
+%type <attr_parm> attribute attribute_list
 
 %token K_TAND
 %right '?' ':'
@@ -170,24 +174,41 @@ main
      comma separated list of names or names with assigned values. */
 attribute_list_opt
   : K_PSTAR attribute_list K_STARP
+    {
+      db_parse_attribute( $2 );
+    }
   | K_PSTAR K_STARP
   |
   ;
 
 attribute_list
   : attribute_list ',' attribute
+    {
+      $3->next  = $1;
+      printf( "Attaching previous of (%s) to (%s)\n", $1->name, $3->name );
+      $1->prev  = $3;
+      $3->index = $1->index + 1;
+      $$ = $3;
+    } 
   | attribute
+    {
+      $$ = $1;
+    }
   ;
 
 attribute
   : IDENTIFIER
     {
+      attr_param* ap = db_create_attr_param( $1, NULL );
       free_safe( $1 );
+      $$ = ap;
     }
-  | IDENTIFIER '=' expression
+  | IDENTIFIER '=' {attr_mode++;} expression {attr_mode--;}
     {
+      attr_param* ap = db_create_attr_param( $1, $4 );
+      printf( "attribute expression: %s\n", (char*)($4->value->value) );
       free_safe( $1 );
-      expression_dealloc( $3, FALSE );
+      $$ = ap;
     }
   ;
 
@@ -211,18 +232,20 @@ module
     {
       db_end_module();
     }
-  | K_module IGNORE I_endmodule
-  | K_macromodule IGNORE I_endmodule
+  | attribute_list_opt K_module IGNORE I_endmodule
+  | attribute_list_opt K_macromodule IGNORE I_endmodule
   ;
 
 module_start
-  : K_module IDENTIFIER { ignore_mode++; } list_of_ports_opt { ignore_mode--; } ';'
+  : attribute_list_opt
+    K_module IDENTIFIER { ignore_mode++; } list_of_ports_opt { ignore_mode--; } ';'
     {
-      db_add_module( $2, @1.text );
+      db_add_module( $3, @2.text );
     }
-  | K_macromodule IDENTIFIER { ignore_mode++; } list_of_ports_opt { ignore_mode--; } ';'
+  | attribute_list_opt
+    K_macromodule IDENTIFIER { ignore_mode++; } list_of_ports_opt { ignore_mode--; } ';'
     {
-      db_add_module( $2, @1.text );
+      db_add_module( $3, @2.text );
     }
   ;
 
@@ -939,7 +962,14 @@ expr_primary
     }
   | STRING
     {
-      $$ = NULL;
+      expression* tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
+      vector*     vec = vector_create( (strlen( $1 ) + 1), FALSE );
+      vector_dealloc( tmp->value );
+      tmp->value        = vec;
+      tmp->value->value = (nibble*)strdup( $1 );
+      printf( "String: %s\n", (char*)(tmp->value->value) );
+      free_safe( $1 );
+      $$ = tmp;
     }
   | UNUSED_STRING
     {
@@ -1288,49 +1318,52 @@ module_item_list
   ;
 
 module_item
-  : net_type range_opt list_of_variables ';'
+  : attribute_list_opt
+    net_type range_opt list_of_variables ';'
     {
-      str_link*     tmp  = $3;
+      str_link*     tmp  = $4;
       str_link*     curr = tmp;
-      if( ($1 == 1) && ($2 != NULL) ) {
+      if( ($2 == 1) && ($3 != NULL) ) {
         /* Creating signal(s) */
         while( curr != NULL ) {
-          db_add_signal( curr->str, $2->left, $2->right );
+          db_add_signal( curr->str, $3->left, $3->right );
           curr = curr->next;
         }
       }
-      str_link_delete_list( $3 );
-      if( $2 != NULL ) {
-        static_expr_dealloc( $2->left,  FALSE );
-        static_expr_dealloc( $2->right, FALSE );
-        free_safe( $2 );
+      str_link_delete_list( $4 );
+      if( $3 != NULL ) {
+        static_expr_dealloc( $3->left,  FALSE );
+        static_expr_dealloc( $3->right, FALSE );
+        free_safe( $3 );
       }
     }
-  | net_type range_opt net_decl_assigns ';'
+  | attribute_list_opt
+    net_type range_opt net_decl_assigns ';'
     {
-      str_link* tmp  = $3;
+      str_link* tmp  = $4;
       str_link* curr = tmp;
-      if( ($1 == 1) && ($2 != NULL) ) {
+      if( ($2 == 1) && ($3 != NULL) ) {
         /* Create signal(s) */
         while( curr != NULL ) {
-          db_add_signal( curr->str, $2->left, $2->right );
+          db_add_signal( curr->str, $3->left, $3->right );
           curr = curr->next;
         }
       }
-      str_link_delete_list( $3 );
-      if( $2 != NULL ) {
-        static_expr_dealloc( $2->left, FALSE );
-        static_expr_dealloc( $2->right, FALSE );
-        free_safe( $2 );
+      str_link_delete_list( $4 );
+      if( $3 != NULL ) {
+        static_expr_dealloc( $3->left, FALSE );
+        static_expr_dealloc( $3->right, FALSE );
+        free_safe( $3 );
       }
     }
-  | net_type drive_strength net_decl_assigns ';'
+  | attribute_list_opt
+    net_type drive_strength net_decl_assigns ';'
     {
-      str_link*   tmp  = $3;
+      str_link*   tmp  = $4;
       str_link*   curr = tmp;
       static_expr left;
       static_expr right;
-      if( $1 == 1 ) {
+      if( $2 == 1 ) {
         /* Create signal(s) */
         left.num  = 1;
         right.num = 0;
@@ -1339,7 +1372,7 @@ module_item
           curr = curr->next;
         }
       }
-      str_link_delete_list( $3 );
+      str_link_delete_list( $4 );
     }
   | K_trireg charge_strength_opt range_opt delay3_opt list_of_variables ';'
     {
@@ -1367,6 +1400,21 @@ module_item
       static_expr_dealloc( $2->left, FALSE );
       static_expr_dealloc( $2->right, FALSE );
       free_safe( $2 );
+    }
+  /* Handles Verilog-2001 port of type:  input wire [m:l] <list>; */
+  | port_type net_type range_opt list_of_variables ';'
+    {
+      /* Create signal -- implicitly this is a wire which may not be explicitly declared */
+      str_link* tmp  = $4;
+      str_link* curr = tmp;
+      while( curr != NULL ) {
+        db_add_signal( curr->str, $3->left, $3->right );
+        curr = curr->next;
+      }
+      str_link_delete_list( $4 );
+      static_expr_dealloc( $3->left, FALSE );
+      static_expr_dealloc( $3->right, FALSE );
+      free_safe( $3 );
     }
   | port_type range_opt error ';'
     {
@@ -1448,9 +1496,10 @@ module_item
       param_exp_tail = NULL;
     }
   | K_assign drive_strength_opt { ignore_mode++; } delay3_opt { ignore_mode--; } assign_list ';'
-  | K_always statement
+  | attribute_list_opt
+    K_always statement
     {
-      statement* stmt = $2;
+      statement* stmt = $3;
       if( stmt != NULL ) {
         db_statement_connect( stmt, stmt );
         db_statement_set_stop( stmt, stmt, TRUE );
@@ -1458,7 +1507,8 @@ module_item
         db_add_statement( stmt, stmt );
       }
     }
-  | K_initial { ignore_mode++; } statement { ignore_mode--; }
+  | attribute_list_opt
+    K_initial { ignore_mode++; } statement { ignore_mode--; }
     {
       /*
       statement* stmt = $2;

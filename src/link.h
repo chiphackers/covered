@@ -61,6 +61,9 @@ exp_link* exp_link_find( expression* exp, exp_link* head );
 /*! \brief Finds specified signal in given sig_link list. */
 sig_link* sig_link_find( signal* sig, sig_link* head );
 
+/*! \brief Finds specified FSM structure in fsm_link list. */
+fsm_link* fsm_link_find( fsm* table, fsm_link* head );
+
 /*! \brief Finds specified module in given mod_link list. */
 mod_link* mod_link_find( module* mod, mod_link* head );
 
@@ -93,6 +96,11 @@ void mod_link_delete_list( mod_link* head );
 
 /*
  $Log$
+ Revision 1.11  2003/08/25 13:02:04  phase1geo
+ Initial stab at adding FSM support.  Contains summary reporting capability
+ at this point and roughly works.  Updated regress suite as a result of these
+ changes.
+
  Revision 1.10  2003/08/05 20:25:05  phase1geo
  Fixing non-blocking bug and updating regression files according to the fix.
  Also added function vector_is_unknown() which can be called before making

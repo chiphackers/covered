@@ -839,6 +839,19 @@
 /*! @} */
 
 /*!
+ \addtogroup attribute_types
+
+ The following defines specify the attribute types that are parseable by Covered.
+
+ !{
+*/
+
+#define ATTRIBUTE_UNKNOWN       0       /*!< This attribute is not recognized by Covered */
+#define ATTRIBUTE_FSM           1       /*!< FSM attribute                               */
+
+/*! @} */
+
+/*!
  Defines boolean variables used in most functions.
 */
 typedef enum {
@@ -1202,6 +1215,7 @@ struct fsm_arc_s {
 
 /*-------------------------------------------------------------------------------*/
 struct fsm_s {
+  char*       name;        /*!< User-defined name that this FSM pertains to                                  */
   expression* from_state;  /*!< Pointer to from_state expression                                             */
   expression* to_state;    /*!< Pointer to to_state expression                                               */
   fsm_arc*    arc_head;    /*!< Pointer to head of list of expression pairs that describe the valid FSM arcs */
@@ -1445,6 +1459,7 @@ typedef struct fsm_var_s fsm_var;
 
 struct fsm_var_s {
   char*       mod;    /*!< Name of module to containing FSM variable  */
+  char*       name;   /*!< Name associated with this FSM variable     */
   expression* ivar;   /*!< Pointer to input state expression          */
   expression* ovar;   /*!< Pointer to output state expression         */
   signal*     iexp;   /*!< Pointer to input signal matching ovar name */
@@ -1467,6 +1482,20 @@ struct fv_bind_s {
 
 /*-------------------------------------------------------------------------------*/
 
+struct attr_param_s;
+
+typedef struct attr_param_s attr_param;
+
+struct attr_param_s {
+  char*       name;   /*!< Name of attribute parameter identifier                               */
+  expression* expr;   /*!< Pointer to expression assigned to the attribute parameter identifier */
+  int         index;  /*!< Index position in the array that this parameter is located at        */
+  attr_param* next;   /*!< Pointer to next attribute parameter in list                          */
+  attr_param* prev;   /*!< Pointer to previous attribute parameter in list                      */
+};
+
+/*-------------------------------------------------------------------------------*/
+
 union expr_stmt_u {
   expression* expr;         /*!< Pointer to expression */
   statement*  stmt;         /*!< Pointer to statement  */
@@ -1475,6 +1504,9 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.86  2003/10/17 12:55:36  phase1geo
+ Intermediate checkin for LSB fixes.
+
  Revision 1.85  2003/10/17 02:12:38  phase1geo
  Adding CDD version information to info line of CDD file.  Updating regression
  for this change.

@@ -31,6 +31,7 @@
 #include "static.h"
 #include "fsm.h"
 #include "info.h"
+#include "attr.h"
 
 
 extern char*     top_module;
@@ -1008,6 +1009,51 @@ void db_statement_set_stop( statement* stmt, statement* post, bool both ) {
 }
 
 /*!
+ \param name  Attribute parameter identifier.
+ \param expr  Pointer to constant expression that is assigned to the identifier.
+
+ \return Returns a pointer to the newly created attribute parameter.
+
+ Calls the attribute_create() function and returns the pointer returned by this function.
+*/
+attr_param* db_create_attr_param( char* name, expression* expr ) {
+
+  attr_param* ap;  /* Pointer to newly allocated/initialized attribute parameter */
+
+  if( expr != NULL ) {
+    snprintf( user_msg, USER_MSG_LENGTH, "In db_create_attr_param, name: %s, expr: %d", name, expr->id );
+  } else {
+    snprintf( user_msg, USER_MSG_LENGTH, "In db_create_attr_param, name: %s", name );
+  }
+  print_output( user_msg, DEBUG );
+
+  if( expr != NULL ) {
+    printf( "db_create_ap: %s\n", (char*)(expr->value->value) );
+  }
+  ap = attribute_create( name, expr );
+
+  return( ap );
+
+}
+
+/*!
+ \param ap  Pointer to attribute parameter list to parse.
+
+ Calls the attribute_parse() function and deallocates this list.
+*/
+void db_parse_attribute( attr_param* ap ) {
+
+  print_output( "In db_parse_attribute", DEBUG );
+
+  /* First, parse the entire attribute */
+  attribute_parse( ap, curr_module );
+
+  /* Then deallocate the structure */
+  attribute_dealloc( ap );
+
+}
+
+/*!
  \param scope  Current VCD scope.
 
  Sets the curr_inst_scope global variable to the specified scope.
@@ -1199,6 +1245,9 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.104  2003/10/17 12:55:36  phase1geo
+ Intermediate checkin for LSB fixes.
+
  Revision 1.103  2003/10/16 04:26:01  phase1geo
  Adding new fsm5 diagnostic to testsuite and regression.  Added proper support
  for FSM variables that are not able to be bound correctly.  Fixing bug in

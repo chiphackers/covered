@@ -23,7 +23,6 @@ extern str_link* use_files_head;
 
 extern str_link* modlist_head;
 extern str_link* modlist_tail;
-extern mod_link* mod_head;
 extern char user_msg[USER_MSG_LENGTH];
 extern int  error_count;
 extern bool flag_scored;
@@ -90,7 +89,7 @@ bool parse_design( char* top, char* output_db ) {
 
     /* Perform all signal/expression binding */
     bind();
-    fsm_var_bind( mod_head );
+    fsm_var_bind();
   
   } else {
 
@@ -170,6 +169,10 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
 
 /*
  $Log$
+ Revision 1.21  2003/10/10 20:52:07  phase1geo
+ Initial submission of FSM expression allowance code.  We are still not quite
+ there yet, but we are getting close.
+
  Revision 1.20  2003/08/10 03:50:10  phase1geo
  More development documentation updates.  All global variables are now
  documented correctly.  Also fixed some generated documentation warnings.

@@ -12,7 +12,10 @@
 
 
 /*! \brief Allocates, initializes and adds FSM variable to global list. */
-fsm_var* fsm_var_add( char* mod, expression* in_state, expression* out_state );
+fsm_var* fsm_var_add( char* mod_name, expression* in_state, expression* out_state, char* name );
+
+/*! \brief Searches FSM variable list for one by the specified name. */
+fsm_var* fsm_var_find_by_name( char* name );
 
 /*! \brief Adds specified signal and expression to binding list. */
 void fsm_var_bind_add( char* sig_name, expression* expr, char* mod_name );
@@ -21,7 +24,7 @@ void fsm_var_bind_add( char* sig_name, expression* expr, char* mod_name );
 void fsm_var_stmt_add( statement* stmt, char* mod_name );
 
 /*! \brief Performs FSM signal/expression binding process. */
-void fsm_var_bind( mod_link* mod_head );
+void fsm_var_bind();
 
 /*! \brief Removes specified FSM variable from global FSM variable list. */
 void fsm_var_remove( fsm_var* fv );
@@ -29,6 +32,10 @@ void fsm_var_remove( fsm_var* fv );
 
 /*
  $Log$
+ Revision 1.2  2003/10/10 20:52:07  phase1geo
+ Initial submission of FSM expression allowance code.  We are still not quite
+ there yet, but we are getting close.
+
  Revision 1.1  2003/10/03 21:28:43  phase1geo
  Restructuring FSM handling to be better suited to handle new FSM input/output
  state variable allowances.  Regression should still pass but new FSM support

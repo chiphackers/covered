@@ -24,7 +24,8 @@
 #include "fsm.h"
 
 
-extern char user_msg[USER_MSG_LENGTH];
+extern char      user_msg[USER_MSG_LENGTH];
+extern mod_link* mod_head;
 
 
 /*!
@@ -71,35 +72,77 @@ fv_bind* fsm_var_stmt_tail = NULL;
 
 
 /*!
- \param mod        String containing module containing FSM state variable.
+ \param mod_name   String containing module containing FSM state variable.
  \param in_state   Pointer to expression containing input state.
  \param out_state  Pointer to expression containing output state.
+ \param name       Name of this FSM (only valid for attributes).
 
  \return Returns pointer to newly allocated FSM variable.
 
  Adds the specified Verilog hierarchical scope to a list of FSM scopes to
  find during the parsing phase.
 */
-fsm_var* fsm_var_add( char* mod, expression* in_state, expression* out_state ) {
+fsm_var* fsm_var_add( char* mod_name, expression* in_state, expression* out_state, char* name ) {
 
-  fsm_var* new_var;  /* Pointer to newly created FSM variable */
+  fsm_var*  new_var = NULL;  /* Pointer to newly created FSM variable */
+  mod_link* modl;            /* Pointer to module link found          */
+  module    mod;             /* Temporary module used for searching   */
+  fsm*      table;           /* Pointer to newly create FSM           */
 
-  new_var        = (fsm_var*)malloc_safe( sizeof( fsm_var ) );
-  new_var->mod   = strdup( mod );
-  new_var->ivar  = in_state;
-  new_var->ovar  = out_state;
-  new_var->iexp  = NULL;
-  new_var->table = NULL;
-  new_var->next  = NULL;
+  /* If we have not parsed, design add new FSM variable to list */
+  if( mod_head == NULL ) {
 
-  if( fsm_var_head == NULL ) {
-    fsm_var_head = fsm_var_tail = new_var;
+    new_var        = (fsm_var*)malloc_safe( sizeof( fsm_var ) );
+    new_var->mod   = strdup( mod_name );
+    new_var->name  = NULL;
+    new_var->ivar  = in_state;
+    new_var->ovar  = out_state;
+    new_var->iexp  = NULL;
+    new_var->table = NULL;
+    new_var->next  = NULL;
+
+    if( fsm_var_head == NULL ) {
+      fsm_var_head = fsm_var_tail = new_var;
+    } else {
+      fsm_var_tail->next = new_var;
+      fsm_var_tail       = new_var;
+    }
+
   } else {
-    fsm_var_tail->next = new_var;
-    fsm_var_tail       = new_var;
+
+    /* Just create the new FSM */
+    mod.name = mod_name;
+
+    if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
+      table = fsm_create( in_state, out_state, FALSE );
+      if( name != NULL ) {
+        table->name = strdup( name );
+      }
+      in_state->table  = table;
+      out_state->table = table;
+      fsm_link_add( table, &(modl->mod->fsm_head), &(modl->mod->fsm_tail) );
+    } else {
+      assert( modl != NULL );
+    }
+
   }
 
   return( new_var );
+
+}
+
+fsm_var* fsm_var_find_by_name( char* name ) {
+
+  fsm_var* curr;  /* Pointer to current FSM variable structure */
+
+  assert( name != NULL );
+
+  curr = fsm_var_head;
+  while( (curr != NULL) && (curr->name != NULL) && (strcmp( curr->name, name ) != 0) ) {
+    curr = curr->next;
+  }
+
+  return( curr );
 
 }
 
@@ -126,57 +169,28 @@ fsm_var* fsm_var_is_output_state( expression* expr ) {
 
 }
 
-/*!
- \param sig_name  Name of signal to bind.
- \param expr      Pointer to expression to bind.
- \param mod_name  Name of module that will contain the expression and signal being bound.
+bool fsm_var_bind_expr( char* sig_name, expression* expr, char* mod_name ) {
 
- Creates a new FSM binding structure and initializes it with the specified information.
- The FSM binding structure is then added to the global list of FSM binding structures to
- be bound after parsing is complete.
-*/
-void fsm_var_bind_add( char* sig_name, expression* expr, char* mod_name ) {
+  bool      retval = TRUE;  /* Return value for this function       */
+  mod_link* modl;           /* Pointer to found module link element */
+  module    mod;             /* Temporary module used for searching  */
 
-  fv_bind* fvb;  /* Pointer to new FSM variable binding structure */
+  mod.name = mod_name;
 
-  /* Allocate and initialize FSM variable bind structure */
-  fvb           = (fv_bind*)malloc_safe( sizeof( fv_bind ) );
-  fvb->sig_name = strdup( sig_name );
-  fvb->expr     = expr;
-  fvb->mod_name = strdup( mod_name );
-
-  /* Add new structure to the global list */
-  if( fsm_var_bind_head == NULL ) {
-    fsm_var_bind_head = fsm_var_bind_tail = fvb;
+  if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
+    if( !bind_perform( sig_name, expr, modl->mod, modl->mod, FALSE, TRUE ) ) {
+      snprintf( user_msg, USER_MSG_LENGTH, "Unable to bind FSM-specified signal (%s) to expression (%d) in module (%s)",
+                sig_name, expr->id, mod_name );
+      print_output( user_msg, FATAL );
+      retval = FALSE;
+    }
   } else {
-    fsm_var_bind_tail->next = fvb;
-    fsm_var_bind_tail       = fvb;
+    snprintf( user_msg, USER_MSG_LENGTH, "Unable to find FSM-specified module (%s) in design", mod_name ); 
+    print_output( user_msg, FATAL );
+    retval = FALSE;
   }
 
-}
-
-/*!
- \param stmt      Pointer to statement containing FSM state expression
- \param mod_name  Name of module that will contain stmt.
-
- Allocates and initializes an FSM variable binding entry and adds it to the
- fsm_var_stmt list for later processing.
-*/
-void fsm_var_stmt_add( statement* stmt, char* mod_name ) {
-
-  fv_bind* fvb;  /* Pointer to new FSM variable binding structure */
-
-  fvb           = (fv_bind*)malloc_safe( sizeof( fv_bind ) );
-  fvb->stmt     = stmt;
-  fvb->mod_name = strdup( mod_name );
-
-  /* Add new structure to the head of the global list */
-  if( fsm_var_stmt_head == NULL ) {
-    fsm_var_stmt_head = fsm_var_stmt_tail = fvb;
-  } else {
-    fvb->next         = fsm_var_stmt_head;
-    fsm_var_stmt_head = fvb;
-  }
+  return( retval );
 
 }
 
@@ -206,6 +220,120 @@ void fsm_var_add_expr( expression* expr, module* mod ) {
 
 }
 
+bool fsm_var_bind_stmt( statement* stmt, char* mod_name ) {
+
+  bool      retval = FALSE;  /* Return value for this function       */
+  mod_link* modl;            /* Pointer to found module link element */
+  module    mod;             /* Temporary module used for searching  */
+  fsm_var*  fv;              /* Pointer to found FSM variable        */
+
+  mod.name = mod_name;
+
+  if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
+
+    /* First, add expression tree to found module expression list */
+    fsm_var_add_expr( stmt->exp, modl->mod );
+
+    /* Set ADDED bit of this statement */
+    stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_ADDED);
+
+    /* Second, add our statement to this module's statement list */
+    stmt_link_add_head( stmt, &(modl->mod->stmt_head), &(modl->mod->stmt_tail) );
+
+    /* Finally, create the new FSM if we are the output state */
+    if( (fv = fsm_var_is_output_state( stmt->exp )) != NULL ) {
+      printf( "Creating FSM\n" );
+      fv->table       = fsm_create( fv->ivar, fv->ovar, FALSE );
+      fv->ivar->table = fv->table;
+      fv->ovar->table = fv->table;
+      fsm_link_add( fv->table, &(modl->mod->fsm_head), &(modl->mod->fsm_tail) );
+      fsm_var_remove( fv );
+    }
+
+  } else {
+
+    retval = FALSE;
+
+  }
+
+  return( retval );
+
+}
+
+/*!
+ \param sig_name  Name of signal to bind.
+ \param expr      Pointer to expression to bind.
+ \param mod_name  Name of module that will contain the expression and signal being bound.
+
+ Creates a new FSM binding structure and initializes it with the specified information.
+ The FSM binding structure is then added to the global list of FSM binding structures to
+ be bound after parsing is complete.
+*/
+void fsm_var_bind_add( char* sig_name, expression* expr, char* mod_name ) {
+
+  fv_bind* fvb;  /* Pointer to new FSM variable binding structure */
+
+  /* If the module list does not exist yet, we need to bind this later; otherwise, bind now */
+  if( mod_head == NULL ) {
+
+    /* Allocate and initialize FSM variable bind structure */
+    fvb           = (fv_bind*)malloc_safe( sizeof( fv_bind ) );
+    fvb->sig_name = strdup( sig_name );
+    fvb->expr     = expr;
+    fvb->mod_name = strdup( mod_name );
+
+    /* Add new structure to the global list */
+    if( fsm_var_bind_head == NULL ) {
+      fsm_var_bind_head = fsm_var_bind_tail = fvb;
+    } else {
+      fsm_var_bind_tail->next = fvb;
+      fsm_var_bind_tail       = fvb;
+    }
+
+  } else {
+
+    printf( "Binding expression early\n" );
+    fsm_var_bind_expr( sig_name, expr, mod_name );
+
+  }
+
+}
+
+/*!
+ \param stmt      Pointer to statement containing FSM state expression
+ \param mod_name  Name of module that will contain stmt.
+
+ Allocates and initializes an FSM variable binding entry and adds it to the
+ fsm_var_stmt list for later processing.
+*/
+void fsm_var_stmt_add( statement* stmt, char* mod_name ) {
+
+  fv_bind* fvb;  /* Pointer to new FSM variable binding structure */
+
+  /* If the module list does not exist yet, we need to bind this later; otherwise, bind now. */
+  if( mod_head == NULL ) {
+
+    fvb           = (fv_bind*)malloc_safe( sizeof( fv_bind ) );
+    fvb->stmt     = stmt;
+    fvb->mod_name = strdup( mod_name );
+
+    /* Add new structure to the head of the global list */
+    if( fsm_var_stmt_head == NULL ) {
+      fsm_var_stmt_head = fsm_var_stmt_tail = fvb;
+    } else {
+      fvb->next         = fsm_var_stmt_head;
+      fsm_var_stmt_head = fvb;
+    }
+
+  } else {
+
+    printf( "Binding statement early\n" );
+    fsm_var_bind_stmt( stmt, mod_name );
+
+  }
+
+}
+
 /*!
  \param mod_head  Pointer to head of module linked list.
 
@@ -221,26 +349,17 @@ void fsm_var_add_expr( expression* expr, module* mod ) {
  If the statement contains an FSM state expression that is an output state expression, create the
  FSM structure for this FSM and add it to the design.
 */
-void fsm_var_bind( mod_link* mod_head ) {
+void fsm_var_bind() {
 
   fv_bind*  curr;           /* Pointer to current FSM variable                               */
   fv_bind*  tmp;            /* Temporary pointer to FSM bind structure                       */
   bool      error = FALSE;  /* Specifies if an error occurred during the FSM binding process */
-  module    mod;            /* Temporary module used for searching purposes                  */
-  mod_link* modl;           /* Pointer to module link element                                */
-  fsm_var*  fv;             /* Pointer to found FSM variable structure                       */
 
   curr = fsm_var_bind_head;
   while( curr != NULL ) {
 
-    mod.name = curr->mod_name;
-
     /* Perform binding */
-    if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
-      error = !bind_perform( curr->sig_name, curr->expr, modl->mod, modl->mod, FALSE, TRUE ) || error;
-    } else {
-      error = TRUE;
-    }
+    error = !fsm_var_bind_expr( curr->sig_name, curr->expr, curr->mod_name ) || error;
 
     tmp = curr->next;
 
@@ -258,34 +377,8 @@ void fsm_var_bind( mod_link* mod_head ) {
     curr = fsm_var_stmt_head;
     while( curr != NULL ) {
 
-      mod.name = curr->mod_name;
-
-      if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
-
-        /* First, add expression tree to found module expression list */
-        fsm_var_add_expr( curr->stmt->exp, modl->mod );
-
-        /* Set ADDED bit of this statement */
-        curr->stmt->exp->suppl = curr->stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_ADDED);
-
-        /* Second, add our statement to this module's statement list */
-        stmt_link_add_head( curr->stmt, &(modl->mod->stmt_head), &(modl->mod->stmt_tail) );
-
-        /* Finally, create the new FSM if we are the output state */
-        if( (fv = fsm_var_is_output_state( curr->stmt->exp )) != NULL ) {
-          fv->table       = fsm_create( fv->ivar, fv->ovar, FALSE );
-          fv->ivar->table = fv->table;
-          fv->ovar->table = fv->table;
-          fsm_link_add( fv->table, &(modl->mod->fsm_head), &(modl->mod->fsm_tail) );
-          fsm_var_remove( fv );
-        }
-
-      } else if( !error ) {
-
-        /* If we found the module before, we should be able to find it again */
-        assert( modl != NULL );
-
-      }
+      /* Bind statement to module */
+      fsm_var_bind_stmt( curr->stmt, curr->mod_name );
 
       tmp = curr->next;
 
@@ -299,6 +392,7 @@ void fsm_var_bind( mod_link* mod_head ) {
 
   } else {
 
+    printf( "Exiting\n" );
     exit( 1 );
 
   }
@@ -366,6 +460,9 @@ void fsm_var_remove( fsm_var* fv ) {
 
 /*
  $Log$
+ Revision 1.7  2003/10/20 21:38:49  phase1geo
+ Adding function documentation to functions that were missing it.
+
  Revision 1.6  2003/10/16 04:26:01  phase1geo
  Adding new fsm5 diagnostic to testsuite and regression.  Added proper support
  for FSM variables that are not able to be bound correctly.  Fixing bug in
