@@ -94,6 +94,8 @@ void vcd_parse_def_var( FILE* vcd ) {
         if( sscanf( tmp, "\[%d]", &lsb ) != 1 ) {
           print_output( "Unrecognized $var format", FATAL );
           exit( 1 );
+        } else {
+          msb = lsb;
         }
 
       }
@@ -101,6 +103,17 @@ void vcd_parse_def_var( FILE* vcd ) {
       if( (fscanf( vcd, "%s", tmp ) != 1) || (strncmp( "$end", tmp, 4 ) != 0) ) {
         print_output( "Unrecognized $var format", FATAL );
         exit( 1 );
+      }
+
+    } else if( sscanf( ref, "%[a-zA-Z0-9_]\[%s]", ref, tmp ) == 2 ) {
+
+      if( sscanf( tmp, "%d:%d", &msb, &lsb ) != 2 ) {
+        if( sscanf( tmp, "%d", &lsb ) != 1 ) {
+          print_output( "Unrecognized $var format", FATAL );
+          exit( 1 );
+        } else {
+          msb = lsb;
+        }
       }
 
     } else {
@@ -366,6 +379,10 @@ void vcd_parse( char* vcd_file ) {
 
 /*
  $Log$
+ Revision 1.13  2003/08/21 21:57:30  phase1geo
+ Fixing bug with certain flavors of VCD files that alias signals that have differing
+ MSBs and LSBs.  This takes care of the rest of the bugs for the 0.2 stable release.
+
  Revision 1.12  2003/08/20 22:08:39  phase1geo
  Fixing problem with not closing VCD file after VCD parsing is completed.
  Also fixed memory problem with symtable.c to cause timestep_tab entries
