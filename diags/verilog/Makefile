@@ -8,11 +8,11 @@
 
 COVERED_SRC   = ../../src
 COVERED       = $(COVERED_SRC)/covered
-COVERED_FLAGS = -q
+COVERED_FLAGS = -y ../vlib
 # COVERED_FLAGS = 
 
 VERILOG       = iverilog
-VERILOG_FLAGS =
+VERILOG_FLAGS = -y ../vlib
 VERILOG_EXEC  = a.out
 
 CDD_DIR       = ../cdd
@@ -54,9 +54,10 @@ regress:	$(COVERED) clean $(DIAGLIST)
 $(DIAGLIST):
 	$(VERILOG) $(VERILOG_FLAGS) $@.v
 	./$(VERILOG_EXEC)
-	$(COVERED) score -t main -vcd $@.vcd $(COVERED_FLAGS) -o $@.cdd -v $@.v >> $(LOGFILE)
+	# $(COVERED) score -t main -vcd $@.vcd $(COVERED_FLAGS) -o $@.cdd -v $@.v >> $(LOGFILE)
+	$(COVERED) score -t main -vcd $@.vcd $(COVERED_FLAGS) -o $@.cdd -v $@.v
 	diff $@.cdd $(CDD_DIR)/$@.cdd
-	rm -rf a.out $@.vcd $@.cdd
+	# rm -rf a.out $@.vcd $@.cdd
 
 $(COVERED):
 	cd $(COVERED_SRC); make
