@@ -1114,6 +1114,10 @@ void expression_operate( expression* expr ) {
       case EXP_OP_CASE :
         assert( expr->left != NULL );
         assert( expr->right != NULL );
+        printf( "Left value\n" );
+        vector_display( expr->left->value );
+        printf( "Right value\n" );
+        vector_display( expr->right->value );
         vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CEQ );
         break;
 
@@ -1332,6 +1336,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.81  2003/10/14 04:02:44  phase1geo
+ Final fixes for new FSM support.  Full regression now passes.  Need to
+ add new diagnostics to verify new functionality, but at least all existing
+ cases are supported again.
+
  Revision 1.80  2003/10/11 05:15:08  phase1geo
  Updates for code optimizations for vector value data type (integers to chars).
  Updated regression for changes.

@@ -176,6 +176,7 @@ bool arc_set_states( char* arcs, int start, vector* left, vector* right ) {
   int    j;              /* Loop iterator                                  */
   int    curr;           /* Current index of arc array to set              */
   int    entry_size;     /* Number of characters needed to store one entry */
+  int    lsb;            /* LSB of original vector                         */
 
   /* Check specified vector for unknown information */
   if( vector_is_unknown( left ) || vector_is_unknown( right ) ) {
@@ -194,16 +195,18 @@ bool arc_set_states( char* arcs, int start, vector* left, vector* right ) {
         pos         = (arc_get_width( arcs ) + ARC_ENTRY_SUPPL_SIZE) % 8;
         curr        = (start * entry_size) + ((arc_get_width( arcs ) + ARC_ENTRY_SUPPL_SIZE) / 8) + ARC_STATUS_SIZE;
         value.value = left->value;
+        lsb         = left->lsb;
       } else {
         pos         = ARC_ENTRY_SUPPL_SIZE;
         curr        = (start * entry_size) + ARC_STATUS_SIZE;
         value.value = right->value;
+        lsb         = right->lsb;
       }
 
       value.width = (arc_get_width( arcs ) > (8 - pos)) ? (8 - pos) : arc_get_width( arcs );
-      value.lsb   = 0;
+      value.lsb   = lsb;
 
-      while( value.lsb < arc_get_width( arcs ) ) {
+      while( (value.lsb - lsb) < arc_get_width( arcs ) ) {
         mask = 0;
         for( i=0; i<value.width; i++ ) {
           mask <<= 1;
@@ -212,7 +215,7 @@ bool arc_set_states( char* arcs, int start, vector* left, vector* right ) {
         arcs[curr] |= ((vector_to_int( &value ) << pos) & mask);
         // printf( "arcs[%d]: %x, value: %x\n", curr, ((int)arcs[curr] & 0xff), ((vector_to_int( &value ) << pos) & mask) );
         value.lsb  += value.width;
-        value.width = ((arc_get_width( arcs ) - value.lsb) > 8) ? 8 : (arc_get_width( arcs ) - value.lsb);
+        value.width = ((arc_get_width( arcs ) - (value.lsb - lsb)) > 8) ? 8 : (arc_get_width( arcs ) - (value.lsb - lsb));
         pos         = 0;
         curr++;
       }
@@ -1073,6 +1076,10 @@ void arc_dealloc( char* arcs ) {
 
 /*
  $Log$
+ Revision 1.13  2003/09/19 18:04:28  phase1geo
+ Adding fsm3 diagnostic to check proper handling of wide state variables.
+ Code fixes to support new diagnostic.
+
  Revision 1.12  2003/09/19 13:25:28  phase1geo
  Adding new FSM diagnostics including diagnostics to verify FSM merging function.
  FSM merging code was modified to work correctly.  Full regression passes.
