@@ -32,9 +32,13 @@ DIAGLIST = assign3.2A    assign1       always1       always3.1.11A  cond1 \
            sbit_sel1     instance1     instance2     instance3      mbit_sel1 \
            implicit1
 
+.SILENT:
+
 regress:	$(COVERED) clean $(DIAGLIST)
+	echo REGRESSION PASSED!
 
 $(DIAGLIST):
+	echo Running $@.v
 	$(VERILOG) $(VERILOG_FLAGS) $@.v
 	./$(VERILOG_EXEC)
 	$(COVERED) -Q score -t main -vcd $@.vcd -o $@.cdd -v $@.v $(COVERED_FLAGS)
