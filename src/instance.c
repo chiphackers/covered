@@ -224,9 +224,7 @@ void instance_resolve_params( mod_parm* mparm, mod_inst* inst ) {
 
   while( mparm != NULL ) {
 
-    if( (PARAM_TYPE( mparm ) == PARAM_TYPE_DECLARED) ||
-        (PARAM_TYPE( mparm ) == PARAM_TYPE_SIG_LSB)  ||
-        (PARAM_TYPE( mparm ) == PARAM_TYPE_SIG_MSB) ) {
+    if( PARAM_TYPE( mparm ) == PARAM_TYPE_DECLARED ) {
       param_resolve_declared( scope, mparm, inst->parent->param_head, &(inst->param_head), &(inst->param_tail) );
     } else {
       param_resolve_override( mparm, &(inst->param_head), &(inst->param_tail) );
@@ -485,6 +483,9 @@ void instance_dealloc( mod_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.25  2003/01/03 05:53:19  phase1geo
+ Removing unnecessary spaces.
+
  Revision 1.24  2002/12/05 14:45:17  phase1geo
  Removing assertion error from instance6.1 failure; however, this case does not
  work correctly according to instance6.2.v diagnostic.  Added @(...) output in

@@ -257,7 +257,9 @@ inst_parm* inst_parm_add( char* scope, vector* value, mod_parm* mparm, inst_parm
   } else {
     parm->name = NULL;
   }
-  parm->value = value;
+  
+  /* Create new value vector, copying the contents of the specified vector value */
+  vector_copy( value, &(parm->value) );
   parm->mparm = mparm;
   parm->next  = NULL;
 
@@ -683,6 +685,9 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
     }
 
     free_safe( parm->name );
+    
+    vector_dealloc( parm->value );
+    
     free_safe( parm );
 
   }
@@ -692,6 +697,12 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.24  2002/12/13 16:49:48  phase1geo
+ Fixing infinite loop bug with statement set_stop function.  Removing
+ hierarchical references from scoring (same problem as defparam statement).
+ Fixing problem with checked in version of param.c and fixing error output
+ in bind() function to be more meaningful to user.
+
  Revision 1.23  2002/12/02 21:46:53  phase1geo
  Fixing bug in parameter file that handles parameters used in instances which are
  instantiated multiple times in the design.

@@ -41,7 +41,10 @@ $(DIAGLIST):
 $(COVERED):
 	cd $(COVERED_SRC); make
 	
+clobber:  clean
+	@rm -f *.rpt* *.cdd
+
 clean:
-	@rm -f $(LOGFILE) *.rpt
-	@rm -f $(IVERILOG_EXEC) $(VCS_EXEC) *.vcd *.cdd *.log
+	@rm -f $(LOGFILE)
+	@rm -f $(IVERILOG_EXEC) $(VCS_EXEC) *.vcd *.log
 	@rm -f core *.o tmp* regress.output

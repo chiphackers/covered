@@ -24,8 +24,6 @@ CDD_DIR       = ../cdd
 
 LOGFILE = regress.log
 
-FAILING_DIAGS = instance6.2
-
 DIAGS1        = always1        always2        always3        always3.1.11A  always4 \
                 always5        always6        always7        always8        always9 \
                 assign2        assign2.1      assign2.2      assign2.3      assign2.9 \
@@ -41,7 +39,7 @@ DIAGS1        = always1        always2        always3        always3.1.11A  alwa
                 ifelse1        include1       include1.1     include2       instance1 \
                 instance1.1    instance1.2    instance2      instance3      instance4 \
                 instance4.1    instance4.2    instance5      instance6      instance6.1 \
-                long_exp1      mbit_sel1 \
+                instance6.2    long_exp1      mbit_sel1 \
                 mbit_sel2      mbit_sel3      mbit_sel3.1    mem1           mult1 \
                 param1         param1.1       param1.2       param1.3       param3 \
                 param3.1       param3.2       param3.3       param3.4       param4 \
@@ -91,4 +89,4 @@ vcs:         clean
 	@cd ../verilog;  $(MAKE) clean
 
 clean:
-	@cd ../verilog;  $(MAKE) clean
+	@cd ../verilog;  $(MAKE) clobber

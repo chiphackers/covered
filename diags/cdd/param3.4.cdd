@@ -8,8 +8,8 @@
 2 6 main.bar1 32 103001 0 0 
 2 8 main.bar1 32 153f82 7 6 32 0 f13aa,f00aa,f00aa,f00aa,f00aa,f00aa,f00aa,f00aa
 1 #bsize main.bar1 32 0 4,0,0,0,0,0,0,0
-1 b main.bar1 3 0 713aa 6
-1 a main.bar1 3 0 713aa
+1 b main.bar1 2 0 313aa 6
+1 a main.bar1 2 0 313aa
 4 8 main.bar1 8 8
 3 foo main.bar2 param3.4.v
 2 7 main.bar2 32 201000 0 0 32 0 0,0,0,0,0,0,0,0

@@ -19,6 +19,9 @@ void vector_init( vector* vec, nibble* value, int width, int lsb );
 /*! \brief Creates and initializes new vector */
 vector* vector_create( int width, int lsb, bool data );
 
+/*! \brief Copies contents of from_vec to to_vec, allocating memory */
+void vector_copy( vector* from_vec, vector** to_vec );
+
 /*! \brief Displays vector information to specified database file. */
 void vector_db_write( vector* vec, FILE* file, bool write_data );
 
@@ -112,6 +115,11 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.14  2002/12/30 05:31:33  phase1geo
+ Fixing bug in module merge for reports when parameterized modules are merged.
+ These modules should not output an error to the user when mismatching modules
+ are found.
+
  Revision 1.13  2002/11/05 00:20:08  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.
