@@ -82,4 +82,4 @@
 4 36 main 27 27
 4 64 main 36 63
 4 27 main 64 0
-6 state next_state 02,04,04,,01,21,e1,81,
+6 state next_state 02,04,04,,01,21,e1,8101
