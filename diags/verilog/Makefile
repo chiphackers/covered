@@ -8,7 +8,7 @@
 
 COVERED_SRC   = ../../src
 COVERED       = $(COVERED_SRC)/covered
-COVERED_GFLAG = 
+COVERED_GFLAG = -Q
 
 IVERILOG       = iverilog
 IVERILOG_FLAGS = -y ./lib -I ./include -DRUNTEST

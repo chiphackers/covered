@@ -1311,9 +1311,18 @@ module_item
       }
       str_link_delete_list( $3 );
     }
-  | K_trireg { ignore_mode++; } charge_strength_opt range_opt delay3_opt list_of_variables ';' { ignore_mode--; }
+  | K_trireg charge_strength_opt range_opt delay3_opt list_of_variables ';'
     {
-      /* Tri-state signals are not currently supported by Covered */
+      str_link* tmp  = $5;
+      str_link* curr = tmp;
+      while( curr != NULL ) {
+        db_add_signal( curr->str, $3->left, $3->right );
+        curr = curr->next;
+      }
+      str_link_delete_list( $5 );
+      static_expr_dealloc( $3->left, FALSE );
+      static_expr_dealloc( $3->right, FALSE );
+      free_safe( $3 );
     }
   | port_type range_opt list_of_variables ';'
     {
@@ -2561,15 +2570,15 @@ task_item
 
 net_type
   : K_wire    { $$ = 1; }
-  | K_tri     { $$ = 0; }
-  | K_tri1    { $$ = 0; }
-  | K_supply0 { $$ = 0; }
-  | K_wand    { $$ = 0; }
-  | K_triand  { $$ = 0; }
-  | K_tri0    { $$ = 0; }
-  | K_supply1 { $$ = 0; }
-  | K_wor     { $$ = 0; }
-  | K_trior   { $$ = 0; }
+  | K_tri     { $$ = 1; }
+  | K_tri1    { $$ = 1; }
+  | K_supply0 { $$ = 1; }
+  | K_wand    { $$ = 1; }
+  | K_triand  { $$ = 1; }
+  | K_tri0    { $$ = 1; }
+  | K_supply1 { $$ = 1; }
+  | K_wor     { $$ = 1; }
+  | K_trior   { $$ = 1; }
   ;
 
 net_decl_assigns

@@ -774,11 +774,11 @@ void combination_list_missed( FILE* ofile, expression* exp, unsigned int curr_de
         case EXP_OP_UNOR       :  combination_unary( ofile, exp, *exp_id, "~|" );                 break;
         case EXP_OP_UNXOR      :  combination_unary( ofile, exp, *exp_id, "~^" );                 break;
         case EXP_OP_PARAM_SBIT :
-        case EXP_OP_SBIT_SEL   :  combination_unary( ofile, exp, *exp_id, "" );                   break;
+        case EXP_OP_SBIT_SEL   :  combination_unary( ofile, exp, *exp_id, "[]" );                 break;
         case EXP_OP_PARAM_MBIT :
-        case EXP_OP_MBIT_SEL   :  combination_unary( ofile, exp, *exp_id, "" );                   break;
-        case EXP_OP_EXPAND     :  combination_unary( ofile, exp, *exp_id, "" );                   break;
-        case EXP_OP_CONCAT     :  combination_unary( ofile, exp, *exp_id, "" );                   break;
+        case EXP_OP_MBIT_SEL   :  combination_unary( ofile, exp, *exp_id, "[:]" );                break;
+        case EXP_OP_EXPAND     :  combination_unary( ofile, exp, *exp_id, "{{}}" );               break;
+        case EXP_OP_CONCAT     :  combination_unary( ofile, exp, *exp_id, "{}" );                 break;
         case EXP_OP_EOR        :  combination_two_vars( ofile, exp, 0, 1, 1, 1, *exp_id, "or" );  break;
         case EXP_OP_CASE       :  combination_unary( ofile, exp, *exp_id, "" );                   break;
         case EXP_OP_CASEX      :  combination_unary( ofile, exp, *exp_id, "" );                   break;
@@ -804,8 +804,8 @@ void combination_list_missed( FILE* ofile, expression* exp, unsigned int curr_de
 */
 bool combination_missed_expr( expression* expr, unsigned int curr_depth ) {
 
-  bool missed_right;     /* Set to TRUE if missed expression found on right */
-  bool missed_left;      /* Set to TRUE if missed expression found on left  */
+  bool missed_right;  /* Set to TRUE if missed expression found on right */
+  bool missed_left;  /* Set to TRUE if missed expression found on left  */
 
   if( (expr != NULL) && (SUPPL_WAS_COMB_COUNTED( expr->suppl ) == 1) ) {
 
@@ -817,8 +817,7 @@ bool combination_missed_expr( expression* expr, unsigned int curr_depth ) {
     if( ((report_comb_depth == REPORT_DETAILED) && (curr_depth == report_comb_depth)) ||
          (report_comb_depth == REPORT_VERBOSE) ) {
 
-      return( ((EXPR_IS_MEASURABLE( expr ) == 1) && (EXPR_COMB_MISSED( expr ) == !report_covered)) || 
-              missed_right || missed_left );
+      return( (EXPR_COMB_MISSED( expr ) == 1) || missed_right || missed_left );
 
     } else {
 
@@ -863,7 +862,7 @@ void combination_display_verbose( FILE* ofile, stmt_link* stmtl ) {
   stmt_iter_reset( &stmti, stmtl );
   while( stmti.curr != NULL ) {
 
-    if( combination_missed_expr( stmti.curr->stmt->exp, 0 ) == 1 ) {
+    if( combination_missed_expr( stmti.curr->stmt->exp, 0 ) != report_covered ) {
 
       stmti.curr->stmt->exp->suppl = stmti.curr->stmt->exp->suppl & ~(0x1 << SUPPL_LSB_COMB_CNTD);
       unexec_exp = stmti.curr->stmt->exp;
@@ -879,9 +878,7 @@ void combination_display_verbose( FILE* ofile, stmt_link* stmtl ) {
 
       /* Output underlining feature for missed expressions */
       combination_underline( ofile, unexec_exp, "            " );
-      fprintf( ofile, "\n" );
-
-      fprintf( ofile, "\n" );
+      fprintf( ofile, "\n\n" );
 
       free_safe( code );
 
@@ -1011,6 +1008,12 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.58  2002/11/27 03:49:20  phase1geo
+ Fixing bugs in score and report commands for regression.  Finally fixed
+ static expression calculation to yield proper coverage results for constant
+ expressions.  Updated regression suite and development documentation for
+ changes.
+
  Revision 1.57  2002/11/24 14:38:12  phase1geo
  Updating more regression CDD files for bug fixes.  Fixing bugs where combinational
  expressions were counted more than once.  Adding new diagnostics to regression
