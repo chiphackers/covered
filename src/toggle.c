@@ -25,6 +25,7 @@ extern mod_link* mod_head;
 extern bool report_covered;
 extern bool report_instance;
 extern char leading_hierarchy[4096];
+extern char second_hierarchy[4096];
 
 /*!
  \param expl   Pointer to expression list to search.
@@ -238,8 +239,6 @@ void toggle_display_verbose( FILE* ofile, sig_link* sigl ) {
 
   }
 
-  fprintf( ofile, "\n" );
-
 }
 
 /*!
@@ -329,29 +328,34 @@ void toggle_module_verbose( FILE* ofile, mod_link* head ) {
 */
 void toggle_report( FILE* ofile, bool verbose ) {
 
-  bool missed_found;      /* If set to TRUE, indicates that untoggled bits were found */
+  bool missed_found;  /* If set to TRUE, indicates that untoggled bits were found */
+  char tmp[4096];     /* Temporary string value                                   */
 
-  fprintf( ofile, "\n\n" );
+  fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
+  fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   TOGGLE COVERAGE RESULTS   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
+  fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
 
   if( report_instance ) {
 
-    fprintf( ofile, "TOGGLE COVERAGE RESULTS\n" );
-    fprintf( ofile, "-----------------------\n" );
+    if( strcmp( leading_hierarchy, second_hierarchy ) != 0 ) {
+      strcpy( tmp, "<NA>" );
+    } else {
+      strcpy( tmp, leading_hierarchy );
+    }
+
     fprintf( ofile, "Instance                                                   Toggle 0 -> 1                       Toggle 1 -> 0\n" );
     fprintf( ofile, "                                                   Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
-    missed_found = toggle_instance_summary( ofile, instance_root, leading_hierarchy );
+    missed_found = toggle_instance_summary( ofile, instance_root, tmp );
     
     if( verbose && missed_found ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-      toggle_instance_verbose( ofile, instance_root, leading_hierarchy );
+      toggle_instance_verbose( ofile, instance_root, tmp );
     }
 
   } else {
 
-    fprintf( ofile, "TOGGLE COVERAGE RESULTS\n" );
-    fprintf( ofile, "-----------------------\n" );
     fprintf( ofile, "Module                    Filename                         Toggle 0 -> 1                       Toggle 1 -> 0\n" );
     fprintf( ofile, "                                                   Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -365,13 +369,15 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
   }
 
-  fprintf( ofile, "=====================================================================================================================\n" );
-  fprintf( ofile, "\n" );
+  fprintf( ofile, "\n\n" );
 
 }
 
 /*
  $Log$
+ Revision 1.24  2004/01/30 23:23:27  phase1geo
+ More report output improvements.  Still not ready with regressions.
+
  Revision 1.23  2004/01/30 06:04:45  phase1geo
  More report output format tweaks.  Adjusted lines and spaces to make things
  look more organized.  Still some more to go.  Regression will fail at this

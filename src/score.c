@@ -25,6 +25,7 @@
 #include "vector.h"
 #include "fsm_arg.h"
 #include "fsm_var.h"
+#include "info.h"
 
 
 char* top_module         = NULL;                /*!< Name of top-level module to score                     */
@@ -368,6 +369,7 @@ int command_score( int argc, int last_arg, char** argv ) {
     /* Parse design */
     if( use_files_head != NULL ) {
       print_output( "Reading design...", NORMAL );
+      info_initialize();
       search_init();
       parse_design( top_module, output_db );
       print_output( "", NORMAL );
@@ -402,6 +404,12 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.42  2004/01/21 22:26:56  phase1geo
+ Changed default CDD file name from "cov.db" to "cov.cdd".  Changed instance
+ statistic gathering from a child merging algorithm to just calculating
+ instance coverage for the individual instances.  Updated full regression for
+ this change and updated VCS regression for all past changes of this release.
+
  Revision 1.41  2003/10/28 13:28:00  phase1geo
  Updates for more FSM attribute handling.  Not quite there yet but full regression
  still passes.

@@ -18,6 +18,7 @@
 #include "defines.h"
 #include "merge.h"
 #include "util.h"
+#include "info.h"
 
 
 extern int merged_code;
@@ -162,6 +163,9 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
     print_output( "Merging databases...", NORMAL );
 
+    /* Initialize all global information */
+    info_initialize();
+
     /* Read in base database */
     db_read( merge_in0, READ_MODE_MERGE_NO_MERGE );
 
@@ -181,6 +185,12 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.15  2004/01/04 04:52:03  phase1geo
+ Updating ChangeLog and TODO files.  Adding merge information to INFO line
+ of CDD files and outputting this information to the merged reports.  Adding
+ starting and ending line information to modules and added function for GUI
+ to retrieve this information.  Updating full regression.
+
  Revision 1.14  2003/08/10 03:50:10  phase1geo
  More development documentation updates.  All global variables are now
  documented correctly.  Also fixed some generated documentation warnings.

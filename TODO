@@ -1,6 +1,5 @@
 The following items are known to be problems in the current code that need to be fixed
-or features that are unimplemented/not complete that need to be done before 0.3 stable
-release can be made.
+or features that are unimplemented/not complete that need to be done.
 
 Legend
 ------
@@ -9,26 +8,26 @@ IP  = In Progress
 
 Score command
 -------------
-1.  Add ability for user to specify FSM all possible states/state transitions
-    for a particular FSM on a command-line basis.
+   1.  Add ability for user to specify FSM all possible states/state transitions
+       for a particular FSM on a command-line basis.
 
 X  2.  Add ability for user to specify FSM location and all possible states/state
-      transitions for a particular FSM using inline $attribute calls.
+       transitions for a particular FSM using inline $attribute calls.
 
-3.  Add ability to automatically extract all possible states/state transitions
-    for a specified FSM.
+   3.  Add ability to automatically extract all possible states/state transitions
+       for a specified FSM.
 
-4.  Add ability to automatically locate and extract an FSM from the design
-    without user intervention.
+   4.  Add ability to automatically locate and extract an FSM from the design
+       without user intervention.
 
 X  5.  Work on increasing performance of score command.
 
-6.  Add more Verilog-2001 constructs to parser.
+   6.  Add more Verilog-2001 constructs to parser.
 
-7.  Allow Covered to run simulation phases in parallel to increase performance.
+   7.  Allow Covered to run simulation phases in parallel to increase performance.
 
-8.  Add feature to cause Covered to omit the simulation phase for toggle and
-    FSM coverage results.
+   8.  Add feature to cause Covered to omit the simulation phase for toggle and
+       FSM coverage results.
 
 Merge command
 -------------
@@ -37,12 +36,12 @@ Merge command
 Report command
 --------------
 
-IP 1.  Update look of text reports to make them more robust and comprehensible.
+X  1.  Update look of text reports to make them more robust and comprehensible.
 
-2.  Work on GUI interface for report function.
+IP 2.  Work on GUI interface for report function.
 
 Miscellaneous
 -------------
 
-1.  Add regression that produces known, achievable error conditions in the code.
+   1.  Add regression that produces known, achievable error conditions in the code.
 

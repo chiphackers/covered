@@ -34,6 +34,8 @@ extern mod_link* mod_head;
 extern int       merged_code;
 extern char*     merge_in0;
 extern char*     merge_in1;
+extern char      leading_hierarchy[4096];
+extern char      second_hierarchy[4096];
 
 /*!
  If set to a boolean value of TRUE, reports the line coverage for the specified database
@@ -400,44 +402,73 @@ void report_gather_module_stats( mod_link* head ) {
 */
 void report_print_header( FILE* ofile ) {
 
-  char type[20];  /* Holds string to indicate module or instance-based report */
-
-  if( report_instance ) {
-    strcpy( type, "Instance-Based" );
-  } else {
-    strcpy( type, "Module-Based" );
-  }
-
   switch( report_comb_depth ) {
     case REPORT_SUMMARY  :
-      fprintf( ofile, "Covered -- Verilog Coverage %s Summarized Report\n", type );
-      fprintf( ofile, "============================================================\n\n" );
+      fprintf( ofile, "                            :::::::::::::::::::::::::::::::::::::::::::::::::::::\n" );
+      fprintf( ofile, "                            ::                                                 ::\n" );
+      fprintf( ofile, "                            ::  Covered -- Verilog Coverage Summarized Report  ::\n" );
+      fprintf( ofile, "                            ::                                                 ::\n" );
+      fprintf( ofile, "                            :::::::::::::::::::::::::::::::::::::::::::::::::::::\n\n\n" );
       break;
     case REPORT_DETAILED :
-      fprintf( ofile, "Covered -- Verilog Coverage %s Detailed Report\n", type );
-      fprintf( ofile, "==========================================================\n\n" );
+      fprintf( ofile, "                             :::::::::::::::::::::::::::::::::::::::::::::::::::\n" );
+      fprintf( ofile, "                             ::                                               ::\n" );
+      fprintf( ofile, "                             ::  Covered -- Verilog Coverage Detailed Report  ::\n" );
+      fprintf( ofile, "                             ::                                               ::\n" );
+      fprintf( ofile, "                             :::::::::::::::::::::::::::::::::::::::::::::::::::\n\n\n" );
       break;
     case REPORT_VERBOSE  :
-      fprintf( ofile, "Covered -- Verilog Coverage %s Verbose Report\n", type );
-      fprintf( ofile, "=========================================================\n\n" );
+      fprintf( ofile, "                             ::::::::::::::::::::::::::::::::::::::::::::::::::\n" );
+      fprintf( ofile, "                             ::                                              ::\n" );
+      fprintf( ofile, "                             ::  Covered -- Verilog Coverage Verbose Report  ::\n" );
+      fprintf( ofile, "                             ::                                              ::\n" );
+      fprintf( ofile, "                             ::::::::::::::::::::::::::::::::::::::::::::::::::\n\n\n" );
       break;
-    default:
-      break;
+    default              :  break;
+  }
+
+  fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
+  fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   GENERAL INFORMATION   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
+  fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
+
+  fprintf( ofile, "* Report generated from CDD file : %s\n\n", input_db );
+
+  if( report_instance ) {
+    fprintf( ofile, "* Reported by                    : Instance\n\n" );
+  } else {
+    fprintf( ofile, "* Reported by                    : Module\n\n" );
   }
 
   if( merged_code != INFO_NOT_MERGED ) {
-    fprintf( ofile, "SPECIAL NOTES\n" );
-    fprintf( ofile, "---------------------------------------------------------------------------------\n" );
+
     if( merged_code == INFO_ONE_MERGED ) {
-      fprintf( ofile, "* Report generated from CDD file that was merged from the following files:\n" );
-      fprintf( ofile, "    %s\n", input_db  );
-      fprintf( ofile, "    %s\n", merge_in0 ); 
+
+      fprintf( ofile, "* Report generated from CDD file that was merged from the following files with the following leading hierarchies:\n" );
+      fprintf( ofile, "    Filename                                           Leading Hierarchy\n" );
+      fprintf( ofile, "    -----------------------------------------------------------------------------------------------------------------\n" );
+      fprintf( ofile, "    %-49.49s  %-62.62s\n", input_db,  leading_hierarchy );
+      fprintf( ofile, "    %-49.49s  %-62.62s\n\n", merge_in0, second_hierarchy  ); 
+
+      if( report_instance && (strcmp( leading_hierarchy, second_hierarchy ) != 0) ) {
+        fprintf( ofile, "* Merged CDD files contain different leading hierarchies, will use value \"<NA>\" to represent leading hierarchy.\n\n" );
+      }
+
     } else if( merged_code == INFO_TWO_MERGED ) {
+
       fprintf( ofile, "* Report generated from CDD file that was merged from the following files:\n" );
-      fprintf( ofile, "    %s\n", merge_in0 );
-      fprintf( ofile, "    %s\n", merge_in1 );
+      fprintf( ofile, "    Filename                                           Leading Hierarchy\n" );
+      fprintf( ofile, "    -----------------------------------------------------------------------------------------------------------------\n" );
+      fprintf( ofile, "    %-49.49s  %-62.62s\n", merge_in0, leading_hierarchy );
+      fprintf( ofile, "    %-49.49s  %-62.62s\n\n", merge_in1, second_hierarchy  ); 
+
+      if( report_instance && (strcmp( leading_hierarchy, second_hierarchy ) != 0) ) {
+        fprintf( ofile, "* Merged CDD files contain different leading hierarchies, will use value \"<NA>\" to represent leading hierarchy.\n\n" );
+      }
+
     }
-    fprintf( ofile, "=================================================================================\n\n" );
+
+    fprintf( ofile, "\n" );
+
   }
 
 }
@@ -527,6 +558,9 @@ int command_report( int argc, int last_arg, char** argv ) {
     snprintf( user_msg, USER_MSG_LENGTH, COVERED_HEADER );
     print_output( user_msg, NORMAL );
 
+    /* Initialize all global variables */
+    info_initialize();
+
     if( !report_gui ) {
 
       /* Open output stream */
@@ -594,6 +628,9 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.28  2004/01/30 23:23:27  phase1geo
+ More report output improvements.  Still not ready with regressions.
+
  Revision 1.27  2004/01/21 22:26:56  phase1geo
  Changed default CDD file name from "cov.db" to "cov.cdd".  Changed instance
  statistic gathering from a child merging algorithm to just calculating

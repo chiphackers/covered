@@ -30,6 +30,7 @@ extern bool         report_covered;
 extern unsigned int report_comb_depth;
 extern bool         report_instance;
 extern char         leading_hierarchy[4096];
+extern char         second_hierarchy[4096];
 
 /*!
  \param stmtl  Pointer to current statement list to explore.
@@ -424,28 +425,33 @@ void line_module_verbose( FILE* ofile, mod_link* head ) {
 */
 void line_report( FILE* ofile, bool verbose ) {
 
-  bool missed_found;      /* If set to TRUE, lines were found to be missed */
+  bool missed_found;  /* If set to TRUE, lines were found to be missed */
+  char tmp[4096];     /* Temporary string value                        */
 
-  fprintf( ofile, "\n\n" );
+  fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
+  fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   LINE COVERAGE RESULTS   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
+  fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
 
   if( report_instance ) {
 
-    fprintf( ofile, "LINE COVERAGE RESULTS\n" );
-    fprintf( ofile, "---------------------\n" );
+    if( strcmp( leading_hierarchy, second_hierarchy ) != 0 ) {
+      strcpy( tmp, "<NA>" );
+    } else {
+      strcpy( tmp, leading_hierarchy );
+    }
+
     fprintf( ofile, "Instance                                           Hit/ Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
-    missed_found = line_instance_summary( ofile, instance_root, leading_hierarchy );
+    missed_found = line_instance_summary( ofile, instance_root, tmp );
     
     if( verbose && (missed_found || report_covered) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-      line_instance_verbose( ofile, instance_root, leading_hierarchy );
+      line_instance_verbose( ofile, instance_root, tmp );
     }
 
   } else {
 
-    fprintf( ofile, "LINE COVERAGE RESULTS\n" );
-    fprintf( ofile, "---------------------\n" );
     fprintf( ofile, "Module                    Filename                 Hit/ Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
@@ -458,13 +464,15 @@ void line_report( FILE* ofile, bool verbose ) {
 
   }
 
-  fprintf( ofile, "=====================================================================================================================\n" );
-  fprintf( ofile, "\n" );
+  fprintf( ofile, "\n\n" );
 
 }
 
 /*
  $Log$
+ Revision 1.40  2004/01/30 23:23:27  phase1geo
+ More report output improvements.  Still not ready with regressions.
+
  Revision 1.39  2004/01/30 06:04:45  phase1geo
  More report output format tweaks.  Adjusted lines and spaces to make things
  look more organized.  Still some more to go.  Regression will fail at this

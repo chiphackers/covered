@@ -15,6 +15,8 @@
 #include "binding.h"
 #include "vcd.h"
 #include "fsm_var.h"
+#include "info.h"
+
 
 extern void reset_lexer( str_link* file_list_head );
 extern int VLparse();
@@ -125,6 +127,9 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
   snprintf( user_msg, USER_MSG_LENGTH, "========  Reading in database %s  ========\n", db );
   print_output( user_msg, DEBUG );
 
+  /* Initialize all global information variables */
+  info_initialize();
+
   /* Read in contents of specified database file */
   if( !db_read( db, READ_MODE_MERGE_NO_MERGE ) ) {
     print_output( "Unable to read database file", FATAL );
@@ -169,6 +174,10 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
 
 /*
  $Log$
+ Revision 1.22  2003/10/28 00:18:06  phase1geo
+ Adding initial support for inline attributes to specify FSMs.  Still more
+ work to go but full regression still passes at this point.
+
  Revision 1.21  2003/10/10 20:52:07  phase1geo
  Initial submission of FSM expression allowance code.  We are still not quite
  there yet, but we are getting close.

@@ -36,6 +36,14 @@ bool flag_scored = FALSE;
 char leading_hierarchy[4096];
 
 /*!
+ If we have merged and the leading hierarchy of the merged CDDs don't match, the value
+ contains the leading hierarchy of the other merged CDD file.  This value will be used
+ in the SPECIAL NOTES section of the report to indicate to the user that this case
+ occurred and that the leading hierarchy value should not be used in the report output.
+*/
+char second_hierarchy[4096];
+
+/*!
  Contains the CDD version number of all CDD files that this version of Covered can write
  and read.
 */
@@ -47,6 +55,16 @@ int  cdd_version = CDD_VERSION;
 */
 int merged_code = INFO_NOT_MERGED;
 
+
+/*!
+ Initializes all variables used for information.
+*/
+void info_initialize() {
+
+  leading_hierarchy[0] = '\0';
+  second_hierarchy[0]  = '\0';
+
+}
 
 /*!
  \param file  Pointer to file to write information to.
@@ -68,12 +86,12 @@ void info_db_write( FILE* file ) {
       break;
     case INFO_ONE_MERGED :
       assert( merge_in0 != NULL );
-      fprintf( file, " %s\n", merge_in0 );
+      fprintf( file, " %s %s\n", merge_in0, second_hierarchy );
       break;
     case INFO_TWO_MERGED :
       assert( merge_in0 != NULL );
       assert( merge_in1 != NULL );
-      fprintf( file, " %s %s\n", merge_in0, merge_in1 );
+      fprintf( file, " %s %s %s\n", merge_in0, merge_in1, second_hierarchy );
       break;
     default :  break;
   }
@@ -94,13 +112,20 @@ bool info_db_read( char** line ) {
   int  mcode;          /* Temporary merge code                           */
   char tmp[4096];      /* Temporary string                               */
 
-  if( sscanf( *line, "%d %s %d %d%n", &scored, leading_hierarchy, &version, &mcode, &chars_read ) == 4 ) {
+  if( sscanf( *line, "%d %s %d %d%n", &scored, tmp, &version, &mcode, &chars_read ) == 4 ) {
 
     *line = *line + chars_read;
 
     if( version != CDD_VERSION ) {
       print_output( "CDD file being read is incompatible with this version of Covered", FATAL );
       retval = FALSE;
+    }
+
+    /* If we have not assigned leading hierarchy yet, do it now; otherwise, assign second hierarchy */
+    if( leading_hierarchy[0] == '\0' ) {
+      strcpy( leading_hierarchy, tmp );
+    } else {
+      strcpy( second_hierarchy, tmp );
     }
 
     if( mcode != INFO_NOT_MERGED ) {
@@ -119,6 +144,15 @@ bool info_db_read( char** line ) {
             print_output( "CDD file being read is incompatible with this version of Covered", FATAL );
             retval = FALSE;
           }
+        }
+        if( sscanf( *line, "%s%n", tmp, &chars_read ) == 1 ) {
+          if( second_hierarchy[0] == '\0' ) {
+            strcpy( second_hierarchy, tmp );
+          }
+          *line = *line + chars_read;
+        } else {
+          print_output( "CDD file being read is incompatible with this version of Covered", FATAL );
+          retval = FALSE;
         }
       } else {
         print_output( "CDD file being read is incompatible with this version of Covered", FATAL );
@@ -143,6 +177,12 @@ bool info_db_read( char** line ) {
 
 /*
  $Log$
+ Revision 1.4  2004/01/04 04:52:03  phase1geo
+ Updating ChangeLog and TODO files.  Adding merge information to INFO line
+ of CDD files and outputting this information to the merged reports.  Adding
+ starting and ending line information to modules and added function for GUI
+ to retrieve this information.  Updating full regression.
+
  Revision 1.3  2003/10/17 02:12:38  phase1geo
  Adding CDD version information to info line of CDD file.  Updating regression
  for this change.

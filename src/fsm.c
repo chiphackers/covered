@@ -36,6 +36,7 @@ extern bool         report_covered;
 extern unsigned int report_comb_depth;
 extern bool         report_instance;
 extern char         leading_hierarchy[4096];
+extern char         second_hierarchy[4096];
 extern char         user_msg[USER_MSG_LENGTH];
 
 
@@ -697,28 +698,33 @@ void fsm_module_verbose( FILE* ofile, mod_link* head ) {
 void fsm_report( FILE* ofile, bool verbose ) {
 
   bool missed_found;  /* If set to TRUE, FSM cases were found to be missed */
+  char tmp[4096];     /* Temporary string value                            */
 
-  fprintf( ofile, "\n\n" );
+  fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
+  fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~   FINITE STATE MACHINE COVERAGE RESULTS   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
+  fprintf( ofile, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" );
 
   if( report_instance ) {
 
-    fprintf( ofile, "FINITE STATE MACHINE COVERAGE RESULTS\n" );
-    fprintf( ofile, "-------------------------------------\n" );
+    if( strcmp( leading_hierarchy, second_hierarchy ) != 0 ) {
+      strcpy( tmp, "<NA>" );
+    } else {
+      strcpy( tmp, leading_hierarchy );
+    }
+
     fprintf( ofile, "                                                               State                             Arc\n" );
     fprintf( ofile, "Instance                                          Hit/Miss/Total    Percent hit    Hit/Miss/Total    Percent hit\n" );
-    fprintf( ofile, "----------------------------------------------------------------------------------------------------------------------\n" );
+    fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
-    missed_found = fsm_instance_summary( ofile, instance_root, leading_hierarchy );
+    missed_found = fsm_instance_summary( ofile, instance_root, tmp );
    
     if( verbose && (missed_found || report_covered) ) {
-      fprintf( ofile, "----------------------------------------------------------------------------------------------------------------------\n" );
-      fsm_instance_verbose( ofile, instance_root, leading_hierarchy );
+      fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
+      fsm_instance_verbose( ofile, instance_root, tmp );
     }
 
   } else {
 
-    fprintf( ofile, "FINITE STATE MACHINE COVERAGE RESULTS\n" );
-    fprintf( ofile, "-------------------------------------\n" );
     fprintf( ofile, "                                                               State                             Arc\n" );
     fprintf( ofile, "Module                    Filename                Hit/Miss/Total    Percent Hit    Hit/Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
@@ -732,8 +738,7 @@ void fsm_report( FILE* ofile, bool verbose ) {
 
   }
 
-  fprintf( ofile, "=====================================================================================================================\n" );
-  fprintf( ofile, "\n" );
+  fprintf( ofile, "\n\n" );
 
 }
 
@@ -772,6 +777,9 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.36  2004/01/30 23:23:27  phase1geo
+ More report output improvements.  Still not ready with regressions.
+
  Revision 1.35  2004/01/30 06:04:45  phase1geo
  More report output format tweaks.  Adjusted lines and spaces to make things
  look more organized.  Still some more to go.  Regression will fail at this
