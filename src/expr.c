@@ -695,14 +695,20 @@ void expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_CASE :
+        assert( expr->left != NULL );
+        assert( expr->right != NULL );
         vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CEQ );
         break;
 
       case EXP_OP_CASEX :
+        assert( expr->left != NULL );
+        assert( expr->right != NULL );
         vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CXEQ );
         break;
 
       case EXP_OP_CASEZ :
+        assert( expr->left != NULL );
+        assert( expr->right != NULL );
         vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CZEQ );
         break;
 
@@ -793,6 +799,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.32  2002/07/08 12:35:31  phase1geo
+/* Added initial support for library searching.  Code seems to be broken at the
+/* moment.
+/*
 /* Revision 1.31  2002/07/05 16:49:47  phase1geo
 /* Modified a lot of code this go around.  Fixed VCD reader to handle changes in
 /* the reverse order (last changes are stored instead of first for timestamp).

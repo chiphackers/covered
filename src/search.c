@@ -33,6 +33,7 @@ mod_link* mod_tail       = NULL;    /*!< Pointer to tail element of module list 
 mod_inst* instance_root = NULL;     /*!< Pointer to root of module instance tree */
 
 extern char* top_module;
+extern char* top_instance;
 
 /*!
  Creates root module for module_node tree.  If a module_node points to this node as its parent,
@@ -44,16 +45,21 @@ void search_init() {
 
   mod        = module_create();
   mod->name  = strdup( top_module );
-  mod->scope = strdup( top_module );
+
+  if( top_instance == NULL ) {
+    mod->scope = strdup( top_module );
+  } else {
+    mod->scope = strdup( top_instance );
+  }
 
   /* Initialize module linked list */
   mod_link_add( mod, &mod_head, &mod_tail );
 
   /* Initialize instance tree */
-  instance_add( &instance_root, NULL, mod, mod->name );
+  instance_add( &instance_root, NULL, mod, mod->scope );
 
 }
-
+ 
 /*!
  \param path Name of include path to search for `include directives.
  \return Returns TRUE if the specified path is a legal directory string
@@ -200,6 +206,10 @@ void search_free_lists() {
 }
 
 /* $Log$
+/* Revision 1.3  2002/07/08 12:35:31  phase1geo
+/* Added initial support for library searching.  Code seems to be broken at the
+/* moment.
+/*
 /* Revision 1.2  2002/07/03 03:31:11  phase1geo
 /* Adding RCS Log strings in files that were missing them so that file version
 /* information is contained in every source and header file.  Reordering src

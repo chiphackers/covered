@@ -16,9 +16,10 @@
 #include "parse.h"
 
 
-char* top_module = NULL;    /*!< Name of top-level module to score              */
-char* output_db  = NULL;    /*!< Name of output score database file to generate */
-char* vcd_file   = NULL;    /*!< Name of VCD output file to parse               */
+char* top_module   = NULL;    /*!< Name of top-level module to score              */
+char* top_instance = NULL;    /*!< Name of top-level instance name                */
+char* output_db    = NULL;    /*!< Name of output score database file to generate */
+char* vcd_file     = NULL;    /*!< Name of VCD output file to parse               */
 
 extern unsigned long largest_malloc_size;
 extern unsigned long curr_malloc_size;
@@ -33,6 +34,9 @@ void score_usage() {
   printf( "Usage:  covered score -t <top-level_module_name> -vcd <dumpfile> [<options>]\n" );
   printf( "\n" );
   printf( "   Options:\n" );
+  printf( "      -i <instance_name>      Instance name of top-level module.  Necessary if module\n" );
+  printf( "                              to verify coverage is not the top-level module in the design.\n" );
+  printf( "                              If not specified, -t value is used.\n" );
   printf( "      -o <database_filename>  Name of database to write coverage information to.\n" );
   printf( "      -I <directory>          Directory to find included Verilog files\n" );
   printf( "      -f <filename>           Name of file containing additional arguments to parse\n" );
@@ -136,6 +140,18 @@ bool score_parse_args( int argc, char** argv ) {
     } else if( strncmp( "-q", argv[i], 2 ) == 0 ) {
 
       set_output_suppression( TRUE );
+
+    } else if( strncmp( "-i", argv[i], 2 ) == 0 ) {
+
+      i++;
+  
+      if( is_variable( argv[i] ) ) {
+        top_instance = strdup( argv[i] );
+      } else {
+        snprintf( err_msg, 4096, "Illegal top-level instance name specified \"%s\"", argv[i] );
+        print_output( err_msg, FATAL );
+        retval = FALSE;
+      }
 
     } else if( strncmp( "-o", argv[i], 2 ) == 0 ) {
 
@@ -275,6 +291,9 @@ int command_score( int argc, char** argv ) {
 }
 
 /* $Log$
+/* Revision 1.8  2002/07/08 16:06:33  phase1geo
+/* Updating help information.
+/*
 /* Revision 1.7  2002/07/08 12:35:31  phase1geo
 /* Added initial support for library searching.  Code seems to be broken at the
 /* moment.
