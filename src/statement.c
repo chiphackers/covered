@@ -305,8 +305,6 @@ bool statement_db_read( char** line, module* curr_mod, int read_mode ) {
         stmt_link_add_head( stmt, &(curr_mod->stmt_head), &(curr_mod->stmt_tail) );
       }
 
-//      stmt_link_display( curr_mod->stmt_head );
-
       /* Possibly add statement to presimulation queue */
       sim_add_stmt_to_queue( stmt );
 
@@ -347,7 +345,8 @@ void statement_connect( statement* curr_stmt, statement* next_stmt ) {
       if( (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_DELAY) &&
           (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_NEDGE) &&
           (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_PEDGE) &&
-          (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_AEDGE) ) {
+          (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_AEDGE) &&
+          (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_EOR) ) {
         curr_stmt->next_false = next_stmt;
       }
     } else if( curr_stmt->next_true != next_stmt ) {
@@ -369,7 +368,8 @@ void statement_connect( statement* curr_stmt, statement* next_stmt ) {
       if( (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_DELAY) &&
           (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_NEDGE) &&
           (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_PEDGE) &&
-          (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_AEDGE) ) {
+          (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_AEDGE) &&
+          (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_EOR) ) {
         curr_stmt->next_false = next_stmt;
       }
     } else if( curr_stmt->next_false != next_stmt ) {
@@ -384,17 +384,33 @@ void statement_connect( statement* curr_stmt, statement* next_stmt ) {
  \param stmt       Pointer to top of statement tree to set stop bits for.
  \param post       Pointer to statement that comes just after the stopped statement.
  \param true_path  Set to TRUE if the current statement exists on the right of its parent.
+ \param both       If TRUE, causes both false and true paths to set stop bits when next
+                   statement is the post statement.
 
  Recursively traverses specified statement tree, setting the statement's stop bits
  that have either their next_true or next_false pointers pointing to the statement
  called post.
 */
-void statement_set_stop( statement* stmt, statement* post, bool true_path ) {
+void statement_set_stop( statement* stmt, statement* post, bool true_path, bool both ) {
 
+  static int count = 0;
   int        true_id;
   int        false_id;
+  int        post_id;
 
   assert( stmt != NULL );
+
+  if( count > 70 ) {
+    assert( count == 0 );
+  } else {
+    count++;
+  }
+
+  if( post == NULL ) {
+    post_id = 0;
+  } else {
+    post_id = post->exp->id;
+  }
 
   if( stmt->next_true == NULL ) {
     true_id = 0;
@@ -408,22 +424,24 @@ void statement_set_stop( statement* stmt, statement* post, bool true_path ) {
     false_id = stmt->next_false->exp->id;
   }
 
-  // printf( "In statement_set_stop, stmt: %d, next_true: %d, next_false: %d\n", stmt->exp->id, true_id, false_id );
+  // printf( "In statement_set_stop, stmt: %d, post: %d, next_true: %d, next_false: %d\n", stmt->exp->id, post_id, true_id, false_id );
 
-  if( ((stmt->next_true == post) && (stmt->next_false == post)) && true_path ) {
-    // printf( "Setting STOP bit for statement %d\n", stmt->exp->id );
-    stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);
+  if( (stmt->next_true == post) && (stmt->next_false == post) ) {
+    if( true_path || both) {
+      // printf( "Setting STOP bit for statement %d\n", stmt->exp->id );
+      stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);
+    }
   } else {
     if( stmt->next_true == stmt->next_false ) {
       if( stmt->next_true != NULL ) { 
-        statement_set_stop( stmt->next_true, post, TRUE );
+        statement_set_stop( stmt->next_true, post, TRUE, both );
       }
     } else {
       if( stmt->next_true != NULL ) {
-        statement_set_stop( stmt->next_true, post, TRUE );
+        statement_set_stop( stmt->next_true, post, TRUE, both );
       }
       if( stmt->next_false != NULL ) {
-        statement_set_stop( stmt->next_false, post, FALSE );
+        statement_set_stop( stmt->next_false, post, FALSE, both );
       }
     }
   }
@@ -472,6 +490,11 @@ void statement_dealloc( statement* stmt ) {
 
 
 /* $Log$
+/* Revision 1.22  2002/07/03 19:54:36  phase1geo
+/* Adding/fixing code to properly handle always blocks with the event control
+/* structures attached.  Added several new diagnostics to test this ability.
+/* always1.v is still failing but the rest are passing.
+/*
 /* Revision 1.21  2002/07/01 15:10:42  phase1geo
 /* Fixing always loopbacks and setting stop bits correctly.  All verilog diagnostics
 /* seem to be passing with these fixes.

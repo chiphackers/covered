@@ -159,9 +159,15 @@ void sim_expression( expression* expr ) {
   assert( expr != NULL );
 
   /* Traverse left child expression if it has changed */
-  if( SUPPL_IS_LEFT_CHANGED( expr->suppl ) == 1 ) {
+  if( (SUPPL_IS_LEFT_CHANGED( expr->suppl ) == 1) ) {
 
-    sim_expression( expr->left );
+    /*
+     An EOR expression is special in that it will automatically traverse down its tree when
+     its operation is performed so don't traverse the tree now.
+    */
+    if( SUPPL_OP( expr->suppl ) != EXP_OP_EOR ) {
+      sim_expression( expr->left );
+    }
 
     /* Clear LEFT CHANGED bit */
     expr->suppl = expr->suppl & ~(0x1 << SUPPL_LSB_LEFT_CHANGED);
@@ -171,7 +177,10 @@ void sim_expression( expression* expr ) {
   /* Traverse right child expression if it has changed */
   if( SUPPL_IS_RIGHT_CHANGED( expr->suppl ) == 1 ) {
 
-    sim_expression( expr->right );
+    /* See explanation above */
+    if( SUPPL_OP( expr->suppl ) != EXP_OP_EOR ) {
+      sim_expression( expr->right );
+    }
 
     /* Clear RIGHT CHANGED bit */
     expr->suppl = expr->suppl & ~(0x1 << SUPPL_LSB_RIGHT_CHANGED);
@@ -179,7 +188,7 @@ void sim_expression( expression* expr ) {
   }
 
   /* Now perform expression operation for this expression */
-  printf( "Performing expression operation: %d, id: %d\n", SUPPL_OP( expr->suppl ), expr->id );
+  // printf( "Performing expression operation: %d, id: %d\n", SUPPL_OP( expr->suppl ), expr->id );
   expression_operate( expr );
 
 }
@@ -286,6 +295,11 @@ void sim_simulate() {
 }
 
 /* $Log$
+/* Revision 1.16  2002/07/03 19:54:36  phase1geo
+/* Adding/fixing code to properly handle always blocks with the event control
+/* structures attached.  Added several new diagnostics to test this ability.
+/* always1.v is still failing but the rest are passing.
+/*
 /* Revision 1.15  2002/07/03 00:59:14  phase1geo
 /* Fixing bug with conditional statements and other "deep" expression trees.
 /*

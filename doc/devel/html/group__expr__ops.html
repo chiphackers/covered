@@ -48,7 +48,9 @@
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a39">EXP_OP_PEDGE</a>&nbsp;&nbsp;&nbsp;0x27</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a40">EXP_OP_NEDGE</a>&nbsp;&nbsp;&nbsp;0x28</td></tr>
 <tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a41">EXP_OP_AEDGE</a>&nbsp;&nbsp;&nbsp;0x29</td></tr>
-<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a42">EXP_OP_DELAY</a>&nbsp;&nbsp;&nbsp;0x2a</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a42">EXP_OP_LAST</a>&nbsp;&nbsp;&nbsp;0x2a</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a43">EXP_OP_EOR</a>&nbsp;&nbsp;&nbsp;0x2b</td></tr>
+<tr><td nowrap align=right valign=top>#define&nbsp;</td><td valign=bottom><a class="el" href="group__expr__ops.html#a44">EXP_OP_DELAY</a>&nbsp;&nbsp;&nbsp;0x2c</td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 The following defines are used for identifying expression operations. <hr><h2>Define Documentation</h2>
@@ -228,13 +230,13 @@ The following defines are used for identifying expression operations. <hr><h2>De
 26 '?:' conditional select     </td>
   </tr>
 </table>
-<a name="a42" doxytag="defines.h::EXP_OP_DELAY"></a><p>
+<a name="a44" doxytag="defines.h::EXP_OP_DELAY"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> #define EXP_OP_DELAY&nbsp;&nbsp;&nbsp;0x2a
+          <td class="md" nowrap valign="top"> #define EXP_OP_DELAY&nbsp;&nbsp;&nbsp;0x2c
       </table>
     </td>
   </tr>
@@ -247,7 +249,7 @@ The following defines are used for identifying expression operations. <hr><h2>De
     <td>
 
 <p>
-42 delay operator     </td>
+44 delay operator     </td>
   </tr>
 </table>
 <a name="a4" doxytag="defines.h::EXP_OP_DIVIDE"></a><p>
@@ -270,6 +272,28 @@ The following defines are used for identifying expression operations. <hr><h2>De
 
 <p>
 4 '/' operator     </td>
+  </tr>
+</table>
+<a name="a43" doxytag="defines.h::EXP_OP_EOR"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> #define EXP_OP_EOR&nbsp;&nbsp;&nbsp;0x2b
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+43 event OR operator     </td>
   </tr>
 </table>
 <a name="a17" doxytag="defines.h::EXP_OP_EQ"></a><p>
@@ -380,6 +404,28 @@ The following defines are used for identifying expression operations. <hr><h2>De
 
 <p>
 24 '&amp;&amp;' operator     </td>
+  </tr>
+</table>
+<a name="a42" doxytag="defines.h::EXP_OP_LAST"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> #define EXP_OP_LAST&nbsp;&nbsp;&nbsp;0x2a
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+42 1-bit value holder for parent     </td>
   </tr>
 </table>
 <a name="a19" doxytag="defines.h::EXP_OP_LE"></a><p>
@@ -998,7 +1044,7 @@ The following defines are used for identifying expression operations. <hr><h2>De
 2 '^' operator     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Tue Jul 2 17:36:59 2002 for Covered by
+<hr><address align="right"><small>Generated on Wed Jul 3 16:28:38 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

@@ -261,6 +261,7 @@ void combination_underline_tree( expression* exp, char*** lines, int* depth, int
           case EXP_OP_PEDGE    :  *size = l_size + r_size + 0;  strcpy( code_fmt, "%s"          );  break;  // ???
           case EXP_OP_NEDGE    :  *size = l_size + r_size + 0;  strcpy( code_fmt, "%s"          );  break;  // ???
           case EXP_OP_AEDGE    :  *size = l_size + r_size + 0;  strcpy( code_fmt, "%s"          );  break;  // ???
+          case EXP_OP_EOR      :  *size = l_size + r_size + 4;  strcpy( code_fmt, "%s    %s"    );  break;
           default              :  
             print_output( "Internal error:  Unknown expression type in combination_underline_tree", FATAL );
             exit( 1 );
@@ -520,6 +521,7 @@ void combination_list_missed( FILE* ofile, expression* exp, int* exp_id ) {
         case EXP_OP_PEDGE    :  /* ??? */  break;
         case EXP_OP_NEDGE    :  /* ??? */  break;
         case EXP_OP_AEDGE    :  /* ??? */  break;
+        case EXP_OP_EOR      :  combination_two_vars( ofile, exp, 0, 1, 1, 1 );  break;
         default              :  break;
       }
       
@@ -689,6 +691,11 @@ void combination_report( FILE* ofile, bool verbose, bool instance ) {
 
 
 /* $Log$
+/* Revision 1.21  2002/07/03 19:54:36  phase1geo
+/* Adding/fixing code to properly handle always blocks with the event control
+/* structures attached.  Added several new diagnostics to test this ability.
+/* always1.v is still failing but the rest are passing.
+/*
 /* Revision 1.20  2002/07/03 00:59:14  phase1geo
 /* Fixing bug with conditional statements and other "deep" expression trees.
 /*

@@ -15,16 +15,17 @@
 <code>#include "<a class="el" href="parse_8h-source.html">parse.h</a>"</code><br>
 <table border=0 cellpadding=0 cellspacing=0>
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="score_8c.html#a4">score_usage</a> ()</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a132">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="score_8c.html#a5">read_command_file</a> (char *cmd_file, char **arg_list, int *arg_num)</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a132">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="score_8c.html#a6">score_parse_args</a> (int argc, char **argv)</td></tr>
-<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="score_8c.html#a7">command_score</a> (int argc, char **argv)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Parses score command-line and performs score.</em> <a href="#a7"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="score_8c.html#a5">score_usage</a> ()</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a134">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="score_8c.html#a6">read_command_file</a> (char *cmd_file, char **arg_list, int *arg_num)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a134">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="score_8c.html#a7">score_parse_args</a> (int argc, char **argv)</td></tr>
+<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="score_8c.html#a8">command_score</a> (int argc, char **argv)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Parses score command-line and performs score.</em> <a href="#a8"></a><em></em></font><br><br></td></tr>
 <tr><td colspan=2><br><h2>Variables</h2></td></tr>
 <tr><td nowrap align=right valign=top>char *&nbsp;</td><td valign=bottom><a class="el" href="score_8c.html#a0">top_module</a> = NULL</td></tr>
 <tr><td nowrap align=right valign=top>char *&nbsp;</td><td valign=bottom><a class="el" href="score_8c.html#a1">output_db</a> = NULL</td></tr>
 <tr><td nowrap align=right valign=top>char *&nbsp;</td><td valign=bottom><a class="el" href="score_8c.html#a2">vcd_file</a> = NULL</td></tr>
 <tr><td nowrap align=right valign=top>unsigned long&nbsp;</td><td valign=bottom><a class="el" href="score_8c.html#a3">largest_malloc_size</a></td></tr>
+<tr><td nowrap align=right valign=top>unsigned long&nbsp;</td><td valign=bottom><a class="el" href="score_8c.html#a4">curr_malloc_size</a></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 
@@ -34,7 +35,7 @@ Author: </b><dd>
 Trevor Williams (<a href="mailto:trevorw@charter.net">trevorw@charter.net</a>) </dl><dl compact><dt><b>
 Date: </b><dd>
 11/29/2001</dl><hr><h2>Function Documentation</h2>
-<a name="a7" doxytag="score.c::command_score"></a><p>
+<a name="a8" doxytag="score.c::command_score"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -84,13 +85,13 @@ Returns: </b><dd>
 Returns 0 if scoring is successful; otherwise, returns -1. </dl>    </td>
   </tr>
 </table>
-<a name="a5" doxytag="score.c::read_command_file"></a><p>
+<a name="a6" doxytag="score.c::read_command_file"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a132">bool</a> read_command_file </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a134">bool</a> read_command_file </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top">char *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>cmd_file</em>, </td>
@@ -140,13 +141,13 @@ Returns: </b><dd>
 Returns TRUE if read of command file was successful; otherwise, returns FALSE. </dl>    </td>
   </tr>
 </table>
-<a name="a6" doxytag="score.c::score_parse_args"></a><p>
+<a name="a7" doxytag="score.c::score_parse_args"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a132">bool</a> score_parse_args </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a134">bool</a> score_parse_args </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top">int&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>argc</em>, </td>
@@ -188,7 +189,7 @@ Returns: </b><dd>
 Returns TRUE if successful in dealing with arguments; otherwise, returns FALSE. </dl>    </td>
   </tr>
 </table>
-<a name="a4" doxytag="score.c::score_usage"></a><p>
+<a name="a5" doxytag="score.c::score_usage"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -217,6 +218,34 @@ Displays usage information for score command.     </td>
   </tr>
 </table>
 <hr><h2>Variable Documentation</h2>
+<a name="a4" doxytag="score.c::curr_malloc_size"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> unsigned long curr_malloc_size </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
+          <td class="md" valign="top">)&nbsp;</td>
+          <td class="md" nowrap></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+Contains the total number of bytes malloc'ed during the simulation run. This information is output to the user after simulation as a performance indicator.     </td>
+  </tr>
+</table>
 <a name="a3" doxytag="score.c::largest_malloc_size"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
@@ -311,7 +340,7 @@ Name of top-level module to score     </td>
 Name of VCD output file to parse     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Tue Jul 2 17:36:57 2002 for Covered by
+<hr><address align="right"><small>Generated on Wed Jul 3 16:28:36 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

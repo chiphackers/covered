@@ -44,7 +44,7 @@ void db_add_statement( statement* stmt );
 void db_statement_connect( statement* curr_stmt, statement* next_stmt );
 
 //! Sets STMT_STOP bit in the appropriate statements.
-void db_statement_set_stop( statement* stmt, statement* post );
+void db_statement_set_stop( statement* stmt, statement* post, bool both );
 
 //! Connects true statement to specified statement.
 void db_connect_statement_true( statement* stmt, statement* exp_true );
@@ -71,6 +71,10 @@ int db_get_signal_size( char* symbol );
 void db_do_timestep( int time ); 
 
 /* $Log$
+/* Revision 1.8  2002/07/01 15:10:42  phase1geo
+/* Fixing always loopbacks and setting stop bits correctly.  All verilog diagnostics
+/* seem to be passing with these fixes.
+/*
 /* Revision 1.7  2002/06/27 12:36:47  phase1geo
 /* Fixing bugs with scoring.  I think I got it this time.
 /*

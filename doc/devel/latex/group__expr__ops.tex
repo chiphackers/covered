@@ -87,7 +87,11 @@
 \item 
 \#define {\bf EXP\_\-OP\_\-AEDGE}\ 0x29
 \item 
-\#define {\bf EXP\_\-OP\_\-DELAY}\ 0x2a
+\#define {\bf EXP\_\-OP\_\-LAST}\ 0x2a
+\item 
+\#define {\bf EXP\_\-OP\_\-EOR}\ 0x2b
+\item 
+\#define {\bf EXP\_\-OP\_\-DELAY}\ 0x2c
 \end{CompactItemize}
 
 
@@ -137,15 +141,20 @@ The following defines are used for identifying expression operations.
 
 26 '?:' conditional select \index{expr_ops@{expr\_\-ops}!EXP_OP_DELAY@{EXP\_\-OP\_\-DELAY}}
 \index{EXP_OP_DELAY@{EXP\_\-OP\_\-DELAY}!expr_ops@{expr\_\-ops}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define EXP\_\-OP\_\-DELAY\ 0x2a}\label{group__expr__ops_a42}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define EXP\_\-OP\_\-DELAY\ 0x2c}\label{group__expr__ops_a44}
 
 
-42 delay operator \index{expr_ops@{expr\_\-ops}!EXP_OP_DIVIDE@{EXP\_\-OP\_\-DIVIDE}}
+44 delay operator \index{expr_ops@{expr\_\-ops}!EXP_OP_DIVIDE@{EXP\_\-OP\_\-DIVIDE}}
 \index{EXP_OP_DIVIDE@{EXP\_\-OP\_\-DIVIDE}!expr_ops@{expr\_\-ops}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define EXP\_\-OP\_\-DIVIDE\ 0x4}\label{group__expr__ops_a4}
 
 
-4 '/' operator \index{expr_ops@{expr\_\-ops}!EXP_OP_EQ@{EXP\_\-OP\_\-EQ}}
+4 '/' operator \index{expr_ops@{expr\_\-ops}!EXP_OP_EOR@{EXP\_\-OP\_\-EOR}}
+\index{EXP_OP_EOR@{EXP\_\-OP\_\-EOR}!expr_ops@{expr\_\-ops}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define EXP\_\-OP\_\-EOR\ 0x2b}\label{group__expr__ops_a43}
+
+
+43 event OR operator \index{expr_ops@{expr\_\-ops}!EXP_OP_EQ@{EXP\_\-OP\_\-EQ}}
 \index{EXP_OP_EQ@{EXP\_\-OP\_\-EQ}!expr_ops@{expr\_\-ops}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define EXP\_\-OP\_\-EQ\ 0x11}\label{group__expr__ops_a17}
 
@@ -170,7 +179,12 @@ The following defines are used for identifying expression operations.
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define EXP\_\-OP\_\-LAND\ 0x18}\label{group__expr__ops_a24}
 
 
-24 '\&\&' operator \index{expr_ops@{expr\_\-ops}!EXP_OP_LE@{EXP\_\-OP\_\-LE}}
+24 '\&\&' operator \index{expr_ops@{expr\_\-ops}!EXP_OP_LAST@{EXP\_\-OP\_\-LAST}}
+\index{EXP_OP_LAST@{EXP\_\-OP\_\-LAST}!expr_ops@{expr\_\-ops}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define EXP\_\-OP\_\-LAST\ 0x2a}\label{group__expr__ops_a42}
+
+
+42 1-bit value holder for parent \index{expr_ops@{expr\_\-ops}!EXP_OP_LE@{EXP\_\-OP\_\-LE}}
 \index{EXP_OP_LE@{EXP\_\-OP\_\-LE}!expr_ops@{expr\_\-ops}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define EXP\_\-OP\_\-LE\ 0x13}\label{group__expr__ops_a19}
 

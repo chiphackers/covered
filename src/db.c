@@ -560,6 +560,13 @@ statement* db_create_statement( expression* exp ) {
 void db_add_statement( statement* stmt ) {
 
   char msg[4096];    /* Message to display to user */
+  static int count = 0;
+
+  if( count > 70 ) {
+    assert( count == 0 );
+  } else {
+    count++;
+  }
  
   if( stmt != NULL ) {
 
@@ -673,11 +680,13 @@ void db_statement_connect( statement* curr_stmt, statement* next_stmt ) {
 /*!
  \param stmt  Pointer to statement tree to traverse.
  \param post  Pointer to statement which stopped statements will be connected to.
+ \param both  If TRUE, causes both true and false paths to set stop bits if
+              connected to post statement.
 
  Calls the statement_set_stop function with the specified parameters.  This function is
  called by the parser after the call to db_statement_connect.
 */
-void db_statement_set_stop( statement* stmt, statement* post ) {
+void db_statement_set_stop( statement* stmt, statement* post, bool both ) {
 
   char msg[4096];    /* Message to display to user */
   int  stmt_id;      /* Current statement ID       */
@@ -696,7 +705,7 @@ void db_statement_set_stop( statement* stmt, statement* post ) {
     snprintf( msg, 4096, "In db_statement_set_stop, stmt: %d, next_stmt: %d", stmt_id, post_id );
     print_output( msg, NORMAL );
  
-    statement_set_stop( stmt, post, TRUE );
+    statement_set_stop( stmt, post, TRUE, both );
 
   }
 
@@ -920,7 +929,7 @@ void db_do_timestep( int time ) {
 
   snprintf( msg, 4096, "Performing timestep #%d", time );
   print_output( msg, NORMAL );
-  printf( "%s\n", msg );
+  // printf( "%s\n", msg );
 
   curr_sim_time = time;
 
@@ -964,6 +973,11 @@ int db_get_signal_size( char* symbol ) {
 
 
 /* $Log$
+/* Revision 1.27  2002/07/03 19:54:36  phase1geo
+/* Adding/fixing code to properly handle always blocks with the event control
+/* structures attached.  Added several new diagnostics to test this ability.
+/* always1.v is still failing but the rest are passing.
+/*
 /* Revision 1.26  2002/07/02 19:52:50  phase1geo
 /* Removing unecessary diagnostics.  Cleaning up extraneous output and
 /* generating new documentation from source.  Regression passes at the

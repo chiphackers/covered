@@ -67,44 +67,45 @@ char* codegen_gen_expr( expression* expr, int line ) {
     } else {
 
       switch( SUPPL_OP( expr->suppl ) ) {
-        case EXP_OP_XOR      :  code_size = 6;  strcpy( code_format, "(%s ^ %s)" );   left = TRUE;   right = TRUE;   break;
-        case EXP_OP_MULTIPLY :  code_size = 6;  strcpy( code_format, "(%s * %s)" );   left = TRUE;   right = TRUE;   break;
-        case EXP_OP_DIVIDE   :  code_size = 6;  strcpy( code_format, "(%s / %s)" );   left = TRUE;   right = TRUE;   break;
-        case EXP_OP_MOD      :  code_size = 6;  strcpy( code_format, "(%s %% %s)" );  left = TRUE;   right = TRUE;   break;
-        case EXP_OP_ADD      :  code_size = 6;  strcpy( code_format, "(%s + %s)" );   left = TRUE;   right = TRUE;   break;
-        case EXP_OP_SUBTRACT :  code_size = 6;  strcpy( code_format, "(%s - %s)" );   left = TRUE;   right = TRUE;   break;
-        case EXP_OP_AND      :  code_size = 6;  strcpy( code_format, "(%s & %s)" );   left = TRUE;   right = TRUE;   break;
-        case EXP_OP_OR       :  code_size = 6;  strcpy( code_format, "(%s | %s)" );   left = TRUE;   right = TRUE;   break;
-        case EXP_OP_NAND     :  code_size = 7;  strcpy( code_format, "(%s ~& %s)" );  left = TRUE;   right = TRUE;   break;
-        case EXP_OP_NOR      :  code_size = 7;  strcpy( code_format, "(%s ~| %s)" );  left = TRUE;   right = TRUE;   break;
-        case EXP_OP_NXOR     :  code_size = 7;  strcpy( code_format, "(%s ~^ %s)" );  left = TRUE;   right = TRUE;   break;
-        case EXP_OP_LT       :  code_size = 6;  strcpy( code_format, "(%s < %s)" );   left = TRUE;   right = TRUE;   break;
-        case EXP_OP_GT       :  code_size = 6;  strcpy( code_format, "(%s > %s)" );   left = TRUE;   right = TRUE;   break;
-        case EXP_OP_LSHIFT   :  code_size = 7;  strcpy( code_format, "(%s << %s)" );  left = TRUE;   right = TRUE;   break;
-        case EXP_OP_RSHIFT   :  code_size = 7;  strcpy( code_format, "(%s >> %s)" );  left = TRUE;   right = TRUE;   break;
-        case EXP_OP_EQ       :  code_size = 7;  strcpy( code_format, "(%s == %s)" );  left = TRUE;   right = TRUE;   break;
-        case EXP_OP_CEQ      :  code_size = 8;  strcpy( code_format, "(%s === %s)" ); left = TRUE;   right = TRUE;   break;
-        case EXP_OP_LE       :  code_size = 7;  strcpy( code_format, "(%s <= %s)" );  left = TRUE;   right = TRUE;   break;
-        case EXP_OP_GE       :  code_size = 7;  strcpy( code_format, "(%s >= %s)" );  left = TRUE;   right = TRUE;   break;
-        case EXP_OP_NE       :  code_size = 7;  strcpy( code_format, "(%s != %s)" );  left = TRUE;   right = TRUE;   break;
-        case EXP_OP_CNE      :  code_size = 8;  strcpy( code_format, "(%s !== %s)" ); left = TRUE;   right = TRUE;   break;
-        case EXP_OP_LOR      :  code_size = 7;  strcpy( code_format, "(%s || %s)" );  left = TRUE;   right = TRUE;   break;
-        case EXP_OP_LAND     :  code_size = 7;  strcpy( code_format, "(%s && %s)" );  left = TRUE;   right = TRUE;   break;
-        case EXP_OP_COND     :  code_size = 4;  strcpy( code_format, "%s ? %s" );     left = TRUE;   right = TRUE ;  break;
-        case EXP_OP_COND_SEL :  code_size = 4;  strcpy( code_format, "%s : %s" );     left = TRUE;   right = TRUE;   break;
-        case EXP_OP_UINV     :  code_size = 3;  strcpy( code_format, "~%s " );        left = FALSE;  right = TRUE;   break;
-        case EXP_OP_UAND     :  code_size = 3;  strcpy( code_format, "&%s " );        left = FALSE;  right = TRUE;   break;
-        case EXP_OP_UNOT     :  code_size = 3;  strcpy( code_format, "!%s " );        left = FALSE;  right = TRUE;   break;
-        case EXP_OP_UOR      :  code_size = 3;  strcpy( code_format, "|%s " );        left = FALSE;  right = TRUE;   break;
-        case EXP_OP_UXOR     :  code_size = 3;  strcpy( code_format, "^%s " );        left = FALSE;  right = TRUE;   break;
-        case EXP_OP_UNAND    :  code_size = 3;  strcpy( code_format, "~&%s" );        left = FALSE;  right = TRUE;   break;
-        case EXP_OP_UNOR     :  code_size = 3;  strcpy( code_format, "~|%s" );        left = FALSE;  right = TRUE;   break;
-        case EXP_OP_UNXOR    :  code_size = 3;  strcpy( code_format, "~^%s" );        left = FALSE;  right = TRUE;   break;
+        case EXP_OP_XOR      :  code_size = 6;  strcpy( code_format, "(%s ^ %s)" );   left = TRUE;   right = TRUE;  break;
+        case EXP_OP_MULTIPLY :  code_size = 6;  strcpy( code_format, "(%s * %s)" );   left = TRUE;   right = TRUE;  break;
+        case EXP_OP_DIVIDE   :  code_size = 6;  strcpy( code_format, "(%s / %s)" );   left = TRUE;   right = TRUE;  break;
+        case EXP_OP_MOD      :  code_size = 6;  strcpy( code_format, "(%s %% %s)" );  left = TRUE;   right = TRUE;  break;
+        case EXP_OP_ADD      :  code_size = 6;  strcpy( code_format, "(%s + %s)" );   left = TRUE;   right = TRUE;  break;
+        case EXP_OP_SUBTRACT :  code_size = 6;  strcpy( code_format, "(%s - %s)" );   left = TRUE;   right = TRUE;  break;
+        case EXP_OP_AND      :  code_size = 6;  strcpy( code_format, "(%s & %s)" );   left = TRUE;   right = TRUE;  break;
+        case EXP_OP_OR       :  code_size = 6;  strcpy( code_format, "(%s | %s)" );   left = TRUE;   right = TRUE;  break;
+        case EXP_OP_NAND     :  code_size = 7;  strcpy( code_format, "(%s ~& %s)" );  left = TRUE;   right = TRUE;  break;
+        case EXP_OP_NOR      :  code_size = 7;  strcpy( code_format, "(%s ~| %s)" );  left = TRUE;   right = TRUE;  break;
+        case EXP_OP_NXOR     :  code_size = 7;  strcpy( code_format, "(%s ~^ %s)" );  left = TRUE;   right = TRUE;  break;
+        case EXP_OP_LT       :  code_size = 6;  strcpy( code_format, "(%s < %s)" );   left = TRUE;   right = TRUE;  break;
+        case EXP_OP_GT       :  code_size = 6;  strcpy( code_format, "(%s > %s)" );   left = TRUE;   right = TRUE;  break;
+        case EXP_OP_LSHIFT   :  code_size = 7;  strcpy( code_format, "(%s << %s)" );  left = TRUE;   right = TRUE;  break;
+        case EXP_OP_RSHIFT   :  code_size = 7;  strcpy( code_format, "(%s >> %s)" );  left = TRUE;   right = TRUE;  break;
+        case EXP_OP_EQ       :  code_size = 7;  strcpy( code_format, "(%s == %s)" );  left = TRUE;   right = TRUE;  break;
+        case EXP_OP_CEQ      :  code_size = 8;  strcpy( code_format, "(%s === %s)" ); left = TRUE;   right = TRUE;  break;
+        case EXP_OP_LE       :  code_size = 7;  strcpy( code_format, "(%s <= %s)" );  left = TRUE;   right = TRUE;  break;
+        case EXP_OP_GE       :  code_size = 7;  strcpy( code_format, "(%s >= %s)" );  left = TRUE;   right = TRUE;  break;
+        case EXP_OP_NE       :  code_size = 7;  strcpy( code_format, "(%s != %s)" );  left = TRUE;   right = TRUE;  break;
+        case EXP_OP_CNE      :  code_size = 8;  strcpy( code_format, "(%s !== %s)" ); left = TRUE;   right = TRUE;  break;
+        case EXP_OP_LOR      :  code_size = 7;  strcpy( code_format, "(%s || %s)" );  left = TRUE;   right = TRUE;  break;
+        case EXP_OP_LAND     :  code_size = 7;  strcpy( code_format, "(%s && %s)" );  left = TRUE;   right = TRUE;  break;
+        case EXP_OP_COND     :  code_size = 4;  strcpy( code_format, "%s ? %s" );     left = TRUE;   right = TRUE;  break;
+        case EXP_OP_COND_SEL :  code_size = 4;  strcpy( code_format, "%s : %s" );     left = TRUE;   right = TRUE;  break;
+        case EXP_OP_UINV     :  code_size = 3;  strcpy( code_format, "~%s " );        left = FALSE;  right = TRUE;  break;
+        case EXP_OP_UAND     :  code_size = 3;  strcpy( code_format, "&%s " );        left = FALSE;  right = TRUE;  break;
+        case EXP_OP_UNOT     :  code_size = 3;  strcpy( code_format, "!%s " );        left = FALSE;  right = TRUE;  break;
+        case EXP_OP_UOR      :  code_size = 3;  strcpy( code_format, "|%s " );        left = FALSE;  right = TRUE;  break;
+        case EXP_OP_UXOR     :  code_size = 3;  strcpy( code_format, "^%s " );        left = FALSE;  right = TRUE;  break;
+        case EXP_OP_UNAND    :  code_size = 3;  strcpy( code_format, "~&%s" );        left = FALSE;  right = TRUE;  break;
+        case EXP_OP_UNOR     :  code_size = 3;  strcpy( code_format, "~|%s" );        left = FALSE;  right = TRUE;  break;
+        case EXP_OP_UNXOR    :  code_size = 3;  strcpy( code_format, "~^%s" );        left = FALSE;  right = TRUE;  break;
         case EXP_OP_EXPAND   :  break;   // Not sure how to handle
         case EXP_OP_CONCAT   :  break;   // Not sure how to handle
-        case EXP_OP_PEDGE    :  break;   // Not sure how to handle
-        case EXP_OP_NEDGE    :  break;   // Not sure how to handle
-        case EXP_OP_AEDGE    :  break;   // Not sure how to handle
+        case EXP_OP_PEDGE    :  code_size = 9;  strcpy( code_format, "posedge %s" );  left = FALSE;  right = TRUE;  break;
+        case EXP_OP_NEDGE    :  code_size = 9;  strcpy( code_format, "negedge %s" );  left = FALSE;  right = TRUE;  break;
+        case EXP_OP_AEDGE    :  code_size = 1;  strcpy( code_format, "%s" );          left = FALSE;  right = TRUE;  break;
+        case EXP_OP_EOR      :  code_size = 5;  strcpy( code_format, "%s or %s" );    left = TRUE;   right = TRUE;  break;
         default:  break;
       }
 
@@ -146,6 +147,11 @@ char* codegen_gen_expr( expression* expr, int line ) {
 
 
 /* $Log$
+/* Revision 1.9  2002/07/03 19:54:35  phase1geo
+/* Adding/fixing code to properly handle always blocks with the event control
+/* structures attached.  Added several new diagnostics to test this ability.
+/* always1.v is still failing but the rest are passing.
+/*
 /* Revision 1.8  2002/07/02 19:52:50  phase1geo
 /* Removing unecessary diagnostics.  Cleaning up extraneous output and
 /* generating new documentation from source.  Regression passes at the

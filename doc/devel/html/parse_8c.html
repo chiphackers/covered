@@ -13,18 +13,18 @@
 <code>#include "<a class="el" href="binding_8h-source.html">binding.h</a>"</code><br>
 <table border=0 cellpadding=0 cellspacing=0>
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="parse_8c.html#a4">reset_lexer</a> (FILE *out, <a class="el" href="defines_8h.html#a112">str_link</a> *file_list_head)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="parse_8c.html#a4">reset_lexer</a> (FILE *out, <a class="el" href="defines_8h.html#a114">str_link</a> *file_list_head)</td></tr>
 <tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="parse_8c.html#a5">VLparse</a> ()</td></tr>
 <tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="parse_8c.html#a6">parse_readline</a> (FILE *<a class="el" href="vcd__lexer_8c.html#a106">file</a>, char *line, int <a class="el" href="vcd__lexer_8c.html#a105">size</a>)</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a132">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="parse_8c.html#a7">parse_design</a> (char *top, char *<a class="el" href="score_8c.html#a1">output_db</a>)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a134">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="parse_8c.html#a7">parse_design</a> (char *top, char *<a class="el" href="score_8c.html#a1">output_db</a>)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Parses the specified design and generates scoring modules.</em> <a href="#a7"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a132">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="parse_8c.html#a8">parse_and_score_dumpfile</a> (char *top, char *db, char *vcd)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a134">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="parse_8c.html#a8">parse_and_score_dumpfile</a> (char *top, char *db, char *vcd)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Parses VCD dumpfile and scores design.</em> <a href="#a8"></a><em></em></font><br><br></td></tr>
 <tr><td colspan=2><br><h2>Variables</h2></td></tr>
 <tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="parse_8c.html#a0">VLdebug</a></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a112">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="parse_8c.html#a1">use_files_head</a></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a112">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="parse_8c.html#a2">modlist_head</a></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a112">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="parse_8c.html#a3">modlist_tail</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a114">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="parse_8c.html#a1">use_files_head</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a114">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="parse_8c.html#a2">modlist_head</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a114">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="parse_8c.html#a3">modlist_tail</a></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 
@@ -40,7 +40,7 @@ Date: </b><dd>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a132">bool</a> parse_and_score_dumpfile </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a134">bool</a> parse_and_score_dumpfile </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top">char *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>top</em>, </td>
@@ -98,7 +98,7 @@ Returns TRUE if VCD parsing and scoring is successful; otherwise, returns FALSE.
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a132">bool</a> parse_design </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a134">bool</a> parse_design </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top">char *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>top</em>, </td>
@@ -212,7 +212,7 @@ Returns the number of characters read from this line.</dl>Reads from specified f
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a112">str_link</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a114">str_link</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>file_list_head</em></td>
         </tr>
         <tr>
@@ -271,7 +271,7 @@ Returns the number of characters read from this line.</dl>Reads from specified f
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a112">str_link</a>* modlist_head
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a114">str_link</a>* modlist_head
       </table>
     </td>
   </tr>
@@ -293,7 +293,7 @@ Returns the number of characters read from this line.</dl>Reads from specified f
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a112">str_link</a>* modlist_tail
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a114">str_link</a>* modlist_tail
       </table>
     </td>
   </tr>
@@ -315,7 +315,7 @@ Returns the number of characters read from this line.</dl>Reads from specified f
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a112">str_link</a>* use_files_head </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a114">str_link</a>* use_files_head </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
           <td class="md" valign="top">)&nbsp;</td>
@@ -359,7 +359,7 @@ Pointer to head element of used files list     </td>
     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Tue Jul 2 17:36:56 2002 for Covered by
+<hr><address align="right"><small>Generated on Wed Jul 3 16:28:36 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

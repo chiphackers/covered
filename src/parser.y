@@ -1007,7 +1007,7 @@ module_item
 		{
                   statement* stmt = $2;
                   db_statement_connect( stmt, stmt );
-                  db_statement_set_stop( stmt, stmt );
+                  db_statement_set_stop( stmt, stmt, TRUE );
                   stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
                   db_add_statement( stmt );
 		}
@@ -1015,7 +1015,7 @@ module_item
 		{
                   /*
                   statement* stmt = $2;
-                  db_statement_set_stop( stmt, NULL );
+                  db_statement_set_stop( stmt, NULL, FALSE );
                   stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
                   db_add_statement( stmt );
                   */
@@ -1293,7 +1293,7 @@ statement
                     stmt = db_create_statement( expr );
                     db_connect_statement_true( stmt, c_stmt->stmt );
                     db_connect_statement_false( stmt, last_stmt );
-                    db_statement_set_stop( c_stmt->stmt, NULL );
+                    db_statement_set_stop( c_stmt->stmt, NULL, FALSE );
                     if( stmt != NULL ) {
                       last_stmt = stmt;
                     }
@@ -1316,7 +1316,7 @@ statement
                     stmt = db_create_statement( expr );
                     db_connect_statement_true( stmt, c_stmt->stmt );
                     db_connect_statement_false( stmt, last_stmt );
-                    db_statement_set_stop( c_stmt->stmt, NULL );
+                    db_statement_set_stop( c_stmt->stmt, NULL, FALSE );
                     if( stmt != NULL ) {
                       last_stmt = stmt;
                     }
@@ -1339,7 +1339,7 @@ statement
                     stmt = db_create_statement( expr );
                     db_connect_statement_true( stmt, c_stmt->stmt );
                     db_connect_statement_false( stmt, last_stmt );
-                    db_statement_set_stop( c_stmt->stmt, NULL );
+                    db_statement_set_stop( c_stmt->stmt, NULL, FALSE );
                     if( stmt != NULL ) {
                       last_stmt = stmt;
                     }
@@ -1366,7 +1366,7 @@ statement
                   statement* stmt = db_create_statement( $3 );
 		  db_add_expression( $3 );
                   db_connect_statement_true( stmt, $5 );
-                  db_statement_set_stop( $5, NULL );
+                  db_statement_set_stop( $5, NULL, FALSE );
                   $$ = stmt;
 		}
 	| K_if '(' expression ')' statement_opt K_else statement_opt
@@ -1375,7 +1375,7 @@ statement
 		  db_add_expression( $3 );
                   db_connect_statement_true( stmt, $5 );
                   db_connect_statement_false( stmt, $7 );
-                  db_statement_set_stop( $5, NULL );
+                  db_statement_set_stop( $5, NULL, FALSE );
                   $$ = stmt;
 		}
 	| K_if '(' error ')' unused_stmt_opt %prec less_than_K_else
@@ -2118,7 +2118,7 @@ event_expression_list
 	| event_expression_list K_or event_expression
 		{
 		  expression* tmp;
-		  tmp = db_create_expression( $3, $1, EXP_OP_LOR, @1.first_line, NULL );
+		  tmp = db_create_expression( $3, $1, EXP_OP_EOR, @1.first_line, NULL );
 		  $$ = tmp;
 		}
 	| event_expression_list ',' event_expression

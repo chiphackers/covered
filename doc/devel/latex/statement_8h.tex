@@ -16,7 +16,7 @@ void {\bf statement\_\-db\_\-write} ({\bf statement} $\ast$stmt, FILE $\ast$ofil
 \begin{CompactList}\small\item\em Reads in statement line from specified string and stores statement in specified module.\item\end{CompactList}\item 
 void {\bf statement\_\-connect} ({\bf statement} $\ast$curr\_\-stmt, {\bf statement} $\ast$next\_\-stmt)
 \begin{CompactList}\small\item\em Connects statement sequence to next statement.\item\end{CompactList}\item 
-void {\bf statement\_\-set\_\-stop} ({\bf statement} $\ast$stmt, {\bf statement} $\ast$post, {\bf bool} true\_\-path)
+void {\bf statement\_\-set\_\-stop} ({\bf statement} $\ast$stmt, {\bf statement} $\ast$post, {\bf bool} true\_\-path, {\bf bool} both)
 \begin{CompactList}\small\item\em Sets stop bits in specified statement tree.\item\end{CompactList}\item 
 void {\bf statement\_\-dealloc} ({\bf statement} $\ast$stmt)
 \begin{CompactList}\small\item\em Deallocates statement memory and associated expression tree from the heap.\item\end{CompactList}\end{CompactItemize}
@@ -114,7 +114,7 @@ stmt}]Pointer to statement to deallocate.\end{description}
 \end{Desc}
 Deallocates specified statement from heap memory. First remove expression tree of this statement. Second, remove all statements following this statement. Finally, remove the specified statement itself. Since statements can be circular in nature, we will not remove a statement that has its expression tree already deallocated. This will prevent this function from getting into an infinite loop (or stack overflow since this function is recursive). \index{statement.h@{statement.h}!statement_set_stop@{statement\_\-set\_\-stop}}
 \index{statement_set_stop@{statement\_\-set\_\-stop}!statement.h@{statement.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void statement\_\-set\_\-stop ({\bf statement} $\ast$ {\em stmt}, {\bf statement} $\ast$ {\em post}, {\bf bool} {\em true\_\-path})}\label{statement_8h_a4}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void statement\_\-set\_\-stop ({\bf statement} $\ast$ {\em stmt}, {\bf statement} $\ast$ {\em post}, {\bf bool} {\em true\_\-path}, {\bf bool} {\em both})}\label{statement_8h_a4}
 
 
 Sets stop bits in specified statement tree.
@@ -125,6 +125,7 @@ Sets stop bits in specified statement tree.
 \item[{\em 
 stmt}]Pointer to top of statement tree to set stop bits for. \item[{\em 
 post}]Pointer to statement that comes just after the stopped statement. \item[{\em 
-true\_\-path}]Set to TRUE if the current statement exists on the right of its parent.\end{description}
+true\_\-path}]Set to TRUE if the current statement exists on the right of its parent. \item[{\em 
+both}]If TRUE, causes both false and true paths to set stop bits when next statement is the post statement.\end{description}
 \end{Desc}
 Recursively traverses specified statement tree, setting the statement's stop bits that have either their next\_\-true or next\_\-false pointers pointing to the statement called post. 

@@ -16,32 +16,32 @@
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a14">search_init</a> ()</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Initializes search maintained pointers.</em> <a href="#a14"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a132">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a15">search_add_include_path</a> (char *path)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a134">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a15">search_add_include_path</a> (char *path)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds an include directory to the list of directories to search for `include directives.</em> <a href="#a15"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a132">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a16">search_add_directory_path</a> (char *path)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a134">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a16">search_add_directory_path</a> (char *path)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds a directory to the list of directories to find unspecified Verilog modules.</em> <a href="#a16"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a132">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a17">search_add_file</a> (char *<a class="el" href="vcd__lexer_8c.html#a106">file</a>)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a134">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a17">search_add_file</a> (char *<a class="el" href="vcd__lexer_8c.html#a106">file</a>)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds a specific Verilog module to the list of modules to score.</em> <a href="#a17"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a132">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a18">search_add_no_score_module</a> (char *<a class="el" href="defines_8h.html#a122">module</a>)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a134">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a18">search_add_no_score_module</a> (char *<a class="el" href="defines_8h.html#a124">module</a>)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds specified module to list of modules not to score.</em> <a href="#a18"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a132">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a19">search_add_extensions</a> (char *ext_list)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a134">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a19">search_add_extensions</a> (char *ext_list)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds specified extensions to allowed file extension list.</em> <a href="#a19"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a20">search_free_lists</a> ()</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Deallocates all used memory for search lists.</em> <a href="#a20"></a><em></em></font><br><br></td></tr>
 <tr><td colspan=2><br><h2>Variables</h2></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a112">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a0">inc_paths_head</a> = NULL</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a112">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a1">inc_paths_tail</a> = NULL</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a112">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a2">dir_paths_head</a> = NULL</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a112">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a3">dir_paths_tail</a> = NULL</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a112">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a4">use_files_head</a> = NULL</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a112">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a5">use_files_tail</a> = NULL</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a112">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a6">no_score_head</a> = NULL</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a112">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a7">no_score_tail</a> = NULL</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a112">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a8">extensions_head</a> = NULL</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a112">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a9">extensions_tail</a> = NULL</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a123">mod_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a10">mod_head</a> = NULL</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a123">mod_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a11">mod_tail</a> = NULL</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a129">mod_inst</a> *&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a12">instance_root</a> = NULL</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a114">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a0">inc_paths_head</a> = NULL</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a114">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a1">inc_paths_tail</a> = NULL</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a114">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a2">dir_paths_head</a> = NULL</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a114">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a3">dir_paths_tail</a> = NULL</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a114">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a4">use_files_head</a> = NULL</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a114">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a5">use_files_tail</a> = NULL</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a114">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a6">no_score_head</a> = NULL</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a114">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a7">no_score_tail</a> = NULL</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a114">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a8">extensions_head</a> = NULL</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a114">str_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a9">extensions_tail</a> = NULL</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a125">mod_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a10">mod_head</a> = NULL</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a125">mod_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a11">mod_tail</a> = NULL</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a131">mod_inst</a> *&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a12">instance_root</a> = NULL</td></tr>
 <tr><td nowrap align=right valign=top>char *&nbsp;</td><td valign=bottom><a class="el" href="search_8c.html#a13">top_module</a></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
@@ -58,7 +58,7 @@ Date: </b><dd>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a132">bool</a> search_add_directory_path </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a134">bool</a> search_add_directory_path </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top">char *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>path</em>          </td>
@@ -97,7 +97,7 @@ Returns TRUE if the specified string is a legal directory string and specifies a
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a132">bool</a> search_add_extensions </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a134">bool</a> search_add_extensions </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top">char *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>ext_list</em>          </td>
@@ -136,7 +136,7 @@ Returns TRUE if the specified string is in the correct format; otherwise, return
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a132">bool</a> search_add_file </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a134">bool</a> search_add_file </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top">char *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>file</em>          </td>
@@ -175,7 +175,7 @@ Returns TRUE if the specified file exists; otherwise, returns FALSE. </dl>    </
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a132">bool</a> search_add_include_path </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a134">bool</a> search_add_include_path </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top">char *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>path</em>          </td>
@@ -214,7 +214,7 @@ Returns TRUE if the specified path is a legal directory string and specifies an 
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a132">bool</a> search_add_no_score_module </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a134">bool</a> search_add_no_score_module </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top">char *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>module</em>          </td>
@@ -314,7 +314,7 @@ Creates root module for module_node tree. If a module_node points to this node a
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a112">str_link</a>* dir_paths_head = NULL
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a114">str_link</a>* dir_paths_head = NULL
       </table>
     </td>
   </tr>
@@ -336,7 +336,7 @@ Pointer to head element of directory paths list     </td>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a112">str_link</a>* dir_paths_tail = NULL
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a114">str_link</a>* dir_paths_tail = NULL
       </table>
     </td>
   </tr>
@@ -358,7 +358,7 @@ Pointer to tail element of directory paths list     </td>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a112">str_link</a>* extensions_head = NULL
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a114">str_link</a>* extensions_head = NULL
       </table>
     </td>
   </tr>
@@ -380,7 +380,7 @@ Pointer to head element of extensions list     </td>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a112">str_link</a>* extensions_tail = NULL
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a114">str_link</a>* extensions_tail = NULL
       </table>
     </td>
   </tr>
@@ -402,7 +402,7 @@ Pointer to tail element of extensions list     </td>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a112">str_link</a>* inc_paths_head = NULL
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a114">str_link</a>* inc_paths_head = NULL
       </table>
     </td>
   </tr>
@@ -424,7 +424,7 @@ Pointer to head element of include paths list     </td>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a112">str_link</a>* inc_paths_tail = NULL
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a114">str_link</a>* inc_paths_tail = NULL
       </table>
     </td>
   </tr>
@@ -446,7 +446,7 @@ Pointer to tail element of include paths list     </td>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a129">mod_inst</a>* instance_root = NULL
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a131">mod_inst</a>* instance_root = NULL
       </table>
     </td>
   </tr>
@@ -468,7 +468,7 @@ Pointer to root of module instance tree     </td>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a123">mod_link</a>* mod_head = NULL
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a125">mod_link</a>* mod_head = NULL
       </table>
     </td>
   </tr>
@@ -490,7 +490,7 @@ Pointer to head element of module list     </td>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a123">mod_link</a>* mod_tail = NULL
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a125">mod_link</a>* mod_tail = NULL
       </table>
     </td>
   </tr>
@@ -512,7 +512,7 @@ Pointer to tail element of module list     </td>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a112">str_link</a>* no_score_head = NULL
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a114">str_link</a>* no_score_head = NULL
       </table>
     </td>
   </tr>
@@ -534,7 +534,7 @@ Pointer to head element of modules not-to-score list     </td>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a112">str_link</a>* no_score_tail = NULL
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a114">str_link</a>* no_score_tail = NULL
       </table>
     </td>
   </tr>
@@ -584,7 +584,7 @@ Name of top-level module to score     </td>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a112">str_link</a>* use_files_head = NULL
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a114">str_link</a>* use_files_head = NULL
       </table>
     </td>
   </tr>
@@ -606,7 +606,7 @@ Pointer to head element of used files list     </td>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a112">str_link</a>* use_files_tail = NULL
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a114">str_link</a>* use_files_tail = NULL
       </table>
     </td>
   </tr>
@@ -622,7 +622,7 @@ Pointer to head element of used files list     </td>
 Pointer to tail element of used files list     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Tue Jul 2 17:36:57 2002 for Covered by
+<hr><address align="right"><small>Generated on Wed Jul 3 16:28:36 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

@@ -28,7 +28,7 @@ void {\bf db\_\-add\_\-statement} ({\bf statement} $\ast$stmt)
 \begin{CompactList}\small\item\em Adds specified statement to current module's statement list. Called by parser.\item\end{CompactList}\item 
 void {\bf db\_\-statement\_\-connect} ({\bf statement} $\ast$curr\_\-stmt, {\bf statement} $\ast$next\_\-stmt)
 \begin{CompactList}\small\item\em Connects one statement block to another.\item\end{CompactList}\item 
-void {\bf db\_\-statement\_\-set\_\-stop} ({\bf statement} $\ast$stmt, {\bf statement} $\ast$post)
+void {\bf db\_\-statement\_\-set\_\-stop} ({\bf statement} $\ast$stmt, {\bf statement} $\ast$post, {\bf bool} both)
 \begin{CompactList}\small\item\em Sets STMT\_\-STOP bit in the appropriate statements.\item\end{CompactList}\item 
 void {\bf db\_\-connect\_\-statement\_\-true} ({\bf statement} $\ast$stmt, {\bf statement} $\ast$exp\_\-true)
 \begin{CompactList}\small\item\em Connects true statement to specified statement.\item\end{CompactList}\item 
@@ -321,7 +321,7 @@ next\_\-stmt}]Pointer to next statement to attach to.\end{description}
 \end{Desc}
 Calls the statement\_\-connect function located in {\bf statement.c} with the specified parameters. \index{db.h@{db.h}!db_statement_set_stop@{db\_\-statement\_\-set\_\-stop}}
 \index{db_statement_set_stop@{db\_\-statement\_\-set\_\-stop}!db.h@{db.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-statement\_\-set\_\-stop ({\bf statement} $\ast$ {\em stmt}, {\bf statement} $\ast$ {\em post})}\label{db_8h_a11}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-statement\_\-set\_\-stop ({\bf statement} $\ast$ {\em stmt}, {\bf statement} $\ast$ {\em post}, {\bf bool} {\em both})}\label{db_8h_a11}
 
 
 Sets STMT\_\-STOP bit in the appropriate statements.
@@ -331,7 +331,8 @@ Sets STMT\_\-STOP bit in the appropriate statements.
 \begin{description}
 \item[{\em 
 stmt}]Pointer to statement tree to traverse. \item[{\em 
-post}]Pointer to statement which stopped statements will be connected to.\end{description}
+post}]Pointer to statement which stopped statements will be connected to. \item[{\em 
+both}]If TRUE, causes both true and false paths to set stop bits if connected to post statement.\end{description}
 \end{Desc}
 Calls the statement\_\-set\_\-stop function with the specified parameters. This function is called by the parser after the call to db\_\-statement\_\-connect. \index{db.h@{db.h}!db_symbol_found@{db\_\-symbol\_\-found}}
 \index{db_symbol_found@{db\_\-symbol\_\-found}!db.h@{db.h}}

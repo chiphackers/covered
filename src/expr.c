@@ -118,7 +118,8 @@ expression* expression_create( expression* right, expression* left, int op, int 
              (op == EXP_OP_UNAND) ||
              (op == EXP_OP_UNOR ) ||
              (op == EXP_OP_UNXOR) ||
-             (op == EXP_OP_LAST) ) {
+             (op == EXP_OP_LAST)  ||
+             (op == EXP_OP_EOR) ) {
 
     /* If this expression will evaluate to a single bit, create vector now */
     expression_create_value( new_expr, 1, 0 );
@@ -216,8 +217,6 @@ int expression_get_id( expression* expr ) {
  expression tree to the coverage database specified by file.
 */
 void expression_db_write( expression* expr, FILE* file, char* scope ) {
-
-  // printf( "In expression_db_write, writing expression %d\n", expr->id );
 
   fprintf( file, "%d %d %s %d %x %d %d ",
     DB_TYPE_EXPRESSION,
@@ -394,6 +393,8 @@ void expression_operate( expression* expr ) {
   nibble  value32[ VECTOR_SIZE( 32 ) ];  /* 32-bit nibble value                   */            
 
   if( expr != NULL ) {
+
+    // printf( "In expression_operate, id: %d, op: %d\n", expr->id, SUPPL_OP( expr->suppl ) );
 
     assert( expr->value != NULL );
 
@@ -658,6 +659,16 @@ void expression_operate( expression* expr ) {
         vector_set_value( expr->left->value, &value1a, 1, 0, 0 );
         break;
 
+      case EXP_OP_EOR :
+        vector_init( &vec1, &value1a, 1, 0 );
+        vector_init( &vec2, &value1b, 1, 0 );
+        expression_operate( expr->left );
+        expression_operate( expr->right );
+        vector_unary_op( &vec1, expr->left->value,  or_optab );
+        vector_unary_op( &vec2, expr->right->value, or_optab );
+        vector_bitwise_op( expr->value, &vec1, &vec2, or_optab );
+        break;
+
       case EXP_OP_DELAY :
         /* If this expression is not currently waiting, set the start time of delay */
         if( vector_to_int( expr->left->value ) == 0xffffffff ) {
@@ -762,6 +773,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.25  2002/07/03 19:54:36  phase1geo
+/* Adding/fixing code to properly handle always blocks with the event control
+/* structures attached.  Added several new diagnostics to test this ability.
+/* always1.v is still failing but the rest are passing.
+/*
 /* Revision 1.24  2002/07/03 03:11:01  phase1geo
 /* Fixing multiplication handling error.
 /*

@@ -13,76 +13,76 @@
 <code>#include "<a class="el" href="util_8h-source.html">util.h</a>"</code><br>
 <table border=0 cellpadding=0 cellspacing=0>
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a7">vector_init</a> (<a class="el" href="defines_8h.html#a113">vector</a> *vec, <a class="el" href="defines_8h.html#a111">nibble</a> *value, int width, int lsb)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a7">vector_init</a> (<a class="el" href="defines_8h.html#a115">vector</a> *vec, <a class="el" href="defines_8h.html#a113">nibble</a> *value, int width, int lsb)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Initializes specified vector.</em> <a href="#a7"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a8">vector_create</a> (int width, int lsb)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a8">vector_create</a> (int width, int lsb)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Creates and initializes new vector.</em> <a href="#a8"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a9">vector_merge</a> (<a class="el" href="defines_8h.html#a113">vector</a> *base, <a class="el" href="defines_8h.html#a113">vector</a> *in)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a9">vector_merge</a> (<a class="el" href="defines_8h.html#a115">vector</a> *base, <a class="el" href="defines_8h.html#a115">vector</a> *in)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Merges two vectors and places result into base vector.</em> <a href="#a9"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a10">vector_db_write</a> (<a class="el" href="defines_8h.html#a113">vector</a> *vec, FILE *<a class="el" href="vcd__lexer_8c.html#a106">file</a>, <a class="el" href="defines_8h.html#a132">bool</a> write_data)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a10">vector_db_write</a> (<a class="el" href="defines_8h.html#a115">vector</a> *vec, FILE *<a class="el" href="vcd__lexer_8c.html#a106">file</a>, <a class="el" href="defines_8h.html#a134">bool</a> write_data)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Displays vector information to specified database file.</em> <a href="#a10"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a132">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a11">vector_db_read</a> (<a class="el" href="defines_8h.html#a113">vector</a> **vec, char **line)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a134">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a11">vector_db_read</a> (<a class="el" href="defines_8h.html#a115">vector</a> **vec, char **line)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Creates and parses current file line for vector information */.</em> <a href="#a11"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a12">vector_display_toggle01</a> (<a class="el" href="defines_8h.html#a111">nibble</a> *nib, int width, FILE *ofile)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a12">vector_display_toggle01</a> (<a class="el" href="defines_8h.html#a113">nibble</a> *nib, int width, FILE *ofile)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Outputs the toggle01 information from the specified nibble to the specified output stream.</em> <a href="#a12"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a13">vector_display_toggle10</a> (<a class="el" href="defines_8h.html#a111">nibble</a> *nib, int width, FILE *ofile)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a13">vector_display_toggle10</a> (<a class="el" href="defines_8h.html#a113">nibble</a> *nib, int width, FILE *ofile)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Outputs the toggle10 information from the specified nibble to the specified output stream.</em> <a href="#a13"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a14">vector_display_nibble</a> (<a class="el" href="defines_8h.html#a111">nibble</a> *nib, int width, int lsb)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a14">vector_display_nibble</a> (<a class="el" href="defines_8h.html#a113">nibble</a> *nib, int width, int lsb)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Outputs nibble to standard output.</em> <a href="#a14"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a15">vector_display</a> (<a class="el" href="defines_8h.html#a113">vector</a> *vec)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a15">vector_display</a> (<a class="el" href="defines_8h.html#a115">vector</a> *vec)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Outputs vector contents to standard output.</em> <a href="#a15"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a111">nibble</a>&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a16">vector_bit_val</a> (<a class="el" href="defines_8h.html#a111">nibble</a> *value, int pos)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a17">vector_set_bit</a> (<a class="el" href="defines_8h.html#a111">nibble</a> *nib, <a class="el" href="defines_8h.html#a111">nibble</a> value, int pos)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a113">nibble</a>&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a16">vector_bit_val</a> (<a class="el" href="defines_8h.html#a113">nibble</a> *value, int pos)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a17">vector_set_bit</a> (<a class="el" href="defines_8h.html#a113">nibble</a> *nib, <a class="el" href="defines_8h.html#a113">nibble</a> value, int pos)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Sets specified bit to specified value in given nibble.</em> <a href="#a17"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a18">vector_set_toggle01</a> (<a class="el" href="defines_8h.html#a111">nibble</a> *value, int pos)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a19">vector_set_toggle10</a> (<a class="el" href="defines_8h.html#a111">nibble</a> *value, int pos)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a20">vector_set_false</a> (<a class="el" href="defines_8h.html#a111">nibble</a> *value, int pos)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a21">vector_set_true</a> (<a class="el" href="defines_8h.html#a111">nibble</a> *value, int pos)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a22">vector_toggle_count</a> (<a class="el" href="defines_8h.html#a113">vector</a> *vec, int *tog01_cnt, int *tog10_cnt)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a18">vector_set_toggle01</a> (<a class="el" href="defines_8h.html#a113">nibble</a> *value, int pos)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a19">vector_set_toggle10</a> (<a class="el" href="defines_8h.html#a113">nibble</a> *value, int pos)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a20">vector_set_false</a> (<a class="el" href="defines_8h.html#a113">nibble</a> *value, int pos)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a21">vector_set_true</a> (<a class="el" href="defines_8h.html#a113">nibble</a> *value, int pos)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a22">vector_toggle_count</a> (<a class="el" href="defines_8h.html#a115">vector</a> *vec, int *tog01_cnt, int *tog10_cnt)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Counts toggle01 and toggle10 information from specifed vector.</em> <a href="#a22"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a23">vector_logic_count</a> (<a class="el" href="defines_8h.html#a113">vector</a> *vec, int *false_cnt, int *true_cnt)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a23">vector_logic_count</a> (<a class="el" href="defines_8h.html#a115">vector</a> *vec, int *false_cnt, int *true_cnt)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Counts FALSE and TRUE information from the specified vector.</em> <a href="#a23"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a132">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a24">vector_set_value</a> (<a class="el" href="defines_8h.html#a113">vector</a> *vec, <a class="el" href="defines_8h.html#a111">nibble</a> *value, int width, int from_lsb, int to_lsb)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a134">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a24">vector_set_value</a> (<a class="el" href="defines_8h.html#a115">vector</a> *vec, <a class="el" href="defines_8h.html#a113">nibble</a> *value, int width, int from_lsb, int to_lsb)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Sets specified vector value to new value and maintains coverage history.</em> <a href="#a24"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a25">vector_to_int</a> (<a class="el" href="defines_8h.html#a113">vector</a> *vec)</td></tr>
+<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a25">vector_to_int</a> (<a class="el" href="defines_8h.html#a115">vector</a> *vec)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Converts vector into integer value.</em> <a href="#a25"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a26">vector_from_int</a> (<a class="el" href="defines_8h.html#a113">vector</a> *vec, int value)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a26">vector_from_int</a> (<a class="el" href="defines_8h.html#a115">vector</a> *vec, int value)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Converts integer into vector value.</em> <a href="#a26"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a27">vector_set_static</a> (<a class="el" href="defines_8h.html#a113">vector</a> *vec, char *str, int bits_per_char)</td></tr>
-<tr><td nowrap align=right valign=top>char *&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a28">vector_to_string</a> (<a class="el" href="defines_8h.html#a113">vector</a> *vec, int type)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a27">vector_set_static</a> (<a class="el" href="defines_8h.html#a115">vector</a> *vec, char *str, int bits_per_char)</td></tr>
+<tr><td nowrap align=right valign=top>char *&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a28">vector_to_string</a> (<a class="el" href="defines_8h.html#a115">vector</a> *vec, int type)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Converts vector into a string value in specified format.</em> <a href="#a28"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a29">vector_from_string</a> (char *str, <a class="el" href="defines_8h.html#a132">bool</a> sized, int type)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a29">vector_from_string</a> (char *str, <a class="el" href="defines_8h.html#a134">bool</a> sized, int type)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Converts character string value into vector.</em> <a href="#a29"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a30">vector_bitwise_op</a> (<a class="el" href="defines_8h.html#a113">vector</a> *tgt, <a class="el" href="defines_8h.html#a113">vector</a> *src1, <a class="el" href="defines_8h.html#a113">vector</a> *src2, int *optab)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a30">vector_bitwise_op</a> (<a class="el" href="defines_8h.html#a115">vector</a> *tgt, <a class="el" href="defines_8h.html#a115">vector</a> *src1, <a class="el" href="defines_8h.html#a115">vector</a> *src2, int *optab)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Performs bitwise operation on two source vectors from specified operation table.</em> <a href="#a30"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a31">vector_op_compare</a> (<a class="el" href="defines_8h.html#a113">vector</a> *tgt, <a class="el" href="defines_8h.html#a113">vector</a> *left, <a class="el" href="defines_8h.html#a113">vector</a> *right, int comp_type)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a31">vector_op_compare</a> (<a class="el" href="defines_8h.html#a115">vector</a> *tgt, <a class="el" href="defines_8h.html#a115">vector</a> *left, <a class="el" href="defines_8h.html#a115">vector</a> *right, int comp_type)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Performs bitwise comparison of two vectors.</em> <a href="#a31"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a32">vector_op_lshift</a> (<a class="el" href="defines_8h.html#a113">vector</a> *tgt, <a class="el" href="defines_8h.html#a113">vector</a> *left, <a class="el" href="defines_8h.html#a113">vector</a> *right)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a32">vector_op_lshift</a> (<a class="el" href="defines_8h.html#a115">vector</a> *tgt, <a class="el" href="defines_8h.html#a115">vector</a> *left, <a class="el" href="defines_8h.html#a115">vector</a> *right)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Performs left shift operation on left expression by right expression bits.</em> <a href="#a32"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a33">vector_op_rshift</a> (<a class="el" href="defines_8h.html#a113">vector</a> *tgt, <a class="el" href="defines_8h.html#a113">vector</a> *left, <a class="el" href="defines_8h.html#a113">vector</a> *right)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a33">vector_op_rshift</a> (<a class="el" href="defines_8h.html#a115">vector</a> *tgt, <a class="el" href="defines_8h.html#a115">vector</a> *left, <a class="el" href="defines_8h.html#a115">vector</a> *right)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Performs right shift operation on left expression by right expression bits.</em> <a href="#a33"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a34">vector_op_add</a> (<a class="el" href="defines_8h.html#a113">vector</a> *tgt, <a class="el" href="defines_8h.html#a113">vector</a> *left, <a class="el" href="defines_8h.html#a113">vector</a> *right)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a34">vector_op_add</a> (<a class="el" href="defines_8h.html#a115">vector</a> *tgt, <a class="el" href="defines_8h.html#a115">vector</a> *left, <a class="el" href="defines_8h.html#a115">vector</a> *right)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Performs addition operation on left and right expression values.</em> <a href="#a34"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a35">vector_op_subtract</a> (<a class="el" href="defines_8h.html#a113">vector</a> *tgt, <a class="el" href="defines_8h.html#a113">vector</a> *left, <a class="el" href="defines_8h.html#a113">vector</a> *right)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a35">vector_op_subtract</a> (<a class="el" href="defines_8h.html#a115">vector</a> *tgt, <a class="el" href="defines_8h.html#a115">vector</a> *left, <a class="el" href="defines_8h.html#a115">vector</a> *right)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Performs subtraction operation on left and right expression values.</em> <a href="#a35"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a36">vector_op_multiply</a> (<a class="el" href="defines_8h.html#a113">vector</a> *tgt, <a class="el" href="defines_8h.html#a113">vector</a> *left, <a class="el" href="defines_8h.html#a113">vector</a> *right)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a36">vector_op_multiply</a> (<a class="el" href="defines_8h.html#a115">vector</a> *tgt, <a class="el" href="defines_8h.html#a115">vector</a> *left, <a class="el" href="defines_8h.html#a115">vector</a> *right)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Performs multiplication operation on left and right expression values.</em> <a href="#a36"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a37">vector_unary_inv</a> (<a class="el" href="defines_8h.html#a113">vector</a> *tgt, <a class="el" href="defines_8h.html#a113">vector</a> *src)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a37">vector_unary_inv</a> (<a class="el" href="defines_8h.html#a115">vector</a> *tgt, <a class="el" href="defines_8h.html#a115">vector</a> *src)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Performs unary bitwise inversion operation on specified vector value.</em> <a href="#a37"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a38">vector_unary_op</a> (<a class="el" href="defines_8h.html#a113">vector</a> *tgt, <a class="el" href="defines_8h.html#a113">vector</a> *src, <a class="el" href="defines_8h.html#a111">nibble</a> *optab)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a38">vector_unary_op</a> (<a class="el" href="defines_8h.html#a115">vector</a> *tgt, <a class="el" href="defines_8h.html#a115">vector</a> *src, <a class="el" href="defines_8h.html#a113">nibble</a> *optab)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Performs unary operation on specified vector value.</em> <a href="#a38"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a39">vector_unary_not</a> (<a class="el" href="defines_8h.html#a113">vector</a> *tgt, <a class="el" href="defines_8h.html#a113">vector</a> *src)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a39">vector_unary_not</a> (<a class="el" href="defines_8h.html#a115">vector</a> *tgt, <a class="el" href="defines_8h.html#a115">vector</a> *src)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Performs unary logical NOT operation on specified vector value.</em> <a href="#a39"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a40">vector_dealloc</a> (<a class="el" href="defines_8h.html#a113">vector</a> *vec)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a40">vector_dealloc</a> (<a class="el" href="defines_8h.html#a115">vector</a> *vec)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Deallocates all memory allocated for vector.</em> <a href="#a40"></a><em></em></font><br><br></td></tr>
 <tr><td colspan=2><br><h2>Variables</h2></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a111">nibble</a>&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a0">xor_optab</a> [16] = { XOR_OP_TABLE }</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a111">nibble</a>&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a1">and_optab</a> [16] = { AND_OP_TABLE }</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a111">nibble</a>&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a2">or_optab</a> [16] = { OR_OP_TABLE }</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a111">nibble</a>&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a3">nand_optab</a> [16] = { NAND_OP_TABLE }</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a111">nibble</a>&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a4">nor_optab</a> [16] = { NOR_OP_TABLE }</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a111">nibble</a>&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a5">nxor_optab</a> [16] = { NXOR_OP_TABLE }</td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a111">nibble</a>&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a6">add_optab</a> [16] = { ADD_OP_TABLE }</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a113">nibble</a>&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a0">xor_optab</a> [16] = { XOR_OP_TABLE }</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a113">nibble</a>&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a1">and_optab</a> [16] = { AND_OP_TABLE }</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a113">nibble</a>&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a2">or_optab</a> [16] = { OR_OP_TABLE }</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a113">nibble</a>&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a3">nand_optab</a> [16] = { NAND_OP_TABLE }</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a113">nibble</a>&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a4">nor_optab</a> [16] = { NOR_OP_TABLE }</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a113">nibble</a>&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a5">nxor_optab</a> [16] = { NXOR_OP_TABLE }</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a113">nibble</a>&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a6">add_optab</a> [16] = { ADD_OP_TABLE }</td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 
@@ -98,9 +98,9 @@ Date: </b><dd>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a111">nibble</a> vector_bit_val </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a113">nibble</a> vector_bit_val </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a111">nibble</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a113">nibble</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>value</em>, </td>
         </tr>
         <tr>
@@ -148,19 +148,19 @@ Returns: </b><dd>
         <tr>
           <td class="md" nowrap valign="top"> void vector_bitwise_op </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>tgt</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>src1</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>src2</em>, </td>
         </tr>
         <tr>
@@ -210,7 +210,7 @@ Source vector 2 to perform operation on. </td></tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a113">vector</a>* vector_create </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a115">vector</a>* vector_create </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top">int&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>width</em>, </td>
@@ -260,9 +260,9 @@ Pointer to newly created vector.</dl>Creates new vector from heap memory and ini
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a132">bool</a> vector_db_read </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a134">bool</a> vector_db_read </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a113">vector</a> **&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a115">vector</a> **&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>vec</em>, </td>
         </tr>
         <tr>
@@ -312,7 +312,7 @@ Returns TRUE if parsing successful; otherwise, returns FALSE.</dl>Creates a new 
         <tr>
           <td class="md" nowrap valign="top"> void vector_db_write </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>vec</em>, </td>
         </tr>
         <tr>
@@ -324,7 +324,7 @@ Returns TRUE if parsing successful; otherwise, returns FALSE.</dl>Creates a new 
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a132">bool</a>&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a134">bool</a>&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>write_data</em></td>
         </tr>
         <tr>
@@ -368,7 +368,7 @@ If set to TRUE, causes 4-state data bytes to be included.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void vector_dealloc </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>vec</em>          </td>
           <td class="md" valign="top">)&nbsp;</td>
           <td class="md" nowrap></td>
@@ -405,7 +405,7 @@ Pointer to vector to deallocate memory from.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void vector_display </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>vec</em>          </td>
           <td class="md" valign="top">)&nbsp;</td>
           <td class="md" nowrap></td>
@@ -442,7 +442,7 @@ Pointer to vector to output to standard output.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void vector_display_nibble </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a111">nibble</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a113">nibble</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>nib</em>, </td>
         </tr>
         <tr>
@@ -498,7 +498,7 @@ Least significant bit of nibble to start outputting.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void vector_display_toggle01 </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a111">nibble</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a113">nibble</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>nib</em>, </td>
         </tr>
         <tr>
@@ -554,7 +554,7 @@ Stream to output information to.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void vector_display_toggle10 </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a111">nibble</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a113">nibble</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>nib</em>, </td>
         </tr>
         <tr>
@@ -610,7 +610,7 @@ Stream to output information to.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void vector_from_int </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>vec</em>, </td>
         </tr>
         <tr>
@@ -656,7 +656,7 @@ Integer value to convert into vector.</td></tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a113">vector</a>* vector_from_string </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a115">vector</a>* vector_from_string </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top">char *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>str</em>, </td>
@@ -664,7 +664,7 @@ Integer value to convert into vector.</td></tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a132">bool</a>&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a134">bool</a>&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>sized</em>, </td>
         </tr>
         <tr>
@@ -716,13 +716,13 @@ Returns pointer to newly create vector holding string value.</dl>Converts a stri
         <tr>
           <td class="md" nowrap valign="top"> void vector_init </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>vec</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a111">nibble</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a113">nibble</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>value</em>, </td>
         </tr>
         <tr>
@@ -780,7 +780,7 @@ Least-significant bit of vector.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void vector_logic_count </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>vec</em>, </td>
         </tr>
         <tr>
@@ -836,13 +836,13 @@ Number of bits in vector that was set to a value of TRUE.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void vector_merge </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>base</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>in</em></td>
         </tr>
         <tr>
@@ -884,19 +884,19 @@ Vector that will be merged with base vector.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void vector_op_add </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>tgt</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>left</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>right</em></td>
         </tr>
         <tr>
@@ -940,19 +940,19 @@ Expression value on right side of + sign.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void vector_op_compare </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>tgt</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>left</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>right</em>, </td>
         </tr>
         <tr>
@@ -1004,19 +1004,19 @@ Comparison type (0=LT, 1=GT, 2=EQ, 3=CEQ)</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void vector_op_lshift </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>tgt</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>left</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>right</em></td>
         </tr>
         <tr>
@@ -1060,19 +1060,19 @@ Expression containing number of bit positions to shift.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void vector_op_multiply </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>tgt</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>left</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>right</em></td>
         </tr>
         <tr>
@@ -1116,19 +1116,19 @@ Expression value on right side of * sign.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void vector_op_rshift </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>tgt</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>left</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>right</em></td>
         </tr>
         <tr>
@@ -1172,19 +1172,19 @@ Expression containing number of bit positions to shift.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void vector_op_subtract </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>tgt</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>left</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>right</em></td>
         </tr>
         <tr>
@@ -1228,13 +1228,13 @@ Expression value on right side of - sign.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void vector_set_bit </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a111">nibble</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a113">nibble</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>nib</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a111">nibble</a>&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a113">nibble</a>&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>value</em>, </td>
         </tr>
         <tr>
@@ -1284,7 +1284,7 @@ Bit position to set.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void vector_set_false </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a111">nibble</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a113">nibble</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>value</em>, </td>
         </tr>
         <tr>
@@ -1330,7 +1330,7 @@ Bit position in FALSE vector to set.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void vector_set_static </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>vec</em>, </td>
         </tr>
         <tr>
@@ -1384,7 +1384,7 @@ Number of bits necessary to store a value character (1, 3, or 4).</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void vector_set_toggle01 </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a111">nibble</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a113">nibble</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>value</em>, </td>
         </tr>
         <tr>
@@ -1430,7 +1430,7 @@ Bit position in toggle vector to set.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void vector_set_toggle10 </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a111">nibble</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a113">nibble</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>value</em>, </td>
         </tr>
         <tr>
@@ -1476,7 +1476,7 @@ Bit position in toggle vector to set.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void vector_set_true </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a111">nibble</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a113">nibble</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>value</em>, </td>
         </tr>
         <tr>
@@ -1520,15 +1520,15 @@ Bit position in TRUE vector to set.</td></tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a132">bool</a> vector_set_value </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a134">bool</a> vector_set_value </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>vec</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a111">nibble</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a113">nibble</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>value</em>, </td>
         </tr>
         <tr>
@@ -1596,7 +1596,7 @@ Returns TRUE if assignment was successful; otherwise, returns FALSE.</dl>Allows 
         <tr>
           <td class="md" nowrap valign="top"> int vector_to_int </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>vec</em>          </td>
           <td class="md" valign="top">)&nbsp;</td>
           <td class="md" nowrap></td>
@@ -1635,7 +1635,7 @@ Returns integer value of specified vector.</dl>Converts a vector structure into 
         <tr>
           <td class="md" nowrap valign="top"> char* vector_to_string </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>vec</em>, </td>
         </tr>
         <tr>
@@ -1685,7 +1685,7 @@ Returns pointer to the allocated/coverted string.</dl>Converts a vector value in
         <tr>
           <td class="md" nowrap valign="top"> void vector_toggle_count </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>vec</em>, </td>
         </tr>
         <tr>
@@ -1741,13 +1741,13 @@ Number of bits in vector that toggled from 1 to 0.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void vector_unary_inv </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>tgt</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>src</em></td>
         </tr>
         <tr>
@@ -1789,13 +1789,13 @@ Source vector to perform operation on.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void vector_unary_not </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>tgt</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>src</em></td>
         </tr>
         <tr>
@@ -1837,19 +1837,19 @@ Source vector to be operated on.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void vector_unary_op </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>tgt</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a113">vector</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a115">vector</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>src</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a111">nibble</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a113">nibble</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>optab</em></td>
         </tr>
         <tr>
@@ -1892,7 +1892,7 @@ Operation table.</td></tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a111">nibble</a> add_optab[16] = { ADD_OP_TABLE }
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a113">nibble</a> add_optab[16] = { ADD_OP_TABLE }
       </table>
     </td>
   </tr>
@@ -1914,7 +1914,7 @@ ADD operation table     </td>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a111">nibble</a> and_optab[16] = { AND_OP_TABLE }
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a113">nibble</a> and_optab[16] = { AND_OP_TABLE }
       </table>
     </td>
   </tr>
@@ -1936,7 +1936,7 @@ AND operation table     </td>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a111">nibble</a> nand_optab[16] = { NAND_OP_TABLE }
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a113">nibble</a> nand_optab[16] = { NAND_OP_TABLE }
       </table>
     </td>
   </tr>
@@ -1958,7 +1958,7 @@ NAND operation table     </td>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a111">nibble</a> nor_optab[16] = { NOR_OP_TABLE }
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a113">nibble</a> nor_optab[16] = { NOR_OP_TABLE }
       </table>
     </td>
   </tr>
@@ -1980,7 +1980,7 @@ NOR operation table     </td>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a111">nibble</a> nxor_optab[16] = { NXOR_OP_TABLE }
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a113">nibble</a> nxor_optab[16] = { NXOR_OP_TABLE }
       </table>
     </td>
   </tr>
@@ -2002,7 +2002,7 @@ NXOR operation table     </td>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a111">nibble</a> or_optab[16] = { OR_OP_TABLE }
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a113">nibble</a> or_optab[16] = { OR_OP_TABLE }
       </table>
     </td>
   </tr>
@@ -2024,7 +2024,7 @@ OR operation table     </td>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a111">nibble</a> xor_optab[16] = { XOR_OP_TABLE }
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a113">nibble</a> xor_optab[16] = { XOR_OP_TABLE }
       </table>
     </td>
   </tr>
@@ -2040,7 +2040,7 @@ OR operation table     </td>
 XOR operation table     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Tue Jul 2 17:36:58 2002 for Covered by
+<hr><address align="right"><small>Generated on Wed Jul 3 16:28:37 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>
