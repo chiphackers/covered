@@ -1,8 +1,8 @@
 <!--
 [variables]
 {
-  $page_title = "FAQ"
-  $page_title_english = "FAQ"
+  $page_title = "Reading Line Coverage"
+  $page_title_english = "Reading Line Coverage"
   $file_prev = "016.html"
   $file_next = "018.html"
   $real_page_number = "17"
@@ -10,161 +10,110 @@
 }
 -->
 
-<_header1>
-$page_title
-</_header1>
+<_header2>
+Reading Line Coverage
+</_header2>
+
+<_header3>
+Summary Information Description - Module-based
+</_header3>
 
 <_pg>
-This page contains a list of accummulated Frequently Asked Questions.
-If you are having difficulties using Covered or have questions that
-are not answered in the User's Guide, please check this list for
-answers.  If you do not find the information that you are looking for
-in the User's Guide or this FAQ, please send an e-mail to:
+For module-based reports, the summary table for line metrics includes information for the
+name of each module that was covered and the name of the file in which the module is
+described in.  Lines <a href="example.rptM.html#4">4 through 9</a> of the module-based report
+show what this information looks like in the report.  We have two modules that were scored
+within our DUT:  main and foobar.  The table shows that both modules were described in the
+file "test.v".
+</_pg>
+
+<_header3>
+Summary Information Description - Instance-based
+</_header3>
+
+<_pg>
+For instance-based reports, the summary table for line metrics includes information for
+the Verilog hierarchy pertaining to each instance on the left-hand-side of each row.  Lines
+<a href="example.rptI.html#4">4 through 9</a> of the instance-based report show what this
+information looks like in the report.  In our DUT example, there are two instances within the
+design with the Verilog hierarchies of "main" and "main.bar".
+</_pg>
+
+<_header3>
+Summary Information Description - Both
+</_header3>
+
+<_pg>
+On the right-hand side of each row in the table are the hit, miss and total numbers for the
+line coverage, followed by a calculated percent of the lines that were hit (calculated by
+taking the number of lines hit during simulation divided by the total number of lines that
+Covered simulated).  The hit value indicates how many lines were executed during the
+simulation; the miss value indicates the number of lines not executed during simulation; and
+the total value indicates the total number of lines within the specified module/instance
+that Covered was able to simulate.
 </_pg>
 
 <_pg>
-<a href="mailto:trevorw@charter.net">Trevor Williams</a>
+If the percentage value in the far left of the summary table is 100%, this indicates that all
+lines that Covered was capable of simulating (for the module/instance of this row) were
+executed.  If the value of the percentage is less than 100%, this indicates that some number
+of lines were not executed and full coverage was not achieved for that module/instance.  Note
+that for a module/instance which does not contain any lines in which Covered was able to
+simulate, the values of hit, miss, and total will be 0 while the hit percentage value will
+indicate 100%.
 </_pg>
 
-<_margin>Question</_margin>
+<_header3>
+Verbose Information Description - Both
+</_header3>
 
 <_pg>
-<strong>Is a CDD file generated from a newer version of Covered compatible
-with a CDD file generated from an older version?</strong>
-</_pg>
-
-<_pg>
-The answer to this question is, "Well, that depends...".  Since the format of the CDD file
-is only used by Covered, the contents and format of this file may be changed to suit the
-needs of Covered.  This means that it is possible for a CDD file created from an older
-version of Covered to be incompatible with a newer version.  Additionally, the developer's
-of Covered will not make any attempts to make sure that older CDD files can be properly
-read by a newer version of Covered.  It is suggested that any CDD files generated from a
-particular version of Covered be merged and/or reported on by that same version, and if
-Covered is upgraded, new CDD files should be generated.
-</_pg>
-
-<_pg>
-This being said, it is also a possibility that between versions of Covered a "backwards
-compatibility" may be maintained if a change to this file's format is not required.
-</_pg>
-
-<_margin>Question</_margin>
-
-<_pg>
-<strong>When I run the score command, Covered seems to take a long time to run.  Is there 
-anything that I can do to speed up scoring?</strong>
+If the miss value for a particular module was not 0 (indicating that lines were missed during
+simulation) and the '-d v' option was specified on the command-line (specifying to output
+verbose reporting information), the line that was missed during simulation will be output
+below the summary information per module that contained missed lines.  In our sample report,
+there was one line that was missed during simulation (according to the summary output) for
+the module/instance called 'main'.  The line number and Verilog line that was missed is
+output in lines <a href="example.rptM.html#11">11 through 16</a> of the module-based report
+and in lines <a href="example.rptI.html#11">11 through 22</a> of the instance-based report.
 </_pg>
 
 <_pg>
-While Covered is continuously being enhanced to provide better performance for all commands
-(especially the score command), it may still take a while to complete scoring if one or more
-of the following is true:
+If a module does not contain any missed lines and the '-d v' option was specified, no verbose
+output will be displayed for this module.  Likewise, if a module/instance does not contain
+any lines that Covered could execute, no verbose output will be displayed.
+</_pg>
+
+<_header4>
+Important Note
+</_header4>
+
+<_pg>
+The definition of what Covered considers a line is an expression (ex. assignment, conditional, 
+etc.).  If an expression is written in such a way that it consumes multiple file lines, 
+Covered only counts the expression as one line.  The user can assume that if the beginning
+of an expression is labeled as missed, the entire expression was missed (not just the first
+line of the expression).  For example, consider the following code:
 </_pg>
 
 <_pg>
-<ol>
-  <li>The design being scored is sufficiently large</li>
-  <li>The VCD dumpfile is sufficiently large</li>
-  <li>The VCD dumpfile contains dump information for a part of the design 
-      not being scored</li>
-</ol>
-</_pg>
-
-<_margin>1.</_margin>
-
-<_pg>
-If reason (1) is true, speeding up each run can be achieved by one of the following
-suggestions:
+always @(posedge b)<br>
+$sp2;a &lt;= (b & c) |<br>
+$sp7;(d & e);
 </_pg>
 
 <_pg>
-<ul>
-  <li>Reduce the scored design in size by eliminating modules from its design tree.
-      (See <a href="011.html#6_3">Section 6.3 Specifying What To Cover</a> for more
-      information on how to accomplish this)</li>
-  <li>Split up the design into smaller parts along module boundaries and generate coverage
-      for those parts.  Note:  it is not currently possible to append these modules into
-      one file.  Merging and reporting must be done on these smaller pieces independently
-      from one another.</li>
-</ul>
-</_pg>
-
-<_margin>2.</_margin>
-
-<_pg>
-If reason (2) is true, nothing can be done except to shorten the run time of the diagnostics
-to produce shorter dumpfiles.
-</_pg>
-
-<_margin>3.</_margin>
-
-<_pg>
-If reason (3) is true, the $dumpvars call in the simulator should be modified to only
-generate VCD dump information for the modules included in scoring.  If there are modules
-not being scored which are included in the $dumpvars calls, please remove these unnecessary
-modules from dumpfile output.
+If the expression <code> a &lt;= (b & c) | (d & e);<code> is not executed during simulation,
+Covered will indicate that only one line was missed during execution (not two), and it will
+display the missing line (if verbose reporting is specified with the '-d v' option) as the
+following:
 </_pg>
 
 <_pg>
-If you believe that you have a situation which is void of these prevailing reasons and
-Covered is still running slowly, please send an e-mail to 
-<a href="mailto:trevorw@charter.net">me</a>.  I will consider these problems to be of lower
-priority than actual bugs but will look into the situation to see where code can
-be optimized.
-</_pg>
-
-<_margin>Question</_margin>
-
-<_pg>
-<strong>I get an assertion error when running Covered, what should I do?</strong>
+$sp5;2:$sp6;assign a &lt;= (b & c) ...
 </_pg>
 
 <_pg>
-Covered uses C assertions to make sure that internal pointers are not be referenced when
-NULL and that certain internal situations do not arise.  If you receive some type of
-assertion error when running Covered, it means that something went wrong internally in
-Covered.  The error is NOT due to user error.  Please submit a bug report containing the
-assertion error message, file and line number.  Additionally, run the Covered command with
-the -D global option (covered -D <command>) and provide the output from doing this with the
-bug report (please only specify tail of output if the output is too lengthy).
-</_pg>
-
-<_pg>
-If Covered provides any other type of error message (something other than a core dump), 
-Covered has found a user error that must be fixed by the user.  Please do not submit bug
-reports if these errors are encountered, unless you wish to add a question about it to the
-FAQ.
-</_pg>
-
-<_margin>Question</_margin>
-
-<_pg>
-<strong>Covered is giving me a parser error for Verilog code that seems to be syntactically
-correct.  What is wrong?</strong>
-</_pg>
-
-<_pg>
-If Covered displays a syntax (parse) error during the score command and the Verilog code is
-written correctly, it may be that either the code is supported in the Verilog-2001
-specification and not in older specifications or Covered's parser is incomplete.  If the
-former is true, see the next FAQ.  If the latter is true, please submit a bug or send an
-e-mail containing a code snippet of the unsupported Verilog.  
-</_pg>
-
-<_margin>Question</_margin>
-
-<_pg>
-<strong>Is Covered's Verilog parser Verilog-2001 compliant?</strong>
-</_pg>
-
-<_pg>
-Not yet.  The goal of the 0.2 stable release was to allow parsing of all Verilog-1995
-standard code.  Parsing support for the entire Verilog-2001 standard will be completed in
-the 0.3 stable release.  However, there are some constructs in the Verilog-2001 standard
-that have been supported (basically because Icarus Verilog currently supports them), so the
-recommendation is to use Covered on that code to find out if the parsing support is there.
-If not, please send a bug report or e-mail containing the code snippet that doesn't parse.
-I will make a point to provide a patch containing parsing support for this code as soon as
-possible.
+The "..." notation at the end of the Verilog output indicates that the expression was a
+multiline expression in the source code but is only considered one line.
 </_pg>

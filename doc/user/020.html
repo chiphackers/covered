@@ -1,0 +1,253 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+  <TITLE>Covered - Reading FSM Coverage</TITLE>
+  <META name="GENERATOR" content="ManStyle">
+  <META name="AUTHOR" content="Trevor Williams">
+  <LINK rel=stylesheet type="text/css" href="styles.css">
+</HEAD>
+<BODY text="#000000"
+      link="#12568c" vlink="#023a64" alink="#000000" 
+      bgcolor="#ffffff" background="img/tile.jpeg">
+
+<TABLE width=615 border=0 cellpadding=0 cellspacing=0>
+  <TR>
+    <TD width=30>
+      <IMG src="img/space.gif" width=30 height=1 border=0>
+    </TD>
+    <TD width=105>
+      <IMG src="img/space.gif" width=105 height=1 border=0>
+    </TD>
+    <TD width=20>
+      <IMG src="img/space.gif" width=20 height=1 border=0>
+    </TD>
+    <TD width=460>
+      <IMG src="img/space.gif" width=460 height=1 border=0><BR>
+      <P class="pageNumber">&nbsp;20&nbsp;</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top></TD>
+    <TD></TD>
+    <TD align=center>
+      <TABLE width=460 border=0 cellpadding=0 cellspacing=0>
+        <TR>
+          <TD width=460 align=center valign=top class="navigator">
+            <P class="navigator"><IMG src="img/000000.gif" height=2 width=460><BR>
+            <IMG src="img/toolbar_left.png" border=0><A href="001.html" alt="Contents"><IMG src="img/toolbar_cont.png" border=0></A><A href="index.html" alt="First Page"><IMG src="img/toolbar_first.png" border=0></A><A href="019.html" alt="Previous Page"><IMG src="img/toolbar_prev.png" border=0></A><A href="index.html" alt="Home"><IMG src="img/toolbar_home.png" border=0></A><A href="021.html" alt="Next Page"><IMG src="img/toolbar_next.png" border=0></A><A href="022.html" alt="Last Page"><IMG src="img/toolbar_last.png" border=0></A><IMG src="img/toolbar_right.png" border=0>
+            <BR><IMG src="img/000000.gif" height=2 width=460></P>
+          </TD>
+        </TR>
+        <TR>
+          <TD align=center valign=top>
+            <P class="pageHeader">User Manual - <B>&laquo;Covered&raquo;</B><BR><IMG src="img/000000.gif" height=1 width=460></P>
+          </TD>
+        </TR>
+        <TR>
+          <TD align=center valign=top>
+            &nbsp;
+          </TD>
+        </TR>
+      </TABLE>
+    </TD>
+  </TR>
+
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header2">11.4&nbsp; <A name="11_4"></A>Reading FSM Coverage</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header3">11.4.1 <A name="11_4_1"></A>Summary Information Description - Module-based</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">For module-based reports, the summary table for FSM metrics includes information for the name of each module that was covered and the name of the file in which the module is described in. Lines <a href="example.rptM.html#125">125 through 131</a> of the module-based report show what this information looks like in the report. We have two modules that were scored within our DUT: main and foobar. The table shows that both modules were described in the file "example.v".</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header3">11.4.2 <A name="11_4_2"></A>Summary Information Description - Instance-based</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">For instance-based reports, the summary table for FSM metrics includes information for the Verilog hierarchy pertaining to each instance on the left-hand-side of each row. Lines <a href="example.rptI.html#131">131 through 137</a> of the instance-based report show what this information looks like in the report. In our DUT example, there are two instances within the design with the Verilog hierarchies of "main" and "main.bar".</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header3">11.4.3 <A name="11_4_3"></A>Summary Information Description - Both</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">On the right-hand side of each row in the table are the hit, miss and total numbers for the FSM state coverage, followed by a calculated percent of the FSM states that were hit (calculated by taking the number of FSM states hit during simulation divided by the total number of FSM states that Covered could have simulated). The hit value indicates how many FSM states were executed during the simulation; the miss value indicates the number of FSM states not executed during simulation; and the total value indicates the total number of FSM states within the specified module/instance that Covered can simulate.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">To the right of the FSM state summary information is the FSM state-transition hit, miss, total and percentage hit summary information for each module/instance.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">If the percentage value in the far left of the summary table is 100%, this indicates that all FSM states and state-transitions that Covered was capable of simulating (for the module/instance of this row) were executed. If the value of the percentage is less than 100%, this indicates that some number of FSM states and/or FSM state-transitions were not executed and full coverage was not achieved for that module/instance. Note that for a module/instance which does not contain any FSMs in which Covered was able to simulate, the values of hit, miss, and total will be 0 while the hit percentage value will indicate 100%.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header3">11.4.4 <A name="11_4_4"></A>Verbose Information Description - Both</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">The verbose output for FSM coverage is split into the state coverage information and the state transition coverage information. When an FSM is found to be not fully covered (i.e., the number of hit states/state transitions is not equal to the number of attainable states/state transitions), the missed states are output to the report as a list of state values in hexidecimal format as follows:</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">&lt;<i>hexidecimal value</i>&gt;</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">When an FSM is found to be not fully covered, the missed state transitions are output to the report as a list of state transitions in the format below:</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">&lt;<i>hexidecimal input state value</i>&gt; -&gt; &lt;<i>hexidecimal output state value</i>&gt;</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">If the -c option is used or the number of attainable state/state transitions are unknown for the specified FSM, Covered outputs this information in the same way as the missed cases except that the title of the output is "Hit cases". If the number of attainable states/state transitions is unknown, providing the cases that were hit during simulation is useful in aiding the user in determining coverage. In this case, the summary report will output question marks in the missed and total categories, showing the user that this information was not known by Covered.</P>
+    </TD>
+  </TR>
+
+
+  <TR>
+    <TD></TD>
+    <TD></TD>
+    <TD></TD>
+    <TD valign=top>
+       <P class="navigatorSmall"><IMG src="img/12568c.gif" height=1 width=460><BR>
+       [&nbsp;
+       <A href="001.html">Contents</A>&nbsp;&nbsp;|&nbsp;
+       <A href="index.html">First Page</A>&nbsp;&nbsp;|&nbsp;
+       <A href="019.html">Previous Page</A>&nbsp;&nbsp;|&nbsp;
+       <A href="index.html">Home</A>&nbsp;
+       &nbsp;|&nbsp;<A href="021.html">Next Page</A>&nbsp;&nbsp;|&nbsp;
+       <A href="022.html">Last Page</A>&nbsp;
+       ]<BR>
+       [&nbsp; <A href="001.html">1</A>&nbsp;|&nbsp;<A href="002.html">2</A>&nbsp;|&nbsp;<A href="003.html">3</A>&nbsp;|&nbsp;<A href="004.html">4</A>&nbsp;|&nbsp;<A href="005.html">5</A>&nbsp;|&nbsp;<A href="006.html">6</A>&nbsp;|&nbsp;<A href="007.html">7</A>&nbsp;|&nbsp;<A href="008.html">8</A>&nbsp;|&nbsp;<A href="009.html">9</A>&nbsp;|&nbsp;<A href="010.html">10</A>&nbsp;|&nbsp;<A href="011.html">11</A>&nbsp;|&nbsp;<A href="012.html">12</A>&nbsp;|&nbsp;<A href="013.html">13</A>&nbsp;|&nbsp;<A href="014.html">14</A>&nbsp;|&nbsp;<A href="015.html">15</A>&nbsp;|&nbsp;<A href="016.html">16</A>&nbsp;|&nbsp;<A href="017.html">17</A>&nbsp;|&nbsp;<A href="018.html">18</A>&nbsp;|&nbsp;<A href="019.html">19</A>&nbsp;|&nbsp;<A href="020.html">20</A>&nbsp;|&nbsp;<A href="021.html">21</A>&nbsp;|&nbsp;<A href="022.html">22</A> &nbsp;]
+       <BR>
+       <B>License: GPL</B><BR>
+       This Manual was created with <A HREF="http://manstyle.sourceforge.net">ManStyle</A>.
+       </P>
+    </TD>
+  </TR>
+
+</TABLE>
+
+<P>
+  <BR><BR>
+</P>
+
+</BODY>
+</HTML>
