@@ -206,7 +206,7 @@ bool fsm_db_read( char** line, module* mod ) {
        If the input state variable is the same as the output state variable, create the new expression now.
       */
       if( iexp.id == oexp.id ) {
-        table->from_state = expression_create( NULL, NULL, EXP_OP_STATIC, iexp.id, 0, FALSE );
+        table->from_state = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, iexp.id, 0, FALSE );
         vector_dealloc( table->from_state->value );
         table->from_state->value = vector_create( iexpl->exp->value->width, TRUE );
       } else {
@@ -756,6 +756,9 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.32  2003/11/16 04:03:39  phase1geo
+ Updating development documentation for FSMs.
+
  Revision 1.31  2003/11/10 04:25:50  phase1geo
  Adding more FSM diagnostics to regression suite.  All major testing for
  current FSM code should be complete at this time.  A few bug fixes to files

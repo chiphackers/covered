@@ -4,10 +4,12 @@
 1 #bar1 main 0 32 0 4 0 0 0 0 0 0 0
 1 x main 0 2 0 3110a
 3 foo main.bar1 param3.3.v
-2 8 main.bar1 33 201000 0 0 2 1 0
-2 7 main.bar1 33 203001 0 0 
-2 9 main.bar1 33 253f82 8 7 2 0 3110a
+2 9 main.bar1 33 201000 0 0 2 1 0
+2 8 main.bar1 33 203001 0 0 
+2 10 main.bar1 33 253002 9 8 2 0 3110a
+2 7 main.bar1 33 2203001 0 0 
+2 11 main.bar1 33 2293fb7 10 7 2 0 3110a
 1 #bsize main.bar1 0 32 0 4 0 0 0 0 0 0 0
-1 b main.bar1 0 2 0 3110a 7
-1 a main.bar1 0 2 0 3110a
-4 9 main.bar1 9 9
+1 b main.bar1 0 2 0 3110a 8
+1 a main.bar1 0 2 0 3110a 7
+4 11 main.bar1 11 11

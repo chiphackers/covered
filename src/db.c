@@ -682,6 +682,7 @@ signal* db_find_signal( char* name ) {
  \param right     Pointer to expression on right side of expression.
  \param left      Pointer to expression on left side of expression.
  \param op        Operation to perform on expression.
+ \param lhs       Specifies this expression is a left-hand-side assignment expression.
  \param line      Line number of current expression.
  \param sig_name  Name of signal that expression is attached to (if valid).
 
@@ -690,7 +691,7 @@ signal* db_find_signal( char* name ) {
  Creates a new expression with the specified parameter information and returns a
  pointer to the newly created expression.
 */
-expression* db_create_expression( expression* right, expression* left, int op, int line, char* sig_name ) {
+expression* db_create_expression( expression* right, expression* left, int op, bool lhs, int line, char* sig_name ) {
 
   expression* expr;                 /* Temporary pointer to newly created expression      */
   int         right_id;             /* ID of right expression                             */
@@ -710,11 +711,12 @@ expression* db_create_expression( expression* right, expression* left, int op, i
     left_id = left->id;
   }
 
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_create_expression, right: %d, left: %d, id: %d, op: %d, line: %d", 
+  snprintf( user_msg, USER_MSG_LENGTH, "In db_create_expression, right: %d, left: %d, id: %d, op: %d, lhs: %d, line: %d", 
                        right_id,
                        left_id,
                        curr_expr_id, 
                        op,
+                       lhs,
                        line );
   print_output( user_msg, DEBUG );
 
@@ -736,7 +738,7 @@ expression* db_create_expression( expression* right, expression* left, int op, i
   }
 
   /* Create expression with next expression ID */
-  expr = expression_create( right, left, op, curr_expr_id, line, FALSE );
+  expr = expression_create( right, left, op, lhs, curr_expr_id, line, FALSE );
   curr_expr_id++;
 
   /* Set right and left side expression's (if they exist) parent pointer to this expression */
@@ -1251,6 +1253,9 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.107  2003/11/12 17:34:03  phase1geo
+ Fixing bug where signals are longer than allowable bit width.
+
  Revision 1.106  2003/10/28 01:09:38  phase1geo
  Cleaning up unnecessary output.
 

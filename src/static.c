@@ -119,7 +119,7 @@ static_expr* static_expr_gen_unary( static_expr* stexp, int op, int line ) {
 
     } else {
 
-      tmpexp = expression_create( stexp->exp, NULL, op, 0, line, FALSE );
+      tmpexp = expression_create( stexp->exp, NULL, op, FALSE, 0, line, FALSE );
       stexp->exp->parent->expr = tmpexp;
       stexp->exp = tmpexp;
 
@@ -180,11 +180,11 @@ static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int
 
       } else {
 
-        right->exp = expression_create( NULL, NULL, EXP_OP_STATIC, 0, line, FALSE );
+        right->exp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, 0, line, FALSE );
         vector_init( right->exp->value, (nibble*)malloc_safe( sizeof( nibble ) * 32 ), 32 );  
         vector_from_int( right->exp->value, right->num );
 
-        tmpexp = expression_create( right->exp, left->exp, op, 0, line, FALSE );
+        tmpexp = expression_create( right->exp, left->exp, op, FALSE, 0, line, FALSE );
         right->exp->parent->expr = tmpexp;
         left->exp->parent->expr  = tmpexp;
         right->exp = tmpexp;
@@ -195,17 +195,17 @@ static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int
 
       if( left->exp == NULL ) {
 
-        left->exp = expression_create( NULL, NULL, EXP_OP_STATIC, 0, line, FALSE );
+        left->exp = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, 0, line, FALSE );
         vector_init( left->exp->value, (nibble*)malloc_safe( sizeof( nibble ) * 32 ), 32 );
         vector_from_int( left->exp->value, left->num );
 
-        tmpexp = expression_create( right->exp, left->exp, op, 0, line, FALSE );
+        tmpexp = expression_create( right->exp, left->exp, op, FALSE, 0, line, FALSE );
         right->exp->parent->expr = tmpexp;
         right->exp = tmpexp;
 
       } else {
 
-        tmpexp = expression_create( right->exp, left->exp, op, 0, line, FALSE );
+        tmpexp = expression_create( right->exp, left->exp, op, FALSE, 0, line, FALSE );
         right->exp->parent->expr = tmpexp;
         left->exp->parent->expr  = tmpexp;
         right->exp = tmpexp;
@@ -286,6 +286,9 @@ void static_expr_dealloc( static_expr* stexp, bool rm_exp ) {
 
 /*
  $Log$
+ Revision 1.9  2003/10/17 12:55:36  phase1geo
+ Intermediate checkin for LSB fixes.
+
  Revision 1.8  2003/10/11 05:15:08  phase1geo
  Updates for code optimizations for vector value data type (integers to chars).
  Updated regression for changes.

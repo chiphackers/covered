@@ -5,18 +5,22 @@
 1 x main 0 2 0 3130a
 1 y main 0 3 0 7002a
 3 foo main.bar1 param3.4.v
-2 7 main.bar1 32 201000 0 0 32 0 0 0 0 0 0 0 0 0
-2 6 main.bar1 32 103001 0 0 
-2 8 main.bar1 32 153f82 7 6 32 0 f13aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa
+2 8 main.bar1 32 201000 0 0 32 0 0 0 0 0 0 0 0 0
+2 7 main.bar1 32 103001 0 0 
+2 9 main.bar1 32 153002 8 7 32 0 f13aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa
+2 6 main.bar1 32 2103001 0 0 
+2 10 main.bar1 32 2193fb7 9 6 32 0 f13aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa
 1 #bsize main.bar1 0 32 0 4 0 0 0 0 0 0 0
-1 b main.bar1 0 2 0 3130a 6
-1 a main.bar1 0 2 0 3130a
-4 8 main.bar1 8 8
+1 b main.bar1 0 2 0 3130a 7
+1 a main.bar1 0 2 0 3130a 6
+4 10 main.bar1 10 10
 3 foo main.bar2 param3.4.v
-2 7 main.bar2 32 201000 0 0 32 0 0 0 0 0 0 0 0 0
-2 6 main.bar2 32 201001 0 0 
-2 8 main.bar2 32 211f82 7 6 32 0 f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa
+2 8 main.bar2 32 201000 0 0 32 0 0 0 0 0 0 0 0 0
+2 7 main.bar2 32 201001 0 0 
+2 9 main.bar2 32 211002 8 7 32 0 f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa
+2 6 main.bar2 32 2201001 0 0 
+2 10 main.bar2 32 2211fb7 9 6 32 0 f00aa f00aa f00aa f00aa f00aa f00aa f00aa f00aa
 1 #bsize main.bar2 0 32 0 5 0 0 0 0 0 0 0
-1 b main.bar2 0 3 0 7002a 6
-1 a main.bar2 0 3 0 7002a
-4 8 main.bar2 8 8
+1 b main.bar2 0 3 0 7002a 7
+1 a main.bar2 0 3 0 7002a 6
+4 10 main.bar2 10 10

@@ -96,6 +96,7 @@ void expression_create_value( expression* exp, int width, bool data ) {
  \param right  Pointer to expression on right.
  \param left   Pointer to expression on left.
  \param op     Operation to perform for this expression.
+ \param lhs    Specifies this expression is a left-hand-side assignment expression.
  \param id     ID for this expression as determined by the parent.
  \param line   Line number this expression is on.
  \param data   Specifies if we should create a nibble array for the vector value.
@@ -105,7 +106,7 @@ void expression_create_value( expression* exp, int width, bool data ) {
  Creates a new expression from heap memory and initializes its values for
  usage.  Right and left expressions need to be created before this function is called.
 */
-expression* expression_create( expression* right, expression* left, int op, int id, int line, bool data ) {
+expression* expression_create( expression* right, expression* left, int op, bool lhs, int id, int line, bool data ) {
 
   expression* new_expr;    /* Pointer to newly created expression */
   int         rwidth = 0;  /* Bit width of expression on right    */
@@ -113,7 +114,7 @@ expression* expression_create( expression* right, expression* left, int op, int 
 
   new_expr = (expression*)malloc_safe( sizeof( expression ) );
 
-  new_expr->suppl        = ((op & 0x7f) << SUPPL_LSB_OP);
+  new_expr->suppl        = (((int)lhs & 0x1) << SUPPL_LSB_LHS) | ((op & 0x7f) << SUPPL_LSB_OP);
   new_expr->id           = id;
   new_expr->line         = line;
   new_expr->sig          = NULL;
@@ -595,7 +596,7 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
       }
 
       /* Create new expression */
-      expr = expression_create( right, left, SUPPL_OP( suppl ), id, linenum,
+      expr = expression_create( right, left, SUPPL_OP( suppl ), SUPPL_IS_LHS( suppl ), id, linenum,
                                 ((SUPPL_OP( suppl ) != EXP_OP_SIG)        && 
                                  (SUPPL_OP( suppl ) != EXP_OP_PARAM)      &&
                                  (SUPPL_OP( suppl ) != EXP_OP_SBIT_SEL)   &&
@@ -1131,6 +1132,12 @@ void expression_operate( expression* expr ) {
         vector_set_value( expr->value, &bit, 1, 0, 0 );
         break;
 
+      case EXP_OP_ASSIGN :
+      case EXP_OP_BASSIGN :
+      case EXP_OP_NASSIGN :
+        vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
+        break;
+
       default :
         print_output( "Internal error:  Unidentified expression operation!", FATAL );
         exit( 1 );
@@ -1329,6 +1336,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.87  2003/11/07 05:18:40  phase1geo
+ Adding working code for inline FSM attribute handling.  Full regression fails
+ at this point but the code seems to be working correctly.
+
  Revision 1.86  2003/10/31 01:38:13  phase1geo
  Adding new expand diagnostics to verify more situations regarding expansion
  operators.  Fixing expression_create to properly handle all situations of

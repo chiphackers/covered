@@ -68,8 +68,8 @@ Expression 3
 ====================================================
  Line #     Expression
 ====================================================
-     31:    display_tagto_current_state
-            |------------1------------|
+     31:    next_st = display_tagto_current_state
+                      |------------1------------|
 
 
 Expression 1
@@ -82,8 +82,8 @@ Expression 1
 ====================================================
  Line #     Expression
 ====================================================
-     78:    next_st
-            |--1--|
+     78:    display_tagto_current_state <= next_st
+                                           |--1--|
 
 
 Expression 1
