@@ -230,6 +230,8 @@ bool statement_db_read( char** line, module* curr_mod ) {
       /* Add statement to module statement list */
       stmt_link_add_tail( stmt, &(curr_mod->stmt_head), &(curr_mod->stmt_tail) );
 
+//      stmt_link_display( curr_mod->stmt_head );
+
       /* Possibly add statement to presimulation queue */
       sim_add_stmt_to_queue( stmt );
 
@@ -288,7 +290,6 @@ void statement_set_stop( statement* stmt ) {
 
   if( (stmt->next_true == NULL) && (stmt->next_false == NULL) && (SUPPL_IS_STMT_STOP( stmt->exp->suppl ) == 0) ) {
     stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);
-    printf( "Set STOP bit for stmt %d\n", stmt->exp->id );
   }
 
   if( stmt->next_true != NULL ) {
@@ -314,8 +315,9 @@ void statement_set_stop( statement* stmt ) {
 */
 void statement_dealloc( statement* stmt ) {
 
-  if( (stmt != NULL) && (stmt->next_true != stmt->next_false) ) {
+  if( stmt != NULL ) {
 
+#ifdef EFFICIENCY_CODE
     assert( stmt->exp != NULL );
 
     /* Deallocate entire expression tree */
@@ -331,6 +333,7 @@ void statement_dealloc( statement* stmt ) {
       statement_dealloc( stmt->next_false );
       stmt->next_false = FALSE;
     }
+#endif
  
     /* Finally, deallocate this statement */
     free_safe( stmt );
@@ -341,6 +344,9 @@ void statement_dealloc( statement* stmt ) {
 
 
 /* $Log$
+/* Revision 1.12  2002/06/25 21:46:10  phase1geo
+/* Fixes to simulator and reporting.  Still some bugs here.
+/*
 /* Revision 1.11  2002/06/25 12:48:38  phase1geo
 /* Fixing case where statement's true and false paths point to itself when
 /* reading in CDD.

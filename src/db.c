@@ -826,7 +826,7 @@ void db_do_timestep( int time ) {
   print_output( msg, NORMAL );
 
   /* Simulate the current timestep */
-  sim_simulate();
+  sim_simulate( time );
 
   /* Finally, clear timestep_tab */
   symtable_dealloc( timestep_tab );
@@ -865,6 +865,9 @@ int db_get_signal_size( char* symbol ) {
 
 
 /* $Log$
+/* Revision 1.16  2002/06/25 21:46:10  phase1geo
+/* Fixes to simulator and reporting.  Still some bugs here.
+/*
 /* Revision 1.15  2002/06/25 03:39:03  phase1geo
 /* Fixed initial scoring bugs.  We now generate a legal CDD file for reporting.
 /* Fixed some report bugs though there are still some remaining.

@@ -24,13 +24,15 @@
 */  
 void module_init( module* mod ) {
     
-  mod->name     = NULL;
-  mod->scope    = NULL;
-  mod->filename = NULL;
-  mod->sig_head = NULL;
-  mod->sig_tail = NULL;
-  mod->exp_head = NULL;
-  mod->exp_tail = NULL;
+  mod->name      = NULL;
+  mod->scope     = NULL;
+  mod->filename  = NULL;
+  mod->sig_head  = NULL;
+  mod->sig_tail  = NULL;
+  mod->exp_head  = NULL;
+  mod->exp_tail  = NULL;
+  mod->stmt_head = NULL;
+  mod->stmt_tail = NULL;
 
 }
 
@@ -327,6 +329,10 @@ void module_clean( module* mod ) {
     exp_link_delete_list( mod->exp_head, TRUE );
     mod->exp_head = NULL;
 
+    /* Free statement list */
+    stmt_link_delete_list( mod->stmt_head );
+    mod->stmt_head = NULL;
+
   }
 
 }
@@ -354,6 +360,11 @@ void module_dealloc( module* mod ) {
 
 
 /* $Log$
+/* Revision 1.5  2002/06/25 02:02:04  phase1geo
+/* Fixing bugs with writing/reading statements and with parsing design with
+/* statements.  We now get to the scoring section.  Some problems here at
+/* the moment with the simulator.
+/*
 /* Revision 1.4  2002/06/24 04:54:48  phase1geo
 /* More fixes and code additions to make statements work properly.  Still not
 /* there at this point.

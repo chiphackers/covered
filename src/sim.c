@@ -178,6 +178,7 @@ void sim_expression( expression* expr ) {
 
 /*!
  \param head_stmt  Pointer to head statement to simulate.
+ \param time       Current timestep from VCD file.
 
  \return Returns a pointer to the first statement to execute in the next timestep
 
@@ -186,7 +187,7 @@ void sim_expression( expression* expr ) {
  it.  Continues to run for current statement tree until statement tree hits a
  wait-for-event condition (or we reach the end of a simulation tree).
 */
-statement* sim_statement( statement* head_stmt ) {
+statement* sim_statement( statement* head_stmt, int time ) {
 
   statement* stmt;              /* Pointer to current statement to evaluate */
   statement* last_stmt = NULL;  /* Pointer to the last statement evaluated  */
@@ -238,16 +239,21 @@ statement* sim_statement( statement* head_stmt ) {
 }
 
 /*!
+ \param time  Current timestep.
+
  This function is the heart of the simulation engine.  It is called by the
  db_do_timestep() function in db.c  and moves the statements and expressions into
  the appropriate simulation functions.  See above explanation on this procedure.
 */
-void sim_simulate() {
+void sim_simulate( int time ) {
 
-  stmt_link* curr_stmt;   /* Pointer to current statement to simulate    */
+  stmt_link* curr_stmt;   /* Pointer to current statement to simulate */
+  stmt_link* last_stmt;   /* Pointer to last statement evaluated      */
+  stmt_link* tmp_stmt;    /* Pointer to temporary statement holder    */
 
   /* Get head statement from pre-simulation statement queue */
   curr_stmt = presim_stmt_head;
+  last_stmt = presim_stmt_head;
 
   while( curr_stmt != NULL ) {
 
@@ -256,14 +262,39 @@ void sim_simulate() {
     printf( "Executing statement %d\n", curr_stmt->stmt->exp->id );
 
     /* Place current statement into statement simulation engine and call it */
-    curr_stmt->stmt = sim_statement( curr_stmt->stmt );
-    curr_stmt       = curr_stmt->next;
+    curr_stmt->stmt = sim_statement( curr_stmt->stmt, time );
+
+    /* If the next statement is NULL, this statement tree is done for good so remove */
+    if( curr_stmt->stmt == NULL ) {
+
+      if( curr_stmt == presim_stmt_head ) {
+        presim_stmt_head = curr_stmt->next;
+      } else if( curr_stmt == presim_stmt_tail ) {
+        presim_stmt_tail       = last_stmt;
+        presim_stmt_tail->next = NULL;
+      } else {
+        last_stmt->next = curr_stmt->next;
+      }
+
+      tmp_stmt  = curr_stmt;
+      curr_stmt = curr_stmt->next;
+
+      free_safe( tmp_stmt );
+
+    } else {
+
+      curr_stmt       = curr_stmt->next;
+
+    }
 
   }
 
 }
 
 /* $Log$
+/* Revision 1.6  2002/06/25 21:46:10  phase1geo
+/* Fixes to simulator and reporting.  Still some bugs here.
+/*
 /* Revision 1.5  2002/06/25 03:39:03  phase1geo
 /* Fixed initial scoring bugs.  We now generate a legal CDD file for reporting.
 /* Fixed some report bugs though there are still some remaining.
