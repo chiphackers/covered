@@ -835,9 +835,7 @@ void fsm_dealloc( fsm* table ) {
   if( table != NULL ) {
 
     /* Deallocate tables */
-    if( table->table != NULL ) {
-      free_safe( table->table );
-    }
+    arc_dealloc( table->table );
 
     /* Deallocate FSM arc structure */
     while( table->arc_head != NULL ) {
@@ -855,6 +853,10 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.14  2003/09/19 13:25:28  phase1geo
+ Adding new FSM diagnostics including diagnostics to verify FSM merging function.
+ FSM merging code was modified to work correctly.  Full regression passes.
+
  Revision 1.13  2003/09/19 02:34:51  phase1geo
  Added new fsm1.3 diagnostic to regress suite which found a bug in arc.c that is
  now fixed.  It had to do with resizing an arc array and copying its values.

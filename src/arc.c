@@ -193,16 +193,16 @@ bool arc_set_states( char* arcs, int start, vector* left, vector* right ) {
       if( j == 0 ) {
         pos         = (arc_get_width( arcs ) + ARC_ENTRY_SUPPL_SIZE) % 8;
         curr        = (start * entry_size) + ((arc_get_width( arcs ) + ARC_ENTRY_SUPPL_SIZE) / 8) + ARC_STATUS_SIZE;
-        value.width = (arc_get_width( arcs ) > (8 - pos)) ? (8 - pos) : arc_get_width( arcs );
         value.value = left->value;
       } else {
-        pos          = ARC_ENTRY_SUPPL_SIZE;
-        value.width  = (arc_get_width( arcs ) > 8) ? 8 : arc_get_width( arcs );
-        curr         = (start * entry_size) + ARC_STATUS_SIZE;
-        value.value  = right->value;
+        pos         = ARC_ENTRY_SUPPL_SIZE;
+        curr        = (start * entry_size) + ARC_STATUS_SIZE;
+        value.value = right->value;
       }
 
-      value.lsb = 0;
+      value.width = (arc_get_width( arcs ) > (8 - pos)) ? (8 - pos) : arc_get_width( arcs );
+      value.lsb   = 0;
+
       while( value.lsb < arc_get_width( arcs ) ) {
         mask = 0;
         for( i=0; i<value.width; i++ ) {
@@ -210,6 +210,7 @@ bool arc_set_states( char* arcs, int start, vector* left, vector* right ) {
           mask  |= (0x1 << pos);
         }
         arcs[curr] |= ((vector_to_int( &value ) << pos) & mask);
+        // printf( "arcs[%d]: %x, value: %x\n", curr, ((int)arcs[curr] & 0xff), ((vector_to_int( &value ) << pos) & mask) );
         value.lsb  += value.width;
         value.width = ((arc_get_width( arcs ) - value.lsb) > 8) ? 8 : (arc_get_width( arcs ) - value.lsb);
         pos         = 0;
@@ -740,6 +741,7 @@ bool arc_db_write( char* arcs, FILE* file ) {
   int  i;              /* Loop iterator                  */
 
   for( i=0; i<(arc_get_curr_size( arcs ) * arc_get_entry_width( arc_get_width( arcs ) )) + ARC_STATUS_SIZE; i++ ) {
+    // printf( "arcs[%d]; %x\n", i, (int)arcs[i] & 0xff );
     if( (int)arcs[i] == 0 ) {
       fprintf( file, "," );
     } else {
@@ -1071,6 +1073,10 @@ void arc_dealloc( char* arcs ) {
 
 /*
  $Log$
+ Revision 1.12  2003/09/19 13:25:28  phase1geo
+ Adding new FSM diagnostics including diagnostics to verify FSM merging function.
+ FSM merging code was modified to work correctly.  Full regression passes.
+
  Revision 1.11  2003/09/19 02:34:51  phase1geo
  Added new fsm1.3 diagnostic to regress suite which found a bug in arc.c that is
  now fixed.  It had to do with resizing an arc array and copying its values.

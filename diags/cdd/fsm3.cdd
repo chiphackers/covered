@@ -1,0 +1,85 @@
+5 1 *
+3 main main fsm3.v
+2 10 main 16 102001 0 0 
+2 9 main 16 102032 0 0 
+2 11 main 16 18201a 10 9 16 0 f11aa,f11aa,f11aa,f11aa
+2 8 main 16 203001 0 0 
+2 12 main 16 1a2599 11 8 16 0 f11aa,f11aa,f11aa,f11aa
+2 5 main 16 203001 0 0 
+2 6 main 16 2a 0 0 2 0 333aa
+2 7 main 16 2033a7 5 6 1 0 111aa
+2 34 main 21 102032 0 0 
+2 33 main 21 102032 0 0 
+2 35 main 21 18201a 34 33 16 0 f11aa,f11aa,f00aa,f00aa
+2 31 main 21 203001 0 0 
+2 30 main 21 203001 0 0 
+2 32 main 21 293008 31 30 1 0 111aa
+2 36 main 21 1a2599 35 32 16 0 f11aa,f11aa,f00aa,f00aa
+2 42 main 22 102032 0 0 
+2 41 main 22 102032 0 0 
+2 43 main 22 18201a 42 41 16 0 f00aa,f00aa,f10aa,f01aa
+2 39 main 22 103001 0 0 
+2 38 main 22 102001 0 0 
+2 40 main 22 1cf008 39 38 1 0 101aa
+2 44 main 22 1ae599 43 40 16 0 f00aa,f00aa,f10aa,f01aa
+2 50 main 23 102032 0 0 
+2 49 main 23 102032 0 0 
+2 51 main 23 18201a 50 49 16 0 f00aa,f00aa,f10aa,f01aa
+2 47 main 23 103001 0 0 
+2 46 main 23 102001 0 0 
+2 48 main 23 1cf008 47 46 1 0 101aa
+2 52 main 23 1ae599 51 48 16 0 f00aa,f00aa,f10aa,f01aa
+2 58 main 24 102032 0 0 
+2 57 main 24 102032 0 0 
+2 59 main 24 18201a 58 57 16 0 f01aa,f10aa,f00aa,f00aa
+2 55 main 24 203001 0 0 
+2 54 main 24 203001 0 0 
+2 56 main 24 293008 55 54 1 0 110aa
+2 60 main 24 1a2599 59 56 16 0 f01aa,f10aa,f00aa,f00aa
+2 53 main 24 102032 0 0 
+2 28 main 20 102081 0 0 
+2 61 main 24 1835ad 53 28 1 0 101aa
+2 45 main 23 102032 0 0 
+2 62 main 23 2831ad 45 28 1 0 111aa
+2 37 main 22 102032 0 0 
+2 63 main 22 2831ad 37 28 1 0 111aa
+2 29 main 21 102032 0 0 
+2 64 main 21 1831ad 29 28 1 0 111aa
+2 24 main 18 1 0 0 
+2 25 main 18 2a 0 0 2 0 111aa
+2 26 main 18 20b029 24 25 1 0 111aa
+2 20 main 18 1 0 0 
+2 21 main 18 2a 0 0 2 0 111aa
+2 22 main 18 20b029 20 21 1 0 111aa
+2 16 main 18 1 0 0 
+2 17 main 18 2a 0 0 2 0 111aa
+2 18 main 18 20b029 16 17 1 0 111aa
+2 13 main 18 1 0 0 
+2 14 main 18 2a 0 0 17 0 f11aa,f11aa,f11aa,f11aa,aa
+2 15 main 18 20b029 13 14 1 0 111aa
+2 19 main 18 2ff02b 18 15 1 0 111aa
+2 23 main 18 2df02b 22 19 1 0 111aa
+2 27 main 18 2f33ab 26 23 1 0 111aa
+1 #STATE_IDLE main 16 0 300001,0,0,0 9 29 34 58
+1 #STATE_HEAD main 16 0 300000,1,0,0 33 37 57
+1 #STATE_DATA main 16 0 300000,0,1,0 42 45 50
+1 #STATE_TAIL main 16 0 300000,0,0,1 41 49 53
+1 clk main 1 0 111aa 5
+1 reset main 1 0 110aa 8
+1 head main 1 0 111aa 16 31 55
+1 tail main 1 0 111aa 24 39 47
+1 valid main 1 0 111aa 20 30 38 46 54
+1 state main 16 0 f11aa,f11aa,f11aa,f11aa 13 28
+1 next_state main 16 0 f11aa,f11aa,f11aa,f11aa 10
+4 12 main 7 7
+4 7 main 12 0
+4 60 main 27 27
+4 61 main 60 27
+4 52 main 27 27
+4 62 main 52 61
+4 44 main 27 27
+4 63 main 44 62
+4 36 main 27 27
+4 64 main 36 63
+4 27 main 64 0
+6 state next_state 10,10,07,,21,20,,010220,,0120,02,01,0220,0102,,0201,0202,21,,,02
