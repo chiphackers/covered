@@ -869,9 +869,9 @@
     <td>
 
 <p>
-<b>Value:</b><div class="fragment"><pre>yytext_ptr = yy_bp; \
-        yytext_ptr -= yy_more_len; \
-        yyleng = (int) (yy_cp - yytext_ptr); \
+<b>Value:</b><div class="fragment"><pre><a class="code" href="lexer_8c.html#a45">yytext_ptr</a> = <a class="code" href="lexer_8c.html#a120">yy_bp</a>; \
+        <a class="code" href="lexer_8c.html#a45">yytext_ptr</a> -= yy_more_len; \
+        yyleng = (int) (yy_cp - <a class="code" href="lexer_8c.html#a45">yytext_ptr</a>); \
         yy_hold_char = *yy_cp; \
         *yy_cp = <font class="charliteral">'\0'</font>; \
         yy_c_buf_p = yy_cp;</pre></div>    </td>
@@ -1496,7 +1496,7 @@
 <p>
 <b>Value:</b><div class="fragment"><pre>{ \
         <font class="keywordflow">if</font> ( ! yy_current_buffer ) \
-                yy_current_buffer = <a class="code" href="lexer_8c.html#a0">yy_create_buffer</a>( yyin, YY_BUF_SIZE ); \
+                yy_current_buffer = <a class="code" href="lexer_8c.html#a0">yy_create_buffer</a>( yyin, <a class="code" href="lexer_8c.html#a30">YY_BUF_SIZE</a> ); \
         yy_current_buffer-&gt;yy_at_bol = at_bol; \
         }</pre></div>    </td>
   </tr>
@@ -1527,7 +1527,7 @@
 <p>
 <b>Value:</b><div class="fragment"><pre>{ \
         <font class="keywordflow">if</font> ( ! yy_current_buffer ) \
-                yy_current_buffer = <a class="code" href="lexer_8c.html#a0">yy_create_buffer</a>( yyin, YY_BUF_SIZE ); \
+                yy_current_buffer = <a class="code" href="lexer_8c.html#a0">yy_create_buffer</a>( yyin, <a class="code" href="lexer_8c.html#a30">YY_BUF_SIZE</a> ); \
         yy_current_buffer-&gt;yy_is_interactive = is_interactive; \
         }</pre></div>    </td>
   </tr>
@@ -1799,9 +1799,9 @@
                 { \
                   \
                 *yy_cp = yy_hold_char; \
-                YY_RESTORE_YY_MORE_OFFSET \
-                yy_c_buf_p = yy_cp = yy_bp + n - YY_MORE_ADJ; \
-                YY_DO_BEFORE_ACTION;   \
+                <a class="code" href="lexer_8c.html#a52">YY_RESTORE_YY_MORE_OFFSET</a> \
+                yy_c_buf_p = yy_cp = <a class="code" href="lexer_8c.html#a120">yy_bp</a> + n - <a class="code" href="lexer_8c.html#a51">YY_MORE_ADJ</a>; \
+                <a class="code" href="lexer_8c.html#a46">YY_DO_BEFORE_ACTION</a>;   \
                 } \
         <font class="keywordflow">while</font> ( 0 )</pre></div>    </td>
   </tr>
@@ -3939,7 +3939,7 @@ Pointer to head element of include paths list     </td>
     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Mon Jul 22 00:22:59 2002 for Covered by
+<hr><address align="right"><small>Generated on Thu Aug 22 00:17:08 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

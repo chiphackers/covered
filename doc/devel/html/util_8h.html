@@ -25,9 +25,9 @@
 <tr><td>&nbsp;</td><td><font size=-1><em>Returns TRUE if the specified directory exists.</em> <a href="#a4"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a5">directory_load</a> (char *dir, <a class="el" href="defines_8h.html#a123">str_link</a> *ext_head, <a class="el" href="defines_8h.html#a123">str_link</a> **file_head, <a class="el" href="defines_8h.html#a123">str_link</a> **file_tail)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Loads contents of specified directory to file list if extension is part of list.</em> <a href="#a5"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a143">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a6">file_exists</a> (char *<a class="el" href="vcd__lexer_8c.html#a112">file</a>)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a143">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a6">file_exists</a> (char *<a class="el" href="lexer_8c.html#a122">file</a>)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Returns TRUE if the specified file exists.</em> <a href="#a6"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a143">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a7">readline</a> (FILE *<a class="el" href="vcd__lexer_8c.html#a112">file</a>, char **line)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a143">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a7">readline</a> (FILE *<a class="el" href="lexer_8c.html#a122">file</a>, char **line)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Reads line from file and returns it in string form.</em> <a href="#a7"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a8">scope_extract_front</a> (char *scope, char *front, char *rest)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Extracts highest level of hierarchy from specified scope.</em> <a href="#a8"></a><em></em></font><br><br></td></tr>
@@ -35,7 +35,7 @@
 <tr><td>&nbsp;</td><td><font size=-1><em>Extracts lowest level of hierarchy from specified scope.</em> <a href="#a9"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a143">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a10">scope_local</a> (char *scope)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Returns TRUE if specified scope is local (contains no periods).</em> <a href="#a10"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void *&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a11">malloc_safe</a> (int <a class="el" href="vcd__lexer_8c.html#a111">size</a>)</td></tr>
+<tr><td nowrap align=right valign=top>void *&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a11">malloc_safe</a> (int <a class="el" href="lexer_8c.html#a121">size</a>)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Performs safe malloc call.</em> <a href="#a11"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="util_8h.html#a12">free_safe</a> (void *ptr)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Performs safe deallocation of heap memory.</em> <a href="#a12"></a><em></em></font><br><br></td></tr>
@@ -680,7 +680,7 @@ Boolean value of suppression.</td></tr>
 </dl>Sets the global variable output_suppressed to the specified value.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Mon Jul 22 00:23:01 2002 for Covered by
+<hr><address align="right"><small>Generated on Thu Aug 22 00:17:09 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

@@ -16,11 +16,11 @@
 00018 
 00020 <a class="code" href="structsignal__s.html">signal</a>* <a class="code" href="signal_8c.html#a2">signal_create</a>( <font class="keywordtype">char</font>* name, <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> lsb, <font class="keywordtype">int</font> is_static );
 00021 
-00023 <font class="keywordtype">void</font> <a class="code" href="signal_8c.html#a3">signal_merge</a>( <a class="code" href="structsignal__s.html">signal</a>* base, <a class="code" href="structsignal__s.html">signal</a>* in );
+00023 <font class="keywordtype">void</font> <a class="code" href="signal_8c.html#a3">signal_db_write</a>( <a class="code" href="structsignal__s.html">signal</a>* sig, FILE* <a class="code" href="lexer_8c.html#a122">file</a>, <font class="keywordtype">char</font>* modname );
 00024 
-00026 <font class="keywordtype">void</font> <a class="code" href="signal_8c.html#a4">signal_db_write</a>( <a class="code" href="structsignal__s.html">signal</a>* sig, FILE* file, <font class="keywordtype">char</font>* modname );
+00026 <font class="keywordtype">bool</font> <a class="code" href="signal_8c.html#a4">signal_db_read</a>( <font class="keywordtype">char</font>** line, <a class="code" href="structmodule__s.html">module</a>* curr_mod );
 00027 
-00029 <font class="keywordtype">bool</font> <a class="code" href="signal_8c.html#a5">signal_db_read</a>( <font class="keywordtype">char</font>** line, <a class="code" href="structmodule__s.html">module</a>* curr_mod );
+00029 <font class="keywordtype">bool</font> <a class="code" href="signal_8c.html#a5">signal_db_merge</a>( <a class="code" href="structsignal__s.html">signal</a>* base, <font class="keywordtype">char</font>** line );
 00030 
 00032 <font class="keywordtype">void</font> <a class="code" href="signal_8c.html#a7">signal_add_expression</a>( <a class="code" href="structsignal__s.html">signal</a>* sig, <a class="code" href="structexpression__s.html">expression</a>* expr );
 00033 
@@ -29,14 +29,19 @@
 00038 <font class="keywordtype">void</font> <a class="code" href="signal_8c.html#a9">signal_dealloc</a>( <a class="code" href="structsignal__s.html">signal</a>* sig );
 00039 
 00040 <font class="comment">/* $Log$</font>
-00041 <font class="comment">/* Revision 1.3  2002/07/17 06:27:18  phase1geo</font>
-00042 <font class="comment">/* Added start for fixes to bit select code starting with single bit selection.</font>
-00043 <font class="comment">/* Full regression passes with addition of sbit_sel1 diagnostic.</font>
-00044 <font class="comment">/* */</font>
-00045 
-00046 <font class="preprocessor">#endif</font>
-00047 <font class="preprocessor"></font>
-</pre></div><hr><address align="right"><small>Generated on Mon Jul 22 00:22:58 2002 for Covered by
+00041 <font class="comment">/* Revision 1.4  2002/08/19 04:34:07  phase1geo</font>
+00042 <font class="comment">/* Fixing bug in database reading code that dealt with merging modules.  Module</font>
+00043 <font class="comment">/* merging is now performed in a more optimal way.  Full regression passes and</font>
+00044 <font class="comment">/* own examples pass as well.</font>
+00045 <font class="comment">/*</font>
+00046 <font class="comment">/* Revision 1.3  2002/07/17 06:27:18  phase1geo</font>
+00047 <font class="comment">/* Added start for fixes to bit select code starting with single bit selection.</font>
+00048 <font class="comment">/* Full regression passes with addition of sbit_sel1 diagnostic.</font>
+00049 <font class="comment">/* */</font>
+00050 
+00051 <font class="preprocessor">#endif</font>
+00052 <font class="preprocessor"></font>
+</pre></div><hr><address align="right"><small>Generated on Thu Aug 22 00:17:07 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

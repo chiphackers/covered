@@ -17,12 +17,12 @@
 <tr><td>&nbsp;</td><td><font size=-1><em>Initializes specified signal with specified values.</em> <a href="#a0"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a127">signal</a> *&nbsp;</td><td valign=bottom><a class="el" href="signal_8h.html#a1">signal_create</a> (char *name, int width, int lsb, int is_static)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Creates a new signal based on the information passed to this function.</em> <a href="#a1"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="signal_8h.html#a2">signal_merge</a> (<a class="el" href="defines_8h.html#a127">signal</a> *base, <a class="el" href="defines_8h.html#a127">signal</a> *in)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Merges two signals, placing result into base signal.</em> <a href="#a2"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="signal_8h.html#a3">signal_db_write</a> (<a class="el" href="defines_8h.html#a127">signal</a> *sig, FILE *<a class="el" href="vcd__lexer_8c.html#a112">file</a>, char *modname)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Outputs this signal information to specified file.</em> <a href="#a3"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a143">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="signal_8h.html#a4">signal_db_read</a> (char **line, <a class="el" href="defines_8h.html#a134">module</a> *curr_mod)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Reads signal information from specified file.</em> <a href="#a4"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="signal_8h.html#a2">signal_db_write</a> (<a class="el" href="defines_8h.html#a127">signal</a> *sig, FILE *<a class="el" href="lexer_8c.html#a122">file</a>, char *modname)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Outputs this signal information to specified file.</em> <a href="#a2"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a143">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="signal_8h.html#a3">signal_db_read</a> (char **line, <a class="el" href="defines_8h.html#a134">module</a> *curr_mod)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Reads signal information from specified file.</em> <a href="#a3"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a143">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="signal_8h.html#a4">signal_db_merge</a> (<a class="el" href="defines_8h.html#a127">signal</a> *base, char **line)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Reads and merges two signals, placing result into base signal.</em> <a href="#a4"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="signal_8h.html#a5">signal_add_expression</a> (<a class="el" href="defines_8h.html#a127">signal</a> *sig, <a class="el" href="defines_8h.html#a126">expression</a> *expr)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds an expression to the signal list.</em> <a href="#a5"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="signal_8h.html#a6">signal_display</a> (<a class="el" href="defines_8h.html#a127">signal</a> *sig)</td></tr>
@@ -154,7 +154,57 @@ Returns: </b><dd>
 Pointer to newly created signal.</dl>This function should be called by the Verilog parser or the database reading function. It initializes all of the necessary values for a signal and returns a pointer to this newly created signal.     </td>
   </tr>
 </table>
-<a name="a4" doxytag="signal.h::signal_db_read"></a><p>
+<a name="a4" doxytag="signal.h::signal_db_merge"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a143">bool</a> signal_db_merge </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a127">signal</a> *&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>base</em>, </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td class="md" nowrap>char **&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>line</em></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td class="md">)&nbsp;</td>
+          <td class="md" colspan="2"></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+Reads and merges two signals, placing result into base signal.
+<p>
+<dl compact><dt><b>
+Parameters: </b><dd>
+<table border=0 cellspacing=2 cellpadding=0>
+<tr><td valign=top><em>base</em>&nbsp;</td><td>
+Signal to store result of merge into. </td></tr>
+<tr><td valign=top><em>line</em>&nbsp;</td><td>
+Pointer to line of CDD file to parse.</td></tr>
+</table>
+</dl><dl compact><dt><b>
+Returns: </b><dd>
+Returns TRUE if parsing successful; otherwise, returns FALSE.</dl>Parses specified line for signal information and performs merge  of the base and in signals, placing the resulting merged signal  into the base signal. If the signals are found to be unalike  (names are different), an error message is displayed to the user.  If both signals are the same, perform the merge on the signal's  vectors.     </td>
+  </tr>
+</table>
+<a name="a3" doxytag="signal.h::signal_db_read"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -210,7 +260,7 @@ A signal will only look in the current module for a matching expression. In the 
 Creates a new signal structure, parses current file line for signal information and stores it to the specified signal. If there are any problems in reading in the current line, returns FALSE; otherwise, returns TRUE.     </td>
   </tr>
 </table>
-<a name="a3" doxytag="signal.h::signal_db_write"></a><p>
+<a name="a2" doxytag="signal.h::signal_db_write"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -396,55 +446,7 @@ Pointer to signal value.</td></tr>
 </dl>Initializes the specified signal with the values of name and value. This function is called by the signal_create routine and is also useful for creating temporary signals (reduces the need for dynamic memory allocation). for performance enhancing purposes.     </td>
   </tr>
 </table>
-<a name="a2" doxytag="signal.h::signal_merge"></a><p>
-<table width="100%" cellpadding="2" cellspacing="0" border="0">
-  <tr>
-    <td class="md">
-      <table cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td class="md" nowrap valign="top"> void signal_merge </td>
-          <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a127">signal</a> *&nbsp;</td>
-          <td class="mdname" nowrap>&nbsp; <em>base</em>, </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a127">signal</a> *&nbsp;</td>
-          <td class="mdname" nowrap>&nbsp; <em>in</em></td>
-        </tr>
-        <tr>
-          <td></td>
-          <td class="md">)&nbsp;</td>
-          <td class="md" colspan="2"></td>
-        </tr>
-
-      </table>
-    </td>
-  </tr>
-</table>
-<table cellspacing=5 cellpadding=0 border=0>
-  <tr>
-    <td>
-      &nbsp;
-    </td>
-    <td>
-
-<p>
-Merges two signals, placing result into base signal.
-<p>
-<dl compact><dt><b>
-Parameters: </b><dd>
-<table border=0 cellspacing=2 cellpadding=0>
-<tr><td valign=top><em>base</em>&nbsp;</td><td>
-Signal to store result of merge into. </td></tr>
-<tr><td valign=top><em>in</em>&nbsp;</td><td>
-Signal to be merged into base signal.</td></tr>
-</table>
-</dl>Performs merge of the base and in signals, placing the resulting merged signal into the base signal. If the signals are found to be unalike (names are different), an error message is displayed to the user. If both signals are the same, perform the merge on the signal's vectors.     </td>
-  </tr>
-</table>
-<hr><address align="right"><small>Generated on Mon Jul 22 00:23:01 2002 for Covered by
+<hr><address align="right"><small>Generated on Thu Aug 22 00:17:09 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

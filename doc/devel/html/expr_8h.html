@@ -17,14 +17,14 @@
 <tr><td>&nbsp;</td><td><font size=-1><em>Creates an expression value and initializes it.</em> <a href="#a0"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a126">expression</a> *&nbsp;</td><td valign=bottom><a class="el" href="expr_8h.html#a1">expression_create</a> (<a class="el" href="defines_8h.html#a126">expression</a> *right, <a class="el" href="defines_8h.html#a126">expression</a> *left, int op, int id, int line)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Creates new expression.</em> <a href="#a1"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="expr_8h.html#a2">expression_merge</a> (<a class="el" href="defines_8h.html#a126">expression</a> *base, <a class="el" href="defines_8h.html#a126">expression</a> *in)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Merges two expressions and stores result in base expression.</em> <a href="#a2"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="expr_8h.html#a3">expression_get_id</a> (<a class="el" href="defines_8h.html#a126">expression</a> *expr)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Returns expression ID of this expression.</em> <a href="#a3"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="expr_8h.html#a4">expression_db_write</a> (<a class="el" href="defines_8h.html#a126">expression</a> *expr, FILE *<a class="el" href="vcd__lexer_8c.html#a112">file</a>, char *scope)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Writes this expression to the specified database file.</em> <a href="#a4"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a143">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="expr_8h.html#a5">expression_db_read</a> (char **<a class="el" href="vcd__lexer_8c.html#a112">file</a>, <a class="el" href="defines_8h.html#a134">module</a> *curr_mod)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Reads current line of specified file and parses for expression information.</em> <a href="#a5"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>int&nbsp;</td><td valign=bottom><a class="el" href="expr_8h.html#a2">expression_get_id</a> (<a class="el" href="defines_8h.html#a126">expression</a> *expr)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Returns expression ID of this expression.</em> <a href="#a2"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="expr_8h.html#a3">expression_db_write</a> (<a class="el" href="defines_8h.html#a126">expression</a> *expr, FILE *<a class="el" href="lexer_8c.html#a122">file</a>, char *scope)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Writes this expression to the specified database file.</em> <a href="#a3"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a143">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="expr_8h.html#a4">expression_db_read</a> (char **line, <a class="el" href="defines_8h.html#a134">module</a> *curr_mod)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Reads current line of specified file and parses for expression information.</em> <a href="#a4"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a143">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="expr_8h.html#a5">expression_db_merge</a> (<a class="el" href="defines_8h.html#a126">expression</a> *base, char **line)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Reads and merges two expressions and stores result in base expression.</em> <a href="#a5"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="expr_8h.html#a6">expression_display</a> (<a class="el" href="defines_8h.html#a126">expression</a> *expr)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Displays the specified expression information.</em> <a href="#a6"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="expr_8h.html#a7">expression_operate</a> (<a class="el" href="defines_8h.html#a126">expression</a> *expr)</td></tr>
@@ -213,7 +213,57 @@ Least significant value of value field.</td></tr>
 </dl>Creates a value vector that is large enough to store width number of bits in value and sets the specified expression value to this value. This function should be called by either the expression_create function, the bind function, or the signal db_read function.     </td>
   </tr>
 </table>
-<a name="a5" doxytag="expr.h::expression_db_read"></a><p>
+<a name="a5" doxytag="expr.h::expression_db_merge"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a143">bool</a> expression_db_merge </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a126">expression</a> *&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>base</em>, </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td class="md" nowrap>char **&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>line</em></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td class="md">)&nbsp;</td>
+          <td class="md" colspan="2"></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+Reads and merges two expressions and stores result in base expression.
+<p>
+<dl compact><dt><b>
+Parameters: </b><dd>
+<table border=0 cellspacing=2 cellpadding=0>
+<tr><td valign=top><em>base</em>&nbsp;</td><td>
+Expression to merge data into. </td></tr>
+<tr><td valign=top><em>line</em>&nbsp;</td><td>
+Pointer to CDD line to parse.</td></tr>
+</table>
+</dl><dl compact><dt><b>
+Returns: </b><dd>
+Returns TRUE if parse and merge was sucessful; otherwise, returns FALSE.</dl>Parses specified line for expression information and merges contents into the base expression. If the two expressions given are not the same (IDs, op, and/or line position differ) we know that the database files being merged  were not created from the same design; therefore, display an error message  to the user in this case. If both expressions are the same, perform the  merge.     </td>
+  </tr>
+</table>
+<a name="a4" doxytag="expr.h::expression_db_read"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -263,7 +313,7 @@ Returns: </b><dd>
 Returns TRUE if parsing successful; otherwise, returns FALSE.</dl>Reads in the specified expression information, creates new expression from heap, populates the expression with specified information from file and  returns that value in the specified expression pointer. If all is  successful, returns TRUE; otherwise, returns FALSE.     </td>
   </tr>
 </table>
-<a name="a4" doxytag="expr.h::expression_db_write"></a><p>
+<a name="a3" doxytag="expr.h::expression_db_write"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -404,7 +454,7 @@ Pointer to expression to display.</td></tr>
 </dl>Displays contents of the specified expression to standard output. This function is called by the module_display function.     </td>
   </tr>
 </table>
-<a name="a3" doxytag="expr.h::expression_get_id"></a><p>
+<a name="a2" doxytag="expr.h::expression_get_id"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -441,54 +491,6 @@ Pointer to expression to get ID from. </td></tr>
 </dl><dl compact><dt><b>
 Returns: </b><dd>
 Returns expression ID for this expression.</dl>If specified expression is non-NULL, return expression ID of this expression; otherwise, return a value of 0 to indicate that this is a leaf node.     </td>
-  </tr>
-</table>
-<a name="a2" doxytag="expr.h::expression_merge"></a><p>
-<table width="100%" cellpadding="2" cellspacing="0" border="0">
-  <tr>
-    <td class="md">
-      <table cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td class="md" nowrap valign="top"> void expression_merge </td>
-          <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a126">expression</a> *&nbsp;</td>
-          <td class="mdname" nowrap>&nbsp; <em>base</em>, </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a126">expression</a> *&nbsp;</td>
-          <td class="mdname" nowrap>&nbsp; <em>in</em></td>
-        </tr>
-        <tr>
-          <td></td>
-          <td class="md">)&nbsp;</td>
-          <td class="md" colspan="2"></td>
-        </tr>
-
-      </table>
-    </td>
-  </tr>
-</table>
-<table cellspacing=5 cellpadding=0 border=0>
-  <tr>
-    <td>
-      &nbsp;
-    </td>
-    <td>
-
-<p>
-Merges two expressions and stores result in base expression.
-<p>
-<dl compact><dt><b>
-Parameters: </b><dd>
-<table border=0 cellspacing=2 cellpadding=0>
-<tr><td valign=top><em>base</em>&nbsp;</td><td>
-Expression to merge data into. </td></tr>
-<tr><td valign=top><em>in</em>&nbsp;</td><td>
-Expression to get merged into base expression.</td></tr>
-</table>
-</dl>Merges contents of the base and in expressions and places the result into the base expression. If the two expressions given are not the same (IDs, op, and/or line position differ) we know that the database files being merged  were not created from the same design; therefore, display an error message  to the user in this case. If both expressions are the same, perform the  merge.     </td>
   </tr>
 </table>
 <a name="a7" doxytag="expr.h::expression_operate"></a><p>
@@ -528,7 +530,7 @@ Pointer to expression to set value to.</td></tr>
 </dl>Performs expression operation. This function must only be run after its left and right expressions have been calculated during this clock period. Sets the value of the operation in its own vector value and updates the suppl nibble as necessary.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Mon Jul 22 00:22:59 2002 for Covered by
+<hr><address align="right"><small>Generated on Thu Aug 22 00:17:07 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

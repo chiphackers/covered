@@ -24,9 +24,9 @@
 00030 
 00032 <font class="keywordtype">void</font> <a class="code" href="util_8c.html#a10">directory_load</a>( <font class="keywordtype">char</font>* dir, <a class="code" href="structstr__link__s.html">str_link</a>* ext_head, <a class="code" href="structstr__link__s.html">str_link</a>** file_head, <a class="code" href="structstr__link__s.html">str_link</a>** file_tail );
 00033 
-00035 <font class="keywordtype">bool</font> <a class="code" href="util_8c.html#a11">file_exists</a>( <font class="keywordtype">char</font>* file );
+00035 <font class="keywordtype">bool</font> <a class="code" href="util_8c.html#a11">file_exists</a>( <font class="keywordtype">char</font>* <a class="code" href="lexer_8c.html#a122">file</a> );
 00036 
-00038 <font class="keywordtype">bool</font> <a class="code" href="util_8c.html#a12">readline</a>( FILE* file, <font class="keywordtype">char</font>** line );
+00038 <font class="keywordtype">bool</font> <a class="code" href="util_8c.html#a12">readline</a>( FILE* <a class="code" href="lexer_8c.html#a122">file</a>, <font class="keywordtype">char</font>** line );
 00039 
 00041 <font class="keywordtype">void</font> <a class="code" href="util_8c.html#a13">scope_extract_front</a>( <font class="keywordtype">char</font>* scope, <font class="keywordtype">char</font>* front, <font class="keywordtype">char</font>* rest );
 00042 
@@ -34,7 +34,7 @@
 00045 
 00047 <font class="keywordtype">bool</font> <a class="code" href="util_8c.html#a15">scope_local</a>( <font class="keywordtype">char</font>* scope );
 00048 
-00050 <font class="keywordtype">void</font>* <a class="code" href="util_8c.html#a16">malloc_safe</a>( <font class="keywordtype">int</font> size );
+00050 <font class="keywordtype">void</font>* <a class="code" href="util_8c.html#a16">malloc_safe</a>( <font class="keywordtype">int</font> <a class="code" href="lexer_8c.html#a121">size</a> );
 00051 
 00053 <font class="keywordtype">void</font> <a class="code" href="util_8c.html#a17">free_safe</a>( <font class="keywordtype">void</font>* ptr );
 00054 
@@ -57,7 +57,7 @@
 00072 
 00073 <font class="preprocessor">#endif</font>
 00074 <font class="preprocessor"></font>
-</pre></div><hr><address align="right"><small>Generated on Mon Jul 22 00:22:58 2002 for Covered by
+</pre></div><hr><address align="right"><small>Generated on Thu Aug 22 00:17:07 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>

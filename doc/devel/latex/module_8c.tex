@@ -17,12 +17,12 @@ void {\bf module\_\-init} ({\bf module} $\ast$mod)
 \begin{CompactList}\small\item\em Initializes all values of module.\item\end{CompactList}\item 
 {\bf module} $\ast$ {\bf module\_\-create} ()
 \begin{CompactList}\small\item\em Creates new module from heap and initializes structure.\item\end{CompactList}\item 
-void {\bf module\_\-merge} ({\bf module} $\ast$base, {\bf module} $\ast$in)
-\begin{CompactList}\small\item\em Merges two modules into base module.\item\end{CompactList}\item 
 {\bf bool} {\bf module\_\-db\_\-write} ({\bf module} $\ast$mod, char $\ast$scope, FILE $\ast${\bf file})
 \begin{CompactList}\small\item\em Writes contents of provided module to specified output.\item\end{CompactList}\item 
-{\bf bool} {\bf module\_\-db\_\-read} ({\bf module} $\ast$$\ast$mod, char $\ast$$\ast$scope, char $\ast$$\ast$line)
+{\bf bool} {\bf module\_\-db\_\-read} ({\bf module} $\ast$mod, char $\ast$scope, char $\ast$$\ast$line)
 \begin{CompactList}\small\item\em Read contents of current line from specified file, creates module and adds to module list.\item\end{CompactList}\item 
+{\bf bool} {\bf module\_\-db\_\-merge} ({\bf module} $\ast$base, FILE $\ast${\bf file})
+\begin{CompactList}\small\item\em Reads and merges two modules into base module.\item\end{CompactList}\item 
 void {\bf module\_\-display\_\-signals} ({\bf module} $\ast$mod)
 \begin{CompactList}\small\item\em Displays signals stored in this module.\item\end{CompactList}\item 
 void {\bf module\_\-display\_\-expressions} ({\bf module} $\ast$mod)
@@ -68,9 +68,26 @@ Creates new module from heap and initializes structure.
 \begin{Desc}
 \item[Returns: ]\par
 Returns pointer to newly created module element that has been properly initialized.\end{Desc}
-Allocates memory from the heap for a module element and initializes all contents to NULL. Returns a pointer to the newly created module. \index{module.c@{module.c}!module_db_read@{module\_\-db\_\-read}}
+Allocates memory from the heap for a module element and initializes all contents to NULL. Returns a pointer to the newly created module. \index{module.c@{module.c}!module_db_merge@{module\_\-db\_\-merge}}
+\index{module_db_merge@{module\_\-db\_\-merge}!module.c@{module.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} module\_\-db\_\-merge ({\bf module} $\ast$ {\em base}, FILE $\ast$ {\em file})}\label{module_8c_a4}
+
+
+Reads and merges two modules into base module.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+base}]Module that will merge in that data from the in module \item[{\em 
+file}]Pointer to CDD file handle to read.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns TRUE if parse and merge was successful; otherwise, returns FALSE.\end{Desc}
+Parses specified line for module information and performs a merge of the two  specified modules, placing the resulting merge module into the module named base. If there are any differences between the two modules, a warning or error will be displayed to the user. \index{module.c@{module.c}!module_db_read@{module\_\-db\_\-read}}
 \index{module_db_read@{module\_\-db\_\-read}!module.c@{module.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} module\_\-db\_\-read ({\bf module} $\ast$$\ast$ {\em mod}, char $\ast$$\ast$ {\em scope}, char $\ast$$\ast$ {\em line})}\label{module_8c_a4}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} module\_\-db\_\-read ({\bf module} $\ast$ {\em mod}, char $\ast$ {\em scope}, char $\ast$$\ast$ {\em line})}\label{module_8c_a3}
 
 
 Read contents of current line from specified file, creates module and adds to module list.
@@ -79,16 +96,16 @@ Read contents of current line from specified file, creates module and adds to mo
 \item[Parameters: ]\par
 \begin{description}
 \item[{\em 
-mod}]Pointer to module to read input from. \item[{\em 
-scope}]Pointer to string to store module instance scope. \item[{\em 
-line}]Pointer to current line to parse. \end{description}
+mod}]Pointer to module to read contents into. \item[{\em 
+scope}]Pointer to name of read module scope. \item[{\em 
+line}]Pointer to current line to parse.\end{description}
 \end{Desc}
 \begin{Desc}
 \item[Returns: ]\par
 Returns TRUE if read was successful; otherwise, returns FALSE.\end{Desc}
-Reads the current line of the specified file and parses it for a module. Creates a new module and assigns the new module to the address specified by the mod pointer. If all is successful, returns TRUE; otherwise, returns FALSE. \index{module.c@{module.c}!module_db_write@{module\_\-db\_\-write}}
+Reads the current line of the specified file and parses it for a module. If all is successful, returns TRUE; otherwise, returns FALSE. \index{module.c@{module.c}!module_db_write@{module\_\-db\_\-write}}
 \index{module_db_write@{module\_\-db\_\-write}!module.c@{module.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} module\_\-db\_\-write ({\bf module} $\ast$ {\em mod}, char $\ast$ {\em scope}, FILE $\ast$ {\em file})}\label{module_8c_a3}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} module\_\-db\_\-write ({\bf module} $\ast$ {\em mod}, char $\ast$ {\em scope}, FILE $\ast$ {\em file})}\label{module_8c_a2}
 
 
 Writes contents of provided module to specified output.
@@ -156,18 +173,4 @@ Initializes all values of module.
 \item[{\em 
 mod}]Pointer to module to initialize.\end{description}
 \end{Desc}
-Initializes all contents to NULL. \index{module.c@{module.c}!module_merge@{module\_\-merge}}
-\index{module_merge@{module\_\-merge}!module.c@{module.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void module\_\-merge ({\bf module} $\ast$ {\em base}, {\bf module} $\ast$ {\em in})}\label{module_8c_a2}
-
-
-Merges two modules into base module.
-
-\begin{Desc}
-\item[Parameters: ]\par
-\begin{description}
-\item[{\em 
-base}]Module that will merge in that data from the in module \item[{\em 
-in}]Module that will be merged into the base module.\end{description}
-\end{Desc}
-Performs a merge of the two specified modules, placing the resulting merge module into the module named base. If there are any differences between the two modules, a warning or error will be displayed to the user. 
+Initializes all contents to NULL. 

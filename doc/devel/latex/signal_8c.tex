@@ -19,12 +19,12 @@ void {\bf signal\_\-init} ({\bf signal} $\ast$sig, char $\ast$name, {\bf vector}
 \begin{CompactList}\small\item\em Initializes specified signal with specified values.\item\end{CompactList}\item 
 {\bf signal} $\ast$ {\bf signal\_\-create} (char $\ast$name, int width, int lsb, int is\_\-static)
 \begin{CompactList}\small\item\em Creates a new signal based on the information passed to this function.\item\end{CompactList}\item 
-void {\bf signal\_\-merge} ({\bf signal} $\ast$base, {\bf signal} $\ast$in)
-\begin{CompactList}\small\item\em Merges two signals, placing result into base signal.\item\end{CompactList}\item 
 void {\bf signal\_\-db\_\-write} ({\bf signal} $\ast$sig, FILE $\ast${\bf file}, char $\ast$modname)
 \begin{CompactList}\small\item\em Outputs this signal information to specified file.\item\end{CompactList}\item 
 {\bf bool} {\bf signal\_\-db\_\-read} (char $\ast$$\ast$line, {\bf module} $\ast$curr\_\-mod)
 \begin{CompactList}\small\item\em Reads signal information from specified file.\item\end{CompactList}\item 
+{\bf bool} {\bf signal\_\-db\_\-merge} ({\bf signal} $\ast$base, char $\ast$$\ast$line)
+\begin{CompactList}\small\item\em Reads and merges two signals, placing result into base signal.\item\end{CompactList}\item 
 void {\bf signal\_\-vcd\_\-assign} ({\bf signal} $\ast$sig, char $\ast$value)
 \item 
 void {\bf signal\_\-add\_\-expression} ({\bf signal} $\ast$sig, {\bf expression} $\ast$expr)
@@ -85,9 +85,26 @@ is\_\-static}]Specifies if this signal is a static value.\end{description}
 \begin{Desc}
 \item[Returns: ]\par
 Pointer to newly created signal.\end{Desc}
-This function should be called by the Verilog parser or the database reading function. It initializes all of the necessary values for a signal and returns a pointer to this newly created signal. \index{signal.c@{signal.c}!signal_db_read@{signal\_\-db\_\-read}}
+This function should be called by the Verilog parser or the database reading function. It initializes all of the necessary values for a signal and returns a pointer to this newly created signal. \index{signal.c@{signal.c}!signal_db_merge@{signal\_\-db\_\-merge}}
+\index{signal_db_merge@{signal\_\-db\_\-merge}!signal.c@{signal.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} signal\_\-db\_\-merge ({\bf signal} $\ast$ {\em base}, char $\ast$$\ast$ {\em line})}\label{signal_8c_a5}
+
+
+Reads and merges two signals, placing result into base signal.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+base}]Signal to store result of merge into. \item[{\em 
+line}]Pointer to line of CDD file to parse.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns TRUE if parsing successful; otherwise, returns FALSE.\end{Desc}
+Parses specified line for signal information and performs merge  of the base and in signals, placing the resulting merged signal  into the base signal. If the signals are found to be unalike  (names are different), an error message is displayed to the user.  If both signals are the same, perform the merge on the signal's  vectors. \index{signal.c@{signal.c}!signal_db_read@{signal\_\-db\_\-read}}
 \index{signal_db_read@{signal\_\-db\_\-read}!signal.c@{signal.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} signal\_\-db\_\-read (char $\ast$$\ast$ {\em line}, {\bf module} $\ast$ {\em curr\_\-mod})}\label{signal_8c_a5}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} signal\_\-db\_\-read (char $\ast$$\ast$ {\em line}, {\bf module} $\ast$ {\em curr\_\-mod})}\label{signal_8c_a4}
 
 
 Reads signal information from specified file.
@@ -111,7 +128,7 @@ A signal will only look in the current module for a matching expression. In the 
 
 Creates a new signal structure, parses current file line for signal information and stores it to the specified signal. If there are any problems in reading in the current line, returns FALSE; otherwise, returns TRUE. \index{signal.c@{signal.c}!signal_db_write@{signal\_\-db\_\-write}}
 \index{signal_db_write@{signal\_\-db\_\-write}!signal.c@{signal.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-db\_\-write ({\bf signal} $\ast$ {\em sig}, FILE $\ast$ {\em file}, char $\ast$ {\em modname})}\label{signal_8c_a4}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-db\_\-write ({\bf signal} $\ast$ {\em sig}, FILE $\ast$ {\em file}, char $\ast$ {\em modname})}\label{signal_8c_a3}
 
 
 Outputs this signal information to specified file.
@@ -165,21 +182,7 @@ sig}]Pointer to signal to initialize. \item[{\em
 name}]Pointer to signal name string. \item[{\em 
 value}]Pointer to signal value.\end{description}
 \end{Desc}
-Initializes the specified signal with the values of name and value. This function is called by the signal\_\-create routine and is also useful for creating temporary signals (reduces the need for dynamic memory allocation). for performance enhancing purposes. \index{signal.c@{signal.c}!signal_merge@{signal\_\-merge}}
-\index{signal_merge@{signal\_\-merge}!signal.c@{signal.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-merge ({\bf signal} $\ast$ {\em base}, {\bf signal} $\ast$ {\em in})}\label{signal_8c_a3}
-
-
-Merges two signals, placing result into base signal.
-
-\begin{Desc}
-\item[Parameters: ]\par
-\begin{description}
-\item[{\em 
-base}]Signal to store result of merge into. \item[{\em 
-in}]Signal to be merged into base signal.\end{description}
-\end{Desc}
-Performs merge of the base and in signals, placing the resulting merged signal into the base signal. If the signals are found to be unalike (names are different), an error message is displayed to the user. If both signals are the same, perform the merge on the signal's vectors. \index{signal.c@{signal.c}!signal_vcd_assign@{signal\_\-vcd\_\-assign}}
+Initializes the specified signal with the values of name and value. This function is called by the signal\_\-create routine and is also useful for creating temporary signals (reduces the need for dynamic memory allocation). for performance enhancing purposes. \index{signal.c@{signal.c}!signal_vcd_assign@{signal\_\-vcd\_\-assign}}
 \index{signal_vcd_assign@{signal\_\-vcd\_\-assign}!signal.c@{signal.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void signal\_\-vcd\_\-assign ({\bf signal} $\ast$ {\em sig}, char $\ast$ {\em value})}\label{signal_8c_a6}
 

@@ -12,14 +12,14 @@ void {\bf expression\_\-create\_\-value} ({\bf expression} $\ast$exp, int width,
 \begin{CompactList}\small\item\em Creates an expression value and initializes it.\item\end{CompactList}\item 
 {\bf expression} $\ast$ {\bf expression\_\-create} ({\bf expression} $\ast$right, {\bf expression} $\ast$left, int op, int id, int line)
 \begin{CompactList}\small\item\em Creates new expression.\item\end{CompactList}\item 
-void {\bf expression\_\-merge} ({\bf expression} $\ast$base, {\bf expression} $\ast$in)
-\begin{CompactList}\small\item\em Merges two expressions and stores result in base expression.\item\end{CompactList}\item 
 int {\bf expression\_\-get\_\-id} ({\bf expression} $\ast$expr)
 \begin{CompactList}\small\item\em Returns expression ID of this expression.\item\end{CompactList}\item 
 void {\bf expression\_\-db\_\-write} ({\bf expression} $\ast$expr, FILE $\ast${\bf file}, char $\ast$scope)
 \begin{CompactList}\small\item\em Writes this expression to the specified database file.\item\end{CompactList}\item 
-{\bf bool} {\bf expression\_\-db\_\-read} (char $\ast$$\ast${\bf file}, {\bf module} $\ast$curr\_\-mod)
+{\bf bool} {\bf expression\_\-db\_\-read} (char $\ast$$\ast$line, {\bf module} $\ast$curr\_\-mod)
 \begin{CompactList}\small\item\em Reads current line of specified file and parses for expression information.\item\end{CompactList}\item 
+{\bf bool} {\bf expression\_\-db\_\-merge} ({\bf expression} $\ast$base, char $\ast$$\ast$line)
+\begin{CompactList}\small\item\em Reads and merges two expressions and stores result in base expression.\item\end{CompactList}\item 
 void {\bf expression\_\-display} ({\bf expression} $\ast$expr)
 \begin{CompactList}\small\item\em Displays the specified expression information.\item\end{CompactList}\item 
 void {\bf expression\_\-operate} ({\bf expression} $\ast$expr)
@@ -95,9 +95,26 @@ exp}]Pointer to expression to add value to. \item[{\em
 width}]Width of value to create. \item[{\em 
 lsb}]Least significant value of value field.\end{description}
 \end{Desc}
-Creates a value vector that is large enough to store width number of bits in value and sets the specified expression value to this value. This function should be called by either the expression\_\-create function, the bind function, or the signal db\_\-read function. \index{expr.h@{expr.h}!expression_db_read@{expression\_\-db\_\-read}}
+Creates a value vector that is large enough to store width number of bits in value and sets the specified expression value to this value. This function should be called by either the expression\_\-create function, the bind function, or the signal db\_\-read function. \index{expr.h@{expr.h}!expression_db_merge@{expression\_\-db\_\-merge}}
+\index{expression_db_merge@{expression\_\-db\_\-merge}!expr.h@{expr.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} expression\_\-db\_\-merge ({\bf expression} $\ast$ {\em base}, char $\ast$$\ast$ {\em line})}\label{expr_8h_a5}
+
+
+Reads and merges two expressions and stores result in base expression.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+base}]Expression to merge data into. \item[{\em 
+line}]Pointer to CDD line to parse.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns TRUE if parse and merge was sucessful; otherwise, returns FALSE.\end{Desc}
+Parses specified line for expression information and merges contents into the base expression. If the two expressions given are not the same (IDs, op, and/or line position differ) we know that the database files being merged  were not created from the same design; therefore, display an error message  to the user in this case. If both expressions are the same, perform the  merge. \index{expr.h@{expr.h}!expression_db_read@{expression\_\-db\_\-read}}
 \index{expression_db_read@{expression\_\-db\_\-read}!expr.h@{expr.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} expression\_\-db\_\-read (char $\ast$$\ast$ {\em line}, {\bf module} $\ast$ {\em curr\_\-mod})}\label{expr_8h_a5}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} expression\_\-db\_\-read (char $\ast$$\ast$ {\em line}, {\bf module} $\ast$ {\em curr\_\-mod})}\label{expr_8h_a4}
 
 
 Reads current line of specified file and parses for expression information.
@@ -114,7 +131,7 @@ curr\_\-mod}]Pointer to current module that instantiates this expression.\end{de
 Returns TRUE if parsing successful; otherwise, returns FALSE.\end{Desc}
 Reads in the specified expression information, creates new expression from heap, populates the expression with specified information from file and  returns that value in the specified expression pointer. If all is  successful, returns TRUE; otherwise, returns FALSE. \index{expr.h@{expr.h}!expression_db_write@{expression\_\-db\_\-write}}
 \index{expression_db_write@{expression\_\-db\_\-write}!expr.h@{expr.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-db\_\-write ({\bf expression} $\ast$ {\em expr}, FILE $\ast$ {\em file}, char $\ast$ {\em scope})}\label{expr_8h_a4}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-db\_\-write ({\bf expression} $\ast$ {\em expr}, FILE $\ast$ {\em file}, char $\ast$ {\em scope})}\label{expr_8h_a3}
 
 
 Writes this expression to the specified database file.
@@ -156,7 +173,7 @@ expr}]Pointer to expression to display.\end{description}
 \end{Desc}
 Displays contents of the specified expression to standard output. This function is called by the module\_\-display function. \index{expr.h@{expr.h}!expression_get_id@{expression\_\-get\_\-id}}
 \index{expression_get_id@{expression\_\-get\_\-id}!expr.h@{expr.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int expression\_\-get\_\-id ({\bf expression} $\ast$ {\em expr})}\label{expr_8h_a3}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int expression\_\-get\_\-id ({\bf expression} $\ast$ {\em expr})}\label{expr_8h_a2}
 
 
 Returns expression ID of this expression.
@@ -170,21 +187,7 @@ expr}]Pointer to expression to get ID from. \end{description}
 \begin{Desc}
 \item[Returns: ]\par
 Returns expression ID for this expression.\end{Desc}
-If specified expression is non-NULL, return expression ID of this expression; otherwise, return a value of 0 to indicate that this is a leaf node. \index{expr.h@{expr.h}!expression_merge@{expression\_\-merge}}
-\index{expression_merge@{expression\_\-merge}!expr.h@{expr.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-merge ({\bf expression} $\ast$ {\em base}, {\bf expression} $\ast$ {\em in})}\label{expr_8h_a2}
-
-
-Merges two expressions and stores result in base expression.
-
-\begin{Desc}
-\item[Parameters: ]\par
-\begin{description}
-\item[{\em 
-base}]Expression to merge data into. \item[{\em 
-in}]Expression to get merged into base expression.\end{description}
-\end{Desc}
-Merges contents of the base and in expressions and places the result into the base expression. If the two expressions given are not the same (IDs, op, and/or line position differ) we know that the database files being merged  were not created from the same design; therefore, display an error message  to the user in this case. If both expressions are the same, perform the  merge. \index{expr.h@{expr.h}!expression_operate@{expression\_\-operate}}
+If specified expression is non-NULL, return expression ID of this expression; otherwise, return a value of 0 to indicate that this is a leaf node. \index{expr.h@{expr.h}!expression_operate@{expression\_\-operate}}
 \index{expression_operate@{expression\_\-operate}!expr.h@{expr.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void expression\_\-operate ({\bf expression} $\ast$ {\em expr})}\label{expr_8h_a7}
 

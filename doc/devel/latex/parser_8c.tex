@@ -333,11 +333,13 @@ union {\bf YYSTYPE}
 \item 
 \#define {\bf less\_\-than\_\-K\_\-else}\ 405
 \item 
+\#define {\bf YYERROR\_\-VERBOSE}\ 1
+\item 
 \#define {\bf YYDEBUG}\ 1
 \item 
 \#define {\bf const}
 \item 
-\#define {\bf YYFINAL}\ 990
+\#define {\bf YYFINAL}\ 995
 \item 
 \#define {\bf YYFLAG}\ -32768
 \item 
@@ -345,7 +347,7 @@ union {\bf YYSTYPE}
 \item 
 \#define {\bf YYTRANSLATE}(x)\ ((unsigned)(x) $<$= 405 ? {\bf yytranslate}[x] : 372)
 \item 
-\#define {\bf YYLAST}\ 4544
+\#define {\bf YYLAST}\ 4437
 \item 
 \#define {\bf YYSTACK\_\-ALLOC}\ malloc
 \item 
@@ -393,7 +395,7 @@ void {\bf \_\-\_\-yy\_\-memcpy} (to, {\bf from}, {\bf count}) char $\ast$to
 \subsection*{Variables}
 \begin{CompactItemize}
 \item 
-char {\bf err\_\-msg} [1000]
+char {\bf err\_\-msg} [4096]
 \item 
 int {\bf ignore\_\-mode} = 0
 \item 
@@ -453,7 +455,7 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsection{Define Documentation}
 \index{parser.c@{parser.c}!const@{const}}
 \index{const@{const}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define const}\label{parser_8c_a159}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define const}\label{parser_8c_a160}
 
 
 \index{parser.c@{parser.c}!HIDENTIFIER@{HIDENTIFIER}}
@@ -1203,17 +1205,17 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 
 \index{parser.c@{parser.c}!YYABORT@{YYABORT}}
 \index{YYABORT@{YYABORT}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYABORT\ goto yyabortlab}\label{parser_8c_a171}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYABORT\ goto yyabortlab}\label{parser_8c_a172}
 
 
 \index{parser.c@{parser.c}!YYACCEPT@{YYACCEPT}}
 \index{YYACCEPT@{YYACCEPT}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYACCEPT\ goto yyacceptlab}\label{parser_8c_a170}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYACCEPT\ goto yyacceptlab}\label{parser_8c_a171}
 
 
 \index{parser.c@{parser.c}!YYBACKUP@{YYBACKUP}}
 \index{YYBACKUP@{YYBACKUP}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYBACKUP(token, value)}\label{parser_8c_a175}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYBACKUP(token, value)}\label{parser_8c_a176}
 
 
 {\bf Value:}
@@ -1240,42 +1242,42 @@ while (0)\end{verbatim}\normalsize
 
 \index{parser.c@{parser.c}!yyclearin@{yyclearin}}
 \index{yyclearin@{yyclearin}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yyclearin\ (yychar = YYEMPTY)}\label{parser_8c_a167}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yyclearin\ (yychar = YYEMPTY)}\label{parser_8c_a168}
 
 
 \index{parser.c@{parser.c}!YYDEBUG@{YYDEBUG}}
 \index{YYDEBUG@{YYDEBUG}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYDEBUG\ 1}\label{parser_8c_a158}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYDEBUG\ 1}\label{parser_8c_a159}
 
 
 \index{parser.c@{parser.c}!yydebug@{yydebug}}
 \index{yydebug@{yydebug}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yydebug\ {\bf VLdebug}}\label{parser_8c_a6}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yydebug\ {\bf VLdebug}}\label{parser_8c_a6}
 
 
 \index{parser.c@{parser.c}!YYEMPTY@{YYEMPTY}}
 \index{YYEMPTY@{YYEMPTY}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYEMPTY\ -2}\label{parser_8c_a168}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYEMPTY\ -2}\label{parser_8c_a169}
 
 
 \index{parser.c@{parser.c}!YYEOF@{YYEOF}}
 \index{YYEOF@{YYEOF}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYEOF\ 0}\label{parser_8c_a169}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYEOF\ 0}\label{parser_8c_a170}
 
 
 \index{parser.c@{parser.c}!YYERRCODE@{YYERRCODE}}
 \index{YYERRCODE@{YYERRCODE}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYERRCODE\ 256}\label{parser_8c_a177}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYERRCODE\ 256}\label{parser_8c_a178}
 
 
 \index{parser.c@{parser.c}!yyerrok@{yyerrok}}
 \index{yyerrok@{yyerrok}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yyerrok\ (yyerrstatus = 0)}\label{parser_8c_a166}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yyerrok\ (yyerrstatus = 0)}\label{parser_8c_a167}
 
 
 \index{parser.c@{parser.c}!YYERROR@{YYERROR}}
 \index{YYERROR@{YYERROR}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYERROR\ goto yyerrlab1}\label{parser_8c_a172}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYERROR\ goto yyerrlab1}\label{parser_8c_a173}
 
 
 \index{parser.c@{parser.c}!yyerror@{yyerror}}
@@ -1283,34 +1285,39 @@ while (0)\end{verbatim}\normalsize
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yyerror\ VLerror}\label{parser_8c_a3}
 
 
+\index{parser.c@{parser.c}!YYERROR_VERBOSE@{YYERROR\_\-VERBOSE}}
+\index{YYERROR_VERBOSE@{YYERROR\_\-VERBOSE}!parser.c@{parser.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYERROR\_\-VERBOSE\ 1}\label{parser_8c_a158}
+
+
 \index{parser.c@{parser.c}!YYFAIL@{YYFAIL}}
 \index{YYFAIL@{YYFAIL}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYFAIL\ goto yyerrlab}\label{parser_8c_a173}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYFAIL\ goto yyerrlab}\label{parser_8c_a174}
 
 
 \index{parser.c@{parser.c}!YYFINAL@{YYFINAL}}
 \index{YYFINAL@{YYFINAL}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYFINAL\ 990}\label{parser_8c_a160}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYFINAL\ 995}\label{parser_8c_a161}
 
 
 \index{parser.c@{parser.c}!YYFLAG@{YYFLAG}}
 \index{YYFLAG@{YYFLAG}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYFLAG\ -32768}\label{parser_8c_a161}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYFLAG\ -32768}\label{parser_8c_a162}
 
 
 \index{parser.c@{parser.c}!YYINITDEPTH@{YYINITDEPTH}}
 \index{YYINITDEPTH@{YYINITDEPTH}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYINITDEPTH\ 200}\label{parser_8c_a179}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYINITDEPTH\ 200}\label{parser_8c_a180}
 
 
 \index{parser.c@{parser.c}!YYLAST@{YYLAST}}
 \index{YYLAST@{YYLAST}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYLAST\ 4544}\label{parser_8c_a164}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYLAST\ 4437}\label{parser_8c_a165}
 
 
 \index{parser.c@{parser.c}!YYLEX@{YYLEX}}
 \index{YYLEX@{YYLEX}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYLEX\ yylex()}\label{parser_8c_a178}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYLEX\ yylex()}\label{parser_8c_a179}
 
 
 \index{parser.c@{parser.c}!yylex@{yylex}}
@@ -1330,7 +1337,7 @@ while (0)\end{verbatim}\normalsize
 
 \index{parser.c@{parser.c}!YYMAXDEPTH@{YYMAXDEPTH}}
 \index{YYMAXDEPTH@{YYMAXDEPTH}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYMAXDEPTH\ 10000}\label{parser_8c_a180}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYMAXDEPTH\ 10000}\label{parser_8c_a181}
 
 
 \index{parser.c@{parser.c}!yynerrs@{yynerrs}}
@@ -1340,7 +1347,7 @@ while (0)\end{verbatim}\normalsize
 
 \index{parser.c@{parser.c}!YYNTBASE@{YYNTBASE}}
 \index{YYNTBASE@{YYNTBASE}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYNTBASE\ 195}\label{parser_8c_a162}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYNTBASE\ 195}\label{parser_8c_a163}
 
 
 \index{parser.c@{parser.c}!yyparse@{yyparse}}
@@ -1350,37 +1357,37 @@ while (0)\end{verbatim}\normalsize
 
 \index{parser.c@{parser.c}!YYPARSE_PARAM_ARG@{YYPARSE\_\-PARAM\_\-ARG}}
 \index{YYPARSE_PARAM_ARG@{YYPARSE\_\-PARAM\_\-ARG}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYPARSE\_\-PARAM\_\-ARG}\label{parser_8c_a181}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYPARSE\_\-PARAM\_\-ARG}\label{parser_8c_a182}
 
 
 \index{parser.c@{parser.c}!YYPARSE_PARAM_DECL@{YYPARSE\_\-PARAM\_\-DECL}}
 \index{YYPARSE_PARAM_DECL@{YYPARSE\_\-PARAM\_\-DECL}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYPARSE\_\-PARAM\_\-DECL}\label{parser_8c_a182}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYPARSE\_\-PARAM\_\-DECL}\label{parser_8c_a183}
 
 
 \index{parser.c@{parser.c}!YYPOPSTACK@{YYPOPSTACK}}
 \index{YYPOPSTACK@{YYPOPSTACK}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYPOPSTACK\ (yyvsp--, yyssp--, yylsp--)}\label{parser_8c_a183}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYPOPSTACK\ (yyvsp--, yyssp--, yylsp--)}\label{parser_8c_a184}
 
 
 \index{parser.c@{parser.c}!YYRECOVERING@{YYRECOVERING}}
 \index{YYRECOVERING@{YYRECOVERING}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYRECOVERING()\ (!!yyerrstatus)}\label{parser_8c_a174}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYRECOVERING()\ (!!yyerrstatus)}\label{parser_8c_a175}
 
 
 \index{parser.c@{parser.c}!YYSTACK_ALLOC@{YYSTACK\_\-ALLOC}}
 \index{YYSTACK_ALLOC@{YYSTACK\_\-ALLOC}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYSTACK\_\-ALLOC\ malloc}\label{parser_8c_a165}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYSTACK\_\-ALLOC\ malloc}\label{parser_8c_a166}
 
 
 \index{parser.c@{parser.c}!YYTERROR@{YYTERROR}}
 \index{YYTERROR@{YYTERROR}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYTERROR\ 1}\label{parser_8c_a176}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYTERROR\ 1}\label{parser_8c_a177}
 
 
 \index{parser.c@{parser.c}!YYTRANSLATE@{YYTRANSLATE}}
 \index{YYTRANSLATE@{YYTRANSLATE}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYTRANSLATE(x)\ ((unsigned)(x) $<$= 405 ? {\bf yytranslate}[x] : 372)}\label{parser_8c_a163}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYTRANSLATE(x)\ ((unsigned)(x) $<$= 405 ? {\bf yytranslate}[x] : 372)}\label{parser_8c_a164}
 
 
 
@@ -1388,7 +1395,7 @@ while (0)\end{verbatim}\normalsize
 \subsection{Function Documentation}
 \index{parser.c@{parser.c}!__yy_memcpy@{\_\-\_\-yy\_\-memcpy}}
 \index{__yy_memcpy@{\_\-\_\-yy\_\-memcpy}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void \_\-\_\-yy\_\-memcpy (to, {\bf from}, {\bf count})\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a206}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void \_\-\_\-yy\_\-memcpy (to, {\bf from}, {\bf count})\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a207}
 
 
 
@@ -1396,155 +1403,155 @@ while (0)\end{verbatim}\normalsize
 \subsection{Variable Documentation}
 \index{parser.c@{parser.c}!count@{count}}
 \index{count@{count}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}unsigned int count}\label{parser_8c_a205}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}unsigned int count}\label{parser_8c_a206}
 
 
 \index{parser.c@{parser.c}!err_msg@{err\_\-msg}}
 \index{err_msg@{err\_\-msg}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char err\_\-msg[1000]}\label{parser_8c_a184}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char err\_\-msg[4096]}\label{parser_8c_a185}
 
 
 \index{parser.c@{parser.c}!from@{from}}
 \index{from@{from}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ from}\label{parser_8c_a204}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ from}\label{parser_8c_a205}
 
 
 \index{parser.c@{parser.c}!ignore_mode@{ignore\_\-mode}}
 \index{ignore_mode@{ignore\_\-mode}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int ignore\_\-mode = 0}\label{parser_8c_a185}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int ignore\_\-mode = 0}\label{parser_8c_a186}
 
 
 \index{parser.c@{parser.c}!yychar@{yychar}}
 \index{yychar@{yychar}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yychar}\label{parser_8c_a199}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yychar}\label{parser_8c_a200}
 
 
 \index{parser.c@{parser.c}!yycheck@{yycheck}}
 \index{yycheck@{yycheck}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yycheck[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a198}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yycheck[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a199}
 
 
 \index{parser.c@{parser.c}!yydebug@{yydebug}}
 \index{yydebug@{yydebug}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yydebug}\label{parser_8c_a203}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yydebug}\label{parser_8c_a204}
 
 
 \index{parser.c@{parser.c}!yydefact@{yydefact}}
 \index{yydefact@{yydefact}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yydefact[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a193}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yydefact[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a194}
 
 
 \index{parser.c@{parser.c}!yydefgoto@{yydefgoto}}
 \index{yydefgoto@{yydefgoto}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yydefgoto[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a194}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yydefgoto[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a195}
 
 
 {\bf Initial value:}
 
-\footnotesize\begin{verbatim} {   988,
-     5,     6,    15,     7,     8,    57,   319,    55,   318,   143,
-   314,   315,   316,   646,   837,   494,   760,   754,   882,   317,
-   650,   408,   255,   202,   203,   685,   205,   106,     9,   146,
-   655,   656,   766,   767,   846,   908,   909,   910,   911,   912,
-   960,   913,   914,    50,    51,   134,   879,   240,   608,   109,
-   461,   132,   108,   426,   725,   300,   930,   223,   163,   855,
-   172,   692,   175,   860,   180,   702,   341,   682,   177,   538,
-   173,   693,   162,   674,   176,   536,   178,   699,   181,   864,
-   700,   861,   174,   534,   183,   547,   595,   978,   591,   977,
-   159,   854,   219,   868,   350,   354,   362,   525,   803,   168,
-   224,    93,   733,   679,   680,    52,   686,   788,   941,   687,
-    94,   432,   433,   409,   213,   734,   735,   138,   139,   268,
-   112,   113,   632,   633,   634,   746,   949,   747,   950,   745,
-   948,    53,   305,   306,   641,   834,   753,   881,    98,    99,
-   238,   239,    95,   414,   415,   297,   298,    54,   103,   104,
-    63,   326,   327,   155,   156,   509,   777,   329,   853,   331,
-   671,   739,   740,   823,   122,   123,   470,   744,   117,   118,
-   467,   743,   510,   511,   773,   916
+\footnotesize\begin{verbatim} {   993,
+     5,     6,    15,     7,     8,    57,   323,    55,   322,   144,
+   318,   319,   320,   651,   842,   499,   765,   759,   887,   321,
+   655,   412,   258,   203,   204,   690,   206,   107,     9,   147,
+   660,   661,   771,   772,   851,   913,   914,   915,   916,   917,
+   965,   918,   919,    50,    51,   135,   884,   241,   613,   110,
+   466,   133,   109,   430,   730,   303,   935,   224,   164,   860,
+   173,   697,   176,   865,   181,   707,   345,   687,   178,   543,
+   174,   698,   163,   679,   177,   541,   179,   704,   182,   869,
+   705,   866,   175,   539,   184,   552,   600,   983,   596,   982,
+   160,   859,   220,   873,   354,   358,   366,   530,   808,   169,
+   225,    93,   738,   684,   685,    52,   691,   793,   946,   692,
+    94,   436,   437,   413,   214,   739,   740,   139,   140,   271,
+   113,   114,   637,   638,   639,   751,   954,   752,   955,   750,
+   953,    53,   308,   309,   646,   839,   758,   886,    98,    99,
+   239,   240,    95,   418,   419,   300,   301,    54,   103,   104,
+    63,   330,   331,   156,   157,   514,   782,   333,   858,   335,
+   676,   744,   745,   828,   123,   124,   475,   749,   118,   119,
+   472,   748,   515,   516,   778,   921
 }\end{verbatim}\normalsize 
 \index{parser.c@{parser.c}!yylloc@{yylloc}}
 \index{yylloc@{yylloc}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}YYLTYPE yylloc}\label{parser_8c_a201}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}YYLTYPE yylloc}\label{parser_8c_a202}
 
 
 \index{parser.c@{parser.c}!yylval@{yylval}}
 \index{yylval@{yylval}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf YYSTYPE} yylval}\label{parser_8c_a200}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf YYSTYPE} yylval}\label{parser_8c_a201}
 
 
 \index{parser.c@{parser.c}!yynerrs@{yynerrs}}
 \index{yynerrs@{yynerrs}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yynerrs}\label{parser_8c_a202}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yynerrs}\label{parser_8c_a203}
 
 
 \index{parser.c@{parser.c}!yypact@{yypact}}
 \index{yypact@{yypact}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yypact[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a195}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yypact[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a196}
 
 
 \index{parser.c@{parser.c}!yypgoto@{yypgoto}}
 \index{yypgoto@{yypgoto}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yypgoto[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a196}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yypgoto[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a197}
 
 
 {\bf Initial value:}
 
 \footnotesize\begin{verbatim} {-32768,
--32768,  1016,-32768,-32768,-32768,-32768,-32768,-32768,-32768,   963,
--32768,   528,-32768,-32768,-32768,-32768,-32768,-32768,-32768,  -482,
-   270,   -93,  1033,   -83,  1526,   -71,   -19,   -29,-32768,-32768,
--32768,   374,-32768,-32768,-32768,-32768,-32768,   121,  -565,  -522,
-    65,-32768,   125,-32768,   991,-32768,-32768,-32768,-32768,-32768,
+-32768,  1035,-32768,-32768,-32768,-32768,-32768,-32768,-32768,   985,
+-32768,   541,-32768,-32768,-32768,-32768,-32768,-32768,-32768,  -465,
+   284,   -53,  1153,  -115,   866,    27,   -19,   -29,-32768,-32768,
+-32768,   385,-32768,-32768,-32768,-32768,-32768,   140,  -570,  -824,
+    71,-32768,   137,-32768,  1015,-32768,-32768,-32768,-32768,-32768,
 -32768,-32768,-32768,-32768,-32768,-32768,-32768,    -6,-32768,-32768,
 -32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
 -32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
 -32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,
--32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,  -170,
-   -81,  -348,   284,   505,-32768,  -455,  -456,-32768,-32768,   -78,
-  -120,-32768,   563,  -597,   613,-32768,   225,   -44,     2,-32768,
-   781,   -10,-32768,-32768,   425,-32768,-32768,-32768,-32768,-32768,
--32768,-32768,   919,   573,-32768,-32768,-32768,-32768,-32768,  1008,
-  -134,   230,  -215,-32768,   107,-32768,-32768,-32768,-32768,   -87,
--32768,-32768,   559,-32768,   730,-32768,-32768,-32768,-32768,-32768,
--32768,-32768,   330,-32768,-32768,   -95,-32768,-32768,-32768,   -86,
--32768,-32768,   741,   404,-32768,-32768
+-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,-32768,  -168,
+   -81,  -352,   406,   524,-32768,  -449,  -258,-32768,-32768,   233,
+  -123,-32768,   585,  -602,   638,-32768,   251,   -44,   -14,-32768,
+   799,     5,-32768,-32768,   440,-32768,-32768,-32768,-32768,-32768,
+-32768,-32768,   941,   598,-32768,-32768,-32768,-32768,-32768,  1031,
+   247,   310,  -216,-32768,    30,-32768,-32768,-32768,-32768,   -94,
+-32768,-32768,   577,-32768,   755,-32768,-32768,-32768,-32768,-32768,
+-32768,-32768,   349,-32768,-32768,  -110,-32768,-32768,-32768,   -92,
+-32768,-32768,   758,   426,-32768,-32768
 }\end{verbatim}\normalsize 
 \index{parser.c@{parser.c}!yyprhs@{yyprhs}}
 \index{yyprhs@{yyprhs}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yyprhs[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a187}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yyprhs[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a188}
 
 
 \index{parser.c@{parser.c}!yyr1@{yyr1}}
 \index{yyr1@{yyr1}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yyr1[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a191}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yyr1[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a192}
 
 
 \index{parser.c@{parser.c}!yyr2@{yyr2}}
 \index{yyr2@{yyr2}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yyr2[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a192}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yyr2[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a193}
 
 
 \index{parser.c@{parser.c}!yyrhs@{yyrhs}}
 \index{yyrhs@{yyrhs}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yyrhs[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a188}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yyrhs[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a189}
 
 
 \index{parser.c@{parser.c}!yyrline@{yyrline}}
 \index{yyrline@{yyrline}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yyrline[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a189}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yyrline[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a190}
 
 
 \index{parser.c@{parser.c}!yytable@{yytable}}
 \index{yytable@{yytable}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yytable[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a197}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yytable[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a198}
 
 
 \index{parser.c@{parser.c}!yytname@{yytname}}
 \index{yytname@{yytname}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const char$\ast$ const yytname[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a190}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const char$\ast$ const yytname[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a191}
 
 
 \index{parser.c@{parser.c}!yytranslate@{yytranslate}}
 \index{yytranslate@{yytranslate}!parser.c@{parser.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yytranslate[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a186}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}const short yytranslate[$\,$]\hspace{0.3cm}{\tt  [static]}}\label{parser_8c_a187}
 
 

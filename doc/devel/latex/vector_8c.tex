@@ -14,12 +14,12 @@ void {\bf vector\_\-init} ({\bf vector} $\ast$vec, {\bf nibble} $\ast$value, int
 \begin{CompactList}\small\item\em Initializes specified vector.\item\end{CompactList}\item 
 {\bf vector} $\ast$ {\bf vector\_\-create} (int width, int lsb)
 \begin{CompactList}\small\item\em Creates and initializes new vector.\item\end{CompactList}\item 
-void {\bf vector\_\-merge} ({\bf vector} $\ast$base, {\bf vector} $\ast$in)
-\begin{CompactList}\small\item\em Merges two vectors and places result into base vector.\item\end{CompactList}\item 
 void {\bf vector\_\-db\_\-write} ({\bf vector} $\ast$vec, FILE $\ast${\bf file}, {\bf bool} write\_\-data)
 \begin{CompactList}\small\item\em Displays vector information to specified database file.\item\end{CompactList}\item 
 {\bf bool} {\bf vector\_\-db\_\-read} ({\bf vector} $\ast$$\ast$vec, char $\ast$$\ast$line)
 \begin{CompactList}\small\item\em Creates and parses current file line for vector information $\ast$/.\item\end{CompactList}\item 
+{\bf bool} {\bf vector\_\-db\_\-merge} ({\bf vector} $\ast$base, char $\ast$$\ast$line)
+\begin{CompactList}\small\item\em Reads and merges two vectors, placing the result into base vector.\item\end{CompactList}\item 
 void {\bf vector\_\-display\_\-toggle01} ({\bf nibble} $\ast$nib, int width, int lsb, FILE $\ast$ofile)
 \begin{CompactList}\small\item\em Outputs the toggle01 information from the specified nibble to the specified output stream.\item\end{CompactList}\item 
 void {\bf vector\_\-display\_\-toggle10} ({\bf nibble} $\ast$nib, int width, int lsb, FILE $\ast$ofile)
@@ -163,9 +163,26 @@ lsb}]Least significant bit for this vector. \end{description}
 \begin{Desc}
 \item[Returns: ]\par
 Pointer to newly created vector.\end{Desc}
-Creates new vector from heap memory and initializes all vector contents. \index{vector.c@{vector.c}!vector_db_read@{vector\_\-db\_\-read}}
+Creates new vector from heap memory and initializes all vector contents. \index{vector.c@{vector.c}!vector_db_merge@{vector\_\-db\_\-merge}}
+\index{vector_db_merge@{vector\_\-db\_\-merge}!vector.c@{vector.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} vector\_\-db\_\-merge ({\bf vector} $\ast$ {\em base}, char $\ast$$\ast$ {\em line})}\label{vector_8c_a11}
+
+
+Reads and merges two vectors, placing the result into base vector.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+base}]Base vector to merge data into. \item[{\em 
+line}]Pointer to line to parse for vector information.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns TRUE if parsing successful; otherwise, returns FALSE.\end{Desc}
+Parses current file line for vector information and performs vector merge of  base vector and read vector information. If the vectors are found to be different (width or lsb are not equal), an error message is sent to the user and the program is halted. If the vectors are found to be equivalents, the merge is performed on the vector nibbles. \index{vector.c@{vector.c}!vector_db_read@{vector\_\-db\_\-read}}
 \index{vector_db_read@{vector\_\-db\_\-read}!vector.c@{vector.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} vector\_\-db\_\-read ({\bf vector} $\ast$$\ast$ {\em vec}, char $\ast$$\ast$ {\em line})}\label{vector_8c_a11}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} vector\_\-db\_\-read ({\bf vector} $\ast$$\ast$ {\em vec}, char $\ast$$\ast$ {\em line})}\label{vector_8c_a10}
 
 
 Creates and parses current file line for vector information $\ast$/.
@@ -175,14 +192,14 @@ Creates and parses current file line for vector information $\ast$/.
 \begin{description}
 \item[{\em 
 vec}]Pointer to vector to create. \item[{\em 
-line}]Pointer to line to parse for vector information. \end{description}
+line}]Pointer to line to parse for vector information.\end{description}
 \end{Desc}
 \begin{Desc}
 \item[Returns: ]\par
 Returns TRUE if parsing successful; otherwise, returns FALSE.\end{Desc}
 Creates a new vector structure, parses current file line for vector information and returns new vector structure to calling function. \index{vector.c@{vector.c}!vector_db_write@{vector\_\-db\_\-write}}
 \index{vector_db_write@{vector\_\-db\_\-write}!vector.c@{vector.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vector\_\-db\_\-write ({\bf vector} $\ast$ {\em vec}, FILE $\ast$ {\em file}, {\bf bool} {\em write\_\-data})}\label{vector_8c_a10}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vector\_\-db\_\-write ({\bf vector} $\ast$ {\em vec}, FILE $\ast$ {\em file}, {\bf bool} {\em write\_\-data})}\label{vector_8c_a9}
 
 
 Displays vector information to specified database file.
@@ -347,21 +364,7 @@ vec}]Pointer to vector to parse. \item[{\em
 false\_\-cnt}]Number of bits in vector that was set to a value of FALSE. \item[{\em 
 true\_\-cnt}]Number of bits in vector that was set to a value of TRUE.\end{description}
 \end{Desc}
-Walks through specified vector counting the number of FALSE bits that are set and the number of TRUE bits that are set. Adds these values to the contents of false\_\-cnt and true\_\-cnt. \index{vector.c@{vector.c}!vector_merge@{vector\_\-merge}}
-\index{vector_merge@{vector\_\-merge}!vector.c@{vector.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vector\_\-merge ({\bf vector} $\ast$ {\em base}, {\bf vector} $\ast$ {\em in})}\label{vector_8c_a9}
-
-
-Merges two vectors and places result into base vector.
-
-\begin{Desc}
-\item[Parameters: ]\par
-\begin{description}
-\item[{\em 
-base}]Base vector to merge data into. \item[{\em 
-in}]Vector that will be merged with base vector.\end{description}
-\end{Desc}
-Performs vector merge of two vectors. If the vectors are found to be different (width or lsb are not equal), an error message is sent to the user and the program is halted. If the vectors are found to be equivalents, the merge is performed on the vector nibbles. \index{vector.c@{vector.c}!vector_op_add@{vector\_\-op\_\-add}}
+Walks through specified vector counting the number of FALSE bits that are set and the number of TRUE bits that are set. Adds these values to the contents of false\_\-cnt and true\_\-cnt. \index{vector.c@{vector.c}!vector_op_add@{vector\_\-op\_\-add}}
 \index{vector_op_add@{vector\_\-op\_\-add}!vector.c@{vector.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vector\_\-op\_\-add ({\bf vector} $\ast$ {\em tgt}, {\bf vector} $\ast$ {\em left}, {\bf vector} $\ast$ {\em right})}\label{vector_8c_a37}
 

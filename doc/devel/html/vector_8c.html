@@ -17,12 +17,12 @@
 <tr><td>&nbsp;</td><td><font size=-1><em>Initializes specified vector.</em> <a href="#a7"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a124">vector</a> *&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a8">vector_create</a> (int width, int lsb)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Creates and initializes new vector.</em> <a href="#a8"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a9">vector_merge</a> (<a class="el" href="defines_8h.html#a124">vector</a> *base, <a class="el" href="defines_8h.html#a124">vector</a> *in)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Merges two vectors and places result into base vector.</em> <a href="#a9"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a10">vector_db_write</a> (<a class="el" href="defines_8h.html#a124">vector</a> *vec, FILE *<a class="el" href="vcd__lexer_8c.html#a112">file</a>, <a class="el" href="defines_8h.html#a143">bool</a> write_data)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Displays vector information to specified database file.</em> <a href="#a10"></a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a143">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a11">vector_db_read</a> (<a class="el" href="defines_8h.html#a124">vector</a> **vec, char **line)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Creates and parses current file line for vector information */.</em> <a href="#a11"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a9">vector_db_write</a> (<a class="el" href="defines_8h.html#a124">vector</a> *vec, FILE *<a class="el" href="lexer_8c.html#a122">file</a>, <a class="el" href="defines_8h.html#a143">bool</a> write_data)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Displays vector information to specified database file.</em> <a href="#a9"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a143">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a10">vector_db_read</a> (<a class="el" href="defines_8h.html#a124">vector</a> **vec, char **line)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Creates and parses current file line for vector information */.</em> <a href="#a10"></a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a143">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a11">vector_db_merge</a> (<a class="el" href="defines_8h.html#a124">vector</a> *base, char **line)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Reads and merges two vectors, placing the result into base vector.</em> <a href="#a11"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a12">vector_display_toggle01</a> (<a class="el" href="defines_8h.html#a122">nibble</a> *nib, int width, int lsb, FILE *ofile)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Outputs the toggle01 information from the specified nibble to the specified output stream.</em> <a href="#a12"></a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="vector_8c.html#a13">vector_display_toggle10</a> (<a class="el" href="defines_8h.html#a122">nibble</a> *nib, int width, int lsb, FILE *ofile)</td></tr>
@@ -259,7 +259,57 @@ Returns: </b><dd>
 Pointer to newly created vector.</dl>Creates new vector from heap memory and initializes all vector contents.     </td>
   </tr>
 </table>
-<a name="a11" doxytag="vector.c::vector_db_read"></a><p>
+<a name="a11" doxytag="vector.c::vector_db_merge"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a143">bool</a> vector_db_merge </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a124">vector</a> *&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>base</em>, </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td class="md" nowrap>char **&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>line</em></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td class="md">)&nbsp;</td>
+          <td class="md" colspan="2"></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+Reads and merges two vectors, placing the result into base vector.
+<p>
+<dl compact><dt><b>
+Parameters: </b><dd>
+<table border=0 cellspacing=2 cellpadding=0>
+<tr><td valign=top><em>base</em>&nbsp;</td><td>
+Base vector to merge data into. </td></tr>
+<tr><td valign=top><em>line</em>&nbsp;</td><td>
+Pointer to line to parse for vector information.</td></tr>
+</table>
+</dl><dl compact><dt><b>
+Returns: </b><dd>
+Returns TRUE if parsing successful; otherwise, returns FALSE.</dl>Parses current file line for vector information and performs vector merge of  base vector and read vector information. If the vectors are found to be different (width or lsb are not equal), an error message is sent to the user and the program is halted. If the vectors are found to be equivalents, the merge is performed on the vector nibbles.     </td>
+  </tr>
+</table>
+<a name="a10" doxytag="vector.c::vector_db_read"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -302,14 +352,14 @@ Parameters: </b><dd>
 <tr><td valign=top><em>vec</em>&nbsp;</td><td>
 Pointer to vector to create. </td></tr>
 <tr><td valign=top><em>line</em>&nbsp;</td><td>
-Pointer to line to parse for vector information. </td></tr>
+Pointer to line to parse for vector information.</td></tr>
 </table>
 </dl><dl compact><dt><b>
 Returns: </b><dd>
 Returns TRUE if parsing successful; otherwise, returns FALSE.</dl>Creates a new vector structure, parses current file line for vector information and returns new vector structure to calling function.     </td>
   </tr>
 </table>
-<a name="a10" doxytag="vector.c::vector_db_write"></a><p>
+<a name="a9" doxytag="vector.c::vector_db_write"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -886,54 +936,6 @@ Number of bits in vector that was set to a value of FALSE. </td></tr>
 Number of bits in vector that was set to a value of TRUE.</td></tr>
 </table>
 </dl>Walks through specified vector counting the number of FALSE bits that are set and the number of TRUE bits that are set. Adds these values to the contents of false_cnt and true_cnt.     </td>
-  </tr>
-</table>
-<a name="a9" doxytag="vector.c::vector_merge"></a><p>
-<table width="100%" cellpadding="2" cellspacing="0" border="0">
-  <tr>
-    <td class="md">
-      <table cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td class="md" nowrap valign="top"> void vector_merge </td>
-          <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a124">vector</a> *&nbsp;</td>
-          <td class="mdname" nowrap>&nbsp; <em>base</em>, </td>
-        </tr>
-        <tr>
-          <td></td>
-          <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a124">vector</a> *&nbsp;</td>
-          <td class="mdname" nowrap>&nbsp; <em>in</em></td>
-        </tr>
-        <tr>
-          <td></td>
-          <td class="md">)&nbsp;</td>
-          <td class="md" colspan="2"></td>
-        </tr>
-
-      </table>
-    </td>
-  </tr>
-</table>
-<table cellspacing=5 cellpadding=0 border=0>
-  <tr>
-    <td>
-      &nbsp;
-    </td>
-    <td>
-
-<p>
-Merges two vectors and places result into base vector.
-<p>
-<dl compact><dt><b>
-Parameters: </b><dd>
-<table border=0 cellspacing=2 cellpadding=0>
-<tr><td valign=top><em>base</em>&nbsp;</td><td>
-Base vector to merge data into. </td></tr>
-<tr><td valign=top><em>in</em>&nbsp;</td><td>
-Vector that will be merged with base vector.</td></tr>
-</table>
-</dl>Performs vector merge of two vectors. If the vectors are found to be different (width or lsb are not equal), an error message is sent to the user and the program is halted. If the vectors are found to be equivalents, the merge is performed on the vector nibbles.     </td>
   </tr>
 </table>
 <a name="a37" doxytag="vector.c::vector_op_add"></a><p>
@@ -2194,7 +2196,7 @@ OR operation table     </td>
 XOR operation table     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Mon Jul 22 00:23:02 2002 for Covered by
+<hr><address align="right"><small>Generated on Thu Aug 22 00:17:09 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.16 </small></address>
