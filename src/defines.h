@@ -394,7 +394,12 @@
 /*!
  Returns a value of 1 if the specified expression is considered to be measurable.
 */
-#define EXPR_IS_MEASURABLE(x)      ((SUPPL_OP( x->suppl ) != EXP_OP_NONE) ? 1 : 0)
+#define EXPR_IS_MEASURABLE(x)      (((SUPPL_OP( x->suppl ) != EXP_OP_NONE) && \
+                                     !(((SUPPL_OP( x->suppl ) == EXP_OP_SIG) || \
+				        (SUPPL_OP( x->suppl ) == EXP_OP_SBIT_SEL) || \
+                                        (SUPPL_OP( x->suppl ) == EXP_OP_MBIT_SEL)) && \
+                                        (SUPPL_IS_ROOT( x->suppl ) == 0)) && \
+                                     (SUPPL_OP( x->suppl ) != EXP_OP_DELAY)) ? 1 : 0)
 
 /*!
  Returns a value of 1 if the specified expression was measurable for combinational 
@@ -754,6 +759,10 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.16  2002/06/27 20:39:43  phase1geo
+/* Fixing scoring bugs as well as report bugs.  Things are starting to work
+/* fairly well now.  Added rest of support for delays.
+/*
 /* Revision 1.15  2002/06/26 04:59:50  phase1geo
 /* Adding initial support for delays.  Support is not yet complete and is
 /* currently untested.

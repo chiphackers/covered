@@ -201,6 +201,7 @@ void combination_underline_tree( expression* exp, char*** lines, int* depth, int
 
     } else if( SUPPL_OP( exp->suppl ) == EXP_OP_SIG ) {
 
+      strcpy( code_fmt, "%s" );
       *size = strlen( exp->sig->name );
 
     } else {
@@ -469,6 +470,7 @@ void combination_list_missed( FILE* ofile, expression* exp, int* exp_id ) {
 
       /* Create combination table */
       switch( SUPPL_OP( exp->suppl ) ) {
+        case EXP_OP_SIG      :  combination_unary( ofile, exp );                 break;
         case EXP_OP_XOR      :  combination_two_vars( ofile, exp, 0, 1, 1, 0 );  break;
         case EXP_OP_ADD      :  combination_two_vars( ofile, exp, 0, 1, 1, 0 );  break;
         case EXP_OP_SUBTRACT :  combination_two_vars( ofile, exp, 0, 1, 1, 0 );  break;
@@ -503,8 +505,8 @@ void combination_list_missed( FILE* ofile, expression* exp, int* exp_id ) {
         case EXP_OP_UNAND    :  combination_unary( ofile, exp );                 break;
         case EXP_OP_UNOR     :  combination_unary( ofile, exp );                 break;
         case EXP_OP_UNXOR    :  combination_unary( ofile, exp );                 break;
-        case EXP_OP_SBIT_SEL :  /* ??? */  break;
-        case EXP_OP_MBIT_SEL :  /* ??? */  break;
+        case EXP_OP_SBIT_SEL :  combination_unary( ofile, exp );                 break;
+        case EXP_OP_MBIT_SEL :  combination_unary( ofile, exp );                 break;
         case EXP_OP_EXPAND   :  /* ??? */  break;
         case EXP_OP_CONCAT   :  /* ??? */  break;
         case EXP_OP_PEDGE    :  /* ??? */  break;
@@ -679,6 +681,10 @@ void combination_report( FILE* ofile, bool verbose, bool instance ) {
 
 
 /* $Log$
+/* Revision 1.17  2002/06/27 20:39:43  phase1geo
+/* Fixing scoring bugs as well as report bugs.  Things are starting to work
+/* fairly well now.  Added rest of support for delays.
+/*
 /* Revision 1.16  2002/06/25 03:39:03  phase1geo
 /* Fixed initial scoring bugs.  We now generate a legal CDD file for reporting.
 /* Fixed some report bugs though there are still some remaining.

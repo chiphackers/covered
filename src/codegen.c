@@ -33,7 +33,7 @@ char* codegen_gen_expr( expression* expr, int line ) {
   char  code_format[12]; /* Format for creating my_code string                                        */
   bool  both;            /* Specifies if both left and right expressions should be used               */
 
-  if( (expr != NULL) && (line == -1) ) {
+  if( (expr != NULL) && ((line == -1) || (expr->line == line)) ) {
 
     left_code  = codegen_gen_expr( expr->left,  line );
     right_code = codegen_gen_expr( expr->right, line );
@@ -142,4 +142,9 @@ char* codegen_gen_expr( expression* expr, int line ) {
 }
 
 
-/* $Log$ */
+/* $Log$
+/* Revision 1.5  2002/05/13 03:02:58  phase1geo
+/* Adding lines back to expressions and removing them from statements (since the line
+/* number range of an expression can be calculated by looking at the expression line
+/* numbers).
+/* */
