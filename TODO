@@ -36,7 +36,7 @@ X  9.  Allow ability to only parse a design and only score a dumpfile (rather th
 X  10. Possibly allow undeclared signals to be automatically created if not found (1-bit signal
        values -- simulators will probably do this).
 
-   11. Make sure that extension order is maintained for a given library path.
+X  11. Make sure that extension order is maintained for a given library path.
 
 
 Merge command
@@ -54,7 +54,7 @@ Report command
 
    3.  Make sure that combinational logic outputting is ordered for each file.
 
-   4.  Make sure that combinational table output is correct for all cases.
+X  4.  Make sure that combinational table output is correct for all cases.
 
 X  5.  Add '+' to combinational logic output for values equal to or greater than one.
 
@@ -63,6 +63,4 @@ X  6.  Make sure that all unnecessary output is removed from verbose output (som
 
    7.  Add depth option for combination logic analyzer.
 
-   8.  Add option to output what has been covered (instead of what has not been covered)
-
-   9.  Make sure that line coverage reports lines not statements
+X  8.  Add option to output what has been covered (instead of what has not been covered)

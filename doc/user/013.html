@@ -157,7 +157,7 @@
             <P class="blockIndentLeft">&nbsp;</P>
           </TD>
           <TD width=100% align=center>
-<table cellspacing=2 cellpadding=4 border=1> <tr> <td colspan=2 class="tableHeader"> Options to report Command </td> </tr> <tr> <td> <strong>Option</strong> </td> <td> <strong>Description</strong> <td> </tr> <tr> <td> -m [l][t][c][f] </td> <td> Specifies type of coverage information to report (default is to generate report for line, toggle and combinational coverage). </td> </tr> <tr> <td> -v </td> <td> Specifies to generate verbose reporting information (default is to generate summary report only). </td> </tr> <tr> <td> -i </td> <td> Generates report information for each instance (default is to generate per module). </td> </tr> <tr> <td> -o &lt;<i>filename</i>&gt; </td> <td> Specifies output file to stream report to (default is standard output) </td> </tr> <tr> <td> -h </td> <td> Outputs usage information for the merge command </td> </tr> </table><br>
+<table cellspacing=2 cellpadding=4 border=1> <tr> <td colspan=2 class="tableHeader"> Options to report Command </td> </tr> <tr> <td> <strong>Option</strong> </td> <td> <strong>Description</strong> <td> </tr> <tr> <td> -m [l][t][c][f] </td> <td> Specifies type of coverage information to report (default is to generate report for line, toggle and combinational coverage). </td> </tr> <tr> <td> -v </td> <td> Specifies to generate verbose reporting information (default is to generate summary report only). </td> </tr> <tr> <td> -i </td> <td> Generates report information for each instance (default is to generate per module). </td> </tr> <tr> <td> -c </td> <td> Used in conjunction with the -v option. If set, causes covered logic to be reported instead of default behavior of reporting uncovered logic. <tr> <td> -o &lt;<i>filename</i>&gt; </td> <td> Specifies output file to stream report to (default is standard output) </td> </tr> <tr> <td> -h </td> <td> Outputs usage information for the merge command </td> </tr> </table><br>
           </TD>
           <TD>
             <P class="blockIndentRight">&nbsp;</P>
@@ -440,6 +440,50 @@
     <TD></TD>
     <TD valign=top>
       <P class="pg">Instance reporting displays each instance in the covered design separately (no combining occurs). This reporting format is useful for determining if certain instances within a design are being neglected. For instance, if a module is instantiated four times (i.e., four instances of the same buffer), it may be that the first buffer is used more often than the other three buffers. This could indicate controller errors or just an indication that there was not enough activity during simulation to fill the other buffers (need to bolster diagnostics or possibly some buffers could be removed?) This type of information would not be viewable if only module reporting were performed.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header2">8.5&nbsp; <A name="8_5"></A>Covered Vs. Uncovered</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">Covered has the ability the generate reports from any given CDD file that displays either uncovered logic (the default behavior) or covered logic. It is understandable why one would want to generate reports displaying uncovered logic (this is probably the reason why you are interested in this tool in the first place). However, why would anyone be interested in reporting covered logic?</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">The reason for having this option is two-fold (and maybe there are other reasons). First, this option is useful in debugging the report command since it let't the user evaluate whether a particular signal or portion of logic was actually fully covered or not. Second, it may be useful for user's of the tool to understand what logic is being evaluated for coverage and what logic is not. If only uncovered logic was supplied for evaluation of the tool, one could not evaluate the effectiveness of the tool. However, by allowing the user to see what logic is covered and uncovered, a more full picture of the tool's capability can be understood.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">To generate a report that specifies what logic is not covered (output only available in verbose reporting mode), no further options are needed. To generate a report that specifies what logic is being covered, simply specify the -c option along with the -v option when calling the report command.</P>
     </TD>
   </TR>
 
