@@ -1122,6 +1122,23 @@ struct mod_inst_s {
 };
 
 /*-------------------------------------------------------------------------------*/
+/*!
+ Node for a tree that carries two strings:  a key and a value.  The tree is a binary
+ tree that is sorted by key.
+*/
+struct tnode_s;
+
+typedef struct tnode_s tnode;
+
+struct tnode_s {
+  char*  name;     /*!< Key value for tree node     */
+  char*  value;    /*!< Value of node               */
+  tnode* left;     /*!< Pointer to left child node  */
+  tnode* right;    /*!< Pointer to right child node */
+  tnode* up;       /*!< Pointer to parent node      */
+};
+
+/*-------------------------------------------------------------------------------*/
 
 union expr_stmt_u {
   expression* expr;         /*!< Pointer to expression */
@@ -1131,6 +1148,11 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.63  2003/01/03 05:52:01  phase1geo
+ Adding code to help safeguard from segmentation faults due to array overflow
+ in VCD parser and symtable.  Reorganized code for symtable symbol lookup and
+ value assignment.
+
  Revision 1.62  2002/12/07 17:46:52  phase1geo
  Fixing bug with handling memory declarations.  Added diagnostic to verify
  that memory declarations are handled properly.  Fixed bug with infinite

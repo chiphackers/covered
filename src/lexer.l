@@ -20,6 +20,7 @@
 #include "vector.h"
 #include "parser_misc.h"
 #include "keywords.h"
+#include "tree.h"
 
 #define yylval VLlval
 #define YYDEBUG 1
@@ -42,8 +43,9 @@ static int  yywrap();
 
 static str_link* filelist_head = 0;
 static str_link* filelist_curr = 0;
-static int last_keyword        = 0;
-static char ppfilename[10];
+static int       last_keyword  = 0;
+static tnode*    found_modules = NULL;
+static char      ppfilename[10];
 
 extern str_link* modlist_head;
 extern str_link* modlist_tail;
@@ -162,6 +164,7 @@ WSPACE [ \t\b\f]+
        if( last_keyword == K_module ) {
          if( (foundmod = str_link_find( yytext, modlist_head )) == NULL ) {
            BEGIN( IGNORE_MODULE );
+           tree_add( yytext, yylloc.text, FALSE, &found_modules );
            rc = IGNORE;
          } else {
            if( filelist_curr != filelist_head ) {
@@ -433,6 +436,8 @@ static int yywrap() {
 
   str_link* curr;
   FILE*     out;
+  bool      found = FALSE;
+  tnode*    node;
   
   /* Close input file */
   if( yyin != 0 ) {
@@ -441,12 +446,36 @@ static int yywrap() {
   
   if( modlist_head == NULL ) {
     assert( unlink( ppfilename ) == 0 );
+    tree_dealloc( found_modules );
     return( 1 );
   }
     
   curr = filelist_curr;
   
-  if( (curr = get_next_vfile( curr, modlist_head->str )) == NULL ) {
+  while( (modlist_head != NULL) && ((modlist_head->suppl & 0x2) != 0x2) && !found ) {
+    if( (node = tree_find( modlist_head->str, found_modules )) != NULL ) {
+      curr->str = node->value;
+      found     = TRUE;
+    } else {
+      if( (curr = get_next_vfile( curr, modlist_head->str )) == NULL ) {
+    
+        /* Set unable to find bit in supplemental field */
+        modlist_head->suppl = modlist_head->suppl | 0x2;
+      
+        /* Move head to tail and try next */
+        modlist_tail->next = modlist_head;
+        modlist_tail       = modlist_head;
+        modlist_head       = modlist_head->next;
+        modlist_tail->next = NULL;
+      
+      } else {
+        found = TRUE;
+      }
+    }
+  }
+
+  /* If the rest of the modules could not be found, display them to the user */
+  if( (modlist_head != NULL) && ((modlist_head->suppl & 0x2) == 0x2) ) {
     print_output( "Unable to find the following modules:", FATAL );
     curr = modlist_head;
     while( curr != NULL ) {
@@ -470,6 +499,9 @@ static int yywrap() {
   
   yylloc.first_line = 1;
   yylloc.text       = curr->str;
+  
+  /* Set bit to allow this library file to  */
+  curr->suppl = (curr->suppl | 0x4);
   
   filelist_curr = curr->next;
   

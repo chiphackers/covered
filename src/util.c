@@ -267,7 +267,7 @@ void directory_load( char* dir, str_link* ext_head, str_link** file_head, str_li
           snprintf( tmpfile, tmpchars, "%s/%s", dir, dirp->d_name );
           if( str_link_find( tmpfile, *file_head ) == NULL ) {
             str_link_add( tmpfile, file_head, file_tail );
-            (*file_tail)->suppl = 'D';
+            (*file_tail)->suppl = 0x1;
           }
         }
       }
@@ -499,7 +499,7 @@ str_link* get_next_vfile( str_link* curr, char* mod ) {
   char      name[256];    /* String holder for module name of file */
 
   while( (curr != NULL) && (next == NULL) ) {
-    if( curr->suppl != 'D' ) {
+    if( (curr->suppl & 0x1) != 0x1 ) {
       next = curr;
     } else {
       convert_file_to_module( name, 256, curr->str );
@@ -592,6 +592,13 @@ void gen_space( char* spaces, int num_spaces ) {
 
 /*
  $Log$
+ Revision 1.18  2002/12/06 02:18:59  phase1geo
+ Fixing bug with calculating list and concatenation lengths when MBIT_SEL
+ expressions were included.  Also modified file parsing algorithm to be
+ smarter when searching files for modules.  This change makes the parsing
+ algorithm much more optimized and fixes the bug specified in our bug list.
+ Added diagnostic to verify fix for first bug.
+
  Revision 1.17  2002/10/31 23:14:30  phase1geo
  Fixing C compatibility problems with cc and gcc.  Found a few possible problems
  with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that

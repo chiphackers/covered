@@ -41,7 +41,7 @@ void str_link_add( char* str, str_link** head, str_link** tail ) {
   tmp = (str_link*)malloc_safe( sizeof( str_link ) );
 
   tmp->str   = str;
-  tmp->suppl = '_';
+  tmp->suppl = 0x0;
   tmp->next  = NULL;
 
   if( *head == NULL ) {
@@ -617,6 +617,11 @@ void mod_link_delete_list( mod_link* head ) {
 
 /*
  $Log$
+ Revision 1.15  2003/01/03 02:07:43  phase1geo
+ Fixing segmentation fault in lexer caused by not closing the temporary
+ input file before unlinking it.  Fixed case where module was parsed but not
+ at the head of the module list.
+
  Revision 1.14  2002/12/06 02:18:59  phase1geo
  Fixing bug with calculating list and concatenation lengths when MBIT_SEL
  expressions were included.  Also modified file parsing algorithm to be

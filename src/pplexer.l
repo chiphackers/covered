@@ -14,6 +14,7 @@
 
 #include "defines.h"
 #include "util.h"
+#include "tree.h"
 
 #define yylval PPVLlval
 #define YYDEBUG 1
@@ -244,67 +245,37 @@ WSPACE [ \t\b\f]+
 
 %%
 
-/*
- Defined macros are kept in this table for convenient lookup. As
- `define directives are matched (and the do_define() function
- called) the tree is built up to match names with values. If a
- define redefines an existing name, the new value it taken.
-*/
-struct define_t {
-  char* name;
-  char* value;
-
-  struct define_t* left;
-  struct define_t* right;
-  struct define_t* up;
-};
-
 /*!
  Define table.
 */
-static struct define_t* def_table = 0;
+tnode* def_table = NULL;
 
 /*!
  \param name  Name of define to lookup in table
+ 
  \return Pointer to defined value.
 
  Looks up the specified define identifier in the binary tree lookup table.
  Returns NULL (0), if the define was not found in the lookup tree; otherwise,
  returns a pointer to the defined value.
 */
-static struct define_t* def_lookup(const char* name) {
+static tnode* def_lookup( const char* name ) {
 
-  struct define_t* cur = def_table;  /* Pointer to current define table node */
-  int              cmp;              /* String compare value                 */
-
-  if( cur != 0 ) {
-
-    assert( cur->up == 0 );
-
-    while( (cur != 0) && ((cmp = strcmp( name, cur->name )) != 0) ) {
-      if( cmp < 0 ) {
-        cur = cur->left;
-      } else {
-        cur = cur->right;
-      }
-    }
-
-  }
-
-  return( cur );
+  return( tree_find( name, def_table ) );
 
 }
 
 /*!
  \param name  Name of defined value.
+ 
  \return Returns 1 if define is found in lookup table; otherwise, returns 0.
 
  Checks lookup table to see if specified define identifier has been
  previously defined.
 */
-static int is_defined( const char* name) {
+static int is_defined( const char* name ) {
 
-  return( def_lookup( name ) != 0 );
+  return( def_lookup( name ) != NULL );
 
 }
 
@@ -317,8 +288,8 @@ static int is_defined( const char* name) {
 
 static void def_match() {
 
-  struct define_t* cur = def_lookup( yytext + 1 );  /* Pointer to define identifier node */
-  int              i;                               /* Loop iterator                     */
+  tnode* cur = def_lookup( yytext + 1 );  /* Pointer to define identifier node */
+  int    i;                               /* Loop iterator                     */
 
   if( cur ) {
 
@@ -358,66 +329,7 @@ static void def_start() {
 */
 void define_macro( const char* name, const char* value ) {
 
-  struct define_t* def;         /* Pointer to newly created define node               */
-  struct define_t* cur;         /* Pointer to current define node in tree             */
-  int              placed = 0;  /* Specifies that define node has been placed in tree */
-  int              cmp;         /* String compare value                               */
-  def = malloc( sizeof( struct define_t ) );
-
-  /* Initialize define node */
-  def->name    = strdup( name );
-  def->value   = strdup( value );
-  def->left    = 0;
-  def->right   = 0;
-  def->up      = 0;
-
-  /* If this node is first inserted, it is root of tree */
-  if( def_table == 0 ) {
-
-    def_table = def;
-
-  } else {
-
-    cur = def_table;
-
-    while( !placed ) {
-
-      cmp = strcmp( def->name, cur->name );
-
-      /* Re-define found */
-      if( cmp == 0 ) {
-
-        free_safe( cur->value );
-        cur->value = def->value;
-        free_safe(def->name);
-        free_safe(def);
-        placed = 1;
-
-      } else if( cmp < 0 ) {
-
-        if( cur->left == 0 ) {
-          cur->left = def;
-          def->up   = cur;
-          placed    = 1;
-        } else {
-          cur       = cur->left;
-        }
-
-      } else {
-
-        if( cur->right == 0 ) {
-          cur->right = def;
-          def->up    = cur;
-          placed     = 1;
-        } else {
-          cur        = cur->right;
-        }
-
-      }
-
-    }
-
-  }
+  tree_add( name, value, TRUE, &def_table );
 
 }
 
@@ -474,113 +386,7 @@ static void def_undefine() {
   /* Get undef directive identifier string */
   sscanf( yytext, "`undef %s", def_name );
 
-  /* Find undefined identifer string in table */
-  cur = def_lookup( def_name );
-
-  /* If node is found, restitch the define tree. */
-  if( cur != 0 ) {
-
-    /* If we are the root node in the tree */
-    if( cur->up == 0 ) {
-
-      /* If we have no children */
-      if( (cur->left == 0) && (cur->right == 0) ) {
-
-        def_table = 0;
-
-      } else if( cur->left == 0 ) {
-
-        def_table = cur->right;
-        if( cur->right ) {
-          cur->right->up = 0;
-        }
-
-      } else if( cur->right == 0 ) {
-
-        assert( cur->left );
-        def_table     = cur->left;
-        def_table->up = 0;
-
-      } else {
-
-        tail = cur->left;
-        while( tail->right ) {
-          tail = tail->right;
-        }
-
-        tail->right     = cur->right;
-        tail->right->up = tail;
-        def_table       = cur->left;
-        def_table->up   = 0;
-
-      }
-
-    } else if( cur->left == 0 ) {
-
-      if( cur->up->left == cur ) {
-
-        cur->up->left = cur->right;
-
-      } else {
-
-        assert( cur->up->right == cur );
-        cur->up->right = cur->right;
-
-      }
-
-      if( cur->right ) {
-        cur->right->up = cur->up;
-      }
-
-    } else if( cur->right == 0 ) {
-
-      assert(cur->left);
-
-      if( cur->up->left == cur ) {
-
-        cur->up->left = cur->left;
-
-      } else {
-
-        assert( cur->up->right == cur );
-        cur->up->right = cur->left;
-
-      }
-
-      cur->left->up = cur->up;
-
-    } else {
-
-      tail = cur->left;
-      assert( cur->left && cur->right );
-
-      while( tail->right ) {
-        tail = tail->right;
-      }
-
-      tail->right = cur->right;
-      tail->right->up = tail;
-
-      if( cur->up->left == cur ) {
-
-        cur->up->left = cur->left;
-
-      } else {
-
-        assert( cur->up->right == cur );
-        cur->up->right = cur->left;
-
-      }
-
-      cur->left->up = cur->up;
-
-    }
-
-    free_safe(cur->name);
-    free_safe(cur->value);
-    free_safe(cur);
-
-  }
+  tree_remove( def_name, &def_table );
 
 }
 

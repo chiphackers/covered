@@ -29,6 +29,7 @@ covered_SOURCES = parser.c \
 		  statement.c \
 		  symtable.c \
 		  toggle.c \
+                  tree.c \
                   util.c \
                   vcd.c \
 		  vector.c
