@@ -108,9 +108,7 @@ proc display_line_cov {} {
     .covbox.ht configure -text "$line_summary_hit"
     .covbox.tt configure -text "$line_summary_total"
 
-    # Write header information
-    .bot.txt insert end "Line #   Verilog Source\n-------  --------------\n"
-  
+    # Next, populate text box with file contents including highlights for covered/uncovered lines
     foreach phrase $contents {
       if [expr [expr $start_line <= $linecount] && [expr $end_line >= $linecount]] {
         set line [format {%7d  %s} $linecount [append phrase "\n"]]

@@ -37,11 +37,10 @@ proc menu_create {.menubar} {
   # Now add open and close options
   $tfm add command -label "Open CDD..." -command {
     set file_name [tk_getOpenFile -filetypes $file_types]
-    message .status -text "Opening $file_name.  Please wait..." -width 500 -relief raised
+    message .status -text "Opening $file_name..." -width 500 -relief raised
     place .status -in . -relx 0.33 -rely 0.5
     after 100 {
       tcl_func_open_cdd $file_name
-      .status configure -text "Populating module/instance information"
       populate_listbox .bot.l
       destroy .status
       .bot.info configure -text "Select a module/instance at left for coverage details"
@@ -68,10 +67,20 @@ proc menu_create {.menubar} {
   }
   $report add separator
   $report add checkbutton -label "Show Uncovered" -variable uncov_type -onvalue 1 -offvalue 0 -command {
+    set text_x [.bot.txt xview]
+    set text_y [.bot.txt yview]
     calc_and_display_line_cov
+    .bot.txt xview moveto [lindex $text_x 0]
+    .bot.txt yview moveto [lindex $text_y 0]
   }
   $report add checkbutton -label "Show Covered" -variable cov_type -onvalue 1 -offvalue 0 -command {
+    set text_x [.bot.txt xview]
+    set text_y [.bot.txt yview]
+    puts $text_x
+    puts $text_y
     calc_and_display_line_cov
+    .bot.txt xview moveto [lindex $text_x 0]
+    .bot.txt yview moveto [lindex $text_y 0]
   }
   set mod_inst_type  "module"
 
@@ -82,19 +91,27 @@ proc menu_create {.menubar} {
   # Choose foreground color of uncovered lines
   global uncov_fgColor
   $m add command -label "Choose Uncovered Foreground ..." -command { 
-     set uncov_fgColor [tk_chooseColor -initialcolor $uncov_fgColor -title \
-                        "Choose Foreground Color for Uncovered Lines"]
-     # Redisplay coverage
-     display_line_cov
+    set uncov_fgColor [tk_chooseColor -initialcolor $uncov_fgColor -title \
+                       "Choose Foreground Color for Uncovered Lines"]
+    # Redisplay coverage
+    set text_x [.bot.txt xview]
+    set text_y [.bot.txt yview]
+    display_line_cov
+    .bot.txt xview moveto [lindex $text_x 0]
+    .bot.txt yview moveto [lindex $text_y 0]
   }
 
   # Choose background color of uncovered lines
   global uncov_bgColor
   $m add command -label "Choose Uncovered Background ..." -command { 
-     set uncov_bgColor [tk_chooseColor -initialcolor $uncov_bgColor -title \
-                        "Choose Background Color for Uncovered Lines"]
-     # Redisplay coverage
-     display_line_cov
+    set uncov_bgColor [tk_chooseColor -initialcolor $uncov_bgColor -title \
+                       "Choose Background Color for Uncovered Lines"]
+    # Redisplay coverage
+    set text_x [.bot.txt xview]
+    set text_y [.bot.txt yview]
+    display_line_cov
+    .bot.txt xview moveto [lindex $text_x 0]
+    .bot.txt yview moveto [lindex $text_y 0]
   }
 
   $m add separator
@@ -105,16 +122,24 @@ proc menu_create {.menubar} {
     set cov_fgColor [tk_chooseColor -initialcolor $cov_fgColor -title \
                      "Choose Foreground Color for Covered Lines"]
     # Redisplay coverage
+    set text_x [.bot.txt xview]
+    set text_y [.bot.txt yview]
     display_line_cov
+    .bot.txt xview moveto [lindex $text_x 0]
+    .bot.txt yview moveto [lindex $text_y 0]
   }
 
   # Choose background color of covered lines
   global cov_bgColor
   $m add command -label "Choose Covered Background ..." -command {
-     set cov_bgColor [tk_chooseColor -initialcolor $cov_bgColor -title \
-                      "Choose Background Color for Covered Lines"]
-     # Redisplay coverage
-     display_line_cov
+    set cov_bgColor [tk_chooseColor -initialcolor $cov_bgColor -title \
+                     "Choose Background Color for Covered Lines"]
+    # Redisplay coverage
+    set text_x [.bot.txt xview]
+    set text_y [.bot.txt yview]
+    display_line_cov
+    .bot.txt xview moveto [lindex $text_x 0]
+    .bot.txt yview moveto [lindex $text_y 0]
   }
 
   # Configure the help option

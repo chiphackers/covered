@@ -24,7 +24,13 @@ proc main_view {} {
   # Create the bottom frame
   frame .bot -width 120 -height 300
 
-  # Create the tree widget to display file names
+  # Create the listbox label
+  label .bot.ll -text "Modules/Instances" -anchor w
+
+  # Create the textbox label
+  label .bot.tl -text "Line #       Verilog Source" -anchor w
+
+  # Create the listbox widget to display file names
   listbox .bot.l -yscrollcommand ".bot.lvb set" -xscrollcommand ".bot.lhb set" -width 30
   bind .bot.l <<ListboxSelect>> populate_text
   scrollbar .bot.lvb -command ".bot.l yview"
@@ -37,19 +43,22 @@ proc main_view {} {
   scrollbar .bot.vb -command ".bot.txt yview"
   scrollbar .bot.hb -orient horizontal -command ".bot.txt xview"
 
-  label .bot.info -relief sunken -anchor w
+  # Create bottom information bar
+  label .bot.info -anchor w
 
   # Pack the widgets into the bottom frame
-  grid rowconfigure    .bot 0 -weight 1
+  grid rowconfigure    .bot 1 -weight 1
   grid columnconfigure .bot 0 -weight 0
   grid columnconfigure .bot 2 -weight 1
-  grid .bot.l    -row 0 -column 0 -sticky nsew
-  grid .bot.lvb  -row 0 -column 1 -sticky ns
-  grid .bot.lhb  -row 1 -column 0 -sticky ew
-  grid .bot.txt  -row 0 -column 2 -sticky nsew
-  grid .bot.vb   -row 0 -column 3 -sticky ns
-  grid .bot.hb   -row 1 -column 2 -sticky ew
-  grid .bot.info -row 2 -column 0 -columnspan 4 -sticky ew
+  grid .bot.ll   -row 0 -column 0 -sticky nsew
+  grid .bot.tl   -row 0 -column 2 -sticky nsew
+  grid .bot.l    -row 1 -column 0 -sticky nsew
+  grid .bot.lvb  -row 1 -column 1 -sticky ns
+  grid .bot.lhb  -row 2 -column 0 -sticky ew
+  grid .bot.txt  -row 1 -column 2 -sticky nsew
+  grid .bot.vb   -row 1 -column 3 -sticky ns
+  grid .bot.hb   -row 2 -column 2 -sticky ew
+  grid .bot.info -row 3 -column 0 -columnspan 4 -sticky ew
 
   # Pack the widgets
   # pack .covbar -fill both -side top
