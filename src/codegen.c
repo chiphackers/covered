@@ -72,6 +72,11 @@ void codegen_create_expr_helper( char** code,
 
   assert( left_depth > 0 );
 
+/*
+  printf( "code_index: %d, first: %s, left_depth: %d, first_same: %d, middle: %s, right_depth: %d, last_same: %d, last: %s\n",
+          code_index, first, left_depth, first_same_line, middle, right_depth, last_same_line, last );
+*/
+
   if( first != NULL ) {
     code_size += strlen( first );
   }
@@ -114,7 +119,7 @@ void codegen_create_expr_helper( char** code,
         if( right_depth > 0 ) {
           codegen_create_expr_helper( code, (code_index + i), tmpstr, right, right_depth, last_same_line, last, NULL, 0, FALSE, NULL );
         } else {
-          code[code_index+1] = tmpstr;
+          code[code_index+i] = tmpstr;
         }
       } else {
         for( i=1; i<left_depth; i++ ) {
@@ -177,6 +182,7 @@ void codegen_create_expr( char*** code,
                           char*   last ) {
 
   int total_len = 0;  /* Total length of first, left, middle, right, and last strings */
+  int i;
 
   *code_depth = 0;
 
@@ -226,6 +232,13 @@ void codegen_create_expr( char*** code,
       codegen_create_expr_helper( *code, 0, first, left, left_depth, (curr_line >= left_line), middle,
                                   right, right_depth, (left_line == right_line), last );
     }
+
+/*
+    printf( "code_depth: %d\n", *code_depth );
+    for( i=0; i<*code_depth; i++ ) {
+      printf( "  %s\n", (*code)[i] );
+    }
+*/
 
   }
 
@@ -617,6 +630,9 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.33  2003/12/16 23:22:07  phase1geo
+ Adding initial code for line width specification for report output.
+
  Revision 1.32  2003/12/13 05:52:02  phase1geo
  Removed verbose output and updated development documentation for new code.
 
