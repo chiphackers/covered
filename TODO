@@ -11,33 +11,24 @@ Score command
    1.  Add ability for user to specify FSM all possible states/state transitions
        for a particular FSM on a command-line basis.
 
-X  2.  Add ability for user to specify FSM location and all possible states/state
-       transitions for a particular FSM using inline $attribute calls.
-
-   3.  Add ability to automatically extract all possible states/state transitions
+   2.  Add ability to automatically extract all possible states/state transitions
        for a specified FSM.
 
-   4.  Add ability to automatically locate and extract an FSM from the design
+   3.  Add ability to automatically locate and extract an FSM from the design
        without user intervention.
 
-X  5.  Work on increasing performance of score command.
-
-   6.  Add more Verilog-1995 constructs to parser.
+   4.  Add more Verilog-1995 constructs to parser.
        - loops (for, while, repeat)
        - tasks/functions
 
-   7.  Add more Verilog-2001 constructs to parser.
+   5.  Add more Verilog-2001 constructs to parser.
 
-   8.  Allow Covered to run simulation phases in parallel to increase performance.
+   6.  Allow Covered to run simulation phases in parallel to increase performance.
 
-   9.  Add feature to cause Covered to omit the simulation phase for toggle and
+   7.  Add feature to cause Covered to omit the simulation phase for toggle and
        FSM coverage results.
 
-X  10. Add race condition checkers.
-
-X  11. Add race condition information to CDD file for reporting purposes.
-
-   12. Add ability to perform assignments for signals that are within modules being Covered.
+   8.  Add ability to perform assignments for signals that are within modules being Covered.
 
 Merge command
 -------------
@@ -46,29 +37,18 @@ Merge command
 Report command
 --------------
 
-X  1.  Update look of text reports to make them more robust and comprehensible.
-
-X  2.  Work on GUI interface for report function.
-
-X  3.  Add race condition outputting.
 
 Miscellaneous
 -------------
 
 IP 1.  Add regression that produces known, achievable error conditions in the code.
 
-X  2.  Change name of signal to vsignal in stable release version.
 
 GUI
 ---
 
-X  1.  Add overwrite functions to signal, expression, and FSM types to allow for quicker
-       closing of files and reopening.
+   1.  Add FSM coverage output
 
-X  2.  Add toggle and combinational logic verbose output
-
-   3.  Add FSM coverage output
-
-X  4.  Make TCL and TK libraries build better in configure scripts
-
-X  5.  Add race condition output
+   2.  Add ability to turn on/off assertions and have coverage information automatically adjusted.
+  
+   3.  Add summary report for entire design (window)
