@@ -23,6 +23,7 @@ char* vcd_file     = NULL;    /*!< Name of VCD output file to parse             
 
 extern unsigned long largest_malloc_size;
 extern unsigned long curr_malloc_size;
+extern str_link*     use_files_head;
 
 
 void define_macro( const char* name, const char* value );
@@ -290,16 +291,19 @@ int command_score( int argc, int last_arg, char** argv ) {
       output_db = strdup( DFLT_OUTPUT_DB );
     }
 
-    print_output( "Scoring design...", NORMAL );
-
-    /* Initialize search engine */
-    search_init();
-
     /* Parse design */
-    parse_design( top_module, output_db );
+    if( use_files_head != NULL ) {
+      print_output( "Scoring design...", NORMAL );
+      search_init();
+      parse_design( top_module, output_db );
+    }
 
     /* Read dumpfile and score design */
-    parse_and_score_dumpfile( top_module, output_db, vcd_file );
+    if( vcd_file != NULL ) {
+      snprintf( msg, 4096, "Scoring dumpfile %s", vcd_file );
+      print_output( msg, NORMAL );
+      parse_and_score_dumpfile( output_db, vcd_file );
+    }
 
     /* Deallocate memory for search engine */
     search_free_lists();
@@ -322,6 +326,9 @@ int command_score( int argc, int last_arg, char** argv ) {
 }
 
 /* $Log$
+/* Revision 1.14  2002/07/17 12:53:04  phase1geo
+/* Added -D option to score command and verified that this works properly.
+/*
 /* Revision 1.13  2002/07/17 00:13:57  phase1geo
 /* Added support for -e option and informally tested.
 /*

@@ -30,7 +30,7 @@ X  6.  Verify that -D option works when a value is specified.
 X  8.  Make sure that parser only parses a file once (when it is in both in a library (-y) and
        and a -v option).
 
-   9.  Allow ability to only parse a design and only score a dumpfile (rather than having to
+X  9.  Allow ability to only parse a design and only score a dumpfile (rather than having to
        do both everytime -- could save a lot of time in not having to reparse).
 
    10. Possibly allow undeclared signals to be automatically created if not found (1-bit signal

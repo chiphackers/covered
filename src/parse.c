@@ -107,14 +107,13 @@ bool parse_design( char* top, char* output_db ) {
 }
 
 /*!
- \param top  Name of top-level Verilog module to score
  \param db   Name of output database file to generate.
  \param vcd  Name of VCD file to parse for scoring.
  \return Returns TRUE if VCD parsing and scoring is successful; otherwise,
          returns FALSE.
 
 */
-bool parse_and_score_dumpfile( char* top, char* db, char* vcd ) {
+bool parse_and_score_dumpfile( char* db, char* vcd ) {
 
   bool retval = TRUE;   /* Return value of this function */
   char msg[4096];       /* Output message                */
@@ -137,8 +136,6 @@ bool parse_and_score_dumpfile( char* top, char* db, char* vcd ) {
   snprintf( msg, 4096, "========  Reading in VCD dumpfile %s  ========\n", vcd );
   print_output( msg, DEBUG );
 
-  snprintf( msg, 4096, "\nScoring dumpfile %s", vcd );
-  print_output( msg, NORMAL );
   reset_vcd_lexer( vcd );
   
   if( VCDparse() != 0 ) {
@@ -163,6 +160,10 @@ bool parse_and_score_dumpfile( char* top, char* db, char* vcd ) {
 }
 
 /* $Log$
+/* Revision 1.7  2002/07/18 22:02:35  phase1geo
+/* In the middle of making improvements/fixes to the expression/signal
+/* binding phase.
+/*
 /* Revision 1.6  2002/07/13 04:09:18  phase1geo
 /* Adding support for correct implementation of `ifdef, `else, `endif
 /* directives.  Full regression passes.
