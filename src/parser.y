@@ -605,230 +605,276 @@ expression
   | expression '^' expression
     {
       expression* tmp;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         tmp = db_create_expression( $3, $1, EXP_OP_XOR, @1.first_line, NULL );
         $$ = tmp;
       } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
         $$ = NULL;
       }
     }
   | expression '*' expression
     {
       expression* tmp;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         tmp = db_create_expression( $3, $1, EXP_OP_MULTIPLY, @1.first_line, NULL );
         $$ = tmp;
       } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
         $$ = NULL;
       }
     }
   | expression '/' expression
     {
       expression* tmp;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         tmp = db_create_expression( $3, $1, EXP_OP_DIVIDE, @1.first_line, NULL );
         $$ = tmp;
       } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
         $$ = NULL;
       }
     }
   | expression '%' expression
     {
       expression* tmp;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         tmp = db_create_expression( $3, $1, EXP_OP_MOD, @1.first_line, NULL );
         $$ = tmp;
       } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
         $$ = NULL;
       }
     }
   | expression '+' expression
     {
       expression* tmp;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         tmp = db_create_expression( $3, $1, EXP_OP_ADD, @1.first_line, NULL );
         $$ = tmp;
       } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
         $$ = NULL;
       }
     }
   | expression '-' expression
     {
       expression* tmp;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         tmp = db_create_expression( $3, $1, EXP_OP_SUBTRACT, @1.first_line, NULL );
         $$ = tmp;
       } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
         $$ = NULL;
       }
     }
   | expression '&' expression
     {
       expression* tmp;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         tmp = db_create_expression( $3, $1, EXP_OP_AND, @1.first_line, NULL );
         $$ = tmp;
       } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
         $$ = NULL;
       }
     }
   | expression '|' expression
     {
       expression* tmp;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         tmp = db_create_expression( $3, $1, EXP_OP_OR, @1.first_line, NULL );
         $$ = tmp;
       } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
         $$ = NULL;
       }
     }
   | expression K_NAND expression
     {
       expression* tmp;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         tmp = db_create_expression( $3, $1, EXP_OP_NAND, @1.first_line, NULL );
         $$ = tmp;
       } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
         $$ = NULL;
       }
     }
   | expression K_NOR expression
     {
       expression* tmp;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         tmp = db_create_expression( $3, $1, EXP_OP_NOR, @1.first_line, NULL );
         $$ = tmp;
       } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
         $$ = NULL;
       }
     }
   | expression K_NXOR expression
     {
       expression* tmp;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         tmp = db_create_expression( $3, $1, EXP_OP_NXOR, @1.first_line, NULL );
         $$ = tmp;
       } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
         $$ = NULL;
       }
     }
   | expression '<' expression
     {
       expression* tmp;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         tmp = db_create_expression( $3, $1, EXP_OP_LT, @1.first_line, NULL );
         $$ = tmp;
       } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
         $$ = NULL;
       }
     }
   | expression '>' expression
     {
       expression* tmp;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         tmp = db_create_expression( $3, $1, EXP_OP_GT, @1.first_line, NULL );
         $$ = tmp;
       } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
         $$ = NULL;
       }
     }
   | expression K_LS expression
     {
       expression* tmp;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         tmp = db_create_expression( $3, $1, EXP_OP_LSHIFT, @1.first_line, NULL );
         $$ = tmp;
       } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
         $$ = NULL;
       }
     }
   | expression K_RS expression
     {
       expression* tmp;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         tmp = db_create_expression( $3, $1, EXP_OP_RSHIFT, @1.first_line, NULL );
         $$ = tmp;
       } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
         $$ = NULL;
       }
     }
   | expression K_EQ expression
     {
       expression* tmp;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         tmp = db_create_expression( $3, $1, EXP_OP_EQ, @1.first_line, NULL );
         $$ = tmp;
       } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
         $$ = NULL;
       }
     }
   | expression K_CEQ expression
     {
       expression* tmp;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         tmp = db_create_expression( $3, $1, EXP_OP_CEQ, @1.first_line, NULL );
         $$ = tmp;
       } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
         $$ = NULL;
       }
     }
   | expression K_LE expression
     {
       expression* tmp;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         tmp = db_create_expression( $3, $1, EXP_OP_LE, @1.first_line, NULL );
         $$ = tmp;
       } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
         $$ = NULL;
       }
     }
   | expression K_GE expression
     {
       expression* tmp;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         tmp = db_create_expression( $3, $1, EXP_OP_GE, @1.first_line, NULL );
         $$ = tmp;
       } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
         $$ = NULL;
       }
     }
   | expression K_NE expression
     {
       expression* tmp;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         tmp = db_create_expression( $3, $1, EXP_OP_NE, @1.first_line, NULL );
         $$ = tmp;
       } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
         $$ = NULL;
       }
     }
   | expression K_CNE expression
     {
       expression* tmp;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         tmp = db_create_expression( $3, $1, EXP_OP_CNE, @1.first_line, NULL );
         $$ = tmp;
       } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
         $$ = NULL;
       }
     }
   | expression K_LOR expression
     {
       expression* tmp;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         tmp = db_create_expression( $3, $1, EXP_OP_LOR, @1.first_line, NULL );
         $$ = tmp;
       } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
         $$ = NULL;
       }
     }
   | expression K_LAND expression
     {
       expression* tmp;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         tmp = db_create_expression( $3, $1, EXP_OP_LAND, @1.first_line, NULL );
         $$ = tmp;
       } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
         $$ = NULL;
       }
     }
@@ -836,11 +882,14 @@ expression
     {
       expression* csel;
       expression* cond;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) && ($5 != NULL) ) {
         csel = db_create_expression( $5,   $3, EXP_OP_COND_SEL, @1.first_line, NULL );
         cond = db_create_expression( csel, $1, EXP_OP_COND,     @1.first_line, NULL );
         $$ = cond;
       } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
+        expression_dealloc( $5, FALSE );
         $$ = NULL;
       }
     }
@@ -902,22 +951,25 @@ expr_primary
   | identifier '[' expression ']'
     {
       expression* tmp;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($3 != NULL) ) {
         tmp = db_create_expression( NULL, $3, EXP_OP_SBIT_SEL, @1.first_line, $1 );
         $$  = tmp;
         free_safe( $1 );
       } else {
+        expression_dealloc( $3, FALSE );
         $$ = NULL;
       }
     }
   | identifier '[' expression ':' expression ']'
     {		  
       expression* tmp;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($3 != NULL) && ($5 != NULL) ) {
         tmp = db_create_expression( $5, $3, EXP_OP_MBIT_SEL, @1.first_line, $1 );
         $$  = tmp;
         free_safe( $1 );
       } else {
+        expression_dealloc( $3, FALSE );
+        expression_dealloc( $5, FALSE );
         $$ = NULL;
       }
     }
@@ -965,20 +1017,23 @@ expr_primary
   | '{' expression_list '}'
     {
       expression* tmp;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($2 != NULL) ) {
         tmp = db_create_expression( $2, NULL, EXP_OP_CONCAT, @1.first_line, NULL );
         $$ = tmp;
       } else {
+        expression_dealloc( $2, FALSE );
         $$ = NULL;
       }
     }
   | '{' expression '{' expression_list '}' '}'
     {
       expression* tmp;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($2 != NULL) && ($4 != NULL) ) {
         tmp = db_create_expression( $4, $2, EXP_OP_EXPAND, @1.first_line, NULL );
         $$ = tmp;
       } else {
+        expression_dealloc( $2, FALSE );
+        expression_dealloc( $4, FALSE );
         $$ = NULL;
       }
     }
@@ -1425,7 +1480,7 @@ statement
       statement*      last_stmt = NULL;
       case_statement* c_stmt    = $5;
       case_statement* tc_stmt;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($3 != NULL) ) {
         c_expr->suppl = c_expr->suppl | (0x1 << SUPPL_LSB_ROOT);
         while( c_stmt != NULL ) {
           if( c_stmt->expr != NULL ) {
@@ -1447,6 +1502,14 @@ statement
         }
         $$ = stmt;
       } else {
+        expression_dealloc( $3, FALSE );
+        while( c_stmt != NULL ) {
+          expression_dealloc( c_stmt->expr, FALSE );
+          statement_dealloc_recursive( c_stmt->stmt );
+          tc_stmt = c_stmt;
+          c_stmt  = c_stmt->prev;
+          free_safe( tc_stmt );
+        }
         $$ = NULL;
       }
     }
@@ -1458,7 +1521,7 @@ statement
       statement*      last_stmt = NULL;
       case_statement* c_stmt    = $5;
       case_statement* tc_stmt;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($3 != NULL) ) {
         c_expr->suppl = c_expr->suppl | (0x1 << SUPPL_LSB_ROOT);
         while( c_stmt != NULL ) {
           if( c_stmt->expr != NULL ) {
@@ -1480,6 +1543,14 @@ statement
         }
         $$ = stmt;
       } else {
+        expression_dealloc( $3, FALSE );
+        while( c_stmt != NULL ) {
+          expression_dealloc( c_stmt->expr, FALSE );
+          statement_dealloc_recursive( c_stmt->stmt );
+          tc_stmt = c_stmt;
+          c_stmt  = c_stmt->prev;
+          free_safe( tc_stmt );
+        }
         $$ = NULL;
       }
     }
@@ -1491,7 +1562,7 @@ statement
       statement*      last_stmt = NULL;
       case_statement* c_stmt    = $5;
       case_statement* tc_stmt;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($3 != NULL) ) {
         c_expr->suppl = c_expr->suppl | (0x1 << SUPPL_LSB_ROOT);
         while( c_stmt != NULL ) {
           if( c_stmt->expr != NULL ) {
@@ -1513,6 +1584,14 @@ statement
         }
         $$ = stmt;
       } else {
+        expression_dealloc( $3, FALSE );
+        while( c_stmt != NULL ) {
+          expression_dealloc( c_stmt->expr, FALSE );
+          statement_dealloc_recursive( c_stmt->stmt );
+          tc_stmt = c_stmt;
+          c_stmt  = c_stmt->prev;
+          free_safe( tc_stmt );
+        }
         $$ = NULL;
       }
     }
@@ -1540,20 +1619,21 @@ statement
   | K_if '(' expression ')' statement_opt %prec less_than_K_else
     {
       statement* stmt;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($3 != NULL) ) {
         stmt = db_create_statement( $3 );
         db_add_expression( $3 );
         db_connect_statement_true( stmt, $5 );
         db_statement_set_stop( $5, NULL, FALSE );
         $$ = stmt;
       } else {
+        statement_dealloc_recursive( $5 );
         $$ = NULL;
       }
     }
   | K_if '(' expression ')' statement_opt K_else statement_opt
     {
       statement* stmt;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($3 != NULL) ) {
         stmt = db_create_statement( $3 );
         db_add_expression( $3 );
         db_connect_statement_true( stmt, $5 );
@@ -1561,6 +1641,8 @@ statement
         db_statement_set_stop( $5, NULL, FALSE );
         $$ = stmt;
       } else {
+        statement_dealloc_recursive( $5 );
+        statement_dealloc_recursive( $7 );
         $$ = NULL;
       }
     }
@@ -1579,7 +1661,7 @@ statement
   | delay1 statement_opt
     {
       statement* stmt;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($1 != NULL) ) {
         stmt = db_create_statement( $1 );
         db_add_expression( $1 );
         if( $2 != NULL ) {
@@ -1587,13 +1669,14 @@ statement
         }
         $$ = stmt;
       } else {
+        statement_dealloc_recursive( $2 );
         $$ = NULL;
       }
     }
   | event_control statement_opt
     {
       statement* stmt;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($1 != NULL) ) {
         stmt = db_create_statement( $1 );
         db_add_expression( $1 );
         if( $2 != NULL ) {
@@ -1601,13 +1684,14 @@ statement
         }
         $$ = stmt;
       } else {
+        statement_dealloc_recursive( $2 );
         $$ = NULL;
       }
     }
   | lpvalue '=' expression ';'
     {
       statement* stmt;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($3 != NULL) ) {
         stmt = db_create_statement( $3 );
         db_add_expression( $3 );
         $$ = stmt;
@@ -1618,7 +1702,7 @@ statement
   | lpvalue K_LE expression ';'
     {
       statement* stmt;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($3 != NULL) ) {
         stmt = db_create_statement( $3 );
         db_add_expression( $3 );
         $$ = stmt;
@@ -1630,7 +1714,7 @@ statement
     {
       statement* stmt;
       expression_dealloc( $3, FALSE );
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($4 != NULL) ) {
         stmt = db_create_statement( $4 );
         db_add_expression( $4 );
         $$ = stmt;
@@ -1642,7 +1726,7 @@ statement
     {
       statement* stmt;
       expression_dealloc( $3, FALSE );
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($4 != NULL) ) {
         stmt = db_create_statement( $4 );
         db_add_expression( $4 );
         $$ = stmt;
@@ -1654,7 +1738,7 @@ statement
     {
       statement* stmt;
       expression_dealloc( $3, FALSE );
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($4 != NULL) ) {
         stmt = db_create_statement( $4 );
         db_add_expression( $4 );
         $$ = stmt;
@@ -1666,7 +1750,7 @@ statement
     {
       statement* stmt;
       expression_dealloc( $3, FALSE );
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($4 != NULL) ) {
         stmt = db_create_statement( $4 );
         db_add_expression( $4 );
         $$ = stmt;
@@ -1685,12 +1769,13 @@ statement
   | K_wait '(' expression ')' statement_opt
     {
       statement* stmt;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($3 != NULL) ) {
         stmt = db_create_statement( $3 );
         db_add_expression( $3 );
         db_connect_statement_true( stmt, $5 );
         $$ = stmt;
       } else {
+        statement_dealloc_recursive( $5 );
         $$ = NULL;
       }
     }
@@ -2044,7 +2129,7 @@ delay1
       vector*     vec;
       expression* exp; 
       expression* tmp;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($2 != NULL) ) {
         vec = vector_create( 32, 0, TRUE );
         tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
         vector_from_int( vec, 0xffffffff );
@@ -2062,7 +2147,7 @@ delay1
       vector*     vec;
       expression* exp;
       expression* tmp;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($3 != NULL) ) {
         vec = vector_create( 32, 0, TRUE );
         tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
         vector_from_int( vec, 0xffffffff );
@@ -2083,7 +2168,7 @@ delay3
       vector*     vec;
       expression* exp; 
       expression* tmp;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($2 != NULL) ) {
         vec = vector_create( 32, 0, TRUE );
         tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
         vector_from_int( vec, 0xffffffff );
@@ -2101,7 +2186,7 @@ delay3
       vector*     vec;
       expression* exp; 
       expression* tmp;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($3 != NULL) ) {
         vec = vector_create( 32, 0, TRUE );
         tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
         vector_from_int( vec, 0xffffffff );
@@ -2119,7 +2204,8 @@ delay3
       vector*     vec;
       expression* exp; 
       expression* tmp;
-      if( ignore_mode == 0 ) {
+      expression_dealloc( $5, FALSE );
+      if( (ignore_mode == 0) && ($3 != NULL) ) {
         vec = vector_create( 32, 0, TRUE );
         tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
         vector_from_int( vec, 0xffffffff );
@@ -2137,6 +2223,8 @@ delay3
       vector*     vec;
       expression* exp; 
       expression* tmp;
+      expression_dealloc( $3, FALSE );
+      expression_dealloc( $7, FALSE );
       if( ignore_mode == 0 ) {
         vec = vector_create( 32, 0, TRUE );
         tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
@@ -2372,6 +2460,9 @@ register_variable
   | IDENTIFIER '[' static_expr ':' static_expr ']'
     {
       /* We don't support memory coverage */
+      if( $1 != NULL ) {
+        free_safe( $1 );
+      }
       $$ = NULL;
     }
   | UNUSED_IDENTIFIER '[' static_expr ':' static_expr ']'
@@ -2576,20 +2667,26 @@ event_expression_list
   | event_expression_list K_or event_expression
     {
       expression* tmp;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         tmp = db_create_expression( $3, $1, EXP_OP_EOR, @1.first_line, NULL );
         $$ = tmp;
       } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
         $$ = NULL;
       }
     }
   | event_expression_list ',' event_expression
     {
-      if( ignore_mode == 0 ) {
+      expression* tmp;
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
+        tmp = db_create_expression( $3, $1, EXP_OP_EOR, @1.first_line, NULL );
+        $$ = tmp;
+      } else {
         expression_dealloc( $1, FALSE );
         expression_dealloc( $3, FALSE );
+        $$ = NULL;
       }
-      $$ = NULL;
     }
   ;
 
@@ -2598,7 +2695,7 @@ event_expression
     {
       expression* tmp1;
       expression* tmp2;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($2 != NULL) ) {
         /* Create 1-bit expression to hold last value of right expression */
         tmp1 = db_create_expression( NULL, NULL, EXP_OP_LAST, @1.first_line, NULL );
         expression_create_value( tmp1, 1, 0, FALSE );
@@ -2612,7 +2709,7 @@ event_expression
     {
       expression* tmp1;
       expression* tmp2;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($2 != NULL) ) {
         tmp1 = db_create_expression( NULL, NULL, EXP_OP_LAST, @1.first_line, NULL );
         expression_create_value( tmp1, 1, 0, FALSE );
         tmp2 = db_create_expression( $2, tmp1, EXP_OP_NEDGE, @1.first_line, NULL );
@@ -2626,7 +2723,7 @@ event_expression
       expression* tmp1;
       expression* tmp2;
       expression* expr = $1;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($1 != NULL ) ) {
         tmp1 = db_create_expression( NULL, NULL, EXP_OP_LAST, @1.first_line, NULL );
         tmp2 = db_create_expression( expr, tmp1, EXP_OP_AEDGE, @1.first_line, NULL );
         expression_create_value( tmp1, expr->value->width, 0, FALSE );

@@ -459,7 +459,7 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
   expression* expr;             /* Pointer to newly created expression                 */
   char        scope[4096];      /* Holder for scope of this expression                 */
   int         linenum;          /* Holder of current line for this expression          */
-  nibble      suppl;            /* Holder of supplemental value of this expression     */
+  control     suppl;            /* Holder of supplemental value of this expression     */
   int         right_id;         /* Holder of expression ID to the right                */
   int         left_id;          /* Holder of expression ID to the left                 */
   expression* right;            /* Pointer to current expression's right expression    */
@@ -1149,6 +1149,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.56  2002/10/29 17:25:56  phase1geo
+ Fixing segmentation fault in expression resizer for expressions with NULL
+ values in right side child expressions.  Also trying fix for log comments.
+
  Revision 1.55  2002/10/24 05:48:58  phase1geo
  Additional fixes for MBIT_SEL.  Changed some philosophical stuff around for
  cleaner code and for correctness.  Added some development documentation for

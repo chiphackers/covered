@@ -27,12 +27,19 @@ void statement_connect( statement* curr_stmt, statement* next_stmt );
 //! Sets stop bits in specified statement tree.
 void statement_set_stop( statement* stmt, statement* post, bool true_path, bool both );
 
+//! Recursively deallocates specified statement tree.
+void statement_dealloc_recursive( statement* stmt );
+
 //! Deallocates statement memory and associated expression tree from the heap.
 void statement_dealloc( statement* stmt );
 
 
 /*
  $Log$
+ Revision 1.10  2002/10/29 19:57:51  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
  Revision 1.9  2002/07/03 21:30:53  phase1geo
  Fixed remaining issues with always statements.  Full regression is running
  error free at this point.  Regenerated documentation.  Added EOR expression

@@ -482,37 +482,72 @@ void statement_set_stop( statement* stmt, statement* post, bool true_path, bool 
 }
 
 /*!
+ \param curr   Pointer to current statement to deallocate.
+ \param start  Pointer to statement of root of statement tree to deallocate.
+ 
+ Recursively deallocates statements listed by the current statement tree.
+ This function is called by the parser to remove statement trees that were
+ created but found to have unsupported code in them.  This function takes
+ care to not remove the same statement twice and to not infinitely loop.
+*/
+void statement_dealloc_recursive_helper( statement* curr, statement* start ) {
+  
+  if( (curr != NULL) && (curr != start) ) {
+    
+    /* Deallocate entire expression tree */
+    expression_dealloc( curr->exp, FALSE );
+    curr->exp = NULL;
+    
+    /* Remove TRUE path */
+    statement_dealloc_recursive_helper( curr->next_true, start );
+    curr->next_true = NULL;
+    
+    /* Remove FALSE path */
+    statement_dealloc_recursive_helper( curr->next_false, start );
+    curr->next_false = NULL;
+    
+    free_safe( curr );
+    
+  }
+  
+}
+
+/*!
+ \param stmt  Pointer to head of statement tree to deallocate.
+ 
+ Recursively deallocates specified statement tree.
+*/
+void statement_dealloc_recursive( statement* stmt ) {
+    
+  if( stmt != NULL ) {
+    
+    /* Deallocate entire expression tree */
+    expression_dealloc( stmt->exp, FALSE );
+  
+    /* Remove TRUE path */
+    statement_dealloc_recursive_helper( stmt->next_true, stmt );
+    stmt->next_true = NULL;
+  
+    /* Remove FALSE path */
+    statement_dealloc_recursive_helper( stmt->next_false, stmt );
+    stmt->next_false = NULL;
+  
+    free_safe( stmt );
+    
+  }
+  
+}
+
+/*!
  \param stmt  Pointer to statement to deallocate.
 
- Deallocates specified statement from heap memory.  First remove expression
- tree of this statement.  Second, remove all statements following this
- statement.  Finally, remove the specified statement itself.  Since statements
- can be circular in nature, we will not remove a statement that has its
- expression tree already deallocated.  This will prevent this function from
- getting into an infinite loop (or stack overflow since this function is
- recursive).
+ Deallocates specified statement from heap memory.  Does not
+ remove attached expression (this is assumed to be cleaned up by the
+ expression list removal function).
 */
 void statement_dealloc( statement* stmt ) {
 
   if( stmt != NULL ) {
-
-#ifdef EFFICIENCY_CODE
-    assert( stmt->exp != NULL );
-
-    /* Deallocate entire expression tree */
-    expression_dealloc( stmt->exp, FALSE );
-    stmt->exp = NULL;
-
-    if( stmt->next_true != NULL ) {
-      statement_dealloc( stmt->next_true );
-      stmt->next_true = FALSE;
-    }
-
-    if( stmt->next_false != NULL ) {
-      statement_dealloc( stmt->next_false );
-      stmt->next_false = FALSE;
-    }
-#endif
  
     /* Finally, deallocate this statement */
     free_safe( stmt );
@@ -524,6 +559,10 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.32  2002/10/29 19:57:51  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
  Revision 1.31  2002/10/11 05:23:21  phase1geo
  Removing local user message allocation and replacing with global to help
  with memory efficiency.
