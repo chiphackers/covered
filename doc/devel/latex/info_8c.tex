@@ -9,9 +9,9 @@
 \begin{CompactItemize}
 \item 
 void {\bf info\_\-db\_\-write} (FILE $\ast${\bf file})
-\begin{CompactList}\small\item\em Writes info line to specified CDD file.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Writes info line to specified CDD file. \item\end{CompactList}\item 
 {\bf bool} {\bf info\_\-db\_\-read} (char $\ast$$\ast$line)
-\begin{CompactList}\small\item\em Reads info line from specified line and stores information.\item\end{CompactList}\end{CompactItemize}
+\begin{CompactList}\small\item\em Reads info line from specified line and stores information. \item\end{CompactList}\end{CompactItemize}
 \subsection*{Variables}
 \begin{CompactItemize}
 \item 
@@ -22,14 +22,10 @@ char {\bf leading\_\-hierarchy} [4096]
 
 
 \subsection{Detailed Description}
-
-
 \begin{Desc}
-\item[Author: ]\par
-Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
-\item[Date: ]\par
-2/12/2003\end{Desc}
+\item[Date:]2/12/2003\end{Desc}
 
 
 \subsection{Function Documentation}
@@ -38,38 +34,36 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} info\_\-db\_\-read (char $\ast$$\ast$ {\em line})}\label{info_8c_a3}
 
 
-Reads info line from specified line and stores information.
+Reads info line from specified line and stores information. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-line}]Pointer to string containing information line to parse.\end{description}
+\item[{\em line}]Pointer to string containing information line to parse.\end{description}
 \end{Desc}
 Reads information line from specified string and stores its information. \index{info.c@{info.c}!info_db_write@{info\_\-db\_\-write}}
 \index{info_db_write@{info\_\-db\_\-write}!info.c@{info.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void info\_\-db\_\-write (FILE $\ast$ {\em file})}\label{info_8c_a2}
 
 
-Writes info line to specified CDD file.
+Writes info line to specified CDD file. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-file}]Pointer to file to write information to.\end{description}
+\item[{\em file}]Pointer to file to write information to.\end{description}
 \end{Desc}
 Writes information line to specified file. 
 
 \subsection{Variable Documentation}
 \index{info.c@{info.c}!flag_scored@{flag\_\-scored}}
 \index{flag_scored@{flag\_\-scored}!info.c@{info.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} flag\_\-scored = FALSE}\label{info_8c_a0}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} {\bf flag\_\-scored} = FALSE}\label{info_8c_a0}
 
 
 If this flag is set to a value of 1, it indicates that the current CDD file has been scored and is available for coverage reporting (if CDD file has not been scored, errors will occur when trying to get coverage numbers). \index{info.c@{info.c}!leading_hierarchy@{leading\_\-hierarchy}}
 \index{leading_hierarchy@{leading\_\-hierarchy}!info.c@{info.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char leading\_\-hierarchy[4096]}\label{info_8c_a1}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char {\bf leading\_\-hierarchy}[4096]}\label{info_8c_a1}
 
 
 This string specifies the Verilog hierarchy leading up to the DUT. This value is taken from the -i value (or is a value of '$\ast$' if the -t option is only specified). 

@@ -252,9 +252,9 @@ void {\bf reset\_\-pplexer} (char $\ast$filename, FILE $\ast$out)
 \item 
 int {\bf yyleng}
 \item 
-FILE $\ast$ {\bf yyin} = (FILE $\ast$) 0
+FILE $\ast$ {\bf yyin} = (FILE $\ast$) 0 $\ast${\bf yyout} = (FILE $\ast$) 0
 \item 
-FILE $\ast$ {\bf yyout} = (FILE $\ast$) 0
+FILE $\ast$ {\bf yyout}
 \item 
 {\bf YY\_\-BUFFER\_\-STATE} {\bf yy\_\-current\_\-buffer} = 0
 \item 
@@ -480,7 +480,8 @@ char {\bf def\_\-name} [256]
         yyleng = (int) (yy_cp - yy_bp); \
         yy_hold_char = *yy_cp; \
         *yy_cp = '\0'; \
-        yy_c_buf_p = yy_cp;\end{verbatim}\normalsize 
+        yy_c_buf_p = yy_cp;
+\end{verbatim}\normalsize 
 \index{pplexer.c@{pplexer.c}!YY_END_OF_BUFFER@{YY\_\-END\_\-OF\_\-BUFFER}}
 \index{YY_END_OF_BUFFER@{YY\_\-END\_\-OF\_\-BUFFER}!pplexer.c@{pplexer.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-END\_\-OF\_\-BUFFER\ 65}\label{pplexer_8c_a48}
@@ -552,7 +553,8 @@ char {\bf def\_\-name} [256]
                 } \
         else if ( ((result = fread( buf, 1, max_size, yyin )) == 0) \
                   && ferror( yyin ) ) \
-                YY_FATAL_ERROR( "input in flex scanner failed" );\end{verbatim}\normalsize 
+                YY_FATAL_ERROR( "input in flex scanner failed" );
+\end{verbatim}\normalsize 
 \index{pplexer.c@{pplexer.c}!yy_load_buffer_state@{yy\_\-load\_\-buffer\_\-state}}
 \index{yy_load_buffer_state@{yy\_\-load\_\-buffer\_\-state}!pplexer.c@{pplexer.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yy\_\-load\_\-buffer\_\-state\ PPVL\_\-load\_\-buffer\_\-state}\label{pplexer_8c_a8}
@@ -608,7 +610,8 @@ char {\bf def\_\-name} [256]
 \footnotesize\begin{verbatim}if ( yyleng > 0 ) \
                 yy_current_buffer->yy_at_bol = \
                                 (yytext[yyleng - 1] == '\n'); \
-        YY_USER_ACTION\end{verbatim}\normalsize 
+        YY_USER_ACTION
+\end{verbatim}\normalsize 
 \index{pplexer.c@{pplexer.c}!YY_SC_TO_UI@{YY\_\-SC\_\-TO\_\-UI}}
 \index{YY_SC_TO_UI@{YY\_\-SC\_\-TO\_\-UI}!pplexer.c@{pplexer.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-SC\_\-TO\_\-UI(c)\ ((unsigned int) (unsigned char) c)}\label{pplexer_8c_a23}
@@ -640,7 +643,8 @@ char {\bf def\_\-name} [256]
         if ( ! yy_current_buffer ) \
                 yy_current_buffer = yy_create_buffer( yyin, YY_BUF_SIZE ); \
         yy_current_buffer->yy_at_bol = at_bol; \
-        }\end{verbatim}\normalsize 
+        }
+\end{verbatim}\normalsize 
 \index{pplexer.c@{pplexer.c}!yy_set_interactive@{yy\_\-set\_\-interactive}}
 \index{yy_set_interactive@{yy\_\-set\_\-interactive}!pplexer.c@{pplexer.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yy\_\-set\_\-interactive(is\_\-interactive)}\label{pplexer_8c_a42}
@@ -652,7 +656,8 @@ char {\bf def\_\-name} [256]
         if ( ! yy_current_buffer ) \
                 yy_current_buffer = yy_create_buffer( yyin, YY_BUF_SIZE ); \
         yy_current_buffer->yy_is_interactive = is_interactive; \
-        }\end{verbatim}\normalsize 
+        }
+\end{verbatim}\normalsize 
 \index{pplexer.c@{pplexer.c}!YY_STACK_USED@{YY\_\-STACK\_\-USED}}
 \index{YY_STACK_USED@{YY\_\-STACK\_\-USED}!pplexer.c@{pplexer.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YY\_\-STACK\_\-USED\ 1}\label{pplexer_8c_a56}
@@ -690,12 +695,12 @@ char {\bf def\_\-name} [256]
 
 \index{pplexer.c@{pplexer.c}!yyin@{yyin}}
 \index{yyin@{yyin}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yyin\ PPVLin}\label{pplexer_8c_a10}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf yyin}\ PPVLin}\label{pplexer_8c_a10}
 
 
 \index{pplexer.c@{pplexer.c}!yyleng@{yyleng}}
 \index{yyleng@{yyleng}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yyleng\ PPVLleng}\label{pplexer_8c_a11}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf yyleng}\ PPVLleng}\label{pplexer_8c_a11}
 
 
 \index{pplexer.c@{pplexer.c}!yyless@{yyless}}
@@ -714,7 +719,8 @@ char {\bf def\_\-name} [256]
                 *yy_c_buf_p = '\0'; \
                 yyleng = n; \
                 } \
-        while ( 0 )\end{verbatim}\normalsize 
+        while ( 0 )
+\end{verbatim}\normalsize 
 \index{pplexer.c@{pplexer.c}!yyless@{yyless}}
 \index{yyless@{yyless}!pplexer.c@{pplexer.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yyless(n)}\label{pplexer_8c_a34}
@@ -730,7 +736,8 @@ char {\bf def\_\-name} [256]
                 yy_c_buf_p = yy_cp = yy_bp + n - YY_MORE_ADJ; \
                 YY_DO_BEFORE_ACTION;   \
                 } \
-        while ( 0 )\end{verbatim}\normalsize 
+        while ( 0 )
+\end{verbatim}\normalsize 
 \index{pplexer.c@{pplexer.c}!yylex@{yylex}}
 \index{yylex@{yylex}!pplexer.c@{pplexer.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yylex\ PPVLlex}\label{pplexer_8c_a12}
@@ -738,7 +745,7 @@ char {\bf def\_\-name} [256]
 
 \index{pplexer.c@{pplexer.c}!yylval@{yylval}}
 \index{yylval@{yylval}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yylval\ PPVLlval}\label{pplexer_8c_a54}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf yylval}\ PPVLlval}\label{pplexer_8c_a54}
 
 
 \index{pplexer.c@{pplexer.c}!yymore@{yymore}}
@@ -748,7 +755,7 @@ char {\bf def\_\-name} [256]
 
 \index{pplexer.c@{pplexer.c}!yyout@{yyout}}
 \index{yyout@{yyout}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yyout\ PPVLout}\label{pplexer_8c_a13}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf yyout}\ PPVLout}\label{pplexer_8c_a13}
 
 
 \index{pplexer.c@{pplexer.c}!yyrestart@{yyrestart}}
@@ -768,7 +775,7 @@ char {\bf def\_\-name} [256]
 
 \index{pplexer.c@{pplexer.c}!yytext@{yytext}}
 \index{yytext@{yytext}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yytext\ PPVLtext}\label{pplexer_8c_a15}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf yytext}\ PPVLtext}\label{pplexer_8c_a15}
 
 
 \index{pplexer.c@{pplexer.c}!yytext_ptr@{yytext\_\-ptr}}
@@ -786,22 +793,22 @@ char {\bf def\_\-name} [256]
 \subsection{Typedef Documentation}
 \index{pplexer.c@{pplexer.c}!YY_BUFFER_STATE@{YY\_\-BUFFER\_\-STATE}}
 \index{YY_BUFFER_STATE@{YY\_\-BUFFER\_\-STATE}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf yy\_\-buffer\_\-state}$\ast$ YY\_\-BUFFER\_\-STATE}\label{pplexer_8c_a79}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf yy\_\-buffer\_\-state}$\ast$ {\bf YY\_\-BUFFER\_\-STATE}}\label{pplexer_8c_a79}
 
 
 \index{pplexer.c@{pplexer.c}!YY_CHAR@{YY\_\-CHAR}}
 \index{YY_CHAR@{YY\_\-CHAR}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef unsigned char YY\_\-CHAR}\label{pplexer_8c_a91}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef unsigned char {\bf YY\_\-CHAR}}\label{pplexer_8c_a91}
 
 
 \index{pplexer.c@{pplexer.c}!yy_size_t@{yy\_\-size\_\-t}}
 \index{yy_size_t@{yy\_\-size\_\-t}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef unsigned int yy\_\-size\_\-t}\label{pplexer_8c_a83}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef unsigned int {\bf yy\_\-size\_\-t}}\label{pplexer_8c_a83}
 
 
 \index{pplexer.c@{pplexer.c}!yy_state_type@{yy\_\-state\_\-type}}
 \index{yy_state_type@{yy\_\-state\_\-type}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef int yy\_\-state\_\-type}\label{pplexer_8c_a92}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef int {\bf yy\_\-state\_\-type}}\label{pplexer_8c_a92}
 
 
 
@@ -818,14 +825,12 @@ Completes the define addition phase. \index{pplexer.c@{pplexer.c}!def_lookup@{de
 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-name}]Name of define to lookup in table\end{description}
+\item[{\em name}]Name of define to lookup in table\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Pointer to defined value.\end{Desc}
+\item[Returns:]Pointer to defined value.\end{Desc}
 Looks up the specified define identifier in the binary tree lookup table. Returns NULL (0), if the define was not found in the lookup tree; otherwise, returns a pointer to the defined value. \index{pplexer.c@{pplexer.c}!def_match@{def\_\-match}}
 \index{def_match@{def\_\-match}!pplexer.c@{pplexer.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void def\_\-match ()\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a130}
@@ -847,24 +852,17 @@ Performs an undefine of an undef indentifier by searching for the matching defin
 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-name}]String value of define identifier \item[{\em 
-value}]String value associated with define identifier\end{description}
+\item[{\em name}]String value of define identifier \item[{\em value}]String value associated with define identifier\end{description}
 \end{Desc}
 Stores define identifer with its value in a define node and placed in the binary search tree for quick lookup later on. \index{pplexer.c@{pplexer.c}!do_define@{do\_\-define}}
 \index{do_define@{do\_\-define}!pplexer.c@{pplexer.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void do\_\-define ()\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a134}
 
 
-
-
 \begin{Desc}
-\item[{\bf Bug: }]\par
-This strips trailing line comments out of the definition. It's not adequate as the \char`\"{}//\char`\"{} may have been quoted or commented, but it will do for now.\end{Desc}
-
-
+\item[{\bf Bug}]This strips trailing line comments out of the definition. It's not adequate as the \char`\"{}//\char`\"{} may have been quoted or commented, but it will do for now. \end{Desc}
 Prepares define value and identifier for storage in the lookup tree and then performs the store. \index{pplexer.c@{pplexer.c}!do_include@{do\_\-include}}
 \index{do_include@{do\_\-include}!pplexer.c@{pplexer.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void do\_\-include ()\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a137}
@@ -881,14 +879,12 @@ Adds include directive filename to file parsing stack. \index{pplexer.c@{pplexer
 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-name}]Name of defined value.\end{description}
+\item[{\em name}]Name of defined value.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Returns 1 if define is found in lookup table; otherwise, returns 0.\end{Desc}
+\item[Returns:]Returns 1 if define is found in lookup table; otherwise, returns 0.\end{Desc}
 Checks lookup table to see if specified define identifier has been previously defined. \index{pplexer.c@{pplexer.c}!reset_pplexer@{reset\_\-pplexer}}
 \index{reset_pplexer@{reset\_\-pplexer}!pplexer.c@{pplexer.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void reset\_\-pplexer (char $\ast$ {\em filename}, FILE $\ast$ {\em out})}\label{pplexer_8c_a143}
@@ -984,117 +980,117 @@ Checks lookup table to see if specified define identifier has been previously de
 \subsection{Variable Documentation}
 \index{pplexer.c@{pplexer.c}!comment_enter@{comment\_\-enter}}
 \index{comment_enter@{comment\_\-enter}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int comment\_\-enter\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a105}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int {\bf comment\_\-enter}\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a105}
 
 
 Contains state before entering comment block. \index{pplexer.c@{pplexer.c}!def_name@{def\_\-name}}
 \index{def_name@{def\_\-name}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char def\_\-name[256]\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a115}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char {\bf def\_\-name}[256]\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a115}
 
 
 Holds current define identifier string. \index{pplexer.c@{pplexer.c}!file@{file}}
 \index{file@{file}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}FILE$\ast$ file}\label{pplexer_8c_a113}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}FILE$\ast$ {\bf file}}\label{pplexer_8c_a113}
 
 
 \index{pplexer.c@{pplexer.c}!inc_paths_head@{inc\_\-paths\_\-head}}
 \index{inc_paths_head@{inc\_\-paths\_\-head}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ inc\_\-paths\_\-head ()}\label{pplexer_8c_a103}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ {\bf inc\_\-paths\_\-head} ()}\label{pplexer_8c_a103}
 
 
 Pointer to head element of include paths list \index{pplexer.c@{pplexer.c}!istack@{istack}}
 \index{istack@{istack}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}struct {\bf include\_\-stack\_\-t}$\ast$ istack = 0\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a106}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}struct {\bf include\_\-stack\_\-t}$\ast$ {\bf istack} = 0\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a106}
 
 
 \index{pplexer.c@{pplexer.c}!len@{len}}
 \index{len@{len}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int len}\label{pplexer_8c_a114}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int {\bf len}}\label{pplexer_8c_a114}
 
 
 \index{pplexer.c@{pplexer.c}!size@{size}}
 \index{size@{size}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf yy\_\-size\_\-t} size}\label{pplexer_8c_a112}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf yy\_\-size\_\-t} {\bf size}}\label{pplexer_8c_a112}
 
 
 \index{pplexer.c@{pplexer.c}!standby@{standby}}
 \index{standby@{standby}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}struct {\bf include\_\-stack\_\-t}$\ast$ standby = 0\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a107}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}struct {\bf include\_\-stack\_\-t}$\ast$ {\bf standby} = 0\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a107}
 
 
 \index{pplexer.c@{pplexer.c}!user_msg@{user\_\-msg}}
 \index{user_msg@{user\_\-msg}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char user\_\-msg[USER\_\-MSG\_\-LENGTH]}\label{pplexer_8c_a104}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char {\bf user\_\-msg}[USER\_\-MSG\_\-LENGTH] ()}\label{pplexer_8c_a104}
 
 
-\index{pplexer.c@{pplexer.c}!yy_accept@{yy\_\-accept}}
+Holds some output that will be displayed via the print\_\-output command. This is created globally so that memory does not need to be reallocated for each function that wishes to use it. \index{pplexer.c@{pplexer.c}!yy_accept@{yy\_\-accept}}
 \index{yy_accept@{yy\_\-accept}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst short int yy\_\-accept[434]\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a94}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst short int {\bf yy\_\-accept}[434]\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a94}
 
 
 \index{pplexer.c@{pplexer.c}!yy_base@{yy\_\-base}}
 \index{yy_base@{yy\_\-base}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst short int yy\_\-base[501]\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a97}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst short int {\bf yy\_\-base}[501]\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a97}
 
 
 \index{pplexer.c@{pplexer.c}!yy_bp@{yy\_\-bp}}
 \index{yy_bp@{yy\_\-bp}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}register char$\ast$ yy\_\-bp}\label{pplexer_8c_a111}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}register char$\ast$ {\bf yy\_\-bp}}\label{pplexer_8c_a111}
 
 
 \index{pplexer.c@{pplexer.c}!yy_c_buf_p@{yy\_\-c\_\-buf\_\-p}}
 \index{yy_c_buf_p@{yy\_\-c\_\-buf\_\-p}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ yy\_\-c\_\-buf\_\-p = (char $\ast$) 0\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a87}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ {\bf yy\_\-c\_\-buf\_\-p} = (char $\ast$) 0\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a87}
 
 
 \index{pplexer.c@{pplexer.c}!yy_chk@{yy\_\-chk}}
 \index{yy_chk@{yy\_\-chk}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst short int yy\_\-chk[1134]\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a100}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst short int {\bf yy\_\-chk}[1134]\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a100}
 
 
 \index{pplexer.c@{pplexer.c}!yy_current_buffer@{yy\_\-current\_\-buffer}}
 \index{yy_current_buffer@{yy\_\-current\_\-buffer}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf YY\_\-BUFFER\_\-STATE} yy\_\-current\_\-buffer = 0\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a84}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf YY\_\-BUFFER\_\-STATE} {\bf yy\_\-current\_\-buffer} = 0\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a84}
 
 
 \index{pplexer.c@{pplexer.c}!yy_def@{yy\_\-def}}
 \index{yy_def@{yy\_\-def}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst short int yy\_\-def[501]\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a98}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst short int {\bf yy\_\-def}[501]\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a98}
 
 
 \index{pplexer.c@{pplexer.c}!yy_did_buffer_switch_on_eof@{yy\_\-did\_\-buffer\_\-switch\_\-on\_\-eof}}
 \index{yy_did_buffer_switch_on_eof@{yy\_\-did\_\-buffer\_\-switch\_\-on\_\-eof}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-did\_\-buffer\_\-switch\_\-on\_\-eof\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a90}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int {\bf yy\_\-did\_\-buffer\_\-switch\_\-on\_\-eof}\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a90}
 
 
 \index{pplexer.c@{pplexer.c}!yy_ec@{yy\_\-ec}}
 \index{yy_ec@{yy\_\-ec}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst int yy\_\-ec[256]\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a95}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst int {\bf yy\_\-ec}[256]\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a95}
 
 
 \index{pplexer.c@{pplexer.c}!yy_hold_char@{yy\_\-hold\_\-char}}
 \index{yy_hold_char@{yy\_\-hold\_\-char}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char yy\_\-hold\_\-char\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a85}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char {\bf yy\_\-hold\_\-char}\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a85}
 
 
 \index{pplexer.c@{pplexer.c}!yy_init@{yy\_\-init}}
 \index{yy_init@{yy\_\-init}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-init = 1\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a88}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int {\bf yy\_\-init} = 1\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a88}
 
 
 \index{pplexer.c@{pplexer.c}!yy_last_accepting_cpos@{yy\_\-last\_\-accepting\_\-cpos}}
 \index{yy_last_accepting_cpos@{yy\_\-last\_\-accepting\_\-cpos}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ yy\_\-last\_\-accepting\_\-cpos\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a102}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ {\bf yy\_\-last\_\-accepting\_\-cpos}\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a102}
 
 
 \index{pplexer.c@{pplexer.c}!yy_last_accepting_state@{yy\_\-last\_\-accepting\_\-state}}
 \index{yy_last_accepting_state@{yy\_\-last\_\-accepting\_\-state}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf yy\_\-state\_\-type} yy\_\-last\_\-accepting\_\-state\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a101}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf yy\_\-state\_\-type} {\bf yy\_\-last\_\-accepting\_\-state}\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a101}
 
 
 \index{pplexer.c@{pplexer.c}!yy_meta@{yy\_\-meta}}
 \index{yy_meta@{yy\_\-meta}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst int yy\_\-meta[34]\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a96}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst int {\bf yy\_\-meta}[34]\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a96}
 
 
 {\bf Initial value:}
@@ -1105,54 +1101,55 @@ Pointer to head element of include paths list \index{pplexer.c@{pplexer.c}!istac
         5,    1,    5,    1,    5,    5,    5,    5,    5,    5,
         5,    5,    5,    5,    5,    5,    5,    5,    5,    5,
         5,    5,    5
-    }\end{verbatim}\normalsize 
+    }
+\end{verbatim}\normalsize 
 \index{pplexer.c@{pplexer.c}!yy_n_chars@{yy\_\-n\_\-chars}}
 \index{yy_n_chars@{yy\_\-n\_\-chars}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-n\_\-chars\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a86}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int {\bf yy\_\-n\_\-chars}\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a86}
 
 
 \index{pplexer.c@{pplexer.c}!yy_nxt@{yy\_\-nxt}}
 \index{yy_nxt@{yy\_\-nxt}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst short int yy\_\-nxt[1134]\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a99}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}yyconst short int {\bf yy\_\-nxt}[1134]\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a99}
 
 
 \index{pplexer.c@{pplexer.c}!yy_start@{yy\_\-start}}
 \index{yy_start@{yy\_\-start}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-start = 0\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a89}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int {\bf yy\_\-start} = 0\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a89}
 
 
 \index{pplexer.c@{pplexer.c}!yy_start_stack@{yy\_\-start\_\-stack}}
 \index{yy_start_stack@{yy\_\-start\_\-stack}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int$\ast$ yy\_\-start\_\-stack = 0\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a110}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int$\ast$ {\bf yy\_\-start\_\-stack} = 0\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a110}
 
 
 \index{pplexer.c@{pplexer.c}!yy_start_stack_depth@{yy\_\-start\_\-stack\_\-depth}}
 \index{yy_start_stack_depth@{yy\_\-start\_\-stack\_\-depth}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-start\_\-stack\_\-depth = 0\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a109}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int {\bf yy\_\-start\_\-stack\_\-depth} = 0\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a109}
 
 
 \index{pplexer.c@{pplexer.c}!yy_start_stack_ptr@{yy\_\-start\_\-stack\_\-ptr}}
 \index{yy_start_stack_ptr@{yy\_\-start\_\-stack\_\-ptr}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yy\_\-start\_\-stack\_\-ptr = 0\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a108}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int {\bf yy\_\-start\_\-stack\_\-ptr} = 0\hspace{0.3cm}{\tt  [static]}}\label{pplexer_8c_a108}
 
 
 \index{pplexer.c@{pplexer.c}!yyin@{yyin}}
 \index{yyin@{yyin}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}FILE$\ast$ yyin = (FILE $\ast$) 0}\label{pplexer_8c_a81}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}FILE$\ast$ {\bf yyin} = (FILE $\ast$) 0 $\ast${\bf yyout} = (FILE $\ast$) 0}\label{pplexer_8c_a81}
 
 
 \index{pplexer.c@{pplexer.c}!yyleng@{yyleng}}
 \index{yyleng@{yyleng}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int yyleng}\label{pplexer_8c_a80}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int {\bf yyleng}}\label{pplexer_8c_a80}
 
 
 \index{pplexer.c@{pplexer.c}!yyout@{yyout}}
 \index{yyout@{yyout}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}FILE $\ast$ yyout = (FILE $\ast$) 0}\label{pplexer_8c_a82}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}FILE $\ast$ {\bf yyout}}\label{pplexer_8c_a82}
 
 
 \index{pplexer.c@{pplexer.c}!yytext@{yytext}}
 \index{yytext@{yytext}!pplexer.c@{pplexer.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ yytext}\label{pplexer_8c_a93}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ {\bf yytext}}\label{pplexer_8c_a93}
 
 

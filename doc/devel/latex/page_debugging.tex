@@ -1,0 +1,67 @@
+\section{Section 8.  Debugging}\label{page_debugging}
+\begin{Desc}
+\item[Section 8.1. Debugging Utilities]\end{Desc}
+\begin{Desc}
+\item[]When a bug is found using Covered, it is often useful for a developer to understand what utilities are available for debugging the problem at hand. Besides using some standard debugger, Covered comes with two built-in debugging facilities useful for narrowing in on the code that is causing the problem. They are the following:\end{Desc}
+\begin{Desc}
+\item[]\begin{enumerate}
+\item Global Covered option -D \item Internal code assertions \end{enumerate}
+\end{Desc}
+\begin{Desc}
+\item[]The following subsections will describe what these facilities are and how they can be used or added to.\end{Desc}
+\begin{Desc}
+\item[Section 8.1. Built-in Command Debugging Utility (-D option)]\end{Desc}
+\begin{Desc}
+\item[]Covered comes with a global command option (a global command is a command that can be used with any command) called '-D'. When this option is specified for any command, interal information is output to standard output during the command run. The information output is meant to help find the area of code which is causing the problem (in the case of a segfault or some other error which causes Covered to exit immediately) and to help understand the values that are being provided to the functions that are output the debug functionality.\end{Desc}
+\begin{Desc}
+\item[]The merge and report commands currently do not emit much debugging information; however, the score command contains a great deal of debugging information. Most of the debugging information comes from the database manager functions. Each function in the {\bf db.c}{\rm (p.\,\pageref{db_8c})} source file contains a single debug output statement, specifying the name of the function being executed as the values of the parameters passed to that function. If any new functions are added to {\bf db.c}{\rm (p.\,\pageref{db_8c})}, it is recommended that these functions output debug information. Additionally, the expression\_\-operate function in {\bf expr.c}{\rm (p.\,\pageref{expr_8c})} contains a debug output statement that is useful for tracking what Covered is doing during the simulation phase of the score command. If key information is missing in any other functions, it is recommended that that information be displayed in debug output.\end{Desc}
+\begin{Desc}
+\item[]To display debug information, the file that you are working with should contain the following code.\end{Desc}
+\begin{Desc}
+\item[]
+
+\footnotesize\begin{verbatim} #include <stdio.h>
+ #include "util.h"
+ 
+ extern char user_msg[USER_MSG_LENGTH];
+\end{verbatim}\normalsize
+\end{Desc}
+\begin{Desc}
+\item[]Once this code has been added to source file, add the debugging information using the snprintf function along with the {\bf print\_\-output}{\rm (p.\,\pageref{util_8h_a2})} function specified in {\bf util.c}{\rm (p.\,\pageref{util_8c})}. The following example specifies how to output some debug information:\end{Desc}
+\begin{Desc}
+\item[]
+
+\footnotesize\begin{verbatim} void foobar( char* name ) {
+   
+   snprintf( user_msg, USER_MSG_LENGTH, "In function foobar, name: %s", name );
+   print_output( user_msg, DEBUG );
+   
+   // ...
+   
+ }
+\end{verbatim}\normalsize
+\end{Desc}
+\begin{Desc}
+\item[]Note that it is not necessary (or recommended) to specify a newline character after the user\_\-msg string as the print\_\-output function will take care of adding this character.\end{Desc}
+\begin{Desc}
+\item[Section 8.2. Internal Assertions]\end{Desc}
+\begin{Desc}
+\item[]The second debugging facility that is used by Covered are C assertions provided by the assert.h library. Assertions are placed in the code to make sure that Covered never attempts to access memory that it should not be accessing (to avoid segmentation fault messages whenever possible) and to verify that things are in the proper state when performing some type of function. The benefit of creating an assertion is that a problem can be detected at the source (speeding up debugging time) and a core dumpfile can be created when Covered is about to do something bad. The core file can be used by a debugger to see where in the code was executing when the problem occurred.\end{Desc}
+\begin{Desc}
+\item[]To use an internal assertion, make sure that the file you want to add the assertion to contains the following include.\end{Desc}
+\begin{Desc}
+\item[]
+
+\footnotesize\begin{verbatim} #include <assert.h>
+\end{verbatim}\normalsize
+\end{Desc}
+\begin{Desc}
+\item[]Once this header file has been included, simply use its assert function to verify a condition that evaluates to TRUE or FALSE. The overhead for assertions is minimal so please don't be shy about putting them in wherever and whenver appropriate.\end{Desc}
+
+
+
+
+\begin{Desc}
+\item[Go To Section...]\begin{itemize}
+\item {\bf Section 1.  Introduction}{\rm (p.\,\pageref{page_intro})}\item {\bf Section 2.  Project Plan}{\rm (p.\,\pageref{page_project_plan})}\item {\bf Section 3.  Coding Style Guidelines}{\rm (p.\,\pageref{page_code_style})}\item {\bf Section 4.  Development Tools}{\rm (p.\,\pageref{page_tools})}\item {\bf Section 5.  Project \char`\"{}Big Picture\char`\"{}}{\rm (p.\,\pageref{page_big_picture})}\item {\bf Section 6.  Coverage Development Reference}{\rm (p.\,\pageref{page_code_details})}\item {\bf Section 7.  Test and Checkout Procedure}{\rm (p.\,\pageref{page_testing})}\item {\bf Section 9.  Odds and Ends Information}{\rm (p.\,\pageref{page_misc})} \end{itemize}
+\end{Desc}

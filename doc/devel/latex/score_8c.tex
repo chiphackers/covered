@@ -22,7 +22,7 @@ void {\bf score\_\-usage} ()
 {\bf bool} {\bf score\_\-parse\_\-args} (int argc, int last\_\-arg, char $\ast$$\ast$argv)
 \item 
 int {\bf command\_\-score} (int argc, int last\_\-arg, char $\ast$$\ast$argv)
-\begin{CompactList}\small\item\em Parses score command-line and performs score.\item\end{CompactList}\end{CompactItemize}
+\begin{CompactList}\small\item\em Parses score command-line and performs score. \item\end{CompactList}\end{CompactItemize}
 \subsection*{Variables}
 \begin{CompactItemize}
 \item 
@@ -51,14 +51,10 @@ char {\bf user\_\-msg} [USER\_\-MSG\_\-LENGTH]
 
 
 \subsection{Detailed Description}
-
-
 \begin{Desc}
-\item[Author: ]\par
-Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
-\item[Date: ]\par
-11/29/2001\end{Desc}
+\item[Date:]11/29/2001\end{Desc}
 
 
 \subsection{Function Documentation}
@@ -67,30 +63,24 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}int command\_\-score (int {\em argc}, int {\em last\_\-arg}, char $\ast$$\ast$ {\em argv})}\label{score_8c_a15}
 
 
-Parses score command-line and performs score.
+Parses score command-line and performs score. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-argc}]Number of arguments in score command-line. \item[{\em 
-last\_\-arg}]Index of last parsed argument in list. \item[{\em 
-argv}]Arguments from command-line to parse.\end{description}
+\item[{\em argc}]Number of arguments in score command-line. \item[{\em last\_\-arg}]Index of last parsed argument in list. \item[{\em argv}]Arguments from command-line to parse.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Returns 0 if scoring is successful; otherwise, returns -1.\end{Desc}
+\item[Returns:]Returns 0 if scoring is successful; otherwise, returns -1.\end{Desc}
 Performs score command functionality. \index{score.c@{score.c}!define_macro@{define\_\-macro}}
 \index{define_macro@{define\_\-macro}!score.c@{score.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void define\_\-macro (const char $\ast$ {\em name}, const char $\ast$ {\em value})}\label{score_8c_a11}
 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-name}]String value of define identifier \item[{\em 
-value}]String value associated with define identifier\end{description}
+\item[{\em name}]String value of define identifier \item[{\em value}]String value associated with define identifier\end{description}
 \end{Desc}
 Stores define identifer with its value in a define node and placed in the binary search tree for quick lookup later on. \index{score.c@{score.c}!read_command_file@{read\_\-command\_\-file}}
 \index{read_command_file@{read\_\-command\_\-file}!score.c@{score.c}}
@@ -98,32 +88,24 @@ Stores define identifer with its value in a define node and placed in the binary
 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-cmd\_\-file}]Name of file to read commands from. \item[{\em 
-arg\_\-list}]List of arguments found in specified command file. \item[{\em 
-arg\_\-num}]Number of arguments in arg\_\-list array. \end{description}
+\item[{\em cmd\_\-file}]Name of file to read commands from. \item[{\em arg\_\-list}]List of arguments found in specified command file. \item[{\em arg\_\-num}]Number of arguments in arg\_\-list array. \end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Returns TRUE if read of command file was successful; otherwise, returns FALSE. \end{Desc}
+\item[Returns:]Returns TRUE if read of command file was successful; otherwise, returns FALSE. \end{Desc}
 \index{score.c@{score.c}!score_parse_args@{score\_\-parse\_\-args}}
 \index{score_parse_args@{score\_\-parse\_\-args}!score.c@{score.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} score\_\-parse\_\-args (int {\em argc}, int {\em last\_\-arg}, char $\ast$$\ast$ {\em argv})}\label{score_8c_a14}
 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-argc}]Number of arguments specified in argv parameter list. \item[{\em 
-last\_\-arg}]Index of last parsed argument in list. \item[{\em 
-argv}]List of arguments to parse.\end{description}
+\item[{\em argc}]Number of arguments specified in argv parameter list. \item[{\em last\_\-arg}]Index of last parsed argument in list. \item[{\em argv}]List of arguments to parse.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Returns TRUE if successful in dealing with arguments; otherwise, returns FALSE.\end{Desc}
+\item[Returns:]Returns TRUE if successful in dealing with arguments; otherwise, returns FALSE.\end{Desc}
 Parses score command argument list and performs specified functions based on these arguments. \index{score.c@{score.c}!score_usage@{score\_\-usage}}
 \index{score_usage@{score\_\-usage}!score.c@{score.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void score\_\-usage ()}\label{score_8c_a12}
@@ -134,57 +116,57 @@ Displays usage information for score command.
 \subsection{Variable Documentation}
 \index{score.c@{score.c}!curr_malloc_size@{curr\_\-malloc\_\-size}}
 \index{curr_malloc_size@{curr\_\-malloc\_\-size}!score.c@{score.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}unsigned long curr\_\-malloc\_\-size ()}\label{score_8c_a8}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}unsigned long {\bf curr\_\-malloc\_\-size} ()}\label{score_8c_a8}
 
 
 Contains the total number of bytes malloc'ed during the simulation run. This information is output to the user after simulation as a performance indicator. \index{score.c@{score.c}!delay_expr_type@{delay\_\-expr\_\-type}}
 \index{delay_expr_type@{delay\_\-expr\_\-type}!score.c@{score.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int delay\_\-expr\_\-type = DELAY\_\-EXPR\_\-DEFAULT}\label{score_8c_a4}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int {\bf delay\_\-expr\_\-type} = DELAY\_\-EXPR\_\-DEFAULT}\label{score_8c_a4}
 
 
 Value to use when a delay expression with min:typ:max \index{score.c@{score.c}!instance_specified@{instance\_\-specified}}
 \index{instance_specified@{instance\_\-specified}!score.c@{score.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} instance\_\-specified = FALSE}\label{score_8c_a6}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} {\bf instance\_\-specified} = FALSE}\label{score_8c_a6}
 
 
 Specifies if -i option was specified \index{score.c@{score.c}!largest_malloc_size@{largest\_\-malloc\_\-size}}
 \index{largest_malloc_size@{largest\_\-malloc\_\-size}!score.c@{score.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}unsigned long largest\_\-malloc\_\-size ()}\label{score_8c_a7}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}unsigned long {\bf largest\_\-malloc\_\-size} ()}\label{score_8c_a7}
 
 
 Holds the largest number of bytes in allocation at one period of time. \index{score.c@{score.c}!output_db@{output\_\-db}}
 \index{output_db@{output\_\-db}!score.c@{score.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ output\_\-db = NULL}\label{score_8c_a2}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ {\bf output\_\-db} = NULL}\label{score_8c_a2}
 
 
 Name of output score database file to generate \index{score.c@{score.c}!ppfilename@{ppfilename}}
 \index{ppfilename@{ppfilename}!score.c@{score.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ ppfilename = NULL}\label{score_8c_a5}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ {\bf ppfilename} = NULL}\label{score_8c_a5}
 
 
 Name of preprocessor filename to use \index{score.c@{score.c}!top_instance@{top\_\-instance}}
 \index{top_instance@{top\_\-instance}!score.c@{score.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ top\_\-instance = NULL}\label{score_8c_a1}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ {\bf top\_\-instance} = NULL}\label{score_8c_a1}
 
 
 Name of top-level instance name \index{score.c@{score.c}!top_module@{top\_\-module}}
 \index{top_module@{top\_\-module}!score.c@{score.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ top\_\-module = NULL}\label{score_8c_a0}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ {\bf top\_\-module} = NULL}\label{score_8c_a0}
 
 
 Name of top-level module to score \index{score.c@{score.c}!use_files_head@{use\_\-files\_\-head}}
 \index{use_files_head@{use\_\-files\_\-head}!score.c@{score.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ use\_\-files\_\-head ()}\label{score_8c_a9}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ {\bf use\_\-files\_\-head} ()}\label{score_8c_a9}
 
 
 Pointer to head element of used files list \index{score.c@{score.c}!user_msg@{user\_\-msg}}
 \index{user_msg@{user\_\-msg}!score.c@{score.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char user\_\-msg[USER\_\-MSG\_\-LENGTH]}\label{score_8c_a10}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char {\bf user\_\-msg}[USER\_\-MSG\_\-LENGTH] ()}\label{score_8c_a10}
 
 
-\index{score.c@{score.c}!vcd_file@{vcd\_\-file}}
+Holds some output that will be displayed via the print\_\-output command. This is created globally so that memory does not need to be reallocated for each function that wishes to use it. \index{score.c@{score.c}!vcd_file@{vcd\_\-file}}
 \index{vcd_file@{vcd\_\-file}!score.c@{score.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ vcd\_\-file = NULL}\label{score_8c_a3}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ {\bf vcd\_\-file} = NULL}\label{score_8c_a3}
 
 
 Name of VCD output file to parse 

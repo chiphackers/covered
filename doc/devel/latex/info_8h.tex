@@ -1,6 +1,6 @@
 \section{info.h File Reference}
 \label{info_8h}\index{info.h@{info.h}}
-Contains functions for reading/writing info line of CDD file. 
+Contains functions for reading/writing info line of CDD file.  
 
 
 {\tt \#include $<$stdio.h$>$}\par
@@ -8,22 +8,18 @@ Contains functions for reading/writing info line of CDD file.
 \begin{CompactItemize}
 \item 
 void {\bf info\_\-db\_\-write} (FILE $\ast${\bf file})
-\begin{CompactList}\small\item\em Writes info line to specified CDD file.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Writes info line to specified CDD file. \item\end{CompactList}\item 
 {\bf bool} {\bf info\_\-db\_\-read} (char $\ast$$\ast$line)
-\begin{CompactList}\small\item\em Reads info line from specified line and stores information.\item\end{CompactList}\end{CompactItemize}
+\begin{CompactList}\small\item\em Reads info line from specified line and stores information. \item\end{CompactList}\end{CompactItemize}
 
 
 \subsection{Detailed Description}
-Contains functions for reading/writing info line of CDD file.
-
-
+Contains functions for reading/writing info line of CDD file. 
 
 \begin{Desc}
-\item[Author: ]\par
-Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
-\item[Date: ]\par
-2/12/2003\end{Desc}
+\item[Date:]2/12/2003 \end{Desc}
 
 
 \subsection{Function Documentation}
@@ -32,25 +28,23 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} info\_\-db\_\-read (char $\ast$$\ast$ {\em line})}\label{info_8h_a1}
 
 
-Reads info line from specified line and stores information.
+Reads info line from specified line and stores information. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-line}]Pointer to string containing information line to parse.\end{description}
+\item[{\em line}]Pointer to string containing information line to parse.\end{description}
 \end{Desc}
 Reads information line from specified string and stores its information. \index{info.h@{info.h}!info_db_write@{info\_\-db\_\-write}}
 \index{info_db_write@{info\_\-db\_\-write}!info.h@{info.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void info\_\-db\_\-write (FILE $\ast$ {\em file})}\label{info_8h_a0}
 
 
-Writes info line to specified CDD file.
+Writes info line to specified CDD file. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-file}]Pointer to file to write information to.\end{description}
+\item[{\em file}]Pointer to file to write information to.\end{description}
 \end{Desc}
 Writes information line to specified file. 

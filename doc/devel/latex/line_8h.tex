@@ -1,6 +1,6 @@
 \section{line.h File Reference}
 \label{line_8h}\index{line.h@{line.h}}
-Contains functions for determining/reporting line coverage. 
+Contains functions for determining/reporting line coverage.  
 
 
 {\tt \#include $<$stdio.h$>$}\par
@@ -9,22 +9,18 @@ Contains functions for determining/reporting line coverage.
 \begin{CompactItemize}
 \item 
 void {\bf line\_\-get\_\-stats} ({\bf stmt\_\-link} $\ast$stmtl, float $\ast$total, int $\ast$hit)
-\begin{CompactList}\small\item\em Calculates line coverage numbers for the specified expression list.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Calculates line coverage numbers for the specified expression list. \item\end{CompactList}\item 
 void {\bf line\_\-report} (FILE $\ast$ofile, {\bf bool} verbose)
-\begin{CompactList}\small\item\em Generates report output for line coverage.\item\end{CompactList}\end{CompactItemize}
+\begin{CompactList}\small\item\em Generates report output for line coverage. \item\end{CompactList}\end{CompactItemize}
 
 
 \subsection{Detailed Description}
-Contains functions for determining/reporting line coverage.
-
-
+Contains functions for determining/reporting line coverage. 
 
 \begin{Desc}
-\item[Author: ]\par
-Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
-\item[Date: ]\par
-3/31/2002\end{Desc}
+\item[Date:]3/31/2002 \end{Desc}
 
 
 \subsection{Function Documentation}
@@ -33,28 +29,23 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void line\_\-get\_\-stats ({\bf stmt\_\-link} $\ast$ {\em stmtl}, float $\ast$ {\em total}, int $\ast$ {\em hit})}\label{line_8h_a0}
 
 
-Calculates line coverage numbers for the specified expression list.
+Calculates line coverage numbers for the specified expression list. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-stmtl}]Pointer to current statement list to explore. \item[{\em 
-total}]Holds total number of lines parsed. \item[{\em 
-hit}]Holds total number of lines hit.\end{description}
+\item[{\em stmtl}]Pointer to current statement list to explore. \item[{\em total}]Holds total number of lines parsed. \item[{\em hit}]Holds total number of lines hit.\end{description}
 \end{Desc}
 Iterates through given statement list, gathering information about which lines exist in the list, which lines were hit during simulation and which lines were missed during simulation. This information is used to report summary information about line coverage. \index{line.h@{line.h}!line_report@{line\_\-report}}
 \index{line_report@{line\_\-report}!line.h@{line.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void line\_\-report (FILE $\ast$ {\em ofile}, {\bf bool} {\em verbose})}\label{line_8h_a1}
 
 
-Generates report output for line coverage.
+Generates report output for line coverage. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-ofile}]Pointer to file to output results to. \item[{\em 
-verbose}]Specifies whether to generate summary or verbose output.\end{description}
+\item[{\em ofile}]Pointer to file to output results to. \item[{\em verbose}]Specifies whether to generate summary or verbose output.\end{description}
 \end{Desc}
-After the design is read into the module hierarchy, parses the hierarchy by module, reporting the line coverage for each module encountered. The parent module will specify its own line coverage along with a total line coverage including its  children. 
+After the design is read into the module hierarchy, parses the hierarchy by module, reporting the line coverage for each module encountered. The parent module will specify its own line coverage along with a total line coverage including its children. 

@@ -14,13 +14,13 @@
 {\bf mod\_\-inst} $\ast$ {\bf instance\_\-create} ({\bf module} $\ast$mod, char $\ast$inst\_\-name)
 \item 
 void {\bf instance\_\-gen\_\-scope} (char $\ast$scope, {\bf mod\_\-inst} $\ast$leaf)
-\begin{CompactList}\small\item\em Builds full hierarchy from leaf node to root.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Builds full hierarchy from leaf node to root. \item\end{CompactList}\item 
 {\bf mod\_\-inst} $\ast$ {\bf instance\_\-find\_\-scope\_\-helper} ({\bf mod\_\-inst} $\ast$root, char $\ast$curr\_\-scope, char $\ast$rest\_\-scope)
 \item 
 {\bf mod\_\-inst} $\ast$ {\bf instance\_\-find\_\-scope} ({\bf mod\_\-inst} $\ast$root, char $\ast$scope)
-\begin{CompactList}\small\item\em Finds specified scope in module instance tree.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Finds specified scope in module instance tree. \item\end{CompactList}\item 
 {\bf mod\_\-inst} $\ast$ {\bf instance\_\-find\_\-by\_\-module} ({\bf mod\_\-inst} $\ast$root, {\bf module} $\ast$mod, int $\ast$ignore)
-\begin{CompactList}\small\item\em Returns instance that points to specified module for each instance.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Returns instance that points to specified module for each instance. \item\end{CompactList}\item 
 void {\bf instance\_\-resolve\_\-params} ({\bf mod\_\-parm} $\ast$mparm, {\bf mod\_\-inst} $\ast$inst)
 \item 
 {\bf mod\_\-inst} $\ast$ {\bf instance\_\-add\_\-child} ({\bf mod\_\-inst} $\ast$inst, {\bf module} $\ast$child, char $\ast$name)
@@ -28,26 +28,22 @@ void {\bf instance\_\-resolve\_\-params} ({\bf mod\_\-parm} $\ast$mparm, {\bf mo
 void {\bf instance\_\-copy} ({\bf mod\_\-inst} $\ast$from\_\-inst, {\bf mod\_\-inst} $\ast$to\_\-inst, char $\ast$name)
 \item 
 void {\bf instance\_\-parse\_\-add} ({\bf mod\_\-inst} $\ast$$\ast$root, {\bf module} $\ast$parent, {\bf module} $\ast$child, char $\ast$inst\_\-name)
-\begin{CompactList}\small\item\em Adds new instance to specified instance tree during parse.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Adds new instance to specified instance tree during parse. \item\end{CompactList}\item 
 void {\bf instance\_\-read\_\-add} ({\bf mod\_\-inst} $\ast$$\ast$root, char $\ast$parent, {\bf module} $\ast$child, char $\ast$inst\_\-name)
-\begin{CompactList}\small\item\em Adds new instance to specified instance tree during CDD read.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Adds new instance to specified instance tree during CDD read. \item\end{CompactList}\item 
 void {\bf instance\_\-db\_\-write} ({\bf mod\_\-inst} $\ast$root, FILE $\ast${\bf file}, char $\ast$scope, {\bf bool} parse\_\-mode)
-\begin{CompactList}\small\item\em Displays contents of module instance tree to specified file.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Displays contents of module instance tree to specified file. \item\end{CompactList}\item 
 void {\bf instance\_\-dealloc\_\-tree} ({\bf mod\_\-inst} $\ast$root)
 \item 
 void {\bf instance\_\-dealloc} ({\bf mod\_\-inst} $\ast$root, char $\ast$scope)
-\begin{CompactList}\small\item\em Removes specified instance from tree.\item\end{CompactList}\end{CompactItemize}
+\begin{CompactList}\small\item\em Removes specified instance from tree. \item\end{CompactList}\end{CompactItemize}
 
 
 \subsection{Detailed Description}
-
-
 \begin{Desc}
-\item[Author: ]\par
-Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
-\item[Date: ]\par
-3/11/2002\end{Desc}
+\item[Date:]3/11/2002\end{Desc}
 
 
 \subsection{Function Documentation}
@@ -57,73 +53,57 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-inst}]Pointer to instance to add child instance to. \item[{\em 
-child}]Pointer to child module to create instance for. \item[{\em 
-name}]Name of instance to add.\end{description}
+\item[{\em inst}]Pointer to instance to add child instance to. \item[{\em child}]Pointer to child module to create instance for. \item[{\em name}]Name of instance to add.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Returns pointer to newly created module instance.\end{Desc}
+\item[Returns:]Returns pointer to newly created module instance.\end{Desc}
 Generates new instance, adds it to the child list of the inst module instance, and resolves any parameters. \index{instance.c@{instance.c}!instance_copy@{instance\_\-copy}}
 \index{instance_copy@{instance\_\-copy}!instance.c@{instance.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void instance\_\-copy ({\bf mod\_\-inst} $\ast$ {\em from\_\-inst}, {\bf mod\_\-inst} $\ast$ {\em to\_\-inst}, char $\ast$ {\em name})}\label{instance_8c_a7}
 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-from\_\-inst}]Pointer to instance tree to copy. \item[{\em 
-to\_\-inst}]Pointer to instance to copy tree to. \item[{\em 
-name}]Instance name of current instance being copied.\end{description}
+\item[{\em from\_\-inst}]Pointer to instance tree to copy. \item[{\em to\_\-inst}]Pointer to instance to copy tree to. \item[{\em name}]Instance name of current instance being copied.\end{description}
 \end{Desc}
-Recursively copies the instance tree of from\_\-inst to the instance  to\_\-inst, allocating memory for the new instances and resolving parameters. \index{instance.c@{instance.c}!instance_create@{instance\_\-create}}
+Recursively copies the instance tree of from\_\-inst to the instance to\_\-inst, allocating memory for the new instances and resolving parameters. \index{instance.c@{instance.c}!instance_create@{instance\_\-create}}
 \index{instance_create@{instance\_\-create}!instance.c@{instance.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-inst}$\ast$ instance\_\-create ({\bf module} $\ast$ {\em mod}, char $\ast$ {\em inst\_\-name})}\label{instance_8c_a0}
 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-mod}]Pointer to module to store in this instance. \item[{\em 
-inst\_\-name}]Instantiated name of this instance.\end{description}
+\item[{\em mod}]Pointer to module to store in this instance. \item[{\em inst\_\-name}]Instantiated name of this instance.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Returns pointer to newly created module instance.\end{Desc}
+\item[Returns:]Returns pointer to newly created module instance.\end{Desc}
 Creates a new module instance from heap, initializes its data and returns a pointer to it. \index{instance.c@{instance.c}!instance_db_write@{instance\_\-db\_\-write}}
 \index{instance_db_write@{instance\_\-db\_\-write}!instance.c@{instance.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void instance\_\-db\_\-write ({\bf mod\_\-inst} $\ast$ {\em root}, FILE $\ast$ {\em file}, char $\ast$ {\em scope}, {\bf bool} {\em parse\_\-mode})}\label{instance_8c_a10}
 
 
-Displays contents of module instance tree to specified file.
+Displays contents of module instance tree to specified file. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-root}]Root of module instance tree to write. \item[{\em 
-file}]Output file to display contents to. \item[{\em 
-scope}]Scope of this module. \item[{\em 
-parse\_\-mode}]Specifies if we are parsing or scoring.\end{description}
+\item[{\em root}]Root of module instance tree to write. \item[{\em file}]Output file to display contents to. \item[{\em scope}]Scope of this module. \item[{\em parse\_\-mode}]Specifies if we are parsing or scoring.\end{description}
 \end{Desc}
 Calls each module display function in instance tree, starting with the root module and ending when all of the leaf modules are output. Note: the function that calls this function originally should set the value of scope to NULL. \index{instance.c@{instance.c}!instance_dealloc@{instance\_\-dealloc}}
 \index{instance_dealloc@{instance\_\-dealloc}!instance.c@{instance.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void instance\_\-dealloc ({\bf mod\_\-inst} $\ast$ {\em root}, char $\ast$ {\em scope})}\label{instance_8c_a12}
 
 
-Removes specified instance from tree.
+Removes specified instance from tree. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-root}]Root of module instance tree. \item[{\em 
-scope}]Scope of module to remove from tree.\end{description}
+\item[{\em root}]Root of module instance tree. \item[{\em scope}]Scope of module to remove from tree.\end{description}
 \end{Desc}
 Searches tree for specified module. If the module instance is found, the module instance is removed from the tree along with all of its child module instances. \index{instance.c@{instance.c}!instance_dealloc_tree@{instance\_\-dealloc\_\-tree}}
 \index{instance_dealloc_tree@{instance\_\-dealloc\_\-tree}!instance.c@{instance.c}}
@@ -131,107 +111,85 @@ Searches tree for specified module. If the module instance is found, the module 
 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-root}]Pointer to root instance of module instance tree to remove.\end{description}
+\item[{\em root}]Pointer to root instance of module instance tree to remove.\end{description}
 \end{Desc}
 Recursively traverses instance tree, deallocating heap memory used to store the the tree. \index{instance.c@{instance.c}!instance_find_by_module@{instance\_\-find\_\-by\_\-module}}
 \index{instance_find_by_module@{instance\_\-find\_\-by\_\-module}!instance.c@{instance.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-inst}$\ast$ instance\_\-find\_\-by\_\-module ({\bf mod\_\-inst} $\ast$ {\em root}, {\bf module} $\ast$ {\em mod}, int $\ast$ {\em ignore})}\label{instance_8c_a4}
 
 
-Returns instance that points to specified module for each instance.
+Returns instance that points to specified module for each instance. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-root}]Pointer to root module instance of tree. \item[{\em 
-mod}]Pointer to module to find in tree. \item[{\em 
-ignore}]Pointer to number of matches to ignore.\end{description}
+\item[{\em root}]Pointer to root module instance of tree. \item[{\em mod}]Pointer to module to find in tree. \item[{\em ignore}]Pointer to number of matches to ignore.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Returns pointer to module instance found by scope.\end{Desc}
-Searches the specified module instance tree for the specified module. When a module instance is found that points to the specified module and the ignore value is 0, a pointer to that module instance is  passed back to the calling function; otherwise, the ignore count is decremented and the searching continues. \index{instance.c@{instance.c}!instance_find_scope@{instance\_\-find\_\-scope}}
+\item[Returns:]Returns pointer to module instance found by scope.\end{Desc}
+Searches the specified module instance tree for the specified module. When a module instance is found that points to the specified module and the ignore value is 0, a pointer to that module instance is passed back to the calling function; otherwise, the ignore count is decremented and the searching continues. \index{instance.c@{instance.c}!instance_find_scope@{instance\_\-find\_\-scope}}
 \index{instance_find_scope@{instance\_\-find\_\-scope}!instance.c@{instance.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-inst}$\ast$ instance\_\-find\_\-scope ({\bf mod\_\-inst} $\ast$ {\em root}, char $\ast$ {\em scope})}\label{instance_8c_a3}
 
 
-Finds specified scope in module instance tree.
+Finds specified scope in module instance tree. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-root}]Root of mod\_\-inst tree to parse for scope. \item[{\em 
-scope}]Scope to search for.\end{description}
+\item[{\em root}]Root of mod\_\-inst tree to parse for scope. \item[{\em scope}]Scope to search for.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Returns pointer to module instance found by scope.\end{Desc}
+\item[Returns:]Returns pointer to module instance found by scope.\end{Desc}
 Searches the specified module instance tree for the specified scope. When the module instance is found, a pointer to that module instance is passed back to the calling function. \index{instance.c@{instance.c}!instance_find_scope_helper@{instance\_\-find\_\-scope\_\-helper}}
 \index{instance_find_scope_helper@{instance\_\-find\_\-scope\_\-helper}!instance.c@{instance.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-inst}$\ast$ instance\_\-find\_\-scope\_\-helper ({\bf mod\_\-inst} $\ast$ {\em root}, char $\ast$ {\em curr\_\-scope}, char $\ast$ {\em rest\_\-scope})}\label{instance_8c_a2}
 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-root}]Root of mod\_\-inst tree to parse for scope. \item[{\em 
-curr\_\-scope}]Scope name (instance name) of current instance. \item[{\em 
-rest\_\-scope}]Rest of scope name.\end{description}
+\item[{\em root}]Root of mod\_\-inst tree to parse for scope. \item[{\em curr\_\-scope}]Scope name (instance name) of current instance. \item[{\em rest\_\-scope}]Rest of scope name.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Returns pointer to module instance found by scope.\end{Desc}
+\item[Returns:]Returns pointer to module instance found by scope.\end{Desc}
 Searches the specified module instance tree for the specified scope. When the module instance is found, a pointer to that module instance is passed back to the calling function. \index{instance.c@{instance.c}!instance_gen_scope@{instance\_\-gen\_\-scope}}
 \index{instance_gen_scope@{instance\_\-gen\_\-scope}!instance.c@{instance.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void instance\_\-gen\_\-scope (char $\ast$ {\em scope}, {\bf mod\_\-inst} $\ast$ {\em leaf})}\label{instance_8c_a1}
 
 
-Builds full hierarchy from leaf node to root.
+Builds full hierarchy from leaf node to root. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-scope}]String pointer to store generated scope (assumed to be allocated) \item[{\em 
-leaf}]Pointer to leaf instance in scope.\end{description}
+\item[{\em scope}]String pointer to store generated scope (assumed to be allocated) \item[{\em leaf}]Pointer to leaf instance in scope.\end{description}
 \end{Desc}
 Recursively travels up to the root of the instance tree, building the scope string as it goes. When the root instance is reached, the string is returned. Assumes that scope is initialized to the NULL character. \index{instance.c@{instance.c}!instance_parse_add@{instance\_\-parse\_\-add}}
 \index{instance_parse_add@{instance\_\-parse\_\-add}!instance.c@{instance.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void instance\_\-parse\_\-add ({\bf mod\_\-inst} $\ast$$\ast$ {\em root}, {\bf module} $\ast$ {\em parent}, {\bf module} $\ast$ {\em child}, char $\ast$ {\em inst\_\-name})}\label{instance_8c_a8}
 
 
-Adds new instance to specified instance tree during parse.
+Adds new instance to specified instance tree during parse. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-root}]Root mod\_\-inst pointer of module instance tree. \item[{\em 
-parent}]Pointer to parent module of specified child. \item[{\em 
-child}]Pointer to child module to add. \item[{\em 
-inst\_\-name}]Name of new module instance.\end{description}
+\item[{\em root}]Root mod\_\-inst pointer of module instance tree. \item[{\em parent}]Pointer to parent module of specified child. \item[{\em child}]Pointer to child module to add. \item[{\em inst\_\-name}]Name of new module instance.\end{description}
 \end{Desc}
 Adds the child module to the child module pointer list located in the module specified by the scope of parent in the module instance tree pointed to by root. This function is used by the db\_\-add\_\-instance function during the parsing stage. \index{instance.c@{instance.c}!instance_read_add@{instance\_\-read\_\-add}}
 \index{instance_read_add@{instance\_\-read\_\-add}!instance.c@{instance.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void instance\_\-read\_\-add ({\bf mod\_\-inst} $\ast$$\ast$ {\em root}, char $\ast$ {\em parent}, {\bf module} $\ast$ {\em child}, char $\ast$ {\em inst\_\-name})}\label{instance_8c_a9}
 
 
-Adds new instance to specified instance tree during CDD read.
+Adds new instance to specified instance tree during CDD read. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-root}]Pointer to root instance of module instance tree. \item[{\em 
-parent}]String scope of parent instance. \item[{\em 
-child}]Pointer to child module to add to specified parent's child list. \item[{\em 
-inst\_\-name}]Instance name of this child module instance.\end{description}
+\item[{\em root}]Pointer to root instance of module instance tree. \item[{\em parent}]String scope of parent instance. \item[{\em child}]Pointer to child module to add to specified parent's child list. \item[{\em inst\_\-name}]Instance name of this child module instance.\end{description}
 \end{Desc}
 Adds the child module to the child module pointer list located in the module specified by the scope of parent in the module instance tree pointed to by root. This function is used by the db\_\-read function during the CDD reading stage. \index{instance.c@{instance.c}!instance_resolve_params@{instance\_\-resolve\_\-params}}
 \index{instance_resolve_params@{instance\_\-resolve\_\-params}!instance.c@{instance.c}}
@@ -239,10 +197,8 @@ Adds the child module to the child module pointer list located in the module spe
 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-mparm}]Pointer to module parameter list to resolve. \item[{\em 
-inst}]Pointer to current instance to resolve parameters into.\end{description}
+\item[{\em mparm}]Pointer to module parameter list to resolve. \item[{\em inst}]Pointer to current instance to resolve parameters into.\end{description}
 \end{Desc}
 Performs parameter resolution for all module parameters in mparm list and places them into the instance parameter list located in the inst structure. Note: This function MUST be called after the specified instance is attached to the instance tree. 

@@ -1,42 +1,37 @@
 \section{Section 3.  Coding Style Guidelines}\label{page_code_style}
- \begin{Desc}
-\item[Section 3.1.  Preamble]\par
- The guidelines to follow when writing code are here to make the entire project look as though it has been written by only one developer. They are intended to keep the code easy to read and understand. Many of the documentation guidelines are in place to keep the generated documentation consistent and helpful for development of the project. These guidelines are intended to be as minimal as possible while still keep the project as consistent as possible. Other ideas to improve code readability and usefulness are encouraged to be shared with the rest of the project. By no means are these guidelines  meant to make its developers feel restricted in their coding styles!\end{Desc}
+\begin{Desc}
+\item[Section 3.1. Preamble]\end{Desc}
+\begin{Desc}
+\item[]The guidelines to follow when writing code are here to make the entire project look as though it has been written by only one developer. They are intended to keep the code easy to read and understand. Many of the documentation guidelines are in place to keep the generated documentation consistent and helpful for development of the project. These guidelines are intended to be as minimal as possible while still keep the project as consistent as possible. Other ideas to improve code readability and usefulness are encouraged to be shared with the rest of the project. By no means are these guidelines meant to make its developers feel restricted in their coding styles!\end{Desc}
+
+
 
 
 \begin{Desc}
-\item[Section 3.2.  Documentation Style Guidelines]\par
- The Covered project uses a combination of standard C comments embedded in the code as well as special comments that are parsable by the Doxygen utility. The Doxygen tool is used to generate all of the development documentation for the project in HTML and Latex versions. This allows the documentation to be viewable via an HTML browser, Acrobat reader, La\-Te\-X viewers (and other related viewers), and embedded in the code itself. For documentation on the usage of Doxygen, please see examples within the Covered project and/or check out the available documentation at the Doxygen website:
-
- {\tt http://www.stack.nl/$\sim$dimitri/doxygen/index.html}
-
- The following are a list of guidelines that should be followed whenever/wherever possible in the source code in the area of documentation.
-
-\begin{enumerate}
-\item 
-All header files must begin with a Doxygen-style header. For an example of what these  headers look like, please see the file {\bf signal.h}\item 
-All source files must begin with a Doxygen-style source header. For an example of what these headers look like, please see the file {\bf signal.c}\item 
-All files should contain the RCS file revision history information at the bottom of the file by using the Log {\bf keyword} {\rm (p.\,\pageref{structkeyword})}.\item 
-All defines, structures, and global variables should contain a Doxygen-style comment  describing its meaning and usage in the code.\item 
-Each function declaration in the header file should contain a Doxygen-style brief, one line description of the function's use.\item 
-Each function definition in the source file should contain a Doxygen-style verbose description of the function's parameters, return value (if necessary), and overall description.\item 
-All internal function variables should be documented using standard C-style comments.\end{enumerate}
+\item[Section 3.2. Documentation Style Guidelines]\end{Desc}
+\begin{Desc}
+\item[]The Covered project uses a combination of standard C comments embedded in the code as well as special comments that are parsable by the Doxygen utility. The Doxygen tool is used to generate all of the development documentation for the project in HTML and Latex versions. This allows the documentation to be viewable via an HTML browser, Acrobat reader, La\-Te\-X viewers (and other related viewers), and embedded in the code itself. For documentation on the usage of Doxygen, please see examples within the Covered project and/or check out the available documentation at the Doxygen website:\end{Desc}
+\begin{Desc}
+\item[]{\tt http://www.stack.nl/$\sim$dimitri/doxygen/index.html}\end{Desc}
+\begin{Desc}
+\item[]The following are a list of guidelines that should be followed whenever/wherever possible in the source code in the area of documentation.\end{Desc}
+\begin{Desc}
+\item[]\begin{enumerate}
+\item All header files must begin with a Doxygen-style header. For an example of what these headers look like, please see the file {\bf signal.h}{\rm (p.\,\pageref{signal_8h})} \item All source files must begin with a Doxygen-style source header. For an example of what these headers look like, please see the file {\bf signal.c}{\rm (p.\,\pageref{signal_8c})} \item All files should contain the RCS file revision history information at the bottom of the file by using the Log keyword. \item All defines, structures, and global variables should contain a Doxygen-style comment describing its meaning and usage in the code. \item Each function declaration in the header file should contain a Doxygen-style brief, one line description of the function's use. \item Each function definition in the source file should contain a Doxygen-style verbose description of the function's parameters, return value (if necessary), and overall description. \item All internal function variables should be documented using standard C-style comments. \end{enumerate}
 \end{Desc}
+\begin{Desc}
+\item[]The most important guideline is to keep the code documentation consistent with other documentation found in the project and to keep that documentation up-to-date with the code that it is associated with. Out-of-date documentation is usually worse than no documentation at all.\end{Desc}
 
-
- The most important guideline is to keep the code documentation consistent with other documentation found in the project and to keep that documentation up-to-date with the code that it is associated with. Out-of-date documentation is usually worse than no documentation at all.
 
 
 
 \begin{Desc}
-\item[Section 3.3.  Coding Style Guidelines]\par
- The following are a list of guidelines that should be followed whenever/wherever possible in the source code in the area of source code.
-
-\begin{enumerate}
-\item 
-Avoid using tabs in any of the source files. Tabs are interpreted differently by all kinds of editors. What looks well-formatted in your editor, may be messy and hard to read in someone else's editor. Please use only spaces for formatting code.\item 
-All defines and global structures are defined in the {\bf defines.h} file. If you need to create any new defines and/or structures for the code, please place these in this file in the appropriate places.\item 
-For all header files, place an\end{enumerate}
+\item[Section 3.3. Coding Style Guidelines]\end{Desc}
+\begin{Desc}
+\item[]The following are a list of guidelines that should be followed whenever/wherever possible in the source code in the area of source code.\end{Desc}
+\begin{Desc}
+\item[]\begin{enumerate}
+\item Avoid using tabs in any of the source files. Tabs are interpreted differently by all kinds of editors. What looks well-formatted in your editor, may be messy and hard to read in someone else's editor. Please use only spaces for formatting code. \item All defines and global structures are defined in the {\bf defines.h}{\rm (p.\,\pageref{defines_8h})} file. If you need to create any new defines and/or structures for the code, please place these in this file in the appropriate places. \item For all header files, place an \end{enumerate}
 \end{Desc}
 
 
@@ -44,24 +39,18 @@ For all header files, place an\end{enumerate}
  #define __<uppercase_filename>__
  ...
  #endif
-\end{verbatim}\normalsize 
+\end{verbatim}\normalsize
 
 
- around all code in the file.
+\begin{Desc}
+\item[]around all code in the file.\end{Desc}
+\begin{Desc}
+\item[]The most important guideline is to keep the code consistent with other code found in the project as it will keep the code easy to read and understand for other developer's.\end{Desc}
 
- The most important guideline is to keep the code consistent with other code found in the project as it will keep the code easy to read and understand for other developer's.
 
 
 
 \begin{Desc}
-\item[Go To Section...]\par
-\begin{CompactItemize}
-\item 
-{\bf Section 1.  Introduction} {\rm (p.\,\pageref{page_intro})}\item 
-{\bf Section 2.  Project Plan} {\rm (p.\,\pageref{page_project_plan})}\item 
-{\bf Section 4.  Development Tools} {\rm (p.\,\pageref{page_tools})}\item 
-{\bf Section 5.  Project \char`\"{}Big Picture\char`\"{}} {\rm (p.\,\pageref{page_big_picture})}\item 
-{\bf Section 6.  Coverage Development Reference} {\rm (p.\,\pageref{page_code_details})}\item 
-{\bf Section 7.  Test and Checkout Procedure} {\rm (p.\,\pageref{page_testing})}\item 
-{\bf Section 8.  Odds and Ends Information} {\rm (p.\,\pageref{page_misc})}\end{CompactItemize}
+\item[Go To Section...]\begin{itemize}
+\item {\bf Section 1.  Introduction}{\rm (p.\,\pageref{page_intro})}\item {\bf Section 2.  Project Plan}{\rm (p.\,\pageref{page_project_plan})}\item {\bf Section 4.  Development Tools}{\rm (p.\,\pageref{page_tools})}\item {\bf Section 5.  Project \char`\"{}Big Picture\char`\"{}}{\rm (p.\,\pageref{page_big_picture})}\item {\bf Section 6.  Coverage Development Reference}{\rm (p.\,\pageref{page_code_details})}\item {\bf Section 7.  Test and Checkout Procedure}{\rm (p.\,\pageref{page_testing})}\item {\bf Section 8.  Debugging}{\rm (p.\,\pageref{page_debugging})}\item {\bf Section 9.  Odds and Ends Information}{\rm (p.\,\pageref{page_misc})} \end{itemize}
 \end{Desc}

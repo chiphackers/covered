@@ -1,6 +1,6 @@
 \section{fsm.h File Reference}
 \label{fsm_8h}\index{fsm.h@{fsm.h}}
-Contains functions for determining/reporting FSM coverage. 
+Contains functions for determining/reporting FSM coverage.  
 
 
 {\tt \#include $<$stdio.h$>$}\par
@@ -9,20 +9,16 @@ Contains functions for determining/reporting FSM coverage.
 \begin{CompactItemize}
 \item 
 void {\bf fsm\_\-report} (FILE $\ast$ofile, {\bf bool} verbose)
-\begin{CompactList}\small\item\em Generates report output for FSM coverage.\item\end{CompactList}\end{CompactItemize}
+\begin{CompactList}\small\item\em Generates report output for FSM coverage. \item\end{CompactList}\end{CompactItemize}
 
 
 \subsection{Detailed Description}
-Contains functions for determining/reporting FSM coverage.
-
-
+Contains functions for determining/reporting FSM coverage. 
 
 \begin{Desc}
-\item[Author: ]\par
-Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
-\item[Date: ]\par
-3/31/2002\end{Desc}
+\item[Date:]3/31/2002 \end{Desc}
 
 
 \subsection{Function Documentation}
@@ -31,13 +27,11 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void fsm\_\-report (FILE $\ast$ {\em ofile}, {\bf bool} {\em verbose})}\label{fsm_8h_a0}
 
 
-Generates report output for FSM coverage.
+Generates report output for FSM coverage. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-ofile}]Pointer to file to output results to. \item[{\em 
-verbose}]Specifies whether or not to provide verbose information\end{description}
+\item[{\em ofile}]Pointer to file to output results to. \item[{\em verbose}]Specifies whether or not to provide verbose information\end{description}
 \end{Desc}
-After the design is read into the module hierarchy, parses the hierarchy by module, reporting the FSM coverage for each module encountered. The parent module will specify its own FSM coverage along with a total FSM coverage including its  children. 
+After the design is read into the module hierarchy, parses the hierarchy by module, reporting the FSM coverage for each module encountered. The parent module will specify its own FSM coverage along with a total FSM coverage including its children. 

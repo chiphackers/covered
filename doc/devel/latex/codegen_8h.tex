@@ -1,6 +1,6 @@
 \section{codegen.h File Reference}
 \label{codegen_8h}\index{codegen.h@{codegen.h}}
-Contains functions for generating Verilog code from expression trees. 
+Contains functions for generating Verilog code from expression trees.  
 
 
 {\tt \#include \char`\"{}defines.h\char`\"{}}\par
@@ -8,20 +8,16 @@ Contains functions for generating Verilog code from expression trees.
 \begin{CompactItemize}
 \item 
 char $\ast$ {\bf codegen\_\-gen\_\-expr} ({\bf expression} $\ast$expr, int line, int parent\_\-op)
-\begin{CompactList}\small\item\em Creates Verilog code string from specified expression tree.\item\end{CompactList}\end{CompactItemize}
+\begin{CompactList}\small\item\em Creates Verilog code string from specified expression tree. \item\end{CompactList}\end{CompactItemize}
 
 
 \subsection{Detailed Description}
-Contains functions for generating Verilog code from expression trees.
-
-
+Contains functions for generating Verilog code from expression trees. 
 
 \begin{Desc}
-\item[Author: ]\par
-Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
-\item[Date: ]\par
-4/11/2002\end{Desc}
+\item[Date:]4/11/2002 \end{Desc}
 
 
 \subsection{Function Documentation}
@@ -30,17 +26,13 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ codegen\_\-gen\_\-expr ({\bf expression} $\ast$ {\em expr}, int {\em line}, int {\em parent\_\-op})}\label{codegen_8h_a0}
 
 
-Creates Verilog code string from specified expression tree.
+Creates Verilog code string from specified expression tree. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-expr}]Pointer to root of expression tree to generate. \item[{\em 
-line}]Specifies last line number to generate. \item[{\em 
-parent\_\-op}]Operation of parent. If our op is the same, no surrounding parenthesis is needed.\end{description}
+\item[{\em expr}]Pointer to root of expression tree to generate. \item[{\em line}]Specifies last line number to generate. \item[{\em parent\_\-op}]Operation of parent. If our op is the same, no surrounding parenthesis is needed.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Returns a pointer to the generated Verilog string.\end{Desc}
+\item[Returns:]Returns a pointer to the generated Verilog string.\end{Desc}
 Generates Verilog code from specified expression tree. This Verilog snippet is used by the verbose coverage reporting functions for showing Verilog examples that were missed during simulation. The line parameter specifies the last line number to generate for this expression tree. If the value of line is -1, the entire expression tree is generated. 

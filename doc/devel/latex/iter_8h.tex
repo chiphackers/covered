@@ -1,6 +1,6 @@
 \section{iter.h File Reference}
 \label{iter_8h}\index{iter.h@{iter.h}}
-Contains functions for dealing with iterators. 
+Contains functions for dealing with iterators.  
 
 
 {\tt \#include \char`\"{}defines.h\char`\"{}}\par
@@ -8,28 +8,24 @@ Contains functions for dealing with iterators.
 \begin{CompactItemize}
 \item 
 void {\bf stmt\_\-iter\_\-reset} ({\bf stmt\_\-iter} $\ast$si, {\bf stmt\_\-link} $\ast$start)
-\begin{CompactList}\small\item\em Resets the specified statement iterator at start point.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Resets the specified statement iterator at start point. \item\end{CompactList}\item 
 void {\bf stmt\_\-iter\_\-next} ({\bf stmt\_\-iter} $\ast$si)
-\begin{CompactList}\small\item\em Moves to the next statement link.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Moves to the next statement link. \item\end{CompactList}\item 
 void {\bf stmt\_\-iter\_\-reverse} ({\bf stmt\_\-iter} $\ast$si)
-\begin{CompactList}\small\item\em Reverses iterator flow and advances to next statement link.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Reverses iterator flow and advances to next statement link. \item\end{CompactList}\item 
 void {\bf stmt\_\-iter\_\-find\_\-head} ({\bf stmt\_\-iter} $\ast$si, {\bf bool} skip)
-\begin{CompactList}\small\item\em Sets specified iterator to start with statement head for ordering.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Sets specified iterator to start with statement head for ordering. \item\end{CompactList}\item 
 void {\bf stmt\_\-iter\_\-get\_\-next\_\-in\_\-order} ({\bf stmt\_\-iter} $\ast$si)
-\begin{CompactList}\small\item\em Sets current iterator to next statement in order.\item\end{CompactList}\end{CompactItemize}
+\begin{CompactList}\small\item\em Sets current iterator to next statement in order. \item\end{CompactList}\end{CompactItemize}
 
 
 \subsection{Detailed Description}
-Contains functions for dealing with iterators.
-
-
+Contains functions for dealing with iterators. 
 
 \begin{Desc}
-\item[Author: ]\par
-Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
-\item[Date: ]\par
-10/24/2002\end{Desc}
+\item[Date:]10/24/2002 \end{Desc}
 
 
 \subsection{Function Documentation}
@@ -38,69 +34,61 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void stmt\_\-iter\_\-find\_\-head ({\bf stmt\_\-iter} $\ast$ {\em si}, {\bf bool} {\em skip})}\label{iter_8h_a3}
 
 
-Sets specified iterator to start with statement head for ordering.
+Sets specified iterator to start with statement head for ordering. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-si}]Pointer to statement iterator to transform. \item[{\em 
-skip}]Specifies if we should skip to the next statement header.\end{description}
+\item[{\em si}]Pointer to statement iterator to transform. \item[{\em skip}]Specifies if we should skip to the next statement header.\end{description}
 \end{Desc}
 Iterates down statement list until a statement head is reached. If a statement head is found, the iterator is reversed (with curr pointing to statement head). Used for displaying statements in line order for reports. \index{iter.h@{iter.h}!stmt_iter_get_next_in_order@{stmt\_\-iter\_\-get\_\-next\_\-in\_\-order}}
 \index{stmt_iter_get_next_in_order@{stmt\_\-iter\_\-get\_\-next\_\-in\_\-order}!iter.h@{iter.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void stmt\_\-iter\_\-get\_\-next\_\-in\_\-order ({\bf stmt\_\-iter} $\ast$ {\em si})}\label{iter_8h_a4}
 
 
-Sets current iterator to next statement in order.
+Sets current iterator to next statement in order. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-si}]Pointer to statement iterator to transform.\end{description}
+\item[{\em si}]Pointer to statement iterator to transform.\end{description}
 \end{Desc}
 Iterates to next statement in list and compares this statement ID with the previous statement ID. If the new statement ID is less than the previous statement ID, we need to reverse the iterator, find the second statement head and reverse the iterator again. This function is used to order statements by line number in verbose reports. \index{iter.h@{iter.h}!stmt_iter_next@{stmt\_\-iter\_\-next}}
 \index{stmt_iter_next@{stmt\_\-iter\_\-next}!iter.h@{iter.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void stmt\_\-iter\_\-next ({\bf stmt\_\-iter} $\ast$ {\em si})}\label{iter_8h_a1}
 
 
-Moves to the next statement link.
+Moves to the next statement link. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-si}]Pointer to statement iterator to advance.\end{description}
+\item[{\em si}]Pointer to statement iterator to advance.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Returns pointer to next statement link.\end{Desc}
+\item[Returns:]Returns pointer to next statement link.\end{Desc}
 Advances specified statement iterator to next statement link in statement list. \index{iter.h@{iter.h}!stmt_iter_reset@{stmt\_\-iter\_\-reset}}
 \index{stmt_iter_reset@{stmt\_\-iter\_\-reset}!iter.h@{iter.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void stmt\_\-iter\_\-reset ({\bf stmt\_\-iter} $\ast$ {\em si}, {\bf stmt\_\-link} $\ast$ {\em start})}\label{iter_8h_a0}
 
 
-Resets the specified statement iterator at start point.
+Resets the specified statement iterator at start point. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-si}]Pointer to statement iterator to reset. \item[{\em 
-start}]Specifies link to start iterating through (can be head or tail).\end{description}
+\item[{\em si}]Pointer to statement iterator to reset. \item[{\em start}]Specifies link to start iterating through (can be head or tail).\end{description}
 \end{Desc}
 Initializes the specified statement iterator to begin advancing. \index{iter.h@{iter.h}!stmt_iter_reverse@{stmt\_\-iter\_\-reverse}}
 \index{stmt_iter_reverse@{stmt\_\-iter\_\-reverse}!iter.h@{iter.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void stmt\_\-iter\_\-reverse ({\bf stmt\_\-iter} $\ast$ {\em si})}\label{iter_8h_a2}
 
 
-Reverses iterator flow and advances to next statement link.
+Reverses iterator flow and advances to next statement link. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-si}]Pointer to statement iterator to reverse.\end{description}
+\item[{\em si}]Pointer to statement iterator to reverse.\end{description}
 \end{Desc}
 Reverses the direction of the iterator and changes the current pointer to point to the last statement before the reverse. 

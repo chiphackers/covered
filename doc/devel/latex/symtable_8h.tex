@@ -1,6 +1,6 @@
 \section{symtable.h File Reference}
 \label{symtable_8h}\index{symtable.h@{symtable.h}}
-Contains functions for manipulating a symtable structure. 
+Contains functions for manipulating a symtable structure.  
 
 
 {\tt \#include \char`\"{}defines.h\char`\"{}}\par
@@ -8,28 +8,26 @@ Contains functions for manipulating a symtable structure.
 \begin{CompactItemize}
 \item 
 {\bf symtable} $\ast$ {\bf symtable\_\-add} (char $\ast$sym, {\bf signal} $\ast$sig, int msb, int lsb, {\bf symtable} $\ast$$\ast$symtab)
-\begin{CompactList}\small\item\em Creates a new symtable entry and adds it to the specified symbol table.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Creates a new symtable entry and adds it to the specified symbol table. \item\end{CompactList}\item 
+{\bf signal} $\ast$ {\bf symtable\_\-find\_\-signal} (char $\ast$sym, {\bf symtable} $\ast$symtab)
+\begin{CompactList}\small\item\em Searches symbol table for specified symbol and returns pointer to signal. \item\end{CompactList}\item 
 int {\bf symtable\_\-find\_\-and\_\-set} (char $\ast$sym, {\bf symtable} $\ast$symtab, char $\ast$value)
-\begin{CompactList}\small\item\em Sets all matching symtable entries to specified value.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Sets all matching symtable entries to specified value. \item\end{CompactList}\item 
 void {\bf symtable\_\-move\_\-and\_\-set} (char $\ast$sym, {\bf symtable} $\ast$from\_\-tab, char $\ast$value, {\bf symtable} $\ast$$\ast$to\_\-tab)
-\begin{CompactList}\small\item\em Copies all matching symtable entries from from\_\-tab to to\_\-tab and assigns value to it.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Copies all matching symtable entries from from\_\-tab to to\_\-tab and assigns value to it. \item\end{CompactList}\item 
 void {\bf symtable\_\-assign} ({\bf symtable} $\ast$symtab)
-\begin{CompactList}\small\item\em Assigns stored values to all associated signals stored in specified symbol table.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Assigns stored values to all associated signals stored in specified symbol table. \item\end{CompactList}\item 
 void {\bf symtable\_\-dealloc} ({\bf symtable} $\ast$symtab)
-\begin{CompactList}\small\item\em Deallocates all symtable entries for specified symbol table.\item\end{CompactList}\end{CompactItemize}
+\begin{CompactList}\small\item\em Deallocates all symtable entries for specified symbol table. \item\end{CompactList}\end{CompactItemize}
 
 
 \subsection{Detailed Description}
-Contains functions for manipulating a symtable structure.
-
-
+Contains functions for manipulating a symtable structure. 
 
 \begin{Desc}
-\item[Author: ]\par
-Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
-\item[Date: ]\par
-1/3/2002\end{Desc}
+\item[Date:]1/3/2002 \end{Desc}
 
 
 \subsection{Function Documentation}
@@ -38,79 +36,77 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf symtable}$\ast$ symtable\_\-add (char $\ast$ {\em sym}, {\bf signal} $\ast$ {\em sig}, int {\em msb}, int {\em lsb}, {\bf symtable} $\ast$$\ast$ {\em symtab})}\label{symtable_8h_a0}
 
 
-Creates a new symtable entry and adds it to the specified symbol table.
+Creates a new symtable entry and adds it to the specified symbol table. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-sym}]VCD symbol for the specified signal. \item[{\em 
-sig}]Pointer to signal corresponding to the specified symbol. \item[{\em 
-msb}]Most significant bit of variable to set. \item[{\em 
-lsb}]Least significant bit of variable to set. \item[{\em 
-symtab}]Pointer to symtable to store the symtable entry to.\end{description}
+\item[{\em sym}]VCD symbol for the specified signal. \item[{\em sig}]Pointer to signal corresponding to the specified symbol. \item[{\em msb}]Most significant bit of variable to set. \item[{\em lsb}]Least significant bit of variable to set. \item[{\em symtab}]Pointer to symtable to store the symtable entry to.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Returns pointer to newly created symtable entry.\end{Desc}
+\item[Returns:]Returns pointer to newly created symtable entry.\end{Desc}
 Using the symbol as a unique ID, creates a new symtable element for specified information and places it into the binary tree. \index{symtable.h@{symtable.h}!symtable_assign@{symtable\_\-assign}}
 \index{symtable_assign@{symtable\_\-assign}!symtable.h@{symtable.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void symtable\_\-assign ({\bf symtable} $\ast$ {\em symtab})}\label{symtable_8h_a3}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void symtable\_\-assign ({\bf symtable} $\ast$ {\em symtab})}\label{symtable_8h_a4}
 
 
-Assigns stored values to all associated signals stored in specified symbol table.
+Assigns stored values to all associated signals stored in specified symbol table. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-symtab}]Root of the symtable to assign values to.\end{description}
+\item[{\em symtab}]Root of the symtable to assign values to.\end{description}
 \end{Desc}
 Recursively traverses entire symtable tree, assigning stored string value to the stored signal. \index{symtable.h@{symtable.h}!symtable_dealloc@{symtable\_\-dealloc}}
 \index{symtable_dealloc@{symtable\_\-dealloc}!symtable.h@{symtable.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void symtable\_\-dealloc ({\bf symtable} $\ast$ {\em symtab})}\label{symtable_8h_a4}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void symtable\_\-dealloc ({\bf symtable} $\ast$ {\em symtab})}\label{symtable_8h_a5}
 
 
-Deallocates all symtable entries for specified symbol table.
+Deallocates all symtable entries for specified symbol table. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-symtab}]Pointer to root of symtable to clear.\end{description}
+\item[{\em symtab}]Pointer to root of symtable to clear.\end{description}
 \end{Desc}
 Recursively deallocates all elements of specifies symbol table. \index{symtable.h@{symtable.h}!symtable_find_and_set@{symtable\_\-find\_\-and\_\-set}}
 \index{symtable_find_and_set@{symtable\_\-find\_\-and\_\-set}!symtable.h@{symtable.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int symtable\_\-find\_\-and\_\-set (char $\ast$ {\em sym}, {\bf symtable} $\ast$ {\em symtab}, char $\ast$ {\em value})}\label{symtable_8h_a1}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int symtable\_\-find\_\-and\_\-set (char $\ast$ {\em sym}, {\bf symtable} $\ast$ {\em symtab}, char $\ast$ {\em value})}\label{symtable_8h_a2}
 
 
-Sets all matching symtable entries to specified value.
+Sets all matching symtable entries to specified value. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-sym}]Name of symbol to find in the table. \item[{\em 
-symtab}]Root of the symtable to search in. \item[{\em 
-value}]Value to set symtable entry to when match found.\end{description}
+\item[{\em sym}]Name of symbol to find in the table. \item[{\em symtab}]Root of the symtable to search in. \item[{\em value}]Value to set symtable entry to when match found.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Returns the number of matches that were found.\end{Desc}
-Performs a binary search of the specified tree to find all matching symtable entries. When a match is found, the specified value is assigned to the symtable entry. \index{symtable.h@{symtable.h}!symtable_move_and_set@{symtable\_\-move\_\-and\_\-set}}
-\index{symtable_move_and_set@{symtable\_\-move\_\-and\_\-set}!symtable.h@{symtable.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void symtable\_\-move\_\-and\_\-set (char $\ast$ {\em sym}, {\bf symtable} $\ast$ {\em from\_\-tab}, char $\ast$ {\em value}, {\bf symtable} $\ast$$\ast$ {\em to\_\-tab})}\label{symtable_8h_a2}
+\item[Returns:]Returns the number of matches that were found.\end{Desc}
+Performs a binary search of the specified tree to find all matching symtable entries. When a match is found, the specified value is assigned to the symtable entry. \index{symtable.h@{symtable.h}!symtable_find_signal@{symtable\_\-find\_\-signal}}
+\index{symtable_find_signal@{symtable\_\-find\_\-signal}!symtable.h@{symtable.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf signal}$\ast$ symtable\_\-find\_\-signal (char $\ast$ {\em sym}, {\bf symtable} $\ast$ {\em symtab})}\label{symtable_8h_a1}
 
 
-Copies all matching symtable entries from from\_\-tab to to\_\-tab and assigns value to it.
+Searches symbol table for specified symbol and returns pointer to signal. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-sym}]Symbol name to search for. \item[{\em 
-from\_\-tab}]Table to pull symbol table information from. \item[{\em 
-value}]Value to assign to newly created table entry. \item[{\em 
-to\_\-tab}]Reference to table to place new entry into.\end{description}
+\item[{\em sym}]Symbol to be searched for. \item[{\em symtab}]Symbol table to search for specified symbol.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns:]Returns pointer to found signal or NULL if symbol not found in table.\end{Desc}
+Searches specified symbol table for an entry that matches the specified symbol. If the symbol is found, the signal pointer from this entry is returned; otherwise, if the symbol is not found, a value of NULL is returned. \index{symtable.h@{symtable.h}!symtable_move_and_set@{symtable\_\-move\_\-and\_\-set}}
+\index{symtable_move_and_set@{symtable\_\-move\_\-and\_\-set}!symtable.h@{symtable.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void symtable\_\-move\_\-and\_\-set (char $\ast$ {\em sym}, {\bf symtable} $\ast$ {\em from\_\-tab}, char $\ast$ {\em value}, {\bf symtable} $\ast$$\ast$ {\em to\_\-tab})}\label{symtable_8h_a3}
+
+
+Copies all matching symtable entries from from\_\-tab to to\_\-tab and assigns value to it. 
+
+\begin{Desc}
+\item[Parameters:]
+\begin{description}
+\item[{\em sym}]Symbol name to search for. \item[{\em from\_\-tab}]Table to pull symbol table information from. \item[{\em value}]Value to assign to newly created table entry. \item[{\em to\_\-tab}]Reference to table to place new entry into.\end{description}
 \end{Desc}
 Performs a binary search of the from\_\-tab symtable in search of all entries that match the specified sym parameter. Whenever a match is found, a new entry is created and placed in the to\_\-tab symtable containing the contents of the found entry. Additionally, the specified value is assigned to the new entry. 

@@ -3,1584 +3,1076 @@
 \subsection*{Compounds}
 \begin{CompactItemize}
 \item 
-struct {\bf YYLTYPE}
+struct {\bf yyltype}
 \item 
 union {\bf YYSTYPE}
 \end{CompactItemize}
 \subsection*{Defines}
 \begin{CompactItemize}
 \item 
-\#define {\bf IDENTIFIER}\ 258
+\#define {\bf YYLTYPE}\ {\bf yyltype}
 \item 
-\#define {\bf PATHPULSE\_\-IDENTIFIER}\ 259
+\#define {\bf IDENTIFIER}\ 257
 \item 
-\#define {\bf NUMBER}\ 260
+\#define {\bf PATHPULSE\_\-IDENTIFIER}\ 258
 \item 
-\#define {\bf REALTIME}\ 261
+\#define {\bf NUMBER}\ 259
 \item 
-\#define {\bf STRING}\ 262
+\#define {\bf REALTIME}\ 260
 \item 
-\#define {\bf SYSTEM\_\-IDENTIFIER}\ 263
+\#define {\bf STRING}\ 261
 \item 
-\#define {\bf IGNORE}\ 264
+\#define {\bf SYSTEM\_\-IDENTIFIER}\ 262
 \item 
-\#define {\bf UNUSED\_\-IDENTIFIER}\ 265
+\#define {\bf IGNORE}\ 263
 \item 
-\#define {\bf UNUSED\_\-PATHPULSE\_\-IDENTIFIER}\ 266
+\#define {\bf UNUSED\_\-IDENTIFIER}\ 264
 \item 
-\#define {\bf UNUSED\_\-NUMBER}\ 267
+\#define {\bf UNUSED\_\-PATHPULSE\_\-IDENTIFIER}\ 265
 \item 
-\#define {\bf UNUSED\_\-REALTIME}\ 268
+\#define {\bf UNUSED\_\-NUMBER}\ 266
 \item 
-\#define {\bf UNUSED\_\-STRING}\ 269
+\#define {\bf UNUSED\_\-REALTIME}\ 267
 \item 
-\#define {\bf UNUSED\_\-SYSTEM\_\-IDENTIFIER}\ 270
+\#define {\bf UNUSED\_\-STRING}\ 268
 \item 
-\#define {\bf K\_\-LE}\ 271
+\#define {\bf UNUSED\_\-SYSTEM\_\-IDENTIFIER}\ 269
 \item 
-\#define {\bf K\_\-GE}\ 272
+\#define {\bf K\_\-LE}\ 270
 \item 
-\#define {\bf K\_\-EG}\ 273
+\#define {\bf K\_\-GE}\ 271
 \item 
-\#define {\bf K\_\-EQ}\ 274
+\#define {\bf K\_\-EG}\ 272
 \item 
-\#define {\bf K\_\-NE}\ 275
+\#define {\bf K\_\-EQ}\ 273
 \item 
-\#define {\bf K\_\-CEQ}\ 276
+\#define {\bf K\_\-NE}\ 274
 \item 
-\#define {\bf K\_\-CNE}\ 277
+\#define {\bf K\_\-CEQ}\ 275
 \item 
-\#define {\bf K\_\-LS}\ 278
+\#define {\bf K\_\-CNE}\ 276
 \item 
-\#define {\bf K\_\-RS}\ 279
+\#define {\bf K\_\-LS}\ 277
 \item 
-\#define {\bf K\_\-SG}\ 280
+\#define {\bf K\_\-RS}\ 278
 \item 
-\#define {\bf K\_\-PO\_\-POS}\ 281
+\#define {\bf K\_\-SG}\ 279
 \item 
-\#define {\bf K\_\-PO\_\-NEG}\ 282
+\#define {\bf K\_\-PO\_\-POS}\ 280
 \item 
-\#define {\bf K\_\-STARP}\ 283
+\#define {\bf K\_\-PO\_\-NEG}\ 281
 \item 
-\#define {\bf K\_\-PSTAR}\ 284
+\#define {\bf K\_\-STARP}\ 282
 \item 
-\#define {\bf K\_\-LOR}\ 285
+\#define {\bf K\_\-PSTAR}\ 283
 \item 
-\#define {\bf K\_\-LAND}\ 286
+\#define {\bf K\_\-LOR}\ 284
 \item 
-\#define {\bf K\_\-NAND}\ 287
+\#define {\bf K\_\-LAND}\ 285
 \item 
-\#define {\bf K\_\-NOR}\ 288
+\#define {\bf K\_\-NAND}\ 286
 \item 
-\#define {\bf K\_\-NXOR}\ 289
+\#define {\bf K\_\-NOR}\ 287
 \item 
-\#define {\bf K\_\-TRIGGER}\ 290
+\#define {\bf K\_\-NXOR}\ 288
 \item 
-\#define {\bf K\_\-always}\ 291
+\#define {\bf K\_\-TRIGGER}\ 289
 \item 
-\#define {\bf K\_\-and}\ 292
+\#define {\bf K\_\-always}\ 290
 \item 
-\#define {\bf K\_\-assign}\ 293
+\#define {\bf K\_\-and}\ 291
 \item 
-\#define {\bf K\_\-begin}\ 294
+\#define {\bf K\_\-assign}\ 292
 \item 
-\#define {\bf K\_\-buf}\ 295
+\#define {\bf K\_\-begin}\ 293
 \item 
-\#define {\bf K\_\-bufif0}\ 296
+\#define {\bf K\_\-buf}\ 294
 \item 
-\#define {\bf K\_\-bufif1}\ 297
+\#define {\bf K\_\-bufif0}\ 295
 \item 
-\#define {\bf K\_\-case}\ 298
+\#define {\bf K\_\-bufif1}\ 296
 \item 
-\#define {\bf K\_\-casex}\ 299
+\#define {\bf K\_\-case}\ 297
 \item 
-\#define {\bf K\_\-casez}\ 300
+\#define {\bf K\_\-casex}\ 298
 \item 
-\#define {\bf K\_\-cmos}\ 301
+\#define {\bf K\_\-casez}\ 299
 \item 
-\#define {\bf K\_\-deassign}\ 302
+\#define {\bf K\_\-cmos}\ 300
 \item 
-\#define {\bf K\_\-default}\ 303
+\#define {\bf K\_\-deassign}\ 301
 \item 
-\#define {\bf K\_\-defparam}\ 304
+\#define {\bf K\_\-default}\ 302
 \item 
-\#define {\bf K\_\-disable}\ 305
+\#define {\bf K\_\-defparam}\ 303
 \item 
-\#define {\bf K\_\-edge}\ 306
+\#define {\bf K\_\-disable}\ 304
 \item 
-\#define {\bf K\_\-else}\ 307
+\#define {\bf K\_\-edge}\ 305
 \item 
-\#define {\bf K\_\-end}\ 308
+\#define {\bf K\_\-else}\ 306
 \item 
-\#define {\bf K\_\-endcase}\ 309
+\#define {\bf K\_\-end}\ 307
 \item 
-\#define {\bf K\_\-endfunction}\ 310
+\#define {\bf K\_\-endcase}\ 308
 \item 
-\#define {\bf K\_\-endmodule}\ 311
+\#define {\bf K\_\-endfunction}\ 309
 \item 
-\#define {\bf I\_\-endmodule}\ 312
+\#define {\bf K\_\-endmodule}\ 310
 \item 
-\#define {\bf K\_\-endprimitive}\ 313
+\#define {\bf I\_\-endmodule}\ 311
 \item 
-\#define {\bf K\_\-endspecify}\ 314
+\#define {\bf K\_\-endprimitive}\ 312
 \item 
-\#define {\bf K\_\-endtable}\ 315
+\#define {\bf K\_\-endspecify}\ 313
 \item 
-\#define {\bf K\_\-endtask}\ 316
+\#define {\bf K\_\-endtable}\ 314
 \item 
-\#define {\bf K\_\-event}\ 317
+\#define {\bf K\_\-endtask}\ 315
 \item 
-\#define {\bf K\_\-for}\ 318
+\#define {\bf K\_\-event}\ 316
 \item 
-\#define {\bf K\_\-force}\ 319
+\#define {\bf K\_\-for}\ 317
 \item 
-\#define {\bf K\_\-forever}\ 320
+\#define {\bf K\_\-force}\ 318
 \item 
-\#define {\bf K\_\-fork}\ 321
+\#define {\bf K\_\-forever}\ 319
 \item 
-\#define {\bf K\_\-function}\ 322
+\#define {\bf K\_\-fork}\ 320
 \item 
-\#define {\bf K\_\-highz0}\ 323
+\#define {\bf K\_\-function}\ 321
 \item 
-\#define {\bf K\_\-highz1}\ 324
+\#define {\bf K\_\-highz0}\ 322
 \item 
-\#define {\bf K\_\-if}\ 325
+\#define {\bf K\_\-highz1}\ 323
 \item 
-\#define {\bf K\_\-initial}\ 326
+\#define {\bf K\_\-if}\ 324
 \item 
-\#define {\bf K\_\-inout}\ 327
+\#define {\bf K\_\-initial}\ 325
 \item 
-\#define {\bf K\_\-input}\ 328
+\#define {\bf K\_\-inout}\ 326
 \item 
-\#define {\bf K\_\-integer}\ 329
+\#define {\bf K\_\-input}\ 327
 \item 
-\#define {\bf K\_\-join}\ 330
+\#define {\bf K\_\-integer}\ 328
 \item 
-\#define {\bf K\_\-large}\ 331
+\#define {\bf K\_\-join}\ 329
 \item 
-\#define {\bf K\_\-localparam}\ 332
+\#define {\bf K\_\-large}\ 330
 \item 
-\#define {\bf K\_\-macromodule}\ 333
+\#define {\bf K\_\-localparam}\ 331
 \item 
-\#define {\bf K\_\-medium}\ 334
+\#define {\bf K\_\-macromodule}\ 332
 \item 
-\#define {\bf K\_\-module}\ 335
+\#define {\bf K\_\-medium}\ 333
 \item 
-\#define {\bf K\_\-nand}\ 336
+\#define {\bf K\_\-module}\ 334
 \item 
-\#define {\bf K\_\-negedge}\ 337
+\#define {\bf K\_\-nand}\ 335
 \item 
-\#define {\bf K\_\-nmos}\ 338
+\#define {\bf K\_\-negedge}\ 336
 \item 
-\#define {\bf K\_\-nor}\ 339
+\#define {\bf K\_\-nmos}\ 337
 \item 
-\#define {\bf K\_\-not}\ 340
+\#define {\bf K\_\-nor}\ 338
 \item 
-\#define {\bf K\_\-notif0}\ 341
+\#define {\bf K\_\-not}\ 339
 \item 
-\#define {\bf K\_\-notif1}\ 342
+\#define {\bf K\_\-notif0}\ 340
 \item 
-\#define {\bf K\_\-or}\ 343
+\#define {\bf K\_\-notif1}\ 341
 \item 
-\#define {\bf K\_\-output}\ 344
+\#define {\bf K\_\-or}\ 342
 \item 
-\#define {\bf K\_\-parameter}\ 345
+\#define {\bf K\_\-output}\ 343
 \item 
-\#define {\bf K\_\-pmos}\ 346
+\#define {\bf K\_\-parameter}\ 344
 \item 
-\#define {\bf K\_\-posedge}\ 347
+\#define {\bf K\_\-pmos}\ 345
 \item 
-\#define {\bf K\_\-primitive}\ 348
+\#define {\bf K\_\-posedge}\ 346
 \item 
-\#define {\bf K\_\-pull0}\ 349
+\#define {\bf K\_\-primitive}\ 347
 \item 
-\#define {\bf K\_\-pull1}\ 350
+\#define {\bf K\_\-pull0}\ 348
 \item 
-\#define {\bf K\_\-pulldown}\ 351
+\#define {\bf K\_\-pull1}\ 349
 \item 
-\#define {\bf K\_\-pullup}\ 352
+\#define {\bf K\_\-pulldown}\ 350
 \item 
-\#define {\bf K\_\-rcmos}\ 353
+\#define {\bf K\_\-pullup}\ 351
 \item 
-\#define {\bf K\_\-real}\ 354
+\#define {\bf K\_\-rcmos}\ 352
 \item 
-\#define {\bf K\_\-realtime}\ 355
+\#define {\bf K\_\-real}\ 353
 \item 
-\#define {\bf K\_\-reg}\ 356
+\#define {\bf K\_\-realtime}\ 354
 \item 
-\#define {\bf K\_\-release}\ 357
+\#define {\bf K\_\-reg}\ 355
 \item 
-\#define {\bf K\_\-repeat}\ 358
+\#define {\bf K\_\-release}\ 356
 \item 
-\#define {\bf K\_\-rnmos}\ 359
+\#define {\bf K\_\-repeat}\ 357
 \item 
-\#define {\bf K\_\-rpmos}\ 360
+\#define {\bf K\_\-rnmos}\ 358
 \item 
-\#define {\bf K\_\-rtran}\ 361
+\#define {\bf K\_\-rpmos}\ 359
 \item 
-\#define {\bf K\_\-rtranif0}\ 362
+\#define {\bf K\_\-rtran}\ 360
 \item 
-\#define {\bf K\_\-rtranif1}\ 363
+\#define {\bf K\_\-rtranif0}\ 361
 \item 
-\#define {\bf K\_\-scalered}\ 364
+\#define {\bf K\_\-rtranif1}\ 362
 \item 
-\#define {\bf K\_\-signed}\ 365
+\#define {\bf K\_\-scalered}\ 363
 \item 
-\#define {\bf K\_\-small}\ 366
+\#define {\bf K\_\-signed}\ 364
 \item 
-\#define {\bf K\_\-specify}\ 367
+\#define {\bf K\_\-small}\ 365
 \item 
-\#define {\bf K\_\-specparam}\ 368
+\#define {\bf K\_\-specify}\ 366
 \item 
-\#define {\bf K\_\-strong0}\ 369
+\#define {\bf K\_\-specparam}\ 367
 \item 
-\#define {\bf K\_\-strong1}\ 370
+\#define {\bf K\_\-strong0}\ 368
 \item 
-\#define {\bf K\_\-supply0}\ 371
+\#define {\bf K\_\-strong1}\ 369
 \item 
-\#define {\bf K\_\-supply1}\ 372
+\#define {\bf K\_\-supply0}\ 370
 \item 
-\#define {\bf K\_\-table}\ 373
+\#define {\bf K\_\-supply1}\ 371
 \item 
-\#define {\bf K\_\-task}\ 374
+\#define {\bf K\_\-table}\ 372
 \item 
-\#define {\bf K\_\-time}\ 375
+\#define {\bf K\_\-task}\ 373
 \item 
-\#define {\bf K\_\-tran}\ 376
+\#define {\bf K\_\-time}\ 374
 \item 
-\#define {\bf K\_\-tranif0}\ 377
+\#define {\bf K\_\-tran}\ 375
 \item 
-\#define {\bf K\_\-tranif1}\ 378
+\#define {\bf K\_\-tranif0}\ 376
 \item 
-\#define {\bf K\_\-tri}\ 379
+\#define {\bf K\_\-tranif1}\ 377
 \item 
-\#define {\bf K\_\-tri0}\ 380
+\#define {\bf K\_\-tri}\ 378
 \item 
-\#define {\bf K\_\-tri1}\ 381
+\#define {\bf K\_\-tri0}\ 379
 \item 
-\#define {\bf K\_\-triand}\ 382
+\#define {\bf K\_\-tri1}\ 380
 \item 
-\#define {\bf K\_\-trior}\ 383
+\#define {\bf K\_\-triand}\ 381
 \item 
-\#define {\bf K\_\-trireg}\ 384
+\#define {\bf K\_\-trior}\ 382
 \item 
-\#define {\bf K\_\-vectored}\ 385
+\#define {\bf K\_\-trireg}\ 383
 \item 
-\#define {\bf K\_\-wait}\ 386
+\#define {\bf K\_\-vectored}\ 384
 \item 
-\#define {\bf K\_\-wand}\ 387
+\#define {\bf K\_\-wait}\ 385
 \item 
-\#define {\bf K\_\-weak0}\ 388
+\#define {\bf K\_\-wand}\ 386
 \item 
-\#define {\bf K\_\-weak1}\ 389
+\#define {\bf K\_\-weak0}\ 387
 \item 
-\#define {\bf K\_\-while}\ 390
+\#define {\bf K\_\-weak1}\ 388
 \item 
-\#define {\bf K\_\-wire}\ 391
+\#define {\bf K\_\-while}\ 389
 \item 
-\#define {\bf K\_\-wor}\ 392
+\#define {\bf K\_\-wire}\ 390
 \item 
-\#define {\bf K\_\-xnor}\ 393
+\#define {\bf K\_\-wor}\ 391
 \item 
-\#define {\bf K\_\-xor}\ 394
+\#define {\bf K\_\-xnor}\ 392
 \item 
-\#define {\bf K\_\-Shold}\ 395
+\#define {\bf K\_\-xor}\ 393
 \item 
-\#define {\bf K\_\-Speriod}\ 396
+\#define {\bf K\_\-Shold}\ 394
 \item 
-\#define {\bf K\_\-Srecovery}\ 397
+\#define {\bf K\_\-Speriod}\ 395
 \item 
-\#define {\bf K\_\-Ssetup}\ 398
+\#define {\bf K\_\-Srecovery}\ 396
 \item 
-\#define {\bf K\_\-Swidth}\ 399
+\#define {\bf K\_\-Ssetup}\ 397
 \item 
-\#define {\bf K\_\-Ssetuphold}\ 400
+\#define {\bf K\_\-Swidth}\ 398
 \item 
-\#define {\bf KK\_\-attribute}\ 401
+\#define {\bf K\_\-Ssetuphold}\ 399
 \item 
-\#define {\bf K\_\-TAND}\ 402
+\#define {\bf KK\_\-attribute}\ 400
 \item 
-\#define {\bf UNARY\_\-PREC}\ 403
+\#define {\bf K\_\-TAND}\ 401
 \item 
-\#define {\bf less\_\-than\_\-K\_\-else}\ 404
+\#define {\bf UNARY\_\-PREC}\ 402
 \item 
-\#define {\bf yystype}\ {\bf YYSTYPE}
-\item 
-\#define {\bf YYSTYPE\_\-IS\_\-DECLARED}\ 1
-\item 
-\#define {\bf YYSTYPE\_\-IS\_\-TRIVIAL}\ 1
-\item 
-\#define {\bf yyltype}\ {\bf YYLTYPE}
-\item 
-\#define {\bf YYLTYPE\_\-IS\_\-DECLARED}\ 1
-\item 
-\#define {\bf YYLTYPE\_\-IS\_\-TRIVIAL}\ 1
+\#define {\bf less\_\-than\_\-K\_\-else}\ 403
 \end{CompactItemize}
 \subsection*{Typedefs}
 \begin{CompactItemize}
 \item 
-typedef YYSTYPE {\bf YYSTYPE}
-\item 
-typedef YYLTYPE {\bf YYLTYPE}
-\end{CompactItemize}
-\subsection*{Enumerations}
-\begin{CompactItemize}
-\item 
-enum {\bf yytokentype} \{ {\bf IDENTIFIER} =  258, 
-{\bf PATHPULSE\_\-IDENTIFIER} =  259, 
-{\bf NUMBER} =  260, 
-{\bf REALTIME} =  261, 
-{\bf STRING} =  262, 
-{\bf SYSTEM\_\-IDENTIFIER} =  263, 
-{\bf IGNORE} =  264, 
-{\bf UNUSED\_\-IDENTIFIER} =  265, 
-{\bf UNUSED\_\-PATHPULSE\_\-IDENTIFIER} =  266, 
-{\bf UNUSED\_\-NUMBER} =  267, 
-{\bf UNUSED\_\-REALTIME} =  268, 
-{\bf UNUSED\_\-STRING} =  269, 
-{\bf UNUSED\_\-SYSTEM\_\-IDENTIFIER} =  270, 
-{\bf K\_\-LE} =  271, 
-{\bf K\_\-GE} =  272, 
-{\bf K\_\-EG} =  273, 
-{\bf K\_\-EQ} =  274, 
-{\bf K\_\-NE} =  275, 
-{\bf K\_\-CEQ} =  276, 
-{\bf K\_\-CNE} =  277, 
-{\bf K\_\-LS} =  278, 
-{\bf K\_\-RS} =  279, 
-{\bf K\_\-SG} =  280, 
-{\bf K\_\-PO\_\-POS} =  281, 
-{\bf K\_\-PO\_\-NEG} =  282, 
-{\bf K\_\-STARP} =  283, 
-{\bf K\_\-PSTAR} =  284, 
-{\bf K\_\-LOR} =  285, 
-{\bf K\_\-LAND} =  286, 
-{\bf K\_\-NAND} =  287, 
-{\bf K\_\-NOR} =  288, 
-{\bf K\_\-NXOR} =  289, 
-{\bf K\_\-TRIGGER} =  290, 
-{\bf K\_\-always} =  291, 
-{\bf K\_\-and} =  292, 
-{\bf K\_\-assign} =  293, 
-{\bf K\_\-begin} =  294, 
-{\bf K\_\-buf} =  295, 
-{\bf K\_\-bufif0} =  296, 
-{\bf K\_\-bufif1} =  297, 
-{\bf K\_\-case} =  298, 
-{\bf K\_\-casex} =  299, 
-{\bf K\_\-casez} =  300, 
-{\bf K\_\-cmos} =  301, 
-{\bf K\_\-deassign} =  302, 
-{\bf K\_\-default} =  303, 
-{\bf K\_\-defparam} =  304, 
-{\bf K\_\-disable} =  305, 
-{\bf K\_\-edge} =  306, 
-{\bf K\_\-else} =  307, 
-{\bf K\_\-end} =  308, 
-{\bf K\_\-endcase} =  309, 
-{\bf K\_\-endfunction} =  310, 
-{\bf K\_\-endmodule} =  311, 
-{\bf I\_\-endmodule} =  312, 
-{\bf K\_\-endprimitive} =  313, 
-{\bf K\_\-endspecify} =  314, 
-{\bf K\_\-endtable} =  315, 
-{\bf K\_\-endtask} =  316, 
-{\bf K\_\-event} =  317, 
-{\bf K\_\-for} =  318, 
-{\bf K\_\-force} =  319, 
-{\bf K\_\-forever} =  320, 
-{\bf K\_\-fork} =  321, 
-{\bf K\_\-function} =  322, 
-{\bf K\_\-highz0} =  323, 
-{\bf K\_\-highz1} =  324, 
-{\bf K\_\-if} =  325, 
-{\bf K\_\-initial} =  326, 
-{\bf K\_\-inout} =  327, 
-{\bf K\_\-input} =  328, 
-{\bf K\_\-integer} =  329, 
-{\bf K\_\-join} =  330, 
-{\bf K\_\-large} =  331, 
-{\bf K\_\-localparam} =  332, 
-{\bf K\_\-macromodule} =  333, 
-{\bf K\_\-medium} =  334, 
-{\bf K\_\-module} =  335, 
-{\bf K\_\-nand} =  336, 
-{\bf K\_\-negedge} =  337, 
-{\bf K\_\-nmos} =  338, 
-{\bf K\_\-nor} =  339, 
-{\bf K\_\-not} =  340, 
-{\bf K\_\-notif0} =  341, 
-{\bf K\_\-notif1} =  342, 
-{\bf K\_\-or} =  343, 
-{\bf K\_\-output} =  344, 
-{\bf K\_\-parameter} =  345, 
-{\bf K\_\-pmos} =  346, 
-{\bf K\_\-posedge} =  347, 
-{\bf K\_\-primitive} =  348, 
-{\bf K\_\-pull0} =  349, 
-{\bf K\_\-pull1} =  350, 
-{\bf K\_\-pulldown} =  351, 
-{\bf K\_\-pullup} =  352, 
-{\bf K\_\-rcmos} =  353, 
-{\bf K\_\-real} =  354, 
-{\bf K\_\-realtime} =  355, 
-{\bf K\_\-reg} =  356, 
-{\bf K\_\-release} =  357, 
-{\bf K\_\-repeat} =  358, 
-{\bf K\_\-rnmos} =  359, 
-{\bf K\_\-rpmos} =  360, 
-{\bf K\_\-rtran} =  361, 
-{\bf K\_\-rtranif0} =  362, 
-{\bf K\_\-rtranif1} =  363, 
-{\bf K\_\-scalered} =  364, 
-{\bf K\_\-signed} =  365, 
-{\bf K\_\-small} =  366, 
-{\bf K\_\-specify} =  367, 
-{\bf K\_\-specparam} =  368, 
-{\bf K\_\-strong0} =  369, 
-{\bf K\_\-strong1} =  370, 
-{\bf K\_\-supply0} =  371, 
-{\bf K\_\-supply1} =  372, 
-{\bf K\_\-table} =  373, 
-{\bf K\_\-task} =  374, 
-{\bf K\_\-time} =  375, 
-{\bf K\_\-tran} =  376, 
-{\bf K\_\-tranif0} =  377, 
-{\bf K\_\-tranif1} =  378, 
-{\bf K\_\-tri} =  379, 
-{\bf K\_\-tri0} =  380, 
-{\bf K\_\-tri1} =  381, 
-{\bf K\_\-triand} =  382, 
-{\bf K\_\-trior} =  383, 
-{\bf K\_\-trireg} =  384, 
-{\bf K\_\-vectored} =  385, 
-{\bf K\_\-wait} =  386, 
-{\bf K\_\-wand} =  387, 
-{\bf K\_\-weak0} =  388, 
-{\bf K\_\-weak1} =  389, 
-{\bf K\_\-while} =  390, 
-{\bf K\_\-wire} =  391, 
-{\bf K\_\-wor} =  392, 
-{\bf K\_\-xnor} =  393, 
-{\bf K\_\-xor} =  394, 
-{\bf K\_\-Shold} =  395, 
-{\bf K\_\-Speriod} =  396, 
-{\bf K\_\-Srecovery} =  397, 
-{\bf K\_\-Ssetup} =  398, 
-{\bf K\_\-Swidth} =  399, 
-{\bf K\_\-Ssetuphold} =  400, 
-{\bf KK\_\-attribute} =  401, 
-{\bf K\_\-TAND} =  402, 
-{\bf UNARY\_\-PREC} =  403, 
-{\bf less\_\-than\_\-K\_\-else} =  404
- \}
+typedef {\bf yyltype} {\bf yyltype}
 \end{CompactItemize}
 \subsection*{Variables}
 \begin{CompactItemize}
 \item 
 {\bf YYSTYPE} {\bf VLlval}
-\item 
-{\bf YYLTYPE} {\bf VLlloc}
 \end{CompactItemize}
 
 
 \subsection{Define Documentation}
 \index{parser.h@{parser.h}!I_endmodule@{I\_\-endmodule}}
 \index{I_endmodule@{I\_\-endmodule}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define I\_\-endmodule\ 312}\label{parser_8h_a54}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define I\_\-endmodule\ 311}\label{parser_8h_a55}
 
 
 \index{parser.h@{parser.h}!IDENTIFIER@{IDENTIFIER}}
 \index{IDENTIFIER@{IDENTIFIER}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define IDENTIFIER\ 258}\label{parser_8h_a0}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define IDENTIFIER\ 257}\label{parser_8h_a1}
 
 
 \index{parser.h@{parser.h}!IGNORE@{IGNORE}}
 \index{IGNORE@{IGNORE}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define IGNORE\ 264}\label{parser_8h_a6}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define IGNORE\ 263}\label{parser_8h_a7}
 
 
 \index{parser.h@{parser.h}!K_always@{K\_\-always}}
 \index{K_always@{K\_\-always}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-always\ 291}\label{parser_8h_a33}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-always\ 290}\label{parser_8h_a34}
 
 
 \index{parser.h@{parser.h}!K_and@{K\_\-and}}
 \index{K_and@{K\_\-and}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-and\ 292}\label{parser_8h_a34}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-and\ 291}\label{parser_8h_a35}
 
 
 \index{parser.h@{parser.h}!K_assign@{K\_\-assign}}
 \index{K_assign@{K\_\-assign}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-assign\ 293}\label{parser_8h_a35}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-assign\ 292}\label{parser_8h_a36}
 
 
 \index{parser.h@{parser.h}!K_begin@{K\_\-begin}}
 \index{K_begin@{K\_\-begin}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-begin\ 294}\label{parser_8h_a36}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-begin\ 293}\label{parser_8h_a37}
 
 
 \index{parser.h@{parser.h}!K_buf@{K\_\-buf}}
 \index{K_buf@{K\_\-buf}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-buf\ 295}\label{parser_8h_a37}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-buf\ 294}\label{parser_8h_a38}
 
 
 \index{parser.h@{parser.h}!K_bufif0@{K\_\-bufif0}}
 \index{K_bufif0@{K\_\-bufif0}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-bufif0\ 296}\label{parser_8h_a38}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-bufif0\ 295}\label{parser_8h_a39}
 
 
 \index{parser.h@{parser.h}!K_bufif1@{K\_\-bufif1}}
 \index{K_bufif1@{K\_\-bufif1}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-bufif1\ 297}\label{parser_8h_a39}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-bufif1\ 296}\label{parser_8h_a40}
 
 
 \index{parser.h@{parser.h}!K_case@{K\_\-case}}
 \index{K_case@{K\_\-case}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-case\ 298}\label{parser_8h_a40}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-case\ 297}\label{parser_8h_a41}
 
 
 \index{parser.h@{parser.h}!K_casex@{K\_\-casex}}
 \index{K_casex@{K\_\-casex}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-casex\ 299}\label{parser_8h_a41}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-casex\ 298}\label{parser_8h_a42}
 
 
 \index{parser.h@{parser.h}!K_casez@{K\_\-casez}}
 \index{K_casez@{K\_\-casez}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-casez\ 300}\label{parser_8h_a42}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-casez\ 299}\label{parser_8h_a43}
 
 
 \index{parser.h@{parser.h}!K_CEQ@{K\_\-CEQ}}
 \index{K_CEQ@{K\_\-CEQ}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-CEQ\ 276}\label{parser_8h_a18}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-CEQ\ 275}\label{parser_8h_a19}
 
 
 \index{parser.h@{parser.h}!K_cmos@{K\_\-cmos}}
 \index{K_cmos@{K\_\-cmos}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-cmos\ 301}\label{parser_8h_a43}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-cmos\ 300}\label{parser_8h_a44}
 
 
 \index{parser.h@{parser.h}!K_CNE@{K\_\-CNE}}
 \index{K_CNE@{K\_\-CNE}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-CNE\ 277}\label{parser_8h_a19}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-CNE\ 276}\label{parser_8h_a20}
 
 
 \index{parser.h@{parser.h}!K_deassign@{K\_\-deassign}}
 \index{K_deassign@{K\_\-deassign}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-deassign\ 302}\label{parser_8h_a44}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-deassign\ 301}\label{parser_8h_a45}
 
 
 \index{parser.h@{parser.h}!K_default@{K\_\-default}}
 \index{K_default@{K\_\-default}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-default\ 303}\label{parser_8h_a45}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-default\ 302}\label{parser_8h_a46}
 
 
 \index{parser.h@{parser.h}!K_defparam@{K\_\-defparam}}
 \index{K_defparam@{K\_\-defparam}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-defparam\ 304}\label{parser_8h_a46}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-defparam\ 303}\label{parser_8h_a47}
 
 
 \index{parser.h@{parser.h}!K_disable@{K\_\-disable}}
 \index{K_disable@{K\_\-disable}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-disable\ 305}\label{parser_8h_a47}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-disable\ 304}\label{parser_8h_a48}
 
 
 \index{parser.h@{parser.h}!K_edge@{K\_\-edge}}
 \index{K_edge@{K\_\-edge}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-edge\ 306}\label{parser_8h_a48}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-edge\ 305}\label{parser_8h_a49}
 
 
 \index{parser.h@{parser.h}!K_EG@{K\_\-EG}}
 \index{K_EG@{K\_\-EG}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-EG\ 273}\label{parser_8h_a15}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-EG\ 272}\label{parser_8h_a16}
 
 
 \index{parser.h@{parser.h}!K_else@{K\_\-else}}
 \index{K_else@{K\_\-else}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-else\ 307}\label{parser_8h_a49}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-else\ 306}\label{parser_8h_a50}
 
 
 \index{parser.h@{parser.h}!K_end@{K\_\-end}}
 \index{K_end@{K\_\-end}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-end\ 308}\label{parser_8h_a50}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-end\ 307}\label{parser_8h_a51}
 
 
 \index{parser.h@{parser.h}!K_endcase@{K\_\-endcase}}
 \index{K_endcase@{K\_\-endcase}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-endcase\ 309}\label{parser_8h_a51}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-endcase\ 308}\label{parser_8h_a52}
 
 
 \index{parser.h@{parser.h}!K_endfunction@{K\_\-endfunction}}
 \index{K_endfunction@{K\_\-endfunction}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-endfunction\ 310}\label{parser_8h_a52}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-endfunction\ 309}\label{parser_8h_a53}
 
 
 \index{parser.h@{parser.h}!K_endmodule@{K\_\-endmodule}}
 \index{K_endmodule@{K\_\-endmodule}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-endmodule\ 311}\label{parser_8h_a53}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-endmodule\ 310}\label{parser_8h_a54}
 
 
 \index{parser.h@{parser.h}!K_endprimitive@{K\_\-endprimitive}}
 \index{K_endprimitive@{K\_\-endprimitive}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-endprimitive\ 313}\label{parser_8h_a55}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-endprimitive\ 312}\label{parser_8h_a56}
 
 
 \index{parser.h@{parser.h}!K_endspecify@{K\_\-endspecify}}
 \index{K_endspecify@{K\_\-endspecify}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-endspecify\ 314}\label{parser_8h_a56}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-endspecify\ 313}\label{parser_8h_a57}
 
 
 \index{parser.h@{parser.h}!K_endtable@{K\_\-endtable}}
 \index{K_endtable@{K\_\-endtable}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-endtable\ 315}\label{parser_8h_a57}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-endtable\ 314}\label{parser_8h_a58}
 
 
 \index{parser.h@{parser.h}!K_endtask@{K\_\-endtask}}
 \index{K_endtask@{K\_\-endtask}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-endtask\ 316}\label{parser_8h_a58}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-endtask\ 315}\label{parser_8h_a59}
 
 
 \index{parser.h@{parser.h}!K_EQ@{K\_\-EQ}}
 \index{K_EQ@{K\_\-EQ}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-EQ\ 274}\label{parser_8h_a16}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-EQ\ 273}\label{parser_8h_a17}
 
 
 \index{parser.h@{parser.h}!K_event@{K\_\-event}}
 \index{K_event@{K\_\-event}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-event\ 317}\label{parser_8h_a59}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-event\ 316}\label{parser_8h_a60}
 
 
 \index{parser.h@{parser.h}!K_for@{K\_\-for}}
 \index{K_for@{K\_\-for}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-for\ 318}\label{parser_8h_a60}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-for\ 317}\label{parser_8h_a61}
 
 
 \index{parser.h@{parser.h}!K_force@{K\_\-force}}
 \index{K_force@{K\_\-force}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-force\ 319}\label{parser_8h_a61}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-force\ 318}\label{parser_8h_a62}
 
 
 \index{parser.h@{parser.h}!K_forever@{K\_\-forever}}
 \index{K_forever@{K\_\-forever}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-forever\ 320}\label{parser_8h_a62}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-forever\ 319}\label{parser_8h_a63}
 
 
 \index{parser.h@{parser.h}!K_fork@{K\_\-fork}}
 \index{K_fork@{K\_\-fork}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-fork\ 321}\label{parser_8h_a63}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-fork\ 320}\label{parser_8h_a64}
 
 
 \index{parser.h@{parser.h}!K_function@{K\_\-function}}
 \index{K_function@{K\_\-function}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-function\ 322}\label{parser_8h_a64}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-function\ 321}\label{parser_8h_a65}
 
 
 \index{parser.h@{parser.h}!K_GE@{K\_\-GE}}
 \index{K_GE@{K\_\-GE}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-GE\ 272}\label{parser_8h_a14}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-GE\ 271}\label{parser_8h_a15}
 
 
 \index{parser.h@{parser.h}!K_highz0@{K\_\-highz0}}
 \index{K_highz0@{K\_\-highz0}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-highz0\ 323}\label{parser_8h_a65}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-highz0\ 322}\label{parser_8h_a66}
 
 
 \index{parser.h@{parser.h}!K_highz1@{K\_\-highz1}}
 \index{K_highz1@{K\_\-highz1}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-highz1\ 324}\label{parser_8h_a66}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-highz1\ 323}\label{parser_8h_a67}
 
 
 \index{parser.h@{parser.h}!K_if@{K\_\-if}}
 \index{K_if@{K\_\-if}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-if\ 325}\label{parser_8h_a67}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-if\ 324}\label{parser_8h_a68}
 
 
 \index{parser.h@{parser.h}!K_initial@{K\_\-initial}}
 \index{K_initial@{K\_\-initial}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-initial\ 326}\label{parser_8h_a68}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-initial\ 325}\label{parser_8h_a69}
 
 
 \index{parser.h@{parser.h}!K_inout@{K\_\-inout}}
 \index{K_inout@{K\_\-inout}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-inout\ 327}\label{parser_8h_a69}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-inout\ 326}\label{parser_8h_a70}
 
 
 \index{parser.h@{parser.h}!K_input@{K\_\-input}}
 \index{K_input@{K\_\-input}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-input\ 328}\label{parser_8h_a70}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-input\ 327}\label{parser_8h_a71}
 
 
 \index{parser.h@{parser.h}!K_integer@{K\_\-integer}}
 \index{K_integer@{K\_\-integer}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-integer\ 329}\label{parser_8h_a71}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-integer\ 328}\label{parser_8h_a72}
 
 
 \index{parser.h@{parser.h}!K_join@{K\_\-join}}
 \index{K_join@{K\_\-join}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-join\ 330}\label{parser_8h_a72}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-join\ 329}\label{parser_8h_a73}
 
 
 \index{parser.h@{parser.h}!K_LAND@{K\_\-LAND}}
 \index{K_LAND@{K\_\-LAND}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-LAND\ 286}\label{parser_8h_a28}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-LAND\ 285}\label{parser_8h_a29}
 
 
 \index{parser.h@{parser.h}!K_large@{K\_\-large}}
 \index{K_large@{K\_\-large}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-large\ 331}\label{parser_8h_a73}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-large\ 330}\label{parser_8h_a74}
 
 
 \index{parser.h@{parser.h}!K_LE@{K\_\-LE}}
 \index{K_LE@{K\_\-LE}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-LE\ 271}\label{parser_8h_a13}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-LE\ 270}\label{parser_8h_a14}
 
 
 \index{parser.h@{parser.h}!K_localparam@{K\_\-localparam}}
 \index{K_localparam@{K\_\-localparam}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-localparam\ 332}\label{parser_8h_a74}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-localparam\ 331}\label{parser_8h_a75}
 
 
 \index{parser.h@{parser.h}!K_LOR@{K\_\-LOR}}
 \index{K_LOR@{K\_\-LOR}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-LOR\ 285}\label{parser_8h_a27}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-LOR\ 284}\label{parser_8h_a28}
 
 
 \index{parser.h@{parser.h}!K_LS@{K\_\-LS}}
 \index{K_LS@{K\_\-LS}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-LS\ 278}\label{parser_8h_a20}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-LS\ 277}\label{parser_8h_a21}
 
 
 \index{parser.h@{parser.h}!K_macromodule@{K\_\-macromodule}}
 \index{K_macromodule@{K\_\-macromodule}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-macromodule\ 333}\label{parser_8h_a75}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-macromodule\ 332}\label{parser_8h_a76}
 
 
 \index{parser.h@{parser.h}!K_medium@{K\_\-medium}}
 \index{K_medium@{K\_\-medium}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-medium\ 334}\label{parser_8h_a76}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-medium\ 333}\label{parser_8h_a77}
 
 
 \index{parser.h@{parser.h}!K_module@{K\_\-module}}
 \index{K_module@{K\_\-module}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-module\ 335}\label{parser_8h_a77}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-module\ 334}\label{parser_8h_a78}
 
 
 \index{parser.h@{parser.h}!K_nand@{K\_\-nand}}
 \index{K_nand@{K\_\-nand}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-nand\ 336}\label{parser_8h_a78}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-nand\ 335}\label{parser_8h_a79}
 
 
 \index{parser.h@{parser.h}!K_NAND@{K\_\-NAND}}
 \index{K_NAND@{K\_\-NAND}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-NAND\ 287}\label{parser_8h_a29}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-NAND\ 286}\label{parser_8h_a30}
 
 
 \index{parser.h@{parser.h}!K_NE@{K\_\-NE}}
 \index{K_NE@{K\_\-NE}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-NE\ 275}\label{parser_8h_a17}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-NE\ 274}\label{parser_8h_a18}
 
 
 \index{parser.h@{parser.h}!K_negedge@{K\_\-negedge}}
 \index{K_negedge@{K\_\-negedge}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-negedge\ 337}\label{parser_8h_a79}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-negedge\ 336}\label{parser_8h_a80}
 
 
 \index{parser.h@{parser.h}!K_nmos@{K\_\-nmos}}
 \index{K_nmos@{K\_\-nmos}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-nmos\ 338}\label{parser_8h_a80}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-nmos\ 337}\label{parser_8h_a81}
 
 
 \index{parser.h@{parser.h}!K_nor@{K\_\-nor}}
 \index{K_nor@{K\_\-nor}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-nor\ 339}\label{parser_8h_a81}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-nor\ 338}\label{parser_8h_a82}
 
 
 \index{parser.h@{parser.h}!K_NOR@{K\_\-NOR}}
 \index{K_NOR@{K\_\-NOR}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-NOR\ 288}\label{parser_8h_a30}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-NOR\ 287}\label{parser_8h_a31}
 
 
 \index{parser.h@{parser.h}!K_not@{K\_\-not}}
 \index{K_not@{K\_\-not}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-not\ 340}\label{parser_8h_a82}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-not\ 339}\label{parser_8h_a83}
 
 
 \index{parser.h@{parser.h}!K_notif0@{K\_\-notif0}}
 \index{K_notif0@{K\_\-notif0}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-notif0\ 341}\label{parser_8h_a83}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-notif0\ 340}\label{parser_8h_a84}
 
 
 \index{parser.h@{parser.h}!K_notif1@{K\_\-notif1}}
 \index{K_notif1@{K\_\-notif1}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-notif1\ 342}\label{parser_8h_a84}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-notif1\ 341}\label{parser_8h_a85}
 
 
 \index{parser.h@{parser.h}!K_NXOR@{K\_\-NXOR}}
 \index{K_NXOR@{K\_\-NXOR}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-NXOR\ 289}\label{parser_8h_a31}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-NXOR\ 288}\label{parser_8h_a32}
 
 
 \index{parser.h@{parser.h}!K_or@{K\_\-or}}
 \index{K_or@{K\_\-or}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-or\ 343}\label{parser_8h_a85}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-or\ 342}\label{parser_8h_a86}
 
 
 \index{parser.h@{parser.h}!K_output@{K\_\-output}}
 \index{K_output@{K\_\-output}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-output\ 344}\label{parser_8h_a86}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-output\ 343}\label{parser_8h_a87}
 
 
 \index{parser.h@{parser.h}!K_parameter@{K\_\-parameter}}
 \index{K_parameter@{K\_\-parameter}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-parameter\ 345}\label{parser_8h_a87}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-parameter\ 344}\label{parser_8h_a88}
 
 
 \index{parser.h@{parser.h}!K_pmos@{K\_\-pmos}}
 \index{K_pmos@{K\_\-pmos}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-pmos\ 346}\label{parser_8h_a88}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-pmos\ 345}\label{parser_8h_a89}
 
 
 \index{parser.h@{parser.h}!K_PO_NEG@{K\_\-PO\_\-NEG}}
 \index{K_PO_NEG@{K\_\-PO\_\-NEG}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-PO\_\-NEG\ 282}\label{parser_8h_a24}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-PO\_\-NEG\ 281}\label{parser_8h_a25}
 
 
 \index{parser.h@{parser.h}!K_PO_POS@{K\_\-PO\_\-POS}}
 \index{K_PO_POS@{K\_\-PO\_\-POS}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-PO\_\-POS\ 281}\label{parser_8h_a23}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-PO\_\-POS\ 280}\label{parser_8h_a24}
 
 
 \index{parser.h@{parser.h}!K_posedge@{K\_\-posedge}}
 \index{K_posedge@{K\_\-posedge}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-posedge\ 347}\label{parser_8h_a89}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-posedge\ 346}\label{parser_8h_a90}
 
 
 \index{parser.h@{parser.h}!K_primitive@{K\_\-primitive}}
 \index{K_primitive@{K\_\-primitive}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-primitive\ 348}\label{parser_8h_a90}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-primitive\ 347}\label{parser_8h_a91}
 
 
 \index{parser.h@{parser.h}!K_PSTAR@{K\_\-PSTAR}}
 \index{K_PSTAR@{K\_\-PSTAR}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-PSTAR\ 284}\label{parser_8h_a26}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-PSTAR\ 283}\label{parser_8h_a27}
 
 
 \index{parser.h@{parser.h}!K_pull0@{K\_\-pull0}}
 \index{K_pull0@{K\_\-pull0}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-pull0\ 349}\label{parser_8h_a91}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-pull0\ 348}\label{parser_8h_a92}
 
 
 \index{parser.h@{parser.h}!K_pull1@{K\_\-pull1}}
 \index{K_pull1@{K\_\-pull1}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-pull1\ 350}\label{parser_8h_a92}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-pull1\ 349}\label{parser_8h_a93}
 
 
 \index{parser.h@{parser.h}!K_pulldown@{K\_\-pulldown}}
 \index{K_pulldown@{K\_\-pulldown}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-pulldown\ 351}\label{parser_8h_a93}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-pulldown\ 350}\label{parser_8h_a94}
 
 
 \index{parser.h@{parser.h}!K_pullup@{K\_\-pullup}}
 \index{K_pullup@{K\_\-pullup}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-pullup\ 352}\label{parser_8h_a94}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-pullup\ 351}\label{parser_8h_a95}
 
 
 \index{parser.h@{parser.h}!K_rcmos@{K\_\-rcmos}}
 \index{K_rcmos@{K\_\-rcmos}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-rcmos\ 353}\label{parser_8h_a95}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-rcmos\ 352}\label{parser_8h_a96}
 
 
 \index{parser.h@{parser.h}!K_real@{K\_\-real}}
 \index{K_real@{K\_\-real}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-real\ 354}\label{parser_8h_a96}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-real\ 353}\label{parser_8h_a97}
 
 
 \index{parser.h@{parser.h}!K_realtime@{K\_\-realtime}}
 \index{K_realtime@{K\_\-realtime}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-realtime\ 355}\label{parser_8h_a97}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-realtime\ 354}\label{parser_8h_a98}
 
 
 \index{parser.h@{parser.h}!K_reg@{K\_\-reg}}
 \index{K_reg@{K\_\-reg}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-reg\ 356}\label{parser_8h_a98}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-reg\ 355}\label{parser_8h_a99}
 
 
 \index{parser.h@{parser.h}!K_release@{K\_\-release}}
 \index{K_release@{K\_\-release}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-release\ 357}\label{parser_8h_a99}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-release\ 356}\label{parser_8h_a100}
 
 
 \index{parser.h@{parser.h}!K_repeat@{K\_\-repeat}}
 \index{K_repeat@{K\_\-repeat}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-repeat\ 358}\label{parser_8h_a100}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-repeat\ 357}\label{parser_8h_a101}
 
 
 \index{parser.h@{parser.h}!K_rnmos@{K\_\-rnmos}}
 \index{K_rnmos@{K\_\-rnmos}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-rnmos\ 359}\label{parser_8h_a101}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-rnmos\ 358}\label{parser_8h_a102}
 
 
 \index{parser.h@{parser.h}!K_rpmos@{K\_\-rpmos}}
 \index{K_rpmos@{K\_\-rpmos}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-rpmos\ 360}\label{parser_8h_a102}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-rpmos\ 359}\label{parser_8h_a103}
 
 
 \index{parser.h@{parser.h}!K_RS@{K\_\-RS}}
 \index{K_RS@{K\_\-RS}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-RS\ 279}\label{parser_8h_a21}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-RS\ 278}\label{parser_8h_a22}
 
 
 \index{parser.h@{parser.h}!K_rtran@{K\_\-rtran}}
 \index{K_rtran@{K\_\-rtran}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-rtran\ 361}\label{parser_8h_a103}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-rtran\ 360}\label{parser_8h_a104}
 
 
 \index{parser.h@{parser.h}!K_rtranif0@{K\_\-rtranif0}}
 \index{K_rtranif0@{K\_\-rtranif0}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-rtranif0\ 362}\label{parser_8h_a104}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-rtranif0\ 361}\label{parser_8h_a105}
 
 
 \index{parser.h@{parser.h}!K_rtranif1@{K\_\-rtranif1}}
 \index{K_rtranif1@{K\_\-rtranif1}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-rtranif1\ 363}\label{parser_8h_a105}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-rtranif1\ 362}\label{parser_8h_a106}
 
 
 \index{parser.h@{parser.h}!K_scalered@{K\_\-scalered}}
 \index{K_scalered@{K\_\-scalered}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-scalered\ 364}\label{parser_8h_a106}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-scalered\ 363}\label{parser_8h_a107}
 
 
 \index{parser.h@{parser.h}!K_SG@{K\_\-SG}}
 \index{K_SG@{K\_\-SG}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-SG\ 280}\label{parser_8h_a22}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-SG\ 279}\label{parser_8h_a23}
 
 
 \index{parser.h@{parser.h}!K_Shold@{K\_\-Shold}}
 \index{K_Shold@{K\_\-Shold}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-Shold\ 395}\label{parser_8h_a137}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-Shold\ 394}\label{parser_8h_a138}
 
 
 \index{parser.h@{parser.h}!K_signed@{K\_\-signed}}
 \index{K_signed@{K\_\-signed}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-signed\ 365}\label{parser_8h_a107}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-signed\ 364}\label{parser_8h_a108}
 
 
 \index{parser.h@{parser.h}!K_small@{K\_\-small}}
 \index{K_small@{K\_\-small}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-small\ 366}\label{parser_8h_a108}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-small\ 365}\label{parser_8h_a109}
 
 
 \index{parser.h@{parser.h}!K_specify@{K\_\-specify}}
 \index{K_specify@{K\_\-specify}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-specify\ 367}\label{parser_8h_a109}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-specify\ 366}\label{parser_8h_a110}
 
 
 \index{parser.h@{parser.h}!K_specparam@{K\_\-specparam}}
 \index{K_specparam@{K\_\-specparam}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-specparam\ 368}\label{parser_8h_a110}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-specparam\ 367}\label{parser_8h_a111}
 
 
 \index{parser.h@{parser.h}!K_Speriod@{K\_\-Speriod}}
 \index{K_Speriod@{K\_\-Speriod}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-Speriod\ 396}\label{parser_8h_a138}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-Speriod\ 395}\label{parser_8h_a139}
 
 
 \index{parser.h@{parser.h}!K_Srecovery@{K\_\-Srecovery}}
 \index{K_Srecovery@{K\_\-Srecovery}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-Srecovery\ 397}\label{parser_8h_a139}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-Srecovery\ 396}\label{parser_8h_a140}
 
 
 \index{parser.h@{parser.h}!K_Ssetup@{K\_\-Ssetup}}
 \index{K_Ssetup@{K\_\-Ssetup}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-Ssetup\ 398}\label{parser_8h_a140}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-Ssetup\ 397}\label{parser_8h_a141}
 
 
 \index{parser.h@{parser.h}!K_Ssetuphold@{K\_\-Ssetuphold}}
 \index{K_Ssetuphold@{K\_\-Ssetuphold}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-Ssetuphold\ 400}\label{parser_8h_a142}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-Ssetuphold\ 399}\label{parser_8h_a143}
 
 
 \index{parser.h@{parser.h}!K_STARP@{K\_\-STARP}}
 \index{K_STARP@{K\_\-STARP}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-STARP\ 283}\label{parser_8h_a25}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-STARP\ 282}\label{parser_8h_a26}
 
 
 \index{parser.h@{parser.h}!K_strong0@{K\_\-strong0}}
 \index{K_strong0@{K\_\-strong0}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-strong0\ 369}\label{parser_8h_a111}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-strong0\ 368}\label{parser_8h_a112}
 
 
 \index{parser.h@{parser.h}!K_strong1@{K\_\-strong1}}
 \index{K_strong1@{K\_\-strong1}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-strong1\ 370}\label{parser_8h_a112}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-strong1\ 369}\label{parser_8h_a113}
 
 
 \index{parser.h@{parser.h}!K_supply0@{K\_\-supply0}}
 \index{K_supply0@{K\_\-supply0}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-supply0\ 371}\label{parser_8h_a113}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-supply0\ 370}\label{parser_8h_a114}
 
 
 \index{parser.h@{parser.h}!K_supply1@{K\_\-supply1}}
 \index{K_supply1@{K\_\-supply1}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-supply1\ 372}\label{parser_8h_a114}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-supply1\ 371}\label{parser_8h_a115}
 
 
 \index{parser.h@{parser.h}!K_Swidth@{K\_\-Swidth}}
 \index{K_Swidth@{K\_\-Swidth}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-Swidth\ 399}\label{parser_8h_a141}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-Swidth\ 398}\label{parser_8h_a142}
 
 
 \index{parser.h@{parser.h}!K_table@{K\_\-table}}
 \index{K_table@{K\_\-table}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-table\ 373}\label{parser_8h_a115}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-table\ 372}\label{parser_8h_a116}
 
 
 \index{parser.h@{parser.h}!K_TAND@{K\_\-TAND}}
 \index{K_TAND@{K\_\-TAND}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-TAND\ 402}\label{parser_8h_a144}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-TAND\ 401}\label{parser_8h_a145}
 
 
 \index{parser.h@{parser.h}!K_task@{K\_\-task}}
 \index{K_task@{K\_\-task}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-task\ 374}\label{parser_8h_a116}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-task\ 373}\label{parser_8h_a117}
 
 
 \index{parser.h@{parser.h}!K_time@{K\_\-time}}
 \index{K_time@{K\_\-time}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-time\ 375}\label{parser_8h_a117}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-time\ 374}\label{parser_8h_a118}
 
 
 \index{parser.h@{parser.h}!K_tran@{K\_\-tran}}
 \index{K_tran@{K\_\-tran}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-tran\ 376}\label{parser_8h_a118}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-tran\ 375}\label{parser_8h_a119}
 
 
 \index{parser.h@{parser.h}!K_tranif0@{K\_\-tranif0}}
 \index{K_tranif0@{K\_\-tranif0}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-tranif0\ 377}\label{parser_8h_a119}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-tranif0\ 376}\label{parser_8h_a120}
 
 
 \index{parser.h@{parser.h}!K_tranif1@{K\_\-tranif1}}
 \index{K_tranif1@{K\_\-tranif1}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-tranif1\ 378}\label{parser_8h_a120}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-tranif1\ 377}\label{parser_8h_a121}
 
 
 \index{parser.h@{parser.h}!K_tri@{K\_\-tri}}
 \index{K_tri@{K\_\-tri}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-tri\ 379}\label{parser_8h_a121}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-tri\ 378}\label{parser_8h_a122}
 
 
 \index{parser.h@{parser.h}!K_tri0@{K\_\-tri0}}
 \index{K_tri0@{K\_\-tri0}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-tri0\ 380}\label{parser_8h_a122}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-tri0\ 379}\label{parser_8h_a123}
 
 
 \index{parser.h@{parser.h}!K_tri1@{K\_\-tri1}}
 \index{K_tri1@{K\_\-tri1}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-tri1\ 381}\label{parser_8h_a123}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-tri1\ 380}\label{parser_8h_a124}
 
 
 \index{parser.h@{parser.h}!K_triand@{K\_\-triand}}
 \index{K_triand@{K\_\-triand}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-triand\ 382}\label{parser_8h_a124}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-triand\ 381}\label{parser_8h_a125}
 
 
 \index{parser.h@{parser.h}!K_TRIGGER@{K\_\-TRIGGER}}
 \index{K_TRIGGER@{K\_\-TRIGGER}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-TRIGGER\ 290}\label{parser_8h_a32}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-TRIGGER\ 289}\label{parser_8h_a33}
 
 
 \index{parser.h@{parser.h}!K_trior@{K\_\-trior}}
 \index{K_trior@{K\_\-trior}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-trior\ 383}\label{parser_8h_a125}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-trior\ 382}\label{parser_8h_a126}
 
 
 \index{parser.h@{parser.h}!K_trireg@{K\_\-trireg}}
 \index{K_trireg@{K\_\-trireg}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-trireg\ 384}\label{parser_8h_a126}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-trireg\ 383}\label{parser_8h_a127}
 
 
 \index{parser.h@{parser.h}!K_vectored@{K\_\-vectored}}
 \index{K_vectored@{K\_\-vectored}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-vectored\ 385}\label{parser_8h_a127}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-vectored\ 384}\label{parser_8h_a128}
 
 
 \index{parser.h@{parser.h}!K_wait@{K\_\-wait}}
 \index{K_wait@{K\_\-wait}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-wait\ 386}\label{parser_8h_a128}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-wait\ 385}\label{parser_8h_a129}
 
 
 \index{parser.h@{parser.h}!K_wand@{K\_\-wand}}
 \index{K_wand@{K\_\-wand}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-wand\ 387}\label{parser_8h_a129}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-wand\ 386}\label{parser_8h_a130}
 
 
 \index{parser.h@{parser.h}!K_weak0@{K\_\-weak0}}
 \index{K_weak0@{K\_\-weak0}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-weak0\ 388}\label{parser_8h_a130}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-weak0\ 387}\label{parser_8h_a131}
 
 
 \index{parser.h@{parser.h}!K_weak1@{K\_\-weak1}}
 \index{K_weak1@{K\_\-weak1}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-weak1\ 389}\label{parser_8h_a131}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-weak1\ 388}\label{parser_8h_a132}
 
 
 \index{parser.h@{parser.h}!K_while@{K\_\-while}}
 \index{K_while@{K\_\-while}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-while\ 390}\label{parser_8h_a132}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-while\ 389}\label{parser_8h_a133}
 
 
 \index{parser.h@{parser.h}!K_wire@{K\_\-wire}}
 \index{K_wire@{K\_\-wire}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-wire\ 391}\label{parser_8h_a133}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-wire\ 390}\label{parser_8h_a134}
 
 
 \index{parser.h@{parser.h}!K_wor@{K\_\-wor}}
 \index{K_wor@{K\_\-wor}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-wor\ 392}\label{parser_8h_a134}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-wor\ 391}\label{parser_8h_a135}
 
 
 \index{parser.h@{parser.h}!K_xnor@{K\_\-xnor}}
 \index{K_xnor@{K\_\-xnor}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-xnor\ 393}\label{parser_8h_a135}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-xnor\ 392}\label{parser_8h_a136}
 
 
 \index{parser.h@{parser.h}!K_xor@{K\_\-xor}}
 \index{K_xor@{K\_\-xor}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-xor\ 394}\label{parser_8h_a136}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define K\_\-xor\ 393}\label{parser_8h_a137}
 
 
 \index{parser.h@{parser.h}!KK_attribute@{KK\_\-attribute}}
 \index{KK_attribute@{KK\_\-attribute}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define KK\_\-attribute\ 401}\label{parser_8h_a143}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define KK\_\-attribute\ 400}\label{parser_8h_a144}
 
 
 \index{parser.h@{parser.h}!less_than_K_else@{less\_\-than\_\-K\_\-else}}
 \index{less_than_K_else@{less\_\-than\_\-K\_\-else}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define less\_\-than\_\-K\_\-else\ 404}\label{parser_8h_a146}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define less\_\-than\_\-K\_\-else\ 403}\label{parser_8h_a147}
 
 
 \index{parser.h@{parser.h}!NUMBER@{NUMBER}}
 \index{NUMBER@{NUMBER}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define NUMBER\ 260}\label{parser_8h_a2}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define NUMBER\ 259}\label{parser_8h_a3}
 
 
 \index{parser.h@{parser.h}!PATHPULSE_IDENTIFIER@{PATHPULSE\_\-IDENTIFIER}}
 \index{PATHPULSE_IDENTIFIER@{PATHPULSE\_\-IDENTIFIER}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define PATHPULSE\_\-IDENTIFIER\ 259}\label{parser_8h_a1}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define PATHPULSE\_\-IDENTIFIER\ 258}\label{parser_8h_a2}
 
 
 \index{parser.h@{parser.h}!REALTIME@{REALTIME}}
 \index{REALTIME@{REALTIME}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define REALTIME\ 261}\label{parser_8h_a3}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define REALTIME\ 260}\label{parser_8h_a4}
 
 
 \index{parser.h@{parser.h}!STRING@{STRING}}
 \index{STRING@{STRING}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define STRING\ 262}\label{parser_8h_a4}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define STRING\ 261}\label{parser_8h_a5}
 
 
 \index{parser.h@{parser.h}!SYSTEM_IDENTIFIER@{SYSTEM\_\-IDENTIFIER}}
 \index{SYSTEM_IDENTIFIER@{SYSTEM\_\-IDENTIFIER}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SYSTEM\_\-IDENTIFIER\ 263}\label{parser_8h_a5}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SYSTEM\_\-IDENTIFIER\ 262}\label{parser_8h_a6}
 
 
 \index{parser.h@{parser.h}!UNARY_PREC@{UNARY\_\-PREC}}
 \index{UNARY_PREC@{UNARY\_\-PREC}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define UNARY\_\-PREC\ 403}\label{parser_8h_a145}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define UNARY\_\-PREC\ 402}\label{parser_8h_a146}
 
 
 \index{parser.h@{parser.h}!UNUSED_IDENTIFIER@{UNUSED\_\-IDENTIFIER}}
 \index{UNUSED_IDENTIFIER@{UNUSED\_\-IDENTIFIER}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define UNUSED\_\-IDENTIFIER\ 265}\label{parser_8h_a7}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define UNUSED\_\-IDENTIFIER\ 264}\label{parser_8h_a8}
 
 
 \index{parser.h@{parser.h}!UNUSED_NUMBER@{UNUSED\_\-NUMBER}}
 \index{UNUSED_NUMBER@{UNUSED\_\-NUMBER}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define UNUSED\_\-NUMBER\ 267}\label{parser_8h_a9}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define UNUSED\_\-NUMBER\ 266}\label{parser_8h_a10}
 
 
 \index{parser.h@{parser.h}!UNUSED_PATHPULSE_IDENTIFIER@{UNUSED\_\-PATHPULSE\_\-IDENTIFIER}}
 \index{UNUSED_PATHPULSE_IDENTIFIER@{UNUSED\_\-PATHPULSE\_\-IDENTIFIER}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define UNUSED\_\-PATHPULSE\_\-IDENTIFIER\ 266}\label{parser_8h_a8}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define UNUSED\_\-PATHPULSE\_\-IDENTIFIER\ 265}\label{parser_8h_a9}
 
 
 \index{parser.h@{parser.h}!UNUSED_REALTIME@{UNUSED\_\-REALTIME}}
 \index{UNUSED_REALTIME@{UNUSED\_\-REALTIME}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define UNUSED\_\-REALTIME\ 268}\label{parser_8h_a10}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define UNUSED\_\-REALTIME\ 267}\label{parser_8h_a11}
 
 
 \index{parser.h@{parser.h}!UNUSED_STRING@{UNUSED\_\-STRING}}
 \index{UNUSED_STRING@{UNUSED\_\-STRING}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define UNUSED\_\-STRING\ 269}\label{parser_8h_a11}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define UNUSED\_\-STRING\ 268}\label{parser_8h_a12}
 
 
 \index{parser.h@{parser.h}!UNUSED_SYSTEM_IDENTIFIER@{UNUSED\_\-SYSTEM\_\-IDENTIFIER}}
 \index{UNUSED_SYSTEM_IDENTIFIER@{UNUSED\_\-SYSTEM\_\-IDENTIFIER}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define UNUSED\_\-SYSTEM\_\-IDENTIFIER\ 270}\label{parser_8h_a12}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define UNUSED\_\-SYSTEM\_\-IDENTIFIER\ 269}\label{parser_8h_a13}
 
 
-\index{parser.h@{parser.h}!yyltype@{yyltype}}
-\index{yyltype@{yyltype}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yyltype\ {\bf YYLTYPE}}\label{parser_8h_a150}
-
-
-\index{parser.h@{parser.h}!YYLTYPE_IS_DECLARED@{YYLTYPE\_\-IS\_\-DECLARED}}
-\index{YYLTYPE_IS_DECLARED@{YYLTYPE\_\-IS\_\-DECLARED}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYLTYPE\_\-IS\_\-DECLARED\ 1}\label{parser_8h_a151}
-
-
-\index{parser.h@{parser.h}!YYLTYPE_IS_TRIVIAL@{YYLTYPE\_\-IS\_\-TRIVIAL}}
-\index{YYLTYPE_IS_TRIVIAL@{YYLTYPE\_\-IS\_\-TRIVIAL}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYLTYPE\_\-IS\_\-TRIVIAL\ 1}\label{parser_8h_a152}
-
-
-\index{parser.h@{parser.h}!yystype@{yystype}}
-\index{yystype@{yystype}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define yystype\ {\bf YYSTYPE}}\label{parser_8h_a147}
-
-
-\index{parser.h@{parser.h}!YYSTYPE_IS_DECLARED@{YYSTYPE\_\-IS\_\-DECLARED}}
-\index{YYSTYPE_IS_DECLARED@{YYSTYPE\_\-IS\_\-DECLARED}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYSTYPE\_\-IS\_\-DECLARED\ 1}\label{parser_8h_a148}
-
-
-\index{parser.h@{parser.h}!YYSTYPE_IS_TRIVIAL@{YYSTYPE\_\-IS\_\-TRIVIAL}}
-\index{YYSTYPE_IS_TRIVIAL@{YYSTYPE\_\-IS\_\-TRIVIAL}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYSTYPE\_\-IS\_\-TRIVIAL\ 1}\label{parser_8h_a149}
+\index{parser.h@{parser.h}!YYLTYPE@{YYLTYPE}}
+\index{YYLTYPE@{YYLTYPE}!parser.h@{parser.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define YYLTYPE\ {\bf yyltype}}\label{parser_8h_a0}
 
 
 
 
 \subsection{Typedef Documentation}
-\index{parser.h@{parser.h}!YYLTYPE@{YYLTYPE}}
-\index{YYLTYPE@{YYLTYPE}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct YYLTYPE  YYLTYPE}\label{parser_8h_a155}
+\index{parser.h@{parser.h}!yyltype@{yyltype}}
+\index{yyltype@{yyltype}!parser.h@{parser.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf yyltype}
+   {\bf yyltype}}\label{parser_8h_a148}
 
-
-\index{parser.h@{parser.h}!YYSTYPE@{YYSTYPE}}
-\index{YYSTYPE@{YYSTYPE}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}typedef union YYSTYPE  YYSTYPE}\label{parser_8h_a153}
-
-
-
-
-\subsection{Enumeration Type Documentation}
-\index{parser.h@{parser.h}!yytokentype@{yytokentype}}
-\index{yytokentype@{yytokentype}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}enum yytokentype}\label{parser_8h_a304}
-
-
-\begin{Desc}
-\item[Enumeration values:]\par
-\begin{description}
-\index{IDENTIFIER@{IDENTIFIER}!parser.h@{parser.h}}\index{parser.h@{parser.h}!IDENTIFIER@{IDENTIFIER}}\item[{\em 
-{\em IDENTIFIER}\label{parser_8h_a304a157}
-}]\index{PATHPULSE_IDENTIFIER@{PATHPULSE\_\-IDENTIFIER}!parser.h@{parser.h}}\index{parser.h@{parser.h}!PATHPULSE_IDENTIFIER@{PATHPULSE\_\-IDENTIFIER}}\item[{\em 
-{\em PATHPULSE\_\-IDENTIFIER}\label{parser_8h_a304a158}
-}]\index{NUMBER@{NUMBER}!parser.h@{parser.h}}\index{parser.h@{parser.h}!NUMBER@{NUMBER}}\item[{\em 
-{\em NUMBER}\label{parser_8h_a304a159}
-}]\index{REALTIME@{REALTIME}!parser.h@{parser.h}}\index{parser.h@{parser.h}!REALTIME@{REALTIME}}\item[{\em 
-{\em REALTIME}\label{parser_8h_a304a160}
-}]\index{STRING@{STRING}!parser.h@{parser.h}}\index{parser.h@{parser.h}!STRING@{STRING}}\item[{\em 
-{\em STRING}\label{parser_8h_a304a161}
-}]\index{SYSTEM_IDENTIFIER@{SYSTEM\_\-IDENTIFIER}!parser.h@{parser.h}}\index{parser.h@{parser.h}!SYSTEM_IDENTIFIER@{SYSTEM\_\-IDENTIFIER}}\item[{\em 
-{\em SYSTEM\_\-IDENTIFIER}\label{parser_8h_a304a162}
-}]\index{IGNORE@{IGNORE}!parser.h@{parser.h}}\index{parser.h@{parser.h}!IGNORE@{IGNORE}}\item[{\em 
-{\em IGNORE}\label{parser_8h_a304a163}
-}]\index{UNUSED_IDENTIFIER@{UNUSED\_\-IDENTIFIER}!parser.h@{parser.h}}\index{parser.h@{parser.h}!UNUSED_IDENTIFIER@{UNUSED\_\-IDENTIFIER}}\item[{\em 
-{\em UNUSED\_\-IDENTIFIER}\label{parser_8h_a304a164}
-}]\index{UNUSED_PATHPULSE_IDENTIFIER@{UNUSED\_\-PATHPULSE\_\-IDENTIFIER}!parser.h@{parser.h}}\index{parser.h@{parser.h}!UNUSED_PATHPULSE_IDENTIFIER@{UNUSED\_\-PATHPULSE\_\-IDENTIFIER}}\item[{\em 
-{\em UNUSED\_\-PATHPULSE\_\-IDENTIFIER}\label{parser_8h_a304a165}
-}]\index{UNUSED_NUMBER@{UNUSED\_\-NUMBER}!parser.h@{parser.h}}\index{parser.h@{parser.h}!UNUSED_NUMBER@{UNUSED\_\-NUMBER}}\item[{\em 
-{\em UNUSED\_\-NUMBER}\label{parser_8h_a304a166}
-}]\index{UNUSED_REALTIME@{UNUSED\_\-REALTIME}!parser.h@{parser.h}}\index{parser.h@{parser.h}!UNUSED_REALTIME@{UNUSED\_\-REALTIME}}\item[{\em 
-{\em UNUSED\_\-REALTIME}\label{parser_8h_a304a167}
-}]\index{UNUSED_STRING@{UNUSED\_\-STRING}!parser.h@{parser.h}}\index{parser.h@{parser.h}!UNUSED_STRING@{UNUSED\_\-STRING}}\item[{\em 
-{\em UNUSED\_\-STRING}\label{parser_8h_a304a168}
-}]\index{UNUSED_SYSTEM_IDENTIFIER@{UNUSED\_\-SYSTEM\_\-IDENTIFIER}!parser.h@{parser.h}}\index{parser.h@{parser.h}!UNUSED_SYSTEM_IDENTIFIER@{UNUSED\_\-SYSTEM\_\-IDENTIFIER}}\item[{\em 
-{\em UNUSED\_\-SYSTEM\_\-IDENTIFIER}\label{parser_8h_a304a169}
-}]\index{K_LE@{K\_\-LE}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_LE@{K\_\-LE}}\item[{\em 
-{\em K\_\-LE}\label{parser_8h_a304a170}
-}]\index{K_GE@{K\_\-GE}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_GE@{K\_\-GE}}\item[{\em 
-{\em K\_\-GE}\label{parser_8h_a304a171}
-}]\index{K_EG@{K\_\-EG}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_EG@{K\_\-EG}}\item[{\em 
-{\em K\_\-EG}\label{parser_8h_a304a172}
-}]\index{K_EQ@{K\_\-EQ}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_EQ@{K\_\-EQ}}\item[{\em 
-{\em K\_\-EQ}\label{parser_8h_a304a173}
-}]\index{K_NE@{K\_\-NE}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_NE@{K\_\-NE}}\item[{\em 
-{\em K\_\-NE}\label{parser_8h_a304a174}
-}]\index{K_CEQ@{K\_\-CEQ}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_CEQ@{K\_\-CEQ}}\item[{\em 
-{\em K\_\-CEQ}\label{parser_8h_a304a175}
-}]\index{K_CNE@{K\_\-CNE}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_CNE@{K\_\-CNE}}\item[{\em 
-{\em K\_\-CNE}\label{parser_8h_a304a176}
-}]\index{K_LS@{K\_\-LS}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_LS@{K\_\-LS}}\item[{\em 
-{\em K\_\-LS}\label{parser_8h_a304a177}
-}]\index{K_RS@{K\_\-RS}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_RS@{K\_\-RS}}\item[{\em 
-{\em K\_\-RS}\label{parser_8h_a304a178}
-}]\index{K_SG@{K\_\-SG}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_SG@{K\_\-SG}}\item[{\em 
-{\em K\_\-SG}\label{parser_8h_a304a179}
-}]\index{K_PO_POS@{K\_\-PO\_\-POS}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_PO_POS@{K\_\-PO\_\-POS}}\item[{\em 
-{\em K\_\-PO\_\-POS}\label{parser_8h_a304a180}
-}]\index{K_PO_NEG@{K\_\-PO\_\-NEG}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_PO_NEG@{K\_\-PO\_\-NEG}}\item[{\em 
-{\em K\_\-PO\_\-NEG}\label{parser_8h_a304a181}
-}]\index{K_STARP@{K\_\-STARP}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_STARP@{K\_\-STARP}}\item[{\em 
-{\em K\_\-STARP}\label{parser_8h_a304a182}
-}]\index{K_PSTAR@{K\_\-PSTAR}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_PSTAR@{K\_\-PSTAR}}\item[{\em 
-{\em K\_\-PSTAR}\label{parser_8h_a304a183}
-}]\index{K_LOR@{K\_\-LOR}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_LOR@{K\_\-LOR}}\item[{\em 
-{\em K\_\-LOR}\label{parser_8h_a304a184}
-}]\index{K_LAND@{K\_\-LAND}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_LAND@{K\_\-LAND}}\item[{\em 
-{\em K\_\-LAND}\label{parser_8h_a304a185}
-}]\index{K_NAND@{K\_\-NAND}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_NAND@{K\_\-NAND}}\item[{\em 
-{\em K\_\-NAND}\label{parser_8h_a304a186}
-}]\index{K_NOR@{K\_\-NOR}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_NOR@{K\_\-NOR}}\item[{\em 
-{\em K\_\-NOR}\label{parser_8h_a304a187}
-}]\index{K_NXOR@{K\_\-NXOR}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_NXOR@{K\_\-NXOR}}\item[{\em 
-{\em K\_\-NXOR}\label{parser_8h_a304a188}
-}]\index{K_TRIGGER@{K\_\-TRIGGER}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_TRIGGER@{K\_\-TRIGGER}}\item[{\em 
-{\em K\_\-TRIGGER}\label{parser_8h_a304a189}
-}]\index{K_always@{K\_\-always}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_always@{K\_\-always}}\item[{\em 
-{\em K\_\-always}\label{parser_8h_a304a190}
-}]\index{K_and@{K\_\-and}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_and@{K\_\-and}}\item[{\em 
-{\em K\_\-and}\label{parser_8h_a304a191}
-}]\index{K_assign@{K\_\-assign}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_assign@{K\_\-assign}}\item[{\em 
-{\em K\_\-assign}\label{parser_8h_a304a192}
-}]\index{K_begin@{K\_\-begin}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_begin@{K\_\-begin}}\item[{\em 
-{\em K\_\-begin}\label{parser_8h_a304a193}
-}]\index{K_buf@{K\_\-buf}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_buf@{K\_\-buf}}\item[{\em 
-{\em K\_\-buf}\label{parser_8h_a304a194}
-}]\index{K_bufif0@{K\_\-bufif0}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_bufif0@{K\_\-bufif0}}\item[{\em 
-{\em K\_\-bufif0}\label{parser_8h_a304a195}
-}]\index{K_bufif1@{K\_\-bufif1}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_bufif1@{K\_\-bufif1}}\item[{\em 
-{\em K\_\-bufif1}\label{parser_8h_a304a196}
-}]\index{K_case@{K\_\-case}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_case@{K\_\-case}}\item[{\em 
-{\em K\_\-case}\label{parser_8h_a304a197}
-}]\index{K_casex@{K\_\-casex}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_casex@{K\_\-casex}}\item[{\em 
-{\em K\_\-casex}\label{parser_8h_a304a198}
-}]\index{K_casez@{K\_\-casez}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_casez@{K\_\-casez}}\item[{\em 
-{\em K\_\-casez}\label{parser_8h_a304a199}
-}]\index{K_cmos@{K\_\-cmos}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_cmos@{K\_\-cmos}}\item[{\em 
-{\em K\_\-cmos}\label{parser_8h_a304a200}
-}]\index{K_deassign@{K\_\-deassign}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_deassign@{K\_\-deassign}}\item[{\em 
-{\em K\_\-deassign}\label{parser_8h_a304a201}
-}]\index{K_default@{K\_\-default}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_default@{K\_\-default}}\item[{\em 
-{\em K\_\-default}\label{parser_8h_a304a202}
-}]\index{K_defparam@{K\_\-defparam}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_defparam@{K\_\-defparam}}\item[{\em 
-{\em K\_\-defparam}\label{parser_8h_a304a203}
-}]\index{K_disable@{K\_\-disable}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_disable@{K\_\-disable}}\item[{\em 
-{\em K\_\-disable}\label{parser_8h_a304a204}
-}]\index{K_edge@{K\_\-edge}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_edge@{K\_\-edge}}\item[{\em 
-{\em K\_\-edge}\label{parser_8h_a304a205}
-}]\index{K_else@{K\_\-else}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_else@{K\_\-else}}\item[{\em 
-{\em K\_\-else}\label{parser_8h_a304a206}
-}]\index{K_end@{K\_\-end}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_end@{K\_\-end}}\item[{\em 
-{\em K\_\-end}\label{parser_8h_a304a207}
-}]\index{K_endcase@{K\_\-endcase}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_endcase@{K\_\-endcase}}\item[{\em 
-{\em K\_\-endcase}\label{parser_8h_a304a208}
-}]\index{K_endfunction@{K\_\-endfunction}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_endfunction@{K\_\-endfunction}}\item[{\em 
-{\em K\_\-endfunction}\label{parser_8h_a304a209}
-}]\index{K_endmodule@{K\_\-endmodule}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_endmodule@{K\_\-endmodule}}\item[{\em 
-{\em K\_\-endmodule}\label{parser_8h_a304a210}
-}]\index{I_endmodule@{I\_\-endmodule}!parser.h@{parser.h}}\index{parser.h@{parser.h}!I_endmodule@{I\_\-endmodule}}\item[{\em 
-{\em I\_\-endmodule}\label{parser_8h_a304a211}
-}]\index{K_endprimitive@{K\_\-endprimitive}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_endprimitive@{K\_\-endprimitive}}\item[{\em 
-{\em K\_\-endprimitive}\label{parser_8h_a304a212}
-}]\index{K_endspecify@{K\_\-endspecify}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_endspecify@{K\_\-endspecify}}\item[{\em 
-{\em K\_\-endspecify}\label{parser_8h_a304a213}
-}]\index{K_endtable@{K\_\-endtable}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_endtable@{K\_\-endtable}}\item[{\em 
-{\em K\_\-endtable}\label{parser_8h_a304a214}
-}]\index{K_endtask@{K\_\-endtask}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_endtask@{K\_\-endtask}}\item[{\em 
-{\em K\_\-endtask}\label{parser_8h_a304a215}
-}]\index{K_event@{K\_\-event}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_event@{K\_\-event}}\item[{\em 
-{\em K\_\-event}\label{parser_8h_a304a216}
-}]\index{K_for@{K\_\-for}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_for@{K\_\-for}}\item[{\em 
-{\em K\_\-for}\label{parser_8h_a304a217}
-}]\index{K_force@{K\_\-force}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_force@{K\_\-force}}\item[{\em 
-{\em K\_\-force}\label{parser_8h_a304a218}
-}]\index{K_forever@{K\_\-forever}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_forever@{K\_\-forever}}\item[{\em 
-{\em K\_\-forever}\label{parser_8h_a304a219}
-}]\index{K_fork@{K\_\-fork}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_fork@{K\_\-fork}}\item[{\em 
-{\em K\_\-fork}\label{parser_8h_a304a220}
-}]\index{K_function@{K\_\-function}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_function@{K\_\-function}}\item[{\em 
-{\em K\_\-function}\label{parser_8h_a304a221}
-}]\index{K_highz0@{K\_\-highz0}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_highz0@{K\_\-highz0}}\item[{\em 
-{\em K\_\-highz0}\label{parser_8h_a304a222}
-}]\index{K_highz1@{K\_\-highz1}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_highz1@{K\_\-highz1}}\item[{\em 
-{\em K\_\-highz1}\label{parser_8h_a304a223}
-}]\index{K_if@{K\_\-if}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_if@{K\_\-if}}\item[{\em 
-{\em K\_\-if}\label{parser_8h_a304a224}
-}]\index{K_initial@{K\_\-initial}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_initial@{K\_\-initial}}\item[{\em 
-{\em K\_\-initial}\label{parser_8h_a304a225}
-}]\index{K_inout@{K\_\-inout}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_inout@{K\_\-inout}}\item[{\em 
-{\em K\_\-inout}\label{parser_8h_a304a226}
-}]\index{K_input@{K\_\-input}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_input@{K\_\-input}}\item[{\em 
-{\em K\_\-input}\label{parser_8h_a304a227}
-}]\index{K_integer@{K\_\-integer}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_integer@{K\_\-integer}}\item[{\em 
-{\em K\_\-integer}\label{parser_8h_a304a228}
-}]\index{K_join@{K\_\-join}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_join@{K\_\-join}}\item[{\em 
-{\em K\_\-join}\label{parser_8h_a304a229}
-}]\index{K_large@{K\_\-large}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_large@{K\_\-large}}\item[{\em 
-{\em K\_\-large}\label{parser_8h_a304a230}
-}]\index{K_localparam@{K\_\-localparam}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_localparam@{K\_\-localparam}}\item[{\em 
-{\em K\_\-localparam}\label{parser_8h_a304a231}
-}]\index{K_macromodule@{K\_\-macromodule}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_macromodule@{K\_\-macromodule}}\item[{\em 
-{\em K\_\-macromodule}\label{parser_8h_a304a232}
-}]\index{K_medium@{K\_\-medium}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_medium@{K\_\-medium}}\item[{\em 
-{\em K\_\-medium}\label{parser_8h_a304a233}
-}]\index{K_module@{K\_\-module}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_module@{K\_\-module}}\item[{\em 
-{\em K\_\-module}\label{parser_8h_a304a234}
-}]\index{K_nand@{K\_\-nand}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_nand@{K\_\-nand}}\item[{\em 
-{\em K\_\-nand}\label{parser_8h_a304a235}
-}]\index{K_negedge@{K\_\-negedge}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_negedge@{K\_\-negedge}}\item[{\em 
-{\em K\_\-negedge}\label{parser_8h_a304a236}
-}]\index{K_nmos@{K\_\-nmos}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_nmos@{K\_\-nmos}}\item[{\em 
-{\em K\_\-nmos}\label{parser_8h_a304a237}
-}]\index{K_nor@{K\_\-nor}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_nor@{K\_\-nor}}\item[{\em 
-{\em K\_\-nor}\label{parser_8h_a304a238}
-}]\index{K_not@{K\_\-not}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_not@{K\_\-not}}\item[{\em 
-{\em K\_\-not}\label{parser_8h_a304a239}
-}]\index{K_notif0@{K\_\-notif0}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_notif0@{K\_\-notif0}}\item[{\em 
-{\em K\_\-notif0}\label{parser_8h_a304a240}
-}]\index{K_notif1@{K\_\-notif1}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_notif1@{K\_\-notif1}}\item[{\em 
-{\em K\_\-notif1}\label{parser_8h_a304a241}
-}]\index{K_or@{K\_\-or}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_or@{K\_\-or}}\item[{\em 
-{\em K\_\-or}\label{parser_8h_a304a242}
-}]\index{K_output@{K\_\-output}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_output@{K\_\-output}}\item[{\em 
-{\em K\_\-output}\label{parser_8h_a304a243}
-}]\index{K_parameter@{K\_\-parameter}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_parameter@{K\_\-parameter}}\item[{\em 
-{\em K\_\-parameter}\label{parser_8h_a304a244}
-}]\index{K_pmos@{K\_\-pmos}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_pmos@{K\_\-pmos}}\item[{\em 
-{\em K\_\-pmos}\label{parser_8h_a304a245}
-}]\index{K_posedge@{K\_\-posedge}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_posedge@{K\_\-posedge}}\item[{\em 
-{\em K\_\-posedge}\label{parser_8h_a304a246}
-}]\index{K_primitive@{K\_\-primitive}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_primitive@{K\_\-primitive}}\item[{\em 
-{\em K\_\-primitive}\label{parser_8h_a304a247}
-}]\index{K_pull0@{K\_\-pull0}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_pull0@{K\_\-pull0}}\item[{\em 
-{\em K\_\-pull0}\label{parser_8h_a304a248}
-}]\index{K_pull1@{K\_\-pull1}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_pull1@{K\_\-pull1}}\item[{\em 
-{\em K\_\-pull1}\label{parser_8h_a304a249}
-}]\index{K_pulldown@{K\_\-pulldown}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_pulldown@{K\_\-pulldown}}\item[{\em 
-{\em K\_\-pulldown}\label{parser_8h_a304a250}
-}]\index{K_pullup@{K\_\-pullup}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_pullup@{K\_\-pullup}}\item[{\em 
-{\em K\_\-pullup}\label{parser_8h_a304a251}
-}]\index{K_rcmos@{K\_\-rcmos}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_rcmos@{K\_\-rcmos}}\item[{\em 
-{\em K\_\-rcmos}\label{parser_8h_a304a252}
-}]\index{K_real@{K\_\-real}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_real@{K\_\-real}}\item[{\em 
-{\em K\_\-real}\label{parser_8h_a304a253}
-}]\index{K_realtime@{K\_\-realtime}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_realtime@{K\_\-realtime}}\item[{\em 
-{\em K\_\-realtime}\label{parser_8h_a304a254}
-}]\index{K_reg@{K\_\-reg}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_reg@{K\_\-reg}}\item[{\em 
-{\em K\_\-reg}\label{parser_8h_a304a255}
-}]\index{K_release@{K\_\-release}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_release@{K\_\-release}}\item[{\em 
-{\em K\_\-release}\label{parser_8h_a304a256}
-}]\index{K_repeat@{K\_\-repeat}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_repeat@{K\_\-repeat}}\item[{\em 
-{\em K\_\-repeat}\label{parser_8h_a304a257}
-}]\index{K_rnmos@{K\_\-rnmos}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_rnmos@{K\_\-rnmos}}\item[{\em 
-{\em K\_\-rnmos}\label{parser_8h_a304a258}
-}]\index{K_rpmos@{K\_\-rpmos}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_rpmos@{K\_\-rpmos}}\item[{\em 
-{\em K\_\-rpmos}\label{parser_8h_a304a259}
-}]\index{K_rtran@{K\_\-rtran}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_rtran@{K\_\-rtran}}\item[{\em 
-{\em K\_\-rtran}\label{parser_8h_a304a260}
-}]\index{K_rtranif0@{K\_\-rtranif0}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_rtranif0@{K\_\-rtranif0}}\item[{\em 
-{\em K\_\-rtranif0}\label{parser_8h_a304a261}
-}]\index{K_rtranif1@{K\_\-rtranif1}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_rtranif1@{K\_\-rtranif1}}\item[{\em 
-{\em K\_\-rtranif1}\label{parser_8h_a304a262}
-}]\index{K_scalered@{K\_\-scalered}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_scalered@{K\_\-scalered}}\item[{\em 
-{\em K\_\-scalered}\label{parser_8h_a304a263}
-}]\index{K_signed@{K\_\-signed}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_signed@{K\_\-signed}}\item[{\em 
-{\em K\_\-signed}\label{parser_8h_a304a264}
-}]\index{K_small@{K\_\-small}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_small@{K\_\-small}}\item[{\em 
-{\em K\_\-small}\label{parser_8h_a304a265}
-}]\index{K_specify@{K\_\-specify}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_specify@{K\_\-specify}}\item[{\em 
-{\em K\_\-specify}\label{parser_8h_a304a266}
-}]\index{K_specparam@{K\_\-specparam}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_specparam@{K\_\-specparam}}\item[{\em 
-{\em K\_\-specparam}\label{parser_8h_a304a267}
-}]\index{K_strong0@{K\_\-strong0}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_strong0@{K\_\-strong0}}\item[{\em 
-{\em K\_\-strong0}\label{parser_8h_a304a268}
-}]\index{K_strong1@{K\_\-strong1}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_strong1@{K\_\-strong1}}\item[{\em 
-{\em K\_\-strong1}\label{parser_8h_a304a269}
-}]\index{K_supply0@{K\_\-supply0}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_supply0@{K\_\-supply0}}\item[{\em 
-{\em K\_\-supply0}\label{parser_8h_a304a270}
-}]\index{K_supply1@{K\_\-supply1}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_supply1@{K\_\-supply1}}\item[{\em 
-{\em K\_\-supply1}\label{parser_8h_a304a271}
-}]\index{K_table@{K\_\-table}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_table@{K\_\-table}}\item[{\em 
-{\em K\_\-table}\label{parser_8h_a304a272}
-}]\index{K_task@{K\_\-task}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_task@{K\_\-task}}\item[{\em 
-{\em K\_\-task}\label{parser_8h_a304a273}
-}]\index{K_time@{K\_\-time}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_time@{K\_\-time}}\item[{\em 
-{\em K\_\-time}\label{parser_8h_a304a274}
-}]\index{K_tran@{K\_\-tran}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_tran@{K\_\-tran}}\item[{\em 
-{\em K\_\-tran}\label{parser_8h_a304a275}
-}]\index{K_tranif0@{K\_\-tranif0}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_tranif0@{K\_\-tranif0}}\item[{\em 
-{\em K\_\-tranif0}\label{parser_8h_a304a276}
-}]\index{K_tranif1@{K\_\-tranif1}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_tranif1@{K\_\-tranif1}}\item[{\em 
-{\em K\_\-tranif1}\label{parser_8h_a304a277}
-}]\index{K_tri@{K\_\-tri}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_tri@{K\_\-tri}}\item[{\em 
-{\em K\_\-tri}\label{parser_8h_a304a278}
-}]\index{K_tri0@{K\_\-tri0}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_tri0@{K\_\-tri0}}\item[{\em 
-{\em K\_\-tri0}\label{parser_8h_a304a279}
-}]\index{K_tri1@{K\_\-tri1}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_tri1@{K\_\-tri1}}\item[{\em 
-{\em K\_\-tri1}\label{parser_8h_a304a280}
-}]\index{K_triand@{K\_\-triand}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_triand@{K\_\-triand}}\item[{\em 
-{\em K\_\-triand}\label{parser_8h_a304a281}
-}]\index{K_trior@{K\_\-trior}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_trior@{K\_\-trior}}\item[{\em 
-{\em K\_\-trior}\label{parser_8h_a304a282}
-}]\index{K_trireg@{K\_\-trireg}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_trireg@{K\_\-trireg}}\item[{\em 
-{\em K\_\-trireg}\label{parser_8h_a304a283}
-}]\index{K_vectored@{K\_\-vectored}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_vectored@{K\_\-vectored}}\item[{\em 
-{\em K\_\-vectored}\label{parser_8h_a304a284}
-}]\index{K_wait@{K\_\-wait}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_wait@{K\_\-wait}}\item[{\em 
-{\em K\_\-wait}\label{parser_8h_a304a285}
-}]\index{K_wand@{K\_\-wand}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_wand@{K\_\-wand}}\item[{\em 
-{\em K\_\-wand}\label{parser_8h_a304a286}
-}]\index{K_weak0@{K\_\-weak0}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_weak0@{K\_\-weak0}}\item[{\em 
-{\em K\_\-weak0}\label{parser_8h_a304a287}
-}]\index{K_weak1@{K\_\-weak1}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_weak1@{K\_\-weak1}}\item[{\em 
-{\em K\_\-weak1}\label{parser_8h_a304a288}
-}]\index{K_while@{K\_\-while}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_while@{K\_\-while}}\item[{\em 
-{\em K\_\-while}\label{parser_8h_a304a289}
-}]\index{K_wire@{K\_\-wire}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_wire@{K\_\-wire}}\item[{\em 
-{\em K\_\-wire}\label{parser_8h_a304a290}
-}]\index{K_wor@{K\_\-wor}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_wor@{K\_\-wor}}\item[{\em 
-{\em K\_\-wor}\label{parser_8h_a304a291}
-}]\index{K_xnor@{K\_\-xnor}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_xnor@{K\_\-xnor}}\item[{\em 
-{\em K\_\-xnor}\label{parser_8h_a304a292}
-}]\index{K_xor@{K\_\-xor}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_xor@{K\_\-xor}}\item[{\em 
-{\em K\_\-xor}\label{parser_8h_a304a293}
-}]\index{K_Shold@{K\_\-Shold}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_Shold@{K\_\-Shold}}\item[{\em 
-{\em K\_\-Shold}\label{parser_8h_a304a294}
-}]\index{K_Speriod@{K\_\-Speriod}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_Speriod@{K\_\-Speriod}}\item[{\em 
-{\em K\_\-Speriod}\label{parser_8h_a304a295}
-}]\index{K_Srecovery@{K\_\-Srecovery}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_Srecovery@{K\_\-Srecovery}}\item[{\em 
-{\em K\_\-Srecovery}\label{parser_8h_a304a296}
-}]\index{K_Ssetup@{K\_\-Ssetup}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_Ssetup@{K\_\-Ssetup}}\item[{\em 
-{\em K\_\-Ssetup}\label{parser_8h_a304a297}
-}]\index{K_Swidth@{K\_\-Swidth}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_Swidth@{K\_\-Swidth}}\item[{\em 
-{\em K\_\-Swidth}\label{parser_8h_a304a298}
-}]\index{K_Ssetuphold@{K\_\-Ssetuphold}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_Ssetuphold@{K\_\-Ssetuphold}}\item[{\em 
-{\em K\_\-Ssetuphold}\label{parser_8h_a304a299}
-}]\index{KK_attribute@{KK\_\-attribute}!parser.h@{parser.h}}\index{parser.h@{parser.h}!KK_attribute@{KK\_\-attribute}}\item[{\em 
-{\em KK\_\-attribute}\label{parser_8h_a304a300}
-}]\index{K_TAND@{K\_\-TAND}!parser.h@{parser.h}}\index{parser.h@{parser.h}!K_TAND@{K\_\-TAND}}\item[{\em 
-{\em K\_\-TAND}\label{parser_8h_a304a301}
-}]\index{UNARY_PREC@{UNARY\_\-PREC}!parser.h@{parser.h}}\index{parser.h@{parser.h}!UNARY_PREC@{UNARY\_\-PREC}}\item[{\em 
-{\em UNARY\_\-PREC}\label{parser_8h_a304a302}
-}]\index{less_than_K_else@{less\_\-than\_\-K\_\-else}!parser.h@{parser.h}}\index{parser.h@{parser.h}!less_than_K_else@{less\_\-than\_\-K\_\-else}}\item[{\em 
-{\em less\_\-than\_\-K\_\-else}\label{parser_8h_a304a303}
-}]\end{description}
-\end{Desc}
 
 
 
 \subsection{Variable Documentation}
-\index{parser.h@{parser.h}!VLlloc@{VLlloc}}
-\index{VLlloc@{VLlloc}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf YYLTYPE} VLlloc}\label{parser_8h_a156}
-
-
 \index{parser.h@{parser.h}!VLlval@{VLlval}}
 \index{VLlval@{VLlval}!parser.h@{parser.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf YYSTYPE} VLlval}\label{parser_8h_a154}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf YYSTYPE} {\bf VLlval}}\label{parser_8h_a149}
 
 

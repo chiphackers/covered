@@ -18,7 +18,7 @@ int {\bf combination\_\-calc\_\-depth} ({\bf expression} $\ast$exp, unsigned int
 void {\bf combination\_\-get\_\-tree\_\-stats} ({\bf expression} $\ast$exp, unsigned int curr\_\-depth, float $\ast$total, int $\ast$hit)
 \item 
 void {\bf combination\_\-get\_\-stats} ({\bf exp\_\-link} $\ast$expl, float $\ast$total, int $\ast$hit)
-\begin{CompactList}\small\item\em Calculates combination logic statistics for summary output.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Calculates combination logic statistics for summary output. \item\end{CompactList}\item 
 {\bf bool} {\bf combination\_\-instance\_\-summary} (FILE $\ast$ofile, {\bf mod\_\-inst} $\ast$root, char $\ast$parent)
 \item 
 {\bf bool} {\bf combination\_\-module\_\-summary} (FILE $\ast$ofile, {\bf mod\_\-link} $\ast$head)
@@ -44,7 +44,7 @@ void {\bf combination\_\-instance\_\-verbose} (FILE $\ast$ofile, {\bf mod\_\-ins
 void {\bf combination\_\-module\_\-verbose} (FILE $\ast$ofile, {\bf mod\_\-link} $\ast$head)
 \item 
 void {\bf combination\_\-report} (FILE $\ast$ofile, {\bf bool} verbose)
-\begin{CompactList}\small\item\em Generates report output for combinational logic coverage.\item\end{CompactList}\end{CompactItemize}
+\begin{CompactList}\small\item\em Generates report output for combinational logic coverage. \item\end{CompactList}\end{CompactItemize}
 \subsection*{Variables}
 \begin{CompactItemize}
 \item 
@@ -63,18 +63,14 @@ char {\bf leading\_\-hierarchy} [4096]
 
 
 \subsection{Detailed Description}
-
-
 \begin{Desc}
-\item[Author: ]\par
-Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
-\item[Date: ]\par
-3/31/2002
-
- The functions in this file are used by the report command to calculate and display all  report output for combination logic coverage. Combinational logic coverage is calculated solely from the list of expression trees in the scored design. For each module or instance, the expression list is passed to the calculation routine which iterates through each expression tree, tallying the total number of expression values and the total number of expression values reached.
-
- Every expression contains two possible expression values during simulation: 0 and 1 (or 1+). If an expression evaluated to some unknown value, this is not recorded by Covered. If an expression has evaluated to 0, the WAS\_\-FALSE bit of the expression's supplemental field will be set. If the expression has evaluated to 1 or a value greater than 1, the WAS\_\-TRUE bit of the expression's supplemental field will be set. If both the WAS\_\-FALSE and the WAS\_\-TRUE bits are set after scoring, the expression is considered to be fully covered.\end{Desc}
+\item[Date:]3/31/2002\end{Desc}
+\begin{Desc}
+\item[]The functions in this file are used by the report command to calculate and display all report output for combination logic coverage. Combinational logic coverage is calculated solely from the list of expression trees in the scored design. For each module or instance, the expression list is passed to the calculation routine which iterates through each expression tree, tallying the total number of expression values and the total number of expression values reached.\end{Desc}
+\begin{Desc}
+\item[]Every expression contains two possible expression values during simulation: 0 and 1 (or 1+). If an expression evaluated to some unknown value, this is not recorded by Covered. If an expression has evaluated to 0, the WAS\_\-FALSE bit of the expression's supplemental field will be set. If the expression has evaluated to 1 or a value greater than 1, the WAS\_\-TRUE bit of the expression's supplemental field will be set. If both the WAS\_\-FALSE and the WAS\_\-TRUE bits are set after scoring, the expression is considered to be fully covered.\end{Desc}
 
 
 \subsection{Function Documentation}
@@ -84,55 +80,43 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-exp}]Pointer to current expression. \item[{\em 
-curr\_\-depth}]Current depth in expression tree. \item[{\em 
-left}]TRUE if evaluating for left child.\end{description}
+\item[{\em exp}]Pointer to current expression. \item[{\em curr\_\-depth}]Current depth in expression tree. \item[{\em left}]TRUE if evaluating for left child.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Returns new depth value for specified child expression.\end{Desc}
+\item[Returns:]Returns new depth value for specified child expression.\end{Desc}
 Based on the current point in the expression tree, calculates the left or right child's curr\_\-depth value. \index{comb.c@{comb.c}!combination_display_verbose@{combination\_\-display\_\-verbose}}
 \index{combination_display_verbose@{combination\_\-display\_\-verbose}!comb.c@{comb.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-display\_\-verbose (FILE $\ast$ {\em ofile}, {\bf stmt\_\-link} $\ast$ {\em stmtl})}\label{comb_8c_a18}
 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-ofile}]Pointer to file to output results to. \item[{\em 
-stmtl}]Pointer to statement list head.\end{description}
+\item[{\em ofile}]Pointer to file to output results to. \item[{\em stmtl}]Pointer to statement list head.\end{description}
 \end{Desc}
-Displays the expressions (and groups of expressions) that were considered  to be measurable (evaluates to a value of TRUE (1) or FALSE (0) but were  not hit during simulation. The entire Verilog expression is displayed to the specified output stream with each of its measured expressions being underlined and numbered. The missed combinations are then output below the Verilog code, showing those logical combinations that were not hit during simulation. \index{comb.c@{comb.c}!combination_draw_line@{combination\_\-draw\_\-line}}
+Displays the expressions (and groups of expressions) that were considered to be measurable (evaluates to a value of TRUE (1) or FALSE (0) but were not hit during simulation. The entire Verilog expression is displayed to the specified output stream with each of its measured expressions being underlined and numbered. The missed combinations are then output below the Verilog code, showing those logical combinations that were not hit during simulation. \index{comb.c@{comb.c}!combination_draw_line@{combination\_\-draw\_\-line}}
 \index{combination_draw_line@{combination\_\-draw\_\-line}!comb.c@{comb.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-draw\_\-line (char $\ast$ {\em line}, int {\em size}, int {\em exp\_\-id})}\label{comb_8c_a11}
 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-line}]Pointer to line to create line onto. \item[{\em 
-size}]Number of characters long line is. \item[{\em 
-exp\_\-id}]ID to place in underline.\end{description}
+\item[{\em line}]Pointer to line to create line onto. \item[{\em size}]Number of characters long line is. \item[{\em exp\_\-id}]ID to place in underline.\end{description}
 \end{Desc}
 Draws an underline containing the specified expression ID to the specified line. \index{comb.c@{comb.c}!combination_get_stats@{combination\_\-get\_\-stats}}
 \index{combination_get_stats@{combination\_\-get\_\-stats}!comb.c@{comb.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-get\_\-stats ({\bf exp\_\-link} $\ast$ {\em expl}, float $\ast$ {\em total}, int $\ast$ {\em hit})}\label{comb_8c_a8}
 
 
-Calculates combination logic statistics for summary output.
+Calculates combination logic statistics for summary output. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-expl}]Pointer to current expression link to evaluate. \item[{\em 
-total}]Pointer to total number of logical combinations. \item[{\em 
-hit}]Pointer to number of logical combinations hit during simulation.\end{description}
+\item[{\em expl}]Pointer to current expression link to evaluate. \item[{\em total}]Pointer to total number of logical combinations. \item[{\em hit}]Pointer to number of logical combinations hit during simulation.\end{description}
 \end{Desc}
 Iterates through specified expression list and finds all root expressions. For each root expression, the combination\_\-get\_\-tree\_\-stats function is called to generate the coverage numbers for the specified expression tree. Called by report function. \index{comb.c@{comb.c}!combination_get_tree_stats@{combination\_\-get\_\-tree\_\-stats}}
 \index{combination_get_tree_stats@{combination\_\-get\_\-tree\_\-stats}!comb.c@{comb.c}}
@@ -140,13 +124,9 @@ Iterates through specified expression list and finds all root expressions. For e
 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-exp}]Pointer to expression tree to traverse. \item[{\em 
-curr\_\-depth}]Current search depth in given expression tree. \item[{\em 
-total}]Pointer to total number of logical combinations. \item[{\em 
-hit}]Pointer to number of logical combinations hit during simulation.\end{description}
+\item[{\em exp}]Pointer to expression tree to traverse. \item[{\em curr\_\-depth}]Current search depth in given expression tree. \item[{\em total}]Pointer to total number of logical combinations. \item[{\em hit}]Pointer to number of logical combinations hit during simulation.\end{description}
 \end{Desc}
 Recursively traverses the specified expression tree, recording the total number of logical combinations in the expression list and the number of combinations hit during the course of simulation. An expression can be considered for combinational coverage if the \char`\"{}measured\char`\"{} bit is set in the expression. \index{comb.c@{comb.c}!combination_instance_summary@{combination\_\-instance\_\-summary}}
 \index{combination_instance_summary@{combination\_\-instance\_\-summary}!comb.c@{comb.c}}
@@ -154,28 +134,21 @@ Recursively traverses the specified expression tree, recording the total number 
 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-ofile}]Pointer to file to output results to. \item[{\em 
-root}]Pointer to node in instance tree to evaluate. \item[{\em 
-parent}]Name of parent instance name.\end{description}
+\item[{\em ofile}]Pointer to file to output results to. \item[{\em root}]Pointer to node in instance tree to evaluate. \item[{\em parent}]Name of parent instance name.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Returns TRUE if combinations were found to be missed; otherwise, returns FALSE.\end{Desc}
-Outputs summarized results of the combinational logic coverage per module instance to the specified output stream. Summarized results are printed  as percentages based on the number of combinations hit during simulation  divided by the total number of expression combinations possible in the  design. An expression is said to be measurable for combinational coverage  if it evaluates to a value of 0 or 1. \index{comb.c@{comb.c}!combination_instance_verbose@{combination\_\-instance\_\-verbose}}
+\item[Returns:]Returns TRUE if combinations were found to be missed; otherwise, returns FALSE.\end{Desc}
+Outputs summarized results of the combinational logic coverage per module instance to the specified output stream. Summarized results are printed as percentages based on the number of combinations hit during simulation divided by the total number of expression combinations possible in the design. An expression is said to be measurable for combinational coverage if it evaluates to a value of 0 or 1. \index{comb.c@{comb.c}!combination_instance_verbose@{combination\_\-instance\_\-verbose}}
 \index{combination_instance_verbose@{combination\_\-instance\_\-verbose}!comb.c@{comb.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-instance\_\-verbose (FILE $\ast$ {\em ofile}, {\bf mod\_\-inst} $\ast$ {\em root}, char $\ast$ {\em parent})}\label{comb_8c_a19}
 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-ofile}]Pointer to file to output results to. \item[{\em 
-root}]Pointer to current module instance to evaluate. \item[{\em 
-parent}]Name of parent instance.\end{description}
+\item[{\em ofile}]Pointer to file to output results to. \item[{\em root}]Pointer to current module instance to evaluate. \item[{\em parent}]Name of parent instance.\end{description}
 \end{Desc}
 Outputs the verbose coverage report for the specified module instance to the specified output stream. \index{comb.c@{comb.c}!combination_list_missed@{combination\_\-list\_\-missed}}
 \index{combination_list_missed@{combination\_\-list\_\-missed}!comb.c@{comb.c}}
@@ -183,13 +156,9 @@ Outputs the verbose coverage report for the specified module instance to the spe
 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-ofile}]Pointer to file to output results to. \item[{\em 
-exp}]Pointer to expression tree to evaluate. \item[{\em 
-curr\_\-depth}]Specifies current depth of expression tree. \item[{\em 
-exp\_\-id}]Pointer to current expression ID to use.\end{description}
+\item[{\em ofile}]Pointer to file to output results to. \item[{\em exp}]Pointer to expression tree to evaluate. \item[{\em curr\_\-depth}]Specifies current depth of expression tree. \item[{\em exp\_\-id}]Pointer to current expression ID to use.\end{description}
 \end{Desc}
 Describe which combinations were not hit for all subexpressions in the specified expression tree. We display the value of missed combinations by displaying the combinations of the children expressions that were not run during simulation. \index{comb.c@{comb.c}!combination_missed_expr@{combination\_\-missed\_\-expr}}
 \index{combination_missed_expr@{combination\_\-missed\_\-expr}!comb.c@{comb.c}}
@@ -197,11 +166,9 @@ Describe which combinations were not hit for all subexpressions in the specified
 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-expr}]Pointer to root of expression tree to search. \item[{\em 
-curr\_\-depth}]Specifies current depth of expression tree.\end{description}
+\item[{\em expr}]Pointer to root of expression tree to search. \item[{\em curr\_\-depth}]Specifies current depth of expression tree.\end{description}
 \end{Desc}
 Recursively traverses specified expression tree, returning TRUE if an expression is found that has not received 100\% coverage for combinational logic. \index{comb.c@{comb.c}!combination_module_summary@{combination\_\-module\_\-summary}}
 \index{combination_module_summary@{combination\_\-module\_\-summary}!comb.c@{comb.c}}
@@ -209,58 +176,43 @@ Recursively traverses specified expression tree, returning TRUE if an expression
 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-ofile}]Pointer to file to output results to. \item[{\em 
-head}]Pointer to link in current module list to evaluate.\end{description}
+\item[{\em ofile}]Pointer to file to output results to. \item[{\em head}]Pointer to link in current module list to evaluate.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Returns TRUE if combinations were found to be missed; otherwise, returns FALSE.\end{Desc}
-Outputs summarized results of the combinational logic coverage per module to the specified output stream. Summarized results are printed as  percentages based on the number of combinations hit during simulation  divided by the total number of expression combinations possible in the  design. An expression is said to be measurable for combinational coverage  if it evaluates to a value of 0 or 1. \index{comb.c@{comb.c}!combination_module_verbose@{combination\_\-module\_\-verbose}}
+\item[Returns:]Returns TRUE if combinations were found to be missed; otherwise, returns FALSE.\end{Desc}
+Outputs summarized results of the combinational logic coverage per module to the specified output stream. Summarized results are printed as percentages based on the number of combinations hit during simulation divided by the total number of expression combinations possible in the design. An expression is said to be measurable for combinational coverage if it evaluates to a value of 0 or 1. \index{comb.c@{comb.c}!combination_module_verbose@{combination\_\-module\_\-verbose}}
 \index{combination_module_verbose@{combination\_\-module\_\-verbose}!comb.c@{comb.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-module\_\-verbose (FILE $\ast$ {\em ofile}, {\bf mod\_\-link} $\ast$ {\em head})}\label{comb_8c_a20}
 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-ofile}]Pointer to file to output results to. \item[{\em 
-head}]Pointer to current module to evaluate.\end{description}
+\item[{\em ofile}]Pointer to file to output results to. \item[{\em head}]Pointer to current module to evaluate.\end{description}
 \end{Desc}
 Outputs the verbose coverage report for the specified module to the specified output stream. \index{comb.c@{comb.c}!combination_report@{combination\_\-report}}
 \index{combination_report@{combination\_\-report}!comb.c@{comb.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-report (FILE $\ast$ {\em ofile}, {\bf bool} {\em verbose})}\label{comb_8c_a21}
 
 
-Generates report output for combinational logic coverage.
+Generates report output for combinational logic coverage. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-ofile}]Pointer to file to output results to. \item[{\em 
-verbose}]Specifies whether or not to provide verbose information\end{description}
+\item[{\em ofile}]Pointer to file to output results to. \item[{\em verbose}]Specifies whether or not to provide verbose information\end{description}
 \end{Desc}
-After the design is read into the module hierarchy, parses the hierarchy by module, reporting the combinational logic coverage for each module encountered. The parent  module will specify its own combinational logic coverage along with a total combinational logic coverage including its children. \index{comb.c@{comb.c}!combination_two_vars@{combination\_\-two\_\-vars}}
+After the design is read into the module hierarchy, parses the hierarchy by module, reporting the combinational logic coverage for each module encountered. The parent module will specify its own combinational logic coverage along with a total combinational logic coverage including its children. \index{comb.c@{comb.c}!combination_two_vars@{combination\_\-two\_\-vars}}
 \index{combination_two_vars@{combination\_\-two\_\-vars}!comb.c@{comb.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-two\_\-vars (FILE $\ast$ {\em ofile}, {\bf expression} $\ast$ {\em exp}, int {\em val0}, int {\em val1}, int {\em val2}, int {\em val3}, int {\em id}, char $\ast$ {\em op})}\label{comb_8c_a15}
 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-ofile}]Pointer to file to output results to. \item[{\em 
-exp}]Pointer to expression to evaluate. \item[{\em 
-val0}]When operation is evaluated, contains result when left == 0 and right == 0 \item[{\em 
-val1}]When operation is evaluated, contains result when left == 0 and right == 1 \item[{\em 
-val2}]When operation is evaluated, contains result when left == 1 and right == 0 \item[{\em 
-val3}]When operation is evaluated, contains result when left == 1 and right == 1 \item[{\em 
-id}]ID of current expression. \item[{\em 
-op}]String showing current expression operation type.\end{description}
+\item[{\em ofile}]Pointer to file to output results to. \item[{\em exp}]Pointer to expression to evaluate. \item[{\em val0}]When operation is evaluated, contains result when left == 0 and right == 0 \item[{\em val1}]When operation is evaluated, contains result when left == 0 and right == 1 \item[{\em val2}]When operation is evaluated, contains result when left == 1 and right == 0 \item[{\em val3}]When operation is evaluated, contains result when left == 1 and right == 1 \item[{\em id}]ID of current expression. \item[{\em op}]String showing current expression operation type.\end{description}
 \end{Desc}
 Displays the missed combinational sequences for the specified expression to the specified output stream in tabular form. \index{comb.c@{comb.c}!combination_unary@{combination\_\-unary}}
 \index{combination_unary@{combination\_\-unary}!comb.c@{comb.c}}
@@ -268,13 +220,9 @@ Displays the missed combinational sequences for the specified expression to the 
 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-ofile}]Pointer to file to output results to. \item[{\em 
-exp}]Pointer to expression to evaluate. \item[{\em 
-id}]ID of current expression. \item[{\em 
-op}]String showing current expression operation type.\end{description}
+\item[{\em ofile}]Pointer to file to output results to. \item[{\em exp}]Pointer to expression to evaluate. \item[{\em id}]ID of current expression. \item[{\em op}]String showing current expression operation type.\end{description}
 \end{Desc}
 Displays the missed unary combination(s) that keep the combination coverage for the specified expression from achieving 100\% coverage. \index{comb.c@{comb.c}!combination_underline@{combination\_\-underline}}
 \index{combination_underline@{combination\_\-underline}!comb.c@{comb.c}}
@@ -282,12 +230,9 @@ Displays the missed unary combination(s) that keep the combination coverage for 
 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-ofile}]Pointer output stream to display underlines to. \item[{\em 
-exp}]Pointer to parent expression to create underline for. \item[{\em 
-begin\_\-sp}]Spacing that is placed at the beginning of the generated line.\end{description}
+\item[{\em ofile}]Pointer output stream to display underlines to. \item[{\em exp}]Pointer to parent expression to create underline for. \item[{\em begin\_\-sp}]Spacing that is placed at the beginning of the generated line.\end{description}
 \end{Desc}
 Traverses through the expression tree that is on the same line as the parent, creating underline strings. An underline is created for each expression that does not have complete combination logic coverage. Each underline (children to parent creates an inverted tree) and contains a number for the specified expression. \index{comb.c@{comb.c}!combination_underline_tree@{combination\_\-underline\_\-tree}}
 \index{combination_underline_tree@{combination\_\-underline\_\-tree}!comb.c@{comb.c}}
@@ -295,47 +240,41 @@ Traverses through the expression tree that is on the same line as the parent, cr
 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-exp}]Pointer to expression to create underline for. \item[{\em 
-curr\_\-depth}]Specifies current depth in expression tree. \item[{\em 
-lines}]Stack of lines for left child. \item[{\em 
-depth}]Pointer to top of left child stack. \item[{\em 
-size}]Pointer to character width of this node. \item[{\em 
-exp\_\-id}]Pointer to current expression ID to use in labeling. \item[{\em 
-parent\_\-op}]Expression operation of parent used for calculating parenthesis.\end{description}
+\item[{\em exp}]Pointer to expression to create underline for. \item[{\em curr\_\-depth}]Specifies current depth in expression tree. \item[{\em lines}]Stack of lines for left child. \item[{\em depth}]Pointer to top of left child stack. \item[{\em size}]Pointer to character width of this node. \item[{\em exp\_\-id}]Pointer to current expression ID to use in labeling. \item[{\em parent\_\-op}]Expression operation of parent used for calculating parenthesis.\end{description}
 \end{Desc}
 Recursively parses specified expression tree, underlining and labeling each measurable expression. 
 
 \subsection{Variable Documentation}
 \index{comb.c@{comb.c}!instance_root@{instance\_\-root}}
 \index{instance_root@{instance\_\-root}!comb.c@{comb.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-inst}$\ast$ instance\_\-root}\label{comb_8c_a0}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-inst}$\ast$ {\bf instance\_\-root} ()}\label{comb_8c_a0}
 
 
-\index{comb.c@{comb.c}!leading_hierarchy@{leading\_\-hierarchy}}
+Pointer to root of module instance tree \index{comb.c@{comb.c}!leading_hierarchy@{leading\_\-hierarchy}}
 \index{leading_hierarchy@{leading\_\-hierarchy}!comb.c@{comb.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char leading\_\-hierarchy[4096]}\label{comb_8c_a5}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char {\bf leading\_\-hierarchy}[4096] ()}\label{comb_8c_a5}
 
 
-\index{comb.c@{comb.c}!mod_head@{mod\_\-head}}
+This string specifies the Verilog hierarchy leading up to the DUT. This value is taken from the -i value (or is a value of '$\ast$' if the -t option is only specified). \index{comb.c@{comb.c}!mod_head@{mod\_\-head}}
 \index{mod_head@{mod\_\-head}!comb.c@{comb.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-link}$\ast$ mod\_\-head}\label{comb_8c_a1}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-link}$\ast$ {\bf mod\_\-head} ()}\label{comb_8c_a1}
 
 
-\index{comb.c@{comb.c}!report_comb_depth@{report\_\-comb\_\-depth}}
+Pointer to head element of module list \index{comb.c@{comb.c}!report_comb_depth@{report\_\-comb\_\-depth}}
 \index{report_comb_depth@{report\_\-comb\_\-depth}!comb.c@{comb.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}unsigned int report\_\-comb\_\-depth}\label{comb_8c_a3}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}unsigned int {\bf report\_\-comb\_\-depth} ()}\label{comb_8c_a3}
 
 
-\index{comb.c@{comb.c}!report_covered@{report\_\-covered}}
+If set to a non-zero value, causes Covered to only generate combinational logic report information for depths up to the number specified. \index{comb.c@{comb.c}!report_covered@{report\_\-covered}}
 \index{report_covered@{report\_\-covered}!comb.c@{comb.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} report\_\-covered}\label{comb_8c_a2}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} {\bf report\_\-covered} ()}\label{comb_8c_a2}
 
 
-\index{comb.c@{comb.c}!report_instance@{report\_\-instance}}
+If set to a boolean value of TRUE, displays covered logic for a particular CDD file. By default, Covered will display uncovered logic. Must be used in conjunction with the -v (verbose output) option. \index{comb.c@{comb.c}!report_instance@{report\_\-instance}}
 \index{report_instance@{report\_\-instance}!comb.c@{comb.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} report\_\-instance}\label{comb_8c_a4}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} {\bf report\_\-instance} ()}\label{comb_8c_a4}
 
 
+If set to a boolean value of TRUE, provides a coverage information for individual module instances. If set to a value of FALSE, reports coverage information on a module basis, merging results from all instances of same module. 

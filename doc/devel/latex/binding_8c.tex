@@ -15,13 +15,13 @@
 \begin{CompactItemize}
 \item 
 void {\bf bind\_\-add} (char $\ast$sig\_\-name, {\bf expression} $\ast$exp, {\bf module} $\ast$mod)
-\begin{CompactList}\small\item\em Adds signal and expression to binding list.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Adds signal and expression to binding list. \item\end{CompactList}\item 
 void {\bf bind\_\-remove} (int id)
-\begin{CompactList}\small\item\em Removes the expression with ID of id from binding list.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Removes the expression with ID of id from binding list. \item\end{CompactList}\item 
 {\bf bool} {\bf bind\_\-perform} (char $\ast$sig\_\-name, {\bf expression} $\ast$exp, {\bf module} $\ast$mod\_\-sig, {\bf module} $\ast$mod\_\-exp, {\bf bool} implicit\_\-allowed)
-\begin{CompactList}\small\item\em Finds signal in module and bind the expression to this signal.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Finds signal in module and bind the expression to this signal. \item\end{CompactList}\item 
 void {\bf bind} ()
-\begin{CompactList}\small\item\em Performs signal/expression bind (performed after parse completed).\item\end{CompactList}\end{CompactItemize}
+\begin{CompactList}\small\item\em Performs signal/expression bind (performed after parse completed). \item\end{CompactList}\end{CompactItemize}
 \subsection*{Variables}
 \begin{CompactItemize}
 \item 
@@ -38,20 +38,13 @@ char {\bf user\_\-msg} [USER\_\-MSG\_\-LENGTH]
 
 
 \subsection{Detailed Description}
-
-
 \begin{Desc}
-\item[Author: ]\par
-Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
-\item[Date: ]\par
-3/4/2002\end{Desc}
+\item[Date:]3/4/2002\end{Desc}
 \begin{Desc}
-\item[Binding]\par
- Binding is the process of setting pointers in signals and expressions to point to each other. These pointers are required for scoring purposes. Binding is required for two purposes:\begin{enumerate}
-\item 
-The signal that is being bound may not have been parsed (hierarchical referencing allows for this).\item 
-An expression does not have a pointer to a signal but rather its vector.\end{enumerate}
+\item[Binding]Binding is the process of setting pointers in signals and expressions to point to each other. These pointers are required for scoring purposes. Binding is required for two purposes:\begin{enumerate}
+\item The signal that is being bound may not have been parsed (hierarchical referencing allows for this).\item An expression does not have a pointer to a signal but rather its vector.\end{enumerate}
 \end{Desc}
 
 
@@ -61,81 +54,72 @@ An expression does not have a pointer to a signal but rather its vector.\end{enu
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void bind ()}\label{binding_8c_a8}
 
 
-Performs signal/expression bind (performed after parse completed).
+Performs signal/expression bind (performed after parse completed). 
 
 In the process of binding, we go through each element of the binding list, finding the signal to be bound in the specified tree, adding the expression to the signal's expression pointer list, and setting the expression vector pointer to point to the signal vector. \index{binding.c@{binding.c}!bind_add@{bind\_\-add}}
 \index{bind_add@{bind\_\-add}!binding.c@{binding.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void bind\_\-add (char $\ast$ {\em sig\_\-name}, {\bf expression} $\ast$ {\em exp}, {\bf module} $\ast$ {\em mod})}\label{binding_8c_a5}
 
 
-Adds signal and expression to binding list.
+Adds signal and expression to binding list. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-sig\_\-name}]Signal scope to bind. \item[{\em 
-exp}]Expression ID to bind. \item[{\em 
-mod}]Pointer to module containing specified expression.\end{description}
+\item[{\em sig\_\-name}]Signal scope to bind. \item[{\em exp}]Expression ID to bind. \item[{\em mod}]Pointer to module containing specified expression.\end{description}
 \end{Desc}
 Adds the specified signal and expression to the bindings linked list. This bindings list will be handled after all input Verilog has been parsed. \index{binding.c@{binding.c}!bind_perform@{bind\_\-perform}}
 \index{bind_perform@{bind\_\-perform}!binding.c@{binding.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} bind\_\-perform (char $\ast$ {\em sig\_\-name}, {\bf expression} $\ast$ {\em exp}, {\bf module} $\ast$ {\em mod\_\-sig}, {\bf module} $\ast$ {\em mod\_\-exp}, {\bf bool} {\em implicit\_\-allowed})}\label{binding_8c_a7}
 
 
-Finds signal in module and bind the expression to this signal.
+Finds signal in module and bind the expression to this signal. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-sig\_\-name}]String name of signal to bind to specified expression. \item[{\em 
-exp}]Pointer to expression to bind. \item[{\em 
-mod\_\-sig}]Pointer to module containing signal. \item[{\em 
-mod\_\-exp}]Pointer to module containing expression. \item[{\em 
-implicit\_\-allowed}]If set to TRUE, creates any signals that are implicitly defined.\end{description}
+\item[{\em sig\_\-name}]String name of signal to bind to specified expression. \item[{\em exp}]Pointer to expression to bind. \item[{\em mod\_\-sig}]Pointer to module containing signal. \item[{\em mod\_\-exp}]Pointer to module containing expression. \item[{\em implicit\_\-allowed}]If set to TRUE, creates any signals that are implicitly defined.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Returns TRUE if bind occurred successfully; otherwise, returns FALSE.\end{Desc}
+\item[Returns:]Returns TRUE if bind occurred successfully; otherwise, returns FALSE.\end{Desc}
 Performs a binding of an expression and signal based on the name of the signal. Looks up signal name in the specified module and sets the expression and signal to point to each other. If the signal name is not found, it is checked to see if the signal is an unused type (name preceded by the '!' character). If the signal is unused, the bind does not occur and the function returns a value of FALSE. If the signal neither exists or is an unused signal, it is considered to be an implicit signal and a 1-bit signal is created. \index{binding.c@{binding.c}!bind_remove@{bind\_\-remove}}
 \index{bind_remove@{bind\_\-remove}!binding.c@{binding.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void bind\_\-remove (int {\em id})}\label{binding_8c_a6}
 
 
-Removes the expression with ID of id from binding list.
+Removes the expression with ID of id from binding list. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-id}]Expression ID of binding to remove.\end{description}
+\item[{\em id}]Expression ID of binding to remove.\end{description}
 \end{Desc}
 Removes the binding containing the expression ID of id. This needs to be called before an expression is removed. 
 
 \subsection{Variable Documentation}
 \index{binding.c@{binding.c}!instance_root@{instance\_\-root}}
 \index{instance_root@{instance\_\-root}!binding.c@{binding.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-inst}$\ast$ instance\_\-root}\label{binding_8c_a2}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-inst}$\ast$ {\bf instance\_\-root} ()}\label{binding_8c_a2}
 
 
-\index{binding.c@{binding.c}!mod_head@{mod\_\-head}}
+Pointer to root of module instance tree \index{binding.c@{binding.c}!mod_head@{mod\_\-head}}
 \index{mod_head@{mod\_\-head}!binding.c@{binding.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-link}$\ast$ mod\_\-head}\label{binding_8c_a3}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-link}$\ast$ {\bf mod\_\-head} ()}\label{binding_8c_a3}
 
 
-\index{binding.c@{binding.c}!seb_head@{seb\_\-head}}
+Pointer to head element of module list \index{binding.c@{binding.c}!seb_head@{seb\_\-head}}
 \index{seb_head@{seb\_\-head}!binding.c@{binding.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf sig\_\-exp\_\-bind}$\ast$ seb\_\-head}\label{binding_8c_a0}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf sig\_\-exp\_\-bind}$\ast$ {\bf seb\_\-head}}\label{binding_8c_a0}
 
 
 \index{binding.c@{binding.c}!seb_tail@{seb\_\-tail}}
 \index{seb_tail@{seb\_\-tail}!binding.c@{binding.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf sig\_\-exp\_\-bind}$\ast$ seb\_\-tail}\label{binding_8c_a1}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf sig\_\-exp\_\-bind}$\ast$ {\bf seb\_\-tail}}\label{binding_8c_a1}
 
 
 \index{binding.c@{binding.c}!user_msg@{user\_\-msg}}
 \index{user_msg@{user\_\-msg}!binding.c@{binding.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char user\_\-msg[USER\_\-MSG\_\-LENGTH]}\label{binding_8c_a4}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char {\bf user\_\-msg}[USER\_\-MSG\_\-LENGTH] ()}\label{binding_8c_a4}
 
 
+Holds some output that will be displayed via the print\_\-output command. This is created globally so that memory does not need to be reallocated for each function that wishes to use it. 

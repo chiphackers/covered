@@ -1,6 +1,6 @@
 \section{link.h File Reference}
 \label{link_8h}\index{link.h@{link.h}}
-Contains functions to manipulate a linked lists. 
+Contains functions to manipulate a linked lists.  
 
 
 {\tt \#include \char`\"{}defines.h\char`\"{}}\par
@@ -8,64 +8,60 @@ Contains functions to manipulate a linked lists.
 \begin{CompactItemize}
 \item 
 void {\bf str\_\-link\_\-add} (char $\ast$str, {\bf str\_\-link} $\ast$$\ast$head, {\bf str\_\-link} $\ast$$\ast$tail)
-\begin{CompactList}\small\item\em Adds specified string to str\_\-link element at the end of the list.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Adds specified string to str\_\-link element at the end of the list. \item\end{CompactList}\item 
 void {\bf stmt\_\-link\_\-add\_\-head} ({\bf statement} $\ast$stmt, {\bf stmt\_\-link} $\ast$$\ast$head, {\bf stmt\_\-link} $\ast$$\ast$tail)
-\begin{CompactList}\small\item\em Adds specified statement to stmt\_\-link element at the beginning of the list.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Adds specified statement to stmt\_\-link element at the beginning of the list. \item\end{CompactList}\item 
 void {\bf stmt\_\-link\_\-add\_\-tail} ({\bf statement} $\ast$stmt, {\bf stmt\_\-link} $\ast$$\ast$head, {\bf stmt\_\-link} $\ast$$\ast$tail)
-\begin{CompactList}\small\item\em Adds specified statement to stmt\_\-link element at the end of the list.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Adds specified statement to stmt\_\-link element at the end of the list. \item\end{CompactList}\item 
 void {\bf exp\_\-link\_\-add} ({\bf expression} $\ast$expr, {\bf exp\_\-link} $\ast$$\ast$head, {\bf exp\_\-link} $\ast$$\ast$tail)
-\begin{CompactList}\small\item\em Adds specified expression to exp\_\-link element at the end of the list.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Adds specified expression to exp\_\-link element at the end of the list. \item\end{CompactList}\item 
 void {\bf sig\_\-link\_\-add} ({\bf signal} $\ast$sig, {\bf sig\_\-link} $\ast$$\ast$head, {\bf sig\_\-link} $\ast$$\ast$tail)
-\begin{CompactList}\small\item\em Adds specified signal to sig\_\-link element at the end of the list.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Adds specified signal to sig\_\-link element at the end of the list. \item\end{CompactList}\item 
 void {\bf mod\_\-link\_\-add} ({\bf module} $\ast$mod, {\bf mod\_\-link} $\ast$$\ast$head, {\bf mod\_\-link} $\ast$$\ast$tail)
-\begin{CompactList}\small\item\em Adds specified module to mod\_\-link element at the end of the list.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Adds specified module to mod\_\-link element at the end of the list. \item\end{CompactList}\item 
 void {\bf str\_\-link\_\-display} ({\bf str\_\-link} $\ast$head)
-\begin{CompactList}\small\item\em Displays specified string list to standard output.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Displays specified string list to standard output. \item\end{CompactList}\item 
 void {\bf stmt\_\-link\_\-display} ({\bf stmt\_\-link} $\ast$head)
-\begin{CompactList}\small\item\em Displays specified statement list to standard output.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Displays specified statement list to standard output. \item\end{CompactList}\item 
 void {\bf exp\_\-link\_\-display} ({\bf exp\_\-link} $\ast$head)
-\begin{CompactList}\small\item\em Displays specified expression list to standard output.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Displays specified expression list to standard output. \item\end{CompactList}\item 
 void {\bf sig\_\-link\_\-display} ({\bf sig\_\-link} $\ast$head)
-\begin{CompactList}\small\item\em Displays specified signal list to standard output.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Displays specified signal list to standard output. \item\end{CompactList}\item 
 void {\bf mod\_\-link\_\-display} ({\bf mod\_\-link} $\ast$head)
-\begin{CompactList}\small\item\em Displays specified module list to standard output.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Displays specified module list to standard output. \item\end{CompactList}\item 
 {\bf str\_\-link} $\ast$ {\bf str\_\-link\_\-find} (char $\ast$value, {\bf str\_\-link} $\ast$head)
-\begin{CompactList}\small\item\em Finds specified string in the given str\_\-link list.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Finds specified string in the given str\_\-link list. \item\end{CompactList}\item 
 {\bf stmt\_\-link} $\ast$ {\bf stmt\_\-link\_\-find} (int id, {\bf stmt\_\-link} $\ast$head)
-\begin{CompactList}\small\item\em Finds specified statement in the given stmt\_\-link list.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Finds specified statement in the given stmt\_\-link list. \item\end{CompactList}\item 
 {\bf exp\_\-link} $\ast$ {\bf exp\_\-link\_\-find} ({\bf expression} $\ast$exp, {\bf exp\_\-link} $\ast$head)
-\begin{CompactList}\small\item\em Finds specified expression in the given exp\_\-link list.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Finds specified expression in the given exp\_\-link list. \item\end{CompactList}\item 
 {\bf sig\_\-link} $\ast$ {\bf sig\_\-link\_\-find} ({\bf signal} $\ast$sig, {\bf sig\_\-link} $\ast$head)
-\begin{CompactList}\small\item\em Finds specified signal in given sig\_\-link list.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Finds specified signal in given sig\_\-link list. \item\end{CompactList}\item 
 {\bf mod\_\-link} $\ast$ {\bf mod\_\-link\_\-find} ({\bf module} $\ast$mod, {\bf mod\_\-link} $\ast$head)
-\begin{CompactList}\small\item\em Finds specified module in given mod\_\-link list.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Finds specified module in given mod\_\-link list. \item\end{CompactList}\item 
 void {\bf str\_\-link\_\-remove} (char $\ast$str, {\bf str\_\-link} $\ast$$\ast$head, {\bf str\_\-link} $\ast$$\ast$tail)
-\begin{CompactList}\small\item\em Searches for and removes specified string link from list.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Searches for and removes specified string link from list. \item\end{CompactList}\item 
 void {\bf exp\_\-link\_\-remove} ({\bf expression} $\ast$exp, {\bf exp\_\-link} $\ast$$\ast$head, {\bf exp\_\-link} $\ast$$\ast$tail, {\bf bool} recursive)
-\begin{CompactList}\small\item\em Searches for and removes specified expression link from list.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Searches for and removes specified expression link from list. \item\end{CompactList}\item 
 void {\bf str\_\-link\_\-delete\_\-list} ({\bf str\_\-link} $\ast$head)
-\begin{CompactList}\small\item\em Deletes entire list specified by head pointer.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Deletes entire list specified by head pointer. \item\end{CompactList}\item 
 void {\bf stmt\_\-link\_\-delete\_\-list} ({\bf stmt\_\-link} $\ast$head)
-\begin{CompactList}\small\item\em Deletes entire list specified by head pointer.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Deletes entire list specified by head pointer. \item\end{CompactList}\item 
 void {\bf exp\_\-link\_\-delete\_\-list} ({\bf exp\_\-link} $\ast$head, {\bf bool} del\_\-exp)
-\begin{CompactList}\small\item\em Deletes entire list specified by head pointer.\item\end{CompactList}\item 
-void {\bf sig\_\-link\_\-delete\_\-list} ({\bf sig\_\-link} $\ast$head)
-\begin{CompactList}\small\item\em Deletes entire list specified by head pointer.\item\end{CompactList}\item 
+\begin{CompactList}\small\item\em Deletes entire list specified by head pointer. \item\end{CompactList}\item 
+void {\bf sig\_\-link\_\-delete\_\-list} ({\bf sig\_\-link} $\ast$head, {\bf bool} del\_\-sig)
+\begin{CompactList}\small\item\em Deletes entire list specified by head pointer. \item\end{CompactList}\item 
 void {\bf mod\_\-link\_\-delete\_\-list} ({\bf mod\_\-link} $\ast$head)
-\begin{CompactList}\small\item\em Deletes entire list specified by head pointer.\item\end{CompactList}\end{CompactItemize}
+\begin{CompactList}\small\item\em Deletes entire list specified by head pointer. \item\end{CompactList}\end{CompactItemize}
 
 
 \subsection{Detailed Description}
-Contains functions to manipulate a linked lists.
-
-
+Contains functions to manipulate a linked lists. 
 
 \begin{Desc}
-\item[Author: ]\par
-Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\item[Author:]Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \begin{Desc}
-\item[Date: ]\par
-11/28/2001\end{Desc}
+\item[Date:]11/28/2001 \end{Desc}
 
 
 \subsection{Function Documentation}
@@ -74,336 +70,285 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void exp\_\-link\_\-add ({\bf expression} $\ast$ {\em expr}, {\bf exp\_\-link} $\ast$$\ast$ {\em head}, {\bf exp\_\-link} $\ast$$\ast$ {\em tail})}\label{link_8h_a3}
 
 
-Adds specified expression to exp\_\-link element at the end of the list.
+Adds specified expression to exp\_\-link element at the end of the list. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-expr}]Expression to add to specified expression list. \item[{\em 
-head}]Pointer to head exp\_\-link element of list. \item[{\em 
-tail}]Pointer to tail exp\_\-link element of list.\end{description}
+\item[{\em expr}]Expression to add to specified expression list. \item[{\em head}]Pointer to head exp\_\-link element of list. \item[{\em tail}]Pointer to tail exp\_\-link element of list.\end{description}
 \end{Desc}
 Creates a new exp\_\-link element with the value specified for expr. Sets next pointer of element to NULL, sets the tail element to point to the new element and sets the tail value to the new element. \index{link.h@{link.h}!exp_link_delete_list@{exp\_\-link\_\-delete\_\-list}}
 \index{exp_link_delete_list@{exp\_\-link\_\-delete\_\-list}!link.h@{link.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void exp\_\-link\_\-delete\_\-list ({\bf exp\_\-link} $\ast$ {\em head}, {\bf bool} {\em del\_\-exp})}\label{link_8h_a20}
 
 
-Deletes entire list specified by head pointer.
+Deletes entire list specified by head pointer. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-head}]Pointer to head exp\_\-link element of list. \item[{\em 
-del\_\-exp}]If set to TRUE, deallocates the expression; otherwise, leaves expression alone.\end{description}
+\item[{\em head}]Pointer to head exp\_\-link element of list. \item[{\em del\_\-exp}]If set to TRUE, deallocates the expression; otherwise, leaves expression alone.\end{description}
 \end{Desc}
 Deletes each element of the specified list. \index{link.h@{link.h}!exp_link_display@{exp\_\-link\_\-display}}
 \index{exp_link_display@{exp\_\-link\_\-display}!link.h@{link.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void exp\_\-link\_\-display ({\bf exp\_\-link} $\ast$ {\em head})}\label{link_8h_a8}
 
 
-Displays specified expression list to standard output.
+Displays specified expression list to standard output. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-head}]Pointer to head of exp\_\-link list.\end{description}
+\item[{\em head}]Pointer to head of exp\_\-link list.\end{description}
 \end{Desc}
 Displays the string contents of the exp\_\-link list pointed to by head to standard output. This function is mainly used for debugging purposes. \index{link.h@{link.h}!exp_link_find@{exp\_\-link\_\-find}}
 \index{exp_link_find@{exp\_\-link\_\-find}!link.h@{link.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf exp\_\-link}$\ast$ exp\_\-link\_\-find ({\bf expression} $\ast$ {\em exp}, {\bf exp\_\-link} $\ast$ {\em head})}\label{link_8h_a13}
 
 
-Finds specified expression in the given exp\_\-link list.
+Finds specified expression in the given exp\_\-link list. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-exp}]Pointer to expression to find. \item[{\em 
-head}]Pointer to head of exp\_\-link list to search.\end{description}
+\item[{\em exp}]Pointer to expression to find. \item[{\em head}]Pointer to head of exp\_\-link list to search.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Returns the pointer to the found exp\_\-link or NULL if the search was unsuccessful.\end{Desc}
+\item[Returns:]Returns the pointer to the found exp\_\-link or NULL if the search was unsuccessful.\end{Desc}
 Iteratively searches the exp\_\-link list specified by the head exp\_\-link element. If a matching expression is found, the pointer to this element is returned. If the specified expression could not be matched, the value of NULL is returned. \index{link.h@{link.h}!exp_link_remove@{exp\_\-link\_\-remove}}
 \index{exp_link_remove@{exp\_\-link\_\-remove}!link.h@{link.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void exp\_\-link\_\-remove ({\bf expression} $\ast$ {\em exp}, {\bf exp\_\-link} $\ast$$\ast$ {\em head}, {\bf exp\_\-link} $\ast$$\ast$ {\em tail}, {\bf bool} {\em recursive})}\label{link_8h_a17}
 
 
-Searches for and removes specified expression link from list.
+Searches for and removes specified expression link from list. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-exp}]Pointer to expression to find and remove. \item[{\em 
-head}]Pointer to head of expression list. \item[{\em 
-tail}]Pointer to tail of expression list. \item[{\em 
-recursive}]If TRUE, recursively removes expression tree and expressions.\end{description}
+\item[{\em exp}]Pointer to expression to find and remove. \item[{\em head}]Pointer to head of expression list. \item[{\em tail}]Pointer to tail of expression list. \item[{\em recursive}]If TRUE, recursively removes expression tree and expressions.\end{description}
 \end{Desc}
 Searches specified list for expression that matches the specified expression. If a match is found, remove it from the list and deallocate the link memory. \index{link.h@{link.h}!mod_link_add@{mod\_\-link\_\-add}}
 \index{mod_link_add@{mod\_\-link\_\-add}!link.h@{link.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void mod\_\-link\_\-add ({\bf module} $\ast$ {\em mod}, {\bf mod\_\-link} $\ast$$\ast$ {\em head}, {\bf mod\_\-link} $\ast$$\ast$ {\em tail})}\label{link_8h_a5}
 
 
-Adds specified module to mod\_\-link element at the end of the list.
+Adds specified module to mod\_\-link element at the end of the list. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-mod}]Module to add to specified module list. \item[{\em 
-head}]Pointer to head mod\_\-link element of list. \item[{\em 
-tail}]Pointer to tail mod\_\-link element of list.\end{description}
+\item[{\em mod}]Module to add to specified module list. \item[{\em head}]Pointer to head mod\_\-link element of list. \item[{\em tail}]Pointer to tail mod\_\-link element of list.\end{description}
 \end{Desc}
 Creates a new mod\_\-link element with the value specified for mod. Sets next pointer of element to NULL, sets the tail element to point to the new element and sets the tail value to the new element. \index{link.h@{link.h}!mod_link_delete_list@{mod\_\-link\_\-delete\_\-list}}
 \index{mod_link_delete_list@{mod\_\-link\_\-delete\_\-list}!link.h@{link.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void mod\_\-link\_\-delete\_\-list ({\bf mod\_\-link} $\ast$ {\em head})}\label{link_8h_a22}
 
 
-Deletes entire list specified by head pointer.
+Deletes entire list specified by head pointer. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-head}]Pointer to head mod\_\-link element of list.\end{description}
+\item[{\em head}]Pointer to head mod\_\-link element of list.\end{description}
 \end{Desc}
 Deletes each element of the specified list. \index{link.h@{link.h}!mod_link_display@{mod\_\-link\_\-display}}
 \index{mod_link_display@{mod\_\-link\_\-display}!link.h@{link.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void mod\_\-link\_\-display ({\bf mod\_\-link} $\ast$ {\em head})}\label{link_8h_a10}
 
 
-Displays specified module list to standard output.
+Displays specified module list to standard output. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-head}]Pointer to head of mod\_\-link list.\end{description}
+\item[{\em head}]Pointer to head of mod\_\-link list.\end{description}
 \end{Desc}
 Displays the string contents of the mod\_\-link list pointed to by head to standard output. This function is mainly used for debugging purposes. \index{link.h@{link.h}!mod_link_find@{mod\_\-link\_\-find}}
 \index{mod_link_find@{mod\_\-link\_\-find}!link.h@{link.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-link}$\ast$ mod\_\-link\_\-find ({\bf module} $\ast$ {\em mod}, {\bf mod\_\-link} $\ast$ {\em head})}\label{link_8h_a15}
 
 
-Finds specified module in given mod\_\-link list.
+Finds specified module in given mod\_\-link list. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-mod}]Pointer to module to find. \item[{\em 
-head}]Pointer to head of mod\_\-link list to search.\end{description}
+\item[{\em mod}]Pointer to module to find. \item[{\em head}]Pointer to head of mod\_\-link list to search.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Returns the pointer to the found mod\_\-link or NULL if the search was unsuccessful.\end{Desc}
+\item[Returns:]Returns the pointer to the found mod\_\-link or NULL if the search was unsuccessful.\end{Desc}
 Iteratively searches the mod\_\-link list specified by the head mod\_\-link element. If a matching module is found, the pointer to this element is returned. If the specified module could not be matched, the value of NULL is returned. \index{link.h@{link.h}!sig_link_add@{sig\_\-link\_\-add}}
 \index{sig_link_add@{sig\_\-link\_\-add}!link.h@{link.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void sig\_\-link\_\-add ({\bf signal} $\ast$ {\em sig}, {\bf sig\_\-link} $\ast$$\ast$ {\em head}, {\bf sig\_\-link} $\ast$$\ast$ {\em tail})}\label{link_8h_a4}
 
 
-Adds specified signal to sig\_\-link element at the end of the list.
+Adds specified signal to sig\_\-link element at the end of the list. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-sig}]Signal to add to specified signal list. \item[{\em 
-head}]Pointer to head sig\_\-link element of list. \item[{\em 
-tail}]Pointer to tail sig\_\-link element of list.\end{description}
+\item[{\em sig}]Signal to add to specified signal list. \item[{\em head}]Pointer to head sig\_\-link element of list. \item[{\em tail}]Pointer to tail sig\_\-link element of list.\end{description}
 \end{Desc}
 Creates a new sig\_\-link element with the value specified for sig. Sets next pointer of element to NULL, sets the tail element to point to the new element and sets the tail value to the new element. \index{link.h@{link.h}!sig_link_delete_list@{sig\_\-link\_\-delete\_\-list}}
 \index{sig_link_delete_list@{sig\_\-link\_\-delete\_\-list}!link.h@{link.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void sig\_\-link\_\-delete\_\-list ({\bf sig\_\-link} $\ast$ {\em head})}\label{link_8h_a21}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void sig\_\-link\_\-delete\_\-list ({\bf sig\_\-link} $\ast$ {\em head}, {\bf bool} {\em del\_\-sig})}\label{link_8h_a21}
 
 
-Deletes entire list specified by head pointer.
+Deletes entire list specified by head pointer. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-head}]Pointer to head sig\_\-link element of list.\end{description}
+\item[{\em head}]Pointer to head sig\_\-link element of list. \item[{\em del\_\-sig}]If set to TRUE, deallocates the signal; otherwise, leaves signal alone.\end{description}
 \end{Desc}
 Deletes each element of the specified list. \index{link.h@{link.h}!sig_link_display@{sig\_\-link\_\-display}}
 \index{sig_link_display@{sig\_\-link\_\-display}!link.h@{link.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void sig\_\-link\_\-display ({\bf sig\_\-link} $\ast$ {\em head})}\label{link_8h_a9}
 
 
-Displays specified signal list to standard output.
+Displays specified signal list to standard output. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-head}]Pointer to head of sig\_\-link list.\end{description}
+\item[{\em head}]Pointer to head of sig\_\-link list.\end{description}
 \end{Desc}
 Displays the string contents of the sig\_\-link list pointed to by head to standard output. This function is mainly used for debugging purposes. \index{link.h@{link.h}!sig_link_find@{sig\_\-link\_\-find}}
 \index{sig_link_find@{sig\_\-link\_\-find}!link.h@{link.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf sig\_\-link}$\ast$ sig\_\-link\_\-find ({\bf signal} $\ast$ {\em sig}, {\bf sig\_\-link} $\ast$ {\em head})}\label{link_8h_a14}
 
 
-Finds specified signal in given sig\_\-link list.
+Finds specified signal in given sig\_\-link list. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-sig}]Pointer to signal to find. \item[{\em 
-head}]Pointer to head of sig\_\-link list to search. \end{description}
+\item[{\em sig}]Pointer to signal to find. \item[{\em head}]Pointer to head of sig\_\-link list to search. \end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Returns the pointer to the found sig\_\-link or NULL if the search was unsuccessful.\end{Desc}
+\item[Returns:]Returns the pointer to the found sig\_\-link or NULL if the search was unsuccessful.\end{Desc}
 Iteratively searches the sig\_\-link list specified by the head sig\_\-link element. If a matching signal is found, the pointer to this element is returned. If the specified signal could not be matched, the value of NULL is returned. \index{link.h@{link.h}!stmt_link_add_head@{stmt\_\-link\_\-add\_\-head}}
 \index{stmt_link_add_head@{stmt\_\-link\_\-add\_\-head}!link.h@{link.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void stmt\_\-link\_\-add\_\-head ({\bf statement} $\ast$ {\em stmt}, {\bf stmt\_\-link} $\ast$$\ast$ {\em head}, {\bf stmt\_\-link} $\ast$$\ast$ {\em tail})}\label{link_8h_a1}
 
 
-Adds specified statement to stmt\_\-link element at the beginning of the list.
+Adds specified statement to stmt\_\-link element at the beginning of the list. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-stmt}]Pointer to statement to add to specified statement list. \item[{\em 
-head}]Pointer to head str\_\-link element of list. \item[{\em 
-tail}]Pointer to tail str\_\-link element of list.\end{description}
+\item[{\em stmt}]Pointer to statement to add to specified statement list. \item[{\em head}]Pointer to head str\_\-link element of list. \item[{\em tail}]Pointer to tail str\_\-link element of list.\end{description}
 \end{Desc}
 Creates a new stmt\_\-link element with the value specified for stmt. Sets next pointer of element to head, sets the head element to point to the new element and (possibly) sets the tail value to the new element. \index{link.h@{link.h}!stmt_link_add_tail@{stmt\_\-link\_\-add\_\-tail}}
 \index{stmt_link_add_tail@{stmt\_\-link\_\-add\_\-tail}!link.h@{link.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void stmt\_\-link\_\-add\_\-tail ({\bf statement} $\ast$ {\em stmt}, {\bf stmt\_\-link} $\ast$$\ast$ {\em head}, {\bf stmt\_\-link} $\ast$$\ast$ {\em tail})}\label{link_8h_a2}
 
 
-Adds specified statement to stmt\_\-link element at the end of the list.
+Adds specified statement to stmt\_\-link element at the end of the list. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-stmt}]Pointer to statement to add to specified statement list. \item[{\em 
-head}]Pointer to head str\_\-link element of list. \item[{\em 
-tail}]Pointer to tail str\_\-link element of list.\end{description}
+\item[{\em stmt}]Pointer to statement to add to specified statement list. \item[{\em head}]Pointer to head str\_\-link element of list. \item[{\em tail}]Pointer to tail str\_\-link element of list.\end{description}
 \end{Desc}
 Creates a new stmt\_\-link element with the value specified for stmt. Sets next pointer of element to NULL and sets the tail value to the new element. \index{link.h@{link.h}!stmt_link_delete_list@{stmt\_\-link\_\-delete\_\-list}}
 \index{stmt_link_delete_list@{stmt\_\-link\_\-delete\_\-list}!link.h@{link.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void stmt\_\-link\_\-delete\_\-list ({\bf stmt\_\-link} $\ast$ {\em head})}\label{link_8h_a19}
 
 
-Deletes entire list specified by head pointer.
+Deletes entire list specified by head pointer. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-head}]Pointer to head stmt\_\-link element of list.\end{description}
+\item[{\em head}]Pointer to head stmt\_\-link element of list.\end{description}
 \end{Desc}
 Deletes each element of the specified list. \index{link.h@{link.h}!stmt_link_display@{stmt\_\-link\_\-display}}
 \index{stmt_link_display@{stmt\_\-link\_\-display}!link.h@{link.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void stmt\_\-link\_\-display ({\bf stmt\_\-link} $\ast$ {\em head})}\label{link_8h_a7}
 
 
-Displays specified statement list to standard output.
+Displays specified statement list to standard output. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-head}]Pointer to head of stmt\_\-link list.\end{description}
+\item[{\em head}]Pointer to head of stmt\_\-link list.\end{description}
 \end{Desc}
 Displays the string contents of the stmt\_\-link list pointed to by head to standard output. This function is mainly used for debugging purposes. \index{link.h@{link.h}!stmt_link_find@{stmt\_\-link\_\-find}}
 \index{stmt_link_find@{stmt\_\-link\_\-find}!link.h@{link.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf stmt\_\-link}$\ast$ stmt\_\-link\_\-find (int {\em id}, {\bf stmt\_\-link} $\ast$ {\em head})}\label{link_8h_a12}
 
 
-Finds specified statement in the given stmt\_\-link list.
+Finds specified statement in the given stmt\_\-link list. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-id}]ID of statement to find. \item[{\em 
-head}]Pointer to head of stmt\_\-link list to search.\end{description}
+\item[{\em id}]ID of statement to find. \item[{\em head}]Pointer to head of stmt\_\-link list to search.\end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Returns the pointer to the found stmt\_\-link or NULL if the search was unsuccessful.\end{Desc}
+\item[Returns:]Returns the pointer to the found stmt\_\-link or NULL if the search was unsuccessful.\end{Desc}
 Iteratively searches the stmt\_\-link list specified by the head stmt\_\-link element. If a matching statement is found, the pointer to this element is returned. If the specified statement could not be matched, the value of NULL is returned. \index{link.h@{link.h}!str_link_add@{str\_\-link\_\-add}}
 \index{str_link_add@{str\_\-link\_\-add}!link.h@{link.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void str\_\-link\_\-add (char $\ast$ {\em str}, {\bf str\_\-link} $\ast$$\ast$ {\em head}, {\bf str\_\-link} $\ast$$\ast$ {\em tail})}\label{link_8h_a0}
 
 
-Adds specified string to str\_\-link element at the end of the list.
+Adds specified string to str\_\-link element at the end of the list. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-str}]String to add to specified list. \item[{\em 
-head}]Pointer to head str\_\-link element of list. \item[{\em 
-tail}]Pointer to tail str\_\-link element of list.\end{description}
+\item[{\em str}]String to add to specified list. \item[{\em head}]Pointer to head str\_\-link element of list. \item[{\em tail}]Pointer to tail str\_\-link element of list.\end{description}
 \end{Desc}
 Creates a new str\_\-link element with the value specified for str. Sets next pointer of element to NULL, sets the tail element to point to the new element and sets the tail value to the new element. \index{link.h@{link.h}!str_link_delete_list@{str\_\-link\_\-delete\_\-list}}
 \index{str_link_delete_list@{str\_\-link\_\-delete\_\-list}!link.h@{link.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void str\_\-link\_\-delete\_\-list ({\bf str\_\-link} $\ast$ {\em head})}\label{link_8h_a18}
 
 
-Deletes entire list specified by head pointer.
+Deletes entire list specified by head pointer. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-head}]Pointer to head str\_\-link element of list.\end{description}
+\item[{\em head}]Pointer to head str\_\-link element of list.\end{description}
 \end{Desc}
 Deletes each element of the specified list. \index{link.h@{link.h}!str_link_display@{str\_\-link\_\-display}}
 \index{str_link_display@{str\_\-link\_\-display}!link.h@{link.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void str\_\-link\_\-display ({\bf str\_\-link} $\ast$ {\em head})}\label{link_8h_a6}
 
 
-Displays specified string list to standard output.
+Displays specified string list to standard output. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-head}]Pointer to head of str\_\-link list.\end{description}
+\item[{\em head}]Pointer to head of str\_\-link list.\end{description}
 \end{Desc}
 Displays the string contents of the str\_\-link list pointed to by head to standard output. This function is mainly used for debugging purposes. \index{link.h@{link.h}!str_link_find@{str\_\-link\_\-find}}
 \index{str_link_find@{str\_\-link\_\-find}!link.h@{link.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf str\_\-link}$\ast$ str\_\-link\_\-find (char $\ast$ {\em value}, {\bf str\_\-link} $\ast$ {\em head})}\label{link_8h_a11}
 
 
-Finds specified string in the given str\_\-link list.
+Finds specified string in the given str\_\-link list. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-value}]String to find in str\_\-link list. \item[{\em 
-head}]Pointer to head link in str\_\-link list to search. \end{description}
+\item[{\em value}]String to find in str\_\-link list. \item[{\em head}]Pointer to head link in str\_\-link list to search. \end{description}
 \end{Desc}
 \begin{Desc}
-\item[Returns: ]\par
-Returns the pointer to the found str\_\-link or NULL if the search was unsuccessful.\end{Desc}
+\item[Returns:]Returns the pointer to the found str\_\-link or NULL if the search was unsuccessful.\end{Desc}
 Iteratively searches the str\_\-link list specifed by the head str\_\-link element. If a matching string is found, the pointer to this element is returned. If the specified string could not be matched, the value of NULL is returned. \index{link.h@{link.h}!str_link_remove@{str\_\-link\_\-remove}}
 \index{str_link_remove@{str\_\-link\_\-remove}!link.h@{link.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void str\_\-link\_\-remove (char $\ast$ {\em str}, {\bf str\_\-link} $\ast$$\ast$ {\em head}, {\bf str\_\-link} $\ast$$\ast$ {\em tail})}\label{link_8h_a16}
 
 
-Searches for and removes specified string link from list.
+Searches for and removes specified string link from list. 
 
 \begin{Desc}
-\item[Parameters: ]\par
+\item[Parameters:]
 \begin{description}
-\item[{\em 
-str}]Pointer to string to find and remove. \item[{\em 
-head}]Pointer to head of string list. \item[{\em 
-tail}]Pointer to tail of string list.\end{description}
+\item[{\em str}]Pointer to string to find and remove. \item[{\em head}]Pointer to head of string list. \item[{\em tail}]Pointer to tail of string list.\end{description}
 \end{Desc}
 Searches specified list for string that matches the specified string. If a match is found, remove it from the list and deallocate the link memory. 

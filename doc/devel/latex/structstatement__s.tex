@@ -1,4 +1,4 @@
-\section{statement\_\-s  Struct Reference}
+\section{statement\_\-s Struct Reference}
 \label{structstatement__s}\index{statement_s@{statement\_\-s}}
 {\tt \#include $<$defines.h$>$}
 
@@ -6,6 +6,10 @@
 \begin{CompactItemize}
 \item 
 {\bf expression} $\ast$ {\bf exp}
+\item 
+{\bf sig\_\-link} $\ast$ {\bf wait\_\-sig\_\-head}
+\item 
+{\bf sig\_\-link} $\ast$ {\bf wait\_\-sig\_\-tail}
 \item 
 {\bf statement} $\ast$ {\bf next\_\-true}
 \item 
@@ -16,20 +20,30 @@
 \subsection{Member Data Documentation}
 \index{statement_s@{statement\_\-s}!exp@{exp}}
 \index{exp@{exp}!statement_s@{statement\_\-s}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf expression}$\ast$ statement\_\-s::exp}\label{structstatement__s_m0}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf expression}$\ast$ {\bf statement\_\-s::exp}}\label{structstatement__s_o0}
 
 
 Pointer to associated expression tree \index{statement_s@{statement\_\-s}!next_false@{next\_\-false}}
 \index{next_false@{next\_\-false}!statement_s@{statement\_\-s}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf statement}$\ast$ statement\_\-s::next\_\-false}\label{structstatement__s_m2}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf statement}$\ast$ {\bf statement\_\-s::next\_\-false}}\label{structstatement__s_o4}
 
 
 Pointer to next statement to run if next\_\-true not picked \index{statement_s@{statement\_\-s}!next_true@{next\_\-true}}
 \index{next_true@{next\_\-true}!statement_s@{statement\_\-s}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf statement}$\ast$ statement\_\-s::next\_\-true}\label{structstatement__s_m1}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf statement}$\ast$ {\bf statement\_\-s::next\_\-true}}\label{structstatement__s_o3}
 
 
-Pointer to next statement to run if expression tree non-zero 
+Pointer to next statement to run if expression tree non-zero \index{statement_s@{statement\_\-s}!wait_sig_head@{wait\_\-sig\_\-head}}
+\index{wait_sig_head@{wait\_\-sig\_\-head}!statement_s@{statement\_\-s}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf sig\_\-link}$\ast$ {\bf statement\_\-s::wait\_\-sig\_\-head}}\label{structstatement__s_o1}
+
+
+Pointer to head of wait event signal list \index{statement_s@{statement\_\-s}!wait_sig_tail@{wait\_\-sig\_\-tail}}
+\index{wait_sig_tail@{wait\_\-sig\_\-tail}!statement_s@{statement\_\-s}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf sig\_\-link}$\ast$ {\bf statement\_\-s::wait\_\-sig\_\-tail}}\label{structstatement__s_o2}
+
+
+Pointer to tail of wait event signal list 
 
 The documentation for this struct was generated from the following file:\begin{CompactItemize}
 \item 

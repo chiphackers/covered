@@ -1066,8 +1066,6 @@
 
  \par Section 7.3.  Verilog Testing Procedure
 
- \par
-
 <HR>
 
  \par Go To Section...
@@ -1218,6 +1216,9 @@
 
 /*
  $Log$
+ Revision 1.6  2003/02/27 03:41:58  phase1geo
+ More development documentation updates.
+
  Revision 1.5  2003/02/24 13:52:57  phase1geo
  Updates to development documentation.
 
