@@ -119,7 +119,10 @@ expression* expression_create( expression* right, expression* left, int op, int 
              (op == EXP_OP_UNOR ) ||
              (op == EXP_OP_UNXOR) ||
              (op == EXP_OP_LAST)  ||
-             (op == EXP_OP_EOR) ) {
+             (op == EXP_OP_EOR)   ||
+             (op == EXP_OP_CASE)  ||
+             (op == EXP_OP_CASEX) ||
+             (op == EXP_OP_CASEZ) ) {
 
     /* If this expression will evaluate to a single bit, create vector now */
     expression_create_value( new_expr, 1, 0 );
@@ -308,7 +311,10 @@ bool expression_db_read( char** line, module* curr_mod ) {
       expr        = expression_create( right, left, SUPPL_OP( suppl ), id, linenum );
       expr->suppl = suppl;
 
-      if( right != NULL ) {
+      /* Don't set right child's parent if the parent is a CASE, CASEX, or CASEX type expression */
+      if( (right != NULL) && 
+          (SUPPL_OP( suppl ) != EXP_OP_CASE) &&
+          (SUPPL_OP( suppl ) != EXP_OP_CASEX) &&          (SUPPL_OP( suppl ) != EXP_OP_CASEZ) ) {
         right->parent->expr = expr;
       }
 
@@ -686,6 +692,17 @@ void expression_operate( expression* expr ) {
         }
         break;
 
+      case EXP_OP_CASE :
+        expression_operate( expr->right );
+        vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_EQ );
+        break;
+
+      case EXP_OP_CASEX :
+      case EXP_OP_CASEZ :
+        expression_operate( expr->right );
+        vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CEQ );
+        break;
+
       default :
         print_output( "Internal error:  Unidentified expression operation!", FATAL );
         exit( 1 );
@@ -773,6 +790,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.26  2002/07/03 21:30:53  phase1geo
+/* Fixed remaining issues with always statements.  Full regression is running
+/* error free at this point.  Regenerated documentation.  Added EOR expression
+/* operation to handle the or expression in event lists.
+/*
 /* Revision 1.25  2002/07/03 19:54:36  phase1geo
 /* Adding/fixing code to properly handle always blocks with the event control
 /* structures attached.  Added several new diagnostics to test this ability.

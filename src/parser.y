@@ -1298,13 +1298,15 @@ statement
 	| K_case '(' expression ')' case_items K_endcase
 		{
                   expression*     expr;
+                  expression*     c_expr = $3;
                   statement*      stmt;
                   statement*      last_stmt = NULL;
                   case_statement* c_stmt    = $5;
                   case_statement* tc_stmt;
                   if( ignore_mode == 0 ) {
+                    c_expr->suppl = c_expr->suppl | (0x1 << SUPPL_LSB_ROOT);
                     while( c_stmt != NULL ) {
-                      expr = db_create_expression( $3, c_stmt->expr, EXP_OP_EQ, @1.first_line, NULL );
+                      expr = db_create_expression( c_expr, c_stmt->expr, EXP_OP_CASE, c_stmt->line, NULL );
                       db_add_expression( expr );
                       stmt = db_create_statement( expr );
                       db_connect_statement_true( stmt, c_stmt->stmt );
@@ -1314,7 +1316,7 @@ statement
                         last_stmt = stmt;
                       }
                       tc_stmt   = c_stmt;
-                      c_stmt    = c_stmt->next;
+                      c_stmt    = c_stmt->prev;
                       free_safe( tc_stmt );
                     }
                     $$ = stmt;
@@ -1325,13 +1327,15 @@ statement
 	| K_casex '(' expression ')' case_items K_endcase
 		{
                   expression*     expr;
+                  expression*     c_expr    = $3;
                   statement*      stmt;
                   statement*      last_stmt = NULL;
                   case_statement* c_stmt    = $5;
                   case_statement* tc_stmt;
                   if( ignore_mode == 0 ) {
+                    c_expr->suppl = c_expr->suppl | (0x1 << SUPPL_LSB_ROOT);
                     while( c_stmt != NULL ) {
-                      expr = db_create_expression( $3, c_stmt->expr, EXP_OP_CEQ, @1.first_line, NULL );
+                      expr = db_create_expression( c_expr, c_stmt->expr, EXP_OP_CASEX, c_stmt->line, NULL );
                       db_add_expression( expr );
                       stmt = db_create_statement( expr );
                       db_connect_statement_true( stmt, c_stmt->stmt );
@@ -1341,7 +1345,7 @@ statement
                         last_stmt = stmt;
                       }
                       tc_stmt   = c_stmt;
-                      c_stmt    = c_stmt->next;
+                      c_stmt    = c_stmt->prev;
                       free_safe( tc_stmt );
                     }
                     $$ = stmt;
@@ -1352,13 +1356,15 @@ statement
 	| K_casez '(' expression ')' case_items K_endcase
 		{
                   expression*     expr;
+                  expression*     c_expr    = $3;
                   statement*      stmt;
                   statement*      last_stmt = NULL;
                   case_statement* c_stmt    = $5;
                   case_statement* tc_stmt;
                   if( ignore_mode == 0 ) {
+                    c_expr->suppl = c_expr->suppl | (0x1 << SUPPL_LSB_ROOT);
                     while( c_stmt != NULL ) {
-                      expr = db_create_expression( $3, c_stmt->expr, EXP_OP_CEQ, @1.first_line, NULL );
+                      expr = db_create_expression( c_expr, c_stmt->expr, EXP_OP_CASEZ, c_stmt->line, NULL );
                       db_add_expression( expr );
                       stmt = db_create_statement( expr );
                       db_connect_statement_true( stmt, c_stmt->stmt );
@@ -1368,7 +1374,7 @@ statement
                         last_stmt = stmt;
                       }
                       tc_stmt   = c_stmt;
-                      c_stmt    = c_stmt->next;
+                      c_stmt    = c_stmt->prev;
                       free_safe( tc_stmt );
                     }
                     $$ = stmt;
@@ -1818,9 +1824,10 @@ case_item
                   case_statement* cstmt;
                   if( ignore_mode == 0 ) {
                     cstmt = (case_statement*)malloc_safe( sizeof( case_statement ) );
-                    cstmt->next = NULL;
+                    cstmt->prev = NULL;
                     cstmt->expr = $1;
                     cstmt->stmt = $3;
+                    cstmt->line = @1.first_line;
 		    $$ = cstmt;
                   } else {
                     $$ = NULL;
@@ -1831,9 +1838,10 @@ case_item
                   case_statement* cstmt;
                   if( ignore_mode == 0 ) {
                     cstmt = (case_statement*)malloc_safe( sizeof( case_statement ) );
-                    cstmt->next = NULL;
+                    cstmt->prev = NULL;
                     cstmt->expr = NULL;
                     cstmt->stmt = $3;
+                    cstmt->line = @1.first_line;
                     $$ = cstmt;
                   } else {
                     $$ = NULL;
@@ -1844,9 +1852,10 @@ case_item
                   case_statement* cstmt;
                   if( ignore_mode == 0 ) {
                     cstmt = (case_statement*)malloc_safe( sizeof( case_statement ) );
-                    cstmt->next = NULL;
+                    cstmt->prev = NULL;
                     cstmt->expr = NULL;
                     cstmt->stmt = $2;
+                    cstmt->line = @1.first_line;
                     $$ = cstmt;
                   } else {
                     $$ = NULL;
@@ -1860,12 +1869,12 @@ case_item
 	;
 
 case_items
-	: case_item case_items
+	: case_items case_item
                 {
-                  case_statement* list = $2;
-                  case_statement* curr = $1;
+                  case_statement* list = $1;
+                  case_statement* curr = $2;
                   if( ignore_mode == 0 ) {
-                    curr->next = list;
+                    curr->prev = list;
                     $$ = curr;
                   } else {
                     $$ = NULL;

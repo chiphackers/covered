@@ -480,7 +480,9 @@ expression* db_create_expression( expression* right, expression* left, int op, i
   curr_expr_id++;
 
   /* Set right and left side expression's (if they exist) parent pointer to this expression */
-  if( right != NULL ) {
+  if( (right != NULL) &&
+      (SUPPL_OP( expr->suppl ) != EXP_OP_CASE) &&      (SUPPL_OP( expr->suppl ) != EXP_OP_CASEX) &&
+      (SUPPL_OP( expr->suppl ) != EXP_OP_CASEZ) ) {
     assert( right->parent->expr == NULL );
     right->parent->expr = expr;
   }
@@ -575,13 +577,11 @@ void db_add_statement( statement* stmt ) {
 
     /* Add TRUE and FALSE statement paths to list */
     if( SUPPL_IS_STMT_STOP( stmt->exp->suppl ) == 0 ) {
-
       db_add_statement( stmt->next_false );
+    }
 
-      if( stmt->next_true != stmt->next_false ) {
-        db_add_statement( stmt->next_true );
-      }
-
+    if( stmt->next_true != stmt->next_false ) {
+      db_add_statement( stmt->next_true );
     }
 
     /* Now add current statement */
@@ -973,6 +973,11 @@ int db_get_signal_size( char* symbol ) {
 
 
 /* $Log$
+/* Revision 1.28  2002/07/03 21:30:52  phase1geo
+/* Fixed remaining issues with always statements.  Full regression is running
+/* error free at this point.  Regenerated documentation.  Added EOR expression
+/* operation to handle the or expression in event lists.
+/*
 /* Revision 1.27  2002/07/03 19:54:36  phase1geo
 /* Adding/fixing code to properly handle always blocks with the event control
 /* structures attached.  Added several new diagnostics to test this ability.

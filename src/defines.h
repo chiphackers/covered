@@ -420,6 +420,9 @@
 #define EXP_OP_LAST     0x2a    /*!< 42 1-bit value holder for parent */
 #define EXP_OP_EOR      0x2b    /*!< 43 event OR operator             */
 #define EXP_OP_DELAY    0x2c    /*!< 44 delay operator                */
+#define EXP_OP_CASE     0x2d    /*!< 45 case equality expression      */
+#define EXP_OP_CASEX    0x2e    /*!< 46 casex equality expression     */
+#define EXP_OP_CASEZ    0x2f    /*!< 47 casez equality expression     */
 
 /*! @} */
 
@@ -768,7 +771,8 @@ typedef struct case_stmt_s case_statement;
 struct case_stmt_s {
   expression*     expr;    /*!< Pointer to case equality expression          */
   statement*      stmt;    /*!< Pointer to first statement in case statement */
-  case_statement* next;    /*!< Pointer to next case statement in list       */
+  int             line;    /*!< Line number of case statement                */
+  case_statement* prev;    /*!< Pointer to previous case statement in list   */
 };
 
 //------------------------------------------------------------------------------
@@ -816,6 +820,11 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.23  2002/07/03 21:30:52  phase1geo
+/* Fixed remaining issues with always statements.  Full regression is running
+/* error free at this point.  Regenerated documentation.  Added EOR expression
+/* operation to handle the or expression in event lists.
+/*
 /* Revision 1.22  2002/07/03 19:54:36  phase1geo
 /* Adding/fixing code to properly handle always blocks with the event control
 /* structures attached.  Added several new diagnostics to test this ability.

@@ -426,7 +426,8 @@ void statement_set_stop( statement* stmt, statement* post, bool true_path, bool 
 
   // printf( "In statement_set_stop, stmt: %d, post: %d, next_true: %d, next_false: %d\n", stmt->exp->id, post_id, true_id, false_id );
 
-  if( (stmt->next_true == post) && (stmt->next_false == post) ) {
+  if( ((stmt->next_true == post) && (stmt->next_false == post)) ||
+      (stmt->next_false == post) ) {
     if( true_path || both) {
       // printf( "Setting STOP bit for statement %d\n", stmt->exp->id );
       stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);
@@ -490,6 +491,11 @@ void statement_dealloc( statement* stmt ) {
 
 
 /* $Log$
+/* Revision 1.23  2002/07/03 21:30:53  phase1geo
+/* Fixed remaining issues with always statements.  Full regression is running
+/* error free at this point.  Regenerated documentation.  Added EOR expression
+/* operation to handle the or expression in event lists.
+/*
 /* Revision 1.22  2002/07/03 19:54:36  phase1geo
 /* Adding/fixing code to properly handle always blocks with the event control
 /* structures attached.  Added several new diagnostics to test this ability.
