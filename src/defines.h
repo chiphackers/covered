@@ -1578,6 +1578,27 @@ struct attr_param_s {
 
 /*-------------------------------------------------------------------------------*/
 
+/*!
+ The stmt_sig structure contains extra information for a given signal that is only used during
+ the parsing stage (therefore, the information does not need to be specified in the vsignal
+ structure itself) and is used to keep track of information about that signal's use in the current
+ module.  It is used for race condition checking.
+*/
+struct stmt_sig_s;
+
+/*!
+ Renaming statement-signal structure for convenience.
+*/
+typedef struct stmt_sig_s stmt_sig;
+
+struct stmt_sig_s {
+  vsignal*   sig;   /*!< Pointer to signal which this structure represents                                   */
+  statement* stmt;  /*!< Pointer to top-level statement in statement tree that this signal is first found in */
+  stmt_sig*  next;  /*!< Pointer to next statement signal structure in the linked list                       */
+};
+
+/*-------------------------------------------------------------------------------*/
+
 union expr_stmt_u {
   expression* expr;         /*!< Pointer to expression */
   statement*  stmt;         /*!< Pointer to statement  */
@@ -1586,6 +1607,10 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.108  2004/11/06 13:22:48  phase1geo
+ Updating CDD files for change where EVAL_T and EVAL_F bits are now being masked out
+ of the CDD files.
+
  Revision 1.107  2004/04/19 04:54:55  phase1geo
  Adding first and last column information to expression and related code.  This is
  not working correctly yet.
