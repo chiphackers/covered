@@ -46,7 +46,7 @@ proc menu_create {.menubar} {
       .bot.info configure -text "Select a module/instance at left for coverage details"
     }
     ;# This line of code is only needed until we have the ability to open several files at once.
-    .menubar.file.menu entryconfigure 0 -state disabled
+    ;# .menubar.file.menu entryconfigure 0 -state disabled
   }
   $tfm add command -label "Reopen CDD" -state disabled
   $tfm add command -label "Close CDD" -state disabled
