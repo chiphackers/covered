@@ -20,7 +20,9 @@ regress-v:
 	cd $(VDIR);  make regress
 	cp $(VDIR)/regress.log v-regress.log
 
-clean:		clean-c clean-v
+distclean:  clean
+
+clean:	clean-c clean-v
 	rm -f *.log
 	
 clean-c:

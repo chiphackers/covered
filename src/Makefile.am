@@ -44,7 +44,7 @@ vcd_parser.h vcd_parser.c: $(srcdir)/vcd_parser.y
 vcd_lexer.c:  $(srcdir)/vcd_lexer.l
 	flex -PVCD -s -ovcd_lexer.c $(srcdir)/vcd_lexer.l
 
-clean: clean-am
+clean:
 	rm -f lexer.c keywords.c
 	rm -f parser.c parser.h parser.output
 	rm -f vcd_lexer.c

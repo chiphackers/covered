@@ -16,13 +16,13 @@
 \subsection*{Functions}
 \begin{CompactItemize}
 \item 
-{\bf bool} {\bf db\_\-write} (char $\ast${\bf file})
+{\bf bool} {\bf db\_\-write} (char $\ast$file)
 \begin{CompactList}\small\item\em Writes contents of expressions, modules and signals to database file.\item\end{CompactList}\item 
-{\bf bool} {\bf db\_\-read} (char $\ast${\bf file}, int read\_\-mode)
+{\bf bool} {\bf db\_\-read} (char $\ast$file, int read\_\-mode)
 \begin{CompactList}\small\item\em Reads contents of database file and stores into internal lists.\item\end{CompactList}\item 
 void {\bf db\_\-add\_\-instance} (char $\ast$scope, char $\ast$modname)
 \begin{CompactList}\small\item\em Adds specified module node to module tree. Called by parser.\item\end{CompactList}\item 
-void {\bf db\_\-add\_\-module} (char $\ast$name, char $\ast${\bf file})
+void {\bf db\_\-add\_\-module} (char $\ast$name, char $\ast$file)
 \begin{CompactList}\small\item\em Adds specified module to module list. Called by parser.\item\end{CompactList}\item 
 void {\bf db\_\-end\_\-module} ()
 \item 
@@ -302,7 +302,7 @@ Searches the current timestep symbol table to see if the specified signal exists
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-vcd\_\-upscope ()}\label{db_8c_a23}
 
 
-Moves the curr\_\-vcd\_\-scope up one level of hierarchy. This function is called when the \$upscope {\bf keyword} {\rm (p.\,\pageref{structkeyword})} is seen in a VCD file. \index{db.c@{db.c}!db_write@{db\_\-write}}
+Moves the curr\_\-vcd\_\-scope up one level of hierarchy. This function is called when the \$upscope keyword is seen in a VCD file. \index{db.c@{db.c}!db_write@{db\_\-write}}
 \index{db_write@{db\_\-write}!db.c@{db.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} db\_\-write (char $\ast$ {\em file})}\label{db_8c_a13}
 

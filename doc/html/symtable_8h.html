@@ -14,11 +14,11 @@
 <p>
 <a href="symtable_8h-source.html">Go to the source code of this file.</a><table border=0 cellpadding=0 cellspacing=0>
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="symtable_8h.html#a0">symtable_add</a> (char *sym, <a class="el" href="defines_8h.html#a100">signal</a> *sig, <a class="el" href="defines_8h.html#a105">symtable</a> **symtab)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="symtable_8h.html#a0">symtable_add</a> (char *sym, <a class="el" href="defines_8h.html#a101">signal</a> *sig, <a class="el" href="defines_8h.html#a106">symtable</a> **symtab)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Creates a new symtable entry and adds it to the specified symbol table.</em> <a href="#a0">More...</a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a112">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="symtable_8h.html#a1">symtable_find</a> (char *sym, <a class="el" href="defines_8h.html#a105">symtable</a> *symtab, <a class="el" href="defines_8h.html#a100">signal</a> **sig)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a113">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="symtable_8h.html#a1">symtable_find</a> (char *sym, <a class="el" href="defines_8h.html#a106">symtable</a> *symtab, <a class="el" href="defines_8h.html#a101">signal</a> **sig)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Finds specified symbol in specified symbol table and returns pointer to signal.</em> <a href="#a1">More...</a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="symtable_8h.html#a2">symtable_dealloc</a> (<a class="el" href="defines_8h.html#a105">symtable</a> *symtab)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="symtable_8h.html#a2">symtable_dealloc</a> (<a class="el" href="defines_8h.html#a106">symtable</a> *symtab)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Deallocates all symtable entries for specified symbol table.</em> <a href="#a2">More...</a><em></em></font><br><br></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
@@ -45,13 +45,13 @@ Date: </b><dd>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a100">signal</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a101">signal</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>sig</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a105">symtable</a> **&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a106">symtable</a> **&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>symtab</em></td>
         </tr>
         <tr>
@@ -95,7 +95,7 @@ Pointer to symtable to store the symtable entry to.</td></tr>
         <tr>
           <td class="md" nowrap valign="top"> void symtable_dealloc </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a105">symtable</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a106">symtable</a> *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>symtab</em>          </td>
           <td class="md" valign="top">)&nbsp;</td>
           <td class="md" nowrap></td>
@@ -130,7 +130,7 @@ Pointer to root of symtable to clear.</td></tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a112">bool</a> symtable_find </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a113">bool</a> symtable_find </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top">char *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>sym</em>, </td>
@@ -138,13 +138,13 @@ Pointer to root of symtable to clear.</td></tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a105">symtable</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a106">symtable</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>symtab</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a100">signal</a> **&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a101">signal</a> **&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>sig</em></td>
         </tr>
         <tr>
@@ -182,7 +182,7 @@ Returns: </b><dd>
 Returns TRUE if symbol was found; otherwise, returns FALSE.</dl>Performs a binary search of the specified tree to find matching symtable entry. If a match is found, assigns sig parameter to the signal represented by the symbol and returns TRUE; otherwise, simply returns FALSE.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Sun Apr 21 23:43:20 2002 for Covered by
+<hr><address align="right"><small>Generated on Tue Apr 23 00:25:16 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.15 </small></address>

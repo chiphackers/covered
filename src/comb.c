@@ -178,7 +178,6 @@ void combination_underline_tree( expression* exp, char*** lines, int* depth, int
   int    i;             /* Loop iterator                                            */
   char   exp_sp[256];   /* Space to take place of missing expression(s)             */
   char   code_fmt[12];  /* Contains format string for rest of stack                 */
-  int    uline_this;    /* Specifies if the current expression should be underlined */
   
   *depth  = 0;
   *size   = 0;
@@ -247,14 +246,10 @@ void combination_underline_tree( expression* exp, char*** lines, int* depth, int
           break;
       }
 
-      uline_this = (  SUPPL_IS_MEASURABLE( exp->suppl ) 
-                    & (  ~SUPPL_WAS_TRUE( exp->suppl ) 
-                       | ~SUPPL_WAS_FALSE( exp->suppl )));
-
       if( l_depth > r_depth ) {
-        *depth = l_depth + uline_this;
+        *depth = l_depth + SUPPL_COMB_MISSED( exp->suppl );
       } else {
-        *depth = r_depth + uline_this;
+        *depth = r_depth + SUPPL_COMB_MISSED( exp->suppl );
       }
 
       if( *depth > 0 ) {
@@ -266,13 +261,13 @@ void combination_underline_tree( expression* exp, char*** lines, int* depth, int
         (*lines)[(*depth)-1] = (char*)malloc_safe( *size + 1 );
 
         /* Create underline or space */
-        if( uline_this == 1 ) {
+        if( SUPPL_COMB_MISSED( exp->suppl ) == 1 ) {
           combination_draw_line( (*lines)[(*depth)-1], *size, *exp_id );
           *exp_id = *exp_id + 1;
         }
 
         /* Combine the left and right line stacks */
-        for( i=0; i<(*depth - uline_this); i++ ) {
+        for( i=0; i<(*depth - SUPPL_COMB_MISSED( exp->suppl )); i++ ) {
 
           (*lines)[i] = (char*)malloc_safe( *size + 1 );
 
@@ -366,6 +361,122 @@ void combination_underline( FILE* ofile, expression* exp, char* begin_sp ) {
 
 /*!
  \param ofile  Pointer to file to output results to.
+ \param exp    Pointer to expression to evaluate.
+ \param val0   When operation is evaluated, contains result when left == 0 and right == 0
+ \param val1   When operation is evaluated, contains result when left == 0 and right == 1
+ \param val2   When operation is evaluated, contains result when left == 1 and right == 0
+ \param val3   When operation is evaluated, contains result when left == 1 and right == 1
+
+ Displays the missed combinational sequences for the specified expression to the
+ specified output stream in tabular form.
+*/
+void combination_two_vars( FILE* ofile, expression* exp, int val0, int val1, int val2, int val3 ) {
+
+  /* Verify that left child expression is valid for this operation */
+  assert( exp->left != NULL );
+  // assert( SUPPL_IS_MEASURABLE( exp->left->suppl ) == 1 );
+
+  /* Verify that right child expression is valid for this operation */
+  assert( exp->right != NULL );
+  // assert( SUPPL_IS_MEASURABLE( exp->left->suppl ) == 1 );
+
+  fprintf( ofile, " L | R | Value\n" );
+  fprintf( ofile, "---+---+------\n" );
+
+  if( !((SUPPL_WAS_FALSE( exp->left->suppl ) == 1) && (SUPPL_WAS_FALSE( exp->right->suppl ) == 1)) ) {
+    fprintf( ofile, " 0 | 0 |    %d\n", val0 );
+  }
+
+  if( !((SUPPL_WAS_FALSE( exp->left->suppl ) == 1) && (SUPPL_WAS_TRUE( exp->right->suppl ) == 1)) ) {
+    fprintf( ofile, " 0 | 1 |    %d\n", val1 );
+  }
+
+  if( !((SUPPL_WAS_TRUE( exp->left->suppl ) == 1) && (SUPPL_WAS_FALSE( exp->right->suppl ) == 1)) ) {
+    fprintf( ofile, " 1 | 0 |    %d\n", val2 );
+  }
+
+  if( !((SUPPL_WAS_TRUE( exp->left->suppl ) == 1) && (SUPPL_WAS_TRUE( exp->right->suppl ) == 1)) ) {
+    fprintf( ofile, " 1 | 1 |    %d\n", val3 );
+  }
+
+  fprintf( ofile, "\n" );
+
+}
+
+/*!
+ \param ofile   Pointer to file to output results to.
+ \param exp     Pointer to expression tree to evaluate.
+ \param exp_id  Pointer to current expression ID to use.
+
+ Describe which combinations were not hit for all subexpressions in the
+ specified expression tree.  We display the value of missed combinations by
+ displaying the combinations of the children expressions that were not run
+ during simulation.
+*/
+void combination_list_missed( FILE* ofile, expression* exp, int* exp_id ) {
+
+  if( exp != NULL ) {
+    
+    combination_list_missed( ofile, exp->left,  exp_id );
+    combination_list_missed( ofile, exp->right, exp_id );
+
+    if( SUPPL_COMB_MISSED( exp->suppl ) == 1 ) {
+
+      fprintf( ofile, "Expression %d\n", *exp_id );
+      fprintf( ofile, "--------------\n" );
+
+      /* Create combination table */
+      switch( exp->op ) {
+        case EXP_OP_XOR      :  combination_two_vars( ofile, exp, 0, 1, 1, 0 );  break;
+        case EXP_OP_ADD      :  combination_two_vars( ofile, exp, 0, 1, 1, 0 );  break;
+        case EXP_OP_SUBTRACT :  combination_two_vars( ofile, exp, 0, 1, 1, 0 );  break;
+        case EXP_OP_AND      :  combination_two_vars( ofile, exp, 0, 0, 0, 1 );  break;
+        case EXP_OP_OR       :  combination_two_vars( ofile, exp, 0, 1, 1, 1 );  break;
+        case EXP_OP_NAND     :  combination_two_vars( ofile, exp, 1, 1, 1, 0 );  break;
+        case EXP_OP_NOR      :  combination_two_vars( ofile, exp, 1, 0, 0, 0 );  break;
+        case EXP_OP_NXOR     :  combination_two_vars( ofile, exp, 1, 0, 0, 1 );  break;
+        case EXP_OP_LT       :  /* ??? */  break;
+        case EXP_OP_GT       :  /* ??? */  break;
+        case EXP_OP_LSHIFT   :  /* ??? */  break;
+        case EXP_OP_RSHIFT   :  /* ??? */  break;
+        case EXP_OP_EQ       :  /* ??? */  break;
+        case EXP_OP_CEQ      :  /* ??? */  break;
+        case EXP_OP_LE       :  /* ??? */  break;
+        case EXP_OP_GE       :  /* ??? */  break;
+        case EXP_OP_NE       :  /* ??? */  break;
+        case EXP_OP_CNE      :  /* ??? */  break;
+        case EXP_OP_LOR      :  combination_two_vars( ofile, exp, 0, 1, 1, 1 );  break;
+        case EXP_OP_LAND     :  combination_two_vars( ofile, exp, 0, 0, 0, 1 );  break;
+        case EXP_OP_COND_T   :  /* ??? */  break;
+        case EXP_OP_COND_F   :  /* ??? */  break;
+        case EXP_OP_UINV     :  /* ??? */  break;
+        case EXP_OP_UAND     :  /* ??? */  break;
+        case EXP_OP_UNOT     :  /* ??? */  break;
+        case EXP_OP_UOR      :  /* ??? */  break;
+        case EXP_OP_UXOR     :  /* ??? */  break;
+        case EXP_OP_UNAND    :  /* ??? */  break;
+        case EXP_OP_UNOR     :  /* ??? */  break;
+        case EXP_OP_UNXOR    :  /* ??? */  break;
+        case EXP_OP_SBIT_SEL :  /* ??? */  break;
+        case EXP_OP_MBIT_SEL :  /* ??? */  break;
+        case EXP_OP_EXPAND   :  /* ??? */  break;
+        case EXP_OP_CONCAT   :  /* ??? */  break;
+        case EXP_OP_PEDGE    :  /* ??? */  break;
+        case EXP_OP_NEDGE    :  /* ??? */  break;
+        case EXP_OP_AEDGE    :  /* ??? */  break;
+        default              :  break;
+      }
+      
+      *exp_id = *exp_id + 1;
+      
+    }
+
+  }
+
+}
+
+/*!
+ \param ofile  Pointer to file to output results to.
  \param expl   Pointer to expression list head.
 
  Displays the expressions (and groups of expressions) that were considered 
@@ -380,36 +491,36 @@ void combination_display_verbose( FILE* ofile, exp_link* expl ) {
 
   expression* unexec_exp;      /* Pointer to current unexecuted expression    */
   char*       code;            /* Code string from code generator             */
-  char*       underline;       /* Underline string for specified code         */
   int         last_line = -1;  /* Line number of last line found to be missed */
+  int         exp_id;          /* Current expression ID of missed expression  */
 
   fprintf( ofile, "Missed Combinations\n\n" );
 
   /* Display current instance missed lines */
   while( expl != NULL ) {
 
-    if( ((SUPPL_WAS_TRUE( expl->exp->suppl )  == 0) ||
-         (SUPPL_WAS_FALSE( expl->exp->suppl ) == 0)) &&
-        (SUPPL_IS_MEASURABLE( expl->exp->suppl ) == 1) &&
-        (expl->exp->line != last_line) ) {
+    if( (SUPPL_COMB_MISSED( expl->exp->suppl ) == 1) && (expl->exp->line != last_line) ) {
 
       last_line  = expl->exp->line;
       unexec_exp = expl->exp;
+      exp_id     = 1;
 
       while( (unexec_exp->parent != NULL) && (unexec_exp->parent->line == unexec_exp->line) ) {
         unexec_exp = unexec_exp->parent;
       }
 
+      /* Generate line of code that missed combinational coverage */
       code = codegen_gen_expr( unexec_exp, unexec_exp->line );
-
       fprintf( ofile, "%7d:    %s\n", unexec_exp->line, code );
 
+      /* Output underlining feature for missed expressions */
       combination_underline( ofile, unexec_exp, "            " );
-
       fprintf( ofile, "\n" );
 
       free_safe( code );
-      free_safe( underline );
+
+      /* Output logical combinations that missed complete coverage */
+      combination_list_missed( ofile, unexec_exp, &exp_id );
 
     }
 

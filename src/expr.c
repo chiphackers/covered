@@ -607,13 +607,11 @@ void expression_operate( expression* expr ) {
 
     vector_dealloc( oldval );
 
-    /* If this expression is measurable, set TRUE/FALSE bits to indicate value */
-    if( ((expr->suppl >> SUPPL_LSB_MEASURABLE) & 0x1) == 1 ) {
-      switch( expr->value->value[0] & 0x3 ) {
-        case 0 :  expr->suppl = expr->suppl | (0x1 << SUPPL_LSB_FALSE);  break;
-        case 1 :  expr->suppl = expr->suppl | (0x1 << SUPPL_LSB_TRUE);   break;
-        default:  break;
-      }
+    /* Set TRUE/FALSE bits to indicate value */
+    switch( expr->value->value[0] & 0x3 ) {
+      case 0 :  expr->suppl = expr->suppl | (0x1 << SUPPL_LSB_FALSE);  break;
+      case 1 :  expr->suppl = expr->suppl | (0x1 << SUPPL_LSB_TRUE);   break;
+      default:  break;
     }
 
   }

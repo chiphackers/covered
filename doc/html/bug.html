@@ -9,15 +9,9 @@
 <hr><a name="bug"><h2>Bug List</h2></a>
 
 <dl compact>
-<dt><a name="_bug000001"></a>Member <a class="el" href="lexer_8c.html#a143">do_define</a>() <dd>This strips trailing line comments out of the definition. It's not adequate as the "//" may have been quoted or commented, but it will do for now.
+<dt><a name="_bug000001"></a>Member <a class="el" href="signal_8c.html#a4">signal_db_read</a>(char **line, module *curr_mod) <dd>A signal will only look in the current module for a matching expression. In the case of a hierarchical reference, it is possible that an expression outside the current module is referencing this signal. We need to check for this case (hierarchical expression) and find the expression elsewhere.
 </dl>
-
-<p>
-
-<dl compact>
-<dt><a name="_bug000002"></a>Member <a class="el" href="signal_8c.html#a4">signal_db_read</a>(char **line, module *curr_mod) <dd>A signal will only look in the current module for a matching expression. In the case of a hierarchical reference, it is possible that an expression outside the current module is referencing this signal. We need to check for this case (hierarchical expression) and find the expression elsewhere.
-</dl>
- <hr><address align="right"><small>Generated on Sun Apr 21 23:43:21 2002 for Covered by
+ <hr><address align="right"><small>Generated on Tue Apr 23 00:25:18 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.15 </small></address>

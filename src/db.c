@@ -675,6 +675,13 @@ void db_find_set_add_signal( char* symbol, vector* vec ) {
           /* Specify that this expression is currently in the expression queue */
           curr_exp->exp->suppl = curr_exp->exp->suppl | (0x1 << SUPPL_LSB_IN_QUEUE);
 
+          /* Set signal expressions supplemental field TRUE/FALSE bits */
+          if( (vec->value[0] & 0x3) == 0 ) {
+            curr_exp->exp->suppl = curr_exp->exp->suppl | (0x1 << SUPPL_LSB_FALSE);
+          } else if( (vec->value[0] & 0x3) == 1 ) {
+            curr_exp->exp->suppl = curr_exp->exp->suppl | (0x1 << SUPPL_LSB_TRUE);
+          }
+
           exp_link_add( curr_exp->exp, &(exp_queue_head), &(exp_queue_tail) );
           curr_exp = curr_exp->next;
 

@@ -245,6 +245,13 @@
 */
 #define SUPPL_WAS_FALSE(x)          ((x >> SUPPL_LSB_FALSE) & 0x1)
 
+/*!
+ Returns a value of 1 if the specified supplemental belongs to an expression
+ that was measurable for combinational coverage but not fully covered during
+ simulation.
+*/
+#define SUPPL_COMB_MISSED(x)        (SUPPL_IS_MEASURABLE(x) & (~SUPPL_WAS_TRUE(x) | ~SUPPL_WAS_FALSE(x)))
+
 /*! @} */
      
 /*!

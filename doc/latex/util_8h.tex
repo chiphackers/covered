@@ -18,15 +18,15 @@ void {\bf print\_\-output} (char $\ast$msg, int type)
 \begin{CompactList}\small\item\em Returns TRUE if the specified string is a legal directory string.\item\end{CompactList}\item 
 {\bf bool} {\bf directory\_\-exists} (char $\ast$dir)
 \begin{CompactList}\small\item\em Returns TRUE if the specified directory exists.\item\end{CompactList}\item 
-{\bf bool} {\bf file\_\-exists} (char $\ast${\bf file})
+{\bf bool} {\bf file\_\-exists} (char $\ast$file)
 \begin{CompactList}\small\item\em Returns TRUE if the specified file exists.\item\end{CompactList}\item 
-{\bf bool} {\bf readline} (FILE $\ast${\bf file}, char $\ast$$\ast$line)
+{\bf bool} {\bf readline} (FILE $\ast$file, char $\ast$$\ast$line)
 \begin{CompactList}\small\item\em Reads line from file and returns it in string form.\item\end{CompactList}\item 
 void {\bf scope\_\-extract\_\-front} (char $\ast$scope, char $\ast$front, char $\ast$rest)
 \begin{CompactList}\small\item\em Extracts highest level of hierarchy from specified scope.\item\end{CompactList}\item 
 void {\bf scope\_\-extract\_\-back} (char $\ast$scope, char $\ast$back, char $\ast$rest)
 \begin{CompactList}\small\item\em Extracts lowest level of hierarchy from specified scope.\item\end{CompactList}\item 
-void $\ast$ {\bf malloc\_\-safe} (int {\bf size})
+void $\ast$ {\bf malloc\_\-safe} (int size)
 \begin{CompactList}\small\item\em Performs safe malloc call.\item\end{CompactList}\item 
 void {\bf free\_\-safe} (void $\ast$ptr)
 \begin{CompactList}\small\item\em Performs safe deallocation of heap memory.\item\end{CompactList}\item 

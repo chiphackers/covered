@@ -26,11 +26,18 @@
 \#define {\bf SUPPL\_\-WAS\_\-TRUE}(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-TRUE) \& 0x1)
 \item 
 \#define {\bf SUPPL\_\-WAS\_\-FALSE}(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-FALSE) \& 0x1)
+\item 
+\#define {\bf SUPPL\_\-COMB\_\-MISSED}(x)\ (SUPPL\_\-IS\_\-MEASURABLE(x) \& ($\sim$SUPPL\_\-WAS\_\-TRUE(x) $|$ $\sim$SUPPL\_\-WAS\_\-FALSE(x)))
 \end{CompactItemize}
 
 
 \subsection{Define Documentation}
-\index{expr_suppl@{expr\_\-suppl}!SUPPL_IS_MEASURABLE@{SUPPL\_\-IS\_\-MEASURABLE}}
+\index{expr_suppl@{expr\_\-suppl}!SUPPL_COMB_MISSED@{SUPPL\_\-COMB\_\-MISSED}}
+\index{SUPPL_COMB_MISSED@{SUPPL\_\-COMB\_\-MISSED}!expr_suppl@{expr\_\-suppl}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-COMB\_\-MISSED(x)\ (SUPPL\_\-IS\_\-MEASURABLE(x) \& ($\sim$SUPPL\_\-WAS\_\-TRUE(x) $|$ $\sim$SUPPL\_\-WAS\_\-FALSE(x)))}\label{group__expr__suppl_a12}
+
+
+Returns a value of 1 if the specified supplemental belongs to an expression that was measurable for combinational coverage but not fully covered during simulation. \index{expr_suppl@{expr\_\-suppl}!SUPPL_IS_MEASURABLE@{SUPPL\_\-IS\_\-MEASURABLE}}
 \index{SUPPL_IS_MEASURABLE@{SUPPL\_\-IS\_\-MEASURABLE}!expr_suppl@{expr\_\-suppl}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-IS\_\-MEASURABLE(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-MEASURABLE) \& 0x1)}\label{group__expr__suppl_a9}
 
