@@ -24,10 +24,13 @@ int main() {
 
     vector_from_int( left->value, i );
 
+    expression_operate( left );
+
     for( j=1; j<16; j++ ) {
 
       vector_from_int( right->value, j );
-  
+
+      expression_operate( right );
       expression_operate( result );
 
       if( vector_to_int( result->value ) != (i % j) ) {

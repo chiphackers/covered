@@ -1,11 +1,6 @@
 #include "defines.h"
 
-tree_node* tree_find_module( char* modname, bool chkname, char* scope, bool chkscope, 
-			     int fname_comp, tree_node* root ) {
-
-  // Place holder
-
-}
+int curr_sim_time;
 
 void exp_link_add( expression* expr, exp_link** head, exp_link** tail ) {
  
