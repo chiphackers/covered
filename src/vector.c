@@ -966,12 +966,14 @@ vector* vector_from_string( char* str ) {
 /*!
  \param vec    Pointer to vector to set value to.
  \param value  String version of VCD value.
+ \param msb    Most significant bit to assign to.
+ \param lsb    Least significant bit to assign to.
 
  Iterates through specified value string, setting the specified vector value to
  this value.  Performs a VCD-specific bit-fill if the value size is not the size
  of the vector.  The specified value string is assumed to be in binary format.
 */
-void vector_vcd_assign( vector* vec, char* value ) {
+void vector_vcd_assign( vector* vec, char* value, int msb, int lsb ) {
 
   char*  ptr;   /* Pointer to current character under evaluation */
   int    i;     /* Loop iterator                                 */
@@ -979,10 +981,11 @@ void vector_vcd_assign( vector* vec, char* value ) {
 
   assert( vec != NULL );
   assert( value != NULL );
+  assert( msb <= (vec->lsb + vec->width) );
 
   /* Set pointer to LSB */
   ptr = (value + strlen( value )) - 1;
-  i   = 0;
+  i   = lsb;
     
   while( ptr >= value ) {
 
@@ -1008,7 +1011,7 @@ void vector_vcd_assign( vector* vec, char* value ) {
   ptr++;
 
   /* Perform VCD value bit-fill if specified value did not match width of vector value */
-  for( ; i<vec->width; i++ ) {
+  for( ; i<=msb; i++ ) {
     if( vval == 1 ) { vval = 0; }
     vector_set_value( vec, &vval, 1, 0, i );
   }
@@ -1470,6 +1473,10 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.32  2003/02/11 05:20:52  phase1geo
+ Fixing problems with merging constant/parameter vector values.  Also fixing
+ bad output from merge command when the CDD files cannot be opened for reading.
+
  Revision 1.31  2003/02/10 06:08:56  phase1geo
  Lots of parser updates to properly handle UDPs, escaped identifiers, specify blocks,
  and other various Verilog structures that Covered was not handling correctly.  Fixes

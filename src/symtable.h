@@ -12,7 +12,7 @@
 
 
 /*! \brief Creates a new symtable entry and adds it to the specified symbol table. */
-symtable* symtable_add( char* sym, signal* sig, symtable** symtab );
+symtable* symtable_add( char* sym, signal* sig, int msb, int lsb, symtable** symtab );
 
 /*! \brief Sets all matching symtable entries to specified value */
 int symtable_find_and_set( char* sym, symtable* symtab, char* value );
@@ -29,6 +29,11 @@ void symtable_dealloc( symtable* symtab );
 
 /*
  $Log$
+ Revision 1.8  2003/01/03 05:52:01  phase1geo
+ Adding code to help safeguard from segmentation faults due to array overflow
+ in VCD parser and symtable.  Reorganized code for symtable symbol lookup and
+ value assignment.
+
  Revision 1.7  2002/11/05 00:20:08  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.

@@ -71,7 +71,7 @@ char* vector_to_string( vector* vec, int type );
 vector* vector_from_string( char* str );
 
 /*! \brief Assigns specified VCD value to specified vector. */
-void vector_vcd_assign( vector* vec, char* value );
+void vector_vcd_assign( vector* vec, char* value, int msb, int lsb );
 
 /*! \brief Counts toggle01 and toggle10 information from specifed vector. */
 void vector_toggle_count( vector* vec, int* tog01_cnt, int* tog10_cnt );
@@ -115,6 +115,9 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.15  2003/01/04 03:56:28  phase1geo
+ Fixing bug with parameterized modules.  Updated regression suite for changes.
+
  Revision 1.14  2002/12/30 05:31:33  phase1geo
  Fixing bug in module merge for reports when parameterized modules are merged.
  These modules should not output an error to the user when mismatching modules

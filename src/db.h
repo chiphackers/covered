@@ -78,7 +78,7 @@ void db_set_vcd_scope( char* scope );
 void db_vcd_upscope();
 
 /*! \brief Adds symbol to signal specified by name. */
-void db_assign_symbol( char* name, char* symbol );
+void db_assign_symbol( char* name, char* symbol, int msb, int lsb );
 
 /*! \brief Sets the found symbol value to specified character value.  Called by VCD lexer. */
 void db_set_symbol_char( char* sym, char value );
@@ -92,6 +92,10 @@ void db_do_timestep( int time );
 
 /*
  $Log$
+ Revision 1.27  2003/01/25 22:39:02  phase1geo
+ Fixing case where statement is found to be unsupported in middle of statement
+ tree.  The entire statement tree is removed from consideration for simulation.
+
  Revision 1.26  2002/12/11 14:51:57  phase1geo
  Fixes compiler errors from last checkin.
 

@@ -92,7 +92,7 @@ bool db_write( char* file, bool parse_mode ) {
 
     /* Iterate through instance tree */
     assert( instance_root != NULL );
-    info_db_write( db_handle );
+    // info_db_write( db_handle );
     instance_db_write( instance_root, db_handle, instance_root->name, parse_mode );
     fclose( db_handle );
 
@@ -1032,15 +1032,18 @@ void db_vcd_upscope() {
 /*!
  \param name    Name of signal to set value to.
  \param symbol  Symbol value of signal used in VCD dumpfile.
+ \param msb     Most significant bit of symbol to set.
+ \param lsb     Least significant bit of symbol to set.
 
  Creates a new entry in the symbol table for the specified signal and symbol.
 */
-void db_assign_symbol( char* name, char* symbol ) {
+void db_assign_symbol( char* name, char* symbol, int msb, int lsb ) {
 
   sig_link* slink;   /* Pointer to signal containing this symbol */
   signal    tmpsig;  /* Temporary signal to search for           */
 
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_assign_symbol, name: %s, symbol: %s, curr_inst_scope: %s", name, symbol, curr_inst_scope );
+  snprintf( user_msg, USER_MSG_LENGTH, "In db_assign_symbol, name: %s, symbol: %s, curr_inst_scope: %s, msb: %d, lsb: %d",
+            name, symbol, curr_inst_scope, msb, lsb );
   print_output( user_msg, DEBUG );
 
   assert( name != NULL );
@@ -1053,7 +1056,7 @@ void db_assign_symbol( char* name, char* symbol ) {
     if( (slink = sig_link_find( &tmpsig, curr_instance->mod->sig_head )) != NULL ) {
 
       /* Add this signal */
-      symtable_add( strdup( symbol ), slink->sig, &vcd_symtab );
+      symtable_add( strdup( symbol ), slink->sig, msb, lsb, &vcd_symtab );
 
     } else {
 
@@ -1150,6 +1153,10 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.87  2003/02/12 14:56:22  phase1geo
+ Adding info.c and info.h files to handle new general information line in
+ CDD file.  Support for this new feature is not complete at this time.
+
  Revision 1.86  2003/02/10 06:08:55  phase1geo
  Lots of parser updates to properly handle UDPs, escaped identifiers, specify blocks,
  and other various Verilog structures that Covered was not handling correctly.  Fixes

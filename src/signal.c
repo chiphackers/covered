@@ -267,19 +267,21 @@ bool signal_db_merge( signal* base, char** line, bool same ) {
 /*!
  \param sig    Pointer to signal to assign VCD value to.
  \param value  String version of VCD value.
+ \param msb    Most significant bit to assign to.
+ \param lsb    Least significant bit to assign to.
 
  Assigns the associated value to the specified signal's vector.  After this, it
  iterates through its expression list, setting the TRUE and FALSE bits accordingly.
  Finally, calls the simulator expr_changed function for each expression.
 */
-void signal_vcd_assign( signal* sig, char* value ) {
+void signal_vcd_assign( signal* sig, char* value, int msb, int lsb ) {
 
   exp_link* curr_expr;   /* Pointer to current expression link under evaluation */
 
   assert( sig->value != NULL );
 
   /* Assign value to signal's vector value */
-  vector_vcd_assign( sig->value, value );
+  vector_vcd_assign( sig->value, value, msb, lsb );
 
   /* Iterate through signal's expression list */
   curr_expr = sig->exp_head;
@@ -362,6 +364,11 @@ void signal_dealloc( signal* sig ) {
 
 /*
  $Log$
+ Revision 1.27  2002/12/30 05:31:33  phase1geo
+ Fixing bug in module merge for reports when parameterized modules are merged.
+ These modules should not output an error to the user when mismatching modules
+ are found.
+
  Revision 1.26  2002/12/29 06:09:32  phase1geo
  Fixing bug where output was not squelched in report command when -Q option
  is specified.  Fixed bug in preprocessor where spaces where added in when newlines

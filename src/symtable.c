@@ -23,6 +23,8 @@
 /*!
  \param sym     VCD symbol for the specified signal.
  \param sig     Pointer to signal corresponding to the specified symbol.
+ \param msb     Most significant bit of variable to set.
+ \param lsb     Least significant bit of variable to set.
  \param symtab  Pointer to symtable to store the symtable entry to.
 
  \return Returns pointer to newly created symtable entry.
@@ -30,7 +32,7 @@
  Using the symbol as a unique ID, creates a new symtable element for specified information
  and places it into the binary tree.
 */
-symtable* symtable_add( char* sym, signal* sig, symtable** symtab ) {
+symtable* symtable_add( char* sym, signal* sig, int msb, int lsb, symtable** symtab ) {
 
   symtable* entry;    /* Pointer to new symtable entry           */
   symtable* curr;     /* Pointer to current symtable entry       */
@@ -40,6 +42,8 @@ symtable* symtable_add( char* sym, signal* sig, symtable** symtab ) {
   entry        = (symtable*)malloc_safe( sizeof( symtable ) );
   entry->sym   = strdup( sym );
   entry->sig   = sig;
+  entry->msb   = msb;
+  entry->lsb   = lsb;
   entry->value = (char*)malloc_safe( sig->value->width + 1 );
   entry->size  = (sig->value->width + 1);
   entry->right = NULL;
@@ -133,7 +137,7 @@ void symtable_move_and_set( char* sym, symtable* from_tab, char* value, symtable
     comp = strcmp( sym, curr->sym );
     if( comp == 0 ) {
       assert( curr->sig->value != NULL );
-      newsym = symtable_add( sym, curr->sig, to_tab );
+      newsym = symtable_add( sym, curr->sig, curr->msb, curr->lsb, to_tab );
       strcpy( newsym->value, value );
     }
     if( comp > 0 ) {
@@ -156,7 +160,7 @@ void symtable_assign( symtable* symtab ) {
   if( symtab != NULL ) {
 
     /* Assign current symbol table entry */
-    signal_vcd_assign( symtab->sig, symtab->value );
+    signal_vcd_assign( symtab->sig, symtab->value, symtab->msb, symtab->lsb );
 
     /* Assign children */
     symtable_assign( symtab->right );
@@ -190,6 +194,11 @@ void symtable_dealloc( symtable* symtab ) {
 
 /*
  $Log$
+ Revision 1.9  2003/01/03 05:52:00  phase1geo
+ Adding code to help safeguard from segmentation faults due to array overflow
+ in VCD parser and symtable.  Reorganized code for symtable symbol lookup and
+ value assignment.
+
  Revision 1.8  2002/11/05 00:20:08  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.

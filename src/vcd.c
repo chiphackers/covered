@@ -68,6 +68,9 @@ void vcd_parse_def_var( FILE* vcd ) {
   char id_code[256];     /* Unique variable identifier_code */
   char ref[256];         /* Name of variable in design      */
   char tmp[15];          /* Temporary string holder         */
+  int  msb = -1;         /* Most significant bit            */
+  int  lsb = -1;         /* Least significant bit           */
+  char t1, t2;
 
   if( fscanf( vcd, "%s %d %s %s %s", type, &size, id_code, ref, tmp ) == 5 ) {
 
@@ -79,15 +82,30 @@ void vcd_parse_def_var( FILE* vcd ) {
     
     if( strncmp( "$end", tmp, 4 ) != 0 ) {
 
+      /* A bit select was specified for this signal, get the size */
+      if( sscanf( tmp, "\[%d:%d]", &msb, &lsb ) != 2 ) {
+        
+        if( sscanf( tmp, "\[%d]", &lsb ) != 1 ) {
+          print_output( "Unrecognized $var format", FATAL );
+          exit( 1 );
+        }
+
+      }
+
       if( (fscanf( vcd, "%s", tmp ) != 1) || (strncmp( "$end", tmp, 4 ) != 0) ) {
         print_output( "Unrecognized $var format", FATAL );
         exit( 1 );
       }
 
+    } else {
+
+      msb = size - 1;
+      lsb = 0;
+
     }
 
     /* For now we will let any type and size slide */
-    db_assign_symbol( ref, id_code );
+    db_assign_symbol( ref, id_code, msb, lsb );
     
   } else {
 
@@ -319,6 +337,10 @@ void vcd_parse( char* vcd_file ) {
 
 /*
  $Log$
+ Revision 1.8  2003/02/07 23:12:30  phase1geo
+ Optimizing db_add_statement function to avoid memory errors.  Adding check
+ for -i option to avoid user error.
+
  Revision 1.7  2003/01/03 05:52:00  phase1geo
  Adding code to help safeguard from segmentation faults due to array overflow
  in VCD parser and symtable.  Reorganized code for symtable symbol lookup and
