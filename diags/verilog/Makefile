@@ -27,7 +27,8 @@ DIAGLIST = assign3.2A    assign1       always1       always3.1.11A  cond1 \
 	   casez1.1      casez1.2      casez1.3      casez1.4       casez2 \
            ifelse1       define1       define1.1     define2        define2.1 \
            static1       include1      include1.1    ifdef1         ifdef2.1 \
-           ifdef2.2      concat1       concat2       expand1        expand2
+           ifdef2.2      concat1       concat2       expand1        expand2 \
+           sbit_sel1
 
 regress:	$(COVERED) clean $(DIAGLIST)
 

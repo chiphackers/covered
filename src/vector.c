@@ -191,18 +191,19 @@ bool vector_db_read( vector** vec, char** line ) {
 /*!
  \param nib    Nibble to display toggle information
  \param width  Number of bits of nibble to display
+ \param lsb    Least significant bit of vector to display
  \param ofile  Stream to output information to.
  
  Displays the toggle01 information from the specified vector to the output
  stream specified in ofile.
 */
-void vector_display_toggle01( nibble* nib, int width, FILE* ofile ) {
+void vector_display_toggle01( nibble* nib, int width, int lsb, FILE* ofile ) {
 
   int i;    /* Loop iterator */
 
   fprintf( ofile, "%d'b", width );
 
-  for( i=(width - 1); i>=0; i-- ) {
+  for( i=((width - 1)+lsb); i>=lsb; i-- ) {
     fprintf( ofile, "%d", ((nib[(i/4)] >> ((i%4)+8)) & 0x1) );
   }
 
@@ -211,18 +212,19 @@ void vector_display_toggle01( nibble* nib, int width, FILE* ofile ) {
 /*!
  \param nib    Nibble to display toggle information
  \param width  Number of bits of nibble to display
+ \param lsb    Least significant bit of vector to display
  \param ofile  Stream to output information to.
  
  Displays the toggle10 information from the specified vector to the output
  stream specified in ofile.
 */
-void vector_display_toggle10( nibble* nib, int width, FILE* ofile ) {
+void vector_display_toggle10( nibble* nib, int width, int lsb, FILE* ofile ) {
 
   int i;    /* Loop iterator */
 
   fprintf( ofile, "%d'b", width );
 
-  for( i=(width - 1); i>=0; i-- ) {
+  for( i=((width - 1)+lsb); i>=lsb; i-- ) {
     fprintf( ofile, "%d", ((nib[(i/4)] >> ((i%4)+12)) & 0x1) );
   }
 
@@ -231,7 +233,7 @@ void vector_display_toggle10( nibble* nib, int width, FILE* ofile ) {
 /*!
  \param nib    Nibble to display.
  \param width  Number of bits in nibble to display.
- \param lsb    Least significant bit of nibble to start outputting.
+ \param lsb    Least significant bit of specified vector.
 
  Outputs the specified nibble array to standard output as described by the
  width and lsb parameters.
@@ -250,7 +252,7 @@ void vector_display_nibble( nibble* nib, int width, int lsb ) {
   /* Display nibble value */
   printf( ", value: %d'b", width );
 
-  for( i=(width - 1); i>=0; i-- ) {
+  for( i=((width - 1)+lsb); i>=lsb; i-- ) {
     switch( (nib[(i/4)] >> ((i%4)*2)) & 0x3 ) {
       case 0 :  printf( "0" );  break;
       case 1 :  printf( "1" );  break;
@@ -262,30 +264,30 @@ void vector_display_nibble( nibble* nib, int width, int lsb ) {
 
   /* Display nibble toggle01 history */
   printf( ", 0->1: " );
-  vector_display_toggle01( nib, width, stdout );
+  vector_display_toggle01( nib, width, lsb, stdout );
 
   /* Display nibble toggle10 history */
   printf( ", 1->0: " );
-  vector_display_toggle10( nib, width, stdout );
+  vector_display_toggle10( nib, width, lsb, stdout );
 
   /* Display bit set information */
   printf( ", set: %d'b", width );
 
-  for( i=(width - 1); i>=0; i-- ) {
+  for( i=((width - 1)+lsb); i>=lsb; i-- ) {
     printf( "%d", ((nib[(i/4)] >> ((i%4)+16)) & 0x1) );
   }
 
   /* Display bit FALSE information */
   printf( ", FALSE: %d'b", width );
 
-  for( i=(width - 1); i>=0; i-- ) {
+  for( i=((width - 1)+lsb); i>=lsb; i-- ) {
     printf( "%d", ((nib[(i/4)] >> ((i%4)+24)) & 0x1) );
   }
 
   /* Display bit TRUE information */
   printf( ", TRUE: %d'b", width );
 
-  for( i=(width - 1); i>=0; i-- ) {
+  for( i=((width - 1)+lsb); i>=lsb; i-- ) {
     printf( "%d", ((nib[(i/4)] >> ((i%4)+28)) & 0x1) );
   }
 
@@ -481,8 +483,8 @@ void vector_logic_count( vector* vec, int* false_cnt, int* true_cnt ) {
  \param vec       Pointer to vector to set value to.
  \param value     New value to set vector value to.
  \param width     Width of new value.
- \param from_lsb  Least significant bit of new value.
- \param to_lsb    Least significant bit of value to set.
+ \param from_idx  Starting bit index of value to start copying.
+ \param to_idx    Starting bit index of vec value to copy to.
  \return Returns TRUE if assignment was successful; otherwise, returns FALSE.
 
  Allows the calling function to set any bit vector within the vector
@@ -491,9 +493,8 @@ void vector_logic_count( vector* vec, int* false_cnt, int* true_cnt ) {
  been set, checks to see if new vector bits have toggled, sets appropriate
  toggle values, sets the new value to this value and returns.
 */
-bool vector_set_value( vector* vec, nibble* value, int width, int from_lsb, int to_lsb ) {
+void vector_set_value( vector* vec, nibble* value, int width, int from_idx, int to_idx ) {
 
-  bool   retval;        /* Return value for this function            */
   nibble from_val;      /* Current bit value of value being assigned */
   nibble to_val;        /* Current bit value of previous value       */
   int    nibble_to_set; /* Index to current nibble in value          */
@@ -502,51 +503,50 @@ bool vector_set_value( vector* vec, nibble* value, int width, int from_lsb, int 
 
   assert( vec != NULL );
 
-  retval = (from_lsb >= vec->lsb) && ((from_lsb + width) <= (vec->lsb + vec->width));
+  /* Verify that index is within range */
+  assert( to_idx < (vec->width + vec->lsb) );
+  assert( to_idx >= 0 );
 
-  if( retval ) {
+  /* Adjust width to smaller of two values */
+  width = (width > (vec->width - to_idx)) ? (vec->width - to_idx) : width;
 
-    for( i=0; i<width; i++ ) {
+  for( i=0; i<width; i++ ) {
 
-      from_val = vector_bit_val( value, (i + from_lsb) );
+    from_val = vector_bit_val( value, (i + from_idx) );
 
-      if( ((vec->value[i/4] >> ((i%4)+16)) & 0x1) == 0x1 ) {
+    if( ((vec->value[i/4] >> ((i%4)+16)) & 0x1) == 0x1 ) {
 
-        /* Assign toggle values if necessary */
-        to_val   = vector_bit_val( vec->value, (i + to_lsb) );
+      /* Assign toggle values if necessary */
+      to_val = vector_bit_val( vec->value, (i + to_idx) );
 
-        if( (to_val == 0) && (from_val == 1) ) {
-          vector_set_toggle01( vec->value, (i + to_lsb) );
-        } else if( (to_val == 1) && (from_val == 0) ) {
-          vector_set_toggle10( vec->value, (i + to_lsb) );
-        }
-
-      }
-
-      /* Assign TRUE/FALSE values if necessary */
-      if( from_val == 0 ) {
-        vector_set_false( vec->value, (i + to_lsb) );
-      } else if( from_val == 1 ) {
-        vector_set_true( vec->value, (i + to_lsb) );
+      if( (to_val == 0) && (from_val == 1) ) {
+        vector_set_toggle01( vec->value, (i + to_idx) );
+      } else if( (to_val == 1) && (from_val == 0) ) {
+        vector_set_toggle10( vec->value, (i + to_idx) );
       }
 
     }
 
-    /* Perform value assignment */
-    for( i=0; i<width; i++ ) {
-
-      nibble_to_set = ((i + to_lsb) / 4);
-      bit_shift     = ((i + to_lsb) % 4) * 2;
-
-      vec->value[nibble_to_set] = (0x1 << (((i + to_lsb) % 4) + 16)) |
-				  (vec->value[nibble_to_set] & ~(0x3 << bit_shift)) |
-                                  (vector_bit_val( value, (i + from_lsb) ) << bit_shift);
-
+    /* Assign TRUE/FALSE values if necessary */
+    if( from_val == 0 ) {
+      vector_set_false( vec->value, (i + to_idx) );
+    } else if( from_val == 1 ) {
+      vector_set_true( vec->value, (i + to_idx) );
     }
 
   }
 
-  return( retval );
+  /* Perform value assignment */
+  for( i=0; i<width; i++ ) {
+
+    nibble_to_set = ((i + to_idx) / 4);
+    bit_shift     = ((i + to_idx) % 4) * 2;
+
+    vec->value[nibble_to_set] = (0x1 << (((i + to_idx) % 4) + 16)) |
+                                (vec->value[nibble_to_set] & ~(0x3 << bit_shift)) |
+                                (vector_bit_val( value, (i + from_idx) ) << bit_shift);
+
+  }
 
 }
 
@@ -598,7 +598,7 @@ int vector_to_int( vector* vec ) {
 
   width = (vec->width > (SIZEOF_INT * 8)) ? 32 : vec->width;
 
-  for( i=(width - 1); i>=0; i-- ) {
+  for( i=(width - 1); i>=vec->lsb; i-- ) {
     switch( (vec->value[i/4] >> ((i%4)*2)) & 0x3 ) {
       case 0 :  retval = (retval << 1) | 0;  break;
       case 1 :  retval = (retval << 1) | 1;  break;
@@ -904,8 +904,6 @@ void vector_vcd_assign( vector* vec, char* value ) {
     vector_set_value( vec, &vval, 1, 0, i );
   }
 
-  // vector_display( vec );
-
 }
 
 /*!
@@ -1071,7 +1069,7 @@ void vector_op_lshift( vector* tgt, vector* left, vector* right ) {
 
   } else {
 
-    vector_set_value( tgt, left->value, (left->width - shift_val), 0, shift_val );
+    vector_set_value( tgt, left->value, (left->width - shift_val), left->lsb, shift_val );
 
   }
 
@@ -1242,7 +1240,7 @@ void vector_op_multiply( vector* tgt, vector* left, vector* right ) {
     if( vector_to_int( left ) == 0 ) {
       vector_from_int( &vec, 0 );
     } else if( vector_to_int( left ) == 1 ) {
-      vector_set_value( &vec, right->value, right->width, 0, 0 );
+      vector_set_value( &vec, right->value, right->width, right->lsb, 0 );
     } else {
       for( i=0; i<vec.width; i++ ) {
         vector_set_bit( vec.value, 2, i );
@@ -1254,7 +1252,7 @@ void vector_op_multiply( vector* tgt, vector* left, vector* right ) {
     if( vector_to_int( right ) == 0 ) {
       vector_from_int( &vec, 0 );
     } else if( vector_to_int( right ) == 1 ) {
-      vector_set_value( &vec, left->value, left->width, 0, 0 );
+      vector_set_value( &vec, left->value, left->width, left->lsb, 0 );
     } else {
       for( i=0; i<vec.width; i++ ) {
         vector_set_bit( vec.value, 2, i );
@@ -1289,7 +1287,7 @@ void vector_unary_inv( vector* tgt, vector* src ) {
 
   for( i=0; i<src->width; i++ ) {
 
-    bit = vector_bit_val( src->value, i );
+    bit = vector_bit_val( src->value, (i + src->lsb) );
 
     switch( bit ) {
       case 0  :  vector_set_bit( vec.value, 1, 0 );  break;
@@ -1320,10 +1318,10 @@ void vector_unary_op( vector* tgt, vector* src, nibble* optab ) {
 
   vector_init( &vec, &vec_val, 1, 0 );
 
-  uval = vector_bit_val( src->value, 0 );
+  uval = vector_bit_val( src->value, src->lsb );
 
   for( i=1; i<src->width; i++ ) {
-    bit  = vector_bit_val( src->value, i );
+    bit  = vector_bit_val( src->value, (i + src->lsb) );
     uval = optab[ ((uval << 2) | bit) ]; 
   }
 
@@ -1371,6 +1369,10 @@ void vector_dealloc( vector* vec ) {
 }
 
 /* $Log$
+/* Revision 1.12  2002/07/14 05:10:42  phase1geo
+/* Added support for signal concatenation in score and report commands.  Fixed
+/* bugs in this code (and multiplication).
+/*
 /* Revision 1.11  2002/07/10 04:57:07  phase1geo
 /* Adding bits to vector nibble to allow us to specify what type of input
 /* static value was read in so that the output value may be displayed in

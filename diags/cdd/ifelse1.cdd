@@ -7,8 +7,8 @@
 1 z main 1 0 10100
 3 mux main.switch ./lib/mux.v
 2 5 main.switch 14 1580 0 0 1 0 100000
-2 7 main.switch 17 3581 0 0 
-2 8 main.switch 19 3581 0 0 
+2 7 main.switch 17 2581 0 0 
+2 8 main.switch 19 1581 0 0 
 2 6 main.switch 16 3181 0 0 
 2 4 main.switch 13 3181 0 0 
 2 1 main.switch 12 3001 0 0 

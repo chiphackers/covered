@@ -116,15 +116,6 @@ void bind_set_tree( expression* expr ) {
 
   nibble value1;     /* Value to initialize LAST element of AEDGE operation */
   int    i;          /* Loop iterator                                       */
-  static int count = 0;
-
-/*
-  if( count > 70 ) {
-    assert( count == 70 );
-  } else {
-    count++;
-  }
-*/
 
   if( expr != NULL ) {
 
@@ -291,9 +282,11 @@ void bind( int mode ) {
         case EXP_OP_SBIT_SEL :
           curr_seb->exp->value->value = sigl->sig->value->value;
           curr_seb->exp->value->width = 1;
+          curr_seb->exp->suppl        = curr_seb->exp->suppl | ((sigl->sig->value->lsb & 0xffff) << SUPPL_LSB_SIG_LSB);
           break;
         case EXP_OP_MBIT_SEL :
           curr_seb->exp->value->value = sigl->sig->value->value;
+          curr_seb->exp->suppl        = curr_seb->exp->suppl | ((sigl->sig->value->lsb & 0xffff) << SUPPL_LSB_SIG_LSB);
           break;
         default :
           snprintf( msg, 4096, "Internal error:  Expression with bad operation (%d) in binding function", SUPPL_OP( seb_head->exp->suppl ) );
@@ -326,6 +319,11 @@ void bind( int mode ) {
 }
 
 /* $Log$
+/* Revision 1.9  2002/07/16 00:05:31  phase1geo
+/* Adding support for replication operator (EXPAND).  All expressional support
+/* should now be available.  Added diagnostics to test replication operator.
+/* Rewrote binding code to be more efficient with memory use.
+/*
 /* Revision 1.8  2002/07/14 05:10:42  phase1geo
 /* Added support for signal concatenation in score and report commands.  Fixed
 /* bugs in this code (and multiplication).

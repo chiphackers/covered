@@ -202,9 +202,9 @@ void toggle_display_verbose( FILE* ofile, sig_link* sigl ) {
     if( (hit01 < curr_sig->sig->value->width) || (hit10 < curr_sig->sig->value->width) ) {
 
       fprintf( ofile, "%-24s  0->1: ", curr_sig->sig->name );
-      vector_display_toggle01( curr_sig->sig->value->value, curr_sig->sig->value->width, ofile );      
+      vector_display_toggle01( curr_sig->sig->value->value, curr_sig->sig->value->width, 0, ofile );      
       fprintf( ofile, "\n......................... 1->0: " );
-      vector_display_toggle10( curr_sig->sig->value->value, curr_sig->sig->value->width, ofile );      
+      vector_display_toggle10( curr_sig->sig->value->value, curr_sig->sig->value->width, 0, ofile );      
       fprintf( ofile, " ...\n" );
 
     }
@@ -323,6 +323,10 @@ void toggle_report( FILE* ofile, bool verbose, bool instance ) {
 }
 
 /* $Log$
+/* Revision 1.7  2002/07/14 05:27:34  phase1geo
+/* Fixing report outputting to allow multiple modules/instances to be
+/* output.
+/*
 /* Revision 1.6  2002/07/09 03:24:48  phase1geo
 /* Various fixes for module instantiantion handling.  This now works.  Also
 /* modified report output for toggle, line and combinational information.

@@ -556,7 +556,7 @@ void expression_operate( expression* expr ) {
 
       case EXP_OP_COND :
         /* Simple vector copy from right side */
-        vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, expr->right->value->lsb, expr->value->lsb );
+        vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
         break;
 
       case EXP_OP_COND_SEL :
@@ -564,16 +564,16 @@ void expression_operate( expression* expr ) {
         vector_unary_op( &vec1, expr->parent->expr->left->value, or_optab );
         if( vector_bit_val( vec1.value, 0 ) == 0 ) {
           vector_set_value( expr->value, expr->right->value->value, expr->right->value->width,
-                            expr->right->value->lsb, expr->value->lsb );
+                            expr->right->value->lsb, 0 );
         } else if( vector_bit_val( vec1.value, 0 ) == 1 ) {
           vector_set_value( expr->value, expr->left->value->value, expr->left->value->width,
-                            expr->left->value->lsb, expr->value->lsb );
+                            expr->left->value->lsb, 0 );
         } else {
           vec = vector_create( expr->value->width, 0 );
           for( i=0; i<vec->width; i++ ) {
             vector_set_bit( vec->value, 2, i );
           }
-          vector_set_value( expr->value, vec->value, vec->width, vec->lsb, expr->value->lsb );
+          vector_set_value( expr->value, vec->value, vec->width, vec->lsb, 0 );
           vector_dealloc( vec );
         }
         break;
@@ -651,8 +651,8 @@ void expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_LIST :
-        vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
-        vector_set_value( expr->value, expr->left->value->value, expr->left->value->width, 0, expr->right->value->width );
+        vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, expr->right->value->lsb, 0 );
+        vector_set_value( expr->value, expr->left->value->value,  expr->left->value->width,  expr->left->value->lsb,  expr->right->value->width );
         break;
 
       case EXP_OP_CONCAT :
@@ -839,6 +839,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.40  2002/07/16 00:05:31  phase1geo
+/* Adding support for replication operator (EXPAND).  All expressional support
+/* should now be available.  Added diagnostics to test replication operator.
+/* Rewrote binding code to be more efficient with memory use.
+/*
 /* Revision 1.39  2002/07/14 05:10:42  phase1geo
 /* Added support for signal concatenation in score and report commands.  Fixed
 /* bugs in this code (and multiplication).

@@ -28,9 +28,6 @@ void signal_db_write( signal* sig, FILE* file, char* modname );
 //! Reads signal information from specified file.
 bool signal_db_read( char** line, module* curr_mod );
 
-//! Sets value of signal to specified value.
-bool signal_set_value( signal* sig, nibble* value, int num_bits, int from_lsb, int to_lsb );
-
 //! Adds an expression to the signal list.
 void signal_add_expression( signal* sig, expression* expr );
 
@@ -40,7 +37,7 @@ void signal_display( signal* sig );
 //! Deallocates the memory used for this signal.
 void signal_dealloc( signal* sig );
 
-/* $Log */
+/* $Log$ */
 
 #endif
 

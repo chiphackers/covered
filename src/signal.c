@@ -210,17 +210,25 @@ bool signal_db_read( char** line, module* curr_mod ) {
             if( SUPPL_OP( expl->exp->suppl ) == EXP_OP_SIG ) {
               expl->exp->value = sig->value;
               expl->exp->sig   = sig;
-            } else if( (SUPPL_OP( expl->exp->suppl ) == EXP_OP_SBIT_SEL) || (SUPPL_OP( expl->exp->suppl ) == EXP_OP_MBIT_SEL) ) {
+            } else if( SUPPL_OP( expl->exp->suppl ) == EXP_OP_SBIT_SEL ) {
               expl->exp->value->value = sig->value->value;
+              expl->exp->value->width = 1;
+              expl->exp->suppl        = expl->exp->suppl | ((sig->value->lsb & 0xffff) << SUPPL_LSB_SIG_LSB);
+              expl->exp->sig          = sig;
+            } else if( SUPPL_OP( expl->exp->suppl ) == EXP_OP_MBIT_SEL ) {
+              expl->exp->value->value = sig->value->value;
+              expl->exp->suppl        = expl->exp->suppl | ((sig->value->lsb & 0xffff) << SUPPL_LSB_SIG_LSB);
               expl->exp->sig          = sig;
             }
 
+#ifdef NOT_NEEDED
             /* Traverse parent links, setting its width if it is set to 0. */
             curr_parent = expl->exp->parent->expr;
             while( (curr_parent != NULL) && (curr_parent->value->width == 0) ) {
               expression_create_value( curr_parent, sig->value->width, sig->value->lsb );
               curr_parent = curr_parent->parent->expr;
             }
+#endif
 
           }
 
@@ -252,31 +260,6 @@ bool signal_db_read( char** line, module* curr_mod ) {
 }
 
 /*!
- \param sig       Pointer to signal to set value to.
- \param value     Value to set signal value to.
- \param num_bits  Number of bits wide that value is.
- \param from_lsb  Least significant bit of assign value.
- \param to_lsb    Least significant bit of signal being assigned.
- \return Returns TRUE if value assignment is successful; otherwise, returns
-         FALSE.
-
- This function is called by the VCD reading function when the matching
- signal is found.  If the signal has never been set to a value before
- (value is NULL), copy the contents of the value verbatim.  If the signal
- value has been set previously, compare the old value to the new value
- bit for bit, setting the toggle bits accordingly.  After this is achieved,
- copy the new value to the signal value.  If the specified value width,
- does not match this signal's width, we have an internal error (VCD file
- does not match the design read in), so we return FALSE.  Otherwise, return
- with a value of TRUE.
-*/
-bool signal_set_value( signal* sig, nibble* value, int num_bits, int from_lsb, int to_lsb ) {
-
-  return( vector_set_value( sig->value, value, num_bits, from_lsb, to_lsb ) );
-
-}
-
-/*!
  \param sig    Pointer to signal to assign VCD value to.
  \param value  String version of VCD value.
 
@@ -287,28 +270,15 @@ bool signal_set_value( signal* sig, nibble* value, int num_bits, int from_lsb, i
 void signal_vcd_assign( signal* sig, char* value ) {
 
   exp_link* curr_expr;   /* Pointer to current expression link under evaluation */
-  vector vec1;           /* Temporary 1-bit vector                              */
-  nibble value1;         /* Temporary 1-bit nibble value                        */
 
   assert( sig->value != NULL );
 
   /* Assign value to signal's vector value */
   vector_vcd_assign( sig->value, value );
 
-  /* Determine if vector is TRUE or FALSE */
-  vector_init( &vec1, &value1, 1, 0 );
-  vector_unary_op( &vec1, sig->value, or_optab );
-
   /* Iterate through signal's expression list */
   curr_expr = sig->exp_head;
   while( curr_expr != NULL ) {
-
-    /* Set signal expressions supplemental field TRUE/FALSE bits */
-    switch( vector_bit_val( vec1.value, 0 ) ) {
-      case 0 :  curr_expr->exp->suppl = curr_expr->exp->suppl | (0x1 << SUPPL_LSB_FALSE);  break;
-      case 1 :  curr_expr->exp->suppl = curr_expr->exp->suppl | (0x1 << SUPPL_LSB_TRUE);   break;
-      default:  break;
-    }
 
     /* Add to simulation queue */
     sim_expr_changed( curr_expr->exp );
@@ -378,6 +348,10 @@ void signal_dealloc( signal* sig ) {
 }
 
 /* $Log$
+/* Revision 1.8  2002/07/08 12:35:31  phase1geo
+/* Added initial support for library searching.  Code seems to be broken at the
+/* moment.
+/*
 /* Revision 1.7  2002/07/05 16:49:47  phase1geo
 /* Modified a lot of code this go around.  Fixed VCD reader to handle changes in
 /* the reverse order (last changes are stored instead of first for timestamp).

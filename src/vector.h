@@ -29,10 +29,10 @@ void vector_db_write( vector* vec, FILE* file, bool write_data );
 bool vector_db_read( vector** vec, char** line );
 
 //! Outputs the toggle01 information from the specified nibble to the specified output stream.
-void vector_display_toggle01( nibble* nib, int width, FILE* ofile );
+void vector_display_toggle01( nibble* nib, int width, int lsb, FILE* ofile );
 
 //! Outputs the toggle10 information from the specified nibble to the specified output stream.
-void vector_display_toggle10( nibble* nib, int width, FILE* ofile );
+void vector_display_toggle10( nibble* nib, int width, int lsb, FILE* ofile );
 
 //! Outputs nibble to standard output.
 void vector_display_nibble( nibble* nib, int width, int lsb );
@@ -44,7 +44,7 @@ void vector_display( vector* vec );
 void vector_set_bit( nibble* nib, nibble value, int pos );
 
 //! Sets specified vector value to new value and maintains coverage history.
-bool vector_set_value( vector* vec, nibble* value, int width, int from_lsb, int to_lsb );
+void vector_set_value( vector* vec, nibble* value, int width, int from_idx, int to_idx );
 
 //! Sets vector output type (DECIMAL, BINARY, OCTAL or HEXIDECIMAL) in first nibble
 void vector_set_type( vector* vec, int type );
@@ -104,6 +104,12 @@ void vector_unary_not( vector* tgt, vector* src );
 void vector_dealloc( vector* vec );
 
 /* $Log$
+/* Revision 1.5  2002/07/10 04:57:07  phase1geo
+/* Adding bits to vector nibble to allow us to specify what type of input
+/* static value was read in so that the output value may be displayed in
+/* the same format (DECIMAL, BINARY, OCTAL, HEXIDECIMAL).  Full regression
+/* passes.
+/*
 /* Revision 1.4  2002/07/03 03:31:11  phase1geo
 /* Adding RCS Log strings in files that were missing them so that file version
 /* information is contained in every source and header file.  Reordering src

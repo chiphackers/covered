@@ -23,18 +23,15 @@ The score command is initiated with the following call:
 </_pg>
 
 <_code>
-covered score -t &lt;top_instance&gt; -vcd &lt;vcd_dumpfile&gt; [&lt;options&gt;]
+covered score -t &lt;top_module&gt; -vcd &lt;vcd_dumpfile&gt; [&lt;options&gt;]
 </_code>
 
 <_pg>
-The <i>top_instance</i> parameter is required for the scoring 
-purposes and represents the top-most module instance in the 
-module instance hierarchy that will be covered.  Covered is 
-limited to being able to gain coverage results for either a 
-single module or a single module tree.  The following figure 
-shows a design in its hierachical form to illustrate how to 
-get Covered to generate coverage results for a part of the 
-design.
+The <i>top_module</i> parameter is required for the scoring purposes and represents the 
+top-most module that will be covered.  Covered is limited to being able to gain coverage 
+results for either a single module or a single module tree.  The following figure shows a 
+design in its hierachical form to illustrate how to get Covered to generate coverage results 
+for a part of the design.
 </_pg>
 
 <_margin>Figure</_margin>
@@ -44,13 +41,12 @@ design.
 </_pg>
 
 <_pg>
-To get coverage for the entire design, the <i>top_instance</i>
-value would be "test".
+To get coverage for the entire design, the <i>top_module</i> value would be "test".
 </_pg>
 
 <_pg>
-To get coverage for the instance foo and all modules below it,
-the <i>top_instance</i> value would be "test.foo".
+To get coverage for the instance foo and all modules below it, the <i>top_module</i> value 
+would be "foo".
 </_pg>
 
 <_pg>
