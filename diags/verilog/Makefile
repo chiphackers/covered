@@ -34,7 +34,7 @@ $(DIAGLIST):
 	@./$(VERILOG_EXEC)
 	@$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@.cfg
 	@diff $@.cdd $(CDD_DIR)/$@.cdd
-	@rm -rf a.out $@.vcd $@.cdd
+	@rm -rf a.out *.vcd *.cdd
 
 $(COVERED):
 	cd $(COVERED_SRC); make

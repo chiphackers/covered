@@ -2609,9 +2609,21 @@ net_decl_assigns
   ;
 
 net_decl_assign
-  : IDENTIFIER '=' { ignore_mode++; } expression { ignore_mode--; }
+  : IDENTIFIER '=' expression
     {
+      statement* stmt;
       if( ignore_mode == 0 ) {
+        if( $3 != NULL ) {
+          stmt = db_create_statement( $3 );
+          stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
+          stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);
+          stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_CONTINUOUS);
+          /* Statement will be looped back to itself */
+          db_connect_statement_true( stmt, stmt );
+          db_connect_statement_false( stmt, stmt );
+          db_add_expression( $3 );
+          db_add_statement( stmt );
+        }
         $$ = $1;
       } else {
         $$ = NULL;
@@ -2621,10 +2633,21 @@ net_decl_assign
     {
       $$ = NULL;
     } 
-  | delay1 IDENTIFIER '=' { ignore_mode++; } expression { ignore_mode--; }
+  | delay1 IDENTIFIER '=' expression
     {
+      statement* stmt;
       if( ignore_mode == 0 ) {
-        expression_dealloc( $1, FALSE );
+        if( $4 != NULL ) {
+          stmt = db_create_statement( $4 );
+          stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_HEAD);
+          stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);
+          stmt->exp->suppl = stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_CONTINUOUS);
+          /* Statement will be looped back to itself */
+          db_connect_statement_true( stmt, stmt );
+          db_connect_statement_false( stmt, stmt );
+          db_add_expression( $4 );
+          db_add_statement( stmt );
+        }
         $$ = $2;
       } else {
         $$ = NULL;

@@ -22,7 +22,8 @@ CDD_DIR       = ../cdd
 LOGFILE = regress.log
 
 DIAGS1       = always1        always2        always3        always3.1.11A  always4 \
-               always5        always6        assign3.2A     case1          case1.1 \
+               always5        always6        assign2        assign2.1      assign2.2 \
+               assign2.3      assign2.8      assign2.9      assign3.2A     case1          case1.1 \
                case1.2        case1.3        case2          case3          case3.1 \
                case3.2        case3.3        case3.4        casex1         casex1.1 \
                casex1.2       casex1.3       casex1.4       casez1         casez1.1 \
@@ -48,8 +49,8 @@ IVONLYDIAGS2 =
 IVONLYDIAGS3 = 
 IVONLYDIAGS4 = 
 
-VCSONLYDIAGS = real1          triand         trior          trireg         wand \
-               wor
+VCSONLYDIAGS = assign2.4      assign2.5      assign2.6      assign2.7      real1 \
+               triand         trior          trireg         wand           wor
 
 iverilog:
 	@cd ../verilog; \
