@@ -28,6 +28,9 @@ Score command
 9.  Allow ability to only parse a design and only score a dumpfile (rather than having to
     do both everytime -- could save a lot of time in not having to reparse).
 
+10. Possibly allow undeclared signals to be automatically created if not found (1-bit signal
+    values -- simulators will probably do this).
+
 
 Merge command
 -------------
