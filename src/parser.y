@@ -1812,9 +1812,9 @@ statement_opt
      This rule handles only procedural assignments. */
 lpvalue
 	: identifier
-	| identifier '[' { ignore_mode++; } static_expr { ignore_mode--; } ']'
-	| identifier { ignore_mode++; } range { ignore_mode--; }
-	| '{' { ignore_mode++; } expression_list { ignore_mode--; } '}'
+	| identifier ignore_more '[' static_expr ']' ignore_less
+	| identifier ignore_more '[' static_expr ':' static_expr ']' ignore_less
+	| '{' ignore_more expression_list ignore_less '}'
 		{
 		  $$ = 0;
 		}
@@ -1825,9 +1825,12 @@ lpvalue
      expression meets the constraints of continuous assignments. */
 lavalue
 	: identifier
-	| identifier '[' { ignore_mode++; } static_expr { ignore_mode--; } ']'
-	| identifier { ignore_mode++; } range { ignore_mode--; }
-	| '{' { ignore_mode++; } expression_list { ignore_mode--; } '}'
+	| identifier ignore_more '[' static_expr ']' ignore_less
+	| identifier ignore_more '[' static_expr ':' static_expr ']' ignore_less
+	| '{' ignore_more expression_list ignore_less '}'
+    {
+      $$ = 0;
+    }
 	;
 
 block_item_decls_opt
@@ -2821,4 +2824,14 @@ port_name
 	| PORTNAME '(' ')'
         | UNUSED_PORTNAME '(' ')'
 	;
+  
+ignore_more
+  :
+    { ignore_mode++; }
+  ;
+  
+ignore_less
+  :
+    { ignore_mode--; }
+  ;
 

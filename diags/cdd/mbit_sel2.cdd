@@ -1,0 +1,8 @@
+3 main main mbit_sel2.v
+2 1 main 7 3f81 0 0 
+2 2 main 8 3f81 0 0 
+1 a main 3 0 736aa
+1 b main 2 0 313aa 1
+1 c main 1 0 110aa 2
+4 1 main 1 1
+4 2 main 2 2
