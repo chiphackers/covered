@@ -210,6 +210,9 @@ void sim_add_statics() {
 /*!
  \param expr  Pointer to expression to simulate.
 
+ \return Returns TRUE if this expression has changed value from previous sim; otherwise,
+         returns FALSE.
+
  Recursively traverses specified expression tree, following the #SUPPL_LSB_LEFT_CHANGED 
  and #SUPPL_LSB_RIGHT_CHANGED bits in the supplemental field.  Once an expression is
  found that has neither bit set, perform the expression operation and move back up
@@ -217,8 +220,9 @@ void sim_add_statics() {
  expression operation for the current expression, clear both changed bits and
  return.
 */
-void sim_expression( expression* expr ) {
+bool sim_expression( expression* expr ) {
 
+  bool retval        = FALSE;  /* Return value for this function                       */
   bool left_changed  = FALSE;  /* Signifies if left expression tree has changed value  */
   bool right_changed = FALSE;  /* Signifies if right expression tree has changed value */
 
@@ -235,12 +239,13 @@ void sim_expression( expression* expr ) {
      its operation is performed so don't traverse the tree now.
     */
     if( (SUPPL_OP( expr->suppl ) != EXP_OP_EOR) && (expr->left != NULL) ) {
-      sim_expression( expr->left );
+      left_changed = sim_expression( expr->left );
+    } else {
+      left_changed = TRUE;
     }
 
     /* Clear LEFT CHANGED bit */
-    expr->suppl  = expr->suppl & ~(0x1 << SUPPL_LSB_LEFT_CHANGED);
-    left_changed = TRUE;
+    expr->suppl = expr->suppl & ~(0x1 << SUPPL_LSB_LEFT_CHANGED);
 
   }
 
@@ -249,12 +254,13 @@ void sim_expression( expression* expr ) {
 
     /* See explanation above */
     if( (SUPPL_OP( expr->suppl ) != EXP_OP_EOR) && (expr->right != NULL) ) {
-      sim_expression( expr->right );
-    }
+      right_changed = sim_expression( expr->right );
+    } else {
+      right_changed = TRUE;
+    } 
 
     /* Clear RIGHT CHANGED bit */
-    expr->suppl   = expr->suppl & ~(0x1 << SUPPL_LSB_RIGHT_CHANGED);
-    right_changed = TRUE;
+    expr->suppl = expr->suppl & ~(0x1 << SUPPL_LSB_RIGHT_CHANGED);
 
   }
 
@@ -263,8 +269,10 @@ void sim_expression( expression* expr ) {
    expressions trees have changed.
   */
   if( (SUPPL_IS_STMT_CONTINUOUS( expr->suppl ) == 0) || left_changed || right_changed ) {
-    expression_operate( expr );
+    retval = expression_operate( expr );
   }
+
+  return( retval );
 
 }
 
@@ -388,6 +396,10 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.36  2004/03/30 15:42:15  phase1geo
+ Renaming signal type to vsignal type to eliminate compilation problems on systems
+ that contain a signal type in the OS.
+
  Revision 1.35  2003/11/29 06:55:49  phase1geo
  Fixing leftover bugs in better report output changes.  Fixed bug in param.c
  where parameters found in RHS expressions that were part of statements that
