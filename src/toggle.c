@@ -278,14 +278,19 @@ void toggle_instance_verbose( FILE* ofile, mod_inst* root, char* parent_inst ) {
     snprintf( tmpname, 4096, "%s.%s", parent_inst, root->name );
   }
 
-  fprintf( ofile, "\n" );
-  fprintf( ofile, "Module: %s, File: %s, Instance: %s\n",
-           root->mod->name,
-           root->mod->filename,
-           tmpname );
-  fprintf( ofile, "--------------------------------------------------------\n" );
+  if( (root->stat->tog01_hit < root->stat->tog_total) ||
+      (root->stat->tog10_hit < root->stat->tog_total) ) {
 
-  toggle_display_verbose( ofile, root->mod->sig_head );
+    fprintf( ofile, "\n" );
+    fprintf( ofile, "Module: %s, File: %s, Instance: %s\n",
+             root->mod->name,
+             root->mod->filename,
+             tmpname );
+    fprintf( ofile, "--------------------------------------------------------\n" );
+
+    toggle_display_verbose( ofile, root->mod->sig_head );
+
+  }
 
   curr_inst = root->child_head;
   while( curr_inst != NULL ) {
@@ -377,6 +382,9 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.21  2003/10/17 12:55:36  phase1geo
+ Intermediate checkin for LSB fixes.
+
  Revision 1.20  2003/10/03 12:31:04  phase1geo
  More report tweaking.
 

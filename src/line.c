@@ -345,14 +345,19 @@ void line_instance_verbose( FILE* ofile, mod_inst* root, char* parent_inst ) {
     snprintf( tmpname, 4096, "%s.%s", parent_inst, root->name );
   }
 
-  fprintf( ofile, "\n" );
-  fprintf( ofile, "Module: %s, File: %s, Instance: %s\n", 
-           root->mod->name, 
-           root->mod->filename,
-           tmpname );
-  fprintf( ofile, "--------------------------------------------------------\n" );
+  if( ((root->stat->line_hit < root->stat->line_total) && !report_covered) ||
+        ((root->stat->line_hit > 0) && report_covered) ) {
 
-  line_display_verbose( ofile, root->mod->stmt_tail );
+    fprintf( ofile, "\n" );
+    fprintf( ofile, "Module: %s, File: %s, Instance: %s\n", 
+             root->mod->name, 
+             root->mod->filename,
+             tmpname );
+    fprintf( ofile, "--------------------------------------------------------\n" );
+
+    line_display_verbose( ofile, root->mod->stmt_tail );
+
+  }
 
   curr_inst = root->child_head;
   while( curr_inst != NULL ) {
@@ -442,6 +447,10 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.37  2003/12/12 17:16:25  phase1geo
+ Changing code generator to output logic based on user supplied format.  Full
+ regression fails at this point due to mismatching report files.
+
  Revision 1.36  2003/12/02 22:38:06  phase1geo
  Removing unnecessary verbosity.
 
