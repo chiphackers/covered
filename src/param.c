@@ -440,7 +440,7 @@ inst_parm* param_has_override( char* mname, mod_parm* mparm, inst_parm* ip_head,
   /* First, check to see if the parent instance contains an override in its instance list. */
   icurr = ip_head;
   while( (icurr != NULL) && 
-         ((PARAM_TYPE( mparm ) != PARAM_TYPE_OVERRIDE)   || 
+         ((PARAM_TYPE( icurr->mparm ) != PARAM_TYPE_OVERRIDE)   || 
           (PARAM_ORDER( mparm ) != PARAM_ORDER( icurr->mparm )) ||
           (strcmp( mname, icurr->name ) != 0)) ) {
     icurr = icurr->next;
@@ -630,6 +630,10 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 
 /* $Log$
+/* Revision 1.12  2002/09/26 04:17:11  phase1geo
+/* Adding support for expressions in parameter definitions.  param1.1.v added to
+/* test simple functionality of this and it passes regression.
+/*
 /* Revision 1.11  2002/09/25 05:36:08  phase1geo
 /* Initial version of parameter support is now in place.  Parameters work on a
 /* basic level.  param1.v tests this basic functionality and param1.cdd contains

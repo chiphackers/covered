@@ -81,6 +81,8 @@ bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst ) {
   char       msg[4096];       /* Display message string                         */
   inst_parm* icurr;           /* Current instance parameter being evaluated     */
   expression tmpexp;          /* Temporary expression                           */
+  int        old_suppl;       /* Contains supplemental value of parameter expr  */
+  bool       param_op;        /* Specifies if current expression is a parameter */
 
   snprintf( msg, 4096, "Writing module %s", mod->name );
   print_output( msg, DEBUG );
@@ -98,10 +100,12 @@ bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst ) {
   curr_exp = mod->exp_head;
   while( curr_exp != NULL ) {
     
+    param_op = ((SUPPL_OP( curr_exp->exp->suppl ) == EXP_OP_PARAM)      ||
+                (SUPPL_OP( curr_exp->exp->suppl ) == EXP_OP_PARAM_SBIT) ||
+                (SUPPL_OP( curr_exp->exp->suppl ) == EXP_OP_PARAM_MBIT));
+
     /* If this expression is a parameter, find the associated instance parameter */
-    if( (SUPPL_OP( curr_exp->exp->suppl ) == EXP_OP_PARAM)      ||
-        (SUPPL_OP( curr_exp->exp->suppl ) == EXP_OP_PARAM_SBIT) ||
-        (SUPPL_OP( curr_exp->exp->suppl ) == EXP_OP_PARAM_MBIT) ) {
+    if( param_op ) {
       tmpexp.id = curr_exp->exp->id;
       icurr     = inst->param_head;
       while( (icurr != NULL) && (exp_link_find( &tmpexp, icurr->mparm->exp_head ) == NULL) ) {
@@ -114,11 +118,18 @@ bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst ) {
         assert( icurr != NULL );
       }
       /* Finally, change the expression operation to STATIC */
+      old_suppl = curr_exp->exp->suppl;
       curr_exp->exp->suppl = (curr_exp->exp->suppl & ~(0x7f << SUPPL_LSB_OP)) | 
                              ((EXP_OP_STATIC & 0x7f) << SUPPL_LSB_OP);
     }
 
     expression_db_write( curr_exp->exp, file, scope );
+
+    if( param_op ) {
+      /* Set operation back to previous */
+      curr_exp->exp->suppl = old_suppl;
+    }
+
     curr_exp = curr_exp->next;
 
   }
@@ -383,6 +394,9 @@ void module_dealloc( module* mod ) {
 
 
 /* $Log$
+/* Revision 1.16  2002/09/25 05:38:11  phase1geo
+/* Cleaning things up a bit.
+/*
 /* Revision 1.15  2002/09/25 05:36:08  phase1geo
 /* Initial version of parameter support is now in place.  Parameters work on a
 /* basic level.  param1.v tests this basic functionality and param1.cdd contains

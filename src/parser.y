@@ -960,7 +960,14 @@ expression_list
 	| expression
 		{
                   if( ignore_mode == 0 ) {
-		    $$ = $1;
+                    if( param_mode == 0 ) {
+		      $$ = $1;
+                    } else {
+                      if( $1 != NULL ) {
+                        exp_link_add( $1, &param_exp_head, &param_exp_tail );
+                      }
+                      $$ = NULL;
+                    }
                   } else {
                     $$ = NULL;
                   }
@@ -972,7 +979,11 @@ expression_list
 	| expression_list ','
 		{
                   if( ignore_mode == 0 ) {
-		    $$ = $1;
+                    if( param_mode == 0 ) {
+		      $$ = $1;
+                    } else {
+                      $$ = NULL;
+                    }
                   } else {
                     $$ = NULL;
                   }
