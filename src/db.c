@@ -502,15 +502,14 @@ void db_add_defparam( char* name, expression* expr ) {
 }
 
 /*!
- \param name       Name of signal being added.
- \param width      Bit width of signal being added.
- \param lsb        Least significant bit of signal.
- \param is_static  If set to non-zero value, sets static bit of this signal vector.
+ \param name   Name of signal being added.
+ \param width  Bit width of signal being added.
+ \param lsb    Least significant bit of signal.
 
  Creates a new signal with the specified parameter information and adds this
  to the signal list if it does not already exist.
 */
-void db_add_signal( char* name, int width, int lsb, int is_static ) {
+void db_add_signal( char* name, int width, int lsb ) {
 
   signal  tmpsig;     /* Temporary signal for signal searching */
   char    msg[4096];  /* Display message string                */
@@ -521,7 +520,7 @@ void db_add_signal( char* name, int width, int lsb, int is_static ) {
   tmpsig.name = name;
 
   if( sig_link_find( &tmpsig, curr_module->sig_head ) == NULL ) {
-    sig_link_add( signal_create( name, width, lsb, is_static ), &(curr_module->sig_head), &(curr_module->sig_tail) );
+    sig_link_add( signal_create( name, width, lsb ), &(curr_module->sig_head), &(curr_module->sig_tail) );
   }
   
 }
@@ -618,7 +617,7 @@ expression* db_create_expression( expression* right, expression* left, int op, i
   }
 
   /* Create expression with next expression ID */
-  expr = expression_create( right, left, op, curr_expr_id, line );
+  expr = expression_create( right, left, op, curr_expr_id, line, FALSE );
   curr_expr_id++;
 
   /* Set right and left side expression's (if they exist) parent pointer to this expression */
@@ -644,23 +643,6 @@ expression* db_create_expression( expression* right, expression* left, int op, i
       /* Add to module parameter list */
       exp_link_add( expr, &(mparm->exp_head), &(mparm->exp_tail) );
 
-      /* Add to all associated instance parameter lists */
-      i      = 0;
-      ignore = 0;
-      while( (found_inst = instance_find_by_module( instance_root, curr_module, &ignore )) != NULL ) {
-
-        if( (iparm = inst_parm_find( sig_name, found_inst->param_head )) != NULL ) {
-          exp_link_add( expr, &(iparm->exp_head), &(iparm->exp_tail) );
-          // printf( "Adding expression %d to parameter %s exp_list\n", expr->id, sig_name );
-        } else {
-          assert( iparm != NULL );
-        }
-
-        i++;
-        ignore = i;
-
-      }
-
     } else {
 
       /* If signal is located in this current module, bind now; else, bind later. */
@@ -673,7 +655,7 @@ expression* db_create_expression( expression* right, expression* left, int op, i
     }
 
   }
-
+ 
   return( expr );
 
 }
@@ -1118,6 +1100,11 @@ void db_do_timestep( int time ) {
 }
 
 /* $Log$
+/* Revision 1.57  2002/09/23 01:37:44  phase1geo
+/* Need to make some changes to the inst_parm structure and some associated
+/* functionality for efficiency purposes.  This checkin contains most of the
+/* changes to the parser (with the exception of signal sizing).
+/*
 /* Revision 1.56  2002/09/21 07:03:28  phase1geo
 /* Attached all parameter functions into db.c.  Just need to finish getting
 /* parser to correctly add override parameters.  Once this is complete, phase 3

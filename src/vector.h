@@ -17,7 +17,7 @@
 void vector_init( vector* vec, nibble* value, int width, int lsb );
 
 //! Creates and initializes new vector
-vector* vector_create( int width, int lsb );
+vector* vector_create( int width, int lsb, bool data );
 
 //! Displays vector information to specified database file.
 void vector_db_write( vector* vec, FILE* file, bool write_data );
@@ -104,6 +104,11 @@ void vector_unary_not( vector* tgt, vector* src );
 void vector_dealloc( vector* vec );
 
 /* $Log$
+/* Revision 1.8  2002/08/23 12:55:34  phase1geo
+/* Starting to make modifications for parameter support.  Added parameter source
+/* and header files, changed vector_from_string function to be more verbose
+/* and updated Makefiles for new param.h/.c files.
+/*
 /* Revision 1.7  2002/08/19 04:34:07  phase1geo
 /* Fixing bug in database reading code that dealt with merging modules.  Module
 /* merging is now performed in a more optimal way.  Full regression passes and

@@ -70,6 +70,7 @@
 #include "param.h"
 #include "util.h"
 #include "expr.h"
+#include "vector.h"
 #include "link.h"
 
 
@@ -124,11 +125,24 @@ mod_parm* mod_parm_add( char* scope, expression* expr, int type, mod_parm** head
   assert( (type == PARAM_TYPE_DECLARED) || (type == PARAM_TYPE_OVERRIDE) );
 
   /* Determine parameter order */
-  curr  = *head;
-  order = 0;
-  while( curr != NULL ) {
-    order++;
-    curr = curr->next;
+  if( type == PARAM_TYPE_DECLARED ) {
+    curr  = *head;
+    order = 0;
+    while( curr != NULL ) {
+      if( PARAM_TYPE( curr ) == PARAM_TYPE_DECLARED ) {
+        order++;
+      }
+      curr = curr->next;
+    }
+  } else {
+    curr  = *head;
+    order = 0;
+    while( curr != NULL ) {
+      if( (PARAM_TYPE( curr ) == PARAM_TYPE_OVERRIDE) &&          (strcmp( scope, curr->name ) == 0) ) {
+        order++;
+      }
+      curr = curr->next;
+    }
   }
 
   /* Create new signal/expression binding */
@@ -201,7 +215,7 @@ inst_parm* inst_parm_find( char* name, inst_parm* parm ) {
 /*!
  \param scope  Full hierarchical name of parameter value.
  \param value  Vector value of specified instance parameter.
- \param order  If set to a positive value, indicates the override order.
+ \param mparm  Pointer to module instance that this instance parameter is derived from.
  \param head   Pointer to head of instance parameter list to add to.
  \param tail   Pointer to tail of instance parameter list to add to.
 
@@ -210,26 +224,19 @@ inst_parm* inst_parm_find( char* name, inst_parm* parm ) {
  Creates a new instance parameter with the specified information and adds 
  it to the instance parameter list.
 */
-inst_parm* inst_parm_add( char* scope, vector* value, int order, inst_parm** head, inst_parm** tail ) {
+inst_parm* inst_parm_add( char* scope, vector* value, mod_parm* mparm, inst_parm** head, inst_parm** tail ) {
 
-  inst_parm* parm;    /* Temporary pointer to instance parameter         */
-  int        type;    /* If this is an override value, set OVERRIDE type */
+  inst_parm* parm;    /* Temporary pointer to instance parameter */
   
   assert( scope != NULL );
   assert( value != NULL );
 
-  type = (order >= 0) ? PARAM_TYPE_OVERRIDE : PARAM_TYPE_DECLARED;
-
   /* Create new signal/expression binding */
-  parm           = (inst_parm*)malloc_safe( sizeof( inst_parm ) );
-  parm->name     = strdup( scope );
-  parm->value    = value;
-  parm->suppl    = ((type & 0x1) << PARAM_LSB_TYPE) | ((order & 0xffff) << PARAM_LSB_ORDER);
-  parm->exp_head = NULL;
-  parm->exp_tail = NULL;
-  parm->sig_head = NULL;
-  parm->sig_tail = NULL;
-  parm->next     = NULL;
+  parm        = (inst_parm*)malloc_safe( sizeof( inst_parm ) );
+  parm->name  = strdup( scope );
+  parm->value = value;
+  parm->mparm = mparm;
+  parm->next  = NULL;
 
   /* Now add the parameter to the current expression */
   if( *head == NULL ) {
@@ -262,7 +269,7 @@ void defparam_add( char* scope, vector* value ) {
 
   if( inst_parm_find( scope, defparam_head ) == NULL ) {
 
-    inst_parm_add( scope, value, -1, &defparam_head, &defparam_tail );
+    inst_parm_add( scope, value, NULL, &defparam_head, &defparam_tail );
 
   } else {
 
@@ -297,7 +304,7 @@ vector* param_find_value_for_expr( expression* expr, inst_parm* icurr ) {
           (SUPPL_OP( expr->suppl ) == EXP_OP_PARAM_SBIT) ||
           (SUPPL_OP( expr->suppl ) == EXP_OP_PARAM_MBIT) );
 
-  while( (icurr != NULL) && (exp_link_find( expr, icurr->exp_head ) == NULL) ) {
+  while( (icurr != NULL) && (exp_link_find( expr, icurr->mparm->exp_head ) == NULL) ) {
     icurr = icurr->next;
   }
 
@@ -417,7 +424,7 @@ inst_parm* param_has_override( char* mname, mod_parm* mparm, inst_parm* ip_head,
   icurr = ip_head;
   while( (icurr != NULL) && 
          ((PARAM_TYPE( mparm ) != PARAM_TYPE_OVERRIDE)   || 
-          (PARAM_ORDER( mparm ) != PARAM_ORDER( icurr )) ||
+          (PARAM_ORDER( mparm ) != PARAM_ORDER( icurr->mparm )) ||
           (strcmp( mname, icurr->name ) != 0)) ) {
     icurr = icurr->next;
   }
@@ -426,7 +433,7 @@ inst_parm* param_has_override( char* mname, mod_parm* mparm, inst_parm* ip_head,
   if( icurr != NULL ) {
 
     /* Add new instance parameter to current instance */
-    parm = inst_parm_add( mparm->name, icurr->value, -1, ihead, itail );
+    parm = inst_parm_add( mparm->name, icurr->value, mparm, ihead, itail );
 
   }
    
@@ -461,7 +468,7 @@ inst_parm* param_has_defparam( char* scope, char* name, inst_parm** ihead, inst_
   if( icurr != NULL ) {
 
     /* Defparam found, use its value to create new instance parameter */
-    parm = inst_parm_add( name, icurr->value, -1, ihead, itail );
+    parm = inst_parm_add( name, icurr->value, NULL, ihead, itail );
 
   }
 
@@ -496,8 +503,8 @@ void param_resolve_declared( char* mscope, mod_parm* mparm, inst_parm* ip_head,
   assert( mparm != NULL );
 
   /* Extract the current module parameter name from its full scope */
-  mname = (char*)malloc_safe( strlen( mscope ) );
-  rest  = (char*)malloc_safe( strlen( mscope ) );
+  mname = strdup( mscope );
+  rest  = strdup( mscope );
   scope_extract_back( mscope, mname, rest );
 
   if( param_has_override( mname, mparm, ip_head, ihead, itail ) != NULL ) {
@@ -516,7 +523,7 @@ void param_resolve_declared( char* mscope, mod_parm* mparm, inst_parm* ip_head,
     param_expr_eval( mparm->expr, *ihead );
 
     /* Now add the new instance parameter */
-    inst_parm_add( mparm->name, mparm->expr->value, -1, ihead, itail );
+    inst_parm_add( mparm->name, mparm->expr->value, mparm, ihead, itail );
 
   }
 
@@ -546,12 +553,80 @@ void param_resolve_override( mod_parm* oparm, inst_parm** ihead, inst_parm** ita
   param_expr_eval( oparm->expr, *ihead );
 
   /* Add the new instance override parameter */
-  inst_parm_add( oparm->name, oparm->expr->value, PARAM_ORDER( oparm ), ihead, itail );
+  inst_parm_add( oparm->name, oparm->expr->value, oparm, ihead, itail );
+
+}
+
+/**********************************************************************************/
+
+/*!
+ \param parm  Pointer to module parameter to remove
+ \param recursive  If TRUE, removes entire module parameter list; otherwise, just remove me.
+
+ Deallocates allocated memory from heap for the specified module parameter.  If
+ the value of recursive is set to TRUE, perform this deallocation for the entire
+ list of module parameters.
+*/
+void mod_parm_dealloc( mod_parm* parm, bool recursive ) {
+
+  if( parm != NULL ) {
+
+    /* If the user wants to deallocate the entire module parameter list, do so now */
+    if( recursive ) {
+      mod_parm_dealloc( parm->next, recursive );
+    }
+
+    free_safe( parm->name );
+
+    if( parm->expr != NULL ) {
+      expression_dealloc( parm->expr, TRUE );
+    }
+
+    exp_link_delete_list( parm->exp_head, FALSE );
+    sig_link_delete_list( parm->sig_head );
+
+    free_safe( parm );
+
+  }
+
+}
+
+/*!
+ \param parm       Pointer to instance parameter to remove
+ \param recursive  If TRUE, removes entire instance parameter list; otherwise, just remove me.
+
+ Deallocates allocated memory from heap for the specified instance parameter.  If
+ the value of recursive is set to TRUE, perform this deallocation for the entire
+ list of instance parameters.
+*/
+void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
+
+  if( parm != NULL ) {
+
+    /* If the user wants to deallocate the entire module parameter list, do so now */
+    if( recursive ) {
+      inst_parm_dealloc( parm->next, recursive );
+    }
+
+    free_safe( parm->name );
+
+    if( parm->value != NULL ) {
+      vector_dealloc( parm->value );
+    }
+
+    free_safe( parm );
+
+  }
 
 }
 
 
 /* $Log$
+/* Revision 1.9  2002/09/23 01:37:45  phase1geo
+/* Need to make some changes to the inst_parm structure and some associated
+/* functionality for efficiency purposes.  This checkin contains most of the
+/* changes to the parser (with the exception of signal sizing).
+/*
 /* Revision 1.8  2002/09/21 07:03:28  phase1geo
 /* Attached all parameter functions into db.c.  Just need to finish getting
 /* parser to correctly add override parameters.  Once this is complete, phase 3

@@ -32,25 +32,30 @@ nibble add_optab[16]  = { ADD_OP_TABLE  };  /*!< ADD operation table  */
  \param value  Pointer to nibble array for vector.
  \param width  Bit width of specified vector.
  \param lsb    Least-significant bit of vector.
-
+ 
  Initializes the specified vector with the contents of width, lsb
- and value.  Initializes all contents of value array to 0.
+ and value (if value != NULL).  If value != NULL, initializes all contents 
+ of value array to 0x2 (X-value).
 */
 void vector_init( vector* vec, nibble* value, int width, int lsb ) {
 
   int i;        /* Loop iterator */
 
-  assert( width > 0 );
   assert( lsb >= 0 );
-  assert( value != NULL );
 
   vec->width = width;
   vec->lsb   = lsb;
   vec->value = value;
 
-  for( i=0; i<VECTOR_SIZE( width ); i++ ) {
-    //vec->value[i] = 0x0;
-    vec->value[i] = 0xaa;
+  if( value != NULL ) {
+
+    assert( width > 0 );
+
+    for( i=0; i<VECTOR_SIZE( width ); i++ ) {
+      //vec->value[i] = 0x0;
+      vec->value[i] = 0xaa;
+    }
+
   }
 
 }
@@ -58,21 +63,28 @@ void vector_init( vector* vec, nibble* value, int width, int lsb ) {
 /*!
  \param width  Bit width of this vector.
  \param lsb    Least significant bit for this vector.
+ \param data   If FALSE only initializes width and lsb but does not allocate a nibble array.
+
  \return Pointer to newly created vector.
 
  Creates new vector from heap memory and initializes all vector contents.
 */
-vector* vector_create( int width, int lsb ) {
+vector* vector_create( int width, int lsb, bool data ) {
 
-  vector* new_vec;   /* Pointer to newly created vector */
-  int     i;         /* Loop iterator                   */
+  vector* new_vec;       /* Pointer to newly created vector               */
+  nibble* value = NULL;  /* Temporarily stores newly created vector value */
+  int     i;             /* Loop iterator                                 */
 
   assert( width > 0 );
 
   new_vec = (vector*)malloc_safe( sizeof( vector ) );
 
+  if( data == TRUE ) {
+    value = (nibble*)malloc_safe( sizeof( nibble ) * VECTOR_SIZE( width ) );
+  }
+
   vector_init( new_vec,
-               (nibble*)malloc_safe( sizeof( nibble ) * VECTOR_SIZE( width ) ),
+               value,
                width,
                lsb );
 
@@ -102,12 +114,27 @@ void vector_db_write( vector* vec, FILE* file, bool write_data ) {
 
   assert( vec->width < MAX_BIT_WIDTH );
 
-  for( i=0; i<VECTOR_SIZE( vec->width ); i++ ) {
-    if( i == 0 ) {
-      fprintf( file, " %x", ((vec->value[i] & mask) | (write_data ? 0 : 0xaa)) );
-    } else {
-      fprintf( file, ",%x", ((vec->value[i] & mask) | (write_data ? 0 : 0xaa)) );
+  if( vec->value == NULL ) {
+
+    /* If the vector value was NULL, output default value */
+    for( i=0; i<VECTOR_SIZE( vec->width ); i++ ) {
+      if( i == 0 ) {
+        fprintf( file, " aa" );
+      } else {
+        fprintf( file, ", aa" );
+      }
     }
+
+  } else {
+
+    for( i=0; i<VECTOR_SIZE( vec->width ); i++ ) {
+      if( i == 0 ) {
+        fprintf( file, " %x", ((vec->value[i] & mask) | (write_data ? 0 : 0xaa)) );
+      } else {
+        fprintf( file, ",%x", ((vec->value[i] & mask) | (write_data ? 0 : 0xaa)) );
+      }
+    }
+
   }
 
 }
@@ -135,7 +162,7 @@ bool vector_db_read( vector** vec, char** line ) {
     *line = *line + chars_read;
 
     /* Create new vector */
-    *vec = vector_create( width, lsb );
+    *vec = vector_create( width, lsb, TRUE );
 
     sscanf( *line, "%x%n", &((*vec)->value[0]), &chars_read );
     *line = *line + chars_read;
@@ -877,7 +904,7 @@ vector* vector_from_string( char* str ) {
   }
 
   /* Create vector */
-  vec = vector_create( size, 0 );
+  vec = vector_create( size, 0, TRUE );
 
   vector_set_type( vec, type );
 
@@ -1215,9 +1242,9 @@ void vector_op_subtract( vector* tgt, vector* left, vector* right ) {
   vector* vec3;  /* Temporary vector holder */
 
   /* Create temp vectors */
-  vec1 = vector_create( tgt->width, 0 );
-  vec2 = vector_create( tgt->width, 0 );
-  vec3 = vector_create( tgt->width, 0 );
+  vec1 = vector_create( tgt->width, 0, TRUE );
+  vec2 = vector_create( tgt->width, 0, TRUE );
+  vec3 = vector_create( tgt->width, 0, TRUE );
 
   /* Create vector with a value of 1 */
   vector_set_bit( vec1->value, 1, 0 );
@@ -1400,13 +1427,20 @@ void vector_dealloc( vector* vec ) {
     free_safe( vec );
 
   } else {
+
     /* Internal error, we should never be trying to deallocate a NULL vector */
     assert( vec != NULL );
+
   }
 
 }
 
 /* $Log$
+/* Revision 1.18  2002/09/19 02:50:02  phase1geo
+/* Causing previously assigned bit to not get set when value does not change.
+/* This is necessary to support different Verilog compiler approaches to displaying
+/* initial values of undefined signals.
+/*
 /* Revision 1.17  2002/09/12 05:16:25  phase1geo
 /* Updating all CDD files in regression suite due to change in vector handling.
 /* Modified vectors to assign a default value of 0xaa to unassigned registers

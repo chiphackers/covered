@@ -845,14 +845,10 @@ struct inst_parm_s;
 typedef struct inst_parm_s inst_parm;
 
 struct inst_parm_s {
-  char*        name;   /*!< Name of associated parameter (no hierarchy)         */
-  vector*      value;  /*!< Pointer to value of instance parameter              */
-  unsigned int suppl;  /*!< Supplemental field containing type and order number */
-  exp_link*    exp_head; /*!< Pointer to head of expression list for dependents */
-  exp_link*    exp_tail; /*!< Pointer to tail of expression list for dependents */
-  sig_link*    sig_head; /*!< Pointer to head of signal list for dependents     */
-  sig_link*    sig_tail; /*!< Pointer to tail of signal list for dependents     */
-  inst_parm*   next;   /*!< Pointer to next instance parameter in list          */
+  char*        name;     /*!< Name of associated parameter (no hierarchy)         */
+  vector*      value;    /*!< Pointer to value of instance parameter              */
+  mod_parm*    mparm;    /*!< Pointer to base module parameter                    */
+  inst_parm*   next;     /*!< Pointer to next instance parameter in list          */
 };
 
 //------------------------------------------------------------------------------
@@ -976,6 +972,12 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.45  2002/09/21 07:03:28  phase1geo
+/* Attached all parameter functions into db.c.  Just need to finish getting
+/* parser to correctly add override parameters.  Once this is complete, phase 3
+/* can start and will include regenerating expressions and signals before
+/* getting output to CDD file.
+/*
 /* Revision 1.44  2002/09/21 04:11:32  phase1geo
 /* Completed phase 1 for adding in parameter support.  Main code is written
 /* that will create an instance parameter from a given module parameter in

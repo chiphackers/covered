@@ -332,7 +332,6 @@ int command_score( int argc, int last_arg, char** argv ) {
     /* Deallocate memory for search engine */
     search_free_lists();
 
-    free_safe( top_module );
     free_safe( output_db );
     free_safe( vcd_file );
 
@@ -350,6 +349,13 @@ int command_score( int argc, int last_arg, char** argv ) {
 }
 
 /* $Log$
+/* Revision 1.22  2002/09/21 04:11:32  phase1geo
+/* Completed phase 1 for adding in parameter support.  Main code is written
+/* that will create an instance parameter from a given module parameter in
+/* its entirety.  The next step will be to complete the module parameter
+/* creation code all the way to the parser.  Regression still passes and
+/* everything compiles at this point.
+/*
 /* Revision 1.21  2002/09/19 05:25:19  phase1geo
 /* Fixing incorrect simulation of static values and fixing reports generated
 /* from these static expressions.  Also includes some modifications for parameters

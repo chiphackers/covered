@@ -42,10 +42,9 @@ void signal_init( signal* sig, char* name, vector* value ) {
 }
 
 /*!
- \param name       Full hierarchical name of this signal.
- \param width      Bit width of this signal.
- \param lsb        Bit position of least significant bit.
- \param is_static  Specifies if this signal is a static value.
+ \param name   Full hierarchical name of this signal.
+ \param width  Bit width of this signal.
+ \param lsb    Bit position of least significant bit.
 
  \returns Pointer to newly created signal.
 
@@ -54,13 +53,13 @@ void signal_init( signal* sig, char* name, vector* value ) {
  values for a signal and returns a pointer to this newly created
  signal.
 */
-signal* signal_create( char* name, int width, int lsb, int is_static ) {
+signal* signal_create( char* name, int width, int lsb ) {
 
   signal* new_sig;     /* Pointer to newly created signal */
 
   new_sig = (signal*)malloc_safe( sizeof( signal ) );
 
-  signal_init( new_sig, strdup( name ), vector_create( width, lsb ) );
+  signal_init( new_sig, strdup( name ), vector_create( width, lsb, TRUE ) );
 
   return( new_sig );
 
@@ -141,7 +140,7 @@ bool signal_db_read( char** line, module* curr_mod ) {
     if( vector_db_read( &vec, line ) ) {
 
       /* Create new signal */
-      sig = signal_create( name, vec->width, vec->lsb, 0 );
+      sig = signal_create( name, vec->width, vec->lsb );
 
       /* Copy over vector value */
       vector_dealloc( sig->value );
@@ -188,15 +187,6 @@ bool signal_db_read( char** line, module* curr_mod ) {
               expl->exp->suppl        = expl->exp->suppl | ((sig->value->lsb & 0xffff) << SUPPL_LSB_SIG_LSB);
               expl->exp->sig          = sig;
             }
-
-#ifdef NOT_NEEDED
-            /* Traverse parent links, setting its width if it is set to 0. */
-            curr_parent = expl->exp->parent->expr;
-            while( (curr_parent != NULL) && (curr_parent->value->width == 0) ) {
-              expression_create_value( curr_parent, sig->value->width, sig->value->lsb );
-              curr_parent = curr_parent->parent->expr;
-            }
-#endif
 
           }
 
@@ -373,6 +363,11 @@ void signal_dealloc( signal* sig ) {
 }
 
 /* $Log$
+/* Revision 1.15  2002/08/19 04:34:07  phase1geo
+/* Fixing bug in database reading code that dealt with merging modules.  Module
+/* merging is now performed in a more optimal way.  Full regression passes and
+/* own examples pass as well.
+/*
 /* Revision 1.14  2002/08/14 04:52:48  phase1geo
 /* Removing unnecessary calls to signal_dealloc function and fixing bug
 /* with signal_dealloc function.

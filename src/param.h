@@ -32,8 +32,19 @@ void param_resolve_declared( char* mscope, mod_parm* mparm, inst_parm* ip_head, 
 //! Transforms an override module parameter into an instance parameter.
 void param_resolve_override( mod_parm* oparm, inst_parm** ihead, inst_parm** itail );
 
+//! Deallocates specified module parameter and possibly entire module parameter list.
+void mod_parm_dealloc( mod_parm* parm, bool recursive );
+
+//! Deallocates specified instance parameter and possibly entire instance parameter list.
+void inst_parm_dealloc( inst_parm* parm, bool recursive );
+
 
 /* $Log$
+/* Revision 1.6  2002/09/23 01:37:45  phase1geo
+/* Need to make some changes to the inst_parm structure and some associated
+/* functionality for efficiency purposes.  This checkin contains most of the
+/* changes to the parser (with the exception of signal sizing).
+/*
 /* Revision 1.5  2002/09/21 07:03:28  phase1geo
 /* Attached all parameter functions into db.c.  Just need to finish getting
 /* parser to correctly add override parameters.  Once this is complete, phase 3

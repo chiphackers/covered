@@ -15,6 +15,8 @@
 #include "expr.h"
 #include "signal.h"
 #include "statement.h"
+#include "param.h"
+#include "link.h"
 
 
 /*!
@@ -62,19 +64,23 @@ module* module_create() {
  \param mod    Pointer to module to write to output.
  \param scope  String version of module scope in hierarchy.
  \param file   Pointer to specified output file to write contents.
+ \param inst   Pointer to the current module instance.
+
  \return Returns TRUE if file output was successful; otherwise, returns FALSE.
 
  Prints the database line for the specified module to the specified database
  file.  If there are any problems with the write, returns FALSE; otherwise,
  returns TRUE.
 */
-bool module_db_write( module* mod, char* scope, FILE* file ) {
+bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst ) {
 
-  bool       retval = TRUE;    /* Return value for this function              */
-  sig_link*  curr_sig;         /* Pointer to current module sig_link element  */
-  exp_link*  curr_exp;         /* Pointer to current module exp_link element  */
-  stmt_link* curr_stmt;        /* Pointer to current module stmt_link element */
-  char       msg[4096];        /* Display message string                      */
+  bool       retval = TRUE;   /* Return value for this function                 */
+  sig_link*  curr_sig;        /* Pointer to current module sig_link element     */
+  exp_link*  curr_exp;        /* Pointer to current module exp_link element     */
+  stmt_link* curr_stmt;       /* Pointer to current module stmt_link element    */
+  char       msg[4096];       /* Display message string                         */
+  inst_parm* icurr;           /* Current instance parameter being evaluated     */
+  expression tmpexp;          /* Temporary expression                           */
 
   snprintf( msg, 4096, "Writing module %s", mod->name );
   print_output( msg, DEBUG );
@@ -92,6 +98,23 @@ bool module_db_write( module* mod, char* scope, FILE* file ) {
   curr_exp = mod->exp_head;
   while( curr_exp != NULL ) {
     
+    /* If this expression is a parameter, find the associated instance parameter */
+    if( (SUPPL_OP( curr_exp->exp->suppl ) == EXP_OP_PARAM)      ||
+        (SUPPL_OP( curr_exp->exp->suppl ) == EXP_OP_PARAM_SBIT) ||
+        (SUPPL_OP( curr_exp->exp->suppl ) == EXP_OP_PARAM_MBIT) ) {
+      tmpexp.id = curr_exp->exp->id;
+      icurr     = inst->param_head;
+      while( (icurr != NULL) && (exp_link_find( &tmpexp, icurr->mparm->exp_head ) == NULL) ) {
+        icurr = icurr->next;
+      }
+      /* If parameter value was found (it should be), adjust expression for new value */
+      if( icurr != NULL ) {
+        expression_set_value_and_resize( curr_exp->exp, icurr->value );
+      } else {
+        assert( icurr != NULL );
+      }
+    }
+
     expression_db_write( curr_exp->exp, file, scope );
     curr_exp = curr_exp->next;
 
@@ -307,14 +330,22 @@ void module_clean( module* mod ) {
     /* Free expression list */
     exp_link_delete_list( mod->exp_head, TRUE );
     mod->exp_head = NULL;
+    mod->exp_tail = NULL;
 
     /* Free signal list */
     sig_link_delete_list( mod->sig_head );
     mod->sig_head = NULL;
+    mod->sig_tail = NULL;
 
     /* Free statement list */
     stmt_link_delete_list( mod->stmt_head );
     mod->stmt_head = NULL;
+    mod->stmt_tail = NULL;
+
+    /* Free parameter list */
+    mod_parm_dealloc( mod->param_head, TRUE );
+    mod->param_head = NULL;
+    mod->param_tail = NULL;
 
   }
 
@@ -343,6 +374,10 @@ void module_dealloc( module* mod ) {
 
 
 /* $Log$
+/* Revision 1.13  2002/08/26 12:57:04  phase1geo
+/* In the middle of adding parameter support.  Intermediate checkin but does
+/* not break regressions at this point.
+/*
 /* Revision 1.12  2002/08/19 04:34:07  phase1geo
 /* Fixing bug in database reading code that dealt with merging modules.  Module
 /* merging is now performed in a more optimal way.  Full regression passes and

@@ -30,17 +30,24 @@ extern int curr_sim_time;
  \param exp    Pointer to expression to add value to.
  \param width  Width of value to create.
  \param lsb    Least significant value of value field.
+ \param data   Specifies if 
 
  Creates a value vector that is large enough to store width number of
  bits in value and sets the specified expression value to this value.  This
  function should be called by either the expression_create function, the bind
  function, or the signal db_read function.
 */
-void expression_create_value( expression* exp, int width, int lsb ) {
+void expression_create_value( expression* exp, int width, int lsb, bool data ) {
+
+  nibble* value = NULL;    /* Temporary storage of vector nibble array */
+
+  if( data == TRUE ) {
+    value = (nibble*)malloc_safe( sizeof( nibble ) * VECTOR_SIZE( width ) );
+  }
 
   /* Create value */
   vector_init( exp->value, 
-               (nibble*)malloc_safe( sizeof( nibble ) * VECTOR_SIZE( width ) ),
+               value,
                width, 
                lsb );
 
@@ -52,13 +59,14 @@ void expression_create_value( expression* exp, int width, int lsb ) {
  \param op     Operation to perform for this expression.
  \param id     ID for this expression as determined by the parent.
  \param line   Line number this expression is on.
+ \param data   Specifies if we should create a nibble array for the vector value.
 
  \return Returns pointer to newly created expression.
 
  Creates a new expression from heap memory and initializes its values for
  usage.  Right and left expressions need to be created before this function is called.
 */
-expression* expression_create( expression* right, expression* left, int op, int id, int line ) {
+expression* expression_create( expression* right, expression* left, int op, int id, int line, bool data ) {
 
   expression* new_expr;    /* Pointer to newly created expression */
   int         rwidth = 0;  /* Bit width of expression on right    */
@@ -98,18 +106,18 @@ expression* expression_create( expression* right, expression* left, int op, int 
     /* For multiplication, we need a width the sum of the left and right expressions */
     assert( rwidth < 1024 );
     assert( lwidth < 1024 );
-    expression_create_value( new_expr, (lwidth + rwidth), 0 );
+    expression_create_value( new_expr, (lwidth + rwidth), 0, data );
 
   } else if( (op == EXP_OP_CONCAT) && (rwidth > 0) ) {
 
     assert( rwidth < 1024 );
-    expression_create_value( new_expr, rwidth, 0 );
+    expression_create_value( new_expr, rwidth, 0, data );
 
   } else if( (op == EXP_OP_EXPAND) && (rwidth > 0) && (lwidth > 0) ) {
 
     assert( rwidth < 1024 );
     assert( lwidth < 1024 );
-    expression_create_value( new_expr, (vector_to_int( left->value ) * rwidth), 0 );
+    expression_create_value( new_expr, (vector_to_int( left->value ) * rwidth), 0, data );
 
   } else if( (op == EXP_OP_LT   ) ||
              (op == EXP_OP_GT   ) ||
@@ -139,7 +147,7 @@ expression* expression_create( expression* right, expression* left, int op, int 
              (op == EXP_OP_DEFAULT) ) {
 
     /* If this expression will evaluate to a single bit, create vector now */
-    expression_create_value( new_expr, 1, 0 );
+    expression_create_value( new_expr, 1, 0, data );
 
   } else {
 
@@ -149,24 +157,170 @@ expression* expression_create( expression* right, expression* left, int op, int 
       if( rwidth >= lwidth ) {
         /* Check to make sure that nothing has gone drastically wrong */
         assert( rwidth < 1024 );
-        expression_create_value( new_expr, rwidth, 0 );
+        expression_create_value( new_expr, rwidth, 0, data );
       } else {
         /* Check to make sure that nothing has gone drastically wrong */
         assert( lwidth < 1024 );
-        expression_create_value( new_expr, lwidth, 0 );
+        expression_create_value( new_expr, lwidth, 0, data );
       }
 
     } else {
  
-      new_expr->value->value = NULL;
-      new_expr->value->width = 0;
-      new_expr->value->lsb   = 0;
-  
+      expression_create_value( new_expr, 0, 0, FALSE );
+ 
     }
 
   }
 
+  if( data == FALSE ) {
+    assert( new_expr->value->value == NULL );
+  }
+
   return( new_expr );
+
+}
+
+/*!
+ \param expr  Pointer to expression to potentially resize.
+
+ Recursively evaluates current expression tree to determine if the size of 
+ the expression's vector value is currently correct.  It is expected that
+ the first expression to call this function is the root expression of the
+ expression tree.  This function is called by the expression_resize_tree
+ function.
+*/
+void expression_resize_tree( expression* expr ) {
+
+  int  largest_width;  /* Holds larger width of left and right children */
+
+  if( expr != NULL ) {
+
+    switch( SUPPL_OP( expr->suppl ) ) {
+
+      /* These operations will already be sized so nothing to do here */
+      case EXP_OP_STATIC     :
+      case EXP_OP_SIG        :
+      case EXP_OP_SBIT_SEL   :
+      case EXP_OP_MBIT_SEL   :
+      case EXP_OP_PARAM      :
+      case EXP_OP_PARAM_SBIT :
+      case EXP_OP_PARAM_MBIT :
+        break;
+
+      /* These operations should always be set to a width 1 */
+      case EXP_OP_LT      :
+      case EXP_OP_GT      :
+      case EXP_OP_EQ      :
+      case EXP_OP_CEQ     :
+      case EXP_OP_LE      :
+      case EXP_OP_GE      :
+      case EXP_OP_NE      :
+      case EXP_OP_CNE     :
+      case EXP_OP_LOR     :
+      case EXP_OP_LAND    :
+      case EXP_OP_UINV    :
+      case EXP_OP_UAND    :
+      case EXP_OP_UNOT    :
+      case EXP_OP_UOR     :
+      case EXP_OP_UXOR    :
+      case EXP_OP_UNAND   :
+      case EXP_OP_UNOR    :
+      case EXP_OP_UNXOR   :
+      case EXP_OP_EOR     :
+      case EXP_OP_NEDGE   :
+      case EXP_OP_PEDGE   :
+      case EXP_OP_CASE    :
+      case EXP_OP_CASEX   :
+      case EXP_OP_CASEZ   :
+      case EXP_OP_DEFAULT :
+      case EXP_OP_LAST    :
+        assert( expr->value == NULL );
+        expression_create_value( expr, 1, 0, FALSE );
+        break;
+
+      /*
+       In the case of an AEDGE expression, it needs to have the size of its LAST child expression
+       to be the width of its right child.
+      */
+      case EXP_OP_AEDGE :
+        assert( expr->left->value == NULL );
+        assert( expr->value == NULL );
+        expression_create_value( expr->left, expr->right->value->width, expr->right->value->lsb, FALSE );
+        expression_create_value( expr, 1, 0, FALSE );
+        break;
+
+      /*
+       In the case of an EXPAND, we need to set the width to be the product of the value of
+       the left child and the bit-width of the right child.
+      */
+      case EXP_OP_EXPAND :
+        assert( expr->value == NULL );
+        expression_create_value( expr, (vector_to_int( expr->left->value ) * expr->right->value->width), 0, FALSE );
+        break;
+
+      /* 
+       In the case of a MULTIPLY or LIST (for concatenation) operation, its expression width must be the sum of its
+       children's width.  Remove the current vector and replace it with the appropriately
+       sized vector.
+      */
+      case EXP_OP_MULTIPLY :
+      case EXP_OP_LIST :
+        assert( expr->value == NULL );
+        expression_create_value( expr, (expr->left->value->width + expr->right->value->width), 0, FALSE );
+        break;
+
+      default :
+        assert( expr->value == NULL );
+        if( (expr->left != NULL) && (expr->left->value->width > expr->right->value->width) ) {
+          largest_width = expr->left->value->width;
+        } else {
+          largest_width = expr->right->value->width;
+        }
+        expression_create_value( expr, largest_width, 0, FALSE );
+        break;
+
+    }
+
+    if( SUPPL_IS_ROOT( expr->suppl ) == 0 ) {
+      expression_resize( expr->parent->expr );
+    }
+
+  }
+
+}
+
+/*!
+ \param expr  Pointer to expression to evaluate.
+ 
+ If the current expression is the root expression of an
+ expression tree, the expression_resize function is called on
+ that entire tree.
+*/
+void expression_resize( expression* expr ) {
+
+  if( SUPPL_IS_ROOT( expr->suppl ) == 1 ) {
+
+    expression_resize( expr );
+
+  }
+
+}
+
+/*!
+ \param exp    Pointer to expression to set value to.
+ \param value  Vector value to set specified expression to.
+
+ Replaces specified expression's vector value with the specified vector value.
+ After setting the value, the expression tree containing this expression is 
+ resized appropriately.
+*/
+void expression_set_value_and_resize( expression* exp, vector* value ) {
+
+  /* Set the specified expression vector value to new value */
+  exp->value = value;
+
+  /* Resize the current expression tree */
+  expression_resize( exp );
 
 }
 
@@ -253,6 +407,8 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
 
     *line = *line + chars_read;
 
+    printf( "Read in expression id: %d\n", id );
+
     /* Find module instance name */
     if( curr_mod == NULL ) {
 
@@ -287,7 +443,7 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
       }
 
       /* Create new expression */
-      expr        = expression_create( right, left, SUPPL_OP( suppl ), id, linenum );
+      expr        = expression_create( right, left, SUPPL_OP( suppl ), id, linenum, TRUE );
       expr->suppl = suppl;
 
       if( right != NULL ) {
@@ -607,7 +763,7 @@ void expression_operate( expression* expr ) {
           vector_set_value( expr->value, expr->left->value->value, expr->left->value->width,
                             expr->left->value->lsb, 0 );
         } else {
-          vec = vector_create( expr->value->width, 0 );
+          vec = vector_create( expr->value->width, 0, TRUE );
           for( i=0; i<vec->width; i++ ) {
             vector_set_bit( vec->value, 2, i );
           }
@@ -884,6 +1040,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.48  2002/09/23 01:37:44  phase1geo
+/* Need to make some changes to the inst_parm structure and some associated
+/* functionality for efficiency purposes.  This checkin contains most of the
+/* changes to the parser (with the exception of signal sizing).
+/*
 /* Revision 1.47  2002/09/19 05:25:19  phase1geo
 /* Fixing incorrect simulation of static values and fixing reports generated
 /* from these static expressions.  Also includes some modifications for parameters

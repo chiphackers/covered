@@ -7,6 +7,7 @@
 */
 
 #include <stdio.h>
+#include <assert.h>
 
 #include "defines.h"
 #include "signal.h"
@@ -1143,7 +1144,7 @@ module_item
 		  if( $1 == 1 ) {
 		    /* Creating signal(s) */
 		    while( curr != NULL ) {
-		      db_add_signal( curr->str, $2->width, $2->lsb, 0 );
+		      db_add_signal( curr->str, $2->width, $2->lsb );
 		      curr = curr->next;
 		    }
 		  }
@@ -1157,7 +1158,7 @@ module_item
 		  if( $1 == 1 ) {
 		    /* Create signal(s) */
 		    while( curr != NULL ) {
-                      db_add_signal( curr->str, $2->width, $2->lsb, 0 );
+                      db_add_signal( curr->str, $2->width, $2->lsb );
                       curr = curr->next;
                     }
 		    /* What to do about assignments? */
@@ -1172,7 +1173,7 @@ module_item
 		  if( $1 == 1 ) {
 		    /* Create signal(s) */
 	            while( curr != NULL ) {
-                      db_add_signal( curr->str, 1, 0, 0 );
+                      db_add_signal( curr->str, 1, 0 );
                       curr = curr->next;
                     }
                     /* What to do about assignments? */
@@ -1189,7 +1190,7 @@ module_item
 		  str_link* tmp  = $3;
                   str_link* curr = tmp;
 		  while( curr != NULL ) {
-                    db_add_signal( curr->str, $2->width, $2->lsb, 0 );
+                    db_add_signal( curr->str, $2->width, $2->lsb );
                     curr = curr->next;
                   }
 		  str_link_delete_list( $3 );
@@ -1814,7 +1815,7 @@ block_item_decl
 		  str_link* curr = tmp;
                   if( ignore_mode == 0 ) {
 		    while( curr != NULL ) {
-		      db_add_signal( curr->str, $2->width, $2->lsb, 0 );
+		      db_add_signal( curr->str, $2->width, $2->lsb );
 		      curr = curr->next;
 		    }
 		    str_link_delete_list( tmp );
@@ -1828,7 +1829,7 @@ block_item_decl
 		  str_link* curr = tmp;
                   if( ignore_mode == 0 ) {
 		    while( curr != NULL ) {
-		      db_add_signal( curr->str, 1, 0, 0 );
+		      db_add_signal( curr->str, 1, 0 );
 		      curr = curr->next;
 		    }
 		    str_link_delete_list( tmp );
@@ -1841,7 +1842,7 @@ block_item_decl
                   str_link* curr = tmp;
                   if( ignore_mode == 0 ) {
                     while( curr != NULL ) {
-                      db_add_signal( curr->str, $3->width, $3->lsb, 0 );
+                      db_add_signal( curr->str, $3->width, $3->lsb );
                       curr = curr->next;
                     }
                     str_link_delete_list( tmp );
@@ -1855,7 +1856,7 @@ block_item_decl
                   str_link* curr = tmp;
                   if( ignore_mode == 0 ) {
                     while( curr != NULL ) {
-                      db_add_signal( curr->str, 1, 0, 0 );
+                      db_add_signal( curr->str, 1, 0 );
                       curr = curr->next;
                     }
                     str_link_delete_list( tmp );
@@ -1970,9 +1971,10 @@ delay1
                   expression* exp; 
                   expression* tmp;
                   if( ignore_mode == 0 ) {
-                    vec = vector_create( 32, 0 );
+                    vec = vector_create( 32, 0, TRUE );
                     tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
-                    vector_from_int( vec, 0xffffffff ); 
+                    vector_from_int( vec, 0xffffffff );
+                    assert( tmp->value->value == NULL ); 
                     free_safe( tmp->value );
                     tmp->value = vec;
                     exp = db_create_expression( $2, tmp, EXP_OP_DELAY, @1.first_line, NULL );
@@ -1987,9 +1989,10 @@ delay1
                   expression* exp;
                   expression* tmp;
                   if( ignore_mode == 0 ) {
-                    vec = vector_create( 32, 0 );
+                    vec = vector_create( 32, 0, TRUE );
                     tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
                     vector_from_int( vec, 0xffffffff );
+                    assert( tmp->value->value == NULL );
                     free_safe( tmp->value );
                     tmp->value = vec;
                     exp = db_create_expression( $3, tmp, EXP_OP_DELAY, @1.first_line, NULL );
@@ -2007,9 +2010,10 @@ delay3
                   expression* exp; 
                   expression* tmp;
                   if( ignore_mode == 0 ) {
-                    vec = vector_create( 32, 0 );
+                    vec = vector_create( 32, 0, TRUE );
                     tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
                     vector_from_int( vec, 0xffffffff );
+                    assert( tmp->value->value == NULL );
                     free_safe( tmp->value );
                     tmp->value = vec;
                     exp = db_create_expression( $2, tmp, EXP_OP_DELAY, @1.first_line, NULL );
@@ -2024,9 +2028,10 @@ delay3
                   expression* exp; 
                   expression* tmp;
                   if( ignore_mode == 0 ) {
-                    vec = vector_create( 32, 0 );
+                    vec = vector_create( 32, 0, TRUE );
                     tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
                     vector_from_int( vec, 0xffffffff );
+                    assert( tmp->value->value == NULL );
                     free_safe( tmp->value );
                     tmp->value = vec;
                     exp = db_create_expression( $3, tmp, EXP_OP_DELAY, @1.first_line, NULL );
@@ -2041,9 +2046,10 @@ delay3
                   expression* exp; 
                   expression* tmp;
                   if( ignore_mode == 0 ) {
-                    vec = vector_create( 32, 0 );
+                    vec = vector_create( 32, 0, TRUE );
                     tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
                     vector_from_int( vec, 0xffffffff );
+                    assert( tmp->value->value == NULL );
                     free_safe( tmp->value );
                     tmp->value = vec;
                     exp = db_create_expression( $3, tmp, EXP_OP_DELAY, @1.first_line, NULL );
@@ -2058,12 +2064,13 @@ delay3
                   expression* exp; 
                   expression* tmp;
                   if( ignore_mode == 0 ) {
-                    vec = vector_create( 32, 0 );
+                    vec = vector_create( 32, 0, TRUE );
                     tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
                     vector_from_int( vec, 0xffffffff );
+                    assert( tmp->value->value == NULL );
                     free_safe( tmp->value );
                     tmp->value = vec;
-                    exp = db_create_expression( $3, tmp, EXP_OP_DELAY, @1.first_line, NULL );
+                    exp = db_create_expression( $5, tmp, EXP_OP_DELAY, @1.first_line, NULL );
                     $$  = exp;
                   } else {
                     $$ = NULL;
@@ -2088,9 +2095,10 @@ delay_value
                   vector*     vec;
                   expression* tmp;
                   if( ignore_mode == 0 ) {
-                    vec = vector_create( 32, 0 );
+                    vec = vector_create( 32, 0, TRUE );
                     tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
                     vector_from_int( vec, $1 );
+                    assert( tmp->value->value == NULL );
                     free_safe( tmp->value );
                     tmp->value = vec;
                     $$ = tmp;
@@ -2103,9 +2111,10 @@ delay_value
                   vector*     vec;
                   expression* tmp;
                   if( ignore_mode == 0 ) {
-                    vec = vector_create( 32, 0 );
+                    vec = vector_create( 32, 0, TRUE );
                     tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
-                    vector_from_int( vec, $1 );
+                    vector_from_int( vec, $3 );
+                    assert( tmp->value->value == NULL );
                     free_safe( tmp->value );
                     tmp->value = vec;
                     $$ = tmp;
@@ -2119,6 +2128,7 @@ delay_value_simple
 	: NUMBER
 		{
 		  expression* tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, @1.first_line, NULL );
+                  assert( tmp->value->value == NULL );
                   free_safe( tmp->value );
 		  tmp->value = $1;
 		  $$ = tmp;
@@ -2498,12 +2508,12 @@ event_expression
 		{
                   expression* tmp1;
 		  expression* tmp2;
-                  nibble      val = 0x2;
+                  // nibble      val = 0x2;
                   if( ignore_mode == 0 ) {
                     /* Create 1-bit expression to hold last value of right expression */
                     tmp1 = db_create_expression( NULL, NULL, EXP_OP_LAST, @1.first_line, NULL );
-                    expression_create_value( tmp1, 1, 0 );
-                    vector_set_value( tmp1->value, &val, 1, 0, 0 );
+                    expression_create_value( tmp1, 1, 0, FALSE );
+                    // vector_set_value( tmp1->value, &val, 1, 0, 0 );
 		    tmp2 = db_create_expression( $2, tmp1, EXP_OP_PEDGE, @1.first_line, NULL );
 		    $$ = tmp2;
                   } else {
@@ -2514,11 +2524,11 @@ event_expression
 		{
 		  expression* tmp1;
                   expression* tmp2;
-                  nibble      val = 0x2;
+                  // nibble      val = 0x2;
                   if( ignore_mode == 0 ) {
                     tmp1 = db_create_expression( NULL, NULL, EXP_OP_LAST, @1.first_line, NULL );
-                    expression_create_value( tmp1, 1, 0 );
-                    vector_set_value( tmp1->value, &val, 1, 0, 0 );
+                    expression_create_value( tmp1, 1, 0, FALSE );
+                    // vector_set_value( tmp1->value, &val, 1, 0, 0 );
 		    tmp2 = db_create_expression( $2, tmp1, EXP_OP_NEDGE, @1.first_line, NULL );
 		    $$ = tmp2;
                   } else {
@@ -2529,13 +2539,13 @@ event_expression
 		{
 		  expression* tmp1;
                   expression* tmp2;
-                  nibble      val  = 0x2;
+                  // nibble      val  = 0x2;
                   expression* expr = $1;
                   if( ignore_mode == 0 ) {
                     tmp1 = db_create_expression( NULL, NULL, EXP_OP_LAST, @1.first_line, NULL );
 		    tmp2 = db_create_expression( expr, tmp1, EXP_OP_AEDGE, @1.first_line, NULL );
-                    expression_create_value( tmp1, expr->value->width, 0 );
-                    vector_set_value( tmp1->value, &val, 1, 0, 0 );
+                    expression_create_value( tmp1, expr->value->width, 0, FALSE );
+                    // vector_set_value( tmp1->value, &val, 1, 0, 0 );
 		    $$ = tmp2;
                   } else {
                     $$ = NULL;

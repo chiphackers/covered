@@ -20,7 +20,7 @@ void module_init( module* mod );
 module* module_create();
 
 //! Writes contents of provided module to specified output.
-bool module_db_write( module* mod, char* scope, FILE* file );
+bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst );
 
 //! Read contents of current line from specified file, creates module and adds to module list.
 bool module_db_read( module* mod, char* scope, char** line );
@@ -41,6 +41,11 @@ void module_clean( module* mod );
 void module_dealloc( module* mod );
 
 /* $Log$
+/* Revision 1.4  2002/08/19 04:34:07  phase1geo
+/* Fixing bug in database reading code that dealt with merging modules.  Module
+/* merging is now performed in a more optimal way.  Full regression passes and
+/* own examples pass as well.
+/*
 /* Revision 1.3  2002/07/18 02:33:24  phase1geo
 /* Fixed instantiation addition.  Multiple hierarchy instantiation trees should
 /* now work.

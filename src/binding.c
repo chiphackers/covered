@@ -117,6 +117,7 @@ void bind_set_tree( expression* expr ) {
   nibble value1;     /* Value to initialize LAST element of AEDGE operation */
   int    i;          /* Loop iterator                                       */
 
+#ifdef DEPRECATED
   if( expr != NULL ) {
 
     /* Set children before I set myself */
@@ -189,6 +190,18 @@ void bind_set_tree( expression* expr ) {
     }
 
   }
+#endif
+
+  expression_resize( expr );
+
+  switch( SUPPL_OP( expr->suppl ) ) {
+    case EXP_OP_SIG :
+    case EXP_OP_SBIT_SEL :
+    case EXP_OP_MBIT_SEL :
+      bind_remove( expr->id );
+      break;
+    default : break;
+  } 
 
 }
 
@@ -224,7 +237,7 @@ void bind_perform( char* sig_name, expression* exp, module* mod, bool implicit_a
     } else {
       snprintf( msg, 4096, "Implicit declaration of signal \"%s\", creating 1-bit version of signal", sig_name );
       print_output( msg, WARNING );
-      sig_link_add( signal_create( sig_name, 1, 0, 0 ), &(mod->sig_head), &(mod->sig_tail) );
+      sig_link_add( signal_create( sig_name, 1, 0 ), &(mod->sig_head), &(mod->sig_tail) );
       sigl = mod->sig_tail;
     }
   }
@@ -336,6 +349,11 @@ void bind() {
 }
 
 /* $Log$
+/* Revision 1.12  2002/07/20 22:22:52  phase1geo
+/* Added ability to create implicit signals for local signals.  Added implicit1.v
+/* diagnostic to test for correctness.  Full regression passes.  Other tweaks to
+/* output information.
+/*
 /* Revision 1.11  2002/07/18 22:02:35  phase1geo
 /* In the middle of making improvements/fixes to the expression/signal
 /* binding phase.

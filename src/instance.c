@@ -320,22 +320,8 @@ void instance_db_write( mod_inst* root, FILE* file, char* scope, bool parse_mode
 
   assert( scope != NULL );
 
-#ifdef DEPRECATED
-  /* Handle parameters at this time */
-  if( parse_mode ) {
-    instance_calc_params( root );
-    instance_param_generate( root );
-  }
-#endif
-
   /* Display root module */
-  module_db_write( root->mod, scope, file );
-
-#ifdef DEPRECATED
-  if( parse_mode ) {
-    instance_param_destroy( root );
-  }
-#endif
+  module_db_write( root->mod, scope, file, root );
 
   /* Display children */
   curr = root->child_head;
@@ -376,6 +362,9 @@ void instance_dealloc_tree( mod_inst* root ) {
     if( root->stat != NULL ) {
       free_safe( root->stat );
     }
+
+    /* Deallocate memory for instance parameter list */
+    inst_parm_dealloc( root->param_head, TRUE );
   
     /* Free up memory for this module instance */
     free_safe( root );
@@ -448,6 +437,11 @@ void instance_dealloc( mod_inst* root, char* scope ) {
 }
 
 /* $Log$
+/* Revision 1.15  2002/09/23 01:37:45  phase1geo
+/* Need to make some changes to the inst_parm structure and some associated
+/* functionality for efficiency purposes.  This checkin contains most of the
+/* changes to the parser (with the exception of signal sizing).
+/*
 /* Revision 1.14  2002/09/21 07:03:28  phase1geo
 /* Attached all parameter functions into db.c.  Just need to finish getting
 /* parser to correctly add override parameters.  Once this is complete, phase 3
