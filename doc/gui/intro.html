@@ -1,0 +1,20 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title>Covered Report Viewer User Manual - Introduction</title>
+</head>
+<body>
+<h1>Introduction</h1>
+<p>The Covered report viewer GUI allows a user to view the coverage results from one or more CDD (Covered Design Database) files that have been previously generated using the Covered score and/or merge commands.  The advantages of using the GUI versus using an ASCII file to view coverage results are the following:</p>
+<ol>
+	<li>View code that is covered/uncovered within the actual source file text (more context)</li>
+	<li>Quickly see which modules/instances were uncovered for each coverage metric.</li>
+	<li>Ability to hide/unhide verbose information for uncovered code.</li>
+	<li>Quickly find expressions that caused combinational logic cases to be uncovered.</li>
+	<li>Allows user to focus on a particular expression/signal/module/instance that is uncovered.</li>
+</ol>
+<p>Because the nature of a GUI interface is much more interactive than a generated text file report, the Covered report viewer is meant to provide the user a more in-depth look at the logic to identify the reasons for not achieving full coverage.  This is the ultimate goal of the GUI interface -- to be an interactive tool for identifying and understanding why full code coverage was not achieved and how to write tests that will cover those areas.</p>
+<p>The GUI report viewer is invoked by specifying the '-view' option to the report command.  The report viewer is part of the report command and is, therefore, not used to parse/score a design and it is not used to create merged CDD files.  The report viewer is read-only when it comes to the CDD file and never writes out to this file.  Although the report viewer does not write a merged CDD file, it is possible to read in several CDD files into the report (assuming they were all generated from the same design-under-test, or DUT).  When multiple CDD files are read in, their information is merged in the GUI.</p>
+<p>The rest of the user manual pages describe the various widgets and windows of the GUI and their functionality.  Additionally, this user manual contains information on how to get the most out of the Covered GUI report viewer.</p>
+</body>
+</html>
