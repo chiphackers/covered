@@ -5,7 +5,8 @@ reg [2:0]   d;
 
 wire        w0;
 wire        w1, w2, w3, w4;
-//wire        w5, w6; 
+wire        w5;
+//wire        w6; 
 wire        w7, w8, w9;
 wire        w10, w11, w12, w13, w14, w15, w16, w17, w18, w19; 
 wire        w20, w21, w22, w23, w24, w25, w26, w27;
@@ -30,7 +31,7 @@ assign x3 = a + b;         // EXP_OP_ADD
 assign x4 = a - b;         // EXP_OP_SUBTRACT
 assign w3 = a & b;	   // EXP_OP_AND
 assign w4 = a | b;         // EXP_OP_OR
-//assign w5 = a ~& b;        // EXP_OP_NAND -- iverilog cannot parse
+assign w5 = a ~& b;        // EXP_OP_NAND -- iverilog cannot parse
 //assign w6 = a ~| b;        // EXP_OP_NOR  -- iverilog cannot parse
 assign w7 = a ~^ b;        // EXP_OP_NXOR
 assign w8 = a < b;         // EXP_OP_LT
