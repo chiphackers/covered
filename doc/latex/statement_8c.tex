@@ -1,0 +1,111 @@
+\section{statement.c File Reference}
+\label{statement_8c}\index{statement.c@{statement.c}}
+{\tt \#include $<$stdio.h$>$}\par
+{\tt \#include $<$assert.h$>$}\par
+{\tt \#include $<$string.h$>$}\par
+{\tt \#include \char`\"{}defines.h\char`\"{}}\par
+{\tt \#include \char`\"{}statement.h\char`\"{}}\par
+{\tt \#include \char`\"{}expression.h\char`\"{}}\par
+{\tt \#include \char`\"{}util.h\char`\"{}}\par
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+{\bf statement} $\ast$ {\bf statement\_\-create} ({\bf expression} $\ast$exp, int line\_\-begin, int line\_\-end)
+\item 
+void {\bf statement\_\-db\_\-write} ({\bf statement} $\ast$stmt, FILE $\ast$ofile, char $\ast$scope)
+\begin{CompactList}\small\item\em Writes specified statement to the specified output file.\item\end{CompactList}\item 
+{\bf bool} {\bf statement\_\-db\_\-read} (char $\ast$$\ast$line, {\bf module} $\ast$curr\_\-mod)
+\begin{CompactList}\small\item\em Reads in statement line from specified string and stores statement in specified module.\item\end{CompactList}\item 
+void {\bf statement\_\-loopback} ({\bf statement} $\ast$stmt)
+\begin{CompactList}\small\item\em Connects statement sequence to form a loop.\item\end{CompactList}\item 
+void {\bf statement\_\-dealloc} ({\bf statement} $\ast$stmt)
+\begin{CompactList}\small\item\em Deallocates statement memory and associated expression tree from the heap.\item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+\begin{Desc}
+\item[Author: ]\par
+Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\begin{Desc}
+\item[Date: ]\par
+5/1/2002\end{Desc}
+
+
+\subsection{Function Documentation}
+\index{statement.c@{statement.c}!statement_create@{statement\_\-create}}
+\index{statement_create@{statement\_\-create}!statement.c@{statement.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf statement}$\ast$ statement\_\-create ({\bf expression} $\ast$ {\em exp}, int {\em line\_\-begin}, int {\em line\_\-end})}\label{statement_8c_a0}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+exp}]Pointer to root expression of expression tree for this statement. \item[{\em 
+line\_\-begin}]Starting line of this expression \item[{\em 
+line\_\-end}]Ending line of this expression\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns pointer to the newly created statement.\end{Desc}
+Creates a new statement structure from heap memory and initializes it with the specified parameter information. \index{statement.c@{statement.c}!statement_db_read@{statement\_\-db\_\-read}}
+\index{statement_db_read@{statement\_\-db\_\-read}!statement.c@{statement.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} statement\_\-db\_\-read (char $\ast$$\ast$ {\em line}, {\bf module} $\ast$ {\em curr\_\-mod})}\label{statement_8c_a2}
+
+
+Reads in statement line from specified string and stores statement in specified module.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+line}]Pointer to current line of file being read. \item[{\em 
+curr\_\-mod}]Pointer to current module.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns TRUE if the line is read without error; otherwise, returns FALSE.\end{Desc}
+Reads in the contents of the statement from the specified line, creates a statement structure to hold the contents. \index{statement.c@{statement.c}!statement_db_write@{statement\_\-db\_\-write}}
+\index{statement_db_write@{statement\_\-db\_\-write}!statement.c@{statement.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void statement\_\-db\_\-write ({\bf statement} $\ast$ {\em stmt}, FILE $\ast$ {\em ofile}, char $\ast$ {\em scope})}\label{statement_8c_a1}
+
+
+Writes specified statement to the specified output file.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+stmt}]Pointer to statement to write out value. \item[{\em 
+ofile}]Pointer to output file to write statement line to. \item[{\em 
+scope}]Scope of parent module which contains the specified statement.\end{description}
+\end{Desc}
+Recursively writes the contents of the specified statement tree (and its associated expression trees to the specified output stream. \index{statement.c@{statement.c}!statement_dealloc@{statement\_\-dealloc}}
+\index{statement_dealloc@{statement\_\-dealloc}!statement.c@{statement.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void statement\_\-dealloc ({\bf statement} $\ast$ {\em stmt})}\label{statement_8c_a4}
+
+
+Deallocates statement memory and associated expression tree from the heap.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+stmt}]Pointer to statement to deallocate.\end{description}
+\end{Desc}
+Deallocates specified statement from heap memory. First remove expression tree of this statement. Second, remove all statements following this statement. Finally, remove the specified statement itself. Since statements can be circular in nature, we will not remove a statement that has its expression tree already deallocated. This will prevent this function from getting into an infinite loop (or stack overflow since this function is recursive). \index{statement.c@{statement.c}!statement_loopback@{statement\_\-loopback}}
+\index{statement_loopback@{statement\_\-loopback}!statement.c@{statement.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void statement\_\-loopback ({\bf statement} $\ast$ {\em stmt})}\label{statement_8c_a3}
+
+
+Connects statement sequence to form a loop.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+stmt}]Pointer to statement sequence to connect ends for loopback.\end{description}
+\end{Desc}
+Traverses the specified stmt sequence (assumes that stmt is the statement at the top of the sequence). When it reaches a statement that has both next\_\-true and next\_\-false set to NULL, sets next\_\-true and next\_\-false of that statement to point to the top of the sequence. This will cause the statement to have a loopback effect. 

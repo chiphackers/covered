@@ -86,6 +86,11 @@
 */
 #define DB_TYPE_MODULE       3
 
+/*!
+ Specifies that the current coverage database line describes a statement.
+*/
+#define DB_TYPE_STATEMENT    4
+
 /*! @} */
 
 
@@ -493,20 +498,8 @@ typedef struct vector_s vector;
  An expression is defined to be a logical combination of signals/values.  Expressions may 
  contain subexpressions (which are expressions in and of themselves).  An measurable expression 
  may only evaluate to TRUE (1) or FALSE (0).  If the parent expression of this expression is 
- NULL, then this expression is considered a root expression.  The nibble cntrl contains the
- run-time information for its expression.  Its bits are specified as the following:
- Bit  0        = Set to 1 if this expression is currently in the run-time queue.
- Bit  1        = Set to 1 if this expression has been executed in the run-time queue.
-                 Indicates to report tool that this expression has been covered under line
-                 coverage.
- Bit  2        = Indicates that the value of this expression has changed during this timestamp
- Bit  3        = Indicates that this expression evaluates to 0 or 1 and can be considered
-                 measurable.
- Bit  8        = Indicates that the value of this expression has been evaluated to FALSE (0)
- Bit  9        = Indicates that the value of this expression has been evaluated to TRUE (1)
- Bits 16 - 32  = Used if this expression has an operation type of EXPR_OP_SBIT_SEL or
-                 EXPR_OP_MBIT_SEL.  Stores the LSB value of the signal that this expression
-                 is harboring.
+ NULL, then this expression is considered a root expression.  The nibble suppl contains the
+ run-time information for its expression.
 */
 struct expression_s;
 struct signal_s;
@@ -517,7 +510,6 @@ typedef struct signal_s     signal;
 struct expression_s {
   vector*     value;       /*!< Current value and toggle information of this expression        */
   nibble      suppl;       /*!< Vector containing supplemental information for this expression */
-  int         line;        /*!< Starting line number of root expression (only valid if root)   */
   int         id;          /*!< Specifies unique ID for this expression in the parent          */
   signal*     sig;         /*!< Pointer to signal.  If NULL then no signal is attached         */
   expression* parent;      /*!< Parent expression.  If NULL then this is the root expression   */
@@ -525,6 +517,31 @@ struct expression_s {
   expression* left;        /*!< Pointer to expression on left                                  */
 };
 
+//------------------------------------------------------------------------------
+/*!
+ A statement is defined to be the structure connected to the root of an expression tree.
+ Statements are sequentially run in the run-time engine, starting at the root statement.
+ After a statements expression tree has been checked for changes and possibly placed into
+ the run-time expression queue, the statements calls the next statement to be run.
+ If the value of the root expression of the associated expression tree is a non-zero value,
+ the next_true statement will be executed (if next_true is not NULL); otherwise, the
+ next_false statement is run.  If next_true and next_false point to the same structure, we
+ have hit the end of the statement sequence; executing the next statement will be executing
+ the first statement of the statement sequence (next_true and next_false should both point
+ to the first statement in the sequence).
+*/
+struct statement_s;
+
+typedef struct statement_s statement;
+
+struct statement_s {
+  expression* exp;         /*!< Pointer to associated expression tree                        */
+  int         line_begin;  /*!< Beginning line of expression tree                            */
+  int         line_end;    /*!< Ending line of expression tree                               */
+  statement*  next_true;   /*!< Pointer to next statement to run if expression tree non-zero */
+  statement*  next_false;  /*!< Pointer to next statement to run if next_true not picked     */
+};
+ 
 //------------------------------------------------------------------------------
 /*!
  Expression link element.  Stores pointer to an expression.
@@ -536,6 +553,19 @@ typedef struct exp_link_s exp_link;
 struct exp_link_s {
   expression* exp;   /*!< Pointer to expression                      */
   exp_link*   next;  /*!< Pointer to next expression element in list */
+};
+
+//------------------------------------------------------------------------------
+/*!
+ Statement link element.  Stores pointer to a statement.
+*/
+struct stmt_link_s;
+
+typedef struct stmt_link_s stmt_link;
+
+struct stmt_link_s {
+  statement* stmt;   /*!< Pointer to statement                       */
+  stmt_link* next;   /*!< Pointer to next statement element in list  */
 };
 
 //------------------------------------------------------------------------------
@@ -671,7 +701,13 @@ struct mod_inst_s {
 };
 
 
-/* $Log$ */
+/* $Log$
+/* Revision 1.8  2002/04/30 05:04:25  phase1geo
+/* Added initial go-round of adding statement handling to parser.  Added simple
+/* Verilog test to check correct statement handling.  At this point there is a
+/* bug in the expression write function (we need to display statement trees in
+/* the proper order since they are unlike normal expression trees.)
+/* */
 
 #endif
 

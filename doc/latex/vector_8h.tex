@@ -40,6 +40,8 @@ char $\ast$ {\bf vector\_\-to\_\-string} ({\bf vector} $\ast$vec, int type)
 \begin{CompactList}\small\item\em Converts character string value into vector.\item\end{CompactList}\item 
 void {\bf vector\_\-toggle\_\-count} ({\bf vector} $\ast$vec, int $\ast$tog01\_\-cnt, int $\ast$tog10\_\-cnt)
 \begin{CompactList}\small\item\em Counts toggle01 and toggle10 information from specifed vector.\item\end{CompactList}\item 
+void {\bf vector\_\-logic\_\-count} ({\bf vector} $\ast$vec, int $\ast$false\_\-cnt, int $\ast$true\_\-cnt)
+\begin{CompactList}\small\item\em Counts FALSE and TRUE information from the specified vector.\item\end{CompactList}\item 
 void {\bf vector\_\-bitwise\_\-op} ({\bf vector} $\ast$tgt, {\bf vector} $\ast$src1, {\bf vector} $\ast$src2, int $\ast$optab)
 \begin{CompactList}\small\item\em Performs bitwise operation on two source vectors from specified operation table.\item\end{CompactList}\item 
 void {\bf vector\_\-op\_\-compare} ({\bf vector} $\ast$tgt, {\bf vector} $\ast$left, {\bf vector} $\ast$right, int comp\_\-type)
@@ -80,7 +82,7 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsection{Function Documentation}
 \index{vector.h@{vector.h}!vector_bitwise_op@{vector\_\-bitwise\_\-op}}
 \index{vector_bitwise_op@{vector\_\-bitwise\_\-op}!vector.h@{vector.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vector\_\-bitwise\_\-op ({\bf vector} $\ast$ {\em tgt}, {\bf vector} $\ast$ {\em src1}, {\bf vector} $\ast$ {\em src2}, int $\ast$ {\em optab})}\label{vector_8h_a16}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vector\_\-bitwise\_\-op ({\bf vector} $\ast$ {\em tgt}, {\bf vector} $\ast$ {\em src1}, {\bf vector} $\ast$ {\em src2}, int $\ast$ {\em optab})}\label{vector_8h_a17}
 
 
 Performs bitwise operation on two source vectors from specified operation table.
@@ -145,7 +147,7 @@ write\_\-data}]If set to TRUE, causes 4-state data bytes to be included.\end{des
 \end{Desc}
 Writes the specified vector to the specified coverage database file. \index{vector.h@{vector.h}!vector_dealloc@{vector\_\-dealloc}}
 \index{vector_dealloc@{vector\_\-dealloc}!vector.h@{vector.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vector\_\-dealloc ({\bf vector} $\ast$ {\em vec})}\label{vector_8h_a26}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vector\_\-dealloc ({\bf vector} $\ast$ {\em vec})}\label{vector_8h_a27}
 
 
 Deallocates all memory allocated for vector.
@@ -262,7 +264,22 @@ value}]Pointer to nibble array for vector. \item[{\em
 width}]Bit width of specified vector. \item[{\em 
 lsb}]Least-significant bit of vector.\end{description}
 \end{Desc}
-Initializes the specified vector with the contents of width, lsb and value. Initializes all contents of value array to 0. \index{vector.h@{vector.h}!vector_merge@{vector\_\-merge}}
+Initializes the specified vector with the contents of width, lsb and value. Initializes all contents of value array to 0. \index{vector.h@{vector.h}!vector_logic_count@{vector\_\-logic\_\-count}}
+\index{vector_logic_count@{vector\_\-logic\_\-count}!vector.h@{vector.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vector\_\-logic\_\-count ({\bf vector} $\ast$ {\em vec}, int $\ast$ {\em false\_\-cnt}, int $\ast$ {\em true\_\-cnt})}\label{vector_8h_a16}
+
+
+Counts FALSE and TRUE information from the specified vector.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+vec}]Pointer to vector to parse. \item[{\em 
+false\_\-cnt}]Number of bits in vector that was set to a value of FALSE. \item[{\em 
+true\_\-cnt}]Number of bits in vector that was set to a value of TRUE.\end{description}
+\end{Desc}
+Walks through specified vector counting the number of FALSE bits that are set and the number of TRUE bits that are set. Adds these values to the contents of false\_\-cnt and true\_\-cnt. \index{vector.h@{vector.h}!vector_merge@{vector\_\-merge}}
 \index{vector_merge@{vector\_\-merge}!vector.h@{vector.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vector\_\-merge ({\bf vector} $\ast$ {\em base}, {\bf vector} $\ast$ {\em in})}\label{vector_8h_a2}
 
@@ -278,7 +295,7 @@ in}]Vector that will be merged with base vector.\end{description}
 \end{Desc}
 Performs vector merge of two vectors. If the vectors are found to be different (width or lsb are not equal), an error message is sent to the user and the program is halted. If the vectors are found to be equivalents, the merge is performed on the vector nibbles. \index{vector.h@{vector.h}!vector_op_add@{vector\_\-op\_\-add}}
 \index{vector_op_add@{vector\_\-op\_\-add}!vector.h@{vector.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vector\_\-op\_\-add ({\bf vector} $\ast$ {\em tgt}, {\bf vector} $\ast$ {\em left}, {\bf vector} $\ast$ {\em right})}\label{vector_8h_a20}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vector\_\-op\_\-add ({\bf vector} $\ast$ {\em tgt}, {\bf vector} $\ast$ {\em left}, {\bf vector} $\ast$ {\em right})}\label{vector_8h_a21}
 
 
 Performs addition operation on left and right expression values.
@@ -293,7 +310,7 @@ right}]Expression value on right side of + sign.\end{description}
 \end{Desc}
 Performs 4-state bitwise addition on left and right expression values. Carry bit is discarded (value is wrapped around). \index{vector.h@{vector.h}!vector_op_compare@{vector\_\-op\_\-compare}}
 \index{vector_op_compare@{vector\_\-op\_\-compare}!vector.h@{vector.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vector\_\-op\_\-compare ({\bf vector} $\ast$ {\em tgt}, {\bf vector} $\ast$ {\em left}, {\bf vector} $\ast$ {\em right}, int {\em comp\_\-type})}\label{vector_8h_a17}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vector\_\-op\_\-compare ({\bf vector} $\ast$ {\em tgt}, {\bf vector} $\ast$ {\em left}, {\bf vector} $\ast$ {\em right}, int {\em comp\_\-type})}\label{vector_8h_a18}
 
 
 Performs bitwise comparison of two vectors.
@@ -309,7 +326,7 @@ comp\_\-type}]Comparison type (0=LT, 1=GT, 2=EQ, 3=CEQ)\end{description}
 \end{Desc}
 Performs a bitwise comparison (starting at most significant bit) of the left and right expressions. \index{vector.h@{vector.h}!vector_op_lshift@{vector\_\-op\_\-lshift}}
 \index{vector_op_lshift@{vector\_\-op\_\-lshift}!vector.h@{vector.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vector\_\-op\_\-lshift ({\bf vector} $\ast$ {\em tgt}, {\bf vector} $\ast$ {\em left}, {\bf vector} $\ast$ {\em right})}\label{vector_8h_a18}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vector\_\-op\_\-lshift ({\bf vector} $\ast$ {\em tgt}, {\bf vector} $\ast$ {\em left}, {\bf vector} $\ast$ {\em right})}\label{vector_8h_a19}
 
 
 Performs left shift operation on left expression by right expression bits.
@@ -324,7 +341,7 @@ right}]Expression containing number of bit positions to shift.\end{description}
 \end{Desc}
 Converts right expression into an integer value and left shifts the left expression the specified number of bit locations, zero-filling the LSB. \index{vector.h@{vector.h}!vector_op_multiply@{vector\_\-op\_\-multiply}}
 \index{vector_op_multiply@{vector\_\-op\_\-multiply}!vector.h@{vector.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vector\_\-op\_\-multiply ({\bf vector} $\ast$ {\em tgt}, {\bf vector} $\ast$ {\em left}, {\bf vector} $\ast$ {\em right})}\label{vector_8h_a22}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vector\_\-op\_\-multiply ({\bf vector} $\ast$ {\em tgt}, {\bf vector} $\ast$ {\em left}, {\bf vector} $\ast$ {\em right})}\label{vector_8h_a23}
 
 
 Performs multiplication operation on left and right expression values.
@@ -339,7 +356,7 @@ right}]Expression value on right side of $\ast$ sign.\end{description}
 \end{Desc}
 Performs 4-state conversion multiplication. If both values are known (non-X, non-Z), vectors are converted to integers, multiplication occurs and values are converted back into vectors. If one of the values is equal to zero, the value is 0. If one of the values is equal to one, the value is that of the other vector. \index{vector.h@{vector.h}!vector_op_rshift@{vector\_\-op\_\-rshift}}
 \index{vector_op_rshift@{vector\_\-op\_\-rshift}!vector.h@{vector.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vector\_\-op\_\-rshift ({\bf vector} $\ast$ {\em tgt}, {\bf vector} $\ast$ {\em left}, {\bf vector} $\ast$ {\em right})}\label{vector_8h_a19}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vector\_\-op\_\-rshift ({\bf vector} $\ast$ {\em tgt}, {\bf vector} $\ast$ {\em left}, {\bf vector} $\ast$ {\em right})}\label{vector_8h_a20}
 
 
 Performs right shift operation on left expression by right expression bits.
@@ -354,7 +371,7 @@ right}]Expression containing number of bit positions to shift.\end{description}
 \end{Desc}
 Converts right expression into an integer value and right shifts the left expression the specified number of bit locations, zero-filling the MSB. \index{vector.h@{vector.h}!vector_op_subtract@{vector\_\-op\_\-subtract}}
 \index{vector_op_subtract@{vector\_\-op\_\-subtract}!vector.h@{vector.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vector\_\-op\_\-subtract ({\bf vector} $\ast$ {\em tgt}, {\bf vector} $\ast$ {\em left}, {\bf vector} $\ast$ {\em right})}\label{vector_8h_a21}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vector\_\-op\_\-subtract ({\bf vector} $\ast$ {\em tgt}, {\bf vector} $\ast$ {\em left}, {\bf vector} $\ast$ {\em right})}\label{vector_8h_a22}
 
 
 Performs subtraction operation on left and right expression values.
@@ -452,7 +469,7 @@ tog10\_\-cnt}]Number of bits in vector that toggled from 1 to 0.\end{description
 \end{Desc}
 Walks through specified vector counting the number of toggle01 bits that are set and the number of toggle10 bits that are set. Adds these values to the contents of tog01\_\-cnt and tog10\_\-cnt. \index{vector.h@{vector.h}!vector_unary_inv@{vector\_\-unary\_\-inv}}
 \index{vector_unary_inv@{vector\_\-unary\_\-inv}!vector.h@{vector.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vector\_\-unary\_\-inv ({\bf vector} $\ast$ {\em tgt}, {\bf vector} $\ast$ {\em src})}\label{vector_8h_a23}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vector\_\-unary\_\-inv ({\bf vector} $\ast$ {\em tgt}, {\bf vector} $\ast$ {\em src})}\label{vector_8h_a24}
 
 
 Performs unary bitwise inversion operation on specified vector value.
@@ -466,7 +483,7 @@ src}]Source vector to perform operation on.\end{description}
 \end{Desc}
 Performs a bitwise inversion on the specified vector. \index{vector.h@{vector.h}!vector_unary_not@{vector\_\-unary\_\-not}}
 \index{vector_unary_not@{vector\_\-unary\_\-not}!vector.h@{vector.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vector\_\-unary\_\-not ({\bf vector} $\ast$ {\em tgt}, {\bf vector} $\ast$ {\em src})}\label{vector_8h_a25}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vector\_\-unary\_\-not ({\bf vector} $\ast$ {\em tgt}, {\bf vector} $\ast$ {\em src})}\label{vector_8h_a26}
 
 
 Performs unary logical NOT operation on specified vector value.
@@ -480,7 +497,7 @@ src}]Source vector to be operated on.\end{description}
 \end{Desc}
 Performs unary logical NOT operation on specified vector value. \index{vector.h@{vector.h}!vector_unary_op@{vector\_\-unary\_\-op}}
 \index{vector_unary_op@{vector\_\-unary\_\-op}!vector.h@{vector.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vector\_\-unary\_\-op ({\bf vector} $\ast$ {\em tgt}, {\bf vector} $\ast$ {\em src}, {\bf nibble} $\ast$ {\em optab})}\label{vector_8h_a24}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void vector\_\-unary\_\-op ({\bf vector} $\ast$ {\em tgt}, {\bf vector} $\ast$ {\em src}, {\bf nibble} $\ast$ {\em optab})}\label{vector_8h_a25}
 
 
 Performs unary operation on specified vector value.

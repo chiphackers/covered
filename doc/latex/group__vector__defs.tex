@@ -13,7 +13,7 @@
 \item 
 \#define {\bf VECTOR\_\-SIZE}(x)\ (((x \% 4) == 0) ? (x / 4) : ((x / 4) + 1))
 \item 
-\#define {\bf VECTOR\_\-MERGE\_\-MASK}\ 0xfff00
+\#define {\bf VECTOR\_\-MERGE\_\-MASK}\ 0xff0fff00
 \end{CompactItemize}
 
 
@@ -33,14 +33,16 @@ Macro for determining if VECTOR\_\-SET\_\-BIT is set. \index{vector_defs@{vector
 
 Macro for determining if VECTOR\_\-STATIC\_\-BIT is set. \index{vector_defs@{vector\_\-defs}!VECTOR_MERGE_MASK@{VECTOR\_\-MERGE\_\-MASK}}
 \index{VECTOR_MERGE_MASK@{VECTOR\_\-MERGE\_\-MASK}!vector_defs@{vector\_\-defs}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define VECTOR\_\-MERGE\_\-MASK\ 0xfff00}\label{group__vector__defs_a5}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define VECTOR\_\-MERGE\_\-MASK\ 0xff0fff00}\label{group__vector__defs_a5}
 
 
 Used for merging two vector nibbles from two vectors. Both vector nibble fields are ANDed with this mask and ORed together to perform the merge.  Fields that are merged are:\begin{CompactItemize}
 \item 
 TOGGLE0-$>$1\item 
 TOGGLE1-$>$0\item 
-SET \end{CompactItemize}
+SET\item 
+FALSE\item 
+TRUE \end{CompactItemize}
 \index{vector_defs@{vector\_\-defs}!VECTOR_SET_BIT@{VECTOR\_\-SET\_\-BIT}}
 \index{VECTOR_SET_BIT@{VECTOR\_\-SET\_\-BIT}!vector_defs@{vector\_\-defs}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define VECTOR\_\-SET\_\-BIT\ 0x1}\label{group__vector__defs_a0}

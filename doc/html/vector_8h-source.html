@@ -14,7 +14,7 @@
 00013 <font class="preprocessor">#include "<a class="code" href="defines_8h.html">defines.h</a>"</font>
 00014 
 00015 
-00017 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a7">vector_init</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <a class="code" href="defines_8h.html#a99">nibble</a>* value, <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> lsb );
+00017 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a7">vector_init</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <a class="code" href="defines_8h.html#a105">nibble</a>* value, <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> lsb );
 00018 
 00020 <a class="code" href="structvector__s.html">vector</a>* <a class="code" href="vector_8c.html#a8">vector_create</a>( <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> lsb );
 00021 
@@ -24,78 +24,80 @@
 00027 
 00029 <font class="keywordtype">bool</font> <a class="code" href="vector_8c.html#a11">vector_db_read</a>( <a class="code" href="structvector__s.html">vector</a>** vec, <font class="keywordtype">char</font>** line );
 00030 
-00032 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a12">vector_display_toggle01</a>( <a class="code" href="defines_8h.html#a99">nibble</a>* nib, <font class="keywordtype">int</font> width, FILE* ofile );
+00032 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a12">vector_display_toggle01</a>( <a class="code" href="defines_8h.html#a105">nibble</a>* nib, <font class="keywordtype">int</font> width, FILE* ofile );
 00033 
-00035 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a13">vector_display_toggle10</a>( <a class="code" href="defines_8h.html#a99">nibble</a>* nib, <font class="keywordtype">int</font> width, FILE* ofile );
+00035 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a13">vector_display_toggle10</a>( <a class="code" href="defines_8h.html#a105">nibble</a>* nib, <font class="keywordtype">int</font> width, FILE* ofile );
 00036 
-00038 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a14">vector_display_nibble</a>( <a class="code" href="defines_8h.html#a99">nibble</a>* nib, <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> lsb );
+00038 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a14">vector_display_nibble</a>( <a class="code" href="defines_8h.html#a105">nibble</a>* nib, <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> lsb );
 00039 
 00041 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a15">vector_display</a>( <a class="code" href="structvector__s.html">vector</a>* vec );
 00042 
-00044 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a17">vector_set_bit</a>( <a class="code" href="defines_8h.html#a99">nibble</a>* nib, <a class="code" href="defines_8h.html#a99">nibble</a> value, <font class="keywordtype">int</font> pos );
+00044 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a17">vector_set_bit</a>( <a class="code" href="defines_8h.html#a105">nibble</a>* nib, <a class="code" href="defines_8h.html#a105">nibble</a> value, <font class="keywordtype">int</font> pos );
 00045 
-00047 <font class="keywordtype">bool</font> <a class="code" href="vector_8c.html#a21">vector_set_value</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <a class="code" href="defines_8h.html#a99">nibble</a>* value, <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> from_lsb, <font class="keywordtype">int</font> to_lsb );
+00047 <font class="keywordtype">bool</font> <a class="code" href="vector_8c.html#a24">vector_set_value</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <a class="code" href="defines_8h.html#a105">nibble</a>* value, <font class="keywordtype">int</font> width, <font class="keywordtype">int</font> from_lsb, <font class="keywordtype">int</font> to_lsb );
 00048 
-00050 <font class="keywordtype">int</font> <a class="code" href="vector_8c.html#a22">vector_to_int</a>( <a class="code" href="structvector__s.html">vector</a>* vec );
+00050 <font class="keywordtype">int</font> <a class="code" href="vector_8c.html#a25">vector_to_int</a>( <a class="code" href="structvector__s.html">vector</a>* vec );
 00051 
-00053 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a23">vector_from_int</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <font class="keywordtype">int</font> value );
+00053 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a26">vector_from_int</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <font class="keywordtype">int</font> value );
 00054 
-00056 <font class="keywordtype">char</font>* <a class="code" href="vector_8c.html#a25">vector_to_string</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <font class="keywordtype">int</font> type );
+00056 <font class="keywordtype">char</font>* <a class="code" href="vector_8c.html#a28">vector_to_string</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <font class="keywordtype">int</font> type );
 00057 
-00059 <a class="code" href="structvector__s.html">vector</a>* <a class="code" href="vector_8c.html#a26">vector_from_string</a>( <font class="keywordtype">char</font>* str, <font class="keywordtype">bool</font> sized, <font class="keywordtype">int</font> type );
+00059 <a class="code" href="structvector__s.html">vector</a>* <a class="code" href="vector_8c.html#a29">vector_from_string</a>( <font class="keywordtype">char</font>* str, <font class="keywordtype">bool</font> sized, <font class="keywordtype">int</font> type );
 00060 
-00062 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a20">vector_toggle_count</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <font class="keywordtype">int</font>* tog01_cnt, <font class="keywordtype">int</font>* tog10_cnt );
+00062 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a22">vector_toggle_count</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <font class="keywordtype">int</font>* tog01_cnt, <font class="keywordtype">int</font>* tog10_cnt );
 00063 
-00065 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a27">vector_bitwise_op</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* src1, <a class="code" href="structvector__s.html">vector</a>* src2, <font class="keywordtype">int</font>* optab );
+00065 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a23">vector_logic_count</a>( <a class="code" href="structvector__s.html">vector</a>* vec, <font class="keywordtype">int</font>* false_cnt, <font class="keywordtype">int</font>* true_cnt );
 00066 
-00068 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a28">vector_op_compare</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* left, <a class="code" href="structvector__s.html">vector</a>* right, <font class="keywordtype">int</font> comp_type );
+00068 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a30">vector_bitwise_op</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* src1, <a class="code" href="structvector__s.html">vector</a>* src2, <font class="keywordtype">int</font>* optab );
 00069 
-00071 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a29">vector_op_lshift</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* left, <a class="code" href="structvector__s.html">vector</a>* right );
-00072  
-00074 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a30">vector_op_rshift</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* left, <a class="code" href="structvector__s.html">vector</a>* right );
-00075 
-00077 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a31">vector_op_add</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* left, <a class="code" href="structvector__s.html">vector</a>* right );
+00071 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a31">vector_op_compare</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* left, <a class="code" href="structvector__s.html">vector</a>* right, <font class="keywordtype">int</font> comp_type );
+00072 
+00074 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a32">vector_op_lshift</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* left, <a class="code" href="structvector__s.html">vector</a>* right );
+00075  
+00077 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a33">vector_op_rshift</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* left, <a class="code" href="structvector__s.html">vector</a>* right );
 00078 
-00080 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a32">vector_op_subtract</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* left, <a class="code" href="structvector__s.html">vector</a>* right );
+00080 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a34">vector_op_add</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* left, <a class="code" href="structvector__s.html">vector</a>* right );
 00081 
-00083 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a33">vector_op_multiply</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* left, <a class="code" href="structvector__s.html">vector</a>* right );
+00083 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a35">vector_op_subtract</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* left, <a class="code" href="structvector__s.html">vector</a>* right );
 00084 
-00086 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a34">vector_unary_inv</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* src );
+00086 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a36">vector_op_multiply</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* left, <a class="code" href="structvector__s.html">vector</a>* right );
 00087 
-00089 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a35">vector_unary_op</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* src, <a class="code" href="defines_8h.html#a99">nibble</a>* optab );
+00089 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a37">vector_unary_inv</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* src );
 00090 
-00092 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a36">vector_unary_not</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* src );
+00092 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a38">vector_unary_op</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* src, <a class="code" href="defines_8h.html#a105">nibble</a>* optab );
 00093 
-00094 
-00095 <font class="comment">/*</font>
-00096 <font class="comment">#define EXP_OP_LT       0x0b</font>
-00097 <font class="comment">#define EXP_OP_GT       0x0c </font>
-00098 <font class="comment">#define EXP_OP_LSHIFT   0x0d</font>
-00099 <font class="comment">#define EXP_OP_RSHIFT   0x0e</font>
-00100 <font class="comment">#define EXP_OP_EQ       0x0f</font>
-00101 <font class="comment">#define EXP_OP_CEQ      0x10</font>
-00102 <font class="comment">#define EXP_OP_LE       0x11</font>
-00103 <font class="comment">#define EXP_OP_GE       0x12</font>
-00104 <font class="comment">#define EXP_OP_NE       0x13</font>
-00105 <font class="comment">#define EXP_OP_CNE      0x14</font>
-00106 <font class="comment">#define EXP_OP_LOR      0x15</font>
-00107 <font class="comment">#define EXP_OP_LAND     0x16</font>
-00108 <font class="comment">#define EXP_OP_COND     0x17</font>
-00109 <font class="comment">#define EXP_OP_SBIT_SEL 0x20</font>
-00110 <font class="comment">#define EXP_OP_MBIT_SEL 0x21</font>
-00111 <font class="comment">#define EXP_OP_EXPAND   0x22</font>
-00112 <font class="comment">#define EXP_OP_CONCAT   0x23</font>
-00113 <font class="comment">#define EXP_OP_PEDGE    0x24</font>
-00114 <font class="comment">#define EXP_OP_NEDGE    0x25</font>
-00115 <font class="comment">#define EXP_OP_AEDGE    0x26</font>
-00116 <font class="comment">*/</font>
-00117 
-00118 
-00120 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a37">vector_dealloc</a>( <a class="code" href="structvector__s.html">vector</a>* vec );
+00095 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a39">vector_unary_not</a>( <a class="code" href="structvector__s.html">vector</a>* tgt, <a class="code" href="structvector__s.html">vector</a>* src );
+00096 
+00097 
+00098 <font class="comment">/*</font>
+00099 <font class="comment">#define EXP_OP_LT       0x0b</font>
+00100 <font class="comment">#define EXP_OP_GT       0x0c </font>
+00101 <font class="comment">#define EXP_OP_LSHIFT   0x0d</font>
+00102 <font class="comment">#define EXP_OP_RSHIFT   0x0e</font>
+00103 <font class="comment">#define EXP_OP_EQ       0x0f</font>
+00104 <font class="comment">#define EXP_OP_CEQ      0x10</font>
+00105 <font class="comment">#define EXP_OP_LE       0x11</font>
+00106 <font class="comment">#define EXP_OP_GE       0x12</font>
+00107 <font class="comment">#define EXP_OP_NE       0x13</font>
+00108 <font class="comment">#define EXP_OP_CNE      0x14</font>
+00109 <font class="comment">#define EXP_OP_LOR      0x15</font>
+00110 <font class="comment">#define EXP_OP_LAND     0x16</font>
+00111 <font class="comment">#define EXP_OP_COND     0x17</font>
+00112 <font class="comment">#define EXP_OP_SBIT_SEL 0x20</font>
+00113 <font class="comment">#define EXP_OP_MBIT_SEL 0x21</font>
+00114 <font class="comment">#define EXP_OP_EXPAND   0x22</font>
+00115 <font class="comment">#define EXP_OP_CONCAT   0x23</font>
+00116 <font class="comment">#define EXP_OP_PEDGE    0x24</font>
+00117 <font class="comment">#define EXP_OP_NEDGE    0x25</font>
+00118 <font class="comment">#define EXP_OP_AEDGE    0x26</font>
+00119 <font class="comment">*/</font>
+00120 
 00121 
-00122 <font class="preprocessor">#endif</font>
-00123 <font class="preprocessor"></font>
-</pre></div><hr><address align="right"><small>Generated on Fri Apr 26 22:56:10 2002 for Covered by
+00123 <font class="keywordtype">void</font> <a class="code" href="vector_8c.html#a40">vector_dealloc</a>( <a class="code" href="structvector__s.html">vector</a>* vec );
+00124 
+00125 <font class="preprocessor">#endif</font>
+00126 <font class="preprocessor"></font>
+</pre></div><hr><address align="right"><small>Generated on Wed May 1 22:21:48 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.15 </small></address>
