@@ -27,7 +27,7 @@ void db_add_module( char* name, char* file );
 void db_add_declared_param( char* name, expression* expr );
 
 //! Adds specified override parameter to parameter list.  Called by parser.
-void db_add_override_param( expression* expr );
+void db_add_override_param( char* inst_name, expression* expr );
 
 //! Adds specified defparam to parameter override list.  Called by parser.
 void db_add_defparam( char* name, expression* expr );
@@ -78,6 +78,12 @@ void db_set_symbol_string( char* sym, char* value );
 void db_do_timestep( int time ); 
 
 /* $Log$
+/* Revision 1.15  2002/09/21 07:03:28  phase1geo
+/* Attached all parameter functions into db.c.  Just need to finish getting
+/* parser to correctly add override parameters.  Once this is complete, phase 3
+/* can start and will include regenerating expressions and signals before
+/* getting output to CDD file.
+/*
 /* Revision 1.14  2002/09/19 05:25:19  phase1geo
 /* Fixing incorrect simulation of static values and fixing reports generated
 /* from these static expressions.  Also includes some modifications for parameters

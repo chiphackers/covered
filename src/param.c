@@ -132,11 +132,15 @@ mod_parm* mod_parm_add( char* scope, expression* expr, int type, mod_parm** head
   }
 
   /* Create new signal/expression binding */
-  parm        = (mod_parm*)malloc_safe( sizeof( mod_parm ) );
-  parm->name  = strdup( scope );
-  parm->expr  = expr;
-  parm->suppl = ((type & 0x1) << PARAM_LSB_TYPE) | ((order & 0xffff) << PARAM_LSB_ORDER);
-  parm->next  = NULL;
+  parm           = (mod_parm*)malloc_safe( sizeof( mod_parm ) );
+  parm->name     = strdup( scope );
+  parm->expr     = expr;
+  parm->suppl    = ((type & 0x1) << PARAM_LSB_TYPE) | ((order & 0xffff) << PARAM_LSB_ORDER);
+  parm->exp_head = NULL;
+  parm->exp_tail = NULL;
+  parm->sig_head = NULL;
+  parm->sig_tail = NULL;
+  parm->next     = NULL;
 
   /* Now add the parameter to the current expression */
   if( *head == NULL ) {
@@ -147,6 +151,24 @@ mod_parm* mod_parm_add( char* scope, expression* expr, int type, mod_parm** head
   }
 
   return( parm );
+
+}
+
+/*!
+ \param mparm  Pointer to module parameter list to display.
+
+ Outputs contents of specified module parameter to standard output.
+ For debugging purposes only.
+*/
+void mod_parm_display( mod_parm* mparm ) {
+
+  while( mparm != NULL ) {
+    assert( mparm->expr != NULL );
+    printf( "  mparam =>  name: %s, suppl: %d, exp_id: %d\n", mparm->name, mparm->suppl, mparm->expr->id );
+    printf( "    " );  sig_link_display( mparm->sig_head );
+    printf( "    " );  exp_link_display( mparm->exp_head );
+    mparm = mparm->next;
+  }
 
 }
 
@@ -199,11 +221,15 @@ inst_parm* inst_parm_add( char* scope, vector* value, int order, inst_parm** hea
   type = (order >= 0) ? PARAM_TYPE_OVERRIDE : PARAM_TYPE_DECLARED;
 
   /* Create new signal/expression binding */
-  parm        = (inst_parm*)malloc_safe( sizeof( inst_parm ) );
-  parm->name  = strdup( scope );
-  parm->value = value;
-  parm->suppl = ((type & 0x1) << PARAM_LSB_TYPE) | ((order & 0xffff) << PARAM_LSB_ORDER);
-  parm->next  = NULL;
+  parm           = (inst_parm*)malloc_safe( sizeof( inst_parm ) );
+  parm->name     = strdup( scope );
+  parm->value    = value;
+  parm->suppl    = ((type & 0x1) << PARAM_LSB_TYPE) | ((order & 0xffff) << PARAM_LSB_ORDER);
+  parm->exp_head = NULL;
+  parm->exp_tail = NULL;
+  parm->sig_head = NULL;
+  parm->sig_tail = NULL;
+  parm->next     = NULL;
 
   /* Now add the parameter to the current expression */
   if( *head == NULL ) {
@@ -216,6 +242,7 @@ inst_parm* inst_parm_add( char* scope, vector* value, int order, inst_parm** hea
   return( parm );
 
 }
+
 
 /************************************************************************************/
 
@@ -467,7 +494,6 @@ void param_resolve_declared( char* mscope, mod_parm* mparm, inst_parm* ip_head,
  
   assert( mscope != NULL );
   assert( mparm != NULL );
-  assert( ip_head != NULL );
 
   /* Extract the current module parameter name from its full scope */
   mname = (char*)malloc_safe( strlen( mscope ) );
@@ -526,6 +552,12 @@ void param_resolve_override( mod_parm* oparm, inst_parm** ihead, inst_parm** ita
 
 
 /* $Log$
+/* Revision 1.8  2002/09/21 07:03:28  phase1geo
+/* Attached all parameter functions into db.c.  Just need to finish getting
+/* parser to correctly add override parameters.  Once this is complete, phase 3
+/* can start and will include regenerating expressions and signals before
+/* getting output to CDD file.
+/*
 /* Revision 1.7  2002/09/21 04:11:32  phase1geo
 /* Completed phase 1 for adding in parameter support.  Main code is written
 /* that will create an instance parameter from a given module parameter in

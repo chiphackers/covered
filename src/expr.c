@@ -650,10 +650,12 @@ void expression_operate( expression* expr ) {
 
       case EXP_OP_STATIC :
       case EXP_OP_SIG    :
+      case EXP_OP_PARAM  :
       case EXP_OP_LAST   :
         break;
 
-      case EXP_OP_SBIT_SEL :
+      case EXP_OP_SBIT_SEL   :
+      case EXP_OP_PARAM_SBIT :
         vector_init( &vec1, &value1a, 1, 0 );
         vector_unary_op( &vec1, expr->right->value, or_optab );
         if( (vec1.value[0] & 0x3) != 2 ) {  
@@ -664,7 +666,8 @@ void expression_operate( expression* expr ) {
         }
         break;
 
-      case EXP_OP_MBIT_SEL :
+      case EXP_OP_MBIT_SEL   :
+      case EXP_OP_PARAM_MBIT :
         vector_init( &vec1, &value1a, 1, 0 );
         vector_init( &vec2, &value1b, 1, 0 );
         vector_unary_op( &vec1, expr->right->value, or_optab );
@@ -881,6 +884,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.47  2002/09/19 05:25:19  phase1geo
+/* Fixing incorrect simulation of static values and fixing reports generated
+/* from these static expressions.  Also includes some modifications for parameters
+/* though these changes are not useful at this point.
+/*
 /* Revision 1.46  2002/08/19 04:34:07  phase1geo
 /* Fixing bug in database reading code that dealt with merging modules.  Module
 /* merging is now performed in a more optimal way.  Full regression passes and

@@ -390,6 +390,8 @@ void db_end_module() {
   /* Remove old head */
   free_safe( str->str );
   free_safe( str );
+
+  // mod_parm_display( curr_module->param_head );
   
 }
 
@@ -410,7 +412,7 @@ void db_add_declared_param( char* name, expression* expr ) {
   int       i;            /* Loop iterator                            */
   mod_parm* mparm;        /* Pointer to added module parameter        */
 
-  snprintf( msg, 4096, "In db_add_declared_param, param: %s\n", name );
+  snprintf( msg, 4096, "In db_add_declared_param, param: %s", name );
   print_output( msg, DEBUG );
 
   if( mod_parm_find( name, curr_module->param_head ) == NULL ) {
@@ -445,13 +447,13 @@ void db_add_declared_param( char* name, expression* expr ) {
 }
 
 /*!
- \param name  Name of override parameter to add.
- \param expr  Expression containing value of this parameter.
+ \param inst_name  Name of instance being overriddent.
+ \param expr       Expression containing value of override parameter.
 
  Creates override parameter and stores this in the current module as well
  as all associated instances.
 */
-void db_add_override_param( expression* expr ) {
+void db_add_override_param( char* inst_name, expression* expr ) {
 
   mod_parm* mparm;      /* Pointer to module parameter added to current module */
   mod_inst* inst;       /* Pointer to current instance to add parameter to     */
@@ -459,13 +461,11 @@ void db_add_override_param( expression* expr ) {
   int       ignore;     /* Specifies how many matching instances to ignore     */
   int       i;          /* Loop iterator                                       */
 
-#ifdef NOT_YET
-  snprintf( msg, 4096, "In db_add_override_param, param: %s\n", name );
+  snprintf( msg, 4096, "In db_add_override_param, instance: %s", inst_name );
   print_output( msg, DEBUG );
 
   /* Add override parameter to module parameter list */
-  mparm = mod_parm_add( name, expr, PARAM_TYPE_OVERRIDE, &(curr_module->param_head), &(curr_module->param_tail) );
-#endif
+  mparm = mod_parm_add( inst_name, expr, PARAM_TYPE_OVERRIDE, &(curr_module->param_head), &(curr_module->param_tail) );
 
   /* Also add this to all associated instance parameter lists */
   i      = 0;
@@ -491,7 +491,7 @@ void db_add_defparam( char* name, expression* expr ) {
 
   char msg[4096];  /* Display message string */
 
-  snprintf( msg, 4096, "In db_add_defparam, defparam: %s\n", name );
+  snprintf( msg, 4096, "In db_add_defparam, defparam: %s", name );
   print_output( msg, DEBUG );
 
   snprintf( msg, 4096, "defparam construct is not supported, line: %d.  Use -P option to score instead", expr->line );
@@ -569,13 +569,16 @@ signal* db_find_signal( char* name ) {
 */
 expression* db_create_expression( expression* right, expression* left, int op, int line, char* sig_name ) {
 
-  expression* expr;             /* Temporary pointer to newly created expression        */
-  char        msg[4096];        /* Display message string                               */
-  int         right_id;         /* ID of right expression                               */
-  int         left_id;          /* ID of left expression                                */
-  int         i;                /* Loop iterator                                        */
-  int         ignore;           /* Number of matching modules to ignore before choosing */
-  mod_inst*   found_inst;       /* Found instance containing current module             */
+  expression* expr;                 /* Temporary pointer to newly created expression        */
+  char        msg[4096];            /* Display message string                               */
+  int         right_id;             /* ID of right expression                               */
+  int         left_id;              /* ID of left expression                                */
+  int         i;                    /* Loop iterator                                        */
+  int         ignore;               /* Number of matching modules to ignore before choosing */
+  mod_inst*   found_inst;           /* Found instance containing current module             */
+  mod_parm*   mparm;                /* Module parameter matching signal of current module   */
+  inst_parm*  iparm;                /* Current instance parameter found                     */
+  bool        sig_is_parm = FALSE;  /* Specifies if current signal is a module parameter    */
 
   if( right == NULL ) {
     right_id = 0;
@@ -596,6 +599,23 @@ expression* db_create_expression( expression* right, expression* left, int op, i
                        op,
                        line );
   print_output( msg, DEBUG );
+
+  /* Check to see if signal is a parameter in this module */
+  if( sig_name != NULL ) {
+    if( (mparm = mod_parm_find( sig_name, curr_module->param_head )) != NULL ) {
+      sig_is_parm = TRUE;
+      switch( op ) {
+        case EXP_OP_SIG      :  op = EXP_OP_PARAM;       break;
+        case EXP_OP_SBIT_SEL :  op = EXP_OP_PARAM_SBIT;  break;
+        case EXP_OP_MBIT_SEL :  op = EXP_OP_PARAM_MBIT;  break;
+        default :  
+          assert( (op == EXP_OP_SIG) || (op == EXP_OP_SBIT_SEL) || (op == EXP_OP_MBIT_SEL) );
+          break;
+      }
+      snprintf( msg, 4096, "  Switching to parameter operation: %d", op );
+      print_output( msg, DEBUG );
+    }
+  }
 
   /* Create expression with next expression ID */
   expr = expression_create( right, left, op, curr_expr_id, line );
@@ -618,14 +638,38 @@ expression* db_create_expression( expression* right, expression* left, int op, i
   /* Add expression and signal to binding list */
   if( sig_name != NULL ) {
 
-    /* If signal is located in this current module, bind now; else, bind later. */
-    if( scope_local( sig_name ) ) {
-//      if( param_find( sig_name, curr_module->param_head ) == NULL ) {
-        /* Name is not a parameter so set it up to bind */
-        bind_perform( sig_name, expr, curr_module, TRUE );
-//      }
+    /* Check to see if we are attaching to a parameter */
+    if( sig_is_parm ) {
+
+      /* Add to module parameter list */
+      exp_link_add( expr, &(mparm->exp_head), &(mparm->exp_tail) );
+
+      /* Add to all associated instance parameter lists */
+      i      = 0;
+      ignore = 0;
+      while( (found_inst = instance_find_by_module( instance_root, curr_module, &ignore )) != NULL ) {
+
+        if( (iparm = inst_parm_find( sig_name, found_inst->param_head )) != NULL ) {
+          exp_link_add( expr, &(iparm->exp_head), &(iparm->exp_tail) );
+          // printf( "Adding expression %d to parameter %s exp_list\n", expr->id, sig_name );
+        } else {
+          assert( iparm != NULL );
+        }
+
+        i++;
+        ignore = i;
+
+      }
+
     } else {
-      bind_add( sig_name, expr, curr_module->name );
+
+      /* If signal is located in this current module, bind now; else, bind later. */
+      if( scope_local( sig_name ) ) {
+        bind_perform( sig_name, expr, curr_module, TRUE );
+      } else {
+        bind_add( sig_name, expr, curr_module->name );
+      }
+
     }
 
   }
@@ -1074,6 +1118,12 @@ void db_do_timestep( int time ) {
 }
 
 /* $Log$
+/* Revision 1.56  2002/09/21 07:03:28  phase1geo
+/* Attached all parameter functions into db.c.  Just need to finish getting
+/* parser to correctly add override parameters.  Once this is complete, phase 3
+/* can start and will include regenerating expressions and signals before
+/* getting output to CDD file.
+/*
 /* Revision 1.55  2002/09/19 05:25:19  phase1geo
 /* Fixing incorrect simulation of static values and fixing reports generated
 /* from these static expressions.  Also includes some modifications for parameters

@@ -187,6 +187,7 @@ void instance_resolve_params( mod_parm* mparm, mod_inst* inst ) {
       assert( PARAM_TYPE( mparm ) == PARAM_TYPE_OVERRIDE );
       param_resolve_override( mparm, &(inst->param_head), &(inst->param_tail) );
     }
+    
     mparm = mparm->next;
   }
 
@@ -447,6 +448,12 @@ void instance_dealloc( mod_inst* root, char* scope ) {
 }
 
 /* $Log$
+/* Revision 1.14  2002/09/21 07:03:28  phase1geo
+/* Attached all parameter functions into db.c.  Just need to finish getting
+/* parser to correctly add override parameters.  Once this is complete, phase 3
+/* can start and will include regenerating expressions and signals before
+/* getting output to CDD file.
+/*
 /* Revision 1.13  2002/09/21 04:11:32  phase1geo
 /* Completed phase 1 for adding in parameter support.  Main code is written
 /* that will create an instance parameter from a given module parameter in

@@ -20,6 +20,10 @@
 char err_msg[4096];
 
 int ignore_mode = 0;
+int param_mode  = 0;
+
+exp_link* param_exp_head = NULL;
+exp_link* param_exp_tail = NULL;
 
 /* Uncomment these lines to turn debugging on */
 //#define YYDEBUG 1
@@ -37,6 +41,7 @@ int ignore_mode = 0;
   statement*      state;
   signal_width*   sigwidth; 
   str_link*       strlink;
+  exp_link*       explink;
   case_statement* case_stmt;
 };
 
@@ -928,18 +933,25 @@ expr_primary
 		}
 	;
 
-  /* Expression lists are used in function/task calls and concatenations */
+  /* Expression lists are used in function/task calls, concatenations, and parameter overrides */
 expression_list
 	: expression_list ',' expression
 		{
 		  expression* tmp;
                   if( ignore_mode == 0 ) {
-		    if( $3 != NULL ) {
-		      tmp = db_create_expression( $3, $1, EXP_OP_LIST, @1.first_line, NULL );
-		      $$ = tmp;
-		    } else {
-		      $$ = $1;
-		    }
+                    if( param_mode == 0 ) {
+		      if( $3 != NULL ) {
+		        tmp = db_create_expression( $3, $1, EXP_OP_LIST, @1.first_line, NULL );
+		        $$ = tmp;
+		      } else {
+		        $$ = $1;
+		      }
+                    } else {
+                      if( $3 != NULL ) {
+                        exp_link_add( $3, &param_exp_head, &param_exp_tail );
+                      }
+                      $$ = NULL;
+                    }
                   } else {
                     $$ = NULL;
                   }
@@ -1169,7 +1181,7 @@ module_item
 		}
 	| K_trireg { ignore_mode++; } charge_strength_opt range_opt delay3_opt list_of_variables ';' { ignore_mode--; }
 		{
-		  /* Tri-state signals are not currently supported by covered */
+		  /* Tri-state signals are not currently supported by Covered */
 		}
 	| port_type range_opt list_of_variables ';'
 		{
@@ -1205,13 +1217,22 @@ module_item
   /* Handles instantiations of modules and user-defined primitives. */
 	| IDENTIFIER parameter_value_opt gate_instance_list ';'
 		{
-		  str_link* tmp = $3;
+		  str_link* tmp  = $3;
 		  str_link* curr = tmp;
+                  exp_link* ecurr;
 		  while( curr != NULL ) {
 		    db_add_instance( curr->str, $1 );
+                    ecurr = param_exp_head;
+                    while( ecurr != NULL ){
+                      db_add_override_param( curr->str, ecurr->exp );
+                      ecurr = ecurr->next;
+                    }
 		    curr = curr->next;
 		  }
-		  str_link_delete_list( $3 );
+		  str_link_delete_list( tmp );
+                  exp_link_delete_list( param_exp_head, FALSE );
+                  param_exp_head = NULL;
+                  param_exp_tail = NULL;
 		}
 
 	| K_assign drive_strength_opt { ignore_mode++; } delay3_opt { ignore_mode--; } assign_list ';'
@@ -2561,13 +2582,12 @@ defparam_assign
 		}
 	;
 
+ /* Parameter override */
 parameter_value_opt
-	: '#' '(' expression_list ')'
+	: '#' '(' { param_mode++; } expression_list { param_mode--; } ')'
 		{
                   if( ignore_mode == 0 ) {
-		    expression_dealloc( $3, FALSE );
-                  } else {
-                    // db_add_override_param( $3 );
+		    expression_dealloc( $4, FALSE );
                   }
 		}
 	| '#' '(' parameter_value_byname_list ')'
@@ -2684,9 +2704,9 @@ parameter_assign_list
 	| parameter_assign_list ',' parameter_assign
 
 parameter_assign
-	: IDENTIFIER '=' expression
+	: IDENTIFIER '=' { param_mode++; } expression { param_mode--; }
 		{
-                  db_add_declared_param( $1, $3 );
+                  db_add_declared_param( $1, $4 );
 		}
         | UNUSED_IDENTIFIER '=' expression
 	;
