@@ -101,6 +101,8 @@ WSPACE [ \t\b\f]+
 <PCOMMENT>"*)" { BEGIN( comment_enter );                       }
 
   /* Multi-character symbols */
+"(*"  { return K_PSTAR;   }
+"*)"  { return K_STARP;   }
 "<<"  { return K_LS;      }
 ">>"  { return K_RS;      }
 "<="  { return K_LE;      }

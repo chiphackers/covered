@@ -34,7 +34,7 @@ DIAGS1        = always1        always2        always3        always3.1.11A  alwa
                 casez1.4       casez2         concat1        concat2        concat3 \
                 concat4.1      concat4.2      concat5        cond1          cond2 \
                 delay1         delay2         define1        define1.1      define2        define2.1 \
-                define3        define4        expand1        expand2        expand3 \
+                define3        define4        expand1        expand2        expand3        gate1 \
                 ifdef1         ifdef1.2       ifdef2.1       ifdef2.2       ifdef2.3 \
                 ifelse1        include1       include1.1     include2       instance1 \
                 instance1.1    instance1.2    instance2      instance3      instance4 \
@@ -57,8 +57,8 @@ IVONLYDIAGS3  =
 IVONLYDIAGS4  = 
 
 VCSONLYDIAGS1 = always7.1      assign2.4      assign2.5      assign2.6      assign2.7 \
-                event1         implicit2.1    real1          triand         trior \
-                trireg         wand           wor
+                event1         gate1.1        implicit2.1    real1          triand \
+                trior          trireg         wand           wor
 VCSONLYDIAGS2 = 
 VCSONLYDIAGS3 = 
 VCSONLYDIAGS4 = 

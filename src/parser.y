@@ -73,7 +73,7 @@ int yydebug = 1;
 %token UNUSED_REALTIME
 %token UNUSED_STRING UNUSED_PORTNAME UNUSED_SYSTEM_IDENTIFIER
 %token K_LE K_GE K_EG K_EQ K_NE K_CEQ K_CNE K_LS K_RS K_SG
-%token K_PO_POS K_PO_NEG
+%token K_PO_POS K_PO_NEG K_STARP K_PSTAR
 %token K_LOR K_LAND K_NAND K_NOR K_NXOR K_TRIGGER
 %token K_always K_and K_assign K_begin K_buf K_bufif0 K_bufif1 K_case
 %token K_casex K_casez K_cmos K_deassign K_default K_defparam K_disable
@@ -143,6 +143,32 @@ int yydebug = 1;
 main 
   : source_file 
   |
+  ;
+
+  /* Verilog-2001 supports attribute lists, which can be attached to a
+     variety of different objects. The syntax inside the (* *) is a
+     comma separated list of names or names with assigned values. */
+attribute_list_opt
+  : K_PSTAR attribute_list K_STARP
+  | K_PSTAR K_STARP
+  |
+  ;
+
+attribute_list
+  : attribute_list ',' attribute
+  | attribute
+  ;
+
+attribute
+  : IDENTIFIER
+    {
+      free_safe( $1 );
+    }
+  | IDENTIFIER '=' expression
+    {
+      free_safe( $1 );
+      expression_dealloc( $3, FALSE );
+    }
   ;
 
 source_file 
@@ -1333,6 +1359,22 @@ module_item
         free_safe( $2 );
       }
       VLerror( "Invalid variable list in port declaration" );
+    }
+  | attribute_list_opt gatetype gate_instance_list ';'
+    {
+      str_link_delete_list( $3 );
+    }
+  | attribute_list_opt gatetype delay3 gate_instance_list ';'
+    {
+      str_link_delete_list( $4 );
+    }
+  | attribute_list_opt gatetype drive_strength gate_instance_list ';'
+    {
+      str_link_delete_list( $4 );
+    }
+  | attribute_list_opt gatetype drive_strength delay3 gate_instance_list ';'
+    {
+      str_link_delete_list( $5 );
     }
   | K_pullup gate_instance_list ';'
     {
@@ -2982,6 +3024,33 @@ gate_instance
     {
       $$ = NULL;
     }
+  ;
+
+gatetype
+  : K_and
+  | K_nand
+  | K_or
+  | K_nor
+  | K_xor
+  | K_xnor
+  | K_buf
+  | K_bufif0
+  | K_bufif1
+  | K_not
+  | K_notif0
+  | K_notif1
+  | K_nmos
+  | K_rnmos
+  | K_pmos
+  | K_rpmos
+  | K_cmos
+  | K_rcmos
+  | K_tran
+  | K_rtran
+  | K_tranif0
+  | K_tranif1
+  | K_rtranif0
+  | K_rtranif1
   ;
 
   /* A function_item_list only lists the input/output/inout
