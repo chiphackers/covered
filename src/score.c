@@ -207,7 +207,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
         read_command_file( argv[i], &arg_list, &arg_num );
         retval = score_parse_args( arg_num, -1, arg_list );
         for( j=0; j<arg_num; j++ ) {
-          free_safe( arg_list[i] );
+          free_safe( arg_list[j] );
         }
         free_safe( arg_list );
       } else {
@@ -331,6 +331,11 @@ int command_score( int argc, int last_arg, char** argv ) {
 }
 
 /* $Log$
+/* Revision 1.17  2002/07/21 00:08:58  phase1geo
+/* Updating score usage information.  Updated manstyle user documentation though
+/* there seems to be some problem getting the HTML generated from this.  Getting
+/* ready for the next release.
+/*
 /* Revision 1.16  2002/07/20 22:22:52  phase1geo
 /* Added ability to create implicit signals for local signals.  Added implicit1.v
 /* diagnostic to test for correctness.  Full regression passes.  Other tweaks to
