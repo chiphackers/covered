@@ -21,7 +21,7 @@
 void usage() {
 
   printf( "\n" );
-  printf( "Usage:  covered (-h | -v | (-D) (-Q) <command> <command_options>)\n" );
+  printf( "Usage:  covered (-h | -v | (-D) (-Q) <command> <command_options>))\n" );
   printf( "\n" );
   printf( "   Options:\n" );
   printf( "      -D                      Debug.  Display information helpful for debugging tool problems\n" );
@@ -129,6 +129,11 @@ int main( int argc, char** argv ) {
 }
 
 /* $Log$
+/* Revision 1.5  2002/07/09 04:46:26  phase1geo
+/* Adding -D and -Q options to covered for outputting debug information or
+/* suppressing normal output entirely.  Updated generated documentation and
+/* modified Verilog diagnostic Makefile to use these new options.
+/*
 /* Revision 1.4  2002/07/03 03:31:11  phase1geo
 /* Adding RCS Log strings in files that were missing them so that file version
 /* information is contained in every source and header file.  Reordering src

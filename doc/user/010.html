@@ -216,7 +216,84 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="header2">5.2&nbsp; <A name="5_2"></A>Covered options</P>
+      <P class="header2">5.2&nbsp; <A name="5_2"></A>Covered usage</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">Covered is initiated with the following command:</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="code">covered (-h | -v | (-D) (-Q) &lt;command&gt; (&lt;command_options&gt;))</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">The -v command (described below) is mutually exclusive from the rest of the commands and has the highest priority. If Covered is called with this option and any other options, the version will only be displayed.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">The -h command (described below) is mutually exclusive from the rest of the commands and has the second highest priority. If Covered is called with this option and the -v option is not specified, the usage information will be displayed to the screen.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">The -Q option suppresses all normal user output from standard output. The only output that will not be suppressed are messages to standard error. This option may be used with any of the Covered commands to achieve this effect. By default, normal user output is sent to standard output.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="pg">The -D option outputs debug information to standard output. Its effect overrides the -Q option. This option may be used in conjunction with any other Covered command for the purposes of debugging tool failures. By default, debug mode is turned off. This command should only be used for debugging as it generates an immense amount of output which may hinder performance.</P>
+    </TD>
+  </TR>
+
+  <TR>
+    <TD></TD>
+    <TD valign=top>
+      <P class="margin"></P>
+    </TD>
+    <TD></TD>
+    <TD valign=top>
+      <P class="header2">5.3&nbsp; <A name="5_3"></A>Covered options</P>
     </TD>
   </TR>
 
@@ -245,7 +322,7 @@
             <P class="blockIndentLeft">&nbsp;</P>
           </TD>
           <TD width=100% align=center>
-<table cellspacing=2 cellpadding=4 border=1> <tr> <td colspan=2 class="tableHeader"> Options to Covered </td> </tr> <tr> <td> <strong>Option</strong> </td> <td> <strong>Description</strong> <td> </tr> <tr> <td> -Q <\td> <td> Quite mode. Suppresses user output to screen. Use in conjunction with a command. </td> </tr> <tr> <td> -D </td> <td> Debug mode. Outputs code debug information to screen. Use in conjunction with commands. </td> </tr> <tr> <td> -h </td> <td> Generates usage output to standard output </td> </tr> <tr> <td> -v </td> <td> Outputs current version of Covered </td> </tr> </table>
+<table cellspacing=2 cellpadding=4 border=1> <tr> <td colspan=2 class="tableHeader"> Options to Covered </td> </tr> <tr> <td> <strong>Option</strong> </td> <td> <strong>Description</strong> <td> </tr> <tr> <td> -Q </td> <td> Quite mode. Suppresses user output to screen. Use in conjunction with a command. </td> </tr> <tr> <td> -D </td> <td> Debug mode. Outputs code debug information to screen. Use in conjunction with commands. </td> </tr> <tr> <td> -h </td> <td> Generates usage output to standard output </td> </tr> <tr> <td> -v </td> <td> Outputs current version of Covered </td> </tr> </table>
           </TD>
           <TD>
             <P class="blockIndentRight">&nbsp;</P>

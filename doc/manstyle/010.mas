@@ -115,6 +115,45 @@ be output to a specific file for storage purposes.
 </_pg>
 
 <_header2>
+Covered usage
+</_header2>
+
+<_pg>
+Covered is initiated with the following command:
+</_pg>
+
+<_code>
+covered (-h | -v | (-D) (-Q) &lt;command&gt; (&lt;command_options&gt;))
+</_code>
+
+<_pg>
+The -v command (described below) is mutually exclusive from the rest of the commands and has
+the highest priority.  If Covered is called with this option and any other options, the 
+version will only be displayed.
+</_pg>
+
+<_pg>
+The -h command (described below) is mutually exclusive from the rest of the commands and has
+the second highest priority.  If Covered is called with this option and the -v option is
+not specified, the usage information will be displayed to the screen.
+</_pg>
+
+<_pg>
+The -Q option suppresses all normal user output from standard output.  The only output that
+will not be suppressed are messages to standard error.  This option may be used with any
+of the Covered commands to achieve this effect.  By default, normal user output is sent
+to standard output.
+</_pg>
+
+<_pg>
+The -D option outputs debug information to standard output.  Its effect overrides the -Q
+option.  This option may be used in conjunction with any other Covered command for the
+purposes of debugging tool failures.  By default, debug mode is turned off.  This command
+should only be used for debugging as it generates an immense amount of output which may hinder
+performance.
+</_pg>
+
+<_header2>
 Covered options
 </_header2>
 
@@ -142,7 +181,7 @@ several chapters.
   <tr>
     <td>
       -Q
-    <\td>
+    </td>
     <td>
       Quite mode.  Suppresses user output to screen.  Use in conjunction with a command.
     </td>
