@@ -465,7 +465,7 @@ static void do_include() {
   istack            = standby;
   standby           = 0;
 
-  snprintf( user_msg, USER_MSG_LENGTH, "Parsing include file \"%s\"", path );
+  snprintf( user_msg, USER_MSG_LENGTH, "Parsing include file '%s'", path );
   print_output( user_msg, NORMAL );
 
   yy_switch_to_buffer( yy_new_buffer( istack->file, YY_BUF_SIZE ) );
@@ -514,7 +514,7 @@ static int yywrap() {
   if( istack != 0 ) {
 
     /* Otherwise, resume the input buffer that is the new stack top. */
-    snprintf( user_msg, USER_MSG_LENGTH, "Resume parsing %s", istack->path );
+    snprintf( user_msg, USER_MSG_LENGTH, "Resume parsing '%s'", istack->path );
     print_output( user_msg, NORMAL );
     yy_switch_to_buffer( istack->yybs );
 

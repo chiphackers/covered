@@ -169,7 +169,7 @@ WSPACE [ \t\b\f]+
          } else {
            if( filelist_curr != filelist_head ) {
              /* The module has been found, recirculate filelist */
-             snprintf( user_msg, USER_MSG_LENGTH, "Parsing file %s", yylloc.text );
+             snprintf( user_msg, USER_MSG_LENGTH, "Parsing file '%s'", yylloc.text );
              print_output( user_msg, NORMAL );
              filelist_curr = filelist_head;
            }
@@ -435,6 +435,7 @@ static void line_directive2() {
 static int yywrap() {
 
   str_link* curr;
+  str_link* tmpm;
   FILE*     out;
   bool      found = FALSE;
   tnode*    node;
@@ -451,23 +452,16 @@ static int yywrap() {
   }
     
   curr = filelist_curr;
+  tmpm = modlist_head;
   
-  while( (modlist_head != NULL) && ((modlist_head->suppl & 0x2) != 0x2) && !found ) {
-    if( (node = tree_find( modlist_head->str, found_modules )) != NULL ) {
+  while( (tmpm != NULL) && !found ) {
+    if( (node = tree_find( tmpm->str, found_modules )) != NULL ) {
       curr->str = node->value;
       found     = TRUE;
     } else {
-      if( (curr = get_next_vfile( curr, modlist_head->str )) == NULL ) {
-    
-        /* Set unable to find bit in supplemental field */
-        modlist_head->suppl = modlist_head->suppl | 0x2;
-      
-        /* Move head to tail and try next */
-        modlist_tail->next = modlist_head;
-        modlist_tail       = modlist_head;
-        modlist_head       = modlist_head->next;
-        modlist_tail->next = NULL;
-      
+      if( (curr = get_next_vfile( curr, tmpm->str )) == NULL ) {
+        tmpm = tmpm->next;
+        curr = filelist_curr;
       } else {
         found = TRUE;
       }
@@ -475,7 +469,7 @@ static int yywrap() {
   }
 
   /* If the rest of the modules could not be found, display them to the user */
-  if( (modlist_head != NULL) && ((modlist_head->suppl & 0x2) == 0x2) ) {
+  if( (modlist_head != NULL) && (tmpm == NULL) ) {
     print_output( "Unable to find the following modules:", FATAL );
     curr = modlist_head;
     while( curr != NULL ) {
