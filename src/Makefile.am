@@ -23,6 +23,7 @@ covered_SOURCES = parser.c \
 		  signal.c \
 		  sim.c \
 		  stat.c \
+                  static.c \
 		  statement.c \
 		  symtable.c \
 		  toggle.c \

@@ -89,6 +89,7 @@ covered_SOURCES = parser.c \
 		  signal.c \
 		  sim.c \
 		  stat.c \
+                  static.c \
 		  statement.c \
 		  symtable.c \
 		  toggle.c \
@@ -107,7 +108,7 @@ LIBS = @LIBS@
 covered_OBJECTS =  parser.o binding.o codegen.o comb.o db.o expr.o fsm.o \
 instance.o keywords.o lexer.o line.o link.o main.o merge.o module.o \
 param.o parse.o parser_misc.o report.o score.o search.o signal.o sim.o \
-stat.o statement.o symtable.o toggle.o util.o vcd.o vector.o
+stat.o static.o statement.o symtable.o toggle.o util.o vcd.o vector.o
 covered_LDADD = $(LDADD)
 covered_DEPENDENCIES = 
 covered_LDFLAGS = 
@@ -127,7 +128,8 @@ DEP_FILES =  .deps/binding.P .deps/codegen.P .deps/comb.P .deps/db.P \
 .deps/module.P .deps/param.P .deps/parse.P .deps/parser.P \
 .deps/parser_misc.P .deps/report.P .deps/score.P .deps/search.P \
 .deps/signal.P .deps/sim.P .deps/stat.P .deps/statement.P \
-.deps/symtable.P .deps/toggle.P .deps/util.P .deps/vcd.P .deps/vector.P
+.deps/static.P .deps/symtable.P .deps/toggle.P .deps/util.P .deps/vcd.P \
+.deps/vector.P
 SOURCES = $(covered_SOURCES)
 OBJECTS = $(covered_OBJECTS)
 
