@@ -20,4 +20,6 @@ void statistic_merge( statistic* stat_to, statistic* stat_from );
 //! Deallocates memory for a statistic structure.
 void statistic_dealloc( statistic* stat );
 
+/* $Log$ */
+
 #endif

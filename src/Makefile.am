@@ -1,35 +1,35 @@
 bin_PROGRAMS = covered
-covered_SOURCES = main.c \
-		  search.c \
-		  parse.c \
-                  util.c \
-                  link.c \
-		  score.c \
-		  merge.c \
-		  report.c \
-		  vector.c \
-		  expr.c \
-		  signal.c \
-		  module.c \
+covered_SOURCES = parser.c \
+		  vcd_parser.c \
+		  binding.c \
+		  codegen.c \
+		  comb.c \
 		  db.c \
-		  symtable.c \
-		  parser_misc.c \
-		  parser.c \
+		  expr.c \
+		  fsm.c \
+		  instance.c \
 		  keywords.c \
 		  lexer.c \
-		  vcd_parser_misc.c \
-		  vcd_parser.c \
-		  vcd_lexer.c \
-		  instance.c \
-		  binding.c \
 		  line.c \
-		  toggle.c \
-		  comb.c \
-		  fsm.c \
+                  link.c \
+		  main.c \
+		  merge.c \
+		  module.c \
+		  parse.c \
+		  parser_misc.c \
+		  report.c \
+		  score.c \
+		  search.c \
+		  signal.c \
+		  sim.c \
 		  stat.c \
-		  codegen.c \
 		  statement.c \
-		  sim.c
+		  symtable.c \
+		  toggle.c \
+                  util.c \
+		  vcd_lexer.c \
+		  vcd_parser_misc.c \
+		  vector.c
 
 parser.h parser.c: $(srcdir)/parser.y
 	bison --verbose -t -p VL -d -o parser.c $(srcdir)/parser.y

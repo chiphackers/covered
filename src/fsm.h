@@ -15,4 +15,6 @@
 //! Generates report output for FSM coverage.
 void fsm_report( FILE* ofile, bool verbose, bool instance );
 
+/* $Log$ */
+
 #endif

@@ -9,7 +9,7 @@ wire        w1, w2, w3, w4;
 wire        w7, w8, w9;
 wire        w10, w11, w12, w13, w14, w15, w16, w17, w18, w19; 
 wire        w20, w21, w22, w23, w24, w25, w26, w27;
-// wire [31:0] x0;
+wire [31:0] x0;
 wire [31:0] x1; 
 // wire [31:0] x2; 
 wire [31:0] x3, x4, x5, x6;
@@ -23,7 +23,7 @@ integer     j, k, l;
 assign w0 = 0;             // EXP_OP_NONE
 assign w1 = a;             // EXP_OP_SIG  -- wrong
 assign w2 = a ^ b;         // EXP_OP_XOR
-// assign x0 = a * b;         // EXP_OP_MULTIPLY  -- unable to parse correctly
+assign x0 = a * b;         // EXP_OP_MULTIPLY
 assign x1 = a / 1;         // EXP_OP_DIVIDE
 // assign x2 = a % 1;         // EXP_OP_MOD  -- iverilog cannot handle
 assign x3 = a + b;         // EXP_OP_ADD

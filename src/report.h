@@ -11,5 +11,7 @@
 //! Parses command-line for report command and performs report functionality.
 int command_report( int argc, char** argv );
 
+/* $Log$ */
+
 #endif
 

@@ -22,15 +22,17 @@ LOGFILE = regress.log
 DIAGLIST = assign3.2A \
 	   always3.1.11A \
            assign1 \
-           cond1
+           cond1 \
+           mult1
 
 regress:	$(COVERED) clean $(DIAGLIST)
 
 $(DIAGLIST):
 	$(VERILOG) $(VERILOG_FLAGS) $@.v
 	./$(VERILOG_EXEC)
-	$(COVERED) score -t main -vcd $@.vcd $(COVERED_FLAGS) -o $@.cdd -v $@.v
+	$(COVERED) score -t main -vcd $@.vcd $(COVERED_FLAGS) -o $@.cdd -v $@.v >> $(LOGFILE)
 	diff $@.cdd $(CDD_DIR)/$@.cdd
+	rm -rf a.out $@.vcd $@.cdd
 
 $(COVERED):
 	cd $(COVERED_SRC); make

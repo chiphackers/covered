@@ -24,5 +24,7 @@ void instance_db_write( mod_inst* root, FILE* file, char* scope );
 //! Removes specified instance from tree.
 void instance_dealloc( mod_inst* root, char* scope );
 
+/* $Log */
+
 #endif
 

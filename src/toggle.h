@@ -19,4 +19,6 @@ void toggle_get_stats( exp_link* expl, sig_link* sigl, float* total, int* hit01,
 //! Generates report output for toggle coverage.
 void toggle_report( FILE* ofile, bool verbose, bool instance );
 
+/* $Log$ */
+
 #endif

@@ -1266,3 +1266,4 @@ void vector_dealloc( vector* vec ) {
 
 }
 
+/* $Log$ */

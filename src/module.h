@@ -40,5 +40,7 @@ void module_clean( module* mod );
 //! Deallocates module element from heap.
 void module_dealloc( module* mod );
 
+/* $Log$ */
+
 #endif
 

@@ -68,3 +68,5 @@ void statistic_dealloc( statistic* stat ) {
   }
 
 }
+
+/* $Log$ */

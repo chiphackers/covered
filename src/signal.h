@@ -40,5 +40,7 @@ void signal_display( signal* sig );
 //! Deallocates the memory used for this signal.
 void signal_dealloc( signal* sig );
 
+/* $Log */
+
 #endif
 

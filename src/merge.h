@@ -11,5 +11,7 @@
 //! Parses command-line for merge options and performs merge command.
 int command_merge( int argc, char** argv );
 
+/* $Log$ */
+
 #endif
 

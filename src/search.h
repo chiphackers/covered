@@ -33,5 +33,7 @@ bool search_add_extensions( char* ext_list );
 //! Deallocates all used memory for search lists.
 void search_free_lists();
 
+/* $Log$ */
+
 #endif
 

@@ -178,3 +178,5 @@ void instance_dealloc( mod_inst* root, char* scope ) {
   free_safe( inst );
   
 }
+
+/* $Log */

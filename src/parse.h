@@ -18,5 +18,7 @@ bool parse_design( char* top, char* output_db );
 //! Parses VCD dumpfile and scores design.
 bool parse_and_score_dumpfile( char* top, char* db, char* vcd );
 
+/* $Log$ */
+
 #endif
 

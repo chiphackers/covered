@@ -144,3 +144,4 @@ int command_merge( int argc, char** argv ) {
 
 }
 
+/* $Log$ */

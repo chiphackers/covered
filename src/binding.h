@@ -21,5 +21,7 @@ void bind_remove( int id );
 //! Performs signal/expression bind (performed after parse completed).
 void bind( int mode );
 
+/* $Log */
+
 #endif
 

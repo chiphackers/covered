@@ -121,3 +121,4 @@ void symtable_dealloc( symtable* symtab ) {
 
 }
 
+/* $Log$ */

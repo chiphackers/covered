@@ -161,3 +161,4 @@ bool parse_and_score_dumpfile( char* top, char* db, char* vcd ) {
 
 }
 
+/* $Log$ */

@@ -387,4 +387,5 @@ void gen_space( char* spaces, int num_spaces ) {
   spaces[i] = '\0';
   
 }
-  
+
+/* $Log$ */

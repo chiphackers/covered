@@ -330,3 +330,4 @@ void signal_dealloc( signal* sig ) {
 
 }
 
+/* $Log$ */

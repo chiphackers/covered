@@ -20,5 +20,7 @@ bool symtable_find( char* sym, symtable* symtab, signal** sig, int skip );
 //! Deallocates all symtable entries for specified symbol table.
 void symtable_dealloc( symtable* symtab );
 
+/* $Log$ */
+
 #endif
 
