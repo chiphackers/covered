@@ -282,7 +282,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
   int    l_size;        /* Number of characters for left expression     */
   int    r_size;        /* Number of characters for right expression    */
   int    i;             /* Loop iterator                                */
-  char   exp_sp[256];   /* Space to take place of missing expression(s) */
+  char*  exp_sp;        /* Space to take place of missing expression(s) */
   char   code_fmt[300]; /* Contains format string for rest of stack     */
   char*  tmpstr;        /* Temporary string value                       */
   int    comb_missed;   /* If set to 1, current combination was missed  */
@@ -294,7 +294,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
   r_lines = NULL;
 
   if( exp != NULL ) {
-
+    
     if( SUPPL_OP( exp->suppl ) == EXP_OP_LAST ) {
 
       *size = 0;
@@ -465,7 +465,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
       } else {
         *depth = r_depth + comb_missed;
       }
-
+      
       if( *depth > 0 ) {
 
         /* Allocate all memory for the stack */
@@ -497,18 +497,14 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
           } else if( i < l_depth ) {
 
             /* Create spaces for right side */
+            exp_sp = (char*)malloc_safe( r_size + 1 );
             gen_space( exp_sp, r_size );
 
             /* Merge left side only */
-            assert( l_lines != NULL );
-            printf( "size: %d ---\n", (*size + 1) );
-            printf( "code_fmt: %s ---\n", code_fmt );
-            printf( "i: %d ---\n", i );
-            printf( "l_lines[%d]: %s ---\n", i, l_lines[i] );
-            printf( "exp_sp:%s.\n", exp_sp );
             snprintf( (*lines)[i], (*size + 1), code_fmt, l_lines[i], exp_sp );
             
             free_safe( l_lines[i] );
+            free_safe( exp_sp );
 
           } else if( i < r_depth ) {
 
@@ -519,10 +515,13 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
             } else {
 
               /* Create spaces for left side */
+              exp_sp = (char*)malloc_safe( l_size + 1 );
               gen_space( exp_sp, l_size );
 
               /* Merge right side only */
               snprintf( (*lines)[i], (*size + 1), code_fmt, exp_sp, r_lines[i] );
+              
+              free_safe( exp_sp );
           
             }
   
@@ -976,6 +975,11 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 
 /* $Log$
+/* Revision 1.47  2002/10/24 23:19:38  phase1geo
+/* Making some fixes to report output.  Fixing bugs.  Added long_exp1.v diagnostic
+/* to regression suite which finds a current bug in the report underlining
+/* functionality.  Need to look into this.
+/*
 /* Revision 1.46  2002/10/11 04:24:01  phase1geo
 /* This checkin represents some major code renovation in the score command to
 /* fully accommodate parameter support.  All parameter support is in at this

@@ -234,8 +234,6 @@ char* codegen_gen_expr( expression* expr, int line, int parent_op ) {
 
       }
 
-      printf( "In codegen, expr id: %d, op: %d\n", expr->id, SUPPL_OP( expr->suppl ) );
-
       if( both ) {
 
         /* If the left or right code is not on the same line as its parent, we could get a NULL value(s). */
@@ -276,16 +274,17 @@ char* codegen_gen_expr( expression* expr, int line, int parent_op ) {
 
   }
 
-  if( expr != NULL ) {
-    printf( "%s, op: %d\n", my_code, SUPPL_OP( expr->suppl ) );
-  }
-
   return( my_code );
 
 }
 
 
 /* $Log$
+/* Revision 1.20  2002/10/24 23:19:38  phase1geo
+/* Making some fixes to report output.  Fixing bugs.  Added long_exp1.v diagnostic
+/* to regression suite which finds a current bug in the report underlining
+/* functionality.  Need to look into this.
+/*
 /* Revision 1.19  2002/10/23 03:39:06  phase1geo
 /* Fixing bug in MBIT_SEL expressions to calculate the expression widths
 /* correctly.  Updated diagnostic testsuite and added diagnostic that
