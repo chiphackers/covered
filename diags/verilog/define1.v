@@ -1,3 +1,4 @@
+`ifdef RUNTEST
 module main;
 
 wire	a;
@@ -18,3 +19,4 @@ initial begin
 end
 
 endmodule
+`endif

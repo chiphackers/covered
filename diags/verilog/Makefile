@@ -8,10 +8,11 @@
 
 COVERED_SRC   = ../../src
 COVERED       = $(COVERED_SRC)/covered
-COVERED_FLAGS = -y ./lib -I ./include
+COVERED_FLAGS = -y ./lib -I ./include -D RUNTEST
+# COVERED_FLAGS = -y ./lib -I ./include
 
 VERILOG       = iverilog
-VERILOG_FLAGS = -y ./lib -I ./include
+VERILOG_FLAGS = -y ./lib -I ./include -DRUNTEST
 VERILOG_EXEC  = a.out
 
 CDD_DIR       = ../cdd

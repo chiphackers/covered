@@ -25,6 +25,9 @@ extern unsigned long largest_malloc_size;
 extern unsigned long curr_malloc_size;
 
 
+void define_macro( const char* name, const char* value );
+
+
 /*!
  Displays usage information for score command.
 */
@@ -34,19 +37,20 @@ void score_usage() {
   printf( "Usage:  covered score -t <top-level_module_name> -vcd <dumpfile> [<options>]\n" );
   printf( "\n" );
   printf( "   Options:\n" );
-  printf( "      -i <instance_name>      Instance name of top-level module.  Necessary if module\n" );
-  printf( "                              to verify coverage is not the top-level module in the design.\n" );
-  printf( "                              If not specified, -t value is used.\n" );
-  printf( "      -o <database_filename>  Name of database to write coverage information to.\n" );
-  printf( "      -I <directory>          Directory to find included Verilog files\n" );
-  printf( "      -f <filename>           Name of file containing additional arguments to parse\n" );
-  printf( "      -y <directory>          Directory to find unspecified Verilog files\n" );
-  printf( "      -v <filename>           Name of specific Verilog file to score\n" );
-  printf( "      -e <module_name>        Name of module to not score\n" );
-  printf( "      -h                      Displays this help information\n" );
+  printf( "      -i <instance_name>          Instance name of top-level module.  Necessary if module\n" );
+  printf( "                                  to verify coverage is not the top-level module in the design.\n" );
+  printf( "                                  If not specified, -t value is used.\n" );
+  printf( "      -o <database_filename>      Name of database to write coverage information to.\n" );
+  printf( "      -I <directory>              Directory to find included Verilog files\n" );
+  printf( "      -f <filename>               Name of file containing additional arguments to parse\n" );
+  printf( "      -y <directory>              Directory to find unspecified Verilog files\n" );
+  printf( "      -v <filename>               Name of specific Verilog file to score\n" );
+  printf( "      -e <module_name>            Name of module to not score\n" );
+  printf( "      -D <define_name>(=<value>)  Defines the specified name to 1 or the specified value\n" );
+  printf( "      -h                          Displays this help information\n" );
   printf( "\n" );
   printf( "      +libext+.<extension>(+.<extension>)+\n" );
-  printf( "                              Extensions of Verilog files to allow in scoring\n" );
+  printf( "                                  Extensions of Verilog files to allow in scoring\n" );
   printf( "\n" );
   printf( "    Note:\n" );
   printf( "      The top-level module specifies the module to begin scoring.  All\n" );
@@ -133,12 +137,13 @@ bool read_command_file( char* cmd_file, char*** arg_list, int* arg_num ) {
 */
 bool score_parse_args( int argc, int last_arg, char** argv ) {
 
-  bool   retval  = TRUE;          /* Return value for this function  */
-  int    i       = last_arg + 1;  /* Loop iterator                   */
-  char** arg_list;                /* List of command_line arguments  */
-  int    arg_num;                 /* Number of arguments in arg_list */
-  char   err_msg[4096];           /* Error message to display        */
-  int    j;                       /* Loop iterator 2                 */
+  bool   retval  = TRUE;          /* Return value for this function                */
+  int    i       = last_arg + 1;  /* Loop iterator                                 */
+  char** arg_list;                /* List of command_line arguments                */
+  int    arg_num;                 /* Number of arguments in arg_list               */
+  char   err_msg[4096];           /* Error message to display                      */
+  int    j;                       /* Loop iterator 2                               */
+  char*  ptr;                     /* Pointer to current character in defined value */
 
   while( (i < argc) && retval ) {
 
@@ -230,6 +235,21 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
 
       retval = search_add_extensions( argv[i] + 8 );
 
+    } else if( strncmp( "-D", argv[i], 2 ) == 0 ) {
+
+      i++;
+      ptr = argv[i];
+      while( (*ptr != '\0') && (*ptr != '=') ) {
+        ptr++;
+      }
+      if( *ptr == '=' ) {
+        *ptr = '\0';
+        ptr++;
+        define_macro( argv[i], ptr );
+      } else {
+        define_macro( argv[i], "1" );
+      }
+
     } else {
 
       snprintf( err_msg, 4096, "Unknown score command option \"%s\".  See \"covered -h\" for more information.", argv[i] );
@@ -302,6 +322,9 @@ int command_score( int argc, int last_arg, char** argv ) {
 }
 
 /* $Log$
+/* Revision 1.13  2002/07/17 00:13:57  phase1geo
+/* Added support for -e option and informally tested.
+/*
 /* Revision 1.12  2002/07/16 03:29:18  phase1geo
 /* Updates to NEWS, INSTALL, ChangeLog for release.  Modifications to Verilog
 /* diagnostic Makefile to make it easier to read.  Added user warning if -e

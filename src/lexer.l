@@ -86,7 +86,7 @@ static struct include_stack_t* standby = 0;
 %x ERROR_LINE
 %x IGNORE_MODULE
 
-%s IFDEF_FALSE
+%x IFDEF_FALSE
 %s IFDEF_TRUE
 %x IFDEF_SUPR
 
