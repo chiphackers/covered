@@ -93,6 +93,9 @@
 #include "sim.h"
 
 
+stmt_loop_link* stmt_loop_stack = NULL;
+
+
 /*!
  \param exp   Pointer to root expression of expression tree for this statement.
   
@@ -116,6 +119,66 @@ statement* statement_create( expression* exp ) {
 
 }
 
+/*!
+ \param stmt  Pointer of statement waiting to be linked.
+ \param id    ID of statement to be read out later.
+
+ Creates a new statement loop link for the specified parameters and adds this
+ element to the top of the statement loop stack.
+*/
+void statement_stack_push( statement* stmt, int id ) {
+
+  stmt_loop_link* sll;     /* Pointer to newly created statement loop link */
+
+  /* Create statement loop link element */
+  sll = (stmt_loop_link*)malloc_safe( sizeof( stmt_loop_link ) );
+
+  /* Populate statement loop link with specified parameters */
+  sll->stmt = stmt;
+  sll->id   = id;
+  sll->next = NULL;
+
+  /* Add to top of statement loop stack */
+  if( stmt_loop_stack == NULL ) {
+    stmt_loop_stack = sll;
+  } else {
+    sll->next       = stmt_loop_stack;
+    stmt_loop_stack = sll;
+  }
+
+}
+
+/*!
+ \param stmt  Pointer to statement being read out of the CDD.
+ 
+ Compares the specified statement against the top of the statement loop stack.  If
+ the ID at the top of the stack matches this statement's ID, the top of the stack is
+ popped and the next_true and next_false pointers of the stored statement are pointed
+ to the specified statement.  The next head is also compared against this statement
+ and the process is repeated until a match is not found.  Once an ID at the top of the
+ stack does not match, no further action is taken.
+*/
+void statement_stack_compare( statement* stmt ) {
+
+  stmt_loop_link* sll;    /* Pointer to top of stack */
+
+  while( stmt->exp->id == stmt_loop_stack->id ) {
+
+    /* Perform the link */
+    stmt_loop_stack->stmt->next_true  = stmt;
+    stmt_loop_stack->stmt->next_false = stmt;
+
+    /* Pop the top off of the stack */
+    sll             = stmt_loop_stack;
+    stmt_loop_stack = stmt_loop_stack->next;
+
+    /* Deallocate the memory for the link */
+    free_safe( sll );
+
+  }
+
+}
+    
 /*!
  \param stmt   Pointer to statement to write out value.
  \param ofile  Pointer to output file to write statement line to.
@@ -213,8 +276,15 @@ bool statement_db_read( char** line, module* curr_mod, int read_mode ) {
         stmt->next_true = stmt;
       } else if( true_id != 0 ) {
         stmtl = stmt_link_find( true_id, curr_mod->stmt_head );
-        assert( stmtl != NULL );
-        stmt->next_true = stmtl->stmt;
+        if( stmtl == NULL ) {
+          assert( true_id == false_id );
+          /* Add to statement loop stack */
+          statement_stack_push( stmt, true_id );
+        } else {
+          /* Check against statement stack */
+          statement_stack_compare( stmt );
+          stmt->next_true = stmtl->stmt;
+        }
       }
 
       /* Find and link next_false */
@@ -222,8 +292,10 @@ bool statement_db_read( char** line, module* curr_mod, int read_mode ) {
         stmt->next_false = stmt;
       } else if( false_id != 0 ) {
         stmtl = stmt_link_find( false_id, curr_mod->stmt_head );
-        assert( stmtl != NULL );
-        stmt->next_false = stmtl->stmt;
+        /* We took care of the stack stuff above, so we don't need to do it here */
+        if( stmtl != NULL ) {
+          stmt->next_false = stmtl->stmt;
+        }
       }
 
       /* Add statement to module statement list */
@@ -255,12 +327,13 @@ bool statement_db_read( char** line, module* curr_mod, int read_mode ) {
  \param curr_stmt  Pointer to statement sequence to traverse.
  \param next_stmt  Pointer to statement to connect ends to.
  \param set_stop   If TRUE and the next_true and next_false are NULL, set stop bit.
+ \param at_top     Set to TRUE when this function is first called; otherwise, FALSE.
 
  Recursively traverses the specified stmt sequence.  When it reaches a statement 
  that has either next_true or next_false set to NULL, sets next_true and/or 
  next_false of that statement to point to the next_stmt statement.
 */
-void statement_connect( statement* curr_stmt, statement* next_stmt, bool set_stop ) {
+void statement_connect( statement* curr_stmt, statement* next_stmt, bool set_stop, bool at_top ) {
 
   bool allow_stop;      /* If TRUE, sets the set_stop value for TRUE paths */
   static int count = 0;
@@ -268,7 +341,11 @@ void statement_connect( statement* curr_stmt, statement* next_stmt, bool set_sto
   assert( curr_stmt != NULL );
   assert( next_stmt != NULL );
 
-  // printf( "In statement_connect, curr_stmt: %d, next_stmt: %d, set_stop: %d\n", curr_stmt->exp->id, next_stmt->exp->id, set_stop );
+  printf( "In statement_connect, curr_stmt: %d, next_stmt: %d, set_stop: %d, at_top: %d\n", 
+          curr_stmt->exp->id, 
+          next_stmt->exp->id, 
+          set_stop,
+          at_top );
 
 /*
   if( count == 100 ) {
@@ -280,7 +357,7 @@ void statement_connect( statement* curr_stmt, statement* next_stmt, bool set_sto
 
   /* Set STOP bit if necessary */
   if( ((curr_stmt->next_true == NULL) && (curr_stmt->next_false == NULL) && set_stop) ||
-      (curr_stmt == next_stmt) ) {
+      ((curr_stmt == next_stmt) && !at_top) ) {
 
     curr_stmt->exp->suppl = curr_stmt->exp->suppl | (0x1 << SUPPL_LSB_STMT_STOP);
 
@@ -299,7 +376,7 @@ void statement_connect( statement* curr_stmt, statement* next_stmt, bool set_sto
                     (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_NEDGE) &&
                     (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_PEDGE) &&
                     (SUPPL_OP( curr_stmt->exp->suppl ) != EXP_OP_AEDGE));
-      statement_connect( curr_stmt->next_true, next_stmt, allow_stop );
+      statement_connect( curr_stmt->next_true, next_stmt, allow_stop, FALSE );
     }
 
   }
@@ -314,7 +391,7 @@ void statement_connect( statement* curr_stmt, statement* next_stmt, bool set_sto
   } else {
 
     if( curr_stmt->next_false != next_stmt ) {
-      statement_connect( curr_stmt->next_false, next_stmt, FALSE );
+      statement_connect( curr_stmt->next_false, next_stmt, FALSE, FALSE );
     }
 
   }

@@ -201,8 +201,6 @@ port_reference
 	| IDENTIFIER '[' static_expr ':' static_expr ']'
 	| IDENTIFIER '[' static_expr ']'
 	| IDENTIFIER '[' error ']'
-		{
-		}
 	;
 
 port_reference_list
@@ -291,22 +289,7 @@ static_expr
                   }
                   $$ = (uop == 0) ? 1 : 0;
 		}
-        | '!' error %prec UNARY_PREC
-                {
-		  snprintf( err_msg, 1000, "%s:%d: error: Operand of unary ! is not a primary expression.\n",
-				@1.text,
-				@1.first_line
-			  );
-                  yyerror( err_msg );
-                }
-        | '^' error %prec UNARY_PREC
-                {
-		  snprintf( err_msg, 1000, "%s:%d: error: Operand of reduction ^ is not a primary expression.\n",
-				@1.text,
-				@1.first_line
-			  );
-		  yyerror( err_msg );
-                }
+
         | static_expr '^' static_expr
 		{
 		  $$ = $1 ^ $3;
@@ -363,10 +346,7 @@ static_expr_primary
 		{
 		  $$ = $2;
 		}
-	| error
-		{
-		  // yyerror( @1, "error: Static value expected for static expression." );
-		}
+
 	;
 
 unused_expr

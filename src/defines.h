@@ -633,6 +633,28 @@ struct stmt_link_s {
 
 //------------------------------------------------------------------------------
 /*!
+ Special statement link that stores the ID of the statement that the specified
+ statement pointer needs to traverse when it has completed.  These structure types
+ are used by the statement CDD reader.  When a statement is read that points to a
+ statement that hasn't been read out of the CDD, the read statement is stored into
+ one of these link types that is linked like a stack (pushed/popped at the head).
+ The head of this stack is interrogated by future statements being read out.  When
+ a statement's ID matches the ID at the head of the stack, the element is popped and
+ the two statements are linked accordingly.  This sequence is used to handle statement
+ looping.
+*/
+struct stmt_loop_link_s;
+
+typedef struct stmt_loop_link_s stmt_loop_link;
+
+struct stmt_loop_link_s {
+  statement*      stmt;     /* Pointer to last statement in loop  */
+  int             id;       /* ID of next statement after last    */
+  stmt_loop_link* next;     /* Pointer to next statement in stack */
+};
+
+//------------------------------------------------------------------------------
+/*!
  Stores all information needed to represent a signal.  If value of value element is non-zero at the
  end of the run, this signal has been simulated.
 */
@@ -789,6 +811,10 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.18  2002/06/28 03:04:59  phase1geo
+/* Fixing more errors found by diagnostics.  Things are running pretty well at
+/* this point with current diagnostics.  Still some report output problems.
+/*
 /* Revision 1.17  2002/06/27 21:18:48  phase1geo
 /* Fixing report Verilog output.  simple.v verilog diagnostic now passes.
 /*

@@ -654,7 +654,7 @@ void db_statement_connect( statement* curr_stmt, statement* next_stmt ) {
   snprintf( msg, 4096, "In db_statement_connect, curr_stmt: %d, next_stmt: %d", curr_id, next_id );
   print_output( msg, NORMAL );
 
-  statement_connect( curr_stmt, next_stmt, FALSE );
+  statement_connect( curr_stmt, next_stmt, FALSE, TRUE );
 
 }
 
@@ -909,6 +909,10 @@ int db_get_signal_size( char* symbol ) {
 
 
 /* $Log$
+/* Revision 1.22  2002/06/28 03:04:59  phase1geo
+/* Fixing more errors found by diagnostics.  Things are running pretty well at
+/* this point with current diagnostics.  Still some report output problems.
+/*
 /* Revision 1.21  2002/06/28 00:40:37  phase1geo
 /* Cleaning up extraneous output from debugging.
 /*
