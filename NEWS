@@ -1,6 +1,39 @@
 Covered-Related NEWS
 ====================
 
+    * 2/8/2004
+
+Development release covered-20040208 made.  This release primarily contains support for detecting
+and handling race conditions with the DUT.  Added flags to the score command control the behavior
+of Covered when these race conditions are detected.  Additionally, the race condition information
+is saved to the CDD file for reporting purposes in both the text reports as well as the GUI.  This
+feature is not only useful to logic designers but also sets up Covered to provide better coverage
+results going forward as well as allows Covered to gain coverage for some constructs that are
+currently not supported.  A few other bugs are fixed in this release as well as documentation
+updates for the race condition usage.  The following is a description of what has changed in this
+release:
+
+  - Added support for detecting/handling race conditions in DUT
+  - Added ability to report race conditions to report command
+  - Fixing bug in file search algorithm.  When a file was specified with a -v option after it
+    had already been included, an error was being reported and parsing stopped.  In this case, it
+    now just ignores the duplicate include.
+  - Fixed preprocessor to ignore protected areas of code.
+  - Fixed library extension command-line parser.
+  - Changed was data is stored on a bit-basis for certain data types to use unions.  Eases coding
+    and improves performance of score command just a bit.
+  - Added support for Verilog strings as static values.  Strings can also be used in FSM value assignment
+    from command-line or from inline attribute.
+  - Ran -Wall compiler flag to clean up code.
+  - Added race condition run to regression
+  - Updated man page, User Guide and GUI documentation for changes
+  - Fixing bug in GUI where deselecting/selecting Covered, Uncovered or Race Condition in combinational
+    logic window would redisplay the file incorrectly.
+  - Added code to display help information in information bar of GUI main window when cursor is
+    over missed toggle and/or combinational logic coverage
+  - Added code to display reason for race condition when cursor is over lines that were discarded from
+    coverage consideration.
+
     * 12/10/2004
 
 Development release covered-20041210 made.  This release contains summary and detailed coverage

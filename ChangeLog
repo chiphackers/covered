@@ -1,3 +1,472 @@
+2005-02-07 16:43  phase1geo
+
+	* TODO: Updating TODO.
+
+2005-02-07 16:19  phase1geo
+
+	* scripts/main_view.tcl, scripts/process_file.tcl, src/race.c,
+	src/race.h, src/tcl_funcs.c: Added code to output race condition
+	reasons to informational bar.  Also added code to output toggle and
+	combinational logic output to information bar when cursor is over
+	an expression that, when clicked on, will take you to the detailed
+	coverage window.
+
+2005-02-07 11:37  phase1geo
+
+	* scripts/process_file.tcl: Fixing bug in process_file.tcl script
+	where start_line and end_line global variables were being assigned
+	when they should not have been.
+
+2005-02-06 23:10  phase1geo
+
+	* diags/cdd/race2.4.cdd, src/statement.c: Fixing bug in
+	statement_get_last_line calculator.  Updated regression for this
+	fix.
+
+2005-02-05 23:15  phase1geo
+
+	* TODO: Updating TODO.
+
+2005-02-05 23:11  phase1geo
+
+	* doc/: manstyle/023.mas, user/023.html: Adding a couple of files
+	that were missing from last checkin.
+
+2005-02-05 23:03  phase1geo
+
+	* doc/: gui/pref_menu.html, gui/report_menu.html,
+	gui/images/pref_view.jpg, gui/images/report_view.jpg,
+	manstyle/008.mas, manstyle/009.mas, manstyle/010.mas,
+	manstyle/011.mas, manstyle/012.mas, manstyle/013.mas,
+	manstyle/014.mas, manstyle/015.mas, manstyle/016.mas,
+	manstyle/017.mas, manstyle/018.mas, manstyle/019.mas,
+	manstyle/020.mas, manstyle/021.mas, manstyle/022.mas,
+	manstyle/user, user/001.html, user/002.html, user/003.html,
+	user/004.html, user/005.html, user/006.html, user/007.html,
+	user/008.html, user/009.html, user/010.html, user/011.html,
+	user/012.html, user/013.html, user/014.html, user/015.html,
+	user/016.html, user/017.html, user/018.html, user/019.html,
+	user/020.html, user/021.html, user/022.html, user/index.html:
+	Updating documentation for changes related to race condition
+	checking.
+
+2005-02-05 00:55  phase1geo
+
+	* doc/user/covered.1: Updated man page.
+
+2005-02-05 00:47  phase1geo
+
+	* diags/regress/Makefile, diags/rpt/race1.1.rptI,
+	diags/rpt/race1.1.rptM, diags/rpt/race1.1.rptWI,
+	diags/rpt/race1.1.rptWM, diags/rpt/race1.2.rptI,
+	diags/rpt/race1.2.rptM, diags/rpt/race1.2.rptWI,
+	diags/rpt/race1.2.rptWM, diags/rpt/race1.rptI,
+	diags/rpt/race1.rptM, diags/rpt/race1.rptWI, diags/rpt/race1.rptWM,
+	diags/rpt/race2.1.rptI, diags/rpt/race2.1.rptM,
+	diags/rpt/race2.1.rptWI, diags/rpt/race2.1.rptWM,
+	diags/rpt/race2.2.rptI, diags/rpt/race2.2.rptM,
+	diags/rpt/race2.2.rptWI, diags/rpt/race2.2.rptWM,
+	diags/rpt/race2.3.rptI, diags/rpt/race2.3.rptM,
+	diags/rpt/race2.3.rptWI, diags/rpt/race2.3.rptWM,
+	diags/rpt/race2.4.rptI, diags/rpt/race2.4.rptM,
+	diags/rpt/race2.4.rptWI, diags/rpt/race2.4.rptWM,
+	diags/verilog/Makefile, src/report.c: Fixing bug with race
+	condition output in instance reporting.  Changing default report
+	output of race conditions to false and updating in-line
+	documentation.	Added rules in regression runs for specifically
+	testing race condition output.	Updated regression files for these
+	changes.  Regression runs clean at this point.	We just need to add
+	user documentation for the race condition feature add and we should
+	be done.
+
+2005-02-05 00:20  phase1geo
+
+	* src/: race.c, report.c: Added ascii report output for race
+	conditions.  There is a segmentation fault bug associated with
+	instance reporting.  Need to look into further.
+
+2005-02-04 23:29  phase1geo
+
+	* scripts/menu_create.tcl, scripts/process_file.tcl, src/line.c,
+	src/race.c, src/race.h, src/tcl_funcs.c: Added race condition
+	reporting to GUI.
+
+2005-02-04 22:13  phase1geo
+
+	* diags/cdd/always11.2.cdd, diags/cdd/race1.1.cdd,
+	diags/cdd/race1.2.cdd, diags/cdd/race1.cdd, diags/cdd/race2.1.cdd,
+	diags/cdd/race2.2.cdd, diags/cdd/race2.3.cdd,
+	diags/cdd/race2.4.cdd, diags/rpt/always11.2.rptI,
+	diags/rpt/always11.2.rptM, diags/rpt/always11.2.rptWI,
+	diags/rpt/always11.2.rptWM, diags/verilog/always11.2.v, src/arc.c,
+	src/comb.c, src/db.c, src/defines.h, src/devel_doc.h, src/expr.c,
+	src/fsm_arg.c, src/info.c, src/lexer.l, src/module.c, src/race.c,
+	src/race.h, src/report.c, src/report.h, src/tcl_funcs.c,
+	src/vector.c: Started to add reporting capabilities for race
+	condition information.	Modified race condition reason calculation
+	and handling.  Ran -Wall on all code and cleaned things up. 
+	Cleaned up regression as a result of these changes.  Full
+	regression now passes.
+
+2005-02-04 17:55  phase1geo
+
+	* src/: db.c, defines.h, module.c, race.c, race.h, statement.c,
+	statement.h: Adding code to support race condition information in
+	CDD files.  All code is now in place for writing/reading this data
+	to/from the CDD file (although nothing is currently done with it
+	and it is currently untested).
+
+2005-02-04 13:38  phase1geo
+
+	* diags/: cdd/always1.cdd, cdd/always4.cdd, cdd/always6.cdd,
+	cdd/case1.1.cdd, cdd/case1.2.cdd, cdd/case1.3.cdd, cdd/case1.cdd,
+	cdd/case2.cdd, cdd/concat4.2.cdd, cdd/concat5.cdd, cdd/fsm4.1.cdd,
+	cdd/fsm4.cdd, cdd/ifelse1.cdd, cdd/long_exp2.cdd, cdd/race2.2.cdd,
+	cdd/race2.3.cdd, cdd/race2.4.cdd, regress/Makefile,
+	regress/race2.2.cfg, regress/race2.3.cfg, regress/race2.4.cfg,
+	rpt/always4.rptI, rpt/always4.rptM, rpt/always4.rptWI,
+	rpt/always4.rptWM, rpt/case1.1.rptI, rpt/case1.1.rptM,
+	rpt/case1.1.rptWI, rpt/case1.1.rptWM, rpt/case1.2.rptI,
+	rpt/case1.2.rptM, rpt/case1.2.rptWI, rpt/case1.2.rptWM,
+	rpt/case1.3.rptI, rpt/case1.3.rptM, rpt/case1.3.rptWI,
+	rpt/case1.3.rptWM, rpt/case2.rptI, rpt/case2.rptM, rpt/case2.rptWI,
+	rpt/case2.rptWM, rpt/ifelse1.rptI, rpt/ifelse1.rptM,
+	rpt/ifelse1.rptWI, rpt/ifelse1.rptWM, rpt/long_exp2.rptI,
+	rpt/long_exp2.rptM, rpt/long_exp2.rptWI, rpt/long_exp2.rptWM,
+	rpt/race2.2.rptI, rpt/race2.2.rptM, rpt/race2.2.rptWI,
+	rpt/race2.2.rptWM, rpt/race2.3.rptI, rpt/race2.3.rptM,
+	rpt/race2.3.rptWI, rpt/race2.3.rptWM, rpt/race2.4.rptI,
+	rpt/race2.4.rptM, rpt/race2.4.rptWI, rpt/race2.4.rptWM,
+	verilog/always1.v, verilog/always4.v, verilog/always6.v,
+	verilog/case1.1.v, verilog/case1.2.v, verilog/case1.3.v,
+	verilog/case1.v, verilog/case2.v, verilog/concat4.2.v,
+	verilog/concat5.v, verilog/fsm4.1.v, verilog/fsm4.v,
+	verilog/long_exp2.v, verilog/race2.2.v, verilog/race2.3.v,
+	verilog/race2.4.v, verilog/lib/mux.v: Adding new race condition
+	checking diagnostics.  Updated all regression diagnostics that
+	failed with new changes to remove race condition code.	Regression
+	now runs cleanly will all race condition checking code.
+
+2005-02-02 23:50  phase1geo
+
+	* TODO: Updating TODO file.
+
+2005-02-02 23:48  phase1geo
+
+	* diags/cdd/race2.1.cdd, diags/regress/Makefile,
+	diags/regress/race2.1.cfg, diags/rpt/race2.1.rptI,
+	diags/rpt/race2.1.rptM, diags/rpt/race2.1.rptWI,
+	diags/rpt/race2.1.rptWM, diags/verilog/race2.1.v, src/race.c:
+	Fixing bugs in race condition checker.	Adding race2.1 diagnostic. 
+	Regression currently has some failures due to these changes.
+
+2005-02-02 22:59  phase1geo
+
+	* diags/cdd/always11.2.cdd, diags/cdd/block1.cdd,
+	diags/rpt/always11.2.rptI, diags/rpt/always11.2.rptM,
+	diags/rpt/always11.2.rptWI, diags/rpt/always11.2.rptWM,
+	diags/verilog/block1.v, src/race.c: Fixing bugs in race condition
+	checker.  Updated regression.
+
+2005-01-31 23:11  phase1geo
+
+	* src/: defines.h, parse.c, race.c: Updates to race condition
+	checker to find blocking/non-blocking assignments in statement
+	block.	Regression still runs clean.
+
+2005-01-27 07:33  phase1geo
+
+	* src/: defines.h, race.c: Added code to calculate if statement
+	block is sequential, combinational, both or none.
+
+2005-01-25 07:59  phase1geo
+
+	* diags/: cdd/race1.2.cdd, regress/Makefile, regress/race1.2.cfg,
+	rpt/race1.2.rptI, rpt/race1.2.rptM, rpt/race1.2.rptWI,
+	rpt/race1.2.rptWM, verilog/race1.2.v: Adding race1.2 to regression
+	suite.
+
+2005-01-25 07:42  phase1geo
+
+	* diags/cdd/race1.1.cdd, diags/regress/Makefile,
+	diags/rpt/race1.1.rptI, diags/rpt/race1.1.rptM,
+	diags/rpt/race1.1.rptWI, diags/rpt/race1.1.rptWM,
+	diags/verilog/Makefile, src/db.c, src/link.c, src/race.c,
+	src/vector.c: Fixing segmentation fault problem with race condition
+	checking.  Added race1.1 to regression.  Removed unnecessary output
+	statements from previous debugging checkins.
+
+2005-01-24 07:21  phase1geo
+
+	* src/: iter.c, iter.h, link.c: Modifying unlinking algorithm for
+	statement links.  Still getting segmentation fault at this time.
+
+2005-01-11 08:24  phase1geo
+
+	* diags/regress/race1.1.cfg, diags/verilog/Makefile,
+	diags/verilog/race1.1.v, src/iter.c, src/link.c, src/race.c,
+	src/vector.c: Intermediate checkin.
+
+2005-01-10 17:23  phase1geo
+
+	* diags/: cdd/race1.cdd, regress/Makefile, rpt/race1.rptI,
+	rpt/race1.rptM, rpt/race1.rptWI, rpt/race1.rptWM: Adding race1
+	diagnostic to regression suite.
+
+2005-01-10 17:03  phase1geo
+
+	* src/: db.c, defines.h, iter.c, iter.h, link.c, link.h, parse.c,
+	race.c, race.h, score.c: Added code to properly report race
+	conditions.  Added code to remove statement blocks from module when
+	race conditions are found.
+
+2005-01-10 07:47  phase1geo
+
+	* diags/: cdd/example.cdd, cdd/fsm1.1.cdd, cdd/fsm1.2.cdd,
+	cdd/fsm1.3.cdd, cdd/fsm1.4.cdd, cdd/fsm1.cdd, cdd/fsm10.1.cdd,
+	cdd/fsm10.2.cdd, cdd/fsm10.cdd, cdd/fsm2.cdd, cdd/fsm2a.cdd,
+	cdd/fsm2b.cdd, cdd/fsm9.2.cdd, cdd/ifelse1.cdd,
+	cdd/instance1.1.cdd, cdd/instance1.2.cdd, cdd/instance1.cdd,
+	cdd/instance2.cdd, cdd/instance4.1.cdd, cdd/instance4.2.cdd,
+	cdd/instance4.cdd, cdd/instance5.cdd, cdd/instance6.1.cdd,
+	cdd/instance6.2.cdd, cdd/instance6.cdd, cdd/instance7.cdd,
+	cdd/merge1.cdd, cdd/merge1a.cdd, cdd/merge1b.cdd,
+	cdd/multi_exp2.cdd, cdd/param3.1.cdd, cdd/param3.2.cdd,
+	cdd/param3.3.cdd, cdd/param3.4.cdd, cdd/param3.5.cdd,
+	cdd/param3.cdd, regress/race1.cfg, verilog/race1.v: Adding race1
+	test into testsuite (though this is not part of the regression
+	suite yet).  Updating CDD files for latest changes.
+
+2005-01-10 07:44  phase1geo
+
+	* src/race.c: Fixing case where signal selects are being assigned
+	by different statements that do not overlap.  We do not have race
+	conditions in this case.
+
+2005-01-09 20:59  phase1geo
+
+	* src/: db.c, defines.h, expr.c, parse.c, race.c, race.h, vector.c,
+	vector.h, vsignal.c, vsignal.h: Code added for race condition
+	checking that checks for signals being assigned in multiple
+	statements.  Working on handling bit selects -- this is in
+	progress.
+
+2005-01-07 17:29  phase1geo
+
+	* diags/cdd/always8.cdd, diags/cdd/case4.1.cdd,
+	diags/cdd/case4.cdd, diags/cdd/string1.cdd, diags/regress/Makefile,
+	diags/regress/string1.cfg, diags/rpt/always8.rptI,
+	diags/rpt/always8.rptM, diags/rpt/always8.rptWI,
+	diags/rpt/always8.rptWM, diags/rpt/case4.1.rptI,
+	diags/rpt/case4.1.rptM, diags/rpt/case4.1.rptWI,
+	diags/rpt/case4.1.rptWM, diags/rpt/case4.rptI,
+	diags/rpt/case4.rptM, diags/rpt/case4.rptWI, diags/rpt/case4.rptWM,
+	diags/rpt/string1.rptI, diags/rpt/string1.rptM,
+	diags/rpt/string1.rptWI, diags/rpt/string1.rptWM,
+	diags/verilog/string1.v, src/codegen.c, src/comb.c, src/lexer.l:
+	Adding ability to handle strings in expressions.  Added string1.v
+	diagnostic to verify this functionality.  Updated regressions for
+	this change.
+
+2005-01-07 16:59  phase1geo
+
+	* diags/cdd/always1.cdd, diags/cdd/always10.cdd,
+	diags/cdd/always11.1.cdd, diags/cdd/always11.2.cdd,
+	diags/cdd/always11.cdd, diags/cdd/always12.cdd,
+	diags/cdd/always13.cdd, diags/cdd/always2.cdd,
+	diags/cdd/always3.1.11A.cdd, diags/cdd/always3.cdd,
+	diags/cdd/always4.cdd, diags/cdd/always5.1.cdd,
+	diags/cdd/always5.cdd, diags/cdd/always6.cdd,
+	diags/cdd/always7.cdd, diags/cdd/always8.cdd,
+	diags/cdd/always9.cdd, diags/cdd/assign1.cdd,
+	diags/cdd/assign2.1.cdd, diags/cdd/assign2.2.cdd,
+	diags/cdd/assign2.3.cdd, diags/cdd/assign2.8.cdd,
+	diags/cdd/assign2.9.cdd, diags/cdd/assign2.cdd,
+	diags/cdd/assign3.2A.cdd, diags/cdd/block1.cdd,
+	diags/cdd/case1.1.cdd, diags/cdd/case1.2.cdd,
+	diags/cdd/case1.3.cdd, diags/cdd/case1.cdd, diags/cdd/case2.cdd,
+	diags/cdd/case3.1.cdd, diags/cdd/case3.2.cdd,
+	diags/cdd/case3.3.cdd, diags/cdd/case3.4.cdd, diags/cdd/case3.cdd,
+	diags/cdd/case4.1.cdd, diags/cdd/case4.cdd, diags/cdd/casex1.1.cdd,
+	diags/cdd/casex1.2.cdd, diags/cdd/casex1.3.cdd,
+	diags/cdd/casex1.4.cdd, diags/cdd/casex1.cdd,
+	diags/cdd/casez1.1.cdd, diags/cdd/casez1.2.cdd,
+	diags/cdd/casez1.3.cdd, diags/cdd/casez1.4.cdd,
+	diags/cdd/casez1.cdd, diags/cdd/casez2.cdd, diags/cdd/concat1.cdd,
+	diags/cdd/concat2.cdd, diags/cdd/concat3.cdd,
+	diags/cdd/concat4.1.cdd, diags/cdd/concat4.2.cdd,
+	diags/cdd/concat5.cdd, diags/cdd/concat6.cdd, diags/cdd/cond1.cdd,
+	diags/cdd/cond2.cdd, diags/cdd/define1.1.cdd,
+	diags/cdd/define1.2.cdd, diags/cdd/define1.cdd,
+	diags/cdd/define2.1.cdd, diags/cdd/define2.cdd,
+	diags/cdd/define3.cdd, diags/cdd/define4.cdd,
+	diags/cdd/delay1.1.cdd, diags/cdd/delay1.2.cdd,
+	diags/cdd/delay1.3.cdd, diags/cdd/delay1.cdd, diags/cdd/delay2.cdd,
+	diags/cdd/example.cdd, diags/cdd/expand1.cdd,
+	diags/cdd/expand2.cdd, diags/cdd/expand3.cdd,
+	diags/cdd/expand4.1.cdd, diags/cdd/expand4.2.cdd,
+	diags/cdd/expand4.3.cdd, diags/cdd/expand4.4.cdd,
+	diags/cdd/expand4.cdd, diags/cdd/fsm1.1.cdd, diags/cdd/fsm1.2.cdd,
+	diags/cdd/fsm1.3.cdd, diags/cdd/fsm1.4.cdd, diags/cdd/fsm1.cdd,
+	diags/cdd/fsm10.1.cdd, diags/cdd/fsm10.2.cdd, diags/cdd/fsm10.cdd,
+	diags/cdd/fsm2.cdd, diags/cdd/fsm2a.cdd, diags/cdd/fsm2b.cdd,
+	diags/cdd/fsm3.cdd, diags/cdd/fsm4.1.cdd, diags/cdd/fsm4.cdd,
+	diags/cdd/fsm5.1.cdd, diags/cdd/fsm5.2.cdd, diags/cdd/fsm5.3.cdd,
+	diags/cdd/fsm5.cdd, diags/cdd/fsm6.cdd, diags/cdd/fsm7.1.cdd,
+	diags/cdd/fsm7.2.cdd, diags/cdd/fsm7.3.cdd, diags/cdd/fsm7.4.cdd,
+	diags/cdd/fsm7.5.cdd, diags/cdd/fsm7.cdd, diags/cdd/fsm8.1.cdd,
+	diags/cdd/fsm8.2.cdd, diags/cdd/fsm8.3.cdd, diags/cdd/fsm8.cdd,
+	diags/cdd/fsm9.1.cdd, diags/cdd/fsm9.2.cdd, diags/cdd/fsm9.cdd,
+	diags/cdd/gate1.cdd, diags/cdd/hier1.cdd, diags/cdd/ifdef1.1.cdd,
+	diags/cdd/ifdef1.2.cdd, diags/cdd/ifdef1.cdd,
+	diags/cdd/ifdef2.1.cdd, diags/cdd/ifdef2.2.cdd,
+	diags/cdd/ifdef2.3.cdd, diags/cdd/ifelse1.cdd,
+	diags/cdd/implicit1.cdd, diags/cdd/implicit2.cdd,
+	diags/cdd/include1.1.cdd, diags/cdd/include1.cdd,
+	diags/cdd/include2.cdd, diags/cdd/instance1.1.cdd,
+	diags/cdd/instance1.2.cdd, diags/cdd/instance1.cdd,
+	diags/cdd/instance2.cdd, diags/cdd/instance3.cdd,
+	diags/cdd/instance4.1.cdd, diags/cdd/instance4.2.cdd,
+	diags/cdd/instance4.cdd, diags/cdd/instance5.cdd,
+	diags/cdd/instance6.1.cdd, diags/cdd/instance6.2.cdd,
+	diags/cdd/instance6.cdd, diags/cdd/instance7.cdd,
+	diags/cdd/long_exp1.cdd, diags/cdd/long_exp2.cdd,
+	diags/cdd/long_exp3.cdd, diags/cdd/long_sig.cdd,
+	diags/cdd/mbit_sel1.cdd, diags/cdd/mbit_sel2.cdd,
+	diags/cdd/mbit_sel3.1.cdd, diags/cdd/mbit_sel3.cdd,
+	diags/cdd/mbit_sel4.1.cdd, diags/cdd/mbit_sel4.2.cdd,
+	diags/cdd/mbit_sel4.3.cdd, diags/cdd/mbit_sel4.cdd,
+	diags/cdd/mem1.cdd, diags/cdd/merge1.cdd, diags/cdd/merge1a.cdd,
+	diags/cdd/merge1b.cdd, diags/cdd/mult1.cdd,
+	diags/cdd/multi_exp1.1.cdd, diags/cdd/multi_exp1.10.cdd,
+	diags/cdd/multi_exp1.11.cdd, diags/cdd/multi_exp1.12.cdd,
+	diags/cdd/multi_exp1.13.cdd, diags/cdd/multi_exp1.14.cdd,
+	diags/cdd/multi_exp1.15.cdd, diags/cdd/multi_exp1.2.cdd,
+	diags/cdd/multi_exp1.3.cdd, diags/cdd/multi_exp1.4.cdd,
+	diags/cdd/multi_exp1.5.cdd, diags/cdd/multi_exp1.6.cdd,
+	diags/cdd/multi_exp1.7.cdd, diags/cdd/multi_exp1.8.cdd,
+	diags/cdd/multi_exp1.9.cdd, diags/cdd/multi_exp1.cdd,
+	diags/cdd/multi_exp2.1.cdd, diags/cdd/multi_exp2.cdd,
+	diags/cdd/multi_exp3.cdd, diags/cdd/param1.1.cdd,
+	diags/cdd/param1.2.cdd, diags/cdd/param1.3.cdd,
+	diags/cdd/param1.cdd, diags/cdd/param3.1.cdd,
+	diags/cdd/param3.2.cdd, diags/cdd/param3.3.cdd,
+	diags/cdd/param3.4.cdd, diags/cdd/param3.5.cdd,
+	diags/cdd/param3.cdd, diags/cdd/param4.1.cdd, diags/cdd/param4.cdd,
+	diags/cdd/param5.cdd, diags/cdd/param6.1.cdd, diags/cdd/param6.cdd,
+	diags/cdd/param7.cdd, diags/cdd/pulldown1.cdd,
+	diags/cdd/pullup1.cdd, diags/cdd/real1.1.cdd,
+	diags/cdd/sbit_sel1.1.cdd, diags/cdd/sbit_sel1.cdd,
+	diags/cdd/static1.cdd, diags/cdd/static2.1.cdd,
+	diags/cdd/static2.2.cdd, diags/cdd/static2.cdd,
+	diags/cdd/supply0.cdd, diags/cdd/supply1.cdd, diags/cdd/toggle.cdd,
+	diags/cdd/tri.cdd, diags/cdd/tri0.cdd, diags/cdd/tri1.cdd,
+	diags/cdd/unary1.cdd, src/codegen.c, src/comb.c, src/defines.h,
+	src/expr.c, src/fsm_arg.c, src/vector.c, src/vector.h: Regression
+	now passes for previous changes.  Also added ability to properly
+	convert quoted strings to vectors and vectors to quoted strings. 
+	This will allow us to support strings in expressions.  This is a
+	known good.
+
+2005-01-07 11:59  phase1geo
+
+	* src/: db.c, defines.h, expr.c, fsm.c, fsm_arg.c, fsm_var.c,
+	iter.c, line.c, link.c, module.c, param.c, parser.y, race.c,
+	race.h, score.c, sim.c, statement.c, static.c, vector.c, vector.h,
+	vsignal.c: Finalized updates for supplemental field changes. 
+	Everything compiles and links correctly at this time; however, a
+	regression run has not confirmed the changes.
+
+2005-01-06 17:51  phase1geo
+
+	* src/: arc.c, codegen.c, comb.c, defines.h, expr.c, fsm_arg.c,
+	lexer.l, parser.y, vector.c, vector.h: Intermediate checkin.  Files
+	don't fully compile yet.
+
+2005-01-06 08:32  phase1geo
+
+	* src/defines.h: Starting to make updates to supplemental fields. 
+	Work is in progress.
+
+2005-01-04 08:37  phase1geo
+
+	* src/: defines.h, race.c: New changes for race condition checking.
+	 Things are uncompilable at this point.
+
+2005-01-03 17:00  phase1geo
+
+	* src/: score.c, search.c: Fixing library extension parser.
+
+2005-01-03 16:24  phase1geo
+
+	* src/pplexer.l: Fixing preprocessor to correctly ignore protected
+	areas of code.
+
+2005-01-03 16:02  phase1geo
+
+	* src/search.c: Fixing case where file is specified with -v after
+	it has already been included to just ignore the file instead of
+	printing out an incorrect error message that the file was unable to
+	be opened.
+
+2004-12-19 22:12  phase1geo
+
+	* src/: db.c, race.c, race.h: A bit more race condition checking
+	code added.  Still not there yet.
+
+2004-12-18 10:23  phase1geo
+
+	* src/: db.c, db.h, parser.y, race.c, race.h: More race condition
+	checking updates.
+
+2004-12-17 16:29  phase1geo
+
+	* src/: race.c, race.h, score.c: More code added to race condition
+	feature.  Still not usable.
+
+2004-12-17 08:27  phase1geo
+
+	* src/: defines.h, race.c, race.h: More code added to race
+	condition checker.  This is in an unusable state at this time.
+
+2004-12-16 17:31  phase1geo
+
+	* src/race.c: More work done on race condition code.
+
+2004-12-16 09:22  phase1geo
+
+	* src/: Makefile.am, Makefile.in, race.c: Adding race.c compilation
+	to Makefile and adding documentation to race.c.
+
+2004-12-16 07:52  phase1geo
+
+	* src/: defines.h, race.c, race.h: Starting to add support for
+	race-condition detection and handling.
+
+2004-12-10 22:52  phase1geo
+
+	* config.h, configure, doc/Makefile.am: Final checkin before
+	20041210 development release.
+
+2004-12-10 16:27  phase1geo
+
+	* release.in: More updates to release.in for development release.
+
+2004-12-10 15:08  phase1geo
+
+	* NEWS, configure.in, release.in, doc/Makefile.am, doc/Makefile.in:
+	More updates for upcoming release.
+
+2004-12-10 09:53  phase1geo
+
+	* release.in: Updates for new Makefile structure for documentation.
+
+2004-12-09 10:22  phase1geo
+
+	* ChangeLog, NEWS, config.h, configure, configure.in,
+	doc/user/covered.1: Getting things ready for 20041209 development
+	release.
+
 2004-12-07 13:55  phase1geo
 
 	* doc/: Makefile, gui/Makefile.am, gui/Makefile.in: Updating
