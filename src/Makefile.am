@@ -28,7 +28,8 @@ covered_SOURCES = main.c \
 		  fsm.c \
 		  stat.c \
 		  codegen.c \
-		  statement.c
+		  statement.c \
+		  sim.c
 
 parser.h parser.c: $(srcdir)/parser.y
 	bison --verbose -t -p VL -d -o parser.c $(srcdir)/parser.y

@@ -94,7 +94,8 @@ covered_SOURCES = main.c \
 		  fsm.c \
 		  stat.c \
 		  codegen.c \
-		  statement.c
+		  statement.c \
+		  sim.c
 
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_CLEAN_FILES = 
@@ -109,7 +110,7 @@ covered_OBJECTS =  main.o search.o parse.o util.o link.o score.o merge.o \
 report.o vector.o expr.o signal.o module.o db.o symtable.o \
 parser_misc.o parser.o keywords.o lexer.o vcd_parser_misc.o \
 vcd_parser.o vcd_lexer.o instance.o binding.o line.o toggle.o comb.o \
-fsm.o stat.o codegen.o statement.o
+fsm.o stat.o codegen.o statement.o sim.o
 covered_LDADD = $(LDADD)
 covered_DEPENDENCIES = 
 covered_LDFLAGS = 
@@ -128,10 +129,10 @@ DEP_FILES =  .deps/binding.P .deps/codegen.P .deps/comb.P .deps/db.P \
 .deps/expr.P .deps/fsm.P .deps/instance.P .deps/keywords.P \
 .deps/lexer.P .deps/line.P .deps/link.P .deps/main.P .deps/merge.P \
 .deps/module.P .deps/parse.P .deps/parser.P .deps/parser_misc.P \
-.deps/report.P .deps/score.P .deps/search.P .deps/signal.P .deps/stat.P \
-.deps/statement.P .deps/symtable.P .deps/toggle.P .deps/util.P \
-.deps/vcd_lexer.P .deps/vcd_parser.P .deps/vcd_parser_misc.P \
-.deps/vector.P
+.deps/report.P .deps/score.P .deps/search.P .deps/signal.P .deps/sim.P \
+.deps/stat.P .deps/statement.P .deps/symtable.P .deps/toggle.P \
+.deps/util.P .deps/vcd_lexer.P .deps/vcd_parser.P \
+.deps/vcd_parser_misc.P .deps/vector.P
 SOURCES = $(covered_SOURCES)
 OBJECTS = $(covered_OBJECTS)
 

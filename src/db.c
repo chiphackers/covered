@@ -19,6 +19,7 @@
 #include "symtable.h"
 #include "instance.h"
 #include "statement.h"
+#include "sim.h"
 
 
 extern char*      top_module;
@@ -746,9 +747,6 @@ void db_find_set_add_signal( char* symbol, vector* vec ) {
         curr_exp = sig->exp_head;
         while( curr_exp != NULL ) {
 
-          /* Specify that this expression is currently in the expression queue */
-          curr_exp->exp->suppl = curr_exp->exp->suppl | (0x1 << SUPPL_LSB_IN_QUEUE);
-
           /* Set signal expressions supplemental field TRUE/FALSE bits */
           if( (vec->value[0] & 0x3) == 0 ) {
             curr_exp->exp->suppl = curr_exp->exp->suppl | (0x1 << SUPPL_LSB_FALSE);
@@ -756,40 +754,8 @@ void db_find_set_add_signal( char* symbol, vector* vec ) {
             curr_exp->exp->suppl = curr_exp->exp->suppl | (0x1 << SUPPL_LSB_TRUE);
           }
 
-          /* 
-           Traverse up expression tree, setting the LEFT_CHANGED or RIGHT_CHANGED
-           bits of parent expressions accordingly until we reach a root expression
-           or statement expression.
-          */
-	  curr_parent = curr_exp->exp->parent->expr;
-          while( (curr_parent != NULL) && !changed_finished ) {
-            if( (curr_parent->left != NULL) && (curr_parent->left->id == curr_exp->exp->id) ) {
-              if( SUPPL_IS_LEFT_CHANGED( curr_parent->suppl ) ) {
-                changed_finished = TRUE;
-              } else {
-                curr_parent->suppl = curr_parent->suppl | (0x1 << SUPPL_LSB_LEFT_CHANGED);
-              }
-            } else if( (curr_parent->right != NULL) && (curr_parent->right->id == curr_exp->exp->id) ) {
-              if( SUPPL_IS_RIGHT_CHANGED( curr_parent->suppl ) ) {
-                changed_finished = TRUE;
-              } else {
-                curr_parent->suppl = curr_parent->suppl | (0x1 << SUPPL_LSB_RIGHT_CHANGED);
-              }
-            }
-            if( SUPPL_OP( curr_parent->suppl ) == EXP_OP_STMT ) {
-              changed_finished = TRUE;
-            }
-            curr_parent = curr_parent->parent->expr;
-          }
-
-          /* 
-           If top-most expression is statement is root expression, place this expression
-           at the tail of the expression queue.
-          */
-          if( (curr_parent == NULL) &&
-              ((curr_exp->exp->suppl & (0x1 << SUPPL_LSB_IN_QUEUE)) == 0) ) {
-            exp_link_add( curr_exp->exp, &exp_queue_head, &exp_queue_tail );
-          }
+          /* Add to simulation queue */
+          sim_add_to_queue( curr_exp->exp );
 
           curr_exp = curr_exp->next;
 
@@ -821,42 +787,8 @@ void db_do_timestep( int time ) {
   snprintf( msg, 4096, "Performing timestep #%d", time );
   print_output( msg, NORMAL );
 
-  while( exp_queue_head != NULL ) {
-
-//    exp_link_display( exp_queue_head );
-
-    assert( exp_queue_head->exp != NULL );
-
-/*
-    if( SUPPL_OP( exp_queue_head->exp->suppl ) == EXP_OP_STMT ) {
-      db_handle_statement( exp_queue_head->exp );
-    }
-*/
- 
-    /* Perform expression operation */
-    printf( "Expression address: 0x%lx\n", exp_queue_head->exp );
-    printf( "Performing expression operation: %d, id: %d\n", SUPPL_OP( exp_queue_head->exp->suppl ), exp_queue_head->exp->id );
-    expression_operate( exp_queue_head->exp );
-
-    /* Indicate that this expression is no longer in the expression queue. */
-    exp_queue_head->exp->suppl = exp_queue_head->exp->suppl & ~(0x1 << SUPPL_LSB_IN_QUEUE);
-
-    /* Indicate that this expression has been executed */
-    exp_queue_head->exp->suppl = exp_queue_head->exp->suppl | (0x1 << SUPPL_LSB_EXECUTED);
-
-    /* If there is a parent, place parent expression in expression queue. */
-    if( (exp_queue_head->exp->parent->expr != NULL) && 
-        ((exp_queue_head->exp->parent->expr->suppl & (0x1 << SUPPL_LSB_IN_QUEUE)) == 0) ) {
-      exp_queue_head->exp->parent->expr->suppl = exp_queue_head->exp->parent->expr->suppl | (0x1 << SUPPL_LSB_IN_QUEUE);
-      exp_link_add( exp_queue_head->exp->parent->expr, &(exp_queue_head), &(exp_queue_tail) );
-    }
-
-    /* Move head pointer in expression queue. */
-    head           = exp_queue_head;
-    exp_queue_head = head->next;
-    free_safe( head );
-
-  }
+  /* Simulate the current timestep */
+  sim_simulate();
 
   /* Finally, clear timestep_tab */
   symtable_dealloc( timestep_tab );
@@ -895,6 +827,10 @@ int db_get_signal_size( char* symbol ) {
 
 
 /* $Log$
+/* Revision 1.11  2002/06/22 05:27:30  phase1geo
+/* Additional supporting code for simulation engine and statement support in
+/* parser.
+/*
 /* Revision 1.10  2002/05/13 03:02:58  phase1geo
 /* Adding lines back to expressions and removing them from statements (since the line
 /* number range of an expression can be calculated by looking at the expression line

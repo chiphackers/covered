@@ -64,7 +64,7 @@ expression* expression_create( expression* right, expression* left, int op, int 
 
   new_expr = (expression*)malloc_safe( sizeof( expression ) );
 
-  new_expr->suppl        = ((op & 0xff) << SUPPL_LSB_OP);
+  new_expr->suppl        = ((op & 0x7f) << SUPPL_LSB_OP);
   new_expr->id           = id;
   new_expr->line         = line;
   new_expr->sig          = NULL;
@@ -195,7 +195,7 @@ void expression_merge( expression* base, expression* in ) {
 */
 int expression_get_id( expression* expr ) {
 
-  if( expr == NULL ) {
+  if( SUPPL_IS_ROOT( expr->suppl ) == 1 ) {
     /* This is the root expression, it does not have a parent */
     return( 0 );
   } else {
@@ -383,7 +383,6 @@ void expression_operate( expression* expr ) {
   nibble  bit;                           /* Bit holder for some ops               */
   int     intval1;                       /* Temporary integer value for *, /, %   */
   int     intval2;                       /* Temporary integer value for *, /, %   */
-  vector  comp;                          /* Vector containing contents of compare */
   nibble  value1a;                       /* 1-bit nibble value                    */
   nibble  value1b;                       /* 1-bit nibble value                    */
   nibble  value32[ VECTOR_SIZE( 32 ) ];  /* 32-bit nibble value                   */            
@@ -391,8 +390,8 @@ void expression_operate( expression* expr ) {
   if( expr != NULL ) {
 
     /* Evaluate left and right expressions before evaluating this expression */
-    expression_operate( expr->right );
-    expression_operate( expr->left  );
+//    expression_operate( expr->right );
+//    expression_operate( expr->left  );
 
     assert( expr->value != NULL );
 
@@ -707,6 +706,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 
 /* $Log$
+/* Revision 1.9  2002/06/22 05:27:30  phase1geo
+/* Additional supporting code for simulation engine and statement support in
+/* parser.
+/*
 /* Revision 1.8  2002/06/21 05:55:05  phase1geo
 /* Getting some codes ready for writing simulation engine.  We should be set
 /* now.
