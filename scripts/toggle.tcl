@@ -75,9 +75,13 @@ proc create_toggle_window {mod_name signal} {
     .togwin.f.info configure -text "$sig_name\[$tmp\]"
   }
 
-  # Set scrollbar to show bit 0 in textbox
-  # .togwin.f.hb set 1 1
-  .togwin.f.t xview moveto 1.0
+  # Right justify the toggle information
+  if {[expr [expr $toggle_msb - $toggle_lsb] + 1] <= 32} { 
+    .togwin.f.t tag configure tog_motion -justify right
+  } else {
+    .togwin.f.t tag configure tog_motion -justify left
+    .togwin.f.t xview moveto 1.0
+  }
 
   .togwin.f.info configure -text "$sig_name\[$toggle_msb:$toggle_lsb\]"
 

@@ -13,6 +13,7 @@ set end_line              0
 set line_summary_total    0
 set line_summary_hit      0
 set toggle_summary_total  0
+set toggle_summary_hit    0
 set toggle_summary_hit01  0
 set toggle_summary_hit10  0
 set curr_mod_name         0
@@ -62,14 +63,10 @@ proc calc_and_display_line_cov {} {
   if {$curr_mod_name != 0} {
 
     # Get list of uncovered/covered lines
-    if {$uncov_type == 1} {
-      set uncovered_lines 0
-      tcl_func_collect_uncovered_lines $curr_mod_name
-    }
-    if {$cov_type == 1} {
-      set covered_lines 0
-      tcl_func_collect_covered_lines $curr_mod_name
-    }
+    set uncovered_lines 0
+    set covered_lines   0
+    tcl_func_collect_uncovered_lines $curr_mod_name
+    tcl_func_collect_covered_lines   $curr_mod_name
 
     display_line_cov
 
@@ -168,18 +165,28 @@ proc calc_and_display_toggle_cov {} {
 
   global cov_type uncov_type mod_inst_type mod_list
   global uncovered_toggles covered_toggles
-  global curr_mod_name
+  global curr_mod_name start_line
+  global toggle_summary_hit toggle_summary_total
 
   if {$curr_mod_name != 0} {
 
     # Get list of uncovered/covered lines
-    if {$uncov_type == 1} {
-      set uncovered_toggles 0
-      tcl_func_collect_uncovered_toggles $curr_mod_name
-    }
-    if {$cov_type == 1} {
-      set covered_toggles 0
-      tcl_func_collect_covered_toggles $curr_mod_name
+    set uncovered_toggles 0
+    set covered_toggles   0
+    tcl_func_collect_uncovered_toggles $curr_mod_name $start_line
+    tcl_func_collect_covered_toggles   $curr_mod_name $start_line
+
+    # Calculate toggle hit and total values
+    if {[lindex $covered_toggles 0] == 0} {
+      set toggle_summary_hit 0
+      if {[lindex $uncovered_toggles 0] == 0} {
+        set toggle_summary_total 0
+      } else {
+        set toggle_summary_total [llength $uncovered_toggles]
+      }
+    } else {
+      set toggle_summary_hit   [llength $covered_toggles]
+      set toggle_summary_total [expr $toggle_summary_hit + [llength $uncovered_toggles]]
     }
 
     display_toggle_cov
@@ -195,7 +202,7 @@ proc display_toggle_cov {} {
   global uncovered_toggles covered_toggles
   global uncov_type cov_type
   global start_line end_line
-  global toggle_summary_total toggle_summary_hit01 toggle_summary_hit10
+  global toggle_summary_total toggle_summary_hit
   global cov_rb mod_inst_type mod_list
   global toggle01_verbose toggle10_verbose toggle_width
   global curr_mod_name
@@ -220,7 +227,7 @@ proc display_toggle_cov {} {
     if {$end_line != 0} {
 
       # First, populate the summary information
-      .covbox.ht configure -text "$toggle_summary_hit01"
+      .covbox.ht configure -text "$toggle_summary_hit"
       .covbox.tt configure -text "$toggle_summary_total"
 
       # Next, populate text box with file contents including highlights for covered/uncovered lines
@@ -254,7 +261,8 @@ proc display_toggle_cov {} {
           .bot.txt configure -cursor $curr_cursor
         }
         .bot.txt tag bind uncov_button <ButtonPress-1> {
-          create_toggle_window $curr_mod_name [.bot.txt get {current wordstart} {current wordend}]
+          set range [.bot.txt tag prevrange uncov_button {current + 1 chars}]
+          create_toggle_window $curr_mod_name [string trim [lindex [split [.bot.txt get [lindex $range 0] [lindex $range 1]] "\["] 0]]
         }
       } 
 

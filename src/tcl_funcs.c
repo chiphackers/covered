@@ -177,13 +177,16 @@ int tcl_func_collect_uncovered_toggles( ClientData d, Tcl_Interp* tcl, int argc,
   int          sig_cnt;
   int          i;
   char         str[85];
+  int          startline;
 
-  modname = strdup_safe( argv[1], __FILE__, __LINE__ );
+  modname   = strdup_safe( argv[1], __FILE__, __LINE__ );
+  startline = atol( argv[2] );
 
   if( toggle_collect( modname, 0, &sigs, &sig_cnt ) ) {
 
     for( i=0; i<sig_cnt; i++ ) {
-      snprintf( str, 85, "%d.%d %d.%d", sigs[i]->line, (((sigs[i]->col >> 16) & 0xffff) + 9), sigs[i]->line, ((sigs[i]->col & 0xffff) + 10) );
+      snprintf( str, 85, "%d.%d %d.%d", (sigs[i]->line - (startline - 1)), (((sigs[i]->col >> 16) & 0xffff) + 9),
+                                        (sigs[i]->line - (startline - 1)), ((sigs[i]->col & 0xffff) + 10) );
       if( i == 0 ) { 
         Tcl_SetVar( tcl, "uncovered_toggles", str, (TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT) );
       } else {
@@ -213,13 +216,16 @@ int tcl_func_collect_covered_toggles( ClientData d, Tcl_Interp* tcl, int argc, c
   int          sig_cnt;
   int          i;
   char         str[85];
+  int          startline;
 
-  modname = strdup_safe( argv[1], __FILE__, __LINE__ );
+  modname   = strdup_safe( argv[1], __FILE__, __LINE__ );
+  startline = atol( argv[2] );
 
   if( toggle_collect( modname, 1, &sigs, &sig_cnt ) ) {
 
     for( i=0; i<sig_cnt; i++ ) {
-      snprintf( str, 85, "%d.%d %d.%d", sigs[i]->line, (((sigs[i]->col >> 16) & 0xffff) + 9), sigs[i]->line, ((sigs[i]->col & 0xffff) + 10) );
+      snprintf( str, 85, "%d.%d %d.%d", (sigs[i]->line - (startline - 1)), (((sigs[i]->col >> 16) & 0xffff) + 9),
+                                        (sigs[i]->line - (startline - 1)), ((sigs[i]->col & 0xffff) + 10) );
       if( i == 0 ) {
         Tcl_SetVar( tcl, "covered_toggles", str, (TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT) );
       } else {
@@ -429,6 +435,10 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* home ) {
 
 /*
  $Log$
+ Revision 1.6  2004/08/08 12:50:27  phase1geo
+ Snapshot of addition of toggle coverage in GUI.  This is not working exactly as
+ it will be, but it is getting close.
+
  Revision 1.5  2004/04/21 05:14:03  phase1geo
  Adding report_gui checking to print_output and adding error handler to TCL
  scripts.  Any errors occurring within the code will be propagated to the user.
