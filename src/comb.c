@@ -924,6 +924,70 @@ void combination_two_vars( FILE* ofile, expression* exp, int val0, int val1, int
 }
 
 /*!
+ \param ofile  Pointer to file to output results to.
+ \param exp    Pointer to top-level AND/OR expression to evaluate.
+ \param id     ID of current expression.
+
+ Displays the missed combinational sequences for the specified expression to the
+ specified output stream in tabular form.
+*/
+void combination_multi_vars( FILE* ofile, expression* exp, int id ) {
+
+  expression* curr_exp;       /* Pointer to current expression */
+  char        exp_id0 = 'A';  /* Name for current expression   */
+  char        exp_id1 = 'A';  /* Name for current expression   */
+  int         exp_cnt = 0;
+  int         i;
+  int         uniq_shift;
+  int         eval_shift;
+  int         eval_val;
+
+  fprintf( ofile, "Expression %d\n", id );
+
+  switch( SUPPL_OP( exp->suppl ) ) {
+    case EXP_OP_AND  :
+      fprintf( ofile, "^^^^^^^^^^^^^ - &\n" );   eval_val = 1;  uniq_shift = SUPPL_LSB_FALSE;  eval_shift = SUPPL_LSB_EVAL_11;  break;
+    case EXP_OP_OR   :
+      fprintf( ofile, "^^^^^^^^^^^^^ - |\n" );   eval_val = 0;  uniq_shift = SUPPL_LSB_TRUE;   eval_shift = SUPPL_LSB_EVAL_00;  break;
+    case EXP_OP_LAND :
+      fprintf( ofile, "^^^^^^^^^^^^^ - &&\n" );  eval_val = 1;  uniq_shift = SUPPL_LSB_FALSE;  eval_shift = SUPPL_LSB_EVAL_11;  break;
+    case EXP_OP_LOR  :
+      fprintf( ofile, "^^^^^^^^^^^^^ - ||\n" );  eval_val = 0;  uniq_shift = SUPPL_LSB_TRUE;   eval_shift = SUPPL_LSB_EVAL_00;  break;
+    default          :  break;
+  }
+
+  /* Count the number of expressions to use */
+  curr_exp = exp;
+  while( (curr_exp->left != NULL) && (SUPPL_OP( curr_exp->suppl ) == SUPPL_OP( curr_exp->left->suppl )) ) {
+    fprintf( ofile, " %c%c |", exp_id1, exp_id0 );
+    exp_cnt++;
+    if( exp_id0 == 'Z' ) {
+      exp_id1++;
+      exp_id0 = 'A';
+    } else {
+      exp_id0++;
+    }
+    curr_exp = curr_exp->left;
+  }
+  fprintf( ofile, " All %d\n", eval_val );
+  for( i=0; i<exp_cnt; i++ ) {
+    fprintf( ofile, "----+" );
+  }
+  fprintf( ofile, "-------\n" );
+
+  curr_exp = exp;
+  while( (curr_exp->left != NULL) && (SUPPL_OP( curr_exp->suppl ) == SUPPL_OP( curr_exp->left->suppl )) ) {
+    fprintf( ofile, "  %d  ", ((curr_exp->suppl >> uniq_shift) & 0x1) );
+    curr_exp = curr_exp->left;
+  }
+  if( ((exp->suppl >> eval_shift) & 0x1) == 0 ) {
+    fprintf( ofile, "  %d\n", ((exp->suppl >> eval_shift) & 0x1) );
+  }
+  fprintf( ofile, "\n" );
+
+}
+
+/*!
  \param ofile       Pointer to file to output results to.
  \param exp         Pointer to expression tree to evaluate.
  \param curr_depth  Specifies current depth of expression tree.
@@ -944,6 +1008,18 @@ void combination_list_missed( FILE* ofile, expression* exp, unsigned int curr_de
     if( (EXPR_COMB_MISSED( exp ) == 1) && 
         (((report_comb_depth == REPORT_DETAILED) && (curr_depth <= report_comb_depth)) ||
           (report_comb_depth == REPORT_VERBOSE)) ) {
+
+/* Remove for new output
+      if( (SUPPL_IS_ROOT( exp->suppl ) == 1) || (SUPPL_OP( exp->suppl ) != SUPPL_OP( exp->parent->expr->suppl )) ) {
+        if( (exp->left != NULL) && (SUPPL_OP( exp->suppl ) == SUPPL_OP( exp->left->suppl )) &&
+            ((SUPPL_OP( exp->suppl ) == EXP_OP_AND)  ||
+             (SUPPL_OP( exp->suppl ) == EXP_OP_OR)   ||
+             (SUPPL_OP( exp->suppl ) == EXP_OP_LAND) ||
+             (SUPPL_OP( exp->suppl ) == EXP_OP_LOR)) ) {
+          combination_multi_vars( ofile, exp, *exp_id );
+        }
+      }
+*/
 
       /* Create combination table */
       switch( SUPPL_OP( exp->suppl ) ) {
@@ -1228,6 +1304,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.72  2003/12/18 18:40:23  phase1geo
+ Increasing detailed depth from 1 to 2 and making detail depth somewhat
+ programmable.
+
  Revision 1.71  2003/12/13 05:52:02  phase1geo
  Removed verbose output and updated development documentation for new code.
 
