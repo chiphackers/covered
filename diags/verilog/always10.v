@@ -13,7 +13,7 @@ initial begin
 	a = 1'b0;
 	c = 1'b0;
 	#20;
-	@(posedge clock) a <= 1'b1;
+	@(negedge clock) a <= 1'b1;
 	@(posedge clock) a <= 1'b0;
 	#20;
 	$finish;
