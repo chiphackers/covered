@@ -1,12 +1,41 @@
 \section{comb.c File Reference}
 \label{comb_8c}\index{comb.c@{comb.c}}
 {\tt \#include $<$stdio.h$>$}\par
+{\tt \#include $<$assert.h$>$}\par
+{\tt \#include \char`\"{}defines.h\char`\"{}}\par
 {\tt \#include \char`\"{}comb.h\char`\"{}}\par
+{\tt \#include \char`\"{}codegen.h\char`\"{}}\par
+{\tt \#include \char`\"{}util.h\char`\"{}}\par
 \subsection*{Functions}
 \begin{CompactItemize}
 \item 
+void {\bf combination\_\-get\_\-stats} ({\bf exp\_\-link} $\ast$expl, float $\ast$total, int $\ast$hit)
+\item 
+void {\bf combination\_\-instance\_\-summary} (FILE $\ast$ofile, {\bf mod\_\-inst} $\ast$root, char $\ast$parent)
+\item 
+void {\bf combination\_\-module\_\-summary} (FILE $\ast$ofile, {\bf mod\_\-link} $\ast$head)
+\item 
+void {\bf combination\_\-draw\_\-line} (char $\ast$line, int {\bf size}, int exp\_\-id)
+\item 
+void {\bf combination\_\-underline\_\-tree} ({\bf expression} $\ast$exp, char $\ast$$\ast$$\ast$lines, int $\ast$depth, int $\ast${\bf size}, int $\ast$exp\_\-id)
+\item 
+void {\bf combination\_\-underline} (FILE $\ast$ofile, {\bf expression} $\ast$exp, char $\ast$begin\_\-sp)
+\item 
+void {\bf combination\_\-display\_\-verbose} (FILE $\ast$ofile, {\bf exp\_\-link} $\ast$expl)
+\item 
+void {\bf combination\_\-instance\_\-verbose} (FILE $\ast$ofile, {\bf mod\_\-inst} $\ast$root)
+\item 
+void {\bf combination\_\-module\_\-verbose} (FILE $\ast$ofile, {\bf mod\_\-link} $\ast$head)
+\item 
 void {\bf combination\_\-report} (FILE $\ast$ofile, {\bf bool} verbose, {\bf bool} instance)
 \begin{CompactList}\small\item\em Generates report output for combinational logic coverage.\item\end{CompactList}\end{CompactItemize}
+\subsection*{Variables}
+\begin{CompactItemize}
+\item 
+{\bf mod\_\-inst} $\ast$ {\bf instance\_\-root}
+\item 
+{\bf mod\_\-link} $\ast$ {\bf mod\_\-head}
+\end{CompactItemize}
 
 
 \subsection{Detailed Description}
@@ -21,9 +50,96 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 
 
 \subsection{Function Documentation}
-\index{comb.c@{comb.c}!combination_report@{combination\_\-report}}
+\index{comb.c@{comb.c}!combination_display_verbose@{combination\_\-display\_\-verbose}}
+\index{combination_display_verbose@{combination\_\-display\_\-verbose}!comb.c@{comb.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-display\_\-verbose (FILE $\ast$ {\em ofile}, {\bf exp\_\-link} $\ast$ {\em expl})}\label{comb_8c_a8}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+ofile}]Pointer to file to output results to. \item[{\em 
+expl}]Pointer to expression list head.\end{description}
+\end{Desc}
+Displays the expressions (and groups of expressions) that were considered  to be measurable (evaluates to a value of TRUE (1) or FALSE (0) but were  not hit during simulation. The entire Verilog expression is displayed to the specified output stream with each of its measured expressions being underlined and numbered. The missed combinations are then output below the Verilog code, showing those logical combinations that were not hit during simulation. \index{comb.c@{comb.c}!combination_draw_line@{combination\_\-draw\_\-line}}
+\index{combination_draw_line@{combination\_\-draw\_\-line}!comb.c@{comb.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-draw\_\-line (char $\ast$ {\em line}, int {\em size}, int {\em exp\_\-id})}\label{comb_8c_a5}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+line}]Pointer to line to create line onto. \item[{\em 
+size}]Number of characters long line is. \item[{\em 
+exp\_\-id}]ID to place in underline.\end{description}
+\end{Desc}
+Draws an underline containing the specified expression ID to the specified line. \index{comb.c@{comb.c}!combination_get_stats@{combination\_\-get\_\-stats}}
+\index{combination_get_stats@{combination\_\-get\_\-stats}!comb.c@{comb.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-get\_\-stats ({\bf exp\_\-link} $\ast$ {\em expl}, float $\ast$ {\em total}, int $\ast$ {\em hit})}\label{comb_8c_a2}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+expl}]Pointer to current expression link to evaluate. \item[{\em 
+total}]Pointer to total number of logical combinations. \item[{\em 
+hit}]Pointer to number of logical combinations hit during simulation.\end{description}
+\end{Desc}
+Recursively traverses the specified expression list, recording the total number of logical combinations in the expression list and the number of combinations hit during the course of simulation. An expression can be considered for combinational coverage if the \char`\"{}measured\char`\"{} bit is set in the expression. \index{comb.c@{comb.c}!combination_instance_summary@{combination\_\-instance\_\-summary}}
+\index{combination_instance_summary@{combination\_\-instance\_\-summary}!comb.c@{comb.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-instance\_\-summary (FILE $\ast$ {\em ofile}, {\bf mod\_\-inst} $\ast$ {\em root}, char $\ast$ {\em parent})}\label{comb_8c_a3}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+ofile}]Pointer to file to output results to. \item[{\em 
+root}]Pointer to node in instance tree to evaluate. \item[{\em 
+parent}]Name of parent instance name.\end{description}
+\end{Desc}
+Outputs summarized results of the combinational logic coverage per module instance to the specified output stream. Summarized results are printed  as percentages based on the number of combinations hit during simulation  divided by the total number of expression combinations possible in the  design. An expression is said to be measurable for combinational coverage  if it evaluates to a value of 0 or 1. \index{comb.c@{comb.c}!combination_instance_verbose@{combination\_\-instance\_\-verbose}}
+\index{combination_instance_verbose@{combination\_\-instance\_\-verbose}!comb.c@{comb.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-instance\_\-verbose (FILE $\ast$ {\em ofile}, {\bf mod\_\-inst} $\ast$ {\em root})}\label{comb_8c_a9}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+ofile}]Pointer to file to output results to. \item[{\em 
+root}]Pointer to current module instance to evaluate.\end{description}
+\end{Desc}
+Outputs the verbose coverage report for the specified module instance to the specified output stream. \index{comb.c@{comb.c}!combination_module_summary@{combination\_\-module\_\-summary}}
+\index{combination_module_summary@{combination\_\-module\_\-summary}!comb.c@{comb.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-module\_\-summary (FILE $\ast$ {\em ofile}, {\bf mod\_\-link} $\ast$ {\em head})}\label{comb_8c_a4}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+ofile}]Pointer to file to output results to. \item[{\em 
+head}]Pointer to link in current module list to evaluate.\end{description}
+\end{Desc}
+Outputs summarized results of the combinational logic coverage per module to the specified output stream. Summarized results are printed as  percentages based on the number of combinations hit during simulation  divided by the total number of expression combinations possible in the  design. An expression is said to be measurable for combinational coverage  if it evaluates to a value of 0 or 1. \index{comb.c@{comb.c}!combination_module_verbose@{combination\_\-module\_\-verbose}}
+\index{combination_module_verbose@{combination\_\-module\_\-verbose}!comb.c@{comb.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-module\_\-verbose (FILE $\ast$ {\em ofile}, {\bf mod\_\-link} $\ast$ {\em head})}\label{comb_8c_a10}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+ofile}]Pointer to file to output results to. \item[{\em 
+head}]Pointer to current module to evaluate.\end{description}
+\end{Desc}
+Outputs the verbose coverage report for the specified module to the specified output stream. \index{comb.c@{comb.c}!combination_report@{combination\_\-report}}
 \index{combination_report@{combination\_\-report}!comb.c@{comb.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-report (FILE $\ast$ {\em ofile}, {\bf bool} {\em verbose}, {\bf bool} {\em instance})}\label{comb_8c_a0}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-report (FILE $\ast$ {\em ofile}, {\bf bool} {\em verbose}, {\bf bool} {\em instance})}\label{comb_8c_a11}
 
 
 Generates report output for combinational logic coverage.
@@ -36,4 +152,44 @@ ofile}]Pointer to file to output results to. \item[{\em
 verbose}]Specifies whether or not to provide verbose information \item[{\em 
 instance}]Specifies to report by instance or module.\end{description}
 \end{Desc}
-After the design is read into the module hierarchy, parses the hierarchy by module, reporting the combinational logic coverage for each module encountered. The parent  module will specify its own combinational logic coverage along with a total combinational logic coverage including its children. 
+After the design is read into the module hierarchy, parses the hierarchy by module, reporting the combinational logic coverage for each module encountered. The parent  module will specify its own combinational logic coverage along with a total combinational logic coverage including its children. \index{comb.c@{comb.c}!combination_underline@{combination\_\-underline}}
+\index{combination_underline@{combination\_\-underline}!comb.c@{comb.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-underline (FILE $\ast$ {\em ofile}, {\bf expression} $\ast$ {\em exp}, char $\ast$ {\em begin\_\-sp})}\label{comb_8c_a7}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+ofile}]Pointer output stream to display underlines to. \item[{\em 
+exp}]Pointer to parent expression to create underline for. \item[{\em 
+begin\_\-sp}]Spacing that is placed at the beginning of the generated line.\end{description}
+\end{Desc}
+Traverses through the expression tree that is on the same line as the parent, creating underline strings. An underline is created for each expression that does not have complete combination logic coverage. Each underline (children to parent creates an inverted tree) and contains a number for the specified expression. \index{comb.c@{comb.c}!combination_underline_tree@{combination\_\-underline\_\-tree}}
+\index{combination_underline_tree@{combination\_\-underline\_\-tree}!comb.c@{comb.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void combination\_\-underline\_\-tree ({\bf expression} $\ast$ {\em exp}, char $\ast$$\ast$$\ast$ {\em lines}, int $\ast$ {\em depth}, int $\ast$ {\em size}, int $\ast$ {\em exp\_\-id})}\label{comb_8c_a6}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+exp}]Pointer to expression to create underline for. \item[{\em 
+lines}]Stack of lines for left child. \item[{\em 
+depth}]Pointer to top of left child stack. \item[{\em 
+size}]Pointer to character width of this node. \item[{\em 
+exp\_\-id}]Pointer to current expression ID to use in labeling.\end{description}
+\end{Desc}
+Recursively parses specified expression tree, underlining and labeling each measurable expression. 
+
+\subsection{Variable Documentation}
+\index{comb.c@{comb.c}!instance_root@{instance\_\-root}}
+\index{instance_root@{instance\_\-root}!comb.c@{comb.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-inst}$\ast$ instance\_\-root}\label{comb_8c_a0}
+
+
+\index{comb.c@{comb.c}!mod_head@{mod\_\-head}}
+\index{mod_head@{mod\_\-head}!comb.c@{comb.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-link}$\ast$ mod\_\-head}\label{comb_8c_a1}
+
+

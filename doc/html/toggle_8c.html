@@ -10,19 +10,21 @@
 <code>#include &lt;assert.h&gt;</code><br>
 <code>#include "<a class="el" href="toggle_8h-source.html">toggle.h</a>"</code><br>
 <code>#include "<a class="el" href="defines_8h-source.html">defines.h</a>"</code><br>
+<code>#include "<a class="el" href="vector_8h-source.html">vector.h</a>"</code><br>
 <table border=0 cellpadding=0 cellspacing=0>
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="toggle_8c.html#a2">toggle_get_stats</a> (<a class="el" href="defines_8h.html#a98">exp_link</a> *expl, <a class="el" href="defines_8h.html#a99">sig_link</a> *sigl, float *total, int *hit01, int *hit10)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="toggle_8c.html#a2">toggle_get_stats</a> (<a class="el" href="defines_8h.html#a101">exp_link</a> *expl, <a class="el" href="defines_8h.html#a102">sig_link</a> *sigl, float *total, int *hit01, int *hit10)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Calculates the toggle coverage for the specifed expression and signal lists.</em> <a href="#a2">More...</a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="toggle_8c.html#a3">toggle_instance_summary</a> (FILE *ofile, <a class="el" href="defines_8h.html#a106">mod_inst</a> *root, char *parent_inst)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="toggle_8c.html#a4">toggle_module_summary</a> (FILE *ofile, <a class="el" href="defines_8h.html#a101">mod_link</a> *head)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="toggle_8c.html#a5">toggle_instance_verbose</a> (FILE *ofile, <a class="el" href="defines_8h.html#a106">mod_inst</a> *root)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="toggle_8c.html#a6">toggle_module_verbose</a> (FILE *ofile, <a class="el" href="defines_8h.html#a101">mod_link</a> *head)</td></tr>
-<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="toggle_8c.html#a7">toggle_report</a> (FILE *ofile, <a class="el" href="defines_8h.html#a109">bool</a> verbose, <a class="el" href="defines_8h.html#a109">bool</a> instance)</td></tr>
-<tr><td>&nbsp;</td><td><font size=-1><em>Generates report output for toggle coverage.</em> <a href="#a7">More...</a><em></em></font><br><br></td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="toggle_8c.html#a3">toggle_instance_summary</a> (FILE *ofile, <a class="el" href="defines_8h.html#a109">mod_inst</a> *root, char *parent_inst)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="toggle_8c.html#a4">toggle_module_summary</a> (FILE *ofile, <a class="el" href="defines_8h.html#a104">mod_link</a> *head)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="toggle_8c.html#a5">toggle_display_verbose</a> (FILE *ofile, <a class="el" href="defines_8h.html#a102">sig_link</a> *sigl)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="toggle_8c.html#a6">toggle_instance_verbose</a> (FILE *ofile, <a class="el" href="defines_8h.html#a109">mod_inst</a> *root)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="toggle_8c.html#a7">toggle_module_verbose</a> (FILE *ofile, <a class="el" href="defines_8h.html#a104">mod_link</a> *head)</td></tr>
+<tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="toggle_8c.html#a8">toggle_report</a> (FILE *ofile, <a class="el" href="defines_8h.html#a112">bool</a> verbose, <a class="el" href="defines_8h.html#a112">bool</a> instance)</td></tr>
+<tr><td>&nbsp;</td><td><font size=-1><em>Generates report output for toggle coverage.</em> <a href="#a8">More...</a><em></em></font><br><br></td></tr>
 <tr><td colspan=2><br><h2>Variables</h2></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a106">mod_inst</a> *&nbsp;</td><td valign=bottom><a class="el" href="toggle_8c.html#a0">instance_root</a></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a101">mod_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="toggle_8c.html#a1">mod_head</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a109">mod_inst</a> *&nbsp;</td><td valign=bottom><a class="el" href="toggle_8c.html#a0">instance_root</a></td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a104">mod_link</a> *&nbsp;</td><td valign=bottom><a class="el" href="toggle_8c.html#a1">mod_head</a></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 
@@ -32,6 +34,52 @@ Author: </b><dd>
 Trevor Williams (<a href="mailto:trevorw@charter.net">trevorw@charter.net</a>) </dl><dl compact><dt><b>
 Date: </b><dd>
 3/31/2002</dl><hr><h2>Function Documentation</h2>
+<a name="a5" doxytag="toggle.c::toggle_display_verbose"></a><p>
+<table width="100%" cellpadding="2" cellspacing="0" border="0">
+  <tr>
+    <td class="md">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td class="md" nowrap valign="top"> void toggle_display_verbose </td>
+          <td class="md" valign="top">(&nbsp;</td>
+          <td class="md" nowrap valign="top">FILE *&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>ofile</em>, </td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a102">sig_link</a> *&nbsp;</td>
+          <td class="mdname" nowrap>&nbsp; <em>sigl</em></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td class="md">)&nbsp;</td>
+          <td class="md" colspan="2"></td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+<table cellspacing=5 cellpadding=0 border=0>
+  <tr>
+    <td>
+      &nbsp;
+    </td>
+    <td>
+
+<p>
+<dl compact><dt><b>
+Parameters: </b><dd>
+<table border=0 cellspacing=2 cellpadding=0>
+<tr><td valign=top><em>ofile</em>&nbsp;</td><td>
+Pointer to file to output results to. </td></tr>
+<tr><td valign=top><em>sigl</em>&nbsp;</td><td>
+Pointer to signal list head.</td></tr>
+</table>
+</dl>Displays the signals that did not achieve 100% toggle coverage to standard  output from the specified signal list.     </td>
+  </tr>
+</table>
 <a name="a2" doxytag="toggle.c::toggle_get_stats"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
@@ -40,13 +88,13 @@ Date: </b><dd>
         <tr>
           <td class="md" nowrap valign="top"> void toggle_get_stats </td>
           <td class="md" valign="top">(&nbsp;</td>
-          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a98">exp_link</a> *&nbsp;</td>
+          <td class="md" nowrap valign="top"><a class="el" href="defines_8h.html#a101">exp_link</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>expl</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a99">sig_link</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a102">sig_link</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>sigl</em>, </td>
         </tr>
         <tr>
@@ -118,7 +166,7 @@ Number of bits toggling from 1 to 0 during simulation.</td></tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a106">mod_inst</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a109">mod_inst</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>root</em>, </td>
         </tr>
         <tr>
@@ -158,7 +206,7 @@ Name of parent instance.</td></tr>
 </dl>Displays the toggle instance summarization to the specified file. Recursively iterates through module instance tree, outputting the toggle information that is found at that instance.     </td>
   </tr>
 </table>
-<a name="a5" doxytag="toggle.c::toggle_instance_verbose"></a><p>
+<a name="a6" doxytag="toggle.c::toggle_instance_verbose"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -172,7 +220,7 @@ Name of parent instance.</td></tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a106">mod_inst</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a109">mod_inst</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>root</em></td>
         </tr>
         <tr>
@@ -201,7 +249,7 @@ Pointer to file to display coverage results to. </td></tr>
 <tr><td valign=top><em>root</em>&nbsp;</td><td>
 Pointer to root of instance module tree to parse.</td></tr>
 </table>
-</dl>Displays the verbose toggle coverage results to the specified output stream on an instance basis. The verbose toggle coverage includes the signal names (and expressions) that did not receive 100% toggle coverage during simulation.     </td>
+</dl>Displays the verbose toggle coverage results to the specified output stream on an instance basis. The verbose toggle coverage includes the signal names and their bits that did not receive 100% toggle coverage during simulation.     </td>
   </tr>
 </table>
 <a name="a4" doxytag="toggle.c::toggle_module_summary"></a><p>
@@ -218,7 +266,7 @@ Pointer to root of instance module tree to parse.</td></tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a101">mod_link</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a104">mod_link</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>head</em></td>
         </tr>
         <tr>
@@ -250,7 +298,7 @@ Pointer to head of module list to parse.</td></tr>
 </dl>Iterates through the module list displaying the toggle coverage for each module.     </td>
   </tr>
 </table>
-<a name="a6" doxytag="toggle.c::toggle_module_verbose"></a><p>
+<a name="a7" doxytag="toggle.c::toggle_module_verbose"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -264,7 +312,7 @@ Pointer to head of module list to parse.</td></tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a101">mod_link</a> *&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a104">mod_link</a> *&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>head</em></td>
         </tr>
         <tr>
@@ -293,10 +341,10 @@ Pointer to file to display coverage results to. </td></tr>
 <tr><td valign=top><em>head</em>&nbsp;</td><td>
 Pointer to head of module list to parse.</td></tr>
 </table>
-</dl>Displays the verbose toggle coverage results to the specified output stream on a module basis (combining modules that are instantiated multiple times). The verbose toggle coverage includes the signal names (and expressions) that did not receive 100% toggle coverage during simulation.     </td>
+</dl>Displays the verbose toggle coverage results to the specified output stream on a module basis (combining modules that are instantiated multiple times). The verbose toggle coverage includes the signal names and their bits that did not receive 100% toggle coverage during simulation.     </td>
   </tr>
 </table>
-<a name="a7" doxytag="toggle.c::toggle_report"></a><p>
+<a name="a8" doxytag="toggle.c::toggle_report"></a><p>
 <table width="100%" cellpadding="2" cellspacing="0" border="0">
   <tr>
     <td class="md">
@@ -310,13 +358,13 @@ Pointer to head of module list to parse.</td></tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a109">bool</a>&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a112">bool</a>&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>verbose</em>, </td>
         </tr>
         <tr>
           <td></td>
           <td></td>
-          <td class="md" nowrap><a class="el" href="defines_8h.html#a109">bool</a>&nbsp;</td>
+          <td class="md" nowrap><a class="el" href="defines_8h.html#a112">bool</a>&nbsp;</td>
           <td class="mdname" nowrap>&nbsp; <em>instance</em></td>
         </tr>
         <tr>
@@ -359,7 +407,7 @@ Specifies to report by instance or module.</td></tr>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a106">mod_inst</a>* instance_root </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a109">mod_inst</a>* instance_root </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
           <td class="md" valign="top">)&nbsp;</td>
@@ -387,7 +435,7 @@ Pointer to root of module instance tree     </td>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a101">mod_link</a>* mod_head </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a104">mod_link</a>* mod_head </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp;          </td>
           <td class="md" valign="top">)&nbsp;</td>
@@ -409,7 +457,7 @@ Pointer to root of module instance tree     </td>
 Pointer to head element of module list     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Thu Apr 18 21:27:19 2002 for Covered by
+<hr><address align="right"><small>Generated on Sun Apr 21 23:43:20 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.15 </small></address>

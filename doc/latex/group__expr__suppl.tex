@@ -20,11 +20,22 @@
 \#define {\bf SUPPL\_\-MERGE\_\-MASK}\ 0x302
 \item 
 \#define {\bf SUPPL\_\-WAS\_\-EXECUTED}(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-EXECUTED) \& 0x1)
+\item 
+\#define {\bf SUPPL\_\-IS\_\-MEASURABLE}(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-MEASURABLE) \& 0x1)
+\item 
+\#define {\bf SUPPL\_\-WAS\_\-TRUE}(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-TRUE) \& 0x1)
+\item 
+\#define {\bf SUPPL\_\-WAS\_\-FALSE}(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-FALSE) \& 0x1)
 \end{CompactItemize}
 
 
 \subsection{Define Documentation}
-\index{expr_suppl@{expr\_\-suppl}!SUPPL_LSB_CHANGED@{SUPPL\_\-LSB\_\-CHANGED}}
+\index{expr_suppl@{expr\_\-suppl}!SUPPL_IS_MEASURABLE@{SUPPL\_\-IS\_\-MEASURABLE}}
+\index{SUPPL_IS_MEASURABLE@{SUPPL\_\-IS\_\-MEASURABLE}!expr_suppl@{expr\_\-suppl}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-IS\_\-MEASURABLE(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-MEASURABLE) \& 0x1)}\label{group__expr__suppl_a9}
+
+
+Returns a value of 1 if the specified supplemental value is considered to be measurable. \index{expr_suppl@{expr\_\-suppl}!SUPPL_LSB_CHANGED@{SUPPL\_\-LSB\_\-CHANGED}}
 \index{SUPPL_LSB_CHANGED@{SUPPL\_\-LSB\_\-CHANGED}!expr_suppl@{expr\_\-suppl}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-LSB\_\-CHANGED\ 2}\label{group__expr__suppl_a2}
 
@@ -74,3 +85,14 @@ FALSE \end{CompactItemize}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-WAS\_\-EXECUTED(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-EXECUTED) \& 0x1)}\label{group__expr__suppl_a8}
 
 
+Returns a value of 1 if the specified supplemental value has the executed bit set; otherwise, returns a value of 0 to indicate whether the corresponding expression was executed during simulation or not. \index{expr_suppl@{expr\_\-suppl}!SUPPL_WAS_FALSE@{SUPPL\_\-WAS\_\-FALSE}}
+\index{SUPPL_WAS_FALSE@{SUPPL\_\-WAS\_\-FALSE}!expr_suppl@{expr\_\-suppl}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-WAS\_\-FALSE(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-FALSE) \& 0x1)}\label{group__expr__suppl_a11}
+
+
+Returns a value of 1 if the specified supplemental belongs to an expression that has evaluated to a value of FALSE (0) during simulation. \index{expr_suppl@{expr\_\-suppl}!SUPPL_WAS_TRUE@{SUPPL\_\-WAS\_\-TRUE}}
+\index{SUPPL_WAS_TRUE@{SUPPL\_\-WAS\_\-TRUE}!expr_suppl@{expr\_\-suppl}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}\#define SUPPL\_\-WAS\_\-TRUE(x)\ ((x $>$$>$ SUPPL\_\-LSB\_\-TRUE) \& 0x1)}\label{group__expr__suppl_a10}
+
+
+Returns a value of 1 if the specified supplemental belongs to an expression that has evaluated to a value of TRUE (1) during simulation. 

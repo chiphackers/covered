@@ -4,6 +4,7 @@
 {\tt \#include $<$assert.h$>$}\par
 {\tt \#include \char`\"{}toggle.h\char`\"{}}\par
 {\tt \#include \char`\"{}defines.h\char`\"{}}\par
+{\tt \#include \char`\"{}vector.h\char`\"{}}\par
 \subsection*{Functions}
 \begin{CompactItemize}
 \item 
@@ -12,6 +13,8 @@ void {\bf toggle\_\-get\_\-stats} ({\bf exp\_\-link} $\ast$expl, {\bf sig\_\-lin
 void {\bf toggle\_\-instance\_\-summary} (FILE $\ast$ofile, {\bf mod\_\-inst} $\ast$root, char $\ast$parent\_\-inst)
 \item 
 void {\bf toggle\_\-module\_\-summary} (FILE $\ast$ofile, {\bf mod\_\-link} $\ast$head)
+\item 
+void {\bf toggle\_\-display\_\-verbose} (FILE $\ast$ofile, {\bf sig\_\-link} $\ast$sigl)
 \item 
 void {\bf toggle\_\-instance\_\-verbose} (FILE $\ast$ofile, {\bf mod\_\-inst} $\ast$root)
 \item 
@@ -40,7 +43,19 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 
 
 \subsection{Function Documentation}
-\index{toggle.c@{toggle.c}!toggle_get_stats@{toggle\_\-get\_\-stats}}
+\index{toggle.c@{toggle.c}!toggle_display_verbose@{toggle\_\-display\_\-verbose}}
+\index{toggle_display_verbose@{toggle\_\-display\_\-verbose}!toggle.c@{toggle.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void toggle\_\-display\_\-verbose (FILE $\ast$ {\em ofile}, {\bf sig\_\-link} $\ast$ {\em sigl})}\label{toggle_8c_a5}
+
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+ofile}]Pointer to file to output results to. \item[{\em 
+sigl}]Pointer to signal list head.\end{description}
+\end{Desc}
+Displays the signals that did not achieve 100\% toggle coverage to standard  output from the specified signal list. \index{toggle.c@{toggle.c}!toggle_get_stats@{toggle\_\-get\_\-stats}}
 \index{toggle_get_stats@{toggle\_\-get\_\-stats}!toggle.c@{toggle.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void toggle\_\-get\_\-stats ({\bf exp\_\-link} $\ast$ {\em expl}, {\bf sig\_\-link} $\ast$ {\em sigl}, float $\ast$ {\em total}, int $\ast$ {\em hit01}, int $\ast$ {\em hit10})}\label{toggle_8c_a2}
 
@@ -72,7 +87,7 @@ parent\_\-inst}]Name of parent instance.\end{description}
 \end{Desc}
 Displays the toggle instance summarization to the specified file. Recursively iterates through module instance tree, outputting the toggle information that is found at that instance. \index{toggle.c@{toggle.c}!toggle_instance_verbose@{toggle\_\-instance\_\-verbose}}
 \index{toggle_instance_verbose@{toggle\_\-instance\_\-verbose}!toggle.c@{toggle.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void toggle\_\-instance\_\-verbose (FILE $\ast$ {\em ofile}, {\bf mod\_\-inst} $\ast$ {\em root})}\label{toggle_8c_a5}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void toggle\_\-instance\_\-verbose (FILE $\ast$ {\em ofile}, {\bf mod\_\-inst} $\ast$ {\em root})}\label{toggle_8c_a6}
 
 
 \begin{Desc}
@@ -82,7 +97,7 @@ Displays the toggle instance summarization to the specified file. Recursively it
 ofile}]Pointer to file to display coverage results to. \item[{\em 
 root}]Pointer to root of instance module tree to parse.\end{description}
 \end{Desc}
-Displays the verbose toggle coverage results to the specified output stream on an instance basis. The verbose toggle coverage includes the signal names (and expressions) that did not receive 100\% toggle coverage during simulation. \index{toggle.c@{toggle.c}!toggle_module_summary@{toggle\_\-module\_\-summary}}
+Displays the verbose toggle coverage results to the specified output stream on an instance basis. The verbose toggle coverage includes the signal names and their bits that did not receive 100\% toggle coverage during simulation. \index{toggle.c@{toggle.c}!toggle_module_summary@{toggle\_\-module\_\-summary}}
 \index{toggle_module_summary@{toggle\_\-module\_\-summary}!toggle.c@{toggle.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void toggle\_\-module\_\-summary (FILE $\ast$ {\em ofile}, {\bf mod\_\-link} $\ast$ {\em head})}\label{toggle_8c_a4}
 
@@ -96,7 +111,7 @@ head}]Pointer to head of module list to parse.\end{description}
 \end{Desc}
 Iterates through the module list displaying the toggle coverage for each module. \index{toggle.c@{toggle.c}!toggle_module_verbose@{toggle\_\-module\_\-verbose}}
 \index{toggle_module_verbose@{toggle\_\-module\_\-verbose}!toggle.c@{toggle.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void toggle\_\-module\_\-verbose (FILE $\ast$ {\em ofile}, {\bf mod\_\-link} $\ast$ {\em head})}\label{toggle_8c_a6}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void toggle\_\-module\_\-verbose (FILE $\ast$ {\em ofile}, {\bf mod\_\-link} $\ast$ {\em head})}\label{toggle_8c_a7}
 
 
 \begin{Desc}
@@ -106,9 +121,9 @@ Iterates through the module list displaying the toggle coverage for each module.
 ofile}]Pointer to file to display coverage results to. \item[{\em 
 head}]Pointer to head of module list to parse.\end{description}
 \end{Desc}
-Displays the verbose toggle coverage results to the specified output stream on a module basis (combining modules that are instantiated multiple times). The verbose toggle coverage includes the signal names (and expressions) that did not receive 100\% toggle coverage during simulation. \index{toggle.c@{toggle.c}!toggle_report@{toggle\_\-report}}
+Displays the verbose toggle coverage results to the specified output stream on a module basis (combining modules that are instantiated multiple times). The verbose toggle coverage includes the signal names and their bits that did not receive 100\% toggle coverage during simulation. \index{toggle.c@{toggle.c}!toggle_report@{toggle\_\-report}}
 \index{toggle_report@{toggle\_\-report}!toggle.c@{toggle.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void toggle\_\-report (FILE $\ast$ {\em ofile}, {\bf bool} {\em verbose}, {\bf bool} {\em instance})}\label{toggle_8c_a7}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void toggle\_\-report (FILE $\ast$ {\em ofile}, {\bf bool} {\em verbose}, {\bf bool} {\em instance})}\label{toggle_8c_a8}
 
 
 Generates report output for toggle coverage.

@@ -6,13 +6,13 @@ Contains functions for writing and reading contents of covered database file.
 \subsection*{Functions}
 \begin{CompactItemize}
 \item 
-{\bf bool} {\bf db\_\-write} (char $\ast$file)
+{\bf bool} {\bf db\_\-write} (char $\ast${\bf file})
 \begin{CompactList}\small\item\em Writes contents of expressions, modules and signals to database file.\item\end{CompactList}\item 
-{\bf bool} {\bf db\_\-read} (char $\ast$file, int read\_\-mode)
+{\bf bool} {\bf db\_\-read} (char $\ast${\bf file}, int read\_\-mode)
 \begin{CompactList}\small\item\em Reads contents of database file and stores into internal lists.\item\end{CompactList}\item 
 void {\bf db\_\-add\_\-instance} (char $\ast$scope, char $\ast$modname)
 \begin{CompactList}\small\item\em Adds specified module node to module tree. Called by parser.\item\end{CompactList}\item 
-void {\bf db\_\-add\_\-module} (char $\ast$name, char $\ast$file)
+void {\bf db\_\-add\_\-module} (char $\ast$name, char $\ast${\bf file})
 \begin{CompactList}\small\item\em Adds specified module to module list. Called by parser.\item\end{CompactList}\item 
 void {\bf db\_\-add\_\-signal} (char $\ast$name, int width, int lsb, int is\_\-static)
 \begin{CompactList}\small\item\em Adds specified signal to signal list. Called by parser.\item\end{CompactList}\item 

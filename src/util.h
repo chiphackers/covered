@@ -46,5 +46,8 @@ void* malloc_safe( int size );
 //! Performs safe deallocation of heap memory.
 void free_safe( void* ptr );
 
+//! Creates a string containing space characters.
+void gen_space( char* spaces, int num_spaces );
+
 #endif
 

@@ -628,7 +628,8 @@ char* vector_to_string( vector* vec, int type ) {
       case 3 :  value = 17;                                                 break;
       default:  break;
     }
-    if( (((i + 1) % group) == 0) || (pos == 0) ) {
+    assert( pos >= 0 );
+    if( (((i + 1) % group) == 0) || (((i + 1) == vec->width) && (pos == 0)) ) {
       switch( value ) {
         case 0x0 :  tmp[pos] = '0';  break;
         case 0x1 :  tmp[pos] = '1';  break;

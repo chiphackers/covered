@@ -167,7 +167,7 @@ void line_display_verbose( FILE* ofile, exp_link* expl ) {
       }
 
       code = codegen_gen_expr( unexec_exp, unexec_exp->line );
-      fprintf( ofile, "%7d: %s\n", unexec_exp->line, code );
+      fprintf( ofile, "%7d:    %s\n", unexec_exp->line, code );
       free_safe( code );
 
     }

@@ -326,6 +326,8 @@ void* malloc_safe( int size ) {
 
   if( size > 10000 ) {
     print_output( "Allocating memory chunk larger than 10000 bytes.  Possible error.", WARNING );
+    printf( "  Memory block size request: %d bytes\n", size );
+    exit( 1 );
   } else if( size <= 0 ) {
     print_output( "Internal:  Attempting to allocate memory of size <= 0", FATAL );
     exit( 1 );
@@ -363,5 +365,25 @@ void free_safe( void* ptr ) {
 
   free( ptr );
 
+}
+
+/*!
+ \param spaces  Pointer to string to places spaces into.
+ \param num_spaces  Number of spaces to place in string.
+ 
+ Creates a string that contains num_spaces number of space characters,
+ adding a NULL character at the end of the string to allow for correct
+ usage by the strlen and other string functions.
+*/
+void gen_space( char* spaces, int num_spaces ) {
+
+  int i;     /* Loop iterator */
+
+  for( i=0; i<num_spaces; i++ ) {
+    spaces[i] = ' ';
+  }
+
+  spaces[i] = '\0';
+  
 }
   

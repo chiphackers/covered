@@ -10,6 +10,7 @@
 #include "defines.h"
 #include "comb.h"
 #include "codegen.h"
+#include "util.h"
 
 
 extern mod_inst* instance_root;
@@ -121,6 +122,238 @@ void combination_module_summary( FILE* ofile, mod_link* head ) {
 }
 
 /*!
+ \param line  Pointer to line to create line onto.
+ \param size  Number of characters long line is.
+ \param exp_id  ID to place in underline.
+
+ Draws an underline containing the specified expression ID to the specified
+ line.
+*/
+void combination_draw_line( char* line, int size, int exp_id ) {
+
+  char str_exp_id[12];   /* String containing value of exp_id        */
+  int  exp_id_size;      /* Number of characters exp_id is in length */
+  int  i;                /* Loop iterator                            */
+
+  /* Calculate size of expression ID */
+  snprintf( str_exp_id, 12, "%d", exp_id );
+  exp_id_size = strlen( str_exp_id );
+
+  line[0] = '|';
+
+  for( i=1; i<((size - exp_id_size) / 2); i++ ) {
+    line[i] = '-';
+  }
+
+  line[i] = '\0';
+  strcat( line, str_exp_id );
+
+  for( i=(i + exp_id_size); i<(size - 1); i++ ) {
+    line[i] = '-';
+  }
+
+  line[i]   = '|';
+  line[i+1] = '\0';
+
+}
+
+/*!
+ \param exp     Pointer to expression to create underline for.
+ \param lines   Stack of lines for left child.
+ \param depth   Pointer to top of left child stack.
+ \param size    Pointer to character width of this node.
+ \param exp_id  Pointer to current expression ID to use in labeling.
+
+ Recursively parses specified expression tree, underlining and labeling each
+ measurable expression.
+*/
+void combination_underline_tree( expression* exp, char*** lines, int* depth, int* size, int* exp_id ) {
+
+  char** l_lines;       /* Pointer to left underline stack              */
+  char** r_lines;       /* Pointer to right underline stack             */
+  int    l_depth;       /* Index to top of left stack                   */
+  int    r_depth;       /* Index to top of right stack                  */
+  int    l_size;        /* Number of characters for left expression     */
+  int    r_size;        /* Number of characters for right expression    */
+  int    i;             /* Loop iterator                                */
+  char   exp_sp[256];   /* Space to take place of missing expression(s) */
+  char   code_fmt[12];  /* Contains format string for rest of stack     */
+  
+  *depth  = 0;
+  *size   = 0;
+  l_lines = NULL;
+  r_lines = NULL;
+
+  if( exp != NULL ) {
+
+    if( exp->op == EXP_OP_NONE ) {
+      
+      *size = exp->value->width + 12;
+
+    } else if( exp->op == EXP_OP_SIG ) {
+
+      *size = strlen( exp->sig->name );
+
+    } else {
+
+      combination_underline_tree( exp->left,  &l_lines, &l_depth, &l_size, exp_id );
+      combination_underline_tree( exp->right, &r_lines, &r_depth, &r_size, exp_id );
+
+      switch( exp->op ) {
+        case EXP_OP_XOR      :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "   );  break;
+        case EXP_OP_MULTIPLY :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "   );  break;
+        case EXP_OP_DIVIDE   :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "   );  break;
+        case EXP_OP_MOD      :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "   );  break;
+        case EXP_OP_ADD      :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "   );  break;
+        case EXP_OP_SUBTRACT :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "   );  break;
+        case EXP_OP_AND      :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "   );  break;
+        case EXP_OP_OR       :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "   );  break;
+        case EXP_OP_NAND     :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "  );  break;
+        case EXP_OP_NOR      :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "  );  break;
+        case EXP_OP_NXOR     :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "  );  break;
+        case EXP_OP_LT       :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "   );  break;
+        case EXP_OP_GT       :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "   );  break;
+        case EXP_OP_LSHIFT   :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "  );  break;
+        case EXP_OP_RSHIFT   :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "  );  break;
+        case EXP_OP_EQ       :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "  );  break;
+        case EXP_OP_CEQ      :  *size = l_size + r_size + 7;  strcpy( code_fmt, " %s     %s " );  break;
+        case EXP_OP_LE       :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "  );  break;
+        case EXP_OP_GE       :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "  );  break;
+        case EXP_OP_NE       :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "  );  break;
+        case EXP_OP_CNE      :  *size = l_size + r_size + 7;  strcpy( code_fmt, " %s     %s " );  break;
+        case EXP_OP_LOR      :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "  );  break;
+        case EXP_OP_LAND     :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "  );  break;
+        case EXP_OP_COND_T   :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s   %s"     );  break;
+        case EXP_OP_COND_F   :  *size = l_size + r_size + 0;  strcpy( code_fmt, "%s"          );  break;
+        case EXP_OP_UINV     :  *size = l_size + r_size + 1;  strcpy( code_fmt, " %s"         );  break;
+        case EXP_OP_UAND     :  *size = l_size + r_size + 1;  strcpy( code_fmt, " %s"         );  break;
+        case EXP_OP_UNOT     :  *size = l_size + r_size + 1;  strcpy( code_fmt, " %s"         );  break;
+        case EXP_OP_UOR      :  *size = l_size + r_size + 1;  strcpy( code_fmt, " %s"         );  break;
+        case EXP_OP_UXOR     :  *size = l_size + r_size + 1;  strcpy( code_fmt, " %s"         );  break;
+        case EXP_OP_UNAND    :  *size = l_size + r_size + 2;  strcpy( code_fmt, "  %s"        );  break;
+        case EXP_OP_UNOR     :  *size = l_size + r_size + 2;  strcpy( code_fmt, "  %s"        );  break;
+        case EXP_OP_UNXOR    :  *size = l_size + r_size + 2;  strcpy( code_fmt, "  %s"        );  break;
+        case EXP_OP_SBIT_SEL :  *size = l_size + r_size + 2;  strcpy( code_fmt, "%s"          );  break;
+        case EXP_OP_MBIT_SEL :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s"          );  break;
+        case EXP_OP_EXPAND   :  *size = l_size + r_size + 0;  strcpy( code_fmt, "%s"          );  break;  // ???
+        case EXP_OP_CONCAT   :  *size = l_size + r_size + 0;  strcpy( code_fmt, "%s"          );  break;  // ???
+        case EXP_OP_PEDGE    :  *size = l_size + r_size + 0;  strcpy( code_fmt, "%s"          );  break;  // ???
+        case EXP_OP_NEDGE    :  *size = l_size + r_size + 0;  strcpy( code_fmt, "%s"          );  break;  // ???
+        case EXP_OP_AEDGE    :  *size = l_size + r_size + 0;  strcpy( code_fmt, "%s"          );  break;  // ???
+        default              :  
+          print_output( "Internal error:  Unknown expression type in combination_underline_tree", FATAL );
+          exit( 1 );
+          break;
+      }
+
+      if( l_depth > r_depth ) {
+        *depth = l_depth + SUPPL_IS_MEASURABLE( exp->suppl );
+      } else {
+        *depth = r_depth + SUPPL_IS_MEASURABLE( exp->suppl );
+      }
+
+      /* Allocate all memory for the stack */
+      printf( "lines allocation: %d\n", (*depth) );
+      *lines = (char**)malloc_safe( sizeof( char* ) * (*depth) );
+
+      /* Allocate memory for this underline */
+      printf( "lines[%d] allocation: %d\n", ((*depth)-1), *size );
+      (*lines)[(*depth)-1] = (char*)malloc_safe( *size + 1 );
+
+      /* Create underline or space */
+      if( SUPPL_IS_MEASURABLE( exp->suppl ) == 1 ) {
+        combination_draw_line( (*lines)[(*depth)-1], *size, *exp_id );
+        *exp_id = *exp_id + 1;
+      }
+
+      /* Combine the left and right line stacks */
+      for( i=0; i<(*depth - 1); i++ ) {
+
+        printf( "lines[%d] allocation: %d\n", i, *size );
+        (*lines)[i] = (char*)malloc_safe( *size + 1 );
+
+        if( (i < l_depth) && (i < r_depth) ) {
+         
+          /* Merge left and right lines */
+          snprintf( (*lines)[i], *size, code_fmt, l_lines[i], r_lines[i] );
+
+          free_safe( l_lines[i] );
+          free_safe( r_lines[i] );
+
+        } else if( i < l_depth ) {
+
+          /* Create spaces for right side */
+          gen_space( exp_sp, r_size );
+
+          /* Merge left side only */
+          snprintf( (*lines)[i], *size, code_fmt, l_lines[i], exp_sp );
+
+          free_safe( l_lines[i] );
+
+        } else if( i < r_depth ) {
+ 
+          /* Create spaces for left side */
+          gen_space( exp_sp, l_size );
+
+          /* Merge left side only */
+          snprintf( (*lines)[i], *size, code_fmt, exp_sp, r_lines[i] );
+
+          free_safe( r_lines[i] );
+ 
+        }
+
+      }
+
+      /* Free left child stack */
+      if( l_depth > 0 ) {
+        free_safe( l_lines );
+      }
+
+      /* Free right child stack */
+      if( r_depth > 0 ) {
+        free_safe( r_lines );
+      }
+
+    }
+
+  }
+    
+}
+
+/*!
+ \param ofile     Pointer output stream to display underlines to.
+ \param exp       Pointer to parent expression to create underline for.
+ \param begin_sp  Spacing that is placed at the beginning of the generated line.
+
+ Traverses through the expression tree that is on the same line as the parent,
+ creating underline strings.  An underline is created for each expression that
+ does not have complete combination logic coverage.  Each underline (children to
+ parent creates an inverted tree) and contains a number for the specified expression.
+*/
+void combination_underline( FILE* ofile, expression* exp, char* begin_sp ) {
+
+  char** lines;    /* Pointer to a stack of lines     */
+  int    depth;    /* Depth of underline stack        */
+  int    size;     /* Width of stack in characters    */
+  int    exp_id;   /* Expression ID to place in label */
+  int    i;        /* Loop iterator                   */
+
+  exp_id = 1;
+
+  combination_underline_tree( exp, &lines, &depth, &size, &exp_id );
+
+  for( i=0; i<depth; i++ ) {
+    fprintf( ofile, "%s%s\n", begin_sp, lines[i] );
+    free_safe( lines[i] );
+  }
+
+  if( depth > 0 ) {
+    free_safe( lines );
+  }
+
+}
+
+/*!
  \param ofile  Pointer to file to output results to.
  \param expl   Pointer to expression list head.
 
@@ -135,7 +368,8 @@ void combination_module_summary( FILE* ofile, mod_link* head ) {
 void combination_display_verbose( FILE* ofile, exp_link* expl ) {
 
   expression* unexec_exp;      /* Pointer to current unexecuted expression    */
-  char*       code;            /* Pointer to code string from code generator  */
+  char*       code;            /* Code string from code generator             */
+  char*       underline;       /* Underline string for specified code         */
   int         last_line = -1;  /* Line number of last line found to be missed */
 
   fprintf( ofile, "Missed Combinations\n" );
@@ -143,19 +377,26 @@ void combination_display_verbose( FILE* ofile, exp_link* expl ) {
   /* Display current instance missed lines */
   while( expl != NULL ) {
 
-    if(   (SUPPL_WAS_TRUE( expl->exp->suppl ) == 0)
-       || (SUPPL_WAS_FALSE( expl->exp->suppl ) == 0) ) {
+    if( ((SUPPL_WAS_TRUE( expl->exp->suppl )  == 0) ||
+         (SUPPL_WAS_FALSE( expl->exp->suppl ) == 0)) &&
+        (SUPPL_IS_MEASURABLE( expl->exp->suppl ) == 1) &&
+        (expl->exp->line != last_line) ) {
 
+      last_line  = expl->exp->line;
       unexec_exp = expl->exp;
-      while( unexec_exp->parent != NULL ) {
+
+      while( (unexec_exp->parent != NULL) && (unexec_exp->parent->line == unexec_exp->line) ) {
         unexec_exp = unexec_exp->parent;
       }
 
-      code = codegen_gen_expr( unexec_exp, -1 );
+      code = codegen_gen_expr( unexec_exp, unexec_exp->line );
 
-/* NEED TO ADD COMBINATIONAL LOGIC OUTPUT HERE */
+      fprintf( ofile, "%7d:    %s\n", unexec_exp->line, code );
+
+      combination_underline( ofile, unexec_exp, "            " );
 
       free_safe( code );
+      free_safe( underline );
 
     }
 
@@ -176,6 +417,25 @@ void combination_display_verbose( FILE* ofile, exp_link* expl ) {
 */
 void combination_instance_verbose( FILE* ofile, mod_inst* root ) {
 
+  mod_inst*   curr_inst;   /* Pointer to current instance being evaluated */
+
+  assert( root != NULL );
+
+  fprintf( ofile, "\n" );
+  fprintf( ofile, "Module: %s, File: %s, Instance: %s\n", 
+           root->mod->name, 
+           root->mod->filename,
+           root->name );
+  fprintf( ofile, "--------------------------------------------------------\n" );
+
+  combination_display_verbose( ofile, root->mod->exp_head );
+
+  curr_inst = root->child_head;
+  while( curr_inst != NULL ) {
+    combination_instance_verbose( ofile, curr_inst );
+    curr_inst = curr_inst->next;
+  }
+
 }
 
 /*!
@@ -186,6 +446,20 @@ void combination_instance_verbose( FILE* ofile, mod_inst* root ) {
  to the specified output stream.
 */
 void combination_module_verbose( FILE* ofile, mod_link* head ) {
+
+  assert( head != NULL );
+
+  fprintf( ofile, "\n" );
+  fprintf( ofile, "Module: %s, File: %s\n", 
+           head->mod->name, 
+           head->mod->filename );
+  fprintf( ofile, "--------------------------------------------------------\n" );
+
+  combination_display_verbose( ofile, head->mod->exp_head );
+  
+  if( head->next != NULL ) {
+    combination_module_verbose( ofile, head->next );
+  }
 
 }
 

@@ -16,15 +16,15 @@
 <tr><td colspan=2><br><h2>Functions</h2></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="search_8h.html#a0">search_init</a> ()</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Initializes search maintained pointers.</em> <a href="#a0">More...</a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a109">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="search_8h.html#a1">search_add_include_path</a> (char *path)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a112">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="search_8h.html#a1">search_add_include_path</a> (char *path)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds an include directory to the list of directories to search for `include directives.</em> <a href="#a1">More...</a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a109">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="search_8h.html#a2">search_add_directory_path</a> (char *path)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a112">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="search_8h.html#a2">search_add_directory_path</a> (char *path)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds a directory to the list of directories to find unspecified Verilog modules.</em> <a href="#a2">More...</a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a109">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="search_8h.html#a3">search_add_file</a> (char *file)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a112">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="search_8h.html#a3">search_add_file</a> (char *<a class="el" href="vcd__lexer_8c.html#a105">file</a>)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds a specific Verilog module to the list of modules to score.</em> <a href="#a3">More...</a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a109">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="search_8h.html#a4">search_add_no_score_module</a> (char *<a class="el" href="defines_8h.html#a100">module</a>)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a112">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="search_8h.html#a4">search_add_no_score_module</a> (char *<a class="el" href="defines_8h.html#a103">module</a>)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds specified module to list of modules not to score.</em> <a href="#a4">More...</a><em></em></font><br><br></td></tr>
-<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a109">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="search_8h.html#a5">search_add_extensions</a> (char *ext_list)</td></tr>
+<tr><td nowrap align=right valign=top><a class="el" href="defines_8h.html#a112">bool</a>&nbsp;</td><td valign=bottom><a class="el" href="search_8h.html#a5">search_add_extensions</a> (char *ext_list)</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Adds specified extensions to allowed file extension list.</em> <a href="#a5">More...</a><em></em></font><br><br></td></tr>
 <tr><td nowrap align=right valign=top>void&nbsp;</td><td valign=bottom><a class="el" href="search_8h.html#a6">search_free_lists</a> ()</td></tr>
 <tr><td>&nbsp;</td><td><font size=-1><em>Deallocates all used memory for search lists.</em> <a href="#a6">More...</a><em></em></font><br><br></td></tr>
@@ -45,7 +45,7 @@ Date: </b><dd>
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a109">bool</a> search_add_directory_path </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a112">bool</a> search_add_directory_path </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top">char *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>path</em>          </td>
@@ -84,7 +84,7 @@ Returns TRUE if the specified string is a legal directory string and specifies a
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a109">bool</a> search_add_extensions </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a112">bool</a> search_add_extensions </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top">char *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>ext_list</em>          </td>
@@ -123,7 +123,7 @@ Returns TRUE if the specified string is in the correct format; otherwise, return
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a109">bool</a> search_add_file </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a112">bool</a> search_add_file </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top">char *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>file</em>          </td>
@@ -162,7 +162,7 @@ Returns TRUE if the specified file exists; otherwise, returns FALSE. </dl>    </
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a109">bool</a> search_add_include_path </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a112">bool</a> search_add_include_path </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top">char *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>path</em>          </td>
@@ -201,7 +201,7 @@ Returns TRUE if the specified path is a legal directory string and specifies an 
     <td class="md">
       <table cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a109">bool</a> search_add_no_score_module </td>
+          <td class="md" nowrap valign="top"> <a class="el" href="defines_8h.html#a112">bool</a> search_add_no_score_module </td>
           <td class="md" valign="top">(&nbsp;</td>
           <td class="md" nowrap valign="top">char *&nbsp;</td>
           <td class="mdname1" valign="top" nowrap>&nbsp; <em>module</em>          </td>
@@ -294,7 +294,7 @@ Initializes search maintained pointers.
 Creates root module for module_node tree. If a module_node points to this node as its parent, that node is considered the root node of the tree.     </td>
   </tr>
 </table>
-<hr><address align="right"><small>Generated on Thu Apr 18 21:27:18 2002 for Covered by
+<hr><address align="right"><small>Generated on Sun Apr 21 23:43:20 2002 for Covered by
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border=0 
 width=110 height=53></a>1.2.15 </small></address>
