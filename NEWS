@@ -1,7 +1,32 @@
 Covered-Related NEWS
 ====================
 
-    * 08/20/2003
+    * 09/25/2003
+
+Release covered-20030925 made.  This release contains the first working FSM code
+coverage portion in Covered.  There is a lot more to work on in the FSM code coverage
+area in the way of automatic FSM extraction and state transition specification, but
+this version is able to extract FSM coverage information for an FSM that is located
+by the user.  Please see user's manual for this release for more details on specifying
+FSM location.  Summary and verbose reporting are available for FSM coverage at this
+point.  Additionally, the data format for FSM coverage information in the CDD file
+has been finalized.  FSM coverage merging is also supported in this release.  User and
+development documentation has been updated.  Please give this development version a
+go to get any bugs out of the FSM code coverage engine.
+
+In addition to the FSM coverage support, a bug was fixed in the vector_to_int()
+function when converting a vector whose LSB is a non-zero value.
+
+Here is what is on the horizon for FSM coverage that you should expect to see in the
+coming development releases.
+
+  - Ability for user to specify the location of an FSM using $attribute function.
+  - Ability for user to specify all possible state transitions for a given FSM on the
+    command-line and using inline $attribute functions.
+  - Automatic FSM extraction including locating an FSM and extracting all possible
+    state transitions.
+
+    * 08/20/2003  - Stable Release 0.2.1
 
 Some bugs were found in the covered-0.2 release that needed to be fixed to consider
 Covered to be completely stable.  This release (covered-0.2.1) contains these fixes

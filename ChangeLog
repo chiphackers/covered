@@ -1,3 +1,15 @@
+2003-09-24 10:28  phase1geo
+
+	* TODO: Updating TODO list for new 0.3 feature adds.
+
+2003-09-23 22:54  phase1geo
+
+	* ChangeLog: Updating ChangeLog for upcoming development release.
+
+2003-09-23 07:28  phase1geo
+
+	* src/fsm.c: Fixes for development documentation.
+
 2003-09-23 07:17  phase1geo
 
 	* doc/: manstyle/012.mas, manstyle/014.mas, user/001.html,
