@@ -77,7 +77,6 @@ vector* vector_create( int width, int lsb, bool data ) {
 
   vector* new_vec;       /* Pointer to newly created vector               */
   nibble* value = NULL;  /* Temporarily stores newly created vector value */
-  int     i;             /* Loop iterator                                 */
 
   assert( width > 0 );
 
@@ -865,7 +864,6 @@ vector* vector_from_string( char* str ) {
   vector* vec;                   /* Temporary holder for newly created vector                                */
   int     bits_per_char;         /* Number of bits represented by a single character in the value string str */
   int     size;                  /* Specifies bit width of vector to create                                  */
-  char*   ptr;                   /* Pointer to current character being evaluated in string str               */
   char    value[MAX_BIT_WIDTH];  /* String to store string value in                                          */
   char    stype[2];              /* Temporary holder for type of string being parsed                         */
   int     type;                  /* Type of string being parsed                                              */
@@ -1032,8 +1030,8 @@ void vector_bitwise_op( vector* tgt, vector* src1, vector* src2, nibble* optab )
 void vector_op_compare( vector* tgt, vector* left, vector* right, int comp_type ) {
 
   int    pos;           /* Loop iterator                        */
-  nibble lbit;          /* Current left expression bit value    */
-  nibble rbit;          /* Current right expression bit value   */
+  nibble lbit = 0;      /* Current left expression bit value    */
+  nibble rbit = 0;      /* Current right expression bit value   */
   bool   done = FALSE;  /* Specifies continuation of comparison */
   nibble value;         /* Result to be stored in tgt           */
 
@@ -1429,6 +1427,11 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.24  2002/10/31 23:14:32  phase1geo
+ Fixing C compatibility problems with cc and gcc.  Found a few possible problems
+ with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that
+ lead to bus errors.  Ran full regression in 64-bit mode without error.
+
  Revision 1.23  2002/10/29 19:57:51  phase1geo
  Fixing problems with beginning block comments within comments which are
  produced automatically by CVS.  Should fix warning messages from compiler.

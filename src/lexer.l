@@ -10,6 +10,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <ctype.h>
 
 #include "defines.h"
 #include "signal.h"
@@ -18,6 +19,7 @@
 #include "link.h"
 #include "vector.h"
 #include "parser_misc.h"
+#include "keywords.h"
 
 #define yylval VLlval
 #define YYDEBUG 1
@@ -151,7 +153,6 @@ WSPACE [ \t\b\f]+
 
   /* Keyword and signal identifiers */
 [a-zA-Z_][a-zA-Z0-9$_]* {
-     char msg[4096];
      int rc = lexer_keyword_code( yytext, yyleng );
      if( rc == IDENTIFIER ) {
        if( ignore_mode == 0 ) {
@@ -486,7 +487,7 @@ WSPACE [ \t\b\f]+
 
   /* Final catchall. something got lost or mishandled. */
 
-. {   fprintf( stderr, "%s: unmatched character (%d)\n", yylloc.first_line, yytext[0] ); }
+. {   fprintf( stderr, "%d: unmatched character (%c)\n", yylloc.first_line, yytext[0] ); }
 
 %%
 
@@ -563,9 +564,8 @@ static int is_defined( const char* name) {
 
 static void def_match() {
 
-  struct define_t*        cur = def_lookup( yytext + 1 );  /* Pointer to define identifier node */
-  struct include_stack_t* isp;                             /* Pointer to include stack          */
-  int                     i;                               /* Loop iterator                     */
+  struct define_t* cur = def_lookup( yytext + 1 );  /* Pointer to define identifier node */
+  int              i;                               /* Loop iterator                     */
 
   if( cur ) {
 
@@ -680,7 +680,7 @@ static void do_define() {
 
   char *cp;        /* Pointer to current token */
 
-  if( cp = strstr(yytext, "//") ) {
+  if( (cp = strstr(yytext, "//")) != NULL ) {
     *cp = 0;
   }
 
@@ -1002,7 +1002,6 @@ static int yywrap() {
 void reset_lexer( FILE* out, str_link* file_list_head ) {
 
   struct include_stack_t* isp = malloc( sizeof( struct include_stack_t ) );
-  str_link* curr;
 
   isp->path   = strdup( file_list_head->str );
   isp->file   = fopen( isp->path, "r" );

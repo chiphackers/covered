@@ -40,6 +40,9 @@ void vector_display_nibble( nibble* nib, int width, int lsb );
 /*! Outputs vector contents to standard output. */
 void vector_display( vector* vec );
 
+/*! Selects bit from value array from bit position pos. */
+nibble vector_bit_val( nibble* value, int pos );
+
 /*! Sets specified bit to specified value in given nibble. */
 void vector_set_bit( nibble* nib, nibble value, int pos );
 
@@ -63,6 +66,9 @@ char* vector_to_string( vector* vec, int type );
 
 /*! Converts character string value into vector. */
 vector* vector_from_string( char* str );
+
+/*! Assigns specified VCD value to specified vector. */
+void vector_vcd_assign( vector* vec, char* value );
 
 /*! Counts toggle01 and toggle10 information from specifed vector. */
 void vector_toggle_count( vector* vec, int* tog01_cnt, int* tog10_cnt );
@@ -105,6 +111,11 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.11  2002/10/31 23:14:37  phase1geo
+ Fixing C compatibility problems with cc and gcc.  Found a few possible problems
+ with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that
+ lead to bus errors.  Ran full regression in 64-bit mode without error.
+
  Revision 1.10  2002/10/29 19:57:51  phase1geo
  Fixing problems with beginning block comments within comments which are
  produced automatically by CVS.  Should fix warning messages from compiler.

@@ -33,7 +33,9 @@ extern bool report_instance;
 */
 void toggle_get_stats( exp_link* expl, sig_link* sigl, float* total, int* hit01, int* hit10 ) {
 
+#ifdef USE_TOGGLE_EXPR
   exp_link* curr_exp = expl;    /* Current expression being evaluated */
+#endif
   sig_link* curr_sig = sigl;    /* Current signal being evaluated     */
   
   /* Search signal list */
@@ -98,7 +100,7 @@ bool toggle_instance_summary( FILE* ofile, mod_inst* root, char* parent_inst ) {
   }
   miss10    = (root->stat->tog_total - root->stat->tog10_hit);
 
-  fprintf( ofile, "  %-20.20s    %-20.20s    %4d/%4.0f/%4.0f      %3.0f%%         %4d/%4.0f/%4.0f      %3.0f\%\n",
+  fprintf( ofile, "  %-20.20s    %-20.20s    %4d/%4.0f/%4.0f      %3.0f%%         %4d/%4.0f/%4.0f      %3.0f%%\n",
            root->name,
            parent_inst,
            root->stat->tog01_hit,
@@ -131,12 +133,11 @@ bool toggle_instance_summary( FILE* ofile, mod_inst* root, char* parent_inst ) {
 */
 bool toggle_module_summary( FILE* ofile, mod_link* head ) {
 
-  mod_inst* curr;                /* Pointer to current child module instance of this node */
-  float     percent01;           /* Percentage of bits that toggled from 0 to 1           */
-  float     percent10;           /* Percentage of bits that toggled from 1 to 0           */
-  float     miss01;              /* Number of bits that did not toggle from 0 to 1        */
-  float     miss10;              /* Number of bits that did not toggle from 1 to 0        */
-  float     miss_found = FALSE;  /* Set to TRUE if missing toggles were found             */
+  float percent01;           /* Percentage of bits that toggled from 0 to 1    */
+  float percent10;           /* Percentage of bits that toggled from 1 to 0    */
+  float miss01;              /* Number of bits that did not toggle from 0 to 1 */
+  float miss10;              /* Number of bits that did not toggle from 1 to 0 */
+  float miss_found = FALSE;  /* Set to TRUE if missing toggles were found      */
 
   while( head != NULL ) {
 
@@ -354,6 +355,10 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.14  2002/10/29 19:57:51  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
  Revision 1.13  2002/10/01 13:21:25  phase1geo
  Fixing bug in report output for single and multi-bit selects.  Also modifying
  the way that parameters are dealt with to allow proper handling of run-time

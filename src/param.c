@@ -49,6 +49,7 @@
 #include "expr.h"
 #include "vector.h"
 #include "link.h"
+#include "signal.h"
 
 
 inst_parm* defparam_head = NULL;   /*!< Pointer to head of parameter list for global defparams */
@@ -117,9 +118,9 @@ mod_parm* mod_parm_find_sig_dependent( char* name, mod_parm* parm ) {
 */
 mod_parm* mod_parm_add( char* scope, expression* expr, int type, mod_parm** head, mod_parm** tail ) {
 
-  mod_parm* parm;    /* Temporary pointer to instance parameter                   */
-  mod_parm* curr;    /* Pointer to current module parameter for ordering purposes */
-  int       order;   /* Current order of parameter                                */
+  mod_parm* parm;       /* Temporary pointer to instance parameter                   */
+  mod_parm* curr;       /* Pointer to current module parameter for ordering purposes */
+  int       order = 0;  /* Current order of parameter                                */
   
   assert( expr != NULL );
   assert( (type == PARAM_TYPE_DECLARED) || 
@@ -381,8 +382,6 @@ bool param_set_sig_size( signal* sig, inst_parm* icurr ) {
 */
 void param_expr_eval( expression* expr, inst_parm* ihead ) {
 
-  vector* tmpval;      /* Temporary holder of found parameter value */
-
   if( expr != NULL ) {
 
     /* Evaluate children first */
@@ -478,10 +477,9 @@ inst_parm* param_has_override( char* mname, mod_parm* mparm, inst_parm* ip_head,
 */
 inst_parm* param_has_defparam( char* scope, mod_parm* mparm, inst_parm** ihead, inst_parm** itail ) {
 
-  inst_parm* parm      = NULL;   /* Pointer newly created instance parameter (if one is created) */
-  inst_parm* icurr;              /* Pointer to current defparam                                  */
-  bool       def_found = FALSE;  /* Specifies if defparam has been found that matches            */
-  char       parm_scope[4096];   /* Specifes full scope to parameter to find                     */
+  inst_parm* parm      = NULL;  /* Pointer newly created instance parameter (if one is created) */
+  inst_parm* icurr;             /* Pointer to current defparam                                  */
+  char       parm_scope[4096];  /* Specifes full scope to parameter to find                     */
 
   assert( scope != NULL );
   assert( mparm != NULL );
@@ -683,6 +681,10 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.20  2002/10/29 19:57:51  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
  Revision 1.19  2002/10/12 06:51:34  phase1geo
  Updating development documentation to match all changes within source.
  Adding new development pages created by Doxygen for the new source

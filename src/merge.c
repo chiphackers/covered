@@ -119,9 +119,7 @@ bool merge_parse_args( int argc, int last_arg, char** argv ) {
 */
 int command_merge( int argc, int last_arg, char** argv ) {
 
-  int   retval = 0;  /* Return value of this function         */
-  FILE* ofile;       /* Pointer to output stream              */
-  FILE* dbfile;      /* Pointer to database file to read from */
+  int retval = 0;  /* Return value of this function */
 
   /* Initialize error suppression value */
   set_output_suppression( FALSE );
@@ -153,6 +151,10 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.9  2002/10/29 19:57:50  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
  Revision 1.8  2002/10/29 13:33:21  phase1geo
  Adding patches for 64-bit compatibility.  Reformatted parser.y for easier
  viewing (removed tabs).  Full regression passes.

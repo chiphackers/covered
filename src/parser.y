@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "defines.h"
 #include "signal.h"
@@ -1482,8 +1483,8 @@ statement
   | K_case '(' expression ')' case_items K_endcase
     {
       expression*     expr;
-      expression*     c_expr = $3;
-      statement*      stmt;
+      expression*     c_expr    = $3;
+      statement*      stmt      = NULL;
       statement*      last_stmt = NULL;
       case_statement* c_stmt    = $5;
       case_statement* tc_stmt;
@@ -1524,7 +1525,7 @@ statement
     {
       expression*     expr;
       expression*     c_expr    = $3;
-      statement*      stmt;
+      statement*      stmt      = NULL;
       statement*      last_stmt = NULL;
       case_statement* c_stmt    = $5;
       case_statement* tc_stmt;
@@ -1565,7 +1566,7 @@ statement
     {
       expression*     expr;
       expression*     c_expr    = $3;
-      statement*      stmt;
+      statement*      stmt      = NULL;
       statement*      last_stmt = NULL;
       case_statement* c_stmt    = $5;
       case_statement* tc_stmt;
@@ -2284,10 +2285,7 @@ delay_value
   | static_expr ':' static_expr ':' static_expr
     {
       expression*  tmp;
-      static_expr* se1 = $1;
-      static_expr* se2 = $3;
-      static_expr* se3 = $5;
-      static_expr* se;
+      static_expr* se = NULL;
       if( ignore_mode == 0 ) {
         switch( delay_expr_type ) {
           case DELAY_EXPR_MIN :

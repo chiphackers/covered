@@ -4,9 +4,16 @@
  \date     11/29/2001
 */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdio.h>
+#ifdef HAVE_STRING_H
 #include <string.h>
+#endif
 #include <assert.h>
+#include <stdlib.h>
 
 #include "defines.h"
 #include "report.h"
@@ -17,6 +24,7 @@
 #include "fsm.h"
 #include "instance.h"
 #include "stat.h"
+#include "db.h"
 
 
 extern char user_msg[USER_MSG_LENGTH];
@@ -404,9 +412,8 @@ void report_generate( FILE* ofile ) {
 */
 int command_report( int argc, int last_arg, char** argv ) {
 
-  int   retval = 0;  /* Return value of this function         */
-  FILE* ofile;       /* Pointer to output stream              */
-  FILE* dbfile;      /* Pointer to database file to read from */
+  int   retval = 0;  /* Return value of this function */
+  FILE* ofile;       /* Pointer to output stream      */
 
   /* Initialize error suppression value */
   set_output_suppression( FALSE );
@@ -468,6 +475,10 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.17  2002/10/29 19:57:51  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
  Revision 1.16  2002/10/11 05:23:21  phase1geo
  Removing local user message allocation and replacing with global to help
  with memory efficiency.

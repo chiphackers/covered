@@ -34,8 +34,7 @@ extern bool         report_instance;
 */
 void line_get_stats( stmt_link* stmtl, float* total, int* hit ) {
 
-  stmt_iter curr;             /* Statement list iterator */
-  int       last_line = -1;     /* Last line number found                          */
+  stmt_iter curr;  /* Statement list iterator */
 
   stmt_iter_reset( &curr, stmtl );
   
@@ -116,10 +115,9 @@ bool line_instance_summary( FILE* ofile, mod_inst* root, char* parent_inst ) {
 */
 bool line_module_summary( FILE* ofile, mod_link* head ) {
 
-  mod_inst* curr;                /* Pointer to current child module instance of this node */
-  float     percent;             /* Percentage of lines hit                               */
-  float     miss;                /* Number of lines missed                                */
-  bool      miss_found = FALSE;  /* Set to TRUE if line was found to be missed            */
+  float percent;             /* Percentage of lines hit                    */
+  float miss;                /* Number of lines missed                     */
+  bool  miss_found = FALSE;  /* Set to TRUE if line was found to be missed */
 
   while( head != NULL ) {
 
@@ -309,6 +307,10 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.24  2002/10/29 19:57:50  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
  Revision 1.23  2002/10/29 13:33:21  phase1geo
  Adding patches for 64-bit compatibility.  Reformatted parser.y for easier
  viewing (removed tabs).  Full regression passes.

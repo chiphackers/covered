@@ -137,13 +137,11 @@ void module_size_elements( module* mod, mod_inst* inst ) {
 */
 bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst ) {
 
-  bool       retval = TRUE;   /* Return value for this function                 */
-  sig_link*  curr_sig;        /* Pointer to current module sig_link element     */
-  exp_link*  curr_exp;        /* Pointer to current module exp_link element     */
-  stmt_iter  curr_stmt;       /* Statement list iterator                        */
-  inst_parm* curr_parm;       /* Pointer to current instance parameter          */
-  int        old_suppl;       /* Contains supplemental value of parameter expr  */
-  bool       param_op;        /* Specifies if current expression is a parameter */
+  bool       retval = TRUE;   /* Return value for this function             */
+  sig_link*  curr_sig;        /* Pointer to current module sig_link element */
+  exp_link*  curr_exp;        /* Pointer to current module exp_link element */
+  stmt_iter  curr_stmt;       /* Statement list iterator                    */
+  inst_parm* curr_parm;       /* Pointer to current instance parameter      */
 
   snprintf( user_msg, USER_MSG_LENGTH, "Writing module %s", mod->name );
   print_output( user_msg, DEBUG );
@@ -427,6 +425,11 @@ void module_dealloc( module* mod ) {
 
 /*
  $Log$
+ Revision 1.25  2002/10/31 23:13:57  phase1geo
+ Fixing C compatibility problems with cc and gcc.  Found a few possible problems
+ with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that
+ lead to bus errors.  Ran full regression in 64-bit mode without error.
+
  Revision 1.24  2002/10/29 19:57:50  phase1geo
  Fixing problems with beginning block comments within comments which are
  produced automatically by CVS.  Should fix warning messages from compiler.

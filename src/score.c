@@ -79,14 +79,13 @@ void score_usage() {
 */
 bool read_command_file( char* cmd_file, char*** arg_list, int* arg_num ) {
 
-  bool      retval  = TRUE;  /* Return value for this function       */
-  str_link* head    = NULL;  /* Pointer to head element of arg list  */
-  str_link* tail    = NULL;  /* Pointer to tail element of arg list  */
-  FILE*     cmd_handle;      /* Pointer to command file              */
-  char      tmp_str[1024];   /* Temporary holder for read argument   */
-  char*     arg;             /* Temporary holder of current argument */
-  str_link* curr;            /* Pointer to current str_link element  */
-  int       tmp_num = 0;     /* Temporary argument number holder     */
+  bool      retval  = TRUE;  /* Return value for this function      */
+  str_link* head    = NULL;  /* Pointer to head element of arg list */
+  str_link* tail    = NULL;  /* Pointer to tail element of arg list */
+  FILE*     cmd_handle;      /* Pointer to command file             */
+  char      tmp_str[1024];   /* Temporary holder for read argument  */
+  str_link* curr;            /* Pointer to current str_link element */
+  int       tmp_num = 0;     /* Temporary argument number holder    */
 
   if( file_exists( cmd_file ) ) {
 
@@ -367,6 +366,10 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.28  2002/10/29 19:57:51  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
  Revision 1.27  2002/10/13 19:20:42  phase1geo
  Added -T option to score command for properly handling min:typ:max delay expressions.
  Updated documentation for -i and -T options to score command and added additional

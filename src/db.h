@@ -38,7 +38,8 @@ void db_add_defparam( char* name, expression* expr );
 /*! Adds specified signal to signal list.  Called by parser. */
 void db_add_signal( char* name, static_expr* left, static_expr* right );
 
-void db_end_module(void);
+/*! Called when the endmodule keyword is parsed. */
+void db_end_module();
 
 /*! Finds specified signal in module and returns pointer to the signal structure.  Called by parser. */
 signal* db_find_signal( char* name );
@@ -70,6 +71,9 @@ void db_connect_statement_false( statement* stmt, statement* exp_false );
 /*! Sets current VCD scope to specified scope. */
 void db_set_vcd_scope( char* scope );
 
+/*! Moves current VCD hierarchy up one level */
+void db_vcd_upscope();
+
 /*! Adds symbol to signal specified by name. */
 void db_assign_symbol( char* name, char* symbol );
 
@@ -85,6 +89,11 @@ void db_do_timestep( int time );
 
 /*
  $Log$
+ Revision 1.22  2002/10/31 23:13:30  phase1geo
+ Fixing C compatibility problems with cc and gcc.  Found a few possible problems
+ with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that
+ lead to bus errors.  Ran full regression in 64-bit mode without error.
+
  Revision 1.21  2002/10/29 19:57:50  phase1geo
  Fixing problems with beginning block comments within comments which are
  produced automatically by CVS.  Should fix warning messages from compiler.

@@ -5,6 +5,7 @@
 */
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "defines.h"
 #include "parse.h"
@@ -37,7 +38,7 @@ extern char user_msg[USER_MSG_LENGTH];
 */
 int parse_readline( FILE* file, char* line, int size ) {
 
-  int i;  /* Loop iterator */
+  int i = 0;  /* Loop iterator */
 
   while( (i < (size - 1)) && !feof( file ) && ((line[i] = fgetc( file )) != '\n') ) {
     i++;
@@ -157,6 +158,10 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
 
 /*
  $Log$
+ Revision 1.13  2002/10/29 19:57:51  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
  Revision 1.12  2002/10/11 05:23:21  phase1geo
  Removing local user message allocation and replacing with global to help
  with memory efficiency.

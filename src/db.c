@@ -22,6 +22,7 @@
 #include "sim.h"
 #include "binding.h"
 #include "param.h"
+#include "static.h"
 
 
 extern char*     top_module;
@@ -77,10 +78,8 @@ int       curr_sim_time = 0;
 */
 bool db_write( char* file, bool parse_mode ) {
 
-  bool         retval = TRUE;  /* Return value for this function         */
-  FILE*        db_handle;      /* Pointer to database file being written */
-  exp_link*    ecur;           /* Pointer to current expression link     */
-  sig_link*    scur;           /* Pointer to current signal link         */
+  bool  retval = TRUE;  /* Return value for this function         */
+  FILE* db_handle;      /* Pointer to database file being written */
 
   if( (db_handle = fopen( file, "w" )) != NULL ) {
 
@@ -215,7 +214,7 @@ bool db_read( char* file, int read_mode ) {
           }
 
           /* Now finish reading module line */
-          if( retval = module_db_read( &tmpmod, mod_scope, &rest_line ) ) {
+          if( (retval = module_db_read( &tmpmod, mod_scope, &rest_line )) == TRUE ) {
             
             if( (read_mode == READ_MODE_MERGE_INST_MERGE) && ((foundinst = instance_find_scope( instance_root, mod_scope )) != NULL) ) {
               merge_mode = TRUE;
@@ -303,7 +302,6 @@ void db_add_instance( char* scope, char* modname ) {
   module*   mod;             /* Pointer to module                        */
   mod_link* found_mod_link;  /* Pointer to found mod_link in module list */
   str_link* mod_in_list;     /* Pointer to found module name in modlist  */
-  mod_parm* mparm;           /* Module parameter to add to instance      */
 
   /* There should always be a parent so internal error if it does not exist. */
   assert( curr_module != NULL );
@@ -647,15 +645,11 @@ signal* db_find_signal( char* name ) {
 */
 expression* db_create_expression( expression* right, expression* left, int op, int line, char* sig_name ) {
 
-  expression* expr;                 /* Temporary pointer to newly created expression        */
-  int         right_id;             /* ID of right expression                               */
-  int         left_id;              /* ID of left expression                                */
-  int         i;                    /* Loop iterator                                        */
-  int         ignore;               /* Number of matching modules to ignore before choosing */
-  mod_inst*   found_inst;           /* Found instance containing current module             */
-  mod_parm*   mparm;                /* Module parameter matching signal of current module   */
-  inst_parm*  iparm;                /* Current instance parameter found                     */
-  bool        sig_is_parm = FALSE;  /* Specifies if current signal is a module parameter    */
+  expression* expr;                 /* Temporary pointer to newly created expression      */
+  int         right_id;             /* ID of right expression                             */
+  int         left_id;              /* ID of left expression                              */
+  mod_parm*   mparm       = NULL;   /* Module parameter matching signal of current module */
+  bool        sig_is_parm = FALSE;  /* Specifies if current signal is a module parameter  */
 
   if( right == NULL ) {
     right_id = 0;
@@ -940,9 +934,6 @@ void db_statement_set_stop( statement* stmt, statement* post, bool both ) {
 */
 void db_set_vcd_scope( char* scope ) {
 
-  int   scope_len;    /* Character length of current scope             */
-  char* tmpscope;     /* Temporary string holder for current VCD scope */
-
   snprintf( user_msg, USER_MSG_LENGTH, "In db_set_vcd_scope, scope: %s", scope );
   print_output( user_msg, DEBUG );
 
@@ -1001,7 +992,6 @@ void db_assign_symbol( char* name, char* symbol ) {
 
   sig_link* slink;   /* Pointer to signal containing this symbol */
   signal    tmpsig;  /* Temporary signal to search for           */
-  mod_inst* inst;    /* Found instance                           */
 
   snprintf( user_msg, USER_MSG_LENGTH, "In db_assign_symbol, name: %s, symbol: %s, curr_inst_scope: %s", name, symbol, curr_inst_scope );
   print_output( user_msg, DEBUG );
@@ -1137,8 +1127,6 @@ void db_set_symbol_string( char* sym, char* value ) {
 */
 void db_do_timestep( int time ) {
 
-  exp_link* head;  /* Current expression at head of expression queue */
-
   snprintf( user_msg, USER_MSG_LENGTH, "Performing timestep #%d", time );
   print_output( user_msg, DEBUG );
 
@@ -1158,6 +1146,11 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.67  2002/10/31 23:13:24  phase1geo
+ Fixing C compatibility problems with cc and gcc.  Found a few possible problems
+ with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that
+ lead to bus errors.  Ran full regression in 64-bit mode without error.
+
  Revision 1.66  2002/10/29 19:57:50  phase1geo
  Fixing problems with beginning block comments within comments which are
  produced automatically by CVS.  Should fix warning messages from compiler.

@@ -4,9 +4,16 @@
  \date     11/28/2001
 */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
 
 #include "link.h"
 #include "defines.h"
@@ -215,7 +222,7 @@ void stmt_link_display( stmt_link* head ) {
 
   stmt_iter_reset( &curr, head );
   while( curr.curr != NULL ) {
-    printf( "  id: %d, addr: 0x%lx\n", curr.curr->stmt->exp->id, curr.curr->stmt );
+    printf( "  id: %d\n", curr.curr->stmt->exp->id );
     stmt_iter_next( &curr );
   }
 
@@ -235,7 +242,7 @@ void exp_link_display( exp_link* head ) {
 
   curr = head;
   while( curr != NULL ) {
-    printf( "  id: %d, op: %d, addr: 0x%lx\n", curr->exp->id, SUPPL_OP( curr->exp->suppl ), curr->exp );
+    printf( "  id: %d, op: %d\n", curr->exp->id, SUPPL_OP( curr->exp->suppl ) );
     curr = curr->next;
   }
 
@@ -571,6 +578,10 @@ void mod_link_delete_list( mod_link* head ) {
 
 /*
  $Log$
+ Revision 1.12  2002/10/29 19:57:50  phase1geo
+ Fixing problems with beginning block comments within comments which are
+ produced automatically by CVS.  Should fix warning messages from compiler.
+
  Revision 1.11  2002/10/29 13:33:21  phase1geo
  Adding patches for 64-bit compatibility.  Reformatted parser.y for easier
  viewing (removed tabs).  Full regression passes.
