@@ -205,7 +205,10 @@ void bind() {
 
     if( modi == NULL ) {
       /* Bad hierarchical reference */
-      snprintf( user_msg, USER_MSG_LENGTH, "Undefined hierarchical reference: %s", curr_seb->sig_name );
+      snprintf( user_msg, USER_MSG_LENGTH, "Undefined hierarchical reference: %s, file: %s, line: %d", 
+                curr_seb->sig_name,
+                curr_seb->mod->filename,
+                curr_seb->exp->line );
       print_output( user_msg, FATAL );
       exit( 1 );
     }
@@ -268,6 +271,10 @@ void bind() {
 
 /* 
  $Log$
+ Revision 1.19  2002/11/05 00:20:06  phase1geo
+ Adding development documentation.  Fixing problem with combinational logic
+ output in report command and updating full regression.
+
  Revision 1.18  2002/10/31 23:13:18  phase1geo
  Fixing C compatibility problems with cc and gcc.  Found a few possible problems
  with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that

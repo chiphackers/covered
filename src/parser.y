@@ -1090,7 +1090,9 @@ identifier
     }
   | HIDENTIFIER
     {
-      $$ = $1;
+      /* Hierarchical references are going to be unsupported at the current time */
+      free_safe( $1 );
+      $$ = NULL;
     }
   | UNUSED_HIDENTIFIER
     {

@@ -462,6 +462,9 @@ inst_parm* param_has_override( char* mname, mod_parm* mparm, inst_parm* ip_head,
   /* If an override has been found, use this value instead of the mparm expression value */
   if( icurr != NULL ) {
 
+    /* Substitute value of parameter override value in mparm expression */
+    //expression_
+
     /* Add new instance parameter to current instance */
     parm = inst_parm_add( mparm->name, icurr->value, mparm, ihead, itail );
 
@@ -689,6 +692,10 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.23  2002/12/02 21:46:53  phase1geo
+ Fixing bug in parameter file that handles parameters used in instances which are
+ instantiated multiple times in the design.
+
  Revision 1.22  2002/11/05 00:20:07  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.
