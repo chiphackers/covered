@@ -109,7 +109,7 @@
  @{
 */
 
-/*!9
+/*!
  Specifies that the tree_find_module function should only match if filename is set.
 */
 #define FNAME_SET            1
@@ -123,6 +123,38 @@
  Specifies that the tree_find_module function should not care about the value of filename.
 */
 #define FNAME_DONTCARE       3
+
+/*! @} */
+
+/*!
+ \addtogroup report_detail Detailedness of reports.
+
+ The following defines specify the amount of detail to include in a generated report.
+
+ @{
+*/
+
+/*!
+ Specifies that only summary information should be included in report.
+*/
+#define REPORT_SUMMARY       0x0
+
+/*!
+ Includes summary information as well as verbose output for line and toggle coverage.
+ Provides high-level view of combinational logic holes.  This information is useful
+ for understanding where uncovered logic exists but not necessarily why it was not
+ covered.
+*/
+#define REPORT_DETAILED      0x1
+
+/*!
+ Includes summary information and all verbose information for line, toggle and
+ combinational logic.  Shows why combinational logic was not considered covered by
+ exposing all missed expressions in each expression tree.  This information is most
+ useful in debugging but may be a bit to much to easily discern where logic is not
+ covered.
+*/
+#define REPORT_VERBOSE       0xffffffff
 
 /*! @} */
 
@@ -856,6 +888,11 @@ union expr_stmt_u {
 
 
 /* $Log$
+/* Revision 1.41  2002/09/06 03:05:28  phase1geo
+/* Some ideas about handling parameters have been added to these files.  Added
+/* "Special Thanks" section in User's Guide for acknowledgements to people
+/* helping in project.
+/*
 /* Revision 1.40  2002/08/27 11:53:16  phase1geo
 /* Adding more code for parameter support.  Moving parameters from being a
 /* part of modules to being a part of instances and calling the expression

@@ -16,7 +16,9 @@
 extern mod_inst* instance_root;
 extern mod_link* mod_head;
 
-extern bool      report_covered;
+extern bool         report_covered;
+extern unsigned int report_comb_depth;
+extern bool         report_instance;
 
 /*!
  \param stmtl  Pointer to current statement list to explore.
@@ -254,20 +256,19 @@ void line_module_verbose( FILE* ofile, mod_link* head ) {
 }
 
 /*!
- \param ofile     Pointer to file to output results to.
- \param verbose   Specifies whether or not to provide verbose information
- \param instance  Specifies to report by instance or module.
+ \param ofile    Pointer to file to output results to.
+ \param verbose  Specifies whether to generate summary or verbose output.
 
  After the design is read into the module hierarchy, parses the hierarchy by module,
  reporting the line coverage for each module encountered.  The parent module will
  specify its own line coverage along with a total line coverage including its 
  children.
 */
-void line_report( FILE* ofile, bool verbose, bool instance ) {
+void line_report( FILE* ofile, bool verbose ) {
 
   bool missed_found;      /* If set to TRUE, lines were found to be missed */
 
-  if( instance ) {
+  if( report_instance ) {
 
     fprintf( ofile, "LINE COVERAGE RESULTS BY INSTANCE\n" );
     fprintf( ofile, "---------------------------------\n" );
@@ -301,6 +302,13 @@ void line_report( FILE* ofile, bool verbose, bool instance ) {
 }
 
 /* $Log$
+/* Revision 1.19  2002/09/10 05:40:09  phase1geo
+/* Adding support for MULTIPLY, DIVIDE and MOD in expression verbose display.
+/* Fixing cases where -c option was not generating covered information in
+/* line and combination report output.  Updates to assign1.v diagnostic for
+/* logic that is now supported by both Covered and IVerilog.  Updated assign1.cdd
+/* to account for correct coverage file for the updated assign1.v diagnostic.
+/*
 /* Revision 1.18  2002/08/20 04:48:18  phase1geo
 /* Adding option to report command that allows the user to display logic that is
 /* being covered (-c option).  This overrides the default behavior of displaying

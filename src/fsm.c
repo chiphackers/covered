@@ -9,17 +9,19 @@
 #include "fsm.h"
 
 
+extern bool report_instance;
+
+
 /*!
  \param ofile     Pointer to file to output results to.
  \param verbose   Specifies whether or not to provide verbose information
- \param instance  Specifies to report by instance or module.
-
+ 
  After the design is read into the module hierarchy, parses the hierarchy by module,
  reporting the FSM coverage for each module encountered.  The parent module will
  specify its own FSM coverage along with a total FSM coverage including its 
  children.
 */
-void fsm_report( FILE* ofile, bool verbose, bool instance ) {
+void fsm_report( FILE* ofile, bool verbose ) {
 
   fprintf( ofile, "FSM COVERAGE RESULTS\n" );
   fprintf( ofile, "--------------------\n" );
@@ -27,4 +29,9 @@ void fsm_report( FILE* ofile, bool verbose, bool instance ) {
 
 }
 
-/* $Log$ */
+/* $Log$
+/* Revision 1.2  2002/07/03 03:31:11  phase1geo
+/* Adding RCS Log strings in files that were missing them so that file version
+/* information is contained in every source and header file.  Reordering src
+/* Makefile to be alphabetical.  Adding mult1.v diagnostic to regression suite.
+/* */

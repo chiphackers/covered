@@ -5,8 +5,13 @@
 \subsection*{Functions}
 \begin{CompactItemize}
 \item 
-void {\bf fsm\_\-report} (FILE $\ast$ofile, {\bf bool} verbose, {\bf bool} instance)
+void {\bf fsm\_\-report} (FILE $\ast$ofile, {\bf bool} verbose)
 \begin{CompactList}\small\item\em Generates report output for FSM coverage.\item\end{CompactList}\end{CompactItemize}
+\subsection*{Variables}
+\begin{CompactItemize}
+\item 
+{\bf bool} {\bf report\_\-instance}
+\end{CompactItemize}
 
 
 \subsection{Detailed Description}
@@ -23,7 +28,7 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsection{Function Documentation}
 \index{fsm.c@{fsm.c}!fsm_report@{fsm\_\-report}}
 \index{fsm_report@{fsm\_\-report}!fsm.c@{fsm.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void fsm\_\-report (FILE $\ast$ {\em ofile}, {\bf bool} {\em verbose}, {\bf bool} {\em instance})}\label{fsm_8c_a0}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void fsm\_\-report (FILE $\ast$ {\em ofile}, {\bf bool} {\em verbose})}\label{fsm_8c_a1}
 
 
 Generates report output for FSM coverage.
@@ -33,7 +38,13 @@ Generates report output for FSM coverage.
 \begin{description}
 \item[{\em 
 ofile}]Pointer to file to output results to. \item[{\em 
-verbose}]Specifies whether or not to provide verbose information \item[{\em 
-instance}]Specifies to report by instance or module.\end{description}
+verbose}]Specifies whether or not to provide verbose information\end{description}
 \end{Desc}
 After the design is read into the module hierarchy, parses the hierarchy by module, reporting the FSM coverage for each module encountered. The parent module will specify its own FSM coverage along with a total FSM coverage including its  children. 
+
+\subsection{Variable Documentation}
+\index{fsm.c@{fsm.c}!report_instance@{report\_\-instance}}
+\index{report_instance@{report\_\-instance}!fsm.c@{fsm.c}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} report\_\-instance}\label{fsm_8c_a0}
+
+

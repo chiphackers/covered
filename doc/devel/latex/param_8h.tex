@@ -1,0 +1,87 @@
+\section{param.h File Reference}
+\label{param_8h}\index{param.h@{param.h}}
+Contains functions and structures necessary to handle parameters. 
+
+
+{\tt \#include \char`\"{}defines.h\char`\"{}}\par
+{\tt \#include \char`\"{}expr.h\char`\"{}}\par
+{\tt \#include \char`\"{}module.h\char`\"{}}\par
+{\tt \#include \char`\"{}vector.h\char`\"{}}\par
+\subsection*{Functions}
+\begin{CompactItemize}
+\item 
+{\bf parameter} $\ast$ {\bf param\_\-find} (char $\ast$name, {\bf parameter} $\ast$parm)
+\begin{CompactList}\small\item\em Searches specified parameter list for the specified parameter name.\item\end{CompactList}\item 
+void {\bf param\_\-add} (char $\ast$name, {\bf expression} $\ast$expr, {\bf module} $\ast$mod)
+\begin{CompactList}\small\item\em Adds parameter to specified module's parameter list.\item\end{CompactList}\item 
+void {\bf param\_\-add\_\-defparam} (char $\ast$scope, {\bf vector} $\ast$expr)
+\begin{CompactList}\small\item\em Adds parameter override to defparam list.\item\end{CompactList}\end{CompactItemize}
+
+
+\subsection{Detailed Description}
+Contains functions and structures necessary to handle parameters.
+
+
+
+\begin{Desc}
+\item[Author: ]\par
+Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
+\begin{Desc}
+\item[Date: ]\par
+8/22/2002\end{Desc}
+
+
+\subsection{Function Documentation}
+\index{param.h@{param.h}!param_add@{param\_\-add}}
+\index{param_add@{param\_\-add}!param.h@{param.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void param\_\-add (char $\ast$ {\em name}, {\bf expression} $\ast$ {\em expr}, {\bf module} $\ast$ {\em mod})}\label{param_8h_a1}
+
+
+Adds parameter to specified module's parameter list.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+name}]Full hierarchical name of parameter value. \item[{\em 
+expr}]Expression to calculate parameter value. \item[{\em 
+mod}]Pointer to module to store default parameter value.\end{description}
+\end{Desc}
+Creates a new parameter with the specified information and adds it to the  instance parameter list. This function is only called when a parameter is found in a particular module.
+
+Note: Necessary \index{param.h@{param.h}!param_add_defparam@{param\_\-add\_\-defparam}}
+\index{param_add_defparam@{param\_\-add\_\-defparam}!param.h@{param.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void param\_\-add\_\-defparam (char $\ast$ {\em scope}, {\bf vector} $\ast$ {\em value})}\label{param_8h_a2}
+
+
+Adds parameter override to defparam list.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+scope}]Full hierarchical reference to specified scope to change value to. \item[{\em 
+value}]User-specified parameter override value.\end{description}
+\end{Desc}
+Scans list of all parameters to make sure that specified parameter isn't already being set to a new value. If no match occurs, creates a new parameter link and places at the tail of the parameter list. If match is found, display error message to user and exit covered immediately. This function is called for each -P option to the score command.
+
+Note: Necessary -- used by {\bf score.c} \index{param.h@{param.h}!param_find@{param\_\-find}}
+\index{param_find@{param\_\-find}!param.h@{param.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf parameter}$\ast$ param\_\-find (char $\ast$ {\em name}, {\bf parameter} $\ast$ {\em parm})}\label{param_8h_a0}
+
+
+Searches specified parameter list for the specified parameter name.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+name}]Name of parameter value to find. \item[{\em 
+parm}]Pointer to head of parameter list to search.\end{description}
+\end{Desc}
+\begin{Desc}
+\item[Returns: ]\par
+Returns pointer to found parameter or NULL if parameter is not found.\end{Desc}
+Searches specified parameter list for a parameter that matches the name of the specified parameter. If a match is found, a pointer to the found parameter is returned to the calling function; otherwise, a value of NULL is returned if no match was found.
+
+Note: Necessary 

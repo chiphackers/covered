@@ -96,8 +96,8 @@ The following options are valid with the report command:
 \fB\-c\fR
 If \fI\-v\fR is specified, displays covered line, toggle and combinational cases.  Default is to display uncovered information.
 .TP 
-\fB\-d\fR \fIdepth\fR
-Depth of combinational expressions to provide coverage for.  Default is infinity.  \fICurrently, this option is unsupported.\fR
+\fB\-d\fR \fI(s|d|v)\fR
+Level of detail to provide in coverage report information (s = summary, d = detailed, v = verbose).  Default is summary.
 .TP 
 \fB\-h\fR
 Displays this help information.
@@ -112,7 +112,7 @@ Type(s) of metrics to report.  Default is \fIltc\fR.
 File to output report information to.  Default is standard output.
 .TP 
 \fB\-v\fR
-Provide verbose information in report.  Default is summarize.
+Deprecated.  Replaced by '\-d d' or '\-d v'.
 .SH "AUTHORS"
 .LP 
 Trevor Williams <trevorw@charter.net>

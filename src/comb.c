@@ -20,6 +20,7 @@ extern mod_link* mod_head;
 
 extern bool         report_covered;
 extern unsigned int report_comb_depth;
+extern bool         report_instance;
 
 
 /*!
@@ -34,7 +35,8 @@ extern unsigned int report_comb_depth;
 */
 int combination_calc_depth( expression* exp, unsigned int curr_depth, bool left ) {
 
-  if( (curr_depth + 1) == report_comb_depth ) {
+  if( ((report_comb_depth == REPORT_DETAILED) && ((curr_depth + 1) == report_comb_depth)) ||
+       (report_comb_depth == REPORT_VERBOSE) ) {
 
     if( left ) {
 
@@ -77,7 +79,8 @@ void combination_get_tree_stats( expression* exp, unsigned int curr_depth, float
 
   if( exp != NULL ) {
 
-    if( curr_depth == report_comb_depth ) {
+    if( ((report_comb_depth == REPORT_DETAILED) && (curr_depth == report_comb_depth)) ||
+         (report_comb_depth == REPORT_VERBOSE) ) {
 
       /* Calculate current expression combination coverage */
       if( EXPR_IS_MEASURABLE( exp ) == 1 ) {
@@ -381,7 +384,8 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
 
       }
 
-      comb_missed = (curr_depth == report_comb_depth) ? EXPR_COMB_MISSED( exp ) : 0;
+      comb_missed = (((report_comb_depth == REPORT_DETAILED) && (curr_depth == report_comb_depth)) ||
+                      (report_comb_depth == REPORT_VERBOSE)) ? EXPR_COMB_MISSED( exp ) : 0;
 
       if( l_depth > r_depth ) {
         *depth = l_depth + comb_missed;
@@ -623,7 +627,9 @@ void combination_list_missed( FILE* ofile, expression* exp, unsigned int curr_de
     combination_list_missed( ofile, exp->left,  combination_calc_depth( exp, curr_depth, TRUE ),  exp_id );
     combination_list_missed( ofile, exp->right, combination_calc_depth( exp, curr_depth, FALSE ), exp_id );
 
-    if( (EXPR_COMB_MISSED( exp ) == 1) && (curr_depth == report_comb_depth) ) {
+    if( (EXPR_COMB_MISSED( exp ) == 1) && 
+        (((report_comb_depth == REPORT_DETAILED) && (curr_depth == report_comb_depth)) ||
+          (report_comb_depth == REPORT_VERBOSE)) ) {
 
       /* Create combination table */
       switch( SUPPL_OP( exp->suppl ) ) {
@@ -697,7 +703,8 @@ bool combination_missed_expr( expression* expr, unsigned int curr_depth ) {
     missed_right = combination_missed_expr( expr->right, combination_calc_depth( expr, curr_depth, FALSE ) );
     missed_left  = combination_missed_expr( expr->left,  combination_calc_depth( expr, curr_depth, TRUE ) );
 
-    if( curr_depth == report_comb_depth ) {
+    if( ((report_comb_depth == REPORT_DETAILED) && (curr_depth == report_comb_depth)) ||
+         (report_comb_depth == REPORT_VERBOSE) ) {
 
       return( (EXPR_COMB_MISSED( expr ) == 1) || missed_right || missed_left );
 
@@ -844,18 +851,17 @@ void combination_module_verbose( FILE* ofile, mod_link* head ) {
 /*!
  \param ofile     Pointer to file to output results to.
  \param verbose   Specifies whether or not to provide verbose information
- \param instance  Specifies to report by instance or module.
 
  After the design is read into the module hierarchy, parses the hierarchy by module,
  reporting the combinational logic coverage for each module encountered.  The parent 
  module will specify its own combinational logic coverage along with a total combinational
  logic coverage including its children.
 */
-void combination_report( FILE* ofile, bool verbose, bool instance ) {
+void combination_report( FILE* ofile, bool verbose ) {
 
   bool missed_found;      /* If set to TRUE, indicates combinations were missed */
 
-  if( instance ) {
+  if( report_instance ) {
 
     fprintf( ofile, "COMBINATIONAL LOGIC COVERAGE RESULTS BY INSTANCE\n" );
     fprintf( ofile, "------------------------------------------------\n" );
@@ -889,6 +895,13 @@ void combination_report( FILE* ofile, bool verbose, bool instance ) {
 
 
 /* $Log$
+/* Revision 1.41  2002/09/12 05:16:25  phase1geo
+/* Updating all CDD files in regression suite due to change in vector handling.
+/* Modified vectors to assign a default value of 0xaa to unassigned registers
+/* to eliminate bugs where values never assigned and VCD file doesn't contain
+/* information for these.  Added initial working version of depth feature in
+/* report generation.  Updates to man page and parameter documentation.
+/*
 /* Revision 1.40  2002/09/10 05:40:09  phase1geo
 /* Adding support for MULTIPLY, DIVIDE and MOD in expression verbose display.
 /* Fixing cases where -c option was not generating covered information in

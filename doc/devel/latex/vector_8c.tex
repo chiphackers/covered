@@ -58,7 +58,7 @@ void {\bf vector\_\-set\_\-static} ({\bf vector} $\ast$vec, char $\ast$str, int 
 \item 
 char $\ast$ {\bf vector\_\-to\_\-string} ({\bf vector} $\ast$vec, int type)
 \begin{CompactList}\small\item\em Converts vector into a string value in specified format.\item\end{CompactList}\item 
-{\bf vector} $\ast$ {\bf vector\_\-from\_\-string} (char $\ast$str, {\bf bool} sized, int type)
+{\bf vector} $\ast$ {\bf vector\_\-from\_\-string} (char $\ast$str)
 \begin{CompactList}\small\item\em Converts character string value into vector.\item\end{CompactList}\item 
 void {\bf vector\_\-vcd\_\-assign} ({\bf vector} $\ast$vec, char $\ast$value)
 \item 
@@ -301,7 +301,7 @@ value}]Integer value to convert into vector.\end{description}
 \end{Desc}
 Converts an integer value into a vector, creating a vector value to store the new vector into. This function is used along with the vector\_\-to\_\-int for mathematical vector operations. We will first convert vectors into integers, perform the mathematical operation, and then revert the integers back into the vectors. \index{vector.c@{vector.c}!vector_from_string@{vector\_\-from\_\-string}}
 \index{vector_from_string@{vector\_\-from\_\-string}!vector.c@{vector.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf vector}$\ast$ vector\_\-from\_\-string (char $\ast$ {\em str}, {\bf bool} {\em sized}, int {\em type})}\label{vector_8c_a31}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf vector}$\ast$ vector\_\-from\_\-string (char $\ast$ {\em str})}\label{vector_8c_a31}
 
 
 Converts character string value into vector.
@@ -310,13 +310,11 @@ Converts character string value into vector.
 \item[Parameters: ]\par
 \begin{description}
 \item[{\em 
-str}]String version of value. \item[{\em 
-sized}]Specifies if string value is sized or unsized. \item[{\em 
-type}]Type of string value.\end{description}
+str}]String version of value.\end{description}
 \end{Desc}
 \begin{Desc}
 \item[Returns: ]\par
-Returns pointer to newly create vector holding string value.\end{Desc}
+Returns pointer to newly created vector holding string value.\end{Desc}
 Converts a string value from the lexer into a vector structure appropriately sized. \index{vector.c@{vector.c}!vector_get_type@{vector\_\-get\_\-type}}
 \index{vector_get_type@{vector\_\-get\_\-type}!vector.c@{vector.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}int vector\_\-get\_\-type ({\bf vector} $\ast$ {\em vec})}\label{vector_8c_a26}

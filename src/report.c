@@ -23,13 +23,13 @@
  If set to a boolean value of TRUE, reports the line coverage for the specified database
  file; otherwise, omits line coverage from the report output.
 */
-bool report_line       = TRUE;
+bool report_line        = TRUE;
 
 /*!
  If set to a boolean value of TRUE, reports the toggle coverage for the specified database
  file; otherwise, omits toggle coverage from the report output.
 */
-bool report_toggle     = TRUE;
+bool report_toggle      = TRUE;
 
 /*!
  If set to a boolean value of TRUE, reports the combinational logic coverage for the specified
@@ -42,34 +42,27 @@ bool report_combination = TRUE;
  specified database file; otherwise, omits finite state machine coverage from the
  report output.
 */
-bool report_fsm        = FALSE;
-
-/*!
- If set to a boolean value of TRUE, provides a verbose description of both the coverage
- and metric examples that were not covered.  If set to FALSE, provides a summarized
- coverage report containing only coverage percentage values.
-*/
-bool report_verbose    = FALSE;
+bool report_fsm         = FALSE;
 
 /*!
  If set to a boolean value of TRUE, provides a coverage information for individual
  module instances.  If set to a value of FALSE, reports coverage information on a
  module basis, merging results from all instances of same module.
 */
-bool report_instance   = FALSE;
+bool report_instance    = FALSE;
 
 /*!
  If set to a boolean value of TRUE, displays covered logic for a particular CDD file.
  By default, Covered will display uncovered logic.  Must be used in conjunction with
  the -v (verbose output) option.
 */
-bool report_covered    = FALSE;
+bool report_covered     = FALSE;
 
 /*!
  If set to a non-zero value, causes Covered to only generate combinational logic
  report information for depths up to the number specified.
 */
-unsigned int report_comb_depth  = 0xffffffff;
+unsigned int report_comb_depth = REPORT_SUMMARY;
 
 
 char* output_file      = NULL;
@@ -89,12 +82,11 @@ void report_usage() {
   printf( "\n" );
   printf( "   Options:\n" );
   printf( "      -m [l][t][c][f]         Type(s) of metrics to report.  Default is ltc.\n" );
-  printf( "      -v                      Provide verbose information in report.  Default is summarize.\n" );
+  printf( "      -d (s|d|v)              Level of report detail (s=summary, d=detailed, v=verbose).\n" );
+  printf( "                               Default is to display summary coverage information.\n" );
   printf( "      -i                      Provides coverage information for instances instead of module.\n" );
-  printf( "      -c                      If -v is specified, displays covered line, toggle and combinational cases.\n" );
-  printf( "                              Default is to display uncovered information.\n" );
-  printf( "      -d <depth>              Depth of combinational expressions to provide coverage for.  Default is\n" );
-  printf( "                              infinity.\n" );
+  printf( "      -c                      If '-d d' or '-d v' is specified, displays covered line, toggle\n" );
+  printf( "                               and combinational cases.  Default is to display uncovered results.\n" );
   printf( "      -o <filename>           File to output report information to.  Default is standard output.\n" );
   printf( "      -h                      Displays this help information.\n" );
   printf( "\n" );
@@ -175,7 +167,8 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
 
     } else if( strncmp( "-v", argv[i], 2 ) == 0 ) {
 
-      report_verbose = TRUE;
+      print_output( "Using deprecated option '-v'.  Please use '-d d' or '-d v'.", FATAL );
+      retval = FALSE;
 
     } else if( strncmp( "-i", argv[i], 2 ) == 0 ) {
 
@@ -188,9 +181,19 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
     } else if( strncmp( "-d", argv[i], 2 ) == 0 ) {
 
       i++;
-      report_comb_depth = atol( argv[i] );
-      // print_output( "Report option -d is not implemented at this time.  Skipping this option...", WARNING );
- 
+     
+      if( argv[i][0] == 's' ) {
+        report_comb_depth = REPORT_SUMMARY;
+      } else if( argv[i][0] == 'd' ) {
+        report_comb_depth = REPORT_DETAILED;
+      } else if( argv[i][0] == 'v' ) {
+        report_comb_depth = REPORT_VERBOSE;
+      } else {
+        snprintf( err_msg, 4096, "Unrecognized detail type: -d %s\n", argv[i] );
+        print_output( err_msg, FATAL );
+        retval = FALSE;
+      }
+
     } else if( strncmp( "-o", argv[i], 2 ) == 0 ) {
 
       i++;
@@ -332,12 +335,21 @@ void report_gather_module_stats( mod_link* head ) {
 */
 void report_print_header( FILE* ofile ) {
 
-  if( report_verbose ) {
-    fprintf( ofile, "Covered -- Verilog Coverage Detailed Report\n" );
-    fprintf( ofile, "===========================================\n" );
-  } else {
-    fprintf( ofile, "Covered -- Verilog Coverage Summarized Report\n" );
-    fprintf( ofile, "=============================================\n" );
+  switch( report_comb_depth ) {
+    case REPORT_SUMMARY  :
+      fprintf( ofile, "Covered -- Verilog Coverage Summarized Report\n" );
+      fprintf( ofile, "=============================================\n" );
+      break;
+    case REPORT_DETAILED :
+      fprintf( ofile, "Covered -- Verilog Coverage Detailed Report\n" );
+      fprintf( ofile, "===========================================\n" );
+      break;
+    case REPORT_VERBOSE  :
+      fprintf( ofile, "Covered -- Verilog Coverage Verbose Report\n" );
+      fprintf( ofile, "==========================================\n" );
+      break;
+    default:
+      break;
   }
 
   fprintf( ofile, "\n" );
@@ -363,19 +375,19 @@ void report_generate( FILE* ofile ) {
 
   /* Call out the proper reports for the specified metrics to report */
   if( report_line ) {
-    line_report( ofile, report_verbose, report_instance );
+    line_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
   }
 
   if( report_toggle ) {
-    toggle_report( ofile, report_verbose, report_instance );
+    toggle_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
   }
 
   if( report_combination ) {
-    combination_report( ofile, report_verbose, report_instance );
+    combination_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
   }
 
   if( report_fsm ) {
-    fsm_report( ofile, report_verbose, report_instance );
+    fsm_report( ofile, (report_comb_depth != REPORT_SUMMARY) );
   }
 
 }
@@ -455,6 +467,13 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 
 /* $Log$
+/* Revision 1.14  2002/09/12 05:16:25  phase1geo
+/* Updating all CDD files in regression suite due to change in vector handling.
+/* Modified vectors to assign a default value of 0xaa to unassigned registers
+/* to eliminate bugs where values never assigned and VCD file doesn't contain
+/* information for these.  Added initial working version of depth feature in
+/* report generation.  Updates to man page and parameter documentation.
+/*
 /* Revision 1.13  2002/08/20 05:55:25  phase1geo
 /* Starting to add combination depth option to report command.  Currently, the
 /* option is not implemented.

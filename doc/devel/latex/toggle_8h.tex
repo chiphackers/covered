@@ -10,7 +10,7 @@ Contains functions for determining/reporting toggle coverage.
 \item 
 void {\bf toggle\_\-get\_\-stats} ({\bf exp\_\-link} $\ast$expl, {\bf sig\_\-link} $\ast$sigl, float $\ast$total, int $\ast$hit01, int $\ast$hit10)
 \begin{CompactList}\small\item\em Calculates the toggle coverage for the specifed expression and signal lists.\item\end{CompactList}\item 
-void {\bf toggle\_\-report} (FILE $\ast$ofile, {\bf bool} verbose, {\bf bool} instance)
+void {\bf toggle\_\-report} (FILE $\ast$ofile, {\bf bool} verbose)
 \begin{CompactList}\small\item\em Generates report output for toggle coverage.\item\end{CompactList}\end{CompactItemize}
 
 
@@ -47,7 +47,7 @@ hit10}]Number of bits toggling from 1 to 0 during simulation.\end{description}
 \end{Desc}
 Searches specified expression list and signal list, gathering information  about toggled bits. For each bit that is found in the design, the total value is incremented by one. For each bit that toggled from a 0 to a 1, the value of hit01 is incremented by one. For each bit that toggled from a 1 to a 0, the value of hit10 is incremented by one. \index{toggle.h@{toggle.h}!toggle_report@{toggle\_\-report}}
 \index{toggle_report@{toggle\_\-report}!toggle.h@{toggle.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void toggle\_\-report (FILE $\ast$ {\em ofile}, {\bf bool} {\em verbose}, {\bf bool} {\em instance})}\label{toggle_8h_a1}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void toggle\_\-report (FILE $\ast$ {\em ofile}, {\bf bool} {\em verbose})}\label{toggle_8h_a1}
 
 
 Generates report output for toggle coverage.
@@ -57,7 +57,6 @@ Generates report output for toggle coverage.
 \begin{description}
 \item[{\em 
 ofile}]Pointer to file to output results to. \item[{\em 
-verbose}]Specifies whether or not to provide verbose information \item[{\em 
-instance}]Specifies to report by instance or module.\end{description}
+verbose}]Specifies whether or not to provide verbose information\end{description}
 \end{Desc}
 After the design is read into the module hierarchy, parses the hierarchy by module, reporting the toggle coverage for each module encountered. The parent module will specify its own toggle coverage along with a total toggle coverage including its  children. 

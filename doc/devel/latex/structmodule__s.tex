@@ -22,6 +22,10 @@ char $\ast$ {\bf filename}
 {\bf stmt\_\-link} $\ast$ {\bf stmt\_\-head}
 \item 
 {\bf stmt\_\-link} $\ast$ {\bf stmt\_\-tail}
+\item 
+{\bf parameter} $\ast$ {\bf param\_\-head}
+\item 
+{\bf parameter} $\ast$ {\bf param\_\-tail}
 \end{CompactItemize}
 
 
@@ -51,7 +55,17 @@ File name where module exists \index{module_s@{module\_\-s}!name@{name}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ module\_\-s::name}\label{structmodule__s_m0}
 
 
-Module name \index{module_s@{module\_\-s}!sig_head@{sig\_\-head}}
+Module name \index{module_s@{module\_\-s}!param_head@{param\_\-head}}
+\index{param_head@{param\_\-head}!module_s@{module\_\-s}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf parameter}$\ast$ module\_\-s::param\_\-head}\label{structmodule__s_m9}
+
+
+Head pointer to list of parameters in this module \index{module_s@{module\_\-s}!param_tail@{param\_\-tail}}
+\index{param_tail@{param\_\-tail}!module_s@{module\_\-s}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf parameter}$\ast$ module\_\-s::param\_\-tail}\label{structmodule__s_m10}
+
+
+Tail pointer to list of parameters in this module \index{module_s@{module\_\-s}!sig_head@{sig\_\-head}}
 \index{sig_head@{sig\_\-head}!module_s@{module\_\-s}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf sig\_\-link}$\ast$ module\_\-s::sig\_\-head}\label{structmodule__s_m3}
 

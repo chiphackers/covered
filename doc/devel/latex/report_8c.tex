@@ -42,13 +42,11 @@ int {\bf command\_\-report} (int argc, int last\_\-arg, char $\ast$$\ast$argv)
 \item 
 {\bf bool} {\bf report\_\-fsm} = FALSE
 \item 
-{\bf bool} {\bf report\_\-verbose} = FALSE
-\item 
 {\bf bool} {\bf report\_\-instance} = FALSE
 \item 
 {\bf bool} {\bf report\_\-covered} = FALSE
 \item 
-unsigned int {\bf report\_\-comb\_\-depth} = 0
+unsigned int {\bf report\_\-comb\_\-depth} = REPORT\_\-SUMMARY
 \item 
 char $\ast$ {\bf output\_\-file} = NULL
 \item 
@@ -74,7 +72,7 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 \subsection{Function Documentation}
 \index{report.c@{report.c}!command_report@{command\_\-report}}
 \index{command_report@{command\_\-report}!report.c@{report.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int command\_\-report (int {\em argc}, int {\em last\_\-arg}, char $\ast$$\ast$ {\em argv})}\label{report_8c_a19}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}int command\_\-report (int {\em argc}, int {\em last\_\-arg}, char $\ast$$\ast$ {\em argv})}\label{report_8c_a18}
 
 
 Parses command-line for report command and performs report functionality.
@@ -92,7 +90,7 @@ argv}]Arguments passed to report command to parse.\end{description}
 Returns 0 is report is successful; otherwise, returns -1.\end{Desc}
 Performs report command functionality. \index{report.c@{report.c}!report_gather_instance_stats@{report\_\-gather\_\-instance\_\-stats}}
 \index{report_gather_instance_stats@{report\_\-gather\_\-instance\_\-stats}!report.c@{report.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void report\_\-gather\_\-instance\_\-stats ({\bf mod\_\-inst} $\ast$ {\em root})}\label{report_8c_a15}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void report\_\-gather\_\-instance\_\-stats ({\bf mod\_\-inst} $\ast$ {\em root})}\label{report_8c_a14}
 
 
 \begin{Desc}
@@ -103,7 +101,7 @@ root}]Pointer to root of instance tree to search.\end{description}
 \end{Desc}
 Recursively parses instance tree, creating statistic structures for each of the instances in the tree. Calculates summary coverage information for children nodes first and parent nodes after. In this way, the parent nodes will have the accumulated information from themselves and all of their children. \index{report.c@{report.c}!report_gather_module_stats@{report\_\-gather\_\-module\_\-stats}}
 \index{report_gather_module_stats@{report\_\-gather\_\-module\_\-stats}!report.c@{report.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void report\_\-gather\_\-module\_\-stats ({\bf mod\_\-link} $\ast$ {\em head})}\label{report_8c_a16}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void report\_\-gather\_\-module\_\-stats ({\bf mod\_\-link} $\ast$ {\em head})}\label{report_8c_a15}
 
 
 \begin{Desc}
@@ -114,7 +112,7 @@ head}]Pointer to head of module list to search.\end{description}
 \end{Desc}
 Traverses module list, creating statistic structures for each of the modules in the tree, and calculates summary coverage information. \index{report.c@{report.c}!report_generate@{report\_\-generate}}
 \index{report_generate@{report\_\-generate}!report.c@{report.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void report\_\-generate (FILE $\ast$ {\em ofile})}\label{report_8c_a18}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void report\_\-generate (FILE $\ast$ {\em ofile})}\label{report_8c_a17}
 
 
 \begin{Desc}
@@ -125,7 +123,7 @@ ofile}]Pointer to output stream to display report information to.\end{descriptio
 \end{Desc}
 Generates a coverage report based on the options specified on the command line to the specified output stream. \index{report.c@{report.c}!report_parse_args@{report\_\-parse\_\-args}}
 \index{report_parse_args@{report\_\-parse\_\-args}!report.c@{report.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} report\_\-parse\_\-args (int {\em argc}, int {\em last\_\-arg}, char $\ast$$\ast$ {\em argv})}\label{report_8c_a14}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} report\_\-parse\_\-args (int {\em argc}, int {\em last\_\-arg}, char $\ast$$\ast$ {\em argv})}\label{report_8c_a13}
 
 
 \begin{Desc}
@@ -141,7 +139,7 @@ argv}]Argument list passed to this program.\end{description}
 Returns TRUE if parsing was successful; otherwise, returns FALSE.\end{Desc}
 Parses the argument list for options. If a legal option is found for the report command, the appropriate action is taken for that option. If an option is found that is not allowed, an error message is reported to the user and the program terminates immediately. \index{report.c@{report.c}!report_parse_metrics@{report\_\-parse\_\-metrics}}
 \index{report_parse_metrics@{report\_\-parse\_\-metrics}!report.c@{report.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void report\_\-parse\_\-metrics (char $\ast$ {\em metrics})}\label{report_8c_a13}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void report\_\-parse\_\-metrics (char $\ast$ {\em metrics})}\label{report_8c_a12}
 
 
 \begin{Desc}
@@ -152,7 +150,7 @@ metrics}]Specified metrics to calculate coverage for.\end{description}
 \end{Desc}
 Parses the specified string containing the metrics to test. If a legal metric character is found, its corresponding flag is set to TRUE. If a character is found that does not correspond to a metric, an error message is flagged to the user (a warning). \index{report.c@{report.c}!report_print_header@{report\_\-print\_\-header}}
 \index{report_print_header@{report\_\-print\_\-header}!report.c@{report.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void report\_\-print\_\-header (FILE $\ast$ {\em ofile})}\label{report_8c_a17}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void report\_\-print\_\-header (FILE $\ast$ {\em ofile})}\label{report_8c_a16}
 
 
 \begin{Desc}
@@ -163,7 +161,7 @@ ofile}]Pointer to output stream to display report information to.\end{descriptio
 \end{Desc}
 Generates generic report header for all reports. \index{report.c@{report.c}!report_usage@{report\_\-usage}}
 \index{report_usage@{report\_\-usage}!report.c@{report.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void report\_\-usage ()}\label{report_8c_a12}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void report\_\-usage ()}\label{report_8c_a11}
 
 
 Displays usage information about the report command. 
@@ -171,37 +169,37 @@ Displays usage information about the report command.
 \subsection{Variable Documentation}
 \index{report.c@{report.c}!input_db@{input\_\-db}}
 \index{input_db@{input\_\-db}!report.c@{report.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ input\_\-db = NULL}\label{report_8c_a9}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ input\_\-db = NULL}\label{report_8c_a8}
 
 
 \index{report.c@{report.c}!instance_root@{instance\_\-root}}
 \index{instance_root@{instance\_\-root}!report.c@{report.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-inst}$\ast$ instance\_\-root}\label{report_8c_a10}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-inst}$\ast$ instance\_\-root}\label{report_8c_a9}
 
 
 \index{report.c@{report.c}!mod_head@{mod\_\-head}}
 \index{mod_head@{mod\_\-head}!report.c@{report.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-link}$\ast$ mod\_\-head}\label{report_8c_a11}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf mod\_\-link}$\ast$ mod\_\-head}\label{report_8c_a10}
 
 
 \index{report.c@{report.c}!output_file@{output\_\-file}}
 \index{output_file@{output\_\-file}!report.c@{report.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ output\_\-file = NULL}\label{report_8c_a8}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ output\_\-file = NULL}\label{report_8c_a7}
 
 
 \index{report.c@{report.c}!report_comb_depth@{report\_\-comb\_\-depth}}
 \index{report_comb_depth@{report\_\-comb\_\-depth}!report.c@{report.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}unsigned int report\_\-comb\_\-depth = 0}\label{report_8c_a7}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}unsigned int report\_\-comb\_\-depth = REPORT\_\-SUMMARY}\label{report_8c_a6}
 
 
-If set to a non-zero value, causes Covered to only generate combinational logic report information for depths up to the number specified. If set to 0, all combinational logic is evaluated. \index{report.c@{report.c}!report_combination@{report\_\-combination}}
+If set to a non-zero value, causes Covered to only generate combinational logic report information for depths up to the number specified. \index{report.c@{report.c}!report_combination@{report\_\-combination}}
 \index{report_combination@{report\_\-combination}!report.c@{report.c}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} report\_\-combination = TRUE}\label{report_8c_a2}
 
 
 If set to a boolean value of TRUE, reports the combinational logic coverage for the specified database file; otherwise, omits combinational logic coverage from the report output. \index{report.c@{report.c}!report_covered@{report\_\-covered}}
 \index{report_covered@{report\_\-covered}!report.c@{report.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} report\_\-covered = FALSE}\label{report_8c_a6}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} report\_\-covered = FALSE}\label{report_8c_a5}
 
 
 If set to a boolean value of TRUE, displays covered logic for a particular CDD file. By default, Covered will display uncovered logic. Must be used in conjunction with the -v (verbose output) option. \index{report.c@{report.c}!report_fsm@{report\_\-fsm}}
@@ -211,7 +209,7 @@ If set to a boolean value of TRUE, displays covered logic for a particular CDD f
 
 If set to a boolean value of TRUE, reports the finite state machine coverage for the specified database file; otherwise, omits finite state machine coverage from the report output. \index{report.c@{report.c}!report_instance@{report\_\-instance}}
 \index{report_instance@{report\_\-instance}!report.c@{report.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} report\_\-instance = FALSE}\label{report_8c_a5}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} report\_\-instance = FALSE}\label{report_8c_a4}
 
 
 If set to a boolean value of TRUE, provides a coverage information for individual module instances. If set to a value of FALSE, reports coverage information on a module basis, merging results from all instances of same module. \index{report.c@{report.c}!report_line@{report\_\-line}}
@@ -224,9 +222,4 @@ If set to a boolean value of TRUE, reports the line coverage for the specified d
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} report\_\-toggle = TRUE}\label{report_8c_a1}
 
 
-If set to a boolean value of TRUE, reports the toggle coverage for the specified database file; otherwise, omits toggle coverage from the report output. \index{report.c@{report.c}!report_verbose@{report\_\-verbose}}
-\index{report_verbose@{report\_\-verbose}!report.c@{report.c}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf bool} report\_\-verbose = FALSE}\label{report_8c_a4}
-
-
-If set to a boolean value of TRUE, provides a verbose description of both the coverage and metric examples that were not covered. If set to FALSE, provides a summarized coverage report containing only coverage percentage values. 
+If set to a boolean value of TRUE, reports the toggle coverage for the specified database file; otherwise, omits toggle coverage from the report output. 

@@ -17,6 +17,10 @@ void {\bf db\_\-add\_\-module} (char $\ast$name, char $\ast${\bf file})
 \begin{CompactList}\small\item\em Adds specified module to module list. Called by parser.\item\end{CompactList}\item 
 void {\bf db\_\-add\_\-signal} (char $\ast$name, int width, int lsb, int is\_\-static)
 \begin{CompactList}\small\item\em Adds specified signal to signal list. Called by parser.\item\end{CompactList}\item 
+void {\bf db\_\-add\_\-parameter} (char $\ast$name, {\bf expression} $\ast$expr)
+\begin{CompactList}\small\item\em Adds specified parameter to parameter list. Called by parser.\item\end{CompactList}\item 
+void {\bf db\_\-add\_\-defparam} (char $\ast$name, {\bf expression} $\ast$expr)
+\begin{CompactList}\small\item\em Adds specified defparam to parameter override list. Called by parser.\item\end{CompactList}\item 
 {\bf signal} $\ast$ {\bf db\_\-find\_\-signal} (char $\ast$name)
 \begin{CompactList}\small\item\em Finds specified signal in module and returns pointer to the signal structure. Called by parser.\item\end{CompactList}\item 
 {\bf expression} $\ast$ {\bf db\_\-create\_\-expression} ({\bf expression} $\ast$right, {\bf expression} $\ast$left, int op, int line, char $\ast$sig\_\-name)
@@ -61,9 +65,23 @@ Trevor Williams ({\tt trevorw@charter.net}) \end{Desc}
 
 
 \subsection{Function Documentation}
-\index{db.h@{db.h}!db_add_expression@{db\_\-add\_\-expression}}
+\index{db.h@{db.h}!db_add_defparam@{db\_\-add\_\-defparam}}
+\index{db_add_defparam@{db\_\-add\_\-defparam}!db.h@{db.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-add\_\-defparam (char $\ast$ {\em name}, {\bf expression} $\ast$ {\em expr})}\label{db_8h_a6}
+
+
+Adds specified defparam to parameter override list. Called by parser.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+name}]Name of parameter value to override. \item[{\em 
+expr}]Expression value of parameter override.\end{description}
+\end{Desc}
+Adds specified parameter to the defparam list. \index{db.h@{db.h}!db_add_expression@{db\_\-add\_\-expression}}
 \index{db_add_expression@{db\_\-add\_\-expression}!db.h@{db.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-add\_\-expression ({\bf expression} $\ast$ {\em root})}\label{db_8h_a7}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-add\_\-expression ({\bf expression} $\ast$ {\em root})}\label{db_8h_a9}
 
 
 Adds specified expression to expression list. Called by parser.
@@ -102,7 +120,21 @@ Adds specified module to module list. Called by parser.
 name}]Name of module being added to tree. \item[{\em 
 file}]Filename that module is a part of.\end{description}
 \end{Desc}
-Creates a new module element with the contents specified by the parameters given and inserts this module into the module list. This function can only be called when we are actually parsing a module which implies that we must have the name of the module at the head of the modlist linked-list structure. \index{db.h@{db.h}!db_add_signal@{db\_\-add\_\-signal}}
+Creates a new module element with the contents specified by the parameters given and inserts this module into the module list. This function can only be called when we are actually parsing a module which implies that we must have the name of the module at the head of the modlist linked-list structure. \index{db.h@{db.h}!db_add_parameter@{db\_\-add\_\-parameter}}
+\index{db_add_parameter@{db\_\-add\_\-parameter}!db.h@{db.h}}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-add\_\-parameter (char $\ast$ {\em name}, {\bf expression} $\ast$ {\em expr})}\label{db_8h_a5}
+
+
+Adds specified parameter to parameter list. Called by parser.
+
+\begin{Desc}
+\item[Parameters: ]\par
+\begin{description}
+\item[{\em 
+name}]Name of parameter to add. \item[{\em 
+expr}]Expression containing value of this parameter.\end{description}
+\end{Desc}
+Searches current module to verify that specified parameter name has not been previously used in the module. If the parameter name has not been found, it is created added to the current module's parameter list. \index{db.h@{db.h}!db_add_signal@{db\_\-add\_\-signal}}
 \index{db_add_signal@{db\_\-add\_\-signal}!db.h@{db.h}}
 \subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-add\_\-signal (char $\ast$ {\em name}, int {\em width}, int {\em lsb}, int {\em is\_\-static})}\label{db_8h_a4}
 
@@ -120,7 +152,7 @@ is\_\-static}]If set to non-zero value, sets static bit of this signal vector.\e
 \end{Desc}
 Creates a new signal with the specified parameter information and adds this to the signal list if it does not already exist. \index{db.h@{db.h}!db_add_statement@{db\_\-add\_\-statement}}
 \index{db_add_statement@{db\_\-add\_\-statement}!db.h@{db.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-add\_\-statement ({\bf statement} $\ast$ {\em stmt})}\label{db_8h_a9}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-add\_\-statement ({\bf statement} $\ast$ {\em stmt})}\label{db_8h_a11}
 
 
 Adds specified statement to current module's statement list. Called by parser.
@@ -133,7 +165,7 @@ stmt}]Pointer to statement add to current module's statement list.\end{descripti
 \end{Desc}
 Adds the specified statement tree to the tail of the current module's statement list. \index{db.h@{db.h}!db_assign_symbol@{db\_\-assign\_\-symbol}}
 \index{db_assign_symbol@{db\_\-assign\_\-symbol}!db.h@{db.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-assign\_\-symbol (char $\ast$ {\em name}, char $\ast$ {\em symbol})}\label{db_8h_a15}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-assign\_\-symbol (char $\ast$ {\em name}, char $\ast$ {\em symbol})}\label{db_8h_a17}
 
 
 Adds symbol to signal specified by name.
@@ -147,7 +179,7 @@ symbol}]Symbol value of signal used in VCD dumpfile.\end{description}
 \end{Desc}
 Creates a new entry in the symbol table for the specified signal and symbol. \index{db.h@{db.h}!db_connect_statement_false@{db\_\-connect\_\-statement\_\-false}}
 \index{db_connect_statement_false@{db\_\-connect\_\-statement\_\-false}!db.h@{db.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-connect\_\-statement\_\-false ({\bf statement} $\ast$ {\em stmt}, {\bf statement} $\ast$ {\em next\_\-false})}\label{db_8h_a13}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-connect\_\-statement\_\-false ({\bf statement} $\ast$ {\em stmt}, {\bf statement} $\ast$ {\em next\_\-false})}\label{db_8h_a15}
 
 
 Connects false statement to specified statement.
@@ -161,7 +193,7 @@ next\_\-false}]Pointer to statement to run if statement evaluates to FALSE.\end{
 \end{Desc}
 Connects the specified statement's false statement. \index{db.h@{db.h}!db_connect_statement_true@{db\_\-connect\_\-statement\_\-true}}
 \index{db_connect_statement_true@{db\_\-connect\_\-statement\_\-true}!db.h@{db.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-connect\_\-statement\_\-true ({\bf statement} $\ast$ {\em stmt}, {\bf statement} $\ast$ {\em next\_\-true})}\label{db_8h_a12}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-connect\_\-statement\_\-true ({\bf statement} $\ast$ {\em stmt}, {\bf statement} $\ast$ {\em next\_\-true})}\label{db_8h_a14}
 
 
 Connects true statement to specified statement.
@@ -175,7 +207,7 @@ next\_\-true}]Pointer to statement to run if statement evaluates to TRUE.\end{de
 \end{Desc}
 Connects the specified statement's true statement. \index{db.h@{db.h}!db_create_expression@{db\_\-create\_\-expression}}
 \index{db_create_expression@{db\_\-create\_\-expression}!db.h@{db.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf expression}$\ast$ db\_\-create\_\-expression ({\bf expression} $\ast$ {\em right}, {\bf expression} $\ast$ {\em left}, int {\em op}, int {\em line}, char $\ast$ {\em sig\_\-name})}\label{db_8h_a6}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf expression}$\ast$ db\_\-create\_\-expression ({\bf expression} $\ast$ {\em right}, {\bf expression} $\ast$ {\em left}, int {\em op}, int {\em line}, char $\ast$ {\em sig\_\-name})}\label{db_8h_a8}
 
 
 Creates new expression from specified information. Called by parser and db\_\-add\_\-expression.
@@ -195,7 +227,7 @@ sig\_\-name}]Name of signal that expression is attached to (if valid).\end{descr
 Returns pointer to newly created expression.\end{Desc}
 Creates a new expression with the specified parameter information and returns a pointer to the newly created expression. \index{db.h@{db.h}!db_create_statement@{db\_\-create\_\-statement}}
 \index{db_create_statement@{db\_\-create\_\-statement}!db.h@{db.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf statement}$\ast$ db\_\-create\_\-statement ({\bf expression} $\ast$ {\em exp})}\label{db_8h_a8}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf statement}$\ast$ db\_\-create\_\-statement ({\bf expression} $\ast$ {\em exp})}\label{db_8h_a10}
 
 
 Creates new statement expression from specified information. Called by parser.
@@ -211,7 +243,7 @@ exp}]Pointer to associated \char`\"{}root\char`\"{} expression.\end{description}
 Returns pointer to created statement.\end{Desc}
 Creates an statement structure and adds created statement to current module's statement list. \index{db.h@{db.h}!db_do_timestep@{db\_\-do\_\-timestep}}
 \index{db_do_timestep@{db\_\-do\_\-timestep}!db.h@{db.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-do\_\-timestep (int {\em time})}\label{db_8h_a18}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-do\_\-timestep (int {\em time})}\label{db_8h_a20}
 
 
 Performs a timestep for all signal changes during this timestep.
@@ -224,7 +256,7 @@ time}]Current time step value being performed.\end{description}
 \end{Desc}
 Cycles through expression queue, performing expression evaluations as we go. If an expression has a parent expression, that parent expression is placed in the expression queue after that expression has completed its evaluation. When the expression queue is empty, we are finished for this clock period. \index{db.h@{db.h}!db_find_signal@{db\_\-find\_\-signal}}
 \index{db_find_signal@{db\_\-find\_\-signal}!db.h@{db.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf signal}$\ast$ db\_\-find\_\-signal (char $\ast$ {\em name})}\label{db_8h_a5}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}{\bf signal}$\ast$ db\_\-find\_\-signal (char $\ast$ {\em name})}\label{db_8h_a7}
 
 
 Finds specified signal in module and returns pointer to the signal structure. Called by parser.
@@ -263,7 +295,7 @@ read\_\-mode}]Specifies what to do with read data. Values are\begin{CompactItemi
 Returns TRUE if database read was successful; otherwise, returns FALSE.\end{Desc}
 Opens specified database file for reading. Reads in each line from the file examining its contents and creating the appropriate type to store the specified information and stores it into the appropriate internal list. If there are any problems opening the file for reading or parsing errors, returns FALSE; otherwise, returns TRUE. \index{db.h@{db.h}!db_set_symbol_char@{db\_\-set\_\-symbol\_\-char}}
 \index{db_set_symbol_char@{db\_\-set\_\-symbol\_\-char}!db.h@{db.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-set\_\-symbol\_\-char (char $\ast$ {\em sym}, char {\em value})}\label{db_8h_a16}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-set\_\-symbol\_\-char (char $\ast$ {\em sym}, char {\em value})}\label{db_8h_a18}
 
 
 Sets the found symbol value to specified character value. Called by VCD lexer.
@@ -277,7 +309,7 @@ value}]String version of value to set symbol table entry to.\end{description}
 \end{Desc}
 Searches the timestep symtable followed by the VCD symbol table searching for the symbol that matches the specified argument. Once a symbol is found, its value parameter is set to the specified character. If the symbol was found in the VCD symbol table, it is copied to the timestep symbol table. \index{db.h@{db.h}!db_set_symbol_string@{db\_\-set\_\-symbol\_\-string}}
 \index{db_set_symbol_string@{db\_\-set\_\-symbol\_\-string}!db.h@{db.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-set\_\-symbol\_\-string (char $\ast$ {\em sym}, char $\ast$ {\em value})}\label{db_8h_a17}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-set\_\-symbol\_\-string (char $\ast$ {\em sym}, char $\ast$ {\em value})}\label{db_8h_a19}
 
 
 Sets the found symbol value to specified string value. Called by VCD lexer.
@@ -291,7 +323,7 @@ value}]String version of value to set symbol table entry to.\end{description}
 \end{Desc}
 Searches the timestep symtable followed by the VCD symbol table searching for the symbol that matches the specified argument. Once a symbol is found, its value parameter is set to the specified string. If the symbol was found in the VCD symbol table, it is copied to the timestep symbol table. \index{db.h@{db.h}!db_set_vcd_scope@{db\_\-set\_\-vcd\_\-scope}}
 \index{db_set_vcd_scope@{db\_\-set\_\-vcd\_\-scope}!db.h@{db.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-set\_\-vcd\_\-scope (char $\ast$ {\em scope})}\label{db_8h_a14}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-set\_\-vcd\_\-scope (char $\ast$ {\em scope})}\label{db_8h_a16}
 
 
 Sets current VCD scope to specified scope.
@@ -304,7 +336,7 @@ scope}]Current VCD scope.\end{description}
 \end{Desc}
 Sets the curr\_\-inst\_\-scope global variable to the specified scope. \index{db.h@{db.h}!db_statement_connect@{db\_\-statement\_\-connect}}
 \index{db_statement_connect@{db\_\-statement\_\-connect}!db.h@{db.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-statement\_\-connect ({\bf statement} $\ast$ {\em curr\_\-stmt}, {\bf statement} $\ast$ {\em next\_\-stmt})}\label{db_8h_a10}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-statement\_\-connect ({\bf statement} $\ast$ {\em curr\_\-stmt}, {\bf statement} $\ast$ {\em next\_\-stmt})}\label{db_8h_a12}
 
 
 Connects one statement block to another.
@@ -318,7 +350,7 @@ next\_\-stmt}]Pointer to next statement to attach to.\end{description}
 \end{Desc}
 Calls the statement\_\-connect function located in {\bf statement.c} with the specified parameters. \index{db.h@{db.h}!db_statement_set_stop@{db\_\-statement\_\-set\_\-stop}}
 \index{db_statement_set_stop@{db\_\-statement\_\-set\_\-stop}!db.h@{db.h}}
-\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-statement\_\-set\_\-stop ({\bf statement} $\ast$ {\em stmt}, {\bf statement} $\ast$ {\em post}, {\bf bool} {\em both})}\label{db_8h_a11}
+\subsubsection{\setlength{\rightskip}{0pt plus 5cm}void db\_\-statement\_\-set\_\-stop ({\bf statement} $\ast$ {\em stmt}, {\bf statement} $\ast$ {\em post}, {\bf bool} {\em both})}\label{db_8h_a13}
 
 
 Sets STMT\_\-STOP bit in the appropriate statements.
