@@ -32,6 +32,10 @@
 extern char user_msg[USER_MSG_LENGTH];
 extern int  delay_expr_type;
 
+/* Functions from lexer */
+extern void lex_start_udp_table();
+extern void lex_end_udp_table();
+
 int ignore_mode = 0;
 int param_mode  = 0;
 
@@ -41,7 +45,7 @@ exp_link* param_exp_tail = NULL;
 #define YYERROR_VERBOSE 1
 
 /* Uncomment these lines to turn debugging on */
-/* 
+/*
 #define YYDEBUG 1
 int yydebug = 1; 
 */
@@ -74,17 +78,17 @@ int yydebug = 1;
   case_statement* case_stmt;
 };
 
-%token <text>   HIDENTIFIER IDENTIFIER
+%token <text>   IDENTIFIER
 %token <text>   PATHPULSE_IDENTIFIER
 %token <number> NUMBER
 %token <realtime> REALTIME
-%token STRING PORTNAME SYSTEM_IDENTIFIER IGNORE
-%token UNUSED_HIDENTIFIER UNUSED_IDENTIFIER
+%token STRING SYSTEM_IDENTIFIER IGNORE
+%token UNUSED_IDENTIFIER
 %token UNUSED_PATHPULSE_IDENTIFIER
 %token UNUSED_NUMBER
 %token UNUSED_REALTIME
-%token UNUSED_STRING UNUSED_PORTNAME UNUSED_SYSTEM_IDENTIFIER
-%token K_LE K_GE K_EG K_EQ K_NE K_CEQ K_CNE K_LS K_RS K_SG
+%token UNUSED_STRING UNUSED_SYSTEM_IDENTIFIER
+%token K_LE K_GE K_EG K_EQ K_NE K_CEQ K_CNE K_LS K_RS K_SG K_EG
 %token K_PO_POS K_PO_NEG K_STARP K_PSTAR
 %token K_LOR K_LAND K_NAND K_NOR K_NXOR K_TRIGGER
 %token K_always K_and K_assign K_begin K_buf K_bufif0 K_bufif1 K_case
@@ -112,12 +116,11 @@ int yydebug = 1;
 %type <integer>   net_type
 %type <vecwidth>  range_opt range
 %type <statexp>   static_expr static_expr_primary
-%type <text>      identifier port_reference port port_opt port_reference_list
-%type <text>      list_of_ports list_of_ports_opt
+%type <text>      identifier
 %type <expr>      expr_primary expression_list expression
 %type <expr>      event_control event_expression_list event_expression
 %type <text>      udp_port_list
-%type <text>      lpvalue lavalue
+%type <text>      lpvalue
 %type <expr>      delay_value delay_value_simple
 %type <text>      range_or_type_opt
 %type <text>      defparam_assign_list defparam_assign
@@ -220,13 +223,7 @@ module_start
 
 list_of_ports_opt
   : '(' list_of_ports ')'
-    {
-      $$ = 0;
-    }
   |
-    {
-      $$ = 0;
-    }
   ;
 
 list_of_ports
@@ -237,9 +234,6 @@ list_of_ports
 port_opt
   : port
   |
-    {
-      $$ = 0;
-    }
   ;
 
   /* Coverage tools should not find port information that interesting.  We will
@@ -247,37 +241,24 @@ port_opt
 
 port
   : port_reference
-  | PORTNAME '(' { ignore_mode++; } port_reference { ignore_mode--; } ')'
+  | '.' IDENTIFIER '(' { ignore_mode++; } port_reference { ignore_mode--; } ')'
     {
-      $$ = 0;
+      free_safe( $2 );
     }
+  | '.' UNUSED_IDENTIFIER '(' port_reference ')'
   | '{' { ignore_mode++; } port_reference_list { ignore_mode--; } '}'
+  | '.' IDENTIFIER '(' '{' { ignore_mode--; } port_reference_list { ignore_mode++; } '}' ')'
     {
-      $$ = 0;
+      free_safe( $2 );
     }
-  | PORTNAME '(' '{' { ignore_mode--; } port_reference_list { ignore_mode++; } '}' ')'
-    {
-      $$ = 0;
-    }
+  | '.' UNUSED_IDENTIFIER '(' '{' port_reference_list '}' ')'
   ;
 
 port_reference
   : UNUSED_IDENTIFIER
-    {
-      $$ = NULL;
-    }
   | UNUSED_IDENTIFIER '[' static_expr ':' static_expr ']'
-    {
-      $$ = NULL;
-    }
   | UNUSED_IDENTIFIER '[' static_expr ']'
-    {
-      $$ = NULL;
-    }
   | UNUSED_IDENTIFIER '[' error ']'
-    { 
-      $$ = NULL;
-    }
   ;
 
 port_reference_list
@@ -1134,13 +1115,16 @@ identifier
     {
       $$ = NULL;
     }
-  | HIDENTIFIER
+  | identifier '.' IDENTIFIER
     {
       /* Hierarchical references are going to be unsupported at the current time */
-      free_safe( $1 );
+      if( $1 != NULL ) {
+        free_safe( $1 );
+      }
+      free_safe( $3 );
       $$ = NULL;
     }
-  | UNUSED_HIDENTIFIER
+  | identifier '.' UNUSED_IDENTIFIER
     {
       $$ = NULL;
     }
@@ -1179,6 +1163,12 @@ udp_primitive
       udp_init_opt
       udp_body
     K_endprimitive
+    {
+      /* We will treat primitives like regular modules */
+      db_add_module( $2, @1.text );
+      db_end_module();
+    }
+  | K_primitive IGNORE K_endprimitive
   ;
 
 udp_port_list
@@ -1213,9 +1203,9 @@ udp_initial
   ;
 
 udp_body
-  : K_table
+  : K_table { lex_start_udp_table(); }
       udp_entry_list
-    K_endtable
+    K_endtable { lex_end_udp_table(); }
   ;
 
 udp_entry_list
@@ -1413,7 +1403,16 @@ module_item
     }
   | K_event list_of_variables ';'
     {
-      str_link_delete_list( $2 );
+      str_link* curr = $2;
+      char      tmp[256];
+      if( ignore_mode == 0 ) {
+        while( curr != NULL ) {
+          snprintf( tmp, 256, "!%s", curr->str );
+          db_add_signal( tmp, NULL, NULL );
+          curr = curr->next;
+        }
+        str_link_delete_list( $2 );
+      }
     }
   /* Handles instantiations of modules and user-defined primitives. */
   | IDENTIFIER parameter_value_opt gate_instance_list ';'
@@ -1461,6 +1460,7 @@ module_item
   | K_function ignore_more range_or_type_opt UNUSED_IDENTIFIER ';'
       function_item_list statement
     K_endfunction ignore_less
+  | K_specify ignore_more specify_item_list ignore_less K_endspecify
   | K_specify K_endspecify
   | K_specify error K_endspecify
   | error ';'
@@ -1702,7 +1702,7 @@ statement
         db_statement_set_stop( $5, NULL, FALSE );
         $$ = stmt;
       } else {
-        statement_dealloc_recursive( $5 );
+        db_remove_statement( $5 );
         $$ = NULL;
       }
     }
@@ -1717,8 +1717,8 @@ statement
         db_statement_set_stop( $5, NULL, FALSE );
         $$ = stmt;
       } else {
-        statement_dealloc_recursive( $5 );
-        statement_dealloc_recursive( $7 );
+        db_remove_statement( $5 );
+        db_remove_statement( $7 );
         $$ = NULL;
       }
     }
@@ -1746,7 +1746,7 @@ statement
         }
         $$ = stmt;
       } else {
-        statement_dealloc_recursive( $2 );
+        db_remove_statement( $2 );
         $$ = NULL;
       }
     }
@@ -1761,7 +1761,7 @@ statement
         }
         $$ = stmt;
       } else {
-        statement_dealloc_recursive( $2 );
+        db_remove_statement( $2 );
         $$ = NULL;
       }
     }
@@ -1852,7 +1852,7 @@ statement
         db_connect_statement_true( stmt, $5 );
         $$ = stmt;
       } else {
-        statement_dealloc_recursive( $5 );
+        db_remove_statement( $5 );
         $$ = NULL;
       }
     }
@@ -1946,11 +1946,19 @@ named_begin_end_block
       }
       $$ = $5;
     }
+  | UNUSED_IDENTIFIER block_item_decls_opt statement_list
+    {
+      $$ = NULL;
+    }
   | IDENTIFIER K_end 
     {
       if( $1 != NULL ) {
         free_safe( $1 );
       }
+      $$ = NULL;
+    }
+  | UNUSED_IDENTIFIER K_end
+    {
       $$ = NULL;
     }
   ;
@@ -2005,7 +2013,7 @@ lpvalue
   | identifier ignore_more '[' expression ':' expression ']' ignore_less
   | '{' ignore_more expression_list ignore_less '}'
     {
-      $$ = 0;
+      $$ = NULL;
     }
   ;
 
@@ -2014,12 +2022,24 @@ lpvalue
      expression meets the constraints of continuous assignments. */
 lavalue
   : identifier
-  | identifier ignore_more '[' expression ']' ignore_less
-  | identifier ignore_more '[' expression ':' expression ']' ignore_less
-  | '{' ignore_more expression_list ignore_less '}'
     {
-      $$ = 0;
+      if( $1 != NULL ) {
+        free_safe( $1 );
+      }
     }
+  | identifier ignore_more '[' expression ']' ignore_less
+    {
+      if( $1 != NULL ) {
+        free_safe( $1 );
+      }
+    }
+  | identifier ignore_more '[' expression ':' expression ']' ignore_less
+    {
+      if( $1 != NULL ) {
+        free_safe( $1 );
+      }
+    }
+  | '{' ignore_more expression_list ignore_less '}'
   ;
 
 block_item_decls_opt
@@ -2969,15 +2989,17 @@ parameter_value_byname_list
   ;
 
 parameter_value_byname
-  : PORTNAME '(' expression ')'
+  : '.' IDENTIFIER '(' expression ')'
     {
-      if( ignore_mode == 0 ) {
-        expression_dealloc( $3, FALSE );
-      }
+      expression_dealloc( $4, FALSE );
+      free_safe( $2 );
     }
-  | UNUSED_PORTNAME '(' expression ')'
-  | PORTNAME '(' ')'
-  | UNUSED_PORTNAME '(' ')'
+  | '.' UNUSED_IDENTIFIER '(' expression ')'
+  | '.' IDENTIFIER '(' ')'
+    {
+      free_safe( $2 );
+    }
+  | '.' UNUSED_IDENTIFIER '(' ')'
   ;
 
 gate_instance_list
@@ -3095,9 +3117,9 @@ parameter_assign_list
   ;
 
 parameter_assign
-  : IDENTIFIER '=' { param_mode++; } expression { param_mode--; }
+  : IDENTIFIER '=' expression
     {
-      db_add_declared_param( $1, $4 );
+      db_add_declared_param( $1, $3 );
     }
   | UNUSED_IDENTIFIER '=' expression
   ;
@@ -3137,14 +3159,139 @@ port_name_list
   ;
 
 port_name
-  : PORTNAME '(' { ignore_mode++; } expression { ignore_mode--; } ')'
-  | UNUSED_PORTNAME '(' expression ')'
-  | PORTNAME '(' error ')'
-  | UNUSED_PORTNAME '(' error ')'
-  | PORTNAME '(' ')'
-  | UNUSED_PORTNAME '(' ')'
+  : '.' IDENTIFIER '(' { ignore_mode++; } expression { ignore_mode--; } ')'
+    {
+      free_safe( $2 );
+    }
+  | '.' UNUSED_IDENTIFIER '(' expression ')'
+  | '.' IDENTIFIER '(' error ')'
+    {
+      free_safe( $2 );
+    }
+  | '.' UNUSED_IDENTIFIER '(' error ')'
+  | '.' IDENTIFIER '(' ')'
+    {
+      free_safe( $2 );
+    }
+  | '.' UNUSED_IDENTIFIER '(' ')'
+  ;
+
+specify_item_list
+  : specify_item
+  | specify_item_list specify_item
+  ;
+
+specify_item
+  : K_specparam specparam_list ';'
+  | specify_simple_path_decl ';'
+  | specify_edge_path_decl ';'
+  | K_if '(' expression ')' specify_simple_path_decl ';'
+  | K_if '(' expression ')' specify_edge_path_decl ';'
+  | K_Shold '(' spec_reference_event ',' spec_reference_event ',' expression spec_notifier_opt ')' ';'
+  | K_Speriod '(' spec_reference_event ',' expression spec_notifier_opt ')' ';'
+  | K_Srecovery '(' spec_reference_event ',' spec_reference_event ',' expression spec_notifier_opt ')' ';'
+  | K_Ssetup '(' spec_reference_event ',' spec_reference_event ',' expression spec_notifier_opt ')' ';'
+  | K_Ssetuphold '(' spec_reference_event ',' spec_reference_event ',' expression ',' expression spec_notifier_opt ')' ';'
+  | K_Swidth '(' spec_reference_event ',' expression ',' expression spec_notifier_opt ')' ';'
+  | K_Swidth '(' spec_reference_event ',' expression ')' ';'
+  ;
+
+specparam_list
+  : specparam
+  | specparam_list ',' specparam
+  ;
+
+specparam
+  : UNUSED_IDENTIFIER '=' expression
+  | UNUSED_IDENTIFIER '=' expression ':' expression ':' expression
+  | UNUSED_PATHPULSE_IDENTIFIER '=' expression
+  | UNUSED_PATHPULSE_IDENTIFIER '=' '(' expression ',' expression ')'
   ;
   
+specify_simple_path_decl
+  : specify_simple_path '=' '(' specify_delay_value_list ')'
+  | specify_simple_path '=' delay_value_simple
+  | specify_simple_path '=' '(' error ')'
+  ;
+
+specify_simple_path
+  : '(' specify_path_identifiers spec_polarity K_EG expression ')'
+  | '(' specify_path_identifiers spec_polarity K_SG expression ')'
+  | '(' error ')'
+  ;
+
+specify_path_identifiers
+  : UNUSED_IDENTIFIER
+  | UNUSED_IDENTIFIER '[' expr_primary ']'
+  | specify_path_identifiers ',' UNUSED_IDENTIFIER
+  | specify_path_identifiers ',' UNUSED_IDENTIFIER '[' expr_primary ']'
+  ;
+
+spec_polarity
+  : '+'
+  | '-'
+  |
+  ;
+
+spec_reference_event
+  : K_posedge expression
+  | K_negedge expression
+  | K_posedge expr_primary K_TAND expression
+  | K_negedge expr_primary K_TAND expression
+  | expr_primary K_TAND expression
+    {
+      assert( $1 == NULL );
+      assert( $3 == NULL );
+    }
+  | expr_primary
+    {
+      assert( $1 == NULL );
+    }
+  ;
+
+spec_notifier_opt
+  :
+  | spec_notifier
+  ;
+
+spec_notifier
+  : ','
+  | ','  identifier
+  | spec_notifier ',' 
+  | spec_notifier ',' identifier
+  | UNUSED_IDENTIFIER
+  ;
+
+specify_edge_path_decl
+  : specify_edge_path '=' '(' specify_delay_value_list ')'
+  | specify_edge_path '=' delay_value_simple
+  ;
+
+specify_edge_path
+  : '(' K_posedge specify_path_identifiers spec_polarity K_EG UNUSED_IDENTIFIER ')'
+  | '(' K_posedge specify_path_identifiers spec_polarity K_EG '(' expr_primary polarity_operator expression ')' ')'
+  | '(' K_posedge specify_path_identifiers spec_polarity K_SG UNUSED_IDENTIFIER ')'
+  | '(' K_posedge specify_path_identifiers spec_polarity K_SG '(' expr_primary polarity_operator expression ')' ')'
+  | '(' K_negedge specify_path_identifiers spec_polarity K_EG UNUSED_IDENTIFIER ')'
+  | '(' K_negedge specify_path_identifiers spec_polarity K_EG '(' expr_primary polarity_operator expression ')' ')'
+  | '(' K_negedge specify_path_identifiers spec_polarity K_SG UNUSED_IDENTIFIER ')'
+  | '(' K_negedge specify_path_identifiers spec_polarity K_SG '(' expr_primary polarity_operator expression ')' ')'
+  ;
+
+polarity_operator
+  : K_PO_POS
+  | K_PO_NEG
+  | ':'
+  ;
+
+specify_delay_value_list
+  : delay_value
+    {
+      assert( $1 == NULL );
+    }
+  | specify_delay_value_list ',' delay_value
+  ;
+
 ignore_more
   :
     {

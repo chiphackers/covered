@@ -62,6 +62,7 @@ extern str_link* modlist_tail;
 %x INCLUDE
 %x ERROR_LINE
 %x IGNORE_MODULE
+%s UDPTABLE
 
 %x IFDEF_FALSE
 %s IFDEF_TRUE
@@ -121,6 +122,8 @@ WSPACE [ \t\b\f]+
 "->"  { return K_TRIGGER; }
 "+:"  { return K_PO_POS;  }
 "-:"  { return K_PO_NEG;  }
+"=>"  { return K_EG;      }
+"*>"  { return K_SG;      }
 
   /* Single character symbols */
 [}{;:\[\],()#=.@&!?<>%|^~+*/-] { return yytext[0]; }
@@ -140,11 +143,37 @@ WSPACE [ \t\b\f]+
 <CSTRING>.    { yymore();      }
 
   /* Ignore modules that are not needed by the parser. */
-<IGNORE_MODULE>endmodule { BEGIN( 0 ); 
-			   return I_endmodule; }
-<IGNORE_MODULE>\n        { yylloc.first_line += 1;  
-			   yymore();           }
-<IGNORE_MODULE>.         { yymore();           }
+<IGNORE_MODULE>endmodule    { BEGIN( 0 ); 
+			      return I_endmodule; }
+<IGNORE_MODULE>endprimitive { BEGIN( 0 );
+                              return( K_endprimitive ); }
+<IGNORE_MODULE>\n           { yylloc.first_line += 1;  
+			      yymore();           }
+<IGNORE_MODULE>.            { yymore();           }
+
+  /* Entries for user defined primitive tables -- not currently supported */
+<UDPTABLE>\(\?0\)    { return '_';       }
+<UDPTABLE>\(\?1\)    { return '+';       }
+<UDPTABLE>\(\?[xX]\) { return '%';       }
+<UDPTABLE>\(\?\?\)   { return '*';       }
+<UDPTABLE>\(01\)     { return 'r';       }
+<UDPTABLE>\(0[xX]\)  { return 'Q';       }
+<UDPTABLE>\(0\?\)    { return 'P';       }
+<UDPTABLE>\(10\)     { return 'f';       }
+<UDPTABLE>\(1[xX]\)  { return 'M';       }
+<UDPTABLE>\(1\?\)    { return 'N';       }
+<UDPTABLE>\([xX]0\)  { return 'F';       }
+<UDPTABLE>\([xX]1\)  { return 'R';       }
+<UDPTABLE>\([xX]\?\) { return 'B';       }
+<UDPTABLE>[bB]       { return 'b';       }
+<UDPTABLE>[lL]       { return 'l';       }
+<UDPTABLE>[hH]       { return 'h';       }
+<UDPTABLE>[fF]       { return 'f';       }
+<UDPTABLE>[rR]       { return 'r';       }
+<UDPTABLE>[xX]       { return 'x';       }
+<UDPTABLE>[nN]       { return 'n';       }
+<UDPTABLE>[pP]       { return 'p';       }
+<UDPTABLE>[01\?\*\-] { return yytext[0]; }
 
   /* Keyword and signal identifiers */
 [a-zA-Z_][a-zA-Z0-9$_]* {
@@ -163,7 +192,7 @@ WSPACE [ \t\b\f]+
            rc = UNUSED_IDENTIFIER;
          }
        }
-       if( last_keyword == K_module ) {
+       if( (last_keyword == K_module) || (last_keyword == K_primitive) ) {
          if( (foundmod = str_link_find( yytext, modlist_head )) == NULL ) {
            BEGIN( IGNORE_MODULE );
            tree_add( yytext, yylloc.text, FALSE, &found_modules );
@@ -185,20 +214,10 @@ WSPACE [ \t\b\f]+
      return( rc );
  }
 
-  /* Hierarchical signal identifiers */
-[a-zA-Z_][a-zA-Z0-9$_]*(\.[a-zA-Z_][a-zA-Z0-9$_]*)+ {
+  /* Signal names starting with a '\' character */
+\\[^ \t\b\f\r\n]+  { 
      if( ignore_mode == 0 ) {
        yylval.text = strdup( yytext );
-       return HIDENTIFIER;
-     } else {
-       return UNUSED_HIDENTIFIER;
-     }
- }
-
-  /* Signal names starting with a '\' character */
-\\[^ \t\b\f\r]+  { 
-     if( ignore_mode == 0 ) {
-       yylval.text = strdup( yytext + 1 );
        return IDENTIFIER; 
      } else {
        return UNUSED_IDENTIFIER;
@@ -211,15 +230,6 @@ WSPACE [ \t\b\f]+
        return SYSTEM_IDENTIFIER; 
      } else {
        return UNUSED_SYSTEM_IDENTIFIER;
-     }
- }
-
-  /* Port name match -- we ignore this information */
-\.{WSPACE}?(([a-zA-Z_][a-zA-Z0-9$_]*)|(\\[^ \t\b\f\r]+)) { 
-     if( ignore_mode == 0 ) {
-       return PORTNAME; 
-     } else {
-       return UNUSED_PORTNAME;
      }
  }
 
@@ -373,6 +383,18 @@ WSPACE [ \t\b\f]+
 . { fprintf( stderr, "%d: unmatched character (%c)\n", yylloc.first_line, yytext[0] ); }
 
 %%
+
+void lex_start_udp_table() {
+
+  BEGIN( UDPTABLE );
+
+}
+
+void lex_end_udp_table() {
+
+  BEGIN( INITIAL );
+
+}
 
 static void line_directive() {
 

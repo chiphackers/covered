@@ -417,12 +417,23 @@ void scope_extract_back( char* scope, char* back, char* rest ) {
 */
 bool scope_local( char* scope ) {
 
-  char* ptr;    /* Pointer to current character */
+  char* ptr;             /* Pointer to current character                */
+  bool  esc;             /* Set to TRUE if current is escaped           */
+  bool  wspace = FALSE;  /* Set if last character seen was a whitespace */
 
   assert( scope != NULL );
 
   ptr = scope;
-  while( (*ptr != '\0') && (*ptr != '.') ) {
+  esc = (*ptr == '\\');
+  while( (*ptr != '\0') && ((*ptr != '.') || esc) ) {
+    if( (*ptr == ' ') || (*ptr == '\n') || (*ptr == '\t') || (*ptr == '\b') || (*ptr == '\r') ) {
+      esc    = FALSE;
+      wspace = TRUE;
+    } else {
+      if( wspace && (*ptr == '\\') ) {
+        esc = TRUE;
+      }
+    }
     ptr++;
   }
 
@@ -592,6 +603,12 @@ void gen_space( char* spaces, int num_spaces ) {
 
 /*
  $Log$
+ Revision 1.19  2003/01/04 09:25:15  phase1geo
+ Fixing file search algorithm to fix bug where unexpected module that was
+ ignored cannot be found.  Added instance7.v diagnostic to verify appropriate
+ handling of this problem.  Added tree.c and tree.h and removed define_t
+ structure in lexer.
+
  Revision 1.18  2002/12/06 02:18:59  phase1geo
  Fixing bug with calculating list and concatenation lengths when MBIT_SEL
  expressions were included.  Also modified file parsing algorithm to be

@@ -410,33 +410,40 @@ void db_add_declared_param( char* name, expression* expr ) {
   int       i;            /* Loop iterator                            */
   mod_parm* mparm;        /* Pointer to added module parameter        */
 
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_declared_param, param: %s", name );
-  print_output( user_msg, DEBUG );
+  assert( name != NULL );
 
-  if( mod_parm_find( name, curr_module->param_head ) == NULL ) {
+  /* If a parameter value type is not supported, don't create this parameter */
+  if( expr != NULL ) {
 
-    /* Add parameter to module parameter list */
-    mparm = mod_parm_add( name, expr, PARAM_TYPE_DECLARED, &(curr_module->param_head), &(curr_module->param_tail) );
+    snprintf( user_msg, USER_MSG_LENGTH, "In db_add_declared_param, param: %s, expr: %d", name, expr->id );
+    print_output( user_msg, DEBUG );
 
-    /* Also add this to all associated instance parameter lists */
-    i      = 0;
-    ignore = 0;
-    while( (inst = instance_find_by_module( instance_root, curr_module, &ignore )) != NULL ) {
+    if( mod_parm_find( name, curr_module->param_head ) == NULL ) {
 
-      /* Reset scope */
-      scope[0] = '\0';
+      /* Add parameter to module parameter list */
+      mparm = mod_parm_add( name, expr, PARAM_TYPE_DECLARED, &(curr_module->param_head), &(curr_module->param_tail) );
 
-      /* Find scope for current instance */
-      instance_gen_scope( scope, inst );
+      /* Also add this to all associated instance parameter lists */
+      i      = 0;
+      ignore = 0;
+      while( (inst = instance_find_by_module( instance_root, curr_module, &ignore )) != NULL ) {
 
-      if( inst->parent == NULL ) {
-        param_resolve_declared( scope, mparm, NULL, &(inst->param_head), &(inst->param_tail) );
-      } else {
-        param_resolve_declared( scope, mparm, inst->parent->param_head, &(inst->param_head), &(inst->param_tail) );
+        /* Reset scope */
+        scope[0] = '\0';
+
+        /* Find scope for current instance */
+        instance_gen_scope( scope, inst );
+
+        if( inst->parent == NULL ) {
+          param_resolve_declared( scope, mparm, NULL, &(inst->param_head), &(inst->param_tail) );
+        } else {
+          param_resolve_declared( scope, mparm, inst->parent->param_head, &(inst->param_head), &(inst->param_tail) );
+        }
+
+        i++;
+        ignore = i;
+
       }
-
-      i++;
-      ignore = i;
 
     }
 
@@ -1137,6 +1144,11 @@ void db_do_timestep( int time ) {
 
 /*
  $Log$
+ Revision 1.85  2003/02/08 21:54:04  phase1geo
+ Fixing memory problems with db_remove_statement function.  Updating comments
+ in statement.c to explain some of the changes necessary to properly remove
+ a statement tree.
+
  Revision 1.84  2003/02/07 23:12:29  phase1geo
  Optimizing db_add_statement function to avoid memory errors.  Adding check
  for -i option to avoid user error.
