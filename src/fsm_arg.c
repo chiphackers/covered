@@ -37,7 +37,7 @@ expression* fsm_arg_parse_state( char** arg, char* mod_name ) {
 
     /* Get first state */
     while( (**arg != '}') && !error ) {
-      if( expl != NULL && (**arg == ',') ) {
+      if( ((expl != NULL) && (**arg == ',')) || (**arg == '{') ) {
         (*arg)++;
       }
       if( (sig = signal_from_string( arg )) != NULL ) {
@@ -230,6 +230,9 @@ bool fsm_arg_parse( char* arg ) {
 
 /*
  $Log$
+ Revision 1.5  2003/10/17 12:55:36  phase1geo
+ Intermediate checkin for LSB fixes.
+
  Revision 1.4  2003/10/13 12:27:25  phase1geo
  More fixes to FSM stuff.
 

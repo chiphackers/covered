@@ -427,7 +427,6 @@ to handle and, in the future, identify.
 
 <_pg>
 <ol>
-  <li>All state registers/variables must be associated with only one variable.</li>
   <li>The FSM is a synchronous design with edge-triggered flip-flops.</li>
   <li>There are no FSMs embedded in another FSM.</li>
   <li>The FSM is not a pipe-lined system.</li>
@@ -446,33 +445,92 @@ command-line method, no changes need to be to source Verilog code for Covered's 
 <_pg>
 To specify where an FSM exists within the design, the -F option must be specified to Covered's
 score command.  Each -F option specifies one FSM within the design.  Multiple -F options to
-the score command is allowed, allowing more than one FSM to be scored simultaneously.  The
+the score command are allowed, allowing more than one FSM to be scored simultaneously.  The
 -F option takes one argument that is subdivided into two or three parts:
 </_pg>
 
 <_margin>FSM score option</_margin>
 
 <_pg>
--F &lt;module&gt;=(&lt;input_state_variable&gt;,)&lt;output_state_variable&gt;
+-F &lt;module&gt;=(&lt;input_state_expression&gt;,)&lt;output_state_expression&gt;
 </_pg>
 
 <_pg>
 The &lt;module&gt; specifies the Verilog module where the FSM state variables exist.  The
-&lt;input_state_variable&gt; specifies the name of the variable that represents the input
-state of the state machine.  The &lt;output_state_variable&gt; specifies the name of the
-variable that represents the output state of the state machine.  Most FSMs have one variable
+&lt;input_state_expression&gt; specifies the name of the variable(s) that represent the input
+state of the state machine.  The &lt;output_state_expression&gt; specifies the name of the
+variable(s) that represent the output state of the state machine.  Most FSMs have one variable
 as the input state (in most cases a registered version of the output state) such that the
 input variable is different than the output variable of the state machine.  Specifying both
 variables in the -F option provides the user to more accurately specify to Covered the
 FSM.  In the case that an FSM has the same variable for the input and output state, the user
-may specify both names or the user may specify only the output state variable (omitting the
-&lt;input_state_variable&gt; and comma character in the argument.
+must specify only the output state variable (omitting the &lt;input_state_expression&gt; and
+comma character in the argument).
+</_pg>
+
+<_pg>
+The input and output expression to the -F command can represent any signals, parts of signals,
+or combinations of signals.  Constant values or parameters in the specification of the
+input/output expression is currently not supported (in fact, there are no future plans to
+support this behavior unless user-feedback demands it).  The following examples show various
+legal ways to specify input/output expressions.  The syntax is limited to what it shown in
+these examples.
+</_pg>
+
+<_margin>Example 1</_margin>
+
+<_code>
+-F foobar=a
+</_code>
+
+<_pg>
+Example 1 specifies that the entire vector called "a" should be considered both the
+input and output state variable.
+</_pg>
+
+<_margin>Example 2</_margin>
+
+<_code>
+-F foobar=a[2]
+</_code>
+
+<_pg>
+Example 2 specifies that bit 2 of the vector called "a" should be considered both
+the input and output state variable.
+</_pg>
+
+<_margin>Example 3</_margin>
+
+<_code>
+-F foobar=a[3:1]
+</_code>
+
+<_pg>
+Example 3 specifies that bits 3:1 of the vector called "a" should be considered both
+the input and output state variable.
+</_pg>
+
+<_margin>Example 4</_margin>
+
+<_code>
+-F foobar={a,b}
+</_code>
+
+<_pg>
+Example 4 specifies that vectors "a" and "b" should be concatenated to form the input/output
+state variable.  Only one set of curly brackets may be used to specify a concatenated state
+expression; however, 2 or more signals may be specified within those brackets.
+</_pg>
+
+<_pg>
+Any combination of the above four examples can be used to formalate the input state
+expression or the output state expression.
 </_pg>
 
 <_pg>
 If the user specifies an FSM that Covered is not able to find (either the module was not
 included in the design that Covered is scoring or the FSM uses Verilog code that Covered is
-not able to handle), a warning message is displayed to the user.  It is then up to the user
+not able to handle), an error message is displayed to the user.  It is then up to the user
 to determine if the FSM was incorrectly specified to Covered or otherwise.  This warning is
 not considered to be a bug in Covered (unless of course, it can be proven that the FSM
 should have been found).
