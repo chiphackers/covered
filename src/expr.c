@@ -157,6 +157,7 @@ expression* expression_create( expression* right, expression* left, int op, int 
 
     assert( rwidth < 1024 );
     assert( lwidth < 1024 );
+    expression_operate_recursively( left );
     expression_create_value( new_expr, (vector_to_int( left->value ) * rwidth), data );
 
   } else if( (op == EXP_OP_LT   ) ||
@@ -1320,6 +1321,12 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.84  2003/10/19 04:23:49  phase1geo
+ Fixing bug in VCD parser for new Icarus Verilog VCD dumpfile formatting.
+ Fixing bug in signal.c for signal merging.  Updates all CDD files to match
+ new format.  Added new diagnostics to test advanced FSM state variable
+ features.
+
  Revision 1.83  2003/10/17 12:55:36  phase1geo
  Intermediate checkin for LSB fixes.
 

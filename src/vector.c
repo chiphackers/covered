@@ -676,7 +676,7 @@ int vector_to_int( vector* vec ) {
       case 1 :  retval = (retval << 1) | 1;  break;
       default:
         print_output( "Vector converting to integer contains X or Z values", FATAL );
-        assert( ((vec->value[i/4] >> ((i%4)*2)) & 0x3) < 2 );
+        assert( VECTOR_VAL( vec->value[i] ) < 2 );
         break;
     }
   }
@@ -1467,6 +1467,10 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.41  2003/10/28 13:28:00  phase1geo
+ Updates for more FSM attribute handling.  Not quite there yet but full regression
+ still passes.
+
  Revision 1.40  2003/10/17 12:55:36  phase1geo
  Intermediate checkin for LSB fixes.
 
