@@ -1,5 +1,21 @@
 Covered-Related NEWS
 ====================
+    * 7/6/2002
+
+Second release of Covered (covered-20020706) made.  Proper support for case, casex and casez
+now exists and has been tested to an extent.  Fixed problem with reading VCD files appropriately.
+Support for multi-bit anyedge (i.e., always @(b) ...) is now installed.  Lots of other bugs
+in the first release have been fixed.  I have noticed a small performance degradation by changing
+the VCD reader and am looking into it.  All in all, this release fixes many bugs and enhances
+support for case statements and always blocks.
+
+    * 7/3/2002
+
+Finally release first unstable version of Covered in tarball format. This version should 
+be considered alpha at this point but may be considered ready for good testing. Please 
+read the release note that accompanies the pointer to the download for information on what 
+type of code is currently supported for testing purposes. Happy bug finding!
+
     * 6/19/2002
 
 Added beginnings of development on-line documentation. At the moment, this documentation 
