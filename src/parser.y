@@ -2488,7 +2488,7 @@ register_variable_list
   : register_variable
     {
       str_link* tmp;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($1 != NULL) ) {
         tmp = (str_link*)malloc( sizeof( str_link ) );
         tmp->str  = $1;
         tmp->next = NULL;
@@ -2500,7 +2500,7 @@ register_variable_list
   | register_variable_list ',' register_variable
     {
       str_link* tmp;
-      if( ignore_mode == 0 ) {
+      if( (ignore_mode == 0) && ($3 != NULL) ) {
         tmp = (str_link*)malloc( sizeof( str_link ) );
         tmp->str  = $3;
         tmp->next = $1;

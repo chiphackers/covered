@@ -440,7 +440,7 @@ void expression_db_write( expression* expr, FILE* file, char* scope ) {
     expr->id,
     scope,
     expr->line,
-    expr->suppl,
+    (expr->suppl & SUPPL_MERGE_MASK),
     (SUPPL_OP( expr->suppl ) == EXP_OP_STATIC) ? 0 : expression_get_id( expr->right ),
     (SUPPL_OP( expr->suppl ) == EXP_OP_STATIC) ? 0 : expression_get_id( expr->left )
   );
@@ -1213,6 +1213,13 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.70  2002/12/06 02:18:59  phase1geo
+ Fixing bug with calculating list and concatenation lengths when MBIT_SEL
+ expressions were included.  Also modified file parsing algorithm to be
+ smarter when searching files for modules.  This change makes the parsing
+ algorithm much more optimized and fixes the bug specified in our bug list.
+ Added diagnostic to verify fix for first bug.
+
  Revision 1.69  2002/12/03 00:04:56  phase1geo
  Fixing bug uncovered by param6.1.v diagnostic.  Full regression now passes.
 

@@ -871,10 +871,11 @@ bool combination_missed_expr( expression* expr, unsigned int curr_depth ) {
 */
 void combination_display_verbose( FILE* ofile, stmt_link* stmtl ) {
 
-  stmt_iter   stmti;       /* Statement list iterator                     */
-  expression* unexec_exp;  /* Pointer to current unexecuted expression    */
-  char*       code;        /* Code string from code generator             */
-  int         exp_id;      /* Current expression ID of missed expression  */
+  stmt_iter   stmti;         /* Statement list iterator                            */
+  stmt_link*  stmtt = NULL;  /* Temporary statement link pointer used for ordering */
+  expression* unexec_exp;    /* Pointer to current unexecuted expression           */
+  char*       code;          /* Code string from code generator                    */
+  int         exp_id;        /* Current expression ID of missed expression         */
 
   if( report_covered ) {
     fprintf( ofile, "Hit Combinations\n" );
@@ -884,6 +885,8 @@ void combination_display_verbose( FILE* ofile, stmt_link* stmtl ) {
 
   /* Display current instance missed lines */
   stmt_iter_reset( &stmti, stmtl );
+  stmt_iter_find_head( &stmti, FALSE );
+
   while( stmti.curr != NULL ) {
 
     if( combination_missed_expr( stmti.curr->stmt->exp, 0 ) != report_covered ) {
@@ -910,8 +913,8 @@ void combination_display_verbose( FILE* ofile, stmt_link* stmtl ) {
       combination_list_missed( ofile, unexec_exp, 0, &exp_id );
 
     }
-
-    stmt_iter_next( &stmti );
+    
+    stmt_iter_get_next_in_order( &stmti );
 
   }
 
@@ -1032,6 +1035,13 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.60  2002/12/05 14:45:17  phase1geo
+ Removing assertion error from instance6.1 failure; however, this case does not
+ work correctly according to instance6.2.v diagnostic.  Added @(...) output in
+ report command for edge-triggered events.  Also fixed bug where a module could be
+ parsed more than once.  Full regression does not pass at this point due to
+ new instance6.2.v diagnostic.
+
  Revision 1.59  2002/11/30 05:06:21  phase1geo
  Fixing bug in report output for covered results.  Allowing any nettype to
  be parsable and usable by Covered (even though some of these are unsupported

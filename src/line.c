@@ -167,6 +167,8 @@ void line_display_verbose( FILE* ofile, stmt_link* stmtl ) {
 
   /* Display current instance missed lines */
   stmt_iter_reset( &stmti, stmtl );
+  stmt_iter_find_head( &stmti, FALSE );
+  
   while( stmti.curr != NULL ) {
 
     if( (SUPPL_OP( stmti.curr->stmt->exp->suppl ) != EXP_OP_DELAY) &&
@@ -187,7 +189,7 @@ void line_display_verbose( FILE* ofile, stmt_link* stmtl ) {
 
     }
 
-    stmt_iter_next( &stmti );
+    stmt_iter_get_next_in_order( &stmti );
 
   }
 
@@ -307,6 +309,9 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.25  2002/11/02 16:16:20  phase1geo
+ Cleaned up all compiler warnings in source and header files.
+
  Revision 1.24  2002/10/29 19:57:50  phase1geo
  Fixing problems with beginning block comments within comments which are
  produced automatically by CVS.  Should fix warning messages from compiler.

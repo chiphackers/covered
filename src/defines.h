@@ -338,6 +338,13 @@
 #define SUPPL_LSB_COMB_CNTD         22
 
 /*!
+ Temporary bit value used by the score command but not displayed to the CDD file.  When
+ this bit is set to a one, it indicates to the statement_connect function that this
+ statement and all children statements do not need to be connected to another statement.
+*/
+#define SUPPL_LSB_STMT_CONNECTED    23
+
+/*!
  Used for merging two supplemental fields from two expressions.  Both expression
  supplemental fields are ANDed with this mask and ORed together to perform the
  merge.  Fields that are merged are:
@@ -352,7 +359,7 @@
  - STMT_CONTINUOUS
  - EVAL 00, 01, 10, 11
 */
-#define SUPPL_MERGE_MASK            0xffffffff
+#define SUPPL_MERGE_MASK            0xff7fffff
 
 /*!
  Returns a value of 1 if the specified supplemental value has the SWAPPED
@@ -1123,6 +1130,13 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.61  2002/12/06 02:18:59  phase1geo
+ Fixing bug with calculating list and concatenation lengths when MBIT_SEL
+ expressions were included.  Also modified file parsing algorithm to be
+ smarter when searching files for modules.  This change makes the parsing
+ algorithm much more optimized and fixes the bug specified in our bug list.
+ Added diagnostic to verify fix for first bug.
+
  Revision 1.60  2002/11/27 03:49:20  phase1geo
  Fixing bugs in score and report commands for regression.  Finally fixed
  static expression calculation to yield proper coverage results for constant

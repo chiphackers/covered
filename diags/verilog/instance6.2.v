@@ -43,7 +43,7 @@ module barfoo( b );
 
 input [2:0]  b;
 
-foobar #(2) dude( b );
+foobar #(2) dude( b[2:1] );
 
 endmodule
 
