@@ -32,6 +32,7 @@ DIAGS    = assign3.2A    always1       always3.1.11A  cond1 \
            static1       include1      include1.1    ifdef1         ifdef2.1 \
            ifdef2.2      concat1       concat2       expand1        expand2 \
            sbit_sel1     instance1     instance2     instance3      mbit_sel1 \
+           param1
 
 IVONLYDIAGS = assign1    implicit1
 
@@ -48,7 +49,7 @@ $(DIAGLIST):
 	@echo Running $@.v
 	@$(VERILOG) $(VERILOG_FLAGS) $@.v
 	@./$(VERILOG_EXEC)
-	@$(COVERED) -D score -t main -vcd $@.vcd -o $@.cdd -v $@.v $(COVERED_FLAGS)
+	@$(COVERED) -Q score -t main -vcd $@.vcd -o $@.cdd -v $@.v $(COVERED_FLAGS)
 	@diff $@.cdd $(CDD_DIR)/$@.cdd
 	@rm -rf a.out $@.vcd $@.cdd
 
