@@ -206,6 +206,18 @@
 #define SUPPL_LSB_TRUE              5
 
 /*!
+ Least-significant bit position of expression supplemental field indicating that this
+ expression has its left child expression in a changed state during this timestamp.
+*/
+#define SUPPL_LSB_LEFT_CHANGED      6
+
+/*!
+ Least-significant bit position of expression supplemental field indicating that this
+ expression has its right child expression in a changed state during this timestamp.
+*/
+#define SUPPL_LSB_RIGHT_CHANGED     7
+
+/*!
  Least-significant bit position of expression supplemental field indicating the
  expression's operation type.
 */
@@ -252,6 +264,18 @@
  that has evaluated to a value of FALSE (0) during simulation.
 */
 #define SUPPL_WAS_FALSE(x)          ((x >> SUPPL_LSB_FALSE) & 0x1)
+
+/*!
+ Returns a value of 1 if the left child expression was changed during this
+ timestamp.
+*/
+#define SUPPL_IS_LEFT_CHANGED(x)    ((x >> SUPPL_LSB_LEFT_CHANGED) & 0x1)
+
+/*!
+ Returns a value of 1 if the right child expression was changed during this
+ timestamp.
+*/
+#define SUPPL_IS_RIGHT_CHANGED(x)   ((x >> SUPPL_LSB_RIGHT_CHANGED) & 0x1)
 
 /*!
  Returns a value of 1 if the specified supplemental belongs to an expression

@@ -647,9 +647,11 @@ bool db_symbol_found( char* symbol ) {
 */
 void db_find_set_add_signal( char* symbol, vector* vec ) {
 
-  signal*   sig;        /* Pointer to found signal                                      */
-  exp_link* curr_exp;   /* Pointer to current expression link in signal expression list */
-  char      msg[4096];  /* Display message string                                       */
+  signal*     sig;                       /* Pointer to found signal                                      */
+  exp_link*   curr_exp;                  /* Pointer to current expression link in signal expression list */
+  char        msg[4096];                 /* Display message string                                       */
+  expression* curr_parent;               /* Pointer to current parent expression to set.                 */
+  bool        changed_finished = FALSE;  /* Indicates that we should stop setting changed bits           */
 
   snprintf( msg, 4096, "In db_find_set_add_signal, addr: 0x%lx, symbol: %s", symbol, symbol );
   print_output( msg, NORMAL );
@@ -682,7 +684,41 @@ void db_find_set_add_signal( char* symbol, vector* vec ) {
             curr_exp->exp->suppl = curr_exp->exp->suppl | (0x1 << SUPPL_LSB_TRUE);
           }
 
-          exp_link_add( curr_exp->exp, &(exp_queue_head), &(exp_queue_tail) );
+          /* 
+           Traverse up expression tree, setting the LEFT_CHANGED or RIGHT_CHANGED
+           bits of parent expressions accordingly until we reach a root expression
+           or statement expression.
+          */
+	  curr_parent = curr_exp->exp->parent;
+          while( (curr_parent != NULL) && !changed_finished ) {
+            if( (curr_parent->left != NULL) && (curr_parent->left->id == curr_exp->exp->id) ) {
+              if( SUPPL_IS_LEFT_CHANGED( curr_parent->suppl ) ) {
+                changed_finished = TRUE;
+              } else {
+                curr_parent->suppl = curr_parent->suppl | (0x1 << SUPPL_LSB_LEFT_CHANGED);
+              }
+            } else if( (curr_parent->right != NULL) && (curr_parent->right->id == curr_exp->exp->id) ) {
+              if( SUPPL_IS_RIGHT_CHANGED( curr_parent->suppl ) ) {
+                changed_finished = TRUE;
+              } else {
+                curr_parent->suppl = curr_parent->suppl | (0x1 << SUPPL_LSB_RIGHT_CHANGED);
+              }
+            }
+            if( SUPPL_OP( curr_parent->suppl ) == EXP_OP_STMT ) {
+              changed_finished = TRUE;
+            }
+            curr_parent = curr_parent->parent;
+          }
+
+          /* 
+           If top-most expression is statement is root expression, place this expression
+           at the tail of the expression queue.
+          */
+          if( (curr_parent == NULL) &&
+              ((curr_exp->exp->suppl & (0x1 << SUPPL_LSB_IN_QUEUE)) == 0) ) {
+            exp_link_add( curr_exp->exp, &exp_queue_head, &exp_queue_tail );
+          }
+
           curr_exp = curr_exp->next;
 
         }
@@ -719,6 +755,10 @@ void db_do_timestep( int time ) {
 
     assert( exp_queue_head->exp != NULL );
 
+    if( SUPPL_OP( exp_queue_head->exp->suppl ) == EXP_OP_STMT ) {
+      db_handle_statement( exp_queue_head->exp );
+    }
+ 
     /* Perform expression operation */
 //    printf( "Expression address: 0x%lx\n", exp_queue_head->exp );
 //    printf( "Performing expression operation: %d, id: %d\n", exp_queue_head->exp->op, exp_queue_head->exp->id );
