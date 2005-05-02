@@ -262,6 +262,9 @@ void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_d
                         exp->suppl.part.eval_10 +
                         exp->suppl.part.eval_11;
               *hit    = *hit + num_hit;
+	      if( (exp->line == 2688) && (exp->op == 9) ) {
+                printf( "num_hit: %d, exp->ulid: %d, combination_is_expr_multi_node: %d\n", num_hit, exp->ulid, combination_is_expr_multi_node( exp ) );
+              }
               if( (num_hit != 4) && (exp->ulid == -1) && !combination_is_expr_multi_node( exp ) ) {
                 exp->ulid = *ulid;
                 (*ulid)++;
@@ -395,7 +398,7 @@ bool combination_instance_summary( FILE* ofile, mod_inst* root, char* parent ) {
     snprintf( tmpname, 4096, "%s.%s", parent, root->name );
   }
 
-  fprintf( ofile, "  %-43.43s    %4d/%4.0f/%4.0f      %3.0f%%\n",
+  fprintf( ofile, "  %-63.63s    %4d/%4.0f/%4.0f      %3.0f%%\n",
            tmpname,
            root->stat->comb_hit,
            miss,
@@ -444,7 +447,7 @@ bool combination_module_summary( FILE* ofile, mod_link* head ) {
       miss_found = TRUE;
     }
 
-    fprintf( ofile, "  %-20.20s    %-20.20s   %4d/%4.0f/%4.0f      %3.0f%%\n", 
+    fprintf( ofile, "  %-30.30s    %-30.30s   %4d/%4.0f/%4.0f      %3.0f%%\n", 
              head->mod->name,
              get_basename( head->mod->filename ),
              head->mod->stat->comb_hit,
@@ -1898,8 +1901,8 @@ void combination_report( FILE* ofile, bool verbose ) {
       strcpy( tmp, leading_hierarchy );
     }
 
-    fprintf( ofile, "Instance                                               Logic Combinations\n" );
-    fprintf( ofile, "                                                  Hit/Miss/Total    Percent hit\n" );
+    fprintf( ofile, "Instance                                                                    Logic Combinations\n" );
+    fprintf( ofile, "                                                                      Hit/Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
     missed_found = combination_instance_summary( ofile, instance_root, tmp );
@@ -1911,8 +1914,8 @@ void combination_report( FILE* ofile, bool verbose ) {
 
   } else {
 
-    fprintf( ofile, "Module                    Filename                     Logical Combinations\n" );
-    fprintf( ofile, "                                                  Hit/Miss/Total    Percent hit\n" );
+    fprintf( ofile, "Module                              Filename                                Logic Combinations\n" );
+    fprintf( ofile, "                                                                      Hit/Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
     missed_found = combination_module_summary( ofile, mod_head );
@@ -1931,6 +1934,12 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.107  2005/02/05 04:13:27  phase1geo
+ Started to add reporting capabilities for race condition information.  Modified
+ race condition reason calculation and handling.  Ran -Wall on all code and cleaned
+ things up.  Cleaned up regression as a result of these changes.  Full regression
+ now passes.
+
  Revision 1.106  2005/01/07 23:30:08  phase1geo
  Adding ability to handle strings in expressions.  Added string1.v diagnostic
  to verify this functionality.  Updated regressions for this change.
