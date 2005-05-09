@@ -470,7 +470,7 @@ static void do_include() {
   snprintf( user_msg, USER_MSG_LENGTH, "Parsing include file '%s'", path );
   print_output( user_msg, NORMAL, __FILE__, __LINE__ );
 
-  yy_switch_to_buffer( yy_new_buffer( istack->file, YY_BUF_SIZE ) );
+  yy_switch_to_buffer( yy_create_buffer( istack->file, YY_BUF_SIZE ) );
 
   fprintf( yyout, "\n`line %u \"%s\" 1\n", (istack->lineno + 1), istack->path );
   

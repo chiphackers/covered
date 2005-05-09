@@ -1,6 +1,22 @@
-#include "vpi_user.h"
+/*!
+ \file    vpi.c
+ \author  Trevor Williams  (trevorw@charter.net)
+ \date    5/6/2005
+*/
 
-int last_time = -1;
+#include <tcl.h>
+
+#include "vpi_user.h"
+#include "db.h"
+
+int  last_time          = -1;
+bool one_instance_found = FALSE;
+
+/* The following are just needed to get the linker to resolve */
+bool report_gui         = FALSE;
+Tcl_Interp* interp;
+char* merge_in0   = NULL;
+char* merge_in1   = NULL;
 
 PLI_INT32 covered_value_change( struct t_cb_data* cb ) {
 
@@ -11,7 +27,8 @@ PLI_INT32 covered_value_change( struct t_cb_data* cb ) {
   vpi_get_time( cb->obj, &time );
 
   if( time.low != last_time ) {
-    vpi_printf( "Performing timestep\n" );
+    vpi_printf( "Calling db_do_timestep\n" );
+    db_do_timestep( last_time );
     last_time = time.low;
   }
 
@@ -25,6 +42,14 @@ PLI_INT32 covered_value_change( struct t_cb_data* cb ) {
 
 }
 
+PLI_INT32 covered_end_of_sim( struct t_cb_data* cb ) {
+
+  vpi_printf( "Calling db_do_timestep\n" );
+  db_do_timestep( -1 );
+  vpi_printf( "At end of simulation, writing CDD contents\n" );
+
+}
+
 static int covered_sim_calltf( char* name ) {
 
   vpiHandle systf_handle, arg_iterator, module_handle;
@@ -34,6 +59,13 @@ static int covered_sim_calltf( char* name ) {
 
   systf_handle = vpi_handle( vpiSysTfCall, NULL );
   arg_iterator = vpi_iterate( vpiArgument, systf_handle );
+
+  /* Create callback that will handle the end of simulation */
+  s_cb_data cb_func;
+  cb_func.reason = cbEndOfSimulation;
+  cb_func.cb_rtn = covered_end_of_sim;
+  cb_func.obj    = NULL;
+  vpi_register_cb( &cb_func );
 
   while( module_handle = vpi_scan( arg_iterator ) ) {
 

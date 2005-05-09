@@ -62,7 +62,7 @@ int yydebug = 1;
    values. I need to supply an explicit version to account for the
    text field, that otherwise won't be copied. */
 
-#ifndef YYLLOC_DEFAULT
+#define YYRHSLOC(Rhs, K) ((Rhs)[K])
 #define YYLLOC_DEFAULT(Current, Rhs, N)                                \
     do                                                                  \
       if (N)                                                            \
@@ -82,7 +82,6 @@ int yydebug = 1;
           (Current).text         = YYRHSLOC(Rhs, 0).text;               \
         }                                                               \
     while (0)
-#endif
 
 %}
 

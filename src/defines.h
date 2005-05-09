@@ -48,6 +48,12 @@
 #define DFLT_OUTPUT_CDD    "cov.cdd"
 
 /*!
+ Default filename that will contain the code necessary to attach Covered as a VPI to the Verilog
+ simulator.
+*/
+#define DFLT_VPI_NAME      "covered_vpi.v"
+
+/*!
  Determine size of integer in bits.
 */
 #define INTEGER_WIDTH	   (SIZEOF_INT * 8)
@@ -1568,6 +1574,11 @@ union expr_stmt_u {
 
 /*
  $Log$
+ Revision 1.122  2005/02/08 23:18:23  phase1geo
+ Starting to add code to handle expression assignment for blocking assignments.
+ At this point, regressions will probably still pass but new code isn't doing exactly
+ what I want.
+
  Revision 1.121  2005/02/05 04:13:29  phase1geo
  Started to add reporting capabilities for race condition information.  Modified
  race condition reason calculation and handling.  Ran -Wall on all code and cleaned

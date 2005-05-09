@@ -32,6 +32,7 @@ char* top_module         = NULL;                /*!< Name of top-level module to
 char* top_instance       = NULL;                /*!< Name of top-level instance name                            */
 char* output_db          = NULL;                /*!< Name of output score database file to generate             */
 char* vcd_file           = NULL;                /*!< Name of VCD output file to parse                           */
+char* vpi_file           = NULL;                /*!< Name of VPI output file to write contents to               */
 int   delay_expr_type    = DELAY_EXPR_DEFAULT;  /*!< Value to use when a delay expression with min:typ:max      */
 char* ppfilename         = NULL;                /*!< Name of preprocessor filename to use                       */
 bool  instance_specified = FALSE;               /*!< Specifies if -i option was specified                       */
@@ -59,6 +60,11 @@ void score_usage() {
   printf( "      -vcd <dumpfile>              Name of dumpfile to score design with.  If this option\n" );
   printf( "                                    is not used, Covered will only create an initial CDD file\n" );
   printf( "                                    from the design and will not attempt to score the design.\n" );
+  printf( "      -vpi (<name>)                Generates Verilog module called <name> which contains code to\n" );
+  printf( "                                    allow Covered to run as a VPI during simulation.  If <name>\n" );
+  printf( "                                    is not specified, the module file is called %s\n", DFLT_VPI_NAME );
+  printf( "                                    If the -vcd option is specified along with this option, this\n" );
+  printf( "                                    option will not be used.\n" );
   printf( "      -i <instance_name>           Verilog hierarchical scope of top-level module to score.\n" );
   printf( "                                    Necessary if module to verify coverage is not the top-level\n" );
   printf( "                                    module in the design.  If not specified, -t value is used.\n" );
@@ -264,6 +270,16 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
         retval = FALSE;
       }
 
+    } else if( strncmp( "-vpi", argv[i], 4 ) == 0 ) {
+
+      i++;
+      if( is_variable( argv[i] ) ) {
+        vpi_file = strdup_safe( argv[i], __FILE__, __LINE__ );
+      } else {
+        vpi_file = strdup_safe( DFLT_VPI_NAME, __FILE__, __LINE__ );
+        i--;
+      }
+
     } else if( strncmp( "-v", argv[i], 2 ) == 0 ) {
 
       i++;
@@ -396,10 +412,17 @@ int command_score( int argc, int last_arg, char** argv ) {
 
     /* Read dumpfile and score design */
     if( vcd_file != NULL ) {
+
       snprintf( user_msg, USER_MSG_LENGTH, "Scoring dumpfile %s...", vcd_file );
       print_output( user_msg, NORMAL, __FILE__, __LINE__ );
       parse_and_score_dumpfile( output_db, vcd_file );
       print_output( "", NORMAL, __FILE__, __LINE__ );
+
+    } else if( vpi_file != NULL ) {
+
+      /* TBD - Output VPI file here */
+      printf( "Outputting VPI file...\n" );
+
     }
 
     /* Deallocate memory for search engine */
@@ -423,6 +446,10 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.49  2005/01/10 23:03:39  phase1geo
+ Added code to properly report race conditions.  Added code to remove statement blocks
+ from module when race conditions are found.
+
  Revision 1.48  2005/01/07 17:59:52  phase1geo
  Finalized updates for supplemental field changes.  Everything compiles and links
  correctly at this time; however, a regression run has not confirmed the changes.
