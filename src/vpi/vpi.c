@@ -10,14 +10,34 @@
 #ifdef CVER
 #include "cv_vpi_user.h"
 #endif
+#include "defines.h"
 
 /* If this value is set, no callbacks are enabled */
 // #define NO_CALLBACKS	1
 #define NO_STMT_CALLBACKS 1
+#undef DEBUG
 #define DEBUG 1
 #define DEBUG_CBS 1
 
-int last_time = -1;
+char      db_name[1024];
+int       last_time        = -1;
+char*     merge_in0        = NULL;
+char*     merge_in1        = NULL;
+bool      report_gui       = FALSE;
+mod_inst* instance_root    = NULL;
+mod_link* mod_head         = NULL;
+mod_link* mod_tail         = NULL;
+str_link* no_score_head    = NULL;
+str_link* no_score_tail    = NULL;
+bool      one_instance_found = FALSE;
+int   timestep_update    = 0;
+bool report_covered      = FALSE;
+bool flag_use_line_width = FALSE;
+int line_width           = DEFAULT_LINE_WIDTH;
+bool report_instance     = FALSE;
+int   flag_race_check    = WARNING;
+
+extern bool flag_scored;
 
 void covered_expr_op_lookup( PLI_INT32 type, char* name ) {
 
@@ -148,6 +168,15 @@ PLI_INT32 covered_end_of_sim( p_cb_data cb ) {
 #ifdef DEBUG_CBS
   vpi_printf( "At end of simulation, writing CDD contents\n" );
 #endif
+
+  /* Indicate that this CDD contains scored information */
+  flag_scored = TRUE;
+                                                                                                                                      
+  /* Write contents to database file */                                                                                               
+  if( !db_write( db_name, FALSE ) ) {
+    vpi_printf( "Unable to write database file" );
+    exit( 1 );
+  }
 
   return( 0 );
 
@@ -902,6 +931,7 @@ void covered_parse_instance( vpiHandle inst ) {
 PLI_INT32 covered_sim_calltf( PLI_BYTE8* name ) {
 
   vpiHandle systf_handle, arg_iterator, module_handle;
+  vpiHandle arg_handle;
   p_cb_data cb;
 
 #ifdef DEBUG
@@ -930,6 +960,38 @@ PLI_INT32 covered_sim_calltf( PLI_BYTE8* name ) {
   cb->value     = NULL;
   cb->user_data = NULL;
   vpi_register_cb( cb );
+
+  /* Get name of CDD database file from system call arguments */
+  if( (arg_handle = vpi_scan( arg_iterator )) != NULL ) {
+    strcpy( db_name, vpi_get_str( vpiName, arg_handle ) );
+  }
+
+#ifdef DEBUG
+  vpi_printf( "========  Reading in database %s  ========\n", db_name );
+#endif
+
+  /* Initialize all global information variables */
+  info_initialize();
+    
+  /* Read in contents of specified database file */
+  if( !db_read( db_name, READ_MODE_MERGE_NO_MERGE ) ) {
+    vpi_printf( "Unable to read database file" );
+    exit( 1 );
+  }   
+      
+#ifdef DEBUG
+  vpi_printf( "========  Writing database %s  ========\n", db_name );
+#endif
+  
+  /* Indicate that this CDD contains scored information */
+  flag_scored = TRUE;
+  
+  /* Write contents to database file */                                                                                               
+  if( !db_write( db_name, FALSE ) ) {                                                                                                      
+    vpi_printf( "Unable to write database file\n" );                                                       
+    exit( 1 );                                                                                                                        
+  }                                                                                                                                   
+
 
   /* Parse child instances */
   while( (module_handle = vpi_scan( arg_iterator )) != NULL ) {
