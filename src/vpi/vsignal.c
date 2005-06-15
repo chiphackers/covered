@@ -138,6 +138,9 @@ bool vsignal_db_read( char** line, module* curr_mod ) {
 
     *line = *line + chars_read;
 
+    snprintf( user_msg, USER_MSG_LENGTH, "Found signal %s, lsb: %d", name, lsb );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+
     /* Read in vector information */
     if( vector_db_read( &vec, line ) ) {
 
@@ -530,6 +533,9 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.1  2005/06/10 22:26:32  phase1geo
+ Adding symlinks to needed files.
+
  Revision 1.7  2005/02/16 13:45:04  phase1geo
  Adding value propagation function to vsignal.c and adding this propagation to
  BASSIGN expression assignment after the assignment occurs.

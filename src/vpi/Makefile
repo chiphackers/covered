@@ -1,5 +1,17 @@
+#!/sw/dvtools/gnu/bin/make
+
+ifdef VCS
+VPI_FLAGS     = -DVCS -I$(VCS_HOME)/include
+LAST_COMPFILE = tmp.vcs
+RUNLINE       = vcs +vpi -load /home/cheetah4/trevorw/covered/src/vpi/covered.so:covered_register -P covered.tab covered_top.v foobar.v; ./simv -l run.log +covered_outdb=out.cdd
+else
+VPI_FLAGS     = -DCVER -I/home/cheetah4/trevorw/include/cver
+LAST_COMPFILE = tmp.cver
+RUNLINE       = cver +loadvpi=./covered.so:vpi_compat_bootstrap covered_top.v foobar.v
+endif
+
 CC     = gcc
-CFLAGS = -I.. -I../.. -I/usr/X11R6/include -g -O2 -DHAVE_CONFIG_H -DVPI_ONLY
+CFLAGS = -I.. -I../.. -I/usr/X11R6/include $(VPI_FLAGS) -g -O2 -DHAVE_CONFIG_H -DVPI_ONLY
 OBJS   = arc.o \
          attr.o \
          binding.o \
@@ -25,28 +37,25 @@ OBJS   = arc.o \
          vector.o \
          vsignal.o
 
-cver:	covered.so
-	cver +loadvpi=./covered.so:vpi_compat_bootstrap covered_top.v foobar.v
+all:	clean covered.so
+	$(RUNLINE)
 
-covered.so: vpi_cver.o $(OBJS)
-	ld -G -shared -export-dynamic vpi_cver.o $(OBJS) -o covered.so
+covered.so: vpi.o $(OBJS)
+	ld -G -shared -export-dynamic vpi.o $(OBJS) -o covered.so
 
-vpi_cver.o: vpi.c
-	gcc -fPIC -g -DCVER -I/home/cheetah4/trevorw/include/cver -I.. -c -o vpi_cver.o vpi.c
+vpi.o: vpi.c
+	gcc -fPIC -g $(VPI_FLAGS) -I.. -c -o vpi.o vpi.c
 	
-vcs:	simv
-	./simv
-
-simv:	covered_vcs.so vpi.c covered.tab covered_top.v foobar.v
-	vcs +vpi -load /home/cheetah4/trevorw/vpi/covered_vcs.so:covered_register -P covered.tab covered_top.v foobar.v
-
-covered_vcs.so: vpi_vcs.o
-	ld -G -shared -export-dynamic vpi_vcs.o -o covered_vcs.so
-
-vpi_vcs.o: vpi.c
-	gcc -fPIC -g -DVCS -I$(VCS_HOME)/include -I.. -c -o vpi_vcs.o vpi.c
-
 clean:
-	rm -f *.so *.o *.log
-	rm -rf csrc simv*
-	rm -rf core
+	if [ ! -f "$(LAST_COMPFILE)" ] ; then \
+		rm -f *.so *.o *.log; \
+		rm -rf csrc simv*; \
+		rm -rf core; \
+		rm -rf tmp.*; \
+		touch $(LAST_COMPFILE); \
+		echo "Cleaned house"; \
+	fi
+
+clobber:
+	rm -f tmp.*
+	$(MAKE) clean

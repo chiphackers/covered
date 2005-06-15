@@ -187,7 +187,7 @@ bool db_read( char* file, int read_mode ) {
 
   if( (db_handle = fopen( file, "r" )) != NULL ) {
 
-    while( readline( db_handle, &curr_line ) && retval ) {
+    while( util_readline( db_handle, &curr_line ) && retval ) {
 
       if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
 
@@ -1351,6 +1351,9 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.1  2005/06/10 22:26:31  phase1geo
+ Adding symlinks to needed files.
+
  Revision 1.127  2005/02/11 22:50:31  phase1geo
  Fixing bug with removing statement blocks that contain statements that cannot
  currently be handled by Covered correctly.  There was a problem when the bad statement

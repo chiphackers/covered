@@ -297,7 +297,7 @@ bool module_db_merge( module* base, FILE* file, bool same ) {
   /* Handle all module expressions */
   curr_base_exp = base->exp_head;
   while( (curr_base_exp != NULL) && retval ) {
-    if( readline( file, &curr_line ) ) {
+    if( util_readline( file, &curr_line ) ) {
       if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
         rest_line = curr_line + chars_read;
         if( type == DB_TYPE_EXPRESSION ) {
@@ -317,7 +317,7 @@ bool module_db_merge( module* base, FILE* file, bool same ) {
   /* Handle all module signals */
   curr_base_sig = base->sig_head;
   while( (curr_base_sig != NULL) && retval ) {
-    if( readline( file, &curr_line ) ) {
+    if( util_readline( file, &curr_line ) ) {
       if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
         rest_line = curr_line + chars_read;
         if( type == DB_TYPE_SIGNAL ) {
@@ -337,7 +337,7 @@ bool module_db_merge( module* base, FILE* file, bool same ) {
   /* Since statements don't get merged, we will just read these lines in */
   stmt_iter_reset( &curr_base_stmt, base->stmt_head );
   while( (curr_base_stmt.curr != NULL) && retval ) {
-    if( readline( file, &curr_line ) ) {
+    if( util_readline( file, &curr_line ) ) {
       if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
         rest_line = curr_line + chars_read;
         if( type != DB_TYPE_STATEMENT ) {
@@ -355,7 +355,7 @@ bool module_db_merge( module* base, FILE* file, bool same ) {
   /* Handle all module FSMs */
   curr_base_fsm = base->fsm_head;
   while( (curr_base_fsm != NULL) && retval ) {
-    if( readline( file, &curr_line ) ) {
+    if( util_readline( file, &curr_line ) ) {
       if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
         rest_line = curr_line + chars_read;
         if( type == DB_TYPE_FSM ) {
@@ -375,7 +375,7 @@ bool module_db_merge( module* base, FILE* file, bool same ) {
   /* Since race condition blocks don't get merged, we will just read these lines in */
   curr_base_race = base->race_head;
   while( (curr_base_race != NULL) && retval ) {
-    if( readline( file, &curr_line ) ) {
+    if( util_readline( file, &curr_line ) ) {
       if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
         rest_line = curr_line + chars_read;
         if( type != DB_TYPE_RACE ) {
@@ -423,7 +423,7 @@ bool module_db_replace( module* base, FILE* file ) {
   /* Handle all module expressions */
   curr_base_exp = base->exp_head;
   while( (curr_base_exp != NULL) && retval ) {
-    if( readline( file, &curr_line ) ) {
+    if( util_readline( file, &curr_line ) ) {
       if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
         rest_line = curr_line + chars_read;
         if( type == DB_TYPE_EXPRESSION ) {
@@ -443,7 +443,7 @@ bool module_db_replace( module* base, FILE* file ) {
   /* Handle all module signals */
   curr_base_sig = base->sig_head;
   while( (curr_base_sig != NULL) && retval ) {
-    if( readline( file, &curr_line ) ) {
+    if( util_readline( file, &curr_line ) ) {
       if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
         rest_line = curr_line + chars_read;
         if( type == DB_TYPE_SIGNAL ) {
@@ -463,7 +463,7 @@ bool module_db_replace( module* base, FILE* file ) {
   /* Since statements don't get replaced, we will just read these lines in */
   stmt_iter_reset( &curr_base_stmt, base->stmt_head );
   while( (curr_base_stmt.curr != NULL) && retval ) {
-    if( readline( file, &curr_line ) ) {
+    if( util_readline( file, &curr_line ) ) {
       if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
         rest_line = curr_line + chars_read;
         if( type != DB_TYPE_STATEMENT ) {
@@ -481,7 +481,7 @@ bool module_db_replace( module* base, FILE* file ) {
   /* Handle all module FSMs */
   curr_base_fsm = base->fsm_head;
   while( (curr_base_fsm != NULL) && retval ) {
-    if( readline( file, &curr_line ) ) {
+    if( util_readline( file, &curr_line ) ) {
       if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
         rest_line = curr_line + chars_read;
         if( type == DB_TYPE_FSM ) {
@@ -501,7 +501,7 @@ bool module_db_replace( module* base, FILE* file ) {
   /* Since race condition blocks don't get replaced, we will just read these lines in */
   curr_base_race = base->race_head;
   while( (curr_base_race != NULL) && retval ) {
-    if( readline( file, &curr_line ) ) {
+    if( util_readline( file, &curr_line ) ) {
       if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
         rest_line = curr_line + chars_read;
         if( type != DB_TYPE_RACE ) {
@@ -637,6 +637,9 @@ void module_dealloc( module* mod ) {
 
 /*
  $Log$
+ Revision 1.1  2005/06/10 22:26:31  phase1geo
+ Adding symlinks to needed files.
+
  Revision 1.38  2005/02/05 04:13:30  phase1geo
  Started to add reporting capabilities for race condition information.  Modified
  race condition reason calculation and handling.  Ran -Wall on all code and cleaned

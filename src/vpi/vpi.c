@@ -15,29 +15,39 @@
 /* If this value is set, no callbacks are enabled */
 // #define NO_CALLBACKS	1
 #define NO_STMT_CALLBACKS 1
+#define NO_EXPR_CALLBACKS 1
 #undef DEBUG
 #define DEBUG 1
 #define DEBUG_CBS 1
 
-char      db_name[1024];
-int       last_time        = -1;
-char*     merge_in0        = NULL;
-char*     merge_in1        = NULL;
-bool      report_gui       = FALSE;
-mod_inst* instance_root    = NULL;
-mod_link* mod_head         = NULL;
-mod_link* mod_tail         = NULL;
-str_link* no_score_head    = NULL;
-str_link* no_score_tail    = NULL;
-bool      one_instance_found = FALSE;
-int   timestep_update    = 0;
-bool report_covered      = FALSE;
-bool flag_use_line_width = FALSE;
-int line_width           = DEFAULT_LINE_WIDTH;
-bool report_instance     = FALSE;
-int   flag_race_check    = WARNING;
+char      in_db_name[1024];
+char      out_db_name[1024];
+int       last_time           = -1;
+mod_inst* vpi_curr_mod        = NULL;
 
-extern bool flag_scored;
+char*     merge_in0           = NULL;
+char*     merge_in1           = NULL;
+bool      report_gui          = FALSE;
+mod_inst* instance_root       = NULL;
+mod_link* mod_head            = NULL;
+mod_link* mod_tail            = NULL;
+str_link* no_score_head       = NULL;
+str_link* no_score_tail       = NULL;
+bool      one_instance_found  = FALSE;
+int       timestep_update     = 0;
+bool      report_covered      = FALSE;
+bool      flag_use_line_width = FALSE;
+int       line_width          = DEFAULT_LINE_WIDTH;
+bool      report_instance     = FALSE;
+int       flag_race_check     = WARNING;
+
+extern bool       flag_scored;
+extern bool       debug_mode;
+extern symtable*  vcd_symtab;
+extern int        vcd_symtab_size;
+extern symtable** timestep_tab;
+extern char*      curr_inst_scope;
+
 
 void covered_expr_op_lookup( PLI_INT32 type, char* name ) {
 
@@ -146,6 +156,18 @@ PLI_INT32 covered_value_change( p_cb_data cb ) {
               vpi_get_str( vpiFullName, cb->obj ), cb->time->low, cb->value->value.str );
 #endif
 
+  if( cb->time->low != last_time ) {
+    if( last_time >= 0 ) {
+      db_do_timestep( last_time );
+    } else {
+      db_do_timestep( 0 );
+    }
+    last_time = cb->time->low;
+  }
+  
+  /* Set symbol value */
+  db_set_symbol_string( cb->user_data, cb->value->value.str );
+
   return( 0 );
 
 }
@@ -171,11 +193,17 @@ PLI_INT32 covered_end_of_sim( p_cb_data cb ) {
 
   /* Indicate that this CDD contains scored information */
   flag_scored = TRUE;
-                                                                                                                                      
-  /* Write contents to database file */                                                                                               
-  if( !db_write( db_name, FALSE ) ) {
+
+  /* Write contents to database file */
+  if( !db_write( out_db_name, FALSE ) ) {
     vpi_printf( "Unable to write database file" );
     exit( 1 );
+  }
+
+  /* Deallocate memory */
+  symtable_dealloc( vcd_symtab );
+  if( timestep_tab != NULL ) {
+    free_safe( timestep_tab );
   }
 
   return( 0 );
@@ -214,32 +242,75 @@ PLI_INT32 covered_cb_error_handler( p_cb_data cb ) {
 
 }
 
+char* gen_next_symbol() {
+
+  static char symbol[21]   = {32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,'\0'};
+  static int  symbol_index = 19;
+  int         i            = 19;
+
+  while( (i >= symbol_index) && (symbol[i] == 126) ) {
+    symbol[i] = 33;
+    if( (i - 1) < symbol_index ) {
+      symbol_index--;
+      if( symbol_index < 0 ) {
+        return( NULL );
+      }
+    }
+    i--;
+  }
+  symbol[i]++;
+
+  return( strdup_safe( (symbol + symbol_index), __FILE__, __LINE__ ) );
+
+}
+
 void covered_create_value_change_cb( vpiHandle sig ) {
 
   p_cb_data cb;
+  vsignal   vsig;
+  sig_link* vsigl;
+  char*     symbol;
+
+  /* Find current signal in coverage database */
+  vsig.name = vpi_get_str( vpiName, sig );
+  if( (vsigl = sig_link_find( &vsig, vpi_curr_mod->mod->sig_head )) != NULL ) {
 
 #ifdef DEBUG
-  vpi_printf( "In covered_create_value_change_cb\n" );
+    vpi_printf( "In covered_create_value_change_cb, adding callback for signal: %s\n", vsigl->sig->name );
 #endif
 
-  // Add a callback for a value change to this net
-  cb                   = (p_cb_data)malloc( sizeof( s_cb_data ) );
-  cb->reason           = cbValueChange;
-  cb->cb_rtn           = covered_value_change;
-  cb->obj              = sig;
-  cb->time             = (p_vpi_time)malloc( sizeof( s_vpi_time ) ); 
-  cb->time->type       = vpiSimTime;
-  cb->time->high       = 0;
-  cb->time->low        = 0;
-  cb->value            = (p_vpi_value)malloc( sizeof( s_vpi_value ) );
-  cb->value->format    = vpiBinStrVal;
-  cb->value->value.str = NULL;
-  vpi_register_cb( cb );
+    /* Generate new symbol */
+    if( (symbol = gen_next_symbol()) == NULL ) {
+      vpi_printf( "INTERNAL ERROR:  Unable to generate unique symbol name\n" );
+      /* Need to increase number of characters in symbol array */
+      vpi_control( vpiFinish, 0 );
+    }
+
+    /* Add signal/symbol to symtab database */
+    db_assign_symbol( vsigl->sig->name, symbol, ((vsigl->sig->value->width + vsigl->sig->lsb) - 1), vsigl->sig->lsb ); 
+
+    /* Add a callback for a value change to this net */
+    cb                   = (p_cb_data)malloc( sizeof( s_cb_data ) );
+    cb->reason           = cbValueChange;
+    cb->cb_rtn           = covered_value_change;
+    cb->obj              = sig;
+    cb->time             = (p_vpi_time)malloc( sizeof( s_vpi_time ) ); 
+    cb->time->type       = vpiSimTime;
+    cb->time->high       = 0;
+    cb->time->low        = 0;
+    cb->value            = (p_vpi_value)malloc( sizeof( s_vpi_value ) );
+    cb->value->format    = vpiBinStrVal;
+    cb->value->value.str = NULL;
+    cb->user_data        = symbol;
+    vpi_register_cb( cb );
+
+  }
 
 }
 
 void covered_create_expr_change_cb( vpiHandle expr ) {
 
+#ifndef NO_EXPR_CALLBACKS
   p_cb_data cb;
 
 #ifdef DEBUG
@@ -259,6 +330,7 @@ void covered_create_expr_change_cb( vpiHandle expr ) {
   cb->value->format    = vpiBinStrVal;
   cb->value->value.str = NULL;
   vpi_register_cb( cb );
+#endif
 
 }
 
@@ -693,6 +765,7 @@ void covered_parse_task_func( vpiHandle mod ) {
 
   vpiHandle iter, handle;
   vpiHandle liter, scope;
+  mod_inst* tmp_mod;
 	
   /* Parse all internal scopes for tasks and functions */
   if( (iter = vpi_iterate( vpiInternalScope, mod )) != NULL ) {
@@ -703,30 +776,44 @@ void covered_parse_task_func( vpiHandle mod ) {
       vpi_printf( "Parsing task/function %s\n", vpi_get_str( vpiFullName, scope ) );
 #endif
 
-      /* Parse signals */
-      if( (liter = vpi_iterate( vpiReg, scope )) != NULL ) {
-        while( (handle = vpi_scan( liter )) != NULL ) {
+      tmp_mod = vpi_curr_mod;
+
+      if( (vpi_curr_mod = instance_find_scope( instance_root, vpi_get_str( vpiFullName, scope ) )) != NULL ) {
+
+        /* Set current scope in database */
+        if( curr_inst_scope != NULL ) {
+          free_safe( curr_inst_scope, __FILE__, __LINE__ );
+        }
+        curr_inst_scope = strdup_safe( vpi_get_str( vpiFullName, scope ), __FILE__, __LINE__ );
+
+        /* Parse signals */
+        if( (liter = vpi_iterate( vpiReg, scope )) != NULL ) {
+          while( (handle = vpi_scan( liter )) != NULL ) {
 #ifdef DEBUG
-          vpi_printf( "  Found reg %s, file: %s, line: %d\n",
-            vpi_get_str( vpiFullName, handle ), vpi_get_str( vpiFile, handle ), vpi_get( vpiLineNo, handle ) );
+            vpi_printf( "  Found reg %s, file: %s, line: %d\n",
+              vpi_get_str( vpiFullName, handle ), vpi_get_str( vpiFile, handle ), vpi_get( vpiLineNo, handle ) );
 #endif
 #ifndef NO_CALLBACKS
-          covered_create_value_change_cb( handle );
+            covered_create_value_change_cb( handle );
 #endif
+          }
         }
+
+        /* Parse the associated statement */
+        if( (handle = vpi_handle( vpiStmt, scope )) != NULL ) {
+          covered_parse_statement( handle );
+        }
+
+        /* Recursively check scope */
+        if( (liter = vpi_iterate( vpiInternalScope, scope )) != NULL ) {
+          while( (handle = vpi_scan( liter )) != NULL ) {
+            covered_parse_task_func( handle );
+          }
+        }
+
       }
 
-      /* Parse the associated statement */
-      if( (handle = vpi_handle( vpiStmt, scope )) != NULL ) {
-        covered_parse_statement( handle );
-      }
-
-      /* Recursively check scope */
-      if( (liter = vpi_iterate( vpiInternalScope, scope )) != NULL ) {
-        while( (handle = vpi_scan( liter )) != NULL ) {
-          covered_parse_task_func( handle );
-        } 
-      }
+      vpi_curr_mod = tmp_mod;
  
     }
 
@@ -900,23 +987,35 @@ void covered_parse_signals( vpiHandle mod ) {
 
 void covered_parse_instance( vpiHandle inst ) {
 
-  vpiHandle iter, handle;
+  vpiHandle  iter, handle;
+  PLI_BYTE8* mod_path = vpi_get_str( vpiFullName, inst );
+
+  /* Find current module in stored design */
+  if( (vpi_curr_mod = instance_find_scope( instance_root, (char*)mod_path )) != NULL ) {
 
 #ifdef DEBUG
-  vpi_printf( "Found module: %s\n", vpi_get_str( vpiName, inst ) );
+    vpi_printf( "Found module to be covered: %s, full name: %s\n", vpi_get_str( vpiName, inst ), mod_path );
 #endif
 
-  /* Parse all signals */
-  covered_parse_signals( inst );
+    /* Set current scope in database */
+    if( curr_inst_scope != NULL ) {
+      free_safe( curr_inst_scope, __FILE__, __LINE__ );
+    }
+    curr_inst_scope = strdup_safe( vpi_get_str( vpiFullName, inst ), __FILE__, __LINE__ );
 
-  /* Parse all continual assignments */
-  covered_parse_cont_assigns( inst );
+    /* Parse all signals */
+    covered_parse_signals( inst );
 
-  /* Parse all processes */
-  covered_parse_processes( inst );
+    /* Parse all continual assignments */
+    covered_parse_cont_assigns( inst );
 
-  /* Parse all functions/tasks */
-  covered_parse_task_func( inst );
+    /* Parse all processes */
+    covered_parse_processes( inst );
+
+    /* Parse all functions/tasks */
+    covered_parse_task_func( inst );
+
+  }
 
   if( (iter = vpi_iterate( vpiModule, inst )) != NULL ) {
 
@@ -930,12 +1029,16 @@ void covered_parse_instance( vpiHandle inst ) {
 
 PLI_INT32 covered_sim_calltf( PLI_BYTE8* name ) {
 
-  vpiHandle systf_handle, arg_iterator, module_handle;
-  vpiHandle arg_handle;
-  p_cb_data cb;
+  vpiHandle       systf_handle, arg_iterator, module_handle;
+  vpiHandle       arg_handle;
+  s_vpi_vlog_info info;
+  p_cb_data       cb;
+  int             i;
+  char*           argvptr;
 
 #ifdef DEBUG
   vpi_printf( "In covered_sim_calltf, name: %s\n", name );
+  debug_mode = TRUE;
 #endif
 
   systf_handle = vpi_handle( vpiSysTfCall, NULL );
@@ -963,40 +1066,53 @@ PLI_INT32 covered_sim_calltf( PLI_BYTE8* name ) {
 
   /* Get name of CDD database file from system call arguments */
   if( (arg_handle = vpi_scan( arg_iterator )) != NULL ) {
-    strcpy( db_name, vpi_get_str( vpiName, arg_handle ) );
+    s_vpi_value data;
+    data.format = vpiStringVal;
+    vpi_get_value( arg_handle, &data );
+    strcpy( in_db_name, data.value.str );
+  }
+
+  /* Get name of CDD database to write to (default is cov.cdd) */
+  strcpy( out_db_name, "cov.cdd" );
+  if( vpi_get_vlog_info( &info ) ) {
+    for( i=1; i<info.argc; i++ ) {
+      argvptr = info.argv[i];
+      if( strncmp( "+covered_outdb=", argvptr, 15 ) == 0 ) {
+        argvptr += 15;
+        strcpy( out_db_name, argvptr );
+      }
+    }
   }
 
 #ifdef DEBUG
-  vpi_printf( "========  Reading in database %s  ========\n", db_name );
+  vpi_printf( "========  Reading in database %s  ========\n", in_db_name );
 #endif
 
   /* Initialize all global information variables */
   info_initialize();
     
   /* Read in contents of specified database file */
-  if( !db_read( db_name, READ_MODE_MERGE_NO_MERGE ) ) {
+  if( !db_read( in_db_name, READ_MODE_MERGE_NO_MERGE ) ) {
     vpi_printf( "Unable to read database file" );
     exit( 1 );
   }   
-      
-#ifdef DEBUG
-  vpi_printf( "========  Writing database %s  ========\n", db_name );
-#endif
-  
-  /* Indicate that this CDD contains scored information */
-  flag_scored = TRUE;
-  
-  /* Write contents to database file */                                                                                               
-  if( !db_write( db_name, FALSE ) ) {                                                                                                      
-    vpi_printf( "Unable to write database file\n" );                                                       
-    exit( 1 );                                                                                                                        
-  }                                                                                                                                   
 
+  /* Create initial symbol table */
+  vcd_symtab = symtable_create();
 
   /* Parse child instances */
   while( (module_handle = vpi_scan( arg_iterator )) != NULL ) {
     covered_parse_instance( module_handle );
   }
+
+  /* Create timestep symbol table array */
+  if( vcd_symtab_size > 0 ) {
+    timestep_tab = malloc_safe_nolimit( (sizeof( symtable*) * vcd_symtab_size), __FILE__, __LINE__ );
+  }
+
+#ifdef DEBUG
+  vpi_printf( "\n*************************************************************\n\n" );
+#endif
 
   return 0;
 

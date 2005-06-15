@@ -21,6 +21,8 @@
 #ifndef VPI_ONLY
 #include <tcl.h>
 #include <tk.h> 
+#else
+#include "vpi_user.h"
 #endif
 
 #ifdef HAVE_MPATROL
@@ -96,6 +98,45 @@ void set_debug( bool value ) {
  Displays the specified message to standard output based on the type of message
  being output.
 */
+#ifdef VPI_ONLY
+void print_output( char* msg, int type, char* file, int line ) {
+
+  char  tmpmsg[USER_MSG_LENGTH];
+
+  switch( type ) {
+    case DEBUG:
+      if( debug_mode ) { vpi_printf( "%s\n", msg ); }
+      break;
+    case NORMAL:
+      if( !output_suppressed || debug_mode ) { vpi_printf( "%s\n", msg ); }
+      break;
+    case WARNING:
+      if( !output_suppressed ) {
+        vpi_printf( "    WARNING!  %s\n", msg );
+      } else if( debug_mode ) {
+        vpi_printf( "    WARNING!  %s (file: %s, line: %d)\n", msg, file, line );
+      }
+      break;
+    case WARNING_WRAP:
+      if( !output_suppressed || debug_mode ) {
+        vpi_printf( "              %s\n", msg );
+      }
+      break;
+    case FATAL:
+      if( debug_mode ) {
+        vpi_printf( "ERROR!  %s (file: %s, line: %d)\n", msg, file, line );
+      } else {
+        vpi_printf( "ERROR!  %s\n", msg );
+      }
+      break;
+    case FATAL_WRAP:
+      vpi_printf( "        %s\n", msg );
+      break;
+    default:  break;
+  }
+
+}
+#else
 void print_output( char* msg, int type, char* file, int line ) {
 
   FILE* outf = debug_mode ? stdout : stderr;
@@ -112,18 +153,14 @@ void print_output( char* msg, int type, char* file, int line ) {
       if( !output_suppressed ) {
         if( report_gui ) {
           snprintf( tmpmsg, USER_MSG_LENGTH, "WARNING!  %s\n", msg );
-#ifndef VPI_ONLY
           Tcl_SetResult( interp, tmpmsg, TCL_VOLATILE );
-#endif
         } else {
           fprintf( outf, "    WARNING!  %s\n", msg );
         }
       } else if( debug_mode ) {
         if( report_gui ) {
           snprintf( tmpmsg, USER_MSG_LENGTH, "WARNING!  %s (file: %s, line: %d)\n", msg, file, line );
-#ifndef VPI_ONLY
           Tcl_SetResult( interp, tmpmsg, TCL_VOLATILE );
-#endif
         } else {
           fprintf( outf, "    WARNING!  %s (file: %s, line: %d)\n", msg, file, line );
         }
@@ -133,9 +170,7 @@ void print_output( char* msg, int type, char* file, int line ) {
       if( !output_suppressed || debug_mode ) {
         if( report_gui ) {
           snprintf( tmpmsg, USER_MSG_LENGTH, "              %s\n", msg );
-#ifndef VPI_ONLY
           Tcl_AppendElement( interp, tmpmsg );
-#endif
         } else {
           fprintf( outf, "              %s\n", msg );
         }
@@ -145,18 +180,14 @@ void print_output( char* msg, int type, char* file, int line ) {
       if( debug_mode ) {
         if( report_gui ) {
           snprintf( tmpmsg, USER_MSG_LENGTH, "%s (file: %s, line: %d)\n", msg, file, line );
-#ifndef VPI_ONLY
           Tcl_SetResult( interp, tmpmsg, TCL_VOLATILE );
-#endif
         } else {
           fprintf( outf, "ERROR!  %s (file: %s, line: %d)\n", msg, file, line );
         }
       } else {
         if( report_gui ) {
           snprintf( tmpmsg, USER_MSG_LENGTH, "%s\n", msg );
-#ifndef VPI_ONLY
           Tcl_SetResult( interp, tmpmsg, TCL_VOLATILE );
-#endif
         } else {
           fprintf( outf, "ERROR!  %s\n", msg );
         }
@@ -165,9 +196,7 @@ void print_output( char* msg, int type, char* file, int line ) {
     case FATAL_WRAP:
       if( report_gui ) {
         snprintf( tmpmsg, USER_MSG_LENGTH, "%s\n", msg );
-#ifndef VPI_ONLY
         Tcl_AppendElement( interp, tmpmsg );
-#endif
       } else { 
         fprintf( outf, "        %s\n", msg );
       }
@@ -176,6 +205,7 @@ void print_output( char* msg, int type, char* file, int line ) {
   }
 
 }
+#endif
 
 /*!
  \param token String to check for valid variable name.
@@ -409,7 +439,7 @@ bool file_exists( char* file ) {
  Reads in a single line of information from the specified file and returns a string
  containing the read line to the calling function.
 */
-bool readline( FILE* file, char** line ) {
+bool util_readline( FILE* file, char** line ) {
 
   char  c;                 /* Character recently read from file */
   int   i         = 0;     /* Current index of line             */
@@ -827,6 +857,9 @@ void timer_stop( timer** tm ) {
 
 /*
  $Log$
+ Revision 1.1  2005/06/10 22:26:32  phase1geo
+ Adding symlinks to needed files.
+
  Revision 1.30  2005/05/02 15:33:34  phase1geo
  Updates.
 
