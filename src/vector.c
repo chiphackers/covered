@@ -795,6 +795,41 @@ bool vector_set_value( vector* vec, vec_data* value, int width, int from_idx, in
 }
 
 /*!
+ \param vec       Pointer to vector to set value to.
+ \param value     New value to set vector value to.
+ \param width     Width of new value.
+ \param from_idx  Starting bit index of value to start copying.
+ \param to_idx    Starting bit index of value to copy to.
+
+ \return Returns TRUE if assignment was performed; otherwise, returns FALSE.
+
+ Allows the calling function to assign the data values from one vector to another.  This function should only
+ be called for assigning vectors that will not be polled for correct toggle and true/false information.
+*/
+bool vector_set_value_only( vector* vec, vec_data* value, int width, int from_idx, int to_idx ) {
+
+  bool retval = FALSE;  /* Return value for this function */
+  int  i;               /* Loop iterator                  */
+
+  assert( vec != NULL );
+  assert( to_idx < vec->width );
+  assert( to_idx >= 0 );
+
+  /* Adjust width to smaller of two values */
+  width = (width > (vec->width - to_idx)) ? (vec->width - to_idx) : width;
+
+  for( i=0; i<width; i++ ) {
+
+    vec->value[i + to_idx] = value[i + from_idx];
+    retval = TRUE;
+
+  }
+
+  return( retval );
+
+}
+
+/*!
  \param vec  Pointer to vector to check for unknowns.
 
  \return Returns TRUE if the specified vector contains unknown values; otherwise, returns FALSE.
@@ -1776,6 +1811,12 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.60  2005/02/05 04:13:30  phase1geo
+ Started to add reporting capabilities for race condition information.  Modified
+ race condition reason calculation and handling.  Ran -Wall on all code and cleaned
+ things up.  Cleaned up regression as a result of these changes.  Full regression
+ now passes.
+
  Revision 1.59  2005/01/25 13:42:28  phase1geo
  Fixing segmentation fault problem with race condition checking.  Added race1.1
  to regression.  Removed unnecessary output statements from previous debugging

@@ -15,8 +15,8 @@
 /*! \brief Calculates line coverage numbers for the specified expression list. */
 void line_get_stats( stmt_link* stmtl, float* total, int* hit );
 
-/*! \brief Gathers line numbers from specified module that were not hit during simulation. */
-bool line_collect( const char* mod_name, int cov, int** lines, int* line_cnt );
+/*! \brief Gathers line numbers from specified functional unit that were not hit during simulation. */
+bool line_collect( const char* funit_name, int cov, int** lines, int* line_cnt );
 
 /*! \brief Generates report output for line coverage. */
 void line_report( FILE* ofile, bool verbose );
@@ -24,6 +24,15 @@ void line_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.10  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.9  2003/11/22 20:44:58  phase1geo
  Adding function to get array of missed line numbers for GUI purposes.  Updates
  to report command for getting information ready when running the GUI.

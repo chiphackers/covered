@@ -61,6 +61,9 @@ void vector_set_bit( nibble* nib, nibble value, int pos );
 /*! \brief Sets specified vector value to new value and maintains coverage history. */
 bool vector_set_value( vector* vec, vec_data* value, int width, int from_idx, int to_idx );
 
+/*! \brief Sets specified vector value to new value */
+bool vector_set_value_only( vector* vec, vec_data* value, int width, int from_idx, int to_idx );
+
 /*! \brief Sets vector output type (DECIMAL, BINARY, OCTAL or HEXIDECIMAL) in first nibble */
 void vector_set_type( vector* vec, int type );
 
@@ -130,6 +133,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.28  2005/01/10 02:59:30  phase1geo
+ Code added for race condition checking that checks for signals being assigned
+ in multiple statements.  Working on handling bit selects -- this is in progress.
+
  Revision 1.27  2005/01/07 23:00:10  phase1geo
  Regression now passes for previous changes.  Also added ability to properly
  convert quoted strings to vectors and vectors to quoted strings.  This will

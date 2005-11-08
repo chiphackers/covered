@@ -17,26 +17,26 @@
 
 #include "defines.h"
 #include "instance.h"
-#include "module.h"
+#include "func_unit.h"
 #include "util.h"
 #include "param.h"
 
 
 /*!
- \param mod        Pointer to module to store in this instance.
+ \param funit      Pointer to functional unit to store in this instance.
  \param inst_name  Instantiated name of this instance.
 
- \return Returns pointer to newly created module instance.
+ \return Returns pointer to newly created functional unit instance.
 
- Creates a new module instance from heap, initializes its data and
+ Creates a new functional unit instance from heap, initializes its data and
  returns a pointer to it.
 */
-mod_inst* instance_create( module* mod, char* inst_name ) {
+funit_inst* instance_create( func_unit* funit, char* inst_name ) {
 
-  mod_inst* new_inst;   /* Pointer to new module instance */
+  funit_inst* new_inst;   /* Pointer to new functional unit instance */
 
-  new_inst             = (mod_inst*)malloc_safe( sizeof( mod_inst ), __FILE__, __LINE__ );
-  new_inst->mod        = mod;
+  new_inst             = (funit_inst*)malloc_safe( sizeof( funit_inst ), __FILE__, __LINE__ );
+  new_inst->funit      = funit;
   new_inst->name       = strdup_safe( inst_name, __FILE__, __LINE__ );
   new_inst->stat       = NULL;
   new_inst->param_head = NULL;
@@ -58,7 +58,7 @@ mod_inst* instance_create( module* mod, char* inst_name ) {
  string as it goes.  When the root instance is reached, the string is returned.
  Assumes that scope is initialized to the NULL character.
 */
-void instance_gen_scope( char* scope, mod_inst* leaf ) {
+void instance_gen_scope( char* scope, funit_inst* leaf ) {
 
   if( leaf != NULL ) {
 
@@ -77,22 +77,22 @@ void instance_gen_scope( char* scope, mod_inst* leaf ) {
 }
 
 /*!
- \param root        Root of mod_inst tree to parse for scope.
+ \param root        Root of funit_inst tree to parse for scope.
  \param curr_scope  Scope name (instance name) of current instance.
  \param rest_scope  Rest of scope name.
  
- \return Returns pointer to module instance found by scope.
+ \return Returns pointer to functional unit instance found by scope.
  
- Searches the specified module instance tree for the specified
- scope.  When the module instance is found, a pointer to that
- module instance is passed back to the calling function.
+ Searches the specified functional unit instance tree for the specified
+ scope.  When the functional unit instance is found, a pointer to that
+ functional unit instance is passed back to the calling function.
 */
-mod_inst* instance_find_scope_helper( mod_inst* root, char* curr_scope, char* rest_scope ) {
+funit_inst* instance_find_scope_helper( funit_inst* root, char* curr_scope, char* rest_scope ) {
  
-  char      front[256];   /* Highest level of hierarchy in hierarchical reference */
-  char      rest[4096];   /* Rest of scope value                                  */
-  mod_inst* inst = NULL;  /* Pointer to found instance                            */
-  mod_inst* child;        /* Pointer to child instance of this module instance    */
+  char        front[256];   /* Highest level of hierarchy in hierarchical reference */
+  char        rest[4096];   /* Rest of scope value                                  */
+  funit_inst* inst = NULL;  /* Pointer to found instance                            */
+  funit_inst* child;        /* Pointer to child instance of this functional unit instance    */
     
   if( root != NULL ) {
 
@@ -126,16 +126,16 @@ mod_inst* instance_find_scope_helper( mod_inst* root, char* curr_scope, char* re
 }
 
 /*!
- \param root   Root of mod_inst tree to parse for scope.
+ \param root   Root of funit_inst tree to parse for scope.
  \param scope  Scope to search for.
  
- \return Returns pointer to module instance found by scope.
+ \return Returns pointer to functional unit instance found by scope.
  
- Searches the specified module instance tree for the specified
- scope.  When the module instance is found, a pointer to that
- module instance is passed back to the calling function.
+ Searches the specified functional unit instance tree for the specified
+ scope.  When the functional unit instance is found, a pointer to that
+ functional unit instance is passed back to the calling function.
 */
-mod_inst* instance_find_scope( mod_inst* root, char* scope ) {
+funit_inst* instance_find_scope( funit_inst* root, char* scope ) {
  
   char tmp_scope[4096];  /* Rest of scope value */
   
@@ -162,26 +162,26 @@ mod_inst* instance_find_scope( mod_inst* root, char* scope ) {
 }
 
 /*!
- \param root    Pointer to root module instance of tree.
- \param mod     Pointer to module to find in tree.
+ \param root    Pointer to root functional unit instance of tree.
+ \param funit   Pointer to functional unit to find in tree.
  \param ignore  Pointer to number of matches to ignore.
 
- \return Returns pointer to module instance found by scope.
+ \return Returns pointer to functional unit instance found by scope.
  
- Searches the specified module instance tree for the specified
- module.  When a module instance is found that points to the specified
- module and the ignore value is 0, a pointer to that module instance is 
+ Searches the specified functional unit instance tree for the specified
+ functional unit.  When a functional unit instance is found that points to the specified
+ functional unit and the ignore value is 0, a pointer to that functional unit instance is 
  passed back to the calling function; otherwise, the ignore count is
  decremented and the searching continues.
 */
-mod_inst* instance_find_by_module( mod_inst* root, module* mod, int* ignore ) {
+funit_inst* instance_find_by_funit( funit_inst* root, func_unit* funit, int* ignore ) {
 
-  mod_inst* match_inst = NULL;   /* Pointer to module instance that found a match      */
-  mod_inst* curr_child;          /* Pointer to current instances child module instance */
+  funit_inst* match_inst = NULL;   /* Pointer to functional unit instance that found a match      */
+  funit_inst* curr_child;          /* Pointer to current instances child functional unit instance */
 
   if( root != NULL ) {
 
-    if( root->mod == mod ) {
+    if( root->funit == funit ) {
 
       if( *ignore == 0 ) {
         match_inst = root;
@@ -193,7 +193,7 @@ mod_inst* instance_find_by_module( mod_inst* root, module* mod, int* ignore ) {
 
       curr_child = root->child_head;
       while( (curr_child != NULL) && (match_inst == NULL) ) {
-        match_inst = instance_find_by_module( curr_child, mod, ignore );
+        match_inst = instance_find_by_funit( curr_child, funit, ignore );
         curr_child = curr_child->next;
       }
 
@@ -214,7 +214,7 @@ mod_inst* instance_find_by_module( mod_inst* root, module* mod, int* ignore ) {
  structure.  Note:  This function MUST be called after the specified
  instance is attached to the instance tree.
 */
-void instance_resolve_params( mod_parm* mparm, mod_inst* inst ) {
+void instance_resolve_params( mod_parm* mparm, funit_inst* inst ) {
 
   char scope[4096];     /* String containing full hierarchical scope of instance */
 
@@ -238,17 +238,17 @@ void instance_resolve_params( mod_parm* mparm, mod_inst* inst ) {
 
 /*!
  \param inst   Pointer to instance to add child instance to.
- \param child  Pointer to child module to create instance for.
+ \param child  Pointer to child functional unit to create instance for.
  \param name   Name of instance to add.
  
- \return Returns pointer to newly created module instance.
+ \return Returns pointer to newly created functional unit instance.
  
- Generates new instance, adds it to the child list of the inst module
+ Generates new instance, adds it to the child list of the inst functional unit
  instance, and resolves any parameters.
 */
-mod_inst* instance_add_child( mod_inst* inst, module* child, char* name ) {
+funit_inst* instance_add_child( funit_inst* inst, func_unit* child, char* name ) {
 
-  mod_inst* new_inst;  /* Pointer to newly created instance to add */
+  funit_inst* new_inst;  /* Pointer to newly created instance to add */
 
   /* Generate new instance */
   new_inst = instance_create( child, name );
@@ -280,17 +280,17 @@ mod_inst* instance_add_child( mod_inst* inst, module* child, char* name ) {
  Recursively copies the instance tree of from_inst to the instance 
  to_inst, allocating memory for the new instances and resolving parameters.
 */
-void instance_copy( mod_inst* from_inst, mod_inst* to_inst, char* name ) {
+void instance_copy( funit_inst* from_inst, funit_inst* to_inst, char* name ) {
 
-  mod_inst* curr;      /* Pointer to current module instance to copy */
-  mod_inst* new_inst;  /* Pointer to newly created module instance   */
+  funit_inst* curr;      /* Pointer to current functional unit instance to copy */
+  funit_inst* new_inst;  /* Pointer to newly created functional unit instance   */
 
   assert( from_inst != NULL );
   assert( to_inst   != NULL );
   assert( name      != NULL );
 
   /* Add new child instance */
-  new_inst = instance_add_child( to_inst, from_inst->mod, name );
+  new_inst = instance_add_child( to_inst, from_inst->funit, name );
 
   /* Iterate through rest of current child's list of children */
   curr = from_inst->child_head;
@@ -302,20 +302,20 @@ void instance_copy( mod_inst* from_inst, mod_inst* to_inst, char* name ) {
 }
 
 /*!
- \param root       Root mod_inst pointer of module instance tree.
- \param parent     Pointer to parent module of specified child.
- \param child      Pointer to child module to add.
- \param inst_name  Name of new module instance.
+ \param root       Root funit_inst pointer of functional unit instance tree.
+ \param parent     Pointer to parent functional unit of specified child.
+ \param child      Pointer to child functional unit to add.
+ \param inst_name  Name of new functional unit instance.
  
- Adds the child module to the child module pointer list located in
- the module specified by the scope of parent in the module instance
+ Adds the child functional unit to the child functional unit pointer list located in
+ the functional unit specified by the scope of parent in the functional unit instance
  tree pointed to by root.  This function is used by the db_add_instance
  function during the parsing stage.
 */
-void instance_parse_add( mod_inst** root, module* parent, module* child, char* inst_name ) {
+void instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child, char* inst_name ) {
   
-  mod_inst* inst;      /* Temporary pointer to module instance to add to */
-  mod_inst* cinst;     /* Pointer to instance of child module            */
+  funit_inst* inst;      /* Temporary pointer to functional unit instance to add to */
+  funit_inst* cinst;     /* Pointer to instance of child functional unit            */
   int       i;         /* Loop iterator                                  */
   int       ignore;    /* Number of matched instances to ignore          */
 
@@ -334,16 +334,16 @@ void instance_parse_add( mod_inst** root, module* parent, module* child, char* i
     ignore = 0;
 
     /*
-     Check to see if the child module has already been parsed and, if so, find
+     Check to see if the child functional unit has already been parsed and, if so, find
      one of its instances for copying the instance tree below it.
     */
-    cinst = instance_find_by_module( *root, child, &ignore);
+    cinst = instance_find_by_funit( *root, child, &ignore);
     
-    /* Filename will be set to a value if the module has been parsed */
-    if( (cinst != NULL) && (cinst->mod->filename != NULL) ) { 
+    /* Filename will be set to a value if the functional unit has been parsed */
+    if( (cinst != NULL) && (cinst->funit->filename != NULL) ) { 
 
       ignore = 0;
-      while( (inst = instance_find_by_module( *root, parent, &ignore )) != NULL ) {
+      while( (inst = instance_find_by_funit( *root, parent, &ignore )) != NULL ) {
         instance_copy( cinst, inst, inst_name );
         i++;
         ignore = i;
@@ -352,7 +352,7 @@ void instance_parse_add( mod_inst** root, module* parent, module* child, char* i
     } else {
 
       ignore = 0;
-      while( (inst = instance_find_by_module( *root, parent, &ignore )) != NULL ) {
+      while( (inst = instance_find_by_funit( *root, parent, &ignore )) != NULL ) {
         instance_add_child( inst, child, inst_name );
         i++;
         ignore = i;
@@ -368,20 +368,20 @@ void instance_parse_add( mod_inst** root, module* parent, module* child, char* i
 }
 
 /*!
- \param root       Pointer to root instance of module instance tree.
+ \param root       Pointer to root instance of functional unit instance tree.
  \param parent     String scope of parent instance.
- \param child      Pointer to child module to add to specified parent's child list.
- \param inst_name  Instance name of this child module instance.
+ \param child      Pointer to child functional unit to add to specified parent's child list.
+ \param inst_name  Instance name of this child functional unit instance.
 
- Adds the child module to the child module pointer list located in
- the module specified by the scope of parent in the module instance
+ Adds the child functional unit to the child functional unit pointer list located in
+ the functional unit specified by the scope of parent in the functional unit instance
  tree pointed to by root.  This function is used by the db_read
  function during the CDD reading stage.
 */ 
-void instance_read_add( mod_inst** root, char* parent, module* child, char* inst_name ) {
+void instance_read_add( funit_inst** root, char* parent, func_unit* child, char* inst_name ) {
 
-  mod_inst* inst;      /* Temporary pointer to module instance to add to */
-  mod_inst* new_inst;  /* Pointer to new module instance to add          */
+  funit_inst* inst;      /* Temporary pointer to functional unit instance to add to */
+  funit_inst* new_inst;  /* Pointer to new functional unit instance to add          */
 
   new_inst = instance_create( child, inst_name );
 
@@ -418,27 +418,27 @@ void instance_read_add( mod_inst** root, char* parent, module* child, char* inst
 }
 
 /*!
- \param root        Root of module instance tree to write.
+ \param root        Root of functional unit instance tree to write.
  \param file        Output file to display contents to.
- \param scope       Scope of this module.
+ \param scope       Scope of this functional unit.
  \param parse_mode  Specifies if we are parsing or scoring.
 
- Calls each module display function in instance tree, starting with
- the root module and ending when all of the leaf modules are output.
+ Calls each functional unit display function in instance tree, starting with
+ the root functional unit and ending when all of the leaf functional units are output.
  Note:  the function that calls this function originally should set
  the value of scope to NULL.
 */
-void instance_db_write( mod_inst* root, FILE* file, char* scope, bool parse_mode ) {
+void instance_db_write( funit_inst* root, FILE* file, char* scope, bool parse_mode ) {
 
-  char      full_scope[4096];  /* Full scope of module to write            */
-  mod_inst* curr;              /* Pointer to current child module instance */
+  char        full_scope[4096];  /* Full scope of functional unit to write            */
+  funit_inst* curr;              /* Pointer to current child functional unit instance */
 
   assert( scope != NULL );
 
   curr = parse_mode ? root : NULL;
 
-  /* Display root module */
-  module_db_write( root->mod, scope, file, curr );
+  /* Display root functional unit */
+  funit_db_write( root->funit, scope, file, curr );
 
   /* Display children */
   curr = root->child_head;
@@ -452,15 +452,15 @@ void instance_db_write( mod_inst* root, FILE* file, char* scope, bool parse_mode
 }
 
 /*!
- \param root  Pointer to root instance of module instance tree to remove.
+ \param root  Pointer to root instance of functional unit instance tree to remove.
 
  Recursively traverses instance tree, deallocating heap memory used to store the
  the tree.
 */
-void instance_dealloc_tree( mod_inst* root ) {
+void instance_dealloc_tree( funit_inst* root ) {
 
-  mod_inst* curr;        /* Pointer to current instance to evaluate */
-  mod_inst* tmp;         /* Temporary pointer to instance           */
+  funit_inst* curr;        /* Pointer to current instance to evaluate */
+  funit_inst* tmp;         /* Temporary pointer to instance           */
 
   if( root != NULL ) {
 
@@ -483,7 +483,7 @@ void instance_dealloc_tree( mod_inst* root ) {
     /* Deallocate memory for instance parameter list */
     inst_parm_dealloc( root->param_head, TRUE );
   
-    /* Free up memory for this module instance */
+    /* Free up memory for this functional unit instance */
     free_safe( root );
 
   }
@@ -491,18 +491,18 @@ void instance_dealloc_tree( mod_inst* root ) {
 }
 
 /*!
- \param root   Root of module instance tree.
- \param scope  Scope of module to remove from tree.
+ \param root   Root of functional unit instance tree.
+ \param scope  Scope of functional unit to remove from tree.
     
- Searches tree for specified module.  If the module instance is found,
- the module instance is removed from the tree along with all of its
- child module instances.
+ Searches tree for specified functional unit.  If the functional unit instance is found,
+ the functional unit instance is removed from the tree along with all of its
+ child functional unit instances.
 */
-void instance_dealloc( mod_inst* root, char* scope ) {
+void instance_dealloc( funit_inst* root, char* scope ) {
   
-  mod_inst* inst;        /* Pointer to instance to remove                        */
-  mod_inst* curr;        /* Pointer to current child instance to remove          */
-  mod_inst* last;        /* Last current child instance                          */
+  funit_inst* inst;        /* Pointer to instance to remove                        */
+  funit_inst* curr;        /* Pointer to current child instance to remove          */
+  funit_inst* last;        /* Last current child instance                          */
   char      back[256];   /* Highest level of hierarchy in hierarchical reference */
   char      rest[4096];  /* Rest of scope value                                  */
   
@@ -555,6 +555,15 @@ void instance_dealloc( mod_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.30  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.29  2004/03/15 21:38:17  phase1geo
  Updated source files after running lint on these files.  Full regression
  still passes at this point.

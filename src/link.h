@@ -29,8 +29,8 @@ void sig_link_add( vsignal* sig, sig_link** head, sig_link** tail );
 /*! \brief Adds specified FSM to fsm_link element at the end of the list. */
 void fsm_link_add( fsm* table, fsm_link** head, fsm_link** tail );
 
-/*! \brief Adds specified module to mod_link element at the end of the list. */
-void mod_link_add( module* mod, mod_link** head, mod_link** tail );
+/*! \brief Adds specified functional unit to funit_link element at the end of the list. */
+void funit_link_add( func_unit* funit, funit_link** head, funit_link** tail );
 
 
 /*! \brief Displays specified string list to standard output. */
@@ -45,8 +45,8 @@ void exp_link_display( exp_link* head );
 /*! \brief Displays specified signal list to standard output. */
 void sig_link_display( sig_link* head );
 
-/*! \brief Displays specified module list to standard output. */
-void mod_link_display( mod_link* head );
+/*! \brief Displays specified functional unit list to standard output. */
+void funit_link_display( funit_link* head );
 
 
 /*! \brief Finds specified string in the given str_link list. */
@@ -64,8 +64,8 @@ sig_link* sig_link_find( vsignal* sig, sig_link* head );
 /*! \brief Finds specified FSM structure in fsm_link list. */
 fsm_link* fsm_link_find( fsm* table, fsm_link* head );
 
-/*! \brief Finds specified module in given mod_link list. */
-mod_link* mod_link_find( module* mod, mod_link* head );
+/*! \brief Finds specified functional unit in given funit_link list. */
+funit_link* funit_link_find( func_unit* funit, funit_link* head );
 
 
 /*! \brief Searches for and removes specified string link from list. */
@@ -94,11 +94,15 @@ void sig_link_delete_list( sig_link* head, bool del_sig );
 void fsm_link_delete_list( fsm_link* head );
 
 /*! \brief Deletes entire list specified by head pointer. */
-void mod_link_delete_list( mod_link* head );
+void funit_link_delete_list( funit_link* head );
 
 
 /*
  $Log$
+ Revision 1.14  2005/01/10 23:03:39  phase1geo
+ Added code to properly report race conditions.  Added code to remove statement blocks
+ from module when race conditions are found.
+
  Revision 1.13  2004/03/30 15:42:14  phase1geo
  Renaming signal type to vsignal type to eliminate compilation problems on systems
  that contain a signal type in the OS.

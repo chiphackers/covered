@@ -40,10 +40,11 @@
 #include "expr.h"
 #include "iter.h"
 #include "link.h"
+#include "func_unit.h"
 
 
-extern mod_inst*    instance_root;
-extern mod_link*    mod_head;
+extern funit_inst*  instance_root;
+extern funit_link*  funit_head;
 
 extern bool         report_covered;
 extern unsigned int report_comb_depth;
@@ -335,20 +336,21 @@ void combination_get_stats( exp_link* expl, float* total, int* hit ) {
 
 }
 
-bool combination_get_module_summary( char* mod_name, int* total, int* hit ) {
+bool combination_get_funit_summary( char* name, int* total, int* hit ) {
 
-  bool      retval = TRUE;  /* Return value of this function */
-  module    mod;            /* Module used for searching     */
-  mod_link* modl;           /* Pointer to found module link  */
-  char      tmp[21];        /* Temporary string for total    */
+  bool        retval = TRUE;  /* Return value of this function         */
+  func_unit   funit;          /* Functional unit used for searching    */
+  funit_link* funitl;         /* Pointer to found functional unit link */
+  char        tmp[21];        /* Temporary string for total            */
 
-  mod.name = mod_name;
+  funit.name = name;
+  funit.type = FUNIT_MODULE;  /* TBD */
 
-  if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
+  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
 
-    snprintf( tmp, 21, "%20.0f", modl->mod->stat->comb_total );
+    snprintf( tmp, 21, "%20.0f", funitl->funit->stat->comb_total );
     assert( sscanf( tmp, "%d", total ) == 1 );
-    *hit = modl->mod->stat->comb_hit;
+    *hit = funitl->funit->stat->comb_hit;
 
   } else {
 
@@ -368,19 +370,19 @@ bool combination_get_module_summary( char* mod_name, int* total, int* hit ) {
  \return Returns TRUE if combinations were found to be missed; otherwise,
          returns FALSE.
 
- Outputs summarized results of the combinational logic coverage per module
+ Outputs summarized results of the combinational logic coverage per functional unit
  instance to the specified output stream.  Summarized results are printed 
  as percentages based on the number of combinations hit during simulation 
  divided by the total number of expression combinations possible in the 
  design.  An expression is said to be measurable for combinational coverage 
  if it evaluates to a value of 0 or 1.
 */
-bool combination_instance_summary( FILE* ofile, mod_inst* root, char* parent ) {
+bool combination_instance_summary( FILE* ofile, funit_inst* root, char* parent ) {
 
-  mod_inst* curr;           /* Pointer to current child module instance of this node */
-  float     percent;        /* Percentage of lines hit                               */
-  float     miss;           /* Number of lines missed                                */
-  char      tmpname[4096];  /* Temporary name holder of instance                     */
+  funit_inst* curr;           /* Pointer to current child functional unit instance of this node */
+  float       percent;        /* Percentage of lines hit                               */
+  float       miss;           /* Number of lines missed                                */
+  char        tmpname[4096];  /* Temporary name holder of instance                     */
 
   assert( root != NULL );
   assert( root->stat != NULL );
@@ -417,19 +419,19 @@ bool combination_instance_summary( FILE* ofile, mod_inst* root, char* parent ) {
 
 /*!
  \param ofile   Pointer to file to output results to.
- \param head    Pointer to link in current module list to evaluate.
+ \param head    Pointer to link in current functional unit list to evaluate.
 
  \return Returns TRUE if combinations were found to be missed; otherwise,
          returns FALSE.
 
- Outputs summarized results of the combinational logic coverage per module
+ Outputs summarized results of the combinational logic coverage per functional unit
  to the specified output stream.  Summarized results are printed as 
  percentages based on the number of combinations hit during simulation 
  divided by the total number of expression combinations possible in the 
  design.  An expression is said to be measurable for combinational coverage 
  if it evaluates to a value of 0 or 1.
 */
-bool combination_module_summary( FILE* ofile, mod_link* head ) {
+bool combination_funit_summary( FILE* ofile, funit_link* head ) {
 
   float percent;             /* Percentage of lines hit                        */
   float miss;                /* Number of lines missed                         */
@@ -437,22 +439,22 @@ bool combination_module_summary( FILE* ofile, mod_link* head ) {
 
   while( head != NULL ) {
 
-    if( head->mod->stat->comb_total == 0 ) {
+    if( head->funit->stat->comb_total == 0 ) {
       percent = 100;
     } else {
-      percent = ((head->mod->stat->comb_hit / head->mod->stat->comb_total) * 100);
+      percent = ((head->funit->stat->comb_hit / head->funit->stat->comb_total) * 100);
     }
-    miss = (head->mod->stat->comb_total - head->mod->stat->comb_hit);
+    miss = (head->funit->stat->comb_total - head->funit->stat->comb_hit);
     if( miss > 0 ) {
       miss_found = TRUE;
     }
 
     fprintf( ofile, "  %-30.30s    %-30.30s   %4d/%4.0f/%4.0f      %3.0f%%\n", 
-             head->mod->name,
-             get_basename( head->mod->filename ),
-             head->mod->stat->comb_hit,
+             head->funit->name,
+             get_basename( head->funit->filename ),
+             head->funit->stat->comb_hit,
              miss,
-             head->mod->stat->comb_total,
+             head->funit->stat->comb_total,
              percent );
 
     head = head->next;
@@ -553,7 +555,7 @@ void combination_draw_centered_line( char* line, int size, int exp_id, bool left
  Recursively parses specified expression tree, underlining and labeling each
  measurable expression.
 */
-void combination_underline_tree( expression* exp, unsigned int curr_depth, char*** lines, int* depth, int* size, int parent_op, bool center ) {
+void combination_underline_tree( expression* exp, unsigned int curr_depth, char*** lines, int* depth, int* size, int parent_op, bool center, func_unit* funit ) {
 
   char** l_lines;       /* Pointer to left underline stack              */
   char** r_lines;       /* Pointer to right underline stack             */
@@ -567,6 +569,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
   char*  tmpstr;        /* Temporary string value                       */
   int    comb_missed;   /* If set to 1, current combination was missed  */
   char*  tmpname;       /* Temporary pointer to current signal name     */
+  func_unit* tfunit;     /* Temporary pointer to found functional unit   */
   
   *depth  = 0;
   *size   = 0;
@@ -619,8 +622,8 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
         
       } else {
 
-        combination_underline_tree( exp->left,  combination_calc_depth( exp, curr_depth, TRUE ),  &l_lines, &l_depth, &l_size, exp->op, center );
-        combination_underline_tree( exp->right, combination_calc_depth( exp, curr_depth, FALSE ), &r_lines, &r_depth, &r_size, exp->op, center );
+        combination_underline_tree( exp->left,  combination_calc_depth( exp, curr_depth, TRUE ),  &l_lines, &l_depth, &l_size, exp->op, center, funit );
+        combination_underline_tree( exp->right, combination_calc_depth( exp, curr_depth, FALSE ), &r_lines, &r_depth, &r_size, exp->op, center, funit );
 
         if( parent_op == exp->op ) {
 
@@ -762,6 +765,23 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
             case EXP_OP_BASSIGN  :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s   %s" );           break;
             case EXP_OP_NASSIGN  :  *size = l_size + r_size + 4;  strcpy( code_fmt, "%s    %s" );          break;
             case EXP_OP_IF       :  *size = r_size + 6;           strcpy( code_fmt, "    %s  " );          break;
+            case EXP_OP_TASK_CALL :
+            case EXP_OP_FUNC_CALL :
+              if( (tfunit = funit_find_tf_by_statement( funit, exp->stmt )) != NULL ) {
+                tmpname = tfunit->name;
+              } else {
+                snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  Could not find statement %d in module %s",
+                          exp->stmt->exp->id, funit->name );
+                print_output( user_msg, FATAL, __FILE__, __LINE__ );
+                exit( 1 );
+              }
+              *size = l_size + r_size + strlen( tmpname ) + 4;
+              for( i=0; i<strlen( tmpname ); i++ ) {
+                code_fmt[i] = ' ';
+              }
+              code_fmt[i] = '\0';
+              strcat( code_fmt, "  %s  " );
+              break;
             default              :
               snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  Unknown expression type in combination_underline_tree (%d)",
                         exp->op );
@@ -975,7 +995,7 @@ char* combination_prep_line( char* line, int start, int len ) {
  does not have complete combination logic coverage.  Each underline (children to
  parent creates an inverted tree) and contains a number for the specified expression.
 */
-void combination_underline( FILE* ofile, char** code, int code_depth, expression* exp ) {
+void combination_underline( FILE* ofile, char** code, int code_depth, expression* exp, func_unit* funit ) {
 
   char** lines;    /* Pointer to a stack of lines     */
   int    depth;    /* Depth of underline stack        */
@@ -987,7 +1007,7 @@ void combination_underline( FILE* ofile, char** code, int code_depth, expression
 
   start = 0;
 
-  combination_underline_tree( exp, 0, &lines, &depth, &size, exp->op, (code_depth == 1) );
+  combination_underline_tree( exp, 0, &lines, &depth, &size, exp->op, (code_depth == 1), funit );
 
   for( j=0; j<code_depth; j++ ) {
 
@@ -1554,7 +1574,7 @@ void combination_output_expr( expression* expr, unsigned int curr_depth, int* an
  the Verilog code, showing those logical combinations that were not hit
  during simulation.
 */
-void combination_display_verbose( FILE* ofile, stmt_link* stmtl ) {
+void combination_display_verbose( FILE* ofile, func_unit* funit ) {
 
   stmt_iter   stmti;           /* Statement list iterator                                                   */
   expression* unexec_exp;      /* Pointer to current unexecuted expression                                  */
@@ -1570,7 +1590,7 @@ void combination_display_verbose( FILE* ofile, stmt_link* stmtl ) {
   }
 
   /* Display current instance missed lines */
-  stmt_iter_reset( &stmti, stmtl );
+  stmt_iter_reset( &stmti, funit->stmt_tail );
   stmt_iter_find_head( &stmti, FALSE );
 
   while( stmti.curr != NULL ) {
@@ -1591,10 +1611,10 @@ void combination_display_verbose( FILE* ofile, stmt_link* stmtl ) {
       fprintf( ofile, "      =========================================================================================================\n" );
 
       /* Generate line of code that missed combinational coverage */
-      codegen_gen_expr( unexec_exp, unexec_exp->op, &code, &code_depth );
+      codegen_gen_expr( unexec_exp, unexec_exp->op, &code, &code_depth, funit );
 
       /* Output underlining feature for missed expressions */
-      combination_underline( ofile, code, code_depth, unexec_exp );
+      combination_underline( ofile, code, code_depth, unexec_exp, funit );
       fprintf( ofile, "\n" );
 
       /* Output logical combinations that missed complete coverage */
@@ -1610,16 +1630,16 @@ void combination_display_verbose( FILE* ofile, stmt_link* stmtl ) {
 
 /*!
  \param ofile   Pointer to file to output results to.
- \param root    Pointer to current module instance to evaluate.
+ \param root    Pointer to current functional unit instance to evaluate.
  \param parent  Name of parent instance.
 
- Outputs the verbose coverage report for the specified module instance
+ Outputs the verbose coverage report for the specified functional unit instance
  to the specified output stream.
 */
-void combination_instance_verbose( FILE* ofile, mod_inst* root, char* parent ) {
+void combination_instance_verbose( FILE* ofile, funit_inst* root, char* parent ) {
 
-  mod_inst* curr_inst;      /* Pointer to current instance being evaluated */
-  char      tmpname[4096];  /* Temporary name holder of instance           */
+  funit_inst* curr_inst;      /* Pointer to current instance being evaluated */
+  char        tmpname[4096];  /* Temporary name holder of instance           */
 
   assert( root != NULL );
 
@@ -1633,13 +1653,17 @@ void combination_instance_verbose( FILE* ofile, mod_inst* root, char* parent ) {
       ((root->stat->comb_hit > 0) && report_covered) ) {
 
     fprintf( ofile, "\n" );
-    fprintf( ofile, "    Module: %s, File: %s, Instance: %s\n", 
-             root->mod->name, 
-             root->mod->filename,
-             tmpname );
+    switch( root->funit->type ) {
+      case FUNIT_MODULE      :  fprintf( ofile, "    Module: " );       break;
+      case FUNIT_NAMED_BLOCK :  fprintf( ofile, "    Named Block: " );  break;
+      case FUNIT_FUNCTION    :  fprintf( ofile, "    Function: " );     break;
+      case FUNIT_TASK        :  fprintf( ofile, "    Task: " );         break;
+      default                :  fprintf( ofile, "    UNKNOWN: " );      break;
+    }
+    fprintf( ofile, "%s, File: %s, Instance: %s\n", root->funit->name, root->funit->filename, tmpname );
     fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
-    combination_display_verbose( ofile, root->mod->stmt_tail );
+    combination_display_verbose( ofile, root->funit );
 
   }
 
@@ -1653,25 +1677,30 @@ void combination_instance_verbose( FILE* ofile, mod_inst* root, char* parent ) {
 
 /*!
  \param ofile  Pointer to file to output results to.
- \param head   Pointer to current module to evaluate.
+ \param head   Pointer to current functional unit to evaluate.
 
- Outputs the verbose coverage report for the specified module
+ Outputs the verbose coverage report for the specified functional unit
  to the specified output stream.
 */
-void combination_module_verbose( FILE* ofile, mod_link* head ) {
+void combination_funit_verbose( FILE* ofile, funit_link* head ) {
 
   while( head != NULL ) {
 
-    if( ((head->mod->stat->comb_hit < head->mod->stat->comb_total) && !report_covered) ||
-        ((head->mod->stat->comb_hit > 0) && report_covered) ) {
+    if( ((head->funit->stat->comb_hit < head->funit->stat->comb_total) && !report_covered) ||
+        ((head->funit->stat->comb_hit > 0) && report_covered) ) {
 
       fprintf( ofile, "\n" );
-      fprintf( ofile, "    Module: %s, File: %s\n", 
-               head->mod->name, 
-               head->mod->filename );
+      switch( head->funit->type ) {
+        case FUNIT_MODULE      :  fprintf( ofile, "    Module: " );       break;
+        case FUNIT_NAMED_BLOCK :  fprintf( ofile, "    Named Block: " );  break;
+        case FUNIT_FUNCTION    :  fprintf( ofile, "    Function: " );     break;
+        case FUNIT_TASK        :  fprintf( ofile, "    Task: " );         break;
+        default                :  fprintf( ofile, "    UNKNOWN: " );      break;
+      }
+      fprintf( ofile, "%s, File: %s\n", head->funit->name, head->funit->filename );
       fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
-      combination_display_verbose( ofile, head->mod->stmt_tail );
+      combination_display_verbose( ofile, head->funit );
 
     }
 
@@ -1681,23 +1710,24 @@ void combination_module_verbose( FILE* ofile, mod_link* head ) {
 
 }
 
-bool combination_collect( const char* mod_name, expression*** covs, int* cov_cnt, expression*** uncovs, int* uncov_cnt ) {
+bool combination_collect( const char* name, expression*** covs, int* cov_cnt, expression*** uncovs, int* uncov_cnt ) {
 
-  bool      retval = TRUE;   /* Return value of this function                                             */
-  module    mod;             /* Module used for searching                                                 */
-  mod_link* modl;            /* Pointer to found module link                                              */
-  stmt_iter stmti;           /* Statement list iterator                                                   */
-  int       any_missed;      /* Specifies if any of the subexpressions were missed in this expression     */
-  int       any_measurable;  /* Specifies if any of the subexpressions were measurable in this expression */
-  int       cov_size;        /* Current maximum allocated space in covs array                             */
-  int       uncov_size;      /* Current maximum allocated space in uncovs array                           */
+  bool        retval = TRUE;   /* Return value of this function                                             */
+  func_unit   funit;           /* Functional unit used for searching                                        */
+  funit_link* funitl;          /* Pointer to found functional unit link                                     */
+  stmt_iter   stmti;           /* Statement list iterator                                                   */
+  int         any_missed;      /* Specifies if any of the subexpressions were missed in this expression     */
+  int         any_measurable;  /* Specifies if any of the subexpressions were measurable in this expression */
+  int         cov_size;        /* Current maximum allocated space in covs array                             */
+  int         uncov_size;      /* Current maximum allocated space in uncovs array                           */
  
-  /* First, find module in module array */
-  mod.name = strdup_safe( mod_name, __FILE__, __LINE__ );
-  if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
+  /* First, find functional unit in functional unit array */
+  funit.name = strdup_safe( name, __FILE__, __LINE__ );
+  funit.type = FUNIT_MODULE;  /* TBD */
+  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
 
     /* Reset combination counted bits */
-    combination_reset_counted_exprs( modl->mod->exp_head );
+    combination_reset_counted_exprs( funitl->funit->exp_head );
 
     /* Create an array that will hold the number of uncovered combinations */
     cov_size   = 20;
@@ -1708,7 +1738,7 @@ bool combination_collect( const char* mod_name, expression*** covs, int* cov_cnt
     *uncovs    = (expression**)malloc_safe( (sizeof( expression* ) * uncov_size), __FILE__, __LINE__ );
 
     /* Display current instance missed lines */
-    stmt_iter_reset( &stmti, modl->mod->stmt_tail );
+    stmt_iter_reset( &stmti, funitl->funit->stmt_tail );
     stmt_iter_find_head( &stmti, FALSE );
 
     while( stmti.curr != NULL ) {
@@ -1750,40 +1780,41 @@ bool combination_collect( const char* mod_name, expression*** covs, int* cov_cnt
 
   }
 
-  free_safe( mod.name );
+  free_safe( funit.name );
 
   return( retval );
 
 }
 
-bool combination_get_expression( char* mod_name, int expr_id, char*** code, int** uline_groups, int* code_size, char*** ulines, int* uline_size ) {
+bool combination_get_expression( char* name, int expr_id, char*** code, int** uline_groups, int* code_size, char*** ulines, int* uline_size ) {
 
-  bool       retval    = TRUE;  /* Return value for this function */
-  module     mod;               /* Module used for searching      */
-  mod_link*  modl;              /* Pointer to found module link   */
-  expression exp;               /* Expression used for searching  */
-  exp_link*  expl;              /* Pointer to found signal link   */
-  int        tmp;               /* Temporary integer (unused)     */
-  int        i, j;
-  char**     tmp_ulines;
-  int        tmp_uline_size;
-  int        start     = 0;
-  int        uline_max = 20;
+  bool        retval    = TRUE;  /* Return value for this function        */
+  func_unit   funit;             /* Functional unit used for searching    */
+  funit_link* funitl;            /* Pointer to found functional unit link */
+  expression  exp;               /* Expression used for searching         */
+  exp_link*   expl;              /* Pointer to found signal link          */
+  int         tmp;               /* Temporary integer (unused)            */
+  int         i, j;
+  char**      tmp_ulines;
+  int         tmp_uline_size;
+  int         start     = 0;
+  int         uline_max = 20;
 
-  mod.name = mod_name;
+  funit.name = name;
+  funit.type = FUNIT_MODULE;  /* TBD */
 
-  if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
+  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
 
     exp.id = expr_id;
 
-    if( (expl = exp_link_find( &exp, modl->mod->exp_head )) != NULL ) {
+    if( (expl = exp_link_find( &exp, funitl->funit->exp_head )) != NULL ) {
 
       /* Generate line of code that missed combinational coverage */
-      codegen_gen_expr( expl->exp, expl->exp->op, code, code_size );
+      codegen_gen_expr( expl->exp, expl->exp->op, code, code_size, funitl->funit );
       *uline_groups = (int*)malloc_safe( sizeof( int ) * (*code_size), __FILE__, __LINE__ );
 
       /* Output underlining feature for missed expressions */
-      combination_underline_tree( expl->exp, 0, &tmp_ulines, &tmp_uline_size, &tmp, expl->exp->op, (*code_size == 1) );
+      combination_underline_tree( expl->exp, 0, &tmp_ulines, &tmp_uline_size, &tmp, expl->exp->op, (*code_size == 1), funitl->funit );
 
       *ulines     = (char**)malloc_safe( sizeof( char* ) * uline_max, __FILE__, __LINE__ );
       *uline_size = 0;
@@ -1843,18 +1874,19 @@ bool combination_get_expression( char* mod_name, int expr_id, char*** code, int*
 
 }
 
-bool combination_get_coverage( char* mod_name, int uline_id, char*** info, int* info_size ) {
+bool combination_get_coverage( char* name, int uline_id, char*** info, int* info_size ) {
 
-  bool      retval = TRUE;  /* Return value for this function       */
-  module    mod;            /* Module used to find specified module */
-  mod_link* modl;           /* Pointer to found module link         */
-  exp_link* expl;           /* Pointer to current expression link   */
+  bool        retval = TRUE;  /* Return value for this function                */
+  func_unit   funit;          /* Module used to find specified functional unit */
+  funit_link* funitl;         /* Pointer to found functional unit link         */
+  exp_link*   expl;           /* Pointer to current expression link            */
 
-  mod.name = mod_name;
+  funit.name = name;
+  funit.type = FUNIT_MODULE;  /* TBD */
 
-  if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
+  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
 
-    expl = modl->mod->exp_head;
+    expl = funitl->funit->exp_head;
     while( (expl != NULL) && (expl->exp->ulid != uline_id) ) {
       expl = expl->next;
     }
@@ -1879,9 +1911,9 @@ bool combination_get_coverage( char* mod_name, int uline_id, char*** info, int* 
  \param ofile     Pointer to file to output results to.
  \param verbose   Specifies whether or not to provide verbose information
 
- After the design is read into the module hierarchy, parses the hierarchy by module,
- reporting the combinational logic coverage for each module encountered.  The parent 
- module will specify its own combinational logic coverage along with a total combinational
+ After the design is read into the functional unit hierarchy, parses the hierarchy by functional unit,
+ reporting the combinational logic coverage for each functional unit encountered.  The parent 
+ functional unit will specify its own combinational logic coverage along with a total combinational
  logic coverage including its children.
 */
 void combination_report( FILE* ofile, bool verbose ) {
@@ -1914,15 +1946,15 @@ void combination_report( FILE* ofile, bool verbose ) {
 
   } else {
 
-    fprintf( ofile, "Module                              Filename                                Logic Combinations\n" );
+    fprintf( ofile, "Module/Task/Function                Filename                                Logic Combinations\n" );
     fprintf( ofile, "                                                                      Hit/Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
-    missed_found = combination_module_summary( ofile, mod_head );
+    missed_found = combination_funit_summary( ofile, funit_head );
 
     if( verbose && (missed_found || report_covered) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-      combination_module_verbose( ofile, mod_head );
+      combination_funit_verbose( ofile, funit_head );
     }
 
   }
@@ -1934,6 +1966,9 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.108  2005/05/02 15:33:34  phase1geo
+ Updates.
+
  Revision 1.107  2005/02/05 04:13:27  phase1geo
  Started to add reporting capabilities for race condition information.  Modified
  race condition reason calculation and handling.  Ran -Wall on all code and cleaned

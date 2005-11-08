@@ -257,7 +257,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
     } else if( strncmp( "-e", argv[i], 2 ) == 0 ) {
 
       i++;
-      retval = search_add_no_score_module( argv[i] );
+      retval = search_add_no_score_funit( argv[i] );
 
     } else if( strncmp( "-vcd", argv[i], 4 ) == 0 ) {
 
@@ -273,7 +273,7 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
     } else if( strncmp( "-vpi", argv[i], 4 ) == 0 ) {
 
       i++;
-      if( is_variable( argv[i] ) ) {
+      if( argv[i][0] != '-' ) {
         vpi_file = strdup_safe( argv[i], __FILE__, __LINE__ );
       } else {
         vpi_file = strdup_safe( DFLT_VPI_NAME, __FILE__, __LINE__ );
@@ -410,18 +410,20 @@ int command_score( int argc, int last_arg, char** argv ) {
       print_output( "", NORMAL, __FILE__, __LINE__ );
     }
 
+    /* Generate VPI-based top module */
+    if( vpi_file != NULL ) {
+
+      snprintf( user_msg, USER_MSG_LENGTH, "Outputting VPI file %s.v...", vpi_file );
+      print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+      // vpi_generate_top_module( vpi_file, output_db, top_instance );
+
     /* Read dumpfile and score design */
-    if( vcd_file != NULL ) {
+    } else if( vcd_file != NULL ) {
 
       snprintf( user_msg, USER_MSG_LENGTH, "Scoring dumpfile %s...", vcd_file );
       print_output( user_msg, NORMAL, __FILE__, __LINE__ );
       parse_and_score_dumpfile( output_db, vcd_file );
       print_output( "", NORMAL, __FILE__, __LINE__ );
-
-    } else if( vpi_file != NULL ) {
-
-      /* TBD - Output VPI file here */
-      printf( "Outputting VPI file...\n" );
 
     }
 
@@ -430,8 +432,11 @@ int command_score( int argc, int last_arg, char** argv ) {
 
     free_safe( output_db );
     free_safe( vcd_file );
+    free_safe( vpi_file );
 
-    print_output( "***  Scoring completed successfully!  ***\n", NORMAL, __FILE__, __LINE__ );
+    if( vcd_file != NULL ) {
+      print_output( "***  Scoring completed successfully!  ***\n", NORMAL, __FILE__, __LINE__ );
+    }
     snprintf( user_msg, USER_MSG_LENGTH, "Dynamic memory allocated:   %ld bytes", largest_malloc_size );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
     snprintf( user_msg, USER_MSG_LENGTH, "Allocated memory remaining: %ld bytes", curr_malloc_size );
@@ -446,6 +451,10 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.50  2005/05/09 03:08:35  phase1geo
+ Intermediate checkin for VPI changes.  Also contains parser fix which should
+ be branch applied to the latest stable and development versions.
+
  Revision 1.49  2005/01/10 23:03:39  phase1geo
  Added code to properly report race conditions.  Added code to remove statement blocks
  from module when race conditions are found.

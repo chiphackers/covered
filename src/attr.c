@@ -16,7 +16,7 @@
 #include "defines.h"
 #include "attr.h"
 #include "expr.h"
-#include "module.h"
+#include "func_unit.h"
 #include "util.h"
 #include "fsm_arg.h"
 
@@ -46,22 +46,22 @@ attr_param* attribute_create( const char* name, expression* expr ) {
 
 /*!
  \param ap     Pointer to current element of attribute parameter list to parse.
- \param mod    Pointer to current module containing this attribute.
+ \param funit  Pointer to current functional unit containing this attribute.
 
  Parses the attribute parameter list in a recursive fashion.  First,
  we go for the last entry and see if it refers to an attribute that covered
  should parse.  If this attribute is identified by Covered as one of its own, it
  calls the appropriate function to handle the entire attribute parameter list.
 */
-void attribute_parse( attr_param* ap, module* mod ) {
+void attribute_parse( attr_param* ap, func_unit* funit ) {
 
   if( ap != NULL ) {
 
     if( ap->next != NULL ) {
-      attribute_parse( ap->next, mod );
+      attribute_parse( ap->next, funit );
     } else {
       if( strcmp( ap->name, "covered_fsm" ) == 0 ) {
-        fsm_arg_parse_attr( ap->prev, mod );
+        fsm_arg_parse_attr( ap->prev, funit );
       }
     }
 
@@ -96,6 +96,15 @@ void attribute_dealloc( attr_param* ap ) {
 
 /*
  $Log$
+ Revision 1.2  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.1  2003/10/28 00:18:05  phase1geo
  Adding initial support for inline attributes to specify FSMs.  Still more
  work to go but full regression still passes at this point.

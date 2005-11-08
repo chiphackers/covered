@@ -1,6 +1,6 @@
-5 1 * 4 0
-3 main main instance3.v 1 10
-3 foo main.bar instance3.v 12 31
+5 1 * 5 0
+3 0 main main instance3.v 1 10
+3 0 foo main.bar instance3.v 12 31
 2 4 17 160019 0 80 0 0 1 1 1
 2 3 17 f0012 0 40 0 0 1 1 0
 2 5 17 b0012 1a 8c0 4 3 1 0 1002

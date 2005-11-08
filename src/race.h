@@ -21,7 +21,7 @@ void race_check_modules();
 bool race_db_write( race_blk* head, FILE* file );
 
 /*! \brief Reads contents from specified line for a race condition block and assigns the new block to the curr_mod */
-bool race_db_read( char** line, module* curr_mod );
+bool race_db_read( char** line, func_unit* curr_mod );
 
 /*! \brief Get statistic information for the specified race condition block list */
 void race_get_stats( race_blk* curr, int* race_total, int type_total[][RACE_TYPE_NUM] );
@@ -38,6 +38,11 @@ void race_blk_delete_list( race_blk* rb );
 
 /*
  $Log$
+ Revision 1.12  2005/02/07 22:19:46  phase1geo
+ Added code to output race condition reasons to informational bar.  Also added code to
+ output toggle and combinational logic output to information bar when cursor is over
+ an expression that, when clicked on, will take you to the detailed coverage window.
+
  Revision 1.11  2005/02/05 05:29:25  phase1geo
  Added race condition reporting to GUI.
 

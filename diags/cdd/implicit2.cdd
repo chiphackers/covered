@@ -1,5 +1,5 @@
-5 1 * 4 0
-3 main main implicit2.v 1 27
+5 1 * 5 0
+3 0 main main implicit2.v 1 27
 1 c 0 2 0 a
 1 b 0 2 0 200a
 1 a 0 2 0 120a

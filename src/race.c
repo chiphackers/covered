@@ -52,10 +52,10 @@ const char* race_msgs[RACE_TYPE_NUM] = { "Sequential statement block contains bl
 					 "System call $strobe used to output signal assigned via blocking assignment",
 					 "Procedural assignment with #0 delay performed" };
 
-extern int       flag_race_check;
-extern char      user_msg[USER_MSG_LENGTH];
-extern mod_link* mod_head;
-extern module*   curr_module;
+extern int         flag_race_check;
+extern char        user_msg[USER_MSG_LENGTH];
+extern funit_link* funit_head;
+extern func_unit*  curr_funit;
 
 
 /*!
@@ -90,7 +90,7 @@ race_blk* race_blk_create( int reason, int start_line, int end_line ) {
  Finds the head statement of the statement block containing the expression specified in the parameter list.
  Verifies that the return value is never NULL (this would be an internal error if it existed).
 */
-statement* race_get_head_statement( module* mod, expression* expr ) {
+statement* race_get_head_statement( func_unit* mod, expression* expr ) {
 
   stmt_iter  si;         /* Statement iterator                                     */
   statement* curr_stmt;  /* Pointer to current statement containing the expression */
@@ -208,7 +208,7 @@ void race_calc_assignments( int sb_index ) {
  Outputs necessary information to user regarding the race condition that was detected and performs any
  necessary memory cleanup to remove the statement block involved in the race condition.
 */
-void race_handle_race_condition( expression* expr, module* mod, statement* stmt, statement* base, int reason ) {
+void race_handle_race_condition( expression* expr, func_unit* mod, statement* stmt, statement* base, int reason ) {
 
   race_blk* rb;  /* Pointer to race condition block to add to specified module */
   int       i;   /* Loop iterator                                              */
@@ -305,7 +305,9 @@ void race_handle_race_condition( expression* expr, module* mod, statement* stmt,
 
 }
 
-void race_check_assignment_types( module* mod ) {
+/*!
+*/
+void race_check_assignment_types( func_unit* mod ) {
 
   int i;  /* Loop iterator */
 
@@ -337,7 +339,9 @@ void race_check_assignment_types( module* mod ) {
 
 }
 
-void race_check_one_block_assignment( module* mod ) {
+/*!
+*/
+void race_check_one_block_assignment( func_unit* mod ) {
 
   sig_link*  sigl;                /* Pointer to current signal                                          */
   exp_link*  expl;                /* Pointer to current expression                                      */
@@ -450,67 +454,71 @@ void race_check_race_count() {
 */
 void race_check_modules() {
 
-  int        sb_index;  /* Index to statement block array              */
-  stmt_iter  si;        /* Statement iterator                          */
-  mod_link*  modl;      /* Pointer to current module link              */
-  int        i;         /* Loop iterators                              */
+  int         sb_index;  /* Index to statement block array              */
+  stmt_iter   si;        /* Statement iterator                          */
+  funit_link* modl;      /* Pointer to current module link              */
+  int         i;         /* Loop iterators                              */
 
-  modl = mod_head;
+  modl = funit_head;
 
   while( modl != NULL ) {
 
-    /* Clear statement block array size */
-    sb_size = 0;
+    if( modl->funit->type == FUNIT_MODULE ) {
 
-    /* First, get the size of the statement block array */
-    stmt_iter_reset( &si, modl->mod->stmt_tail );
-    while( si.curr != NULL ) {
-      if( si.curr->stmt->exp->suppl.part.stmt_head == 1 ) {
-        sb_size++;
-      }
-      stmt_iter_next( &si );
-    }
+      /* Clear statement block array size */
+      sb_size = 0;
 
-    if( sb_size > 0 ) {
-
-      /* Allocate memory for the statement block array and clear current index */
-      sb       = (stmt_blk*)malloc_safe( (sizeof( stmt_blk ) * sb_size), __FILE__, __LINE__ );
-      sb_index = 0;
-
-      /* Second, populate the statement block array with pointers to the head statements */
-      stmt_iter_reset( &si, modl->mod->stmt_tail );
+      /* First, get the size of the statement block array */
+      stmt_iter_reset( &si, modl->funit->stmt_tail );
       while( si.curr != NULL ) {
         if( si.curr->stmt->exp->suppl.part.stmt_head == 1 ) {
-          sb[sb_index].stmt    = si.curr->stmt;
-          sb[sb_index].remove  = FALSE;
-	  sb[sb_index].seq     = FALSE;
-	  sb[sb_index].cmb     = FALSE;
-	  sb[sb_index].bassign = FALSE;
-	  sb[sb_index].nassign = FALSE;
-	  race_calc_stmt_blk_type( sb[sb_index].stmt->exp, sb_index );
-	  race_calc_assignments( sb_index );
-          sb_index++; 
+          sb_size++;
         }
         stmt_iter_next( &si );
       }
 
-      /* Perform checks #1 - #5 */
-      race_check_assignment_types( modl->mod );
+      if( sb_size > 0 ) {
 
-      /* Perform check #6 */
-      race_check_one_block_assignment( modl->mod );
+        /* Allocate memory for the statement block array and clear current index */
+        sb       = (stmt_blk*)malloc_safe( (sizeof( stmt_blk ) * sb_size), __FILE__, __LINE__ );
+        sb_index = 0;
 
-      /* Cleanup statements to be removed */
-      stmt_iter_reverse( &si );
-      curr_module = modl->mod;
-      for( i=0; i<sb_size; i++ ) {
-        if( sb[i].remove ) {
-          db_remove_statement( sb[i].stmt );
+        /* Second, populate the statement block array with pointers to the head statements */
+        stmt_iter_reset( &si, modl->funit->stmt_tail );
+        while( si.curr != NULL ) {
+          if( si.curr->stmt->exp->suppl.part.stmt_head == 1 ) {
+            sb[sb_index].stmt    = si.curr->stmt;
+            sb[sb_index].remove  = FALSE;
+	    sb[sb_index].seq     = FALSE;
+	    sb[sb_index].cmb     = FALSE;
+	    sb[sb_index].bassign = FALSE;
+	    sb[sb_index].nassign = FALSE;
+	    race_calc_stmt_blk_type( sb[sb_index].stmt->exp, sb_index );
+	    race_calc_assignments( sb_index );
+            sb_index++; 
+          }
+          stmt_iter_next( &si );
         }
-      }
 
-      /* Deallocate stmt_blk list */
-      free_safe( sb );
+        /* Perform checks #1 - #5 */
+        race_check_assignment_types( modl->funit );
+
+        /* Perform check #6 */
+        race_check_one_block_assignment( modl->funit );
+
+        /* Cleanup statements to be removed */
+        stmt_iter_reverse( &si );
+        curr_funit = modl->funit;
+        for( i=0; i<sb_size; i++ ) {
+          if( sb[i].remove ) {
+            db_remove_statement( sb[i].stmt );
+          }
+        }
+
+        /* Deallocate stmt_blk list */
+        free_safe( sb );
+
+      }
 
     }
 
@@ -555,7 +563,7 @@ bool race_db_write( race_blk* rb, FILE* file ) {
  Reads the specified line from the CDD file and parses it for race condition block
  information.
 */
-bool race_db_read( char** line, module* curr_mod ) {
+bool race_db_read( char** line, func_unit* curr_mod ) {
 
   bool      retval = TRUE;  /* Return value for this function                 */
   int       start_line;     /* Starting line for race condition block         */
@@ -616,18 +624,25 @@ void race_get_stats( race_blk* curr, int* race_total, int type_total[][RACE_TYPE
 
 }
 
-bool race_report_summary( FILE* ofile, mod_link* head ) {
+/*!
+ TBD
+*/
+bool race_report_summary( FILE* ofile, funit_link* head ) {
 
   bool found = FALSE;  /* Return value for this function */
 
   while( head != NULL ) {
 
-    found = (head->mod->stat->race_total > 0) ? TRUE : found;
+    if( head->funit->type == FUNIT_MODULE ) {
 
-    fprintf( ofile, "  %-20.20s    %-20.20s        %d\n", 
-             head->mod->name,
-	     get_basename( head->mod->filename ),
-	     head->mod->stat->race_total );
+      found = (head->funit->stat->race_total > 0) ? TRUE : found;
+
+      fprintf( ofile, "  %-20.20s    %-20.20s        %d\n", 
+               head->funit->name,
+  	       get_basename( head->funit->filename ),
+  	       head->funit->stat->race_total );
+
+    }
 
     head = head->next;
 
@@ -637,24 +652,32 @@ bool race_report_summary( FILE* ofile, mod_link* head ) {
 
 }
 
-void race_report_verbose( FILE* ofile, mod_link* head ) {
+/*!
+ TBD
+*/
+void race_report_verbose( FILE* ofile, funit_link* head ) {
 
   race_blk* curr_race;  /* Pointer to current race condition block */
 
   while( head != NULL ) {
 
-    if( head->mod->stat->race_total > 0 ) {
+    if( head->funit->stat->race_total > 0 ) {
 
       fprintf( ofile, "\n" );
-      fprintf( ofile, "    Module: %s, File: %s\n", 
-               head->mod->name, 
-               head->mod->filename );
+      switch( head->funit->type ) {
+        case FUNIT_MODULE      :  fprintf( ofile, "    Module: " );       break;
+        case FUNIT_NAMED_BLOCK :  fprintf( ofile, "    Named Block: " );  break;
+        case FUNIT_FUNCTION    :  fprintf( ofile, "    Function: " );     break;
+        case FUNIT_TASK        :  fprintf( ofile, "    Task: " );         break;
+        default                :  fprintf( ofile, "    UNKNOWN: " );      break;
+      }
+      fprintf( ofile, "%s, File: %s\n", head->funit->name, head->funit->filename );
       fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
       fprintf( ofile, "      Starting Line #     Race Condition Violation Reason\n" );
       fprintf( ofile, "      ---------------------------------------------------------------------------------------------------------\n" );
 
-      curr_race = head->mod->race_head;
+      curr_race = head->funit->race_head;
       while( curr_race != NULL ) {
         fprintf( ofile, "              %7d:    %s\n", curr_race->start_line, race_msgs[curr_race->reason] );
 	curr_race = curr_race->next;
@@ -687,11 +710,11 @@ void race_report( FILE* ofile, bool verbose ) {
   fprintf( ofile, "Module                    Filename                 Number of Violations found\n" );
   fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
-  found = race_report_summary( ofile, mod_head );
+  found = race_report_summary( ofile, funit_head );
 
   if( verbose && found ) {
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-    race_report_verbose( ofile, mod_head );
+    race_report_verbose( ofile, funit_head );
   }
 
   fprintf( ofile, "\n\n" );
@@ -711,23 +734,24 @@ void race_report( FILE* ofile, bool verbose ) {
 */
 bool race_collect_lines( char* modname, int** lines, int** reasons, int* line_cnt ) {
 
-  bool      retval    = TRUE;  /* Return value for this function                           */
-  module    mod;               /* Temporary module used to search for module name          */
-  mod_link* modl;              /* Pointer to found module link containing specified module */
-  race_blk* curr_race = NULL;  /* Pointer to current race condition block                  */
-  int       i;                 /* Loop iterator                                            */
-  int       line_size = 20;    /* Current number of lines allocated in lines array         */
+  bool        retval    = TRUE;  /* Return value for this function                           */
+  func_unit   mod;               /* Temporary module used to search for module name          */
+  funit_link* modl;              /* Pointer to found module link containing specified module */
+  race_blk*   curr_race = NULL;  /* Pointer to current race condition block                  */
+  int         i;                 /* Loop iterator                                            */
+  int         line_size = 20;    /* Current number of lines allocated in lines array         */
 
   mod.name = strdup_safe( modname, __FILE__, __LINE__ );
+  mod.type = FUNIT_MODULE;
 
-  if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
+  if( (modl = funit_link_find( &mod, funit_head )) != NULL ) {
 
     /* Begin by allocating some memory for the lines */
     *lines    = (int*)malloc_safe( (sizeof( int ) * line_size), __FILE__, __LINE__ );
     *reasons  = (int*)malloc_safe( (sizeof( int ) * line_size), __FILE__, __LINE__ );
     *line_cnt = 0;
 
-    curr_race = modl->mod->race_head;
+    curr_race = modl->funit->race_head;
     while( curr_race != NULL ) {
       for( i=curr_race->start_line; i<=curr_race->end_line; i++ ) {
 	if( *line_cnt == line_size ) {
@@ -775,6 +799,11 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.23  2005/02/07 22:19:46  phase1geo
+ Added code to output race condition reasons to informational bar.  Also added code to
+ output toggle and combinational logic output to information bar when cursor is over
+ an expression that, when clicked on, will take you to the detailed coverage window.
+
  Revision 1.22  2005/02/05 06:20:58  phase1geo
  Added ascii report output for race conditions.  There is a segmentation fault
  bug associated with instance reporting.  Need to look into further.

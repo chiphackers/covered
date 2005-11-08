@@ -1,5 +1,5 @@
-5 1 main.inst0 4 0
-3 depth2 inst1 instance1.v 37 46
+5 1 main.inst0 5 0
+3 0 depth2 inst1 instance1.v 37 46
 2 3 44 110012 1 c0 0 0 
 2 2 44 c000d 1 c0 0 0 
 2 4 44 c0012 2 3cc0 3 2 1 0 1102

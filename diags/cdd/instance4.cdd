@@ -1,8 +1,8 @@
-5 1 * 4 0
-3 main main instance4.v 1 21
+5 1 * 5 0
+3 0 main main instance4.v 1 21
 1 b 0 1 0 102
 1 a 0 1 0 1102
-3 foobar main.foo instance4.v 24 33
+3 0 foobar main.foo instance4.v 24 33
 2 3 29 f000f 1 c0 0 0 
 2 2 29 b000b 1 c0 0 0 
 2 4 29 b000f 9 1cc0 3 2 1 0 102
@@ -12,7 +12,7 @@
 1 b 0 1 16 1102 2
 1 a 0 1 0 102 1
 4 5 5 5
-3 fooman main.foo.foo instance4.v 36 44
+3 0 fooman main.foo.foo instance4.v 36 44
 2 8 42 f000f 1 c0 0 0 
 2 7 42 b000b 1 c0 0 0 
 2 9 42 b000f 8 1c40 8 7 1 0 2

@@ -41,7 +41,7 @@ void directory_load( char* dir, str_link* ext_head, str_link** file_head, str_li
 bool file_exists( char* file );
 
 /*! \brief Reads line from file and returns it in string form. */
-bool readline( FILE* file, char** line );
+bool util_readline( FILE* file, char** line );
 
 /*! \brief Extracts highest level of hierarchy from specified scope. */
 void scope_extract_front( char* scope, char* front, char* rest );
@@ -87,6 +87,15 @@ void timer_stop( timer** tm );
 
 /*
  $Log$
+ Revision 1.16  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.15  2003/10/03 03:08:44  phase1geo
  Modifying filename in summary output to only specify basename of file instead
  of entire path.  The verbose report contains the full pathname still, however.

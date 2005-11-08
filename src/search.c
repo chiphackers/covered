@@ -18,7 +18,7 @@
 #include "defines.h"
 #include "search.h"
 #include "link.h"
-#include "module.h"
+#include "func_unit.h"
 #include "util.h"
 #include "instance.h"
 
@@ -29,16 +29,16 @@ str_link* inc_paths_tail = NULL;    /*!< Pointer to tail element of include path
 str_link* use_files_head = NULL;    /*!< Pointer to head element of used files list             */
 str_link* use_files_tail = NULL;    /*!< Pointer to tail element of used files list             */
 
-str_link* no_score_head = NULL;     /*!< Pointer to head element of modules not-to-score list   */
-str_link* no_score_tail = NULL;     /*!< Pointer to tail element of modules not-to-score list   */
+str_link* no_score_head = NULL;     /*!< Pointer to head element of functional units not-to-score list   */
+str_link* no_score_tail = NULL;     /*!< Pointer to tail element of functional units not-to-score list   */
 
 str_link* extensions_head = NULL;   /*!< Pointer to head element of extensions list             */
 str_link* extensions_tail = NULL;   /*!< Pointer to tail element of extensions list             */
 
-mod_link* mod_head       = NULL;    /*!< Pointer to head element of module list */
-mod_link* mod_tail       = NULL;    /*!< Pointer to tail element of module list */
+funit_link* funit_head       = NULL;    /*!< Pointer to head element of functional unit list */
+funit_link* funit_tail       = NULL;    /*!< Pointer to tail element of functional unit list */
 
-mod_inst* instance_root = NULL;     /*!< Pointer to root of module instance tree */
+funit_inst* instance_root = NULL;     /*!< Pointer to root of functional unit instance tree */
 
 extern char* top_module;
 extern char* top_instance;
@@ -51,21 +51,22 @@ extern char  leading_hierarchy[4096];
 */
 void search_init() {
 
-  module* mod;            /* Pointer to newly created module node from top module */
-  char    dutname[4096];  /* Instance name of top-level DUT module                */
+  func_unit* mod;            /* Pointer to newly created module node from top module */
+  char       dutname[4096];  /* Instance name of top-level DUT module                */
 
-  mod = module_create();
+  mod       = funit_create();
+  mod->type = FUNIT_MODULE;
 
   if( top_module != NULL ) {
-    mod->name  = strdup_safe( top_module, __FILE__, __LINE__ );
+    mod->name = strdup_safe( top_module, __FILE__, __LINE__ );
   } else {
     print_output( "No top_module was specified with the -t option.  Please see \"covered -h\" for usage.",
                   FATAL, __FILE__, __LINE__ );
     exit( 1 );
   }
 
-  /* Initialize module linked list */
-  mod_link_add( mod, &mod_head, &mod_tail );
+  /* Initialize functional unit linked list */
+  funit_link_add( mod, &funit_head, &funit_tail );
 
   /* Initialize instance tree */
   if( top_instance == NULL ) {
@@ -158,18 +159,19 @@ bool search_add_file( char* file ) {
 }
 
 /*!
- \param module Name of module to specifically not score
- \return Returns TRUE if the specified string is a legal module name; otherwise,
+ \param funit  Name of functional unit to specifically not score
+
+ \return Returns TRUE if the specified string is a legal functional unit name; otherwise,
          returns FALSE.
 
 */
-bool search_add_no_score_module( char* module ) {
+bool search_add_no_score_funit( char* funit ) {
 
   bool  retval = TRUE;   /* Return value for this function */
   char* tmp;             /* Temporary module name          */
 
-  if( is_variable( module ) ) {
-    tmp = strdup_safe( module, __FILE__, __LINE__ );
+  if( is_variable( funit ) ) {
+    tmp = strdup_safe( funit, __FILE__, __LINE__ );
     str_link_add( tmp, &no_score_head, &no_score_tail );
   } else {
     retval = FALSE;
@@ -247,6 +249,9 @@ void search_free_lists() {
 
 /*
  $Log$
+ Revision 1.18  2005/01/03 23:00:35  phase1geo
+ Fixing library extension parser.
+
  Revision 1.17  2005/01/03 22:02:27  phase1geo
  Fixing case where file is specified with -v after it has already been included to
  just ignore the file instead of printing out an incorrect error message that the

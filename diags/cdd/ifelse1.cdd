@@ -1,12 +1,12 @@
-5 1 * 4 0
-3 main main ifelse1.v 1 33
+5 1 * 5 0
+3 0 main main ifelse1.v 1 33
 1 sel 0 1 0 102
 1 b 0 1 0 1002
 1 a 0 1 0 102
 1 reset 0 1 0 1002
 1 clock 0 1 0 1102
 1 z 0 1 0 102
-3 mux main.switch ./lib/mux.v 1 21
+3 0 mux main.switch ./lib/mux.v 1 21
 2 6 14 9000c 0 40 0 0 1 1 0
 2 5 14 40004 1 80000 0 0 
 2 7 14 4000c 37 56 6 5 

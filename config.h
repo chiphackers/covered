@@ -2,7 +2,7 @@
 /* config.h.in.  Generated from configure.in by autoheader.  */
 
 /* Browser to view help pages with */
-#define COVERED_BROWSER "/usr/bin/mozilla"
+#define COVERED_BROWSER "/usr/bin/netscape"
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1

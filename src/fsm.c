@@ -31,8 +31,8 @@
 #include "codegen.h"
 
 
-extern mod_inst*    instance_root;
-extern mod_link*    mod_head;
+extern funit_inst*  instance_root;
+extern funit_link*  funit_head;
 extern bool         report_covered; 
 extern unsigned int report_comb_depth;
 extern bool         report_instance;
@@ -167,15 +167,15 @@ bool fsm_db_write( fsm* table, FILE* file ) {
 } 
 
 /*!
- \param line  Pointer to current line being read from the CDD file.
- \param mod   Pointer to current module.
+ \param line   Pointer to current line being read from the CDD file.
+ \param funit  Pointer to current functional unit.
 
  \return Returns TRUE if read was successful; otherwise, returns FALSE.
 
  Reads in contents of FSM line from CDD file and stores newly created
- FSM into the specified module.
+ FSM into the specified functional unit.
 */
-bool fsm_db_read( char** line, module* mod ) {
+bool fsm_db_read( char** line, func_unit* funit ) {
 
   bool       retval = TRUE;    /* Return value for this function                     */
   expression iexp;             /* Temporary signal used for finding state variable   */
@@ -191,8 +191,8 @@ bool fsm_db_read( char** line, module* mod ) {
     *line = *line + chars_read + 1;
 
     /* Find specified signal */
-    if( ((iexpl = exp_link_find( &iexp, mod->exp_head )) != NULL) &&
-        ((oexpl = exp_link_find( &oexp, mod->exp_head )) != NULL) ) {
+    if( ((iexpl = exp_link_find( &iexp, funit->exp_head )) != NULL) &&
+        ((oexpl = exp_link_find( &oexp, funit->exp_head )) != NULL) ) {
 
       /* Create new FSM */
       table = fsm_create( iexpl->exp, oexpl->exp );
@@ -216,8 +216,8 @@ bool fsm_db_read( char** line, module* mod ) {
 
         if( arc_db_read( &(table->table), line ) ) {
 
-          /* Add fsm to current module */
-          fsm_link_add( table, &(mod->fsm_head), &(mod->fsm_tail) );
+          /* Add fsm to current functional unit */
+          fsm_link_add( table, &(funit->fsm_head), &(funit->fsm_tail) );
  
         } else {
 
@@ -228,8 +228,8 @@ bool fsm_db_read( char** line, module* mod ) {
 
       } else {
 
-        /* Add fsm to current module */
-        fsm_link_add( table, &(mod->fsm_head), &(mod->fsm_tail) );
+        /* Add fsm to current functional unit */
+        fsm_link_add( table, &(funit->fsm_head), &(funit->fsm_tail) );
 
       }
  
@@ -393,14 +393,14 @@ void fsm_get_stats( fsm_link* table, float* state_total, int* state_hit, float* 
 
  Generates an instance summary report of the current FSM states and arcs hit during simulation.
 */
-bool fsm_instance_summary( FILE* ofile, mod_inst* root, char* parent_inst ) {
+bool fsm_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst ) {
 
-  mod_inst* curr;            /* Pointer to current child module instance of this node */
-  float     state_percent;   /* Percentage of states hit                              */
-  float     arc_percent;     /* Percentage of arcs hit                                */
-  float     state_miss;      /* Number of states missed                               */
-  float     arc_miss;        /* Number of arcs missed                                 */
-  char      tmpname[4096];   /* Temporary name holder for instance                    */
+  funit_inst* curr;            /* Pointer to current child functional unit instance of this node */
+  float       state_percent;   /* Percentage of states hit                                       */
+  float       arc_percent;     /* Percentage of arcs hit                                         */
+  float       state_miss;      /* Number of states missed                                        */
+  float       arc_miss;        /* Number of arcs missed                                          */
+  char        tmpname[4096];   /* Temporary name holder for instance                             */
 
   assert( root != NULL );
   assert( root->stat != NULL );
@@ -455,13 +455,13 @@ bool fsm_instance_summary( FILE* ofile, mod_inst* root, char* parent_inst ) {
 
 /*!
  \param ofile  Pointer to output file to display report contents to.
- \param head   Pointer to module list to traverse.
+ \param head   Pointer to functional unit list to traverse.
 
  \return Returns TRUE if any FSM states/arcs were found missing; otherwise, returns FALSE.
 
- Generates a module summary report of the current FSM states and arcs hit during simulation.
+ Generates a functional unit summary report of the current FSM states and arcs hit during simulation.
 */
-bool fsm_module_summary( FILE* ofile, mod_link* head ) {
+bool fsm_funit_summary( FILE* ofile, funit_link* head ) {
 
   float state_percent;       /* Percentage of states hit                        */
   float arc_percent;         /* Percentage of arcs hit                          */
@@ -471,39 +471,39 @@ bool fsm_module_summary( FILE* ofile, mod_link* head ) {
 
   while( head != NULL ) {
 
-    if( head->mod->stat->state_total == 0 ) {
+    if( head->funit->stat->state_total == 0 ) {
       state_percent = 100.0;
     } else {
-      state_percent = ((head->mod->stat->state_hit / head->mod->stat->state_total) * 100);
+      state_percent = ((head->funit->stat->state_hit / head->funit->stat->state_total) * 100);
     }
 
-    if( head->mod->stat->arc_total == 0 ) {
+    if( head->funit->stat->arc_total == 0 ) {
       arc_percent = 100.0;
     } else {
-      arc_percent = ((head->mod->stat->arc_hit / head->mod->stat->arc_total) * 100);
+      arc_percent = ((head->funit->stat->arc_hit / head->funit->stat->arc_total) * 100);
     }
 
-    state_miss = (head->mod->stat->state_total - head->mod->stat->state_hit);
-    arc_miss   = (head->mod->stat->arc_total   - head->mod->stat->arc_hit);
+    state_miss = (head->funit->stat->state_total - head->funit->stat->state_hit);
+    arc_miss   = (head->funit->stat->arc_total   - head->funit->stat->arc_hit);
     miss_found = ((state_miss != 0) || (arc_miss != 0)) ? TRUE : miss_found;
 
-    if( (head->mod->stat->state_total == -1) || (head->mod->stat->arc_total == -1) ) {
+    if( (head->funit->stat->state_total == -1) || (head->funit->stat->arc_total == -1) ) {
       fprintf( ofile, "  %-20.20s    %-20.20s   %4d/  ? /  ?        ? %%         %4d/  ? /  ?        ? %%\n",
-           head->mod->name,
-           get_basename( head->mod->filename ),
-           head->mod->stat->state_hit,
-           head->mod->stat->arc_hit );
+           head->funit->name,
+           get_basename( head->funit->filename ),
+           head->funit->stat->state_hit,
+           head->funit->stat->arc_hit );
     } else {
       fprintf( ofile, "  %-20.20s    %-20.20s   %4d/%4.0f/%4.0f      %3.0f%%         %4d/%4.0f/%4.0f      %3.0f%%\n",
-             head->mod->name,
-             get_basename( head->mod->filename ),
-             head->mod->stat->state_hit,
+             head->funit->name,
+             get_basename( head->funit->filename ),
+             head->funit->stat->state_hit,
              state_miss,
-             head->mod->stat->state_total,
+             head->funit->stat->state_total,
              state_percent,
-             head->mod->stat->arc_hit,
+             head->funit->stat->arc_hit,
              arc_miss,
-             head->mod->stat->arc_total,
+             head->funit->stat->arc_total,
              arc_percent );
     }
 
@@ -597,7 +597,7 @@ void fsm_display_arc_verbose( FILE* ofile, fsm* table ) {
 
 /*!
  \param ofile  File handle of output file to send report output to.
- \param head   Pointer to head of FSM link for a module.
+ \param head   Pointer to head of FSM link for a functional unit.
 
  Displays the verbose FSM state and state transition information to the specified
  output file.
@@ -613,15 +613,15 @@ void fsm_display_verbose( FILE* ofile, fsm_link* head ) {
   while( head != NULL ) {
 
     if( head->table->from_state->id == head->table->to_state->id ) {
-      codegen_gen_expr( head->table->to_state, head->table->to_state->op, &ocode, &ocode_depth );
+      codegen_gen_expr( head->table->to_state, head->table->to_state->op, &ocode, &ocode_depth, NULL );
       fprintf( ofile, "      FSM input/output state (%s)\n\n", ocode[0] );
       for( i=0; i<ocode_depth; i++ ) {
         free_safe( ocode[i] );
       }
       free_safe( ocode );
     } else {
-      codegen_gen_expr( head->table->from_state, head->table->from_state->op, &icode, &icode_depth );
-      codegen_gen_expr( head->table->to_state,   head->table->to_state->op,   &ocode, &ocode_depth );
+      codegen_gen_expr( head->table->from_state, head->table->from_state->op, &icode, &icode_depth, NULL );
+      codegen_gen_expr( head->table->to_state,   head->table->to_state->op,   &ocode, &ocode_depth, NULL );
       fprintf( ofile, "      FSM input state (%s), output state (%s)\n\n", icode[0], ocode[0] );
       for( i=0; i<icode_depth; i++ ) {
         free_safe( icode[i] );
@@ -653,10 +653,10 @@ void fsm_display_verbose( FILE* ofile, fsm_link* head ) {
 
  Generates an instance verbose report of the current FSM states and arcs hit during simulation.
 */
-void fsm_instance_verbose( FILE* ofile, mod_inst* root, char* parent_inst ) {
+void fsm_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) {
 
-  mod_inst* curr_inst;      /* Pointer to current instance being evaluated */
-  char      tmpname[4096];  /* Temporary name holder for instance          */
+  funit_inst* curr_inst;      /* Pointer to current instance being evaluated */
+  char        tmpname[4096];  /* Temporary name holder for instance          */
 
   assert( root != NULL );
 
@@ -672,13 +672,17 @@ void fsm_instance_verbose( FILE* ofile, mod_inst* root, char* parent_inst ) {
       (((root->stat->state_hit > 0) || (root->stat->arc_hit > 0)) && report_covered) ) {
 
     fprintf( ofile, "\n" );
-    fprintf( ofile, "    Module: %s, File: %s, Instance: %s\n",
-             root->mod->name,
-             root->mod->filename,
-             tmpname );
+    switch( root->funit->type ) {
+      case FUNIT_MODULE      :  fprintf( ofile, "    Module: " );       break;
+      case FUNIT_NAMED_BLOCK :  fprintf( ofile, "    Named Block: " );  break;
+      case FUNIT_FUNCTION    :  fprintf( ofile, "    Function: " );     break;
+      case FUNIT_TASK        :  fprintf( ofile, "    Task: " );         break;
+      default                :  fprintf( ofile, "    UNKNOWN: " );      break;
+    }
+    fprintf( ofile, "%s, File: %s, Instance: %s\n", root->funit->name, root->funit->filename, tmpname );
     fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
-    fsm_display_verbose( ofile, root->mod->fsm_head );
+    fsm_display_verbose( ofile, root->funit->fsm_head );
 
   }
 
@@ -692,27 +696,32 @@ void fsm_instance_verbose( FILE* ofile, mod_inst* root, char* parent_inst ) {
 
 /*! 
  \param ofile  Pointer to output file to display report contents to.
- \param head   Pointer to head of module list to traverse.
+ \param head   Pointer to head of functional unit list to traverse.
 
- Generates a module verbose report of the current FSM states and arcs hit during simulation.
+ Generates a functional unit verbose report of the current FSM states and arcs hit during simulation.
 */
-void fsm_module_verbose( FILE* ofile, mod_link* head ) {
+void fsm_funit_verbose( FILE* ofile, funit_link* head ) {
 
   while( head != NULL ) {
 
-    if( (((head->mod->stat->state_hit < head->mod->stat->state_total) || 
-          (head->mod->stat->arc_hit < head->mod->stat->arc_total)) && !report_covered) ||
-          (head->mod->stat->state_total == -1) ||
-          (head->mod->stat->arc_total   == -1) ||
-        (((head->mod->stat->state_hit > 0) || (head->mod->stat->arc_hit > 0)) && report_covered) ) {
+    if( (((head->funit->stat->state_hit < head->funit->stat->state_total) || 
+          (head->funit->stat->arc_hit < head->funit->stat->arc_total)) && !report_covered) ||
+          (head->funit->stat->state_total == -1) ||
+          (head->funit->stat->arc_total   == -1) ||
+        (((head->funit->stat->state_hit > 0) || (head->funit->stat->arc_hit > 0)) && report_covered) ) {
 
       fprintf( ofile, "\n" );
-      fprintf( ofile, "    Module: %s, File: %s\n",
-               head->mod->name,
-               head->mod->filename );
+      switch( head->funit->type ) {
+        case FUNIT_MODULE      :  fprintf( ofile, "    Module: " );       break;
+        case FUNIT_NAMED_BLOCK :  fprintf( ofile, "    Named Block: " );  break;
+        case FUNIT_FUNCTION    :  fprintf( ofile, "    Function: " );     break;
+        case FUNIT_TASK        :  fprintf( ofile, "    Task: " );         break;
+        default                :  fprintf( ofile, "    UNKNOWN: " );      break;
+      }
+      fprintf( ofile, "%s, File: %s\n", head->funit->name, head->funit->filename );
       fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
-      fsm_display_verbose( ofile, head->mod->fsm_head );
+      fsm_display_verbose( ofile, head->funit->fsm_head );
 
     }
 
@@ -726,8 +735,8 @@ void fsm_module_verbose( FILE* ofile, mod_link* head ) {
  \param ofile     Pointer to file to output results to.
  \param verbose   Specifies whether or not to provide verbose information
  
- After the design is read into the module hierarchy, parses the hierarchy by module,
- reporting the FSM coverage for each module encountered.  The parent module will
+ After the design is read into the functional unit hierarchy, parses the hierarchy by functional unit,
+ reporting the FSM coverage for each functional unit encountered.  The parent functional unit will
  specify its own FSM coverage along with a total FSM coverage including its 
  children.
 */
@@ -762,14 +771,14 @@ void fsm_report( FILE* ofile, bool verbose ) {
   } else {
 
     fprintf( ofile, "                                                               State                             Arc\n" );
-    fprintf( ofile, "Module                    Filename                Hit/Miss/Total    Percent Hit    Hit/Miss/Total    Percent hit\n" );
+    fprintf( ofile, "Module/Task/Function      Filename                Hit/Miss/Total    Percent Hit    Hit/Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
-    missed_found = fsm_module_summary( ofile, mod_head );
+    missed_found = fsm_funit_summary( ofile, funit_head );
 
     if( verbose && (missed_found || report_covered) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-      fsm_module_verbose( ofile, mod_head );
+      fsm_funit_verbose( ofile, funit_head );
     }
 
   }
@@ -813,6 +822,10 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.42  2005/01/07 17:59:51  phase1geo
+ Finalized updates for supplemental field changes.  Everything compiles and links
+ correctly at this time; however, a regression run has not confirmed the changes.
+
  Revision 1.41  2004/04/19 04:54:56  phase1geo
  Adding first and last column information to expression and related code.  This is
  not working correctly yet.

@@ -10,23 +10,32 @@
 
 #include "defines.h"
 
-/*! \brief Collects array of uncovered/covered lines from given module. */
-bool line_collect( const char* mod_name, int cov, int** lines, int* line_cnt );
+/*! \brief Collects array of uncovered/covered lines from given functional unit. */
+bool line_collect( const char* funit_name, int cov, int** lines, int* line_cnt );
 
-/*! \brief Returns hit and total information for specified module. */
-bool line_get_module_summary( char* mod_name, int* total, int* hit );
+/*! \brief Returns hit and total information for specified functional unit. */
+bool line_get_funit_summary( char* funit_name, int* total, int* hit );
 
-/*! \brief Collects array of module names from the design. */
-bool module_get_list( char*** mod_list, int* mod_size );
+/*! \brief Collects array of functional unit names from the design. */
+bool funit_get_list( char*** funit_list, int* funit_size );
 
-/*! \brief Retrieves filename of given module. */
-char* module_get_filename( const char* mod_name );
+/*! \brief Retrieves filename of given functional unit. */
+char* funit_get_filename( const char* funit_name );
 
-/*! \brief Retrieves starting and ending line numbers of the specified module. */
-bool module_get_start_and_end_lines( const char* mod_name, int* start_line, int* end_line );
+/*! \brief Retrieves starting and ending line numbers of the specified functional unit. */
+bool funit_get_start_and_end_lines( const char* funit_name, int* start_line, int* end_line );
 
 /*
  $Log$
+ Revision 1.4  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.3  2004/01/04 04:52:03  phase1geo
  Updating ChangeLog and TODO files.  Adding merge information to INFO line
  of CDD files and outputting this information to the merged reports.  Adding

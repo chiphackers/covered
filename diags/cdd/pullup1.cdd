@@ -1,5 +1,5 @@
-5 1 * 4 0
-3 main main pullup1.v 1 17
+5 1 * 5 0
+3 0 main main pullup1.v 1 17
 2 1 4 c000c 1 40 0 0 
 2 2 4 0 1 80000 0 0 
 2 3 4 0 36 7e 1 2 

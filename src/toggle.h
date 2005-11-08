@@ -17,11 +17,13 @@
 void toggle_get_stats( sig_link* sigl, float* total, int* hit01, int* hit10 );
 
 /*! \brief Collects all toggle expressions that match the specified coverage indication. */
-bool toggle_collect( const char* mod_name, int cov, expression*** sigs, int* sig_cnt );
+bool toggle_collect( const char* funit_name, int cov, expression*** sigs, int* sig_cnt );
 
-bool toggle_get_coverage( char* mod_name, char* sig_name, int* msb, int* lsb, char** tog01, char** tog10 );
+/*! \brief TBD */
+bool toggle_get_coverage( char* funit_name, char* sig_name, int* msb, int* lsb, char** tog01, char** tog10 );
 
-bool toggle_get_module_summary( char* mod_name, int* total, int* hit01, int* hit10 );
+/*! \brief TBD */
+bool toggle_get_funit_summary( char* funit_name, int* total, int* hit01, int* hit10 );
 
 /*! \brief Generates report output for toggle coverage. */
 void toggle_report( FILE* ofile, bool verbose );
@@ -29,6 +31,10 @@ void toggle_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.8  2004/08/08 12:50:27  phase1geo
+ Snapshot of addition of toggle coverage in GUI.  This is not working exactly as
+ it will be, but it is getting close.
+
  Revision 1.7  2004/03/15 21:38:17  phase1geo
  Updated source files after running lint on these files.  Full regression
  still passes at this point.

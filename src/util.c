@@ -18,8 +18,10 @@
 #ifdef HAVE_STRING_H
 #include <string.h>
 #endif
+#ifndef VPI_ONLY
 #include <tcl.h>
 #include <tk.h> 
+#endif
 
 #ifdef HAVE_MPATROL
 #include <mpdebug.h>
@@ -30,7 +32,9 @@
 #include "link.h"
 
 extern bool        report_gui;
+#ifndef VPI_ONLY
 extern Tcl_Interp* interp;
+#endif
 
 /*!
  If set to TRUE, suppresses all non-fatal error messages from being displayed.
@@ -108,14 +112,18 @@ void print_output( char* msg, int type, char* file, int line ) {
       if( !output_suppressed ) {
         if( report_gui ) {
           snprintf( tmpmsg, USER_MSG_LENGTH, "WARNING!  %s\n", msg );
+#ifndef VPI_ONLY
           Tcl_SetResult( interp, tmpmsg, TCL_VOLATILE );
+#endif
         } else {
           fprintf( outf, "    WARNING!  %s\n", msg );
         }
       } else if( debug_mode ) {
         if( report_gui ) {
           snprintf( tmpmsg, USER_MSG_LENGTH, "WARNING!  %s (file: %s, line: %d)\n", msg, file, line );
+#ifndef VPI_ONLY
           Tcl_SetResult( interp, tmpmsg, TCL_VOLATILE );
+#endif
         } else {
           fprintf( outf, "    WARNING!  %s (file: %s, line: %d)\n", msg, file, line );
         }
@@ -125,7 +133,9 @@ void print_output( char* msg, int type, char* file, int line ) {
       if( !output_suppressed || debug_mode ) {
         if( report_gui ) {
           snprintf( tmpmsg, USER_MSG_LENGTH, "              %s\n", msg );
+#ifndef VPI_ONLY
           Tcl_AppendElement( interp, tmpmsg );
+#endif
         } else {
           fprintf( outf, "              %s\n", msg );
         }
@@ -135,14 +145,18 @@ void print_output( char* msg, int type, char* file, int line ) {
       if( debug_mode ) {
         if( report_gui ) {
           snprintf( tmpmsg, USER_MSG_LENGTH, "%s (file: %s, line: %d)\n", msg, file, line );
+#ifndef VPI_ONLY
           Tcl_SetResult( interp, tmpmsg, TCL_VOLATILE );
+#endif
         } else {
           fprintf( outf, "ERROR!  %s (file: %s, line: %d)\n", msg, file, line );
         }
       } else {
         if( report_gui ) {
           snprintf( tmpmsg, USER_MSG_LENGTH, "%s\n", msg );
+#ifndef VPI_ONLY
           Tcl_SetResult( interp, tmpmsg, TCL_VOLATILE );
+#endif
         } else {
           fprintf( outf, "ERROR!  %s\n", msg );
         }
@@ -151,7 +165,9 @@ void print_output( char* msg, int type, char* file, int line ) {
     case FATAL_WRAP:
       if( report_gui ) {
         snprintf( tmpmsg, USER_MSG_LENGTH, "%s\n", msg );
+#ifndef VPI_ONLY
         Tcl_AppendElement( interp, tmpmsg );
+#endif
       } else { 
         fprintf( outf, "        %s\n", msg );
       }
@@ -393,7 +409,7 @@ bool file_exists( char* file ) {
  Reads in a single line of information from the specified file and returns a string
  containing the read line to the calling function.
 */
-bool readline( FILE* file, char** line ) {
+bool util_readline( FILE* file, char** line ) {
 
   char  c;                 /* Character recently read from file */
   int   i         = 0;     /* Current index of line             */
@@ -811,6 +827,9 @@ void timer_stop( timer** tm ) {
 
 /*
  $Log$
+ Revision 1.30  2005/05/02 15:33:34  phase1geo
+ Updates.
+
  Revision 1.29  2004/04/21 05:14:03  phase1geo
  Adding report_gui checking to print_output and adding error handler to TCL
  scripts.  Any errors occurring within the code will be propagated to the user.

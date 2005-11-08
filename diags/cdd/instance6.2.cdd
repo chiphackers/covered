@@ -1,8 +1,8 @@
-5 1 * 4 0
-3 main main instance6.2.v 6 26
+5 1 * 5 0
+3 0 main main instance6.2.v 6 26
 1 b 0 4 0 aa
 1 a 0 4 0 15aa
-3 foobar main.foo instance6.2.v 29 39
+3 0 foobar main.foo instance6.2.v 29 39
 2 5 37 f000f 0 40 0 0 32 0 0 0 0 0 0 0 0 0
 2 4 37 d000d 0 80 0 0 32 0 1 0 0 0 0 0 0 0
 2 6 37 b0010 24 10c0 5 4 
@@ -12,10 +12,10 @@
 1 b 0 4 16 15aa 6
 1 a 0 2 0 110a 3
 4 7 7 7
-3 barfoo main.bar instance6.2.v 42 48
+3 0 barfoo main.bar instance6.2.v 42 48
 1 #dude 0 32 0 4 0 0 0 0 0 0 0
 1 b 0 4 16 aa
-3 foobar main.bar.dude instance6.2.v 29 39
+3 0 foobar main.bar.dude instance6.2.v 29 39
 2 5 37 f000f 0 40 0 0 32 0 0 0 0 0 0 0 0 0
 2 4 37 d000d 0 80 0 0 32 0 1 0 0 0 0 0 0 0
 2 6 37 b0010 24 1080 5 4 

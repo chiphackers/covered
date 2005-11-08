@@ -25,7 +25,7 @@ void fsm_create_tables( fsm* table );
 bool fsm_db_write( fsm* table, FILE* file );
 
 /*! \brief Reads in contents of specified FSM. */
-bool fsm_db_read( char** line, module* mod );
+bool fsm_db_read( char** line, func_unit* funit );
 
 /*! \brief Reads and merges two FSMs, placing result into base FSM. */
 bool fsm_db_merge( fsm* base, char** line, bool same );
@@ -47,6 +47,10 @@ void fsm_dealloc( fsm* table );
 
 /*
  $Log$
+ Revision 1.13  2004/04/05 12:30:52  phase1geo
+ Adding *db_replace functions to allow a design to be opened with new CDD
+ results (for GUI purposes only).
+
  Revision 1.12  2003/11/07 05:18:40  phase1geo
  Adding working code for inline FSM attribute handling.  Full regression fails
  at this point but the code seems to be working correctly.

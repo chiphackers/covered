@@ -1,5 +1,5 @@
-5 1 * 4 0
-3 main main param5.v 1 24
+5 1 * 5 0
+3 0 main main param5.v 1 24
 2 6 8 100010 1 c0 0 0 
 2 7 8 f000f 1b c0 6 0 2 0 320a
 2 5 8 c000c 1 c0 0 0 

@@ -21,8 +21,8 @@
 #include "link.h"
 
 
-extern mod_inst* instance_root;
-extern mod_link* mod_head;
+extern funit_inst* instance_root;
+extern funit_link* funit_head;
 
 extern bool report_covered;
 extern bool report_instance;
@@ -31,7 +31,7 @@ extern char second_hierarchy[4096];
 
 /*!
  \param sigl   Pointer to signal list to search.
- \param total  Total number of bits in the design/module.
+ \param total  Total number of bits in the design/functional unit.
  \param hit01  Number of bits toggling from 0 to 1 during simulation.
  \param hit10  Number of bits toggling from 1 to 0 during simulation.
 
@@ -56,27 +56,28 @@ void toggle_get_stats( sig_link* sigl, float* total, int* hit01, int* hit10 ) {
 
 }
 
-bool toggle_collect( const char* mod_name, int cov, expression*** sigs, int* sig_cnt ) {
+bool toggle_collect( const char* funit_name, int cov, expression*** sigs, int* sig_cnt ) {
 
-  bool      retval = TRUE;  /* Return value for this function                 */
-  module    mod;            /* Module used for searching                      */
-  mod_link* modl;           /* Pointer to found module link                   */
+  bool        retval = TRUE;  /* Return value for this function                 */
+  func_unit   funit;          /* Functional unit used for searching             */
+  funit_link* funitl;         /* Pointer to found functional unit link          */
   sig_link* curr_sig;       /* Pointer to current signal link being evaluated */
   int       hit01;          /* Number of bits that toggled from 0 to 1        */
   int       hit10;          /* Number of bits that toggled from 1 to 0        */
   int       sig_size; 
   exp_link* expl;           /* Pointer to expression linked list              */
      
-  /* First, find module in module array */
-  mod.name = strdup_safe( mod_name, __FILE__, __LINE__ );
-  if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
+  /* First, find functional unit in functional unit array */
+  funit.name = strdup_safe( funit_name, __FILE__, __LINE__ );
+  funit.type = FUNIT_MODULE;  /* TBD */
+  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
 
     /* Create an array that will hold the number of uncovered lines */
     sig_size = 20;
     *sig_cnt = 0;
     *sigs    = (expression**)malloc_safe( (sizeof( expression* ) * sig_size), __FILE__, __LINE__ );
 
-    curr_sig = modl->mod->sig_head;
+    curr_sig = funitl->funit->sig_head;
 
     while( curr_sig != NULL ) {
 
@@ -117,27 +118,28 @@ bool toggle_collect( const char* mod_name, int cov, expression*** sigs, int* sig
 
   }
 
-  free_safe( mod.name );
+  free_safe( funit.name );
 
   return( retval );
 
 }
 
-bool toggle_get_coverage( char* mod_name, char* sig_name, int* msb, int* lsb, char** tog01, char** tog10 ) {
+bool toggle_get_coverage( char* funit_name, char* sig_name, int* msb, int* lsb, char** tog01, char** tog10 ) {
 
-  bool      retval = TRUE;  /* Return value for this function */
-  module    mod;            /* Module used for searching      */
-  mod_link* modl;           /* Pointer to found module link   */
-  vsignal   sig;            /* Signal used for searching      */
-  sig_link* sigl;           /* Pointer to found signal link   */
+  bool        retval = TRUE;  /* Return value for this function        */
+  func_unit   funit;          /* Functional unit used for searching    */
+  funit_link* funitl;         /* Pointer to found functional unit link */
+  vsignal     sig;            /* Signal used for searching             */
+  sig_link*   sigl;           /* Pointer to found signal link          */
 
-  mod.name = mod_name;
+  funit.name = funit_name;
+  funit.type = FUNIT_MODULE;  /* TBD */
 
-  if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
+  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
 
     sig.name = sig_name;
 
-    if( (sigl = sig_link_find( &sig, modl->mod->sig_head )) != NULL ) {
+    if( (sigl = sig_link_find( &sig, funitl->funit->sig_head )) != NULL ) {
       *msb = sigl->sig->lsb + (sigl->sig->value->width - 1);
       *lsb = sigl->sig->lsb; 
       *tog01 = vector_get_toggle01( sigl->sig->value->value, sigl->sig->value->width );
@@ -157,35 +159,36 @@ bool toggle_get_coverage( char* mod_name, char* sig_name, int* msb, int* lsb, ch
 }
 
 /*!
- \param mod_name  Name of module to retrieve summary information from.
- \param total     Pointer to total number of toggles in this module.
- \param hit01     Pointer to number of toggles hit going 0 -> 1 in this module.
- \param hit10     Pointer to number of toggles hit going 1 -> 0 in this module.
+ \param funit_name  Name of functional unit to retrieve summary information from.
+ \param total       Pointer to total number of toggles in this functional unit.
+ \param hit01       Pointer to number of toggles hit going 0 -> 1 in this functional unit.
+ \param hit10       Pointer to number of toggles hit going 1 -> 0 in this functional unit.
 
- \return Returns TRUE if specified module was found in design; otherwise,
+ \return Returns TRUE if specified functional unit was found in design; otherwise,
          returns FALSE.
 
- Looks up summary information for specified module.  If the module was found,
- the hit and total values for this module are returned to the calling function.
- If the module was not found, a value of FALSE is returned to the calling
- function, indicating that the module was not found in the design and the values
+ Looks up summary information for specified functional unit.  If the functional unit was found,
+ the hit and total values for this functional unit are returned to the calling function.
+ If the functional unit was not found, a value of FALSE is returned to the calling
+ function, indicating that the functional unit was not found in the design and the values
  of total and hit should not be used.
 */
-bool toggle_get_module_summary( char* mod_name, int* total, int* hit01, int* hit10 ) {
+bool toggle_get_funit_summary( char* funit_name, int* total, int* hit01, int* hit10 ) {
 
-  bool      retval = TRUE;  /* Return value for this function */
-  module    mod;            /* Module used for searching      */
-  mod_link* modl;           /* Pointer to found module link   */
-  char      tmp[21];        /* Temporary string for total     */
+  bool        retval = TRUE;  /* Return value for this function        */
+  func_unit   funit;          /* Functional unit used for searching    */
+  funit_link* funitl;         /* Pointer to found functional unit link */
+  char        tmp[21];        /* Temporary string for total            */
 
-  mod.name = mod_name;
+  funit.name = funit_name;
+  funit.type = FUNIT_MODULE;  /* TBD */
 
-  if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
+  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
 
-    snprintf( tmp, 21, "%20.0f", modl->mod->stat->tog_total );
+    snprintf( tmp, 21, "%20.0f", funitl->funit->stat->tog_total );
     assert( sscanf( tmp, "%d", total ) == 1 );
-    *hit01 = modl->mod->stat->tog01_hit;
-    *hit10 = modl->mod->stat->tog10_hit;
+    *hit01 = funitl->funit->stat->tog01_hit;
+    *hit10 = funitl->funit->stat->tog10_hit;
 
   } else {
 
@@ -199,23 +202,23 @@ bool toggle_get_module_summary( char* mod_name, int* total, int* hit01, int* hit
 
 /*!
  \param ofile        File to output coverage information to.
- \param root         Instance node in the module instance tree being evaluated.
+ \param root         Instance node in the functional unit instance tree being evaluated.
  \param parent_inst  Name of parent instance.
 
  \return Returns TRUE if any bits were found to be not toggled; otherwise, returns FALSE.
 
  Displays the toggle instance summarization to the specified file.  Recursively
- iterates through module instance tree, outputting the toggle information that
+ iterates through functional unit instance tree, outputting the toggle information that
  is found at that instance.
 */
-bool toggle_instance_summary( FILE* ofile, mod_inst* root, char* parent_inst ) {
+bool toggle_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst ) {
 
-  mod_inst* curr;           /* Pointer to current child module instance of this node */
-  float     percent01;      /* Percentage of bits toggling from 0 -> 1               */
-  float     percent10;      /* Percentage of bits toggling from 1 -> 0               */
-  float     miss01;         /* Number of bits that did not toggle from 0 -> 1        */
-  float     miss10;         /* Number of bits that did not toggle from 1 -> 0        */
-  char      tmpname[4096];  /* Temporary name holder for instance                    */
+  funit_inst* curr;           /* Pointer to current child functional unit instance of this node */
+  float       percent01;      /* Percentage of bits toggling from 0 -> 1               */
+  float       percent10;      /* Percentage of bits toggling from 1 -> 0               */
+  float       miss01;         /* Number of bits that did not toggle from 0 -> 1        */
+  float       miss10;         /* Number of bits that did not toggle from 1 -> 0        */
+  char        tmpname[4096];  /* Temporary name holder for instance                    */
 
   assert( root != NULL );
   assert( root->stat != NULL );
@@ -265,14 +268,14 @@ bool toggle_instance_summary( FILE* ofile, mod_inst* root, char* parent_inst ) {
 
 /*!
  \param ofile  Pointer to file to display coverage results to.
- \param head   Pointer to head of module list to parse.
+ \param head   Pointer to head of functional unit list to parse.
 
  \return Returns TRUE if any bits were found to be untoggled; otherwise, returns FALSE.
 
- Iterates through the module list displaying the toggle coverage for
- each module.
+ Iterates through the functional unit list displaying the toggle coverage for
+ each functional unit.
 */
-bool toggle_module_summary( FILE* ofile, mod_link* head ) {
+bool toggle_funit_summary( FILE* ofile, funit_link* head ) {
 
   float percent01;           /* Percentage of bits that toggled from 0 to 1    */
   float percent10;           /* Percentage of bits that toggled from 1 to 0    */
@@ -283,33 +286,33 @@ bool toggle_module_summary( FILE* ofile, mod_link* head ) {
   while( head != NULL ) {
 
     /* Calculate for toggle01 */
-    if( head->mod->stat->tog_total == 0 ) {
+    if( head->funit->stat->tog_total == 0 ) {
       percent01 = 100;
     } else {
-      percent01 = ((head->mod->stat->tog01_hit / head->mod->stat->tog_total) * 100);
+      percent01 = ((head->funit->stat->tog01_hit / head->funit->stat->tog_total) * 100);
     }
-    miss01 = (head->mod->stat->tog_total - head->mod->stat->tog01_hit);
+    miss01 = (head->funit->stat->tog_total - head->funit->stat->tog01_hit);
 
     /* Calculate for toggle10 */
-    if( head->mod->stat->tog_total == 0 ) {
+    if( head->funit->stat->tog_total == 0 ) {
       percent10 = 100;
     } else {
-      percent10 = ((head->mod->stat->tog10_hit / head->mod->stat->tog_total) * 100);
+      percent10 = ((head->funit->stat->tog10_hit / head->funit->stat->tog_total) * 100);
     }
-    miss10 = (head->mod->stat->tog_total - head->mod->stat->tog10_hit);
+    miss10 = (head->funit->stat->tog_total - head->funit->stat->tog10_hit);
 
     miss_found = ((miss01 > 0) || (miss10 > 0)) ? TRUE : miss_found;
 
     fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5.0f/%5.0f      %3.0f%%         %5d/%5.0f/%5.0f      %3.0f%%\n", 
-             head->mod->name,
-             get_basename( head->mod->filename ),
-             head->mod->stat->tog01_hit,
+             head->funit->name,
+             get_basename( head->funit->filename ),
+             head->funit->stat->tog01_hit,
              miss01,
-             head->mod->stat->tog_total,
+             head->funit->stat->tog_total,
              percent01,
-             head->mod->stat->tog10_hit,
+             head->funit->stat->tog10_hit,
              miss10,
-             head->mod->stat->tog_total,
+             head->funit->stat->tog_total,
              percent10 );
 
     head = head->next;
@@ -385,17 +388,17 @@ void toggle_display_verbose( FILE* ofile, sig_link* sigl ) {
 
 /*!
  \param ofile        Pointer to file to display coverage results to.
- \param root         Pointer to root of instance module tree to parse.
+ \param root         Pointer to root of instance functional unit tree to parse.
  \param parent_inst  Name of parent instance.
 
  Displays the verbose toggle coverage results to the specified output stream on
  an instance basis.  The verbose toggle coverage includes the signal names
  and their bits that did not receive 100% toggle coverage during simulation. 
 */
-void toggle_instance_verbose( FILE* ofile, mod_inst* root, char* parent_inst ) {
+void toggle_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) {
 
-  mod_inst* curr_inst;      /* Pointer to current instance being evaluated */
-  char      tmpname[4096];  /* Temporary name holder of instance           */
+  funit_inst* curr_inst;      /* Pointer to current instance being evaluated */
+  char        tmpname[4096];  /* Temporary name holder of instance           */
 
   assert( root != NULL );
 
@@ -409,13 +412,17 @@ void toggle_instance_verbose( FILE* ofile, mod_inst* root, char* parent_inst ) {
       (root->stat->tog10_hit < root->stat->tog_total) ) {
 
     fprintf( ofile, "\n" );
-    fprintf( ofile, "    Module: %s, File: %s, Instance: %s\n",
-             root->mod->name,
-             root->mod->filename,
-             tmpname );
+    switch( root->funit->type ) {
+      case FUNIT_MODULE      :  fprintf( ofile, "    Module: " );       break;
+      case FUNIT_NAMED_BLOCK :  fprintf( ofile, "    Named Block: " );  break;
+      case FUNIT_FUNCTION    :  fprintf( ofile, "    Function: " );     break;
+      case FUNIT_TASK        :  fprintf( ofile, "    Task: " );         break;
+      default                :  fprintf( ofile, "    UNKNOWN: " );      break;
+    }
+    fprintf( ofile, "%s, File: %s, Instance: %s\n", root->funit->name, root->funit->filename, tmpname );
     fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
-    toggle_display_verbose( ofile, root->mod->sig_head );
+    toggle_display_verbose( ofile, root->funit->sig_head );
 
   }
 
@@ -429,27 +436,32 @@ void toggle_instance_verbose( FILE* ofile, mod_inst* root, char* parent_inst ) {
 
 /*!
  \param ofile  Pointer to file to display coverage results to.
- \param head   Pointer to head of module list to parse.
+ \param head   Pointer to head of functional unit list to parse.
 
  Displays the verbose toggle coverage results to the specified output stream on
- a module basis (combining modules that are instantiated multiple times).
+ a functional unit basis (combining functional units that are instantiated multiple times).
  The verbose toggle coverage includes the signal names and their bits that
  did not receive 100% toggle coverage during simulation.
 */
-void toggle_module_verbose( FILE* ofile, mod_link* head ) {
+void toggle_funit_verbose( FILE* ofile, funit_link* head ) {
 
   while( head != NULL ) {
 
-    if( (head->mod->stat->tog01_hit < head->mod->stat->tog_total) ||
-        (head->mod->stat->tog10_hit < head->mod->stat->tog_total) ) {
+    if( (head->funit->stat->tog01_hit < head->funit->stat->tog_total) ||
+        (head->funit->stat->tog10_hit < head->funit->stat->tog_total) ) {
 
       fprintf( ofile, "\n" );
-      fprintf( ofile, "    Module: %s, File: %s\n",
-               head->mod->name,
-               head->mod->filename );
+      switch( head->funit->type ) {
+        case FUNIT_MODULE      :  fprintf( ofile, "    Module: " );       break;
+        case FUNIT_NAMED_BLOCK :  fprintf( ofile, "    Named Block: " );  break;
+        case FUNIT_FUNCTION    :  fprintf( ofile, "    Function: " );     break;
+        case FUNIT_TASK        :  fprintf( ofile, "    Task: " );         break;
+        default                :  fprintf( ofile, "    UNKNOWN: " );      break;
+      }
+      fprintf( ofile, "%s, File: %s\n", head->funit->name, head->funit->filename );
       fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
-      toggle_display_verbose( ofile, head->mod->sig_head );
+      toggle_display_verbose( ofile, head->funit->sig_head );
 
     }
 
@@ -463,8 +475,8 @@ void toggle_module_verbose( FILE* ofile, mod_link* head ) {
  \param ofile     Pointer to file to output results to.
  \param verbose   Specifies whether or not to provide verbose information
 
- After the design is read into the module hierarchy, parses the hierarchy by module,
- reporting the toggle coverage for each module encountered.  The parent module will
+ After the design is read into the functional unit hierarchy, parses the hierarchy by functional unit,
+ reporting the toggle coverage for each functional unit encountered.  The parent functional unit will
  specify its own toggle coverage along with a total toggle coverage including its 
  children.
 */
@@ -498,15 +510,15 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
   } else {
 
-    fprintf( ofile, "Module                    Filename                         Toggle 0 -> 1                       Toggle 1 -> 0\n" );
+    fprintf( ofile, "Module/Task/Function      Filename                         Toggle 0 -> 1                       Toggle 1 -> 0\n" );
     fprintf( ofile, "                                                   Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
-    missed_found = toggle_module_summary( ofile, mod_head );
+    missed_found = toggle_funit_summary( ofile, funit_head );
 
     if( verbose && missed_found ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-      toggle_module_verbose( ofile, mod_head );
+      toggle_funit_verbose( ofile, funit_head );
     }
 
   }
@@ -517,6 +529,10 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.27  2004/08/08 12:50:27  phase1geo
+ Snapshot of addition of toggle coverage in GUI.  This is not working exactly as
+ it will be, but it is getting close.
+
  Revision 1.26  2004/03/15 21:38:17  phase1geo
  Updated source files after running lint on these files.  Full regression
  still passes at this point.

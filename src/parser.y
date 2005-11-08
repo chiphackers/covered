@@ -21,7 +21,7 @@
 #include "vsignal.h"
 #include "expr.h"
 #include "vector.h"
-#include "module.h"
+#include "func_unit.h"
 #include "db.h"
 #include "link.h"
 #include "parser_misc.h"
@@ -99,7 +99,7 @@ int yydebug = 1;
   exp_link*       explink;
   case_statement* case_stmt;
   attr_param*     attr_parm;
-  sig_exp_bind*   sigexp;
+  exp_bind*       expbind;
 };
 
 %token <text>     IDENTIFIER
@@ -139,7 +139,7 @@ int yydebug = 1;
 %token KK_attribute
 
 %type <integer>   net_type port_type
-%type <vecwidth>  range_opt range
+%type <vecwidth>  range_opt range range_or_type_opt
 %type <statexp>   static_expr static_expr_primary
 %type <text>      identifier
 %type <expr>      expr_primary expression_list expression
@@ -147,13 +147,12 @@ int yydebug = 1;
 %type <expr>      event_control event_expression_list event_expression
 %type <text>      udp_port_list
 %type <expr>      delay_value delay_value_simple
-%type <text>      range_or_type_opt
 %type <text>      defparam_assign_list defparam_assign
 %type <text>      gate_instance
 %type <text>      localparam_assign_list localparam_assign
 %type <strlink>   register_variable_list list_of_variables
 %type <strlink>   gate_instance_list
-%type <sigexp>    net_decl_assigns net_decl_assign
+%type <expbind>   net_decl_assigns net_decl_assign
 %type <text>      register_variable
 %type <state>     statement statement_list statement_opt 
 %type <state>     for_statement fork_statement while_statement named_begin_end_block if_statement_error
@@ -1051,11 +1050,18 @@ expr_primary
     }
   | identifier '(' expression_list ')'
     {
-      if( ignore_mode == 0 ) {
-        expression_dealloc( $3, FALSE );
+      expression* tmp;
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL ) ) {
+        tmp = db_create_expression( NULL, $3, EXP_OP_FUNC_CALL, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), $1 );
+        $$  = tmp;
         free_safe( $1 );
+      } else {
+        if( $1 != NULL ) {
+          free_safe( $1 );
+        }
+        expression_dealloc( $3, FALSE );
+        $$ = NULL;
       }
-      $$ = NULL;
     }
   | SYSTEM_IDENTIFIER '(' expression_list ')'
     {
@@ -1346,16 +1352,16 @@ module_item
   | attribute_list_opt
     net_type range_opt net_decl_assigns ';'
     {
-      expression*   tmp;
-      sig_exp_bind* curr = $4;
-      sig_exp_bind* seb;
-      statement*    stmt;
+      expression* tmp;
+      exp_bind*   curr = $4;
+      exp_bind*   eb;
+      statement*  stmt;
       if( ($2 == 1) && ($3 != NULL) ) {
         /* Create signal(s) */
         while( curr != NULL ) {
-          db_add_signal( curr->sig_name, $3->left, $3->right, 0 );
+          db_add_signal( curr->name, $3->left, $3->right, 0 );
           if( curr->exp != NULL ) {
-            tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, curr->exp->line, 0, 0, curr->sig_name );
+            tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, curr->exp->line, 0, 0, curr->name );
             tmp  = db_create_expression( curr->exp, tmp, EXP_OP_BASSIGN, FALSE, curr->exp->line, 0, 0, NULL );
             stmt = db_create_statement( tmp );
             stmt->exp->suppl.part.stmt_head = 1;
@@ -1372,10 +1378,10 @@ module_item
       }
       curr = $4;
       while( curr != NULL ) {
-        seb  = curr->next;
-        free_safe( curr->sig_name );
+        eb   = curr->next;
+        free_safe( curr->name );
         free_safe( curr );
-        curr = seb;
+        curr = eb;
       }
       if( $3 != NULL ) {
         static_expr_dealloc( $3->left, FALSE );
@@ -1387,8 +1393,8 @@ module_item
     net_type drive_strength net_decl_assigns ';'
     {
       expression*   tmp;
-      sig_exp_bind* curr = $4;
-      sig_exp_bind* seb;
+      exp_bind*     curr = $4;
+      exp_bind*     eb;
       statement*    stmt;
       static_expr   left;
       static_expr   right;
@@ -1397,9 +1403,9 @@ module_item
         left.num  = 1;
         right.num = 0;
         while( curr != NULL ) {
-          db_add_signal( curr->sig_name, &left, &right, 0 );
+          db_add_signal( curr->name, &left, &right, 0 );
           if( curr->exp != NULL ) {
-            tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, curr->exp->line, 0, 0, curr->sig_name );
+            tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, curr->exp->line, 0, 0, curr->name );
             tmp  = db_create_expression( curr->exp, tmp, EXP_OP_BASSIGN, FALSE, curr->exp->line, 0, 0, NULL );
             stmt = db_create_statement( tmp );
             stmt->exp->suppl.part.stmt_head = 1;
@@ -1416,10 +1422,10 @@ module_item
       }
       curr = $4;
       while( curr != NULL ) {
-        seb  = curr->next;
-        free_safe( curr->sig_name );
+        eb  = curr->next;
+        free_safe( curr->name );
         free_safe( curr );
-        curr = seb;
+        curr = eb;
       }
     }
   | K_trireg charge_strength_opt range_opt delay3_opt list_of_variables ';'
@@ -1535,7 +1541,7 @@ module_item
           db_add_override_param( curr->str, ecurr->exp );
           ecurr = ecurr->next;
         }
-        db_add_instance( curr->str, $1 );
+        db_add_instance( curr->str, $1, FUNIT_MODULE );
         curr = curr->next;
       }
       str_link_delete_list( tmp );
@@ -1565,12 +1571,55 @@ module_item
       db_add_statement( stmt, stmt );
       */
     }
-  | K_task ignore_more UNUSED_IDENTIFIER ';'
-      task_item_list_opt statement_opt
-    K_endtask ignore_less
-  | K_function ignore_more range_or_type_opt UNUSED_IDENTIFIER ';'
-      function_item_list statement
-    K_endfunction ignore_less
+  | K_task IDENTIFIER ';'
+    {
+      if( ignore_mode == 0 ) {
+        db_add_function_task( FUNIT_TASK, $2, @2.text, @2.first_line );
+      }
+    }
+    task_item_list_opt statement_opt
+    {
+      statement* stmt = $6;
+      if( (ignore_mode == 0) && (stmt != NULL) ) {
+        db_statement_set_stop( stmt, NULL, FALSE );
+        stmt->exp->suppl.part.stmt_head = 1;
+        db_add_statement( stmt, stmt );
+      }
+    }
+    K_endtask
+    {
+      if( ignore_mode == 0 ) {
+        db_end_function_task( @8.last_line );
+      }
+    }
+  | K_function range_or_type_opt IDENTIFIER ';'
+    {
+      char tmp[256];
+      if( ignore_mode == 0 ) {
+        db_add_function_task( FUNIT_FUNCTION, $3, @3.text, @3.first_line );
+        snprintf( tmp, 256, "!%s", $3 );
+        db_add_signal( tmp, $2->left, $2->right, 0 );
+        static_expr_dealloc( $2->left, FALSE );
+        static_expr_dealloc( $2->right, FALSE );
+        free_safe( $2 );
+        free_safe( $3 );
+      }
+    }
+    function_item_list statement
+    {
+      statement* stmt = $7;
+      if( (ignore_mode == 0) && (stmt != NULL) ) {
+        db_statement_set_stop( stmt, NULL, FALSE );
+        stmt->exp->suppl.part.stmt_head = 1;
+        db_add_statement( stmt, stmt );
+      }
+    }
+    K_endfunction
+    {
+      if( ignore_mode == 0 ) {
+        db_end_function_task( @9.last_line );
+      }
+    }
   | K_specify ignore_more specify_item_list ignore_less K_endspecify
   | K_specify K_endspecify
   | K_specify error K_endspecify
@@ -1586,7 +1635,7 @@ module_item
     {
       VLerror( "Syntax error in continuous assignment" );
     }
-  | K_function ignore_more error K_endfunction ignore_less
+  | K_function error K_endfunction
     {
       /* yyerror( @1, "error: I give up on this function definition" );
          yyerrok; */
@@ -2032,19 +2081,39 @@ statement
     {
       $$ = NULL;
     }
-  | identifier '(' { ignore_mode++; } expression_list { ignore_mode--; } ')' ';'
+  | identifier '(' expression_list ')' ';'
     {
-      if( ignore_mode == 0 ) {
+      expression* exp;
+      statement*  stmt;
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
+        exp  = db_create_expression( NULL, $3, EXP_OP_TASK_CALL, FALSE, @1.first_line, @1.first_column, (@5.last_line - 1), $1 );
+        stmt = db_create_statement( exp );
+        db_add_expression( exp );
+        $$   = stmt;
         free_safe( $1 );
+      } else {
+        if( $1 != NULL ) {
+          free_safe( $1 );
+        }
+        $$ = NULL;
       }
-      $$ = NULL;
     }
   | identifier ';'
     {
-      if( ignore_mode == 0 ) {
+      expression* exp;
+      statement*  stmt;
+      if( (ignore_mode == 0) && ($1 != NULL) ) {
+        exp  = db_create_expression( NULL, NULL, EXP_OP_TASK_CALL, FALSE, @1.first_line, @1.first_column, (@2.last_line - 1), $1 );
+        stmt = db_create_statement( exp );
+        db_add_expression( exp );
+        $$   = stmt;
         free_safe( $1 );
+      } else {
+        if( $1 != NULL ) {
+          free_safe( $1 );
+        }
+        $$ = NULL;
       }
-      $$ = NULL;
     }
   | error ';'
     {
@@ -2813,21 +2882,79 @@ range_or_type_opt
     { 
       vector_width* tmp = $1;
       if( ignore_mode == 0 ) {
+        $$ = tmp;
+      } else {
         if( tmp->left != NULL ) {
           free_safe( tmp->left );
-        }
-        if( tmp->right != NULL ) {
+        } else {
           free_safe( tmp->right );
         }
         free_safe( tmp );
+        $$ = NULL;
       }
-      $$ = NULL;
     }
-  | K_integer  { $$ = NULL; }
+  | K_integer
+    {
+      vector_width* tmp;
+      static_expr*  left;
+      static_expr*  right;
+      if( ignore_mode == 0 ) {
+        left = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+        left->exp = NULL;
+        left->num = 31;
+        right = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+        right->exp = NULL;
+        right->num = 0;
+        tmp = (vector_width*)malloc_safe( sizeof( vector_width ), __FILE__, __LINE__ );
+        tmp->left  = left;
+        tmp->right = right;
+        $$ = tmp;
+      } else {
+        $$ = NULL;
+      }
+    }
   | K_real     { $$ = NULL; }
   | K_realtime { $$ = NULL; }
-  | K_time     { $$ = NULL; }
-  |            { $$ = NULL; }
+  | K_time
+    {
+      vector_width* tmp;
+      static_expr*  left;
+      static_expr*  right;
+      if( ignore_mode == 0 ) {
+        left = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+        left->exp = NULL;
+        left->num = 63;
+        right = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+        right->exp = NULL;
+        right->num = 0;
+        tmp = (vector_width*)malloc_safe( sizeof( vector_width ), __FILE__, __LINE__ );
+        tmp->left  = left;
+        tmp->right = right;
+        $$ = tmp;
+      } else {
+        $$ = NULL;
+      }
+    }
+  |
+    {
+      vector_width* tmp;
+      static_expr*  left;
+      static_expr*  right;
+      if( ignore_mode == 0 ) {
+        left = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+        left->exp = NULL;
+        left->num = 0;
+        right = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+        right->exp = NULL;
+        right->num = 0;
+        tmp = (vector_width*)malloc_safe( sizeof( vector_width ), __FILE__, __LINE__ );
+        tmp->left  = left;
+        tmp->right = right;
+        $$ = tmp;
+      } else {
+        $$ = NULL;
+      }
+    }
   ;
 
   /* The register_variable rule is matched only when I am parsing
@@ -2980,13 +3107,13 @@ net_decl_assigns
 net_decl_assign
   : IDENTIFIER '=' expression
     {
-      sig_exp_bind* seb;
+      exp_bind* eb;
       if( ignore_mode == 0 ) {
-        seb = (sig_exp_bind*)malloc_safe( sizeof( sig_exp_bind ), __FILE__, __LINE__ );
-        seb->sig_name = $1;
-        seb->exp      = $3;
-        seb->next     = NULL;
-        $$ = seb;
+        eb = (exp_bind*)malloc_safe( sizeof( exp_bind ), __FILE__, __LINE__ );
+        eb->name = $1;
+        eb->exp  = $3;
+        eb->next = NULL;
+        $$ = eb;
       } else {
         $$ = NULL;
       }
@@ -2997,13 +3124,13 @@ net_decl_assign
     } 
   | delay1 IDENTIFIER '=' expression
     {
-      sig_exp_bind* seb;
+      exp_bind* eb;
       if( ignore_mode == 0 ) {
-        seb = (sig_exp_bind*)malloc_safe( sizeof( sig_exp_bind ), __FILE__, __LINE__ );
-        seb->sig_name = $2;
-        seb->exp      = $4;
-        seb->next     = NULL;
-        $$ = seb;
+        eb = (exp_bind*)malloc_safe( sizeof( exp_bind ), __FILE__, __LINE__ );
+        eb->name = $2;
+        eb->exp  = $4;
+        eb->next = NULL;
+        $$ = eb;
       } else {
         $$ = NULL;
       }
@@ -3337,7 +3464,21 @@ function_item_list
   ;
 
 function_item
-  : K_input { ignore_mode++; } range_opt list_of_variables ';' { ignore_mode--; }
+  : K_input range_opt list_of_variables ';'
+    {
+      /* Create signal -- implicitly this is a wire which may not be explicitly declared */
+      str_link* tmp  = $3;
+      str_link* curr = tmp;
+      printf( "In function_item, ignore_mode: %d\n", ignore_mode );
+      while( curr != NULL ) {
+        db_add_signal( curr->str, $2->left, $2->right, 1 );
+        curr = curr->next;
+      }
+      str_link_delete_list( $3 );
+      static_expr_dealloc( $2->left, FALSE );
+      static_expr_dealloc( $2->right, FALSE );
+      free_safe( $2 );
+    }
   | block_item_decl
   ;
 

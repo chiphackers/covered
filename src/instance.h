@@ -5,36 +5,40 @@
  \file    instance.h
  \author   Trevor Williams  (trevorw@charter.net)
  \date     3/11/2002
- \brief    Contains functions for handling module instances.
+ \brief    Contains functions for handling functional unit instances.
 */
 
 #include "defines.h"
 
 
 /*! \brief Builds full hierarchy from leaf node to root. */
-void instance_gen_scope( char* scope, mod_inst* leaf );
+void instance_gen_scope( char* scope, funit_inst* leaf );
 
-/*! \brief Finds specified scope in module instance tree. */
-mod_inst* instance_find_scope( mod_inst* root, char* scope );
+/*! \brief Finds specified scope in functional unit instance tree. */
+funit_inst* instance_find_scope( funit_inst* root, char* scope );
 
-/*! \brief Returns instance that points to specified module for each instance. */
-mod_inst* instance_find_by_module( mod_inst* root, module* mod, int* ignore );
+/*! \brief Returns instance that points to specified functional unit for each instance. */
+funit_inst* instance_find_by_funit( funit_inst* root, func_unit* funit, int* ignore );
 
 /*! \brief Adds new instance to specified instance tree during parse. */
-void instance_parse_add( mod_inst** root, module* parent, module* child, char* inst_name );
+void instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child, char* inst_name );
 
 /*! \brief Adds new instance to specified instance tree during CDD read. */
-void instance_read_add( mod_inst** root, char* parent, module* child, char* inst_name );
+void instance_read_add( funit_inst** root, char* parent, func_unit* child, char* inst_name );
 
-/*! \brief Displays contents of module instance tree to specified file. */
-void instance_db_write( mod_inst* root, FILE* file, char* scope, bool parse_mode );
+/*! \brief Displays contents of functional unit instance tree to specified file. */
+void instance_db_write( funit_inst* root, FILE* file, char* scope, bool parse_mode );
 
 /*! \brief Removes specified instance from tree. */
-void instance_dealloc( mod_inst* root, char* scope );
+void instance_dealloc( funit_inst* root, char* scope );
 
 
 /*
  $Log$
+ Revision 1.9  2002/11/05 00:20:07  phase1geo
+ Adding development documentation.  Fixing problem with combinational logic
+ output in report command and updating full regression.
+
  Revision 1.8  2002/10/31 23:13:52  phase1geo
  Fixing C compatibility problems with cc and gcc.  Found a few possible problems
  with 64-bit vs. 32-bit compilation of the tool.  Fixed bug in parser that

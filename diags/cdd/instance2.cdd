@@ -1,5 +1,5 @@
-5 1 * 4 0
-3 main main instance2.v 1 27
+5 1 * 5 0
+3 0 main main instance2.v 1 27
 2 3 9 180018 1 c0 0 0 
 2 2 9 110015 1 c0 0 0 
 2 4 9 110018 31 1880 3 2 5 0 dcaa 102
@@ -12,7 +12,7 @@
 1 carry 0 1 0 102 2
 1 result 0 5 0 dcaa 102 1
 4 6 6 6
-3 adder4 main.add ./lib/adder4.v 1 22
+3 0 adder4 main.add ./lib/adder4.v 1 22
 1 a 0 4 16 8aa
 1 b 0 4 16 5caa
 1 c 0 1 0 102
@@ -20,7 +20,7 @@
 1 c2 0 1 0 2
 1 c1 0 1 0 2
 1 c0 0 1 0 2
-3 adder1 main.add.bit0 ./lib/adder1.v 1 18
+3 0 adder1 main.add.bit0 ./lib/adder1.v 1 18
 2 9 15 f000f 1 c0 0 0 
 2 8 15 b000b 1 40 0 0 
 2 10 15 b000f 2 cc0 9 8 1 0 1002
@@ -37,7 +37,7 @@
 1 z 0 1 0 1002 7
 4 11 11 11
 4 16 16 16
-3 adder1 main.add.bit1 ./lib/adder1.v 1 18
+3 0 adder1 main.add.bit1 ./lib/adder1.v 1 18
 2 9 15 f000f 1 40 0 0 
 2 8 15 b000b 1 40 0 0 
 2 10 15 b000f 2 440 9 8 1 0 2
@@ -54,7 +54,7 @@
 1 z 0 1 0 2 7
 4 11 11 11
 4 16 16 16
-3 adder1 main.add.bit2 ./lib/adder1.v 1 18
+3 0 adder1 main.add.bit2 ./lib/adder1.v 1 18
 2 9 15 f000f 1 c0 0 0 
 2 8 15 b000b 1 40 0 0 
 2 10 15 b000f 2 cc0 9 8 1 0 1102
@@ -71,7 +71,7 @@
 1 z 0 1 0 1102 7
 4 11 11 11
 4 16 16 16
-3 adder1 main.add.bit3 ./lib/adder1.v 1 18
+3 0 adder1 main.add.bit3 ./lib/adder1.v 1 18
 2 9 15 f000f 1 c0 0 0 
 2 8 15 b000b 1 c0 0 0 
 2 10 15 b000f 2 34c0 9 8 1 0 1102

@@ -1,4 +1,4 @@
-bin_PROGRAMS = covered covered.vpi
+bin_PROGRAMS = covered
 covered_SOURCES = arc.c \
                   attr.c \
                   parser.c \
@@ -10,6 +10,7 @@ covered_SOURCES = arc.c \
 		  fsm.c \
                   fsm_arg.c \
 		  fsm_var.c \
+		  func_unit.c \
 		  gui.c \
 		  info.c \
 		  instance.c \
@@ -21,7 +22,6 @@ covered_SOURCES = arc.c \
                   link.c \
 		  main.c \
 		  merge.c \
-		  module.c \
 		  param.c \
 		  parse.c \
 		  parser_misc.c \
@@ -42,8 +42,6 @@ covered_SOURCES = arc.c \
 		  vector.c \
 		  vsignal.c
 
-covered_vpi_SOURCES = 
-
 covered_LDADD = $(TCLTK_LIBS)
 
 INCLUDES=	-I..
@@ -60,9 +58,6 @@ lexer.c:  $(srcdir)/lexer.l
 
 keywords.c:  keywords.gperf
 	gperf -o -i 7 -C -k 1-3,$$ -L ANSI-C -H keyword_hash -N check_identifier -t $(srcdir)/keywords.gperf > keywords.c || (rm -f keywords.c ; false)
-
-covered.vpi:
-	iverilog-vpi --name=covered vpi.c
 
 clean:
 	rm -f pplexer.c lexer.c keywords.c

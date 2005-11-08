@@ -11,17 +11,20 @@
 
 #include "defines.h"
 
-/*! \brief Writes contents of expressions, modules and vsignals to database file. */
+/*! \brief Writes contents of expressions, functional units and vsignals to database file. */
 bool db_write( char* file, bool parse_mode );
 
 /*! \brief Reads contents of database file and stores into internal lists. */
 bool db_read( char* file, int read_mode );
 
-/*! \brief Adds specified module node to module tree.  Called by parser. */
-void db_add_instance( char* scope, char* modname );
+/*! \brief Adds specified functional unit node to functional unit tree.  Called by parser. */
+func_unit* db_add_instance( char* scope, char* name, int type );
 
 /*! \brief Adds specified module to module list.  Called by parser. */
 void db_add_module( char* name, char* file, int start_line );
+
+/*! \brief Adds specified task/function to functional unit list.  Called by parser. */
+void db_add_function_task( int type, char* name, char* file, int start_line );
 
 /*! \brief Adds specified declared parameter to parameter list.  Called by parser. */
 void db_add_declared_param( char* name, expression* expr );
@@ -41,7 +44,10 @@ void db_add_signal( char* name, static_expr* left, static_expr* right, int inpor
 /*! \brief Called when the endmodule keyword is parsed. */
 void db_end_module( int end_line );
 
-/*! \brief Finds specified signal in module and returns pointer to the signal structure.  Called by parser. */
+/*! \brief Called when the endfunction or endtask keyword is parsed. */
+void db_end_function_task( int end_line );
+
+/*! \brief Finds specified signal in functional unit and returns pointer to the signal structure.  Called by parser. */
 vsignal* db_find_signal( char* name );
 
 /*! \brief Creates new expression from specified information.  Called by parser and db_add_expression. */
@@ -53,11 +59,11 @@ void db_add_expression( expression* root );
 /*! \brief Creates new statement expression from specified information.  Called by parser. */
 statement* db_create_statement( expression* exp );
 
-/*! \brief Adds specified statement to current module's statement list.  Called by parser. */
+/*! \brief Adds specified statement to current functional unit's statement list.  Called by parser. */
 void db_add_statement( statement* stmt, statement* start );
 
-/*! \brief Removes specified statement from current module. */
-void db_remove_statement_from_current_module( statement* stmt );
+/*! \brief Removes specified statement from current functional unit. */
+void db_remove_statement_from_current_funit( statement* stmt );
 
 /*! \brief Removes specified statement and associated expression from list and memory. */
 void db_remove_statement( statement* stmt );
@@ -103,6 +109,9 @@ void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.37  2004/12/18 16:23:17  phase1geo
+ More race condition checking updates.
+
  Revision 1.36  2004/04/19 04:54:55  phase1geo
  Adding first and last column information to expression and related code.  This is
  not working correctly yet.

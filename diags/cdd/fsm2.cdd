@@ -1,5 +1,5 @@
-5 1 main 4 2 fsm2a.cdd fsm2b.cdd main
-3 fsm fsm lib/fsm.v 1 35
+5 1 main 5 2 fsm2a.cdd fsm2b.cdd main
+3 0 fsm fsm lib/fsm.v 1 35
 2 13 23 36003f 1 c0 0 0 
 2 12 23 290032 32 40 0 0 
 2 14 23 210032 1a cc0 13 12 2 0 330a

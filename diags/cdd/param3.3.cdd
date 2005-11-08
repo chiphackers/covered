@@ -1,9 +1,9 @@
-5 1 * 4 0
-3 main main param3.3.v 3 23
+5 1 * 5 0
+3 0 main main param3.3.v 3 23
 1 #xsize 0 32 0 4 0 0 0 0 0 0 0
 1 #bar1 0 32 0 4 0 0 0 0 0 0 0
 1 x 0 2 0 110a
-3 foo main.bar1 param3.3.v 26 35
+3 0 foo main.bar1 param3.3.v 26 35
 2 9 33 f0012 0 40 0 0 2 1 0
 2 8 33 b000b 1 c0 0 0 
 2 10 33 b0012 2 14c0 9 8 2 0 110a

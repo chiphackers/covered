@@ -17,8 +17,8 @@ statement* statement_create( expression* exp );
 /*! \brief Writes specified statement to the specified output file. */
 void statement_db_write( statement* stmt, FILE* ofile );
 
-/*! \brief Reads in statement line from specified string and stores statement in specified module. */
-bool statement_db_read( char** line, module* curr_mod, int read_mode );
+/*! \brief Reads in statement line from specified string and stores statement in specified functional unit. */
+bool statement_db_read( char** line, func_unit* curr_funit, func_unit* last_funit, int read_mode );
 
 /*! \brief Connects statement sequence to next statement. */
 void statement_connect( statement* curr_stmt, statement* next_stmt );
@@ -38,6 +38,11 @@ void statement_dealloc( statement* stmt );
 
 /*
  $Log$
+ Revision 1.17  2005/02/04 23:55:54  phase1geo
+ Adding code to support race condition information in CDD files.  All code is
+ now in place for writing/reading this data to/from the CDD file (although
+ nothing is currently done with it and it is currently untested).
+
  Revision 1.16  2004/01/08 23:24:41  phase1geo
  Removing unnecessary scope information from signals, expressions and
  statements to reduce file sizes of CDDs and slightly speeds up fscanf

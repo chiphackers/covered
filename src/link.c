@@ -19,7 +19,7 @@
 #include "defines.h"
 #include "vsignal.h"
 #include "expr.h"
-#include "module.h"
+#include "func_unit.h"
 #include "util.h"
 #include "statement.h"
 #include "iter.h"
@@ -191,22 +191,22 @@ void fsm_link_add( fsm* table, fsm_link** head, fsm_link** tail ) {
 }
 
 /*!
- \param mod   Module to add to specified module list.
- \param head  Pointer to head mod_link element of list.
- \param tail  Pointer to tail mod_link element of list.
+ \param funit  Functional unit to add to specified functional unit list.
+ \param head   Pointer to head funit_link element of list.
+ \param tail   Pointer to tail funit_link element of list.
 
- Creates a new mod_link element with the value specified for mod.
+ Creates a new funit_link element with the value specified for functional unit.
  Sets next pointer of element to NULL, sets the tail element to point
  to the new element and sets the tail value to the new element.
 */
-void mod_link_add( module* mod, mod_link** head, mod_link** tail ) {
+void funit_link_add( func_unit* funit, funit_link** head, funit_link** tail ) {
 	
-  mod_link* tmp;   /* Temporary pointer to newly created mod_link element */
+  funit_link* tmp;   /* Temporary pointer to newly created funit_link element */
 	
-  tmp = (mod_link*)malloc_safe( sizeof( mod_link ), __FILE__, __LINE__ );
+  tmp = (funit_link*)malloc_safe( sizeof( funit_link ), __FILE__, __LINE__ );
 	
-  tmp->mod  = mod;
-  tmp->next = NULL;
+  tmp->funit = funit;
+  tmp->next  = NULL;
 	
   if( *head == NULL ) {
     *head = *tail = tmp;
@@ -300,20 +300,20 @@ void sig_link_display( sig_link* head ) {
 }
 
 /*!
- \param head  Pointer to head of mod_link list.
+ \param head  Pointer to head of funit_link list.
 
- Displays the string contents of the mod_link list pointed to by head
+ Displays the string contents of the funit_link list pointed to by head
  to standard output.  This function is mainly used for debugging purposes.
 */
-void mod_link_display( mod_link* head ) {
+void funit_link_display( funit_link* head ) {
 
-  mod_link* curr;    /* Pointer to current mod_link link to display */
+  funit_link* curr;    /* Pointer to current funit_link link to display */
 
-  printf( "Module list:\n" );
+  printf( "Functional unit list:\n" );
 
   curr = head;
   while( curr != NULL ) {
-    printf( "  name: %s\n", curr->mod->name );
+    printf( "  name: %s, type: %d\n", curr->funit->name, curr->funit->type );
     curr = curr->next;
   }
 
@@ -433,21 +433,21 @@ fsm_link* fsm_link_find( fsm* table, fsm_link* head ) {
 }
 
 /*!
- \param mod    Pointer to module to find.
- \param head  Pointer to head of mod_link list to search.
+ \param funit  Pointer to functional unit to find.
+ \param head   Pointer to head of funit_link list to search.
  
- \return Returns the pointer to the found mod_link or NULL if the search was unsuccessful.
+ \return Returns the pointer to the found funit_link or NULL if the search was unsuccessful.
 
- Iteratively searches the mod_link list specified by the head mod_link element.  If
- a matching module is found, the pointer to this element is returned.  If the specified
- module could not be matched, the value of NULL is returned.
+ Iteratively searches the funit_link list specified by the head funit_link element.  If
+ a matching functional unit is found, the pointer to this element is returned.  If the specified
+ functional unit could not be matched, the value of NULL is returned.
 */
-mod_link* mod_link_find( module* mod, mod_link* head ) {
+funit_link* funit_link_find( func_unit* funit, funit_link* head ) {
 
-  mod_link* curr;    /* Pointer to current mod_link link */
+  funit_link* curr;    /* Pointer to current funit_link link */
 
   curr = head;
-  while( (curr != NULL) && (strcmp( curr->mod->name, mod->name ) != 0) ) {
+  while( (curr != NULL) && ((strcmp( curr->funit->name, funit->name ) != 0) || (curr->funit->type != funit->type)) ) {
     curr = curr->next;
   }
 
@@ -732,13 +732,13 @@ void fsm_link_delete_list( fsm_link* head ) {
 }
 
 /*!
- \param head  Pointer to head mod_link element of list.
+ \param head  Pointer to head funit_link element of list.
 
  Deletes each element of the specified list.
 */
-void mod_link_delete_list( mod_link* head ) {
+void funit_link_delete_list( funit_link* head ) {
 
-  mod_link* tmp;   /* Temporary pointer to current link in list */
+  funit_link* tmp;   /* Temporary pointer to current link in list */
 
   while( head != NULL ) {
 
@@ -746,10 +746,10 @@ void mod_link_delete_list( mod_link* head ) {
     head = tmp->next;
 
     /* Deallocate signal */
-    module_dealloc( tmp->mod );
-    tmp->mod = NULL;
+    funit_dealloc( tmp->funit );
+    tmp->funit = NULL;
 
-    /* Deallocate mod_link element itself */
+    /* Deallocate funit_link element itself */
     free_safe( tmp );
 
   }
@@ -759,6 +759,11 @@ void mod_link_delete_list( mod_link* head ) {
 
 /*
  $Log$
+ Revision 1.33  2005/01/25 13:42:27  phase1geo
+ Fixing segmentation fault problem with race condition checking.  Added race1.1
+ to regression.  Removed unnecessary output statements from previous debugging
+ checkins.
+
  Revision 1.32  2005/01/24 13:21:45  phase1geo
  Modifying unlinking algorithm for statement links.  Still getting
  segmentation fault at this time.

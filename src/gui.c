@@ -17,44 +17,44 @@
 #include "link.h"
 
 
-extern mod_link* mod_head;
+extern funit_link* funit_head;
 
 
 /*!
- \param mod_list  Pointer to array containing module names
- \param mod_size  Pointer to integer containing size of module array.
+ \param funit_list  Pointer to array containing functional unit names
+ \param funit_size  Pointer to integer containing size of functional unit array.
 
  \return Returns TRUE if function is successful; otherwise, returns FALSE.
 
- Creates an array of the module names that exist in the design.
+ Creates an array of the functional unit names that exist in the design.
 */
-bool module_get_list( char*** mod_list, int* mod_size ) {
+bool funit_get_list( char*** funit_list, int* funit_size ) {
 
-  bool      retval = TRUE;  /* Return value for this function         */
-  mod_link* curr;           /* Pointer to current module link in list */
-  int       i;              /* Index to module list                   */
+  bool        retval = TRUE;  /* Return value for this function                  */
+  funit_link* curr;           /* Pointer to current functional unit link in list */
+  int         i;              /* Index to module list                            */
 
-  /* Initialize module array size */
-  *mod_size = 0;
+  /* Initialize functional unit array size */
+  *funit_size = 0;
 
-  /* Count the number of modules */
-  curr = mod_head;
+  /* Count the number of functional units */
+  curr = funit_head;
   while( curr != NULL ) {
-    (*mod_size)++;
+    (*funit_size)++;
     curr = curr->next;
   }
 
-  /* If we have any modules in the currently loaded design, create the list now */
-  if( *mod_size > 0 ) {
+  /* If we have any functional units in the currently loaded design, create the list now */
+  if( *funit_size > 0 ) {
 
-    /* Allocate array to store module names */
-    *mod_list = (char**)malloc_safe( (sizeof( char* ) * (*mod_size)), __FILE__, __LINE__ );
+    /* Allocate array to store functional unit names */
+    *funit_list = (char**)malloc_safe( (sizeof( char* ) * (*funit_size)), __FILE__, __LINE__ );
 
-    /* Now let's populate the module list */
+    /* Now let's populate the functional unit list */
     i    = 0;
-    curr = mod_head;
+    curr = funit_head;
     while( curr != NULL ) {
-      (*mod_list)[i] = strdup_safe( curr->mod->name, __FILE__, __LINE__ );
+      (*funit_list)[i] = strdup_safe( curr->funit->name, __FILE__, __LINE__ );
       i++;
       curr = curr->next;
     }
@@ -66,58 +66,60 @@ bool module_get_list( char*** mod_list, int* mod_size ) {
 }
 
 /*!
- \param mod_name  Name of module to get filename for.
+ \param funit_name  Name of functional unit to get filename for.
 
- \return Returns name of filename containing specified mod_name if module name was found in
+ \return Returns name of filename containing specified funit_name if functional unit name was found in
          design; otherwise, returns a value of NULL.
 
- Searches design for module named mod_name.  If module is found, the filename of the
- module is returned to the calling function.  If the module was not found, a value of NULL
+ Searches design for functional unit named funit_name.  If functional unit is found, the filename of the
+ functional unit is returned to the calling function.  If the functional unit was not found, a value of NULL
  is returned to the calling function indicating an error occurred.
 */
-char* module_get_filename( const char* mod_name ) {
+char* funit_get_filename( const char* funit_name ) {
 
-  module    mod;           /* Temporary module container used for searching    */
-  mod_link* modl;          /* Pointer to module link containing matched module */
-  char*     fname = NULL;  /* Name of filename containing specified module     */
+  func_unit   funit;         /* Temporary functional unit container used for searching             */
+  funit_link* funitl;        /* Pointer to functional unit link containing matched functional unit */
+  char*       fname = NULL;  /* Name of filename containing specified functional unit              */
 
-  mod.name = strdup_safe( mod_name, __FILE__, __LINE__ );
+  funit.name = strdup_safe( funit_name, __FILE__, __LINE__ );
+  funit.type = FUNIT_MODULE;  /* TBD */
 
-  if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
+  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
      
-    fname = strdup_safe( modl->mod->filename, __FILE__, __LINE__ );
+    fname = strdup_safe( funitl->funit->filename, __FILE__, __LINE__ );
 
   }
 
-  free_safe( mod.name );
+  free_safe( funit.name );
 
   return( fname );
 
 }
 
 /*!
- \param mod_name    Name of module to get start and end line numbers for.
- \param start_line  Pointer to value that will contain starting line number of this module.
- \param end_line    Pointer to value that will contain ending line number of this module.
+ \param funit_name  Name of functional unit to get start and end line numbers for.
+ \param start_line  Pointer to value that will contain starting line number of this functional unit.
+ \param end_line    Pointer to value that will contain ending line number of this functional unit.
 
- \return Returns a value of TRUE if module was found; otherwise, returns a value of FALSE.
+ \return Returns a value of TRUE if functional unit was found; otherwise, returns a value of FALSE.
 
- Finds specified module name in design and returns the starting and ending line numbers of
- the found module, returning a value of TRUE to the calling function.  If the module was
+ Finds specified functional unit name in design and returns the starting and ending line numbers of
+ the found functional unit, returning a value of TRUE to the calling function.  If the functional unit was
  not found in the design, a value of FALSE is returned.
 */
-bool module_get_start_and_end_lines( const char* mod_name, int* start_line, int* end_line ) {
+bool funit_get_start_and_end_lines( const char* funit_name, int* start_line, int* end_line ) {
 
-  bool      retval = TRUE;  /* Return value of this function                    */
-  module    mod;            /* Temporary module container used for searching    */
-  mod_link* modl;           /* Pointer to module line containing matched module */
+  bool        retval = TRUE;  /* Return value of this function                                      */
+  func_unit   funit;          /* Temporary functional unit container used for searching             */
+  funit_link* funitl;         /* Pointer to functional unit line containing matched functional unit */
   
-  mod.name = strdup_safe( mod_name, __FILE__, __LINE__ );
+  funit.name = strdup_safe( funit_name, __FILE__, __LINE__ );
+  funit.type = FUNIT_MODULE;  /* TBD */
 
-  if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
+  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
 
-    *start_line = modl->mod->start_line;
-    *end_line   = modl->mod->end_line;
+    *start_line = funitl->funit->start_line;
+    *end_line   = funitl->funit->end_line;
 
   } else {
 
@@ -125,7 +127,7 @@ bool module_get_start_and_end_lines( const char* mod_name, int* start_line, int*
 
   }
 
-  free_safe( mod.name );
+  free_safe( funit.name );
 
   return( retval );
 
@@ -133,6 +135,15 @@ bool module_get_start_and_end_lines( const char* mod_name, int* start_line, int*
 
 /*
  $Log$
+ Revision 1.4  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.3  2004/01/04 04:52:03  phase1geo
  Updating ChangeLog and TODO files.  Adding merge information to INFO line
  of CDD files and outputting this information to the merged reports.  Adding

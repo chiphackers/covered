@@ -16,13 +16,18 @@ IVERILOG_EXEC  = a.out
 IVERILOG_INTER = vvp
 
 VCS       = vcs
-VCS_FLAGS = +libext+.v+ -y ./lib +incdir+./include +define+RUNTEST +define+VCS
-VCS_EXEC  = simv
+#VCS_FLAGS = +libext+.v+ -y ./lib +incdir+./include +define+RUNTEST +define+VCS +vpi -load ../../src/vpi/covered.so:covered_register -P ../../src/vpi/covered.tab covered_top.v
+VCS_FLAGS = +libext+.v+ -y ./lib +incdir+./include +define+RUNTEST
+VCS_EXEC  = ./simv +covered_outdb=out.cdd
 
 VERILOG       = $(IVERILOG)
 VERILOG_FLAGS = $(IVERILOG_FLAGS)
 VERILOG_EXEC  = $(IVERILOG_EXEC)
 VERILOG_CMD   = $(IVERILOG_INTER) $(IVERILOG_EXEC)
+#VERILOG       = $(VCS)
+#VERILOG_FLAGS = $(VCS_FLAGS)
+#VERILOG_EXEC  = $(VCS_EXEC)
+#VERILOG_CMD   = $(VCS_EXEC)
 
 CDD_DIR       = ../cdd
 RPT_DIR       = ../rpt

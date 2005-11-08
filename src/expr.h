@@ -38,7 +38,7 @@ void expression_get_wait_sig_list( expression* expr, sig_link** head, sig_link**
 void expression_db_write( expression* expr, FILE* file );
 
 /*! \brief Reads current line of specified file and parses for expression information. */
-bool expression_db_read( char** line, module* curr_mod, bool eval );
+bool expression_db_read( char** line, func_unit* curr_mod, bool eval );
 
 /*! \brief Reads and merges two expressions and stores result in base expression. */
 bool expression_db_merge( expression* base, char** line, bool same );
@@ -73,6 +73,11 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.29  2005/02/08 23:18:23  phase1geo
+ Starting to add code to handle expression assignment for blocking assignments.
+ At this point, regressions will probably still pass but new code isn't doing exactly
+ what I want.
+
  Revision 1.28  2004/10/22 21:40:30  phase1geo
  More incremental updates to improve efficiency in score command (though this
  change should not, in and of itself, improve efficiency).

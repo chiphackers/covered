@@ -24,8 +24,8 @@
 #include "util.h"
 #include "expr.h"
 
-extern mod_inst* instance_root;
-extern mod_link* mod_head;
+extern funit_inst* instance_root;
+extern funit_link* funit_head;
 
 extern bool         report_covered;
 extern unsigned int report_comb_depth;
@@ -72,38 +72,39 @@ void line_get_stats( stmt_link* stmtl, float* total, int* hit ) {
 }
 
 /*!
- \param mod_name  Name of module to get missed line number array from.
- \param cov       If set to 1, gets covered lines, if 0 retrieves uncovered lines; otherwise, gets all lines
- \param lines     Pointer to array of integers that will contain the missed lines.
- \param line_cnt  Pointer to size of lines array.
+ \param funit_name  Name of functional unit to get missed line number array from.
+ \param cov         If set to 1, gets covered lines, if 0 retrieves uncovered lines; otherwise, gets all lines
+ \param lines       Pointer to array of integers that will contain the missed lines.
+ \param line_cnt    Pointer to size of lines array.
 
- \return Returns TRUE if module specified was found; otherwise, returns FALSE.
+ \return Returns TRUE if the functional unit specified was found; otherwise, returns FALSE.
 
- Searches design for specified module name.  If the module name is found, the lines
+ Searches design for specified functional unit name.  If the functional unit name is found, the lines
  array and line_cnt values are initialized and filled with the line numbers that were
- not hit during simulation and a value of TRUE is returned.  If the module name was
+ not hit during simulation and a value of TRUE is returned.  If the functional unit name was
  not found, a value of FALSE is returned.
 */
-bool line_collect( const char* mod_name, int cov, int** lines, int* line_cnt ) {
+bool line_collect( const char* funit_name, int cov, int** lines, int* line_cnt ) {
 
-  bool      retval = TRUE;  /* Return value for this function                     */
-  stmt_iter stmti;          /* Statement list iterator                            */
-  module    mod;            /* Module used for searching                          */
-  mod_link* modl;           /* Pointer to found module link                       */
-  int       i;              /* Loop iterator                                      */
-  int       last_line;      /* Specifies the last line of the current expression  */
-  int       line_size;      /* Indicates the number of entries in the lines array */
+  bool        retval = TRUE;  /* Return value for this function                     */
+  stmt_iter   stmti;          /* Statement list iterator                            */
+  func_unit   funit;          /* Functional unit used for searching                 */
+  funit_link* funitl;         /* Pointer to found functional unit link              */
+  int         i;              /* Loop iterator                                      */
+  int         last_line;      /* Specifies the last line of the current expression  */
+  int         line_size;      /* Indicates the number of entries in the lines array */
 
-  /* First, find module in module array */
-  mod.name = strdup_safe( mod_name, __FILE__, __LINE__ );
-  if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
+  /* First, find functional unit in functional unit array */
+  funit.name = strdup_safe( funit_name, __FILE__, __LINE__ );
+  funit.type = FUNIT_MODULE;  /* TBD */
+  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
 
     /* Create an array that will hold the number of uncovered lines */
     line_size = 20;
     *line_cnt = 0;
     *lines    = (int*)malloc_safe( (sizeof( int ) * line_size), __FILE__, __LINE__ );
 
-    stmt_iter_reset( &stmti, modl->mod->stmt_tail );
+    stmt_iter_reset( &stmti, funitl->funit->stmt_tail );
     stmt_iter_find_head( &stmti, FALSE );
 
     while( stmti.curr != NULL ) {
@@ -141,40 +142,41 @@ bool line_collect( const char* mod_name, int cov, int** lines, int* line_cnt ) {
 
   }
 
-  free_safe( mod.name );
+  free_safe( funit.name );
 
   return( retval );
 
 }
 
 /*!
- \param mod_name  Name of module to retrieve summary information from.
- \param total     Pointer to total number of lines in this module.
- \param hit       Pointer to number of lines hit in this module.
+ \param funit_name  Name of functional unit to retrieve summary information from.
+ \param total       Pointer to total number of lines in this functional unit.
+ \param hit         Pointer to number of lines hit in this functional unit.
 
- \return Returns TRUE if specified module was found in design; otherwise,
+ \return Returns TRUE if specified functional unit was found in design; otherwise,
          returns FALSE.
 
- Looks up summary information for specified module.  If the module was found,
- the hit and total values for this module are returned to the calling function.
- If the module was not found, a value of FALSE is returned to the calling
- function, indicating that the module was not found in the design and the values
+ Looks up summary information for specified functional unit.  If the functional unit was found,
+ the hit and total values for this functional unit are returned to the calling function.
+ If the functional unit was not found, a value of FALSE is returned to the calling
+ function, indicating that the functional unit was not found in the design and the values
  of total and hit should not be used.
 */
-bool line_get_module_summary( char* mod_name, int* total, int* hit ) {
+bool line_get_funit_summary( char* funit_name, int* total, int* hit ) {
 
-  bool      retval = TRUE;  /* Return value for this function */
-  module    mod;            /* Module used for searching      */
-  mod_link* modl;           /* Pointer to found module link   */
-  char      tmp[21];        /* Temporary string for total     */
+  bool        retval = TRUE;  /* Return value for this function        */
+  func_unit   funit;          /* Functional unit used for searching    */
+  funit_link* funitl;         /* Pointer to found functional unit link */
+  char        tmp[21];        /* Temporary string for total            */
 
-  mod.name = mod_name;
+  funit.name = funit_name;
+  funit.type = FUNIT_MODULE;  /* TBD */
 
-  if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
+  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
 
-    snprintf( tmp, 21, "%20.0f", modl->mod->stat->line_total );
+    snprintf( tmp, 21, "%20.0f", funitl->funit->stat->line_total );
     assert( sscanf( tmp, "%d", total ) == 1 );
-    *hit = modl->mod->stat->line_hit;
+    *hit = funitl->funit->stat->line_hit;
 
   } else {
 
@@ -198,12 +200,12 @@ bool line_get_module_summary( char* mod_name, int* total, int* hit ) {
  executed during the course of simulation.  The parent node will
  display its information before calling its children.
 */
-bool line_instance_summary( FILE* ofile, mod_inst* root, char* parent_inst ) {
+bool line_instance_summary( FILE* ofile, funit_inst* root, char* parent_inst ) {
 
-  mod_inst* curr;           /* Pointer to current child module instance of this node */
-  float     percent;        /* Percentage of lines hit                               */
-  float     miss;           /* Number of lines missed                                */
-  char      tmpname[4096];  /* Temporary holder of instance name                     */
+  funit_inst* curr;           /* Pointer to current child functional unit instance of this node */
+  float       percent;        /* Percentage of lines hit                                        */
+  float       miss;           /* Number of lines missed                                         */
+  char        tmpname[4096];  /* Temporary holder of instance name                              */
 
   assert( root != NULL );
   assert( root->stat != NULL );
@@ -241,15 +243,15 @@ bool line_instance_summary( FILE* ofile, mod_inst* root, char* parent_inst ) {
 
 /*!
  \param ofile  Pointer to file to output results to.
- \param head   Pointer to head of module list to explore.
+ \param head   Pointer to head of functional unit list to explore.
 
  \return Returns TRUE if there where lines that were found to be missed; otherwise,
          returns FALSE.
 
- Iterates through the module list, displaying the line coverage results (summary
- format) for each module.
+ Iterates through the functional unit list, displaying the line coverage results (summary
+ format) for each functional unit.
 */
-bool line_module_summary( FILE* ofile, mod_link* head ) {
+bool line_funit_summary( FILE* ofile, funit_link* head ) {
 
   float percent;             /* Percentage of lines hit                    */
   float miss;                /* Number of lines missed                     */
@@ -257,21 +259,21 @@ bool line_module_summary( FILE* ofile, mod_link* head ) {
 
   while( head != NULL ) {
 
-    if( head->mod->stat->line_total == 0 ) {
+    if( head->funit->stat->line_total == 0 ) {
       percent = 100.0;
     } else {
-      percent = ((head->mod->stat->line_hit / head->mod->stat->line_total) * 100);
+      percent = ((head->funit->stat->line_hit / head->funit->stat->line_total) * 100);
     }
 
-    miss       = (head->mod->stat->line_total - head->mod->stat->line_hit);
+    miss       = (head->funit->stat->line_total - head->funit->stat->line_hit);
     miss_found = (miss > 0) ? TRUE : miss_found;
 
     fprintf( ofile, "  %-20.20s    %-20.20s   %5d/%5.0f/%5.0f      %3.0f%%\n", 
-             head->mod->name,
-             get_basename( head->mod->filename ),
-             head->mod->stat->line_hit,
+             head->funit->name,
+             get_basename( head->funit->filename ),
+             head->funit->stat->line_hit,
              miss,
-             head->mod->stat->line_total,
+             head->funit->stat->line_total,
              percent );
 
     head = head->next;
@@ -289,7 +291,7 @@ bool line_module_summary( FILE* ofile, mod_link* head ) {
  Displays the lines missed during simulation to standard output from the
  specified expression list.
 */
-void line_display_verbose( FILE* ofile, stmt_link* stmtl ) {
+void line_display_verbose( FILE* ofile, func_unit* funit ) {
 
   stmt_iter   stmti;       /* Statement list iterator                    */
   expression* unexec_exp;  /* Pointer to current unexecuted expression   */
@@ -304,7 +306,7 @@ void line_display_verbose( FILE* ofile, stmt_link* stmtl ) {
   }
 
   /* Display current instance missed lines */
-  stmt_iter_reset( &stmti, stmtl );
+  stmt_iter_reset( &stmti, funit->stmt_tail );
   stmt_iter_find_head( &stmti, FALSE );
   
   while( stmti.curr != NULL ) {
@@ -320,7 +322,7 @@ void line_display_verbose( FILE* ofile, stmt_link* stmtl ) {
 
         unexec_exp = stmti.curr->stmt->exp;
 
-        codegen_gen_expr( unexec_exp, unexec_exp->op, &code, &code_depth );
+        codegen_gen_expr( unexec_exp, unexec_exp->op, &code, &code_depth, funit );
         if( code_depth == 1 ) {
           fprintf( ofile, "      %7d:    %s\n", unexec_exp->line, code[0] );
         } else {
@@ -350,13 +352,13 @@ void line_display_verbose( FILE* ofile, stmt_link* stmtl ) {
 
  Displays the verbose line coverage results to the specified output stream on
  an instance basis.  The verbose line coverage includes the line numbers 
- (and associated verilog code) and file/module name of the lines that were 
+ (and associated verilog code) and file/functional unit name of the lines that were 
  not hit during simulation.
 */
-void line_instance_verbose( FILE* ofile, mod_inst* root, char* parent_inst ) {
+void line_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) {
 
-  mod_inst* curr_inst;      /* Pointer to current instance being evaluated */
-  char      tmpname[4096];  /* Temporary name holder for instance          */
+  funit_inst* curr_inst;      /* Pointer to current instance being evaluated */
+  char        tmpname[4096];  /* Temporary name holder for instance          */
 
   assert( root != NULL );
 
@@ -371,12 +373,12 @@ void line_instance_verbose( FILE* ofile, mod_inst* root, char* parent_inst ) {
 
     fprintf( ofile, "\n" );
     fprintf( ofile, "    Module: %s, File: %s, Instance: %s\n", 
-             root->mod->name, 
-             root->mod->filename,
+             root->funit->name, 
+             root->funit->filename,
              tmpname );
     fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
-    line_display_verbose( ofile, root->mod->stmt_tail );
+    line_display_verbose( ofile, root->funit );
 
   }
 
@@ -390,27 +392,27 @@ void line_instance_verbose( FILE* ofile, mod_inst* root, char* parent_inst ) {
 
 /*!
  \param ofile  Pointer to file to output results to.
- \param head   Pointer to head of module list to search through.
+ \param head   Pointer to head of functional unit list to search through.
 
  Displays the verbose line coverage results to the specified output stream on
- a module basis (combining modules that are instantiated multiple times).
+ a functional unit basis (combining functional units that are instantiated multiple times).
  The verbose line coverage includes the line numbers (and associated verilog
- code) and file/module name of the lines that were not hit during simulation.
+ code) and file/functional unit name of the lines that were not hit during simulation.
 */
-void line_module_verbose( FILE* ofile, mod_link* head ) {
+void line_funit_verbose( FILE* ofile, funit_link* head ) {
 
   while( head != NULL ) {
 
-    if( ((head->mod->stat->line_hit < head->mod->stat->line_total) && !report_covered) ||
-        ((head->mod->stat->line_hit > 0) && report_covered) ) {
+    if( ((head->funit->stat->line_hit < head->funit->stat->line_total) && !report_covered) ||
+        ((head->funit->stat->line_hit > 0) && report_covered) ) {
 
       fprintf( ofile, "\n" );
       fprintf( ofile, "    Module: %s, File: %s\n", 
-               head->mod->name, 
-               head->mod->filename );
+               head->funit->name, 
+               head->funit->filename );
       fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
-      line_display_verbose( ofile, head->mod->stmt_tail );
+      line_display_verbose( ofile, head->funit );
   
     }
 
@@ -424,8 +426,8 @@ void line_module_verbose( FILE* ofile, mod_link* head ) {
  \param ofile    Pointer to file to output results to.
  \param verbose  Specifies whether to generate summary or verbose output.
 
- After the design is read into the module hierarchy, parses the hierarchy by module,
- reporting the line coverage for each module encountered.  The parent module will
+ After the design is read into the functional unit hierarchy, parses the hierarchy by functional unit,
+ reporting the line coverage for each functional unit encountered.  The parent functional unit will
  specify its own line coverage along with a total line coverage including its 
  children.
 */
@@ -458,14 +460,14 @@ void line_report( FILE* ofile, bool verbose ) {
 
   } else {
 
-    fprintf( ofile, "Module                    Filename                 Hit/ Miss/Total    Percent hit\n" );
+    fprintf( ofile, "Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hit\n" );
     fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
 
-    missed_found = line_module_summary( ofile, mod_head );
+    missed_found = line_funit_summary( ofile, funit_head );
 
     if( verbose && (missed_found || report_covered) ) {
       fprintf( ofile, "---------------------------------------------------------------------------------------------------------------------\n" );
-      line_module_verbose( ofile, mod_head );
+      line_funit_verbose( ofile, funit_head );
     }
 
   }
@@ -476,6 +478,9 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.48  2005/02/05 05:29:25  phase1geo
+ Added race condition reporting to GUI.
+
  Revision 1.47  2005/01/07 17:59:51  phase1geo
  Finalized updates for supplemental field changes.  Everything compiles and links
  correctly at this time; however, a regression run has not confirmed the changes.

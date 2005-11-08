@@ -15,7 +15,7 @@
 attr_param* attribute_create( const char* name, expression* expr );
 
 /*! \brief Parses and handles specified attribute parameter list. */
-void attribute_parse( attr_param* ap, module* mod );
+void attribute_parse( attr_param* ap, func_unit* mod );
 
 /*! \brief Deallocates entire attribute parameter list. */
 void attribute_dealloc( attr_param* ap );
@@ -23,6 +23,15 @@ void attribute_dealloc( attr_param* ap );
 
 /*
  $Log$
+ Revision 1.4  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.3  2004/03/15 21:38:17  phase1geo
  Updated source files after running lint on these files.  Full regression
  still passes at this point.

@@ -1,5 +1,5 @@
-5 1 * 4 0
-3 main main multi_exp2.v 1 26
+5 1 * 5 0
+3 0 main main multi_exp2.v 1 26
 2 13 8 2d002d 1 c0 0 0 
 2 10 8 250028 0 80 0 0 1 1 1
 2 9 8 200020 1 40 0 0 
@@ -24,7 +24,7 @@
 1 b 0 1 0 2 2
 1 a 0 1 0 102 1
 4 16 16 16
-3 foobar main.bar multi_exp2.v 28 36
+3 0 foobar main.bar multi_exp2.v 28 36
 2 21 34 19001c 0 0 0 0 1 1 1
 2 20 34 140014 1 80000 0 0 
 2 22 34 14001c 37 212 21 20 

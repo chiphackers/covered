@@ -20,7 +20,7 @@
 #include "expr.h"
 #include "link.h"
 #include "vector.h"
-#include "module.h"
+#include "func_unit.h"
 #include "util.h"
 #include "sim.h"
 
@@ -111,8 +111,8 @@ void vsignal_db_write( vsignal* sig, FILE* file ) {
 }
 
 /*!
- \param line      Pointer to current line from database file to parse.
- \param curr_mod  Pointer to current module instantiating this vsignal.
+ \param line        Pointer to current line from database file to parse.
+ \param curr_funit  Pointer to current functional unit instantiating this vsignal.
 
  \return Returns TRUE if vsignal information read successfully; otherwise,
          returns FALSE.
@@ -121,11 +121,11 @@ void vsignal_db_write( vsignal* sig, FILE* file ) {
  information and stores it to the specified vsignal.  If there are any problems
  in reading in the current line, returns FALSE; otherwise, returns TRUE.
 */
-bool vsignal_db_read( char** line, module* curr_mod ) {
+bool vsignal_db_read( char** line, func_unit* curr_funit ) {
 
   bool       retval = TRUE;  /* Return value for this function                   */
   char       name[256];      /* Name of current vsignal                          */
-  vsignal*    sig;           /* Pointer to the newly created vsignal             */
+  vsignal*   sig;            /* Pointer to the newly created vsignal             */
   vector*    vec;            /* Vector value for this vsignal                    */
   int        lsb;            /* Least-significant bit of this vsignal            */
   int        exp_id;         /* Expression ID                                    */
@@ -149,11 +149,11 @@ bool vsignal_db_read( char** line, module* curr_mod ) {
       sig->value = vec;
 
       /* Add vsignal to vsignal list */
-      if( curr_mod == NULL ) {
-        print_output( "Internal error:  vsignal in database written before its module", FATAL, __FILE__, __LINE__ );
+      if( curr_funit == NULL ) {
+        print_output( "Internal error:  vsignal in database written before its functional unit", FATAL, __FILE__, __LINE__ );
         retval = FALSE;
       } else {
-        sig_link_add( sig, &(curr_mod->sig_head), &(curr_mod->sig_tail) );
+        sig_link_add( sig, &(curr_funit->sig_head), &(curr_funit->sig_tail) );
       }
 
       /* Read in expressions */
@@ -161,10 +161,10 @@ bool vsignal_db_read( char** line, module* curr_mod ) {
 
         *line = *line + chars_read;
 
-        /* Find expression in current module and add it to vsignal list */
+        /* Find expression in current functional unit and add it to vsignal list */
         texp.id = exp_id;
 
-        if( (expl = exp_link_find( &texp, curr_mod->exp_head )) != NULL ) {
+        if( (expl = exp_link_find( &texp, curr_funit->exp_head )) != NULL ) {
 
           exp_link_add( expl->exp, &(sig->exp_head), &(sig->exp_tail) );
           
@@ -530,6 +530,10 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.7  2005/02/16 13:45:04  phase1geo
+ Adding value propagation function to vsignal.c and adding this propagation to
+ BASSIGN expression assignment after the assignment occurs.
+
  Revision 1.6  2005/01/10 02:59:30  phase1geo
  Code added for race condition checking that checks for signals being assigned
  in multiple statements.  Working on handling bit selects -- this is in progress.

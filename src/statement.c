@@ -129,6 +129,8 @@ statement* statement_create( expression* exp ) {
   stmt->wait_sig_tail        = NULL;
   stmt->next_true            = NULL;
   stmt->next_false           = NULL;
+  stmt->tf_exp_head          = NULL;
+  stmt->tf_exp_tail          = NULL;
 
   expression_get_wait_sig_list( exp, &(stmt->wait_sig_head), &(stmt->wait_sig_tail) );
 
@@ -209,6 +211,8 @@ void statement_stack_compare( statement* stmt ) {
 */
 void statement_db_write( statement* stmt, FILE* ofile ) {
 
+  exp_link* expl;  /* Pointer to current element in expression list */
+
   assert( stmt != NULL );
 
 #ifdef EFFICIENCY_CODE
@@ -227,21 +231,17 @@ void statement_db_write( statement* stmt, FILE* ofile ) {
 #endif
 
   /* Write out contents of this statement last */
-  fprintf( ofile, "%d %d",
+  fprintf( ofile, "%d %d %d %d",
     DB_TYPE_STATEMENT,
-    stmt->exp->id
+    stmt->exp->id,
+    ((stmt->next_true   == NULL) ? 0 : stmt->next_true->exp->id),
+    ((stmt->next_false  == NULL) ? 0 : stmt->next_false->exp->id)
   );
 
-  if( stmt->next_true == NULL ) {
-    fprintf( ofile, " 0" );
-  } else {
-    fprintf( ofile, " %d", stmt->next_true->exp->id );
-  }
-
-  if( stmt->next_false == NULL ) {
-    fprintf( ofile, " 0" );
-  } else {
-    fprintf( ofile, " %d", stmt->next_false->exp->id );
+  expl = stmt->tf_exp_head;
+  while( expl != NULL ) {
+    fprintf( ofile, " %d", expl->exp->id );
+    expl = expl->next;
   }
 
   fprintf( ofile, "\n" );
@@ -249,21 +249,22 @@ void statement_db_write( statement* stmt, FILE* ofile ) {
 }
 
 /*!
- \param line      Pointer to current line of file being read.
- \param curr_mod  Pointer to current module.
- \param read_mode  If set to REPORT, adds statement to head of list; otherwise, adds statement to tail.
+ \param line        Pointer to current line of file being read.
+ \param curr_funit  Pointer to current module.
+ \param read_mode   If set to REPORT, adds statement to head of list; otherwise, adds statement to tail.
  
  \return Returns TRUE if the line is read without error; otherwise, returns FALSE.
 
  Reads in the contents of the statement from the specified line, creates
  a statement structure to hold the contents.
 */
-bool statement_db_read( char** line, module* curr_mod, int read_mode ) {
+bool statement_db_read( char** line, func_unit* curr_funit, func_unit* last_funit, int read_mode ) {
 
   bool       retval = TRUE;  /* Return value of this function                                          */
   int        id;             /* ID of root expression that is associated with this statement           */
   int        true_id;        /* ID of root expression that is associated with the next_true statement  */
   int        false_id;       /* ID of root expression that is associated with the next_false statement */
+  int        tf_call_id;     /* ID of task/function call expression that points to this statement      */
   expression tmpexp;         /* Temporary expression used for expression search                        */
   statement* stmt;           /* Pointer to newly created statement                                     */
   exp_link*  expl;           /* Pointer to found expression link                                       */
@@ -274,16 +275,16 @@ bool statement_db_read( char** line, module* curr_mod, int read_mode ) {
 
     *line = *line + chars_read;
 
-    if( curr_mod == NULL ) {
+    if( curr_funit == NULL ) {
 
-      print_output( "Internal error:  statement in database written before its module", FATAL, __FILE__, __LINE__ );
+      print_output( "Internal error:  statement in database written before its functional unit", FATAL, __FILE__, __LINE__ );
       retval = FALSE;
 
     } else {
 
       /* Find associated root expression */
       tmpexp.id = id;
-      expl = exp_link_find( &tmpexp, curr_mod->exp_head );
+      expl = exp_link_find( &tmpexp, curr_funit->exp_head );
 
       stmt = statement_create( expl->exp );
 
@@ -291,7 +292,7 @@ bool statement_db_read( char** line, module* curr_mod, int read_mode ) {
       if( true_id == id ) {
         stmt->next_true = stmt;
       } else if( true_id != 0 ) {
-        stmtl = stmt_link_find( true_id, curr_mod->stmt_head );
+        stmtl = stmt_link_find( true_id, curr_funit->stmt_head );
         if( stmtl == NULL ) {
           /* Add to statement loop stack */
           statement_stack_push( stmt, true_id );
@@ -306,7 +307,7 @@ bool statement_db_read( char** line, module* curr_mod, int read_mode ) {
       if( false_id == id ) {
         stmt->next_false = stmt;
       } else if( false_id != 0 ) {
-        stmtl = stmt_link_find( false_id, curr_mod->stmt_head );
+        stmtl = stmt_link_find( false_id, curr_funit->stmt_head );
         if( stmtl == NULL ) {
           statement_stack_push( stmt, false_id );
         } else {
@@ -315,11 +316,29 @@ bool statement_db_read( char** line, module* curr_mod, int read_mode ) {
         }
       }
 
-      /* Add statement to module statement list */
+      /* Connect ourselves up to all task/function call expressions that point to us */
+      while( sscanf( *line, "%d%n", &tf_call_id, &chars_read ) == 1 ) {
+        *line = *line + chars_read;
+
+        /* Find expression in current functional unit and add it to vsignal list */
+        tmpexp.id = tf_call_id;
+
+        if( (expl = exp_link_find( &tmpexp, last_funit->exp_head )) != NULL ) {
+          exp_link_add( expl->exp, &(stmt->tf_exp_head), &(stmt->tf_exp_tail) );
+          expl->exp->stmt = stmt;
+        } else {
+          snprintf( user_msg, USER_MSG_LENGTH, "Expression %d not found for statement %d", tmpexp.id, stmt->exp->id );
+          print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          retval = FALSE;
+          exit( 1 );
+        }
+      }
+
+      /* Add statement to functional unit statement list */
       if( (read_mode == READ_MODE_MERGE_NO_MERGE) || (read_mode == READ_MODE_MERGE_INST_MERGE) ) {
-        stmt_link_add_tail( stmt, &(curr_mod->stmt_head), &(curr_mod->stmt_tail) );
+        stmt_link_add_tail( stmt, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
       } else {
-        stmt_link_add_head( stmt, &(curr_mod->stmt_head), &(curr_mod->stmt_tail) );
+        stmt_link_add_head( stmt, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
       }
 
       /* Possibly add statement to presimulation queue */
@@ -555,8 +574,8 @@ void statement_dealloc_recursive_helper( statement* curr, statement* start ) {
     /* Remove FALSE path */
     statement_dealloc_recursive_helper( curr->next_false, start );
 
-    /* Disconnect statement from current module */
-    db_remove_statement_from_current_module( curr );
+    /* Disconnect statement from current functional unit */
+    db_remove_statement_from_current_funit( curr );
 
     /* Set pointers to this statement to NULL */
     statement_remove_paths( start, curr );
@@ -582,8 +601,8 @@ void statement_dealloc_recursive( statement* stmt ) {
     /* Remove FALSE path */
     statement_dealloc_recursive_helper( stmt->next_false, stmt );
 
-    /* Disconnect statement from current module */
-    db_remove_statement_from_current_module( stmt );
+    /* Disconnect statement from current functional unit */
+    db_remove_statement_from_current_funit( stmt );
 
     /* Remove wait event signal list */
     sig_link_delete_list( stmt->wait_sig_head, FALSE );
@@ -621,6 +640,10 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.52  2005/02/07 05:10:15  phase1geo
+ Fixing bug in statement_get_last_line calculator.  Updated regression for this
+ fix.
+
  Revision 1.51  2005/02/04 23:55:54  phase1geo
  Adding code to support race condition information in CDD files.  All code is
  now in place for writing/reading this data to/from the CDD file (although

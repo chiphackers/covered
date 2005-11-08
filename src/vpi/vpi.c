@@ -6,19 +6,15 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include "vpi_user.h"
 #ifdef CVER
 #include "cv_vpi_user.h"
 #endif
 #include "defines.h"
 
-/* If this value is set, no callbacks are enabled */
-// #define NO_CALLBACKS	1
-#define NO_STMT_CALLBACKS 1
+/* If this value is set, no expression callbacks are enabled */
 #define NO_EXPR_CALLBACKS 1
-#undef DEBUG
-#define DEBUG 1
-#define DEBUG_CBS 1
 
 char      in_db_name[1024];
 char      out_db_name[1024];
@@ -47,8 +43,11 @@ extern symtable*  vcd_symtab;
 extern int        vcd_symtab_size;
 extern symtable** timestep_tab;
 extern char*      curr_inst_scope;
+extern mod_inst*  curr_instance;
+extern char*      user_msg[USER_MSG_LENGTH];
 
 
+#ifdef VPI_DEBUG
 void covered_expr_op_lookup( PLI_INT32 type, char* name ) {
 
   switch( type ) {
@@ -133,10 +132,11 @@ void covered_stmt_lookup( PLI_INT32 type, char* name ) {
   }
 
 }
+#endif
 
 PLI_INT32 covered_expr_change( p_cb_data cb ) {
 
-#ifdef DEBUG_CBS
+#ifdef VPI_DEBUG
   char op_name[50];
 
   covered_expr_op_lookup( vpi_get( vpiOpType, cb->obj ), op_name );
@@ -151,7 +151,7 @@ PLI_INT32 covered_expr_change( p_cb_data cb ) {
 
 PLI_INT32 covered_value_change( p_cb_data cb ) {
 
-#ifdef DEBUG_CBS
+#ifdef VPI_DEBUG
   vpi_printf( "In covered_value_change, name: %s, time: %d, value: %s\n",
               vpi_get_str( vpiFullName, cb->obj ), cb->time->low, cb->value->value.str );
 #endif
@@ -159,8 +159,6 @@ PLI_INT32 covered_value_change( p_cb_data cb ) {
   if( cb->time->low != last_time ) {
     if( last_time >= 0 ) {
       db_do_timestep( last_time );
-    } else {
-      db_do_timestep( 0 );
     }
     last_time = cb->time->low;
   }
@@ -174,7 +172,7 @@ PLI_INT32 covered_value_change( p_cb_data cb ) {
 
 PLI_INT32 covered_stmt_change( p_cb_data cb ) {
 
-#ifdef DEBUG_CBS
+#ifdef VPI_DEBUG
   char stmt_name[50];
 
   covered_stmt_lookup( vpi_get( vpiType, cb->obj ), stmt_name );
@@ -187,7 +185,7 @@ PLI_INT32 covered_stmt_change( p_cb_data cb ) {
 
 PLI_INT32 covered_end_of_sim( p_cb_data cb ) {
 
-#ifdef DEBUG_CBS
+#ifdef VPI_DEBUG
   vpi_printf( "At end of simulation, writing CDD contents\n" );
 #endif
 
@@ -275,7 +273,7 @@ void covered_create_value_change_cb( vpiHandle sig ) {
   vsig.name = vpi_get_str( vpiName, sig );
   if( (vsigl = sig_link_find( &vsig, vpi_curr_mod->mod->sig_head )) != NULL ) {
 
-#ifdef DEBUG
+#ifdef VPI_DEBUG
     vpi_printf( "In covered_create_value_change_cb, adding callback for signal: %s\n", vsigl->sig->name );
 #endif
 
@@ -313,7 +311,7 @@ void covered_create_expr_change_cb( vpiHandle expr ) {
 #ifndef NO_EXPR_CALLBACKS
   p_cb_data cb;
 
-#ifdef DEBUG
+#ifdef VPI_DEBUG
   vpi_printf( "In covered_create_expr_change_cb\n" );
 #endif
 
@@ -334,37 +332,11 @@ void covered_create_expr_change_cb( vpiHandle expr ) {
 
 }
 
-void covered_create_stmt_cb( vpiHandle stmt ) {
-
-#ifndef NO_STMT_CALLBACKS
-  p_cb_data cb;
-
-#ifdef DEBUG
-  vpi_printf( "In covered_create_stmt_cb\n" );
-#endif
-
-  /* Add a callback for a value change to this expr */
-  cb                   = (p_cb_data)malloc( sizeof( s_cb_data ) );
-  cb->reason           = cbStmt;
-  cb->cb_rtn           = covered_stmt_change;
-  cb->obj              = stmt;
-  cb->time             = (p_vpi_time)malloc( sizeof( s_vpi_time ) );
-  cb->time->type       = vpiSimTime;
-  cb->time->high       = 0;
-  cb->time->low        = 0;
-  cb->value            = (p_vpi_value)malloc( sizeof( s_vpi_value ) );
-  cb->value->format    = vpiBinStrVal;
-  cb->value->value.str = NULL;
-  vpi_register_cb( cb );
-#endif
-
-}
-
 void covered_parse_expr( vpiHandle expr, int lhs ) {
 
   vpiHandle iter, handle;
   PLI_INT32 type = vpi_get( vpiType, expr );
-#ifdef DEBUG
+#ifdef VPI_DEBUG
   char      op_name[50];
 #endif
 
@@ -383,12 +355,12 @@ void covered_parse_expr( vpiHandle expr, int lhs ) {
 
       }
 
-#ifdef DEBUG
+#ifdef VPI_DEBUG
       covered_expr_op_lookup( vpi_get( vpiOpType, expr ), op_name );
       vpi_printf( "      EXPRESSION: %s\n", op_name );
 #endif
 
-#ifndef NO_CALLBACKS
+#ifndef NO_EXPR_CALLBACKS
       covered_create_expr_change_cb( expr );
 #endif
 
@@ -404,43 +376,43 @@ void covered_parse_expr( vpiHandle expr, int lhs ) {
         covered_parse_expr( handle, 0 );
       }
 
-#ifdef DEBUG
+#ifdef VPI_DEBUG
       vpi_printf( "      PART_SELECT\n" );
 #endif
 
-#ifndef NO_CALLBACKS
+#ifndef NO_EXPR_CALLBACKS
       covered_create_expr_change_cb( expr );
 #endif
 
     } else if( type == vpiNet ) {
 
-#ifdef DEBUG
+#ifdef VPI_DEBUG
       vpi_printf( "      NET\n" );
 #endif
 
     } else if( type == vpiReg ) {
 
-#ifdef DEBUG
+#ifdef VPI_DEBUG
       vpi_printf( "      REG\n" );
 #endif
 
     } else if( type == vpiFuncCall ) {
 
-#ifdef DEBUG
+#ifdef VPI_DEBUG
       vpi_printf( "      FUNCTION_CALL\n" );
 #endif
 
-#ifndef NO_CALLBACKS
+#ifndef NO_EXPR_CALLBACKS
       covered_create_expr_change_cb( expr );
 #endif
 
     } else if( type == vpiSysFuncCall ) {
  
-#ifdef DEBUG
+#ifdef VPI_DEBUG
       vpi_printf( "      SYSTEM_FUNCTION_CALL\n" );
 #endif
 
-#ifndef NO_CALLBACKS                                                                                                                  
+#ifndef NO_EXPR_CALLBACKS                                                                                                                  
       covered_create_expr_change_cb( expr );                                                                                          
 #endif
 
@@ -462,7 +434,7 @@ void covered_parse_cont_assigns( vpiHandle mod ) {
 
     while( (handle = vpi_scan( iter )) != NULL ) {
 
-#ifdef DEBUG
+#ifdef VPI_DEBUG
       vpi_printf( "  Found continuous assignment, file: %s, line: %d\n",
          vpi_get_str( vpiFile, handle ), vpi_get( vpiLineNo, handle ) );
 #endif
@@ -481,7 +453,7 @@ void covered_parse_statement( vpiHandle stmt );
 void covered_parse_block_statement( vpiHandle stmt ) {
 
   vpiHandle iter, handle;
-#ifdef DEBUG
+#ifdef VPI_DEBUG
   char      type[20];
 
   switch( vpi_get( vpiType, stmt ) ) {
@@ -509,7 +481,7 @@ void covered_parse_event_control( vpiHandle stmt ) {
 
   vpiHandle handle;
 
-#ifdef DEBUG
+#ifdef VPI_DEBUG
   vpi_printf( "    Event control, file: %s, line: %d\n",
     vpi_get_str( vpiFile, stmt ), vpi_get( vpiLineNo, stmt ) );
 #endif
@@ -530,7 +502,7 @@ void covered_parse_assignment( vpiHandle stmt ) {
 
   vpiHandle handle;
 
-#ifdef DEBUG
+#ifdef VPI_DEBUG
   vpi_printf( "    Assignment, file: %s, line: %d\n",
     vpi_get_str( vpiFile, stmt ), vpi_get( vpiLineNo, stmt ) );
 #endif
@@ -551,7 +523,7 @@ void covered_parse_if( vpiHandle stmt ) {
   vpiHandle handle;
   PLI_INT32 type = vpi_get( vpiType, stmt );
 
-#ifdef DEBUG
+#ifdef VPI_DEBUG
   if( type == vpiIf) {
     vpi_printf( "    If, file: %s, line: %d\n", vpi_get_str( vpiFile, stmt ), vpi_get( vpiLineNo, stmt ) );
   } else {
@@ -580,7 +552,7 @@ void covered_parse_forever( vpiHandle stmt ) {
 
   vpiHandle handle;
 
-#ifdef DEBUG
+#ifdef VPI_DEBUG
   vpi_printf( "    Forever, file: %s, line: %d\n", vpi_get_str( vpiFile, stmt ), vpi_get( vpiLineNo, stmt ) );
 #endif
 
@@ -595,7 +567,7 @@ void covered_parse_delay_control( vpiHandle stmt ) {
 
   vpiHandle iter, handle;
 
-#ifdef DEBUG
+#ifdef VPI_DEBUG
   vpi_printf( "    Delay control, file: %s, line: %d\n", vpi_get_str( vpiFile, stmt ), vpi_get( vpiLineNo, stmt ) );
 #endif
 
@@ -616,7 +588,7 @@ void covered_parse_delay_control( vpiHandle stmt ) {
 void covered_parse_while_repeat_wait( vpiHandle stmt ) {
 
   vpiHandle handle;
-#ifdef DEBUG
+#ifdef VPI_DEBUG
   PLI_INT32 type = vpi_get( vpiType, stmt );
   char      t[20];
 
@@ -644,7 +616,7 @@ void covered_parse_while_repeat_wait( vpiHandle stmt ) {
 void covered_parse_case( vpiHandle stmt ) {
 
   vpiHandle handle;
-#ifdef DEBUG
+#ifdef VPI_DEBUG
   PLI_INT32 type = vpi_get( vpiCaseType, stmt );
   char      t[20];
 
@@ -668,7 +640,7 @@ void covered_parse_case_item( vpiHandle stmt ) {
 
   vpiHandle iter, handle;
 
-#ifdef DEBUG
+#ifdef VPI_DEBUG
   vpi_printf( "    Case item, file: %s, line: %d\n", vpi_get_str( vpiFile, stmt ), vpi_get( vpiLineNo, stmt ) );
 #endif
 
@@ -690,7 +662,7 @@ void covered_parse_for( vpiHandle stmt ) {
 
   vpiHandle handle;
 
-#ifdef DEBUG
+#ifdef VPI_DEBUG
   vpi_printf( "    For, file: %s, line: %d\n", vpi_get_str( vpiFile, stmt ), vpi_get( vpiLineNo, stmt ) );
 #endif
 
@@ -719,7 +691,7 @@ void covered_parse_for( vpiHandle stmt ) {
 void covered_parse_force_proc_assign( vpiHandle stmt ) {
 
   vpiHandle handle;
-#ifdef DEBUG
+#ifdef VPI_DEBUG
   PLI_INT32 type = vpi_get( vpiType, stmt );
 
   if( type == vpiForce ) {
@@ -744,7 +716,7 @@ void covered_parse_force_proc_assign( vpiHandle stmt ) {
 void covered_parse_release_deassign( vpiHandle stmt ) {
 
   vpiHandle handle;
-#ifdef DEBUG
+#ifdef VPI_DEBUG
   PLI_INT32 type = vpi_get( vpiType, stmt );
 
   if( type == vpiRelease ) {
@@ -772,7 +744,7 @@ void covered_parse_task_func( vpiHandle mod ) {
 
     while( (scope = vpi_scan( iter )) != NULL ) {
       
-#ifdef DEBUG
+#ifdef VPI_DEBUG
       vpi_printf( "Parsing task/function %s\n", vpi_get_str( vpiFullName, scope ) );
 #endif
 
@@ -789,13 +761,11 @@ void covered_parse_task_func( vpiHandle mod ) {
         /* Parse signals */
         if( (liter = vpi_iterate( vpiReg, scope )) != NULL ) {
           while( (handle = vpi_scan( liter )) != NULL ) {
-#ifdef DEBUG
+#ifdef VPI_DEBUG
             vpi_printf( "  Found reg %s, file: %s, line: %d\n",
               vpi_get_str( vpiFullName, handle ), vpi_get_str( vpiFile, handle ), vpi_get( vpiLineNo, handle ) );
 #endif
-#ifndef NO_CALLBACKS
             covered_create_value_change_cb( handle );
-#endif
           }
         }
 
@@ -824,7 +794,7 @@ void covered_parse_task_func( vpiHandle mod ) {
 void covered_parse_call( vpiHandle stmt ) {
 
   vpiHandle iter, handle;
-#ifdef DEBUG
+#ifdef VPI_DEBUG
   PLI_INT32 type = vpi_get( vpiType, stmt );
 
   if( type == vpiTaskCall ) {
@@ -843,15 +813,11 @@ void covered_parse_call( vpiHandle stmt ) {
     }
   }
 
-#ifndef NO_CALLBACKS
-  covered_create_stmt_cb( stmt );
-#endif
-
 }
 
 void covered_parse_event_disable( vpiHandle stmt ) {
 
-#ifdef DEBUG
+#ifdef VPI_DEBUG
   PLI_INT32 type = vpi_get( vpiType, stmt );
 
   if( type == vpiEventStmt ) {
@@ -861,16 +827,12 @@ void covered_parse_event_disable( vpiHandle stmt ) {
   }
 #endif
 
-#ifndef NO_CALLBACKS
-  covered_create_stmt_cb( stmt );
-#endif
-
 }
 
 void covered_parse_statement( vpiHandle stmt ) {
 
   PLI_INT32 type = vpi_get( vpiType, stmt );
-#ifdef DEBUG
+#ifdef VPI_DEBUG
   char      t[50];
 #endif
 
@@ -904,7 +866,7 @@ void covered_parse_statement( vpiHandle stmt ) {
     case vpiSysFuncCall  :
     case vpiNullStmt     :
     default              :
-#ifdef DEBUG
+#ifdef VPI_DEBUG
       covered_stmt_lookup( vpi_get( vpiType, stmt ), t );
       vpi_printf( "    %s\n", t );
 #endif
@@ -926,14 +888,14 @@ void covered_parse_processes( vpiHandle mod ) {
 
       /* Parse always blocks */ 
       if( type == vpiAlways ) {
-#ifdef DEBUG
+#ifdef VPI_DEBUG
         vpi_printf( "  Found always block\n" );
 #endif
         covered_parse_statement( vpi_handle( vpiStmt, handle ) );
 
       /* Parse initial blocks */
       } else if( type == vpiInitial ) {
-#ifdef DEBUG
+#ifdef VPI_DEBUG
         vpi_printf( "  Found initial block\n" );
 #endif
         covered_parse_statement( vpi_handle( vpiStmt, handle ) );
@@ -954,13 +916,11 @@ void covered_parse_signals( vpiHandle mod ) {
 
     while( (handle = vpi_scan( iter )) != NULL ) {
 
-#ifdef DEBUG
+#ifdef VPI_DEBUG
       vpi_printf( "  Found net: %s\n", vpi_get_str( vpiName, handle ) );
 #endif
 
-#ifndef NO_CALLBACKS
       covered_create_value_change_cb( handle );
-#endif
 
     }
 
@@ -971,13 +931,11 @@ void covered_parse_signals( vpiHandle mod ) {
 
     while( (handle = vpi_scan( iter )) != NULL ) {
 
-#ifdef DEBUG
+#ifdef VPI_DEBUG
       vpi_printf( "  Found reg: %s\n", vpi_get_str( vpiName, handle ) );
 #endif
 
-#ifndef NO_CALLBACKS
       covered_create_value_change_cb( handle );
-#endif
 
     }
 
@@ -993,9 +951,13 @@ void covered_parse_instance( vpiHandle inst ) {
   /* Find current module in stored design */
   if( (vpi_curr_mod = instance_find_scope( instance_root, (char*)mod_path )) != NULL ) {
 
-#ifdef DEBUG
+#ifdef VPI_DEBUG
     vpi_printf( "Found module to be covered: %s, full name: %s\n", vpi_get_str( vpiName, inst ), mod_path );
 #endif
+
+    /* Set database curr_instance */
+    curr_instance      = vpi_curr_mod;
+    one_instance_found = TRUE;
 
     /* Set current scope in database */
     if( curr_inst_scope != NULL ) {
@@ -1036,7 +998,7 @@ PLI_INT32 covered_sim_calltf( PLI_BYTE8* name ) {
   int             i;
   char*           argvptr;
 
-#ifdef DEBUG
+#ifdef VPI_DEBUG
   vpi_printf( "In covered_sim_calltf, name: %s\n", name );
   debug_mode = TRUE;
 #endif
@@ -1084,7 +1046,7 @@ PLI_INT32 covered_sim_calltf( PLI_BYTE8* name ) {
     }
   }
 
-#ifdef DEBUG
+#ifdef VPI_DEBUG
   vpi_printf( "========  Reading in database %s  ========\n", in_db_name );
 #endif
 
@@ -1110,7 +1072,7 @@ PLI_INT32 covered_sim_calltf( PLI_BYTE8* name ) {
     timestep_tab = malloc_safe_nolimit( (sizeof( symtable*) * vcd_symtab_size), __FILE__, __LINE__ );
   }
 
-#ifdef DEBUG
+#ifdef VPI_DEBUG
   vpi_printf( "\n*************************************************************\n\n" );
 #endif
 
@@ -1129,6 +1091,28 @@ void covered_register() {
   tf_data.sizetf    = 0;
   tf_data.user_data = "$covered_sim";
   vpi_register_systf( &tf_data );
+
+}
+
+void vpi_generate_top_module( char* vpi_file, char* output_db, char* top_inst ) {
+
+  FILE* vfile;  /* File handle to VPI top-level module */
+
+  /* Create filename for VPI-based module */
+  snprintf( user_msg, USER_MSG_LENGTH, "%s.v", vpi_file );
+
+  if( (vfile = fopen( user_msg, "w" )) != NULL ) {
+
+    fprintf( vfile, "module %s;\ninitial $covered_sim( \"%s\", %s );\nendmodule\n", vpi_file, output_db, top_inst );
+    fclose( vfile );
+
+  } else {
+
+    snprintf( user_msg, USER_MSG_LENGTH, "Unable to open %s for writing", vpi_file );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    exit( 1 );
+ 
+  }
 
 }
 

@@ -12,11 +12,15 @@
 
 
 /*! \brief Creates Verilog code string from specified expression tree. */
-void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_depth );
+void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_depth, func_unit* funit );
 
 
 /*
  $Log$
+ Revision 1.7  2003/12/12 17:16:25  phase1geo
+ Changing code generator to output logic based on user supplied format.  Full
+ regression fails at this point due to mismatching report files.
+
  Revision 1.6  2002/11/05 00:20:06  phase1geo
  Adding development documentation.  Fixing problem with combinational logic
  output in report command and updating full regression.

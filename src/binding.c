@@ -39,7 +39,7 @@
  These signals are considered "automatically created" because they are not declared
  in either the port list or the wire list for its particular module.  Therefore, when the
  binding process occurs and a signal structure has not been created for a used signal
- (because the signal was not declared in the port list or wire list), the bind_perform
+ (because the signal was not declared in the port list or wire list), the bind_signal
  function needs to do one of the following:
 
  \par
@@ -74,46 +74,48 @@
 #include "param.h"
 
 
-extern mod_inst* instance_root;
-extern mod_link* mod_head;
-extern char      user_msg[USER_MSG_LENGTH];
+extern funit_inst* instance_root;
+extern funit_link* funit_head;
+extern char        user_msg[USER_MSG_LENGTH];
 
 /*!
- Pointer to the head of the signal/expression binding list.
+ Pointer to the head of the signal/functional unit/expression binding list.
 */
-sig_exp_bind* seb_head;
+exp_bind* eb_head;
 
 /*!
- Pointer to the tail of the signal/expression binding list.
+ Pointer to the tail of the signal/functional unit/expression binding list.
 */
-sig_exp_bind* seb_tail;
+exp_bind* eb_tail;
 
 /*!
- \param sig_name  Signal scope to bind.
- \param exp       Expression ID to bind.
- \param mod       Pointer to module containing specified expression.
+ \param type  Type of thing being bound with the specified expression (0=signal, 1=functional unit)
+ \param name  Signal/Function/Task scope to bind.
+ \param exp   Expression ID to bind.
+ \param mod   Pointer to module containing specified expression.
 
- Adds the specified signal and expression to the bindings linked list.
+ Adds the specified signal/function/task and expression to the bindings linked list.
  This bindings list will be handled after all input Verilog has been
  parsed.
 */
-void bind_add( const char* sig_name, expression* exp, module* mod ) {
+void bind_add( int type, const char* name, expression* exp, func_unit* mod ) {
   
-  sig_exp_bind* seb;   /* Temporary pointer to signal/expressing binding */
+  exp_bind* eb;   /* Temporary pointer to signal/expressing binding */
   
   /* Create new signal/expression binding */
-  seb           = (sig_exp_bind *)malloc_safe( sizeof( sig_exp_bind ), __FILE__, __LINE__ );
-  seb->sig_name = strdup_safe( sig_name, __FILE__, __LINE__ );
-  seb->mod      = mod;
-  seb->exp      = exp;
-  seb->next     = NULL;
+  eb       = (exp_bind *)malloc_safe( sizeof( exp_bind ), __FILE__, __LINE__ );
+  eb->type = type;
+  eb->name = strdup_safe( name, __FILE__, __LINE__ );
+  eb->mod  = mod;
+  eb->exp  = exp;
+  eb->next = NULL;
   
   /* Add new signal/expression binding to linked list */
-  if( seb_head == NULL ) {
-    seb_head = seb_tail = seb;
+  if( eb_head == NULL ) {
+    eb_head = eb_tail = eb;
   } else {
-    seb_tail->next = seb;
-    seb_tail       = seb;
+    eb_tail->next = eb;
+    eb_tail       = eb;
   }
   
 }
@@ -126,11 +128,11 @@ void bind_add( const char* sig_name, expression* exp, module* mod ) {
 */
 void bind_remove( int id ) {
 
-  sig_exp_bind* curr;    /* Pointer to current sig_exp_bind link       */
-  sig_exp_bind* last;    /* Pointer to last sig_exp_bind link examined */
+  exp_bind* curr;    /* Pointer to current exp_bind link       */
+  exp_bind* last;    /* Pointer to last exp_bind link examined */
 
-  curr = seb_head;
-  last = seb_head;
+  curr = eb_head;
+  last = eb_head;
 
   while( curr != NULL ) {
 
@@ -139,19 +141,19 @@ void bind_remove( int id ) {
     if( curr->exp->id == id ) {
       
       /* Remove this binding element */
-      if( (curr == seb_head) && (curr == seb_tail) ) {
-        seb_head = seb_tail = NULL;
-      } else if( curr == seb_head ) {
-        seb_head = seb_head->next;
-      } else if( curr == seb_tail ) {
-        seb_tail       = last;
-        seb_tail->next = NULL;
+      if( (curr == eb_head) && (curr == eb_tail) ) {
+        eb_head = eb_tail = NULL;
+      } else if( curr == eb_head ) {
+        eb_head = eb_head->next;
+      } else if( curr == eb_tail ) {
+        eb_tail       = last;
+        eb_tail->next = NULL;
       } else {
         last->next = curr->next;
       }
 
       /* Now free the binding element memory */
-      free_safe( curr->sig_name );
+      free_safe( curr->name );
       free_safe( curr );
 
       curr = NULL;
@@ -168,40 +170,42 @@ void bind_remove( int id ) {
 }
 
 /*!
- \param sig_name          String name of signal to bind to specified expression.
+ \param name              String name of signal to bind to specified expression.
  \param exp               Pointer to expression to bind.
- \param mod_sig           Pointer to module containing signal.
- \param mod_exp           Pointer to module containing expression.
+ \param funit_sfu         Pointer to functional unit containing signal.
+ \param funit_exp         Pointer to functional unit containing expression.
  \param implicit_allowed  If set to TRUE, creates any signals that are implicitly defined.
  \param fsm_bind          If set to TRUE, handling binding for FSM binding.
 
  \return Returns TRUE if bind occurred successfully; otherwise, returns FALSE.
  
  Performs a binding of an expression and signal based on the name of the
- signal.  Looks up signal name in the specified module and sets the expression
+ signal.  Looks up signal name in the specified functional unit and sets the expression
  and signal to point to each other.  If the signal name is not found, it is checked to
  see if the signal is an unused type (name preceded by the '!' character).  If the signal
  is unused, the bind does not occur and the function returns a value of FALSE.  If the
  signal neither exists or is an unused signal, it is considered to be an implicit signal
  and a 1-bit signal is created.
 */
-bool bind_perform( char* sig_name, expression* exp, module* mod_sig, module* mod_exp, bool implicit_allowed, bool fsm_bind ) {
+bool bind_signal( char* name, expression* exp, func_unit* funit_sig, func_unit* funit_exp, bool implicit_allowed, bool fsm_bind ) {
 
-  vsignal   tsig;           /* Temporary signal for comparison purposes          */
-  sig_link* sigl;           /* Pointer to found signal in specified module       */
-  char*     tmpname;        /* Temporary name containing unused signal character */
-  bool      retval = TRUE;  /* Return value for this function                    */
+  vsignal     tsig;           /* Temporary signal for comparison purposes           */
+  func_unit   tfu;            /* Temporary functional unit for comparison purposes  */
+  sig_link*   sigl;           /* Pointer to found signal in specified module        */
+  funit_link* funitl;         /* Pointer to found function unit in specified module */
+  char*       tmpname;        /* Temporary name containing unused signal character  */
+  bool        retval = TRUE;  /* Return value for this function                     */
 
-  /* Search for specified signal in current module */
-  vsignal_init( &tsig, sig_name, NULL, 0 );
-  sigl = sig_link_find( &tsig, mod_sig->sig_head );
+  /* Search for specified signal in current functional unit */
+  vsignal_init( &tsig, name, NULL, 0 );
+  sigl = sig_link_find( &tsig, funit_sig->sig_head );
 
   /* If standard signal is not found, check to see if it is an unused signal */
   if( sigl == NULL ) {
-    tmpname = (char*)malloc_safe( (strlen( sig_name ) + 2), __FILE__, __LINE__ );
-    snprintf( tmpname, (strlen( sig_name ) + 2), "!%s", sig_name );
+    tmpname = (char*)malloc_safe( (strlen( name ) + 2), __FILE__, __LINE__ );
+    snprintf( tmpname, (strlen( name ) + 2), "!%s", name );
     vsignal_init( &tsig, tmpname, NULL, 0 );
-    sigl = sig_link_find( &tsig, mod_sig->sig_head );
+    sigl = sig_link_find( &tsig, funit_sig->sig_head );
     if( sigl != NULL ) {
       retval = FALSE;
     }
@@ -211,24 +215,24 @@ bool bind_perform( char* sig_name, expression* exp, module* mod_sig, module* mod
   if( sigl == NULL ) {
     if( fsm_bind ) {
       snprintf( user_msg, USER_MSG_LENGTH, "Unable to find specified FSM signal \"%s\" in module \"%s\" in file %s",
-                sig_name,
-                mod_exp->name,
-                mod_exp->filename );
+                name,
+                funit_exp->name,
+                funit_exp->filename );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       retval = FALSE;
     } else if( !implicit_allowed ) {
       /* Bad hierarchical reference -- user error  -- unachievable code due to unsuppported use of hierarchical referencing */
       snprintf( user_msg, USER_MSG_LENGTH, "Hierarchical reference to undefined signal \"%s\" in %s, line %d", 
-                sig_name,
-                mod_exp->filename,
+                name,
+                funit_exp->filename,
                 exp->line );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       exit( 1 );
     } else {
-      snprintf( user_msg, USER_MSG_LENGTH, "Implicit declaration of signal \"%s\", creating 1-bit version of signal", sig_name );
+      snprintf( user_msg, USER_MSG_LENGTH, "Implicit declaration of signal \"%s\", creating 1-bit version of signal", name );
       print_output( user_msg, WARNING, __FILE__, __LINE__ );
-      sig_link_add( vsignal_create( sig_name, 1, 0 ), &(mod_sig->sig_head), &(mod_sig->sig_tail) );
-      sigl = mod_sig->sig_tail;
+      sig_link_add( vsignal_create( name, 1, 0 ), &(funit_sig->sig_head), &(funit_sig->sig_tail) );
+      sigl = funit_sig->sig_tail;
     }
   }
 
@@ -247,6 +251,55 @@ bool bind_perform( char* sig_name, expression* exp, module* mod_sig, module* mod
 }
 
 /*!
+*/
+bool bind_task_function( int type, char* name, expression* exp, func_unit* funit_tf, func_unit* funit_exp ) {
+
+  func_unit   funit;          /* Temporary functional unit for comparison purposes  */
+  funit_link* funitl;         /* Pointer to found function unit in specified module */
+  bool        retval = TRUE;  /* Return value for this function                     */
+  stmt_iter   si;             /* Statement iterator used to find the head statement */
+
+  assert( (type == FUNIT_FUNCTION) || (type == FUNIT_TASK) );
+  assert( funit_tf->type == FUNIT_MODULE );
+
+  /* Search for specified signal in current functional unit */
+  funit.name = name;
+  funit.type = type;
+
+  /* Search for specified functional unit in current functional unit */
+  funitl = funit_link_find( &funit, funit_tf->tf_head );
+
+  /* Bad hierarchical reference -- user error  -- unachievable code due to unsuppported use of hierarchical referencing */
+  if( funitl == NULL ) {
+    snprintf( user_msg, USER_MSG_LENGTH, "Hierarchical reference to undefined task/function \"%s\" in %s, line %d",
+              name,
+              funit_exp->filename,
+              exp->line );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
+    exit( 1 );
+  }
+
+  if( retval ) {
+
+    assert( funitl->funit->stmt_head != NULL );
+    assert( funitl->funit->stmt_head->stmt != NULL );
+
+    /* Set expression to point at task/function's first head statement */
+    stmt_iter_reset( &si, funitl->funit->stmt_head );
+    stmt_iter_find_head( &si, FALSE );
+    assert( si.curr->stmt != NULL );
+    exp->stmt = si.curr->stmt;
+
+    /* Set head statement to point to this expression */
+    exp_link_add( exp, &(si.curr->stmt->tf_exp_head), &(si.curr->stmt->tf_exp_tail) );
+
+  }
+
+  return( retval );
+
+}
+
+/*!
  In the process of binding, we go through each element of the binding list,
  finding the signal to be bound in the specified tree, adding the expression
  to the signal's expression pointer list, and setting the expression vector pointer
@@ -254,77 +307,97 @@ bool bind_perform( char* sig_name, expression* exp, module* mod_sig, module* mod
 */
 void bind() {
   
-  mod_inst*     modi;          /* Pointer to found module instance             */
-  char          scope[4096];   /* Scope of signal's parent module              */
-  char          sig_name[256]; /* Name of signal in module                     */
-  sig_exp_bind* curr_seb;      /* Pointer to current signal/expression binding */
-  int           id;            /* Current expression id -- used for removal    */
-  
-  mod_parm*     mparm;         /* Newly created module parameter               */
-  int           i;             /* Loop iterator                                */
-  int           ignore;        /* Number of instances to ignore                */
-  mod_inst*     inst;          /* Pointer to current instance to modify        */
-  inst_parm*    curr_iparm;    /* Pointer to current instance parameter        */
-  bool          done = FALSE;  /* Specifies if the current signal is completed */
-  int           orig_width;    /* Original width of found signal               */
-  int           orig_lsb;      /* Original lsb of found signal                 */
+  funit_inst* funiti;        /* Pointer to found functional unit instance    */
+  char        scope[4096];   /* Scope of signal's parent functional unit     */
+  char        name[256];     /* Name of signal/functional unit in module     */
+  exp_bind*   curr_eb;       /* Pointer to current expression binding        */
+  int         id;            /* Current expression id -- used for removal    */
+  mod_parm*   mparm;         /* Newly created module parameter               */
+  int         i;             /* Loop iterator                                */
+  int         ignore;        /* Number of instances to ignore                */
+  funit_inst* inst;          /* Pointer to current instance to modify        */
+  inst_parm*  curr_iparm;    /* Pointer to current instance parameter        */
+  bool        done = FALSE;  /* Specifies if the current signal is completed */
+  int         orig_width;    /* Original width of found signal               */
+  int         orig_lsb;      /* Original lsb of found signal                 */
     
-  curr_seb = seb_head;
+  curr_eb = eb_head;
 
-  while( curr_seb != NULL ) {
+  while( curr_eb != NULL ) {
 
-    assert( curr_seb->exp != NULL );
-    id = curr_seb->exp->id;
+    assert( curr_eb->exp != NULL );
+    id = curr_eb->exp->id;
 
-    /* Find module where signal resides */
-    scope_extract_back( curr_seb->sig_name, sig_name, scope );
+    /* Find functional unit where signal/task/function resides */
+    scope_extract_back( curr_eb->name, name, scope );
 
-    /* We should never see a "scopeless" signal */
-    assert( scope[0] != '\0' );
+    /* Handle signal binding */
+    if( curr_eb->type == 0 ) {
 
-    /* Scope present, search for module based on scope */
-    modi = instance_find_scope( instance_root, scope );
+      /* We should never see a "scopeless" signal if the functional unit is a module */
+      assert( scope[0] != '\0' );
 
-    if( modi == NULL ) {
-      /* Bad hierarchical reference -- we should never get to this line of code due to unsupported hierarchical referencing */
-      snprintf( user_msg, USER_MSG_LENGTH, "Undefined hierarchical reference: %s, file: %s, line: %d", 
-                curr_seb->sig_name,
-                curr_seb->mod->filename,
-                curr_seb->exp->line );
-      print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      exit( 1 );
+      /* Scope present, search for functional unit based on scope */
+      funiti = instance_find_scope( instance_root, scope );
+
+      if( funiti == NULL ) {
+        /* Bad hierarchical reference -- we should never get to this line of code due to unsupported hierarchical referencing */
+        snprintf( user_msg, USER_MSG_LENGTH, "Undefined hierarchical reference: %s, file: %s, line: %d", 
+                  curr_eb->name,
+                  curr_eb->mod->filename,
+                  curr_eb->exp->line );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        exit( 1 );
+      }
+
+      /* Now bind the signal to the expression */
+      bind_signal( curr_eb->name, curr_eb->exp, funiti->funit, curr_eb->mod, FALSE, FALSE );
+
+    /* Otherwise, handle function/task binding */
+    } else {
+
+      if( scope[0] != '\0' ) {
+        funiti = instance_find_scope( instance_root, scope );
+      } else {
+        ignore = 0;
+        funiti = instance_find_by_funit( instance_root, curr_eb->mod, &ignore );
+      }
+
+      assert( funiti != NULL );
+
+      /* Bind the expression to the task/function */
+      bind_task_function( curr_eb->type, curr_eb->name, curr_eb->exp, funiti->funit, curr_eb->mod );
+
     }
 
-    /* Now bind the signal to the expression */
-    bind_perform( curr_seb->sig_name, curr_seb->exp, modi->mod, curr_seb->mod, FALSE, FALSE );
-
+#ifdef SKIP
     /************************************************************************************
      *  THIS CODE COULD PROBABLY BE PUT SOMEWHERE ELSE BUT WE WILL KEEP IT HERE FOR NOW *
      ************************************************************************************/
      
     /* Create parameter for remote signal in current expression's module */
-    mparm = mod_parm_add( NULL, NULL, PARAM_TYPE_EXP_LSB, &(curr_seb->mod->param_head), &(curr_seb->mod->param_tail) );
+    mparm = mod_parm_add( NULL, NULL, PARAM_TYPE_EXP_LSB, &(curr_eb->mod->param_head), &(curr_eb->mod->param_tail) );
     
-    orig_width = curr_seb->exp->sig->value->width;
-    orig_lsb   = curr_seb->exp->sig->lsb;
+    orig_width = curr_eb->exp->sig->value->width;
+    orig_lsb   = curr_eb->exp->sig->lsb;
     i          = 0;
     ignore     = 0;
-    while( (inst = instance_find_by_module( instance_root, curr_seb->mod, &ignore )) != NULL ) {
+    while( (inst = instance_find_by_module( instance_root, curr_eb->mod, &ignore )) != NULL ) {
       
       /* Add instance parameter based on size of current signal */
-      if( (curr_seb->exp->sig->value->width == -1) || (curr_seb->exp->sig->lsb == -1) ) {
+      if( (curr_eb->exp->sig->value->width == -1) || (curr_eb->exp->sig->lsb == -1) ) {
         /* Signal size not known yet, figure out its size based on parameters */
         curr_iparm = inst->param_head;
         while( (curr_iparm != NULL) && !done ) {
           assert( curr_iparm->mparm != NULL );
           /* This parameter sizes a signal so perform the signal size */
-          if( curr_iparm->mparm->sig == curr_seb->exp->sig ) {
+          if( curr_iparm->mparm->sig == curr_eb->exp->sig ) {
             done = param_set_sig_size( curr_iparm->mparm->sig, curr_iparm );
           }
           curr_iparm = curr_iparm->next;
         }
       }
-      inst_parm_add( NULL, curr_seb->exp->sig->value, mparm, &(inst->param_head), &(inst->param_tail) );
+      inst_parm_add( NULL, curr_eb->exp->sig->value, mparm, &(inst->param_head), &(inst->param_tail) );
       
       i++;
       ignore = i;
@@ -332,17 +405,18 @@ void bind() {
     }
 
     /* Revert signal to its previous state */
-    curr_seb->exp->sig->value->width = orig_width;
-    curr_seb->exp->sig->lsb          = orig_lsb;
+    curr_eb->exp->sig->value->width = orig_width;
+    curr_eb->exp->sig->lsb          = orig_lsb;
     
     /* Signify that current expression is getting its value elsewhere */
-    curr_seb->exp->sig = NULL;
+    curr_eb->exp->sig = NULL;
     
     /*************************
      * End of misplaced code *
      *************************/
+#endif
    
-    curr_seb = curr_seb->next;
+    curr_eb = curr_eb->next;
 
     /* Remove binding from list */
     bind_remove( id );
@@ -353,6 +427,9 @@ void bind() {
 
 /* 
  $Log$
+ Revision 1.30  2005/02/09 14:12:20  phase1geo
+ More code for supporting expression assignments.
+
  Revision 1.29  2005/02/08 23:18:22  phase1geo
  Starting to add code to handle expression assignment for blocking assignments.
  At this point, regressions will probably still pass but new code isn't doing exactly

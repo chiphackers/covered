@@ -51,6 +51,13 @@
  Covered will perform the assignment for a blocking assignment expression.  This allows us to
  expand the amount of code that can be covered by allowing several "zero-time" assignments to
  occur while maintaining accurate coverage information.
+
+ \par EXP_OP_FUNC_CALL
+ TBD
+ 
+ \par EXP_OP_TASK_CALL
+ A task call expression simply runs the head statement block of the prescribed task immediately
+ (the statement block is immediately run using the sim_statement function call).
 */
 
 #include <stdio.h>
@@ -142,6 +149,7 @@ expression* expression_create( expression* right, expression* left, int op, bool
   new_expr->left           = left;
   new_expr->value          = (vector*)malloc_safe( sizeof( vector ), __FILE__, __LINE__ );
   new_expr->table          = NULL;
+  new_expr->stmt           = NULL;
 
   if( right != NULL ) {
 
@@ -579,9 +587,9 @@ void expression_db_write( expression* expr, FILE* file ) {
 }
 
 /*!
- \param line      String containing database line to read information from.
- \param curr_mod  Pointer to current module that instantiates this expression.
- \param eval      If TRUE, evaluate expression if children are static.
+ \param line        String containing database line to read information from.
+ \param curr_funit  Pointer to current functional unit that instantiates this expression.
+ \param eval        If TRUE, evaluate expression if children are static.
 
  \return Returns TRUE if parsing successful; otherwise, returns FALSE.
 
@@ -590,7 +598,7 @@ void expression_db_write( expression* expr, FILE* file ) {
  returns that value in the specified expression pointer.  If all is 
  successful, returns TRUE; otherwise, returns FALSE.
 */
-bool expression_db_read( char** line, module* curr_mod, bool eval ) {
+bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) {
 
   bool        retval = TRUE;  /* Return value for this function                   */
   int         id;             /* Holder of expression ID                          */
@@ -606,16 +614,16 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
   int         chars_read;     /* Number of characters scanned in from line        */
   vector*     vec;            /* Holders vector value of this expression          */
   expression  texp;           /* Temporary expression link holder for searching   */
-  exp_link*   expl;           /* Pointer to found expression in module            */
+  exp_link*   expl;           /* Pointer to found expression in functional unit   */
 
   if( sscanf( *line, "%d %d %x %x %x %d %d%n", &id, &linenum, &column, &op, &(suppl.all), &right_id, &left_id, &chars_read ) == 7 ) {
 
     *line = *line + chars_read;
 
-    /* Find module instance name */
-    if( curr_mod == NULL ) {
+    /* Find functional unit instance name */
+    if( curr_funit == NULL ) {
 
-      snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  expression (%d) in database written before its module", id );
+      snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  expression (%d) in database written before its functional unit", id );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       retval = FALSE;
 
@@ -625,7 +633,7 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
       texp.id = right_id;
       if( right_id == 0 ) {
         right = NULL;
-      } else if( (expl = exp_link_find( &texp, curr_mod->exp_head )) == NULL ) {
+      } else if( (expl = exp_link_find( &texp, curr_funit->exp_head )) == NULL ) {
         snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  root expression (%d) found before leaf expression (%d) in database file", id, right_id );
   	    print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( 1 );
@@ -637,7 +645,7 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
       texp.id = left_id;
       if( left_id == 0 ) {
         left = NULL;
-      } else if( (expl = exp_link_find( &texp, curr_mod->exp_head )) == NULL ) {
+      } else if( (expl = exp_link_find( &texp, curr_funit->exp_head )) == NULL ) {
         snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  root expression (%d) found before leaf expression (%d) in database file", id, left_id );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( 1 );
@@ -713,7 +721,7 @@ bool expression_db_read( char** line, module* curr_mod, bool eval ) {
 
       }
 
-      exp_link_add( expr, &(curr_mod->exp_head), &(curr_mod->exp_tail) );
+      exp_link_add( expr, &(curr_funit->exp_head), &(curr_funit->exp_tail) );
 
       /*
        If this expression is a constant expression, force the simulator to evaluate
@@ -883,7 +891,7 @@ bool expression_db_replace( expression* base, char** line ) {
  \param expr  Pointer to expression to display.
 
  Displays contents of the specified expression to standard output.  This function
- is called by the module_display function.
+ is called by the funit_display function.
 */
 void expression_display( expression* expr ) {
 
@@ -1305,6 +1313,13 @@ bool expression_operate( expression* expr ) {
       case EXP_OP_IF :
         break;
 
+      case EXP_OP_FUNC_CALL :
+        break;
+
+      case EXP_OP_TASK_CALL :
+        sim_statement( expr->stmt );
+        break;
+
       default :
         print_output( "Internal error:  Unidentified expression operation!", FATAL, __FILE__, __LINE__ );
         exit( 1 );
@@ -1376,7 +1391,7 @@ void expression_operate_recursively( expression* expr ) {
     /*
      Non-static expression found where static expression required.  Simulator
      should catch this error before us, so no user error (too much work to find
-     expression in module expression list for now.
+     expression in functional unit expression list for now.
     */
     assert( (expr->op != EXP_OP_SIG)      &&
             (expr->op != EXP_OP_SBIT_SEL) &&
@@ -1603,6 +1618,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.114  2005/02/16 13:44:55  phase1geo
+ Adding value propagation function to vsignal.c and adding this propagation to
+ BASSIGN expression assignment after the assignment occurs.
+
  Revision 1.113  2005/02/11 22:50:33  phase1geo
  Fixing bug with removing statement blocks that contain statements that cannot
  currently be handled by Covered correctly.  There was a problem when the bad statement

@@ -1,5 +1,5 @@
-5 1 * 4 0
-3 main main multi_exp2.1.v 1 22
+5 1 * 5 0
+3 0 main main multi_exp2.1.v 1 22
 2 4 5 110011 1 c0 0 0 
 2 2 5 d000d 1 c0 0 0 
 2 1 5 90009 1 c0 0 0 

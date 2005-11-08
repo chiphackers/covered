@@ -16,7 +16,7 @@
 #include <assert.h>
 
 #include "defines.h"
-#include "module.h"
+#include "func_unit.h"
 #include "util.h"
 #include "expr.h"
 #include "vsignal.h"
@@ -32,68 +32,71 @@ extern char user_msg[USER_MSG_LENGTH];
 
 
 /*!
- \param mod  Pointer to module to initialize.
+ \param funit  Pointer to functional unit to initialize.
 
  Initializes all contents to NULL.
 */  
-void module_init( module* mod ) {
+void funit_init( func_unit* funit ) {
     
-  mod->name       = NULL;
-  mod->filename   = NULL;
-  mod->start_line = 0;
-  mod->end_line   = 0;
-  mod->stat       = NULL;
-  mod->sig_head   = NULL;
-  mod->sig_tail   = NULL;
-  mod->exp_head   = NULL;
-  mod->exp_tail   = NULL;
-  mod->stmt_head  = NULL;
-  mod->stmt_tail  = NULL;
-  mod->fsm_head   = NULL;
-  mod->fsm_tail   = NULL;
-  mod->race_head  = NULL;
-  mod->race_tail  = NULL;
-  mod->param_head = NULL;
-  mod->param_tail = NULL;
+  funit->type       = FUNIT_MODULE;
+  funit->name       = NULL;
+  funit->filename   = NULL;
+  funit->start_line = 0;
+  funit->end_line   = 0;
+  funit->stat       = NULL;
+  funit->sig_head   = NULL;
+  funit->sig_tail   = NULL;
+  funit->exp_head   = NULL;
+  funit->exp_tail   = NULL;
+  funit->stmt_head  = NULL;
+  funit->stmt_tail  = NULL;
+  funit->fsm_head   = NULL;
+  funit->fsm_tail   = NULL;
+  funit->race_head  = NULL;
+  funit->race_tail  = NULL;
+  funit->param_head = NULL;
+  funit->param_tail = NULL;
+  funit->tf_head    = NULL;
+  funit->tf_tail    = NULL;
 
 }
 
 /*!
- \return Returns pointer to newly created module element that has been
+ \return Returns pointer to newly created functional unit element that has been
          properly initialized.
 
- Allocates memory from the heap for a module element and initializes all
- contents to NULL.  Returns a pointer to the newly created module.
+ Allocates memory from the heap for a functional unit element and initializes all
+ contents to NULL.  Returns a pointer to the newly created functional unit.
 */
-module* module_create() {
+func_unit* funit_create() {
 
-  module* mod;   /* Pointer to newly created module element */
+  func_unit* funit;   /* Pointer to newly created functional unit element */
 
-  /* Create and initialize module */
-  mod = (module*)malloc_safe( sizeof( module ), __FILE__, __LINE__ );
+  /* Create and initialize functional unit */
+  funit = (func_unit*)malloc_safe( sizeof( func_unit ), __FILE__, __LINE__ );
 
-  module_init( mod );
+  funit_init( funit );
 
-  return( mod );
+  return( funit );
 
 }
 
 /*!
- \param mod   Pointer to module containing elements to resize.
- \param inst  Pointer to instance containing this module.
+ \param funit  Pointer to functional unit containing elements to resize.
+ \param inst   Pointer to instance containing this functional unit.
  
  Resizes signals if they are contigent upon parameter values.  After
  all signals have been resized, the signal's corresponding expressions
  are resized.  This function should be called just prior to outputting
- this module's contents to the CDD file (after parsing phase only)
+ this funtional unit's contents to the CDD file (after parsing phase only)
 */
-void module_size_elements( module* mod, mod_inst* inst ) {
+void funit_size_elements( func_unit* funit, funit_inst* inst ) {
   
   inst_parm* curr_iparm;   /* Pointer to current instance parameter to evaluate */
   exp_link*  curr_exp;     /* Pointer to current expression link to evaluate    */
   fsm_link*  curr_fsm;     /* Pointer to current FSM structure to evaluate      */
   
-  assert( mod  != NULL );
+  assert( funit != NULL );
   assert( inst != NULL );
   
   /* 
@@ -124,7 +127,7 @@ void module_size_elements( module* mod, mod_inst* inst ) {
    signals.  Makes the assumption that all children expressions come
    before the root expression in the list (this is currently the case).
   */
-  curr_exp = mod->exp_head;
+  curr_exp = funit->exp_head;
   while( curr_exp != NULL ) {
     if( ESUPPL_IS_ROOT( curr_exp->exp->suppl ) ) {
       /* Perform an entire expression resize */
@@ -142,7 +145,7 @@ void module_size_elements( module* mod, mod_inst* inst ) {
    cannot be created until the state variable size can be calculated.
    Since this has been done now, size the FSMs.
   */
-  curr_fsm = mod->fsm_head;
+  curr_fsm = funit->fsm_head;
   while( curr_fsm != NULL ) {
     fsm_create_tables( curr_fsm->table );
     curr_fsm = curr_fsm->next;
@@ -151,86 +154,101 @@ void module_size_elements( module* mod, mod_inst* inst ) {
 }
 
 /*!
- \param mod    Pointer to module to write to output.
- \param scope  String version of module scope in hierarchy.
+ \param funit  Pointer to functional unit to write to output.
+ \param scope  String version of functional unit scope in hierarchy.
  \param file   Pointer to specified output file to write contents.
- \param inst   Pointer to the current module instance.
+ \param inst   Pointer to the current functional unit instance.
 
  \return Returns TRUE if file output was successful; otherwise, returns FALSE.
 
- Prints the database line for the specified module to the specified database
+ Prints the database line for the specified functional unit to the specified database
  file.  If there are any problems with the write, returns FALSE; otherwise,
  returns TRUE.
 */
-bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst ) {
+bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst ) {
 
   bool       retval = TRUE;   /* Return value for this function             */
-  sig_link*  curr_sig;        /* Pointer to current module sig_link element */
-  exp_link*  curr_exp;        /* Pointer to current module exp_link element */
+  sig_link*  curr_sig;        /* Pointer to current functional unit sig_link element */
+  exp_link*  curr_exp;        /* Pointer to current functional unit exp_link element */
   stmt_iter  curr_stmt;       /* Statement list iterator                    */
   inst_parm* curr_parm;       /* Pointer to current instance parameter      */
-  fsm_link*  curr_fsm;        /* Pointer to current module fsm_link element */
+  fsm_link*  curr_fsm;        /* Pointer to current functional unit fsm_link element */
   race_blk*  curr_race;       /* Pointer to current race condition block    */
 
-  snprintf( user_msg, USER_MSG_LENGTH, "Writing module %s", mod->name );
+  switch( funit->type ) {
+    case FUNIT_MODULE      :  snprintf( user_msg, USER_MSG_LENGTH, "Writing module %s", funit->name );       break;
+    case FUNIT_NAMED_BLOCK :  snprintf( user_msg, USER_MSG_LENGTH, "Writing named block %s", funit->name );  break;
+    case FUNIT_FUNCTION    :  snprintf( user_msg, USER_MSG_LENGTH, "Writing function %s", funit->name );     break;
+    case FUNIT_TASK        :  snprintf( user_msg, USER_MSG_LENGTH, "Writing task %s", funit->name );         break;
+    default                :
+      snprintf( user_msg, USER_MSG_LENGTH, "Internal error:  Unknown functional unit type %d", funit->type );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      exit( 1 );
+      break;
+  }
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
-  fprintf( file, "%d %s %s %s %d %d\n",
-    DB_TYPE_MODULE,
-    mod->name,
+  fprintf( file, "%d %d %s %s %s %d %d\n",
+    DB_TYPE_FUNIT,
+    funit->type,
+    funit->name,
     scope,
-    mod->filename,
-    mod->start_line,
-    mod->end_line
+    funit->filename,
+    funit->start_line,
+    funit->end_line
   );
 
-  /* Size all elements in this module if we are in parse mode */
+  /* Size all elements in this functional unit if we are in parse mode */
   if( inst != NULL ) {
-    module_size_elements( mod, inst );
+    funit_size_elements( funit, inst );
   }
   
-  /* Now print all expressions in module */
-  curr_exp = mod->exp_head;
+  /* Now print all expressions in functional unit */
+  curr_exp = funit->exp_head;
   while( curr_exp != NULL ) {
     expression_db_write( curr_exp->exp, file );
     curr_exp = curr_exp->next;
   }
 
-  /* Now print all parameters in module */
-  if( inst != NULL ) {
-    curr_parm = inst->param_head;
-    while( curr_parm != NULL ) {
-      param_db_write( curr_parm, file );
-      curr_parm = curr_parm->next;
+  /* Now print all parameters in functional unit (if this is a module) */
+  if( funit->type == FUNIT_MODULE ) {
+    if( inst != NULL ) {
+      curr_parm = inst->param_head;
+      while( curr_parm != NULL ) {
+        param_db_write( curr_parm, file );
+        curr_parm = curr_parm->next;
+      }
     }
   }
 
-  /* Now print all signals in module */
-  curr_sig = mod->sig_head;
+  /* Now print all signals in functional unit */
+  curr_sig = funit->sig_head;
   while( curr_sig != NULL ) {
     vsignal_db_write( curr_sig->sig, file );
     curr_sig = curr_sig->next; 
   }
 
-  /* Now print all statements in module */
-  stmt_iter_reset( &curr_stmt, mod->stmt_head );
+  /* Now print all statements in functional unit */
+  stmt_iter_reset( &curr_stmt, funit->stmt_head );
   while( curr_stmt.curr != NULL ) {
     statement_db_write( curr_stmt.curr->stmt, file );
     stmt_iter_next( &curr_stmt );
   }
 
-  /* Now print all FSM structures in module */
-  curr_fsm = mod->fsm_head;
+  /* Now print all FSM structures in functional unit */
+  curr_fsm = funit->fsm_head;
   while( curr_fsm != NULL ) {
     fsm_db_write( curr_fsm->table, file );
     curr_fsm = curr_fsm->next;
   }
 
-  /* Now print all race condition block structures in module */
-  curr_race = mod->race_head;
-  while( curr_race != NULL ) {
-    race_db_write( curr_race, file );
-    curr_race = curr_race->next;
+  /* Now print all race condition block structures in functional unit (if we are a module) */
+  if( funit->type == FUNIT_MODULE ) {
+    curr_race = funit->race_head;
+    while( curr_race != NULL ) {
+      race_db_write( curr_race, file );
+      curr_race = curr_race->next;
+    }
   }
 
   return( retval );
@@ -238,26 +256,30 @@ bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst ) {
 }
 
 /*!
- \param mod    Pointer to module to read contents into.
- \param scope  Pointer to name of read module scope.
+ \param funit  Pointer to functional unit to read contents into.
+ \param scope  Pointer to name of read functional unit scope.
  \param line   Pointer to current line to parse.
 
  \return Returns TRUE if read was successful; otherwise, returns FALSE.
 
- Reads the current line of the specified file and parses it for a module.
+ Reads the current line of the specified file and parses it for a functional unit.
  If all is successful, returns TRUE; otherwise, returns FALSE.
 */
-bool module_db_read( module* mod, char* scope, char** line ) {
+bool funit_db_read( func_unit* funit, char* scope, char** line ) {
 
   bool    retval = TRUE;    /* Return value for this function      */
   int     chars_read;       /* Number of characters currently read */
+  int     params;
 
-  if( sscanf( *line, "%s %s %s %d %d%n", mod->name, scope, mod->filename, &(mod->start_line), &(mod->end_line), &chars_read ) == 5 ) {
+  if( (params = sscanf( *line, "%d %s %s %s %d %d%n", &(funit->type), funit->name, scope, funit->filename,
+              &(funit->start_line), &(funit->end_line), &chars_read )) == 6 ) {
 
     *line = *line + chars_read;
 
   } else {
 
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Incorrect number of parameters for func_unit, should be 6 but is %d\n", params );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = FALSE;
 
   }
@@ -267,24 +289,24 @@ bool module_db_read( module* mod, char* scope, char** line ) {
 }
 
 /*!
- \param base  Module that will merge in that data from the in module
+ \param base  Module that will merge in that data from the in functional unit
  \param file  Pointer to CDD file handle to read.
- \param same  Specifies if module to be merged should match existing module exactly or not.
+ \param same  Specifies if functional unit to be merged should match existing functional unit exactly or not.
 
  \return Returns TRUE if parse and merge was successful; otherwise, returns FALSE.
 
- Parses specified line for module information and performs a merge of the two 
- specified modules, placing the resulting merge module into the module named base.
- If there are any differences between the two modules, a warning or error will be
+ Parses specified line for functional unit information and performs a merge of the two 
+ specified functional units, placing the resulting merge functional unit into the functional unit named base.
+ If there are any differences between the two functional units, a warning or error will be
  displayed to the user.
 */
-bool module_db_merge( module* base, FILE* file, bool same ) {
+bool funit_db_merge( func_unit* base, FILE* file, bool same ) {
 
   bool      retval = TRUE;   /* Return value of this function                                */
-  exp_link* curr_base_exp;   /* Pointer to current expression in base module expression list */
-  sig_link* curr_base_sig;   /* Pointer to current signal in base module signal list         */
+  exp_link* curr_base_exp;   /* Pointer to current expression in base functional unit expression list */
+  sig_link* curr_base_sig;   /* Pointer to current signal in base functional unit signal list         */
   stmt_iter curr_base_stmt;  /* Statement list iterator                                      */
-  fsm_link* curr_base_fsm;   /* Pointer to current FSM in base module FSM list               */
+  fsm_link* curr_base_fsm;   /* Pointer to current FSM in base functional unit FSM list               */
   race_blk* curr_base_race;  /* Pointer to current race condition block in base module list  */
   char*     curr_line;       /* Pointer to current line being read from CDD                  */
   char*     rest_line;       /* Pointer to rest of read line                                 */
@@ -294,10 +316,10 @@ bool module_db_merge( module* base, FILE* file, bool same ) {
   assert( base != NULL );
   assert( base->name != NULL );
 
-  /* Handle all module expressions */
+  /* Handle all functional unit expressions */
   curr_base_exp = base->exp_head;
   while( (curr_base_exp != NULL) && retval ) {
-    if( readline( file, &curr_line ) ) {
+    if( util_readline( file, &curr_line ) ) {
       if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
         rest_line = curr_line + chars_read;
         if( type == DB_TYPE_EXPRESSION ) {
@@ -314,10 +336,10 @@ bool module_db_merge( module* base, FILE* file, bool same ) {
     curr_base_exp = curr_base_exp->next;
   }
 
-  /* Handle all module signals */
+  /* Handle all functional unit signals */
   curr_base_sig = base->sig_head;
   while( (curr_base_sig != NULL) && retval ) {
-    if( readline( file, &curr_line ) ) {
+    if( util_readline( file, &curr_line ) ) {
       if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
         rest_line = curr_line + chars_read;
         if( type == DB_TYPE_SIGNAL ) {
@@ -337,7 +359,7 @@ bool module_db_merge( module* base, FILE* file, bool same ) {
   /* Since statements don't get merged, we will just read these lines in */
   stmt_iter_reset( &curr_base_stmt, base->stmt_head );
   while( (curr_base_stmt.curr != NULL) && retval ) {
-    if( readline( file, &curr_line ) ) {
+    if( util_readline( file, &curr_line ) ) {
       if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
         rest_line = curr_line + chars_read;
         if( type != DB_TYPE_STATEMENT ) {
@@ -352,10 +374,10 @@ bool module_db_merge( module* base, FILE* file, bool same ) {
     stmt_iter_next( &curr_base_stmt );
   }
 
-  /* Handle all module FSMs */
+  /* Handle all functional unit FSMs */
   curr_base_fsm = base->fsm_head;
   while( (curr_base_fsm != NULL) && retval ) {
-    if( readline( file, &curr_line ) ) {
+    if( util_readline( file, &curr_line ) ) {
       if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
         rest_line = curr_line + chars_read;
         if( type == DB_TYPE_FSM ) {
@@ -373,45 +395,47 @@ bool module_db_merge( module* base, FILE* file, bool same ) {
   }
 
   /* Since race condition blocks don't get merged, we will just read these lines in */
-  curr_base_race = base->race_head;
-  while( (curr_base_race != NULL) && retval ) {
-    if( readline( file, &curr_line ) ) {
-      if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
-        rest_line = curr_line + chars_read;
-        if( type != DB_TYPE_RACE ) {
+  if( base->type == FUNIT_MODULE ) {
+    curr_base_race = base->race_head;
+    while( (curr_base_race != NULL) && retval ) {
+      if( util_readline( file, &curr_line ) ) {
+        if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
+          rest_line = curr_line + chars_read;
+          if( type != DB_TYPE_RACE ) {
+            retval = FALSE;
+          }
+        } else {
           retval = FALSE;
         }
       } else {
         retval = FALSE;
       }
-    } else {
-      retval = FALSE;
+      curr_base_race = curr_base_race->next;
     }
-    curr_base_race = curr_base_race->next;
-  } 
+  }
 
   return( retval );
 
 }
 
 /*!
- \param base  Module that will be replaced with the new data.
+ \param base  Functional unit that will be replaced with the new data.
  \param file  Pointer to CDD file handle to read.
 
  \return Returns TRUE if parse and merge was successful; otherwise, returns FALSE.
 
- Parses specified line for module information and performs a replacement of the original
- module with the contents of the new module.  If there are any differences between the
- two modules, a warning or error will be displayed to the user.
+ Parses specified line for functional unit information and performs a replacement of the original
+ functional unit with the contents of the new functional unit.  If there are any differences between the
+ two functional units, a warning or error will be displayed to the user.
 */
-bool module_db_replace( module* base, FILE* file ) {
+bool funit_db_replace( func_unit* base, FILE* file ) {
 
-  bool      retval = TRUE;   /* Return value of this function                                */
-  exp_link* curr_base_exp;   /* Pointer to current expression in base module expression list */
-  sig_link* curr_base_sig;   /* Pointer to current signal in base module signal list         */
+  bool      retval = TRUE;   /* Return value of this function                                         */
+  exp_link* curr_base_exp;   /* Pointer to current expression in base functional unit expression list */
+  sig_link* curr_base_sig;   /* Pointer to current signal in base functional unit signal list         */
   stmt_iter curr_base_stmt;  /* Statement list iterator                                      */
-  fsm_link* curr_base_fsm;   /* Pointer to current FSM in base module FSM list               */
-  race_blk* curr_base_race;  /* Pointer to current race condition block in base module list  */
+  fsm_link* curr_base_fsm;   /* Pointer to current FSM in base functional unit FSM list               */
+  race_blk* curr_base_race;  /* Pointer to current race condition block in base functional unit list  */
   char*     curr_line;       /* Pointer to current line being read from CDD                  */
   char*     rest_line;       /* Pointer to rest of read line                                 */
   int       type;            /* Specifies currently read CDD type                            */
@@ -420,10 +444,10 @@ bool module_db_replace( module* base, FILE* file ) {
   assert( base != NULL );
   assert( base->name != NULL );
 
-  /* Handle all module expressions */
+  /* Handle all functional unit expressions */
   curr_base_exp = base->exp_head;
   while( (curr_base_exp != NULL) && retval ) {
-    if( readline( file, &curr_line ) ) {
+    if( util_readline( file, &curr_line ) ) {
       if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
         rest_line = curr_line + chars_read;
         if( type == DB_TYPE_EXPRESSION ) {
@@ -440,10 +464,10 @@ bool module_db_replace( module* base, FILE* file ) {
     curr_base_exp = curr_base_exp->next;
   }
 
-  /* Handle all module signals */
+  /* Handle all functional unit signals */
   curr_base_sig = base->sig_head;
   while( (curr_base_sig != NULL) && retval ) {
-    if( readline( file, &curr_line ) ) {
+    if( util_readline( file, &curr_line ) ) {
       if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
         rest_line = curr_line + chars_read;
         if( type == DB_TYPE_SIGNAL ) {
@@ -463,7 +487,7 @@ bool module_db_replace( module* base, FILE* file ) {
   /* Since statements don't get replaced, we will just read these lines in */
   stmt_iter_reset( &curr_base_stmt, base->stmt_head );
   while( (curr_base_stmt.curr != NULL) && retval ) {
-    if( readline( file, &curr_line ) ) {
+    if( util_readline( file, &curr_line ) ) {
       if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
         rest_line = curr_line + chars_read;
         if( type != DB_TYPE_STATEMENT ) {
@@ -478,10 +502,10 @@ bool module_db_replace( module* base, FILE* file ) {
     stmt_iter_next( &curr_base_stmt );
   }
 
-  /* Handle all module FSMs */
+  /* Handle all functional unit FSMs */
   curr_base_fsm = base->fsm_head;
   while( (curr_base_fsm != NULL) && retval ) {
-    if( readline( file, &curr_line ) ) {
+    if( util_readline( file, &curr_line ) ) {
       if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
         rest_line = curr_line + chars_read;
         if( type == DB_TYPE_FSM ) {
@@ -501,7 +525,7 @@ bool module_db_replace( module* base, FILE* file ) {
   /* Since race condition blocks don't get replaced, we will just read these lines in */
   curr_base_race = base->race_head;
   while( (curr_base_race != NULL) && retval ) {
-    if( readline( file, &curr_line ) ) {
+    if( util_readline( file, &curr_line ) ) {
       if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
         rest_line = curr_line + chars_read;
         if( type != DB_TYPE_RACE ) {
@@ -521,18 +545,51 @@ bool module_db_replace( module* base, FILE* file ) {
 }
 
 /*!
- \param mod  Pointer to module element to display signals.
+ \param mod   Pointer to module to search for the given statement.
+ \param stmt  Pointer to statement to search for.
 
- Iterates through signal list of specified module, displaying each signal's
+ \return Returns a pointer to the functional unit (task/function) that contains the given
+         statement; otherwise, return NULL if this statement could not be found.
+
+ Given the specified module, search all task/function functional units within that module
+ for the given statement.  
+*/
+func_unit* funit_find_tf_by_statement( func_unit* mod, statement* stmt ) {
+
+  funit_link* tfl;  /* Pointer to current functional unit link being checked */
+
+  assert( mod != NULL );
+  assert( mod->type == FUNIT_MODULE );
+  assert( stmt != NULL );
+
+  tfl = mod->tf_head;
+  while( (tfl != NULL) && (stmt_link_find( stmt->exp->id, tfl->funit->stmt_head ) == NULL) ) {
+    tfl = tfl->next;
+  }
+
+  return( (tfl == NULL) ? NULL : tfl->funit );
+
+}
+
+/*!
+ \param funit  Pointer to functional unit element to display signals.
+
+ Iterates through signal list of specified functional unit, displaying each signal's
  name, width, lsb and value.
 */
-void module_display_signals( module* mod ) {
+void funit_display_signals( func_unit* funit ) {
 
   sig_link* sigl;  /* Pointer to current signal link element */
 
-  printf( "Module => %s\n", mod->name );
+  switch( funit->type ) {
+    case FUNIT_MODULE      :  printf( "Module => %s\n", funit->name );       break;
+    case FUNIT_NAMED_BLOCK :  printf( "Named block => %s\n", funit->name );  break;
+    case FUNIT_FUNCTION    :  printf( "Function => %s\n", funit->name );     break;
+    case FUNIT_TASK        :  printf( "Task => %s\n", funit->name );         break;
+    default                :  printf( "UNKNOWN => %s\n", funit->name );      break;
+  }
 
-  sigl = mod->sig_head;
+  sigl = funit->sig_head;
   while( sigl != NULL ) {
     vsignal_display( sigl->sig );
     sigl = sigl->next;
@@ -541,18 +598,24 @@ void module_display_signals( module* mod ) {
 }
 
 /*!
- \param mod  Pointer to module element to display expressions
+ \param funit  Pointer to functional unit element to display expressions
 
- Iterates through expression list of specified module, displaying each expression's
+ Iterates through expression list of specified functional unit, displaying each expression's
  id.
 */
-void module_display_expressions( module* mod ) {
+void funit_display_expressions( func_unit* funit ) {
 
   exp_link* expl;    /* Pointer to current expression link element */
 
-  printf( "Module => %s\n", mod->name );
+  switch( funit->type ) {
+    case FUNIT_MODULE      :  printf( "Module => %s\n", funit->name );       break;
+    case FUNIT_NAMED_BLOCK :  printf( "Named block => %s\n", funit->name );  break;
+    case FUNIT_FUNCTION    :  printf( "Function => %s\n", funit->name );     break;
+    case FUNIT_TASK        :  printf( "Task => %s\n", funit->name );         break;
+    default                :  printf( "UNKNOWN => %s\n", funit->name );      break;
+  }
 
-  expl = mod->exp_head;
+  expl = funit->exp_head;
   while( expl != NULL ) {
     expression_display( expl->exp );
     expl = expl->next;
@@ -561,74 +624,74 @@ void module_display_expressions( module* mod ) {
 }
 
 /*!
- \param mod  Pointer to module element to clean.
+ \param funit  Pointer to functional unit element to clean.
 
- Deallocates module contents: name and filename strings.
+ Deallocates functional unit contents: name and filename strings.
 */
-void module_clean( module* mod ) {
+void funit_clean( func_unit* funit ) {
 
-  if( mod != NULL ) {
+  if( funit != NULL ) {
 
-    /* Free module name */
-    if( mod->name != NULL ) {
-      free_safe( mod->name );
-      mod->name = NULL;
+    /* Free functional unit name */
+    if( funit->name != NULL ) {
+      free_safe( funit->name );
+      funit->name = NULL;
     }
 
-    /* Free module filename */
-    if( mod->filename != NULL ) {
-      free_safe( mod->filename );
-      mod->filename = NULL;
+    /* Free functional unit filename */
+    if( funit->filename != NULL ) {
+      free_safe( funit->filename );
+      funit->filename = NULL;
     }
 
     /* Free expression list */
-    exp_link_delete_list( mod->exp_head, TRUE );
-    mod->exp_head = NULL;
-    mod->exp_tail = NULL;
+    exp_link_delete_list( funit->exp_head, TRUE );
+    funit->exp_head = NULL;
+    funit->exp_tail = NULL;
 
     /* Free signal list */
-    sig_link_delete_list( mod->sig_head, TRUE );
-    mod->sig_head = NULL;
-    mod->sig_tail = NULL;
+    sig_link_delete_list( funit->sig_head, TRUE );
+    funit->sig_head = NULL;
+    funit->sig_tail = NULL;
 
     /* Free statement list */
-    stmt_link_delete_list( mod->stmt_head );
-    mod->stmt_head = NULL;
-    mod->stmt_tail = NULL;
+    stmt_link_delete_list( funit->stmt_head );
+    funit->stmt_head = NULL;
+    funit->stmt_tail = NULL;
 
     /* Free parameter list */
-    mod_parm_dealloc( mod->param_head, TRUE );
-    mod->param_head = NULL;
-    mod->param_tail = NULL;
+    mod_parm_dealloc( funit->param_head, TRUE );
+    funit->param_head = NULL;
+    funit->param_tail = NULL;
 
     /* Free FSM list */
-    fsm_link_delete_list( mod->fsm_head );
-    mod->fsm_head = NULL;
-    mod->fsm_tail = NULL;
+    fsm_link_delete_list( funit->fsm_head );
+    funit->fsm_head = NULL;
+    funit->fsm_tail = NULL;
 
     /* Free race condition block list */
-    race_blk_delete_list( mod->race_head );
-    mod->race_head = NULL;
-    mod->race_tail = NULL;
+    race_blk_delete_list( funit->race_head );
+    funit->race_head = NULL;
+    funit->race_tail = NULL;
 
   }
 
 }
 
 /*!
- \param mod  Pointer to module element to deallocate.
+ \param funit  Pointer to functional unit element to deallocate.
 
- Deallocates module; name and filename strings; and finally
+ Deallocates functional unit; name and filename strings; and finally
  the structure itself from the heap.
 */
-void module_dealloc( module* mod ) {
+void funit_dealloc( func_unit* funit ) {
 
-  if( mod != NULL ) {
+  if( funit != NULL ) {
 
-    module_clean( mod );
+    funit_clean( funit );
 
-    /* Deallocate module element itself */
-    free_safe( mod );
+    /* Deallocate functional unit element itself */
+    free_safe( funit );
 
   }
 
@@ -637,6 +700,12 @@ void module_dealloc( module* mod ) {
 
 /*
  $Log$
+ Revision 1.38  2005/02/05 04:13:30  phase1geo
+ Started to add reporting capabilities for race condition information.  Modified
+ race condition reason calculation and handling.  Ran -Wall on all code and cleaned
+ things up.  Cleaned up regression as a result of these changes.  Full regression
+ now passes.
+
  Revision 1.37  2005/02/04 23:55:53  phase1geo
  Adding code to support race condition information in CDD files.  All code is
  now in place for writing/reading this data to/from the CDD file (although

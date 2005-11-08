@@ -25,8 +25,8 @@
 #include "db.h"
 
 
-extern char      user_msg[USER_MSG_LENGTH];
-extern mod_link* mod_head;
+extern char        user_msg[USER_MSG_LENGTH];
+extern funit_link* funit_head;
 
 
 /*!
@@ -58,22 +58,22 @@ fv_bind* fsm_var_bind_head = NULL;
 fv_bind* fsm_var_bind_tail = NULL;
 
 /*!
- Pointer to the head of the list of FSM variable statement/module bindings.  During the
+ Pointer to the head of the list of FSM variable statement/functional unit bindings.  During the
  command-line parse of FSM variables, bindings will be submitted into this list for
  processing after Verilog parsing has completed.  After Verilog parsing has completed,
- the FSM bind function needs to be called to bind all FSM statements/modules to
+ the FSM bind function needs to be called to bind all FSM statements/functional units to
  each other.
 */
 fv_bind* fsm_var_stmt_head = NULL;
 
 /*!
- Pointer to the tail of the list of FSM statement/module bindings.
+ Pointer to the tail of the list of FSM statement/functional unit bindings.
 */
 fv_bind* fsm_var_stmt_tail = NULL;
 
 
 /*!
- \param mod_name   String containing module containing FSM state variable.
+ \param funit_name   String containing functional unit containing FSM state variable.
  \param in_state   Pointer to expression containing input state.
  \param out_state  Pointer to expression containing output state.
  \param name       Name of this FSM (only valid for attributes).
@@ -83,18 +83,18 @@ fv_bind* fsm_var_stmt_tail = NULL;
  Adds the specified Verilog hierarchical scope to a list of FSM scopes to
  find during the parsing phase.
 */
-fsm_var* fsm_var_add( char* mod_name, expression* in_state, expression* out_state, char* name ) {
+fsm_var* fsm_var_add( char* funit_name, expression* in_state, expression* out_state, char* name ) {
 
-  fsm_var*  new_var = NULL;  /* Pointer to newly created FSM variable */
-  mod_link* modl;            /* Pointer to module link found          */
-  module    mod;             /* Temporary module used for searching   */
-  fsm*      table;           /* Pointer to newly create FSM           */
+  fsm_var*    new_var = NULL;  /* Pointer to newly created FSM variable          */
+  funit_link* funitl;          /* Pointer to functional unit link found          */
+  func_unit   funit;           /* Temporary functional unit used for searching   */
+  fsm*        table;           /* Pointer to newly create FSM                    */
 
   /* If we have not parsed, design add new FSM variable to list */
-  if( mod_head == NULL ) {
+  if( funit_head == NULL ) {
 
     new_var        = (fsm_var*)malloc_safe( sizeof( fsm_var ), __FILE__, __LINE__ );
-    new_var->mod   = strdup_safe( mod_name, __FILE__, __LINE__ );
+    new_var->funit = strdup_safe( funit_name, __FILE__, __LINE__ );
     new_var->name  = NULL;
     new_var->ivar  = in_state;
     new_var->ovar  = out_state;
@@ -112,18 +112,19 @@ fsm_var* fsm_var_add( char* mod_name, expression* in_state, expression* out_stat
   } else {
 
     /* Just create the new FSM */
-    mod.name = mod_name;
+    funit.name = funit_name;
+    funit.type = FUNIT_MODULE;
 
-    if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
+    if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
       table = fsm_create( in_state, out_state );
       if( name != NULL ) {
         table->name = strdup_safe( name, __FILE__, __LINE__ );
       }
       in_state->table  = table;
       out_state->table = table;
-      fsm_link_add( table, &(modl->mod->fsm_head), &(modl->mod->fsm_tail) );
+      fsm_link_add( table, &(funitl->funit->fsm_head), &(funitl->funit->fsm_tail) );
     } else {
-      assert( modl != NULL );
+      assert( funitl != NULL );
     }
 
   }
@@ -156,37 +157,38 @@ fsm_var* fsm_var_is_output_state( expression* expr ) {
 }
 
 /*!
- \param sig_name  String name of signal to bind to specified expression.
- \param expr      Pointer to expression to bind to signal called sig_name.
- \param mod_name  String name of module that contains the expression pointed to by expr.
+ \param sig_name    String name of signal to bind to specified expression.
+ \param expr        Pointer to expression to bind to signal called sig_name.
+ \param funit_name  String name of functional unit that contains the expression pointed to by expr.
 
  \return Returns TRUE if the signal and expression are able to be bound (specified signal
-         name and module name exist in design); otherwise, returns a value of FALSE.
+         name and functional unit name exist in design); otherwise, returns a value of FALSE.
 
- Searches the module list for the module called mod_name.  If the module is found in the
- design, searches this module for the signal called sig_name.  If the signal is found,
+ Searches the functional unit list for the functional unit called funit_name.  If the functional unit
+ is found in the design, searches this functional unit for the signal called sig_name.  If the signal is found,
  the signal and specified expression expr are bound to each other and this function returns
- a value of TRUE.  If the signal name could not be found or the module name could not be found
+ a value of TRUE.  If the signal name could not be found or the functional unit name could not be found
  in the design, no binding occurs and the function displays an error message and returns a
  value of FALSE to the calling function.
 */
-bool fsm_var_bind_expr( char* sig_name, expression* expr, char* mod_name ) {
+bool fsm_var_bind_expr( char* sig_name, expression* expr, char* funit_name ) {
 
-  bool      retval = TRUE;  /* Return value for this function       */
-  mod_link* modl;           /* Pointer to found module link element */
-  module    mod;             /* Temporary module used for searching  */
+  bool        retval = TRUE;  /* Return value for this function                */
+  funit_link* funitl;         /* Pointer to found functional unit link element */
+  func_unit   funit;          /* Temporary functional unit used for searching  */
 
-  mod.name = mod_name;
+  funit.name = funit_name;
+  funit.type = FUNIT_MODULE;
 
-  if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
-    if( !bind_perform( sig_name, expr, modl->mod, modl->mod, FALSE, TRUE ) ) {
+  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
+    if( !bind_signal( sig_name, expr, funitl->funit, funitl->funit, FALSE, TRUE ) ) {
       snprintf( user_msg, USER_MSG_LENGTH, "Unable to bind FSM-specified signal (%s) to expression (%d) in module (%s)",
-                sig_name, expr->id, mod_name );
+                sig_name, expr->id, funit_name );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       retval = FALSE;
     }
   } else {
-    snprintf( user_msg, USER_MSG_LENGTH, "Unable to find FSM-specified module (%s) in design", mod_name ); 
+    snprintf( user_msg, USER_MSG_LENGTH, "Unable to find FSM-specified module (%s) in design", funit_name ); 
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = FALSE;
   }
@@ -196,24 +198,24 @@ bool fsm_var_bind_expr( char* sig_name, expression* expr, char* mod_name ) {
 }
 
 /*!
- \param expr  Pointer to expression to add to the specified module.
- \param mod   Pointer to module structure to add expression to.
+ \param expr   Pointer to expression to add to the specified functional unit.
+ \param funit  Pointer to functional unit structure to add expression to.
 
  Iterates through specified expression tree, adding each expression to the
- specified module if the expression does not already exist in the module.
+ specified functional unit if the expression does not already exist in the functional unit.
 */
-void fsm_var_add_expr( expression* expr, module* mod ) {
+void fsm_var_add_expr( expression* expr, func_unit* funit ) {
 
   if( expr != NULL ) {
 
-    if( exp_link_find( expr, mod->exp_head ) == NULL ) {
+    if( exp_link_find( expr, funit->exp_head ) == NULL ) {
 
       /* Add expression's children first. */
       db_add_expression( expr->right );
       db_add_expression( expr->left );
 
       /* Now add this expression to the list. */
-      exp_link_add( expr, &(mod->exp_head), &(mod->exp_tail) );
+      exp_link_add( expr, &(funit->exp_head), &(funit->exp_tail) );
 
     }
 
@@ -222,46 +224,47 @@ void fsm_var_add_expr( expression* expr, module* mod ) {
 }
 
 /*!
- \param stmt      Pointer to statement to bind.
- \param mod_name  String name of module which will contain stmt.
+ \param stmt        Pointer to statement to bind.
+ \param funit_name  String name of functional unit which will contain stmt.
 
  \return Returns a value of TRUE if the statement was successfully bound to
-         the specified module name; otherwise, returns a value of FALSE.
+         the specified functional unit name; otherwise, returns a value of FALSE.
 
- Searches the design module list for a module called mod_name.  If the module
- is found in the design, adds the statement's expression tree to the design,
+ Searches the design functional unit list for a functional unit called funit_name.
+ If the functional unit is found in the design, adds the statement's expression tree to the design,
  sets the STMT_ADDED bit in the statement's supplemental field, adds this
- statement to the found module structure, and finally creates an FSM table if
+ statement to the found functional unit structure, and finally creates an FSM table if
  the statement contains an output state FSM expression tree and returns a value
- of TRUE to the calling function.  If the module could not be found, this
+ of TRUE to the calling function.  If the functional unit could not be found, this
  function, returns a value of FALSE to the calling function.
 */
-bool fsm_var_bind_stmt( statement* stmt, char* mod_name ) {
+bool fsm_var_bind_stmt( statement* stmt, char* funit_name ) {
 
-  bool      retval = FALSE;  /* Return value for this function       */
-  mod_link* modl;            /* Pointer to found module link element */
-  module    mod;             /* Temporary module used for searching  */
-  fsm_var*  fv;              /* Pointer to found FSM variable        */
+  bool        retval = FALSE;  /* Return value for this function                */
+  funit_link* funitl;          /* Pointer to found functional unit link element */
+  func_unit   funit;           /* Temporary functional unit used for searching  */
+  fsm_var*    fv;              /* Pointer to found FSM variable                 */
 
-  mod.name = mod_name;
+  funit.name = funit_name;
+  funit.type = FUNIT_MODULE;  /* TBD */
 
-  if( (modl = mod_link_find( &mod, mod_head )) != NULL ) {
+  if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
 
-    /* First, add expression tree to found module expression list */
-    fsm_var_add_expr( stmt->exp, modl->mod );
+    /* First, add expression tree to found functional unit expression list */
+    fsm_var_add_expr( stmt->exp, funitl->funit );
 
     /* Set ADDED bit of this statement */
     stmt->exp->suppl.part.stmt_added = 1;
 
-    /* Second, add our statement to this module's statement list */
-    stmt_link_add_head( stmt, &(modl->mod->stmt_head), &(modl->mod->stmt_tail) );
+    /* Second, add our statement to this functional unit's statement list */
+    stmt_link_add_head( stmt, &(funitl->funit->stmt_head), &(funitl->funit->stmt_tail) );
 
     /* Finally, create the new FSM if we are the output state */
     if( (fv = fsm_var_is_output_state( stmt->exp )) != NULL ) {
       fv->table       = fsm_create( fv->ivar, fv->ovar );
       fv->ivar->table = fv->table;
       fv->ovar->table = fv->table;
-      fsm_link_add( fv->table, &(modl->mod->fsm_head), &(modl->mod->fsm_tail) );
+      fsm_link_add( fv->table, &(funitl->funit->fsm_head), &(funitl->funit->fsm_tail) );
       fsm_var_remove( fv );
     }
 
@@ -276,27 +279,27 @@ bool fsm_var_bind_stmt( statement* stmt, char* mod_name ) {
 }
 
 /*!
- \param sig_name  Name of signal to bind.
- \param expr      Pointer to expression to bind.
- \param mod_name  Name of module that will contain the expression and signal being bound.
+ \param sig_name    Name of signal to bind.
+ \param expr        Pointer to expression to bind.
+ \param funit_name  Name of functional unit that will contain the expression and signal being bound.
 
  Creates a new FSM binding structure and initializes it with the specified information.
  The FSM binding structure is then added to the global list of FSM binding structures to
  be bound after parsing is complete.
 */
-void fsm_var_bind_add( char* sig_name, expression* expr, char* mod_name ) {
+void fsm_var_bind_add( char* sig_name, expression* expr, char* funit_name ) {
 
   fv_bind* fvb;  /* Pointer to new FSM variable binding structure */
 
-  /* If the module list does not exist yet, we need to bind this later; otherwise, bind now */
-  if( mod_head == NULL ) {
+  /* If the functional unit list does not exist yet, we need to bind this later; otherwise, bind now */
+  if( funit_head == NULL ) {
 
     /* Allocate and initialize FSM variable bind structure */
-    fvb           = (fv_bind*)malloc_safe( sizeof( fv_bind ), __FILE__, __LINE__ );
-    fvb->sig_name = strdup_safe( sig_name, __FILE__, __LINE__ );
-    fvb->expr     = expr;
-    fvb->mod_name = strdup_safe( mod_name, __FILE__, __LINE__ );
-    fvb->next     = NULL;
+    fvb             = (fv_bind*)malloc_safe( sizeof( fv_bind ), __FILE__, __LINE__ );
+    fvb->sig_name   = strdup_safe( sig_name, __FILE__, __LINE__ );
+    fvb->expr       = expr;
+    fvb->funit_name = strdup_safe( funit_name, __FILE__, __LINE__ );
+    fvb->next       = NULL;
 
     /* Add new structure to the global list */
     if( fsm_var_bind_head == NULL ) {
@@ -308,7 +311,7 @@ void fsm_var_bind_add( char* sig_name, expression* expr, char* mod_name ) {
 
   } else {
 
-    if( !fsm_var_bind_expr( sig_name, expr, mod_name ) ) {
+    if( !fsm_var_bind_expr( sig_name, expr, funit_name ) ) {
       exit( 1 );
     }
 
@@ -317,20 +320,20 @@ void fsm_var_bind_add( char* sig_name, expression* expr, char* mod_name ) {
 }
 
 /*!
- \param stmt      Pointer to statement containing FSM state expression
- \param mod_name  Name of module that will contain stmt.
+ \param stmt        Pointer to statement containing FSM state expression
+ \param funit_name  Name of functional unit that will contain stmt.
 
  Allocates and initializes an FSM variable binding entry and adds it to the
  fsm_var_stmt list for later processing.
 */
-void fsm_var_stmt_add( statement* stmt, char* mod_name ) {
+void fsm_var_stmt_add( statement* stmt, char* funit_name ) {
 
   fv_bind* fvb;  /* Pointer to new FSM variable binding structure */
 
-  fvb           = (fv_bind*)malloc_safe( sizeof( fv_bind ), __FILE__, __LINE__ );
-  fvb->stmt     = stmt;
-  fvb->mod_name = strdup_safe( mod_name, __FILE__, __LINE__ );
-  fvb->next     = NULL;
+  fvb             = (fv_bind*)malloc_safe( sizeof( fv_bind ), __FILE__, __LINE__ );
+  fvb->stmt       = stmt;
+  fvb->funit_name = strdup_safe( funit_name, __FILE__, __LINE__ );
+  fvb->next       = NULL;
 
   /* Add new structure to the head of the global list */
   if( fsm_var_stmt_head == NULL ) {
@@ -344,14 +347,14 @@ void fsm_var_stmt_add( statement* stmt, char* mod_name ) {
 
 /*!
  After Verilog parsing has completed, this function should be called to bind all signals
- to their associated FSM state expressions and modules.  For each entry in the FSM binding list
- the signal name is looked in the module specified in the binding entry.  If the signal is found,
+ to their associated FSM state expressions and functional units.  For each entry in the FSM binding list
+ the signal name is looked in the functional unit specified in the binding entry.  If the signal is found,
  the associated expression pointer is added to the signal's expression list and the expression's
  signal pointer is set to point at the found signal structure.  If the signal was not found,
  an error message is reported to the user, specifying the signal did not exist in the design.
 
  After the signals and expressions have been bound, the FSM statement binding list is iterated
- through binding all statements containing FSM state expressions to the module that it is a part of.
+ through binding all statements containing FSM state expressions to the functional unit that it is a part of.
  If the statement contains an FSM state expression that is an output state expression, create the
  FSM structure for this FSM and add it to the design.
 */
@@ -365,13 +368,13 @@ void fsm_var_bind() {
   while( curr != NULL ) {
 
     /* Perform binding */
-    error = !fsm_var_bind_expr( curr->sig_name, curr->expr, curr->mod_name ) || error;
+    error = !fsm_var_bind_expr( curr->sig_name, curr->expr, curr->funit_name ) || error;
 
     tmp = curr->next;
 
     /* Deallocate memory for this bind structure */
     free_safe( curr->sig_name );
-    free_safe( curr->mod_name );
+    free_safe( curr->funit_name );
     free_safe( curr );
 
     curr = tmp;
@@ -383,13 +386,13 @@ void fsm_var_bind() {
     curr = fsm_var_stmt_head;
     while( curr != NULL ) {
 
-      /* Bind statement to module */
-      fsm_var_bind_stmt( curr->stmt, curr->mod_name );
+      /* Bind statement to functional unit */
+      fsm_var_bind_stmt( curr->stmt, curr->funit_name );
 
       tmp = curr->next;
 
       /* Deallocate memory for this bind structure */
-      free_safe( curr->mod_name );
+      free_safe( curr->funit_name );
       free_safe( curr );
 
       curr = tmp;
@@ -413,8 +416,8 @@ void fsm_var_dealloc( fsm_var* fv ) {
 
   if( fv != NULL ) {
 
-    /* Deallocate the module name string */
-    free_safe( fv->mod );
+    /* Deallocate the functional unit name string */
+    free_safe( fv->funit );
 
     /* Finally, deallocate ourself */
     free_safe( fv );
@@ -465,6 +468,10 @@ void fsm_var_remove( fsm_var* fv ) {
 
 /*
  $Log$
+ Revision 1.16  2005/01/07 17:59:51  phase1geo
+ Finalized updates for supplemental field changes.  Everything compiles and links
+ correctly at this time; however, a regression run has not confirmed the changes.
+
  Revision 1.15  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,

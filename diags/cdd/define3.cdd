@@ -1,5 +1,5 @@
-5 1 * 4 0
-3 main main define3.v 1 24
+5 1 * 5 0
+3 0 main main define3.v 1 24
 2 3 9 120012 1 80 0 0 
 2 2 9 b000e 0 80 0 0 32 0 44 0 0 0 0 0 0 0
 2 4 9 b0012 6 2080 3 2 32 0 1aa aa aa aa aa aa aa aa

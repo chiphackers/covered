@@ -1,5 +1,5 @@
-5 1 main.foo 4 0
-3 fooman foo instance4.v 36 44
+5 1 main.foo 5 0
+3 0 fooman foo instance4.v 36 44
 2 3 42 f000f 1 c0 0 0 
 2 2 42 b000b 1 c0 0 0 
 2 4 42 b000f 8 1c40 3 2 1 0 2

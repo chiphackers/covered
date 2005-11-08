@@ -24,8 +24,8 @@
 #include "race.h"
 
 
-extern mod_link*   mod_head;
-extern mod_inst*   instance_root;
+extern funit_link* funit_head;
+extern funit_inst* instance_root;
 extern char        user_msg[USER_MSG_LENGTH];
 extern const char* race_msgs[RACE_TYPE_NUM];
 
@@ -48,19 +48,19 @@ int tcl_func_get_race_reason_msgs( ClientData d, Tcl_Interp* tcl, int argc, cons
 
 }
 
-int tcl_func_get_module_list( ClientData d, Tcl_Interp* tcl, int argc, const char *argv[] ) {
+int tcl_func_get_funit_list( ClientData d, Tcl_Interp* tcl, int argc, const char *argv[] ) {
 
-  char** mod_list;         /* List of module names in design */
-  int    mod_size;         /* Number of elements in mod_list */
+  char** funit_list;         /* List of functional unit names in design */
+  int    funit_size;         /* Number of elements in funit_list */
   int    retval = TCL_OK;  /* Return value of this function  */
   int    i;                /* Loop iterator                  */
 
-  if( module_get_list( &mod_list, &mod_size ) ) {
-    for( i=0; i<mod_size; i++ ) {
-      Tcl_SetVar( tcl, "mod_list", mod_list[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+  if( funit_get_list( &funit_list, &funit_size ) ) {
+    for( i=0; i<funit_size; i++ ) {
+      Tcl_SetVar( tcl, "funit_list", funit_list[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
     }
   } else {
-    snprintf( user_msg, USER_MSG_LENGTH, "Unable to get modules list from this design" );
+    snprintf( user_msg, USER_MSG_LENGTH, "Unable to get functional unit list from this design" );
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = TCL_ERROR;
@@ -70,16 +70,16 @@ int tcl_func_get_module_list( ClientData d, Tcl_Interp* tcl, int argc, const cha
 
 }
 
-int tcl_func_get_instances( Tcl_Interp* tcl, mod_inst* root ) {
+int tcl_func_get_instances( Tcl_Interp* tcl, funit_inst* root ) {
 
-  mod_inst* curr;
+  funit_inst* curr;
   char      scope[4096];  /* Hierarchical scope name */
 
   /* Generate the name of this child */
   scope[0] = '\0';
   instance_gen_scope( scope, root );
-  Tcl_SetVar( tcl, "inst_list", scope,           (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
-  Tcl_SetVar( tcl, "mod_list",  root->mod->name, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+  Tcl_SetVar( tcl, "inst_list",  scope,             (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+  Tcl_SetVar( tcl, "funit_list", root->funit->name, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
 
   curr = root->child_head;
   while( curr != NULL ) {
@@ -113,10 +113,10 @@ int tcl_func_get_filename( ClientData d, Tcl_Interp* tcl, int argc, const char* 
   char* filename;
   int   retval = TCL_OK;
 
-  if( (filename = module_get_filename( argv[1] )) != NULL ) {
+  if( (filename = funit_get_filename( argv[1] )) != NULL ) {
     Tcl_SetVar( tcl, "file_name", filename, TCL_GLOBAL_ONLY );
   } else {
-    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find filename for module %s", argv[1] );
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find filename for functional unit %s", argv[1] );
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = TCL_ERROR;
@@ -126,20 +126,20 @@ int tcl_func_get_filename( ClientData d, Tcl_Interp* tcl, int argc, const char* 
 
 }
 
-int tcl_func_get_module_start_and_end( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
+int tcl_func_get_funit_start_and_end( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
   int  retval = TCL_OK;  /* Return value for this function */
   int  start_line;
   int  end_line;
   char linenum[20];
 
-  if( module_get_start_and_end_lines( argv[1], &start_line, &end_line ) ) {
+  if( funit_get_start_and_end_lines( argv[1], &start_line, &end_line ) ) {
     snprintf( linenum, 20, "%d", start_line );
     Tcl_SetVar( tcl, "start_line", linenum, TCL_GLOBAL_ONLY );
     snprintf( linenum, 20, "%d", end_line );
     Tcl_SetVar( tcl, "end_line",   linenum, TCL_GLOBAL_ONLY );
   } else {
-    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find start and end lines for module %s", argv[1] );
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find start and end lines for functional unit %s", argv[1] );
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = TCL_ERROR;
@@ -172,7 +172,7 @@ int tcl_func_collect_uncovered_lines( ClientData d, Tcl_Interp* tcl, int argc, c
 
   } else {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find module %s in design", argv[1] );
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s in design", argv[1] );
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = TCL_ERROR;
@@ -186,15 +186,15 @@ int tcl_func_collect_uncovered_lines( ClientData d, Tcl_Interp* tcl, int argc, c
 int tcl_func_collect_covered_lines( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
   int   retval  = TCL_OK;
-  char* modname;
+  char* funit_name;
   int*  lines;
   int   line_cnt;
   int   i;
   char  line[20];
 
-  modname = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
 
-  if( line_collect( modname, 1, &lines, &line_cnt ) ) {
+  if( line_collect( funit_name, 1, &lines, &line_cnt ) ) {
 
     for( i=0; i<line_cnt; i++ ) {
       snprintf( line, 20, "%d", lines[i] );
@@ -209,14 +209,14 @@ int tcl_func_collect_covered_lines( ClientData d, Tcl_Interp* tcl, int argc, con
 
   } else {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find module %s in design", argv[1] );
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s in design", argv[1] );
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = TCL_ERROR;
 
   }
 
-  free_safe( modname );
+  free_safe( funit_name );
 
   return( retval );
 
@@ -270,17 +270,17 @@ int tcl_func_collect_race_lines( ClientData d, Tcl_Interp* tcl, int argc, const 
 int tcl_func_collect_uncovered_toggles( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
   int          retval = TCL_OK;
-  char*        modname;
+  char*        funit_name;
   expression** sigs;
   int          sig_cnt;
   int          i;
   char         str[85];
   int          startline;
 
-  modname   = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_name   = strdup_safe( argv[1], __FILE__, __LINE__ );
   startline = atol( argv[2] );
 
-  if( toggle_collect( modname, 0, &sigs, &sig_cnt ) ) {
+  if( toggle_collect( funit_name, 0, &sigs, &sig_cnt ) ) {
 
     for( i=0; i<sig_cnt; i++ ) {
       snprintf( str, 85, "%d.%d %d.%d", (sigs[i]->line - (startline - 1)), (((sigs[i]->col >> 16) & 0xffff) + 9),
@@ -296,14 +296,14 @@ int tcl_func_collect_uncovered_toggles( ClientData d, Tcl_Interp* tcl, int argc,
 
   } else {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find module %s in design", argv[1] );
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s in design", argv[1] );
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = TCL_ERROR;
 
   }
 
-  free_safe( modname );
+  free_safe( funit_name );
 
   return( retval );
 
@@ -312,17 +312,17 @@ int tcl_func_collect_uncovered_toggles( ClientData d, Tcl_Interp* tcl, int argc,
 int tcl_func_collect_covered_toggles( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
   int          retval = TCL_OK;
-  char*        modname;
+  char*        funit_name;
   expression** sigs;
   int          sig_cnt;
   int          i;
   char         str[85];
   int          startline;
 
-  modname   = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_name   = strdup_safe( argv[1], __FILE__, __LINE__ );
   startline = atol( argv[2] );
 
-  if( toggle_collect( modname, 1, &sigs, &sig_cnt ) ) {
+  if( toggle_collect( funit_name, 1, &sigs, &sig_cnt ) ) {
 
     for( i=0; i<sig_cnt; i++ ) {
       snprintf( str, 85, "%d.%d %d.%d", (sigs[i]->line - (startline - 1)), (((sigs[i]->col >> 16) & 0xffff) + 9),
@@ -338,14 +338,14 @@ int tcl_func_collect_covered_toggles( ClientData d, Tcl_Interp* tcl, int argc, c
 
   } else {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find module %s in design", argv[1] );
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s in design", argv[1] );
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = TCL_ERROR;
 
   }
 
-  free_safe( modname );
+  free_safe( funit_name );
 
   return( retval );
 
@@ -354,7 +354,7 @@ int tcl_func_collect_covered_toggles( ClientData d, Tcl_Interp* tcl, int argc, c
 int tcl_func_get_toggle_coverage( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
   int   retval = TCL_OK;
-  char* modname;
+  char* funit_name;
   char* signame;
   int   msb;
   int   lsb; 
@@ -362,10 +362,10 @@ int tcl_func_get_toggle_coverage( ClientData d, Tcl_Interp* tcl, int argc, const
   char* tog10;
   char  tmp[20];
 
-  modname = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
   signame = strdup_safe( argv[2], __FILE__, __LINE__ );
 
-  if( toggle_get_coverage( modname, signame, &msb, &lsb, &tog01, &tog10 ) ) {
+  if( toggle_get_coverage( funit_name, signame, &msb, &lsb, &tog01, &tog10 ) ) {
 
     snprintf( tmp, 20, "%d", msb );
     Tcl_SetVar( tcl, "toggle_msb", tmp, TCL_GLOBAL_ONLY );
@@ -379,14 +379,14 @@ int tcl_func_get_toggle_coverage( ClientData d, Tcl_Interp* tcl, int argc, const
     free_safe( tog10 );
 
   } else {
-    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find module %s in design", argv[1] );
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s in design", argv[1] );
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = TCL_ERROR;
   }
 
   /* Free up allocated memory */
-  free_safe( modname );
+  free_safe( funit_name );
   free_safe( signame );
 
   return( retval );
@@ -396,7 +396,7 @@ int tcl_func_get_toggle_coverage( ClientData d, Tcl_Interp* tcl, int argc, const
 int tcl_func_collect_combs( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
   int          retval = TCL_OK;
-  char*        modname;
+  char*        funit_name;
   expression** covs;
   expression** uncovs;
   int          cov_cnt;
@@ -406,10 +406,10 @@ int tcl_func_collect_combs( ClientData d, Tcl_Interp* tcl, int argc, const char*
   int          startline;
   expression*  last;
 
-  modname   = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_name   = strdup_safe( argv[1], __FILE__, __LINE__ );
   startline = atol( argv[2] );
 
-  if( combination_collect( modname, &covs, &cov_cnt, &uncovs, &uncov_cnt ) ) {
+  if( combination_collect( funit_name, &covs, &cov_cnt, &uncovs, &uncov_cnt ) ) {
 
     /* Load uncovered statements into Tcl */
     for( i=0; i<uncov_cnt; i++ ) {
@@ -442,14 +442,14 @@ int tcl_func_collect_combs( ClientData d, Tcl_Interp* tcl, int argc, const char*
 
   } else {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find module %s in design", argv[1] );
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s in design", argv[1] );
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = TCL_ERROR;
 
   }
 
-  free_safe( modname );
+  free_safe( funit_name );
 
   return( retval );
 
@@ -458,7 +458,7 @@ int tcl_func_collect_combs( ClientData d, Tcl_Interp* tcl, int argc, const char*
 int tcl_func_get_comb_expression( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
   int    retval = TCL_OK;
-  char*  modname;
+  char*  funit_name;
   int    expr_id;
   char** code;
   int*   uline_groups;
@@ -468,10 +468,10 @@ int tcl_func_get_comb_expression( ClientData d, Tcl_Interp* tcl, int argc, const
   int    i;
   char   tmp[20];
 
-  modname = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
   expr_id = atol( argv[2] );
 
-  if( combination_get_expression( modname, expr_id, &code, &uline_groups, &code_size, &ulines, &uline_size ) ) {
+  if( combination_get_expression( funit_name, expr_id, &code, &uline_groups, &code_size, &ulines, &uline_size ) ) {
 
     for( i=0; i<code_size; i++ ) {
       if( i == 0 ) {
@@ -506,14 +506,14 @@ int tcl_func_get_comb_expression( ClientData d, Tcl_Interp* tcl, int argc, const
     }
 
   } else {
-    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find module %s in design", argv[1] );
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s in design", argv[1] );
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = TCL_ERROR;
   }
 
   /* Free up allocated memory */
-  free_safe( modname );
+  free_safe( funit_name );
 
   return( retval );
 
@@ -521,17 +521,17 @@ int tcl_func_get_comb_expression( ClientData d, Tcl_Interp* tcl, int argc, const
 
 int tcl_func_get_comb_coverage( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
-  int    retval = TCL_OK;  /* Return value for this function                      */
-  char*  modname;          /* Name of module containing expression to lookup      */
-  int    ulid;             /* Underline ID of expression to find                  */
-  char** info;             /* Array containing lines of coverage information text */
-  int    info_size;        /* Specifies number of elements in info array          */
-  int    i;                /* Loop iterator                                       */
+  int    retval = TCL_OK;  /* Return value for this function                          */
+  char*  funit_name;       /* Name of functional unit containing expression to lookup */
+  int    ulid;             /* Underline ID of expression to find                      */
+  char** info;             /* Array containing lines of coverage information text     */
+  int    info_size;        /* Specifies number of elements in info array              */
+  int    i;                /* Loop iterator                                           */
 
-  modname = strdup_safe( argv[1], __FILE__, __LINE__ );
-  ulid    = atol( argv[2] );
+  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  ulid       = atol( argv[2] );
 
-  if( combination_get_coverage( modname, ulid, &info, &info_size ) ) {
+  if( combination_get_coverage( funit_name, ulid, &info, &info_size ) ) {
 
     if( info_size > 0 ) {
 
@@ -550,13 +550,13 @@ int tcl_func_get_comb_coverage( ClientData d, Tcl_Interp* tcl, int argc, const c
 
   } else {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find module %s and/or expression ID %d in design", argv[1], ulid );
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s and/or expression ID %d in design", argv[1], ulid );
     Tcl_AddErrorInfo( tcl, user_msg );
     retval = TCL_ERROR;
   }
 
   /* Free up allocated memory */
-  free_safe( modname );
+  free_safe( funit_name );
 
   return( retval );
 
@@ -640,26 +640,26 @@ int tcl_func_merge_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* arg
 int tcl_func_get_line_summary( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
   int   retval = TCL_OK;  /* Return value for this function           */
-  char* mod_name;         /* Name of module to lookup                 */
+  char* funit_name;       /* Name of functional unit to lookup        */
   int   total;            /* Contains total number of lines evaluated */
   int   hit;              /* Contains total number of lines hit       */
   char  value[20];        /* String version of a value                */
 
-  mod_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
  
-  if( line_get_module_summary( mod_name, &total, &hit ) ) {
+  if( line_get_funit_summary( funit_name, &total, &hit ) ) {
     snprintf( value, 20, "%d", total );
     Tcl_SetVar( tcl, "line_summary_total", value, TCL_GLOBAL_ONLY );
     snprintf( value, 20, "%d", hit );
     Tcl_SetVar( tcl, "line_summary_hit", value, TCL_GLOBAL_ONLY );
   } else {
-    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find module %s", mod_name );
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s", funit_name );
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = TCL_ERROR;
   }
 
-  free_safe( mod_name );
+  free_safe( funit_name );
 
   return( retval );
 
@@ -668,15 +668,15 @@ int tcl_func_get_line_summary( ClientData d, Tcl_Interp* tcl, int argc, const ch
 int tcl_func_get_toggle_summary( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
   int   retval = TCL_OK;  /* Return value for this function             */
-  char* mod_name;         /* Name of module to lookup                   */
+  char* funit_name;       /* Name of functional unit to lookup          */
   int   total;            /* Contains total number of toggles evaluated */
   int   hit01;            /* Contains total number of toggle 0->1 hit   */
   int   hit10;            /* Contains total number of toggle 1->0 hit   */
   char  value[20];        /* String version of a value                  */
 
-  mod_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
 		     
-  if( toggle_get_module_summary( mod_name, &total, &hit01, &hit10 ) ) {
+  if( toggle_get_funit_summary( funit_name, &total, &hit01, &hit10 ) ) {
     snprintf( value, 20, "%d", total );
     Tcl_SetVar( tcl, "toggle_summary_total", value, TCL_GLOBAL_ONLY );
     snprintf( value, 20, "%d", hit01 );
@@ -684,13 +684,13 @@ int tcl_func_get_toggle_summary( ClientData d, Tcl_Interp* tcl, int argc, const 
     snprintf( value, 20, "%d", hit10 );
     Tcl_SetVar( tcl, "toggle_summary_hit10", value, TCL_GLOBAL_ONLY );
   } else {
-    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find module %s", mod_name );
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s", funit_name );
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = TCL_ERROR;
   }
 
-  free_safe( mod_name );
+  free_safe( funit_name );
 
   return( retval );
 
@@ -699,26 +699,26 @@ int tcl_func_get_toggle_summary( ClientData d, Tcl_Interp* tcl, int argc, const 
 int tcl_func_get_comb_summary( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
   int   retval = TCL_OK;  /* Return value for this function                 */
-  char* mod_name;         /* Name of module to lookup                       */
+  char* funit_name;       /* Name of functional unit to lookup              */
   int   total;            /* Contains total number of expressions evaluated */
   int   hit;              /* Contains total number of expressions hit       */
   char  value[20];        /* String version of a value                      */
 
-  mod_name = strdup_safe( argv[1], __FILE__, __LINE__ );
+  funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
 
-  if( combination_get_module_summary( mod_name, &total, &hit ) ) {
+  if( combination_get_funit_summary( funit_name, &total, &hit ) ) {
     snprintf( value, 20, "%d", total );
     Tcl_SetVar( tcl, "comb_summary_total", value, TCL_GLOBAL_ONLY );
     snprintf( value, 20, "%d", hit );
     Tcl_SetVar( tcl, "comb_summary_hit", value, TCL_GLOBAL_ONLY );
   } else {
-    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find module %s", mod_name );
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s", funit_name );
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = TCL_ERROR;
   }
 
-  free_safe( mod_name );
+  free_safe( funit_name );
 
   return( retval );
 
@@ -727,7 +727,7 @@ int tcl_func_get_comb_summary( ClientData d, Tcl_Interp* tcl, int argc, const ch
 void tcl_func_initialize( Tcl_Interp* tcl, char* home, char* version, char* browser ) {
 
   Tcl_CreateCommand( tcl, "tcl_func_get_race_reason_msgs",      (Tcl_CmdProc*)(tcl_func_get_race_reason_msgs),      0, 0 );
-  Tcl_CreateCommand( tcl, "tcl_func_get_module_list",           (Tcl_CmdProc*)(tcl_func_get_module_list),           0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_get_funit_list",            (Tcl_CmdProc*)(tcl_func_get_funit_list),            0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_instance_list",         (Tcl_CmdProc*)(tcl_func_get_instance_list),         0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_filename",              (Tcl_CmdProc*)(tcl_func_get_filename),              0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_collect_uncovered_lines",   (Tcl_CmdProc*)(tcl_func_collect_uncovered_lines),   0, 0 );
@@ -736,7 +736,7 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* home, char* version, char* brow
   Tcl_CreateCommand( tcl, "tcl_func_collect_uncovered_toggles", (Tcl_CmdProc*)(tcl_func_collect_uncovered_toggles), 0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_collect_covered_toggles",   (Tcl_CmdProc*)(tcl_func_collect_covered_toggles),   0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_collect_combs",             (Tcl_CmdProc*)(tcl_func_collect_combs),             0, 0 );
-  Tcl_CreateCommand( tcl, "tcl_func_get_module_start_and_end",  (Tcl_CmdProc*)(tcl_func_get_module_start_and_end),  0, 0 );
+  Tcl_CreateCommand( tcl, "tcl_func_get_funit_start_and_end",   (Tcl_CmdProc*)(tcl_func_get_funit_start_and_end),   0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_toggle_coverage",       (Tcl_CmdProc*)(tcl_func_get_toggle_coverage),       0, 0 ); 
   Tcl_CreateCommand( tcl, "tcl_func_get_comb_expression",       (Tcl_CmdProc*)(tcl_func_get_comb_expression),       0, 0 );
   Tcl_CreateCommand( tcl, "tcl_func_get_comb_coverage",         (Tcl_CmdProc*)(tcl_func_get_comb_coverage),         0, 0 );
@@ -762,6 +762,11 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* home, char* version, char* brow
 
 /*
  $Log$
+ Revision 1.17  2005/02/07 22:19:46  phase1geo
+ Added code to output race condition reasons to informational bar.  Also added code to
+ output toggle and combinational logic output to information bar when cursor is over
+ an expression that, when clicked on, will take you to the detailed coverage window.
+
  Revision 1.16  2005/02/05 05:29:25  phase1geo
  Added race condition reporting to GUI.
 

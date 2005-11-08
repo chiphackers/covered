@@ -33,14 +33,14 @@
 #include "race.h"
 
 
-extern char      user_msg[USER_MSG_LENGTH];
-extern mod_inst* instance_root;
-extern mod_link* mod_head;
-extern int       merged_code;
-extern char*     merge_in0;
-extern char*     merge_in1;
-extern char      leading_hierarchy[4096];
-extern char      second_hierarchy[4096];
+extern char        user_msg[USER_MSG_LENGTH];
+extern funit_inst* instance_root;
+extern funit_link* funit_head;
+extern int         merged_code;
+extern char*       merge_in0;
+extern char*       merge_in1;
+extern char        leading_hierarchy[4096];
+extern char        second_hierarchy[4096];
 
 /*!
  If set to a boolean value of TRUE, reports the line coverage for the specified database
@@ -75,8 +75,8 @@ bool report_race         = FALSE;
 
 /*!
  If set to a boolean value of TRUE, provides a coverage information for individual
- module instances.  If set to a value of FALSE, reports coverage information on a
- module basis, merging results from all instances of same module.
+ functional unit instances.  If set to a value of FALSE, reports coverage information on a
+ functional unit basis, merging results from all instances of same functional unit.
 */
 bool report_instance     = FALSE;
 
@@ -141,7 +141,7 @@ void report_usage() {
   printf( "      -m [l][t][c][f][r]      Type(s) of metrics to report.  Default is ltcf.\n" );
   printf( "      -d (s|d|v)              Level of report detail (s=summary, d=detailed, v=verbose).\n" );
   printf( "                               Default is to display summary coverage information.\n" );
-  printf( "      -i                      Provides coverage information for instances instead of module.\n" );
+  printf( "      -i                      Provides coverage information for instances instead of module/task/function.\n" );
   printf( "      -c                      If '-d d' or '-d v' is specified, displays covered line, toggle\n" );
   printf( "                               and combinational cases.  Default is to display uncovered results.\n" );
   printf( "      -o <filename>           File to output report information to.  Default is standard output.\n" );
@@ -323,9 +323,9 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
  will have the accumulated information from themselves and all of their
  children.
 */
-void report_gather_instance_stats( mod_inst* root ) {
+void report_gather_instance_stats( funit_inst* root ) {
 
-  mod_inst* curr;    /* Pointer to current instance being evaluated */
+  funit_inst* curr;    /* Pointer to current instance being evaluated */
 
   /* Create a statistics structure for this instance */
   assert( root->stat == NULL );
@@ -341,24 +341,24 @@ void report_gather_instance_stats( mod_inst* root ) {
 
   /* Get coverage results for this instance */
   if( report_line ) {
-    line_get_stats( root->mod->stmt_head, &(root->stat->line_total), &(root->stat->line_hit) );
+    line_get_stats( root->funit->stmt_head, &(root->stat->line_total), &(root->stat->line_hit) );
   }
 
   if( report_toggle ) {
-    toggle_get_stats( root->mod->sig_head, 
+    toggle_get_stats( root->funit->sig_head, 
                       &(root->stat->tog_total), 
                       &(root->stat->tog01_hit), 
                       &(root->stat->tog10_hit) );
   }
 
   if( report_combination ) {
-    combination_get_stats( root->mod->exp_head,
+    combination_get_stats( root->funit->exp_head,
                            &(root->stat->comb_total),
                            &(root->stat->comb_hit) );
   }
 
   if( report_fsm ) {
-    fsm_get_stats( root->mod->fsm_head,
+    fsm_get_stats( root->funit->fsm_head,
                    &(root->stat->state_total),
                    &(root->stat->state_hit),
                    &(root->stat->arc_total),
@@ -366,57 +366,57 @@ void report_gather_instance_stats( mod_inst* root ) {
   }
 
   /* Only get race condition statistics for this instance module if the module hasn't been gathered yet */
-  if( report_race && (root->mod->stat == NULL) ) {
-    root->mod->stat = statistic_create();
-    race_get_stats( root->mod->race_head,
-                    &(root->mod->stat->race_total),
-                    &(root->mod->stat->rtype_total) );
+  if( report_race && (root->funit->stat == NULL) ) {
+    root->funit->stat = statistic_create();
+    race_get_stats( root->funit->race_head,
+                    &(root->funit->stat->race_total),
+                    &(root->funit->stat->rtype_total) );
   }
 
 }
 
 /*!
- \param head  Pointer to head of module list to search.
+ \param head  Pointer to head of functional unit list to search.
  
- Traverses module list, creating statistic structures for each
- of the modules in the tree, and calculates summary coverage information.
+ Traverses functional unit list, creating statistic structures for each
+ of the functional units in the tree, and calculates summary coverage information.
 */
-void report_gather_module_stats( mod_link* head ) {
+void report_gather_funit_stats( funit_link* head ) {
 
   while( head != NULL ) {
 
-    head->mod->stat = statistic_create();
+    head->funit->stat = statistic_create();
 
     /* Get coverage results for this instance */
     if( report_line ) {
-      line_get_stats( head->mod->stmt_head, &(head->mod->stat->line_total), &(head->mod->stat->line_hit) );
+      line_get_stats( head->funit->stmt_head, &(head->funit->stat->line_total), &(head->funit->stat->line_hit) );
     }
 
     if( report_toggle ) {
-      toggle_get_stats( head->mod->sig_head, 
-                        &(head->mod->stat->tog_total), 
-                        &(head->mod->stat->tog01_hit), 
-                        &(head->mod->stat->tog10_hit) );
+      toggle_get_stats( head->funit->sig_head, 
+                        &(head->funit->stat->tog_total), 
+                        &(head->funit->stat->tog01_hit), 
+                        &(head->funit->stat->tog10_hit) );
     }
 
     if( report_combination ) {
-      combination_get_stats( head->mod->exp_head,
-                             &(head->mod->stat->comb_total),
-                             &(head->mod->stat->comb_hit) );
+      combination_get_stats( head->funit->exp_head,
+                             &(head->funit->stat->comb_total),
+                             &(head->funit->stat->comb_hit) );
     }
 
     if( report_fsm ) {
-      fsm_get_stats( head->mod->fsm_head,
-                     &(head->mod->stat->state_total),
-                     &(head->mod->stat->state_hit),
-                     &(head->mod->stat->arc_total),
-                     &(head->mod->stat->arc_hit) );
+      fsm_get_stats( head->funit->fsm_head,
+                     &(head->funit->stat->state_total),
+                     &(head->funit->stat->state_hit),
+                     &(head->funit->stat->arc_total),
+                     &(head->funit->stat->arc_hit) );
     }
 
     if( report_race ) {
-      race_get_stats( head->mod->race_head,
-                      &(head->mod->stat->race_total),
-                      &(head->mod->stat->rtype_total) );
+      race_get_stats( head->funit->race_head,
+                      &(head->funit->stat->race_total),
+                      &(head->funit->stat->rtype_total) );
     }
 
     head = head->next;
@@ -517,7 +517,7 @@ void report_generate( FILE* ofile ) {
   if( report_instance ) {
     report_gather_instance_stats( instance_root );
   } else {
-    report_gather_module_stats( mod_head );
+    report_gather_funit_stats( funit_head );
   }
 
   /* Call out the proper reports for the specified metrics to report */
@@ -549,7 +549,7 @@ void report_generate( FILE* ofile ) {
  
  \return Returns TRUE if CDD file was read properly; otherwise, returns FALSE.
 
- Reads in specified CDD file and gathers module statistics to get ready for GUI
+ Reads in specified CDD file and gathers functional unit statistics to get ready for GUI
  interaction with this CDD file. 
 */
 bool report_read_cdd_and_ready( char* ifile, int read_mode ) {
@@ -564,7 +564,7 @@ bool report_read_cdd_and_ready( char* ifile, int read_mode ) {
   } else {
 
     if( (retval = db_read( ifile, read_mode )) ) {
-      report_gather_module_stats( mod_head );
+      report_gather_funit_stats( funit_head );
     }
 
   }
@@ -714,6 +714,14 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.43  2005/02/05 06:47:20  phase1geo
+ Fixing bug with race condition output in instance reporting.  Changing default
+ report output of race conditions to false and updating in-line documentation.
+ Added rules in regression runs for specifically testing race condition output.
+ Updated regression files for these changes.  Regression runs clean at this point.
+ We just need to add user documentation for the race condition feature add and
+ we should be done.
+
  Revision 1.42  2005/02/05 06:21:02  phase1geo
  Added ascii report output for race conditions.  There is a segmentation fault
  bug associated with instance reporting.  Need to look into further.

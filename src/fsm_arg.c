@@ -26,15 +26,15 @@ extern char user_msg[USER_MSG_LENGTH];
 
 
 /*!
- \param arg       Pointer to argument to parse.
- \param mod_name  Name of module that this expression belongs to.
+ \param arg         Pointer to argument to parse.
+ \param funit_name  Name of functional unit that this expression belongs to.
 
  \return Returns pointer to expression tree containing parsed state variable expression.
 
  Parses the specified argument value for all information regarding a state variable
  expression.  This function places all 
 */
-expression* fsm_arg_parse_state( char** arg, char* mod_name ) {
+expression* fsm_arg_parse_state( char** arg, char* funit_name ) {
 
   bool        error = FALSE;  /* Specifies if a parsing error has beenf found   */
   vsignal*    sig;            /* Pointer to read-in signal                      */
@@ -60,7 +60,7 @@ expression* fsm_arg_parse_state( char** arg, char* mod_name ) {
 
           expr = expression_create( NULL, NULL, EXP_OP_SIG, FALSE, curr_expr_id, 0, 0, 0, FALSE );
           curr_expr_id++;
-          fsm_var_bind_add( sig->name, expr, mod_name );
+          fsm_var_bind_add( sig->name, expr, funit_name );
 
         } else if( sig->value->width == 1 ) {
 
@@ -72,7 +72,7 @@ expression* fsm_arg_parse_state( char** arg, char* mod_name ) {
 
           expr = expression_create( NULL, expr, EXP_OP_SBIT_SEL, FALSE, curr_expr_id, 0, 0, 0, FALSE );
           curr_expr_id++;
-          fsm_var_bind_add( sig->name, expr, mod_name );
+          fsm_var_bind_add( sig->name, expr, funit_name );
 
         } else {
 
@@ -90,7 +90,7 @@ expression* fsm_arg_parse_state( char** arg, char* mod_name ) {
 
           expr = expression_create( expt, expr, EXP_OP_MBIT_SEL, FALSE, curr_expr_id, 0, 0, 0, FALSE );
           curr_expr_id++;
-          fsm_var_bind_add( sig->name, expr, mod_name );
+          fsm_var_bind_add( sig->name, expr, funit_name );
 
         }
 
@@ -102,7 +102,7 @@ expression* fsm_arg_parse_state( char** arg, char* mod_name ) {
         }
 
         /* Add signal name and expression to FSM var binding list */
-        fsm_var_bind_add( sig->name, expr, mod_name );
+        fsm_var_bind_add( sig->name, expr, funit_name );
 
       } else {
         expression_dealloc( expl, FALSE );
@@ -155,7 +155,7 @@ expression* fsm_arg_parse_state( char** arg, char* mod_name ) {
       }
 
       /* Add signal name and expression to FSM var binding list */
-      fsm_var_bind_add( sig->name, expl, mod_name );
+      fsm_var_bind_add( sig->name, expl, funit_name );
 
     } else {
       error = TRUE;
@@ -171,7 +171,7 @@ expression* fsm_arg_parse_state( char** arg, char* mod_name ) {
     stmt->exp->suppl.part.stmt_cont = 1;
     stmt->next_true                 = stmt;
     stmt->next_false                = stmt;
-    fsm_var_stmt_add( stmt, mod_name );
+    fsm_var_stmt_add( stmt, funit_name );
   } else {
     expl = NULL;
   }
@@ -202,7 +202,7 @@ bool fsm_arg_parse( char* arg ) {
 
   if( *ptr == '\0' ) {
 
-    print_output( "Option -F must specify a module and one or two variables.  See \"covered score -h\" for more information.",
+    print_output( "Option -F must specify a module/task/function/named block and one or two variables.  See \"covered score -h\" for more information.",
                   FATAL, __FILE__, __LINE__ );
     retval = FALSE;
 
@@ -243,8 +243,8 @@ bool fsm_arg_parse( char* arg ) {
 }
 
 /*!
- \param str  Pointer to string containing parameter or constant value.
- \param mod  Pointer to module containing this FSM.
+ \param str    Pointer to string containing parameter or constant value.
+ \param funit  Pointer to functional unit containing this FSM.
 
  \return Returns a pointer to the expression created from the found value; otherwise,
          returns a value of NULL to indicate the this parser was unable to parse the
@@ -255,7 +255,7 @@ bool fsm_arg_parse( char* arg ) {
  parsed value and is returned to the calling function.  If the string is not
  parsed correctly, a value of NULL is returned to the calling function.
 */
-expression* fsm_arg_parse_value( char** str, module* mod ) {
+expression* fsm_arg_parse_value( char** str, func_unit* funit ) {
 
   expression* expr = NULL;   /* Pointer to expression containing state value */
   expression* left;          /* Left child expression                        */
@@ -281,7 +281,7 @@ expression* fsm_arg_parse_value( char** str, module* mod ) {
     /* This value should be a parameter value, parse it */
     if( sscanf( *str, "%[a-zA-Z0-9_]\[%d:%d]%n", str_val, &msb, &lsb, &chars_read ) == 3 ) {
       *str = *str + chars_read;
-      if( (mparm = mod_parm_find( str_val, mod->param_head )) != NULL ) {
+      if( (mparm = mod_parm_find( str_val, funit->param_head )) != NULL ) {
 
         /* Generate left child expression */
         left = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
@@ -305,7 +305,7 @@ expression* fsm_arg_parse_value( char** str, module* mod ) {
       }
     } else if( sscanf( *str, "%[a-zA-Z0-9_]\[%d]%n", str_val, &lsb, &chars_read ) == 2 ) {
       *str = *str + chars_read;
-      if( (mparm = mod_parm_find( str_val, mod->param_head )) != NULL ) {
+      if( (mparm = mod_parm_find( str_val, funit->param_head )) != NULL ) {
 
         /* Generate left child expression */
         left = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, curr_expr_id, 0, 0, 0, FALSE );
@@ -322,7 +322,7 @@ expression* fsm_arg_parse_value( char** str, module* mod ) {
       }
     } else if( sscanf( *str, "%[a-zA-Z0-9_]%n", str_val, &chars_read ) == 1 ) {
       *str = *str + chars_read;
-      if( (mparm = mod_parm_find( str_val, mod->param_head )) != NULL ) {
+      if( (mparm = mod_parm_find( str_val, funit->param_head )) != NULL ) {
 
         /* Generate parameter expression */
         expr = expression_create( NULL, NULL, EXP_OP_PARAM, FALSE, curr_expr_id, 0, 0, 0, FALSE );
@@ -343,7 +343,7 @@ expression* fsm_arg_parse_value( char** str, module* mod ) {
 /*!
  \param expr   Pointer to expression containing string value in vector value array.
  \param table  Pointer to FSM table to add the transition arcs to.
- \param mod    Pointer to the module that contains the specified FSM.
+ \param funit  Pointer to the functional unit that contains the specified FSM.
 
  \par
  Parses a transition string carried in the specified expression argument.  All transitions
@@ -356,7 +356,7 @@ expression* fsm_arg_parse_value( char** str, module* mod ) {
  Each transition is then added to the specified FSM table's arc list which is added to the
  FSM arc transition table when the fsm_create_tables() function is called.
 */
-void fsm_arg_parse_trans( expression* expr, fsm* table, module* mod ) {
+void fsm_arg_parse_trans( expression* expr, fsm* table, func_unit* funit ) {
 
   expression* from_state;  /* Pointer to from_state value of transition */
   expression* to_state;    /* Pointer to to_state value of transition   */
@@ -368,25 +368,25 @@ void fsm_arg_parse_trans( expression* expr, fsm* table, module* mod ) {
   /* Convert expression value to a string */
   tmp = str = vector_to_string( expr->value );
 
-  if( (from_state = fsm_arg_parse_value( &str, mod )) == NULL ) {
+  if( (from_state = fsm_arg_parse_value( &str, funit )) == NULL ) {
     snprintf( user_msg, USER_MSG_LENGTH, "Left-hand side FSM transition value must be a constant value or parameter, line: %d, file: %s",
-              expr->line, mod->filename );
+              expr->line, funit->filename );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     exit( 1 );
   } else {
 
     if( (str[0] != '-') || (str[1] != '>') ) {
       snprintf( user_msg, USER_MSG_LENGTH, "FSM transition values must contain the string '->' between them, line: %d, file: %s",
-                expr->line, mod->filename );
+                expr->line, funit->filename );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       exit( 1 );
     } else {
       str += 2;
     }
 
-    if( (to_state = fsm_arg_parse_value( &str, mod )) == NULL ) {
+    if( (to_state = fsm_arg_parse_value( &str, funit )) == NULL ) {
       snprintf( user_msg, USER_MSG_LENGTH, "Right-hand side FSM transition value must be a constant value or parameter, line: %d, file: %s",
-                expr->line, mod->filename );
+                expr->line, funit->filename );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       exit( 1 );
     } else {
@@ -404,13 +404,13 @@ void fsm_arg_parse_trans( expression* expr, fsm* table, module* mod ) {
 }
 
 /*!
- \param ap   Pointer to attribute parameter list.
- \param mod  Pointer to module containing this attribute.
+ \param ap     Pointer to attribute parameter list.
+ \param funit  Pointer to functional unit containing this attribute.
 
  Parses the specified attribute parameter for validity and updates FSM structure
  accordingly.
 */
-void fsm_arg_parse_attr( attr_param* ap, module* mod ) {
+void fsm_arg_parse_attr( attr_param* ap, func_unit* funit ) {
 
   attr_param* curr;               /* Pointer to current attribute parameter in list */
   fsm_link*   fsml      = NULL;   /* Pointer to found FSM structure                 */
@@ -431,38 +431,38 @@ void fsm_arg_parse_attr( attr_param* ap, module* mod ) {
         ignore = TRUE;
       } else {
         table.name = curr->name;
-        fsml       = fsm_link_find( &table, mod->fsm_head );
+        fsml       = fsm_link_find( &table, funit->fsm_head );
       }
     } else if( (index == 2) && (strcmp( curr->name, "is" ) == 0) && (curr->expr != NULL) ) {
       if( fsml == NULL ) {
         tmp = str = vector_to_string( curr->expr->value );
-        if( (in_state = fsm_arg_parse_state( &str, mod->name )) == NULL ) {
-          snprintf( user_msg, USER_MSG_LENGTH, "Illegal input state expression (%s), file: %s", str, mod->filename );
+        if( (in_state = fsm_arg_parse_state( &str, funit->name )) == NULL ) {
+          snprintf( user_msg, USER_MSG_LENGTH, "Illegal input state expression (%s), file: %s", str, funit->filename );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           exit( 1 );
         }
         free_safe( tmp );
       } else {
         snprintf( user_msg, USER_MSG_LENGTH, "Input state specified after output state for this FSM has already been specified, file: %s",
-                  mod->filename );
+                  funit->filename );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( 1 );
       }
     } else if( (index == 2) && (strcmp( curr->name, "os" ) == 0) && (curr->expr != NULL) ) {
       if( fsml == NULL ) {
         tmp = str = vector_to_string( curr->expr->value );
-        if( (out_state = fsm_arg_parse_state( &str, mod->name )) == NULL ) {
-          snprintf( user_msg, USER_MSG_LENGTH, "Illegal output state expression (%s), file: %s", str, mod->filename );
+        if( (out_state = fsm_arg_parse_state( &str, funit->name )) == NULL ) {
+          snprintf( user_msg, USER_MSG_LENGTH, "Illegal output state expression (%s), file: %s", str, funit->filename );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           exit( 1 );
         } else {
-          fsm_var_add( mod->name, out_state, out_state, table.name );
-          fsml = fsm_link_find( &table, mod->fsm_head );
+          fsm_var_add( funit->name, out_state, out_state, table.name );
+          fsml = fsm_link_find( &table, funit->fsm_head );
         }
         free_safe( tmp );
       } else {
         snprintf( user_msg, USER_MSG_LENGTH, "Output state specified after output state for this FSM has already been specified, file: %s",
-                  mod->filename );
+                  funit->filename );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( 1 );
       }
@@ -470,36 +470,36 @@ void fsm_arg_parse_attr( attr_param* ap, module* mod ) {
                (in_state != NULL) && (curr->expr != NULL) ) {
       if( fsml == NULL ) {
         tmp = str = vector_to_string( curr->expr->value );
-        if( (out_state = fsm_arg_parse_state( &str, mod->name )) == NULL ) {
-          snprintf( user_msg, USER_MSG_LENGTH, "Illegal output state expression (%s), file: %s", str, mod->filename );
+        if( (out_state = fsm_arg_parse_state( &str, funit->name )) == NULL ) {
+          snprintf( user_msg, USER_MSG_LENGTH, "Illegal output state expression (%s), file: %s", str, funit->filename );
           print_output( user_msg, FATAL, __FILE__, __LINE__ );
           exit( 1 );
         } else {
-          fsm_var_add( mod->name, in_state, out_state, table.name );
-          fsml = fsm_link_find( &table, mod->fsm_head );
+          fsm_var_add( funit->name, in_state, out_state, table.name );
+          fsml = fsm_link_find( &table, funit->fsm_head );
         }
         free_safe( tmp );
       } else {
         snprintf( user_msg, USER_MSG_LENGTH, "Output state specified after output state for this FSM has already been specified, file: %s",
-                  mod->filename );
+                  funit->filename );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( 1 );
       }
     } else if( (index > 1) && (strcmp( curr->name, "trans" ) == 0) && (curr->expr != NULL) ) {
       if( fsml == NULL ) {
         snprintf( user_msg, USER_MSG_LENGTH, "Attribute FSM name (%s) has not been previously created, file: %s", table.name,
-                  mod->filename );
+                  funit->filename );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( 1 );
       } else {
-        fsm_arg_parse_trans( curr->expr, fsml->table, mod );
+        fsm_arg_parse_trans( curr->expr, fsml->table, funit );
       }
     } else {
       tmp = vector_to_string( curr->expr->value );
       snprintf( user_msg, USER_MSG_LENGTH, "Invalid covered_fsm attribute parameter (%s=%s), file: %s",
                 curr->name,
                 tmp,
-                mod->filename );
+                funit->filename );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       free_safe( tmp );
       exit( 1 );
@@ -516,6 +516,12 @@ void fsm_arg_parse_attr( attr_param* ap, module* mod ) {
 
 /*
  $Log$
+ Revision 1.20  2005/02/05 04:13:29  phase1geo
+ Started to add reporting capabilities for race condition information.  Modified
+ race condition reason calculation and handling.  Ran -Wall on all code and cleaned
+ things up.  Cleaned up regression as a result of these changes.  Full regression
+ now passes.
+
  Revision 1.19  2005/01/07 23:00:10  phase1geo
  Regression now passes for previous changes.  Also added ability to properly
  convert quoted strings to vectors and vectors to quoted strings.  This will

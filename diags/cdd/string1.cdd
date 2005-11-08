@@ -1,5 +1,5 @@
-5 1 * 4 0
-3 main main string1.v 1 18
+5 1 * 5 0
+3 0 main main string1.v 1 18
 2 3 6 150017 1 80 0 0 
 2 2 6 e0012 0 80 0 0 24 4 55 14 55 14 14 14
 2 4 6 e0017 31 2080 3 2 32 0 daa 10aa aa aa aa aa aa aa

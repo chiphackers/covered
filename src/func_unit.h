@@ -1,11 +1,11 @@
-#ifndef __MODULE_H__
-#define __MODULE_H__
+#ifndef __FUNC_UNIT_H__
+#define __FUNC_UNIT_H__
 
 /*!
- \file     module.h
+ \file     func_unit.h
  \author   Trevor Williams  (trevorw@charter.net)
  \date     12/7/2001
- \brief    Contains functions for handling modules.
+ \brief    Contains functions for handling functional units.
 */
 
 #include <stdio.h>
@@ -13,39 +13,47 @@
 #include "defines.h"
 
 
-/*! \brief Initializes all values of module. */
-void module_init( module* mod );
+/*! \brief Initializes all values of functional_unit. */
+void funit_init( func_unit* mod );
 
-/*! \brief Creates new module from heap and initializes structure. */
-module* module_create();
+/*! \brief Creates new functional unit from heap and initializes structure. */
+func_unit* funit_create();
 
-/*! \brief Writes contents of provided module to specified output. */
-bool module_db_write( module* mod, char* scope, FILE* file, mod_inst* inst );
+/*! \brief Writes contents of provided functional unit to specified output. */
+bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst );
 
-/*! \brief Read contents of current line from specified file, creates module and adds to module list. */
-bool module_db_read( module* mod, char* scope, char** line );
+/*! \brief Read contents of current line from specified file, creates functional unit
+           and adds to functional unit list. */
+bool funit_db_read( func_unit* funit, char* scope, char** line );
 
-/*! \brief Reads and merges two modules into base module. */
-bool module_db_merge( module* base, FILE* file, bool same );
+/*! \brief Reads and merges two functional units into base functional unit. */
+bool funit_db_merge( func_unit* base, FILE* file, bool same );
 
-/*! \brief Reads and replaces original module with contents of new module. */
-bool module_db_replace( module* base, FILE* file );
+/*! \brief Reads and replaces original functional unit with contents of new functional unit. */
+bool funit_db_replace( func_unit* base, FILE* file );
 
-/*! \brief Displays signals stored in this module. */
-void module_display_signals( module* mod );
+/*! \brief Finds the task/function block that contains the given statement for the specified module. */
+func_unit* funit_find_tf_by_statement( func_unit* mod, statement* stmt );
 
-/*! \brief Displays expressions stored in this module. */
-void module_display_expressions( module* mod );
+/*! \brief Displays signals stored in this functional unit. */
+void funit_display_signals( func_unit* funit );
 
-/*! \brief Deallocates module element contents only from heap. */
-void module_clean( module* mod );
+/*! \brief Displays expressions stored in this functional unit. */
+void funit_display_expressions( func_unit* funit );
 
-/*! \brief Deallocates module element from heap. */
-void module_dealloc( module* mod );
+/*! \brief Deallocates functional unit element contents only from heap. */
+void funit_clean( func_unit* funit );
+
+/*! \brief Deallocates functional unit element from heap. */
+void funit_dealloc( func_unit* funit );
 
 
 /*
  $Log$
+ Revision 1.10  2004/04/05 12:30:52  phase1geo
+ Adding *db_replace functions to allow a design to be opened with new CDD
+ results (for GUI purposes only).
+
  Revision 1.9  2002/12/30 05:31:33  phase1geo
  Fixing bug in module merge for reports when parameterized modules are merged.
  These modules should not output an error to the user when mismatching modules

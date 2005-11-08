@@ -1,5 +1,5 @@
-5 1 * 4 0
-3 main main param1.v 1 21
+5 1 * 5 0
+3 0 main main param1.v 1 21
 2 6 9 18001d 32 80 0 0 
 2 5 9 f0014 32 80 0 0 
 2 7 9 b0014 1a 2080 6 5 32 0 aa aa aa aa aa aa aa aa

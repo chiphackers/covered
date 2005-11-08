@@ -18,7 +18,7 @@
 #include "defines.h"
 #include "db.h"
 #include "util.h"
-#include "module.h"
+#include "func_unit.h"
 #include "expr.h"
 #include "vsignal.h"
 #include "link.h"
@@ -36,18 +36,18 @@
 #include "race.h"
 
 
-extern char*     top_module;
-extern mod_inst* instance_root;
-extern str_link* no_score_head;
-extern mod_link* mod_head;
-extern mod_link* mod_tail;
-extern nibble    or_optab[16];
-extern char      user_msg[USER_MSG_LENGTH];
-extern bool      one_instance_found;
-extern char      leading_hierarchy[4096];
-extern bool      flag_scored;
-extern int       timestep_update;
-extern bool      debug_mode;
+extern char*       top_module;
+extern funit_inst* instance_root;
+extern str_link*   no_score_head;
+extern funit_link* funit_head;
+extern funit_link* funit_tail;
+extern nibble      or_optab[16];
+extern char        user_msg[USER_MSG_LENGTH];
+extern bool        one_instance_found;
+extern char        leading_hierarchy[4096];
+extern bool        flag_scored;
+extern int         timestep_update;
+extern bool        debug_mode;
 
 /*!
  Specifies the string Verilog scope that is currently specified in the VCD file.
@@ -58,7 +58,7 @@ char* curr_inst_scope   = NULL;
  Pointer to the current instance selected by the VCD parser.  If this value is
  NULL, the current instance does not reside in the design specified for coverage.
 */
-mod_inst* curr_instance = NULL;
+funit_inst* curr_instance = NULL;
 
 /*!
  Pointer to head of list of module names that need to be parsed yet.  These names
@@ -73,9 +73,14 @@ str_link* modlist_head  = NULL;
 str_link* modlist_tail  = NULL;
 
 /*!
- Pointer to the module structure for the module that is currently being parsed.
+ Pointer to the functional unit structure for the functional unit that is currently being parsed.
 */
-module*   curr_module   = NULL;
+func_unit* curr_funit   = NULL;
+
+/*!
+ Pointer to the last functional unit structure that was being parsed prior to the current functional unit.
+*/ 
+func_unit* last_funit   = NULL;
 
 /*!
  This static value contains the current expression ID number to use for the next expression found, it
@@ -104,7 +109,7 @@ int       last_sim_update = 0;
  \return Returns TRUE if database write was successful; otherwise, returns FALSE.
 
  Opens specified database for writing.  If database open successful,
- iterates through module, expression and signal lists, displaying each
+ iterates through functional unit, expression and signal lists, displaying each
  to the database file.  If database write successful, returns TRUE; otherwise,
  returns FALSE to the calling function.
 */
@@ -130,13 +135,13 @@ bool db_write( char* file, bool parse_mode ) {
   }
 
   /* Remove memory allocated for instance_root and mod_head */
-  assert( instance_root->mod != NULL );
+  assert( instance_root->funit != NULL );
   instance_dealloc( instance_root, instance_root->name );
-  mod_link_delete_list( mod_head );
+  funit_link_delete_list( funit_head );
 
   instance_root = NULL;
-  mod_head      = NULL;
-  mod_tail      = NULL;
+  funit_head    = NULL;
+  funit_tail    = NULL;
 
   return( retval );
 
@@ -160,34 +165,35 @@ bool db_write( char* file, bool parse_mode ) {
 */
 bool db_read( char* file, int read_mode ) {
 
-  bool         retval = TRUE;        /* Return value for this function                 */
-  FILE*        db_handle;            /* Pointer to database file being read            */
-  int          type;                 /* Specifies object type                          */
-  module       tmpmod;               /* Temporary module pointer                       */
-  char*        curr_line;            /* Pointer to current line being read from db     */
-  char*        rest_line;            /* Pointer to rest of the current line            */
-  int          chars_read;           /* Number of characters currently read on line    */
-  char         parent_scope[4096];   /* Scope of parent module to the current instance */
-  char         back[4096];           /* Current module instance name                   */
-  char         mod_scope[4096];      /* Current scope of module instance               */
-  char         mod_name[256];        /* Current name of module instance                */
-  char         mod_file[4096];       /* Current filename of module instance            */
-  mod_link*    foundmod;             /* Found module link                              */
-  mod_inst*    foundinst;            /* Found module instance                          */
-  bool         merge_mode = FALSE;   /* If TRUE, we should currently be merging data   */
+  bool         retval = TRUE;        /* Return value for this function                          */
+  FILE*        db_handle;            /* Pointer to database file being read                     */
+  int          type;                 /* Specifies object type                                   */
+  func_unit    tmpfunit;             /* Temporary functional unit pointer                       */
+  char*        curr_line;            /* Pointer to current line being read from db              */
+  char*        rest_line;            /* Pointer to rest of the current line                     */
+  int          chars_read;           /* Number of characters currently read on line             */
+  char         parent_scope[4096];   /* Scope of parent functional unit to the current instance */
+  char         back[4096];           /* Current functional unit instance name                   */
+  char         funit_scope[4096];    /* Current scope of functional unit instance               */
+  char         funit_name[256];      /* Current name of functional unit instance                */
+  char         funit_file[4096];     /* Current filename of functional unit instance            */
+  funit_link*  foundfunit;           /* Found functional unit link                              */
+  funit_inst*  foundinst;            /* Found functional unit instance                          */
+  bool         merge_mode = FALSE;   /* If TRUE, we should currently be merging data            */
 
   snprintf( user_msg, USER_MSG_LENGTH, "In db_read, file: %s, mode: %d", file, read_mode );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
   /* Setup temporary module for storage */
-  tmpmod.name     = mod_name;
-  tmpmod.filename = mod_file;
+  tmpfunit.name     = funit_name;
+  tmpfunit.filename = funit_file;
 
-  curr_module     = NULL;
+  curr_funit = NULL;
+  last_funit = NULL;
 
   if( (db_handle = fopen( file, "r" )) != NULL ) {
 
-    while( readline( db_handle, &curr_line ) && retval ) {
+    while( util_readline( db_handle, &curr_line ) && retval ) {
 
       if( sscanf( curr_line, "%d%n", &type, &chars_read ) == 1 ) {
 
@@ -211,62 +217,65 @@ bool db_read( char* file, int read_mode ) {
           assert( !merge_mode );
 
           /* Parse rest of line for signal info */
-          retval = vsignal_db_read( &rest_line, curr_module );
+          retval = vsignal_db_read( &rest_line, curr_funit );
 	    
         } else if( type == DB_TYPE_EXPRESSION ) {
 
           assert( !merge_mode );
 
           /* Parse rest of line for expression info */
-          retval = expression_db_read( &rest_line, curr_module, (read_mode == READ_MODE_MERGE_NO_MERGE) );
+          retval = expression_db_read( &rest_line, curr_funit, (read_mode == READ_MODE_MERGE_NO_MERGE) );
 
         } else if( type == DB_TYPE_STATEMENT ) {
 
           assert( !merge_mode );
 
           /* Parse rest of line for statement info */
-          retval = statement_db_read( &rest_line, curr_module, read_mode );
+          retval = statement_db_read( &rest_line, curr_funit, last_funit, read_mode );
 
         } else if( type == DB_TYPE_FSM ) {
 
           assert( !merge_mode );
 
           /* Parse rest of line for FSM info */
-          retval = fsm_db_read( &rest_line, curr_module );
+          retval = fsm_db_read( &rest_line, curr_funit );
 
         } else if( type == DB_TYPE_RACE ) {
 
           assert( !merge_mode );
 
           /* Parse rest of line for race condition block info */
-          retval = race_db_read( &rest_line, curr_module );
+          retval = race_db_read( &rest_line, curr_funit );
 
-        } else if( type == DB_TYPE_MODULE ) {
+        } else if( type == DB_TYPE_FUNIT ) {
 
           if( !merge_mode ) {
 
-            /* Finish handling last module read from CDD file */
-            if( curr_module != NULL ) {
+            /* Finish handling last functional unit read from CDD file */
+            if( curr_funit != NULL ) {
               
               if( instance_root == NULL ) {
                 
-                instance_read_add( &instance_root, NULL, curr_module, mod_scope );
+                instance_read_add( &instance_root, NULL, curr_funit, funit_scope );
                 
               } else {
                 
-                /* Add module to instance tree and module list */
-                scope_extract_back( mod_scope, back, parent_scope );
+                /* Add functional unit to instance tree and functional unit list */
+                scope_extract_back( funit_scope, back, parent_scope );
 
-                /* Make sure that module in database was not written before its parent module */
+                /* Make sure that functional unit in database was not written before its parent functional unit */
                 assert( instance_find_scope( instance_root, parent_scope ) != NULL );
 
-                /* Add module to instance tree and module list */
-                instance_read_add( &instance_root, parent_scope, curr_module, back );
+                /* Add functional unit to instance tree and functional unit list */
+                instance_read_add( &instance_root, parent_scope, curr_funit, back );
                 
               }
               
-              mod_link_add( curr_module, &mod_head, &mod_tail );
-              curr_module = NULL;
+              funit_link_add( curr_funit, &funit_head, &funit_tail );
+              if( curr_funit->type == FUNIT_MODULE ) {
+                last_funit = curr_funit;
+              }
+              curr_funit = NULL;
 
             }
 
@@ -276,38 +285,41 @@ bool db_read( char* file, int read_mode ) {
 
           }
 
-          /* Now finish reading module line */
-          if( (retval = module_db_read( &tmpmod, mod_scope, &rest_line )) == TRUE ) {
-            
-            if( (read_mode == READ_MODE_MERGE_INST_MERGE) && ((foundinst = instance_find_scope( instance_root, mod_scope )) != NULL) ) {
+          /* Now finish reading functional unit line */
+          if( (retval = funit_db_read( &tmpfunit, funit_scope, &rest_line )) == TRUE ) {
+            if( (read_mode == READ_MODE_MERGE_INST_MERGE) && ((foundinst = instance_find_scope( instance_root, funit_scope )) != NULL) ) {
               merge_mode = TRUE;
-              module_db_merge( foundinst->mod, db_handle, TRUE );
+              funit_db_merge( foundinst->funit, db_handle, TRUE );
             } else if( read_mode == READ_MODE_REPORT_MOD_REPLACE ) {
-              if( (foundmod = mod_link_find( &tmpmod, mod_head )) != NULL ) {
+              if( (foundfunit = funit_link_find( &tmpfunit, funit_head )) != NULL ) {
                 merge_mode = TRUE;
                 /*
-                 If this module has been assigned a stat, remove it and replace it with the new module contents;
-                 otherwise, merge the results of the new module with the old.
+                 If this functional unit has been assigned a stat, remove it and replace it with the new functional unit contents;
+                 otherwise, merge the results of the new functional unit with the old.
                 */
-                if( foundmod->mod->stat != NULL ) {
-                  statistic_dealloc( foundmod->mod->stat );
-                  foundmod->mod->stat = NULL;
-                  module_db_replace( foundmod->mod, db_handle );
+                if( foundfunit->funit->stat != NULL ) {
+                  statistic_dealloc( foundfunit->funit->stat );
+                  foundfunit->funit->stat = NULL;
+                  funit_db_replace( foundfunit->funit, db_handle );
                 } else {
-                  module_db_merge( foundmod->mod, db_handle, FALSE );
+                  funit_db_merge( foundfunit->funit, db_handle, FALSE );
                 }
               } else {
                 retval = FALSE;
               }
-            } else if( (read_mode == READ_MODE_REPORT_MOD_MERGE) && ((foundmod = mod_link_find( &tmpmod, mod_head )) != NULL) ) {
+            } else if( (read_mode == READ_MODE_REPORT_MOD_MERGE) && ((foundfunit = funit_link_find( &tmpfunit, funit_head )) != NULL) ) {
               merge_mode = TRUE;
-              module_db_merge( foundmod->mod, db_handle, FALSE );
+              funit_db_merge( foundfunit->funit, db_handle, FALSE );
             } else {
-              curr_module             = module_create();
-              curr_module->name       = strdup_safe( mod_name, __FILE__, __LINE__ );
-              curr_module->filename   = strdup_safe( mod_file, __FILE__, __LINE__ );
-              curr_module->start_line = tmpmod.start_line;
-              curr_module->end_line   = tmpmod.end_line;
+              curr_funit             = funit_create();
+              curr_funit->name       = strdup_safe( funit_name, __FILE__, __LINE__ );
+              curr_funit->type       = tmpfunit.type;
+              curr_funit->filename   = strdup_safe( funit_file, __FILE__, __LINE__ );
+              curr_funit->start_line = tmpfunit.start_line;
+              curr_funit->end_line   = tmpfunit.end_line;
+              if( (tmpfunit.type == FUNIT_FUNCTION) || (tmpfunit.type == FUNIT_TASK) ) {
+                funit_link_add( curr_funit, &(last_funit->tf_head), &(last_funit->tf_tail) );
+              }
             }
 
           }
@@ -342,23 +354,23 @@ bool db_read( char* file, int read_mode ) {
 
   }
 
-  /* If the last module was being read and not merged, add it now */
-  if( !merge_mode && (curr_module != NULL) ) {
+  /* If the last functional unit was being read and not merged, add it now */
+  if( !merge_mode && (curr_funit != NULL) ) {
 
     if( instance_root == NULL ) {
       
-      instance_read_add( &instance_root, NULL, curr_module, mod_scope );
+      instance_read_add( &instance_root, NULL, curr_funit, funit_scope );
       
     } else {
       
-      /* Add module to instance tree and module list */
-      scope_extract_back( mod_scope, back, parent_scope );
+      /* Add functional unit to instance tree and functional unit list */
+      scope_extract_back( funit_scope, back, parent_scope );
     
-      /* Make sure that module in database not written before its parent module */
+      /* Make sure that functional unit in database not written before its parent functional unit */
       if( instance_find_scope( instance_root, parent_scope ) != NULL ) {
 
-        /* Add module to instance tree and module list */
-        instance_read_add( &instance_root, parent_scope, curr_module, back );
+        /* Add functional unit to instance tree and functional unit list */
+        instance_read_add( &instance_root, parent_scope, curr_funit, back );
 
       } else {
 
@@ -369,8 +381,11 @@ bool db_read( char* file, int read_mode ) {
       
     }
     
-    mod_link_add( curr_module, &mod_head, &mod_tail );
-    curr_module = NULL;
+    funit_link_add( curr_funit, &funit_head, &funit_tail );
+    if( curr_funit->type == FUNIT_MODULE ) {
+      last_funit = curr_funit;
+    }
+    curr_funit = NULL;
 
   }
 
@@ -379,52 +394,67 @@ bool db_read( char* file, int read_mode ) {
 }
 
 /*!
- \param scope    Name of module node instance being added.
- \param modname  Name of module being instantiated.
- 
- Creates a new module_node with the instantiation name, search for matching module.  If
- module hasn't been created previously, create it now without a filename associated (NULL).
- Add module_node to tree if there are no problems in doing so.
-*/
-void db_add_instance( char* scope, char* modname ) {
+ \param scope  Name of functional unit instance being added.
+ \param name   Name of functional unit being instantiated.
+ \param type   Type of functional unit being instantiated.
 
-  module*   mod;             /* Pointer to module                        */
-  mod_link* found_mod_link;  /* Pointer to found mod_link in module list */
+ \return Returns a pointer to the created functional unit if the instance was added to the hierarchy;
+         otherwise, returns NULL.
+ 
+ Creates a new functional unit node with the instantiation name, search for matching functional unit.  If
+ functional unit hasn't been created previously, create it now without a filename associated (NULL).
+ Add functional unit node to tree if there are no problems in doing so.
+*/
+func_unit* db_add_instance( char* scope, char* name, int type ) {
+
+  func_unit*  funit = NULL;      /* Pointer to functional unit                          */
+  funit_link* found_funit_link;  /* Pointer to found funit_link in functional unit list */
 
   /* There should always be a parent so internal error if it does not exist. */
-  assert( curr_module != NULL );
+  assert( curr_funit != NULL );
 
-  /* If this module name is in our list of no_score modules, skip adding the instance */
-  if( str_link_find( modname, no_score_head ) == NULL ) {
+  /* If this functional unit name is in our list of no_score functional units, skip adding the instance */
+  if( str_link_find( name, no_score_head ) == NULL ) {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "In db_add_instance, instance: %s, module: %s", scope, modname );
+    switch( type ) {
+      case FUNIT_MODULE      :  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_instance, instance: %s, module: %s", scope, name );  break;
+      case FUNIT_NAMED_BLOCK :  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_instance, instance: %s, named block: %s", scope, name );  break;
+      case FUNIT_FUNCTION    :  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_instance, instance: %s, function: %s", scope, name );  break;
+      case FUNIT_TASK        :  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_instance, instance: %s, task: %s", scope, name );  break;
+      default                :  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_instance, instance: %s, UNKNOWN: %s", scope, name );  break;
+    }
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
-    /* Create new module node */
-    mod       = module_create();
-    mod->name = strdup_safe( modname, __FILE__, __LINE__ );
+    /* Create new functional unit node */
+    funit       = funit_create();
+    funit->name = strdup_safe( name, __FILE__, __LINE__ );
+    funit->type = type;
 
-    if( (found_mod_link = mod_link_find( mod, mod_head )) != NULL ) {
+    if( (found_funit_link = funit_link_find( funit, funit_head )) != NULL ) {
 
-      instance_parse_add( &instance_root, curr_module, found_mod_link->mod, scope );
+      assert( type == FUNIT_MODULE );
 
-      module_dealloc( mod );
+      instance_parse_add( &instance_root, curr_funit, found_funit_link->funit, scope );
+
+      funit_dealloc( funit );
 
     } else {
 
-      /* Add new module to module list. */
-      mod_link_add( mod, &mod_head, &mod_tail );
+      /* Add new functional unit to functional unit list. */
+      funit_link_add( funit, &funit_head, &funit_tail );
 
       /* Add instance. */
-      instance_parse_add( &instance_root, curr_module, mod, scope );
+      instance_parse_add( &instance_root, curr_funit, funit, scope );
 
-      if( str_link_find( modname, modlist_head ) == NULL ) {
-        str_link_add( modname, &modlist_head, &modlist_tail );
+      if( (type == FUNIT_MODULE) && (str_link_find( name, modlist_head ) == NULL) ) {
+        str_link_add( name, &modlist_head, &modlist_tail );
       }
       
     }
 
   }
+
+  return( funit );
 
 }
 
@@ -440,22 +470,23 @@ void db_add_instance( char* scope, char* modname ) {
 */
 void db_add_module( char* name, char* file, int start_line ) {
 
-  module    mod;   /* Temporary module for comparison */
-  mod_link* modl;  /* Pointer to found tree node      */
+  func_unit   mod;   /* Temporary module for comparison */
+  funit_link* modl;  /* Pointer to found tree node      */
 
   snprintf( user_msg, USER_MSG_LENGTH, "In db_add_module, module: %s, file: %s, start_line: %d", name, file, start_line );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
   /* Set current module to this module */
   mod.name = name;
+  mod.type = FUNIT_MODULE;
 
-  modl = mod_link_find( &mod, mod_head );
+  modl = funit_link_find( &mod, funit_head );
 
   assert( modl != NULL );
 
-  curr_module             = modl->mod;
-  curr_module->filename   = strdup_safe( file, __FILE__, __LINE__ );
-  curr_module->start_line = start_line;
+  curr_funit             = modl->funit;
+  curr_funit->filename   = strdup_safe( file, __FILE__, __LINE__ );
+  curr_funit->start_line = start_line;
   
 }
 
@@ -469,12 +500,66 @@ void db_end_module( int end_line ) {
   snprintf( user_msg, USER_MSG_LENGTH, "In db_end_module, end_line: %d", end_line );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
-  curr_module->end_line = end_line;
+  curr_funit->end_line = end_line;
 
-  str_link_remove( curr_module->name, &modlist_head, &modlist_tail );
+  str_link_remove( curr_funit->name, &modlist_head, &modlist_tail );
 
-  /* mod_parm_display( curr_module->param_head ); */
-  
+}
+
+/*!
+*/
+void db_add_function_task( int type, char* name, char* file, int start_line ) {
+
+  func_unit* tf;  /* Pointer to created functional unit */
+
+  assert( (type == FUNIT_FUNCTION) || (type == FUNIT_TASK) );
+
+  switch( type ) {
+    case FUNIT_FUNCTION :
+      snprintf( user_msg, USER_MSG_LENGTH, "In db_add_function_task, function: %s, file: %s, start_line: %d", name, file, start_line );
+      break;
+    case FUNIT_TASK :
+      snprintf( user_msg, USER_MSG_LENGTH, "In db_add_function_task, task: %s, file: %s, start_line: %d", name, file, start_line );
+      break;
+    default :  break;
+  }
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+
+  /* Add this as an instance so we can get scope */
+  if( (tf = db_add_instance( name, name, type )) != NULL ) {
+
+    /* Keep track of parent module pointer */
+    last_funit = curr_funit;
+
+    /* Store this functional unit in the parent module list */
+    funit_link_add( tf, &(last_funit->tf_head), &(last_funit->tf_tail) );
+
+    /* Set current functional unit to this functional unit */
+    curr_funit             = tf;
+    curr_funit->filename   = strdup_safe( file, __FILE__, __LINE__ );
+    curr_funit->start_line = start_line;
+    
+    /* Add parent module to this function/tasks list for signal binding purposes */
+    funit_link_add( last_funit, &(curr_funit->tf_head), &(curr_funit->tf_tail) );
+
+  }
+
+}
+
+/*!
+ \param end_line  Line number of end of this task/function
+*/
+void db_end_function_task( int end_line ) {
+
+  snprintf( user_msg, USER_MSG_LENGTH, "In db_end_function_task, end_line: %d", end_line );
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+
+  /* Store last line information */
+  curr_funit->end_line = end_line;
+
+  /* Set the current functional unit to the parent module */
+  curr_funit = last_funit;
+
 }
 
 /*!
@@ -487,11 +572,11 @@ void db_end_module( int end_line ) {
 */
 void db_add_declared_param( char* name, expression* expr ) {
 
-  char      scope[4096];  /* String containing current instance scope */
-  mod_inst* inst;         /* Pointer to found module instance         */
-  int       ignore;       /* Number of matching modules to ignore     */
-  int       i;            /* Loop iterator                            */
-  mod_parm* mparm;        /* Pointer to added module parameter        */
+  char        scope[4096];  /* String containing current instance scope      */
+  funit_inst* inst;         /* Pointer to found functional unit instance     */
+  int         ignore;       /* Number of matching functional units to ignore */
+  int         i;            /* Loop iterator                                 */
+  mod_parm*   mparm;        /* Pointer to added module parameter             */
 
   assert( name != NULL );
 
@@ -501,15 +586,15 @@ void db_add_declared_param( char* name, expression* expr ) {
     snprintf( user_msg, USER_MSG_LENGTH, "In db_add_declared_param, param: %s, expr: %d", name, expr->id );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
-    if( mod_parm_find( name, curr_module->param_head ) == NULL ) {
+    if( mod_parm_find( name, curr_funit->param_head ) == NULL ) {
 
       /* Add parameter to module parameter list */
-      mparm = mod_parm_add( name, expr, PARAM_TYPE_DECLARED, &(curr_module->param_head), &(curr_module->param_tail) );
+      mparm = mod_parm_add( name, expr, PARAM_TYPE_DECLARED, &(curr_funit->param_head), &(curr_funit->param_tail) );
 
       /* Also add this to all associated instance parameter lists */
       i      = 0;
       ignore = 0;
-      while( (inst = instance_find_by_module( instance_root, curr_module, &ignore )) != NULL ) {
+      while( (inst = instance_find_by_funit( instance_root, curr_funit, &ignore )) != NULL ) {
 
         /* Reset scope */
         scope[0] = '\0';
@@ -543,21 +628,21 @@ void db_add_declared_param( char* name, expression* expr ) {
 */
 void db_add_override_param( char* inst_name, expression* expr ) {
 
-  mod_parm* mparm;   /* Pointer to module parameter added to current module */
-  mod_inst* inst;    /* Pointer to current instance to add parameter to     */
-  int       ignore;  /* Specifies how many matching instances to ignore     */
-  int       i;       /* Loop iterator                                       */
+  mod_parm*   mparm;   /* Pointer to module parameter added to current module */
+  funit_inst* inst;    /* Pointer to current instance to add parameter to     */
+  int         ignore;  /* Specifies how many matching instances to ignore     */
+  int         i;       /* Loop iterator                                       */
 
   snprintf( user_msg, USER_MSG_LENGTH, "In db_add_override_param, instance: %s", inst_name );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
   /* Add override parameter to module parameter list */
-  mparm = mod_parm_add( inst_name, expr, PARAM_TYPE_OVERRIDE, &(curr_module->param_head), &(curr_module->param_tail) );
+  mparm = mod_parm_add( inst_name, expr, PARAM_TYPE_OVERRIDE, &(curr_funit->param_head), &(curr_funit->param_tail) );
 
   /* Also add this to all associated instance parameter lists */
   i      = 0;
   ignore = 0;
-  while( (inst = instance_find_by_module( instance_root, curr_module, &ignore )) != NULL ) {
+  while( (inst = instance_find_by_funit( instance_root, curr_funit, &ignore )) != NULL ) {
 
     param_resolve_override( mparm, &(inst->param_head), &(inst->param_tail) );
 
@@ -578,10 +663,10 @@ void db_add_override_param( char* inst_name, expression* expr ) {
 */
 void db_add_vector_param( vsignal* sig, expression* parm_exp, int type ) {
 
-  mod_parm* mparm;   /* Holds newly created module parameter                        */
-  mod_inst* inst;    /* Pointer to instance that is found to contain current module */
-  int       i;       /* Loop iterator                                               */
-  int       ignore;  /* Number of matching instances to ignore before selecting     */
+  mod_parm*   mparm;   /* Holds newly created module parameter                                 */
+  funit_inst* inst;    /* Pointer to instance that is found to contain current functional unit */
+  int         i;       /* Loop iterator                                                        */
+  int         ignore;  /* Number of matching instances to ignore before selecting              */
 
   assert( sig != NULL );
   assert( (type == PARAM_TYPE_SIG_LSB) || (type == PARAM_TYPE_SIG_MSB) );
@@ -590,7 +675,7 @@ void db_add_vector_param( vsignal* sig, expression* parm_exp, int type ) {
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
   /* Add signal vector parameter to module parameter list */
-  mparm = mod_parm_add( NULL, parm_exp, type, &(curr_module->param_head), &(curr_module->param_tail) );
+  mparm = mod_parm_add( NULL, parm_exp, type, &(curr_funit->param_head), &(curr_funit->param_tail) );
 
   /* Add signal to module parameter list */
   mparm->sig = sig;
@@ -598,7 +683,7 @@ void db_add_vector_param( vsignal* sig, expression* parm_exp, int type ) {
   /* Also add this to all associated instance parameter lists */
   i      = 0;
   ignore = 0;
-  while( (inst = instance_find_by_module( instance_root, curr_module, &ignore )) != NULL ) {
+  while( (inst = instance_find_by_funit( instance_root, curr_funit, &ignore )) != NULL ) {
 
     param_resolve_override( mparm, &(inst->param_head), &(inst->param_tail) );
 
@@ -652,7 +737,7 @@ void db_add_signal( char* name, static_expr* left, static_expr* right, int inpor
   tmpsig.name = name;
 
   /* Add signal to current module's signal list if it does not already exist */
-  if( sig_link_find( &tmpsig, curr_module->sig_head ) == NULL ) {
+  if( sig_link_find( &tmpsig, curr_funit->sig_head ) == NULL ) {
 
     static_expr_calc_lsb_and_width( left, right, &width, &lsb );
 
@@ -681,7 +766,7 @@ void db_add_signal( char* name, static_expr* left, static_expr* right, int inpor
     }
 
     /* Add signal to current module's signal list */
-    sig_link_add( sig, &(curr_module->sig_head), &(curr_module->sig_tail) );
+    sig_link_add( sig, &(curr_funit->sig_head), &(curr_funit->sig_tail) );
 
     /* Indicate if signal is an input port or not */
     sig->value->suppl.part.inport = inport;
@@ -708,7 +793,7 @@ vsignal* db_find_signal( char* name ) {
 
   /* Create signal to find */
   sig.name = name;
-  sigl = sig_link_find( &sig, curr_module->sig_head );
+  sigl = sig_link_find( &sig, curr_funit->sig_head );
 
   if( sigl == NULL ) {
     return( NULL );
@@ -723,7 +808,7 @@ int db_curr_signal_count() {
   int       sig_cnt = 0;  /* Holds number of signals in the current module */
   sig_link* sigl;         /* Pointer to current signal link                */
 
-  sigl = curr_module->sig_head;
+  sigl = curr_funit->sig_head;
   while( sigl != NULL ) {
     sig_cnt++;
     sigl = sigl->next;
@@ -774,7 +859,7 @@ expression* db_create_expression( expression* right, expression* left, int op, b
 
   /* Check to see if signal is a parameter in this module */
   if( sig_name != NULL ) {
-    if( (mparm = mod_parm_find( sig_name, curr_module->param_head )) != NULL ) {
+    if( (mparm = mod_parm_find( sig_name, curr_funit->param_head )) != NULL ) {
       sig_is_parm = TRUE;
       switch( op ) {
         case EXP_OP_SIG      :  op = EXP_OP_PARAM;       break;
@@ -819,13 +904,17 @@ expression* db_create_expression( expression* right, expression* left, int op, b
     } else {
 
       /* If signal is located in this current module, bind now; else, bind later */
-      if( scope_local( sig_name ) ) {
-        if( !bind_perform( sig_name, expr, curr_module, curr_module, TRUE, FALSE ) ) {
+      if( scope_local( sig_name ) && (op != EXP_OP_FUNC_CALL) && (op != EXP_OP_TASK_CALL) ) {
+        if( !bind_signal( sig_name, expr, curr_funit, curr_funit, TRUE, FALSE ) ) {
           expression_dealloc( expr, FALSE );
           expr = NULL;
         }
       } else {
-        bind_add( sig_name, expr, curr_module );
+        switch( op ) {
+          case EXP_OP_FUNC_CALL :  bind_add( FUNIT_FUNCTION, sig_name, expr, curr_funit );  break;
+          case EXP_OP_TASK_CALL :  bind_add( FUNIT_TASK,     sig_name, expr, curr_funit );  break;
+          default               :  bind_add( 0,              sig_name, expr, curr_funit );  break;
+        }
       }
 
     }
@@ -857,7 +946,7 @@ void db_add_expression( expression* root ) {
 
   if( root != NULL ) {
 
-    if( exp_link_find( root, curr_module->exp_head ) == NULL ) {
+    if( exp_link_find( root, curr_funit->exp_head ) == NULL ) {
     
       snprintf( user_msg, USER_MSG_LENGTH, "In db_add_expression, id: %d, op: %d, line: %d", 
                 root->id, root->op, root->line );
@@ -868,13 +957,13 @@ void db_add_expression( expression* root ) {
       db_add_expression( root->left );
 
       /* Now add this expression to the list. */
-      exp_link_add( root, &(curr_module->exp_head), &(curr_module->exp_tail) );
+      exp_link_add( root, &(curr_funit->exp_head), &(curr_funit->exp_tail) );
 
     }
 
   }
 
-  /* module_display_expressions( curr_module ); */
+  /* module_display_expressions( curr_funit ); */
 
 }
 
@@ -926,7 +1015,7 @@ void db_add_statement( statement* stmt, statement* start ) {
     stmt->exp->suppl.part.stmt_added = 1;
 
     /* Now add current statement */
-    stmt_link_add_tail( stmt, &(curr_module->stmt_head), &(curr_module->stmt_tail) );
+    stmt_link_add_tail( stmt, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
 
   }
 
@@ -935,10 +1024,10 @@ void db_add_statement( statement* stmt, statement* start ) {
 /*!
  \param stmt  Pointer to statement to remove from memory.
 
- Removes specified statement expression from the current module.  Called by statement_dealloc_recursive in
+ Removes specified statement expression from the current functional unit.  Called by statement_dealloc_recursive in
  statement.c in its deallocation algorithm.
 */
-void db_remove_statement_from_current_module( statement* stmt ) {
+void db_remove_statement_from_current_funit( statement* stmt ) {
 
   if( (stmt != NULL) && (stmt->exp != NULL) ) {
 
@@ -946,13 +1035,13 @@ void db_remove_statement_from_current_module( statement* stmt ) {
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
     /* Remove expression from any module parameter expression lists */
-    mod_parm_find_expr_and_remove( stmt->exp, curr_module->param_head );
+    mod_parm_find_expr_and_remove( stmt->exp, curr_funit->param_head );
 
     /* Remove expression from current module expression list and delete expressions */
-    exp_link_remove( stmt->exp, &(curr_module->exp_head), &(curr_module->exp_tail), TRUE );
+    exp_link_remove( stmt->exp, &(curr_funit->exp_head), &(curr_funit->exp_tail), TRUE );
 
     /* Remove this statement link from the current module's stmt_link list */
-    stmt_link_unlink( stmt, &(curr_module->stmt_head), &(curr_module->stmt_tail) );
+    stmt_link_unlink( stmt, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
 
   }
 
@@ -1132,7 +1221,7 @@ void db_parse_attribute( attr_param* ap ) {
   print_output( "In db_parse_attribute", DEBUG, __FILE__, __LINE__ );
 
   /* First, parse the entire attribute */
-  attribute_parse( ap, curr_module );
+  attribute_parse( ap, curr_funit );
 
   /* Then deallocate the structure */
   attribute_dealloc( ap );
@@ -1235,7 +1324,7 @@ void db_assign_symbol( char* name, char* symbol, int msb, int lsb ) {
     tmpsig.name = name;
 
     /* Find the signal that matches the specified signal name */
-    if( (slink = sig_link_find( &tmpsig, curr_instance->mod->sig_head )) != NULL ) {
+    if( (slink = sig_link_find( &tmpsig, curr_instance->funit->sig_head )) != NULL ) {
 
       /* Only add the symbol if we are not going to generate this value ourselves */
       if( slink->sig->value->suppl.part.assigned == 0 ) {
@@ -1345,12 +1434,17 @@ void db_dealloc_global_vars() {
     free_safe( curr_inst_scope );
   }
 
-  // instance_dealloc( curr_instance );
-
 }
 
 /*
  $Log$
+ Revision 1.127  2005/02/11 22:50:31  phase1geo
+ Fixing bug with removing statement blocks that contain statements that cannot
+ currently be handled by Covered correctly.  There was a problem when the bad statement
+ was the last statement in the statement block.  Updated regression accordingly.
+ Added race condition diagnostics that currently are not in regression due to lack
+ of code support for them.  Ifdef'ed out the BASSIGN stuff for this checkin.
+
  Revision 1.126  2005/02/09 14:12:20  phase1geo
  More code for supporting expression assignments.
 

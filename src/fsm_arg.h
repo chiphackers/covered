@@ -15,11 +15,15 @@
 bool fsm_arg_parse( char* arg );
 
 /*! \brief Parses specified attribute argument for FSM information. */
-void fsm_arg_parse_attr( attr_param* ap, module* mod );
+void fsm_arg_parse_attr( attr_param* ap, func_unit* funit );
 
 
 /*
  $Log$
+ Revision 1.2  2003/10/28 00:18:06  phase1geo
+ Adding initial support for inline attributes to specify FSMs.  Still more
+ work to go but full regression still passes at this point.
+
  Revision 1.1  2003/10/02 12:30:56  phase1geo
  Initial code modifications to handle more robust FSM cases.
 
