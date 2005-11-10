@@ -204,6 +204,9 @@
 /*! Represents a Verilog task (syntax "task <name> ... endtask") */
 #define FUNIT_TASK           3
 
+/*! The number of valid functional unit types */
+#define FUNIT_TYPES          4
+
 /*! @} */
 
 /*!
@@ -1553,11 +1556,11 @@ struct vector_width_s {
 };
 
 struct exp_bind_s {
-  int         type;  /*!< Specifies if name refers to a signal (0) or functional unit (1) */
-  char*       name;  /*!< Name of Verilog scoped signal/functional unit to bind           */
-  expression* exp;   /*!< Expression to bind.                                             */
-  func_unit*  mod;   /*!< Pointer to module containing expression                         */
-  exp_bind*   next;  /*!< Pointer to next binding in list                                 */
+  int         type;   /*!< Specifies if name refers to a signal (0) or functional unit (1) */
+  char*       name;   /*!< Name of Verilog scoped signal/functional unit to bind           */
+  expression* exp;    /*!< Expression to bind.                                             */
+  func_unit*  funit;  /*!< Pointer to functional unit containing expression                */
+  exp_bind*   next;   /*!< Pointer to next binding in list                                 */
 };
 
 struct case_stmt_s {
@@ -1634,6 +1637,10 @@ struct stmt_blk_s {
 
 /*
  $Log$
+ Revision 1.124  2005/11/08 23:12:09  phase1geo
+ Fixes for function/task additions.  Still a lot of testing on these structures;
+ however, regressions now pass again so we are checkpointing here.
+
  Revision 1.123  2005/05/09 03:08:34  phase1geo
  Intermediate checkin for VPI changes.  Also contains parser fix which should
  be branch applied to the latest stable and development versions.

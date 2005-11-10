@@ -84,9 +84,16 @@ void timer_start( timer** tm );
 void timer_stop( timer** tm );
 #endif
 
+/*! \brief Returns string representation of the specified functional unit type */
+const char* get_funit_type( int type );
+
 
 /*
  $Log$
+ Revision 1.17  2005/11/08 23:12:10  phase1geo
+ Fixes for function/task additions.  Still a lot of testing on these structures;
+ however, regressions now pass again so we are checkpointing here.
+
  Revision 1.16  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,

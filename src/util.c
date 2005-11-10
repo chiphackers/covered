@@ -64,6 +64,8 @@ unsigned long largest_malloc_size = 0;
 */
 char user_msg[USER_MSG_LENGTH];
 
+const char* funit_types[FUNIT_TYPES+1] = { "module", "named block", "function", "task", "UNKNOWN" };
+
 
 /*!
  \param value Boolean value of suppression.
@@ -825,8 +827,26 @@ void timer_stop( timer** tm ) {
 }
 #endif
 
+const char* get_funit_type( int type ) {
+
+  const char* type_str;
+
+  if( (type >= 0) && (type < FUNIT_TYPES) ) {
+    type_str = funit_types[type];
+  } else {
+    type_str = funit_types[FUNIT_TYPES];
+  }
+
+  return( type_str );
+
+}
+
 /*
  $Log$
+ Revision 1.31  2005/11/08 23:12:10  phase1geo
+ Fixes for function/task additions.  Still a lot of testing on these structures;
+ however, regressions now pass again so we are checkpointing here.
+
  Revision 1.30  2005/05/02 15:33:34  phase1geo
  Updates.
 

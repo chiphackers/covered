@@ -163,7 +163,7 @@ bool line_collect( char* funit_name, int funit_type, int cov, int** lines, int* 
  function, indicating that the functional unit was not found in the design and the values
  of total and hit should not be used.
 */
-bool line_get_funit_summary( char* funit_name, char* funit_type, int* total, int* hit ) {
+bool line_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit ) {
 
   bool        retval = TRUE;  /* Return value for this function        */
   func_unit   funit;          /* Functional unit used for searching    */
@@ -479,6 +479,11 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.50  2005/11/10 19:28:23  phase1geo
+ Updates/fixes for tasks/functions.  Also updated Tcl/Tk scripts for these changes.
+ Fixed bug with net_decl_assign statements -- the line, start column and end column
+ information was incorrect, causing problems with the GUI output.
+
  Revision 1.49  2005/11/08 23:12:09  phase1geo
  Fixes for function/task additions.  Still a lot of testing on these structures;
  however, regressions now pass again so we are checkpointing here.

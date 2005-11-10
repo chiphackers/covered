@@ -98,17 +98,17 @@ exp_bind* eb_tail;
  This bindings list will be handled after all input Verilog has been
  parsed.
 */
-void bind_add( int type, const char* name, expression* exp, func_unit* mod ) {
+void bind_add( int type, const char* name, expression* exp, func_unit* funit ) {
   
   exp_bind* eb;   /* Temporary pointer to signal/expressing binding */
   
   /* Create new signal/expression binding */
-  eb       = (exp_bind *)malloc_safe( sizeof( exp_bind ), __FILE__, __LINE__ );
-  eb->type = type;
-  eb->name = strdup_safe( name, __FILE__, __LINE__ );
-  eb->mod  = mod;
-  eb->exp  = exp;
-  eb->next = NULL;
+  eb        = (exp_bind *)malloc_safe( sizeof( exp_bind ), __FILE__, __LINE__ );
+  eb->type  = type;
+  eb->name  = strdup_safe( name, __FILE__, __LINE__ );
+  eb->funit = funit;
+  eb->exp   = exp;
+  eb->next  = NULL;
   
   /* Add new signal/expression binding to linked list */
   if( eb_head == NULL ) {
@@ -189,12 +189,12 @@ void bind_remove( int id ) {
 */
 bool bind_signal( char* name, expression* exp, func_unit* funit_sig, func_unit* funit_exp, bool implicit_allowed, bool fsm_bind ) {
 
-  vsignal     tsig;           /* Temporary signal for comparison purposes           */
-  func_unit   tfu;            /* Temporary functional unit for comparison purposes  */
-  sig_link*   sigl;           /* Pointer to found signal in specified module        */
+  vsignal     tsig;           /* Temporary signal for comparison purposes */
+  func_unit   tfu;            /* Temporary functional unit for comparison purposes */
+  sig_link*   sigl;           /* Pointer to found signal in specified functional unit */
   funit_link* funitl;         /* Pointer to found function unit in specified module */
-  char*       tmpname;        /* Temporary name containing unused signal character  */
-  bool        retval = TRUE;  /* Return value for this function                     */
+  char*       tmpname;        /* Temporary name containing unused signal character */
+  bool        retval = TRUE;  /* Return value for this function */
 
   /* Search for specified signal in current functional unit */
   vsignal_init( &tsig, name, NULL, 0 );
@@ -251,6 +251,7 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_sig, func_unit* 
 }
 
 /*!
+ \param type  Type of functional unit
 */
 bool bind_task_function( int type, char* name, expression* exp, func_unit* funit_tf, func_unit* funit_exp ) {
 
@@ -260,6 +261,9 @@ bool bind_task_function( int type, char* name, expression* exp, func_unit* funit
   stmt_iter   si;             /* Statement iterator used to find the head statement */
   vsignal     sig;            /* Temporary signal for comparison purposes */
   sig_link*   sigl;           /* Temporary signal link holder */
+
+  printf( "In bind_task_function, type: %d, name: %s, exp: %d, funit_tf: %s, funit_exp: %s\n",
+          type, name, exp->id, funit_tf->name, funit_exp->name );
 
   assert( (type == FUNIT_FUNCTION) || (type == FUNIT_TASK) );
   assert( funit_tf->type == FUNIT_MODULE );
@@ -362,14 +366,14 @@ void bind() {
         /* Bad hierarchical reference -- we should never get to this line of code due to unsupported hierarchical referencing */
         snprintf( user_msg, USER_MSG_LENGTH, "Undefined hierarchical reference: %s, file: %s, line: %d", 
                   curr_eb->name,
-                  curr_eb->mod->filename,
+                  curr_eb->funit->filename,
                   curr_eb->exp->line );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         exit( 1 );
       }
 
       /* Now bind the signal to the expression */
-      bind_signal( curr_eb->name, curr_eb->exp, funiti->funit, curr_eb->mod, FALSE, FALSE );
+      bind_signal( curr_eb->name, curr_eb->exp, funiti->funit, curr_eb->funit, FALSE, FALSE );
 
     /* Otherwise, handle function/task binding */
     } else {
@@ -378,13 +382,13 @@ void bind() {
         funiti = instance_find_scope( instance_root, scope );
       } else {
         ignore = 0;
-        funiti = instance_find_by_funit( instance_root, curr_eb->mod, &ignore );
+        funiti = instance_find_by_funit( instance_root, curr_eb->funit, &ignore );
       }
 
       assert( funiti != NULL );
 
       /* Bind the expression to the task/function */
-      bind_task_function( curr_eb->type, curr_eb->name, curr_eb->exp, funiti->funit, curr_eb->mod );
+      bind_task_function( curr_eb->type, curr_eb->name, curr_eb->exp, funiti->funit, curr_eb->funit );
 
     }
 
@@ -445,6 +449,11 @@ void bind() {
 
 /* 
  $Log$
+ Revision 1.32  2005/11/10 19:28:22  phase1geo
+ Updates/fixes for tasks/functions.  Also updated Tcl/Tk scripts for these changes.
+ Fixed bug with net_decl_assign statements -- the line, start column and end column
+ information was incorrect, causing problems with the GUI output.
+
  Revision 1.31  2005/11/08 23:12:09  phase1geo
  Fixes for function/task additions.  Still a lot of testing on these structures;
  however, regressions now pass again so we are checkpointing here.

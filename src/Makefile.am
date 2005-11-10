@@ -27,6 +27,7 @@ covered_SOURCES = arc.c \
 		  parser_misc.c \
                   race.c \
 		  report.c \
+		  scope.c \
 		  score.c \
 		  search.c \
 		  sim.c \
