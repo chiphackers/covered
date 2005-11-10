@@ -12,7 +12,7 @@ proc cov_create {.covbox} {
       if {$last_cov_rb != $cov_rb} {
         set last_cov_rb $cov_rb
         highlight_listbox
-        process_module_line_cov
+        process_funit_line_cov
       } else {
         display_line_cov
       }
@@ -27,7 +27,7 @@ proc cov_create {.covbox} {
       if {$last_cov_rb != $cov_rb} {
         set last_cov_rb $cov_rb
         highlight_listbox
-        process_module_toggle_cov
+        process_funit_toggle_cov
       } else {
         display_toggle_cov
       }
@@ -42,7 +42,7 @@ proc cov_create {.covbox} {
       if {$last_cov_rb != $cov_rb} {
         set last_cov_rb $cov_rb
         highlight_listbox
-        process_module_comb_cov
+        process_funit_comb_cov
       } else {
         display_comb_cov
       }
@@ -57,7 +57,7 @@ proc cov_create {.covbox} {
       if {$last_cov_rb != $cov_rb} {
         set last_cov_rb $cov_rb
         highlight_listbox
-        process_module_fsm_cov
+        process_funit_fsm_cov
       } else {
         display_fsm_cov
       }

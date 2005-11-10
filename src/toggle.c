@@ -56,20 +56,21 @@ void toggle_get_stats( sig_link* sigl, float* total, int* hit01, int* hit10 ) {
 
 }
 
-bool toggle_collect( const char* funit_name, int cov, expression*** sigs, int* sig_cnt ) {
+bool toggle_collect( char* funit_name, int funit_type, int cov, expression*** sigs, int* sig_cnt ) {
 
   bool        retval = TRUE;  /* Return value for this function                 */
   func_unit   funit;          /* Functional unit used for searching             */
   funit_link* funitl;         /* Pointer to found functional unit link          */
-  sig_link* curr_sig;       /* Pointer to current signal link being evaluated */
-  int       hit01;          /* Number of bits that toggled from 0 to 1        */
-  int       hit10;          /* Number of bits that toggled from 1 to 0        */
-  int       sig_size; 
-  exp_link* expl;           /* Pointer to expression linked list              */
+  sig_link*   curr_sig;       /* Pointer to current signal link being evaluated */
+  int         hit01;          /* Number of bits that toggled from 0 to 1        */
+  int         hit10;          /* Number of bits that toggled from 1 to 0        */
+  int         sig_size; 
+  exp_link*   expl;           /* Pointer to expression linked list              */
      
   /* First, find functional unit in functional unit array */
-  funit.name = strdup_safe( funit_name, __FILE__, __LINE__ );
-  funit.type = FUNIT_MODULE;  /* TBD */
+  funit.name = funit_name;
+  funit.type = funit_type;
+
   if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
 
     /* Create an array that will hold the number of uncovered lines */
@@ -118,13 +119,11 @@ bool toggle_collect( const char* funit_name, int cov, expression*** sigs, int* s
 
   }
 
-  free_safe( funit.name );
-
   return( retval );
 
 }
 
-bool toggle_get_coverage( char* funit_name, char* sig_name, int* msb, int* lsb, char** tog01, char** tog10 ) {
+bool toggle_get_coverage( char* funit_name, int funit_type, char* sig_name, int* msb, int* lsb, char** tog01, char** tog10 ) {
 
   bool        retval = TRUE;  /* Return value for this function        */
   func_unit   funit;          /* Functional unit used for searching    */
@@ -133,7 +132,7 @@ bool toggle_get_coverage( char* funit_name, char* sig_name, int* msb, int* lsb, 
   sig_link*   sigl;           /* Pointer to found signal link          */
 
   funit.name = funit_name;
-  funit.type = FUNIT_MODULE;  /* TBD */
+  funit.type = funit_type;
 
   if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
 
@@ -160,6 +159,7 @@ bool toggle_get_coverage( char* funit_name, char* sig_name, int* msb, int* lsb, 
 
 /*!
  \param funit_name  Name of functional unit to retrieve summary information from.
+ \param funit_type  Type of functional unit to retrieve summary information from.
  \param total       Pointer to total number of toggles in this functional unit.
  \param hit01       Pointer to number of toggles hit going 0 -> 1 in this functional unit.
  \param hit10       Pointer to number of toggles hit going 1 -> 0 in this functional unit.
@@ -173,7 +173,7 @@ bool toggle_get_coverage( char* funit_name, char* sig_name, int* msb, int* lsb, 
  function, indicating that the functional unit was not found in the design and the values
  of total and hit should not be used.
 */
-bool toggle_get_funit_summary( char* funit_name, int* total, int* hit01, int* hit10 ) {
+bool toggle_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit01, int* hit10 ) {
 
   bool        retval = TRUE;  /* Return value for this function        */
   func_unit   funit;          /* Functional unit used for searching    */
@@ -181,7 +181,7 @@ bool toggle_get_funit_summary( char* funit_name, int* total, int* hit01, int* hi
   char        tmp[21];        /* Temporary string for total            */
 
   funit.name = funit_name;
-  funit.type = FUNIT_MODULE;  /* TBD */
+  funit.type = funit_type;
 
   if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
 
@@ -529,6 +529,10 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.28  2005/11/08 23:12:10  phase1geo
+ Fixes for function/task additions.  Still a lot of testing on these structures;
+ however, regressions now pass again so we are checkpointing here.
+
  Revision 1.27  2004/08/08 12:50:27  phase1geo
  Snapshot of addition of toggle coverage in GUI.  This is not working exactly as
  it will be, but it is getting close.

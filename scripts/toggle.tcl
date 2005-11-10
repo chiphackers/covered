@@ -1,6 +1,6 @@
 set sig_name ""
 
-proc create_toggle_window {mod_name signal} {
+proc create_toggle_window {funit_name funit_type signal} {
 
   global toggle01_verbose toggle10_verbose toggle_msb toggle_lsb
   global sig_name
@@ -45,7 +45,7 @@ proc create_toggle_window {mod_name signal} {
   set toggle10_verbose 0
   set toggle_msb       0
   set toggle_lsb       0
-  tcl_func_get_toggle_coverage $mod_name $signal
+  tcl_func_get_toggle_coverage $funit_name $funit_type $signal
 
   # Allow us to clear out text box
   .togwin.f.t configure -state normal

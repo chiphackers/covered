@@ -20,16 +20,16 @@ void combination_reset_counted_exprs( exp_link* expl );
 void combination_get_stats( exp_link* expl, float* total, int* hit );
 
 /*! \brief Collects all toggle expressions that match the specified coverage indication. */
-bool combination_collect( const char* mod_name, expression*** covs, int* cov_cnt, expression*** uncovs, int* uncov_cnt );
+bool combination_collect( char* funit_name, int funit_type, expression*** covs, int* cov_cnt, expression*** uncovs, int* uncov_cnt );
 
 /*! \brief Gets combinational logic summary statistics for specified module. */
-bool combination_get_module_summary( char* mod_name, int* total, int* hit );
+bool combination_get_module_summary( char* funit_name, int funit_type, int* total, int* hit );
 
 /*! \brief Gets output for specified expression including underlines and code */
-bool combination_get_expression( char* mod_name, int expr_id, char*** code, int** uline_groups, int* code_size, char*** ulines, int* uline_size );
+bool combination_get_expression( char* funit_name, int funit_type, int expr_id, char*** code, int** uline_groups, int* code_size, char*** ulines, int* uline_size );
 
 /*! \brief Gets output for specified expression including coverage information */
-bool combination_get_coverage( char* mod_name, int uline_id, char*** info, int* info_size );
+bool combination_get_coverage( char* funit_name, int funit_type, int uline_id, char*** info, int* info_size );
 
 /*! \brief Generates report output for combinational logic coverage. */
 void combination_report( FILE* ofile, bool verbose );
@@ -37,6 +37,10 @@ void combination_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.12  2004/09/07 03:17:13  phase1geo
+ Fixing bug that did not allow combinational logic to be revisited in GUI properly.
+ Also removing comments from bgerror function in Tcl code.
+
  Revision 1.11  2004/08/17 15:23:37  phase1geo
  Added combinational logic coverage output to GUI.  Modified comb.c code to get this
  to work that impacts ASCII coverage output; however, regression is fully passing with

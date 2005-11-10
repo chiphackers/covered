@@ -336,15 +336,15 @@ void combination_get_stats( exp_link* expl, float* total, int* hit ) {
 
 }
 
-bool combination_get_funit_summary( char* name, int* total, int* hit ) {
+bool combination_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit ) {
 
   bool        retval = TRUE;  /* Return value of this function         */
   func_unit   funit;          /* Functional unit used for searching    */
   funit_link* funitl;         /* Pointer to found functional unit link */
   char        tmp[21];        /* Temporary string for total            */
 
-  funit.name = name;
-  funit.type = FUNIT_MODULE;  /* TBD */
+  funit.name = funit_name;
+  funit.type = funit_type;
 
   if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
 
@@ -1428,6 +1428,7 @@ void combination_get_missed_expr( char*** info, int* info_size, expression* exp,
         /* Create combination table */
         switch( exp->op ) {
           case EXP_OP_SIG        :  combination_unary( info, info_size, exp, "" );         break;
+          case EXP_OP_FUNC_CALL  :  combination_unary( info, info_size, exp, "" );         break;
           case EXP_OP_XOR        :  combination_two_vars( info, info_size, exp, "^" );     break;
           case EXP_OP_ADD        :  combination_two_vars( info, info_size, exp, "+" );     break;
           case EXP_OP_SUBTRACT   :  combination_two_vars( info, info_size, exp, "-" );     break;
@@ -1710,7 +1711,7 @@ void combination_funit_verbose( FILE* ofile, funit_link* head ) {
 
 }
 
-bool combination_collect( const char* name, expression*** covs, int* cov_cnt, expression*** uncovs, int* uncov_cnt ) {
+bool combination_collect( char* funit_name, int funit_type, expression*** covs, int* cov_cnt, expression*** uncovs, int* uncov_cnt ) {
 
   bool        retval = TRUE;   /* Return value of this function                                             */
   func_unit   funit;           /* Functional unit used for searching                                        */
@@ -1722,8 +1723,9 @@ bool combination_collect( const char* name, expression*** covs, int* cov_cnt, ex
   int         uncov_size;      /* Current maximum allocated space in uncovs array                           */
  
   /* First, find functional unit in functional unit array */
-  funit.name = strdup_safe( name, __FILE__, __LINE__ );
-  funit.type = FUNIT_MODULE;  /* TBD */
+  funit.name = funit_name;
+  funit.type = funit_type;
+
   if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
 
     /* Reset combination counted bits */
@@ -1780,28 +1782,27 @@ bool combination_collect( const char* name, expression*** covs, int* cov_cnt, ex
 
   }
 
-  free_safe( funit.name );
-
   return( retval );
 
 }
 
-bool combination_get_expression( char* name, int expr_id, char*** code, int** uline_groups, int* code_size, char*** ulines, int* uline_size ) {
+bool combination_get_expression( char* funit_name, int funit_type, int expr_id, char*** code, int** uline_groups, int* code_size,
+                                 char*** ulines, int* uline_size ) {
 
-  bool        retval    = TRUE;  /* Return value for this function        */
-  func_unit   funit;             /* Functional unit used for searching    */
+  bool        retval    = TRUE;  /* Return value for this function */
+  func_unit   funit;             /* Functional unit used for searching */
   funit_link* funitl;            /* Pointer to found functional unit link */
-  expression  exp;               /* Expression used for searching         */
-  exp_link*   expl;              /* Pointer to found signal link          */
-  int         tmp;               /* Temporary integer (unused)            */
+  expression  exp;               /* Expression used for searching */
+  exp_link*   expl;              /* Pointer to found signal link */
+  int         tmp;               /* Temporary integer (unused) */
   int         i, j;
   char**      tmp_ulines;
   int         tmp_uline_size;
   int         start     = 0;
   int         uline_max = 20;
 
-  funit.name = name;
-  funit.type = FUNIT_MODULE;  /* TBD */
+  funit.name = funit_name;
+  funit.type = funit_type;
 
   if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
 
@@ -1874,15 +1875,15 @@ bool combination_get_expression( char* name, int expr_id, char*** code, int** ul
 
 }
 
-bool combination_get_coverage( char* name, int uline_id, char*** info, int* info_size ) {
+bool combination_get_coverage( char* funit_name, int funit_type, int uline_id, char*** info, int* info_size ) {
 
   bool        retval = TRUE;  /* Return value for this function                */
   func_unit   funit;          /* Module used to find specified functional unit */
   funit_link* funitl;         /* Pointer to found functional unit link         */
   exp_link*   expl;           /* Pointer to current expression link            */
 
-  funit.name = name;
-  funit.type = FUNIT_MODULE;  /* TBD */
+  funit.name = funit_name;
+  funit.type = funit_type;
 
   if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
 
@@ -1966,6 +1967,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.109  2005/11/08 23:12:09  phase1geo
+ Fixes for function/task additions.  Still a lot of testing on these structures;
+ however, regressions now pass again so we are checkpointing here.
+
  Revision 1.108  2005/05/02 15:33:34  phase1geo
  Updates.
 

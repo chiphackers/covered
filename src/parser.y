@@ -49,6 +49,8 @@ sig_link* wait_sig_tail = NULL;
 sig_link* dummy_head    = NULL;
 sig_link* dummy_tail    = NULL;
 
+vector_width* curr_sig_width = NULL;
+
 #define YYERROR_VERBOSE 1
 
 /* Uncomment these lines to turn debugging on */
@@ -152,7 +154,6 @@ int yydebug = 1;
 %type <text>      localparam_assign_list localparam_assign
 %type <strlink>   register_variable_list list_of_variables
 %type <strlink>   gate_instance_list
-%type <expbind>   net_decl_assigns net_decl_assign
 %type <text>      register_variable
 %type <state>     statement statement_list statement_opt 
 %type <state>     for_statement fork_statement while_statement named_begin_end_block if_statement_error
@@ -1347,85 +1348,43 @@ module_item
         static_expr_dealloc( $3->left,  FALSE );
         static_expr_dealloc( $3->right, FALSE );
         free_safe( $3 );
+        curr_sig_width = NULL;
       }
     }
   | attribute_list_opt
     net_type range_opt net_decl_assigns ';'
     {
-      expression* tmp;
-      exp_bind*   curr = $4;
-      exp_bind*   eb;
-      statement*  stmt;
-      if( ($2 == 1) && ($3 != NULL) ) {
-        /* Create signal(s) */
-        while( curr != NULL ) {
-          db_add_signal( curr->name, $3->left, $3->right, 0 );
-          if( curr->exp != NULL ) {
-            tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, curr->exp->line, 0, 0, curr->name );
-            tmp  = db_create_expression( curr->exp, tmp, EXP_OP_BASSIGN, FALSE, curr->exp->line, 0, 0, NULL );
-            stmt = db_create_statement( tmp );
-            stmt->exp->suppl.part.stmt_head = 1;
-            stmt->exp->suppl.part.stmt_stop = 1;
-            stmt->exp->suppl.part.stmt_cont = 1;
-            /* Statement will be looped back to itself */
-            db_connect_statement_true( stmt, stmt );
-            db_connect_statement_false( stmt, stmt );
-            db_add_expression( tmp );
-            db_add_statement( stmt, stmt );
-          }
-          curr = curr->next;
-        }
-      }
-      curr = $4;
-      while( curr != NULL ) {
-        eb   = curr->next;
-        free_safe( curr->name );
-        free_safe( curr );
-        curr = eb;
-      }
-      if( $3 != NULL ) {
-        static_expr_dealloc( $3->left, FALSE );
-        static_expr_dealloc( $3->right, FALSE );
-        free_safe( $3 );
+      if( curr_sig_width != NULL ) {
+        static_expr_dealloc( curr_sig_width->left, FALSE );
+        static_expr_dealloc( curr_sig_width->right, FALSE );
+        free_safe( curr_sig_width );
+        curr_sig_width = NULL;
       }
     }
   | attribute_list_opt
-    net_type drive_strength net_decl_assigns ';'
+    net_type drive_strength
     {
-      expression*   tmp;
-      exp_bind*     curr = $4;
-      exp_bind*     eb;
-      statement*    stmt;
-      static_expr   left;
-      static_expr   right;
-      if( $2 == 1 ) {
-        /* Create signal(s) */
-        left.num  = 1;
-        right.num = 0;
-        while( curr != NULL ) {
-          db_add_signal( curr->name, &left, &right, 0 );
-          if( curr->exp != NULL ) {
-            tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, curr->exp->line, 0, 0, curr->name );
-            tmp  = db_create_expression( curr->exp, tmp, EXP_OP_BASSIGN, FALSE, curr->exp->line, 0, 0, NULL );
-            stmt = db_create_statement( tmp );
-            stmt->exp->suppl.part.stmt_head = 1;
-            stmt->exp->suppl.part.stmt_stop = 1;
-            stmt->exp->suppl.part.stmt_cont = 1;
-            /* Statement will be looped back to itself */
-            db_connect_statement_true( stmt, stmt );
-            db_connect_statement_false( stmt, stmt );
-            db_add_expression( tmp );
-            db_add_statement( stmt, stmt );
-          }
-          curr = curr->next;
-        }
+      static_expr*  left;
+      static_expr*  right;
+      if( (ignore_mode == 0) && ($2 == 1) ) {
+        left = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+        left->exp = NULL;
+        left->num = 0;
+        right = (static_expr*)malloc_safe( sizeof( static_expr ), __FILE__, __LINE__ );
+        right->exp = NULL;
+        right->num = 0;
+        curr_sig_width = (vector_width*)malloc_safe( sizeof( vector_width ), __FILE__, __LINE__ );
+        curr_sig_width->left  = left;
+        curr_sig_width->right = right;
       }
-      curr = $4;
-      while( curr != NULL ) {
-        eb  = curr->next;
-        free_safe( curr->name );
-        free_safe( curr );
-        curr = eb;
+    }
+    net_decl_assigns ';'
+    {
+      if( curr_sig_width != NULL ) {
+        static_expr_dealloc( curr_sig_width->left, FALSE );
+        static_expr_dealloc( curr_sig_width->right, FALSE );
+        free_safe( curr_sig_width );
+        curr_sig_width = NULL;
       }
     }
   | K_trireg charge_strength_opt range_opt delay3_opt list_of_variables ';'
@@ -1440,6 +1399,7 @@ module_item
       static_expr_dealloc( $3->left, FALSE );
       static_expr_dealloc( $3->right, FALSE );
       free_safe( $3 );
+      curr_sig_width = NULL;
     }
   | port_type range_opt list_of_variables ';'
     {
@@ -1454,6 +1414,7 @@ module_item
       static_expr_dealloc( $2->left, FALSE );
       static_expr_dealloc( $2->right, FALSE );
       free_safe( $2 );
+      curr_sig_width = NULL;
     }
   /* Handles Verilog-2001 port of type:  input wire [m:l] <list>; */
   | port_type net_type range_opt list_of_variables ';'
@@ -1469,11 +1430,13 @@ module_item
       static_expr_dealloc( $3->left, FALSE );
       static_expr_dealloc( $3->right, FALSE );
       free_safe( $3 );
+      curr_sig_width = NULL;
     }
   | port_type range_opt error ';'
     {
       if( $2 != NULL ) {
         free_safe( $2 );
+        curr_sig_width = NULL;
       }
       VLerror( "Invalid variable list in port declaration" );
     }
@@ -1589,7 +1552,7 @@ module_item
     K_endtask
     {
       if( ignore_mode == 0 ) {
-        db_end_function_task( @8.last_line );
+        db_end_function_task( @8.first_line );
       }
     }
   | K_function range_or_type_opt IDENTIFIER ';'
@@ -1597,7 +1560,7 @@ module_item
       char tmp[256];
       if( ignore_mode == 0 ) {
         db_add_function_task( FUNIT_FUNCTION, $3, @3.text, @3.first_line );
-        snprintf( tmp, 256, "!%s", $3 );
+        snprintf( tmp, 256, "%s", $3 );
         db_add_signal( tmp, $2->left, $2->right, 0 );
         static_expr_dealloc( $2->left, FALSE );
         static_expr_dealloc( $2->right, FALSE );
@@ -1617,7 +1580,7 @@ module_item
     K_endfunction
     {
       if( ignore_mode == 0 ) {
-        db_end_function_task( @9.last_line );
+        db_end_function_task( @9.first_line );
       }
     }
   | K_specify ignore_more specify_item_list ignore_less K_endspecify
@@ -2838,6 +2801,7 @@ assign
 range_opt
   : range
     {
+      curr_sig_width = $1;
       $$ = $1;
     }
   |
@@ -2855,6 +2819,7 @@ range_opt
         tmp = (vector_width*)malloc_safe( sizeof( vector_width ), __FILE__, __LINE__ );
         tmp->left  = left;
         tmp->right = right;
+        curr_sig_width = tmp;
         $$ = tmp;
       } else {
         $$ = NULL;
@@ -3046,6 +3011,7 @@ task_item
       if( ignore_mode == 0 ) {
         str_link_delete_list( $4 );
         if( $3 != NULL ) {
+          curr_sig_width = NULL;
           free_safe( $3 );
         }
       }
@@ -3055,6 +3021,7 @@ task_item
       if( ignore_mode == 0 ) {
         str_link_delete_list( $4 );
         if( $3 != NULL ) {
+          curr_sig_width = NULL;
           free_safe( $3 );
         }
       }
@@ -3064,6 +3031,7 @@ task_item
       if( ignore_mode == 0 ) {
         str_link_delete_list( $4 );
         if( $3 != NULL ) {
+          curr_sig_width = NULL;
           free_safe( $3 );
         }
       }
@@ -3085,54 +3053,53 @@ net_type
 
 net_decl_assigns
   : net_decl_assigns ',' net_decl_assign
-    {
-      if( ignore_mode == 0 ) {
-        $3->next = $1;
-        $$ = $3;
-      } else {
-        $$ = NULL;
-      }
-    }
   | net_decl_assign
-    {
-      if( ignore_mode == 0 ) {
-        $1->next = NULL;
-        $$ = $1;
-      } else {
-        $$ = NULL;
-      }
-    }
   ;
 
 net_decl_assign
   : IDENTIFIER '=' expression
     {
-      exp_bind* eb;
-      if( ignore_mode == 0 ) {
-        eb = (exp_bind*)malloc_safe( sizeof( exp_bind ), __FILE__, __LINE__ );
-        eb->name = $1;
-        eb->exp  = $3;
-        eb->next = NULL;
-        $$ = eb;
-      } else {
-        $$ = NULL;
+      expression* tmp;
+      statement*  stmt;
+      if( (ignore_mode == 0) && ($1 != NULL) && (curr_sig_width != NULL) ) {
+        db_add_signal( $1, curr_sig_width->left, curr_sig_width->right, 0 );
+        if( $3 != NULL ) {
+          tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
+          tmp  = db_create_expression( $3, tmp, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+          stmt = db_create_statement( tmp );
+          stmt->exp->suppl.part.stmt_head = 1;
+          stmt->exp->suppl.part.stmt_stop = 1;
+          stmt->exp->suppl.part.stmt_cont = 1;
+          /* Statement will be looped back to itself */
+          db_connect_statement_true( stmt, stmt );
+          db_connect_statement_false( stmt, stmt );
+          db_add_expression( tmp );
+          db_add_statement( stmt, stmt );
+        }
+        free_safe( $1 );
       }
     }
   | UNUSED_IDENTIFIER '=' expression
-    {
-      $$ = NULL;
-    } 
   | delay1 IDENTIFIER '=' expression
     {
-      exp_bind* eb;
-      if( ignore_mode == 0 ) {
-        eb = (exp_bind*)malloc_safe( sizeof( exp_bind ), __FILE__, __LINE__ );
-        eb->name = $2;
-        eb->exp  = $4;
-        eb->next = NULL;
-        $$ = eb;
-      } else {
-        $$ = NULL;
+      expression* tmp;
+      statement*  stmt;
+      if( (ignore_mode == 0) && ($2 != NULL) && (curr_sig_width != NULL) ) {
+        db_add_signal( $2, curr_sig_width->left, curr_sig_width->right, 0 );
+        if( $4 != NULL ) {
+          tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @2.first_line, @2.first_column, (@2.last_column - 1), $2 );
+          tmp  = db_create_expression( $4, tmp, EXP_OP_BASSIGN, FALSE, @2.first_line, @2.first_column, (@4.last_column - 1), NULL );
+          stmt = db_create_statement( tmp );
+          stmt->exp->suppl.part.stmt_head = 1;
+          stmt->exp->suppl.part.stmt_stop = 1;
+          stmt->exp->suppl.part.stmt_cont = 1;
+          /* Statement will be looped back to itself */
+          db_connect_statement_true( stmt, stmt );
+          db_connect_statement_false( stmt, stmt );
+          db_add_expression( tmp );
+          db_add_statement( stmt, stmt );
+        }
+        free_safe( $2 );
       }
     }
   ;
@@ -3469,7 +3436,6 @@ function_item
       /* Create signal -- implicitly this is a wire which may not be explicitly declared */
       str_link* tmp  = $3;
       str_link* curr = tmp;
-      printf( "In function_item, ignore_mode: %d\n", ignore_mode );
       while( curr != NULL ) {
         db_add_signal( curr->str, $2->left, $2->right, 1 );
         curr = curr->next;
@@ -3478,6 +3444,7 @@ function_item
       static_expr_dealloc( $2->left, FALSE );
       static_expr_dealloc( $2->right, FALSE );
       free_safe( $2 );
+      curr_sig_width = NULL;
     }
   | block_item_decl
   ;

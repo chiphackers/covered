@@ -18,7 +18,8 @@ set toggle_summary_hit01  0
 set toggle_summary_hit10  0
 set comb_summary_total    0
 set comb_summary_hit      0
-set curr_mod_name         0
+set curr_funit_name       0
+set curr_funit_type       0
 
 # TODO : 
 # Suppose that a really large verilog file has a lot of lines uncovered.
@@ -56,14 +57,14 @@ proc create_race_tags {} {
 
 }
 
-proc process_module_line_cov {} {
+proc process_funit_line_cov {} {
 
   global fileContent file_name start_line end_line
-  global curr_mod_name
+  global curr_funit_name curr_funit_type
 
-  if {$curr_mod_name != 0} {
+  if {$curr_funit_name != 0} {
 
-    tcl_func_get_filename $curr_mod_name
+    tcl_func_get_filename $curr_funit_name $curr_funit_type
 
     if {[catch {set fileText $fileContent($file_name)}]} {
       if {[catch {set fp [open $file_name "r"]}]} {
@@ -76,13 +77,13 @@ proc process_module_line_cov {} {
       close $fp
     }
 
-    # Get start and end line numbers of this module
+    # Get start and end line numbers of this functional unit
     set start_line 0
     set end_line   0
-    tcl_func_get_module_start_and_end $curr_mod_name
+    tcl_func_get_funit_start_and_end $curr_funit_name $curr_funit_type
 
     # Get line summary information and display this now
-    tcl_func_get_line_summary $curr_mod_name
+    tcl_func_get_line_summary $curr_funit_name $curr_funit_type
 
     calc_and_display_line_cov
 
@@ -92,19 +93,19 @@ proc process_module_line_cov {} {
 
 proc calc_and_display_line_cov {} {
 
-  global cov_type uncov_type race_type mod_inst_type mod_list
+  global cov_type uncov_type race_type mod_inst_type funit_names funit_types
   global uncovered_lines covered_lines race_lines
-  global curr_mod_name
+  global curr_funit_name curr_funit_type
 
-  if {$curr_mod_name != 0} {
+  if {$curr_funit_name != 0} {
 
     # Get list of uncovered/covered lines
     set uncovered_lines 0
     set covered_lines   0
     set race_lines      0
-    tcl_func_collect_uncovered_lines $curr_mod_name
-    tcl_func_collect_covered_lines   $curr_mod_name
-    tcl_func_collect_race_lines      $curr_mod_name
+    tcl_func_collect_uncovered_lines $curr_funit_name $curr_funit_type
+    tcl_func_collect_covered_lines   $curr_funit_name $curr_funit_type
+    tcl_func_collect_race_lines      $curr_funit_name $curr_funit_type
 
     display_line_cov
 
@@ -122,9 +123,9 @@ proc display_line_cov {} {
   global uncov_type cov_type race_type
   global start_line end_line
   global line_summary_total line_summary_hit
-  global curr_mod_name
+  global curr_funit_name curr_funit_type
 
-  if {$curr_mod_name != 0} {
+  if {$curr_funit_name != 0} {
 
     # Populate information bar
     if {$file_name != 0} {
@@ -181,14 +182,14 @@ proc display_line_cov {} {
 
 }
 
-proc process_module_toggle_cov {} {
+proc process_funit_toggle_cov {} {
 
   global fileContent file_name start_line end_line
-  global curr_mod_name
+  global curr_funit_name curr_funit_type
 
-  if {$curr_mod_name != 0} {
+  if {$curr_funit_name != 0} {
 
-    tcl_func_get_filename $curr_mod_name
+    tcl_func_get_filename $curr_funit_name $curr_funit_type
 
     if {[catch {set fileText $fileContent($file_name)}]} {
       if {[catch {set fp [open $file_name "r"]}]} {
@@ -201,13 +202,13 @@ proc process_module_toggle_cov {} {
       close $fp
     }
 
-    # Get start and end line numbers of this module
+    # Get start and end line numbers of this functional unit
     set start_line 0
     set end_line   0
-    tcl_func_get_module_start_and_end $curr_mod_name
+    tcl_func_get_funit_start_and_end $curr_funit_name $curr_funit_type
 
     # Get line summary information and display this now
-    tcl_func_get_toggle_summary $curr_mod_name
+    tcl_func_get_toggle_summary $curr_funit_name $curr_funit_type
 
     calc_and_display_toggle_cov
 
@@ -217,18 +218,18 @@ proc process_module_toggle_cov {} {
 
 proc calc_and_display_toggle_cov {} {
 
-  global cov_type uncov_type mod_inst_type mod_list
+  global cov_type uncov_type mod_inst_type
   global uncovered_toggles covered_toggles race_toggles
-  global curr_mod_name start_line
+  global curr_funit_name curr_funit_type start_line
   global toggle_summary_hit toggle_summary_total
 
-  if {$curr_mod_name != 0} {
+  if {$curr_funit_name != 0} {
 
     # Get list of uncovered/covered lines
     set uncovered_toggles ""
     set covered_toggles   ""
-    tcl_func_collect_uncovered_toggles $curr_mod_name $start_line
-    tcl_func_collect_covered_toggles   $curr_mod_name $start_line
+    tcl_func_collect_uncovered_toggles $curr_funit_name $curr_funit_type $start_line
+    tcl_func_collect_covered_toggles   $curr_funit_name $curr_funit_type $start_line
 
     # Calculate toggle hit and total values
     if {[llength $covered_toggles] == 0} {
@@ -258,11 +259,11 @@ proc display_toggle_cov {} {
   global uncov_type cov_type
   global start_line end_line
   global toggle_summary_total toggle_summary_hit
-  global cov_rb mod_inst_type mod_list
+  global cov_rb mod_inst_type
   global toggle01_verbose toggle10_verbose toggle_width
-  global curr_mod_name
+  global curr_funit_name curr_funit_type
 
-  if {$curr_mod_name != 0} {
+  if {$curr_funit_name != 0} {
 
     # Populate information bar
     .info configure -text "Filename: $file_name"
@@ -320,7 +321,7 @@ proc display_toggle_cov {} {
         }
         .bot.right.txt tag bind uncov_button <ButtonPress-1> {
           set range [.bot.right.txt tag prevrange uncov_button {current + 1 chars}]
-          create_toggle_window $curr_mod_name [string trim [lindex [split [.bot.right.txt get [lindex $range 0] [lindex $range 1]] "\["] 0]]
+          create_toggle_window $curr_funit_name $curr_funit_type [string trim [lindex [split [.bot.right.txt get [lindex $range 0] [lindex $range 1]] "\["] 0]]
         }
       } 
 
@@ -344,14 +345,14 @@ proc display_toggle_cov {} {
 
 }
  
-proc process_module_comb_cov {} {
+proc process_funit_comb_cov {} {
 
   global fileContent file_name start_line end_line
-  global curr_mod_name
+  global curr_funit_name curr_funit_type
 
-  if {$curr_mod_name != 0} {
+  if {$curr_funit_name != 0} {
 
-    tcl_func_get_filename $curr_mod_name
+    tcl_func_get_filename $curr_funit_name $curr_funit_type
 
     if {[catch {set fileText $fileContent($file_name)}]} {
       if {[catch {set fp [open $file_name "r"]}]} {
@@ -364,13 +365,13 @@ proc process_module_comb_cov {} {
       close $fp
     }
 
-    # Get start and end line numbers of this module
+    # Get start and end line numbers of this functional unit
     set start_line 0
     set end_line   0
-    tcl_func_get_module_start_and_end $curr_mod_name
+    tcl_func_get_funit_start_and_end $curr_funit_name $curr_funit_type
 
     # Get line summary information and display this now
-    tcl_func_get_comb_summary $curr_mod_name
+    tcl_func_get_comb_summary $curr_funit_name $curr_funit_type
 
     calc_and_display_comb_cov
 
@@ -380,19 +381,19 @@ proc process_module_comb_cov {} {
 
 proc calc_and_display_comb_cov {} {
 
-  global cov_type uncov_type race_type mod_inst_type mod_list
+  global cov_type uncov_type race_type mod_inst_type
   global uncovered_combs covered_combs race_lines
-  global curr_mod_name start_line
+  global curr_funit_name curr_funit_type start_line
   global comb_summary_hit comb_summary_total
 
-  if {$curr_mod_name != 0} {
+  if {$curr_funit_name != 0} {
 
     # Get list of uncovered/covered combinational logic 
     set uncovered_combs ""
     set covered_combs   ""
     set race_lines      ""
-    tcl_func_collect_combs $curr_mod_name $start_line
-    tcl_func_collect_race_lines $curr_mod_name
+    tcl_func_collect_combs $curr_funit_name $curr_funit_type $start_line
+    tcl_func_collect_race_lines $curr_funit_name $curr_funit_type
 
     # Calculate combinational logic hit and total values
     if {[llength $covered_combs] == 0} {
@@ -423,10 +424,10 @@ proc display_comb_cov {} {
   global uncov_type cov_type race_type
   global start_line end_line
   global comb_summary_total comb_summary_hit
-  global cov_rb mod_inst_type mod_list
-  global curr_mod_name
+  global cov_rb mod_inst_type
+  global curr_funit_name curr_funit_type
 
-  if {$curr_mod_name != 0} {
+  if {$curr_funit_name != 0} {
 
     # Populate information bar
     .info configure -text "Filename: $file_name"
@@ -520,7 +521,7 @@ proc display_comb_cov {} {
           set my_range   [.bot.right.txt tag prevrange uncov_highlight {current + 1 chars}]
           set index [expr [lsearch -exact $all_ranges [lindex $my_range 0]] / 2]
           set expr_id [lindex [lindex $uncovered_combs $index] 2]
-          create_comb_window $curr_mod_name $expr_id
+          create_comb_window $curr_funit_name $curr_funit_type $expr_id
         }
       }
 
@@ -544,7 +545,7 @@ proc display_comb_cov {} {
 
 }
 
-proc process_module_fsm_cov {} {
+proc process_funit_fsm_cov {} {
 
   global start_line end_line
 

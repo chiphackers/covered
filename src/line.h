@@ -16,7 +16,7 @@
 void line_get_stats( stmt_link* stmtl, float* total, int* hit );
 
 /*! \brief Gathers line numbers from specified functional unit that were not hit during simulation. */
-bool line_collect( const char* funit_name, int cov, int** lines, int* line_cnt );
+bool line_collect( char* funit_name, int funit_type, int cov, int** lines, int* line_cnt );
 
 /*! \brief Generates report output for line coverage. */
 void line_report( FILE* ofile, bool verbose );
@@ -24,6 +24,10 @@ void line_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.11  2005/11/08 23:12:09  phase1geo
+ Fixes for function/task additions.  Still a lot of testing on these structures;
+ however, regressions now pass again so we are checkpointing here.
+
  Revision 1.10  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,

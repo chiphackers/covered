@@ -254,10 +254,12 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_sig, func_unit* 
 */
 bool bind_task_function( int type, char* name, expression* exp, func_unit* funit_tf, func_unit* funit_exp ) {
 
-  func_unit   funit;          /* Temporary functional unit for comparison purposes  */
+  func_unit   funit;          /* Temporary functional unit for comparison purposes */
   funit_link* funitl;         /* Pointer to found function unit in specified module */
-  bool        retval = TRUE;  /* Return value for this function                     */
+  bool        retval = TRUE;  /* Return value for this function */
   stmt_iter   si;             /* Statement iterator used to find the head statement */
+  vsignal     sig;            /* Temporary signal for comparison purposes */
+  sig_link*   sigl;           /* Temporary signal link holder */
 
   assert( (type == FUNIT_FUNCTION) || (type == FUNIT_TASK) );
   assert( funit_tf->type == FUNIT_MODULE );
@@ -292,6 +294,22 @@ bool bind_task_function( int type, char* name, expression* exp, func_unit* funit
 
     /* Set head statement to point to this expression */
     exp_link_add( exp, &(si.curr->stmt->tf_exp_head), &(si.curr->stmt->tf_exp_tail) );
+
+    /* If this is a function, also bind the return value signal vector to the expression's vector */
+    if( type == FUNIT_FUNCTION ) {
+
+      sig.name = funitl->funit->name;
+      sigl = sig_link_find( &sig, funitl->funit->sig_head );
+
+      assert( sigl != NULL );
+
+      /* Add expression to signal expression list */
+      exp_link_add( exp, &(sigl->sig->exp_head), &(sigl->sig->exp_tail) );
+
+      /* Set expression to point at signal */
+      exp->sig = sigl->sig;
+
+    }
 
   }
 
@@ -427,6 +445,10 @@ void bind() {
 
 /* 
  $Log$
+ Revision 1.31  2005/11/08 23:12:09  phase1geo
+ Fixes for function/task additions.  Still a lot of testing on these structures;
+ however, regressions now pass again so we are checkpointing here.
+
  Revision 1.30  2005/02/09 14:12:20  phase1geo
  More code for supporting expression assignments.
 

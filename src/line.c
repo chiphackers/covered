@@ -73,6 +73,7 @@ void line_get_stats( stmt_link* stmtl, float* total, int* hit ) {
 
 /*!
  \param funit_name  Name of functional unit to get missed line number array from.
+ \param funit_type  Type of functional unit to get missed line number array from.
  \param cov         If set to 1, gets covered lines, if 0 retrieves uncovered lines; otherwise, gets all lines
  \param lines       Pointer to array of integers that will contain the missed lines.
  \param line_cnt    Pointer to size of lines array.
@@ -84,19 +85,20 @@ void line_get_stats( stmt_link* stmtl, float* total, int* hit ) {
  not hit during simulation and a value of TRUE is returned.  If the functional unit name was
  not found, a value of FALSE is returned.
 */
-bool line_collect( const char* funit_name, int cov, int** lines, int* line_cnt ) {
+bool line_collect( char* funit_name, int funit_type, int cov, int** lines, int* line_cnt ) {
 
-  bool        retval = TRUE;  /* Return value for this function                     */
-  stmt_iter   stmti;          /* Statement list iterator                            */
-  func_unit   funit;          /* Functional unit used for searching                 */
-  funit_link* funitl;         /* Pointer to found functional unit link              */
-  int         i;              /* Loop iterator                                      */
+  bool        retval = TRUE;  /* Return value for this function */
+  stmt_iter   stmti;          /* Statement list iterator */
+  func_unit   funit;          /* Functional unit used for searching */
+  funit_link* funitl;         /* Pointer to found functional unit link */
+  int         i;              /* Loop iterator */
   int         last_line;      /* Specifies the last line of the current expression  */
   int         line_size;      /* Indicates the number of entries in the lines array */
 
   /* First, find functional unit in functional unit array */
-  funit.name = strdup_safe( funit_name, __FILE__, __LINE__ );
-  funit.type = FUNIT_MODULE;  /* TBD */
+  funit.name = funit_name;
+  funit.type = funit_type;
+
   if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
 
     /* Create an array that will hold the number of uncovered lines */
@@ -142,14 +144,13 @@ bool line_collect( const char* funit_name, int cov, int** lines, int* line_cnt )
 
   }
 
-  free_safe( funit.name );
-
   return( retval );
 
 }
 
 /*!
  \param funit_name  Name of functional unit to retrieve summary information from.
+ \param funit_type  Type of functional unit to retrieve summary information from.
  \param total       Pointer to total number of lines in this functional unit.
  \param hit         Pointer to number of lines hit in this functional unit.
 
@@ -162,7 +163,7 @@ bool line_collect( const char* funit_name, int cov, int** lines, int* line_cnt )
  function, indicating that the functional unit was not found in the design and the values
  of total and hit should not be used.
 */
-bool line_get_funit_summary( char* funit_name, int* total, int* hit ) {
+bool line_get_funit_summary( char* funit_name, char* funit_type, int* total, int* hit ) {
 
   bool        retval = TRUE;  /* Return value for this function        */
   func_unit   funit;          /* Functional unit used for searching    */
@@ -170,7 +171,7 @@ bool line_get_funit_summary( char* funit_name, int* total, int* hit ) {
   char        tmp[21];        /* Temporary string for total            */
 
   funit.name = funit_name;
-  funit.type = FUNIT_MODULE;  /* TBD */
+  funit.type = funit_type;
 
   if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
 
@@ -478,6 +479,10 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.49  2005/11/08 23:12:09  phase1geo
+ Fixes for function/task additions.  Still a lot of testing on these structures;
+ however, regressions now pass again so we are checkpointing here.
+
  Revision 1.48  2005/02/05 05:29:25  phase1geo
  Added race condition reporting to GUI.
 

@@ -722,17 +722,18 @@ void race_report( FILE* ofile, bool verbose ) {
 }
 
 /*!
- \param modname   Name of module to search for
- \param lines     Pointer to an array of lines that contain line numbers of race condition statements
- \param reasons   Pointer to an array of race condition reason integers, one for each line in the lines array
- \param line_cnt  Pointer to number of elements that exist in lines array
+ \param funit_name  Name of funtional unit to search for
+ \param funit_type  Type of funtional unit to search for
+ \param lines       Pointer to an array of lines that contain line numbers of race condition statements
+ \param reasons     Pointer to an array of race condition reason integers, one for each line in the lines array
+ \param line_cnt    Pointer to number of elements that exist in lines array
 
  \return Returns TRUE if the specified module name was found in the design; otherwise, returns FALSE.
 
  Collects all of the line numbers in the specified module that were ignored from coverage due to
  detecting a race condition.  This function is primarily used by the GUI for outputting purposes.
 */
-bool race_collect_lines( char* modname, int** lines, int** reasons, int* line_cnt ) {
+bool race_collect_lines( char* funit_name, int funit_type, int** lines, int** reasons, int* line_cnt ) {
 
   bool        retval    = TRUE;  /* Return value for this function                           */
   func_unit   mod;               /* Temporary module used to search for module name          */
@@ -741,8 +742,8 @@ bool race_collect_lines( char* modname, int** lines, int** reasons, int* line_cn
   int         i;                 /* Loop iterator                                            */
   int         line_size = 20;    /* Current number of lines allocated in lines array         */
 
-  mod.name = strdup_safe( modname, __FILE__, __LINE__ );
-  mod.type = FUNIT_MODULE;
+  mod.name = strdup_safe( funit_name, __FILE__, __LINE__ );
+  mod.type = funit_type;
 
   if( (modl = funit_link_find( &mod, funit_head )) != NULL ) {
 
@@ -799,6 +800,10 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.24  2005/11/08 23:12:10  phase1geo
+ Fixes for function/task additions.  Still a lot of testing on these structures;
+ however, regressions now pass again so we are checkpointing here.
+
  Revision 1.23  2005/02/07 22:19:46  phase1geo
  Added code to output race condition reasons to informational bar.  Also added code to
  output toggle and combinational logic output to information bar when cursor is over

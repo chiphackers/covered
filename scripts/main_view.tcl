@@ -114,7 +114,7 @@ proc main_place {width value} {
  
 proc populate_listbox {listbox_w} {
 
-  global mod_inst_type mod_list inst_list cov_rb file_name
+  global mod_inst_type funit_names funit_types inst_list cov_rb file_name
   global line_summary_total line_summary_hit
   global toggle_summary_total toggle_summary_hit01 toggle_summary_hit10
   global uncov_fgColor uncov_bgColor
@@ -128,10 +128,11 @@ proc populate_listbox {listbox_w} {
 
     # If we are in module mode, list modules (otherwise, list instances)
     if {$mod_inst_type == "module"} {
-      set mod_list ""
-      tcl_func_get_module_list 
-      foreach mod_name $mod_list {
-        $listbox_w insert end $mod_name
+      set funit_names ""
+      set funit_types ""
+      tcl_func_get_funit_list 
+      foreach funit_name $funit_names {
+        $listbox_w insert end $funit_name
       }
     } else {
       set inst_list ""
@@ -153,7 +154,7 @@ proc populate_listbox {listbox_w} {
 
 proc highlight_listbox {} {
 
-  global file_name mod_list cov_rb
+  global file_name funit_names funit_types cov_rb
   global uncov_fgColor uncov_bgColor lb_fgColor lb_bgColor
   global line_summary_total line_summary_hit
   global toggle_summary_total toggle_summary_hit01 toggle_summary_hit10
@@ -163,15 +164,16 @@ proc highlight_listbox {} {
 
     # If we are in module mode, list modules (otherwise, list instances)
     set curr_line 0
-    foreach mod_name $mod_list {
+    set funits [llength $funit_names]
+    for {set i 0} {$i < $funits} {incr i} {
       if {$cov_rb == "line"} {
-        tcl_func_get_line_summary $mod_name
+        tcl_func_get_line_summary [lindex $funit_names $i] [lindex $funit_types $i]
         set fully_covered [expr $line_summary_total == $line_summary_hit]
       } elseif {$cov_rb == "toggle"} {
-        tcl_func_get_toggle_summary $mod_name
+        tcl_func_get_toggle_summary [lindex $funit_names $i] [lindex $funit_types $i]
         set fully_covered [expr [expr $toggle_summary_total == $toggle_summary_hit01] && [expr $toggle_summary_total == $toggle_summary_hit10]]
       } elseif {$cov_rb == "comb"} {
-        tcl_func_get_comb_summary $mod_name
+        tcl_func_get_comb_summary [lindex $funit_names $i] [lindex $funit_types $i]
         set fully_covered [expr $comb_summary_total == $comb_summary_hit]
       } elseif {$cov_rb == "fsm"} {
       } else {
@@ -191,8 +193,8 @@ proc highlight_listbox {} {
 
 proc populate_text {} {
 
-  global cov_rb mod_inst_type mod_list
-  global curr_mod_name last_lb_index
+  global cov_rb mod_inst_type funit_names funit_types
+  global curr_funit_name curr_funit_type last_lb_index
 
   set index [.bot.left.l curselection]
 
@@ -201,21 +203,17 @@ proc populate_text {} {
     if {$last_lb_index != $index} {
 
       set last_lb_index $index
-
-      if {$mod_inst_type == "instance"} {
-        set curr_mod_name [lindex $mod_list $index]
-      } else {
-        set curr_mod_name [.bot.left.l get $index]
-      }
+      set curr_funit_name [lindex $funit_names $index]
+      set curr_funit_type [lindex $funit_types $index]
 
       if {$cov_rb == "line"} {
-        process_module_line_cov
+        process_funit_line_cov
       } elseif {$cov_rb == "toggle"} {
-        process_module_toggle_cov
+        process_funit_toggle_cov
       } elseif {$cov_rb == "comb"} {
-        process_module_comb_cov
+        process_funit_comb_cov
       } elseif {$cov_rb == "fsm"} {
-        process_module_fsm_cov
+        process_funit_fsm_cov
       } else {
         # ERROR
       }

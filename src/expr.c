@@ -53,7 +53,10 @@
  occur while maintaining accurate coverage information.
 
  \par EXP_OP_FUNC_CALL
- TBD
+ A function call expression runs the head statement block of the prescribed function whenever an
+ expression changes value in its parameter list.  The expression's value vector pointer is
+ automatically set to the return value signal in the function by the binding process.  As such,
+ a function call expression should never deallocate its vector.
  
  \par EXP_OP_TASK_CALL
  A task call expression simply runs the head statement block of the prescribed task immediately
@@ -278,6 +281,7 @@ void expression_set_value( expression* exp, vector* vec ) {
   switch( exp->op ) {
     case EXP_OP_SIG   :
     case EXP_OP_PARAM :
+    case EXP_OP_FUNC_CALL :
       exp->value->value = vec->value;
       exp->value->width = vec->width;
       break;
@@ -347,6 +351,7 @@ void expression_resize( expression* expr, bool recursive ) {
       case EXP_OP_BASSIGN :
       case EXP_OP_NASSIGN :
       case EXP_OP_IF :
+      case EXP_OP_FUNC_CALL :
         break;
 
       /* These operations should always be set to a width 1 */
@@ -495,7 +500,7 @@ expression* expression_get_last_line_expr( expression* expr ) {
  \param tail  Pointer to tail of signal list to populate.
 
  Recursively parses specified expression list in search of signals within the
- expression.  When a signal is found, it is added the the signal list specified
+ expression.  When a signal is found, it is added to the signal list specified
  by head and tail.  This function is called by the expression_get_wait_sig_list
  function.
 */
@@ -503,7 +508,8 @@ void expression_get_wait_sig_list_helper( expression* expr, sig_link** head, sig
 
   if( expr != NULL ) {
 
-    if( expr->op == EXP_OP_SIG ) {
+    if( (expr->op == EXP_OP_SIG) ||
+        (expr->op == EXP_OP_FUNC_CALL) ) {
  
       assert( expr->sig != NULL );
       sig_link_add( expr->sig, head, tail );
@@ -578,6 +584,7 @@ void expression_db_write( expression* expr, FILE* file ) {
       (expr->op != EXP_OP_BASSIGN)    &&
       (expr->op != EXP_OP_NASSIGN)    &&
       (expr->op != EXP_OP_IF)         &&
+      (expr->op != EXP_OP_FUNC_CALL)  &&
       ((expr->op == EXP_OP_STATIC) || (ESUPPL_IS_LHS( expr->suppl ) == 0)) ) {
     vector_db_write( expr->value, file, (expr->op == EXP_OP_STATIC) );
   }
@@ -666,6 +673,7 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) {
                                  (op != EXP_OP_BASSIGN)    &&
                                  (op != EXP_OP_NASSIGN)    &&
                                  (op != EXP_OP_IF)         &&
+                                 (op != EXP_OP_FUNC_CALL)  &&
                                  ((op == EXP_OP_STATIC) || (ESUPPL_IS_LHS( suppl ) == 0))) );
 
       expr->suppl.all = suppl.all;
@@ -692,6 +700,7 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) {
           (op != EXP_OP_BASSIGN)    &&
           (op != EXP_OP_NASSIGN)    &&
           (op != EXP_OP_IF)         &&
+          (op != EXP_OP_FUNC_CALL)  &&
           ((op == EXP_OP_STATIC) || (ESUPPL_IS_LHS( suppl ) == 0)) ) {
 
         /* Read in vector information */
@@ -797,6 +806,7 @@ bool expression_db_merge( expression* base, char** line, bool same ) {
           (op != EXP_OP_BASSIGN)    &&
           (op != EXP_OP_NASSIGN)    &&
           (op != EXP_OP_IF)         &&
+          (op != EXP_OP_FUNC_CALL)  &&
           ((op == EXP_OP_STATIC) || (ESUPPL_IS_LHS( suppl ) == 0)) ) {
 
         /* Merge expression vectors */
@@ -868,6 +878,7 @@ bool expression_db_replace( expression* base, char** line ) {
           (op != EXP_OP_BASSIGN)    &&
           (op != EXP_OP_NASSIGN)    &&
           (op != EXP_OP_IF)         &&
+          (op != EXP_OP_FUNC_CALL)  &&
           ((op == EXP_OP_STATIC) || (ESUPPL_IS_LHS( suppl ) == 0)) ) {
 
         /* Merge expression vectors */
@@ -1314,6 +1325,7 @@ bool expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_FUNC_CALL :
+        sim_statement( expr->stmt );
         break;
 
       case EXP_OP_TASK_CALL :
@@ -1580,6 +1592,7 @@ void expression_dealloc( expression* expr, bool exp_only ) {
         (op != EXP_OP_BASSIGN   ) &&
         (op != EXP_OP_NASSIGN   ) &&
         (op != EXP_OP_IF        ) &&
+        (op != EXP_OP_FUNC_CALL ) &&
         ((ESUPPL_IS_LHS( expr->suppl ) == 0) || (op == EXP_OP_STATIC)) ) {
 
       /* Free up memory from vector value storage */
@@ -1618,6 +1631,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.115  2005/11/08 23:12:09  phase1geo
+ Fixes for function/task additions.  Still a lot of testing on these structures;
+ however, regressions now pass again so we are checkpointing here.
+
  Revision 1.114  2005/02/16 13:44:55  phase1geo
  Adding value propagation function to vsignal.c and adding this propagation to
  BASSIGN expression assignment after the assignment occurs.

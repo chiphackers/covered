@@ -21,18 +21,20 @@ extern funit_link* funit_head;
 
 
 /*!
- \param funit_list  Pointer to array containing functional unit names
- \param funit_size  Pointer to integer containing size of functional unit array.
+ \param funit_names  Pointer to array containing functional unit names
+ \param funit_types  Pointer to array containing functional unit types
+ \param funit_size   Pointer to integer containing size of functional unit array.
 
  \return Returns TRUE if function is successful; otherwise, returns FALSE.
 
- Creates an array of the functional unit names that exist in the design.
+ Creates an array of the functional unit names/types that exist in the design.
 */
-bool funit_get_list( char*** funit_list, int* funit_size ) {
+bool funit_get_list( char*** funit_names, char*** funit_types, int* funit_size ) {
 
-  bool        retval = TRUE;  /* Return value for this function                  */
+  bool        retval = TRUE;  /* Return value for this function */
   funit_link* curr;           /* Pointer to current functional unit link in list */
-  int         i;              /* Index to module list                            */
+  int         i;              /* Index to module list */
+  char        tmpstr[10];     /* Temporary string */
 
   /* Initialize functional unit array size */
   *funit_size = 0;
@@ -48,13 +50,16 @@ bool funit_get_list( char*** funit_list, int* funit_size ) {
   if( *funit_size > 0 ) {
 
     /* Allocate array to store functional unit names */
-    *funit_list = (char**)malloc_safe( (sizeof( char* ) * (*funit_size)), __FILE__, __LINE__ );
+    *funit_names = (char**)malloc_safe( (sizeof( char* ) * (*funit_size)), __FILE__, __LINE__ );
+    *funit_types = (char**)malloc_safe( (sizeof( char* ) * (*funit_size)), __FILE__, __LINE__ );
 
     /* Now let's populate the functional unit list */
     i    = 0;
     curr = funit_head;
     while( curr != NULL ) {
-      (*funit_list)[i] = strdup_safe( curr->funit->name, __FILE__, __LINE__ );
+      (*funit_names)[i] = strdup_safe( curr->funit->name, __FILE__, __LINE__ );
+      snprintf( tmpstr, 10, "%d", curr->funit->type );
+      (*funit_types)[i] = strdup_safe( tmpstr, __FILE__, __LINE__ );
       i++;
       curr = curr->next;
     }
@@ -67,6 +72,7 @@ bool funit_get_list( char*** funit_list, int* funit_size ) {
 
 /*!
  \param funit_name  Name of functional unit to get filename for.
+ \param funit_type  Type of functional unit to get filename for.
 
  \return Returns name of filename containing specified funit_name if functional unit name was found in
          design; otherwise, returns a value of NULL.
@@ -75,14 +81,14 @@ bool funit_get_list( char*** funit_list, int* funit_size ) {
  functional unit is returned to the calling function.  If the functional unit was not found, a value of NULL
  is returned to the calling function indicating an error occurred.
 */
-char* funit_get_filename( const char* funit_name ) {
+char* funit_get_filename( const char* funit_name, int funit_type ) {
 
   func_unit   funit;         /* Temporary functional unit container used for searching             */
   funit_link* funitl;        /* Pointer to functional unit link containing matched functional unit */
   char*       fname = NULL;  /* Name of filename containing specified functional unit              */
 
   funit.name = strdup_safe( funit_name, __FILE__, __LINE__ );
-  funit.type = FUNIT_MODULE;  /* TBD */
+  funit.type = funit_type;
 
   if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
      
@@ -98,6 +104,7 @@ char* funit_get_filename( const char* funit_name ) {
 
 /*!
  \param funit_name  Name of functional unit to get start and end line numbers for.
+ \param funit_type  Type of functional unit to get start and end line numbers for.
  \param start_line  Pointer to value that will contain starting line number of this functional unit.
  \param end_line    Pointer to value that will contain ending line number of this functional unit.
 
@@ -107,14 +114,14 @@ char* funit_get_filename( const char* funit_name ) {
  the found functional unit, returning a value of TRUE to the calling function.  If the functional unit was
  not found in the design, a value of FALSE is returned.
 */
-bool funit_get_start_and_end_lines( const char* funit_name, int* start_line, int* end_line ) {
+bool funit_get_start_and_end_lines( const char* funit_name, int funit_type, int* start_line, int* end_line ) {
 
   bool        retval = TRUE;  /* Return value of this function                                      */
   func_unit   funit;          /* Temporary functional unit container used for searching             */
   funit_link* funitl;         /* Pointer to functional unit line containing matched functional unit */
   
   funit.name = strdup_safe( funit_name, __FILE__, __LINE__ );
-  funit.type = FUNIT_MODULE;  /* TBD */
+  funit.type = funit_type;
 
   if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
 
@@ -135,6 +142,10 @@ bool funit_get_start_and_end_lines( const char* funit_name, int* start_line, int
 
 /*
  $Log$
+ Revision 1.5  2005/11/08 23:12:09  phase1geo
+ Fixes for function/task additions.  Still a lot of testing on these structures;
+ however, regressions now pass again so we are checkpointing here.
+
  Revision 1.4  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,

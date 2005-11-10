@@ -23,7 +23,7 @@ vsignal* vsignal_create( char* name, int width, int lsb );
 void vsignal_db_write( vsignal* sig, FILE* file );
 
 /*! \brief Reads vsignal information from specified file. */
-bool vsignal_db_read( char** line, func_unit* curr_funit );
+bool vsignal_db_read( char** line, func_unit* curr_funit, func_unit* last_funit );
 
 /*! \brief Reads and merges two vsignals, placing result into base vsignal. */
 bool vsignal_db_merge( vsignal* base, char** line, bool same );
@@ -61,6 +61,10 @@ void vsignal_dealloc( vsignal* sig );
 
 /*
  $Log$
+ Revision 1.5  2005/11/08 23:12:10  phase1geo
+ Fixes for function/task additions.  Still a lot of testing on these structures;
+ however, regressions now pass again so we are checkpointing here.
+
  Revision 1.4  2005/02/16 13:45:04  phase1geo
  Adding value propagation function to vsignal.c and adding this propagation to
  BASSIGN expression assignment after the assignment occurs.

@@ -131,7 +131,7 @@ proc display_comb_info {} {
 
 proc display_comb_coverage {ulid} {
 
-  global curr_mod_name comb_expr_cov
+  global curr_funit_name curr_funit_type comb_expr_cov
 
   # Allow us to clear out text box and repopulate
   .combwin.f.bot.t configure -state normal
@@ -141,7 +141,7 @@ proc display_comb_coverage {ulid} {
 
   # Get combinational coverage information
   set comb_expr_cov ""
-  tcl_func_get_comb_coverage $curr_mod_name $ulid
+  tcl_func_get_comb_coverage $curr_funit_name $curr_funit_type $ulid
 
   # Display coverage information
   .combwin.f.bot.t insert end "\n\n"
@@ -156,7 +156,7 @@ proc display_comb_coverage {ulid} {
 proc get_expr_index_from_range {selected_range get_uline_id} {
 
   global comb_uline_exprs comb_curr_uline_id
-  global curr_mod_name
+  global curr_funit_name curr_funit_type
 
   # Get range information
   set start_info [split [lindex $selected_range 0] .]
@@ -451,7 +451,7 @@ proc generate_underlines {} {
 
 }
 
-proc create_comb_window {mod_name expr_id} {
+proc create_comb_window {funit_name funit_type expr_id} {
 
   global comb_code comb_uline_groups comb_ulines
 
@@ -531,7 +531,7 @@ proc create_comb_window {mod_name expr_id} {
   set comb_code         "" 
   set comb_uline_groups "" 
   set comb_ulines       ""
-  tcl_func_get_comb_expression $mod_name $expr_id
+  tcl_func_get_comb_expression $funit_name $funit_type $expr_id
 
   organize_underlines
 

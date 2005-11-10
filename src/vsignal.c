@@ -113,6 +113,7 @@ void vsignal_db_write( vsignal* sig, FILE* file ) {
 /*!
  \param line        Pointer to current line from database file to parse.
  \param curr_funit  Pointer to current functional unit instantiating this vsignal.
+ \param last_funit  Pointer to last functional unit parsed in CDD file.
 
  \return Returns TRUE if vsignal information read successfully; otherwise,
          returns FALSE.
@@ -121,7 +122,7 @@ void vsignal_db_write( vsignal* sig, FILE* file ) {
  information and stores it to the specified vsignal.  If there are any problems
  in reading in the current line, returns FALSE; otherwise, returns TRUE.
 */
-bool vsignal_db_read( char** line, func_unit* curr_funit ) {
+bool vsignal_db_read( char** line, func_unit* curr_funit, func_unit* last_funit ) {
 
   bool       retval = TRUE;  /* Return value for this function                   */
   char       name[256];      /* Name of current vsignal                          */
@@ -161,10 +162,19 @@ bool vsignal_db_read( char** line, func_unit* curr_funit ) {
 
         *line = *line + chars_read;
 
-        /* Find expression in current functional unit and add it to vsignal list */
+        /* Find expression in current (or last if funit is a function) functional unit and add it to vsignal list */
         texp.id = exp_id;
+        expl    = NULL;
 
-        if( (expl = exp_link_find( &texp, curr_funit->exp_head )) != NULL ) {
+        if( (curr_funit->type == FUNIT_FUNCTION) && (strcmp( curr_funit->name, sig->name ) == 0) ) {
+          expl = exp_link_find( &texp, last_funit->exp_head );
+        }
+
+        if( expl == NULL ) {
+          expl = exp_link_find( &texp, curr_funit->exp_head );
+        }
+
+        if( expl != NULL ) {
 
           exp_link_add( expl->exp, &(sig->exp_head), &(sig->exp_tail) );
           
@@ -179,7 +189,8 @@ bool vsignal_db_read( char** line, func_unit* curr_funit ) {
               (expl->exp->op == EXP_OP_MBIT_SEL) ||
               (expl->exp->op == EXP_OP_PARAM)    ||
               (expl->exp->op == EXP_OP_PARAM_SBIT) ||
-              (expl->exp->op == EXP_OP_PARAM_MBIT) ) {
+              (expl->exp->op == EXP_OP_PARAM_MBIT) ||
+              (expl->exp->op == EXP_OP_FUNC_CALL) ) {
             expression_set_value( expl->exp, sig->value );
           }
 
@@ -530,6 +541,10 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.8  2005/11/08 23:12:10  phase1geo
+ Fixes for function/task additions.  Still a lot of testing on these structures;
+ however, regressions now pass again so we are checkpointing here.
+
  Revision 1.7  2005/02/16 13:45:04  phase1geo
  Adding value propagation function to vsignal.c and adding this propagation to
  BASSIGN expression assignment after the assignment occurs.
