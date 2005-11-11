@@ -589,6 +589,12 @@ void expression_db_write( expression* expr, FILE* file ) {
     vector_db_write( expr->value, file, (expr->op == EXP_OP_STATIC) );
   }
 
+  if( (expr->sig != NULL) || (expr->stmt != NULL) ) {
+    if( expr->sig != NULL ) {
+      fprintf( file, " 0 %s", expr->sig->name );
+    } else if( expr->op == EXP_OP_FUNC_CALL ) {
+      fprintf( file, " %d %s", FUNIT_FUNCTION, funit_find_tf_by_statement( func_unit* mod, statement* stmt )expr->stmt
+
   fprintf( file, "\n" );
 
 }
@@ -1631,6 +1637,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.116  2005/11/10 19:28:22  phase1geo
+ Updates/fixes for tasks/functions.  Also updated Tcl/Tk scripts for these changes.
+ Fixed bug with net_decl_assign statements -- the line, start column and end column
+ information was incorrect, causing problems with the GUI output.
+
  Revision 1.115  2005/11/08 23:12:09  phase1geo
  Fixes for function/task additions.  Still a lot of testing on these structures;
  however, regressions now pass again so we are checkpointing here.
