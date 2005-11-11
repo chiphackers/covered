@@ -66,79 +66,92 @@ func_unit* scope_find_funit_from_scope( char* scope, func_unit* curr_funit ) {
  \return
 
 */
-vsignal* scope_find_signal( char* name, func_unit* curr_funit ) {
+bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, func_unit** found_funit ) {
 
-  vsignal    sig;                     /* Temporary holder for signal */
-  sig_link*  sigl;                    /* Pointer to current signal link */
-  char*      sig_name;                /* Base signal name holder */
-  char*      scope;                   /* Signal scope holder */
-  func_unit* tmp_funit = curr_funit;  /* Pointer to original functional unit for error reporting purposes */
+  vsignal    sig;       /* Temporary holder for signal */
+  sig_link*  sigl;      /* Pointer to current signal link */
+  char*      sig_name;  /* Signal basename holder */
+  char*      scope;     /* Signal scope holder */
 
   assert( curr_funit != NULL );
+
+  *found_funit = curr_funit;
+  sig_name     = strdup_safe( name, __FILE__, __LINE__ );
+  sig.name     = sig_name;
 
   /* If there is a hierarchical reference being made, adjust the signal name and current functional unit */
   if( !scope_local( name ) ) {
 
-    sig_name = (char *)malloc_safe( strlen( name ) + 1, __FILE__, __LINE__ );
-    scope    = (char *)malloc_safe( strlen( name ) + 1, __FILE__, __LINE__ );
+    scope = (char *)malloc_safe( strlen( name ) + 1, __FILE__, __LINE__ );
 
     /* Extract the signal name from its scope */
     scope_extract_back( name, sig_name, scope );
 
     /* Get the functional unit that contains this signal */
-    if( (curr_funit = scope_find_funit_from_scope( scope, curr_funit )) == NULL ) {
+    if( (*found_funit = scope_find_funit_from_scope( scope, curr_funit )) == NULL ) {
 
       snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined signal hierarchy (%s) in %s %s, file %s",
-                name, get_funit_type( tmp_funit->type ), tmp_funit->name, tmp_funit->filename );
+                name, get_funit_type( curr_funit->type ), curr_funit->name, curr_funit->filename );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       exit( 1 );
  
-    } else {
-
-      curr_funit = tmp_funit;
-      sig.name   = sig_name;
-
     }
 
-    free_safe( sig_name );
     free_safe( scope );
-
-  } else {
-  
-    sig.name = name;
 
   }
 
   /* First, look in the current functional unit */
-  if( (sigl = sig_link_find( &sig, curr_funit->sig_head )) == NULL ) {
+  if( (sigl = sig_link_find( &sig, (*found_funit)->sig_head )) == NULL ) {
 
     /* Look in parent module if we are a task, function or named block */
-    sigl = sig_link_find( &sig, curr_funit->tf_head->funit->sig_head );
+    if( (*found_funit)->type != FUNIT_MODULE ) {
+      sigl = sig_link_find( &sig, (*found_funit)->tf_head->funit->sig_head );
+    }
 
   }
 
-  return( (sigl == NULL) ? NULL : sigl->sig );
+  free_safe( sig_name );
+
+  /* Get found signal pointer if it can be found */
+  *found_sig = (sigl == NULL) ? NULL : sigl->sig;
+
+  return( sigl != NULL );
 
 }
 
-func_unit* scope_find_task_function( char* name, int type, func_unit* curr_funit ) {
+/*!
+ \param name
+ \param type
+ \param curr_funit
+ \param found_funit
 
-  func_unit   funit;  /* Temporary holder of task */
-  funit_link* funitl;
-  func_unit*  tmp_funit = curr_funit;
+ \return TBD
+
+ TBD
+*/
+bool scope_find_task_function( char* name, int type, func_unit* curr_funit, func_unit** found_funit ) {
+
+  func_unit   funit;   /* Temporary holder of task */
+  funit_link* funitl;  /* Pointer to current functional unit link */
 
   assert( (type == FUNIT_FUNCTION) || (type == FUNIT_TASK) );
   assert( curr_funit != NULL );
 
-  funit.name = name;
-  funit.type = type;
+  *found_funit = curr_funit;
+  funit.name   = name;
+  funit.type   = type;
 
+  /*
+   If we are performing a hierarchical reference to a task/function, find the functional unit
+   that refers to this scope.
+  */
   if( !scope_local( name ) ) {
 
-    if( (curr_funit = scope_find_funit_from_scope( name, curr_funit )) == NULL ) {
+    if( (*found_funit = scope_find_funit_from_scope( name, curr_funit )) == NULL ) {
 
       snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined %s hierarchy in %s %s, file %s",
-                get_funit_type( type ), get_funit_type( tmp_funit->type ), name, tmp_funit->filename );
+                get_funit_type( type ), get_funit_type( curr_funit->type ), name, curr_funit->filename );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       exit( 1 );
 
@@ -147,22 +160,29 @@ func_unit* scope_find_task_function( char* name, int type, func_unit* curr_funit
   }
 
   /* Look in the current functional unit if we are a module */
-  if( curr_funit->type == FUNIT_MODULE ) {
+  if( (*found_funit)->type == FUNIT_MODULE ) {
 
-    funitl = funit_link_find( &funit, curr_funit->tf_head );
+    funitl = funit_link_find( &funit, (*found_funit)->tf_head );
 
   /* Otherwise, look in the parent module for the task */
   } else {
 
-    funitl = funit_link_find( &funit, curr_funit->tf_head->funit->tf_head );
+    funitl = funit_link_find( &funit, (*found_funit)->tf_head->funit->tf_head );
 
   }
 
-  return( (funitl == NULL) ? NULL : funitl->funit );    
+  *found_funit = (funitl == NULL) ? NULL : funitl->funit;
+
+  return( funitl != NULL );    
 
 }
 
 
 /* $Log$
+/* Revision 1.1  2005/11/10 23:27:37  phase1geo
+/* Adding scope files to handle scope searching.  The functions are complete (not
+/* debugged) but are not as of yet used anywhere in the code.  Added new func2 diagnostic
+/* which brings out scoping issues for functions.
+/*
 */
 

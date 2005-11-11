@@ -172,7 +172,6 @@ void bind_remove( int id ) {
 /*!
  \param name              String name of signal to bind to specified expression.
  \param exp               Pointer to expression to bind.
- \param funit_sfu         Pointer to functional unit containing signal.
  \param funit_exp         Pointer to functional unit containing expression.
  \param implicit_allowed  If set to TRUE, creates any signals that are implicitly defined.
  \param fsm_bind          If set to TRUE, handling binding for FSM binding.
@@ -187,62 +186,66 @@ void bind_remove( int id ) {
  signal neither exists or is an unused signal, it is considered to be an implicit signal
  and a 1-bit signal is created.
 */
-bool bind_signal( char* name, expression* exp, func_unit* funit_sig, func_unit* funit_exp, bool implicit_allowed, bool fsm_bind ) {
+bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool implicit_allowed, bool fsm_bind ) {
 
-  vsignal     tsig;           /* Temporary signal for comparison purposes */
-  func_unit   tfu;            /* Temporary functional unit for comparison purposes */
-  sig_link*   sigl;           /* Pointer to found signal in specified functional unit */
-  funit_link* funitl;         /* Pointer to found function unit in specified module */
-  char*       tmpname;        /* Temporary name containing unused signal character */
-  bool        retval = TRUE;  /* Return value for this function */
+  bool       retval = TRUE;  /* Return value for this function */
+  char*      tmpname;        /* Temporary name containing unused signal character */
+  vsignal*   found_sig;      /* Pointer to found signal in design for the given name */
+  func_unit* found_funit;    /* Pointer to found functional unit containing given signal */
 
   /* Search for specified signal in current functional unit */
-  vsignal_init( &tsig, name, NULL, 0 );
-  sigl = sig_link_find( &tsig, funit_sig->sig_head );
+  if( !scope_find_signal( name, funit_exp, &found_sig, &found_funit ) ) {
 
-  /* If standard signal is not found, check to see if it is an unused signal */
-  if( sigl == NULL ) {
+    /* Check to see if it is an unused signal */
     tmpname = (char*)malloc_safe( (strlen( name ) + 2), __FILE__, __LINE__ );
     snprintf( tmpname, (strlen( name ) + 2), "!%s", name );
-    vsignal_init( &tsig, tmpname, NULL, 0 );
-    sigl = sig_link_find( &tsig, funit_sig->sig_head );
-    if( sigl != NULL ) {
-      retval = FALSE;
-    }
-    free_safe( tmpname );
-  }
 
-  if( sigl == NULL ) {
-    if( fsm_bind ) {
-      snprintf( user_msg, USER_MSG_LENGTH, "Unable to find specified FSM signal \"%s\" in module \"%s\" in file %s",
-                name,
-                funit_exp->name,
-                funit_exp->filename );
-      print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      retval = FALSE;
-    } else if( !implicit_allowed ) {
-      /* Bad hierarchical reference -- user error  -- unachievable code due to unsuppported use of hierarchical referencing */
-      snprintf( user_msg, USER_MSG_LENGTH, "Hierarchical reference to undefined signal \"%s\" in %s, line %d", 
-                name,
-                funit_exp->filename,
-                exp->line );
-      print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      exit( 1 );
+    if( !scope_find_signal( tmpname, found_funit, &found_sig, &found_funit ) ) {
+
+      /* If we are binding an FSM, output an error message */
+      if( fsm_bind ) {
+        snprintf( user_msg, USER_MSG_LENGTH, "Unable to find specified FSM signal \"%s\" in module \"%s\" in file %s",
+                  name,
+                  funit_exp->name,
+                  funit_exp->filename );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        retval = FALSE;
+
+      /* If implicit signal creation is not allowed, output an error message */
+      } else if( !implicit_allowed || (funit_exp != found_funit) ) {
+        /* Bad hierarchical reference -- user error  -- unachievable code due to unsuppported use of hierarchical referencing */
+        snprintf( user_msg, USER_MSG_LENGTH, "Hierarchical reference to undefined signal \"%s\" in %s, line %d",
+                  name,
+                  funit_exp->filename,
+                  exp->line );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        exit( 1 );
+
+      /* Otherwise, implicitly create the signal and bind to it */
+      } else {
+        snprintf( user_msg, USER_MSG_LENGTH, "Implicit declaration of signal \"%s\", creating 1-bit version of signal", name );
+        print_output( user_msg, WARNING, __FILE__, __LINE__ );
+        found_sig = vsignal_create( name, 1, 0 );
+        sig_link_add( found_sig, &(found_funit->sig_head), &(found_funit->sig_tail) );
+      }
+
     } else {
-      snprintf( user_msg, USER_MSG_LENGTH, "Implicit declaration of signal \"%s\", creating 1-bit version of signal", name );
-      print_output( user_msg, WARNING, __FILE__, __LINE__ );
-      sig_link_add( vsignal_create( name, 1, 0 ), &(funit_sig->sig_head), &(funit_sig->sig_tail) );
-      sigl = funit_sig->sig_tail;
+
+      retval = FALSE;
+
     }
+
+    free_safe( tmpname );
+
   }
 
   if( retval ) {
 
     /* Add expression to signal expression list */
-    exp_link_add( exp, &(sigl->sig->exp_head), &(sigl->sig->exp_tail) );
+    exp_link_add( exp, &(found_sig->exp_head), &(found_sig->exp_tail) );
 
     /* Set expression to point at signal */
-    exp->sig = sigl->sig;
+    exp->sig = found_sig;
 
   }
 
@@ -253,45 +256,36 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_sig, func_unit* 
 /*!
  \param type  Type of functional unit
 */
-bool bind_task_function( int type, char* name, expression* exp, func_unit* funit_tf, func_unit* funit_exp ) {
+bool bind_task_function( int type, char* name, expression* exp, func_unit* funit_exp ) {
 
-  func_unit   funit;          /* Temporary functional unit for comparison purposes */
-  funit_link* funitl;         /* Pointer to found function unit in specified module */
   bool        retval = TRUE;  /* Return value for this function */
   stmt_iter   si;             /* Statement iterator used to find the head statement */
   vsignal     sig;            /* Temporary signal for comparison purposes */
   sig_link*   sigl;           /* Temporary signal link holder */
+  func_unit*  found_funit;    /* Pointer to found task/function functional unit */
 
-  printf( "In bind_task_function, type: %d, name: %s, exp: %d, funit_tf: %s, funit_exp: %s\n",
-          type, name, exp->id, funit_tf->name, funit_exp->name );
+  printf( "In bind_task_function, type: %d, name: %s, exp: %d, funit_exp: %s\n", type, name, exp->id, funit_exp->name );
 
   assert( (type == FUNIT_FUNCTION) || (type == FUNIT_TASK) );
-  assert( funit_tf->type == FUNIT_MODULE );
 
-  /* Search for specified signal in current functional unit */
-  funit.name = name;
-  funit.type = type;
+  if( !scope_find_task_function( name, type, funit_exp, &found_funit ) ) {
 
-  /* Search for specified functional unit in current functional unit */
-  funitl = funit_link_find( &funit, funit_tf->tf_head );
-
-  /* Bad hierarchical reference -- user error  -- unachievable code due to unsuppported use of hierarchical referencing */
-  if( funitl == NULL ) {
-    snprintf( user_msg, USER_MSG_LENGTH, "Hierarchical reference to undefined task/function \"%s\" in %s, line %d",
+    /* Bad hierarchical reference -- user error  -- unachievable code due to unsuppported use of hierarchical referencing */
+    snprintf( user_msg, USER_MSG_LENGTH, "Hierarchical reference to undefined %s \"%s\" in %s, line %d",
+              get_funit_type( type ),
               name,
               funit_exp->filename,
               exp->line );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     exit( 1 );
-  }
 
-  if( retval ) {
+  } else {
 
-    assert( funitl->funit->stmt_head != NULL );
-    assert( funitl->funit->stmt_head->stmt != NULL );
+    assert( found_funit->stmt_head != NULL );
+    assert( found_funit->stmt_head->stmt != NULL );
 
     /* Set expression to point at task/function's first head statement */
-    stmt_iter_reset( &si, funitl->funit->stmt_head );
+    stmt_iter_reset( &si, found_funit->stmt_head );
     stmt_iter_find_head( &si, FALSE );
     assert( si.curr->stmt != NULL );
     exp->stmt = si.curr->stmt;
@@ -302,8 +296,8 @@ bool bind_task_function( int type, char* name, expression* exp, func_unit* funit
     /* If this is a function, also bind the return value signal vector to the expression's vector */
     if( type == FUNIT_FUNCTION ) {
 
-      sig.name = funitl->funit->name;
-      sigl = sig_link_find( &sig, funitl->funit->sig_head );
+      sig.name = found_funit->name;
+      sigl     = sig_link_find( &sig, found_funit->sig_head );
 
       assert( sigl != NULL );
 
@@ -330,8 +324,6 @@ bool bind_task_function( int type, char* name, expression* exp, func_unit* funit
 void bind() {
   
   funit_inst* funiti;        /* Pointer to found functional unit instance    */
-  char        scope[4096];   /* Scope of signal's parent functional unit     */
-  char        name[256];     /* Name of signal/functional unit in module     */
   exp_bind*   curr_eb;       /* Pointer to current expression binding        */
   int         id;            /* Current expression id -- used for removal    */
   mod_parm*   mparm;         /* Newly created module parameter               */
@@ -350,45 +342,16 @@ void bind() {
     assert( curr_eb->exp != NULL );
     id = curr_eb->exp->id;
 
-    /* Find functional unit where signal/task/function resides */
-    scope_extract_back( curr_eb->name, name, scope );
-
     /* Handle signal binding */
     if( curr_eb->type == 0 ) {
 
-      /* We should never see a "scopeless" signal if the functional unit is a module */
-      assert( scope[0] != '\0' );
-
-      /* Scope present, search for functional unit based on scope */
-      funiti = instance_find_scope( instance_root, scope );
-
-      if( funiti == NULL ) {
-        /* Bad hierarchical reference -- we should never get to this line of code due to unsupported hierarchical referencing */
-        snprintf( user_msg, USER_MSG_LENGTH, "Undefined hierarchical reference: %s, file: %s, line: %d", 
-                  curr_eb->name,
-                  curr_eb->funit->filename,
-                  curr_eb->exp->line );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        exit( 1 );
-      }
-
-      /* Now bind the signal to the expression */
-      bind_signal( curr_eb->name, curr_eb->exp, funiti->funit, curr_eb->funit, FALSE, FALSE );
+      bind_signal( curr_eb->name, curr_eb->exp, curr_eb->funit, FALSE, FALSE );
 
     /* Otherwise, handle function/task binding */
     } else {
 
-      if( scope[0] != '\0' ) {
-        funiti = instance_find_scope( instance_root, scope );
-      } else {
-        ignore = 0;
-        funiti = instance_find_by_funit( instance_root, curr_eb->funit, &ignore );
-      }
-
-      assert( funiti != NULL );
-
       /* Bind the expression to the task/function */
-      bind_task_function( curr_eb->type, curr_eb->name, curr_eb->exp, funiti->funit, curr_eb->funit );
+      bind_task_function( curr_eb->type, curr_eb->name, curr_eb->exp, curr_eb->funit );
 
     }
 
@@ -449,6 +412,11 @@ void bind() {
 
 /* 
  $Log$
+ Revision 1.33  2005/11/10 23:27:37  phase1geo
+ Adding scope files to handle scope searching.  The functions are complete (not
+ debugged) but are not as of yet used anywhere in the code.  Added new func2 diagnostic
+ which brings out scoping issues for functions.
+
  Revision 1.32  2005/11/10 19:28:22  phase1geo
  Updates/fixes for tasks/functions.  Also updated Tcl/Tk scripts for these changes.
  Fixed bug with net_decl_assign statements -- the line, start column and end column

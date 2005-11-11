@@ -18,7 +18,13 @@ void bind_add( int type, const char* name, expression* exp, func_unit* funit );
 void bind_remove( int id );
 
 /*! \brief Finds vsignal in functional unit and bind the expression to this vsignal. */
-bool bind_perform( int type, char* sig_name, expression* exp, func_unit* mod_sfu, func_unit* mod_exp, bool implicit_allowed, bool fsm_bind );
+bool bind_perform( int type, char* sig_name, expression* exp, func_unit* funit_exp, bool implicit_allowed, bool fsm_bind );
+
+/*! \brief Binds a signal to an expression */
+bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool implicit_allowed, bool fsm_bind );
+
+/*! \brief Binds a function or task to an expression */
+bool bind_task_function( int type, char* name, expression* exp, func_unit* funit_exp );
 
 /*! \brief Performs vsignal/expression bind (performed after parse completed). */
 void bind();
@@ -26,6 +32,10 @@ void bind();
 
 /* 
  $Log$
+ Revision 1.13  2005/11/08 23:12:09  phase1geo
+ Fixes for function/task additions.  Still a lot of testing on these structures;
+ however, regressions now pass again so we are checkpointing here.
+
  Revision 1.12  2004/03/30 15:42:14  phase1geo
  Renaming signal type to vsignal type to eliminate compilation problems on systems
  that contain a signal type in the OS.

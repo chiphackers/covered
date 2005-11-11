@@ -3006,34 +3006,21 @@ task_item_list
 
 task_item
   : block_item_decl
-  | K_input { ignore_mode++; } range_opt list_of_variables ';' { ignore_mode--; }
+  | port_type range_opt list_of_variables ';'
     {
       if( ignore_mode == 0 ) {
-        str_link_delete_list( $4 );
-        if( $3 != NULL ) {
-          curr_sig_width = NULL;
-          free_safe( $3 );
+        /* Create signal -- implicitly this is a wire which may not be explicitly declared */
+        str_link* tmp  = $3;
+        str_link* curr = tmp;
+        while( curr != NULL ) {
+          db_add_signal( curr->str, $2->left, $2->right, 1 );
+          curr = curr->next;
         }
-      }
-    }
-  | K_output { ignore_mode++; } range_opt list_of_variables ';' { ignore_mode--; }
-    {
-      if( ignore_mode == 0 ) {
-        str_link_delete_list( $4 );
-        if( $3 != NULL ) {
-          curr_sig_width = NULL;
-          free_safe( $3 );
-        }
-      }
-    }
-  | K_inout { ignore_mode++; } range_opt list_of_variables ';' { ignore_mode--; }
-    {
-      if( ignore_mode == 0 ) {
-        str_link_delete_list( $4 );
-        if( $3 != NULL ) {
-          curr_sig_width = NULL;
-          free_safe( $3 );
-        }
+        str_link_delete_list( $3 );
+        static_expr_dealloc( $2->left, FALSE );
+        static_expr_dealloc( $2->right, FALSE );
+        free_safe( $2 );
+        curr_sig_width = NULL;
       }
     }
   ;

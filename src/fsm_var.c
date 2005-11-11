@@ -181,7 +181,7 @@ bool fsm_var_bind_expr( char* sig_name, expression* expr, char* funit_name ) {
   funit.type = FUNIT_MODULE;
 
   if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
-    if( !bind_signal( sig_name, expr, funitl->funit, funitl->funit, FALSE, TRUE ) ) {
+    if( !bind_signal( sig_name, expr, funitl->funit, FALSE, TRUE ) ) {
       snprintf( user_msg, USER_MSG_LENGTH, "Unable to bind FSM-specified signal (%s) to expression (%d) in module (%s)",
                 sig_name, expr->id, funit_name );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -468,6 +468,10 @@ void fsm_var_remove( fsm_var* fv ) {
 
 /*
  $Log$
+ Revision 1.17  2005/11/08 23:12:09  phase1geo
+ Fixes for function/task additions.  Still a lot of testing on these structures;
+ however, regressions now pass again so we are checkpointing here.
+
  Revision 1.16  2005/01/07 17:59:51  phase1geo
  Finalized updates for supplemental field changes.  Everything compiles and links
  correctly at this time; however, a regression run has not confirmed the changes.
