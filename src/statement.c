@@ -98,6 +98,7 @@
 #include "link.h"
 #include "sim.h"
 #include "db.h"
+#include "iter.h"
 
 
 extern char user_msg[USER_MSG_LENGTH];
@@ -131,8 +132,6 @@ statement* statement_create( expression* exp ) {
   stmt->next_false           = NULL;
   stmt->tf_exp_head          = NULL;
   stmt->tf_exp_tail          = NULL;
-
-  expression_get_wait_sig_list( exp, &(stmt->wait_sig_head), &(stmt->wait_sig_tail) );
 
   return( stmt );
 
@@ -511,6 +510,44 @@ int statement_get_last_line( statement* stmt ) {
 
 }
 
+/*!
+ \param stmt  Pointer to child statement of statement block to find head statement for
+ \param head  Pointer to head of statement link list.
+
+ \return Returns a pointer to the head statement of the block that contains stmt.
+*/
+statement* statement_find_head_statement( statement* stmt, stmt_link* head ) {
+
+  stmt_iter  si;     /* Statement iterator used to find head statement */
+  stmt_link* stmtl;  /* Pointer to current statement in stmt_link list */
+
+  assert( stmt != NULL );
+
+  /* If the specified statement is the head statement, just return it */
+  if( ESUPPL_IS_STMT_HEAD( stmt->exp->suppl ) == 1 ) {
+
+    return( stmt );
+
+  } else {
+
+    /* Find current statement in statement list */
+    stmtl = stmt_link_find( stmt->exp->id, head );
+    assert( stmtl != NULL );
+
+    /* Reset the statement iterator */
+    stmt_iter_reset( &si, stmtl );
+
+    /* Find the head statement using the statement iterator */
+    stmt_iter_find_head( &si, FALSE );
+
+    assert( si.curr != NULL );
+
+    return( si.curr->stmt );
+
+  }
+
+}
+
 void statement_remove_paths_helper( statement* curr, statement* start, statement* stmt ) {
 
   if( (curr != NULL) && (curr != start) ) {
@@ -640,6 +677,10 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.53  2005/11/08 23:12:10  phase1geo
+ Fixes for function/task additions.  Still a lot of testing on these structures;
+ however, regressions now pass again so we are checkpointing here.
+
  Revision 1.52  2005/02/07 05:10:15  phase1geo
  Fixing bug in statement_get_last_line calculator.  Updated regression for this
  fix.

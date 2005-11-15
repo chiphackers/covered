@@ -14,24 +14,28 @@
 /*! \brief Adds vsignal and expression to binding list. */
 void bind_add( int type, const char* name, expression* exp, func_unit* funit );
 
+/*! \brief Appends an FSM expression to a matching expression binding structure */
+void bind_append_fsm_expr( expression* fsm_exp, expression* exp, func_unit* curr_funit );
+
 /*! \brief Removes the expression with ID of id from binding list. */
 void bind_remove( int id );
 
-/*! \brief Finds vsignal in functional unit and bind the expression to this vsignal. */
-bool bind_perform( int type, char* sig_name, expression* exp, func_unit* funit_exp, bool implicit_allowed, bool fsm_bind );
-
 /*! \brief Binds a signal to an expression */
-bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool implicit_allowed, bool fsm_bind );
+bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool implicit_allowed, bool fsm_bind, bool cdd_reading );
 
 /*! \brief Binds a function or task to an expression */
-bool bind_task_function( int type, char* name, expression* exp, func_unit* funit_exp );
+bool bind_task_function( int type, char* name, expression* exp, func_unit* funit_exp, bool cdd_reading );
 
 /*! \brief Performs vsignal/expression bind (performed after parse completed). */
-void bind();
+void bind( bool cdd_reading );
 
 
 /* 
  $Log$
+ Revision 1.14  2005/11/11 22:53:40  phase1geo
+ Updated bind process to allow binding of structures from different hierarchies.
+ Added task port signals to get added.
+
  Revision 1.13  2005/11/08 23:12:09  phase1geo
  Fixes for function/task additions.  Still a lot of testing on these structures;
  however, regressions now pass again so we are checkpointing here.

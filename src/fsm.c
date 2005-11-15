@@ -29,6 +29,7 @@
 #include "arc.h"
 #include "expr.h"
 #include "codegen.h"
+#include "binding.h"
 
 
 extern funit_inst*  instance_root;
@@ -203,7 +204,7 @@ bool fsm_db_read( char** line, func_unit* funit ) {
       if( iexp.id == oexp.id ) {
         table->from_state = expression_create( NULL, NULL, EXP_OP_STATIC, FALSE, iexp.id, 0, 0, 0, FALSE );
         vector_dealloc( table->from_state->value );
-        table->from_state->value = vector_create( iexpl->exp->value->width, TRUE );
+        bind_append_fsm_expr( table->from_state, iexpl->exp, funit );
       } else {
         table->from_state = iexpl->exp;
       }
@@ -822,6 +823,10 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.43  2005/11/08 23:12:09  phase1geo
+ Fixes for function/task additions.  Still a lot of testing on these structures;
+ however, regressions now pass again so we are checkpointing here.
+
  Revision 1.42  2005/01/07 17:59:51  phase1geo
  Finalized updates for supplemental field changes.  Everything compiles and links
  correctly at this time; however, a regression run has not confirmed the changes.

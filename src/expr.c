@@ -75,6 +75,7 @@
 #include "util.h"
 #include "sim.h"
 #include "fsm.h"
+#include "func_unit.h"
 
 
 extern nibble xor_optab[OPTAB_SIZE];
@@ -555,6 +556,28 @@ void expression_get_wait_sig_list( expression* expr, sig_link** head, sig_link**
 }
 
 /*!
+ \param exp  Pointer to expression to get root statement for.
+
+ \return Returns a pointer to the root statement of the specified expression if one exists;
+         otherwise, returns NULL.
+
+ Recursively traverses up expression tree that contains exp until the root expression is found (if
+ one exists).  If the root expression is found, return the pointer to the statement pointing to this
+ root expression.  If the root expression was not found, return NULL.
+*/
+statement* expression_get_root_statement( expression* exp ) {
+
+  if( exp == NULL ) {
+    return( NULL );
+  } else if( ESUPPL_IS_ROOT( exp->suppl ) == 1 ) {
+    return( exp->parent->stmt );
+  } else {
+    return( expression_get_root_statement( exp->parent->expr ) );
+  }
+
+}
+
+/*!
  \param expr   Pointer to expression to write to database file.
  \param file   Pointer to database file to write to.
 
@@ -562,6 +585,8 @@ void expression_get_wait_sig_list( expression* expr, sig_link** head, sig_link**
  expression tree to the coverage database specified by file.
 */
 void expression_db_write( expression* expr, FILE* file ) {
+
+  func_unit* funit;  /* Pointer to functional unit containing the statement attached to this expression */
 
   fprintf( file, "%d %d %d %x %x %x %d %d ",
     DB_TYPE_EXPRESSION,
@@ -589,11 +614,13 @@ void expression_db_write( expression* expr, FILE* file ) {
     vector_db_write( expr->value, file, (expr->op == EXP_OP_STATIC) );
   }
 
-  if( (expr->sig != NULL) || (expr->stmt != NULL) ) {
-    if( expr->sig != NULL ) {
-      fprintf( file, " 0 %s", expr->sig->name );
-    } else if( expr->op == EXP_OP_FUNC_CALL ) {
-      fprintf( file, " %d %s", FUNIT_FUNCTION, funit_find_tf_by_statement( func_unit* mod, statement* stmt )expr->stmt
+  if( expr->sig != NULL ) {
+    fprintf( file, "%s", expr->sig->name );
+  } else if( expr->stmt != NULL ) {
+    funit = funit_find_by_id( expr->stmt->exp->id );
+    assert( funit != NULL );
+    fprintf( file, " %s", funit->name );
+  }
 
   fprintf( file, "\n" );
 
@@ -613,21 +640,22 @@ void expression_db_write( expression* expr, FILE* file ) {
 */
 bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) {
 
-  bool        retval = TRUE;  /* Return value for this function                   */
-  int         id;             /* Holder of expression ID                          */
-  expression* expr;           /* Pointer to newly created expression              */
-  int         linenum;        /* Holder of current line for this expression       */
-  int         column;         /* Holder of column alignment information           */
-  control     op;             /* Holder of expression operation                   */
-  esuppl      suppl;          /* Holder of supplemental value of this expression  */
-  int         right_id;       /* Holder of expression ID to the right             */
-  int         left_id;        /* Holder of expression ID to the left              */
+  bool        retval = TRUE;  /* Return value for this function */
+  int         id;             /* Holder of expression ID */
+  expression* expr;           /* Pointer to newly created expression */
+  int         linenum;        /* Holder of current line for this expression */
+  int         column;         /* Holder of column alignment information */
+  control     op;             /* Holder of expression operation */
+  esuppl      suppl;          /* Holder of supplemental value of this expression */
+  int         right_id;       /* Holder of expression ID to the right */
+  int         left_id;        /* Holder of expression ID to the left */
   expression* right;          /* Pointer to current expression's right expression */
-  expression* left;           /* Pointer to current expression's left expression  */
-  int         chars_read;     /* Number of characters scanned in from line        */
-  vector*     vec;            /* Holders vector value of this expression          */
-  expression  texp;           /* Temporary expression link holder for searching   */
-  exp_link*   expl;           /* Pointer to found expression in functional unit   */
+  expression* left;           /* Pointer to current expression's left expression */
+  int         chars_read;     /* Number of characters scanned in from line */
+  vector*     vec;            /* Holders vector value of this expression */
+  expression  texp;           /* Temporary expression link holder for searching */
+  exp_link*   expl;           /* Pointer to found expression in functional unit */
+  char        tmpname[1024];  /* Name of signal/functional unit that the current expression is bound to */
 
   if( sscanf( *line, "%d %d %x %x %x %d %d%n", &id, &linenum, &column, &op, &(suppl.all), &right_id, &left_id, &chars_read ) == 7 ) {
 
@@ -723,6 +751,16 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) {
  
         }
 
+      }
+
+      /* Check to see if we are bound to a signal or functional unit */
+      if( sscanf( *line, "%s%n", tmpname, &chars_read ) == 1 ) {
+        *line = *line + chars_read;
+        switch( op ) {
+          case EXP_OP_FUNC_CALL :  bind_add( FUNIT_FUNCTION, tmpname, expr, curr_funit );  break;
+          case EXP_OP_TASK_CALL :  bind_add( FUNIT_TASK,     tmpname, expr, curr_funit );  break;
+          default               :  bind_add( 0,              tmpname, expr, curr_funit );  break;
+        }
       }
 
       /* If we are an assignment operator, set our vector value to that of the right child */
@@ -1637,6 +1675,12 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.117  2005/11/11 23:29:12  phase1geo
+ Checkpointing some work in progress.  This will cause compile errors.  In
+ the process of moving db read expression signal binding from vsignal output to
+ expression output so that we can just call the binder in the expression_db_read
+ function.
+
  Revision 1.116  2005/11/10 19:28:22  phase1geo
  Updates/fixes for tasks/functions.  Also updated Tcl/Tk scripts for these changes.
  Fixed bug with net_decl_assign statements -- the line, start column and end column

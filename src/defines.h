@@ -1350,293 +1350,291 @@ typedef struct stmt_blk_s stmt_blk;
 /*  STRUCTURE/UNION DEFINITIONS  */
 
 struct str_link_s {
-  char*     str;    /*!< String to store                  */
-  char      suppl;  /*!< 8-bit additional information     */
-  str_link* next;   /*!< Pointer to next str_link element */
+  char*     str;                     /*!< String to store */
+  char      suppl;                   /*!< 8-bit additional information */
+  str_link* next;                    /*!< Pointer to next str_link element */
 };
 
 struct vector_s {
-  int        width;       /*!< Bit width of this vector                                                                 */
+  int        width;                  /*!< Bit width of this vector */
   union {
-    nibble   all;         /*!< Allows us to set all bits in the suppl field                                             */
+    nibble   all;                    /*!< Allows us to set all bits in the suppl field */
     struct {
-      nibble base    :3;  /*!< Base-type of this data when originally parsed                                            */
-      nibble wait    :1;  /*!< Specifies that this signal should be waited for                                          */
-      nibble inport  :1;  /*!< Specifies if this vector is part of an input port                                        */
-      nibble assigned:1;  /*!< Specifies that this vector will be assigned from simulated results (instead of dumpfile) */
+      nibble base    :3;             /*!< Base-type of this data when originally parsed */
+      nibble wait    :1;             /*!< Specifies that this signal should be waited for */
+      nibble inport  :1;             /*!< Specifies if this vector is part of an input port */
+      nibble assigned:1;             /*!< Specifies that this vector will be assigned from simulated results (instead of dumpfile) */
     } part;
-  } suppl;                /*!< Supplemental field                                                                       */
-  vec_data*  value;       /*!< 4-state current value and toggle history                                                 */
+  } suppl;                           /*!< Supplemental field */
+  vec_data*  value;                  /*!< 4-state current value and toggle history */
 };
 
 union expr_stmt_u {
-  expression* expr;         /*!< Pointer to expression */
-  statement*  stmt;         /*!< Pointer to statement  */
+  expression* expr;                  /*!< Pointer to expression */
+  statement*  stmt;                  /*!< Pointer to statement */
 };
 
 struct expression_s {
-  vector*     value;   /*!< Current value and toggle information of this expression     */
-  control     op;      /*!< Expression operation type                                   */
-  esuppl      suppl;   /*!< Supplemental information for the expression                 */
-  int         id;      /*!< Specifies unique ID for this expression in the parent       */
-  int         ulid;    /*!< Specifies underline ID for reporting purposes               */
-  int         line;    /*!< Specified line in file that this expression is found on     */
-  control     col;     /*!< Specifies column location of beginning/ending of expression */
-  vsignal*    sig;     /*!< Pointer to signal.  If NULL then no signal is attached      */
-  expr_stmt*  parent;  /*!< Parent expression/statement                                 */
-  expression* right;   /*!< Pointer to expression on right                              */
-  expression* left;    /*!< Pointer to expression on left                               */
-  fsm*        table;   /*!< Pointer to FSM table associated with this expression        */
-  statement*  stmt;    /*!< Pointer to starting task/function statement to be called by
-                            this expression                                             */
+  vector*     value;                 /*!< Current value and toggle information of this expression */
+  control     op;                    /*!< Expression operation type (see \ref expr_ops for the list of legal values) */
+  esuppl      suppl;                 /*!< Supplemental information for the expression */
+  int         id;                    /*!< Specifies unique ID for this expression in the parent */
+  int         ulid;                  /*!< Specifies underline ID for reporting purposes */
+  int         line;                  /*!< Specified line in file that this expression is found on */
+  control     col;                   /*!< Specifies column location of beginning/ending of expression */
+  vsignal*    sig;                   /*!< Pointer to signal.  If NULL then no signal is attached */
+  expr_stmt*  parent;                /*!< Parent expression/statement */
+  expression* right;                 /*!< Pointer to expression on right */
+  expression* left;                  /*!< Pointer to expression on left */
+  fsm*        table;                 /*!< Pointer to FSM table associated with this expression */
+  statement*  stmt;                  /*!< Pointer to starting task/function statement to be called by this expression */
 };
 
 struct vsignal_s {
-  char*      name;      /*!< Full hierarchical name of signal in design    */
-  vector*    value;     /*!< Pointer to vector value of this signal        */
-  int        lsb;       /*!< Least-significant bit position of this signal */
-  exp_link*  exp_head;  /*!< Head pointer to list of expressions           */
-  exp_link*  exp_tail;  /*!< Tail pointer to list of expressions           */
+  char*      name;                   /*!< Full hierarchical name of signal in design */
+  vector*    value;                  /*!< Pointer to vector value of this signal */
+  int        lsb;                    /*!< Least-significant bit position of this signal */
+  exp_link*  exp_head;               /*!< Head pointer to list of expressions */
+  exp_link*  exp_tail;               /*!< Tail pointer to list of expressions */
 };
 
 struct fsm_s {
-  char*       name;        /*!< User-defined name that this FSM pertains to                                  */
-  expression* from_state;  /*!< Pointer to from_state expression                                             */
-  expression* to_state;    /*!< Pointer to to_state expression                                               */
-  fsm_arc*    arc_head;    /*!< Pointer to head of list of expression pairs that describe the valid FSM arcs */
-  fsm_arc*    arc_tail;    /*!< Pointer to tail of list of expression pairs that describe the valid FSM arcs */
-  char*       table;       /*!< FSM arc traversal table                                                      */
+  char*       name;                  /*!< User-defined name that this FSM pertains to */
+  expression* from_state;            /*!< Pointer to from_state expression */
+  expression* to_state;              /*!< Pointer to to_state expression */
+  fsm_arc*    arc_head;              /*!< Pointer to head of list of expression pairs that describe the valid FSM arcs */
+  fsm_arc*    arc_tail;              /*!< Pointer to tail of list of expression pairs that describe the valid FSM arcs */
+  char*       table;                 /*!< FSM arc traversal table */
 };
 
 struct statement_s {
-  expression* exp;            /*!< Pointer to associated expression tree                        */
-  sig_link*   wait_sig_head;  /*!< Pointer to head of wait event signal list                    */
-  sig_link*   wait_sig_tail;  /*!< Pointer to tail of wait event signal list                    */
-  statement*  next_true;      /*!< Pointer to next statement to run if expression tree non-zero */
-  statement*  next_false;     /*!< Pointer to next statement to run if next_true not picked     */
-  exp_link*   tf_exp_head;    /*!< Pointer to head of task/function call expression list        */
-  exp_link*   tf_exp_tail;    /*!< Pointer to tail of task/function call expression list        */
+  expression* exp;                   /*!< Pointer to associated expression tree                        */
+  sig_link*   wait_sig_head;         /*!< Pointer to head of wait event signal list                    */
+  sig_link*   wait_sig_tail;         /*!< Pointer to tail of wait event signal list                    */
+  statement*  next_true;             /*!< Pointer to next statement to run if expression tree non-zero */
+  statement*  next_false;            /*!< Pointer to next statement to run if next_true not picked     */
+  exp_link*   tf_exp_head;           /*!< Pointer to head of task/function call expression list        */
+  exp_link*   tf_exp_tail;           /*!< Pointer to tail of task/function call expression list        */
 };
 
 struct sig_link_s {
-  vsignal*  sig;   /*!< Pointer to signal in list                   */
-  sig_link* next;  /*!< Pointer to next signal link element in list */
+  vsignal*  sig;                     /*!< Pointer to signal in list */
+  sig_link* next;                    /*!< Pointer to next signal link element in list */
 };
 
 struct stmt_iter_s {
-  stmt_link* curr;   /*!< Pointer to current statement link               */
-  stmt_link* last;   /*!< Two-way pointer to next/previous statement link */
+  stmt_link* curr;                   /*!< Pointer to current statement link */
+  stmt_link* last;                   /*!< Two-way pointer to next/previous statement link */
 };
 
 struct exp_link_s {
-  expression* exp;   /*!< Pointer to expression                      */
-  exp_link*   next;  /*!< Pointer to next expression element in list */
+  expression* exp;                   /*!< Pointer to expression */
+  exp_link*   next;                  /*!< Pointer to next expression element in list */
 };
 
 struct stmt_link_s {
-  statement* stmt;  /*!< Pointer to statement                       */
-  stmt_link* ptr;   /*!< Pointer to next statement element in list  */
+  statement* stmt;                   /*!< Pointer to statement */
+  stmt_link* ptr;                    /*!< Pointer to next statement element in list */
 };
 
 struct stmt_loop_link_s {
-  statement*      stmt;     /* Pointer to last statement in loop  */
-  int             id;       /* ID of next statement after last    */
-  stmt_loop_link* next;     /* Pointer to next statement in stack */
+  statement*      stmt;              /*!< Pointer to last statement in loop */
+  int             id;                /*!< ID of next statement after last */
+  stmt_loop_link* next;              /*!< Pointer to next statement in stack */
 };
 
 struct statistic_s {
-  float line_total;                  /*!< Total number of lines parsed                   */
-  int   line_hit;                    /*!< Number of lines executed during simulation     */
-  float tog_total;                   /*!< Total number of bits to toggle                 */
-  int   tog01_hit;                   /*!< Number of bits toggling from 0 to 1            */
-  int   tog10_hit;                   /*!< Number of bits toggling from 1 to 0            */
-  float comb_total;                  /*!< Total number of expression combinations        */
-  int   comb_hit;                    /*!< Number of logic combinations hit               */
-  float state_total;                 /*!< Total number of FSM states                     */
-  int   state_hit;                   /*!< Number of FSM states reached                   */
-  float arc_total;                   /*!< Total number of FSM arcs                       */
-  int   arc_hit;                     /*!< Number of FSM arcs traversed                   */
-  int   race_total;                  /*!< Total number of race conditions found          */
+  float line_total;                  /*!< Total number of lines parsed */
+  int   line_hit;                    /*!< Number of lines executed during simulation */
+  float tog_total;                   /*!< Total number of bits to toggle */
+  int   tog01_hit;                   /*!< Number of bits toggling from 0 to 1 */
+  int   tog10_hit;                   /*!< Number of bits toggling from 1 to 0 */
+  float comb_total;                  /*!< Total number of expression combinations */
+  int   comb_hit;                    /*!< Number of logic combinations hit */
+  float state_total;                 /*!< Total number of FSM states */
+  int   state_hit;                   /*!< Number of FSM states reached */
+  float arc_total;                   /*!< Total number of FSM arcs */
+  int   arc_hit;                     /*!< Number of FSM arcs traversed */
+  int   race_total;                  /*!< Total number of race conditions found */
   int   rtype_total[RACE_TYPE_NUM];  /*!< Total number of each race condition type found */
 };
 
 struct mod_parm_s {
-  char*        name;     /*!< Full hierarchical name of associated parameter      */
-  expression*  expr;     /*!< Expression tree containing value of parameter       */
-  unsigned int suppl;    /*!< Supplemental field containing type and order number */
-  exp_link*    exp_head; /*!< Pointer to head of expression list for dependents   */
-  exp_link*    exp_tail; /*!< Pointer to tail of expression list for dependents   */
-  vsignal*     sig;      /*!< Pointer to associated signal (if one is available)  */
-  mod_parm*    next;     /*!< Pointer to next module parameter in list            */
+  char*        name;                 /*!< Full hierarchical name of associated parameter */
+  expression*  expr;                 /*!< Expression tree containing value of parameter */
+  unsigned int suppl;                /*!< Supplemental field containing type and order number */
+  exp_link*    exp_head;             /*!< Pointer to head of expression list for dependents */
+  exp_link*    exp_tail;             /*!< Pointer to tail of expression list for dependents */
+  vsignal*     sig;                  /*!< Pointer to associated signal (if one is available) */
+  mod_parm*    next;                 /*!< Pointer to next module parameter in list */
 };
 
 struct inst_parm_s {
-  char*        name;     /*!< Name of associated parameter (no hierarchy)         */
-  vector*      value;    /*!< Pointer to value of instance parameter              */
-  mod_parm*    mparm;    /*!< Pointer to base module parameter                    */
-  inst_parm*   next;     /*!< Pointer to next instance parameter in list          */
+  char*        name;                 /*!< Name of associated parameter (no hierarchy) */
+  vector*      value;                /*!< Pointer to value of instance parameter */
+  mod_parm*    mparm;                /*!< Pointer to base module parameter */
+  inst_parm*   next;                 /*!< Pointer to next instance parameter in list */
 };
 
 struct fsm_arc_s {
-  expression* from_state;  /*!< Pointer to expression that represents the state we are transferring from */
-  expression* to_state;    /*!< Pointer to expression that represents the state we are transferring to   */
-  fsm_arc*    next;        /*!< Pointer to next fsm_arc in this list                                     */
+  expression* from_state;            /*!< Pointer to expression that represents the state we are transferring from */
+  expression* to_state;              /*!< Pointer to expression that represents the state we are transferring to */
+  fsm_arc*    next;                  /*!< Pointer to next fsm_arc in this list */
 };
 
 struct fsm_link_s {
-  fsm*      table;  /*!< Pointer to FSM structure to store        */
-  fsm_link* next;   /*!< Pointer to next element in fsm_link list */
+  fsm*      table;                   /*!< Pointer to FSM structure to store */
+  fsm_link* next;                    /*!< Pointer to next element in fsm_link list */
 };
 
 struct race_blk_s {
-  int       start_line;  /*!< Starting line number of statement block that was found to be a race condition  */
-  int       end_line;    /*!< Ending line number of statement block that was found to be a race condition    */
-  int       reason;      /*!< Numerical reason for why this statement block was found to be a race condition */
-  race_blk* next;        /*!< Pointer to next race block in list                                             */
+  int       start_line;              /*!< Starting line number of statement block that was found to be a race condition */
+  int       end_line;                /*!< Ending line number of statement block that was found to be a race condition */
+  int       reason;                  /*!< Numerical reason for why this statement block was found to be a race condition */
+  race_blk* next;                    /*!< Pointer to next race block in list */
 };
 
 struct func_unit_s {
-  int         type;        /*!< Specifies the type of functional unit this structure represents.
-                                Legal values are defined in \ref func_unit_types.                */
-  char*       name;        /*!< Module name                                                      */
-  char*       filename;    /*!< File name where functional unit exists                           */
-  int         start_line;  /*!< Starting line number of functional unit in its file              */
-  int         end_line;    /*!< Ending line number of functional unit in its file                */
-  statistic*  stat;        /*!< Pointer to functional unit coverage statistics structure         */
-  sig_link*   sig_head;    /*!< Head pointer to list of signals in this functional unit          */
-  sig_link*   sig_tail;    /*!< Tail pointer to list of signals in this functional unit          */
-  exp_link*   exp_head;    /*!< Head pointer to list of expressions in this functional unit      */
-  exp_link*   exp_tail;    /*!< Tail pointer to list of expressions in this functional unit      */
-  stmt_link*  stmt_head;   /*!< Head pointer to list of statements in this functional unit       */
-  stmt_link*  stmt_tail;   /*!< Tail pointer to list of statements in this functional unit       */
-  fsm_link*   fsm_head;    /*!< Head pointer to list of FSMs in this functional unit             */
-  fsm_link*   fsm_tail;    /*!< Tail pointer to list of FSMs in this functional unit             */
-  race_blk*   race_head;   /*!< Head pointer to list of race condition blocks in this functional
-                                unit if we are a module.                                         */
-  race_blk*   race_tail;   /*!< Tail pointer to list of race condition blocks in this functional
-                                unit if we are a module.                                         */
-  mod_parm*   param_head;  /*!< Head pointer to list of parameters in this functional unit if we
-                                are a module.                                                    */
-  mod_parm*   param_tail;  /*!< Tail pointer to list of parameters in this functional unit if we
-                                are a module.                                                    */
-  funit_link* tf_head;     /*!< Head pointer to list of task/function functional units if we are
-                                a module.                                                        */
-  funit_link* tf_tail;     /*!< Tail pointer to list of task/function functional units if we are
-                                a module.                                                        */
-};
+  int         type;                  /*!< Specifies the type of functional unit this structure represents.
+                                          Legal values are defined in \ref func_unit_types */
+  char*       name;                  /*!< Functional unit name */
+  char*       filename;              /*!< File name where functional unit exists */
+  int         start_line;            /*!< Starting line number of functional unit in its file */
+  int         end_line;              /*!< Ending line number of functional unit in its file */
+  statistic*  stat;                  /*!< Pointer to functional unit coverage statistics structure */
+  sig_link*   sig_head;              /*!< Head pointer to list of signals in this functional unit */
+  sig_link*   sig_tail;              /*!< Tail pointer to list of signals in this functional unit */
+  exp_link*   exp_head;              /*!< Head pointer to list of expressions in this functional unit */
+  exp_link*   exp_tail;              /*!< Tail pointer to list of expressions in this functional unit */
+  stmt_link*  stmt_head;             /*!< Head pointer to list of statements in this functional unit */
+  stmt_link*  stmt_tail;             /*!< Tail pointer to list of statements in this functional unit */
+  fsm_link*   fsm_head;              /*!< Head pointer to list of FSMs in this functional unit */
+  fsm_link*   fsm_tail;              /*!< Tail pointer to list of FSMs in this functional unit */
+  race_blk*   race_head;             /*!< Head pointer to list of race condition blocks in this functional unit if we are a module */
+  race_blk*   race_tail;             /*!< Tail pointer to list of race condition blocks in this functional unit if we are a module */
+  mod_parm*   param_head;            /*!< Head pointer to list of parameters in this functional unit if we are a module */
+  mod_parm*   param_tail;            /*!< Tail pointer to list of parameters in this functional unit if we are a module */
+  funit_link* tf_head;               /*!< Head pointer to list of task/function functional units if we are a module */
+  funit_link* tf_tail;               /*!< Tail pointer to list of task/function functional units if we are a module */
+ };
 
 struct funit_link_s {
-  func_unit*  funit;  /*!< Pointer to functional unit in list */
-  funit_link* next;   /*!< Next functional unit link in list  */
+  func_unit*  funit;                 /*!< Pointer to functional unit in list */
+  funit_link* next;                  /*!< Next functional unit link in list */
 };
 
 struct sym_sig_s {
-  vsignal* sig;   /*!< Pointer to signal that this symtable entry refers to */
-  int      msb;   /*!< Most significant bit of value to set                 */
-  int      lsb;   /*!< Least significant bit of value to set                */
-  sym_sig* next;  /*!< Pointer to next sym_sig link in list                 */
+  vsignal* sig;                      /*!< Pointer to signal that this symtable entry refers to */
+  int      msb;                      /*!< Most significant bit of value to set */
+  int      lsb;                      /*!< Least significant bit of value to set */
+  sym_sig* next;                     /*!< Pointer to next sym_sig link in list */
 };
 
 struct symtable_s {
-  sym_sig*  sig_head;     /*!< Pointer to head of sym_sig list             */
-  sym_sig*  sig_tail;     /*!< Pointer to tail of sym_sig list             */
-  char*     value;        /*!< String representation of last current value */
-  int       size;         /*!< Number of bytes allowed storage for value   */
-  symtable* table[256];   /*!< Array of symbol tables for next level       */
+  sym_sig*  sig_head;                /*!< Pointer to head of sym_sig list */
+  sym_sig*  sig_tail;                /*!< Pointer to tail of sym_sig list */
+  char*     value;                   /*!< String representation of last current value */
+  int       size;                    /*!< Number of bytes allowed storage for value */
+  symtable* table[256];              /*!< Array of symbol tables for next level */
 };
 
 struct static_expr_s {
-  expression* exp;        /*!< Specifies if static value is an expression   */
-  int         num;        /*!< Specifies if static value is a numeric value */
+  expression* exp;                   /*!< Specifies if static value is an expression */
+  int         num;                   /*!< Specifies if static value is a numeric value */
 };
 
 struct vector_width_s {
-  static_expr* left;      /*!< Specifies left bit value of bit range  */
-  static_expr* right;     /*!< Specifies right bit value of bit range */
+  static_expr* left;                 /*!< Specifies left bit value of bit range */
+  static_expr* right;                /*!< Specifies right bit value of bit range */
 };
 
 struct exp_bind_s {
-  int         type;   /*!< Specifies if name refers to a signal (0) or functional unit (1) */
-  char*       name;   /*!< Name of Verilog scoped signal/functional unit to bind           */
-  expression* exp;    /*!< Expression to bind.                                             */
-  func_unit*  funit;  /*!< Pointer to functional unit containing expression                */
-  exp_bind*   next;   /*!< Pointer to next binding in list                                 */
+  int         type;                  /*!< Specifies if name refers to a signal (0), function (FUNIT_FUNCTION) or task (FUNIT_TASK) */
+  char*       name;                  /*!< Name of Verilog scoped signal/functional unit to bind */
+  expression* exp;                   /*!< Expression to bind. */
+  expression* fsm;                   /*!< FSM expression to create value for when this expression is bound */
+  func_unit*  funit;                 /*!< Pointer to functional unit containing expression */
+  exp_bind*   next;                  /*!< Pointer to next binding in list */
 };
 
 struct case_stmt_s {
-  expression*     expr;    /*!< Pointer to case equality expression          */
-  statement*      stmt;    /*!< Pointer to first statement in case statement */
-  int             line;    /*!< Line number of case statement                */
-  case_statement* prev;    /*!< Pointer to previous case statement in list   */
+  expression*     expr;              /*!< Pointer to case equality expression */
+  statement*      stmt;              /*!< Pointer to first statement in case statement */
+  int             line;              /*!< Line number of case statement */
+  case_statement* prev;              /*!< Pointer to previous case statement in list */
 };
 
 struct funit_inst_s {
-  char*       name;          /*!< Instance name of this functional unit instance                 */
-  func_unit*  funit;         /*!< Pointer to functional unit this instance represents            */
-  statistic*  stat;          /*!< Pointer to statistic holder                                    */
-  inst_parm*  param_head;    /*!< Head pointer to list of parameter overrides in this functional
-                                  unit if it is a module                                         */
-  inst_parm*  param_tail;    /*!< Tail pointer to list of parameter overrides in this functional
-                                  unit if it is a module                                         */
-  funit_inst* parent;        /*!< Pointer to parent instance -- used for convenience only        */
-  funit_inst* child_head;    /*!< Pointer to head of child list                                  */
-  funit_inst* child_tail;    /*!< Pointer to tail of child list                                  */
-  funit_inst* next;          /*!< Pointer to next child in parents list                          */
+  char*       name;                  /*!< Instance name of this functional unit instance */
+  func_unit*  funit;                 /*!< Pointer to functional unit this instance represents */
+  statistic*  stat;                  /*!< Pointer to statistic holder */
+  inst_parm*  param_head;            /*!< Head pointer to list of parameter overrides in this functional unit if it is a module */
+  inst_parm*  param_tail;            /*!< Tail pointer to list of parameter overrides in this functional unit if it is a module */
+  funit_inst* parent;                /*!< Pointer to parent instance -- used for convenience only */
+  funit_inst* child_head;            /*!< Pointer to head of child list */
+  funit_inst* child_tail;            /*!< Pointer to tail of child list */
+  funit_inst* next;                  /*!< Pointer to next child in parents list */
 };
 
 struct tnode_s {
-  char*  name;     /*!< Key value for tree node     */
-  char*  value;    /*!< Value of node               */
-  tnode* left;     /*!< Pointer to left child node  */
-  tnode* right;    /*!< Pointer to right child node */
-  tnode* up;       /*!< Pointer to parent node      */
+  char*  name;                       /*!< Key value for tree node */
+  char*  value;                      /*!< Value of node */
+  tnode* left;                       /*!< Pointer to left child node */
+  tnode* right;                      /*!< Pointer to right child node */
+  tnode* up;                         /*!< Pointer to parent node */
 };
 
 #ifdef HAVE_SYS_TIMES_H
 struct timer_s {
-  struct tms start;  /*!< Contains start time of a particular timer                     */
-  clock_t    total;  /*!< Contains the total amount of user time accrued for this timer */
+  struct tms start;                  /*!< Contains start time of a particular timer */
+  clock_t    total;                  /*!< Contains the total amount of user time accrued for this timer */
 };
 #endif
 
 struct fsm_var_s {
-  char*       funit;  /*!< Name of functional unit containing FSM variable  */
-  char*       name;   /*!< Name associated with this FSM variable           */
-  expression* ivar;   /*!< Pointer to input state expression                */
-  expression* ovar;   /*!< Pointer to output state expression               */
-  vsignal*    iexp;   /*!< Pointer to input signal matching ovar name       */
-  fsm*        table;  /*!< Pointer to FSM containing signal from ovar       */
-  fsm_var*    next;   /*!< Pointer to next fsm_var element in list          */
+  char*       funit;                 /*!< Name of functional unit containing FSM variable */
+  char*       name;                  /*!< Name associated with this FSM variable */
+  expression* ivar;                  /*!< Pointer to input state expression */
+  expression* ovar;                  /*!< Pointer to output state expression */
+  vsignal*    iexp;                  /*!< Pointer to input signal matching ovar name */
+  fsm*        table;                 /*!< Pointer to FSM containing signal from ovar */
+  fsm_var*    next;                  /*!< Pointer to next fsm_var element in list */
 };
 
 struct fv_bind_s {
-  char*       sig_name;    /*!< Name of signal to bind to expression                    */
-  expression* expr;        /*!< Pointer to expression to bind to signal                 */
-  char*       funit_name;  /*!< Name of functional unit to find sig_name and expression */
-  statement*  stmt;        /*!< Pointer to statement which contains root of expr        */
-  fv_bind*    next;        /*!< Pointer to next FSM variable bind element in list       */
+  char*       sig_name;              /*!< Name of signal to bind to expression */
+  expression* expr;                  /*!< Pointer to expression to bind to signal */
+  char*       funit_name;            /*!< Name of functional unit to find sig_name and expression */
+  statement*  stmt;                  /*!< Pointer to statement which contains root of expr */
+  fv_bind*    next;                  /*!< Pointer to next FSM variable bind element in list */
 };
 
 struct attr_param_s {
-  char*       name;   /*!< Name of attribute parameter identifier                               */
-  expression* expr;   /*!< Pointer to expression assigned to the attribute parameter identifier */
-  int         index;  /*!< Index position in the array that this parameter is located at        */
-  attr_param* next;   /*!< Pointer to next attribute parameter in list                          */
-  attr_param* prev;   /*!< Pointer to previous attribute parameter in list                      */
+  char*       name;                  /*!< Name of attribute parameter identifier */
+  expression* expr;                  /*!< Pointer to expression assigned to the attribute parameter identifier */
+  int         index;                 /*!< Index position in the array that this parameter is located at */
+  attr_param* next;                  /*!< Pointer to next attribute parameter in list */
+  attr_param* prev;                  /*!< Pointer to previous attribute parameter in list */
 };
 
 struct stmt_blk_s {
-  statement* stmt;      /*!< Pointer to top-level statement in statement tree that this signal is first found in */
-  bool       remove;    /*!< Specifies if this statement block should be removed after checking is complete      */
-  bool       seq;       /*!< If true, this statement block is considered to include sequential logic             */
-  bool       cmb;       /*!< If true, this statement block is considered to include combinational logic          */
-  bool       bassign;   /*!< If true, at least one expression in statement block is a blocking assignment        */
-  bool       nassign;   /*!< If true, at least one expression in statement block is a non-blocking assignment    */
+  statement* stmt;                   /*!< Pointer to top-level statement in statement tree that this signal is first found in */
+  bool       remove;                 /*!< Specifies if this statement block should be removed after checking is complete */
+  bool       seq;                    /*!< If true, this statement block is considered to include sequential logic */
+  bool       cmb;                    /*!< If true, this statement block is considered to include combinational logic */
+  bool       bassign;                /*!< If true, at least one expression in statement block is a blocking assignment */
+  bool       nassign;                /*!< If true, at least one expression in statement block is a non-blocking assignment */
 };
 
 
 /*
  $Log$
+ Revision 1.126  2005/11/11 23:29:12  phase1geo
+ Checkpointing some work in progress.  This will cause compile errors.  In
+ the process of moving db read expression signal binding from vsignal output to
+ expression output so that we can just call the binder in the expression_db_read
+ function.
+
  Revision 1.125  2005/11/10 23:27:37  phase1geo
  Adding scope files to handle scope searching.  The functions are complete (not
  debugged) but are not as of yet used anywhere in the code.  Added new func2 diagnostic

@@ -28,7 +28,8 @@
 #include "race.h"
 
 
-extern char user_msg[USER_MSG_LENGTH];
+extern char        user_msg[USER_MSG_LENGTH];
+extern funit_link* funit_head;
 
 
 /*!
@@ -572,6 +573,35 @@ func_unit* funit_find_tf_by_statement( func_unit* mod, statement* stmt ) {
 }
 
 /*!
+ \param id  Expression/statement ID to search for
+ 
+ \return Returns a pointer to the functional unit that contains the specified expression/statement
+         ID if one exists; otherwise, returns NULL.
+
+ Searches the functional units until one is found that contains the expression/statement identified
+ by the specified ID and returns a pointer to this functional unit.  If no such ID exists in the
+ design, a value of NULL is returned to the calling statement.
+*/
+func_unit* funit_find_by_id( int id ) {
+
+  funit_link* funitl;       /* Temporary pointer to functional unit link */
+  exp_link*   expl = NULL;  /* Temporary pointer to expression link */
+  expression  exp;          /* Temporary expression used for comparison purposes */
+
+  exp.id = id;
+
+  funitl = funit_head;
+  while( (funitl != NULL) && (expl == NULL) ) {
+    if( (expl = exp_link_find( &exp, funitl->funit->exp_head )) == NULL ) {
+      funitl = funitl->next;
+    }
+  }
+      
+  return( (funitl == NULL) ? NULL : funitl->funit );
+    
+}
+
+/*!
  \param funit  Pointer to functional unit element to display signals.
 
  Iterates through signal list of specified functional unit, displaying each signal's
@@ -700,6 +730,10 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.1  2005/11/08 23:12:09  phase1geo
+ Fixes for function/task additions.  Still a lot of testing on these structures;
+ however, regressions now pass again so we are checkpointing here.
+
  Revision 1.38  2005/02/05 04:13:30  phase1geo
  Started to add reporting capabilities for race condition information.  Modified
  race condition reason calculation and handling.  Ran -Wall on all code and cleaned

@@ -29,6 +29,9 @@ void statement_set_stop( statement* stmt, statement* post, bool true_path, bool 
 /*! \brief Calculates the last line of the specified statement tree. */
 int statement_get_last_line( statement* stmt );
 
+/*! \brief Gets the head statement for the block containing stmt */
+statement* statement_find_head_statement( statement* stmt, stmt_link* head );
+
 /*! \brief Recursively deallocates specified statement tree. */
 void statement_dealloc_recursive( statement* stmt );
 
@@ -38,6 +41,10 @@ void statement_dealloc( statement* stmt );
 
 /*
  $Log$
+ Revision 1.18  2005/11/08 23:12:10  phase1geo
+ Fixes for function/task additions.  Still a lot of testing on these structures;
+ however, regressions now pass again so we are checkpointing here.
+
  Revision 1.17  2005/02/04 23:55:54  phase1geo
  Adding code to support race condition information in CDD files.  All code is
  now in place for writing/reading this data to/from the CDD file (although

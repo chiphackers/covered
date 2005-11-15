@@ -906,18 +906,10 @@ expression* db_create_expression( expression* right, expression* left, int op, b
 
     } else {
 
-      /* If signal is located in this current module, bind now; else, bind later */
-      if( scope_local( sig_name ) && (op != EXP_OP_FUNC_CALL) && (op != EXP_OP_TASK_CALL) ) {
-        if( !bind_signal( sig_name, expr, curr_funit, TRUE, FALSE ) ) {
-          expression_dealloc( expr, FALSE );
-          expr = NULL;
-        }
-      } else {
-        switch( op ) {
-          case EXP_OP_FUNC_CALL :  bind_add( FUNIT_FUNCTION, sig_name, expr, curr_funit );  break;
-          case EXP_OP_TASK_CALL :  bind_add( FUNIT_TASK,     sig_name, expr, curr_funit );  break;
-          default               :  bind_add( 0,              sig_name, expr, curr_funit );  break;
-        }
+      switch( op ) {
+        case EXP_OP_FUNC_CALL :  bind_add( FUNIT_FUNCTION, sig_name, expr, curr_funit );  break;
+        case EXP_OP_TASK_CALL :  bind_add( FUNIT_TASK,     sig_name, expr, curr_funit );  break;
+        default               :  bind_add( 0,              sig_name, expr, curr_funit );  break;
       }
 
     }
@@ -1441,6 +1433,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.130  2005/11/11 22:53:40  phase1geo
+ Updated bind process to allow binding of structures from different hierarchies.
+ Added task port signals to get added.
+
  Revision 1.129  2005/11/10 19:28:22  phase1geo
  Updates/fixes for tasks/functions.  Also updated Tcl/Tk scripts for these changes.
  Fixed bug with net_decl_assign statements -- the line, start column and end column

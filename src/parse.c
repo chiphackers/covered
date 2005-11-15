@@ -93,7 +93,7 @@ bool parse_design( char* top, char* output_db ) {
     print_output( "========  Completed design parsing  ========\n", DEBUG, __FILE__, __LINE__ );
 
     /* Perform all signal/expression binding */
-    bind();
+    bind( FALSE );
     fsm_var_bind();
   
     /* Perform race condition checking */
@@ -145,6 +145,9 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
     exit( 1 );
   }
   
+  /* Bind expressions to signals/functional units */
+  bind( TRUE );
+
   sim_add_statics();
 
   /* Read in contents of VCD file */
@@ -183,6 +186,10 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
 
 /*
  $Log$
+ Revision 1.28  2005/02/01 05:11:18  phase1geo
+ Updates to race condition checker to find blocking/non-blocking assignments in
+ statement block.  Regression still runs clean.
+
  Revision 1.27  2005/01/10 23:03:39  phase1geo
  Added code to properly report race conditions.  Added code to remove statement blocks
  from module when race conditions are found.

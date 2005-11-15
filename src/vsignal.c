@@ -98,12 +98,6 @@ void vsignal_db_write( vsignal* sig, FILE* file ) {
 
     vector_db_write( sig->value, file, (sig->name[0] == '#') );
 
-    curr = sig->exp_head;
-    while( curr != NULL ) {
-      fprintf( file, " %d", expression_get_id( curr->exp ) );
-      curr = curr->next;
-    }
-
     fprintf( file, "\n" );
 
   }
@@ -541,6 +535,11 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.9  2005/11/10 19:28:23  phase1geo
+ Updates/fixes for tasks/functions.  Also updated Tcl/Tk scripts for these changes.
+ Fixed bug with net_decl_assign statements -- the line, start column and end column
+ information was incorrect, causing problems with the GUI output.
+
  Revision 1.8  2005/11/08 23:12:10  phase1geo
  Fixes for function/task additions.  Still a lot of testing on these structures;
  however, regressions now pass again so we are checkpointing here.

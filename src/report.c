@@ -31,6 +31,7 @@
 #include "tcl_funcs.h"
 #include "info.h"
 #include "race.h"
+#include "binding.h"
 
 
 extern char        user_msg[USER_MSG_LENGTH];
@@ -635,10 +636,12 @@ int command_report( int argc, int last_arg, char** argv ) {
 
         if( report_instance ) {
           if( db_read( input_db, READ_MODE_REPORT_NO_MERGE ) ) {
+            bind( TRUE );
             report_generate( ofile );
           }
         } else {
           if( db_read( input_db, READ_MODE_REPORT_MOD_MERGE ) ) {
+            bind( TRUE );
             report_generate( ofile );
           }
         }
@@ -714,6 +717,10 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.44  2005/11/08 23:12:10  phase1geo
+ Fixes for function/task additions.  Still a lot of testing on these structures;
+ however, regressions now pass again so we are checkpointing here.
+
  Revision 1.43  2005/02/05 06:47:20  phase1geo
  Fixing bug with race condition output in instance reporting.  Changing default
  report output of race conditions to false and updating in-line documentation.

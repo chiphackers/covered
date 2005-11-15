@@ -72,6 +72,7 @@
 #include "util.h"
 #include "vector.h"
 #include "param.h"
+#include "statement.h"
 
 
 extern funit_inst* instance_root;
@@ -108,6 +109,7 @@ void bind_add( int type, const char* name, expression* exp, func_unit* funit ) {
   eb->name  = strdup_safe( name, __FILE__, __LINE__ );
   eb->funit = funit;
   eb->exp   = exp;
+  eb->fsm   = NULL;
   eb->next  = NULL;
   
   /* Add new signal/expression binding to linked list */
@@ -118,6 +120,32 @@ void bind_add( int type, const char* name, expression* exp, func_unit* funit ) {
     eb_tail       = eb;
   }
   
+}
+
+/*!
+ \param fsm_exp     Expression pertaining to an FSM input state that needs to be sized when
+                    its associated expression is bound to its signal
+ \param exp         Expression to match
+ \param curr_funit  Functional unit that the FSM expression resides in (this will be the same
+                    functional unit as the expression functional unit).
+
+ Searches the expression binding list for the entry that matches the given exp and curr_funit
+ parameters.  When the entry is found, the FSM expression is added to the exp_bind structure
+ to be sized when the expression is bound.
+*/
+void bind_append_fsm_expr( expression* fsm_exp, expression* exp, func_unit* curr_funit ) {
+
+  exp_bind* curr;
+
+  curr = eb_head;
+  while( (curr != NULL) && ((exp != curr->exp) || (curr_funit != curr->funit)) ) {
+    curr = curr->next;
+  }
+
+  assert( curr != NULL );
+
+  curr->fsm = fsm_exp;
+
 }
 
 /*!
@@ -186,12 +214,13 @@ void bind_remove( int id ) {
  signal neither exists or is an unused signal, it is considered to be an implicit signal
  and a 1-bit signal is created.
 */
-bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool implicit_allowed, bool fsm_bind ) {
+bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool implicit_allowed, bool fsm_bind, bool cdd_reading ) {
 
   bool       retval = TRUE;  /* Return value for this function */
   char*      tmpname;        /* Temporary name containing unused signal character */
   vsignal*   found_sig;      /* Pointer to found signal in design for the given name */
   func_unit* found_funit;    /* Pointer to found functional unit containing given signal */
+  statement* stmt;           /* Pointer to root statement for the given expression */
 
   /* Search for specified signal in current functional unit */
   if( !scope_find_signal( name, funit_exp, &found_sig, &found_funit ) ) {
@@ -247,6 +276,31 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool implic
     /* Set expression to point at signal */
     exp->sig = found_sig;
 
+    if( cdd_reading ) {
+
+      if( (exp->op == EXP_OP_SIG)        ||
+          (exp->op == EXP_OP_SBIT_SEL)   ||
+          (exp->op == EXP_OP_MBIT_SEL)   ||
+          (exp->op == EXP_OP_PARAM)      ||
+          (exp->op == EXP_OP_PARAM_SBIT) ||
+          (exp->op == EXP_OP_PARAM_MBIT) ) {
+        // vector_dealloc( exp->value );
+        expression_set_value( exp, found_sig->value );
+      }
+
+      if( ((exp->op == EXP_OP_SIG) ||
+           (exp->op == EXP_OP_SBIT_SEL) ||
+           (exp->op == EXP_OP_MBIT_SEL)) &&
+          ((stmt = expression_get_root_statement( exp )) != NULL) &&
+          ((stmt->exp->op == EXP_OP_EOR) ||
+           (stmt->exp->op == EXP_OP_AEDGE) ||
+           (stmt->exp->op == EXP_OP_PEDGE) ||
+           (stmt->exp->op == EXP_OP_NEDGE)) ) {
+        sig_link_add( found_sig, &(stmt->wait_sig_head), &(stmt->wait_sig_tail) );
+      }
+
+    }
+
   }
 
   return( retval );
@@ -256,15 +310,14 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool implic
 /*!
  \param type  Type of functional unit
 */
-bool bind_task_function( int type, char* name, expression* exp, func_unit* funit_exp ) {
+bool bind_task_function( int type, char* name, expression* exp, func_unit* funit_exp, bool cdd_reading ) {
 
-  bool        retval = TRUE;  /* Return value for this function */
-  stmt_iter   si;             /* Statement iterator used to find the head statement */
-  vsignal     sig;            /* Temporary signal for comparison purposes */
-  sig_link*   sigl;           /* Temporary signal link holder */
-  func_unit*  found_funit;    /* Pointer to found task/function functional unit */
-
-  printf( "In bind_task_function, type: %d, name: %s, exp: %d, funit_exp: %s\n", type, name, exp->id, funit_exp->name );
+  bool       retval = TRUE;  /* Return value for this function */
+  stmt_iter  si;             /* Statement iterator used to find the head statement */
+  vsignal    sig;            /* Temporary signal for comparison purposes */
+  sig_link*  sigl;           /* Temporary signal link holder */
+  func_unit* found_funit;    /* Pointer to found task/function functional unit */
+  statement* stmt;           /* Pointer to root statement for expression calling a function */
 
   assert( (type == FUNIT_FUNCTION) || (type == FUNIT_TASK) );
 
@@ -307,6 +360,22 @@ bool bind_task_function( int type, char* name, expression* exp, func_unit* funit
       /* Set expression to point at signal */
       exp->sig = sigl->sig;
 
+      if( cdd_reading ) {
+
+        /* Attach the signal's value to our expression value */
+        expression_set_value( exp, sigl->sig->value );
+
+        /* Add to wait list */
+        if( ((stmt = expression_get_root_statement( exp )) != NULL) &&
+            ((stmt->exp->op == EXP_OP_EOR) ||
+             (stmt->exp->op == EXP_OP_AEDGE) ||
+             (stmt->exp->op == EXP_OP_PEDGE) ||
+             (stmt->exp->op == EXP_OP_NEDGE)) ) {
+          sig_link_add( sigl->sig, &(stmt->wait_sig_head), &(stmt->wait_sig_tail) );
+        }
+
+      }
+
     }
 
   }
@@ -316,24 +385,30 @@ bool bind_task_function( int type, char* name, expression* exp, func_unit* funit
 }
 
 /*!
+ \param cdd_reading  Set to TRUE if we are binding after reading the CDD file; otherwise, set to FALSE.
+
  In the process of binding, we go through each element of the binding list,
  finding the signal to be bound in the specified tree, adding the expression
  to the signal's expression pointer list, and setting the expression vector pointer
  to point to the signal vector.
 */
-void bind() {
+void bind( bool cdd_reading ) {
   
-  funit_inst* funiti;        /* Pointer to found functional unit instance    */
-  exp_bind*   curr_eb;       /* Pointer to current expression binding        */
-  int         id;            /* Current expression id -- used for removal    */
-  mod_parm*   mparm;         /* Newly created module parameter               */
-  int         i;             /* Loop iterator                                */
-  int         ignore;        /* Number of instances to ignore                */
-  funit_inst* inst;          /* Pointer to current instance to modify        */
-  inst_parm*  curr_iparm;    /* Pointer to current instance parameter        */
-  bool        done = FALSE;  /* Specifies if the current signal is completed */
-  int         orig_width;    /* Original width of found signal               */
-  int         orig_lsb;      /* Original lsb of found signal                 */
+  funit_inst* funiti;               /* Pointer to found functional unit instance */
+  exp_bind*   curr_eb;              /* Pointer to current expression binding */
+  int         id;                   /* Current expression id -- used for removal */
+  mod_parm*   mparm;                /* Newly created module parameter */
+  int         i;                    /* Loop iterator */
+  int         ignore;               /* Number of instances to ignore */
+  funit_inst* inst;                 /* Pointer to current instance to modify */
+  inst_parm*  curr_iparm;           /* Pointer to current instance parameter */
+  bool        done = FALSE;         /* Specifies if the current signal is completed */
+  int         orig_width;           /* Original width of found signal */
+  int         orig_lsb;             /* Original lsb of found signal */
+  bool        bound;                /* Specifies if the current expression was successfully bound or not */
+  stmt_link*  unbound_head = NULL;  /* Head of list containing head statements of blocks containing unbound expressions */
+  stmt_link*  unbound_tail = NULL;  /* Tail of list containing head statements of blocks containing unbound expressions */
+  statement*  tmp_stmt;             /* Pointer to temporary statement */
     
   curr_eb = eb_head;
 
@@ -345,14 +420,40 @@ void bind() {
     /* Handle signal binding */
     if( curr_eb->type == 0 ) {
 
-      bind_signal( curr_eb->name, curr_eb->exp, curr_eb->funit, FALSE, FALSE );
+      /*
+       Bind the signal.  If it is unsuccessful, we need to remove the statement that this expression
+       is a part of.
+      */
+      bound = bind_signal( curr_eb->name, curr_eb->exp, curr_eb->funit, FALSE, FALSE, cdd_reading );
+
+      /* If an FSM expression is attached, size it now */
+      if( curr_eb->fsm != NULL ) {
+        curr_eb->fsm->value = vector_create( curr_eb->exp->value->width, TRUE );
+      }
 
     /* Otherwise, handle function/task binding */
     } else {
 
-      /* Bind the expression to the task/function */
-      bind_task_function( curr_eb->type, curr_eb->name, curr_eb->exp, curr_eb->funit );
+      /*
+       Bind the expression to the task/function.  If it is unsuccessful, we need to remove the statement
+       that this expression is a part of.
+      */
+      bound = bind_task_function( curr_eb->type, curr_eb->name, curr_eb->exp, curr_eb->funit, cdd_reading );
 
+    }
+
+    /*
+     If the expression was unable to be bound, put its statement block in a list to be removed after
+     binding has been completed.
+    */
+    if( !bound ) {
+      if( (tmp_stmt = expression_get_root_statement( curr_eb->exp )) != NULL ) {
+        tmp_stmt = statement_find_head_statement( tmp_stmt, curr_eb->funit->stmt_head );
+        assert( tmp_stmt != NULL );
+        if( stmt_link_find( tmp_stmt->exp->id, unbound_head ) == NULL ) {
+          stmt_link_add_tail( tmp_stmt, &unbound_head, &unbound_tail );
+        }
+      }
     }
 
 #ifdef SKIP
@@ -407,11 +508,21 @@ void bind() {
     bind_remove( id );
 
   }
-  
+
+  /* Remove all statement blocks that contain unbindable expressions -- we cannot accurately simulate these */
+  while( unbound_head != NULL ) {
+    db_remove_statement( unbound_head->stmt );
+    stmt_link_unlink( unbound_head->stmt, &unbound_head, &unbound_tail );
+  }
+
 }
 
 /* 
  $Log$
+ Revision 1.34  2005/11/11 22:53:40  phase1geo
+ Updated bind process to allow binding of structures from different hierarchies.
+ Added task port signals to get added.
+
  Revision 1.33  2005/11/10 23:27:37  phase1geo
  Adding scope files to handle scope searching.  The functions are complete (not
  debugged) but are not as of yet used anywhere in the code.  Added new func2 diagnostic
