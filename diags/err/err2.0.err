@@ -1,0 +1,29 @@
+
+Covered covered-20050208 -- Verilog Code Coverage Utility
+Written by Trevor Williams  (trevorw@charter.net)
+Freely distributable under the GPL license
+
+Reading design...
+Parsing file 'err2.0.v'
+In db_add_module, module: main, file: err2.0.v, start_line: 1
+In db_add_signal, signal: b
+In db_create_expression, right: 0, left: 0, id: 1, op: 1, lhs: 0, line: 4, first: 9, last: 9
+In db_add_signal, signal: a
+In db_create_expression, right: 0, left: 0, id: 2, op: 1, lhs: 1, line: 4, first: 5, last: 5
+In db_create_expression, right: 1, left: 2, id: 3, op: 54, lhs: 0, line: 4, first: 5, last: 9
+In db_create_statement, id: 3, line: 4
+In db_connect_statement_true, id: 3, next: 3
+In db_connect_statement_false, id: 3, next: 3
+In db_add_expression, id: 3, op: 54, line: 4
+In db_add_expression, id: 1, op: 1, line: 4
+In db_add_expression, id: 2, op: 1, line: 4
+In db_add_statement, id: 3, start id: 3
+In db_end_module, end_line: 14
+========  Completed design parsing  ========
+
+
+Checking for race conditions...
+========  Completed race condition checking  ========
+
+ERROR!  Could not open ./tmp/err2.0.cdd for writing (file: db.c, line: 132)
+ERROR!  Unable to write database file (file: parse.c, line: 114)

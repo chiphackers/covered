@@ -45,7 +45,7 @@ $(DIAGLIST):
 	-@$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@.rptI $@.cdd
 	-@$(COVERED) $(COVERED_GFLAG) report -w -d v -o $@.rptWM $@.cdd
 	-@$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $@.rptWI $@.cdd
-	@./check_test $@ 1
+	@./check_test $@ 1 0
 
 $(RACELIST):
 	@echo Running $@
@@ -56,7 +56,7 @@ $(RACELIST):
 	-@$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -i -o $@.rptI $@.cdd
 	-@$(COVERED) $(COVERED_GFLAG) report -w -d v -m ltcfr -o $@.rptWM $@.cdd
 	-@$(COVERED) $(COVERED_GFLAG) report -w -d v -m ltcfr -i -o $@.rptWI $@.cdd
-	@./check_test $@ 1
+	@./check_test $@ 1 0
 
 $(MERGELIST):
 	@echo Running $@
@@ -67,7 +67,7 @@ $(MERGELIST):
 	-@$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@a.rptI $@a.cdd
 	-@$(COVERED) $(COVERED_GFLAG) report -w -d v -o $@a.rptWM $@a.cdd
 	-@$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $@a.rptWI $@a.cdd
-	@./check_test $@a 0
+	@./check_test $@a 0 0
 	@$(VERILOG) $(VERILOG_FLAGS) $@b.v
 	@$(VERILOG_CMD)
 	@$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@b.cfg
@@ -75,19 +75,20 @@ $(MERGELIST):
 	-@$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@b.rptI $@b.cdd
 	-@$(COVERED) $(COVERED_GFLAG) report -w -d v -o $@b.rptWM $@b.cdd
 	-@$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $@b.rptWI $@b.cdd
-	@./check_test $@b 0
+	@./check_test $@b 0 0
 	@$(COVERED) $(COVERED_GFLAG) merge -o $@.cdd $@a.cdd $@b.cdd
 	-@$(COVERED) $(COVERED_GFLAG) report -d v -o $@.rptM $@.cdd
 	-@$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@.rptI $@.cdd
 	-@$(COVERED) $(COVERED_GFLAG) report -w -d v -o $@.rptWM $@.cdd
 	-@$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $@.rptWI $@.cdd
-	@./check_test $@ 1
+	@./check_test $@ 1 0
 
 $(ERRSCORELIST):
 	@echo Running $@
 	@$(VERILOG) $(VERILOG_FLAGS) $@.v
 	@$(VERILOG_CMD)
 	@$(COVERED) -D score -f ../regress/$@.cfg | tee $@.err
+	@./check_test $@ 1 1
 
 $(ERRMERGELIST):
 	@echo Running $@
@@ -98,7 +99,7 @@ $(ERRMERGELIST):
 	@$(VERILOG_CMD)
 	@$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@b.cfg
 	@$(COVERED) -D merge -o $@.cdd $@a.cdd $@b.cdd | tee $@.err
-	@./check_err $@
+	@./check_test $@ 1 1
 
 $(ERRREPORTLIST):
 	@echo Running $@
@@ -106,6 +107,7 @@ $(ERRREPORTLIST):
 	@$(VERILOG_CMD)
 	@$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@.cfg
 	@$(COVERED) -D report -d v $@.cdd | tee $@.err
+	@./check_test $@ 1 1
 
 $(COVERED):
 	cd $(COVERED_SRC); make

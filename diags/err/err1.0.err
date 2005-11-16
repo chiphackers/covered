@@ -1,0 +1,88 @@
+
+Covered covered-20050208 -- Verilog Code Coverage Utility
+Written by Trevor Williams  (trevorw@charter.net)
+Freely distributable under the GPL license
+
+Reading design...
+Parsing file 'err1.0.v'
+In db_add_module, module: main, file: err1.0.v, start_line: 1
+In db_add_signal, signal: clk
+In db_add_signal, signal: reset
+In db_add_signal, signal: head
+In db_add_signal, signal: tail
+In db_add_signal, signal: valid
+In db_add_instance, instance: fsm, module: fsma
+In db_end_module, end_line: 39
+In db_add_module, module: fsma, file: err1.0.v, start_line: 42
+In db_add_signal, signal: clock
+In db_add_signal, signal: reset
+In db_add_signal, signal: head
+In db_add_signal, signal: tail
+In db_add_signal, signal: valid
+In db_create_expression, right: 0, left: 0, id: 1, op: 0, lhs: 0, line: 56, first: 23, last: 27
+In db_add_declared_param, param: STATE_IDLE, expr: 1
+In expression_operate, id: 1, op: 0, line: 56
+In db_create_expression, right: 0, left: 0, id: 2, op: 0, lhs: 0, line: 57, first: 23, last: 27
+In db_add_declared_param, param: STATE_HEAD, expr: 2
+In expression_operate, id: 2, op: 0, line: 57
+In db_create_expression, right: 0, left: 0, id: 3, op: 0, lhs: 0, line: 58, first: 23, last: 27
+In db_add_declared_param, param: STATE_DATA, expr: 3
+In expression_operate, id: 3, op: 0, line: 58
+In db_create_expression, right: 0, left: 0, id: 4, op: 0, lhs: 0, line: 59, first: 23, last: 27
+In db_add_declared_param, param: STATE_TAIL, expr: 4
+In expression_operate, id: 4, op: 0, line: 59
+In db_add_signal, signal: state
+In db_add_signal, signal: next_state
+In db_create_expression, right: 0, left: 0, id: 5, op: 1, lhs: 0, line: 64, first: 17, last: 21
+In db_create_expression, right: 0, left: 0, id: 6, op: 42, lhs: 0, line: 64, first: 9, last: 15
+In db_create_expression, right: 5, left: 6, id: 7, op: 39, lhs: 0, line: 64, first: 9, last: 21
+In db_create_expression, right: 0, left: 0, id: 8, op: 1, lhs: 1, line: 64, first: 24, last: 28
+In db_create_expression, right: 0, left: 0, id: 9, op: 1, lhs: 0, line: 64, first: 33, last: 37
+In db_create_expression, right: 0, left: 0, id: 10, op: 1, lhs: 0, line: 64, first: 41, last: 50
+  Switching to parameter operation: 50
+In db_create_expression, right: 0, left: 0, id: 11, op: 1, lhs: 0, line: 64, first: 54, last: 63
+In db_create_expression, right: 11, left: 10, id: 12, op: 26, lhs: 0, line: 64, first: 33, last: 50
+In db_create_expression, right: 12, left: 9, id: 13, op: 25, lhs: 0, line: 64, first: 33, last: 63
+In db_create_expression, right: 13, left: 8, id: 14, op: 55, lhs: 0, line: 64, first: 24, last: 63
+In db_create_statement, id: 14, line: 64
+In db_add_expression, id: 14, op: 55, line: 64
+In db_add_expression, id: 13, op: 25, line: 64
+In db_add_expression, id: 12, op: 26, line: 64
+In db_add_expression, id: 11, op: 1, line: 64
+In db_add_expression, id: 10, op: 50, line: 64
+In db_add_expression, id: 9, op: 1, line: 64
+In db_add_expression, id: 8, op: 1, line: 64
+In db_create_statement, id: 7, line: 64
+In db_add_expression, id: 7, op: 39, line: 64
+In db_add_expression, id: 5, op: 1, line: 64
+In db_add_expression, id: 6, op: 42, line: 64
+In db_statement_connect, curr_stmt: 7, next_stmt: 14
+In db_statement_connect, curr_stmt: 7, next_stmt: 7
+In db_statement_set_stop, stmt: 7, next_stmt: 7
+In db_add_statement, id: 7, start id: 7
+In db_add_statement, id: 14, start id: 7
+In db_create_attr_param, name: covered_fsm
+In db_create_attr_param, name: channel
+In db_create_expression, right: 0, left: 0, id: 15, op: 0, lhs: 0, line: 66, first: 28, last: 34
+In db_create_attr_param, name: is, expr: 15
+In db_create_expression, right: 0, left: 0, id: 16, op: 0, lhs: 0, line: 66, first: 40, last: 57
+In db_create_attr_param, name: os, expr: 16
+In db_create_expression, right: 0, left: 0, id: 17, op: 0, lhs: 0, line: 67, first: 31, last: 54
+In db_create_attr_param, name: trans, expr: 17
+In db_create_expression, right: 0, left: 0, id: 18, op: 0, lhs: 0, line: 68, first: 31, last: 54
+In db_create_attr_param, name: trans, expr: 18
+In db_create_expression, right: 0, left: 0, id: 19, op: 0, lhs: 0, line: 69, first: 31, last: 54
+In db_create_attr_param, name: trans, expr: 19
+In db_create_expression, right: 0, left: 0, id: 20, op: 0, lhs: 0, line: 70, first: 31, last: 54
+In db_create_attr_param, name: trans, expr: 20
+In db_create_expression, right: 0, left: 0, id: 21, op: 0, lhs: 0, line: 71, first: 31, last: 54
+In db_create_attr_param, name: trans, expr: 21
+In db_create_expression, right: 0, left: 0, id: 22, op: 0, lhs: 0, line: 72, first: 31, last: 54
+In db_create_attr_param, name: trans, expr: 22
+In db_create_expression, right: 0, left: 0, id: 23, op: 0, lhs: 0, line: 73, first: 31, last: 54
+In db_create_attr_param, name: trans, expr: 23
+In db_create_expression, right: 0, left: 0, id: 24, op: 0, lhs: 0, line: 74, first: 31, last: 54
+In db_create_attr_param, name: trans, expr: 24
+In db_parse_attribute
+ERROR!  Unable to find specified FSM signal "foo" in module "fsma" in file err1.0.v (file: binding.c, line: 240)
+ERROR!  Unable to bind FSM-specified signal (foo) to expression (26) in module (fsma) (file: fsm_var.c, line: 187)

@@ -7,10 +7,12 @@
 
 $test   = $ARGV[0];
 $rm_cdd = $ARGV[1];
+$err    = $ARGV[2];
 
 # Defines
 $CDD_DIR    = "../cdd";
 $RPT_DIR    = "../rpt";
+$ERR_DIR    = "../err";
 $RPT_OUTPUT = "regress.output";
 
 # Open report results file if it currently exists and accumulate info.
@@ -35,39 +37,52 @@ if( open( RPT_RESULTS, "${RPT_OUTPUT}" ) > 0 ) {
 
 }
 
-# Check CDD file
-$check1 = system( "diff ${test}.cdd ${CDD_DIR}/${test}.cdd" );
-if( ($check1 == 0) && ($rm_cdd == 1) ) {
-  system( "rm ${test}.cdd" ) && die;
-}
+# If this is not an error test, check the CDD and report files */
+if( $err == 0 ) {
 
-# Check module report
-$check2 = system( "diff ${test}.rptM ${RPT_DIR}/${test}.rptM" );
-if( $check2 == 0 ) {
-  system( "rm ${test}.rptM" ) && die;
-}
+  # Check CDD file
+  $check1 = system( "diff ${test}.cdd ${CDD_DIR}/${test}.cdd" );
+  if( ($check1 == 0) && ($rm_cdd == 1) ) {
+    system( "rm ${test}.cdd" ) && die;
+  }
 
-# Check instance report
-$check3 = system( "diff ${test}.rptI ${RPT_DIR}/${test}.rptI" );
-if( $check3 == 0 ) {
-  system( "rm ${test}.rptI" ) && die;
-}
+  # Check module report
+  $check2 = system( "diff ${test}.rptM ${RPT_DIR}/${test}.rptM" );
+  if( $check2 == 0 ) {
+    system( "rm ${test}.rptM" ) && die;
+  }
 
-# Check module with line-width report
-$check4 = system( "diff ${test}.rptWM ${RPT_DIR}/${test}.rptWM" );
-if( $check4 == 0 ) {
-  system( "rm ${test}.rptWM" ) && die;
-}
+  # Check instance report
+  $check3 = system( "diff ${test}.rptI ${RPT_DIR}/${test}.rptI" );
+  if( $check3 == 0 ) {
+    system( "rm ${test}.rptI" ) && die;
+  }
 
-# Check instance with line-width report
-$check5 = system( "diff ${test}.rptWI ${RPT_DIR}/${test}.rptWI" );
-if( $check5 == 0 ) {
-  system( "rm ${test}.rptWI" ) && die;
+  # Check module with line-width report
+  $check4 = system( "diff ${test}.rptWM ${RPT_DIR}/${test}.rptWM" );
+  if( $check4 == 0 ) {
+    system( "rm ${test}.rptWM" ) && die;
+  }
+
+  # Check instance with line-width report
+  $check5 = system( "diff ${test}.rptWI ${RPT_DIR}/${test}.rptWI" );
+  if( $check5 == 0 ) {
+    system( "rm ${test}.rptWI" ) && die;
+  }
+
+} else {
+
+  $check1 = system( "diff ${test}.err ${ERR_DIR}/${test}.err" );
+  if( $check1 == 0 ) {
+    system( "rm ${test}.err" ) && die;
+  }
+
 }
 
 open( RPT_RESULTS, ">${RPT_OUTPUT}" ) || die "Can't open ${RPT_OUTPUT} for writing!\n";
 
-if( ($check1 > 0) || ($check2 > 0) || ($check3 > 0) || ($check4 > 0) || ($check5 > 0) ) {
+if( (($err == 0) && (($check1 > 0) || ($check2 > 0) || ($check3 > 0) || ($check4 > 0) || ($check5 > 0))) ||
+    (($err == 1) && ($check1 > 0)) ) {
   print "  Checking output results         -- FAILED\n";
   $failed++;
 } else {

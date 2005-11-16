@@ -69,7 +69,8 @@ MERGE1        = merge1         fsm2
 RACELIST      = race1          race1.1        race1.2        race2.1        race2.2 \
                 race2.3        race2.4
 
-ERRSCORE      = err1.0         err2.0
+ERRSCORE      = err1.0         err2.0         func3          func3.1        func3.2 \
+                func3.3        func3.4        func3.5        func3.6
 ERRMERGE      =
 ERRREPORT     = err2.1
            

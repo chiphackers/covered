@@ -1,0 +1,29 @@
+
+Covered covered-20050208 -- Verilog Code Coverage Utility
+Written by Trevor Williams  (trevorw@charter.net)
+Freely distributable under the GPL license
+
+Reading design...
+Parsing file 'func3.3.v'
+In db_add_module, module: main, file: func3.3.v, start_line: 1
+In db_create_expression, right: 0, left: 0, id: 1, op: 0, lhs: 0, line: 3, first: 27, last: 30
+In db_create_expression, right: 0, left: 1, id: 2, op: 57, lhs: 0, line: 3, first: 15, last: 32
+In db_add_signal, signal: a
+In db_create_expression, right: 0, left: 0, id: 3, op: 1, lhs: 1, line: 3, first: 11, last: 11
+In db_create_expression, right: 2, left: 3, id: 4, op: 54, lhs: 0, line: 3, first: 11, last: 32
+In db_create_statement, id: 4, line: 3
+In db_connect_statement_true, id: 4, next: 4
+In db_connect_statement_false, id: 4, next: 4
+In db_add_expression, id: 4, op: 54, line: 3
+In db_add_expression, id: 2, op: 57, line: 3
+In db_add_expression, id: 1, op: 0, line: 3
+In db_add_expression, id: 3, op: 1, line: 3
+In db_add_statement, id: 4, start id: 4
+In db_add_function_task, function: return_two, file: func3.3.v, start_line: 12
+In db_add_instance, instance: return_two, function: return_two
+In db_add_signal, signal: return_two
+In db_add_signal, signal: a
+In db_create_expression, right: 0, left: 0, id: 5, op: 1, lhs: 0, line: 15, first: 4, last: 4
+In db_create_expression, right: 0, left: 0, id: 6, op: 42, lhs: 0, line: 15, first: 4, last: 4
+In db_create_expression, right: 5, left: 6, id: 7, op: 41, lhs: 0, line: 15, first: 4, last: 4
+ERROR!  Attempting to use a delay, task call, non-blocking assign or event controls in function return_two, file func3.3.v, line 15 (file: db.c, line: 891)
