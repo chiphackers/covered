@@ -73,6 +73,7 @@
 #include "vector.h"
 #include "param.h"
 #include "statement.h"
+#include "scope.h"
 
 
 extern funit_inst* instance_root;
@@ -201,7 +202,6 @@ void bind_remove( int id ) {
  \param name              String name of signal to bind to specified expression.
  \param exp               Pointer to expression to bind.
  \param funit_exp         Pointer to functional unit containing expression.
- \param implicit_allowed  If set to TRUE, creates any signals that are implicitly defined.
  \param fsm_bind          If set to TRUE, handling binding for FSM binding.
 
  \return Returns TRUE if bind occurred successfully; otherwise, returns FALSE.
@@ -214,7 +214,7 @@ void bind_remove( int id ) {
  signal neither exists or is an unused signal, it is considered to be an implicit signal
  and a 1-bit signal is created.
 */
-bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool implicit_allowed, bool fsm_bind, bool cdd_reading ) {
+bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bind, bool cdd_reading ) {
 
   bool       retval = TRUE;  /* Return value for this function */
   char*      tmpname;        /* Temporary name containing unused signal character */
@@ -223,13 +223,13 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool implic
   statement* stmt;           /* Pointer to root statement for the given expression */
 
   /* Search for specified signal in current functional unit */
-  if( !scope_find_signal( name, funit_exp, &found_sig, &found_funit ) ) {
+  if( !scope_find_signal( name, funit_exp, &found_sig, &found_funit, exp->line ) ) {
 
     /* Check to see if it is an unused signal */
     tmpname = (char*)malloc_safe( (strlen( name ) + 2), __FILE__, __LINE__ );
     snprintf( tmpname, (strlen( name ) + 2), "!%s", name );
 
-    if( !scope_find_signal( tmpname, found_funit, &found_sig, &found_funit ) ) {
+    if( !scope_find_signal( tmpname, found_funit, &found_sig, &found_funit, exp->line ) ) {
 
       /* If we are binding an FSM, output an error message */
       if( fsm_bind ) {
@@ -239,16 +239,6 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool implic
                   funit_exp->filename );
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         retval = FALSE;
-
-      /* If implicit signal creation is not allowed, output an error message */
-      } else if( !implicit_allowed || (funit_exp != found_funit) ) {
-        /* Bad hierarchical reference -- user error  -- unachievable code due to unsuppported use of hierarchical referencing */
-        snprintf( user_msg, USER_MSG_LENGTH, "Hierarchical reference to undefined signal \"%s\" in %s, line %d",
-                  name,
-                  funit_exp->filename,
-                  exp->line );
-        print_output( user_msg, FATAL, __FILE__, __LINE__ );
-        exit( 1 );
 
       /* Otherwise, implicitly create the signal and bind to it */
       } else {
@@ -321,7 +311,7 @@ bool bind_task_function( int type, char* name, expression* exp, func_unit* funit
 
   assert( (type == FUNIT_FUNCTION) || (type == FUNIT_TASK) );
 
-  if( !scope_find_task_function( name, type, funit_exp, &found_funit ) ) {
+  if( !scope_find_task_function( name, type, funit_exp, &found_funit, exp->line ) ) {
 
     /* Bad hierarchical reference -- user error  -- unachievable code due to unsuppported use of hierarchical referencing */
     snprintf( user_msg, USER_MSG_LENGTH, "Hierarchical reference to undefined %s \"%s\" in %s, line %d",
@@ -424,7 +414,7 @@ void bind( bool cdd_reading ) {
        Bind the signal.  If it is unsuccessful, we need to remove the statement that this expression
        is a part of.
       */
-      bound = bind_signal( curr_eb->name, curr_eb->exp, curr_eb->funit, FALSE, FALSE, cdd_reading );
+      bound = bind_signal( curr_eb->name, curr_eb->exp, curr_eb->funit, FALSE, cdd_reading );
 
       /* If an FSM expression is attached, size it now */
       if( curr_eb->fsm != NULL ) {
@@ -519,6 +509,13 @@ void bind( bool cdd_reading ) {
 
 /* 
  $Log$
+ Revision 1.35  2005/11/15 23:08:02  phase1geo
+ Updates for new binding scheme.  Binding occurs for all expressions, signals,
+ FSMs, and functional units after parsing has completed or after database reading
+ has been completed.  This should allow for any hierarchical reference or scope
+ issues to be handled correctly.  Regression mostly passes but there are still
+ a few failures at this point.  Checkpointing.
+
  Revision 1.34  2005/11/11 22:53:40  phase1geo
  Updated bind process to allow binding of structures from different hierarchies.
  Added task port signals to get added.

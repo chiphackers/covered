@@ -21,7 +21,7 @@ void bind_append_fsm_expr( expression* fsm_exp, expression* exp, func_unit* curr
 void bind_remove( int id );
 
 /*! \brief Binds a signal to an expression */
-bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool implicit_allowed, bool fsm_bind, bool cdd_reading );
+bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bind, bool cdd_reading );
 
 /*! \brief Binds a function or task to an expression */
 bool bind_task_function( int type, char* name, expression* exp, func_unit* funit_exp, bool cdd_reading );
@@ -32,6 +32,13 @@ void bind( bool cdd_reading );
 
 /* 
  $Log$
+ Revision 1.15  2005/11/15 23:08:02  phase1geo
+ Updates for new binding scheme.  Binding occurs for all expressions, signals,
+ FSMs, and functional units after parsing has completed or after database reading
+ has been completed.  This should allow for any hierarchical reference or scope
+ issues to be handled correctly.  Regression mostly passes but there are still
+ a few failures at this point.  Checkpointing.
+
  Revision 1.14  2005/11/11 22:53:40  phase1geo
  Updated bind process to allow binding of structures from different hierarchies.
  Added task port signals to get added.

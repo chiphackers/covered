@@ -181,7 +181,7 @@ bool fsm_var_bind_expr( char* sig_name, expression* expr, char* funit_name ) {
   funit.type = FUNIT_MODULE;
 
   if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
-    if( !bind_signal( sig_name, expr, funitl->funit, FALSE, TRUE, FALSE ) ) {
+    if( !bind_signal( sig_name, expr, funitl->funit, TRUE, FALSE ) ) {
       snprintf( user_msg, USER_MSG_LENGTH, "Unable to bind FSM-specified signal (%s) to expression (%d) in module (%s)",
                 sig_name, expr->id, funit_name );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
@@ -468,6 +468,13 @@ void fsm_var_remove( fsm_var* fv ) {
 
 /*
  $Log$
+ Revision 1.19  2005/11/15 23:08:02  phase1geo
+ Updates for new binding scheme.  Binding occurs for all expressions, signals,
+ FSMs, and functional units after parsing has completed or after database reading
+ has been completed.  This should allow for any hierarchical reference or scope
+ issues to be handled correctly.  Regression mostly passes but there are still
+ a few failures at this point.  Checkpointing.
+
  Revision 1.18  2005/11/11 22:53:40  phase1geo
  Updated bind process to allow binding of structures from different hierarchies.
  Added task port signals to get added.

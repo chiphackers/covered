@@ -66,7 +66,7 @@ func_unit* scope_find_funit_from_scope( char* scope, func_unit* curr_funit ) {
  \return
 
 */
-bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, func_unit** found_funit ) {
+bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, func_unit** found_funit, int line ) {
 
   vsignal    sig;       /* Temporary holder for signal */
   sig_link*  sigl;      /* Pointer to current signal link */
@@ -90,8 +90,8 @@ bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, 
     /* Get the functional unit that contains this signal */
     if( (*found_funit = scope_find_funit_from_scope( scope, curr_funit )) == NULL ) {
 
-      snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined signal hierarchy (%s) in %s %s, file %s",
-                name, get_funit_type( curr_funit->type ), curr_funit->name, curr_funit->filename );
+      snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined signal hierarchy (%s) in %s %s, file %s, line %d",
+                name, get_funit_type( curr_funit->type ), curr_funit->name, curr_funit->filename, line );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       exit( 1 );
  
@@ -130,7 +130,7 @@ bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, 
 
  TBD
 */
-bool scope_find_task_function( char* name, int type, func_unit* curr_funit, func_unit** found_funit ) {
+bool scope_find_task_function( char* name, int type, func_unit* curr_funit, func_unit** found_funit, int line ) {
 
   func_unit   funit;   /* Temporary holder of task */
   funit_link* funitl;  /* Pointer to current functional unit link */
@@ -150,8 +150,8 @@ bool scope_find_task_function( char* name, int type, func_unit* curr_funit, func
 
     if( (*found_funit = scope_find_funit_from_scope( name, curr_funit )) == NULL ) {
 
-      snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined %s hierarchy in %s %s, file %s",
-                get_funit_type( type ), get_funit_type( curr_funit->type ), name, curr_funit->filename );
+      snprintf( user_msg, USER_MSG_LENGTH, "Referencing undefined %s hierarchy in %s %s, file %s, line %d",
+                get_funit_type( type ), get_funit_type( curr_funit->type ), name, curr_funit->filename, line );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       exit( 1 );
 
@@ -179,6 +179,10 @@ bool scope_find_task_function( char* name, int type, func_unit* curr_funit, func
 
 
 /* $Log$
+/* Revision 1.2  2005/11/11 22:53:40  phase1geo
+/* Updated bind process to allow binding of structures from different hierarchies.
+/* Added task port signals to get added.
+/*
 /* Revision 1.1  2005/11/10 23:27:37  phase1geo
 /* Adding scope files to handle scope searching.  The functions are complete (not
 /* debugged) but are not as of yet used anywhere in the code.  Added new func2 diagnostic
