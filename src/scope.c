@@ -167,6 +167,7 @@ bool scope_find_task_function( char* name, int type, func_unit* curr_funit, func
   /* Otherwise, look in the parent module for the task */
   } else {
 
+    assert( (*found_funit)->tf_head != NULL );
     funitl = funit_link_find( &funit, (*found_funit)->tf_head->funit->tf_head );
 
   }
@@ -179,6 +180,9 @@ bool scope_find_task_function( char* name, int type, func_unit* curr_funit, func
 
 
 /* $Log$
+/* Revision 1.3  2005/11/16 05:41:31  phase1geo
+/* Fixing implicit signal creation in binding functions.
+/*
 /* Revision 1.2  2005/11/11 22:53:40  phase1geo
 /* Updated bind process to allow binding of structures from different hierarchies.
 /* Added task port signals to get added.

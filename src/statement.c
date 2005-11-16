@@ -130,8 +130,6 @@ statement* statement_create( expression* exp ) {
   stmt->wait_sig_tail        = NULL;
   stmt->next_true            = NULL;
   stmt->next_false           = NULL;
-  stmt->tf_exp_head          = NULL;
-  stmt->tf_exp_tail          = NULL;
 
   return( stmt );
 
@@ -237,12 +235,6 @@ void statement_db_write( statement* stmt, FILE* ofile ) {
     ((stmt->next_false  == NULL) ? 0 : stmt->next_false->exp->id)
   );
 
-  expl = stmt->tf_exp_head;
-  while( expl != NULL ) {
-    fprintf( ofile, " %d", expl->exp->id );
-    expl = expl->next;
-  }
-
   fprintf( ofile, "\n" );
 
 }
@@ -257,7 +249,7 @@ void statement_db_write( statement* stmt, FILE* ofile ) {
  Reads in the contents of the statement from the specified line, creates
  a statement structure to hold the contents.
 */
-bool statement_db_read( char** line, func_unit* curr_funit, func_unit* last_funit, int read_mode ) {
+bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) {
 
   bool       retval = TRUE;  /* Return value of this function                                          */
   int        id;             /* ID of root expression that is associated with this statement           */
@@ -315,24 +307,6 @@ bool statement_db_read( char** line, func_unit* curr_funit, func_unit* last_funi
         }
       }
 
-      /* Connect ourselves up to all task/function call expressions that point to us */
-      while( sscanf( *line, "%d%n", &tf_call_id, &chars_read ) == 1 ) {
-        *line = *line + chars_read;
-
-        /* Find expression in current functional unit and add it to vsignal list */
-        tmpexp.id = tf_call_id;
-
-        if( (expl = exp_link_find( &tmpexp, last_funit->exp_head )) != NULL ) {
-          exp_link_add( expl->exp, &(stmt->tf_exp_head), &(stmt->tf_exp_tail) );
-          expl->exp->stmt = stmt;
-        } else {
-          snprintf( user_msg, USER_MSG_LENGTH, "Expression %d not found for statement %d", tmpexp.id, stmt->exp->id );
-          print_output( user_msg, FATAL, __FILE__, __LINE__ );
-          retval = FALSE;
-          exit( 1 );
-        }
-      }
-
       /* Add statement to functional unit statement list */
       if( (read_mode == READ_MODE_MERGE_NO_MERGE) || (read_mode == READ_MODE_MERGE_INST_MERGE) ) {
         stmt_link_add_tail( stmt, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
@@ -340,8 +314,14 @@ bool statement_db_read( char** line, func_unit* curr_funit, func_unit* last_funi
         stmt_link_add_head( stmt, &(curr_funit->stmt_head), &(curr_funit->stmt_tail) );
       }
 
-      /* Possibly add statement to presimulation queue */
-      sim_add_stmt_to_queue( stmt );
+      /*
+       Possibly add statement to presimulation queue (if the current functional unit is a task
+       or function, do not add this to the presimulation queue (this will be added when the expression
+       is called.
+      */
+      if( (curr_funit->type == FUNIT_MODULE) || (curr_funit->type == FUNIT_NAMED_BLOCK) ) {
+        sim_add_stmt_to_queue( stmt );
+      }
 
     }
 
@@ -677,6 +657,13 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.54  2005/11/15 23:08:02  phase1geo
+ Updates for new binding scheme.  Binding occurs for all expressions, signals,
+ FSMs, and functional units after parsing has completed or after database reading
+ has been completed.  This should allow for any hierarchical reference or scope
+ issues to be handled correctly.  Regression mostly passes but there are still
+ a few failures at this point.  Checkpointing.
+
  Revision 1.53  2005/11/08 23:12:10  phase1geo
  Fixes for function/task additions.  Still a lot of testing on these structures;
  however, regressions now pass again so we are checkpointing here.

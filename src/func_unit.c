@@ -546,33 +546,6 @@ bool funit_db_replace( func_unit* base, FILE* file ) {
 }
 
 /*!
- \param mod   Pointer to module to search for the given statement.
- \param stmt  Pointer to statement to search for.
-
- \return Returns a pointer to the functional unit (task/function) that contains the given
-         statement; otherwise, return NULL if this statement could not be found.
-
- Given the specified module, search all task/function functional units within that module
- for the given statement.  
-*/
-func_unit* funit_find_tf_by_statement( func_unit* mod, statement* stmt ) {
-
-  funit_link* tfl;  /* Pointer to current functional unit link being checked */
-
-  assert( mod != NULL );
-  assert( mod->type == FUNIT_MODULE );
-  assert( stmt != NULL );
-
-  tfl = mod->tf_head;
-  while( (tfl != NULL) && (stmt_link_find( stmt->exp->id, tfl->funit->stmt_head ) == NULL) ) {
-    tfl = tfl->next;
-  }
-
-  return( (tfl == NULL) ? NULL : tfl->funit );
-
-}
-
-/*!
  \param id  Expression/statement ID to search for
  
  \return Returns a pointer to the functional unit that contains the specified expression/statement
@@ -730,6 +703,13 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.2  2005/11/15 23:08:02  phase1geo
+ Updates for new binding scheme.  Binding occurs for all expressions, signals,
+ FSMs, and functional units after parsing has completed or after database reading
+ has been completed.  This should allow for any hierarchical reference or scope
+ issues to be handled correctly.  Regression mostly passes but there are still
+ a few failures at this point.  Checkpointing.
+
  Revision 1.1  2005/11/08 23:12:09  phase1geo
  Fixes for function/task additions.  Still a lot of testing on these structures;
  however, regressions now pass again so we are checkpointing here.

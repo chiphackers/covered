@@ -1413,8 +1413,6 @@ struct statement_s {
   sig_link*   wait_sig_tail;         /*!< Pointer to tail of wait event signal list                    */
   statement*  next_true;             /*!< Pointer to next statement to run if expression tree non-zero */
   statement*  next_false;            /*!< Pointer to next statement to run if next_true not picked     */
-  exp_link*   tf_exp_head;           /*!< Pointer to head of task/function call expression list        */
-  exp_link*   tf_exp_tail;           /*!< Pointer to tail of task/function call expression list        */
 };
 
 struct sig_link_s {
@@ -1629,6 +1627,13 @@ struct stmt_blk_s {
 
 /*
  $Log$
+ Revision 1.127  2005/11/15 23:08:02  phase1geo
+ Updates for new binding scheme.  Binding occurs for all expressions, signals,
+ FSMs, and functional units after parsing has completed or after database reading
+ has been completed.  This should allow for any hierarchical reference or scope
+ issues to be handled correctly.  Regression mostly passes but there are still
+ a few failures at this point.  Checkpointing.
+
  Revision 1.126  2005/11/11 23:29:12  phase1geo
  Checkpointing some work in progress.  This will cause compile errors.  In
  the process of moving db read expression signal binding from vsignal output to

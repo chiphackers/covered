@@ -333,9 +333,6 @@ bool bind_task_function( int type, char* name, expression* exp, func_unit* funit
     assert( si.curr->stmt != NULL );
     exp->stmt = si.curr->stmt;
 
-    /* Set head statement to point to this expression */
-    exp_link_add( exp, &(si.curr->stmt->tf_exp_head), &(si.curr->stmt->tf_exp_tail) );
-
     /* If this is a function, also bind the return value signal vector to the expression's vector */
     if( type == FUNIT_FUNCTION ) {
 
@@ -509,6 +506,9 @@ void bind( bool cdd_reading ) {
 
 /* 
  $Log$
+ Revision 1.36  2005/11/16 05:41:31  phase1geo
+ Fixing implicit signal creation in binding functions.
+
  Revision 1.35  2005/11/15 23:08:02  phase1geo
  Updates for new binding scheme.  Binding occurs for all expressions, signals,
  FSMs, and functional units after parsing has completed or after database reading

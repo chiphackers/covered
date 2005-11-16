@@ -18,7 +18,7 @@ statement* statement_create( expression* exp );
 void statement_db_write( statement* stmt, FILE* ofile );
 
 /*! \brief Reads in statement line from specified string and stores statement in specified functional unit. */
-bool statement_db_read( char** line, func_unit* curr_funit, func_unit* last_funit, int read_mode );
+bool statement_db_read( char** line, func_unit* curr_funit, int read_mode );
 
 /*! \brief Connects statement sequence to next statement. */
 void statement_connect( statement* curr_stmt, statement* next_stmt );
@@ -41,6 +41,13 @@ void statement_dealloc( statement* stmt );
 
 /*
  $Log$
+ Revision 1.19  2005/11/15 23:08:02  phase1geo
+ Updates for new binding scheme.  Binding occurs for all expressions, signals,
+ FSMs, and functional units after parsing has completed or after database reading
+ has been completed.  This should allow for any hierarchical reference or scope
+ issues to be handled correctly.  Regression mostly passes but there are still
+ a few failures at this point.  Checkpointing.
+
  Revision 1.18  2005/11/08 23:12:10  phase1geo
  Fixes for function/task additions.  Still a lot of testing on these structures;
  however, regressions now pass again so we are checkpointing here.

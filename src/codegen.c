@@ -368,7 +368,7 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
       assert( expr->stmt != NULL );
 
-      if( (tfunit = funit_find_tf_by_statement( funit, expr->stmt )) != NULL ) {
+      if( (tfunit = funit_find_by_id( expr->stmt->exp->id )) != NULL ) {
         tmpstr = (char*)malloc_safe( (strlen( tfunit->name ) + 2), __FILE__, __LINE__ );
         snprintf( tmpstr, (strlen( tfunit->name ) + 3), "%s( ", tfunit->name );
         codegen_create_expr( code, code_depth, expr->line, tmpstr, left_code, left_code_depth, expr->left->line, " )", NULL, 0, 0, NULL );
@@ -634,6 +634,10 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.41  2005/11/08 23:12:09  phase1geo
+ Fixes for function/task additions.  Still a lot of testing on these structures;
+ however, regressions now pass again so we are checkpointing here.
+
  Revision 1.40  2005/01/07 23:30:08  phase1geo
  Adding ability to handle strings in expressions.  Added string1.v diagnostic
  to verify this functionality.  Updated regressions for this change.
