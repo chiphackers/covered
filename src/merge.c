@@ -19,6 +19,7 @@
 #include "merge.h"
 #include "util.h"
 #include "info.h"
+#include "binding.h"
 
 
 extern int merged_code;
@@ -168,6 +169,7 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
     /* Read in base database */
     db_read( merge_in0, READ_MODE_MERGE_NO_MERGE );
+    bind( TRUE );
 
     /* Read in database to merge */
     db_read( merge_in1, READ_MODE_MERGE_INST_MERGE );
@@ -185,6 +187,15 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.17  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.16  2004/01/31 18:58:43  phase1geo
  Finished reformatting of reports.  Fixed bug where merged reports with
  different leading hierarchies were outputting the leading hierarchy of one
