@@ -58,9 +58,6 @@ bool expression_operate( expression* expr );
 /*! \brief Performs recursive expression operation (parse mode only). */
 void expression_operate_recursively( expression* expr );
 
-/*! \brief Returns a compressed, 1-bit representation of the value after a unary OR. */
-int expression_bit_value( expression* expr );
-
 /*! \brief Returns TRUE if specified expression is found to contain all static leaf expressions. */
 bool expression_is_static_only( expression* expr );
 
@@ -76,6 +73,13 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.31  2005/11/15 23:08:02  phase1geo
+ Updates for new binding scheme.  Binding occurs for all expressions, signals,
+ FSMs, and functional units after parsing has completed or after database reading
+ has been completed.  This should allow for any hierarchical reference or scope
+ issues to be handled correctly.  Regression mostly passes but there are still
+ a few failures at this point.  Checkpointing.
+
  Revision 1.30  2005/11/08 23:12:09  phase1geo
  Fixes for function/task additions.  Still a lot of testing on these structures;
  however, regressions now pass again so we are checkpointing here.

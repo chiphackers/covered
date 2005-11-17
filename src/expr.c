@@ -992,20 +992,21 @@ void expression_display( expression* expr ) {
 */
 bool expression_operate( expression* expr ) {
 
-  bool       retval = TRUE;   /* Return value for this function */
-  vector     vec1;            /* Used for logical reduction */ 
-  vector     vec2;            /* Used for logical reduction */
-  vector*    vec;             /* Pointer to vector of unknown size */
-  int        i;               /* Loop iterator */
-  int        j;               /* Loop iterator */
-  vec_data   bit;             /* Bit holder for some ops */
-  int        intval1;         /* Temporary integer value for *, /, % */
-  int        intval2;         /* Temporary integer value for *, /, % */
-  vec_data   value1a;         /* 1-bit nibble value */
-  vec_data   value1b;         /* 1-bit nibble value */
-  vec_data   value32[32];     /* 32-bit nibble value */
-  control    lf, lt, rf, rt;  /* Specify left and right WAS_TRUE/WAS_FALSE values */
-  statement* last_stmt;       /* Temporary statement holder */
+  bool       retval = TRUE;         /* Return value for this function */
+  vector     vec1;                  /* Used for logical reduction */ 
+  vector     vec2;                  /* Used for logical reduction */
+  vector*    vec;                   /* Pointer to vector of unknown size */
+  int        i;                     /* Loop iterator */
+  int        j;                     /* Loop iterator */
+  vec_data   bit;                   /* Bit holder for some ops */
+  int        intval1;               /* Temporary integer value for *, /, % */
+  int        intval2;               /* Temporary integer value for *, /, % */
+  vec_data   value1a;               /* 1-bit nibble value */
+  vec_data   value1b;               /* 1-bit nibble value */
+  vec_data   value32[32];           /* 32-bit nibble value */
+  control    lf, lt, rf, rt;        /* Specify left and right WAS_TRUE/WAS_FALSE values */
+  statement* last_stmt;             /* Temporary statement holder */
+  bool       exp_is_event = FALSE;  /* Specifies if current expression is an event expression */
 
   if( (expr != NULL) && (expr->suppl.part.lhs == 0) ) {
 
@@ -1253,59 +1254,52 @@ bool expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_PEDGE :
+        expr->suppl.part.eval_t = 0;
         value1a.part.value = expr->right->value->value[0].part.value;
         value1b.all        = expr->left->value->value[0].all;
-        /* If the event has been armed previously, evaluate */
-        if( (value1b.part.misc == 1) && (value1a.part.value != expr->left->value->value[0].part.value) && (value1a.part.value == 1) ) {
-          bit.part.value = 1;
-          retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
-          /* Clear armed bit */
-          value1a.part.misc = 0;
+        // if( (value1b.part.misc == 1) && (value1a.part.value != value1b.part.value) && (value1a.part.value == 1) ) {
+        if( (value1a.part.value != value1b.part.value) && (value1a.part.value == 1) ) {
+          expr->suppl.part.eval_t = 1;
+          expr->suppl.part.true   = 1;
         } else {
-          bit.part.value = 0;
-          retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
-          /* Set armed bit */
-          value1a.part.misc = 1;
+          retval = FALSE;
         }
         /* Set left LAST value to current value of right */
         expr->left->value->value[0].all = value1a.all;
+        exp_is_event = TRUE;
         break;
  
       case EXP_OP_NEDGE :
+        expr->suppl.part.eval_t = 0;
         value1a.part.value = expr->right->value->value[0].part.value;
         value1b.all        = expr->left->value->value[0].all;
-        if( (value1b.part.misc == 1) && (value1a.part.value != expr->left->value->value[0].part.value) && (value1a.part.value == 0) ) {
-          bit.part.value = 1;
-          retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
-          /* Clear armed bit */
-          value1a.part.misc = 0;
+        // if( (value1b.part.misc == 1) && (value1a.part.value != value1b.part.value) && (value1a.part.value == 0) ) {
+        if( (value1a.part.value != value1b.part.value) && (value1a.part.value == 0) ) {
+          expr->suppl.part.eval_t = 1;
+          expr->suppl.part.true   = 1;
         } else {
-          bit.part.value = 0;
-          retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
-          /* Set armed bit */
-          value1a.part.misc = 1;
+          retval = FALSE;
         }
         /* Set left LAST value to current value of right */
         expr->left->value->value[0].all = value1a.all;
+        exp_is_event = TRUE;
         break;
 
       case EXP_OP_AEDGE :
+        expr->suppl.part.eval_t = 0;
         vector_init( &vec1, &value1a, 1 );
         vector_op_compare( &vec1, expr->left->value, expr->right->value, COMP_CEQ );
         value1b.all = expr->left->value->value[0].all;
         /* Set left LAST value to current value of right */
         vector_set_value( expr->left->value, expr->right->value->value, expr->right->value->width, 0, 0 );
-        if( (value1b.part.misc == 1) && (vector_to_int( &vec1 ) == 0) ) {
-          bit.part.value = 1;
-          retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
-          /* Clear armed bit */
-          expr->left->value->value[0].part.misc = 0;
+        // if( (value1b.part.misc == 1) && (vector_to_int( &vec1 ) == 0) ) {
+        if( vector_to_int( &vec1 ) == 0 ) {
+          expr->suppl.part.eval_t = 1;
+          expr->suppl.part.true   = 1;
         } else {
-          bit.part.value = 0;
-          retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
-          /* Set armed bit */
-          expr->left->value->value[0].part.misc = 1;
+          retval = FALSE;
         }
+        exp_is_event = TRUE;
         break;
 
       case EXP_OP_EOR :
@@ -1319,6 +1313,7 @@ bool expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_DELAY :
+        expr->suppl.part.eval_t = 0;
         /* If this expression is not currently waiting, set the start time of delay */
         if( vector_to_int( expr->left->value ) == 0xffffffff ) {
           vector_from_int( expr->left->value, curr_sim_time );
@@ -1326,13 +1321,13 @@ bool expression_operate( expression* expr ) {
         intval1 = vector_to_int( expr->left->value );           /* Start time of delay */
         intval2 = vector_to_int( expr->right->value );          /* Number of clocks to delay */
         if( ((intval1 + intval2) <= curr_sim_time) || ((curr_sim_time == -1) && (intval1 != 0xffffffff)) ) {
-          bit.part.value = 1;
-          retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
+          expr->suppl.part.eval_t = 1;
+          expr->suppl.part.true   = 1;
           vector_from_int( expr->left->value, 0xffffffff );
         } else {
-          bit.part.value = 0;
-          retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
+          retval = FALSE;
         }
+        exp_is_event = TRUE;
         break;
 
       case EXP_OP_CASE :
@@ -1384,46 +1379,50 @@ bool expression_operate( expression* expr ) {
     }
     
     /* If we have a new value, recalculate TRUE/FALSE indicators */
-    if( retval ) {
+    if( !exp_is_event ) {
 
-      /* Clear current TRUE/FALSE indicators */
-      if( (expr->op != EXP_OP_STATIC) && (expr->op != EXP_OP_PARAM ) ) {
-        expr->suppl.part.eval_t = 0;
-        expr->suppl.part.eval_f = 0;
+      if( retval ) {
+
+        /* Clear current TRUE/FALSE indicators */
+        if( (expr->op != EXP_OP_STATIC) && (expr->op != EXP_OP_PARAM ) ) {
+          expr->suppl.part.eval_t = 0;
+          expr->suppl.part.eval_f = 0;
+        }
+      
+        /* Set TRUE/FALSE bits to indicate value */
+        vector_init( &vec1, &value1a, 1 );
+        vector_unary_op( &vec1, expr->value, or_optab );
+        switch( vec1.value[0].part.value ) {
+          case 0 :  expr->suppl.part.false = 1;  expr->suppl.part.eval_f = 1;  break;
+          case 1 :  expr->suppl.part.true  = 1;  expr->suppl.part.eval_t = 1;  break;
+          default:  break;
+        }
+
       }
-    
-      /* Set TRUE/FALSE bits to indicate value */
-      vector_init( &vec1, &value1a, 1 );
-      vector_unary_op( &vec1, expr->value, or_optab );
-      switch( vec1.value[0].part.value ) {
-        case 0 :  expr->suppl.part.false = 1;  expr->suppl.part.eval_f = 1;  break;
-        case 1 :  expr->suppl.part.true  = 1;  expr->suppl.part.eval_t = 1;  break;
-        default:  break;
+
+      /* Set EVAL00, EVAL01, EVAL10 or EVAL11 bits based on current value of children */
+      if( (expr->left != NULL) && (expr->right != NULL) ) {
+        lf = ESUPPL_IS_FALSE( expr->left->suppl  );
+        lt = ESUPPL_IS_TRUE(  expr->left->suppl  );
+        rf = ESUPPL_IS_FALSE( expr->right->suppl );
+        rt = ESUPPL_IS_TRUE(  expr->right->suppl );
+        /* printf( "expr %d, lf: %d, lt: %d, rf: %d, rt: %d\n", expr->id, lf, lt, rf, rt ); */
+        expr->suppl.part.eval_00 |= lf & rf;
+        expr->suppl.part.eval_01 |= lf & rt;
+        expr->suppl.part.eval_10 |= lt & rf;
+        expr->suppl.part.eval_11 |= lt & rt;
       }
 
-    }
-
-    /* Set EVAL00, EVAL01, EVAL10 or EVAL11 bits based on current value of children */
-    if( (expr->left != NULL) && (expr->right != NULL) ) {
-      lf = ESUPPL_IS_FALSE( expr->left->suppl  );
-      lt = ESUPPL_IS_TRUE(  expr->left->suppl  );
-      rf = ESUPPL_IS_FALSE( expr->right->suppl );
-      rt = ESUPPL_IS_TRUE(  expr->right->suppl );
-      /* printf( "expr %d, lf: %d, lt: %d, rf: %d, rt: %d\n", expr->id, lf, lt, rf, rt ); */
-      expr->suppl.part.eval_00 |= lf & rf;
-      expr->suppl.part.eval_01 |= lf & rt;
-      expr->suppl.part.eval_10 |= lt & rf;
-      expr->suppl.part.eval_11 |= lt & rt;
-    }
-
-    /* If this expression is attached to an FSM, perform the FSM calculation now */
-    if( expr->table != NULL ) {
-      fsm_table_set( expr->table );
-      /* If from_state was not specified, we need to copy the current contents of to_state to from_state */
-      if( expr->table->from_state->id == expr->id ) {
-        vector_dealloc( expr->table->from_state->value );
-        vector_copy( expr->value, &(expr->table->from_state->value) );
+      /* If this expression is attached to an FSM, perform the FSM calculation now */
+      if( expr->table != NULL ) {
+        fsm_table_set( expr->table );
+        /* If from_state was not specified, we need to copy the current contents of to_state to from_state */
+        if( expr->table->from_state->id == expr->id ) {
+          vector_dealloc( expr->table->from_state->value );
+          vector_copy( expr->value, &(expr->table->from_state->value) );
+        }
       }
+
     }
 
   }
@@ -1470,29 +1469,6 @@ void expression_operate_recursively( expression* expr ) {
     
   }
   
-}
-
-/*!
- \param expr  Pointer to expression to evaluate.
-
- \return Returns the value of the expression after being compressed to 1 bit via
-         a unary OR.
-
- Returns a value of 1 if the specified expression contains at least one 1 value
- and no X or Z values in its bits.  It accomplishes this by performing a unary 
- OR operation on the specified expression value and testing bit 0 of the result.
-*/
-int expression_bit_value( expression* expr ) {
-
-  vector   result;  /* Vector containing result of expression tree */
-  vec_data data;    /* Data for result vector                      */
-
-  /* Evaluate the value of the root expression and return this value */
-  vector_init( &result, &data, 1 );
-  vector_unary_op( &result, expr->value, or_optab );
-
-  return( data.part.value );
-
 }
 
 /*!
@@ -1567,7 +1543,7 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
   if( lhs != NULL ) {
 
     snprintf( user_msg, USER_MSG_LENGTH, "In expression_assign, lhs_op: %d, rhs_op: %d, lsb: %d", lhs->op, rhs->op, *lsb );
-    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 
     switch( lhs->op ) {
       case EXP_OP_SIG      :
@@ -1675,6 +1651,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.119  2005/11/17 05:34:44  phase1geo
+ Initial work on supporting blocking assignments.  Added new diagnostic to
+ check that this initial work is working correctly.  Quite a bit more work to
+ do here.
+
  Revision 1.118  2005/11/15 23:08:02  phase1geo
  Updates for new binding scheme.  Binding occurs for all expressions, signals,
  FSMs, and functional units after parsing has completed or after database reading

@@ -693,10 +693,19 @@
 				 (x->op == EXP_OP_LAND))
 
 /*!
+ Returns a value of true if the specified expression is considered to be an event type
+ (i.e., it either occurred or did not occur -- WAS_FALSE is not important).
+*/
+#define EXPR_IS_EVENT(x)        ((x->op == EXP_OP_PEDGE) || \
+                                 (x->op == EXP_OP_NEDGE) || \
+                                 (x->op == EXP_OP_AEDGE) || \
+                                 (x->op == EXP_OP_DELAY))
+
+/*!
  Returns a value of true if the specified expression is considered a unary expression by
  the combinational logic report generator.
 */
-#define EXPR_IS_UNARY(x)        !EXPR_IS_COMB(x)
+#define EXPR_IS_UNARY(x)        !EXPR_IS_COMB(x) && !EXPR_IS_EVENT(x)
 
 /*!
  Returns a value of 1 if the specified expression was measurable for combinational 
@@ -710,7 +719,8 @@
                                        !x->suppl.part.eval_10 || \
                                        !x->suppl.part.eval_11)) || \
 				     !ESUPPL_WAS_TRUE( x->suppl ) || \
-				     !ESUPPL_WAS_FALSE( x->suppl )))
+				     (!ESUPPL_WAS_FALSE( x->suppl ) && \
+                                      !EXPR_IS_EVENT( x ))))
 
 /*!
  \addtogroup op_tables
@@ -1627,6 +1637,10 @@ struct stmt_blk_s {
 
 /*
  $Log$
+ Revision 1.128  2005/11/16 22:01:51  phase1geo
+ Fixing more problems related to simulation of function/task calls.  Regression
+ runs are now running without errors.
+
  Revision 1.127  2005/11/15 23:08:02  phase1geo
  Updates for new binding scheme.  Binding occurs for all expressions, signals,
  FSMs, and functional units after parsing has completed or after database reading

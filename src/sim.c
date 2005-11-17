@@ -115,6 +115,10 @@ stmt_link* presim_stmt_tail = NULL;
 */
 void sim_expr_changed( expression* expr ) {
 
+  assert( expr != NULL );
+
+  /* printf( "In sim_expr_changed, expr %d, line %d\n", expr->id, expr->line ); */
+
   /* No need to continue to traverse up tree if both CHANGED bits are set */
   if( (ESUPPL_IS_LEFT_CHANGED( expr->suppl ) == 0) ||
       (ESUPPL_IS_RIGHT_CHANGED( expr->suppl ) == 0) ||
@@ -145,16 +149,11 @@ void sim_expr_changed( expression* expr ) {
       /* Continue up the tree */
       sim_expr_changed( expr->parent->expr );
 
-    } else {
+    }
 
-      /*
-       If this expression is only 1-level deep, set one of the changed bits to let the simulator
-       know that it needs to evaluate the expression.
-      */
-      if( (ESUPPL_IS_LEFT_CHANGED( expr->suppl ) == 0) && (ESUPPL_IS_RIGHT_CHANGED( expr->suppl ) == 0) ) {
-        expr->suppl.part.right_changed = 1;
-      }
-
+    /* Set one of the changed bits to let the simulator know that it needs to evaluate the expression.  */
+    if( (ESUPPL_IS_LEFT_CHANGED( expr->suppl ) == 0) && (ESUPPL_IS_RIGHT_CHANGED( expr->suppl ) == 0) ) {
+      expr->suppl.part.right_changed = 1;
     }
 
   }
@@ -227,6 +226,11 @@ bool sim_expression( expression* expr ) {
   bool right_changed = FALSE;  /* Signifies if right expression tree has changed value */
 
   assert( expr != NULL );
+
+  /*
+  printf( "In sim_expression %d, left_changed %d, right_changed %d\n",
+          expr->id, ESUPPL_IS_LEFT_CHANGED( expr->suppl ), ESUPPL_IS_RIGHT_CHANGED( expr->suppl ) );
+  */
 
   /* Traverse left child expression if it has changed */
   if( (ESUPPL_IS_LEFT_CHANGED( expr->suppl ) == 1) ||
@@ -312,7 +316,7 @@ bool sim_statement( statement* head_stmt, statement** last_stmt ) {
     /* Indicate that this statement's expression has been executed */
     stmt->exp->suppl.part.executed = 1;
 
-    // printf( "Executed statement %d, expr changed %d\n", stmt->exp->id, expr_changed );
+    /* printf( "Executed statement %d, expr changed %d\n", stmt->exp->id, expr_changed ); */
       
     /* Clear wait event signal bits */
     if( first && expr_changed ) {
@@ -330,7 +334,7 @@ bool sim_statement( statement* head_stmt, statement** last_stmt ) {
        /* If this is a continuous assignment, don't traverse next pointers. */
        stmt = NULL;
     } else {
-      if( expression_bit_value( stmt->exp ) == 1 ) {
+      if( ESUPPL_IS_TRUE( stmt->exp->suppl ) == 1 ) {
         stmt = stmt->next_true;
       } else {
         stmt = stmt->next_false;
@@ -371,8 +375,10 @@ void sim_simulate() {
     
       stmt_executed |= sim_statement( curr_stmt.curr->stmt, &(curr_stmt.curr->stmt) );
 
-      // printf( "Simulated statement block %d, line %d, executed %d\n",
-      //         curr_stmt.curr->stmt->exp->id, curr_stmt.curr->stmt->exp->line, stmt_executed );
+      /*
+      printf( "Simulated statement block %d, line %d, executed %d\n",
+              curr_stmt.curr->stmt->exp->id, curr_stmt.curr->stmt->exp->line, stmt_executed );
+      */
 
       if( curr_stmt.curr->stmt == NULL ) {
       
@@ -413,6 +419,11 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.40  2005/11/17 05:34:44  phase1geo
+ Initial work on supporting blocking assignments.  Added new diagnostic to
+ check that this initial work is working correctly.  Quite a bit more work to
+ do here.
+
  Revision 1.39  2005/02/08 23:18:23  phase1geo
  Starting to add code to handle expression assignment for blocking assignments.
  At this point, regressions will probably still pass but new code isn't doing exactly

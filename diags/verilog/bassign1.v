@@ -15,6 +15,8 @@ initial begin
         $dumpvars( 0, main );
 	c = 1'b1;
         #10;
+	c = 1'b0;
+	#10;
         $finish;
 end
 

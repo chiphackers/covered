@@ -270,6 +270,14 @@ void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_d
                 exp->ulid = *ulid;
                 (*ulid)++;
               }
+            } else if( EXPR_IS_EVENT( exp ) == 1 ) {
+              *total  = *total + 1;
+              num_hit = ESUPPL_WAS_TRUE( exp->suppl );
+              *hit    = *hit + num_hit;
+              if( (num_hit != 1) && (exp->ulid == -1) && !combination_is_expr_multi_node( exp ) ) {
+                exp->ulid = *ulid;
+                (*ulid)++;
+              }
             } else {
               *total  = *total + 2;
               num_hit = ESUPPL_WAS_TRUE( exp->suppl ) + ESUPPL_WAS_FALSE( exp->suppl );
@@ -1098,6 +1106,39 @@ void combination_unary( char*** info, int* info_size, expression* exp, char* op 
 
 /*!
  \param info       Pointer to array of strings that will contain the coverage information for this expression
+ \param info_size  Pointer to integer containing number of elements in info array
+ \param exp        Pointer to expression to evaluate.
+ \param op         String showing current expression operation type.
+
+ Displays the missed unary combination(s) that keep the combination coverage for
+ the specified expression from achieving 100% coverage.
+*/
+void combination_event( char*** info, int* info_size, expression* exp, char* op ) {
+
+  char tmp[20];
+  int  length;
+
+  assert( exp != NULL );
+  assert( exp->ulid != -1 );
+
+  /* Allocate memory for info array */
+  *info_size = 3;
+  *info      = (char**)malloc_safe( sizeof( char* ) * (*info_size), __FILE__, __LINE__ );
+
+  /* Allocate lines and assign values */
+  length = 28;  snprintf( tmp, 20, "%d", exp->ulid );  length += strlen( tmp );
+  (*info)[0] = (char*)malloc_safe( length, __FILE__, __LINE__ );
+  snprintf( (*info)[0], length, "        Expression %d   (0/1)", exp->ulid );
+
+  length  = 25 + strlen( op );  (*info)[1] = (char*)malloc_safe( length, __FILE__, __LINE__ );
+  snprintf( (*info)[1], length, "        ^^^^^^^^^^^^^ - %s", op );
+
+  (*info)[2] = strdup( "         * Event did not occur" );
+
+}
+
+/*!
+ \param info       Pointer to array of strings that will contain the coverage information for this expression
  \param info_size  Pointer to integer containing number of elements in info array 
  \param exp        Pointer to expression to evaluate.
  \param op         String showing current expression operation type.
@@ -1470,9 +1511,9 @@ void combination_get_missed_expr( char*** info, int* info_size, expression* exp,
           case EXP_OP_CASE       :  combination_unary( info, info_size, exp, "" );         break;
           case EXP_OP_CASEX      :  combination_unary( info, info_size, exp, "" );         break;
           case EXP_OP_CASEZ      :  combination_unary( info, info_size, exp, "" );         break;
-          case EXP_OP_PEDGE      :  combination_unary( info, info_size, exp, "posedge" );  break;
-          case EXP_OP_NEDGE      :  combination_unary( info, info_size, exp, "negedge" );  break;
-          case EXP_OP_AEDGE      :  combination_unary( info, info_size, exp, "" );         break;
+          case EXP_OP_PEDGE      :  combination_event( info, info_size, exp, "posedge" );  break;
+          case EXP_OP_NEDGE      :  combination_event( info, info_size, exp, "negedge" );  break;
+          case EXP_OP_AEDGE      :  combination_event( info, info_size, exp, "" );         break;
           default                :  break;
         }
 
@@ -1967,6 +2008,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.111  2005/11/16 22:01:51  phase1geo
+ Fixing more problems related to simulation of function/task calls.  Regression
+ runs are now running without errors.
+
  Revision 1.110  2005/11/10 19:28:22  phase1geo
  Updates/fixes for tasks/functions.  Also updated Tcl/Tk scripts for these changes.
  Fixed bug with net_decl_assign statements -- the line, start column and end column
