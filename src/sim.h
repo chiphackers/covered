@@ -28,12 +28,19 @@ bool sim_is_curr_wait_signal( vsignal* sig );
 /*! \brief Adds static expression values to initial simulator */
 void sim_add_statics();
 
+/*! \brief Simulates one statement block */
+bool sim_statement( statement* head_stmt, statement** last_stmt );
+
 /*! \brief Simulates current timestep. */
 void sim_simulate();
 
 
 /*
  $Log$
+ Revision 1.10  2004/03/30 15:42:15  phase1geo
+ Renaming signal type to vsignal type to eliminate compilation problems on systems
+ that contain a signal type in the OS.
+
  Revision 1.9  2003/08/15 03:52:22  phase1geo
  More checkins of last checkin and adding some missing files.
 

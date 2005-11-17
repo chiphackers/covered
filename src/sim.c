@@ -282,36 +282,40 @@ bool sim_expression( expression* expr ) {
 
 /*!
  \param head_stmt  Pointer to head statement to simulate.
+ \param last_stmt  Pointer to last statement simulated during this run (if non-NULL, this
+                   statement should be first statement to execute the next time this is run).
 
- \return Returns a pointer to the first statement to execute in the next timestep
+ \return Returns TRUE if this statement block has executed at least one statement; otherwise,
+         returns FALSE to indicate that this statement block had no simulation effect.
 
  Performs statement simulation as described above.  Calls expression simulator if
  the associated root expression is specified that signals have changed value within
  it.  Continues to run for current statement tree until statement tree hits a
  wait-for-event condition (or we reach the end of a simulation tree).
 */
-statement* sim_statement( statement* head_stmt ) {
+bool sim_statement( statement* head_stmt, statement** last_stmt ) {
 
-  statement* stmt;              /* Pointer to current statement to evaluate               */
-  statement* last_stmt = NULL;  /* Pointer to the last statement evaluated                */
-  bool       first     = TRUE;  /* Specifies that this is the first time through the loop */
-  sig_link*  sigl;              /* Pointer to current signal in signal list               */
+  statement* stmt;          /* Pointer to current statement to evaluate */
+  bool       first = TRUE;  /* Specifies that this is the first time through the loop */
+  sig_link*  sigl;          /* Pointer to current signal in signal list */
+  bool       expr_changed;  /* Specifies if expression tree was modified in any way */
 
   /* Set the value of stmt with the head_stmt */
-  stmt = head_stmt;
+  stmt       = head_stmt;
+  *last_stmt = NULL;
 
   while( stmt != NULL ) {
 
     /* Place expression in expression simulator and run */
-    sim_expression( stmt->exp );
+    expr_changed = sim_expression( stmt->exp );
 
     /* Indicate that this statement's expression has been executed */
     stmt->exp->suppl.part.executed = 1;
 
-    /* printf( "Executed statement %d\n", stmt->exp->id ); */
+    // printf( "Executed statement %d, expr changed %d\n", stmt->exp->id, expr_changed );
       
     /* Clear wait event signal bits */
-    if( first ) {
+    if( first && expr_changed ) {
       sigl = stmt->wait_sig_head;
       while( sigl != NULL ) {
         vsignal_set_wait_bit( sigl->sig, 0 );
@@ -320,7 +324,7 @@ statement* sim_statement( statement* head_stmt ) {
       first = FALSE;
     }
 
-    last_stmt = stmt;
+    *last_stmt = stmt;
 
     if( ESUPPL_IS_STMT_CONTINUOUS( stmt->exp->suppl ) == 1 ) {
        /* If this is a continuous assignment, don't traverse next pointers. */
@@ -336,11 +340,11 @@ statement* sim_statement( statement* head_stmt ) {
   }
 
   /* If this is the last statement in the tree with no loopback, return NULL */
-  if( (last_stmt->next_true == NULL) && (last_stmt->next_false == NULL) ) {
-    last_stmt = NULL;
+  if( ((*last_stmt)->next_true == NULL) && ((*last_stmt)->next_false == NULL) ) {
+    *last_stmt = NULL;
   }
 
-  return( last_stmt );
+  return( !first );
 
 }
 
@@ -351,48 +355,57 @@ statement* sim_statement( statement* head_stmt ) {
 */
 void sim_simulate() {
 
-  stmt_iter  curr_stmt;  /* Statement list iterator                   */
-  stmt_link* tmp_stmt;   /* Temporary pointer to statement link       */
-  sig_link*  sigl;       /* Pointer to current element in signal list */
+  stmt_iter  curr_stmt;             /* Statement list iterator */
+  stmt_link* tmp_stmt;              /* Temporary pointer to statement link */
+  sig_link*  sigl;                  /* Pointer to current element in signal list */
+  bool       stmt_executed = TRUE;  /* Specifies if the current statement had a simulation effect */
   
-  stmt_iter_reset( &curr_stmt, presim_stmt_head );
-  
-  while( curr_stmt.curr != NULL ) {
-    
-    assert( curr_stmt.curr->stmt != NULL );
-    
-    curr_stmt.curr->stmt = sim_statement( curr_stmt.curr->stmt );
+  while( stmt_executed ) {
 
-    if( curr_stmt.curr->stmt == NULL ) {
+    stmt_executed = FALSE;
+    stmt_iter_reset( &curr_stmt, presim_stmt_head );
+  
+    while( curr_stmt.curr != NULL ) {
+    
+      assert( curr_stmt.curr->stmt != NULL );
+    
+      stmt_executed |= sim_statement( curr_stmt.curr->stmt, &(curr_stmt.curr->stmt) );
+
+      // printf( "Simulated statement block %d, line %d, executed %d\n",
+      //         curr_stmt.curr->stmt->exp->id, curr_stmt.curr->stmt->exp->line, stmt_executed );
+
+      if( curr_stmt.curr->stmt == NULL ) {
       
-      if( curr_stmt.curr == presim_stmt_head ) {
-        presim_stmt_head      = (stmt_link*)((long int)(curr_stmt.curr->ptr) ^ (long int)(curr_stmt.last));
-        presim_stmt_head->ptr = (stmt_link*)((long int)(curr_stmt.curr) ^ (long int)(presim_stmt_head->ptr));
-      } else if( curr_stmt.curr == presim_stmt_tail ) {
-        presim_stmt_tail      = curr_stmt.last;
-        presim_stmt_tail->ptr = (stmt_link*)((long int)(curr_stmt.curr) ^ (long int)(presim_stmt_tail->ptr));
+        if( curr_stmt.curr == presim_stmt_head ) {
+          presim_stmt_head      = (stmt_link*)((long int)(curr_stmt.curr->ptr) ^ (long int)(curr_stmt.last));
+          presim_stmt_head->ptr = (stmt_link*)((long int)(curr_stmt.curr) ^ (long int)(presim_stmt_head->ptr));
+        } else if( curr_stmt.curr == presim_stmt_tail ) {
+          presim_stmt_tail      = curr_stmt.last;
+          presim_stmt_tail->ptr = (stmt_link*)((long int)(curr_stmt.curr) ^ (long int)(presim_stmt_tail->ptr));
+        } else {
+          tmp_stmt            = (stmt_link*)((long int)(curr_stmt.last) ^ (long int)(curr_stmt.curr->ptr));
+          curr_stmt.last->ptr = tmp_stmt;
+          tmp_stmt->ptr       = (stmt_link*)(((long int)(curr_stmt.curr) ^ (long int)(tmp_stmt->ptr)) ^ (long int)(curr_stmt.last));
+        }
+      
+        tmp_stmt = curr_stmt.curr;
+        stmt_iter_next( &curr_stmt );
+      
       } else {
-        tmp_stmt            = (stmt_link*)((long int)(curr_stmt.last) ^ (long int)(curr_stmt.curr->ptr));
-        curr_stmt.last->ptr = tmp_stmt;
-        tmp_stmt->ptr       = (stmt_link*)(((long int)(curr_stmt.curr) ^ (long int)(tmp_stmt->ptr)) ^ (long int)(curr_stmt.last));
-      }
-      
-      tmp_stmt = curr_stmt.curr;
-      stmt_iter_next( &curr_stmt );
-      
-    } else {
 
-      /* Set wait bits on current statement */
-      sigl = curr_stmt.curr->stmt->wait_sig_head;
-      while( sigl != NULL ) {
-        vsignal_set_wait_bit( sigl->sig, 1 );
-        sigl = sigl->next;
+        /* Set wait bits on current statement */
+        sigl = curr_stmt.curr->stmt->wait_sig_head;
+        while( sigl != NULL ) {
+          vsignal_set_wait_bit( sigl->sig, 1 );
+          sigl = sigl->next;
+        }
+      
+        stmt_iter_next( &curr_stmt );
+      
       }
-      
-      stmt_iter_next( &curr_stmt );
-      
-    }
     
+    }
+
   }
   
 }
@@ -400,6 +413,11 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.39  2005/02/08 23:18:23  phase1geo
+ Starting to add code to handle expression assignment for blocking assignments.
+ At this point, regressions will probably still pass but new code isn't doing exactly
+ what I want.
+
  Revision 1.38  2005/01/07 17:59:52  phase1geo
  Finalized updates for supplemental field changes.  Everything compiles and links
  correctly at this time; however, a regression run has not confirmed the changes.

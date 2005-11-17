@@ -27,9 +27,9 @@ LOGFILE = regress.log
 DIAGS1        = always1        always2        always3        always3.1.11A  always4 \
                 always5        always6        always7        always8        always9 \
                 always10       always11       always11.1     always11.2     always12 \
-                always13       assign2 \
-                assign2.1      assign2.2      assign2.3      assign2.9      assign3.2A \
-                block1         case1          case1.1        case1.2        case1.3 \
+                always13       assign2        assign2.1      assign2.2      assign2.3 \
+                assign2.9      assign3.2A     bassign1       block1         case1 \
+                case1.1        case1.2        case1.3 \
                 case2          case3          case3.1        case3.2        case3.3 \
                 case3.4        case4          case4.1        casex1         casex1.1 \
                 casex1.2       casex1.3       casex1.4       casez1         casez1.1 \
