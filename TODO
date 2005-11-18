@@ -29,6 +29,14 @@ Score command
        FSM coverage results.
 
    8.  Add ability to perform assignments for signals that are within modules being Covered.
+       - Handle cases where a BASSIGN is performed in a statement block that is ignored/thrown away
+         (we may want the VCD assignment information for this)
+
+   9.  Fix bug for event-handling
+
+   10. Put support in for events/triggers
+
+   11. Finish support for tasks and named blocks
 
 Merge command
 -------------

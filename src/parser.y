@@ -3052,7 +3052,7 @@ net_decl_assign
         db_add_signal( $1, curr_sig_width->left, curr_sig_width->right, 0 );
         if( $3 != NULL ) {
           tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-          tmp  = db_create_expression( $3, tmp, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+          tmp  = db_create_expression( $3, tmp, EXP_OP_DASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
           stmt = db_create_statement( tmp );
           stmt->exp->suppl.part.stmt_head = 1;
           stmt->exp->suppl.part.stmt_stop = 1;
@@ -3075,7 +3075,7 @@ net_decl_assign
         db_add_signal( $2, curr_sig_width->left, curr_sig_width->right, 0 );
         if( $4 != NULL ) {
           tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @2.first_line, @2.first_column, (@2.last_column - 1), $2 );
-          tmp  = db_create_expression( $4, tmp, EXP_OP_BASSIGN, FALSE, @2.first_line, @2.first_column, (@4.last_column - 1), NULL );
+          tmp  = db_create_expression( $4, tmp, EXP_OP_DASSIGN, FALSE, @2.first_line, @2.first_column, (@4.last_column - 1), NULL );
           stmt = db_create_statement( tmp );
           stmt->exp->suppl.part.stmt_head = 1;
           stmt->exp->suppl.part.stmt_stop = 1;

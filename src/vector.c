@@ -1490,17 +1490,17 @@ bool vector_op_lshift( vector* tgt, vector* left, vector* right ) {
 
   } else {
 
-    shift_val = vector_to_int( right );
-
-    if( shift_val >= left->width ) {
-      shift_val = left->width;
-    } else {
-      retval = vector_set_value( tgt, left->value, (left->width - shift_val), 0, shift_val );
+    /* Zero-fill LSBs */
+    for( i=0; i<tgt->width; i++ ) {
+      retval |= vector_set_value( tgt, &zero, 1, 0, i );
     }
 
-    /* Zero-fill LSBs */
-    for( i=0; i<shift_val; i++ ) {
-      retval |= vector_set_value( tgt, &zero, 1, 0, i );
+    shift_val = vector_to_int( right );
+
+    if( shift_val >= tgt->width ) {
+      shift_val = tgt->width;
+    } else {
+      retval |= vector_set_value( tgt, left->value, left->width, 0, shift_val );
     }
 
   }
@@ -1538,17 +1538,17 @@ bool vector_op_rshift( vector* tgt, vector* left, vector* right ) {
 
   } else {
 
-    shift_val = vector_to_int( right );
-
-    if( shift_val >= left->width ) {
-      shift_val = left->width;
-    } else {
-      retval = vector_set_value( tgt, left->value, (left->width - shift_val), shift_val, 0 );
+    /* Perform zero-fill */
+    for( i=0; i<tgt->width; i++ ) {
+      retval |= vector_set_value( tgt, &zero, 1, 0, i );
     }
 
-    /* Zero-fill LSBs */
-    for( i=(left->width - shift_val); i<left->width; i++ ) {
-      retval |= vector_set_value( tgt, &zero, 1, 0, i );
+    shift_val = vector_to_int( right );
+
+    if( shift_val >= tgt->width ) {
+      shift_val = tgt->width;
+    } else {
+      retval |= vector_set_value( tgt, left->value, left->width, shift_val, 0 );
     }
 
   }
@@ -1847,6 +1847,11 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.62  2005/11/18 05:17:01  phase1geo
+ Updating regressions with latest round of changes.  Also added bit-fill capability
+ to expression_assign function -- still more changes to come.  We need to fix the
+ expression sizing problem for RHS expressions of assignment operators.
+
  Revision 1.61  2005/11/08 23:12:10  phase1geo
  Fixes for function/task additions.  Still a lot of testing on these structures;
  however, regressions now pass again so we are checkpointing here.

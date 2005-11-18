@@ -40,7 +40,7 @@
  immediately.  In the case of MBIT_SEL, the LSB is also constant.  Vector direction
  is currently not considered at this point.
 
- \par EXP_OP_ASSIGN, EXP_OP_NASSIGN, EXP_OP_IF
+ \par EXP_OP_ASSIGN, EXP_OP_DASSIGN, EXP_OP_NASSIGN, EXP_OP_IF
  All of these expressions are assignment operators that are in assign statements,
  behavioral non-blocking assignments, and if expressions, respectively.
  These expressions do not have an operation to perform because their vector value pointers
@@ -350,6 +350,7 @@ void expression_resize( expression* expr, bool recursive ) {
       case EXP_OP_SBIT_SEL :
       case EXP_OP_MBIT_SEL :
       case EXP_OP_ASSIGN :
+      case EXP_OP_DASSIGN :
       case EXP_OP_BASSIGN :
       case EXP_OP_NASSIGN :
       case EXP_OP_IF :
@@ -437,16 +438,27 @@ void expression_resize( expression* expr, bool recursive ) {
         break;
 
       default :
-        if( (expr->left != NULL) && ((expr->right == NULL) || (expr->left->value->width > expr->right->value->width)) ) {
-          largest_width = expr->left->value->width;
-        } else if( expr->right != NULL ) {
-          largest_width = expr->right->value->width;
+        if( (ESUPPL_IS_ROOT( expr->suppl ) == 1) ||
+            ((expr->parent->expr->op != EXP_OP_ASSIGN) &&
+             (expr->parent->expr->op != EXP_OP_DASSIGN) &&
+             (expr->parent->expr->op != EXP_OP_BASSIGN) &&
+             (expr->parent->expr->op != EXP_OP_NASSIGN)) ) {
+          if( (expr->left != NULL) && ((expr->right == NULL) || (expr->left->value->width > expr->right->value->width)) ) {
+            largest_width = expr->left->value->width;
+          } else if( expr->right != NULL ) {
+            largest_width = expr->right->value->width;
+          } else {
+            largest_width = 1;
+          }
+          if( (expr->value->width != largest_width) || (expr->value->value == NULL) ) {
+            assert( expr->value->value == NULL );
+            expression_create_value( expr, largest_width, FALSE );
+          }
         } else {
-          largest_width = 1;
-        }
-        if( (expr->value->width != largest_width) || (expr->value->value == NULL) ) {
-          assert( expr->value->value == NULL );
-          expression_create_value( expr, largest_width, FALSE );
+          if( (expr->parent->expr->left->value->width != expr->value->width) || (expr->value->value == NULL) ) {
+            assert( expr->value->value == NULL );
+            expression_create_value( expr, expr->parent->expr->left->value->width, FALSE );
+          }
         }
         break;
 
@@ -607,6 +619,7 @@ void expression_db_write( expression* expr, FILE* file ) {
       (expr->op != EXP_OP_PARAM_SBIT) &&
       (expr->op != EXP_OP_PARAM_MBIT) &&
       (expr->op != EXP_OP_ASSIGN)     &&
+      (expr->op != EXP_OP_DASSIGN)    &&
       (expr->op != EXP_OP_BASSIGN)    &&
       (expr->op != EXP_OP_NASSIGN)    &&
       (expr->op != EXP_OP_IF)         &&
@@ -705,6 +718,7 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) {
                                  (op != EXP_OP_MBIT_SEL)   &&
                                  (op != EXP_OP_PARAM_MBIT) &&
                                  (op != EXP_OP_ASSIGN)     &&
+                                 (op != EXP_OP_DASSIGN)    &&
                                  (op != EXP_OP_BASSIGN)    &&
                                  (op != EXP_OP_NASSIGN)    &&
                                  (op != EXP_OP_IF)         &&
@@ -732,6 +746,7 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) {
           (op != EXP_OP_PARAM_SBIT) &&
           (op != EXP_OP_PARAM_MBIT) &&
           (op != EXP_OP_ASSIGN)     &&
+          (op != EXP_OP_DASSIGN)    &&
           (op != EXP_OP_BASSIGN)    &&
           (op != EXP_OP_NASSIGN)    &&
           (op != EXP_OP_IF)         &&
@@ -766,6 +781,7 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) {
 
       /* If we are an assignment operator, set our vector value to that of the right child */
       if( (op == EXP_OP_ASSIGN)  ||
+          (op == EXP_OP_DASSIGN) ||
           (op == EXP_OP_BASSIGN) ||
           (op == EXP_OP_NASSIGN) ||
           (op == EXP_OP_IF) ) {
@@ -848,6 +864,7 @@ bool expression_db_merge( expression* base, char** line, bool same ) {
           (op != EXP_OP_PARAM_SBIT) &&
           (op != EXP_OP_PARAM_MBIT) &&
           (op != EXP_OP_ASSIGN)     &&
+          (op != EXP_OP_DASSIGN)    &&
           (op != EXP_OP_BASSIGN)    &&
           (op != EXP_OP_NASSIGN)    &&
           (op != EXP_OP_IF)         &&
@@ -920,6 +937,7 @@ bool expression_db_replace( expression* base, char** line ) {
           (op != EXP_OP_PARAM_SBIT) &&
           (op != EXP_OP_PARAM_MBIT) &&
           (op != EXP_OP_ASSIGN)     &&
+          (op != EXP_OP_DASSIGN)    &&
           (op != EXP_OP_BASSIGN)    &&
           (op != EXP_OP_NASSIGN)    &&
           (op != EXP_OP_IF)         &&
@@ -1358,6 +1376,7 @@ bool expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_ASSIGN :
+      case EXP_OP_DASSIGN :
       case EXP_OP_NASSIGN :
       case EXP_OP_IF :
         break;
@@ -1501,26 +1520,30 @@ bool expression_is_static_only( expression* expr ) {
 /*!
  \param expr  Pointer to current expression to evaluate
 
- Recursively traverses expression tree specified by expr and sets the assigned vector supplemental
- field attribute to true for all signal (including single and multi-bit expressions).  This assumes
- that the expression tree is the LHS of a blocking assignment operator (which is called in db.c)
+ Checks to see if the expression is in the LHS of a BASSIGN expression tree.  If it is, it sets the
+ assigned supplemental field of the expression's signal vector to indicate the the value of this
+ signal will come from Covered instead of the dumpfile.  This is called in the bind_signal function
+ after the expression and signal have been bound (only in parsing stage).
 */
 void expression_set_assigned( expression* expr ) {
 
-  if( expr != NULL ) {
+  expression* curr;  /* Pointer to current expression */
 
-    if( (expr->op == EXP_OP_SIG) ||
-        (expr->op == EXP_OP_SBIT_SEL) ||
-	(expr->op == EXP_OP_MBIT_SEL) ) { 
+  assert( expr != NULL );
 
-      /* printf( "Setting assigned for signal %s\n", expr->sig->name ); */
+  if( ESUPPL_IS_LHS( expr->suppl ) == 1 ) {
+
+    curr = expr;
+    while( (ESUPPL_IS_ROOT( curr->suppl ) == 0) && (curr->op != EXP_OP_BASSIGN) ) {
+      curr = curr->parent->expr;
+    }
+
+    /*
+     If we are on the LHS of a BASSIGN operator, set the assigned bit to indicate that
+     this signal will be assigned by Covered and not the dumpfile.
+    */
+    if( curr->op == EXP_OP_BASSIGN ) {
       expr->sig->value->suppl.part.assigned = 1;
-
-    } else {
-
-      expression_set_assigned( expr->left  );
-      expression_set_assigned( expr->right );
-
     }
 
   }
@@ -1546,36 +1569,36 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
 
     switch( lhs->op ) {
       case EXP_OP_SIG      :
-        vector_display( lhs->value );
-        vector_display( rhs->value );
-        vector_set_value( lhs->value, rhs->value->value, rhs->value->width, *lsb, 0 );
-        if( rhs->value->width < lhs->value->width ) {
-          vector_bit_fill( lhs->value, lhs->value->width, (rhs->value->width + *lsb) );
+        if( lhs->sig->value->suppl.part.assigned == 1 ) {
+          vector_set_value( lhs->value, rhs->value->value, rhs->value->width, *lsb, 0 );
+          if( rhs->value->width < lhs->value->width ) {
+            vector_bit_fill( lhs->value, lhs->value->width, (rhs->value->width + *lsb) );
+          }
+  	  vsignal_propagate( lhs->sig );
         }
-  	vsignal_propagate( lhs->sig );
         *lsb = *lsb + lhs->value->width;
-        vector_display( lhs->value );
-        vector_display( rhs->value );
         break;
       case EXP_OP_SBIT_SEL :
-        if( !vector_is_unknown( lhs->left->value ) ) {
-          intval1 = vector_to_int( lhs->left->value ) - lhs->sig->lsb;
-          assert( intval1 >= 0 );
-          assert( intval1 < lhs->sig->value->width );
-          lhs->value->value = lhs->sig->value->value + intval1;
+        if( lhs->sig->value->suppl.part.assigned == 1 ) {
+          if( !vector_is_unknown( lhs->left->value ) ) {
+            intval1 = vector_to_int( lhs->left->value ) - lhs->sig->lsb;
+            assert( intval1 >= 0 );
+            assert( intval1 < lhs->sig->value->width );
+            lhs->value->value = lhs->sig->value->value + intval1;
+          }
+          vector_set_value( lhs->value, rhs->value->value, 1, *lsb, 0 );
+	  vsignal_propagate( lhs->sig );
         }
-        vector_set_value( lhs->value, rhs->value->value, 1, *lsb, 0 );
-        vector_display( lhs->value );
-	vsignal_propagate( lhs->sig );
         *lsb = *lsb + lhs->value->width;
         break;
       case EXP_OP_MBIT_SEL :
-        vector_set_value( lhs->value, rhs->value->value, rhs->value->width, *lsb, 0 );
-        if( rhs->value->width < lhs->value->width ) {
-          vector_bit_fill( lhs->value, lhs->value->width, (rhs->value->width + *lsb) );
+        if( lhs->sig->value->suppl.part.assigned == 1 ) {
+          vector_set_value( lhs->value, rhs->value->value, rhs->value->width, *lsb, 0 );
+          if( rhs->value->width < lhs->value->width ) {
+            vector_bit_fill( lhs->value, lhs->value->width, (rhs->value->width + *lsb) );
+          }
+  	  vsignal_propagate( lhs->sig );
         }
-        vector_display( lhs->value );
-	vsignal_propagate( lhs->sig );
         *lsb = *lsb + lhs->value->width;
         break;
       case EXP_OP_CONCAT   :
@@ -1620,6 +1643,7 @@ void expression_dealloc( expression* expr, bool exp_only ) {
         (op != EXP_OP_PARAM_SBIT) &&
         (op != EXP_OP_PARAM_MBIT) &&
         (op != EXP_OP_ASSIGN    ) &&
+        (op != EXP_OP_DASSIGN   ) &&
         (op != EXP_OP_BASSIGN   ) &&
         (op != EXP_OP_NASSIGN   ) &&
         (op != EXP_OP_IF        ) &&
@@ -1662,6 +1686,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.121  2005/11/18 05:17:01  phase1geo
+ Updating regressions with latest round of changes.  Also added bit-fill capability
+ to expression_assign function -- still more changes to come.  We need to fix the
+ expression sizing problem for RHS expressions of assignment operators.
+
  Revision 1.120  2005/11/17 23:35:16  phase1geo
  Blocking assignment is now working properly along with support for event expressions
  (currently only the original PEDGE, NEDGE, AEDGE and DELAY are supported but more

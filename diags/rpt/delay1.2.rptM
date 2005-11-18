@@ -49,7 +49,7 @@ Module/Task/Function      Filename                         Toggle 0 -> 1        
 Module/Task/Function                Filename                                Logic Combinations
                                                                       Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  main                              delay1.2.v                          3/   3/   6       50%
+  main                              delay1.2.v                          2/   3/   5       40%
 ---------------------------------------------------------------------------------------------------------------------
 
     Module: main, File: delay1.2.v

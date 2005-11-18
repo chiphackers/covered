@@ -62,7 +62,7 @@ Module/Task/Function                Filename                                Logi
                                                                       Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
   main                              instance3.v                         0/   0/   0      100%
-  foo                               instance3.v                         5/   3/   8       62%
+  foo                               instance3.v                         4/   3/   7       57%
 ---------------------------------------------------------------------------------------------------------------------
 
     Module: foo, File: instance3.v
@@ -75,11 +75,9 @@ Module/Task/Function                Filename                                Logi
              19:    @(posedge  c )
                     |-----1------|
 
-        Expression 1   (1/2)
+        Expression 1   (0/1)
         ^^^^^^^^^^^^^ - posedge
-         E | E
-        =0=|=1=
-             *
+         * Event did not occur
 
       =========================================================================================================
        Line #     Expression

@@ -328,7 +328,6 @@ bool sim_statement( statement* head_stmt, statement** last_stmt ) {
        stmt = NULL;
     } else {
       if( ESUPPL_IS_TRUE( stmt->exp->suppl ) == 1 ) {
-        printf( "Traversing TRUE path\n" );
         stmt = stmt->next_true;
       } else {
         stmt = stmt->next_false;
@@ -411,6 +410,11 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.42  2005/11/18 05:17:01  phase1geo
+ Updating regressions with latest round of changes.  Also added bit-fill capability
+ to expression_assign function -- still more changes to come.  We need to fix the
+ expression sizing problem for RHS expressions of assignment operators.
+
  Revision 1.41  2005/11/17 23:35:16  phase1geo
  Blocking assignment is now working properly along with support for event expressions
  (currently only the original PEDGE, NEDGE, AEDGE and DELAY are supported but more

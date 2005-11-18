@@ -770,6 +770,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
             case EXP_OP_CASEZ    :  *size = l_size + r_size + 12; strcpy( code_fmt, "       %s   %s  " );  break;
             case EXP_OP_DELAY    :  *size = l_size + r_size + 3;  strcpy( code_fmt, "  %s " );             break;
             case EXP_OP_ASSIGN   :  *size = l_size + r_size + 10; strcpy( code_fmt, "       %s   %s" );    break;
+            case EXP_OP_DASSIGN  :
             case EXP_OP_BASSIGN  :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s   %s" );           break;
             case EXP_OP_NASSIGN  :  *size = l_size + r_size + 4;  strcpy( code_fmt, "%s    %s" );          break;
             case EXP_OP_IF       :  *size = r_size + 6;           strcpy( code_fmt, "    %s  " );          break;
@@ -2008,6 +2009,12 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.112  2005/11/17 23:35:16  phase1geo
+ Blocking assignment is now working properly along with support for event expressions
+ (currently only the original PEDGE, NEDGE, AEDGE and DELAY are supported but more
+ can now follow).  Added new race4 diagnostic to verify that a register cannot be
+ assigned from more than one location -- this works.  Regression fails at this point.
+
  Revision 1.111  2005/11/16 22:01:51  phase1geo
  Fixing more problems related to simulation of function/task calls.  Regression
  runs are now running without errors.

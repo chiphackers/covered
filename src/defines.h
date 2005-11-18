@@ -622,16 +622,18 @@
 #define EXP_OP_PARAM_MBIT 0x34
 /*! Decimal value = 53.  Specifies an assign assignment operator. */
 #define EXP_OP_ASSIGN     0x35
-/*! Decimal value = 54.  Specifies a blocking assignment operator. */
-#define EXP_OP_BASSIGN    0x36
-/*! Decimal value = 55.  Specifies a non-blocking assignment operator. */
-#define EXP_OP_NASSIGN    0x37
-/*! Decimal value = 56.  Specifies an if statement operator. */
-#define EXP_OP_IF         0x38
-/*! Decimal value = 57.  Specifies a function call. */
-#define EXP_OP_FUNC_CALL  0x39
-/*! Decimal value = 58.  Specifies a task call (note: this operator MUST be the root of the expression tree) */
-#define EXP_OP_TASK_CALL  0x3a
+/*! Decimal value = 54.  Specifies a wire declaration assignment operator. */
+#define EXP_OP_DASSIGN    0x36
+/*! Decimal value = 55.  Specifies a blocking assignment operator. */
+#define EXP_OP_BASSIGN    0x37
+/*! Decimal value = 56.  Specifies a non-blocking assignment operator. */
+#define EXP_OP_NASSIGN    0x38
+/*! Decimal value = 57.  Specifies an if statement operator. */
+#define EXP_OP_IF         0x39
+/*! Decimal value = 58.  Specifies a function call. */
+#define EXP_OP_FUNC_CALL  0x3a
+/*! Decimal value = 59.  Specifies a task call (note: this operator MUST be the root of the expression tree) */
+#define EXP_OP_TASK_CALL  0x3b
 
 /*! @} */
 
@@ -652,6 +654,7 @@
                                      (x->op != EXP_OP_DELAY) && \
                                      (x->op != EXP_OP_EOR) && \
                                      (x->op != EXP_OP_ASSIGN) && \
+                                     (x->op != EXP_OP_DASSIGN) && \
                                      (x->op != EXP_OP_BASSIGN) && \
                                      (x->op != EXP_OP_NASSIGN) && \
                                      (x->op != EXP_OP_IF) && \
@@ -662,6 +665,7 @@
                                         (x->op == EXP_OP_SBIT_SEL) || \
                                         (x->op == EXP_OP_MBIT_SEL)) && \
                                        (x->parent->expr->op != EXP_OP_ASSIGN) && \
+                                       (x->parent->expr->op != EXP_OP_DASSIGN) && \
                                        (x->parent->expr->op != EXP_OP_BASSIGN) && \
                                        (x->parent->expr->op != EXP_OP_NASSIGN) && \
                                        (x->parent->expr->op != EXP_OP_IF) && \
@@ -1637,6 +1641,12 @@ struct stmt_blk_s {
 
 /*
  $Log$
+ Revision 1.129  2005/11/17 23:35:16  phase1geo
+ Blocking assignment is now working properly along with support for event expressions
+ (currently only the original PEDGE, NEDGE, AEDGE and DELAY are supported but more
+ can now follow).  Added new race4 diagnostic to verify that a register cannot be
+ assigned from more than one location -- this works.  Regression fails at this point.
+
  Revision 1.128  2005/11/16 22:01:51  phase1geo
  Fixing more problems related to simulation of function/task calls.  Regression
  runs are now running without errors.

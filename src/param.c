@@ -191,12 +191,13 @@ mod_parm* mod_parm_add( char* scope, expression* expr, int type, mod_parm** head
   } else {
     parm->name = NULL;
   }
-  parm->expr     = expr;
-  parm->suppl    = ((type & 0x7) << PARAM_LSB_TYPE) | ((order & 0xffff) << PARAM_LSB_ORDER);
-  parm->exp_head = NULL;
-  parm->exp_tail = NULL;
-  parm->sig      = NULL;
-  parm->next     = NULL;
+  parm->expr                  = expr;
+  parm->expr->suppl.part.root = 1;
+  parm->suppl                 = ((type & 0x7) << PARAM_LSB_TYPE) | ((order & 0xffff) << PARAM_LSB_ORDER);
+  parm->exp_head              = NULL;
+  parm->exp_tail              = NULL;
+  parm->sig                   = NULL;
+  parm->next                  = NULL;
 
   /* Now add the parameter to the current expression */
   if( *head == NULL ) {
@@ -722,6 +723,10 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.35  2005/01/07 17:59:52  phase1geo
+ Finalized updates for supplemental field changes.  Everything compiles and links
+ correctly at this time; however, a regression run has not confirmed the changes.
+
  Revision 1.34  2004/03/30 15:42:14  phase1geo
  Renaming signal type to vsignal type to eliminate compilation problems on systems
  that contain a signal type in the OS.

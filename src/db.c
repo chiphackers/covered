@@ -929,18 +929,6 @@ expression* db_create_expression( expression* right, expression* left, int op, b
 
     }
 
-  } else {
-
-#ifdef PERFORM_ASSIGNMENT
-    /*
-     If this is a blocking assignment, set the assigned vector attribute in all signals to the
-     left of the blocking assignment operator to TRUE.
-    */
-    if( op == EXP_OP_BASSIGN ) {
-      expression_set_assigned( expr->left );
-    }
-#endif
-
   }
  
   return( expr );
@@ -1448,6 +1436,11 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.133  2005/11/16 23:02:23  phase1geo
+ Added new diagnostics to check for functions that contain time-consuming expressions (this
+ is not allowed by Covered -- and not by most commercial simulators either).  Updated check_test
+ to do error checking and added error outputs.  Full regression passes at this point -- 225 diagnostics.
+
  Revision 1.132  2005/11/16 22:01:51  phase1geo
  Fixing more problems related to simulation of function/task calls.  Regression
  runs are now running without errors.

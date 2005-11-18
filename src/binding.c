@@ -289,6 +289,15 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
         sig_link_add( found_sig, &(stmt->wait_sig_head), &(stmt->wait_sig_tail) );
       }
 
+    } else {
+
+      /* Check to see if this signal should be assigned by Covered or the dumpfile */
+      if( (exp->op == EXP_OP_SIG) ||
+          (exp->op == EXP_OP_SBIT_SEL) ||
+          (exp->op == EXP_OP_MBIT_SEL) ) {
+        expression_set_assigned( exp );
+      }
+
     }
 
   }
@@ -506,6 +515,10 @@ void bind( bool cdd_reading ) {
 
 /* 
  $Log$
+ Revision 1.37  2005/11/16 22:01:51  phase1geo
+ Fixing more problems related to simulation of function/task calls.  Regression
+ runs are now running without errors.
+
  Revision 1.36  2005/11/16 05:41:31  phase1geo
  Fixing implicit signal creation in binding functions.
 
