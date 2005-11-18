@@ -830,6 +830,42 @@ bool vector_set_value_only( vector* vec, vec_data* value, int width, int from_id
 }
 
 /*!
+ \param vec  Pointer to vector to bit-fill
+ \param lsb  Least-significant bit to start bit-filling
+
+ \return Returns TRUE if any of the bits in the bit-fill range have changed
+         value.
+
+ Performs a bit-fill of the specified vector starting at the specified LSB
+ and bit-filling all bits to the MSB.
+*/
+bool vector_bit_fill( vector* vec, int msb, int lsb ) {
+
+  vec_data value;            /* Temporary vector data value */
+  bool     changed = FALSE;  /* Return value for this function */
+  int      i;                /* Loop iterator */
+
+  assert( vec != NULL );
+  assert( lsb > 0 ); 
+  msb = (msb > vec->width) ? vec->width : msb;
+
+  switch( vec->value[lsb-1].part.value ) {
+    case 0 :  value.all = 0;  break;
+    case 1 :  value.all = 0;  break;
+    case 2 :  value.all = 2;  break;
+    case 3 :  value.all = 3;  break;
+    default:  break;
+  }
+
+  for( i=lsb; i<msb; i++ ) {
+    changed |= vector_set_value( vec, &value, 1, 0, i );
+  }
+
+  return( changed );
+
+}
+
+/*!
  \param vec  Pointer to vector to check for unknowns.
 
  \return Returns TRUE if the specified vector contains unknown values; otherwise, returns FALSE.
@@ -1811,6 +1847,10 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.61  2005/11/08 23:12:10  phase1geo
+ Fixes for function/task additions.  Still a lot of testing on these structures;
+ however, regressions now pass again so we are checkpointing here.
+
  Revision 1.60  2005/02/05 04:13:30  phase1geo
  Started to add reporting capabilities for race condition information.  Modified
  race condition reason calculation and handling.  Ran -Wall on all code and cleaned

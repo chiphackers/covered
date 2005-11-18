@@ -117,7 +117,7 @@ void sim_expr_changed( expression* expr ) {
 
   assert( expr != NULL );
 
-  /* printf( "In sim_expr_changed, expr %d, line %d\n", expr->id, expr->line ); */
+  printf( "In sim_expr_changed, expr %d, line %d\n", expr->id, expr->line );
 
   /* No need to continue to traverse up tree if both CHANGED bits are set */
   if( (ESUPPL_IS_LEFT_CHANGED( expr->suppl ) == 0) ||
@@ -227,10 +227,8 @@ bool sim_expression( expression* expr ) {
 
   assert( expr != NULL );
 
-  /*
   printf( "In sim_expression %d, left_changed %d, right_changed %d\n",
           expr->id, ESUPPL_IS_LEFT_CHANGED( expr->suppl ), ESUPPL_IS_RIGHT_CHANGED( expr->suppl ) );
-  */
 
   /* Traverse left child expression if it has changed */
   if( (ESUPPL_IS_LEFT_CHANGED( expr->suppl ) == 1) ||
@@ -238,11 +236,7 @@ bool sim_expression( expression* expr ) {
       (expr->op == EXP_OP_CASEX)                   ||
       (expr->op == EXP_OP_CASEZ) ) {
 
-    /*
-     An EOR expression is special in that it will automatically traverse down its tree when
-     its operation is performed so don't traverse the tree now.
-    */
-    if( (expr->op != EXP_OP_EOR) && (expr->left != NULL) ) {
+    if( expr->left != NULL ) {
       if( expr->left->suppl.part.lhs == 0 ) {
         left_changed = sim_expression( expr->left );
       }
@@ -258,8 +252,7 @@ bool sim_expression( expression* expr ) {
   /* Traverse right child expression if it has changed */
   if( ESUPPL_IS_RIGHT_CHANGED( expr->suppl ) == 1 ) {
 
-    /* See explanation above */
-    if( (expr->op != EXP_OP_EOR) && (expr->right != NULL) ) {
+    if( expr->right != NULL ) {
       if( expr->right->suppl.part.lhs == 0 ) {
         right_changed = sim_expression( expr->right );
       }
@@ -316,7 +309,7 @@ bool sim_statement( statement* head_stmt, statement** last_stmt ) {
     /* Indicate that this statement's expression has been executed */
     stmt->exp->suppl.part.executed = 1;
 
-    /* printf( "Executed statement %d, expr changed %d\n", stmt->exp->id, expr_changed ); */
+    printf( "Executed statement %d, expr changed %d\n", stmt->exp->id, expr_changed );
       
     /* Clear wait event signal bits */
     if( first && expr_changed ) {
@@ -335,6 +328,7 @@ bool sim_statement( statement* head_stmt, statement** last_stmt ) {
        stmt = NULL;
     } else {
       if( ESUPPL_IS_TRUE( stmt->exp->suppl ) == 1 ) {
+        printf( "Traversing TRUE path\n" );
         stmt = stmt->next_true;
       } else {
         stmt = stmt->next_false;
@@ -375,10 +369,8 @@ void sim_simulate() {
     
       stmt_executed |= sim_statement( curr_stmt.curr->stmt, &(curr_stmt.curr->stmt) );
 
-      /*
       printf( "Simulated statement block %d, line %d, executed %d\n",
               curr_stmt.curr->stmt->exp->id, curr_stmt.curr->stmt->exp->line, stmt_executed );
-      */
 
       if( curr_stmt.curr->stmt == NULL ) {
       
@@ -419,6 +411,12 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.41  2005/11/17 23:35:16  phase1geo
+ Blocking assignment is now working properly along with support for event expressions
+ (currently only the original PEDGE, NEDGE, AEDGE and DELAY are supported but more
+ can now follow).  Added new race4 diagnostic to verify that a register cannot be
+ assigned from more than one location -- this works.  Regression fails at this point.
+
  Revision 1.40  2005/11/17 05:34:44  phase1geo
  Initial work on supporting blocking assignments.  Added new diagnostic to
  check that this initial work is working correctly.  Quite a bit more work to

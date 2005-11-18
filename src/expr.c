@@ -1273,7 +1273,6 @@ bool expression_operate( expression* expr ) {
         expr->suppl.part.eval_t = 0;
         value1a.part.value = expr->right->value->value[0].part.value;
         value1b.all        = expr->left->value->value[0].all;
-        // if( (value1b.part.misc == 1) && (value1a.part.value != value1b.part.value) && (value1a.part.value == 0) ) {
         if( (value1a.part.value != value1b.part.value) && (value1a.part.value == 0) ) {
           expr->suppl.part.eval_t = 1;
           expr->suppl.part.true   = 1;
@@ -1292,7 +1291,6 @@ bool expression_operate( expression* expr ) {
         value1b.all = expr->left->value->value[0].all;
         /* Set left LAST value to current value of right */
         vector_set_value( expr->left->value, expr->right->value->value, expr->right->value->width, 0, 0 );
-        // if( (value1b.part.misc == 1) && (vector_to_int( &vec1 ) == 0) ) {
         if( vector_to_int( &vec1 ) == 0 ) {
           expr->suppl.part.eval_t = 1;
           expr->suppl.part.true   = 1;
@@ -1303,13 +1301,14 @@ bool expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_EOR :
-        vector_init( &vec1, &value1a, 1 );
-        vector_init( &vec2, &value1b, 1 );
-        expression_operate( expr->left );
-        expression_operate( expr->right );
-        vector_unary_op( &vec1, expr->left->value,  or_optab );
-        vector_unary_op( &vec2, expr->right->value, or_optab );
-        retval = vector_bitwise_op( expr->value, &vec1, &vec2, or_optab );
+        if( (ESUPPL_IS_TRUE( expr->left->suppl ) == 1) || (ESUPPL_IS_TRUE( expr->right->suppl ) == 1) ) {
+          bit.part.value = 1;
+        } else {
+          bit.part.value = 0;
+        }
+        ESUPPL_IS_TRUE( expr->left->suppl )  = 0;
+        ESUPPL_IS_TRUE( expr->right->suppl ) = 0;
+        retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
         break;
 
       case EXP_OP_DELAY :
@@ -1547,9 +1546,16 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
 
     switch( lhs->op ) {
       case EXP_OP_SIG      :
-        vector_set_value( lhs->value, rhs->value->value, lhs->value->width, *lsb, 0 );
-	vsignal_propagate( lhs->sig );
+        vector_display( lhs->value );
+        vector_display( rhs->value );
+        vector_set_value( lhs->value, rhs->value->value, rhs->value->width, *lsb, 0 );
+        if( rhs->value->width < lhs->value->width ) {
+          vector_bit_fill( lhs->value, lhs->value->width, (rhs->value->width + *lsb) );
+        }
+  	vsignal_propagate( lhs->sig );
         *lsb = *lsb + lhs->value->width;
+        vector_display( lhs->value );
+        vector_display( rhs->value );
         break;
       case EXP_OP_SBIT_SEL :
         if( !vector_is_unknown( lhs->left->value ) ) {
@@ -1559,11 +1565,16 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
           lhs->value->value = lhs->sig->value->value + intval1;
         }
         vector_set_value( lhs->value, rhs->value->value, 1, *lsb, 0 );
+        vector_display( lhs->value );
 	vsignal_propagate( lhs->sig );
         *lsb = *lsb + lhs->value->width;
         break;
       case EXP_OP_MBIT_SEL :
-        vector_set_value( lhs->value, rhs->value->value, lhs->value->width, *lsb, 0 );
+        vector_set_value( lhs->value, rhs->value->value, rhs->value->width, *lsb, 0 );
+        if( rhs->value->width < lhs->value->width ) {
+          vector_bit_fill( lhs->value, lhs->value->width, (rhs->value->width + *lsb) );
+        }
+        vector_display( lhs->value );
 	vsignal_propagate( lhs->sig );
         *lsb = *lsb + lhs->value->width;
         break;
@@ -1651,6 +1662,12 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.120  2005/11/17 23:35:16  phase1geo
+ Blocking assignment is now working properly along with support for event expressions
+ (currently only the original PEDGE, NEDGE, AEDGE and DELAY are supported but more
+ can now follow).  Added new race4 diagnostic to verify that a register cannot be
+ assigned from more than one location -- this works.  Regression fails at this point.
+
  Revision 1.119  2005/11/17 05:34:44  phase1geo
  Initial work on supporting blocking assignments.  Added new diagnostic to
  check that this initial work is working correctly.  Quite a bit more work to

@@ -55,14 +55,14 @@ void vector_display( vector* vec );
 /*! \brief Selects bit from value array from bit position pos. */
 nibble vector_bit_val( nibble* value, int pos );
 
-/*! \brief Sets specified bit to specified value in given nibble. */
-void vector_set_bit( nibble* nib, nibble value, int pos );
-
 /*! \brief Sets specified vector value to new value and maintains coverage history. */
 bool vector_set_value( vector* vec, vec_data* value, int width, int from_idx, int to_idx );
 
 /*! \brief Sets specified vector value to new value */
 bool vector_set_value_only( vector* vec, vec_data* value, int width, int from_idx, int to_idx );
+
+/*! \brief Performs a zero-fill of all bits starting at lsb and continuing to the vector's msb */
+bool vector_zero_fill( vector* vec, int msb, int lsb );
 
 /*! \brief Sets vector output type (DECIMAL, BINARY, OCTAL or HEXIDECIMAL) in first nibble */
 void vector_set_type( vector* vec, int type );
@@ -133,6 +133,10 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.29  2005/11/08 23:12:10  phase1geo
+ Fixes for function/task additions.  Still a lot of testing on these structures;
+ however, regressions now pass again so we are checkpointing here.
+
  Revision 1.28  2005/01/10 02:59:30  phase1geo
  Code added for race condition checking that checks for signals being assigned
  in multiple statements.  Working on handling bit selects -- this is in progress.
