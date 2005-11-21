@@ -42,9 +42,9 @@ DIAGS1        = always1        always2        always3        always3.1.11A  alwa
                 fsm1           fsm1.1         fsm1.2         fsm1.3         fsm1.4 \
                 fsm3           fsm4           fsm4.1         fsm5           fsm5.1 \
                 fsm5.2         fsm5.3         fsm10          func1          func2 \
-                gate1          hier1 \
-                ifdef1         ifdef1.2       ifdef2.1       ifdef2.2       ifdef2.3 \
-                ifelse1        include1       include1.1     include2       instance1 \
+                gate1          hier1          ifdef1         ifdef1.2       ifdef2.1 \
+                ifdef2.2       ifdef2.3       ifelse1        include1       include1.1 \
+                include2       initial1       instance1 \
                 instance1.1    instance1.2    instance2      instance3      instance4 \
                 instance4.1    instance4.2    instance5      instance6      instance6.1 \
                 instance6.2    instance7      long_exp1      long_exp2      long_exp3 \

@@ -1525,14 +1525,14 @@ module_item
       }
     }
   | attribute_list_opt
-    K_initial { ignore_mode++; } statement { ignore_mode--; }
+    K_initial statement
     {
-      /*
-      statement* stmt = $2;
-      db_statement_set_stop( stmt, NULL, FALSE );
-      stmt->exp->suppl.part.stmt_head = 1;
-      db_add_statement( stmt, stmt );
-      */
+      statement* stmt = $3;
+      if( stmt != NULL ) {
+        db_statement_set_stop( stmt, NULL, FALSE );
+        stmt->exp->suppl.part.stmt_head = 1;
+        db_add_statement( stmt, stmt );
+      }
     }
   | K_task IDENTIFIER ';'
     {

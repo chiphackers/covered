@@ -373,10 +373,10 @@ bool sim_statement( statement* head_stmt, statement** last_stmt ) {
 void sim_simulate() {
 
   stmt_iter  curr_stmt;             /* Statement list iterator */
-  stmt_link* tmp_stmt;              /* Temporary pointer to statement link */
   sig_link*  sigl;                  /* Pointer to current element in signal list */
   bool       stmt_executed = TRUE;  /* Specifies if the any statement had a simulation effect */
   bool       curr_executed;         /* Specifies if the current statement had a simulation effect */
+  statement* tmp_stmt;              /* Temporary statement pointer */
   
   while( stmt_executed ) {
 
@@ -391,7 +391,7 @@ void sim_simulate() {
     
       assert( curr_stmt.curr->stmt != NULL );
     
-      curr_executed = sim_statement( curr_stmt.curr->stmt, &(curr_stmt.curr->stmt) );
+      curr_executed = sim_statement( curr_stmt.curr->stmt, &tmp_stmt );
 
 #ifdef DEBUG_MODE
       snprintf( user_msg, USER_MSG_LENGTH, "Simulated statement block %d, line %d, executed %d",
@@ -401,24 +401,18 @@ void sim_simulate() {
 
       stmt_executed |= curr_executed;
 
-      if( curr_stmt.curr->stmt == NULL ) {
-      
-        if( curr_stmt.curr == presim_stmt_head ) {
-          presim_stmt_head      = (stmt_link*)((long int)(curr_stmt.curr->ptr) ^ (long int)(curr_stmt.last));
-          presim_stmt_head->ptr = (stmt_link*)((long int)(curr_stmt.curr) ^ (long int)(presim_stmt_head->ptr));
-        } else if( curr_stmt.curr == presim_stmt_tail ) {
-          presim_stmt_tail      = curr_stmt.last;
-          presim_stmt_tail->ptr = (stmt_link*)((long int)(curr_stmt.curr) ^ (long int)(presim_stmt_tail->ptr));
-        } else {
-          tmp_stmt            = (stmt_link*)((long int)(curr_stmt.last) ^ (long int)(curr_stmt.curr->ptr));
-          curr_stmt.last->ptr = tmp_stmt;
-          tmp_stmt->ptr       = (stmt_link*)(((long int)(curr_stmt.curr) ^ (long int)(tmp_stmt->ptr)) ^ (long int)(curr_stmt.last));
-        }
-      
-        tmp_stmt = curr_stmt.curr;
+      /* If we have reached the end of the current statement block, remove it from the presim queue */
+      if( tmp_stmt == NULL ) {
+
+        /* Go to next statement in presim queue */
         stmt_iter_next( &curr_stmt );
+    
+        /* Remove the completed statement block */
+        stmt_link_unlink( curr_stmt.last->stmt, &presim_stmt_head, &presim_stmt_tail );
       
       } else {
+
+        curr_stmt.curr->stmt = tmp_stmt;
 
         /* Set wait bits on current statement */
         sigl = curr_stmt.curr->stmt->wait_sig_head;
@@ -427,10 +421,11 @@ void sim_simulate() {
           sigl = sigl->next;
         }
       
+        /* Go to next statement in presim queue */
         stmt_iter_next( &curr_stmt );
-      
-      }
     
+      }
+
     }
 
   }
@@ -440,6 +435,9 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.45  2005/11/21 22:21:58  phase1geo
+ More regression updates.  Also made some updates to debugging output.
+
  Revision 1.44  2005/11/21 04:17:43  phase1geo
  More updates to regression suite -- includes several bug fixes.  Also added --enable-debug
  facility to configuration file which will include or exclude debugging output from being
