@@ -8,7 +8,7 @@
 
 COVERED_SRC   = ../../src
 COVERED       = $(COVERED_SRC)/covered
-COVERED_GFLAG = -D
+COVERED_GFLAG = -Q
 
 IVERILOG       = iverilog
 IVERILOG_FLAGS = -y ./lib -I ./include -DRUNTEST
@@ -84,29 +84,29 @@ $(MERGELIST):
 	@./check_test $@ 1 0
 
 $(ERRSCORELIST):
-	@echo Running $@
+	@echo Running $@ -- should see an error message
 	@$(VERILOG) $(VERILOG_FLAGS) $@.v
 	@$(VERILOG_CMD)
-	@$(COVERED) -D score -f ../regress/$@.cfg | tee $@.err
+	@$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@.cfg | tee $@.err
 	@./check_test $@ 1 1
 
 $(ERRMERGELIST):
-	@echo Running $@
+	@echo Running $@ -- should see an error message
 	@$(VERILOG) $(VERILOG_FLAGS) $@a.v
 	@$(VERILOG_CMD)
 	@$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@a.cfg
 	@$(VERILOG) $(VERILOG_FLAGS) $@b.v
 	@$(VERILOG_CMD)
 	@$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@b.cfg
-	@$(COVERED) -D merge -o $@.cdd $@a.cdd $@b.cdd | tee $@.err
+	@$(COVERED) $(COVERED_GFLAG) merge -o $@.cdd $@a.cdd $@b.cdd | tee $@.err
 	@./check_test $@ 1 1
 
 $(ERRREPORTLIST):
-	@echo Running $@
+	@echo Running $@ -- should see an error message
 	@$(VERILOG) $(VERILOG_FLAGS) $@.v
 	@$(VERILOG_CMD)
 	@$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@.cfg
-	@$(COVERED) -D report -d v $@.cdd | tee $@.err
+	@$(COVERED) $(COVERED_GFLAG) report -d v $@.cdd | tee $@.err
 	@./check_test $@ 1 1
 
 $(COVERED):

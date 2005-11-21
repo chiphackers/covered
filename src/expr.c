@@ -92,6 +92,9 @@ extern char user_msg[USER_MSG_LENGTH];
 extern exp_link* static_expr_head;
 extern exp_link* static_expr_tail;
 
+extern bool debug_mode;
+
+
 /*! Array containing string names of expression operation types (useful for outputting expression op) */ 
 const char* exp_op_names[EXP_OP_NUM] = {
   "STATIC", "SIG", "XOR", "MULTIPLY", "DIVIDE", "MOD", "ADD", "SUBTRACT", "AND", "OR", "NAND", "NOR", "NXOR",
@@ -1010,17 +1013,17 @@ void expression_display( expression* expr ) {
     right_id = expr->right->id;
   }
 
-  printf( "  Expression =>  id: %d, op: %s, line: %d, col: %x, suppl: %x, width: %d, left: %d, right: %d\n", 
+  printf( "  Expression =>  id: %d, op: %s, line: %d, col: %x, suppl: %x, left: %d, right: %d, ", 
           expr->id,
           expression_string_op( expr->op ),
           expr->line,
 	  expr->col,
           expr->suppl.all,
-          expr->value->width,
           left_id, 
           right_id );
 
-  vector_display( expr->value );
+  vector_display_value( expr->value->value, expr->value->width );
+  printf( "\n" );
 
 }
 
@@ -1056,7 +1059,7 @@ bool expression_operate( expression* expr ) {
   if( (expr != NULL) && (expr->suppl.part.lhs == 0) ) {
 
 #ifdef DEBUG_MODE
-    snprintf( user_msg, USER_MSG_LENGTH, "In expression_operate, id: %d, op: %s, line: %d",
+    snprintf( user_msg, USER_MSG_LENGTH, "      In expression_operate, id: %d, op: %s, line: %d",
               expr->id, expression_string_op( expr->op ), expr->line );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
@@ -1627,7 +1630,7 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
   if( lhs != NULL ) {
 
 #ifdef DEBUG_MODE
-    snprintf( user_msg, USER_MSG_LENGTH, "In expression_assign, lhs_op: %s, rhs_op: %s, lsb: %d",
+    snprintf( user_msg, USER_MSG_LENGTH, "        In expression_assign, lhs_op: %s, rhs_op: %s, lsb: %d",
               expression_string_op( lhs->op ), expression_string_op( rhs->op ), *lsb );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
@@ -1640,9 +1643,13 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
             vector_bit_fill( lhs->value, lhs->value->width, (rhs->value->width + *lsb) );
           }
   	  vsignal_propagate( lhs->sig );
-          // expression_display( lhs );
         }
         *lsb = *lsb + lhs->value->width;
+#ifdef DEBUG_MODE
+	if( debug_mode ) {
+          printf( "        " );  vsignal_display( lhs->sig );
+        }
+#endif
         break;
       case EXP_OP_SBIT_SEL :
         if( lhs->sig->value->suppl.part.assigned == 1 ) {
@@ -1656,6 +1663,11 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
 	  vsignal_propagate( lhs->sig );
         }
         *lsb = *lsb + lhs->value->width;
+#ifdef DEBUG_MODE
+	if( debug_mode ) {
+          printf( "        " );  vsignal_display( lhs->sig );
+        }
+#endif
         break;
       case EXP_OP_MBIT_SEL :
         if( lhs->sig->value->suppl.part.assigned == 1 ) {
@@ -1666,6 +1678,11 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
   	  vsignal_propagate( lhs->sig );
         }
         *lsb = *lsb + lhs->value->width;
+#ifdef DEBUG_MODE
+ 	if( debug_mode ) {
+          printf( "        " );  vsignal_display( lhs->sig );
+        }
+#endif
         break;
       case EXP_OP_CONCAT   :
       case EXP_OP_LIST     :
@@ -1752,6 +1769,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.123  2005/11/21 04:17:43  phase1geo
+ More updates to regression suite -- includes several bug fixes.  Also added --enable-debug
+ facility to configuration file which will include or exclude debugging output from being
+ generated.
+
  Revision 1.122  2005/11/18 23:52:55  phase1geo
  More regression cleanup -- still quite a few errors to handle here.
 

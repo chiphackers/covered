@@ -131,21 +131,17 @@ void sim_expr_changed( expression* expr ) {
       (ESUPPL_IS_RIGHT_CHANGED( expr->suppl ) == 0) ||
       (expr->op == EXP_OP_COND) ) {
 
-    printf( "is_root? %d\n", ESUPPL_IS_ROOT( expr->suppl ) );
-
     /* If we are not the root expression, do the following */
     if( ESUPPL_IS_ROOT( expr->suppl ) == 0 ) {
 
       /* Set the appropriate CHANGED bit of the parent expression */
       if( (expr->parent->expr->left != NULL) && (expr->parent->expr->left->id == expr->id) ) {
 
-        printf( "Setting left_changed in parent %s to 1\n", expression_string_op( expr->parent->expr->op ) );
         expr->parent->expr->suppl.part.left_changed = 1;
 
         /* If the parent of this expression is a CONDITIONAL, set the RIGHT_CHANGED bit of the parent too */
         if( expr->parent->expr->op == EXP_OP_COND ) {
 
-          printf( "Setting right_changed in parent %s to 1\n", expression_string_op( expr->parent->expr->op ) );
           expr->parent->expr->suppl.part.right_changed = 1;
 
         }
@@ -153,7 +149,6 @@ void sim_expr_changed( expression* expr ) {
 
       } else if( (expr->parent->expr->right != NULL) && (expr->parent->expr->right->id == expr->id) ) {
         
-        printf( "Setting right_changed in parent %s to 1\n", expression_string_op( expr->parent->expr->op ) );
         expr->parent->expr->suppl.part.right_changed = 1;
 
       }
@@ -245,7 +240,7 @@ bool sim_expression( expression* expr ) {
   assert( expr != NULL );
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In sim_expression %d, left_changed %d, right_changed %d",
+  snprintf( user_msg, USER_MSG_LENGTH, "    In sim_expression %d, left_changed %d, right_changed %d",
             expr->id, ESUPPL_IS_LEFT_CHANGED( expr->suppl ), ESUPPL_IS_RIGHT_CHANGED( expr->suppl ) );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
@@ -332,7 +327,7 @@ bool sim_statement( statement* head_stmt, statement** last_stmt ) {
     stmt->exp->suppl.part.executed = 1;
 
 #ifdef DEBUG_MODE
-    snprintf( user_msg, USER_MSG_LENGTH, "Executed statement %d, expr changed %d", stmt->exp->id, expr_changed );
+    snprintf( user_msg, USER_MSG_LENGTH, "  Executed statement %d, expr changed %d", stmt->exp->id, expr_changed );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
       
@@ -380,24 +375,31 @@ void sim_simulate() {
   stmt_iter  curr_stmt;             /* Statement list iterator */
   stmt_link* tmp_stmt;              /* Temporary pointer to statement link */
   sig_link*  sigl;                  /* Pointer to current element in signal list */
-  bool       stmt_executed = TRUE;  /* Specifies if the current statement had a simulation effect */
+  bool       stmt_executed = TRUE;  /* Specifies if the any statement had a simulation effect */
+  bool       curr_executed;         /* Specifies if the current statement had a simulation effect */
   
   while( stmt_executed ) {
 
     stmt_executed = FALSE;
     stmt_iter_reset( &curr_stmt, presim_stmt_head );
   
+#ifdef DEBUG_MODE
+    print_output( "####  Iterating through presim queue  ####", DEBUG, __FILE__, __LINE__ );
+#endif
+    
     while( curr_stmt.curr != NULL ) {
     
       assert( curr_stmt.curr->stmt != NULL );
     
-      stmt_executed |= sim_statement( curr_stmt.curr->stmt, &(curr_stmt.curr->stmt) );
+      curr_executed = sim_statement( curr_stmt.curr->stmt, &(curr_stmt.curr->stmt) );
 
 #ifdef DEBUG_MODE
       snprintf( user_msg, USER_MSG_LENGTH, "Simulated statement block %d, line %d, executed %d",
-                curr_stmt.curr->stmt->exp->id, curr_stmt.curr->stmt->exp->line, stmt_executed );
+                curr_stmt.curr->stmt->exp->id, curr_stmt.curr->stmt->exp->line, curr_executed );
       print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
+
+      stmt_executed |= curr_executed;
 
       if( curr_stmt.curr->stmt == NULL ) {
       
@@ -438,6 +440,11 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.44  2005/11/21 04:17:43  phase1geo
+ More updates to regression suite -- includes several bug fixes.  Also added --enable-debug
+ facility to configuration file which will include or exclude debugging output from being
+ generated.
+
  Revision 1.43  2005/11/18 23:52:55  phase1geo
  More regression cleanup -- still quite a few errors to handle here.
 

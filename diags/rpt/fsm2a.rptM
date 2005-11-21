@@ -45,7 +45,7 @@ Module/Task/Function      Filename                         Toggle 0 -> 1        
 Module/Task/Function                Filename                                Logic Combinations
                                                                       Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  fsm                               fsm.v                              27/  13/  40       68%
+  fsm                               fsm.v                              22/  13/  35       63%
 ---------------------------------------------------------------------------------------------------------------------
 
     Module: fsm, File: lib/fsm.v
@@ -129,7 +129,7 @@ Module/Task/Function                Filename                                Logi
                                                                State                             Arc
 Module/Task/Function      Filename                Hit/Miss/Total    Percent Hit    Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  fsm                     fsm.v                     4/  ? /  ?        ? %            5/  ? /  ?        ? %
+  fsm                     fsm.v                     4/  ? /  ?        ? %            6/  ? /  ?        ? %
 ---------------------------------------------------------------------------------------------------------------------
 
     Module: fsm, File: lib/fsm.v
@@ -152,6 +152,7 @@ Module/Task/Function      Filename                Hit/Miss/Total    Percent Hit 
           2'h0       -> 2'h0      
           2'h0       -> 2'h1      
           2'h1       -> 2'h2      
+          2'h2       -> 2'h2      
           2'h2       -> 2'h3      
           2'h3       -> 2'h0      
 

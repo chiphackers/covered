@@ -57,7 +57,7 @@ Module/Task/Function                Filename                                Logi
                                                                       Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
   main                              fsm1.3.v                            0/   0/   0      100%
-  fsm                               fsm.v                              27/  13/  40       68%
+  fsm                               fsm.v                              22/  13/  35       63%
 ---------------------------------------------------------------------------------------------------------------------
 
     Module: fsm, File: lib/fsm.v
@@ -142,7 +142,7 @@ Module/Task/Function                Filename                                Logi
 Module/Task/Function      Filename                Hit/Miss/Total    Percent Hit    Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
   main                    fsm1.3.v                  0/   0/   0      100%            0/   0/   0      100%
-  fsm                     fsm.v                     4/  ? /  ?        ? %            5/  ? /  ?        ? %
+  fsm                     fsm.v                     4/  ? /  ?        ? %            6/  ? /  ?        ? %
 ---------------------------------------------------------------------------------------------------------------------
 
     Module: fsm, File: lib/fsm.v
@@ -165,6 +165,7 @@ Module/Task/Function      Filename                Hit/Miss/Total    Percent Hit 
           2'h0       -> 2'h0      
           2'h0       -> 2'h1      
           2'h1       -> 2'h2      
+          2'h2       -> 2'h2      
           2'h2       -> 2'h3      
           2'h3       -> 2'h0      
 

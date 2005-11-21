@@ -454,9 +454,9 @@ void vsignal_display( vsignal* sig ) {
 
   assert( sig != NULL );
 
-  printf( "  Signal =>  name: %s, lsb: %d", sig->name, sig->lsb );
-  
-  vector_display( sig->value );
+  printf( "  Signal =>  name: %s, lsb: %d, ", sig->name, sig->lsb );
+  vector_display_value( sig->value->value, sig->value->width );
+  printf( "\n" );
 
 }
 
@@ -537,6 +537,11 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.11  2005/11/21 04:17:43  phase1geo
+ More updates to regression suite -- includes several bug fixes.  Also added --enable-debug
+ facility to configuration file which will include or exclude debugging output from being
+ generated.
+
  Revision 1.10  2005/11/15 23:08:02  phase1geo
  Updates for new binding scheme.  Binding occurs for all expressions, signals,
  FSMs, and functional units after parsing has completed or after database reading
