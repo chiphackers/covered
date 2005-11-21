@@ -53,7 +53,7 @@ Module/Task/Function      Filename                         Toggle 0 -> 1        
 Module/Task/Function                Filename                                Logic Combinations
                                                                       Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  fsm                               fsm.v                              24/  16/  40       60%
+  fsm                               fsm.v                              19/  16/  35       54%
 ---------------------------------------------------------------------------------------------------------------------
 
     Module: fsm, File: lib/fsm.v

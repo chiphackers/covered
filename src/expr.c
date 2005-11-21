@@ -92,6 +92,14 @@ extern char user_msg[USER_MSG_LENGTH];
 extern exp_link* static_expr_head;
 extern exp_link* static_expr_tail;
 
+/*! Array containing string names of expression operation types (useful for outputting expression op) */ 
+const char* exp_op_names[EXP_OP_NUM] = {
+  "STATIC", "SIG", "XOR", "MULTIPLY", "DIVIDE", "MOD", "ADD", "SUBTRACT", "AND", "OR", "NAND", "NOR", "NXOR",
+  "LT", "GT", "LSHIFT", "RSHIFT", "EQ", "CEQ", "LE", "GE", "NE", "CNE", "LOR", "LAND", "COND", "COND_SEL",
+  "UINV", "UAND", "UNOT", "UOR", "UXOR", "UNAND", "UNOR", "UNXOR", "SBIT_SEL", "MBIT_SEL", "EXPAND", "CONCAT",
+  "PEDGE", "NEDGE", "AEDGE", "LAST", "EOR", "DELAY", "CASE", "CASEX", "CASEZ", "DEFAULT", "LIST", "PARAM",
+  "PARAM_SBIT", "PARAM_MBIT", "ASSIGN", "DASSIGN", "BASSIGN", "NASSIGN", "IF", "FUNC_CALL", "TASK_CALL" };
+
 
 /*!
  \param exp    Pointer to expression to add value to.
@@ -278,7 +286,8 @@ void expression_set_value( expression* exp, vector* vec ) {
   assert( exp->value != NULL );
   assert( vec != NULL );
   
-  /* printf( "In expression_set_value, expr: %d, op: %d, line: %d\n", exp->id, exp->op, exp->line ); */
+  /* printf( "In expression_set_value, expr: %d, op: %s, line: %d\n",
+              exp->id, expression_string_op( exp->op ), exp->line ); */
   
   switch( exp->op ) {
     case EXP_OP_SIG   :
@@ -962,6 +971,20 @@ bool expression_db_replace( expression* base, char** line ) {
 }
 
 /*!
+ \param op  Expression operation to get string representation of
+
+ \return Returns a non-writable string that contains the user-readable name of the
+         specified expression operation.
+*/
+const char* expression_string_op( int op ) {
+
+  assert( (op >= 0) && (op < EXP_OP_NUM) );
+
+  return( exp_op_names[op] );
+
+}
+
+/*!
  \param expr  Pointer to expression to display.
 
  Displays contents of the specified expression to standard output.  This function
@@ -969,8 +992,9 @@ bool expression_db_replace( expression* base, char** line ) {
 */
 void expression_display( expression* expr ) {
 
-  int right_id;        /* Value of right expression ID */
-  int left_id;         /* Value of left expression ID  */
+  int right_id;  /* Value of right expression ID */
+  int left_id;   /* Value of left expression ID  */
+  char op[20];   /* String representation of expression operation */    
 
   assert( expr != NULL );
 
@@ -986,14 +1010,17 @@ void expression_display( expression* expr ) {
     right_id = expr->right->id;
   }
 
-  printf( "  Expression =>  id: %d, line: %d, col: %x, suppl: %x, width: %d, left: %d, right: %d\n", 
+  printf( "  Expression =>  id: %d, op: %s, line: %d, col: %x, suppl: %x, width: %d, left: %d, right: %d\n", 
           expr->id,
+          expression_string_op( expr->op ),
           expr->line,
 	  expr->col,
           expr->suppl.all,
           expr->value->width,
           left_id, 
           right_id );
+
+  vector_display( expr->value );
 
 }
 
@@ -1028,8 +1055,11 @@ bool expression_operate( expression* expr ) {
 
   if( (expr != NULL) && (expr->suppl.part.lhs == 0) ) {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "In expression_operate, id: %d, op: %d, line: %d", expr->id, expr->op, expr->line );
+#ifdef DEBUG_MODE
+    snprintf( user_msg, USER_MSG_LENGTH, "In expression_operate, id: %d, op: %s, line: %d",
+              expr->id, expression_string_op( expr->op ), expr->line );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif
 
     assert( expr->value != NULL );
     assert( ESUPPL_IS_LHS( expr->suppl ) == 0 );
@@ -1275,11 +1305,12 @@ bool expression_operate( expression* expr ) {
         expr->suppl.part.eval_t = 0;
         value1a.part.value = expr->right->value->value[0].part.value;
         value1b.all        = expr->left->value->value[0].all;
-        // if( (value1b.part.misc == 1) && (value1a.part.value != value1b.part.value) && (value1a.part.value == 1) ) {
-        if( (value1a.part.value != value1b.part.value) && (value1a.part.value == 1) ) {
+        if( (value1b.part.misc == 1) && (value1a.part.value != value1b.part.value) && (value1a.part.value == 1) ) {
           expr->suppl.part.eval_t = 1;
           expr->suppl.part.true   = 1;
+          value1a.part.misc       = 0;
         } else {
+          value1a.part.misc       = 1;
           retval = FALSE;
         }
         /* Set left LAST value to current value of right */
@@ -1291,10 +1322,12 @@ bool expression_operate( expression* expr ) {
         expr->suppl.part.eval_t = 0;
         value1a.part.value = expr->right->value->value[0].part.value;
         value1b.all        = expr->left->value->value[0].all;
-        if( (value1a.part.value != value1b.part.value) && (value1a.part.value == 0) ) {
+        if( (value1b.part.misc == 1) && (value1a.part.value != value1b.part.value) && (value1a.part.value == 0) ) {
           expr->suppl.part.eval_t = 1;
           expr->suppl.part.true   = 1;
+          value1a.part.misc       = 0;
         } else {
+          value1a.part.misc       = 1;
           retval = FALSE;
         }
         /* Set left LAST value to current value of right */
@@ -1309,23 +1342,25 @@ bool expression_operate( expression* expr ) {
         value1b.all = expr->left->value->value[0].all;
         /* Set left LAST value to current value of right */
         vector_set_value( expr->left->value, expr->right->value->value, expr->right->value->width, 0, 0 );
-        if( vector_to_int( &vec1 ) == 0 ) {
+        if( (value1b.part.misc == 1) && (vector_to_int( &vec1 ) == 0) ) {
           expr->suppl.part.eval_t = 1;
           expr->suppl.part.true   = 1;
+          expr->left->value->value[0].part.misc = 0;
         } else {
+          expr->left->value->value[0].part.misc = 1;
           retval = FALSE;
         }
         exp_is_event = TRUE;
         break;
 
       case EXP_OP_EOR :
+        expression_operate( expr->left );
+        expression_operate( expr->right );
         if( (ESUPPL_IS_TRUE( expr->left->suppl ) == 1) || (ESUPPL_IS_TRUE( expr->right->suppl ) == 1) ) {
           bit.part.value = 1;
         } else {
           bit.part.value = 0;
         }
-        ESUPPL_IS_TRUE( expr->left->suppl )  = 0;
-        ESUPPL_IS_TRUE( expr->right->suppl ) = 0;
         retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
         break;
 
@@ -1518,6 +1553,33 @@ bool expression_is_static_only( expression* expr ) {
 }
 
 /*!
+ \param expr  Pointer to top-level expression tree to set events for
+
+ Recursively traverses down specified expression tree, arming each PEDGE, NEDGE and
+ AEDGE expression that it sees.
+*/
+void expression_arm_events( expression* expr ) {
+
+  assert( expr != NULL );
+
+  if( expr->op == EXP_OP_EOR ) {
+
+    /* Go down tree setting all events */
+    expression_arm_events( expr->left );
+    expression_arm_events( expr->right );
+
+  } else if( (expr->op == EXP_OP_PEDGE) ||
+             (expr->op == EXP_OP_NEDGE) ||
+             (expr->op == EXP_OP_AEDGE) ) {
+
+    /* Arm this event */
+    expr->left->value->value[0].part.misc = 1;
+
+  }
+
+}
+
+/*!
  \param expr  Pointer to current expression to evaluate
 
  Checks to see if the expression is in the LHS of a BASSIGN expression tree.  If it is, it sets the
@@ -1564,8 +1626,11 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
 
   if( lhs != NULL ) {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "In expression_assign, lhs_op: %d, rhs_op: %d, lsb: %d", lhs->op, rhs->op, *lsb );
+#ifdef DEBUG_MODE
+    snprintf( user_msg, USER_MSG_LENGTH, "In expression_assign, lhs_op: %s, rhs_op: %s, lsb: %d",
+              expression_string_op( lhs->op ), expression_string_op( rhs->op ), *lsb );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif
 
     switch( lhs->op ) {
       case EXP_OP_SIG      :
@@ -1575,6 +1640,7 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
             vector_bit_fill( lhs->value, lhs->value->width, (rhs->value->width + *lsb) );
           }
   	  vsignal_propagate( lhs->sig );
+          // expression_display( lhs );
         }
         *lsb = *lsb + lhs->value->width;
         break;
@@ -1686,6 +1752,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.122  2005/11/18 23:52:55  phase1geo
+ More regression cleanup -- still quite a few errors to handle here.
+
  Revision 1.121  2005/11/18 05:17:01  phase1geo
  Updating regressions with latest round of changes.  Also added bit-fill capability
  to expression_assign function -- still more changes to come.  We need to fix the

@@ -54,6 +54,9 @@ COVERED_TCLTK
 ## Check for browser for help pages
 COVERED_PROG_BROWSER
 
+dnl Specify debug enabling
+COVERED_DEBUG
+
 dnl AC_CHECK_HEADERS(getopt.h)
 AC_CHECK_HEADERS(string.h)
 AC_CHECK_HEADERS(sys/times.h)

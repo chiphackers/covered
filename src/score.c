@@ -439,8 +439,10 @@ int command_score( int argc, int last_arg, char** argv ) {
     }
     snprintf( user_msg, USER_MSG_LENGTH, "Dynamic memory allocated:   %ld bytes", largest_malloc_size );
     print_output( user_msg, NORMAL, __FILE__, __LINE__ );
+#ifdef DEBUG_MODE
     snprintf( user_msg, USER_MSG_LENGTH, "Allocated memory remaining: %ld bytes", curr_malloc_size );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif
     print_output( "", NORMAL, __FILE__, __LINE__ );
 
   }
@@ -451,6 +453,10 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.51  2005/11/08 23:12:10  phase1geo
+ Fixes for function/task additions.  Still a lot of testing on these structures;
+ however, regressions now pass again so we are checkpointing here.
+
  Revision 1.50  2005/05/09 03:08:35  phase1geo
  Intermediate checkin for VPI changes.  Also contains parser fix which should
  be branch applied to the latest stable and development versions.

@@ -176,6 +176,7 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
   fsm_link*  curr_fsm;        /* Pointer to current functional unit fsm_link element */
   race_blk*  curr_race;       /* Pointer to current race condition block    */
 
+#ifdef DEBUG_MODE
   switch( funit->type ) {
     case FUNIT_MODULE      :  snprintf( user_msg, USER_MSG_LENGTH, "Writing module %s", funit->name );       break;
     case FUNIT_NAMED_BLOCK :  snprintf( user_msg, USER_MSG_LENGTH, "Writing named block %s", funit->name );  break;
@@ -188,6 +189,7 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
       break;
   }
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif
 
   fprintf( file, "%d %d %s %s %s %d %d\n",
     DB_TYPE_FUNIT,
@@ -703,6 +705,10 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.3  2005/11/16 22:01:51  phase1geo
+ Fixing more problems related to simulation of function/task calls.  Regression
+ runs are now running without errors.
+
  Revision 1.2  2005/11/15 23:08:02  phase1geo
  Updates for new binding scheme.  Binding occurs for all expressions, signals,
  FSMs, and functional units after parsing has completed or after database reading

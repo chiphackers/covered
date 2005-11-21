@@ -273,7 +273,7 @@ void exp_link_display( exp_link* head ) {
 
   curr = head;
   while( curr != NULL ) {
-    printf( "  id: %d, op: %d, line: %d\n", curr->exp->id, curr->exp->op, curr->exp->line );
+    printf( "  id: %d, op: %s, line: %d\n", curr->exp->id, expression_string_op( curr->exp->op ), curr->exp->line );
     curr = curr->next;
   }
 
@@ -759,6 +759,10 @@ void funit_link_delete_list( funit_link* head ) {
 
 /*
  $Log$
+ Revision 1.34  2005/11/08 23:12:09  phase1geo
+ Fixes for function/task additions.  Still a lot of testing on these structures;
+ however, regressions now pass again so we are checkpointing here.
+
  Revision 1.33  2005/01/25 13:42:27  phase1geo
  Fixing segmentation fault problem with race condition checking.  Added race1.1
  to regression.  Removed unnecessary output statements from previous debugging

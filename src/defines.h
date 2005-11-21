@@ -634,6 +634,8 @@
 #define EXP_OP_FUNC_CALL  0x3a
 /*! Decimal value = 59.  Specifies a task call (note: this operator MUST be the root of the expression tree) */
 #define EXP_OP_TASK_CALL  0x3b
+/*! The total number of defines for expression values */
+#define EXP_OP_NUM        60
 
 /*! @} */
 
@@ -1641,6 +1643,9 @@ struct stmt_blk_s {
 
 /*
  $Log$
+ Revision 1.130  2005/11/18 23:52:55  phase1geo
+ More regression cleanup -- still quite a few errors to handle here.
+
  Revision 1.129  2005/11/17 23:35:16  phase1geo
  Blocking assignment is now working properly along with support for event expressions
  (currently only the original PEDGE, NEDGE, AEDGE and DELAY are supported but more

@@ -60,6 +60,4 @@ lexer.c:  $(srcdir)/lexer.l
 keywords.c:  keywords.gperf
 	gperf -o -i 7 -C -k 1-3,$$ -L ANSI-C -H keyword_hash -N check_identifier -t $(srcdir)/keywords.gperf > keywords.c || (rm -f keywords.c ; false)
 
-clean:
-	rm -f pplexer.c lexer.c keywords.c
-	rm -f parser.c parser.h parser.output
+CLEANFILES = pplexer.c lexer.c keywords.c parser.c parser.h parser.output

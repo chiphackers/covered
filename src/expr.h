@@ -49,6 +49,9 @@ bool expression_db_merge( expression* base, char** line, bool same );
 /*! \brief Reads and replaces original expression with new expression. */
 bool expression_db_replace( expression* base, char** line );
 
+/*! \brief Returns user-readable name of specified expression operation. */
+const char* expression_string_op( int op );
+
 /*! \brief Displays the specified expression information. */
 void expression_display( expression* expr );
 
@@ -60,6 +63,9 @@ void expression_operate_recursively( expression* expr );
 
 /*! \brief Returns TRUE if specified expression is found to contain all static leaf expressions. */
 bool expression_is_static_only( expression* expr );
+
+/*! \brief Arms all PEDGE, NEDGE and AEDGE event expressions in given expression tree */
+void expression_arm_events( expression* expr );
 
 /*! \brief Returns TRUE if specified expression is on the LHS of a blocking assignment operator. */
 bool expression_is_assigned( expression* expr );
@@ -73,6 +79,12 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.32  2005/11/17 23:35:16  phase1geo
+ Blocking assignment is now working properly along with support for event expressions
+ (currently only the original PEDGE, NEDGE, AEDGE and DELAY are supported but more
+ can now follow).  Added new race4 diagnostic to verify that a register cannot be
+ assigned from more than one location -- this works.  Regression fails at this point.
+
  Revision 1.31  2005/11/15 23:08:02  phase1geo
  Updates for new binding scheme.  Binding occurs for all expressions, signals,
  FSMs, and functional units after parsing has completed or after database reading

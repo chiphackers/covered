@@ -90,7 +90,9 @@ bool parse_design( char* top, char* output_db ) {
       exit( 1 );
     }
 
+#ifdef DEBUG_MODE
     print_output( "========  Completed design parsing  ========\n", DEBUG, __FILE__, __LINE__ );
+#endif
 
     /* Perform all signal/expression binding */
     bind( FALSE );
@@ -100,7 +102,9 @@ bool parse_design( char* top, char* output_db ) {
     print_output( "\nChecking for race conditions...", NORMAL, __FILE__, __LINE__ );
     race_check_modules();
 
+#ifdef DEBUG_MODE
     print_output( "========  Completed race condition checking  ========\n", DEBUG, __FILE__, __LINE__ );
+#endif
 
   } else {
 
@@ -115,8 +119,10 @@ bool parse_design( char* top, char* output_db ) {
     exit( 1 );
   }
 
+#ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "========  Design written to database %s successfully  ========\n\n", output_db );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif
 
   return( retval );
 
@@ -133,8 +139,10 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
 
   bool retval = TRUE;  /* Return value of this function */
 
+#ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "========  Reading in database %s  ========\n", db );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif
 
   /* Initialize all global information variables */
   info_initialize();
@@ -156,8 +164,10 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
     exit( 1 );
   }
 
+#ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "========  Reading in VCD dumpfile %s  ========\n", vcd );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif
   
   /* Perform initialization simulation timestep */
   db_do_timestep( 0 );
@@ -168,8 +178,10 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
   /* Flush any pending statement trees that are waiting for delay */
   db_do_timestep( -1 );
 
+#ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "========  Writing database %s  ========\n", db );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif
 
   /* Indicate that this CDD contains scored information */
   flag_scored = TRUE;
@@ -186,6 +198,13 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
 
 /*
  $Log$
+ Revision 1.29  2005/11/15 23:08:02  phase1geo
+ Updates for new binding scheme.  Binding occurs for all expressions, signals,
+ FSMs, and functional units after parsing has completed or after database reading
+ has been completed.  This should allow for any hierarchical reference or scope
+ issues to be handled correctly.  Regression mostly passes but there are still
+ a few failures at this point.  Checkpointing.
+
  Revision 1.28  2005/02/01 05:11:18  phase1geo
  Updates to race condition checker to find blocking/non-blocking assignments in
  statement block.  Regression still runs clean.

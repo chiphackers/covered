@@ -23,16 +23,25 @@
 #include "util.h"
 
 
+extern char user_msg[USER_MSG_LENGTH];
+
+
 /*!
  Displays usage information about this utility.
 */
 void usage() {
 
   printf( "\n" );
+#ifdef DEBUG_MODE
   printf( "Usage:  covered (-h | -v | (-D | -Q) <command> <command_options>))\n" );
+#else
+  printf( "Usage:  covered (-h | -v | -Q) <command> <command_options>))\n" );
+#endif
   printf( "\n" );
   printf( "   Options:\n" );
+#ifdef DEBUG_MODE
   printf( "      -D                      Debug.  Display information helpful for debugging tool problems\n" );
+#endif
   printf( "      -Q                      Quiet mode.  Causes all output to be suppressed\n" );
   printf( "      -v                      Version.  Display current Covered version\n" );
   printf( "      -h                      Help.  Display this usage information\n" );
@@ -87,14 +96,16 @@ int main( int argc, char** argv ) {
 
       do {
 
-        if( strncmp( "-D", argv[curr_arg], 2 ) == 0 ) {
-
-          set_debug( TRUE );
-
-        } else if( strncmp( "-Q", argv[curr_arg], 2 ) == 0 ) {
+        if( strncmp( "-Q", argv[curr_arg], 2 ) == 0 ) {
 
           set_output_suppression( TRUE );
 
+#ifdef DEBUG_MODE
+        } else if( strncmp( "-D", argv[curr_arg], 2 ) == 0 ) {
+
+          set_debug( TRUE );
+
+#endif
         } else if( strncmp( "score", argv[curr_arg], 5 ) == 0 ) {
 
           retval    = command_score( argc, curr_arg, argv );
@@ -112,8 +123,9 @@ int main( int argc, char** argv ) {
 
         } else {
 
-          print_output( "Unknown command.  Please see \"covered -h\" for usage.", FATAL, __FILE__, __LINE__ );
-          retval = -1;
+          snprintf( user_msg, USER_MSG_LENGTH, "Unknown command/global option \"%s\".  Please see \"covered -h\" for usage.", argv[curr_arg] );
+          print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          exit( 1 );
 
         }
 
@@ -138,6 +150,15 @@ int main( int argc, char** argv ) {
 
 /*
  $Log$
+ Revision 1.12  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.11  2002/11/27 15:53:50  phase1geo
  Checkins for next release (20021127).  Updates to documentation, configuration
  files and NEWS.

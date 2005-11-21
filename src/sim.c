@@ -74,6 +74,7 @@
 
 
 extern nibble or_optab[OPTAB_SIZE];
+extern char   user_msg[USER_MSG_LENGTH];
 
 /*!
  Pointer to head of expression list that contains all expressions that contain static (non-changing)
@@ -117,12 +118,20 @@ void sim_expr_changed( expression* expr ) {
 
   assert( expr != NULL );
 
-  printf( "In sim_expr_changed, expr %d, line %d\n", expr->id, expr->line );
+#ifdef DEBUG_MODE
+  snprintf( user_msg, USER_MSG_LENGTH, "In sim_expr_changed, expr %d, op %s, line %d, left_changed: %d, right_changed: %d",
+            expr->id, expression_string_op( expr->op ), expr->line,
+            ESUPPL_IS_LEFT_CHANGED( expr->suppl ),
+            ESUPPL_IS_RIGHT_CHANGED( expr->suppl ) );
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif
 
   /* No need to continue to traverse up tree if both CHANGED bits are set */
   if( (ESUPPL_IS_LEFT_CHANGED( expr->suppl ) == 0) ||
       (ESUPPL_IS_RIGHT_CHANGED( expr->suppl ) == 0) ||
       (expr->op == EXP_OP_COND) ) {
+
+    printf( "is_root? %d\n", ESUPPL_IS_ROOT( expr->suppl ) );
 
     /* If we are not the root expression, do the following */
     if( ESUPPL_IS_ROOT( expr->suppl ) == 0 ) {
@@ -130,11 +139,13 @@ void sim_expr_changed( expression* expr ) {
       /* Set the appropriate CHANGED bit of the parent expression */
       if( (expr->parent->expr->left != NULL) && (expr->parent->expr->left->id == expr->id) ) {
 
+        printf( "Setting left_changed in parent %s to 1\n", expression_string_op( expr->parent->expr->op ) );
         expr->parent->expr->suppl.part.left_changed = 1;
 
         /* If the parent of this expression is a CONDITIONAL, set the RIGHT_CHANGED bit of the parent too */
         if( expr->parent->expr->op == EXP_OP_COND ) {
 
+          printf( "Setting right_changed in parent %s to 1\n", expression_string_op( expr->parent->expr->op ) );
           expr->parent->expr->suppl.part.right_changed = 1;
 
         }
@@ -142,6 +153,7 @@ void sim_expr_changed( expression* expr ) {
 
       } else if( (expr->parent->expr->right != NULL) && (expr->parent->expr->right->id == expr->id) ) {
         
+        printf( "Setting right_changed in parent %s to 1\n", expression_string_op( expr->parent->expr->op ) );
         expr->parent->expr->suppl.part.right_changed = 1;
 
       }
@@ -153,7 +165,7 @@ void sim_expr_changed( expression* expr ) {
 
     /* Set one of the changed bits to let the simulator know that it needs to evaluate the expression.  */
     if( (ESUPPL_IS_LEFT_CHANGED( expr->suppl ) == 0) && (ESUPPL_IS_RIGHT_CHANGED( expr->suppl ) == 0) ) {
-      expr->suppl.part.right_changed = 1;
+      expr->suppl.part.left_changed = 1;
     }
 
   }
@@ -173,8 +185,13 @@ void sim_add_stmt_to_queue( statement* stmt ) {
 
   assert( stmt != NULL );
 
+  /* Only add expression if it is the head statement of its statement block */
   if( ESUPPL_IS_STMT_HEAD( stmt->exp->suppl ) == 1 ) {
 
+    /* Arm all events */
+    expression_arm_events( stmt->exp );
+      
+    /* Add to presimulation queue */
     stmt_link_add_tail( stmt, &(presim_stmt_head), &(presim_stmt_tail) );
 
     /* Set wait signals */
@@ -227,8 +244,11 @@ bool sim_expression( expression* expr ) {
 
   assert( expr != NULL );
 
-  printf( "In sim_expression %d, left_changed %d, right_changed %d\n",
-          expr->id, ESUPPL_IS_LEFT_CHANGED( expr->suppl ), ESUPPL_IS_RIGHT_CHANGED( expr->suppl ) );
+#ifdef DEBUG_MODE
+  snprintf( user_msg, USER_MSG_LENGTH, "In sim_expression %d, left_changed %d, right_changed %d",
+            expr->id, ESUPPL_IS_LEFT_CHANGED( expr->suppl ), ESUPPL_IS_RIGHT_CHANGED( expr->suppl ) );
+  print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif
 
   /* Traverse left child expression if it has changed */
   if( (ESUPPL_IS_LEFT_CHANGED( expr->suppl ) == 1) ||
@@ -236,7 +256,8 @@ bool sim_expression( expression* expr ) {
       (expr->op == EXP_OP_CASEX)                   ||
       (expr->op == EXP_OP_CASEZ) ) {
 
-    if( expr->left != NULL ) {
+    /* EOR operations will be traversed by the expression operator */
+    if( (expr->op != EXP_OP_EOR) && (expr->left != NULL) ) {
       if( expr->left->suppl.part.lhs == 0 ) {
         left_changed = sim_expression( expr->left );
       }
@@ -252,7 +273,8 @@ bool sim_expression( expression* expr ) {
   /* Traverse right child expression if it has changed */
   if( ESUPPL_IS_RIGHT_CHANGED( expr->suppl ) == 1 ) {
 
-    if( expr->right != NULL ) {
+    /* EOR operations will be traversed by the expression operator */
+    if( (expr->op != EXP_OP_EOR) && (expr->right != NULL) ) {
       if( expr->right->suppl.part.lhs == 0 ) {
         right_changed = sim_expression( expr->right );
       }
@@ -309,7 +331,10 @@ bool sim_statement( statement* head_stmt, statement** last_stmt ) {
     /* Indicate that this statement's expression has been executed */
     stmt->exp->suppl.part.executed = 1;
 
-    printf( "Executed statement %d, expr changed %d\n", stmt->exp->id, expr_changed );
+#ifdef DEBUG_MODE
+    snprintf( user_msg, USER_MSG_LENGTH, "Executed statement %d, expr changed %d", stmt->exp->id, expr_changed );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif
       
     /* Clear wait event signal bits */
     if( first && expr_changed ) {
@@ -368,8 +393,11 @@ void sim_simulate() {
     
       stmt_executed |= sim_statement( curr_stmt.curr->stmt, &(curr_stmt.curr->stmt) );
 
-      printf( "Simulated statement block %d, line %d, executed %d\n",
-              curr_stmt.curr->stmt->exp->id, curr_stmt.curr->stmt->exp->line, stmt_executed );
+#ifdef DEBUG_MODE
+      snprintf( user_msg, USER_MSG_LENGTH, "Simulated statement block %d, line %d, executed %d",
+                curr_stmt.curr->stmt->exp->id, curr_stmt.curr->stmt->exp->line, stmt_executed );
+      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif
 
       if( curr_stmt.curr->stmt == NULL ) {
       
@@ -410,6 +438,9 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.43  2005/11/18 23:52:55  phase1geo
+ More regression cleanup -- still quite a few errors to handle here.
+
  Revision 1.42  2005/11/18 05:17:01  phase1geo
  Updating regressions with latest round of changes.  Also added bit-fill capability
  to expression_assign function -- still more changes to come.  We need to fix the

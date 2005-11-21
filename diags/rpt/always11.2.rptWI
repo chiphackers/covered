@@ -55,7 +55,7 @@ Instance                                                   Toggle 0 -> 1        
 Instance                                                                    Logic Combinations
                                                                       Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
-  <NA>.main                                                             3/   1/   4       75%
+  <NA>.main                                                             1/   1/   2       50%
 ---------------------------------------------------------------------------------------------------------------------
 
     Module: main, File: always11.2.v, Instance: <NA>.main
@@ -68,11 +68,9 @@ Instance                                                                    Logi
               8:    @( a )
                     |-1--|
 
-        Expression 1   (1/2)
+        Expression 1   (0/1)
         ^^^^^^^^^^^^^ - 
-         E | E
-        =0=|=1=
-             *
+         * Event did not occur
 
 
 
