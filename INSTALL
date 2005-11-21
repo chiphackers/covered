@@ -41,6 +41,15 @@
 
     ./configure --with-mpatrol
 
+  If you would like to see the built-in debugging information that Covered can produce
+  while it runs a command, you will need to specify the following configuration command:
+
+    ./configure --enable-debug
+
+  After configure has been called and 'make' run, you can get the Covered debug information
+  generated to standard output by specifying the global '-D' option (see 'covered -h' for more
+  information) with any command.
+
   After the configuration process has completed, a Makefile will be created in the
   Covered directory.  To build and compile all source code for the tool, simply type:
 
