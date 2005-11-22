@@ -540,13 +540,14 @@ void exp_link_remove( expression* exp, exp_link** head, exp_link** tail, bool re
       last->next = curr->next;
     }
 
-    /* If recursive flag set, remove expression as well */
-    if( recursive ) {
-      expression_dealloc( curr->exp, TRUE );
-    }
-
     free_safe( curr );
 
+  }
+
+  /* If recursive flag set, remove expression as well */
+  if( recursive ) {
+    printf( "Deallocating expression %d\n", exp->id );
+    expression_dealloc( exp, TRUE );
   }
 
 }
@@ -759,6 +760,11 @@ void funit_link_delete_list( funit_link* head ) {
 
 /*
  $Log$
+ Revision 1.35  2005/11/21 04:17:43  phase1geo
+ More updates to regression suite -- includes several bug fixes.  Also added --enable-debug
+ facility to configuration file which will include or exclude debugging output from being
+ generated.
+
  Revision 1.34  2005/11/08 23:12:09  phase1geo
  Fixes for function/task additions.  Still a lot of testing on these structures;
  however, regressions now pass again so we are checkpointing here.

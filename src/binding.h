@@ -18,10 +18,10 @@ void bind_add( int type, const char* name, expression* exp, func_unit* funit );
 void bind_append_fsm_expr( expression* fsm_exp, expression* exp, func_unit* curr_funit );
 
 /*! \brief Removes the expression with ID of id from binding list. */
-void bind_remove( int id );
+void bind_remove( int id, bool clear_assigned );
 
 /*! \brief Binds a signal to an expression */
-bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bind, bool cdd_reading );
+bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bind, bool cdd_reading, bool clear_assigned );
 
 /*! \brief Binds a function or task to an expression */
 bool bind_task_function( int type, char* name, expression* exp, func_unit* funit_exp, bool cdd_reading );
@@ -32,6 +32,9 @@ void bind( bool cdd_reading );
 
 /* 
  $Log$
+ Revision 1.16  2005/11/16 05:41:31  phase1geo
+ Fixing implicit signal creation in binding functions.
+
  Revision 1.15  2005/11/15 23:08:02  phase1geo
  Updates for new binding scheme.  Binding occurs for all expressions, signals,
  FSMs, and functional units after parsing has completed or after database reading

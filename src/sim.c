@@ -377,6 +377,7 @@ void sim_simulate() {
   bool       stmt_executed = TRUE;  /* Specifies if the any statement had a simulation effect */
   bool       curr_executed;         /* Specifies if the current statement had a simulation effect */
   statement* tmp_stmt;              /* Temporary statement pointer */
+  stmt_link* tmp_stmtl;             /* Temporary statement link pointer */
   
   while( stmt_executed ) {
 
@@ -390,6 +391,7 @@ void sim_simulate() {
     while( curr_stmt.curr != NULL ) {
     
       assert( curr_stmt.curr->stmt != NULL );
+      assert( curr_stmt.curr->stmt->exp != NULL );
     
       curr_executed = sim_statement( curr_stmt.curr->stmt, &tmp_stmt );
 
@@ -404,11 +406,16 @@ void sim_simulate() {
       /* If we have reached the end of the current statement block, remove it from the presim queue */
       if( tmp_stmt == NULL ) {
 
+        tmp_stmtl = curr_stmt.last;
+
         /* Go to next statement in presim queue */
         stmt_iter_next( &curr_stmt );
     
-        /* Remove the completed statement block */
+        /* Remove the last completed statement block */
         stmt_link_unlink( curr_stmt.last->stmt, &presim_stmt_head, &presim_stmt_tail );
+
+        /* Re-adjust the curr and last pointers in the curr_stmt structure */
+        curr_stmt.last = tmp_stmtl;
       
       } else {
 
@@ -435,6 +442,11 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.46  2005/11/21 23:31:06  phase1geo
+ Adding support for initial statement blocks.  Added first initial1 diagnostic
+ to regression suite.  This support seems to be working for the moment -- still
+ need to run regressions.
+
  Revision 1.45  2005/11/21 22:21:58  phase1geo
  More regression updates.  Also made some updates to debugging output.
 

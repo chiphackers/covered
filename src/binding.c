@@ -105,13 +105,14 @@ void bind_add( int type, const char* name, expression* exp, func_unit* funit ) {
   exp_bind* eb;   /* Temporary pointer to signal/expressing binding */
   
   /* Create new signal/expression binding */
-  eb        = (exp_bind *)malloc_safe( sizeof( exp_bind ), __FILE__, __LINE__ );
-  eb->type  = type;
-  eb->name  = strdup_safe( name, __FILE__, __LINE__ );
-  eb->funit = funit;
-  eb->exp   = exp;
-  eb->fsm   = NULL;
-  eb->next  = NULL;
+  eb                 = (exp_bind *)malloc_safe( sizeof( exp_bind ), __FILE__, __LINE__ );
+  eb->type           = type;
+  eb->name           = strdup_safe( name, __FILE__, __LINE__ );
+  eb->clear_assigned = FALSE;
+  eb->funit          = funit;
+  eb->exp            = exp;
+  eb->fsm            = NULL;
+  eb->next           = NULL;
   
   /* Add new signal/expression binding to linked list */
   if( eb_head == NULL ) {
@@ -155,10 +156,12 @@ void bind_append_fsm_expr( expression* fsm_exp, expression* exp, func_unit* curr
  Removes the binding containing the expression ID of id.  This needs to
  be called before an expression is removed.
 */
-void bind_remove( int id ) {
+void bind_remove( int id, bool clear_assigned ) {
 
-  exp_bind* curr;    /* Pointer to current exp_bind link       */
-  exp_bind* last;    /* Pointer to last exp_bind link examined */
+  exp_bind* curr;  /* Pointer to current exp_bind link */
+  exp_bind* last;  /* Pointer to last exp_bind link examined */
+
+  printf( "REMOVING BIND %d with clear_assigned %d!!!!\n", id, clear_assigned );
 
   curr = eb_head;
   last = eb_head;
@@ -169,21 +172,32 @@ void bind_remove( int id ) {
 
     if( curr->exp->id == id ) {
       
-      /* Remove this binding element */
-      if( (curr == eb_head) && (curr == eb_tail) ) {
-        eb_head = eb_tail = NULL;
-      } else if( curr == eb_head ) {
-        eb_head = eb_head->next;
-      } else if( curr == eb_tail ) {
-        eb_tail       = last;
-        eb_tail->next = NULL;
-      } else {
-        last->next = curr->next;
-      }
+      if( clear_assigned ) {
 
-      /* Now free the binding element memory */
-      free_safe( curr->name );
-      free_safe( curr );
+        printf( "Found expression %d for clearing\n", id );
+        curr->clear_assigned = TRUE;
+
+      } else {
+
+        printf( "Actually removing!!!\n" );
+
+        /* Remove this binding element */
+        if( (curr == eb_head) && (curr == eb_tail) ) {
+          eb_head = eb_tail = NULL;
+        } else if( curr == eb_head ) {
+          eb_head = eb_head->next;
+        } else if( curr == eb_tail ) {
+          eb_tail       = last;
+          eb_tail->next = NULL;
+        } else {
+          last->next = curr->next;
+        }
+
+        /* Now free the binding element memory */
+        free_safe( curr->name );
+        free_safe( curr );
+
+      }
 
       curr = NULL;
       
@@ -203,6 +217,7 @@ void bind_remove( int id ) {
  \param exp               Pointer to expression to bind.
  \param funit_exp         Pointer to functional unit containing expression.
  \param fsm_bind          If set to TRUE, handling binding for FSM binding.
+ \param clear_assigned    If set to TRUE, clears
 
  \return Returns TRUE if bind occurred successfully; otherwise, returns FALSE.
  
@@ -214,13 +229,15 @@ void bind_remove( int id ) {
  signal neither exists or is an unused signal, it is considered to be an implicit signal
  and a 1-bit signal is created.
 */
-bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bind, bool cdd_reading ) {
+bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bind, bool cdd_reading, bool clear_assigned ) {
 
   bool       retval = TRUE;  /* Return value for this function */
   char*      tmpname;        /* Temporary name containing unused signal character */
   vsignal*   found_sig;      /* Pointer to found signal in design for the given name */
   func_unit* found_funit;    /* Pointer to found functional unit containing given signal */
   statement* stmt;           /* Pointer to root statement for the given expression */
+
+  printf( "Binding expression %d to signal %s\n", exp->id, name );
 
   /* Search for specified signal in current functional unit */
   if( !scope_find_signal( name, funit_exp, &found_sig, &found_funit, exp->line ) ) {
@@ -260,42 +277,50 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
 
   if( retval ) {
 
-    /* Add expression to signal expression list */
-    exp_link_add( exp, &(found_sig->exp_head), &(found_sig->exp_tail) );
+    if( clear_assigned ) {
 
-    /* Set expression to point at signal */
-    exp->sig = found_sig;
-
-    if( cdd_reading ) {
-
-      if( (exp->op == EXP_OP_SIG)        ||
-          (exp->op == EXP_OP_SBIT_SEL)   ||
-          (exp->op == EXP_OP_MBIT_SEL)   ||
-          (exp->op == EXP_OP_PARAM)      ||
-          (exp->op == EXP_OP_PARAM_SBIT) ||
-          (exp->op == EXP_OP_PARAM_MBIT) ) {
-        // vector_dealloc( exp->value );
-        expression_set_value( exp, found_sig->value );
-      }
-
-      if( ((exp->op == EXP_OP_SIG) ||
-           (exp->op == EXP_OP_SBIT_SEL) ||
-           (exp->op == EXP_OP_MBIT_SEL)) &&
-          ((stmt = expression_get_root_statement( exp )) != NULL) &&
-          ((stmt->exp->op == EXP_OP_EOR) ||
-           (stmt->exp->op == EXP_OP_AEDGE) ||
-           (stmt->exp->op == EXP_OP_PEDGE) ||
-           (stmt->exp->op == EXP_OP_NEDGE)) ) {
-        sig_link_add( found_sig, &(stmt->wait_sig_head), &(stmt->wait_sig_tail) );
-      }
+      printf( "Clearing assigned in bind_signal for %s!!!\n", found_sig->name );
+      found_sig->value->suppl.part.assigned = 0;
 
     } else {
 
-      /* Check to see if this signal should be assigned by Covered or the dumpfile */
-      if( (exp->op == EXP_OP_SIG) ||
-          (exp->op == EXP_OP_SBIT_SEL) ||
-          (exp->op == EXP_OP_MBIT_SEL) ) {
-        expression_set_assigned( exp );
+      /* Add expression to signal expression list */
+      exp_link_add( exp, &(found_sig->exp_head), &(found_sig->exp_tail) );
+
+      /* Set expression to point at signal */
+      exp->sig = found_sig;
+
+      if( cdd_reading ) {
+
+        if( (exp->op == EXP_OP_SIG)        ||
+            (exp->op == EXP_OP_SBIT_SEL)   ||
+            (exp->op == EXP_OP_MBIT_SEL)   ||
+            (exp->op == EXP_OP_PARAM)      ||
+            (exp->op == EXP_OP_PARAM_SBIT) ||
+            (exp->op == EXP_OP_PARAM_MBIT) ) {
+          expression_set_value( exp, found_sig->value );
+        }
+
+        if( ((exp->op == EXP_OP_SIG) ||
+             (exp->op == EXP_OP_SBIT_SEL) ||
+             (exp->op == EXP_OP_MBIT_SEL)) &&
+            ((stmt = expression_get_root_statement( exp )) != NULL) &&
+            ((stmt->exp->op == EXP_OP_EOR) ||
+             (stmt->exp->op == EXP_OP_AEDGE) ||
+             (stmt->exp->op == EXP_OP_PEDGE) ||
+             (stmt->exp->op == EXP_OP_NEDGE)) ) {
+          sig_link_add( found_sig, &(stmt->wait_sig_head), &(stmt->wait_sig_tail) );
+        }
+
+      } else {
+
+        /* Check to see if this signal should be assigned by Covered or the dumpfile */
+        if( (exp->op == EXP_OP_SIG) ||
+            (exp->op == EXP_OP_SBIT_SEL) ||
+            (exp->op == EXP_OP_MBIT_SEL) ) {
+          expression_set_assigned( exp );
+        }
+
       }
 
     }
@@ -420,7 +445,7 @@ void bind( bool cdd_reading ) {
        Bind the signal.  If it is unsuccessful, we need to remove the statement that this expression
        is a part of.
       */
-      bound = bind_signal( curr_eb->name, curr_eb->exp, curr_eb->funit, FALSE, cdd_reading );
+      bound = bind_signal( curr_eb->name, curr_eb->exp, curr_eb->funit, FALSE, cdd_reading, curr_eb->clear_assigned );
 
       /* If an FSM expression is attached, size it now */
       if( curr_eb->fsm != NULL ) {
@@ -501,7 +526,7 @@ void bind( bool cdd_reading ) {
     curr_eb = curr_eb->next;
 
     /* Remove binding from list */
-    bind_remove( id );
+    bind_remove( id, FALSE );
 
   }
 
@@ -515,6 +540,9 @@ void bind( bool cdd_reading ) {
 
 /* 
  $Log$
+ Revision 1.38  2005/11/18 23:52:55  phase1geo
+ More regression cleanup -- still quite a few errors to handle here.
+
  Revision 1.37  2005/11/16 22:01:51  phase1geo
  Fixing more problems related to simulation of function/task calls.  Regression
  runs are now running without errors.

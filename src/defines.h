@@ -1565,6 +1565,7 @@ struct vector_width_s {
 struct exp_bind_s {
   int         type;                  /*!< Specifies if name refers to a signal (0), function (FUNIT_FUNCTION) or task (FUNIT_TASK) */
   char*       name;                  /*!< Name of Verilog scoped signal/functional unit to bind */
+  bool        clear_assigned;        /*!< If TRUE, clears the signal assigned supplemental field without binding */
   expression* exp;                   /*!< Expression to bind. */
   expression* fsm;                   /*!< FSM expression to create value for when this expression is bound */
   func_unit*  funit;                 /*!< Pointer to functional unit containing expression */
@@ -1643,6 +1644,11 @@ struct stmt_blk_s {
 
 /*
  $Log$
+ Revision 1.131  2005/11/21 04:17:43  phase1geo
+ More updates to regression suite -- includes several bug fixes.  Also added --enable-debug
+ facility to configuration file which will include or exclude debugging output from being
+ generated.
+
  Revision 1.130  2005/11/18 23:52:55  phase1geo
  More regression cleanup -- still quite a few errors to handle here.
 
