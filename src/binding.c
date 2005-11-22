@@ -108,7 +108,7 @@ void bind_add( int type, const char* name, expression* exp, func_unit* funit ) {
   eb                 = (exp_bind *)malloc_safe( sizeof( exp_bind ), __FILE__, __LINE__ );
   eb->type           = type;
   eb->name           = strdup_safe( name, __FILE__, __LINE__ );
-  eb->clear_assigned = FALSE;
+  eb->clear_assigned = 0;
   eb->funit          = funit;
   eb->exp            = exp;
   eb->fsm            = NULL;
@@ -150,6 +150,42 @@ void bind_append_fsm_expr( expression* fsm_exp, expression* exp, func_unit* curr
 
 }
 
+void bind_display_list() {
+
+  exp_bind* curr;  /* Pointer to current expression binding */
+
+  curr = eb_head;
+ 
+  printf( "Expression binding list:\n" );
+
+  while( curr != NULL ) {
+
+    switch( curr->type ) {
+      case FUNIT_FUNCTION :
+        printf( "  Expr: %d, %s, line %d;  Functional Unit: %s;  Function: %s\n",
+                curr->exp->id, expression_string_op( curr->exp->op ), curr->exp->line, curr->funit->name, curr->name );
+        break;
+      case FUNIT_TASK :
+        printf( "  Expr: %d, %s, line %d;  Functional Unit: %s;  Task: %s\n",
+                curr->exp->id, expression_string_op( curr->exp->op ), curr->exp->line, curr->funit->name, curr->name );
+        break;
+      case 0 :
+        if( curr->clear_assigned > 0 ) {
+          printf( "  Signal to be cleared: %s\n", curr->name );
+        } else {
+          printf( "  Expr: %d, %s, line %d;  Functional Unit: %s;  Signal: %s\n",
+                  curr->exp->id, expression_string_op( curr->exp->op ), curr->exp->line, curr->funit->name, curr->name );
+        }
+        break;
+      default :  break;
+    }
+
+    curr = curr->next;
+
+  }
+
+}
+
 /*!
  \param id  Expression ID of binding to remove.
 
@@ -161,7 +197,7 @@ void bind_remove( int id, bool clear_assigned ) {
   exp_bind* curr;  /* Pointer to current exp_bind link */
   exp_bind* last;  /* Pointer to last exp_bind link examined */
 
-  printf( "REMOVING BIND %d with clear_assigned %d!!!!\n", id, clear_assigned );
+  // bind_display_list();
 
   curr = eb_head;
   last = eb_head;
@@ -170,16 +206,13 @@ void bind_remove( int id, bool clear_assigned ) {
 
     assert( curr->exp != NULL );
 
-    if( curr->exp->id == id ) {
+    if( ((curr->clear_assigned == 0) && (curr->exp->id == id)) || (curr->clear_assigned == id) ) {
       
       if( clear_assigned ) {
 
-        printf( "Found expression %d for clearing\n", id );
-        curr->clear_assigned = TRUE;
+        curr->clear_assigned = id;
 
       } else {
-
-        printf( "Actually removing!!!\n" );
 
         /* Remove this binding element */
         if( (curr == eb_head) && (curr == eb_tail) ) {
@@ -209,6 +242,8 @@ void bind_remove( int id, bool clear_assigned ) {
     }
 
   }
+
+  // bind_display_list();
       
 }
 
@@ -236,8 +271,6 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
   vsignal*   found_sig;      /* Pointer to found signal in design for the given name */
   func_unit* found_funit;    /* Pointer to found functional unit containing given signal */
   statement* stmt;           /* Pointer to root statement for the given expression */
-
-  printf( "Binding expression %d to signal %s\n", exp->id, name );
 
   /* Search for specified signal in current functional unit */
   if( !scope_find_signal( name, funit_exp, &found_sig, &found_funit, exp->line ) ) {
@@ -279,7 +312,6 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
 
     if( clear_assigned ) {
 
-      printf( "Clearing assigned in bind_signal for %s!!!\n", found_sig->name );
       found_sig->value->suppl.part.assigned = 0;
 
     } else {
@@ -436,7 +468,13 @@ void bind( bool cdd_reading ) {
   while( curr_eb != NULL ) {
 
     assert( curr_eb->exp != NULL );
-    id = curr_eb->exp->id;
+
+    /* Figure out ID to clear from the binding list after the bind occurs */
+    if( curr_eb->clear_assigned == 0 ) {
+      id = curr_eb->exp->id;
+    } else {
+      id = curr_eb->clear_assigned;
+    }
 
     /* Handle signal binding */
     if( curr_eb->type == 0 ) {
@@ -445,7 +483,7 @@ void bind( bool cdd_reading ) {
        Bind the signal.  If it is unsuccessful, we need to remove the statement that this expression
        is a part of.
       */
-      bound = bind_signal( curr_eb->name, curr_eb->exp, curr_eb->funit, FALSE, cdd_reading, curr_eb->clear_assigned );
+      bound = bind_signal( curr_eb->name, curr_eb->exp, curr_eb->funit, FALSE, cdd_reading, (curr_eb->clear_assigned > 0) );
 
       /* If an FSM expression is attached, size it now */
       if( curr_eb->fsm != NULL ) {
@@ -467,7 +505,7 @@ void bind( bool cdd_reading ) {
      If the expression was unable to be bound, put its statement block in a list to be removed after
      binding has been completed.
     */
-    if( !bound ) {
+    if( !bound && (curr_eb->clear_assigned == 0) ) {
       if( (tmp_stmt = expression_get_root_statement( curr_eb->exp )) != NULL ) {
         tmp_stmt = statement_find_head_statement( tmp_stmt, curr_eb->funit->stmt_head );
         assert( tmp_stmt != NULL );
@@ -540,6 +578,11 @@ void bind( bool cdd_reading ) {
 
 /* 
  $Log$
+ Revision 1.39  2005/11/22 05:30:33  phase1geo
+ Updates to regression suite for clearing the assigned bit when a statement
+ block is removed from coverage consideration and it is assigning that signal.
+ This is not fully working at this point.
+
  Revision 1.38  2005/11/18 23:52:55  phase1geo
  More regression cleanup -- still quite a few errors to handle here.
 
