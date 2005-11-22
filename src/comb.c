@@ -734,6 +734,13 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
               code_fmt[i] = '\0';
               strcat( code_fmt, " %s %s " );
               break;
+            case EXP_OP_TRIGGER  :
+              tmpname = exp->sig->name;
+              *size = l_size + r_size + strlen( tmpname ) + 2;
+              for( i=0; i<strlen( tmpname ) + 2; i++ ) {
+                code_fmt[i] = ' ';
+              }
+              code_fmt[i] = '\0';
             case EXP_OP_EXPAND   :  *size = l_size + r_size + 4;  strcpy( code_fmt, " %s %s  "         );  break;
             case EXP_OP_CONCAT   :  *size = l_size + r_size + 2;  strcpy( code_fmt, " %s "             );  break;
             case EXP_OP_LIST     :  *size = l_size + r_size + 2;  strcpy( code_fmt, "%s  %s"           );  break;
@@ -1515,6 +1522,7 @@ void combination_get_missed_expr( char*** info, int* info_size, expression* exp,
           case EXP_OP_PEDGE      :  combination_event( info, info_size, exp, "posedge" );  break;
           case EXP_OP_NEDGE      :  combination_event( info, info_size, exp, "negedge" );  break;
           case EXP_OP_AEDGE      :  combination_event( info, info_size, exp, "" );         break;
+          case EXP_OP_TRIGGER    :  combination_event( info, info_size, exp, "->" );       break;
           default                :  break;
         }
 
@@ -2009,6 +2017,9 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.113  2005/11/18 23:52:55  phase1geo
+ More regression cleanup -- still quite a few errors to handle here.
+
  Revision 1.112  2005/11/17 23:35:16  phase1geo
  Blocking assignment is now working properly along with support for event expressions
  (currently only the original PEDGE, NEDGE, AEDGE and DELAY are supported but more

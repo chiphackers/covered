@@ -380,6 +380,17 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
         exit( 1 );
       }
 
+    } else if( expr->op == EXP_OP_TRIGGER ) {
+
+      assert( expr->sig != NULL );
+
+      tmpstr = (char*)malloc_safe( (strlen( expr->sig->name ) + 3), __FILE__, __LINE__ );
+      snprintf( tmpstr, (strlen( expr->sig->name ) + 3), "->%s", expr->sig->name );
+
+      *code       = (char**)malloc_safe( sizeof( char* ), __FILE__, __LINE__ );
+      (*code)[0]  = strdup_safe( tmpstr, __FILE__, __LINE__ );
+      *code_depth = 1;
+
     } else if( expr->op == EXP_OP_DEFAULT ) {
 
       *code       = (char**)malloc_safe( sizeof( char* ), __FILE__, __LINE__ );
@@ -635,6 +646,9 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.43  2005/11/18 23:52:55  phase1geo
+ More regression cleanup -- still quite a few errors to handle here.
+
  Revision 1.42  2005/11/16 22:01:51  phase1geo
  Fixing more problems related to simulation of function/task calls.  Regression
  runs are now running without errors.

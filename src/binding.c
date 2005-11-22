@@ -316,6 +316,8 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
 
     } else {
 
+      printf( "Binding expression %d, line %d to signal %s\n", exp->id, exp->line, found_sig->name );
+
       /* Add expression to signal expression list */
       exp_link_add( exp, &(found_sig->exp_head), &(found_sig->exp_tail) );
 
@@ -506,6 +508,7 @@ void bind( bool cdd_reading ) {
      binding has been completed.
     */
     if( !bound && (curr_eb->clear_assigned == 0) ) {
+      printf( "Getting root statement for exp %d, %s, line %d\n", curr_eb->exp->id, expression_string_op( curr_eb->exp->op ), curr_eb->exp->line );
       if( (tmp_stmt = expression_get_root_statement( curr_eb->exp )) != NULL ) {
         tmp_stmt = statement_find_head_statement( tmp_stmt, curr_eb->funit->stmt_head );
         assert( tmp_stmt != NULL );
@@ -578,6 +581,10 @@ void bind( bool cdd_reading ) {
 
 /* 
  $Log$
+ Revision 1.40  2005/11/22 16:46:27  phase1geo
+ Fixed bug with clearing the assigned bit in the binding phase.  Full regression
+ now runs cleanly.
+
  Revision 1.39  2005/11/22 05:30:33  phase1geo
  Updates to regression suite for clearing the assigned bit when a statement
  block is removed from coverage consideration and it is assigning that signal.

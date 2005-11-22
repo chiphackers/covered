@@ -634,8 +634,10 @@
 #define EXP_OP_FUNC_CALL  0x3a
 /*! Decimal value = 59.  Specifies a task call (note: this operator MUST be the root of the expression tree) */
 #define EXP_OP_TASK_CALL  0x3b
+/*! Decimal value = 60.  Specifies an event trigger (->). */
+#define EXP_OP_TRIGGER    0x3c
 /*! The total number of defines for expression values */
-#define EXP_OP_NUM        60
+#define EXP_OP_NUM        61
 
 /*! @} */
 
@@ -1380,6 +1382,7 @@ struct vector_s {
       nibble wait    :1;             /*!< Specifies that this signal should be waited for */
       nibble inport  :1;             /*!< Specifies if this vector is part of an input port */
       nibble assigned:1;             /*!< Specifies that this vector will be assigned from simulated results (instead of dumpfile) */
+      nibble event   :1;             /*!< Specifies that this vector represents an event value instead of a signal value */
     } part;
   } suppl;                           /*!< Supplemental field */
   vec_data*  value;                  /*!< 4-state current value and toggle history */
@@ -1644,6 +1647,10 @@ struct stmt_blk_s {
 
 /*
  $Log$
+ Revision 1.133  2005/11/22 16:46:27  phase1geo
+ Fixed bug with clearing the assigned bit in the binding phase.  Full regression
+ now runs cleanly.
+
  Revision 1.132  2005/11/22 05:30:33  phase1geo
  Updates to regression suite for clearing the assigned bit when a statement
  block is removed from coverage consideration and it is assigning that signal.

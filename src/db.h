@@ -39,7 +39,7 @@ void db_add_vector_param( vsignal* sig, expression* parm_exp, int type );
 void db_add_defparam( char* name, expression* expr );
 
 /*! \brief Adds specified vsignal to vsignal list.  Called by parser. */
-void db_add_signal( char* name, static_expr* left, static_expr* right, int inport );
+void db_add_signal( char* name, static_expr* left, static_expr* right, bool inport, bool event );
 
 /*! \brief Called when the endmodule keyword is parsed. */
 void db_end_module( int end_line );
@@ -109,6 +109,10 @@ void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.38  2005/11/08 23:12:09  phase1geo
+ Fixes for function/task additions.  Still a lot of testing on these structures;
+ however, regressions now pass again so we are checkpointing here.
+
  Revision 1.37  2004/12/18 16:23:17  phase1geo
  More race condition checking updates.
 

@@ -737,7 +737,8 @@ void db_add_defparam( char* name, expression* expr ) {
  \param name    Name of signal being added.
  \param left    Specifies constant value for calculation of left-hand vector value.
  \param right   Specifies constant value for calculation of right-hand vector value.
- \param inport  Set to 1 if specified signal name is an input port.
+ \param inport  Set to TRUE if specified signal name is an input port.
+ \param event   set to TRUE if specified signal name is an event.
 
  Creates a new signal with the specified parameter information and adds this
  to the signal list if it does not already exist.  If width == 0, the sig_msb
@@ -745,7 +746,7 @@ void db_add_defparam( char* name, expression* expr ) {
  add to the current module's parameter list and all associated instances are
  updated to contain new value.
 */
-void db_add_signal( char* name, static_expr* left, static_expr* right, int inport ) {
+void db_add_signal( char* name, static_expr* left, static_expr* right, bool inport, bool event ) {
 
   vsignal  tmpsig;  /* Temporary signal for signal searching */
   vsignal* sig;     /* Container for newly created signal    */
@@ -792,7 +793,10 @@ void db_add_signal( char* name, static_expr* left, static_expr* right, int inpor
     sig_link_add( sig, &(curr_funit->sig_head), &(curr_funit->sig_tail) );
 
     /* Indicate if signal is an input port or not */
-    sig->value->suppl.part.inport = inport;
+    sig->value->suppl.part.inport = inport ? 1 : 0;
+
+    /* Indicate if signal is an event or not */
+    sig->value->suppl.part.event  = event ? 1 : 0;
 
   }
   
@@ -1510,6 +1514,11 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.135  2005/11/21 04:17:43  phase1geo
+ More updates to regression suite -- includes several bug fixes.  Also added --enable-debug
+ facility to configuration file which will include or exclude debugging output from being
+ generated.
+
  Revision 1.134  2005/11/18 23:52:55  phase1geo
  More regression cleanup -- still quite a few errors to handle here.
 

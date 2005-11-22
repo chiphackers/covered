@@ -101,7 +101,7 @@ const char* exp_op_names[EXP_OP_NUM] = {
   "LT", "GT", "LSHIFT", "RSHIFT", "EQ", "CEQ", "LE", "GE", "NE", "CNE", "LOR", "LAND", "COND", "COND_SEL",
   "UINV", "UAND", "UNOT", "UOR", "UXOR", "UNAND", "UNOR", "UNXOR", "SBIT_SEL", "MBIT_SEL", "EXPAND", "CONCAT",
   "PEDGE", "NEDGE", "AEDGE", "LAST", "EOR", "DELAY", "CASE", "CASEX", "CASEZ", "DEFAULT", "LIST", "PARAM",
-  "PARAM_SBIT", "PARAM_MBIT", "ASSIGN", "DASSIGN", "BASSIGN", "NASSIGN", "IF", "FUNC_CALL", "TASK_CALL" };
+  "PARAM_SBIT", "PARAM_MBIT", "ASSIGN", "DASSIGN", "BASSIGN", "NASSIGN", "IF", "FUNC_CALL", "TASK_CALL", "TRIGGER" };
 
 
 /*!
@@ -116,7 +116,7 @@ const char* exp_op_names[EXP_OP_NUM] = {
 */
 void expression_create_value( expression* exp, int width, bool data ) {
 
-  vec_data* value = NULL;    /* Temporary storage of vector nibble array */
+  vec_data* value = NULL;  /* Temporary storage of vector nibble array */
 
   if( data == TRUE ) {
     value = (vec_data*)malloc_safe( (sizeof( vec_data ) * width), __FILE__, __LINE__ );
@@ -146,8 +146,8 @@ void expression_create_value( expression* exp, int width, bool data ) {
 expression* expression_create( expression* right, expression* left, int op, bool lhs, int id, int line, int first, int last, bool data ) {
 
   expression* new_expr;    /* Pointer to newly created expression */
-  int         rwidth = 0;  /* Bit width of expression on right    */
-  int         lwidth = 0;  /* Bit width of expression on left     */
+  int         rwidth = 0;  /* Bit width of expression on right */
+  int         lwidth = 0;  /* Bit width of expression on left */
 
   new_expr = (expression*)malloc_safe( sizeof( expression ), __FILE__, __LINE__ );
 
@@ -211,30 +211,30 @@ expression* expression_create( expression* right, expression* left, int op, bool
       expression_create_value( new_expr, 1, data );
     }
 
-  } else if( (op == EXP_OP_LT   ) ||
-             (op == EXP_OP_GT   ) ||
-             (op == EXP_OP_EQ   ) ||
-             (op == EXP_OP_CEQ  ) ||
-             (op == EXP_OP_LE   ) ||
-             (op == EXP_OP_GE   ) ||
-             (op == EXP_OP_NE   ) ||
-             (op == EXP_OP_CNE  ) ||
-             (op == EXP_OP_LOR  ) ||
-             (op == EXP_OP_LAND ) ||
-             (op == EXP_OP_UAND ) ||
-             (op == EXP_OP_UNOT ) ||
-             (op == EXP_OP_UOR  ) ||
-             (op == EXP_OP_UXOR ) ||
-             (op == EXP_OP_UNAND) ||
-             (op == EXP_OP_UNOR ) ||
-             (op == EXP_OP_UNXOR) ||
-             (op == EXP_OP_EOR)   ||
-             (op == EXP_OP_NEDGE) ||
-             (op == EXP_OP_PEDGE) ||
-             (op == EXP_OP_AEDGE) ||
-             (op == EXP_OP_CASE)  ||
-             (op == EXP_OP_CASEX) ||
-             (op == EXP_OP_CASEZ) ||
+  } else if( (op == EXP_OP_LT   )   ||
+             (op == EXP_OP_GT   )   ||
+             (op == EXP_OP_EQ   )   ||
+             (op == EXP_OP_CEQ  )   ||
+             (op == EXP_OP_LE   )   ||
+             (op == EXP_OP_GE   )   ||
+             (op == EXP_OP_NE   )   ||
+             (op == EXP_OP_CNE  )   ||
+             (op == EXP_OP_LOR  )   ||
+             (op == EXP_OP_LAND )   ||
+             (op == EXP_OP_UAND )   ||
+             (op == EXP_OP_UNOT )   ||
+             (op == EXP_OP_UOR  )   ||
+             (op == EXP_OP_UXOR )   ||
+             (op == EXP_OP_UNAND)   ||
+             (op == EXP_OP_UNOR )   ||
+             (op == EXP_OP_UNXOR)   ||
+             (op == EXP_OP_EOR)     ||
+             (op == EXP_OP_NEDGE)   ||
+             (op == EXP_OP_PEDGE)   ||
+             (op == EXP_OP_AEDGE)   ||
+             (op == EXP_OP_CASE)    ||
+             (op == EXP_OP_CASEX)   ||
+             (op == EXP_OP_CASEZ)   ||
              (op == EXP_OP_DEFAULT) ) {
 
     /* If this expression will evaluate to a single bit, create vector now */
@@ -282,7 +282,7 @@ expression* expression_create( expression* right, expression* left, int op, bool
 */
 void expression_set_value( expression* exp, vector* vec ) {
   
-  int lbit;  /* Bit boundary specified by left child  */
+  int lbit;  /* Bit boundary specified by left child */
   int rbit;  /* Bit boundary specified by right child */
   
   assert( exp != NULL );
@@ -293,9 +293,10 @@ void expression_set_value( expression* exp, vector* vec ) {
               exp->id, expression_string_op( exp->op ), exp->line ); */
   
   switch( exp->op ) {
-    case EXP_OP_SIG   :
-    case EXP_OP_PARAM :
+    case EXP_OP_SIG       :
+    case EXP_OP_PARAM     :
     case EXP_OP_FUNC_CALL :
+    case EXP_OP_TRIGGER   :
       exp->value->value = vec->value;
       exp->value->width = vec->width;
       break;
@@ -361,6 +362,7 @@ void expression_resize( expression* expr, bool recursive ) {
       case EXP_OP_SIG :
       case EXP_OP_SBIT_SEL :
       case EXP_OP_MBIT_SEL :
+      case EXP_OP_TRIGGER :
       case EXP_OP_ASSIGN :
       case EXP_OP_DASSIGN :
       case EXP_OP_BASSIGN :
@@ -534,7 +536,8 @@ void expression_get_wait_sig_list_helper( expression* expr, sig_link** head, sig
 
   if( expr != NULL ) {
 
-    if( (expr->op == EXP_OP_SIG) ||
+    if( (expr->op == EXP_OP_SIG)     ||
+        (expr->op == EXP_OP_TRIGGER) ||
         (expr->op == EXP_OP_FUNC_CALL) ) {
  
       assert( expr->sig != NULL );
@@ -627,6 +630,7 @@ void expression_db_write( expression* expr, FILE* file ) {
   if( (expr->op != EXP_OP_SIG)        &&
       (expr->op != EXP_OP_SBIT_SEL)   &&
       (expr->op != EXP_OP_MBIT_SEL)   &&
+      (expr->op != EXP_OP_TRIGGER)    &&
       (expr->op != EXP_OP_PARAM)      &&
       (expr->op != EXP_OP_PARAM_SBIT) &&
       (expr->op != EXP_OP_PARAM_MBIT) &&
@@ -725,6 +729,7 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) {
                                 ((column >> 16) & 0xffff), (column & 0xffff),
                                 ((op != EXP_OP_SIG)        && 
                                  (op != EXP_OP_PARAM)      &&
+                                 (op != EXP_OP_TRIGGER)    &&
                                  (op != EXP_OP_SBIT_SEL)   &&
                                  (op != EXP_OP_PARAM_SBIT) &&
                                  (op != EXP_OP_MBIT_SEL)   &&
@@ -751,9 +756,12 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) {
         left->parent->expr = expr;
       }
 
+      printf( "Reading expression %d, %s, line %d\n", id, expression_string_op( op ), linenum );
+
       if( (op != EXP_OP_SIG)        && 
           (op != EXP_OP_SBIT_SEL)   && 
           (op != EXP_OP_MBIT_SEL)   &&
+          (op != EXP_OP_TRIGGER)    &&
           (op != EXP_OP_PARAM)      &&
           (op != EXP_OP_PARAM_SBIT) &&
           (op != EXP_OP_PARAM_MBIT) &&
@@ -872,6 +880,7 @@ bool expression_db_merge( expression* base, char** line, bool same ) {
       if( (op != EXP_OP_SIG)        &&
           (op != EXP_OP_SBIT_SEL)   &&
           (op != EXP_OP_MBIT_SEL)   &&
+          (op != EXP_OP_TRIGGER)    &&
           (op != EXP_OP_PARAM)      &&
           (op != EXP_OP_PARAM_SBIT) &&
           (op != EXP_OP_PARAM_MBIT) &&
@@ -945,6 +954,7 @@ bool expression_db_replace( expression* base, char** line ) {
       if( (op != EXP_OP_SIG)        &&
           (op != EXP_OP_SBIT_SEL)   &&
           (op != EXP_OP_MBIT_SEL)   &&
+          (op != EXP_OP_TRIGGER)    &&
           (op != EXP_OP_PARAM)      &&
           (op != EXP_OP_PARAM_SBIT) &&
           (op != EXP_OP_PARAM_MBIT) &&
@@ -1385,6 +1395,11 @@ bool expression_operate( expression* expr ) {
         exp_is_event = TRUE;
         break;
 
+      case EXP_OP_TRIGGER :
+        expr->value->value[0].part.value = ~(expr->value->value[0].part.value);
+        retval = TRUE;
+        break;
+
       case EXP_OP_CASE :
         assert( expr->left != NULL );
         assert( expr->right != NULL );
@@ -1722,6 +1737,7 @@ void expression_dealloc( expression* expr, bool exp_only ) {
     if( (op != EXP_OP_SIG       ) && 
         (op != EXP_OP_SBIT_SEL  ) &&
         (op != EXP_OP_MBIT_SEL  ) &&
+        (op != EXP_OP_TRIGGER   ) &&
         (op != EXP_OP_PARAM     ) &&
         (op != EXP_OP_PARAM_SBIT) &&
         (op != EXP_OP_PARAM_MBIT) &&
@@ -1779,6 +1795,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.126  2005/11/22 16:46:27  phase1geo
+ Fixed bug with clearing the assigned bit in the binding phase.  Full regression
+ now runs cleanly.
+
  Revision 1.125  2005/11/22 05:30:33  phase1geo
  Updates to regression suite for clearing the assigned bit when a statement
  block is removed from coverage consideration and it is assigning that signal.
