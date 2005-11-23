@@ -1382,7 +1382,8 @@ struct vector_s {
       nibble wait    :1;             /*!< Specifies that this signal should be waited for */
       nibble inport  :1;             /*!< Specifies if this vector is part of an input port */
       nibble assigned:1;             /*!< Specifies that this vector will be assigned from simulated results (instead of dumpfile) */
-      nibble event   :1;             /*!< Specifies that this vector represents an event value instead of a signal value */
+      nibble mba     :1;             /*!< Specifies that this vector MUST be assigned from simulated results because this information
+                                          is NOT provided in the dumpfile */
     } part;
   } suppl;                           /*!< Supplemental field */
   vec_data*  value;                  /*!< 4-state current value and toggle history */
@@ -1647,6 +1648,11 @@ struct stmt_blk_s {
 
 /*
  $Log$
+ Revision 1.134  2005/11/22 23:03:48  phase1geo
+ Adding support for event trigger mechanism.  Regression is currently broke
+ due to these changes -- we need to remove statement blocks that contain
+ triggers that are not simulated.
+
  Revision 1.133  2005/11/22 16:46:27  phase1geo
  Fixed bug with clearing the assigned bit in the binding phase.  Full regression
  now runs cleanly.

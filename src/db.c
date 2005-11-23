@@ -738,7 +738,7 @@ void db_add_defparam( char* name, expression* expr ) {
  \param left    Specifies constant value for calculation of left-hand vector value.
  \param right   Specifies constant value for calculation of right-hand vector value.
  \param inport  Set to TRUE if specified signal name is an input port.
- \param event   set to TRUE if specified signal name is an event.
+ \param mba     Set to TRUE if specified signal must be assigned by simulated results.
 
  Creates a new signal with the specified parameter information and adds this
  to the signal list if it does not already exist.  If width == 0, the sig_msb
@@ -746,7 +746,7 @@ void db_add_defparam( char* name, expression* expr ) {
  add to the current module's parameter list and all associated instances are
  updated to contain new value.
 */
-void db_add_signal( char* name, static_expr* left, static_expr* right, bool inport, bool event ) {
+void db_add_signal( char* name, static_expr* left, static_expr* right, bool inport, bool mba ) {
 
   vsignal  tmpsig;  /* Temporary signal for signal searching */
   vsignal* sig;     /* Container for newly created signal    */
@@ -795,8 +795,8 @@ void db_add_signal( char* name, static_expr* left, static_expr* right, bool inpo
     /* Indicate if signal is an input port or not */
     sig->value->suppl.part.inport = inport ? 1 : 0;
 
-    /* Indicate if signal is an event or not */
-    sig->value->suppl.part.event  = event ? 1 : 0;
+    /* Indicate if signal must be assigned by simulated results or not */
+    sig->value->suppl.part.mba  = mba ? 1 : 0;
 
   }
   
@@ -1068,7 +1068,7 @@ void db_remove_statement_from_current_funit( statement* stmt ) {
   if( (stmt != NULL) && (stmt->exp != NULL) ) {
 
 #ifdef DEBUG_MODE
-    snprintf( user_msg, USER_MSG_LENGTH, "In db_remove_statement_from_current_module, stmt id: %d", stmt->exp->id );
+    snprintf( user_msg, USER_MSG_LENGTH, "In db_remove_statement_from_current_module %s, stmt id: %d", curr_funit->name, stmt->exp->id );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -1514,6 +1514,11 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.136  2005/11/22 23:03:48  phase1geo
+ Adding support for event trigger mechanism.  Regression is currently broke
+ due to these changes -- we need to remove statement blocks that contain
+ triggers that are not simulated.
+
  Revision 1.135  2005/11/21 04:17:43  phase1geo
  More updates to regression suite -- includes several bug fixes.  Also added --enable-debug
  facility to configuration file which will include or exclude debugging output from being

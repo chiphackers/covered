@@ -47,7 +47,7 @@ void toggle_get_stats( sig_link* sigl, float* total, int* hit01, int* hit10 ) {
   
   /* Search signal list */
   while( curr_sig != NULL ) {
-    if( curr_sig->sig->name[0] != '#' ) {
+    if( (curr_sig->sig->name[0] != '#') && (curr_sig->sig->value->suppl.part.mba == 0) ) {
       *total = *total + curr_sig->sig->value->width;
       vector_toggle_count( curr_sig->sig->value, hit01, hit10 );
     }
@@ -85,7 +85,7 @@ bool toggle_collect( char* funit_name, int funit_type, int cov, expression*** si
       hit01 = 0;
       hit10 = 0;
 
-      if( curr_sig->sig->name[0] != '#' ) {
+      if( (curr_sig->sig->name[0] != '#') && (curr_sig->sig->value->suppl.part.mba == 0) ) {
 
         vector_toggle_count( curr_sig->sig->value, &hit01, &hit10 );
 
@@ -352,7 +352,7 @@ void toggle_display_verbose( FILE* ofile, sig_link* sigl ) {
     hit01 = 0;
     hit10 = 0;
 
-    if( curr_sig->sig->name[0] != '#' ) {
+    if( (curr_sig->sig->name[0] != '#') && (curr_sig->sig->value->suppl.part.mba == 0) ) {
 
       vector_toggle_count( curr_sig->sig->value, &hit01, &hit10 );
 
@@ -529,6 +529,11 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.29  2005/11/10 19:28:23  phase1geo
+ Updates/fixes for tasks/functions.  Also updated Tcl/Tk scripts for these changes.
+ Fixed bug with net_decl_assign statements -- the line, start column and end column
+ information was incorrect, causing problems with the GUI output.
+
  Revision 1.28  2005/11/08 23:12:10  phase1geo
  Fixes for function/task additions.  Still a lot of testing on these structures;
  however, regressions now pass again so we are checkpointing here.

@@ -2400,7 +2400,7 @@ block_item_decl
       static_expr left;
       static_expr right;
       if( ignore_mode == 0 ) {
-        left.num  = 1;
+        left.num  = 0;
         right.num = 0;
         left.exp  = NULL;
         right.exp = NULL;
@@ -2413,12 +2413,17 @@ block_item_decl
     }
   | K_integer register_variable_list ';'
     {
-      str_link* curr = $2;
-      char      tmp[256];
+      str_link*   curr = $2;
+      char        tmp[256];
+      static_expr left;
+      static_expr right;
       if( ignore_mode == 0 ) {
+        left.num  = 31;
+        right.num = 0;
+        left.exp  = NULL;
+        right.exp = NULL;
         while( curr != NULL ) {
-          snprintf( tmp, 256, "!%s", curr->str );
-          db_add_signal( tmp, NULL, NULL, FALSE, FALSE );
+          db_add_signal( curr->str, &left, &right, FALSE, TRUE );
           curr = curr->next;
         }
         str_link_delete_list( $2 );
@@ -2426,12 +2431,17 @@ block_item_decl
     }
   | K_time register_variable_list ';'
     {
-      str_link* curr = $2;
-      char      tmp[256];
+      str_link*   curr = $2;
+      char        tmp[256];
+      static_expr left;
+      static_expr right;
       if( ignore_mode == 0 ) {
+        left.num  = 63;
+        right.num = 0;
+        left.exp  = NULL;
+        right.exp = NULL;
         while( curr != NULL ) {
-          snprintf( tmp, 256, "!%s", curr->str );
-          db_add_signal( tmp, NULL, NULL, FALSE, FALSE );
+          db_add_signal( curr->str, &left, &right, FALSE, TRUE );
           curr = curr->next;
         }
         str_link_delete_list( $2 );

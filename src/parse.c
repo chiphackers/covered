@@ -102,6 +102,9 @@ bool parse_design( char* top, char* output_db ) {
     print_output( "\nChecking for race conditions...", NORMAL, __FILE__, __LINE__ );
     race_check_modules();
 
+    /* Remove all statement blocks that cannot be considered for coverage */
+    stmt_blk_remove();
+
 #ifdef DEBUG_MODE
     print_output( "========  Completed race condition checking  ========\n", DEBUG, __FILE__, __LINE__ );
 #endif
@@ -198,6 +201,11 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
 
 /*
  $Log$
+ Revision 1.30  2005/11/21 04:17:43  phase1geo
+ More updates to regression suite -- includes several bug fixes.  Also added --enable-debug
+ facility to configuration file which will include or exclude debugging output from being
+ generated.
+
  Revision 1.29  2005/11/15 23:08:02  phase1geo
  Updates for new binding scheme.  Binding occurs for all expressions, signals,
  FSMs, and functional units after parsing has completed or after database reading

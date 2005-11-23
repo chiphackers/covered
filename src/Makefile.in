@@ -60,7 +60,7 @@ am_covered_OBJECTS = arc.$(OBJEXT) attr.$(OBJEXT) parser.$(OBJEXT) \
 	param.$(OBJEXT) parse.$(OBJEXT) parser_misc.$(OBJEXT) \
 	race.$(OBJEXT) report.$(OBJEXT) scope.$(OBJEXT) \
 	score.$(OBJEXT) search.$(OBJEXT) sim.$(OBJEXT) stat.$(OBJEXT) \
-	static.$(OBJEXT) statement.$(OBJEXT) symtable.$(OBJEXT) \
+	static.$(OBJEXT) statement.$(OBJEXT) stmt_blk.$(OBJEXT) symtable.$(OBJEXT) \
 	tcl_funcs.$(OBJEXT) toggle.$(OBJEXT) tree.$(OBJEXT) \
 	util.$(OBJEXT) vcd.$(OBJEXT) vector.$(OBJEXT) \
 	vsignal.$(OBJEXT)
@@ -198,6 +198,7 @@ covered_SOURCES = arc.c \
 		  stat.c \
                   static.c \
 		  statement.c \
+		  stmt_blk.c \
 		  symtable.c \
 		  tcl_funcs.c \
 		  toggle.c \
@@ -311,6 +312,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sim.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stat.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/statement.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stmt_blk.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/static.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/symtable.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tcl_funcs.Po@am__quote@

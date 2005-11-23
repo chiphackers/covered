@@ -756,8 +756,6 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) {
         left->parent->expr = expr;
       }
 
-      printf( "Reading expression %d, %s, line %d\n", id, expression_string_op( op ), linenum );
-
       if( (op != EXP_OP_SIG)        && 
           (op != EXP_OP_SBIT_SEL)   && 
           (op != EXP_OP_MBIT_SEL)   &&
@@ -1728,7 +1726,9 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
 */
 void expression_dealloc( expression* expr, bool exp_only ) {
 
-  int op;     /* Temporary operation holder */
+  int        op;        /* Temporary operation holder */
+  exp_link*  tmp_expl;  /* Temporary pointer to expression list */
+  statement* tmp_stmt;  /* Temporary pointer to statement */
 
   if( expr != NULL ) {
 
@@ -1766,7 +1766,20 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
         /* Clear the blocking assignment bit of the attached signal if it is on the LHS */
         if( ESUPPL_IS_LHS( expr->suppl ) == 1 ) {
+
           expr->sig->value->suppl.part.assigned = 0;
+
+          /* If this signal must be assigned, remove all statement blocks that reference this signal */
+          if( expr->sig->value->suppl.part.mba == 1 ) {
+            tmp_expl = expr->sig->exp_head;
+            while( tmp_expl != NULL ) {
+              if( (tmp_stmt = expression_get_root_statement( tmp_expl->exp )) != NULL ) {
+                stmt_blk_add_to_remove_list( tmp_stmt );
+              }
+              tmp_expl = tmp_expl->next;
+            }
+          }
+
         }
         
       }  
@@ -1795,6 +1808,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.127  2005/11/22 23:03:48  phase1geo
+ Adding support for event trigger mechanism.  Regression is currently broke
+ due to these changes -- we need to remove statement blocks that contain
+ triggers that are not simulated.
+
  Revision 1.126  2005/11/22 16:46:27  phase1geo
  Fixed bug with clearing the assigned bit in the binding phase.  Full regression
  now runs cleanly.
