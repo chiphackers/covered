@@ -663,6 +663,7 @@
                                      (x->op != EXP_OP_NASSIGN) && \
                                      (x->op != EXP_OP_IF) && \
                                      (x->op != EXP_OP_TASK_CALL) && \
+				     (x->op != EXP_OP_TRIGGER) && \
                                      (ESUPPL_IS_LHS( x->suppl ) == 0) && \
                                      !((ESUPPL_IS_ROOT( x->suppl ) == 0) && \
                                        ((x->op == EXP_OP_SIG) || \
@@ -1648,6 +1649,9 @@ struct stmt_blk_s {
 
 /*
  $Log$
+ Revision 1.135  2005/11/23 23:05:24  phase1geo
+ Updating regression files.  Full regression now passes.
+
  Revision 1.134  2005/11/22 23:03:48  phase1geo
  Adding support for event trigger mechanism.  Regression is currently broke
  due to these changes -- we need to remove statement blocks that contain

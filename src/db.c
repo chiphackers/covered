@@ -796,7 +796,10 @@ void db_add_signal( char* name, static_expr* left, static_expr* right, bool inpo
     sig->value->suppl.part.inport = inport ? 1 : 0;
 
     /* Indicate if signal must be assigned by simulated results or not */
-    sig->value->suppl.part.mba  = mba ? 1 : 0;
+    if( mba ) {
+      sig->value->suppl.part.mba      = 1;
+      sig->value->suppl.part.assigned = 1;
+    }
 
   }
   
@@ -1068,7 +1071,8 @@ void db_remove_statement_from_current_funit( statement* stmt ) {
   if( (stmt != NULL) && (stmt->exp != NULL) ) {
 
 #ifdef DEBUG_MODE
-    snprintf( user_msg, USER_MSG_LENGTH, "In db_remove_statement_from_current_module %s, stmt id: %d", curr_funit->name, stmt->exp->id );
+    snprintf( user_msg, USER_MSG_LENGTH, "In db_remove_statement_from_current_module %s, stmt id: %d, line: %d",
+              curr_funit->name, stmt->exp->id, stmt->exp->line );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -1514,6 +1518,9 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.137  2005/11/23 23:05:24  phase1geo
+ Updating regression files.  Full regression now passes.
+
  Revision 1.136  2005/11/22 23:03:48  phase1geo
  Adding support for event trigger mechanism.  Regression is currently broke
  due to these changes -- we need to remove statement blocks that contain

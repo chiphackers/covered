@@ -390,7 +390,7 @@ void race_check_one_block_assignment( func_unit* mod ) {
             curr_race = FALSE;
 	    break;	
         }
-          
+
         /* Get expression's head statement */
         curr_stmt = race_get_head_statement( mod, expl->exp );
 
@@ -513,6 +513,9 @@ void race_check_modules() {
         curr_funit = modl->funit;
         for( i=0; i<sb_size; i++ ) {
           if( sb[i].remove ) {
+#ifdef DEBUG_MODE
+            print_output( "Removing statement block because it was found to have a race condition", DEBUG, __FILE__, __LINE__ );
+#endif 
             stmt_blk_add_to_remove_list( sb[i].stmt );
           }
         }
@@ -802,6 +805,9 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.27  2005/11/23 23:05:24  phase1geo
+ Updating regression files.  Full regression now passes.
+
  Revision 1.26  2005/11/18 23:52:55  phase1geo
  More regression cleanup -- still quite a few errors to handle here.
 

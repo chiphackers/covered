@@ -1394,7 +1394,11 @@ bool expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_TRIGGER :
-        expr->value->value[0].part.value = ~(expr->value->value[0].part.value);
+        if( expr->value->value[0].part.value == 1 ) {
+          expr->value->value[0].part.value = 0;
+        } else {
+          expr->value->value[0].part.value = 1;
+        }
         retval = TRUE;
         break;
 
@@ -1595,6 +1599,36 @@ void expression_arm_events( expression* expr ) {
 
 }
 
+/*! \brief Returns TRUE if specified expression is on the LHS of a blocking assignment operator. */
+bool expression_is_assigned( expression* expr ) {
+
+  bool retval = FALSE;  /* Return value for this function */
+
+  assert( expr != NULL );
+
+  /* If this expression is a trigger then this is an assigned expression */
+  if( expr->op == EXP_OP_TRIGGER ) {
+
+    retval = TRUE;
+
+  } else if( (ESUPPL_IS_LHS( expr->suppl ) == 1) &&
+             ((expr->op == EXP_OP_SIG) ||
+              (expr->op == EXP_OP_SBIT_SEL) ||
+              (expr->op == EXP_OP_MBIT_SEL)) ) {
+
+    while( (expr != NULL) && (ESUPPL_IS_ROOT( expr->suppl ) == 0) && (expr->op != EXP_OP_BASSIGN) ) {
+      expr = expr->parent->expr;
+    }
+
+    retval = (expr != NULL) && (expr->op == EXP_OP_BASSIGN);
+
+  }
+
+  return( retval );
+
+}
+
+
 /*!
  \param expr  Pointer to current expression to evaluate
 
@@ -1757,15 +1791,15 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
       if( expr->sig == NULL ) {
 
-        bind_remove( expr->id, (ESUPPL_IS_LHS( expr->suppl ) == 1) );
+        bind_remove( expr->id, expression_is_assigned( expr ) );
 
       } else {
 
         /* Remove this expression from the attached signal's expression list */
         exp_link_remove( expr, &(expr->sig->exp_head), &(expr->sig->exp_tail), FALSE );
 
-        /* Clear the blocking assignment bit of the attached signal if it is on the LHS */
-        if( ESUPPL_IS_LHS( expr->suppl ) == 1 ) {
+        /* Clear the assigned bit of the attached signal */
+        if( expression_is_assigned( expr ) ) {
 
           expr->sig->value->suppl.part.assigned = 0;
 
@@ -1774,6 +1808,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
             tmp_expl = expr->sig->exp_head;
             while( tmp_expl != NULL ) {
               if( (tmp_stmt = expression_get_root_statement( tmp_expl->exp )) != NULL ) {
+#ifdef DEBUG_MODE
+                print_output( "Removing statement block because a statement block is being removed that assigns an MBA", DEBUG, __FILE__, __LINE__ );
+#endif
                 stmt_blk_add_to_remove_list( tmp_stmt );
               }
               tmp_expl = tmp_expl->next;
@@ -1808,6 +1845,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.128  2005/11/23 23:05:24  phase1geo
+ Updating regression files.  Full regression now passes.
+
  Revision 1.127  2005/11/22 23:03:48  phase1geo
  Adding support for event trigger mechanism.  Regression is currently broke
  due to these changes -- we need to remove statement blocks that contain

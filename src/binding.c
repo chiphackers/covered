@@ -199,6 +199,7 @@ void bind_remove( int id, bool clear_assigned ) {
   exp_bind* curr;  /* Pointer to current exp_bind link */
   exp_bind* last;  /* Pointer to last exp_bind link examined */
 
+  // printf( "In bind_remove, id %d, clear_assigned %d\n", id, clear_assigned );
   // bind_display_list();
 
   curr = eb_head;
@@ -273,6 +274,7 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
   vsignal*   found_sig;      /* Pointer to found signal in design for the given name */
   func_unit* found_funit;    /* Pointer to found functional unit containing given signal */
   statement* stmt;           /* Pointer to root statement for the given expression */
+  exp_link*  expl;           /* Pointer to current expression link */
 
   /* Search for specified signal in current functional unit */
   if( !scope_find_signal( name, funit_exp, &found_sig, &found_funit, exp->line ) ) {
@@ -312,11 +314,8 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
 
   if( retval ) {
 
-    if( clear_assigned ) {
-
-      found_sig->value->suppl.part.assigned = 0;
-
-    } else {
+    /* Bind signal and expression if we are not clearing or this is an MBA */
+    if( !clear_assigned ) {
 
       /* Add expression to signal expression list */
       exp_link_add( exp, &(found_sig->exp_head), &(found_sig->exp_tail) );
@@ -324,38 +323,64 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
       /* Set expression to point at signal */
       exp->sig = found_sig;
 
-      if( cdd_reading ) {
+    }
 
-        if( (exp->op == EXP_OP_SIG)        ||
-            (exp->op == EXP_OP_SBIT_SEL)   ||
-            (exp->op == EXP_OP_MBIT_SEL)   ||
-            (exp->op == EXP_OP_PARAM)      ||
-            (exp->op == EXP_OP_PARAM_SBIT) ||
-            (exp->op == EXP_OP_PARAM_MBIT) ) {
-          expression_set_value( exp, found_sig->value );
-        }
+    if( cdd_reading ) {
 
-        if( ((exp->op == EXP_OP_SIG) ||
-             (exp->op == EXP_OP_SBIT_SEL) ||
-             (exp->op == EXP_OP_MBIT_SEL)) &&
-            ((stmt = expression_get_root_statement( exp )) != NULL) &&
-            ((stmt->exp->op == EXP_OP_EOR) ||
-             (stmt->exp->op == EXP_OP_AEDGE) ||
-             (stmt->exp->op == EXP_OP_PEDGE) ||
-             (stmt->exp->op == EXP_OP_NEDGE)) ) {
-          sig_link_add( found_sig, &(stmt->wait_sig_head), &(stmt->wait_sig_tail) );
-        }
-
-      } else {
-
-        /* Check to see if this signal should be assigned by Covered or the dumpfile */
-        if( (exp->op == EXP_OP_SIG) ||
-            (exp->op == EXP_OP_SBIT_SEL) ||
-            (exp->op == EXP_OP_MBIT_SEL) ) {
-          expression_set_assigned( exp );
-        }
-
+      if( (exp->op == EXP_OP_SIG)        ||
+          (exp->op == EXP_OP_SBIT_SEL)   ||
+          (exp->op == EXP_OP_MBIT_SEL)   ||
+          (exp->op == EXP_OP_PARAM)      ||
+          (exp->op == EXP_OP_PARAM_SBIT) ||
+          (exp->op == EXP_OP_PARAM_MBIT) ||
+          (exp->op == EXP_OP_TRIGGER) ) {
+        expression_set_value( exp, found_sig->value );
       }
+
+      if( ((exp->op == EXP_OP_SIG) ||
+           (exp->op == EXP_OP_SBIT_SEL) ||
+           (exp->op == EXP_OP_MBIT_SEL)) &&
+          ((stmt = expression_get_root_statement( exp )) != NULL) &&
+          ((stmt->exp->op == EXP_OP_EOR) ||
+           (stmt->exp->op == EXP_OP_AEDGE) ||
+           (stmt->exp->op == EXP_OP_PEDGE) ||
+           (stmt->exp->op == EXP_OP_NEDGE)) ) {
+        sig_link_add( found_sig, &(stmt->wait_sig_head), &(stmt->wait_sig_tail) );
+      }
+
+    } else {
+
+      /* Check to see if this signal should be assigned by Covered or the dumpfile */
+      if( clear_assigned ) {
+        found_sig->value->suppl.part.assigned = 0;
+      }
+
+      if( !clear_assigned &&
+          ((exp->op == EXP_OP_SIG) ||
+           (exp->op == EXP_OP_SBIT_SEL) ||
+           (exp->op == EXP_OP_MBIT_SEL)) ) {
+        expression_set_assigned( exp );
+      }
+
+      /*
+       If the signal is found for the given expression but the signal is marked as "must be assigned" but is also marked as
+       "won't be assigned", we need to remove all statement blocks that contain this signal from coverage consideration.
+      */
+      if( (found_sig->value->suppl.part.assigned == 0) && (found_sig->value->suppl.part.mba == 1) ) {
+        expl = found_sig->exp_head;
+        while( expl != NULL ) {
+          if( (stmt = expression_get_root_statement( expl->exp )) != NULL ) {
+#ifdef DEBUG_MODE
+            snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block %d, line %d because it needed to be assigned but would not be",
+                      stmt->exp->id, stmt->exp->line );
+            print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif
+            stmt_blk_add_to_remove_list( stmt );
+          }
+          expl = expl->next;
+        }
+      }
+
 
     }
 
@@ -480,6 +505,11 @@ void bind( bool cdd_reading ) {
     /* Handle signal binding */
     if( curr_eb->type == 0 ) {
 
+/*
+      printf( "Binding exp %d, %s, line %d to signal %s\n",
+              curr_eb->exp->id, expression_string_op( curr_eb->exp->op ), curr_eb->exp->line, curr_eb->name );
+*/
+
       /*
        Bind the signal.  If it is unsuccessful, we need to remove the statement that this expression
        is a part of.
@@ -508,25 +538,11 @@ void bind( bool cdd_reading ) {
     */
     if( !bound && (curr_eb->clear_assigned == 0) ) {
       if( (tmp_stmt = expression_get_root_statement( curr_eb->exp )) != NULL ) {
+#ifdef DEBUG_MODE
+        snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block containing line %d because it was unbindable", curr_eb->exp->line );
+        print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif        
         stmt_blk_add_to_remove_list( tmp_stmt );
-      }
-    }
-
-    /*
-     If the signal is found for the given expression but the signal is marked as "must be assigned" but is also marked as
-     "won't be assigned", we need to remove all statement blocks that contain this signal from coverage consideration.
-    */
-    if( bound                                                &&
-        (curr_eb->type == 0)                                 &&
-        (curr_eb->clear_assigned == 0)                       &&
-        (curr_eb->exp->sig->value->suppl.part.assigned == 0) &&
-        (curr_eb->exp->sig->value->suppl.part.mba == 1) ) {
-      tmp_expl = curr_eb->exp->sig->exp_head;
-      while( tmp_expl != NULL ) {
-        if( (tmp_stmt = expression_get_root_statement( tmp_expl->exp )) != NULL ) {
-          stmt_blk_add_to_remove_list( tmp_stmt );
-        }
-        tmp_expl = tmp_expl->next;
       }
     }
 
@@ -587,6 +603,9 @@ void bind( bool cdd_reading ) {
 
 /* 
  $Log$
+ Revision 1.42  2005/11/23 23:05:24  phase1geo
+ Updating regression files.  Full regression now passes.
+
  Revision 1.41  2005/11/22 23:03:48  phase1geo
  Adding support for event trigger mechanism.  Regression is currently broke
  due to these changes -- we need to remove statement blocks that contain
