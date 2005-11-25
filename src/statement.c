@@ -500,6 +500,7 @@ statement* statement_find_head_statement( statement* stmt, stmt_link* head ) {
 
   stmt_iter  si;     /* Statement iterator used to find head statement */
   stmt_link* stmtl;  /* Pointer to current statement in stmt_link list */
+  func_unit* tmp_funit;
 
   assert( stmt != NULL );
 
@@ -658,6 +659,9 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.56  2005/11/23 23:05:24  phase1geo
+ Updating regression files.  Full regression now passes.
+
  Revision 1.55  2005/11/16 22:01:51  phase1geo
  Fixing more problems related to simulation of function/task calls.  Regression
  runs are now running without errors.

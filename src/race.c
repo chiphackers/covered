@@ -30,6 +30,8 @@
 #include "vector.h"
 #include "link.h"
 #include "stmt_blk.h"
+#include "expr.h"
+#include "func_unit.h"
 
 
 stmt_blk* sb = NULL;
@@ -93,32 +95,17 @@ race_blk* race_blk_create( int reason, int start_line, int end_line ) {
 */
 statement* race_get_head_statement( func_unit* mod, expression* expr ) {
 
-  stmt_iter  si;         /* Statement iterator                                     */
   statement* curr_stmt;  /* Pointer to current statement containing the expression */
 
   /* First, find the statement associated with this expression */
-  while( (expr != NULL) && (expr->suppl.part.root == 0) ) {
-    expr = expr->parent->expr;
-  }
-  curr_stmt = expr->parent->stmt;
+  if( (curr_stmt = expression_get_root_statement( expr )) != NULL ) {
 
-  /* Second, find the head statement that contains the expression's statement */
-  stmt_iter_reset( &si, mod->stmt_tail );
+    curr_stmt = statement_find_head_statement( curr_stmt, mod->stmt_head );
+    assert( curr_stmt != NULL );
 
-  while( (si.curr != NULL) && (si.curr->stmt != curr_stmt) ) {
-    stmt_iter_next( &si );
   }
 
-  assert( si.curr != NULL );
-
-  /* Back up to the head statement once we have found the matching statement */
-  stmt_iter_next( &si );
-  stmt_iter_reverse( &si );
-  stmt_iter_find_head( &si, FALSE );
-
-  assert( si.curr != NULL );
-
-  return( si.curr->stmt );
+  return( curr_stmt );
 
 }
 
@@ -130,7 +117,7 @@ statement* race_get_head_statement( func_unit* mod, expression* expr ) {
 */
 int race_find_head_statement( statement* stmt ) {
 
-  int i = 0;   /* Loop iterator                  */
+  int i = 0;   /* Loop iterator */
 
   while( (i < sb_size) && (sb[i].stmt != stmt) ) {
     i++;
@@ -342,15 +329,21 @@ void race_check_assignment_types( func_unit* mod ) {
 }
 
 /*!
+ \param mod  Pointer to module containing signals to verify
+
+ Verifies that every signal is assigned in only one statement block.  If a signal is
+ assigned in more than one statement block, both statement block's need to be removed
+ from coverage consideration and a possible warning/error message generated to the user.
 */
 void race_check_one_block_assignment( func_unit* mod ) {
 
-  sig_link*  sigl;                /* Pointer to current signal                                          */
-  exp_link*  expl;                /* Pointer to current expression                                      */
-  statement* curr_stmt;           /* Pointer to current statement                                       */
-  int        sig_stmt;            /* Index of base signal statement in statement block array            */
+  sig_link*  sigl;                /* Pointer to current signal */
+  exp_link*  expl;                /* Pointer to current expression */
+  statement* curr_stmt;           /* Pointer to current statement */
+  int        sig_stmt;            /* Index of base signal statement in statement block array */
   bool       race_found = FALSE;  /* Specifies if at least one race condition was found for this signal */
-  bool       curr_race;           /* Set to TRUE if race condition was found in current iteration       */
+  bool       curr_race;           /* Set to TRUE if race condition was found in current iteration */
+  func_unit* exp_funit;           /* Functional unit containing a signal's expression */
 
   sigl = mod->sig_head;
   while( sigl != NULL ) {
@@ -362,7 +355,7 @@ void race_check_one_block_assignment( func_unit* mod ) {
     while( expl != NULL ) {
 					      
       /* Only look at expressions that are part of LHS */
-      if( expl->exp->suppl.part.lhs == 1 ) {      
+      if( expl->exp->suppl.part.lhs == 1 ) {
 
 	/*
 	 If the signal was a part select, set the appropriate misc bits to indicate what
@@ -391,8 +384,13 @@ void race_check_one_block_assignment( func_unit* mod ) {
 	    break;	
         }
 
+        /* Get the functional unit containing this expression */
+        exp_funit = funit_find_by_id( expl->exp->id );
+
+        assert( exp_funit != NULL );
+
         /* Get expression's head statement */
-        curr_stmt = race_get_head_statement( mod, expl->exp );
+        curr_stmt = race_get_head_statement( exp_funit, expl->exp );
 
         /* Check to see if the current signal is already being assigned in another statement */
         if( sig_stmt == -1 ) {
@@ -456,10 +454,11 @@ void race_check_race_count() {
 */
 void race_check_modules() {
 
-  int         sb_index;  /* Index to statement block array              */
-  stmt_iter   si;        /* Statement iterator                          */
-  funit_link* modl;      /* Pointer to current module link              */
-  int         i;         /* Loop iterators                              */
+  int         sb_index;  /* Index to statement block array */
+  stmt_iter   si;        /* Statement iterator */
+  funit_link* modl;      /* Pointer to current module link */
+  int         i;         /* Loop iterator */
+  funit_link* tfl;       /* Pointer to current task/function/named block link */
 
   modl = funit_head;
 
@@ -470,13 +469,26 @@ void race_check_modules() {
       /* Clear statement block array size */
       sb_size = 0;
 
-      /* First, get the size of the statement block array */
+      /* First, get the size of the statement block array for this module */
       stmt_iter_reset( &si, modl->funit->stmt_tail );
       while( si.curr != NULL ) {
         if( si.curr->stmt->exp->suppl.part.stmt_head == 1 ) {
           sb_size++;
         }
         stmt_iter_next( &si );
+      }
+
+      /* Next, get the size of the statement block array for any tasks/named blocks */
+      tfl = modl->funit->tf_head;
+      while( tfl != NULL ) {
+        stmt_iter_reset( &si, tfl->funit->stmt_tail );
+        while( si.curr != NULL ) {
+          if( si.curr->stmt->exp->suppl.part.stmt_head == 1 ) {
+            sb_size++;
+          }
+          stmt_iter_next( &si );
+        }
+        tfl = tfl->next;
       }
 
       if( sb_size > 0 ) {
@@ -491,7 +503,7 @@ void race_check_modules() {
           if( si.curr->stmt->exp->suppl.part.stmt_head == 1 ) {
             sb[sb_index].stmt    = si.curr->stmt;
             sb[sb_index].remove  = FALSE;
-	    sb[sb_index].seq     = FALSE;
+            sb[sb_index].seq     = FALSE;
 	    sb[sb_index].cmb     = FALSE;
 	    sb[sb_index].bassign = FALSE;
 	    sb[sb_index].nassign = FALSE;
@@ -500,6 +512,27 @@ void race_check_modules() {
             sb_index++; 
           }
           stmt_iter_next( &si );
+        }
+
+        /* Third, populate the statement block array with pointer to the head statements of the task/functions */
+        tfl = modl->funit->tf_head;
+        while( tfl != NULL ) {
+          stmt_iter_reset( &si, tfl->funit->stmt_tail );
+          while( si.curr != NULL ) {
+            if( si.curr->stmt->exp->suppl.part.stmt_head == 1 ) {
+              sb[sb_index].stmt    = si.curr->stmt;
+              sb[sb_index].remove  = FALSE;
+              sb[sb_index].seq     = FALSE;
+              sb[sb_index].cmb     = FALSE;
+              sb[sb_index].bassign = FALSE;
+              sb[sb_index].nassign = FALSE;
+              race_calc_stmt_blk_type( sb[sb_index].stmt->exp, sb_index );
+              race_calc_assignments( sb_index );
+              sb_index++;
+            }
+            stmt_iter_next( &si );
+          }
+          tfl = tfl->next;
         }
 
         /* Perform checks #1 - #5 */
@@ -805,6 +838,9 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.28  2005/11/25 16:48:48  phase1geo
+ Fixing bugs in binding algorithm.  Full regression now passes.
+
  Revision 1.27  2005/11/23 23:05:24  phase1geo
  Updating regression files.  Full regression now passes.
 
