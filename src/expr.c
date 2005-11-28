@@ -1804,7 +1804,7 @@ void expression_dealloc( expression* expr, bool exp_only ) {
           expr->sig->value->suppl.part.assigned = 0;
 
           /* If this signal must be assigned, remove all statement blocks that reference this signal */
-          if( expr->sig->value->suppl.part.mba == 1 ) {
+          if( (expr->sig->value->suppl.part.mba == 1) && !exp_only ) {
             tmp_expl = expr->sig->exp_head;
             while( tmp_expl != NULL ) {
               if( (tmp_stmt = expression_get_root_statement( tmp_expl->exp )) != NULL ) {
@@ -1845,6 +1845,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.129  2005/11/25 16:48:48  phase1geo
+ Fixing bugs in binding algorithm.  Full regression now passes.
+
  Revision 1.128  2005/11/23 23:05:24  phase1geo
  Updating regression files.  Full regression now passes.
 
