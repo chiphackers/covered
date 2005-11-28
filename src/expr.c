@@ -1036,7 +1036,8 @@ void expression_display( expression* expr ) {
 }
 
 /*!
- \param expr   Pointer to expression to set value to.
+ \param expr  Pointer to expression to set value to.
+ \param thr   Pointer to current thread being simulated. 
 
  \return Returns TRUE if the assigned expression value was different than the previously stored value;
          otherwise, returns FALSE.
@@ -1046,7 +1047,7 @@ void expression_display( expression* expr ) {
  Sets the value of the operation in its own vector value and updates the
  suppl nibble as necessary.
 */
-bool expression_operate( expression* expr ) {
+bool expression_operate( expression* expr, thread* thr ) {
 
   bool       retval = TRUE;         /* Return value for this function */
   vector     vec1;                  /* Used for logical reduction */ 
@@ -1365,8 +1366,8 @@ bool expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_EOR :
-        expression_operate( expr->left );
-        expression_operate( expr->right );
+        expression_operate( expr->left, NULL );
+        expression_operate( expr->right, NULL );
         if( (ESUPPL_IS_TRUE( expr->left->suppl ) == 1) || (ESUPPL_IS_TRUE( expr->right->suppl ) == 1) ) {
           bit.part.value = 1;
         } else {
@@ -1437,12 +1438,35 @@ bool expression_operate( expression* expr ) {
         break;
 
       case EXP_OP_FUNC_CALL :
-        sim_statement( expr->stmt, &last_stmt );
+        sim_thread( sim_add_thread( thr, expr->stmt ) );
         break;
 
       case EXP_OP_TASK_CALL :
-        sim_statement( expr->stmt, &last_stmt );
+        retval = FALSE;
+        if( expr->value->value[0].part.misc == 0 ) {
+          printf( "Adding thread...\n" );
+          sim_add_thread( thr, expr->stmt );
+          expr->value->value[0].part.misc  = 1;
+          expr->value->value[0].part.value = 0;
+          printf( "Setting value to false\n" );
+        } else if( thr->child_head == NULL ) {
+          expr->value->value[0].part.misc  = 0;
+          expr->value->value[0].part.value = 1;
+          retval = TRUE;
+        }
         break;
+
+#ifdef TBD
+      case EXP_OP_FORK :
+        break;
+
+      case EXP_OP_JOIN :
+        retval = (thr->child_head == NULL);
+        break;
+
+      case EXP_OP_DISABLE :
+        break;
+#endif
 
       default :
         print_output( "Internal error:  Unidentified expression operation!", FATAL, __FILE__, __LINE__ );
@@ -1538,7 +1562,7 @@ void expression_operate_recursively( expression* expr ) {
     }
     
     /* Perform operation */
-    expression_operate( expr );
+    expression_operate( expr, NULL );
     
   }
   
@@ -1845,6 +1869,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.130  2005/11/28 18:31:02  phase1geo
+ Fixing memory fault bug in expression deallocation algorithm.
+
  Revision 1.129  2005/11/25 16:48:48  phase1geo
  Fixing bugs in binding algorithm.  Full regression now passes.
 

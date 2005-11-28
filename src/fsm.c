@@ -117,8 +117,8 @@ void fsm_create_tables( fsm* table ) {
   while( (curr_arc != NULL) && set ) {
 
     /* Evaluate from and to state expressions */
-    expression_operate( curr_arc->from_state );
-    expression_operate( curr_arc->to_state   );
+    expression_operate( curr_arc->from_state, NULL );
+    expression_operate( curr_arc->to_state, NULL );
 
     /* Set table entry in table, if possible */
     arc_add( &(table->table), curr_arc->from_state->value, curr_arc->to_state->value, 0 );
@@ -823,6 +823,13 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.44  2005/11/15 23:08:02  phase1geo
+ Updates for new binding scheme.  Binding occurs for all expressions, signals,
+ FSMs, and functional units after parsing has completed or after database reading
+ has been completed.  This should allow for any hierarchical reference or scope
+ issues to be handled correctly.  Regression mostly passes but there are still
+ a few failures at this point.  Checkpointing.
+
  Revision 1.43  2005/11/08 23:12:09  phase1geo
  Fixes for function/task additions.  Still a lot of testing on these structures;
  however, regressions now pass again so we are checkpointing here.

@@ -56,7 +56,7 @@ const char* expression_string_op( int op );
 void expression_display( expression* expr );
 
 /*! \brief Performs operation specified by parameter expression. */
-bool expression_operate( expression* expr );
+bool expression_operate( expression* expr, thread* thr );
 
 /*! \brief Performs recursive expression operation (parse mode only). */
 void expression_operate_recursively( expression* expr );
@@ -79,6 +79,11 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.33  2005/11/21 04:17:43  phase1geo
+ More updates to regression suite -- includes several bug fixes.  Also added --enable-debug
+ facility to configuration file which will include or exclude debugging output from being
+ generated.
+
  Revision 1.32  2005/11/17 23:35:16  phase1geo
  Blocking assignment is now working properly along with support for event expressions
  (currently only the original PEDGE, NEDGE, AEDGE and DELAY are supported but more

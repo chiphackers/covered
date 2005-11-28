@@ -369,10 +369,16 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
       assert( expr->stmt != NULL );
 
       if( (tfunit = funit_find_by_id( expr->stmt->exp->id )) != NULL ) {
-        tmpstr = (char*)malloc_safe( (strlen( tfunit->name ) + 2), __FILE__, __LINE__ );
-        snprintf( tmpstr, (strlen( tfunit->name ) + 3), "%s( ", tfunit->name );
-        codegen_create_expr( code, code_depth, expr->line, tmpstr, left_code, left_code_depth, expr->left->line, " )", NULL, 0, 0, NULL );
-        free_safe( tmpstr );
+        if( (expr->op == EXP_OP_TASK_CALL) && (expr->left == NULL) ) {
+          *code       = (char**)malloc_safe( sizeof( char* ), __FILE__, __LINE__ );
+          (*code)[0]  = strdup_safe( tfunit->name, __FILE__, __LINE__ );
+          *code_depth = 1;
+        } else {
+          tmpstr = (char*)malloc_safe( (strlen( tfunit->name ) + 3), __FILE__, __LINE__ );
+          snprintf( tmpstr, (strlen( tfunit->name ) + 3), "%s( ", tfunit->name );
+          codegen_create_expr( code, code_depth, expr->line, tmpstr, left_code, left_code_depth, expr->left->line, " )", NULL, 0, 0, NULL );
+          free_safe( tmpstr );
+        }
       } else {
         snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find statement %d in module %s's task/function list",
                   expr->stmt->exp->id, funit->name );
@@ -646,6 +652,11 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.44  2005/11/22 23:03:48  phase1geo
+ Adding support for event trigger mechanism.  Regression is currently broke
+ due to these changes -- we need to remove statement blocks that contain
+ triggers that are not simulated.
+
  Revision 1.43  2005/11/18 23:52:55  phase1geo
  More regression cleanup -- still quite a few errors to handle here.
 

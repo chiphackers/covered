@@ -449,7 +449,7 @@ void param_expr_eval( expression* expr, inst_parm* ihead ) {
     }
 
     /* Perform the operation */
-    expression_operate( expr );
+    expression_operate( expr, NULL );
 
   }
   
@@ -723,6 +723,9 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.36  2005/11/18 23:52:55  phase1geo
+ More regression cleanup -- still quite a few errors to handle here.
+
  Revision 1.35  2005/01/07 17:59:52  phase1geo
  Finalized updates for supplemental field changes.  Everything compiles and links
  correctly at this time; however, a regression run has not confirmed the changes.

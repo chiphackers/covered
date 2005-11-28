@@ -15,8 +15,11 @@
 /*! \brief Adds specified expression's statement to pre-simulation statement queue. */
 void sim_expr_changed( expression* expr );
 
-/*! \brief Adds specified statement to pre-simulation statement queue. */
-void sim_add_stmt_to_queue( statement* stmt );
+/*! \brief Creates a thread for the given statement and adds it to the thread simulation queue. */
+thread* sim_add_thread( thread* parent, statement* stmt );
+
+/*! \brief Deallocates thread and removes it from parent and thread queue lists */
+void sim_kill_thread( thread* thr );
 
 void sim_set_curr_wait_signals();
 
@@ -28,8 +31,8 @@ bool sim_is_curr_wait_signal( vsignal* sig );
 /*! \brief Adds static expression values to initial simulator */
 void sim_add_statics();
 
-/*! \brief Simulates one statement block */
-bool sim_statement( statement* head_stmt, statement** last_stmt );
+/*! \brief Simulates one thread until it has either completed or enters a context switch */
+bool sim_thread( thread* thr );
 
 /*! \brief Simulates current timestep. */
 void sim_simulate();
@@ -37,6 +40,11 @@ void sim_simulate();
 
 /*
  $Log$
+ Revision 1.11  2005/11/17 05:34:44  phase1geo
+ Initial work on supporting blocking assignments.  Added new diagnostic to
+ check that this initial work is working correctly.  Quite a bit more work to
+ do here.
+
  Revision 1.10  2004/03/30 15:42:15  phase1geo
  Renaming signal type to vsignal type to eliminate compilation problems on systems
  that contain a signal type in the OS.

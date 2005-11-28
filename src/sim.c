@@ -91,16 +91,21 @@ exp_link*  static_expr_head = NULL;
 exp_link*  static_expr_tail = NULL;
 
 /*!
- Pointer to head of statement list that contains all statements that will initially be simulated
+ Pointer to head of thread list that contains all threads that will initially be simulated
  for the current timestep.
 */
-stmt_link* presim_stmt_head = NULL;
+thread* thread_head = NULL;
 
 /*!
- Pointer to tail of statement list that contains all statements that will initially be simulated
+ Pointer to tail of thread list that contains all threads that will initially be simulated
  for the current timestep.
 */
-stmt_link* presim_stmt_tail = NULL;
+thread* thread_tail = NULL;
+
+/*!
+ Pointer to current thread being simulated
+*/
+thread* curr_thread = NULL;
 
 
 /*!
@@ -168,26 +173,48 @@ void sim_expr_changed( expression* expr ) {
 }
 
 /*!
- \param stmt  Pointer to statement to add to queue.
+ \param parent  Pointer to parent thread of the new thread to create (set to NULL if there is no parent thread)
+ \param stmt    Pointer to head statement to have new thread point to.
 
- Checks STMT_HEAD bit of specified statement.  If this is set to 1, adds
- this statement to the presimulation statement queue; otherwise, it does nothing with
- the statement
+ \return Returns a pointer to the newly created thread if created; otherwise, returns NULL.
+
+ Creates a new thread with the given information and adds the thread to the thread queue to run.  Returns a pointer
+ to the newly created thread for joining/running purposes.
 */
-void sim_add_stmt_to_queue( statement* stmt ) {
+thread* sim_add_thread( thread* parent, statement* stmt ) {
 
-  sig_link* sigl;  /* Pointer to current signal in signal list */
+  thread*   thr = NULL;  /* Pointer to new thread to create */
+  sig_link* sigl;        /* Pointer to current signal in signal list */
 
   assert( stmt != NULL );
 
   /* Only add expression if it is the head statement of its statement block */
   if( ESUPPL_IS_STMT_HEAD( stmt->exp->suppl ) == 1 ) {
 
-    /* Arm all events */
+    /* Create and initialize thread */
+    thr             = (thread*)malloc_safe( sizeof( thread ), __FILE__, __LINE__ );
+    thr->parent     = parent;
+    thr->curr       = stmt;
+    thr->child_head = NULL;
+    thr->child_tail = NULL;
+    thr->prev_sib   = NULL;
+    thr->next_sib   = NULL;
+    thr->prev       = NULL;
+    thr->next       = NULL;
+
+    /* If the parent thread is specified, add this thread to its list of children */
+    if( parent != NULL ) {
+      if( parent->child_head == NULL ) {
+        parent->child_head = parent->child_tail = thr;
+      } else {
+        thr->prev_sib                = parent->child_tail;
+        parent->child_tail->next_sib = thr;
+        parent->child_tail           = thr;
+      }
+    }
+
+    /* Arm all events in current statement expression */
     expression_arm_events( stmt->exp );
-      
-    /* Add to presimulation queue */
-    stmt_link_add_tail( stmt, &(presim_stmt_head), &(presim_stmt_tail) );
 
     /* Set wait signals */
     sigl = stmt->wait_sig_head;
@@ -196,7 +223,93 @@ void sim_add_stmt_to_queue( statement* stmt ) {
       sigl = sigl->next;
     }
 
+    /* Add this thread to the simulation thread queue */
+    if( (parent == NULL) && (thread_head == NULL) ) {
+
+      /* If the thread queue is currently empty, just add the thread */
+      thread_head = thread_tail = thr;
+
+    /* Otherwise, if the parent exists and is not the tail of the thread queue, insert the child between the parent and its next pointer */
+    } else if( (parent != NULL) && (parent != thread_tail) ) {
+      thr->next       = parent->next;
+      thr->prev       = parent;
+      parent->next    = thr;
+      thr->next->prev = thr;
+
+    /* Otherwise, add the thread to the end of the thread queue */
+    } else {
+      thr->prev         = thread_tail;
+      thread_tail->next = thr;
+      thread_tail       = thr;
+    }
+
   }
+
+  return( thr );
+
+}
+
+/*!
+ \param thr  Thread to remove from simulation
+
+ Removes the specified thread from its parent and the thread simulation queue and finally deallocates
+ the specified thread.
+*/
+void sim_kill_thread( thread* thr ) {
+
+  assert( thr != NULL );
+
+  /* Remove this thread from its parent, if it has a parent */
+  if( thr->parent != NULL ) {
+
+    /* If this thread is the only child of its parent, make the parent child empty */
+    if( (thr == thr->parent->child_head) && (thr == thr->parent->child_tail) ) {
+
+      thr->parent->child_head = thr->parent->child_tail = NULL;
+
+    /* If this thread is the head, we need to bump up the head pointer */
+    } else if( thr == thr->parent->child_head ) {
+ 
+      thr->parent->child_head           = thr->next_sib;
+      thr->parent->child_head->prev_sib = NULL;
+
+    /* If this thread is the tail, we need to adjust the tail pointer */
+    } else if( thr == thr->parent->child_tail ) {
+  
+      thr->parent->child_tail           = thr->prev_sib;
+      thr->parent->child_tail->next_sib = NULL;
+
+    /* Otherwise, we need to to adjust the pointers within the list */
+    } else {
+
+      thr->prev_sib->next_sib = thr->next_sib;
+      thr->next_sib->prev_sib = thr->prev_sib;
+
+    }
+
+  }
+
+  /* If this thread is the current thread, retreat the current thread pointer */
+  if( thr == curr_thread ) {
+    curr_thread = thr->prev;
+  }
+
+  /* Now remove the thread from the thread list */
+  if( (thr == thread_head) && (thr == thread_tail) ) {
+    thread_head = thread_tail = NULL;
+  } else if( thr == thread_head ) {
+    thread_head       = thr->next;
+    thread_head->prev = NULL;
+  } else if( thr == thread_tail ) {
+    thread_tail       = thr->prev;
+    thread_tail->next = NULL;
+  } else {
+    thr->prev->next = thr->next;
+    thr->next->prev = thr->prev;
+  }
+
+  /* Now we can deallocate the thread */
+  free_safe( thr );
 
 }
 
@@ -220,6 +333,7 @@ void sim_add_statics() {
 
 /*!
  \param expr  Pointer to expression to simulate.
+ \param thr   Pointer to current thread that is being simulated.
 
  \return Returns TRUE if this expression has changed value from previous sim; otherwise,
          returns FALSE.
@@ -231,7 +345,7 @@ void sim_add_statics() {
  expression operation for the current expression, clear both changed bits and
  return.
 */
-bool sim_expression( expression* expr ) {
+bool sim_expression( expression* expr, thread* thr ) {
 
   bool retval        = FALSE;  /* Return value for this function                       */
   bool left_changed  = FALSE;  /* Signifies if left expression tree has changed value  */
@@ -254,7 +368,7 @@ bool sim_expression( expression* expr ) {
     /* EOR operations will be traversed by the expression operator */
     if( (expr->op != EXP_OP_EOR) && (expr->left != NULL) ) {
       if( expr->left->suppl.part.lhs == 0 ) {
-        left_changed = sim_expression( expr->left );
+        left_changed = sim_expression( expr->left, thr );
       }
     } else {
       left_changed = TRUE;
@@ -271,7 +385,7 @@ bool sim_expression( expression* expr ) {
     /* EOR operations will be traversed by the expression operator */
     if( (expr->op != EXP_OP_EOR) && (expr->right != NULL) ) {
       if( expr->right->suppl.part.lhs == 0 ) {
-        right_changed = sim_expression( expr->right );
+        right_changed = sim_expression( expr->right, thr );
       }
     } else {
       right_changed = TRUE;
@@ -287,7 +401,7 @@ bool sim_expression( expression* expr ) {
    expressions trees have changed.
   */
   if( (ESUPPL_IS_STMT_CONTINUOUS( expr->suppl ) == 0) || left_changed || right_changed ) {
-    retval = expression_operate( expr );
+    retval = expression_operate( expr, thr );
   }
 
   return( retval );
@@ -307,7 +421,8 @@ bool sim_expression( expression* expr ) {
  it.  Continues to run for current statement tree until statement tree hits a
  wait-for-event condition (or we reach the end of a simulation tree).
 */
-bool sim_statement( statement* head_stmt, statement** last_stmt ) {
+bool sim_thread( thread* thr ) {
+// statement* head_stmt, statement** last_stmt ) {
 
   statement* stmt;          /* Pointer to current statement to evaluate */
   bool       first = TRUE;  /* Specifies that this is the first time through the loop */
@@ -315,13 +430,12 @@ bool sim_statement( statement* head_stmt, statement** last_stmt ) {
   bool       expr_changed;  /* Specifies if expression tree was modified in any way */
 
   /* Set the value of stmt with the head_stmt */
-  stmt       = head_stmt;
-  *last_stmt = NULL;
+  stmt = thr->curr;
 
   while( stmt != NULL ) {
 
     /* Place expression in expression simulator and run */
-    expr_changed = sim_expression( stmt->exp );
+    expr_changed = sim_expression( stmt->exp, thr );
 
     /* Indicate that this statement's expression has been executed */
     stmt->exp->suppl.part.executed = 1;
@@ -341,24 +455,47 @@ bool sim_statement( statement* head_stmt, statement** last_stmt ) {
       first = FALSE;
     }
 
-    *last_stmt = stmt;
+    thr->curr = stmt;
 
     if( ESUPPL_IS_STMT_CONTINUOUS( stmt->exp->suppl ) == 1 ) {
        /* If this is a continuous assignment, don't traverse next pointers. */
        stmt = NULL;
     } else {
       if( ESUPPL_IS_TRUE( stmt->exp->suppl ) == 1 ) {
+        printf( "Going to next true\n" );
         stmt = stmt->next_true;
       } else {
+        printf( "Going to next false\n" );
         stmt = stmt->next_false;
       }
     }
 
   }
 
-  /* If this is the last statement in the tree with no loopback, return NULL */
-  if( ((*last_stmt)->next_true == NULL) && ((*last_stmt)->next_false == NULL) ) {
-    *last_stmt = NULL;
+  /* If this is the last statement in the tree with no loopback, kill the current thread */
+  if( (thr->curr->next_true == NULL) && (thr->curr->next_false == NULL) ) {
+
+#ifdef DEBUG_MODE
+    snprintf( user_msg, USER_MSG_LENGTH, "Completed thread %x, executed %d, killing...\n", thr, !first );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif
+ 
+    sim_kill_thread( thr );
+
+  /* Otherwise, set wait bits on current statement */
+  } else {
+
+#ifdef DEBUG_MODE
+    snprintf( user_msg, USER_MSG_LENGTH, "Switching context of thread %x, executed %d...\n", thr, !first );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif
+
+    sigl = curr_thread->curr->wait_sig_head;
+    while( sigl != NULL ) {
+      vsignal_set_wait_bit( sigl->sig, 1 );
+      sigl = sigl->next;
+    }
+
   }
 
   return( !first );
@@ -372,65 +509,27 @@ bool sim_statement( statement* head_stmt, statement** last_stmt ) {
 */
 void sim_simulate() {
 
-  stmt_iter  curr_stmt;             /* Statement list iterator */
-  sig_link*  sigl;                  /* Pointer to current element in signal list */
-  bool       stmt_executed = TRUE;  /* Specifies if the any statement had a simulation effect */
-  bool       curr_executed;         /* Specifies if the current statement had a simulation effect */
-  statement* tmp_stmt;              /* Temporary statement pointer */
-  stmt_link* tmp_stmtl;             /* Temporary statement link pointer */
+  bool thread_executed = TRUE;  /* Specifies if the any statement had a simulation effect */
+  bool curr_executed;           /* Specifies if the current statement had a simulation effect */
   
-  while( stmt_executed ) {
+  while( thread_executed ) {
 
-    stmt_executed = FALSE;
-    stmt_iter_reset( &curr_stmt, presim_stmt_head );
+    thread_executed = FALSE;
+    curr_thread     = thread_head;
   
 #ifdef DEBUG_MODE
-    print_output( "####  Iterating through presim queue  ####", DEBUG, __FILE__, __LINE__ );
+    print_output( "####  Iterating through thread queue  ####", DEBUG, __FILE__, __LINE__ );
 #endif
     
-    while( curr_stmt.curr != NULL ) {
+    while( curr_thread != NULL ) {
     
-      assert( curr_stmt.curr->stmt != NULL );
-      assert( curr_stmt.curr->stmt->exp != NULL );
+      assert( curr_thread->curr != NULL );
+      assert( curr_thread->curr->exp != NULL );
     
-      curr_executed = sim_statement( curr_stmt.curr->stmt, &tmp_stmt );
+      thread_executed |= sim_thread( curr_thread );
 
-#ifdef DEBUG_MODE
-      snprintf( user_msg, USER_MSG_LENGTH, "Simulated statement block %d, line %d, executed %d",
-                curr_stmt.curr->stmt->exp->id, curr_stmt.curr->stmt->exp->line, curr_executed );
-      print_output( user_msg, DEBUG, __FILE__, __LINE__ );
-#endif
-
-      stmt_executed |= curr_executed;
-
-      /* If we have reached the end of the current statement block, remove it from the presim queue */
-      if( tmp_stmt == NULL ) {
-
-        tmp_stmtl = curr_stmt.last;
-
-        /* Go to next statement in presim queue */
-        stmt_iter_next( &curr_stmt );
-    
-        /* Remove the last completed statement block */
-        stmt_link_unlink( curr_stmt.last->stmt, &presim_stmt_head, &presim_stmt_tail );
-
-        /* Re-adjust the curr and last pointers in the curr_stmt structure */
-        curr_stmt.last = tmp_stmtl;
-      
-      } else {
-
-        curr_stmt.curr->stmt = tmp_stmt;
-
-        /* Set wait bits on current statement */
-        sigl = curr_stmt.curr->stmt->wait_sig_head;
-        while( sigl != NULL ) {
-          vsignal_set_wait_bit( sigl->sig, 1 );
-          sigl = sigl->next;
-        }
-      
-        /* Go to next statement in presim queue */
-        stmt_iter_next( &curr_stmt );
-    
+      if( curr_thread != NULL ) {
+        curr_thread = curr_thread->next;
       }
 
     }
@@ -442,6 +541,11 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.47  2005/11/22 05:30:33  phase1geo
+ Updates to regression suite for clearing the assigned bit when a statement
+ block is removed from coverage consideration and it is assigning that signal.
+ This is not fully working at this point.
+
  Revision 1.46  2005/11/21 23:31:06  phase1geo
  Adding support for initial statement blocks.  Added first initial1 diagnostic
  to regression suite.  This support seems to be working for the moment -- still

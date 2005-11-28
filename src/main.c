@@ -100,11 +100,12 @@ int main( int argc, char** argv ) {
 
           set_output_suppression( TRUE );
 
-#ifdef DEBUG_MODE
         } else if( strncmp( "-D", argv[curr_arg], 2 ) == 0 ) {
 
+#ifdef DEBUG_MODE
           set_debug( TRUE );
-
+#else
+          print_output( "Global command -D can only be used when Covered is configured with the --enable-debug flag when being built", FATAL, __FILE__, __LINE__ );
 #endif
         } else if( strncmp( "score", argv[curr_arg], 5 ) == 0 ) {
 
@@ -150,6 +151,11 @@ int main( int argc, char** argv ) {
 
 /*
  $Log$
+ Revision 1.13  2005/11/21 04:17:43  phase1geo
+ More updates to regression suite -- includes several bug fixes.  Also added --enable-debug
+ facility to configuration file which will include or exclude debugging output from being
+ generated.
+
  Revision 1.12  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,

@@ -1195,6 +1195,13 @@ struct attr_param_s;
 */
 struct stmt_blk_s;
 
+/*!
+ Simulator feature that keeps track of head pointer for a given thread along with pointers to the
+ parent and children thread of this thread.  Threads allow us to handle task calls and fork/join
+ statements.
+*/
+struct thread_s;
+
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION TYPEDEFS  */
 
@@ -1365,6 +1372,11 @@ typedef struct attr_param_s attr_param;
 */
 typedef struct stmt_blk_s stmt_blk;
 
+/*!
+ Renaming thread structure for convenience.
+*/
+typedef struct thread_s thread;
+
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION DEFINITIONS  */
 
@@ -1429,11 +1441,11 @@ struct fsm_s {
 };
 
 struct statement_s {
-  expression* exp;                   /*!< Pointer to associated expression tree                        */
-  sig_link*   wait_sig_head;         /*!< Pointer to head of wait event signal list                    */
-  sig_link*   wait_sig_tail;         /*!< Pointer to tail of wait event signal list                    */
+  expression* exp;                   /*!< Pointer to associated expression tree */
+  sig_link*   wait_sig_head;         /*!< Pointer to head of wait event signal list */
+  sig_link*   wait_sig_tail;         /*!< Pointer to tail of wait event signal list */
   statement*  next_true;             /*!< Pointer to next statement to run if expression tree non-zero */
-  statement*  next_false;            /*!< Pointer to next statement to run if next_true not picked     */
+  statement*  next_false;            /*!< Pointer to next statement to run if next_true not picked */
 };
 
 struct sig_link_s {
@@ -1646,9 +1658,23 @@ struct stmt_blk_s {
   bool       nassign;                /*!< If true, at least one expression in statement block is a non-blocking assignment */
 };
 
+struct thread_s {
+  thread*    parent;                 /*!< Pointer to parent thread that spawned this thread */
+  statement* curr;                   /*!< Pointer to current head statement for this thread */
+  thread*    child_head;             /*!< Pointer to head element in child thread list for this thread */
+  thread*    child_tail;             /*!< Pointer to tail element in child thread list for this thread */
+  thread*    prev_sib;               /*!< Pointer to previous sibling thread */
+  thread*    next_sib;               /*!< Pointer to next sibling thread */
+  thread*    prev;                   /*!< Pointer to previous thread in thread simulation list */
+  thread*    next;                   /*!< Pointer to next thread in thread simulation list */
+};
+
 
 /*
  $Log$
+ Revision 1.136  2005/11/25 16:48:48  phase1geo
+ Fixing bugs in binding algorithm.  Full regression now passes.
+
  Revision 1.135  2005/11/23 23:05:24  phase1geo
  Updating regression files.  Full regression now passes.
 
