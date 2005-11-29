@@ -184,7 +184,7 @@ void statement_stack_compare( statement* stmt ) {
     if( stmt_loop_stack->stmt->next_true == NULL ) {
       stmt_loop_stack->stmt->next_true  = stmt;
     }
-    if( stmt_loop_stack->stmt->next_false == NULL ) {
+    if( (stmt_loop_stack->stmt->next_false == NULL) && !EXPR_IS_CONTEXT_SWITCH( stmt_loop_stack->stmt->exp ) ) {
       stmt_loop_stack->stmt->next_false = stmt;
     }
 
@@ -227,7 +227,6 @@ void statement_db_write( statement* stmt, FILE* ofile ) {
   expression_db_write( stmt->exp, ofile );
 #endif
 
-  printf( "Writing statement %s, next_true: %d, next_false: %d\n", expression_string_op( stmt->exp->op ), ((stmt->next_true   == NULL) ? 0 : stmt->next_true->exp->id), ((stmt->next_false  == NULL) ? 0 : stmt->next_false->exp->id) );
   /* Write out contents of this statement last */
   fprintf( ofile, "%d %d %d %d",
     DB_TYPE_STATEMENT,
@@ -279,21 +278,16 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) {
       expl = exp_link_find( &tmpexp, curr_funit->exp_head );
 
       stmt = statement_create( expl->exp );
-      printf( "Created statement %s, next_true %d, next_false %d\n", expression_string_op( expl->exp->op ), true_id, false_id );
 
       /* Find and link next_true */
       if( true_id == id ) {
-        printf( "true_id == id\n" );
         stmt->next_true = stmt;
       } else if( true_id != 0 ) {
-        printf( "true_id != 0\n" );
         stmtl = stmt_link_find( true_id, curr_funit->stmt_head );
         if( stmtl == NULL ) {
-          printf( "Unable to find true_id in statement list, adding to stack\n" );
           /* Add to statement loop stack */
           statement_stack_push( stmt, true_id );
         } else {
-          printf( "Comparing against stack\n" );
           /* Check against statement stack */
           statement_stack_compare( stmt );
           stmt->next_true = stmtl->stmt;
@@ -302,25 +296,16 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) {
 
       /* Find and link next_false */
       if( false_id == id ) {
-        printf( "false_id == id\n" );
         stmt->next_false = stmt;
       } else if( false_id != 0 ) {
-        printf( "false_id != 0\n" );
         stmtl = stmt_link_find( false_id, curr_funit->stmt_head );
         if( stmtl == NULL ) {
-          printf( "Unable to find false_id in statement list, adding to stack\n" );
           statement_stack_push( stmt, false_id );
         } else {
-          printf( "Comparing against the stack\n" );
           statement_stack_compare( stmt );
           stmt->next_false = stmtl->stmt;
         }
       }
-
-      printf( "2 Created statement %s, next_true %d, next_false %d\n",
-              expression_string_op( expl->exp->op ),
-              ((stmt->next_true  == NULL) ? 0 : stmt->next_true->exp->id),
-              ((stmt->next_false == NULL) ? 0 : stmt->next_false->exp->id) );
 
       /* Add statement to functional unit statement list */
       if( (read_mode == READ_MODE_MERGE_NO_MERGE) || (read_mode == READ_MODE_MERGE_INST_MERGE) ) {
@@ -368,9 +353,7 @@ void statement_connect( statement* curr_stmt, statement* next_stmt ) {
   if( (curr_stmt->next_true == curr_stmt->next_false) || 
       (curr_stmt->exp->suppl.part.stmt_connected == 1) ) {
 
-    printf( "Connecting statement whose next_true and next_false pointers are the same, %s\n", expression_string_op( curr_stmt->exp->op ) );
     if( curr_stmt->next_true == NULL ) {
-      printf( "Next TRUE is NULL, connecting next_true to %s\n", expression_string_op( next_stmt->exp->op ) );
       curr_stmt->next_true  = next_stmt;
       /* If the current statement is a wait statement, don't connect next_false path */
       if( (curr_stmt->exp->op != EXP_OP_DELAY) &&
@@ -379,17 +362,14 @@ void statement_connect( statement* curr_stmt, statement* next_stmt ) {
           (curr_stmt->exp->op != EXP_OP_AEDGE) &&
           (curr_stmt->exp->op != EXP_OP_EOR)   &&
           (curr_stmt->exp->op != EXP_OP_TASK_CALL) ) {
-        printf( "Connecting next_false to %s\n", expression_string_op( next_stmt->exp->op ) );
         curr_stmt->next_false = next_stmt;
       }
     } else if( curr_stmt->next_true != next_stmt ) {
-      printf( "Next TRUE is != next_stmt, connecting...\n" );
       statement_connect( curr_stmt->next_true, next_stmt );
     }
 
   } else {
 
-    printf( "Connecting statement whose next_true and next_false pointers are different, %s\n", expression_string_op( curr_stmt->exp->op ) );
     /* Traverse TRUE path */
     if( curr_stmt->next_true == NULL ) {
       curr_stmt->next_true = next_stmt;
@@ -405,7 +385,6 @@ void statement_connect( statement* curr_stmt, statement* next_stmt ) {
           (curr_stmt->exp->op != EXP_OP_AEDGE) &&
           (curr_stmt->exp->op != EXP_OP_EOR)   &&
           (curr_stmt->exp->op != EXP_OP_TASK_CALL) ) {
-        printf( "Connecting next_false to %s\n", expression_string_op( next_stmt->exp->op ) );
         curr_stmt->next_false = next_stmt;
       }
     } else if( curr_stmt->next_false != next_stmt ) {
@@ -439,7 +418,6 @@ void statement_set_stop( statement* stmt, statement* post, bool true_path, bool 
       ((stmt->next_true == post) && (stmt->next_false == NULL)) ||
       (stmt->next_false == post) ) {
     if( true_path || both) {
-      /* printf( "Setting STOP bit for statement %d\n", stmt->exp->id ); */
       stmt->exp->suppl.part.stmt_stop = 1;
     }
   } else {
@@ -682,6 +660,9 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.58  2005/11/28 23:28:47  phase1geo
+ Checkpointing with additions for threads.
+
  Revision 1.57  2005/11/25 22:03:20  phase1geo
  Fixing bugs in race condition checker when racing statement blocks are in
  different functional units.  Still some work to do here with what to do when

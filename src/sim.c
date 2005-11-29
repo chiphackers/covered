@@ -424,10 +424,10 @@ bool sim_expression( expression* expr, thread* thr ) {
 bool sim_thread( thread* thr ) {
 // statement* head_stmt, statement** last_stmt ) {
 
-  statement* stmt;          /* Pointer to current statement to evaluate */
-  bool       first = TRUE;  /* Specifies that this is the first time through the loop */
-  sig_link*  sigl;          /* Pointer to current signal in signal list */
-  bool       expr_changed;  /* Specifies if expression tree was modified in any way */
+  statement* stmt;                  /* Pointer to current statement to evaluate */
+  sig_link*  sigl;                  /* Pointer to current signal in signal list */
+  bool       first        = TRUE;   /* Specifies that this is the first time through the loop */
+  bool       expr_changed = FALSE;  /* Specifies if expression tree was modified in any way */
 
   /* Set the value of stmt with the head_stmt */
   stmt = thr->curr;
@@ -462,10 +462,8 @@ bool sim_thread( thread* thr ) {
        stmt = NULL;
     } else {
       if( ESUPPL_IS_TRUE( stmt->exp->suppl ) == 1 ) {
-        printf( "Going to next true\n" );
         stmt = stmt->next_true;
       } else {
-        printf( "Going to next false\n" );
         stmt = stmt->next_false;
       }
     }
@@ -473,7 +471,7 @@ bool sim_thread( thread* thr ) {
   }
 
   /* If this is the last statement in the tree with no loopback, kill the current thread */
-  if( (thr->curr->next_true == NULL) && (thr->curr->next_false == NULL) ) {
+  if( expr_changed && (thr->curr->next_true == NULL) && (thr->curr->next_false == NULL) ) {
 
 #ifdef DEBUG_MODE
     snprintf( user_msg, USER_MSG_LENGTH, "Completed thread %x, executed %d, killing...\n", thr, !first );
@@ -541,6 +539,9 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.48  2005/11/28 23:28:47  phase1geo
+ Checkpointing with additions for threads.
+
  Revision 1.47  2005/11/22 05:30:33  phase1geo
  Updates to regression suite for clearing the assigned bit when a statement
  block is removed from coverage consideration and it is assigning that signal.

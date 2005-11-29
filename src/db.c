@@ -1291,6 +1291,44 @@ void db_parse_attribute( attr_param* ap ) {
 }
 
 /*!
+ \param stmt  Pointer to statement to compare with all expressions
+ 
+ \return Returns a pointer to a list of all expressions found that call
+         the specified statement.  Returns NULL if no expressions were
+         found in the design that match this statement.
+
+ Searches the list of all expressions in all functional units that call
+ the specified statement and returns these in a list format to the calling
+ function.  This function should only be called after the entire design has
+ been parsed to be completely correct.
+*/
+exp_link* db_get_exprs_with_statement( statement* stmt ) {
+
+  exp_link*   exp_head = NULL;  /* Pointer to head of expression list */
+  exp_link*   exp_tail = NULL;  /* Pointer to tail of expression list */
+  funit_link* funitl;           /* Pointer to current functional unit link being examined */
+  exp_link*   expl;             /* Pointer to current expression link being examined */
+
+  assert( stmt != NULL );
+  
+  funitl = funit_head;
+
+  while( funitl != NULL ) {
+    expl = funitl->funit->exp_head;
+    while( expl != NULL ) {
+      if( expl->exp->stmt == stmt ) {
+        exp_link_add( expl->exp, &exp_head, &exp_tail );
+      }
+      expl = expl->next;
+    }
+    funitl = funitl->next;
+  }
+
+  return( exp_head );
+
+}
+
+/*!
  \param scope  Current VCD scope.
 
  Sets the curr_inst_scope global variable to the specified scope.
@@ -1518,6 +1556,9 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.138  2005/11/25 16:48:48  phase1geo
+ Fixing bugs in binding algorithm.  Full regression now passes.
+
  Revision 1.137  2005/11/23 23:05:24  phase1geo
  Updating regression files.  Full regression now passes.
 

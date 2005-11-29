@@ -415,9 +415,8 @@ bool bind_task_function( int type, char* name, expression* exp, func_unit* funit
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     exit( 1 );
 
-  } else {
+  } else if( found_funit->stmt_head != NULL ) {
 
-    assert( found_funit->stmt_head != NULL );
     assert( found_funit->stmt_head->stmt != NULL );
 
     /* Set expression to point at task/function's first head statement */
@@ -457,6 +456,11 @@ bool bind_task_function( int type, char* name, expression* exp, func_unit* funit
       }
 
     }
+
+  } else {
+
+    /* Binding did not occur */
+    retval = FALSE;
 
   }
 
@@ -603,6 +607,9 @@ void bind( bool cdd_reading ) {
 
 /* 
  $Log$
+ Revision 1.43  2005/11/25 16:48:48  phase1geo
+ Fixing bugs in binding algorithm.  Full regression now passes.
+
  Revision 1.42  2005/11/23 23:05:24  phase1geo
  Updating regression files.  Full regression now passes.
 

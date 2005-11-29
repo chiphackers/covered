@@ -12,6 +12,8 @@
 #include "link.h"
 #include "func_unit.h"
 #include "statement.h"
+#include "db.h"
+#include "expr.h"
 
 
 /*! Pointer to head of statement block list to remove */
@@ -37,8 +39,11 @@ extern func_unit* curr_funit;
 */
 void stmt_blk_add_to_remove_list( statement* stmt ) {
 
-  func_unit* funit;  /* Functional unit containing the specified statement */
-  int        i;      /* Loop iterator */
+  func_unit* funit;     /* Functional unit containing the specified statement */
+  int        i;         /* Loop iterator */
+  exp_link*  exp_head;  /* Head of expression list containing expressions that call this statement */
+  exp_link*  expl;      /* Pointer to current expression link being examined */
+  statement* tmp_stmt;  /* Temporary pointer to root statement */
 
   assert( stmt != NULL );
 
@@ -46,6 +51,24 @@ void stmt_blk_add_to_remove_list( statement* stmt ) {
   funit = funit_find_by_id( stmt->exp->id );
 
   assert( funit != NULL );
+
+  /*
+   If we are removing the statement contained in a task or function, we need to remove all statement
+   blocks that contain expressions that call this task or function.
+  */
+  if( (funit->type == FUNIT_FUNCTION) || (funit->type == FUNIT_TASK) ) {
+    // printf( "Searching for all expressions that call %s...\n", funit->name );
+    if( (exp_head = db_get_exprs_with_statement( stmt )) != NULL ) {
+      expl = exp_head;
+      while( expl != NULL ) {
+        if( (tmp_stmt = expression_get_root_statement( expl->exp )) != NULL ) {
+          stmt_blk_add_to_remove_list( tmp_stmt );
+        }
+        expl = expl->next;
+      } 
+      exp_link_delete_list( exp_head, FALSE );
+    }
+  }
 
   /* Find the head statement of the statement block that contains this statement */
   stmt = statement_find_head_statement( stmt, funit->stmt_head );
@@ -91,5 +114,8 @@ void stmt_blk_remove() {
 
 /*
  $Log$
+ Revision 1.1  2005/11/25 16:48:48  phase1geo
+ Fixing bugs in binding algorithm.  Full regression now passes.
+
 */
 

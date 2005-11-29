@@ -1444,11 +1444,9 @@ bool expression_operate( expression* expr, thread* thr ) {
       case EXP_OP_TASK_CALL :
         retval = FALSE;
         if( expr->value->value[0].part.misc == 0 ) {
-          printf( "Adding thread...\n" );
           sim_add_thread( thr, expr->stmt );
           expr->value->value[0].part.misc  = 1;
           expr->value->value[0].part.value = 0;
-          printf( "Setting value to false\n" );
         } else if( thr->child_head == NULL ) {
           expr->value->value[0].part.misc  = 0;
           expr->value->value[0].part.value = 1;
@@ -1844,7 +1842,7 @@ void expression_dealloc( expression* expr, bool exp_only ) {
         }
         
       }  
- 
+
     }
 
     free_safe( expr->parent );
@@ -1869,6 +1867,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.131  2005/11/28 23:28:47  phase1geo
+ Checkpointing with additions for threads.
+
  Revision 1.130  2005/11/28 18:31:02  phase1geo
  Fixing memory fault bug in expression deallocation algorithm.
 

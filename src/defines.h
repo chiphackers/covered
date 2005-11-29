@@ -711,6 +711,17 @@
                                  (x->op == EXP_OP_DELAY))
 
 /*!
+ These expressions will only allow a statement block to advance when they evaluate to a value of true (i.e.,
+ their statement's false path is NULL).  They allow context switching to occur if they evaluate to false.
+*/
+#define EXPR_IS_CONTEXT_SWITCH(x)	((x->op == EXP_OP_DELAY) || \
+          				 (x->op == EXP_OP_NEDGE) || \
+                                         (x->op == EXP_OP_PEDGE) || \
+                                         (x->op == EXP_OP_AEDGE) || \
+                                         (x->op == EXP_OP_EOR)   || \
+                                         (x->op == EXP_OP_TASK_CALL))
+
+/*!
  Returns a value of true if the specified expression is considered a unary expression by
  the combinational logic report generator.
 */
@@ -1672,6 +1683,9 @@ struct thread_s {
 
 /*
  $Log$
+ Revision 1.137  2005/11/28 23:28:47  phase1geo
+ Checkpointing with additions for threads.
+
  Revision 1.136  2005/11/25 16:48:48  phase1geo
  Fixing bugs in binding algorithm.  Full regression now passes.
 
