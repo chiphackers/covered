@@ -24,7 +24,7 @@ void bind_remove( int id, bool clear_assigned );
 bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bind, bool cdd_reading, bool clear_assigned );
 
 /*! \brief Binds a function or task to an expression */
-bool bind_task_function( int type, char* name, expression* exp, func_unit* funit_exp, bool cdd_reading );
+bool bind_task_function_namedblock( int type, char* name, expression* exp, func_unit* funit_exp, bool cdd_reading );
 
 /*! \brief Performs vsignal/expression bind (performed after parse completed). */
 void bind( bool cdd_reading );
@@ -32,6 +32,11 @@ void bind( bool cdd_reading );
 
 /* 
  $Log$
+ Revision 1.17  2005/11/22 05:30:33  phase1geo
+ Updates to regression suite for clearing the assigned bit when a statement
+ block is removed from coverage consideration and it is assigning that signal.
+ This is not fully working at this point.
+
  Revision 1.16  2005/11/16 05:41:31  phase1geo
  Fixing implicit signal creation in binding functions.
 

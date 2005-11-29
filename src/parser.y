@@ -154,9 +154,9 @@ int yydebug = 1;
 %type <text>      localparam_assign_list localparam_assign
 %type <strlink>   register_variable_list list_of_variables
 %type <strlink>   gate_instance_list
-%type <text>      register_variable
+%type <text>      register_variable named_begin_end_block
 %type <state>     statement statement_list statement_opt 
-%type <state>     for_statement fork_statement while_statement named_begin_end_block if_statement_error
+%type <state>     for_statement fork_statement while_statement if_statement_error
 %type <case_stmt> case_items case_item
 %type <expr>      delay1 delay3 delay3_opt
 %type <attr_parm> attribute attribute_list
@@ -1541,7 +1541,7 @@ module_item
   | K_task IDENTIFIER ';'
     {
       if( ignore_mode == 0 ) {
-        db_add_function_task( FUNIT_TASK, $2, @2.text, @2.first_line );
+        db_add_function_task_namedblock( FUNIT_TASK, $2, @2.text, @2.first_line );
       }
     }
     task_item_list_opt statement_opt
@@ -1556,14 +1556,14 @@ module_item
     K_endtask
     {
       if( ignore_mode == 0 ) {
-        db_end_function_task( @8.first_line );
+        db_end_function_task_namedblock( @8.first_line );
       }
     }
   | K_function range_or_type_opt IDENTIFIER ';'
     {
       char tmp[256];
       if( ignore_mode == 0 ) {
-        db_add_function_task( FUNIT_FUNCTION, $3, @3.text, @3.first_line );
+        db_add_function_task_namedblock( FUNIT_FUNCTION, $3, @3.text, @3.first_line );
         snprintf( tmp, 256, "%s", $3 );
         db_add_signal( tmp, $2->left, $2->right, FALSE, FALSE );
         static_expr_dealloc( $2->left, FALSE );
@@ -1584,7 +1584,7 @@ module_item
     K_endfunction
     {
       if( ignore_mode == 0 ) {
-        db_end_function_task( @9.first_line );
+        db_end_function_task_namedblock( @9.first_line );
       }
     }
   | K_specify ignore_more specify_item_list ignore_less K_endspecify
@@ -1637,7 +1637,18 @@ statement
     }
   | K_begin ':' named_begin_end_block K_end
     {
-      $$ = $3;
+      expression* exp;
+      statement*  stmt;
+      if( $3 != NULL ) {
+        db_end_function_task_namedblock( @4.first_line );
+        exp  = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_line - 1), $3 );
+        stmt = db_create_statement( exp );
+        db_add_expression( exp );
+        free_safe( $3 );
+        $$ = stmt;
+      } else {
+        $$ = NULL;
+      }
     }
   | K_begin K_end
     {
@@ -2144,12 +2155,36 @@ while_statement
   ;
 
 named_begin_end_block
-  : IDENTIFIER ignore_more block_item_decls_opt ignore_less statement_list
+  : IDENTIFIER
     {
-      if( $1 != NULL ) {
-        free_safe( $1 );
+      if( (ignore_mode == 0) && ($1 != NULL) ) {
+        db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $1, @1.text, @1.first_line );
+      } else {
+        ignore_mode++;
       }
-      $$ = $5;
+    }
+    block_item_decls_opt statement_list
+    {
+      statement* stmt = $4;
+      if( ignore_mode == 0 ) {
+        if( stmt != NULL ) {
+          db_statement_set_stop( stmt, NULL, FALSE );
+          stmt->exp->suppl.part.stmt_head = 1;
+          db_add_statement( stmt, stmt );
+          $$ = $1;
+        } else {
+          if( $1 != NULL ) {
+            free_safe( $1 );
+          }
+          $$ = NULL;
+        }
+      } else {
+        if( $1 != NULL ) {
+          free_safe( $1 );
+        }
+        ignore_mode--;
+        $$ = NULL;
+      }
     }
   | UNUSED_IDENTIFIER block_item_decls_opt statement_list
     {

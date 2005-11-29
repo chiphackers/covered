@@ -636,8 +636,16 @@
 #define EXP_OP_TASK_CALL  0x3b
 /*! Decimal value = 60.  Specifies an event trigger (->). */
 #define EXP_OP_TRIGGER    0x3c
+/*! Decimal value = 61.  Specifies a "call" to a named block */
+#define EXP_OP_NB_CALL    0x3d
+/*! Decimal value = 62.  Specifies a fork command */
+#define EXP_OP_FORK       0x3e
+/*! Decimal value = 63.  Specifies a join command */
+#define EXP_OP_JOIN       0x3f
+/*! Decimal value = 64.  Specifies a disable command */
+#define EXP_OP_DISABLE    0x40
 /*! The total number of defines for expression values */
-#define EXP_OP_NUM        61
+#define EXP_OP_NUM        65
 
 /*! @} */
 
@@ -664,6 +672,10 @@
                                      (x->op != EXP_OP_IF) && \
                                      (x->op != EXP_OP_TASK_CALL) && \
 				     (x->op != EXP_OP_TRIGGER) && \
+				     (x->op != EXP_OP_NB_CALL) && \
+				     (x->op != EXP_OP_FORK) && \
+				     (x->op != EXP_OP_JOIN) && \
+				     (x->op != EXP_OP_DISABLE) && \
                                      (ESUPPL_IS_LHS( x->suppl ) == 0) && \
                                      !((ESUPPL_IS_ROOT( x->suppl ) == 0) && \
                                        ((x->op == EXP_OP_SIG) || \
@@ -1683,6 +1695,11 @@ struct thread_s {
 
 /*
  $Log$
+ Revision 1.138  2005/11/29 19:04:47  phase1geo
+ Adding tests to verify task functionality.  Updating failing tests and fixed
+ bugs for context switch expressions at the end of a statement block, statement
+ block removal for missing function/tasks and thread killing.
+
  Revision 1.137  2005/11/28 23:28:47  phase1geo
  Checkpointing with additions for threads.
 

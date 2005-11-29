@@ -61,6 +61,12 @@
  \par EXP_OP_TASK_CALL
  A task call expression simply runs the head statement block of the prescribed task immediately
  (the statement block is immediately run using the sim_statement function call).
+
+ \par EXP_OP_NB_CALL
+ A named block call expression is not really a legitimate Verilog expression type but is used for
+ the purposes of binding an expression to a functional unit (like EXP_OP_TASK_CALL).  It is not
+ measurable and has no report output structure.  It acts much like an EXP_OP_TASK_CALL expression
+ in simulation but does not pass any parameters.
 */
 
 #include <stdio.h>
@@ -101,7 +107,8 @@ const char* exp_op_names[EXP_OP_NUM] = {
   "LT", "GT", "LSHIFT", "RSHIFT", "EQ", "CEQ", "LE", "GE", "NE", "CNE", "LOR", "LAND", "COND", "COND_SEL",
   "UINV", "UAND", "UNOT", "UOR", "UXOR", "UNAND", "UNOR", "UNXOR", "SBIT_SEL", "MBIT_SEL", "EXPAND", "CONCAT",
   "PEDGE", "NEDGE", "AEDGE", "LAST", "EOR", "DELAY", "CASE", "CASEX", "CASEZ", "DEFAULT", "LIST", "PARAM",
-  "PARAM_SBIT", "PARAM_MBIT", "ASSIGN", "DASSIGN", "BASSIGN", "NASSIGN", "IF", "FUNC_CALL", "TASK_CALL", "TRIGGER" };
+  "PARAM_SBIT", "PARAM_MBIT", "ASSIGN", "DASSIGN", "BASSIGN", "NASSIGN", "IF", "FUNC_CALL", "TASK_CALL", "TRIGGER",
+  "NB_CALL", "FORK", "JOIN", "DISABLE" };
 
 
 /*!
@@ -791,9 +798,10 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) {
       if( sscanf( *line, "%s%n", tmpname, &chars_read ) == 1 ) {
         *line = *line + chars_read;
         switch( op ) {
-          case EXP_OP_FUNC_CALL :  bind_add( FUNIT_FUNCTION, tmpname, expr, curr_funit );  break;
-          case EXP_OP_TASK_CALL :  bind_add( FUNIT_TASK,     tmpname, expr, curr_funit );  break;
-          default               :  bind_add( 0,              tmpname, expr, curr_funit );  break;
+          case EXP_OP_FUNC_CALL :  bind_add( FUNIT_FUNCTION,    tmpname, expr, curr_funit );  break;
+          case EXP_OP_TASK_CALL :  bind_add( FUNIT_TASK,        tmpname, expr, curr_funit );  break;
+          case EXP_OP_NB_CALL   :  bind_add( FUNIT_NAMED_BLOCK, tmpname, expr, curr_funit );  break;
+          default               :  bind_add( 0,                 tmpname, expr, curr_funit );  break;
         }
       }
 
@@ -1454,8 +1462,21 @@ bool expression_operate( expression* expr, thread* thr ) {
         }
         break;
 
-#ifdef TBD
+      case EXP_OP_NB_CALL :
+        retval = FALSE;
+        if( expr->value->value[0].part.misc == 0 ) {
+          sim_add_thread( thr, expr->stmt );
+          expr->value->value[0].part.misc  = 1;
+          expr->value->value[0].part.value = 0;
+        } else if( thr->child_head == NULL ) {
+          expr->value->value[0].part.misc  = 0;
+          expr->value->value[0].part.value = 1;
+          retval = TRUE;
+        }
+        break;
+
       case EXP_OP_FORK :
+        sim_add_thread( thr, expr->stmt );
         break;
 
       case EXP_OP_JOIN :
@@ -1463,8 +1484,8 @@ bool expression_operate( expression* expr, thread* thr ) {
         break;
 
       case EXP_OP_DISABLE :
+        // TBD - sim_kill_thread( thr );
         break;
-#endif
 
       default :
         print_output( "Internal error:  Unidentified expression operation!", FATAL, __FILE__, __LINE__ );
@@ -1867,6 +1888,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.132  2005/11/29 19:04:47  phase1geo
+ Adding tests to verify task functionality.  Updating failing tests and fixed
+ bugs for context switch expressions at the end of a statement block, statement
+ block removal for missing function/tasks and thread killing.
+
  Revision 1.131  2005/11/28 23:28:47  phase1geo
  Checkpointing with additions for threads.
 

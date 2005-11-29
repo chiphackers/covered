@@ -20,10 +20,13 @@ func_unit* scope_find_funit_from_scope( char* scope, func_unit* curr_funit );
 bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, func_unit** found_funit, int line );
 
 /*! \brief  Finds the given task or function in the provided scope. */
-bool scope_find_task_function( char* name, int type, func_unit* curr_funit, func_unit** found_funit, int line );
+bool scope_find_task_function_namedblock( char* name, int type, func_unit* curr_funit, func_unit** found_funit, int line );
 
 
 /* $Log$
+/* Revision 1.3  2005/11/16 05:41:31  phase1geo
+/* Fixing implicit signal creation in binding functions.
+/*
 /* Revision 1.2  2005/11/11 22:53:40  phase1geo
 /* Updated bind process to allow binding of structures from different hierarchies.
 /* Added task port signals to get added.

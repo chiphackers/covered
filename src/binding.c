@@ -393,7 +393,7 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
 /*!
  \param type  Type of functional unit
 */
-bool bind_task_function( int type, char* name, expression* exp, func_unit* funit_exp, bool cdd_reading ) {
+bool bind_task_function_namedblock( int type, char* name, expression* exp, func_unit* funit_exp, bool cdd_reading ) {
 
   bool       retval = TRUE;  /* Return value for this function */
   stmt_iter  si;             /* Statement iterator used to find the head statement */
@@ -402,9 +402,9 @@ bool bind_task_function( int type, char* name, expression* exp, func_unit* funit
   func_unit* found_funit;    /* Pointer to found task/function functional unit */
   statement* stmt;           /* Pointer to root statement for expression calling a function */
 
-  assert( (type == FUNIT_FUNCTION) || (type == FUNIT_TASK) );
+  assert( (type == FUNIT_FUNCTION) || (type == FUNIT_TASK) || (type == FUNIT_NAMED_BLOCK) );
 
-  if( !scope_find_task_function( name, type, funit_exp, &found_funit, exp->line ) ) {
+  if( !scope_find_task_function_namedblock( name, type, funit_exp, &found_funit, exp->line ) ) {
 
     /* Bad hierarchical reference -- user error  -- unachievable code due to unsuppported use of hierarchical referencing */
     snprintf( user_msg, USER_MSG_LENGTH, "Hierarchical reference to undefined %s \"%s\" in %s, line %d",
@@ -532,7 +532,7 @@ void bind( bool cdd_reading ) {
        Bind the expression to the task/function.  If it is unsuccessful, we need to remove the statement
        that this expression is a part of.
       */
-      bound = bind_task_function( curr_eb->type, curr_eb->name, curr_eb->exp, curr_eb->funit, cdd_reading );
+      bound = bind_task_function_namedblock( curr_eb->type, curr_eb->name, curr_eb->exp, curr_eb->funit, cdd_reading );
 
     }
 
@@ -607,6 +607,11 @@ void bind( bool cdd_reading ) {
 
 /* 
  $Log$
+ Revision 1.44  2005/11/29 19:04:47  phase1geo
+ Adding tests to verify task functionality.  Updating failing tests and fixed
+ bugs for context switch expressions at the end of a statement block, statement
+ block removal for missing function/tasks and thread killing.
+
  Revision 1.43  2005/11/25 16:48:48  phase1geo
  Fixing bugs in binding algorithm.  Full regression now passes.
 

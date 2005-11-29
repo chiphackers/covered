@@ -271,7 +271,7 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
     codegen_gen_expr( expr->left,  expr->op, &left_code,  &left_code_depth,  funit );
     codegen_gen_expr( expr->right, expr->op, &right_code, &right_code_depth, funit );
 
-    if( expr->op == EXP_OP_LAST ) {
+    if( (expr->op == EXP_OP_LAST) || (expr->op == EXP_OP_NB_CALL) ) {
 
       /* Do nothing. */
 
@@ -652,6 +652,9 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.45  2005/11/28 23:28:47  phase1geo
+ Checkpointing with additions for threads.
+
  Revision 1.44  2005/11/22 23:03:48  phase1geo
  Adding support for event trigger mechanism.  Regression is currently broke
  due to these changes -- we need to remove statement blocks that contain

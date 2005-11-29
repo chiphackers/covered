@@ -273,6 +273,8 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) {
 
     } else {
 
+      printf( "In statement_db_read, current funit %s\n", curr_funit->name );
+
       /* Find associated root expression */
       tmpexp.id = id;
       expl = exp_link_find( &tmpexp, curr_funit->exp_head );
@@ -356,12 +358,7 @@ void statement_connect( statement* curr_stmt, statement* next_stmt ) {
     if( curr_stmt->next_true == NULL ) {
       curr_stmt->next_true  = next_stmt;
       /* If the current statement is a wait statement, don't connect next_false path */
-      if( (curr_stmt->exp->op != EXP_OP_DELAY) &&
-          (curr_stmt->exp->op != EXP_OP_NEDGE) &&
-          (curr_stmt->exp->op != EXP_OP_PEDGE) &&
-          (curr_stmt->exp->op != EXP_OP_AEDGE) &&
-          (curr_stmt->exp->op != EXP_OP_EOR)   &&
-          (curr_stmt->exp->op != EXP_OP_TASK_CALL) ) {
+      if( !EXPR_IS_CONTEXT_SWITCH( curr_stmt->exp ) ) {
         curr_stmt->next_false = next_stmt;
       }
     } else if( curr_stmt->next_true != next_stmt ) {
@@ -379,12 +376,7 @@ void statement_connect( statement* curr_stmt, statement* next_stmt ) {
 
     /* Traverse FALSE path */
     if( curr_stmt->next_false == NULL ) {
-      if( (curr_stmt->exp->op != EXP_OP_DELAY) &&
-          (curr_stmt->exp->op != EXP_OP_NEDGE) &&
-          (curr_stmt->exp->op != EXP_OP_PEDGE) &&
-          (curr_stmt->exp->op != EXP_OP_AEDGE) &&
-          (curr_stmt->exp->op != EXP_OP_EOR)   &&
-          (curr_stmt->exp->op != EXP_OP_TASK_CALL) ) {
+      if( !EXPR_IS_CONTEXT_SWITCH( curr_stmt->exp ) ) {
         curr_stmt->next_false = next_stmt;
       }
     } else if( curr_stmt->next_false != next_stmt ) {
@@ -660,6 +652,11 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.59  2005/11/29 19:04:48  phase1geo
+ Adding tests to verify task functionality.  Updating failing tests and fixed
+ bugs for context switch expressions at the end of a statement block, statement
+ block removal for missing function/tasks and thread killing.
+
  Revision 1.58  2005/11/28 23:28:47  phase1geo
  Checkpointing with additions for threads.
 

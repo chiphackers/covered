@@ -516,20 +516,27 @@ void db_end_module( int end_line ) {
 }
 
 /*!
+ \param type        Specifies type of functional unit being added (function, task or named_block)
+ \param name        Name of functional unit
+ \param file        File containing the specified functional unit
+ \param start_line  Starting line number of functional unit
 */
-void db_add_function_task( int type, char* name, char* file, int start_line ) {
+void db_add_function_task_namedblock( int type, char* name, char* file, int start_line ) {
 
   func_unit* tf;  /* Pointer to created functional unit */
 
-  assert( (type == FUNIT_FUNCTION) || (type == FUNIT_TASK) );
+  assert( (type == FUNIT_FUNCTION) || (type == FUNIT_TASK) || (type == FUNIT_NAMED_BLOCK) );
 
 #ifdef DEBUG_MODE
   switch( type ) {
     case FUNIT_FUNCTION :
-      snprintf( user_msg, USER_MSG_LENGTH, "In db_add_function_task, function: %s, file: %s, start_line: %d", name, file, start_line );
+      snprintf( user_msg, USER_MSG_LENGTH, "In db_add_function_task_namedblock, function: %s, file: %s, start_line: %d", name, file, start_line );
       break;
     case FUNIT_TASK :
-      snprintf( user_msg, USER_MSG_LENGTH, "In db_add_function_task, task: %s, file: %s, start_line: %d", name, file, start_line );
+      snprintf( user_msg, USER_MSG_LENGTH, "In db_add_function_task_namedblock, task: %s, file: %s, start_line: %d", name, file, start_line );
+      break;
+    case FUNIT_NAMED_BLOCK :
+      snprintf( user_msg, USER_MSG_LENGTH, "In db_add_function_task_namedblock, named_block: %s, file: %s, start_line: %d", name, file, start_line );
       break;
     default :  break;
   }
@@ -560,10 +567,10 @@ void db_add_function_task( int type, char* name, char* file, int start_line ) {
 /*!
  \param end_line  Line number of end of this task/function
 */
-void db_end_function_task( int end_line ) {
+void db_end_function_task_namedblock( int end_line ) {
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_end_function_task, end_line: %d", end_line );
+  snprintf( user_msg, USER_MSG_LENGTH, "In db_end_function_task_namedblock, end_line: %d", end_line );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -957,9 +964,10 @@ expression* db_create_expression( expression* right, expression* left, int op, b
     } else {
 
       switch( op ) {
-        case EXP_OP_FUNC_CALL :  bind_add( FUNIT_FUNCTION, sig_name, expr, curr_funit );  break;
-        case EXP_OP_TASK_CALL :  bind_add( FUNIT_TASK,     sig_name, expr, curr_funit );  break;
-        default               :  bind_add( 0,              sig_name, expr, curr_funit );  break;
+        case EXP_OP_FUNC_CALL :  bind_add( FUNIT_FUNCTION,    sig_name, expr, curr_funit );  break;
+        case EXP_OP_TASK_CALL :  bind_add( FUNIT_TASK,        sig_name, expr, curr_funit );  break;
+        case EXP_OP_NB_CALL   :  bind_add( FUNIT_NAMED_BLOCK, sig_name, expr, curr_funit );  break;
+        default               :  bind_add( 0,                 sig_name, expr, curr_funit );  break;
       }
 
     }
@@ -1556,6 +1564,11 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.139  2005/11/29 19:04:47  phase1geo
+ Adding tests to verify task functionality.  Updating failing tests and fixed
+ bugs for context switch expressions at the end of a statement block, statement
+ block removal for missing function/tasks and thread killing.
+
  Revision 1.138  2005/11/25 16:48:48  phase1geo
  Fixing bugs in binding algorithm.  Full regression now passes.
 
