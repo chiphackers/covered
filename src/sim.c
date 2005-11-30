@@ -173,6 +173,34 @@ void sim_expr_changed( expression* expr ) {
 }
 
 /*!
+ Displays the current state of the thread queue
+*/
+void sim_display_thread_queue() {
+
+  thread* curr;  /* Pointer to current thread */
+  
+  printf( "Current thread queue...\n" );
+
+  curr = thread_head;
+  while( curr != NULL ) {
+    if( curr == curr_thread ) {
+      printf( "  -> stmt %d, %s, line %d  ", curr->curr->exp->id, expression_string_op( curr->curr->exp->op ), curr->curr->exp->line );
+    } else {
+      printf( "     stmt %d, %s, line %d  ", curr->curr->exp->id, expression_string_op( curr->curr->exp->op ), curr->curr->exp->line );
+    }
+    if( curr == thread_head ) {
+      printf( "H" );
+    }
+    if( curr == thread_tail ) {
+      printf( "T" );
+    }
+    printf( "\n" );
+    curr = curr->next;
+  }
+
+}
+
+/*!
  \param parent  Pointer to parent thread of the new thread to create (set to NULL if there is no parent thread)
  \param stmt    Pointer to head statement to have new thread point to.
 
@@ -183,13 +211,17 @@ void sim_expr_changed( expression* expr ) {
 */
 thread* sim_add_thread( thread* parent, statement* stmt ) {
 
-  thread*   thr = NULL;  /* Pointer to new thread to create */
-  sig_link* sigl;        /* Pointer to current signal in signal list */
+  sig_link* sigl;                 /* Pointer to current signal in signal list */
+  thread*   thr         = NULL;   /* Pointer to new thread to create */
+  bool      first_child = FALSE;  /* Specifies if this is the first child to be added to the parent */
 
   assert( stmt != NULL );
 
   /* Only add expression if it is the head statement of its statement block */
   if( ESUPPL_IS_STMT_HEAD( stmt->exp->suppl ) == 1 ) {
+
+    // printf( "THREAD QUEUE PRIOR TO THREAD ADD\n" );
+    // sim_display_thread_queue();
 
     /* Create and initialize thread */
     thr             = (thread*)malloc_safe( sizeof( thread ), __FILE__, __LINE__ );
@@ -206,6 +238,7 @@ thread* sim_add_thread( thread* parent, statement* stmt ) {
     if( parent != NULL ) {
       if( parent->child_head == NULL ) {
         parent->child_head = parent->child_tail = thr;
+        first_child = TRUE;
       } else {
         thr->prev_sib                = parent->child_tail;
         parent->child_tail->next_sib = thr;
@@ -224,6 +257,49 @@ thread* sim_add_thread( thread* parent, statement* stmt ) {
     }
 
     /* Add this thread to the simulation thread queue */
+#ifndef ATTEMPT_TO_SHORTEN
+    if( parent != NULL ) {
+
+      /* If this is the first child to be added to the parent, remove the parent from the thread queue */
+      if( first_child ) {
+        thr->prev = parent->prev;
+        thr->next = parent->next;
+
+      /* Otherwise, just insert this child between the parent's previous and the other child */
+      } else {
+        thr->prev = parent->next->prev;
+        thr->next = parent->next; 
+      }
+
+      /* Set the parent to point its next pointer to us */
+      parent->next = thr;
+
+      /* Fix the previous thread to point to us */
+      if( thr->prev == NULL ) {
+        thread_head = thr;
+      } else {
+        thr->prev->next = thr;
+      }
+
+      /* Fix the next thread to point to us */
+      if( thr->next == NULL ) {
+        thread_tail = thr;
+      } else {
+        thr->next->prev = thr;
+      }
+
+    } else {
+
+      if( thread_head == NULL ) {
+        thread_head = thread_tail = thr;
+      } else {
+        thr->prev         = thread_tail;
+        thread_tail->next = thr;
+        thread_tail       = thr;
+      }
+ 
+    }
+#else
     if( (parent == NULL) && (thread_head == NULL) ) {
 
       /* If the thread queue is currently empty, just add the thread */
@@ -242,6 +318,10 @@ thread* sim_add_thread( thread* parent, statement* stmt ) {
       thread_tail->next = thr;
       thread_tail       = thr;
     }
+#endif
+
+    // printf( "THREAD QUEUE AFTER ADD\n" );
+    // sim_display_thread_queue();
 
   }
 
@@ -257,7 +337,12 @@ thread* sim_add_thread( thread* parent, statement* stmt ) {
 */
 void sim_kill_thread( thread* thr ) {
 
+  bool last_child = FALSE;  /* Specifies if we are the last child being removed from parent thread */
+
   assert( thr != NULL );
+
+  // printf( "THREAD QUEUE PRIOR TO KILL\n" );
+  // sim_display_thread_queue();
 
   /* Remove this thread from its parent, if it has a parent */
   if( thr->parent != NULL ) {
@@ -266,6 +351,7 @@ void sim_kill_thread( thread* thr ) {
     if( (thr == thr->parent->child_head) && (thr == thr->parent->child_tail) ) {
 
       thr->parent->child_head = thr->parent->child_tail = NULL;
+      last_child = TRUE;
 
     /* If this thread is the head, we need to bump up the head pointer */
     } else if( thr == thr->parent->child_head ) {
@@ -294,6 +380,23 @@ void sim_kill_thread( thread* thr ) {
     curr_thread = thr->prev;
   }
 
+#ifndef ATTEMPT_TO_SHORTEN
+  /* If we are the last child, re-insert the parent thread */
+  if( last_child ) {
+    if( thr->prev == NULL ) {
+      thread_head = thr->parent;
+    } else {
+      thr->prev->next = thr->parent;
+    }
+    thr->parent->prev = thr->prev;
+    thr->parent->next = thr;
+    thr->prev         = thr->parent;
+  }    
+#endif
+
+  // printf( "AFTER re-inserting parent thread\n" );
+  // sim_display_thread_queue();
+
   /* Now remove the thread from the thread list */
   if( (thr == thread_head) && (thr == thread_tail) ) {
     thread_head = thread_tail = NULL;
@@ -310,6 +413,9 @@ void sim_kill_thread( thread* thr ) {
 
   /* Now we can deallocate the thread */
   free_safe( thr );
+
+  // printf( "THREAD_QUEUE AFTER KILL\n" );
+  // sim_display_thread_queue();
 
 }
 
@@ -528,7 +634,11 @@ void sim_simulate() {
 
       if( curr_thread != NULL ) {
         curr_thread = curr_thread->next;
+      } else {
+        curr_thread = thread_head;
       }
+
+      // sim_display_thread_queue();
 
     }
 
@@ -539,6 +649,11 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.49  2005/11/29 19:04:48  phase1geo
+ Adding tests to verify task functionality.  Updating failing tests and fixed
+ bugs for context switch expressions at the end of a statement block, statement
+ block removal for missing function/tasks and thread killing.
+
  Revision 1.48  2005/11/28 23:28:47  phase1geo
  Checkpointing with additions for threads.
 

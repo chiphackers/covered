@@ -319,7 +319,7 @@ bool db_read( char* file, int read_mode ) {
               curr_funit->filename   = strdup_safe( funit_file, __FILE__, __LINE__ );
               curr_funit->start_line = tmpfunit.start_line;
               curr_funit->end_line   = tmpfunit.end_line;
-              if( (tmpfunit.type == FUNIT_FUNCTION) || (tmpfunit.type == FUNIT_TASK) ) {
+              if( (tmpfunit.type == FUNIT_FUNCTION) || (tmpfunit.type == FUNIT_TASK) || (tmpfunit.type == FUNIT_NAMED_BLOCK) ) {
                 funit_link_add( curr_funit, &(last_funit->tf_head), &(last_funit->tf_tail) );
                 funit_link_add( last_funit, &(curr_funit->tf_head), &(curr_funit->tf_tail) );
               }
@@ -1564,6 +1564,11 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.140  2005/11/29 23:14:37  phase1geo
+ Adding support for named blocks.  Still not working at this point but checkpointing
+ anyways.  Added new task3.1 diagnostic to verify task removal when a task is calling
+ another task.
+
  Revision 1.139  2005/11/29 19:04:47  phase1geo
  Adding tests to verify task functionality.  Updating failing tests and fixed
  bugs for context switch expressions at the end of a statement block, statement

@@ -273,8 +273,6 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) {
 
     } else {
 
-      printf( "In statement_db_read, current funit %s\n", curr_funit->name );
-
       /* Find associated root expression */
       tmpexp.id = id;
       expl = exp_link_find( &tmpexp, curr_funit->exp_head );
@@ -321,7 +319,7 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) {
        or function, do not add this to the presimulation queue (this will be added when the expression
        is called.
       */
-      if( (curr_funit->type == FUNIT_MODULE) || (curr_funit->type == FUNIT_NAMED_BLOCK) ) {
+      if( curr_funit->type == FUNIT_MODULE ) {
         sim_add_thread( NULL, stmt );
       }
 
@@ -652,6 +650,11 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.60  2005/11/29 23:14:37  phase1geo
+ Adding support for named blocks.  Still not working at this point but checkpointing
+ anyways.  Added new task3.1 diagnostic to verify task removal when a task is calling
+ another task.
+
  Revision 1.59  2005/11/29 19:04:48  phase1geo
  Adding tests to verify task functionality.  Updating failing tests and fixed
  bugs for context switch expressions at the end of a statement block, statement

@@ -171,6 +171,10 @@ void bind_display_list() {
         printf( "  Expr: %d, %s, line %d;  Functional Unit: %s;  Task: %s\n",
                 curr->exp->id, expression_string_op( curr->exp->op ), curr->exp->line, curr->funit->name, curr->name );
         break;
+      case FUNIT_NAMED_BLOCK :
+        printf( "  Expr: %d, %s, line %d;  Functional Unit: %s;  Named Block: %s\n",
+                curr->exp->id, expression_string_op( curr->exp->op ), curr->exp->line, curr->funit->name, curr->name );
+        break;
       case 0 :
         if( curr->clear_assigned > 0 ) {
           printf( "  Signal to be cleared: %s\n", curr->name );
@@ -198,9 +202,6 @@ void bind_remove( int id, bool clear_assigned ) {
 
   exp_bind* curr;  /* Pointer to current exp_bind link */
   exp_bind* last;  /* Pointer to last exp_bind link examined */
-
-  // printf( "In bind_remove, id %d, clear_assigned %d\n", id, clear_assigned );
-  // bind_display_list();
 
   curr = eb_head;
   last = eb_head;
@@ -246,8 +247,6 @@ void bind_remove( int id, bool clear_assigned ) {
 
   }
 
-  // bind_display_list();
-      
 }
 
 /*!
@@ -509,11 +508,6 @@ void bind( bool cdd_reading ) {
     /* Handle signal binding */
     if( curr_eb->type == 0 ) {
 
-/*
-      printf( "Binding exp %d, %s, line %d to signal %s\n",
-              curr_eb->exp->id, expression_string_op( curr_eb->exp->op ), curr_eb->exp->line, curr_eb->name );
-*/
-
       /*
        Bind the signal.  If it is unsuccessful, we need to remove the statement that this expression
        is a part of.
@@ -607,6 +601,11 @@ void bind( bool cdd_reading ) {
 
 /* 
  $Log$
+ Revision 1.45  2005/11/29 23:14:37  phase1geo
+ Adding support for named blocks.  Still not working at this point but checkpointing
+ anyways.  Added new task3.1 diagnostic to verify task removal when a task is calling
+ another task.
+
  Revision 1.44  2005/11/29 19:04:47  phase1geo
  Adding tests to verify task functionality.  Updating failing tests and fixed
  bugs for context switch expressions at the end of a statement block, statement
