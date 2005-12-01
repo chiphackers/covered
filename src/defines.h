@@ -731,8 +731,7 @@
                                          (x->op == EXP_OP_PEDGE)     || \
                                          (x->op == EXP_OP_AEDGE)     || \
                                          (x->op == EXP_OP_EOR)       || \
-                                         (x->op == EXP_OP_TASK_CALL) || \
-                                         (x->op == EXP_OP_NB_CALL))
+                                         (x->op == EXP_OP_TASK_CALL))
 
 /*!
  Returns a value of true if the specified expression is considered a unary expression by
@@ -1697,6 +1696,11 @@ struct thread_s {
 
 /*
  $Log$
+ Revision 1.141  2005/12/01 16:08:19  phase1geo
+ Allowing nested functional units within a module to get parsed and handled correctly.
+ Added new nested_block1 diagnostic to test nested named blocks -- will add more tests
+ later for different combinations.  Updated regression suite which now passes.
+
  Revision 1.140  2005/11/30 18:25:56  phase1geo
  Fixing named block code.  Full regression now passes.  Still more work to do on
  named blocks, however.

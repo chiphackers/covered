@@ -64,8 +64,8 @@
 
  \par EXP_OP_NB_CALL
  A named block call expression is not really a legitimate Verilog expression type but is used for
- the purposes of binding an expression to a functional unit (like EXP_OP_TASK_CALL).  It is not
- measurable and has no report output structure.  It acts much like an EXP_OP_TASK_CALL expression
+ the purposes of binding an expression to a functional unit (like EXP_OP_FUNC_CALL).  It is not
+ measurable and has no report output structure.  It acts much like an EXP_OP_FUNC_CALL expression
  in simulation but does not pass any parameters.
 */
 
@@ -1463,16 +1463,7 @@ bool expression_operate( expression* expr, thread* thr ) {
         break;
 
       case EXP_OP_NB_CALL :
-        retval = FALSE;
-        if( expr->value->value[0].part.misc == 0 ) {
-          sim_add_thread( thr, expr->stmt );
-          expr->value->value[0].part.misc  = 1;
-          expr->value->value[0].part.value = 0;
-        } else if( thr->child_head == NULL ) {
-          expr->value->value[0].part.misc  = 0;
-          expr->value->value[0].part.value = 1;
-          retval = TRUE;
-        }
+        sim_thread( sim_add_thread( thr, expr->stmt ) );
         break;
 
       case EXP_OP_FORK :
@@ -1888,6 +1879,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.133  2005/11/29 23:14:37  phase1geo
+ Adding support for named blocks.  Still not working at this point but checkpointing
+ anyways.  Added new task3.1 diagnostic to verify task removal when a task is calling
+ another task.
+
  Revision 1.132  2005/11/29 19:04:47  phase1geo
  Adding tests to verify task functionality.  Updating failing tests and fixed
  bugs for context switch expressions at the end of a statement block, statement

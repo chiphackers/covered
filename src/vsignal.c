@@ -383,8 +383,8 @@ void vsignal_propagate( vsignal* sig ) {
   curr_expr = sig->exp_head;
   while( curr_expr != NULL ) {
 
-    /* Add to simulation queue if expression is a RHS */
-    if( ESUPPL_IS_LHS( curr_expr->exp->suppl ) == 0 ) {
+    /* Add to simulation queue if expression is a RHS and not a function call */
+    if( (ESUPPL_IS_LHS( curr_expr->exp->suppl ) == 0) && (curr_expr->exp->op != EXP_OP_FUNC_CALL) ) {
       sim_expr_changed( curr_expr->exp );
     }
 
@@ -538,6 +538,11 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.13  2005/12/01 16:08:19  phase1geo
+ Allowing nested functional units within a module to get parsed and handled correctly.
+ Added new nested_block1 diagnostic to test nested named blocks -- will add more tests
+ later for different combinations.  Updated regression suite which now passes.
+
  Revision 1.12  2005/11/21 22:21:58  phase1geo
  More regression updates.  Also made some updates to debugging output.
 
