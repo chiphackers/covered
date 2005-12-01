@@ -14,8 +14,10 @@
 #endif
 #include <assert.h>
 #include <stdlib.h>
+#ifdef HAVE_TCLTK
 #include <tcl.h>
 #include <tk.h>
+#endif
 
 #include "defines.h"
 #include "report.h"
@@ -120,10 +122,12 @@ char* output_file      = NULL;
 */
 char* input_db         = NULL;
 
+#ifdef HAVE_TCLTK
 /*!
  TCL interpreter for this application.
 */
 Tcl_Interp* interp;
+#endif
 
 /*!
  Displays usage information about the report command.
@@ -133,9 +137,10 @@ void report_usage() {
   printf( "\n" );
   printf( "Usage:  covered report (-h | -view | [<options>] <database_file>)\n" );
   printf( "\n" );
+#ifdef HAVE_TCLTK
   printf( "   -view                      Uses the graphical report viewer for viewing reports.  If this\n" );
   printf( "                               option is not specified, the text report will be generated.\n" );
-  printf( "                               (This option is currently not available).\n" );
+#endif
   printf( "   -h                         Displays this help information.\n" );
   printf( "\n" );
   printf( "   Options:\n" );
@@ -229,11 +234,13 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
       i++;
       report_parse_metrics( argv[i] );
 
+#ifdef HAVE_TCLTK
     } else if( strncmp( "-view", argv[i], 5 ) == 0 ) {
 
       report_gui          = TRUE;
       report_comb_depth   = REPORT_VERBOSE;
       flag_use_line_width = TRUE;
+#endif
 
     } else if( strncmp( "-i", argv[i], 2 ) == 0 ) {
 
@@ -650,6 +657,7 @@ int command_report( int argc, int last_arg, char** argv ) {
 
       fclose( ofile );
 
+#ifdef HAVE_TCLTK
     } else {
 
       if( input_db != NULL ) {
@@ -705,6 +713,7 @@ int command_report( int argc, int last_arg, char** argv ) {
       /* Clean Up */
       free( covered_home );
       free( main_file );
+#endif
 
     }
 
@@ -717,6 +726,13 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.45  2005/11/15 23:08:02  phase1geo
+ Updates for new binding scheme.  Binding occurs for all expressions, signals,
+ FSMs, and functional units after parsing has completed or after database reading
+ has been completed.  This should allow for any hierarchical reference or scope
+ issues to be handled correctly.  Regression mostly passes but there are still
+ a few failures at this point.  Checkpointing.
+
  Revision 1.44  2005/11/08 23:12:10  phase1geo
  Fixes for function/task additions.  Still a lot of testing on these structures;
  however, regressions now pass again so we are checkpointing here.

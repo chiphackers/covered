@@ -19,8 +19,10 @@
 #include <string.h>
 #endif
 #ifndef VPI_ONLY
+#ifdef HAVE_TCLTK
 #include <tcl.h>
 #include <tk.h> 
+#endif
 #endif
 
 #ifdef HAVE_MPATROL
@@ -33,7 +35,9 @@
 
 extern bool        report_gui;
 #ifndef VPI_ONLY
+#ifdef HAVE_TCLTK
 extern Tcl_Interp* interp;
+#endif
 #endif
 
 /*!
@@ -115,7 +119,9 @@ void print_output( char* msg, int type, char* file, int line ) {
         if( report_gui ) {
           snprintf( tmpmsg, USER_MSG_LENGTH, "WARNING!  %s\n", msg );
 #ifndef VPI_ONLY
+#ifdef HAVE_TCLTK
           Tcl_SetResult( interp, tmpmsg, TCL_VOLATILE );
+#endif
 #endif
         } else {
           fprintf( outf, "    WARNING!  %s\n", msg );
@@ -124,7 +130,9 @@ void print_output( char* msg, int type, char* file, int line ) {
         if( report_gui ) {
           snprintf( tmpmsg, USER_MSG_LENGTH, "WARNING!  %s (file: %s, line: %d)\n", msg, file, line );
 #ifndef VPI_ONLY
+#ifdef HAVE_TCLTK
           Tcl_SetResult( interp, tmpmsg, TCL_VOLATILE );
+#endif
 #endif
         } else {
           fprintf( outf, "    WARNING!  %s (file: %s, line: %d)\n", msg, file, line );
@@ -136,7 +144,9 @@ void print_output( char* msg, int type, char* file, int line ) {
         if( report_gui ) {
           snprintf( tmpmsg, USER_MSG_LENGTH, "              %s\n", msg );
 #ifndef VPI_ONLY
+#ifdef HAVE_TCLTK
           Tcl_AppendElement( interp, tmpmsg );
+#endif
 #endif
         } else {
           fprintf( outf, "              %s\n", msg );
@@ -148,7 +158,9 @@ void print_output( char* msg, int type, char* file, int line ) {
         if( report_gui ) {
           snprintf( tmpmsg, USER_MSG_LENGTH, "%s (file: %s, line: %d)\n", msg, file, line );
 #ifndef VPI_ONLY
+#ifdef HAVE_TCLTK
           Tcl_SetResult( interp, tmpmsg, TCL_VOLATILE );
+#endif
 #endif
         } else {
           fprintf( outf, "ERROR!  %s (file: %s, line: %d)\n", msg, file, line );
@@ -157,7 +169,9 @@ void print_output( char* msg, int type, char* file, int line ) {
         if( report_gui ) {
           snprintf( tmpmsg, USER_MSG_LENGTH, "%s\n", msg );
 #ifndef VPI_ONLY
+#ifdef HAVE_TCLTK
           Tcl_SetResult( interp, tmpmsg, TCL_VOLATILE );
+#endif
 #endif
         } else {
           fprintf( outf, "ERROR!  %s\n", msg );
@@ -168,7 +182,9 @@ void print_output( char* msg, int type, char* file, int line ) {
       if( report_gui ) {
         snprintf( tmpmsg, USER_MSG_LENGTH, "%s\n", msg );
 #ifndef VPI_ONLY
+#ifdef HAVE_TCLTK
         Tcl_AppendElement( interp, tmpmsg );
+#endif
 #endif
       } else { 
         fprintf( outf, "        %s\n", msg );
@@ -848,6 +864,10 @@ const char* get_funit_type( int type ) {
 
 /*
  $Log$
+ Revision 1.33  2005/11/30 18:25:56  phase1geo
+ Fixing named block code.  Full regression now passes.  Still more work to do on
+ named blocks, however.
+
  Revision 1.32  2005/11/10 23:27:37  phase1geo
  Adding scope files to handle scope searching.  The functions are complete (not
  debugged) but are not as of yet used anywhere in the code.  Added new func2 diagnostic
