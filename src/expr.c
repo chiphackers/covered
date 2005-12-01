@@ -66,7 +66,8 @@
  A named block call expression is not really a legitimate Verilog expression type but is used for
  the purposes of binding an expression to a functional unit (like EXP_OP_FUNC_CALL).  It is not
  measurable and has no report output structure.  It acts much like an EXP_OP_FUNC_CALL expression
- in simulation but does not pass any parameters.
+ if it is nested in a a function block; otherwise, acts like an EXP_OP_TASK_CALL in simulation but
+ does not pass any parameters.
 */
 
 #include <stdio.h>
@@ -1463,7 +1464,20 @@ bool expression_operate( expression* expr, thread* thr ) {
         break;
 
       case EXP_OP_NB_CALL :
-        sim_thread( sim_add_thread( thr, expr->stmt ) );
+        if( ESUPPL_IS_IN_FUNC( expr->suppl ) ) {
+          sim_thread( sim_add_thread( thr, expr->stmt ) );
+        } else {
+          retval = FALSE;
+          if( expr->value->value[0].part.misc == 0 ) {
+            sim_add_thread( thr, expr->stmt );
+            expr->value->value[0].part.misc  = 1;
+            expr->value->value[0].part.value = 0;
+          } else if( thr->child_head == NULL ) {
+            expr->value->value[0].part.misc  = 0;
+            expr->value->value[0].part.value = 1;
+            retval = TRUE;
+          }
+        }
         break;
 
       case EXP_OP_FORK :
@@ -1879,6 +1893,13 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.134  2005/12/01 18:35:17  phase1geo
+ Fixing bug where functions in continuous assignments could cause the
+ assignment to constantly be reevaluated (infinite looping).  Added new nested_block2
+ diagnostic to verify nested named blocks in functions.  Also verifies that nested
+ named blocks can call functions in the same module.  Also modified NB_CALL expressions
+ to act like functions (no context switching involved).  Full regression passes.
+
  Revision 1.133  2005/11/29 23:14:37  phase1geo
  Adding support for named blocks.  Still not working at this point but checkpointing
  anyways.  Added new task3.1 diagnostic to verify task removal when a task is calling

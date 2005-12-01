@@ -866,6 +866,7 @@ expression* db_create_expression( expression* right, expression* left, int op, b
   expression* expr;                 /* Temporary pointer to newly created expression */
   mod_parm*   mparm       = NULL;   /* Module parameter matching signal of current module */
   bool        sig_is_parm = FALSE;  /* Specifies if current signal is a module parameter */
+  bool        exp_in_func;          /* Specifies if expression is in a function block */
 #ifdef DEBUG_MODE
   int         right_id;             /* ID of right expression */
   int         left_id;              /* ID of left expression */
@@ -906,8 +907,11 @@ expression* db_create_expression( expression* right, expression* left, int op, b
     }
   }
 
+  /* Check to see if current expression is in a function */
+  exp_in_func = funit_within_function( curr_funit );
+
   /* Check to make sure that expression is allowed for the current functional unit type */
-  if( (curr_funit->type == FUNIT_FUNCTION) &&
+  if( exp_in_func &&
       ((op == EXP_OP_DELAY) ||
        (op == EXP_OP_TASK_CALL) ||
        (op == EXP_OP_NASSIGN)   ||
@@ -923,6 +927,9 @@ expression* db_create_expression( expression* right, expression* left, int op, b
   /* Create expression with next expression ID */
   expr = expression_create( right, left, op, lhs, curr_expr_id, line, first, last, FALSE );
   curr_expr_id++;
+
+  /* If current functional unit is nested in a function, set the IN_FUNC supplemental field bit */
+  expr->suppl.part.in_func = exp_in_func ? 1 : 0;
 
   /* Set right and left side expression's (if they exist) parent pointer to this expression */
   if( right != NULL ) {
@@ -1550,6 +1557,11 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.142  2005/12/01 16:08:19  phase1geo
+ Allowing nested functional units within a module to get parsed and handled correctly.
+ Added new nested_block1 diagnostic to test nested named blocks -- will add more tests
+ later for different combinations.  Updated regression suite which now passes.
+
  Revision 1.141  2005/11/30 18:25:55  phase1geo
  Fixing named block code.  Full regression now passes.  Still more work to do on
  named blocks, however.

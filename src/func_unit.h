@@ -22,6 +22,9 @@ func_unit* funit_create();
 /*! \brief Returns the parent module of the given functional unit. */
 func_unit* funit_get_curr_module( func_unit* funit );
 
+/*! \brief Specifies if the given functional unit is nested in a function. */
+bool funit_within_function( func_unit* funit );
+
 /*! \brief Writes contents of provided functional unit to specified output. */
 bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst );
 
@@ -53,6 +56,11 @@ void funit_dealloc( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.4  2005/12/01 16:08:19  phase1geo
+ Allowing nested functional units within a module to get parsed and handled correctly.
+ Added new nested_block1 diagnostic to test nested named blocks -- will add more tests
+ later for different combinations.  Updated regression suite which now passes.
+
  Revision 1.3  2005/11/16 22:01:51  phase1geo
  Fixing more problems related to simulation of function/task calls.  Regression
  runs are now running without errors.

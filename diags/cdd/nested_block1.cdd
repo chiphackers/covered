@@ -1,10 +1,10 @@
 5 1 * 5 0
 3 0 main main nested_block1.v 1 22
-2 11 5 8000c 3d 1e 0 0 1 0 2 foo
+2 11 5 8000c 3d 9e 0 0 1 0 2 foo
 1 a 0 1 32 2
 4 11 0 0
 3 1 foo main.foo nested_block1.v 5 13
-2 10 7 10005 3d 1e 0 0 1 0 2 bar
+2 10 7 10005 3d 9e 0 0 1 0 2 bar
 1 b 0 1 32 2
 4 10 0 0
 3 1 bar main.foo.bar nested_block1.v 7 12

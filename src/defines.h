@@ -361,6 +361,11 @@
 */
 #define ESUPPL_IS_LHS(x)             x.part.lhs
 
+/*!
+ Returns a value of 1 if the specified expression is contained in a function.
+*/
+#define ESUPPL_IS_IN_FUNC(x)         x.part.in_func
+
 /*! @} */
      
 /*!
@@ -731,7 +736,8 @@
                                          (x->op == EXP_OP_PEDGE)     || \
                                          (x->op == EXP_OP_AEDGE)     || \
                                          (x->op == EXP_OP_EOR)       || \
-                                         (x->op == EXP_OP_TASK_CALL))
+                                         (x->op == EXP_OP_TASK_CALL) || \
+                                         ((x->op == EXP_OP_NB_CALL) && !ESUPPL_IS_IN_FUNC(x->suppl)))
 
 /*!
  Returns a value of true if the specified expression is considered a unary expression by
@@ -1004,6 +1010,7 @@ union esuppl_u {
                                     added to the functional unit statement list and should not be added again. */
     control lhs           :1;  /*!< Bit 19.  Indicates that this expression exists on the left-hand side of an assignment
                                     operation. */
+    control in_func       :1;  /*!< Bit 20.  Indicates that this expression exists in a function */
   } part;
 };
 
@@ -1696,6 +1703,13 @@ struct thread_s {
 
 /*
  $Log$
+ Revision 1.142  2005/12/01 18:35:17  phase1geo
+ Fixing bug where functions in continuous assignments could cause the
+ assignment to constantly be reevaluated (infinite looping).  Added new nested_block2
+ diagnostic to verify nested named blocks in functions.  Also verifies that nested
+ named blocks can call functions in the same module.  Also modified NB_CALL expressions
+ to act like functions (no context switching involved).  Full regression passes.
+
  Revision 1.141  2005/12/01 16:08:19  phase1geo
  Allowing nested functional units within a module to get parsed and handled correctly.
  Added new nested_block1 diagnostic to test nested named blocks -- will add more tests

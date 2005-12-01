@@ -103,6 +103,23 @@ func_unit* funit_get_curr_module( func_unit* funit ) {
 }
 
 /*!
+ \param funit  Functional unit that may be nested in a function
+
+ \return Returns TRUE if the specified functional unit is nested in a function block; otherwise, returns FALSE.
+*/
+bool funit_within_function( func_unit* funit ) {
+
+  assert( funit != NULL );
+
+  while( (funit->type != FUNIT_FUNCTION) && (funit->type != FUNIT_MODULE) ) {
+    funit = funit->parent;
+  }
+
+  return( funit->type == FUNIT_FUNCTION );
+
+}
+
+/*!
  \param funit  Pointer to functional unit containing elements to resize.
  \param inst   Pointer to instance containing this functional unit.
  
@@ -725,6 +742,11 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.5  2005/12/01 16:08:19  phase1geo
+ Allowing nested functional units within a module to get parsed and handled correctly.
+ Added new nested_block1 diagnostic to test nested named blocks -- will add more tests
+ later for different combinations.  Updated regression suite which now passes.
+
  Revision 1.4  2005/11/21 04:17:43  phase1geo
  More updates to regression suite -- includes several bug fixes.  Also added --enable-debug
  facility to configuration file which will include or exclude debugging output from being
