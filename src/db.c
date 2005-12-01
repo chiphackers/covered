@@ -866,7 +866,7 @@ expression* db_create_expression( expression* right, expression* left, int op, b
   expression* expr;                 /* Temporary pointer to newly created expression */
   mod_parm*   mparm       = NULL;   /* Module parameter matching signal of current module */
   bool        sig_is_parm = FALSE;  /* Specifies if current signal is a module parameter */
-  bool        exp_in_func;          /* Specifies if expression is in a function block */
+  func_unit*  func_funit;           /* Pointer to function, if we are nested in one */
 #ifdef DEBUG_MODE
   int         right_id;             /* ID of right expression */
   int         left_id;              /* ID of left expression */
@@ -908,10 +908,10 @@ expression* db_create_expression( expression* right, expression* left, int op, b
   }
 
   /* Check to see if current expression is in a function */
-  exp_in_func = funit_within_function( curr_funit );
+  func_funit = funit_get_curr_function( curr_funit );
 
   /* Check to make sure that expression is allowed for the current functional unit type */
-  if( exp_in_func &&
+  if( (func_funit != NULL) &&
       ((op == EXP_OP_DELAY) ||
        (op == EXP_OP_TASK_CALL) ||
        (op == EXP_OP_NASSIGN)   ||
@@ -919,7 +919,7 @@ expression* db_create_expression( expression* right, expression* left, int op, b
        (op == EXP_OP_NEDGE)     ||
        (op == EXP_OP_AEDGE)     ||
        (op == EXP_OP_EOR)) ) {
-    snprintf( user_msg, USER_MSG_LENGTH, "Attempting to use a delay, task call, non-blocking assign or event controls in function %s, file %s, line %d", curr_funit->name, curr_funit->filename, line );
+    snprintf( user_msg, USER_MSG_LENGTH, "Attempting to use a delay, task call, non-blocking assign or event controls in function %s, file %s, line %d", func_funit->name, curr_funit->filename, line );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     exit( 1 );
   }
@@ -929,7 +929,7 @@ expression* db_create_expression( expression* right, expression* left, int op, b
   curr_expr_id++;
 
   /* If current functional unit is nested in a function, set the IN_FUNC supplemental field bit */
-  expr->suppl.part.in_func = exp_in_func ? 1 : 0;
+  expr->suppl.part.in_func = (func_funit != NULL) ? 1 : 0;
 
   /* Set right and left side expression's (if they exist) parent pointer to this expression */
   if( right != NULL ) {
@@ -1557,6 +1557,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.143  2005/12/01 20:49:02  phase1geo
+ Adding nested_block3 to verify nested named blocks in tasks.  Fixed named block
+ usage to be FUNC_CALL or TASK_CALL -like based on its placement.
+
  Revision 1.142  2005/12/01 16:08:19  phase1geo
  Allowing nested functional units within a module to get parsed and handled correctly.
  Added new nested_block1 diagnostic to test nested named blocks -- will add more tests

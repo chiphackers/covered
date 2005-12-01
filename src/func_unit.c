@@ -105,9 +105,10 @@ func_unit* funit_get_curr_module( func_unit* funit ) {
 /*!
  \param funit  Functional unit that may be nested in a function
 
- \return Returns TRUE if the specified functional unit is nested in a function block; otherwise, returns FALSE.
+ \return Returns a pointer to the function that contains the specified functional unit if
+         one exists; otherwise, returns NULL.
 */
-bool funit_within_function( func_unit* funit ) {
+func_unit* funit_get_curr_function( func_unit* funit ) {
 
   assert( funit != NULL );
 
@@ -115,7 +116,7 @@ bool funit_within_function( func_unit* funit ) {
     funit = funit->parent;
   }
 
-  return( funit->type == FUNIT_FUNCTION );
+  return( (funit->type == FUNIT_FUNCTION) ? funit : NULL );
 
 }
 
@@ -742,6 +743,10 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.6  2005/12/01 20:49:02  phase1geo
+ Adding nested_block3 to verify nested named blocks in tasks.  Fixed named block
+ usage to be FUNC_CALL or TASK_CALL -like based on its placement.
+
  Revision 1.5  2005/12/01 16:08:19  phase1geo
  Allowing nested functional units within a module to get parsed and handled correctly.
  Added new nested_block1 diagnostic to test nested named blocks -- will add more tests

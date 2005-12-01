@@ -73,7 +73,9 @@ RACELIST      = race1          race1.1        race1.2        race2.1        race
                 race2.3        race2.4        race4
 
 ERRSCORE      = err1.0         err2.0         func3          func3.1        func3.2 \
-                func3.3        func3.4        func3.5        func3.6
+                func3.3        func3.4        func3.5        func3.6        func4 \
+                func4.1        func4.2        func4.3        func4.4        func4.5 \
+                func4.6
 ERRMERGE      =
 ERRREPORT     = err2.1
            

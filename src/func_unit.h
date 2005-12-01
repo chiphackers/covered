@@ -22,8 +22,8 @@ func_unit* funit_create();
 /*! \brief Returns the parent module of the given functional unit. */
 func_unit* funit_get_curr_module( func_unit* funit );
 
-/*! \brief Specifies if the given functional unit is nested in a function. */
-bool funit_within_function( func_unit* funit );
+/*! \brief Returns the parent function of the given functional unit (if there is one) */
+func_unit* funit_get_curr_function( func_unit* funit );
 
 /*! \brief Writes contents of provided functional unit to specified output. */
 bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst );
@@ -56,6 +56,10 @@ void funit_dealloc( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.5  2005/12/01 20:49:02  phase1geo
+ Adding nested_block3 to verify nested named blocks in tasks.  Fixed named block
+ usage to be FUNC_CALL or TASK_CALL -like based on its placement.
+
  Revision 1.4  2005/12/01 16:08:19  phase1geo
  Allowing nested functional units within a module to get parsed and handled correctly.
  Added new nested_block1 diagnostic to test nested named blocks -- will add more tests
