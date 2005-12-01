@@ -1802,6 +1802,9 @@ bool vector_unary_op( vector* tgt, vector* src, nibble* optab ) {
 
     vector_init( &vec, &vec_val, 1 );
 
+    assert( src != NULL );
+    assert( src->value != NULL );
+
     uval = src->value[0].part.value;
 
     for( i=1; i<src->width; i++ ) {
@@ -1862,6 +1865,9 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.64  2005/11/21 22:21:58  phase1geo
+ More regression updates.  Also made some updates to debugging output.
+
  Revision 1.63  2005/11/18 23:52:55  phase1geo
  More regression cleanup -- still quite a few errors to handle here.
 

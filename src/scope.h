@@ -22,8 +22,19 @@ bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, 
 /*! \brief  Finds the given task or function in the provided scope. */
 bool scope_find_task_function_namedblock( char* name, int type, func_unit* curr_funit, func_unit** found_funit, int line );
 
+/*! \brief  Finds the parent functional unit of the functional unit with the given scope */
+func_unit* scope_get_parent_funit( char* scope );
+
+/*! \brief  Finds the parent module of the functional unit with the given scope */
+func_unit* scope_get_parent_module( char* scope );
+
 
 /* $Log$
+/* Revision 1.4  2005/11/29 23:14:37  phase1geo
+/* Adding support for named blocks.  Still not working at this point but checkpointing
+/* anyways.  Added new task3.1 diagnostic to verify task removal when a task is calling
+/* another task.
+/*
 /* Revision 1.3  2005/11/16 05:41:31  phase1geo
 /* Fixing implicit signal creation in binding functions.
 /*

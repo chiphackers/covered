@@ -34,6 +34,7 @@
 #include "info.h"
 #include "attr.h"
 #include "race.h"
+#include "scope.h"
 
 
 extern char*       top_module;
@@ -76,11 +77,6 @@ str_link* modlist_tail  = NULL;
  Pointer to the functional unit structure for the functional unit that is currently being parsed.
 */
 func_unit* curr_funit   = NULL;
-
-/*!
- Pointer to the last functional unit structure that was being parsed prior to the current functional unit.
-*/ 
-func_unit* last_funit   = NULL;
 
 /*!
  This static value contains the current expression ID number to use for the next expression found, it
@@ -165,21 +161,22 @@ bool db_write( char* file, bool parse_mode ) {
 */
 bool db_read( char* file, int read_mode ) {
 
-  bool         retval = TRUE;        /* Return value for this function                          */
-  FILE*        db_handle;            /* Pointer to database file being read                     */
-  int          type;                 /* Specifies object type                                   */
-  func_unit    tmpfunit;             /* Temporary functional unit pointer                       */
-  char*        curr_line;            /* Pointer to current line being read from db              */
-  char*        rest_line;            /* Pointer to rest of the current line                     */
-  int          chars_read;           /* Number of characters currently read on line             */
+  bool         retval = TRUE;        /* Return value for this function */
+  FILE*        db_handle;            /* Pointer to database file being read */
+  int          type;                 /* Specifies object type */
+  func_unit    tmpfunit;             /* Temporary functional unit pointer */
+  char*        curr_line;            /* Pointer to current line being read from db */
+  char*        rest_line;            /* Pointer to rest of the current line */
+  int          chars_read;           /* Number of characters currently read on line */
   char         parent_scope[4096];   /* Scope of parent functional unit to the current instance */
-  char         back[4096];           /* Current functional unit instance name                   */
-  char         funit_scope[4096];    /* Current scope of functional unit instance               */
-  char         funit_name[256];      /* Current name of functional unit instance                */
-  char         funit_file[4096];     /* Current filename of functional unit instance            */
-  funit_link*  foundfunit;           /* Found functional unit link                              */
-  funit_inst*  foundinst;            /* Found functional unit instance                          */
-  bool         merge_mode = FALSE;   /* If TRUE, we should currently be merging data            */
+  char         back[4096];           /* Current functional unit instance name */
+  char         funit_scope[4096];    /* Current scope of functional unit instance */
+  char         funit_name[256];      /* Current name of functional unit instance */
+  char         funit_file[4096];     /* Current filename of functional unit instance */
+  funit_link*  foundfunit;           /* Found functional unit link */
+  funit_inst*  foundinst;            /* Found functional unit instance */
+  bool         merge_mode = FALSE;   /* If TRUE, we should currently be merging data */
+  func_unit*   parent_mod;           /* Pointer to parent module of this functional unit */
 
 #ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "In db_read, file: %s, mode: %d", file, read_mode );
@@ -190,8 +187,7 @@ bool db_read( char* file, int read_mode ) {
   tmpfunit.name     = funit_name;
   tmpfunit.filename = funit_file;
 
-  curr_funit = NULL;
-  last_funit = NULL;
+  curr_funit  = NULL;
 
   if( (db_handle = fopen( file, "r" )) != NULL ) {
 
@@ -219,7 +215,7 @@ bool db_read( char* file, int read_mode ) {
           assert( !merge_mode );
 
           /* Parse rest of line for signal info */
-          retval = vsignal_db_read( &rest_line, curr_funit, last_funit );
+          retval = vsignal_db_read( &rest_line, curr_funit );
 	    
         } else if( type == DB_TYPE_EXPRESSION ) {
 
@@ -274,9 +270,6 @@ bool db_read( char* file, int read_mode ) {
               }
               
               funit_link_add( curr_funit, &funit_head, &funit_tail );
-              if( curr_funit->type == FUNIT_MODULE ) {
-                last_funit = curr_funit;
-              }
               curr_funit = NULL;
 
             }
@@ -319,9 +312,10 @@ bool db_read( char* file, int read_mode ) {
               curr_funit->filename   = strdup_safe( funit_file, __FILE__, __LINE__ );
               curr_funit->start_line = tmpfunit.start_line;
               curr_funit->end_line   = tmpfunit.end_line;
-              if( (tmpfunit.type == FUNIT_FUNCTION) || (tmpfunit.type == FUNIT_TASK) || (tmpfunit.type == FUNIT_NAMED_BLOCK) ) {
-                funit_link_add( curr_funit, &(last_funit->tf_head), &(last_funit->tf_tail) );
-                funit_link_add( last_funit, &(curr_funit->tf_head), &(curr_funit->tf_tail) );
+              if( tmpfunit.type != FUNIT_MODULE ) {
+                curr_funit->parent = scope_get_parent_funit( funit_scope );
+                parent_mod         = scope_get_parent_module( funit_scope );
+                funit_link_add( curr_funit, &(parent_mod->tf_head), &(parent_mod->tf_tail) );
               }
             }
 
@@ -385,9 +379,6 @@ bool db_read( char* file, int read_mode ) {
     }
     
     funit_link_add( curr_funit, &funit_head, &funit_tail );
-    if( curr_funit->type == FUNIT_MODULE ) {
-      last_funit = curr_funit;
-    }
     curr_funit = NULL;
 
   }
@@ -420,13 +411,7 @@ func_unit* db_add_instance( char* scope, char* name, int type ) {
   if( str_link_find( name, no_score_head ) == NULL ) {
 
 #ifdef DEBUG_MODE
-    switch( type ) {
-      case FUNIT_MODULE      :  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_instance, instance: %s, module: %s", scope, name );  break;
-      case FUNIT_NAMED_BLOCK :  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_instance, instance: %s, named block: %s", scope, name );  break;
-      case FUNIT_FUNCTION    :  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_instance, instance: %s, function: %s", scope, name );  break;
-      case FUNIT_TASK        :  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_instance, instance: %s, task: %s", scope, name );  break;
-      default                :  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_instance, instance: %s, UNKNOWN: %s", scope, name );  break;
-    }
+    snprintf( user_msg, USER_MSG_LENGTH, "In db_add_instance, instance: %s, %s:  %s", scope, get_funit_type( type ), name );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -523,7 +508,8 @@ void db_end_module( int end_line ) {
 */
 void db_add_function_task_namedblock( int type, char* name, char* file, int start_line ) {
 
-  func_unit* tf;  /* Pointer to created functional unit */
+  func_unit* tf;      /* Pointer to created functional unit */
+  func_unit* parent;  /* Pointer to parent module for the newly created functional unit */
 
   assert( (type == FUNIT_FUNCTION) || (type == FUNIT_TASK) || (type == FUNIT_NAMED_BLOCK) );
 
@@ -546,20 +532,20 @@ void db_add_function_task_namedblock( int type, char* name, char* file, int star
   /* Add this as an instance so we can get scope */
   if( (tf = db_add_instance( name, name, type )) != NULL ) {
 
-    /* Keep track of parent module pointer */
-    last_funit = curr_funit;
+    /* Get the parent module */
+    parent = funit_get_curr_module( curr_funit );
 
     /* Store this functional unit in the parent module list */
-    funit_link_add( tf, &(last_funit->tf_head), &(last_funit->tf_tail) );
+    funit_link_add( tf, &(parent->tf_head), &(parent->tf_tail) );
+
+    /* Set our parent pointer to the current functional unit */
+    tf->parent = curr_funit;
 
     /* Set current functional unit to this functional unit */
     curr_funit             = tf;
     curr_funit->filename   = strdup_safe( file, __FILE__, __LINE__ );
     curr_funit->start_line = start_line;
     
-    /* Add parent module to this function/tasks list for signal binding purposes */
-    funit_link_add( last_funit, &(curr_funit->tf_head), &(curr_funit->tf_tail) );
-
   }
 
 }
@@ -578,7 +564,7 @@ void db_end_function_task_namedblock( int end_line ) {
   curr_funit->end_line = end_line;
 
   /* Set the current functional unit to the parent module */
-  curr_funit = last_funit;
+  curr_funit = curr_funit->parent;
 
 }
 
@@ -1564,6 +1550,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.141  2005/11/30 18:25:55  phase1geo
+ Fixing named block code.  Full regression now passes.  Still more work to do on
+ named blocks, however.
+
  Revision 1.140  2005/11/29 23:14:37  phase1geo
  Adding support for named blocks.  Still not working at this point but checkpointing
  anyways.  Added new task3.1 diagnostic to verify task removal when a task is calling

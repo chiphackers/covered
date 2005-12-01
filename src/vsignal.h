@@ -23,7 +23,7 @@ vsignal* vsignal_create( char* name, int width, int lsb );
 void vsignal_db_write( vsignal* sig, FILE* file );
 
 /*! \brief Reads vsignal information from specified file. */
-bool vsignal_db_read( char** line, func_unit* curr_funit, func_unit* last_funit );
+bool vsignal_db_read( char** line, func_unit* curr_funit );
 
 /*! \brief Reads and merges two vsignals, placing result into base vsignal. */
 bool vsignal_db_merge( vsignal* base, char** line, bool same );
@@ -61,6 +61,11 @@ void vsignal_dealloc( vsignal* sig );
 
 /*
  $Log$
+ Revision 1.6  2005/11/10 19:28:23  phase1geo
+ Updates/fixes for tasks/functions.  Also updated Tcl/Tk scripts for these changes.
+ Fixed bug with net_decl_assign statements -- the line, start column and end column
+ information was incorrect, causing problems with the GUI output.
+
  Revision 1.5  2005/11/08 23:12:10  phase1geo
  Fixes for function/task additions.  Still a lot of testing on these structures;
  however, regressions now pass again so we are checkpointing here.

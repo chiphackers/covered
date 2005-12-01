@@ -127,6 +127,9 @@ int race_find_head_statement( statement* stmt ) {
 
 }
 
+/*!
+ TBD
+*/
 void race_calc_stmt_blk_type( expression* expr, int sb_index ) {
 
   if( expr != NULL ) {
@@ -147,6 +150,9 @@ void race_calc_stmt_blk_type( expression* expr, int sb_index ) {
 
 }
 
+/*!
+ TBD
+*/
 void race_calc_expr_assignment( expression* exp, int sb_index ) {
 
   switch( exp->op ) {
@@ -159,6 +165,9 @@ void race_calc_expr_assignment( expression* exp, int sb_index ) {
 
 }
 
+/*!
+ TBD
+*/
 void race_calc_assignments_helper( statement* stmt, statement* head, int sb_index ) {
 
   if( stmt != NULL ) {
@@ -176,6 +185,9 @@ void race_calc_assignments_helper( statement* stmt, statement* head, int sb_inde
 
 }
 
+/*!
+ TBD
+*/
 void race_calc_assignments( int sb_index ) {
 
   /* Calculate head statement assignment type */
@@ -295,6 +307,7 @@ void race_handle_race_condition( expression* expr, func_unit* mod, statement* st
 }
 
 /*!
+ \param mod  Pointer to functional unit to check assignment types for
 */
 void race_check_assignment_types( func_unit* mod ) {
 
@@ -663,7 +676,12 @@ void race_get_stats( race_blk* curr, int* race_total, int type_total[][RACE_TYPE
 }
 
 /*!
- TBD
+ \param ofile  Pointer to output file to use
+ \param head   Pointer to head of functional unit list to report
+
+ \return Returns TRUE if any race conditions were found in the functional unit list
+
+ Displays the summary report for race conditions for all functional units in design.
 */
 bool race_report_summary( FILE* ofile, funit_link* head ) {
 
@@ -691,7 +709,11 @@ bool race_report_summary( FILE* ofile, funit_link* head ) {
 }
 
 /*!
- TBD
+ \param ofile  Pointer to output file to use
+ \param head   Pointer to head of functional unit list being reported
+
+ Outputs a verbose race condition report to the specified output file specifying
+ the line number and race condition reason for all functional units in the design.
 */
 void race_report_verbose( FILE* ofile, funit_link* head ) {
 
@@ -838,6 +860,12 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.29  2005/11/25 22:03:20  phase1geo
+ Fixing bugs in race condition checker when racing statement blocks are in
+ different functional units.  Still some work to do here with what to do when
+ conflicting statement block is in a task/function (I suppose we need to remove
+ the calling statement block as well?)
+
  Revision 1.28  2005/11/25 16:48:48  phase1geo
  Fixing bugs in binding algorithm.  Full regression now passes.
 

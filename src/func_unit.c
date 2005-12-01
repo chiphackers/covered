@@ -59,6 +59,7 @@ void funit_init( func_unit* funit ) {
   funit->param_tail = NULL;
   funit->tf_head    = NULL;
   funit->tf_tail    = NULL;
+  funit->parent     = NULL;
 
 }
 
@@ -83,6 +84,25 @@ func_unit* funit_create() {
 }
 
 /*!
+ \param funit  Pointer to functional unit to get its module from
+
+ \return Returns a pointer to the module that contains the specified functional unit.
+
+ Traverses up parent list until the FUNIT_MODULE is found (parent should be NULL).
+*/
+func_unit* funit_get_curr_module( func_unit* funit ) {
+
+  assert( funit != NULL );
+
+  while( funit->parent != NULL ) {
+    funit = funit->parent;
+  }
+
+  return( funit );
+
+}
+
+/*!
  \param funit  Pointer to functional unit containing elements to resize.
  \param inst   Pointer to instance containing this functional unit.
  
@@ -94,8 +114,8 @@ func_unit* funit_create() {
 void funit_size_elements( func_unit* funit, funit_inst* inst ) {
   
   inst_parm* curr_iparm;   /* Pointer to current instance parameter to evaluate */
-  exp_link*  curr_exp;     /* Pointer to current expression link to evaluate    */
-  fsm_link*  curr_fsm;     /* Pointer to current FSM structure to evaluate      */
+  exp_link*  curr_exp;     /* Pointer to current expression link to evaluate */
+  fsm_link*  curr_fsm;     /* Pointer to current FSM structure to evaluate */
   
   assert( funit != NULL );
   assert( inst != NULL );
@@ -168,13 +188,13 @@ void funit_size_elements( func_unit* funit, funit_inst* inst ) {
 */
 bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst ) {
 
-  bool       retval = TRUE;   /* Return value for this function             */
-  sig_link*  curr_sig;        /* Pointer to current functional unit sig_link element */
-  exp_link*  curr_exp;        /* Pointer to current functional unit exp_link element */
-  stmt_iter  curr_stmt;       /* Statement list iterator                    */
-  inst_parm* curr_parm;       /* Pointer to current instance parameter      */
-  fsm_link*  curr_fsm;        /* Pointer to current functional unit fsm_link element */
-  race_blk*  curr_race;       /* Pointer to current race condition block    */
+  bool       retval = TRUE;  /* Return value for this function */
+  sig_link*  curr_sig;       /* Pointer to current functional unit sig_link element */
+  exp_link*  curr_exp;       /* Pointer to current functional unit exp_link element */
+  stmt_iter  curr_stmt;      /* Statement list iterator */
+  inst_parm* curr_parm;      /* Pointer to current instance parameter */
+  fsm_link*  curr_fsm;       /* Pointer to current functional unit fsm_link element */
+  race_blk*  curr_race;      /* Pointer to current race condition block */
 
 #ifdef DEBUG_MODE
   switch( funit->type ) {
@@ -270,9 +290,9 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
 */
 bool funit_db_read( func_unit* funit, char* scope, char** line ) {
 
-  bool    retval = TRUE;    /* Return value for this function      */
-  int     chars_read;       /* Number of characters currently read */
-  int     params;
+  bool retval = TRUE;  /* Return value for this function */
+  int  chars_read;     /* Number of characters currently read */
+  int  params;         /* Number of parameters in string that were parsed */
 
   if( (params = sscanf( *line, "%d %s %s %s %d %d%n", &(funit->type), funit->name, scope, funit->filename,
               &(funit->start_line), &(funit->end_line), &chars_read )) == 6 ) {
@@ -305,16 +325,16 @@ bool funit_db_read( func_unit* funit, char* scope, char** line ) {
 */
 bool funit_db_merge( func_unit* base, FILE* file, bool same ) {
 
-  bool      retval = TRUE;   /* Return value of this function                                */
+  bool      retval = TRUE;   /* Return value of this function */
   exp_link* curr_base_exp;   /* Pointer to current expression in base functional unit expression list */
-  sig_link* curr_base_sig;   /* Pointer to current signal in base functional unit signal list         */
-  stmt_iter curr_base_stmt;  /* Statement list iterator                                      */
-  fsm_link* curr_base_fsm;   /* Pointer to current FSM in base functional unit FSM list               */
+  sig_link* curr_base_sig;   /* Pointer to current signal in base functional unit signal list */
+  stmt_iter curr_base_stmt;  /* Statement list iterator */
+  fsm_link* curr_base_fsm;   /* Pointer to current FSM in base functional unit FSM list */
   race_blk* curr_base_race;  /* Pointer to current race condition block in base module list  */
-  char*     curr_line;       /* Pointer to current line being read from CDD                  */
-  char*     rest_line;       /* Pointer to rest of read line                                 */
-  int       type;            /* Specifies currently read CDD type                            */
-  int       chars_read;      /* Number of characters read from current CDD line              */
+  char*     curr_line;       /* Pointer to current line being read from CDD */
+  char*     rest_line;       /* Pointer to rest of read line */
+  int       type;            /* Specifies currently read CDD type */
+  int       chars_read;      /* Number of characters read from current CDD line */
 
   assert( base != NULL );
   assert( base->name != NULL );
@@ -433,16 +453,16 @@ bool funit_db_merge( func_unit* base, FILE* file, bool same ) {
 */
 bool funit_db_replace( func_unit* base, FILE* file ) {
 
-  bool      retval = TRUE;   /* Return value of this function                                         */
+  bool      retval = TRUE;   /* Return value of this function */
   exp_link* curr_base_exp;   /* Pointer to current expression in base functional unit expression list */
-  sig_link* curr_base_sig;   /* Pointer to current signal in base functional unit signal list         */
-  stmt_iter curr_base_stmt;  /* Statement list iterator                                      */
-  fsm_link* curr_base_fsm;   /* Pointer to current FSM in base functional unit FSM list               */
+  sig_link* curr_base_sig;   /* Pointer to current signal in base functional unit signal list */
+  stmt_iter curr_base_stmt;  /* Statement list iterator */
+  fsm_link* curr_base_fsm;   /* Pointer to current FSM in base functional unit FSM list */
   race_blk* curr_base_race;  /* Pointer to current race condition block in base functional unit list  */
-  char*     curr_line;       /* Pointer to current line being read from CDD                  */
-  char*     rest_line;       /* Pointer to rest of read line                                 */
-  int       type;            /* Specifies currently read CDD type                            */
-  int       chars_read;      /* Number of characters read from current CDD line              */
+  char*     curr_line;       /* Pointer to current line being read from CDD */
+  char*     rest_line;       /* Pointer to rest of read line */
+  int       type;            /* Specifies currently read CDD type */
+  int       chars_read;      /* Number of characters read from current CDD line */
 
   assert( base != NULL );
   assert( base->name != NULL );
@@ -705,6 +725,11 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.4  2005/11/21 04:17:43  phase1geo
+ More updates to regression suite -- includes several bug fixes.  Also added --enable-debug
+ facility to configuration file which will include or exclude debugging output from being
+ generated.
+
  Revision 1.3  2005/11/16 22:01:51  phase1geo
  Fixing more problems related to simulation of function/task calls.  Regression
  runs are now running without errors.

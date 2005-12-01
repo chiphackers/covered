@@ -1641,7 +1641,7 @@ statement
       statement*  stmt;
       if( $3 != NULL ) {
         db_end_function_task_namedblock( @4.first_line );
-        exp  = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_line - 1), $3 );
+        exp  = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), $3 );
         stmt = db_create_statement( exp );
         db_add_expression( exp );
         free_safe( $3 );

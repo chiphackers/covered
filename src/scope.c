@@ -12,6 +12,7 @@
 #include "link.h"
 #include "instance.h"
 #include "util.h"
+#include "func_unit.h"
 
 
 extern funit_inst* instance_root;
@@ -72,6 +73,7 @@ bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, 
   sig_link*  sigl;      /* Pointer to current signal link */
   char*      sig_name;  /* Signal basename holder */
   char*      scope;     /* Signal scope holder */
+  func_unit* parent;    /* Pointer to parent functional unit */
 
   assert( curr_funit != NULL );
 
@@ -104,9 +106,10 @@ bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, 
   /* First, look in the current functional unit */
   if( (sigl = sig_link_find( &sig, (*found_funit)->sig_head )) == NULL ) {
 
-    /* Look in parent module if we are a task, function or named block */
-    if( (*found_funit)->type != FUNIT_MODULE ) {
-      sigl = sig_link_find( &sig, (*found_funit)->tf_head->funit->sig_head );
+    /* Continue to look in parent modules (if there are any) */
+    parent = (*found_funit)->parent;
+    while( (parent != NULL) && ((sigl = sig_link_find( &sig, parent->sig_head )) == NULL) ) {
+      parent = parent->parent;
     }
 
   }
@@ -125,6 +128,7 @@ bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, 
  \param type
  \param curr_funit
  \param found_funit
+ \param line
 
  \return TBD
 
@@ -159,18 +163,11 @@ bool scope_find_task_function_namedblock( char* name, int type, func_unit* curr_
 
   }
 
-  /* Look in the current functional unit if we are a module */
-  if( (*found_funit)->type == FUNIT_MODULE ) {
+  /* Get the current module */
+  *found_funit = funit_get_curr_module( *found_funit );
 
-    funitl = funit_link_find( &funit, (*found_funit)->tf_head );
-
-  /* Otherwise, look in the parent module for the task */
-  } else {
-
-    assert( (*found_funit)->tf_head != NULL );
-    funitl = funit_link_find( &funit, (*found_funit)->tf_head->funit->tf_head );
-
-  }
+  /* Search for functional unit in the module's tf_head list */
+  funitl = funit_link_find( &funit, (*found_funit)->tf_head );
 
   *found_funit = (funitl == NULL) ? NULL : funitl->funit;
 
@@ -178,8 +175,84 @@ bool scope_find_task_function_namedblock( char* name, int type, func_unit* curr_
 
 }
 
+/*!
+ \param scope  Scope of current functional unit to get parent functional unit for
+
+ \return Returns a pointer to the parent functional unit of this functional unit.
+
+ \note This function should only be called when the scope refers to a functional unit
+       that is NOT a module!
+*/
+func_unit* scope_get_parent_funit( char* scope ) {
+
+  funit_inst* inst;  /* Pointer to functional unit instance with the specified scope */
+  char*       rest;  /* Temporary holder */
+  char*       back;  /* Temporary holder */
+
+  rest = (char*)malloc_safe( (strlen( scope ) + 1), __FILE__, __LINE__ );
+  back = (char*)malloc_safe( (strlen( scope ) + 1), __FILE__, __LINE__ );
+
+  /* Go up one in hierarchy */
+  scope_extract_back( scope, back, rest );
+
+  assert( rest != '\0' );
+
+  /* Get functional instance for the rest of the scope */
+  inst = instance_find_scope( instance_root, rest );
+
+  assert( inst != NULL );
+
+  free_safe( rest );
+  free_safe( back );
+
+  return( inst->funit );
+
+}
+
+/*!
+ \param scope  Full hierarchical scope of functional unit to find parent module for.
+
+ \return Returns pointer to module that is the parent of the specified functional unit.
+
+ \note Assumes that the given scope is not that of a module itself!
+*/
+func_unit* scope_get_parent_module( char* scope ) {
+
+  funit_inst* inst;        /* Pointer to functional unit instance with the specified scope */
+  char*       curr_scope;  /* Current scope to search for */
+  char*       rest;        /* Temporary holder */
+  char*       back;        /* Temporary holder */
+
+  assert( scope != NULL );
+
+  /* Get a local copy of the specified scope */
+  curr_scope = strdup_safe( scope, __FILE__, __LINE__ );
+  rest       = strdup_safe( scope, __FILE__, __LINE__ );
+  back       = strdup_safe( scope, __FILE__, __LINE__ );
+
+  do {
+    scope_extract_back( curr_scope, back, rest );
+    assert( rest[0] != '\0' );
+    strcpy( curr_scope, rest );
+    inst = instance_find_scope( instance_root, curr_scope );
+    assert( inst != NULL );
+  } while( inst->funit->type != FUNIT_MODULE );
+
+  free_safe( curr_scope );
+  free_safe( rest );
+  free_safe( back );
+
+  return( inst->funit );
+
+}
+
 
 /* $Log$
+/* Revision 1.5  2005/11/29 23:14:37  phase1geo
+/* Adding support for named blocks.  Still not working at this point but checkpointing
+/* anyways.  Added new task3.1 diagnostic to verify task removal when a task is calling
+/* another task.
+/*
 /* Revision 1.4  2005/11/16 22:01:51  phase1geo
 /* Fixing more problems related to simulation of function/task calls.  Regression
 /* runs are now running without errors.

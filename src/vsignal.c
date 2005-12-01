@@ -107,7 +107,6 @@ void vsignal_db_write( vsignal* sig, FILE* file ) {
 /*!
  \param line        Pointer to current line from database file to parse.
  \param curr_funit  Pointer to current functional unit instantiating this vsignal.
- \param last_funit  Pointer to last functional unit parsed in CDD file.
 
  \return Returns TRUE if vsignal information read successfully; otherwise,
          returns FALSE.
@@ -116,17 +115,18 @@ void vsignal_db_write( vsignal* sig, FILE* file ) {
  information and stores it to the specified vsignal.  If there are any problems
  in reading in the current line, returns FALSE; otherwise, returns TRUE.
 */
-bool vsignal_db_read( char** line, func_unit* curr_funit, func_unit* last_funit ) {
+bool vsignal_db_read( char** line, func_unit* curr_funit ) {
 
-  bool       retval = TRUE;  /* Return value for this function                   */
-  char       name[256];      /* Name of current vsignal                          */
-  vsignal*   sig;            /* Pointer to the newly created vsignal             */
-  vector*    vec;            /* Vector value for this vsignal                    */
-  int        lsb;            /* Least-significant bit of this vsignal            */
-  int        exp_id;         /* Expression ID                                    */
-  int        chars_read;     /* Number of characters read from line              */
+  bool       retval = TRUE;  /* Return value for this function */
+  char       name[256];      /* Name of current vsignal */
+  vsignal*   sig;            /* Pointer to the newly created vsignal */
+  vector*    vec;            /* Vector value for this vsignal */
+  int        lsb;            /* Least-significant bit of this vsignal */
+  int        exp_id;         /* Expression ID */
+  int        chars_read;     /* Number of characters read from line */
   expression texp;           /* Temporary expression link for searching purposes */
-  exp_link*  expl;           /* Temporary expression link for storage            */
+  exp_link*  expl;           /* Temporary expression link for storage */
+  func_unit* parent_mod;     /* Pointer to parent module */
 
   /* Get name values. */
   if( sscanf( *line, "%s %d %n", name, &lsb, &chars_read ) == 2 ) {
@@ -161,7 +161,8 @@ bool vsignal_db_read( char** line, func_unit* curr_funit, func_unit* last_funit 
         expl    = NULL;
 
         if( (curr_funit->type == FUNIT_FUNCTION) && (strcmp( curr_funit->name, sig->name ) == 0) ) {
-          expl = exp_link_find( &texp, last_funit->exp_head );
+          parent_mod = funit_get_curr_module( curr_funit );
+          expl       = exp_link_find( &texp, parent_mod->exp_head );
         }
 
         if( expl == NULL ) {
@@ -233,10 +234,10 @@ bool vsignal_db_read( char** line, func_unit* curr_funit, func_unit* last_funit 
 */
 bool vsignal_db_merge( vsignal* base, char** line, bool same ) {
  
-  bool retval;      /* Return value of this function         */
-  char name[256];   /* Name of current vsignal               */
+  bool retval;      /* Return value of this function */
+  char name[256];   /* Name of current vsignal */
   int  lsb;         /* Least-significant bit of this vsignal */
-  int  chars_read;  /* Number of characters read from line   */
+  int  chars_read;  /* Number of characters read from line */
 
   assert( base != NULL );
   assert( base->name != NULL );
@@ -281,10 +282,10 @@ bool vsignal_db_merge( vsignal* base, char** line, bool same ) {
 */
 bool vsignal_db_replace( vsignal* base, char** line ) {
 
-  bool retval;      /* Return value of this function         */
-  char name[256];   /* Name of current vsignal               */
+  bool retval;      /* Return value of this function */
+  char name[256];   /* Name of current vsignal */
   int  lsb;         /* Least-significant bit of this vsignal */
-  int  chars_read;  /* Number of characters read from line   */
+  int  chars_read;  /* Number of characters read from line */
 
   assert( base != NULL );
   assert( base->name != NULL );
@@ -406,7 +407,7 @@ void vsignal_propagate( vsignal* sig ) {
 void vsignal_vcd_assign( vsignal* sig, char* value, int msb, int lsb ) {
 
   bool      vec_changed;  /* Specifies if assigned value differed from original value */
-  exp_link* curr_expr;    /* Pointer to current expression link under evaluation      */
+  exp_link* curr_expr;    /* Pointer to current expression link under evaluation */
 
   assert( sig->value != NULL );
 
@@ -472,10 +473,10 @@ void vsignal_display( vsignal* sig ) {
 */
 vsignal* vsignal_from_string( char** str ) {
 
-  vsignal* sig;        /* Pointer to newly created vsignal      */
-  char    name[4096];  /* Signal name                           */
-  int     msb;         /* MSB of vsignal                        */
-  int     lsb;         /* LSB of vsignal                        */
+  vsignal* sig;        /* Pointer to newly created vsignal */
+  char    name[4096];  /* Signal name */
+  int     msb;         /* MSB of vsignal */
+  int     lsb;         /* LSB of vsignal */
   int     chars_read;  /* Number of characters read from string */
 
   if( sscanf( *str, "%[a-zA-Z0-9_]\[%d:%d]%n", name, &msb, &lsb, &chars_read ) == 3 ) {
@@ -537,6 +538,9 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.12  2005/11/21 22:21:58  phase1geo
+ More regression updates.  Also made some updates to debugging output.
+
  Revision 1.11  2005/11/21 04:17:43  phase1geo
  More updates to regression suite -- includes several bug fixes.  Also added --enable-debug
  facility to configuration file which will include or exclude debugging output from being

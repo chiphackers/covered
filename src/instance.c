@@ -33,7 +33,7 @@
 */
 funit_inst* instance_create( func_unit* funit, char* inst_name ) {
 
-  funit_inst* new_inst;   /* Pointer to new functional unit instance */
+  funit_inst* new_inst;  /* Pointer to new functional unit instance */
 
   new_inst             = (funit_inst*)malloc_safe( sizeof( funit_inst ), __FILE__, __LINE__ );
   new_inst->funit      = funit;
@@ -90,9 +90,9 @@ void instance_gen_scope( char* scope, funit_inst* leaf ) {
 funit_inst* instance_find_scope_helper( funit_inst* root, char* curr_scope, char* rest_scope ) {
  
   char        front[256];   /* Highest level of hierarchy in hierarchical reference */
-  char        rest[4096];   /* Rest of scope value                                  */
-  funit_inst* inst = NULL;  /* Pointer to found instance                            */
-  funit_inst* child;        /* Pointer to child instance of this functional unit instance    */
+  char        rest[4096];   /* Rest of scope value */
+  funit_inst* inst = NULL;  /* Pointer to found instance */
+  funit_inst* child;        /* Pointer to child instance of this functional unit instance */
     
   if( root != NULL ) {
 
@@ -176,8 +176,8 @@ funit_inst* instance_find_scope( funit_inst* root, char* scope ) {
 */
 funit_inst* instance_find_by_funit( funit_inst* root, func_unit* funit, int* ignore ) {
 
-  funit_inst* match_inst = NULL;   /* Pointer to functional unit instance that found a match      */
-  funit_inst* curr_child;          /* Pointer to current instances child functional unit instance */
+  funit_inst* match_inst = NULL;  /* Pointer to functional unit instance that found a match */
+  funit_inst* curr_child;         /* Pointer to current instances child functional unit instance */
 
   if( root != NULL ) {
 
@@ -216,7 +216,7 @@ funit_inst* instance_find_by_funit( funit_inst* root, func_unit* funit, int* ign
 */
 void instance_resolve_params( mod_parm* mparm, funit_inst* inst ) {
 
-  char scope[4096];     /* String containing full hierarchical scope of instance */
+  char scope[4096];  /* String containing full hierarchical scope of instance */
 
   /* Generate current instance scope */
   scope[0] = '\0';
@@ -283,7 +283,7 @@ funit_inst* instance_add_child( funit_inst* inst, func_unit* child, char* name )
 void instance_copy( funit_inst* from_inst, funit_inst* to_inst, char* name ) {
 
   funit_inst* curr;      /* Pointer to current functional unit instance to copy */
-  funit_inst* new_inst;  /* Pointer to newly created functional unit instance   */
+  funit_inst* new_inst;  /* Pointer to newly created functional unit instance */
 
   assert( from_inst != NULL );
   assert( to_inst   != NULL );
@@ -314,10 +314,10 @@ void instance_copy( funit_inst* from_inst, funit_inst* to_inst, char* name ) {
 */
 void instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child, char* inst_name ) {
   
-  funit_inst* inst;      /* Temporary pointer to functional unit instance to add to */
-  funit_inst* cinst;     /* Pointer to instance of child functional unit            */
-  int       i;         /* Loop iterator                                  */
-  int       ignore;    /* Number of matched instances to ignore          */
+  funit_inst* inst;    /* Temporary pointer to functional unit instance to add to */
+  funit_inst* cinst;   /* Pointer to instance of child functional unit */
+  int         i;       /* Loop iterator */
+  int         ignore;  /* Number of matched instances to ignore */
 
   if( *root == NULL ) {
 
@@ -381,7 +381,7 @@ void instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child,
 void instance_read_add( funit_inst** root, char* parent, func_unit* child, char* inst_name ) {
 
   funit_inst* inst;      /* Temporary pointer to functional unit instance to add to */
-  funit_inst* new_inst;  /* Pointer to new functional unit instance to add          */
+  funit_inst* new_inst;  /* Pointer to new functional unit instance to add */
 
   new_inst = instance_create( child, inst_name );
 
@@ -430,7 +430,7 @@ void instance_read_add( funit_inst** root, char* parent, func_unit* child, char*
 */
 void instance_db_write( funit_inst* root, FILE* file, char* scope, bool parse_mode ) {
 
-  char        full_scope[4096];  /* Full scope of functional unit to write            */
+  char        full_scope[4096];  /* Full scope of functional unit to write */
   funit_inst* curr;              /* Pointer to current child functional unit instance */
 
   assert( scope != NULL );
@@ -459,8 +459,8 @@ void instance_db_write( funit_inst* root, FILE* file, char* scope, bool parse_mo
 */
 void instance_dealloc_tree( funit_inst* root ) {
 
-  funit_inst* curr;        /* Pointer to current instance to evaluate */
-  funit_inst* tmp;         /* Temporary pointer to instance           */
+  funit_inst* curr;  /* Pointer to current instance to evaluate */
+  funit_inst* tmp;   /* Temporary pointer to instance */
 
   if( root != NULL ) {
 
@@ -500,11 +500,11 @@ void instance_dealloc_tree( funit_inst* root ) {
 */
 void instance_dealloc( funit_inst* root, char* scope ) {
   
-  funit_inst* inst;        /* Pointer to instance to remove                        */
-  funit_inst* curr;        /* Pointer to current child instance to remove          */
-  funit_inst* last;        /* Last current child instance                          */
-  char      back[256];   /* Highest level of hierarchy in hierarchical reference */
-  char      rest[4096];  /* Rest of scope value                                  */
+  funit_inst* inst;        /* Pointer to instance to remove */
+  funit_inst* curr;        /* Pointer to current child instance to remove */
+  funit_inst* last;        /* Last current child instance */
+  char        back[256];   /* Highest level of hierarchy in hierarchical reference */
+  char        rest[4096];  /* Rest of scope value */
   
   assert( root  != NULL );
   assert( scope != NULL );
@@ -555,6 +555,10 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.31  2005/11/08 23:12:09  phase1geo
+ Fixes for function/task additions.  Still a lot of testing on these structures;
+ however, regressions now pass again so we are checkpointing here.
+
  Revision 1.30  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,
