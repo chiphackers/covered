@@ -505,8 +505,11 @@ void db_end_module( int end_line ) {
  \param name        Name of functional unit
  \param file        File containing the specified functional unit
  \param start_line  Starting line number of functional unit
+
+ \return Returns TRUE if specified function, task or named block was added to the design.  If
+         it was not, returns FALSE to indicate that this block should be ignored.
 */
-void db_add_function_task_namedblock( int type, char* name, char* file, int start_line ) {
+bool db_add_function_task_namedblock( int type, char* name, char* file, int start_line ) {
 
   func_unit* tf;      /* Pointer to created functional unit */
   func_unit* parent;  /* Pointer to parent module for the newly created functional unit */
@@ -547,6 +550,8 @@ void db_add_function_task_namedblock( int type, char* name, char* file, int star
     curr_funit->start_line = start_line;
     
   }
+
+  return( tf != NULL );
 
 }
 
@@ -1557,6 +1562,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.144  2005/12/01 21:11:16  phase1geo
+ Adding more error checking diagnostics into regression suite.  Full regression
+ passes.
+
  Revision 1.143  2005/12/01 20:49:02  phase1geo
  Adding nested_block3 to verify nested named blocks in tasks.  Fixed named block
  usage to be FUNC_CALL or TASK_CALL -like based on its placement.

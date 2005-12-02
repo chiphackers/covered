@@ -1,3 +1,8 @@
-Note:  At this time, task1.1 report files are incorrect -- this is due to a known
-bug that will get fixed at some point in time in the future.  For now, we will make
-this diagnostic pass. 
+Note:  At this time, the following diagnostic report files are incorrect:
+
+  task1.1
+  exclude3
+  exclude4
+
+This is due to a known bug that will get fixed at some point in time in the
+future.  For now, we will make these diagnostics pass. 

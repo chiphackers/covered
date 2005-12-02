@@ -1541,7 +1541,9 @@ module_item
   | K_task IDENTIFIER ';'
     {
       if( ignore_mode == 0 ) {
-        db_add_function_task_namedblock( FUNIT_TASK, $2, @2.text, @2.first_line );
+        if( !db_add_function_task_namedblock( FUNIT_TASK, $2, @2.text, @2.first_line ) ) {
+          ignore_mode++;
+        }
       }
     }
     task_item_list_opt statement_opt
@@ -1557,19 +1559,24 @@ module_item
     {
       if( ignore_mode == 0 ) {
         db_end_function_task_namedblock( @8.first_line );
+      } else {
+        ignore_mode--;
       }
     }
   | K_function range_or_type_opt IDENTIFIER ';'
     {
       char tmp[256];
       if( ignore_mode == 0 ) {
-        db_add_function_task_namedblock( FUNIT_FUNCTION, $3, @3.text, @3.first_line );
-        snprintf( tmp, 256, "%s", $3 );
-        db_add_signal( tmp, $2->left, $2->right, FALSE, FALSE );
-        static_expr_dealloc( $2->left, FALSE );
-        static_expr_dealloc( $2->right, FALSE );
-        free_safe( $2 );
-        free_safe( $3 );
+        if( db_add_function_task_namedblock( FUNIT_FUNCTION, $3, @3.text, @3.first_line ) ) {
+          snprintf( tmp, 256, "%s", $3 );
+          db_add_signal( tmp, $2->left, $2->right, FALSE, FALSE );
+          static_expr_dealloc( $2->left, FALSE );
+          static_expr_dealloc( $2->right, FALSE );
+          free_safe( $2 );
+          free_safe( $3 );
+        } else {
+          ignore_mode++;
+        }
       }
     }
     function_item_list statement
@@ -1585,6 +1592,8 @@ module_item
     {
       if( ignore_mode == 0 ) {
         db_end_function_task_namedblock( @9.first_line );
+      } else {
+        ignore_mode--;
       }
     }
   | K_specify ignore_more specify_item_list ignore_less K_endspecify
@@ -1647,6 +1656,7 @@ statement
         free_safe( $3 );
         $$ = stmt;
       } else {
+        ignore_mode--;
         $$ = NULL;
       }
     }
@@ -2158,7 +2168,9 @@ named_begin_end_block
   : IDENTIFIER
     {
       if( (ignore_mode == 0) && ($1 != NULL) ) {
-        db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $1, @1.text, @1.first_line );
+        if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $1, @1.text, @1.first_line ) ) {
+          ignore_mode++;
+        }
       } else {
         ignore_mode++;
       }
@@ -2182,7 +2194,6 @@ named_begin_end_block
         if( $1 != NULL ) {
           free_safe( $1 );
         }
-        ignore_mode--;
         $$ = NULL;
       }
     }
@@ -3478,18 +3489,20 @@ function_item_list
 function_item
   : K_input range_opt list_of_variables ';'
     {
-      /* Create signal -- implicitly this is a wire which may not be explicitly declared */
-      str_link* tmp  = $3;
-      str_link* curr = tmp;
-      while( curr != NULL ) {
-        db_add_signal( curr->str, $2->left, $2->right, TRUE, FALSE );
-        curr = curr->next;
+      if( ignore_mode == 0 ) {
+        /* Create signal -- implicitly this is a wire which may not be explicitly declared */
+        str_link* tmp  = $3;
+        str_link* curr = tmp;
+        while( curr != NULL ) {
+          db_add_signal( curr->str, $2->left, $2->right, TRUE, FALSE );
+          curr = curr->next;
+        }
+        str_link_delete_list( $3 );
+        static_expr_dealloc( $2->left, FALSE );
+        static_expr_dealloc( $2->right, FALSE );
+        free_safe( $2 );
+        curr_sig_width = NULL;
       }
-      str_link_delete_list( $3 );
-      static_expr_dealloc( $2->left, FALSE );
-      static_expr_dealloc( $2->right, FALSE );
-      free_safe( $2 );
-      curr_sig_width = NULL;
     }
   | block_item_decl
   ;

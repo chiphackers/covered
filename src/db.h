@@ -24,7 +24,7 @@ func_unit* db_add_instance( char* scope, char* name, int type );
 void db_add_module( char* name, char* file, int start_line );
 
 /*! \brief Adds specified task/function to functional unit list.  Called by parser. */
-void db_add_function_task( int type, char* name, char* file, int start_line );
+bool db_add_function_task( int type, char* name, char* file, int start_line );
 
 /*! \brief Adds specified declared parameter to parameter list.  Called by parser. */
 void db_add_declared_param( char* name, expression* expr );
@@ -112,6 +112,11 @@ void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.41  2005/11/29 19:04:47  phase1geo
+ Adding tests to verify task functionality.  Updating failing tests and fixed
+ bugs for context switch expressions at the end of a statement block, statement
+ block removal for missing function/tasks and thread killing.
+
  Revision 1.40  2005/11/23 23:05:24  phase1geo
  Updating regression files.  Full regression now passes.
 

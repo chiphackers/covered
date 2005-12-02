@@ -81,6 +81,8 @@
 extern funit_inst* instance_root;
 extern funit_link* funit_head;
 extern char        user_msg[USER_MSG_LENGTH];
+extern str_link*   no_score_head;
+
 
 /*!
  Pointer to the head of the signal/functional unit/expression binding list.
@@ -91,6 +93,7 @@ exp_bind* eb_head;
  Pointer to the tail of the signal/functional unit/expression binding list.
 */
 exp_bind* eb_tail;
+
 
 /*!
  \param type  Type of thing being bound with the specified expression (0=signal, 1=functional unit)
@@ -403,56 +406,69 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
 
   assert( (type == FUNIT_FUNCTION) || (type == FUNIT_TASK) || (type == FUNIT_NAMED_BLOCK) );
 
-  if( !scope_find_task_function_namedblock( name, type, funit_exp, &found_funit, exp->line ) ) {
+  /* Search the no_score list to make sure that this function is not being manually excluded */
+  if( str_link_find( name, no_score_head ) == NULL ) {
 
-    /* Bad hierarchical reference -- user error  -- unachievable code due to unsuppported use of hierarchical referencing */
-    snprintf( user_msg, USER_MSG_LENGTH, "Hierarchical reference to undefined %s \"%s\" in %s, line %d",
-              get_funit_type( type ),
-              name,
-              funit_exp->filename,
-              exp->line );
-    print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    exit( 1 );
+    if( !scope_find_task_function_namedblock( name, type, funit_exp, &found_funit, exp->line ) ) {
 
-  } else if( found_funit->stmt_head != NULL ) {
+      /*
+       Bad hierarchical reference -- user error
+       Unachievable code due to unsuppported use of hierarchical referencing
+      */
+      snprintf( user_msg, USER_MSG_LENGTH, "Hierarchical reference to undefined %s \"%s\" in %s, line %d",
+                get_funit_type( type ),
+                name,
+                funit_exp->filename,
+                exp->line );
+      print_output( user_msg, FATAL, __FILE__, __LINE__ );
+      exit( 1 );
 
-    assert( found_funit->stmt_head->stmt != NULL );
+    } else if( found_funit->stmt_head != NULL ) {
 
-    /* Set expression to point at task/function's first head statement */
-    stmt_iter_reset( &si, found_funit->stmt_head );
-    stmt_iter_find_head( &si, FALSE );
-    assert( si.curr->stmt != NULL );
-    exp->stmt = si.curr->stmt;
+      assert( found_funit->stmt_head->stmt != NULL );
 
-    /* If this is a function, also bind the return value signal vector to the expression's vector */
-    if( type == FUNIT_FUNCTION ) {
+      /* Set expression to point at task/function's first head statement */
+      stmt_iter_reset( &si, found_funit->stmt_head );
+      stmt_iter_find_head( &si, FALSE );
+      assert( si.curr->stmt != NULL );
+      exp->stmt = si.curr->stmt;
 
-      sig.name = found_funit->name;
-      sigl     = sig_link_find( &sig, found_funit->sig_head );
+      /* If this is a function, also bind the return value signal vector to the expression's vector */
+      if( type == FUNIT_FUNCTION ) {
 
-      assert( sigl != NULL );
+        sig.name = found_funit->name;
+        sigl     = sig_link_find( &sig, found_funit->sig_head );
 
-      /* Add expression to signal expression list */
-      exp_link_add( exp, &(sigl->sig->exp_head), &(sigl->sig->exp_tail) );
+        assert( sigl != NULL );
 
-      /* Set expression to point at signal */
-      exp->sig = sigl->sig;
+        /* Add expression to signal expression list */
+        exp_link_add( exp, &(sigl->sig->exp_head), &(sigl->sig->exp_tail) );
 
-      if( cdd_reading ) {
+        /* Set expression to point at signal */
+        exp->sig = sigl->sig;
 
-        /* Attach the signal's value to our expression value */
-        expression_set_value( exp, sigl->sig->value );
+        if( cdd_reading ) {
 
-        /* Add to wait list */
-        if( ((stmt = expression_get_root_statement( exp )) != NULL) &&
-            ((stmt->exp->op == EXP_OP_EOR) ||
-             (stmt->exp->op == EXP_OP_AEDGE) ||
-             (stmt->exp->op == EXP_OP_PEDGE) ||
-             (stmt->exp->op == EXP_OP_NEDGE)) ) {
-          sig_link_add( sigl->sig, &(stmt->wait_sig_head), &(stmt->wait_sig_tail) );
+          /* Attach the signal's value to our expression value */
+          expression_set_value( exp, sigl->sig->value );
+
+          /* Add to wait list */
+          if( ((stmt = expression_get_root_statement( exp )) != NULL) &&
+              ((stmt->exp->op == EXP_OP_EOR) ||
+               (stmt->exp->op == EXP_OP_AEDGE) ||
+               (stmt->exp->op == EXP_OP_PEDGE) ||
+               (stmt->exp->op == EXP_OP_NEDGE)) ) {
+            sig_link_add( sigl->sig, &(stmt->wait_sig_head), &(stmt->wait_sig_tail) );
+          }
+
         }
 
       }
+
+    } else {
+
+      /* Binding did not occur */
+      retval = FALSE;
 
     }
 
@@ -601,6 +617,10 @@ void bind( bool cdd_reading ) {
 
 /* 
  $Log$
+ Revision 1.46  2005/11/30 18:25:55  phase1geo
+ Fixing named block code.  Full regression now passes.  Still more work to do on
+ named blocks, however.
+
  Revision 1.45  2005/11/29 23:14:37  phase1geo
  Adding support for named blocks.  Still not working at this point but checkpointing
  anyways.  Added new task3.1 diagnostic to verify task removal when a task is calling
