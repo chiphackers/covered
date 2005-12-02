@@ -655,9 +655,7 @@ void expression_db_write( expression* expr, FILE* file ) {
   if( expr->sig != NULL ) {
     fprintf( file, "%s", expr->sig->name );
   } else if( expr->stmt != NULL ) {
-    funit = funit_find_by_id( expr->stmt->exp->id );
-    assert( funit != NULL );
-    fprintf( file, " %s", funit->name );
+    fprintf( file, "%d", expr->stmt->exp->id );
   }
 
   fprintf( file, "\n" );
@@ -694,6 +692,7 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) {
   expression  texp;           /* Temporary expression link holder for searching */
   exp_link*   expl;           /* Pointer to found expression in functional unit */
   char        tmpname[1024];  /* Name of signal/functional unit that the current expression is bound to */
+  int         tmpid;          /* ID of statement that the current expression is bound to */
 
   if( sscanf( *line, "%d %d %x %x %x %d %d%n", &id, &linenum, &column, &op, &(suppl.all), &right_id, &left_id, &chars_read ) == 7 ) {
 
@@ -795,8 +794,13 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) {
 
       }
 
+      /* Check to see if we are bound to a statement */
+      if( sscanf( *line, "%d%n", &tmpid, &chars_read ) == 1 ) {
+        *line = *line + chars_read;
+        bind_add_stmt( tmpid, expr, curr_funit );
+
       /* Check to see if we are bound to a signal or functional unit */
-      if( sscanf( *line, "%s%n", tmpname, &chars_read ) == 1 ) {
+      } else if( sscanf( *line, "%s%n", tmpname, &chars_read ) == 1 ) {
         *line = *line + chars_read;
         switch( op ) {
           case EXP_OP_FUNC_CALL :  bind_add( FUNIT_FUNCTION,    tmpname, expr, curr_funit );  break;
@@ -1893,6 +1897,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.135  2005/12/01 20:49:02  phase1geo
+ Adding nested_block3 to verify nested named blocks in tasks.  Fixed named block
+ usage to be FUNC_CALL or TASK_CALL -like based on its placement.
+
  Revision 1.134  2005/12/01 18:35:17  phase1geo
  Fixing bug where functions in continuous assignments could cause the
  assignment to constantly be reevaluated (infinite looping).  Added new nested_block2

@@ -24,7 +24,7 @@ func_unit* db_add_instance( char* scope, char* name, int type );
 void db_add_module( char* name, char* file, int start_line );
 
 /*! \brief Adds specified task/function to functional unit list.  Called by parser. */
-bool db_add_function_task( int type, char* name, char* file, int start_line );
+bool db_add_function_task_namedblock( int type, char* name, char* file, int start_line );
 
 /*! \brief Adds specified declared parameter to parameter list.  Called by parser. */
 void db_add_declared_param( char* name, expression* expr );
@@ -41,6 +41,9 @@ void db_add_defparam( char* name, expression* expr );
 /*! \brief Adds specified vsignal to vsignal list.  Called by parser. */
 void db_add_signal( char* name, static_expr* left, static_expr* right, bool inport, bool mba );
 
+/*! \brief Creates statement block that acts like a fork join block from a standard statement block */
+statement* db_add_fork_join( statement* stmt );
+
 /*! \brief Called when the endmodule keyword is parsed. */
 void db_end_module( int end_line );
 
@@ -56,8 +59,11 @@ expression* db_create_expression( expression* right, expression* left, int op, b
 /*! \brief Adds specified expression to expression list.  Called by parser. */
 void db_add_expression( expression* root );
 
+/*! \brief Checks specified statement for parallelization and if it must be, creates a parallel statement block */
+statement* db_parallelize_statement( statement* stmt, int fork_depth );
+
 /*! \brief Creates new statement expression from specified information.  Called by parser. */
-statement* db_create_statement( expression* exp );
+statement* db_create_statement( expression* exp, int fork_level );
 
 /*! \brief Adds specified statement to current functional unit's statement list.  Called by parser. */
 void db_add_statement( statement* stmt, statement* start );
@@ -112,6 +118,10 @@ void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.42  2005/12/02 12:03:17  phase1geo
+ Adding support for excluding functions, tasks and named blocks.  Added tests
+ to regression suite to verify this support.  Full regression passes.
+
  Revision 1.41  2005/11/29 19:04:47  phase1geo
  Adding tests to verify task functionality.  Updating failing tests and fixed
  bugs for context switch expressions at the end of a statement block, statement

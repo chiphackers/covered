@@ -1614,6 +1614,7 @@ struct exp_bind_s {
   int         type;                  /*!< Specifies if name refers to a signal (0), function (FUNIT_FUNCTION) or task (FUNIT_TASK) */
   char*       name;                  /*!< Name of Verilog scoped signal/functional unit to bind */
   int         clear_assigned;        /*!< If >0, clears the signal assigned supplemental field without binding */
+  int         stmt_id;               /*!< Specifies the statement ID to bind to (only value for expressiont-statement binding) */
   expression* exp;                   /*!< Expression to bind. */
   expression* fsm;                   /*!< FSM expression to create value for when this expression is bound */
   func_unit*  funit;                 /*!< Pointer to functional unit containing expression */
@@ -1703,6 +1704,10 @@ struct thread_s {
 
 /*
  $Log$
+ Revision 1.143  2005/12/01 20:49:02  phase1geo
+ Adding nested_block3 to verify nested named blocks in tasks.  Fixed named block
+ usage to be FUNC_CALL or TASK_CALL -like based on its placement.
+
  Revision 1.142  2005/12/01 18:35:17  phase1geo
  Fixing bug where functions in continuous assignments could cause the
  assignment to constantly be reevaluated (infinite looping).  Added new nested_block2

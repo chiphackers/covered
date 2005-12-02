@@ -888,8 +888,13 @@ expression* db_create_expression( expression* right, expression* left, int op, b
     left_id = left->id;
   }
 
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_create_expression, right: %d, left: %d, id: %d, op: %s, lhs: %d, line: %d, first: %d, last: %d", 
-                       right_id, left_id, curr_expr_id, expression_string_op( op ), lhs, line, first, last );
+  if( sig_name == NULL ) {
+    snprintf( user_msg, USER_MSG_LENGTH, "In db_create_expression, right: %d, left: %d, id: %d, op: %s, lhs: %d, line: %d, first: %d, last: %d", 
+              right_id, left_id, curr_expr_id, expression_string_op( op ), lhs, line, first, last );
+  } else {
+    snprintf( user_msg, USER_MSG_LENGTH, "In db_create_expression, right: %d, left: %d, id: %d, op: %s, lhs: %d, line: %d, first: %d, last: %d, sig_name: %s",
+              right_id, left_id, curr_expr_id, expression_string_op( op ), lhs, line, first, last, sig_name );
+  }
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -1009,23 +1014,67 @@ void db_add_expression( expression* root ) {
 }
 
 /*!
- \param exp  Pointer to associated "root" expression.
+ \param stmt        Pointer to statement to check for parallelization
+ \param fork_depth  Current depth of forking
+
+ \return Returns pointer to parallelized statement block
+*/
+statement* db_parallelize_statement( statement* stmt, int fork_depth ) {
+
+  expression* exp;  /* Expression containing FORK statement */
+
+  /* If we are a parallel statement, create a FORK statement for this statement block */
+  if( (stmt != NULL) && (fork_depth > 0) ) {
+
+#ifdef DEBUG_MODE
+    snprintf( user_msg, USER_MSG_LENGTH, "In db_parallelize_statement, id: %d, line: %d, fork_depth: %d", stmt->exp->id, stmt->exp->line, fork_depth );
+    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif
+
+    /* Create a thread block for this statement block */
+    db_statement_set_stop( stmt, NULL, FALSE );
+    stmt->exp->suppl.part.stmt_head = 1;
+    db_add_statement( stmt, stmt );
+
+    /* Create FORK expression */
+    exp = db_create_expression( NULL, NULL, EXP_OP_FORK, FALSE, stmt->exp->line, ((stmt->exp->col & 0xffff0000) >> 16), (stmt->exp->col & 0xffff), NULL );
+
+    /* Create FORK statement and add the expression */
+    stmt = db_create_statement( exp, (fork_depth - 1) );
+    db_add_expression( exp );
+
+    /* Bind the FORK expression to this statement */
+    bind_add_stmt( stmt->exp->id, exp, curr_funit );
+
+  }
+
+  return( stmt );
+
+}
+
+/*!
+ \param exp         Pointer to associated "root" expression.
+ \param fork_depth  Specifies the level of forking that this statement is in (if >0 then we are a parallel statement)
 
  \return Returns pointer to created statement.
 
  Creates an statement structure and adds created statement to current
  module's statement list.
 */
-statement* db_create_statement( expression* exp ) {
+statement* db_create_statement( expression* exp, int fork_depth ) {
 
-  statement* stmt;  /* Pointer to newly created statement */
+  statement*  stmt;  /* Pointer to newly created statement */
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_create_statement, id: %d, line: %d", exp->id, exp->line );
+  snprintf( user_msg, USER_MSG_LENGTH, "In db_create_statement, id: %d, line: %d, fork_depth: %d", exp->id, exp->line, fork_depth );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
+  /* Create the given statement */
   stmt = statement_create( exp );
+
+  /* If we are a parallel statement, create a FORK statement for this statement block */
+  stmt = db_parallelize_statement( stmt, fork_depth );
 
   return( stmt );
 
@@ -1562,6 +1611,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.145  2005/12/02 12:03:17  phase1geo
+ Adding support for excluding functions, tasks and named blocks.  Added tests
+ to regression suite to verify this support.  Full regression passes.
+
  Revision 1.144  2005/12/01 21:11:16  phase1geo
  Adding more error checking diagnostics into regression suite.  Full regression
  passes.

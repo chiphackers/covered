@@ -114,6 +114,7 @@ void bind_add( int type, const char* name, expression* exp, func_unit* funit ) {
   eb->type           = type;
   eb->name           = strdup_safe( name, __FILE__, __LINE__ );
   eb->clear_assigned = 0;
+  eb->stmt_id        = 0;
   eb->funit          = funit;
   eb->exp            = exp;
   eb->fsm            = NULL;
@@ -127,6 +128,31 @@ void bind_add( int type, const char* name, expression* exp, func_unit* funit ) {
     eb_tail       = eb;
   }
   
+}
+
+void bind_add_stmt( int id, expression* exp, func_unit* funit ) {
+
+  exp_bind* eb;  /* Temporary pointer to signal/expression binding */
+
+  /* Create new statement/expression binding */
+  eb                 = (exp_bind *)malloc_safe( sizeof( exp_bind ), __FILE__, __LINE__ );
+  eb->type           = 0;
+  eb->name           = NULL;
+  eb->clear_assigned = 0;
+  eb->stmt_id        = id;
+  eb->funit          = funit;
+  eb->exp            = exp;
+  eb->fsm            = NULL;
+  eb->next           = NULL;
+
+  /* Add new signal/expression binding to linked list */
+  if( eb_head == NULL ) {
+    eb_head = eb_tail = eb;
+  } else {
+    eb_tail->next = eb;
+    eb_tail       = eb;
+  }
+
 }
 
 /*!
@@ -392,6 +418,25 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
 
 }
 
+bool bind_statement( int id, expression* exp, func_unit* funit_exp, bool cdd_reading ) {
+
+  bool       retval = FALSE;  /* Return value for this function */
+  func_unit* found_funit;     /* Pointer to functional unit containing the specified statement */
+  stmt_link* found_stmtl;     /* Pointer to found statement */
+
+  if( ((found_funit = funit_find_by_id( id )) != NULL) && ((found_stmtl = stmt_link_find( id, found_funit->stmt_head )) != NULL) ) {
+
+    /* Bind the expression to the specified statement */
+    printf( "Binding expression %d, %s, line %d to statement %d, line %d\n", exp->id, expression_string_op( exp->op ), exp->line, found_stmtl->stmt->exp->id, found_stmtl->stmt->exp->line );
+    exp->stmt = found_stmtl->stmt;
+    retval = TRUE;
+
+  }
+
+  return( retval );
+
+}
+
 /*!
  \param type  Type of functional unit
 */
@@ -521,28 +566,37 @@ void bind( bool cdd_reading ) {
       id = curr_eb->clear_assigned;
     }
 
-    /* Handle signal binding */
-    if( curr_eb->type == 0 ) {
+    if( curr_eb->stmt_id == 0 ) {
 
-      /*
-       Bind the signal.  If it is unsuccessful, we need to remove the statement that this expression
-       is a part of.
-      */
-      bound = bind_signal( curr_eb->name, curr_eb->exp, curr_eb->funit, FALSE, cdd_reading, (curr_eb->clear_assigned > 0) );
+      /* Handle signal binding */
+      if( curr_eb->type == 0 ) {
 
-      /* If an FSM expression is attached, size it now */
-      if( curr_eb->fsm != NULL ) {
-        curr_eb->fsm->value = vector_create( curr_eb->exp->value->width, TRUE );
+        /*
+         Bind the signal.  If it is unsuccessful, we need to remove the statement that this expression
+         is a part of.
+        */
+        bound = bind_signal( curr_eb->name, curr_eb->exp, curr_eb->funit, FALSE, cdd_reading, (curr_eb->clear_assigned > 0) );
+
+        /* If an FSM expression is attached, size it now */
+        if( curr_eb->fsm != NULL ) {
+          curr_eb->fsm->value = vector_create( curr_eb->exp->value->width, TRUE );
+        }
+
+      /* Otherwise, handle function/task binding */
+      } else {
+
+        /*
+         Bind the expression to the task/function.  If it is unsuccessful, we need to remove the statement
+         that this expression is a part of.
+        */
+        bound = bind_task_function_namedblock( curr_eb->type, curr_eb->name, curr_eb->exp, curr_eb->funit, cdd_reading );
+
       }
 
-    /* Otherwise, handle function/task binding */
     } else {
 
-      /*
-       Bind the expression to the task/function.  If it is unsuccessful, we need to remove the statement
-       that this expression is a part of.
-      */
-      bound = bind_task_function_namedblock( curr_eb->type, curr_eb->name, curr_eb->exp, curr_eb->funit, cdd_reading );
+      /* Handle statement binding */
+      bound = bind_statement( curr_eb->stmt_id, curr_eb->exp, curr_eb->funit, cdd_reading );
 
     }
 
@@ -617,6 +671,10 @@ void bind( bool cdd_reading ) {
 
 /* 
  $Log$
+ Revision 1.47  2005/12/02 12:03:17  phase1geo
+ Adding support for excluding functions, tasks and named blocks.  Added tests
+ to regression suite to verify this support.  Full regression passes.
+
  Revision 1.46  2005/11/30 18:25:55  phase1geo
  Fixing named block code.  Full regression now passes.  Still more work to do on
  named blocks, however.

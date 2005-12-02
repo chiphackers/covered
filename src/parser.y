@@ -39,6 +39,8 @@ extern void lex_end_udp_table();
 int  ignore_mode = 0;
 int  param_mode  = 0;
 int  attr_mode   = 0;
+int  fork_depth  = 0;
+int  block_depth = 0; 
 bool lhs_mode    = FALSE;
 
 exp_link* param_exp_head = NULL;
@@ -154,9 +156,9 @@ int yydebug = 1;
 %type <text>      localparam_assign_list localparam_assign
 %type <strlink>   register_variable_list list_of_variables
 %type <strlink>   gate_instance_list
-%type <text>      register_variable named_begin_end_block
+%type <text>      register_variable named_begin_end_block fork_statement
 %type <state>     statement statement_list statement_opt 
-%type <state>     for_statement fork_statement while_statement if_statement_error
+%type <state>     for_statement while_statement if_statement_error
 %type <case_stmt> case_items case_item
 %type <expr>      delay1 delay3 delay3_opt
 %type <attr_parm> attribute attribute_list
@@ -1640,18 +1642,45 @@ statement
     {
       $$ = NULL;
     }
-  | K_begin statement_list K_end
+  | K_begin inc_block_depth statement_list dec_block_depth K_end
     {
-      $$ = $2;
+      statement* stmt = db_parallelize_statement( $3, fork_depth - block_depth );
+      printf( "Called parallelize statement in begin...end block!!!!\n" );
+      $$ = stmt;
     }
-  | K_begin ':' named_begin_end_block K_end
+  | K_begin inc_block_depth ':' named_begin_end_block dec_block_depth K_end
+    {
+      expression* exp;
+      statement*  stmt;
+      if( $4 != NULL ) {
+        db_end_function_task_namedblock( @6.first_line );
+        exp  = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), $4 );
+        stmt = db_create_statement( exp, fork_depth - block_depth );
+        db_add_expression( exp );
+        free_safe( $4 );
+        $$ = stmt;
+      } else {
+        ignore_mode--;
+        $$ = NULL;
+      }
+    }
+  | K_begin inc_block_depth dec_block_depth K_end
+    {
+      $$ = NULL;
+    }
+  | K_begin inc_block_depth error dec_block_depth K_end
+    {
+      VLerror( "Illegal syntax in begin/end block" );
+      $$ = NULL;
+    }
+  | K_fork inc_fork_depth fork_statement dec_fork_depth K_join
     {
       expression* exp;
       statement*  stmt;
       if( $3 != NULL ) {
         db_end_function_task_namedblock( @4.first_line );
         exp  = db_create_expression( NULL, NULL, EXP_OP_NB_CALL, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), $3 );
-        stmt = db_create_statement( exp );
+        stmt = db_create_statement( exp, fork_depth - block_depth );
         db_add_expression( exp );
         free_safe( $3 );
         $$ = stmt;
@@ -1659,19 +1688,6 @@ statement
         ignore_mode--;
         $$ = NULL;
       }
-    }
-  | K_begin K_end
-    {
-      $$ = NULL;
-    }
-  | K_begin error K_end
-    {
-      VLerror( "Illegal syntax in begin/end block" );
-      $$ = NULL;
-    }
-  | K_fork { ignore_mode++; } fork_statement { ignore_mode--; } K_join
-    {
-      $$ = NULL;
     }
   | K_disable { ignore_mode++; } identifier ';' { ignore_mode--; }
     {
@@ -1684,31 +1700,31 @@ statement
       if( (ignore_mode == 0) && ($2 != NULL) ) {
         expr = db_create_expression( NULL, NULL, EXP_OP_TRIGGER, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), $2 );
         db_add_expression( expr );
-        stmt = db_create_statement( expr );
-        $$   = stmt;
+        stmt = db_create_statement( expr, fork_depth - block_depth );
+        $$ = stmt;
       } else {
         $$ = NULL;
       }
     }
-  | K_forever { ignore_mode++; } statement { ignore_mode--; }
+  | K_forever { ignore_mode++; fork_depth--; } statement { ignore_mode--; fork_depth++; }
     {
       $$ = NULL;
     }
-  | K_fork { ignore_mode++; } statement_list K_join { ignore_mode--; }
+  | K_fork inc_fork_depth statement_list dec_fork_depth K_join
+    {
+      $$ = $3;
+    }
+  | K_repeat { ignore_mode++; } '(' expression ')' inc_block_depth statement { ignore_mode--; fork_depth++; }
     {
       $$ = NULL;
     }
-  | K_repeat { ignore_mode++; } '(' expression ')' statement { ignore_mode--; }
-    {
-      $$ = NULL;
-    }
-  | K_case '(' expression ')' case_items K_endcase
+  | K_case '(' expression ')' inc_block_depth case_items dec_block_depth K_endcase
     {
       expression*     expr;
       expression*     c_expr    = $3;
       statement*      stmt      = NULL;
       statement*      last_stmt = NULL;
-      case_statement* c_stmt    = $5;
+      case_statement* c_stmt    = $6;
       case_statement* tc_stmt;
       if( (ignore_mode == 0) && ($3 != NULL) ) {
         c_expr->suppl.part.root = 1;
@@ -1719,7 +1735,7 @@ statement
             expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, 0, 0, NULL );
           }
           db_add_expression( expr );
-          stmt = db_create_statement( expr );
+          stmt = db_create_statement( expr, fork_depth - block_depth );
           db_connect_statement_true( stmt, c_stmt->stmt );
           db_connect_statement_false( stmt, last_stmt );
           db_statement_set_stop( c_stmt->stmt, NULL, FALSE );
@@ -1744,13 +1760,13 @@ statement
         $$ = NULL;
       }
     }
-  | K_casex '(' expression ')' case_items K_endcase
+  | K_casex '(' expression ')' inc_block_depth case_items dec_block_depth K_endcase
     {
       expression*     expr;
       expression*     c_expr    = $3;
       statement*      stmt      = NULL;
       statement*      last_stmt = NULL;
-      case_statement* c_stmt    = $5;
+      case_statement* c_stmt    = $6;
       case_statement* tc_stmt;
       if( (ignore_mode == 0) && ($3 != NULL) ) {
         c_expr->suppl.part.root = 1;
@@ -1761,7 +1777,7 @@ statement
             expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, 0, 0, NULL );
           }
           db_add_expression( expr );
-          stmt = db_create_statement( expr );
+          stmt = db_create_statement( expr, fork_depth - block_depth );
           db_connect_statement_true( stmt, c_stmt->stmt );
           db_connect_statement_false( stmt, last_stmt );
           db_statement_set_stop( c_stmt->stmt, NULL, FALSE );
@@ -1786,13 +1802,13 @@ statement
         $$ = NULL;
       }
     }
-  | K_casez '(' expression ')' case_items K_endcase
+  | K_casez '(' expression ')' inc_block_depth case_items dec_block_depth K_endcase
     {
       expression*     expr;
       expression*     c_expr    = $3;
       statement*      stmt      = NULL;
       statement*      last_stmt = NULL;
-      case_statement* c_stmt    = $5;
+      case_statement* c_stmt    = $6;
       case_statement* tc_stmt;
       if( (ignore_mode == 0) && ($3 != NULL) ) {
         c_expr->suppl.part.root = 1;
@@ -1803,7 +1819,7 @@ statement
             expr = db_create_expression( NULL, NULL, EXP_OP_DEFAULT, lhs_mode, c_stmt->line, 0, 0, NULL );
           }
           db_add_expression( expr );
-          stmt = db_create_statement( expr );
+          stmt = db_create_statement( expr, fork_depth - block_depth );
           db_connect_statement_true( stmt, c_stmt->stmt );
           db_connect_statement_false( stmt, last_stmt );
           db_statement_set_stop( c_stmt->stmt, NULL, FALSE );
@@ -1828,7 +1844,7 @@ statement
         $$ = NULL;
       }
     }
-  | K_case '(' expression ')' error K_endcase
+  | K_case '(' expression ')' inc_block_depth error dec_block_depth K_endcase
     {
       if( ignore_mode == 0 ) {
         expression_dealloc( $3, FALSE );
@@ -1836,7 +1852,7 @@ statement
       VLerror( "Illegal case expression" );
       $$ = NULL;
     }
-  | K_casex '(' expression ')' error K_endcase
+  | K_casex '(' expression ')' inc_block_depth error dec_block_depth K_endcase
     {
       if( ignore_mode == 0 ) {
         expression_dealloc( $3, FALSE );
@@ -1844,7 +1860,7 @@ statement
       VLerror( "Illegal casex expression" );
       $$ = NULL;
     }
-  | K_casez '(' expression ')' error K_endcase
+  | K_casez '(' expression ')' inc_block_depth error dec_block_depth K_endcase
     {
       if( ignore_mode == 0 ) {
         expression_dealloc( $3, FALSE );
@@ -1852,7 +1868,7 @@ statement
       VLerror( "Illegal casez expression" );
       $$ = NULL;
     }
-  | K_if '(' expression ')' statement_opt %prec less_than_K_else
+  | K_if '(' expression ')' inc_block_depth statement_opt dec_block_depth %prec less_than_K_else
     {
       expression* tmp;
       statement*  stmt;
@@ -1860,17 +1876,17 @@ statement
         tmp  = db_create_expression( $3, NULL, EXP_OP_IF, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
         vector_dealloc( tmp->value );
         tmp->value = $3->value;
-        stmt = db_create_statement( tmp );
+        stmt = db_create_statement( tmp, fork_depth - block_depth );
         db_add_expression( tmp );
-        db_connect_statement_true( stmt, $5 );
-        db_statement_set_stop( $5, NULL, FALSE );
+        db_connect_statement_true( stmt, $6 );
+        db_statement_set_stop( $6, NULL, FALSE );
         $$ = stmt;
       } else {
-        db_remove_statement( $5 );
+        db_remove_statement( $6 );
         $$ = NULL;
       }
     }
-  | K_if '(' expression ')' statement_opt K_else statement_opt
+  | K_if '(' expression ')' inc_block_depth statement_opt dec_block_depth K_else statement_opt
     {
       expression* tmp;
       statement*  stmt;
@@ -1878,15 +1894,15 @@ statement
         tmp  = db_create_expression( $3, NULL, EXP_OP_IF, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
         vector_dealloc( tmp->value );
         tmp->value = $3->value;
-        stmt = db_create_statement( tmp );
+        stmt = db_create_statement( tmp, fork_depth - block_depth );
         db_add_expression( tmp );
-        db_connect_statement_true( stmt, $5 );
-        db_connect_statement_false( stmt, $7 );
-        db_statement_set_stop( $5, NULL, FALSE );
+        db_connect_statement_true( stmt, $6 );
+        db_connect_statement_false( stmt, $9 );
+        db_statement_set_stop( $6, NULL, FALSE );
         $$ = stmt;
       } else {
-        db_remove_statement( $5 );
-        db_remove_statement( $7 );
+        db_remove_statement( $6 );
+        db_remove_statement( $9 );
         $$ = NULL;
       }
     }
@@ -1895,41 +1911,41 @@ statement
       VLerror( "Illegal conditional if expression" );
       $$ = NULL;
     }
-  | K_for { ignore_mode++; } for_statement { ignore_mode--; }
+  | K_for { ignore_mode++; fork_depth--; } for_statement { ignore_mode--; fork_depth++; }
     {
       $$ = NULL;
     }
-  | K_while { ignore_mode++; } while_statement { ignore_mode--; }
+  | K_while { ignore_mode++; fork_depth--; } while_statement { ignore_mode--; fork_depth++; }
     {
       $$ = NULL;
     }
-  | delay1 statement_opt
+  | delay1 inc_block_depth statement_opt dec_block_depth
     {
       statement* stmt;
       if( (ignore_mode == 0) && ($1 != NULL) ) {
-        stmt = db_create_statement( $1 );
+        stmt = db_create_statement( $1, fork_depth - block_depth );
         db_add_expression( $1 );
-        if( $2 != NULL ) {
-          db_statement_connect( stmt, $2 );
+        if( $3 != NULL ) {
+          db_statement_connect( stmt, $3 );
         }
         $$ = stmt;
       } else {
-        db_remove_statement( $2 );
+        db_remove_statement( $3 );
         $$ = NULL;
       }
     }
-  | event_control statement_opt
+  | event_control inc_block_depth statement_opt dec_block_depth
     {
       statement* stmt;
       if( (ignore_mode == 0) && ($1 != NULL) ) {
-        stmt = db_create_statement( $1 );
+        stmt = db_create_statement( $1, fork_depth - block_depth );
         db_add_expression( $1 );
-        if( $2 != NULL ) {
-          db_statement_connect( stmt, $2 );
+        if( $3 != NULL ) {
+          db_statement_connect( stmt, $3 );
         }
         $$ = stmt;
       } else {
-        db_remove_statement( $2 );
+        db_remove_statement( $3 );
         $$ = NULL;
       }
     }
@@ -1941,7 +1957,7 @@ statement
         tmp  = db_create_expression( $3, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
         vector_dealloc( tmp->value );
         tmp->value = $3->value;
-        stmt = db_create_statement( tmp );
+        stmt = db_create_statement( tmp, fork_depth - block_depth );
         db_add_expression( tmp );
         $$ = stmt;
       } else {
@@ -1958,7 +1974,7 @@ statement
         tmp  = db_create_expression( $3, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
         vector_dealloc( tmp->value );
         tmp->value = $3->value;
-        stmt = db_create_statement( tmp );
+        stmt = db_create_statement( tmp, fork_depth - block_depth );
         db_add_expression( tmp );
         $$ = stmt;
       } else {
@@ -1976,7 +1992,7 @@ statement
         tmp  = db_create_expression( $4, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
         vector_dealloc( tmp->value );
         tmp->value = $4->value;
-        stmt = db_create_statement( tmp );
+        stmt = db_create_statement( tmp, fork_depth - block_depth );
         db_add_expression( tmp );
         $$ = stmt;
       } else {
@@ -1994,7 +2010,7 @@ statement
         tmp  = db_create_expression( $4, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
         vector_dealloc( tmp->value );
         tmp->value = $4->value;
-        stmt = db_create_statement( tmp );
+        stmt = db_create_statement( tmp, fork_depth - block_depth );
         db_add_expression( tmp );
         $$ = stmt;
       } else {
@@ -2012,7 +2028,7 @@ statement
         tmp  = db_create_expression( $4, $1, EXP_OP_BASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
         vector_dealloc( tmp->value );
         tmp->value = $4->value;
-        stmt = db_create_statement( tmp );
+        stmt = db_create_statement( tmp, fork_depth - block_depth );
         db_add_expression( tmp );
         $$ = stmt;
       } else {
@@ -2030,7 +2046,7 @@ statement
         tmp  = db_create_expression( $4, $1, EXP_OP_NASSIGN, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
         vector_dealloc( tmp->value );
         tmp->value = $4->value;
-        stmt = db_create_statement( tmp );
+        stmt = db_create_statement( tmp, fork_depth - block_depth );
         db_add_expression( tmp );
         $$ = stmt;
       } else {
@@ -2049,16 +2065,16 @@ statement
       expression_dealloc( $1, FALSE );
       $$ = NULL;
     }
-  | K_wait '(' expression ')' statement_opt
+  | K_wait '(' expression ')' inc_block_depth statement_opt dec_block_depth
     {
       statement* stmt;
       if( (ignore_mode == 0) && ($3 != NULL) ) {
-        stmt = db_create_statement( $3 );
+        stmt = db_create_statement( $3, fork_depth - block_depth );
         db_add_expression( $3 );
-        db_connect_statement_true( stmt, $5 );
+        db_connect_statement_true( stmt, $6 );
         $$ = stmt;
       } else {
-        db_remove_statement( $5 );
+        db_remove_statement( $6 );
         $$ = NULL;
       }
     }
@@ -2084,7 +2100,7 @@ statement
       statement*  stmt;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         exp  = db_create_expression( NULL, $3, EXP_OP_TASK_CALL, FALSE, @1.first_line, @1.first_column, (@5.last_line - 1), $1 );
-        stmt = db_create_statement( exp );
+        stmt = db_create_statement( exp, fork_depth - block_depth );
         db_add_expression( exp );
         $$   = stmt;
         free_safe( $1 );
@@ -2101,7 +2117,7 @@ statement
       statement*  stmt;
       if( (ignore_mode == 0) && ($1 != NULL) ) {
         exp  = db_create_expression( NULL, NULL, EXP_OP_TASK_CALL, FALSE, @1.first_line, @1.first_column, (@2.last_line - 1), $1 );
-        stmt = db_create_statement( exp );
+        stmt = db_create_statement( exp, fork_depth - block_depth );
         db_add_expression( exp );
         $$   = stmt;
         free_safe( $1 );
@@ -2139,7 +2155,39 @@ for_statement
   ;
 
 fork_statement
-  : ':' UNUSED_IDENTIFIER block_item_decls_opt statement_list
+  : ':' IDENTIFIER
+    {
+      if( (ignore_mode == 0) && ($2 != NULL) ) {
+        if( !db_add_function_task_namedblock( FUNIT_NAMED_BLOCK, $2, @2.text, @2.first_line ) ) {
+          ignore_mode++;
+        }
+      } else {
+        ignore_mode++;
+      }
+    }
+    block_item_decls_opt statement_list
+    {
+      statement* stmt = $5;
+      if( ignore_mode == 0 ) {
+        if( stmt != NULL ) {
+          db_statement_set_stop( stmt, NULL, FALSE );
+          stmt->exp->suppl.part.stmt_head = 1;
+          db_add_statement( stmt, stmt );
+          $$ = $2;
+        } else {
+          if( $2 != NULL ) {
+            free_safe( $2 );
+          }
+          $$ = NULL;
+        }
+      } else {
+        if( $2 != NULL ) {
+          free_safe( $2 );
+        }
+        $$ = NULL;
+      }
+    }
+  | ':' UNUSED_IDENTIFIER block_item_decls_opt statement_list
     {
       $$ = NULL;
     }
@@ -2851,7 +2899,7 @@ assign
         tmp  = db_create_expression( $3, $1, EXP_OP_ASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
         vector_dealloc( tmp->value );
         tmp->value = $3->value;
-        stmt = db_create_statement( tmp );
+        stmt = db_create_statement( tmp, fork_depth - block_depth );
         stmt->exp->suppl.part.stmt_head = 1;
         stmt->exp->suppl.part.stmt_stop = 1;
         stmt->exp->suppl.part.stmt_cont = 1;
@@ -3122,7 +3170,7 @@ net_decl_assign
         if( $3 != NULL ) {
           tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
           tmp  = db_create_expression( $3, tmp, EXP_OP_DASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
-          stmt = db_create_statement( tmp );
+          stmt = db_create_statement( tmp, fork_depth - block_depth );
           stmt->exp->suppl.part.stmt_head = 1;
           stmt->exp->suppl.part.stmt_stop = 1;
           stmt->exp->suppl.part.stmt_cont = 1;
@@ -3145,7 +3193,7 @@ net_decl_assign
         if( $4 != NULL ) {
           tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @2.first_line, @2.first_column, (@2.last_column - 1), $2 );
           tmp  = db_create_expression( $4, tmp, EXP_OP_DASSIGN, FALSE, @2.first_line, @2.first_column, (@4.last_column - 1), NULL );
-          stmt = db_create_statement( tmp );
+          stmt = db_create_statement( tmp, fork_depth - block_depth );
           stmt->exp->suppl.part.stmt_head = 1;
           stmt->exp->suppl.part.stmt_stop = 1;
           stmt->exp->suppl.part.stmt_cont = 1;
@@ -3717,5 +3765,35 @@ end_lhs
   :
     {
       lhs_mode = FALSE;
+    }
+  ;
+
+inc_fork_depth
+  :
+    {
+      fork_depth++;
+      block_depth = fork_depth;
+    }
+  ;
+
+dec_fork_depth
+  :
+    {
+      fork_depth--;
+      block_depth = fork_depth;
+    }
+  ;
+
+inc_block_depth
+  :
+    {
+      block_depth++;
+    }
+  ;
+
+dec block_depth
+  :
+    {
+      block_depth--;
     }
   ;

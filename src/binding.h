@@ -14,6 +14,9 @@
 /*! \brief Adds vsignal and expression to binding list. */
 void bind_add( int type, const char* name, expression* exp, func_unit* funit );
 
+/*! \brief Adds statement ID and expression to binding list. */
+void bind_add_stmt( int id, expression* exp, func_unit* funit );
+
 /*! \brief Appends an FSM expression to a matching expression binding structure */
 void bind_append_fsm_expr( expression* fsm_exp, expression* exp, func_unit* curr_funit );
 
@@ -32,6 +35,11 @@ void bind( bool cdd_reading );
 
 /* 
  $Log$
+ Revision 1.18  2005/11/29 23:14:37  phase1geo
+ Adding support for named blocks.  Still not working at this point but checkpointing
+ anyways.  Added new task3.1 diagnostic to verify task removal when a task is calling
+ another task.
+
  Revision 1.17  2005/11/22 05:30:33  phase1geo
  Updates to regression suite for clearing the assigned bit when a statement
  block is removed from coverage consideration and it is assigning that signal.
