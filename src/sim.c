@@ -228,6 +228,7 @@ thread* sim_add_thread( thread* parent, statement* stmt ) {
     thr->parent     = parent;
     thr->head       = stmt;
     thr->curr       = stmt;
+    thr->kill       = FALSE;
     thr->child_head = NULL;
     thr->child_tail = NULL;
     thr->prev_sib   = NULL;
@@ -437,9 +438,9 @@ void sim_kill_thread_with_stmt( statement* stmt ) {
     curr = curr->next;
   }
 
-  /* If the thread was found containing the specified statement, kill it */
+  /* If the thread was found containing the specified statement, tell the simulator to kill it */
   if( curr != NULL ) {
-    sim_kill_thread( curr );
+    curr->kill = TRUE;
   }
 
 }
@@ -553,7 +554,6 @@ bool sim_expression( expression* expr, thread* thr ) {
  wait-for-event condition (or we reach the end of a simulation tree).
 */
 bool sim_thread( thread* thr ) {
-// statement* head_stmt, statement** last_stmt ) {
 
   statement* stmt;                  /* Pointer to current statement to evaluate */
   sig_link*  sigl;                  /* Pointer to current signal in signal list */
@@ -563,7 +563,7 @@ bool sim_thread( thread* thr ) {
   /* Set the value of stmt with the head_stmt */
   stmt = thr->curr;
 
-  while( stmt != NULL ) {
+  while( (stmt != NULL) && !thr->kill ) {
 
     /* Place expression in expression simulator and run */
     expr_changed = sim_expression( stmt->exp, thr );
@@ -602,7 +602,7 @@ bool sim_thread( thread* thr ) {
   }
 
   /* If this is the last statement in the tree with no loopback, kill the current thread */
-  if( expr_changed && (thr->curr->next_true == NULL) && (thr->curr->next_false == NULL) ) {
+  if( (expr_changed && (thr->curr->next_true == NULL) && (thr->curr->next_false == NULL)) || thr->kill ) {
 
 #ifdef DEBUG_MODE
     snprintf( user_msg, USER_MSG_LENGTH, "Completed thread %x, executed %d, killing...\n", thr, !first );
@@ -674,6 +674,10 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.51  2005/12/05 22:02:24  phase1geo
+ Added initial support for disable expression.  Added test to verify functionality.
+ Full regression passes.
+
  Revision 1.50  2005/11/30 18:25:56  phase1geo
  Fixing named block code.  Full regression now passes.  Still more work to do on
  named blocks, however.

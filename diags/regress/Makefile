@@ -37,7 +37,7 @@ DIAGS1        = always1         always2         always3         always3.1.11A   
                 concat4.1       concat4.2       concat5         concat6         cond1 \
                 cond2           delay1          delay2          define1         define1.1 \
                 define1.2       define2         define2.1       define3         define4 \
-                disable1        event1.1        exclude1        exclude2        exclude3        exclude4 \
+                disable1        disable1.1      event1.1        exclude1        exclude2        exclude3        exclude4 \
                 expand1         expand2         expand3         expand4         expand4.1 \
                 expand4.2       expand4.3       expand4.4       fork1           fork2 \
                 fsm1            fsm1.1 \
