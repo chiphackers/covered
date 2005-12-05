@@ -220,9 +220,6 @@ thread* sim_add_thread( thread* parent, statement* stmt ) {
   /* Only add expression if it is the head statement of its statement block */
   if( ESUPPL_IS_STMT_HEAD( stmt->exp->suppl ) == 1 ) {
 
-    // printf( "THREAD QUEUE PRIOR TO THREAD ADD\n" );
-    // sim_display_thread_queue();
-
     /* Create and initialize thread */
     thr             = (thread*)malloc_safe( sizeof( thread ), __FILE__, __LINE__ );
     thr->parent     = parent;
@@ -259,7 +256,6 @@ thread* sim_add_thread( thread* parent, statement* stmt ) {
     }
 
     /* Add this thread to the simulation thread queue */
-#ifndef ATTEMPT_TO_SHORTEN
     if( parent != NULL ) {
 
       /* If this is the first child to be added to the parent, remove the parent from the thread queue */
@@ -301,29 +297,6 @@ thread* sim_add_thread( thread* parent, statement* stmt ) {
       }
  
     }
-#else
-    if( (parent == NULL) && (thread_head == NULL) ) {
-
-      /* If the thread queue is currently empty, just add the thread */
-      thread_head = thread_tail = thr;
-
-    /* Otherwise, if the parent exists and is not the tail of the thread queue, insert the child between the parent and its next pointer */
-    } else if( (parent != NULL) && (parent != thread_tail) ) {
-      thr->next       = parent->next;
-      thr->prev       = parent;
-      parent->next    = thr;
-      thr->next->prev = thr;
-
-    /* Otherwise, add the thread to the end of the thread queue */
-    } else {
-      thr->prev         = thread_tail;
-      thread_tail->next = thr;
-      thread_tail       = thr;
-    }
-#endif
-
-    // printf( "THREAD QUEUE AFTER ADD\n" );
-    // sim_display_thread_queue();
 
   }
 
@@ -343,8 +316,12 @@ void sim_kill_thread( thread* thr ) {
 
   assert( thr != NULL );
 
-  // printf( "THREAD QUEUE PRIOR TO KILL\n" );
-  // sim_display_thread_queue();
+#ifdef OBSOLETE
+  /* Remove all children (if any) */
+  while( thr->child_head != NULL ) {
+    sim_kill_thread( thr->child_head );
+  }
+#endif
 
   /* Remove this thread from its parent, if it has a parent */
   if( thr->parent != NULL ) {
@@ -382,7 +359,6 @@ void sim_kill_thread( thread* thr ) {
     curr_thread = thr->prev;
   }
 
-#ifndef ATTEMPT_TO_SHORTEN
   /* If we are the last child, re-insert the parent thread */
   if( last_child ) {
     if( thr->prev == NULL ) {
@@ -394,10 +370,6 @@ void sim_kill_thread( thread* thr ) {
     thr->parent->next = thr;
     thr->prev         = thr->parent;
   }    
-#endif
-
-  // printf( "AFTER re-inserting parent thread\n" );
-  // sim_display_thread_queue();
 
   /* Now remove the thread from the thread list */
   if( (thr == thread_head) && (thr == thread_tail) ) {
@@ -416,9 +388,6 @@ void sim_kill_thread( thread* thr ) {
   /* Now we can deallocate the thread */
   free_safe( thr );
 
-  // printf( "THREAD_QUEUE AFTER KILL\n" );
-  // sim_display_thread_queue();
-
 }
 
 /*!
@@ -430,17 +399,49 @@ void sim_kill_thread( thread* thr ) {
 */
 void sim_kill_thread_with_stmt( statement* stmt ) {
 
-  thread* curr;  /* Pointer to current thread being examined */
+  thread* curr  = NULL;   /* Pointer to current thread being examined */
+  thread* parent;         /* Pointer to current parent thread being examined */
+  thread* child;          /* Pointer to current child being examined */
+  bool    found = FALSE;  /* Specifies if matching statement has been found yet */
+
+  assert( stmt != NULL );
 
   /* First, find the thread (if any) that contains the specified statement */
   curr = thread_head;
-  while( (curr != NULL) && (curr->head != stmt) ) {
-    curr = curr->next;
-  }
+  while( (curr != NULL) && !found ) {
 
-  /* If the thread was found containing the specified statement, tell the simulator to kill it */
-  if( curr != NULL ) {
-    curr->kill = TRUE;
+    if( curr->head == stmt ) {
+
+      curr->kill = TRUE;
+      found      = TRUE;
+
+    } else {
+
+      /* Check parent(s) */
+      parent = curr->parent;
+      while( (parent != NULL) && (parent->head != stmt) ) {
+        parent = parent->parent;
+      }
+
+      if( parent != NULL ) {
+
+        /* Kill all children including ourselves */
+        child = parent->child_head;
+        while( child != NULL ) {
+          child->kill = TRUE;
+          child       = child->next_sib;
+        }
+        parent->kill = TRUE;
+        found        = TRUE;
+
+      }
+
+    }
+
+    if( !found ) {
+      curr = curr->next;
+    }
+
   }
 
 }
@@ -663,8 +664,6 @@ void sim_simulate() {
         curr_thread = thread_head;
       }
 
-      // sim_display_thread_queue();
-
     }
 
   }
@@ -674,6 +673,10 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.52  2005/12/05 22:45:39  phase1geo
+ Bug fixes to disable code when disabling ourselves -- we move thread killing
+ to be done by the sim_thread routine only.
+
  Revision 1.51  2005/12/05 22:02:24  phase1geo
  Added initial support for disable expression.  Added test to verify functionality.
  Full regression passes.

@@ -523,6 +523,7 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
 
     if( !scope_find_task_function_namedblock( name, type, funit_exp, &found_funit, exp->line ) ) {
 
+#ifdef OBSOLETE
       /*
        Bad hierarchical reference -- user error
        Unachievable code due to unsuppported use of hierarchical referencing
@@ -534,6 +535,8 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
                 exp->line );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       exit( 1 );
+#endif
+      retval = FALSE;
 
     } else if( found_funit->stmt_head != NULL ) {
 
@@ -746,6 +749,10 @@ void bind( bool cdd_reading ) {
 
 /* 
  $Log$
+ Revision 1.51  2005/12/05 22:02:24  phase1geo
+ Added initial support for disable expression.  Added test to verify functionality.
+ Full regression passes.
+
  Revision 1.50  2005/12/05 21:28:07  phase1geo
  Getting fork statements with scope to work.  Added test to regression to verify
  this functionality.  Fixed bug in binding expression to named block.

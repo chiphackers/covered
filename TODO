@@ -19,7 +19,9 @@ Score command
 
    4.  Add more Verilog-1995 constructs to parser.
        - loops (for, while, repeat)
-       - tasks/functions
+X      - tasks/functions
+X      - events
+X      - fork/join/disable
 
    5.  Add more Verilog-2001 constructs to parser.
 
@@ -34,9 +36,10 @@ X  8.  Add ability to perform assignments for signals that are within modules be
 
 X  9.  Put support in for events/triggers
 
-   10. Finish support for tasks and named blocks
+X  10. Finish support for tasks and named blocks
 
    11. Add ability to remove scoring of continuous assignments, always blocks and initial blocks.
+
 
 Merge command
 -------------
