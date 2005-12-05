@@ -973,6 +973,7 @@ expression* db_create_expression( expression* right, expression* left, int op, b
         case EXP_OP_FUNC_CALL :  bind_add( FUNIT_FUNCTION,    sig_name, expr, curr_funit );  break;
         case EXP_OP_TASK_CALL :  bind_add( FUNIT_TASK,        sig_name, expr, curr_funit );  break;
         case EXP_OP_NB_CALL   :  bind_add( FUNIT_NAMED_BLOCK, sig_name, expr, curr_funit );  break;
+        case EXP_OP_DISABLE   :  bind_add( 1,                 sig_name, expr, curr_funit );  break;
         default               :  bind_add( 0,                 sig_name, expr, curr_funit );  break;
       }
 
@@ -1622,6 +1623,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.148  2005/12/05 21:28:07  phase1geo
+ Getting fork statements with scope to work.  Added test to regression to verify
+ this functionality.  Fixed bug in binding expression to named block.
+
  Revision 1.147  2005/12/05 20:26:55  phase1geo
  Fixing bugs in code to remove statement blocks that are pointed to by expressions
  in NB_CALL and FORK cases.  Fixed bugs in fork code -- this is now working at the

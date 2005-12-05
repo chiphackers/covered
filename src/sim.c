@@ -226,6 +226,7 @@ thread* sim_add_thread( thread* parent, statement* stmt ) {
     /* Create and initialize thread */
     thr             = (thread*)malloc_safe( sizeof( thread ), __FILE__, __LINE__ );
     thr->parent     = parent;
+    thr->head       = stmt;
     thr->curr       = stmt;
     thr->child_head = NULL;
     thr->child_tail = NULL;
@@ -416,6 +417,30 @@ void sim_kill_thread( thread* thr ) {
 
   // printf( "THREAD_QUEUE AFTER KILL\n" );
   // sim_display_thread_queue();
+
+}
+
+/*!
+ \param stmt  Pointer to head statement of thread to kill
+
+ Searches the current state of the thread queue for the thread containing the specified head statement.
+ If a thread was found to match, kill it.  This function is called whenever the DISABLE statement is
+ run.
+*/
+void sim_kill_thread_with_stmt( statement* stmt ) {
+
+  thread* curr;  /* Pointer to current thread being examined */
+
+  /* First, find the thread (if any) that contains the specified statement */
+  curr = thread_head;
+  while( (curr != NULL) && (curr->head != stmt) ) {
+    curr = curr->next;
+  }
+
+  /* If the thread was found containing the specified statement, kill it */
+  if( curr != NULL ) {
+    sim_kill_thread( curr );
+  }
 
 }
 
@@ -649,6 +674,10 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.50  2005/11/30 18:25:56  phase1geo
+ Fixing named block code.  Full regression now passes.  Still more work to do on
+ named blocks, however.
+
  Revision 1.49  2005/11/29 19:04:48  phase1geo
  Adding tests to verify task functionality.  Updating failing tests and fixed
  bugs for context switch expressions at the end of a statement block, statement

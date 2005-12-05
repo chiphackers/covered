@@ -21,6 +21,9 @@ thread* sim_add_thread( thread* parent, statement* stmt );
 /*! \brief Deallocates thread and removes it from parent and thread queue lists */
 void sim_kill_thread( thread* thr );
 
+/*! \brief Deallocates thread and removes it from parent and thread queue lists for specified statement */
+void sim_kill_thread_with_stmt( statement* stmt );
+
 void sim_set_curr_wait_signals();
 
 void sim_clear_curr_wait_signals();
@@ -40,6 +43,9 @@ void sim_simulate();
 
 /*
  $Log$
+ Revision 1.12  2005/11/28 23:28:47  phase1geo
+ Checkpointing with additions for threads.
+
  Revision 1.11  2005/11/17 05:34:44  phase1geo
  Initial work on supporting blocking assignments.  Added new diagnostic to
  check that this initial work is working correctly.  Quite a bit more work to

@@ -1691,9 +1691,22 @@ statement
         $$ = NULL;
       }
     }
-  | K_disable { ignore_mode++; } identifier ';' { ignore_mode--; }
+  | K_disable identifier ';'
     {
-      $$ = NULL;
+      expression* exp;
+      statement*  stmt;
+      if( (ignore_mode == 0) && ($2 != NULL) ) {
+        exp  = db_create_expression( NULL, NULL, EXP_OP_DISABLE, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), $2 );
+        stmt = db_create_statement( exp );
+        db_add_expression( exp );
+        free_safe( $2 );
+        $$ = stmt;
+      } else {
+        if( $2 != NULL ) {
+          free_safe( $2 );
+        }
+        $$ = NULL;
+      } 
     }
   | K_TRIGGER IDENTIFIER ';'
     {

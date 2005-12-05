@@ -1493,7 +1493,7 @@ bool expression_operate( expression* expr, thread* thr ) {
         break;
 
       case EXP_OP_DISABLE :
-        // TBD - sim_kill_thread( thr );
+        sim_kill_thread_with_stmt( expr->stmt );
         break;
 
       default :
@@ -1912,6 +1912,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.137  2005/12/05 20:26:55  phase1geo
+ Fixing bugs in code to remove statement blocks that are pointed to by expressions
+ in NB_CALL and FORK cases.  Fixed bugs in fork code -- this is now working at the
+ moment.  Updated regressions which now fully pass.
+
  Revision 1.136  2005/12/02 19:58:36  phase1geo
  Added initial support for FORK/JOIN expressions.  Code is not working correctly
  yet as we need to determine if a statement should be done in parallel or not.
