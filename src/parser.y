@@ -1675,7 +1675,7 @@ statement
       VLerror( "Illegal syntax in begin/end block" );
       $$ = NULL;
     }
-  | K_fork inc_fork_depth fork_statement dec_fork_depth K_join
+  | K_fork inc_fork_depth fork_statement K_join
     {
       expression* exp;
       statement*  stmt;
@@ -2177,15 +2177,21 @@ fork_statement
         ignore_mode++;
       }
     }
-    block_item_decls_opt statement_list
+    block_item_decls_opt statement_list dec_fork_depth
     {
-      statement* stmt = $5;
+      expression* expr;
+      statement*  stmt;
       if( ignore_mode == 0 ) {
-        if( stmt != NULL ) {
-//          db_statement_set_stop( stmt, NULL, FALSE );
-//          stmt->exp->suppl.part.stmt_head      = 1;
-//          stmt->exp->suppl.part.stmt_is_called = 1;
-//          db_add_statement( stmt, stmt );
+        if( $5 != NULL ) {
+          expr = db_create_expression( NULL, NULL, EXP_OP_JOIN, FALSE, @5.first_line, @5.first_column, (@5.last_column - 1), NULL );
+          stmt = db_create_statement( expr );
+          db_statement_connect( $5, stmt );
+          db_add_expression( expr );
+          stmt = $5;
+          db_statement_set_stop( stmt, NULL, FALSE );
+          stmt->exp->suppl.part.stmt_head      = 1;
+          stmt->exp->suppl.part.stmt_is_called = 1;
+          db_add_statement( stmt, stmt );
           $$ = $2;
         } else {
           if( $2 != NULL ) {

@@ -1029,8 +1029,8 @@ statement* db_parallelize_statement( statement* stmt ) {
   if( (stmt != NULL) && (fork_depth != -1) && (fork_block_depth[fork_depth] == block_depth) ) {
 
 #ifdef DEBUG_MODE
-    snprintf( user_msg, USER_MSG_LENGTH, "In db_parallelize_statement, id: %d, line: %d, fork_depth: %d, block_depth: %d, fork_block_depth: %d",
-              stmt->exp->id, stmt->exp->line, fork_depth, block_depth, fork_block_depth[fork_depth] );
+    snprintf( user_msg, USER_MSG_LENGTH, "In db_parallelize_statement, id: %d, %s, line: %d, fork_depth: %d, block_depth: %d, fork_block_depth: %d",
+              stmt->exp->id, expression_string_op( stmt->exp->op ), stmt->exp->line, fork_depth, block_depth, fork_block_depth[fork_depth] );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -1622,6 +1622,11 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.147  2005/12/05 20:26:55  phase1geo
+ Fixing bugs in code to remove statement blocks that are pointed to by expressions
+ in NB_CALL and FORK cases.  Fixed bugs in fork code -- this is now working at the
+ moment.  Updated regressions which now fully pass.
+
  Revision 1.146  2005/12/02 19:58:36  phase1geo
  Added initial support for FORK/JOIN expressions.  Code is not working correctly
  yet as we need to determine if a statement should be done in parallel or not.
