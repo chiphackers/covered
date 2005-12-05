@@ -655,7 +655,7 @@ void expression_db_write( expression* expr, FILE* file ) {
   if( expr->sig != NULL ) {
     fprintf( file, "%s", expr->sig->name );
   } else if( expr->stmt != NULL ) {
-    fprintf( file, "%d", expr->stmt->exp->id );
+    fprintf( file, " %d", expr->stmt->exp->id );
   }
 
   fprintf( file, "\n" );
@@ -1839,6 +1839,21 @@ void expression_dealloc( expression* expr, bool exp_only ) {
       vector_dealloc( expr->value );
       expr->value = NULL;
 
+      /* If this is a named block call or fork statement, remove the statement that this expression points to */
+      if( (expr->op == EXP_OP_NB_CALL) || (expr->op == EXP_OP_FORK) ) {
+
+        if( expr->stmt == NULL ) {
+          bind_rm_stmt( expr->id );
+        } else if( !exp_only ) {
+#ifdef DEBUG_MODE
+          snprintf( user_msg, USER_MSG_LENGTH, "Removing statement block starting at line %d because it is a NB_CALL or FORK and its calling expression is being removed", expr->stmt->exp->line );
+          print_output( user_msg, DEBUG, __FILE__, __LINE__ );
+#endif
+          stmt_blk_add_to_remove_list( expr->stmt );
+        }
+
+      }
+
     } else {
 
       if( expr->sig == NULL ) {
@@ -1897,6 +1912,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.136  2005/12/02 19:58:36  phase1geo
+ Added initial support for FORK/JOIN expressions.  Code is not working correctly
+ yet as we need to determine if a statement should be done in parallel or not.
+
  Revision 1.135  2005/12/01 20:49:02  phase1geo
  Adding nested_block3 to verify nested named blocks in tasks.  Fixed named block
  usage to be FUNC_CALL or TASK_CALL -like based on its placement.

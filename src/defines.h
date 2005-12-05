@@ -366,6 +366,13 @@
 */
 #define ESUPPL_IS_IN_FUNC(x)         x.part.in_func
 
+/*!
+ Returns a value of 1 if the specified statement is called by a TASK_CALL, FUNC_CALL,
+ NB_CALL or FORK statement.  If a statement is to be called, it will not be automatically
+ placed in the thread queue at time 0.
+*/
+#define ESUPPL_STMT_IS_CALLED(x)     x.part.stmt_is_called
+
 /*! @} */
      
 /*!
@@ -1011,6 +1018,9 @@ union esuppl_u {
     control lhs           :1;  /*!< Bit 19.  Indicates that this expression exists on the left-hand side of an assignment
                                     operation. */
     control in_func       :1;  /*!< Bit 20.  Indicates that this expression exists in a function */
+    control stmt_is_called:1;  /*!< Bit 21.  Indicates that this statement is called by a FUNC_CALL, TASK_CALL, NB_CALL or
+                                    FORK statement.  If a statement has this bit set, it will NOT be automatically placed
+                                    in the thread queue at time 0. */
   } part;
 };
 
@@ -1615,6 +1625,7 @@ struct exp_bind_s {
   char*       name;                  /*!< Name of Verilog scoped signal/functional unit to bind */
   int         clear_assigned;        /*!< If >0, clears the signal assigned supplemental field without binding */
   int         stmt_id;               /*!< Specifies the statement ID to bind to (only value for expressiont-statement binding) */
+  bool        rm_stmt;               /*!< Specifies if statement block attached to this expression should be removed after binding */
   expression* exp;                   /*!< Expression to bind. */
   expression* fsm;                   /*!< FSM expression to create value for when this expression is bound */
   func_unit*  funit;                 /*!< Pointer to functional unit containing expression */
@@ -1704,6 +1715,10 @@ struct thread_s {
 
 /*
  $Log$
+ Revision 1.144  2005/12/02 19:58:36  phase1geo
+ Added initial support for FORK/JOIN expressions.  Code is not working correctly
+ yet as we need to determine if a statement should be done in parallel or not.
+
  Revision 1.143  2005/12/01 20:49:02  phase1geo
  Adding nested_block3 to verify nested named blocks in tasks.  Fixed named block
  usage to be FUNC_CALL or TASK_CALL -like based on its placement.

@@ -49,6 +49,9 @@ extern char        leading_hierarchy[4096];
 extern bool        flag_scored;
 extern int         timestep_update;
 extern bool        debug_mode;
+extern int*        fork_block_depth;
+extern int         fork_depth;
+extern int         block_depth;
 
 /*!
  Specifies the string Verilog scope that is currently specified in the VCD file.
@@ -1014,37 +1017,46 @@ void db_add_expression( expression* root ) {
 }
 
 /*!
- \param stmt        Pointer to statement to check for parallelization
- \param fork_depth  Current depth of forking
+ \param stmt  Pointer to statement to check for parallelization
 
  \return Returns pointer to parallelized statement block
 */
-statement* db_parallelize_statement( statement* stmt, int fork_depth ) {
+statement* db_parallelize_statement( statement* stmt ) {
 
   expression* exp;  /* Expression containing FORK statement */
 
   /* If we are a parallel statement, create a FORK statement for this statement block */
-  if( (stmt != NULL) && (fork_depth > 0) ) {
+  if( (stmt != NULL) && (fork_depth != -1) && (fork_block_depth[fork_depth] == block_depth) ) {
 
 #ifdef DEBUG_MODE
-    snprintf( user_msg, USER_MSG_LENGTH, "In db_parallelize_statement, id: %d, line: %d, fork_depth: %d", stmt->exp->id, stmt->exp->line, fork_depth );
+    snprintf( user_msg, USER_MSG_LENGTH, "In db_parallelize_statement, id: %d, line: %d, fork_depth: %d, block_depth: %d, fork_block_depth: %d",
+              stmt->exp->id, stmt->exp->line, fork_depth, block_depth, fork_block_depth[fork_depth] );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
     /* Create a thread block for this statement block */
     db_statement_set_stop( stmt, NULL, FALSE );
-    stmt->exp->suppl.part.stmt_head = 1;
+    stmt->exp->suppl.part.stmt_head      = 1;
+    stmt->exp->suppl.part.stmt_is_called = 1;
     db_add_statement( stmt, stmt );
 
     /* Create FORK expression */
     exp = db_create_expression( NULL, NULL, EXP_OP_FORK, FALSE, stmt->exp->line, ((stmt->exp->col & 0xffff0000) >> 16), (stmt->exp->col & 0xffff), NULL );
 
-    /* Create FORK statement and add the expression */
-    stmt = db_create_statement( exp, (fork_depth - 1) );
-    db_add_expression( exp );
-
     /* Bind the FORK expression to this statement */
     bind_add_stmt( stmt->exp->id, exp, curr_funit );
+
+    /* Reduce fork and block depth for the new statement */
+    fork_depth--;
+    block_depth--;
+
+    /* Create FORK statement and add the expression */
+    stmt = db_create_statement( exp );
+    db_add_expression( exp );
+
+    /* Restore fork and block depth values for parser */
+    fork_depth++;
+    block_depth++;
 
   }
 
@@ -1053,20 +1065,19 @@ statement* db_parallelize_statement( statement* stmt, int fork_depth ) {
 }
 
 /*!
- \param exp         Pointer to associated "root" expression.
- \param fork_depth  Specifies the level of forking that this statement is in (if >0 then we are a parallel statement)
+ \param exp  Pointer to associated "root" expression.
 
  \return Returns pointer to created statement.
 
  Creates an statement structure and adds created statement to current
  module's statement list.
 */
-statement* db_create_statement( expression* exp, int fork_depth ) {
+statement* db_create_statement( expression* exp ) {
 
-  statement*  stmt;  /* Pointer to newly created statement */
+  statement* stmt;  /* Pointer to newly created statement */
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_create_statement, id: %d, line: %d, fork_depth: %d", exp->id, exp->line, fork_depth );
+  snprintf( user_msg, USER_MSG_LENGTH, "In db_create_statement, id: %d, line: %d", exp->id, exp->line );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -1074,7 +1085,7 @@ statement* db_create_statement( expression* exp, int fork_depth ) {
   stmt = statement_create( exp );
 
   /* If we are a parallel statement, create a FORK statement for this statement block */
-  stmt = db_parallelize_statement( stmt, fork_depth );
+  stmt = db_parallelize_statement( stmt );
 
   return( stmt );
 
@@ -1126,8 +1137,8 @@ void db_remove_statement_from_current_funit( statement* stmt ) {
   if( (stmt != NULL) && (stmt->exp != NULL) ) {
 
 #ifdef DEBUG_MODE
-    snprintf( user_msg, USER_MSG_LENGTH, "In db_remove_statement_from_current_module %s, stmt id: %d, line: %d",
-              curr_funit->name, stmt->exp->id, stmt->exp->line );
+    snprintf( user_msg, USER_MSG_LENGTH, "In db_remove_statement_from_current_module %s, stmt id: %d, %s, line: %d",
+              curr_funit->name, stmt->exp->id, expression_string_op( stmt->exp->op ), stmt->exp->line );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -1611,6 +1622,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.146  2005/12/02 19:58:36  phase1geo
+ Added initial support for FORK/JOIN expressions.  Code is not working correctly
+ yet as we need to determine if a statement should be done in parallel or not.
+
  Revision 1.145  2005/12/02 12:03:17  phase1geo
  Adding support for excluding functions, tasks and named blocks.  Added tests
  to regression suite to verify this support.  Full regression passes.

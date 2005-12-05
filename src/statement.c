@@ -319,7 +319,7 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) {
        or function, do not add this to the presimulation queue (this will be added when the expression
        is called.
       */
-      if( curr_funit->type == FUNIT_MODULE ) {
+      if( ESUPPL_STMT_IS_CALLED( stmt->exp->suppl ) == 0 ) {
         sim_add_thread( NULL, stmt );
       }
 
@@ -650,6 +650,10 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.61  2005/11/30 18:25:56  phase1geo
+ Fixing named block code.  Full regression now passes.  Still more work to do on
+ named blocks, however.
+
  Revision 1.60  2005/11/29 23:14:37  phase1geo
  Adding support for named blocks.  Still not working at this point but checkpointing
  anyways.  Added new task3.1 diagnostic to verify task removal when a task is calling

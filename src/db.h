@@ -60,10 +60,10 @@ expression* db_create_expression( expression* right, expression* left, int op, b
 void db_add_expression( expression* root );
 
 /*! \brief Checks specified statement for parallelization and if it must be, creates a parallel statement block */
-statement* db_parallelize_statement( statement* stmt, int fork_depth );
+statement* db_parallelize_statement( statement* stmt );
 
 /*! \brief Creates new statement expression from specified information.  Called by parser. */
-statement* db_create_statement( expression* exp, int fork_level );
+statement* db_create_statement( expression* exp );
 
 /*! \brief Adds specified statement to current functional unit's statement list.  Called by parser. */
 void db_add_statement( statement* stmt, statement* start );
@@ -118,6 +118,10 @@ void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.43  2005/12/02 19:58:36  phase1geo
+ Added initial support for FORK/JOIN expressions.  Code is not working correctly
+ yet as we need to determine if a statement should be done in parallel or not.
+
  Revision 1.42  2005/12/02 12:03:17  phase1geo
  Adding support for excluding functions, tasks and named blocks.  Added tests
  to regression suite to verify this support.  Full regression passes.
