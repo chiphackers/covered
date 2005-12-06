@@ -21,7 +21,7 @@ Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hi
   foobar                  disable1.1.v               3/    1/    4       75%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Module: foobar, File: disable1.1.v
+    Named Block: foobar, File: disable1.1.v
     -------------------------------------------------------------------------------------------------------------
     Missed Lines
 

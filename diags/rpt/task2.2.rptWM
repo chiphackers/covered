@@ -28,7 +28,7 @@ Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hi
             7:     a  = 1'b0
 
 
-    Module: delay_for_awhile, File: task2.2.v
+    Task: delay_for_awhile, File: task2.2.v
     -------------------------------------------------------------------------------------------------------------
     Missed Lines
 

@@ -374,10 +374,14 @@ void line_instance_verbose( FILE* ofile, funit_inst* root, char* parent_inst ) {
         ((root->stat->line_hit > 0) && report_covered) ) {
 
     fprintf( ofile, "\n" );
-    fprintf( ofile, "    Module: %s, File: %s, Instance: %s\n", 
-             root->funit->name, 
-             root->funit->filename,
-             tmpname );
+    switch( root->funit->type ) {
+      case FUNIT_MODULE      :  fprintf( ofile, "    Module: " );       break;
+      case FUNIT_NAMED_BLOCK :  fprintf( ofile, "    Named Block: " );  break;
+      case FUNIT_FUNCTION    :  fprintf( ofile, "    Function: " );     break;
+      case FUNIT_TASK        :  fprintf( ofile, "    Task: " );         break;
+      default                :  fprintf( ofile, "    UNKNOWN: " );      break;
+    }
+    fprintf( ofile, "%s, File: %s, Instance: %s\n", root->funit->name, root->funit->filename, tmpname );
     fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
     line_display_verbose( ofile, root->funit );
@@ -409,9 +413,14 @@ void line_funit_verbose( FILE* ofile, funit_link* head ) {
         ((head->funit->stat->line_hit > 0) && report_covered) ) {
 
       fprintf( ofile, "\n" );
-      fprintf( ofile, "    Module: %s, File: %s\n", 
-               head->funit->name, 
-               head->funit->filename );
+      switch( head->funit->type ) {
+        case FUNIT_MODULE      :  fprintf( ofile, "    Module: " );       break;
+        case FUNIT_NAMED_BLOCK :  fprintf( ofile, "    Named Block: " );  break;
+        case FUNIT_FUNCTION    :  fprintf( ofile, "    Function: " );     break;
+        case FUNIT_TASK        :  fprintf( ofile, "    Task: " );         break;
+        default                :  fprintf( ofile, "    UNKNOWN: " );      break;
+      }
+      fprintf( ofile, "%s, File: %s\n", head->funit->name, head->funit->filename );
       fprintf( ofile, "    -------------------------------------------------------------------------------------------------------------\n" );
 
       line_display_verbose( ofile, head->funit );
@@ -480,6 +489,10 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.52  2005/11/30 18:25:56  phase1geo
+ Fixing named block code.  Full regression now passes.  Still more work to do on
+ named blocks, however.
+
  Revision 1.51  2005/11/10 23:27:37  phase1geo
  Adding scope files to handle scope searching.  The functions are complete (not
  debugged) but are not as of yet used anywhere in the code.  Added new func2 diagnostic

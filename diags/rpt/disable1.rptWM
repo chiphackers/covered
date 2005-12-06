@@ -21,7 +21,7 @@ Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hi
   foo                     disable1.v                 1/    1/    2       50%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Module: foo, File: disable1.v
+    Named Block: foo, File: disable1.v
     -------------------------------------------------------------------------------------------------------------
     Missed Lines
 
