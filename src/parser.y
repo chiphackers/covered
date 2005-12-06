@@ -1721,9 +1721,12 @@ statement
         $$ = NULL;
       }
     }
-  | K_forever { ignore_mode++; block_depth++; } statement { ignore_mode--; block_depth--; }
+  | K_forever inc_block_depth statement dec_block_depth
     {
-      $$ = NULL;
+      if( $3 != NULL ) {
+        db_statement_connect( stmt, stmt );
+      }
+      $$ = $3;
     }
   | K_fork inc_fork_depth statement_list dec_fork_depth K_join
     {

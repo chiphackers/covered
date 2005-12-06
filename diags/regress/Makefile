@@ -38,9 +38,9 @@ DIAGS1        = always1         always2         always3         always3.1.11A   
                 cond2           delay1          delay2          define1         define1.1 \
                 define1.2       define2         define2.1       define3         define4 \
                 disable1        disable1.1      disable2        disable2.1      event1.1 \
-                exclude1        exclude2        exclude3        exclude4 \
-                expand1         expand2         expand3         expand4         expand4.1 \
-                expand4.2       expand4.3       expand4.4       fork1           fork2 \
+                exclude1        exclude2        exclude3        exclude4        expand1 \
+                expand2         expand3         expand4         expand4.1       expand4.2 \
+                expand4.3       expand4.4       forever1        fork1           fork2 \
                 fsm1            fsm1.1 \
                 fsm1.2          fsm1.3          fsm1.4          fsm3            fsm4 \
                 fsm4.1          fsm5            fsm5.1          fsm5.2          fsm5.3 \
@@ -61,9 +61,9 @@ DIAGS1        = always1         always2         always3         always3.1.11A   
                 param3          param3.1        param3.2        param3.3        param3.4 \
                 param3.5        param4          param4.1        param5          param6 \
                 param6.1        param7          pulldown1       pullup1         sbit_sel1 \
+		sbit_sel1.1     static1         string1         supply0         supply1 \
                 task1           task1.1         task2           task2.1         task2.2 \
-                task2.3         task3           task3.1         sbit_sel1.1     static1 \
-                string1         supply0         supply1         toggle          tri \
+                task2.3         task3           task3.1         toggle          tri \
                 tri0            tri1
 DIAGS2        = delay1.1
 DIAGS3        = delay1.2
@@ -128,3 +128,6 @@ vcs:         clean
 
 clean:
 	@cd ../verilog;  $(MAKE) clobber
+
+reset:
+	@cd ../verilog;  $(MAKE) reset

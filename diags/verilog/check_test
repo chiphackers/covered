@@ -7,7 +7,7 @@
 
 $test   = $ARGV[0];
 $rm_cdd = $ARGV[1];
-$err    = $ARGV[2];
+$mode   = $ARGV[2];
 
 # Defines
 $CDD_DIR    = "../cdd";
@@ -38,7 +38,7 @@ if( open( RPT_RESULTS, "${RPT_OUTPUT}" ) > 0 ) {
 }
 
 # If this is not an error test, check the CDD and report files */
-if( $err == 0 ) {
+if( $mode == 0 ) {
 
   # Check CDD file
   $check1 = system( "diff ${test}.cdd ${CDD_DIR}/${test}.cdd" );
@@ -70,7 +70,8 @@ if( $err == 0 ) {
     system( "rm ${test}.rptWI" ) && die;
   }
 
-} else {
+# If this is an error test, check the error file
+} elsif( $mode == 1 ) {
 
   $check1 = system( "diff ${test}.err ${ERR_DIR}/${test}.err" );
   if( $check1 == 0 ) {
@@ -81,17 +82,22 @@ if( $err == 0 ) {
 
 open( RPT_RESULTS, ">${RPT_OUTPUT}" ) || die "Can't open ${RPT_OUTPUT} for writing!\n";
 
-if( (($err == 0) && (($check1 > 0) || ($check2 > 0) || ($check3 > 0) || ($check4 > 0) || ($check5 > 0))) ||
-    (($err == 1) && ($check1 > 0)) ) {
+if( (($mode == 0) && (($check1 > 0) || ($check2 > 0) || ($check3 > 0) || ($check4 > 0) || ($check5 > 0))) ||
+    (($mode == 1) && ($check1 > 0)) ) {
   print "  Checking output results         -- FAILED\n";
   $failed++;
 } else {
-  print "  Checking output results         -- PASSED\n";
+  if( $mode == 0 ) {
+    print "  Checking output results         -- PASSED\n";
+  }
   $passed++;
 
   # Remove VCD file
   system( "rm -f *.vcd" ) && die;
 }
+
+# Create the done file
+system( "touch ${test}.done" ) && die;
 
 print RPT_RESULTS "DIAGNOSTICS PASSED: ${passed}, FAILED: ${failed}\n";
 

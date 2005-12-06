@@ -1,7 +1,7 @@
 module main;
 
-wire a = foo( b );
 reg  b;
+wire a = foo( b );
 
 initial begin
         $dumpfile( "nested_block2.1.vcd" );
