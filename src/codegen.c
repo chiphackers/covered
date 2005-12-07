@@ -627,6 +627,10 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
           codegen_create_expr( code, code_depth, expr->line, "if( ", right_code, right_code_depth, expr->right->line, " )",
                                NULL, 0, 0, NULL );
           break;
+        case EXP_OP_REPEAT   :
+          codegen_create_expr( code, code_depth, expr->line, "repeat( ", right_code, right_code_depth, expr->right->line, " )",
+                               NULL, 0, 0, NULL );
+          break;
         default:  break;
       }
 
@@ -652,6 +656,11 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.46  2005/11/29 23:14:37  phase1geo
+ Adding support for named blocks.  Still not working at this point but checkpointing
+ anyways.  Added new task3.1 diagnostic to verify task removal when a task is calling
+ another task.
+
  Revision 1.45  2005/11/28 23:28:47  phase1geo
  Checkpointing with additions for threads.
 

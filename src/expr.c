@@ -68,6 +68,11 @@
  measurable and has no report output structure.  It acts much like an EXP_OP_FUNC_CALL expression
  if it is nested in a a function block; otherwise, acts like an EXP_OP_TASK_CALL in simulation but
  does not pass any parameters.
+
+ \par EXP_OP_REPEAT
+ The EXP_OP_REPEAT expression takes on the width of its right expression and, starting at a value of 0,
+ increments by one until it reaches the value of the right expression (at that time it returns false
+ and returns its incrementing value back to 0.
 */
 
 #include <stdio.h>
@@ -109,7 +114,7 @@ const char* exp_op_names[EXP_OP_NUM] = {
   "UINV", "UAND", "UNOT", "UOR", "UXOR", "UNAND", "UNOR", "UNXOR", "SBIT_SEL", "MBIT_SEL", "EXPAND", "CONCAT",
   "PEDGE", "NEDGE", "AEDGE", "LAST", "EOR", "DELAY", "CASE", "CASEX", "CASEZ", "DEFAULT", "LIST", "PARAM",
   "PARAM_SBIT", "PARAM_MBIT", "ASSIGN", "DASSIGN", "BASSIGN", "NASSIGN", "IF", "FUNC_CALL", "TASK_CALL", "TRIGGER",
-  "NB_CALL", "FORK", "JOIN", "DISABLE" };
+  "NB_CALL", "FORK", "JOIN", "DISABLE", "REPEAT", "WHILE", "FOR" };
 
 
 /*!
@@ -243,7 +248,8 @@ expression* expression_create( expression* right, expression* left, int op, bool
              (op == EXP_OP_CASE)    ||
              (op == EXP_OP_CASEX)   ||
              (op == EXP_OP_CASEZ)   ||
-             (op == EXP_OP_DEFAULT) ) {
+             (op == EXP_OP_DEFAULT) ||
+             (op == EXP_OP_REPEAT) ) {
 
     /* If this expression will evaluate to a single bit, create vector now */
     expression_create_value( new_expr, 1, data );
@@ -404,6 +410,7 @@ void expression_resize( expression* expr, bool recursive ) {
       case EXP_OP_CASEX   :
       case EXP_OP_CASEZ   :
       case EXP_OP_DEFAULT :
+      case EXP_OP_REPEAT  :
         if( (expr->value->width != 1) || (expr->value->value == NULL) ) {
           assert( expr->value->value == NULL );
           expression_create_value( expr, 1, FALSE );
@@ -1497,6 +1504,15 @@ bool expression_operate( expression* expr, thread* thr ) {
         sim_kill_thread_with_stmt( expr->stmt );
         break;
 
+      case EXP_OP_REPEAT :
+        retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_LT );
+        if( expr->value->value[0].part.value == 0 ) {
+          vector_from_int( expr->left->value, 0 );
+        } else {
+          vector_from_int( expr->left->value, (vector_to_int( expr->left->value ) + 1) );
+        }
+        break;
+
       default :
         print_output( "Internal error:  Unidentified expression operation!", FATAL, __FILE__, __LINE__ );
         exit( 1 );
@@ -1913,6 +1929,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.139  2005/12/05 23:30:35  phase1geo
+ Adding support for disabling tasks.  Full regression passes.
+
  Revision 1.138  2005/12/05 22:02:24  phase1geo
  Added initial support for disable expression.  Added test to verify functionality.
  Full regression passes.

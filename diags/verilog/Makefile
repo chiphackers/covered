@@ -149,9 +149,9 @@ reset:  clobber
 	@rm -f *.done
 
 clobber:  clean
-	@rm -f *.rpt* *.cdd *.err
+	@rm -f *.rpt* *.cdd *.err regress.output regress.failed
 
 clean:
 	@rm -f $(LOGFILE)
 	@rm -f $(IVERILOG_EXEC) $(VCS_EXEC) *.vcd *.log
-	@rm -f core *.o tmp* regress.output
+	@rm -f core *.o tmp*

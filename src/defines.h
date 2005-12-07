@@ -656,8 +656,14 @@
 #define EXP_OP_JOIN       0x3f
 /*! Decimal value = 64.  Specifies a disable command */
 #define EXP_OP_DISABLE    0x40
+/*! Decimal value = 65.  Specifies a repeat loop test expression */
+#define EXP_OP_REPEAT     0x41
+/*! Decimal value = 66.  Specifies a while loop test expression */
+#define EXP_OP_WHILE      0x42
+/*! Decimal value = 67.  Specifies a for loop test expression */
+#define EXP_OP_FOR        0x43
 /*! The total number of defines for expression values */
-#define EXP_OP_NUM        65
+#define EXP_OP_NUM        68
 
 /*! @} */
 
@@ -1717,6 +1723,10 @@ struct thread_s {
 
 /*
  $Log$
+ Revision 1.147  2005/12/05 22:45:38  phase1geo
+ Bug fixes to disable code when disabling ourselves -- we move thread killing
+ to be done by the sim_thread routine only.
+
  Revision 1.146  2005/12/05 22:02:24  phase1geo
  Added initial support for disable expression.  Added test to verify functionality.
  Full regression passes.

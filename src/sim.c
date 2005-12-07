@@ -603,7 +603,10 @@ bool sim_thread( thread* thr ) {
   }
 
   /* If this is the last statement in the tree with no loopback, kill the current thread */
-  if( (expr_changed && (thr->curr->next_true == NULL) && (thr->curr->next_false == NULL)) || thr->kill ) {
+  if( (expr_changed && 
+      (((thr->curr->next_true == NULL) && (thr->curr->next_false == NULL)) ||
+       (!EXPR_IS_CONTEXT_SWITCH( thr->curr->exp ) && !ESUPPL_IS_STMT_CONTINUOUS( thr->curr->exp->suppl )))) ||
+      thr->kill ) {
 
 #ifdef DEBUG_MODE
     snprintf( user_msg, USER_MSG_LENGTH, "Completed thread %x, executed %d, killing...\n", thr, !first );
@@ -673,6 +676,9 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.53  2005/12/05 23:30:35  phase1geo
+ Adding support for disabling tasks.  Full regression passes.
+
  Revision 1.52  2005/12/05 22:45:39  phase1geo
  Bug fixes to disable code when disabling ourselves -- we move thread killing
  to be done by the sim_thread routine only.

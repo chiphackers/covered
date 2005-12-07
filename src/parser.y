@@ -1755,9 +1755,29 @@ statement
         $$ = NULL;
       }
     }
-  | K_repeat { ignore_mode++; } '(' expression ')' inc_block_depth statement { ignore_mode--; block_depth--; }
+  | K_repeat '(' expression ')' inc_block_depth statement dec_block_depth
     {
-      $$ = NULL;
+      vector*     vec;
+      expression* expr;
+      statement*  stmt;
+      if( (ignore_mode == 0) && ($3 != NULL) && ($6 != NULL) ) {
+        vec  = vector_create( 32, TRUE );
+        expr = db_create_expression( NULL, NULL, EXP_OP_STATIC, FALSE, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+        vector_from_int( vec, 0x0 );
+        assert( expr->value->value == NULL );
+        free_safe( expr->value );
+        expr->value = vec;
+        expr = db_create_expression( $3, expr, EXP_OP_REPEAT, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
+        stmt = db_create_statement( expr );
+        db_add_expression( expr );
+        db_connect_statement_true( stmt, $6 );
+        db_statement_set_stop( $6, NULL, FALSE );
+        assert( db_statement_connect( $6, stmt ) );
+        $$ = stmt;
+      } else {
+        db_remove_statement( $6 );
+        $$ = NULL;
+      }
     }
   | K_case '(' expression ')' inc_block_depth case_items dec_block_depth K_endcase
     {
@@ -1956,7 +1976,7 @@ statement
     {
       $$ = NULL;
     }
-  | K_while { ignore_mode++; block_depth++; } while_statement { ignore_mode--; block_depth--; }
+  | K_while inc_block_depth while_statement dec_block_depth
     {
       $$ = NULL;
     }
@@ -3836,7 +3856,6 @@ inc_fork_depth
   :
     {
       fork_depth++;
-      // printf( "Increased fork depth to %d\n", fork_depth );
       fork_block_depth = (int*)realloc( fork_block_depth, (fork_depth + 1) );
       fork_block_depth[fork_depth] = block_depth;
     }
@@ -3846,7 +3865,6 @@ dec_fork_depth
   :
     {
       fork_depth--;
-      // printf( "Decreased fork depth to %d\n", fork_depth );
       fork_block_depth = (int*)realloc( fork_block_depth, (fork_depth + 1) );
     }
   ;
