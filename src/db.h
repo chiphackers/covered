@@ -75,7 +75,7 @@ void db_remove_statement_from_current_funit( statement* stmt );
 void db_remove_statement( statement* stmt );
 
 /*! \brief Connects one statement block to another. */
-void db_statement_connect( statement* curr_stmt, statement* next_stmt );
+bool db_statement_connect( statement* curr_stmt, statement* next_stmt );
 
 /*! \brief Sets STMT_STOP bit in the appropriate statements. */
 void db_statement_set_stop( statement* stmt, statement* post, bool both );
@@ -118,6 +118,11 @@ void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.44  2005/12/05 20:26:55  phase1geo
+ Fixing bugs in code to remove statement blocks that are pointed to by expressions
+ in NB_CALL and FORK cases.  Fixed bugs in fork code -- this is now working at the
+ moment.  Updated regressions which now fully pass.
+
  Revision 1.43  2005/12/02 19:58:36  phase1geo
  Added initial support for FORK/JOIN expressions.  Code is not working correctly
  yet as we need to determine if a statement should be done in parallel or not.

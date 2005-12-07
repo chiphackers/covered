@@ -10,10 +10,11 @@ $rm_cdd = $ARGV[1];
 $mode   = $ARGV[2];
 
 # Defines
-$CDD_DIR    = "../cdd";
-$RPT_DIR    = "../rpt";
-$ERR_DIR    = "../err";
-$RPT_OUTPUT = "regress.output";
+$CDD_DIR     = "../cdd";
+$RPT_DIR     = "../rpt";
+$ERR_DIR     = "../err";
+$RPT_OUTPUT  = "regress.output";
+$FAIL_OUTPUT = "regress.failed";
 
 # Open report results file if it currently exists and accumulate info.
 if( open( RPT_RESULTS, "${RPT_OUTPUT}" ) > 0 ) {
@@ -81,10 +82,12 @@ if( $mode == 0 ) {
 }
 
 open( RPT_RESULTS, ">${RPT_OUTPUT}" ) || die "Can't open ${RPT_OUTPUT} for writing!\n";
+open( RPT_FAILED, ">>${FAIL_OUTPUT}" ) || die "Can't open ${FAIL_OUTPUT} for writing!\n";
 
 if( (($mode == 0) && (($check1 > 0) || ($check2 > 0) || ($check3 > 0) || ($check4 > 0) || ($check5 > 0))) ||
     (($mode == 1) && ($check1 > 0)) ) {
   print "  Checking output results         -- FAILED\n";
+  print RPT_FAILED "${test}\n";
   $failed++;
 } else {
   if( $mode == 0 ) {
@@ -94,12 +97,13 @@ if( (($mode == 0) && (($check1 > 0) || ($check2 > 0) || ($check3 > 0) || ($check
 
   # Remove VCD file
   system( "rm -f *.vcd" ) && die;
-}
+ 
+  # Create the done file
+  system( "touch ${test}.done" ) && die;
 
-# Create the done file
-system( "touch ${test}.done" ) && die;
+}
 
 print RPT_RESULTS "DIAGNOSTICS PASSED: ${passed}, FAILED: ${failed}\n";
 
 close( RPT_RESULTS );
-
+close( RPT_FAILED  );

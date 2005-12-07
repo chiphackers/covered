@@ -1246,9 +1246,16 @@ void db_connect_statement_false( statement* stmt, statement* next_false ) {
  \param curr_stmt  Pointer to current statement to attach.
  \param next_stmt  Pointer to next statement to attach to.
 
- Calls the statement_connect function located in statement.c with the specified parameters.
+ \return Returns TRUE if statement was properly connected to the given statement list; otherwise,
+         returns FALSE.
+
+ Calls the statement_connect function located in statement.c with the specified parameters.  If
+ the statement connection was not achieved, displays warning to user and returns FALSE.  The calling
+ function should throw this statement away.
 */
-void db_statement_connect( statement* curr_stmt, statement* next_stmt ) {
+bool db_statement_connect( statement* curr_stmt, statement* next_stmt ) {
+
+  bool retval;  /* Return value for this function */
 
 #ifdef DEBUG_MODE
   int curr_id;  /* Current statement ID */
@@ -1270,7 +1277,19 @@ void db_statement_connect( statement* curr_stmt, statement* next_stmt ) {
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
-  statement_connect( curr_stmt, next_stmt );
+  /*
+   Connect statement, if it was not successful, add it to the functional unit's statement list immediately
+   as it will not be later on.
+  */
+  if( !(retval = statement_connect( curr_stmt, next_stmt )) ) {
+
+    snprintf( user_msg, USER_MSG_LENGTH, "Unreachable statement found starting at line %d in file %s.  Ignoring...",
+              next_stmt->exp->line, curr_funit->filename );
+    print_output( user_msg, WARNING, __FILE__, __LINE__ );
+
+  }
+
+  return( retval );
 
 }
 
@@ -1623,6 +1642,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.149  2005/12/05 22:02:24  phase1geo
+ Added initial support for disable expression.  Added test to verify functionality.
+ Full regression passes.
+
  Revision 1.148  2005/12/05 21:28:07  phase1geo
  Getting fork statements with scope to work.  Added test to regression to verify
  this functionality.  Fixed bug in binding expression to named block.

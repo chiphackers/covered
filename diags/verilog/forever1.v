@@ -1,10 +1,11 @@
 module main;
 
-reg a;
+reg a, b;
 
 initial begin
 	a = 1'b0;
 	forever #5 a = ~a;
+	b = 1'b0;
 end
 
 initial begin

@@ -340,15 +340,19 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) {
  \param curr_stmt  Pointer to statement sequence to traverse.
  \param next_stmt  Pointer to statement to connect ends to.
 
+ \return Returns TRUE if statement was connected to the given statement list; otherwise, returns FALSE.
+
  Recursively traverses the specified stmt sequence.  When it reaches a statement 
  that has either next_true or next_false set to NULL, sets next_true and/or 
  next_false of that statement to point to the next_stmt statement.
 */
-void statement_connect( statement* curr_stmt, statement* next_stmt ) {
+bool statement_connect( statement* curr_stmt, statement* next_stmt ) {
+
+  bool retval = FALSE;  /* Return value for this function */
 
   assert( curr_stmt != NULL );
   assert( next_stmt != NULL );
-    
+
   /* If both paths go to the same destination, only parse one path */
   if( (curr_stmt->next_true == curr_stmt->next_false) || 
       (curr_stmt->exp->suppl.part.stmt_connected == 1) ) {
@@ -359,8 +363,9 @@ void statement_connect( statement* curr_stmt, statement* next_stmt ) {
       if( !EXPR_IS_CONTEXT_SWITCH( curr_stmt->exp ) ) {
         curr_stmt->next_false = next_stmt;
       }
-    } else if( curr_stmt->next_true != next_stmt ) {
-      statement_connect( curr_stmt->next_true, next_stmt );
+      retval = TRUE;
+    } else if( (curr_stmt->next_false != next_stmt) && (ESUPPL_IS_STMT_STOP( curr_stmt->exp->suppl ) == 0) ) {
+      retval |= statement_connect( curr_stmt->next_false, next_stmt );
     }
 
   } else {
@@ -368,17 +373,19 @@ void statement_connect( statement* curr_stmt, statement* next_stmt ) {
     /* Traverse TRUE path */
     if( curr_stmt->next_true == NULL ) {
       curr_stmt->next_true = next_stmt;
-    } else if( curr_stmt->next_true != next_stmt ) {
-      statement_connect( curr_stmt->next_true, next_stmt );
+      retval = TRUE;
+    } else if( (curr_stmt->next_true != next_stmt) ) {
+      retval |= statement_connect( curr_stmt->next_true, next_stmt );
     }
 
     /* Traverse FALSE path */
     if( curr_stmt->next_false == NULL ) {
       if( !EXPR_IS_CONTEXT_SWITCH( curr_stmt->exp ) ) {
         curr_stmt->next_false = next_stmt;
+        retval = TRUE;
       }
-    } else if( curr_stmt->next_false != next_stmt ) {
-      statement_connect( curr_stmt->next_false, next_stmt );
+    } else if( (curr_stmt->next_false != next_stmt) ) {
+      retval |= statement_connect( curr_stmt->next_false, next_stmt );
     }
 
   }
@@ -386,6 +393,8 @@ void statement_connect( statement* curr_stmt, statement* next_stmt ) {
   if( (curr_stmt->next_true != NULL) && (curr_stmt->next_false != NULL) ) {
     curr_stmt->exp->suppl.part.stmt_connected = 1;
   }
+
+  return( retval );
 
 }
 
@@ -650,6 +659,11 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.62  2005/12/05 20:26:55  phase1geo
+ Fixing bugs in code to remove statement blocks that are pointed to by expressions
+ in NB_CALL and FORK cases.  Fixed bugs in fork code -- this is now working at the
+ moment.  Updated regressions which now fully pass.
+
  Revision 1.61  2005/11/30 18:25:56  phase1geo
  Fixing named block code.  Full regression now passes.  Still more work to do on
  named blocks, however.

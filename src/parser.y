@@ -1525,10 +1525,13 @@ module_item
     {
       statement* stmt = $3;
       if( stmt != NULL ) {
-        db_statement_connect( stmt, stmt );
-        db_statement_set_stop( stmt, stmt, TRUE );
-        stmt->exp->suppl.part.stmt_head = 1;
-        db_add_statement( stmt, stmt );
+        if( db_statement_connect( stmt, stmt ) ) {
+          db_statement_set_stop( stmt, stmt, TRUE );
+          stmt->exp->suppl.part.stmt_head = 1;
+          db_add_statement( stmt, stmt );
+        } else {
+          db_remove_statement( stmt );
+        }
       }
     }
   | attribute_list_opt
@@ -1724,9 +1727,14 @@ statement
   | K_forever inc_block_depth statement dec_block_depth
     {
       if( $3 != NULL ) {
-        db_statement_connect( stmt, stmt );
+        if( db_statement_connect( $3, $3 ) ) {
+          db_statement_set_stop( $3, $3, TRUE );
+          $$ = $3;
+        } else {
+          db_remove_statement( $3 );
+          $$ = NULL;
+        }
       }
-      $$ = $3;
     }
   | K_fork inc_fork_depth statement_list dec_fork_depth K_join
     {
@@ -1735,9 +1743,14 @@ statement
       if( (ignore_mode == 0) && ($3 != NULL) ) {
         expr = db_create_expression( NULL, NULL, EXP_OP_JOIN, FALSE, @5.first_line, @5.first_column, (@5.last_column - 1), NULL );
         stmt = db_create_statement( expr );
-        db_statement_connect( $3, stmt );
-        db_add_expression( expr );
-        $$ = $3;
+        if( db_statement_connect( $3, stmt ) ) {
+          db_add_expression( expr );
+          $$ = $3;
+        } else {
+          db_remove_statement( $3 );
+          db_remove_statement( stmt );
+          $$ = NULL;
+        }
       } else {
         $$ = NULL;
       }
@@ -1954,7 +1967,11 @@ statement
         stmt = db_create_statement( $1 );
         db_add_expression( $1 );
         if( $3 != NULL ) {
-          db_statement_connect( stmt, $3 );
+          if( !db_statement_connect( stmt, $3 ) ) {
+            db_remove_statement( stmt );
+            db_remove_statement( $3 );
+            stmt = NULL;
+          }
         }
         $$ = stmt;
       } else {
@@ -1969,7 +1986,11 @@ statement
         stmt = db_create_statement( $1 );
         db_add_expression( $1 );
         if( $3 != NULL ) {
-          db_statement_connect( stmt, $3 );
+          if( !db_statement_connect( stmt, $3 ) ) {
+            db_remove_statement( stmt );
+            db_remove_statement( $3 );
+            stmt = NULL;
+          }
         }
         $$ = stmt;
       } else {
@@ -2201,14 +2222,19 @@ fork_statement
         if( $5 != NULL ) {
           expr = db_create_expression( NULL, NULL, EXP_OP_JOIN, FALSE, @5.first_line, @5.first_column, (@5.last_column - 1), NULL );
           stmt = db_create_statement( expr );
-          db_statement_connect( $5, stmt );
-          db_add_expression( expr );
-          stmt = $5;
-          db_statement_set_stop( stmt, NULL, FALSE );
-          stmt->exp->suppl.part.stmt_head      = 1;
-          stmt->exp->suppl.part.stmt_is_called = 1;
-          db_add_statement( stmt, stmt );
-          $$ = $2;
+          if( db_statement_connect( $5, stmt ) ) {
+            db_add_expression( expr );
+            stmt = $5;
+            db_statement_set_stop( stmt, NULL, FALSE );
+            stmt->exp->suppl.part.stmt_head      = 1;
+            stmt->exp->suppl.part.stmt_is_called = 1;
+            db_add_statement( stmt, stmt );
+            $$ = $2;
+          } else {
+            db_remove_statement( $5 );
+            db_remove_statement( stmt );
+            $$ = NULL;
+          }
         } else {
           if( $2 != NULL ) {
             free_safe( $2 );
@@ -2318,7 +2344,9 @@ statement_list
           $$ = NULL;
         } else {
           if( $2 != NULL ) {
-            db_statement_connect( $1, $2 );
+            if( !db_statement_connect( $1, $2 ) ) {
+              db_remove_statement( $2 );
+            }
             $$ = $1;
           } else {
             db_remove_statement( $1 );
