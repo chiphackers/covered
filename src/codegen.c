@@ -631,6 +631,10 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
           codegen_create_expr( code, code_depth, expr->line, "repeat( ", right_code, right_code_depth, expr->right->line, " )",
                                NULL, 0, 0, NULL );
           break;
+        case EXP_OP_WHILE    :
+          codegen_create_expr( code, code_depth, expr->line, "while( ", right_code, right_code_depth, expr->right->line, " )",
+                               NULL, 0, 0, NULL );
+          break;
         default:  break;
       }
 
@@ -656,6 +660,10 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.47  2005/12/07 21:50:50  phase1geo
+ Added support for repeat blocks.  Added repeat1 to regression and fixed errors.
+ Full regression passes.
+
  Revision 1.46  2005/11/29 23:14:37  phase1geo
  Adding support for named blocks.  Still not working at this point but checkpointing
  anyways.  Added new task3.1 diagnostic to verify task removal when a task is calling

@@ -383,6 +383,7 @@ void expression_resize( expression* expr, bool recursive ) {
       case EXP_OP_NASSIGN :
       case EXP_OP_IF :
       case EXP_OP_FUNC_CALL :
+      case EXP_OP_WHILE :
         break;
 
       /* These operations should always be set to a width 1 */
@@ -654,6 +655,7 @@ void expression_db_write( expression* expr, FILE* file ) {
       (expr->op != EXP_OP_BASSIGN)    &&
       (expr->op != EXP_OP_NASSIGN)    &&
       (expr->op != EXP_OP_IF)         &&
+      (expr->op != EXP_OP_WHILE)      &&
       (expr->op != EXP_OP_FUNC_CALL)  &&
       ((expr->op == EXP_OP_STATIC) || (ESUPPL_IS_LHS( expr->suppl ) == 0)) ) {
     vector_db_write( expr->value, file, (expr->op == EXP_OP_STATIC) );
@@ -753,6 +755,7 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) {
                                  (op != EXP_OP_BASSIGN)    &&
                                  (op != EXP_OP_NASSIGN)    &&
                                  (op != EXP_OP_IF)         &&
+				 (op != EXP_OP_WHILE)      &&
                                  (op != EXP_OP_FUNC_CALL)  &&
                                  ((op == EXP_OP_STATIC) || (ESUPPL_IS_LHS( suppl ) == 0))) );
 
@@ -782,6 +785,7 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) {
           (op != EXP_OP_BASSIGN)    &&
           (op != EXP_OP_NASSIGN)    &&
           (op != EXP_OP_IF)         &&
+          (op != EXP_OP_WHILE)      &&
           (op != EXP_OP_FUNC_CALL)  &&
           ((op == EXP_OP_STATIC) || (ESUPPL_IS_LHS( suppl ) == 0)) ) {
 
@@ -823,7 +827,8 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) {
           (op == EXP_OP_DASSIGN) ||
           (op == EXP_OP_BASSIGN) ||
           (op == EXP_OP_NASSIGN) ||
-          (op == EXP_OP_IF) ) {
+          (op == EXP_OP_IF)      ||
+          (op == EXP_OP_WHILE) ) {
 
         vector_dealloc( expr->value );
         expr->value = right->value;
@@ -908,6 +913,7 @@ bool expression_db_merge( expression* base, char** line, bool same ) {
           (op != EXP_OP_BASSIGN)    &&
           (op != EXP_OP_NASSIGN)    &&
           (op != EXP_OP_IF)         &&
+          (op != EXP_OP_WHILE)      &&
           (op != EXP_OP_FUNC_CALL)  &&
           ((op == EXP_OP_STATIC) || (ESUPPL_IS_LHS( suppl ) == 0)) ) {
 
@@ -982,6 +988,7 @@ bool expression_db_replace( expression* base, char** line ) {
           (op != EXP_OP_BASSIGN)    &&
           (op != EXP_OP_NASSIGN)    &&
           (op != EXP_OP_IF)         &&
+          (op != EXP_OP_WHILE)      &&
           (op != EXP_OP_FUNC_CALL)  &&
           ((op == EXP_OP_STATIC) || (ESUPPL_IS_LHS( suppl ) == 0)) ) {
 
@@ -1456,6 +1463,7 @@ bool expression_operate( expression* expr, thread* thr ) {
       case EXP_OP_DASSIGN :
       case EXP_OP_NASSIGN :
       case EXP_OP_IF :
+      case EXP_OP_WHILE :
         break;
 
       case EXP_OP_FUNC_CALL :
@@ -1849,6 +1857,7 @@ void expression_dealloc( expression* expr, bool exp_only ) {
         (op != EXP_OP_BASSIGN   ) &&
         (op != EXP_OP_NASSIGN   ) &&
         (op != EXP_OP_IF        ) &&
+        (op != EXP_OP_WHILE     ) &&
         (op != EXP_OP_FUNC_CALL ) &&
         ((ESUPPL_IS_LHS( expr->suppl ) == 0) || (op == EXP_OP_STATIC)) ) {
 
@@ -1929,6 +1938,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.140  2005/12/07 21:50:51  phase1geo
+ Added support for repeat blocks.  Added repeat1 to regression and fixed errors.
+ Full regression passes.
+
  Revision 1.139  2005/12/05 23:30:35  phase1geo
  Adding support for disabling tasks.  Full regression passes.
 

@@ -692,6 +692,7 @@
 				     (x->op != EXP_OP_JOIN) && \
 				     (x->op != EXP_OP_DISABLE) && \
 				     (x->op != EXP_OP_REPEAT) && \
+                                     (x->op != EXP_OP_WHILE) && \
                                      (ESUPPL_IS_LHS( x->suppl ) == 0) && \
                                      !((ESUPPL_IS_ROOT( x->suppl ) == 0) && \
                                        ((x->op == EXP_OP_SIG) || \
@@ -702,6 +703,7 @@
                                        (x->parent->expr->op != EXP_OP_BASSIGN) && \
                                        (x->parent->expr->op != EXP_OP_NASSIGN) && \
                                        (x->parent->expr->op != EXP_OP_IF) && \
+                                       (x->parent->expr->op != EXP_OP_WHILE) && \
                                        (x->parent->expr->op != EXP_OP_COND)) && \
                                      (x->line != 0)) ? 1 : 0)
 
@@ -1725,6 +1727,11 @@ struct thread_s {
 
 /*
  $Log$
+ Revision 1.149  2005/12/08 19:47:00  phase1geo
+ Fixed repeat2 simulation issues.  Fixed statement_connect algorithm, removed the
+ need for a separate set_stop function and reshuffled the positions of esuppl bits.
+ Full regression passes.
+
  Revision 1.148  2005/12/07 21:50:50  phase1geo
  Added support for repeat blocks.  Added repeat1 to regression and fixed errors.
  Full regression passes.

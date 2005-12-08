@@ -160,7 +160,7 @@ int yydebug = 1;
 %type <strlink>   gate_instance_list
 %type <text>      register_variable named_begin_end_block fork_statement
 %type <state>     statement statement_list statement_opt 
-%type <state>     for_statement while_statement if_statement_error
+%type <state>     for_statement if_statement_error
 %type <case_stmt> case_items case_item
 %type <expr>      delay1 delay3 delay3_opt
 %type <attr_parm> attribute attribute_list
@@ -1771,6 +1771,7 @@ statement
         assert( db_statement_connect( $6, stmt ) );
         $$ = stmt;
       } else {
+        expression_dealloc( $3, FALSE );
         db_remove_statement( $6 );
         $$ = NULL;
       }
@@ -1967,8 +1968,29 @@ statement
     {
       $$ = NULL;
     }
-  | K_while inc_block_depth while_statement dec_block_depth
+  | K_while '(' expression ')' inc_block_depth statement dec_block_depth
     {
+      expression* expr;
+      statement*  stmt;
+      if( (ignore_mode == 0) && ($3 != NULL) && ($6 != NULL) ) {
+        expr = db_create_expression( $3, NULL, EXP_OP_WHILE, FALSE, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
+        vector_dealloc( expr->value );
+        expr->value = $3->value;
+        stmt = db_create_statement( expr );
+        db_add_expression( expr );
+        db_connect_statement_true( stmt, $6 );
+        stmt->conn_id = stmt_conn_id;   /* This will cause the STOP bit to be set for all statements connecting to stmt */
+        assert( db_statement_connect( $6, stmt ) );
+        $$ = stmt;
+      } else {
+        expression_dealloc( $3, FALSE );
+        db_remove_statement( $6 );
+        $$ = NULL;
+      }
+    }
+  | K_while '(' error ')' inc_block_depth statement dec_block_depth
+    {
+      db_remove_statement( $6 );
       $$ = NULL;
     }
   | delay1 inc_block_depth statement_opt dec_block_depth
@@ -2267,17 +2289,6 @@ fork_statement
       $$ = NULL;
     }
   |
-    {
-      $$ = NULL;
-    }
-  ;
-
-while_statement
-  : '(' expression ')' statement
-    {
-      $$ = NULL;
-    }
-  | '(' error ')' statement
     {
       $$ = NULL;
     }
