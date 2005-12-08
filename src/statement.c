@@ -9,9 +9,9 @@
  contains a pointer to the next statement if its expression tree evaluates to
  TRUE (non-zero value) or FALSE (zero value).  To minimize memory use, a statement 
  uses some of the unused bits in its root expression supplemental field instead of
- having its own supplemental field.  There are two bits in the expression
- supplemental value that are only used by statements:  #ESUPPL_LSB_STMT_HEAD and
- #ESUPPL_LSB_STMT_STOP.
+ having its own supplemental field.  There are three bits in the expression
+ supplemental value that are only used by statements:  esuppl_u.stmt_head,
+ esuppl_u.stmt_stop_true and esuppl_u.stmt_stop_false.
 
  \par
  The STMT_HEAD bit indicates that this statement should be loaded into the
@@ -20,11 +20,11 @@
  has this bit set, all other statements have this bit cleared.
 
  \par
- The STMT_STOP bit is used for CDD output.  If a statement has this bit set, it will
- not traverse its next_true or next_false paths when outputting.  This is necessary
- when statement paths merge back to the same path.  If this bit was not used, the
- statements output after the merge would be output twice.  Consider the following
- Verilog code snippet:
+ The STMT_STOP bits are used for CDD output.  If a statement has these bits set, it will
+ not traverse its next_true or next_false, respectively, paths when outputting.  This is necessary
+ when statement paths merge back to the same path or when statement loops are encountered.
+ If this bit was not used, the statements output after the merge/loop would be output more than
+ once.  Consider the following Verilog code snippet:
 
  \code
  intial begin
@@ -55,11 +55,10 @@
  the FALSE branch.
 
  \par
- To eliminate this redundancy, the STMT_STOP bit is set on statement 4.  The last
- statement of a TRUE path before merging always gets its STMT_STOP bit set.  The
- FALSE path should never get the STMT_STOP bit set.  Additionally, once a statement
- gets its STMT_STOP bit set by the parser, this value must be maintained (never
- cleared).
+ To eliminate this redundancy, the STMT_STOP_TRUE and STMT_STOP_FALSE bits are set
+ on statement 4.  The last statement of a TRUE path before merging always gets its
+ STMT_STOP bit set.  Additionally, once a statement gets its STMT_STOP bit set by
+ the parser, this value must be maintained (never cleared).
 
  \par Cyclic Statement Trees
  Many times a statement tree will "loopback" on itself.  These statement trees are
@@ -130,6 +129,7 @@ statement* statement_create( expression* exp ) {
   stmt->wait_sig_tail        = NULL;
   stmt->next_true            = NULL;
   stmt->next_false           = NULL;
+  stmt->conn_id              = 0;
 
   return( stmt );
 
@@ -336,9 +336,21 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) {
 
 }
 
+#ifdef SKIP
+void display( char* id, statement* curr_stmt, statement* next_stmt, int conn_id ) {
+
+  printf( "%s::  curr_stmt id: %d, line: %d, op: %s, conn_id: %d, stop_T: %d, stop_F: %d   next_stmt: %d, line: %d, op: %s   conn_id: %d\n",
+          id, curr_stmt->exp->id, curr_stmt->exp->line, expression_string_op( curr_stmt->exp->op ), curr_stmt->conn_id,
+          curr_stmt->exp->suppl.part.stmt_stop_true, curr_stmt->exp->suppl.part.stmt_stop_false, next_stmt->exp->id, next_stmt->exp->line, expression_string_op( next_stmt->exp->op ),
+          conn_id );
+
+}
+#endif
+
 /*!
  \param curr_stmt  Pointer to statement sequence to traverse.
  \param next_stmt  Pointer to statement to connect ends to.
+ \param conn_id    Current connection identifier (used to eliminate infinite looping and connection overwrite)
 
  \return Returns TRUE if statement was connected to the given statement list; otherwise, returns FALSE.
 
@@ -346,26 +358,53 @@ bool statement_db_read( char** line, func_unit* curr_funit, int read_mode ) {
  that has either next_true or next_false set to NULL, sets next_true and/or 
  next_false of that statement to point to the next_stmt statement.
 */
-bool statement_connect( statement* curr_stmt, statement* next_stmt ) {
+bool statement_connect( statement* curr_stmt, statement* next_stmt, int conn_id ) {
 
   bool retval = FALSE;  /* Return value for this function */
 
   assert( curr_stmt != NULL );
   assert( next_stmt != NULL );
 
-  /* If both paths go to the same destination, only parse one path */
-  if( (curr_stmt->next_true == curr_stmt->next_false) || 
-      (curr_stmt->exp->suppl.part.stmt_connected == 1) ) {
+  /* Specify that this statement has been traversed */
+  curr_stmt->conn_id = conn_id;
 
+  /* If both paths go to the same destination, only parse one path */
+  if( curr_stmt->next_true == curr_stmt->next_false ) {
+
+    /* If the TRUE path is NULL, connect it to the new statement */
     if( curr_stmt->next_true == NULL ) {
       curr_stmt->next_true  = next_stmt;
+#ifdef SKIP
+      display( "1 Connected TRUE", curr_stmt, next_stmt, conn_id );
+#endif
       /* If the current statement is a wait statement, don't connect next_false path */
       if( !EXPR_IS_CONTEXT_SWITCH( curr_stmt->exp ) ) {
         curr_stmt->next_false = next_stmt;
+#ifdef SKIP
+        display( "1 Connected FALSE", curr_stmt, next_stmt, conn_id );
+#endif
+      }
+      if( curr_stmt->next_true->conn_id == conn_id ) {
+        curr_stmt->exp->suppl.part.stmt_stop_true  = 1;
+        curr_stmt->exp->suppl.part.stmt_stop_false = 1;
+#ifdef SKIP
+        display( "1.1 Set STOP_TRUE and STOP_FALSE", curr_stmt, next_stmt, conn_id );
+#endif
       }
       retval = TRUE;
-    } else if( (curr_stmt->next_false != next_stmt) && (ESUPPL_IS_STMT_STOP( curr_stmt->exp->suppl ) == 0) ) {
-      retval |= statement_connect( curr_stmt->next_false, next_stmt );
+    /* If the TRUE path leads to a loop/merge, set the stop bit and stop traversing */
+    } else if( curr_stmt->next_true->conn_id == conn_id ) {
+      curr_stmt->exp->suppl.part.stmt_stop_true  = 1;
+      curr_stmt->exp->suppl.part.stmt_stop_false = 1;
+#ifdef SKIP
+      display( "1 Set STOP_TRUE and STOP_FALSE", curr_stmt, next_stmt, conn_id );
+#endif
+    /* Otherwise, continue to traverse the TRUE path */
+    } else if( curr_stmt->next_true != next_stmt ) {
+#ifdef SKIP
+      display( "1 Traversing TRUE path", curr_stmt, next_stmt, conn_id );
+#endif
+      retval |= statement_connect( curr_stmt->next_true, next_stmt, conn_id );
     }
 
   } else {
@@ -373,71 +412,62 @@ bool statement_connect( statement* curr_stmt, statement* next_stmt ) {
     /* Traverse TRUE path */
     if( curr_stmt->next_true == NULL ) {
       curr_stmt->next_true = next_stmt;
+#ifdef SKIP
+      display( "2 Connected TRUE", curr_stmt, next_stmt, conn_id );
+#endif
+      if( curr_stmt->next_true->conn_id == conn_id ) {
+        curr_stmt->exp->suppl.part.stmt_stop_true = 1;
+#ifdef SKIP
+        display( "2.1 Set STOP_TRUE", curr_stmt, next_stmt, conn_id );
+#endif
+      }
       retval = TRUE;
-    } else if( (curr_stmt->next_true != next_stmt) ) {
-      retval |= statement_connect( curr_stmt->next_true, next_stmt );
+    /* If the TRUE path leads to a loop/merge, set the stop bit and stop traversing */
+    } else if( curr_stmt->next_true->conn_id == conn_id ) {
+      curr_stmt->exp->suppl.part.stmt_stop_true = 1;
+#ifdef SKIP
+      display( "2 Set STOP_TRUE", curr_stmt, next_stmt, conn_id );
+#endif
+    /* Otherwise, continue to traverse the TRUE path */
+    } else if( curr_stmt->next_true != next_stmt ) {
+#ifdef SKIP
+      display( "2 Traversing TRUE path", curr_stmt, next_stmt, conn_id );
+#endif
+      retval |= statement_connect( curr_stmt->next_true, next_stmt, conn_id );
     }
 
     /* Traverse FALSE path */
     if( curr_stmt->next_false == NULL ) {
       if( !EXPR_IS_CONTEXT_SWITCH( curr_stmt->exp ) ) {
         curr_stmt->next_false = next_stmt;
+#ifdef SKIP
+        display( "2 Connected FALSE", curr_stmt, next_stmt, conn_id );
+#endif
+        if( curr_stmt->next_false->conn_id == conn_id ) {
+          curr_stmt->exp->suppl.part.stmt_stop_false = 1;
+#ifdef SKIP
+          display( "2.2 Set STOP_FALSE", curr_stmt, next_stmt, conn_id );
+#endif
+        }
         retval = TRUE;
       }
+    /* If the FALSE path leads to a loop/merge, set the stop bit and stop traversing */
+    } else if( curr_stmt->next_false->conn_id == conn_id ) {
+      curr_stmt->exp->suppl.part.stmt_stop_false = 1;
+#ifdef SKIP
+      display( "2 Set STOP_FALSE", curr_stmt, next_stmt, conn_id );
+#endif
+    /* Otherwise, continue to traverse the FALSE path */
     } else if( (curr_stmt->next_false != next_stmt) ) {
-      retval |= statement_connect( curr_stmt->next_false, next_stmt );
+#ifdef SKIP
+      display( "2 Traversing FALSE path", curr_stmt, next_stmt, conn_id );
+#endif
+      retval |= statement_connect( curr_stmt->next_false, next_stmt, conn_id );
     }
 
-  }
-
-  if( (curr_stmt->next_true != NULL) && (curr_stmt->next_false != NULL) ) {
-    curr_stmt->exp->suppl.part.stmt_connected = 1;
   }
 
   return( retval );
-
-}
-
-/*!
- \param stmt       Pointer to top of statement tree to set stop bits for.
- \param post       Pointer to statement that comes just after the stopped statement.
- \param true_path  Set to TRUE if the current statement exists on the right of its parent.
- \param both       If TRUE, causes both false and true paths to set stop bits when next
-                   statement is the post statement.
-
- Recursively traverses specified statement tree, setting the statement's stop bits
- that have either their next_true or next_false pointers pointing to the statement
- called post.
-*/
-void statement_set_stop( statement* stmt, statement* post, bool true_path, bool both ) {
-
-  assert( stmt != NULL );
-
-  if( ((stmt->next_true == post) && (stmt->next_false == post)) ||
-      ((stmt->next_true == post) && (stmt->next_false == NULL)) ||
-      (stmt->next_false == post) ) {
-    if( true_path || both) {
-      stmt->exp->suppl.part.stmt_stop = 1;
-    }
-  } else {
-    if( (stmt->next_true == stmt->next_false) ||
-        (stmt->exp->suppl.part.stmt_connected == 0) ) {
-      if( (stmt->next_true != NULL) && (stmt->next_true != post) ) { 
-        statement_set_stop( stmt->next_true, post, TRUE, both );
-      }
-    } else {
-      if( (stmt->next_true != NULL) && (stmt->next_true != post) ) {
-        statement_set_stop( stmt->next_true, post, TRUE, both );
-      }
-      if( (stmt->next_false != NULL) && (stmt->next_false != post) ) {
-        statement_set_stop( stmt->next_false, post, FALSE, both );
-      }
-    }
-  }
-  
-  if( (stmt->next_true != NULL) && (stmt->next_false != NULL) ) {
-    stmt->exp->suppl.part.stmt_connected = 0;
-  }
 
 }
 
@@ -465,7 +495,7 @@ int statement_get_last_line_helper( statement* stmt, statement* base ) {
     if( (stmt->next_false == NULL) || (stmt->next_false == base) ) {
       last_exp   = expression_get_last_line_expr( stmt->exp );
       last_false = last_exp->line;
-    } else if( ESUPPL_IS_STMT_STOP( stmt->exp->suppl ) == 0 ) {
+    } else if( ESUPPL_IS_STMT_STOP_FALSE( stmt->exp->suppl ) == 0 ) {
       last_false = statement_get_last_line_helper( stmt->next_false, base );
     }
 
@@ -473,7 +503,7 @@ int statement_get_last_line_helper( statement* stmt, statement* base ) {
     if( (stmt->next_true == NULL) || (stmt->next_true == base) ) {
       last_exp  = expression_get_last_line_expr( stmt->exp );
       last_true = last_exp->line;
-    } else if( ESUPPL_IS_STMT_STOP( stmt->exp->suppl ) == 0 ) {
+    } else if( ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0 ) {
       last_true = statement_get_last_line_helper( stmt->next_true, base );
     }
 
@@ -659,6 +689,9 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.63  2005/12/07 20:23:38  phase1geo
+ Fixing case where statement is unconnectable.  Full regression now passes.
+
  Revision 1.62  2005/12/05 20:26:55  phase1geo
  Fixing bugs in code to remove statement blocks that are pointed to by expressions
  in NB_CALL and FORK cases.  Fixed bugs in fork code -- this is now working at the

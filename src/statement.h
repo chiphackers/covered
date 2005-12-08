@@ -20,11 +20,8 @@ void statement_db_write( statement* stmt, FILE* ofile );
 /*! \brief Reads in statement line from specified string and stores statement in specified functional unit. */
 bool statement_db_read( char** line, func_unit* curr_funit, int read_mode );
 
-/*! \brief Connects statement sequence to next statement. */
-bool statement_connect( statement* curr_stmt, statement* next_stmt );
-
-/*! \brief Sets stop bits in specified statement tree. */
-void statement_set_stop( statement* stmt, statement* post, bool true_path, bool both );
+/*! \brief Connects statement sequence to next statement and sets stop bit. */
+bool statement_connect( statement* curr_stmt, statement* next_stmt, int conn_id );
 
 /*! \brief Calculates the last line of the specified statement tree. */
 int statement_get_last_line( statement* stmt );
@@ -41,6 +38,9 @@ void statement_dealloc( statement* stmt );
 
 /*
  $Log$
+ Revision 1.21  2005/12/07 20:23:38  phase1geo
+ Fixing case where statement is unconnectable.  Full regression now passes.
+
  Revision 1.20  2005/11/16 22:01:51  phase1geo
  Fixing more problems related to simulation of function/task calls.  Regression
  runs are now running without errors.

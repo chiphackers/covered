@@ -31,6 +31,7 @@
 
 extern char user_msg[USER_MSG_LENGTH];
 extern int  delay_expr_type;
+extern int  stmt_conn_id;
 
 /* Functions from lexer */
 extern void lex_start_udp_table();
@@ -1526,7 +1527,6 @@ module_item
       statement* stmt = $3;
       if( stmt != NULL ) {
         if( db_statement_connect( stmt, stmt ) ) {
-          db_statement_set_stop( stmt, stmt, TRUE );
           stmt->exp->suppl.part.stmt_head = 1;
           db_add_statement( stmt, stmt );
         } else {
@@ -1539,7 +1539,6 @@ module_item
     {
       statement* stmt = $3;
       if( stmt != NULL ) {
-        db_statement_set_stop( stmt, NULL, FALSE );
         stmt->exp->suppl.part.stmt_head = 1;
         db_add_statement( stmt, stmt );
       }
@@ -1556,7 +1555,6 @@ module_item
     {
       statement* stmt = $6;
       if( (ignore_mode == 0) && (stmt != NULL) ) {
-        db_statement_set_stop( stmt, NULL, FALSE );
         stmt->exp->suppl.part.stmt_head      = 1;
         stmt->exp->suppl.part.stmt_is_called = 1;
         db_add_statement( stmt, stmt );
@@ -1590,7 +1588,6 @@ module_item
     {
       statement* stmt = $7;
       if( (ignore_mode == 0) && (stmt != NULL) ) {
-        db_statement_set_stop( stmt, NULL, FALSE );
         stmt->exp->suppl.part.stmt_head      = 1;
         stmt->exp->suppl.part.stmt_is_called = 1;
         db_add_statement( stmt, stmt );
@@ -1728,7 +1725,6 @@ statement
     {
       if( $3 != NULL ) {
         if( db_statement_connect( $3, $3 ) ) {
-          db_statement_set_stop( $3, $3, TRUE );
           $$ = $3;
         } else {
           db_remove_statement( $3 );
@@ -1771,7 +1767,7 @@ statement
         stmt = db_create_statement( expr );
         db_add_expression( expr );
         db_connect_statement_true( stmt, $6 );
-        db_statement_set_stop( $6, NULL, FALSE );
+        stmt->conn_id = stmt_conn_id;   /* This will cause the STOP bit to be set for all statements connecting to stmt */
         assert( db_statement_connect( $6, stmt ) );
         $$ = stmt;
       } else {
@@ -1799,7 +1795,6 @@ statement
           stmt = db_create_statement( expr );
           db_connect_statement_true( stmt, c_stmt->stmt );
           db_connect_statement_false( stmt, last_stmt );
-          db_statement_set_stop( c_stmt->stmt, NULL, FALSE );
           if( stmt != NULL ) {
             last_stmt = stmt;
           }
@@ -1841,7 +1836,6 @@ statement
           stmt = db_create_statement( expr );
           db_connect_statement_true( stmt, c_stmt->stmt );
           db_connect_statement_false( stmt, last_stmt );
-          db_statement_set_stop( c_stmt->stmt, NULL, FALSE );
           if( stmt != NULL ) {
             last_stmt = stmt;
           }
@@ -1883,7 +1877,6 @@ statement
           stmt = db_create_statement( expr );
           db_connect_statement_true( stmt, c_stmt->stmt );
           db_connect_statement_false( stmt, last_stmt );
-          db_statement_set_stop( c_stmt->stmt, NULL, FALSE );
           if( stmt != NULL ) {
             last_stmt = stmt;
           }
@@ -1940,7 +1933,6 @@ statement
         stmt = db_create_statement( tmp );
         db_add_expression( tmp );
         db_connect_statement_true( stmt, $6 );
-        db_statement_set_stop( $6, NULL, FALSE );
         $$ = stmt;
       } else {
         db_remove_statement( $6 );
@@ -1959,7 +1951,6 @@ statement
         db_add_expression( tmp );
         db_connect_statement_true( stmt, $6 );
         db_connect_statement_false( stmt, $9 );
-        db_statement_set_stop( $6, NULL, FALSE );
         $$ = stmt;
       } else {
         db_remove_statement( $6 );
@@ -2245,7 +2236,6 @@ fork_statement
           if( db_statement_connect( $5, stmt ) ) {
             db_add_expression( expr );
             stmt = $5;
-            db_statement_set_stop( stmt, NULL, FALSE );
             stmt->exp->suppl.part.stmt_head      = 1;
             stmt->exp->suppl.part.stmt_is_called = 1;
             db_add_statement( stmt, stmt );
@@ -2309,7 +2299,6 @@ named_begin_end_block
       statement* stmt = $4;
       if( ignore_mode == 0 ) {
         if( stmt != NULL ) {
-          db_statement_set_stop( stmt, NULL, FALSE );
           stmt->exp->suppl.part.stmt_head      = 1;
           stmt->exp->suppl.part.stmt_is_called = 1;
           db_add_statement( stmt, stmt );
@@ -2984,9 +2973,10 @@ assign
         vector_dealloc( tmp->value );
         tmp->value = $3->value;
         stmt = db_create_statement( tmp );
-        stmt->exp->suppl.part.stmt_head = 1;
-        stmt->exp->suppl.part.stmt_stop = 1;
-        stmt->exp->suppl.part.stmt_cont = 1;
+        stmt->exp->suppl.part.stmt_head       = 1;
+        stmt->exp->suppl.part.stmt_stop_true  = 1;
+        stmt->exp->suppl.part.stmt_stop_false = 1;
+        stmt->exp->suppl.part.stmt_cont       = 1;
         /* Statement will be looped back to itself */
         db_connect_statement_true( stmt, stmt );
         db_connect_statement_false( stmt, stmt );
@@ -3255,9 +3245,10 @@ net_decl_assign
           tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
           tmp  = db_create_expression( $3, tmp, EXP_OP_DASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
           stmt = db_create_statement( tmp );
-          stmt->exp->suppl.part.stmt_head = 1;
-          stmt->exp->suppl.part.stmt_stop = 1;
-          stmt->exp->suppl.part.stmt_cont = 1;
+          stmt->exp->suppl.part.stmt_head       = 1;
+          stmt->exp->suppl.part.stmt_stop_true  = 1;
+          stmt->exp->suppl.part.stmt_stop_false = 1;
+          stmt->exp->suppl.part.stmt_cont       = 1;
           /* Statement will be looped back to itself */
           db_connect_statement_true( stmt, stmt );
           db_connect_statement_false( stmt, stmt );
@@ -3278,9 +3269,10 @@ net_decl_assign
           tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @2.first_line, @2.first_column, (@2.last_column - 1), $2 );
           tmp  = db_create_expression( $4, tmp, EXP_OP_DASSIGN, FALSE, @2.first_line, @2.first_column, (@4.last_column - 1), NULL );
           stmt = db_create_statement( tmp );
-          stmt->exp->suppl.part.stmt_head = 1;
-          stmt->exp->suppl.part.stmt_stop = 1;
-          stmt->exp->suppl.part.stmt_cont = 1;
+          stmt->exp->suppl.part.stmt_head       = 1;
+          stmt->exp->suppl.part.stmt_stop_true  = 1;
+          stmt->exp->suppl.part.stmt_stop_false = 1;
+          stmt->exp->suppl.part.stmt_cont       = 1;
           /* Statement will be looped back to itself */
           db_connect_statement_true( stmt, stmt );
           db_connect_statement_false( stmt, stmt );

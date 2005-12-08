@@ -173,9 +173,13 @@ void race_calc_assignments_helper( statement* stmt, statement* head, int sb_inde
   if( stmt != NULL ) {
 	
     /* Calculate children statements */
-    if( (stmt != head) && (ESUPPL_IS_STMT_STOP( stmt->exp->suppl ) == 0) ) {
-      race_calc_assignments_helper( stmt->next_true, head, sb_index );
-      race_calc_assignments_helper( stmt->next_false, head, sb_index );
+    if( stmt != head ) {
+      if( ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0 ) {
+        race_calc_assignments_helper( stmt->next_true, head, sb_index );
+      }
+      if( ESUPPL_IS_STMT_STOP_FALSE( stmt->exp->suppl ) == 0 ) {
+        race_calc_assignments_helper( stmt->next_false, head, sb_index );
+      }
     }
 
     /* Calculate assignment operator type */
@@ -860,6 +864,11 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.30  2005/12/01 16:08:19  phase1geo
+ Allowing nested functional units within a module to get parsed and handled correctly.
+ Added new nested_block1 diagnostic to test nested named blocks -- will add more tests
+ later for different combinations.  Updated regression suite which now passes.
+
  Revision 1.29  2005/11/25 22:03:20  phase1geo
  Fixing bugs in race condition checker when racing statement blocks are in
  different functional units.  Still some work to do here with what to do when

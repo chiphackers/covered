@@ -77,9 +77,6 @@ void db_remove_statement( statement* stmt );
 /*! \brief Connects one statement block to another. */
 bool db_statement_connect( statement* curr_stmt, statement* next_stmt );
 
-/*! \brief Sets STMT_STOP bit in the appropriate statements. */
-void db_statement_set_stop( statement* stmt, statement* post, bool both );
-
 /*! \brief Connects true statement to specified statement. */
 void db_connect_statement_true( statement* stmt, statement* exp_true );
 
@@ -118,6 +115,9 @@ void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.45  2005/12/07 20:23:38  phase1geo
+ Fixing case where statement is unconnectable.  Full regression now passes.
+
  Revision 1.44  2005/12/05 20:26:55  phase1geo
  Fixing bugs in code to remove statement blocks that are pointed to by expressions
  in NB_CALL and FORK cases.  Fixed bugs in fork code -- this is now working at the

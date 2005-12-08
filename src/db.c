@@ -102,6 +102,12 @@ int       curr_sim_time   = 0;
 int       last_sim_update = 0;
 
 /*!
+ Specifies current connection ID to use for connecting statements.  This value should be passed
+ to the statement_connect function and incremented immediately after.
+*/
+int       stmt_conn_id    = 1;
+
+/*!
  \param file        Name of database file to output contents to.
  \param parse_mode  Specifies if we are outputting parse data or score data.
 
@@ -1036,7 +1042,6 @@ statement* db_parallelize_statement( statement* stmt ) {
 #endif
 
     /* Create a thread block for this statement block */
-    db_statement_set_stop( stmt, NULL, FALSE );
     stmt->exp->suppl.part.stmt_head      = 1;
     stmt->exp->suppl.part.stmt_is_called = 1;
     db_add_statement( stmt, stmt );
@@ -1109,11 +1114,11 @@ void db_add_statement( statement* stmt, statement* start ) {
 #endif
 
     /* Add TRUE and FALSE statement paths to list */
-    if( (ESUPPL_IS_STMT_STOP( stmt->exp->suppl ) == 0) && (stmt->next_false != start) ) {
+    if( (ESUPPL_IS_STMT_STOP_FALSE( stmt->exp->suppl ) == 0) && (stmt->next_false != start) ) {
       db_add_statement( stmt->next_false, start );
     }
 
-    if( (stmt->next_true != stmt->next_false) && (stmt->next_true != start) ) {
+    if( (ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0) && (stmt->next_true != stmt->next_false) && (stmt->next_true != start) ) {
       db_add_statement( stmt->next_true, start );
     }
 
@@ -1281,7 +1286,7 @@ bool db_statement_connect( statement* curr_stmt, statement* next_stmt ) {
    Connect statement, if it was not successful, add it to the functional unit's statement list immediately
    as it will not be later on.
   */
-  if( !(retval = statement_connect( curr_stmt, next_stmt )) ) {
+  if( !(retval = statement_connect( curr_stmt, next_stmt, stmt_conn_id )) ) {
 
     snprintf( user_msg, USER_MSG_LENGTH, "Unreachable statement found starting at line %d in file %s.  Ignoring...",
               next_stmt->exp->line, curr_funit->filename );
@@ -1289,44 +1294,10 @@ bool db_statement_connect( statement* curr_stmt, statement* next_stmt ) {
 
   }
 
+  /* Increment stmt_conn_id for next statement connection */
+  stmt_conn_id++;
+
   return( retval );
-
-}
-
-/*!
- \param stmt  Pointer to statement tree to traverse.
- \param post  Pointer to statement which stopped statements will be connected to.
- \param both  If TRUE, causes both true and false paths to set stop bits if
-              connected to post statement.
-
- Calls the statement_set_stop function with the specified parameters.  This function is
- called by the parser after the call to db_statement_connect.
-*/
-void db_statement_set_stop( statement* stmt, statement* post, bool both ) {
-
-#ifdef DEBUG_MODE
-  int stmt_id;  /* Current statement ID */
-  int post_id;  /* Statement ID after stop */
-#endif
-
-  if( stmt != NULL ) {
-
-#ifdef DEBUG_MODE
-    stmt_id = stmt->exp->id;
-
-    if( post == NULL ) {
-      post_id = 0;
-    } else {
-      post_id = post->exp->id;
-    }
-
-    snprintf( user_msg, USER_MSG_LENGTH, "In db_statement_set_stop, stmt: %d, next_stmt: %d", stmt_id, post_id );
-    print_output( user_msg, DEBUG, __FILE__, __LINE__ );
-#endif
- 
-    statement_set_stop( stmt, post, TRUE, both );
-
-  }
 
 }
 
@@ -1642,6 +1613,9 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.150  2005/12/07 20:23:38  phase1geo
+ Fixing case where statement is unconnectable.  Full regression now passes.
+
  Revision 1.149  2005/12/05 22:02:24  phase1geo
  Added initial support for disable expression.  Added test to verify functionality.
  Full regression passes.

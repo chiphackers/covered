@@ -9,9 +9,9 @@ always @(a)
      begin
       if( b )
         begin
-         a <= 1'b0;
+         a = 1'b0;
         end
-        b <= 1'b0;
+        b = 1'b0;
      end
   end
 

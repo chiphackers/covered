@@ -26,8 +26,8 @@ Instance                                           Hit/ Miss/Total    Percent hi
     Missed Lines
 
            10:    if(  b  )
-           12:     a  <= 1'b0
-           14:     b  <= 1'b0
+           12:     a  = 1'b0
+           14:     b  = 1'b0
 
 
 

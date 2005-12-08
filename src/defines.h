@@ -261,18 +261,9 @@
 /*!
  Used for merging two supplemental fields from two expressions.  Both expression
  supplemental fields are ANDed with this mask and ORed together to perform the
- merge.  Fields that are merged are:
- - SWAPPED
- - ROOT
- - EXECUTED
- - TRUE
- - FALSE
- - STMT_STOP
- - STMT_HEAD
- - STMT_CONTINUOUS
- - EVAL 00, 01, 10, 11
+ merge.  See \ref esuppl_u for information on which bits are masked.
 */
-#define ESUPPL_MERGE_MASK            0x3f93fff
+#define ESUPPL_MERGE_MASK            0x3ffff
 
 /*!
  Returns a value of 1 if the specified supplemental value has the SWAPPED
@@ -303,9 +294,15 @@
 
 /*!
  Returns a value of 1 if the specified supplemental belongs to an expression
- whose associated statement is a stop (for writing purposes).
+ whose associated statement is a stop in the true path (for writing purposes).
 */
-#define ESUPPL_IS_STMT_STOP(x)       x.part.stmt_stop
+#define ESUPPL_IS_STMT_STOP_TRUE(x)  x.part.stmt_stop_true
+
+/*!
+ Returns a value of 1 if the specified supplemental belongs to an expression
+ whose associated statement is a stop in the false path (for writing purposes).
+*/
+#define ESUPPL_IS_STMT_STOP_FALSE(x)  x.part.stmt_stop_false
 
 /*!
  Returns a value of 1 if the specified supplemental belongs to an expression
@@ -694,6 +691,7 @@
 				     (x->op != EXP_OP_FORK) && \
 				     (x->op != EXP_OP_JOIN) && \
 				     (x->op != EXP_OP_DISABLE) && \
+				     (x->op != EXP_OP_REPEAT) && \
                                      (ESUPPL_IS_LHS( x->suppl ) == 0) && \
                                      !((ESUPPL_IS_ROOT( x->suppl ) == 0) && \
                                        ((x->op == EXP_OP_SIG) || \
@@ -973,60 +971,62 @@ union esuppl_u;
 typedef union esuppl_u esuppl;
 
 union esuppl_u {
-  control   all;               /*!< Controls all bits within this union                                             */
+  control   all;               /*!< Controls all bits within this union */
   struct {
-    control swapped       :1;  /*!< Bit 0.  Indicates that the children of this expression have been swapped.  The swapping
-                                    of the positions is performed by the score command (for multi-bit selects) and
-                                    this bit indicates to the report code to swap them back when displaying them in
-                                    a report.                                                                       */
-    control root          :1;  /*!< Bit 1.  Indicates that this expression is a root expression.  Traversing to the parent
-                                    pointer will take you to a statement type.                                      */
-    control executed      :1;  /*!< Bit 2.  Indicates that this expression has been executed in the queue during the
-                                    lifetime of the simulation.                                                     */
-    control stmt_head     :1;  /*!< Bit 3.  Indicates the statement which this expression belongs is a head statement (only
-                                    valid for root expressions -- parent expression == NULL).                       */
-    control stmt_stop     :1;  /*!< Bit 4.  Indicates the statement which this expression belongs should write itself to
-                                    the CDD and not continue to traverse its next_true and next_false pointers.     */
-    control stmt_cont     :1;  /*!< Bit 5.  Indicates the statement which this expression belongs is part of a continuous
-                                    assignment.  As such, stop simulating this statement tree after this expression
-                                    tree is evaluated.                                                              */
-    control false         :1;  /*!< Bit 6.  Indicates that this expression has evaluated to a value of FALSE during the
-                                    lifetime of the simulation.                                                     */
-    control true          :1;  /*!< Bit 7.  Indicates that this expression has evaluated to a value of TRUE during the
-                                    lifetime of the simulation.                                                     */
-    control left_changed  :1;  /*!< Bit 8.  Indicates that this expression has its left child expression in a changed
-                                    state during this timestamp.                                                    */
-    control right_changed :1;  /*!< Bit 9.  Indicates that this expression has its right child expression in a changed
-                                    state during this timestamp.                                                    */
-    control eval_00       :1;  /*!< Bit 10.  Indicates that the value of the left child expression evaluated to FALSE
-                                    and the right child expression evaluated to FALSE.                              */
-    control eval_01       :1;  /*!< Bit 11.  Indicates that the value of the left child expression evaluated to FALSE and
-                                    the right child expression evaluated to TRUE.                                   */
-    control eval_10       :1;  /*!< Bit 12.  Indicates that the value of the left child expression evaluated to TRUE and the
-                                    right child expression evaluated to FALSE.                                      */
-    control eval_11       :1;  /*!< Bit 13.  Indicates that the value of the left child expression evaluated to TRUE and the
-                                    right child expression evaluated to TRUE.                                       */
-    control eval_t        :1;  /*!< Bit 14.  Indicates that the value of the current expression is currently set to TRUE
-                                    (temporary value).                                                              */
-    control eval_f        :1;  /*!< Bit 15.  Indicates that the value of the current expression is currently set to FALSE
-                                    (temporary value).                                                              */
-    control comb_cntd     :1;  /*!< Bit 16.  Indicates that the current expression has been previously counted for
-                                    combinational coverage.  Only set by report command (therefore this bit will
-                                    always be a zero when written to CDD file.                                      */
-    control stmt_connected:1;  /*!< Bit 17.  Temporary bit value used by the score command but not displayed to the CDD
-                                    file.  When this bit is set to a one, it indicates to the statement_connect
-                                    function that this statement and all children statements do not need to be
-                                    connected to another statement. */
-    control stmt_added    :1;  /*!< Bit 18.  Temporary bit value used by the score command but not displayed to the CDD
-                                    file.  When this bit is set to a one, it indicates to the db_add_statement
-                                    function that this statement and all children statements have already been
-                                    added to the functional unit statement list and should not be added again. */
-    control lhs           :1;  /*!< Bit 19.  Indicates that this expression exists on the left-hand side of an assignment
-                                    operation. */
-    control in_func       :1;  /*!< Bit 20.  Indicates that this expression exists in a function */
-    control stmt_is_called:1;  /*!< Bit 21.  Indicates that this statement is called by a FUNC_CALL, TASK_CALL, NB_CALL or
-                                    FORK statement.  If a statement has this bit set, it will NOT be automatically placed
-                                    in the thread queue at time 0. */
+ 
+    /* MASKED BITS */
+    control swapped        :1;  /*!< Bit 0.  Mask bit = 1.  Indicates that the children of this expression have been
+                                     swapped.  The swapping of the positions is performed by the score command (for
+                                     multi-bit selects) and this bit indicates to the report code to swap them back
+                                     when displaying them in. */
+    control root           :1;  /*!< Bit 1.  Mask bit = 1.  Indicates that this expression is a root expression.
+                                     Traversing to the parent pointer will take you to a statement type. */
+    control executed       :1;  /*!< Bit 2.  Mask bit = 1.  Indicates that this expression has been executed in the
+                                     queue during the lifetime of the simulation. */
+    control false          :1;  /*!< Bit 3.  Mask bit = 1.  Indicates that this expression has evaluated to a value
+                                     of FALSE during the lifetime of the simulation. */
+    control true           :1;  /*!< Bit 4.  Mask bit = 1.  Indicates that this expression has evaluated to a value
+                                     of TRUE during the lifetime of the simulation. */
+    control left_changed   :1;  /*!< Bit 5.  Mask bit = 1.  Indicates that this expression has its left child
+                                     expression in a changed state during this timestamp. */
+    control right_changed  :1;  /*!< Bit 6.  Mask bit = 1.  Indicates that this expression has its right child
+                                     expression in a changed state during this timestamp. */
+    control eval_00        :1;  /*!< Bit 7.  Mask bit = 1.  Indicates that the value of the left child expression
+                                     evaluated to FALSE and the right child expression evaluated to FALSE. */
+    control eval_01        :1;  /*!< Bit 8.  Mask bit = 1.  Indicates that the value of the left child expression
+                                     evaluated to FALSE and the right child expression evaluated to TRUE. */
+    control eval_10        :1;  /*!< Bit 9.  Mask bit = 1.  Indicates that the value of the left child expression
+                                     evaluated to TRUE and the right child expression evaluated to FALSE. */
+    control eval_11        :1;  /*!< Bit 10.  Mask bit = 1.  Indicates that the value of the left child expression
+                                     evaluated to TRUE and the right child expression evaluated to TRUE. */
+    control lhs            :1;  /*!< Bit 11.  Mask bit = 1.  Indicates that this expression exists on the left-hand
+                                     side of an assignment operation. */
+    control in_func        :1;  /*!< Bit 12.  Mask bit = 1.  Indicates that this expression exists in a function */
+    control stmt_head      :1;  /*!< Bit 13.  Mask bit = 1.  Indicates the statement which this expression belongs is
+                                     a head statement (only valid for root expressions -- parent expression == NULL). */
+    control stmt_stop_true :1;  /*!< Bit 14.  Mask bit = 1.  Indicates the statement which this expression belongs
+                                     should write itself to the CDD and not continue to traverse its next_true pointer. */
+    control stmt_stop_false:1;  /*!< Bit 15.  Mask bit = 1.  Indicates the statement which this expression belongs
+                                     should write itself to the CDD and not continue to traverse its next_false pointer. */
+    control stmt_cont      :1;  /*!< Bit 16.  Mask bit = 1.  Indicates the statement which this expression belongs is
+                                     part of a continuous assignment.  As such, stop simulating this statement tree
+                                     after this expression tree is evaluated. */
+    control stmt_is_called :1;  /*!< Bit 17.  Mask bit = 1.  Indicates that this statement is called by a FUNC_CALL,
+                                     TASK_CALL, NB_CALL or FORK statement.  If a statement has this bit set, it will NOT
+                                     be automatically placed in the thread queue at time 0. */
+ 
+    /* UNMASKED BITS */
+    control eval_t         :1;  /*!< Bit 18.  Mask bit = 0.  Indicates that the value of the current expression is
+                                     currently set to TRUE (temporary value). */
+    control eval_f         :1;  /*!< Bit 19.  Mask bit = 0.  Indicates that the value of the current expression is
+                                     currently set to FALSE (temporary value). */
+    control comb_cntd      :1;  /*!< Bit 20.  Mask bit = 0.  Indicates that the current expression has been previously
+                                     counted for combinational coverage.  Only set by report command (therefore this bit
+                                     will always be a zero when written to CDD file. */
+    control stmt_added     :1;  /*!< Bit 21.  Temporary bit value used by the score command but not displayed to the CDD
+                                     file.  When this bit is set to a one, it indicates to the db_add_statement
+                                     function that this statement and all children statements have already been
+                                     added to the functional unit statement list and should not be added again. */
   } part;
 };
 
@@ -1492,6 +1492,8 @@ struct statement_s {
   sig_link*   wait_sig_tail;         /*!< Pointer to tail of wait event signal list */
   statement*  next_true;             /*!< Pointer to next statement to run if expression tree non-zero */
   statement*  next_false;            /*!< Pointer to next statement to run if next_true not picked */
+  int         conn_id;               /*!< Current connection ID (used to make sure that we do not infinitely loop
+                                          in connecting statements together) */
 };
 
 struct sig_link_s {
@@ -1723,6 +1725,10 @@ struct thread_s {
 
 /*
  $Log$
+ Revision 1.148  2005/12/07 21:50:50  phase1geo
+ Added support for repeat blocks.  Added repeat1 to regression and fixed errors.
+ Full regression passes.
+
  Revision 1.147  2005/12/05 22:45:38  phase1geo
  Bug fixes to disable code when disabling ourselves -- we move thread killing
  to be done by the sim_thread routine only.
