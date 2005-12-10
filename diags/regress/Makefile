@@ -40,8 +40,8 @@ DIAGS1        = always1         always2         always3         always3.1.11A   
                 disable1        disable1.1      disable2        disable2.1      event1.1 \
                 exclude1        exclude2        exclude3        exclude4        expand1 \
                 expand2         expand3         expand4         expand4.1       expand4.2 \
-                expand4.3       expand4.4       forever1        fork1           fork2 \
-                fsm1            fsm1.1 \
+                expand4.3       expand4.4       for1            for2            forever1 \
+                fork1           fork2           fsm1            fsm1.1 \
                 fsm1.2          fsm1.3          fsm1.4          fsm3            fsm4 \
                 fsm4.1          fsm5            fsm5.1          fsm5.2          fsm5.3 \
                 fsm10           func1           func2           gate1           hier1 \

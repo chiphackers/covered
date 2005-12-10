@@ -18,7 +18,7 @@ Score command
        without user intervention.
 
    4.  Add more Verilog-1995 constructs to parser.
-       - loops (for, while, repeat)
+X      - loops (for, while, repeat)
 X      - tasks/functions
 X      - events
 X      - fork/join/disable

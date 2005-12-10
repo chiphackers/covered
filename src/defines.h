@@ -657,10 +657,8 @@
 #define EXP_OP_REPEAT     0x41
 /*! Decimal value = 66.  Specifies a while loop test expression */
 #define EXP_OP_WHILE      0x42
-/*! Decimal value = 67.  Specifies a for loop test expression */
-#define EXP_OP_FOR        0x43
 /*! The total number of defines for expression values */
-#define EXP_OP_NUM        68
+#define EXP_OP_NUM        67
 
 /*! @} */
 
@@ -1727,6 +1725,10 @@ struct thread_s {
 
 /*
  $Log$
+ Revision 1.150  2005/12/08 22:50:59  phase1geo
+ Adding support for while loops.  Added while1 and while1.1 to regression suite.
+ Ran VCS on regression suite and updated.  Full regression passes.
+
  Revision 1.149  2005/12/08 19:47:00  phase1geo
  Fixed repeat2 simulation issues.  Fixed statement_connect algorithm, removed the
  need for a separate set_stop function and reshuffled the positions of esuppl bits.

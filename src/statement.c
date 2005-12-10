@@ -560,81 +560,6 @@ statement* statement_find_head_statement( statement* stmt, stmt_link* head ) {
 
 }
 
-void statement_remove_paths_helper( statement* curr, statement* start, statement* stmt ) {
-
-  if( (curr != NULL) && (curr != start) ) {
-
-    /* Handle TRUE path */
-    if( curr->next_true == stmt ) {
-      curr->next_true = NULL;
-    } else {
-      statement_remove_paths_helper( curr->next_true,  start, stmt );
-    }
-
-    /* Handle FALSE path */
-    if( curr->next_false == stmt ) {
-      curr->next_false = NULL;
-    } else {
-      statement_remove_paths_helper( curr->next_false, start, stmt );
-    }
-
-  }
-
-}
-
-void statement_remove_paths( statement* start, statement* stmt ) {
-
-  if( start != NULL ) {
-
-    /* Handle TRUE path */
-    if( start->next_true == stmt ) {
-      start->next_true = NULL;
-    } else {
-      statement_remove_paths_helper( start->next_true,  start, stmt );
-    }
-
-    /* Handle FALSE path */
-    if( start->next_false == stmt ) {
-      start->next_false = NULL;
-    } else {
-      statement_remove_paths_helper( start->next_false, start, stmt );
-    }
-
-  }
-
-}
-
-/*!
- \param curr   Pointer to current statement to deallocate.
- \param start  Pointer to statement of root of statement tree to deallocate.
- 
- Recursively deallocates statements listed by the current statement tree.
- This function is called by the parser to remove statement trees that were
- created but found to have unsupported code in them.  This function takes
- care to not remove the same statement twice and to not infinitely loop.
-*/
-void statement_dealloc_recursive_helper( statement* curr, statement* start ) {
-  
-  if( (curr != NULL) && (curr != start) ) {
-    
-    /* Remove TRUE path */
-    statement_dealloc_recursive_helper( curr->next_true,  start );
-    
-    /* Remove FALSE path */
-    statement_dealloc_recursive_helper( curr->next_false, start );
-
-    /* Disconnect statement from current functional unit */
-    db_remove_statement_from_current_funit( curr );
-
-    /* Set pointers to this statement to NULL */
-    statement_remove_paths( start, curr );
-
-    free_safe( curr );
-    
-  }
-  
-}
-
 /*!
  \param stmt  Pointer to head of statement tree to deallocate.
  
@@ -645,10 +570,24 @@ void statement_dealloc_recursive( statement* stmt ) {
   if( stmt != NULL ) {
   
     /* Remove TRUE path */
-    statement_dealloc_recursive_helper( stmt->next_true,  stmt );
+    if( stmt->next_true == stmt->next_false ) {
+
+      if( ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0 ) {
+        statement_dealloc_recursive( stmt->next_true );
+      }
+
+    } else {
+
+      if( ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0 ) {
+        statement_dealloc_recursive( stmt->next_true );
+      }
   
-    /* Remove FALSE path */
-    statement_dealloc_recursive_helper( stmt->next_false, stmt );
+      /* Remove FALSE path */
+      if( ESUPPL_IS_STMT_STOP_FALSE( stmt->exp->suppl ) == 0 ) {
+        statement_dealloc_recursive( stmt->next_false );
+      }
+
+    }
 
     /* Disconnect statement from current functional unit */
     db_remove_statement_from_current_funit( stmt );
@@ -656,9 +595,6 @@ void statement_dealloc_recursive( statement* stmt ) {
     /* Remove wait event signal list */
     sig_link_delete_list( stmt->wait_sig_head, FALSE );
   
-    /* Set pointers to this statement to NULL */
-    statement_remove_paths( stmt, stmt );
-
     free_safe( stmt );
     
   }
@@ -689,6 +625,11 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.64  2005/12/08 19:47:00  phase1geo
+ Fixed repeat2 simulation issues.  Fixed statement_connect algorithm, removed the
+ need for a separate set_stop function and reshuffled the positions of esuppl bits.
+ Full regression passes.
+
  Revision 1.63  2005/12/07 20:23:38  phase1geo
  Fixing case where statement is unconnectable.  Full regression now passes.
 

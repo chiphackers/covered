@@ -160,7 +160,7 @@ int yydebug = 1;
 %type <strlink>   gate_instance_list
 %type <text>      register_variable named_begin_end_block fork_statement
 %type <state>     statement statement_list statement_opt 
-%type <state>     for_statement if_statement_error
+%type <state>     if_statement_error
 %type <case_stmt> case_items case_item
 %type <expr>      delay1 delay3 delay3_opt
 %type <attr_parm> attribute attribute_list
@@ -1964,8 +1964,65 @@ statement
       VLerror( "Illegal conditional if expression" );
       $$ = NULL;
     }
-  | K_for { ignore_mode++; block_depth++; } for_statement { ignore_mode--; block_depth--; }
+  | K_for '(' lpvalue '=' expression ';' expression ';' lpvalue '=' expression ')' inc_block_depth statement dec_block_depth
     {
+      expression* expr;
+      statement*  stmt1;
+      statement*  stmt2;
+      statement*  stmt3;
+      statement*  stmt4 = $14;
+      if( (ignore_mode == 0) && ($3 != NULL) && ($5 != NULL) && ($7 != NULL) &&
+          ($9 != NULL) && ($11 != NULL) && ($14 != NULL) ) {
+        block_depth++;
+        expr = db_create_expression( $5, $3, EXP_OP_BASSIGN, FALSE, @3.first_line, @3.first_column, (@5.last_column - 1), NULL );
+        vector_dealloc( expr->value );
+        expr->value = $5->value;
+        stmt1 = db_create_statement( expr );
+        db_add_expression( expr );
+        stmt2 = db_create_statement( $7 );
+        db_add_expression( $7 );
+        db_statement_connect( stmt1, stmt2 );
+        db_connect_statement_true( stmt2, stmt4 );
+        expr = db_create_expression( $11, $9, EXP_OP_BASSIGN, FALSE, @7.first_line, @7.first_column, (@9.last_column - 1), NULL );
+        vector_dealloc( expr->value );
+        expr->value = $11->value;
+        stmt3 = db_create_statement( expr );
+        db_add_expression( expr );
+        db_statement_connect( stmt4, stmt3 );
+        stmt2->conn_id = stmt_conn_id;   /* This will cause the STOP bit to be set for the stmt3 */
+        db_statement_connect( stmt3, stmt2 );
+        block_depth--;
+        $$ = db_parallelize_statement( stmt1 );
+      } else {
+        expression_dealloc( $3, FALSE );
+        expression_dealloc( $5, FALSE );
+        expression_dealloc( $7, FALSE );
+        expression_dealloc( $9, FALSE );
+        expression_dealloc( $11, FALSE );
+        db_remove_statement( stmt4 );
+        $$ = NULL;
+      }
+    }
+  | K_for '(' lpvalue '=' expression ';' expression ';' error ')' inc_block_depth statement dec_block_depth
+    {
+      expression_dealloc( $3, FALSE );
+      expression_dealloc( $5, FALSE );
+      expression_dealloc( $7, FALSE );
+      db_remove_statement( $12 );
+      $$ = NULL;
+    }
+  | K_for '(' lpvalue '=' expression ';' error ';' lpvalue '=' expression ')' inc_block_depth statement dec_block_depth
+    {
+      expression_dealloc( $3, FALSE );
+      expression_dealloc( $5, FALSE );
+      expression_dealloc( $9, FALSE );
+      expression_dealloc( $11, FALSE );
+      db_remove_statement( $14 );
+      $$ = NULL;
+    }
+  | K_for '(' error ')' inc_block_depth statement dec_block_depth
+    {
+      db_remove_statement( $6 );
       $$ = NULL;
     }
   | K_while '(' expression ')' inc_block_depth statement dec_block_depth
@@ -2213,25 +2270,6 @@ statement
   | error ';'
     {
       VLerror( "Illegal statement" );
-      $$ = NULL;
-    }
-  ;
-
-for_statement
-  : '(' lpvalue '=' expression ';' expression ';' lpvalue '=' expression ')' statement
-    {
-      $$ = NULL;
-    }
-  | '(' lpvalue '=' expression ';' expression ';' error ')' statement
-    {
-      $$ = NULL;
-    }
-  | '(' lpvalue '=' expression ';' error ';' lpvalue '=' expression ')' statement
-    {
-      $$ = NULL;
-    }
-  | '(' error ')' statement
-    {
       $$ = NULL;
     }
   ;
