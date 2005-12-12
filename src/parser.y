@@ -264,11 +264,13 @@ module_start
     K_module IDENTIFIER { ignore_mode++; } list_of_ports_opt { ignore_mode--; } ';'
     {
       db_add_module( $3, @2.text, @2.first_line );
+      free_safe( $3 );
     }
   | attribute_list_opt
     K_macromodule IDENTIFIER { ignore_mode++; } list_of_ports_opt { ignore_mode--; } ';'
     {
       db_add_module( $3, @2.text, @2.first_line );
+      free_safe( $3 );
     }
   ;
 
@@ -1230,6 +1232,7 @@ udp_primitive
       /* We will treat primitives like regular modules */
       db_add_module( $2, @1.text, @1.first_line );
       db_end_module( @10.first_line );
+      free_safe( $2 );
     }
   | K_primitive IGNORE K_endprimitive
   ;
@@ -1237,9 +1240,14 @@ udp_primitive
 udp_port_list
   : IDENTIFIER
     {
-      $$ = 0;
+      free_safe( $1 );
+      $$ = NULL;
     }
   | udp_port_list ',' IDENTIFIER
+    {
+      free_safe( $3 );
+      $$ = NULL;
+    }
   ;
 
 udp_port_decls
@@ -1253,7 +1261,13 @@ udp_port_decl
       str_link_delete_list( $2 );
     }
   | K_output IDENTIFIER ';'
+    {
+      free_safe( $2 );
+    }
   | K_reg IDENTIFIER ';'
+    {
+      free_safe( $2 );
+    }
   ;
 
 udp_init_opt
@@ -1263,6 +1277,9 @@ udp_init_opt
 
 udp_initial
   : K_initial IDENTIFIER '=' NUMBER ';'
+    {
+      free_safe( $2 );
+    }
   ;
 
 udp_body
@@ -1522,6 +1539,7 @@ module_item
       exp_link_delete_list( param_exp_head, FALSE );
       param_exp_head = NULL;
       param_exp_tail = NULL;
+      free_safe( $1 );
     }
   | K_assign drive_strength_opt { ignore_mode++; } delay3_opt { ignore_mode--; } assign_list ';'
   | attribute_list_opt
@@ -1557,6 +1575,7 @@ module_item
           ignore_mode++;
         }
       }
+      free_safe( $2 );
     }
     task_item_list_opt statement_opt
     {
@@ -1723,8 +1742,12 @@ statement
         expr = db_create_expression( NULL, NULL, EXP_OP_TRIGGER, FALSE, @1.first_line, @1.first_column, (@2.last_column - 1), $2 );
         db_add_expression( expr );
         stmt = db_create_statement( expr );
+        free_safe( $2 );
         $$ = stmt;
       } else {
+        if( $2 != NULL ) {
+          free_safe( $2 );
+        }
         $$ = NULL;
       }
     }
@@ -3005,8 +3028,8 @@ delay_value_simple
   | IDENTIFIER
     {
       expression* tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
-      $$ = tmp;
       free_safe( $1 );
+      $$ = tmp;
     }
   | UNUSED_IDENTIFIER
     {
@@ -3191,7 +3214,7 @@ register_variable
     {
       $$ = NULL;
     }
-  | IDENTIFIER '[' static_expr ':' static_expr ']'
+  | IDENTIFIER '[' ignore_more static_expr ':' static_expr ignore_less ']'
     {
       /* We don't support memory coverage */
       char* name;
@@ -3700,6 +3723,7 @@ parameter_assign
   : IDENTIFIER '=' expression
     {
       db_add_declared_param( $1, $3 );
+      free_safe( $1 );
     }
   | UNUSED_IDENTIFIER '=' expression
   ;

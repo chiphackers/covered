@@ -7,7 +7,8 @@
 ######################################################
 
 COVERED_SRC   = ../../src
-COVERED       = valgrind --tool=memcheck --leak-check=yes -v $(COVERED_SRC)/covered
+#COVERED       = $(COVERED_SRC)/covered
+COVERED       = valgrind --tool=memcheck --leak-check=yes --show-reachable=yes -v $(COVERED_SRC)/covered
 COVERED_GFLAG = -D
 
 IVERILOG       = iverilog
@@ -54,6 +55,7 @@ $(DIAGLIST):
 		echo Skipping $@; \
 		./check_test $@ 1 2; \
 	fi
+	@./check_test $@ 1 3
 
 $(RACELIST):
 	@if test ! -f $@.done; then \
@@ -70,6 +72,7 @@ $(RACELIST):
 		echo Skipping $@; \
 		./check_test $@ 1 2; \
 	fi
+	@./check_test $@ 1 3
 
 $(MERGELIST):
 	@if test ! -f $@.done; then \
@@ -100,6 +103,7 @@ $(MERGELIST):
 		echo Skipping $@; \
 		./check_test $@ 1 2; \
 	fi
+	@./check_test $@ 1 3
 
 $(ERRSCORELIST):
 	@if test ! -f $@.done; then \
@@ -112,6 +116,7 @@ $(ERRSCORELIST):
 		echo Skipping $@; \
 		./check_test $@ 1 2; \
 	fi
+	@./check_test $@ 1 3
 
 $(ERRMERGELIST):
 	@if test ! -f $@.done; then \
@@ -128,6 +133,7 @@ $(ERRMERGELIST):
 		echo Skipping $@; \
 		./check_test $@ 1 2; \
 	fi
+	@./check_test $@ 1 3
 
 $(ERRREPORTLIST):
 	@if test ! -f $@.done; then \
@@ -141,6 +147,7 @@ $(ERRREPORTLIST):
 		echo Skipping $@; \
 		./check_test $@ 1 2; \
 	fi
+	@./check_test $@ 1 3
 
 $(COVERED):
 	cd $(COVERED_SRC); make

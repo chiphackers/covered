@@ -736,6 +736,11 @@ int command_report( int argc, int last_arg, char** argv ) {
 
   }
 
+  free_safe( input_db );
+
+  /* Close the database */
+  db_close();
+
   return( retval );
 
 }
@@ -743,6 +748,10 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.47  2005/12/12 03:46:14  phase1geo
+ Adding exclusion to score command to improve performance.  Updated regression
+ which now fully passes.
+
  Revision 1.46  2005/12/01 19:46:50  phase1geo
  Removed Tcl/Tk from source files if HAVE_TCLTK is not defined.
 

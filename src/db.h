@@ -11,6 +11,10 @@
 
 #include "defines.h"
 
+
+/*! \brief Deallocates all memory consumed by the database. */
+void db_close();
+
 /*! \brief Writes contents of expressions, functional units and vsignals to database file. */
 bool db_write( char* file, bool parse_mode );
 
@@ -115,6 +119,11 @@ void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.46  2005/12/08 19:47:00  phase1geo
+ Fixed repeat2 simulation issues.  Fixed statement_connect algorithm, removed the
+ need for a separate set_stop function and reshuffled the positions of esuppl bits.
+ Full regression passes.
+
  Revision 1.45  2005/12/07 20:23:38  phase1geo
  Fixing case where statement is unconnectable.  Full regression now passes.
 

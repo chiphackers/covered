@@ -108,6 +108,8 @@ exp_bind* eb_tail;
 void bind_add( int type, const char* name, expression* exp, func_unit* funit ) {
   
   exp_bind* eb;   /* Temporary pointer to signal/expressing binding */
+
+  assert( exp != NULL );
   
   /* Create new signal/expression binding */
   eb                 = (exp_bind *)malloc_safe( sizeof( exp_bind ), __FILE__, __LINE__ );
@@ -116,6 +118,7 @@ void bind_add( int type, const char* name, expression* exp, func_unit* funit ) {
   eb->clear_assigned = 0;
   eb->stmt_id        = 0;
   eb->rm_stmt        = FALSE;
+  eb->line           = exp->line;
   eb->funit          = funit;
   eb->exp            = exp;
   eb->fsm            = NULL;
@@ -143,6 +146,8 @@ void bind_add_stmt( int id, expression* exp, func_unit* funit ) {
 
   exp_bind* eb;  /* Temporary pointer to signal/expression binding */
 
+  assert( exp != NULL );
+
   /* Create new statement/expression binding */
   eb                 = (exp_bind *)malloc_safe( sizeof( exp_bind ), __FILE__, __LINE__ );
   eb->type           = 0;
@@ -150,6 +155,7 @@ void bind_add_stmt( int id, expression* exp, func_unit* funit ) {
   eb->clear_assigned = 0;
   eb->stmt_id        = id;
   eb->rm_stmt        = FALSE;
+  eb->line           = exp->line;
   eb->funit          = funit;
   eb->exp            = exp;
   eb->fsm            = NULL;
@@ -335,7 +341,8 @@ void bind_rm_stmt( int id ) {
  \param exp               Pointer to expression to bind.
  \param funit_exp         Pointer to functional unit containing expression.
  \param fsm_bind          If set to TRUE, handling binding for FSM binding.
- \param clear_assigned    If set to TRUE, clears
+ \param clear_assigned    If set to TRUE, clears signal assigned bit.
+ \param exp_line          Line of specified expression (when expression is NULL)
 
  \return Returns TRUE if bind occurred successfully; otherwise, returns FALSE.
  
@@ -347,7 +354,7 @@ void bind_rm_stmt( int id ) {
  signal neither exists or is an unused signal, it is considered to be an implicit signal
  and a 1-bit signal is created.
 */
-bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bind, bool cdd_reading, bool clear_assigned ) {
+bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bind, bool cdd_reading, bool clear_assigned, int exp_line ) {
 
   bool       retval = TRUE;  /* Return value for this function */
   char*      tmpname;        /* Temporary name containing unused signal character */
@@ -357,13 +364,13 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
   exp_link*  expl;           /* Pointer to current expression link */
 
   /* Search for specified signal in current functional unit */
-  if( !scope_find_signal( name, funit_exp, &found_sig, &found_funit, exp->line ) ) {
+  if( !scope_find_signal( name, funit_exp, &found_sig, &found_funit, exp_line ) ) {
 
     /* Check to see if it is an unused signal */
     tmpname = (char*)malloc_safe( (strlen( name ) + 2), __FILE__, __LINE__ );
     snprintf( tmpname, (strlen( name ) + 2), "!%s", name );
 
-    if( !scope_find_signal( tmpname, found_funit, &found_sig, &found_funit, exp->line ) ) {
+    if( !scope_find_signal( tmpname, found_funit, &found_sig, &found_funit, exp_line ) ) {
 
       /* If we are binding an FSM, output an error message */
       if( fsm_bind ) {
@@ -507,7 +514,7 @@ bool bind_statement( int id, expression* exp, func_unit* funit_exp, bool cdd_rea
 /*!
  \param type  Type of functional unit
 */
-bool bind_task_function_namedblock( int type, char* name, expression* exp, func_unit* funit_exp, bool cdd_reading ) {
+bool bind_task_function_namedblock( int type, char* name, expression* exp, func_unit* funit_exp, bool cdd_reading, int exp_line ) {
 
   bool       retval = TRUE;  /* Return value for this function */
   stmt_iter  si;             /* Statement iterator used to find the head statement */
@@ -521,7 +528,7 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
   /* Search the no_score list to make sure that this function is not being manually excluded */
   if( str_link_find( name, no_score_head ) == NULL ) {
 
-    if( !scope_find_task_function_namedblock( name, type, funit_exp, &found_funit, exp->line ) ) {
+    if( !scope_find_task_function_namedblock( name, type, funit_exp, &found_funit, exp_line ) ) {
 
 #ifdef OBSOLETE
       /*
@@ -532,7 +539,7 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
                 get_funit_type( type ),
                 name,
                 funit_exp->filename,
-                exp->line );
+                exp_line );
       print_output( user_msg, FATAL, __FILE__, __LINE__ );
       exit( 1 );
 #endif
@@ -645,7 +652,7 @@ void bind( bool cdd_reading ) {
          Bind the signal.  If it is unsuccessful, we need to remove the statement that this expression
          is a part of.
         */
-        bound = bind_signal( curr_eb->name, curr_eb->exp, curr_eb->funit, FALSE, cdd_reading, (curr_eb->clear_assigned > 0) );
+        bound = bind_signal( curr_eb->name, curr_eb->exp, curr_eb->funit, FALSE, cdd_reading, (curr_eb->clear_assigned > 0), curr_eb->line );
 
         /* If an FSM expression is attached, size it now */
         if( curr_eb->fsm != NULL ) {
@@ -656,8 +663,8 @@ void bind( bool cdd_reading ) {
       } else if( curr_eb->type == 1 ) {
 
         /* Attempt to bind a named block -- if unsuccessful, attempt to bind with a task */
-        if( !bind_task_function_namedblock( FUNIT_NAMED_BLOCK, curr_eb->name, curr_eb->exp, curr_eb->funit, cdd_reading ) ) {
-          bound = bind_task_function_namedblock( FUNIT_TASK, curr_eb->name, curr_eb->exp, curr_eb->funit, cdd_reading );
+        if( !bind_task_function_namedblock( FUNIT_NAMED_BLOCK, curr_eb->name, curr_eb->exp, curr_eb->funit, cdd_reading, curr_eb->line ) ) {
+          bound = bind_task_function_namedblock( FUNIT_TASK, curr_eb->name, curr_eb->exp, curr_eb->funit, cdd_reading, curr_eb->line );
         }
 
       /* Otherwise, handle function/task binding */
@@ -667,7 +674,7 @@ void bind( bool cdd_reading ) {
          Bind the expression to the task/function.  If it is unsuccessful, we need to remove the statement
          that this expression is a part of.
         */
-        bound = bind_task_function_namedblock( curr_eb->type, curr_eb->name, curr_eb->exp, curr_eb->funit, cdd_reading );
+        bound = bind_task_function_namedblock( curr_eb->type, curr_eb->name, curr_eb->exp, curr_eb->funit, cdd_reading, curr_eb->line );
 
       }
 
@@ -749,6 +756,9 @@ void bind( bool cdd_reading ) {
 
 /* 
  $Log$
+ Revision 1.52  2005/12/05 23:30:35  phase1geo
+ Adding support for disabling tasks.  Full regression passes.
+
  Revision 1.51  2005/12/05 22:02:24  phase1geo
  Added initial support for disable expression.  Added test to verify functionality.
  Full regression passes.

@@ -181,6 +181,9 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
   /* Flush any pending statement trees that are waiting for delay */
   db_do_timestep( -1 );
 
+  /* Remove all remaining threads */
+  sim_kill_all_threads();
+
 #ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "========  Writing database %s  ========\n", db );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -201,6 +204,9 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
 
 /*
  $Log$
+ Revision 1.31  2005/11/23 23:05:24  phase1geo
+ Updating regression files.  Full regression now passes.
+
  Revision 1.30  2005/11/21 04:17:43  phase1geo
  More updates to regression suite -- includes several bug fixes.  Also added --enable-debug
  facility to configuration file which will include or exclude debugging output from being

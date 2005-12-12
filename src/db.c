@@ -107,6 +107,23 @@ int       last_sim_update = 0;
 */
 int       stmt_conn_id    = 1;
 
+
+/*!
+ Deallocates all memory associated with the database.
+*/
+void db_close() {
+
+  /* Remove memory allocated for instance_root and mod_head */
+  assert( instance_root->funit != NULL );
+  instance_dealloc( instance_root, instance_root->name );
+  funit_link_delete_list( funit_head );
+
+  instance_root = NULL;
+  funit_head    = NULL;
+  funit_tail    = NULL;
+
+}
+
 /*!
  \param file        Name of database file to output contents to.
  \param parse_mode  Specifies if we are outputting parse data or score data.
@@ -140,13 +157,7 @@ bool db_write( char* file, bool parse_mode ) {
   }
 
   /* Remove memory allocated for instance_root and mod_head */
-  assert( instance_root->funit != NULL );
-  instance_dealloc( instance_root, instance_root->name );
-  funit_link_delete_list( funit_head );
-
-  instance_root = NULL;
-  funit_head    = NULL;
-  funit_tail    = NULL;
+  db_close();
 
   return( retval );
 
@@ -1493,7 +1504,7 @@ void db_assign_symbol( char* name, char* symbol, int msb, int lsb ) {
       if( slink->sig->value->suppl.part.assigned == 0 ) {
 
         /* Add this signal */
-        symtable_add( strdup_safe( symbol, __FILE__, __LINE__ ), slink->sig, msb, lsb );
+        symtable_add( symbol, slink->sig, msb, lsb );
 
       }
 
@@ -1613,6 +1624,11 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.151  2005/12/08 19:47:00  phase1geo
+ Fixed repeat2 simulation issues.  Fixed statement_connect algorithm, removed the
+ need for a separate set_stop function and reshuffled the positions of esuppl bits.
+ Full regression passes.
+
  Revision 1.150  2005/12/07 20:23:38  phase1geo
  Fixing case where statement is unconnectable.  Full regression now passes.
 

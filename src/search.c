@@ -71,12 +71,12 @@ void search_init() {
   /* Initialize instance tree */
   if( top_instance == NULL ) {
     top_instance = strdup_safe( top_module, __FILE__, __LINE__ );
-    instance_parse_add( &instance_root, NULL, mod, strdup_safe( top_instance, __FILE__, __LINE__ ) );
+    instance_parse_add( &instance_root, NULL, mod, top_instance );
     leading_hierarchy[0] = '*';
     leading_hierarchy[1] = '\0';
   } else {
     scope_extract_back( top_instance, dutname, leading_hierarchy );
-    instance_parse_add( &instance_root, NULL, mod, strdup_safe( dutname, __FILE__, __LINE__ ) );
+    instance_parse_add( &instance_root, NULL, mod, dutname );
     if( leading_hierarchy[0] == '\0' ) {
       leading_hierarchy[0] = '*';
       leading_hierarchy[1] = '\0';
@@ -249,6 +249,10 @@ void search_free_lists() {
 
 /*
  $Log$
+ Revision 1.19  2005/11/08 23:12:10  phase1geo
+ Fixes for function/task additions.  Still a lot of testing on these structures;
+ however, regressions now pass again so we are checkpointing here.
+
  Revision 1.18  2005/01/03 23:00:35  phase1geo
  Fixing library extension parser.
 

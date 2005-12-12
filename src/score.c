@@ -446,13 +446,6 @@ int command_score( int argc, int last_arg, char** argv ) {
 
     }
 
-    /* Deallocate memory for search engine */
-    search_free_lists();
-
-    free_safe( output_db );
-    free_safe( vcd_file );
-    free_safe( vpi_file );
-
     if( vcd_file != NULL ) {
       print_output( "***  Scoring completed successfully!  ***\n", NORMAL, __FILE__, __LINE__ );
     }
@@ -464,6 +457,19 @@ int command_score( int argc, int last_arg, char** argv ) {
 #endif
     print_output( "", NORMAL, __FILE__, __LINE__ );
 
+    /* Deallocate memory for search engine */
+    search_free_lists();
+
+    free_safe( output_db );
+    free_safe( vcd_file );
+    free_safe( vpi_file );
+    free_safe( top_module );
+    free_safe( ppfilename );
+    
+    if( top_instance != NULL ) {
+      free_safe( top_instance );
+    }
+
   }
 
   return( retval );
@@ -472,6 +478,10 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.53  2005/12/12 03:46:14  phase1geo
+ Adding exclusion to score command to improve performance.  Updated regression
+ which now fully passes.
+
  Revision 1.52  2005/11/21 04:17:43  phase1geo
  More updates to regression suite -- includes several bug fixes.  Also added --enable-debug
  facility to configuration file which will include or exclude debugging output from being
