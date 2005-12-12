@@ -32,6 +32,9 @@
 extern char user_msg[USER_MSG_LENGTH];
 extern int  delay_expr_type;
 extern int  stmt_conn_id;
+extern bool flag_exclude_assign;
+extern bool flag_exclude_always;
+extern bool flag_exclude_initial;
 
 /* Functions from lexer */
 extern void lex_start_udp_table();
@@ -1526,7 +1529,7 @@ module_item
     {
       statement* stmt = $3;
       if( stmt != NULL ) {
-        if( db_statement_connect( stmt, stmt ) ) {
+        if( db_statement_connect( stmt, stmt ) && !flag_exclude_always ) {
           stmt->exp->suppl.part.stmt_head = 1;
           db_add_statement( stmt, stmt );
         } else {
@@ -1539,8 +1542,12 @@ module_item
     {
       statement* stmt = $3;
       if( stmt != NULL ) {
-        stmt->exp->suppl.part.stmt_head = 1;
-        db_add_statement( stmt, stmt );
+        if( !flag_exclude_initial ) {
+          stmt->exp->suppl.part.stmt_head = 1;
+          db_add_statement( stmt, stmt );
+        } else {
+          db_remove_statement( stmt );
+        }
       }
     }
   | K_task IDENTIFIER ';'
@@ -3017,7 +3024,7 @@ assign
     {
       expression* tmp;
       statement*  stmt;
-      if( ($1 != NULL) && ($3 != NULL) ) {
+      if( ($1 != NULL) && ($3 != NULL) && !flag_exclude_assign ) {
         tmp  = db_create_expression( $3, $1, EXP_OP_ASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
         vector_dealloc( tmp->value );
         tmp->value = $3->value;
@@ -3288,7 +3295,7 @@ net_decl_assign
     {
       expression* tmp;
       statement*  stmt;
-      if( (ignore_mode == 0) && ($1 != NULL) && (curr_sig_width != NULL) ) {
+      if( (ignore_mode == 0) && ($1 != NULL) && (curr_sig_width != NULL) && !flag_exclude_assign ) {
         db_add_signal( $1, curr_sig_width->left, curr_sig_width->right, FALSE, FALSE );
         if( $3 != NULL ) {
           tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
@@ -3312,7 +3319,7 @@ net_decl_assign
     {
       expression* tmp;
       statement*  stmt;
-      if( (ignore_mode == 0) && ($2 != NULL) && (curr_sig_width != NULL) ) {
+      if( (ignore_mode == 0) && ($2 != NULL) && (curr_sig_width != NULL) && !flag_exclude_assign ) {
         db_add_signal( $2, curr_sig_width->left, curr_sig_width->right, FALSE, FALSE );
         if( $4 != NULL ) {
           tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @2.first_line, @2.first_column, (@2.last_column - 1), $2 );

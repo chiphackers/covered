@@ -1,4 +1,4 @@
-5 1 * 5 0
+5 1 * 5 0 0 0 0
 3 0 main main param7.v 5 17
 1 #a 0 32 0 1 0 0 0 0 0 0 0
 3 0 foo main.a param7.v 21 27

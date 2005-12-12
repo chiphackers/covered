@@ -44,6 +44,9 @@ extern char*       merge_in0;
 extern char*       merge_in1;
 extern char        leading_hierarchy[4096];
 extern char        second_hierarchy[4096];
+extern bool        flag_exclude_assign;
+extern bool        flag_exclude_always;
+extern bool        flag_exclude_initial;
 
 /*!
  If set to a boolean value of TRUE, reports the line coverage for the specified database
@@ -477,6 +480,20 @@ void report_print_header( FILE* ofile ) {
     fprintf( ofile, "* Reported by                    : Module\n\n" );
   }
 
+  if( flag_exclude_assign || flag_exclude_always || flag_exclude_initial ) {
+    fprintf( ofile, "* CDD file excludes the following block types:\n" );
+    if( flag_exclude_assign ) {
+      fprintf( ofile, "    assign - Continuous Assigments\n" );
+    }
+    if( flag_exclude_always ) {
+      fprintf( ofile, "    always - Always Statements\n" );
+    }
+    if( flag_exclude_initial ) {
+      fprintf( ofile, "    initial - Initial Statements\n" );
+    }
+    fprintf( ofile, "\n" );
+  }
+
   if( merged_code != INFO_NOT_MERGED ) {
 
     if( merged_code == INFO_ONE_MERGED ) {
@@ -726,6 +743,9 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.46  2005/12/01 19:46:50  phase1geo
+ Removed Tcl/Tk from source files if HAVE_TCLTK is not defined.
+
  Revision 1.45  2005/11/15 23:08:02  phase1geo
  Updates for new binding scheme.  Binding occurs for all expressions, signals,
  FSMs, and functional units after parsing has completed or after database reading

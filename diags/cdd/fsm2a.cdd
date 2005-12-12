@@ -1,4 +1,4 @@
-5 1 main 5 0
+5 1 main 5 0 0 0 0
 3 0 fsm fsm lib/fsm.v 1 35
 2 13 23 36003f 1 18 0 0 next_state
 2 12 23 290032 32 8 0 0 #STATE_IDLE

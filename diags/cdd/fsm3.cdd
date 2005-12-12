@@ -1,4 +1,4 @@
-5 1 * 5 0
+5 1 * 5 0 0 0 0
 3 0 main main fsm3.v 1 64
 2 13 16 34003d 1 10 0 0 next_state
 2 12 16 270030 32 10 0 0 #STATE_IDLE

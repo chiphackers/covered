@@ -17,28 +17,12 @@ Score command
    3.  Add ability to automatically locate and extract an FSM from the design
        without user intervention.
 
-   4.  Add more Verilog-1995 constructs to parser.
-X      - loops (for, while, repeat)
-X      - tasks/functions
-X      - events
-X      - fork/join/disable
+   4.  Add more Verilog-2001 constructs to parser.
 
-   5.  Add more Verilog-2001 constructs to parser.
+   5.  Allow Covered to run simulation phases in parallel to increase performance.
 
-   6.  Allow Covered to run simulation phases in parallel to increase performance.
-
-   7.  Add feature to cause Covered to omit the simulation phase for toggle and
+   6.  Add feature to cause Covered to omit the simulation phase for toggle and
        FSM coverage results.
-
-X  8.  Add ability to perform assignments for signals that are within modules being Covered.
-       - Handle cases where a BASSIGN is performed in a statement block that is ignored/thrown away
-         (we may want the VCD assignment information for this)
-
-X  9.  Put support in for events/triggers
-
-X  10. Finish support for tasks and named blocks
-
-   11. Add ability to remove scoring of continuous assignments, always blocks and initial blocks.
 
 
 Merge command

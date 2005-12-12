@@ -1,4 +1,4 @@
-5 1 main2 5 0
+5 1 main2 5 0 0 0 0
 3 0 dut_and dut ./lib/dut_and.v 1 9
 2 3 7 f000f 1 8 0 0 c
 2 2 7 b000b 1 10 0 0 b

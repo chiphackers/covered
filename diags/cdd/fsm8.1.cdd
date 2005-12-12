@@ -1,4 +1,4 @@
-5 1 * 5 0
+5 1 * 5 0 0 0 0
 3 0 main main fsm8.1.v 1 59
 2 16 17 580061 32 8 0 0 #STATE_IDLE
 2 15 17 4a0053 1 18 0 0 next_state

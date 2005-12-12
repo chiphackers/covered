@@ -28,16 +28,19 @@
 #include "info.h"
 
 
-char* top_module         = NULL;                /*!< Name of top-level module to score                          */
-char* top_instance       = NULL;                /*!< Name of top-level instance name                            */
-char* output_db          = NULL;                /*!< Name of output score database file to generate             */
-char* vcd_file           = NULL;                /*!< Name of VCD output file to parse                           */
-char* vpi_file           = NULL;                /*!< Name of VPI output file to write contents to               */
-int   delay_expr_type    = DELAY_EXPR_DEFAULT;  /*!< Value to use when a delay expression with min:typ:max      */
-char* ppfilename         = NULL;                /*!< Name of preprocessor filename to use                       */
-bool  instance_specified = FALSE;               /*!< Specifies if -i option was specified                       */
-int   timestep_update    = 0;                   /*!< Specifies timestep increment to display current time       */
-int   flag_race_check    = WARNING;             /*!< Specifies how race conditions should be handled            */
+char* top_module           = NULL;                /*!< Name of top-level module to score */
+char* top_instance         = NULL;                /*!< Name of top-level instance name */
+char* output_db            = NULL;                /*!< Name of output score database file to generate */
+char* vcd_file             = NULL;                /*!< Name of VCD output file to parse */
+char* vpi_file             = NULL;                /*!< Name of VPI output file to write contents to */
+int   delay_expr_type      = DELAY_EXPR_DEFAULT;  /*!< Value to use when a delay expression with min:typ:max */
+char* ppfilename           = NULL;                /*!< Name of preprocessor filename to use */
+bool  instance_specified   = FALSE;               /*!< Specifies if -i option was specified */
+int   timestep_update      = 0;                   /*!< Specifies timestep increment to display current time */
+int   flag_race_check      = WARNING;             /*!< Specifies how race conditions should be handled */
+bool  flag_exclude_assign  = FALSE;               /*!< Specifies if continuous assignments blocks should be sim'd */
+bool  flag_exclude_always  = FALSE;               /*!< Specifies if always blocks should be sim'd */
+bool  flag_exclude_initial = FALSE;               /*!< Specifies if initial blocks should be sim'd */
 
 extern unsigned long largest_malloc_size;
 extern unsigned long curr_malloc_size;
@@ -76,7 +79,6 @@ void score_usage() {
   printf( "                                    the output variable (ovar) is also used as the input variable.\n" ); 
   printf( "      -y <directory>               Directory to find unspecified Verilog files.\n" );
   printf( "      -v <filename>                Name of specific Verilog file to score.\n" );
-  printf( "      -e <module_name>             Name of module to not score.\n" );
   printf( "      -D <define_name>(=<value>)   Defines the specified name to 1 or the specified value.\n" );
   printf( "      -p <filename>                Specifies name of file to use for preprocessor output.\n" );
   printf( "      -P <parameter_scope>=<value> Performs a defparam on the specified parameter with value.\n" );
@@ -92,6 +94,11 @@ void score_usage() {
   printf( "      +libext+.<extension>(+.<extension>)+\n" );
   printf( "                                   Extensions of Verilog files to allow in scoring\n" );
   printf( "\n" );
+  printf( "   Optimization Options:\n" );
+  printf( "      -e <block_name>              Name of module, task, function or named begin/end block to not score.\n" );
+  printf( "      -ec                          Exclude continuous assignment blocks from coverage.\n" );
+  printf( "      -ea                          Exclude always blocks from coverage.\n" );
+  printf( "      -ei                          Exclude initial blocks from coverage.\n" );
   printf( "    Note:\n" );
   printf( "      The top-level module specifies the module to begin scoring.  All\n" );
   printf( "      modules beneath this module in the hierarchy will also be scored\n" );
@@ -253,6 +260,18 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
         print_output( user_msg, FATAL, __FILE__, __LINE__ );
         retval = FALSE;
       }
+
+    } else if( strncmp( "-ec", argv[i], 3 ) == 0 ) {
+
+      flag_exclude_assign = TRUE;
+
+    } else if( strncmp( "-ea", argv[i], 3 ) == 0 ) {
+
+      flag_exclude_always = TRUE;
+
+    } else if( strncmp( "-ei", argv[i], 3 ) == 0 ) {
+
+      flag_exclude_initial = TRUE;
 
     } else if( strncmp( "-e", argv[i], 2 ) == 0 ) {
 
@@ -453,6 +472,11 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.52  2005/11/21 04:17:43  phase1geo
+ More updates to regression suite -- includes several bug fixes.  Also added --enable-debug
+ facility to configuration file which will include or exclude debugging output from being
+ generated.
+
  Revision 1.51  2005/11/08 23:12:10  phase1geo
  Fixes for function/task additions.  Still a lot of testing on these structures;
  however, regressions now pass again so we are checkpointing here.
