@@ -43,9 +43,13 @@ if( open( RPT_RESULTS, "${RPT_OUTPUT}" ) > 0 ) {
 }
 
 # If this is the finish mode, remove all *.done files if failed count shows no failures
-if( ($mode == 3) && ($failed == 0) ) {
+if( $mode == 3 ) {
 
-  system( "rm -rf *.done $RPT_OUTPUT $FAIL_OUTPUT" ) && die;
+  system( "echo; cat $RPT_OUTPUT; echo; rm -rf $RPT_OUTPUT" ) && die;
+
+  if( $failed == 0 ) {
+    system( "rm -rf *.done $FAIL_OUTPUT" ) && die;
+  }
 
 } else {
 

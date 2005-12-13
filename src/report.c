@@ -738,6 +738,9 @@ int command_report( int argc, int last_arg, char** argv ) {
 
   free_safe( input_db );
 
+  /* Remove all remaining threads */
+  sim_kill_all_threads();
+
   /* Close the database */
   db_close();
 
@@ -748,6 +751,9 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.48  2005/12/12 23:25:37  phase1geo
+ Fixing memory faults.  This is a work in progress.
+
  Revision 1.47  2005/12/12 03:46:14  phase1geo
  Adding exclusion to score command to improve performance.  Updated regression
  which now fully passes.

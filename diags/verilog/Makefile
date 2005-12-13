@@ -38,7 +38,7 @@ RPT_DIR       = ../rpt
 
 LOGFILE = regress.log
 
-regress:	$(COVERED) $(DIAGLIST) $(RACELIST) $(MERGELIST) $(ERRSCORELIST) $(ERRMERGELIST)
+regress:	$(COVERED) $(DIAGLIST) $(RACELIST) $(MERGELIST) $(ERRSCORELIST) $(ERRMERGELIST) eot
 
 $(DIAGLIST):
 	@if test ! -f $@.done; then \
@@ -55,7 +55,7 @@ $(DIAGLIST):
 		echo Skipping $@; \
 		./check_test $@ 1 2; \
 	fi
-	@./check_test $@ 1 3
+#	@./check_test $@ 1 3
 
 $(RACELIST):
 	@if test ! -f $@.done; then \
@@ -72,7 +72,7 @@ $(RACELIST):
 		echo Skipping $@; \
 		./check_test $@ 1 2; \
 	fi
-	@./check_test $@ 1 3
+#	@./check_test $@ 1 3
 
 $(MERGELIST):
 	@if test ! -f $@.done; then \
@@ -103,7 +103,7 @@ $(MERGELIST):
 		echo Skipping $@; \
 		./check_test $@ 1 2; \
 	fi
-	@./check_test $@ 1 3
+#	@./check_test $@ 1 3
 
 $(ERRSCORELIST):
 	@if test ! -f $@.done; then \
@@ -116,7 +116,7 @@ $(ERRSCORELIST):
 		echo Skipping $@; \
 		./check_test $@ 1 2; \
 	fi
-	@./check_test $@ 1 3
+#	@./check_test $@ 1 3
 
 $(ERRMERGELIST):
 	@if test ! -f $@.done; then \
@@ -133,7 +133,7 @@ $(ERRMERGELIST):
 		echo Skipping $@; \
 		./check_test $@ 1 2; \
 	fi
-	@./check_test $@ 1 3
+#	@./check_test $@ 1 3
 
 $(ERRREPORTLIST):
 	@if test ! -f $@.done; then \
@@ -147,10 +147,13 @@ $(ERRREPORTLIST):
 		echo Skipping $@; \
 		./check_test $@ 1 2; \
 	fi
-	@./check_test $@ 1 3
+#	@./check_test $@ 1 3
 
 $(COVERED):
 	cd $(COVERED_SRC); make
+
+eot:
+	@./check_test dummy 1 3
 	
 reset:  clobber
 	@rm -f *.done

@@ -263,9 +263,6 @@ void combination_get_tree_stats( expression* exp, int* ulid, unsigned int curr_d
                         exp->suppl.part.eval_10 +
                         exp->suppl.part.eval_11;
               *hit    = *hit + num_hit;
-	      if( (exp->line == 2688) && (exp->op == 9) ) {
-                printf( "num_hit: %d, exp->ulid: %d, combination_is_expr_multi_node: %d\n", num_hit, exp->ulid, combination_is_expr_multi_node( exp ) );
-              }
               if( (num_hit != 4) && (exp->ulid == -1) && !combination_is_expr_multi_node( exp ) ) {
                 exp->ulid = *ulid;
                 (*ulid)++;
@@ -585,7 +582,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
   r_lines = NULL;
 
   if( exp != NULL ) {
-    
+
     if( (exp->op == EXP_OP_LAST) || (exp->op == EXP_OP_NB_CALL) ) {
 
       *size = 0;
@@ -826,11 +823,12 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
         /* Allocate all memory for the stack */
         *lines = (char**)malloc_safe( (sizeof( char* ) * (*depth)), __FILE__, __LINE__ );
 
-        /* Allocate memory for this underline */
-        (*lines)[(*depth)-1] = (char*)malloc_safe( (*size + 1), __FILE__, __LINE__ );
-
         /* Create underline or space */
         if( comb_missed == 1 ) {
+
+          /* Allocate memory for this underline */
+          (*lines)[(*depth)-1] = (char*)malloc_safe( (*size + 1), __FILE__, __LINE__ );
+
           if( center ) {
             combination_draw_centered_line( (*lines)[(*depth)-1], *size, exp->ulid, TRUE, TRUE );
           } else {
@@ -2019,6 +2017,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.117  2005/12/08 22:50:58  phase1geo
+ Adding support for while loops.  Added while1 and while1.1 to regression suite.
+ Ran VCS on regression suite and updated.  Full regression passes.
+
  Revision 1.116  2005/12/07 21:50:50  phase1geo
  Added support for repeat blocks.  Added repeat1 to regression and fixed errors.
  Full regression passes.

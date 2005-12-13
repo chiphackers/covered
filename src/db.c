@@ -457,7 +457,7 @@ func_unit* db_add_instance( char* scope, char* name, int type ) {
       instance_parse_add( &instance_root, curr_funit, funit, scope );
 
       if( (type == FUNIT_MODULE) && (str_link_find( name, modlist_head ) == NULL) ) {
-        str_link_add( name, &modlist_head, &modlist_tail );
+        str_link_add( strdup_safe( name, __FILE__, __LINE__ ), &modlist_head, &modlist_tail );
       }
       
     }
@@ -1624,6 +1624,9 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.152  2005/12/12 23:25:37  phase1geo
+ Fixing memory faults.  This is a work in progress.
+
  Revision 1.151  2005/12/08 19:47:00  phase1geo
  Fixed repeat2 simulation issues.  Fixed statement_connect algorithm, removed the
  need for a separate set_stop function and reshuffled the positions of esuppl bits.

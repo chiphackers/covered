@@ -89,6 +89,9 @@ void codegen_create_expr_helper( char** code,
       code_size += strlen( middle );
     }
   }
+  if( code[code_index] != NULL ) {
+    free_safe( code[code_index] );
+  }
   code[code_index]    = (char*)malloc_safe( (code_size + 1), __FILE__, __LINE__ );
   code[code_index][0] = '\0';
 
@@ -660,6 +663,10 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.48  2005/12/08 22:50:58  phase1geo
+ Adding support for while loops.  Added while1 and while1.1 to regression suite.
+ Ran VCS on regression suite and updated.  Full regression passes.
+
  Revision 1.47  2005/12/07 21:50:50  phase1geo
  Added support for repeat blocks.  Added repeat1 to regression and fixed errors.
  Full regression passes.
