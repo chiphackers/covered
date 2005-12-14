@@ -294,6 +294,7 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
         tmpstr = vector_to_string( expr->value );
         (*code)[0] = (char*)malloc_safe( (strlen( tmpstr ) + 3), __FILE__, __LINE__ );
         snprintf( (*code)[0], (strlen( tmpstr ) + 3), "\"%s\"", tmpstr );
+        free_safe( tmpstr );
 
       } else { 
 
@@ -664,6 +665,10 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.50  2005/12/14 23:03:24  phase1geo
+ More updates to remove memory faults.  Still a work in progress but full
+ regression passes.
+
  Revision 1.49  2005/12/13 23:15:14  phase1geo
  More fixes for memory leaks.  Regression fully passes at this point.
 

@@ -182,9 +182,9 @@ WSPACE [ \t\b\f]+
 <CSTRING>\n   {
 	yylloc.last_column = 0;
 	BEGIN( 0 );
-        if( ignore_mode == 0 ) {
-          yylval.text = strdup_safe( yytext, __FILE__, __LINE__ );
-        }
+        // if( ignore_mode == 0 ) {
+        //   yylval.text = strdup_safe( yytext, __FILE__, __LINE__ );
+        // }
         /* VLerror( yylloc, "Missing close quote of string." ); */
         yylloc.first_line += 1;
         return 0;
@@ -195,7 +195,8 @@ WSPACE [ \t\b\f]+
         if( ignore_mode == 0 ) {
           yylval.text = strdup_safe( yytext, __FILE__, __LINE__ );
           yylval.text[ strlen( yytext ) - 1 ] = '\0';
-          yylval.number = vector_from_string( &yylval.text, TRUE );
+          yylval.number = vector_from_string( &(yylval.text), TRUE );
+          free_safe( yylval.text );
           return STRING;
         } else {
           return UNUSED_STRING;
