@@ -2940,6 +2940,7 @@ delay_value
           tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
           vector_init( tmp->value, (vec_data*)malloc_safe( (sizeof( vec_data ) * 32), __FILE__, __LINE__ ), 32 );  
           vector_from_int( tmp->value, se->num );
+          static_expr_dealloc( se, TRUE );
         } else {
           tmp = se->exp;
           static_expr_dealloc( se, FALSE );
@@ -2990,6 +2991,7 @@ delay_value
             tmp = db_create_expression( NULL, NULL, EXP_OP_STATIC, lhs_mode, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
             vector_init( tmp->value, (vec_data*)malloc_safe( (sizeof( vec_data ) * 32), __FILE__, __LINE__ ), 32 );
             vector_from_int( tmp->value, se->num );
+            static_expr_dealloc( se, TRUE );
           } else {
             tmp = se->exp;
             free_safe( se );
@@ -3928,7 +3930,7 @@ inc_fork_depth
   :
     {
       fork_depth++;
-      fork_block_depth = (int*)realloc( fork_block_depth, (fork_depth + 1) );
+      fork_block_depth = (int*)realloc( fork_block_depth, ((fork_depth + 1) * sizeof( int )) );
       fork_block_depth[fork_depth] = block_depth;
     }
   ;
@@ -3937,7 +3939,7 @@ dec_fork_depth
   :
     {
       fork_depth--;
-      fork_block_depth = (int*)realloc( fork_block_depth, (fork_depth + 1) );
+      fork_block_depth = (int*)realloc( fork_block_depth, ((fork_depth + 1) * sizeof( int )) );
     }
   ;
 

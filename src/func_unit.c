@@ -720,6 +720,9 @@ void funit_clean( func_unit* funit ) {
     /* Free statistic structure */
     statistic_dealloc( funit->stat );
 
+    /* Free tf elements */
+    funit_link_delete_list( funit->tf_head, FALSE );
+
   }
 
 }
@@ -746,6 +749,9 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.8  2005/12/12 23:25:37  phase1geo
+ Fixing memory faults.  This is a work in progress.
+
  Revision 1.7  2005/12/01 21:11:16  phase1geo
  Adding more error checking diagnostics into regression suite.  Full regression
  passes.

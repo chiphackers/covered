@@ -612,6 +612,9 @@ static int yywrap() {
     fclose( yyin );
   }
   
+  /* Delete the current buffer */
+  yy_delete_buffer( YY_CURRENT_BUFFER );
+  
   /*
    If we have no more modules to find in our module list, then remove the
    temporary preprocessor file, deallocate the found_modules tree and
@@ -660,7 +663,7 @@ static int yywrap() {
   PPVLlex();
   
   fclose( out );
-  
+
   yyrestart( fopen( ppfilename, "r" ) );
   
   yylloc.first_line  = 1;
@@ -708,7 +711,7 @@ void reset_lexer( str_link* file_list_head ) {
   PPVLlex();
   
   fclose( out );
-  
+
   yyrestart( fopen( ppfilename, "r" ) );
 
   yylloc.text        = curr->str;

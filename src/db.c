@@ -116,7 +116,7 @@ void db_close() {
   /* Remove memory allocated for instance_root and mod_head */
   assert( instance_root->funit != NULL );
   instance_dealloc( instance_root, instance_root->name );
-  funit_link_delete_list( funit_head );
+  funit_link_delete_list( funit_head, TRUE );
 
   instance_root = NULL;
   funit_head    = NULL;
@@ -1624,6 +1624,9 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.153  2005/12/13 23:15:14  phase1geo
+ More fixes for memory leaks.  Regression fully passes at this point.
+
  Revision 1.152  2005/12/12 23:25:37  phase1geo
  Fixing memory faults.  This is a work in progress.
 

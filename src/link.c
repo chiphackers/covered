@@ -732,11 +732,12 @@ void fsm_link_delete_list( fsm_link* head ) {
 }
 
 /*!
- \param head  Pointer to head funit_link element of list.
+ \param head      Pointer to head funit_link element of list.
+ \param rm_funit  If TRUE, deallocates specified functional unit; otherwise, just deallocates the links
 
  Deletes each element of the specified list.
 */
-void funit_link_delete_list( funit_link* head ) {
+void funit_link_delete_list( funit_link* head, bool rm_funit ) {
 
   funit_link* tmp;   /* Temporary pointer to current link in list */
 
@@ -746,8 +747,10 @@ void funit_link_delete_list( funit_link* head ) {
     head = tmp->next;
 
     /* Deallocate signal */
-    funit_dealloc( tmp->funit );
-    tmp->funit = NULL;
+    if( rm_funit ) {
+      funit_dealloc( tmp->funit );
+      tmp->funit = NULL;
+    }
 
     /* Deallocate funit_link element itself */
     free_safe( tmp );
@@ -759,6 +762,10 @@ void funit_link_delete_list( funit_link* head ) {
 
 /*
  $Log$
+ Revision 1.37  2005/11/22 16:46:27  phase1geo
+ Fixed bug with clearing the assigned bit in the binding phase.  Full regression
+ now runs cleanly.
+
  Revision 1.36  2005/11/22 05:30:33  phase1geo
  Updates to regression suite for clearing the assigned bit when a statement
  block is removed from coverage consideration and it is assigning that signal.

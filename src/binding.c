@@ -262,13 +262,12 @@ void bind_remove( int id, bool clear_assigned ) {
 
   while( curr != NULL ) {
 
-    assert( curr->exp != NULL );
-
-    if( ((curr->clear_assigned == 0) && (curr->exp->id == id)) || (curr->clear_assigned == id) ) {
+    if( ((curr->exp != NULL) && (curr->exp->id == id)) || (curr->clear_assigned == id) || (curr->rm_stmt == id) ) {
       
       if( clear_assigned ) {
 
         curr->clear_assigned = id;
+        curr->exp            = NULL;
 
       } else {
 
@@ -313,26 +312,20 @@ void bind_rm_stmt( int id ) {
 
   exp_bind* curr;  /* Pointer to current exp_bind link */
 
-  // printf( "In bind_rm_stmt, id: %d\n", id );
-  // bind_display_list();
-
   /* Find the binding element that matches this expression ID */
   curr = eb_head;
 
   while( curr != NULL ) {
 
-    assert( curr->exp != NULL );
-
     /* Tell the binder to remove the statement block */
-    if( !curr->rm_stmt && (curr->exp->id == id) ) {
+    if( !curr->rm_stmt && (curr->exp != NULL) && (curr->exp->id == id) ) {
       curr->rm_stmt = id;
+      curr->exp     = NULL;
     }      
 
     curr = curr->next;
 
   }
-
-  // bind_display_list();
 
 }
 
@@ -634,16 +627,14 @@ void bind( bool cdd_reading ) {
 
   while( curr_eb != NULL ) {
 
-    assert( curr_eb->exp != NULL );
-
-    /* Figure out ID to clear from the binding list after the bind occurs */
-    if( curr_eb->clear_assigned == 0 ) {
-      id = curr_eb->exp->id;
-    } else {
-      id = curr_eb->clear_assigned;
-    }
-
     if( curr_eb->stmt_id == 0 ) {
+
+      /* Figure out ID to clear from the binding list after the bind occurs */
+      if( curr_eb->clear_assigned == 0 ) {
+        id = curr_eb->exp->id;
+      } else {
+        id = curr_eb->clear_assigned;
+      }
 
       /* Handle signal binding */
       if( curr_eb->type == 0 ) {
@@ -679,6 +670,13 @@ void bind( bool cdd_reading ) {
       }
 
     } else {
+
+      /* Figure out ID to clear from the binding list after the bind occurs */
+      if( curr_eb->rm_stmt > 0 ) {
+        id = curr_eb->rm_stmt;
+      } else {
+        id = curr_eb->exp->id;
+      }
 
       /* Handle statement binding */
       bound = bind_statement( curr_eb->stmt_id, curr_eb->exp, curr_eb->funit, cdd_reading, curr_eb->rm_stmt );
@@ -756,6 +754,9 @@ void bind( bool cdd_reading ) {
 
 /* 
  $Log$
+ Revision 1.53  2005/12/12 23:25:37  phase1geo
+ Fixing memory faults.  This is a work in progress.
+
  Revision 1.52  2005/12/05 23:30:35  phase1geo
  Adding support for disabling tasks.  Full regression passes.
 

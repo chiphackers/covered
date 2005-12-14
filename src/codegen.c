@@ -111,6 +111,7 @@ void codegen_create_expr_helper( char** code,
         codegen_create_expr_helper( code, code_index, tmpstr, right, right_depth, last_same_line, last, NULL, 0, FALSE, NULL );
         free_safe( tmpstr );
       } else {
+        free_safe( code[code_index] );
         code[code_index] = tmpstr;
       }
     } else {
@@ -663,6 +664,9 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.49  2005/12/13 23:15:14  phase1geo
+ More fixes for memory leaks.  Regression fully passes at this point.
+
  Revision 1.48  2005/12/08 22:50:58  phase1geo
  Adding support for while loops.  Added while1 and while1.1 to regression suite.
  Ran VCS on regression suite and updated.  Full regression passes.

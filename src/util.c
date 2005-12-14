@@ -388,6 +388,8 @@ void directory_load( char* dir, str_link* ext_head, str_link** file_head, str_li
       }
     }
 
+    closedir( dir_handle );
+
   }
 
 }
@@ -864,6 +866,9 @@ const char* get_funit_type( int type ) {
 
 /*
  $Log$
+ Revision 1.35  2005/12/12 23:25:37  phase1geo
+ Fixing memory faults.  This is a work in progress.
+
  Revision 1.34  2005/12/01 19:46:50  phase1geo
  Removed Tcl/Tk from source files if HAVE_TCLTK is not defined.
 
