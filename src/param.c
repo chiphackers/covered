@@ -683,10 +683,16 @@ void mod_parm_dealloc( mod_parm* parm, bool recursive ) {
       mod_parm_dealloc( parm->next, recursive );
     }
 
-    free_safe( parm->name );
+    /* Remove the attached expression tree */
+    expression_dealloc( parm->expr, TRUE );
 
+    /* Remove the expression list that this parameter is used in */
     exp_link_delete_list( parm->exp_head, FALSE );
 
+    /* Remove the parameter name */
+    free_safe( parm->name );
+
+    /* Remove the parameter itself */
     free_safe( parm );
 
   }
@@ -723,6 +729,9 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.37  2005/11/28 23:28:47  phase1geo
+ Checkpointing with additions for threads.
+
  Revision 1.36  2005/11/18 23:52:55  phase1geo
  More regression cleanup -- still quite a few errors to handle here.
 

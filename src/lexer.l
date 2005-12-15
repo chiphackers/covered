@@ -39,10 +39,11 @@ extern char* ppfilename;
 /*!
  Contains state before entering comment block.
 */
-static int  comment_enter;
-static void line_directive();
-static void line_directive2();
-static int  yywrap();
+static int   comment_enter;
+static void  line_directive();
+static void  line_directive2();
+static int   yywrap();
+static char* tmpstr;
 
 static str_link* filelist_head = 0;
 static str_link* filelist_curr = 0;
@@ -195,8 +196,9 @@ WSPACE [ \t\b\f]+
         if( ignore_mode == 0 ) {
           yylval.text = strdup_safe( yytext, __FILE__, __LINE__ );
           yylval.text[ strlen( yytext ) - 1 ] = '\0';
+          tmpstr = yylval.text;
           yylval.number = vector_from_string( &(yylval.text), TRUE );
-          free_safe( yylval.text );
+          free_safe( tmpstr );
           return STRING;
         } else {
           return UNUSED_STRING;

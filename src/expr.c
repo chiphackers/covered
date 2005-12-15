@@ -163,6 +163,7 @@ expression* expression_create( expression* right, expression* left, int op, bool
   int         lwidth = 0;  /* Bit width of expression on left */
 
   new_expr = (expression*)malloc_safe( sizeof( expression ), __FILE__, __LINE__ );
+  // printf( "Allocated expression %p\n", new_expr );
 
   new_expr->suppl.all      = 0;
   new_expr->suppl.part.lhs = (nibble)lhs & 0x1;
@@ -1939,6 +1940,7 @@ void expression_dealloc( expression* expr, bool exp_only ) {
     }
 
     /* Remove this expression memory */
+    // printf( "Deallocated expression %p  %d, %s line %d\n", expr, expr->id, expression_string_op( expr->op ), expr->line );
     free_safe( expr );
 
   }
@@ -1948,6 +1950,9 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.143  2005/12/13 23:15:15  phase1geo
+ More fixes for memory leaks.  Regression fully passes at this point.
+
  Revision 1.142  2005/12/10 06:41:18  phase1geo
  Added support for FOR loops and added diagnostics to regression suite to verify
  functionality.  Fixed statement deallocation function (removed a bunch of code
