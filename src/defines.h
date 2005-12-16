@@ -753,21 +753,21 @@
 /*!
  These expressions all use someone else's vectors instead of their own.
 */
-#define EXPR_OWNS_VEC(op,suppl)         ((op != EXP_OP_SIG)        && \
-                                         (op != EXP_OP_SBIT_SEL)   && \
-                                         (op != EXP_OP_MBIT_SEL)   && \
-                                         (op != EXP_OP_TRIGGER)    && \
-                                         (op != EXP_OP_PARAM)      && \
-                                         (op != EXP_OP_PARAM_SBIT) && \
-                                         (op != EXP_OP_PARAM_MBIT) && \
-                                         (op != EXP_OP_ASSIGN)     && \
-                                         (op != EXP_OP_DASSIGN)    && \
-                                         (op != EXP_OP_BASSIGN)    && \
-                                         (op != EXP_OP_NASSIGN)    && \
-                                         (op != EXP_OP_IF)         && \
-                                         (op != EXP_OP_WHILE)      && \
-                                         (op != EXP_OP_FUNC_CALL)  && \
-                                         ((op == EXP_OP_STATIC) || (ESUPPL_IS_LHS( suppl ) == 0)))
+#define EXPR_OWNS_VEC(o,s)              ((o != EXP_OP_SIG)        && \
+                                         (o != EXP_OP_SBIT_SEL)   && \
+                                         (o != EXP_OP_MBIT_SEL)   && \
+                                         (o != EXP_OP_TRIGGER)    && \
+                                         (o != EXP_OP_PARAM)      && \
+                                         (o != EXP_OP_PARAM_SBIT) && \
+                                         (o != EXP_OP_PARAM_MBIT) && \
+                                         (o != EXP_OP_ASSIGN)     && \
+                                         (o != EXP_OP_DASSIGN)    && \
+                                         (o != EXP_OP_BASSIGN)    && \
+                                         (o != EXP_OP_NASSIGN)    && \
+                                         (o != EXP_OP_IF)         && \
+                                         (o != EXP_OP_WHILE)      && \
+                                         (o != EXP_OP_FUNC_CALL)  && \
+                                         ((o == EXP_OP_STATIC) || (ESUPPL_IS_LHS( s ) == 0)))
 
 /*!
  Returns a value of true if the specified expression is considered a unary expression by
@@ -1745,6 +1745,10 @@ struct thread_s {
 
 /*
  $Log$
+ Revision 1.153  2005/12/16 06:25:15  phase1geo
+ Fixing lshift/rshift operations to avoid reading unallocated memory.  Updated
+ assign1.cdd file.
+
  Revision 1.152  2005/12/12 23:25:37  phase1geo
  Fixing memory faults.  This is a work in progress.
 

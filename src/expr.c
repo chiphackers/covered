@@ -178,6 +178,7 @@ expression* expression_create( expression* right, expression* left, int op, bool
   new_expr->right          = right;
   new_expr->left           = left;
   new_expr->value          = (vector*)malloc_safe( sizeof( vector ), __FILE__, __LINE__ );
+  // printf( "Allocated expression vector %p   %d %s line %d\n", new_expr->value, id, expression_string_op( op ), line );
   new_expr->table          = NULL;
   new_expr->stmt           = NULL;
 
@@ -644,21 +645,7 @@ void expression_db_write( expression* expr, FILE* file ) {
     (expr->op == EXP_OP_STATIC) ? 0 : expression_get_id( expr->left )
   );
 
-  if( (expr->op != EXP_OP_SIG)        &&
-      (expr->op != EXP_OP_SBIT_SEL)   &&
-      (expr->op != EXP_OP_MBIT_SEL)   &&
-      (expr->op != EXP_OP_TRIGGER)    &&
-      (expr->op != EXP_OP_PARAM)      &&
-      (expr->op != EXP_OP_PARAM_SBIT) &&
-      (expr->op != EXP_OP_PARAM_MBIT) &&
-      (expr->op != EXP_OP_ASSIGN)     &&
-      (expr->op != EXP_OP_DASSIGN)    &&
-      (expr->op != EXP_OP_BASSIGN)    &&
-      (expr->op != EXP_OP_NASSIGN)    &&
-      (expr->op != EXP_OP_IF)         &&
-      (expr->op != EXP_OP_WHILE)      &&
-      (expr->op != EXP_OP_FUNC_CALL)  &&
-      ((expr->op == EXP_OP_STATIC) || (ESUPPL_IS_LHS( expr->suppl ) == 0)) ) {
+  if( EXPR_OWNS_VEC( expr->op, expr->suppl ) ) {
     vector_db_write( expr->value, file, (expr->op == EXP_OP_STATIC) );
   }
 
@@ -743,22 +730,7 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) {
 
       /* Create new expression */
       expr = expression_create( right, left, op, ESUPPL_IS_LHS( suppl ), id, linenum,
-                                ((column >> 16) & 0xffff), (column & 0xffff),
-                                ((op != EXP_OP_SIG)        && 
-                                 (op != EXP_OP_PARAM)      &&
-                                 (op != EXP_OP_TRIGGER)    &&
-                                 (op != EXP_OP_SBIT_SEL)   &&
-                                 (op != EXP_OP_PARAM_SBIT) &&
-                                 (op != EXP_OP_MBIT_SEL)   &&
-                                 (op != EXP_OP_PARAM_MBIT) &&
-                                 (op != EXP_OP_ASSIGN)     &&
-                                 (op != EXP_OP_DASSIGN)    &&
-                                 (op != EXP_OP_BASSIGN)    &&
-                                 (op != EXP_OP_NASSIGN)    &&
-                                 (op != EXP_OP_IF)         &&
-				 (op != EXP_OP_WHILE)      &&
-                                 (op != EXP_OP_FUNC_CALL)  &&
-                                 ((op == EXP_OP_STATIC) || (ESUPPL_IS_LHS( suppl ) == 0))) );
+                                ((column >> 16) & 0xffff), (column & 0xffff), EXPR_OWNS_VEC( op, suppl ) );
 
       expr->suppl.all = suppl.all;
 
@@ -774,21 +746,7 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) {
         left->parent->expr = expr;
       }
 
-      if( (op != EXP_OP_SIG)        && 
-          (op != EXP_OP_SBIT_SEL)   && 
-          (op != EXP_OP_MBIT_SEL)   &&
-          (op != EXP_OP_TRIGGER)    &&
-          (op != EXP_OP_PARAM)      &&
-          (op != EXP_OP_PARAM_SBIT) &&
-          (op != EXP_OP_PARAM_MBIT) &&
-          (op != EXP_OP_ASSIGN)     &&
-          (op != EXP_OP_DASSIGN)    &&
-          (op != EXP_OP_BASSIGN)    &&
-          (op != EXP_OP_NASSIGN)    &&
-          (op != EXP_OP_IF)         &&
-          (op != EXP_OP_WHILE)      &&
-          (op != EXP_OP_FUNC_CALL)  &&
-          ((op == EXP_OP_STATIC) || (ESUPPL_IS_LHS( suppl ) == 0)) ) {
+      if( EXPR_OWNS_VEC( op, suppl ) ) {
 
         /* Read in vector information */
         if( vector_db_read( &vec, line ) ) {
@@ -902,21 +860,7 @@ bool expression_db_merge( expression* base, char** line, bool same ) {
       /* Merge expression supplemental fields */
       base->suppl.all = (base->suppl.all & ESUPPL_MERGE_MASK) | (suppl.all & ESUPPL_MERGE_MASK);
 
-      if( (op != EXP_OP_SIG)        &&
-          (op != EXP_OP_SBIT_SEL)   &&
-          (op != EXP_OP_MBIT_SEL)   &&
-          (op != EXP_OP_TRIGGER)    &&
-          (op != EXP_OP_PARAM)      &&
-          (op != EXP_OP_PARAM_SBIT) &&
-          (op != EXP_OP_PARAM_MBIT) &&
-          (op != EXP_OP_ASSIGN)     &&
-          (op != EXP_OP_DASSIGN)    &&
-          (op != EXP_OP_BASSIGN)    &&
-          (op != EXP_OP_NASSIGN)    &&
-          (op != EXP_OP_IF)         &&
-          (op != EXP_OP_WHILE)      &&
-          (op != EXP_OP_FUNC_CALL)  &&
-          ((op == EXP_OP_STATIC) || (ESUPPL_IS_LHS( suppl ) == 0)) ) {
+      if( EXPR_OWNS_VEC( op, suppl ) ) {
 
         /* Merge expression vectors */
         retval = vector_db_merge( base->value, line, same );
@@ -977,21 +921,7 @@ bool expression_db_replace( expression* base, char** line ) {
       /* Merge expression supplemental fields */
       base->suppl.all = suppl.all;
 
-      if( (op != EXP_OP_SIG)        &&
-          (op != EXP_OP_SBIT_SEL)   &&
-          (op != EXP_OP_MBIT_SEL)   &&
-          (op != EXP_OP_TRIGGER)    &&
-          (op != EXP_OP_PARAM)      &&
-          (op != EXP_OP_PARAM_SBIT) &&
-          (op != EXP_OP_PARAM_MBIT) &&
-          (op != EXP_OP_ASSIGN)     &&
-          (op != EXP_OP_DASSIGN)    &&
-          (op != EXP_OP_BASSIGN)    &&
-          (op != EXP_OP_NASSIGN)    &&
-          (op != EXP_OP_IF)         &&
-          (op != EXP_OP_WHILE)      &&
-          (op != EXP_OP_FUNC_CALL)  &&
-          ((op == EXP_OP_STATIC) || (ESUPPL_IS_LHS( suppl ) == 0)) ) {
+      if( EXPR_OWNS_VEC( op, suppl ) ) {
 
         /* Merge expression vectors */
         retval = vector_db_replace( base->value, line );
@@ -1846,21 +1776,7 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
     op = expr->op;
 
-    if( (op != EXP_OP_SIG       ) && 
-        (op != EXP_OP_SBIT_SEL  ) &&
-        (op != EXP_OP_MBIT_SEL  ) &&
-        (op != EXP_OP_TRIGGER   ) &&
-        (op != EXP_OP_PARAM     ) &&
-        (op != EXP_OP_PARAM_SBIT) &&
-        (op != EXP_OP_PARAM_MBIT) &&
-        (op != EXP_OP_ASSIGN    ) &&
-        (op != EXP_OP_DASSIGN   ) &&
-        (op != EXP_OP_BASSIGN   ) &&
-        (op != EXP_OP_NASSIGN   ) &&
-        (op != EXP_OP_IF        ) &&
-        (op != EXP_OP_WHILE     ) &&
-        (op != EXP_OP_FUNC_CALL ) &&
-        ((ESUPPL_IS_LHS( expr->suppl ) == 0) || (op == EXP_OP_STATIC)) ) {
+    if( EXPR_OWNS_VEC( op, expr->suppl ) ) {
 
       /* Free up memory from vector value storage */
       vector_dealloc( expr->value );
@@ -1890,7 +1806,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
           (op != EXP_OP_NASSIGN) &&
           (op != EXP_OP_IF)      &&
           (op != EXP_OP_WHILE) ) {
+        // printf( "Deallocated expression vector only %p   %d %s line %d\n", expr->value, expr->id, expression_string_op( expr->op ), expr->line );
         free_safe( expr->value );
+      } else if( expr->value != NULL ) {
+        // printf( "Did not remove expression vector but is not NULL %d, %s line %d\n", expr->id, expression_string_op( expr->op ), expr->line );
       }
 
       if( expr->sig == NULL ) {
@@ -1950,6 +1869,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.144  2005/12/15 17:24:46  phase1geo
+ More fixes for memory fault clean-up.  At this point all of the always
+ diagnostics have been run and come up clean with valgrind.  Full regression
+ passes.
+
  Revision 1.143  2005/12/13 23:15:15  phase1geo
  More fixes for memory leaks.  Regression fully passes at this point.
 

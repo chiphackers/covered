@@ -3325,6 +3325,8 @@ net_decl_assign
         if( $3 != NULL ) {
           tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
           tmp  = db_create_expression( $3, tmp, EXP_OP_DASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+          vector_dealloc( tmp->value );
+          tmp->value = $3->value;
           stmt = db_create_statement( tmp );
           stmt->exp->suppl.part.stmt_head       = 1;
           stmt->exp->suppl.part.stmt_stop_true  = 1;
@@ -3349,6 +3351,8 @@ net_decl_assign
         if( $4 != NULL ) {
           tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @2.first_line, @2.first_column, (@2.last_column - 1), $2 );
           tmp  = db_create_expression( $4, tmp, EXP_OP_DASSIGN, FALSE, @2.first_line, @2.first_column, (@4.last_column - 1), NULL );
+          vector_dealloc( tmp->value );
+          tmp->value = $4->value;
           stmt = db_create_statement( tmp );
           stmt->exp->suppl.part.stmt_head       = 1;
           stmt->exp->suppl.part.stmt_stop_true  = 1;
@@ -3398,18 +3402,14 @@ event_control
     {
       vsignal*    sig;
       expression* tmp;
-      if( ignore_mode == 0 ) {
-        sig = db_find_signal( $2 );
-        if( sig != NULL ) {
-          tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL );
-          vector_dealloc( tmp->value );
-          tmp->value = sig->value;
-          $$ = tmp;
-        } else {
-          $$ = NULL;
-        }
+      if( (ignore_mode == 0) && ($2 != NULL) ) {
+        tmp = db_create_expression( NULL, NULL, EXP_OP_SIG, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), $2 );
         free_safe( $2 );
+        $$ = tmp;
       } else {
+        if( $2 != NULL ) {
+          free_safe( $2 );
+        }
         $$ = NULL;
       }
     }
