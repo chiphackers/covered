@@ -751,6 +751,25 @@
                                          ((x->op == EXP_OP_NB_CALL) && !ESUPPL_IS_IN_FUNC(x->suppl)))
 
 /*!
+ These expressions all use someone else's vectors instead of their own.
+*/
+#define EXPR_OWNS_VEC(op,suppl)         ((op != EXP_OP_SIG)        && \
+                                         (op != EXP_OP_SBIT_SEL)   && \
+                                         (op != EXP_OP_MBIT_SEL)   && \
+                                         (op != EXP_OP_TRIGGER)    && \
+                                         (op != EXP_OP_PARAM)      && \
+                                         (op != EXP_OP_PARAM_SBIT) && \
+                                         (op != EXP_OP_PARAM_MBIT) && \
+                                         (op != EXP_OP_ASSIGN)     && \
+                                         (op != EXP_OP_DASSIGN)    && \
+                                         (op != EXP_OP_BASSIGN)    && \
+                                         (op != EXP_OP_NASSIGN)    && \
+                                         (op != EXP_OP_IF)         && \
+                                         (op != EXP_OP_WHILE)      && \
+                                         (op != EXP_OP_FUNC_CALL)  && \
+                                         ((op == EXP_OP_STATIC) || (ESUPPL_IS_LHS( suppl ) == 0)))
+
+/*!
  Returns a value of true if the specified expression is considered a unary expression by
  the combinational logic report generator.
 */
@@ -1726,6 +1745,9 @@ struct thread_s {
 
 /*
  $Log$
+ Revision 1.152  2005/12/12 23:25:37  phase1geo
+ Fixing memory faults.  This is a work in progress.
+
  Revision 1.151  2005/12/10 06:41:18  phase1geo
  Added support for FOR loops and added diagnostics to regression suite to verify
  functionality.  Fixed statement deallocation function (removed a bunch of code

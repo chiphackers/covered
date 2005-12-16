@@ -1512,9 +1512,7 @@ bool vector_op_lshift( vector* tgt, vector* left, vector* right ) {
 
     shift_val = vector_to_int( right );
 
-    if( shift_val >= tgt->width ) {
-      shift_val = tgt->width;
-    } else {
+    if( shift_val < left->width ) {
       retval |= vector_set_value( tgt, left->value, left->width, 0, shift_val );
     }
 
@@ -1560,9 +1558,7 @@ bool vector_op_rshift( vector* tgt, vector* left, vector* right ) {
 
     shift_val = vector_to_int( right );
 
-    if( shift_val >= tgt->width ) {
-      shift_val = tgt->width;
-    } else {
+    if( shift_val < left->width ) {
       retval |= vector_set_value( tgt, left->value, left->width, shift_val, 0 );
     }
 
@@ -1865,6 +1861,11 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.65  2005/12/01 16:08:19  phase1geo
+ Allowing nested functional units within a module to get parsed and handled correctly.
+ Added new nested_block1 diagnostic to test nested named blocks -- will add more tests
+ later for different combinations.  Updated regression suite which now passes.
+
  Revision 1.64  2005/11/21 22:21:58  phase1geo
  More regression updates.  Also made some updates to debugging output.
 
