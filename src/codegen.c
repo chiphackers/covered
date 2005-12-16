@@ -333,6 +333,8 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
           break;
       }
 
+      // free_safe( tmpstr );
+
     } else if( (expr->op == EXP_OP_SBIT_SEL) || (expr->op == EXP_OP_PARAM_SBIT) ) {
 
       assert( expr->sig != NULL );
@@ -369,6 +371,8 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
                              right_code, right_code_depth, expr->right->line, "]" );
       }
 
+      free_safe( tmpstr );
+
     } else if( (expr->op == EXP_OP_FUNC_CALL) || (expr->op == EXP_OP_TASK_CALL) ) {
 
       assert( expr->stmt != NULL );
@@ -401,6 +405,8 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
       *code       = (char**)malloc_safe( sizeof( char* ), __FILE__, __LINE__ );
       (*code)[0]  = strdup_safe( tmpstr, __FILE__, __LINE__ );
       *code_depth = 1;
+
+      free_safe( tmpstr );
 
     } else if( expr->op == EXP_OP_DEFAULT ) {
 
@@ -665,6 +671,9 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.51  2005/12/14 23:25:50  phase1geo
+ Checkpointing some more memory fault fixes.
+
  Revision 1.50  2005/12/14 23:03:24  phase1geo
  More updates to remove memory faults.  Still a work in progress but full
  regression passes.
