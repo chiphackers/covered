@@ -125,6 +125,7 @@ void codegen_create_expr_helper( char** code,
         free_safe( left[i] );
         if( right_depth > 0 ) {
           codegen_create_expr_helper( code, (code_index + i), tmpstr, right, right_depth, last_same_line, last, NULL, 0, FALSE, NULL );
+          free_safe( tmpstr );
         } else {
           code[code_index+i] = tmpstr;
         }
@@ -671,6 +672,9 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.52  2005/12/16 23:26:41  phase1geo
+ Last set of memory leak fixes to get all assign diagnostics to run cleanly.
+
  Revision 1.51  2005/12/14 23:25:50  phase1geo
  Checkpointing some more memory fault fixes.
 
