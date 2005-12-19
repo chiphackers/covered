@@ -264,7 +264,8 @@ WSPACE [ \t\b\f]+
      yylloc.last_column += strlen( yytext );
      if( rc == IDENTIFIER ) {
        if( ignore_mode == 0 ) {
-         yylval.text  = strdup_safe( yytext, __FILE__, __LINE__ );
+         yylval.text = strdup_safe( yytext, __FILE__, __LINE__ );
+         // printf( "Allocated IDENTIFIER %p  %s, line %d\n", yylval.text, yylval.text, yylloc.first_line );
          if( strncmp( yylval.text, "PATHPULSE$", 10) == 0 ) {
            rc = PATHPULSE_IDENTIFIER;
          }
@@ -277,6 +278,7 @@ WSPACE [ \t\b\f]+
        }
        if( (last_keyword == K_module) || (last_keyword == K_primitive) ) {
          if( (foundmod = str_link_find( yytext, modlist_head )) == NULL ) {
+           free_safe( yylval.text );
            BEGIN( IGNORE_MODULE );
            tree_add( yytext, yylloc.text, FALSE, &found_modules );
            rc = IGNORE;

@@ -77,7 +77,7 @@ bool parse_design( char* top, char* output_db ) {
 
   bool retval = TRUE;  /* Return value of this function */
 
-  str_link_add( top, &modlist_head, &modlist_tail );
+  str_link_add( strdup_safe( top, __FILE__, __LINE__ ), &modlist_head, &modlist_tail );
 
   if( use_files_head != NULL ) {
 
@@ -204,6 +204,9 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
 
 /*
  $Log$
+ Revision 1.32  2005/12/12 23:25:37  phase1geo
+ Fixing memory faults.  This is a work in progress.
+
  Revision 1.31  2005/11/23 23:05:24  phase1geo
  Updating regression files.  Full regression now passes.
 

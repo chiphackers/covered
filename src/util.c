@@ -531,9 +531,9 @@ void scope_extract_back( char* scope, char* back, char* rest ) {
 */
 void scope_extract_scope( char* scope, char* front, char* back ) {
 
-  back[0]  = '\0';
+  back[0] = '\0';
 
-  if( strncmp( scope, front, strlen( front ) ) == 0 ) {
+  if( (strncmp( scope, front, strlen( front ) ) == 0) && (strlen( scope ) > strlen( front )) ) {
     strcpy( back, (scope + strlen( front ) + 1) );
   }
 
@@ -748,6 +748,7 @@ void free_safe( void* ptr ) {
 
   /* printf( "Freeing memory, addr: 0x%lx\n", ptr ); */
 
+  // printf( "Deallocating ptr %p\n", ptr );
   free( ptr );
 
 }
@@ -866,6 +867,10 @@ const char* get_funit_type( int type ) {
 
 /*
  $Log$
+ Revision 1.36  2005/12/14 23:03:24  phase1geo
+ More updates to remove memory faults.  Still a work in progress but full
+ regression passes.
+
  Revision 1.35  2005/12/12 23:25:37  phase1geo
  Fixing memory faults.  This is a work in progress.
 

@@ -496,6 +496,7 @@ static_expr_primary
         free_safe( $1 );
         $$ = tmp;
       } else {
+        assert( $1 == NULL );
         $$ = NULL;
       }
     }
@@ -1517,8 +1518,8 @@ module_item
           db_add_signal( curr->str, &left, &right, FALSE, TRUE );
           curr = curr->next;
         }
-        str_link_delete_list( $2 );
       }
+      str_link_delete_list( $2 );
     }
   /* Handles instantiations of modules and user-defined primitives. */
   | IDENTIFIER parameter_value_opt gate_instance_list ';'
@@ -1607,6 +1608,12 @@ module_item
           free_safe( $3 );
         } else {
           ignore_mode++;
+        }
+        if( $2 != NULL ) {
+          free_safe( $2 );
+        }
+        if( $3 != NULL ) {
+          free_safe( $3 );
         }
       }
     }
@@ -2471,7 +2478,9 @@ lpvalue
         free_safe( $1 );
         $$  = tmp;
       } else {
-        free_safe( $1 );
+        if( $1 != NULL ) {
+          free_safe( $1 );
+        }
         $$  = NULL;
       }
     }
@@ -2484,7 +2493,9 @@ lpvalue
         $$  = tmp;
       } else {
         expression_dealloc( $4, FALSE );
-        free_safe( $1 );
+        if( $1 != NULL ) {
+          free_safe( $1 );
+        }
         $$  = NULL;
       }
     }
@@ -2498,7 +2509,9 @@ lpvalue
       } else {
         expression_dealloc( $4, FALSE );
         expression_dealloc( $6, FALSE );
-        free_safe( $1 );
+        if( $1 != NULL ) {
+          free_safe( $1 );
+        }
         $$  = NULL;
       }
     }
@@ -2527,7 +2540,9 @@ lavalue
         free_safe( $1 );
         $$  = tmp;
       } else {
-        free_safe( $1 );
+        if( $1 != NULL ) {
+          free_safe( $1 );
+        }
         $$  = NULL;
       }
     }
@@ -2540,7 +2555,9 @@ lavalue
         $$  = tmp;
       } else {
         expression_dealloc( $4, FALSE );
-        free_safe( $1 );
+        if( $1 != NULL ) {
+          free_safe( $1 );
+        }
         $$  = NULL;
       }
     }
@@ -2554,7 +2571,9 @@ lavalue
       } else {
         expression_dealloc( $4, FALSE );
         expression_dealloc( $6, FALSE );
-        free_safe( $1 );
+        if( $1 != NULL ) {
+          free_safe( $1 );
+        }
         $$  = NULL;
       }
     }
@@ -2703,8 +2722,8 @@ block_item_decl
           db_add_signal( tmp, NULL, NULL, FALSE, FALSE );
           curr = curr->next;
         }
-        str_link_delete_list( $2 );
       }
+      str_link_delete_list( $2 );
     }
   | K_realtime list_of_variables ';'
     {
@@ -2716,8 +2735,8 @@ block_item_decl
           db_add_signal( tmp, NULL, NULL, FALSE, FALSE );
           curr = curr->next;
         }
-        str_link_delete_list( $2 );
       }
+      str_link_delete_list( $2 );
     }
   | K_parameter parameter_assign_list ';'
   | K_localparam localparam_assign_list ';'
@@ -3544,8 +3563,8 @@ defparam_assign_list
 defparam_assign
   : identifier '=' expression
     {
-      if( ignore_mode == 0 ) {
-        expression_dealloc( $3, FALSE );
+      expression_dealloc( $3, FALSE );
+      if( $1 != NULL ) {
         free_safe( $1 );
       }
     }
@@ -3621,7 +3640,7 @@ gate_instance_list
   /* A gate_instance is a module instantiation or a built in part
      type. In any case, the gate has a set of connections to ports. */
 gate_instance
-  : IDENTIFIER '(' { ignore_mode++; } expression_list { ignore_mode--; } ')'
+  : IDENTIFIER ignore_more '(' expression_list ')' ignore_less
     {
       if( ignore_mode == 0 ) {
         $$ = $1;
@@ -3629,11 +3648,11 @@ gate_instance
         $$ = NULL;
       }
     }
-  | UNUSED_IDENTIFIER '(' expression_list ')'
+  | UNUSED_IDENTIFIER ignore_more '(' expression_list ')' ignore_less
     {
       $$ = NULL;
     }
-  | IDENTIFIER { ignore_mode++; } range '(' expression_list { ignore_mode--; } ')'
+  | IDENTIFIER ignore_more range '(' expression_list ')' ignore_less
     {
       if( ignore_mode == 0 ) {
         $$ = $1;
@@ -3641,15 +3660,15 @@ gate_instance
         $$ = NULL;
       }
     }
-  | '(' { ignore_mode++; } expression_list { ignore_mode--; } ')'
+  | '(' ignore_more expression_list ignore_less ')'
     {
       $$ = NULL;
     }
-  | IDENTIFIER '(' port_name_list ')'
+  | IDENTIFIER ignore_more '(' port_name_list ')' ignore_less
     {
       $$ = $1;
     }
-  | UNUSED_IDENTIFIER '(' port_name_list ')'
+  | UNUSED_IDENTIFIER ignore_more '(' port_name_list ')' ignore_less
     {
       $$ = NULL;
     }
@@ -3733,17 +3752,26 @@ parameter_assign
 localparam_assign_list
   : localparam_assign
     {
+      if( $1 != NULL ) {
+        free_safe( $1 );
+      }
       $$ = NULL;
     }
   | range localparam_assign
     {
-      if( ignore_mode == 0 ) {
+      if( $1 != NULL ) {
         free_safe( $1 );
+      }
+      if( $2 != NULL ) {
+        free_safe( $2 );
       }
       $$ = NULL;
     }
   | localparam_assign_list ',' localparam_assign
     {
+      if( $3 != NULL ) {
+        free_safe( $3 );
+      }
       $$ = NULL;
     }
   ;
@@ -3863,8 +3891,18 @@ spec_notifier_opt
 spec_notifier
   : ','
   | ','  identifier
+    {
+      if( $2 != NULL ) {
+        free_safe( $2 );
+      }
+    }
   | spec_notifier ',' 
   | spec_notifier ',' identifier
+    {
+      if( $3 != NULL ) {
+        free_safe( $3 );
+      }
+    }
   | UNUSED_IDENTIFIER
   ;
 
