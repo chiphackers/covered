@@ -58,6 +58,8 @@ tnode* tree_add( const char* key, const char* value, bool override, tnode** root
         if( override ) {
           free_safe( curr->value );
           curr->value = node->value;
+        } else {
+          free_safe( node->value );
         }
 
         free_safe( node->name );
@@ -270,6 +272,15 @@ void tree_dealloc( tnode* root ) {
 
 /*
  $Log$
+ Revision 1.2  2004/03/16 05:45:43  phase1geo
+ Checkin contains a plethora of changes, bug fixes, enhancements...
+ Some of which include:  new diagnostics to verify bug fixes found in field,
+ test generator script for creating new diagnostics, enhancing error reporting
+ output to include filename and line number of failing code (useful for error
+ regression testing), support for error regression testing, bug fixes for
+ segmentation fault errors found in field, additional data integrity features,
+ and code support for GUI tool (this submission does not include TCL files).
+
  Revision 1.1  2003/01/04 09:25:15  phase1geo
  Fixing file search algorithm to fix bug where unexpected module that was
  ignored cannot be found.  Added instance7.v diagnostic to verify appropriate

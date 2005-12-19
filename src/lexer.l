@@ -669,7 +669,8 @@ static int yywrap() {
   
   fclose( out );
 
-  yyrestart( fopen( ppfilename, "r" ) );
+  yyin = fopen( ppfilename, "r" );
+  yyrestart( yyin );
   
   yylloc.first_line  = 1;
   yylloc.last_column = 0;
@@ -717,7 +718,8 @@ void reset_lexer( str_link* file_list_head ) {
   
   fclose( out );
 
-  yyrestart( fopen( ppfilename, "r" ) );
+  yyin = fopen( ppfilename, "r" );
+  yyrestart( yyin );
 
   yylloc.text        = curr->str;
   yylloc.first_line  = 1;

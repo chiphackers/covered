@@ -1604,8 +1604,6 @@ module_item
           db_add_signal( tmp, $2->left, $2->right, FALSE, FALSE );
           static_expr_dealloc( $2->left, FALSE );
           static_expr_dealloc( $2->right, FALSE );
-          free_safe( $2 );
-          free_safe( $3 );
         } else {
           ignore_mode++;
         }

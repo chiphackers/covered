@@ -8,8 +8,8 @@
 
 COVERED_SRC   = ../../src
 COVERED       = $(COVERED_SRC)/covered
-#COVERED       = valgrind --tool=memcheck --leak-check=yes --show-reachable=yes --num-callers=10 -v $(COVERED_SRC)/covered
-#COVERED_GFLAG = -D
+VG_COVERED    = valgrind --tool=memcheck --leak-check=yes --show-reachable=yes --num-callers=10 --log-file=mem_check -v $(COVERED_SRC)/covered
+COVERED_GFLAG = -D
 
 IVERILOG       = iverilog
 IVERILOG_FLAGS = -y ./lib -I ./include -DRUNTEST
@@ -45,8 +45,8 @@ $(DIAGLIST):
 		echo Running $@; \
 		$(VERILOG) $(VERILOG_FLAGS) $@.v; \
 		$(VERILOG_CMD); \
-		$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@.cfg; \
-		$(COVERED) $(COVERED_GFLAG) report -d v -o $@.rptM $@.cdd; \
+		$(VG_COVERED) $(COVERED_GFLAG) score -f ../regress/$@.cfg; \
+		$(VG_COVERED) $(COVERED_GFLAG) report -d v -o $@.rptM $@.cdd; \
 		$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@.rptI $@.cdd; \
 		$(COVERED) $(COVERED_GFLAG) report -w -d v -o $@.rptWM $@.cdd; \
 		$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $@.rptWI $@.cdd; \
@@ -62,8 +62,8 @@ $(RACELIST):
 		echo Running $@; \
 		$(VERILOG) $(VERILOG_FLAGS) $@.v; \
 		$(VERILOG_CMD); \
-		$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@.cfg; \
-		$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -o $@.rptM $@.cdd; \
+		$(VG_COVERED) $(COVERED_GFLAG) score -f ../regress/$@.cfg; \
+		$(VG_COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -o $@.rptM $@.cdd; \
 		$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -i -o $@.rptI $@.cdd; \
 		$(COVERED) $(COVERED_GFLAG) report -w -d v -m ltcfr -o $@.rptWM $@.cdd; \
 		$(COVERED) $(COVERED_GFLAG) report -w -d v -m ltcfr -i -o $@.rptWI $@.cdd; \
@@ -79,21 +79,21 @@ $(MERGELIST):
 		echo Running $@; \
 		$(VERILOG) $(VERILOG_FLAGS) $@a.v; \
 		$(VERILOG_CMD); \
-		$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@a.cfg; \
-		$(COVERED) $(COVERED_GFLAG) report -d v -o $@a.rptM $@a.cdd; \
+		$(VG_COVERED) $(COVERED_GFLAG) score -f ../regress/$@a.cfg; \
+		$(VG_COVERED) $(COVERED_GFLAG) report -d v -o $@a.rptM $@a.cdd; \
 		$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@a.rptI $@a.cdd; \
 		$(COVERED) $(COVERED_GFLAG) report -w -d v -o $@a.rptWM $@a.cdd; \
 		$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $@a.rptWI $@a.cdd; \
 		./check_test $@a 0 0; \
 		$(VERILOG) $(VERILOG_FLAGS) $@b.v; \
 		$(VERILOG_CMD); \
-		$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@b.cfg; \
-		$(COVERED) $(COVERED_GFLAG) report -d v -o $@b.rptM $@b.cdd; \
+		$(VG_COVERED) $(COVERED_GFLAG) score -f ../regress/$@b.cfg; \
+		$(VG_COVERED) $(COVERED_GFLAG) report -d v -o $@b.rptM $@b.cdd; \
 		$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@b.rptI $@b.cdd; \
 		$(COVERED) $(COVERED_GFLAG) report -w -d v -o $@b.rptWM $@b.cdd; \
 		$(COVERED) $(COVERED_GFLAG) report -w -d v -i -o $@b.rptWI $@b.cdd; \
 		./check_test $@b 0 0; \
-		$(COVERED) $(COVERED_GFLAG) merge -o $@.cdd $@a.cdd $@b.cdd; \
+		$(VG_COVERED) $(COVERED_GFLAG) merge -o $@.cdd $@a.cdd $@b.cdd; \
 		$(COVERED) $(COVERED_GFLAG) report -d v -o $@.rptM $@.cdd; \
 		$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@.rptI $@.cdd; \
 		$(COVERED) $(COVERED_GFLAG) report -w -d v -o $@.rptWM $@.cdd; \

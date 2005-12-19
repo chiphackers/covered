@@ -371,6 +371,7 @@ bool funit_db_merge( func_unit* base, FILE* file, bool same ) {
       } else {
         retval = FALSE;
       }
+      free_safe( curr_line );
     } else {
       retval = FALSE;
     }
@@ -391,6 +392,7 @@ bool funit_db_merge( func_unit* base, FILE* file, bool same ) {
       } else {
         retval = FALSE;
       }
+      free_safe( curr_line );
     } else {
       retval = FALSE;
     }
@@ -409,6 +411,7 @@ bool funit_db_merge( func_unit* base, FILE* file, bool same ) {
       } else {
         retval = FALSE;
       }
+      free_safe( curr_line );
     } else {
       retval = FALSE;
     }
@@ -429,6 +432,7 @@ bool funit_db_merge( func_unit* base, FILE* file, bool same ) {
       } else {
         retval = FALSE;
       }
+      free_safe( curr_line );
     } else {
       retval = FALSE;
     }
@@ -448,6 +452,7 @@ bool funit_db_merge( func_unit* base, FILE* file, bool same ) {
         } else {
           retval = FALSE;
         }
+        free_safe( curr_line );
       } else {
         retval = FALSE;
       }
@@ -499,6 +504,7 @@ bool funit_db_replace( func_unit* base, FILE* file ) {
       } else {
         retval = FALSE;
       }
+      free_safe( curr_line );
     } else {
       retval = FALSE;
     }
@@ -519,6 +525,7 @@ bool funit_db_replace( func_unit* base, FILE* file ) {
       } else {
         retval = FALSE;
       }
+      free_safe( curr_line );
     } else {
       retval = FALSE;
     }
@@ -537,6 +544,7 @@ bool funit_db_replace( func_unit* base, FILE* file ) {
       } else {
         retval = FALSE;
       }
+      free_safe( curr_line );
     } else {
       retval = FALSE;
     }
@@ -557,6 +565,7 @@ bool funit_db_replace( func_unit* base, FILE* file ) {
       } else {
         retval = FALSE;
       }
+      free_safe( curr_line );
     } else {
       retval = FALSE;
     }
@@ -575,6 +584,7 @@ bool funit_db_replace( func_unit* base, FILE* file ) {
       } else {
         retval = FALSE;
       }
+      free_safe( curr_line );
     } else {
       retval = FALSE;
     }
@@ -687,15 +697,15 @@ void funit_clean( func_unit* funit ) {
       funit->filename = NULL;
     }
 
-    /* Free expression list */
-    exp_link_delete_list( funit->exp_head, TRUE );
-    funit->exp_head = NULL;
-    funit->exp_tail = NULL;
-
     /* Free signal list */
     sig_link_delete_list( funit->sig_head, TRUE );
     funit->sig_head = NULL;
     funit->sig_tail = NULL;
+
+    /* Free expression list */
+    exp_link_delete_list( funit->exp_head, TRUE );
+    funit->exp_head = NULL;
+    funit->exp_tail = NULL;
 
     /* Free statement list */
     stmt_link_delete_list( funit->stmt_head );
@@ -749,6 +759,10 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.9  2005/12/14 23:03:24  phase1geo
+ More updates to remove memory faults.  Still a work in progress but full
+ regression passes.
+
  Revision 1.8  2005/12/12 23:25:37  phase1geo
  Fixing memory faults.  This is a work in progress.
 

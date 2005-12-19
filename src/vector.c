@@ -953,8 +953,8 @@ int vector_to_int( vector* vec ) {
 */
 void vector_from_int( vector* vec, int value ) {
 
-  int width;      /* Number of bits to convert */
-  int i;          /* Loop iterator             */
+  int width;  /* Number of bits to convert */
+  int i;      /* Loop iterator */
 
   width = (vec->width < (SIZEOF_INT * 8)) ? vec->width : (SIZEOF_INT * 8);
 
@@ -1733,7 +1733,7 @@ bool vector_op_multiply( vector* tgt, vector* left, vector* right ) {
   }
 
   /* Set target value */
-  retval = vector_set_value( tgt, vec.value, tgt->width, 0, 0 );
+  retval = vector_set_value( tgt, vec.value, vec.width, 0, 0 );
 
   return( retval );
 
@@ -1866,6 +1866,9 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.67  2005/12/16 23:09:15  phase1geo
+ More updates to remove memory leaks.  Full regression passes.
+
  Revision 1.66  2005/12/16 06:25:15  phase1geo
  Fixing lshift/rshift operations to avoid reading unallocated memory.  Updated
  assign1.cdd file.
