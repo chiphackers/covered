@@ -331,6 +331,15 @@ void defparam_add( char* scope, vector* value ) {
 
 }
 
+/*!
+ Deallocates all memory used for storing defparam information.
+*/
+void defparam_dealloc() {
+
+  inst_parm_dealloc( defparam_head, TRUE );
+
+}
+
 /*************************************************************************************/
 
 /*!
@@ -729,6 +738,10 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.39  2005/12/17 05:47:36  phase1geo
+ More memory fault fixes.  Regression runs cleanly and we have verified
+ no memory faults up to define3.v.  Still have a ways to go.
+
  Revision 1.38  2005/12/15 17:24:46  phase1geo
  More fixes for memory fault clean-up.  At this point all of the always
  diagnostics have been run and come up clean with valgrind.  Full regression

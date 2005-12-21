@@ -37,6 +37,9 @@ inst_parm* inst_parm_add( char* scope, vector* value, mod_parm* mparm, inst_parm
 /*! \brief Adds parameter override to defparam list. */
 void defparam_add( char* scope, vector* expr );
 
+/*! \brief Deallocates all memory associated with defparam storage from command-line */
+void defparam_dealloc();
+
 /*! \brief Sets the specified expression value to the instance parameter value. */
 void param_set_expr_size( expression* expr, inst_parm* icurr );
 
@@ -61,6 +64,10 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive );
 
 /*
  $Log$
+ Revision 1.15  2004/03/30 15:42:14  phase1geo
+ Renaming signal type to vsignal type to eliminate compilation problems on systems
+ that contain a signal type in the OS.
+
  Revision 1.14  2004/01/08 23:24:41  phase1geo
  Removing unnecessary scope information from signals, expressions and
  statements to reduce file sizes of CDDs and slightly speeds up fscanf

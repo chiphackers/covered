@@ -170,6 +170,7 @@ int command_merge( int argc, int last_arg, char** argv ) {
     /* Read in base database */
     db_read( merge_in0, READ_MODE_MERGE_NO_MERGE );
     bind( TRUE );
+    sim_add_statics();
 
     /* Read in database to merge */
     db_read( merge_in1, READ_MODE_MERGE_INST_MERGE );
@@ -182,6 +183,11 @@ int command_merge( int argc, int last_arg, char** argv ) {
     /* Remove all remaining threads */
     sim_kill_all_threads();
 
+    /* Deallocate memory */
+    free_safe( merged_file );
+    free_safe( merge_in0 );
+    free_safe( merge_in1 );
+
   }
 
   return( retval );
@@ -190,6 +196,9 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.19  2005/12/13 23:15:15  phase1geo
+ More fixes for memory leaks.  Regression fully passes at this point.
+
  Revision 1.18  2005/11/16 05:50:12  phase1geo
  Fixing binding with merge command.
 

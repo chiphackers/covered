@@ -36,11 +36,11 @@ extern char user_msg[USER_MSG_LENGTH];
 */
 expression* fsm_arg_parse_state( char** arg, char* funit_name ) {
 
-  bool        error = FALSE;  /* Specifies if a parsing error has beenf found   */
-  vsignal*    sig;            /* Pointer to read-in signal                      */
-  expression* expl  = NULL;   /* Pointer to left expression                     */
-  expression* expr  = NULL;   /* Pointer to right expression                    */
-  expression* expt  = NULL;   /* Pointer to temporary expression                */
+  bool        error = FALSE;  /* Specifies if a parsing error has beenf found */
+  vsignal*    sig;            /* Pointer to read-in signal */
+  expression* expl  = NULL;   /* Pointer to left expression */
+  expression* expr  = NULL;   /* Pointer to right expression */
+  expression* expt  = NULL;   /* Pointer to temporary expression */
   statement*  stmt;           /* Pointer to statement containing top expression */
 
   /*
@@ -157,6 +157,9 @@ expression* fsm_arg_parse_state( char** arg, char* funit_name ) {
       /* Add signal name and expression to FSM var binding list */
       fsm_var_bind_add( sig->name, expl, funit_name );
 
+      /* Deallocate signal */
+      vsignal_dealloc( sig );
+
     } else {
       error = TRUE;
     }
@@ -192,10 +195,10 @@ expression* fsm_arg_parse_state( char** arg, char* funit_name ) {
 */
 bool fsm_arg_parse( char* arg ) {
 
-  bool        retval = TRUE;  /* Return value for this function        */
-  char*       ptr    = arg;   /* Pointer to current character in arg   */
-  expression* in_state;       /* Pointer to input state expression     */
-  expression* out_state;      /* Pointer to output state expression    */
+  bool        retval = TRUE;  /* Return value for this function */
+  char*       ptr    = arg;   /* Pointer to current character in arg */
+  expression* in_state;       /* Pointer to input state expression */
+  expression* out_state;      /* Pointer to output state expression */
 
   while( (*ptr != '\0') && (*ptr != '=') ) {
     ptr++;
@@ -259,14 +262,14 @@ bool fsm_arg_parse( char* arg ) {
 expression* fsm_arg_parse_value( char** str, func_unit* funit ) {
 
   expression* expr = NULL;   /* Pointer to expression containing state value */
-  expression* left;          /* Left child expression                        */
-  expression* right;         /* Right child expression                       */
-  vector*     vec;           /* Pointer to newly allocated vector value      */
-  char        str_val[256];  /* String version of value parsed               */
-  int         msb;           /* Most-significant bit position of parameter   */
-  int         lsb;           /* Least-significant bit position of parameter  */
-  int         chars_read;    /* Number of characters read from sscanf()      */
-  mod_parm*   mparm;         /* Pointer to module parameter found            */
+  expression* left;          /* Left child expression */
+  expression* right;         /* Right child expression */
+  vector*     vec;           /* Pointer to newly allocated vector value */
+  char        str_val[256];  /* String version of value parsed */
+  int         msb;           /* Most-significant bit position of parameter */
+  int         lsb;           /* Least-significant bit position of parameter */
+  int         chars_read;    /* Number of characters read from sscanf() */
+  mod_parm*   mparm;         /* Pointer to module parameter found */
 
   if( (vec = vector_from_string( str, FALSE )) != NULL ) {
 
@@ -360,9 +363,9 @@ expression* fsm_arg_parse_value( char** str, func_unit* funit ) {
 void fsm_arg_parse_trans( expression* expr, fsm* table, func_unit* funit ) {
 
   expression* from_state;  /* Pointer to from_state value of transition */
-  expression* to_state;    /* Pointer to to_state value of transition   */
-  char*       str;         /* String version of expression value        */
-  char*       tmp;         /* Temporary pointer to string               */
+  expression* to_state;    /* Pointer to to_state value of transition */
+  char*       str;         /* String version of expression value */
+  char*       tmp;         /* Temporary pointer to string */
 
   assert( expr != NULL );
 
@@ -414,14 +417,14 @@ void fsm_arg_parse_trans( expression* expr, fsm* table, func_unit* funit ) {
 void fsm_arg_parse_attr( attr_param* ap, func_unit* funit ) {
 
   attr_param* curr;               /* Pointer to current attribute parameter in list */
-  fsm_link*   fsml      = NULL;   /* Pointer to found FSM structure                 */
-  fsm         table;              /* Temporary FSM used for searching purposes      */
-  int         index     = 1;      /* Current index number in list                   */
+  fsm_link*   fsml      = NULL;   /* Pointer to found FSM structure */
+  fsm         table;              /* Temporary FSM used for searching purposes */
+  int         index     = 1;      /* Current index number in list */
   bool        ignore    = FALSE;  /* Set to TRUE if we should ignore this attribute */
-  expression* in_state  = NULL;   /* Pointer to input state                         */
-  expression* out_state = NULL;   /* Pointer to output state                        */
-  char*       str;                /* Temporary holder for string value              */
-  char*       tmp;                /* Temporary holder for string value              */
+  expression* in_state  = NULL;   /* Pointer to input state */
+  expression* out_state = NULL;   /* Pointer to output state */
+  char*       str;                /* Temporary holder for string value */
+  char*       tmp;                /* Temporary holder for string value */
 
   curr = ap;
   while( (curr != NULL) && !ignore ) {
@@ -517,6 +520,11 @@ void fsm_arg_parse_attr( attr_param* ap, func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.22  2005/12/08 19:47:00  phase1geo
+ Fixed repeat2 simulation issues.  Fixed statement_connect algorithm, removed the
+ need for a separate set_stop function and reshuffled the positions of esuppl bits.
+ Full regression passes.
+
  Revision 1.21  2005/11/08 23:12:09  phase1geo
  Fixes for function/task additions.  Still a lot of testing on these structures;
  however, regressions now pass again so we are checkpointing here.

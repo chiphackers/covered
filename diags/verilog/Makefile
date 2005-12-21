@@ -6,9 +6,11 @@
 # Purpose:      Runs regression suite for Verilog
 ######################################################
 
+VG_LOG_PREFIX = mem_check
+
 COVERED_SRC   = ../../src
 COVERED       = $(COVERED_SRC)/covered
-VG_COVERED    = valgrind --tool=memcheck --leak-check=yes --show-reachable=yes --num-callers=10 --log-file=mem_check --db-attach=yes -v $(COVERED_SRC)/covered
+VG_COVERED    = valgrind --tool=memcheck --leak-check=yes --show-reachable=yes --num-callers=10 --log-file=$(VG_LOG_PREFIX) --suppressions=vg_supp -v $(COVERED_SRC)/covered
 COVERED_GFLAG = -D
 
 IVERILOG       = iverilog
@@ -37,6 +39,8 @@ CDD_DIR       = ../cdd
 RPT_DIR       = ../rpt
 
 LOGFILE = regress.log
+
+.PHONY:	view_vg_errs
 
 regress:	$(COVERED) $(DIAGLIST) $(RACELIST) $(MERGELIST) $(ERRSCORELIST) $(ERRMERGELIST) eot
 
@@ -154,6 +158,9 @@ $(COVERED):
 
 eot:
 	@./check_test dummy 1 3
+
+view_vg_errs:
+	@./view_vg_errs $(VG_LOG_PREFIX)
 	
 reset:  clobber
 	@rm -f *.done
@@ -165,3 +172,4 @@ clean:
 	@rm -f $(LOGFILE)
 	@rm -f $(IVERILOG_EXEC) $(VCS_EXEC) *.vcd *.log
 	@rm -f core *.o tmp*
+	@rm -f $(VG_LOG_PREFIX).*

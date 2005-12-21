@@ -460,6 +460,9 @@ int command_score( int argc, int last_arg, char** argv ) {
     /* Deallocate memory for search engine */
     search_free_lists();
 
+    /* Deallocate memory for defparams */
+    defparam_dealloc();
+
     free_safe( output_db );
     free_safe( vcd_file );
     free_safe( vpi_file );
@@ -478,6 +481,9 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.54  2005/12/12 23:25:37  phase1geo
+ Fixing memory faults.  This is a work in progress.
+
  Revision 1.53  2005/12/12 03:46:14  phase1geo
  Adding exclusion to score command to improve performance.  Updated regression
  which now fully passes.

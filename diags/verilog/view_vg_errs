@@ -1,0 +1,24 @@
+#!/usr/bin/perl
+
+#	Name:		view_vg_errs
+#	Author:		Trevor Williams  (trevorw@charter.net)
+#	Date:		12/21/2005
+#	Usage:		view_vg_errs <valgrind_log_prefix>
+
+# Initialize global variables
+$vg_prefix = $ARGV[0];
+@bad_files = ();
+
+# Display usage information if this script was invoked improperly
+if( $vg_prefix eq "" ) {
+  die "Usage:  view_vg_errs <valgrind_log_prefix>\n";
+}
+
+@bad_files = split( '\n', `grep -l \"LEAK SUMMARY\" ${vg_prefix}.*` );
+
+if( @bad_files > 0 ) {
+  system( "vi @bad_files" ) && die;
+} else {
+  print "\nNo valgrind memory leak errors exist!\n\n";
+}
+
