@@ -8,7 +8,7 @@
 
 COVERED_SRC   = ../../src
 COVERED       = $(COVERED_SRC)/covered
-VG_COVERED    = valgrind --tool=memcheck --leak-check=yes --show-reachable=yes --num-callers=10 --log-file=mem_check -v $(COVERED_SRC)/covered
+VG_COVERED    = valgrind --tool=memcheck --leak-check=yes --show-reachable=yes --num-callers=10 --log-file=mem_check --db-attach=yes -v $(COVERED_SRC)/covered
 COVERED_GFLAG = -D
 
 IVERILOG       = iverilog

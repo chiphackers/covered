@@ -133,12 +133,10 @@ WSPACE [ \t\b\f]+
 
   /* Define directive */
 `define{WSPACE}[a-zA-Z_][a-zA-Z0-9_]*{WSPACE} {
-     printf( "Pushing state!\n" );
      yy_push_state( DEFINE );
      def_start();
  }
 `define{WSPACE}[a-zA-Z_][a-zA-Z0-9_]* {
-     printf( "Pushing state!\n" );
      yy_push_state( DEFINE );
      def_start();
  }
@@ -149,7 +147,6 @@ WSPACE [ \t\b\f]+
      def_finish();
      istack->lineno += 1;
      fputc( '\n', yyout );
-     printf( "Popping state!\n" );
      yy_pop_state();
  }
 
