@@ -167,9 +167,9 @@ reset:  clobber
 
 clobber:  clean
 	@rm -f *.rpt* *.cdd *.err regress.output regress.failed
+	@rm -f $(VG_LOG_PREFIX).*
 
 clean:
 	@rm -f $(LOGFILE)
 	@rm -f $(IVERILOG_EXEC) $(VCS_EXEC) *.vcd *.log
 	@rm -f core *.o tmp*
-	@rm -f $(VG_LOG_PREFIX).*
