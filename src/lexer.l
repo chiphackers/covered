@@ -49,6 +49,7 @@ static str_link* filelist_head = 0;
 static str_link* filelist_curr = 0;
 static int       last_keyword  = 0;
 static tnode*    found_modules = NULL;
+char*            directive_filename = NULL;
 
 extern str_link* modlist_head;
 extern str_link* modlist_tail;
@@ -548,7 +549,6 @@ static void line_directive() {
 
   char* qt1;
   char* qt2;
-  char* buf;
   
   qt1 = strchr( yytext, '"');
   assert( qt1 );
@@ -557,11 +557,11 @@ static void line_directive() {
   qt2 = strchr( qt1, '"' );
   assert( qt2 );
   
-  buf = (char*)malloc_safe( (qt2 - qt1 + 1), __FILE__, __LINE__ );
-  strncpy( buf, qt1, qt2-qt1 );
-  buf[qt2-qt1] = '\0';
+  directive_filename = (char*)realloc( directive_filename, (qt2 - qt1 + 1) );
+  strncpy( directive_filename, qt1, qt2-qt1 );
+  directive_filename[qt2-qt1] = '\0';
   
-  yylloc.text = buf;
+  yylloc.text = directive_filename;
   
   qt2 += 1;
   yylloc.first_line = strtoul( qt2, 0, 0 );
@@ -573,7 +573,6 @@ static void line_directive2() {
   char* cp;
   char* qt1;
   char* qt2;
-  char* buf;
   
   assert( strncmp( yytext, "`line", 5 ) == 0 );
   
@@ -591,11 +590,11 @@ static void line_directive2() {
   qt2 = strchr( qt1, '"' );
   assert( qt2 );
   
-  buf = (char*)malloc_safe( (qt2 - qt1 + 1), __FILE__, __LINE__ );
-  strncpy( buf, qt1, qt2 - qt1 );
-  buf[qt2-qt1] = '\0';
+  directive_filename = (char*)realloc( directive_filename, (qt2 - qt1 + 1) );
+  strncpy( directive_filename, qt1, qt2 - qt1 );
+  directive_filename[qt2-qt1] = '\0';
   
-  yylloc.text = buf;
+  yylloc.text = directive_filename;
   
 }
   

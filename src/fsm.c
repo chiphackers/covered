@@ -814,6 +814,17 @@ void fsm_dealloc( fsm* table ) {
       free_safe( tmp );
     }
 
+    /*
+     Deallocate from_state if it is the same expression ID as the to_state expression and is
+     not the same expression structure
+    */
+    if( (table->from_state != NULL)             &&
+        (table->to_state != NULL)               &&
+        (table->from_state != table->to_state ) &&
+        (table->from_state->id == table->to_state->id) ) {
+      expression_dealloc( table->from_state, FALSE );
+    }
+
     /* Deallocate this structure */
     free_safe( table );
       
@@ -823,6 +834,9 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.45  2005/11/28 23:28:47  phase1geo
+ Checkpointing with additions for threads.
+
  Revision 1.44  2005/11/15 23:08:02  phase1geo
  Updates for new binding scheme.  Binding occurs for all expressions, signals,
  FSMs, and functional units after parsing has completed or after database reading

@@ -109,7 +109,7 @@ iverilog:    clean
 	$(MAKE) COVERED_GFLAG=-Q VERILOG=$(IVERILOG) VERILOG_FLAGS="$(IVERILOG_FLAGS3)" VERILOG_CMD="vvp $(IVERILOG_EXEC)" VERILOG_EXEC=$(IVERILOG_EXEC) DIAGLIST="$(DIAGS3) $(IVONLYDIAGS3)" regress
 	@cd ../verilog; \
 	$(MAKE) COVERED_GFLAG=-Q VERILOG=$(IVERILOG) VERILOG_FLAGS="$(IVERILOG_FLAGS4)" VERILOG_CMD="vvp $(IVERILOG_EXEC)" VERILOG_EXEC=$(IVERILOG_EXEC) DIAGLIST="$(DIAGS4) $(IVONLYDIAGS4)" regress
-	@cd ../verilog;  $(MAKE) clean
+	@cd ../verilog;  $(MAKE) eot;  $(MAKE) clean
 
 vcs:         clean
 	@cd ../verilog; \
@@ -120,7 +120,7 @@ vcs:         clean
 	$(MAKE) COVERED_GFLAG=-Q VERILOG=$(VCS) VERILOG_FLAGS="$(VCS_FLAGS3)" VERILOG_CMD=$(VCS_EXEC) VERILOG_EXEC=$(VCS_EXEC) DIAGLIST="$(DIAGS3) $(VCSONLYDIAGS3)" regress
 	@cd ../verilog; \
 	$(MAKE) COVERED_GFLAG=-Q VERILOG=$(VCS) VERILOG_FLAGS="$(VCS_FLAGS4)" VERILOG_CMD=$(VCS_EXEC) VERILOG_EXEC=$(VCS_EXEC) DIAGLIST="$(DIAGS4) $(VCSONLYDIAGS4)" regress
-	@cd ../verilog;  $(MAKE) clean
+	@cd ../verilog;  $(MAKE) eot;  $(MAKE) clean
 
 clean:
 	@cd ../verilog;  $(MAKE) clobber

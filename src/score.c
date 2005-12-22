@@ -46,6 +46,7 @@ extern unsigned long largest_malloc_size;
 extern unsigned long curr_malloc_size;
 extern str_link*     use_files_head;
 extern char          user_msg[USER_MSG_LENGTH];
+extern char*         directive_filename;
 
 
 void define_macro( const char* name, const char* value );
@@ -468,6 +469,10 @@ int command_score( int argc, int last_arg, char** argv ) {
     free_safe( vpi_file );
     free_safe( top_module );
     free_safe( ppfilename );
+
+    if( directive_filename != NULL ) {
+      free_safe( directive_filename );
+    }
     
     if( top_instance != NULL ) {
       free_safe( top_instance );
@@ -481,6 +486,11 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.55  2005/12/21 22:30:54  phase1geo
+ More updates to memory leak fix list.  We are getting close!  Added some helper
+ scripts/rules to more easily debug valgrind memory leak errors.  Also added suppression
+ file for valgrind for a memory leak problem that exists in lex-generated code.
+
  Revision 1.54  2005/12/12 23:25:37  phase1geo
  Fixing memory faults.  This is a work in progress.
 
