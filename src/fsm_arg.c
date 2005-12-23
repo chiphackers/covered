@@ -104,6 +104,9 @@ expression* fsm_arg_parse_state( char** arg, char* funit_name ) {
         /* Add signal name and expression to FSM var binding list */
         fsm_var_bind_add( sig->name, expr, funit_name );
 
+        /* Deallocate signal */
+        vsignal_dealloc( sig );
+
       } else {
         expression_dealloc( expl, FALSE );
         error = TRUE;
@@ -520,6 +523,11 @@ void fsm_arg_parse_attr( attr_param* ap, func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.23  2005/12/21 22:30:54  phase1geo
+ More updates to memory leak fix list.  We are getting close!  Added some helper
+ scripts/rules to more easily debug valgrind memory leak errors.  Also added suppression
+ file for valgrind for a memory leak problem that exists in lex-generated code.
+
  Revision 1.22  2005/12/08 19:47:00  phase1geo
  Fixed repeat2 simulation issues.  Fixed statement_connect algorithm, removed the
  need for a separate set_stop function and reshuffled the positions of esuppl bits.

@@ -1,8 +1,26 @@
 {
-yy_start_stack_deallocation
-Memcheck:Leak
-fun:malloc
-fun:yy_flex_alloc
-fun:yy_push_state
-fun:PPVLlex
+   yy_start_stack_deallocation
+   Memcheck:Leak
+   fun:malloc
+   fun:yy_flex_alloc
+   fun:yy_push_state
+   fun:PPVLlex
+}
+
+{
+   VL_lexer_leak
+   Memcheck:Leak
+   fun:malloc
+   fun:VLalloc
+   fun:VLensure_buffer_stack
+   fun:VLrestart
+}
+
+{
+   PPVL_lexer_leak
+   Memcheck:Leak
+   fun:malloc
+   fun:PPVLalloc
+   fun:PPVLensure_buffer_stack
+   fun:PPVLrestart
 }

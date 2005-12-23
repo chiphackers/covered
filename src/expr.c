@@ -1636,6 +1636,28 @@ bool expression_is_assigned( expression* expr ) {
 
 }
 
+/*!
+ \param expr  Pointer to expression to check
+
+ \return Returns TRUE if the specifies expression belongs in a single or mult-bit select expression
+*/
+bool expression_is_bit_select( expression* expr ) {
+
+  bool retval = FALSE;  /* Return value for this function */
+
+  if( (expr != NULL) && (ESUPPL_IS_ROOT( expr->suppl ) == 0) ) {
+
+    if( (expr->parent->expr->op == EXP_OP_SBIT_SEL) || (expr->parent->expr->op == EXP_OP_MBIT_SEL) ) {
+      retval = TRUE;
+    } else {
+      retval = expression_is_bit_select( expr->parent->expr );
+    }
+
+  }
+
+  return( retval );
+
+}
 
 /*!
  \param expr  Pointer to current expression to evaluate
@@ -1681,6 +1703,7 @@ void expression_set_assigned( expression* expr ) {
 void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
 
   int intval1;  /* Integer value to use */
+  func_unit* funit;
 
   if( lhs != NULL ) {
 
@@ -1741,9 +1764,14 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
         break;
       case EXP_OP_CONCAT   :
       case EXP_OP_LIST     :
+      case EXP_OP_STATIC   :
         break;
       default:
         /* This is an illegal expression to have on the left-hand-side of an expression */
+        /*
+          funit = funit_find_by_id( lhs->id );
+          printf( "lhs->op: %d, %d in module %s\n", lhs->op, lhs->line, funit->name );
+        */
 	assert( (lhs->op == EXP_OP_SIG)      ||
 	        (lhs->op == EXP_OP_SBIT_SEL) ||
 		(lhs->op == EXP_OP_MBIT_SEL) ||
@@ -1869,6 +1897,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.146  2005/12/17 05:47:36  phase1geo
+ More memory fault fixes.  Regression runs cleanly and we have verified
+ no memory faults up to define3.v.  Still have a ways to go.
+
  Revision 1.145  2005/12/16 23:09:15  phase1geo
  More updates to remove memory leaks.  Full regression passes.
 

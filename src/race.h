@@ -14,6 +14,9 @@
 #include "defines.h"
 
 
+/*! \brief Calculates the assignment type used in the given statement */
+void race_calc_assignments( statement* stmt, int sb_index );
+
 /*! \brief Checks the current module for race conditions */
 void race_check_modules();
 
@@ -38,6 +41,11 @@ void race_blk_delete_list( race_blk* rb );
 
 /*
  $Log$
+ Revision 1.14  2005/11/10 19:28:23  phase1geo
+ Updates/fixes for tasks/functions.  Also updated Tcl/Tk scripts for these changes.
+ Fixed bug with net_decl_assign statements -- the line, start column and end column
+ information was incorrect, causing problems with the GUI output.
+
  Revision 1.13  2005/11/08 23:12:10  phase1geo
  Fixes for function/task additions.  Still a lot of testing on these structures;
  however, regressions now pass again so we are checkpointing here.

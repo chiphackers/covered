@@ -84,6 +84,56 @@ race_blk* race_blk_create( int reason, int start_line, int end_line ) {
 
 }
 
+bool race_find_head_statement_containing_statement_helper( statement* curr, statement* to_find ) {
+
+  bool retval = FALSE;  /* Return value for this function */
+
+  if( curr != NULL ) {
+
+    if( curr == to_find ) {
+
+      retval = TRUE;
+
+    } else {
+
+      /* 
+       If the current statement is a named block call, task call or fork statement, look for specified
+       statement in its statement block.
+      */
+      if( (curr->exp->op == EXP_OP_NB_CALL)   ||
+          (curr->exp->op == EXP_OP_TASK_CALL) ||
+          (curr->exp->op == EXP_OP_FORK) ) {
+        retval = race_find_head_statement_containing_statement_helper( curr->exp->stmt, to_find );
+      }
+
+      if( !retval && (ESUPPL_IS_STMT_STOP_TRUE( curr->exp->suppl ) == 0) ) {
+        retval = race_find_head_statement_containing_statement_helper( curr->next_true, to_find );
+      }
+   
+      if( !retval && (ESUPPL_IS_STMT_STOP_FALSE( curr->exp->suppl ) == 0) && (curr->next_true != curr->next_false) ) {
+        retval = race_find_head_statement_containing_statement_helper( curr->next_false, to_find );
+      }
+
+    }
+
+  }
+
+  return( retval );
+
+}
+
+statement* race_find_head_statement_containing_statement( statement* stmt ) {
+
+  int i = 0;   /* Loop iterator */
+
+  while( (i < sb_size) && !race_find_head_statement_containing_statement_helper( sb[i].stmt, stmt ) ) {
+    i++;
+  }
+
+  return( sb[i].stmt );
+
+}
+
 /*!
  \param mod   Pointer to module containing statement list to parse.
  \param expr  Pointer to root expression to find in statement list.
@@ -100,7 +150,7 @@ statement* race_get_head_statement( func_unit* mod, expression* expr ) {
   /* First, find the statement associated with this expression */
   if( (curr_stmt = expression_get_root_statement( expr )) != NULL ) {
 
-    curr_stmt = statement_find_head_statement( curr_stmt, mod->stmt_head );
+    curr_stmt = race_find_head_statement_containing_statement( curr_stmt );
     assert( curr_stmt != NULL );
 
   }
@@ -156,11 +206,14 @@ void race_calc_stmt_blk_type( expression* expr, int sb_index ) {
 void race_calc_expr_assignment( expression* exp, int sb_index ) {
 
   switch( exp->op ) {
-    case EXP_OP_ASSIGN  :
-    case EXP_OP_DASSIGN :
-    case EXP_OP_BASSIGN :  sb[sb_index].bassign = TRUE;  break;
-    case EXP_OP_NASSIGN :  sb[sb_index].nassign = TRUE;  break;
-    default             :  break;
+    case EXP_OP_ASSIGN    :
+    case EXP_OP_DASSIGN   :
+    case EXP_OP_BASSIGN   :  sb[sb_index].bassign = TRUE;  break;
+    case EXP_OP_NASSIGN   :  sb[sb_index].nassign = TRUE;  break;
+    case EXP_OP_TASK_CALL :
+    case EXP_OP_FORK      :
+    case EXP_OP_NB_CALL   :  race_calc_assignments( exp->stmt, sb_index );  break;
+    default               :  break;
   }
 
 }
@@ -168,38 +221,22 @@ void race_calc_expr_assignment( expression* exp, int sb_index ) {
 /*!
  TBD
 */
-void race_calc_assignments_helper( statement* stmt, statement* head, int sb_index ) {
+void race_calc_assignments( statement* stmt, int sb_index ) {
 
   if( stmt != NULL ) {
 	
     /* Calculate children statements */
-    if( stmt != head ) {
-      if( ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0 ) {
-        race_calc_assignments_helper( stmt->next_true, head, sb_index );
-      }
-      if( ESUPPL_IS_STMT_STOP_FALSE( stmt->exp->suppl ) == 0 ) {
-        race_calc_assignments_helper( stmt->next_false, head, sb_index );
-      }
+    if( ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0 ) {
+      race_calc_assignments( stmt->next_true, sb_index );
+    }
+    if( (ESUPPL_IS_STMT_STOP_FALSE( stmt->exp->suppl ) == 0) && (stmt->next_true != stmt->next_false) ) {
+      race_calc_assignments( stmt->next_false, sb_index );
     }
 
     /* Calculate assignment operator type */
     race_calc_expr_assignment( stmt->exp, sb_index );
 
   }
-
-}
-
-/*!
- TBD
-*/
-void race_calc_assignments( int sb_index ) {
-
-  /* Calculate head statement assignment type */
-  race_calc_expr_assignment( sb[sb_index].stmt->exp, sb_index );
-
-  /* Calculate children statements */
-  race_calc_assignments_helper( sb[sb_index].stmt->next_true,  sb[sb_index].stmt, sb_index );
-  race_calc_assignments_helper( sb[sb_index].stmt->next_false, sb[sb_index].stmt, sb_index );
 
 }
 
@@ -371,8 +408,8 @@ void race_check_one_block_assignment( func_unit* mod ) {
     expl = sigl->sig->exp_head;
     while( expl != NULL ) {
 					      
-      /* Only look at expressions that are part of LHS */
-      if( expl->exp->suppl.part.lhs == 1 ) {
+      /* Only look at expressions that are part of LHS and they are not part of a bit select */
+      if( (ESUPPL_IS_LHS( expl->exp->suppl ) == 1) && !expression_is_bit_select( expl->exp ) ) {
 
 	/*
 	 If the signal was a part select, set the appropriate misc bits to indicate what
@@ -489,23 +526,11 @@ void race_check_modules() {
       /* First, get the size of the statement block array for this module */
       stmt_iter_reset( &si, modl->funit->stmt_tail );
       while( si.curr != NULL ) {
-        if( si.curr->stmt->exp->suppl.part.stmt_head == 1 ) {
+        if( (si.curr->stmt->exp->suppl.part.stmt_head == 1) &&
+            (si.curr->stmt->exp->suppl.part.stmt_is_called == 0) ) {
           sb_size++;
         }
         stmt_iter_next( &si );
-      }
-
-      /* Next, get the size of the statement block array for any tasks/named blocks */
-      tfl = modl->funit->tf_head;
-      while( tfl != NULL ) {
-        stmt_iter_reset( &si, tfl->funit->stmt_tail );
-        while( si.curr != NULL ) {
-          if( si.curr->stmt->exp->suppl.part.stmt_head == 1 ) {
-            sb_size++;
-          }
-          stmt_iter_next( &si );
-        }
-        tfl = tfl->next;
       }
 
       if( sb_size > 0 ) {
@@ -517,7 +542,8 @@ void race_check_modules() {
         /* Second, populate the statement block array with pointers to the head statements */
         stmt_iter_reset( &si, modl->funit->stmt_tail );
         while( si.curr != NULL ) {
-          if( si.curr->stmt->exp->suppl.part.stmt_head == 1 ) {
+          if( (si.curr->stmt->exp->suppl.part.stmt_head == 1) &&
+              (si.curr->stmt->exp->suppl.part.stmt_is_called == 0) ) {
             sb[sb_index].stmt    = si.curr->stmt;
             sb[sb_index].remove  = FALSE;
             sb[sb_index].seq     = FALSE;
@@ -525,31 +551,10 @@ void race_check_modules() {
 	    sb[sb_index].bassign = FALSE;
 	    sb[sb_index].nassign = FALSE;
 	    race_calc_stmt_blk_type( sb[sb_index].stmt->exp, sb_index );
-	    race_calc_assignments( sb_index );
+	    race_calc_assignments( sb[sb_index].stmt, sb_index );
             sb_index++; 
           }
           stmt_iter_next( &si );
-        }
-
-        /* Third, populate the statement block array with pointer to the head statements of the task/functions */
-        tfl = modl->funit->tf_head;
-        while( tfl != NULL ) {
-          stmt_iter_reset( &si, tfl->funit->stmt_tail );
-          while( si.curr != NULL ) {
-            if( si.curr->stmt->exp->suppl.part.stmt_head == 1 ) {
-              sb[sb_index].stmt    = si.curr->stmt;
-              sb[sb_index].remove  = FALSE;
-              sb[sb_index].seq     = FALSE;
-              sb[sb_index].cmb     = FALSE;
-              sb[sb_index].bassign = FALSE;
-              sb[sb_index].nassign = FALSE;
-              race_calc_stmt_blk_type( sb[sb_index].stmt->exp, sb_index );
-              race_calc_assignments( sb_index );
-              sb_index++;
-            }
-            stmt_iter_next( &si );
-          }
-          tfl = tfl->next;
         }
 
         /* Perform checks #1 - #5 */
@@ -864,6 +869,11 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.31  2005/12/08 19:47:00  phase1geo
+ Fixed repeat2 simulation issues.  Fixed statement_connect algorithm, removed the
+ need for a separate set_stop function and reshuffled the positions of esuppl bits.
+ Full regression passes.
+
  Revision 1.30  2005/12/01 16:08:19  phase1geo
  Allowing nested functional units within a module to get parsed and handled correctly.
  Added new nested_block1 diagnostic to test nested named blocks -- will add more tests

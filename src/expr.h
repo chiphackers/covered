@@ -70,6 +70,9 @@ void expression_arm_events( expression* expr );
 /*! \brief Returns TRUE if specified expression is on the LHS of a blocking assignment operator. */
 bool expression_is_assigned( expression* expr );
 
+/*! \brief Returns TRUE if specifies expression is a part of an bit select expression tree. */
+bool expression_is_bit_select( expression* expr );
+
 /*! \brief Performs blocking assignment assignment to variables. */
 void expression_assign( expression* lhs, expression* rhs, int* lsb );
 
@@ -79,6 +82,9 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.34  2005/11/28 23:28:47  phase1geo
+ Checkpointing with additions for threads.
+
  Revision 1.33  2005/11/21 04:17:43  phase1geo
  More updates to regression suite -- includes several bug fixes.  Also added --enable-debug
  facility to configuration file which will include or exclude debugging output from being
