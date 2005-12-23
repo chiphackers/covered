@@ -130,7 +130,7 @@ statement* race_find_head_statement_containing_statement( statement* stmt ) {
     i++;
   }
 
-  return( sb[i].stmt );
+  return( (i == sb_size) ? NULL : sb[i].stmt );
 
 }
 
@@ -151,7 +151,6 @@ statement* race_get_head_statement( func_unit* mod, expression* expr ) {
   if( (curr_stmt = expression_get_root_statement( expr )) != NULL ) {
 
     curr_stmt = race_find_head_statement_containing_statement( curr_stmt );
-    assert( curr_stmt != NULL );
 
   }
 
@@ -444,26 +443,28 @@ void race_check_one_block_assignment( func_unit* mod ) {
         assert( exp_funit != NULL );
 
         /* Get expression's head statement */
-        curr_stmt = race_get_head_statement( exp_funit, expl->exp );
+        if( (curr_stmt = race_get_head_statement( exp_funit, expl->exp )) != NULL ) {
 
-        /* Check to see if the current signal is already being assigned in another statement */
-        if( sig_stmt == -1 ) {
+          /* Check to see if the current signal is already being assigned in another statement */
+          if( sig_stmt == -1 ) {
 
-	  /* Get index of base signal statement in sb array */
-          sig_stmt = race_find_head_statement( curr_stmt );
-	  assert( sig_stmt != -1 );
+  	    /* Get index of base signal statement in sb array */
+            sig_stmt = race_find_head_statement( curr_stmt );
+	    assert( sig_stmt != -1 );
 
-          /* Check to see if current signal is also an input port */ 
-          if( (sigl->sig->value->suppl.part.inport == 1) || curr_race ) {
-            race_handle_race_condition( expl->exp, mod, curr_stmt, NULL, RACE_TYPE_ASSIGN_IN_ONE_BLOCK2 );
+            /* Check to see if current signal is also an input port */ 
+            if( (sigl->sig->value->suppl.part.inport == 1) || curr_race ) {
+              race_handle_race_condition( expl->exp, mod, curr_stmt, NULL, RACE_TYPE_ASSIGN_IN_ONE_BLOCK2 );
+	      sb[sig_stmt].remove = TRUE;
+            }
+
+          } else if( (sb[sig_stmt].stmt != curr_stmt) && curr_race ) {
+
+            race_handle_race_condition( expl->exp, mod, curr_stmt, sb[sig_stmt].stmt, RACE_TYPE_ASSIGN_IN_ONE_BLOCK1 );
 	    sb[sig_stmt].remove = TRUE;
+	    race_found = TRUE;
+
           }
-
-        } else if( (sb[sig_stmt].stmt != curr_stmt) && curr_race ) {
-
-          race_handle_race_condition( expl->exp, mod, curr_stmt, sb[sig_stmt].stmt, RACE_TYPE_ASSIGN_IN_ONE_BLOCK1 );
-	  sb[sig_stmt].remove = TRUE;
-	  race_found = TRUE;
 
         }
 
@@ -869,6 +870,17 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.32  2005/12/23 05:41:52  phase1geo
+ Fixing several bugs in score command per bug report #1388339.  Fixed problem
+ with race condition checker statement iterator to eliminate infinite looping (this
+ was the problem in the original bug).  Also fixed expression assigment when static
+ expressions are used in the LHS (caused an assertion failure).  Also fixed the race
+ condition checker to properly pay attention to task calls, named blocks and fork
+ statements to make sure that these are being handled correctly for race condition
+ checking.  Fixed bug for signals that are on the LHS side of an assignment expression
+ but is not being assigned (bit selects) so that these are NOT considered for race
+ conditions.  Full regression is a bit broken now but the opened bug can now be closed.
+
  Revision 1.31  2005/12/08 19:47:00  phase1geo
  Fixed repeat2 simulation issues.  Fixed statement_connect algorithm, removed the
  need for a separate set_stop function and reshuffled the positions of esuppl bits.
