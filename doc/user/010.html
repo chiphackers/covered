@@ -3,7 +3,7 @@
 <HEAD>
   <TITLE>Covered - Installation</TITLE>
   <META name="GENERATOR" content="ManStyle">
-  <META name="AUTHOR" content="Trevor Williams">
+  <meta name="author" content="Trevor Williams">
   <LINK rel=stylesheet type="text/css" href="styles.css">
 </HEAD>
 <BODY text="#000000"
@@ -84,7 +84,12 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">The goal of Covered was to create a tool that has very few requirements to allow it to be compiled and run on all platforms. The following is a list of all utilities/resources required to compile Covered. However, Covered is primarily developed on RedHat Linux and as such is primarily tested by the developers on that platform.</P>
+      <P class="pg">
+      The goal of Covered was to create a tool that has very few requirements to allow 
+      it to be compiled and run on all platforms. The following is a list of all 
+      utilities/resources required to compile Covered. However, Covered is primarily 
+      developed on RedHat/Fedora Core Linux and as such is primarily tested by the 
+      developers on that platform.</P>
     </TD>
   </TR>
 
@@ -95,7 +100,15 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg"><ul> <li>gcc (Version 2.96 -- not sure if >=3.0 versions will work yet)</li> <li>flex (Version 2.5.4 or higher)</li> <li>bison (Version 1.28 or higher)</li> <li>GNU make (Version 3.27.1 or higher)</li> <li>GNU gperf (Version 2.7.2 or higher)</li> </ul> </P>
+      <P class="pg">
+      <ul>
+      	<li>gcc (Version 2.96 or higher)</li>
+      	<li>flex (Version 2.5.4 or higher)</li>
+      	<li>bison (Version 1.28 or higher)</li>
+      	<li>GNU make (Version 3.27.1 or higher)</li>
+      	<li>GNU gperf (Version 2.7.2 or higher)</li>
+      	<li>tcl and tk (Versions 8.4 or higher)</li>
+      </ul> </P>
     </TD>
   </TR>
 
@@ -106,7 +119,10 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">Covered is primarily developed on RedHat 7.3 but has been known to compile with 32-bit and 64-bit compilers that contain the general GNU library of tools.</P>
+      <P class="pg">
+      Covered is currently primarily developed on Fedora Core 3 but has been known to 
+      compile with 32-bit and 64-bit compilers that contain the general GNU library of 
+      tools.</P>
     </TD>
   </TR>
 
@@ -128,7 +144,8 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">To download the source files in .tar.gz format, go to the following URL:</P>
+      <P class="pg">
+      To download the source files in .tar.gz format, go to the following URL:</P>
     </TD>
   </TR>
 
@@ -150,7 +167,13 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">Double-click on the .tar.gz version that you wish to install. The browser should immediately bring up a window asking if you would like to save to disk or open immediately. Choose the "Save to Disk" option. Another window will pop up, allowing you to choose the directory to store the tarball in. After selecting a directory, click the "Save" button. The download utility will begin downloading the tarball to the selected directory.</P>
+      <P class="pg">
+      Double-click on the .tar.gz version that you wish to install. The browser should 
+      immediately bring up a window asking if you would like to save to disk or open 
+      immediately. Choose the "Save to Disk" option. Another window will pop up, 
+      allowing you to choose the directory to store the tarball in. After selecting a 
+      directory, click the "Save" button. The download utility will begin downloading 
+      the tarball to the selected directory.</P>
     </TD>
   </TR>
 
@@ -172,7 +195,9 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">Once you have downloaded a tarball, enter the following to unzip and untar the package:</P>
+      <P class="pg">
+      Once you have downloaded a tarball, enter the following to unzip and untar 
+      the package:</P>
     </TD>
   </TR>
 
@@ -194,7 +219,9 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">This will create a directory called <tt>covered-<i>version</i></tt>. Change your current directory to this directory and enter the following command:</P>
+      <P class="pg">
+      This will create a directory called <tt>covered-<i>version</i></tt>. Change your 
+      current directory to this directory and enter the following command:</P>
     </TD>
   </TR>
 
@@ -216,7 +243,15 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">This command will create the Makefiles necessary for your machine to compile the source code correctly. If any errors are generated during this command run, it is usually an indication that some program or library is missing from your computer that is necessary for Covered to compile/run. Please install any missing programs/libraries and type this command again. If the configure script completes successfully, you may compile the source with the following command:</P>
+      <P class="pg">
+      This command will create the Makefiles/include files necessary for your 
+      machine to compile the source code correctly (without the ability to use the 
+      global debugging -D option to covered -- use the --enable-debug option to 
+      configure to get this ability). If any errors are generated during this command 
+      run, it is usually an indication that some program or library is missing from 
+      your computer that is necessary for Covered to compile/run. Please install any 
+      missing programs/libraries and type this command again. If the configure script 
+      completes successfully, you may compile the source with the following command:</P>
     </TD>
   </TR>
 
@@ -238,7 +273,12 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">This will begin the process of compiling/linking the source code for Covered. This stage may take a while. When the source files have been compiled, the <tt>covered</tt> executable file will have been created. To install this executable in your <tt>/usr/local/bin</tt> directory, enter the following command:</P>
+      <P class="pg">
+      This will begin the process of compiling/linking the source code for Covered. 
+      This stage may take a while. When the source files have been compiled, the 
+      <tt>covered</tt> executable file will have been created. To install this 
+      executable in your <tt>/usr/local/bin</tt> directory, enter the following 
+      command:</P>
     </TD>
   </TR>
 
@@ -260,7 +300,10 @@
     </TD>
     <TD></TD>
     <TD valign=top>
-      <P class="pg">This will install the covered executable and manpage help files. Once covered is installed, make sure that <tt>/usr/local/bin</tt> is in your environment path. You are now ready to run Covered.</P>
+      <P class="pg">
+      This will install the covered executable and manpage help files. Once covered 
+      is installed, make sure that <tt>/usr/local/bin</tt> is in your environment 
+      path. You are now ready to run Covered.</P>
     </TD>
   </TR>
 

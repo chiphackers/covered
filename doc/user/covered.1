@@ -1,4 +1,4 @@
-.TH "Covered" "1" "covered-20050208" "Trevor Williams" "Code Analysis"
+.TH "Covered" "1" "covered-20060101" "Trevor Williams" "Code Analysis"
 .SH "NAME"
 .LP 
 Covered \- Verilog Code Coverage Analyzer
@@ -17,7 +17,7 @@ Covered \- Verilog Code Coverage Analyzer
 These options are placed immediately after the keyword \fIcovered\fR in the command\-line.  They can be used for any command (with the exception of \fI\-v\fR and \fI\-h\fR) and have the same effect in each case.
 .TP 
 \fB\-D\fR
-Debug.  Display information helpful for debugging tool problems.
+Debug.  Display information helpful for debugging tool problems.  Note:  This option is now only available when covered is built with the \-\-enable\-debug configuration option.
 .TP 
 \fB\-h\fR
 Help.  Display this usage information.
@@ -48,8 +48,17 @@ Defines the specified name to 1.
 \fB\-D\fR \fIdefine_name=value\fR
 Defines the specified name to the specified value.
 .TP 
-\fB\-e\fR \fImodule_name\fR
-Name of module to not score.  Causes all submodules in the Verilog tree under this module to also not be scored.
+\fB\-e\fR \fIblock_name\fR
+Name of module, task, function or named begin/end block to not score.  Causes all subblocks in the Verilog tree under this block to also not be scored.
+.TP 
+\fB\-ea\fR
+Excludes all always blocks from being considered for coverage.
+.TP 
+\fB\-ec\fR
+Excludes all continuous assignments from being considered for coverage.
+.TP 
+\fB\-ei\fR
+Excludes all initial blocks from being considered for coverage.
 .TP 
 \fB\-F\fR \fImodule_name=(in_expr,)out_expr\fR
 Indicates to the parser where to find the FSM located in module \fImodule_name\fR which has an input state expression called \fIin_expr\fR and output state expression called \fIout_expr\fR.  If \fIin_expr\fR is not specified, \fIout_expr\fR is used as both the input and output state expression.
