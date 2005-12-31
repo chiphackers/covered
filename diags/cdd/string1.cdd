@@ -1,11 +1,11 @@
 5 1 * 5 0 0 0 0
 3 0 main main string1.v 1 18
-2 3 6 150017 1 10 0 0 chr
-2 2 6 e0012 0 10 0 0 24 4 55 14 55 14 14 14
-2 4 6 e0017 31 410 3 2 32 0 daa 10aa aa aa aa aa aa aa
-2 5 6 d0018 26 10 4 0 64 0 daa 10aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa
-2 1 6 70009 1 800 0 0 str
-2 6 6 70018 35 1e016 5 1 
+2 3 6 150017 0 1 8 0 0 chr
+2 2 6 e0012 0 0 8 0 0 24 4 55 14 55 14 14 14
+2 4 6 e0017 0 31 208 3 2 32 0 daa 10aa aa aa aa aa aa aa
+2 5 6 d0018 0 26 8 4 0 64 0 daa 10aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa
+2 1 6 70009 0 1 400 0 0 str
+2 6 6 70018 7 35 f00a 5 1 
 1 chr 0 8 0 daa 10aa
 1 str 0 64 0 daa 10aa aa aa aa aa aa aa aa aa aa aa aa aa aa aa
 4 6 6 6

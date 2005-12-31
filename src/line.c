@@ -60,7 +60,7 @@ void line_get_stats( stmt_link* stmtl, float* total, int* hit ) {
         (curr.curr->stmt->exp->op != EXP_OP_NB_CALL) &&
         (curr.curr->stmt->exp->line != 0) ) {
       *total = *total + 1;
-      if( ESUPPL_WAS_EXECUTED( curr.curr->stmt->exp->suppl ) == 1 ) {
+      if( curr.curr->stmt->exp->exec_num > 0 ) {
         (*hit)++;
         last_hit = curr.curr->stmt->exp->line;
       }
@@ -119,7 +119,7 @@ bool line_collect( char* funit_name, int funit_type, int cov, int** lines, int* 
           (stmti.curr->stmt->exp->op != EXP_OP_DEFAULT) &&
           (stmti.curr->stmt->exp->line != 0) ) {
 
-        if( ESUPPL_WAS_EXECUTED( stmti.curr->stmt->exp->suppl ) == cov ) {
+        if( ((stmti.curr->stmt->exp->exec_num > 0) ? 1 : 0) == cov ) {
 
           last_line = expression_get_last_line_expr( stmti.curr->stmt->exp )->line;
           for( i=stmti.curr->stmt->exp->line; i<=last_line; i++ ) {
@@ -320,7 +320,7 @@ void line_display_verbose( FILE* ofile, func_unit* funit ) {
         (stmti.curr->stmt->exp->op != EXP_OP_DEFAULT) &&
         (stmti.curr->stmt->exp->line != 0) ) {
 
-      if( ESUPPL_WAS_EXECUTED( stmti.curr->stmt->exp->suppl ) == report_covered ) {
+      if( ((stmti.curr->stmt->exp->exec_num > 0) ? 1 : 0) == report_covered ) {
 
         unexec_exp = stmti.curr->stmt->exp;
 
@@ -489,6 +489,10 @@ void line_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.53  2005/12/06 15:42:11  phase1geo
+ Added disable2.1 diagnostic to regression suite.  Fixed bad output from line
+ coverage reports.  Full regression passes.
+
  Revision 1.52  2005/11/30 18:25:56  phase1geo
  Fixing named block code.  Full regression now passes.  Still more work to do on
  named blocks, however.

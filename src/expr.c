@@ -172,6 +172,7 @@ expression* expression_create( expression* right, expression* left, int op, bool
   new_expr->ulid           = -1;
   new_expr->line           = line;
   new_expr->col            = ((first & 0xffff) << 16) | (last & 0xffff);
+  new_expr->exec_num       = 0;
   new_expr->sig            = NULL;
   new_expr->parent         = (expr_stmt*)malloc_safe( sizeof( expr_stmt ), __FILE__, __LINE__ );
   new_expr->parent->expr   = NULL;
@@ -634,11 +635,12 @@ void expression_db_write( expression* expr, FILE* file ) {
 
   func_unit* funit;  /* Pointer to functional unit containing the statement attached to this expression */
 
-  fprintf( file, "%d %d %d %x %x %x %d %d ",
+  fprintf( file, "%d %d %d %x %x %x %x %d %d ",
     DB_TYPE_EXPRESSION,
     expr->id,
     expr->line,
     expr->col,
+    expr->exec_num,
     expr->op,
     (expr->suppl.all & ESUPPL_MERGE_MASK),
     (expr->op == EXP_OP_STATIC) ? 0 : expression_get_id( expr->right ),
@@ -678,6 +680,7 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) {
   expression* expr;           /* Pointer to newly created expression */
   int         linenum;        /* Holder of current line for this expression */
   int         column;         /* Holder of column alignment information */
+  control     exec_num;       /* Holder of expression's execution number */
   control     op;             /* Holder of expression operation */
   esuppl      suppl;          /* Holder of supplemental value of this expression */
   int         right_id;       /* Holder of expression ID to the right */
@@ -691,7 +694,7 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) {
   char        tmpname[1024];  /* Name of signal/functional unit that the current expression is bound to */
   int         tmpid;          /* ID of statement that the current expression is bound to */
 
-  if( sscanf( *line, "%d %d %x %x %x %d %d%n", &id, &linenum, &column, &op, &(suppl.all), &right_id, &left_id, &chars_read ) == 7 ) {
+  if( sscanf( *line, "%d %d %x %x %x %x %d %d%n", &id, &linenum, &column, &exec_num, &op, &(suppl.all), &right_id, &left_id, &chars_read ) == 8 ) {
 
     *line = *line + chars_read;
 
@@ -733,6 +736,7 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) {
                                 ((column >> 16) & 0xffff), (column & 0xffff), EXPR_OWNS_VEC( op, suppl ) );
 
       expr->suppl.all = suppl.all;
+      expr->exec_num  = exec_num;
 
       if( right != NULL ) {
         right->parent->expr = expr;
@@ -834,18 +838,19 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) {
 bool expression_db_merge( expression* base, char** line, bool same ) {
 
   bool    retval = TRUE;  /* Return value for this function */
-  int     id;             /* Expression ID field            */
-  int     linenum;        /* Expression line number         */
-  int     column;         /* Column information             */
-  control op;             /* Expression operation           */
-  esuppl  suppl;          /* Supplemental field             */
-  int     right_id;       /* ID of right child              */
-  int     left_id;        /* ID of left child               */
-  int     chars_read;     /* Number of characters read      */
+  int     id;             /* Expression ID field */
+  int     linenum;        /* Expression line number */
+  int     column;         /* Column information */
+  control exec_num;       /* Execution number */
+  control op;             /* Expression operation */
+  esuppl  suppl;          /* Supplemental field */
+  int     right_id;       /* ID of right child */
+  int     left_id;        /* ID of left child */
+  int     chars_read;     /* Number of characters read */
 
   assert( base != NULL );
 
-  if( sscanf( *line, "%d %d %x %x %x %d %d%n", &id, &linenum, &column, &op, &(suppl.all), &right_id, &left_id, &chars_read ) == 7 ) {
+  if( sscanf( *line, "%d %d %x %x %x %x %d %d%n", &id, &linenum, &column, &exec_num, &op, &(suppl.all), &right_id, &left_id, &chars_read ) == 8 ) {
 
     *line = *line + chars_read;
 
@@ -859,6 +864,11 @@ bool expression_db_merge( expression* base, char** line, bool same ) {
 
       /* Merge expression supplemental fields */
       base->suppl.all = (base->suppl.all & ESUPPL_MERGE_MASK) | (suppl.all & ESUPPL_MERGE_MASK);
+
+      /* Merge execution number information */
+      if( base->exec_num < exec_num ) {
+        base->exec_num = exec_num;
+      }
 
       if( EXPR_OWNS_VEC( op, suppl ) ) {
 
@@ -895,18 +905,19 @@ bool expression_db_merge( expression* base, char** line, bool same ) {
 bool expression_db_replace( expression* base, char** line ) {
 
   bool    retval = TRUE;  /* Return value for this function */
-  int     id;             /* Expression ID field            */
-  int     linenum;        /* Expression line number         */
-  int     column;         /* Column location information    */
-  control op;             /* Expression operation           */
-  esuppl  suppl;          /* Supplemental field             */
-  int     right_id;       /* ID of right child              */
-  int     left_id;        /* ID of left child               */
-  int     chars_read;     /* Number of characters read      */
+  int     id;             /* Expression ID field */
+  int     linenum;        /* Expression line number */
+  int     column;         /* Column location information */
+  control exec_num;       /* Execution count */
+  control op;             /* Expression operation */
+  esuppl  suppl;          /* Supplemental field */
+  int     right_id;       /* ID of right child */
+  int     left_id;        /* ID of left child */
+  int     chars_read;     /* Number of characters read */
 
   assert( base != NULL );
 
-  if( sscanf( *line, "%d %d %x %x %x %d %d%n", &id, &linenum, &column, &op, &(suppl.all), &right_id, &left_id, &chars_read ) == 7 ) {
+  if( sscanf( *line, "%d %d %x %x %x %x %d %d%n", &id, &linenum, &column, &exec_num, &op, &(suppl.all), &right_id, &left_id, &chars_read ) == 8 ) {
 
     *line = *line + chars_read;
 
@@ -918,8 +929,11 @@ bool expression_db_replace( expression* base, char** line ) {
 
     } else {
 
-      /* Merge expression supplemental fields */
+      /* Replace expression supplemental fields */
       base->suppl.all = suppl.all;
+
+      /* Replace execution count value */
+      base->exec_num  = exec_num;
 
       if( EXPR_OWNS_VEC( op, suppl ) ) {
 
@@ -980,12 +994,13 @@ void expression_display( expression* expr ) {
     right_id = expr->right->id;
   }
 
-  printf( "  Expression =>  id: %d, op: %s, line: %d, col: %x, suppl: %x, left: %d, right: %d, ", 
+  printf( "  Expression =>  id: %d, op: %s, line: %d, col: %x, suppl: %x, exec_num: %d, left: %d, right: %d, ", 
           expr->id,
           expression_string_op( expr->op ),
           expr->line,
 	  expr->col,
           expr->suppl.all,
+          expr->exec_num,
           left_id, 
           right_id );
 
@@ -1897,6 +1912,17 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.147  2005/12/23 05:41:52  phase1geo
+ Fixing several bugs in score command per bug report #1388339.  Fixed problem
+ with race condition checker statement iterator to eliminate infinite looping (this
+ was the problem in the original bug).  Also fixed expression assigment when static
+ expressions are used in the LHS (caused an assertion failure).  Also fixed the race
+ condition checker to properly pay attention to task calls, named blocks and fork
+ statements to make sure that these are being handled correctly for race condition
+ checking.  Fixed bug for signals that are on the LHS side of an assignment expression
+ but is not being assigned (bit selects) so that these are NOT considered for race
+ conditions.  Full regression is a bit broken now but the opened bug can now be closed.
+
  Revision 1.146  2005/12/17 05:47:36  phase1geo
  More memory fault fixes.  Regression runs cleanly and we have verified
  no memory faults up to define3.v.  Still have a ways to go.

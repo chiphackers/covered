@@ -263,7 +263,7 @@
  supplemental fields are ANDed with this mask and ORed together to perform the
  merge.  See \ref esuppl_u for information on which bits are masked.
 */
-#define ESUPPL_MERGE_MASK            0x3ffff
+#define ESUPPL_MERGE_MASK            0x1ffff
 
 /*!
  Returns a value of 1 if the specified supplemental value has the SWAPPED
@@ -278,13 +278,6 @@
  expression tree.
 */
 #define ESUPPL_IS_ROOT(x)            x.part.root
-
-/*!
- Returns a value of 1 if the specified supplemental value has the executed
- bit set; otherwise, returns a value of 0 to indicate whether the
- corresponding expression was executed during simulation or not.
-*/
-#define ESUPPL_WAS_EXECUTED(x)       x.part.executed
 
 /*!
  Returns a value of 1 if the specified supplemental belongs to an expression
@@ -1000,49 +993,47 @@ union esuppl_u {
                                      when displaying them in. */
     control root           :1;  /*!< Bit 1.  Mask bit = 1.  Indicates that this expression is a root expression.
                                      Traversing to the parent pointer will take you to a statement type. */
-    control executed       :1;  /*!< Bit 2.  Mask bit = 1.  Indicates that this expression has been executed in the
-                                     queue during the lifetime of the simulation. */
-    control false          :1;  /*!< Bit 3.  Mask bit = 1.  Indicates that this expression has evaluated to a value
+    control false          :1;  /*!< Bit 2.  Mask bit = 1.  Indicates that this expression has evaluated to a value
                                      of FALSE during the lifetime of the simulation. */
-    control true           :1;  /*!< Bit 4.  Mask bit = 1.  Indicates that this expression has evaluated to a value
+    control true           :1;  /*!< Bit 3.  Mask bit = 1.  Indicates that this expression has evaluated to a value
                                      of TRUE during the lifetime of the simulation. */
-    control left_changed   :1;  /*!< Bit 5.  Mask bit = 1.  Indicates that this expression has its left child
+    control left_changed   :1;  /*!< Bit 4.  Mask bit = 1.  Indicates that this expression has its left child
                                      expression in a changed state during this timestamp. */
-    control right_changed  :1;  /*!< Bit 6.  Mask bit = 1.  Indicates that this expression has its right child
+    control right_changed  :1;  /*!< Bit 5.  Mask bit = 1.  Indicates that this expression has its right child
                                      expression in a changed state during this timestamp. */
-    control eval_00        :1;  /*!< Bit 7.  Mask bit = 1.  Indicates that the value of the left child expression
+    control eval_00        :1;  /*!< Bit 6.  Mask bit = 1.  Indicates that the value of the left child expression
                                      evaluated to FALSE and the right child expression evaluated to FALSE. */
-    control eval_01        :1;  /*!< Bit 8.  Mask bit = 1.  Indicates that the value of the left child expression
+    control eval_01        :1;  /*!< Bit 7.  Mask bit = 1.  Indicates that the value of the left child expression
                                      evaluated to FALSE and the right child expression evaluated to TRUE. */
-    control eval_10        :1;  /*!< Bit 9.  Mask bit = 1.  Indicates that the value of the left child expression
+    control eval_10        :1;  /*!< Bit 8.  Mask bit = 1.  Indicates that the value of the left child expression
                                      evaluated to TRUE and the right child expression evaluated to FALSE. */
-    control eval_11        :1;  /*!< Bit 10.  Mask bit = 1.  Indicates that the value of the left child expression
+    control eval_11        :1;  /*!< Bit 9.  Mask bit = 1.  Indicates that the value of the left child expression
                                      evaluated to TRUE and the right child expression evaluated to TRUE. */
-    control lhs            :1;  /*!< Bit 11.  Mask bit = 1.  Indicates that this expression exists on the left-hand
+    control lhs            :1;  /*!< Bit 10.  Mask bit = 1.  Indicates that this expression exists on the left-hand
                                      side of an assignment operation. */
-    control in_func        :1;  /*!< Bit 12.  Mask bit = 1.  Indicates that this expression exists in a function */
-    control stmt_head      :1;  /*!< Bit 13.  Mask bit = 1.  Indicates the statement which this expression belongs is
+    control in_func        :1;  /*!< Bit 11.  Mask bit = 1.  Indicates that this expression exists in a function */
+    control stmt_head      :1;  /*!< Bit 12.  Mask bit = 1.  Indicates the statement which this expression belongs is
                                      a head statement (only valid for root expressions -- parent expression == NULL). */
-    control stmt_stop_true :1;  /*!< Bit 14.  Mask bit = 1.  Indicates the statement which this expression belongs
+    control stmt_stop_true :1;  /*!< Bit 13.  Mask bit = 1.  Indicates the statement which this expression belongs
                                      should write itself to the CDD and not continue to traverse its next_true pointer. */
-    control stmt_stop_false:1;  /*!< Bit 15.  Mask bit = 1.  Indicates the statement which this expression belongs
+    control stmt_stop_false:1;  /*!< Bit 14.  Mask bit = 1.  Indicates the statement which this expression belongs
                                      should write itself to the CDD and not continue to traverse its next_false pointer. */
-    control stmt_cont      :1;  /*!< Bit 16.  Mask bit = 1.  Indicates the statement which this expression belongs is
+    control stmt_cont      :1;  /*!< Bit 15.  Mask bit = 1.  Indicates the statement which this expression belongs is
                                      part of a continuous assignment.  As such, stop simulating this statement tree
                                      after this expression tree is evaluated. */
-    control stmt_is_called :1;  /*!< Bit 17.  Mask bit = 1.  Indicates that this statement is called by a FUNC_CALL,
+    control stmt_is_called :1;  /*!< Bit 16.  Mask bit = 1.  Indicates that this statement is called by a FUNC_CALL,
                                      TASK_CALL, NB_CALL or FORK statement.  If a statement has this bit set, it will NOT
                                      be automatically placed in the thread queue at time 0. */
  
     /* UNMASKED BITS */
-    control eval_t         :1;  /*!< Bit 18.  Mask bit = 0.  Indicates that the value of the current expression is
+    control eval_t         :1;  /*!< Bit 17.  Mask bit = 0.  Indicates that the value of the current expression is
                                      currently set to TRUE (temporary value). */
-    control eval_f         :1;  /*!< Bit 19.  Mask bit = 0.  Indicates that the value of the current expression is
+    control eval_f         :1;  /*!< Bit 18.  Mask bit = 0.  Indicates that the value of the current expression is
                                      currently set to FALSE (temporary value). */
-    control comb_cntd      :1;  /*!< Bit 20.  Mask bit = 0.  Indicates that the current expression has been previously
+    control comb_cntd      :1;  /*!< Bit 19.  Mask bit = 0.  Indicates that the current expression has been previously
                                      counted for combinational coverage.  Only set by report command (therefore this bit
                                      will always be a zero when written to CDD file. */
-    control stmt_added     :1;  /*!< Bit 21.  Temporary bit value used by the score command but not displayed to the CDD
+    control stmt_added     :1;  /*!< Bit 20.  Temporary bit value used by the score command but not displayed to the CDD
                                      file.  When this bit is set to a one, it indicates to the db_add_statement
                                      function that this statement and all children statements have already been
                                      added to the functional unit statement list and should not be added again. */
@@ -1479,6 +1470,7 @@ struct expression_s {
   int         id;                    /*!< Specifies unique ID for this expression in the parent */
   int         ulid;                  /*!< Specifies underline ID for reporting purposes */
   int         line;                  /*!< Specified line in file that this expression is found on */
+  control     exec_num;              /*!< Specifies the number of times this expression was executed during simulation */
   control     col;                   /*!< Specifies column location of beginning/ending of expression */
   vsignal*    sig;                   /*!< Pointer to signal.  If NULL then no signal is attached */
   expr_stmt*  parent;                /*!< Parent expression/statement */
@@ -1745,6 +1737,9 @@ struct thread_s {
 
 /*
  $Log$
+ Revision 1.154  2005/12/16 23:09:15  phase1geo
+ More updates to remove memory leaks.  Full regression passes.
+
  Revision 1.153  2005/12/16 06:25:15  phase1geo
  Fixing lshift/rshift operations to avoid reading unallocated memory.  Updated
  assign1.cdd file.

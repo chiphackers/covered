@@ -581,7 +581,7 @@ bool sim_thread( thread* thr ) {
     expr_changed = sim_expression( stmt->exp, thr );
 
     /* Indicate that this statement's expression has been executed */
-    stmt->exp->suppl.part.executed = 1;
+    stmt->exp->exec_num++;
 
 #ifdef DEBUG_MODE
     snprintf( user_msg, USER_MSG_LENGTH, "  Executed statement %d, expr changed %d", stmt->exp->id, expr_changed );
@@ -687,6 +687,9 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.55  2005/12/12 23:25:37  phase1geo
+ Fixing memory faults.  This is a work in progress.
+
  Revision 1.54  2005/12/07 21:50:51  phase1geo
  Added support for repeat blocks.  Added repeat1 to regression and fixed errors.
  Full regression passes.
