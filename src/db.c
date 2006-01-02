@@ -161,9 +161,6 @@ bool db_write( char* file, bool parse_mode ) {
 
   }
 
-  /* Remove memory allocated for instance_root and mod_head */
-  db_close();
-
   return( retval );
 
 }
@@ -1628,6 +1625,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.155  2005/12/17 05:47:36  phase1geo
+ More memory fault fixes.  Regression runs cleanly and we have verified
+ no memory faults up to define3.v.  Still have a ways to go.
+
  Revision 1.154  2005/12/14 23:03:24  phase1geo
  More updates to remove memory faults.  Still a work in progress but full
  regression passes.

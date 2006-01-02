@@ -58,7 +58,7 @@ am_covered_OBJECTS = arc.$(OBJEXT) attr.$(OBJEXT) parser.$(OBJEXT) \
 	keywords.$(OBJEXT) pplexer.$(OBJEXT) lexer.$(OBJEXT) \
 	line.$(OBJEXT) link.$(OBJEXT) main.$(OBJEXT) merge.$(OBJEXT) \
 	param.$(OBJEXT) parse.$(OBJEXT) parser_misc.$(OBJEXT) \
-	race.$(OBJEXT) report.$(OBJEXT) scope.$(OBJEXT) \
+	perf.$(OBJEXT) race.$(OBJEXT) report.$(OBJEXT) scope.$(OBJEXT) \
 	score.$(OBJEXT) search.$(OBJEXT) sim.$(OBJEXT) stat.$(OBJEXT) \
 	static.$(OBJEXT) statement.$(OBJEXT) stmt_blk.$(OBJEXT) \
 	symtable.$(OBJEXT) tcl_funcs.$(OBJEXT) toggle.$(OBJEXT) \
@@ -189,6 +189,7 @@ covered_SOURCES = arc.c \
 		  param.c \
 		  parse.c \
 		  parser_misc.c \
+		  perf.c \
                   race.c \
 		  report.c \
 		  scope.c \
@@ -303,6 +304,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parse.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parser.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parser_misc.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/perf.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pplexer.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/race.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/report.Po@am__quote@

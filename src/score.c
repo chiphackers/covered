@@ -26,6 +26,7 @@
 #include "fsm_arg.h"
 #include "fsm_var.h"
 #include "info.h"
+#include "perf.h"
 
 
 char* top_module           = NULL;                /*!< Name of top-level module to score */
@@ -47,6 +48,7 @@ extern unsigned long curr_malloc_size;
 extern str_link*     use_files_head;
 extern char          user_msg[USER_MSG_LENGTH];
 extern char*         directive_filename;
+extern bool          debug_mode;
 
 
 void define_macro( const char* name, const char* value );
@@ -460,6 +462,15 @@ int command_score( int argc, int last_arg, char** argv ) {
 #endif
     print_output( "", NORMAL, __FILE__, __LINE__ );
 
+#ifdef DEBUG_MODE
+    if( debug_mode ) {
+      perf_output_inst_report( stdout );
+    }
+#endif
+
+    /* Close database */
+    db_close();
+
     /* Deallocate memory for search engine */
     search_free_lists();
 
@@ -488,6 +499,9 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.57  2005/12/31 03:30:47  phase1geo
+ Various documentation updates.
+
  Revision 1.56  2005/12/22 23:04:42  phase1geo
  More memory leak fixes.
 
