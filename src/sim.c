@@ -75,7 +75,6 @@
 
 extern nibble or_optab[OPTAB_SIZE];
 extern char   user_msg[USER_MSG_LENGTH];
-extern int    curr_sim_time;
 
 /*!
  Pointer to head of expression list that contains all expressions that contain static (non-changing)
@@ -130,9 +129,6 @@ void sim_expr_changed( expression* expr ) {
             ESUPPL_IS_LEFT_CHANGED( expr->suppl ),
             ESUPPL_IS_RIGHT_CHANGED( expr->suppl ) );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
-  if( curr_sim_time == 287 ) {
-    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-  }
 #endif
 
   /* No need to continue to traverse up tree if both CHANGED bits are set */
@@ -505,9 +501,6 @@ bool sim_expression( expression* expr, thread* thr ) {
   snprintf( user_msg, USER_MSG_LENGTH, "    In sim_expression %d, left_changed %d, right_changed %d",
             expr->id, ESUPPL_IS_LEFT_CHANGED( expr->suppl ), ESUPPL_IS_RIGHT_CHANGED( expr->suppl ) );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
-  if( curr_sim_time == 287 ) {
-    print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-  }
 #endif
 
   /* Traverse left child expression if it has changed */
@@ -593,9 +586,6 @@ bool sim_thread( thread* thr ) {
 #ifdef DEBUG_MODE
     snprintf( user_msg, USER_MSG_LENGTH, "  Executed statement %d, expr changed %d", stmt->exp->id, expr_changed );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
-    if( curr_sim_time == 287 ) {
-      print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-    }
 #endif
       
     /* Clear wait event signal bits */
@@ -632,9 +622,6 @@ bool sim_thread( thread* thr ) {
 #ifdef DEBUG_MODE
     snprintf( user_msg, USER_MSG_LENGTH, "Completed thread %x, executed %d, killing...\n", thr, !first );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
-    if( curr_sim_time == 287 ) {
-      print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-    }
 #endif
  
     sim_kill_thread( thr );
@@ -645,9 +632,6 @@ bool sim_thread( thread* thr ) {
 #ifdef DEBUG_MODE
     snprintf( user_msg, USER_MSG_LENGTH, "Switching context of thread %x, executed %d...\n", thr, !first );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
-    if( curr_sim_time == 287 ) {
-      print_output( user_msg, NORMAL, __FILE__, __LINE__ );
-    }
 #endif
 
     sigl = curr_thread->curr->wait_sig_head;
@@ -679,9 +663,6 @@ void sim_simulate() {
   
 #ifdef DEBUG_MODE
     print_output( "####  Iterating through thread queue  ####", DEBUG, __FILE__, __LINE__ );
-    if( curr_sim_time == 287 ) {
-      print_output( "####  Iterating through thread queue  ####", NORMAL, __FILE__, __LINE__ );
-    }
 #endif
     
     while( curr_thread != NULL ) {
@@ -706,6 +687,14 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.57  2006/01/03 22:59:16  phase1geo
+ Fixing bug in expression_assign function -- removed recursive assignment when
+ the LHS expression is a signal, single-bit, multi-bit or static value (only
+ recurse when the LHS is a CONCAT or LIST).  Fixing bug in db_close function to
+ check if the instance tree has been populated before deallocating memory for it.
+ Fixing bug in report help information when Tcl/Tk is not available.  Added bassign2
+ diagnostic to regression suite to verify first described bug.
+
  Revision 1.56  2005/12/31 05:00:57  phase1geo
  Updating regression due to recent changes in adding exec_num field in expression
  and removing the executed bit in the expression supplemental field.  This will eventually
