@@ -138,16 +138,20 @@ Tcl_Interp* interp;
 void report_usage() {
 
   printf( "\n" );
+#ifdef HAVE_TCLTK
   printf( "Usage:  covered report (-h | -view | [<options>] <database_file>)\n" );
   printf( "\n" );
-#ifdef HAVE_TCLTK
   printf( "   -view                      Uses the graphical report viewer for viewing reports.  If this\n" );
   printf( "                               option is not specified, the text report will be generated.\n" );
+#else
+  printf( "Usage:  covered report (-h | [<options>] <database_file>)\n" );
+  printf( "\n" );
 #endif
   printf( "   -h                         Displays this help information.\n" );
   printf( "\n" );
   printf( "   Options:\n" );
-  printf( "      -m [l][t][c][f][r]      Type(s) of metrics to report.  Default is ltcf.\n" );
+  printf( "      -m [l][t][c][f][r]      Type(s) of metrics to report.  l=line, t=toggle, c=combinational logic,\n" );
+  printf( "                               f=FSM state/arc, r=race condition.  Default is ltcf.\n" );
   printf( "      -d (s|d|v)              Level of report detail (s=summary, d=detailed, v=verbose).\n" );
   printf( "                               Default is to display summary coverage information.\n" );
   printf( "      -i                      Provides coverage information for instances instead of module/task/function.\n" );
@@ -751,6 +755,9 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.49  2005/12/13 23:15:15  phase1geo
+ More fixes for memory leaks.  Regression fully passes at this point.
+
  Revision 1.48  2005/12/12 23:25:37  phase1geo
  Fixing memory faults.  This is a work in progress.
 

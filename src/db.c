@@ -114,18 +114,22 @@ int       stmt_conn_id    = 1;
 */
 void db_close() {
 
-  /* Remove memory allocated for instance_root and mod_head */
-  assert( instance_root->funit != NULL );
-  instance_dealloc( instance_root, instance_root->name );
-  funit_link_delete_list( funit_head, TRUE );
+  if( instance_root != NULL ) {
 
-  /* Deallocate preprocessor define tree */
-  tree_dealloc( def_table );
+    /* Remove memory allocated for instance_root and mod_head */
+    assert( instance_root->funit != NULL );
+    instance_dealloc( instance_root, instance_root->name );
+    funit_link_delete_list( funit_head, TRUE );
 
-  instance_root = NULL;
-  funit_head    = NULL;
-  funit_tail    = NULL;
-  def_table     = NULL;
+    /* Deallocate preprocessor define tree */
+    tree_dealloc( def_table );
+
+    instance_root = NULL;
+    funit_head    = NULL;
+    funit_tail    = NULL;
+    def_table     = NULL;
+
+  }
 
 }
 
@@ -1625,6 +1629,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.156  2006/01/02 21:35:36  phase1geo
+ Added simulation performance statistical information to end of score command
+ when we are in debug mode.
+
  Revision 1.155  2005/12/17 05:47:36  phase1geo
  More memory fault fixes.  Regression runs cleanly and we have verified
  no memory faults up to define3.v.  Still have a ways to go.

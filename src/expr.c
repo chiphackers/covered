@@ -1779,6 +1779,9 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
         break;
       case EXP_OP_CONCAT   :
       case EXP_OP_LIST     :
+        expression_assign( lhs->right, rhs, lsb );
+        expression_assign( lhs->left,  rhs, lsb );
+        break;
       case EXP_OP_STATIC   :
         break;
       default:
@@ -1794,10 +1797,6 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
 		(lhs->op == EXP_OP_LIST) );
         break;
     }
-
-    /* Not sure at this point if this code belongs above or below the above switch statement */
-    expression_assign( lhs->right, rhs, lsb );
-    expression_assign( lhs->left,  rhs, lsb );
 
   }
 
@@ -1912,6 +1911,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.148  2005/12/31 05:00:57  phase1geo
+ Updating regression due to recent changes in adding exec_num field in expression
+ and removing the executed bit in the expression supplemental field.  This will eventually
+ allow us to get information on where the simulator is spending the most time.
+
  Revision 1.147  2005/12/23 05:41:52  phase1geo
  Fixing several bugs in score command per bug report #1388339.  Fixed problem
  with race condition checker statement iterator to eliminate infinite looping (this
