@@ -29,19 +29,20 @@
 #include "perf.h"
 
 
-char* top_module           = NULL;                /*!< Name of top-level module to score */
-char* top_instance         = NULL;                /*!< Name of top-level instance name */
-char* output_db            = NULL;                /*!< Name of output score database file to generate */
-char* vcd_file             = NULL;                /*!< Name of VCD output file to parse */
-char* vpi_file             = NULL;                /*!< Name of VPI output file to write contents to */
-int   delay_expr_type      = DELAY_EXPR_DEFAULT;  /*!< Value to use when a delay expression with min:typ:max */
-char* ppfilename           = NULL;                /*!< Name of preprocessor filename to use */
-bool  instance_specified   = FALSE;               /*!< Specifies if -i option was specified */
-int   timestep_update      = 0;                   /*!< Specifies timestep increment to display current time */
-int   flag_race_check      = WARNING;             /*!< Specifies how race conditions should be handled */
-bool  flag_exclude_assign  = FALSE;               /*!< Specifies if continuous assignments blocks should be sim'd */
-bool  flag_exclude_always  = FALSE;               /*!< Specifies if always blocks should be sim'd */
-bool  flag_exclude_initial = FALSE;               /*!< Specifies if initial blocks should be sim'd */
+char* top_module             = NULL;                /*!< Name of top-level module to score */
+char* top_instance           = NULL;                /*!< Name of top-level instance name */
+char* output_db              = NULL;                /*!< Name of output score database file to generate */
+char* vcd_file               = NULL;                /*!< Name of VCD output file to parse */
+char* vpi_file               = NULL;                /*!< Name of VPI output file to write contents to */
+int   delay_expr_type        = DELAY_EXPR_DEFAULT;  /*!< Value to use when a delay expression with min:typ:max */
+char* ppfilename             = NULL;                /*!< Name of preprocessor filename to use */
+bool  instance_specified     = FALSE;               /*!< Specifies if -i option was specified */
+int   timestep_update        = 0;                   /*!< Specifies timestep increment to display current time */
+int   flag_race_check        = WARNING;             /*!< Specifies how race conditions should be handled */
+bool  flag_exclude_assign    = FALSE;               /*!< Specifies if continuous assignments blocks should be sim'd */
+bool  flag_exclude_always    = FALSE;               /*!< Specifies if always blocks should be sim'd */
+bool  flag_exclude_initial   = FALSE;               /*!< Specifies if initial blocks should be sim'd */
+bool  flag_display_sim_stats = FALSE;               /*!< Specifies if simulation performance information should be output */
 
 extern unsigned long largest_malloc_size;
 extern unsigned long curr_malloc_size;
@@ -94,6 +95,8 @@ void score_usage() {
   printf( "                                    (-rS = Silent.  Do not report condition was found, just handle it.\n" );
   printf( "                                     -rW = Warning.  Report race condition information, but just handle it.  Default.\n" );
   printf( "                                     -rE = Error.  Report race condition information and stop scoring.)\n" );
+  printf( "      -S                           Outputs simulation performance information after scoring has completed.  This\n" );
+  printf( "                                    information is currently only useful for the developers of Covered.\n" );
   printf( "      -h                           Displays this help information.\n" );
   printf( "\n" );
   printf( "      +libext+.<extension>(+.<extension>)+\n" );
@@ -385,6 +388,10 @@ bool score_parse_args( int argc, int last_arg, char** argv ) {
           retval = FALSE;
           break;
       }
+
+    } else if( strncmp( "-S", argv[i], 2 ) == 0 ) {
+
+      flag_display_sim_stats = TRUE;
         
     } else {
 
@@ -462,9 +469,10 @@ int command_score( int argc, int last_arg, char** argv ) {
 #endif
     print_output( "", NORMAL, __FILE__, __LINE__ );
 
-#ifdef DEBUG_MODE
-    perf_output_inst_report( stdout );
-#endif
+    /* Display simulation statistics if specified */
+    if( flag_display_sim_stats ) {
+      perf_output_inst_report( stdout );
+    }
 
     /* Close database */
     db_close();
@@ -497,6 +505,10 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.59  2006/01/04 03:15:52  phase1geo
+ Adding bassign3 diagnostic to regression suite to verify expression_assign
+ function works correctly for CONCAT/LIST ordering.
+
  Revision 1.58  2006/01/02 21:35:36  phase1geo
  Added simulation performance statistical information to end of score command
  when we are in debug mode.

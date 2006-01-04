@@ -580,9 +580,6 @@ bool sim_thread( thread* thr ) {
     /* Place expression in expression simulator and run */
     expr_changed = sim_expression( stmt->exp, thr );
 
-    /* Indicate that this statement's expression has been executed */
-    stmt->exp->exec_num++;
-
 #ifdef DEBUG_MODE
     snprintf( user_msg, USER_MSG_LENGTH, "  Executed statement %d, expr changed %d", stmt->exp->id, expr_changed );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
@@ -687,6 +684,9 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.58  2006/01/03 23:00:18  phase1geo
+ Removing debugging output from last checkin.
+
  Revision 1.57  2006/01/03 22:59:16  phase1geo
  Fixing bug in expression_assign function -- removed recursive assignment when
  the LHS expression is a signal, single-bit, multi-bit or static value (only

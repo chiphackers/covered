@@ -1523,6 +1523,9 @@ bool expression_operate( expression* expr, thread* thr ) {
 
   }
 
+  /* Specify that we have executed this expression */
+  (expr->exec_num)++;
+
   return( retval );
 
 }
@@ -1911,6 +1914,14 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.149  2006/01/03 22:59:16  phase1geo
+ Fixing bug in expression_assign function -- removed recursive assignment when
+ the LHS expression is a signal, single-bit, multi-bit or static value (only
+ recurse when the LHS is a CONCAT or LIST).  Fixing bug in db_close function to
+ check if the instance tree has been populated before deallocating memory for it.
+ Fixing bug in report help information when Tcl/Tk is not available.  Added bassign2
+ diagnostic to regression suite to verify first described bug.
+
  Revision 1.148  2005/12/31 05:00:57  phase1geo
  Updating regression due to recent changes in adding exec_num field in expression
  and removing the executed bit in the expression supplemental field.  This will eventually
