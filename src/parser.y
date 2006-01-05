@@ -51,8 +51,6 @@ bool lhs_mode    = FALSE;
 exp_link* param_exp_head = NULL;
 exp_link* param_exp_tail = NULL;
 
-sig_link* wait_sig_head = NULL;
-sig_link* wait_sig_tail = NULL;
 sig_link* dummy_head    = NULL;
 sig_link* dummy_tail    = NULL;
 

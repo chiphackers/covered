@@ -76,13 +76,13 @@
 1 #STATE_HEAD 0 2 0 1
 1 #STATE_DATA 0 2 0 4
 1 #STATE_TAIL 0 2 0 5
-1 clock 0 1 24 1102
-1 reset 0 1 16 1002
-1 head 0 1 24 1102
-1 tail 0 1 24 1102
-1 valid 0 1 24 1102
-1 state 0 2 8 330a
-1 next_state 0 2 32 330a
+1 clock 0 1 8 1102
+1 reset 0 1 8 1002
+1 head 0 1 8 1102
+1 tail 0 1 8 1102
+1 valid 0 1 8 1102
+1 state 0 2 0 330a
+1 next_state 0 2 16 330a
 4 1 1 1
 4 2 2 2
 4 16 9 9

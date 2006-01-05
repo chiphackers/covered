@@ -318,39 +318,6 @@ bool vsignal_db_replace( vsignal* base, char** line ) {
 }
 
 /*!
- \param sig  Pointer to vsignal to set wait bit to.
- \param val  Value to set wait bit to.
-
- Sets the wait bit in the specified vsignal to the specified value.
-*/
-void vsignal_set_wait_bit( vsignal* sig, int val ) {
-
-  assert( sig != NULL );
-  assert( sig->value != NULL );
-  assert( sig->value->value != NULL );
-
-  sig->value->suppl.part.wait = val;
-
-}
-
-/*!
- \param sig  Pointer to vsignal to retrieve wait bit value from.
-
- \return Returns value of wait bit in specified vsignal.
-
- Gets the value of the wait bit from the specified vsignal.
-*/
-int vsignal_get_wait_bit( vsignal* sig ) {
-
-  assert( sig != NULL );
-  assert( sig->value != NULL );
-  assert( sig->value->value != NULL );
-
-  return( sig->value->suppl.part.wait );
-
-}
-
-/*!
  \param sig  Pointer to signal to set assigned bits to
  \param msb  Most-significant bit to set in signal vector
  \param lsb  Least-significant bit to set in signal vector
@@ -538,6 +505,13 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.14  2005/12/01 18:35:17  phase1geo
+ Fixing bug where functions in continuous assignments could cause the
+ assignment to constantly be reevaluated (infinite looping).  Added new nested_block2
+ diagnostic to verify nested named blocks in functions.  Also verifies that nested
+ named blocks can call functions in the same module.  Also modified NB_CALL expressions
+ to act like functions (no context switching involved).  Full regression passes.
+
  Revision 1.13  2005/12/01 16:08:19  phase1geo
  Allowing nested functional units within a module to get parsed and handled correctly.
  Added new nested_block1 diagnostic to test nested named blocks -- will add more tests

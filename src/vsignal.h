@@ -31,12 +31,6 @@ bool vsignal_db_merge( vsignal* base, char** line, bool same );
 /*! \brief Reads and replaces an original vsignal with a new vsignal. */
 bool vsignal_db_replace( vsignal* base, char** line );
 
-/*! \brief Sets value of currently waiting bit of vsignal to specified value. */
-void vsignal_set_wait_bit( vsignal* sig, int val );
-
-/*! \brief Gets value of currently waiting bit of vsignal. */
-int vsignal_get_wait_bit( vsignal* sig );
-
 /*! \brief Sets vector value assigned bits and returns overlapping indicator. */
 bool vsignal_set_assigned( vsignal* sig, int msb, int lsb );
 
@@ -61,6 +55,11 @@ void vsignal_dealloc( vsignal* sig );
 
 /*
  $Log$
+ Revision 1.7  2005/12/01 16:08:19  phase1geo
+ Allowing nested functional units within a module to get parsed and handled correctly.
+ Added new nested_block1 diagnostic to test nested named blocks -- will add more tests
+ later for different combinations.  Updated regression suite which now passes.
+
  Revision 1.6  2005/11/10 19:28:23  phase1geo
  Updates/fixes for tasks/functions.  Also updated Tcl/Tk scripts for these changes.
  Fixed bug with net_decl_assign statements -- the line, start column and end column

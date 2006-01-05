@@ -88,17 +88,6 @@
  array is an array of pointers to symtable tree nodes, one entry for each node in the symtable tree.
  The array is allocated after the symtable tree has been fully populated and is destroyed at the very
  end of the score command.
-
- \par
- Two indices are used to maintain the array, presim_size and postsim_size.  All signals that changed
- during the current timestep and need to be assigned to their appropriate signals before simulation
- occurs for that timestep are placed in the lower elements of this array (i.e., starting at zero and
- moving upperward).  The presim_size indicates how many elements are in the lower elements of the
- array.  All signals that changed during the current timestep and need to be assigned to their
- appropriate signals after simulation occurs for that timestep are placed in the upper elements of
- this array (i.e., starting at the largest index and moving downward).  The postsim_size indicates how
- many elements are in the upper elements of the array.  Both the presim_size and postsim_size signals
- are set to zero before the next timestep.
 */
 
 #ifdef HAVE_CONFIG_H
@@ -135,12 +124,6 @@ int        vcd_symtab_size = 0;
  how this structure is used.
 */
 symtable** timestep_tab    = NULL;
-
-/*!
- Maintains the current number of elements in the timestep_tab array that need to be
- evaluated prior to simulation for a timestep.
-*/
-int        presim_size     = 0;
 
 /*!
  Maintains the current number of elements in the timestep_tab array that need to be
@@ -268,9 +251,9 @@ void symtable_add( char* sym, vsignal* sig, int msb, int lsb ) {
 */
 void symtable_set_value( char* sym, char* value ) {
 
-  symtable* curr;         /* Pointer to current symtable                                     */
-  sym_sig*  sig;          /* Pointer to current sym_sig in list                              */
-  char*     ptr;          /* Pointer to current character in symbol                          */
+  symtable* curr;         /* Pointer to current symtable */
+  sym_sig*  sig;          /* Pointer to current sym_sig in list */
+  char*     ptr;          /* Pointer to current character in symbol */
   bool      set = FALSE;  /* Specifies if this symtable entry has been set this timestep yet */
 
   assert( vcd_symtab != NULL );
@@ -296,23 +279,9 @@ void symtable_set_value( char* sym, char* value ) {
 
     if( !set ) {
 
-      /*
-       See if current signal is to be placed in presim queue or postsim queue and
-       put it there.
-      */
-      sig = curr->sig_head;
-      while( (sig != NULL) && (vsignal_get_wait_bit( sig->sig ) == 0) ) {
-        sig = sig->next;
-      }
-
-      /* None of the signals are wait signals, place in postsim queue */
-      if( sig == NULL ) {
-        timestep_tab[((vcd_symtab_size - 1) - postsim_size)] = curr;
-        postsim_size++;
-      } else {
-        timestep_tab[presim_size] = curr;
-        presim_size++;
-      }
+      /* Place in postsim queue */
+      timestep_tab[postsim_size] = curr;
+      postsim_size++;
    
     }
 
@@ -321,41 +290,25 @@ void symtable_set_value( char* sym, char* value ) {
 }
 
 /*!
- \param presim  If set to TRUE, assigns all signals for pre-simulation (else assign all signals
-                for post-simulation.
-
  Traverses simulation symentry array, assigning stored string value to the
  stored signal.
 */
-void symtable_assign( bool presim ) {
+void symtable_assign() {
 
   symtable* curr;  /* Pointer to current symtable entry  */
   sym_sig*  sig;   /* Pointer to current sym_sig in list */
   int       i;     /* Loop iterator                      */
 
-  if( presim ) {
-    for( i=0; i<presim_size; i++ ) {
-      curr = timestep_tab[i];
-      sig = curr->sig_head;
-      while( sig != NULL ) {
-        vsignal_vcd_assign( sig->sig, curr->value, sig->msb, sig->lsb );
-        sig = sig->next;
-      }
-      curr->value[0] = '\0';
+  for( i=0; i<postsim_size; i++ ) {
+    curr = timestep_tab[i];
+    sig = curr->sig_head;
+    while( sig != NULL ) {
+      vsignal_vcd_assign( sig->sig, curr->value, sig->msb, sig->lsb );
+      sig = sig->next;
     }
-    presim_size = 0;
-  } else {
-    for( i=(vcd_symtab_size - 1); i>=(vcd_symtab_size - postsim_size); i-- ) {
-      curr = timestep_tab[i];
-      sig = curr->sig_head;
-      while( sig != NULL ) {
-        vsignal_vcd_assign( sig->sig, curr->value, sig->msb, sig->lsb );
-        sig = sig->next;
-      }
-      curr->value[0] = '\0';
-    }
-    postsim_size = 0;
+    curr->value[0] = '\0';
   }
+  postsim_size = 0;
 
 }
 
@@ -396,6 +349,10 @@ void symtable_dealloc( symtable* symtab ) {
 
 /*
  $Log$
+ Revision 1.18  2004/03/30 15:42:15  phase1geo
+ Renaming signal type to vsignal type to eliminate compilation problems on systems
+ that contain a signal type in the OS.
+
  Revision 1.17  2004/03/16 05:45:43  phase1geo
  Checkin contains a plethora of changes, bug fixes, enhancements...
  Some of which include:  new diagnostics to verify bug fixes found in field,

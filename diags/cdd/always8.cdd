@@ -28,8 +28,8 @@
 1 #B 0 2 0 1
 1 #C 0 2 0 4
 1 #D 0 2 0 5
-1 a 0 2 8 20a
-1 b 1 49 32 24aa aa aa aa aa aa aa aa aa aa aa aa 2
+1 a 0 2 0 20a
+1 b 1 49 16 24aa aa aa aa aa aa aa aa aa aa aa aa 2
 4 24 7 7
 4 25 24 7
 4 20 7 7

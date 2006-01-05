@@ -222,10 +222,10 @@
 1 y0 0 2 0 330a
 1 y1 0 2 0 330a
 1 y2 0 2 0 330a
-1 i 0 32 64 13aa aa aa aa aa aa aa aa
-1 l 0 32 64 7faa aa aa aa aa aa aa aa
-1 k 0 32 64 13aa aa aa aa aa aa aa aa
-1 j 0 32 64 13aa aa aa aa aa aa aa aa
+1 i 0 32 32 13aa aa aa aa aa aa aa aa
+1 l 0 32 32 7faa aa aa aa aa aa aa aa
+1 k 0 32 32 13aa aa aa aa aa aa aa aa
+1 j 0 32 32 13aa aa aa aa aa aa aa aa
 4 3 3 3
 4 6 6 6
 4 11 11 11

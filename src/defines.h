@@ -1458,7 +1458,6 @@ struct vector_s {
     nibble   all;                    /*!< Allows us to set all bits in the suppl field */
     struct {
       nibble base    :3;             /*!< Base-type of this data when originally parsed */
-      nibble wait    :1;             /*!< Specifies that this signal should be waited for */
       nibble inport  :1;             /*!< Specifies if this vector is part of an input port */
       nibble assigned:1;             /*!< Specifies that this vector will be assigned from simulated results (instead of dumpfile) */
       nibble mba     :1;             /*!< Specifies that this vector MUST be assigned from simulated results because this information
@@ -1509,12 +1508,11 @@ struct fsm_s {
 
 struct statement_s {
   expression* exp;                   /*!< Pointer to associated expression tree */
-  sig_link*   wait_sig_head;         /*!< Pointer to head of wait event signal list */
-  sig_link*   wait_sig_tail;         /*!< Pointer to tail of wait event signal list */
   statement*  next_true;             /*!< Pointer to next statement to run if expression tree non-zero */
   statement*  next_false;            /*!< Pointer to next statement to run if next_true not picked */
   int         conn_id;               /*!< Current connection ID (used to make sure that we do not infinitely loop
                                           in connecting statements together) */
+  thread*     thr;                   /*!< Pointer to thread that this statement is executing in */
 };
 
 struct sig_link_s {
@@ -1752,6 +1750,10 @@ struct perf_stat_s {
 
 /*
  $Log$
+ Revision 1.156  2006/01/02 21:35:36  phase1geo
+ Added simulation performance statistical information to end of score command
+ when we are in debug mode.
+
  Revision 1.155  2005/12/31 05:00:57  phase1geo
  Updating regression due to recent changes in adding exec_num field in expression
  and removing the executed bit in the expression supplemental field.  This will eventually

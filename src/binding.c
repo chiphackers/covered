@@ -417,17 +417,6 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
         expression_set_value( exp, found_sig->value );
       }
 
-      if( ((exp->op == EXP_OP_SIG) ||
-           (exp->op == EXP_OP_SBIT_SEL) ||
-           (exp->op == EXP_OP_MBIT_SEL)) &&
-          ((stmt = expression_get_root_statement( exp )) != NULL) &&
-          ((stmt->exp->op == EXP_OP_EOR) ||
-           (stmt->exp->op == EXP_OP_AEDGE) ||
-           (stmt->exp->op == EXP_OP_PEDGE) ||
-           (stmt->exp->op == EXP_OP_NEDGE)) ) {
-        sig_link_add( found_sig, &(stmt->wait_sig_head), &(stmt->wait_sig_tail) );
-      }
-
     } else {
 
       /* Check to see if this signal should be assigned by Covered or the dumpfile */
@@ -566,15 +555,6 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
 
           /* Attach the signal's value to our expression value */
           expression_set_value( exp, sigl->sig->value );
-
-          /* Add to wait list */
-          if( ((stmt = expression_get_root_statement( exp )) != NULL) &&
-              ((stmt->exp->op == EXP_OP_EOR) ||
-               (stmt->exp->op == EXP_OP_AEDGE) ||
-               (stmt->exp->op == EXP_OP_PEDGE) ||
-               (stmt->exp->op == EXP_OP_NEDGE)) ) {
-            sig_link_add( sigl->sig, &(stmt->wait_sig_head), &(stmt->wait_sig_tail) );
-          }
 
         }
 
@@ -754,6 +734,10 @@ void bind( bool cdd_reading ) {
 
 /* 
  $Log$
+ Revision 1.54  2005/12/14 23:03:24  phase1geo
+ More updates to remove memory faults.  Still a work in progress but full
+ regression passes.
+
  Revision 1.53  2005/12/12 23:25:37  phase1geo
  Fixing memory faults.  This is a work in progress.
 

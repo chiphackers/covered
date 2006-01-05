@@ -248,13 +248,6 @@ thread* sim_add_thread( thread* parent, statement* stmt ) {
     /* Arm all events in current statement expression */
     expression_arm_events( stmt->exp );
 
-    /* Set wait signals */
-    sigl = stmt->wait_sig_head;
-    while( sigl != NULL ) {
-      vsignal_set_wait_bit( sigl->sig, 1 );
-      sigl = sigl->next;
-    }
-
     /* Add this thread to the simulation thread queue */
     if( parent != NULL ) {
 
@@ -587,11 +580,6 @@ bool sim_thread( thread* thr ) {
       
     /* Clear wait event signal bits */
     if( first && expr_changed ) {
-      sigl = stmt->wait_sig_head;
-      while( sigl != NULL ) {
-        vsignal_set_wait_bit( sigl->sig, 0 );
-        sigl = sigl->next;
-      }
       first = FALSE;
     }
 
@@ -623,19 +611,13 @@ bool sim_thread( thread* thr ) {
  
     sim_kill_thread( thr );
 
-  /* Otherwise, set wait bits on current statement */
+#ifdef DEBUG_MODE
+  /* Otherwise, we are switching contexts */
   } else {
 
-#ifdef DEBUG_MODE
     snprintf( user_msg, USER_MSG_LENGTH, "Switching context of thread %x, executed %d...\n", thr, !first );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
-
-    sigl = curr_thread->curr->wait_sig_head;
-    while( sigl != NULL ) {
-      vsignal_set_wait_bit( sigl->sig, 1 );
-      sigl = sigl->next;
-    }
 
   }
 
@@ -684,6 +666,11 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.59  2006/01/04 22:07:04  phase1geo
+ Changing expression execution calculation from sim to expression_operate function.
+ Updating all regression files for this change.  Modifications to diagnostic Makefile
+ to accommodate environments that do not have valgrind.
+
  Revision 1.58  2006/01/03 23:00:18  phase1geo
  Removing debugging output from last checkin.
 

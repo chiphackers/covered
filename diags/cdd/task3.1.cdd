@@ -1,6 +1,6 @@
 5 1 * 5 0 0 0 0
 3 0 main main task3.1.v 1 35
 3 3 call_task1 main.call_task1 task3.1.v 14 22
-1 a 0 1 16 2
+1 a 0 1 8 2
 3 3 call_task2 main.call_task2 task3.1.v 24 33
-1 a 0 1 16 2
+1 a 0 1 8 2

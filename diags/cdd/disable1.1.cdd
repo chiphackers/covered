@@ -1,7 +1,7 @@
 5 1 * 5 0 0 0 0
 3 0 main main disable1.1.v 1 22
 2 20 5 8000c 2 3d 100a 0 0 1 0 2 3
-1 a 0 1 32 102
+1 a 0 1 16 102
 4 20 0 0
 3 1 foobar main.foobar disable1.1.v 5 13
 2 2 6 d0010 1 0 4 0 0 1 1 0

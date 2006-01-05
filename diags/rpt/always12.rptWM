@@ -71,7 +71,7 @@ Module/Task/Function                Filename                                Logi
                                                                       Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
   main                              always12.v                          2/   3/   5       40%
-  foobar                            always12.v                          0/   2/   2        0%
+  foobar                            always12.v                          1/   1/   2       50%
 ---------------------------------------------------------------------------------------------------------------------
 
     Module: main, File: always12.v
@@ -113,11 +113,11 @@ Module/Task/Function                Filename                                Logi
              32:     a  =  b 
                           |1|
 
-        Expression 1   (0/2)
+        Expression 1   (1/2)
         ^^^^^^^^^^^^^ - 
          E | E
         =0=|=1=
-         *   *
+             *
 
 
 
