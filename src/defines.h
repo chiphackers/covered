@@ -1419,6 +1419,7 @@ struct statement_s {
   int         conn_id;               /*!< Current connection ID (used to make sure that we do not infinitely loop
                                           in connecting statements together) */
   thread*     thr;                   /*!< Pointer to thread that this statement is executing in */
+  thread*     static_thr;            /*!< Pointer to thread that originally called this statement */
 };
 
 struct sig_link_s {
@@ -1640,6 +1641,7 @@ struct thread_s {
   statement* head;                   /*!< Pointer to original head statement that created this thread */
   statement* curr;                   /*!< Pointer to current head statement for this thread */
   bool       kill;                   /*!< Set to true if this thread should be killed */
+  bool       queued;                 /*!< Set to true when thread exists in the thread queue */
   thread*    child_head;             /*!< Pointer to head element in child thread list for this thread */
   thread*    child_tail;             /*!< Pointer to tail element in child thread list for this thread */
   thread*    prev_sib;               /*!< Pointer to previous sibling thread */
@@ -1656,6 +1658,12 @@ struct perf_stat_s {
 
 /*
  $Log$
+ Revision 1.158  2006/01/06 18:54:03  phase1geo
+ Breaking up expression_operate function into individual functions for each
+ expression operation.  Also storing additional information in a globally accessible,
+ constant structure array to increase performance.  Updating full regression for these
+ changes.  Full regression passes.
+
  Revision 1.157  2006/01/05 05:52:06  phase1geo
  Removing wait bit in vector supplemental field and modifying algorithm to only
  assign in the post-sim location (pre-sim now is gone).  This fixes some issues

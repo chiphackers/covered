@@ -180,9 +180,6 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
     print_output( "\n***  Merging completed successfully!  ***", NORMAL, __FILE__, __LINE__ );
 
-    /* Remove all remaining threads */
-    sim_kill_all_threads();
-
     /* Close database */
     db_close();
 
@@ -199,6 +196,10 @@ int command_merge( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.21  2006/01/02 21:35:36  phase1geo
+ Added simulation performance statistical information to end of score command
+ when we are in debug mode.
+
  Revision 1.20  2005/12/21 22:30:54  phase1geo
  More updates to memory leak fix list.  We are getting close!  Added some helper
  scripts/rules to more easily debug valgrind memory leak errors.  Also added suppression

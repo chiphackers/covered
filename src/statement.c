@@ -130,6 +130,7 @@ statement* statement_create( expression* exp ) {
   stmt->next_false           = NULL;
   stmt->conn_id              = 0;
   stmt->thr                  = NULL;
+  stmt->static_thr           = NULL;
 
   return( stmt );
 
@@ -612,6 +613,11 @@ void statement_dealloc( statement* stmt ) {
 
   if( stmt != NULL ) {
  
+    /* Deallocate the thread attached to this statement */
+    if( stmt->thr != NULL ) {
+      free_safe( stmt->thr );
+    }
+
     /* Finally, deallocate this statement */
     free_safe( stmt );
 
@@ -622,6 +628,12 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.68  2006/01/06 18:54:03  phase1geo
+ Breaking up expression_operate function into individual functions for each
+ expression operation.  Also storing additional information in a globally accessible,
+ constant structure array to increase performance.  Updating full regression for these
+ changes.  Full regression passes.
+
  Revision 1.67  2006/01/05 05:52:06  phase1geo
  Removing wait bit in vector supplemental field and modifying algorithm to only
  assign in the post-sim location (pre-sim now is gone).  This fixes some issues

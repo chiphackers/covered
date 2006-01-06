@@ -742,9 +742,6 @@ int command_report( int argc, int last_arg, char** argv ) {
 
   free_safe( input_db );
 
-  /* Remove all remaining threads */
-  sim_kill_all_threads();
-
   /* Close the database */
   db_close();
 
@@ -755,6 +752,14 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.50  2006/01/03 22:59:16  phase1geo
+ Fixing bug in expression_assign function -- removed recursive assignment when
+ the LHS expression is a signal, single-bit, multi-bit or static value (only
+ recurse when the LHS is a CONCAT or LIST).  Fixing bug in db_close function to
+ check if the instance tree has been populated before deallocating memory for it.
+ Fixing bug in report help information when Tcl/Tk is not available.  Added bassign2
+ diagnostic to regression suite to verify first described bug.
+
  Revision 1.49  2005/12/13 23:15:15  phase1geo
  More fixes for memory leaks.  Regression fully passes at this point.
 

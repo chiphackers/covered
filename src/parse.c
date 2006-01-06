@@ -175,17 +175,16 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
   
+#ifdef OBSOLETE
   /* Perform initialization simulation timestep */
   db_do_timestep( 0 );
+#endif
 
   /* Perform the parse */
   vcd_parse( vcd );
     
   /* Flush any pending statement trees that are waiting for delay */
   db_do_timestep( -1 );
-
-  /* Remove all remaining threads */
-  sim_kill_all_threads();
 
 #ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "========  Writing database %s  ========\n", db );
@@ -207,6 +206,10 @@ bool parse_and_score_dumpfile( char* db, char* vcd ) {
 
 /*
  $Log$
+ Revision 1.34  2006/01/02 21:35:36  phase1geo
+ Added simulation performance statistical information to end of score command
+ when we are in debug mode.
+
  Revision 1.33  2005/12/19 05:18:24  phase1geo
  Fixing memory leak problems with instance1.1.  Full regression has some segfaults
  that need to be looked at now.
