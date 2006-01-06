@@ -100,7 +100,8 @@
 #include "iter.h"
 
 
-extern char user_msg[USER_MSG_LENGTH];
+extern char     user_msg[USER_MSG_LENGTH];
+extern exp_info exp_op_info[EXP_OP_NUM];
 
 /*!
  Pointer to statement loop stack structure.  See description of \ref stmt_loop_link
@@ -621,6 +622,12 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.67  2006/01/05 05:52:06  phase1geo
+ Removing wait bit in vector supplemental field and modifying algorithm to only
+ assign in the post-sim location (pre-sim now is gone).  This fixes some issues
+ with simulation results and increases performance a bit.  Updated regressions
+ for these changes.  Full regression passes.
+
  Revision 1.66  2005/12/23 20:59:34  phase1geo
  Fixing assertion error in race condition checker.  Full regression runs cleanly.
 

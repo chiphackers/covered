@@ -106,16 +106,135 @@ extern exp_link* static_expr_tail;
 
 extern bool debug_mode;
 
+static bool expression_op_func__xor( expression*, thread* );
+static bool expression_op_func__multiply( expression*, thread* );
+static bool expression_op_func__divide( expression*, thread* );
+static bool expression_op_func__mod( expression*, thread* );
+static bool expression_op_func__add( expression*, thread* );
+static bool expression_op_func__subtract( expression*, thread* );
+static bool expression_op_func__and( expression*, thread* );
+static bool expression_op_func__or( expression*, thread* );
+static bool expression_op_func__nand( expression*, thread* );
+static bool expression_op_func__nor( expression*, thread* );
+static bool expression_op_func__nxor( expression*, thread* );
+static bool expression_op_func__lt( expression*, thread* );
+static bool expression_op_func__gt( expression*, thread* );
+static bool expression_op_func__lshift( expression*, thread* );
+static bool expression_op_func__rshift( expression*, thread* );
+static bool expression_op_func__eq( expression*, thread* );
+static bool expression_op_func__ceq( expression*, thread* );
+static bool expression_op_func__le( expression*, thread* );
+static bool expression_op_func__ge( expression*, thread* );
+static bool expression_op_func__ne( expression*, thread* );
+static bool expression_op_func__cne( expression*, thread* );
+static bool expression_op_func__lor( expression*, thread* );
+static bool expression_op_func__land( expression*, thread* );
+static bool expression_op_func__cond( expression*, thread* );
+static bool expression_op_func__cond_sel( expression*, thread* );
+static bool expression_op_func__uinv( expression*, thread* );
+static bool expression_op_func__uand( expression*, thread* );
+static bool expression_op_func__unot( expression*, thread* );
+static bool expression_op_func__uor( expression*, thread* );
+static bool expression_op_func__uxor( expression*, thread* );
+static bool expression_op_func__unand( expression*, thread* );
+static bool expression_op_func__unor( expression*, thread* );
+static bool expression_op_func__unxor( expression*, thread* );
+static bool expression_op_func__sbit( expression*, thread* );
+static bool expression_op_func__expand( expression*, thread* );
+static bool expression_op_func__concat( expression*, thread* );
+static bool expression_op_func__pedge( expression*, thread* );
+static bool expression_op_func__nedge( expression*, thread* );
+static bool expression_op_func__aedge( expression*, thread* );
+static bool expression_op_func__eor( expression*, thread* );
+static bool expression_op_func__delay( expression*, thread* );
+static bool expression_op_func__case( expression*, thread* );
+static bool expression_op_func__casex( expression*, thread* );
+static bool expression_op_func__casez( expression*, thread* );
+static bool expression_op_func__default( expression*, thread* );
+static bool expression_op_func__list( expression*, thread* );
+static bool expression_op_func__bassign( expression*, thread* );
+static bool expression_op_func__func_call( expression*, thread* );
+static bool expression_op_func__task_call( expression*, thread* );
+static bool expression_op_func__trigger( expression*, thread* );
+static bool expression_op_func__nb_call( expression*, thread* );
+static bool expression_op_func__fork( expression*, thread* );
+static bool expression_op_func__join( expression*, thread* );
+static bool expression_op_func__disable( expression*, thread* );
+static bool expression_op_func__repeat( expression*, thread* );
+static bool expression_op_func__null( expression*, thread* );
 
-/*! Array containing string names of expression operation types (useful for outputting expression op) */ 
-const char* exp_op_names[EXP_OP_NUM] = {
-  "STATIC", "SIG", "XOR", "MULTIPLY", "DIVIDE", "MOD", "ADD", "SUBTRACT", "AND", "OR", "NAND", "NOR", "NXOR",
-  "LT", "GT", "LSHIFT", "RSHIFT", "EQ", "CEQ", "LE", "GE", "NE", "CNE", "LOR", "LAND", "COND", "COND_SEL",
-  "UINV", "UAND", "UNOT", "UOR", "UXOR", "UNAND", "UNOR", "UNXOR", "SBIT_SEL", "MBIT_SEL", "EXPAND", "CONCAT",
-  "PEDGE", "NEDGE", "AEDGE", "LAST", "EOR", "DELAY", "CASE", "CASEX", "CASEZ", "DEFAULT", "LIST", "PARAM",
-  "PARAM_SBIT", "PARAM_MBIT", "ASSIGN", "DASSIGN", "BASSIGN", "NASSIGN", "IF", "FUNC_CALL", "TASK_CALL", "TRIGGER",
-  "NB_CALL", "FORK", "JOIN", "DISABLE", "REPEAT", "WHILE" };
 
+/*!
+ Array containing static information about expression operation types.  NOTE:  This structure MUST be
+ updated if a new expression is added!
+*/
+const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",     expression_op_func__null,      {0, 1, 0, 1, 0, 0} },
+                                           {"SIG",        expression_op_func__null,      {0, 0, 0, 1, 1, 0} },
+                                           {"XOR",        expression_op_func__xor,       {0, 0, 1, 0, 1, 0} },
+                                           {"MULTIPLY",   expression_op_func__multiply,  {0, 0, 0, 1, 1, 0} },
+                                           {"DIVIDE",     expression_op_func__divide,    {0, 0, 0, 1, 1, 0} },
+                                           {"MOD",        expression_op_func__mod,       {0, 0, 0, 1, 1, 0} },
+                                           {"ADD",        expression_op_func__add,       {0, 0, 1, 0, 1, 0} },
+                                           {"SUBTRACT",   expression_op_func__subtract,  {0, 0, 1, 0, 1, 0} },
+                                           {"AND",        expression_op_func__and,       {0, 0, 1, 0, 1, 0} },
+                                           {"OR",         expression_op_func__or,        {0, 0, 1, 0, 1, 0} },
+                                           {"NAND",       expression_op_func__nand,      {0, 0, 1, 0, 1, 0} },
+                                           {"NOR",        expression_op_func__nor,       {0, 0, 1, 0, 1, 0} },
+                                           {"NXOR",       expression_op_func__nxor,      {0, 0, 1, 0, 1, 0} },
+                                           {"LT",         expression_op_func__lt,        {0, 0, 0, 1, 1, 0} },
+                                           {"GT",         expression_op_func__gt,        {0, 0, 0, 1, 1, 0} },
+                                           {"LSHIFT",     expression_op_func__lshift,    {0, 0, 0, 1, 1, 0} },
+                                           {"RSHIFT",     expression_op_func__rshift,    {0, 0, 0, 1, 1, 0} },
+                                           {"EQ",         expression_op_func__eq,        {0, 0, 0, 1, 1, 0} },
+                                           {"CEQ",        expression_op_func__ceq,       {0, 0, 0, 1, 1, 0} },
+                                           {"LE",         expression_op_func__le,        {0, 0, 0, 1, 1, 0} },
+                                           {"GE",         expression_op_func__ge,        {0, 0, 0, 1, 1, 0} },
+                                           {"NE",         expression_op_func__ne,        {0, 0, 0, 1, 1, 0} },
+                                           {"CNE",        expression_op_func__cne,       {0, 0, 0, 1, 1, 0} },
+                                           {"LOR",        expression_op_func__lor,       {0, 0, 1, 0, 1, 0} },
+                                           {"LAND",       expression_op_func__land,      {0, 0, 1, 0, 1, 0} },
+                                           {"COND",       expression_op_func__cond,      {0, 0, 0, 1, 1, 0} },
+                                           {"COND_SEL",   expression_op_func__cond_sel,  {0, 0, 0, 1, 0, 0} },
+                                           {"UINV",       expression_op_func__uinv,      {0, 0, 0, 1, 1, 0} },
+                                           {"UAND",       expression_op_func__uand,      {0, 0, 0, 1, 1, 0} },
+                                           {"UNOT",       expression_op_func__unot,      {0, 0, 0, 1, 1, 0} },
+                                           {"UOR",        expression_op_func__uor,       {0, 0, 0, 1, 1, 0} },
+                                           {"UXOR",       expression_op_func__uxor,      {0, 0, 0, 1, 1, 0} },
+                                           {"UNAND",      expression_op_func__unand,     {0, 0, 0, 1, 1, 0} },
+                                           {"UNOR",       expression_op_func__unor,      {0, 0, 0, 1, 1, 0} },
+                                           {"UNXOR",      expression_op_func__unxor,     {0, 0, 0, 1, 1, 0} },
+                                           {"SBIT_SEL",   expression_op_func__sbit,      {0, 0, 0, 1, 1, 0} },
+                                           {"MBIT_SEL",   expression_op_func__null,      {0, 0, 0, 1, 1, 0} },
+                                           {"EXPAND",     expression_op_func__expand,    {0, 0, 0, 1, 1, 0} },
+                                           {"CONCAT",     expression_op_func__concat,    {0, 0, 0, 1, 1, 0} },
+                                           {"PEDGE",      expression_op_func__pedge,     {1, 0, 0, 0, 1, 1} },
+                                           {"NEDGE",      expression_op_func__nedge,     {1, 0, 0, 0, 1, 1} },
+                                           {"AEDGE",      expression_op_func__aedge,     {1, 0, 0, 0, 1, 1} },
+                                           {"LAST",       expression_op_func__null,      {0, 0, 0, 1, 0, 0} },
+                                           {"EOR",        expression_op_func__eor,       {0, 0, 0, 1, 0, 1} },
+                                           {"DELAY",      expression_op_func__delay,     {1, 0, 0, 0, 0, 1} },
+                                           {"CASE",       expression_op_func__case,      {0, 0, 0, 1, 0, 0} },
+                                           {"CASEX",      expression_op_func__casex,     {0, 0, 0, 1, 0, 0} },
+                                           {"CASEZ",      expression_op_func__casez,     {0, 0, 0, 1, 0, 0} },
+                                           {"DEFAULT",    expression_op_func__default,   {0, 0, 0, 1, 0, 0} },
+                                           {"LIST",       expression_op_func__list,      {0, 0, 0, 1, 0, 0} },
+                                           {"PARAM",      expression_op_func__null,      {0, 1, 0, 1, 0, 0} },
+                                           {"PARAM_SBIT", expression_op_func__sbit,      {0, 1, 0, 1, 0, 0} },
+                                           {"PARAM_MBIT", expression_op_func__null,      {0, 1, 0, 1, 0, 0} },
+                                           {"ASSIGN",     expression_op_func__null,      {0, 0, 0, 1, 0, 0} },
+                                           {"DASSIGN",    expression_op_func__null,      {0, 0, 0, 1, 0, 0} },
+                                           {"BASSIGN",    expression_op_func__bassign,   {0, 0, 0, 1, 0, 0} },
+                                           {"NASSIGN",    expression_op_func__null,      {0, 0, 0, 1, 0, 0} },
+                                           {"IF",         expression_op_func__null,      {0, 0, 0, 1, 0, 0} },
+                                           {"FUNC_CALL",  expression_op_func__func_call, {0, 0, 0, 1, 1, 0} },
+                                           {"TASK_CALL",  expression_op_func__task_call, {0, 0, 0, 1, 0, 1} },
+                                           {"TRIGGER",    expression_op_func__trigger,   {0, 0, 0, 1, 0, 0} },
+                                           {"NB_CALL",    expression_op_func__nb_call,   {0, 0, 0, 1, 0, 0} },
+                                           {"FORK",       expression_op_func__fork,      {0, 0, 0, 1, 0, 0} },
+                                           {"JOIN",       expression_op_func__join,      {0, 0, 0, 1, 0, 0} },
+                                           {"DISABLE",    expression_op_func__disable,   {0, 0, 0, 1, 0, 0} },
+                                           {"REPEAT",     expression_op_func__repeat,    {0, 0, 0, 1, 0, 0} },
+                                           {"WHILE",      expression_op_func__null,      {0, 0, 0, 1, 0, 0} } };
 
 /*!
  \param exp    Pointer to expression to add value to.
@@ -140,6 +259,8 @@ void expression_create_value( expression* exp, int width, bool data ) {
 
 }
 
+void expression_assign_op_func( expression* expr );
+
 /*!
  \param right  Pointer to expression on right.
  \param left   Pointer to expression on left.
@@ -156,7 +277,7 @@ void expression_create_value( expression* exp, int width, bool data ) {
  Creates a new expression from heap memory and initializes its values for
  usage.  Right and left expressions need to be created before this function is called.
 */
-expression* expression_create( expression* right, expression* left, int op, bool lhs, int id, int line, int first, int last, bool data ) {
+expression* expression_create( expression* right, expression* left, exp_op_type op, bool lhs, int id, int line, int first, int last, bool data ) {
 
   expression* new_expr;    /* Pointer to newly created expression */
   int         rwidth = 0;  /* Bit width of expression on right */
@@ -964,7 +1085,7 @@ const char* expression_string_op( int op ) {
 
   assert( (op >= 0) && (op < EXP_OP_NUM) );
 
-  return( exp_op_names[op] );
+  return( exp_op_info[op].name );
 
 }
 
@@ -1010,6 +1131,1114 @@ void expression_display( expression* expr ) {
 }
 
 /*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs XOR operation.
+*/
+bool expression_op_func__xor( expression* expr, thread* thr ) {
+
+  return( vector_bitwise_op( expr->value, expr->left->value, expr->right->value, xor_optab ) );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a multiply operation.
+*/
+bool expression_op_func__multiply( expression* expr, thread* thr ) {
+
+  return( vector_op_multiply( expr->value, expr->left->value, expr->right->value ) );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a 32-bit divide operation.
+*/
+bool expression_op_func__divide( expression* expr, thread* thr ) {
+
+  vector   vec1;            /* Temporary vector */
+  vec_data bit;             /* Holds the value of a single bit in a vector value */
+  vec_data value32[32];     /* Holds the value of a 32-bit vector value */
+  int      intval1;         /* Integer holder */
+  int      intval2;         /* Integer holder */
+  int      i;               /* Loop iterator */
+  bool     retval = FALSE;  /* Return value for this function */
+
+  if( vector_is_unknown( expr->left->value ) || vector_is_unknown( expr->right->value ) ) {
+
+    bit.all        = 0;
+    bit.part.value = 0x2;
+    for( i=0; i<expr->value->width; i++ ) {
+      retval |= vector_set_value( expr->value, &bit, 1, 0, i );
+    }
+
+  } else {
+
+    vector_init( &vec1, value32, 32 );
+    intval1 = vector_to_int( expr->left->value );
+    intval2 = vector_to_int( expr->right->value );
+
+    if( intval2 == 0 ) {
+      print_output( "Division by 0 error", FATAL, __FILE__, __LINE__ );
+      exit( 1 );
+    }
+
+    intval1 = intval1 / intval2;
+    vector_from_int( &vec1, intval1 );
+    retval = vector_set_value( expr->value, vec1.value, expr->value->width, 0, 0 );
+
+  }
+
+  return( retval );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a 32-bit modulus operation.
+*/
+bool expression_op_func__mod( expression* expr, thread* thr ) {
+
+  vector   vec1;            /* Temporary vector */
+  vec_data bit;             /* Holds the value of a single bit in a vector value */
+  vec_data value32[32];     /* Holds the value of a 32-bit vector value */
+  int      intval1;         /* Integer holder */
+  int      intval2;         /* Integer holder */
+  int      i;               /* Loop iterator */
+  bool     retval = FALSE;  /* Return value for this function */
+
+  if( vector_is_unknown( expr->left->value ) || vector_is_unknown( expr->right->value ) ) {
+
+    bit.all        = 0;
+    bit.part.value = 0x2;
+    for( i=0; i<expr->value->width; i++ ) {
+      retval |= vector_set_value( expr->value, &bit, 1, 0, i );
+    }
+
+  } else {
+
+    vector_init( &vec1, value32, 32 );
+    intval1 = vector_to_int( expr->left->value );
+    intval2 = vector_to_int( expr->right->value );
+
+    if( intval2 == 0 ) {
+      print_output( "Division by 0 error", FATAL, __FILE__, __LINE__ );
+      exit( 1 );
+    }
+
+    intval1 = intval1 % intval2;
+    vector_from_int( &vec1, intval1 );
+    retval = vector_set_value( expr->value, vec1.value, expr->value->width, 0, 0 );
+
+  }
+
+  return( retval );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs an addition operation.
+*/
+bool expression_op_func__add( expression* expr, thread* thr ) {
+
+  return( vector_op_add( expr->value, expr->left->value, expr->right->value ) );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a subtraction operation.
+*/
+bool expression_op_func__subtract( expression* expr, thread* thr ) {
+
+  return( vector_op_subtract( expr->value, expr->left->value, expr->right->value ) );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a bitwise AND operation.
+*/
+bool expression_op_func__and( expression* expr, thread* thr ) {
+
+  return( vector_bitwise_op( expr->value, expr->left->value, expr->right->value, and_optab ) );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a bitwise OR operation.
+*/
+bool expression_op_func__or( expression* expr, thread* thr ) {
+
+  return( vector_bitwise_op( expr->value, expr->left->value, expr->right->value, or_optab ) );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a bitwise NAND operation.
+*/
+bool expression_op_func__nand( expression* expr, thread* thr ) {
+
+  return( vector_bitwise_op( expr->value, expr->left->value, expr->right->value, nand_optab ) );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a bitwise NOR operation.
+*/
+bool expression_op_func__nor( expression* expr, thread* thr ) {
+
+  return( vector_bitwise_op( expr->value, expr->left->value, expr->right->value, nor_optab ) );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a bitwise NXOR operation.
+*/
+bool expression_op_func__nxor( expression* expr, thread* thr ) {
+
+  return( vector_bitwise_op( expr->value, expr->left->value, expr->right->value, nxor_optab ) );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a less-than comparison operation.
+*/
+bool expression_op_func__lt( expression* expr, thread* thr ) {
+
+  return( vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_LT ) );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a greater-than comparison operation.
+*/
+bool expression_op_func__gt( expression* expr, thread* thr ) {
+
+  return( vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_GT ) );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a left shift operation.
+*/
+bool expression_op_func__lshift( expression* expr, thread* thr ) {
+
+  return( vector_op_lshift( expr->value, expr->left->value, expr->right->value ) );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a right shift operation.
+*/
+bool expression_op_func__rshift( expression* expr, thread* thr ) {
+
+  return( vector_op_rshift( expr->value, expr->left->value, expr->right->value ) );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs an equality (==) comparison operation.
+*/
+bool expression_op_func__eq( expression* expr, thread* thr ) {
+
+  return( vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_EQ ) );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs an equality (===) comparison operation.
+*/
+bool expression_op_func__ceq( expression* expr, thread* thr ) {
+
+  return( vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CEQ ) );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a less-than-or-equal comparison operation.
+*/
+bool expression_op_func__le( expression* expr, thread* thr ) {
+
+  return( vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_LE ) );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a greater-than-or-equal comparison operation.
+*/
+bool expression_op_func__ge( expression* expr, thread* thr ) {
+
+  return( vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_GE ) );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a not-equal (!=) comparison operation.
+*/
+bool expression_op_func__ne( expression* expr, thread* thr ) {
+
+  return( vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_NE ) );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a not-equal (!==) comparison operation.
+*/
+bool expression_op_func__cne( expression* expr, thread* thr ) {
+
+  return( vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CNE ) );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a logical OR operation.
+*/
+bool expression_op_func__lor( expression* expr, thread* thr ) {
+
+  vector   vec1;     /* Used for logical reduction */
+  vector   vec2;     /* Used for logical reduction */
+  vec_data value1a;  /* 1-bit nibble value */
+  vec_data value1b;  /* 1-bit nibble value */
+
+  vector_init( &vec1, &value1a, 1 );
+  vector_init( &vec2, &value1b, 1 );
+
+  vector_unary_op( &vec1, expr->left->value,  or_optab );
+  vector_unary_op( &vec2, expr->right->value, or_optab );
+
+  return( vector_bitwise_op( expr->value, &vec1, &vec2, or_optab ) );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a logical AND operation.
+*/
+bool expression_op_func__land( expression* expr, thread* thr ) {
+
+  vector   vec1;     /* Used for logical reduction */
+  vector   vec2;     /* Used for logical reduction */
+  vec_data value1a;  /* 1-bit nibble value */
+  vec_data value1b;  /* 1-bit nibble value */
+
+  vector_init( &vec1, &value1a, 1 );
+  vector_init( &vec2, &value1b, 1 );
+
+  vector_unary_op( &vec1, expr->left->value,  or_optab );
+  vector_unary_op( &vec2, expr->right->value, or_optab );
+
+  return( vector_bitwise_op( expr->value, &vec1, &vec2, and_optab ) );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a conditional (?:) operation.
+*/
+bool expression_op_func__cond( expression* expr, thread* thr ) {
+
+  /* Simple vector copy from right side */
+  return( vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 ) );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a conditional select (?:) operation.
+*/
+bool expression_op_func__cond_sel( expression* expr, thread* thr ) {
+
+  vector   vec1;            /* Used for logical reduction */
+  vec_data bit1;            /* 1-bit vector value */
+  vec_data bitx;            /* 1-bit X vector value */
+  int      i;               /* Loop iterator */
+  bool     retval = FALSE;  /* Return value for this function */
+
+  vector_init( &vec1, &bit1, 1 );
+  vector_unary_op( &vec1, expr->parent->expr->left->value, or_optab );
+
+  if( vec1.value[0].part.value == 0 ) {
+    retval = vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
+  } else if( vec1.value[0].part.value == 1 ) {
+    retval = vector_set_value( expr->value, expr->left->value->value, expr->left->value->width, 0, 0 );
+  } else {
+    bitx.all        = 0; 
+    bitx.part.value = 2;
+    for( i=0; i<expr->value->width; i++ ) {
+      retval |= vector_set_value( expr->value, &bitx, 1, 0, i );
+    }
+  }
+
+  return( retval );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a unary invert operation.
+*/
+bool expression_op_func__uinv( expression* expr, thread* thr ) {
+
+  return( vector_unary_inv( expr->value, expr->right->value ) );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a unary AND operation.
+*/
+bool expression_op_func__uand( expression* expr, thread* thr ) {
+
+  return( vector_unary_op( expr->value, expr->right->value, and_optab ) );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a unary NOT operation.
+*/
+bool expression_op_func__unot( expression* expr, thread* thr ) {
+
+  return( vector_unary_not( expr->value, expr->right->value ) );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a unary OR operation.
+*/
+bool expression_op_func__uor( expression* expr, thread* thr ) {
+
+  return( vector_unary_op( expr->value, expr->right->value, or_optab ) );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a unary XOR operation.
+*/
+bool expression_op_func__uxor( expression* expr, thread* thr ) {
+
+  return( vector_unary_op( expr->value, expr->right->value, xor_optab ) );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a unary NAND operation.
+*/
+bool expression_op_func__unand( expression* expr, thread* thr ) {
+
+  return( vector_unary_op( expr->value, expr->right->value, nand_optab ) );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a unary NOR operation.
+*/
+bool expression_op_func__unor( expression* expr, thread* thr ) {
+
+  return( vector_unary_op( expr->value, expr->right->value, nor_optab ) );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a unary NXOR operation.
+*/
+bool expression_op_func__unxor( expression* expr, thread* thr ) {
+
+  return( vector_unary_op( expr->value, expr->right->value, nxor_optab ) );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ No operation is performed -- expression value is assumed to be changed.
+*/
+bool expression_op_func__null( expression* expr, thread* thr ) {
+
+  return( TRUE );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a single bit select operation.
+*/
+bool expression_op_func__sbit( expression* expr, thread* thr ) {
+
+  int intval;  /* Integer value */
+
+  if( !vector_is_unknown( expr->left->value ) ) {
+
+    intval = vector_to_int( expr->left->value ) - expr->sig->lsb;
+    assert( intval >= 0 );
+    assert( intval < expr->sig->value->width );
+    expr->value->value = expr->sig->value->value + intval;
+
+  }
+
+  return( TRUE );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a expansion ({{}}) operation.
+*/
+bool expression_op_func__expand( expression* expr, thread* thr ) {
+
+  vec_data bit;             /* 1-bit vector value */
+  int      i;               /* Loop iterator */
+  int      j;               /* Loop iterator */
+  int      width;           /* Width to expand this operation to */
+  bool     retval = FALSE;  /* Return value for this function */
+
+  bit.all = 0;
+
+  if( vector_is_unknown( expr->left->value ) ) {
+
+    bit.part.value = 0x2;
+    for( i=0; i<expr->value->width; i++ ) {
+      retval |= vector_set_value( expr->value, &bit, 1, 0, i );
+    }
+
+  } else {
+
+    for( j=0; j<expr->right->value->width; j++ ) {
+      bit.part.value = expr->right->value->value[j].part.value;
+      width          = vector_to_int( expr->left->value );
+      for( i=0; i<width; i++ ) {
+        retval |= vector_set_value( expr->value, &bit, 1, 0, ((j * expr->right->value->width) + i) );
+      }
+    }
+
+  }
+
+  return( retval );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a list (,) operation.
+*/
+bool expression_op_func__list( expression* expr, thread* thr ) {
+
+  bool retval = FALSE;  /* Return value for this function */
+
+  retval |= vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
+  retval |= vector_set_value( expr->value, expr->left->value->value,  expr->left->value->width,  0, expr->right->value->width );
+
+  return( retval );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a concatenation ({}) operation.
+*/
+bool expression_op_func__concat( expression* expr, thread* thr ) {
+
+  return( vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 ) );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a positive edge event operation.
+*/
+bool expression_op_func__pedge( expression* expr, thread* thr ) {
+
+  bool     retval;   /* Return value for this function */
+  vec_data value1a;  /* 1-bit vector value */
+  vec_data value1b;  /* 2-bit vector value */
+
+  expr->suppl.part.eval_t = 0;
+  value1a.all             = 0;
+  value1a.part.value      = expr->right->value->value[0].part.value;
+  value1b.all             = expr->left->value->value[0].all;
+
+  if( (value1b.part.misc == 1) && (value1a.part.value != value1b.part.value) && (value1a.part.value == 1) ) {
+    expr->suppl.part.eval_t = 1;
+    expr->suppl.part.true   = 1;
+    value1a.part.misc       = 0;
+    retval = TRUE;
+  } else {
+    value1a.part.misc       = 1;
+    retval = FALSE;
+  }
+
+  /* Set left LAST value to current value of right */
+  expr->left->value->value[0].all = value1a.all;
+
+  return( retval );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a negative-edge event operation.
+*/
+bool expression_op_func__nedge( expression* expr, thread* thr ) {
+
+  bool     retval;   /* Return value for this function */
+  vec_data value1a;  /* 1-bit vector value */
+  vec_data value1b;  /* 2-bit vector value */
+
+  expr->suppl.part.eval_t = 0;
+  value1a.all             = 0;
+  value1a.part.value      = expr->right->value->value[0].part.value;
+  value1b.all             = expr->left->value->value[0].all;
+
+  if( (value1b.part.misc == 1) && (value1a.part.value != value1b.part.value) && (value1a.part.value == 0) ) {
+    expr->suppl.part.eval_t = 1;
+    expr->suppl.part.true   = 1;
+    value1a.part.misc       = 0;
+    retval = TRUE;
+  } else {
+    value1a.part.misc       = 1;
+    retval = FALSE;
+  }
+
+  /* Set left LAST value to current value of right */
+  expr->left->value->value[0].all = value1a.all;
+
+  return( retval );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs an any-edge event operation.
+*/
+bool expression_op_func__aedge( expression* expr, thread* thr ) {
+
+  vector   vec;      /* Temporary vector */
+  vec_data value1a;  /* 1-bit vector value */
+  vec_data value1b;  /* 1-bit vector value */
+  bool     retval;   /* Return value of this function */
+
+  expr->suppl.part.eval_t = 0;
+  vector_init( &vec, &value1a, 1 );
+  vector_op_compare( &vec, expr->left->value, expr->right->value, COMP_CEQ );
+  value1b.all = expr->left->value->value[0].all;
+
+  /* Set left LAST value to current value of right */
+  vector_set_value_only( expr->left->value, expr->right->value->value, expr->right->value->width, 0, 0 );
+
+  if( (value1b.part.misc == 1) && (vector_to_int( &vec ) == 0) ) {
+    expr->suppl.part.eval_t = 1;
+    expr->suppl.part.true   = 1;
+    expr->left->value->value[0].part.misc = 0;
+    retval = TRUE;
+  } else {
+    expr->left->value->value[0].part.misc = 1;
+    retval = FALSE;
+  }
+
+  return( retval );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a event OR operation.
+*/
+bool expression_op_func__eor( expression* expr, thread* thr ) {
+
+  vec_data bit;  /* 1-bit vector value */
+
+  expression_operate( expr->left, NULL );
+  expression_operate( expr->right, NULL );
+
+  bit.all = 0;
+
+  if( (ESUPPL_IS_TRUE( expr->left->suppl ) == 1) || (ESUPPL_IS_TRUE( expr->right->suppl ) == 1) ) {
+    bit.part.value = 1;
+  } else {
+    bit.part.value = 0;
+  }
+
+  return( vector_set_value( expr->value, &bit, 1, 0, 0 ) );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a delay operation.
+*/
+bool expression_op_func__delay( expression* expr, thread* thr ) {
+
+  bool retval;   /* Return value for this function */
+  int  intval1;  /* Integer value holder */
+  int  intval2;  /* Integer value holder */
+
+  expr->suppl.part.eval_t = 0;
+
+  /* If this expression is not currently waiting, set the start time of delay */
+  if( vector_to_int( expr->left->value ) == 0xffffffff ) {
+    vector_from_int( expr->left->value, curr_sim_time );
+  }
+
+  intval1 = vector_to_int( expr->left->value );           /* Start time of delay */
+  intval2 = vector_to_int( expr->right->value );          /* Number of clocks to delay */
+
+  if( ((intval1 + intval2) <= curr_sim_time) || ((curr_sim_time == -1) && (intval1 != 0xffffffff)) ) {
+    expr->suppl.part.eval_t = 1;
+    expr->suppl.part.true   = 1;
+    vector_from_int( expr->left->value, 0xffffffff );
+    retval = TRUE;
+  } else {
+    retval = FALSE;
+  }
+
+  return( retval );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs an event trigger (->) operation.
+*/
+bool expression_op_func__trigger( expression* expr, thread* thr ) {
+
+  if( expr->value->value[0].part.value == 1 ) {
+    expr->value->value[0].part.value = 0;
+  } else {
+    expr->value->value[0].part.value = 1;
+  }
+
+  return( TRUE );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a case comparison operation.
+*/
+bool expression_op_func__case( expression* expr, thread* thr ) {
+
+  return( vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CEQ ) );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a casex comparison operation.
+*/
+bool expression_op_func__casex( expression* expr, thread* thr ) {
+
+  return( vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CXEQ ) );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a casez comparison operation.
+*/
+bool expression_op_func__casez( expression* expr, thread* thr ) {
+
+  return( vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CZEQ ) );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a case default comparison operation.
+*/
+bool expression_op_func__default( expression* expr, thread* thr ) {
+
+  vec_data bit;  /* 1-bit vector value */
+
+  bit.all        = 0;
+  bit.part.value = 1;
+
+  return( vector_set_value( expr->value, &bit, 1, 0, 0 ) );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a blocking assignment operation.
+*/
+bool expression_op_func__bassign( expression* expr, thread* thr ) {
+
+  int intval = 0;  /* Integer value */
+
+  expression_assign( expr->left, expr->right, &intval );
+
+  return( TRUE );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a function call operation.
+*/
+bool expression_op_func__func_call( expression* expr, thread* thr ) {
+
+  sim_thread( sim_add_thread( thr, expr->stmt ) );
+
+  return( TRUE );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a task call operation.
+*/
+bool expression_op_func__task_call( expression* expr, thread* thr ) {
+
+  bool retval = FALSE;  /* Return value for this function */
+
+  if( expr->value->value[0].part.misc == 0 ) {
+
+    sim_add_thread( thr, expr->stmt );
+    expr->value->value[0].part.misc  = 1;
+    expr->value->value[0].part.value = 0;
+
+  } else if( thr->child_head == NULL ) {
+
+    expr->value->value[0].part.misc  = 0;
+    expr->value->value[0].part.value = 1;
+    retval = TRUE;
+
+  }
+
+  return( retval );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a named block call operation.
+*/
+bool expression_op_func__nb_call( expression* expr, thread* thr ) {
+
+  bool retval = FALSE;  /* Return value for this function */
+
+  if( ESUPPL_IS_IN_FUNC( expr->suppl ) ) {
+
+    sim_thread( sim_add_thread( thr, expr->stmt ) );
+    retval = TRUE;
+
+  } else {
+
+    if( expr->value->value[0].part.misc == 0 ) {
+      sim_add_thread( thr, expr->stmt );
+      expr->value->value[0].part.misc  = 1;
+      expr->value->value[0].part.value = 0;
+    } else if( thr->child_head == NULL ) {
+      expr->value->value[0].part.misc  = 0;
+      expr->value->value[0].part.value = 1;
+      retval = TRUE;
+    }
+
+  }
+
+  return( retval );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a fork operation.
+*/
+bool expression_op_func__fork( expression* expr, thread* thr ) {
+
+  sim_add_thread( thr, expr->stmt );
+
+  return( TRUE );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a join operation.
+*/
+bool expression_op_func__join( expression* expr, thread* thr ) {
+
+  return( thr->child_head == NULL );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a block disable operation.
+*/
+bool expression_op_func__disable( expression* expr, thread* thr ) {
+
+  sim_kill_thread_with_stmt( expr->stmt );
+
+  return( TRUE );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a repeat loop operation.
+*/
+bool expression_op_func__repeat( expression* expr, thread* thr ) {
+
+  bool retval;  /* Return value for this function */
+
+  retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_LT );
+
+  if( expr->value->value[0].part.value == 0 ) {
+    vector_from_int( expr->left->value, 0 );
+  } else {
+    vector_from_int( expr->left->value, (vector_to_int( expr->left->value ) + 1) );
+  }
+
+  return( retval );
+
+}
+
+/*!
  \param expr  Pointer to expression to set value to.
  \param thr   Pointer to current thread being simulated. 
 
@@ -1023,23 +2252,12 @@ void expression_display( expression* expr ) {
 */
 bool expression_operate( expression* expr, thread* thr ) {
 
-  bool       retval = TRUE;         /* Return value for this function */
-  vector     vec1;                  /* Used for logical reduction */ 
-  vector     vec2;                  /* Used for logical reduction */
-  vector*    vec;                   /* Pointer to vector of unknown size */
-  int        i;                     /* Loop iterator */
-  int        j;                     /* Loop iterator */
-  vec_data   bit;                   /* Bit holder for some ops */
-  int        intval1;               /* Temporary integer value for *, /, % */
-  int        intval2;               /* Temporary integer value for *, /, % */
-  vec_data   value1a;               /* 1-bit nibble value */
-  vec_data   value1b;               /* 1-bit nibble value */
-  vec_data   value32[32];           /* 32-bit nibble value */
-  control    lf, lt, rf, rt;        /* Specify left and right WAS_TRUE/WAS_FALSE values */
-  statement* last_stmt;             /* Temporary statement holder */
-  bool       exp_is_event = FALSE;  /* Specifies if current expression is an event expression */
+  bool     retval = TRUE;   /* Return value for this function */
+  vector   vec;             /* Used for logical reduction */ 
+  vec_data bit;             /* Bit holder for some ops */
+  control  lf, lt, rf, rt;  /* Specify left and right WAS_TRUE/WAS_FALSE values */
 
-  if( (expr != NULL) && (expr->suppl.part.lhs == 0) ) {
+  if( (expr != NULL) && (ESUPPL_IS_LHS( expr->suppl ) == 0) ) {
 
 #ifdef DEBUG_MODE
     snprintf( user_msg, USER_MSG_LENGTH, "      In expression_operate, id: %d, op: %s, line: %d",
@@ -1048,434 +2266,12 @@ bool expression_operate( expression* expr, thread* thr ) {
 #endif
 
     assert( expr->value != NULL );
-    assert( ESUPPL_IS_LHS( expr->suppl ) == 0 );
 
-    bit.all     = 0;
-    value1a.all = 0;
-    value1b.all = 0;
+    /* Call expression operation */
+    retval = exp_op_info[expr->op].func( expr, thr );
 
-    switch( expr->op ) {
-
-      case EXP_OP_XOR :
-        retval = vector_bitwise_op( expr->value, expr->left->value, expr->right->value, xor_optab );
-        break;
-
-      case EXP_OP_MULTIPLY :
-        retval = vector_op_multiply( expr->value, expr->left->value, expr->right->value );
-        break;
-
-      case EXP_OP_DIVIDE :
-        if( vector_is_unknown( expr->left->value ) || vector_is_unknown( expr->right->value ) ) {
-          bit.part.value = 0x2;
-          for( i=0; i<expr->value->width; i++ ) {
-            retval |= vector_set_value( expr->value, &bit, 1, 0, i );
-          }
-        } else {
-          vector_init( &vec1, value32, 32 );
-          intval1 = vector_to_int( expr->left->value );
-          intval2 = vector_to_int( expr->right->value );
-          if( intval2 == 0 ) {
-            print_output( "Division by 0 error", FATAL, __FILE__, __LINE__ );
-            exit( 1 );
-          }
-          intval1 = intval1 / intval2;
-          vector_from_int( &vec1, intval1 );
-          retval = vector_set_value( expr->value, vec1.value, expr->value->width, 0, 0 );
-        }
-        break;
-
-      case EXP_OP_MOD :
-        if( vector_is_unknown( expr->left->value ) || vector_is_unknown( expr->right->value ) ) {
-          bit.part.value = 0x2;
-          for( i=0; i<expr->value->width; i++ ) {
-            retval |= vector_set_value( expr->value, &bit, 1, 0, i );
-          }
-        } else {
-          vector_init( &vec1, value32, 32 );
-          intval1 = vector_to_int( expr->left->value );
-          intval2 = vector_to_int( expr->right->value );
-          if( intval2 == 0 ) {
-            print_output( "Division by 0 error", FATAL, __FILE__, __LINE__ );
-            exit( 1 );
-          }
-          intval1 = intval1 % intval2;
-          vector_from_int( &vec1, intval1 );
-          retval = vector_set_value( expr->value, vec1.value, expr->value->width, 0, 0 );
-        }
-        break;
- 
-      case EXP_OP_ADD :
-        retval = vector_op_add( expr->value, expr->left->value, expr->right->value );
-        break;
-
-      case EXP_OP_SUBTRACT :
-        retval = vector_op_subtract( expr->value, expr->left->value, expr->right->value );
-        break;
-
-      case EXP_OP_AND :
-        retval = vector_bitwise_op( expr->value, expr->left->value, expr->right->value, and_optab );
-        break;
-
-      case EXP_OP_OR :
-        retval = vector_bitwise_op( expr->value, expr->left->value, expr->right->value, or_optab );
-        break;
-
-      case EXP_OP_NAND :
-        retval = vector_bitwise_op( expr->value, expr->left->value, expr->right->value, nand_optab );
-        break;
-
-      case EXP_OP_NOR :
-        retval = vector_bitwise_op( expr->value, expr->left->value, expr->right->value, nor_optab );
-        break;
-
-      case EXP_OP_NXOR :
-        retval = vector_bitwise_op( expr->value, expr->left->value, expr->right->value, nxor_optab );
-        break;
-
-      case EXP_OP_LT :
-        retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_LT );
-        break;
-
-      case EXP_OP_GT :
-        retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_GT );
-        break;
-
-      case EXP_OP_LSHIFT :
-        retval = vector_op_lshift( expr->value, expr->left->value, expr->right->value );
-        break;
- 
-      case EXP_OP_RSHIFT :
-        retval = vector_op_rshift( expr->value, expr->left->value, expr->right->value );
-        break;
-
-      case EXP_OP_EQ :
-        retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_EQ );
-        break;
-
-      case EXP_OP_CEQ :
-        retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CEQ );
-        break;
-
-      case EXP_OP_LE :
-        retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_LE );
-        break;
-
-      case EXP_OP_GE :
-        retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_GE );
-        break;
- 
-      case EXP_OP_NE :
-        retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_NE );
-        break;
-
-      case EXP_OP_CNE :
-        retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CNE );
-        break;
-
-      case EXP_OP_LOR :
-        vector_init( &vec1, &value1a, 1 );
-        vector_init( &vec2, &value1b, 1 );
-        vector_unary_op( &vec1, expr->left->value,  or_optab );
-        vector_unary_op( &vec2, expr->right->value, or_optab );
-        retval = vector_bitwise_op( expr->value, &vec1, &vec2, or_optab );
-        break;
-
-      case EXP_OP_LAND :
-        vector_init( &vec1, &value1a, 1 );
-        vector_init( &vec2, &value1b, 1 );
-        vector_unary_op( &vec1, expr->left->value,  or_optab );
-        vector_unary_op( &vec2, expr->right->value, or_optab );
-        retval = vector_bitwise_op( expr->value, &vec1, &vec2, and_optab );
-        break;
-
-      case EXP_OP_COND :
-        /* Simple vector copy from right side */
-        retval = vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
-        break;
-
-      case EXP_OP_COND_SEL :
-        vector_init( &vec1, &value1a, 1 );
-        vector_unary_op( &vec1, expr->parent->expr->left->value, or_optab );
-        if( vec1.value[0].part.value == 0 ) {
-          retval = vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
-        } else if( vec1.value[0].part.value == 1 ) {
-          retval = vector_set_value( expr->value, expr->left->value->value, expr->left->value->width, 0, 0 );
-        } else {
-          vec = vector_create( expr->value->width, TRUE );
-          for( i=0; i<vec->width; i++ ) {
-            vec->value[i].part.value = 2;
-          }
-          retval = vector_set_value( expr->value, vec->value, vec->width, 0, 0 );
-          vector_dealloc( vec );
-        }
-        break;
-
-      case EXP_OP_UINV :
-        retval = vector_unary_inv( expr->value, expr->right->value );
-        break;
-
-      case EXP_OP_UAND :
-        retval = vector_unary_op( expr->value, expr->right->value, and_optab );
-        break;
-
-      case EXP_OP_UNOT :
-        retval = vector_unary_not( expr->value, expr->right->value );
-        break;
-
-      case EXP_OP_UOR :
-        retval = vector_unary_op( expr->value, expr->right->value, or_optab );
-        break;
- 
-      case EXP_OP_UXOR :
-        retval = vector_unary_op( expr->value, expr->right->value, xor_optab );
-        break;
-
-      case EXP_OP_UNAND :
-        retval = vector_unary_op( expr->value, expr->right->value, nand_optab );
-        break;
-
-      case EXP_OP_UNOR :
-        retval = vector_unary_op( expr->value, expr->right->value, nor_optab );
-        break;
-
-      case EXP_OP_UNXOR :
-        retval = vector_unary_op( expr->value, expr->right->value, nxor_optab );
-        break;
-
-      case EXP_OP_STATIC :
-      case EXP_OP_SIG    :
-      case EXP_OP_PARAM  :
-      case EXP_OP_LAST   :
-        break;
-
-      case EXP_OP_SBIT_SEL   :
-      case EXP_OP_PARAM_SBIT :
-        if( !vector_is_unknown( expr->left->value ) ) {
-          intval1 = vector_to_int( expr->left->value ) - expr->sig->lsb;
-          assert( intval1 >= 0 );
-          assert( intval1 < expr->sig->value->width );
-          expr->value->value = expr->sig->value->value + intval1;
-        }
-        break;
-
-      case EXP_OP_MBIT_SEL   :
-      case EXP_OP_PARAM_MBIT :
-          break;
-
-      case EXP_OP_EXPAND :
-        if( vector_is_unknown( expr->left->value ) ) {
-          bit.part.value = 0x2;
-          for( i=0; i<expr->value->width; i++ ) {
-            retval |= vector_set_value( expr->value, &bit, 1, 0, i );
-          }
-        } else {
-          for( j=0; j<expr->right->value->width; j++ ) {
-            bit.part.value = expr->right->value->value[j].part.value;
-            for( i=0; i<vector_to_int( expr->left->value ); i++ ) {
-              retval |= vector_set_value( expr->value, &bit, 1, 0, ((j * expr->right->value->width) + i) );
-            }
-          }
-        }
-        break;
-
-      case EXP_OP_LIST :
-        retval |= vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
-        retval |= vector_set_value( expr->value, expr->left->value->value,  expr->left->value->width,  0, expr->right->value->width );
-        break;
-
-      case EXP_OP_CONCAT :
-        retval = vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
-        break;
-
-      case EXP_OP_PEDGE :
-        expr->suppl.part.eval_t = 0;
-        value1a.part.value = expr->right->value->value[0].part.value;
-        value1b.all        = expr->left->value->value[0].all;
-        if( (value1b.part.misc == 1) && (value1a.part.value != value1b.part.value) && (value1a.part.value == 1) ) {
-          expr->suppl.part.eval_t = 1;
-          expr->suppl.part.true   = 1;
-          value1a.part.misc       = 0;
-        } else {
-          value1a.part.misc       = 1;
-          retval = FALSE;
-        }
-        /* Set left LAST value to current value of right */
-        expr->left->value->value[0].all = value1a.all;
-        exp_is_event = TRUE;
-        break;
- 
-      case EXP_OP_NEDGE :
-        expr->suppl.part.eval_t = 0;
-        value1a.part.value = expr->right->value->value[0].part.value;
-        value1b.all        = expr->left->value->value[0].all;
-        if( (value1b.part.misc == 1) && (value1a.part.value != value1b.part.value) && (value1a.part.value == 0) ) {
-          expr->suppl.part.eval_t = 1;
-          expr->suppl.part.true   = 1;
-          value1a.part.misc       = 0;
-        } else {
-          value1a.part.misc       = 1;
-          retval = FALSE;
-        }
-        /* Set left LAST value to current value of right */
-        expr->left->value->value[0].all = value1a.all;
-        exp_is_event = TRUE;
-        break;
-
-      case EXP_OP_AEDGE :
-        expr->suppl.part.eval_t = 0;
-        vector_init( &vec1, &value1a, 1 );
-        vector_op_compare( &vec1, expr->left->value, expr->right->value, COMP_CEQ );
-        value1b.all = expr->left->value->value[0].all;
-        /* Set left LAST value to current value of right */
-        vector_set_value( expr->left->value, expr->right->value->value, expr->right->value->width, 0, 0 );
-        if( (value1b.part.misc == 1) && (vector_to_int( &vec1 ) == 0) ) {
-          expr->suppl.part.eval_t = 1;
-          expr->suppl.part.true   = 1;
-          expr->left->value->value[0].part.misc = 0;
-        } else {
-          expr->left->value->value[0].part.misc = 1;
-          retval = FALSE;
-        }
-        exp_is_event = TRUE;
-        break;
-
-      case EXP_OP_EOR :
-        expression_operate( expr->left, NULL );
-        expression_operate( expr->right, NULL );
-        if( (ESUPPL_IS_TRUE( expr->left->suppl ) == 1) || (ESUPPL_IS_TRUE( expr->right->suppl ) == 1) ) {
-          bit.part.value = 1;
-        } else {
-          bit.part.value = 0;
-        }
-        retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
-        break;
-
-      case EXP_OP_DELAY :
-        expr->suppl.part.eval_t = 0;
-        /* If this expression is not currently waiting, set the start time of delay */
-        if( vector_to_int( expr->left->value ) == 0xffffffff ) {
-          vector_from_int( expr->left->value, curr_sim_time );
-        }
-        intval1 = vector_to_int( expr->left->value );           /* Start time of delay */
-        intval2 = vector_to_int( expr->right->value );          /* Number of clocks to delay */
-        if( ((intval1 + intval2) <= curr_sim_time) || ((curr_sim_time == -1) && (intval1 != 0xffffffff)) ) {
-          expr->suppl.part.eval_t = 1;
-          expr->suppl.part.true   = 1;
-          vector_from_int( expr->left->value, 0xffffffff );
-        } else {
-          retval = FALSE;
-        }
-        exp_is_event = TRUE;
-        break;
-
-      case EXP_OP_TRIGGER :
-        if( expr->value->value[0].part.value == 1 ) {
-          expr->value->value[0].part.value = 0;
-        } else {
-          expr->value->value[0].part.value = 1;
-        }
-        retval = TRUE;
-        break;
-
-      case EXP_OP_CASE :
-        assert( expr->left != NULL );
-        assert( expr->right != NULL );
-        retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CEQ );
-        break;
-
-      case EXP_OP_CASEX :
-        assert( expr->left != NULL );
-        assert( expr->right != NULL );
-        retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CXEQ );
-        break;
-
-      case EXP_OP_CASEZ :
-        assert( expr->left != NULL );
-        assert( expr->right != NULL );
-        retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_CZEQ );
-        break;
-
-      case EXP_OP_DEFAULT :
-        bit.part.value = 1;
-        retval = vector_set_value( expr->value, &bit, 1, 0, 0 );
-        break;
-
-      case EXP_OP_BASSIGN :
-        intval1 = 0;
-        expression_assign( expr->left, expr->right, &intval1 );
-        break;
-
-      case EXP_OP_ASSIGN :
-      case EXP_OP_DASSIGN :
-      case EXP_OP_NASSIGN :
-      case EXP_OP_IF :
-      case EXP_OP_WHILE :
-        break;
-
-      case EXP_OP_FUNC_CALL :
-        sim_thread( sim_add_thread( thr, expr->stmt ) );
-        break;
-
-      case EXP_OP_TASK_CALL :
-        retval = FALSE;
-        if( expr->value->value[0].part.misc == 0 ) {
-          sim_add_thread( thr, expr->stmt );
-          expr->value->value[0].part.misc  = 1;
-          expr->value->value[0].part.value = 0;
-        } else if( thr->child_head == NULL ) {
-          expr->value->value[0].part.misc  = 0;
-          expr->value->value[0].part.value = 1;
-          retval = TRUE;
-        }
-        break;
-
-      case EXP_OP_NB_CALL :
-        if( ESUPPL_IS_IN_FUNC( expr->suppl ) ) {
-          sim_thread( sim_add_thread( thr, expr->stmt ) );
-        } else {
-          retval = FALSE;
-          if( expr->value->value[0].part.misc == 0 ) {
-            sim_add_thread( thr, expr->stmt );
-            expr->value->value[0].part.misc  = 1;
-            expr->value->value[0].part.value = 0;
-          } else if( thr->child_head == NULL ) {
-            expr->value->value[0].part.misc  = 0;
-            expr->value->value[0].part.value = 1;
-            retval = TRUE;
-          }
-        }
-        break;
-
-      case EXP_OP_FORK :
-        sim_add_thread( thr, expr->stmt );
-        break;
-
-      case EXP_OP_JOIN :
-        retval = (thr->child_head == NULL);
-        break;
-
-      case EXP_OP_DISABLE :
-        sim_kill_thread_with_stmt( expr->stmt );
-        break;
-
-      case EXP_OP_REPEAT :
-        retval = vector_op_compare( expr->value, expr->left->value, expr->right->value, COMP_LT );
-        if( expr->value->value[0].part.value == 0 ) {
-          vector_from_int( expr->left->value, 0 );
-        } else {
-          vector_from_int( expr->left->value, (vector_to_int( expr->left->value ) + 1) );
-        }
-        break;
-
-      default :
-        print_output( "Internal error:  Unidentified expression operation!", FATAL, __FILE__, __LINE__ );
-        exit( 1 );
-        break;
-
-    }
-    
     /* If we have a new value, recalculate TRUE/FALSE indicators */
-    if( !exp_is_event ) {
+    if( EXPR_IS_EVENT( expr ) == 0 ) {
 
       if( retval ) {
 
@@ -1486,9 +2282,9 @@ bool expression_operate( expression* expr, thread* thr ) {
         }
       
         /* Set TRUE/FALSE bits to indicate value */
-        vector_init( &vec1, &value1a, 1 );
-        vector_unary_op( &vec1, expr->value, or_optab );
-        switch( vec1.value[0].part.value ) {
+        vector_init( &vec, &bit, 1 );
+        vector_unary_op( &vec, expr->value, or_optab );
+        switch( vec.value[0].part.value ) {
           case 0 :  expr->suppl.part.false = 1;  expr->suppl.part.eval_f = 1;  break;
           case 1 :  expr->suppl.part.true  = 1;  expr->suppl.part.eval_t = 1;  break;
           default:  break;
@@ -1914,6 +2710,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.150  2006/01/04 22:07:04  phase1geo
+ Changing expression execution calculation from sim to expression_operate function.
+ Updating all regression files for this change.  Modifications to diagnostic Makefile
+ to accommodate environments that do not have valgrind.
+
  Revision 1.149  2006/01/03 22:59:16  phase1geo
  Fixing bug in expression_assign function -- removed recursive assignment when
  the LHS expression is a signal, single-bit, multi-bit or static value (only

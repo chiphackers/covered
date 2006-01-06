@@ -43,17 +43,16 @@
 #include "func_unit.h"
 
 
-extern funit_inst*  instance_root;
-extern funit_link*  funit_head;
-
-extern bool         report_covered;
-extern unsigned int report_comb_depth;
-extern bool         report_instance;
-extern char         leading_hierarchy[4096];
-extern char         second_hierarchy[4096];
-extern int          line_width;
-extern char         user_msg[USER_MSG_LENGTH];
-
+extern funit_inst*    instance_root;
+extern funit_link*    funit_head;
+extern bool           report_covered;
+extern unsigned int   report_comb_depth;
+extern bool           report_instance;
+extern char           leading_hierarchy[4096];
+extern char           second_hierarchy[4096];
+extern int            line_width;
+extern char           user_msg[USER_MSG_LENGTH];
+extern const exp_info exp_op_info[EXP_OP_NUM];
 
 /*!
  \param exp         Pointer to current expression.
@@ -2017,6 +2016,9 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.118  2005/12/13 23:15:14  phase1geo
+ More fixes for memory leaks.  Regression fully passes at this point.
+
  Revision 1.117  2005/12/08 22:50:58  phase1geo
  Adding support for while loops.  Added while1 and while1.1 to regression suite.
  Ran VCS on regression suite and updated.  Full regression passes.

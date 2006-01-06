@@ -17,7 +17,7 @@
 void expression_create_value( expression* exp, int width, bool data );
 
 /*! \brief Creates new expression. */
-expression* expression_create( expression* right, expression* left, int op, bool lhs, int id, int line, int first, int last, bool data );
+expression* expression_create( expression* right, expression* left, exp_op_type op, bool lhs, int id, int line, int first, int last, bool data );
 
 /*! \brief Sets the specified expression value to the specified vector value. */
 void expression_set_value( expression* exp, vector* vec );
@@ -82,6 +82,17 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.35  2005/12/23 05:41:52  phase1geo
+ Fixing several bugs in score command per bug report #1388339.  Fixed problem
+ with race condition checker statement iterator to eliminate infinite looping (this
+ was the problem in the original bug).  Also fixed expression assigment when static
+ expressions are used in the LHS (caused an assertion failure).  Also fixed the race
+ condition checker to properly pay attention to task calls, named blocks and fork
+ statements to make sure that these are being handled correctly for race condition
+ checking.  Fixed bug for signals that are on the LHS side of an assignment expression
+ but is not being assigned (bit selects) so that these are NOT considered for race
+ conditions.  Full regression is a bit broken now but the opened bug can now be closed.
+
  Revision 1.34  2005/11/28 23:28:47  phase1geo
  Checkpointing with additions for threads.
 

@@ -510,180 +510,83 @@
 /*! @} */
 
 /*!
- \addtogroup expr_ops Expression operations
-
- The following defines are used for identifying expression operations.
-
- @{
+ Enumeration of the various expression operations that Covered supports.
 */
-/*! Decimal value = 0.  Specifies constant value. */
-#define EXP_OP_STATIC     0x00
-/*! Decimal value = 1.  Specifies signal value. */
-#define EXP_OP_SIG        0x01
-/*! Decimal value = 2.  Specifies '^' operator. */
-#define EXP_OP_XOR        0x02
-/*! Decimal value = 3.  Specifies '*' operator. */
-#define EXP_OP_MULTIPLY   0x03
-/*! Decimal value = 4.  Specifies '/' operator. */
-#define EXP_OP_DIVIDE     0x04
-/*! Decimal value = 5.  Specifies '%' operator. */
-#define EXP_OP_MOD        0x05
-/*! Decimal value = 6.  Specifies '+' operator. */
-#define EXP_OP_ADD        0x06
-/*! Decimal value = 7.  Specifies '-' operator. */
-#define EXP_OP_SUBTRACT   0x07
-/*! Decimal value = 8.  Specifies '&' operator. */
-#define EXP_OP_AND        0x08
-/*! Decimal value = 9.  Specifies '|' operator. */
-#define EXP_OP_OR         0x09
-/*! Decimal value = 10.  Specifies '~&' operator. */
-#define EXP_OP_NAND       0x0a
-/*! Decimal value = 11.  Specifies '~|' operator. */
-#define EXP_OP_NOR        0x0b
-/*! Decimal value = 12.  Specifies '~^' operator. */
-#define EXP_OP_NXOR       0x0c
-/*! Decimal value = 13.  Specifies '<' operator. */
-#define EXP_OP_LT         0x0d
-/*! Decimal value = 14.  Specifies '>' operator. */
-#define EXP_OP_GT         0x0e
-/*! Decimal value = 15.  Specifies '<<' operator. */
-#define EXP_OP_LSHIFT     0x0f
-/*! Decimal value = 16.  Specifies '>>' operator. */
-#define EXP_OP_RSHIFT     0x10
-/*! Decimal value = 17.  Specifies '==' operator. */
-#define EXP_OP_EQ         0x11
-/*! Decimal value = 18.  Specifies '===' operator. */
-#define EXP_OP_CEQ        0x12
-/*! Decimal value = 19.  Specifies '<=' operator. */
-#define EXP_OP_LE         0x13
-/*! Decimal value = 20.  Specifies '>=' operator. */
-#define EXP_OP_GE         0x14
-/*! Decimal value = 21.  Specifies '!=' operator. */
-#define EXP_OP_NE         0x15
-/*! Decimal value = 22.  Specifies '!==' operator. */
-#define EXP_OP_CNE        0x16
-/*! Decimal value = 23.  Specifies '||' operator. */
-#define EXP_OP_LOR        0x17
-/*! Decimal value = 24.  Specifies '&&' operator. */
-#define EXP_OP_LAND       0x18
-/*! Decimal value = 25.  Specifies '?:' conditional operator. */
-#define EXP_OP_COND       0x19
-/*! Decimal value = 26.  Specifies '?:' conditional select. */
-#define EXP_OP_COND_SEL   0x1a
-/*! Decimal value = 27.  Specifies '~' unary operator. */
-#define EXP_OP_UINV       0x1b
-/*! Decimal value = 28.  Specifies '&' unary operator. */
-#define EXP_OP_UAND       0x1c
-/*! Decimal value = 29.  Specifies '!' unary operator. */
-#define EXP_OP_UNOT       0x1d
-/*! Decimal value = 30.  Specifies '|' unary operator. */
-#define EXP_OP_UOR        0x1e
-/*! Decimal value = 31.  Specifies '^' unary operator. */
-#define EXP_OP_UXOR       0x1f
-/*! Decimal value = 32.  Specifies '~&' unary operator. */
-#define EXP_OP_UNAND      0x20
-/*! Decimal value = 33.  Specifies '~|' unary operator. */
-#define EXP_OP_UNOR       0x21
-/*! Decimal value = 34.  Specifies '~^' unary operator. */
-#define EXP_OP_UNXOR      0x22
-/*! Decimal value = 35.  Specifies single-bit signal select (i.e., [x]). */
-#define EXP_OP_SBIT_SEL   0x23
-/*! Decimal value = 36.  Specifies multi-bit signal select (i.e., [x:y]). */
-#define EXP_OP_MBIT_SEL   0x24
-/*! Decimal value = 37.  Specifies bit expansion operator (i.e., {x{y}}). */
-#define EXP_OP_EXPAND     0x25
-/*! Decimal value = 38.  Specifies signal concatenation operator (i.e., {x,y}). */
-#define EXP_OP_CONCAT     0x26
-/*! Decimal value = 39.  Specifies posedge operator (i.e., \@posedge x). */
-#define EXP_OP_PEDGE      0x27
-/*! Decimal value = 40.  Specifies negedge operator (i.e., \@negedge x). */
-#define EXP_OP_NEDGE      0x28
-/*! Decimal value = 41.  Specifies anyedge operator (i.e., \@x). */
-#define EXP_OP_AEDGE      0x29
-/*! Decimal value = 42.  Specifies 1-bit holder for parent. */
-#define EXP_OP_LAST       0x2a
-/*! Decimal value = 43.  Specifies 'or' event operator. */
-#define EXP_OP_EOR        0x2b
-/*! Decimal value = 44.  Specifies delay operator (i.e., #(x)). */
-#define EXP_OP_DELAY      0x2c
-/*! Decimal value = 45.  Specifies case equality expression. */
-#define EXP_OP_CASE       0x2d
-/*! Decimal value = 46.  Specifies casex equality expression. */
-#define EXP_OP_CASEX      0x2e
-/*! Decimal value = 47.  Specifies casez equality expression. */
-#define EXP_OP_CASEZ      0x2f
-/*! Decimal value = 48.  Specifies case/casex/casez default expression. */
-#define EXP_OP_DEFAULT    0x30
-/*! Decimal value = 49.  Specifies comma separated expression list. */
-#define EXP_OP_LIST       0x31
-/*! Decimal value = 50.  Specifies full parameter. */
-#define EXP_OP_PARAM      0x32
-/*! Decimal value = 51.  Specifies single-bit select parameter. */
-#define EXP_OP_PARAM_SBIT 0x33
-/*! Decimal value = 52.  Specifies multi-bit select parameter. */
-#define EXP_OP_PARAM_MBIT 0x34
-/*! Decimal value = 53.  Specifies an assign assignment operator. */
-#define EXP_OP_ASSIGN     0x35
-/*! Decimal value = 54.  Specifies a wire declaration assignment operator. */
-#define EXP_OP_DASSIGN    0x36
-/*! Decimal value = 55.  Specifies a blocking assignment operator. */
-#define EXP_OP_BASSIGN    0x37
-/*! Decimal value = 56.  Specifies a non-blocking assignment operator. */
-#define EXP_OP_NASSIGN    0x38
-/*! Decimal value = 57.  Specifies an if statement operator. */
-#define EXP_OP_IF         0x39
-/*! Decimal value = 58.  Specifies a function call. */
-#define EXP_OP_FUNC_CALL  0x3a
-/*! Decimal value = 59.  Specifies a task call (note: this operator MUST be the root of the expression tree) */
-#define EXP_OP_TASK_CALL  0x3b
-/*! Decimal value = 60.  Specifies an event trigger (->). */
-#define EXP_OP_TRIGGER    0x3c
-/*! Decimal value = 61.  Specifies a "call" to a named block */
-#define EXP_OP_NB_CALL    0x3d
-/*! Decimal value = 62.  Specifies a fork command */
-#define EXP_OP_FORK       0x3e
-/*! Decimal value = 63.  Specifies a join command */
-#define EXP_OP_JOIN       0x3f
-/*! Decimal value = 64.  Specifies a disable command */
-#define EXP_OP_DISABLE    0x40
-/*! Decimal value = 65.  Specifies a repeat loop test expression */
-#define EXP_OP_REPEAT     0x41
-/*! Decimal value = 66.  Specifies a while loop test expression */
-#define EXP_OP_WHILE      0x42
-/*! The total number of defines for expression values */
-#define EXP_OP_NUM        67
-
-/*! @} */
+typedef enum exp_op_type_e {
+  EXP_OP_STATIC = 0,      /*!<  0:0x00.  Specifies constant value. */
+  EXP_OP_SIG,             /*!<  1:0x01.  Specifies signal value. */
+  EXP_OP_XOR,             /*!<  2:0x02.  Specifies '^' operator. */
+  EXP_OP_MULTIPLY,        /*!<  3:0x03.  Specifies '*' operator. */
+  EXP_OP_DIVIDE,          /*!<  4:0x04.  Specifies '/' operator. */
+  EXP_OP_MOD,             /*!<  5:0x05.  Specifies '%' operator. */
+  EXP_OP_ADD,             /*!<  6:0x06.  Specifies '+' operator. */
+  EXP_OP_SUBTRACT,        /*!<  7:0x07.  Specifies '-' operator. */
+  EXP_OP_AND,             /*!<  8:0x08.  Specifies '&' operator. */
+  EXP_OP_OR,              /*!<  9:0x09.  Specifies '|' operator. */
+  EXP_OP_NAND,            /*!< 10:0x0a.  Specifies '~&' operator. */
+  EXP_OP_NOR,             /*!< 11:0x0b.  Specifies '~|' operator. */
+  EXP_OP_NXOR,            /*!< 12:0x0c.  Specifies '~^' operator. */
+  EXP_OP_LT,              /*!< 13:0x0d.  Specifies '<' operator. */
+  EXP_OP_GT,              /*!< 14:0x0e.  Specifies '>' operator. */
+  EXP_OP_LSHIFT,          /*!< 15:0x0f.  Specifies '<<' operator. */
+  EXP_OP_RSHIFT,          /*!< 16:0x10.  Specifies '>>' operator. */
+  EXP_OP_EQ,              /*!< 17:0x11.  Specifies '==' operator. */
+  EXP_OP_CEQ,             /*!< 18:0x12.  Specifies '===' operator. */
+  EXP_OP_LE,              /*!< 19:0x13.  Specifies '<=' operator. */
+  EXP_OP_GE,              /*!< 20:0x14.  Specifies '>=' operator. */
+  EXP_OP_NE,              /*!< 21:0x15.  Specifies '!=' operator. */
+  EXP_OP_CNE,             /*!< 22:0x16.  Specifies '!==' operator. */
+  EXP_OP_LOR,             /*!< 23:0x17.  Specifies '||' operator. */
+  EXP_OP_LAND,            /*!< 24:0x18.  Specifies '&&' operator. */
+  EXP_OP_COND,            /*!< 25:0x19.  Specifies '?:' conditional operator. */
+  EXP_OP_COND_SEL,        /*!< 26:0x1a.  Specifies '?:' conditional select. */
+  EXP_OP_UINV,            /*!< 27:0x1b.  Specifies '~' unary operator. */
+  EXP_OP_UAND,            /*!< 28:0x1c.  Specifies '&' unary operator. */
+  EXP_OP_UNOT,            /*!< 29:0x1d.  Specifies '!' unary operator. */
+  EXP_OP_UOR,             /*!< 30:0x1e.  Specifies '|' unary operator. */
+  EXP_OP_UXOR,            /*!< 31:0x1f.  Specifies '^' unary operator. */
+  EXP_OP_UNAND,           /*!< 32:0x20.  Specifies '~&' unary operator. */
+  EXP_OP_UNOR,            /*!< 33:0x21.  Specifies '~|' unary operator. */
+  EXP_OP_UNXOR,           /*!< 34:0x22.  Specifies '~^' unary operator. */
+  EXP_OP_SBIT_SEL,        /*!< 35:0x23.  Specifies single-bit signal select (i.e., [x]). */
+  EXP_OP_MBIT_SEL,        /*!< 36:0x24.  Specifies multi-bit signal select (i.e., [x:y]). */
+  EXP_OP_EXPAND,          /*!< 37:0x25.  Specifies bit expansion operator (i.e., {x{y}}). */
+  EXP_OP_CONCAT,          /*!< 38:0x26.  Specifies signal concatenation operator (i.e., {x,y}). */
+  EXP_OP_PEDGE,           /*!< 39:0x27.  Specifies posedge operator (i.e., \@posedge x). */
+  EXP_OP_NEDGE,           /*!< 40:0x28.  Specifies negedge operator (i.e., \@negedge x). */
+  EXP_OP_AEDGE,           /*!< 41:0x29.  Specifies anyedge operator (i.e., \@x). */
+  EXP_OP_LAST,            /*!< 42:0x2a.  Specifies 1-bit holder for parent. */
+  EXP_OP_EOR,             /*!< 43:0x2b.  Specifies 'or' event operator. */
+  EXP_OP_DELAY,           /*!< 44:0x2c.  Specifies delay operator (i.e., #(x)). */
+  EXP_OP_CASE,            /*!< 45:0x2d.  Specifies case equality expression. */
+  EXP_OP_CASEX,           /*!< 46:0x2e.  Specifies casex equality expression. */
+  EXP_OP_CASEZ,           /*!< 47:0x2f.  Specifies casez equality expression. */
+  EXP_OP_DEFAULT,         /*!< 48:0x30.  Specifies case/casex/casez default expression. */
+  EXP_OP_LIST,            /*!< 49:0x31.  Specifies comma separated expression list. */
+  EXP_OP_PARAM,           /*!< 50:0x32.  Specifies full parameter. */
+  EXP_OP_PARAM_SBIT,      /*!< 51:0x33.  Specifies single-bit select parameter. */
+  EXP_OP_PARAM_MBIT,      /*!< 52:0x34.  Specifies multi-bit select parameter. */
+  EXP_OP_ASSIGN,          /*!< 53:0x35.  Specifies an assign assignment operator. */
+  EXP_OP_DASSIGN,         /*!< 54:0x36.  Specifies a wire declaration assignment operator. */
+  EXP_OP_BASSIGN,         /*!< 55:0x37.  Specifies a blocking assignment operator. */
+  EXP_OP_NASSIGN,         /*!< 56:0x38.  Specifies a non-blocking assignment operator. */
+  EXP_OP_IF,              /*!< 57:0x39.  Specifies an if statement operator. */
+  EXP_OP_FUNC_CALL,       /*!< 58:0x3a.  Specifies a function call. */
+  EXP_OP_TASK_CALL,       /*!< 59:0x3b.  Specifies a task call (note: this operator MUST be the root of the expression tree) */
+  EXP_OP_TRIGGER,         /*!< 60:0x3c.  Specifies an event trigger (->). */
+  EXP_OP_NB_CALL,         /*!< 61:0x3d.  Specifies a "call" to a named block */
+  EXP_OP_FORK,            /*!< 62:0x3e.  Specifies a fork command */
+  EXP_OP_JOIN,            /*!< 63:0x3f.  Specifies a join command */
+  EXP_OP_DISABLE,         /*!< 64:0x40.  Specifies a disable command */
+  EXP_OP_REPEAT,          /*!< 65:0x41.  Specifies a repeat loop test expression */
+  EXP_OP_WHILE,           /*!< 66:0x42.  Specifies a while loop test expression */
+  EXP_OP_NUM              /*!< The total number of defines for expression values */
+} exp_op_type;
 
 /*!
  Returns a value of 1 if the specified expression is considered to be measurable.
 */
-#define EXPR_IS_MEASURABLE(x)      (((x->op != EXP_OP_STATIC) && \
-                                     (x->op != EXP_OP_LAST) && \
-                                     (x->op != EXP_OP_LIST) && \
-                                     (x->op != EXP_OP_COND_SEL) && \
-                                     (x->op != EXP_OP_CASE) && \
-                                     (x->op != EXP_OP_CASEX) && \
-                                     (x->op != EXP_OP_CASEZ) && \
-                                     (x->op != EXP_OP_DEFAULT) && \
-                                     (x->op != EXP_OP_PARAM) && \
-                                     (x->op != EXP_OP_PARAM_SBIT) && \
-                                     (x->op != EXP_OP_PARAM_MBIT) && \
-                                     (x->op != EXP_OP_DELAY) && \
-                                     (x->op != EXP_OP_EOR) && \
-                                     (x->op != EXP_OP_ASSIGN) && \
-                                     (x->op != EXP_OP_DASSIGN) && \
-                                     (x->op != EXP_OP_BASSIGN) && \
-                                     (x->op != EXP_OP_NASSIGN) && \
-                                     (x->op != EXP_OP_IF) && \
-                                     (x->op != EXP_OP_TASK_CALL) && \
-				     (x->op != EXP_OP_TRIGGER) && \
-				     (x->op != EXP_OP_NB_CALL) && \
-				     (x->op != EXP_OP_FORK) && \
-				     (x->op != EXP_OP_JOIN) && \
-				     (x->op != EXP_OP_DISABLE) && \
-				     (x->op != EXP_OP_REPEAT) && \
-                                     (x->op != EXP_OP_WHILE) && \
+#define EXPR_IS_MEASURABLE(x)      (((exp_op_info[x->op].suppl.measurable == 1) && \
                                      (ESUPPL_IS_LHS( x->suppl ) == 0) && \
                                      !((ESUPPL_IS_ROOT( x->suppl ) == 0) && \
                                        ((x->op == EXP_OP_SIG) || \
@@ -702,45 +605,25 @@
  Returns a value of TRUE if the specified expression is a STATIC, PARAM, PARAM_SBIT or PARAM_MBIT
  operation type.
 */
-#define EXPR_IS_STATIC(x)        ((x->op == EXP_OP_STATIC)     || \
-                                  (x->op == EXP_OP_PARAM)      || \
-                                  (x->op == EXP_OP_PARAM_SBIT) || \
-                                  (x->op == EXP_OP_PARAM_MBIT))
+#define EXPR_IS_STATIC(x)        exp_op_info[x->op].suppl.is_static
 
 /*!
  Returns a value of true if the specified expression is considered a combination expression by
  the combinational logic report generator.
 */
-#define EXPR_IS_COMB(x)         ((x->op == EXP_OP_XOR)      || \
-		                 (x->op == EXP_OP_ADD)      || \
-				 (x->op == EXP_OP_SUBTRACT) || \
-				 (x->op == EXP_OP_AND)      || \
-				 (x->op == EXP_OP_OR)       || \
-				 (x->op == EXP_OP_NAND)     || \
-				 (x->op == EXP_OP_NOR)      || \
-				 (x->op == EXP_OP_NXOR)     || \
-				 (x->op == EXP_OP_LOR)      || \
-				 (x->op == EXP_OP_LAND))
+#define EXPR_IS_COMB(x)          exp_op_info[x->op].suppl.is_comb
 
 /*!
  Returns a value of true if the specified expression is considered to be an event type
  (i.e., it either occurred or did not occur -- WAS_FALSE is not important).
 */
-#define EXPR_IS_EVENT(x)        ((x->op == EXP_OP_PEDGE) || \
-                                 (x->op == EXP_OP_NEDGE) || \
-                                 (x->op == EXP_OP_AEDGE) || \
-                                 (x->op == EXP_OP_DELAY))
+#define EXPR_IS_EVENT(x)         exp_op_info[x->op].suppl.is_event
 
 /*!
  These expressions will only allow a statement block to advance when they evaluate to a value of true (i.e.,
  their statement's false path is NULL).  They allow context switching to occur if they evaluate to false.
 */
-#define EXPR_IS_CONTEXT_SWITCH(x)	((x->op == EXP_OP_DELAY)     || \
-          				 (x->op == EXP_OP_NEDGE)     || \
-                                         (x->op == EXP_OP_PEDGE)     || \
-                                         (x->op == EXP_OP_AEDGE)     || \
-                                         (x->op == EXP_OP_EOR)       || \
-                                         (x->op == EXP_OP_TASK_CALL) || \
+#define EXPR_IS_CONTEXT_SWITCH(x)	((exp_op_info[x->op].suppl.is_context_switch == 1) || \
                                          ((x->op == EXP_OP_NB_CALL) && !ESUPPL_IS_IN_FUNC(x->suppl)))
 
 /*!
@@ -766,7 +649,7 @@
  Returns a value of true if the specified expression is considered a unary expression by
  the combinational logic report generator.
 */
-#define EXPR_IS_UNARY(x)        !EXPR_IS_COMB(x) && !EXPR_IS_EVENT(x)
+#define EXPR_IS_UNARY(x)        exp_op_info[x->op].suppl.is_unary
 
 /*!
  Returns a value of 1 if the specified expression was measurable for combinational 
@@ -1051,6 +934,11 @@ union esuppl_u {
 union expr_stmt_u;
 
 /*!
+ Contains static information about each expression operation type.
+*/
+struct exp_info_s;
+
+/*!
  Specifies an element in a linked list containing string values.  This data
  structure allows us to add new elements to the list without resizing, this
  optimizes performance with small amount of overhead.
@@ -1267,6 +1155,11 @@ struct perf_stat_s;
 /*  STRUCTURE/UNION TYPEDEFS  */
 
 /*!
+ Renaming expression operation information structure for convenience.
+*/
+typedef struct exp_info_s exp_info;
+
+/*!
  Renaming string link structure for convenience.
 */
 typedef struct str_link_s str_link;
@@ -1446,6 +1339,19 @@ typedef struct perf_stat_s perf_stat;
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION DEFINITIONS  */
 
+struct exp_info_s {
+  char* name;                             /*!< Operation name */
+  bool  (*func)( expression*, thread* );  /*!< Operation function to call */
+  struct {
+    nibble is_event:1;                    /*!< Specifies if operation is an event */
+    nibble is_static:1;                   /*!< Specifies if operation is a static value (does not change during simulation) */
+    nibble is_comb:1;                     /*!< Specifies if operation is combinational (both left/right expressions valid) */
+    nibble is_unary:1;                    /*!< Specifies if operation is unary (left expression valid only) */
+    nibble measurable:1;                  /*!< Specifies if this operation type can be measured */
+    nibble is_context_switch:1;           /*!< Specifies if this operation will cause a context switch */
+  } suppl;                                /*!< Supplemental information about this expression */
+};
+
 struct str_link_s {
   char*     str;                     /*!< String to store */
   char      suppl;                   /*!< 8-bit additional information */
@@ -1473,20 +1379,20 @@ union expr_stmt_u {
 };
 
 struct expression_s {
-  vector*     value;                 /*!< Current value and toggle information of this expression */
-  control     op;                    /*!< Expression operation type (see \ref expr_ops for the list of legal values) */
-  esuppl      suppl;                 /*!< Supplemental information for the expression */
-  int         id;                    /*!< Specifies unique ID for this expression in the parent */
-  int         ulid;                  /*!< Specifies underline ID for reporting purposes */
-  int         line;                  /*!< Specified line in file that this expression is found on */
-  control     exec_num;              /*!< Specifies the number of times this expression was executed during simulation */
-  control     col;                   /*!< Specifies column location of beginning/ending of expression */
-  vsignal*    sig;                   /*!< Pointer to signal.  If NULL then no signal is attached */
-  expr_stmt*  parent;                /*!< Parent expression/statement */
-  expression* right;                 /*!< Pointer to expression on right */
-  expression* left;                  /*!< Pointer to expression on left */
-  fsm*        table;                 /*!< Pointer to FSM table associated with this expression */
-  statement*  stmt;                  /*!< Pointer to starting task/function statement to be called by this expression */
+  vector*     value;                /*!< Current value and toggle information of this expression */
+  exp_op_type op;                   /*!< Expression operation type */
+  esuppl      suppl;                /*!< Supplemental information for the expression */
+  int         id;                   /*!< Specifies unique ID for this expression in the parent */
+  int         ulid;                 /*!< Specifies underline ID for reporting purposes */
+  int         line;                 /*!< Specified line in file that this expression is found on */
+  control     exec_num;             /*!< Specifies the number of times this expression was executed during simulation */
+  control     col;                  /*!< Specifies column location of beginning/ending of expression */
+  vsignal*    sig;                  /*!< Pointer to signal.  If NULL then no signal is attached */
+  expr_stmt*  parent;               /*!< Parent expression/statement */
+  expression* right;                /*!< Pointer to expression on right */
+  expression* left;                 /*!< Pointer to expression on left */
+  fsm*        table;                /*!< Pointer to FSM table associated with this expression */
+  statement*  stmt;                 /*!< Pointer to starting task/function statement to be called by this expression */
 };
 
 struct vsignal_s {
@@ -1750,6 +1656,12 @@ struct perf_stat_s {
 
 /*
  $Log$
+ Revision 1.157  2006/01/05 05:52:06  phase1geo
+ Removing wait bit in vector supplemental field and modifying algorithm to only
+ assign in the post-sim location (pre-sim now is gone).  This fixes some issues
+ with simulation results and increases performance a bit.  Updated regressions
+ for these changes.  Full regression passes.
+
  Revision 1.156  2006/01/02 21:35:36  phase1geo
  Added simulation performance statistical information to end of score command
  when we are in debug mode.
