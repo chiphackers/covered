@@ -211,7 +211,7 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",     expression_op_func__nu
                                            {"NEDGE",      expression_op_func__nedge,     {1, 0, 0, 0, 1, 1} },
                                            {"AEDGE",      expression_op_func__aedge,     {1, 0, 0, 0, 1, 1} },
                                            {"LAST",       expression_op_func__null,      {0, 0, 0, 1, 0, 0} },
-                                           {"EOR",        expression_op_func__eor,       {0, 0, 0, 1, 0, 1} },
+                                           {"EOR",        expression_op_func__eor,       {1, 0, 0, 1, 0, 1} },
                                            {"DELAY",      expression_op_func__delay,     {1, 0, 0, 0, 0, 1} },
                                            {"CASE",       expression_op_func__case,      {0, 0, 0, 1, 0, 0} },
                                            {"CASEX",      expression_op_func__casex,     {0, 0, 0, 1, 0, 0} },
@@ -1897,27 +1897,28 @@ bool expression_op_func__nedge( expression* expr, thread* thr ) {
 */
 bool expression_op_func__aedge( expression* expr, thread* thr ) {
 
-  vector   vec;      /* Temporary vector */
-  vec_data value1a;  /* 1-bit vector value */
-  vec_data value1b;  /* 1-bit vector value */
-  bool     retval;   /* Return value of this function */
+  vector   vec;     /* Temporary vector */
+  vec_data bit;     /* 1-bit vector value */
+  bool     retval;  /* Return value of this function */
 
-  expr->suppl.part.eval_t = 0;
-  vector_init( &vec, &value1a, 1 );
+  vector_init( &vec, &bit, 1 );
   vector_op_compare( &vec, expr->left->value, expr->right->value, COMP_CEQ );
-  value1b.all = expr->left->value->value[0].all;
 
-  /* Set left LAST value to current value of right */
-  vector_set_value_only( expr->left->value, expr->right->value->value, expr->right->value->width, 0, 0 );
+  /* If the last value and the current value are NOT equal, we have a fired event */
+  if( bit.part.value == 0 ) {
 
-  if( (value1b.part.misc == 1) && (vector_to_int( &vec ) == 0) ) {
     expr->suppl.part.eval_t = 1;
     expr->suppl.part.true   = 1;
-    expr->left->value->value[0].part.misc = 0;
     retval = TRUE;
+
+    /* Set left LAST value to current value of right */
+    vector_set_value_only( expr->left->value, expr->right->value->value, expr->right->value->width, 0, 0 );
+
   } else {
-    expr->left->value->value[0].part.misc = 1;
+
+    expr->suppl.part.eval_t = 0;
     retval = FALSE;
+
   }
 
   return( retval );
@@ -1934,20 +1935,26 @@ bool expression_op_func__aedge( expression* expr, thread* thr ) {
 */
 bool expression_op_func__eor( expression* expr, thread* thr ) {
 
-  vec_data bit;  /* 1-bit vector value */
-
-  expression_operate( expr->left, NULL );
-  expression_operate( expr->right, NULL );
-
-  bit.all = 0;
+  bool retval;  /* Return value for this function */
 
   if( (ESUPPL_IS_TRUE( expr->left->suppl ) == 1) || (ESUPPL_IS_TRUE( expr->right->suppl ) == 1) ) {
-    bit.part.value = 1;
+
+    expr->suppl.part.eval_t = 1;
+    expr->suppl.part.true   = 1;
+    retval = TRUE;
+
+    /* Clear eval_t bits in left and right expressions */
+    expr->left->suppl.part.eval_t  = 0;
+    expr->right->suppl.part.eval_t = 0;
+
   } else {
-    bit.part.value = 0;
+
+    expr->suppl.part.eval_t = 0;
+    retval = FALSE;
+
   }
 
-  return( vector_set_value( expr->value, &bit, 1, 0, 0 ) );
+  return( retval );
 
 }
 
@@ -2713,6 +2720,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.152  2006/01/08 03:05:05  phase1geo
+ Checkpointing work on optimized thread handling.  I believe that this is now
+ working as wanted; however, regressions will not pass until EOR optimization
+ has been completed.  I will be working on this next.
+
  Revision 1.151  2006/01/06 18:54:03  phase1geo
  Breaking up expression_operate function into individual functions for each
  expression operation.  Also storing additional information in a globally accessible,
