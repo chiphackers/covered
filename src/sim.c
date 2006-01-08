@@ -147,10 +147,11 @@ void sim_display_thread_queue( thread** head ) {
 */
 void sim_thread_push( thread* thr, thread** head, thread** tail ) {
 
-  /* Only add the thread if it exists and it isn't already in the queue */
+  // printf( "Before thread is pushed...\n" );
+  // sim_display_thread_queue( head );
+
+  /* Only add the thread if it exists and it isn't already in a queue */
   if( (thr != NULL) && !thr->queued ) {
- 
-    printf( "In sim_thread_push, pushing...\n" );
 
     /* Add thread to tail-end of queue */
     if( *tail == NULL ) {
@@ -164,15 +165,13 @@ void sim_thread_push( thread* thr, thread** head, thread** tail ) {
       *tail         = thr;
     }
 
-    /* If we are pushing into the thread queue, set the queue indicator to TRUE */
-    if( head == &thread_head ) {
-      thr->queued = TRUE;
-    }
+    /* Set the queue indicator to TRUE */
+    thr->queued = TRUE;
 
   }
 
-  printf( "Called sim_thread_push...\n" );
-  sim_display_thread_queue( head );
+  // printf( "After thread is pushed...\n" );
+  // sim_display_thread_queue( head );
 
 }
 
@@ -182,6 +181,9 @@ void sim_thread_push( thread* thr, thread** head, thread** tail ) {
 void sim_thread_pop_head() {
 
   thread* tmp_head = thread_head;  /* Pointer to head of thread queue */
+
+  // printf( "Before thread is popped from thread queue...\n" );
+  // sim_display_thread_queue( &thread_head );
 
   if( thread_head != NULL ) {
 
@@ -206,8 +208,8 @@ void sim_thread_pop_head() {
 
   }
 
-  printf( "Called sim_thread_pop_head...\n" );
-  sim_display_thread_queue( &thread_head );
+  // printf( "After thread is popped from thread queue...\n" );
+  // sim_display_thread_queue( &thread_head );
 
 }
 
@@ -265,10 +267,10 @@ void sim_expr_changed( expression* expr ) {
       sim_expr_changed( expr->parent->expr );
 
     /*
-     Otherwise, if we have hit the root expression, add this statement (if it is the head) back onto
-     the thread queue.
+     Otherwise, if we have hit the root expression and the parent pointer is valid, add 
+     this statement (if it is the head) back onto the thread queue.
     */
-    } else {
+    } else if( expr->parent->expr != NULL ) {
 
       sim_thread_push( expr->parent->stmt->thr, &thread_head, &thread_tail );
 
@@ -339,26 +341,10 @@ thread* sim_add_thread( thread* parent, statement* stmt ) {
     /* Add this thread to the simulation thread queue */
     if( parent != NULL ) {
 
-      /* If this is the first child to be added to the parent, remove the parent from the thread queue */
-      if( first_child ) {
-        thr->prev      = parent->prev;
-        thr->next      = parent->next;
-
-      /* Otherwise, just insert this child between the parent's previous and the other child */
-      } else {
-        thr->prev = parent->next->prev;
-        thr->next = parent->next; 
-      }
-
-      /* Set the parent to point its next pointer to us */
+      /* Insert this child between the parent and its next thread */
+      thr->prev    = parent;
+      thr->next    = parent->next;
       parent->next = thr;
-
-      /* Fix the previous thread to point to us */
-      if( thr->prev == NULL ) {
-        thread_head = thr;
-      } else {
-        thr->prev->next = thr;
-      }
 
       /* Fix the next thread to point to us */
       if( thr->next == NULL ) {
@@ -379,8 +365,8 @@ thread* sim_add_thread( thread* parent, statement* stmt ) {
  
     }
 
-    printf( "Called sim_add_thread...\n" );
-    sim_display_thread_queue( &thread_head );
+    // printf( "After thread is added to thread queue...\n" );
+    // sim_display_thread_queue( &thread_head );
 
   }
 
@@ -431,30 +417,20 @@ void sim_kill_thread( thread* thr ) {
 
   }
 
-  /* If we are the last child, re-insert the parent thread */
+  /* If we are the last child, re-insert the parent in our place (setting thread_head to the parent) */
   if( last_child ) {
-    if( thr->prev == NULL ) {
-      thread_head = thr->parent;
+    thr->parent->next = thr->next;
+    if( thr->parent->next == NULL ) {
+      thread_tail = thr->parent;
     } else {
-      thr->prev->next = thr->parent;
+      thr->parent->next->prev = thr->parent;
     }
-    thr->parent->prev = thr->prev;
-    thr->parent->next = thr;
-    thr->prev         = thr->parent;
-  }    
-
-  /* Now remove the thread from the thread list */
-  if( (thr == thread_head) && (thr == thread_tail) ) {
-    thread_head = thread_tail = NULL;
-  } else if( thr == thread_head ) {
-    thread_head       = thr->next;
-    thread_head->prev = NULL;
-  } else if( thr == thread_tail ) {
-    thread_tail       = thr->prev;
-    thread_tail->next = NULL;
+    thread_head = thr->parent;
   } else {
-    thr->prev->next = thr->next;
-    thr->next->prev = thr->prev;
+    thread_head = thread_head->next;
+    if( thread_head == NULL ) {
+      thread_tail = NULL;
+    }
   }
 
   /* Set the statement thread pointer to NULL */
@@ -720,6 +696,10 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.62  2006/01/06 23:39:10  phase1geo
+ Started working on removing the need to simulate more than is necessary.  Things
+ are pretty broken at this point, but all of the code should be in -- debugging.
+
  Revision 1.61  2006/01/06 18:54:03  phase1geo
  Breaking up expression_operate function into individual functions for each
  expression operation.  Also storing additional information in a globally accessible,

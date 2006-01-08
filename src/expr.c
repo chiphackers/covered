@@ -2004,6 +2004,9 @@ bool expression_op_func__trigger( expression* expr, thread* thr ) {
     expr->value->value[0].part.value = 1;
   }
 
+  /* Propagate event */
+  vsignal_propagate( expr->sig );
+
   return( TRUE );
 
 }
@@ -2710,6 +2713,12 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.151  2006/01/06 18:54:03  phase1geo
+ Breaking up expression_operate function into individual functions for each
+ expression operation.  Also storing additional information in a globally accessible,
+ constant structure array to increase performance.  Updating full regression for these
+ changes.  Full regression passes.
+
  Revision 1.150  2006/01/04 22:07:04  phase1geo
  Changing expression execution calculation from sim to expression_operate function.
  Updating all regression files for this change.  Modifications to diagnostic Makefile
