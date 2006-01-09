@@ -306,18 +306,18 @@ thread* sim_add_thread( thread* parent, statement* stmt ) {
   if( ESUPPL_IS_STMT_HEAD( stmt->exp->suppl ) == 1 ) {
 
     /* Create and initialize thread */
-    thr             = (thread*)malloc_safe( sizeof( thread ), __FILE__, __LINE__ );
-    thr->parent     = parent;
-    thr->head       = stmt;
-    thr->curr       = stmt;
-    thr->kill       = FALSE;
-    thr->queued     = TRUE;    /* We will place the thread immediately into the thread queue */
-    thr->child_head = NULL;
-    thr->child_tail = NULL;
-    thr->prev_sib   = NULL;
-    thr->next_sib   = NULL;
-    thr->prev       = NULL;
-    thr->next       = NULL;
+    thr               = (thread*)malloc_safe( sizeof( thread ), __FILE__, __LINE__ );
+    thr->parent       = parent;
+    thr->head         = stmt;
+    thr->curr         = stmt;
+    thr->kill         = FALSE;
+    thr->queued       = TRUE;    /* We will place the thread immediately into the thread queue */
+    thr->child_head   = NULL;
+    thr->child_tail   = NULL;
+    thr->prev_sib     = NULL;
+    thr->next_sib     = NULL;
+    thr->prev         = NULL;
+    thr->next         = NULL;
 
     /* Set statement pointer to this thread */
     stmt->thr        = thr;
@@ -335,11 +335,11 @@ thread* sim_add_thread( thread* parent, statement* stmt ) {
       }
     }
 
-    /* Arm all events in current statement expression */
-    expression_arm_events( stmt->exp );
-
     /* Add this thread to the simulation thread queue */
     if( parent != NULL ) {
+
+      /* We are not the first statement since we are a child */
+      thr->exec_first = FALSE;
 
       /* Insert this child between the parent and its next thread */
       thr->prev    = parent;
@@ -354,6 +354,9 @@ thread* sim_add_thread( thread* parent, statement* stmt ) {
       }
 
     } else {
+
+      /* We are the first statement */
+      thr->exec_first = TRUE;
 
       if( thread_head == NULL ) {
         thread_head = thread_tail = thr;
@@ -620,6 +623,9 @@ void sim_thread( thread* thr ) {
       
     thr->curr = stmt;
 
+    /* Set exec_first to FALSE */
+    thr->exec_first = FALSE;
+
     if( ESUPPL_IS_STMT_CONTINUOUS( stmt->exp->suppl ) == 1 ) {
        /* If this is a continuous assignment, don't traverse next pointers. */
        stmt = NULL;
@@ -649,6 +655,9 @@ void sim_thread( thread* thr ) {
 
   /* Otherwise, we are switching contexts */
   } else {
+
+    /* Set exec_first to TRUE for next run */
+    thr->exec_first = TRUE;
 
 #ifdef DEBUG_MODE
     snprintf( user_msg, USER_MSG_LENGTH, "Switching context of thread %p...\n", thr );
@@ -698,6 +707,10 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.64  2006/01/08 05:51:03  phase1geo
+ Added optimizations to EOR and AEDGE expressions.  In the process of running
+ regressions...
+
  Revision 1.63  2006/01/08 03:05:06  phase1geo
  Checkpointing work on optimized thread handling.  I believe that this is now
  working as wanted; however, regressions will not pass until EOR optimization

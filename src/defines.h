@@ -1642,6 +1642,7 @@ struct thread_s {
   statement* curr;                   /*!< Pointer to current head statement for this thread */
   bool       kill;                   /*!< Set to true if this thread should be killed */
   bool       queued;                 /*!< Set to true when thread exists in the thread queue */
+  bool       exec_first;             /*!< Set to true when the first statement is being executed */
   thread*    child_head;             /*!< Pointer to head element in child thread list for this thread */
   thread*    child_tail;             /*!< Pointer to tail element in child thread list for this thread */
   thread*    prev_sib;               /*!< Pointer to previous sibling thread */
@@ -1658,6 +1659,10 @@ struct perf_stat_s {
 
 /*
  $Log$
+ Revision 1.159  2006/01/06 23:39:10  phase1geo
+ Started working on removing the need to simulate more than is necessary.  Things
+ are pretty broken at this point, but all of the code should be in -- debugging.
+
  Revision 1.158  2006/01/06 18:54:03  phase1geo
  Breaking up expression_operate function into individual functions for each
  expression operation.  Also storing additional information in a globally accessible,

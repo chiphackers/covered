@@ -64,9 +64,6 @@ void expression_operate_recursively( expression* expr );
 /*! \brief Returns TRUE if specified expression is found to contain all static leaf expressions. */
 bool expression_is_static_only( expression* expr );
 
-/*! \brief Arms all PEDGE, NEDGE and AEDGE event expressions in given expression tree */
-void expression_arm_events( expression* expr );
-
 /*! \brief Returns TRUE if specified expression is on the LHS of a blocking assignment operator. */
 bool expression_is_assigned( expression* expr );
 
@@ -82,6 +79,12 @@ void expression_dealloc( expression* expr, bool exp_only );
 
 /*
  $Log$
+ Revision 1.36  2006/01/06 18:54:03  phase1geo
+ Breaking up expression_operate function into individual functions for each
+ expression operation.  Also storing additional information in a globally accessible,
+ constant structure array to increase performance.  Updating full regression for these
+ changes.  Full regression passes.
+
  Revision 1.35  2005/12/23 05:41:52  phase1geo
  Fixing several bugs in score command per bug report #1388339.  Fixed problem
  with race condition checker statement iterator to eliminate infinite looping (this

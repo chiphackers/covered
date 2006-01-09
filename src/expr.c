@@ -1825,22 +1825,20 @@ bool expression_op_func__concat( expression* expr, thread* thr ) {
 */
 bool expression_op_func__pedge( expression* expr, thread* thr ) {
 
-  bool     retval;   /* Return value for this function */
-  vec_data value1a;  /* 1-bit vector value */
-  vec_data value1b;  /* 2-bit vector value */
+  bool              retval;   /* Return value for this function */
+  register vec_data value1a;  /* 1-bit vector value */
+  register vec_data value1b;  /* 2-bit vector value */
 
-  expr->suppl.part.eval_t = 0;
-  value1a.all             = 0;
-  value1a.part.value      = expr->right->value->value[0].part.value;
-  value1b.all             = expr->left->value->value[0].all;
+  value1a.all        = 0;
+  value1a.part.value = expr->right->value->value[0].part.value;
+  value1b.all        = expr->left->value->value[0].all;
 
-  if( (value1b.part.misc == 1) && (value1a.part.value != value1b.part.value) && (value1a.part.value == 1) ) {
-    expr->suppl.part.eval_t = 1;
+  if( (value1a.part.value != value1b.part.value) && (value1a.part.value == 1) && thr->exec_first ) {
     expr->suppl.part.true   = 1;
-    value1a.part.misc       = 0;
+    expr->suppl.part.eval_t = 1;
     retval = TRUE;
   } else {
-    value1a.part.misc       = 1;
+    expr->suppl.part.eval_t = 0;
     retval = FALSE;
   }
 
@@ -1861,22 +1859,20 @@ bool expression_op_func__pedge( expression* expr, thread* thr ) {
 */
 bool expression_op_func__nedge( expression* expr, thread* thr ) {
 
-  bool     retval;   /* Return value for this function */
-  vec_data value1a;  /* 1-bit vector value */
-  vec_data value1b;  /* 2-bit vector value */
+  bool              retval;   /* Return value for this function */
+  register vec_data value1a;  /* 1-bit vector value */
+  register vec_data value1b;  /* 2-bit vector value */
 
-  expr->suppl.part.eval_t = 0;
-  value1a.all             = 0;
-  value1a.part.value      = expr->right->value->value[0].part.value;
-  value1b.all             = expr->left->value->value[0].all;
+  value1a.all        = 0;
+  value1a.part.value = expr->right->value->value[0].part.value;
+  value1b.all        = expr->left->value->value[0].all;
 
-  if( (value1b.part.misc == 1) && (value1a.part.value != value1b.part.value) && (value1a.part.value == 0) ) {
-    expr->suppl.part.eval_t = 1;
+  if( (value1a.part.value != value1b.part.value) && (value1a.part.value == 0) && thr->exec_first ) {
     expr->suppl.part.true   = 1;
-    value1a.part.misc       = 0;
+    expr->suppl.part.eval_t = 1;
     retval = TRUE;
   } else {
-    value1a.part.misc       = 1;
+    expr->suppl.part.eval_t = 0;
     retval = FALSE;
   }
 
@@ -1905,20 +1901,14 @@ bool expression_op_func__aedge( expression* expr, thread* thr ) {
   vector_op_compare( &vec, expr->left->value, expr->right->value, COMP_CEQ );
 
   /* If the last value and the current value are NOT equal, we have a fired event */
-  if( bit.part.value == 0 ) {
-
-    expr->suppl.part.eval_t = 1;
+  if( (bit.part.value == 0) && thr->exec_first ) {
     expr->suppl.part.true   = 1;
+    expr->suppl.part.eval_t = 1;
     retval = TRUE;
-
-    /* Set left LAST value to current value of right */
     vector_set_value_only( expr->left->value, expr->right->value->value, expr->right->value->width, 0, 0 );
-
   } else {
-
     expr->suppl.part.eval_t = 0;
     retval = FALSE;
-
   }
 
   return( retval );
@@ -2404,33 +2394,6 @@ bool expression_is_static_only( expression* expr ) {
 
 }
 
-/*!
- \param expr  Pointer to top-level expression tree to set events for
-
- Recursively traverses down specified expression tree, arming each PEDGE, NEDGE and
- AEDGE expression that it sees.
-*/
-void expression_arm_events( expression* expr ) {
-
-  assert( expr != NULL );
-
-  if( expr->op == EXP_OP_EOR ) {
-
-    /* Go down tree setting all events */
-    expression_arm_events( expr->left );
-    expression_arm_events( expr->right );
-
-  } else if( (expr->op == EXP_OP_PEDGE) ||
-             (expr->op == EXP_OP_NEDGE) ||
-             (expr->op == EXP_OP_AEDGE) ) {
-
-    /* Arm this event */
-    expr->left->value->value[0].part.misc = 1;
-
-  }
-
-}
-
 /*! \brief Returns TRUE if specified expression is on the LHS of a blocking assignment operator. */
 bool expression_is_assigned( expression* expr ) {
 
@@ -2720,6 +2683,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.153  2006/01/08 05:51:03  phase1geo
+ Added optimizations to EOR and AEDGE expressions.  In the process of running
+ regressions...
+
  Revision 1.152  2006/01/08 03:05:05  phase1geo
  Checkpointing work on optimized thread handling.  I believe that this is now
  working as wanted; however, regressions will not pass until EOR optimization
