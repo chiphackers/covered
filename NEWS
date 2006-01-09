@@ -1,9 +1,70 @@
 Covered-Related NEWS
 ====================
 
-    * 2/8/2004
+    * 1/9/2006
 
-Development release covered-20040208 made.  This release primarily contains support for detecting
+Development release covered-20060109 made.  It has been almost a year since the last development
+release of Covered, but in the meantime there has been a lot of work put into the score command
+of Covered during this time to fix bugs, add more coverage support for various Verilog constructs,
+simulate more accurately, remove memory corruption/estrangement and improve the run-time speed
+of the score command.  I think that user's of Covered will appreciate the enhancements.  Documentation
+updates have been made and build problems have been fixed (Covered now compiles cleanly for
+Fedora Core 3 builds).  I plan to revisit Covered's GUI in the next release to fix various bugs
+and improve the usability.  The following is a description of what has changed in this release from the
+last release:
+
+  - Blocking assignments in covered blocks are now performed by Covered's simulation core instead of
+    being taken from the dumpfile to improve simulation/coverage accuracy.
+  - Fixed lots bugs with statement block removal
+  - Added patch to parser.y to fix compiling problems with bison-2.0.
+  - Increased space for module/instance name in reports
+  - Added full support for the following Verilog constructs:
+    - tasks and task calls
+    - functions and function calls
+    - named begin/end blocks
+    - fork/join
+    - event types and event triggers
+    - hierarchical referencing (both relative and top-of-tree scoping)
+    - initial blocks
+    - for, repeat and while looping
+    - block disabling
+  - Fixed bug with net_decl_assign statements (the line, start column and end column information was
+    incorrect, causing problems with the GUI output).
+  - Fixed implicit signal creation in binding functions.
+  - Fixed binding with merge command. 
+  - Added --enable-debug configuration option to remove verbose outputting code from compilation.
+    This significantly improves run-time performance.
+  - Better race condition reporting
+  - Lots of fixes related to bad memory accesses and memory leaks (found using the valgrind utility).
+  - Removed Tcl/Tk from source files if HAVE_TCLTK is not defined.
+  - Added ability to exclude functions, tasks and named begin/end blocks with the -e score command
+  - Added ability to exclude all continuous assignments from coverage consideration with -ec score command
+  - Added ability to exclude all always blocks from coverage consideration with -ea score command
+  - Added ability to exclude all initial blocks from coverage consideration with -ei score command
+  - Fixed problem with race condition checker statement iterator to eliminate infinite looping.
+  - Also fixed expression assigment when static expressions are used in the LHS
+  - Fixed bug for signals that are on the LHS side of an assignment expression but are not being
+    assigned (bit selects) so that these are NOT considered for race conditions.
+  - Added simulation performance statistical information to end of score command when the -S option is
+    specified to the score command (this will probably only be useful for Covered developers but may
+    be interesting/useful for users later on).
+  - Fixing bug in expression_assign function -- removed recursive assignment when the LHS expression
+    is a signal, single-bit, multi-bit or static value (only recurse when the LHS is a CONCAT or
+    LIST).
+  - Fixing bug in report help information when Tcl/Tk is not available
+  - Lots of improvements to simulator to increase performance (this will be quite noticeable!)
+  - Documentation updates
+  - Regression suite enhancements (lots of new diagnostics added for testing new Verilog constructs as well
+    as testing bug fixes).
+
+Note:  The format of the generated CDD files has changed quite a bit in format so you will not be able
+to merge CDD files generated from older versions of Covered with CDD files generated from newer versions
+of Covered (Covered will display an error message to the user stating this reason).  As always, please
+e-mail any bugs/problems found with this new release!
+
+    * 2/8/2005
+
+Development release covered-20050208 made.  This release primarily contains support for detecting
 and handling race conditions with the DUT.  Added flags to the score command control the behavior
 of Covered when these race conditions are detected.  Additionally, the race condition information
 is saved to the CDD file for reporting purposes in both the text reports as well as the GUI.  This
