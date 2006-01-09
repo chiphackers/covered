@@ -24,13 +24,6 @@ Score command
    6.  Add feature to cause Covered to omit the simulation phase for toggle and
        FSM coverage results.
 
-   7.  Performance enhancements
-       - Add thread to sim queue only when a new thread is created, if it is a delay
-         or when one of its subexpression signal values change
-       - Remove constant EOR evaluation and expression evaluation in simulator
-X      - Break up expression_operate into individual functions (stored in expression
-         structure)
-
 
 Merge command
 -------------
