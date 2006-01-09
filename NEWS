@@ -56,6 +56,8 @@ last release:
   - Documentation updates
   - Regression suite enhancements (lots of new diagnostics added for testing new Verilog constructs as well
     as testing bug fixes).
+  - Added cleanup function at exit which now automatically removes the temporary files that Covered creates
+    from the pre-processing step even when something goes drastically wrong while this file is opened.
 
 Note:  The format of the generated CDD files has changed quite a bit in format so you will not be able
 to merge CDD files generated from older versions of Covered with CDD files generated from newer versions
