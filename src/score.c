@@ -488,6 +488,7 @@ int command_score( int argc, int last_arg, char** argv ) {
     free_safe( vpi_file );
     free_safe( top_module );
     free_safe( ppfilename );
+    ppfilename = NULL;
 
     if( directive_filename != NULL ) {
       free_safe( directive_filename );
@@ -505,6 +506,11 @@ int command_score( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.60  2006/01/04 22:07:04  phase1geo
+ Changing expression execution calculation from sim to expression_operate function.
+ Updating all regression files for this change.  Modifications to diagnostic Makefile
+ to accommodate environments that do not have valgrind.
+
  Revision 1.59  2006/01/04 03:15:52  phase1geo
  Adding bassign3 diagnostic to regression suite to verify expression_assign
  function works correctly for CONCAT/LIST ordering.

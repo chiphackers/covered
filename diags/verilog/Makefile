@@ -195,4 +195,4 @@ clobber:  clean
 clean:
 	@rm -f $(LOGFILE)
 	@rm -f $(IVERILOG_EXEC) $(VCS_EXEC) *.vcd *.log
-	@rm -f core *.o tmp*
+	@rm -f core *.o

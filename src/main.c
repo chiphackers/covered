@@ -14,6 +14,7 @@
 #endif
 #include <stdlib.h>
 #include <stdarg.h>
+#include <unistd.h>
 
 #include "devel_doc.h"
 #include "defines.h"
@@ -23,7 +24,8 @@
 #include "util.h"
 
 
-extern char user_msg[USER_MSG_LENGTH];
+extern char  user_msg[USER_MSG_LENGTH];
+extern char* ppfilename;
 
 
 /*!
@@ -59,6 +61,19 @@ void usage() {
 }
 
 /*!
+ Function called at the end of execution which takes care of cleaning up state and temporary files.
+*/
+void covered_cleanup( void ) {
+
+  /* Remove temporary pre-processor file (if it still exists) */
+  if( ppfilename != NULL ) {
+    unlink( ppfilename );
+    free_safe( ppfilename );
+  }
+
+}
+
+/*!
  \param argc Number of arguments specified in argv parameter list.
  \param argv List of arguments passed to this process from the command-line.
  \return Returns 0 to indicate a successful return; otherwise, returns a non-zero value.
@@ -75,6 +90,9 @@ int main( int argc, char** argv ) {
   /* Initialize error suppression value */
   set_output_suppression( FALSE );
   set_debug( FALSE );
+
+  /* Setup function to be called at exit */
+  assert( atexit( covered_cleanup ) == 0 );
 
   if( argc == 1 ) {
 
@@ -151,6 +169,9 @@ int main( int argc, char** argv ) {
 
 /*
  $Log$
+ Revision 1.14  2005/11/28 23:28:47  phase1geo
+ Checkpointing with additions for threads.
+
  Revision 1.13  2005/11/21 04:17:43  phase1geo
  More updates to regression suite -- includes several bug fixes.  Also added --enable-debug
  facility to configuration file which will include or exclude debugging output from being
