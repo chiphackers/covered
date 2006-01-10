@@ -73,6 +73,13 @@
  The EXP_OP_REPEAT expression takes on the width of its right expression and, starting at a value of 0,
  increments by one until it reaches the value of the right expression (at that time it returns false
  and returns its incrementing value back to 0.
+ 
+ \par EXP_OP_SLIST
+ The EXP_OP_SLIST expression is a 1-bit expression whose value is meaningless.  It indicates the
+ Verilog-2001 sensitivity list @* for a statement block and its right expression is attaches to
+ an EOR attached list of AEDGE operations.  The SLIST expression works like an EOR but only checks
+ the right child.  When outputting an expression tree whose root expression is an SLIST, the rest
+ of the expression should be ignored for outputting purposes.
 */
 
 #include <stdio.h>
@@ -147,6 +154,7 @@ static bool expression_op_func__pedge( expression*, thread* );
 static bool expression_op_func__nedge( expression*, thread* );
 static bool expression_op_func__aedge( expression*, thread* );
 static bool expression_op_func__eor( expression*, thread* );
+static bool expression_op_func__slist( expression*, thread* );
 static bool expression_op_func__delay( expression*, thread* );
 static bool expression_op_func__case( expression*, thread* );
 static bool expression_op_func__casex( expression*, thread* );
@@ -167,7 +175,7 @@ static bool expression_op_func__null( expression*, thread* );
 
 /*!
  Array containing static information about expression operation types.  NOTE:  This structure MUST be
- updated if a new expression is added!
+ updated if a new expression is added!  The third argument is an initialization to the \ref exp_info_s structure.
 */
 const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",     expression_op_func__null,      {0, 1, 0, 1, 0, 0} },
                                            {"SIG",        expression_op_func__null,      {0, 0, 0, 1, 1, 0} },
@@ -237,7 +245,8 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",     expression_op_func__nu
                                            {"REPEAT",     expression_op_func__repeat,    {0, 0, 0, 1, 0, 0} },
                                            {"WHILE",      expression_op_func__null,      {0, 0, 0, 1, 0, 0} },
                                            {"ALSHIFT",    expression_op_func__lshift,    {0, 0, 0, 1, 1, 0} },
-                                           {"ARSHIFT",    expression_op_func__arshift,   {0, 0, 0, 1, 1, 0} } };
+                                           {"ARSHIFT",    expression_op_func__arshift,   {0, 0, 0, 1, 1, 0} },
+                                           {"SLIST",      expression_op_func__slist,     {1, 0, 0, 0, 1, 1} } };
 
 /*!
  \param exp    Pointer to expression to add value to.
@@ -1971,6 +1980,38 @@ bool expression_op_func__eor( expression* expr, thread* thr ) {
 
  \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
 
+ Performs a sensitivity list operation.
+*/
+bool expression_op_func__slist( expression* expr, thread* thr ) {
+
+  bool retval;  /* Return value for this function */
+
+  if( ESUPPL_IS_TRUE( expr->right->suppl ) == 1 ) {
+
+    expr->suppl.part.eval_t = 1;
+    expr->suppl.part.true   = 1;
+    retval = TRUE;
+
+    /* Clear eval_t bit in right expression */
+    expr->right->suppl.part.eval_t = 0;
+
+  } else {
+
+    expr->suppl.part.eval_t = 0;
+    retval = FALSE;
+
+  }
+
+  return( retval );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
  Performs a delay operation.
 */
 bool expression_op_func__delay( expression* expr, thread* thr ) {
@@ -2700,6 +2741,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.155  2006/01/10 05:12:48  phase1geo
+ Added arithmetic left and right shift operators.  Added ashift1 diagnostic
+ to verify their correct operation.
+
  Revision 1.154  2006/01/09 04:15:25  phase1geo
  Attempting to fix one last problem with latest changes.  Regression runs are
  currently running.  Checkpointing.

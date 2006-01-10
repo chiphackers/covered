@@ -582,6 +582,7 @@ typedef enum exp_op_type_e {
   EXP_OP_WHILE,           /*!< 66:0x42.  Specifies a while loop test expression */
   EXP_OP_ALSHIFT,         /*!< 67:0x43.  Specifies arithmetic left shift (<<<) */
   EXP_OP_ARSHIFT,         /*!< 68:0x44.  Specifies arithmetic right shift (>>>) */
+  EXP_OP_SLIST,           /*!< 69:0x45.  Specifies sensitivity list (*) */
   EXP_OP_NUM              /*!< The total number of defines for expression values */
 } exp_op_type;
 
@@ -610,7 +611,7 @@ typedef enum exp_op_type_e {
 #define EXPR_IS_STATIC(x)        exp_op_info[x->op].suppl.is_static
 
 /*!
- Returns a value of true if the specified expression is considered a combination expression by
+ Returns a value of true if the specified expression ks considered a combination expression by
  the combinational logic report generator.
 */
 #define EXPR_IS_COMB(x)          exp_op_info[x->op].suppl.is_comb
@@ -1661,6 +1662,10 @@ struct perf_stat_s {
 
 /*
  $Log$
+ Revision 1.161  2006/01/10 05:12:48  phase1geo
+ Added arithmetic left and right shift operators.  Added ashift1 diagnostic
+ to verify their correct operation.
+
  Revision 1.160  2006/01/09 04:15:25  phase1geo
  Attempting to fix one last problem with latest changes.  Regression runs are
  currently running.  Checkpointing.

@@ -2145,6 +2145,51 @@ statement
         $$ = NULL;
       }
     }
+  | '@' '*' statement_opt
+    {
+      expression* expr;
+      statement*  stmt;
+      if( (ignore_mode == 0) && ($3 != NULL) ) {
+        expr = db_create_sensitivity_list( $3 );
+        expr = db_create_expression( expr, NULL, EXP_OP_SLIST, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL ); 
+        stmt = db_create_statement( expr );
+        db_add_expression( expr );
+        $$ = stmt;
+      } else {
+        db_remove_statement( $3 );
+        $$ = NULL;
+      }
+    }
+  | '@' '(' '*' ')' statement_opt
+    {
+      expression* expr;
+      statement*  stmt;
+      if( (ignore_mode == 0) && ($5 != NULL) ) {
+        expr = db_create_sensitivity_list( $5 );
+        expr = db_create_expression( expr, NULL, EXP_OP_SLIST, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
+        stmt = db_create_statement( expr );
+        db_add_expression( expr );
+        $$ = stmt;
+      } else {
+        db_remove_statement( $5 );
+        $$ = NULL;
+      }
+    }
+  | '@' K_PSTAR ')' statement_opt
+    {
+      expression* expr;
+      statement*  stmt;
+      if( (ignore_mode == 0) && ($4 != NULL) ) {
+        expr = db_create_sensitivity_list( $4 );
+        expr = db_create_expression( expr, NULL, EXP_OP_SLIST, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        stmt = db_create_statement( expr );
+        db_add_expression( expr );
+        $$ = stmt;
+      } else {
+        db_remove_statement( $4 );
+        $$ = NULL;
+      }
+    }
   | lpvalue '=' expression ';'
     {
       expression* tmp;

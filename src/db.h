@@ -63,6 +63,9 @@ expression* db_create_expression( expression* right, expression* left, int op, b
 /*! \brief Adds specified expression to expression list.  Called by parser. */
 void db_add_expression( expression* root );
 
+/*! \brief Creates an expression tree sensitivity list for the given statement block */
+expression* db_create_sensitivity_list( statement* stmt );
+
 /*! \brief Checks specified statement for parallelization and if it must be, creates a parallel statement block */
 statement* db_parallelize_statement( statement* stmt );
 
@@ -119,6 +122,9 @@ void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.47  2005/12/12 23:25:37  phase1geo
+ Fixing memory faults.  This is a work in progress.
+
  Revision 1.46  2005/12/08 19:47:00  phase1geo
  Fixed repeat2 simulation issues.  Fixed statement_connect algorithm, removed the
  need for a separate set_stop function and reshuffled the positions of esuppl bits.
