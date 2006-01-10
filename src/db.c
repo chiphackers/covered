@@ -1046,7 +1046,47 @@ void db_add_expression( expression* root ) {
 */
 expression* db_create_sensitivity_list( statement* stmt ) {
 
-  return( NULL );
+  str_link*   sig_head = NULL;  /* Pointer to head of signal name list containing RHS used signals */
+  str_link*   sig_tail = NULL;  /* Pointer to tail of signal name list containing RHS used signals */
+  str_link*   strl;             /* Pointer to current signal name link */
+  expression* exps;             /* Pointer to created expression for type SIG */
+  expression* expl;             /* Pointer to created expression for type LAST */
+  expression* expa;             /* Pointer to created expression for type AEDGE */
+  expression* expe;             /* Pointer to created expression for type EOR */
+  expression* expc     = NULL;  /* Pointer to left child expression */
+
+  /* Get the list of all RHS signals in the given statement block */
+  statement_find_rhs_sigs( stmt, &sig_head, &sig_tail );
+
+  /* Create sensitivity expression tree for the list of RHS signals */
+  if( sig_head != NULL ) {
+
+    strl = sig_head;
+    while( strl != NULL ) {
+
+      /* Create AEDGE and EOR for subsequent signals */
+      exps = db_create_expression( NULL, NULL, EXP_OP_SIG,   FALSE, 0, 0, 0, strl->str );
+      expl = db_create_expression( NULL, NULL, EXP_OP_LAST,  FALSE, 0, 0, 0, NULL );
+      expa = db_create_expression( exps, expl, EXP_OP_AEDGE, FALSE, 0, 0, 0, NULL );
+
+      /* If we have a child expression already, create the EOR expression to connect them */
+      if( expc != NULL ) {
+        expe = db_create_expression( expa, expc, EXP_OP_EOR, FALSE, 0, 0, 0, NULL );
+        expc = expe;
+      } else {
+        expc = expa;
+      }
+
+      strl = strl->next;
+
+    }
+
+    /* Deallocate string list */
+    str_link_delete_list( sig_head );
+
+  }
+
+  return( expc );
 
 }
 
@@ -1634,6 +1674,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.159  2006/01/10 05:56:36  phase1geo
+ In the middle of adding support for event sensitivity lists to score command.
+ Regressions should pass but this code is not complete at this time.
+
  Revision 1.158  2006/01/05 05:52:06  phase1geo
  Removing wait bit in vector supplemental field and modifying algorithm to only
  assign in the post-sim location (pre-sim now is gone).  This fixes some issues

@@ -22,7 +22,7 @@ IVERILOG_INTER = vvp
 
 VCS       = vcs
 #VCS_FLAGS = +libext+.v+ -y ./lib +incdir+./include +define+RUNTEST +define+VCS +vpi -load ../../src/vpi/covered.so:covered_register -P ../../src/vpi/covered.tab covered_top.v
-VCS_FLAGS = +libext+.v+ -y ./lib +incdir+./include +define+RUNTEST
+VCS_FLAGS = +libext+.v+ -y ./lib +incdir+./include +define+RUNTEST +v2k
 VCS_EXEC  = ./simv +covered_outdb=out.cdd
 
 ifdef USE_VCS
@@ -53,10 +53,10 @@ $(DIAGLIST):
 		$(VERILOG_CMD); \
 		vg_exists=`which $(VG_EXEC) | wc -w`; \
 		if test "$$vg_exists" = "1"; then \
-			$(VG_COVERED) $(COVERED_GFLAG) score -S -f ../regress/$@.cfg; \
+			$(VG_COVERED) $(COVERED_GFLAG) score -f ../regress/$@.cfg; \
 			$(VG_COVERED) $(COVERED_GFLAG) report -d v -o $@.rptM $@.cdd; \
 		else \
-			$(COVERED) $(COVERED_GFLAG) score -S -f ../regress/$@.cfg; \
+			$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@.cfg; \
 			$(COVERED) $(COVERED_GFLAG) report -d v -o $@.rptM $@.cdd; \
 		fi; \
 		$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@.rptI $@.cdd; \
@@ -75,10 +75,10 @@ $(RACELIST):
 		$(VERILOG_CMD); \
 		vg_exists=`which $(VG_EXEC) | wc -w`; \
 		if test "$$vg_exists" = "1"; then \
-			$(VG_COVERED) $(COVERED_GFLAG) score -S -f ../regress/$@.cfg; \
+			$(VG_COVERED) $(COVERED_GFLAG) score -f ../regress/$@.cfg; \
 			$(VG_COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -o $@.rptM $@.cdd; \
 		else \
-			$(COVERED) $(COVERED_GFLAG) score -S -f ../regress/$@.cfg; \
+			$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@.cfg; \
 			$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -o $@.rptM $@.cdd; \
 		fi; \
 		$(COVERED) $(COVERED_GFLAG) report -d v -m ltcfr -i -o $@.rptI $@.cdd; \
@@ -97,10 +97,10 @@ $(MERGELIST):
 		$(VERILOG_CMD); \
 		vg_exists=`which $(VG_EXEC) | wc -w`; \
 		if test "$$vg_exists" = "1"; then \
-			$(VG_COVERED) $(COVERED_GFLAG) score -S -f ../regress/$@a.cfg; \
+			$(VG_COVERED) $(COVERED_GFLAG) score -f ../regress/$@a.cfg; \
 			$(VG_COVERED) $(COVERED_GFLAG) report -d v -o $@a.rptM $@a.cdd; \
 		else \
-			$(COVERED) $(COVERED_GFLAG) score -S -f ../regress/$@a.cfg; \
+			$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@a.cfg; \
 			$(COVERED) $(COVERED_GFLAG) report -d v -o $@a.rptM $@a.cdd; \
 		fi; \
 		$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@a.rptI $@a.cdd; \
@@ -110,10 +110,10 @@ $(MERGELIST):
 		$(VERILOG) $(VERILOG_FLAGS) $@b.v; \
 		$(VERILOG_CMD); \
 		if test "$$vg_exists" = "1"; then \
-			$(VG_COVERED) $(COVERED_GFLAG) score -S -f ../regress/$@b.cfg; \
+			$(VG_COVERED) $(COVERED_GFLAG) score -f ../regress/$@b.cfg; \
 			$(VG_COVERED) $(COVERED_GFLAG) report -d v -o $@b.rptM $@b.cdd; \
 		else \
-			$(COVERED) $(COVERED_GFLAG) score -S -f ../regress/$@b.cfg; \
+			$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@b.cfg; \
 			$(COVERED) $(COVERED_GFLAG) report -d v -o $@b.rptM $@b.cdd; \
 		fi; \
 		$(COVERED) $(COVERED_GFLAG) report -d v -i -o $@b.rptI $@b.cdd; \

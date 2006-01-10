@@ -93,6 +93,7 @@ int yydebug = 1;
 %}
 
 %union {
+  bool            logical;
   char*           text;
   int	          integer;
   vector*         number;
@@ -107,6 +108,7 @@ int yydebug = 1;
   case_statement* case_stmt;
   attr_param*     attr_parm;
   exp_bind*       expbind;
+  port_info*      portinfo;
 };
 
 %token <text>     IDENTIFIER
@@ -145,7 +147,7 @@ int yydebug = 1;
 
 %token KK_attribute
 
-%type <integer>   net_type port_type
+%type <integer>   net_type port_type net_type_opt
 %type <vecwidth>  range_opt range range_or_type_opt
 %type <statexp>   static_expr static_expr_primary
 %type <text>      identifier
@@ -165,6 +167,8 @@ int yydebug = 1;
 %type <case_stmt> case_items case_item
 %type <expr>      delay1 delay3 delay3_opt
 %type <attr_parm> attribute attribute_list
+%type <portinfo>  port_declaration list_of_port_declarations
+%type <logical>   signed_opt
 
 %token K_TAND
 %right '?' ':'
@@ -245,36 +249,107 @@ description
   ;
 
 module
-  : module_start module_item_list K_endmodule
+  : attribute_list_opt module_start IDENTIFIER 
     {
-      db_end_module( @3.first_line );
+      db_add_module( $3, @2.text, @2.first_line );
+      free_safe( $3 );
     }
-  | module_start K_endmodule
+    module_parameter_port_list_opt
+    module_port_list_opt ';'
+    module_item_list_opt K_endmodule
     {
-      db_end_module( @2.first_line );
+      db_end_module( @9.first_line );
     }
   | attribute_list_opt K_module IGNORE I_endmodule
   | attribute_list_opt K_macromodule IGNORE I_endmodule
   ;
 
 module_start
-  : attribute_list_opt
-    K_module IDENTIFIER { ignore_mode++; } list_of_ports_opt { ignore_mode--; } ';'
+  : K_module
+  | K_macromodule
+  ;
+
+module_parameter_port_list_opt
+  : '#' '(' module_parameter_port_list ')'
+  |
+  ;
+
+module_parameter_port_list
+  : K_parameter parameter_assign
+  | module_parameter_port_list ',' parameter_assign
+  | module_parameter_port_list ',' K_parameter parameter_assign
+  ;
+
+module_port_list_opt
+  : '(' list_of_ports ')'
+  | '(' list_of_port_declarations ')'
     {
-      db_add_module( $3, @2.text, @2.first_line );
-      free_safe( $3 );
+      if( $2 != NULL ) {
+        static_expr_dealloc( $2->range->left,  FALSE );
+        static_expr_dealloc( $2->range->right, FALSE );
+        free_safe( $2->range );
+        free_safe( $2 );
+      }
     }
-  | attribute_list_opt
-    K_macromodule IDENTIFIER { ignore_mode++; } list_of_ports_opt { ignore_mode--; } ';'
+  |
+  ;
+
+  /* Verilog-2001 syntax for declaring all ports within module port list */
+list_of_port_declarations
+  : port_declaration
     {
-      db_add_module( $3, @2.text, @2.first_line );
-      free_safe( $3 );
+      $$ = $1;
+    }
+  | list_of_port_declarations ',' port_declaration
+    {
+      if( $1 != NULL ) {
+        static_expr_dealloc( $1->range->left, FALSE );
+        static_expr_dealloc( $1->range->right, FALSE );
+        free_safe( $1->range );
+        free_safe( $1 );
+      }
+      $$ = $3;
+    }
+  | list_of_port_declarations ',' IDENTIFIER
+    {
+      if( $1 != NULL ) {
+        db_add_signal( $3, $1->range->left, $1->range->right, $1->input, FALSE );
+      }
+      $$ = $1;
     }
   ;
 
-list_of_ports_opt
-  : '(' list_of_ports ')'
-  |
+  /* Handles Verilog-2001 port of type:  input wire [m:l] <list>; */
+port_declaration
+  : attribute_list_opt port_type net_type_opt signed_opt range_opt IDENTIFIER
+    {
+      port_info* pi;
+      if( ignore_mode == 0 ) {
+        db_add_signal( $6, $5->left, $5->right, ($2 == 1), FALSE );
+        pi = (port_info*)malloc_safe( sizeof( port_info ), __FILE__, __LINE__ );
+        pi->input      = $2;
+        pi->is_signed  = $4;
+        pi->range      = $5;
+        curr_sig_width = NULL;
+        $$ = pi;
+      } else {
+        static_expr_dealloc( $5->left,  FALSE );
+        static_expr_dealloc( $5->right, FALSE );
+        free_safe( $5 );
+        $$ = NULL;
+      }
+    }
+  | attribute_list_opt port_type net_type_opt signed_opt range_opt error
+    {
+      if( $5 != NULL ) {
+        static_expr_dealloc( $5->left, FALSE );
+        static_expr_dealloc( $5->right, FALSE );
+        free_safe( $5 );
+        curr_sig_width = NULL;
+      }
+      VLerror( "Invalid variable list in port declaration" );
+      $$ = NULL;
+    }
   ;
 
 list_of_ports
@@ -289,16 +364,14 @@ port_opt
 
   /* Coverage tools should not find port information that interesting.  We will
      handle it for parsing purposes, but ignore its information. */
-
 port
   : port_reference
-  | '.' IDENTIFIER '(' { ignore_mode++; } port_reference { ignore_mode--; } ')'
+  | '.' IDENTIFIER '(' port_reference ')'
     {
       free_safe( $2 );
     }
-  | '.' UNUSED_IDENTIFIER '(' port_reference ')'
-  | '{' { ignore_mode++; } port_reference_list { ignore_mode--; } '}'
-  | '.' IDENTIFIER '(' '{' { ignore_mode--; } port_reference_list { ignore_mode++; } '}' ')'
+  | '{' port_reference_list '}'
+  | '.' IDENTIFIER '(' '{' port_reference_list '}' ')'
     {
       free_safe( $2 );
     }
@@ -306,9 +379,25 @@ port
   ;
 
 port_reference
-  : UNUSED_IDENTIFIER
-  | UNUSED_IDENTIFIER '[' static_expr ':' static_expr ']'
-  | UNUSED_IDENTIFIER '[' static_expr ']'
+  : IDENTIFIER
+    {
+      free_safe( $1 );
+    }
+  | UNUSED_IDENTIFIER
+  | IDENTIFIER '[' ignore_more static_expr ':' static_expr ignore_less ']'
+    {
+      free_safe( $1 );
+    }
+  | UNUSED_IDENTIFIER '[' ignore_more static_expr ':' static_expr ignore_less ']'
+  | IDENTIFIER '[' ignore_more static_expr ignore_less ']'
+    {
+      free_safe( $1 );
+    }
+  | UNUSED_IDENTIFIER '[' ignore_more static_expr ignore_less ']'
+  | IDENTIFIER '[' error ']'
+    {
+      free_safe( $1 );
+    }
   | UNUSED_IDENTIFIER '[' error ']'
   ;
 
@@ -1372,6 +1461,11 @@ udp_sequ_entry
   ;
 
   /* This is the start of a module body */
+module_item_list_opt
+  : module_item_list
+  |
+  ;
+
 module_item_list
   : module_item_list module_item
   | module_item
@@ -1447,45 +1541,6 @@ module_item
       static_expr_dealloc( $3->right, FALSE );
       free_safe( $3 );
       curr_sig_width = NULL;
-    }
-  | port_type range_opt list_of_variables ';'
-    {
-      /* Create signal -- implicitly this is a wire which may not be explicitly declared */
-      str_link* tmp  = $3;
-      str_link* curr = tmp;
-      while( curr != NULL ) {
-        db_add_signal( curr->str, $2->left, $2->right, ($1 == 1), FALSE );
-        curr = curr->next;
-      }
-      str_link_delete_list( $3 );
-      static_expr_dealloc( $2->left, FALSE );
-      static_expr_dealloc( $2->right, FALSE );
-      free_safe( $2 );
-      curr_sig_width = NULL;
-    }
-  /* Handles Verilog-2001 port of type:  input wire [m:l] <list>; */
-  | port_type net_type range_opt list_of_variables ';'
-    {
-      /* Create signal -- implicitly this is a wire which may not be explicitly declared */
-      str_link* tmp  = $4;
-      str_link* curr = tmp;
-      while( curr != NULL ) {
-        db_add_signal( curr->str, $3->left, $3->right, ($1 == 1), FALSE );
-        curr = curr->next;
-      }
-      str_link_delete_list( $4 );
-      static_expr_dealloc( $3->left, FALSE );
-      static_expr_dealloc( $3->right, FALSE );
-      free_safe( $3 );
-      curr_sig_width = NULL;
-    }
-  | port_type range_opt error ';'
-    {
-      if( $2 != NULL ) {
-        free_safe( $2 );
-        curr_sig_width = NULL;
-      }
-      VLerror( "Invalid variable list in port declaration" );
     }
   | attribute_list_opt gatetype gate_instance_list ';'
     {
@@ -2145,45 +2200,20 @@ statement
         $$ = NULL;
       }
     }
-  | '@' '*' statement_opt
-    {
-      expression* expr;
-      statement*  stmt;
-      if( (ignore_mode == 0) && ($3 != NULL) ) {
-        expr = db_create_sensitivity_list( $3 );
-        expr = db_create_expression( expr, NULL, EXP_OP_SLIST, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL ); 
-        stmt = db_create_statement( expr );
-        db_add_expression( expr );
-        $$ = stmt;
-      } else {
-        db_remove_statement( $3 );
-        $$ = NULL;
-      }
-    }
-  | '@' '(' '*' ')' statement_opt
-    {
-      expression* expr;
-      statement*  stmt;
-      if( (ignore_mode == 0) && ($5 != NULL) ) {
-        expr = db_create_sensitivity_list( $5 );
-        expr = db_create_expression( expr, NULL, EXP_OP_SLIST, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
-        stmt = db_create_statement( expr );
-        db_add_expression( expr );
-        $$ = stmt;
-      } else {
-        db_remove_statement( $5 );
-        $$ = NULL;
-      }
-    }
-  | '@' K_PSTAR ')' statement_opt
+  | '@' '*' inc_block_depth statement_opt dec_block_depth
     {
       expression* expr;
       statement*  stmt;
       if( (ignore_mode == 0) && ($4 != NULL) ) {
         expr = db_create_sensitivity_list( $4 );
-        expr = db_create_expression( expr, NULL, EXP_OP_SLIST, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        expr = db_create_expression( expr, NULL, EXP_OP_SLIST, lhs_mode, @1.first_line, @1.first_column, (@2.last_column - 1), NULL ); 
         stmt = db_create_statement( expr );
         db_add_expression( expr );
+        if( !db_statement_connect( stmt, $4 ) ) {
+          db_remove_statement( stmt );
+          db_remove_statement( $4 );
+          stmt = NULL;
+        }
         $$ = stmt;
       } else {
         db_remove_statement( $4 );
@@ -3379,6 +3409,16 @@ task_item
         curr_sig_width = NULL;
       }
     }
+  ;
+
+signed_opt
+  : K_signed { $$ = 1; }
+  |          { $$ = 0; }
+  ;
+
+net_type_opt
+  : net_type { $$ = $1; }
+  |          { $$ = 0;  }
   ;
 
 net_type

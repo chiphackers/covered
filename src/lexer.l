@@ -166,6 +166,9 @@ WSPACE [ \t\b\f]+
 "=>"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_EG;      }
 "*>"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_SG;      }
 
+  /* Properly handle all cases of (*) and convert it to a simple '*' */
+"("{WSPACE}*"*"{WSPACE}*")" { yylloc.first_column = yylloc.last_column;  yylloc.last_column += strlen( yytext );  return '*'; }
+
   /* Single character symbols */
 [}{;:\[\],()#=.@&!?<>%|^~+*/-] {
 	yylloc.first_column = yylloc.last_column;

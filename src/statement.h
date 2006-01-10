@@ -26,6 +26,9 @@ bool statement_connect( statement* curr_stmt, statement* next_stmt, int conn_id 
 /*! \brief Calculates the last line of the specified statement tree. */
 int statement_get_last_line( statement* stmt );
 
+/*! \brief Creates a list of all signals on the RHS of expressions in the given statement block */
+void statement_find_rhs_sigs( statement* stmt, str_link** head, str_link** tail );
+
 /*! \brief Gets the head statement for the block containing stmt */
 statement* statement_find_head_statement( statement* stmt, stmt_link* head );
 
@@ -38,6 +41,11 @@ void statement_dealloc( statement* stmt );
 
 /*
  $Log$
+ Revision 1.22  2005/12/08 19:47:00  phase1geo
+ Fixed repeat2 simulation issues.  Fixed statement_connect algorithm, removed the
+ need for a separate set_stop function and reshuffled the positions of esuppl bits.
+ Full regression passes.
+
  Revision 1.21  2005/12/07 20:23:38  phase1geo
  Fixing case where statement is unconnectable.  Full regression now passes.
 

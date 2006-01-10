@@ -273,8 +273,13 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
   if( expr != NULL ) {
 
-    codegen_gen_expr( expr->left,  expr->op, &left_code,  &left_code_depth,  funit );
-    codegen_gen_expr( expr->right, expr->op, &right_code, &right_code_depth, funit );
+    /* Only traverse left and right expression trees if we are not an SLIST */
+    if( expr->op != EXP_OP_SLIST ) {
+
+      codegen_gen_expr( expr->left,  expr->op, &left_code,  &left_code_depth,  funit );
+      codegen_gen_expr( expr->right, expr->op, &right_code, &right_code_depth, funit );
+
+    }
 
     if( (expr->op == EXP_OP_LAST) || (expr->op == EXP_OP_NB_CALL) ) {
 
@@ -413,6 +418,12 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
       *code       = (char**)malloc_safe( sizeof( char* ), __FILE__, __LINE__ );
       (*code)[0]  = strdup_safe( "default :", __FILE__, __LINE__ );
+      *code_depth = 1;
+
+    } else if( expr->op == EXP_OP_SLIST ) {
+
+      *code       = (char**)malloc_safe( sizeof( char* ), __FILE__, __LINE__ );
+      (*code)[0]  = strdup_safe( "@*", __FILE__, __LINE__ );
       *code_depth = 1;
 
     } else {
@@ -680,6 +691,10 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.54  2006/01/10 05:12:48  phase1geo
+ Added arithmetic left and right shift operators.  Added ashift1 diagnostic
+ to verify their correct operation.
+
  Revision 1.53  2005/12/17 05:47:36  phase1geo
  More memory fault fixes.  Regression runs cleanly and we have verified
  no memory faults up to define3.v.  Still have a ways to go.

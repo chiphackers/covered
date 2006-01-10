@@ -303,6 +303,25 @@ void bind_remove( int id, bool clear_assigned ) {
 }
 
 /*!
+ \param exp  Pointer to expression to search for
+
+ \return Returns the name of the signal to be bound with the given expression (if one exists);
+         otherwise, returns NULL if no match was found.
+*/
+char* bind_find_sig_name( expression* exp ) {
+
+  exp_bind* curr;  /* Pointer to current exp_bind link */
+ 
+  curr = eb_head;
+  while( (curr != NULL) && (curr->exp != exp) ) {
+    curr = curr->next;
+  }
+
+  return( (curr == NULL) ? NULL : curr->name );
+
+}
+
+/*!
  \param id  Expression ID whose statement pointer needs to be removed after binding
 
  Tells the associated binding element to remove the corresponding statement block after
@@ -734,6 +753,12 @@ void bind( bool cdd_reading ) {
 
 /* 
  $Log$
+ Revision 1.55  2006/01/05 05:52:06  phase1geo
+ Removing wait bit in vector supplemental field and modifying algorithm to only
+ assign in the post-sim location (pre-sim now is gone).  This fixes some issues
+ with simulation results and increases performance a bit.  Updated regressions
+ for these changes.  Full regression passes.
+
  Revision 1.54  2005/12/14 23:03:24  phase1geo
  More updates to remove memory faults.  Still a work in progress but full
  regression passes.

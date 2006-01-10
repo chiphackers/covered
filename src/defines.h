@@ -1154,6 +1154,11 @@ struct thread_s;
 */
 struct perf_stat_s;
 
+/*!
+ Container for port-specific information.
+*/
+struct port_info_s;
+
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION TYPEDEFS  */
 
@@ -1338,6 +1343,11 @@ typedef struct thread_s thread;
  Renaming perf_stat structure for convenience.
 */
 typedef struct perf_stat_s perf_stat;
+
+/*!
+ Renaming port_info_s structure for convenience.
+*/
+typedef struct port_info_s port_info;
 
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION DEFINITIONS  */
@@ -1659,9 +1669,18 @@ struct perf_stat_s {
   float   op_cnt[EXP_OP_NUM];        /*!< Specifies the number of expressions containing the associated operation */
 };
 
+struct port_info_s {
+  int           input;               /*!< Set to 1 if this port is an input or inout port */
+  bool          is_signed;           /*!< Set to TRUE if this port is signed */
+  vector_width* range;               /*!< Contains range information for this port */
+};
 
 /*
  $Log$
+ Revision 1.162  2006/01/10 05:56:36  phase1geo
+ In the middle of adding support for event sensitivity lists to score command.
+ Regressions should pass but this code is not complete at this time.
+
  Revision 1.161  2006/01/10 05:12:48  phase1geo
  Added arithmetic left and right shift operators.  Added ashift1 diagnostic
  to verify their correct operation.

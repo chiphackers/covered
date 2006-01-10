@@ -676,60 +676,51 @@ expression* expression_get_last_line_expr( expression* expr ) {
 
 /*!
  \param expr  Pointer to expression tree to parse.
- \param head  Pointer to head of signal list to populate.
- \param tail  Pointer to tail of signal list to populate.
+ \param head  Pointer to head of signal name list to populate.
+ \param tail  Pointer to tail of signal name list to populate.
 
- Recursively parses specified expression list in search of signals within the
- expression.  When a signal is found, it is added to the signal list specified
- by head and tail.  This function is called by the expression_get_wait_sig_list
- function.
+ Recursively parses specified expression list in search of RHS signals.
+ When a signal name is found, it is added to the signal name list specified
+ by head and tail.
 */
-void expression_get_wait_sig_list_helper( expression* expr, sig_link** head, sig_link** tail ) {
+void expression_find_rhs_sigs( expression* expr, str_link** head, str_link** tail ) {
 
-  if( expr != NULL ) {
+  char* sig_name;  /* Name of signal found */
 
-    if( (expr->op == EXP_OP_SIG)     ||
-        (expr->op == EXP_OP_TRIGGER) ||
-        (expr->op == EXP_OP_FUNC_CALL) ) {
+  /* Only continue if our expression is valid and it is an RHS */
+  if( (expr != NULL) && (ESUPPL_IS_LHS( expr->suppl ) == 0) ) {
+
+    if( (expr->op == EXP_OP_SIG)      ||
+        (expr->op == EXP_OP_TRIGGER)  ||
+        (expr->op == EXP_OP_SBIT_SEL) ||
+        (expr->op == EXP_OP_MBIT_SEL) ) {
  
-      assert( expr->sig != NULL );
-      sig_link_add( expr->sig, head, tail );
-
-    } else {
-
-      if( (expr->op == EXP_OP_SBIT_SEL) ||
-          (expr->op == EXP_OP_MBIT_SEL) ) {
-        assert( expr->sig != NULL );
-        sig_link_add( expr->sig, head, tail );
+      /*
+       If the expression doesn't current contain the signal (i.e., it hasn't been bound yet),
+       get the signal name from the binder.
+      */
+      if( expr->sig == NULL ) {
+        sig_name = bind_find_sig_name( expr );
+      } else {
+        sig_name = expr->sig->name;
       }
-
-      expression_get_wait_sig_list_helper( expr->right, head, tail );
-      expression_get_wait_sig_list_helper( expr->left,  head, tail );
+       
+      assert( sig_name != NULL );
+    
+      /* If the signal isn't already in the list, add it */
+      if( str_link_find( sig_name, *head ) == NULL ) {
+        str_link_add( strdup_safe( sig_name, __FILE__, __LINE__ ), head, tail );
+      }
 
     }
 
-  }
+    /* If this expression operation is neither a SIG or TRIGGER, keep searching tree */
+    if( (expr->op != EXP_OP_SIG) && (expr->op != EXP_OP_TRIGGER) ) {
 
-}
+      expression_find_rhs_sigs( expr->right, head, tail );
+      expression_find_rhs_sigs( expr->left,  head, tail );
 
-/*!
- \param expr  Pointer to expression tree to parse.
- \param head  Pointer to head of signal list to populate.
- \param tail  Pointer to tail of signal list to populate.
-
- If the specified expression tree has an event operation at the root of the
- expression tree (EOR, PEDGE, NEDGE, AEDGE), send the expression, head and tail
- to the expression_get_wait_sig_list_helper function.
-*/
-void expression_get_wait_sig_list( expression* expr, sig_link** head, sig_link** tail ) {
-
-  if( (expr != NULL) &&
-      ((expr->op == EXP_OP_EOR)   ||
-       (expr->op == EXP_OP_PEDGE) ||
-       (expr->op == EXP_OP_NEDGE) ||
-       (expr->op == EXP_OP_AEDGE)) ) {
-
-    expression_get_wait_sig_list_helper( expr, head, tail );
+    }
 
   }
 
@@ -2741,6 +2732,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.156  2006/01/10 05:56:36  phase1geo
+ In the middle of adding support for event sensitivity lists to score command.
+ Regressions should pass but this code is not complete at this time.
+
  Revision 1.155  2006/01/10 05:12:48  phase1geo
  Added arithmetic left and right shift operators.  Added ashift1 diagnostic
  to verify their correct operation.

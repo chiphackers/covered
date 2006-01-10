@@ -606,6 +606,11 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
 
       }
 
+    } else if( exp->op == EXP_OP_SLIST ) {
+
+      *size = 2;
+      strcpy( code_fmt, "@*" );
+
     } else {
 
       if( (exp->op == EXP_OP_SIG) || (exp->op == EXP_OP_PARAM) ) {
@@ -1527,6 +1532,7 @@ void combination_get_missed_expr( char*** info, int* info_size, expression* exp,
           case EXP_OP_PEDGE      :  combination_event( info, info_size, exp, "posedge" );  break;
           case EXP_OP_NEDGE      :  combination_event( info, info_size, exp, "negedge" );  break;
           case EXP_OP_AEDGE      :  combination_event( info, info_size, exp, "" );         break;
+          case EXP_OP_SLIST      :  combination_event( info, info_size, exp, "@*" );       break;
           case EXP_OP_TRIGGER    :  combination_event( info, info_size, exp, "->" );       break;
           default                :  break;
         }
@@ -2022,6 +2028,10 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.120  2006/01/10 05:12:48  phase1geo
+ Added arithmetic left and right shift operators.  Added ashift1 diagnostic
+ to verify their correct operation.
+
  Revision 1.119  2006/01/06 18:54:03  phase1geo
  Breaking up expression_operate function into individual functions for each
  expression operation.  Also storing additional information in a globally accessible,

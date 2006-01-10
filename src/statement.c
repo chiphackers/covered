@@ -375,36 +375,21 @@ bool statement_connect( statement* curr_stmt, statement* next_stmt, int conn_id 
     /* If the TRUE path is NULL, connect it to the new statement */
     if( curr_stmt->next_true == NULL ) {
       curr_stmt->next_true  = next_stmt;
-#ifdef SKIP
-      display( "1 Connected TRUE", curr_stmt, next_stmt, conn_id );
-#endif
       /* If the current statement is a wait statement, don't connect next_false path */
       if( !EXPR_IS_CONTEXT_SWITCH( curr_stmt->exp ) ) {
         curr_stmt->next_false = next_stmt;
-#ifdef SKIP
-        display( "1 Connected FALSE", curr_stmt, next_stmt, conn_id );
-#endif
       }
       if( curr_stmt->next_true->conn_id == conn_id ) {
         curr_stmt->exp->suppl.part.stmt_stop_true  = 1;
         curr_stmt->exp->suppl.part.stmt_stop_false = 1;
-#ifdef SKIP
-        display( "1.1 Set STOP_TRUE and STOP_FALSE", curr_stmt, next_stmt, conn_id );
-#endif
       }
       retval = TRUE;
     /* If the TRUE path leads to a loop/merge, set the stop bit and stop traversing */
     } else if( curr_stmt->next_true->conn_id == conn_id ) {
       curr_stmt->exp->suppl.part.stmt_stop_true  = 1;
       curr_stmt->exp->suppl.part.stmt_stop_false = 1;
-#ifdef SKIP
-      display( "1 Set STOP_TRUE and STOP_FALSE", curr_stmt, next_stmt, conn_id );
-#endif
     /* Otherwise, continue to traverse the TRUE path */
     } else if( curr_stmt->next_true != next_stmt ) {
-#ifdef SKIP
-      display( "1 Traversing TRUE path", curr_stmt, next_stmt, conn_id );
-#endif
       retval |= statement_connect( curr_stmt->next_true, next_stmt, conn_id );
     }
 
@@ -413,27 +398,15 @@ bool statement_connect( statement* curr_stmt, statement* next_stmt, int conn_id 
     /* Traverse TRUE path */
     if( curr_stmt->next_true == NULL ) {
       curr_stmt->next_true = next_stmt;
-#ifdef SKIP
-      display( "2 Connected TRUE", curr_stmt, next_stmt, conn_id );
-#endif
       if( curr_stmt->next_true->conn_id == conn_id ) {
         curr_stmt->exp->suppl.part.stmt_stop_true = 1;
-#ifdef SKIP
-        display( "2.1 Set STOP_TRUE", curr_stmt, next_stmt, conn_id );
-#endif
       }
       retval = TRUE;
     /* If the TRUE path leads to a loop/merge, set the stop bit and stop traversing */
     } else if( curr_stmt->next_true->conn_id == conn_id ) {
       curr_stmt->exp->suppl.part.stmt_stop_true = 1;
-#ifdef SKIP
-      display( "2 Set STOP_TRUE", curr_stmt, next_stmt, conn_id );
-#endif
     /* Otherwise, continue to traverse the TRUE path */
     } else if( curr_stmt->next_true != next_stmt ) {
-#ifdef SKIP
-      display( "2 Traversing TRUE path", curr_stmt, next_stmt, conn_id );
-#endif
       retval |= statement_connect( curr_stmt->next_true, next_stmt, conn_id );
     }
 
@@ -441,28 +414,16 @@ bool statement_connect( statement* curr_stmt, statement* next_stmt, int conn_id 
     if( curr_stmt->next_false == NULL ) {
       if( !EXPR_IS_CONTEXT_SWITCH( curr_stmt->exp ) ) {
         curr_stmt->next_false = next_stmt;
-#ifdef SKIP
-        display( "2 Connected FALSE", curr_stmt, next_stmt, conn_id );
-#endif
         if( curr_stmt->next_false->conn_id == conn_id ) {
           curr_stmt->exp->suppl.part.stmt_stop_false = 1;
-#ifdef SKIP
-          display( "2.2 Set STOP_FALSE", curr_stmt, next_stmt, conn_id );
-#endif
         }
         retval = TRUE;
       }
     /* If the FALSE path leads to a loop/merge, set the stop bit and stop traversing */
     } else if( curr_stmt->next_false->conn_id == conn_id ) {
       curr_stmt->exp->suppl.part.stmt_stop_false = 1;
-#ifdef SKIP
-      display( "2 Set STOP_FALSE", curr_stmt, next_stmt, conn_id );
-#endif
     /* Otherwise, continue to traverse the FALSE path */
     } else if( (curr_stmt->next_false != next_stmt) ) {
-#ifdef SKIP
-      display( "2 Traversing FALSE path", curr_stmt, next_stmt, conn_id );
-#endif
       retval |= statement_connect( curr_stmt->next_false, next_stmt, conn_id );
     }
 
@@ -521,6 +482,45 @@ int statement_get_last_line_helper( statement* stmt, statement* base ) {
 int statement_get_last_line( statement* stmt ) {
 
   return( statement_get_last_line_helper( stmt, stmt ) );
+
+}
+
+/*!
+ \param stmt  Pointer to current statement block to traverse
+ \param head  Pointer to head of signal name list that will contain a list of all RHS signals
+ \param tail  Pointer to tail of signal name list that will contain a list of all RHS signals
+
+ Searches the specified statement block and returns a list of all signals on the right-hand-side
+ of expressions.
+*/
+void statement_find_rhs_sigs( statement* stmt, str_link** head, str_link** tail ) {
+
+  if( stmt != NULL ) {
+
+    /* Find all RHS signals in this statement's expression tree */
+    expression_find_rhs_sigs( stmt->exp, head, tail );
+
+    /* If both true and false paths lead to same statement, just traverse the true path */
+    if( stmt->next_true == stmt->next_false ) {
+
+      if( ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0 ) {
+        statement_find_rhs_sigs( stmt->next_true, head, tail );
+      }
+
+    /* Otherwise, traverse both true and false paths */
+    } else {
+
+      if( ESUPPL_IS_STMT_STOP_TRUE( stmt->exp->suppl ) == 0 ) {
+        statement_find_rhs_sigs( stmt->next_true, head, tail );
+      }
+
+      if( ESUPPL_IS_STMT_STOP_FALSE( stmt->exp->suppl ) == 0 ) {
+        statement_find_rhs_sigs( stmt->next_false, head, tail );
+      }
+
+    }
+
+  }
 
 }
 
@@ -628,6 +628,10 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.69  2006/01/06 23:39:10  phase1geo
+ Started working on removing the need to simulate more than is necessary.  Things
+ are pretty broken at this point, but all of the code should be in -- debugging.
+
  Revision 1.68  2006/01/06 18:54:03  phase1geo
  Breaking up expression_operate function into individual functions for each
  expression operation.  Also storing additional information in a globally accessible,
