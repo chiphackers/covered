@@ -144,7 +144,9 @@ WSPACE [ \t\b\f]+
 "(*"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_PSTAR;   }
 "*)"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_STARP;   }
 "<<"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_LS;      }
+"<<<" { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 3;  return K_LSS;     }
 ">>"  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_RS;      }
+">>>" { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 3;  return K_RSS;     }
 "<="  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_LE;      }
 ">="  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_GE;      }
 "=="  { yylloc.first_column = yylloc.last_column;  yylloc.last_column += 2;  return K_EQ;      }

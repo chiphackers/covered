@@ -482,8 +482,16 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
           codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left->line, " << ",
                                right_code, right_code_depth, expr->right->line, after );
           break;
+        case EXP_OP_ALSHIFT  :
+          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left->line, " <<< ",
+                               right_code, right_code_depth, expr->right->line, after );
+          break;
         case EXP_OP_RSHIFT   :
           codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left->line, " >> ",
+                               right_code, right_code_depth, expr->right->line, after );
+          break;
+        case EXP_OP_ARSHIFT   :
+          codegen_create_expr( code, code_depth, expr->line, before, left_code, left_code_depth, expr->left->line, " >>> ",
                                right_code, right_code_depth, expr->right->line, after );
           break;
         case EXP_OP_EQ       :
@@ -672,6 +680,10 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.53  2005/12/17 05:47:36  phase1geo
+ More memory fault fixes.  Regression runs cleanly and we have verified
+ no memory faults up to define3.v.  Still have a ways to go.
+
  Revision 1.52  2005/12/16 23:26:41  phase1geo
  Last set of memory leak fixes to get all assign diagnostics to run cleanly.
 

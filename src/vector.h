@@ -112,6 +112,9 @@ bool vector_op_lshift( vector* tgt, vector* left, vector* right );
 /*! \brief Performs right shift operation on left expression by right expression bits. */
 bool vector_op_rshift( vector* tgt, vector* left, vector* right );
 
+/*! \brief Performs arithmetic right shift operation on left expression by right expression bits. */
+bool vector_op_arshift( vector* tgt, vector* left, vector* right );
+
 /*! \brief Performs addition operation on left and right expression values. */
 bool vector_op_add( vector* tgt, vector* left, vector* right );
 
@@ -136,6 +139,9 @@ void vector_dealloc( vector* vec );
 
 /*
  $Log$
+ Revision 1.31  2005/11/21 22:21:58  phase1geo
+ More regression updates.  Also made some updates to debugging output.
+
  Revision 1.30  2005/11/18 05:17:01  phase1geo
  Updating regressions with latest round of changes.  Also added bit-fill capability
  to expression_assign function -- still more changes to come.  We need to fix the

@@ -121,6 +121,7 @@ static bool expression_op_func__lt( expression*, thread* );
 static bool expression_op_func__gt( expression*, thread* );
 static bool expression_op_func__lshift( expression*, thread* );
 static bool expression_op_func__rshift( expression*, thread* );
+static bool expression_op_func__arshift( expression*, thread* );
 static bool expression_op_func__eq( expression*, thread* );
 static bool expression_op_func__ceq( expression*, thread* );
 static bool expression_op_func__le( expression*, thread* );
@@ -234,7 +235,9 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",     expression_op_func__nu
                                            {"JOIN",       expression_op_func__join,      {0, 0, 0, 1, 0, 0} },
                                            {"DISABLE",    expression_op_func__disable,   {0, 0, 0, 1, 0, 0} },
                                            {"REPEAT",     expression_op_func__repeat,    {0, 0, 0, 1, 0, 0} },
-                                           {"WHILE",      expression_op_func__null,      {0, 0, 0, 1, 0, 0} } };
+                                           {"WHILE",      expression_op_func__null,      {0, 0, 0, 1, 0, 0} },
+                                           {"ALSHIFT",    expression_op_func__lshift,    {0, 0, 0, 1, 1, 0} },
+                                           {"ARSHIFT",    expression_op_func__arshift,   {0, 0, 0, 1, 1, 0} } };
 
 /*!
  \param exp    Pointer to expression to add value to.
@@ -1403,6 +1406,20 @@ bool expression_op_func__lshift( expression* expr, thread* thr ) {
 bool expression_op_func__rshift( expression* expr, thread* thr ) {
 
   return( vector_op_rshift( expr->value, expr->left->value, expr->right->value ) );
+
+}
+
+/*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs an arithmetic right shift operation.
+*/
+bool expression_op_func__arshift( expression* expr, thread* thr ) {
+
+  return( vector_op_arshift( expr->value, expr->left->value, expr->right->value ) );
 
 }
 
@@ -2683,6 +2700,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.154  2006/01/09 04:15:25  phase1geo
+ Attempting to fix one last problem with latest changes.  Regression runs are
+ currently running.  Checkpointing.
+
  Revision 1.153  2006/01/08 05:51:03  phase1geo
  Added optimizations to EOR and AEDGE expressions.  In the process of running
  regressions...

@@ -120,7 +120,7 @@ int yydebug = 1;
 %token UNUSED_NUMBER
 %token UNUSED_REALTIME
 %token UNUSED_STRING UNUSED_SYSTEM_IDENTIFIER
-%token K_LE K_GE K_EG K_EQ K_NE K_CEQ K_CNE K_LS K_RS K_SG K_EG
+%token K_LE K_GE K_EG K_EQ K_NE K_CEQ K_CNE K_LS K_LSS K_RS K_RSS K_SG K_EG
 %token K_PO_POS K_PO_NEG K_STARP K_PSTAR
 %token K_LOR K_LAND K_NAND K_NOR K_NXOR K_TRIGGER
 %token K_always K_and K_assign K_begin K_buf K_bufif0 K_bufif1 K_case
@@ -175,7 +175,7 @@ int yydebug = 1;
 %left '&' K_NAND
 %left K_EQ K_NE K_CEQ K_CNE
 %left K_GE K_LE '<' '>'
-%left K_LS K_RS
+%left K_LS K_RS K_LSS K_RSS
 %left '+' '-'
 %left '*' '/' '%'
 %left UNARY_PREC
@@ -833,11 +833,35 @@ expression
         $$ = NULL;
       }
     }
+  | expression K_LSS expression
+    {
+      expression* tmp;
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
+        tmp = db_create_expression( $3, $1, EXP_OP_ALSHIFT, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = tmp;
+      } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
+        $$ = NULL;
+      }
+    }
   | expression K_RS expression
     {
       expression* tmp;
       if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
         tmp = db_create_expression( $3, $1, EXP_OP_RSHIFT, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+        $$ = tmp;
+      } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $3, FALSE );
+        $$ = NULL;
+      }
+    }
+  | expression K_RSS expression
+    {
+      expression* tmp;
+      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
+        tmp = db_create_expression( $3, $1, EXP_OP_ARSHIFT, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
         $$ = tmp;
       } else {
         expression_dealloc( $1, FALSE );

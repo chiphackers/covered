@@ -18,11 +18,29 @@ Score command
        without user intervention.
 
    4.  Add more Verilog-2001 constructs to parser.
+	- `ifndef and `elsif
+	- `file and `line (low priority)
+	- task/function argument list
+	- constant functions
+	- automatic storage for functions/tasks (instead of static) - difficult!
+	! explicitly named parameters
+	- make sure that localparams cannot be modified by a defparam or SDF
+	- generate command (extremely low priority)
+	! wildcard sensitivity list (@*)
+	- Add signed capability (unsigned zero-fills unused bits while sign fills with MSB)
+	- register assignment
+	- variable multi-bit selects
+	- exponential power operator (**)
+	- >>> (fills sign bit with its value) and <<< (same as <<)
+	- MAKE SURE THAT WE DOCUMENT IN THE USER'S GUIDE WHAT VERILOG-2001 CONSTRUCTS ARE
+	  SUPPORTED AND NOT SUPPORTED!
 
    5.  Allow Covered to run simulation phases in parallel to increase performance.
 
    6.  Add feature to cause Covered to omit the simulation phase for toggle and
        FSM coverage results.
+
+   7.  Add support for reading LXT-style dumpfiles
 
 
 Merge command

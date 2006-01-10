@@ -646,7 +646,9 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
             case EXP_OP_LT         :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s   %s"        );  break;
             case EXP_OP_GT         :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s   %s"        );  break;
             case EXP_OP_LSHIFT     :  *size = l_size + r_size + 4;  strcpy( code_fmt, "%s    %s"       );  break;
+            case EXP_OP_ALSHIFT    :  *size = l_size + r_size + 5;  strcpy( code_fmt, "%s     %s"      );  break;
             case EXP_OP_RSHIFT     :  *size = l_size + r_size + 4;  strcpy( code_fmt, "%s    %s"       );  break;
+            case EXP_OP_ARSHIFT    :  *size = l_size + r_size + 5;  strcpy( code_fmt, "%s     %s"      );  break;
             case EXP_OP_EQ         :  *size = l_size + r_size + 4;  strcpy( code_fmt, "%s    %s"       );  break;
             case EXP_OP_CEQ        :  *size = l_size + r_size + 5;  strcpy( code_fmt, "%s     %s"      );  break;
             case EXP_OP_LE         :  *size = l_size + r_size + 4;  strcpy( code_fmt, "%s    %s"       );  break;
@@ -675,7 +677,9 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
             case EXP_OP_LT         :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "        );  break;
             case EXP_OP_GT         :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "        );  break;
             case EXP_OP_LSHIFT     :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "       );  break;
+            case EXP_OP_ALSHIFT    :  *size = l_size + r_size + 7;  strcpy( code_fmt, " %s     %s "      );  break;
             case EXP_OP_RSHIFT     :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "       );  break;
+            case EXP_OP_ARSHIFT    :  *size = l_size + r_size + 7;  strcpy( code_fmt, " %s     %s "      );  break;
             case EXP_OP_EQ         :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "       );  break;
             case EXP_OP_CEQ        :  *size = l_size + r_size + 7;  strcpy( code_fmt, " %s     %s "      );  break;
             case EXP_OP_LE         :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "       );  break;
@@ -1491,7 +1495,9 @@ void combination_get_missed_expr( char*** info, int* info_size, expression* exp,
           case EXP_OP_LT         :  combination_unary( info, info_size, exp, "<" );        break;
           case EXP_OP_GT         :  combination_unary( info, info_size, exp, ">" );        break;
           case EXP_OP_LSHIFT     :  combination_unary( info, info_size, exp, "<<" );       break;
+          case EXP_OP_ALSHIFT    :  combination_unary( info, info_size, exp, "<<<" );      break;
           case EXP_OP_RSHIFT     :  combination_unary( info, info_size, exp, ">>" );       break;
+          case EXP_OP_ARSHIFT    :  combination_unary( info, info_size, exp, ">>>" );      break;
           case EXP_OP_EQ         :  combination_unary( info, info_size, exp, "==" );       break;
           case EXP_OP_CEQ        :  combination_unary( info, info_size, exp, "===" );      break;
           case EXP_OP_LE         :  combination_unary( info, info_size, exp, "<=" );       break;
@@ -2016,6 +2022,12 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.119  2006/01/06 18:54:03  phase1geo
+ Breaking up expression_operate function into individual functions for each
+ expression operation.  Also storing additional information in a globally accessible,
+ constant structure array to increase performance.  Updating full regression for these
+ changes.  Full regression passes.
+
  Revision 1.118  2005/12/13 23:15:14  phase1geo
  More fixes for memory leaks.  Regression fully passes at this point.
 

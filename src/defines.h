@@ -580,6 +580,8 @@ typedef enum exp_op_type_e {
   EXP_OP_DISABLE,         /*!< 64:0x40.  Specifies a disable command */
   EXP_OP_REPEAT,          /*!< 65:0x41.  Specifies a repeat loop test expression */
   EXP_OP_WHILE,           /*!< 66:0x42.  Specifies a while loop test expression */
+  EXP_OP_ALSHIFT,         /*!< 67:0x43.  Specifies arithmetic left shift (<<<) */
+  EXP_OP_ARSHIFT,         /*!< 68:0x44.  Specifies arithmetic right shift (>>>) */
   EXP_OP_NUM              /*!< The total number of defines for expression values */
 } exp_op_type;
 
@@ -1659,6 +1661,10 @@ struct perf_stat_s {
 
 /*
  $Log$
+ Revision 1.160  2006/01/09 04:15:25  phase1geo
+ Attempting to fix one last problem with latest changes.  Regression runs are
+ currently running.  Checkpointing.
+
  Revision 1.159  2006/01/06 23:39:10  phase1geo
  Started working on removing the need to simulate more than is necessary.  Things
  are pretty broken at this point, but all of the code should be in -- debugging.

@@ -64,7 +64,7 @@ extern char user_msg[USER_MSG_LENGTH];
 */
 void vector_init( vector* vec, vec_data* value, int width ) {
 
-  int i;        /* Loop iterator */
+  int i;  /* Loop iterator */
 
   vec->width     = width;
   vec->suppl.all = 0;
@@ -92,7 +92,7 @@ void vector_init( vector* vec, vec_data* value, int width ) {
 */
 vector* vector_create( int width, bool data ) {
 
-  vector*   new_vec;       /* Pointer to newly created vector               */
+  vector*   new_vec;       /* Pointer to newly created vector */
   vec_data* value = NULL;  /* Temporarily stores newly created vector value */
 
   assert( width > 0 );
@@ -142,7 +142,7 @@ void vector_copy( vector* from_vec, vector** to_vec ) {
 unsigned int vector_nibbles_to_uint( nibble dat0, nibble dat1, nibble dat2, nibble dat3 ) {
 
   unsigned int d[4];  /* Array of unsigned int format of dat0,1,2,3 */
-  int          i;     /* Loop iterator                              */
+  int          i;     /* Loop iterator */
 
   d[0] = ((unsigned int)dat0) & 0xff;
   d[1] = ((unsigned int)dat1) & 0xff;
@@ -188,7 +188,7 @@ void vector_uint_to_nibbles( unsigned int data, nibble* dat ) {
 */
 void vector_db_write( vector* vec, FILE* file, bool write_data ) {
 
-  int    i;      /* Loop iterator                       */
+  int    i;      /* Loop iterator */
   nibble mask;   /* Mask value for vector value nibbles */
 
   assert( vec != NULL );
@@ -258,12 +258,12 @@ void vector_db_write( vector* vec, FILE* file, bool write_data ) {
 */
 bool vector_db_read( vector** vec, char** line ) {
 
-  bool         retval = TRUE;  /* Return value for this function    */
-  int          width;          /* Vector bit width                  */
-  int          suppl;          /* Temporary supplemental value      */
-  int          i;              /* Loop iterator                     */
-  int          chars_read;     /* Number of characters read         */
-  unsigned int value;          /* Temporary value                   */
+  bool         retval = TRUE;  /* Return value for this function */
+  int          width;          /* Vector bit width */
+  int          suppl;          /* Temporary supplemental value */
+  int          i;              /* Loop iterator */
+  int          chars_read;     /* Number of characters read */
+  unsigned int value;          /* Temporary value */
   nibble       nibs[4];        /* Temporary nibble value containers */
 
   /* Read in vector information */
@@ -333,12 +333,12 @@ bool vector_db_read( vector** vec, char** line ) {
 bool vector_db_merge( vector* base, char** line, bool same ) {
 
   bool   retval = TRUE;   /* Return value of this function */
-  int    width;           /* Width of read vector          */
-  int    suppl;           /* Supplemental value of vector  */
-  int    chars_read;      /* Number of characters read     */
-  int    i;               /* Loop iterator                 */
-  int    value;           /* Integer form of value         */
-  nibble nibs[4];         /* Temporary nibble containers   */     
+  int    width;           /* Width of read vector */
+  int    suppl;           /* Supplemental value of vector */
+  int    chars_read;      /* Number of characters read */
+  int    i;               /* Loop iterator */
+  int    value;           /* Integer form of value */
+  nibble nibs[4];         /* Temporary nibble containers */
 
   assert( base != NULL );
 
@@ -415,12 +415,12 @@ bool vector_db_merge( vector* base, char** line, bool same ) {
 bool vector_db_replace( vector* base, char** line ) {
 
   bool   retval = TRUE;   /* Return value of this function */
-  int    width;           /* Width of read vector          */
-  int    suppl;           /* Supplemental value of vector  */
-  int    chars_read;      /* Number of characters read     */
-  int    i;               /* Loop iterator                 */
-  int    value;           /* Integer form of value         */
-  nibble nibs[4];         /* Temporary nibble containers   */
+  int    width;           /* Width of read vector */
+  int    suppl;           /* Supplemental value of vector */
+  int    chars_read;      /* Number of characters read */
+  int    i;               /* Loop iterator */
+  int    value;           /* Integer form of value */
+  nibble nibs[4];         /* Temporary nibble containers */
 
   assert( base != NULL );
 
@@ -525,7 +525,7 @@ char* vector_get_toggle10( vec_data* nib, int width ) {
 void vector_display_toggle01( vec_data* nib, int width, FILE* ofile ) {
 
   int value = 0;  /* Current 4-bit hexidecimal value of toggle */
-  int i;          /* Loop iterator                             */
+  int i;          /* Loop iterator */
 
   fprintf( ofile, "%d'h", width );
 
@@ -553,7 +553,7 @@ void vector_display_toggle01( vec_data* nib, int width, FILE* ofile ) {
 void vector_display_toggle10( vec_data* nib, int width, FILE* ofile ) {
 
   int value = 0;  /* Current 4-bit hexidecimal value of toggle */
-  int i;          /* Loop iterator                             */
+  int i;          /* Loop iterator */
 
   fprintf( ofile, "%d'h", width );
 
@@ -721,7 +721,7 @@ void vector_logic_count( vector* vec, int* false_cnt, int* true_cnt ) {
 bool vector_set_assigned( vector* vec, int msb, int lsb ) {
 
   bool prev_assigned = FALSE;  /* Specifies if any set bit was previously set */
-  int  i;                      /* Loop iterator                               */
+  int  i;                      /* Loop iterator */
 
   assert( vec != NULL );
   assert( (msb - lsb) < vec->width );
@@ -754,12 +754,12 @@ bool vector_set_assigned( vector* vec, int msb, int lsb ) {
 */
 bool vector_set_value( vector* vec, vec_data* value, int width, int from_idx, int to_idx ) {
 
-  bool      retval = FALSE;       /* Return value for this function            */
+  bool      retval = FALSE;       /* Return value for this function */
   nibble    from_val;             /* Current bit value of value being assigned */
-  nibble    to_val;               /* Current bit value of previous value       */
-  int       i;                    /* Loop iterator                             */
-  vec_data  set_val;              /* Value to set current vec value to         */
-  vec_data* vval   = vec->value;  /* Pointer to vector value array             */
+  nibble    to_val;               /* Current bit value of previous value */
+  int       i;                    /* Loop iterator */
+  vec_data  set_val;              /* Value to set current vec value to */
+  vec_data* vval   = vec->value;  /* Pointer to vector value array */
 
   assert( vec != NULL );
 
@@ -828,7 +828,7 @@ bool vector_set_value( vector* vec, vec_data* value, int width, int from_idx, in
 bool vector_set_value_only( vector* vec, vec_data* value, int width, int from_idx, int to_idx ) {
 
   bool retval = FALSE;  /* Return value for this function */
-  int  i;               /* Loop iterator                  */
+  int  i;               /* Loop iterator */
 
   assert( vec != NULL );
   assert( to_idx < vec->width );
@@ -895,8 +895,8 @@ bool vector_bit_fill( vector* vec, int msb, int lsb ) {
 bool vector_is_unknown( vector* vec ) {
 
   bool unknown = FALSE;  /* Specifies if vector contains unknown values */
-  int  i;                /* Loop iterator                               */
-  int  val;              /* Bit value of current bit                    */
+  int  i;                /* Loop iterator */
+  int  val;              /* Bit value of current bit */
 
   for( i=0; i<vec->width; i++ ) {
     val = vec->value[i].part.value;
@@ -921,8 +921,8 @@ bool vector_is_unknown( vector* vec ) {
 int vector_to_int( vector* vec ) {
 
   int retval = 0;   /* Integer value returned to calling function */
-  int i;            /* Loop iterator                              */
-  int width;        /* Number of bits to use in creating integer  */
+  int i;            /* Loop iterator */
+  int width;        /* Number of bits to use in creating integer */
 
   width = (vec->width > (SIZEOF_INT * 8)) ? 32 : vec->width;
 
@@ -975,10 +975,10 @@ void vector_from_int( vector* vec, int value ) {
 */
 void vector_set_static( vector* vec, char* str, int bits_per_char ) {
 
-  char* ptr;      /* Pointer to current character evaluating         */
-  int   pos;      /* Current bit position in vector                  */
+  char* ptr;      /* Pointer to current character evaluating */
+  int   pos;      /* Current bit position in vector */
   int   val;      /* Temporary holder for value of current character */
-  int   i;        /* Loop iterator                                   */
+  int   i;        /* Loop iterator */
 
   pos = 0;
 
@@ -1031,15 +1031,15 @@ void vector_set_static( vector* vec, char* str, int bits_per_char ) {
 */
 char* vector_to_string( vector* vec ) {
 
-  char*  str = NULL;     /* Pointer to allocated string                          */
-  char*  tmp;            /* Pointer to temporary string value                    */
-  int    i;              /* Loop iterator                                        */
-  int    str_size;       /* Number of characters needed to hold vector string    */
-  int    vec_size;       /* Number of characters needed to hold vector value     */
-  int    group;          /* Number of vector bits to group together for type     */
-  char   type_char;      /* Character type specifier                             */
-  int    pos;            /* Current bit position in string                       */
-  nibble value;          /* Current value of string character                    */
+  char*  str = NULL;     /* Pointer to allocated string */
+  char*  tmp;            /* Pointer to temporary string value */
+  int    i;              /* Loop iterator */
+  int    str_size;       /* Number of characters needed to hold vector string */
+  int    vec_size;       /* Number of characters needed to hold vector value */
+  int    group;          /* Number of vector bits to group together for type */
+  char   type_char;      /* Character type specifier */
+  int    pos;            /* Current bit position in string */
+  nibble value;          /* Current value of string character */
   char   width_str[20];  /* Holds value of width string to calculate string size */
 
   if( vec->suppl.part.base == QSTRING ) {
@@ -1161,15 +1161,15 @@ char* vector_to_string( vector* vec ) {
 */
 vector* vector_from_string( char** str, bool quoted ) {
 
-  vector* vec;                   /* Temporary holder for newly created vector                                */
+  vector* vec;                   /* Temporary holder for newly created vector */
   int     bits_per_char;         /* Number of bits represented by a single character in the value string str */
-  int     size;                  /* Specifies bit width of vector to create                                  */
-  char    value[MAX_BIT_WIDTH];  /* String to store string value in                                          */
-  char    stype[2];              /* Temporary holder for type of string being parsed                         */
-  nibble  type;                  /* Type of string being parsed                                              */
-  int     chars_read;            /* Number of characters read by a sscanf() function call                    */
-  int     i, j;                  /* Loop iterators                                                           */
-  int     pos;                   /* Bit position                                                             */
+  int     size;                  /* Specifies bit width of vector to create */
+  char    value[MAX_BIT_WIDTH];  /* String to store string value in */
+  char    stype[2];              /* Temporary holder for type of string being parsed */
+  nibble  type;                  /* Type of string being parsed */
+  int     chars_read;            /* Number of characters read by a sscanf() function call */
+  int     i, j;                  /* Loop iterators */
+  int     pos;                   /* Bit position */
 
   if( quoted ) {
 
@@ -1286,10 +1286,10 @@ vector* vector_from_string( char** str, bool quoted ) {
 */
 bool vector_vcd_assign( vector* vec, char* value, int msb, int lsb ) {
 
-  bool     retval = FALSE;  /* Return value for this function                */
+  bool     retval = FALSE;  /* Return value for this function */
   char*    ptr;             /* Pointer to current character under evaluation */
-  int      i;               /* Loop iterator                                 */
-  vec_data vval;            /* Temporary vector value holder                 */
+  int      i;               /* Loop iterator */
+  vec_data vval;            /* Temporary vector value holder */
 
   assert( vec != NULL );
   assert( value != NULL );
@@ -1353,12 +1353,12 @@ bool vector_vcd_assign( vector* vec, char* value, int msb, int lsb ) {
 */
 bool vector_bitwise_op( vector* tgt, vector* src1, vector* src2, nibble* optab ) {
 
-  bool     retval = FALSE;  /* Return value for this function    */
-  vector   vec;             /* Temporary vector value            */
+  bool     retval = FALSE;  /* Return value for this function */
+  vector   vec;             /* Temporary vector value */
   vec_data vecval;          /* Temporary nibble value for vector */
-  int      i;               /* Loop iterator                     */
-  nibble   bit1;            /* Current bit value for src1        */
-  nibble   bit2;            /* Current bit value for src2        */
+  int      i;               /* Loop iterator */
+  nibble   bit1;            /* Current bit value for src1 */
+  nibble   bit2;            /* Current bit value for src2 */
 
   vector_init( &vec, &vecval, 1 );
 
@@ -1398,12 +1398,12 @@ bool vector_bitwise_op( vector* tgt, vector* src1, vector* src2, nibble* optab )
 */
 bool vector_op_compare( vector* tgt, vector* left, vector* right, int comp_type ) {
 
-  bool     retval = FALSE;  /* Return value for this function       */
-  int      pos;             /* Loop iterator                        */
-  nibble   lbit   = 0;      /* Current left expression bit value    */
-  nibble   rbit   = 0;      /* Current right expression bit value   */
+  bool     retval = FALSE;  /* Return value for this function */
+  int      pos;             /* Loop iterator */
+  nibble   lbit   = 0;      /* Current left expression bit value */
+  nibble   rbit   = 0;      /* Current right expression bit value */
   bool     done   = FALSE;  /* Specifies continuation of comparison */
-  vec_data value;           /* Result to be stored in tgt           */
+  vec_data value;           /* Result to be stored in tgt */
 
   /* Determine at which bit position to begin comparing, start at MSB of smallest vector */
   if( left->width > right->width ) {
@@ -1493,10 +1493,10 @@ bool vector_op_compare( vector* tgt, vector* left, vector* right, int comp_type 
 bool vector_op_lshift( vector* tgt, vector* left, vector* right ) {
 
   bool     retval  = FALSE;  /* Return value for this function */
-  int      shift_val;        /* Number of bits to shift left   */
-  vec_data zero;             /* Zero value for zero-fill       */
-  vec_data unknown;          /* X-value for unknown fill       */
-  int      i;                /* Loop iterator                  */
+  int      shift_val;        /* Number of bits to shift left */
+  vec_data zero;             /* Zero value for zero-fill */
+  vec_data unknown;          /* X-value for unknown fill */
+  int      i;                /* Loop iterator */
 
   zero.all    = 0;
   unknown.all = 2;
@@ -1517,7 +1517,7 @@ bool vector_op_lshift( vector* tgt, vector* left, vector* right ) {
     shift_val = vector_to_int( right );
 
     if( shift_val < left->width ) {
-      retval |= vector_set_value( tgt, left->value, left->width, 0, shift_val );
+      retval |= vector_set_value( tgt, left->value, (left->width - shift_val), 0, shift_val );
     }
 
   }
@@ -1539,10 +1539,10 @@ bool vector_op_lshift( vector* tgt, vector* left, vector* right ) {
 bool vector_op_rshift( vector* tgt, vector* left, vector* right ) {
 
   bool     retval = FALSE;  /* Return value for this function */
-  int      shift_val;       /* Number of bits to shift left   */
-  vec_data zero;            /* Zero value for zero-fill       */
-  vec_data unknown;         /* X-value for unknown fill       */
-  int      i;               /* Loop iterator                  */
+  int      shift_val;       /* Number of bits to shift left */
+  vec_data zero;            /* Zero value for zero-fill */
+  vec_data unknown;         /* X-value for unknown fill */
+  int      i;               /* Loop iterator */
 
   zero.all    = 0;
   unknown.all = 2;
@@ -1563,7 +1563,54 @@ bool vector_op_rshift( vector* tgt, vector* left, vector* right ) {
     shift_val = vector_to_int( right );
 
     if( shift_val < left->width ) {
-      retval |= vector_set_value( tgt, left->value, left->width, shift_val, 0 );
+      retval |= vector_set_value( tgt, left->value, (left->width - shift_val), shift_val, 0 );
+    }
+
+  }
+
+  return( retval );
+
+}
+
+/*!
+ \param tgt    Target vector for storage of results.
+ \param left   Expression value being shifted left.
+ \param right  Expression containing number of bit positions to shift.
+
+ \return Returns TRUE if assigned value differs from original value; otherwise, returns FALSE.
+
+ Converts right expression into an integer value and right shifts the left
+ expression the specified number of bit locations, sign extending the MSB.
+*/
+bool vector_op_arshift( vector* tgt, vector* left, vector* right ) {
+
+  bool     retval = FALSE;  /* Return value for this function */
+  int      shift_val;       /* Number of bits to shift left */
+  vec_data sign;            /* Sign extended value for zero-fill */
+  vec_data unknown;         /* X-value for unknown fill */
+  int      i;               /* Loop iterator */
+
+  sign.all        = 0;
+  sign.part.value = left->value[left->width - 1].part.value;
+  unknown.all     = 2;
+
+  if( vector_is_unknown( right ) ) {
+
+    for( i=0; i<tgt->width; i++ ) {
+      retval |= vector_set_value( tgt, &unknown, 1, 0, i );
+    }
+
+  } else {
+
+    /* Perform sign extend-fill */
+    for( i=0; i<tgt->width; i++ ) {
+      retval |= vector_set_value( tgt, &sign, 1, 0, i );
+    }
+
+    shift_val = vector_to_int( right );
+
+    if( shift_val < left->width ) {
+      retval |= vector_set_value( tgt, left->value, (left->width - shift_val), shift_val, 0 );
     }
 
   }
@@ -1585,11 +1632,11 @@ bool vector_op_rshift( vector* tgt, vector* left, vector* right ) {
 bool vector_op_add( vector* tgt, vector* left, vector* right ) {
 
   bool     retval = FALSE;  /* Return value for this function */
-  nibble   lbit;            /* Current left expression bit    */
-  nibble   rbit;            /* Current right expression bit   */
-  nibble   carry  = 0;      /* Carry bit                      */
-  vec_data value;           /* Current value                  */
-  int      i;               /* Loop iterator                  */
+  nibble   lbit;            /* Current left expression bit */
+  nibble   rbit;            /* Current right expression bit */
+  nibble   carry  = 0;      /* Carry bit */
+  vec_data value;           /* Current value */
+  int      i;               /* Loop iterator */
 
   for( i=0; i<tgt->width; i++ ) {
     
@@ -1633,9 +1680,9 @@ bool vector_op_add( vector* tgt, vector* left, vector* right ) {
 bool vector_op_subtract( vector* tgt, vector* left, vector* right ) {
 
   bool    retval = FALSE;  /* Return value for this function */
-  vector* vec1;            /* Temporary vector holder        */
-  vector* vec2;            /* Temporary vector holder        */
-  vector* vec3;            /* Temporary vector holder        */
+  vector* vec1;            /* Temporary vector holder */
+  vector* vec2;            /* Temporary vector holder */
+  vector* vec3;            /* Temporary vector holder */
 
   /* Create temp vectors */
   vec1 = vector_create( tgt->width, TRUE );
@@ -1679,13 +1726,13 @@ bool vector_op_subtract( vector* tgt, vector* left, vector* right ) {
 bool vector_op_multiply( vector* tgt, vector* left, vector* right ) {
 
   bool     retval = FALSE;  /* Return value for this function */
-  vector   lcomp;           /* Compare vector left            */
-  vec_data lcomp_val;       /* Compare value left             */
-  vector   rcomp;           /* Compare vector right           */
-  vec_data rcomp_val;       /* Compare value right            */
-  vector   vec;             /* Intermediate vector            */
-  vec_data vec_val[32];     /* Intermediate value             */
-  int      i;               /* Loop iterator                  */
+  vector   lcomp;           /* Compare vector left */
+  vec_data lcomp_val;       /* Compare value left */
+  vector   rcomp;           /* Compare vector right */
+  vec_data rcomp_val;       /* Compare value right */
+  vector   vec;             /* Intermediate vector */
+  vec_data vec_val[32];     /* Intermediate value */
+  int      i;               /* Loop iterator */
 
   /* Initialize temporary vectors */
   vector_init( &lcomp, &lcomp_val, 1 );
@@ -1749,11 +1796,11 @@ bool vector_op_multiply( vector* tgt, vector* left, vector* right ) {
 */
 bool vector_unary_inv( vector* tgt, vector* src ) {
 
-  bool     retval = FALSE;  /* Return value for this function  */
+  bool     retval = FALSE;  /* Return value for this function */
   nibble   bit;             /* Selected bit from source vector */
-  vector   vec;             /* Temporary vector value          */
-  vec_data vec_val;         /* Temporary value                 */
-  int      i;               /* Loop iterator                   */
+  vector   vec;             /* Temporary vector value */
+  vec_data vec_val;         /* Temporary value */
+  int      i;               /* Loop iterator */
 
   vector_init( &vec, &vec_val, 1 );
 
@@ -1787,11 +1834,11 @@ bool vector_unary_inv( vector* tgt, vector* src ) {
 bool vector_unary_op( vector* tgt, vector* src, nibble* optab ) {
 
   bool     retval;   /* Return value for this function */
-  nibble   uval;     /* Unary operation value          */
-  nibble   bit;      /* Current bit under evaluation   */
-  vector   vec;      /* Temporary vector value         */
-  vec_data vec_val;  /* Temporary value                */
-  int      i;        /* Loop iterator                  */
+  nibble   uval;     /* Unary operation value */
+  nibble   bit;      /* Current bit under evaluation */
+  vector   vec;      /* Temporary vector value */
+  vec_data vec_val;  /* Temporary value */
+  int      i;        /* Loop iterator */
 
   if( (src->width == 1) && (optab[16] == 1) ) {
 
@@ -1866,6 +1913,10 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.68  2005/12/19 23:11:27  phase1geo
+ More fixes for memory faults.  Full regression passes.  Errors have now been
+ eliminated from regression -- just left-over memory issues remain.
+
  Revision 1.67  2005/12/16 23:09:15  phase1geo
  More updates to remove memory leaks.  Full regression passes.
 
