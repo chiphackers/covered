@@ -147,7 +147,7 @@ int yydebug = 1;
 
 %token KK_attribute
 
-%type <integer>   net_type port_type net_type_opt
+%type <integer>   net_type port_type net_type_opt var_type
 %type <vecwidth>  range_opt range range_or_type_opt
 %type <statexp>   static_expr static_expr_primary
 %type <text>      identifier
@@ -339,6 +339,42 @@ port_declaration
         $$ = NULL;
       }
     }
+  | attribute_list_opt K_output var_type signed_opt range_opt IDENTIFIER
+    {
+      port_info* pi;
+      if( ignore_mode == 0 ) {
+        db_add_signal( $6, $5->left, $5->right, 0, FALSE );
+        pi = (port_info*)malloc_safe( sizeof( port_info ), __FILE__, __LINE__ );
+        pi->input      = 0;
+        pi->is_signed  = $4;
+        pi->range      = $5;
+        curr_sig_width = NULL;
+        $$ = pi;
+      } else {
+        static_expr_dealloc( $5->left,  FALSE );
+        static_expr_dealloc( $5->right, FALSE );
+        free_safe( $5 );
+        $$ = NULL;
+      }
+    }
+  | attribute_list_opt K_output var_type signed_opt range_opt IDENTIFIER '=' static_expr
+    {
+      port_info* pi;
+      if( ignore_mode == 0 ) {
+        db_add_signal( $6, $5->left, $5->right, 0, FALSE );
+        pi = (port_info*)malloc_safe( sizeof( port_info ), __FILE__, __LINE__ );
+        pi->input      = 0;
+        pi->is_signed  = $4;
+        pi->range      = $5;
+        curr_sig_width = NULL;
+        $$ = pi;
+      } else {
+        static_expr_dealloc( $5->left,  FALSE );
+        static_expr_dealloc( $5->right, FALSE );
+        free_safe( $5 );
+        $$ = NULL;
+      }
+    }
   | attribute_list_opt port_type net_type_opt signed_opt range_opt error
     {
       if( $5 != NULL ) {
@@ -350,6 +386,18 @@ port_declaration
       VLerror( "Invalid variable list in port declaration" );
       $$ = NULL;
     }
+  | attribute_list_opt K_output var_type signed_opt range_opt error
+    {
+      if( $5 != NULL ) {
+        static_expr_dealloc( $5->left, FALSE );
+        static_expr_dealloc( $5->right, FALSE );
+        free_safe( $5 );
+        curr_sig_width = NULL;
+      }
+      VLerror( "Invalid variable list in port declaration" );
+      $$ = NULL;
+    }
+
   ;
 
 list_of_ports
@@ -1527,6 +1575,45 @@ module_item
         free_safe( curr_sig_width );
         curr_sig_width = NULL;
       }
+    }
+  | port_type range_opt list_of_variables ';'
+    {
+      /* Create signal -- implicitly this is a wire which may not be explicitly declared */
+      str_link* tmp  = $3;
+      str_link* curr = tmp;
+      while( curr != NULL ) {
+        db_add_signal( curr->str, $2->left, $2->right, ($1 == 1), FALSE );
+        curr = curr->next;
+      }
+      str_link_delete_list( $3 );
+      static_expr_dealloc( $2->left, FALSE );
+      static_expr_dealloc( $2->right, FALSE );
+      free_safe( $2 );
+      curr_sig_width = NULL;
+    }
+  /* Handles Verilog-2001 port of type:  input wire [m:l] <list>; */
+  | port_type net_type range_opt list_of_variables ';'
+    {
+      /* Create signal -- implicitly this is a wire which may not be explicitly declared */
+      str_link* tmp  = $4;
+      str_link* curr = tmp;
+      while( curr != NULL ) {
+        db_add_signal( curr->str, $3->left, $3->right, ($1 == 1), FALSE );
+        curr = curr->next;
+      }
+      str_link_delete_list( $4 );
+      static_expr_dealloc( $3->left, FALSE );
+      static_expr_dealloc( $3->right, FALSE );
+      free_safe( $3 );
+      curr_sig_width = NULL;
+    }
+  | port_type range_opt error ';'
+    {
+      if( $2 != NULL ) {
+        free_safe( $2 );
+        curr_sig_width = NULL;
+      }
+      VLerror( "Invalid variable list in port declaration" );
     }
   | K_trireg charge_strength_opt range_opt delay3_opt list_of_variables ';'
     {
@@ -3432,6 +3519,10 @@ net_type
   | K_supply1 { $$ = 1; }
   | K_wor     { $$ = 1; }
   | K_trior   { $$ = 1; }
+  ;
+
+var_type
+  : K_reg     { $$ = 1; }
   ;
 
 net_decl_assigns
