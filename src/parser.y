@@ -357,7 +357,8 @@ port_declaration
         $$ = NULL;
       }
     }
-  | attribute_list_opt K_output var_type signed_opt range_opt IDENTIFIER '=' static_expr
+  /* We just need to parse the static register assignment as this signal will get its value from the dumpfile */
+  | attribute_list_opt K_output var_type signed_opt range_opt IDENTIFIER '=' ignore_more static_expr ignore_less
     {
       port_info* pi;
       if( ignore_mode == 0 ) {

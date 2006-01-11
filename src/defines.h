@@ -1376,11 +1376,12 @@ struct vector_s {
   union {
     nibble   all;                    /*!< Allows us to set all bits in the suppl field */
     struct {
-      nibble base    :3;             /*!< Base-type of this data when originally parsed */
-      nibble inport  :1;             /*!< Specifies if this vector is part of an input port */
-      nibble assigned:1;             /*!< Specifies that this vector will be assigned from simulated results (instead of dumpfile) */
-      nibble mba     :1;             /*!< Specifies that this vector MUST be assigned from simulated results because this information
+      nibble base     :3;            /*!< Base-type of this data when originally parsed */
+      nibble inport   :1;            /*!< Specifies if this vector is part of an input port */
+      nibble assigned :1;            /*!< Specifies that this vector will be assigned from simulated results (instead of dumpfile) */
+      nibble mba      :1;            /*!< Specifies that this vector MUST be assigned from simulated results because this information
                                           is NOT provided in the dumpfile */
+      nibble is_signed:1;            /*!< Specifies that this vector should be treated as a signed value */
     } part;
   } suppl;                           /*!< Supplemental field */
   vec_data*  value;                  /*!< 4-state current value and toggle history */
@@ -1677,6 +1678,12 @@ struct port_info_s {
 
 /*
  $Log$
+ Revision 1.163  2006/01/10 23:13:50  phase1geo
+ Completed support for implicit event sensitivity list.  Added diagnostics to verify
+ this new capability.  Also started support for parsing inline parameters and port
+ declarations (though this is probably not complete and not passing at this point).
+ Checkpointing.
+
  Revision 1.162  2006/01/10 05:56:36  phase1geo
  In the middle of adding support for event sensitivity lists to score command.
  Regressions should pass but this code is not complete at this time.
