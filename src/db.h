@@ -31,7 +31,7 @@ void db_add_module( char* name, char* file, int start_line );
 bool db_add_function_task_namedblock( int type, char* name, char* file, int start_line );
 
 /*! \brief Adds specified declared parameter to parameter list.  Called by parser. */
-void db_add_declared_param( char* name, expression* expr );
+void db_add_declared_param( char* name, expression* expr, bool local );
 
 /*! \brief Adds specified override parameter to parameter list.  Called by parser. */
 void db_add_override_param( char* inst_name, expression* expr, char* param_name );
@@ -122,6 +122,11 @@ void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.49  2006/01/12 22:14:45  phase1geo
+ Completed code for handling parameter value pass by name Verilog-2001 syntax.
+ Added diagnostics to regression suite and updated regression files for this
+ change.  Full regression now passes.
+
  Revision 1.48  2006/01/10 05:56:36  phase1geo
  In the middle of adding support for event sensitivity lists to score command.
  Regressions should pass but this code is not complete at this time.

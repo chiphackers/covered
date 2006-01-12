@@ -600,14 +600,15 @@ void db_end_function_task_namedblock( int end_line ) {
 }
 
 /*!
- \param name  Name of declared parameter to add.
- \param expr  Expression containing value of this parameter.
+ \param name   Name of declared parameter to add.
+ \param expr   Expression containing value of this parameter.
+ \param local  If TRUE, specifies that this parameter is a local parameter.
 
  Searches current module to verify that specified parameter name has not been previously
  used in the module.  If the parameter name has not been found, it is created added to
  the current module's parameter list.
 */
-void db_add_declared_param( char* name, expression* expr ) {
+void db_add_declared_param( char* name, expression* expr, bool local ) {
 
   char        scope[4096];  /* String containing current instance scope      */
   funit_inst* inst;         /* Pointer to found functional unit instance     */
@@ -621,14 +622,15 @@ void db_add_declared_param( char* name, expression* expr ) {
   if( expr != NULL ) {
 
 #ifdef DEBUG_MODE
-    snprintf( user_msg, USER_MSG_LENGTH, "In db_add_declared_param, param: %s, expr: %d", name, expr->id );
+    snprintf( user_msg, USER_MSG_LENGTH, "In db_add_declared_param, param: %s, expr: %d, local: %d", name, expr->id, local );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
     if( mod_parm_find( name, curr_funit->param_head ) == NULL ) {
 
       /* Add parameter to module parameter list */
-      mparm = mod_parm_add( name, expr, PARAM_TYPE_DECLARED, &(curr_funit->param_head), &(curr_funit->param_tail), NULL );
+      mparm = mod_parm_add( name, expr, (local ? PARAM_TYPE_DECLARED_LOCAL : PARAM_TYPE_DECLARED),
+                            &(curr_funit->param_head), &(curr_funit->param_tail), NULL );
 
       /* Also add this to all associated instance parameter lists */
       i      = 0;
@@ -1679,6 +1681,11 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.161  2006/01/12 22:14:45  phase1geo
+ Completed code for handling parameter value pass by name Verilog-2001 syntax.
+ Added diagnostics to regression suite and updated regression files for this
+ change.  Full regression now passes.
+
  Revision 1.160  2006/01/10 23:13:50  phase1geo
  Completed support for implicit event sensitivity list.  Added diagnostics to verify
  this new capability.  Also started support for parsing inline parameters and port

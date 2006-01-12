@@ -51,7 +51,8 @@ DIAGS1        = always1         always2         always3         always3.1.11A   
                 ifelse1         include1        include1.1      include2        initial1 \
                 instance1       instance1.1     instance1.2     instance2       instance3 \
                 instance4       instance4.1     instance4.2     instance5       instance6 \
-                instance6.1     instance6.2     instance7       long_exp1       long_exp2 \
+                instance6.1     instance6.2     instance7       localparam1     localparam1.1 \
+                localparam1.2   localparam1.3   localparam2     long_exp1       long_exp2 \
                 long_exp3       long_sig        mbit_sel1       mbit_sel2       mbit_sel3 \
                 mbit_sel3.1     mbit_sel4       mbit_sel4.1     mbit_sel4.2     mbit_sel4.3 \
                 mem1            mult1           multi_exp1      multi_exp1.1    multi_exp1.2 \

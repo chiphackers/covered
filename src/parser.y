@@ -163,7 +163,6 @@ int yydebug = 1;
 %type <expr>      delay_value delay_value_simple
 %type <text>      defparam_assign_list defparam_assign
 %type <text>      gate_instance
-%type <text>      localparam_assign_list localparam_assign
 %type <strlink>   register_variable_list list_of_variables
 %type <strlink>   gate_instance_list
 %type <text>      register_variable named_begin_end_block fork_statement
@@ -3969,7 +3968,11 @@ parameter_assign_list
   : parameter_assign
   | range parameter_assign
     {
-      free_safe( $1 );
+      if( $1 != NULL ) {
+        static_expr_dealloc( $1->left,  FALSE );
+        static_expr_dealloc( $1->right, FALSE );
+        free_safe( $1 );
+      }
     }
   | parameter_assign_list ',' parameter_assign
   ;
@@ -3977,7 +3980,7 @@ parameter_assign_list
 parameter_assign
   : IDENTIFIER '=' expression
     {
-      db_add_declared_param( $1, $3 );
+      db_add_declared_param( $1, $3, FALSE );
       free_safe( $1 );
     }
   | UNUSED_IDENTIFIER '=' expression
@@ -3985,40 +3988,24 @@ parameter_assign
 
 localparam_assign_list
   : localparam_assign
-    {
-      if( $1 != NULL ) {
-        free_safe( $1 );
-      }
-      $$ = NULL;
-    }
   | range localparam_assign
     {
       if( $1 != NULL ) {
+        static_expr_dealloc( $1->left,  FALSE );
+        static_expr_dealloc( $1->right, FALSE );
         free_safe( $1 );
       }
-      if( $2 != NULL ) {
-        free_safe( $2 );
-      }
-      $$ = NULL;
     }
   | localparam_assign_list ',' localparam_assign
-    {
-      if( $3 != NULL ) {
-        free_safe( $3 );
-      }
-      $$ = NULL;
-    }
   ;
 
 localparam_assign
-  : IDENTIFIER '=' { ignore_mode++; } expression { ignore_mode--; }
+  : IDENTIFIER '=' expression
     {
-      $$ = $1;
+      db_add_declared_param( $1, $3, TRUE );
+      free_safe( $1 );
     }
   | UNUSED_IDENTIFIER '=' expression
-    {
-      $$ = NULL;
-    }
   ;
 
 port_name_list

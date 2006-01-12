@@ -156,11 +156,12 @@ mod_parm* mod_parm_add( char* scope, expression* expr, int type, mod_parm** head
   int       order = 0;  /* Current order of parameter                                */
   
   assert( expr != NULL );
-  assert( (type == PARAM_TYPE_DECLARED) || 
-          (type == PARAM_TYPE_OVERRIDE) ||
-          (type == PARAM_TYPE_SIG_LSB)  ||
-          (type == PARAM_TYPE_SIG_MSB)  ||
-          (type == PARAM_TYPE_EXP_LSB)  ||
+  assert( (type == PARAM_TYPE_DECLARED)       || 
+          (type == PARAM_TYPE_DECLARED_LOCAL) ||
+          (type == PARAM_TYPE_OVERRIDE)       ||
+          (type == PARAM_TYPE_SIG_LSB)        ||
+          (type == PARAM_TYPE_SIG_MSB)        ||
+          (type == PARAM_TYPE_EXP_LSB)        ||
           (type == PARAM_TYPE_EXP_MSB) );
 
   /* Determine parameter order */
@@ -506,6 +507,7 @@ inst_parm* param_has_override( char* mname, mod_parm* mparm, inst_parm* ip_head,
   icurr = ip_head;
   while( (icurr != NULL) && 
          !((PARAM_TYPE( icurr->mparm ) == PARAM_TYPE_OVERRIDE) &&
+           (PARAM_TYPE( mparm ) != PARAM_TYPE_DECLARED_LOCAL) &&
            ((icurr->name != NULL) ? (strcmp( icurr->name, mparm->name ) == 0) : (PARAM_ORDER( mparm ) == PARAM_ORDER( icurr->mparm ))) &&
            (strcmp( mname, icurr->inst_name ) == 0)) ) {
     icurr = icurr->next;
@@ -551,7 +553,9 @@ inst_parm* param_has_defparam( char* scope, mod_parm* mparm, inst_parm** ihead, 
   }
 
   icurr = defparam_head;
-  while( (icurr != NULL) && (strcmp( icurr->name, parm_scope ) != 0) ) {
+  while( (icurr != NULL) &&
+         !((strcmp( icurr->name, parm_scope ) == 0) &&
+           (PARAM_TYPE( mparm ) != PARAM_TYPE_DECLARED_LOCAL)) ) {
     icurr = icurr->next;
   }
 
@@ -739,10 +743,20 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
       inst_parm_dealloc( parm->next, recursive );
     }
 
-    free_safe( parm->name );
+    /* Deallocate parameter name, if specified */
+    if( parm->name != NULL ) {
+      free_safe( parm->name );
+    }
+
+    /* Deallocate instance name, if specified */
+    if( parm->inst_name != NULL ) {
+      free_safe( parm->inst_name );
+    }
     
+    /* Deallocate parameter value */
     vector_dealloc( parm->value );
     
+    /* Deallocate parameter itself */
     free_safe( parm );
 
   }
@@ -752,6 +766,11 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.42  2006/01/12 22:14:45  phase1geo
+ Completed code for handling parameter value pass by name Verilog-2001 syntax.
+ Added diagnostics to regression suite and updated regression files for this
+ change.  Full regression now passes.
+
  Revision 1.41  2005/12/21 23:16:53  phase1geo
  More memory leak fixes.
 
