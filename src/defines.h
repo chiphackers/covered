@@ -1159,6 +1159,11 @@ struct perf_stat_s;
 */
 struct port_info_s;
 
+/*!
+ Container for holding information pertinent for parameter overriding.
+*/
+struct param_oride_s;
+
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION TYPEDEFS  */
 
@@ -1349,6 +1354,11 @@ typedef struct perf_stat_s perf_stat;
 */
 typedef struct port_info_s port_info;
 
+/*!
+ Renaming param_orides_s structure for convenience.
+*/
+typedef struct param_oride_s param_oride;
+
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION DEFINITIONS  */
 
@@ -1479,17 +1489,19 @@ struct statistic_s {
 };
 
 struct mod_parm_s {
-  char*        name;                 /*!< Full hierarchical name of associated parameter */
+  char*        name;                 /*!< Name of parameter */
   expression*  expr;                 /*!< Expression tree containing value of parameter */
   unsigned int suppl;                /*!< Supplemental field containing type and order number */
   exp_link*    exp_head;             /*!< Pointer to head of expression list for dependents */
   exp_link*    exp_tail;             /*!< Pointer to tail of expression list for dependents */
   vsignal*     sig;                  /*!< Pointer to associated signal (if one is available) */
+  char*        inst_name;            /*!< Stores name of instance that will have this parameter overriden (only valid for parameter overridding) */
   mod_parm*    next;                 /*!< Pointer to next module parameter in list */
 };
 
 struct inst_parm_s {
-  char*        name;                 /*!< Name of associated parameter (no hierarchy) */
+  char*        name;                 /*!< Name of associated parameter */
+  char*        inst_name;            /*!< Name of instance to which this structure belongs to */
   vector*      value;                /*!< Pointer to value of instance parameter */
   mod_parm*    mparm;                /*!< Pointer to base module parameter */
   inst_parm*   next;                 /*!< Pointer to next instance parameter in list */
@@ -1676,8 +1688,19 @@ struct port_info_s {
   vector_width* range;               /*!< Contains range information for this port */
 };
 
+struct param_oride_s {
+  char*        name;                 /*!< Specifies name of parameter being overridden (only valid for by_name syntax) */
+  expression*  expr;                 /*!< Expression to override parameter with */
+  param_oride* next;                 /*!< Pointer to next parameter override structure in list */
+};
+
 /*
  $Log$
+ Revision 1.164  2006/01/11 19:57:10  phase1geo
+ Added diagnostics to verify proper handling of inline parameters, inline port
+ declarations and added is_signed bit to vector supplemental field (though we still
+ do not handle signed values appropriately).
+
  Revision 1.163  2006/01/10 23:13:50  phase1geo
  Completed support for implicit event sensitivity list.  Added diagnostics to verify
  this new capability.  Also started support for parsing inline parameters and port

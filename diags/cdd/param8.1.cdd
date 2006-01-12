@@ -1,6 +1,5 @@
 5 1 * 5 0 0 0 0
 3 0 main main param8.1.v 1 17
-1 #bar 0 32 0 5 0 0 0 0 0 0 0
 1 a 0 3 0 2a
 3 0 foo main.bar param8.1.v 20 30
 2 14 28 f0012 1 32 4 0 0 #ZERO

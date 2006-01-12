@@ -48,8 +48,13 @@ int  fork_depth  = -1;
 int  block_depth = 0; 
 bool lhs_mode    = FALSE;
 
+param_oride* param_oride_head = NULL;
+param_oride* param_oride_tail = NULL;
+
+#ifdef OBSOLETE
 exp_link* param_exp_head = NULL;
 exp_link* param_exp_tail = NULL;
+#endif
 
 sig_link* dummy_head    = NULL;
 sig_link* dummy_tail    = NULL;
@@ -1280,7 +1285,8 @@ expr_primary
 expression_list
   : expression_list ',' expression
     {
-      expression* tmp;
+      expression*  tmp;
+      param_oride* po;
       if( ignore_mode == 0 ) {
         if( param_mode == 0 ) {
           if( $3 != NULL ) {
@@ -1291,7 +1297,16 @@ expression_list
           }
         } else {
           if( $3 != NULL ) {
-            exp_link_add( $3, &param_exp_head, &param_exp_tail );
+            po = (param_oride*)malloc_safe( sizeof( param_oride ), __FILE__, __LINE__ );
+            po->name = NULL;
+            po->expr = $3;
+            po->next = NULL;
+            if( param_oride_head == NULL ) {
+              param_oride_head = param_oride_tail = po;
+            } else {
+              param_oride_tail->next = po;
+              param_oride_tail       = po;
+            }
           }
           $$ = NULL;
         }
@@ -1301,12 +1316,22 @@ expression_list
     }
   | expression
     {
+      param_oride* po;
       if( ignore_mode == 0 ) {
         if( param_mode == 0 ) {
           $$ = $1;
         } else {
           if( $1 != NULL ) {
-            exp_link_add( $1, &param_exp_head, &param_exp_tail );
+            po = (param_oride*)malloc_safe( sizeof( param_oride ), __FILE__, __LINE__ );
+            po->name = NULL;
+            po->expr = $1;
+            po->next = NULL;
+            if( param_oride_head == NULL ) {
+              param_oride_head = param_oride_tail = po;
+            } else {
+              param_oride_tail->next = po;
+              param_oride_tail       = po;
+            }
           }
           $$ = NULL;
         }
@@ -1689,22 +1714,25 @@ module_item
   /* Handles instantiations of modules and user-defined primitives. */
   | IDENTIFIER parameter_value_opt gate_instance_list ';'
     {
-      str_link* tmp  = $3;
-      str_link* curr = tmp;
-      exp_link* ecurr;
+      str_link*    tmp  = $3;
+      str_link*    curr = tmp;
+      param_oride* po;
       while( curr != NULL ) {
-        ecurr = param_exp_head;
-        while( ecurr != NULL ){
-          db_add_override_param( curr->str, ecurr->exp );
-          ecurr = ecurr->next;
+        while( param_oride_head != NULL ){
+          po               = param_oride_head;
+          param_oride_head = po->next;
+          db_add_override_param( curr->str, po->expr, po->name );
+          if( po->name != NULL ) {
+            free_safe( po->name );
+          }
+          free_safe( po );
         }
         db_add_instance( curr->str, $1, FUNIT_MODULE );
         curr = curr->next;
       }
       str_link_delete_list( tmp );
-      exp_link_delete_list( param_exp_head, FALSE );
-      param_exp_head = NULL;
-      param_exp_tail = NULL;
+      param_oride_head = NULL;
+      param_oride_tail = NULL;
       free_safe( $1 );
     }
   | K_assign drive_strength_opt { ignore_mode++; } delay3_opt { ignore_mode--; } assign_list ';'
@@ -3796,8 +3824,17 @@ parameter_value_byname_list
 parameter_value_byname
   : '.' IDENTIFIER '(' expression ')'
     {
-      expression_dealloc( $4, FALSE );
-      free_safe( $2 );
+      param_oride* po;
+      po = (param_oride*)malloc_safe( sizeof( param_oride ), __FILE__, __LINE__ );
+      po->name = $2;
+      po->expr = $4;
+      po->next = NULL;
+      if( param_oride_head == NULL ) {
+        param_oride_head = param_oride_tail = po;
+      } else {
+        param_oride_tail->next = po;
+        param_oride_tail       = po;
+      }
     }
   | '.' UNUSED_IDENTIFIER '(' expression ')'
   | '.' IDENTIFIER '(' ')'

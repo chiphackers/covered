@@ -1,7 +1,5 @@
 5 1 * 5 0 0 0 0
 3 0 main main param3.1.v 1 21
-1 #bar1 0 32 0 0 0 0 0 0 0 0 0
-1 #bar2 0 32 0 1 0 0 0 0 0 0 0
 1 y 0 1 0 2
 1 x 0 1 0 1102
 3 0 foo main.bar1 param3.1.v 23 30

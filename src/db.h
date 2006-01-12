@@ -34,7 +34,7 @@ bool db_add_function_task_namedblock( int type, char* name, char* file, int star
 void db_add_declared_param( char* name, expression* expr );
 
 /*! \brief Adds specified override parameter to parameter list.  Called by parser. */
-void db_add_override_param( char* inst_name, expression* expr );
+void db_add_override_param( char* inst_name, expression* expr, char* param_name );
 
 /*! \brief Adds vsignal/expression vector parameter to parameter list. */
 void db_add_vector_param( vsignal* sig, expression* parm_exp, int type );
@@ -122,6 +122,10 @@ void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.48  2006/01/10 05:56:36  phase1geo
+ In the middle of adding support for event sensitivity lists to score command.
+ Regressions should pass but this code is not complete at this time.
+
  Revision 1.47  2005/12/12 23:25:37  phase1geo
  Fixing memory faults.  This is a work in progress.
 

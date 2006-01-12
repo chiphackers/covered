@@ -13,7 +13,6 @@
 1 a 0 2 0 110a
 4 28 28 28
 3 0 barfoo main.bar instance6.2.v 42 48
-1 #dude 0 32 0 4 0 0 0 0 0 0 0
 1 b 0 4 8 aa
 3 0 foobar main.bar.dude instance6.2.v 29 39
 2 26 37 f000f 4 0 4 0 0 32 0 0 0 0 0 0 0 0 0

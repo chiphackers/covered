@@ -137,18 +137,19 @@ void mod_parm_find_expr_and_remove( expression* exp, mod_parm* parm ) {
 }
 
 /*!
- \param scope  Full hierarchical name of parameter value.
- \param expr   Expression tree for current module parameter.
- \param type   Specifies type of module parameter (declared/override).
- \param head   Pointer to head of module parameter list to add to.
- \param tail   Pointer to tail of module parameter list to add to.
+ \param scope      Full hierarchical name of parameter value.
+ \param expr       Expression tree for current module parameter.
+ \param type       Specifies type of module parameter (declared/override).
+ \param head       Pointer to head of module parameter list to add to.
+ \param tail       Pointer to tail of module parameter list to add to.
+ \param inst_name  Name of instance (used for parameter overridding)
 
  \return Returns pointer to newly created module parameter.
 
  Creates a new module parameter with the specified information and adds 
  it to the module parameter list.
 */
-mod_parm* mod_parm_add( char* scope, expression* expr, int type, mod_parm** head, mod_parm** tail ) {
+mod_parm* mod_parm_add( char* scope, expression* expr, int type, mod_parm** head, mod_parm** tail, char* inst_name ) {
 
   mod_parm* parm;       /* Temporary pointer to instance parameter                   */
   mod_parm* curr;       /* Pointer to current module parameter for ordering purposes */
@@ -177,7 +178,7 @@ mod_parm* mod_parm_add( char* scope, expression* expr, int type, mod_parm** head
     order = 0;
     while( curr != NULL ) {
       if( (PARAM_TYPE( curr ) == PARAM_TYPE_OVERRIDE) &&
-          (strcmp( scope, curr->name ) == 0) ) {
+          (strcmp( inst_name, curr->inst_name ) == 0) ) {
         order++;
       }
       curr = curr->next;
@@ -190,6 +191,11 @@ mod_parm* mod_parm_add( char* scope, expression* expr, int type, mod_parm** head
     parm->name = strdup_safe( scope, __FILE__, __LINE__ );
   } else {
     parm->name = NULL;
+  }
+  if( inst_name != NULL ) {
+    parm->inst_name = strdup_safe( inst_name, __FILE__, __LINE__ );
+  } else {
+    parm->inst_name = NULL;
   }
   parm->expr                  = expr;
   parm->expr->suppl.part.root = 1;
@@ -260,29 +266,36 @@ inst_parm* inst_parm_find( char* name, inst_parm* parm ) {
 }
 
 /*!
- \param scope  Full hierarchical name of parameter value.
- \param value  Vector value of specified instance parameter.
- \param mparm  Pointer to module instance that this instance parameter is derived from.
- \param head   Pointer to head of instance parameter list to add to.
- \param tail   Pointer to tail of instance parameter list to add to.
+ \param name       Name of parameter
+ \param inst_name  Name of instance containing this parameter name
+ \param scope      Full hierarchical name of parameter value.
+ \param value      Vector value of specified instance parameter.
+ \param mparm      Pointer to module instance that this instance parameter is derived from.
+ \param head       Pointer to head of instance parameter list to add to.
+ \param tail       Pointer to tail of instance parameter list to add to.
 
  \return Returns pointer to newly created instance parameter.
 
  Creates a new instance parameter with the specified information and adds 
  it to the instance parameter list.
 */
-inst_parm* inst_parm_add( char* scope, vector* value, mod_parm* mparm, inst_parm** head, inst_parm** tail ) {
+inst_parm* inst_parm_add( char* name, char* inst_name, vector* value, mod_parm* mparm, inst_parm** head, inst_parm** tail ) {
 
   inst_parm* parm;    /* Temporary pointer to instance parameter */
   
   assert( value != NULL );
 
   /* Create new signal/expression binding */
-  parm        = (inst_parm*)malloc_safe( sizeof( inst_parm ), __FILE__, __LINE__ );
-  if( scope != NULL ) {
-    parm->name = strdup_safe( scope, __FILE__, __LINE__ );
+  parm = (inst_parm*)malloc_safe( sizeof( inst_parm ), __FILE__, __LINE__ );
+  if( name != NULL ) {
+    parm->name = strdup_safe( name, __FILE__, __LINE__ );
   } else {
     parm->name = NULL;
+  }
+  if( inst_name != NULL ) {
+    parm->inst_name = strdup_safe( inst_name, __FILE__, __LINE__ );
+  } else {
+    parm->inst_name = NULL;
   }
   
   /* Create new value vector, copying the contents of the specified vector value */
@@ -319,7 +332,7 @@ void defparam_add( char* scope, vector* value ) {
 
   if( inst_parm_find( scope, defparam_head ) == NULL ) {
 
-    inst_parm_add( scope, value, NULL, &defparam_head, &defparam_tail );
+    inst_parm_add( scope, NULL, value, NULL, &defparam_head, &defparam_tail );
     vector_dealloc( value );
 
   } else {
@@ -492,9 +505,9 @@ inst_parm* param_has_override( char* mname, mod_parm* mparm, inst_parm* ip_head,
   /* First, check to see if the parent instance contains an override in its instance list. */
   icurr = ip_head;
   while( (icurr != NULL) && 
-         ((PARAM_TYPE( icurr->mparm ) != PARAM_TYPE_OVERRIDE)   || 
-          (PARAM_ORDER( mparm ) != PARAM_ORDER( icurr->mparm )) ||
-          (strcmp( mname, icurr->name ) != 0)) ) {
+         !((PARAM_TYPE( icurr->mparm ) == PARAM_TYPE_OVERRIDE) &&
+           ((icurr->name != NULL) ? (strcmp( icurr->name, mparm->name ) == 0) : (PARAM_ORDER( mparm ) == PARAM_ORDER( icurr->mparm ))) &&
+           (strcmp( mname, icurr->inst_name ) == 0)) ) {
     icurr = icurr->next;
   }
 
@@ -502,7 +515,7 @@ inst_parm* param_has_override( char* mname, mod_parm* mparm, inst_parm* ip_head,
   if( icurr != NULL ) {
 
     /* Add new instance parameter to current instance */
-    parm = inst_parm_add( mparm->name, icurr->value, mparm, ihead, itail );
+    parm = inst_parm_add( mparm->name, NULL, icurr->value, mparm, ihead, itail );
 
   }
 
@@ -545,7 +558,7 @@ inst_parm* param_has_defparam( char* scope, mod_parm* mparm, inst_parm** ihead, 
   if( icurr != NULL ) {
 
     /* Defparam found, use its value to create new instance parameter */
-    parm = inst_parm_add( mparm->name, icurr->value, mparm, ihead, itail );
+    parm = inst_parm_add( mparm->name, NULL, icurr->value, mparm, ihead, itail );
 
   }
 
@@ -600,7 +613,7 @@ void param_resolve_declared( char* mscope, mod_parm* mparm, inst_parm* ip_head,
     param_expr_eval( mparm->expr, *ihead );
 
     /* Now add the new instance parameter */
-    inst_parm_add( mparm->name, mparm->expr->value, mparm, ihead, itail );
+    inst_parm_add( mparm->name, NULL, mparm->expr->value, mparm, ihead, itail );
 
   }
 
@@ -630,7 +643,7 @@ void param_resolve_override( mod_parm* oparm, inst_parm** ihead, inst_parm** ita
   param_expr_eval( oparm->expr, *ihead );
 
   /* Add the new instance override parameter */
-  inst_parm_add( oparm->name, oparm->expr->value, oparm, ihead, itail );
+  inst_parm_add( oparm->name, oparm->inst_name, oparm->expr->value, oparm, ihead, itail );
 
 }
 
@@ -739,6 +752,9 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.41  2005/12/21 23:16:53  phase1geo
+ More memory leak fixes.
+
  Revision 1.40  2005/12/21 22:30:54  phase1geo
  More updates to memory leak fix list.  We are getting close!  Added some helper
  scripts/rules to more easily debug valgrind memory leak errors.  Also added suppression

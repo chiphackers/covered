@@ -628,7 +628,7 @@ void db_add_declared_param( char* name, expression* expr ) {
     if( mod_parm_find( name, curr_funit->param_head ) == NULL ) {
 
       /* Add parameter to module parameter list */
-      mparm = mod_parm_add( name, expr, PARAM_TYPE_DECLARED, &(curr_funit->param_head), &(curr_funit->param_tail) );
+      mparm = mod_parm_add( name, expr, PARAM_TYPE_DECLARED, &(curr_funit->param_head), &(curr_funit->param_tail), NULL );
 
       /* Also add this to all associated instance parameter lists */
       i      = 0;
@@ -659,13 +659,14 @@ void db_add_declared_param( char* name, expression* expr ) {
 }
 
 /*!
- \param inst_name  Name of instance being overriddent.
- \param expr       Expression containing value of override parameter.
+ \param inst_name   Name of instance being overridden.
+ \param expr        Expression containing value of override parameter.
+ \param param_name  Name of parameter being overridden (for parameter_value_byname syntax)
 
  Creates override parameter and stores this in the current module as well
  as all associated instances.
 */
-void db_add_override_param( char* inst_name, expression* expr ) {
+void db_add_override_param( char* inst_name, expression* expr, char* param_name ) {
 
   mod_parm*   mparm;   /* Pointer to module parameter added to current module */
   funit_inst* inst;    /* Pointer to current instance to add parameter to     */
@@ -673,12 +674,16 @@ void db_add_override_param( char* inst_name, expression* expr ) {
   int         i;       /* Loop iterator                                       */
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_override_param, instance: %s", inst_name );
+  if( param_name != NULL ) {
+    snprintf( user_msg, USER_MSG_LENGTH, "In db_add_override_param, instance: %s, param_name: %s", inst_name, param_name );
+  } else {
+    snprintf( user_msg, USER_MSG_LENGTH, "In db_add_override_param, instance: %s", inst_name );
+  }
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
   /* Add override parameter to module parameter list */
-  mparm = mod_parm_add( inst_name, expr, PARAM_TYPE_OVERRIDE, &(curr_funit->param_head), &(curr_funit->param_tail) );
+  mparm = mod_parm_add( param_name, expr, PARAM_TYPE_OVERRIDE, &(curr_funit->param_head), &(curr_funit->param_tail), inst_name );
 
   /* Also add this to all associated instance parameter lists */
   i      = 0;
@@ -718,7 +723,7 @@ void db_add_vector_param( vsignal* sig, expression* parm_exp, int type ) {
 #endif
 
   /* Add signal vector parameter to module parameter list */
-  mparm = mod_parm_add( NULL, parm_exp, type, &(curr_funit->param_head), &(curr_funit->param_tail) );
+  mparm = mod_parm_add( NULL, parm_exp, type, &(curr_funit->param_head), &(curr_funit->param_tail), NULL );
 
   /* Add signal to module parameter list */
   mparm->sig = sig;
@@ -1674,6 +1679,12 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.160  2006/01/10 23:13:50  phase1geo
+ Completed support for implicit event sensitivity list.  Added diagnostics to verify
+ this new capability.  Also started support for parsing inline parameters and port
+ declarations (though this is probably not complete and not passing at this point).
+ Checkpointing.
+
  Revision 1.159  2006/01/10 05:56:36  phase1geo
  In the middle of adding support for event sensitivity lists to score command.
  Regressions should pass but this code is not complete at this time.
