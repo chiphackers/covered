@@ -18,20 +18,24 @@ Score command
        without user intervention.
 
    4.  Add more Verilog-2001 constructs to parser.
-	- `ifndef and `elsif
-	- `file and `line (low priority)
+X	- `ifndef
+	- `elsif
+	- `file
+X	- `line
 	- task/function argument list
 	- constant functions
 	- automatic storage for functions/tasks (instead of static) - difficult!
-	! explicitly named parameters
-	- make sure that localparams cannot be modified by a defparam or SDF
+X	! explicitly named parameters
+X	- make sure that localparams cannot be modified by a defparam or SDF
 	- generate command (extremely low priority)
-	! wildcard sensitivity list (@*)
+X	! wildcard sensitivity list (@*)
 	- Add signed capability (unsigned zero-fills unused bits while sign fills with MSB)
 	- register assignment
 	- variable multi-bit selects
 	- exponential power operator (**)
-	- >>> (fills sign bit with its value) and <<< (same as <<)
+X	- >>> (fills sign bit with its value) and <<< (same as <<)
+X	- pre-port parameter listing
+X	- inline port declaration listing
 	- MAKE SURE THAT WE DOCUMENT IN THE USER'S GUIDE WHAT VERILOG-2001 CONSTRUCTS ARE
 	  SUPPORTED AND NOT SUPPORTED!
 
