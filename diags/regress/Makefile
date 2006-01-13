@@ -98,8 +98,8 @@ IVONLYDIAGS3  =
 IVONLYDIAGS4  = 
 
 VCSONLYDIAGS1 = always7.1       assign2.4       assign2.5       assign2.6       assign2.7 \
-                event1          gate1.1         implicit2.1     real1           triand \
-                trior           trireg          wand            wor
+                event1          exponent1       gate1.1         implicit2.1     real1 \
+                triand          trior           trireg          wand            wor
 VCSONLYDIAGS2 = 
 VCSONLYDIAGS3 = 
 VCSONLYDIAGS4 = 

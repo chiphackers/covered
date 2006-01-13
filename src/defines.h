@@ -589,6 +589,7 @@ typedef enum exp_op_type_e {
   EXP_OP_ALSHIFT,         /*!< 67:0x43.  Specifies arithmetic left shift (<<<) */
   EXP_OP_ARSHIFT,         /*!< 68:0x44.  Specifies arithmetic right shift (>>>) */
   EXP_OP_SLIST,           /*!< 69:0x45.  Specifies sensitivity list (*) */
+  EXP_OP_EXPONENT,        /*!< 70:0x46.  Specifies the exponential operator "**" */
   EXP_OP_NUM              /*!< The total number of defines for expression values */
 } exp_op_type;
 
@@ -1702,6 +1703,10 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.166  2006/01/12 22:53:01  phase1geo
+ Adding support for localparam construct.  Added tests to regression suite to
+ verify correct functionality.  Full regression passes.
+
  Revision 1.165  2006/01/12 22:14:45  phase1geo
  Completed code for handling parameter value pass by name Verilog-2001 syntax.
  Added diagnostics to regression suite and updated regression files for this

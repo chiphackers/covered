@@ -643,6 +643,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
             case EXP_OP_MOD        :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s   %s"        );  break;
             case EXP_OP_ADD        :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s   %s"        );  break;
             case EXP_OP_SUBTRACT   :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s   %s"        );  break;
+            case EXP_OP_EXPONENT   :  *size = l_size + r_size + 4;  strcpy( code_fmt, "%s    %s"       );  break;
             case EXP_OP_AND        :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s   %s"        );  break;
             case EXP_OP_OR         :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s   %s"        );  break;
             case EXP_OP_NAND       :  *size = l_size + r_size + 4;  strcpy( code_fmt, "%s    %s"       );  break;
@@ -674,6 +675,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
             case EXP_OP_MOD        :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "        );  break;
             case EXP_OP_ADD        :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "        );  break;
             case EXP_OP_SUBTRACT   :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "        );  break;
+            case EXP_OP_EXPONENT   :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "       );  break;
             case EXP_OP_AND        :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "        );  break;
             case EXP_OP_OR         :  *size = l_size + r_size + 5;  strcpy( code_fmt, " %s   %s "        );  break;
             case EXP_OP_NAND       :  *size = l_size + r_size + 6;  strcpy( code_fmt, " %s    %s "       );  break;
@@ -1492,6 +1494,7 @@ void combination_get_missed_expr( char*** info, int* info_size, expression* exp,
           case EXP_OP_MULTIPLY   :  combination_unary( info, info_size, exp, "*" );        break;
           case EXP_OP_DIVIDE     :  combination_unary( info, info_size, exp, "/" );        break;
           case EXP_OP_MOD        :  combination_unary( info, info_size, exp, "%%" );       break;
+          case EXP_OP_EXPONENT   :  combination_unary( info, info_size, exp, "**" );       break;
           case EXP_OP_AND        :  combination_two_vars( info, info_size, exp, "&" );     break;
           case EXP_OP_OR         :  combination_two_vars( info, info_size, exp, "|" );     break;
           case EXP_OP_NAND       :  combination_two_vars( info, info_size, exp, "~&" );    break;
@@ -2028,6 +2031,12 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.121  2006/01/10 23:13:50  phase1geo
+ Completed support for implicit event sensitivity list.  Added diagnostics to verify
+ this new capability.  Also started support for parsing inline parameters and port
+ declarations (though this is probably not complete and not passing at this point).
+ Checkpointing.
+
  Revision 1.120  2006/01/10 05:12:48  phase1geo
  Added arithmetic left and right shift operators.  Added ashift1 diagnostic
  to verify their correct operation.

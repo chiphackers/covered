@@ -155,11 +155,13 @@ static_expr* static_expr_gen_unary( static_expr* stexp, int op, int line, int fi
 */
 static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int line, int first, int last ) {
 
-  expression* tmpexp;    /* Temporary expression for holding newly created parent expression */
+  expression* tmpexp;     /* Temporary expression for holding newly created parent expression */
+  int         i;          /* Loop iterator */
+  int         value = 1;  /* Temporary value */
   
   assert( (op == EXP_OP_XOR) || (op == EXP_OP_MULTIPLY) || (op == EXP_OP_DIVIDE) || (op == EXP_OP_MOD) ||
           (op == EXP_OP_ADD) || (op == EXP_OP_SUBTRACT) || (op == EXP_OP_AND)    || (op == EXP_OP_OR)  ||
-          (op == EXP_OP_NOR) || (op == EXP_OP_NAND)     || (op == EXP_OP_NXOR) );
+          (op == EXP_OP_NOR) || (op == EXP_OP_NAND)     || (op == EXP_OP_NXOR)   || (op == EXP_OP_EXPONENT) );
 
   if( (right != NULL) && (left != NULL) ) {
 
@@ -174,6 +176,12 @@ static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int
           case EXP_OP_MOD      :  right->num = left->num % right->num;     break;
           case EXP_OP_ADD      :  right->num = left->num + right->num;     break;
           case EXP_OP_SUBTRACT :  right->num = left->num - right->num;     break;
+          case EXP_OP_EXPONENT :
+            for( i=0; i<right->num; i++ ) {
+              value *= left->num;
+            }
+            right->num = value;
+            break;
           case EXP_OP_AND      :  right->num = left->num & right->num;     break;
           case EXP_OP_OR       :  right->num = left->num | right->num;     break;
           case EXP_OP_NOR      :  right->num = ~(left->num | right->num);  break;
@@ -290,6 +298,10 @@ void static_expr_dealloc( static_expr* stexp, bool rm_exp ) {
 
 /*
  $Log$
+ Revision 1.13  2005/01/07 17:59:52  phase1geo
+ Finalized updates for supplemental field changes.  Everything compiles and links
+ correctly at this time; however, a regression run has not confirmed the changes.
+
  Revision 1.12  2004/04/19 04:54:56  phase1geo
  Adding first and last column information to expression and related code.  This is
  not working correctly yet.

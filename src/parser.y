@@ -879,6 +879,18 @@ expression
         $$ = NULL;
       }
     }
+  | expression '*' '*' expression
+    {
+      expression* tmp;
+      if( (ignore_mode == 0) && ($1 != NULL) && ($4 != NULL) ) {
+        tmp = db_create_expression( $4, $1, EXP_OP_EXPONENT, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), NULL );
+        $$ = tmp;
+      } else {
+        expression_dealloc( $1, FALSE );
+        expression_dealloc( $4, FALSE );
+        $$ = NULL;
+      }
+    }
   | expression '&' expression
     {
       expression* tmp;

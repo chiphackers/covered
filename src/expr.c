@@ -171,6 +171,7 @@ static bool expression_op_func__join( expression*, thread* );
 static bool expression_op_func__disable( expression*, thread* );
 static bool expression_op_func__repeat( expression*, thread* );
 static bool expression_op_func__null( expression*, thread* );
+static bool expression_op_func__exponent( expression*, thread* );
 
 
 /*!
@@ -246,7 +247,8 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",     expression_op_func__nu
                                            {"WHILE",      expression_op_func__null,      {0, 0, 0, 1, 0, 0} },
                                            {"ALSHIFT",    expression_op_func__lshift,    {0, 0, 0, 1, 1, 0} },
                                            {"ARSHIFT",    expression_op_func__arshift,   {0, 0, 0, 1, 1, 0} },
-                                           {"SLIST",      expression_op_func__slist,     {1, 0, 0, 0, 1, 1} } };
+                                           {"SLIST",      expression_op_func__slist,     {1, 0, 0, 0, 1, 1} },
+                                           {"EXPONENT",   expression_op_func__exponent,  {0, 0, 0, 1, 1, 0} } };
 
 /*!
  \param exp    Pointer to expression to add value to.
@@ -2288,6 +2290,50 @@ bool expression_op_func__repeat( expression* expr, thread* thr ) {
 }
 
 /*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs an exponential power operation.
+*/
+bool expression_op_func__exponent( expression* expr, thread* thr ) {
+
+  bool     retval  = FALSE;  /* Return value for this function */
+  vec_data bit;              /* 1-bit vector value */
+  vec_data value32[32];      /* 32-bit vector value */
+  vector   vec;              /* Temporary vector value */
+  int      intval1;          /* Integer value */
+  int      intval2;          /* Integer value */
+  int      intval3 = 1;      /* Integer value */
+  int      i;                /* Loop iterator */
+
+  if( vector_is_unknown( expr->left->value ) || vector_is_unknown( expr->right->value ) ) {
+
+    bit.all        = 0;
+    bit.part.value = 0x2;
+    for( i=0; i<expr->value->width; i++ ) {
+      retval |= vector_set_value( expr->value, &bit, 1, 0, i );
+    }
+
+  } else {
+
+    vector_init( &vec, value32, 32 );
+    intval1 = vector_to_int( expr->left->value );
+    intval2 = vector_to_int( expr->right->value );
+
+    for( i=0; i<intval2; i++ ) {
+      intval3 *= intval1;
+    }
+
+    vector_from_int( &vec, intval3 );
+    retval = vector_set_value( expr->value, vec.value, expr->value->width, 0, 0 );
+
+  }
+
+}
+
+/*!
  \param expr  Pointer to expression to set value to.
  \param thr   Pointer to current thread being simulated. 
 
@@ -2732,6 +2778,12 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.157  2006/01/10 23:13:50  phase1geo
+ Completed support for implicit event sensitivity list.  Added diagnostics to verify
+ this new capability.  Also started support for parsing inline parameters and port
+ declarations (though this is probably not complete and not passing at this point).
+ Checkpointing.
+
  Revision 1.156  2006/01/10 05:56:36  phase1geo
  In the middle of adding support for event sensitivity lists to score command.
  Regressions should pass but this code is not complete at this time.
