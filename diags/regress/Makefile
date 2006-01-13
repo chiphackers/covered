@@ -69,8 +69,8 @@ DIAGS1        = always1         always2         always3         always3.1.11A   
                 slist1          slist1.1        slist1.2        slist1.3        slist2 \
                 static1         string1         supply0         supply1 \
                 task1           task1.1         task2           task2.1         task2.2 \
-                task2.3         task3           task3.1         toggle          tri \
-                tri0            tri1            while1          while1.1
+                task2.3         task3           task3.1         task4           toggle \
+                tri             tri0            tri1            while1          while1.1
 DIAGS2        = delay1.1
 DIAGS3        = delay1.2
 DIAGS4        = delay1.3
