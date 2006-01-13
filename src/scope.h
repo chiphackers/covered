@@ -29,24 +29,29 @@ func_unit* scope_get_parent_funit( char* scope );
 func_unit* scope_get_parent_module( char* scope );
 
 
-/* $Log$
-/* Revision 1.4  2005/11/29 23:14:37  phase1geo
-/* Adding support for named blocks.  Still not working at this point but checkpointing
-/* anyways.  Added new task3.1 diagnostic to verify task removal when a task is calling
-/* another task.
 /*
-/* Revision 1.3  2005/11/16 05:41:31  phase1geo
-/* Fixing implicit signal creation in binding functions.
-/*
-/* Revision 1.2  2005/11/11 22:53:40  phase1geo
-/* Updated bind process to allow binding of structures from different hierarchies.
-/* Added task port signals to get added.
-/*
-/* Revision 1.1  2005/11/10 23:27:37  phase1geo
-/* Adding scope files to handle scope searching.  The functions are complete (not
-/* debugged) but are not as of yet used anywhere in the code.  Added new func2 diagnostic
-/* which brings out scoping issues for functions.
-/*
+ $Log$
+ Revision 1.5  2005/12/01 16:08:19  phase1geo
+ Allowing nested functional units within a module to get parsed and handled correctly.
+ Added new nested_block1 diagnostic to test nested named blocks -- will add more tests
+ later for different combinations.  Updated regression suite which now passes.
+
+ Revision 1.4  2005/11/29 23:14:37  phase1geo
+ Adding support for named blocks.  Still not working at this point but checkpointing
+ anyways.  Added new task3.1 diagnostic to verify task removal when a task is calling
+ another task.
+
+ Revision 1.3  2005/11/16 05:41:31  phase1geo
+ Fixing implicit signal creation in binding functions.
+
+ Revision 1.2  2005/11/11 22:53:40  phase1geo
+ Updated bind process to allow binding of structures from different hierarchies.
+ Added task port signals to get added.
+
+ Revision 1.1  2005/11/10 23:27:37  phase1geo
+ Adding scope files to handle scope searching.  The functions are complete (not
+ debugged) but are not as of yet used anywhere in the code.  Added new func2 diagnostic
+ which brings out scoping issues for functions.
 */
 
 #endif

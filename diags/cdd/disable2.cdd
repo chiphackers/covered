@@ -19,11 +19,11 @@
 4 11 0 0
 4 10 11 11
 4 2 10 10
-3 3 foo main.foo disable2.v 23 32
+3 3 main.foo main.foo disable2.v 23 32
 2 30 25 20006 1 3d 11002 0 0 1 0 2 17
 1 a 0 1 16 102
 4 30 0 0
-3 1 bar main.foo.bar disable2.v 25 31
+3 1 main.foo.bar main.foo.bar disable2.v 25 31
 2 16 26 8000b 1 0 4 0 0 1 1 0
 2 15 26 40004 0 1 400 0 0 a
 2 17 26 4000b 1 37 11006 16 15 

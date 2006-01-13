@@ -21,7 +21,7 @@ Instance                                           Hit/ Miss/Total    Percent hi
   <NA>.main.foo                                      1/    1/    2       50%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Named Block: foo, File: disable1.v, Instance: <NA>.main.foo
+    Named Block: main.foo, File: disable1.v, Instance: <NA>.main.foo
     -------------------------------------------------------------------------------------------------------------
     Missed Lines
 

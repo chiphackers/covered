@@ -45,7 +45,7 @@
 4 13 16 16
 4 10 13 0
 4 7 10 10
-3 3 delay_for_a main.delay_for_a task2.3.v 31 37
+3 3 main.delay_for_a main.delay_for_a task2.3.v 31 37
 2 35 34 c000c 5 1 c 0 0 a
 2 36 34 4000a 0 2a 0 0 0 2 0 a
 2 37 34 4000c 8 27 1100a 35 36 1 0 2

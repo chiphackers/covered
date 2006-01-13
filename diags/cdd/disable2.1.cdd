@@ -2,7 +2,7 @@
 3 0 main main disable2.1.v 1 25
 2 1 4 10004 2 3b 100a 0 0 1 0 2 7
 4 1 0 0
-3 3 foo main.foo disable2.1.v 14 23
+3 3 main.foo main.foo disable2.1.v 14 23
 2 6 17 8000b 1 0 8 0 0 1 1 1
 2 5 17 40004 0 1 400 0 0 a
 2 7 17 4000b 1 37 1100a 6 5 

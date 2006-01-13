@@ -14,17 +14,17 @@
 4 33 0 0
 4 22 33 0
 4 11 22 0
-3 1 foobar main.foobar named_block1.v 5 7
+3 1 main.foobar main.foobar named_block1.v 5 7
 2 2 6 50008 1 0 4 0 0 1 1 0
 2 1 6 10001 0 1 400 0 0 a
 2 3 6 10008 1 37 11006 2 1 
 4 3 0 0
-3 1 barfoo main.barfoo named_block1.v 9 11
+3 1 main.barfoo main.barfoo named_block1.v 9 11
 2 6 10 60009 1 0 8 0 0 1 1 1
 2 5 10 10001 0 1 400 0 0 b
 2 7 10 10009 1 38 1100a 6 5 
 4 7 0 0
-3 1 fooey main.fooey named_block1.v 15 19
+3 1 main.fooey main.fooey named_block1.v 15 19
 2 14 17 b000b 1 1 8 0 0 b
 2 13 17 70007 1 1 4 0 0 a
 2 15 17 7000b 1 8 84 14 13 1 0 2
@@ -39,7 +39,7 @@
 1 c 0 1 0 2
 4 21 0 0
 4 16 21 21
-3 1 barry main.barry named_block1.v 20 24
+3 1 main.barry main.barry named_block1.v 20 24
 2 25 22 b000b 1 1 8 0 0 b
 2 24 22 70007 1 1 4 0 0 a
 2 26 22 7000b 1 2 88 25 24 1 0 2

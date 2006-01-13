@@ -523,6 +523,8 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
   sig_link*  sigl;           /* Temporary signal link holder */
   func_unit* found_funit;    /* Pointer to found task/function functional unit */
   statement* stmt;           /* Pointer to root statement for expression calling a function */
+  char       rest[4096];     /* Temporary string */
+  char       back[4096];     /* Temporary string */
 
   assert( (type == FUNIT_FUNCTION) || (type == FUNIT_TASK) || (type == FUNIT_NAMED_BLOCK) );
 
@@ -531,19 +533,7 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
 
     if( !scope_find_task_function_namedblock( name, type, funit_exp, &found_funit, exp_line ) ) {
 
-#ifdef OBSOLETE
-      /*
-       Bad hierarchical reference -- user error
-       Unachievable code due to unsuppported use of hierarchical referencing
-      */
-      snprintf( user_msg, USER_MSG_LENGTH, "Hierarchical reference to undefined %s \"%s\" in %s, line %d",
-                get_funit_type( type ),
-                name,
-                funit_exp->filename,
-                exp_line );
-      print_output( user_msg, FATAL, __FILE__, __LINE__ );
-      exit( 1 );
-#endif
+      printf( "Unable to find functional unit for name %s\n", name );
       retval = FALSE;
 
     } else if( found_funit->stmt_head != NULL ) {
@@ -559,7 +549,8 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
       /* If this is a function, also bind the return value signal vector to the expression's vector */
       if( type == FUNIT_FUNCTION ) {
 
-        sig.name = found_funit->name;
+        scope_extract_back( found_funit->name, back, rest );
+        sig.name = back;
         sigl     = sig_link_find( &sig, found_funit->sig_head );
 
         assert( sigl != NULL );
@@ -753,6 +744,12 @@ void bind( bool cdd_reading ) {
 
 /* 
  $Log$
+ Revision 1.56  2006/01/10 23:13:50  phase1geo
+ Completed support for implicit event sensitivity list.  Added diagnostics to verify
+ this new capability.  Also started support for parsing inline parameters and port
+ declarations (though this is probably not complete and not passing at this point).
+ Checkpointing.
+
  Revision 1.55  2006/01/05 05:52:06  phase1geo
  Removing wait bit in vector supplemental field and modifying algorithm to only
  assign in the post-sim location (pre-sim now is gone).  This fixes some issues

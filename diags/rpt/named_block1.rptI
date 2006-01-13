@@ -48,7 +48,7 @@ Instance                                                   Toggle 0 -> 1        
       a                         0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Named Block: fooey, File: named_block1.v, Instance: <NA>.main.fooey
+    Named Block: main.fooey, File: named_block1.v, Instance: <NA>.main.fooey
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -59,7 +59,7 @@ Instance                                                   Toggle 0 -> 1        
       c                         0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Named Block: barry, File: named_block1.v, Instance: <NA>.main.barry
+    Named Block: main.barry, File: named_block1.v, Instance: <NA>.main.barry
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -84,7 +84,7 @@ Instance                                                                    Logi
   <NA>.main.barry                                                       2/   6/   8       25%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Named Block: fooey, File: named_block1.v, Instance: <NA>.main.fooey
+    Named Block: main.fooey, File: named_block1.v, Instance: <NA>.main.fooey
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 
@@ -113,7 +113,7 @@ Instance                                                                    Logi
          *         *    *
 
 
-    Named Block: barry, File: named_block1.v, Instance: <NA>.main.barry
+    Named Block: main.barry, File: named_block1.v, Instance: <NA>.main.barry
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 

@@ -33,7 +33,7 @@ Instance                                                   Toggle 0 -> 1        
   <NA>.main.call_task2                               0/    1/    1        0%             0/    1/    1        0%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Task: call_task1, File: task3.1.v, Instance: <NA>.main.call_task1
+    Task: main.call_task1, File: task3.1.v, Instance: <NA>.main.call_task1
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -42,7 +42,7 @@ Instance                                                   Toggle 0 -> 1        
       a                         0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Task: call_task2, File: task3.1.v, Instance: <NA>.main.call_task2
+    Task: main.call_task2, File: task3.1.v, Instance: <NA>.main.call_task2
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 

@@ -8,7 +8,7 @@
 1 a 0 1 16 1002
 4 4 3 0
 4 3 4 0
-3 3 invert_a main.invert_a task1.v 18 24
+3 3 main.invert_a main.invert_a task1.v 18 24
 2 18 21 60006 2 1 c 0 0 b
 2 19 21 50005 2 1b c 18 0 1 0 1002
 2 17 21 10001 0 1 400 0 0 a

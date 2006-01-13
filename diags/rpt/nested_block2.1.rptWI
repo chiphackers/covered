@@ -44,7 +44,7 @@ Instance                                                   Toggle 0 -> 1        
       a                         0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Function: foo, File: nested_block2.1.v, Instance: <NA>.main.foo
+    Function: main.foo, File: nested_block2.1.v, Instance: <NA>.main.foo
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -86,7 +86,7 @@ Instance                                                                    Logi
          *    
 
 
-    Function: foo, File: nested_block2.1.v, Instance: <NA>.main.foo
+    Function: main.foo, File: nested_block2.1.v, Instance: <NA>.main.foo
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 

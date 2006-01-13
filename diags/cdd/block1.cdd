@@ -9,7 +9,7 @@
 1 b 0 1 16 102
 4 11 3 0
 4 3 11 0
-3 1 foo main.foo block1.v 7 10
+3 1 main.foo main.foo block1.v 7 10
 2 5 8 80008 2 1 c 0 0 a
 2 4 8 30003 0 1 400 0 0 b
 2 6 8 30008 2 37 1100e 5 4 

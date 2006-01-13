@@ -67,9 +67,9 @@ DIAGS1        = always1         always2         always3         always3.1.11A   
                 param9.1        param9.2        port1           port2           pulldown1 \
                 pullup1         repeat1         repeat2         sbit_sel1       sbit_sel1.1 \
                 slist1          slist1.1        slist1.2        slist1.3        slist2 \
-                static1         string1         supply0         supply1 \
-                task1           task1.1         task2           task2.1         task2.2 \
-                task2.3         task3           task3.1         task4           toggle \
+                static1         string1         supply0         supply1         task1 \
+                task1.1         task2           task2.1         task2.2         task2.3 \
+                task3           task3.1         task4           task4.1         toggle \
                 tri             tri0            tri1            while1          while1.1
 DIAGS2        = delay1.1
 DIAGS3        = delay1.2
@@ -83,7 +83,7 @@ RACELIST      = race1           race1.1         race1.2         race2.1         
 ERRSCORE      = err1.0          err2.0          func3           func3.1         func3.2 \
                 func3.3         func3.4         func3.5         func3.6         func4 \
                 func4.1         func4.2         func4.3         func4.4         func4.5 \
-                func4.6
+                func4.6         task5
 ERRMERGE      =
 ERRREPORT     = err2.1
            

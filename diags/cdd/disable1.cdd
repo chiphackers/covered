@@ -15,7 +15,7 @@
 4 17 0 0
 4 16 17 17
 4 11 16 16
-3 1 foo main.foo disable1.v 7 11
+3 1 main.foo main.foo disable1.v 7 11
 2 2 8 a000d 1 0 4 0 0 1 1 0
 2 1 8 60006 0 1 400 0 0 a
 2 3 8 6000d 1 37 11006 2 1 

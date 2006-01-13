@@ -23,7 +23,7 @@
 4 15 11 3
 4 5 15 0
 4 3 5 0
-3 3 foobar main.foobar always12.v 28 34
+3 3 main.foobar main.foobar always12.v 28 34
 2 29 32 50005 1 1 4 0 0 b
 2 28 32 10001 0 1 400 0 0 a
 2 30 32 10005 1 37 11006 29 28 

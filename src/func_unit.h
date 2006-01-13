@@ -25,6 +25,9 @@ func_unit* funit_get_curr_module( func_unit* funit );
 /*! \brief Returns the parent function of the given functional unit (if there is one) */
 func_unit* funit_get_curr_function( func_unit* funit );
 
+/*! \brief Generates the internally used task/function/named-block name for the specified functional unit */
+char* funit_gen_task_function_namedblock_name( char* orig_name, func_unit* parent );
+
 /*! \brief Writes contents of provided functional unit to specified output. */
 bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst );
 
@@ -56,6 +59,10 @@ void funit_dealloc( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.6  2005/12/01 21:11:16  phase1geo
+ Adding more error checking diagnostics into regression suite.  Full regression
+ passes.
+
  Revision 1.5  2005/12/01 20:49:02  phase1geo
  Adding nested_block3 to verify nested named blocks in tasks.  Fixed named block
  usage to be FUNC_CALL or TASK_CALL -like based on its placement.

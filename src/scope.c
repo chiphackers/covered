@@ -136,15 +136,15 @@ bool scope_find_signal( char* name, func_unit* curr_funit, vsignal** found_sig, 
 */
 bool scope_find_task_function_namedblock( char* name, int type, func_unit* curr_funit, func_unit** found_funit, int line ) {
 
-  func_unit   funit;   /* Temporary holder of task */
-  funit_link* funitl;  /* Pointer to current functional unit link */
+  funit_link* funitl;         /* Pointer to current functional unit link */
+  char        rest[4096];     /* Temporary string */
+  char        back[4096];     /* Temporary string */
+  bool        found = FALSE;  /* Specifies if function unit has been found */
 
   assert( (type == FUNIT_FUNCTION) || (type == FUNIT_TASK) || (type == FUNIT_NAMED_BLOCK) );
   assert( curr_funit != NULL );
 
   *found_funit = curr_funit;
-  funit.name   = name;
-  funit.type   = type;
 
   /*
    If we are performing a hierarchical reference to a task/function/named block, find the functional unit
@@ -167,11 +167,18 @@ bool scope_find_task_function_namedblock( char* name, int type, func_unit* curr_
   *found_funit = funit_get_curr_module( *found_funit );
 
   /* Search for functional unit in the module's tf_head list */
-  funitl = funit_link_find( &funit, (*found_funit)->tf_head );
+  funitl = (*found_funit)->tf_head;
+  while( (funitl != NULL) && !found ) {
+    scope_extract_back( funitl->funit->name, back, rest );
+    if( strcmp( back, name ) == 0 ) {
+      found        = TRUE;
+      *found_funit = funitl->funit;
+    } else {
+      funitl = funitl->next;
+    }
+  }
 
-  *found_funit = (funitl == NULL) ? NULL : funitl->funit;
-
-  return( funitl != NULL );    
+  return( found );
 
 }
 
@@ -247,27 +254,32 @@ func_unit* scope_get_parent_module( char* scope ) {
 }
 
 
-/* $Log$
-/* Revision 1.5  2005/11/29 23:14:37  phase1geo
-/* Adding support for named blocks.  Still not working at this point but checkpointing
-/* anyways.  Added new task3.1 diagnostic to verify task removal when a task is calling
-/* another task.
 /*
-/* Revision 1.4  2005/11/16 22:01:51  phase1geo
-/* Fixing more problems related to simulation of function/task calls.  Regression
-/* runs are now running without errors.
-/*
-/* Revision 1.3  2005/11/16 05:41:31  phase1geo
-/* Fixing implicit signal creation in binding functions.
-/*
-/* Revision 1.2  2005/11/11 22:53:40  phase1geo
-/* Updated bind process to allow binding of structures from different hierarchies.
-/* Added task port signals to get added.
-/*
-/* Revision 1.1  2005/11/10 23:27:37  phase1geo
-/* Adding scope files to handle scope searching.  The functions are complete (not
-/* debugged) but are not as of yet used anywhere in the code.  Added new func2 diagnostic
-/* which brings out scoping issues for functions.
-/*
+ $Log$
+ Revision 1.6  2005/12/01 16:08:19  phase1geo
+ Allowing nested functional units within a module to get parsed and handled correctly.
+ Added new nested_block1 diagnostic to test nested named blocks -- will add more tests
+ later for different combinations.  Updated regression suite which now passes.
+
+ Revision 1.5  2005/11/29 23:14:37  phase1geo
+ Adding support for named blocks.  Still not working at this point but checkpointing
+ anyways.  Added new task3.1 diagnostic to verify task removal when a task is calling
+ another task.
+
+ Revision 1.4  2005/11/16 22:01:51  phase1geo
+ Fixing more problems related to simulation of function/task calls.  Regression
+ runs are now running without errors.
+
+ Revision 1.3  2005/11/16 05:41:31  phase1geo
+ Fixing implicit signal creation in binding functions.
+
+ Revision 1.2  2005/11/11 22:53:40  phase1geo
+ Updated bind process to allow binding of structures from different hierarchies.
+ Added task port signals to get added.
+
+ Revision 1.1  2005/11/10 23:27:37  phase1geo
+ Adding scope files to handle scope searching.  The functions are complete (not
+ debugged) but are not as of yet used anywhere in the code.  Added new func2 diagnostic
+ which brings out scoping issues for functions.
 */
 

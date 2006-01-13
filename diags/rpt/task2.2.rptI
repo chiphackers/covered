@@ -28,7 +28,7 @@ Instance                                           Hit/ Miss/Total    Percent hi
             7:     a  = 1'b0
 
 
-    Task: delay_for_awhile, File: task2.2.v, Instance: <NA>.main.delay_for_awhile
+    Task: main.delay_for_awhile, File: task2.2.v, Instance: <NA>.main.delay_for_awhile
     -------------------------------------------------------------------------------------------------------------
     Missed Lines
 
@@ -57,7 +57,7 @@ Instance                                                   Toggle 0 -> 1        
       a                         0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Task: delay_for_awhile, File: task2.2.v, Instance: <NA>.main.delay_for_awhile
+    Task: main.delay_for_awhile, File: task2.2.v, Instance: <NA>.main.delay_for_awhile
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -77,7 +77,7 @@ Instance                                                                    Logi
   <NA>.main.delay_for_awhile                                            1/   1/   2       50%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Task: delay_for_awhile, File: task2.2.v, Instance: <NA>.main.delay_for_awhile
+    Task: main.delay_for_awhile, File: task2.2.v, Instance: <NA>.main.delay_for_awhile
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 

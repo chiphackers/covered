@@ -18,7 +18,7 @@
 Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
   main                    task2.2.v                  3/    1/    4       75%
-  delay_for_awhile        task2.2.v                  4/    1/    5       80%
+  main.delay_for_awhil    task2.2.v                  4/    1/    5       80%
 ---------------------------------------------------------------------------------------------------------------------
 
     Module: main, File: task2.2.v
@@ -28,7 +28,7 @@ Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hi
             7:     a  = 1'b0
 
 
-    Task: delay_for_awhile, File: task2.2.v
+    Task: main.delay_for_awhile, File: task2.2.v
     -------------------------------------------------------------------------------------------------------------
     Missed Lines
 
@@ -43,7 +43,7 @@ Module/Task/Function      Filename                         Toggle 0 -> 1        
                                                    Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
   main                    task2.2.v                  1/    1/    2       50%             0/    2/    2        0%
-  delay_for_awhile        task2.2.v                  1/    0/    1      100%             0/    1/    1        0%
+  main.delay_for_awhil    task2.2.v                  1/    0/    1      100%             0/    1/    1        0%
 ---------------------------------------------------------------------------------------------------------------------
 
     Module: main, File: task2.2.v
@@ -57,7 +57,7 @@ Module/Task/Function      Filename                         Toggle 0 -> 1        
       a                         0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Task: delay_for_awhile, File: task2.2.v
+    Task: main.delay_for_awhile, File: task2.2.v
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -74,10 +74,10 @@ Module/Task/Function                Filename                                Logi
                                                                       Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
   main                              task2.2.v                           0/   0/   0      100%
-  delay_for_awhile                  task2.2.v                           1/   1/   2       50%
+  main.delay_for_awhile             task2.2.v                           1/   1/   2       50%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Task: delay_for_awhile, File: task2.2.v
+    Task: main.delay_for_awhile, File: task2.2.v
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 
@@ -100,6 +100,6 @@ Module/Task/Function                Filename                                Logi
 Module/Task/Function      Filename                Hit/Miss/Total    Percent Hit    Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
   main                    task2.2.v                 0/   0/   0      100%            0/   0/   0      100%
-  delay_for_awhile        task2.2.v                 0/   0/   0      100%            0/   0/   0      100%
+  main.delay_for_awhil    task2.2.v                 0/   0/   0      100%            0/   0/   0      100%
 
 

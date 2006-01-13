@@ -18,9 +18,9 @@
 Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
   main                    nested_block2.v            1/    0/    1      100%
-  foo                     nested_block2.v            0/    0/    0      100%
-  foo_block               nested_block2.v            2/    0/    2      100%
-  bar                     nested_block2.v            1/    0/    1      100%
+  main.foo                nested_block2.v            0/    0/    0      100%
+  main.foo.foo_block      nested_block2.v            2/    0/    2      100%
+  main.bar                nested_block2.v            1/    0/    1      100%
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -30,9 +30,9 @@ Module/Task/Function      Filename                         Toggle 0 -> 1        
                                                    Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
   main                    nested_block2.v            0/    2/    2        0%             0/    2/    2        0%
-  foo                     nested_block2.v            0/    2/    2        0%             0/    2/    2        0%
-  foo_block               nested_block2.v            0/    1/    1        0%             0/    1/    1        0%
-  bar                     nested_block2.v            0/    2/    2        0%             0/    2/    2        0%
+  main.foo                nested_block2.v            0/    2/    2        0%             0/    2/    2        0%
+  main.foo.foo_block      nested_block2.v            0/    1/    1        0%             0/    1/    1        0%
+  main.bar                nested_block2.v            0/    2/    2        0%             0/    2/    2        0%
 ---------------------------------------------------------------------------------------------------------------------
 
     Module: main, File: nested_block2.v
@@ -46,7 +46,7 @@ Module/Task/Function      Filename                         Toggle 0 -> 1        
       a                         0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Function: foo, File: nested_block2.v
+    Function: main.foo, File: nested_block2.v
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -57,7 +57,7 @@ Module/Task/Function      Filename                         Toggle 0 -> 1        
       a                         0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Named Block: foo_block, File: nested_block2.v
+    Named Block: main.foo.foo_block, File: nested_block2.v
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -66,7 +66,7 @@ Module/Task/Function      Filename                         Toggle 0 -> 1        
       c                         0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Function: bar, File: nested_block2.v
+    Function: main.bar, File: nested_block2.v
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -85,9 +85,9 @@ Module/Task/Function                Filename                                Logi
                                                                       Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
   main                              nested_block2.v                     1/   1/   2       50%
-  foo                               nested_block2.v                     0/   0/   0      100%
-  foo_block                         nested_block2.v                     1/   1/   2       50%
-  bar                               nested_block2.v                     1/   1/   2       50%
+  main.foo                          nested_block2.v                     0/   0/   0      100%
+  main.foo.foo_block                nested_block2.v                     1/   1/   2       50%
+  main.bar                          nested_block2.v                     1/   1/   2       50%
 ---------------------------------------------------------------------------------------------------------------------
 
     Module: main, File: nested_block2.v
@@ -107,7 +107,7 @@ Module/Task/Function                Filename                                Logi
              *
 
 
-    Named Block: foo_block, File: nested_block2.v
+    Named Block: main.foo.foo_block, File: nested_block2.v
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 
@@ -124,7 +124,7 @@ Module/Task/Function                Filename                                Logi
              *
 
 
-    Function: bar, File: nested_block2.v
+    Function: main.bar, File: nested_block2.v
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 
@@ -149,8 +149,8 @@ Module/Task/Function                Filename                                Logi
 Module/Task/Function      Filename                Hit/Miss/Total    Percent Hit    Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
   main                    nested_block2.v           0/   0/   0      100%            0/   0/   0      100%
-  foo                     nested_block2.v           0/   0/   0      100%            0/   0/   0      100%
-  foo_block               nested_block2.v           0/   0/   0      100%            0/   0/   0      100%
-  bar                     nested_block2.v           0/   0/   0      100%            0/   0/   0      100%
+  main.foo                nested_block2.v           0/   0/   0      100%            0/   0/   0      100%
+  main.foo.foo_block      nested_block2.v           0/   0/   0      100%            0/   0/   0      100%
+  main.bar                nested_block2.v           0/   0/   0      100%            0/   0/   0      100%
 
 

@@ -21,7 +21,7 @@ Instance                                           Hit/ Miss/Total    Percent hi
   <NA>.main.foobar                                   3/    1/    4       75%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Named Block: foobar, File: disable1.1.v, Instance: <NA>.main.foobar
+    Named Block: main.foobar, File: disable1.1.v, Instance: <NA>.main.foobar
     -------------------------------------------------------------------------------------------------------------
     Missed Lines
 

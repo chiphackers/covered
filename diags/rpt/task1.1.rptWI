@@ -42,7 +42,7 @@ Instance                                                   Toggle 0 -> 1        
       a                         0->1: 1'h0
       ......................... 1->0: 1'h1 ...
 
-    Task: invert_a, File: task1.1.v, Instance: <NA>.main.invert_a
+    Task: main.invert_a, File: task1.1.v, Instance: <NA>.main.invert_a
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 

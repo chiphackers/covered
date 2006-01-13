@@ -3,11 +3,11 @@
 2 11 5 8000c 2 3d 100a 0 0 1 0 2 10
 1 a 0 1 16 2
 4 11 0 0
-3 1 foo main.foo nested_block1.v 5 13
+3 1 main.foo main.foo nested_block1.v 5 13
 2 10 7 10005 2 3d 1100a 0 0 1 0 2 3
 1 b 0 1 16 2
 4 10 0 0
-3 1 bar main.foo.bar nested_block1.v 7 12
+3 1 main.foo.bar main.foo.bar nested_block1.v 7 12
 2 2 9 60009 1 0 8 0 0 1 1 1
 2 1 9 20002 0 1 400 0 0 a
 2 3 9 20009 1 37 1100a 2 1 

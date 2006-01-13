@@ -44,7 +44,7 @@ Instance                                                   Toggle 0 -> 1        
       a                         0->1: 1'h0
       ......................... 1->0: 1'h1 ...
 
-    Function: invert, File: func2.v, Instance: <NA>.main.invert
+    Function: main.invert, File: func2.v, Instance: <NA>.main.invert
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -55,7 +55,7 @@ Instance                                                   Toggle 0 -> 1        
       a                         0->1: 1'h1
       ......................... 1->0: 1'h0 ...
 
-    Function: buffer, File: func2.v, Instance: <NA>.main.buffer
+    Function: main.buffer, File: func2.v, Instance: <NA>.main.buffer
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 

@@ -3,7 +3,7 @@
 2 22 6 10004 2 3d 100a 0 0 1 0 2 10
 1 b 0 1 16 102
 4 22 0 0
-3 1 foo_fork main.foo_fork fork2.v 6 18
+3 1 main.foo_fork main.foo_fork fork2.v 6 18
 2 2 9 100013 1 0 4 0 0 1 1 0
 2 1 9 c000c 0 1 400 0 0 a
 2 3 9 c0013 1 37 11006 2 1 

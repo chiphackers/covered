@@ -46,7 +46,7 @@ Instance                                                   Toggle 0 -> 1        
       a                         0->1: 1'h1
       ......................... 1->0: 1'h0 ...
 
-    Task: foo, File: nested_block3.v, Instance: <NA>.main.foo
+    Task: main.foo, File: nested_block3.v, Instance: <NA>.main.foo
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -55,7 +55,7 @@ Instance                                                   Toggle 0 -> 1        
       a                         0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Named Block: foo_block, File: nested_block3.v, Instance: <NA>.main.foo.foo_block
+    Named Block: main.foo.foo_block, File: nested_block3.v, Instance: <NA>.main.foo.foo_block
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 

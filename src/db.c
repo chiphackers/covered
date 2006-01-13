@@ -255,6 +255,7 @@ bool db_read( char* file, int read_mode ) {
           assert( !merge_mode );
 
           /* Parse rest of line for statement info */
+          // printf( "Reading statement for instance %s\n", funit_scope );
           retval = statement_db_read( &rest_line, curr_funit, read_mode );
 
         } else if( type == DB_TYPE_FSM ) {
@@ -448,7 +449,12 @@ func_unit* db_add_instance( char* scope, char* name, int type ) {
 
     if( (found_funit_link = funit_link_find( funit, funit_head )) != NULL ) {
 
-      assert( type == FUNIT_MODULE );
+      if( type != FUNIT_MODULE ) {
+        snprintf( user_msg, USER_MSG_LENGTH, "Multiple identical task/function/named-begin-end names (%s) found in module %s, file %s\n",
+                  scope, curr_funit->name, curr_funit->filename );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        exit( 1 );
+      }
 
       instance_parse_add( &instance_root, curr_funit, found_funit_link->funit, scope );
 
@@ -537,8 +543,9 @@ void db_end_module( int end_line ) {
 */
 bool db_add_function_task_namedblock( int type, char* name, char* file, int start_line ) {
 
-  func_unit* tf;      /* Pointer to created functional unit */
-  func_unit* parent;  /* Pointer to parent module for the newly created functional unit */
+  func_unit* tf;         /* Pointer to created functional unit */
+  func_unit* parent;     /* Pointer to parent module for the newly created functional unit */
+  char*      full_name;  /* Full name of function/task/namedblock which includes the parent module name */
 
   assert( (type == FUNIT_FUNCTION) || (type == FUNIT_TASK) || (type == FUNIT_NAMED_BLOCK) );
 
@@ -558,10 +565,13 @@ bool db_add_function_task_namedblock( int type, char* name, char* file, int star
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
-  /* Add this as an instance so we can get scope */
-  if( (tf = db_add_instance( name, name, type )) != NULL ) {
+  /* Generate full name to use for the function/task */
+  full_name = funit_gen_task_function_namedblock_name( name, curr_funit );
 
-    /* Get the parent module */
+  /* Add this as an instance so we can get scope */
+  if( (tf = db_add_instance( name, full_name, type )) != NULL ) {
+
+    /* Get parent */
     parent = funit_get_curr_module( curr_funit );
 
     /* Store this functional unit in the parent module list */
@@ -576,6 +586,8 @@ bool db_add_function_task_namedblock( int type, char* name, char* file, int star
     curr_funit->start_line = start_line;
     
   }
+
+  free_safe( full_name );
 
   return( tf != NULL );
 
@@ -1681,6 +1693,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.162  2006/01/12 22:53:01  phase1geo
+ Adding support for localparam construct.  Added tests to regression suite to
+ verify correct functionality.  Full regression passes.
+
  Revision 1.161  2006/01/12 22:14:45  phase1geo
  Completed code for handling parameter value pass by name Verilog-2001 syntax.
  Added diagnostics to regression suite and updated regression files for this

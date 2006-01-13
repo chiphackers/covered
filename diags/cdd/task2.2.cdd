@@ -24,7 +24,7 @@
 4 16 0 0
 4 13 16 0
 4 10 13 13
-3 3 delay_for_awhile main.delay_for_awhile task2.2.v 24 36
+3 3 main.delay_for_awhile main.delay_for_awhile task2.2.v 24 36
 2 21 29 60009 1 0 4 0 0 1 1 0
 2 20 29 20002 0 1 400 0 0 b
 2 22 29 20009 1 37 11006 21 20 

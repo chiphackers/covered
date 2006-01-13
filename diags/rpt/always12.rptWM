@@ -18,7 +18,7 @@
 Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
   main                    always12.v                 3/    3/    6       50%
-  foobar                  always12.v                 1/    0/    1      100%
+  main.foobar             always12.v                 1/    0/    1      100%
 ---------------------------------------------------------------------------------------------------------------------
 
     Module: main, File: always12.v
@@ -38,7 +38,7 @@ Module/Task/Function      Filename                         Toggle 0 -> 1        
                                                    Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
   main                    always12.v                 0/    2/    2        0%             0/    2/    2        0%
-  foobar                  always12.v                 0/    2/    2        0%             0/    2/    2        0%
+  main.foobar             always12.v                 0/    2/    2        0%             0/    2/    2        0%
 ---------------------------------------------------------------------------------------------------------------------
 
     Module: main, File: always12.v
@@ -52,7 +52,7 @@ Module/Task/Function      Filename                         Toggle 0 -> 1        
       a                         0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Task: foobar, File: always12.v
+    Task: main.foobar, File: always12.v
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -71,7 +71,7 @@ Module/Task/Function                Filename                                Logi
                                                                       Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
   main                              always12.v                          2/   3/   5       40%
-  foobar                            always12.v                          1/   1/   2       50%
+  main.foobar                       always12.v                          1/   1/   2       50%
 ---------------------------------------------------------------------------------------------------------------------
 
     Module: main, File: always12.v
@@ -103,7 +103,7 @@ Module/Task/Function                Filename                                Logi
          *   *
 
 
-    Task: foobar, File: always12.v
+    Task: main.foobar, File: always12.v
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 
@@ -128,6 +128,6 @@ Module/Task/Function                Filename                                Logi
 Module/Task/Function      Filename                Hit/Miss/Total    Percent Hit    Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
   main                    always12.v                0/   0/   0      100%            0/   0/   0      100%
-  foobar                  always12.v                0/   0/   0      100%            0/   0/   0      100%
+  main.foobar             always12.v                0/   0/   0      100%            0/   0/   0      100%
 
 

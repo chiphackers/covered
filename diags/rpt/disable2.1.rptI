@@ -21,7 +21,7 @@ Instance                                           Hit/ Miss/Total    Percent hi
   <NA>.main.foo                                      3/    1/    4       75%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Task: foo, File: disable2.1.v, Instance: <NA>.main.foo
+    Task: main.foo, File: disable2.1.v, Instance: <NA>.main.foo
     -------------------------------------------------------------------------------------------------------------
     Missed Lines
 
@@ -39,7 +39,7 @@ Instance                                                   Toggle 0 -> 1        
   <NA>.main.foo                                      0/    1/    1        0%             0/    1/    1        0%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Task: foo, File: disable2.1.v, Instance: <NA>.main.foo
+    Task: main.foo, File: disable2.1.v, Instance: <NA>.main.foo
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -59,7 +59,7 @@ Instance                                                                    Logi
   <NA>.main.foo                                                         1/   1/   2       50%
 ---------------------------------------------------------------------------------------------------------------------
 
-    Task: foo, File: disable2.1.v, Instance: <NA>.main.foo
+    Task: main.foo, File: disable2.1.v, Instance: <NA>.main.foo
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 

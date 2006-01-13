@@ -52,7 +52,7 @@ Instance                                                   Toggle 0 -> 1        
       a                         0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Task: foobar, File: always12.v, Instance: <NA>.main.foobar
+    Task: main.foobar, File: always12.v, Instance: <NA>.main.foobar
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -103,7 +103,7 @@ Instance                                                                    Logi
          *   *
 
 
-    Task: foobar, File: always12.v, Instance: <NA>.main.foobar
+    Task: main.foobar, File: always12.v, Instance: <NA>.main.foobar
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 

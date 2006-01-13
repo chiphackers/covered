@@ -18,7 +18,7 @@
 Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
   main                    fork2.v                    0/    0/    0      100%
-  foo_fork                fork2.v                    7/    0/    7      100%
+  main.foo_fork           fork2.v                    7/    0/    7      100%
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -28,7 +28,7 @@ Module/Task/Function      Filename                         Toggle 0 -> 1        
                                                    Hit/ Miss/Total    Percent hit      Hit/ Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
   main                    fork2.v                    1/    0/    1      100%             0/    1/    1        0%
-  foo_fork                fork2.v                    1/    0/    1      100%             0/    1/    1        0%
+  main.foo_fork           fork2.v                    1/    0/    1      100%             0/    1/    1        0%
 ---------------------------------------------------------------------------------------------------------------------
 
     Module: main, File: fork2.v
@@ -40,7 +40,7 @@ Module/Task/Function      Filename                         Toggle 0 -> 1        
       b                         0->1: 1'h1
       ......................... 1->0: 1'h0 ...
 
-    Named Block: foo_fork, File: fork2.v
+    Named Block: main.foo_fork, File: fork2.v
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -57,7 +57,7 @@ Module/Task/Function                Filename                                Logi
                                                                       Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
   main                              fork2.v                             0/   0/   0      100%
-  foo_fork                          fork2.v                             0/   0/   0      100%
+  main.foo_fork                     fork2.v                             0/   0/   0      100%
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -67,6 +67,6 @@ Module/Task/Function                Filename                                Logi
 Module/Task/Function      Filename                Hit/Miss/Total    Percent Hit    Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
   main                    fork2.v                   0/   0/   0      100%            0/   0/   0      100%
-  foo_fork                fork2.v                   0/   0/   0      100%            0/   0/   0      100%
+  main.foo_fork           fork2.v                   0/   0/   0      100%            0/   0/   0      100%
 
 

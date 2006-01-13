@@ -40,7 +40,7 @@ Instance                                                   Toggle 0 -> 1        
       a                         0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Task: delay_for_awhile, File: task2.v, Instance: <NA>.main.delay_for_awhile
+    Task: main.delay_for_awhile, File: task2.v, Instance: <NA>.main.delay_for_awhile
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
