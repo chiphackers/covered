@@ -50,7 +50,7 @@ Instance                                                   Toggle 0 -> 1        
       foo_d                     0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Function: foo_func, File: ./lib/foo_module.v, Instance: <NA>.main.bar.foo_func
+    Function: foo_module.foo_func, File: ./lib/foo_module.v, Instance: <NA>.main.bar.foo_func
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -91,7 +91,7 @@ Instance                                                                    Logi
          *   *
 
 
-    Function: foo_func, File: ./lib/foo_module.v, Instance: <NA>.main.bar.foo_func
+    Function: foo_module.foo_func, File: ./lib/foo_module.v, Instance: <NA>.main.bar.foo_func
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 

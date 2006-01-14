@@ -170,10 +170,12 @@ bool search_add_no_score_funit( char* funit ) {
   bool  retval = TRUE;   /* Return value for this function */
   char* tmp;             /* Temporary module name          */
 
-  if( is_variable( funit ) ) {
+  if( is_func_unit( funit ) ) {
     tmp = strdup_safe( funit, __FILE__, __LINE__ );
     str_link_add( tmp, &no_score_head, &no_score_tail );
   } else {
+    snprintf( user_msg, USER_MSG_LENGTH, "Value of -e option (%s) is not a valid block name", funit );
+    print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = FALSE;
   }
 
@@ -249,6 +251,9 @@ void search_free_lists() {
 
 /*
  $Log$
+ Revision 1.20  2005/12/12 23:25:37  phase1geo
+ Fixing memory faults.  This is a work in progress.
+
  Revision 1.19  2005/11/08 23:12:10  phase1geo
  Fixes for function/task additions.  Still a lot of testing on these structures;
  however, regressions now pass again so we are checkpointing here.

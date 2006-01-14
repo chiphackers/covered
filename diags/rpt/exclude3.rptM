@@ -19,8 +19,8 @@ Module/Task/Function      Filename                 Hit/ Miss/Total    Percent hi
 ---------------------------------------------------------------------------------------------------------------------
   main                    exclude3.v                 0/    0/    0      100%
   foo_module              foo_module.v               1/    0/    1      100%
-  foo_named_block         foo_module.v               1/    0/    1      100%
-  foo_func                foo_module.v               1/    0/    1      100%
+  foo_module.foo_named    foo_module.v               1/    0/    1      100%
+  foo_module.foo_func     foo_module.v               1/    0/    1      100%
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -31,8 +31,8 @@ Module/Task/Function      Filename                         Toggle 0 -> 1        
 ---------------------------------------------------------------------------------------------------------------------
   main                    exclude3.v                 0/    0/    0      100%             0/    0/    0      100%
   foo_module              foo_module.v               0/    4/    4        0%             0/    4/    4        0%
-  foo_named_block         foo_module.v               0/    0/    0      100%             0/    0/    0      100%
-  foo_func                foo_module.v               0/    2/    2        0%             0/    2/    2        0%
+  foo_module.foo_named    foo_module.v               0/    0/    0      100%             0/    0/    0      100%
+  foo_module.foo_func     foo_module.v               0/    2/    2        0%             0/    2/    2        0%
 ---------------------------------------------------------------------------------------------------------------------
 
     Module: foo_module, File: ./lib/foo_module.v
@@ -50,7 +50,7 @@ Module/Task/Function      Filename                         Toggle 0 -> 1        
       foo_d                     0->1: 1'h0
       ......................... 1->0: 1'h0 ...
 
-    Function: foo_func, File: ./lib/foo_module.v
+    Function: foo_module.foo_func, File: ./lib/foo_module.v
     -------------------------------------------------------------------------------------------------------------
     Signals not getting 100% toggle coverage
 
@@ -70,8 +70,8 @@ Module/Task/Function                Filename                                Logi
 ---------------------------------------------------------------------------------------------------------------------
   main                              exclude3.v                          0/   0/   0      100%
   foo_module                        foo_module.v                        0/   2/   2        0%
-  foo_named_block                   foo_module.v                        0/   0/   0      100%
-  foo_func                          foo_module.v                        0/   2/   2        0%
+  foo_module.foo_named_block        foo_module.v                        0/   0/   0      100%
+  foo_module.foo_func               foo_module.v                        0/   2/   2        0%
 ---------------------------------------------------------------------------------------------------------------------
 
     Module: foo_module, File: ./lib/foo_module.v
@@ -91,7 +91,7 @@ Module/Task/Function                Filename                                Logi
          *   *
 
 
-    Function: foo_func, File: ./lib/foo_module.v
+    Function: foo_module.foo_func, File: ./lib/foo_module.v
     -------------------------------------------------------------------------------------------------------------
     Missed Combinations  (* = missed value)
 
@@ -117,7 +117,7 @@ Module/Task/Function      Filename                Hit/Miss/Total    Percent Hit 
 ---------------------------------------------------------------------------------------------------------------------
   main                    exclude3.v                0/   0/   0      100%            0/   0/   0      100%
   foo_module              foo_module.v              0/   0/   0      100%            0/   0/   0      100%
-  foo_named_block         foo_module.v              0/   0/   0      100%            0/   0/   0      100%
-  foo_func                foo_module.v              0/   0/   0      100%            0/   0/   0      100%
+  foo_module.foo_named    foo_module.v              0/   0/   0      100%            0/   0/   0      100%
+  foo_module.foo_func     foo_module.v              0/   0/   0      100%            0/   0/   0      100%
 
 

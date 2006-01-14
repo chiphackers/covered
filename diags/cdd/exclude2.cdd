@@ -9,12 +9,12 @@
 1 foo_d 0 1 16 2
 4 8 0 0
 4 12 0 0
-3 1 foo_named_block main.bar.foo_named_block ./lib/foo_module.v 15 17
+3 1 foo_module.foo_named_block main.bar.foo_named_block ./lib/foo_module.v 15 17
 2 10 16 9000c 1 0 8 0 0 1 1 1
 2 9 16 10005 0 1 400 0 0 foo_d
 2 11 16 1000c 1 37 1100a 10 9 
 4 11 0 0
-3 3 foo_task main.bar.foo_task ./lib/foo_module.v 26 32
+3 3 foo_module.foo_task main.bar.foo_task ./lib/foo_module.v 26 32
 2 14 28 c000f 1 0 4 0 0 1 1 0
 2 13 28 40008 0 1 400 0 0 foo_b
 2 15 28 4000f 1 37 11006 14 13 

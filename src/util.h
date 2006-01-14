@@ -28,6 +28,9 @@ bool is_variable( char* token );
 /*! \brief Returns TRUE if the specified string is a legal directory string. */
 bool is_directory( char* token );
 
+/*! \brief Returns TRUE if the specified string is a legal functional unit value. */
+bool is_func_unit( char* token );
+
 /*! \brief Extracts filename from file pathname. */
 char* get_basename( char* str );
 
@@ -90,6 +93,11 @@ const char* get_funit_type( int type );
 
 /*
  $Log$
+ Revision 1.18  2005/11/10 23:27:37  phase1geo
+ Adding scope files to handle scope searching.  The functions are complete (not
+ debugged) but are not as of yet used anywhere in the code.  Added new func2 diagnostic
+ which brings out scoping issues for functions.
+
  Revision 1.17  2005/11/08 23:12:10  phase1geo
  Fixes for function/task additions.  Still a lot of testing on these structures;
  however, regressions now pass again so we are checkpointing here.

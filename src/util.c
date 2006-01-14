@@ -239,6 +239,43 @@ bool is_variable( char* token ) {
 }
 
 /*!
+ \param token  Pointer to string to parse.
+
+ \return Returns TRUE if the specified token is a valid argument representing
+         a functional unit.
+*/
+bool is_func_unit( char* token ) {
+
+  char* orig;                          /* Temporary string */
+  char* rest;                          /* Temporary string */
+  char* front;                         /* Temporary string */
+  bool  okay = (strlen( token ) > 0);  /* Specifies if this token is a functional unit value or not */
+
+  /* Allocate memory */
+  orig  = strdup_safe( token, __FILE__, __LINE__ );
+  rest  = strdup_safe( token, __FILE__, __LINE__ );
+  front = strdup_safe( token, __FILE__, __LINE__ );
+
+  /* Check to make sure that each value between '.' is a valid variable */
+  while( (strlen( orig ) > 0) && okay ) {
+    scope_extract_front( orig, front, rest );
+    if( !is_variable( front ) ) {
+      okay = FALSE;
+    } else {
+      strcpy( orig, rest );
+    }
+  }
+
+  /* Deallocate memory */
+  free_safe( orig );
+  free_safe( rest );
+  free_safe( front );
+
+  return( okay );
+
+}
+
+/*!
  \param token String to check for valid pathname-ness
  \return Returns TRUE if the specified string is a legal UNIX directory;
          otherwise, returns FALSE.
@@ -867,6 +904,10 @@ const char* get_funit_type( int type ) {
 
 /*
  $Log$
+ Revision 1.37  2005/12/19 05:18:24  phase1geo
+ Fixing memory leak problems with instance1.1.  Full regression has some segfaults
+ that need to be looked at now.
+
  Revision 1.36  2005/12/14 23:03:24  phase1geo
  More updates to remove memory faults.  Still a work in progress but full
  regression passes.
