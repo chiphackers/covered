@@ -22,6 +22,9 @@
 #include "param.h"
 
 
+extern int curr_expr_id;
+
+
 /*!
  \param funit      Pointer to functional unit to store in this instance.
  \param inst_name  Instantiated name of this instance.
@@ -432,10 +435,21 @@ void instance_db_write( funit_inst* root, FILE* file, char* scope, bool parse_mo
 
   char        full_scope[4096];  /* Full scope of functional unit to write */
   funit_inst* curr;              /* Pointer to current child functional unit instance */
+  exp_link*   expl;              /* Pointer to current expression link */
 
   assert( scope != NULL );
 
   curr = parse_mode ? root : NULL;
+
+  /* If we are in parse mode, re-issue expression IDs */
+  if( parse_mode ) {
+    expl = root->funit->exp_head;
+    while( expl != NULL ) {
+      expl->exp->id = curr_expr_id;
+      curr_expr_id++;
+      expl = expl->next;
+    }
+  }
 
   /* Display root functional unit */
   funit_db_write( root->funit, scope, file, curr );
@@ -555,6 +569,11 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.32  2005/12/01 16:08:19  phase1geo
+ Allowing nested functional units within a module to get parsed and handled correctly.
+ Added new nested_block1 diagnostic to test nested named blocks -- will add more tests
+ later for different combinations.  Updated regression suite which now passes.
+
  Revision 1.31  2005/11/08 23:12:09  phase1geo
  Fixes for function/task additions.  Still a lot of testing on these structures;
  however, regressions now pass again so we are checkpointing here.

@@ -124,6 +124,9 @@ void db_close() {
     /* Deallocate preprocessor define tree */
     tree_dealloc( def_table );
 
+    /* Deallocate the binding list */
+    bind_dealloc();
+
     instance_root = NULL;
     funit_head    = NULL;
     funit_tail    = NULL;
@@ -150,6 +153,9 @@ bool db_write( char* file, bool parse_mode ) {
   FILE* db_handle;      /* Pointer to database file being written */
 
   if( (db_handle = fopen( file, "w" )) != NULL ) {
+
+    /* Reset expression IDs */
+    curr_expr_id = 1;
 
     /* Iterate through instance tree */
     assert( instance_root != NULL );
@@ -1693,6 +1699,11 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.163  2006/01/13 23:27:02  phase1geo
+ Initial attempt to fix problem with handling functions/tasks/named blocks with
+ the same name in the design.  Still have a few diagnostics failing in regressions
+ to contend with.  Updating regression with these changes.
+
  Revision 1.162  2006/01/12 22:53:01  phase1geo
  Adding support for localparam construct.  Added tests to regression suite to
  verify correct functionality.  Full regression passes.

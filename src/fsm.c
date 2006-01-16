@@ -281,6 +281,7 @@ bool fsm_db_merge( fsm* base, char** line, bool same ) {
 
     *line = *line + chars_read + 1;
 
+#ifdef TBD
     if( (base->from_state->id != iid) || (base->to_state->id != oid) ) {
 
       print_output( "Attempting to merge two databases derived from different designs.  Unable to merge",
@@ -288,6 +289,8 @@ bool fsm_db_merge( fsm* base, char** line, bool same ) {
       exit( 1 );
 
     } else if( is_table == 1 ) {
+#endif
+    if( is_table == 1 ) {
 
       arc_db_merge( &(base->table), line, same );
           
@@ -834,6 +837,9 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.46  2005/12/22 23:04:42  phase1geo
+ More memory leak fixes.
+
  Revision 1.45  2005/11/28 23:28:47  phase1geo
  Checkpointing with additions for threads.
 

@@ -681,7 +681,9 @@ void param_db_write( inst_parm* iparm, FILE* file ) {
 
     curr = iparm->mparm->exp_head;
     while( curr != NULL ) {
-      fprintf( file, " %d", expression_get_id( curr->exp ) );
+      if( curr->exp->line != 0 ) {
+        fprintf( file, " %d", expression_get_id( curr->exp ) );
+      }
       curr = curr->next;
     }
 
@@ -766,6 +768,10 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.43  2006/01/12 22:53:01  phase1geo
+ Adding support for localparam construct.  Added tests to regression suite to
+ verify correct functionality.  Full regression passes.
+
  Revision 1.42  2006/01/12 22:14:45  phase1geo
  Completed code for handling parameter value pass by name Verilog-2001 syntax.
  Added diagnostics to regression suite and updated regression files for this

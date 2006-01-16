@@ -38,9 +38,18 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
 /*! \brief Performs vsignal/expression bind (performed after parse completed). */
 void bind( bool cdd_reading );
 
+/*! \brief Deallocates memory used for binding */
+void bind_dealloc();
+
 
 /* 
  $Log$
+ Revision 1.22  2006/01/10 23:13:50  phase1geo
+ Completed support for implicit event sensitivity list.  Added diagnostics to verify
+ this new capability.  Also started support for parsing inline parameters and port
+ declarations (though this is probably not complete and not passing at this point).
+ Checkpointing.
+
  Revision 1.21  2005/12/12 23:25:37  phase1geo
  Fixing memory faults.  This is a work in progress.
 

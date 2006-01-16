@@ -35,7 +35,7 @@
  Contains the CDD version number of all CDD files that this version of Covered can write
  and read.
 */
-#define CDD_VERSION        5
+#define CDD_VERSION        6
 
 /*!
  This contains the header information specified when executing this tool.
@@ -1703,6 +1703,10 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.167  2006/01/13 04:01:04  phase1geo
+ Adding support for exponential operation.  Added exponent1 diagnostic to verify
+ but Icarus does not support this currently.
+
  Revision 1.166  2006/01/12 22:53:01  phase1geo
  Adding support for localparam construct.  Added tests to regression suite to
  verify correct functionality.  Full regression passes.

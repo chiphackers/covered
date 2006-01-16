@@ -533,7 +533,6 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
 
     if( !scope_find_task_function_namedblock( name, type, funit_exp, &found_funit, exp_line ) ) {
 
-      printf( "Unable to find functional unit for name %s\n", name );
       retval = FALSE;
 
     } else if( found_funit->stmt_head != NULL ) {
@@ -598,20 +597,20 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
 */
 void bind( bool cdd_reading ) {
   
-  funit_inst* funiti;               /* Pointer to found functional unit instance */
-  exp_bind*   curr_eb;              /* Pointer to current expression binding */
-  int         id;                   /* Current expression id -- used for removal */
-  mod_parm*   mparm;                /* Newly created module parameter */
-  int         i;                    /* Loop iterator */
-  int         ignore;               /* Number of instances to ignore */
-  funit_inst* inst;                 /* Pointer to current instance to modify */
-  inst_parm*  curr_iparm;           /* Pointer to current instance parameter */
-  bool        done = FALSE;         /* Specifies if the current signal is completed */
-  int         orig_width;           /* Original width of found signal */
-  int         orig_lsb;             /* Original lsb of found signal */
-  bool        bound;                /* Specifies if the current expression was successfully bound or not */
-  statement*  tmp_stmt;             /* Pointer to temporary statement */
-  exp_link*   tmp_expl;             /* Pointer to current expression link in signal's expression list */
+  funit_inst* funiti;        /* Pointer to found functional unit instance */
+  exp_bind*   curr_eb;       /* Pointer to current expression binding */
+  int         id;            /* Current expression id -- used for removal */
+  mod_parm*   mparm;         /* Newly created module parameter */
+  int         i;             /* Loop iterator */
+  int         ignore;        /* Number of instances to ignore */
+  funit_inst* inst;          /* Pointer to current instance to modify */
+  inst_parm*  curr_iparm;    /* Pointer to current instance parameter */
+  bool        done = FALSE;  /* Specifies if the current signal is completed */
+  int         orig_width;    /* Original width of found signal */
+  int         orig_lsb;      /* Original lsb of found signal */
+  bool        bound;         /* Specifies if the current expression was successfully bound or not */
+  statement*  tmp_stmt;      /* Pointer to temporary statement */
+  exp_link*   tmp_expl;      /* Pointer to current expression link in signal's expression list */
     
   curr_eb = eb_head;
 
@@ -687,63 +686,46 @@ void bind( bool cdd_reading ) {
       }
     }
 
-#ifdef SKIP
-    /************************************************************************************
-     *  THIS CODE COULD PROBABLY BE PUT SOMEWHERE ELSE BUT WE WILL KEEP IT HERE FOR NOW *
-     ************************************************************************************/
-     
-    /* Create parameter for remote signal in current expression's module */
-    mparm = mod_parm_add( NULL, NULL, PARAM_TYPE_EXP_LSB, &(curr_eb->mod->param_head), &(curr_eb->mod->param_tail) );
-    
-    orig_width = curr_eb->exp->sig->value->width;
-    orig_lsb   = curr_eb->exp->sig->lsb;
-    i          = 0;
-    ignore     = 0;
-    while( (inst = instance_find_by_module( instance_root, curr_eb->mod, &ignore )) != NULL ) {
-      
-      /* Add instance parameter based on size of current signal */
-      if( (curr_eb->exp->sig->value->width == -1) || (curr_eb->exp->sig->lsb == -1) ) {
-        /* Signal size not known yet, figure out its size based on parameters */
-        curr_iparm = inst->param_head;
-        while( (curr_iparm != NULL) && !done ) {
-          assert( curr_iparm->mparm != NULL );
-          /* This parameter sizes a signal so perform the signal size */
-          if( curr_iparm->mparm->sig == curr_eb->exp->sig ) {
-            done = param_set_sig_size( curr_iparm->mparm->sig, curr_iparm );
-          }
-          curr_iparm = curr_iparm->next;
-        }
-      }
-      inst_parm_add( NULL, curr_eb->exp->sig->value, mparm, &(inst->param_head), &(inst->param_tail) );
-      
-      i++;
-      ignore = i;
-      
-    }
-
-    /* Revert signal to its previous state */
-    curr_eb->exp->sig->value->width = orig_width;
-    curr_eb->exp->sig->lsb          = orig_lsb;
-    
-    /* Signify that current expression is getting its value elsewhere */
-    curr_eb->exp->sig = NULL;
-    
-    /*************************
-     * End of misplaced code *
-     *************************/
-#endif
-   
     curr_eb = curr_eb->next;
-
-    /* Remove binding from list */
-    bind_remove( id, FALSE );
 
   }
 
 }
 
+/*!
+ Deallocates all memory used for the storage of the binding list.
+*/
+void bind_dealloc() {
+
+  exp_bind* tmp;  /* Temporary binding pointer */
+
+  while( eb_head != NULL ) {
+
+    tmp     = eb_head;
+    eb_head = tmp->next;
+
+    /* Deallocate the name, if specified */
+    if( tmp->name != NULL ) {
+      free_safe( tmp->name );
+    }
+
+    /* Deallocate this structure */
+    free_safe( tmp );
+
+  }
+
+  /* Reset the head and tail pointers */
+  eb_head = eb_tail = NULL;
+
+}
+
 /* 
  $Log$
+ Revision 1.57  2006/01/13 23:27:02  phase1geo
+ Initial attempt to fix problem with handling functions/tasks/named blocks with
+ the same name in the design.  Still have a few diagnostics failing in regressions
+ to contend with.  Updating regression with these changes.
+
  Revision 1.56  2006/01/10 23:13:50  phase1geo
  Completed support for implicit event sensitivity list.  Added diagnostics to verify
  this new capability.  Also started support for parsing inline parameters and port

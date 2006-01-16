@@ -12,8 +12,13 @@ VG_FLAGS      = --tool=memcheck --leak-check=yes --show-reachable=yes --num-call
 
 COVERED_SRC   = ../../src
 COVERED       = $(COVERED_SRC)/covered
-VG_COVERED    = $(VG_EXEC) $(VG_FLAGS) $(COVERED)
 COVERED_GFLAG = -D
+
+ifdef CHECK_MEM
+VG_COVERED    = $(VG_EXEC) $(VG_FLAGS) $(COVERED)
+else
+VG_COVERED    = $(COVERED)
+endif
 
 IVERILOG       = iverilog
 IVERILOG_FLAGS = -y ./lib -I ./include -DRUNTEST

@@ -759,9 +759,10 @@ statement* expression_get_root_statement( expression* exp ) {
 */
 void expression_db_write( expression* expr, FILE* file ) {
 
-  func_unit* funit;  /* Pointer to functional unit containing the statement attached to this expression */
+  func_unit* funit;     /* Pointer to functional unit containing the statement attached to this expression */
+  char*      sig_name;  /* Temporary pointer to signal name */
 
-  fprintf( file, "%d %d %d %x %x %x %x %d %d ",
+  fprintf( file, "%d %d %d %x %x %x %x %d %d",
     DB_TYPE_EXPRESSION,
     expr->id,
     expr->line,
@@ -774,13 +775,18 @@ void expression_db_write( expression* expr, FILE* file ) {
   );
 
   if( EXPR_OWNS_VEC( expr->op, expr->suppl ) ) {
+    fprintf( file, " " );
     vector_db_write( expr->value, file, (expr->op == EXP_OP_STATIC) );
   }
 
-  if( expr->sig != NULL ) {
-    fprintf( file, "%s", expr->sig->name );
+  sig_name = bind_find_sig_name( expr );
+
+  if( sig_name != NULL ) {
+    fprintf( file, " %s", sig_name );
+  } else if( expr->sig != NULL ) {
+    fprintf( file, " %s", expr->sig->name );  /* This will be valid for parameters */
   } else if( expr->stmt != NULL ) {
-    fprintf( file, " %d", expr->stmt->exp->id );
+    fprintf( file, " %d", expr->stmt->exp->id );  /* Statement bindings will always be in the same module as the expr */
   }
 
   fprintf( file, "\n" );
@@ -980,7 +986,7 @@ bool expression_db_merge( expression* base, char** line, bool same ) {
 
     *line = *line + chars_read;
 
-    if( (base->id != id) || (base->op != op) ) {
+    if( (base->op != op) || (base->line != linenum) || (base->col != column) ) {
 
       print_output( "Attempting to merge databases derived from different designs.  Unable to merge",
                     FATAL, __FILE__, __LINE__ );
@@ -1047,7 +1053,7 @@ bool expression_db_replace( expression* base, char** line ) {
 
     *line = *line + chars_read;
 
-    if( (base->id != id) || (base->op != op) ) {
+    if( (base->op != op) || (base->line != linenum) || (base->col != column) ) {
 
       print_output( "Attempting to replace a database derived from a different design.  Unable to replace",
                     FATAL, __FILE__, __LINE__ );
@@ -2355,8 +2361,8 @@ bool expression_operate( expression* expr, thread* thr ) {
   if( (expr != NULL) && (ESUPPL_IS_LHS( expr->suppl ) == 0) ) {
 
 #ifdef DEBUG_MODE
-    snprintf( user_msg, USER_MSG_LENGTH, "      In expression_operate, id: %d, op: %s, line: %d",
-              expr->id, expression_string_op( expr->op ), expr->line );
+    snprintf( user_msg, USER_MSG_LENGTH, "      In expression_operate, id: %d, op: %s, line: %d, addr: %p",
+              expr->id, expression_string_op( expr->op ), expr->line, expr );
     print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -2778,6 +2784,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.158  2006/01/13 04:01:04  phase1geo
+ Adding support for exponential operation.  Added exponent1 diagnostic to verify
+ but Icarus does not support this currently.
+
  Revision 1.157  2006/01/10 23:13:50  phase1geo
  Completed support for implicit event sensitivity list.  Added diagnostics to verify
  this new capability.  Also started support for parsing inline parameters and port
