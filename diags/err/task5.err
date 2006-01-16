@@ -1,24 +1,2 @@
-
-Covered covered-20060109 -- Verilog Code Coverage Utility
-Written by Trevor Williams  (trevorw@charter.net)
-Freely distributable under the GPL license
-
-Reading design...
-Parsing file 'task5.v'
-In db_add_module, module: main, file: task5.v, start_line: 1
-In db_create_expression, right: 0, left: 0, id: 1, op: STATIC, lhs: 0, line: 6, first: 9, last: 10
-In db_create_expression, right: 0, left: 0, id: 2, op: STATIC, lhs: 0, line: 6, first: 9, last: 10
-In db_create_expression, right: 1, left: 2, id: 3, op: DELAY, lhs: 0, line: 6, first: 8, last: 10
-In db_create_statement, id: 3, line: 6
-In db_add_expression, id: 3, op: DELAY, line: 6
-In db_add_expression, id: 1, op: STATIC, line: 6
-In db_add_expression, id: 2, op: STATIC, line: 6
-In db_remove_statement, stmt id: 3, line: 6
-In db_remove_statement_from_current_module main, stmt id: 3, DELAY, line: 6
-In db_add_function_task_namedblock, task: foo, file: task5.v, start_line: 10
-In db_add_instance, instance: foo, task:  main.foo
-In db_end_function_task_namedblock, end_line: 14
-In db_add_function_task_namedblock, task: foo, file: task5.v, start_line: 16
-In db_add_instance, instance: foo, task:  main.foo
 ERROR!  Multiple identical task/function/named-begin-end names (foo) found in module main, file task5.v
- (file: db.c, line: 455)
+

@@ -145,7 +145,8 @@ $(ERRSCORELIST):
 		echo Running $@ -- should see an error message; \
 		$(VERILOG) $(VERILOG_FLAGS) $@.v; \
 		$(VERILOG_CMD); \
-		$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@.cfg | tee $@.err; \
+		$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@.cfg 2> $@.err; \
+		cat $@.err; \
 		./check_test $@ 1 1; \
 	else \
 		echo Skipping $@; \
@@ -161,7 +162,8 @@ $(ERRMERGELIST):
 		$(VERILOG) $(VERILOG_FLAGS) $@b.v; \
 		$(VERILOG_CMD); \
 		$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@b.cfg; \
-		$(COVERED) $(COVERED_GFLAG) merge -o $@.cdd $@a.cdd $@b.cdd | tee $@.err; \
+		$(COVERED) $(COVERED_GFLAG) merge -o $@.cdd $@a.cdd $@b.cdd 2> $@.err; \
+		cat $@.err; \
 		./check_test $@ 1 1; \
 	else \
 		echo Skipping $@; \
@@ -174,7 +176,8 @@ $(ERRREPORTLIST):
 		$(VERILOG) $(VERILOG_FLAGS) $@.v; \
 		$(VERILOG_CMD); \
 		$(COVERED) $(COVERED_GFLAG) score -f ../regress/$@.cfg; \
-		$(COVERED) $(COVERED_GFLAG) report -d v $@.cdd | tee $@.err; \
+		$(COVERED) $(COVERED_GFLAG) report -d v $@.cdd 2> $@.err; \
+		cat $@.err; \
 		./check_test $@ 1 1 || \
 	else \
 		echo Skipping $@; \

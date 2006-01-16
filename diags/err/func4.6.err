@@ -1,0 +1,1 @@
+ERROR!  Attempting to use a delay, task call, non-blocking assign or event controls in function main.return_two, file func4.6.v, line 16
