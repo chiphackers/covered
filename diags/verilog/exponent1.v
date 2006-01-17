@@ -1,13 +1,13 @@
 module main;
 
-integer a, b, c;
+reg [31:0] a, b, c;
 
 initial begin
 	b = 2;
 	c = 3;
 	#1;
 	a = b ** c;
-	a = b ** c;
+	a = a ** c;
 end
 
 initial begin

@@ -14,10 +14,10 @@ IVERILOG_FLAGS4 = -y ./lib -I ./include -DRUNTEST -Tmax
 IVERILOG_EXEC   = a.out
 
 VCS        = vcs
-VCS_FLAGS1 = +libext+.v+ -y ./lib +incdir+./include +define+RUNTEST +define+VCS
-VCS_FLAGS2 = +libext+.v+ -y ./lib +incdir+./include +define+RUNTEST +define+VCS +mindelays
-VCS_FLAGS3 = +libext+.v+ -y ./lib +incdir+./include +define+RUNTEST +define+VCS +typdelays
-VCS_FLAGS4 = +libext+.v+ -y ./lib +incdir+./include +define+RUNTEST +define+VCS +maxdelays
+VCS_FLAGS1 = +libext+.v+ -y ./lib +incdir+./include +define+RUNTEST +define+VCS +v2k
+VCS_FLAGS2 = +libext+.v+ -y ./lib +incdir+./include +define+RUNTEST +define+VCS +mindelays +v2k
+VCS_FLAGS3 = +libext+.v+ -y ./lib +incdir+./include +define+RUNTEST +define+VCS +typdelays +v2k
+VCS_FLAGS4 = +libext+.v+ -y ./lib +incdir+./include +define+RUNTEST +define+VCS +maxdelays +v2k
 VCS_EXEC   = simv
 
 CDD_DIR       = ../cdd
