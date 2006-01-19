@@ -92,15 +92,17 @@ proc menu_create {.menubar} {
 
   global mod_inst_type cov_uncov_type cov_rb
 
-  $report add command -label "Show Summary" -state disabled -command {
+  $report add command -label "Show Summary..." -state disabled -command {
     create_summary
   }
   $report add separator
   $report add radiobutton -label "Module-based"   -variable mod_inst_type -value "module" -command {
     populate_listbox .bot.left.l
+    update_summary
   }
   $report add radiobutton -label "Instance-based" -variable mod_inst_type -value "instance" -command {
     populate_listbox .bot.left.l
+    update_summary
   }
   $report add separator
   $report add checkbutton -label "Show Uncovered" -variable uncov_type -onvalue 1 -offvalue 0 -command {

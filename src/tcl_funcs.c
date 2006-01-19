@@ -380,6 +380,7 @@ int tcl_func_collect_covered_toggles( ClientData d, Tcl_Interp* tcl, int argc, c
                 (sigl->sig->line - (start_line - 1)), (sigl->sig->col + 9),
                 (sigl->sig->line - (start_line - 1)), (sigl->sig->col + (strlen( sigl->sig->name ) - 1) + 10) );
       Tcl_SetVar( tcl, "covered_toggles", tmp, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      sigl = sigl->next;
     }
 
     /* Deallocate list of signals (without deallocating the signals themselves) */
@@ -908,6 +909,12 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* home, char* version, char* brow
 
 /*
  $Log$
+ Revision 1.23  2006/01/19 23:10:38  phase1geo
+ Adding line and starting column information to vsignal structure (and associated CDD
+ files).  Regression has been fully updated for this change which now fully passes.  Final
+ changes to summary GUI.  Fixed signal underlining for toggle coverage to work for both
+ explicit and implicit signals.  Getting things ready for a preferences window.
+
  Revision 1.22  2006/01/19 00:01:09  phase1geo
  Lots of changes/additions.  Summary report window work is now complete (with the
  exception of adding extra features).  Added support for parsing left and right
