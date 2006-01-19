@@ -56,16 +56,30 @@ void toggle_get_stats( sig_link* sigl, float* total, int* hit01, int* hit10 ) {
 
 }
 
-bool toggle_collect( char* funit_name, int funit_type, int cov, expression*** sigs, int* sig_cnt ) {
+/*!
+ \param funit_name  Name of functional unit to gather coverage information from
+ \param funit_type  Type of functional unit to gather coverage information from
+ \param cov         Specifies to get uncovered (0) or covered (1) signals
+ \param sigs        Pointer to array of strings containing signal names of covered/uncovered signals
+ \param sig_cnt     Number of valid entries in sigs array
 
-  bool        retval = TRUE;  /* Return value for this function                 */
-  func_unit   funit;          /* Functional unit used for searching             */
-  funit_link* funitl;         /* Pointer to found functional unit link          */
+ \return Returns TRUE if toggle information was found for the specified functional unit; otherwise,
+         returns FALSE
+
+ Searches the list of signals for the specified functional unit for signals that are either covered
+ or uncovered.  When a signal is found that meets the requirements, the name of the signal is added
+ to the sigs list and sig_cnt is incremented by one.
+*/
+bool toggle_collect( char* funit_name, int funit_type, int cov, char*** sigs, int* sig_cnt ) {
+
+  bool        retval = TRUE;  /* Return value for this function */
+  func_unit   funit;          /* Functional unit used for searching */
+  funit_link* funitl;         /* Pointer to found functional unit link */
   sig_link*   curr_sig;       /* Pointer to current signal link being evaluated */
-  int         hit01;          /* Number of bits that toggled from 0 to 1        */
-  int         hit10;          /* Number of bits that toggled from 1 to 0        */
-  int         sig_size; 
-  exp_link*   expl;           /* Pointer to expression linked list              */
+  int         hit01;          /* Number of bits that toggled from 0 to 1 */
+  int         hit10;          /* Number of bits that toggled from 1 to 0 */
+  int         sig_size;       /* Specifies the maximum size of the sigs array */
+  exp_link*   expl;           /* Pointer to expression linked list */
      
   /* First, find functional unit in functional unit array */
   funit.name = funit_name;
@@ -76,7 +90,7 @@ bool toggle_collect( char* funit_name, int funit_type, int cov, expression*** si
     /* Create an array that will hold the number of uncovered lines */
     sig_size = 20;
     *sig_cnt = 0;
-    *sigs    = (expression**)malloc_safe( (sizeof( expression* ) * sig_size), __FILE__, __LINE__ );
+    *sigs    = (char**)malloc_safe( (sizeof( char* ) * sig_size), __FILE__, __LINE__ );
 
     curr_sig = funitl->funit->sig_head;
 
@@ -92,18 +106,14 @@ bool toggle_collect( char* funit_name, int funit_type, int cov, expression*** si
         if( ((cov == 1) && (hit01 == curr_sig->sig->value->width) && (hit10 == curr_sig->sig->value->width)) ||
 	    ((cov == 0) && ((hit01 < curr_sig->sig->value->width) || (hit10 < curr_sig->sig->value->width))) ) {
 
-          expl = curr_sig->sig->exp_head;
-	  while( expl != NULL ) {
-            if( expl->exp->line != 0 ) {	
-              if( *sig_cnt == sig_size ) {
-                sig_size += 20;
-  	        *sigs    = (expression**)realloc( *sigs, (sizeof( expression* ) * sig_size) );
-              }
-              (*sigs)[(*sig_cnt)] = expl->exp;
-              (*sig_cnt)++;
-	    } 
-	    expl = expl->next; 
-	  } 
+          /* Allocate more memory for values */
+          if( *sig_cnt == sig_size ) {
+            sig_size += 20;
+            *sigs     = (char**)realloc( *sigs, (sizeof( char* ) * sig_size) );
+          }
+
+          (*sigs)[(*sig_cnt)] = strdup_safe( curr_sig->sig->name, __FILE__, __LINE__ );
+          (*sig_cnt)++;
           
         }
 
@@ -123,6 +133,19 @@ bool toggle_collect( char* funit_name, int funit_type, int cov, expression*** si
 
 }
 
+/*!
+ \param funit_name  Name of functional unit containing signal to get toggle coverage information for
+ \param funit_type  Type of functional unit containing signal to get toggle coverage information for
+ \param sig_name    Name of signal within the specified functional unit to get toggle coverage information for
+ \param msb         Most-significant bit position of the requested signal
+ \param lsb         Least-significant bit position of the requested signal
+ \param tog01       Toggle vector of bits transitioning from a 0 to a 1
+ \param tog10       Toggle vector of bits transitioning from a 1 to a 0
+
+ \return Returns TRUE if the specified functional unit and signal exists; otherwise, returns FALSE.
+
+ TBD
+*/
 bool toggle_get_coverage( char* funit_name, int funit_type, char* sig_name, int* msb, int* lsb, char** tog01, char** tog10 ) {
 
   bool        retval = TRUE;  /* Return value for this function        */
@@ -173,22 +196,47 @@ bool toggle_get_coverage( char* funit_name, int funit_type, char* sig_name, int*
  function, indicating that the functional unit was not found in the design and the values
  of total and hit should not be used.
 */
-bool toggle_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit01, int* hit10 ) {
+bool toggle_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit ) {
 
-  bool        retval = TRUE;  /* Return value for this function        */
-  func_unit   funit;          /* Functional unit used for searching    */
+  bool        retval = TRUE;  /* Return value for this function */
+  func_unit   funit;          /* Functional unit used for searching */
   funit_link* funitl;         /* Pointer to found functional unit link */
-  char        tmp[21];        /* Temporary string for total            */
+  sig_link*   curr_sig;       /* Pointer to current signal */
+  int         hit01;          /* Number of bits toggling from a 0 to 1 */
+  int         hit10;          /* Number of bits toggling from a 1 to 0 */
 
   funit.name = funit_name;
   funit.type = funit_type;
 
+  /* Initialize total and hit */
+  *total = 0;
+  *hit   = 0;
+
   if( (funitl = funit_link_find( &funit, funit_head )) != NULL ) {
 
-    snprintf( tmp, 21, "%20.0f", funitl->funit->stat->tog_total );
-    assert( sscanf( tmp, "%d", total ) == 1 );
-    *hit01 = funitl->funit->stat->tog01_hit;
-    *hit10 = funitl->funit->stat->tog10_hit;
+    curr_sig = funitl->funit->sig_head;
+
+    while( curr_sig != NULL ) {
+
+      hit01 = 0;
+      hit10 = 0;
+
+      if( (curr_sig->sig->name[0] != '#') && (curr_sig->sig->value->suppl.part.mba == 0) ) {
+
+        /* We have found a valid signal to look at; therefore, increment the total */
+        (*total)++;
+
+        vector_toggle_count( curr_sig->sig->value, &hit01, &hit10 );
+
+        if( (hit01 == curr_sig->sig->value->width) && (hit10 == curr_sig->sig->value->width) ) {
+          (*hit)++;
+        }
+
+      }
+
+      curr_sig = curr_sig->next;
+
+    }
 
   } else {
 
@@ -529,6 +577,9 @@ void toggle_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.30  2005/11/23 23:05:24  phase1geo
+ Updating regression files.  Full regression now passes.
+
  Revision 1.29  2005/11/10 19:28:23  phase1geo
  Updates/fixes for tasks/functions.  Also updated Tcl/Tk scripts for these changes.
  Fixed bug with net_decl_assign statements -- the line, start column and end column

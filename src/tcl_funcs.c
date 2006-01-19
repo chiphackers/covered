@@ -288,31 +288,41 @@ int tcl_func_collect_race_lines( ClientData d, Tcl_Interp* tcl, int argc, const 
 
 }
 
+/*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+
+ Populates the global variable "uncovered_toggles" with the names of all signals of the given functional unit
+ that did not achieve 100% toggle coverage.
+*/
 int tcl_func_collect_uncovered_toggles( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
-  int          retval = TCL_OK;
-  char*        funit_name;
-  int          funit_type;
-  expression** sigs;
-  int          sig_cnt;
-  int          i;
-  char         str[85];
-  int          startline;
+  int    retval = TCL_OK;  /* Return value for this function */
+  char*  funit_name;       /* Functional unit name to get uncovered signal names for */
+  int    funit_type;       /* Functional unit type to get uncovered signal names for */
+  char** sigs;             /* Array of signal names found to be uncovered */
+  int    sig_cnt;          /* Number of valid entries in the sigs array */
+  int    i;                /* Loop iterator */
 
+  /* Get the valid arguments for this command */
   funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
   funit_type = atoi( argv[2] );
-  startline  = atoi( argv[3] );
 
+  /* Find all signals that did not achieve 100% coverage */
   if( toggle_collect( funit_name, funit_type, 0, &sigs, &sig_cnt ) ) {
 
     for( i=0; i<sig_cnt; i++ ) {
-      snprintf( str, 85, "%d.%d %d.%d", (sigs[i]->line - (startline - 1)), (((sigs[i]->col >> 16) & 0xffff) + 9),
-                                        (sigs[i]->line - (startline - 1)), ((sigs[i]->col & 0xffff) + 10) );
       if( i == 0 ) { 
-        Tcl_SetVar( tcl, "uncovered_toggles", str, (TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT) );
+        Tcl_SetVar( tcl, "uncovered_toggles", sigs[i], (TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT) );
       } else {
-        Tcl_SetVar( tcl, "uncovered_toggles", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+        Tcl_SetVar( tcl, "uncovered_toggles", sigs[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
       }
+      free_safe( sigs[i] );
     }
 
     free_safe( sigs );
@@ -332,31 +342,38 @@ int tcl_func_collect_uncovered_toggles( ClientData d, Tcl_Interp* tcl, int argc,
 
 }
 
+/*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+ 
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+*/
 int tcl_func_collect_covered_toggles( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
-  int          retval = TCL_OK;
-  char*        funit_name;
-  int          funit_type;
-  expression** sigs;
-  int          sig_cnt;
-  int          i;
-  char         str[85];
-  int          startline;
+  int    retval = TCL_OK;  /* Return value for this function */
+  char*  funit_name;       /* Functional unit name to find */
+  int    funit_type;       /* Functional unit type to find */
+  char** sigs;             /* Array of signal names found to be covered */
+  int    sig_cnt;          /* Number of valid elements in the sigs array */
+  int    i;                /* Loop iterator */
 
+  /* Get the valid arguments for this function call */
   funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
   funit_type = atoi( argv[2] );
-  startline  = atoi( argv[3] );
 
+  /* Get the toggle information for all covered signals */
   if( toggle_collect( funit_name, funit_type, 1, &sigs, &sig_cnt ) ) {
 
     for( i=0; i<sig_cnt; i++ ) {
-      snprintf( str, 85, "%d.%d %d.%d", (sigs[i]->line - (startline - 1)), (((sigs[i]->col >> 16) & 0xffff) + 9),
-                                        (sigs[i]->line - (startline - 1)), ((sigs[i]->col & 0xffff) + 10) );
       if( i == 0 ) {
-        Tcl_SetVar( tcl, "covered_toggles", str, (TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT) );
+        Tcl_SetVar( tcl, "covered_toggles", sigs[i], (TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT) );
       } else {
-        Tcl_SetVar( tcl, "covered_toggles", str, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+        Tcl_SetVar( tcl, "covered_toggles", sigs[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
       }
+      free_safe( sigs[i] );
     }
 
     free_safe( sigs );
@@ -376,6 +393,15 @@ int tcl_func_collect_covered_toggles( ClientData d, Tcl_Interp* tcl, int argc, c
 
 }
 
+/*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+*/
 int tcl_func_get_toggle_coverage( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
   int   retval = TCL_OK;
@@ -420,6 +446,15 @@ int tcl_func_get_toggle_coverage( ClientData d, Tcl_Interp* tcl, int argc, const
 
 }
 
+/*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+*/
 int tcl_func_collect_combs( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
   int          retval = TCL_OK;
@@ -484,6 +519,15 @@ int tcl_func_collect_combs( ClientData d, Tcl_Interp* tcl, int argc, const char*
 
 }
 
+/*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+*/
 int tcl_func_get_comb_expression( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
   int    retval = TCL_OK;
@@ -550,6 +594,15 @@ int tcl_func_get_comb_expression( ClientData d, Tcl_Interp* tcl, int argc, const
 
 }
 
+/*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+*/
 int tcl_func_get_comb_coverage( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
   int    retval = TCL_OK;  /* Return value for this function                          */
@@ -595,6 +648,15 @@ int tcl_func_get_comb_coverage( ClientData d, Tcl_Interp* tcl, int argc, const c
 
 }
 
+/*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+*/
 int tcl_func_open_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
   int   retval = TCL_OK;
@@ -620,6 +682,15 @@ int tcl_func_open_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv
 
 }
 
+/*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+*/
 int tcl_func_replace_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
   int   retval = TCL_OK;
@@ -645,6 +716,15 @@ int tcl_func_replace_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* a
 
 }
 
+/*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+*/
 int tcl_func_merge_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
   int   retval = TCL_OK;
@@ -670,6 +750,15 @@ int tcl_func_merge_cdd( ClientData d, Tcl_Interp* tcl, int argc, const char* arg
 
 }
 
+/*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+*/
 int tcl_func_get_line_summary( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
   int   retval = TCL_OK;  /* Return value for this function           */
@@ -700,26 +789,36 @@ int tcl_func_get_line_summary( ClientData d, Tcl_Interp* tcl, int argc, const ch
 
 }
 
+/*!
+ \param d     TBD
+ \param tcl   Pointer to the Tcl interpreter
+ \param argc  Number of arguments in the argv list
+ \param argv  Array of arguments passed to this function
+
+ \return Returns TCL_OK if there are no errors encountered when running this command; otherwise, returns
+         TCL_ERROR.
+
+ Populates the global variables "toggle_summary_total" and "toggle_summary_hit" to the total number
+ of signals evaluated for toggle coverage and the total number of signals with complete toggle coverage
+ for the specified functional unit.
+*/
 int tcl_func_get_toggle_summary( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
-  int   retval = TCL_OK;  /* Return value for this function             */
-  char* funit_name;       /* Name of functional unit to lookup          */
-  int   funit_type;       /* Type of functional unit to lookup          */
-  int   total;            /* Contains total number of toggles evaluated */
-  int   hit01;            /* Contains total number of toggle 0->1 hit   */
-  int   hit10;            /* Contains total number of toggle 1->0 hit   */
-  char  value[20];        /* String version of a value                  */
+  int   retval = TCL_OK;  /* Return value for this function */
+  char* funit_name;       /* Name of functional unit to lookup */
+  int   funit_type;       /* Type of functional unit to lookup */
+  int   total;            /* Contains total number of signals evaluated */
+  int   hit;              /* Contains total number of signals hit */
+  char  value[20];        /* String version of a value */
 
   funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
   funit_type = atoi( argv[2] );
 		     
-  if( toggle_get_funit_summary( funit_name, funit_type, &total, &hit01, &hit10 ) ) {
+  if( toggle_get_funit_summary( funit_name, funit_type, &total, &hit ) ) {
     snprintf( value, 20, "%d", total );
     Tcl_SetVar( tcl, "toggle_summary_total", value, TCL_GLOBAL_ONLY );
-    snprintf( value, 20, "%d", hit01 );
-    Tcl_SetVar( tcl, "toggle_summary_hit01", value, TCL_GLOBAL_ONLY );
-    snprintf( value, 20, "%d", hit10 );
-    Tcl_SetVar( tcl, "toggle_summary_hit10", value, TCL_GLOBAL_ONLY );
+    snprintf( value, 20, "%d", hit );
+    Tcl_SetVar( tcl, "toggle_summary_hit", value, TCL_GLOBAL_ONLY );
   } else {
     snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s", funit_name );
     Tcl_AddErrorInfo( tcl, user_msg );
@@ -802,6 +901,9 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* home, char* version, char* brow
 
 /*
  $Log$
+ Revision 1.21  2005/12/02 05:46:50  phase1geo
+ Fixing compile errors when HAVE_TCLTK is defined in config.h.
+
  Revision 1.20  2005/12/01 19:46:50  phase1geo
  Removed Tcl/Tk from source files if HAVE_TCLTK is not defined.
 

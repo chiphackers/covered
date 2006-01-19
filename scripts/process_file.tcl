@@ -14,8 +14,6 @@ set line_summary_total    0
 set line_summary_hit      0
 set toggle_summary_total  0
 set toggle_summary_hit    0
-set toggle_summary_hit01  0
-set toggle_summary_hit10  0
 set comb_summary_total    0
 set comb_summary_hit      0
 set curr_funit_name       0
@@ -61,6 +59,7 @@ proc process_funit_line_cov {} {
 
   global fileContent file_name start_line end_line
   global curr_funit_name curr_funit_type
+  global line_summary_hit line_summary_total
 
   if {$curr_funit_name != 0} {
 
@@ -186,6 +185,7 @@ proc process_funit_toggle_cov {} {
 
   global fileContent file_name start_line end_line
   global curr_funit_name curr_funit_type
+  global toggle_summary_hit toggle_summary_total
 
   if {$curr_funit_name != 0} {
 
@@ -221,7 +221,6 @@ proc calc_and_display_toggle_cov {} {
   global cov_type uncov_type mod_inst_type
   global uncovered_toggles covered_toggles race_toggles
   global curr_funit_name curr_funit_type start_line
-  global toggle_summary_hit toggle_summary_total
 
   if {$curr_funit_name != 0} {
 
@@ -230,19 +229,6 @@ proc calc_and_display_toggle_cov {} {
     set covered_toggles   ""
     tcl_func_collect_uncovered_toggles $curr_funit_name $curr_funit_type $start_line
     tcl_func_collect_covered_toggles   $curr_funit_name $curr_funit_type $start_line
-
-    # Calculate toggle hit and total values
-    if {[llength $covered_toggles] == 0} {
-      set toggle_summary_hit 0
-      if {[llength $uncovered_toggles] == 0} {
-        set toggle_summary_total 0
-      } else {
-        set toggle_summary_total [llength $uncovered_toggles]
-      }
-    } else {
-      set toggle_summary_hit   [llength $covered_toggles]
-      set toggle_summary_total [expr $toggle_summary_hit + [llength $uncovered_toggles]]
-    }
 
     display_toggle_cov
 
@@ -301,9 +287,16 @@ proc display_toggle_cov {} {
         set cmd_button ".bot.right.txt tag add uncov_button"
         set cmd_leave  ".bot.right.txt tag add uncov_leave"
         foreach entry $uncovered_toggles {
-          set cmd_enter  [concat $cmd_enter  $entry]
-          set cmd_button [concat $cmd_button $entry]
-          set cmd_leave  [concat $cmd_leave  $entry]
+
+          # Get start and end indices of the signal name via text search
+          set start_i [.bot.right.txt search $entry $start_line.0]
+          .bot.right.txt mark set signame_start $start_i
+          set end_i [.bot.right.txt index "signame_start wordend"]
+          .bot.right.txt mark unset signame_start
+
+          set cmd_enter  [concat $cmd_enter  $start_i $end_i]
+          set cmd_button [concat $cmd_button $start_i $end_i]
+          set cmd_leave  [concat $cmd_leave  $start_i $end_i]
         }
         eval $cmd_enter
         eval $cmd_button
@@ -328,7 +321,14 @@ proc display_toggle_cov {} {
       if {[expr $cov_type == 1] && [expr [llength $covered_toggles] > 0]} {
         set cmd_cov ".bot.right.txt tag add cov_highlight"
         foreach entry $covered_toggles {
-          set cmd_cov [concat $cmd_cov $entry]
+
+          # Get start and end indices of the signal name via text search
+          set start_i [.bot.right.txt search $entry $start_line.0]
+          .bot.right.txt mark set signame_start $start_i
+          set end_i [.bot.right.txt index "signame_start wordend"]
+          .bot.right.txt mark unset signame_start
+
+          set cmd_cov [concat $cmd_cov $start_i $end_i]
         }
         eval $cmd_cov
         .bot.right.txt tag configure cov_highlight -foreground $cov_fgColor -background $cov_bgColor
@@ -384,7 +384,6 @@ proc calc_and_display_comb_cov {} {
   global cov_type uncov_type race_type mod_inst_type
   global uncovered_combs covered_combs race_lines
   global curr_funit_name curr_funit_type start_line
-  global comb_summary_hit comb_summary_total
 
   if {$curr_funit_name != 0} {
 
@@ -394,19 +393,6 @@ proc calc_and_display_comb_cov {} {
     set race_lines      ""
     tcl_func_collect_combs $curr_funit_name $curr_funit_type $start_line
     tcl_func_collect_race_lines $curr_funit_name $curr_funit_type
-
-    # Calculate combinational logic hit and total values
-    if {[llength $covered_combs] == 0} {
-      set comb_summary_hit 0
-      if {[llength $uncovered_combs] == 0} {
-        set comb_summary_total 0
-      } else {
-        set comb_summary_total [llength $uncovered_combs]
-      }
-    } else {
-      set comb_summary_hit   [llength $covered_combs]
-      set comb_summary_total [expr $comb_summary_hit + [llength $uncovered_combs]]
-    }
 
     display_comb_cov
 

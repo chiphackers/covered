@@ -50,10 +50,11 @@ proc menu_create {.menubar} {
         destroy .status
         .info configure -text "Select a module/instance at left for coverage details"
       }
-      ;# Disable ourselves and allow user to replace or merge new CDD
+      ;# Disable ourselves and allow user to replace or merge new CDD and view summary window
       .menubar.file.menu entryconfigure 0 -state disabled
       .menubar.file.menu entryconfigure 1 -state normal
       .menubar.file.menu entryconfigure 2 -state normal
+      .menubar.report.menu entryconfigure 0 -state normal
     }
   }
   $tfm add command -label "Open Related CDD..." -state disabled -command {
@@ -91,6 +92,10 @@ proc menu_create {.menubar} {
 
   global mod_inst_type cov_uncov_type cov_rb
 
+  $report add command -label "Show Summary" -state disabled -command {
+    create_summary
+  }
+  $report add separator
   $report add radiobutton -label "Module-based"   -variable mod_inst_type -value "module" -command {
     populate_listbox .bot.left.l
   }

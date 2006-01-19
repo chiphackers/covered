@@ -568,6 +568,12 @@ static_expr
       tmp = static_expr_gen( $3, $1, EXP_OP_SUBTRACT, @1.first_line, @1.first_column, (@3.last_column - 1) );
       $$ = tmp;
     }
+  | static_expr '*' '*' static_expr
+    {
+      static_expr* tmp;
+      tmp = static_expr_gen( $4, $1, EXP_OP_EXPONENT, @1.first_line, @1.first_column, (@4.last_column - 1) );
+      $$ = tmp;
+    }
   | static_expr '&' static_expr
     {
       static_expr* tmp;
@@ -596,6 +602,18 @@ static_expr
     {
       static_expr* tmp;
       tmp = static_expr_gen( $3, $1, EXP_OP_NXOR, @1.first_line, @1.first_column, (@3.last_column - 1) );
+      $$ = tmp;
+    }
+  | static_expr K_LS static_expr
+    {
+      static_expr* tmp;
+      tmp = static_expr_gen( $3, $1, EXP_OP_LSHIFT, @1.first_line, @1.first_column, (@3.last_column - 1) );
+      $$ = tmp;
+    }
+  | static_expr K_RS static_expr
+    {
+      static_expr* tmp;
+      tmp = static_expr_gen( $3, $1, EXP_OP_RSHIFT, @1.first_line, @1.first_column, (@3.last_column - 1) );
       $$ = tmp;
     }
   ;

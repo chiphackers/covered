@@ -161,7 +161,8 @@ static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int
   
   assert( (op == EXP_OP_XOR) || (op == EXP_OP_MULTIPLY) || (op == EXP_OP_DIVIDE) || (op == EXP_OP_MOD) ||
           (op == EXP_OP_ADD) || (op == EXP_OP_SUBTRACT) || (op == EXP_OP_AND)    || (op == EXP_OP_OR)  ||
-          (op == EXP_OP_NOR) || (op == EXP_OP_NAND)     || (op == EXP_OP_NXOR)   || (op == EXP_OP_EXPONENT) );
+          (op == EXP_OP_NOR) || (op == EXP_OP_NAND)     || (op == EXP_OP_NXOR)   || (op == EXP_OP_EXPONENT) ||
+          (op == EXP_OP_LSHIFT) || (op == EXP_OP_RSHIFT) );
 
   if( (right != NULL) && (left != NULL) ) {
 
@@ -187,6 +188,8 @@ static_expr* static_expr_gen( static_expr* right, static_expr* left, int op, int
           case EXP_OP_NOR      :  right->num = ~(left->num | right->num);  break;
           case EXP_OP_NAND     :  right->num = ~(left->num & right->num);  break;
           case EXP_OP_NXOR     :  right->num = ~(left->num ^ right->num);  break;
+          case EXP_OP_LSHIFT   :  right->num = left->num << right->num;    break;
+          case EXP_OP_RSHIFT   :  right->num = left->num >> right->num;    break;
           default              :  break;
         }
 
@@ -298,6 +301,10 @@ void static_expr_dealloc( static_expr* stexp, bool rm_exp ) {
 
 /*
  $Log$
+ Revision 1.14  2006/01/13 04:01:04  phase1geo
+ Adding support for exponential operation.  Added exponent1 diagnostic to verify
+ but Icarus does not support this currently.
+
  Revision 1.13  2005/01/07 17:59:52  phase1geo
  Finalized updates for supplemental field changes.  Everything compiles and links
  correctly at this time; however, a regression run has not confirmed the changes.

@@ -241,12 +241,15 @@ bool report_parse_args( int argc, int last_arg, char** argv ) {
       i++;
       report_parse_metrics( argv[i] );
 
-#ifdef HAVE_TCLTK
     } else if( strncmp( "-view", argv[i], 5 ) == 0 ) {
 
+#ifdef HAVE_TCLTK
       report_gui          = TRUE;
       report_comb_depth   = REPORT_VERBOSE;
       flag_use_line_width = TRUE;
+#else
+      print_output( "The -view option is not available with this build", FATAL, __FILE__, __LINE__ );
+      retval = FALSE;
 #endif
 
     } else if( strncmp( "-i", argv[i], 2 ) == 0 ) {
@@ -593,6 +596,7 @@ bool report_read_cdd_and_ready( char* ifile, int read_mode ) {
   } else {
 
     if( (retval = db_read( ifile, read_mode )) ) {
+      bind( TRUE );
       report_gather_funit_stats( funit_head );
     }
 
@@ -752,6 +756,10 @@ int command_report( int argc, int last_arg, char** argv ) {
 
 /*
  $Log$
+ Revision 1.51  2006/01/06 23:39:10  phase1geo
+ Started working on removing the need to simulate more than is necessary.  Things
+ are pretty broken at this point, but all of the code should be in -- debugging.
+
  Revision 1.50  2006/01/03 22:59:16  phase1geo
  Fixing bug in expression_assign function -- removed recursive assignment when
  the LHS expression is a signal, single-bit, multi-bit or static value (only

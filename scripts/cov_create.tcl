@@ -13,6 +13,7 @@ proc cov_create {.covbox} {
         set last_cov_rb $cov_rb
         highlight_listbox
         process_funit_line_cov
+        update_summary
       } else {
         display_line_cov
       }
@@ -28,6 +29,7 @@ proc cov_create {.covbox} {
         set last_cov_rb $cov_rb
         highlight_listbox
         process_funit_toggle_cov
+        update_summary
       } else {
         display_toggle_cov
       }
@@ -43,6 +45,7 @@ proc cov_create {.covbox} {
         set last_cov_rb $cov_rb
         highlight_listbox
         process_funit_comb_cov
+        update_summary
       } else {
         display_comb_cov
       }
@@ -58,6 +61,7 @@ proc cov_create {.covbox} {
         set last_cov_rb $cov_rb
         highlight_listbox
         process_funit_fsm_cov
+        update_summary
       } else {
         display_fsm_cov
       }

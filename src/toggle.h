@@ -17,13 +17,13 @@
 void toggle_get_stats( sig_link* sigl, float* total, int* hit01, int* hit10 );
 
 /*! \brief Collects all toggle expressions that match the specified coverage indication. */
-bool toggle_collect( char* funit_name, int funit_type, int cov, expression*** sigs, int* sig_cnt );
+bool toggle_collect( char* funit_name, int funit_type, int cov, char*** sigs, int* sig_cnt );
 
 /*! \brief TBD */
 bool toggle_get_coverage( char* funit_name, int funit_type, char* sig_name, int* msb, int* lsb, char** tog01, char** tog10 );
 
-/*! \brief TBD */
-bool toggle_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit01, int* hit10 );
+/*! \brief Gets total and hit toggle signal status for the specified functional unit */
+bool toggle_get_funit_summary( char* funit_name, int funit_type, int* total, int* hit );
 
 /*! \brief Generates report output for toggle coverage. */
 void toggle_report( FILE* ofile, bool verbose );
@@ -31,6 +31,11 @@ void toggle_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.10  2005/11/10 19:28:23  phase1geo
+ Updates/fixes for tasks/functions.  Also updated Tcl/Tk scripts for these changes.
+ Fixed bug with net_decl_assign statements -- the line, start column and end column
+ information was incorrect, causing problems with the GUI output.
+
  Revision 1.9  2005/11/08 23:12:10  phase1geo
  Fixes for function/task additions.  Still a lot of testing on these structures;
  however, regressions now pass again so we are checkpointing here.

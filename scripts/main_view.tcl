@@ -117,7 +117,7 @@ proc populate_listbox {listbox_w} {
 
   global mod_inst_type funit_names funit_types inst_list cov_rb file_name
   global line_summary_total line_summary_hit
-  global toggle_summary_total toggle_summary_hit01 toggle_summary_hit10
+  global toggle_summary_total toggle_summary_hit
   global uncov_fgColor uncov_bgColor
   global lb_fgColor lb_bgColor
  
@@ -158,7 +158,7 @@ proc highlight_listbox {} {
   global file_name funit_names funit_types cov_rb
   global uncov_fgColor uncov_bgColor lb_fgColor lb_bgColor
   global line_summary_total line_summary_hit
-  global toggle_summary_total toggle_summary_hit01 toggle_summary_hit10
+  global toggle_summary_total toggle_summary_hit
   global comb_summary_total comb_summary_hit
 
   if {$file_name != 0} {
@@ -172,7 +172,7 @@ proc highlight_listbox {} {
         set fully_covered [expr $line_summary_total == $line_summary_hit]
       } elseif {$cov_rb == "toggle"} {
         tcl_func_get_toggle_summary [lindex $funit_names $i] [lindex $funit_types $i]
-        set fully_covered [expr [expr $toggle_summary_total == $toggle_summary_hit01] && [expr $toggle_summary_total == $toggle_summary_hit10]]
+        set fully_covered [expr $toggle_summary_total == $toggle_summary_hit]
       } elseif {$cov_rb == "comb"} {
         tcl_func_get_comb_summary [lindex $funit_names $i] [lindex $funit_types $i]
         set fully_covered [expr $comb_summary_total == $comb_summary_hit]
