@@ -419,7 +419,7 @@ void directory_load( char* dir, str_link* ext_head, str_link** file_head, str_li
           snprintf( tmpfile, tmpchars, "%s/%s", dir, dirp->d_name );
           if( str_link_find( tmpfile, *file_head ) == NULL ) {
             str_link_add( tmpfile, file_head, file_tail );
-            (*file_tail)->suppl = 0x1;
+            (*file_tail)->suppl1 = 0x1;
           }
         }
       }
@@ -680,7 +680,7 @@ str_link* get_next_vfile( str_link* curr, char* mod ) {
   char      name[256];    /* String holder for module name of file */
 
   while( (curr != NULL) && (next == NULL) ) {
-    if( (curr->suppl & 0x1) != 0x1 ) {
+    if( (curr->suppl1 & 0x1) != 0x1 ) {
       next = curr;
     } else {
       convert_file_to_module( name, 256, curr->str );
@@ -904,6 +904,11 @@ const char* get_funit_type( int type ) {
 
 /*
  $Log$
+ Revision 1.39  2006/01/16 18:10:20  phase1geo
+ Causing all error information to get sent to stderr no matter what mode we
+ are in.  Updating error diagnostics for this change.  Full regression now
+ passes.
+
  Revision 1.38  2006/01/14 04:17:23  phase1geo
  Adding is_func_unit function to check to see if a -e value is a valid module, function,
  task or named begin/end block.  Updated regression accordingly.  We are getting closer

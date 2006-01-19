@@ -19,9 +19,9 @@
 2 17 10 5000a 1 46 218 15 16 32 0 aa aa aa aa aa aa aa aa
 2 18 10 10001 0 1 400 0 0 a
 2 19 10 1000a 1 37 2a 17 18
-1 c 0 32 16 aa aa aa aa aa aa aa aa
-1 b 0 32 16 aa aa aa aa aa aa aa aa
-1 a 0 32 16 80aa aa 2aa aa aa aa aa aa
+1 c 0 3 17 32 16 aa aa aa aa aa aa aa aa
+1 b 0 3 14 32 16 aa aa aa aa aa aa aa aa
+1 a 0 3 11 32 16 80aa aa 2aa aa aa aa aa aa
 4 19 0 0
 4 14 19 19
 4 9 14 0

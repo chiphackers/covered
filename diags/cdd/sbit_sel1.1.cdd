@@ -12,10 +12,10 @@
 2 10 11 b000d 1 1 8 0 0 vec
 2 11 11 70007 0 1 400 0 0 c
 2 12 11 7000d 1 35 f00a 10 11
-1 a 0 16 0 aa aa aa aa
-1 b 0 1 0 2
-1 c 0 32 0 aa aa aa aa aa aa aa aa
-1 vec 0 32 0 aa aa aa aa aa aa aa aa
+1 a 0 3 12 16 0 aa aa aa aa
+1 b 0 4 12 1 0 2
+1 c 0 5 12 32 0 aa aa aa aa aa aa aa aa
+1 vec 0 7 12 32 0 aa aa aa aa aa aa aa aa
 4 5 5 5
 4 9 9 9
 4 12 12 12

@@ -1384,7 +1384,8 @@ struct exp_info_s {
 
 struct str_link_s {
   char*     str;                     /*!< String to store */
-  char      suppl;                   /*!< 8-bit additional information */
+  control   suppl1;                  /*!< 32-bit additional information */
+  control   suppl2;                  /*!< 32-bit additional information */
   str_link* next;                    /*!< Pointer to next str_link element */
 };
 
@@ -1428,6 +1429,8 @@ struct expression_s {
 
 struct vsignal_s {
   char*      name;                   /*!< Full hierarchical name of signal in design */
+  int        line;                   /*!< Specifies line number that this signal was declared on */
+  control    col;                    /*!< Specifies starting column that this signal was declared on */
   vector*    value;                  /*!< Pointer to vector value of this signal */
   int        lsb;                    /*!< Least-significant bit position of this signal */
   exp_link*  exp_head;               /*!< Head pointer to list of expressions */
@@ -1703,6 +1706,10 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.168  2006/01/16 17:27:41  phase1geo
+ Fixing binding issues when designs have modules/tasks/functions that are either used
+ more than once in a design or have the same name.  Full regression now passes.
+
  Revision 1.167  2006/01/13 04:01:04  phase1geo
  Adding support for exponential operation.  Added exponent1 diagnostic to verify
  but Icarus does not support this currently.

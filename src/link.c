@@ -41,9 +41,10 @@ void str_link_add( char* str, str_link** head, str_link** tail ) {
 
   tmp = (str_link*)malloc_safe( sizeof( str_link ), __FILE__, __LINE__ );
 
-  tmp->str   = str;
-  tmp->suppl = 0x0;
-  tmp->next  = NULL;
+  tmp->str    = str;
+  tmp->suppl1 = 0x0;
+  tmp->suppl2 = 0x0;
+  tmp->next   = NULL;
 
   if( *head == NULL ) {
     *head = *tail = tmp;
@@ -763,6 +764,10 @@ void funit_link_delete_list( funit_link* head, bool rm_funit ) {
 
 /*
  $Log$
+ Revision 1.39  2005/12/19 05:18:24  phase1geo
+ Fixing memory leak problems with instance1.1.  Full regression has some segfaults
+ that need to be looked at now.
+
  Revision 1.38  2005/12/14 23:03:24  phase1geo
  More updates to remove memory faults.  Still a work in progress but full
  regression passes.

@@ -14,10 +14,10 @@
 
 
 /*! \brief Initializes specified vsignal with specified values. */
-void vsignal_init( vsignal* sig, char* name, vector* value, int lsb );
+void vsignal_init( vsignal* sig, char* name, vector* value, int lsb, int line, control col );
 
 /*! \brief Creates a new vsignal based on the information passed to this function. */
-vsignal* vsignal_create( char* name, int width, int lsb );
+vsignal* vsignal_create( char* name, int width, int lsb, int line, control col );
 
 /*! \brief Outputs this vsignal information to specified file. */
 void vsignal_db_write( vsignal* sig, FILE* file );
@@ -55,6 +55,12 @@ void vsignal_dealloc( vsignal* sig );
 
 /*
  $Log$
+ Revision 1.8  2006/01/05 05:52:06  phase1geo
+ Removing wait bit in vector supplemental field and modifying algorithm to only
+ assign in the post-sim location (pre-sim now is gone).  This fixes some issues
+ with simulation results and increases performance a bit.  Updated regressions
+ for these changes.  Full regression passes.
+
  Revision 1.7  2005/12/01 16:08:19  phase1geo
  Allowing nested functional units within a module to get parsed and handled correctly.
  Added new nested_block1 diagnostic to test nested named blocks -- will add more tests

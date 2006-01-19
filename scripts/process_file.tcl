@@ -287,16 +287,9 @@ proc display_toggle_cov {} {
         set cmd_button ".bot.right.txt tag add uncov_button"
         set cmd_leave  ".bot.right.txt tag add uncov_leave"
         foreach entry $uncovered_toggles {
-
-          # Get start and end indices of the signal name via text search
-          set start_i [.bot.right.txt search $entry $start_line.0]
-          .bot.right.txt mark set signame_start $start_i
-          set end_i [.bot.right.txt index "signame_start wordend"]
-          .bot.right.txt mark unset signame_start
-
-          set cmd_enter  [concat $cmd_enter  $start_i $end_i]
-          set cmd_button [concat $cmd_button $start_i $end_i]
-          set cmd_leave  [concat $cmd_leave  $start_i $end_i]
+          set cmd_enter  [concat $cmd_enter  $entry]
+          set cmd_button [concat $cmd_button $entry]
+          set cmd_leave  [concat $cmd_leave  $entry]
         }
         eval $cmd_enter
         eval $cmd_button
@@ -321,14 +314,7 @@ proc display_toggle_cov {} {
       if {[expr $cov_type == 1] && [expr [llength $covered_toggles] > 0]} {
         set cmd_cov ".bot.right.txt tag add cov_highlight"
         foreach entry $covered_toggles {
-
-          # Get start and end indices of the signal name via text search
-          set start_i [.bot.right.txt search $entry $start_line.0]
-          .bot.right.txt mark set signame_start $start_i
-          set end_i [.bot.right.txt index "signame_start wordend"]
-          .bot.right.txt mark unset signame_start
-
-          set cmd_cov [concat $cmd_cov $start_i $end_i]
+          set cmd_cov [concat $cmd_cov $entry]
         }
         eval $cmd_cov
         .bot.right.txt tag configure cov_highlight -foreground $cov_fgColor -background $cov_bgColor

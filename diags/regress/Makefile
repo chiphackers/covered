@@ -43,16 +43,15 @@ DIAGS1        = always1         always2         always3         always3.1.11A   
                 exclude4        exclude5        exclude5.1      exclude5.2      expand1 \
                 expand2         expand3         expand4         expand4.1       expand4.2 \
                 expand4.3       expand4.4       for1            for2            forever1 \
-                fork1           fork2           fsm1            fsm1.1 \
-                fsm1.2          fsm1.3          fsm1.4          fsm3            fsm4 \
-                fsm4.1          fsm5            fsm5.1          fsm5.2          fsm5.3 \
-                fsm10           func1           func2           gate1           hier1 \
-                ifdef1          ifdef1.2        ifdef2.1        ifdef2.2        ifdef2.3 \
-                ifelse1         include1        include1.1      include2        initial1 \
-                instance1       instance1.1     instance1.2     instance2       instance3 \
-                instance4       instance4.1     instance4.2     instance5       instance6 \
-                instance6.1     instance6.2     instance7       localparam1     localparam1.1 \
-                localparam1.2   localparam1.3   localparam2     localparam3     long_exp1       long_exp2 \
+                fork1           fork2           fsm3            fsm4            fsm4.1 \
+                fsm5            fsm5.1          fsm5.2          fsm5.3          func1 \
+                func2           gate1           hier1           ifdef1          ifdef1.2 \
+                ifdef2.1        ifdef2.2        ifdef2.3        ifelse1         include1 \
+                include1.1      include2        initial1        instance1       instance1.1 \
+                instance1.2     instance2       instance3       instance4       instance4.1 \
+                instance4.2     instance5       instance6       instance6.1     instance6.2 \
+                instance7       localparam1     localparam1.1   localparam1.2   localparam1.3 \
+                localparam2     localparam3     long_exp1       long_exp2 \
                 long_exp3       long_sig        mbit_sel1       mbit_sel2       mbit_sel3 \
                 mbit_sel3.1     mbit_sel4       mbit_sel4.1     mbit_sel4.2     mbit_sel4.3 \
                 mem1            mult1           multi_exp1      multi_exp1.1    multi_exp1.2 \
@@ -87,12 +86,13 @@ ERRSCORE      = err1.0          err2.0          func3           func3.1         
 ERRMERGE      =
 ERRREPORT     = err2.1
            
-IVONLYDIAGS1  = always5.1       assign1         assign2.8       example         fsm6 \
+IVONLYDIAGS1  = always5.1       assign1         assign2.8       example         fsm1 \
+                fsm1.1          fsm1.2          fsm1.3          fsm1.4          fsm6 \
                 fsm7            fsm7.1          fsm7.2          fsm7.3          fsm7.4 \
                 fsm7.5          fsm8            fsm8.1          fsm8.2          fsm8.3 \
-                fsm9            fsm9.1          fsm9.2          fsm10.1         fsm10.2 \
-                ifdef1.1        implicit1       implicit2       real1.1         static2 \
-                static2.1       static2.2       unary1
+                fsm9            fsm9.1          fsm9.2          fsm10           fsm10.1 \
+                fsm10.2         ifdef1.1        implicit1       implicit2       real1.1 \
+                static2         static2.1       static2.2       unary1
 IVONLYDIAGS2  = 
 IVONLYDIAGS3  = 
 IVONLYDIAGS4  = 

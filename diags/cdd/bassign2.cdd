@@ -10,8 +10,8 @@
 2 8 8 30003 0 1 400 0 0 a
 2 9 8 10004 0 23 400 0 8 b
 2 10 8 10008 1 37 a 7 9
-1 b 0 32 16 2aa aa aa aa aa aa aa aa
-1 a 0 32 16 aa aa aa aa aa aa aa aa
+1 b 0 3 14 32 16 2aa aa aa aa aa aa aa aa
+1 a 0 3 11 32 16 aa aa aa aa aa aa aa aa
 4 10 0 0
 4 6 10 10
 4 3 6 6

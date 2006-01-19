@@ -82,17 +82,17 @@
 2 80 54 100013 47 2c a 78 79 32 0 aa aa aa aa aa aa aa aa
 2 81 0 0 5 1 f00e 0 0 next_state
 2 82 0 0 5 1 f00e 0 0 state
-1 #STATE_IDLE 0 2 0 0
-1 #STATE_HEAD 0 2 0 1
-1 #STATE_DATA 0 2 0 4
-1 #STATE_TAIL 0 2 0 5
-1 clk 0 1 16 1102
-1 reset 0 1 0 1002
-1 head 0 1 0 1102
-1 tail 0 1 0 1102
-1 valid 0 1 0 1102
-1 state 0 2 0 330a
-1 next_state 0 2 16 330a
+1 #STATE_IDLE 0 0 0 2 0 0
+1 #STATE_HEAD 0 0 0 2 0 1
+1 #STATE_DATA 0 0 0 2 0 4
+1 #STATE_TAIL 0 0 0 2 0 5
+1 clk 0 8 11 1 16 1102
+1 reset 0 9 11 1 0 1002
+1 head 0 10 11 1 0 1102
+1 tail 0 11 11 1 0 1102
+1 valid 0 12 11 1 0 1102
+1 state 0 13 11 2 0 330a
+1 next_state 0 14 11 2 16 330a
 4 82 82 82
 4 81 81 81
 4 7 10 10

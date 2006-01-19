@@ -261,7 +261,6 @@ bool db_read( char* file, int read_mode ) {
           assert( !merge_mode );
 
           /* Parse rest of line for statement info */
-          // printf( "Reading statement for instance %s\n", funit_scope );
           retval = statement_db_read( &rest_line, curr_funit, read_mode );
 
         } else if( type == DB_TYPE_FSM ) {
@@ -788,6 +787,8 @@ void db_add_defparam( char* name, expression* expr ) {
  \param right   Specifies constant value for calculation of right-hand vector value.
  \param inport  Set to TRUE if specified signal name is an input port.
  \param mba     Set to TRUE if specified signal must be assigned by simulated results.
+ \param line    Line number where signal was declared.
+ \param col     Starting column where signal was declared.
 
  Creates a new signal with the specified parameter information and adds this
  to the signal list if it does not already exist.  If width == 0, the sig_msb
@@ -795,7 +796,7 @@ void db_add_defparam( char* name, expression* expr ) {
  add to the current module's parameter list and all associated instances are
  updated to contain new value.
 */
-void db_add_signal( char* name, static_expr* left, static_expr* right, bool inport, bool mba ) {
+void db_add_signal( char* name, static_expr* left, static_expr* right, bool inport, bool mba, int line, control col ) {
 
   vsignal  tmpsig;  /* Temporary signal for signal searching */
   vsignal* sig;     /* Container for newly created signal    */
@@ -803,7 +804,7 @@ void db_add_signal( char* name, static_expr* left, static_expr* right, bool inpo
   int      width;   /* Signal width                          */
 
 #ifdef DEBUG_MODE
-  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_signal, signal: %s", name );
+  snprintf( user_msg, USER_MSG_LENGTH, "In db_add_signal, signal: %s, line: %d, col: %d", name, line, col );
   print_output( user_msg, DEBUG, __FILE__, __LINE__ );
 #endif
 
@@ -824,10 +825,10 @@ void db_add_signal( char* name, static_expr* left, static_expr* right, bool inpo
     }  
 
     if( (lsb != -1) && (width != -1) ) { 
-      sig = vsignal_create( name, width, lsb );
+      sig = vsignal_create( name, width, lsb, line, col );
     } else {
       sig = (vsignal*)malloc_safe( sizeof( vsignal ), __FILE__, __LINE__ );
-      vsignal_init( sig, strdup_safe( name, __FILE__, __LINE__ ), (vector*)malloc_safe( sizeof( vector ), __FILE__, __LINE__ ), lsb );
+      vsignal_init( sig, strdup_safe( name, __FILE__, __LINE__ ), (vector*)malloc_safe( sizeof( vector ), __FILE__, __LINE__ ), lsb, line, col );
       vector_init( sig->value, NULL, width );
       if( (left != NULL) && (left->exp != NULL) ) {
         db_add_vector_param( sig, left->exp, PARAM_TYPE_SIG_MSB );
@@ -1699,6 +1700,10 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.164  2006/01/16 17:27:41  phase1geo
+ Fixing binding issues when designs have modules/tasks/functions that are either used
+ more than once in a design or have the same name.  Full regression now passes.
+
  Revision 1.163  2006/01/13 23:27:02  phase1geo
  Initial attempt to fix problem with handling functions/tasks/named blocks with
  the same name in the design.  Still have a few diagnostics failing in regressions

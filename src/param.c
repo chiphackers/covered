@@ -672,7 +672,7 @@ void param_db_write( inst_parm* iparm, FILE* file ) {
   if( iparm->name != NULL ) {
 
     /* Display identification and value information first */
-    fprintf( file, "%d #%s 0 ",
+    fprintf( file, "%d #%s 0 0 0 ",
       DB_TYPE_SIGNAL,
       iparm->name
     );
@@ -768,6 +768,10 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.44  2006/01/16 17:27:41  phase1geo
+ Fixing binding issues when designs have modules/tasks/functions that are either used
+ more than once in a design or have the same name.  Full regression now passes.
+
  Revision 1.43  2006/01/12 22:53:01  phase1geo
  Adding support for localparam construct.  Added tests to regression suite to
  verify correct functionality.  Full regression passes.

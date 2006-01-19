@@ -2,9 +2,9 @@
 3 0 fsm fsm lib/fsm.v 1 35
 2 1 23 36003f 7 1 c 0 0 next_state
 2 2 23 290032 1 32 14 0 0 #STATE_IDLE
-2 3 23 210032 8 1a dc 1 2 2 0 330a
+2 3 23 210032 9 1a dc 1 2 2 0 330a
 2 4 23 210025 2 1 c 0 0 reset
-2 5 23 21003f 8 19 1ec 3 4 2 0 330a
+2 5 23 21003f 9 19 1ec 3 4 2 0 330a
 2 6 23 18001c 0 1 400 0 0 state
 2 7 23 18003f 16 38 602e 5 6
 2 8 23 110015 2d 1 c 0 0 clock
@@ -72,17 +72,17 @@
 2 70 25 90026 11 2b 100a 58 69 1 0 2
 2 71 0 0 7 1 f00e 0 0 next_state
 2 72 0 0 6 1 f00e 0 0 state
-1 #STATE_IDLE 0 2 0 0
-1 #STATE_HEAD 0 2 0 1
-1 #STATE_DATA 0 2 0 4
-1 #STATE_TAIL 0 2 0 5
-1 clock 0 1 8 1102
-1 reset 0 1 8 1002
-1 head 0 1 8 1102
-1 tail 0 1 8 1102
-1 valid 0 1 8 1102
-1 state 0 2 0 330a
-1 next_state 0 2 16 330a
+1 #STATE_IDLE 0 0 0 2 0 0
+1 #STATE_HEAD 0 0 0 2 0 1
+1 #STATE_DATA 0 0 0 2 0 4
+1 #STATE_TAIL 0 0 0 2 0 5
+1 clock 0 9 10 1 8 1102
+1 reset 0 10 10 1 8 1002
+1 head 0 11 10 1 8 1102
+1 tail 0 12 10 1 8 1102
+1 valid 0 13 10 1 8 1102
+1 state 0 20 11 2 0 330a
+1 next_state 0 21 11 2 16 330a
 4 72 72 72
 4 71 71 71
 4 7 10 10

@@ -17,7 +17,7 @@
 void toggle_get_stats( sig_link* sigl, float* total, int* hit01, int* hit10 );
 
 /*! \brief Collects all toggle expressions that match the specified coverage indication. */
-bool toggle_collect( char* funit_name, int funit_type, int cov, char*** sigs, int* sig_cnt );
+bool toggle_collect( char* funit_name, int funit_type, int cov, sig_link** sig_head, sig_link** sig_tail );
 
 /*! \brief TBD */
 bool toggle_get_coverage( char* funit_name, int funit_type, char* sig_name, int* msb, int* lsb, char** tog01, char** tog10 );
@@ -31,6 +31,13 @@ void toggle_report( FILE* ofile, bool verbose );
 
 /*
  $Log$
+ Revision 1.11  2006/01/19 00:01:09  phase1geo
+ Lots of changes/additions.  Summary report window work is now complete (with the
+ exception of adding extra features).  Added support for parsing left and right
+ shift operators and the exponent operator in static expression scenarios.  Fixed
+ issues related to GUI (due to recent changes in the score command).  Things seem
+ to be generally working as expected with the GUI now.
+
  Revision 1.10  2005/11/10 19:28:23  phase1geo
  Updates/fixes for tasks/functions.  Also updated Tcl/Tk scripts for these changes.
  Fixed bug with net_decl_assign statements -- the line, start column and end column

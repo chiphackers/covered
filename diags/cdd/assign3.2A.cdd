@@ -12,11 +12,11 @@
 2 10 32 b0014 3 24 208 8 9 val
 2 11 32 70007 0 1 400 0 0 c
 2 12 32 70014 3 35 f00a 10 11
-1 a 0 1 0 2
-1 b 0 32 0 aa aa aa aa aa aa aa aa
-1 c 0 16 0 aa aa aa aa
-1 val 0 32 0 aa aa aa aa aa aa aa aa
-1 error 0 1 0 2
+1 a 0 23 5 1 0 2
+1 b 0 24 12 32 0 aa aa aa aa aa aa aa aa
+1 c 0 25 12 16 0 aa aa aa aa
+1 val 0 27 11 32 0 aa aa aa aa aa aa aa aa
+1 error 0 28 4 1 0 2
 4 4 4 4
 4 7 7 7
 4 12 12 12

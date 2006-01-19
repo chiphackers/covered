@@ -4,17 +4,17 @@
 2 2 4 90010 1 3a 8 0 1 foo
 2 3 4 50005 0 1 400 0 0 a
 2 4 4 50010 1 36 f00a 2 3
-1 b 0 1 0 2
-1 a 0 1 0 2
+1 b 0 3 5 1 0 2
+1 a 0 4 5 1 0 2
 4 4 4 4
 3 2 main.foo main.foo nested_block2.1.v 14 23
 2 5 18 40008 1 3d 11802 0 0 1 0 2 foo_block
 2 6 21 a000a 1 1 808 0 0 c
 2 7 21 40006 0 1 c00 0 0 foo
 2 8 21 4000a 1 37 80a 6 7
-1 foo 0 1 16 2
-1 a 0 1 8 2
-1 c 0 1 16 2
+1 foo 0 14 9 1 16 2
+1 a 0 15 8 1 8 2
+1 c 0 16 6 1 16 2
 4 8 0 0
 4 5 8 8
 3 1 main.foo.foo_block main.foo.foo_block nested_block2.1.v 18 20

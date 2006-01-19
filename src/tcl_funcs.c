@@ -302,34 +302,38 @@ int tcl_func_collect_race_lines( ClientData d, Tcl_Interp* tcl, int argc, const 
 */
 int tcl_func_collect_uncovered_toggles( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
-  int    retval = TCL_OK;  /* Return value for this function */
-  char*  funit_name;       /* Functional unit name to get uncovered signal names for */
-  int    funit_type;       /* Functional unit type to get uncovered signal names for */
-  char** sigs;             /* Array of signal names found to be uncovered */
-  int    sig_cnt;          /* Number of valid entries in the sigs array */
-  int    i;                /* Loop iterator */
+  int       retval   = TCL_OK;  /* Return value for this function */
+  char*     funit_name;         /* Functional unit name to get uncovered signal names for */
+  int       funit_type;         /* Functional unit type to get uncovered signal names for */
+  sig_link* sig_head = NULL;    /* Pointer to head of signal list */
+  sig_link* sig_tail = NULL;    /* Pointer to tail of signal list */
+  sig_link* sigl;               /* Pointer to current signal link being evaluated */
+  char      tmp[85];            /* Temporary string */
+  int       start_line;         /* Starting line number */
 
   /* Get the valid arguments for this command */
   funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
   funit_type = atoi( argv[2] );
+  start_line = atoi( argv[3] );
 
   /* Find all signals that did not achieve 100% coverage */
-  if( toggle_collect( funit_name, funit_type, 0, &sigs, &sig_cnt ) ) {
+  if( toggle_collect( funit_name, funit_type, 0, &sig_head, &sig_tail ) ) {
 
-    for( i=0; i<sig_cnt; i++ ) {
-      if( i == 0 ) { 
-        Tcl_SetVar( tcl, "uncovered_toggles", sigs[i], (TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT) );
-      } else {
-        Tcl_SetVar( tcl, "uncovered_toggles", sigs[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
-      }
-      free_safe( sigs[i] );
+    sigl = sig_head;
+    while( sigl != NULL ) {
+      snprintf( tmp, 85, "%d.%d %d.%d",
+                (sigl->sig->line - (start_line - 1)), (sigl->sig->col + 9),
+                (sigl->sig->line - (start_line - 1)), (sigl->sig->col + (strlen( sigl->sig->name ) - 1) + 10) );
+      Tcl_SetVar( tcl, "uncovered_toggles", tmp, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
+      sigl = sigl->next;
     }
 
-    free_safe( sigs );
+    /* Deallocate signal list (without destroying signals) */
+    sig_link_delete_list( sig_head, FALSE );
 
   } else {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s in design", argv[1] );
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s in design", funit_name );
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = TCL_ERROR;
@@ -353,34 +357,37 @@ int tcl_func_collect_uncovered_toggles( ClientData d, Tcl_Interp* tcl, int argc,
 */
 int tcl_func_collect_covered_toggles( ClientData d, Tcl_Interp* tcl, int argc, const char* argv[] ) {
 
-  int    retval = TCL_OK;  /* Return value for this function */
-  char*  funit_name;       /* Functional unit name to find */
-  int    funit_type;       /* Functional unit type to find */
-  char** sigs;             /* Array of signal names found to be covered */
-  int    sig_cnt;          /* Number of valid elements in the sigs array */
-  int    i;                /* Loop iterator */
+  int       retval   = TCL_OK;  /* Return value for this function */
+  char*     funit_name;         /* Functional unit name to find */
+  int       funit_type;         /* Functional unit type to find */
+  sig_link* sig_head = NULL;    /* Pointer to head of signal list */
+  sig_link* sig_tail = NULL;    /* Pointer to tail of signal list */
+  sig_link* sigl;               /* Pointer to current signal being evaluated */
+  char      tmp[85];            /* Temporary string */
+  int       start_line;         /* Starting line number of this functional unit */
 
   /* Get the valid arguments for this function call */
   funit_name = strdup_safe( argv[1], __FILE__, __LINE__ );
   funit_type = atoi( argv[2] );
+  start_line = atoi( argv[3] );
 
   /* Get the toggle information for all covered signals */
-  if( toggle_collect( funit_name, funit_type, 1, &sigs, &sig_cnt ) ) {
+  if( toggle_collect( funit_name, funit_type, 1, &sig_head, &sig_tail ) ) {
 
-    for( i=0; i<sig_cnt; i++ ) {
-      if( i == 0 ) {
-        Tcl_SetVar( tcl, "covered_toggles", sigs[i], (TCL_GLOBAL_ONLY | TCL_LIST_ELEMENT) );
-      } else {
-        Tcl_SetVar( tcl, "covered_toggles", sigs[i], (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
-      }
-      free_safe( sigs[i] );
+    sigl = sig_head;
+    while( sigl != NULL ) {
+      snprintf( tmp, 85, "%d.%d %d.%d",
+                (sigl->sig->line - (start_line - 1)), (sigl->sig->col + 9),
+                (sigl->sig->line - (start_line - 1)), (sigl->sig->col + (strlen( sigl->sig->name ) - 1) + 10) );
+      Tcl_SetVar( tcl, "covered_toggles", tmp, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
     }
 
-    free_safe( sigs );
+    /* Deallocate list of signals (without deallocating the signals themselves) */
+    sig_link_delete_list( sig_head, FALSE );
 
   } else {
 
-    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s in design", argv[1] );
+    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s in design", funit_name );
     Tcl_AddErrorInfo( tcl, user_msg );
     print_output( user_msg, FATAL, __FILE__, __LINE__ );
     retval = TCL_ERROR;
@@ -901,6 +908,13 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* home, char* version, char* brow
 
 /*
  $Log$
+ Revision 1.22  2006/01/19 00:01:09  phase1geo
+ Lots of changes/additions.  Summary report window work is now complete (with the
+ exception of adding extra features).  Added support for parsing left and right
+ shift operators and the exponent operator in static expression scenarios.  Fixed
+ issues related to GUI (due to recent changes in the score command).  Things seem
+ to be generally working as expected with the GUI now.
+
  Revision 1.21  2005/12/02 05:46:50  phase1geo
  Fixing compile errors when HAVE_TCLTK is defined in config.h.
 

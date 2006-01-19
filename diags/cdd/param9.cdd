@@ -1,7 +1,7 @@
 5 1 * 6 0 0 0 0
 3 0 main main param9.v 1 12
 3 0 foo main.bar param9.v 15 23
-1 #p1 0 32 0 44 0 0 0 0 0 0 0
-1 #p2 0 32 0 10 1 0 0 0 0 0 0
-1 a 0 10 0 aa aa a
-1 b 0 20 0 aa aa aa aa aa
+1 #p1 0 0 0 32 0 44 0 0 0 0 0 0 0
+1 #p2 0 0 0 32 0 10 1 0 0 0 0 0 0
+1 a 0 20 16 10 0 aa aa a
+1 b 0 21 16 20 0 aa aa aa aa aa

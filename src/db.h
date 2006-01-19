@@ -43,7 +43,7 @@ void db_add_vector_param( vsignal* sig, expression* parm_exp, int type );
 void db_add_defparam( char* name, expression* expr );
 
 /*! \brief Adds specified vsignal to vsignal list.  Called by parser. */
-void db_add_signal( char* name, static_expr* left, static_expr* right, bool inport, bool mba );
+void db_add_signal( char* name, static_expr* left, static_expr* right, bool inport, bool mba, int line, control col );
 
 /*! \brief Creates statement block that acts like a fork join block from a standard statement block */
 statement* db_add_fork_join( statement* stmt );
@@ -122,6 +122,10 @@ void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.50  2006/01/12 22:53:01  phase1geo
+ Adding support for localparam construct.  Added tests to regression suite to
+ verify correct functionality.  Full regression passes.
+
  Revision 1.49  2006/01/12 22:14:45  phase1geo
  Completed code for handling parameter value pass by name Verilog-2001 syntax.
  Added diagnostics to regression suite and updated regression files for this

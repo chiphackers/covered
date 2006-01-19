@@ -395,9 +395,10 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
 
       /* Otherwise, implicitly create the signal and bind to it */
       } else {
+        assert( exp != NULL );
         snprintf( user_msg, USER_MSG_LENGTH, "Implicit declaration of signal \"%s\", creating 1-bit version of signal", name );
         print_output( user_msg, WARNING, __FILE__, __LINE__ );
-        found_sig = vsignal_create( name, 1, 0 );
+        found_sig = vsignal_create( name, 1, 0, exp->line, ((exp->col >> 16) & 0xffff) );
         sig_link_add( found_sig, &(found_funit->sig_head), &(found_funit->sig_tail) );
       }
 
@@ -721,6 +722,10 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.58  2006/01/16 17:27:41  phase1geo
+ Fixing binding issues when designs have modules/tasks/functions that are either used
+ more than once in a design or have the same name.  Full regression now passes.
+
  Revision 1.57  2006/01/13 23:27:02  phase1geo
  Initial attempt to fix problem with handling functions/tasks/named blocks with
  the same name in the design.  Still have a few diagnostics failing in regressions

@@ -73,15 +73,15 @@
 2 71 0 0 5 0 8 0 0 32 0 1 0 0 0 0 0 0 0
 2 72 0 0 5 23 f00e 0 71 next_state
 2 73 0 0 4 1 f00e 0 0 state
-1 #STATE_IDLE 0 1 0 0
-1 #STATE_SEND 0 1 0 1
-1 clock 0 1 16 1102
-1 reset 0 1 0 1002
-1 state 0 1 0 1102
-1 next_state 0 2 16 330a
-1 msg_ip 0 1 0 1102
-1 head 0 1 0 1102
-1 valid 0 1 0 1102
+1 #STATE_IDLE 0 0 0 1 0 0
+1 #STATE_SEND 0 0 0 1 0 1
+1 clock 0 6 15 1 16 1102
+1 reset 0 7 15 1 0 1002
+1 state 0 8 15 1 0 1102
+1 next_state 0 9 15 2 16 330a
+1 msg_ip 0 10 15 1 0 1102
+1 head 0 11 15 1 0 1102
+1 valid 0 12 15 1 0 1102
 4 73 73 73
 4 72 72 72
 4 8 11 11

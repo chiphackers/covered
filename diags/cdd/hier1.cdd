@@ -1,5 +1,5 @@
 5 1 * 6 0 0 0 0
 3 0 main main hier1.v 1 12
-1 a 0 2 0 a
+1 a 0 3 11 2 0 a
 3 0 bar main.foo hier1.v 15 25
-1 a 0 2 0 a
+1 a 0 17 10 2 0 a
