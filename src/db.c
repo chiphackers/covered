@@ -149,7 +149,7 @@ void db_close() {
 */
 bool db_write( char* file, bool parse_mode ) {
 
-  bool  retval = TRUE;  /* Return value for this function         */
+  bool  retval = TRUE;  /* Return value for this function */
   FILE* db_handle;      /* Pointer to database file being written */
 
   if( (db_handle = fopen( file, "w" )) != NULL ) {
@@ -433,7 +433,7 @@ bool db_read( char* file, int read_mode ) {
 */
 func_unit* db_add_instance( char* scope, char* name, int type ) {
 
-  func_unit*  funit = NULL;      /* Pointer to functional unit                          */
+  func_unit*  funit = NULL;      /* Pointer to functional unit */
   funit_link* found_funit_link;  /* Pointer to found funit_link in functional unit list */
 
   /* There should always be a parent so internal error if it does not exist. */
@@ -498,7 +498,7 @@ func_unit* db_add_instance( char* scope, char* name, int type ) {
 void db_add_module( char* name, char* file, int start_line ) {
 
   func_unit   mod;   /* Temporary module for comparison */
-  funit_link* modl;  /* Pointer to found tree node      */
+  funit_link* modl;  /* Pointer to found tree node */
 
 #ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "In db_add_module, module: %s, file: %s, start_line: %d", name, file, start_line );
@@ -627,11 +627,7 @@ void db_end_function_task_namedblock( int end_line ) {
 */
 void db_add_declared_param( char* name, expression* expr, bool local ) {
 
-  char        scope[4096];  /* String containing current instance scope      */
-  funit_inst* inst;         /* Pointer to found functional unit instance     */
-  int         ignore;       /* Number of matching functional units to ignore */
-  int         i;            /* Loop iterator                                 */
-  mod_parm*   mparm;        /* Pointer to added module parameter             */
+  mod_parm* mparm;  /* Pointer to added module parameter */
 
   assert( name != NULL );
 
@@ -647,25 +643,6 @@ void db_add_declared_param( char* name, expression* expr, bool local ) {
 
       /* Add parameter to module parameter list */
       mparm = mod_parm_add( name, expr, (local ? PARAM_TYPE_DECLARED_LOCAL : PARAM_TYPE_DECLARED), curr_funit, NULL );
-
-      /* Also add this to all associated instance parameter lists */
-      i      = 0;
-      ignore = 0;
-      while( (inst = instance_find_by_funit( instance_root, curr_funit, &ignore )) != NULL ) {
-
-        /* Reset scope */
-        scope[0] = '\0';
-
-        /* Find scope for current instance */
-        instance_gen_scope( scope, inst );
-
-        /* Resolve this parameter */
-        param_resolve_declared( mparm, inst );
-
-        i++;
-        ignore = i;
-
-      }
 
     }
 
@@ -683,10 +660,7 @@ void db_add_declared_param( char* name, expression* expr, bool local ) {
 */
 void db_add_override_param( char* inst_name, expression* expr, char* param_name ) {
 
-  mod_parm*   mparm;   /* Pointer to module parameter added to current module */
-  funit_inst* inst;    /* Pointer to current instance to add parameter to     */
-  int         ignore;  /* Specifies how many matching instances to ignore     */
-  int         i;       /* Loop iterator                                       */
+  mod_parm* mparm;  /* Pointer to module parameter added to current module */
 
 #ifdef DEBUG_MODE
   if( param_name != NULL ) {
@@ -700,18 +674,6 @@ void db_add_override_param( char* inst_name, expression* expr, char* param_name 
   /* Add override parameter to module parameter list */
   mparm = mod_parm_add( param_name, expr, PARAM_TYPE_OVERRIDE, curr_funit, inst_name );
 
-  /* Also add this to all associated instance parameter lists */
-  i      = 0;
-  ignore = 0;
-  while( (inst = instance_find_by_funit( instance_root, curr_funit, &ignore )) != NULL ) {
-
-    param_resolve_override( mparm, inst );
-
-    i++;
-    ignore = i;
-
-  }
-
 }
 
 /*!
@@ -724,10 +686,7 @@ void db_add_override_param( char* inst_name, expression* expr, char* param_name 
 */
 void db_add_vector_param( vsignal* sig, expression* parm_exp, int type ) {
 
-  mod_parm*   mparm;   /* Holds newly created module parameter                                 */
-  funit_inst* inst;    /* Pointer to instance that is found to contain current functional unit */
-  int         i;       /* Loop iterator                                                        */
-  int         ignore;  /* Number of matching instances to ignore before selecting              */
+  mod_parm* mparm;  /* Holds newly created module parameter */
 
   assert( sig != NULL );
   assert( (type == PARAM_TYPE_SIG_LSB) || (type == PARAM_TYPE_SIG_MSB) );
@@ -742,18 +701,6 @@ void db_add_vector_param( vsignal* sig, expression* parm_exp, int type ) {
 
   /* Add signal to module parameter list */
   mparm->sig = sig;
-
-  /* Also add this to all associated instance parameter lists */
-  i      = 0;
-  ignore = 0;
-  while( (inst = instance_find_by_funit( instance_root, curr_funit, &ignore )) != NULL ) {
-
-    param_resolve_override( mparm, inst );
-
-    i++;
-    ignore = i;
-
-  }
 
 }
 
@@ -795,9 +742,9 @@ void db_add_defparam( char* name, expression* expr ) {
 void db_add_signal( char* name, static_expr* left, static_expr* right, bool inport, bool mba, int line, control col ) {
 
   vsignal  tmpsig;  /* Temporary signal for signal searching */
-  vsignal* sig;     /* Container for newly created signal    */
-  int      lsb;     /* Signal LSB                            */
-  int      width;   /* Signal width                          */
+  vsignal* sig;     /* Container for newly created signal */
+  int      lsb;     /* Signal LSB */
+  int      width;   /* Signal width */
 
 #ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "In db_add_signal, signal: %s, line: %d, col: %d", name, line, col );
@@ -1529,7 +1476,7 @@ void db_set_vcd_scope( char* scope ) {
 void db_vcd_upscope() {
 
   char back[4096];   /* Lowest level of hierarchy */
-  char rest[4096];   /* Hierarchy up one level    */
+  char rest[4096];   /* Hierarchy up one level */
 
 #ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "In db_vcd_upscope, curr_inst_scope: %s", curr_inst_scope );
@@ -1562,7 +1509,7 @@ void db_vcd_upscope() {
 void db_assign_symbol( char* name, char* symbol, int msb, int lsb ) {
 
   sig_link* slink;   /* Pointer to signal containing this symbol */
-  vsignal   tmpsig;  /* Temporary signal to search for           */
+  vsignal   tmpsig;  /* Temporary signal to search for */
 
 #ifdef DEBUG_MODE
   snprintf( user_msg, USER_MSG_LENGTH, "In db_assign_symbol, name: %s, symbol: %s, curr_inst_scope: %s, msb: %d, lsb: %d",
@@ -1696,6 +1643,11 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.166  2006/01/20 19:15:23  phase1geo
+ Fixed bug to properly handle the scoping of parameters when parameters are created/used
+ in non-module functional units.  Added param10*.v diagnostics to regression suite to
+ verify the behavior is correct now.
+
  Revision 1.165  2006/01/19 23:10:38  phase1geo
  Adding line and starting column information to vsignal structure (and associated CDD
  files).  Regression has been fully updated for this change which now fully passes.  Final

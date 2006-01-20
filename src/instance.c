@@ -221,7 +221,7 @@ void instance_resolve_params( mod_parm* mparm, funit_inst* inst ) {
 
   while( mparm != NULL ) {
 
-    if( PARAM_TYPE( mparm ) == PARAM_TYPE_DECLARED ) {
+    if( (PARAM_TYPE( mparm ) == PARAM_TYPE_DECLARED) || (PARAM_TYPE( mparm ) == PARAM_TYPE_DECLARED_LOCAL) ) {
       param_resolve_declared( mparm, inst );
     } else {
       param_resolve_override( mparm, inst );
@@ -263,7 +263,7 @@ funit_inst* instance_add_child( funit_inst* inst, func_unit* child, char* name )
   new_inst->parent = inst;
 
   /* Resolve all parameters for new instance */
-  instance_resolve_params( child->param_head, new_inst );
+  // instance_resolve_params( child->param_head, new_inst );
 
   return( new_inst );
 
@@ -321,7 +321,7 @@ void instance_parse_add( funit_inst** root, func_unit* parent, func_unit* child,
     *root = instance_create( child, inst_name );
 
     /* Resolve all parameters for new instance */
-    instance_resolve_params( child->param_head, *root );
+    // instance_resolve_params( child->param_head, *root );
 
   } else {
 
@@ -563,6 +563,11 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.34  2006/01/20 19:15:23  phase1geo
+ Fixed bug to properly handle the scoping of parameters when parameters are created/used
+ in non-module functional units.  Added param10*.v diagnostics to regression suite to
+ verify the behavior is correct now.
+
  Revision 1.33  2006/01/16 17:27:41  phase1geo
  Fixing binding issues when designs have modules/tasks/functions that are either used
  more than once in a design or have the same name.  Full regression now passes.

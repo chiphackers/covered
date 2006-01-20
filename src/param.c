@@ -457,6 +457,7 @@ void param_expr_eval( expression* expr, funit_inst* inst ) {
         param_find_and_set_expr_value( expr, inst );
         break;
       default :
+        printf( "Expression %d, %s, line %d  statement %p\n", expr->id, expression_string_op( expr->op ), expr->line, expr->stmt );
         /*
          Since we are not a parameter identifier, let's allocate some data for us 
          if we don't have some already.
@@ -646,6 +647,39 @@ void param_resolve_override( mod_parm* oparm, funit_inst* inst ) {
 }
 
 /*!
+ \param funit  Pointer to functional unit to resolve parameter values
+
+ Called after binding has occurred.  Recursively resolves all parameters for the given
+ instance tree.
+*/
+void param_resolve( funit_inst* inst ) {
+
+  mod_parm*   mparm;  /* Pointer to current module parameter in functional unit */
+  funit_inst* child;  /* Pointer to child instance of this instance */
+
+  printf( "Resolving parameters for instance %s...\n", inst->name );
+
+  /* Resolve this instance */
+  mparm = inst->funit->param_head;
+  while( mparm != NULL ) {
+    if( (PARAM_TYPE( mparm ) == PARAM_TYPE_DECLARED) || (PARAM_TYPE( mparm ) == PARAM_TYPE_DECLARED_LOCAL) ) {
+      param_resolve_declared( mparm, inst );
+    } else {
+      param_resolve_override( mparm, inst );
+    }
+    mparm = mparm->next;
+  }
+
+  /* Resolve all child instances */
+  child = inst->child_head;
+  while( child != NULL ) {
+    param_resolve( child );
+    child = child->next;
+  }
+
+}
+
+/*!
  \param iparm  Pointer to instance parameter to output to file.
  \param file   Pointer to file handle to write parameter contents to.
 
@@ -762,6 +796,9 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.47  2006/01/20 19:27:14  phase1geo
+ Fixing compile warning.
+
  Revision 1.46  2006/01/20 19:15:23  phase1geo
  Fixed bug to properly handle the scoping of parameters when parameters are created/used
  in non-module functional units.  Added param10*.v diagnostics to regression suite to

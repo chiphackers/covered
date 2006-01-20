@@ -561,12 +561,12 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
         /* Set expression to point at signal */
         exp->sig = sigl->sig;
 
-        if( cdd_reading ) {
+  //       if( cdd_reading ) {
 
           /* Attach the signal's value to our expression value */
           expression_set_value( exp, sigl->sig->value );
 
-        }
+    //     }
 
       }
 
@@ -691,6 +691,11 @@ void bind( bool cdd_reading ) {
 
   }
 
+  /* If we are in parse mode, resolve all parameters now */
+  if( !cdd_reading ) {
+    param_resolve( instance_root );
+  }
+
 }
 
 /*!
@@ -722,6 +727,12 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.59  2006/01/19 23:10:38  phase1geo
+ Adding line and starting column information to vsignal structure (and associated CDD
+ files).  Regression has been fully updated for this change which now fully passes.  Final
+ changes to summary GUI.  Fixed signal underlining for toggle coverage to work for both
+ explicit and implicit signals.  Getting things ready for a preferences window.
+
  Revision 1.58  2006/01/16 17:27:41  phase1geo
  Fixing binding issues when designs have modules/tasks/functions that are either used
  more than once in a design or have the same name.  Full regression now passes.
