@@ -90,29 +90,6 @@ mod_parm* mod_parm_find( char* name, mod_parm* parm ) {
 }
 
 /*!
- \param name  Name of signal to search for signal-parameter dependency
- \param parm  Pointer to head of module parameter list to search.
- 
- \return Returns pointer to found module parameter or NULL if search was unsuccessful
- 
- Searches the specified module list for a parameter that points to a signal that
- matches the specified name.  This indicates that the signal specified by the given
- name is dependent upon the value of this parameter.  Returns a pointer to the found
- module parameter if a match is found; otherwise, returns NULL.
-*/ 
-mod_parm* mod_parm_find_sig_dependent( char* name, mod_parm* parm ) {
-
-  assert( name != NULL );
-  
-  while( (parm != NULL) && ((parm->sig == NULL) || (parm->sig->name == NULL) || (strcmp( parm->sig->name, name ) != 0)) ) {
-    parm = parm->next;
-  }
-  
-  return( parm );
-  
-}
-
-/*!
  \param exp   Pointer to expression to find and remove from lists.
  \param parm  Pointer to module parameter list to search.
 
@@ -140,8 +117,7 @@ void mod_parm_find_expr_and_remove( expression* exp, mod_parm* parm ) {
  \param scope      Full hierarchical name of parameter value.
  \param expr       Expression tree for current module parameter.
  \param type       Specifies type of module parameter (declared/override).
- \param head       Pointer to head of module parameter list to add to.
- \param tail       Pointer to tail of module parameter list to add to.
+ \param funit      Functional unit to add this module parameter to.
  \param inst_name  Name of instance (used for parameter overridding)
 
  \return Returns pointer to newly created module parameter.
@@ -149,11 +125,12 @@ void mod_parm_find_expr_and_remove( expression* exp, mod_parm* parm ) {
  Creates a new module parameter with the specified information and adds 
  it to the module parameter list.
 */
-mod_parm* mod_parm_add( char* scope, expression* expr, int type, mod_parm** head, mod_parm** tail, char* inst_name ) {
+mod_parm* mod_parm_add( char* scope, expression* expr, int type, func_unit* funit, char* inst_name ) {
 
-  mod_parm* parm;       /* Temporary pointer to instance parameter                   */
-  mod_parm* curr;       /* Pointer to current module parameter for ordering purposes */
-  int       order = 0;  /* Current order of parameter                                */
+  mod_parm*  parm;       /* Temporary pointer to instance parameter */
+  mod_parm*  curr;       /* Pointer to current module parameter for ordering purposes */
+  int        order = 0;  /* Current order of parameter */
+  func_unit* mod_funit;  /* Pointer to module containing this functional unit (used for ordering purposes) */
   
   assert( expr != NULL );
   assert( (type == PARAM_TYPE_DECLARED)       || 
@@ -164,9 +141,12 @@ mod_parm* mod_parm_add( char* scope, expression* expr, int type, mod_parm** head
           (type == PARAM_TYPE_EXP_LSB)        ||
           (type == PARAM_TYPE_EXP_MSB) );
 
+  /* Find module containing this functional unit */
+  mod_funit = funit_get_curr_module( funit );
+
   /* Determine parameter order */
   if( type == PARAM_TYPE_DECLARED ) {
-    curr  = *head;
+    curr  = mod_funit->param_head;
     order = 0;
     while( curr != NULL ) {
       if( PARAM_TYPE( curr ) == PARAM_TYPE_DECLARED ) {
@@ -175,7 +155,7 @@ mod_parm* mod_parm_add( char* scope, expression* expr, int type, mod_parm** head
       curr = curr->next;
     }
   } else if( type == PARAM_TYPE_OVERRIDE ) {
-    curr  = *head;
+    curr  = mod_funit->param_head;
     order = 0;
     while( curr != NULL ) {
       if( (PARAM_TYPE( curr ) == PARAM_TYPE_OVERRIDE) &&
@@ -207,11 +187,11 @@ mod_parm* mod_parm_add( char* scope, expression* expr, int type, mod_parm** head
   parm->next                  = NULL;
 
   /* Now add the parameter to the current expression */
-  if( *head == NULL ) {
-    *head = *tail = parm;
+  if( funit->param_head == NULL ) {
+    funit->param_head = funit->param_tail = parm;
   } else {
-    (*tail)->next = parm;
-    *tail         = parm;
+    funit->param_tail->next = parm;
+    funit->param_tail       = parm;
   }
 
   return( parm );
@@ -359,7 +339,7 @@ void defparam_dealloc() {
 
 /*!
  \param expr  Pointer to current expression to evaluate.
- \param icurr  Pointer to head of instance parameter list to search.
+ \param inst  Pointer to current instance to search.
 
  \return Returns a pointer to the specified value found.
 
@@ -369,19 +349,39 @@ void defparam_dealloc() {
  an error message is displayed to the user (the user has created a module in which
  a parameter value is used without being defined).
 */
-void param_find_and_set_expr_value( expression* expr, inst_parm* icurr ) {
+void param_find_and_set_expr_value( expression* expr, funit_inst* inst ) {
+
+  inst_parm* icurr;  /* Pointer to current instance parameter being evaluated */
     
-  while( (icurr != NULL) && (exp_link_find( expr, icurr->mparm->exp_head ) == NULL) ) {
-    icurr = icurr->next;
-  }
+  if( inst != NULL ) {
+
+    icurr = inst->param_head;
+    while( (icurr != NULL) && (exp_link_find( expr, icurr->mparm->exp_head ) == NULL) ) {
+      icurr = icurr->next;
+    }
+
+    /*
+     If we were unable to find the module parameter in the current instance, check the rest of our
+     scope for the value.
+    */
+    if( icurr == NULL ) {
+
+      if( inst->funit->parent != NULL ) {
+        param_find_and_set_expr_value( expr, inst->parent );
+      } else {
+        snprintf( user_msg, USER_MSG_LENGTH, "Parameter used in expression but not defined in current module, line %d", expr->line );
+        print_output( user_msg, FATAL, __FILE__, __LINE__ );
+        exit( 1 );
+      }
+
+    } else {
   
-  if( icurr == NULL ) {
-    snprintf( user_msg, USER_MSG_LENGTH, "Parameter used in expression but not defined in current module, line %d", expr->line );
-    print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    exit( 1 );
+      /* Set the found instance parameter value to this expression */
+      expression_set_value( expr, icurr->value );
+
+    }
+
   }
-  
-  expression_set_value( expr, icurr->value );
   
 }
 
@@ -430,8 +430,8 @@ bool param_set_sig_size( vsignal* sig, inst_parm* icurr ) {
 /*************************************************************************************/
 
 /*!
- \param expr         Current expression to evaluate.
- \param ihead        Pointer to head of current instance instance parameter list.
+ \param expr  Current expression to evaluate.
+ \param inst  Pointer to current instance to evaluate for.
 
  Recursively evaluates the specified expression tree, calculating the value of leaf nodes
  first.  If a another parameter value is encountered, lookup the value of this parameter
@@ -439,13 +439,13 @@ bool param_set_sig_size( vsignal* sig, inst_parm* icurr ) {
  found, we have encountered a user error; therefore, display an error message to the
  user indicating such.
 */
-void param_expr_eval( expression* expr, inst_parm* ihead ) {
+void param_expr_eval( expression* expr, funit_inst* inst ) {
 
   if( expr != NULL ) {
 
     /* Evaluate children first */
-    param_expr_eval( expr->left,  ihead );
-    param_expr_eval( expr->right, ihead );
+    param_expr_eval( expr->left,  inst );
+    param_expr_eval( expr->right, inst );
 
     switch( expr->op ) {
       case EXP_OP_STATIC :
@@ -453,7 +453,7 @@ void param_expr_eval( expression* expr, inst_parm* ihead ) {
       case EXP_OP_PARAM      :
       case EXP_OP_PARAM_SBIT :
       case EXP_OP_PARAM_MBIT :
-        param_find_and_set_expr_value( expr, ihead );
+        param_find_and_set_expr_value( expr, inst );
         break;
       default :
         /*
@@ -482,11 +482,8 @@ void param_expr_eval( expression* expr, inst_parm* ihead ) {
 /*************************************************************************************/
 
 /*!
- \param mname    Instance name of current module.
- \param mparm    Pointer to parameter in current module to check.
- \param ip_head  Pointer to parent instance's instance parameter list.
- \param ihead    Pointer to current instance parameter list head to add to.
- \param itail    Pointer to current instance parameter list tail to add to.
+ \param mparm  Pointer to parameter in current module to check.
+ \param inst   Pointer to current instance.
 
  \return Returns a pointer to the newly created instance parameter or NULL if one is not created
 
@@ -494,30 +491,40 @@ void param_expr_eval( expression* expr, inst_parm* ihead ) {
  override is found, adds the new instance parameter using the value of the
  override.  If no override is found, returns NULL and does nothing.
 */
-inst_parm* param_has_override( char* mname, mod_parm* mparm, inst_parm* ip_head, 
-                               inst_parm** ihead, inst_parm** itail ) {
+inst_parm* param_has_override( mod_parm* mparm, funit_inst* inst ) {
 
-  inst_parm* icurr;        /* Pointer to current instance parameter                  */
-  inst_parm* parm = NULL;  /* Pointer to newly created parameter (if one is created) */
+  inst_parm*  icurr = NULL;  /* Pointer to current instance parameter in parent */
+  inst_parm*  parm  = NULL;  /* Pointer to newly created parameter (if one is created) */
+  funit_inst* mod_inst;      /* Pointer to the instance that refers to the module containing this instance */
 
-  assert( mname != NULL );
   assert( mparm != NULL );
+  assert( inst != NULL );
 
-  /* First, check to see if the parent instance contains an override in its instance list. */
-  icurr = ip_head;
-  while( (icurr != NULL) && 
-         !((PARAM_TYPE( icurr->mparm ) == PARAM_TYPE_OVERRIDE) &&
-           (PARAM_TYPE( mparm ) != PARAM_TYPE_DECLARED_LOCAL) &&
-           ((icurr->name != NULL) ? (strcmp( icurr->name, mparm->name ) == 0) : (PARAM_ORDER( mparm ) == PARAM_ORDER( icurr->mparm ))) &&
-           (strcmp( mname, icurr->inst_name ) == 0)) ) {
-    icurr = icurr->next;
+  /* Find the module instance for this instance */
+  mod_inst = inst;
+  while( mod_inst->funit->parent != NULL ) {
+    mod_inst = mod_inst->parent;
+  }
+
+  /* Check to see if the parent instance contains an override in its instance list. */
+  if( mod_inst->parent != NULL ) {
+
+    icurr = mod_inst->parent->param_head;
+    while( (icurr != NULL) && 
+           !((PARAM_TYPE( icurr->mparm ) == PARAM_TYPE_OVERRIDE) &&
+             (PARAM_TYPE( mparm ) != PARAM_TYPE_DECLARED_LOCAL) &&
+             ((icurr->name != NULL) ? (strcmp( icurr->name, mparm->name ) == 0) : (PARAM_ORDER( mparm ) == PARAM_ORDER( icurr->mparm ))) &&
+             (strcmp( mod_inst->name, icurr->inst_name ) == 0)) ) {
+      icurr = icurr->next;
+    }
+
   }
 
   /* If an override has been found, use this value instead of the mparm expression value */
   if( icurr != NULL ) {
 
     /* Add new instance parameter to current instance */
-    parm = inst_parm_add( mparm->name, NULL, icurr->value, mparm, ihead, itail );
+    parm = inst_parm_add( mparm->name, NULL, icurr->value, mparm, &(inst->param_head), &(inst->param_tail) );
 
   }
 
@@ -526,10 +533,8 @@ inst_parm* param_has_override( char* mname, mod_parm* mparm, inst_parm* ip_head,
 }
 
 /*!
- \param scope  Full hierarchical scope of parameter to check.
  \param mparm  Pointer to module parameter to attach new instance parameter to.
- \param ihead  Pointer to head of instance parameter list to add to.
- \param itail  Pointer to tail of instance parameter list to add to.
+ \param inst   Pointer to current instance.
 
  \return Returns pointer to created instance parameter or NULL if one is not created.
 
@@ -537,15 +542,21 @@ inst_parm* param_has_override( char* mname, mod_parm* mparm, inst_parm* ip_head,
  instance parameter is created with the value of the found defparam.  If a match
  is not found, return NULL and do nothing else.
 */
-inst_parm* param_has_defparam( char* scope, mod_parm* mparm, inst_parm** ihead, inst_parm** itail ) {
+inst_parm* param_has_defparam( mod_parm* mparm, funit_inst* inst ) {
 
-  inst_parm* parm      = NULL;  /* Pointer newly created instance parameter (if one is created) */
-  inst_parm* icurr;             /* Pointer to current defparam                                  */
-  char       parm_scope[4096];  /* Specifes full scope to parameter to find                     */
+  inst_parm* parm = NULL;       /* Pointer newly created instance parameter (if one is created) */
+  inst_parm* icurr;             /* Pointer to current defparam */
+  char       parm_scope[4096];  /* Specifes full scope to parameter to find */
+  char       scope[4096];       /* Scope of this instance */
 
-  assert( scope != NULL );
   assert( mparm != NULL );
+  assert( inst != NULL );
 
+  /* Get scope of this instance */
+  scope[0] = '\0';
+  instance_gen_scope( scope, inst );
+
+  /* Generate full hierarchy of this parameter */
   if( strcmp( leading_hierarchy, "*" ) == 0 ) {
     snprintf( parm_scope, 4096, "%s.%s", scope, mparm->name );
   } else {
@@ -562,7 +573,7 @@ inst_parm* param_has_defparam( char* scope, mod_parm* mparm, inst_parm** ihead, 
   if( icurr != NULL ) {
 
     /* Defparam found, use its value to create new instance parameter */
-    parm = inst_parm_add( mparm->name, NULL, icurr->value, mparm, ihead, itail );
+    parm = inst_parm_add( mparm->name, NULL, icurr->value, mparm, &(inst->param_head), &(inst->param_tail) );
 
   }
 
@@ -571,11 +582,8 @@ inst_parm* param_has_defparam( char* scope, mod_parm* mparm, inst_parm** ihead, 
 }
 
 /*!
- \param mscope   Full hierarchical scope of current module.
- \param mparm    Pointer to parameter in current module to check.
- \param ip_head  Pointer to parent instance's instance parameter list.
- \param ihead    Pointer to current instance parameter list head to add to.
- \param itail    Pointer to current instance parameter list tail to add to.
+ \param mparm  Pointer to parameter in current module to check.
+ \param inst   Pointer to current instance.
 
  Performs declared module parameter resolution and stores the appropriate
  instance parameter into the current instance's instance parameter list.  This
@@ -587,25 +595,15 @@ inst_parm* param_has_defparam( char* scope, mod_parm* mparm, inst_parm** ihead, 
  -# If (2) fails, calculate the current expression's value by evaluating the
     parameter's expression tree.
 */
-void param_resolve_declared( char* mscope, mod_parm* mparm, inst_parm* ip_head, 
-                             inst_parm** ihead, inst_parm** itail ) {
+void param_resolve_declared( mod_parm* mparm, funit_inst* inst ) {
 
-  char* mname;  /* String containing instance name of current module   */
-  char* rest;   /* String containing scope of current module -- unused */
- 
-  assert( mscope != NULL );
   assert( mparm != NULL );
 
-  /* Extract the current module parameter name from its full scope */
-  mname = strdup_safe( mscope, __FILE__, __LINE__ );
-  rest  = strdup_safe( mscope, __FILE__, __LINE__ );
-  scope_extract_back( mscope, mname, rest );
-
-  if( param_has_override( mname, mparm, ip_head, ihead, itail ) != NULL ) {
+  if( param_has_override( mparm, inst ) != NULL ) {
 
     /* Parameter override was found in parent module, do nothing more */
 
-  } else if( param_has_defparam( mscope, mparm, ihead, itail ) != NULL ) {
+  } else if( param_has_defparam( mparm, inst ) != NULL ) {
 
     /* Parameter defparam override was found, do nothing more */
 
@@ -614,16 +612,12 @@ void param_resolve_declared( char* mscope, mod_parm* mparm, inst_parm* ip_head,
     assert( mparm->expr != NULL );
 
     /* First evaluate the current module expression */
-    param_expr_eval( mparm->expr, *ihead );
+    param_expr_eval( mparm->expr, inst );
 
     /* Now add the new instance parameter */
-    inst_parm_add( mparm->name, NULL, mparm->expr->value, mparm, ihead, itail );
+    inst_parm_add( mparm->name, NULL, mparm->expr->value, mparm, &(inst->param_head), &(inst->param_tail) );
 
   }
-
-  /* Deallocate temporary string values */
-  free_safe( mname );
-  free_safe( rest  );
 
 }
 
@@ -631,23 +625,22 @@ void param_resolve_declared( char* mscope, mod_parm* mparm, inst_parm* ip_head,
 
 /*!
  \param oparm  Pointer to override module parameter.
- \param ihead  Pointer to head of instance parameter list to add to.
- \param itail  Pointer to tail of instance parameter list to add to.
+ \param inst   Pointer to instance to add new instance parameter to.
 
  Evaluates the current module parameter expression tree and adds a new instance
  parameter to the specified instance parameter list, preserving the order and
  type of the override parameter.
 */
-void param_resolve_override( mod_parm* oparm, inst_parm** ihead, inst_parm** itail ) {
+void param_resolve_override( mod_parm* oparm, funit_inst* inst ) {
 
   assert( oparm       != NULL );
   assert( oparm->expr != NULL );
 
   /* Evaluate module override parameter */
-  param_expr_eval( oparm->expr, *ihead );
+  param_expr_eval( oparm->expr, inst );
 
   /* Add the new instance override parameter */
-  inst_parm_add( oparm->name, oparm->inst_name, oparm->expr->value, oparm, ihead, itail );
+  inst_parm_add( oparm->name, oparm->inst_name, oparm->expr->value, oparm, &(inst->param_head), &(inst->param_tail) );
 
 }
 
@@ -768,6 +761,12 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.45  2006/01/19 23:10:38  phase1geo
+ Adding line and starting column information to vsignal structure (and associated CDD
+ files).  Regression has been fully updated for this change which now fully passes.  Final
+ changes to summary GUI.  Fixed signal underlining for toggle coverage to work for both
+ explicit and implicit signals.  Getting things ready for a preferences window.
+
  Revision 1.44  2006/01/16 17:27:41  phase1geo
  Fixing binding issues when designs have modules/tasks/functions that are either used
  more than once in a design or have the same name.  Full regression now passes.

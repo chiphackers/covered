@@ -16,14 +16,11 @@
 /*! \brief Searches specified module parameter list for matching parameter. */
 mod_parm* mod_parm_find( char* name, mod_parm* parm );
 
-/*! \brief Searches specified module parameter list for matching signal dependency. */
-mod_parm* mod_parm_find_sig_dependent( char* name, mod_parm* parm );
-
 /*! \brief Find specified expression and remove if found from module parameter expression lists. */
 void mod_parm_find_expr_and_remove( expression* exp, mod_parm* parm );
 
 /*! \brief Creates new module parameter and adds it to the specified list. */
-mod_parm* mod_parm_add( char* scope, expression* expr, int type, mod_parm** head, mod_parm** tail, char* inst_name );
+mod_parm* mod_parm_add( char* scope, expression* expr, int type, func_unit* funit, char* inst_name );
 
 /*! \brief Outputs contents of module parameter list to standard output. */
 void mod_parm_display( mod_parm* mparm );
@@ -47,10 +44,10 @@ void param_set_expr_size( expression* expr, inst_parm* icurr );
 bool param_set_sig_size( vsignal* sig, inst_parm* icurr );
 
 /*! \brief Transforms a declared module parameter into an instance parameter. */
-void param_resolve_declared( char* mscope, mod_parm* mparm, inst_parm* ip_head, inst_parm** ihead, inst_parm** itail );
+void param_resolve_declared( mod_parm* mparm, funit_inst* inst );
 
 /*! \brief Transforms an override module parameter into an instance parameter. */
-void param_resolve_override( mod_parm* oparm, inst_parm** ihead, inst_parm** itail );
+void param_resolve_override( mod_parm* oparm, funit_inst* inst );
 
 /*! \brief Outputs specified instance parameter to specified output stream. */
 void param_db_write( inst_parm* iparm, FILE* file );
@@ -64,6 +61,11 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive );
 
 /*
  $Log$
+ Revision 1.17  2006/01/12 22:14:45  phase1geo
+ Completed code for handling parameter value pass by name Verilog-2001 syntax.
+ Added diagnostics to regression suite and updated regression files for this
+ change.  Full regression now passes.
+
  Revision 1.16  2005/12/21 22:30:54  phase1geo
  More updates to memory leak fix list.  We are getting close!  Added some helper
  scripts/rules to more easily debug valgrind memory leak errors.  Also added suppression

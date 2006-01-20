@@ -219,18 +219,12 @@ funit_inst* instance_find_by_funit( funit_inst* root, func_unit* funit, int* ign
 */
 void instance_resolve_params( mod_parm* mparm, funit_inst* inst ) {
 
-  char scope[4096];  /* String containing full hierarchical scope of instance */
-
-  /* Generate current instance scope */
-  scope[0] = '\0';
-  instance_gen_scope( scope, inst );
-
   while( mparm != NULL ) {
 
     if( PARAM_TYPE( mparm ) == PARAM_TYPE_DECLARED ) {
-      param_resolve_declared( scope, mparm, inst->parent->param_head, &(inst->param_head), &(inst->param_tail) );
+      param_resolve_declared( mparm, inst );
     } else {
-      param_resolve_override( mparm, &(inst->param_head), &(inst->param_tail) );
+      param_resolve_override( mparm, inst );
     }
 
     mparm = mparm->next;
@@ -569,6 +563,10 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.33  2006/01/16 17:27:41  phase1geo
+ Fixing binding issues when designs have modules/tasks/functions that are either used
+ more than once in a design or have the same name.  Full regression now passes.
+
  Revision 1.32  2005/12/01 16:08:19  phase1geo
  Allowing nested functional units within a module to get parsed and handled correctly.
  Added new nested_block1 diagnostic to test nested named blocks -- will add more tests

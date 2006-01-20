@@ -63,7 +63,8 @@ DIAGS1        = always1         always2         always3         always3.1.11A   
                 param3          param3.1        param3.2        param3.3        param3.4 \
                 param3.5        param4          param4.1        param5          param6 \
                 param6.1        param7          param8          param8.1        param9 \
-                param9.1        param9.2        port1           port2           pulldown1 \
+                param9.1        param9.2        param10         param10.1       param10.2 \
+                param10.3       param10.4       param10.5       port1           port2           pulldown1 \
                 pullup1         repeat1         repeat2         sbit_sel1       sbit_sel1.1 \
                 slist1          slist1.1        slist1.2        slist1.3        slist2 \
                 static1         string1         supply0         supply1         task1 \
