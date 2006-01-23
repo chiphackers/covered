@@ -3,5 +3,5 @@
 3 0 foo main.bar localparam1.2.v 15 23
 1 #SIZEL 0 0 0 32 0 11 0 0 0 0 0 0 0
 1 #SIZEG 0 0 0 32 0 44 0 0 0 0 0 0 0
-1 a 0 20 19 5 0 aa 2
-1 b 0 21 19 10 0 aa aa a
+1 a 0 20 30013 5 0 aa 2
+1 b 0 21 30013 10 0 aa aa a

@@ -322,8 +322,8 @@ int tcl_func_collect_uncovered_toggles( ClientData d, Tcl_Interp* tcl, int argc,
     sigl = sig_head;
     while( sigl != NULL ) {
       snprintf( tmp, 85, "%d.%d %d.%d",
-                (sigl->sig->line - (start_line - 1)), (sigl->sig->col + 9),
-                (sigl->sig->line - (start_line - 1)), (sigl->sig->col + (strlen( sigl->sig->name ) - 1) + 10) );
+                (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + 9),
+                (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + (strlen( sigl->sig->name ) - 1) + 10) );
       Tcl_SetVar( tcl, "uncovered_toggles", tmp, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
       sigl = sigl->next;
     }
@@ -377,8 +377,8 @@ int tcl_func_collect_covered_toggles( ClientData d, Tcl_Interp* tcl, int argc, c
     sigl = sig_head;
     while( sigl != NULL ) {
       snprintf( tmp, 85, "%d.%d %d.%d",
-                (sigl->sig->line - (start_line - 1)), (sigl->sig->col + 9),
-                (sigl->sig->line - (start_line - 1)), (sigl->sig->col + (strlen( sigl->sig->name ) - 1) + 10) );
+                (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + 9),
+                (sigl->sig->line - (start_line - 1)), (sigl->sig->suppl.part.col + (strlen( sigl->sig->name ) - 1) + 10) );
       Tcl_SetVar( tcl, "covered_toggles", tmp, (TCL_GLOBAL_ONLY | TCL_APPEND_VALUE | TCL_LIST_ELEMENT) );
       sigl = sigl->next;
     }
@@ -909,6 +909,10 @@ void tcl_func_initialize( Tcl_Interp* tcl, char* home, char* version, char* brow
 
 /*
  $Log$
+ Revision 1.24  2006/01/19 23:29:08  phase1geo
+ Fixing bug from last checkin in tcl_funcs.c (infinite looping).  Small updates
+ to menu.
+
  Revision 1.23  2006/01/19 23:10:38  phase1geo
  Adding line and starting column information to vsignal structure (and associated CDD
  files).  Regression has been fully updated for this change which now fully passes.  Final

@@ -726,9 +726,9 @@ void db_add_defparam( char* name, expression* expr ) {
 
 /*!
  \param name    Name of signal being added.
+ \param type    Type of signal being added.
  \param left    Specifies constant value for calculation of left-hand vector value.
  \param right   Specifies constant value for calculation of right-hand vector value.
- \param inport  Set to TRUE if specified signal name is an input port.
  \param mba     Set to TRUE if specified signal must be assigned by simulated results.
  \param line    Line number where signal was declared.
  \param col     Starting column where signal was declared.
@@ -739,7 +739,7 @@ void db_add_defparam( char* name, expression* expr ) {
  add to the current module's parameter list and all associated instances are
  updated to contain new value.
 */
-void db_add_signal( char* name, static_expr* left, static_expr* right, bool inport, bool mba, int line, control col ) {
+void db_add_signal( char* name, int type, static_expr* left, static_expr* right, bool mba, int line, int col ) {
 
   vsignal  tmpsig;  /* Temporary signal for signal searching */
   vsignal* sig;     /* Container for newly created signal */
@@ -768,10 +768,10 @@ void db_add_signal( char* name, static_expr* left, static_expr* right, bool inpo
     }  
 
     if( (lsb != -1) && (width != -1) ) { 
-      sig = vsignal_create( name, width, lsb, line, col );
+      sig = vsignal_create( name, type, width, lsb, line, col );
     } else {
       sig = (vsignal*)malloc_safe( sizeof( vsignal ), __FILE__, __LINE__ );
-      vsignal_init( sig, strdup_safe( name, __FILE__, __LINE__ ), (vector*)malloc_safe( sizeof( vector ), __FILE__, __LINE__ ), lsb, line, col );
+      vsignal_init( sig, strdup_safe( name, __FILE__, __LINE__ ), type, (vector*)malloc_safe( sizeof( vector ), __FILE__, __LINE__ ), lsb, line, col );
       vector_init( sig->value, NULL, width );
       if( (left != NULL) && (left->exp != NULL) ) {
         db_add_vector_param( sig, left->exp, PARAM_TYPE_SIG_MSB );
@@ -783,9 +783,6 @@ void db_add_signal( char* name, static_expr* left, static_expr* right, bool inpo
 
     /* Add signal to current module's signal list */
     sig_link_add( sig, &(curr_funit->sig_head), &(curr_funit->sig_tail) );
-
-    /* Indicate if signal is an input port or not */
-    sig->value->suppl.part.inport = inport ? 1 : 0;
 
     /* Indicate if signal must be assigned by simulated results or not */
     if( mba ) {
@@ -1643,6 +1640,11 @@ void db_dealloc_global_vars() {
 
 /*
  $Log$
+ Revision 1.167  2006/01/20 22:44:51  phase1geo
+ Moving parameter resolution to post-bind stage to allow static functions to
+ be considered.  Regression passes without static function testing.  Static
+ function support still has some work to go.  Checkpointing.
+
  Revision 1.166  2006/01/20 19:15:23  phase1geo
  Fixed bug to properly handle the scoping of parameters when parameters are created/used
  in non-module functional units.  Added param10*.v diagnostics to regression suite to

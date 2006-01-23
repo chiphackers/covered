@@ -25,6 +25,9 @@ func_unit* funit_get_curr_module( func_unit* funit );
 /*! \brief Returns the parent function of the given functional unit (if there is one) */
 func_unit* funit_get_curr_function( func_unit* funit );
 
+/*! \brief Returns the number of input, output and inout ports in the specified functional unit */
+int funit_get_port_count( func_unit* funit );
+
 /*! \brief Finds specified module parameter given the current functional unit and its scope */
 mod_parm* funit_find_param( char* name, func_unit* funit );
 
@@ -62,6 +65,11 @@ void funit_dealloc( func_unit* funit );
 
 /*
  $Log$
+ Revision 1.8  2006/01/20 19:15:23  phase1geo
+ Fixed bug to properly handle the scoping of parameters when parameters are created/used
+ in non-module functional units.  Added param10*.v diagnostics to regression suite to
+ verify the behavior is correct now.
+
  Revision 1.7  2006/01/13 23:27:02  phase1geo
  Initial attempt to fix problem with handling functions/tasks/named blocks with
  the same name in the design.  Still have a few diagnostics failing in regressions

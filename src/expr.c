@@ -52,6 +52,10 @@
  expand the amount of code that can be covered by allowing several "zero-time" assignments to
  occur while maintaining accurate coverage information.
 
+ \par EXP_OP_PASSIGN
+ The port assignment operator is like the blocking assignment operator, in that Covered will perform
+ the assignment.
+
  \par EXP_OP_FUNC_CALL
  A function call expression runs the head statement block of the prescribed function whenever an
  expression changes value in its parameter list.  The expression's value vector pointer is
@@ -172,6 +176,7 @@ static bool expression_op_func__disable( expression*, thread* );
 static bool expression_op_func__repeat( expression*, thread* );
 static bool expression_op_func__null( expression*, thread* );
 static bool expression_op_func__exponent( expression*, thread* );
+static bool expression_op_func__passign( expression*, thread* );
 
 
 /*!
@@ -248,7 +253,8 @@ const exp_info exp_op_info[EXP_OP_NUM] = { {"STATIC",     expression_op_func__nu
                                            {"ALSHIFT",    expression_op_func__lshift,    {0, 0, 0, 1, 1, 0} },
                                            {"ARSHIFT",    expression_op_func__arshift,   {0, 0, 0, 1, 1, 0} },
                                            {"SLIST",      expression_op_func__slist,     {1, 0, 0, 0, 1, 1} },
-                                           {"EXPONENT",   expression_op_func__exponent,  {0, 0, 0, 1, 1, 0} } };
+                                           {"EXPONENT",   expression_op_func__exponent,  {0, 0, 0, 1, 1, 0} },
+                                           {"PASSIGN",    expression_op_func__passign,   {0, 0, 0, 1, 0, 0} } };
 
 /*!
  \param exp    Pointer to expression to add value to.
@@ -298,25 +304,24 @@ expression* expression_create( expression* right, expression* left, exp_op_type 
   int         lwidth = 0;  /* Bit width of expression on left */
 
   new_expr = (expression*)malloc_safe( sizeof( expression ), __FILE__, __LINE__ );
-  // printf( "Allocated expression %p   %d, %s, line %d\n", new_expr, id, expression_string_op( op ), line );
 
-  new_expr->suppl.all      = 0;
-  new_expr->suppl.part.lhs = (nibble)lhs & 0x1;
-  new_expr->op             = op;
-  new_expr->id             = id;
-  new_expr->ulid           = -1;
-  new_expr->line           = line;
-  new_expr->col            = ((first & 0xffff) << 16) | (last & 0xffff);
-  new_expr->exec_num       = 0;
-  new_expr->sig            = NULL;
-  new_expr->parent         = (expr_stmt*)malloc_safe( sizeof( expr_stmt ), __FILE__, __LINE__ );
-  new_expr->parent->expr   = NULL;
-  new_expr->right          = right;
-  new_expr->left           = left;
-  new_expr->value          = (vector*)malloc_safe( sizeof( vector ), __FILE__, __LINE__ );
-  // printf( "Allocated expression vector %p   %d %s line %d\n", new_expr->value, id, expression_string_op( op ), line );
-  new_expr->table          = NULL;
-  new_expr->stmt           = NULL;
+  new_expr->suppl.all           = 0;
+  new_expr->suppl.part.lhs      = (nibble)lhs & 0x1;
+  new_expr->suppl.part.owns_vec = EXPR_OWNS_VEC( op, new_expr->suppl );
+  new_expr->op                  = op;
+  new_expr->id                  = id;
+  new_expr->ulid                = -1;
+  new_expr->line                = line;
+  new_expr->col                 = ((first & 0xffff) << 16) | (last & 0xffff);
+  new_expr->exec_num            = 0;
+  new_expr->sig                 = NULL;
+  new_expr->parent              = (expr_stmt*)malloc_safe( sizeof( expr_stmt ), __FILE__, __LINE__ );
+  new_expr->parent->expr        = NULL;
+  new_expr->right               = right;
+  new_expr->left                = left;
+  new_expr->value               = (vector*)malloc_safe( sizeof( vector ), __FILE__, __LINE__ );
+  new_expr->table               = NULL;
+  new_expr->stmt                = NULL;
 
   if( right != NULL ) {
 
@@ -441,14 +446,12 @@ void expression_set_value( expression* exp, vector* vec ) {
   assert( exp->value != NULL );
   assert( vec != NULL );
   
-  /* printf( "In expression_set_value, expr: %d, op: %s, line: %d\n",
-              exp->id, expression_string_op( exp->op ), exp->line ); */
-
   switch( exp->op ) {
     case EXP_OP_SIG       :
     case EXP_OP_PARAM     :
     case EXP_OP_FUNC_CALL :
     case EXP_OP_TRIGGER   :
+    case EXP_OP_PASSIGN   :
       exp->value->value = vec->value;
       exp->value->width = vec->width;
       break;
@@ -519,6 +522,7 @@ void expression_resize( expression* expr, bool recursive ) {
       case EXP_OP_DASSIGN :
       case EXP_OP_BASSIGN :
       case EXP_OP_NASSIGN :
+      case EXP_OP_PASSIGN :
       case EXP_OP_IF :
       case EXP_OP_FUNC_CALL :
       case EXP_OP_WHILE :
@@ -774,7 +778,7 @@ void expression_db_write( expression* expr, FILE* file ) {
     (expr->op == EXP_OP_STATIC) ? 0 : expression_get_id( expr->left )
   );
 
-  if( EXPR_OWNS_VEC( expr->op, expr->suppl ) ) {
+  if( ESUPPL_OWNS_VEC( expr->suppl ) ) {
     fprintf( file, " " );
     vector_db_write( expr->value, file, (expr->op == EXP_OP_STATIC) );
   }
@@ -865,7 +869,7 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) {
 
       /* Create new expression */
       expr = expression_create( right, left, op, ESUPPL_IS_LHS( suppl ), id, linenum,
-                                ((column >> 16) & 0xffff), (column & 0xffff), EXPR_OWNS_VEC( op, suppl ) );
+                                ((column >> 16) & 0xffff), (column & 0xffff), ESUPPL_OWNS_VEC( suppl ) );
 
       expr->suppl.all = suppl.all;
       expr->exec_num  = exec_num;
@@ -882,7 +886,7 @@ bool expression_db_read( char** line, func_unit* curr_funit, bool eval ) {
         left->parent->expr = expr;
       }
 
-      if( EXPR_OWNS_VEC( op, suppl ) ) {
+      if( ESUPPL_OWNS_VEC( suppl ) ) {
 
         /* Read in vector information */
         if( vector_db_read( &vec, line ) ) {
@@ -1002,7 +1006,7 @@ bool expression_db_merge( expression* base, char** line, bool same ) {
         base->exec_num = exec_num;
       }
 
-      if( EXPR_OWNS_VEC( op, suppl ) ) {
+      if( ESUPPL_OWNS_VEC( suppl ) ) {
 
         /* Merge expression vectors */
         retval = vector_db_merge( base->value, line, same );
@@ -1067,7 +1071,7 @@ bool expression_db_replace( expression* base, char** line ) {
       /* Replace execution count value */
       base->exec_num  = exec_num;
 
-      if( EXPR_OWNS_VEC( op, suppl ) ) {
+      if( ESUPPL_OWNS_VEC( suppl ) ) {
 
         /* Merge expression vectors */
         retval = vector_db_replace( base->value, line );
@@ -2340,6 +2344,46 @@ bool expression_op_func__exponent( expression* expr, thread* thr ) {
 }
 
 /*!
+ \param expr  Pointer to expression to perform operation on
+ \param thr   Pointer to thread containing this expression
+
+ \return Returns TRUE if the expression has changed value from its previous value; otherwise, returns FALSE.
+
+ Performs a port assignment operation.
+*/
+bool expression_op_func__passign( expression* expr, thread* thr ) {
+
+  int intval = 0;  /* Integer value */
+
+  switch( expr->sig->suppl.part.type ) {
+
+    /* If the connected signal is an input type, copy the parameter expression value to this vector */
+    case SSUPPL_TYPE_INPUT :
+      vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
+      printf( "Set input port signal %s to value:\n", expr->sig->name );
+      vector_display( expr->value );
+      vsignal_propagate( expr->sig );
+      break;
+
+    /*
+     If the connected signal is an output type, do an expression assign from our expression value
+     to the right expression.
+    */
+    case SSUPPL_TYPE_OUTPUT :
+      expression_assign( expr->right, expr, &intval );
+      break;
+
+    /* We don't currently support INOUT as these are not used in tasks or functions */
+    default :
+      assert( (expr->sig->suppl.part.type == SSUPPL_TYPE_INPUT) ||
+              (expr->sig->suppl.part.type == SSUPPL_TYPE_OUTPUT) );
+      break;
+
+  }
+
+}
+
+/*!
  \param expr  Pointer to expression to set value to.
  \param thr   Pointer to current thread being simulated. 
 
@@ -2399,7 +2443,6 @@ bool expression_operate( expression* expr, thread* thr ) {
         lt = ESUPPL_IS_TRUE(  expr->left->suppl  );
         rf = ESUPPL_IS_FALSE( expr->right->suppl );
         rt = ESUPPL_IS_TRUE(  expr->right->suppl );
-        /* printf( "expr %d, lf: %d, lt: %d, rf: %d, rt: %d\n", expr->id, lf, lt, rf, rt ); */
         expr->suppl.part.eval_00 |= lf & rf;
         expr->suppl.part.eval_01 |= lf & rt;
         expr->suppl.part.eval_10 |= lt & rf;
@@ -2659,10 +2702,6 @@ void expression_assign( expression* lhs, expression* rhs, int* lsb ) {
         break;
       default:
         /* This is an illegal expression to have on the left-hand-side of an expression */
-        /*
-          funit = funit_find_by_id( lhs->id );
-          printf( "lhs->op: %d, %d in module %s\n", lhs->op, lhs->line, funit->name );
-        */
 	assert( (lhs->op == EXP_OP_SIG)      ||
 	        (lhs->op == EXP_OP_SBIT_SEL) ||
 		(lhs->op == EXP_OP_MBIT_SEL) ||
@@ -2691,7 +2730,7 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
     op = expr->op;
 
-    if( EXPR_OWNS_VEC( op, expr->suppl ) ) {
+    if( ESUPPL_OWNS_VEC( expr->suppl ) ) {
 
       /* Free up memory from vector value storage */
       vector_dealloc( expr->value );
@@ -2721,10 +2760,7 @@ void expression_dealloc( expression* expr, bool exp_only ) {
           (op != EXP_OP_NASSIGN) &&
           (op != EXP_OP_IF)      &&
           (op != EXP_OP_WHILE) ) {
-        // printf( "Deallocated expression vector only %p   %d %s line %d\n", expr->value, expr->id, expression_string_op( expr->op ), expr->line );
         free_safe( expr->value );
-      } else if( expr->value != NULL ) {
-        // printf( "Did not remove expression vector but is not NULL %d, %s line %d\n", expr->id, expression_string_op( expr->op ), expr->line );
       }
 
       if( expr->sig == NULL ) {
@@ -2774,7 +2810,6 @@ void expression_dealloc( expression* expr, bool exp_only ) {
     }
 
     /* Remove this expression memory */
-    // printf( "Deallocated expression %p  %d, %s line %d\n", expr, expr->id, expression_string_op( expr->op ), expr->line );
     free_safe( expr );
 
   }
@@ -2784,6 +2819,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.159  2006/01/16 17:27:41  phase1geo
+ Fixing binding issues when designs have modules/tasks/functions that are either used
+ more than once in a design or have the same name.  Full regression now passes.
+
  Revision 1.158  2006/01/13 04:01:04  phase1geo
  Adding support for exponential operation.  Added exponent1 diagnostic to verify
  but Icarus does not support this currently.

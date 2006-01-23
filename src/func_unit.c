@@ -121,6 +121,32 @@ func_unit* funit_get_curr_function( func_unit* funit ) {
 }
 
 /*!
+ \param funit  Pointer to functional unit to process
+
+ \return Returns the number of input, output and inout ports specified in this functional unit
+*/
+int funit_get_port_count( func_unit* funit ) {
+
+  sig_link* sigl;          /* Pointer to current signal link to examine */
+  int       port_cnt = 0;  /* Return value for this function */
+
+  assert( funit != NULL );
+
+  sigl = funit->sig_head;
+  while( sigl != NULL ) {
+    if( (sigl->sig->suppl.part.type == SSUPPL_TYPE_INPUT)  ||
+        (sigl->sig->suppl.part.type == SSUPPL_TYPE_OUTPUT) ||
+        (sigl->sig->suppl.part.type == SSUPPL_TYPE_INOUT) ) {
+      port_cnt++;
+    }
+    sigl = sigl->next;
+  }
+
+  return( port_cnt );
+
+}
+
+/*!
  \param name   Name of parameter to search for
  \param funit  Functional unit to check for existence of named parameter
 
@@ -803,6 +829,11 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.13  2006/01/20 19:15:23  phase1geo
+ Fixed bug to properly handle the scoping of parameters when parameters are created/used
+ in non-module functional units.  Added param10*.v diagnostics to regression suite to
+ verify the behavior is correct now.
+
  Revision 1.12  2006/01/13 23:27:02  phase1geo
  Initial attempt to fix problem with handling functions/tasks/named blocks with
  the same name in the design.  Still have a few diagnostics failing in regressions

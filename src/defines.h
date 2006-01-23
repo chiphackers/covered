@@ -263,7 +263,7 @@
  supplemental fields are ANDed with this mask and ORed together to perform the
  merge.  See \ref esuppl_u for information on which bits are masked.
 */
-#define ESUPPL_MERGE_MASK            0x1ffff
+#define ESUPPL_MERGE_MASK            0x3ffff
 
 /*!
  Returns a value of 1 if the specified supplemental value has the SWAPPED
@@ -362,6 +362,40 @@
  placed in the thread queue at time 0.
 */
 #define ESUPPL_STMT_IS_CALLED(x)     x.part.stmt_is_called
+
+/*!
+ Returns a value of 1 if the specified expression owns its vector structure or 0 if it
+ shares it with someone else.
+*/
+#define ESUPPL_OWNS_VEC(x)           x.part.owns_vec
+
+/*! @} */
+
+/*!
+ \addtogroup ssuppl_type Signal Supplemental Field Types
+
+ The following defines represent the various types of signals that can be parsed.
+
+ @{
+*/
+
+/*! This is an input port signal */
+#define SSUPPL_TYPE_INPUT         0
+
+/*! This is an output port signal */
+#define SSUPPL_TYPE_OUTPUT        1
+
+/*! This is an inout port signal */
+#define SSUPPL_TYPE_INOUT         2
+
+/*! This is a declared signal (i.e., not a port) */
+#define SSUPPL_TYPE_DECLARED      3
+
+/*! This is an event */
+#define SSUPPL_TYPE_EVENT         4
+
+/*! This signal was implicitly created */
+#define SSUPPL_TYPE_IMPLICIT      5
 
 /*! @} */
      
@@ -590,6 +624,7 @@ typedef enum exp_op_type_e {
   EXP_OP_ARSHIFT,         /*!< 68:0x44.  Specifies arithmetic right shift (>>>) */
   EXP_OP_SLIST,           /*!< 69:0x45.  Specifies sensitivity list (*) */
   EXP_OP_EXPONENT,        /*!< 70:0x46.  Specifies the exponential operator "**" */
+  EXP_OP_PASSIGN,         /*!< 71:0x47.  Specifies a port assignment */
   EXP_OP_NUM              /*!< The total number of defines for expression values */
 } exp_op_type;
 
@@ -917,22 +952,41 @@ union esuppl_u {
     control stmt_is_called :1;  /*!< Bit 16.  Mask bit = 1.  Indicates that this statement is called by a FUNC_CALL,
                                      TASK_CALL, NB_CALL or FORK statement.  If a statement has this bit set, it will NOT
                                      be automatically placed in the thread queue at time 0. */
+    control owns_vec       :1;  /*!< Bit 17.  Mask bit = 1.  Indicates that this expression either owns its vector
+                                     structure or shares it with someone else. */
  
     /* UNMASKED BITS */
-    control eval_t         :1;  /*!< Bit 17.  Mask bit = 0.  Indicates that the value of the current expression is
+    control eval_t         :1;  /*!< Bit 18.  Mask bit = 0.  Indicates that the value of the current expression is
                                      currently set to TRUE (temporary value). */
-    control eval_f         :1;  /*!< Bit 18.  Mask bit = 0.  Indicates that the value of the current expression is
+    control eval_f         :1;  /*!< Bit 19.  Mask bit = 0.  Indicates that the value of the current expression is
                                      currently set to FALSE (temporary value). */
-    control comb_cntd      :1;  /*!< Bit 19.  Mask bit = 0.  Indicates that the current expression has been previously
+    control comb_cntd      :1;  /*!< Bit 20.  Mask bit = 0.  Indicates that the current expression has been previously
                                      counted for combinational coverage.  Only set by report command (therefore this bit
                                      will always be a zero when written to CDD file. */
-    control stmt_added     :1;  /*!< Bit 20.  Temporary bit value used by the score command but not displayed to the CDD
+    control stmt_added     :1;  /*!< Bit 21.  Temporary bit value used by the score command but not displayed to the CDD
                                      file.  When this bit is set to a one, it indicates to the db_add_statement
                                      function that this statement and all children statements have already been
                                      added to the functional unit statement list and should not be added again. */
   } part;
 };
 
+/*!
+ Supplemental signal information.
+*/
+union ssuppl_u;
+
+/*!
+ Renaming ssuppl_u field for convenience.
+*/
+typedef union ssuppl_u ssuppl;
+
+union ssuppl_u {
+  control all;
+  struct {
+    control col            :16; /*!< Specifies the starting column this signal is declared on */
+    control type           :3;  /*!< Specifies signal type (see \ref ssuppl_types for legal values) */
+  } part;
+};
 
 /*------------------------------------------------------------------------------*/
 /*  STRUCTURE/UNION DECLARATIONS  */
@@ -1430,7 +1484,7 @@ struct expression_s {
 struct vsignal_s {
   char*      name;                   /*!< Full hierarchical name of signal in design */
   int        line;                   /*!< Specifies line number that this signal was declared on */
-  control    col;                    /*!< Specifies starting column that this signal was declared on */
+  ssuppl     suppl;                  /*!< Supplemental information for this signal */
   vector*    value;                  /*!< Pointer to vector value of this signal */
   int        lsb;                    /*!< Least-significant bit position of this signal */
   exp_link*  exp_head;               /*!< Head pointer to list of expressions */
@@ -1693,7 +1747,7 @@ struct perf_stat_s {
 };
 
 struct port_info_s {
-  int           input;               /*!< Set to 1 if this port is an input or inout port */
+  int           type;                /*!< Type of port (see \ref ssuppl_types for legal values) */
   bool          is_signed;           /*!< Set to TRUE if this port is signed */
   vector_width* range;               /*!< Contains range information for this port */
 };
@@ -1706,6 +1760,12 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.169  2006/01/19 23:10:38  phase1geo
+ Adding line and starting column information to vsignal structure (and associated CDD
+ files).  Regression has been fully updated for this change which now fully passes.  Final
+ changes to summary GUI.  Fixed signal underlining for toggle coverage to work for both
+ explicit and implicit signals.  Getting things ready for a preferences window.
+
  Revision 1.168  2006/01/16 17:27:41  phase1geo
  Fixing binding issues when designs have modules/tasks/functions that are either used
  more than once in a design or have the same name.  Full regression now passes.

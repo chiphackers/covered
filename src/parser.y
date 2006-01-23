@@ -43,6 +43,7 @@ extern void lex_end_udp_table();
 int  ignore_mode = 0;
 int  param_mode  = 0;
 int  attr_mode   = 0;
+int  port_mode   = 0;
 int* fork_block_depth;
 int  fork_depth  = -1;
 int  block_depth = 0; 
@@ -317,7 +318,7 @@ list_of_port_declarations
   | list_of_port_declarations ',' IDENTIFIER
     {
       if( $1 != NULL ) {
-        db_add_signal( $3, $1->range->left, $1->range->right, $1->input, FALSE, @3.first_line, @3.first_column );
+        db_add_signal( $3, $1->type, $1->range->left, $1->range->right, FALSE, @3.first_line, @3.first_column );
       }
       $$ = $1;
     }
@@ -329,9 +330,9 @@ port_declaration
     {
       port_info* pi;
       if( ignore_mode == 0 ) {
-        db_add_signal( $6, $5->left, $5->right, ($2 == 1), FALSE, @6.first_line, @6.first_column );
+        db_add_signal( $6, $2, $5->left, $5->right, FALSE, @6.first_line, @6.first_column );
         pi = (port_info*)malloc_safe( sizeof( port_info ), __FILE__, __LINE__ );
-        pi->input      = $2;
+        pi->type       = $2;
         pi->is_signed  = $4;
         pi->range      = $5;
         curr_sig_width = NULL;
@@ -347,9 +348,9 @@ port_declaration
     {
       port_info* pi;
       if( ignore_mode == 0 ) {
-        db_add_signal( $6, $5->left, $5->right, 0, FALSE, @6.first_line, @6.first_column );
+        db_add_signal( $6, SSUPPL_TYPE_OUTPUT, $5->left, $5->right, FALSE, @6.first_line, @6.first_column );
         pi = (port_info*)malloc_safe( sizeof( port_info ), __FILE__, __LINE__ );
-        pi->input      = 0;
+        pi->type       = SSUPPL_TYPE_OUTPUT;
         pi->is_signed  = $4;
         pi->range      = $5;
         curr_sig_width = NULL;
@@ -366,9 +367,9 @@ port_declaration
     {
       port_info* pi;
       if( ignore_mode == 0 ) {
-        db_add_signal( $6, $5->left, $5->right, 0, FALSE, @6.first_line, @6.first_column );
+        db_add_signal( $6, SSUPPL_TYPE_OUTPUT, $5->left, $5->right, FALSE, @6.first_line, @6.first_column );
         pi = (port_info*)malloc_safe( sizeof( port_info ), __FILE__, __LINE__ );
-        pi->input      = 0;
+        pi->type       = SSUPPL_TYPE_OUTPUT;
         pi->is_signed  = $4;
         pi->range      = $5;
         curr_sig_width = NULL;
@@ -1253,18 +1254,18 @@ expr_primary
       free_safe( $1 );
       $$ = NULL;
     }
-  | identifier '(' expression_list ')'
+  | identifier '(' { port_mode++; } expression_list { port_mode--; } ')'
     {
       expression* tmp;
-      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL ) ) {
-        tmp = db_create_expression( NULL, $3, EXP_OP_FUNC_CALL, lhs_mode, @1.first_line, @1.first_column, (@4.last_column - 1), $1 );
+      if( (ignore_mode == 0) && ($1 != NULL) && ($4 != NULL ) ) {
+        tmp = db_create_expression( NULL, $4, EXP_OP_FUNC_CALL, lhs_mode, @1.first_line, @1.first_column, (@6.last_column - 1), $1 );
         $$  = tmp;
         free_safe( $1 );
       } else {
         if( $1 != NULL ) {
           free_safe( $1 );
         }
-        expression_dealloc( $3, FALSE );
+        expression_dealloc( $4, FALSE );
         $$ = NULL;
       }
     }
@@ -1315,11 +1316,15 @@ expression_list
   : expression_list ',' expression
     {
       expression*  tmp;
+      expression*  exp = $3;
       param_oride* po;
       if( ignore_mode == 0 ) {
         if( param_mode == 0 ) {
           if( $3 != NULL ) {
-            tmp = db_create_expression( $3, $1, EXP_OP_LIST, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
+            if( port_mode == 1 ) {
+              exp = db_create_expression( $3, NULL, EXP_OP_PASSIGN, 0, @3.first_line, @3.first_column, (@3.last_column - 1), NULL );
+            }
+            tmp = db_create_expression( exp, $1, EXP_OP_LIST, lhs_mode, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
             $$ = tmp;
           } else {
             $$ = $1;
@@ -1345,10 +1350,14 @@ expression_list
     }
   | expression
     {
+      expression*  exp = $1;
       param_oride* po;
       if( ignore_mode == 0 ) {
         if( param_mode == 0 ) {
-          $$ = $1;
+          if( port_mode == 1 ) {
+            exp = db_create_expression( $1, NULL, EXP_OP_PASSIGN, 0, @1.first_line, @1.first_column, (@1.last_column - 1), NULL );
+          }
+          $$ = exp;
         } else {
           if( $1 != NULL ) {
             po = (param_oride*)malloc_safe( sizeof( param_oride ), __FILE__, __LINE__ );
@@ -1587,7 +1596,7 @@ module_item
       if( ($2 == 1) && ($3 != NULL) ) {
         /* Creating signal(s) */
         while( curr != NULL ) {
-          db_add_signal( curr->str, $3->left, $3->right, FALSE, FALSE, curr->suppl1, curr->suppl2 );
+          db_add_signal( curr->str, SSUPPL_TYPE_DECLARED, $3->left, $3->right, FALSE, curr->suppl1, curr->suppl2 );
           curr = curr->next;
         }
       }
@@ -1641,7 +1650,7 @@ module_item
       str_link* tmp  = $3;
       str_link* curr = tmp;
       while( curr != NULL ) {
-        db_add_signal( curr->str, $2->left, $2->right, ($1 == 1), FALSE, curr->suppl1, curr->suppl2 );
+        db_add_signal( curr->str, $1, $2->left, $2->right, FALSE, curr->suppl1, curr->suppl2 );
         curr = curr->next;
       }
       str_link_delete_list( $3 );
@@ -1657,7 +1666,7 @@ module_item
       str_link* tmp  = $4;
       str_link* curr = tmp;
       while( curr != NULL ) {
-        db_add_signal( curr->str, $3->left, $3->right, ($1 == 1), FALSE, curr->suppl1, curr->suppl2 );
+        db_add_signal( curr->str, $1, $3->left, $3->right, FALSE, curr->suppl1, curr->suppl2 );
         curr = curr->next;
       }
       str_link_delete_list( $4 );
@@ -1679,7 +1688,7 @@ module_item
       str_link* tmp  = $5;
       str_link* curr = tmp;
       while( curr != NULL ) {
-        db_add_signal( curr->str, $3->left, $3->right, FALSE, FALSE, curr->suppl1, curr->suppl2 );
+        db_add_signal( curr->str, SSUPPL_TYPE_DECLARED, $3->left, $3->right, FALSE, curr->suppl1, curr->suppl2 );
         curr = curr->next;
       }
       str_link_delete_list( $5 );
@@ -1738,7 +1747,7 @@ module_item
         right.exp = NULL;
         right.num = 0;
         while( curr != NULL ) {
-          db_add_signal( curr->str, &left, &right, FALSE, TRUE, curr->suppl1, curr->suppl2 );
+          db_add_signal( curr->str, SSUPPL_TYPE_EVENT, &left, &right, TRUE, curr->suppl1, curr->suppl2 );
           curr = curr->next;
         }
       }
@@ -1827,7 +1836,7 @@ module_item
       if( ignore_mode == 0 ) {
         if( db_add_function_task_namedblock( FUNIT_FUNCTION, $3, @3.text, @3.first_line ) ) {
           snprintf( tmp, 256, "%s", $3 );
-          db_add_signal( tmp, $2->left, $2->right, FALSE, FALSE, @3.first_line, @3.first_column );
+          db_add_signal( tmp, SSUPPL_TYPE_IMPLICIT, $2->left, $2->right, FALSE, @3.first_line, @3.first_column );
           static_expr_dealloc( $2->left, FALSE );
           static_expr_dealloc( $2->right, FALSE );
         } else {
@@ -2514,12 +2523,12 @@ statement
     {
       $$ = NULL;
     }
-  | identifier '(' expression_list ')' ';'
+  | identifier '(' { port_mode++; } expression_list { port_mode++; } ')' ';'
     {
       expression* exp;
       statement*  stmt;
-      if( (ignore_mode == 0) && ($1 != NULL) && ($3 != NULL) ) {
-        exp  = db_create_expression( NULL, $3, EXP_OP_TASK_CALL, FALSE, @1.first_line, @1.first_column, (@5.last_column - 1), $1 );
+      if( (ignore_mode == 0) && ($1 != NULL) && ($4 != NULL) ) {
+        exp  = db_create_expression( NULL, $4, EXP_OP_TASK_CALL, FALSE, @1.first_line, @1.first_column, (@7.last_column - 1), $1 );
         stmt = db_create_statement( exp );
         db_add_expression( exp );
         $$   = stmt;
@@ -2857,7 +2866,7 @@ block_item_decl
       str_link* curr = tmp;
       if( ignore_mode == 0 ) {
         while( curr != NULL ) {
-          db_add_signal( curr->str, $2->left, $2->right, FALSE, FALSE, curr->suppl1, curr->suppl2 );
+          db_add_signal( curr->str, SSUPPL_TYPE_DECLARED, $2->left, $2->right, FALSE, curr->suppl1, curr->suppl2 );
           curr = curr->next;
         }
         str_link_delete_list( tmp );
@@ -2879,7 +2888,7 @@ block_item_decl
         left.exp  = NULL;
         right.exp = NULL;
         while( curr != NULL ) {
-          db_add_signal( curr->str, &left, &right, FALSE, FALSE, curr->suppl1, curr->suppl2 );
+          db_add_signal( curr->str, SSUPPL_TYPE_DECLARED, &left, &right, FALSE, curr->suppl1, curr->suppl2 );
           curr = curr->next;
         }
         str_link_delete_list( tmp );
@@ -2892,7 +2901,7 @@ block_item_decl
       str_link* curr = tmp;
       if( ignore_mode == 0 ) {
         while( curr != NULL ) {
-          db_add_signal( curr->str, $3->left, $3->right, FALSE, FALSE, curr->suppl1, curr->suppl2 );
+          db_add_signal( curr->str, SSUPPL_TYPE_DECLARED, $3->left, $3->right, FALSE, curr->suppl1, curr->suppl2 );
           curr = curr->next;
         }
         str_link_delete_list( tmp );
@@ -2914,7 +2923,7 @@ block_item_decl
         left.exp  = NULL;
         right.exp = NULL;
         while( curr != NULL ) {
-          db_add_signal( curr->str, &left, &right, FALSE, FALSE, curr->suppl1, curr->suppl2 );
+          db_add_signal( curr->str, SSUPPL_TYPE_DECLARED, &left, &right, FALSE, curr->suppl1, curr->suppl2 );
           curr = curr->next;
         }
         str_link_delete_list( tmp );
@@ -2932,7 +2941,7 @@ block_item_decl
         left.exp  = NULL;
         right.exp = NULL;
         while( curr != NULL ) {
-          db_add_signal( curr->str, &left, &right, FALSE, TRUE, curr->suppl1, curr->suppl2 );
+          db_add_signal( curr->str, SSUPPL_TYPE_DECLARED, &left, &right, TRUE, curr->suppl1, curr->suppl2 );
           curr = curr->next;
         }
         str_link_delete_list( $2 );
@@ -2950,7 +2959,7 @@ block_item_decl
         left.exp  = NULL;
         right.exp = NULL;
         while( curr != NULL ) {
-          db_add_signal( curr->str, &left, &right, FALSE, TRUE, curr->suppl1, curr->suppl2 );
+          db_add_signal( curr->str, SSUPPL_TYPE_DECLARED, &left, &right, TRUE, curr->suppl1, curr->suppl2 );
           curr = curr->next;
         }
         str_link_delete_list( $2 );
@@ -2963,7 +2972,7 @@ block_item_decl
       if( ignore_mode == 0 ) {
         while( curr != NULL ) {
           snprintf( tmp, 256, "!%s", curr->str );
-          db_add_signal( tmp, NULL, NULL, FALSE, FALSE, curr->suppl1, curr->suppl2 );
+          db_add_signal( tmp, SSUPPL_TYPE_DECLARED, NULL, NULL, FALSE, curr->suppl1, curr->suppl2 );
           curr = curr->next;
         }
       }
@@ -2976,7 +2985,7 @@ block_item_decl
       if( ignore_mode == 0 ) {
         while( curr != NULL ) {
           snprintf( tmp, 256, "!%s", curr->str );
-          db_add_signal( tmp, NULL, NULL, FALSE, FALSE, curr->suppl1, curr->suppl2 );
+          db_add_signal( tmp, SSUPPL_TYPE_DECLARED, NULL, NULL, FALSE, curr->suppl1, curr->suppl2 );
           curr = curr->next;
         }
       }
@@ -3552,7 +3561,7 @@ task_item
         str_link* tmp  = $3;
         str_link* curr = tmp;
         while( curr != NULL ) {
-          db_add_signal( curr->str, $2->left, $2->right, TRUE, FALSE, curr->suppl1, curr->suppl2 );
+          db_add_signal( curr->str, $1, $2->left, $2->right, FALSE, curr->suppl1, curr->suppl2 );
           curr = curr->next;
         }
         str_link_delete_list( $3 );
@@ -3602,7 +3611,7 @@ net_decl_assign
       expression* tmp;
       statement*  stmt;
       if( (ignore_mode == 0) && ($1 != NULL) && (curr_sig_width != NULL) && !flag_exclude_assign ) {
-        db_add_signal( $1, curr_sig_width->left, curr_sig_width->right, FALSE, FALSE, @1.first_line, @1.first_column );
+        db_add_signal( $1, SSUPPL_TYPE_DECLARED, curr_sig_width->left, curr_sig_width->right, FALSE, @1.first_line, @1.first_column );
         if( $3 != NULL ) {
           tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @1.first_line, @1.first_column, (@1.last_column - 1), $1 );
           tmp  = db_create_expression( $3, tmp, EXP_OP_DASSIGN, FALSE, @1.first_line, @1.first_column, (@3.last_column - 1), NULL );
@@ -3628,7 +3637,7 @@ net_decl_assign
       expression* tmp;
       statement*  stmt;
       if( (ignore_mode == 0) && ($2 != NULL) && (curr_sig_width != NULL) && !flag_exclude_assign ) {
-        db_add_signal( $2, curr_sig_width->left, curr_sig_width->right, FALSE, FALSE, @2.first_line, @2.first_column );
+        db_add_signal( $2, SSUPPL_TYPE_DECLARED, curr_sig_width->left, curr_sig_width->right, FALSE, @2.first_line, @2.first_column );
         if( $4 != NULL ) {
           tmp  = db_create_expression( NULL, NULL, EXP_OP_SIG, TRUE, @2.first_line, @2.first_column, (@2.last_column - 1), $2 );
           tmp  = db_create_expression( $4, tmp, EXP_OP_DASSIGN, FALSE, @2.first_line, @2.first_column, (@4.last_column - 1), NULL );
@@ -3798,15 +3807,15 @@ charge_strength
 port_type
   : K_input
     {
-      $$ = 1;
+      $$ = SSUPPL_TYPE_INPUT;
     }
   | K_output
     {
-      $$ = 0;
+      $$ = SSUPPL_TYPE_OUTPUT;
     }
   | K_inout
     {
-      $$ = 1;
+      $$ = SSUPPL_TYPE_INOUT;
     }
   ;
 
@@ -3989,7 +3998,7 @@ function_item
         str_link* tmp  = $3;
         str_link* curr = tmp;
         while( curr != NULL ) {
-          db_add_signal( curr->str, $2->left, $2->right, TRUE, FALSE, curr->suppl1, curr->suppl2 );
+          db_add_signal( curr->str, SSUPPL_TYPE_INPUT, $2->left, $2->right, FALSE, curr->suppl1, curr->suppl2 );
           curr = curr->next;
         }
         str_link_delete_list( $3 );

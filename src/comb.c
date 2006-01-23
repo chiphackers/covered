@@ -787,6 +787,7 @@ void combination_underline_tree( expression* exp, unsigned int curr_depth, char*
             case EXP_OP_DASSIGN  :
             case EXP_OP_BASSIGN  :  *size = l_size + r_size + 3;  strcpy( code_fmt, "%s   %s" );           break;
             case EXP_OP_NASSIGN  :  *size = l_size + r_size + 4;  strcpy( code_fmt, "%s    %s" );          break;
+            case EXP_OP_PASSIGN  :  *size = r_size;               strcpy( code_fmt, "%s" );                break;
             case EXP_OP_IF       :  *size = r_size + 6;           strcpy( code_fmt, "    %s  " );          break;
             case EXP_OP_REPEAT   :  *size = r_size + 10;          strcpy( code_fmt, "        %s  " );      break;
             case EXP_OP_WHILE    :  *size = r_size + 9;           strcpy( code_fmt, "       %s  " );       break;
@@ -2033,6 +2034,11 @@ void combination_report( FILE* ofile, bool verbose ) {
 
 /*
  $Log$
+ Revision 1.123  2006/01/13 23:27:02  phase1geo
+ Initial attempt to fix problem with handling functions/tasks/named blocks with
+ the same name in the design.  Still have a few diagnostics failing in regressions
+ to contend with.  Updating regression with these changes.
+
  Revision 1.122  2006/01/13 04:01:04  phase1geo
  Adding support for exponential operation.  Added exponent1 diagnostic to verify
  but Icarus does not support this currently.

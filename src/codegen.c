@@ -659,6 +659,11 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
           codegen_create_expr( code, code_depth, expr->line, NULL, left_code, left_code_depth, expr->left->line, " <= ",
                                right_code, right_code_depth, expr->right->line, NULL );
           break;
+        case EXP_OP_PASSIGN  :
+          *code            = right_code;
+          *code_depth      = right_code_depth;
+          right_code_depth = 0;
+          break;
         case EXP_OP_IF       :
           codegen_create_expr( code, code_depth, expr->line, "if( ", right_code, right_code_depth, expr->right->line, " )",
                                NULL, 0, 0, NULL );
@@ -696,6 +701,11 @@ void codegen_gen_expr( expression* expr, int parent_op, char*** code, int* code_
 
 /*
  $Log$
+ Revision 1.57  2006/01/13 23:27:02  phase1geo
+ Initial attempt to fix problem with handling functions/tasks/named blocks with
+ the same name in the design.  Still have a few diagnostics failing in regressions
+ to contend with.  Updating regression with these changes.
+
  Revision 1.56  2006/01/13 04:01:04  phase1geo
  Adding support for exponential operation.  Added exponent1 diagnostic to verify
  but Icarus does not support this currently.

@@ -43,7 +43,7 @@ void db_add_vector_param( vsignal* sig, expression* parm_exp, int type );
 void db_add_defparam( char* name, expression* expr );
 
 /*! \brief Adds specified vsignal to vsignal list.  Called by parser. */
-void db_add_signal( char* name, static_expr* left, static_expr* right, bool inport, bool mba, int line, control col );
+void db_add_signal( char* name, int type, static_expr* left, static_expr* right, bool mba, int line, int col );
 
 /*! \brief Creates statement block that acts like a fork join block from a standard statement block */
 statement* db_add_fork_join( statement* stmt );
@@ -122,6 +122,12 @@ void db_dealloc_design();
 
 /*
  $Log$
+ Revision 1.51  2006/01/19 23:10:38  phase1geo
+ Adding line and starting column information to vsignal structure (and associated CDD
+ files).  Regression has been fully updated for this change which now fully passes.  Final
+ changes to summary GUI.  Fixed signal underlining for toggle coverage to work for both
+ explicit and implicit signals.  Getting things ready for a preferences window.
+
  Revision 1.50  2006/01/12 22:53:01  phase1geo
  Adding support for localparam construct.  Added tests to regression suite to
  verify correct functionality.  Full regression passes.

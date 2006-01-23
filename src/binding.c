@@ -398,7 +398,7 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
         assert( exp != NULL );
         snprintf( user_msg, USER_MSG_LENGTH, "Implicit declaration of signal \"%s\", creating 1-bit version of signal", name );
         print_output( user_msg, WARNING, __FILE__, __LINE__ );
-        found_sig = vsignal_create( name, 1, 0, exp->line, ((exp->col >> 16) & 0xffff) );
+        found_sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, 1, 0, exp->line, ((exp->col >> 16) & 0xffff) );
         sig_link_add( found_sig, &(found_funit->sig_head), &(found_funit->sig_tail) );
       }
 
@@ -433,7 +433,8 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
           (exp->op == EXP_OP_PARAM)      ||
           (exp->op == EXP_OP_PARAM_SBIT) ||
           (exp->op == EXP_OP_PARAM_MBIT) ||
-          (exp->op == EXP_OP_TRIGGER) ) {
+          (exp->op == EXP_OP_TRIGGER)    ||
+          (exp->op == EXP_OP_PASSIGN) ) {
         expression_set_value( exp, found_sig->value );
       }
 
@@ -514,7 +515,99 @@ bool bind_statement( int id, expression* exp, func_unit* funit_exp, bool cdd_rea
 }
 
 /*!
- \param type  Type of functional unit
+ \param expr       Pointer to port expression to potentially bind to the specified port
+ \param funit      Pointer to task/function to bind port list to
+ \param order      Tracks the port order for the current task/function call parameter
+ \param funit_exp  Pointer to functional unit containing the given expression
+
+ Binds a given task/function call port parameter to the matching signal in the specified
+ task/function.
+*/
+bool bind_task_function_ports( expression* expr, func_unit* funit, int* order, func_unit* funit_exp ) {
+
+  sig_link* sigl;            /* Pointer to current signal link to examine */
+  int       i;               /* Loop iterator */
+  bool      found;           /* Specifies if we have found a matching port */
+  char      sig_name[4096];  /* Hierarchical path to matched port signal */
+
+  assert( funit != NULL );
+
+  if( expr != NULL ) {
+
+    /* If the expression is a list, traverse left and right expression trees */
+    if( expr->op == EXP_OP_LIST ) {
+
+      bind_task_function_ports( expr->left,  funit, order, funit_exp );
+      bind_task_function_ports( expr->right, funit, order, funit_exp );
+
+    /* Otherwise, we have found an expression to bind to a port */
+    } else {
+
+      assert( expr->op == EXP_OP_PASSIGN );
+
+      /* Find the port that matches our order */
+      found = FALSE;
+      i     = 0;
+      sigl  = funit->sig_head;
+      while( (sigl != NULL) && !found ) {
+        if( (sigl->sig->suppl.part.type == SSUPPL_TYPE_INPUT)  ||
+            (sigl->sig->suppl.part.type == SSUPPL_TYPE_OUTPUT) ||
+            (sigl->sig->suppl.part.type == SSUPPL_TYPE_INOUT) ) {
+          if( i == *order ) {
+            found = TRUE;
+          } else {
+            i++;
+            sigl = sigl->next;
+          }
+        } else {
+          sigl = sigl->next;
+        }
+      }
+
+      /*
+       If we found our signal to bind to, do it now; otherwise, just skip ahead (the error will be handled by
+       the calling function.
+      */
+      if( sigl != NULL ) {
+
+        printf( "Binding funit port (order=%d, op=%s) to funit %s, port %s\n",
+                *order, expression_string_op( expr->op ), funit->name, sigl->sig->name );
+
+        /* Create signal name to bind */
+        snprintf( sig_name, 4096, "%s.%s", funit->name, sigl->sig->name );
+
+        /* Add the signal to the binding list */
+        bind_add( 0, sig_name, expr, funit_exp );
+
+        /* Specify that this expression does not own its vector */
+        expr->suppl.part.owns_vec = 0;
+
+        /* Specify that this vector will be assigned by Covered and not the dumpfile */
+        sigl->sig->value->suppl.part.assigned = 1;
+
+        /* Increment the port order number */
+        (*order)++;
+
+      }
+
+    }
+
+  }
+
+}
+
+/*!
+ \param type         Type of functional unit to bind
+ \param name         Name of functional unit to bind
+ \param exp          Pointer to expression containing FUNC_CALL/TASK_CALL operation type to bind
+ \param funit_exp    Pointer to functional unit containing exp
+ \param cdd_reading  Set to TRUE when we are reading from the CDD file (FALSE when parsing)
+ \param exp_line     Line number of expression that is being bound (used when exp is NULL)
+
+ \return Returns TRUE if there were no errors in binding the specified expression to the needed
+         functional unit; otherwise, returns FALSE to indicate that we had an error.
+
+ Binds an expression to a function/task/named block.
 */
 bool bind_task_function_namedblock( int type, char* name, expression* exp, func_unit* funit_exp, bool cdd_reading, int exp_line ) {
 
@@ -526,6 +619,8 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
   statement* stmt;           /* Pointer to root statement for expression calling a function */
   char       rest[4096];     /* Temporary string */
   char       back[4096];     /* Temporary string */
+  int        port_order;     /* Port order value */
+  int        port_cnt;       /* Number of ports in the found function/task's port list */
 
   assert( (type == FUNIT_FUNCTION) || (type == FUNIT_TASK) || (type == FUNIT_NAMED_BLOCK) );
 
@@ -561,12 +656,25 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
         /* Set expression to point at signal */
         exp->sig = sigl->sig;
 
-  //       if( cdd_reading ) {
+        /* Attach the signal's value to our expression value */
+        expression_set_value( exp, sigl->sig->value );
 
-          /* Attach the signal's value to our expression value */
-          expression_set_value( exp, sigl->sig->value );
+      }
 
-    //     }
+      /* If this is a function or task, bind the ports as well */
+      if( ((type == FUNIT_FUNCTION) || (type == FUNIT_TASK)) && !cdd_reading ) {
+
+        /* First, bind the ports */
+        port_order = 0;
+        bind_task_function_ports( exp->left, found_funit, &port_order, funit_exp );
+
+        /* Check to see if the call port count matches the actual port count */
+        if( (port_cnt = funit_get_port_count( found_funit )) != port_order ) {
+          snprintf( user_msg, USER_MSG_LENGTH, "Number of arguments in %s call (%d) does not match its %s port list (%d), file %s, line %d",
+                    get_funit_type( type ), port_order, get_funit_type( type ), port_cnt, funit_exp->filename, exp->line );
+          print_output( user_msg, FATAL, __FILE__, __LINE__ );
+          exit( 1 );
+        }
 
       }
 
@@ -727,6 +835,11 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.60  2006/01/20 22:44:51  phase1geo
+ Moving parameter resolution to post-bind stage to allow static functions to
+ be considered.  Regression passes without static function testing.  Static
+ function support still has some work to go.  Checkpointing.
+
  Revision 1.59  2006/01/19 23:10:38  phase1geo
  Adding line and starting column information to vsignal structure (and associated CDD
  files).  Regression has been fully updated for this change which now fully passes.  Final

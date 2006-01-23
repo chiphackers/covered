@@ -32,6 +32,7 @@ extern char   user_msg[USER_MSG_LENGTH];
 /*!
  \param sig    Pointer to vsignal to initialize.
  \param name   Pointer to vsignal name string.
+ \param type   Type of signal to create
  \param value  Pointer to vsignal value.
  \param lsb    Least-significant bit position in this string.
  \param line   Line number that this signal is declared on.
@@ -42,20 +43,23 @@ extern char   user_msg[USER_MSG_LENGTH];
  creating temporary vsignals (reduces the need for dynamic memory allocation).
  for performance enhancing purposes.
 */
-void vsignal_init( vsignal* sig, char* name, vector* value, int lsb, int line, control col ) {
+void vsignal_init( vsignal* sig, char* name, int type, vector* value, int lsb, int line, int col ) {
 
-  sig->name     = name;
-  sig->value    = value;
-  sig->lsb      = lsb;
-  sig->line     = line;
-  sig->col      = col;
-  sig->exp_head = NULL;
-  sig->exp_tail = NULL;
+  sig->name            = name;
+  sig->suppl.all       = 0;
+  sig->suppl.part.type = type;
+  sig->suppl.part.col  = col;
+  sig->value           = value;
+  sig->lsb             = lsb;
+  sig->line            = line;
+  sig->exp_head        = NULL;
+  sig->exp_tail        = NULL;
 
 }
 
 /*!
  \param name   Full hierarchical name of this vsignal.
+ \param type   Type of signal to create
  \param width  Bit width of this vsignal.
  \param lsb    Bit position of least significant bit.
  \param line   Line number that this signal is declared on.
@@ -68,13 +72,13 @@ void vsignal_init( vsignal* sig, char* name, vector* value, int lsb, int line, c
  values for a vsignal and returns a pointer to this newly created
  vsignal.
 */
-vsignal* vsignal_create( char* name, int width, int lsb, int line, control col ) {
+vsignal* vsignal_create( char* name, int type, int width, int lsb, int line, int col ) {
 
   vsignal* new_sig;  /* Pointer to newly created vsignal */
 
   new_sig = (vsignal*)malloc_safe( sizeof( vsignal ), __FILE__, __LINE__ );
 
-  vsignal_init( new_sig, strdup_safe( name, __FILE__, __LINE__ ), vector_create( width, TRUE ), lsb, line, col );
+  vsignal_init( new_sig, strdup_safe( name, __FILE__, __LINE__ ), type, vector_create( width, TRUE ), lsb, line, col );
 
   return( new_sig );
 
@@ -96,12 +100,12 @@ void vsignal_db_write( vsignal* sig, FILE* file ) {
   if( (sig->name[0] != '!') && (sig->value->width != -1) ) {
 
     /* Display identification and value information first */
-    fprintf( file, "%d %s %d %d %d ",
+    fprintf( file, "%d %s %d %d %x ",
       DB_TYPE_SIGNAL,
       sig->name,
       sig->lsb,
       sig->line,
-      sig->col
+      sig->suppl.all
     );
 
     vector_db_write( sig->value, file, (sig->name[0] == '#') );
@@ -131,7 +135,7 @@ bool vsignal_db_read( char** line, func_unit* curr_funit ) {
   vector*    vec;            /* Vector value for this vsignal */
   int        lsb;            /* Least-significant bit of this vsignal */
   int        sline;          /* Declared line number */
-  int        scol;           /* Column number */
+  ssuppl     suppl;          /* Supplemental field */
   int        exp_id;         /* Expression ID */
   int        chars_read;     /* Number of characters read from line */
   expression texp;           /* Temporary expression link for searching purposes */
@@ -139,7 +143,7 @@ bool vsignal_db_read( char** line, func_unit* curr_funit ) {
   func_unit* parent_mod;     /* Pointer to parent module */
 
   /* Get name values. */
-  if( sscanf( *line, "%s %d %d %d %n", name, &lsb, &sline, &scol, &chars_read ) == 4 ) {
+  if( sscanf( *line, "%s %d %d %x %n", name, &lsb, &sline, &(suppl.all), &chars_read ) == 4 ) {
 
     *line = *line + chars_read;
 
@@ -147,7 +151,7 @@ bool vsignal_db_read( char** line, func_unit* curr_funit ) {
     if( vector_db_read( &vec, line ) ) {
 
       /* Create new vsignal */
-      sig = vsignal_create( name, vec->width, lsb, sline, scol );
+      sig = vsignal_create( name, suppl.part.type, vec->width, lsb, sline, suppl.part.col );
 
       /* Copy over vector value */
       vector_dealloc( sig->value );
@@ -248,13 +252,13 @@ bool vsignal_db_merge( vsignal* base, char** line, bool same ) {
   char    name[256];   /* Name of current vsignal */
   int     lsb;         /* Least-significant bit of this vsignal */
   int     sline;       /* Declared line number */
-  control scol;        /* Declared starting column */
+  ssuppl  suppl;       /* Supplemental signal information */
   int     chars_read;  /* Number of characters read from line */
 
   assert( base != NULL );
   assert( base->name != NULL );
 
-  if( sscanf( *line, "%s %d %d %d %n", name, &lsb, &sline, &scol, &chars_read ) == 4 ) {
+  if( sscanf( *line, "%s %d %d %x %n", name, &lsb, &sline, &(suppl.all), &chars_read ) == 4 ) {
 
     *line = *line + chars_read;
 
@@ -294,17 +298,17 @@ bool vsignal_db_merge( vsignal* base, char** line, bool same ) {
 */
 bool vsignal_db_replace( vsignal* base, char** line ) {
 
-  bool    retval;      /* Return value of this function */
-  char    name[256];   /* Name of current vsignal */
-  int     lsb;         /* Least-significant bit of this vsignal */
-  int     sline;       /* Declared line number */
-  control scol;        /* Declared starting column */
-  int     chars_read;  /* Number of characters read from line */
+  bool   retval;      /* Return value of this function */
+  char   name[256];   /* Name of current vsignal */
+  int    lsb;         /* Least-significant bit of this vsignal */
+  int    sline;       /* Declared line number */
+  ssuppl suppl;       /* Supplemental signal information */
+  int    chars_read;  /* Number of characters read from line */
 
   assert( base != NULL );
   assert( base->name != NULL );
 
-  if( sscanf( *line, "%s %d %d %d %n", name, &lsb, &sline, &scol, &chars_read ) == 4 ) {
+  if( sscanf( *line, "%s %d %d %x %n", name, &lsb, &sline, &(suppl.all), &chars_read ) == 4 ) {
 
     *line = *line + chars_read;
 
@@ -461,13 +465,13 @@ vsignal* vsignal_from_string( char** str ) {
   int     chars_read;  /* Number of characters read from string */
 
   if( sscanf( *str, "%[a-zA-Z0-9_]\[%d:%d]%n", name, &msb, &lsb, &chars_read ) == 3 ) {
-    sig = vsignal_create( name, ((msb - lsb) + 1), lsb, 0, 0 );
+    sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, ((msb - lsb) + 1), lsb, 0, 0 );
     *str += chars_read;
   } else if( sscanf( *str, "%[a-zA-Z0-9_]\[%d]%n", name, &lsb, &chars_read ) == 2 ) {
-    sig = vsignal_create( name, 1, lsb, 0, 0 );
+    sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, 1, lsb, 0, 0 );
     *str += chars_read;
   } else if( sscanf( *str, "%[a-zA-Z0-9_]%n", name, &chars_read ) == 1 ) {
-    sig = vsignal_create( name, 1, 0, 0, 0 );
+    sig = vsignal_create( name, SSUPPL_TYPE_IMPLICIT, 1, 0, 0, 0 );
     /* Specify that this width is unknown */
     sig->value->width = 0;
     *str += chars_read;
@@ -519,6 +523,12 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.16  2006/01/19 23:10:38  phase1geo
+ Adding line and starting column information to vsignal structure (and associated CDD
+ files).  Regression has been fully updated for this change which now fully passes.  Final
+ changes to summary GUI.  Fixed signal underlining for toggle coverage to work for both
+ explicit and implicit signals.  Getting things ready for a preferences window.
+
  Revision 1.15  2006/01/05 05:52:06  phase1geo
  Removing wait bit in vector supplemental field and modifying algorithm to only
  assign in the post-sim location (pre-sim now is gone).  This fixes some issues
