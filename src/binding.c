@@ -426,6 +426,11 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
       /* Set expression to point at signal */
       exp->sig = found_sig;
 
+      /* If this is a port assignment, we need to link the expression and signal together immediately */
+      if( exp->op == EXP_OP_PASSIGN ) {
+        expression_set_value( exp, found_sig->value );
+      }
+
     }
 
     if( cdd_reading ) {
@@ -436,8 +441,7 @@ bool bind_signal( char* name, expression* exp, func_unit* funit_exp, bool fsm_bi
           (exp->op == EXP_OP_PARAM)      ||
           (exp->op == EXP_OP_PARAM_SBIT) ||
           (exp->op == EXP_OP_PARAM_MBIT) ||
-          (exp->op == EXP_OP_TRIGGER)    ||
-          (exp->op == EXP_OP_PASSIGN) ) {
+          (exp->op == EXP_OP_TRIGGER) ) {
         expression_set_value( exp, found_sig->value );
       }
 
@@ -841,6 +845,10 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.62  2006/01/23 17:23:28  phase1geo
+ Fixing scope issues that came up when port assignment was added.  Full regression
+ now passes.
+
  Revision 1.61  2006/01/23 03:53:29  phase1geo
  Adding support for input/output ports of tasks/functions.  Regressions are not
  running cleanly at this point so there is still some work to do here.  Checkpointing.
