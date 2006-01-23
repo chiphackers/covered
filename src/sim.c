@@ -538,8 +538,7 @@ bool sim_expression( expression* expr, thread* thr ) {
       (expr->op == EXP_OP_CASEX)                   ||
       (expr->op == EXP_OP_CASEZ) ) {
 
-    /* EOR operations will be traversed by the expression operator */
-    //if( (expr->op != EXP_OP_EOR) && (expr->left != NULL) ) {
+    /* Simulate the left expression if it has changed */
     if( expr->left != NULL ) {
       if( expr->left->suppl.part.lhs == 0 ) {
         left_changed = sim_expression( expr->left, thr );
@@ -556,8 +555,7 @@ bool sim_expression( expression* expr, thread* thr ) {
   /* Traverse right child expression if it has changed */
   if( ESUPPL_IS_RIGHT_CHANGED( expr->suppl ) == 1 ) {
 
-    /* EOR operations will be traversed by the expression operator */
-    // if( (expr->op != EXP_OP_EOR) && (expr->right != NULL) ) {
+    /* Simulate the right expression if it has changed */
     if( expr->right != NULL ) {
       if( expr->right->suppl.part.lhs == 0 ) {
         right_changed = sim_expression( expr->right, thr );
@@ -707,6 +705,10 @@ void sim_simulate() {
 
 /*
  $Log$
+ Revision 1.65  2006/01/09 04:15:25  phase1geo
+ Attempting to fix one last problem with latest changes.  Regression runs are
+ currently running.  Checkpointing.
+
  Revision 1.64  2006/01/08 05:51:03  phase1geo
  Added optimizations to EOR and AEDGE expressions.  In the process of running
  regressions...

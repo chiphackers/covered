@@ -368,8 +368,10 @@ void vsignal_propagate( vsignal* sig ) {
   curr_expr = sig->exp_head;
   while( curr_expr != NULL ) {
 
-    /* Add to simulation queue if expression is a RHS and not a function call */
-    if( (ESUPPL_IS_LHS( curr_expr->exp->suppl ) == 0) && (curr_expr->exp->op != EXP_OP_FUNC_CALL) ) {
+    /* Add to simulation queue if expression is a RHS, not a function call and not a port assignment */
+    if( (ESUPPL_IS_LHS( curr_expr->exp->suppl ) == 0) &&
+        (curr_expr->exp->op != EXP_OP_FUNC_CALL) &&
+        (curr_expr->exp->op != EXP_OP_PASSIGN) ) {
       sim_expr_changed( curr_expr->exp );
     }
 
@@ -523,6 +525,10 @@ void vsignal_dealloc( vsignal* sig ) {
 
 /*
  $Log$
+ Revision 1.17  2006/01/23 03:53:30  phase1geo
+ Adding support for input/output ports of tasks/functions.  Regressions are not
+ running cleanly at this point so there is still some work to do here.  Checkpointing.
+
  Revision 1.16  2006/01/19 23:10:38  phase1geo
  Adding line and starting column information to vsignal structure (and associated CDD
  files).  Regression has been fully updated for this change which now fully passes.  Final

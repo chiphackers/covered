@@ -69,9 +69,9 @@ Instance                                                                    Logi
                                                                       Hit/Miss/Total    Percent hit
 ---------------------------------------------------------------------------------------------------------------------
   <NA>.main                                                             0/   0/   0      100%
-  <NA>.main.bar                                                         0/   2/   2        0%
+  <NA>.main.bar                                                         1/   1/   2       50%
   <NA>.main.bar.foo_named_block                                         0/   0/   0      100%
-  <NA>.main.bar.foo_func                                                0/   2/   2        0%
+  <NA>.main.bar.foo_func                                                1/   1/   2       50%
 ---------------------------------------------------------------------------------------------------------------------
 
     Module: foo_module, File: ./lib/foo_module.v, Instance: <NA>.main.bar
@@ -84,11 +84,11 @@ Instance                                                                    Logi
               9:    assign foo_a = foo_func( 1'b0 )
                                    |------1-------|
 
-        Expression 1   (0/2)
+        Expression 1   (1/2)
         ^^^^^^^^^^^^^ - 
          E | E
         =0=|=1=
-         *   *
+         *    
 
 
     Function: foo_module.foo_func, File: ./lib/foo_module.v, Instance: <NA>.main.bar.foo_func
@@ -101,11 +101,11 @@ Instance                                                                    Logi
              22:    foo_func = ~ a 
                                |1-|
 
-        Expression 1   (0/2)
+        Expression 1   (1/2)
         ^^^^^^^^^^^^^ - ~
          E | E
         =0=|=1=
-         *   *
+         *    
 
 
 

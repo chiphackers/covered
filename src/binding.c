@@ -197,6 +197,9 @@ void bind_append_fsm_expr( expression* fsm_exp, expression* exp, func_unit* curr
 
 }
 
+/*!
+ Displays to standard output the current state of the binding list (debug purposes only).
+*/
 void bind_display_list() {
 
   exp_bind* curr;  /* Pointer to current expression binding */
@@ -517,13 +520,14 @@ bool bind_statement( int id, expression* exp, func_unit* funit_exp, bool cdd_rea
 /*!
  \param expr       Pointer to port expression to potentially bind to the specified port
  \param funit      Pointer to task/function to bind port list to
+ \param name       Hierachical name of function to bind port list to
  \param order      Tracks the port order for the current task/function call parameter
  \param funit_exp  Pointer to functional unit containing the given expression
 
  Binds a given task/function call port parameter to the matching signal in the specified
  task/function.
 */
-bool bind_task_function_ports( expression* expr, func_unit* funit, int* order, func_unit* funit_exp ) {
+bool bind_task_function_ports( expression* expr, func_unit* funit, char* name, int* order, func_unit* funit_exp ) {
 
   sig_link* sigl;            /* Pointer to current signal link to examine */
   int       i;               /* Loop iterator */
@@ -537,8 +541,8 @@ bool bind_task_function_ports( expression* expr, func_unit* funit, int* order, f
     /* If the expression is a list, traverse left and right expression trees */
     if( expr->op == EXP_OP_LIST ) {
 
-      bind_task_function_ports( expr->left,  funit, order, funit_exp );
-      bind_task_function_ports( expr->right, funit, order, funit_exp );
+      bind_task_function_ports( expr->left,  funit, name, order, funit_exp );
+      bind_task_function_ports( expr->right, funit, name, order, funit_exp );
 
     /* Otherwise, we have found an expression to bind to a port */
     } else {
@@ -570,11 +574,13 @@ bool bind_task_function_ports( expression* expr, func_unit* funit, int* order, f
       */
       if( sigl != NULL ) {
 
+/*
         printf( "Binding funit port (order=%d, op=%s) to funit %s, port %s\n",
                 *order, expression_string_op( expr->op ), funit->name, sigl->sig->name );
+*/
 
         /* Create signal name to bind */
-        snprintf( sig_name, 4096, "%s.%s", funit->name, sigl->sig->name );
+        snprintf( sig_name, 4096, "%s.%s", name, sigl->sig->name );
 
         /* Add the signal to the binding list */
         bind_add( 0, sig_name, expr, funit_exp );
@@ -666,7 +672,7 @@ bool bind_task_function_namedblock( int type, char* name, expression* exp, func_
 
         /* First, bind the ports */
         port_order = 0;
-        bind_task_function_ports( exp->left, found_funit, &port_order, funit_exp );
+        bind_task_function_ports( exp->left, found_funit, name, &port_order, funit_exp );
 
         /* Check to see if the call port count matches the actual port count */
         if( (port_cnt = funit_get_port_count( found_funit )) != port_order ) {
@@ -835,6 +841,10 @@ void bind_dealloc() {
 
 /* 
  $Log$
+ Revision 1.61  2006/01/23 03:53:29  phase1geo
+ Adding support for input/output ports of tasks/functions.  Regressions are not
+ running cleanly at this point so there is still some work to do here.  Checkpointing.
+
  Revision 1.60  2006/01/20 22:44:51  phase1geo
  Moving parameter resolution to post-bind stage to allow static functions to
  be considered.  Regression passes without static function testing.  Static

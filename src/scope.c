@@ -34,28 +34,35 @@ extern char        user_msg[USER_MSG_LENGTH];
 func_unit* scope_find_funit_from_scope( char* scope, func_unit* curr_funit ) {
 
   funit_inst* funiti;
+  func_unit*  funit;            /* Pointer to parent functional unit */
   int         ignore = 0;
+  char        rel_scope[4096];  /* Scope to use when checking for relative path */
 
   assert( curr_funit != NULL );
 
   /* First check scope based on a relative path */
   if( (funiti = instance_find_by_funit( instance_root, curr_funit, &ignore )) != NULL ) {
-
-    if( (funiti = instance_find_scope( funiti, scope )) == NULL ) {
-
-      /* If the scope isn't relative, check the scope from top-of-tree */
-      funiti = instance_find_scope( instance_root, scope );
-
-    }
-
-  } else {
-
-    snprintf( user_msg, USER_MSG_LENGTH, "Internal Error:  Unable to find functional unit %s in hierarchy", curr_funit->name );
-    print_output( user_msg, FATAL, __FILE__, __LINE__ );
-    exit( 1 );
-
+    snprintf( rel_scope, 4096, "%s.%s", funiti->name, scope );
+    funiti = instance_find_scope( funiti, rel_scope );
   }
-    
+
+  /*
+   If we did not find the functional unit yet, check the scope relative to the parent module
+   (if this functional unit is not a module)
+  */
+  if( (funiti == NULL) && (curr_funit->type != FUNIT_MODULE) ) {
+    funit = funit_get_curr_module( curr_funit );
+    if( (funiti = instance_find_by_funit( instance_root, funit, &ignore )) != NULL ) {
+      snprintf( rel_scope, 4096, "%s.%s", funiti->name, scope );
+      funiti = instance_find_scope( funiti, rel_scope );
+    }
+  }
+
+  /* If we still did not find the functional unit, check the scope from top-of-tree */
+  if( funiti == NULL ) {
+    funiti = instance_find_scope( instance_root, scope );
+  }
+
   return( (funiti == NULL) ? NULL : funiti->funit );
 
 }
@@ -256,6 +263,11 @@ func_unit* scope_get_parent_module( char* scope ) {
 
 /*
  $Log$
+ Revision 1.7  2006/01/13 23:27:02  phase1geo
+ Initial attempt to fix problem with handling functions/tasks/named blocks with
+ the same name in the design.  Still have a few diagnostics failing in regressions
+ to contend with.  Updating regression with these changes.
+
  Revision 1.6  2005/12/01 16:08:19  phase1geo
  Allowing nested functional units within a module to get parsed and handled correctly.
  Added new nested_block1 diagnostic to test nested named blocks -- will add more tests

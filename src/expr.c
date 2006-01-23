@@ -2360,8 +2360,8 @@ bool expression_op_func__passign( expression* expr, thread* thr ) {
     /* If the connected signal is an input type, copy the parameter expression value to this vector */
     case SSUPPL_TYPE_INPUT :
       vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
-      printf( "Set input port signal %s to value:\n", expr->sig->name );
-      vector_display( expr->value );
+      // printf( "Set input port signal %s to value:\n", expr->sig->name );
+      // vector_display( expr->value );
       vsignal_propagate( expr->sig );
       break;
 
@@ -2819,6 +2819,10 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.160  2006/01/23 03:53:29  phase1geo
+ Adding support for input/output ports of tasks/functions.  Regressions are not
+ running cleanly at this point so there is still some work to do here.  Checkpointing.
+
  Revision 1.159  2006/01/16 17:27:41  phase1geo
  Fixing binding issues when designs have modules/tasks/functions that are either used
  more than once in a design or have the same name.  Full regression now passes.

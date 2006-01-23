@@ -453,7 +453,8 @@ void race_check_one_block_assignment( func_unit* mod ) {
 	    assert( sig_stmt != -1 );
 
             /* Check to see if current signal is also an input port */ 
-            if( (sigl->sig->value->suppl.part.inport == 1) || curr_race ) {
+            if( (sigl->sig->suppl.part.type == SSUPPL_TYPE_INPUT) ||
+                (sigl->sig->suppl.part.type == SSUPPL_TYPE_INOUT) || curr_race ) {
               race_handle_race_condition( expl->exp, mod, curr_stmt, NULL, RACE_TYPE_ASSIGN_IN_ONE_BLOCK2 );
 	      sb[sig_stmt].remove = TRUE;
             }
@@ -870,6 +871,9 @@ void race_blk_delete_list( race_blk* rb ) {
 
 /*
  $Log$
+ Revision 1.33  2005/12/23 20:59:34  phase1geo
+ Fixing assertion error in race condition checker.  Full regression runs cleanly.
+
  Revision 1.32  2005/12/23 05:41:52  phase1geo
  Fixing several bugs in score command per bug report #1388339.  Fixed problem
  with race condition checker statement iterator to eliminate infinite looping (this
