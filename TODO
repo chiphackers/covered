@@ -22,8 +22,11 @@ X	- `ifndef
 	- `elsif
 	- `file
 X	- `line
-	- task/function argument list
-	- constant functions (this needs support of the above for it to work)
+X	- task/function argument list
+IP	- constant functions (this needs support of the above for it to work)
+		- need to make signal sizing/expression binding work for all
+		  possibilities of parameter uses (need to size based on dependencies
+	 	  instead of assumptions)
 	- automatic storage for functions/tasks (instead of static) - difficult!
 X	! explicitly named parameters
 X	- make sure that localparams cannot be modified by a defparam or SDF
@@ -37,6 +40,7 @@ X	- >>> (fills sign bit with its value) and <<< (same as <<)
 X	- pre-port parameter listing
 X	- inline port declaration listing
 	- NULL task/function ports (?)
+	- arrays of instances
 	- MAKE SURE THAT WE DOCUMENT IN THE USER'S GUIDE WHAT VERILOG-2001 CONSTRUCTS ARE
 	  SUPPORTED AND NOT SUPPORTED!
 
