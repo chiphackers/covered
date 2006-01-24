@@ -774,7 +774,7 @@ void expression_db_write( expression* expr, FILE* file, bool parse_mode ) {
 
   fprintf( file, "%d %d %d %x %x %x %x %d %d",
     DB_TYPE_EXPRESSION,
-    (parse_mode ? expr->ulid : expr->id),
+    expression_get_id( expr, parse_mode ),
     expr->line,
     expr->col,
     expr->exec_num,
@@ -2827,6 +2827,11 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.163  2006/01/24 23:24:37  phase1geo
+ More updates to handle static functions properly.  I have redone quite a bit
+ of code here which has regressions pretty broke at the moment.  More work
+ to do but I'm checkpointing.
+
  Revision 1.162  2006/01/23 22:55:10  phase1geo
  Updates to fix constant function support.  There is some issues to resolve
  here but full regression is passing with the exception of the newly added
