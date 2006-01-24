@@ -404,11 +404,11 @@ void instance_db_write( funit_inst* root, FILE* file, char* scope, bool parse_mo
 
   curr = parse_mode ? root : NULL;
 
-  /* If we are in parse mode, re-issue expression IDs */
+  /* If we are in parse mode, re-issue expression IDs (we use the ulid field since it is not used in parse mode) */
   if( parse_mode ) {
     expl = root->funit->exp_head;
     while( expl != NULL ) {
-      expl->exp->id = curr_expr_id;
+      expl->exp->ulid = curr_expr_id;
       curr_expr_id++;
       expl = expl->next;
     }
@@ -532,6 +532,9 @@ void instance_dealloc( funit_inst* root, char* scope ) {
 
 /*
  $Log$
+ Revision 1.36  2006/01/20 22:50:50  phase1geo
+ Code cleanup.
+
  Revision 1.35  2006/01/20 22:44:51  phase1geo
  Moving parameter resolution to post-bind stage to allow static functions to
  be considered.  Regression passes without static function testing.  Static

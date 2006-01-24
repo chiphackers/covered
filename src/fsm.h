@@ -22,7 +22,7 @@ void fsm_add_arc( fsm* table, expression* from_state, expression* to_state );
 void fsm_create_tables( fsm* table );
 
 /*! \brief Outputs contents of specified FSM to CDD file. */
-bool fsm_db_write( fsm* table, FILE* file );
+bool fsm_db_write( fsm* table, FILE* file, bool parse_mode );
 
 /*! \brief Reads in contents of specified FSM. */
 bool fsm_db_read( char** line, func_unit* funit );
@@ -47,6 +47,10 @@ void fsm_dealloc( fsm* table );
 
 /*
  $Log$
+ Revision 1.14  2005/11/08 23:12:09  phase1geo
+ Fixes for function/task additions.  Still a lot of testing on these structures;
+ however, regressions now pass again so we are checkpointing here.
+
  Revision 1.13  2004/04/05 12:30:52  phase1geo
  Adding *db_replace functions to allow a design to be opened with new CDD
  results (for GUI purposes only).

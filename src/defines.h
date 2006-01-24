@@ -447,21 +447,10 @@
 /*! @} */
 
 /*!
- \addtogroup param_suppl Instance/module parameter supplemental field definitions.
+ \addtogroup param_suppl_types Instance/module parameter supplemental type definitions.
 
  @{
 */
-
-/*!
- Specifies the least significant bit of the parameter order for current parameter
- in module.
-*/
-#define PARAM_LSB_ORDER                 0
-
-/*!
- Specifies the least significant bit of the parameter type (declared/override).
-*/
-#define PARAM_LSB_TYPE                  16
 
 /*!
  Specifies that the current module parameter is a declared type (belongs to current 
@@ -504,16 +493,6 @@
  module) and is local (cannot be overridden by defparams and inline parameter overrides).
 */
 #define PARAM_TYPE_DECLARED_LOCAL       6
-
-/*!
- Returns the order for the specified modparm type.
-*/
-#define PARAM_ORDER(x)                  ((x->suppl >> PARAM_LSB_ORDER) & 0xffff)
-
-/*!
- Returns the type (declared/override) of the specified modparm type.
-*/
-#define PARAM_TYPE(x)                   ((x->suppl >> PARAM_LSB_TYPE) & 0x7)
 
 /*! @} */
 
@@ -688,6 +667,7 @@ typedef enum exp_op_type_e {
                                          (o != EXP_OP_IF)         && \
                                          (o != EXP_OP_WHILE)      && \
                                          (o != EXP_OP_FUNC_CALL)  && \
+					 (o != EXP_OP_PASSIGN)    && \
                                          ((o == EXP_OP_STATIC) || (ESUPPL_IS_LHS( s ) == 0)))
 
 /*!
@@ -985,6 +965,24 @@ union ssuppl_u {
   struct {
     control col            :16; /*!< Specifies the starting column this signal is declared on */
     control type           :3;  /*!< Specifies signal type (see \ref ssuppl_types for legal values) */
+  } part;
+};
+
+/*!
+ Supplemental module parameter information.
+*/
+union psuppl_u;
+
+/*!
+ Renaming psuppl_u field for convenience.
+*/
+typedef union psuppl_u psuppl;
+
+union psuppl_u {
+  control all;
+  struct {
+    control order    : 16;      /*!< Specifies the parameter order number in its module */
+    control type     : 3;       /*!< Specifies the parameter type (see \ref param_suppl_types for legal value) */
   } part;
 };
 
@@ -1555,7 +1553,7 @@ struct statistic_s {
 struct mod_parm_s {
   char*        name;                 /*!< Name of parameter */
   expression*  expr;                 /*!< Expression tree containing value of parameter */
-  unsigned int suppl;                /*!< Supplemental field containing type and order number */
+  psuppl       suppl;                /*!< Supplemental field */
   exp_link*    exp_head;             /*!< Pointer to head of expression list for dependents */
   exp_link*    exp_tail;             /*!< Pointer to tail of expression list for dependents */
   vsignal*     sig;                  /*!< Pointer to associated signal (if one is available) */
@@ -1647,7 +1645,7 @@ struct vector_width_s {
 struct exp_bind_s {
   int         type;                  /*!< Specifies if name refers to a signal (0), function (FUNIT_FUNCTION) or task (FUNIT_TASK) */
   char*       name;                  /*!< Name of Verilog scoped signal/functional unit to bind */
-  int         clear_assigned;        /*!< If >0, clears the signal assigned supplemental field without binding */
+  bool        clear_assigned;        /*!< If TRUE, clears the signal assigned supplemental field without binding */
   int         stmt_id;               /*!< Specifies the statement ID to bind to (only value for expressiont-statement binding) */
   bool        rm_stmt;               /*!< Specifies if statement block attached to this expression should be removed after binding */
   int         line;                  /*!< Specifies line of expression -- used when expression is deallocated and we are clearing */
@@ -1760,6 +1758,10 @@ struct param_oride_s {
 
 /*
  $Log$
+ Revision 1.170  2006/01/23 03:53:29  phase1geo
+ Adding support for input/output ports of tasks/functions.  Regressions are not
+ running cleanly at this point so there is still some work to do here.  Checkpointing.
+
  Revision 1.169  2006/01/19 23:10:38  phase1geo
  Adding line and starting column information to vsignal structure (and associated CDD
  files).  Regression has been fully updated for this change which now fully passes.  Final

@@ -201,13 +201,14 @@ void statement_stack_compare( statement* stmt ) {
 }
     
 /*!
- \param stmt   Pointer to statement to write out value.
- \param ofile  Pointer to output file to write statement line to.
+ \param stmt        Pointer to statement to write out value.
+ \param ofile       Pointer to output file to write statement line to.
+ \param parse_mode  Specifies if we are writing the CDD immediately after parsing
 
  Recursively writes the contents of the specified statement tree (and its
  associated expression trees to the specified output stream.
 */
-void statement_db_write( statement* stmt, FILE* ofile ) {
+void statement_db_write( statement* stmt, FILE* ofile, bool parse_mode ) {
 
   exp_link* expl;  /* Pointer to current element in expression list */
 
@@ -231,9 +232,9 @@ void statement_db_write( statement* stmt, FILE* ofile ) {
   /* Write out contents of this statement last */
   fprintf( ofile, "%d %d %d %d",
     DB_TYPE_STATEMENT,
-    stmt->exp->id,
-    ((stmt->next_true   == NULL) ? 0 : stmt->next_true->exp->id),
-    ((stmt->next_false  == NULL) ? 0 : stmt->next_false->exp->id)
+    expression_get_id( stmt->exp, parse_mode ),
+    ((stmt->next_true   == NULL) ? 0 : expression_get_id( stmt->next_true->exp, parse_mode )),
+    ((stmt->next_false  == NULL) ? 0 : expression_get_id( stmt->next_false->exp, parse_mode ))
   );
 
   fprintf( ofile, "\n" );
@@ -630,6 +631,11 @@ void statement_dealloc( statement* stmt ) {
 
 /*
  $Log$
+ Revision 1.71  2006/01/13 23:27:02  phase1geo
+ Initial attempt to fix problem with handling functions/tasks/named blocks with
+ the same name in the design.  Still have a few diagnostics failing in regressions
+ to contend with.  Updating regression with these changes.
+
  Revision 1.70  2006/01/10 23:13:51  phase1geo
  Completed support for implicit event sensitivity list.  Added diagnostics to verify
  this new capability.  Also started support for parsing inline parameters and port

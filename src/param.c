@@ -151,7 +151,7 @@ mod_parm* mod_parm_add( char* scope, expression* expr, int type, func_unit* funi
     curr  = mod_funit->param_head;
     order = 0;
     while( curr != NULL ) {
-      if( PARAM_TYPE( curr ) == PARAM_TYPE_DECLARED ) {
+      if( curr->suppl.part.type == PARAM_TYPE_DECLARED ) {
         order++;
       }
       curr = curr->next;
@@ -160,7 +160,7 @@ mod_parm* mod_parm_add( char* scope, expression* expr, int type, func_unit* funi
     curr  = mod_funit->param_head;
     order = 0;
     while( curr != NULL ) {
-      if( (PARAM_TYPE( curr ) == PARAM_TYPE_OVERRIDE) &&
+      if( (curr->suppl.part.type == PARAM_TYPE_OVERRIDE) &&
           (strcmp( inst_name, curr->inst_name ) == 0) ) {
         order++;
       }
@@ -182,7 +182,9 @@ mod_parm* mod_parm_add( char* scope, expression* expr, int type, func_unit* funi
   }
   parm->expr                  = expr;
   parm->expr->suppl.part.root = 1;
-  parm->suppl                 = ((type & 0x7) << PARAM_LSB_TYPE) | ((order & 0xffff) << PARAM_LSB_ORDER);
+  parm->suppl.all             = 0;
+  parm->suppl.part.type       = type;
+  parm->suppl.part.order      = order;
   parm->exp_head              = NULL;
   parm->exp_tail              = NULL;
   parm->sig                   = NULL;
@@ -399,7 +401,7 @@ void param_find_and_set_expr_value( expression* expr, funit_inst* inst ) {
 bool param_set_sig_size( vsignal* sig, inst_parm* icurr ) {
 
   bool established = FALSE;  /* Specifies if current signal size is fully established */
-  int  bit_sel;              /* MSB/LSB bit select value from instance parameter      */
+  int  bit_sel;              /* MSB/LSB bit select value from instance parameter */
 
   assert( sig != NULL );
   assert( sig->name != NULL );
@@ -420,6 +422,12 @@ bool param_set_sig_size( vsignal* sig, inst_parm* icurr ) {
       sig->value->width = (sig->lsb - bit_sel) + 1;
       sig->lsb          = bit_sel;
     }
+
+    /* Create the vector data for this signal at this time since the width is now known */
+    if( sig->value->value != NULL ) {
+      free_safe( sig->value->value );
+    }
+    sig->value->value = (vec_data*)malloc_safe( (sizeof( vec_data ) * sig->value->width), __FILE__, __LINE__ );
     
     established = TRUE;
     
@@ -449,12 +457,13 @@ void param_expr_eval( expression* expr, funit_inst* inst ) {
 
   if( expr != NULL ) {
 
-    /* For constant functions, resize the functional unit first */
+    /* For constant functions, resolve parameters and resize the functional unit first */
     if( expr->op == EXP_OP_FUNC_CALL ) {
       funit = funit_find_by_id( expr->stmt->exp->id );
       assert( funit != NULL );
       funiti = instance_find_by_funit( inst, funit, &ignore );
       assert( funiti != NULL );
+      param_resolve( funiti );
       funit_size_elements( funit, funiti );
     }
 
@@ -462,10 +471,9 @@ void param_expr_eval( expression* expr, funit_inst* inst ) {
     param_expr_eval( expr->left,  inst );
     param_expr_eval( expr->right, inst );
 
-    printf( "$$$$ In param_expr_eval, expression %s line %d\n", expression_string_op( expr->op ), expr->line );
-
     switch( expr->op ) {
       case EXP_OP_STATIC :
+      case EXP_OP_FUNC_CALL :
         break;
       case EXP_OP_PARAM      :
       case EXP_OP_PARAM_SBIT :
@@ -528,9 +536,9 @@ inst_parm* param_has_override( mod_parm* mparm, funit_inst* inst ) {
 
     icurr = mod_inst->parent->param_head;
     while( (icurr != NULL) && 
-           !((PARAM_TYPE( icurr->mparm ) == PARAM_TYPE_OVERRIDE) &&
-             (PARAM_TYPE( mparm ) != PARAM_TYPE_DECLARED_LOCAL) &&
-             ((icurr->name != NULL) ? (strcmp( icurr->name, mparm->name ) == 0) : (PARAM_ORDER( mparm ) == PARAM_ORDER( icurr->mparm ))) &&
+           !((icurr->mparm->suppl.part.type == PARAM_TYPE_OVERRIDE) &&
+             (mparm->suppl.part.type != PARAM_TYPE_DECLARED_LOCAL) &&
+             ((icurr->name != NULL) ? (strcmp( icurr->name, mparm->name ) == 0) : (mparm->suppl.part.order == icurr->mparm->suppl.part.order )) &&
              (strcmp( mod_inst->name, icurr->inst_name ) == 0)) ) {
       icurr = icurr->next;
     }
@@ -583,7 +591,7 @@ inst_parm* param_has_defparam( mod_parm* mparm, funit_inst* inst ) {
   icurr = defparam_head;
   while( (icurr != NULL) &&
          !((strcmp( icurr->name, parm_scope ) == 0) &&
-           (PARAM_TYPE( mparm ) != PARAM_TYPE_DECLARED_LOCAL)) ) {
+           (mparm->suppl.part.type != PARAM_TYPE_DECLARED_LOCAL)) ) {
     icurr = icurr->next;
   }
 
@@ -675,7 +683,8 @@ void param_resolve( funit_inst* inst ) {
   /* Resolve this instance */
   mparm = inst->funit->param_head;
   while( mparm != NULL ) {
-    if( (PARAM_TYPE( mparm ) == PARAM_TYPE_DECLARED) || (PARAM_TYPE( mparm ) == PARAM_TYPE_DECLARED_LOCAL) ) {
+    if( (mparm->suppl.part.type == PARAM_TYPE_DECLARED) ||
+        (mparm->suppl.part.type == PARAM_TYPE_DECLARED_LOCAL) ) {
       param_resolve_declared( mparm, inst );
     } else {
       param_resolve_override( mparm, inst );
@@ -693,8 +702,9 @@ void param_resolve( funit_inst* inst ) {
 }
 
 /*!
- \param iparm  Pointer to instance parameter to output to file.
- \param file   Pointer to file handle to write parameter contents to.
+ \param iparm       Pointer to instance parameter to output to file.
+ \param file        Pointer to file handle to write parameter contents to.
+ \param parse_mode  Specifies if we are writing after just parsing the design
 
  Prints contents of specified instance parameter to the specified output stream.
  Parameters get output in the same format as signals (they type specified for parameters
@@ -702,7 +712,7 @@ void param_resolve( funit_inst* inst ) {
  that the current signal is a parameter and not a signal, and should therefore not
  be scored as a signal.
 */
-void param_db_write( inst_parm* iparm, FILE* file ) {
+void param_db_write( inst_parm* iparm, FILE* file, bool parse_mode ) {
 
   exp_link* curr;      /* Pointer to current expression link element */
 
@@ -723,7 +733,7 @@ void param_db_write( inst_parm* iparm, FILE* file ) {
     curr = iparm->mparm->exp_head;
     while( curr != NULL ) {
       if( curr->exp->line != 0 ) {
-        fprintf( file, " %d", expression_get_id( curr->exp ) );
+        fprintf( file, " %d", expression_get_id( curr->exp, parse_mode ) );
       }
       curr = curr->next;
     }
@@ -809,6 +819,12 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive ) {
 
 /*
  $Log$
+ Revision 1.50  2006/01/23 22:55:10  phase1geo
+ Updates to fix constant function support.  There is some issues to resolve
+ here but full regression is passing with the exception of the newly added
+ static_func1.1 diagnostic.  Fixed problem where expand and multi-bit expressions
+ were getting coverage numbers calculated for them before they were simulated.
+
  Revision 1.49  2006/01/20 22:50:50  phase1geo
  Code cleanup.
 

@@ -130,21 +130,22 @@ void fsm_create_tables( fsm* table ) {
 }
 
 /*!
- \param table  Pointer to FSM structure to output.
- \param file   Pointer to file output stream to write to.
+ \param table       Pointer to FSM structure to output.
+ \param file        Pointer to file output stream to write to.
+ \param parse_mode  Set to TRUE when we are writing immediately after parsing
 
  \return Returns TRUE if file writing is successful; otherwise, returns FALSE.
 
  Outputs the contents of the specified FSM to the specified CDD file.
 */
-bool fsm_db_write( fsm* table, FILE* file ) {
+bool fsm_db_write( fsm* table, FILE* file, bool parse_mode ) {
 
   bool retval = TRUE;  /* Return value for this function */
 
   fprintf( file, "%d %d %d ",
     DB_TYPE_FSM,
-    table->from_state->id,
-    table->to_state->id
+    expression_get_id( table->from_state, parse_mode ),
+    expression_get_id( table->to_state, parse_mode )
   );
 
   /* Print set table */
@@ -837,6 +838,10 @@ void fsm_dealloc( fsm* table ) {
 
 /*
  $Log$
+ Revision 1.47  2006/01/16 17:27:41  phase1geo
+ Fixing binding issues when designs have modules/tasks/functions that are either used
+ more than once in a design or have the same name.  Full regression now passes.
+
  Revision 1.46  2005/12/22 23:04:42  phase1geo
  More memory leak fixes.
 

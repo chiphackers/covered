@@ -246,6 +246,7 @@ void funit_size_elements( func_unit* funit, funit_inst* inst ) {
     }
     if( curr_exp->exp->sig != NULL ) {
       expression_set_value( curr_exp->exp, curr_exp->exp->sig->value );
+      assert( curr_exp->exp->value->value != NULL );
     }
     curr_exp = curr_exp->next;
   }
@@ -319,7 +320,7 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
   /* Now print all expressions in functional unit */
   curr_exp = funit->exp_head;
   while( curr_exp != NULL ) {
-    expression_db_write( curr_exp->exp, file );
+    expression_db_write( curr_exp->exp, file, (inst != NULL) );
     curr_exp = curr_exp->next;
   }
 
@@ -327,7 +328,7 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
   if( inst != NULL ) {
     curr_parm = inst->param_head;
     while( curr_parm != NULL ) {
-      param_db_write( curr_parm, file );
+      param_db_write( curr_parm, file, (inst != NULL) );
       curr_parm = curr_parm->next;
     }
   }
@@ -342,14 +343,14 @@ bool funit_db_write( func_unit* funit, char* scope, FILE* file, funit_inst* inst
   /* Now print all statements in functional unit */
   stmt_iter_reset( &curr_stmt, funit->stmt_head );
   while( curr_stmt.curr != NULL ) {
-    statement_db_write( curr_stmt.curr->stmt, file );
+    statement_db_write( curr_stmt.curr->stmt, file, (inst != NULL) );
     stmt_iter_next( &curr_stmt );
   }
 
   /* Now print all FSM structures in functional unit */
   curr_fsm = funit->fsm_head;
   while( curr_fsm != NULL ) {
-    fsm_db_write( curr_fsm->table, file );
+    fsm_db_write( curr_fsm->table, file, (inst != NULL) );
     curr_fsm = curr_fsm->next;
   }
 
@@ -829,6 +830,10 @@ void funit_dealloc( func_unit* funit ) {
 
 /*
  $Log$
+ Revision 1.14  2006/01/23 03:53:30  phase1geo
+ Adding support for input/output ports of tasks/functions.  Regressions are not
+ running cleanly at this point so there is still some work to do here.  Checkpointing.
+
  Revision 1.13  2006/01/20 19:15:23  phase1geo
  Fixed bug to properly handle the scoping of parameters when parameters are created/used
  in non-module functional units.  Added param10*.v diagnostics to regression suite to

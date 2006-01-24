@@ -53,7 +53,7 @@ void param_resolve_override( mod_parm* oparm, funit_inst* inst );
 void param_resolve( funit_inst* inst );
 
 /*! \brief Outputs specified instance parameter to specified output stream. */
-void param_db_write( inst_parm* iparm, FILE* file );
+void param_db_write( inst_parm* iparm, FILE* file, bool parse_mode );
 
 /*! \brief Deallocates specified module parameter and possibly entire module parameter list. */
 void mod_parm_dealloc( mod_parm* parm, bool recursive );
@@ -64,6 +64,11 @@ void inst_parm_dealloc( inst_parm* parm, bool recursive );
 
 /*
  $Log$
+ Revision 1.19  2006/01/20 22:44:51  phase1geo
+ Moving parameter resolution to post-bind stage to allow static functions to
+ be considered.  Regression passes without static function testing.  Static
+ function support still has some work to go.  Checkpointing.
+
  Revision 1.18  2006/01/20 19:15:23  phase1geo
  Fixed bug to properly handle the scoping of parameters when parameters are created/used
  in non-module functional units.  Added param10*.v diagnostics to regression suite to

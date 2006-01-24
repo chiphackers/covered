@@ -15,7 +15,7 @@
 statement* statement_create( expression* exp );
 
 /*! \brief Writes specified statement to the specified output file. */
-void statement_db_write( statement* stmt, FILE* ofile );
+void statement_db_write( statement* stmt, FILE* ofile, bool parse_mode );
 
 /*! \brief Reads in statement line from specified string and stores statement in specified functional unit. */
 bool statement_db_read( char** line, func_unit* curr_funit, int read_mode );
@@ -41,6 +41,12 @@ void statement_dealloc( statement* stmt );
 
 /*
  $Log$
+ Revision 1.23  2006/01/10 23:13:51  phase1geo
+ Completed support for implicit event sensitivity list.  Added diagnostics to verify
+ this new capability.  Also started support for parsing inline parameters and port
+ declarations (though this is probably not complete and not passing at this point).
+ Checkpointing.
+
  Revision 1.22  2005/12/08 19:47:00  phase1geo
  Fixed repeat2 simulation issues.  Fixed statement_connect algorithm, removed the
  need for a separate set_stop function and reshuffled the positions of esuppl bits.

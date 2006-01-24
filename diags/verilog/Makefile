@@ -8,7 +8,7 @@
 
 VG_LOG_PREFIX = mem_check
 VG_EXEC       = valgrind
-VG_FLAGS      = --tool=memcheck --leak-check=yes --show-reachable=yes --num-callers=10 --log-file=$(VG_LOG_PREFIX) --suppressions=vg_supp -v
+VG_FLAGS      = --tool=memcheck --leak-check=yes --show-reachable=yes --num-callers=15 --log-file=$(VG_LOG_PREFIX) --suppressions=vg_supp -v
 
 COVERED_SRC   = ../../src
 COVERED       = $(COVERED_SRC)/covered

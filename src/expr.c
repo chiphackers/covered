@@ -54,7 +54,8 @@
 
  \par EXP_OP_PASSIGN
  The port assignment operator is like the blocking assignment operator, in that Covered will perform
- the assignment.
+ the assignment.  The signal pointer points to the port signal of the function/task, the vector pointer
+ is set to point to this signal's vector.
 
  \par EXP_OP_FUNC_CALL
  A function call expression runs the head statement block of the prescribed function whenever an
@@ -445,13 +446,14 @@ void expression_set_value( expression* exp, vector* vec ) {
   assert( exp != NULL );
   assert( exp->value != NULL );
   assert( vec != NULL );
+
+  // printf( "In expression_set_value, exp %s line %d, vec %p, vec->value %p\n", expression_string_op( exp->op ), exp->line, vec, vec->value );
   
   switch( exp->op ) {
     case EXP_OP_SIG       :
     case EXP_OP_PARAM     :
     case EXP_OP_FUNC_CALL :
     case EXP_OP_TRIGGER   :
-    case EXP_OP_PASSIGN   :
       exp->value->value = vec->value;
       exp->value->width = vec->width;
       break;
@@ -641,19 +643,21 @@ void expression_resize( expression* expr, bool recursive ) {
 }
 
 /*!
- \param expr  Pointer to expression to get ID from.
+ \param expr        Pointer to expression to get ID from.
+ \param parse_mode  Specifies if ulid (TRUE) or id (FALSE) should be used
+
  \return Returns expression ID for this expression.
 
  If specified expression is non-NULL, return expression ID of this
  expression; otherwise, return a value of 0 to indicate that this
  is a leaf node.
 */
-int expression_get_id( expression* expr ) {
+int expression_get_id( expression* expr, bool parse_mode ) {
 
   if( expr == NULL ) {
     return( 0 );
   } else {
-    return( expr->id );
+    return( parse_mode ? expr->ulid : expr->id );
   }
 
 }
@@ -755,27 +759,29 @@ statement* expression_get_root_statement( expression* exp ) {
 }
 
 /*!
- \param expr  Pointer to expression to write to database file.
- \param file  Pointer to database file to write to.
+ \param expr        Pointer to expression to write to database file.
+ \param file        Pointer to database file to write to.
+ \param parse_mode  Set to TRUE when we are writing after just parsing the design (causes ulid value to be
+                    output instead of id)
 
  This function recursively displays the expression information for the specified
  expression tree to the coverage database specified by file.
 */
-void expression_db_write( expression* expr, FILE* file ) {
+void expression_db_write( expression* expr, FILE* file, bool parse_mode ) {
 
   func_unit* funit;     /* Pointer to functional unit containing the statement attached to this expression */
   char*      sig_name;  /* Temporary pointer to signal name */
 
   fprintf( file, "%d %d %d %x %x %x %x %d %d",
     DB_TYPE_EXPRESSION,
-    expr->id,
+    (parse_mode ? expr->ulid : expr->id),
     expr->line,
     expr->col,
     expr->exec_num,
     expr->op,
     (expr->suppl.all & ESUPPL_MERGE_MASK),
-    (expr->op == EXP_OP_STATIC) ? 0 : expression_get_id( expr->right ),
-    (expr->op == EXP_OP_STATIC) ? 0 : expression_get_id( expr->left )
+    ((expr->op == EXP_OP_STATIC) ? 0 : expression_get_id( expr->right, parse_mode )),
+    ((expr->op == EXP_OP_STATIC) ? 0 : expression_get_id( expr->left,  parse_mode ))
   );
 
   if( ESUPPL_OWNS_VEC( expr->suppl ) ) {
@@ -2360,8 +2366,7 @@ bool expression_op_func__passign( expression* expr, thread* thr ) {
     /* If the connected signal is an input type, copy the parameter expression value to this vector */
     case SSUPPL_TYPE_INPUT :
       vector_set_value( expr->value, expr->right->value->value, expr->right->value->width, 0, 0 );
-      // printf( "Set input port signal %s to value:\n", expr->sig->name );
-      // vector_display( expr->value );
+      // vsignal_display( expr->sig );
       vsignal_propagate( expr->sig );
       break;
 
@@ -2756,21 +2761,21 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
     } else {
 
+      /* Remove this expression from the binding list (if it exists there) */
+      bind_remove( expr->id, expression_is_assigned( expr ) );
+
       /* Deallocate vector memory but not vector itself */
       if( (op != EXP_OP_ASSIGN)  &&
           (op != EXP_OP_DASSIGN) &&
           (op != EXP_OP_BASSIGN) &&
           (op != EXP_OP_NASSIGN) &&
           (op != EXP_OP_IF)      &&
-          (op != EXP_OP_WHILE) ) {
+          (op != EXP_OP_WHILE)   &&
+          (op != EXP_OP_PASSIGN) ) {
         free_safe( expr->value );
       }
 
-      if( expr->sig == NULL ) {
-
-        bind_remove( expr->id, expression_is_assigned( expr ) );
-
-      } else {
+      if( expr->sig != NULL ) {
 
         /* Remove this expression from the attached signal's expression list */
         exp_link_remove( expr, &(expr->sig->exp_head), &(expr->sig->exp_tail), FALSE );
@@ -2822,6 +2827,12 @@ void expression_dealloc( expression* expr, bool exp_only ) {
 
 /* 
  $Log$
+ Revision 1.162  2006/01/23 22:55:10  phase1geo
+ Updates to fix constant function support.  There is some issues to resolve
+ here but full regression is passing with the exception of the newly added
+ static_func1.1 diagnostic.  Fixed problem where expand and multi-bit expressions
+ were getting coverage numbers calculated for them before they were simulated.
+
  Revision 1.161  2006/01/23 17:23:28  phase1geo
  Fixing scope issues that came up when port assignment was added.  Full regression
  now passes.

@@ -98,7 +98,6 @@ vector* vector_create( int width, bool data ) {
   assert( width > 0 );
 
   new_vec = (vector*)malloc_safe( sizeof( vector ), __FILE__, __LINE__ );
-  // printf( "Allocated vector %p, width: %d, sizeof( vec_data ): %d\n", new_vec, width, sizeof( vec_data ) );
 
   if( data == TRUE ) {
     value = (vec_data*)malloc_safe( (sizeof( vec_data ) * width), __FILE__, __LINE__ );
@@ -764,7 +763,6 @@ bool vector_set_value( vector* vec, vec_data* value, int width, int from_idx, in
   assert( vec != NULL );
 
   /* Verify that index is within range */
-  /* printf( "to_idx: %d, vec->width: %d\n", to_idx, vec->width ); */
   assert( to_idx < vec->width );
   assert( to_idx >= 0 );
 
@@ -897,6 +895,10 @@ bool vector_is_unknown( vector* vec ) {
   bool unknown = FALSE;  /* Specifies if vector contains unknown values */
   int  i;                /* Loop iterator */
   int  val;              /* Bit value of current bit */
+
+  assert( vec != NULL );
+  assert( vec->width > 0 );
+  assert( vec->value != NULL );
 
   for( i=0; i<vec->width; i++ ) {
     val = vec->value[i].part.value;
@@ -1899,7 +1901,6 @@ void vector_dealloc( vector* vec ) {
     }
 
     /* Deallocate vector itself */
-    // printf( "Deallocated vector %p\n", vec );
     free_safe( vec );
 
   } else {
@@ -1913,6 +1914,10 @@ void vector_dealloc( vector* vec ) {
 
 /*
  $Log$
+ Revision 1.69  2006/01/10 05:12:48  phase1geo
+ Added arithmetic left and right shift operators.  Added ashift1 diagnostic
+ to verify their correct operation.
+
  Revision 1.68  2005/12/19 23:11:27  phase1geo
  More fixes for memory faults.  Full regression passes.  Errors have now been
  eliminated from regression -- just left-over memory issues remain.
